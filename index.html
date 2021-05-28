@@ -1,0 +1,24 @@
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <script src="script.js"></script>
+    <script src="https://unpkg.com/ag-grid-community/dist/ag-grid-community.min.js"></script>
+    <!-- <link rel="stylesheet" type="text/css" href="styles.css"> -->
+  </head>
+  <body>
+
+    <!-- todo: rename any column -->
+    <!-- todo: select rows to delete rows -->
+
+    <p>Simple Markdown Table Generator - click [Log Markdown] to generate, then copy and paste from the console log
+    <button onclick="renameColumn(1)">Rename Column1</button><br />
+    <button onclick="addColumn()">Add Column</button>
+    <button onclick="addRow()">Add Row</button>
+    <button onclick="logMarkdown()">Log Markdown</button>
+    <div
+      id="myGrid"
+      style="height: 500px; width:100%;"
+      class="ag-theme-alpine"
+    ></div>
+  </body>
+</html>

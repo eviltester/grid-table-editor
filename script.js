@@ -76,19 +76,26 @@ function addRow() {
 function logMarkdown() {
   var markdownTable = '';
 
+  //console.log(gridOptions.api.getColumnDefs())
   // output headers
   var headers = gridOptions.api.getColumnDefs().map(col => col.headerName);
-
   //console.log(headers);
+
+  var fieldnames = gridOptions.api.getColumnDefs().map(col => col.field);
+  console.log(fieldnames);
+
   // output rows
   //console.log(rowData);
   var gridRowData = [];
   gridOptions.api.forEachNode(node => {
     var vals = [];
-    //console.log(node.data);
-    for (const property in node.data) {
-      //console.log(`${property}: ${node.data[property]}`);
-      vals.push(node.data[property]);
+    console.log(node.data);
+
+    for (const propertyid in fieldnames) {
+      property = fieldnames[propertyid];
+      console.log(property);
+      console.log(`- ${property}: ${node.data[property]}`);
+      vals.push(node.data[property] ? node.data[property] : ' ');
     }
     gridRowData.push(vals);
   });
@@ -97,8 +104,12 @@ function logMarkdown() {
   markdownTable = markdownTable + '|' + headers.join('|') + '|' + '\n';
   markdownTable =
     markdownTable + '|' + headers.map(name => '-----').join('|') + '|' + '\n';
+  console.log(gridRowData);
   gridRowData.forEach(values => {
     markdownTable = markdownTable + '|' + values.join('|') + '|' + '\n';
   });
   console.log(markdownTable);
+  document.getElementById('markdownarea').innerHTML = markdownTable;
 }
+
+// use papa parse for csv parsing https://www.papaparse.com/demo

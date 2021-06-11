@@ -3,12 +3,7 @@ var rowData = [];
 var columnDefs = [
   {
     headerName: 'Column',
-    field: 'column1',
-    wrapText: true,
-    autoHeight: true,
-    resizable: true,
-    rowDrag: true,
-    editable: true
+    field: 'column1'
   }
 ];
 
@@ -16,6 +11,13 @@ var gridOptions = {
   columnDefs: columnDefs,
   rowData: rowData,
 
+  defaultColDef: {
+    wrapText: true,
+    autoHeight: true,
+    resizable: true,
+    rowDrag: true,
+    editable: true
+  },
   rowDragManaged: true,
   enableMultiRowDragging: true,
   rowSelection: 'multiple'
@@ -37,10 +39,14 @@ function addColumn() {
   }
 
   var colDefs = gridOptions.api.getColumnDefs();
-  var newCol = Object.assign({}, colDefs[0]);
+  //var newCol = Object.assign({}, colDefs[0]);
+  var newCol = {};
   newCol.headerName = colTitle;
   newCol.field = 'column' + (colDefs.length + 1);
-  newCol.colId = newCol.field;
+  //newCol.colId = newCol.field;
+  //delete newCol.rowGroup;
+  //delete newCol.pivot;
+
   colDefs.push(newCol);
 
   console.log(newCol);

@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <script src="script.js"></script>
   <script src="https://unpkg.com/ag-grid-community/dist/ag-grid-community.min.js"></script>
+  <script src="https://unpkg.com/papaparse@latest/papaparse.min.js"></script>
   <!-- <link rel="stylesheet" type="text/css" href="styles.css"> -->
 </head>
 
@@ -17,6 +18,7 @@
   <button onclick="addColumn()">Add Column</button>
   <button onclick="addRow()">Add Row</button>
   <button onclick="logMarkdown()">Log Markdown</button>
+  <input type="file" id="csvinput">
   <div id="myGrid" style="height: 500px; width:100%;" class="ag-theme-alpine"></div>
   <div id="makrdown" style="height: 500px; width:100%;">
     <textarea style="height: 50%; width:100%; white-space: pre-wrap;" name="Markdown" id="markdownarea"></textarea>

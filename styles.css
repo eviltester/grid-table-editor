@@ -1,3 +1,17 @@
 body {
   background: rgb(255, 255, 255);
 }
+
+.appheading{
+  text-align: center;
+}
+
+.instructions{
+  position: fixed;
+  top:0;
+  left:0;
+  background-color: aliceblue;
+  z-index: 1;
+  margin:10px;
+  padding:10px;
+}

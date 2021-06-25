@@ -18,6 +18,9 @@ var gridOptions = {
     rowDrag: true,
     editable: true
   },
+  components: {
+    agColumnHeader: CustomHeader,
+  },
   rowDragManaged: true,
   enableMultiRowDragging: true,
   rowSelection: 'multiple'
@@ -27,6 +30,8 @@ var gridOptions = {
 document.addEventListener('DOMContentLoaded', function() {
   var gridDiv = document.querySelector('#myGrid');
   new agGrid.Grid(gridDiv, gridOptions);
+  // having setup the grid, make it a little more responsive
+  setTimeout(function(){document.getElementById("myGrid").style.height="40%";},1000)
 });
 
 // given an array of String column names, set the grid to have those columns
@@ -68,6 +73,115 @@ function addColumn() {
   // todo add default value for that column to all rows in rowData
 }
 
+
+/*
+    Using Grid Column IDs
+*/
+function renameColId(id) {
+
+  var colDefs = gridOptions.api.getColumnDefs();
+  var editColDef;
+  colDefs.forEach(colDef =>{
+    if(colDef.colId==id){
+      editColDef = colDef;
+    }
+  })
+
+  var colTitle = prompt('Column Name?', editColDef.headerName);
+
+  if (colTitle != null && colTitle != '') {
+    console.log('rename column ' + id + ' with this name: ' + colTitle);
+  } else {
+    return;
+  }
+
+  editColDef.headerName = colTitle;
+
+  
+  gridOptions.api.setColumnDefs(colDefs);
+}
+
+function addNeighbourColumnId(position, id) {
+  var colTitle = prompt('Column Name?');
+
+  if (colTitle != null && colTitle != '') {
+    console.log('create a new neighbour column with this name: ' + colTitle);
+  } else {
+    return;
+  }
+
+  var colDefs = gridOptions.api.getColumnDefs();
+  
+  //var newCol = Object.assign({}, colDefs[0]);
+  var newCol = {};
+  newCol.headerName = colTitle;
+  newCol.field = 'column' + (colDefs.length + 1);
+
+  // add to right
+  colDefs.push(newCol);
+
+  gridOptions.api.setColumnDefs(colDefs);
+
+
+
+  // need to use column-state to set the order
+  // https://www.ag-grid.com/javascript-grid/column-state/
+
+  var columnState = gridOptions.columnApi.getColumnState();
+  var newColumnStates = [];
+  var currentColumnState;
+  var newColumnState;
+
+  // find new columnId
+  var colDefsHunt = gridOptions.api.getColumnDefs();
+  var newColId;
+  colDefsHunt.forEach(col =>{
+    if(col.field == newCol.field){
+      console.log(newCol.colId);
+      newColId = col.colId;
+    }
+  })
+
+
+  // find main column state
+  columnState.forEach(col =>{
+    if(col.colId== id){
+      currentColumnState=col;
+    }
+  })
+
+  // find new column id
+  columnState.forEach(col =>{
+    if(col.colId== newColId){
+      newColumnState=col;
+    }
+  })
+
+  // shuffle by creating a new state
+  columnState.forEach(colDef =>{
+    if(colDef.colId==id){
+      if(position<0){
+          newColumnStates.push(newColumnState)
+          newColumnStates.push(currentColumnState)
+      }else{
+        newColumnStates.push(currentColumnState)
+        newColumnStates.push(newColumnState)      }
+    }else{
+      if(colDef.colId!=newColId){
+        newColumnStates.push(colDef);
+      }
+    }
+  })
+
+  gridOptions.columnApi.applyColumnState({ state: newColumnStates, applyOrder: true });
+
+  // todo add default value for that column to all rows in rowData
+}
+
+
+/*
+  using position indexes
+*/
 function renameColumn(id) {
   var colTitle = prompt('Column Name?');
 

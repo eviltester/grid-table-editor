@@ -2,39 +2,55 @@
 
 <head>
   <meta charset="UTF-8" />
-  <script src="script.js"></script>
   <script src="https://unpkg.com/ag-grid-community/dist/ag-grid-community.min.js"></script>
   <script src="https://unpkg.com/papaparse@latest/papaparse.min.js"></script>
-  <!-- <link rel="stylesheet" type="text/css" href="styles.css"> -->
+  <script src="customHeader.js"></script>
+  <script src="script.js"></script>
+  <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 
 <body>
 
   <!-- todo: rename any column -->
-  <!-- todo: select rows to delete rows -->
   <!-- todo: custom header cells for add left/right/rename-->
-  <!-- todo: delete column-->
-  <!-- todo: import markdown table-->
-  <!-- todo: export csv-->
 
-  <p>Simple Markdown Table Generator - click [Show Markdown] to generate, then copy and paste from the console log</p>
-  <button onclick="renameColumn(1)">Rename Column1</button><br />
-  <button onclick="addColumn()">Add Column</button>
-  <button onclick="addRow()">Add Row</button>
-  <button onclick="logMarkdown()">Show Markdown</button>
-  <div>
-  <label for="csvinput">.csv import:</label><input type="file" id="csvinput">
-  <button onclick="csvExport()">CSV export</button>
+  <!-- todo: select rows to delete rows -->
+  <!-- todo: delete column-->
+
+  <h1 class="appheading">Simple Markdown Table Editor</h1>
+  <div class="instructions">
+  <details>
+    <summary>Instructions</summary>
+    <ul>
+      <li>[~] Rename Column</li>
+      <li>[&lt;+] Add Column Left</li>
+      <li>[+&gt;] Add Column Right</li>
+      <li>click [Set Markdown From Grid] to generate Markdown from the Grid</li>
+      <li>Drag Columns to re-order</li>
+      <li>Rest seems self-explanatory</li>
+    </ul>
+  </details>
+</div>
+
+
+  <div class="toolbar">
+    <button onclick="addRow()">Add Row</button>
   </div>
   <div id="myGrid" style="height: 500px; width:100%;" class="ag-theme-alpine"></div>
-  <div id="markdown" style="height: 500px; width:100%;">
+  <div class="importexport">
     <button onclick="logMarkdown()">v Set Markdown From Grid v</button>
     <button onclick="importMarkdownText()">^ Set Grid From Markdown ^</button>
-    <textarea style="height: 50%; width:100%; white-space: pre-wrap;" name="Markdown" id="markdownarea"></textarea>
+    <label for="csvinput">.csv import ^:</label><input type="file" id="csvinput">
+    <button onclick="csvExport()">CSV export</button>
+  </div>
+  <div id="markdown" style="height: 30%; width:100%;">
+    <textarea style="height: 100%; width:100%; white-space: pre-wrap;" name="Markdown" id="markdownarea"></textarea>
   </div>
   <p>
-    Built with <a href="https://ag-grid.com">AG Grid</a> Community Edition
+    Built by <a href="https://eviltester.com" target="_blank">Alan Richardson</a> with <a href="https://ag-grid.com" target="_blank">AG Grid</a> Community Edition,
+    and <a href="https://www.papaparse.com/" target="_blank">PapaParse</a>
   </p>
 </body>
+
 
 </html>

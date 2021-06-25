@@ -29,6 +29,7 @@ document.addEventListener('DOMContentLoaded', function() {
   new agGrid.Grid(gridDiv, gridOptions);
 });
 
+// given an array of String column names, set the grid to have those columns
 function createColumns(columnNames) {
   var colDefs = [];
   columnNames.forEach(column => {
@@ -125,7 +126,7 @@ function logMarkdown() {
     markdownTable = markdownTable + '|' + values.join('|') + '|' + '\n';
   });
   console.log(markdownTable);
-  document.getElementById('markdownarea').innerHTML = markdownTable;
+  document.getElementById('markdownarea').value = markdownTable;
 }
 
 // use papa parse for csv parsing https://www.papaparse.com/demo
@@ -134,28 +135,71 @@ document.addEventListener('DOMContentLoaded', function() {
   inputElement.addEventListener('change', handleFiles, false);
 });
 
-function handleFiles() {
-  console.log(this.files[0]);
-  Papa.parse(this.files[0], {
-    complete: function(results) {
-      var header = true;
-      results.data.forEach(row => {
-        if (header) {
-          createColumns(row);
-          header = false;
-          gridOptions.api.setRowData([]);
-        } else {
-          var fieldnames = gridOptions.api
-            .getColumnDefs()
-            .map(col => col.field);
-          var vals = {};
-          for (const propertyid in fieldnames) {
-            vals[fieldnames[propertyid]] = row[propertyid];
-          }
-          //console.log(vals);
-          gridOptions.api.applyTransaction({ add: [vals] });
-        }
-      });
+function setGridFromData(data){
+
+  var header = true;
+  data.forEach(row => {
+    if (header) {
+      createColumns(row);
+      header = false;
+      gridOptions.api.setRowData([]);
+    } else {
+      var fieldnames = gridOptions.api
+        .getColumnDefs()
+        .map(col => col.field);
+      var vals = {};
+      for (const propertyid in fieldnames) {
+        vals[fieldnames[propertyid]] = row[propertyid];
+      }
+      //console.log(vals);
+      gridOptions.api.applyTransaction({ add: [vals] });
     }
   });
+}
+
+function handleFiles() {
+  //console.log(this.files[0]);
+  Papa.parse(this.files[0], {
+    complete: function(results) {
+      setGridFromData(results.data);
+    }
+  });
+}
+
+// Basic Markdown Table Parsing
+function markdownTableToDataRows(markdownTable){
+    const rows = markdownTable.split(/[\r\n]+/);
+    var data = [];
+    var rowCount = 0;
+    rows.forEach(row =>{
+      var rowString = row.trim();
+      
+      if(rowString.charAt(0)=="|"){
+        rowString = rowString.substring(1);
+      }
+      if(rowString.charAt(rowString.length-1)=="|"){
+        rowString=rowString.slice(0, -1);
+      }
+
+      var rowString = rowString.trim();
+
+      if(rowString.length>0 && rowCount!=1){
+        var values = rowString.split("|");
+        var cellValues = values.map(contents => contents.trim());
+        console.log(cellValues);
+        data.push(cellValues);
+      }
+
+      rowCount++;      
+    });
+
+    return data;
+}
+
+function importMarkdownText(){
+  setGridFromData(
+    markdownTableToDataRows(
+      document.getElementById("markdownarea").value
+    )
+  );
 }

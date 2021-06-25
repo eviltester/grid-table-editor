@@ -85,6 +85,10 @@ function addRow() {
   gridOptions.api.applyTransaction({ add: [{}] });
 }
 
+function csvExport(){
+  gridOptions.api.exportDataAsCsv();
+}
+
 function logMarkdown() {
   var markdownTable = '';
 

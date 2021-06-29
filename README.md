@@ -9,5 +9,9 @@ A simple Markdown Table Editor
 - import markdown
 - generate markdown from grid
 
+---
+
+## Use The Editor
+
 - [Use on gitPages](https://eviltester.github.io/grid-table-editor/)
 - [Edit on StackBlitz ⚡️](https://stackblitz.com/edit/grid-table-editor)

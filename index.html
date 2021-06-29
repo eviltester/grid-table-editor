@@ -27,6 +27,7 @@
       <li>[+&gt;] Add Column Right</li>
       <li>click [Set Markdown From Grid] to generate Markdown from the Grid</li>
       <li>Drag Columns to re-order</li>
+      <li>Select multiple rows with ctrl and shift (cmd + shift on mac)</li>
       <li>Rest seems self-explanatory</li>
     </ul>
   </details>
@@ -35,6 +36,9 @@
 
   <div class="toolbar">
     <button onclick="addRow()">Add Row</button>
+    <button onclick="addRows(-1)">Add Rows Above</button>
+    <button onclick="addRows(1)">Add Rows Below</button>
+    <button onclick="deleteRows()">Delete Selected Rows</button>
   </div>
   <div id="myGrid" style="height: 500px; width:100%;" class="ag-theme-alpine"></div>
   <div class="importexport">

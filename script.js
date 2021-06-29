@@ -1,8 +1,10 @@
 var rowData = [];
 
+var nextFieldNumber = 2;
+
 var columnDefs = [
   {
-    headerName: 'Column',
+    headerName: '~rename-me',
     field: 'column1'
   }
 ];
@@ -38,9 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function createColumns(columnNames) {
   var colDefs = [];
   columnNames.forEach(column => {
-    var newCol = {};
-    newCol.headerName = column;
-    newCol.field = 'column' + (colDefs.length + 1);
+    var newCol = getNewCol(column);
     colDefs.push(newCol);
     console.log(newCol);
   });
@@ -57,17 +57,10 @@ function addColumn() {
   }
 
   var colDefs = gridOptions.api.getColumnDefs();
-  //var newCol = Object.assign({}, colDefs[0]);
-  var newCol = {};
-  newCol.headerName = colTitle;
-  newCol.field = 'column' + (colDefs.length + 1);
-  //newCol.colId = newCol.field;
-  //delete newCol.rowGroup;
-  //delete newCol.pivot;
+  var newCol = getNewCol(colTitle);
 
   colDefs.push(newCol);
 
-  //console.log(newCol);
   gridOptions.api.setColumnDefs(colDefs);
 
   // todo add default value for that column to all rows in rowData
@@ -101,6 +94,45 @@ function renameColId(id) {
   gridOptions.api.setColumnDefs(colDefs);
 }
 
+function deleteColId(id) {
+
+  var colDefs = gridOptions.api.getColumnDefs();
+
+  if(colDefs.length==1){
+      alert("Cannot Delete The Only Column");
+      return;
+  }
+
+  var editColDef;
+  colDefs.forEach(colDef =>{
+    if(colDef.colId==id){
+      editColDef = colDef;
+    }
+  })
+
+  if(!confirm('Are you Sure You Want to Delete Column Named '+ editColDef.headerName + "?"))
+    return;
+
+  var newColDefs = [];
+
+  var editColDef;
+  colDefs.forEach(colDef =>{
+    if(colDef.colId!=id){
+      newColDefs.push(colDef)
+    }
+  })
+  
+  gridOptions.api.setColumnDefs(newColDefs);
+}
+
+function getNewCol(named){
+  var newCol = {};
+  newCol.headerName = named;
+  newCol.field = 'column' + nextFieldNumber;
+  nextFieldNumber++;
+  return newCol;
+}
+
 function addNeighbourColumnId(position, id) {
   var colTitle = prompt('Column Name?');
 
@@ -112,10 +144,7 @@ function addNeighbourColumnId(position, id) {
 
   var colDefs = gridOptions.api.getColumnDefs();
   
-  //var newCol = Object.assign({}, colDefs[0]);
-  var newCol = {};
-  newCol.headerName = colTitle;
-  newCol.field = 'column' + (colDefs.length + 1);
+  var newCol = getNewCol(colTitle);
 
   // add to right
   colDefs.push(newCol);
@@ -179,9 +208,14 @@ function addNeighbourColumnId(position, id) {
 }
 
 
+
+
+
 /*
   using position indexes
 */
+
+
 function renameColumn(id) {
   var colTitle = prompt('Column Name?');
 
@@ -198,6 +232,70 @@ function renameColumn(id) {
 
 function addRow() {
   gridOptions.api.applyTransaction({ add: [{}] });
+}
+
+function getMaxRowIndex(rowNodes){
+
+  var maxIndex=0;
+  rowNodes.forEach( node =>{
+      if(node.rowIndex>maxIndex){
+        maxIndex=node.rowIndex;
+      }
+    }
+
+  )
+  return maxIndex;
+}
+
+function getMinRowIndex(rowNodes){
+
+  var minIndex=rowNodes[0].rowIndex;
+  rowNodes.forEach( node =>{
+      if(node.rowIndex<minIndex){
+        minIndex=node.rowIndex;
+      }
+    }
+
+  )
+  return minIndex;
+}
+
+
+function addRows(position) {
+  // -1 above, 1 below
+  var rowsToAdd = gridOptions.api.getSelectedNodes();
+
+  var positionIndexToAddAt = 0;
+
+  if(rowsToAdd.length==0){
+    if(gridOptions.api.getDisplayedRowCount()==0 || position<0){
+      rowsToAdd = [{rowIndex:0}];
+    }else{
+      rowsToAdd = [{rowIndex:gridOptions.api.getDisplayedRowCount()}];
+    }
+  }
+  
+  if(position<0){
+    positionIndexToAddAt = getMinRowIndex(rowsToAdd);
+  }else{
+    positionIndexToAddAt = getMaxRowIndex(rowsToAdd)+position;
+  }
+
+  if(positionIndexToAddAt<0){
+    positionIndexToAddAt=0;
+  }
+
+  var objectsToAdd = [];
+  var numberOfRowsToAdd = rowsToAdd.length;
+  for(var objectCountToAdd=0; objectCountToAdd<numberOfRowsToAdd; objectCountToAdd++){
+      objectsToAdd.push({});
+  }
+
+  gridOptions.api.applyTransaction({ add: objectsToAdd, addIndex: positionIndexToAddAt });
+}
+
+function deleteRows() {
+  gridOptions.api.applyTransaction({ remove: gridOptions.api.getSelectedRows() });
 }
 
 function csvExport(){

@@ -20,9 +20,11 @@ var gridOptions = {
     rowDrag: true,
     editable: true
   },
+
   components: {
     agColumnHeader: CustomHeader,
   },
+  
   rowDragManaged: true,
   enableMultiRowDragging: true,
   rowSelection: 'multiple'
@@ -294,7 +296,7 @@ function addRows(position) {
   gridOptions.api.applyTransaction({ add: objectsToAdd, addIndex: positionIndexToAddAt });
 }
 
-function deleteRows() {
+function deleteSelectedRows() {
   gridOptions.api.applyTransaction({ remove: gridOptions.api.getSelectedRows() });
 }
 
@@ -303,6 +305,9 @@ function csvExport(){
 }
 
 function logMarkdown() {
+
+  logJson();
+
   var markdownTable = '';
 
   //console.log(gridOptions.api.getColumnDefs())
@@ -339,6 +344,45 @@ function logMarkdown() {
   });
   console.log(markdownTable);
   document.getElementById('markdownarea').value = markdownTable;
+}
+
+// use papa parse for csv parsing https://www.papaparse.com/demo
+document.addEventListener('DOMContentLoaded', function() {
+  const inputElement = document.getElementById('csvinput');
+  inputElement.addEventListener('change', handleFiles, false);
+});
+
+function getDataAsObjectArray(){
+
+  var colDefs = gridOptions.api.getColumnDefs();
+
+  var gridRowData = [];
+  gridOptions.api.forEachNode(node => {
+    var vals = {};
+    //console.log(node.data);
+
+    colDefs.forEach(colDef => {
+      property = colDef.field;
+      //console.log(property);
+      //console.log(`- ${property}: ${node.data[property]}`);
+      vals[colDef.headerName.replaceAll(" ", "_")] = node.data[property] ? node.data[property] : '';
+    }
+    );
+    gridRowData.push(vals);
+
+  });
+
+  return gridRowData;
+
+}
+
+function getGridAsJson(){
+  return JSON.stringify(getDataAsObjectArray(), null, "\t");
+}
+
+
+function logJson() {
+  console.log(getGridAsJson());
 }
 
 // use papa parse for csv parsing https://www.papaparse.com/demo

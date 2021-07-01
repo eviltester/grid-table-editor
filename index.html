@@ -11,11 +11,21 @@
 
 <body>
 
-  <!-- todo: rename any column -->
-  <!-- todo: custom header cells for add left/right/rename-->
 
-  <!-- todo: select rows to delete rows -->
-  <!-- todo: delete column-->
+
+  <!-- 
+    TODOs:
+
+    Generate JSON from grid - console logged
+    Generate CSV from grid - console logged
+    Import JSON into Grid
+    Switchable tabs for Markdown, CSV, JSON
+    Generate copy paste JSON
+    Generate copy paste CSV
+    refactor code into GridExtensionObject.js for delete rows, cols etc.
+    refactor code into importExport.js
+    
+  -->
 
   <h1 class="appheading">Simple Markdown Table Editor</h1>
   <div class="instructions">
@@ -23,12 +33,18 @@
     <summary>Instructions</summary>
     <ul>
       <li>[~] Rename Column</li>
+      <li>[x] Delete Column</li>
       <li>[&lt;+] Add Column Left</li>
       <li>[+&gt;] Add Column Right</li>
       <li>click [Set Markdown From Grid] to generate Markdown from the Grid</li>
+      <li>Enter Markdown in the Text Area and click [Set Grid From Markdown] to generate the grid from the entered Markdown</li>
+      <li>Import CSV file to set grid from the loaded file</li>
+      <li>[CSV Export] will download the grid as CSV</li>
       <li>Drag Columns to re-order</li>
+      <li>Drag Rows to re-order</li>
       <li>Select multiple rows with ctrl and shift (cmd + shift on mac)</li>
-      <li>Rest seems self-explanatory</li>
+      <li>Add new Rows with the [Add Row...] buttons</li>
+      <li>[Delete Selected Rows] will delete any selected rows</li>
     </ul>
   </details>
 </div>
@@ -38,8 +54,9 @@
     <button onclick="addRow()">Add Row</button>
     <button onclick="addRows(-1)">Add Rows Above</button>
     <button onclick="addRows(1)">Add Rows Below</button>
-    <button onclick="deleteRows()">Delete Selected Rows</button>
+    <button onclick="deleteSelectedRows()">Delete Selected Rows</button>
   </div>
+  <!-- ag-theme-alpine -->
   <div id="myGrid" style="height: 500px; width:100%;" class="ag-theme-alpine"></div>
   <div class="importexport">
     <button onclick="logMarkdown()">v Set Markdown From Grid v</button>
@@ -48,7 +65,7 @@
     <button onclick="csvExport()">CSV export</button>
   </div>
   <div id="markdown" style="height: 30%; width:100%;">
-    <textarea style="height: 100%; width:100%; white-space: pre-wrap;" name="Markdown" id="markdownarea"></textarea>
+    <textarea class="textrepresentation" name="Markdown" id="markdownarea"></textarea>
   </div>
   <p>
     Built by <a href="https://eviltester.com" target="_blank">Alan Richardson</a> with <a href="https://ag-grid.com" target="_blank">AG Grid</a> Community Edition,

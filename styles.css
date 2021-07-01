@@ -1,17 +1,50 @@
 body {
-  background: rgb(255, 255, 255);
+  background: rgb(242, 242, 242);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.instructions{
+  padding:10px;
+}
+
+details[open]{
+  background-color: white;
+  border-style: dashed;
+}
+
+details[open] ul{
+  margin-right: 10px;
+}
+
+details[open] ul li:last-child{
+  padding-bottom: 10px;
 }
 
 .appheading{
   text-align: center;
 }
 
-.instructions{
-  position: fixed;
-  top:0;
-  left:0;
-  background-color: aliceblue;
-  z-index: 1;
-  margin:10px;
-  padding:10px;
+
+@media only screen and (min-width: 750px) {
+  .instructions{
+    position: fixed;
+    top:0;
+    left:0;
+    z-index: 1;
+  }
+}
+
+.headerbuttons{
+  color: #0019fd;
+}
+
+.customHeaderLabel{
+  text-align: center;
+}
+
+.textrepresentation{
+  height: 100%;
+  width:100%;
+  white-space: pre-wrap;
+  background-color: #fdfdfd;
 }

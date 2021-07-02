@@ -4,22 +4,27 @@ class Exporter {
         this.gridApi = gridApi;
     }
 
+    // https://www.ag-grid.com/javascript-grid/csv-export/
     csvExport(){
         this.gridApi.exportDataAsCsv();
     }
 
-    getMarkdown(){
-        var markdownTable='';
-        //console.log(gridOptions.api.getColumnDefs())
-        // output headers
-        var headers = this.gridApi.getColumnDefs().map(col => col.headerName);
-        //console.log(headers);
+    getGridAsCSV(){
+        return this.gridApi.getDataAsCsv();
 
+        // in theory, could use above to change delimiter to "|" and
+        // then amend generated string to create markdown but seems
+        // simpler to create a specific generator
+    }
+
+    // https://www.markdownguide.org/extended-syntax/
+    getGridAsMarkdown(){
+        
+        var headers = this.gridApi.getColumnDefs().map(col => col.headerName);
         var fieldnames = this.gridApi.getColumnDefs().map(col => col.field);
-        //console.log(fieldnames);
+    
 
         // output rows
-        //console.log(rowData);
         var gridRowData = [];
         this.gridApi.forEachNode(node => {
             var vals = [];
@@ -27,49 +32,69 @@ class Exporter {
 
             for (const propertyid in fieldnames) {
                 var property = fieldnames[propertyid];
-                //console.log(property);
-                //console.log(`- ${property}: ${node.data[property]}`);
                 vals.push(node.data[property] ? node.data[property] : ' ');
             }
             gridRowData.push(vals);
         });
-        //console.log(gridRowData);
 
-        markdownTable = markdownTable + '|' + headers.join('|') + '|' + '\n';
+        return this.formatAsMarkdownTable(headers, gridRowData);
+    }
+
+    formatAsMarkdownTable(headers, data){
+        // headers is an array of 'headers' and 
+        // data is an array of nested arrays matching the header values
+
+        // display a pipe (|) character in a table by using its HTML character code (&#124;).
+
+        var renderHeaders = headers.map(header => header.replaceAll("|","&#124;"))
+        var markdownTable =  '|' + renderHeaders.join('|') + '|' + '\n';
+
         markdownTable =
             markdownTable + '|' + headers.map(name => '-----').join('|') + '|' + '\n';
-        //console.log(gridRowData);
-        gridRowData.forEach(values => {
-            markdownTable = markdownTable + '|' + values.join('|') + '|' + '\n';
-        });
+            data.forEach(values => {                
+                var renderValues = values.map(value => value.replaceAll("|","&#124;"))
+                markdownTable = markdownTable + '|' + renderValues.join('|') + '|' + '\n';
+            });
 
         return markdownTable;
     }
 
-    getDataAsObjectArray(){
+    convertStringToJavaScriptValidName(aString){
+        return aString.replace(/[^A-Za-z0-9_]/g, '_');
+    }
+
+    getDataAsObjectArray(headerNameConvertor){
+
+        var convertor=headerNameConvertor;
+        if(headerNameConvertor===undefined){
+            convertor = function (header){
+                return header;
+            }
+        }
 
         var colDefs = this.gridApi.getColumnDefs();
 
-        var gridRowData = [];
+        var objectArray = [];
         this.gridApi.forEachNode(node => {
-            var vals = {};
+            var anObject = {};
             //console.log(node.data);
 
             colDefs.forEach(colDef => {
                     var property = colDef.field;
-                    //console.log(property);
-                    //console.log(`- ${property}: ${node.data[property]}`);
-                    var jsonHeaderName = colDef.headerName.
-                                        replace(/[^A-Za-z0-9_]/g, '_');
-                    vals[jsonHeaderName] = node.data[property] ? node.data[property] : '';
+                    var jsonHeaderName = convertor(colDef.headerName);
+                    anObject[jsonHeaderName] = node.data[property] ? node.data[property] : '';
                 }
             );
-            gridRowData.push(vals);
+            objectArray.push(anObject);
 
         });
 
-        return gridRowData;
+        return objectArray;
+    }
 
+
+    getGridAsJavaScriptJson(){
+        return JSON.stringify(this.getDataAsObjectArray(this.convertStringToJavaScriptValidName), null, "\t");
     }
 
     getGridAsJson(){

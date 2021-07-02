@@ -300,89 +300,31 @@ function deleteSelectedRows() {
   gridOptions.api.applyTransaction({ remove: gridOptions.api.getSelectedRows() });
 }
 
+
+
+/*
+  Exporting
+ */
 function csvExport(){
-  gridOptions.api.exportDataAsCsv();
+  new Exporter(gridOptions.api).csvExport();
 }
 
 function logMarkdown() {
 
   logJson();
 
-  var markdownTable = '';
+  var markdownTable = new Exporter(gridOptions.api).getMarkdown();
 
-  //console.log(gridOptions.api.getColumnDefs())
-  // output headers
-  var headers = gridOptions.api.getColumnDefs().map(col => col.headerName);
-  //console.log(headers);
-
-  var fieldnames = gridOptions.api.getColumnDefs().map(col => col.field);
-  //console.log(fieldnames);
-
-  // output rows
-  //console.log(rowData);
-  var gridRowData = [];
-  gridOptions.api.forEachNode(node => {
-    var vals = [];
-    //console.log(node.data);
-
-    for (const propertyid in fieldnames) {
-      property = fieldnames[propertyid];
-      //console.log(property);
-      //console.log(`- ${property}: ${node.data[property]}`);
-      vals.push(node.data[property] ? node.data[property] : ' ');
-    }
-    gridRowData.push(vals);
-  });
-  //console.log(gridRowData);
-
-  markdownTable = markdownTable + '|' + headers.join('|') + '|' + '\n';
-  markdownTable =
-    markdownTable + '|' + headers.map(name => '-----').join('|') + '|' + '\n';
-  //console.log(gridRowData);
-  gridRowData.forEach(values => {
-    markdownTable = markdownTable + '|' + values.join('|') + '|' + '\n';
-  });
   console.log(markdownTable);
   document.getElementById('markdownarea').value = markdownTable;
 }
 
-// use papa parse for csv parsing https://www.papaparse.com/demo
-document.addEventListener('DOMContentLoaded', function() {
-  const inputElement = document.getElementById('csvinput');
-  inputElement.addEventListener('change', handleFiles, false);
-});
-
-function getDataAsObjectArray(){
-
-  var colDefs = gridOptions.api.getColumnDefs();
-
-  var gridRowData = [];
-  gridOptions.api.forEachNode(node => {
-    var vals = {};
-    //console.log(node.data);
-
-    colDefs.forEach(colDef => {
-      property = colDef.field;
-      //console.log(property);
-      //console.log(`- ${property}: ${node.data[property]}`);
-      vals[colDef.headerName.replaceAll(" ", "_")] = node.data[property] ? node.data[property] : '';
-    }
-    );
-    gridRowData.push(vals);
-
-  });
-
-  return gridRowData;
-
-}
-
-function getGridAsJson(){
-  return JSON.stringify(getDataAsObjectArray(), null, "\t");
-}
-
+/*
+  Importing
+ */
 
 function logJson() {
-  console.log(getGridAsJson());
+  console.log(new Exporter(gridOptions.api).getGridAsJson());
 }
 
 // use papa parse for csv parsing https://www.papaparse.com/demo

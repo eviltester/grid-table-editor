@@ -9,6 +9,8 @@ class Importer{
 
     setGridFromData(data){
 
+        // data is row of values where the first row is the headers
+
         var header = true;
         data.forEach(row => {
           if (header) {

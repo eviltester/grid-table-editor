@@ -1,6 +1,6 @@
-# Markdown Grid Table Editor
+# Data Grid Table Editor
 
-A simple Markdown Table Editor
+A simple Data Table Editor that generates Markdown, CSV or JSON. It can also be used to interchange data between the formats, supporting editing in the grid.
 
 - Grid interface
 - drag and drop rows to re-order

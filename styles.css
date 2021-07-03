@@ -7,6 +7,37 @@ body {
   padding:10px;
 }
 
+/* Conversion Types List */
+
+.type-select{
+  display: block;
+  padding: .5rem 1rem;
+}
+
+.type-select:hover{
+  border-style: solid;
+  border-width: 1px 1px 0px 1px;
+  border-color: #b3b3b3 #b3b3b3 #fff;
+}
+
+.active-type{
+  border-style: solid;
+  border-width: 1px 1px 0px 1px;
+  border-color: #020000 #000000 #fff;
+}
+
+.conversionTypesList{
+  border-bottom: 1px solid #dee2e6;
+  display: flex;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  padding-left: 0;
+  margin-bottom: 0;
+  list-style: none;
+}
+
+/* Instructions */
+
 details[open]{
   background-color: white;
   border-style: dashed;
@@ -34,6 +65,7 @@ details[open] ul li:last-child{
   }
 }
 
+/* The grid heading control buttons */
 .headerbuttons{
   color: #0019fd;
 }
@@ -41,6 +73,8 @@ details[open] ul li:last-child{
 .customHeaderLabel{
   text-align: center;
 }
+
+/* The text conversion box */
 
 .textrepresentation{
   height: 100%;

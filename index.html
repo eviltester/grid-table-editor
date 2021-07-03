@@ -23,12 +23,13 @@
     Switchable tabs for Markdown, CSV, JSON
     Generate copy paste JSON, JavaScript JSON
     Generate copy paste CSV
+
     Export to file: JSON, JavaScript JSON
     Import from file: Markdown, JSON
 
   -->
 
-  <h1 class="appheading">Simple Markdown Table Editor</h1>
+  <h1 class="appheading">Simple Data Table Editor</h1>
   <div class="instructions">
   <details>
     <summary>Instructions</summary>
@@ -37,8 +38,9 @@
       <li>[x] Delete Column</li>
       <li>[&lt;+] Add Column Left</li>
       <li>[+&gt;] Add Column Right</li>
-      <li>click [Set Markdown From Grid] to generate Markdown from the Grid</li>
-      <li>Enter Markdown in the Text Area and click [Set Grid From Markdown] to generate the grid from the entered Markdown</li>
+      <li>Use tabs to switch between the type of text representation: markdown, csv, etc.</li>
+      <li>click [Set Text From Grid] to generate text from the Grid</li>
+      <li>Enter format in the Text Area and click [Set Grid From Text] to generate the grid from the entered text type</li>
       <li>Import CSV file to set grid from the loaded file</li>
       <li>[CSV Export] will download the grid as CSV</li>
       <li>Drag Columns to re-order</li>
@@ -60,14 +62,48 @@
   <!-- ag-theme-alpine -->
   <div id="myGrid" style="height: 500px; width:100%;" class="ag-theme-alpine"></div>
   <div class="importexport">
-    <button onclick="logMarkdown()">v Set Markdown From Grid v</button>
-    <button onclick="importMarkdownText()">^ Set Grid From Markdown ^</button>
+    <button onclick="renderTextFromGrid()">v Set Text From Grid v</button>
+    <button onclick="importText()">^ Set Grid From Text ^</button>
     <label for="csvinput">.csv import ^:</label><input type="file" id="csvinput">
     <button onclick="csvExport()">CSV export</button>
   </div>
+
+  <div id="conversionTypes" class="conversionTypes">
+    <ul class="conversionTypesList">
+      <li id="type-markdown" class="type-select active-type">
+        <a class="type-select-action" data-type="markdown" href="#">Markdown</a>
+      </li>
+      <li id="type-csv" class="type-select">
+        <a class="type-select-action" data-type="csv" href="#">CSV</a>
+      </li>
+      <li id="type-json" class="type-select">
+        <a class="type-select-action" data-type="json" href="#">JSON</a>
+      </li>
+      <li id="type-javascript" class="type-select">
+        <a class="type-select-action" data-type="javascript" href="#">JavaScript</a>
+      </li>
+    </ul>
+  </div>
+
   <div id="markdown" style="height: 30%; width:100%;">
     <textarea class="textrepresentation" name="Markdown" id="markdownarea"></textarea>
   </div>
+
+  <Script>
+    document.querySelectorAll(".type-select-action").forEach( lielem => lielem.addEventListener("click", (e) => {
+
+      // set the display buttons
+      document.querySelectorAll(".type-select").forEach(elem => elem.classList.remove("active-type"));
+      var elem = e.target;
+      liItem = elem.parentElement.classList.add("active-type");
+
+      // switched tab so re-render text
+      renderTextFromGrid();
+
+      // don't try to navigate
+      return false;
+    }));
+  </Script>
   <p>
     Built by <a href="https://eviltester.com" target="_blank">Alan Richardson</a> with <a href="https://ag-grid.com" target="_blank">AG Grid</a> Community Edition,
     and <a href="https://www.papaparse.com/" target="_blank">PapaParse</a>

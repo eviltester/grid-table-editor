@@ -146,29 +146,50 @@ function csvExport(){
   exporter.csvExport();
 }
 
-function logMarkdown() {
+function renderTextFromGrid() {
 
-  inDevExports(); // simple test while developing text views
+  type = document.querySelector("li.active-type a").getAttribute("data-type");
+  var textToRender;
 
-  var markdownTable = exporter.getGridAsMarkdown();
+  if(type=="markdown") {
+    textToRender = exporter.getGridAsMarkdown();
+  }
 
-  console.log(markdownTable);
-  document.getElementById('markdownarea').value = markdownTable;
-}
+  if(type=="csv") {
+    textToRender = exporter.getGridAsCSV();
+  }
 
+  if(type=="json") {
+    textToRender = exporter.getGridAsJson();
+  }
 
+  if(type=="javascript") {
+    textToRender = exporter.getGridAsJavaScriptJson();
+  }
 
-function inDevExports() {
-  console.log(exporter.getGridAsJson());
-  console.log(exporter.getGridAsJavaScriptJson());
-  console.log(exporter.getGridAsCSV())
+  document.getElementById('markdownarea').value = textToRender;
 }
 
 /*
   Importing
- */
+*/
 
 
-function importMarkdownText(){
-  importer.importMarkDownTextFrom(document.getElementById("markdownarea").value)
+function importText(){
+
+  typeToImport = document.querySelector("li.active-type a").getAttribute("data-type");
+  textToImport = document.getElementById("markdownarea").value;
+
+  if(type=="markdown") {
+    importer.importMarkDownTextFrom(textToImport)
+  }
+
+  if(type=="csv") {
+    importer.setGridFromData(Papa.parse(textToImport).data);
+  }
+
+  if(type=="json" || type=="javascript") {
+    importer.setGridFromData(Papa.parse(Papa.unparse(JSON.parse(textToImport))).data);
+  }
+
 }

@@ -14,19 +14,10 @@
 
 <body>
 
-
-
   <!-- 
     TODOs:
 
-    Import JSON into Grid (use JSON -> CSV with PapaParse, then import the CSV)
-    Switchable tabs for Markdown, CSV, JSON
-    Generate copy paste JSON, JavaScript JSON
-    Generate copy paste CSV
-
-    Export to file: JSON, JavaScript JSON
     Import from file: Markdown, JSON
-
   -->
 
   <h1 class="appheading">Simple Data Table Editor</h1>
@@ -65,7 +56,7 @@
     <button onclick="renderTextFromGrid()">v Set Text From Grid v</button>
     <button onclick="importText()">^ Set Grid From Text ^</button>
     <label for="csvinput">.csv import ^:</label><input type="file" id="csvinput">
-    <button onclick="csvExport()">CSV export</button>
+    <button onclick="fileDownload()">Download</button>
   </div>
 
   <div id="conversionTypes" class="conversionTypes">

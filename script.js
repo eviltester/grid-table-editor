@@ -142,8 +142,49 @@ function deleteSelectedRows() {
 /*
   Exporting
  */
-function csvExport(){
-  exporter.csvExport();
+
+// generate text file https://jsfiddle.net/ourcodeworld/rce6nn3z/2/
+function download(filename, text) {
+  var element = document.createElement('a');
+  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+  element.setAttribute('download', filename);
+
+  element.style.display = 'none';
+  document.body.appendChild(element);
+
+  element.click();
+
+  document.body.removeChild(element);
+}
+
+// Start file download.
+function fileDownload(){
+
+  renderTextFromGrid();
+
+  type = document.querySelector("li.active-type a").getAttribute("data-type");
+
+  if(type=="csv"){
+    exporter.csvExport();
+    return;
+  }
+
+  var filename;
+
+  if(type=="markdown") {
+    filename = "export.md";
+  }
+
+  if(type=="json"){
+    filename = "export.json";
+  }
+  if(type=="javascript"){
+    filename = "export.js";
+  }
+
+  var text = document.getElementById("markdownarea").value;
+  download(filename, text);
+
 }
 
 function renderTextFromGrid() {

@@ -5,12 +5,13 @@ A simple Data Table Editor that generates Markdown, CSV or JSON. It can also be 
 - Grid interface
 - drag and drop rows to re-order
 - drag and drop columns to re-order
-- import csv from file and editor
+- import csv from file
+- import csv, markdown, and json from editor
+- generate csv, markdown, json and javascript from grid
+- export csv, markdown and json files
 - add and delete columns
 - add and delete rows  
-- export csv
-- import markdown from editor
-- generate markdown from grid
+
 
 ---
 

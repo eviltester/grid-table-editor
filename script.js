@@ -87,7 +87,12 @@ function renameColId(id) {
   if (colTitle != null && colTitle != '') {
     console.log('rename column ' + id + ' with this name: ' + colTitle);
   } else {
-    return;
+    return false;
+  }
+
+  if(gridExtras.nameAlreadyExists(colTitle)){
+    alert(`A column with name ${colTitle} already exists`);
+    return false;
   }
 
   gridExtras.renameColId(id, colTitle);
@@ -112,8 +117,25 @@ function deleteColId(id) {
 }
 
 
+function duplicateColumnId(position, id) {
+  var colTitle = prompt('Copy Column As?');
+
+  if (colTitle != null && colTitle != '') {
+    console.log('duplicate a column with this name: ' + colTitle);
+  } else {
+    return;
+  }
+
+  if(gridExtras.nameAlreadyExists(colTitle)){
+    alert(`A column with name ${colTitle} already exists`);
+    return false;
+  }
+
+  gridExtras.duplicateColumn(position, id, colTitle);
+}
+
 function addNeighbourColumnId(position, id) {
-  var colTitle = prompt('Column Name?');
+  var colTitle = prompt('New Column Name?');
 
   if (colTitle != null && colTitle != '') {
     console.log('create a new neighbour column with this name: ' + colTitle);
@@ -121,21 +143,14 @@ function addNeighbourColumnId(position, id) {
     return;
   }
 
+  if(gridExtras.nameAlreadyExists(colTitle)){
+    alert(`A column with name ${colTitle} already exists`);
+    return false;
+  }
+
   gridExtras.addNeighbourColumnId(position, id, colTitle);
 }
 
-
-function renameColumn(id) {
-  var colTitle = prompt('Column Name?');
-
-  if (colTitle != null && colTitle != '') {
-    console.log('rename column ' + id + ' with this name: ' + colTitle);
-  } else {
-    return;
-  }
-
-  gridExtras.renameColId(id,colTitle);
-}
 
 
 function addRow() {

@@ -33,6 +33,7 @@ class CustomHeader {
                 <span title="add left" onclick="addNeighbourColumnId(-1,'${this.agParams.column.colId}')">[<+]</span>
                 <span title="rename" onclick="renameColId('${this.agParams.column.colId}')">[~]</span>
                 <span title="delete" onclick="deleteColId('${this.agParams.column.colId}')">[x]</span>
+                <span title="duplicate" onclick="duplicateColumnId(1,'${this.agParams.column.colId}')">[+=]</span>
                 <span title="add right" onclick="addNeighbourColumnId(1,'${this.agParams.column.colId}')">[+>]</span>
             </div>
 

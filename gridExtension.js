@@ -25,75 +25,109 @@ class GridExtension{
         this.gridApi.setColumnDefs(colDefs);
     }
 
+    duplicateColumn(position, id, colTitle) {
+
+        this.addNeighbourColumnId(position, id, colTitle);
+
+        var colDefsHunt = this.gridApi.getColumnDefs();
+        var colDataToCopy;
+        var destinationCol;
+
+        colDefsHunt.forEach(col =>{
+            if(col.headerName == colTitle){
+                destinationCol = col;
+            }
+            if(col.colId == id){
+                colDataToCopy = col;
+            }
+        })
+
+        this.gridApi.forEachNode(node => {
+            var vals = [];
+            node.setDataValue(destinationCol.field, node.data[colDataToCopy.field])
+        });
+
+    }
+
+
+
+    appendColumnToGrid(colTitle){
+
+        var colDefs = this.gridApi.getColumnDefs();
+
+        var newCol = this.getNewCol(colTitle);
+        // add to right
+        colDefs.push(newCol);
+
+        this.gridApi.setColumnDefs(colDefs);
+
+        return newCol
+    }
+
+    moveColumnTo(position, id, columnToMove){
+        // need to use column-state to set the order
+        // https://www.ag-grid.com/javascript-grid/column-state/
+
+        var columnState = this.columnApi.getColumnState();
+        var newColumnStates = [];
+        var currentColumnState;
+        var newColumnState;
+
+        // find new columnId
+        var colDefsHunt = this.gridApi.getColumnDefs();
+        var newColId;
+        colDefsHunt.forEach(col =>{
+            if(col.field == columnToMove.field){
+                newColId = col.colId;
+            }
+        })
+
+
+        // find main column state
+        columnState.forEach(col =>{
+            if(col.colId== id){
+                currentColumnState=col;
+            }
+        })
+
+        // find new column id
+        columnState.forEach(col =>{
+            if(col.colId== newColId){
+                newColumnState=col;
+            }
+        })
+
+        // shuffle by creating a new state
+        columnState.forEach(colDef =>{
+            if(colDef.colId==id){
+                if(position<0){
+                    newColumnStates.push(newColumnState)
+                    newColumnStates.push(currentColumnState)
+                }else{
+                    newColumnStates.push(currentColumnState)
+                    newColumnStates.push(newColumnState)      }
+            }else{
+                if(colDef.colId!=newColId){
+                    newColumnStates.push(colDef);
+                }
+            }
+        })
+
+        this.columnApi.applyColumnState(
+            { state: newColumnStates,
+                applyOrder: true }
+        );
+
+    }
+
     addNeighbourColumnId(position, id, colTitle){
 
         if(colTitle === undefined || colTitle==="" || colTitle.length==0)
             return;
 
-        var colDefs = this.gridApi.getColumnDefs();
-  
-        var newCol = this.getNewCol(colTitle);
-      
-        // add to right
-        colDefs.push(newCol);
-      
-        this.gridApi.setColumnDefs(colDefs);
-      
-      
-      
-        // need to use column-state to set the order
-        // https://www.ag-grid.com/javascript-grid/column-state/
-      
-        var columnState = this.columnApi.getColumnState();
-        var newColumnStates = [];
-        var currentColumnState;
-        var newColumnState;
-      
-        // find new columnId
-        var colDefsHunt = this.gridApi.getColumnDefs();
-        var newColId;
-        colDefsHunt.forEach(col =>{
-          if(col.field == newCol.field){
-            newColId = col.colId;
-          }
-        })
-      
-      
-        // find main column state
-        columnState.forEach(col =>{
-          if(col.colId== id){
-            currentColumnState=col;
-          }
-        })
-      
-        // find new column id
-        columnState.forEach(col =>{
-          if(col.colId== newColId){
-            newColumnState=col;
-          }
-        })
-      
-        // shuffle by creating a new state
-        columnState.forEach(colDef =>{
-          if(colDef.colId==id){
-            if(position<0){
-                newColumnStates.push(newColumnState)
-                newColumnStates.push(currentColumnState)
-            }else{
-              newColumnStates.push(currentColumnState)
-              newColumnStates.push(newColumnState)      }
-          }else{
-            if(colDef.colId!=newColId){
-              newColumnStates.push(colDef);
-            }
-          }
-        })
-      
-        this.columnApi.applyColumnState(
-            { state: newColumnStates, 
-                applyOrder: true }
-        );
-      
+        var newCol = this.appendColumnToGrid(colTitle);
+        this.moveColumnTo(position, id, newCol);
+
         // TODO: add default value for that column to all rows in rowData
 
     }
@@ -123,11 +157,16 @@ class GridExtension{
                 return colDef;
             }  
         }
-        // colDefs.some(colDef =>{
-        //   if(colDef.colId==id){
-        //     return colDef;
-        //   }
-        // });
+    }
+
+    nameAlreadyExists(name){
+        var colDefs = this.gridApi.getColumnDefs();
+        for(const  colDef of colDefs){
+            if(colDef.headerName===name){
+                return true;
+            }
+        }
+        return false;
     }
 
     renameColId(id,name){

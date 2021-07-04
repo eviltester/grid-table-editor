@@ -1,22 +1,33 @@
-// https://www.ag-grid.com/javascript-grid/component-header/
+/*
+ https://www.ag-grid.com/javascript-grid/component-header/
+
+  for icons on header
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css"/>
+
+ */
 
 class CustomHeader {
     init(agParams) {
       this.agParams = agParams;
       this.eGui = document.createElement('div');
+      this.eGui.classList.add('headerWrapper');
       this.eGui.innerHTML = `
-              <div class="customHeaderMenuButton">
-                  <i class="fa ${this.agParams.menuIcon}"></i>
-              </div>
-              <div class="customHeaderLabel">${this.agParams.displayName}</div>
-              <div class="customSortDownLabel inactive">
-                  <i class="fa fa-long-arrow-alt-down"></i>
-              </div>
-              <div class="customSortUpLabel inactive">
-                  <i class="fa fa-long-arrow-alt-up"></i>
-              </div>
-              <div class="customSortRemoveLabel inactive">
-                  <i class="fa fa-times"></i>
+               <div class="customHeaderTop">
+                <div class="customHeaderMenuButton">
+                    <i class="fa ${this.agParams.menuIcon}"></i>
+                </div>
+                <div class="customHeaderLabel">${this.agParams.displayName}</div>
+                <div class="customSort">
+                  <span class="customSortDownLabel inactive">
+                      <i class="fa fa-long-arrow-alt-down"></i>
+                  </span>
+                  <span class="customSortUpLabel inactive">
+                      <i class="fa fa-long-arrow-alt-up"></i>
+                  </span>
+                  <span class="customSortRemoveLabel inactive">
+                      <i class="fa fa-times"></i>
+                  </span>
+                </div>
               </div>
               <div class="headerbuttons">
                 <span title="add left" onclick="addNeighbourColumnId(-1,'${this.agParams.column.colId}')">[<+]</span>

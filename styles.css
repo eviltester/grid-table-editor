@@ -36,6 +36,11 @@ body {
   list-style: none;
 }
 
+a.type-select-action {
+  text-decoration: none;
+  color:black
+}
+
 /* Instructions */
 
 details[open]{
@@ -65,14 +70,8 @@ details[open] ul li:last-child{
   }
 }
 
-/* The grid heading control buttons */
-.headerbuttons{
-  color: #0019fd;
-}
 
-.customHeaderLabel{
-  text-align: center;
-}
+
 
 /* The text conversion box */
 
@@ -81,4 +80,52 @@ details[open] ul li:last-child{
   width:100%;
   white-space: pre-wrap;
   background-color: #fdfdfd;
+}
+
+/*
+Custom header styles for default items
+ */
+
+.headerWrapper{
+  width:100%;
+}
+.customHeaderTop{
+  display: flex;
+}
+
+.customSort{
+  display: flex;
+  flex: 0;
+}
+.customHeaderMenuButton {
+  flex:0;
+  margin: 0 3px 0 3px;
+}
+
+.customHeaderLabel{
+  flex:3;
+  text-align: center;
+}
+
+.customSortDownLabel {
+  margin: 0 0 0 3px;
+}
+
+.customSortUpLabel {
+  margin: 0;
+}
+
+.customSortRemoveLabel {
+  margin: 0 0 0 3px;
+  font-size: 11px;
+}
+
+.active {
+  color: cornflowerblue;
+}
+
+/* The grid heading control buttons */
+.headerbuttons{
+  text-align: center;
+  color: #0019fd;
 }

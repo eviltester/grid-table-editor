@@ -18,7 +18,12 @@ var gridOptions = {
     autoHeight: true,
     resizable: true,
     rowDrag: true,
-    editable: true
+    editable: true,
+    filter:true,
+    sortable:true,
+    headerComponentParams: {
+      menuIcon: 'fa-bars',
+    },
   },
 
   components: {

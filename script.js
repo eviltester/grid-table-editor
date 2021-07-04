@@ -168,7 +168,9 @@ function deleteSelectedRows() {
   gridExtras.deleteSelectedRows();
 }
 
-
+function onFilterTextBoxChanged(){
+    gridOptions.api.setQuickFilter(document.getElementById('filter-text-box').value);
+}
 
 /*
   Exporting

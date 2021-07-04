@@ -40,6 +40,7 @@
       <li>[~] Rename Column</li>
       <li>[x] Delete Column</li>
       <li>[&lt;+] Add Column Left</li>
+      <li>[+=] Duplicate this column</li>
       <li>[+&gt;] Add Column Right</li>
       <li>Use tabs to switch between the type of text representation: markdown, csv, etc.</li>
       <li>click [Set Text From Grid] to generate text from the Grid</li>
@@ -60,6 +61,7 @@
     <button onclick="addRows(-1)">Add Rows Above</button>
     <button onclick="addRows(1)">Add Rows Below</button>
     <button onclick="deleteSelectedRows()">Delete Selected Rows</button>
+    <label for="filter-text-box">Filter:</label> <input type="text" id="filter-text-box" placeholder="Filter..." oninput="onFilterTextBoxChanged()">
   </div>
   <!-- ag-theme-alpine -->
   <div id="myGrid" style="height: 500px; width:100%;" class="ag-theme-alpine"></div>

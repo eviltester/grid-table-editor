@@ -20,10 +20,7 @@ var gridOptions = {
     rowDrag: true,
     editable: true,
     filter:true,
-    sortable:true,
-    headerComponentParams: {
-      menuIcon: 'fa-bars',
-    },
+    sortable:true
   },
 
   components: {

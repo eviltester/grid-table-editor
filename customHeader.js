@@ -14,18 +14,18 @@ class CustomHeader {
       this.eGui.innerHTML = `
                <div class="customHeaderTop">
                 <div class="customHeaderMenuButton">
-                    <i class="fa ${this.agParams.menuIcon}"></i>
+                    <i class="ag-icon ag-icon-filter"></i>
                 </div>
                 <div class="customHeaderLabel">${this.agParams.displayName}</div>
                 <div class="customSort">
                   <span class="customSortDownLabel inactive">
-                      <i class="fa fa-long-arrow-alt-down"></i>
+                      <i class="ag-icon ag-icon-desc"></i>
                   </span>
                   <span class="customSortUpLabel inactive">
-                      <i class="fa fa-long-arrow-alt-up"></i>
+                      <i class="ag-icon ag-icon-asc"></i>
                   </span>
                   <span class="customSortRemoveLabel inactive">
-                      <i class="fa fa-times"></i>
+                      <i class="ag-icon ag-icon-cancel"></i>
                   </span>
                 </div>
               </div>

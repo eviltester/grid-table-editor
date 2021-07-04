@@ -46,18 +46,32 @@ document.addEventListener('DOMContentLoaded', function() {
   importer = new Importer(gridOptions.api, gridExtras);
 
   inputElement = document.getElementById('csvinput');
-  inputElement.addEventListener('change', handleFiles, false);
+  inputElement.addEventListener('change', loadFile, false);
 });
 
-    // use papa parse for csv parsing https://www.papaparse.com/demo
-   function handleFiles() {
-        //console.log(this.files[0]);
-        Papa.parse(this.files[0], {
-          complete: function(results) {
-            importer.setGridFromData(results.data);
-          }
-        });
-    }
+  // use papa parse for csv parsing https://www.papaparse.com/demo
+ function loadFile() {
+
+   type = document.querySelector("li.active-type a").getAttribute("data-type");
+
+   if(type=="csv") {
+     //console.log(this.files[0]);
+     Papa.parse(this.files[0], {
+       complete: function (results) {
+         importer.setGridFromData(results.data);
+         renderTextFromGrid();
+       }
+     });
+     return;
+   }
+
+   const reader = new FileReader();
+   reader.addEventListener('load', (event) => {
+     setTextFromString(event.target.result);
+     importText();
+   });
+   reader.readAsText(this.files[0]);
+ }
 
 
 /*
@@ -187,6 +201,31 @@ function fileDownload(){
 
 }
 
+function setFileFormatType(){
+  type = document.querySelector("li.active-type a").getAttribute("data-type");
+
+  var fileType;
+
+  if(type=="csv"){
+    fileType=".csv";
+  }
+
+  var filename;
+
+  if(type=="markdown") {
+    fileType=".md";
+  }
+
+  if(type=="json"){
+    fileType=".json";
+  }
+  if(type=="javascript"){
+    fileType=".js";
+  }
+
+  document.querySelectorAll(".fileFormat").forEach(elem => elem.innerText = fileType);
+}
+
 function renderTextFromGrid() {
 
   type = document.querySelector("li.active-type a").getAttribute("data-type");
@@ -208,6 +247,10 @@ function renderTextFromGrid() {
     textToRender = exporter.getGridAsJavaScriptJson();
   }
 
+  setTextFromString(textToRender);
+}
+
+function setTextFromString(textToRender){
   document.getElementById('markdownarea').value = textToRender;
 }
 

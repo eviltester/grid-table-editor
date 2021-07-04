@@ -17,7 +17,7 @@
   <!-- 
     TODOs:
 
-    Import from file: Markdown, JSON
+    Error handling and reporting
   -->
 
   <h1 class="appheading">Simple Data Table Editor</h1>
@@ -32,8 +32,8 @@
       <li>Use tabs to switch between the type of text representation: markdown, csv, etc.</li>
       <li>click [Set Text From Grid] to generate text from the Grid</li>
       <li>Enter format in the Text Area and click [Set Grid From Text] to generate the grid from the entered text type</li>
-      <li>Import CSV file to set grid from the loaded file</li>
-      <li>[CSV Export] will download the grid as CSV</li>
+      <li>[Choose File] to Import chosen type e.g. CSV, Markdown file to set grid from the loaded file</li>
+      <li>[Download ...] will download the grid as chosen format e.g CSV, Markdown</li>
       <li>Drag Columns to re-order</li>
       <li>Drag Rows to re-order</li>
       <li>Select multiple rows with ctrl and shift (cmd + shift on mac)</li>
@@ -55,16 +55,16 @@
   <div class="importexport">
     <button onclick="renderTextFromGrid()">v Set Text From Grid v</button>
     <button onclick="importText()">^ Set Grid From Text ^</button>
-    <label for="csvinput">.csv import ^:</label><input type="file" id="csvinput">
-    <button onclick="fileDownload()">Download</button>
+    <label for="csvinput"><span class="fileFormat">.csv</span> import ^:</label><input type="file" id="csvinput">
+    <button onclick="fileDownload()"><span class="fileFormat">.csv</span> Download</button>
   </div>
 
   <div id="conversionTypes" class="conversionTypes">
     <ul class="conversionTypesList">
-      <li id="type-markdown" class="type-select active-type">
+      <li id="type-markdown" class="type-select">
         <a class="type-select-action" data-type="markdown" href="#">Markdown</a>
       </li>
-      <li id="type-csv" class="type-select">
+      <li id="type-csv" class="type-select active-type">
         <a class="type-select-action" data-type="csv" href="#">CSV</a>
       </li>
       <li id="type-json" class="type-select">
@@ -90,7 +90,7 @@
 
       // switched tab so re-render text
       renderTextFromGrid();
-
+      setFileFormatType();
       // don't try to navigate
       return false;
     }));

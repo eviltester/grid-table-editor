@@ -288,7 +288,9 @@ function importText(){
   }
 
   if(type=="csv") {
-    importer.setGridFromData(Papa.parse(textToImport).data);
+    var results=Papa.parse(textToImport);
+    console.log(results.errors);
+    importer.setGridFromData(results.data);
   }
 
   if(type=="json" || type=="javascript") {

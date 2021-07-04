@@ -289,7 +289,7 @@ function importText(){
 
   if(type=="csv") {
     var results=Papa.parse(textToImport);
-    console.log(results.errors);
+    //console.log(results.errors);
     importer.setGridFromData(results.data);
   }
 

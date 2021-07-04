@@ -29,6 +29,9 @@ Looking for similar apps to compare features sets and functionality?
 - https://www.tablesgenerator.com/markdown_table
 - https://tableconvert.com/
 - atom plugin https://atom.io/packages/markdown-table-editor
+- https://jakebathman.github.io/Markdown-Table-Generator/
+- https://susisu.github.io/mte-demo/
+- https://tabletomarkdown.com/
 
 ## References
 

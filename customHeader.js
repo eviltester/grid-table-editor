@@ -13,7 +13,7 @@ class CustomHeader {
       this.eGui.classList.add('headerWrapper');
       this.eGui.innerHTML = `
                <div class="customHeaderTop">
-                <div class="customHeaderMenuButton">
+                <div class="customFilterMenuButton">
                     <i class="ag-icon ag-icon-filter"></i>
                 </div>
                 <div class="customHeaderLabel">${this.agParams.displayName}</div>
@@ -39,7 +39,7 @@ class CustomHeader {
 
           `;
   
-      this.eMenuButton = this.eGui.querySelector('.customHeaderMenuButton');
+      this.eMenuButton = this.eGui.querySelector('.customFilterMenuButton');
       this.eSortDownButton = this.eGui.querySelector('.customSortDownLabel');
       this.eSortUpButton = this.eGui.querySelector('.customSortUpLabel');
       this.eSortRemoveButton = this.eGui.querySelector('.customSortRemoveLabel');
@@ -77,33 +77,51 @@ class CustomHeader {
           this.onSortChangedListener
         );
         this.onSortChanged();
+
+        this.onFilterChangedListener = this.onFilterChanged.bind(this);
+        this.agParams.column.addEventListener(
+            'filterChanged',
+            this.onFilterChangedListener
+        );
+        this.onFilterChanged();
+
       } else {
         this.eGui.removeChild(this.eSortDownButton);
         this.eGui.removeChild(this.eSortUpButton);
         this.eGui.removeChild(this.eSortRemoveButton);
       }
     }
+
+    deactivateIcon(toDeactivateItems){
+      toDeactivateItems.forEach((toDeactivate) => {
+        toDeactivate.classList.remove("active");
+      });
+    }
+
+    activateIcon(toActivate){
+      toActivate.classList.add("active");
+    }
+
+    onFilterChanged(){
+
+      if (this.agParams.column.isFilterActive()) {
+        this.activateIcon(this.eMenuButton);
+      }else{
+        this.deactivateIcon([this.eMenuButton]);
+      }
+
+    }
   
     onSortChanged() {
-      const deactivate = (toDeactivateItems) => {
-        toDeactivateItems.forEach((toDeactivate) => {
-          toDeactivate.className = toDeactivate.className.split(' ')[0];
-        });
-      };
-  
-      const activate = (toActivate) => {
-        toActivate.className = toActivate.className + ' active';
-      };
-  
       if (this.agParams.column.isSortAscending()) {
-        deactivate([this.eSortUpButton, this.eSortRemoveButton]);
-        activate(this.eSortDownButton);
+        this.deactivateIcon([this.eSortUpButton, this.eSortRemoveButton]);
+        this.activateIcon(this.eSortDownButton);
       } else if (this.agParams.column.isSortDescending()) {
-        deactivate([this.eSortDownButton, this.eSortRemoveButton]);
-        activate(this.eSortUpButton);
+        this.deactivateIcon([this.eSortDownButton, this.eSortRemoveButton]);
+        this.activateIcon(this.eSortUpButton);
       } else {
-        deactivate([this.eSortUpButton, this.eSortDownButton]);
-        activate(this.eSortRemoveButton);
+        this.deactivateIcon([this.eSortUpButton, this.eSortDownButton]);
+        this.activateIcon(this.eSortRemoveButton);
       }
     }
   

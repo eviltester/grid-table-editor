@@ -1,12 +1,26 @@
 body {
   background: rgb(242, 242, 242);
   font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
 }
 
+.main-app{
+  margin:10px;
+}
 .instructions{
   padding:10px;
+  color: white;
 }
 
+.header{
+  background-color: black;
+  color: white;
+
+}
+
+.footer{
+  text-align:center;
+}
 /* Conversion Types List */
 
 .type-select{
@@ -46,6 +60,7 @@ a.type-select-action {
 details[open]{
   background-color: white;
   border-style: dashed;
+  color: black;
 }
 
 details[open] ul{

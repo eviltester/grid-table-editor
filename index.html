@@ -21,7 +21,6 @@
   <!-- 
     TODOs:
 
-    Visual indicator on columns with filters applied
     Duplicate Row (Below, Above)
     Handle markdown alignment - import and export
     Option: Emboldened Headings on export and render in grid
@@ -33,6 +32,7 @@
     Configure 'column types' for Data Generation
   -->
 
+  <div class="header">
   <h1 class="appheading">Markdown & CSV Data Table Editor</h1>
   <div class="instructions">
   <details>
@@ -56,7 +56,9 @@
     </ul>
   </details>
 </div>
+</div>
 
+  <div class="main-app">
   <div class="toolbar">
     <button onclick="addRow()">Add Row</button>
     <button onclick="addRows(-1)">Add Rows Above</button>
@@ -93,6 +95,7 @@
   <div id="markdown" style="height: 30%; width:100%;">
     <textarea class="textrepresentation" name="Markdown" id="markdownarea"></textarea>
   </div>
+  </div>
 
   <Script>
     document.querySelectorAll(".type-select-action").forEach( lielem => lielem.addEventListener("click", (e) => {
@@ -109,10 +112,13 @@
       return false;
     }));
   </Script>
+
+  <div class="footer">
   <p>
     Built by <a href="https://eviltester.com" target="_blank">Alan Richardson</a> with <a href="https://ag-grid.com" target="_blank">AG Grid</a> Community Edition,
     and <a href="https://www.papaparse.com/" target="_blank">PapaParse</a>
   </p>
+  </div>
 </body>
 
 

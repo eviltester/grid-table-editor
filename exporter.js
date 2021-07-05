@@ -26,7 +26,9 @@ class Exporter {
 
         // output rows
         var gridRowData = [];
-        this.gridApi.forEachNode(node => {
+        // since we can filter and sort...
+        // if we use forEachNode then it ignores the filter and does not honour the sorting
+        this.gridApi.forEachNodeAfterFilterAndSort(node => {
             var vals = [];
             //console.log(node.data);
 
@@ -75,7 +77,9 @@ class Exporter {
         var colDefs = this.gridApi.getColumnDefs();
 
         var objectArray = [];
-        this.gridApi.forEachNode(node => {
+        // since we can filter and sort...
+        // if we use forEachNode then it ignores the filter and does not honour the sorting
+        this.gridApi.forEachNodeAfterFilterAndSort(node => {
             var anObject = {};
             //console.log(node.data);
 

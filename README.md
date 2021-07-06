@@ -10,7 +10,7 @@ A simple Data Table Editor that generates Markdown, CSV or JSON. It can also be 
 - generate csv, markdown, json and javascript from grid
 - export csv, markdown and json files
 - add and delete columns
-- add and delete rows  
+- add and delete rows
 
 
 ---
@@ -32,6 +32,7 @@ Looking for similar apps to compare features sets and functionality?
 - https://jakebathman.github.io/Markdown-Table-Generator/
 - https://susisu.github.io/mte-demo/
 - https://tabletomarkdown.com/
+- https://www.convertcsv.com/csv-to-markdown.htm
 
 ## References
 

@@ -24,7 +24,7 @@
     Duplicate Row (Below, Above)
     Handle markdown alignment - import and export
     Option: Emboldened Headings on export and render in grid
-    Handle Emboldended Headings in Markdown import
+    Handle Emboldened Headings in Markdown import
     User configured options e.g. confirm for delete, markdown format (front and end bars)
     Error handling and reporting
     New Export formats: spaced Text (config on number of spaces), Tab Delimited, HTML Table
@@ -53,6 +53,10 @@
       <li>Select multiple rows with ctrl and shift (cmd + shift on mac)</li>
       <li>Add new Rows with the [Add Row...] buttons</li>
       <li>[Delete Selected Rows] will delete any selected rows</li>
+      <li>Use the filter icon on the left of each column to filter specific column.</li>
+      <li>The up and down arrows in the header will sort the column, use (x) to clear the sort</li>
+      <li>Use the Filter field to filter any column to match the text</li>
+      <li>[Clear] will clear the quick filter and all column filters</li>
     </ul>
   </details>
 </div>
@@ -65,6 +69,7 @@
     <button onclick="addRows(1)">Add Rows Below</button>
     <button onclick="deleteSelectedRows()">Delete Selected Rows</button>
     <label for="filter-text-box">Filter:</label> <input type="text" id="filter-text-box" placeholder="Filter..." oninput="onFilterTextBoxChanged()">
+    <button title="Clear Filters" onclick="clearFilters()">Clear</button>
   </div>
   <!-- ag-theme-alpine -->
   <div id="myGrid" style="height: 500px; width:100%;" class="ag-theme-alpine"></div>

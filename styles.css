@@ -1,5 +1,14 @@
+
+/*
+
+styles used
+https://coolors.co/d8f3dc-b7e4c7-95d5b2-74c69d-52b788-40916c-2d6a4f-1b4332-081c15
+
+*/
+
+
 body {
-  background: rgb(242, 242, 242);
+  background: #D8F3DC;
   font-family: Arial, Helvetica, sans-serif;
   margin: 0;
 }
@@ -13,7 +22,7 @@ body {
 }
 
 .header{
-  background-color: black;
+  background-color: #1B4332;
   color: white;
 
 }
@@ -21,6 +30,11 @@ body {
 .footer{
   text-align:center;
 }
+
+.footer a{
+  color: #1B4332;
+}
+
 /* Conversion Types List */
 
 .type-select{
@@ -31,17 +45,17 @@ body {
 .type-select:hover{
   border-style: solid;
   border-width: 1px 1px 0px 1px;
-  border-color: #b3b3b3 #b3b3b3 #fff;
+  border-color: #95D5B2 #95D5B2 #D8F3DC;
 }
 
 .active-type{
   border-style: solid;
   border-width: 1px 1px 0px 1px;
-  border-color: #020000 #000000 #fff;
+  border-color: #2D6A4F #2D6A4F #D8F3DC;
 }
 
 .conversionTypesList{
-  border-bottom: 1px solid #dee2e6;
+  border-bottom: 1px solid #D8F3DC;
   display: flex;
   -ms-flex-wrap: wrap;
   flex-wrap: wrap;
@@ -85,7 +99,10 @@ details[open] ul li:last-child{
   }
 }
 
-
+button{
+  background-color: #2D6A4F;
+  color: white
+}
 
 
 /* The text conversion box */
@@ -94,7 +111,7 @@ details[open] ul li:last-child{
   height: 100%;
   width:100%;
   white-space: pre-wrap;
-  background-color: #fdfdfd;
+  background-color: #B7E4C7;
 }
 
 /*
@@ -136,11 +153,11 @@ Custom header styles for default items
 }
 
 .active {
-  color: #48cd01;
+  color: #52B788;
 }
 
 /* The grid heading control buttons */
 .headerbuttons{
   text-align: center;
-  color: #0019fd;
+  color: #081C15;
 }

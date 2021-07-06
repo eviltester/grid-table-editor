@@ -34,7 +34,7 @@ var gridOptions = {
 
 var importer, exporter;
 
-// setup the grid after the page has finished loading
+// setup the grid after the page has finished loading 
 document.addEventListener('DOMContentLoaded', function() {
   var gridDiv = document.querySelector('#myGrid');
   new agGrid.Grid(gridDiv, gridOptions);
@@ -170,6 +170,12 @@ function deleteSelectedRows() {
 
 function onFilterTextBoxChanged(){
     gridOptions.api.setQuickFilter(document.getElementById('filter-text-box').value);
+}
+
+function clearFilters(){
+  document.getElementById('filter-text-box').value='';
+  gridOptions.api.setQuickFilter(null);
+  gridOptions.api.setFilterModel(null);
 }
 
 /*

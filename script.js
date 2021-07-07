@@ -9,6 +9,8 @@ var columnDefs = [
   }
 ];
 
+
+
 var gridOptions = {
   columnDefs: columnDefs,
   rowData: rowData,
@@ -20,7 +22,7 @@ var gridOptions = {
     rowDrag: true,
     editable: true,
     filter:true,
-    sortable:true
+    sortable:true,
   },
 
   components: {
@@ -29,7 +31,8 @@ var gridOptions = {
   
   rowDragManaged: true,
   enableMultiRowDragging: true,
-  rowSelection: 'multiple'
+  rowSelection: 'multiple',
+  onColumnResized: (params) => {params.api.resetRowHeights();}
 };
 
 var importer, exporter;
@@ -49,6 +52,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
   inputElement = document.getElementById('csvinput');
   inputElement.addEventListener('change', loadFile, false);
+
+  // give a clue what to do by importing the instructions into the grid
+  setTextFromInstructions();
 });
 
   // use papa parse for csv parsing https://www.papaparse.com/demo
@@ -151,6 +157,11 @@ function addNeighbourColumnId(position, id) {
   gridExtras.addNeighbourColumnId(position, id, colTitle);
 }
 
+function clearTable() {
+  if(confirm('Are you sure you want to reset the table and all data?')){
+    gridExtras.clearGrid();
+  }
+}
 
 
 function addRow() {
@@ -283,6 +294,15 @@ function setTextFromString(textToRender){
   Importing
 */
 
+function setTextFromInstructions(){
+  var instructions = document.querySelectorAll("div.instructions details ul li");
+  var textData = [];
+  textData.push(["Instructions"]);
+  instructions.forEach(instruction => {
+    textData.push([instruction.innerText]);
+  })
+  importer.setGridFromData(textData);
+}
 
 function importText(){
 

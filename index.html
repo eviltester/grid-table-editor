@@ -38,6 +38,8 @@
   <details>
     <summary>Instructions</summary>
     <ul>
+      <li>[Reset Table] To clear all table data</li>
+      <li> Expand '&gt; Instructions' to read the instructions</li>
       <li>[~] Rename Column</li>
       <li>[x] Delete Column</li>
       <li>[&lt;+] Add Column Left</li>
@@ -70,6 +72,7 @@
     <button onclick="deleteSelectedRows()">Delete Selected Rows</button>
     <label for="filter-text-box">Filter:</label> <input type="text" id="filter-text-box" placeholder="Filter..." oninput="onFilterTextBoxChanged()">
     <button title="Clear Filters" onclick="clearFilters()">Clear</button>
+    <button title="Clear All Data" onclick="clearTable()">Reset Table</button>
   </div>
   <!-- ag-theme-alpine -->
   <div id="myGrid" style="height: 500px; width:100%;" class="ag-theme-alpine"></div>

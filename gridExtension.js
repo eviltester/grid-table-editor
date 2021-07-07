@@ -4,13 +4,30 @@ class GridExtension{
         this.gridApi = gridApi;
         this.columnApi = columnApi;
         this.nextFieldNumber=2;
+        this.cellRendererText = params => `<div style='word-break:normal;line-height: normal'><p>${params.value}</p></div>`;
     }
 
 
+    clearGrid(){
+        var columnDefs = [
+            {
+                headerName: '~rename-me',
+                field: 'column1'
+            }
+        ];
+        this.gridApi.setColumnDefs(columnDefs);
+        this.gridApi.setRowData([]);
+        this.nextFieldNumber=2;
+    }
+
+
+
     getNewCol(named){
+
         var newCol = {};
         newCol.headerName = named;
         newCol.field = 'column' + this.nextFieldNumber;
+        newCol.cellRenderer = this.cellRendererText;
         this.nextFieldNumber++;
         return newCol;
       }

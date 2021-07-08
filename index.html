@@ -21,6 +21,7 @@
   <!-- 
     TODOs:
 
+    Refactor code into classes
     Duplicate Row (Below, Above)
     Handle markdown alignment - import and export
     Option: Emboldened Headings on export and render in grid
@@ -28,7 +29,6 @@
     User configured options e.g. confirm for delete, markdown format (front and end bars)
     Error handling and reporting
     New Export formats: spaced Text (config on number of spaces), Tab Delimited, HTML Table
-
     Configure 'column types' for Data Generation
   -->
 
@@ -58,8 +58,14 @@
       <li>Use the filter icon on the left of each column to filter specific column.</li>
       <li>The up and down arrows in the header will sort the column, use (x) to clear the sort</li>
       <li>Use the Filter field to filter any column to match the text</li>
-      <li>[Clear] will clear the quick filter and all column filters</li>
+      <li>[Clear Filters] will clear the quick filter and all column filters</li>
     </ul>
+    <div class="footer">
+    <p>
+      Built by <a href="https://eviltester.com" target="_blank">Alan Richardson</a> with <a href="https://ag-grid.com" target="_blank">AG Grid</a> Community Edition,
+      and <a href="https://www.papaparse.com/" target="_blank">PapaParse</a>
+    </p>
+  </div>
   </details>
 </div>
 </div>
@@ -71,7 +77,7 @@
     <button onclick="addRows(1)">Add Rows Below</button>
     <button onclick="deleteSelectedRows()">Delete Selected Rows</button>
     <label for="filter-text-box">Filter:</label> <input type="text" id="filter-text-box" placeholder="Filter..." oninput="onFilterTextBoxChanged()">
-    <button title="Clear Filters" onclick="clearFilters()">Clear</button>
+    <button title="Clear Filters" onclick="clearFilters()">Clear Filters</button>
     <button title="Clear All Data" onclick="clearTable()">Reset Table</button>
   </div>
   <!-- ag-theme-alpine -->
@@ -83,26 +89,30 @@
     <button onclick="fileDownload()"><span class="fileFormat">.csv</span> Download</button>
   </div>
 
-  <div id="conversionTypes" class="conversionTypes">
-    <ul class="conversionTypesList">
-      <li id="type-markdown" class="type-select">
-        <a class="type-select-action" data-type="markdown" href="#">Markdown</a>
-      </li>
-      <li id="type-csv" class="type-select active-type">
-        <a class="type-select-action" data-type="csv" href="#">CSV</a>
-      </li>
-      <li id="type-json" class="type-select">
-        <a class="type-select-action" data-type="json" href="#">JSON</a>
-      </li>
-      <li id="type-javascript" class="type-select">
-        <a class="type-select-action" data-type="javascript" href="#">JavaScript</a>
-      </li>
-    </ul>
+  <div class="conversionTabs">
+    <div id="conversionTypes" class="conversionTypes">
+      <ul class="conversionTypesList">
+        <li id="type-markdown" class="type-select">
+          <a class="type-select-action" data-type="markdown" href="#">Markdown</a>
+        </li>
+        <li id="type-csv" class="type-select active-type">
+          <a class="type-select-action" data-type="csv" href="#">CSV</a>
+        </li>
+        <li id="type-json" class="type-select">
+          <a class="type-select-action" data-type="json" href="#">JSON</a>
+        </li>
+        <li id="type-javascript" class="type-select">
+          <a class="type-select-action" data-type="javascript" href="#">JavaScript</a>
+        </li>
+      </ul>
+    </div>
+    <div class="rightbuttons">
+      <button onclick="copyText()" title="Copy text to clipboard" id="copyTextButton">Copy</button>
+    </div>
   </div>
 
   <div id="markdown" style="height: 30%; width:100%;">
     <textarea class="textrepresentation" name="Markdown" id="markdownarea"></textarea>
-  </div>
   </div>
 
   <Script>
@@ -120,13 +130,6 @@
       return false;
     }));
   </Script>
-
-  <div class="footer">
-  <p>
-    Built by <a href="https://eviltester.com" target="_blank">Alan Richardson</a> with <a href="https://ag-grid.com" target="_blank">AG Grid</a> Community Edition,
-    and <a href="https://www.papaparse.com/" target="_blank">PapaParse</a>
-  </p>
-  </div>
 </body>
 
 

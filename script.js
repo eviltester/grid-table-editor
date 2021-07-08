@@ -324,3 +324,19 @@ function importText(){
   }
 
 }
+
+function copyText() {
+  // todo refactor out into a page model
+  var copyText = document.getElementById("markdownarea");
+
+  // select text
+  copyText.select();
+  copyText.setSelectionRange(0, 99999);
+
+  document.execCommand("copy");
+
+  document.getElementById("copyTextButton").innerText = "Copied";
+  setTimeout(
+    function(){ document.getElementById("copyTextButton").innerText = "Copy"; }
+    , 3000);
+}

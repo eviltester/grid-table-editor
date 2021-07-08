@@ -1,14 +1,20 @@
 
 /*
 
-styles used
+styles tried
 https://coolors.co/d8f3dc-b7e4c7-95d5b2-74c69d-52b788-40916c-2d6a4f-1b4332-081c15
+
+Light to Dark (green): D8F3DC, B7E4C7, 95D5B2, 74C69D, 52B788, 40916C, 2D6A4F, 1B4332, 081C15
+
+https://coolors.co/012a4a-013a63-01497c-014f86-2a6f97-2c7da0-468faf-61a5c2-89c2d9-a9d6e5
+
+Light to Dark (blue): A9D6E5, 89C2D9, 61A5C2, 468FAF, 2C7DA0, 2A6F97, 014F86, 01497C, 013A63, 012A4A
 
 */
 
 
 body {
-  background: #D8F3DC;
+  background: #A9D6E5;
   font-family: Arial, Helvetica, sans-serif;
   margin: 0;
 }
@@ -22,7 +28,7 @@ body {
 }
 
 .header{
-  background-color: #1B4332;
+  background-color: #01497C;
   color: white;
 
 }
@@ -32,10 +38,14 @@ body {
 }
 
 .footer a{
-  color: #1B4332;
+  color: #01497C;
 }
 
 /* Conversion Types List */
+
+.conversionTabs{
+  height: 3em;
+}
 
 .type-select{
   display: block;
@@ -45,17 +55,17 @@ body {
 .type-select:hover{
   border-style: solid;
   border-width: 1px 1px 0px 1px;
-  border-color: #95D5B2 #95D5B2 #D8F3DC;
+  border-color: #61A5C2 #61A5C2 #A9D6E5;
 }
 
 .active-type{
   border-style: solid;
   border-width: 1px 1px 0px 1px;
-  border-color: #2D6A4F #2D6A4F #D8F3DC;
+  border-color: #014F86 #014F86 #A9D6E5;
 }
 
 .conversionTypesList{
-  border-bottom: 1px solid #D8F3DC;
+  border-bottom: 1px solid #A9D6E5;
   display: flex;
   -ms-flex-wrap: wrap;
   flex-wrap: wrap;
@@ -67,6 +77,19 @@ body {
 a.type-select-action {
   text-decoration: none;
   color:black
+}
+
+/* add set of buttons to the right of the tabs */
+
+.conversionTypes{
+  float: left;
+}
+.rightbuttons{
+  float: right;
+}
+
+.rightbuttons button{
+  margin-top: 2em;
 }
 
 /* Instructions */
@@ -100,7 +123,7 @@ details[open] ul li:last-child{
 }
 
 button{
-  background-color: #2D6A4F;
+  background-color: #014F86;
   color: white
 }
 
@@ -111,7 +134,8 @@ button{
   height: 100%;
   width:100%;
   white-space: pre-wrap;
-  background-color: #B7E4C7;
+  background-color: #89C2D9;
+  resize: vertical;
 }
 
 /*
@@ -153,11 +177,12 @@ Custom header styles for default items
 }
 
 .active {
-  color: #52B788;
+  color: #2C7DA0;
 }
+
 
 /* The grid heading control buttons */
 .headerbuttons{
   text-align: center;
-  color: #081C15;
+  color: #012A4A;
 }

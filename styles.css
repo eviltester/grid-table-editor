@@ -10,11 +10,17 @@ https://coolors.co/012a4a-013a63-01497c-014f86-2a6f97-2c7da0-468faf-61a5c2-89c2d
 
 Light to Dark (blue): A9D6E5, 89C2D9, 61A5C2, 468FAF, 2C7DA0, 2A6F97, 014F86, 01497C, 013A63, 012A4A
 
+
+Based on https://coolors.co/6b9080-a4c3b2-cce3de-eaf4f4-f6fff8
+
+Light to dark grey green: F6FFF8, EAF4F4, CCE3DE, A4C3B2, 2D6A4F, 6B9080, 3D5249
+
+00a05b, ebf9f2 
 */
 
 
 body {
-  background: #A9D6E5;
+  background: #ffffff;
   font-family: Arial, Helvetica, sans-serif;
   margin: 0;
 }
@@ -28,7 +34,7 @@ body {
 }
 
 .header{
-  background-color: #01497C;
+  background-color: #3D5249;
   color: white;
 
 }
@@ -37,9 +43,7 @@ body {
   text-align:center;
 }
 
-.footer a{
-  color: #01497C;
-}
+
 
 /* Conversion Types List */
 
@@ -123,7 +127,7 @@ details[open] ul li:last-child{
 }
 
 button{
-  background-color: #014F86;
+  background-color: #2D6A4F;
   color: white
 }
 
@@ -134,7 +138,7 @@ button{
   height: 100%;
   width:100%;
   white-space: pre-wrap;
-  background-color: #89C2D9;
+  background-color: #ebf9f2;
   resize: vertical;
 }
 
@@ -177,12 +181,12 @@ Custom header styles for default items
 }
 
 .active {
-  color: #2C7DA0;
+  color: #00a05b;
 }
 
 
 /* The grid heading control buttons */
 .headerbuttons{
   text-align: center;
-  color: #012A4A;
+  color: #1e4a01;
 }

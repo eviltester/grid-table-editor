@@ -20,7 +20,14 @@ class GridExtension{
         this.nextFieldNumber=2;
     }
 
+    clearFilters(){
+        this.gridApi.setQuickFilter(null);
+        this.gridApi.setFilterModel(null);
+    }
 
+    filterText(text){
+        gridOptions.api.setQuickFilter(text);
+    }
 
     getNewCol(named){
 
@@ -40,6 +47,21 @@ class GridExtension{
             colDefs.push(newCol);
         });
         this.gridApi.setColumnDefs(colDefs);
+        var fieldNames = colDefs.map(colDef => colDef.field);
+        this.addFieldsToData(fieldNames, '')
+    }
+
+    addFieldsToData(fieldNames, defaultValue){
+        fieldNames.forEach(fieldName => {
+            this.addFieldToData(fieldName, defaultValue);
+        });
+    }
+
+    addFieldToData(fieldName, defaultValue){
+        this.gridApi.forEachNode(node => {
+            var vals = [];
+            node.setDataValue(fieldName, defaultValue);
+        });
     }
 
     duplicateColumn(position, id, colTitle) {
@@ -77,6 +99,8 @@ class GridExtension{
         colDefs.push(newCol);
 
         this.gridApi.setColumnDefs(colDefs);
+
+        this.addFieldToData(newCol.field, '')
 
         return newCol
     }
@@ -145,8 +169,6 @@ class GridExtension{
         var newCol = this.appendColumnToGrid(colTitle);
         this.moveColumnTo(position, id, newCol);
 
-        // TODO: add default value for that column to all rows in rowData
-
     }
 
     deleteColumnId(id){
@@ -203,8 +225,17 @@ class GridExtension{
         this.gridApi.applyTransaction({ remove: this.gridApi.getSelectedRows() });
     }
 
+    getBlankRowData(){
+        var colDefs = this.gridApi.getColumnDefs();
+        var newRowObject = {}
+        colDefs.forEach(colDef =>{
+            newRowObject[colDef.field] = '';
+        })
+        return newRowObject;
+    }
+
     addRow(){
-        this.gridApi.applyTransaction({ add: [{}] });
+        this.gridApi.applyTransaction({ add: [this.getBlankRowData()] });
     }
     
 
@@ -235,7 +266,7 @@ class GridExtension{
         var objectsToAdd = [];
         var numberOfRowsToAdd = rowsToAdd.length;
         for(var objectCountToAdd=0; objectCountToAdd<numberOfRowsToAdd; objectCountToAdd++){
-            objectsToAdd.push({});
+            objectsToAdd.push(this.getBlankRowData());
         }
 
         this.gridApi.applyTransaction({ add: objectsToAdd, addIndex: positionIndexToAddAt });

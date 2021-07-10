@@ -47,6 +47,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
   gridExtras = new GridExtension(gridOptions.api, gridOptions.columnApi);
 
+  gridControls = new GridControl(gridExtras, new PageMap());
+  gridControls.addHooksToPage(document);
+
   exporter = new Exporter(gridOptions.api);
   importer = new Importer(gridOptions.api, gridExtras);
 
@@ -157,37 +160,6 @@ function addNeighbourColumnId(position, id) {
   gridExtras.addNeighbourColumnId(position, id, colTitle);
 }
 
-function clearTable() {
-  if(confirm('Are you sure you want to reset the table and all data?')){
-    gridExtras.clearGrid();
-  }
-}
-
-
-function addRow() {
-  gridExtras.addRow();
-}
-
-function addRows(position) {
-  gridExtras.addRowsRelativeToSelection(position);
-}
-
-function deleteSelectedRows() {
-  if(!confirm('Are you Sure You Want to Delete Rows?'))
-    return;
-
-  gridExtras.deleteSelectedRows();
-}
-
-function onFilterTextBoxChanged(){
-    gridOptions.api.setQuickFilter(document.getElementById('filter-text-box').value);
-}
-
-function clearFilters(){
-  document.getElementById('filter-text-box').value='';
-  gridOptions.api.setQuickFilter(null);
-  gridOptions.api.setFilterModel(null);
-}
 
 /*
   Exporting
@@ -295,6 +267,7 @@ function setTextFromString(textToRender){
 */
 
 function setTextFromInstructions(){
+  gridExtras.clearGrid();
   var instructions = document.querySelectorAll("div.instructions details ul li");
   var textData = [];
   textData.push(["Instructions"]);

@@ -13,6 +13,7 @@
   <script src="exporter.js"></script>
   <script src="importer.js"></script>
   <script src="gridExtension.js"></script>
+  <script src="gridControl.js"></script>
   <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 
@@ -71,15 +72,17 @@
 </div>
 </div>
 
+
+
   <div class="main-app">
   <div class="toolbar">
-    <button onclick="addRow()">Add Row</button>
-    <button onclick="addRows(-1)">Add Rows Above</button>
-    <button onclick="addRows(1)">Add Rows Below</button>
-    <button onclick="deleteSelectedRows()">Delete Selected Rows</button>
-    <label for="filter-text-box">Filter:</label> <input type="text" id="filter-text-box" placeholder="Filter..." oninput="onFilterTextBoxChanged()">
-    <button title="Clear Filters" onclick="clearFilters()">Clear Filters</button>
-    <button title="Clear All Data" onclick="clearTable()">Reset Table</button>
+    <button id="addRowButton">Add Row</button>
+    <button id="addRowsAboveButton">Add Rows Above</button>
+    <button id="addRowsBelowButton">Add Rows Below</button>
+    <button id="deleteSelectedRowsButton">Delete Selected Rows</button>
+    <label for="filter-text-box">Filter:</label> <input type="text" id="filter-text-box" placeholder="Filter...">
+    <button id="clearFiltersButton" title="Clear Filters">Clear Filters</button>
+    <button id="clearTableButton" title="Clear All Data">Reset Table</button>
   </div>
   <!-- ag-theme-alpine -->
   <div id="myGrid" style="height: 500px; width:100%;" class="ag-theme-alpine"></div>

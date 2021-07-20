@@ -83,6 +83,16 @@ a.type-select-action {
   color:black
 }
 
+
+/* file drag and dropping */
+.dragdropzone.is-dragover {
+  background-color: grey;
+}
+
+.dragdropzone{
+  background-color: rgb(209, 243, 224);
+}
+
 /* add set of buttons to the right of the tabs */
 
 .conversionTypes{

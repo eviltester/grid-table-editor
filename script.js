@@ -57,6 +57,7 @@ document.addEventListener('DOMContentLoaded', function() {
   inputElement.addEventListener('change', loadFile, false);
 
   // give a clue what to do by importing the instructions into the grid
+  
   setTextFromInstructions();
 });
 
@@ -76,14 +77,18 @@ document.addEventListener('DOMContentLoaded', function() {
      return;
    }
 
-   const reader = new FileReader();
-   reader.addEventListener('load', (event) => {
-     setTextFromString(event.target.result);
-     importText();
-   });
-   reader.readAsText(this.files[0]);
+   this.readFile(this.files[0]);
+
  }
 
+ function readFile(aFile){
+    const reader = new FileReader();
+    reader.addEventListener('load', (event) => {
+      setTextFromString(event.target.result);
+      importText();
+    });
+    reader.readAsText(aFile);
+ }
 
 /*
     Grid Amendments with Guarded Alerts
@@ -203,6 +208,12 @@ function fileDownload(){
   if(type=="javascript"){
     filename = "export.js";
   }
+  if(type=="gherkin"){
+    filename = "export.gherkin";
+  }
+  if(type=="html"){
+    filename = "export.html";
+  }
 
   var text = document.getElementById("markdownarea").value;
   download(filename, text);
@@ -230,6 +241,12 @@ function setFileFormatType(){
   if(type=="javascript"){
     fileType=".js";
   }
+  if(type=="gherkin"){
+    fileType=".gherkin";
+  }
+  if(type=="html"){
+    fileType=".html";
+  }
 
   document.querySelectorAll(".fileFormat").forEach(elem => elem.innerText = fileType);
 }
@@ -253,6 +270,14 @@ function renderTextFromGrid() {
 
   if(type=="javascript") {
     textToRender = exporter.getGridAsJavaScriptJson();
+  }
+
+  if(type=="gherkin") {
+    textToRender = exporter.getGridAsGherkin();
+  }
+
+  if(type=="html") {
+    textToRender = exporter.getGridAsHTML();
   }
 
   setTextFromString(textToRender);
@@ -282,17 +307,26 @@ function importText(){
   typeToImport = document.querySelector("li.active-type a").getAttribute("data-type");
   textToImport = document.getElementById("markdownarea").value;
 
-  if(type=="markdown") {
+  if(typeToImport=="html") {
+    console.log("not implemented html import yet");
+    return;
+  }
+
+  if(typeToImport=="markdown" || typeToImport=="gherkin") {
     importer.importMarkDownTextFrom(textToImport)
   }
 
-  if(type=="csv") {
+  if(typeToImport=="gherkin") {
+    importer.importMarkDownTextFrom(textToImport)
+  }
+
+  if(typeToImport=="csv") {
     var results=Papa.parse(textToImport);
     //console.log(results.errors);
     importer.setGridFromData(results.data);
   }
 
-  if(type=="json" || type=="javascript") {
+  if(typeToImport=="json" || typeToImport=="javascript") {
     importer.setGridFromData(Papa.parse(Papa.unparse(JSON.parse(textToImport))).data);
   }
 

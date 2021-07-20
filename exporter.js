@@ -15,6 +15,7 @@ class Exporter {
         // in theory, could use above to change delimiter to "|" and
         // then amend generated string to create markdown but seems
         // simpler to create a specific generator
+        
     }
 
     // https://www.markdownguide.org/extended-syntax/
@@ -53,13 +54,112 @@ class Exporter {
 
         markdownTable =
             markdownTable + '|' + headers.map(name => '-----').join('|') + '|' + '\n';
-            data.forEach(values => {                
-                var renderValues = values.map(value => value.replaceAll("|","&#124;"))
-                markdownTable = markdownTable + '|' + renderValues.join('|') + '|' + '\n';
-            });
+        data.forEach(values => {                
+            var renderValues = values.map(value => value.replaceAll("|","&#124;"))
+            markdownTable = markdownTable + '|' + renderValues.join('|') + '|' + '\n';
+        });
 
         return markdownTable;
     }
+
+    getGridAsGherkin(){
+        
+        var headers = this.gridApi.getColumnDefs().map(col => col.headerName);
+        var fieldnames = this.gridApi.getColumnDefs().map(col => col.field);
+    
+
+        // output rows
+        var gridRowData = [];
+        // since we can filter and sort...
+        // if we use forEachNode then it ignores the filter and does not honour the sorting
+        this.gridApi.forEachNodeAfterFilterAndSort(node => {
+            var vals = [];
+            //console.log(node.data);
+
+            for (const propertyid in fieldnames) {
+                var property = fieldnames[propertyid];
+                vals.push(node.data[property] ? node.data[property] : ' ');
+            }
+            gridRowData.push(vals);
+        });
+
+        return this.formatAsGherkinTable(headers, gridRowData);
+    }
+
+    validGherkinCellValue(data){
+        return data.replaceAll('\\','\\\\').replaceAll("|","\|")
+    }
+
+    formatAsGherkinTable(headers, data){
+        // headers is an array of 'headers' and 
+        // data is an array of nested arrays matching the header values
+
+        // display a pipe (|) character in a table by using its HTML character code (&#124;).
+
+        var renderHeaders = headers.map(header => this.validGherkinCellValue(header));
+        var markdownTable =  '|' + renderHeaders.join('|') + '|' + '\n';
+
+        data.forEach(values => {                
+            var renderValues = values.map(value => this.validGherkinCellValue(value));
+            markdownTable = markdownTable + '|' + renderValues.join('|') + '|' + '\n';
+        });
+
+        return markdownTable;
+    }
+
+    getGridAsHTML(){
+        
+        var headers = this.gridApi.getColumnDefs().map(col => col.headerName);
+        var fieldnames = this.gridApi.getColumnDefs().map(col => col.field);
+    
+
+        // output rows
+        var gridRowData = [];
+        // since we can filter and sort...
+        // if we use forEachNode then it ignores the filter and does not honour the sorting
+        this.gridApi.forEachNodeAfterFilterAndSort(node => {
+            var vals = [];
+            //console.log(node.data);
+
+            for (const propertyid in fieldnames) {
+                var property = fieldnames[propertyid];
+                vals.push(node.data[property] ? node.data[property] : ' ');
+            }
+            gridRowData.push(vals);
+        });
+
+        return this.formatAsHTMLTable(headers, gridRowData);
+    }
+
+    validHTMLCellValue(data){
+        return data.replaceAll('<','&lt;').replaceAll(">","&gt;")
+    }
+
+    formatAsHTMLTable(headers, data){
+        // headers is an array of 'headers' and 
+        // data is an array of nested arrays matching the header values
+
+        // display a pipe (|) character in a table by using its HTML character code (&#124;).
+
+        var markdownTable = "<table>\n";
+
+        markdownTable = markdownTable + "<tr>\n";
+        var renderHeaders = headers.map(header => this.validGherkinCellValue(header));
+        markdownTable +=  '<th>' + renderHeaders.join('</th><th>') + '</th>' + '\n';
+        markdownTable = markdownTable + "</tr>\n";
+
+        data.forEach(values => {         
+            markdownTable = markdownTable + "<tr>\n";       
+            var renderValues = values.map(value => this.validGherkinCellValue(value));
+            markdownTable = markdownTable + '<td>' + renderValues.join('</td><td>') + '</td>' + '\n';
+            markdownTable = markdownTable + "</tr>\n";
+        });
+
+        markdownTable += "</table>";
+
+        return markdownTable;
+    }
+   
 
     convertStringToJavaScriptValidName(aString){
         return aString.replace(/[^A-Za-z0-9_]/g, '_');

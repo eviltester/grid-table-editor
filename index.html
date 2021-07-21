@@ -33,8 +33,6 @@
     Error handling and reporting
     New Export formats: spaced Text (config on number of spaces), Tab Delimited,  text table +----+ format, restructured text format, sql create table and inserts
     Configure 'column types' for Data Generation
-
-    create an array of types and import output accepted to hide/show the GUI elements depending on capability
   -->
 
   <div class="header">
@@ -92,9 +90,9 @@
   <div id="myGrid" style="height: 500px; width:100%;" class="ag-theme-alpine"></div>
   <div class="importexport">
     <button onclick="renderTextFromGrid()">v Set Text From Grid v</button>
-    <button onclick="importText()">^ Set Grid From Text ^</button>
-    <label for="csvinput"><span class="fileFormat">.csv</span> import ^:</label><input type="file" id="csvinput">
-    <button onclick="fileDownload()"><span class="fileFormat">.csv</span> Download</button>
+    <button id="importtextbutton" onclick="importText()">^ Set Grid From Text ^</button>
+    <label id="csvinputlabel" for="csvinput"><span class="fileFormat">.csv</span> import ^:</label><input type="file" id="csvinput">
+    <button id="filedownload" onclick="fileDownload()"><span class="fileFormat">.csv</span> Download</button>
     <label id="dropzone">
       <span>[Drag And Drop <span class="fileFormat">.csv</span> File Here]</span>
   </label>

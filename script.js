@@ -37,7 +37,7 @@ var gridOptions = {
 
 var importer, exporter;
 
-// setup the grid after the page has finished loading 
+// setup the grid after the page has finished loading
 document.addEventListener('DOMContentLoaded', function() {
   var gridDiv = document.querySelector('#myGrid');
   new agGrid.Grid(gridDiv, gridOptions);
@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', function() {
   inputElement.addEventListener('change', loadFile, false);
 
   // give a clue what to do by importing the instructions into the grid
-  
+
   setTextFromInstructions();
 
   // setup the drop zone
@@ -172,10 +172,19 @@ function addNeighbourColumnId(position, id) {
 
 
 /*
-  Exporting
+  Exporting and Importing
  */
 
 // generate text file https://jsfiddle.net/ourcodeworld/rce6nn3z/2/
+
+const fileTypes ={};
+fileTypes["csv"] = {type: "csv", fileExtension: ".csv", canImport: true, canExport: true};
+fileTypes["markdown"] =   {type: "markdown", fileExtension: ".md", canImport: true, canExport: true};
+fileTypes["json"] =   {type: "json", fileExtension: ".json", canImport: true, canExport: true};
+fileTypes["javascript"] =   {type: "javascript", fileExtension: ".js", canImport: true, canExport: true};
+fileTypes["gherkin"] =   {type: "gherkin", fileExtension: ".gherkin", canImport: true, canExport: true};
+fileTypes["html"] = {type: "html", fileExtension: ".html", canImport: false, canExport: true};
+
 function download(filename, text) {
   var element = document.createElement('a');
   element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
@@ -196,29 +205,17 @@ function fileDownload(){
 
   type = document.querySelector("li.active-type a").getAttribute("data-type");
 
+  if(!fileTypes.hasOwnProperty(type)){
+    console.log(`Data Type ${type} not supported`)
+    return;
+  }
+
   if(type=="csv"){
     exporter.csvExport();
     return;
   }
 
-  var filename;
-
-  if(type=="markdown") {
-    filename = "export.md";
-  }
-
-  if(type=="json"){
-    filename = "export.json";
-  }
-  if(type=="javascript"){
-    filename = "export.js";
-  }
-  if(type=="gherkin"){
-    filename = "export.gherkin";
-  }
-  if(type=="html"){
-    filename = "export.html";
-  }
+  var filename = "export" + fileTypes[type].fileExtension;
 
   var text = document.getElementById("markdownarea").value;
   download(filename, text);
@@ -228,30 +225,31 @@ function fileDownload(){
 function setFileFormatType(){
   type = document.querySelector("li.active-type a").getAttribute("data-type");
 
-  var fileType;
+  importControlLocators = ["#importtextbutton", "#filedownload", "#dropzone", "#csvinputlabel", "#csvinput"];
+  importControls = [];
+  importControlLocators.forEach(locator => 
+    { 
+      var elem = document.querySelector(locator);
+      if(elem){
+        importControls.push(elem);
+      }
+  })
 
-  if(type=="csv"){
-    fileType=".csv";
+  if(!fileTypes.hasOwnProperty(type)){
+    console.log(`Data Type ${type} not supported`);
+    return;
   }
 
-  var filename;
+  importVisibility = "visible";
 
-  if(type=="markdown") {
-    fileType=".md";
+  if(!fileTypes[type].canImport){
+    console.log(`Data Type ${type} not supported for importing`);
+    importVisibility="hidden";
   }
 
-  if(type=="json"){
-    fileType=".json";
-  }
-  if(type=="javascript"){
-    fileType=".js";
-  }
-  if(type=="gherkin"){
-    fileType=".gherkin";
-  }
-  if(type=="html"){
-    fileType=".html";
-  }
+  importControls.forEach(e => e.style.visibility = importVisibility);
+
+  const fileType = fileTypes[type].fileExtension;
 
   document.querySelectorAll(".fileFormat").forEach(elem => elem.innerText = fileType);
 }
@@ -259,33 +257,19 @@ function setFileFormatType(){
 function renderTextFromGrid() {
 
   type = document.querySelector("li.active-type a").getAttribute("data-type");
-  var textToRender;
 
-  if(type=="markdown") {
-    textToRender = exporter.getGridAsMarkdown();
+  if(!fileTypes.hasOwnProperty(type) && fileTypes[type].canImport){
+    console.log(`Data Type ${type} not supported`);
+    return;
   }
 
-  if(type=="csv") {
-    textToRender = exporter.getGridAsCSV();
+  if(!fileTypes[type].canExport){
+    console.log(`Data Type ${type} not supported for exporting`);
+    return;
   }
 
-  if(type=="json") {
-    textToRender = exporter.getGridAsJson();
-  }
 
-  if(type=="javascript") {
-    textToRender = exporter.getGridAsJavaScriptJson();
-  }
-
-  if(type=="gherkin") {
-    textToRender = exporter.getGridAsGherkin();
-  }
-
-  if(type=="html") {
-    textToRender = exporter.getGridAsHTML();
-  }
-
-  setTextFromString(textToRender);
+  setTextFromString(exporter.getGridAs(type));
 }
 
 function setTextFromString(textToRender){
@@ -305,6 +289,8 @@ function setTextFromInstructions(){
     textData.push([instruction.innerText]);
   })
   importer.setGridFromData(textData);
+  // set the instructions to fit grid size
+  gridOptions.api.sizeColumnsToFit()
 }
 
 function importText(){
@@ -312,8 +298,13 @@ function importText(){
   typeToImport = document.querySelector("li.active-type a").getAttribute("data-type");
   textToImport = document.getElementById("markdownarea").value;
 
-  if(typeToImport=="html") {
-    console.log("not implemented html import yet");
+  if(!fileTypes.hasOwnProperty(typeToImport)){
+    console.log(`Data Type ${typeToImport} not supported`);
+    return;
+  }
+
+  if(!fileTypes[typeToImport].canImport){
+    console.log(`Data Type ${typeToImport} not supported for importing`);
     return;
   }
 

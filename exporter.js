@@ -9,13 +9,42 @@ class Exporter {
         this.gridApi.exportDataAsCsv();
     }
 
+    getGridAs(type){
+
+        if(type=="markdown") {
+          return this.getGridAsMarkdown();
+        }
+      
+        if(type=="csv") {
+            return this.getGridAsCSV();
+        }
+      
+        if(type=="json") {
+            return this.getGridAsJson();
+        }
+      
+        if(type=="javascript") {
+            return this.getGridAsJavaScriptJson();
+        }
+      
+        if(type=="gherkin") {
+            return this.getGridAsGherkin();
+        }
+      
+        if(type=="html") {
+            return this.getGridAsHTML();
+        }
+
+        return "";
+    }
+
     getGridAsCSV(){
         return this.gridApi.getDataAsCsv();
 
         // in theory, could use above to change delimiter to "|" and
         // then amend generated string to create markdown but seems
-        // simpler to create a specific generator
-        
+        // simpler to create a specific generator 
+
     }
 
     // https://www.markdownguide.org/extended-syntax/

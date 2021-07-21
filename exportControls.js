@@ -3,6 +3,7 @@ class ExportsPageMap{
     constructor(){
         this.fileDownloadButtonQuery = "#filedownload";
         this.markdownTextArea = "#markdownarea";
+        this.copyTextButton = "#copyTextButton";
     }
 }
 
@@ -20,6 +21,10 @@ class ExportControls {
         var element = container.querySelector(this.pageMap.fileDownloadButtonQuery);
         var addDownloadButtonListener = this.fileDownload.bind(this);
         element.addEventListener('click', addDownloadButtonListener, false);
+
+        var copyButton = container.querySelector(this.pageMap.copyTextButton);
+        var copyTextButtonListener = this.copyText.bind(this);
+        copyButton.addEventListener('click', copyTextButtonListener, false);
     }
 
     fileDownload(){
@@ -42,5 +47,21 @@ class ExportControls {
 
         var text = document.querySelector(this.pageMap.markdownTextArea).value;
         new Download(filename).downloadFile(text);
+    }
+
+    copyText() {
+
+        var copyText = document.querySelector(this.pageMap.markdownTextArea);
+
+        // select text
+        copyText.select();
+        copyText.setSelectionRange(0, 99999);
+
+        document.execCommand("copy");
+
+        document.querySelector(this.pageMap.copyTextButton).innerText = "Copied";
+        setTimeout(
+            function(){ document.querySelector(this.pageMap.copyTextButton).innerText = "Copy"; }
+            , 3000);
     }
 }

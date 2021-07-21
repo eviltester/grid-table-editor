@@ -9,6 +9,11 @@ class Exporter {
         this.gridApi.exportDataAsCsv();
     }
 
+    canExport(type){
+        const supportedTypes = ["markdown", "csv", "json", "javascript", "gherkin", "html"]
+        return supportedTypes.includes(type);
+    }
+
     getGridAs(type){
 
         if(type=="markdown") {

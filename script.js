@@ -57,7 +57,6 @@ document.addEventListener('DOMContentLoaded', function() {
   inputElement.addEventListener('change', loadFile, false);
 
   // give a clue what to do by importing the instructions into the grid
-
   setTextFromInstructions();
 
   // setup the drop zone
@@ -178,12 +177,12 @@ function addNeighbourColumnId(position, id) {
 // generate text file https://jsfiddle.net/ourcodeworld/rce6nn3z/2/
 
 const fileTypes ={};
-fileTypes["csv"] = {type: "csv", fileExtension: ".csv", canImport: true, canExport: true};
-fileTypes["markdown"] =   {type: "markdown", fileExtension: ".md", canImport: true, canExport: true};
-fileTypes["json"] =   {type: "json", fileExtension: ".json", canImport: true, canExport: true};
-fileTypes["javascript"] =   {type: "javascript", fileExtension: ".js", canImport: true, canExport: true};
-fileTypes["gherkin"] =   {type: "gherkin", fileExtension: ".gherkin", canImport: true, canExport: true};
-fileTypes["html"] = {type: "html", fileExtension: ".html", canImport: false, canExport: true};
+fileTypes["csv"] = {type: "csv", fileExtension: ".csv"};
+fileTypes["markdown"] =   {type: "markdown", fileExtension: ".md"};
+fileTypes["json"] =   {type: "json", fileExtension: ".json"};
+fileTypes["javascript"] =   {type: "javascript", fileExtension: ".js"};
+fileTypes["gherkin"] =   {type: "gherkin", fileExtension: ".gherkin"};
+fileTypes["html"] = {type: "html", fileExtension: ".html"};
 
 function download(filename, text) {
   var element = document.createElement('a');
@@ -242,7 +241,7 @@ function setFileFormatType(){
 
   importVisibility = "visible";
 
-  if(!fileTypes[type].canImport){
+  if(!importer.canImport(type)){
     console.log(`Data Type ${type} not supported for importing`);
     importVisibility="hidden";
   }
@@ -258,16 +257,10 @@ function renderTextFromGrid() {
 
   type = document.querySelector("li.active-type a").getAttribute("data-type");
 
-  if(!fileTypes.hasOwnProperty(type) && fileTypes[type].canImport){
-    console.log(`Data Type ${type} not supported`);
-    return;
-  }
-
-  if(!fileTypes[type].canExport){
+  if(!exporter.canExport(type)){
     console.log(`Data Type ${type} not supported for exporting`);
     return;
   }
-
 
   setTextFromString(exporter.getGridAs(type));
 }
@@ -303,7 +296,7 @@ function importText(){
     return;
   }
 
-  if(!fileTypes[typeToImport].canImport){
+  if(!importer.canImport(typeToImport)){
     console.log(`Data Type ${typeToImport} not supported for importing`);
     return;
   }

@@ -5,6 +5,12 @@ class Importer{
         this.gridExtras=gridExtension;
     }
 
+    canImport(type){
+        // todo support html import , "html"
+        const supportedTypes = ["markdown", "csv", "json", "javascript", "gherkin"]
+        return supportedTypes.includes(type);
+    }
+
     // text area import
 
     setGridFromData(data){

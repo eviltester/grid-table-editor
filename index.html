@@ -15,6 +15,8 @@
   <script src="gridExtension.js"></script>
   <script src="gridControl.js"></script>
   <script src="dragDropControl.js"></script>
+  <script src="download.js"></script>
+  <script src="exportControls.js"></script>
   <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 
@@ -92,7 +94,7 @@
     <button onclick="renderTextFromGrid()">v Set Text From Grid v</button>
     <button id="importtextbutton" onclick="importText()">^ Set Grid From Text ^</button>
     <label id="csvinputlabel" for="csvinput"><span class="fileFormat">.csv</span> import ^:</label><input type="file" id="csvinput">
-    <button id="filedownload" onclick="fileDownload()"><span class="fileFormat">.csv</span> Download</button>
+    <button id="filedownload"><span class="fileFormat">.csv</span> Download</button>
     <label id="dropzone">
       <span>[Drag And Drop <span class="fileFormat">.csv</span> File Here]</span>
   </label>

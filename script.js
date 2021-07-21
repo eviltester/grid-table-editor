@@ -53,6 +53,10 @@ document.addEventListener('DOMContentLoaded', function() {
   exporter = new Exporter(gridOptions.api);
   importer = new Importer(gridOptions.api, gridExtras);
 
+  exportControls = new ExportControls(exporter, new ExportsPageMap(),
+                                      fileTypes, renderTextFromGrid)
+                    .addHooksToPage(document);
+
   inputElement = document.getElementById('csvinput');
   inputElement.addEventListener('change', loadFile, false);
 
@@ -184,42 +188,9 @@ fileTypes["javascript"] =   {type: "javascript", fileExtension: ".js"};
 fileTypes["gherkin"] =   {type: "gherkin", fileExtension: ".gherkin"};
 fileTypes["html"] = {type: "html", fileExtension: ".html"};
 
-function download(filename, text) {
-  var element = document.createElement('a');
-  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-  element.setAttribute('download', filename);
-
-  element.style.display = 'none';
-  document.body.appendChild(element);
-
-  element.click();
-
-  document.body.removeChild(element);
-}
 
 // Start file download.
-function fileDownload(){
 
-  renderTextFromGrid();
-
-  type = document.querySelector("li.active-type a").getAttribute("data-type");
-
-  if(!fileTypes.hasOwnProperty(type)){
-    console.log(`Data Type ${type} not supported`)
-    return;
-  }
-
-  if(type=="csv"){
-    exporter.csvExport();
-    return;
-  }
-
-  var filename = "export" + fileTypes[type].fileExtension;
-
-  var text = document.getElementById("markdownarea").value;
-  download(filename, text);
-
-}
 
 function setFileFormatType(){
   type = document.querySelector("li.active-type a").getAttribute("data-type");
@@ -267,6 +238,22 @@ function renderTextFromGrid() {
 
 function setTextFromString(textToRender){
   document.getElementById('markdownarea').value = textToRender;
+}
+
+function copyText() {
+  // todo refactor out into a page model
+  var copyText = document.getElementById("markdownarea");
+
+  // select text
+  copyText.select();
+  copyText.setSelectionRange(0, 99999);
+
+  document.execCommand("copy");
+
+  document.getElementById("copyTextButton").innerText = "Copied";
+  setTimeout(
+      function(){ document.getElementById("copyTextButton").innerText = "Copy"; }
+      , 3000);
 }
 
 /*
@@ -321,18 +308,3 @@ function importText(){
 
 }
 
-function copyText() {
-  // todo refactor out into a page model
-  var copyText = document.getElementById("markdownarea");
-
-  // select text
-  copyText.select();
-  copyText.setSelectionRange(0, 99999);
-
-  document.execCommand("copy");
-
-  document.getElementById("copyTextButton").innerText = "Copied";
-  setTimeout(
-    function(){ document.getElementById("copyTextButton").innerText = "Copy"; }
-    , 3000);
-}

@@ -59,6 +59,11 @@ document.addEventListener('DOMContentLoaded', function() {
   // give a clue what to do by importing the instructions into the grid
   
   setTextFromInstructions();
+
+  // setup the drop zone
+  const dragDrop = new DragDropControl();
+  dragDrop.configureAsDropZone(document.getElementById("dropzone"));
+
 });
 
   // use papa parse for csv parsing https://www.papaparse.com/demo

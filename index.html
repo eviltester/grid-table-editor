@@ -1,8 +1,8 @@
 <html>
 
 <head>
-  <title>Markdown and CSV Table Editor - Data Grid editing, importing and exporting (json too) </title>
-  <meta name="description" content="An editor and convertor for Markdown Tables, CSV, JSON and JavaScript Arrays. Import and export from files. Edit, sort, filter in the Data Grid.">
+  <title>Markdown and CSV Table Generator and Editor - Data Grid editing, import and export (json, html) </title>
+  <meta name="description" content="A Table Generator and Editor. Convert to and from tables for Markdown, CSV, JSON and JavaScript Arrays. Import and export from files. Edit, sort, filter in the Data Grid.">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="author" content="Alan Richardson">
@@ -14,6 +14,7 @@
   <script src="importer.js"></script>
   <script src="gridExtension.js"></script>
   <script src="gridControl.js"></script>
+  <script src="dragDropControl.js"></script>
   <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 
@@ -21,8 +22,6 @@
 
   <!-- 
     TODOs:
- 
-
 
     Change Grid Column Size Based on Number of columns e.g. 1 == 75%, 2==50%, 3=33%, then autosize
     Refactor code into classes
@@ -52,6 +51,7 @@
       <li>[+=] Duplicate this column</li>
       <li>[+&gt;] Add Column Right</li>
       <li>Use tabs to switch between the type of text representation: markdown, csv, etc.</li>
+      <li>Drag and drop files of selected representation to import.</li>
       <li>click [Set Text From Grid] to generate text from the Grid</li>
       <li>Enter format in the Text Area and click [Set Grid From Text] to generate the grid from the entered text type</li>
       <li>[Choose File] to Import chosen type e.g. CSV, Markdown file to set grid from the loaded file</li>
@@ -95,8 +95,7 @@
     <button onclick="importText()">^ Set Grid From Text ^</button>
     <label for="csvinput"><span class="fileFormat">.csv</span> import ^:</label><input type="file" id="csvinput">
     <button onclick="fileDownload()"><span class="fileFormat">.csv</span> Download</button>
-    <label id="dropzone" class="dragdropzone" 
-    ondrop="fileDropHandler(event);">
+    <label id="dropzone">
       <span>[Drag And Drop <span class="fileFormat">.csv</span> File Here]</span>
   </label>
   </div>
@@ -133,54 +132,6 @@
     <textarea class="textrepresentation" name="Markdown" id="markdownarea"></textarea>
   </div>
 
-  <script>
-    // file drop handling
-    // https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API/File_drag_and_drop
-    // https://css-tricks.com/drag-and-drop-file-uploading/
-    var dropzone = document.getElementById("dropzone");
-
-    events = 'drag dragstart dragend dragover dragenter dragleave'.split(' ');
-    events.forEach(e => dropzone.addEventListener(e, function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }, false));
-
-    ['dragover','dragenter'].forEach(e => dropzone.addEventListener(e, function(e) {
-      dropzone.classList.add('is-dragover')
-    }, false));
-
-    ['dragleave','dragend','drop'].forEach(e => dropzone.addEventListener(e, function(e) {
-      dropzone.classList.remove('is-dragover')
-    }, false));
-
-    function fileDropHandler(ev) {
-      console.log('File(s) dropped');
-
-      // Prevent default behavior (Prevent file from being opened)
-      ev.preventDefault();
-      ev.stopPropagation();
-
-      if (ev.dataTransfer.items) {
-        // Use DataTransferItemList interface to access the file(s)
-        for (var i = 0; i < ev.dataTransfer.items.length; i++) {
-          // If dropped items aren't files, reject them
-          if (ev.dataTransfer.items[i].kind === 'file') {
-            var file = ev.dataTransfer.items[i].getAsFile();
-            console.log('... file[' + i + '].name = ' + file.name);
-            readFile(file);
-            break;            
-          }
-        }
-      } else {
-        // Use DataTransfer interface to access the file(s)
-        readFile(ev.dataTransfer.files[i]);
-        // for (var i = 0; i < ev.dataTransfer.files.length; i++) {
-        //   console.log('... file[' + i + '].name = ' + ev.dataTransfer.files[i].name);
-        //   readFile(file);        
-        // }
-      }
-    }
-  </script>
 
   <Script>
     document.querySelectorAll(".type-select-action").forEach( lielem => lielem.addEventListener("click", (e) => {

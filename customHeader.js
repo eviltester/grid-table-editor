@@ -36,8 +36,9 @@ class CustomHeader {
                 <span title="duplicate" onclick="duplicateColumnId(1,'${this.agParams.column.colId}')">[+=]</span>
                 <span title="add right" onclick="addNeighbourColumnId(1,'${this.agParams.column.colId}')">[+>]</span>
             </div>
-
           `;
+
+      // todo the onclick methods above should be on an object that is passed in and hook the event with an added listener
   
       this.eMenuButton = this.eGui.querySelector('.customFilterMenuButton');
       this.eSortDownButton = this.eGui.querySelector('.customSortDownLabel');

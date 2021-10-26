@@ -117,6 +117,22 @@ class RulesParser{
     }
 }
 
+/*
+    Support for much of the faker APi
+
+    http://marak.github.io/faker.js/
+    https://github.com/Marak/faker.js
+
+    e.g.
+
+    faker.name.firstName
+    faker.fake {{name.lastName}}, {{name.firstName}}
+    faker.lorem.paragraph
+
+    faker.helper is deliberately excluded
+
+ */
+
 function generateUsingFaker(ruleSpec){
 
     const parts = ruleSpec.split("\.");

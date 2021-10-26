@@ -31,10 +31,21 @@ class RegexRules{
 
         this.rules.forEach((rule)=>{
             // is it a faker function?
+            try{
+                const whatDidWeGet = generateUsingFaker(rule.ruleSpec);
+                if(whatDidWeGet !== undefined && whatDidWeGet !==null){
+                    rule.type="faker";
+                    return "faker";
+                }
+            }catch(err){
+                // ignore and try as regex
+            }
 
             // does the regex generation work?
             try{
                 new RandExp(new RegExp(rule.ruleSpec)).gen();
+                rule.type="regex";
+                return "regex";
             }catch(err){
                 this.errors.push(`Error evaluating _${rule.name}_ as a Regex generator : ` + err);
             }
@@ -106,6 +117,31 @@ class RulesParser{
     }
 }
 
+function generateUsingFaker(ruleSpec){
+
+    const parts = ruleSpec.split("\.");
+
+    if(parts.length===0){
+        return undefined;
+    }
+
+    var fakerThing = faker;
+    for(var part of parts){
+        if(part==="faker"){
+            // ignore
+        }else{
+            fakerThing = fakerThing[part];
+            if(fakerThing===undefined){
+                return undefined;
+            }
+        }
+    }
+    if(typeof fakerThing === "function"){
+        return fakerThing();
+    }
+
+}
+
 function generateRegex(thisMany, fromRules){
 
     // given some rules
@@ -118,7 +154,20 @@ function generateRegex(thisMany, fromRules){
 
     for(row=0; row<thisMany; row++){
 
-        const aRow = fromRules.map((rule) => new RandExp(new RegExp(rule.ruleSpec)).gen());
+        const aRow = fromRules.map((rule) => {
+
+            // is faker?
+            if(rule.type==="faker"){
+                return generateUsingFaker(rule.ruleSpec);
+            }
+
+            if(rule.type==="regex"){
+                return new RandExp(new RegExp(rule.ruleSpec)).gen();
+            }
+
+            return "";
+
+        });
         data.push(aRow);
 
     }

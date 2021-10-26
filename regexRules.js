@@ -125,21 +125,71 @@ function generateUsingFaker(ruleSpec){
         return undefined;
     }
 
+    var command="";
+    var callFake=false;
+    var callFakeArgs="";
+
     var fakerThing = faker;
     for(var part of parts){
-        if(part==="faker"){
-            // ignore
-        }else{
-            fakerThing = fakerThing[part];
-            if(fakerThing===undefined){
+
+        const possibleFakerCommandRegex = new RegExp("^([A-Za-z]*)$");
+        if(possibleFakerCommandRegex.test(part)){
+            command = command + part + ".";
+            if(part==="faker"){
+                // ignore
+                continue;
+            }
+
+            if(part==="helpers"){
+                // faker helpers not supported
+                console.log("Faker helpers not supported");
                 return undefined;
             }
+            else{
+                fakerThing = fakerThing[part];
+                if(fakerThing===undefined){
+                    return undefined;
+                }
+            }
+        }
+
+        if(part.startsWith("fake")){
+            // it is a call to fake
+            callFake=true;
+            callFakeArgs = ruleSpec.replace(command+"fake","");
+            break;
         }
     }
+
+    if(callFake){
+        callFakeArgs = callFakeArgs.trim();
+        // remove ()
+        callFakeArgs = removeStartAndEnd("(", ")", callFakeArgs);
+        var removeQuote=undefined;
+        if(callFakeArgs.startsWith('"')){
+            removeQuote='"';
+        }
+        if(callFakeArgs.startsWith("'")){
+            removeQuote="'";
+        }
+        if(removeQuote!==undefined){
+            callFakeArgs = removeStartAndEnd(removeQuote, removeQuote, callFakeArgs);
+        }
+
+        return faker.fake(callFakeArgs);
+    }
+
     if(typeof fakerThing === "function"){
         return fakerThing();
     }
 
+}
+
+function removeStartAndEnd(start, end, from){
+    if(from.startsWith(start,0) && from.endsWith(end)){
+        return from.substr(1,from.length-2);
+    }
+    return from;
 }
 
 function generateRegex(thisMany, fromRules){

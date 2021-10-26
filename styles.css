@@ -142,6 +142,13 @@ button{
   resize: vertical;
 }
 
+.testDataDefn{
+  height: 10em;
+  width:100%;
+  white-space: pre-wrap;
+  resize: vertical;
+}
+
 /*
 Custom header styles for default items
  */

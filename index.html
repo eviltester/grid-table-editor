@@ -187,30 +187,37 @@
     // https://www.npmjs.com/package/randexp
     function generateTestData(){
 
-      console.log("pressed data generate")
+      const rulesParser = new RulesParser();
 
-      dataDefn = new RegexRules();
-      // parse data definition text
       const areaText = document.getElementById('testdatadefntext').value;
       const desiredRowCount = document.getElementById('generateCount').value;
-      const defnLines = areaText.split("\n");
 
-      // add rules to dataDefn
-      for(index=0; index<defnLines.length; index+=2){
-        const name = defnLines[index];
-        const rule = defnLines[index+1];
-        dataDefn.addRule(name.trim(), rule.trim())
+
+
+      rulesParser.parseText(areaText);
+
+      if(!rulesParser.isValid()){
+        console.log(rulesParser.errors);
+        alert(rulesParser.errors.join("\n"));
+        return;
       }
 
+      if(desiredRowCount<0){
+        alert("Enter how many rows to generate.");
+        return;
+      }
+
+
       // generate
-      const data = dataDefn.generate(desiredRowCount);
+      const data = rulesParser.regexRules.generate(desiredRowCount);
+
+
 
       // add data to table
       importer.setGridFromData(data);
 
       // and refresh the export
       renderTextFromGrid();
-
     }
 
     var element = document.querySelector("#generatedata");

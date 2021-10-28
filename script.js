@@ -32,7 +32,7 @@ var gridOptions = {
   rowDragManaged: true,
   enableMultiRowDragging: true,
   rowSelection: 'multiple',
-  onColumnResized: (params) => {params.api.resetRowHeights();}
+  //onColumnResized: (params) => {params.api.resetRowHeights();}
 };
 
 var importer, exporter;

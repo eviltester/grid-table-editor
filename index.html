@@ -17,6 +17,7 @@
   <script src="dragDropControl.js"></script>
   <script src="download.js"></script>
   <script src="exportControls.js"></script>
+  <script src="testdatadefn.js"></script>
 
   <!-- random data generation -->
   <!-- https://github.com/Marak/faker.js -->
@@ -113,8 +114,15 @@
   <div class="testDataDefnGui">
     <details>
       <summary>Test Data</summary>
-      <div><button id="generatedata">Generate</button><label id="howmanygenerate" for="generateCount"> How Many?</label><input type="number" id="generateCount"/></div>
-        <div><textarea class="testDataDefn" name="testdatadefntext" id="testdatadefntext"></textarea></div>
+      <div>
+      <div>
+          <button id="generatedata">Generate</button><label id="howmanygenerate" for="generateCount"> How Many?</label><input type="number" id="generateCount"/>
+      </div>
+        <div class="defn-edit-zone">
+          <div class="defn-grid-container" id="defngrid" class="ag-theme-alpine" style="float:left"></div>
+          <div class="defn-text-container" style="float:right;padding-top:2em"><textarea class="testDataDefn" name="testdatadefntext" id="testdatadefntext"></textarea></div>
+        </div>
+      </div>
     </details>
   </div>
 
@@ -153,82 +161,24 @@
 
 
   <script>
-    document.querySelectorAll(".type-select-action").forEach( lielem => lielem.addEventListener("click", (e) => {
+    window.addEventListener('load', function() {
+      document.querySelectorAll(".type-select-action").forEach( lielem => lielem.addEventListener("click", (e) => {
 
-      // set the display buttons
-      document.querySelectorAll(".type-select").forEach(elem => elem.classList.remove("active-type"));
-      var elem = e.target;
-      liItem = elem.parentElement.classList.add("active-type");
+        // set the display buttons
+        document.querySelectorAll(".type-select").forEach(elem => elem.classList.remove("active-type"));
+        var elem = e.target;
+        liItem = elem.parentElement.classList.add("active-type");
 
-      // switched tab so re-render text
-      renderTextFromGrid();
-      setFileFormatType();
-      // don't try to navigate
-      return false;
-    }));
+        // switched tab so re-render text
+        renderTextFromGrid();
+        setFileFormatType();
+        // don't try to navigate
+        return false;
+      }));
+    })
   </script>
 
 
-  <script>
-
-    /*
-      Definition data is of the format:
-
-      rulename
-      regex
-      rulename
-      regex
-
-     */
-
-    /*
-      Useful Regex Templates:
-
-      https://projects.lukehaas.me/regexhub/
-      https://www.regular-expressions.info/examples.html
-      http://fent.github.io/randexp.js/
-
-     */
-
-    // https://www.npmjs.com/package/randexp
-    function generateTestData(){
-
-      const rulesParser = new RulesParser();
-
-      const areaText = document.getElementById('testdatadefntext').value;
-      const desiredRowCount = document.getElementById('generateCount').value;
-
-
-
-      rulesParser.parseText(areaText);
-
-      if(!rulesParser.isValid()){
-        console.log(rulesParser.errors);
-        alert(rulesParser.errors.join("\n"));
-        return;
-      }
-
-      if(desiredRowCount<0){
-        alert("Enter how many rows to generate.");
-        return;
-      }
-
-
-      // generate
-      const data = rulesParser.regexRules.generate(desiredRowCount);
-
-
-
-      // add data to table
-      importer.setGridFromData(data);
-
-      // and refresh the export
-      renderTextFromGrid();
-    }
-
-    var element = document.querySelector("#generatedata");
-    element.addEventListener('click', generateTestData, false);
-  </script>
 
 </body>
 

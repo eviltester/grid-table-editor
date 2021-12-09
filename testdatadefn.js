@@ -112,7 +112,6 @@ function setupTestDataEditGrid(gridDiv){
             autoHeight: true,
             resizable: true,
             editable: true,
-            sortable:true,
             rowDrag: true,
         },
 

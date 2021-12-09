@@ -84,6 +84,10 @@ Looking for similar apps to compare features sets and functionality?
 - https://tabletomarkdown.com/
 - https://www.convertcsv.com/csv-to-markdown.htm
 
+For Test Data Generation, you might want to look at:
+
+- https://www.mockaroo.com/
+
 ## References
 
 - [Markdown Tables Extended Syntax](https://www.markdownguide.org/extended-syntax/#tables)

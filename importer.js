@@ -18,6 +18,9 @@ class Importer{
         // data is row of values where the first row is the headers
 
         var header = true;
+
+        var addRows = [];
+
         data.forEach(row => {
           if (header) {
             this.gridExtras.createColumns(row);
@@ -31,9 +34,11 @@ class Importer{
             for (const propertyid in fieldnames) {
               vals[fieldnames[propertyid]] = row[propertyid];
             }
-            this.gridApi.applyTransaction({ add: [vals] });
+            addRows.push(vals);
           }
         });
+
+        this.gridApi.applyTransaction({ add: addRows });
       }
       
       

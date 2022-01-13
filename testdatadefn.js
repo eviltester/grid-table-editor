@@ -116,7 +116,7 @@ function setupTestDataEditGrid(gridDiv){
         },
 
         rowDragManaged: true,
-        enableMultiRowDragging: true,
+        rowDragMultiRow: true,
         rowSelection: 'multiple',
         onCellEditingStopped: ( e => { convertGridToText();}),
         onRowDragEnd:  ( e => { convertGridToText();})

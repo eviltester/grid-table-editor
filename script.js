@@ -30,7 +30,7 @@ var gridOptions = {
   },
   
   rowDragManaged: true,
-  enableMultiRowDragging: true,
+  rowDragMultiRow: true,
   rowSelection: 'multiple',
   //onColumnResized: (params) => {params.api.resetRowHeights();}
 };
@@ -252,7 +252,7 @@ function setTextFromInstructions(){
   var textData = [];
   textData.push(["Instructions"]);
   instructions.forEach(instruction => {
-    textData.push([instruction.innerText]);
+    textData.push([instruction.textContent]);
   })
   importer.setGridFromData(textData);
   // set the instructions to fit grid size

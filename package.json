@@ -1,0 +1,41 @@
+{
+  "name": "grid-table-editor",
+  "version": "1.0.0",
+  "description": "A simple Data Table Editor that generates Markdown, CSV or JSON. It can also be used to interchange data between the formats, supporting editing in the grid.",
+  "main": "index.html",
+  "scripts": {
+    "test": "jest"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.jsx?$": "babel-jest"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eviltester/grid-table-editor.git"
+  },
+  "keywords": [
+    "table editor",
+    "test data",
+    "test data generator",
+    "markdown table",
+    "html table",
+    "data grid editor"
+  ],
+  "author": "Alan Richardson",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/eviltester/grid-table-editor/issues"
+  },
+  "homepage": "https://github.com/eviltester/grid-table-editor#readme",
+  "dependencies": {
+    "faker": "^5.5.3",
+    "jest": "^28.1.0",
+    "randexp": "^0.5.3"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.18.0",
+    "babel-jest": "^28.1.0"
+  }
+}

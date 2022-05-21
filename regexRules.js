@@ -218,7 +218,7 @@ function generateRegex(thisMany, fromRules){
     const headers = fromRules.map((rule) => rule.name);
     data.push(headers);
 
-    for(row=0; row<thisMany; row++){
+    for(var row=0; row<thisMany; row++){
 
         const aRow = fromRules.map((rule) => {
 
@@ -241,3 +241,4 @@ function generateRegex(thisMany, fromRules){
     return data;
 }
 
+export {RegexRules, RegexRule, RulesParser};

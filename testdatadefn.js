@@ -17,6 +17,8 @@
 
  */
 
+import {RulesParser} from './regexRules.js';
+
 // https://www.npmjs.com/package/randexp
 function generateTestData(){
 

@@ -241,4 +241,4 @@ function generateRegex(thisMany, fromRules){
     return data;
 }
 
-export {RegexRules, RegexRule, RulesParser};
+export {RegexRules, RegexRule, RulesParser, removeStartAndEnd};

@@ -19,21 +19,29 @@
 
 import {RulesParser} from './regexRules.js';
 
-// https://www.npmjs.com/package/randexp
-function generateTestData(){
+function getRulesParserFromTextArea(){
 
     const rulesParser = new RulesParser();
-
     const areaText = document.getElementById('testdatadefntext').value;
-    const desiredRowCount = document.getElementById('generateCount').value;
-
-
-
     rulesParser.parseText(areaText);
 
     if(!rulesParser.isValid()){
         console.log(rulesParser.errors);
         alert(rulesParser.errors.join("\n"));
+        return;
+    }
+
+    return rulesParser;
+
+}
+
+// https://www.npmjs.com/package/randexp
+function generateTestData(){
+
+    const desiredRowCount = document.getElementById('generateCount').value;
+
+    const rulesParser = getRulesParserFromTextArea();
+    if(rulesParser===undefined){
         return;
     }
 
@@ -53,6 +61,11 @@ function generateTestData(){
 
     // and refresh the export
     renderTextFromGrid();
+
+    // set the grid to use the rules
+    populateTestDataGridFromRules();
+    console.log("changed");
+
 }
 
 function createTestDataGrid(){
@@ -71,7 +84,45 @@ function createTestDataGrid(){
 
 }
 
+
 var defnGridOptions;
+
+// populate Test Data Grid From Rules in Text Area
+function populateTestDataGridFromRules(){
+
+    const rulesParser = getRulesParserFromTextArea();
+    if(rulesParser===undefined){
+        return;
+    }
+
+    // clear data
+    // now add the rules
+    defnGridOptions.api.setRowData([]);
+
+    for(let rule of rulesParser.regexRules.rules){
+        let data={};
+        data.columnName = rule.name;
+        if(rule.type=="faker"){
+            if(rule.ruleSpec.startsWith("fake ")){
+                data.type = "fake";
+                data.value= rule.ruleSpec.replace("fake ","");
+            }else{
+                data.type = rule.ruleSpec;
+                data.value="";
+            }
+
+        }else{
+            data.type = "RegEx";
+            data.value = rule.ruleSpec;            
+        }
+
+        // todo, should be a bigger transaction for efficiency
+        defnGridOptions.api.applyTransaction({add: [data]},)
+    }
+
+}
+
+
 
 function setupTestDataEditGrid(gridDiv){
 

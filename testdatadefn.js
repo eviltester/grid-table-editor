@@ -64,7 +64,6 @@ function generateTestData(){
 
     // set the grid to use the rules
     populateTestDataGridFromRules();
-    console.log("changed");
 
 }
 

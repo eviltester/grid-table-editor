@@ -145,7 +145,7 @@ class SelectFilterEditor {
        let datalist = document.createElement('datalist');
        datalist.id="selectionValuesDataList";
        this.gui.appendChild(datalist);
-       console.log(params.values);
+       //console.log(params.values);
        params.values.forEach((value)=>{
            var option = document.createElement("option");
            option.setAttribute("value",value);

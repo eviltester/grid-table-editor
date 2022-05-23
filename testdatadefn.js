@@ -18,6 +18,9 @@
  */
 
 import {RulesParser} from './regexRules.js';
+import {Debouncer} from './utils/debouncer.js';
+
+var debouncer = new Debouncer();
 
 function getRulesParserFromTextArea(){
 
@@ -31,6 +34,9 @@ function getRulesParserFromTextArea(){
 
 // https://www.npmjs.com/package/randexp
 function generateTestData(){
+
+
+    debouncer.clear("populateTestDataGrid");
 
     const desiredRowCount = document.getElementById('generateCount').value;
 
@@ -82,7 +88,6 @@ var defnGridOptions;
 // populate Test Data Grid From Rules in Text Area
 function populateTestDataGridFromRules(){
 
-    console.log("populating");
     const rulesParser = getRulesParserFromTextArea();
 
     if(!rulesParser.isValid()){
@@ -119,13 +124,11 @@ function populateTestDataGridFromRules(){
 
 // create a simple editor that shows the list of values but with a search component
 // https://www.ag-grid.com/javascript-data-grid/component-cell-editor/
-/* <input list="brow">
-<datalist id="brow">
-  <option value="Internet Explorer">
-  <option value="Firefox">
-  <option value="Chrome">
-  <option value="Opera">
-  <option value="Safari">
+/* <input list="values">
+<datalist id="values">
+  <option value="Value 1">
+  <option value="Value 2">
+  <option value="Value 3">
 </datalist>   */
 
 class SelectFilterEditor {
@@ -212,8 +215,6 @@ function setupTestDataEditGrid(gridDiv){
         {field: 'value'}
     ];
 
-
-
     defnGridOptions = {
         columnDefs: defnColumnDefs,
         rowData: defnRowData,
@@ -279,25 +280,18 @@ function convertGridToText(){
 }
 
 
-var debouncer;
-function debounceAFunctionCall(functionToCall, time){
-    clearTimeout(debouncer);
-    debouncer=setTimeout(functionToCall, time);
-}
-
 window.addEventListener('load', function() {
     var element = document.querySelector("#generatedata");
     element.addEventListener('click', generateTestData, false);
 
     createTestDataGrid();
 
-
     var inputarea = document.getElementById('testdatadefntext');
     // https://stackoverflow.com/questions/2823733/textarea-onchange-detection/14029861?noredirect=1#comment19596202_14029861
 
     inputarea.addEventListener('input', function() {
           // debounce a call to set the grid from the text area
-          debounceAFunctionCall(populateTestDataGridFromRules,1000);
+          debouncer.debounce("populateTestDataGrid", populateTestDataGridFromRules, 1000);
     }, false);
 
 

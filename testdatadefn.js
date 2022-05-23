@@ -25,12 +25,6 @@ function getRulesParserFromTextArea(){
     const areaText = document.getElementById('testdatadefntext').value;
     rulesParser.parseText(areaText);
 
-    if(!rulesParser.isValid()){
-        console.log(rulesParser.errors);
-        alert(rulesParser.errors.join("\n"));
-        return;
-    }
-
     return rulesParser;
 
 }
@@ -41,7 +35,9 @@ function generateTestData(){
     const desiredRowCount = document.getElementById('generateCount').value;
 
     const rulesParser = getRulesParserFromTextArea();
-    if(rulesParser===undefined){
+    if(!rulesParser.isValid()){
+        console.log(rulesParser.errors);
+        alert(rulesParser.errors.join("\n"));
         return;
     }
 
@@ -50,11 +46,8 @@ function generateTestData(){
         return;
     }
 
-
     // generate
     const data = rulesParser.regexRules.generate(desiredRowCount);
-
-
 
     // add data to table
     importer.setGridFromData(data);
@@ -89,8 +82,10 @@ var defnGridOptions;
 // populate Test Data Grid From Rules in Text Area
 function populateTestDataGridFromRules(){
 
+    console.log("populating");
     const rulesParser = getRulesParserFromTextArea();
-    if(rulesParser===undefined){
+
+    if(!rulesParser.isValid()){
         return;
     }
 
@@ -283,9 +278,27 @@ function convertGridToText(){
     document.getElementById("testdatadefntext").value = outputText;
 }
 
+
+var debouncer;
+function debounceAFunctionCall(functionToCall, time){
+    clearTimeout(debouncer);
+    debouncer=setTimeout(functionToCall, time);
+}
+
 window.addEventListener('load', function() {
     var element = document.querySelector("#generatedata");
     element.addEventListener('click', generateTestData, false);
 
     createTestDataGrid();
+
+
+    var inputarea = document.getElementById('testdatadefntext');
+    // https://stackoverflow.com/questions/2823733/textarea-onchange-detection/14029861?noredirect=1#comment19596202_14029861
+
+    inputarea.addEventListener('input', function() {
+          // debounce a call to set the grid from the text area
+          debounceAFunctionCall(populateTestDataGridFromRules,1000);
+    }, false);
+
+
 });

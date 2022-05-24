@@ -17,7 +17,7 @@
 
  */
 
-import {RulesParser} from './regexRules.js';
+import {RulesParser} from './data_generation/testDataRules.js';
 import {Debouncer} from './utils/debouncer.js';
 
 var debouncer = new Debouncer();
@@ -53,7 +53,7 @@ function generateTestData(){
     }
 
     // generate
-    const data = rulesParser.regexRules.generate(desiredRowCount);
+    const data = rulesParser.testDataRules.generate(desiredRowCount);
 
     // add data to table
     importer.setGridFromData(data);
@@ -98,7 +98,7 @@ function populateTestDataGridFromRules(){
     // now add the rules
     defnGridOptions.api.setRowData([]);
 
-    for(let rule of rulesParser.regexRules.rules){
+    for(let rule of rulesParser.testDataRules.rules){
         let data={};
         data.columnName = rule.name;
         if(rule.type=="faker"){

@@ -1,7 +1,7 @@
 // requires randExp
 // requires faker.js
 
-class RegexRules{
+class TestDataRules{
 
     constructor() {
         this.rules = [];
@@ -18,11 +18,11 @@ class RegexRules{
     }
 
     addRule(aName, aRule){
-        this.rules.push(new RegexRule(aName.trim(), aRule));
+        this.rules.push(new TestDataRule(aName.trim(), aRule));
     }
 
     generate(thisMany){
-        return generateRegex(thisMany, this.rules);
+        return generateDataFromRules(thisMany, this.rules);
     }
 
     validateRules(){
@@ -55,11 +55,12 @@ class RegexRules{
 
 }
 
-class RegexRule{
+class TestDataRule{
 
     constructor(aName, aRule="") {
         this.name = aName;
         this.ruleSpec = aRule;
+        this.type="regex"; // 'regex' by default, or 'faker'
     }
 
 }
@@ -67,7 +68,7 @@ class RegexRule{
 class RulesParser{
 
     constructor(){
-        this.regexRules = new RegexRules();
+        this.testDataRules = new TestDataRules();
         this.errors = [];
     }
 
@@ -105,11 +106,11 @@ class RulesParser{
                 return;
             }
 
-            this.regexRules.addRule(name.trim(), rule.trim())
+            this.testDataRules.addRule(name.trim(), rule.trim())
         }
 
-        this.regexRules.validateRules();
-        this.errors = this.errors.concat(this.regexRules.errors);
+        this.testDataRules.validateRules();
+        this.errors = this.errors.concat(this.testDataRules.errors);
     }
 
     isValid(){
@@ -208,7 +209,7 @@ function removeStartAndEnd(start, end, from){
     return from;
 }
 
-function generateRegex(thisMany, fromRules){
+function generateDataFromRules(thisMany, fromRules){
 
     // given some rules
     // generate thisMany instances
@@ -241,4 +242,4 @@ function generateRegex(thisMany, fromRules){
     return data;
 }
 
-export {RegexRules, RegexRule, RulesParser, removeStartAndEnd};
+export {TestDataRules, TestDataRule, RulesParser, removeStartAndEnd};

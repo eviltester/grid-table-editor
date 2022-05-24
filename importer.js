@@ -43,6 +43,7 @@ class Importer{
       
       
       // Basic Markdown Table Parsing
+      // todo: replace this with new MarkdownConvertor(markdownTable).markdownTableToDataRows()
     markdownTableToDataRows(markdownTable){
           const rows = markdownTable.split(/[\r\n]+/);
           var data = [];

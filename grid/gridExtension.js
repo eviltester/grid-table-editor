@@ -9,7 +9,7 @@ class GridExtension{
 
 
     clearGrid(){
-        var columnDefs = [
+        const columnDefs = [
             {
                 headerName: '~rename-me',
                 field: 'column1'
@@ -26,12 +26,12 @@ class GridExtension{
     }
 
     filterText(text){
-        gridOptions.api.setQuickFilter(text);
+        this.gridApi.setQuickFilter(text);
     }
 
     getNewCol(named){
 
-        var newCol = {};
+        let newCol = {};
         newCol.headerName = named;
         newCol.field = 'column' + this.nextFieldNumber;
         newCol.cellRenderer = this.cellRendererText;
@@ -41,9 +41,9 @@ class GridExtension{
 
     // given an array of String column names, set the grid to have those columns
     createColumns(columnNames) {
-        var colDefs = [];
+        let colDefs = [];
         columnNames.forEach(column => {
-            var newCol = this.getNewCol(column);
+            let newCol = this.getNewCol(column);
             colDefs.push(newCol);
         });
         this.gridApi.setColumnDefs(colDefs);
@@ -59,7 +59,6 @@ class GridExtension{
 
     addFieldToData(fieldName, defaultValue){
         this.gridApi.forEachNode(node => {
-            var vals = [];
             node.setDataValue(fieldName, defaultValue);
         });
     }
@@ -68,9 +67,9 @@ class GridExtension{
 
         this.addNeighbourColumnId(position, id, colTitle);
 
-        var colDefsHunt = this.gridApi.getColumnDefs();
-        var colDataToCopy;
-        var destinationCol;
+        let colDefsHunt = this.gridApi.getColumnDefs();
+        let colDataToCopy;
+        let destinationCol;
 
         colDefsHunt.forEach(col =>{
             if(col.headerName == colTitle){
@@ -82,7 +81,6 @@ class GridExtension{
         })
 
         this.gridApi.forEachNode(node => {
-            var vals = [];
             node.setDataValue(destinationCol.field, node.data[colDataToCopy.field])
         });
 
@@ -92,9 +90,9 @@ class GridExtension{
 
     appendColumnToGrid(colTitle){
 
-        var colDefs = this.gridApi.getColumnDefs();
+        let colDefs = this.gridApi.getColumnDefs();
 
-        var newCol = this.getNewCol(colTitle);
+        let newCol = this.getNewCol(colTitle);
         // add to right
         colDefs.push(newCol);
 
@@ -109,14 +107,14 @@ class GridExtension{
         // need to use column-state to set the order
         // https://www.ag-grid.com/javascript-grid/column-state/
 
-        var columnState = this.columnApi.getColumnState();
-        var newColumnStates = [];
-        var currentColumnState;
-        var newColumnState;
+        let columnState = this.columnApi.getColumnState();
+        let newColumnStates = [];
+        let currentColumnState;
+        let newColumnState;
 
         // find new columnId
-        var colDefsHunt = this.gridApi.getColumnDefs();
-        var newColId;
+        let colDefsHunt = this.gridApi.getColumnDefs();
+        let newColId;
         colDefsHunt.forEach(col =>{
             if(col.field == columnToMove.field){
                 newColId = col.colId;
@@ -166,16 +164,15 @@ class GridExtension{
         if(colTitle === undefined || colTitle==="" || colTitle.length==0)
             return;
 
-        var newCol = this.appendColumnToGrid(colTitle);
+        let newCol = this.appendColumnToGrid(colTitle);
         this.moveColumnTo(position, id, newCol);
 
     }
 
     deleteColumnId(id){
 
-        var colDefs = this.gridApi.getColumnDefs();
-
-        var newColDefs = [];
+        let colDefs = this.gridApi.getColumnDefs();
+        let newColDefs = [];
 
         colDefs.forEach(colDef =>{
           if(colDef.colId!=id){
@@ -190,7 +187,7 @@ class GridExtension{
 
     getColumnDef(id){
 
-        var colDefs = this.gridApi.getColumnDefs();
+        let colDefs = this.gridApi.getColumnDefs();
         for(let colDef of colDefs){
             if(colDef.colId==id){
                 return colDef;
@@ -297,3 +294,5 @@ class GridExtension{
         return minIndex;
     }
 }
+
+export {GridExtension}

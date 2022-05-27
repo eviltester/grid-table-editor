@@ -1,3 +1,5 @@
+import { ConvertGridToCsv } from "./data_formats/exports/convert_grid_to_csv.js";
+
 class Exporter {
 
     constructor(gridApi) {
@@ -21,7 +23,7 @@ class Exporter {
         }
       
         if(type=="csv") {
-            return this.getGridAsCSV();
+            return new ConvertGridToCsv(this.gridApi).get();
         }
       
         if(type=="json") {
@@ -41,15 +43,6 @@ class Exporter {
         }
 
         return "";
-    }
-
-    getGridAsCSV(){
-        return this.gridApi.getDataAsCsv();
-
-        // in theory, could use above to change delimiter to "|" and
-        // then amend generated string to create markdown but seems
-        // simpler to create a specific generator 
-
     }
 
     // https://www.markdownguide.org/extended-syntax/
@@ -121,7 +114,7 @@ class Exporter {
     }
 
     validGherkinCellValue(data){
-        return data.replaceAll('\\','\\\\').replaceAll("|","\|")
+        return data.replaceAll('\\','\\\\').replaceAll("|","\\|")
     }
 
     formatAsGherkinTable(headers, data){
@@ -239,3 +232,5 @@ class Exporter {
         return JSON.stringify(this.getDataAsObjectArray(), null, "\t");
     }
 }
+
+export {Exporter}

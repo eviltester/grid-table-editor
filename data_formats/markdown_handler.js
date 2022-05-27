@@ -1,33 +1,34 @@
 export class MarkdownConvertor {
 
-  
-    // todo add any configuration options into the markdown converter
     constructor(params) {
-      this.validateSeperatorLength=false;
+      this.validateSeparatorLength=false;
+      this.treatThisAsGherkin=false;
       
       if(params!==undefined){
-        if(params.hasOwnProperty("validateSeperatorLength")){
-          this.validateSeperatorLength = params.validateSeperatorLength;
+        if(params.hasOwnProperty("validateSeparatorLength")){
+          // configure to stop parsing table string if header separators are wrong
+          this.validateSeparatorLength = params.validateSeparatorLength;
+        }
+        if(params.hasOwnProperty("treatThisAsGherkin")){
+          // configure to stop parsing table string if header separators are wrong
+          this.treatThisAsGherkin = params.treatThisAsGherkin;
         }
       }
     }
 
-    isMarkdownTableSeperatorRowValid(theRow){
+    isMarkdownTableSeparatorRowValid(theRow){
 
       let rowString = theRow.trim();
-      let values = rowString.split("|");
 
-      if(values[0]!=""){
-        return false; // first value should be empty
+      if(!rowString.startsWith("|")){
+        return false; // should start with |
       }
 
-      if(values[values.length-1]!=""){
-        return false; // last value should be empty
+      if(!rowString.endsWith("|")){
+        return false; // last char should be |
       }
 
-      values = values.slice(1,-1); // remove first and last items which are empty
-
-      let cellValues = values.map(contents => {return contents.trim()});
+      let cellValues = this.getValuesFromMarkdownTableRow(rowString);
 
       let sizeCheckedValues = cellValues.filter(value => {
 
@@ -59,53 +60,89 @@ export class MarkdownConvertor {
       return true;
     }
     
+    getValuesFromMarkdownTableRow(aRowString){
+
+      let rowString = aRowString.trim();
+
+      if(rowString.charAt(0)=="|"){
+        rowString = rowString.substring(1);
+      }
+      if(rowString.charAt(rowString.length-1)=="|"){
+        rowString=rowString.slice(0, -1);
+      }
+
+      if(this.treatThisAsGherkin){
+        // quick hack to allow split to work
+        rowString = rowString.replaceAll("|", "&#124;");
+      }
+
+      var values = rowString.split("|");
+
+      var cellValues = values.map(contents => {
+        let actualContents = contents.trim();
+
+        // handle any special character conversions for markdown
+        // also handles the split hack for Gherkin
+        actualContents = actualContents.replaceAll("&#124;","|")
+
+        if(this.treatThisAsGherkin){
+          // handle any special character conversions for gherkin
+          actualContents = actualContents.replaceAll('\\\\','\\').replaceAll("\\|","|")
+        }
+        
+
+        return actualContents;
+      });
+
+      return cellValues;
+    }
+
     // todo: create a GenericDataTable class with a 'headers' array and a rowdata[][] array
     markdownTableToDataRows(markdownTable){
 
-        // todo: split is removing blank lines in the middle rather than stopping processing early
-        let rows = markdownTable.split(/[\r\n]+/);
+        let rows = [];
+        // should not really need to handle \r because a trim will remove it
+        rows=markdownTable.split("\n");
+
         let data = [];
         let rowCount = 0;
         let processingStarted = false;
         for(const row of rows){
           let rowString = row.trim();
 
-          if(processingStarted===true && rowString.length===0){
-              // skip empty it is a gap in the table
-              break;
-          }
-
           if(processingStarted===false && rowString.length===0){
-            // skip empty lines
+            // skip empty lines at the start of the input string
             continue;
           }else{
             processingStarted=true;
           }
-          
-          
-          if(rowString.charAt(0)=="|"){
-            rowString = rowString.substring(1);
+
+          if(processingStarted===true && rowString.length===0){
+              // gap in the table when processing means end of table
+              break;
           }
-          if(rowString.charAt(rowString.length-1)=="|"){
-            rowString=rowString.slice(0, -1);
-          }
-    
-          rowString = rowString.trim();
-    
+
           // it is the "|---|" separator row
           if(rowString.length>0 && rowCount==1){
-            if(this.validateSeperatorLength){
-              if(!this.isMarkdownTableSeperatorRowValid(rowString)){
+            if(this.validateSeparatorLength){
+              if(!this.isMarkdownTableSeparatorRowValid(rowString)){
                 // not valid return empty data
                 return [];
               }
             }
           }
 
+          // todo: create a proper gherkin importer
+          if(this.treatThisAsGherkin){
+            // with Gherkin row count 1 is a normal row
+            if(rowString.length>0 && rowCount==1){
+              var cellValues = this.getValuesFromMarkdownTableRow(rowString);
+              data.push(cellValues);
+            }
+          }
+
           if(rowString.length>0 && rowCount!=1){
-            var values = rowString.split("|");
-            var cellValues = values.map(contents => contents.trim());
-            //console.log(cellValues);
+            var cellValues = this.getValuesFromMarkdownTableRow(rowString);
             data.push(cellValues);
           }
     

@@ -161,3 +161,4 @@ class CustomHeader {
     }
   }
   
+export {CustomHeader}

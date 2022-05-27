@@ -1,3 +1,5 @@
+import { MarkdownConvertor } from "./markdown_handler.js";
+
 class Importer{
 
     constructor(gridApi,gridExtension) {
@@ -43,42 +45,32 @@ class Importer{
       
       
       // Basic Markdown Table Parsing
-      // todo: replace this with new MarkdownConvertor(markdownTable).markdownTableToDataRows()
     markdownTableToDataRows(markdownTable){
-          const rows = markdownTable.split(/[\r\n]+/);
-          var data = [];
-          var rowCount = 0;
-          rows.forEach(row =>{
-            var rowString = row.trim();
-            
-            if(rowString.charAt(0)=="|"){
-              rowString = rowString.substring(1);
-            }
-            if(rowString.charAt(rowString.length-1)=="|"){
-              rowString=rowString.slice(0, -1);
-            }
-      
-            var rowString = rowString.trim();
-      
-            if(rowString.length>0 && rowCount!=1){
-              var values = rowString.split("|");
-              var cellValues = values.map(contents => contents.trim());
-              console.log(cellValues);
-              data.push(cellValues);
-            }
-      
-            rowCount++;      
-          });
-      
-          return data;
-      }
+      // todo enable validation when we have the ability to show errors on the GUI
+      return new MarkdownConvertor().markdownTableToDataRows(markdownTable);
+    }
+
+    gherkinToDataRows(gherkinTable){
+      // todo enable validation when we have the ability to show errors on the GUI
+      return new MarkdownConvertor({treatThisAsGherkin: true}).markdownTableToDataRows(gherkinTable);
+    }
 
 
-      importMarkDownTextFrom(aString){
-        this.setGridFromData(
-            this.markdownTableToDataRows(
-              aString
-            )
-          );
-      }
+    importMarkDownTextFrom(aString){
+      this.setGridFromData(
+          this.markdownTableToDataRows(
+            aString
+          )
+        );
+    }
+
+    importGherkinTextFrom(aString){
+      this.setGridFromData(
+          this.gherkinToDataRows(
+            aString
+          )
+        );
+    }
 }
+
+export {Importer}

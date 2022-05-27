@@ -19,6 +19,8 @@
 
 import {RulesParser} from './data_generation/testDataRules.js';
 import {Debouncer} from './utils/debouncer.js';
+import {GridExtension} from './grid/gridExtension.js';
+import { Importer } from './data_formats/importer.js';
 
 var debouncer = new Debouncer();
 
@@ -56,10 +58,10 @@ function generateTestData(){
     const data = rulesParser.testDataRules.generate(desiredRowCount);
 
     // add data to table
-    importer.setGridFromData(data);
+    window.importer.setGridFromData(data);
 
     // and refresh the export
-    renderTextFromGrid();
+    window.renderTextFromGrid();
 
     // set the grid to use the rules
     populateTestDataGridFromRules();

@@ -17,3 +17,5 @@ class Download {
         document.body.removeChild(element);
     }
 }
+
+export {Download}

@@ -1,3 +1,5 @@
+import {Download} from './download.js';
+
 class ExportsPageMap{
 
     constructor(){
@@ -59,9 +61,12 @@ class ExportControls {
 
         document.execCommand("copy");
 
-        document.querySelector(this.pageMap.copyTextButton).innerText = "Copied";
+        let copyButton = document.querySelector(this.pageMap.copyTextButton);
+        copyButton.innerText = "Copied";
         setTimeout(
-            function(){ document.querySelector(this.pageMap.copyTextButton).innerText = "Copy"; }
-            , 3000);
+            function(aButton){ aButton.innerText = "Copy"; }
+            , 3000, copyButton);
     }
 }
+
+export {ExportControls, ExportsPageMap}

@@ -1,4 +1,4 @@
-class PageMap{
+class GridControlsPageMap{
 
     constructor(){
         this.addRowButtonQuery = "#addRowButton";
@@ -11,6 +11,8 @@ class PageMap{
     }
 }
 
+// todo: don't hook into existing controls in HTML create them here and then hook into them
+// The buttons above a grid
 class GridControl {
 
     constructor(gridExtension, pageMap) {
@@ -20,32 +22,32 @@ class GridControl {
 
     addHooksToPage(container){
 
-        var element = container.querySelector(this.pageMap.addRowButtonQuery);
-        var addRowListener = this.addRow.bind(this);
+        let element = container.querySelector(this.pageMap.addRowButtonQuery);
+        let addRowListener = this.addRow.bind(this);
         element.addEventListener('click', addRowListener, false);
 
-        var element = container.querySelector(this.pageMap.addRowsAboveButtonQuery);
-        var addRowsListener = this.addRows.bind(this);
+        element = container.querySelector(this.pageMap.addRowsAboveButtonQuery);
+        let addRowsListener = this.addRows.bind(this);
         element.addEventListener('click', function(){addRowsListener(-1)}, false);
 
-        var element = container.querySelector(this.pageMap.addRowsBelowButtonQuery);
-        var addRowsBelowListener = this.addRows.bind(this);
+        element = container.querySelector(this.pageMap.addRowsBelowButtonQuery);
+        let addRowsBelowListener = this.addRows.bind(this);
         element.addEventListener('click', function(){addRowsBelowListener(1)}, false);
 
-        var element = container.querySelector(this.pageMap.deleteSelectedRowsButtonQuery);
-        var deleteRowsListener = this.deleteSelectedRows.bind(this);
+        element = container.querySelector(this.pageMap.deleteSelectedRowsButtonQuery);
+        let deleteRowsListener = this.deleteSelectedRows.bind(this);
         element.addEventListener('click', deleteRowsListener, false);
 
-        var element = container.querySelector(this.pageMap.clearFiltersButtonQuery);
-        var clearFiltersListener = this.clearFilters.bind(this);
+        element = container.querySelector(this.pageMap.clearFiltersButtonQuery);
+        let clearFiltersListener = this.clearFilters.bind(this);
         element.addEventListener('click', clearFiltersListener, false);
 
-        var element = container.querySelector(this.pageMap.filtersTextBoxQuery);
-        var filterTextListener = this.filterTextBoxChanged.bind(this);
+        element = container.querySelector(this.pageMap.filtersTextBoxQuery);
+        let filterTextListener = this.filterTextBoxChanged.bind(this);
         element.addEventListener('input', filterTextListener, false);
 
-        var element = container.querySelector(this.pageMap.clearTableButtonQuery);
-        var clearTableListener = this.clearTable.bind(this);
+        element = container.querySelector(this.pageMap.clearTableButtonQuery);
+        let clearTableListener = this.clearTable.bind(this);
         element.addEventListener('click', clearTableListener, false);
 
     }
@@ -55,28 +57,30 @@ class GridControl {
     }
 
     addRows(position) {
-        gridExtras.addRowsRelativeToSelection(position);
+        this.gridExtras.addRowsRelativeToSelection(position);
     }
 
     deleteSelectedRows() {
         if(!confirm('Are you Sure You Want to Delete Rows?'))
             return;
 
-        gridExtras.deleteSelectedRows();
+        this.gridExtras.deleteSelectedRows();
     }
 
     clearFilters(){
         document.getElementById('filter-text-box').value='';
-        gridExtras.clearFilters();
+        this.gridExtras.clearFilters();
     }
 
     filterTextBoxChanged(){
-        gridExtras.filterText(document.getElementById('filter-text-box').value);
+        this.gridExtras.filterText(document.getElementById('filter-text-box').value);
     }
 
     clearTable() {
         if(confirm('Are you sure you want to reset the table and all data?')){
-            gridExtras.clearGrid();
+            this.gridExtras.clearGrid();
         }
     }
 }
+
+export {GridControl, GridControlsPageMap}

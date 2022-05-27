@@ -1,6 +1,8 @@
 class DragDropControl {
 
-    constructor() {}
+    constructor(readFileFunction) {
+        this.readFileFunction = readFileFunction;
+    }
 
     // file drop handling
     // https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API/File_drag_and_drop
@@ -50,13 +52,14 @@ class DragDropControl {
                 if (ev.dataTransfer.items[i].kind === 'file') {
                     var file = ev.dataTransfer.items[i].getAsFile();
                     console.log('... file[' + i + '].name = ' + file.name);
-                    readFile(file);
+                    this.readFileFunction(file);
                     break;  // only process first file
                 }
             }
         } else {
-            // todo, this should be a method on an object, pass in the readHandler to the constructor
-            readFile(ev.dataTransfer.files[i]);
+            this.readFileFunction(ev.dataTransfer.files[i]);
         }
     }
 }
+
+export {DragDropControl}

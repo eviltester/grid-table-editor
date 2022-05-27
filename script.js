@@ -1,3 +1,12 @@
+import { Importer } from "./data_formats/importer.js";
+import { Exporter } from "./exporter.js";
+import { GridExtension } from "./grid/gridExtension.js";
+import { DragDropControl } from "./gui_components/drag-drop-dontrol.js";
+import { GridControl, GridControlsPageMap } from "./gui_components/gridControl.js"
+import { CustomHeader } from "./gui_components/customHeader.js";
+import { ExportControls, ExportsPageMap } from "./gui_components/exportControls.js";
+
+
 var rowData = [];
 
 var nextFieldNumber = 2;
@@ -36,6 +45,20 @@ var gridOptions = {
 };
 
 var importer, exporter;
+var gridExtras;
+
+
+function readFile(aFile){
+  const reader = new FileReader();
+  reader.addEventListener('load', (event) => {
+    setTextFromString(event.target.result);
+    importText();
+  });
+  reader.readAsText(aFile);
+}
+
+window.readFile = readFile;
+
 
 // setup the grid after the page has finished loading
 document.addEventListener('DOMContentLoaded', function() {
@@ -47,56 +70,51 @@ document.addEventListener('DOMContentLoaded', function() {
 
   gridExtras = new GridExtension(gridOptions.api, gridOptions.columnApi);
 
-  gridControls = new GridControl(gridExtras, new PageMap());
+  let gridControls = new GridControl(gridExtras, new GridControlsPageMap());
   gridControls.addHooksToPage(document);
 
   exporter = new Exporter(gridOptions.api);
+  window.exporter = exporter;
   importer = new Importer(gridOptions.api, gridExtras);
+  window.importer = importer;
 
-  exportControls = new ExportControls(exporter, new ExportsPageMap(),
+  let exportControls = new ExportControls(exporter, new ExportsPageMap(),
                                       fileTypes, renderTextFromGrid)
                     .addHooksToPage(document);
 
-  inputElement = document.getElementById('csvinput');
+  let inputElement = document.getElementById('csvinput');
   inputElement.addEventListener('change', loadFile, false);
 
   // give a clue what to do by importing the instructions into the grid
   setTextFromInstructions();
 
   // setup the drop zone
-  const dragDrop = new DragDropControl();
+  const dragDrop = new DragDropControl(readFile);
   dragDrop.configureAsDropZone(document.getElementById("dropzone"));
 
 });
 
   // use papa parse for csv parsing https://www.papaparse.com/demo
- function loadFile() {
+function loadFile() {
 
-   type = document.querySelector("li.active-type a").getAttribute("data-type");
+  let type = document.querySelector("li.active-type a").getAttribute("data-type");
 
-   if(type=="csv") {
-     //console.log(this.files[0]);
-     Papa.parse(this.files[0], {
-       complete: function (results) {
-         importer.setGridFromData(results.data);
-         renderTextFromGrid();
-       }
-     });
-     return;
-   }
-
-   this.readFile(this.files[0]);
-
- }
-
- function readFile(aFile){
-    const reader = new FileReader();
-    reader.addEventListener('load', (event) => {
-      setTextFromString(event.target.result);
-      importText();
+  if(type=="csv") {
+    //console.log(this.files[0]);
+    Papa.parse(this.files[0], {
+      complete: function (results) {
+        importer.setGridFromData(results.data);
+        renderTextFromGrid();
+      }
     });
-    reader.readAsText(aFile);
- }
+    return;
+  }
+
+  this.readFile(this.files[0]);
+
+}
+
+
 
 /*
     Grid Amendments with Guarded Alerts
@@ -119,6 +137,7 @@ function renameColId(id) {
 
   gridExtras.renameColId(id, colTitle);
 }
+window.renameColId = renameColId;
 
 function deleteColId(id) {
 
@@ -129,7 +148,7 @@ function deleteColId(id) {
       return;
   }
 
-  editColDef = gridExtras.getColumnDef(id);
+  let editColDef = gridExtras.getColumnDef(id);
 
   if(!confirm('Are you Sure You Want to Delete Column Named '+ editColDef.headerName + "?"))
     return;
@@ -138,9 +157,11 @@ function deleteColId(id) {
 
 }
 
+window.deleteColId = deleteColId;
+
 
 function duplicateColumnId(position, id) {
-  var colTitle = prompt('Copy Column As?');
+  let colTitle = prompt('Copy Column As?');
 
   if (colTitle != null && colTitle != '') {
     console.log('duplicate a column with this name: ' + colTitle);
@@ -156,8 +177,10 @@ function duplicateColumnId(position, id) {
   gridExtras.duplicateColumn(position, id, colTitle);
 }
 
+window.duplicateColumnId = duplicateColumnId;
+
 function addNeighbourColumnId(position, id) {
-  var colTitle = prompt('New Column Name?');
+  let colTitle = prompt('New Column Name?');
 
   if (colTitle != null && colTitle != '') {
     console.log('create a new neighbour column with this name: ' + colTitle);
@@ -172,7 +195,7 @@ function addNeighbourColumnId(position, id) {
 
   gridExtras.addNeighbourColumnId(position, id, colTitle);
 }
-
+window.addNeighbourColumnId = addNeighbourColumnId;
 
 /*
   Exporting and Importing
@@ -193,13 +216,12 @@ fileTypes["html"] = {type: "html", fileExtension: ".html"};
 
 
 function setFileFormatType(){
-  type = document.querySelector("li.active-type a").getAttribute("data-type");
+  const type = document.querySelector("li.active-type a").getAttribute("data-type");
 
-  importControlLocators = ["#importtextbutton", "#filedownload", "#dropzone", "#csvinputlabel", "#csvinput"];
-  importControls = [];
-  importControlLocators.forEach(locator => 
-    { 
-      var elem = document.querySelector(locator);
+  const importControlLocators = ["#importtextbutton", "#filedownload", "#dropzone", "#csvinputlabel", "#csvinput"];
+  let importControls = [];
+  importControlLocators.forEach(locator =>{ 
+      let elem = document.querySelector(locator);
       if(elem){
         importControls.push(elem);
       }
@@ -210,7 +232,7 @@ function setFileFormatType(){
     return;
   }
 
-  importVisibility = "visible";
+  let importVisibility = "visible";
 
   if(!importer.canImport(type)){
     console.log(`Data Type ${type} not supported for importing`);
@@ -224,9 +246,11 @@ function setFileFormatType(){
   document.querySelectorAll(".fileFormat").forEach(elem => elem.innerText = fileType);
 }
 
+window.setFileFormatType = setFileFormatType;
+
 function renderTextFromGrid() {
 
-  type = document.querySelector("li.active-type a").getAttribute("data-type");
+  let type = document.querySelector("li.active-type a").getAttribute("data-type");
 
   if(!exporter.canExport(type)){
     console.log(`Data Type ${type} not supported for exporting`);
@@ -235,6 +259,8 @@ function renderTextFromGrid() {
 
   setTextFromString(exporter.getGridAs(type));
 }
+
+window.renderTextFromGrid = renderTextFromGrid;
 
 function setTextFromString(textToRender){
   document.getElementById('markdownarea').value = textToRender;
@@ -248,8 +274,8 @@ function setTextFromString(textToRender){
 
 function setTextFromInstructions(){
   gridExtras.clearGrid();
-  var instructions = document.querySelectorAll("div.instructions details ul li");
-  var textData = [];
+  const instructions = document.querySelectorAll("div.instructions details ul li");
+  let textData = [];
   textData.push(["Instructions"]);
   instructions.forEach(instruction => {
     textData.push([instruction.textContent]);
@@ -261,8 +287,8 @@ function setTextFromInstructions(){
 
 function importText(){
 
-  typeToImport = document.querySelector("li.active-type a").getAttribute("data-type");
-  textToImport = document.getElementById("markdownarea").value;
+  const typeToImport = document.querySelector("li.active-type a").getAttribute("data-type");
+  const textToImport = document.getElementById("markdownarea").value;
 
   if(!fileTypes.hasOwnProperty(typeToImport)){
     console.log(`Data Type ${typeToImport} not supported`);
@@ -274,12 +300,12 @@ function importText(){
     return;
   }
 
-  if(typeToImport=="markdown" || typeToImport=="gherkin") {
-    importer.importMarkDownTextFrom(textToImport)
+  if(typeToImport=="markdown") {
+    importer.importMarkDownTextFrom(textToImport);
   }
 
   if(typeToImport=="gherkin") {
-    importer.importMarkDownTextFrom(textToImport)
+    importer.importGherkinTextFrom(textToImport);
   }
 
   if(typeToImport=="csv") {
@@ -293,4 +319,5 @@ function importText(){
   }
 
 }
+window.importText = importText;
 

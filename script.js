@@ -110,7 +110,7 @@ function loadFile() {
     return;
   }
 
-  this.readFile(this.files[0]);
+  readFile(this.files[0]);
 
 }
 

@@ -27,10 +27,7 @@ body {
 .main-app{
   margin:10px;
 }
-.instructions{
-  padding:10px;
-  color: white;
-}
+
 
 .header{
   background-color: #3D5249;
@@ -106,6 +103,11 @@ a.type-select-action {
 }
 
 /* Instructions */
+
+.instructions{
+  padding:10px;
+  color: rgb(0, 0, 0);
+}
 
 details[open]{
   background-color: white;
@@ -197,3 +199,38 @@ Custom header styles for default items
   text-align: center;
   color: #1e4a01;
 }
+
+/* Docs */
+
+.bodycontent{
+  max-width: 1200px;
+  margin: auto;
+}
+
+.header .pageheading{
+  font-size: 2em;
+  display: inline;
+  padding-left: 1em;
+}
+
+.header .pageheading a{
+  color: white;
+  text-decoration: none;
+}
+
+.header .mainmenu{
+  display: inline;
+  padding-left: 3em;
+}
+
+.header .mainmenu a{
+  color: white;
+  padding:0.5em;
+}
+
+.mainmenu a:hover{
+  background-color: #2D6A4F;
+  font-size: 1.2em;
+  padding:0em;
+}
+

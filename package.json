@@ -4,7 +4,8 @@
   "description": "A simple Data Table Editor that generates Markdown, CSV or JSON. It can also be used to interchange data between the formats, supporting editing in the grid.",
   "main": "index.html",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "publishdocs": "eleventy"
   },
   "repository": {
     "type": "git",

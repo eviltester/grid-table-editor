@@ -6,6 +6,9 @@
 
  */
 
+import { GridExtension } from "./gridExtension.js";
+import { GuardedColumnEdits } from "./guarded-column-edits.js";
+
 class CustomHeader {
     init(agParams) {
       this.agParams = agParams;
@@ -30,21 +33,44 @@ class CustomHeader {
                 </div>
               </div>
               <div class="headerbuttons">
-                <span title="add left" onclick="addNeighbourColumnId(-1,'${this.agParams.column.colId}')">[<+]</span>
-                <span title="rename" onclick="renameColId('${this.agParams.column.colId}')">[~]</span>
-                <span title="delete" onclick="deleteColId('${this.agParams.column.colId}')">[x]</span>
-                <span title="duplicate" onclick="duplicateColumnId(1,'${this.agParams.column.colId}')">[+=]</span>
-                <span title="add right" onclick="addNeighbourColumnId(1,'${this.agParams.column.colId}')">[+>]</span>
+                <span class="customHeaderAddLeftButton" title="add left">[<+]</span>
+                <span class="customHeaderRenameButton" title="rename">[~]</span>
+                <span class="customHeaderDeleteButton" title="delete">[x]</span>
+                <span class="customHeaderDuplicateButton" title="duplicate">[+=]</span>
+                <span class="customHeaderAddRightButton" title="add right">[+>]</span>
             </div>
           `;
 
-      // todo the onclick methods above should be on an object that is passed in and hook the event with an added listener
+      this.guardedColumnEdits = new GuardedColumnEdits(new GridExtension(this.agParams.api, this.agParams.columnApi));
   
       this.eMenuButton = this.eGui.querySelector('.customFilterMenuButton');
       this.eSortDownButton = this.eGui.querySelector('.customSortDownLabel');
       this.eSortUpButton = this.eGui.querySelector('.customSortUpLabel');
       this.eSortRemoveButton = this.eGui.querySelector('.customSortRemoveLabel');
+
+    
   
+      this.headerAddLeftButton = this.eGui.querySelector('.customHeaderAddLeftButton');
+      this.onAddLeftButtonListener = this.onAddLeftButtonClick.bind(this);
+      this.headerAddLeftButton.addEventListener('click', this.onAddLeftButtonListener);
+
+      this.headerRenameButton = this.eGui.querySelector('.customHeaderRenameButton');
+      this.onRenameButtonListener = this.onRenameButtonClick.bind(this);
+      this.headerRenameButton.addEventListener('click', this.onRenameButtonListener);
+
+      this.headerDeleteButton = this.eGui.querySelector('.customHeaderDeleteButton');
+      this.onDeleteButtonListener = this.onDeleteButtonClick.bind(this);
+      this.headerDeleteButton.addEventListener('click', this.onDeleteButtonListener);
+
+      this.headerDuplicateButton = this.eGui.querySelector('.customHeaderDuplicateButton');
+      this.onDuplicateButtonListener = this.onDuplicateButtonClick.bind(this);
+      this.headerDuplicateButton.addEventListener('click', this.onDuplicateButtonListener);
+
+      this.headerAddRightButton = this.eGui.querySelector('.customHeaderAddRightButton');
+      this.onAddRightButtonListener = this.onAddRightButtonClick.bind(this);
+      this.headerAddRightButton.addEventListener('click', this.onAddRightButtonListener);
+
+
       if (this.agParams.enableMenu) {
         this.onMenuClickListener = this.onMenuClick.bind(this);
         this.eMenuButton.addEventListener('click', this.onMenuClickListener);
@@ -91,6 +117,26 @@ class CustomHeader {
         this.eGui.removeChild(this.eSortUpButton);
         this.eGui.removeChild(this.eSortRemoveButton);
       }
+    }
+
+    onAddLeftButtonClick(){
+        this.guardedColumnEdits.addNeighbourColumnId(-1,this.agParams.column.colId);
+    }
+
+    onRenameButtonClick(){
+      this.guardedColumnEdits.renameColId(this.agParams.column.colId);
+    }
+
+    onDeleteButtonClick(){
+      this.guardedColumnEdits.deleteColId(this.agParams.column.colId);
+    }
+
+    onDuplicateButtonClick(){
+      this.guardedColumnEdits.duplicateColumnId(1, this.agParams.column.colId);
+    }
+
+    onAddRightButtonClick(){
+      this.guardedColumnEdits.addNeighbourColumnId(1,this.agParams.column.colId);
     }
 
     deactivateIcon(toDeactivateItems){
@@ -158,6 +204,12 @@ class CustomHeader {
         'sortChanged',
         this.onSortChangedListener
       );
+
+      this.headerAddLeftButton.removeEventListener('click', this.onAddLeftButtonListener);
+      this.headerRenameButton.removeEventListener('click', this.onRenameButtonListener);
+      this.headerDeleteButton.removeEventListener('click', this.onDeleteButtonListener);
+      this.headerDuplicateButton.removeEventListener('click', this.onDuplicateButtonListener);
+      this.headerAddRightButton.removeEventListener('click', this.onAddRightButtonListener);
     }
   }
   

@@ -1,9 +1,13 @@
+/*
+    A wrapper for AG Grid that makes it easier to add new columns
+    and perform high level operations with the grid that we need
+    for editing the grid.
+*/
 class GridExtension{
 
     constructor(gridApi, columnApi) {
         this.gridApi = gridApi;
         this.columnApi = columnApi;
-        this.nextFieldNumber=2;
         this.cellRendererText = params => `<div style='word-break:normal;line-height: normal'><p>${params.value}</p></div>`;
     }
 
@@ -17,7 +21,6 @@ class GridExtension{
         ];
         this.gridApi.setColumnDefs(columnDefs);
         this.gridApi.setRowData([]);
-        this.nextFieldNumber=2;
     }
 
     clearFilters(){
@@ -29,13 +32,25 @@ class GridExtension{
         this.gridApi.setQuickFilter(text);
     }
 
+    getNextFieldNumber(){
+        const columnDefs = this.gridApi.getColumnDefs()
+        let largestNumber=0;
+        columnDefs.forEach(column => {
+            let fieldName = column.field;
+            let fieldNumber = Number.parseInt(fieldName.replace("column",""));
+            if(fieldNumber>largestNumber){
+                largestNumber = fieldNumber;
+            }
+        });
+        return largestNumber+1;
+    }
+
     getNewCol(named){
 
         let newCol = {};
         newCol.headerName = named;
-        newCol.field = 'column' + this.nextFieldNumber;
+        newCol.field = 'column' + this.getNextFieldNumber();
         newCol.cellRenderer = this.cellRendererText;
-        this.nextFieldNumber++;
         return newCol;
       }
 
@@ -183,6 +198,10 @@ class GridExtension{
         this.gridApi.setColumnDefs(newColDefs);      
 
         // TODO: consider deleting all the data as well
+    }
+
+    getNumberOfColumns(){
+        return this.gridApi.getColumnDefs().length;
     }
 
     getColumnDef(id){

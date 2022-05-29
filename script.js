@@ -3,13 +3,11 @@ import { Exporter } from "./exporter.js";
 import { GridExtension } from "./grid/gridExtension.js";
 import { DragDropControl } from "./gui_components/drag-drop-dontrol.js";
 import { GridControl, GridControlsPageMap } from "./gui_components/gridControl.js"
-import { CustomHeader } from "./gui_components/customHeader.js";
+import { CustomHeader } from "./grid/customHeader.js";
 import { ExportControls, ExportsPageMap } from "./gui_components/exportControls.js";
 
 
 var rowData = [];
-
-var nextFieldNumber = 2;
 
 var columnDefs = [
   {
@@ -116,86 +114,6 @@ function loadFile() {
 
 
 
-/*
-    Grid Amendments with Guarded Alerts
-*/
-function renameColId(id) {
-
-  var editColDef = gridExtras.getColumnDef(id);
-  var colTitle = prompt('Column Name?', editColDef.headerName);
-
-  if (colTitle != null && colTitle != '') {
-    console.log('rename column ' + id + ' with this name: ' + colTitle);
-  } else {
-    return false;
-  }
-
-  if(gridExtras.nameAlreadyExists(colTitle)){
-    alert(`A column with name ${colTitle} already exists`);
-    return false;
-  }
-
-  gridExtras.renameColId(id, colTitle);
-}
-window.renameColId = renameColId;
-
-function deleteColId(id) {
-
-  var colDefs = gridOptions.api.getColumnDefs();
-
-  if(colDefs.length==1){
-      alert("Cannot Delete The Only Column");
-      return;
-  }
-
-  let editColDef = gridExtras.getColumnDef(id);
-
-  if(!confirm('Are you Sure You Want to Delete Column Named '+ editColDef.headerName + "?"))
-    return;
-
-  gridExtras.deleteColumnId(id);
-
-}
-
-window.deleteColId = deleteColId;
-
-
-function duplicateColumnId(position, id) {
-  let colTitle = prompt('Copy Column As?');
-
-  if (colTitle != null && colTitle != '') {
-    console.log('duplicate a column with this name: ' + colTitle);
-  } else {
-    return;
-  }
-
-  if(gridExtras.nameAlreadyExists(colTitle)){
-    alert(`A column with name ${colTitle} already exists`);
-    return false;
-  }
-
-  gridExtras.duplicateColumn(position, id, colTitle);
-}
-
-window.duplicateColumnId = duplicateColumnId;
-
-function addNeighbourColumnId(position, id) {
-  let colTitle = prompt('New Column Name?');
-
-  if (colTitle != null && colTitle != '') {
-    console.log('create a new neighbour column with this name: ' + colTitle);
-  } else {
-    return;
-  }
-
-  if(gridExtras.nameAlreadyExists(colTitle)){
-    alert(`A column with name ${colTitle} already exists`);
-    return false;
-  }
-
-  gridExtras.addNeighbourColumnId(position, id, colTitle);
-}
-window.addNeighbourColumnId = addNeighbourColumnId;
 
 /*
   Exporting and Importing

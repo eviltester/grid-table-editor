@@ -14,6 +14,33 @@ class Importer{
     }
 
     // text area import
+    // todo: move into Importer
+    importText(typeToImport, textToImport){
+
+      if(!this.canImport(typeToImport)){
+        console.log(`Data Type ${typeToImport} not supported for importing`);
+        return;
+      }
+
+      if(typeToImport=="markdown") {
+        this.importMarkDownTextFrom(textToImport);
+      }
+
+      if(typeToImport=="gherkin") {
+        this.importGherkinTextFrom(textToImport);
+      }
+
+      if(typeToImport=="csv") {
+        var results=Papa.parse(textToImport);
+        //console.log(results.errors);
+        this.setGridFromData(results.data);
+      }
+
+      if(typeToImport=="json" || typeToImport=="javascript") {
+        this.setGridFromData(Papa.parse(Papa.unparse(JSON.parse(textToImport))).data);
+      }
+
+    }
 
     setGridFromData(data){
 
@@ -45,7 +72,7 @@ class Importer{
       
       
       // Basic Markdown Table Parsing
-    markdownTableToDataRows(markdownTable){
+      markdownTableToDataRows(markdownTable){
       // todo enable validation when we have the ability to show errors on the GUI
       return new MarkdownConvertor().markdownTableToDataRows(markdownTable);
     }

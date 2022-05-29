@@ -5,6 +5,7 @@ import { DragDropControl } from "./gui_components/drag-drop-dontrol.js";
 import { GridControl, GridControlsPageMap } from "./gui_components/gridControl.js"
 import { CustomHeader } from "./grid/customHeader.js";
 import { ExportControls, ExportsPageMap } from "./gui_components/exportControls.js";
+import { enableTestDataGenerationInterface } from "./testdatadefn.js";
 
 
 var rowData = [];
@@ -15,8 +16,6 @@ var columnDefs = [
     field: 'column1'
   }
 ];
-
-
 
 var gridOptions = {
   columnDefs: columnDefs,
@@ -50,7 +49,7 @@ function readFile(aFile){
   const reader = new FileReader();
   reader.addEventListener('load', (event) => {
     setTextFromString(event.target.result);
-    importText();
+    importTextArea();
   });
   reader.readAsText(aFile);
 }
@@ -203,39 +202,30 @@ function setTextFromInstructions(){
   gridOptions.api.sizeColumnsToFit()
 }
 
-function importText(){
-
+function importTextArea(){
   const typeToImport = document.querySelector("li.active-type a").getAttribute("data-type");
   const textToImport = document.getElementById("markdownarea").value;
-
-  if(!fileTypes.hasOwnProperty(typeToImport)){
-    console.log(`Data Type ${typeToImport} not supported`);
-    return;
-  }
-
-  if(!importer.canImport(typeToImport)){
-    console.log(`Data Type ${typeToImport} not supported for importing`);
-    return;
-  }
-
-  if(typeToImport=="markdown") {
-    importer.importMarkDownTextFrom(textToImport);
-  }
-
-  if(typeToImport=="gherkin") {
-    importer.importGherkinTextFrom(textToImport);
-  }
-
-  if(typeToImport=="csv") {
-    var results=Papa.parse(textToImport);
-    //console.log(results.errors);
-    importer.setGridFromData(results.data);
-  }
-
-  if(typeToImport=="json" || typeToImport=="javascript") {
-    importer.setGridFromData(Papa.parse(Papa.unparse(JSON.parse(textToImport))).data);
-  }
-
+  importer.importText(typeToImport, textToImport);
 }
-window.importText = importText;
 
+window.importTextArea = importTextArea;
+
+
+
+window.addEventListener('load', function() {
+  document.querySelectorAll(".type-select-action").forEach( lielem => lielem.addEventListener("click", (e) => {
+
+    // set the display buttons
+    document.querySelectorAll(".type-select").forEach(elem => elem.classList.remove("active-type"));
+
+    e.target.parentElement.classList.add("active-type");
+
+    // switched tab so re-render text
+    window.renderTextFromGrid();
+    window.setFileFormatType();
+    // don't try to navigate
+    return false;
+  }));
+
+  enableTestDataGenerationInterface("testDataGeneratorContainer", importer, renderTextFromGrid);
+})

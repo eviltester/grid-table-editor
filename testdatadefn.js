@@ -17,12 +17,15 @@
 
  */
 
+// todo wrap this as a class and make components
+
 import {RulesParser} from './data_generation/testDataRules.js';
 import {Debouncer} from './utils/debouncer.js';
 import {GridExtension} from './grid/gridExtension.js';
-import { Importer } from './data_formats/importer.js';
 
 var debouncer = new Debouncer();
+let importer=undefined;
+let renderTextCallback = undefined;
 
 function getRulesParserFromTextArea(){
 
@@ -58,10 +61,10 @@ function generateTestData(){
     const data = rulesParser.testDataRules.generate(desiredRowCount);
 
     // add data to table
-    window.importer.setGridFromData(data);
+    importer.setGridFromData(data);
 
     // and refresh the export
-    window.renderTextFromGrid();
+    renderTextCallback();
 
     // set the grid to use the rules
     populateTestDataGridFromRules();
@@ -282,7 +285,22 @@ function convertGridToText(){
 }
 
 
-window.addEventListener('load', function() {
+function enableTestDataGenerationInterface(parentId, anImporter, renderTextCallbackFunction){
+
+    importer = anImporter;
+    renderTextCallback = renderTextCallbackFunction;
+
+    let parentElem = document.getElementById(parentId);
+    parentElem.innerHTML = `
+        <div>
+            <button id="generatedata">Generate</button><label id="howmanygenerate" for="generateCount"> How Many?</label><input type="number" id="generateCount"/>
+        </div>
+        <div class="defn-edit-zone">
+            <div class="defn-grid-container" id="defngrid" class="ag-theme-alpine" style="float:left"></div>
+            <div class="defn-text-container" style="float:right;padding-top:2em"><textarea class="testDataDefn" name="testdatadefntext" id="testdatadefntext"></textarea></div>
+        </div>
+    `;
+
     var element = document.querySelector("#generatedata");
     element.addEventListener('click', generateTestData, false);
 
@@ -295,6 +313,6 @@ window.addEventListener('load', function() {
           // debounce a call to set the grid from the text area
           debouncer.debounce("populateTestDataGrid", populateTestDataGridFromRules, 1000);
     }, false);
+};
 
-
-});
+export {enableTestDataGenerationInterface}

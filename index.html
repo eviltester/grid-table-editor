@@ -1,8 +1,8 @@
 <html>
 
 <head>
-  <title>Test Data Generator and Table Editor for Markdown,  CSV, json, html</title>
-  <meta name="description" content="A Test Data Generator and Data Table Editor. Convert to and from tables for Markdown, CSV, JSON and JavaScript Arrays. Import and export from files. Edit, sort, filter in the Data Grid. Generate Test Data into the grid.">
+  <title>Test Data Generator and Table Editor for Markdown, CSV, JSON, Gherkin and HTML</title>
+  <meta name="description" content="A Test Data Generator and Data Table Editor. Convert to and from tables for Markdown, Ghrekin, CSV, JSON and JavaScript Arrays. Import and export from files. Edit, sort, filter in the Data Grid. Generate Test Data into the grid.">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="author" content="Alan Richardson">
@@ -38,6 +38,7 @@
     User configured options e.g. confirm for delete, markdown format (front and end bars)
     Error handling and reporting
     New Export formats: spaced Text (config on number of spaces), Tab Delimited,  text table +----+ format, restructured text format, sql create table and inserts
+    add an about page and other pages for SEO and usability
   -->
 
   <div class="header">
@@ -98,7 +99,7 @@
   <div id="myGrid" style="height: 500px; width:100%;" class="ag-theme-alpine"></div>
   <div class="importexport">
     <button onclick="renderTextFromGrid()">v Set Text From Grid v</button>
-    <button id="importtextbutton" onclick="importText()">^ Set Grid From Text ^</button>
+    <button id="importtextbutton" onclick="importTextArea()">^ Set Grid From Text ^</button>
     <label id="csvinputlabel" for="csvinput"><span class="fileFormat">.csv</span> import ^:</label><input type="file" id="csvinput"/>
     <button id="filedownload"><span class="fileFormat">.csv</span> Download</button>
     <label id="dropzone">
@@ -109,14 +110,7 @@
   <div class="testDataDefnGui">
     <details>
       <summary>Test Data</summary>
-      <div>
-      <div>
-          <button id="generatedata">Generate</button><label id="howmanygenerate" for="generateCount"> How Many?</label><input type="number" id="generateCount"/>
-      </div>
-        <div class="defn-edit-zone">
-          <div class="defn-grid-container" id="defngrid" class="ag-theme-alpine" style="float:left"></div>
-          <div class="defn-text-container" style="float:right;padding-top:2em"><textarea class="testDataDefn" name="testdatadefntext" id="testdatadefntext"></textarea></div>
-        </div>
+      <div id="testDataGeneratorContainer">
       </div>
     </details>
   </div>
@@ -153,25 +147,6 @@
   <div id="markdown" style="height: 30%; width:100%;">
     <textarea class="textrepresentation" name="Markdown" id="markdownarea"></textarea>
   </div>
-
-
-  <script>
-    window.addEventListener('load', function() {
-      document.querySelectorAll(".type-select-action").forEach( lielem => lielem.addEventListener("click", (e) => {
-
-        // set the display buttons
-        document.querySelectorAll(".type-select").forEach(elem => elem.classList.remove("active-type"));
-        var elem = e.target;
-        liItem = elem.parentElement.classList.add("active-type");
-
-        // switched tab so re-render text
-        window.renderTextFromGrid();
-        window.setFileFormatType();
-        // don't try to navigate
-        return false;
-      }));
-    })
-  </script>
 
 
 

@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkdocs=self.webpackChunkdocs||[]).push([[611],{1792:function(e){e.exports=JSON.parse('[{"label":"release","permalink":"/grid-table-editor/blog/tags/release","count":1}]')}}]);

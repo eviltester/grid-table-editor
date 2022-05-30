@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+    <channel>
+        <title>Data Table Editor &amp; Generator Blog</title>
+        <link>https://eviltester.github.io/grid-table-editor/blog</link>
+        <description>Data Table Editor &amp; Generator Blog</description>
+        <lastBuildDate>Mon, 30 May 2022 00:00:00 GMT</lastBuildDate>
+        <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
+        <generator>https://github.com/jpmonette/feed</generator>
+        <language>en</language>
+        <item>
+            <title><![CDATA[News at May 30th 2022]]></title>
+            <link>https://eviltester.github.io/grid-table-editor/blog/initial-blog-post</link>
+            <guid>initial-blog-post</guid>
+            <pubDate>Mon, 30 May 2022 00:00:00 GMT</pubDate>
+            <description><![CDATA[Initial Release of docs.]]></description>
+            <content:encoded><![CDATA[<p>Initial Release of docs.</p><p>I've been busy refactoring the code of the <a href="https://github.com/eviltester/grid-table-editor/" target="_blank" rel="noopener noreferrer">Data Table Editor</a></p><ul><li>to make it more modular</li><li>add unit tests</li><li>add documentation</li></ul><p>This should make the application more robust and easier to use.</p><p>It is still hosted on Gitpages, but if more people use the app then I'll setup a domain for it.</p><p>Currently web traffic is tracked using plausible.io and no data is passed to the server other than counts of page views.</p>]]></content:encoded>
+            <category>release</category>
+        </item>
+    </channel>
+</rss>

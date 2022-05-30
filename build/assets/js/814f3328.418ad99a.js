@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkdocs=self.webpackChunkdocs||[]).push([[535],{5641:function(t){t.exports=JSON.parse('{"title":"Recent posts","items":[{"title":"News at May 30th 2022","permalink":"/grid-table-editor/blog/initial-blog-post"}]}')}}]);

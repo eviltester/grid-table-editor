@@ -5,7 +5,8 @@
   "main": "index.html",
   "scripts": {
     "test": "jest",
-    "publishdocs": "eleventy"
+    "publishdocs": "eleventy",
+    "build" : "npm run build --prefix docs-src && cp ./index.html ./build/app.html && cp -R ./js ./build/js && cp -R ./libs ./build/libs"
   },
   "repository": {
     "type": "git",

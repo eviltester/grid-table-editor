@@ -1,0 +1,236 @@
+
+/*
+
+styles tried
+https://coolors.co/d8f3dc-b7e4c7-95d5b2-74c69d-52b788-40916c-2d6a4f-1b4332-081c15
+
+Light to Dark (green): D8F3DC, B7E4C7, 95D5B2, 74C69D, 52B788, 40916C, 2D6A4F, 1B4332, 081C15
+
+https://coolors.co/012a4a-013a63-01497c-014f86-2a6f97-2c7da0-468faf-61a5c2-89c2d9-a9d6e5
+
+Light to Dark (blue): A9D6E5, 89C2D9, 61A5C2, 468FAF, 2C7DA0, 2A6F97, 014F86, 01497C, 013A63, 012A4A
+
+
+Based on https://coolors.co/6b9080-a4c3b2-cce3de-eaf4f4-f6fff8
+
+Light to dark grey green: F6FFF8, EAF4F4, CCE3DE, A4C3B2, 2D6A4F, 6B9080, 3D5249
+
+00a05b, ebf9f2 
+*/
+
+
+body {
+  background: #ffffff;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.main-app{
+  margin:10px;
+}
+
+
+.header{
+  background-color: #3D5249;
+  color: white;
+
+}
+
+.footer{
+  text-align:center;
+}
+
+
+
+/* Conversion Types List */
+
+.conversionTabs{
+  height: 3em;
+}
+
+.type-select{
+  display: block;
+  padding: .5rem 1rem;
+}
+
+.type-select:hover{
+  border-style: solid;
+  border-width: 1px 1px 0px 1px;
+  border-color: #61A5C2 #61A5C2 #A9D6E5;
+}
+
+.active-type{
+  border-style: solid;
+  border-width: 1px 1px 0px 1px;
+  border-color: #014F86 #014F86 #A9D6E5;
+}
+
+.conversionTypesList{
+  border-bottom: 1px solid #A9D6E5;
+  display: flex;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  padding-left: 0;
+  margin-bottom: 0;
+  list-style: none;
+}
+
+a.type-select-action {
+  text-decoration: none;
+  color:black
+}
+
+
+/* file drag and dropping */
+.dragdropzone.is-dragover {
+  background-color: grey;
+}
+
+.dragdropzone{
+  background-color: rgb(209, 243, 224);
+}
+
+/* add set of buttons to the right of the tabs */
+
+.conversionTypes{
+  float: left;
+}
+.rightbuttons{
+  float: right;
+}
+
+.rightbuttons button{
+  margin-top: 2em;
+}
+
+/* Instructions */
+
+.instructions{
+  padding:10px;
+  color: rgb(0, 0, 0);
+}
+
+details[open]{
+  background-color: white;
+  border-style: dashed;
+  color: black;
+}
+
+details[open] ul{
+  margin-right: 10px;
+}
+
+details[open] ul li:last-child{
+  padding-bottom: 10px;
+}
+
+.appheading{
+  text-align: center;
+  margin: 0px;
+}
+
+button{
+  background-color: #2D6A4F;
+  color: white
+}
+
+
+/* The text conversion box */
+
+.textrepresentation{
+  height: 100%;
+  width:100%;
+  white-space: pre-wrap;
+  background-color: #ebf9f2;
+  resize: vertical;
+}
+
+.testDataDefn{
+  height: 10em;
+  width:100%;
+  white-space: pre-wrap;
+  resize: vertical;
+}
+
+/*
+Custom header styles for default items
+ */
+
+.headerWrapper{
+  width:100%;
+}
+.customHeaderTop{
+  display: flex;
+}
+
+.customSort{
+  display: flex;
+  flex: 0;
+}
+.customHeaderMenuButton {
+  flex:0;
+  margin: 0 3px 0 3px;
+}
+
+.customHeaderLabel{
+  flex:3;
+  text-align: center;
+}
+
+.customSortDownLabel {
+  margin: 0 0 0 3px;
+}
+
+.customSortUpLabel {
+  margin: 0;
+}
+
+.customSortRemoveLabel {
+  margin: 0 0 0 3px;
+  font-size: 11px;
+}
+
+.active {
+  color: #00a05b;
+}
+
+
+/* The grid heading control buttons */
+.headerbuttons{
+  text-align: center;
+  color: #1e4a01;
+}
+
+/* Docs */
+
+.bodycontent{
+  max-width: 1200px;
+  margin: auto;
+}
+
+.header .pageheading{
+  font-size: 2em;
+  display: inline;
+  padding-left: 1em;
+}
+
+.header .pageheading a{
+  color: white;
+  text-decoration: none;
+}
+
+.header .mainmenu{
+  display: inline;
+  padding-left: 3em;
+}
+
+.header .mainmenu a{
+  color: white;
+  padding:0.5em;
+}
+
+.mainmenu a:hover{
+  background-color: #2D6A4F;
+  font-size: 1.2em;
+  padding:0em;
+}
+

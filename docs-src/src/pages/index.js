@@ -17,7 +17,7 @@ function HomepageHeader() {
         <div className={styles.buttons}>
           <Link
             className="button button--secondary button--lg"
-            to="/app.html">
+            to="https://eviltester.github.io/grid-table-editor/app.html">
             Use The Application
           </Link>
         </div>
@@ -30,8 +30,8 @@ export default function Home() {
   const {siteConfig} = useDocusaurusContext();
   return (
     <Layout
-      title={`Hello from ${siteConfig.title}`}
-      description="Description will go into a meta tag in <head />">
+      title={`${siteConfig.title}`}
+      description="A Test Data Editor and Generation Tool. Edit and Convert between Markdown, CSV, JSON, Gherkin and HTML.">
       <HomepageHeader />
       <main>
         <HomepageFeatures />

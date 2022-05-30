@@ -1,4 +1,4 @@
-import {TestDataRules, TestDataRule, removeStartAndEnd} from '../../data_generation/testDataRules';
+import {TestDataRules, TestDataRule, removeStartAndEnd} from '../../js/data_generation/testDataRules';
 
 // to get import and export workign from tests
 // https://stackoverflow.com/questions/35756479/does-jest-support-es6-import-export

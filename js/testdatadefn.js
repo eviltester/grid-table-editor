@@ -296,8 +296,13 @@ function enableTestDataGenerationInterface(parentId, anImporter, renderTextCallb
             <button id="generatedata">Generate</button><label id="howmanygenerate" for="generateCount"> How Many?</label><input type="number" id="generateCount"/>
         </div>
         <div class="defn-edit-zone">
-            <div class="defn-grid-container" id="defngrid" class="ag-theme-alpine" style="float:left"></div>
-            <div class="defn-text-container" style="float:right;padding-top:2em"><textarea class="testDataDefn" name="testdatadefntext" id="testdatadefntext"></textarea></div>
+            <div class="defn-grid-container" id="defngrid" class="ag-theme-alpine" style="float:left">
+            </div>
+            <div class="defn-text-container" style="float:right;padding-top:2em">
+                <p>Test Data Text Schema</p>
+                <textarea class="testDataDefn" name="testdatadefntext" id="testdatadefntext">
+                </textarea>
+            </div>
         </div>
     `;
 

@@ -1,4 +1,4 @@
-import {Debouncer} from '../../utils/debouncer.js';
+import {Debouncer} from '../../js/utils/debouncer.js';
 
 describe("Debouncer will call a function after a delay",()=>{
 

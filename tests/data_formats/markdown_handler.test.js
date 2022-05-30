@@ -1,4 +1,4 @@
-import {MarkdownConvertor} from '../../data_formats/markdown_handler';
+import {MarkdownConvertor} from '../../js/data_formats/markdown_handler';
 
 
 describe("can get values from a markdown table row", ()=>{

@@ -63,7 +63,7 @@ const config = {
         //  src: 'img/logo.svg',
         //},
         items: [
-          {to: '/app.html', label: 'App', position: 'left'},
+          {href: 'https://eviltester.github.io/grid-table-editor/app.html', label: 'App', position: 'left'},
           {
             type: 'doc',
             docId: 'intro',

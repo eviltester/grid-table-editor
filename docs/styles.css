@@ -28,11 +28,16 @@ body {
   margin:10px;
 }
 
-
+/* was #3D5249 - then docusaurus uses #2e8555*/
 .header{
-  background-color: #3D5249;
+  background-color: #2e8555;
   color: white;
+  display: flex;
+  height: 2.4em;
+}
 
+div.header div{
+  margin-top: 1em;
 }
 
 .footer{
@@ -208,7 +213,7 @@ Custom header styles for default items
 }
 
 .header .pageheading{
-  font-size: 2em;
+  font-size: 1em;
   display: inline;
   padding-left: 1em;
 }
@@ -220,17 +225,18 @@ Custom header styles for default items
 
 .header .mainmenu{
   display: inline;
-  padding-left: 3em;
+  padding-left: 2em;
+}
+
+.header .mainmenu a{
+  text-decoration: none;
 }
 
 .header .mainmenu a{
   color: white;
-  padding:0.5em;
 }
 
-.mainmenu a:hover{
-  background-color: #2D6A4F;
-  font-size: 1.2em;
-  padding:0em;
+.mainmenu a:hover, .header .pageheading a:hover{
+  color: #000000;
 }
 

@@ -199,11 +199,37 @@ function setupTestDataEditGrid(gridDiv){
 
     const defnRowData = [];
 
-    /* generate faker APi calls https://rawgit.com/Marak/faker.js/master/examples/browser/index.html
+    /* for version 7 use https://fakerjs.dev/playground/
+
     let codegen="";
-    Object.keys(faker).forEach(k=>{Object.getOwnPropertyNames(faker[k]).filter(item => typeof faker[k][item] === 'function').forEach(k2 => codegen=codegen+`"${k}.${k2}",`)});
+    let lastK="";
+    let skipKeys = ["definitions", "helpers"];
+    let skipValues = ["mersenne.seed", "mersenne.seed_array"];
+    let fakerKeys = Object.keys(faker);
+    fakerKeys.forEach(k=>{
+        Object.getOwnPropertyNames(faker[k]).
+             filter(item => {return typeof faker[k][item] === 'function'})
+             .forEach(
+                 k2 => {
+                     if(lastK!=k){
+                         codegen=codegen+"\n";
+                         lastK=k;
+                         if(skipKeys.includes(k)){
+                             codegen=codegen+"// ";
+                         }
+                     }
+                     let eol = "";
+                     if(skipValues.includes(`${k}.${k2}`)){
+                         codegen=codegen+"\n// ";
+                         eol = "\n";
+                     }
+                     codegen=codegen+`"${k}.${k2}",${eol}`;
+                    }
+             )
+    });
     console.log(codegen);
-     */
+
+    */
     const defnColumnDefs = [
         {
             field: 'columnName',
@@ -213,13 +239,32 @@ function setupTestDataEditGrid(gridDiv){
             cellEditor: SelectFilterEditor,
             cellEditorParams: {
                 values: ['RegEx', "fake",
-                    "mersenne.rand",
-                    //"mersenne.seed",
-                    //"mersenne.seed_array",
-                    "random.number","random.float","random.arrayElement","random.arrayElements","random.objectElement","random.uuid","random.boolean","random.word","random.words","random.image","random.locale","random.alpha","random.alphaNumeric","random.hexaDecimal",
-                    //"helpers.randomize","helpers.slugify","helpers.replaceSymbolWithNumber","helpers.replaceSymbols","helpers.replaceCreditCardSymbols","helpers.repeatString","helpers.regexpStyleStringParse","helpers.shuffle","helpers.mustache","helpers.createCard","helpers.contextualCard","helpers.userCard","helpers.createTransaction",
-                "name.firstName","name.lastName","name.middleName","name.findName","name.jobTitle","name.gender","name.prefix","name.suffix","name.title","name.jobDescriptor","name.jobArea","name.jobType","address.zipCode","address.zipCodeByState","address.city","address.cityPrefix","address.citySuffix","address.cityName","address.streetName","address.streetAddress","address.streetSuffix","address.streetPrefix","address.secondaryAddress","address.county","address.country","address.countryCode","address.state","address.stateAbbr","address.latitude","address.longitude","address.direction","address.cardinalDirection","address.ordinalDirection","address.nearbyGPSCoordinate","address.timeZone","animal.dog","animal.cat","animal.snake","animal.bear","animal.lion","animal.cetacean","animal.horse","animal.bird","animal.cow","animal.fish","animal.crocodilia","animal.insect","animal.rabbit","animal.type","company.suffixes","company.companyName","company.companySuffix","company.catchPhrase","company.bs","company.catchPhraseAdjective","company.catchPhraseDescriptor","company.catchPhraseNoun","company.bsAdjective","company.bsBuzz","company.bsNoun","finance.account","finance.accountName","finance.routingNumber","finance.mask","finance.amount","finance.transactionType","finance.currencyCode","finance.currencyName","finance.currencySymbol","finance.bitcoinAddress","finance.litecoinAddress","finance.creditCardNumber","finance.creditCardCVV","finance.ethereumAddress","finance.iban","finance.bic","finance.transactionDescription","image.image","image.avatar","image.imageUrl","image.abstract","image.animals","image.business","image.cats","image.city","image.food","image.nightlife","image.fashion","image.people","image.nature","image.sports","image.technics","image.transport","image.dataUri","lorem.word","lorem.words","lorem.sentence","lorem.slug","lorem.sentences","lorem.paragraph","lorem.paragraphs","lorem.text","lorem.lines","hacker.abbreviation","hacker.adjective","hacker.noun","hacker.verb","hacker.ingverb","hacker.phrase","internet.avatar","internet.email","internet.exampleEmail","internet.userName","internet.protocol","internet.httpMethod","internet.url","internet.domainName","internet.domainSuffix","internet.domainWord","internet.ip","internet.ipv6","internet.port","internet.userAgent","internet.color","internet.mac","internet.password","database.column","database.type","database.collation","database.engine","phone.phoneNumber","phone.phoneNumberFormat","phone.phoneFormats","date.past","date.future","date.between","date.betweens","date.recent","date.soon","date.month","date.weekday","time.recent","commerce.color","commerce.department","commerce.productName","commerce.price","commerce.productAdjective","commerce.productMaterial","commerce.product","commerce.productDescription","system.fileName","system.commonFileName","system.mimeType","system.commonFileType","system.commonFileExt","system.fileType","system.fileExt","system.directoryPath","system.filePath","system.semver","git.branch","git.commitEntry","git.commitMessage","git.commitSha","git.shortSha","vehicle.vehicle","vehicle.manufacturer","vehicle.model","vehicle.type","vehicle.fuel","vehicle.vin","vehicle.color","vehicle.vrm","vehicle.bicycle","music.genre","datatype.number","datatype.float","datatype.datetime","datatype.string","datatype.uuid","datatype.boolean","datatype.hexaDecimal","datatype.json","datatype.array",],
-            },
+                "mersenne.rand",
+                // "mersenne.seed",
+                // "mersenne.seed_array",
+                "random.word","random.words","random.locale","random.alpha","random.alphaNumeric","random.numeric",
+                // "helpers.slugify","helpers.replaceSymbolWithNumber","helpers.replaceSymbols","helpers.replaceCreditCardSymbols","helpers.repeatString","helpers.regexpStyleStringParse","helpers.shuffle","helpers.uniqueArray","helpers.mustache","helpers.maybe","helpers.objectKey","helpers.objectValue","helpers.arrayElement","helpers.arrayElements",
+                "datatype.number","datatype.float","datatype.datetime","datatype.string","datatype.uuid","datatype.boolean","datatype.hexadecimal","datatype.json","datatype.array","datatype.bigInt",
+                "address.zipCode","address.zipCodeByState","address.city","address.cityPrefix","address.citySuffix","address.cityName","address.buildingNumber","address.street","address.streetName","address.streetAddress","address.streetSuffix","address.streetPrefix","address.secondaryAddress","address.county","address.country","address.countryCode","address.state","address.stateAbbr","address.latitude","address.longitude","address.direction","address.cardinalDirection","address.ordinalDirection","address.nearbyGPSCoordinate","address.timeZone",
+                "animal.dog","animal.cat","animal.snake","animal.bear","animal.lion","animal.cetacean","animal.horse","animal.bird","animal.cow","animal.fish","animal.crocodilia","animal.insect","animal.rabbit","animal.type",
+                "color.human","color.space","color.cssSupportedFunction","color.cssSupportedSpace","color.rgb","color.cmyk","color.hsl","color.hwb","color.lab","color.lch","color.colorByCSSColorSpace",
+                "commerce.color","commerce.department","commerce.productName","commerce.price","commerce.productAdjective","commerce.productMaterial","commerce.product","commerce.productDescription",
+                "company.suffixes","company.companyName","company.companySuffix","company.catchPhrase","company.bs","company.catchPhraseAdjective","company.catchPhraseDescriptor","company.catchPhraseNoun","company.bsAdjective","company.bsBuzz","company.bsNoun",
+                "database.column","database.type","database.collation","database.engine","database.mongodbObjectId",
+                "date.past","date.future","date.between","date.betweens","date.recent","date.soon","date.month","date.weekday","date.birthdate",
+                "finance.account","finance.accountName","finance.routingNumber","finance.mask","finance.amount","finance.transactionType","finance.currencyCode","finance.currencyName","finance.currencySymbol","finance.bitcoinAddress","finance.litecoinAddress","finance.creditCardNumber","finance.creditCardCVV","finance.creditCardIssuer","finance.pin","finance.ethereumAddress","finance.iban","finance.bic","finance.transactionDescription",
+                "git.branch","git.commitEntry","git.commitMessage","git.commitSha","git.shortSha",
+                "hacker.abbreviation","hacker.adjective","hacker.noun","hacker.verb","hacker.ingverb","hacker.phrase",
+                "image.image","image.avatar","image.imageUrl","image.abstract","image.animals","image.business","image.cats","image.city","image.food","image.nightlife","image.fashion","image.people","image.nature","image.sports","image.technics","image.transport","image.dataUri",
+                "internet.avatar","internet.email","internet.exampleEmail","internet.userName","internet.protocol","internet.httpMethod","internet.httpStatusCode","internet.url","internet.domainName","internet.domainSuffix","internet.domainWord","internet.ip","internet.ipv4","internet.ipv6","internet.port","internet.userAgent","internet.color","internet.mac","internet.password","internet.emoji",
+                "lorem.word","lorem.words","lorem.sentence","lorem.slug","lorem.sentences","lorem.paragraph","lorem.paragraphs","lorem.text","lorem.lines",
+                "music.genre","music.songName",
+                "name.firstName","name.lastName","name.middleName","name.findName","name.gender","name.prefix","name.suffix","name.jobTitle","name.jobDescriptor","name.jobArea","name.jobType",
+                "phone.phoneNumber","phone.phoneNumberFormat","phone.phoneFormats","phone.imei",
+                "system.fileName","system.commonFileName","system.mimeType","system.commonFileType","system.commonFileExt","system.fileType","system.fileExt","system.directoryPath","system.filePath","system.semver",
+                "vehicle.vehicle","vehicle.manufacturer","vehicle.model","vehicle.type","vehicle.fuel","vehicle.vin","vehicle.color","vehicle.vrm","vehicle.bicycle",
+                "word.adjective","word.adverb","word.conjunction","word.interjection","word.noun","word.preposition","word.verb",
+            ]},
         },
         {field: 'value'}
     ];

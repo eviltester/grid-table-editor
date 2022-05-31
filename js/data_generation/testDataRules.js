@@ -1,6 +1,11 @@
 // requires randExp
 // requires faker.js
 
+//  https://fakerjs.dev/guide/#environments
+// https://cdn.skypack.dev/@faker-js/faker
+
+import { faker } from "https://cdn.skypack.dev/@faker-js/faker@v7.1.0"
+
 class TestDataRules{
 
     constructor() {

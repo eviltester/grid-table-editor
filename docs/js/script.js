@@ -1,48 +1,13 @@
 import { Importer } from "./data_formats/importer.js";
 import { Exporter } from "./exporter.js";
-import { GridExtension } from "./grid/gridExtension.js";
 import { DragDropControl } from "./gui_components/drag-drop-dontrol.js";
-import { GridControl, GridControlsPageMap } from "./gui_components/gridControl.js"
-import { CustomHeader } from "./grid/customHeader.js";
 import { ExportControls, ExportsPageMap } from "./gui_components/exportControls.js";
 import { enableTestDataGenerationInterface } from "./testdatadefn.js";
+import { ExtendedDataGrid } from "./gui_components/main-display-grid.js";
 
-
-var rowData = [];
-
-var columnDefs = [
-  {
-    headerName: '~rename-me',
-    field: 'column1'
-  }
-];
-
-var gridOptions = {
-  columnDefs: columnDefs,
-  rowData: rowData,
-
-  defaultColDef: {
-    wrapText: true,
-    autoHeight: true,
-    resizable: true,
-    rowDrag: true,
-    editable: true,
-    filter:true,
-    sortable:true,
-  },
-
-  components: {
-    agColumnHeader: CustomHeader,
-  },
-  
-  rowDragManaged: true,
-  rowDragMultiRow: true,
-  rowSelection: 'multiple',
-  //onColumnResized: (params) => {params.api.resetRowHeights();}
-};
 
 var importer, exporter;
-var gridExtras;
+var mainDataGrid;
 
 
 function readFile(aFile){
@@ -59,20 +24,14 @@ window.readFile = readFile;
 
 // setup the grid after the page has finished loading
 document.addEventListener('DOMContentLoaded', function() {
-  var gridDiv = document.querySelector('#myGrid');
-  new agGrid.Grid(gridDiv, gridOptions);
+  let gridDiv = document.querySelector('#myGrid');
 
-  // having setup the grid, make it a little more responsive
-  setTimeout(function(){document.getElementById("myGrid").style.height="40%";},1000)
+  mainDataGrid = new ExtendedDataGrid();
+  mainDataGrid.createChildGrid(gridDiv);
 
-  gridExtras = new GridExtension(gridOptions.api, gridOptions.columnApi);
-
-  let gridControls = new GridControl(gridExtras, new GridControlsPageMap());
-  gridControls.addHooksToPage(document);
-
-  exporter = new Exporter(gridOptions.api);
+  exporter = new Exporter(mainDataGrid.getGridApi());
   window.exporter = exporter;
-  importer = new Importer(gridOptions.api, gridExtras);
+  importer = new Importer(mainDataGrid.getGridApi(), mainDataGrid.getGridExtras());
   window.importer = importer;
 
   let exportControls = new ExportControls(exporter, new ExportsPageMap(),
@@ -190,7 +149,7 @@ function setTextFromString(textToRender){
 */
 
 function setTextFromInstructions(){
-  gridExtras.clearGrid();
+  mainDataGrid.getGridExtras().clearGrid();
   const instructions = document.querySelectorAll("div.instructions details ul li");
   let textData = [];
   textData.push(["Instructions"]);
@@ -199,7 +158,7 @@ function setTextFromInstructions(){
   })
   importer.setGridFromData(textData);
   // set the instructions to fit grid size
-  gridOptions.api.sizeColumnsToFit()
+  mainDataGrid.getGridApi().sizeColumnsToFit()
 }
 
 function importTextArea(){

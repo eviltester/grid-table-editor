@@ -57,6 +57,10 @@ function generateTestData(){
         return;
     }
 
+    // todo: it would lower memory requirements if we did
+    // this in tranches of 100 and appended the transaction as we go
+
+    
     // generate
     const data = rulesParser.testDataRules.generate(desiredRowCount);
 

@@ -45,11 +45,14 @@ class GridExtension{
         return largestNumber+1;
     }
 
-    getNewCol(named){
+    getNewCol(named, fieldId){
 
         let newCol = {};
         newCol.headerName = named;
-        newCol.field = 'column' + this.getNextFieldNumber();
+        if(fieldId===undefined){
+            fieldId = this.getNextFieldNumber();
+        }
+        newCol.field = 'column' + fieldId;
         newCol.cellRenderer = this.cellRendererText;
         return newCol;
       }
@@ -57,9 +60,11 @@ class GridExtension{
     // given an array of String column names, set the grid to have those columns
     createColumns(columnNames) {
         let colDefs = [];
+        let fieldId = this.getNextFieldNumber();
         columnNames.forEach(column => {
-            let newCol = this.getNewCol(column);
+            let newCol = this.getNewCol(column, fieldId);
             colDefs.push(newCol);
+            fieldId++;
         });
         this.gridApi.setColumnDefs(colDefs);
         var fieldNames = colDefs.map(colDef => colDef.field);

@@ -128,7 +128,8 @@ const config = {
         darkTheme: darkCodeTheme,
       },
       scripts: [
-        {src: 'https://plausible.io/js/script.js', defer: true, 'data-domain': 'anywaydata.com'}
+        {src: 'https://plausible.io/js/script.js', defer: true, 'data-domain': 'anywaydata.com'},
+        {src: 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7132305589272099', async: true, crossorigin: 'anonymous'}
       ],
     }),
 };

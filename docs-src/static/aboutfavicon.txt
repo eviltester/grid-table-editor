@@ -1,0 +1,6 @@
+This favicon was generated using the following font:
+
+- Font Title: Alatsi
+- Font Author: Copyright 2019 The Alatsi Project Authors (https://github.com/SorkinType/Alatsi)
+- Font Source: http://fonts.gstatic.com/s/alatsi/v9/TK3iWkUJAxQ2nLNGHjUHte5fKg.ttf
+- Font License: SIL Open Font License, 1.1 (http://scripts.sil.org/OFL))

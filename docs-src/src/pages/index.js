@@ -15,11 +15,11 @@ function HomepageHeader() {
         <h1 className="hero__title">{siteConfig.title}</h1>
         <p className="hero__subtitle">{siteConfig.tagline}</p>
         <div className={styles.buttons}>
-          <Link
+          <a
             className="button button--secondary button--lg"
-            to="https://eviltester.github.io/grid-table-editor/app.html">
+            href="/app.html">
             Use The Application
-          </Link>
+          </a>
         </div>
       </div>
     </header>

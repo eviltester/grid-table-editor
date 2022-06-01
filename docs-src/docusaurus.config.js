@@ -6,10 +6,10 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'Data Table Editor & Generator',
+  title: 'AnyWayData - Data Table Editor & Generator',
   tagline: 'Edit and Generate Test Data in Your Browser',
-  url: 'https://eviltester.github.io',
-  baseUrl: '/grid-table-editor/',
+  url: 'https://anywaydata.com',
+  baseUrl: '/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
@@ -57,13 +57,13 @@ const config = {
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       navbar: {
-        title: 'Grid Table Editor',
+        title: 'AnyWayData',
         //logo: {
         //  alt: 'My Site Logo',
         //  src: 'img/logo.svg',
         //},
         items: [
-          {href: 'https://eviltester.github.io/grid-table-editor/app.html', label: 'App', position: 'left'},
+          {href: 'https://anywaydata.com/app.html', label: 'App', position: 'left'},
           {
             type: 'doc',
             docId: 'intro',
@@ -128,7 +128,7 @@ const config = {
         darkTheme: darkCodeTheme,
       },
       scripts: [
-        {src: 'https://plausible.io/js/script.js', defer: true, 'data-domain': 'eviltester.github.io/grid-table-editor'}
+        {src: 'https://plausible.io/js/script.js', defer: true, 'data-domain': 'anywaydata.com'}
       ],
     }),
 };

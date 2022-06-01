@@ -349,8 +349,7 @@ function enableTestDataGenerationInterface(parentId, anImporter, renderTextCallb
             </div>
             <div class="defn-text-container" style="float:right;padding-top:2em">
                 <p>Test Data Text Schema</p>
-                <textarea class="testDataDefn" name="testdatadefntext" id="testdatadefntext">
-                </textarea>
+                <textarea class="testDataDefn" name="testdatadefntext" id="testdatadefntext"></textarea>
             </div>
         </div>
     `;

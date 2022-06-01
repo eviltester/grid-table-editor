@@ -5,8 +5,7 @@
   "main": "index.html",
   "scripts": {
     "test": "jest",
-    "publishdocs": "eleventy",
-    "build" : "npm run build --prefix docs-src && cp ./index.html ./docs/app.html && cp -R ./js ./docs/js && cp -R ./libs ./docs/libs && cp ./styles.css ./docs/styles.css"
+    "anywaydata" : "npm run anywaydata --prefix docs-src && cp ./index.html ./build/app.html && cp -R ./js ./build/js && cp -R ./libs ./build/libs && cp ./styles.css ./build/styles.css && cp -R ./build/ ../../anywaydata-com"
   },
   "repository": {
     "type": "git",

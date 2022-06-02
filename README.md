@@ -75,18 +75,10 @@ prefers
 
 Looking for similar apps to compare features sets and functionality?
 
-- https://truben.no/table/
-- https://www.tablesgenerator.com/markdown_table
-- https://tableconvert.com/
-- atom plugin https://atom.io/packages/markdown-table-editor
-- https://jakebathman.github.io/Markdown-Table-Generator/
-- https://susisu.github.io/mte-demo/
-- https://tabletomarkdown.com/
-- https://www.convertcsv.com/csv-to-markdown.htm
+There is a maintained list in the documentation:
 
-For Test Data Generation, you might want to look at:
+- [Related Tools](https://anywaydata.com/docs/misc/related_tools)
 
-- https://www.mockaroo.com/
 
 ## References
 
@@ -100,3 +92,13 @@ For Test Data Generation, you might want to look at:
     - http://fent.github.io/randexp.js/
 - [AG Grid](https://ag-grid.com) for the data table
 - [PapaParse](https://www.papaparse.com/) for csv processing
+
+## Tool Categories
+
+This tool falls in to the categories:
+
+- online markdown editor
+- markdown table generator
+- markdown table editor
+- Online Test Data Generation
+- Online CSV Editor

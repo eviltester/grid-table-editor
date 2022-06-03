@@ -1,4 +1,4 @@
-import { ConvertGridToCsv } from "./data_formats/exports/convert_grid_to_csv.js";
+import { ConvertGridToCsv } from "./exports/convert_grid_to_csv.js";
 
 class Exporter {
 

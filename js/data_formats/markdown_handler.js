@@ -73,7 +73,7 @@ export class MarkdownConvertor {
 
       if(this.treatThisAsGherkin){
         // quick hack to allow split to work
-        rowString = rowString.replaceAll("|", "&#124;");
+        rowString = rowString.replaceAll("\\|", "&#124;");
       }
 
       var values = rowString.split("|");
@@ -82,15 +82,19 @@ export class MarkdownConvertor {
         let actualContents = contents.trim();
 
         // handle any special character conversions for markdown
-        // also handles the split hack for Gherkin
-        actualContents = actualContents.replaceAll("&#124;","|")
+        if(this.treatThisAsGherkin){
+          // reverse, quick hack to allow split to work
+          actualContents = actualContents.replaceAll("&#124;", "\\|");
+        }else{
+          actualContents = actualContents.replaceAll("&#124;","|")
+        }
+        
 
         if(this.treatThisAsGherkin){
           // handle any special character conversions for gherkin
           actualContents = actualContents.replaceAll('\\\\','\\').replaceAll("\\|","|")
         }
         
-
         return actualContents;
       });
 
@@ -123,7 +127,7 @@ export class MarkdownConvertor {
           }
 
           // it is the "|---|" separator row
-          if(rowString.length>0 && rowCount==1){
+          if(rowString.length>0 && rowCount===1 && this.treatThisAsGherkin===false){
             if(this.validateSeparatorLength){
               if(!this.isMarkdownTableSeparatorRowValid(rowString)){
                 // not valid return empty data
@@ -135,7 +139,7 @@ export class MarkdownConvertor {
           // todo: create a proper gherkin importer
           if(this.treatThisAsGherkin){
             // with Gherkin row count 1 is a normal row
-            if(rowString.length>0 && rowCount==1){
+            if(rowString.length>0 && rowCount===1){
               var cellValues = this.getValuesFromMarkdownTableRow(rowString);
               data.push(cellValues);
             }

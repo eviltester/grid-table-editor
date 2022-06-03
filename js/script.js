@@ -1,8 +1,8 @@
 import { Importer } from "./data_formats/importer.js";
-import { Exporter } from "./exporter.js";
+import { Exporter } from "./data_formats/exporter.js";
 import { DragDropControl } from "./gui_components/drag-drop-dontrol.js";
 import { ExportControls, ExportsPageMap } from "./gui_components/exportControls.js";
-import { enableTestDataGenerationInterface } from "./testdatadefn.js";
+import { enableTestDataGenerationInterface } from "./gui_components/testdatadefn.js";
 import { ExtendedDataGrid } from "./gui_components/main-display-grid.js";
 
 

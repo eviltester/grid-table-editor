@@ -5,7 +5,7 @@
   "main": "index.html",
   "scripts": {
     "test": "jest",
-    "anywaydata" : "npm run anywaydata --prefix docs-src && cp ./index.html ./build/app.html && cp -R ./js ./build/js && cp -R ./libs ./build/libs && cp ./styles.css ./build/styles.css && cp -R ./build/ ../../anywaydata-com"
+    "anywaydata": "npm run anywaydata --prefix docs-src && cp ./index.html ./build/app.html && cp -R ./js ./build/js && cp -R ./libs ./build/libs && cp ./styles.css ./build/styles.css && cp -R ./build/ ../../anywaydata-com"
   },
   "repository": {
     "type": "git",
@@ -32,6 +32,7 @@
   },
   "devDependencies": {
     "@babel/preset-env": "^7.18.0",
+    "@faker-js/faker": "^7.1.0",
     "babel-jest": "^28.1.0"
   }
 }

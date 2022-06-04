@@ -26,7 +26,7 @@ import { SelectFilterEditor} from '../grid/select-filter-editor.js';
 
 var debouncer = new Debouncer();
 let importer=undefined;
-let renderTextCallback = undefined;
+let exportControls=undefined;
 
 function getRulesParserFromTextArea(){
 
@@ -69,7 +69,7 @@ function generateTestData(){
     importer.setGridFromData(data);
 
     // and refresh the export
-    renderTextCallback();
+    exportControls.renderTextFromGrid();
 
     // set the grid to use the rules
     populateTestDataGridFromRules();
@@ -271,10 +271,10 @@ function convertGridToText(){
 }
 
 
-function enableTestDataGenerationInterface(parentId, anImporter, renderTextCallbackFunction){
+function enableTestDataGenerationInterface(parentId, anImporter, theExportControls){
 
     importer = anImporter;
-    renderTextCallback = renderTextCallbackFunction;
+    exportControls = theExportControls;
 
     let parentElem = document.getElementById(parentId);
     parentElem.innerHTML = `

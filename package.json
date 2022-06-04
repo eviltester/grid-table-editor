@@ -7,6 +7,11 @@
     "test": "jest",
     "anywaydata": "npm run anywaydata --prefix docs-src && cp ./index.html ./build/app.html && cp -R ./js ./build/js && cp -R ./libs ./build/libs && cp ./styles.css ./build/styles.css && cp -R ./build/ ../../anywaydata-com"
   },
+  "jest":{
+    "moduleNameMapper":{
+      "https://cdn.skypack.dev/@faker-js/faker@v7.1.0": "@faker-js/faker"
+    }
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/eviltester/grid-table-editor.git"

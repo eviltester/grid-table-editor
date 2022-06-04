@@ -45,13 +45,10 @@ class Exporter {
         return "";
     }
 
-    // https://www.markdownguide.org/extended-syntax/
-    getGridAsMarkdown(){
-        
+    getGridAsHeadersAndRows(){
         var headers = this.gridApi.getColumnDefs().map(col => col.headerName);
         var fieldnames = this.gridApi.getColumnDefs().map(col => col.field);
     
-
         // output rows
         var gridRowData = [];
         // since we can filter and sort...
@@ -62,11 +59,18 @@ class Exporter {
 
             for (const propertyid in fieldnames) {
                 var property = fieldnames[propertyid];
-                vals.push(node.data[property] ? node.data[property] : ' ');
+                vals.push(node.data[property] ? String(node.data[property]) : ' ');
             }
             gridRowData.push(vals);
         });
 
+        return [headers,  gridRowData];
+    }
+
+
+    // https://www.markdownguide.org/extended-syntax/
+    getGridAsMarkdown(){       
+        var [headers, gridRowData] = this.getGridAsHeadersAndRows();
         return this.formatAsMarkdownTable(headers, gridRowData);
     }
 
@@ -90,26 +94,7 @@ class Exporter {
     }
 
     getGridAsGherkin(){
-        
-        var headers = this.gridApi.getColumnDefs().map(col => col.headerName);
-        var fieldnames = this.gridApi.getColumnDefs().map(col => col.field);
-    
-
-        // output rows
-        var gridRowData = [];
-        // since we can filter and sort...
-        // if we use forEachNode then it ignores the filter and does not honour the sorting
-        this.gridApi.forEachNodeAfterFilterAndSort(node => {
-            var vals = [];
-            //console.log(node.data);
-
-            for (const propertyid in fieldnames) {
-                var property = fieldnames[propertyid];
-                vals.push(node.data[property] ? node.data[property] : ' ');
-            }
-            gridRowData.push(vals);
-        });
-
+        var [headers, gridRowData] = this.getGridAsHeadersAndRows();
         return this.formatAsGherkinTable(headers, gridRowData);
     }
 
@@ -135,26 +120,7 @@ class Exporter {
     }
 
     getGridAsHTML(){
-        
-        var headers = this.gridApi.getColumnDefs().map(col => col.headerName);
-        var fieldnames = this.gridApi.getColumnDefs().map(col => col.field);
-    
-
-        // output rows
-        var gridRowData = [];
-        // since we can filter and sort...
-        // if we use forEachNode then it ignores the filter and does not honour the sorting
-        this.gridApi.forEachNodeAfterFilterAndSort(node => {
-            var vals = [];
-            //console.log(node.data);
-
-            for (const propertyid in fieldnames) {
-                var property = fieldnames[propertyid];
-                vals.push(node.data[property] ? node.data[property] : ' ');
-            }
-            gridRowData.push(vals);
-        });
-
+        var [headers, gridRowData] = this.getGridAsHeadersAndRows();
         return this.formatAsHTMLTable(headers, gridRowData);
     }
 

@@ -209,6 +209,12 @@ class GridExtension{
         return this.gridApi.getColumnDefs().length;
     }
 
+    getNumberOfSelectedRows(){
+        return this.gridApi.getSelectedNodes().length;
+    }
+
+
+
     getColumnDef(id){
 
         let colDefs = this.gridApi.getColumnDefs();

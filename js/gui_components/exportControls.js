@@ -1,4 +1,5 @@
 import {Download} from './download.js';
+import {fileTypes} from '../data_formats/file-types.js';
 
 class ExportsPageMap{
 
@@ -11,11 +12,9 @@ class ExportsPageMap{
 
 class ExportControls {
 
-    constructor(exporter, pageMap, fileTypes, renderTextFunction) {
-        this.pageMap = pageMap;
+    constructor(exporter) {
+        this.pageMap = new ExportsPageMap();
         this.exporter = exporter;
-        this.fileTypes = fileTypes;
-        this.renderTextFromGrid = renderTextFunction;
     }
 
     addHooksToPage(container){
@@ -35,7 +34,7 @@ class ExportControls {
 
         var type = document.querySelector("li.active-type a").getAttribute("data-type");
 
-        if(!exporter.canExport(type)){
+        if(!this.exporter.canExport(type)){
             console.log(`Data Type ${type} not supported`)
             return;
         }
@@ -45,7 +44,7 @@ class ExportControls {
             return;
         }
 
-        var filename = "export" + this.fileTypes[type].fileExtension;
+        var filename = "export" + fileTypes[type].fileExtension;
 
         var text = document.querySelector(this.pageMap.markdownTextArea).value;
         new Download(filename).downloadFile(text);
@@ -66,6 +65,24 @@ class ExportControls {
         setTimeout(
             function(aButton){ aButton.innerText = "Copy"; }
             , 3000, copyButton);
+    }
+
+    renderTextFromGrid() {
+
+        let type = document.querySelector("li.active-type a").getAttribute("data-type");
+      
+        if(!this.exporter.canExport(type)){
+          console.log(`Data Type ${type} not supported for exporting`);
+          return;
+        }
+      
+        let textToRender = this.exporter.getGridAs(type);
+        this.setTextFromString(textToRender);
+        
+    }
+
+    setTextFromString(someText){
+        document.getElementById('markdownarea').value = someText;
     }
 }
 

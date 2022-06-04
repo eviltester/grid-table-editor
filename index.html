@@ -84,7 +84,7 @@
     </ul>
     <div class="footer">
     <p>
-      v20220601.001 Built by <a href="https://eviltester.com" target="_blank">Alan Richardson</a> with 
+      v20220604.001 Built by <a href="https://eviltester.com" target="_blank">Alan Richardson</a> with 
       <a href="https://ag-grid.com" target="_blank">AG Grid</a> Community Edition, 
       <a href="http://fent.github.io/randexp.js/" target="_blank">RandExp.js</a>, 
       <a href="https://fakerjs.dev/" target="_blank">Faker.dev</a>, 
@@ -94,76 +94,22 @@
   </details>
 </div>
 
-
-
-
   <div class="main-app">
-  <div class="toolbar">
-    <button id="addRowButton">Add Row</button>
-    <button id="addRowsAboveButton">Add Rows Above</button>
-    <button id="addRowsBelowButton">Add Rows Below</button>
-    <button id="deleteSelectedRowsButton">Delete Selected Rows</button>
-    <label for="filter-text-box">Filter:</label> <input type="text" id="filter-text-box" placeholder="Filter...">
-    <button id="clearFiltersButton" title="Clear Filters">Clear Filters</button>
-    <button id="clearTableButton" title="Clear All Data">Reset Table</button>
-  </div>
-  <!-- ag-theme-alpine -->
-  <div id="myGrid" style="height: 500px; width:100%;" class="ag-theme-alpine"></div>
-  <div class="importexport">
-    <button onclick="renderTextFromGrid()">v Set Text From Grid v</button>
-    <button id="importtextbutton" onclick="importTextArea()">^ Set Grid From Text ^</button>
-    <label id="csvinputlabel" for="csvinput"><span class="fileFormat">.csv</span> import ^:</label><input type="file" id="csvinput"/>
-    <button id="filedownload"><span class="fileFormat">.csv</span> Download</button>
-    <label id="dropzone">
-      <span>[Drag And Drop <span class="fileFormat">.csv</span> File Here]</span>
-  </label>
-  </div>
+    <div id="main-grid-view"></div>
 
-  <div class="testDataDefnGui">
-    <details>
-      <summary>Test Data</summary>
-      <div id="testDataGeneratorContainer">
-      </div>
-    </details>
-  </div>
+    <div class="importexport" id="import-export-controls"></div>
 
-  <div class-"tabbedTextArea">
-    <div class="conversionTabs">
-      <div id="conversionTypes" class="conversionTypes">
-        <ul class="conversionTypesList">
-          <li id="type-markdown" class="type-select">
-            <a class="type-select-action" data-type="markdown" href="#">Markdown</a>
-          </li>
-          <li id="type-csv" class="type-select active-type">
-            <a class="type-select-action" data-type="csv" href="#">CSV</a>
-          </li>
-          <li id="type-json" class="type-select">
-            <a class="type-select-action" data-type="json" href="#">JSON</a>
-          </li>
-          <li id="type-javascript" class="type-select">
-            <a class="type-select-action" data-type="javascript" href="#">JavaScript</a>
-          </li>
-          <li id="type-gherkin" class="type-select">
-            <a class="type-select-action" data-type="gherkin" href="#">Gherkin</a>
-          </li>
-          <li id="type-html" class="type-select">
-            <a class="type-select-action" data-type="html" href="#">HTML</a>
-          </li>
-        </ul>
-      </div>
-      <div class="rightbuttons">
-        <button title="Copy text to clipboard" id="copyTextButton">Copy</button>
-      </div>
+    <div class="testDataDefnGui">
+      <details>
+        <summary>Test Data</summary>
+        <div id="testDataGeneratorContainer"></div>
+      </details>
     </div>
 
-    <div id="markdown" style="height: 30%; width:100%;">
-      <textarea class="textrepresentation" name="Markdown" id="markdownarea"></textarea>
-    </div>
+    <div class="tabbedTextArea" id="tabbedTextArea" >
   </div>
 
 
 
 </body>
-
-
 </html>

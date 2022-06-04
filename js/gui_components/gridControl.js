@@ -15,9 +15,30 @@ class GridControlsPageMap{
 // The buttons above a grid
 class GridControl {
 
-    constructor(gridExtension, pageMap) {
-        this.gridExtras = gridExtension;
+    constructor(pageMap) {
+
         this.pageMap = pageMap;
+    }
+
+    // todo create the elements rather than inject HTML to avoid hard coded IDs
+    addGuiIn(parent){
+        parent.innerHTML =`
+        <div class="toolbar">
+            <button id="addRowButton">Add Row</button>
+            <button id="addRowsAboveButton">Add Rows Above</button>
+            <button id="addRowsBelowButton">Add Rows Below</button>
+            <button id="deleteSelectedRowsButton">Delete Selected Rows</button>
+            <label for="filter-text-box">Filter:</label> <input type="text" id="filter-text-box" placeholder="Filter...">
+            <button id="clearFiltersButton" title="Clear Filters">Clear Filters</button>
+            <button id="clearTableButton" title="Clear All Data">Reset Table</button>
+        </div>
+        <!-- ag-theme-alpine -->
+        <div id="myGrid" style="height: 500px; width:100%;" class="ag-theme-alpine"></div>
+        `;
+    }
+
+    useThisGridFunctionality(gridExtension){
+        this.gridExtras = gridExtension;
     }
 
     addHooksToPage(container){
@@ -61,6 +82,12 @@ class GridControl {
     }
 
     deleteSelectedRows() {
+
+        if(this.gridExtras.getNumberOfSelectedRows()<=0){
+            console.log("no rows selected");
+            return;
+        }
+
         if(!confirm('Are you Sure You Want to Delete Rows?'))
             return;
 

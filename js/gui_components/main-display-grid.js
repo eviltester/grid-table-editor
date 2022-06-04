@@ -41,7 +41,10 @@ class ExtendedDataGrid {
 
     createChildGrid(parentGridDiv){
 
-        let gridDiv = parentGridDiv;
+        let gridControls = new GridControl(new GridControlsPageMap());
+        gridControls.addGuiIn(parentGridDiv)
+
+        let gridDiv = document.querySelector('#myGrid');
 
         new agGrid.Grid(gridDiv, this.gridOptions);
 
@@ -50,7 +53,7 @@ class ExtendedDataGrid {
 
         this.gridExtras = new GridExtension(this.gridOptions.api, this.gridOptions.columnApi);
 
-        let gridControls = new GridControl(this.gridExtras, new GridControlsPageMap());
+        gridControls.useThisGridFunctionality(this.gridExtras);
         gridControls.addHooksToPage(document);
     }
 

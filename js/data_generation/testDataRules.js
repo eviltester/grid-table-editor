@@ -4,9 +4,9 @@
 //  https://fakerjs.dev/guide/#environments
 // https://cdn.skypack.dev/@faker-js/faker
 
-// todo: resolve this so we can use single command
-//const { faker } = require('@faker-js/faker');
-import { faker } from "https://cdn.skypack.dev/@faker-js/faker@v7.1.0"
+// use a moduleNameMapper in jest to allow importing from https
+//import { faker } from '@faker-js/faker';
+import { faker } from "https://cdn.skypack.dev/@faker-js/faker@v7.1.0";
 
 class TestDataRules{
 

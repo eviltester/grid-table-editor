@@ -68,11 +68,11 @@ class Importer{
         });
 
         this.gridApi.applyTransaction({ add: addRows });
-      }
+    }
       
       
       // Basic Markdown Table Parsing
-      markdownTableToDataRows(markdownTable){
+    markdownTableToDataRows(markdownTable){
       // todo enable validation when we have the ability to show errors on the GUI
       return new MarkdownConvertor().markdownTableToDataRows(markdownTable);
     }

@@ -1,6 +1,7 @@
 import {ExportControls} from "./exportControls.js"
 import {DragDropControl} from "./drag-drop-control.js"
 import { fileTypes } from "../data_formats/file-types.js";
+import { DelimitedOptions } from "./options-delimited-controls.js";
 
 class ImportExportControls {
 
@@ -115,6 +116,46 @@ class ImportExportControls {
         const fileType = fileTypes[type].fileExtension;
       
         document.querySelectorAll(".fileFormat").forEach(elem => elem.innerText = fileType);
+    }
+
+    setOptionsViewForFormatType(){
+        return;
+        const type = document.querySelector("li.active-type a").getAttribute("data-type");
+
+        const edit_area = document.querySelector("div.edit-area");
+        const optionsparent = document.querySelector("div.options-parent");
+        const text_area = document.getElementById("markdown");
+
+        edit_area.style.width="100%";
+        edit_area.style.height="30%";
+
+        if(type!=="csv"){
+            edit_area.style.display="block";
+            optionsparent.style.display="none";
+            text_area.style.width="100%";
+            text_area.style.height="100%";
+            return;
+        }
+
+        edit_area.style.display="flex";
+
+        text_area.style.width="70%";
+        text_area.style.height="100%";
+
+        optionsparent.style.width="30%";
+        optionsparent.style.height="100%";
+
+        optionsparent.innerHTML = "";
+        if(this.delimitedOptions===undefined){
+            this.delimitedOptions = new DelimitedOptions(optionsparent);
+        }
+        this.delimitedOptions.addToGui();
+
+        optionsparent.style.display = "block";
+
+        // configure the display options based on type
+        // configure the apply button to apply the styles and export the grid
+
     }
   
 

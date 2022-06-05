@@ -1,4 +1,7 @@
 import { ConvertGridToCsv } from "./exports/convert_grid_to_csv.js";
+import { GenericDataTable } from "./generic-data-table.js";
+import { GherkinConvertor } from "./gherkin-convertor.js";
+import { MarkdownConvertor } from "./markdown-convertor.js";
 
 class Exporter {
 
@@ -45,6 +48,7 @@ class Exporter {
         return "";
     }
 
+    // todo: phase out the old data array format and use the GenericDataTable instead
     getGridAsHeadersAndRows(){
         var headers = this.gridApi.getColumnDefs().map(col => col.headerName);
         var fieldnames = this.gridApi.getColumnDefs().map(col => col.field);
@@ -67,56 +71,33 @@ class Exporter {
         return [headers,  gridRowData];
     }
 
+    getGridAsGenericDataTable(){
+        let dataTable = new GenericDataTable();
+        dataTable.setHeaders(this.gridApi.getColumnDefs().map(col => col.headerName));
 
-    // https://www.markdownguide.org/extended-syntax/
-    getGridAsMarkdown(){       
-        var [headers, gridRowData] = this.getGridAsHeadersAndRows();
-        return this.formatAsMarkdownTable(headers, gridRowData);
-    }
+        var fieldnames = this.gridApi.getColumnDefs().map(col => col.field);
+    
+        // since we can filter and sort...
+        // if we use forEachNode then it ignores the filter and does not honour the sorting
+        this.gridApi.forEachNodeAfterFilterAndSort(node => {
+            var vals = [];
 
-    formatAsMarkdownTable(headers, data){
-        // headers is an array of 'headers' and 
-        // data is an array of nested arrays matching the header values
-
-        // display a pipe (|) character in a table by using its HTML character code (&#124;).
-
-        var renderHeaders = headers.map(header => header.replaceAll("|","&#124;"))
-        var markdownTable =  '|' + renderHeaders.join('|') + '|' + '\n';
-
-        markdownTable =
-            markdownTable + '|' + headers.map(name => '-----').join('|') + '|' + '\n';
-        data.forEach(values => {                
-            var renderValues = values.map(value => value.replaceAll("|","&#124;"))
-            markdownTable = markdownTable + '|' + renderValues.join('|') + '|' + '\n';
+            for (const propertyid in fieldnames) {
+                var property = fieldnames[propertyid];
+                vals.push(node.data[property] ? String(node.data[property]) : ' ');
+            }
+            dataTable.appendDataRow(vals);
         });
 
-        return markdownTable;
+        return dataTable;
+    }
+
+    getGridAsMarkdown(){       
+        return new MarkdownConvertor().formatAsMarkdownTable(this.getGridAsGenericDataTable());
     }
 
     getGridAsGherkin(){
-        var [headers, gridRowData] = this.getGridAsHeadersAndRows();
-        return this.formatAsGherkinTable(headers, gridRowData);
-    }
-
-    validGherkinCellValue(data){
-        return data.replaceAll('\\','\\\\').replaceAll("|","\\|")
-    }
-
-    formatAsGherkinTable(headers, data){
-        // headers is an array of 'headers' and 
-        // data is an array of nested arrays matching the header values
-
-        // display a pipe (|) character in a table by using its HTML character code (&#124;).
-
-        var renderHeaders = headers.map(header => this.validGherkinCellValue(header));
-        var markdownTable =  '|' + renderHeaders.join('|') + '|' + '\n';
-
-        data.forEach(values => {                
-            var renderValues = values.map(value => this.validGherkinCellValue(value));
-            markdownTable = markdownTable + '|' + renderValues.join('|') + '|' + '\n';
-        });
-
-        return markdownTable;
+        return new GherkinConvertor().formatAsGherkinTable(this.getGridAsGenericDataTable());
     }
 
     getGridAsHTML(){
@@ -128,6 +109,7 @@ class Exporter {
         return data.replaceAll('<','&lt;').replaceAll(">","&gt;")
     }
 
+    // todo: move to html-convertor and convert to use GenericDataTable as input
     formatAsHTMLTable(headers, data){
         // headers is an array of 'headers' and 
         // data is an array of nested arrays matching the header values

@@ -16,6 +16,7 @@ export class GherkinConvertor {
         rowString=rowString.slice(0, -1);
       }
 
+      // allow split to take place by formating the escaped bars
       rowString = rowString.replaceAll("\\|", "&#124;");
 
       let values = rowString.split("|");
@@ -23,6 +24,7 @@ export class GherkinConvertor {
       let cellValues = values.map(contents => {
             let actualContents = contents.trim();
 
+            // after split set the bars back to escaped
             actualContents = actualContents.replaceAll("&#124;", "\\|");
             
             // handle any special character conversions for gherkin
@@ -33,6 +35,27 @@ export class GherkinConvertor {
 
       return cellValues;
     }
+
+    validGherkinCellValue(data){
+        return data.replaceAll('\\','\\\\').replaceAll("|","\\|")
+    }
+
+    formatAsGherkinTable(dataTable){
+
+        // display a pipe (|) character in a table by using its HTML character code (&#124;).
+
+        var renderHeaders = dataTable.getHeaders().map(header => this.validGherkinCellValue(header));
+        var markdownTable =  '|' + renderHeaders.join('|') + '|' + '\n';
+
+        for(let rowIndex=0; rowIndex<dataTable.getRowCount(); rowIndex++){
+            let row = dataTable.getRow(rowIndex);               
+            var renderValues = row.map(value => this.validGherkinCellValue(value));
+            markdownTable = markdownTable + '|' + renderValues.join('|') + '|' + '\n';
+        };
+
+        return markdownTable;
+    }
+
 
     gherkinTableToDataTable(gherkinTable){
 

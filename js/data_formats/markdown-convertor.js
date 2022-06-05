@@ -138,7 +138,31 @@ export class MarkdownConvertor {
 
    // todo: migrate away from this and use the Generic Data Table
     markdownTableToDataRows(markdownTable){
-
       return this.markdownTableToDataTable(markdownTable).asDataArray();
     }
+
+
+    validMarkdownCellValue(data){
+      return data.replaceAll("|","&#124;");
+    }
+
+    // https://www.markdownguide.org/extended-syntax/
+    formatAsMarkdownTable(dataTable){
+      // display a pipe (|) character in a table by using its HTML character code (&#124;).
+
+      let renderHeaders = dataTable.getHeaders().map(header => this.validMarkdownCellValue(header));
+      let markdownTable =  '|' + renderHeaders.join('|') + '|' + '\n';
+
+      // todo: use length of header to adjust the number of ---- output
+      markdownTable =
+          markdownTable + '|' + dataTable.getHeaders().map(name => '-----').join('|') + '|' + '\n';
+
+      for(let rowIndex=0; rowIndex<dataTable.getRowCount(); rowIndex++){
+          let row = dataTable.getRow(rowIndex);                    
+          let renderValues = row.map(value => this.validMarkdownCellValue(value));
+          markdownTable = markdownTable + '|' + renderValues.join('|') + '|' + '\n';
+      };
+
+      return markdownTable;
+  }
 }

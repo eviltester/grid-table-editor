@@ -1,7 +1,5 @@
-import {MarkdownConvertor} from '../../js/data_formats/markdown_handler';
+import { GenericDataTable } from '../../js/data_formats/generic-data-table';
 import {GherkinConvertor} from '../../js/data_formats/gherkin-convertor';
-import {GenericDataTable} from '../../js/data_formats/generic-data-table';
-
 
 describe("can get values from a markdown table row", ()=>{
 
@@ -276,5 +274,41 @@ describe("Can convert markdown tables to data suitable for a data grid",()=>{
         expect(data[2][0]).toBe('');
         expect(data[2][1]).toBe('row 1 cell 1');
     });
+
+
+
+    describe("Can convert generic data grids to gherkin tables",()=>{
+
+        test('can convert a simple 2x3 table to gherkin table', () => {
+            const basicTable =
+`|heading 1|heading 2|
+|row 0 cell 0|row 0 cell 1|
+|row 1 cell 0|row 1 cell 1|
+`    
+    
+            let table = new GherkinConvertor().gherkinTableToDataTable(basicTable);
+
+            let output = new GherkinConvertor().formatAsGherkinTable(table);
+
+            expect(output).toBe(basicTable);
+        });
+
+        test('can a table and escape bars', () => {
+            const expected =
+`|heading\\| 1|heading 2|h3|h4|
+|\\|start bar|data \\| bar|end bar\\||\\|start and end bar\\||
+`    
+    
+            let table = new GenericDataTable();
+            table.setHeaders(["heading| 1", "heading 2", "h3", "h4"]);
+            table.appendDataRow(["|start bar","data | bar", "end bar|", "|start and end bar|"])
+
+            let output = new GherkinConvertor().formatAsGherkinTable(table);
+
+            expect(output).toBe(expected);
+        });
+
+    });
+
 
 });

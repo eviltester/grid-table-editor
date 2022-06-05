@@ -1,4 +1,5 @@
-import {MarkdownConvertor} from '../../js/data_formats/markdown_handler';
+import {MarkdownConvertor} from '../../js/data_formats/markdown-convertor';
+import { GenericDataTable } from '../../js/data_formats/generic-data-table';
 
 
 describe("can get values from a markdown table row", ()=>{
@@ -358,6 +359,42 @@ describe("Can convert markdown tables to data suitable for a data grid",()=>{
         expect(data[1][1]).toBe('row 0 cell 1');
         expect(data[2][0]).toBe('');
         expect(data[2][1]).toBe('row 1 cell 1');
+
+    });
+
+
+    describe("Can convert generic data grids to markdown tables",()=>{
+
+        test('can convert a simple 2x3 table to markdown table', () => {
+            const basicTable =
+`|heading 1|heading 2|
+|-----|-----|
+|row 0 cell 0|row 0 cell 1|
+|row 1 cell 0|row 1 cell 1|
+`    
+    
+            let table = new MarkdownConvertor().markdownTableToDataTable(basicTable);
+
+            let output = new MarkdownConvertor().formatAsMarkdownTable(table);
+
+            expect(output).toBe(basicTable);
+        });
+
+        test('convert a table and escape bars', () => {
+            const expected =
+`|heading&#124; 1|heading 2|h3|h4|
+|-----|-----|-----|-----|
+|&#124;start bar|data &#124; bar|end bar&#124;|&#124;start and end bar&#124;|
+`    
+    
+            let table = new GenericDataTable();
+            table.setHeaders(["heading| 1", "heading 2", "h3", "h4"]);
+            table.appendDataRow(["|start bar","data | bar", "end bar|", "|start and end bar|"])
+
+            let output = new MarkdownConvertor().formatAsMarkdownTable(table);
+
+            expect(output).toBe(expected);
+        });
 
     });
 

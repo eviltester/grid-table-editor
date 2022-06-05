@@ -1,5 +1,5 @@
 import { GherkinConvertor } from "./gherkin-convertor.js";
-import { MarkdownConvertor } from "./markdown_handler.js";
+import { MarkdownConvertor } from "./markdown-convertor.js";
 
 class Importer{
 
@@ -99,7 +99,7 @@ class Importer{
 
       // todo: apply transactions incrementally for larger data sets
       this.gridApi.applyTransaction({ add: addRows });
-  }
+    }
       
     importMarkDownTextFrom(aString){
       this.setGridFromGenericDataTable(new MarkdownConvertor().markdownTableToDataTable(aString));

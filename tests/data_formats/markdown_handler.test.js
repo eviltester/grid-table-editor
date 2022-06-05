@@ -119,13 +119,14 @@ describe("Can convert markdown tables to data suitable for a data grid",()=>{
     test('can handle embedded bars', () => {
         const basicTable =
 `|head&#124;ing 1|heading 2|
+|-------|-------|
 |row 0&#124; cell 0|row 0 cell 1|
 |row 1 cell 0|row 1&#124; cell 1|
 `    
-        let data = new MarkdownConvertor({treatThisAsGherkin: true}).markdownTableToDataRows(basicTable);
+        let data = new MarkdownConvertor().markdownTableToDataRows(basicTable);
 
         //todo: convert data to a GenericDataTable here and use that in all our tests, then migrate the code to use GenericDataTable
-        //console.log(data);
+        console.log(data);
 
         expect(data.length).toBe(3);
         expect(data[0][0]).toBe('head|ing 1');

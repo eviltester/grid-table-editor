@@ -66,6 +66,8 @@ describe("Can convert markdown tables to data suitable for a data grid",()=>{
         //todo: convert data to a GenericDataTable here and use that in all our tests, then migrate the code to use GenericDataTable
         //console.log(data);
 
+        //let table = new GenericDataTable().fromDataArray(data);
+
         expect(data.length).toBe(3);
         expect(data[0][0]).toBe('heading 1');
         expect(data[0][1]).toBe('heading 2');

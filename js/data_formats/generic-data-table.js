@@ -1,3 +1,25 @@
+/*
+
+GenericDataTable will be the intermediate data format for all conversions.
+
+ie.
+
+- all import from format will be to a GenericDataTable
+- grid setting will be from a GenericDataTable
+- grid will export to GenericDataTable
+- all exports will format from a GenericData Table
+
+e.g.
+
+csv -> to GenericDataTable -> grid
+markdown -> to GenericDataTable -> grid
+csv -> to GenericDataTable -> markdown
+grid -> to GenericDataTable -> markdown
+
+This way we only have to support conversion to, and from GenericDataTable and this
+can be more easily unit tested.
+
+*/
 class GenericDataTable {
 
     constructor() {
@@ -56,6 +78,22 @@ class GenericDataTable {
         }
 
         return true;
+    }
+
+    // convert to the old format to ease migration
+    asDataArray(){
+
+        let data = [];
+
+        if(this.headers.length==0){
+            return data;
+        }
+
+        data.push(this.headers.map(header => header));
+        for(let row of this.rows){
+            data.push(row.map(cell => cell));
+        }
+        return data;
     }
 
     appendDataRow(rowData){

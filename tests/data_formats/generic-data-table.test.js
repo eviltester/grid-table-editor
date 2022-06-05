@@ -75,6 +75,44 @@ describe("Can create Generic Data Table from scratch", ()=>{
     });
 });
 
+describe("Can convert Generic Data Table to old data format", ()=>{
+
+    test('convert a table with header and rows', () => {
+        let data = [];
+        data[0]=["header 1", "header 2"];
+        data[1]=["row 0, cell 0","row 0, cell 1"];
+        data[2]=["row 1, cell 0","row 1, cell 1"];
+
+        let dataTable = new GenericDataTable();
+
+        expect(dataTable.setFromDataArray(data)).toBe(true);
+        expect(dataTable.getColumnCount()).toBe(2);
+        expect(dataTable.getHeader(0)).toBe("header 1");
+        expect(dataTable.getHeader(1)).toBe("header 2");
+        expect(dataTable.getRowCount()).toBe(2);
+        expect(dataTable.getCell(0,0)).toBe("row 0, cell 0");
+        expect(dataTable.getCell(1,1)).toBe("row 1, cell 1");
+        expect(dataTable.getRow(0)[1]).toBe("row 0, cell 1");
+        expect(dataTable.getRow(1).length).toBe(dataTable.getColumnCount());
+
+        let convertedData = dataTable.asDataArray();
+
+        expect(convertedData.length).toBe(3);
+        expect(convertedData[0][0]).toBe('header 1');
+        expect(convertedData[0][1]).toBe('header 2');
+        expect(convertedData[1][0]).toBe('row 0, cell 0');
+        expect(convertedData[1][1]).toBe('row 0, cell 1');
+        expect(convertedData[2][0]).toBe('row 1, cell 0');
+        expect(convertedData[2][1]).toBe('row 1, cell 1');
+    });
+
+    test('empty table to empty table', () => {
+        let dataTable = new GenericDataTable();
+        let convertedData = dataTable.asDataArray();
+        expect(convertedData.length).toBe(0);
+    });
+});
+
 /*
 
 TODO: unsupported scenarios

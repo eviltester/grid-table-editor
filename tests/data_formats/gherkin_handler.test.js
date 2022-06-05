@@ -1,11 +1,13 @@
 import {MarkdownConvertor} from '../../js/data_formats/markdown_handler';
+import {GherkinConvertor} from '../../js/data_formats/gherkin-convertor';
+import {GenericDataTable} from '../../js/data_formats/generic-data-table';
 
 
 describe("can get values from a markdown table row", ()=>{
 
     test('even if malformed with no start', () => {
 
-        let values = new MarkdownConvertor({treatThisAsGherkin: true}).getValuesFromMarkdownTableRow("1|2|");
+        let values = new GherkinConvertor().getValuesFromTableRow("1|2|");
 
         expect(values).toEqual(expect.arrayContaining([1,2].map(s => s.toString())));
         expect(values.length).toBe(2);
@@ -13,7 +15,7 @@ describe("can get values from a markdown table row", ()=>{
 
     test('even if malformed with no end', () => {
 
-        let values = new MarkdownConvertor({treatThisAsGherkin: true}).getValuesFromMarkdownTableRow("|1|2");
+        let values = new GherkinConvertor().getValuesFromTableRow("|1|2");
 
         expect(values).toEqual(expect.arrayContaining([1,2].map(s => s.toString())));
         expect(values.length).toBe(2);
@@ -21,7 +23,7 @@ describe("can get values from a markdown table row", ()=>{
 
     test('even if malformed with no start or end', () => {
 
-        let values = new MarkdownConvertor({treatThisAsGherkin: true}).getValuesFromMarkdownTableRow("1|2");
+        let values = new GherkinConvertor().getValuesFromTableRow("1|2");
 
         expect(values).toEqual(expect.arrayContaining([1,2].map(s => s.toString())));
         expect(values.length).toBe(2);
@@ -29,7 +31,7 @@ describe("can get values from a markdown table row", ()=>{
 
     test('surrounding spaces are ignored', () => {
 
-        let values = new MarkdownConvertor({treatThisAsGherkin: true}).getValuesFromMarkdownTableRow(" |  1    |   2    |    ");
+        let values = new GherkinConvertor().getValuesFromTableRow(" |  1    |   2    |    ");
 
         expect(values).toEqual(expect.arrayContaining([1,2].map(s => s.toString())));
         expect(values.length).toBe(2);
@@ -37,7 +39,7 @@ describe("can get values from a markdown table row", ()=>{
 
     test('spaces in a cell are significant', () => {
 
-        let values = new MarkdownConvertor({treatThisAsGherkin: true}).getValuesFromMarkdownTableRow("|1|2 3|");
+        let values = new GherkinConvertor().getValuesFromTableRow("|1|2 3|");
 
         expect(values).toEqual(expect.arrayContaining(["1","2 3"]));
         expect(values.length).toBe(2);
@@ -45,13 +47,17 @@ describe("can get values from a markdown table row", ()=>{
 
     test('blank values are processed', () => {
 
-        let values = new MarkdownConvertor({treatThisAsGherkin: true}).getValuesFromMarkdownTableRow("||2 3|");
+        let values = new GherkinConvertor().getValuesFromTableRow("||2 3|");
 
         expect(values).toEqual(expect.arrayContaining(["","2 3"]));
         expect(values.length).toBe(2);
     });
 
 });
+
+//todo: convert data to a GenericDataTable here and use that in all our tests
+// todo: convert markdownTableToDataRows to be markdownTableToGenericDataTable and only use markdownTableToGenericDataTable in code
+// todo: create a Gherkin specific convertor rather than using the MarkdownConvertor
 
 describe("Can convert markdown tables to data suitable for a data grid",()=>{
 
@@ -61,12 +67,18 @@ describe("Can convert markdown tables to data suitable for a data grid",()=>{
 |row 0 cell 0|row 0 cell 1|
 |row 1 cell 0|row 1 cell 1|
 `    
-        let data = new MarkdownConvertor({treatThisAsGherkin: true}).markdownTableToDataRows(basicTable);
 
-        //todo: convert data to a GenericDataTable here and use that in all our tests, then migrate the code to use GenericDataTable
-        //console.log(data);
+        let table = new GherkinConvertor().gherkinTableToDataTable(basicTable);
 
-        //let table = new GenericDataTable().fromDataArray(data);
+        expect(table.getRowCount()).toBe(2);
+        expect(table.getHeader(0)).toBe('heading 1');
+        expect(table.getHeader(1)).toBe('heading 2');
+        expect(table.getCell(0,0)).toBe('row 0 cell 0');
+        expect(table.getCell(0,1)).toBe('row 0 cell 1');
+        expect(table.getCell(1,0)).toBe('row 1 cell 0');
+        expect(table.getCell(1,1)).toBe('row 1 cell 1');
+
+        let data = new GherkinConvertor().gherkinTableToDataRows(basicTable);
 
         expect(data.length).toBe(3);
         expect(data[0][0]).toBe('heading 1');
@@ -84,10 +96,17 @@ describe("Can convert markdown tables to data suitable for a data grid",()=>{
 |row 0\\| cell 0|row 0 cell 1|
 |row 1 cell 0|row 1 \\|cell 1|
 `    
-        let data = new MarkdownConvertor({treatThisAsGherkin: true}).markdownTableToDataRows(basicTable);
+        let table = new GherkinConvertor().gherkinTableToDataTable(basicTable);
 
-        //todo: convert data to a GenericDataTable here and use that in all our tests, then migrate the code to use GenericDataTable
-        //console.log(data);
+        expect(table.getRowCount()).toBe(2);
+        expect(table.getHeader(0)).toBe('head|ing 1');
+        expect(table.getHeader(1)).toBe('heading 2');
+        expect(table.getCell(0,0)).toBe('row 0| cell 0');
+        expect(table.getCell(0,1)).toBe('row 0 cell 1');
+        expect(table.getCell(1,0)).toBe('row 1 cell 0');
+        expect(table.getCell(1,1)).toBe('row 1 |cell 1');
+
+        let data = new GherkinConvertor().gherkinTableToDataRows(basicTable);
 
         expect(data.length).toBe(3);
         expect(data[0][0]).toBe('head|ing 1');
@@ -96,16 +115,17 @@ describe("Can convert markdown tables to data suitable for a data grid",()=>{
         expect(data[1][1]).toBe('row 0 cell 1');
         expect(data[2][0]).toBe('row 1 cell 0');
         expect(data[2][1]).toBe('row 1 |cell 1');
-
     });
 
     test('empty table returns empty array', () => {
         const basicTable = "";
 
-        let data = new MarkdownConvertor({treatThisAsGherkin: true}).markdownTableToDataRows(basicTable);
+        let table = new GherkinConvertor().gherkinTableToDataTable(basicTable);
 
-        //todo: convert data to a GenericDataTable here and use that in all our tests, then migrate the code to use GenericDataTable
-        //console.log(data);
+        expect(table.getRowCount()).toBe(0);
+        expect(table.getColumnCount()).toBe(0);
+
+        let data = new GherkinConvertor().gherkinTableToDataRows(basicTable);
 
         expect(data.length).toBe(0);
     });
@@ -120,10 +140,18 @@ describe("Can convert markdown tables to data suitable for a data grid",()=>{
 |row 0 cell 0|row 0 cell 1|
 |row 1 cell 0|row 1 cell 1|
 `    
-        let data = new MarkdownConvertor({treatThisAsGherkin: true}).markdownTableToDataRows(basicTable);
 
-        //todo: convert data to a GenericDataTable here and use that in all our tests, then migrate the code to use GenericDataTable
-        //console.log(data);
+        let table = new GherkinConvertor().gherkinTableToDataTable(basicTable);
+
+        expect(table.getRowCount()).toBe(2);
+        expect(table.getHeader(0)).toBe('heading 1');
+        expect(table.getHeader(1)).toBe('heading 2');
+        expect(table.getCell(0,0)).toBe('row 0 cell 0');
+        expect(table.getCell(0,1)).toBe('row 0 cell 1');
+        expect(table.getCell(1,0)).toBe('row 1 cell 0');
+        expect(table.getCell(1,1)).toBe('row 1 cell 1');
+
+        let data = new GherkinConvertor().gherkinTableToDataRows(basicTable);
 
         expect(data.length).toBe(3);
         expect(data[0][0]).toBe('heading 1');
@@ -144,10 +172,18 @@ describe("Can convert markdown tables to data suitable for a data grid",()=>{
 
 
 `    
-        let data = new MarkdownConvertor({treatThisAsGherkin: true}).markdownTableToDataRows(basicTable);
 
-        //todo: convert data to a GenericDataTable here and use that in all our tests, then migrate the code to use GenericDataTable
-        //console.log(data);
+        let table = new GherkinConvertor().gherkinTableToDataTable(basicTable);
+
+        expect(table.getRowCount()).toBe(2);
+        expect(table.getHeader(0)).toBe('heading 1');
+        expect(table.getHeader(1)).toBe('heading 2');
+        expect(table.getCell(0,0)).toBe('row 0 cell 0');
+        expect(table.getCell(0,1)).toBe('row 0 cell 1');
+        expect(table.getCell(1,0)).toBe('row 1 cell 0');
+        expect(table.getCell(1,1)).toBe('row 1 cell 1');
+
+        let data = new GherkinConvertor().gherkinTableToDataRows(basicTable);
 
         expect(data.length).toBe(3);
         expect(data[0][0]).toBe('heading 1');
@@ -168,9 +204,18 @@ describe("Can convert markdown tables to data suitable for a data grid",()=>{
 
 |row 1 cell 0|row 1 cell 1|
 `    
-        let data = new MarkdownConvertor({treatThisAsGherkin: true}).markdownTableToDataRows(basicTable);
+        
 
-        //todo: convert data to a GenericDataTable here and use that in all our tests, then migrate the code to use GenericDataTable
+        let table = new GherkinConvertor().gherkinTableToDataTable(basicTable);
+
+        expect(table.getRowCount()).toBe(1);
+        expect(table.getHeader(0)).toBe('heading -1');
+        expect(table.getHeader(1)).toBe('heading -2');
+        expect(table.getCell(0,0)).toBe('row 0 cell 0');
+        expect(table.getCell(0,1)).toBe('row 0 cell 1');
+
+        let data = new GherkinConvertor().gherkinTableToDataRows(basicTable);
+
         expect(data.length).toBe(2);
         expect(data[0][0]).toBe('heading -1');
         expect(data[0][1]).toBe('heading -2');
@@ -188,9 +233,18 @@ describe("Can convert markdown tables to data suitable for a data grid",()=>{
 "\r\n"+
 "|row 1 cell 0|row 1 cell 1|\r\n"
     
-        let data = new MarkdownConvertor({treatThisAsGherkin: true}).markdownTableToDataRows(basicTable);
+        
 
-        //todo: convert data to a GenericDataTable here and use that in all our tests, then migrate the code to use GenericDataTable
+        let table = new GherkinConvertor().gherkinTableToDataTable(basicTable);
+
+        expect(table.getRowCount()).toBe(1);
+        expect(table.getHeader(0)).toBe('heading -1');
+        expect(table.getHeader(1)).toBe('heading -2');
+        expect(table.getCell(0,0)).toBe('row 0 cell 0');
+        expect(table.getCell(0,1)).toBe('row 0 cell 1');
+
+        let data = new GherkinConvertor().gherkinTableToDataRows(basicTable);
+
         expect(data.length).toBe(2);
         expect(data[0][0]).toBe('heading -1');
         expect(data[0][1]).toBe('heading -2');
@@ -204,10 +258,19 @@ describe("Can convert markdown tables to data suitable for a data grid",()=>{
 | |row 0 cell 1|
 ||row 1 cell 1|
 `    
-        let data = new MarkdownConvertor({treatThisAsGherkin: true}).markdownTableToDataRows(basicTable);
+        
 
-        //todo: convert data to a GenericDataTable here and use that in all our tests, then migrate the code to use GenericDataTable
-        //console.log(data);
+        let table = new GherkinConvertor().gherkinTableToDataTable(basicTable);
+
+        expect(table.getRowCount()).toBe(2);
+        expect(table.getHeader(0)).toBe('heading 1');
+        expect(table.getHeader(1)).toBe('heading 2');
+        expect(table.getCell(0,0)).toBe('');
+        expect(table.getCell(0,1)).toBe('row 0 cell 1');
+        expect(table.getCell(1,0)).toBe('');
+        expect(table.getCell(1,1)).toBe('row 1 cell 1');
+
+        let data = new GherkinConvertor().gherkinTableToDataRows(basicTable);
 
         expect(data.length).toBe(3);
         expect(data[0][0]).toBe('heading 1');
@@ -216,7 +279,6 @@ describe("Can convert markdown tables to data suitable for a data grid",()=>{
         expect(data[1][1]).toBe('row 0 cell 1');
         expect(data[2][0]).toBe('');
         expect(data[2][1]).toBe('row 1 cell 1');
-
     });
 
 });

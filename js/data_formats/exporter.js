@@ -3,6 +3,9 @@ import { GenericDataTable } from "./generic-data-table.js";
 import { GherkinConvertor } from "./gherkin-convertor.js";
 import { MarkdownConvertor } from "./markdown-convertor.js";
 import { HtmlConvertor } from "./html-convertor.js";
+import { JsonConvertor } from "./json-convertor.js";
+import { JavascriptConvertor } from "./javascript-convertor.js";
+import { CsvConvertor } from "./csv-convertor.js";
 
 class Exporter {
 
@@ -27,7 +30,8 @@ class Exporter {
         }
       
         if(type=="csv") {
-            return new ConvertGridToCsv(this.gridApi).get();
+            return this.getGridAsCsv();
+            //return new ConvertGridToCsv(this.gridApi).get();
         }
       
         if(type=="json") {
@@ -62,7 +66,7 @@ class Exporter {
 
             for (const propertyid in fieldnames) {
                 var property = fieldnames[propertyid];
-                vals.push(node.data[property] ? String(node.data[property]) : ' ');
+                vals.push(node.data[property] ? String(node.data[property]) : '');
             }
             dataTable.appendDataRow(vals);
         });
@@ -82,49 +86,16 @@ class Exporter {
         return new HtmlConvertor().formatAsHTMLTable(this.getGridAsGenericDataTable());
     }
 
-
-    convertStringToJavaScriptValidName(aString){
-        return aString.replace(/[^A-Za-z0-9_]/g, '_');
-    }
-
-    getDataAsObjectArray(headerNameConvertor){
-
-        var convertor=headerNameConvertor;
-        if(headerNameConvertor===undefined){
-            convertor = function (header){
-                return header;
-            }
-        }
-
-        var colDefs = this.gridApi.getColumnDefs();
-
-        var objectArray = [];
-        // since we can filter and sort...
-        // if we use forEachNode then it ignores the filter and does not honour the sorting
-        this.gridApi.forEachNodeAfterFilterAndSort(node => {
-            var anObject = {};
-            //console.log(node.data);
-
-            colDefs.forEach(colDef => {
-                    var property = colDef.field;
-                    var jsonHeaderName = convertor(colDef.headerName);
-                    anObject[jsonHeaderName] = node.data[property] ? node.data[property] : '';
-                }
-            );
-            objectArray.push(anObject);
-
-        });
-
-        return objectArray;
-    }
-
-
     getGridAsJavaScriptJson(){
-        return JSON.stringify(this.getDataAsObjectArray(this.convertStringToJavaScriptValidName), null, "\t");
+        return JSON.stringify(new JavascriptConvertor().formatAsObjects(this.getGridAsGenericDataTable()), null, "\t");
     }
 
     getGridAsJson(){
-        return JSON.stringify(this.getDataAsObjectArray(), null, "\t");
+        return JSON.stringify(new JsonConvertor().formatAsObjects(this.getGridAsGenericDataTable()), null, "\t");
+    }
+
+    getGridAsCsv(){
+        return new CsvConvertor().convertFrom(this.getGridAsGenericDataTable());
     }
 }
 

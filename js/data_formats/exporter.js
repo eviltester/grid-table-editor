@@ -1,4 +1,3 @@
-import { ConvertGridToCsv } from "./exports/convert_grid_to_csv.js";
 import { GenericDataTable } from "./generic-data-table.js";
 import { GherkinConvertor } from "./gherkin-convertor.js";
 import { MarkdownConvertor } from "./markdown-convertor.js";
@@ -11,11 +10,6 @@ class Exporter {
 
     constructor(gridApi) {
         this.gridApi = gridApi;
-    }
-
-    // https://www.ag-grid.com/javascript-grid/csv-export/
-    csvExport(){
-        this.gridApi.exportDataAsCsv();
     }
 
     canExport(type){
@@ -31,7 +25,6 @@ class Exporter {
       
         if(type=="csv") {
             return this.getGridAsCsv();
-            //return new ConvertGridToCsv(this.gridApi).get();
         }
       
         if(type=="json") {

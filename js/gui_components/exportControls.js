@@ -39,11 +39,6 @@ class ExportControls {
             return;
         }
 
-        if(type=="csv"){
-            this.exporter.csvExport();
-            return;
-        }
-
         var filename = "export" + fileTypes[type].fileExtension;
 
         var text = document.querySelector(this.pageMap.markdownTextArea).value;

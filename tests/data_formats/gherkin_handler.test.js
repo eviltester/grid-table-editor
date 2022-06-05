@@ -55,10 +55,6 @@ describe("can get values from a markdown table row", ()=>{
 
 });
 
-//todo: convert data to a GenericDataTable here and use that in all our tests
-// todo: convert markdownTableToDataRows to be markdownTableToGenericDataTable and only use markdownTableToGenericDataTable in code
-// todo: create a Gherkin specific convertor rather than using the MarkdownConvertor
-
 describe("Can convert markdown tables to data suitable for a data grid",()=>{
 
     test('can convert a simple 2x3 table', () => {

@@ -43,6 +43,7 @@ class Importer{
 
     }
 
+    // todo: phase this out and use the GenericDataTable
     setGridFromData(data){
 
         // data is row of values where the first row is the headers
@@ -70,35 +71,43 @@ class Importer{
 
         this.gridApi.applyTransaction({ add: addRows });
     }
+
+    setGridFromGenericDataTable(dataTable){
+
+      if(dataTable.getColumnCount()==0){
+        // will not create a table with no columns
+        // todo: report errors on screen
+      }
+
+      this.gridExtras.createColumns(dataTable.getHeaders());
+      this.gridApi.setRowData([]);
+
+      let addRows = [];
       
+      let fieldnames = this.gridApi.getColumnDefs().map(col => col.field);
+
+      for(let rowIndex=0; rowIndex<dataTable.getRowCount(); rowIndex++){
+        
+          // var vals = {};
+          // let row= dataTable.getRow(rowIndex);
+          // for (const propertyid in fieldnames) {
+          //   vals[fieldnames[propertyid]] = row[propertyid];
+          // }
+          // addRows.push(vals);
+          addRows.push(dataTable.getRowAsObjectUsingHeadings(rowIndex,fieldnames));
+      }
+
+      // todo: apply transactions incrementally for larger data sets
+      this.gridApi.applyTransaction({ add: addRows });
+  }
       
-      // Basic Markdown Table Parsing
-    markdownTableToDataRows(markdownTable){
-      // todo enable validation when we have the ability to show errors on the GUI
-      return new MarkdownConvertor().markdownTableToDataRows(markdownTable);
-    }
-
-    gherkinToDataRows(gherkinTable){
-      // todo enable validation when we have the ability to show errors on the GUI
-      return new GherkinConvertor().gherkinTableToDataRows(gherkinTable);
-    }
-
-
     importMarkDownTextFrom(aString){
-      this.setGridFromData(
-          this.markdownTableToDataRows(
-            aString
-          )
-        );
+      this.setGridFromGenericDataTable(new MarkdownConvertor().markdownTableToDataTable(aString));
     }
 
     // todo: create a setGridFromDataTable method to handle the GenericDataTable
     importGherkinTextFrom(aString){
-      this.setGridFromData(
-          this.gherkinToDataRows(
-            aString
-          )
-        );
+      this.setGridFromGenericDataTable(new GherkinConvertor().gherkinTableToDataTable(aString));
     }
 }
 

@@ -73,6 +73,32 @@ describe("Can create Generic Data Table from scratch", ()=>{
         expect(dataTable.getHeader(0)).toBe("header 1");
         expect(dataTable.getHeader(1)).toBe("header 2");
     });
+
+    test('can get headers in bulk', () => {
+        let dataTable = new GenericDataTable();
+
+        dataTable.setHeaders(["header 1", "header 2"]);
+        expect(dataTable.getHeaders()[0]).toBe("header 1");
+        expect(dataTable.getHeaders()[1]).toBe("header 2");
+    });
+
+    test('can get rows as objects', () => {
+        let dataTable = new GenericDataTable();
+
+        dataTable.setHeaders(["header 1", "header2"]);
+        dataTable.appendDataRow(["bob","eris"]);
+        dataTable.appendDataRow(["aleister","william"]);
+
+        let aRow = dataTable.getRowAsObject(0);
+        expect(aRow["header 1"]).toBe("bob");
+        expect(aRow.header2).toBe("eris");
+
+        let anotherRow = dataTable.getRowAsObjectUsingHeadings(1,["field1","field2"]);
+        expect(anotherRow["field1"]).toBe("aleister");
+        expect(anotherRow.field2).toBe("william");
+
+    });
+
 });
 
 describe("Can convert Generic Data Table to old data format", ()=>{

@@ -142,6 +142,10 @@ class GenericDataTable {
         return this.headers[headerIndex];
     }
 
+    getHeaders(){
+        return this.headers.map(header => header);
+    }
+
     getRowCount(){
         return this.rows.length;
     }
@@ -152,6 +156,26 @@ class GenericDataTable {
 
     getRow(rowIndex){
         return this.rows[rowIndex].map(cell => cell);
+    }
+
+    getRowAsObject(rowIndex){
+
+      let fieldnames = this.getHeaders();
+      let vals = {};
+      let row = this.getRow(rowIndex);
+      for (const propertyid in fieldnames) {
+        vals[fieldnames[propertyid]] = row[propertyid];
+      }
+      return vals;
+    }
+
+    getRowAsObjectUsingHeadings(rowIndex, fieldnames){
+        let vals = {};
+        let row = this.getRow(rowIndex);
+        for (const propertyid in fieldnames) {
+            vals[fieldnames[propertyid]] = row[propertyid];
+        }
+        return vals;
     }
 }
 

@@ -1,3 +1,4 @@
+import { GherkinConvertor } from "./gherkin-convertor.js";
 import { MarkdownConvertor } from "./markdown_handler.js";
 
 class Importer{
@@ -79,7 +80,7 @@ class Importer{
 
     gherkinToDataRows(gherkinTable){
       // todo enable validation when we have the ability to show errors on the GUI
-      return new MarkdownConvertor({treatThisAsGherkin: true}).markdownTableToDataRows(gherkinTable);
+      return new GherkinConvertor().gherkinTableToDataRows(gherkinTable);
     }
 
 
@@ -91,6 +92,7 @@ class Importer{
         );
     }
 
+    // todo: create a setGridFromDataTable method to handle the GenericDataTable
     importGherkinTextFrom(aString){
       this.setGridFromData(
           this.gherkinToDataRows(

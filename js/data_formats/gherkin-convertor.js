@@ -1,4 +1,4 @@
-import { GenericDataTable } from "./generic-data-table";
+import { GenericDataTable } from "./generic-data-table.js";
 
 export class GherkinConvertor {
 

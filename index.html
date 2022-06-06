@@ -85,6 +85,8 @@
   </details>
 </div>
 
+
+
   <div class="main-app">
     <div id="main-grid-view"></div>
 
@@ -100,7 +102,15 @@
     <div class="tabbedTextArea" id="tabbedTextArea" >
   </div>
 
+<!-- loading message -->
+<h1 id="initial-load">Please Wait, Loading...</h1>
+<script>
+  window.addEventListener('load', (event) => {
+    document.getElementById("initial-load").remove();
+});
+</script>
 
+  
 
 </body>
 </html>

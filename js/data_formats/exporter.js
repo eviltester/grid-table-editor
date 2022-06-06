@@ -10,6 +10,16 @@ class Exporter {
 
     constructor(gridApi) {
         this.gridApi = gridApi;
+
+        this.csvDelimiter={};
+        this.csvDelimiter.options = {
+            quotes: true, //or array of booleans
+            quoteChar: '"',
+            escapeChar: '"',
+            delimiter: ",",
+            header: true,
+            newline: "\n",
+        }
     }
 
     canExport(type){
@@ -87,8 +97,13 @@ class Exporter {
         return JSON.stringify(new JsonConvertor().formatAsObjects(this.getGridAsGenericDataTable()), null, "\t");
     }
 
+    setCsvDelimiterOptions(options){
+
+        this.csvDelimiter.options = {...this.csvDelimiter.options, ...options};
+    }
+
     getGridAsCsv(){
-        return new CsvConvertor().convertFrom(this.getGridAsGenericDataTable());
+        return new CsvConvertor({options : this.csvDelimiter.options}).convertFrom(this.getGridAsGenericDataTable());
     }
 }
 

@@ -32,6 +32,16 @@ class ImportExportControls {
         const dragDropZone = new DragDropControl(this.readFile.bind(this));
         dragDropZone.configureAsDropZone(parentelement.querySelector("#dropzone"));
 
+        this.csvDelimiter={};
+        this.csvDelimiter.options = {
+            quotes: true, //or array of booleans
+            quoteChar: '"',
+            escapeChar: '"',
+            delimiter: ",",
+            header: true,
+            newline: "\n",
+        }
+
     }
 
     setImporter(anImporter){
@@ -119,7 +129,7 @@ class ImportExportControls {
     }
 
     setOptionsViewForFormatType(){
-        return;
+
         const type = document.querySelector("li.active-type a").getAttribute("data-type");
 
         const edit_area = document.querySelector("div.edit-area");
@@ -139,10 +149,10 @@ class ImportExportControls {
 
         edit_area.style.display="flex";
 
-        text_area.style.width="70%";
+        text_area.style.width="100%";
         text_area.style.height="100%";
 
-        optionsparent.style.width="30%";
+        optionsparent.style.width="17em";
         optionsparent.style.height="100%";
 
         optionsparent.innerHTML = "";
@@ -150,11 +160,20 @@ class ImportExportControls {
             this.delimitedOptions = new DelimitedOptions(optionsparent);
         }
         this.delimitedOptions.addToGui();
+        this.delimitedOptions.setFromOptions(this.csvDelimiter.options);
+        this.delimitedOptions.setApplyCallback(this.setCsvDelimterOptions.bind(this));
 
         optionsparent.style.display = "block";
 
         // configure the display options based on type
         // configure the apply button to apply the styles and export the grid
+    }
+
+    setCsvDelimterOptions(options){
+
+        this.csvDelimiter.options = {...this.csvDelimiter.options, ...options};
+        this.exporter.setCsvDelimiterOptions(this.csvDelimiter.options)
+        this.renderTextFromGrid();
 
     }
   

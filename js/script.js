@@ -36,6 +36,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   importExportController.renderTextFromGrid();
   importExportController.setFileFormatType();
+  importExportController.setOptionsViewForFormatType();
 
   enableTestDataGenerationInterface("testDataGeneratorContainer", importer, importExportController.getExportControls());
 

@@ -17,6 +17,9 @@ class TabbedTextControl{
               <li id="type-csv" class="type-select active-type">
                 <a class="type-select-action" data-type="csv" href="#">CSV</a>
               </li>
+              <li id="type-dsv" class="type-select">
+                <a class="type-select-action" data-type="dsv" href="#">Delimited</a>
+              </li>
               <li id="type-json" class="type-select">
                 <a class="type-select-action" data-type="json" href="#">JSON</a>
               </li>

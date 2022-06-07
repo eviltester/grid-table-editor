@@ -1,6 +1,6 @@
 import { JsonConvertor } from "./json-convertor.js";
 
-export class DelimitorConvertor {
+export class DelimiterConvertor {
 
     constructor(params) {
 

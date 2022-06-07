@@ -5,6 +5,7 @@ import { HtmlConvertor } from "./html-convertor.js";
 import { JsonConvertor } from "./json-convertor.js";
 import { JavascriptConvertor } from "./javascript-convertor.js";
 import { CsvConvertor } from "./csv-convertor.js";
+import { DelimiterConvertor } from "./delimiter-convertor.js";
 
 class Exporter {
 
@@ -20,10 +21,20 @@ class Exporter {
             header: true,
             newline: "\n",
         }
+
+        this.delimiter={};
+        this.delimiter.options = {
+            quotes: true, //or array of booleans
+            quoteChar: '"',
+            escapeChar: '"',
+            delimiter: "\t",
+            header: true,
+            newline: "\n",
+        }
     }
 
     canExport(type){
-        const supportedTypes = ["markdown", "csv", "json", "javascript", "gherkin", "html"]
+        const supportedTypes = ["markdown", "csv", "dsv", "json", "javascript", "gherkin", "html"]
         return supportedTypes.includes(type);
     }
 
@@ -35,6 +46,10 @@ class Exporter {
       
         if(type=="csv") {
             return this.getGridAsCsv();
+        }
+
+        if(type=="dsv") {
+            return this.getGridAsDsv();
         }
       
         if(type=="json") {
@@ -98,12 +113,19 @@ class Exporter {
     }
 
     setCsvDelimiterOptions(options){
-
         this.csvDelimiter.options = {...this.csvDelimiter.options, ...options};
+    }
+
+    setDelimiterOptions(options){
+        this.delimiter.options = {...this.delimiter.options, ...options};
     }
 
     getGridAsCsv(){
         return new CsvConvertor({options : this.csvDelimiter.options}).convertFrom(this.getGridAsGenericDataTable());
+    }
+
+    getGridAsDsv(){
+        return new DelimiterConvertor({options : this.delimiter.options}).convertFrom(this.getGridAsGenericDataTable());
     }
 }
 

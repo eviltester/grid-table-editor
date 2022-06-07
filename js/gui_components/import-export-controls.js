@@ -1,9 +1,15 @@
 import {ExportControls} from "./exportControls.js"
 import {DragDropControl} from "./drag-drop-control.js"
 import { fileTypes } from "../data_formats/file-types.js";
+import { CsvDelimitedOptions } from "./options-csv-delimited-controls.js";
 import { DelimitedOptions } from "./options-delimited-controls.js";
 
 class ImportExportControls {
+
+    constructor(){
+        this.csvDelimiter = {};
+        this.delimited={};
+    }
 
     addHTMLtoGui(parentelement){
         parentelement.innerHTML = `
@@ -38,6 +44,16 @@ class ImportExportControls {
             quoteChar: '"',
             escapeChar: '"',
             delimiter: ",",
+            header: true,
+            newline: "\n",
+        }
+
+        this.delimiter={};
+        this.delimiter.options = {
+            quotes: true, //or array of booleans
+            quoteChar: '"',
+            escapeChar: '"',
+            delimiter: "\t",
             header: true,
             newline: "\n",
         }
@@ -116,6 +132,13 @@ class ImportExportControls {
           importVisibility="hidden";
         }
       
+        if(type==="csv"){
+            this.importer.setImportOptions(this.csvDelimiter.options);
+        }
+        if(type==="dsv"){
+            this.importer.setImportOptions(this.delimiter.options);
+        }
+
         importControls.forEach(e => e.style.visibility = importVisibility);
       
         if(!fileTypes.hasOwnProperty(type)){
@@ -139,7 +162,7 @@ class ImportExportControls {
         edit_area.style.width="100%";
         edit_area.style.height="30%";
 
-        if(type!=="csv"){
+        if(type!=="csv" && type!="dsv"){
             edit_area.style.display="block";
             optionsparent.style.display="none";
             text_area.style.width="100%";
@@ -156,12 +179,23 @@ class ImportExportControls {
         optionsparent.style.height="100%";
 
         optionsparent.innerHTML = "";
-        if(this.delimitedOptions===undefined){
-            this.delimitedOptions = new DelimitedOptions(optionsparent);
+
+        if(type=="csv"){
+            if(this.csvDelimitedOptions===undefined){
+                this.csvDelimitedOptions = new CsvDelimitedOptions(optionsparent);
+            }
+            this.csvDelimitedOptions.addToGui();
+            this.csvDelimitedOptions.setFromOptions(this.csvDelimiter.options);
+            this.csvDelimitedOptions.setApplyCallback(this.setCsvDelimterOptions.bind(this));
         }
-        this.delimitedOptions.addToGui();
-        this.delimitedOptions.setFromOptions(this.csvDelimiter.options);
-        this.delimitedOptions.setApplyCallback(this.setCsvDelimterOptions.bind(this));
+        if(type=="dsv"){
+            if(this.delimitedOptions===undefined){
+                this.delimitedOptions = new DelimitedOptions(optionsparent);
+            }
+            this.delimitedOptions.addToGui();
+            this.delimitedOptions.setFromOptions(this.delimiter.options);
+            this.delimitedOptions.setApplyCallback(this.setDelimterOptions.bind(this));
+        }
 
         optionsparent.style.display = "block";
 
@@ -174,7 +208,13 @@ class ImportExportControls {
         this.csvDelimiter.options = {...this.csvDelimiter.options, ...options};
         this.exporter.setCsvDelimiterOptions(this.csvDelimiter.options)
         this.renderTextFromGrid();
+    }
 
+    setDelimterOptions(options){
+
+        this.delimiter.options = {...this.delimiter.options, ...options};
+        this.exporter.setDelimiterOptions(this.delimiter.options)
+        this.renderTextFromGrid();
     }
   
 

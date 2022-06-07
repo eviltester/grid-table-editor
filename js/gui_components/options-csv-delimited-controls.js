@@ -1,17 +1,4 @@
-class DelimitedOptions{
-
-    delimiterMappings={
-      "tab": "\t",
-      "comma": ",",
-      "hash": "#",
-      "colon": ":",
-      "pipe": "|",
-      "space": " ",
-      "semicolon": ";",
-      "slash": "/",
-      "backslash": "\\",
-      "semicolon": ";",
-    }
+class CsvDelimitedOptions{
 
     constructor(parentElement) {
         this.parent = parentElement;
@@ -22,29 +9,6 @@ class DelimitedOptions{
         `
         <div class="delimited-options" style="width:100%">
           <div><p><strong>Options</strong></p></div>
-
-          <div class="delimiter">
-            <label for="delimiter">Delimiter</label>
-            <select name="delimiter">
-              <option value="tab">Tab [\\t]</option>
-              <option value="comma">Comma [,]</option>
-              <option value="hash">Hash [#]</option>
-              <option value="colon">Colon [:]</option>
-              <option value="pipe">Pipe [|]</option>
-              <option value="space">Space [ ]</option>
-              <option value="semicolon">Semicolon [;]</option>
-              <option value="slash">Slash [/]</option>
-              <option value="backslash">Slash [\\]</option>
-              <option value="custom">Custom Value</option>
-            </select>
-            <br>
-          </div>
-          <div class="custom-delimiter">
-            <label for="custom-delimiter">Custom</label>
-            <input type="text" name="custom-delimiter" value='' style="width:5em">
-            <br>
-          </div>  
-
           <div class="quotes">            
             <label for="quotes"> Use Quotes</label>
             <input type="checkbox" name="quotes" value="quotes">
@@ -102,59 +66,23 @@ class DelimitedOptions{
 
     getOptionsFromGui(){
 
-      let selectElem = this.parent.querySelector(".delimited-options div.delimiter select");
-      let delimiterName = selectElem.options[selectElem.selectedIndex].value;
-      let delimiter=undefined;
-      if(delimiterName==="custom"){
-        delimiter = this.parent.querySelector(".delimited-options .custom-delimiter input").value;
-      }else{
-        for(const key in this.delimiterMappings){
-          if(delimiterName===key){
-            delimiter = this.delimiterMappings[key];
-          }
-        }
-      }
-
-      if(delimiter===undefined){
-        console.log("unknown delimiter found - using tab");
-        delimiter="\t";
-      }
       return {
           quotes: this.parent.querySelector(".delimited-options .quotes input").checked,
           header: this.parent.querySelector(".delimited-options .headerVal input").checked,
           quoteChar: this.parent.querySelector(".delimited-options .quoteChar input").value,
-          escapeChar: this.parent.querySelector(".delimited-options .escapeChar input").value,
-          delimiter: delimiter
+          escapeChar: this.parent.querySelector(".delimited-options .escapeChar input").value
       }
 
     }
 
     setFromOptions(options){
+      let tempElem=undefined;
 
       this.parent.querySelector(".delimited-options .quotes input").checked = options.quotes ? options.quotes : true;
       this.parent.querySelector(".delimited-options .headerVal input").checked = options.header ? options.header : true;
       this.parent.querySelector(".delimited-options .quoteChar input").value = options.quoteChar ? options.quoteChar : "\"";
       this.parent.querySelector(".delimited-options .escapeChar input").value = options.escapeChar ? options.escapeChar : "\"";
 
-      let foundDelim=false;
-      for(const key in this.delimiterMappings){
-        if(options.delimiter===this.delimiterMappings[key]){
-          let optionelem = this.parent.querySelector(`.delimited-options div.delimiter option[value='${key}']`);
-          if(optionelem!==undefined){
-            optionelem.selected=true;
-          }
-          
-          foundDelim=true;
-        }
-      }
-
-      if(!foundDelim){
-        let optionelem = this.parent.querySelector(".delimited-options div.delimiter option[value='custom']");
-        if(optionelem!==undefined){
-          optionelem.selected=true;
-        }
-        this.parent.querySelector(".delimited-options .custom-delimiter input").value = options.delimiter;
-      }
 
       // if(options.hasOwnProperty("newline")){
       //   this.options.newline = localoptions.newline;
@@ -163,4 +91,4 @@ class DelimitedOptions{
 
 }
 
-export {DelimitedOptions};
+export {CsvDelimitedOptions};

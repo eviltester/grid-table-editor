@@ -1,4 +1,4 @@
-import { DelimitorConvertor } from "./delimiter-convertor.js";
+import { DelimiterConvertor } from "./delimiter-convertor.js";
 
 export class CsvConvertor {
 
@@ -39,6 +39,6 @@ export class CsvConvertor {
     }
 
     convertFrom(dataTable){   
-        return new DelimitorConvertor({options: this.options}).convertFrom(dataTable);
+        return new DelimiterConvertor({options: this.options}).convertFrom(dataTable);
     }
 }

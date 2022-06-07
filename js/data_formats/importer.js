@@ -6,12 +6,18 @@ class Importer{
     constructor(gridApi,gridExtension) {
         this.gridApi = gridApi;
         this.gridExtras=gridExtension;
+        this.importOptions={};
+        this.importOptions.options={};
     }
 
     canImport(type){
         // todo support html import , "html"
-        const supportedTypes = ["markdown", "csv", "json", "javascript", "gherkin"]
+        const supportedTypes = ["markdown", "csv", "json", "javascript", "gherkin", "dsv"]
         return supportedTypes.includes(type);
+    }
+
+    setImportOptions(options){
+      this.importOptions=options;
     }
 
     // text area import
@@ -31,8 +37,15 @@ class Importer{
         this.importGherkinTextFrom(textToImport);
       }
 
-      if(typeToImport=="csv") {
-        var results=Papa.parse(textToImport);
+      if(typeToImport=="csv" || typeToImport=="dsv") {
+
+        // if importOptions header is false then it returns an array
+        // we have currently only coded setGridFromData to handle this
+        if(this.importOptions){
+          this.importOptions.header=false;
+        }
+        
+        var results=Papa.parse(textToImport, this.importOptions);
         //console.log(results.errors);
         this.setGridFromData(results.data);
       }

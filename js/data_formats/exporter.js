@@ -7,6 +7,20 @@ import { JavascriptConvertor } from "./javascript-convertor.js";
 import { CsvConvertor } from "./csv-convertor.js";
 import { DelimiterConvertor } from "./delimiter-convertor.js";
 
+
+// ascii table libraries
+// https://github.com/sorensen/ascii-table
+
+// https://www.npmjs.com/package/ascii-table3
+// https://openbase.com/js/ascii-data-table/documentation
+// https://ozh.github.io/ascii-tables/
+
+
+// bugs
+// the options are not persisted between tab changes
+// removing use-header deletes header so we should remember what the header is and restore it so we can add back into the grid, or use existing headers if column count matches
+// delimited doesn't fully survive setting the grid text e.g. : merges
+
 class Exporter {
 
     constructor(gridApi) {

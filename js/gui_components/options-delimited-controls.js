@@ -131,10 +131,10 @@ class DelimitedOptions{
 
     setFromOptions(options){
 
-      this.parent.querySelector(".delimited-options .quotes input").checked = options.quotes ? options.quotes : true;
-      this.parent.querySelector(".delimited-options .headerVal input").checked = options.header ? options.header : true;
-      this.parent.querySelector(".delimited-options .quoteChar input").value = options.quoteChar ? options.quoteChar : "\"";
-      this.parent.querySelector(".delimited-options .escapeChar input").value = options.escapeChar ? options.escapeChar : "\"";
+      this.parent.querySelector(".delimited-options .quotes input").checked = options.quotes!==undefined ? options.quotes : true;
+      this.parent.querySelector(".delimited-options .headerVal input").checked = options.header!==undefined ? options.header : true;
+      this.parent.querySelector(".delimited-options .quoteChar input").value = options.quoteChar!==undefined ? options.quoteChar : "\"";
+      this.parent.querySelector(".delimited-options .escapeChar input").value = options.escapeChar!==undefined ? options.escapeChar : "\"";
 
       let foundDelim=false;
       for(const key in this.delimiterMappings){

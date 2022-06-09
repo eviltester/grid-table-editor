@@ -75,8 +75,9 @@ class CsvDelimitedOptions{
 
     }
 
-    setFromOptions(options){
-      let tempElem=undefined;
+    setFromOptions(delimiterOptions){
+
+      let options = delimiterOptions?.options ? delimiterOptions.options : {};
 
       this.parent.querySelector(".delimited-options .quotes input").checked = options.quotes!==undefined ? options.quotes : true;
       this.parent.querySelector(".delimited-options .headerVal input").checked = options.header!==undefined ? options.header : true;

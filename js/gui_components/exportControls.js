@@ -73,7 +73,6 @@ class ExportControls {
       
         let textToRender = this.exporter.getGridAs(type);
         this.setTextFromString(textToRender);
-        
     }
 
     setTextFromString(someText){

@@ -3,12 +3,13 @@ import {DragDropControl} from "./drag-drop-control.js"
 import { fileTypes } from "../data_formats/file-types.js";
 import { CsvDelimitedOptions } from "./options-csv-delimited-controls.js";
 import { DelimitedOptions } from "./options-delimited-controls.js";
+import { DelimiterOptions } from "../data_formats/delimiter-options.js"
 
 class ImportExportControls {
 
     constructor(){
-        this.csvDelimiter = {};
-        this.delimited={};
+        this.csvDelimiter = new DelimiterOptions(",");
+        this.delimiter= new DelimiterOptions("\t");
     }
 
     addHTMLtoGui(parentelement){
@@ -22,9 +23,9 @@ class ImportExportControls {
             </label>
         `;
 
-        let settextfrombridbutton = parentelement.querySelector("#settextfromgridbutton");
+        let settextfromgridbutton = parentelement.querySelector("#settextfromgridbutton");
         let setTextAreaClickListener = this.renderTextFromGrid.bind(this);
-        settextfrombridbutton.addEventListener('click', setTextAreaClickListener, false);      
+        settextfromgridbutton.addEventListener('click', setTextAreaClickListener, false);      
 
         let setgridfromtextbutton = parentelement.querySelector("#setgridfromtextbutton");
         let importTextAreaClickListener = this.importTextArea.bind(this);
@@ -37,27 +38,6 @@ class ImportExportControls {
         // setup the drop zone
         const dragDropZone = new DragDropControl(this.readFile.bind(this));
         dragDropZone.configureAsDropZone(parentelement.querySelector("#dropzone"));
-
-        this.csvDelimiter={};
-        this.csvDelimiter.options = {
-            quotes: true, //or array of booleans
-            quoteChar: '"',
-            escapeChar: '"',
-            delimiter: ",",
-            header: true,
-            newline: "\n",
-        }
-
-        this.delimiter={};
-        this.delimiter.options = {
-            quotes: true, //or array of booleans
-            quoteChar: '"',
-            escapeChar: '"',
-            delimiter: "\t",
-            header: true,
-            newline: "\n",
-        }
-
     }
 
     setImporter(anImporter){
@@ -78,6 +58,7 @@ class ImportExportControls {
     importTextArea(){
         const typeToImport = document.querySelector("li.active-type a").getAttribute("data-type");
         const textToImport = document.getElementById("markdownarea").value;
+
         this.importer.importText(typeToImport, textToImport);
     }
 
@@ -133,10 +114,10 @@ class ImportExportControls {
         }
       
         if(type==="csv"){
-            this.importer.setImportOptions(this.csvDelimiter.options);
+            this.importer.setImportOptions(this.csvDelimiter);
         }
         if(type==="dsv"){
-            this.importer.setImportOptions(this.delimiter.options);
+            this.importer.setImportOptions(this.delimiter);
         }
 
         importControls.forEach(e => e.style.visibility = importVisibility);
@@ -185,7 +166,7 @@ class ImportExportControls {
                 this.csvDelimitedOptions = new CsvDelimitedOptions(optionsparent);
             }
             this.csvDelimitedOptions.addToGui();
-            this.csvDelimitedOptions.setFromOptions(this.csvDelimiter.options);
+            this.csvDelimitedOptions.setFromOptions(this.csvDelimiter);
             this.csvDelimitedOptions.setApplyCallback(this.setCsvDelimterOptions.bind(this));
         }
         if(type=="dsv"){
@@ -193,7 +174,7 @@ class ImportExportControls {
                 this.delimitedOptions = new DelimitedOptions(optionsparent);
             }
             this.delimitedOptions.addToGui();
-            this.delimitedOptions.setFromOptions(this.delimiter.options);
+            this.delimitedOptions.setFromOptions(this.delimiter);
             this.delimitedOptions.setApplyCallback(this.setDelimterOptions.bind(this));
         }
 
@@ -205,15 +186,27 @@ class ImportExportControls {
 
     setCsvDelimterOptions(options){
 
-        this.csvDelimiter.options = {...this.csvDelimiter.options, ...options};
-        this.exporter.setCsvDelimiterOptions(this.csvDelimiter.options)
+        this.csvDelimiter.mergeOptions(options);
+
+        if(this.csvDelimiter.options.header===false){
+            // store headers from the grid in the options
+            this.csvDelimiter.headers = this.exporter.getHeadersFromGrid();
+        }
+
+        this.exporter.setCsvDelimiterOptions(this.csvDelimiter)
         this.renderTextFromGrid();
     }
 
     setDelimterOptions(options){
 
-        this.delimiter.options = {...this.delimiter.options, ...options};
-        this.exporter.setDelimiterOptions(this.delimiter.options)
+        this.delimiter.mergeOptions(options);
+
+        if(this.delimiter.options.header===false){
+            // store headers from the grid in the options
+            this.delimiter.headers = this.exporter.getHeadersFromGrid();
+        }
+
+        this.exporter.setDelimiterOptions(this.delimiter)
         this.renderTextFromGrid();
     }
   

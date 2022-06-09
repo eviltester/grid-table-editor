@@ -1,13 +1,13 @@
-import { GherkinConvertor } from "./gherkin-convertor.js";
-import { MarkdownConvertor } from "./markdown-convertor.js";
+import { DelimiterOptions } from "../data_formats/delimiter-options.js";
+import { GherkinConvertor } from "../data_formats/gherkin-convertor.js";
+import { MarkdownConvertor } from "../data_formats/markdown-convertor.js";
 
 class Importer{
 
     constructor(gridApi,gridExtension) {
         this.gridApi = gridApi;
         this.gridExtras=gridExtension;
-        this.importOptions={};
-        this.importOptions.options={};
+        this.importOptions= new DelimiterOptions();
     }
 
     canImport(type){
@@ -37,21 +37,41 @@ class Importer{
         this.importGherkinTextFrom(textToImport);
       }
 
+      let rememberOptionsHeader=undefined;
+
       if(typeToImport=="csv" || typeToImport=="dsv") {
 
+        let headerText="";
+
+        if(this.importOptions){
+          if(this.importOptions.options.header==false){
+            // if we have any stored headers then add them to the input
+            let headers = this.importOptions.headers;
+            if(headers!==undefined && headers.length>0){
+              headerText = Papa.unparse([this.importOptions.headers], this.importOptions.options)
+              headerText = headerText+this.importOptions.options.newline;
+            }
+            
+          }
+        }
         // if importOptions header is false then it returns an array
         // we have currently only coded setGridFromData to handle this
         if(this.importOptions){
-          this.importOptions.header=false;
+          rememberOptionsHeader = this.importOptions.options.header;
+          this.importOptions.options.header=false;
         }
         
-        var results=Papa.parse(textToImport, this.importOptions);
+        var results=Papa.parse(headerText + textToImport, this.importOptions.options);
         //console.log(results.errors);
         this.setGridFromData(results.data);
       }
 
       if(typeToImport=="json" || typeToImport=="javascript") {
         this.setGridFromData(Papa.parse(Papa.unparse(JSON.parse(textToImport))).data);
+      }
+
+      if(rememberOptionsHeader!==undefined){
+        this.importOptions.options.header=rememberOptionsHeader;
       }
 
     }

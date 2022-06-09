@@ -1,5 +1,5 @@
-import { Importer } from "./data_formats/importer.js";
-import { Exporter } from "./data_formats/exporter.js";
+import { Importer } from "./grid/importer.js";
+import { Exporter } from "./grid/exporter.js";
 import { enableTestDataGenerationInterface } from "./gui_components/testdatadefn.js";
 import { ExtendedDataGrid } from "./gui_components/main-display-grid.js";
 import {TabbedTextControl} from "./gui_components/tabbed-text-control.js"

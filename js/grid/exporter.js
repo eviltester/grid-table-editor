@@ -17,9 +17,6 @@ import { DelimiterOptions } from "../data_formats/delimiter-options.js";
 // https://ozh.github.io/ascii-tables/
 
 
-// bugs
-// custom delimiter not importing properly
-
 class Exporter {
 
     constructor(gridApi) {

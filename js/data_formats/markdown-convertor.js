@@ -94,7 +94,7 @@ export class MarkdownConvertor {
     }
 
    
-    markdownTableToDataTable(markdownTable){
+    toDataTable(markdownTable){
 
       let rows = [];
       // should not really need to handle \r because a trim will remove it

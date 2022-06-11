@@ -33,4 +33,11 @@ export class JsonConvertor {
         return objects;
     }
 
+    toDataTable(textToImport){
+        let results = Papa.parse(Papa.unparse(JSON.parse(textToImport)));
+        let dataTable = new GenericDataTable();
+        dataTable.setFromDataArray(results.data);
+        return dataTable;
+    }
+
 }

@@ -13,32 +13,48 @@ export class CsvConvertor {
             newline: "\n",
         }
 
-        // allow configuring off...
-        if(params!==undefined){
-            if(params.hasOwnProperty("options")){
-              let localoptions = params.options;
-              if(localoptions.hasOwnProperty("quotes")){
-                this.options.quotes = localoptions.quotes;
-              }
-              if(localoptions.hasOwnProperty("quoteChar")){
-                this.options.quoteChar = localoptions.quoteChar;
-              }
-              if(localoptions.hasOwnProperty("escapeChar")){
-                this.options.escapeChar = localoptions.escapeChar;
-              }
-              if(localoptions.hasOwnProperty("header")){
-                this.options.header = localoptions.header;
-              }
-              if(localoptions.hasOwnProperty("newline")){
-                this.options.newline = localoptions.newline;
-              }
-            }
-        }
+        this.storedHeaders = [];
 
-        // todo: need a way to configure delimiters from GUI
+        if(params!==undefined){
+          this.setOptions(params);
+        }
+    }
+
+    setOptions(delimiterOptions){
+      if(delimiterOptions.hasOwnProperty("options")){
+        let localoptions = delimiterOptions.options;
+        if(localoptions.hasOwnProperty("quotes")){
+          this.options.quotes = localoptions.quotes;
+        }
+        if(localoptions.hasOwnProperty("quoteChar")){
+          this.options.quoteChar = localoptions.quoteChar;
+        }
+        if(localoptions.hasOwnProperty("escapeChar")){
+          this.options.escapeChar = localoptions.escapeChar;
+        }
+        // CSV so do not allow changing delimiter
+        // if(localoptions.hasOwnProperty("delimiter")){
+        //   this.options.delimiter = localoptions.delimiter;
+        // }
+        if(localoptions.hasOwnProperty("header")){
+          this.options.header = localoptions.header;
+        }
+        if(localoptions.hasOwnProperty("newline")){
+          this.options.newline = localoptions.newline;
+        }
+      }
+      if(delimiterOptions.hasOwnProperty("headers")){
+        this.storedHeaders = delimiterOptions.headers.map(header => header);
+      }else{
+        this.storedHeaders = [];
+      }
     }
 
     convertFrom(dataTable){   
-        return new DelimiterConvertor({options: this.options}).convertFrom(dataTable);
+        return new DelimiterConvertor({options: this.options, headers: this.storedHeaders}).convertFrom(dataTable);
+    }
+
+    toDataTable(textToImport){
+        return new DelimiterConvertor({options: this.options, headers: this.storedHeaders}).toDataTable(textToImport);
     }
 }

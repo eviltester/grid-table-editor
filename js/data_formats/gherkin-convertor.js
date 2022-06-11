@@ -57,7 +57,7 @@ export class GherkinConvertor {
     }
 
 
-    gherkinTableToDataTable(gherkinTable){
+    toDataTable(gherkinTable){
 
         let dataTable = new GenericDataTable();
 

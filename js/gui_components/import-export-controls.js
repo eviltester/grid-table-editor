@@ -70,6 +70,7 @@ class ImportExportControls {
 
         let type = document.querySelector("li.active-type a").getAttribute("data-type");
     
+        // todo: why is this 'different' and not just using the normal readFile approach?
         if(type=="csv" || type=="dsv") {
         //console.log(this.files[0]);
         Papa.parse(this.fileInputElement.files[0], {

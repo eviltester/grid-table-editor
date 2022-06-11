@@ -40,7 +40,7 @@ export class HtmlConvertor {
         return html;
     }
 
-    htmlTableToDataTable(aString){
+    toDataTable(aString){
 
         // create a dom element
         // inject the html table into the dom element
@@ -103,7 +103,7 @@ export class HtmlConvertor {
 
     // get the text, not the HTML and remove any characters that might mess up the data conversion
     getTableCellContents(tableCell){
-        return tableCell.innerText.replaceAll("\n","");
+        return tableCell.innerText.replaceAll("\n"," ").trim();
     }
 
 }

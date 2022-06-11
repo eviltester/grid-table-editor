@@ -54,7 +54,7 @@ export class DelimiterConvertor {
       }
     }
 
-    convertFrom(dataTable){      
+    fromDataTable(dataTable){      
         let objects = new JsonConvertor().formatAsObjects(dataTable);
         return Papa.unparse(objects, this.options);
     }

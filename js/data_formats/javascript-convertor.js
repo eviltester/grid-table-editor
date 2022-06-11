@@ -14,6 +14,10 @@ export class JavascriptConvertor {
         return this.delegateTo.formatAsObjects(dataTable);
     }
 
+    fromDataTable(dataTable){
+        return this.delegateTo.fromDataTable(dataTable);
+    }
+
     toDataTable(textToImport){
         return this.delegateTo.toDataTable(textToImport);
     }

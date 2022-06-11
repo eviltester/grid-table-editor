@@ -7,6 +7,7 @@ import { JavascriptConvertor } from "../data_formats/javascript-convertor.js";
 import { CsvConvertor } from "../data_formats/csv-convertor.js";
 import { DelimiterConvertor } from "../data_formats/delimiter-convertor.js";
 import { DelimiterOptions } from "../data_formats/delimiter-options.js";
+import { AsciiTableConvertor } from "../data_formats/asciitable-convertor.js";
 import {fileTypes} from '../data_formats/file-types.js';
 
 class Exporter {
@@ -15,12 +16,24 @@ class Exporter {
         this.gridApi = gridApi;
         this.csvDelimiter= new DelimiterOptions('"');
         this.delimiter= new DelimiterOptions("\t");
+
+        this.options={};
+        this.options["csv"] = this.csvDelimiter;
+        this.options["dsv"] = this.delimiter;
+
+        this.exporters = {};
+        this.exporters["markdown"]= new MarkdownConvertor();
+        this.exporters["csv"]= new CsvConvertor();
+        this.exporters["dsv"]= new DelimiterConvertor();
+        this.exporters["json"] = new JsonConvertor();
+        this.exporters["javascript"] = new JavascriptConvertor();
+        this.exporters["gherkin"] = new GherkinConvertor();
+        this.exporters["html"] = new HtmlConvertor();
+        this.exporters["asciitable"] = new AsciiTableConvertor();
     }
 
-    // todo: register exporters and code to an interface to simplify code here like the importer
     canExport(type){
-        const supportedTypes = ["markdown", "csv", "dsv", "json", "javascript", "gherkin", "html", "asciitable"]
-        return supportedTypes.includes(type);
+        return this.exporters.hasOwnProperty(type);
     }
 
     getFileExtensionFor(type){
@@ -29,39 +42,20 @@ class Exporter {
 
     getGridAs(type){
 
-        if(type=="markdown") {
-          return this.getGridAsMarkdown();
-        }
-      
-        if(type=="csv") {
-            return this.getGridAsCsv();
+        if(!this.canExport(type)){
+            console.log(`Data Type ${type} not supported for exporting`);
+            return "";
         }
 
-        if(type=="dsv") {
-            return this.getGridAsDsv();
+        if(this.exporters.hasOwnProperty(type)){
+            console.log("using generic export call for implied interface")
+            let exporterToUse = this.exporters[type];
+            let optionsToUse = this.options[type];
+            if(optionsToUse!==undefined){
+                exporterToUse?.setOptions?.(optionsToUse);
+            }
+            return exporterToUse?.fromDataTable(this.getGridAsGenericDataTable());
         }
-      
-        if(type=="json") {
-            return this.getGridAsJson();
-        }
-      
-        if(type=="javascript") {
-            return this.getGridAsJavaScriptJson();
-        }
-      
-        if(type=="gherkin") {
-            return this.getGridAsGherkin();
-        }
-      
-        if(type=="html") {
-            return this.getGridAsHTML();
-        }
-
-        if(type=="asciitable") {
-            return this.getGridAsAsciiTable();
-        }
-
-        return "";
     }
 
     getGridAsGenericDataTable(){
@@ -89,26 +83,8 @@ class Exporter {
         return this.gridApi.getColumnDefs().map(col => col.headerName);
     }
 
-    getGridAsMarkdown(){       
-        return new MarkdownConvertor().formatAsMarkdownTable(this.getGridAsGenericDataTable());
-    }
 
-    getGridAsGherkin(){
-        return new GherkinConvertor().formatAsGherkinTable(this.getGridAsGenericDataTable());
-    }
-
-    getGridAsHTML(){
-        return new HtmlConvertor().formatAsHTMLTable(this.getGridAsGenericDataTable());
-    }
-
-    getGridAsJavaScriptJson(){
-        return JSON.stringify(new JavascriptConvertor().formatAsObjects(this.getGridAsGenericDataTable()), null, "\t");
-    }
-
-    getGridAsJson(){
-        return JSON.stringify(new JsonConvertor().formatAsObjects(this.getGridAsGenericDataTable()), null, "\t");
-    }
-
+    // todo: import and export options setting should use a consistent approach
     setCsvDelimiterOptions(options){
         this.csvDelimiter.mergeOptions(options);
     }
@@ -117,24 +93,6 @@ class Exporter {
         this.delimiter.mergeOptions(options);
     }
 
-    getGridAsCsv(){
-        return new CsvConvertor({options : this.csvDelimiter.options}).convertFrom(this.getGridAsGenericDataTable());
-    }
-
-    getGridAsDsv(){
-        return new DelimiterConvertor({options : this.delimiter.options}).convertFrom(this.getGridAsGenericDataTable());
-    }
-
-    // todo: move this into a convertor class and add options to format in different ways
-    getGridAsAsciiTable(){
-        // hack out a quick experiment with asciitable
-        let dataTable = this.getGridAsGenericDataTable()
-        var table = new AsciiTable()
-            .setHeading(dataTable.getHeaders())
-            .addRowMatrix(dataTable.rows);
-
-            return table.render();
-    }
 }
 
 export {Exporter}

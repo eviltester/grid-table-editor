@@ -158,7 +158,7 @@ export class MarkdownConvertor {
     }
 
     // https://www.markdownguide.org/extended-syntax/
-    formatAsMarkdownTable(dataTable){
+    fromDataTable(dataTable){
       // display a pipe (|) character in a table by using its HTML character code (&#124;).
 
       let renderHeaders = dataTable.getHeaders().map(header => this.validMarkdownCellValue(header));

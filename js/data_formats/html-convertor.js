@@ -18,7 +18,7 @@ export class HtmlConvertor {
         return data.replaceAll('<','&lt;').replaceAll(">","&gt;")
     }
 
-    formatAsHTMLTable(dataTable){
+    fromDataTable(dataTable){
 
         var html = "<table>\n";
 

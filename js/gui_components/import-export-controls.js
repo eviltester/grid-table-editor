@@ -95,9 +95,14 @@ class ImportExportControls {
     }
 
     setFileFormatType(){
+
+        // todo: these should not be document based locators, they should work from the parent
+        
+        // get data format type
         const type = document.querySelector("li.active-type a").getAttribute("data-type");
       
-        const importControlLocators = ["#setgridfromtextbutton", "#filedownload", "#dropzone", "#csvinputlabel", "#csvinput"];
+        // set import control visibility
+        const importControlLocators = ["#setgridfromtextbutton", "#dropzone", "#csvinputlabel", "#csvinput"];
         let importControls = [];
         importControlLocators.forEach(locator =>{ 
             let elem = document.querySelector(locator);
@@ -105,14 +110,37 @@ class ImportExportControls {
               importControls.push(elem);
             }
         })
-            
+
         let importVisibility = "visible";
-      
+
         if(!this.importer.canImport(type)){
-          console.log(`Data Type ${type} not supported for importing`);
-          importVisibility="hidden";
+            console.log(`Data Type ${type} not supported for importing`);
+            importVisibility="hidden";
         }
+        
+        importControls.forEach(e => e.style.visibility = importVisibility);
+
+        // set export controls visibility
+        const exportControlLocators = ["#filedownload"];
+        let exportControls = [];
+        exportControlLocators.forEach(locator =>{ 
+            let elem = document.querySelector(locator);
+            if(elem){
+              exportControls.push(elem);
+            }
+        })
+            
+        let exportVisibility = "visible";
       
+        if(!this.exporter.canExport(type)){
+            console.log(`Data Type ${type} not supported for exporting`);
+            exportVisibility="hidden";
+        }
+
+        exportControls.forEach(e => e.style.visibility = exportVisibility);
+
+        // set options for type
+        // todo: why are we not setting export options here too
         if(type==="csv"){
             this.importer.setImportOptions(this.csvDelimiter);
         }
@@ -120,8 +148,8 @@ class ImportExportControls {
             this.importer.setImportOptions(this.delimiter);
         }
 
-        importControls.forEach(e => e.style.visibility = importVisibility);
-      
+        // todo: allow export and import to have different file types
+        // configure file type display
         const fileType = this.importer.getFileExtensionFor(type);
       
         document.querySelectorAll(".fileFormat").forEach(elem => elem.innerText = fileType);

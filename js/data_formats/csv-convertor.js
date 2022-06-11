@@ -50,8 +50,8 @@ export class CsvConvertor {
       }
     }
 
-    convertFrom(dataTable){   
-        return new DelimiterConvertor({options: this.options, headers: this.storedHeaders}).convertFrom(dataTable);
+    fromDataTable(dataTable){   
+        return new DelimiterConvertor({options: this.options, headers: this.storedHeaders}).fromDataTable(dataTable);
     }
 
     toDataTable(textToImport){

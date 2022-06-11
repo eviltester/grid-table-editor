@@ -7,6 +7,7 @@ fileTypes["json"] =   {type: "json", fileExtension: ".json"};
 fileTypes["javascript"] =   {type: "javascript", fileExtension: ".js"};
 fileTypes["gherkin"] =   {type: "gherkin", fileExtension: ".gherkin"};
 fileTypes["html"] = {type: "html", fileExtension: ".html"};
+fileTypes["asciitable"] = {type: "asciitable", fileExtension: ".txt"};
 
 
 export {fileTypes};

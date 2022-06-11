@@ -96,6 +96,8 @@ Programming libraries to help convert data.
 ### Markdown Table Libraries
 
 - [Markdown-table](https://github.com/wooorm/markdown-table) - Javascript array to Markdown Table Generator.
+- [Turndown](https://github.com/mixmark-io/turndown) - Javascript HTML to Markdown Table Convertor
+- [Susisu Markdown Table Editor Kernel](https://github.com/susisu/mte-kernel) - Javascript API for Markdown Table editing
 
 ### Test Data Generation
 

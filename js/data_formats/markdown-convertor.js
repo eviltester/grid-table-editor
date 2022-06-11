@@ -1,5 +1,16 @@
 import { GenericDataTable } from "./generic-data-table.js";
 
+// todo: option - compact/readable readable will pad out the columns to match the longest length of items and adjust header delimiters to match
+// todo: option - space padding add space (before, after, both ) e.g. | value| or |value | or | value |
+// todo: option - tab padding add tab (before, after, both ) e.g. | value| or |value | or | value |
+// todo: option - border bars e.g. | at start and end of table line, when off then generate "Heading1 | Heading2", "row0-1 | row0-2"
+// todo: option - embolden headers e.g. | **header1** |
+// todo: option - emphasis on headers e.g. | _header1_ |
+// todo: option - embolden columns (given a list of numbers e.g. 1,2)(not zero indexed since this is for humans) e.g. | **row0-1** |
+// todo: option - emphasis on columns (given a list of numbers e.g. 1,2)(not zero indexed since this is for humans) e.g. e.g. | _header1_ |
+// todo: somehow support alignment on headers :--- :---: ---:
+// todo: option - initially support alignment with a global config "default align", "left align", "center", "right alignment"
+// todo: option - allow finer grained control for all columns
 export class MarkdownConvertor {
 
     constructor(params) {

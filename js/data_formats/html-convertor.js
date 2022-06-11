@@ -80,11 +80,7 @@ export class HtmlConvertor {
         // add header row to table
         //console.log("Header");
         //console.log(header);
-
-        // get the text, not the HTML
-        dataTable.setHeaders([...headerCells].map(contents => contents.innerText));
-
-
+        dataTable.setHeaders(this.getCellContentsArrayFromNodeList(headerCells));
 
         //console.log("Rows");
         for(let rowCount=1; rowCount<rows.length; rowCount++){
@@ -92,7 +88,7 @@ export class HtmlConvertor {
             let cells = rows[rowCount].querySelectorAll("td");
 
             //console.log(cells);
-            dataTable.appendDataRow([...cells].map(contents => contents.innerText));
+            dataTable.appendDataRow(this.getCellContentsArrayFromNodeList(cells));
         }
 
         container.innerHTML="";
@@ -100,4 +96,14 @@ export class HtmlConvertor {
 
         return dataTable;
     }
+
+    getCellContentsArrayFromNodeList(aNodeList){
+        return [...aNodeList].map(contents => this.getTableCellContents(contents));
+    }
+
+    // get the text, not the HTML and remove any characters that might mess up the data conversion
+    getTableCellContents(tableCell){
+        return tableCell.innerText.replaceAll("\n","");
+    }
+
 }

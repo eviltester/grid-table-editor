@@ -8,7 +8,10 @@ class GridExtension{
     constructor(gridApi, columnApi) {
         this.gridApi = gridApi;
         this.columnApi = columnApi;
-        this.cellRendererText = params => `<div style='word-break:normal;line-height: normal'><p>${params.value}</p></div>`;
+        this.cellRendererText = (params) => {
+            let val = params.value?.replaceAll("<", "&lt;")?.replaceAll(">","&gt;");
+            return `<div style='word-break:normal;line-height: normal'><p>${val}</p></div>`
+        };
     }
 
 

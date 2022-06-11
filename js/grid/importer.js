@@ -10,6 +10,9 @@ class Importer{
         this.importOptions= new DelimiterOptions();
     }
 
+    // todo: have all importers and exporters follow the same interface and register capabilities
+    // they should report on what formats they can handle
+    // register all importers in an array and use most appropriate based on type
     canImport(type){
         // todo support html import , "html"
         const supportedTypes = ["markdown", "csv", "json", "javascript", "gherkin", "dsv"]
@@ -60,12 +63,7 @@ class Importer{
           this.importOptions.options.header=false;
         }
         
-        // todo: papa parse docs say it supports multichar delimiters, but... I can't get that to work here e.g. ==, " bob " need to investigate what that means
-        // note - test case in papa parse uses ", " as the multichar delim, but that doesn't work from our GUI so we might have introduced an issue somewhere
-        // see https://github.com/mholt/PapaParse/blob/master/tests/test-cases.js
-        console.log(textToImport);
         var results=Papa.parse(headerText + textToImport, this.importOptions.options);
-        console.log(results.errors);
         this.setGridFromData(results.data);
       }
 

@@ -1,8 +1,8 @@
 import {ExportControls} from "./exportControls.js"
 import {DragDropControl} from "./drag-drop-control.js"
 import { fileTypes } from "../data_formats/file-types.js";
-import { CsvDelimitedOptions } from "./options-csv-delimited-controls.js";
-import { DelimitedOptions } from "./options-delimited-controls.js";
+import { CsvDelimitedOptions } from "./options_panels/options-csv-delimited-controls.js";
+import { DelimitedOptions } from "./options_panels/options-delimited-controls.js";
 import { DelimiterOptions } from "../data_formats/delimiter-options.js"
 
 class ImportExportControls {
@@ -71,7 +71,7 @@ class ImportExportControls {
 
         let type = document.querySelector("li.active-type a").getAttribute("data-type");
     
-        if(type=="csv") {
+        if(type=="csv" || type=="dsv") {
         //console.log(this.files[0]);
         Papa.parse(this.fileInputElement.files[0], {
             complete: function (results) {

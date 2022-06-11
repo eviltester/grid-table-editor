@@ -17,6 +17,7 @@ class Exporter {
         this.delimiter= new DelimiterOptions("\t");
     }
 
+    // todo: register exporters and code to an interface to simplify code here like the importer
     canExport(type){
         const supportedTypes = ["markdown", "csv", "dsv", "json", "javascript", "gherkin", "html", "asciitable"]
         return supportedTypes.includes(type);
@@ -124,6 +125,7 @@ class Exporter {
         return new DelimiterConvertor({options : this.delimiter.options}).convertFrom(this.getGridAsGenericDataTable());
     }
 
+    // todo: move this into a convertor class and add options to format in different ways
     getGridAsAsciiTable(){
         // hack out a quick experiment with asciitable
         let dataTable = this.getGridAsGenericDataTable()

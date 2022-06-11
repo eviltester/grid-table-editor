@@ -18,7 +18,7 @@ class Exporter {
     }
 
     canExport(type){
-        const supportedTypes = ["markdown", "csv", "dsv", "json", "javascript", "gherkin", "html"]
+        const supportedTypes = ["markdown", "csv", "dsv", "json", "javascript", "gherkin", "html", "asciitable"]
         return supportedTypes.includes(type);
     }
 
@@ -54,6 +54,10 @@ class Exporter {
       
         if(type=="html") {
             return this.getGridAsHTML();
+        }
+
+        if(type=="asciitable") {
+            return this.getGridAsAsciiTable();
         }
 
         return "";
@@ -118,6 +122,16 @@ class Exporter {
 
     getGridAsDsv(){
         return new DelimiterConvertor({options : this.delimiter.options}).convertFrom(this.getGridAsGenericDataTable());
+    }
+
+    getGridAsAsciiTable(){
+        // hack out a quick experiment with asciitable
+        let dataTable = this.getGridAsGenericDataTable()
+        var table = new AsciiTable()
+            .setHeading(dataTable.getHeaders())
+            .addRowMatrix(dataTable.rows);
+
+            return table.render();
     }
 }
 

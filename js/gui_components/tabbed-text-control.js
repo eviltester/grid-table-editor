@@ -5,6 +5,7 @@ class TabbedTextControl{
         this.importExportController = theImportExportControls;
     }
 
+    // todo: populate this from the registered importers and exporters rather than hard coding
     addToGui(){
         this.parent.innerHTML =
         `
@@ -31,6 +32,9 @@ class TabbedTextControl{
               </li>
               <li id="type-html" class="type-select">
                 <a class="type-select-action" data-type="html" href="#">HTML</a>
+              </li>
+              <li id="type-asciitable" class="type-select">
+                <a class="type-select-action" data-type="asciitable" href="#">ASCII</a>
               </li>
             </ul>
           </div>

@@ -31,7 +31,7 @@ class Importer{
     }
 
     getFileExtensionFor(type){
-        return fileTypes[type].fileExtension;
+        return fileTypes[type]?.fileExtension;
     }
 
     setImportOptions(options){

@@ -52,22 +52,30 @@ class TabbedTextControl{
         `;
 
 
-    document.querySelectorAll(".type-select-action").forEach( lielem => lielem.addEventListener("click", (e) => {
+      this.parent.querySelectorAll(".type-select-action").forEach( lielem => lielem.addEventListener("click", (e) => {
 
-        // set the display buttons
-        document.querySelectorAll(".type-select").forEach(elem => elem.classList.remove("active-type"));
-    
-        e.target.parentElement.classList.add("active-type");
-    
-        // switched tab so re-render text
-        this.importExportController.renderTextFromGrid();
-        this.importExportController.setFileFormatType();
-        this.importExportController.setOptionsViewForFormatType();
-        // don't try to navigate
-        return false;
-        }));
+          // set the display buttons
+          this.parent.querySelectorAll(".type-select").forEach(elem => elem.classList.remove("active-type"));
+      
+          e.target.parentElement.classList.add("active-type");
+      
+          // switched tab so re-render text
+          this.importExportController.renderTextFromGrid();
+          this.importExportController.setFileFormatType();
+          this.importExportController.setOptionsViewForFormatType();
+          // don't try to navigate
+          return false;
+        })
+      );
+
+      this.parent.querySelectorAll("li.type-select").forEach( lielem => lielem.addEventListener("click", (e) => {  
+        e.target.querySelector("a.type-select-action")?.click();
+      })
+    );
+
 
     }
+    
 }
 
 export {TabbedTextControl};

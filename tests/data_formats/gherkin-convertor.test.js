@@ -62,7 +62,7 @@ describe("Can convert markdown tables to data suitable for a data grid",()=>{
 |row 1 cell 0|row 1 cell 1|
 `    
 
-        let table = new GherkinConvertor().gherkinTableToDataTable(basicTable);
+        let table = new GherkinConvertor().toDataTable(basicTable);
 
         expect(table.getRowCount()).toBe(2);
         expect(table.getHeader(0)).toBe('heading 1');
@@ -90,7 +90,7 @@ describe("Can convert markdown tables to data suitable for a data grid",()=>{
 |row 0\\| cell 0|row 0 cell 1|
 |row 1 cell 0|row 1 \\|cell 1|
 `    
-        let table = new GherkinConvertor().gherkinTableToDataTable(basicTable);
+        let table = new GherkinConvertor().toDataTable(basicTable);
 
         expect(table.getRowCount()).toBe(2);
         expect(table.getHeader(0)).toBe('head|ing 1');
@@ -114,7 +114,7 @@ describe("Can convert markdown tables to data suitable for a data grid",()=>{
     test('empty table returns empty array', () => {
         const basicTable = "";
 
-        let table = new GherkinConvertor().gherkinTableToDataTable(basicTable);
+        let table = new GherkinConvertor().toDataTable(basicTable);
 
         expect(table.getRowCount()).toBe(0);
         expect(table.getColumnCount()).toBe(0);
@@ -135,7 +135,7 @@ describe("Can convert markdown tables to data suitable for a data grid",()=>{
 |row 1 cell 0|row 1 cell 1|
 `    
 
-        let table = new GherkinConvertor().gherkinTableToDataTable(basicTable);
+        let table = new GherkinConvertor().toDataTable(basicTable);
 
         expect(table.getRowCount()).toBe(2);
         expect(table.getHeader(0)).toBe('heading 1');
@@ -167,7 +167,7 @@ describe("Can convert markdown tables to data suitable for a data grid",()=>{
 
 `    
 
-        let table = new GherkinConvertor().gherkinTableToDataTable(basicTable);
+        let table = new GherkinConvertor().toDataTable(basicTable);
 
         expect(table.getRowCount()).toBe(2);
         expect(table.getHeader(0)).toBe('heading 1');
@@ -200,7 +200,7 @@ describe("Can convert markdown tables to data suitable for a data grid",()=>{
 `    
         
 
-        let table = new GherkinConvertor().gherkinTableToDataTable(basicTable);
+        let table = new GherkinConvertor().toDataTable(basicTable);
 
         expect(table.getRowCount()).toBe(1);
         expect(table.getHeader(0)).toBe('heading -1');
@@ -229,7 +229,7 @@ describe("Can convert markdown tables to data suitable for a data grid",()=>{
     
         
 
-        let table = new GherkinConvertor().gherkinTableToDataTable(basicTable);
+        let table = new GherkinConvertor().toDataTable(basicTable);
 
         expect(table.getRowCount()).toBe(1);
         expect(table.getHeader(0)).toBe('heading -1');
@@ -254,7 +254,7 @@ describe("Can convert markdown tables to data suitable for a data grid",()=>{
 `    
         
 
-        let table = new GherkinConvertor().gherkinTableToDataTable(basicTable);
+        let table = new GherkinConvertor().toDataTable(basicTable);
 
         expect(table.getRowCount()).toBe(2);
         expect(table.getHeader(0)).toBe('heading 1');
@@ -286,9 +286,9 @@ describe("Can convert markdown tables to data suitable for a data grid",()=>{
 |row 1 cell 0|row 1 cell 1|
 `    
     
-            let table = new GherkinConvertor().gherkinTableToDataTable(basicTable);
+            let table = new GherkinConvertor().toDataTable(basicTable);
 
-            let output = new GherkinConvertor().formatAsGherkinTable(table);
+            let output = new GherkinConvertor().fromDataTable(table);
 
             expect(output).toBe(basicTable);
         });
@@ -303,7 +303,7 @@ describe("Can convert markdown tables to data suitable for a data grid",()=>{
             table.setHeaders(["heading| 1", "heading 2", "h3", "h4"]);
             table.appendDataRow(["|start bar","data | bar", "end bar|", "|start and end bar|"])
 
-            let output = new GherkinConvertor().formatAsGherkinTable(table);
+            let output = new GherkinConvertor().fromDataTable(table);
 
             expect(output).toBe(expected);
         });

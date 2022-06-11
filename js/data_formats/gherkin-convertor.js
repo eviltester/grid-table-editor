@@ -100,6 +100,6 @@ export class GherkinConvertor {
     }
 
     gherkinTableToDataRows(gherkinTable){
-        return this.gherkinTableToDataTable(gherkinTable).asDataArray();
+        return this.toDataTable(gherkinTable).asDataArray();
     }
 }

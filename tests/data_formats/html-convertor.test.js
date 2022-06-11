@@ -18,7 +18,7 @@ describe("Can convert generic data grids to html tables",()=>{
         table.setHeaders(["heading< 1", "heading 2", "h3", "h4"]);
         table.appendDataRow(["<start","data > bar", "end bar>", "<start and end bar>"])
 
-        let output = new HtmlConvertor().formatAsHTMLTable(table);
+        let output = new HtmlConvertor().fromDataTable(table);
 
         expect(output).toBe(expected);
     });

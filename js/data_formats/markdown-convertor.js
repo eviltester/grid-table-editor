@@ -149,7 +149,7 @@ export class MarkdownConvertor {
 
    // todo: migrate away from this and use the Generic Data Table
     markdownTableToDataRows(markdownTable){
-      return this.markdownTableToDataTable(markdownTable).asDataArray();
+      return this.toDataTable(markdownTable).asDataArray();
     }
 
 

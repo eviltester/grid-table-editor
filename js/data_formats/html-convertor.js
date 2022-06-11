@@ -40,4 +40,64 @@ export class HtmlConvertor {
         return html;
     }
 
+    htmlTableToDataTable(aString){
+
+        // create a dom element
+        // inject the html table into the dom element
+        // traverse and create a GenericDataTable
+
+        const dataTable = new GenericDataTable();
+
+        let container = document.createElement("div");
+        container.innerHTML=aString;
+
+        // find the table
+        let table = container.querySelector("table");
+
+        if(table===undefined){
+            // todo: create some error surfacing protocol
+            console.log("Error: could not find table in the HTML import");
+            return dataTable;
+        }
+
+        // get the rows
+        let rows = table.querySelectorAll("tr");
+
+        if(rows===undefined){
+            console.log("Error: could not find any rows in the table");
+            return dataTable;
+        }
+
+        // header is the first row - handle th or td
+        let header = rows[0];
+
+        let headerCells = header.querySelectorAll("td, th");
+        if(headerCells===undefined || headerCells.length===0){
+            console.log("Error: could not find any headers in the table");
+            return dataTable;
+        }
+
+        // add header row to table
+        //console.log("Header");
+        //console.log(header);
+
+        // get the text, not the HTML
+        dataTable.setHeaders([...headerCells].map(contents => contents.innerText));
+
+
+
+        //console.log("Rows");
+        for(let rowCount=1; rowCount<rows.length; rowCount++){
+            // add row to table
+            let cells = rows[rowCount].querySelectorAll("td");
+
+            //console.log(cells);
+            dataTable.appendDataRow([...cells].map(contents => contents.innerText));
+        }
+
+        container.innerHTML="";
+        container=undefined;
+
+        return dataTable;
+    }
 }

@@ -1,6 +1,7 @@
 import { DelimiterOptions } from "../data_formats/delimiter-options.js";
 import { GherkinConvertor } from "../data_formats/gherkin-convertor.js";
 import { MarkdownConvertor } from "../data_formats/markdown-convertor.js";
+import { HtmlConvertor } from "../data_formats/html-convertor.js";
 import { fileTypes } from "../data_formats/file-types.js";
 
 class Importer{
@@ -15,8 +16,7 @@ class Importer{
     // they should report on what formats they can handle
     // register all importers in an array and use most appropriate based on type
     canImport(type){
-        // todo support html import , "html"
-        const supportedTypes = ["markdown", "csv", "json", "javascript", "gherkin", "dsv"]
+        const supportedTypes = ["markdown", "csv", "json", "javascript", "gherkin", "dsv", "html"]
         return supportedTypes.includes(type);
     }
 
@@ -42,6 +42,10 @@ class Importer{
 
       if(typeToImport=="gherkin") {
         this.importGherkinTextFrom(textToImport);
+      }
+
+      if(typeToImport=="html"){
+        this.importHtmlTextFrom(textToImport);
       }
 
       let rememberOptionsHeader=undefined;
@@ -79,7 +83,6 @@ class Importer{
       if(rememberOptionsHeader!==undefined){
         this.importOptions.options.header=rememberOptionsHeader;
       }
-
     }
 
     // todo: phase this out and use the GenericDataTable
@@ -144,9 +147,12 @@ class Importer{
       this.setGridFromGenericDataTable(new MarkdownConvertor().markdownTableToDataTable(aString));
     }
 
-    // todo: create a setGridFromDataTable method to handle the GenericDataTable
     importGherkinTextFrom(aString){
       this.setGridFromGenericDataTable(new GherkinConvertor().gherkinTableToDataTable(aString));
+    }
+
+    importHtmlTextFrom(aString){
+      this.setGridFromGenericDataTable(new HtmlConvertor().htmlTableToDataTable(aString));
     }
 }
 

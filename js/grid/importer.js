@@ -1,6 +1,7 @@
 import { DelimiterOptions } from "../data_formats/delimiter-options.js";
 import { GherkinConvertor } from "../data_formats/gherkin-convertor.js";
 import { MarkdownConvertor } from "../data_formats/markdown-convertor.js";
+import { fileTypes } from "../data_formats/file-types.js";
 
 class Importer{
 
@@ -17,6 +18,10 @@ class Importer{
         // todo support html import , "html"
         const supportedTypes = ["markdown", "csv", "json", "javascript", "gherkin", "dsv"]
         return supportedTypes.includes(type);
+    }
+
+    getFileExtensionFor(type){
+        return fileTypes[type].fileExtension;
     }
 
     setImportOptions(options){

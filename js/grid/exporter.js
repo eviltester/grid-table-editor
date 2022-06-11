@@ -7,7 +7,7 @@ import { JavascriptConvertor } from "../data_formats/javascript-convertor.js";
 import { CsvConvertor } from "../data_formats/csv-convertor.js";
 import { DelimiterConvertor } from "../data_formats/delimiter-convertor.js";
 import { DelimiterOptions } from "../data_formats/delimiter-options.js";
-
+import {fileTypes} from '../data_formats/file-types.js';
 
 // ascii table libraries
 // https://github.com/sorensen/ascii-table
@@ -28,6 +28,10 @@ class Exporter {
     canExport(type){
         const supportedTypes = ["markdown", "csv", "dsv", "json", "javascript", "gherkin", "html"]
         return supportedTypes.includes(type);
+    }
+
+    getFileExtensionFor(type){
+        return fileTypes[type].fileExtension;
     }
 
     getGridAs(type){

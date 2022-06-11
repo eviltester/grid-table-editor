@@ -1,5 +1,4 @@
 import {Download} from './download.js';
-import {fileTypes} from '../data_formats/file-types.js';
 
 class ExportsPageMap{
 
@@ -39,7 +38,7 @@ class ExportControls {
             return;
         }
 
-        var filename = "export" + fileTypes[type].fileExtension;
+        var filename = "export" + this.exporter.getFileExtensionFor(type);
 
         var text = document.querySelector(this.pageMap.markdownTextArea).value;
         new Download(filename).downloadFile(text);

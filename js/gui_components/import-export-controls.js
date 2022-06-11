@@ -1,6 +1,5 @@
 import {ExportControls} from "./exportControls.js"
 import {DragDropControl} from "./drag-drop-control.js"
-import { fileTypes } from "../data_formats/file-types.js";
 import { CsvDelimitedOptions } from "./options_panels/options-csv-delimited-controls.js";
 import { DelimitedOptions } from "./options_panels/options-delimited-controls.js";
 import { DelimiterOptions } from "../data_formats/delimiter-options.js"
@@ -122,12 +121,7 @@ class ImportExportControls {
 
         importControls.forEach(e => e.style.visibility = importVisibility);
       
-        if(!fileTypes.hasOwnProperty(type)){
-            console.log(`Data Type ${type} not supported`);
-            return;
-        }
-
-        const fileType = fileTypes[type].fileExtension;
+        const fileType = this.importer.getFileExtensionFor(type);
       
         document.querySelectorAll(".fileFormat").forEach(elem => elem.innerText = fileType);
     }

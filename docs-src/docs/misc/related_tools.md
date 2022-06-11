@@ -104,3 +104,12 @@ Programming libraries to help convert data.
 - [Rust Markov Chain Based Generator](https://github.com/dsietz/test-data-generation) - Test Data Generation Library written in Rust.
 - [Node Dummy JSON](https://www.npmjs.com/package/dummy-json) JavaScript library for generating random JSN data using Handlebars format template.
 - [Java Big Data Generator](https://finraos.github.io/DataGenerator/) - Java library for generating test data.
+
+### Ascii Tables
+
+Libraries to help format data into human readable ascii tables.
+
+-  [Sorenson Node Debugging Ascii Table](https://github.com/sorensen/ascii-table) - Javascript Ascii table generation originally for node debugging output.
+-  [Ascii Table 3](https://github.com/AllMightySauron/ascii-table3) - Javascript extended version of Sorenson with predefined table styles
+-  [OpenBase Ascii Table](https://openbase.com/js/ascii-data-table/documentation) - Javascript simple table layout with configurable column widths
+-  [Ozh Ascii Tables](https://github.com/ozh/ascii-tables) - Javascript format data into tables supports adding comment lines to output for different programming languages also outputs media wiki markup

@@ -9,14 +9,6 @@ import { DelimiterConvertor } from "../data_formats/delimiter-convertor.js";
 import { DelimiterOptions } from "../data_formats/delimiter-options.js";
 import {fileTypes} from '../data_formats/file-types.js';
 
-// ascii table libraries
-// https://github.com/sorensen/ascii-table
-
-// https://www.npmjs.com/package/ascii-table3
-// https://openbase.com/js/ascii-data-table/documentation
-// https://ozh.github.io/ascii-tables/
-
-
 class Exporter {
 
     constructor(gridApi) {

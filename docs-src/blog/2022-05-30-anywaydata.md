@@ -3,6 +3,7 @@ slug: now-at-anywaydata-com
 title: Moved to AnyWayData.com
 authors: alan
 tags: [release]
+date: 2022-05-30T15:00
 ---
 
 The [deployed version of the application](https://anywaydata.com/app.html) has moved to it's own domain of [anywaydata.com](https://anywaydata.com).

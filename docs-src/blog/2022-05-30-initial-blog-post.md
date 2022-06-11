@@ -3,6 +3,7 @@ slug: initial-blog-post
 title: News at May 30th 2022
 authors: alan
 tags: [release]
+date: 2022-05-30T10:00
 ---
 
 Initial Release of docs.

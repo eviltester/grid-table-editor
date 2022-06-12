@@ -4,6 +4,8 @@ import { CsvDelimitedOptions } from "./options_panels/options-csv-delimited-cont
 import { DelimitedOptions } from "./options_panels/options-delimited-controls.js";
 import { DelimiterOptions } from "../data_formats/delimiter-options.js"
 import { AsciiTableOptionsPanel } from "./options_panels/options-ascii-table.js";
+import { MarkdownOptionsPanel } from "./options_panels/options-markdown-panel.js";
+import { MarkdownOptions} from "../data_formats/markdown-convertor.js"
 
 class ImportExportControls {
 
@@ -11,8 +13,9 @@ class ImportExportControls {
         this.csvDelimiter = new DelimiterOptions(",");
         this.delimiter= new DelimiterOptions("\t");
         this.asciiTableStyleOptions = {style: "default"};
+        this.markdownOptions = new MarkdownOptions();
 
-        this.typesWithOptionsPanels = ["csv", "dsv", "asciitable"];
+        this.typesWithOptionsPanels = ["csv", "dsv", "asciitable", "markdown"];
     }
 
     addHTMLtoGui(parentelement){
@@ -212,6 +215,14 @@ class ImportExportControls {
             this.asciiTableOptionsPanel.setFromOptions(this.asciiTableStyleOptions);
             this.asciiTableOptionsPanel.setApplyCallback(this.setAsciiTableOptions.bind(this));
         }
+        if(type=="markdown"){
+            if(this.markdownOptionsPanel===undefined){
+                this.markdownOptionsPanel = new MarkdownOptionsPanel(optionsparent);
+            }
+            this.markdownOptionsPanel.addToGui();
+            this.markdownOptionsPanel.setFromOptions(this.markdownOptions);
+            this.markdownOptionsPanel.setApplyCallback(this.setMarkdownOptions.bind(this));
+        }
 
         optionsparent.style.display = "block";
 
@@ -252,6 +263,14 @@ class ImportExportControls {
         }
 
         this.exporter.setAsciiTableOptions(this.asciiTableStyleOptions)
+        this.renderTextFromGrid();
+    }
+
+    setMarkdownOptions(options){
+
+        this.markdownOptions.mergeOptions(options);
+
+        this.exporter.setMarkdownOptions(this.markdownOptions);
         this.renderTextFromGrid();
     }
 

@@ -1,5 +1,5 @@
-import {MarkdownConvertor, MarkdownOptions} from '../../js/data_formats/markdown-convertor';
-import { GenericDataTable } from '../../js/data_formats/generic-data-table';
+import {MarkdownConvertor, MarkdownOptions} from '../../js/data_formats/markdown-convertor.js';
+import { GenericDataTable } from '../../js/data_formats/generic-data-table.js';
 
 
 describe("can get values from a markdown table row", ()=>{

@@ -47,9 +47,13 @@ class MarkdownConvertor {
     constructor(params) {
       this.options=new MarkdownOptions();
       
-      if(params!==undefined){
-          this.options.mergeOptions(params);
+      if(params?.options){
+          this.setOptions(params);
       }
+    }
+
+    setOptions(newOptions){
+        this.options.mergeOptions(newOptions);
     }
 
     isMarkdownTableSeparatorRowValid(theRow){

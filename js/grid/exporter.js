@@ -17,9 +17,13 @@ class Exporter {
         this.csvDelimiter= new DelimiterOptions('"');
         this.delimiter= new DelimiterOptions("\t");
 
+        // todo make this an 'AsciiTableOptions` object
+        this.asciiTableOptions = {style : "default"};
+
         this.options={};
         this.options["csv"] = this.csvDelimiter;
         this.options["dsv"] = this.delimiter;
+        this.options["asciitable"] = this.asciiTableOptions;
 
         this.exporters = {};
         this.exporters["markdown"]= new MarkdownConvertor();
@@ -48,7 +52,6 @@ class Exporter {
         }
 
         if(this.exporters.hasOwnProperty(type)){
-            console.log("using generic export call for implied interface")
             let exporterToUse = this.exporters[type];
             let optionsToUse = this.options[type];
             if(optionsToUse!==undefined){
@@ -91,6 +94,12 @@ class Exporter {
 
     setDelimiterOptions(options){
         this.delimiter.mergeOptions(options);
+    }
+
+    setAsciiTableOptions(options){
+        if(options?.style){
+            this.asciiTableOptions.style = options.style;
+        }
     }
 
 }

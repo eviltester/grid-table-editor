@@ -3,12 +3,16 @@ import {DragDropControl} from "./drag-drop-control.js"
 import { CsvDelimitedOptions } from "./options_panels/options-csv-delimited-controls.js";
 import { DelimitedOptions } from "./options_panels/options-delimited-controls.js";
 import { DelimiterOptions } from "../data_formats/delimiter-options.js"
+import { AsciiTableOptionsPanel } from "./options_panels/options-ascii-table.js";
 
 class ImportExportControls {
 
     constructor(){
         this.csvDelimiter = new DelimiterOptions(",");
         this.delimiter= new DelimiterOptions("\t");
+        this.asciiTableStyleOptions = {style: "default"};
+
+        this.typesWithOptionsPanels = ["csv", "dsv", "asciitable"];
     }
 
     addHTMLtoGui(parentelement){
@@ -166,7 +170,7 @@ class ImportExportControls {
         edit_area.style.width="100%";
         edit_area.style.height="30%";
 
-        if(type!=="csv" && type!="dsv"){
+        if(!this.typesWithOptionsPanels.includes(type)){
             edit_area.style.display="block";
             optionsparent.style.display="none";
             text_area.style.width="100%";
@@ -199,6 +203,14 @@ class ImportExportControls {
             this.delimitedOptions.addToGui();
             this.delimitedOptions.setFromOptions(this.delimiter);
             this.delimitedOptions.setApplyCallback(this.setDelimterOptions.bind(this));
+        }
+        if(type=="asciitable"){
+            if(this.asciiTableOptionsPanel===undefined){
+                this.asciiTableOptionsPanel = new AsciiTableOptionsPanel(optionsparent);
+            }
+            this.asciiTableOptionsPanel.addToGui();
+            this.asciiTableOptionsPanel.setFromOptions(this.asciiTableStyleOptions);
+            this.asciiTableOptionsPanel.setApplyCallback(this.setAsciiTableOptions.bind(this));
         }
 
         optionsparent.style.display = "block";
@@ -233,6 +245,15 @@ class ImportExportControls {
         this.renderTextFromGrid();
     }
   
+    setAsciiTableOptions(options){
+
+        if(options?.style){
+            this.asciiTableStyleOptions.style = options.style;
+        }
+
+        this.exporter.setAsciiTableOptions(this.asciiTableStyleOptions)
+        this.renderTextFromGrid();
+    }
 
 }
 

@@ -1,6 +1,6 @@
 import {AsciiTable3} from "../libs/ascii-table3/ascii-table3.js"
 
-// using slightly chanced version of https://github.com/AllMightySauron/ascii-table3 to run in browser
+// using slightly changed version of https://github.com/AllMightySauron/ascii-table3 to run in browser
 
 // note: not a high priority as most IDEs can comment out lines
 // todo: option to remove header

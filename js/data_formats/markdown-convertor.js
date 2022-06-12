@@ -1,26 +1,54 @@
 import { GenericDataTable } from "./generic-data-table.js";
 
-// todo: option - compact/readable readable will pad out the columns to match the longest length of items and adjust header delimiters to match
-// todo: option - space padding add space (before, after, both ) e.g. | value| or |value | or | value |
-// todo: option - tab padding add tab (before, after, both ) e.g. | value| or |value | or | value |
-// todo: option - border bars e.g. | at start and end of table line, when off then generate "Heading1 | Heading2", "row0-1 | row0-2"
-// todo: option - embolden headers e.g. | **header1** |
-// todo: option - emphasis on headers e.g. | _header1_ |
-// todo: option - embolden columns (given a list of numbers e.g. 1,2)(not zero indexed since this is for humans) e.g. | **row0-1** |
-// todo: option - emphasis on columns (given a list of numbers e.g. 1,2)(not zero indexed since this is for humans) e.g. e.g. | _header1_ |
-// todo: somehow support alignment on headers :--- :---: ---:
-// todo: option - initially support alignment with a global config "default align", "left align", "center", "right alignment"
+// todo: expose options at GUI
 // todo: option - allow finer grained control for all columns
-export class MarkdownConvertor {
+class MarkdownOptions{
+
+  constructor(){
+      this.options = {
+          // was going to add readable but the ascii output will handle that
+          compact: true,
+          // space padding add space (left, right, both ) e.g. | value| or |value | or | value |
+          spacePadding: 'none', // none, left, right, both
+          // tab padding add tab (left, right, both ) e.g. | value| or |value | or | value |
+          tabPadding: 'none', // none, left, right, both
+          // border bars e.g. | at start and end of table line, when off then generate "Heading1 | Heading2", "row0-1 | row0-2"
+          borderBars: true,
+          //embolden headers e.g. | **header1** |
+          emboldenHeaders: false,
+          //emphasis on headers e.g. | _header1_ |
+          emphasisHeaders: false,
+          //embolden columns (given a list of numbers e.g. 1,2)(not zero indexed since this is for humans) e.g. | **row0-1** |
+          emboldenColumns: [],
+          // emphasis on columns (given a list of numbers e.g. 1,2)(not zero indexed since this is for humans) e.g. e.g. | _header1_ |
+          emphasisColumns: [],
+          // support alignment with a global config "default align", "left align", "center", "right alignment"
+          //alignment on headers --- :--- :---: ---:
+          globalColumnAlign: 'default', //default, left, center, right 
+      }
+      this.validateSeparatorLength = false;
+  }
+
+  mergeOptions(newoptions){
+      if(newoptions.options){
+          this.options = {...this.options, ...newoptions.options}
+      }else{
+          this.options = {...this.options, ...newoptions}
+      }
+      if(newoptions.validateSeparatorLength){
+        this.validateSeparatorLength = newoptions.validateSeparatorLength;
+      }
+  }
+}
+
+
+class MarkdownConvertor {
 
     constructor(params) {
-      this.validateSeparatorLength=false;
+      this.options=new MarkdownOptions();
       
       if(params!==undefined){
-        if(params.hasOwnProperty("validateSeparatorLength")){
-          // configure to stop parsing table string if header separators are wrong
-          this.validateSeparatorLength = params.validateSeparatorLength;
-        }
+          this.options.mergeOptions(params);
       }
     }
 
@@ -126,7 +154,7 @@ export class MarkdownConvertor {
 
         // it is the "|---|" separator row
         if(rowString.length>0 && rowCount===1){
-          if(this.validateSeparatorLength){
+          if(this.options.validateSeparatorLength){
             if(!this.isMarkdownTableSeparatorRowValid(rowString)){
               // not valid return empty dataTable
               return new GenericDataTable();
@@ -157,23 +185,87 @@ export class MarkdownConvertor {
       return data.replaceAll("|","&#124;");
     }
 
+    formatCell(value, isHeader, index){
+      let leftPadding = "";
+      let rightPadding = "";
+
+      if(index===undefined){
+        // it is the header marker
+          if(this.options.options.globalColumnAlign==="left" || this.options.options.globalColumnAlign==="center"){
+            leftPadding = ":" + leftPadding;
+          }
+          if(this.options.options.globalColumnAlign==="right" || this.options.options.globalColumnAlign==="center"){
+            rightPadding = rightPadding + ":";
+          }
+      }
+      if(isHeader){
+        if(this.options.options.emboldenHeaders===true || this.options.options.emboldenColumns.includes(index)){
+          leftPadding = "**" + leftPadding;
+          rightPadding = rightPadding + "**";
+        }
+        if(this.options.options.emphasisHeaders===true || this.options.options.emphasisColumns.includes(index)){
+          leftPadding = "_" + leftPadding;
+          rightPadding = rightPadding + "_";
+        }
+      }else{
+        if(this.options.options.emboldenColumns.includes(index)){
+          leftPadding = "**" + leftPadding;
+          rightPadding = rightPadding + "**";
+        }
+        if(this.options.options.emphasisColumns.includes(index)){
+          leftPadding = "_" + leftPadding;
+          rightPadding = rightPadding + "_";
+        }
+      }
+      if(this.options.options.spacePadding==='left' || this.options.options.spacePadding==='both'){
+        leftPadding = " " + leftPadding;
+      }
+      if(this.options.options.spacePadding==='right' || this.options.options.spacePadding==='both'){
+        rightPadding = rightPadding + " ";
+      }
+      if(this.options.options.tabPadding==='left' || this.options.options.tabPadding==='both'){
+        leftPadding = "\t" + leftPadding;
+      }
+      if(this.options.options.tabPadding==='right' || this.options.options.tabPadding==='both'){
+        rightPadding = rightPadding + "\t";
+      }
+
+      return leftPadding + this.validMarkdownCellValue(value) + rightPadding;
+    }
+
     // https://www.markdownguide.org/extended-syntax/
     fromDataTable(dataTable){
       // display a pipe (|) character in a table by using its HTML character code (&#124;).
 
-      let renderHeaders = dataTable.getHeaders().map(header => this.validMarkdownCellValue(header));
-      let markdownTable =  '|' + renderHeaders.join('|') + '|' + '\n';
+      let renderHeaders = dataTable.getHeaders().map((header, index) => {
+          return this.formatCell(header, true, index+1);
+      });
+
+      let border = '|';
+      if(this.options.options.borderBars===false){
+        border="";
+      }
+
+      let markdownTable =  border + renderHeaders.join('|') + border + '\n';
 
       // todo: use length of header to adjust the number of ---- output
       markdownTable =
-          markdownTable + '|' + dataTable.getHeaders().map(name => '-----').join('|') + '|' + '\n';
+          markdownTable + border + dataTable.getHeaders().map(name =>{
+           return this.formatCell('-----', false, undefined);
+          }).join('|') + border + '\n';
 
       for(let rowIndex=0; rowIndex<dataTable.getRowCount(); rowIndex++){
-          let row = dataTable.getRow(rowIndex);                    
-          let renderValues = row.map(value => this.validMarkdownCellValue(value));
-          markdownTable = markdownTable + '|' + renderValues.join('|') + '|' + '\n';
+          let row = dataTable.getRow(rowIndex);
+
+          let renderValues = row.map((value, index) => {
+            return this.formatCell(value, false, index+1);
+          });
+
+          markdownTable = markdownTable + border + renderValues.join('|') + border + '\n';
       };
 
       return markdownTable;
   }
 }
+
+export {MarkdownConvertor, MarkdownOptions}

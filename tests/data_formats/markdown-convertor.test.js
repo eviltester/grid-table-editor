@@ -1,4 +1,4 @@
-import {MarkdownConvertor} from '../../js/data_formats/markdown-convertor';
+import {MarkdownConvertor, MarkdownOptions} from '../../js/data_formats/markdown-convertor';
 import { GenericDataTable } from '../../js/data_formats/generic-data-table';
 
 
@@ -149,7 +149,7 @@ describe("Can convert markdown tables to data suitable for a data grid",()=>{
         let data = new MarkdownConvertor().markdownTableToDataRows(basicTable);
 
         //todo: convert data to a GenericDataTable here and use that in all our tests, then migrate the code to use GenericDataTable
-        console.log(data);
+        //console.log(data);
 
         expect(data.length).toBe(3);
         expect(data[0][0]).toBe('head|ing 1');
@@ -287,12 +287,15 @@ describe("Can convert markdown tables to data suitable for a data grid",()=>{
 |row 0 cell 0|row 0 cell 1|
 `    
 
-        let table = new MarkdownConvertor({validateSeparatorLength:true}).toDataTable(basicTable);
+        let options = new MarkdownOptions();
+        options.validateSeparatorLength=true;
+
+        let table = new MarkdownConvertor(options).toDataTable(basicTable);
 
         expect(table.getColumnCount()).toBe(0);
         expect(table.getRowCount()).toBe(0);
 
-        let data = new MarkdownConvertor({validateSeparatorLength:true}).markdownTableToDataRows(basicTable);
+        let data = new MarkdownConvertor(options).markdownTableToDataRows(basicTable);
 
         //todo: convert data to a GenericDataTable here and use that in all our tests, then migrate the code to use GenericDataTable
 
@@ -394,6 +397,242 @@ describe("Can convert markdown tables to data suitable for a data grid",()=>{
             let output = new MarkdownConvertor().fromDataTable(table);
 
             expect(output).toBe(expected);
+        });
+
+    });
+
+    describe("Can use options to configure output of markdown",()=>{
+
+        const basicInputTable =
+`|heading 1|heading 2|
+|-----|-----|
+|row 0 cell 0|row 0 cell 1|
+|row 1 cell 0|row 1 cell 1|
+` 
+
+        test('can create markdown table without borders', () => {
+            const expectedOutputTable =
+`heading 1|heading 2
+-----|-----
+row 0 cell 0|row 0 cell 1
+row 1 cell 0|row 1 cell 1
+`    
+    
+            let table = new MarkdownConvertor().toDataTable(basicInputTable);
+            let markdownOptions = new MarkdownOptions();
+            markdownOptions.options.borderBars=false;
+            let output = new MarkdownConvertor(markdownOptions).fromDataTable(table);
+            expect(output).toBe(expectedOutputTable);
+        });
+
+        test('can create markdown table with emboldened headers', () => {
+            const expectedOutputTable =
+`|**heading 1**|**heading 2**|
+|-----|-----|
+|row 0 cell 0|row 0 cell 1|
+|row 1 cell 0|row 1 cell 1|
+`    
+    
+            let table = new MarkdownConvertor().toDataTable(basicInputTable);
+            let markdownOptions = new MarkdownOptions();
+            markdownOptions.options.emboldenHeaders=true;
+            let output = new MarkdownConvertor(markdownOptions).fromDataTable(table);
+            expect(output).toBe(expectedOutputTable);
+        });
+
+        test('can create markdown table with emphasised headers', () => {
+            const expectedOutputTable =
+`|_heading 1_|_heading 2_|
+|-----|-----|
+|row 0 cell 0|row 0 cell 1|
+|row 1 cell 0|row 1 cell 1|
+`    
+    
+            let table = new MarkdownConvertor().toDataTable(basicInputTable);
+            let markdownOptions = new MarkdownOptions();
+            markdownOptions.options.emphasisHeaders=true;
+            let output = new MarkdownConvertor(markdownOptions).fromDataTable(table);
+            expect(output).toBe(expectedOutputTable);
+        });
+
+        test('can create markdown table with space padding to left', () => {
+            const expectedOutputTable =
+`| heading 1| heading 2|
+| -----| -----|
+| row 0 cell 0| row 0 cell 1|
+| row 1 cell 0| row 1 cell 1|
+`    
+    
+            let table = new MarkdownConvertor().toDataTable(basicInputTable);
+            let markdownOptions = new MarkdownOptions();
+            markdownOptions.options.spacePadding='left';
+            let output = new MarkdownConvertor(markdownOptions).fromDataTable(table);
+            expect(output).toBe(expectedOutputTable);
+        });
+
+        test('can create markdown table with space padding to right', () => {
+            const expectedOutputTable =
+`|heading 1 |heading 2 |
+|----- |----- |
+|row 0 cell 0 |row 0 cell 1 |
+|row 1 cell 0 |row 1 cell 1 |
+`    
+    
+            let table = new MarkdownConvertor().toDataTable(basicInputTable);
+            let markdownOptions = new MarkdownOptions();
+            markdownOptions.options.spacePadding='right';
+            let output = new MarkdownConvertor(markdownOptions).fromDataTable(table);
+            expect(output).toBe(expectedOutputTable);
+        });
+
+        test('can create markdown table with space padding to left and right', () => {
+            const expectedOutputTable =
+`| heading 1 | heading 2 |
+| ----- | ----- |
+| row 0 cell 0 | row 0 cell 1 |
+| row 1 cell 0 | row 1 cell 1 |
+`    
+    
+            let table = new MarkdownConvertor().toDataTable(basicInputTable);
+            let markdownOptions = new MarkdownOptions();
+            markdownOptions.options.spacePadding='both';
+            let output = new MarkdownConvertor(markdownOptions).fromDataTable(table);
+            expect(output).toBe(expectedOutputTable);
+        });
+
+        test('can create markdown table with tab padding to left', () => {
+            const expectedOutputTable =
+`|\theading 1|\theading 2|
+|\t-----|\t-----|
+|\trow 0 cell 0|\trow 0 cell 1|
+|\trow 1 cell 0|\trow 1 cell 1|
+`    
+    
+            let table = new MarkdownConvertor().toDataTable(basicInputTable);
+            let markdownOptions = new MarkdownOptions();
+            markdownOptions.options.tabPadding='left';
+            let output = new MarkdownConvertor(markdownOptions).fromDataTable(table);
+            expect(output).toBe(expectedOutputTable);
+        });
+
+        test('can create markdown table with tab padding to left and right', () => {
+            const expectedOutputTable =
+`|\theading 1\t|\theading 2\t|
+|\t-----\t|\t-----\t|
+|\trow 0 cell 0\t|\trow 0 cell 1\t|
+|\trow 1 cell 0\t|\trow 1 cell 1\t|
+`    
+    
+            let table = new MarkdownConvertor().toDataTable(basicInputTable);
+            let markdownOptions = new MarkdownOptions();
+            markdownOptions.options.tabPadding='both';
+            let output = new MarkdownConvertor(markdownOptions).fromDataTable(table);
+            expect(output).toBe(expectedOutputTable);
+        });
+
+        test('can create markdown table with tab padding to right', () => {
+            const expectedOutputTable =
+`|heading 1\t|heading 2\t|
+|-----\t|-----\t|
+|row 0 cell 0\t|row 0 cell 1\t|
+|row 1 cell 0\t|row 1 cell 1\t|
+`    
+    
+            let table = new MarkdownConvertor().toDataTable(basicInputTable);
+            let markdownOptions = new MarkdownOptions();
+            markdownOptions.options.tabPadding='right';
+            let output = new MarkdownConvertor(markdownOptions).fromDataTable(table);
+            expect(output).toBe(expectedOutputTable);
+        });
+
+        test('can create markdown table with emboldend columns', () => {
+            const expectedOutputTable =
+`|**heading 1**|heading 2|
+|-----|-----|
+|**row 0 cell 0**|row 0 cell 1|
+|**row 1 cell 0**|row 1 cell 1|
+`    
+    
+            let table = new MarkdownConvertor().toDataTable(basicInputTable);
+            let markdownOptions = new MarkdownOptions();
+            markdownOptions.options.emboldenColumns=[1];
+            let output = new MarkdownConvertor(markdownOptions).fromDataTable(table);
+            expect(output).toBe(expectedOutputTable);
+        });
+
+        test('can create markdown table with ephasised columns', () => {
+            const expectedOutputTable =
+`|heading 1|_heading 2_|
+|-----|-----|
+|row 0 cell 0|_row 0 cell 1_|
+|row 1 cell 0|_row 1 cell 1_|
+`    
+    
+            let table = new MarkdownConvertor().toDataTable(basicInputTable);
+            let markdownOptions = new MarkdownOptions();
+            markdownOptions.options.emphasisColumns=[2];
+            let output = new MarkdownConvertor(markdownOptions).fromDataTable(table);
+            expect(output).toBe(expectedOutputTable);
+        });
+
+        test('can align columns at global level by default nothing happens', () => {
+            const expectedOutputTable =
+`|heading 1|heading 2|
+|-----|-----|
+|row 0 cell 0|row 0 cell 1|
+|row 1 cell 0|row 1 cell 1|
+`    
+    
+            let table = new MarkdownConvertor().toDataTable(basicInputTable);
+            let markdownOptions = new MarkdownOptions();
+            markdownOptions.options.globalColumnAlign='default';
+            let output = new MarkdownConvertor(markdownOptions).fromDataTable(table);
+            expect(output).toBe(expectedOutputTable);
+        });
+
+        test('can align columns at global level to left align', () => {
+            const expectedOutputTable =
+`|heading 1|heading 2|
+|:-----|:-----|
+|row 0 cell 0|row 0 cell 1|
+|row 1 cell 0|row 1 cell 1|
+`    
+    
+            let table = new MarkdownConvertor().toDataTable(basicInputTable);
+            let markdownOptions = new MarkdownOptions();
+            markdownOptions.options.globalColumnAlign='left';
+            let output = new MarkdownConvertor(markdownOptions).fromDataTable(table);
+            expect(output).toBe(expectedOutputTable);
+        });
+
+        test('can align columns at global level to right align', () => {
+            const expectedOutputTable =
+`|heading 1|heading 2|
+|-----:|-----:|
+|row 0 cell 0|row 0 cell 1|
+|row 1 cell 0|row 1 cell 1|
+`    
+    
+            let table = new MarkdownConvertor().toDataTable(basicInputTable);
+            let markdownOptions = new MarkdownOptions();
+            markdownOptions.options.globalColumnAlign='right';
+            let output = new MarkdownConvertor(markdownOptions).fromDataTable(table);
+            expect(output).toBe(expectedOutputTable);
+        });
+
+        test('can align columns at global level to center align', () => {
+            const expectedOutputTable =
+`|heading 1|heading 2|
+|:-----:|:-----:|
+|row 0 cell 0|row 0 cell 1|
+|row 1 cell 0|row 1 cell 1|
+`    
+    
+            let table = new MarkdownConvertor().toDataTable(basicInputTable);
+            let markdownOptions = new MarkdownOptions();
+            markdownOptions.options.globalColumnAlign='center';
+            let output = new MarkdownConvertor(markdownOptions).fromDataTable(table);
+            expect(output).toBe(expectedOutputTable);
         });
 
     });

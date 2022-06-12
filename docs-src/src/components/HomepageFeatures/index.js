@@ -35,7 +35,7 @@ const FeatureList = [
         configure a test data schema and choose from predefined random formats or
         write your field value description as a RegEx. Generate as many rows as your
         computer can handle. Want 1000 records? Easy. 100,000? Easy. 1,000,000 sure,
-        it might take 30 seconds or so, but if you computer can handle it, we can
+        it might take 30 seconds or so, but if your computer can handle it, we can
         generate it.
       </>
     ),

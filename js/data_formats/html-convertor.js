@@ -1,6 +1,5 @@
 import { GenericDataTable } from "./generic-data-table.js";
 
-// todo: import by creating the html table in a hidden div then iterating over the table to create the data
 // todo: expand import by sanitising the cell values to remove html - possibly make this an option
 // todo: options - compact - no line breaks or indents
 // todo: options - formatted - indent HTML and add new lines

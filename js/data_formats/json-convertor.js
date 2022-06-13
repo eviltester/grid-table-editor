@@ -1,32 +1,61 @@
 import { GenericDataTable } from "./generic-data-table.js";
 
-// todo: options - make numbers numeric - by default everything is a string by support numbers being unquoted
-// todo: options - pretty print or not - when not then every row is shown on a new line
-// todo: options - minify - all on one line
-// todo: options - as object with user configurable key name e.g. {"table":[...jsonrows]}
+class JsonConvertorOptions{
 
-export class JsonConvertor {
+    constructor(){
+        this.options = {
+            //  make numbers numeric - by default everything is a string by support numbers being unquoted
+            makeNumbersNumeric: false,
+            //pretty print or not - when not then every row is shown on same line and minified
+            prettyPrint: true,
+            // pretty print delimiter or this could be a number of spaces
+            prettyPrintDelimiter: `\t`, 
+            // output as array (false), or object with property named below
+            asObject:false, 
+            // as object with user configurable key name e.g. {"table":[...jsonrows]}
+            asPropertyNamed: "data"
+        };
+
+        this.headerNameConvertor = (x)=>x;
+    }
+
+    mergeOptions(newoptions){
+        if(newoptions.options){
+            this.options = {...this.options, ...newoptions.options}
+        }else{
+            this.options = {...this.options, ...newoptions}
+        }
+
+        if(newoptions.headerNameConvertor){
+          this.headerNameConvertor = newoptions.headerNameConvertor;
+        }
+    }
+}
+
+class JsonConvertor {
 
     constructor(params) {
 
-        this.convertor = function (header){
-            return header;
-        }
+        this.config = new JsonConvertorOptions();
 
         if(params!==undefined){
-            if(params.hasOwnProperty("headerNameConvertor")){
-                this.convertor = params.headerNameConvertor;
-            }
+            this.setOptions(params);
         }
+    }
+
+    setOptions(newOptions){
+        this.config.mergeOptions(newOptions);
     }
 
     formatAsObjects(dataTable){
 
-        let fieldnames = dataTable.getHeaders().map(header => this.convertor(header));
+        let fieldnames = dataTable.getHeaders().map(
+                            header => this.config.headerNameConvertor(header)
+                        );
         let objects = [];
 
         for(let rowIndex=0; rowIndex<dataTable.getRowCount(); rowIndex++){
-            let row = dataTable.getRow(rowIndex);
+            //let row = dataTable.getRow(rowIndex);
             objects.push(dataTable.getRowAsObjectUsingHeadings(rowIndex,fieldnames))
         }
 
@@ -34,7 +63,30 @@ export class JsonConvertor {
     }
 
     fromDataTable(dataTable){
-            return JSON.stringify(this.formatAsObjects(dataTable), null, "\t");
+
+        let replacer=null;
+        if(this.config.options.makeNumbersNumeric){
+            replacer = (key, value) => {
+                if((value*1)===0){return 0;} // special case 0
+                return (value === value * 1 ) ? value * 1 : value;
+            }
+        }
+
+        let delimiter = null;
+        if(this.config.options.prettyPrint){
+            delimiter = this.config.options.prettyPrintDelimiter;
+        }
+
+        let data = this.formatAsObjects(dataTable);
+
+        let toOutput = undefined;
+        if(this.config.options.asObject){
+            toOutput = {}
+            toOutput[this.config.options.asPropertyNamed]=data;
+        }else{
+            toOutput = data;
+        }
+        return JSON.stringify(toOutput, replacer, delimiter);
     }
     
     toDataTable(textToImport){
@@ -45,3 +97,5 @@ export class JsonConvertor {
     }
 
 }
+
+export {JsonConvertor, JsonConvertorOptions}

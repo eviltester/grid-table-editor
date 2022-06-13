@@ -5,6 +5,7 @@ export class DelimiterConvertor {
 
     constructor(params) {
 
+      // todo: use new DelimiterOptions and add into this module as an export from herer
         this.options = {
             quotes: false, //or array of booleans
             quoteChar: '"',

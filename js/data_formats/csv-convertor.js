@@ -4,6 +4,7 @@ export class CsvConvertor {
 
     constructor(params) {
 
+      // todo: use DelimiterOptions
         this.options = {
             quotes: true, //or array of booleans
             quoteChar: '"',
@@ -20,6 +21,7 @@ export class CsvConvertor {
         }
     }
 
+    // todo: delegate to DelimiterConverter but force "delimiter" to be ","
     setOptions(delimiterOptions){
       if(delimiterOptions.hasOwnProperty("options")){
         let localoptions = delimiterOptions.options;

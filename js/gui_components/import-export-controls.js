@@ -5,7 +5,9 @@ import { DelimitedOptions } from "./options_panels/options-delimited-controls.js
 import { DelimiterOptions } from "../data_formats/delimiter-options.js"
 import { AsciiTableOptionsPanel } from "./options_panels/options-ascii-table.js";
 import { MarkdownOptionsPanel } from "./options_panels/options-markdown-panel.js";
+import { JsonOptionsPanel } from "./options_panels/options-json-panel.js";
 import { MarkdownOptions} from "../data_formats/markdown-convertor.js"
+import { JsonConvertorOptions } from "../data_formats/json-convertor.js";
 
 class ImportExportControls {
 
@@ -14,8 +16,9 @@ class ImportExportControls {
         this.delimiter= new DelimiterOptions("\t");
         this.asciiTableStyleOptions = {style: "default"};
         this.markdownOptions = new MarkdownOptions();
+        this.jsonConvertorOptions = new JsonConvertorOptions();
 
-        this.typesWithOptionsPanels = ["csv", "dsv", "asciitable", "markdown"];
+        this.typesWithOptionsPanels = ["csv", "dsv", "asciitable", "markdown", "json"];
     }
 
     addHTMLtoGui(parentelement){
@@ -223,6 +226,14 @@ class ImportExportControls {
             this.markdownOptionsPanel.setFromOptions(this.markdownOptions);
             this.markdownOptionsPanel.setApplyCallback(this.setMarkdownOptions.bind(this));
         }
+        if(type=="json"){
+            if(this.jsonOptionsPanel===undefined){
+                this.jsonOptionsPanel = new JsonOptionsPanel(optionsparent);
+            }
+            this.jsonOptionsPanel.addToGui();
+            this.jsonOptionsPanel.setFromOptions(this.jsonConvertorOptions);
+            this.jsonOptionsPanel.setApplyCallback(this.setJsonConvertorOptions.bind(this));
+        }
 
         optionsparent.style.display = "block";
 
@@ -270,7 +281,15 @@ class ImportExportControls {
 
         this.markdownOptions.mergeOptions(options);
 
-        this.exporter.setMarkdownOptions(this.markdownOptions);
+        this.exporter.setMarkdownOptions(this.jsonConvertorOptions);
+        this.renderTextFromGrid();
+    }
+
+    setJsonConvertorOptions(options){
+
+        this.jsonConvertorOptions.mergeOptions(options);
+
+        this.exporter.setJsonConvertorOptions(this.jsonConvertorOptions);
         this.renderTextFromGrid();
     }
 

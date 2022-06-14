@@ -1,8 +1,19 @@
+import { isNumber } from "../utils/number-convertor.js";
 import { GenericDataTable } from "./generic-data-table.js";
 
 class JsonConvertorOptions{
 
     constructor(){
+
+        this.delimiterMappings={
+            "tab": "\t",
+            "dot": ".",
+            "dash": "-",
+            "underline": "_",
+            "space": " ",
+            "plus": "+",
+        }
+
         this.options = {
             //  make numbers numeric - by default everything is a string by support numbers being unquoted
             makeNumbersNumeric: false,
@@ -67,14 +78,17 @@ class JsonConvertor {
         let replacer=null;
         if(this.config.options.makeNumbersNumeric){
             replacer = (key, value) => {
-                if((value*1)===0){return 0;} // special case 0
-                return (value === value * 1 ) ? value * 1 : value;
+                if((value*1)==0){return 0;} // special case 0
+                return (value == value * 1 ) ? value * 1 : value;
             }
         }
 
         let delimiter = null;
         if(this.config.options.prettyPrint){
             delimiter = this.config.options.prettyPrintDelimiter;
+        }
+        if(isNumber(delimiter)){
+            delimiter = delimiter*1;
         }
 
         let data = this.formatAsObjects(dataTable);

@@ -2,7 +2,7 @@ import { GenericDataTable } from "../data_formats/generic-data-table.js";
 import { GherkinConvertor } from "../data_formats/gherkin-convertor.js";
 import { MarkdownConvertor, MarkdownOptions } from "../data_formats/markdown-convertor.js";
 import { HtmlConvertor } from "../data_formats/html-convertor.js";
-import { JsonConvertor } from "../data_formats/json-convertor.js";
+import { JsonConvertor, JsonConvertorOptions } from "../data_formats/json-convertor.js";
 import { JavascriptConvertor } from "../data_formats/javascript-convertor.js";
 import { CsvConvertor } from "../data_formats/csv-convertor.js";
 import { DelimiterConvertor } from "../data_formats/delimiter-convertor.js";
@@ -21,12 +21,14 @@ class Exporter {
         this.asciiTableOptions = {style : "default"};
 
         this.markdownOptions = new MarkdownOptions();
+        this.jsonConvertorOptions = new JsonConvertorOptions();
 
         this.options={};
         this.options["csv"] = this.csvDelimiter;
         this.options["dsv"] = this.delimiter;
         this.options["asciitable"] = this.asciiTableOptions;
         this.options["markdown"] = this.markdownOptions;
+        this.options["json"] = this.jsonConvertorOptions;
         
 
         this.exporters = {};
@@ -108,6 +110,10 @@ class Exporter {
         if(options?.style){
             this.asciiTableOptions.style = options.style;
         }
+    }
+
+    setJsonConvertorOptions(options){
+        this.jsonConvertorOptions.mergeOptions(options);
     }
 
 

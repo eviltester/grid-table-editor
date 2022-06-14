@@ -64,6 +64,24 @@ describe("Can use options to configure json output",()=>{
         expect(output).toBe(expectedJson);
     });
 
+    test('can create json table using numeric delimiter', () => {
+        const expectedJson =
+`[
+    {
+        "h1": "r0c0",
+        "h2": "r0c1"
+    },
+    {
+        "h1": "r1c0",
+        "h2": "r1c1"
+    }
+]`    
+        let config = new JsonConvertorOptions();
+        config.options.prettyPrintDelimiter="4";
+        let output = new JsonConvertor(config).fromDataTable(basicInputTable);
+        expect(output).toBe(expectedJson);
+    });
+
     test('can create json table minified', () => {
         const expectedJson =`[{"h1":"r0c0","h2":"r0c1"},{"h1":"r1c0","h2":"r1c1"}]`;
 
@@ -136,5 +154,8 @@ describe("Can use options to configure json output",()=>{
         let output = new JsonConvertor(config).fromDataTable(inputTable);
         expect(output).toBe(expectedJson);
     });
+
+
+    //todo: if pretty print delimiter is a number then convert to an actual number to pass to stringify
 
 });

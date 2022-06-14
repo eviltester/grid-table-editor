@@ -38,4 +38,4 @@ function getNumberArrayFrom(aString){
     return ret;
 }
 
-export {getNumberArrayFrom}
+export {getNumberArrayFrom, isNumber}

@@ -12,6 +12,7 @@ A simple Data Table Editor that generates Markdown, CSV or JSON. It can also be 
 - add and delete columns
 - add and delete rows
 - randomly fill data with Test Data
+- configure export options
 
 
 ---

@@ -14,7 +14,6 @@ A simple Data Table Editor that generates Markdown, CSV or JSON. It can also be 
 - randomly fill data with Test Data
 - configure export options
 
-
 ---
 
 ## Use The Editor

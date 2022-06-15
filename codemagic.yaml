@@ -1,8 +1,12 @@
 workflows:
   my-workflow:
+    environment:
+      groups:
+        - serverconfig
     scripts:
       - name: Install dependencies
         script: npm ci
       - name: Run tests
         script: npm test
+
 

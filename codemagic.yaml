@@ -12,4 +12,8 @@ workflows:
       email:
         recipients:
           - $emailaddress
+    triggering:
+      events:                       # List the events that trigger builds
+        - push
+      cancel_previous_builds: false        
 

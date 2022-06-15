@@ -8,5 +8,8 @@ workflows:
         script: npm ci
       - name: Run tests
         script: npm test
-
+    publishing:
+      email:
+        recipients:
+          - $emailaddress
 

@@ -281,7 +281,7 @@ class ImportExportControls {
 
         this.markdownOptions.mergeOptions(options);
 
-        this.exporter.setMarkdownOptions(this.jsonConvertorOptions);
+        this.exporter.setMarkdownOptions(this.markdownOptions);
         this.renderTextFromGrid();
     }
 

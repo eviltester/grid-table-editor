@@ -5,7 +5,7 @@ class TabbedTextControl{
         this.importExportController = theImportExportControls;
     }
 
-    // todo: populate this from the registered importers and exporters rather than hard coding
+    // TODO : populate this from the registered importers and exporters rather than hard coding
     addToGui(){
         this.parent.innerHTML =
         `

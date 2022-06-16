@@ -1,17 +1,20 @@
-import {AsciiTableConvertor} from "../../data_formats/asciitable-convertor.js"
+import {AsciiTableConvertor, AsciiTableOptions} from "../../data_formats/asciitable-convertor.js"
+import {HtmlDataValues} from "./html-options-data-utils.js";
 
 class AsciiTableOptionsPanel{
 
     constructor(parentElement) {
         this.parent = parentElement;
+        this.htmlData = new HtmlDataValues(this.parent);
     }
 
+    // TODO: create some HTML constructor objects to make building the options panels simpler
     addToGui(){
 
       let stylesAsOptions = "";
       let asciiTableConverter = new AsciiTableConvertor();
 
-      for (const [readable, internal] of Object.entries(asciiTableConverter.styleNames)) {
+      for (const [readable, internal] of Object.entries(asciiTableConverter.options.styleNames)) {
           stylesAsOptions = stylesAsOptions + 
           `<option value="${internal}">${readable}</option>`
       }
@@ -37,44 +40,21 @@ class AsciiTableOptionsPanel{
     }
 
     setApplyCallback(callbackFunc){
-
       let button = this.parent.querySelector(".delimited-options .apply button");
       button.onclick = function (){
           callbackFunc(this.getOptionsFromGui())
       }.bind(this);
-
     }
 
     getOptionsFromGui(){
-
-      let selectElem = this.parent.querySelector(".delimited-options div.style select");
-      let styleName = selectElem.options[selectElem.selectedIndex].value;
-
-      return {
-          style: styleName,
-      }
-
+      let newOptions = new AsciiTableOptions();
+      newOptions.options.style = this.htmlData.getSelectedValueFrom("div.style select","ramac");
+      return newOptions;
     }
 
-    setFromOptions(options){
-
-      let style = options?.style ? options.style : "default";
-
-      let foundStyle=false;
-      let optionelem = this.parent.querySelector(`.delimited-options div.style option[value='${style}']`);
-      if(optionelem){
-          optionelem.selected=true;
-          foundStyle=true;
-      }
-      
-      if(!foundStyle){
-        let optionelem = this.parent.querySelector(".delimited-options div.style option[value='default']");
-        if(optionelem){
-          optionelem.selected=true;
-        }
-      }
+    setFromOptions(asciiTableOptions){
+        this.htmlData.setDropDownOptionToKeyValue("div.style select", asciiTableOptions.options.style, "default");
     }
-
 }
 
 export {AsciiTableOptionsPanel};

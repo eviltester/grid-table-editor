@@ -54,7 +54,7 @@ class Importer{
       }
     }
 
-    // todo: phase this out and use the GenericDataTable
+    // TODO : phase this out and use the GenericDataTable
     setGridFromData(data){
 
         // data is row of values where the first row is the headers
@@ -87,7 +87,7 @@ class Importer{
 
       if(dataTable.getColumnCount()==0){
         // will not create a table with no columns
-        // todo: report errors on screen
+        // TODO : report errors on screen
       }
 
       this.gridExtras.createColumns(dataTable.getHeaders());
@@ -101,7 +101,7 @@ class Importer{
           addRows.push(dataTable.getRowAsObjectUsingHeadings(rowIndex,fieldnames));
       }
 
-      // todo: apply transactions incrementally for larger data sets
+      // TODO : apply transactions incrementally for larger data sets
       this.gridApi.applyTransaction({ add: addRows });
     }
 }

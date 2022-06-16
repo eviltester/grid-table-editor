@@ -1,7 +1,5 @@
 import { JsonConvertor } from "./json-convertor.js";
 
-// todo: combine Json and Javascript and make the name conversion an option from the GUI
-
 function convertStringToJavaScriptValidName(aString){
     return aString.replace(/[^A-Za-z0-9_]/g, '_');
 }

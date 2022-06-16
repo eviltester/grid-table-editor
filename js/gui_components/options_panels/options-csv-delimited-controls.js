@@ -1,7 +1,11 @@
+import { DelimiterOptions } from "../../data_formats/delimiter-options.js";
+import {HtmlDataValues} from "./html-options-data-utils.js";
+
 class CsvDelimitedOptions{
 
     constructor(parentElement) {
         this.parent = parentElement;
+        this.htmlData = new HtmlDataValues(this.parent);
     }
 
     addToGui(){
@@ -66,28 +70,28 @@ class CsvDelimitedOptions{
 
     getOptionsFromGui(){
 
-      return {
-          quotes: this.parent.querySelector(".delimited-options .quotes input").checked,
-          header: this.parent.querySelector(".delimited-options .headerVal input").checked,
-          quoteChar: this.parent.querySelector(".delimited-options .quoteChar input").value,
-          escapeChar: this.parent.querySelector(".delimited-options .escapeChar input").value
-      }
+      // TODO : create a CsvDelimiterOptions()
+      let delimiterOptions = new DelimiterOptions(",");
 
+      delimiterOptions.options.quotes = this.htmlData.getCheckBoxValueFrom(".quotes input");
+      delimiterOptions.options.header = this.htmlData.getCheckBoxValueFrom(".headerVal input");
+      delimiterOptions.options.quoteChar =  this.htmlData.getTextInputValueFrom(".quoteChar input");
+      delimiterOptions.options.escapeChar = this.htmlData.getTextInputValueFrom(".escapeChar input");
+      return delimiterOptions;
     }
 
     setFromOptions(delimiterOptions){
 
-      let options = delimiterOptions?.options ? delimiterOptions.options : {};
+      if(!delimiterOptions.options){
+        return;
+      }
 
-      this.parent.querySelector(".delimited-options .quotes input").checked = options.quotes!==undefined ? options.quotes : true;
-      this.parent.querySelector(".delimited-options .headerVal input").checked = options.header!==undefined ? options.header : true;
-      this.parent.querySelector(".delimited-options .quoteChar input").value = options.quoteChar!==undefined ? options.quoteChar : "\"";
-      this.parent.querySelector(".delimited-options .escapeChar input").value = options.escapeChar!==undefined ? options.escapeChar : "\"";
+      let options = delimiterOptions.options;
 
-
-      // if(options.hasOwnProperty("newline")){
-      //   this.options.newline = localoptions.newline;
-      // }
+      this.htmlData.setCheckBoxFrom(".quotes input", options.quotes, true);
+      this.htmlData.setCheckBoxFrom(".headerVal input", options.header, true);
+      this.htmlData.setTextFieldToValue(".quoteChar input", options.quoteChar, "\"");
+      this.htmlData.setTextFieldToValue(".escapeChar input", options.escapeChar, "\"");
     }
 
 }

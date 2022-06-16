@@ -208,7 +208,7 @@ class GridExtension{
         
         this.gridApi.setColumnDefs(newColDefs);      
 
-        // TODO: consider deleting all the data as well
+        // TODO : consider deleting all the data as well
     }
 
     getNumberOfColumns(){

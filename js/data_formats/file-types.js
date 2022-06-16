@@ -1,6 +1,6 @@
-// todo: this should be wrapped into the importer and exporter so an exporter returns filetype
-// todo: there should be a default file name as well as extension e.g. asciitable.txt to help disctinguish from dsv.txt
-// todo: roll this into the convertors
+// TODO : this should be wrapped into the importer and exporter so an exporter returns filetype
+// TODO : there should be a default file name as well as extension e.g. asciitable.txt to help disctinguish from dsv.txt
+// TODO : roll this into the convertors
 const fileTypes ={};
 fileTypes["csv"] = {type: "csv", fileExtension: ".csv"};
 fileTypes["dsv"] = {type: "dsv", fileExtension: ".txt"};

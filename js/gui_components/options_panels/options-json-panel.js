@@ -80,38 +80,19 @@ class JsonOptionsPanel{
 
     getOptionsFromGui(){
 
-      let options = new JsonConvertorOptions();
+      let newOptions = new JsonConvertorOptions();
 
-      let newOptions = {};
-      newOptions.options = {};
       newOptions.options.makeNumbersNumeric = this.htmlData.getCheckBoxValueFrom(this.divLocator + " .numbersnumeric input");
       newOptions.options.prettyPrint = this.htmlData.getCheckBoxValueFrom(this.divLocator + " .prettyprint input");
       newOptions.options.asObject = this.htmlData.getCheckBoxValueFrom(this.divLocator + " .asobject input");
       newOptions.options.asPropertyNamed = this.htmlData.getTextInputValueFrom(this.divLocator + " .propertynamed input");
 
+      let prettyPrintDelimiter = this.htmlData.getSelectWithCustomInput("select[name='prettydelimiter']", "custom", 
+                                            ".custom-pretty-delimiter input", newOptions.delimiterMappings,  "\t");
 
-      let selectElem = this.parent.querySelector("select[name='prettydelimiter']");
-      let delimiterName = selectElem.options[selectElem.selectedIndex].value;
-      let delimiter=undefined;
-      if(delimiterName==="custom"){
-        delimiter = this.parent.querySelector(".custom-pretty-delimiter input").value;
-      }else{
-        for(const key in options.delimiterMappings){
-          if(delimiterName===key){
-            delimiter = options.delimiterMappings[key];
-          }
-        }
-      }
+      newOptions.options.prettyPrintDelimiter = prettyPrintDelimiter;
 
-      if(delimiter===undefined){
-        console.log("unknown delimiter found - using tab");
-        delimiter="\t";
-      }
-
-      newOptions.options.prettyPrintDelimiter = delimiter;
-
-      options.mergeOptions(newOptions);
-      return options;
+      return newOptions;
 
     }
 
@@ -125,27 +106,9 @@ class JsonOptionsPanel{
       this.htmlData.setCheckBoxFrom(this.divLocator + " .asobject input", options?.asObject, false);
       this.htmlData.setTextFieldToValue(this.divLocator + " .propertynamed input", options?.asPropertyNamed);
 
-
-      this.parent.querySelector(".custom-pretty-delimiter input").value="";
-      let foundDelim=false;
-      for(const key in mainOptions.delimiterMappings){
-        if(options.prettyPrintDelimiter===mainOptions.delimiterMappings[key]){
-          let optionelem = this.parent.querySelector(`select[name='prettydelimiter'] option[value='${key}']`);
-          if(optionelem!==undefined){
-            optionelem.selected=true;
-          }
-          
-          foundDelim=true;
-        }
-      }
-
-      if(!foundDelim){
-        let optionelem = this.parent.querySelector("select[name='prettydelimiter'] option[value='custom']");
-        if(optionelem!==undefined){
-          optionelem.selected=true;
-        }
-        this.parent.querySelector(".custom-pretty-delimiter input").value = options.prettyPrintDelimiter;
-      }
+      this.htmlData.setSelectWithCustomInput(`select[name='prettydelimiter']`, "custom",
+                                      ".custom-pretty-delimiter input", mainOptions.delimiterMappings,
+                                      options.prettyPrintDelimiter);
     }
 
 }

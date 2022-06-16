@@ -17,7 +17,7 @@
 
  */
 
-// todo wrap this as a class and make components
+// TODO :wrap this as a class and make components
 
 import {RulesParser} from '../data_generation/testDataRules.js';
 import {Debouncer} from '../utils/debouncer.js';
@@ -58,7 +58,7 @@ function generateTestData(){
         return;
     }
 
-    // todo: it would lower memory requirements if we did
+    // TODO : it would lower memory requirements if we did
     // this in tranches of 100 and appended the transaction as we go
 
     

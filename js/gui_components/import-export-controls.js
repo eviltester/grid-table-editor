@@ -2,23 +2,13 @@ import {ExportControls} from "./exportControls.js"
 import {DragDropControl} from "./drag-drop-control.js"
 import { CsvDelimitedOptions } from "./options_panels/options-csv-delimited-controls.js";
 import { DelimitedOptions } from "./options_panels/options-delimited-controls.js";
-import { DelimiterOptions } from "../data_formats/delimiter-options.js"
 import { AsciiTableOptionsPanel } from "./options_panels/options-ascii-table.js";
 import { MarkdownOptionsPanel } from "./options_panels/options-markdown-panel.js";
 import { JsonOptionsPanel } from "./options_panels/options-json-panel.js";
-import { MarkdownOptions} from "../data_formats/markdown-convertor.js"
-import { JsonConvertorOptions } from "../data_formats/json-convertor.js";
 
 class ImportExportControls {
 
     constructor(){
-        this.csvDelimiter = new DelimiterOptions(",");
-        this.delimiter= new DelimiterOptions("\t");
-        this.asciiTableStyleOptions = {style: "default"};
-        this.markdownOptions = new MarkdownOptions();
-        this.jsonConvertorOptions = new JsonConvertorOptions();
-
-        this.typesWithOptionsPanels = ["csv", "dsv", "asciitable", "markdown", "json"];
     }
 
     addHTMLtoGui(parentelement){
@@ -47,6 +37,8 @@ class ImportExportControls {
         // setup the drop zone
         const dragDropZone = new DragDropControl(this.readFile.bind(this));
         dragDropZone.configureAsDropZone(parentelement.querySelector("#dropzone"));
+
+
     }
 
     setImporter(anImporter){
@@ -80,7 +72,7 @@ class ImportExportControls {
 
         let type = document.querySelector("li.active-type a").getAttribute("data-type");
     
-        // todo: why is this 'different' and not just using the normal readFile approach?
+        // TODO : why is this 'different' and not just using the normal readFile approach?
         if(type=="csv" || type=="dsv") {
         //console.log(this.files[0]);
         Papa.parse(this.fileInputElement.files[0], {
@@ -106,7 +98,7 @@ class ImportExportControls {
 
     setFileFormatType(){
 
-        // todo: these should not be document based locators, they should work from the parent
+        // TODO : these should not be document based locators, they should work from the parent
         
         // get data format type
         const type = document.querySelector("li.active-type a").getAttribute("data-type");
@@ -150,7 +142,7 @@ class ImportExportControls {
         exportControls.forEach(e => e.style.visibility = exportVisibility);
 
         // set options for type
-        // todo: why are we not setting export options here too
+        // TODO : why are we not setting export options here too
         if(type==="csv"){
             this.importer.setImportOptions(this.csvDelimiter);
         }
@@ -158,13 +150,25 @@ class ImportExportControls {
             this.importer.setImportOptions(this.delimiter);
         }
 
-        // todo: allow export and import to have different file types
+        // TODO : allow export and import to have different file types
         // configure file type display
         const fileType = this.importer.getFileExtensionFor(type);
       
         document.querySelectorAll(".fileFormat").forEach(elem => elem.innerText = fileType);
     }
 
+    setupOptionsPanelsWithin(optionsparent){
+        if(this.optionsPanels===undefined){
+            if(optionsparent){
+                this.optionsPanels={};
+                this.optionsPanels["csv"] =new CsvDelimitedOptions(optionsparent);
+                this.optionsPanels["dsv"] =new DelimitedOptions(optionsparent);
+                this.optionsPanels["asciitable"] =new AsciiTableOptionsPanel(optionsparent);
+                this.optionsPanels["markdown"] =new MarkdownOptionsPanel(optionsparent);
+                this.optionsPanels["json"] =new JsonOptionsPanel(optionsparent);
+            }
+        }
+    }
     setOptionsViewForFormatType(){
 
         const type = document.querySelector("li.active-type a").getAttribute("data-type");
@@ -176,7 +180,14 @@ class ImportExportControls {
         edit_area.style.width="100%";
         edit_area.style.height="30%";
 
-        if(!this.typesWithOptionsPanels.includes(type)){
+        if(this.optionsPanels===undefined){
+            this.setupOptionsPanelsWithin(optionsparent);
+        }
+
+        let optionsPanel = this.optionsPanels[type]
+
+        if(optionsPanel===undefined){
+            console.log("undefined panel type for " + type);
             edit_area.style.display="block";
             optionsparent.style.display="none";
             text_area.style.width="100%";
@@ -194,105 +205,24 @@ class ImportExportControls {
 
         optionsparent.innerHTML = "";
 
-        if(type=="csv"){
-            if(this.csvDelimitedOptions===undefined){
-                this.csvDelimitedOptions = new CsvDelimitedOptions(optionsparent);
-            }
-            this.csvDelimitedOptions.addToGui();
-            this.csvDelimitedOptions.setFromOptions(this.csvDelimiter);
-            this.csvDelimitedOptions.setApplyCallback(this.setCsvDelimterOptions.bind(this));
-        }
-        if(type=="dsv"){
-            if(this.delimitedOptions===undefined){
-                this.delimitedOptions = new DelimitedOptions(optionsparent);
-            }
-            this.delimitedOptions.addToGui();
-            this.delimitedOptions.setFromOptions(this.delimiter);
-            this.delimitedOptions.setApplyCallback(this.setDelimterOptions.bind(this));
-        }
-        if(type=="asciitable"){
-            if(this.asciiTableOptionsPanel===undefined){
-                this.asciiTableOptionsPanel = new AsciiTableOptionsPanel(optionsparent);
-            }
-            this.asciiTableOptionsPanel.addToGui();
-            this.asciiTableOptionsPanel.setFromOptions(this.asciiTableStyleOptions);
-            this.asciiTableOptionsPanel.setApplyCallback(this.setAsciiTableOptions.bind(this));
-        }
-        if(type=="markdown"){
-            if(this.markdownOptionsPanel===undefined){
-                this.markdownOptionsPanel = new MarkdownOptionsPanel(optionsparent);
-            }
-            this.markdownOptionsPanel.addToGui();
-            this.markdownOptionsPanel.setFromOptions(this.markdownOptions);
-            this.markdownOptionsPanel.setApplyCallback(this.setMarkdownOptions.bind(this));
-        }
-        if(type=="json"){
-            if(this.jsonOptionsPanel===undefined){
-                this.jsonOptionsPanel = new JsonOptionsPanel(optionsparent);
-            }
-            this.jsonOptionsPanel.addToGui();
-            this.jsonOptionsPanel.setFromOptions(this.jsonConvertorOptions);
-            this.jsonOptionsPanel.setApplyCallback(this.setJsonConvertorOptions.bind(this));
+
+        if(optionsPanel){
+            console.log("using generic panel setup for " + type);
+            optionsPanel.addToGui();
+            //this.optionsPanel.setFromOptions(this.typeOptions[type]);
+            optionsPanel.setFromOptions(this.exporter.getOptionsForType(type));
+            optionsPanel.setApplyCallback(this.setCurrentTypeOptions.bind(this));
         }
 
         optionsparent.style.display = "block";
-
-        // configure the display options based on type
-        // configure the apply button to apply the styles and export the grid
     }
 
-    setCsvDelimterOptions(options){
-
-        this.csvDelimiter.mergeOptions(options);
-
-        if(this.csvDelimiter.options.header===false){
-            // store headers from the grid in the options
-            this.csvDelimiter.headers = this.exporter.getHeadersFromGrid();
-        }
-
-        this.exporter.setCsvDelimiterOptions(this.csvDelimiter)
+    setCurrentTypeOptions(options){
+        const type = document.querySelector("li.active-type a").getAttribute("data-type");
+        console.log("using generic options setting for " + type);
+        this.exporter.setOptionsForType(type,options);
         this.renderTextFromGrid();
     }
-
-    setDelimterOptions(options){
-
-        this.delimiter.mergeOptions(options);
-
-        if(this.delimiter.options.header===false){
-            // store headers from the grid in the options
-            this.delimiter.headers = this.exporter.getHeadersFromGrid();
-        }
-
-        this.exporter.setDelimiterOptions(this.delimiter)
-        this.renderTextFromGrid();
-    }
-  
-    setAsciiTableOptions(options){
-
-        if(options?.style){
-            this.asciiTableStyleOptions.style = options.style;
-        }
-
-        this.exporter.setAsciiTableOptions(this.asciiTableStyleOptions)
-        this.renderTextFromGrid();
-    }
-
-    setMarkdownOptions(options){
-
-        this.markdownOptions.mergeOptions(options);
-
-        this.exporter.setMarkdownOptions(this.markdownOptions);
-        this.renderTextFromGrid();
-    }
-
-    setJsonConvertorOptions(options){
-
-        this.jsonConvertorOptions.mergeOptions(options);
-
-        this.exporter.setJsonConvertorOptions(this.jsonConvertorOptions);
-        this.renderTextFromGrid();
-    }
-
 }
 
 export {ImportExportControls}

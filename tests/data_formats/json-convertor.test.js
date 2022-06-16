@@ -156,6 +156,6 @@ describe("Can use options to configure json output",()=>{
     });
 
 
-    //todo: if pretty print delimiter is a number then convert to an actual number to pass to stringify
+    //TODO : if pretty print delimiter is a number then convert to an actual number to pass to stringify
 
 });

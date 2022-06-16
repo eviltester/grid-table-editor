@@ -1,7 +1,7 @@
 import { GenericDataTable } from "./generic-data-table.js";
 
-// todo: expose options at GUI
-// todo: option - allow finer grained control for all columns
+// TODO : expose options at GUI
+// TODO : option - allow finer grained control for all columns
 class MarkdownOptions{
 
   constructor(){
@@ -179,7 +179,7 @@ class MarkdownConvertor {
   }
 
 
-   // todo: migrate away from this and use the Generic Data Table
+   // TODO : migrate away from this and use the Generic Data Table
     markdownTableToDataRows(markdownTable){
       return this.toDataTable(markdownTable).asDataArray();
     }
@@ -252,7 +252,7 @@ class MarkdownConvertor {
 
       let markdownTable =  border + renderHeaders.join('|') + border + '\n';
 
-      // todo: use length of header to adjust the number of ---- output
+      // TODO : use length of header to adjust the number of ---- output
       markdownTable =
           markdownTable + border + dataTable.getHeaders().map(name =>{
            return this.formatCell('-----', false, undefined);

@@ -7,30 +7,21 @@ import { JavascriptConvertor } from "../data_formats/javascript-convertor.js";
 import { CsvConvertor } from "../data_formats/csv-convertor.js";
 import { DelimiterConvertor } from "../data_formats/delimiter-convertor.js";
 import { DelimiterOptions } from "../data_formats/delimiter-options.js";
-import { AsciiTableConvertor } from "../data_formats/asciitable-convertor.js";
+import { AsciiTableConvertor, AsciiTableOptions } from "../data_formats/asciitable-convertor.js";
 import {fileTypes} from '../data_formats/file-types.js';
 
 class Exporter {
 
     constructor(gridApi) {
         this.gridApi = gridApi;
-        this.csvDelimiter= new DelimiterOptions('"');
-        this.delimiter= new DelimiterOptions("\t");
-
-        // todo make this an 'AsciiTableOptions` object
-        this.asciiTableOptions = {style : "default"};
-
-        this.markdownOptions = new MarkdownOptions();
-        this.jsonConvertorOptions = new JsonConvertorOptions();
 
         this.options={};
-        this.options["csv"] = this.csvDelimiter;
-        this.options["dsv"] = this.delimiter;
-        this.options["asciitable"] = this.asciiTableOptions;
-        this.options["markdown"] = this.markdownOptions;
-        this.options["json"] = this.jsonConvertorOptions;
+        this.options["csv"] = new DelimiterOptions('"');
+        this.options["dsv"] = new DelimiterOptions("\t");
+        this.options["asciitable"] = new AsciiTableOptions();
+        this.options["markdown"] = new MarkdownOptions();
+        this.options["json"] = new JsonConvertorOptions();
         
-
         this.exporters = {};
         this.exporters["markdown"]= new MarkdownConvertor();
         this.exporters["csv"]= new CsvConvertor();
@@ -92,32 +83,27 @@ class Exporter {
         return this.gridApi.getColumnDefs().map(col => col.headerName);
     }
 
-
-    // todo: import and export options setting should use a consistent approach
-    setCsvDelimiterOptions(options){
-        this.csvDelimiter.mergeOptions(options);
+ 
+    getOptionsForType(type){
+        return this.options[type];
     }
 
-    setDelimiterOptions(options){
-        this.delimiter.mergeOptions(options);
-    }
+    setOptionsForType(type, options){
+        if(this.options[type]){
+            let optionsToUse = this.options[type];
+            optionsToUse.mergeOptions(options);
 
-    setMarkdownOptions(options){
-        this.markdownOptions.mergeOptions(options);
-    }
+            // because we can switch headers off for these types
+            // we need to remember them
+            if(type==="csv" || type ==="dsv"){
 
-    setAsciiTableOptions(options){
-        if(options?.style){
-            this.asciiTableOptions.style = options.style;
+                if(optionsToUse.header===false){
+                    // store headers from the grid in the options
+                    optionsToUse.headers = this.getHeadersFromGrid();
+                }
+            }            
         }
     }
-
-    setJsonConvertorOptions(options){
-        this.jsonConvertorOptions.mergeOptions(options);
-    }
-
-
-
 }
 
 export {Exporter}

@@ -11,7 +11,7 @@ class GridControlsPageMap{
     }
 }
 
-// todo: don't hook into existing controls in HTML create them here and then hook into them
+// TODO : don't hook into existing controls in HTML create them here and then hook into them
 // The buttons above a grid
 class GridControl {
 
@@ -20,7 +20,7 @@ class GridControl {
         this.pageMap = pageMap;
     }
 
-    // todo create the elements rather than inject HTML to avoid hard coded IDs
+    // TODO : avoid hard coded IDs use relative to the parent, so store the parent e.g. like option panels
     addGuiIn(parent){
         parent.innerHTML =`
         <div class="toolbar">

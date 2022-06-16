@@ -20,7 +20,7 @@ class HtmlDataValues{
 
     setCheckBoxFrom(locator,value, adefault){
         let elem = this.parent.querySelector(locator);
-        let valueToUse = value ? value : adefault;
+        let valueToUse = value!==undefined ? value : adefault;
         
         if(elem){
           elem.checked = valueToUse;
@@ -40,7 +40,7 @@ class HtmlDataValues{
     }
 
     setTextFieldToValue(locator, value){
-        let setValue = value ? value : "";
+        let setValue = value!==undefined ? value : "";
 
         let elem = this.parent.querySelector(locator);
         if(elem){
@@ -57,7 +57,56 @@ class HtmlDataValues{
         }
     }
 
+    getSelectWithCustomInput(selectLocator, customItemKey, inputLocator, keyMappings, aDefault){
 
+        let selectElem = this.parent.querySelector(selectLocator);
+        let delimiterName = selectElem.options[selectElem.selectedIndex].value;
+        let delimiter=undefined;
+        if(delimiterName===customItemKey){
+          delimiter = this.parent.querySelector(inputLocator).value;
+        }else{
+          for(const key in keyMappings){
+            if(delimiterName===key){
+              delimiter = keyMappings[key];
+            }
+          }
+        }
+  
+        if(delimiter===undefined){
+          console.log("unknown item found - using default");
+          delimiter=aDefault;
+        }
+
+        return delimiter;
+    }
+
+    setSelectWithCustomInput(selectLocator, customItemKey, inputLocator, keyMappings, theValue){
+        // set input to empty
+        this.parent.querySelector(inputLocator).value="";
+
+        // vind the value in the key mappings if present
+        let foundDelim=false;
+        for(const key in keyMappings){
+          if(theValue===keyMappings[key]){
+            let optionelem = this.parent.querySelector(selectLocator + ` option[value='${key}']`);
+            if(optionelem!==undefined){
+              optionelem.selected=true;
+            }
+            
+            foundDelim=true;
+          }
+        }
+        
+        // if not there then set to the custom
+        if(!foundDelim){
+          let optionelem = this.parent.querySelector(selectLocator + ` option[value='${customItemKey}']`);
+          if(optionelem!==undefined){
+            optionelem.selected=true;
+          }
+          // and set the text field
+          this.parent.querySelector(inputLocator).value = theValue;
+        }
+    }
 
 }
 

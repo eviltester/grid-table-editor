@@ -3,16 +3,14 @@ import {AsciiTable3} from "../libs/ascii-table3/ascii-table3.js"
 // using slightly changed version of https://github.com/AllMightySauron/ascii-table3 to run in browser
 
 // note: not a high priority as most IDEs can comment out lines
-// todo: option to remove header
-// todo: asciiDoc format
-// todo: add line code commenting styles to allow pasting generated string into code
-// todo: add block code commenting styles to allow pasting generated string into code
+// TODO : option to remove header
+// TODO : asciiDoc format
+// TODO : add line code commenting styles to allow pasting generated string into code
+// TODO : add block code commenting styles to allow pasting generated string into code
 
+class AsciiTableOptions{
 
-export class AsciiTableConvertor {
-
-    constructor(params) {
-
+    constructor(){
         this.options = {
             style: "ramac",
             linePrefix: ""
@@ -36,9 +34,28 @@ export class AsciiTableConvertor {
             "unicode mix":"unicode-mix",
         }
 
-        if(params?.options){
-            this.setOptions(params.options);
+    }
+  
+    mergeOptions(newoptions){
+        let optionstoSet ={};
+        if(newoptions.options){
+            optionstoSet = {...this.options, ...newoptions.options}
+        }else{
+            optionstoSet = {...this.options, ...newoptions}
         }
+
+        if(optionstoSet?.style){
+            if(this.isValidStyleKey(optionstoSet.style)){
+                this.options.style = this.styleNames[optionstoSet.style];
+            }else{
+                if(this.isValidStyleName(optionstoSet.style)){
+                    this.options.style = optionstoSet.style;
+                }else{
+                    console.log(`ascii table style ${optionstoSet.style} not found`);
+                }
+            }
+        }
+        this.options.linePrefix = optionstoSet.linePrefix ? optionstoSet.linePrefix : "";
     }
 
     isValidStyleKey(name){
@@ -53,19 +70,22 @@ export class AsciiTableConvertor {
         }
         return false;
     }
+  }
+
+
+class AsciiTableConvertor {
+
+    constructor(params) {
+
+        this.options = new AsciiTableOptions();
+        
+        if(params?.options){
+            this.setOptions(params.options);
+        }
+    }
 
     setOptions(options){
-        if(options?.style){
-            if(this.isValidStyleKey(options.style)){
-                this.options.style = this.styleNames[options.style];
-            }else{
-                if(this.isValidStyleName(options.style)){
-                    this.options.style = options.style;
-                }else{
-                    console.log(`ascii table style ${options.style} not found`);
-                }
-            }
-        }
+        this.options.mergeOptions(options);
     }
 
 
@@ -73,7 +93,7 @@ export class AsciiTableConvertor {
 
         // setHeading doesn't take an array it takes an expanded set of items
         var tableOutput = new AsciiTable3();
-        tableOutput.setStyle(this.options.style)
+        tableOutput.setStyle(this.options.options.style)
             .setHeading(...dataTable.getHeaders())
             .addRowMatrix(dataTable.rows);
             return tableOutput.toString();
@@ -84,3 +104,5 @@ export class AsciiTableConvertor {
     // }
 
 }
+
+export {AsciiTableConvertor, AsciiTableOptions};

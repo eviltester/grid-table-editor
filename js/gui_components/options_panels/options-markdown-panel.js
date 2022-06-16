@@ -1,10 +1,12 @@
 import { MarkdownOptions } from "../../data_formats/markdown-convertor.js";
 import {getNumberArrayFrom} from "../../utils/number-convertor.js";
+import {HtmlDataValues} from "./html-options-data-utils.js";
 
 class MarkdownOptionsPanel{
 
     constructor(parentElement) {
         this.parent = parentElement;
+        this.htmlData = new HtmlDataValues(this.parent);
     }
 
     addToGui(){
@@ -96,29 +98,20 @@ class MarkdownOptionsPanel{
 
     }
 
-    getSelectedValueFrom(selector, adefault){
-        let selectElem = this.parent.querySelector(selector);
-        let value=undefined;
-        if(selectElem){
-          value= selectElem.options[selectElem.selectedIndex].value;
-        }
-        return value ? value : adefault;        
-    }
-
-
-
     getOptionsFromGui(){
 
       let options = new MarkdownOptions();
 
       let newOptions = {};
       newOptions.options = {};
-      newOptions.options.spacePadding = this.getSelectedValueFrom(".markdown-options div.spacepadding select", "none");
-      newOptions.options.tabPadding = this.getSelectedValueFrom(".markdown-options div.tabpadding select", "none");
-      newOptions.options.borderBars = this.parent.querySelector(".markdown-options .borderbars input").checked;
-      newOptions.options.emboldenHeaders = this.parent.querySelector(".markdown-options .emboldenheaders input").checked;
-      newOptions.options.emphasisHeaders = this.parent.querySelector(".markdown-options .emphasisheaders input").checked;
-      newOptions.options.globalColumnAlign = this.getSelectedValueFrom(".markdown-options div.globalcolumnalign select", "default");
+      newOptions.options.spacePadding = this.htmlData.getSelectedValueFrom(".markdown-options div.spacepadding select", "none");
+      newOptions.options.tabPadding = this.htmlData.getSelectedValueFrom(".markdown-options div.tabpadding select", "none");
+
+      newOptions.options.borderBars = this.htmlData.getCheckBoxValueFrom(".markdown-options .borderbars input");
+      newOptions.options.emboldenHeaders = this.htmlData.getCheckBoxValueFrom(".markdown-options .emboldenheaders input");
+      newOptions.options.emphasisHeaders = this.htmlData.getCheckBoxValueFrom(".markdown-options .emphasisheaders input");
+
+      newOptions.options.globalColumnAlign = this.htmlData.getSelectedValueFrom(".markdown-options div.globalcolumnalign select", "default");
 
       newOptions.options.emboldenColumns = getNumberArrayFrom(
         this.parent.querySelector(".markdown-options .emboldencolumns input").value,
@@ -133,53 +126,24 @@ class MarkdownOptionsPanel{
 
     }
 
-    setCheckBoxFrom(locator,value, adefault){
-      let elem = this.parent.querySelector(locator);
-      let valueToUse = value ? value : adefault;
-      
-      if(elem){
-        elem.checked = valueToUse;
-      }
-    }
-
-    setDropDownOptionToKeyValue(locator, key, adefault){
-      let elem = this.parent.querySelector(`${locator} option[value='${key}']`);
-      if(elem){
-        elem.selected=true;
-      }else{
-        elem = this.parent.querySelector(`${locator} option[value='${adefault}']`);
-        if(elem){
-          elem.selected=true;
-        }
-      }
-    }
-
-    setTextFieldToValue(locator, value){
-      let setValue = value ? value : "";
-
-      let elem = this.parent.querySelector(locator);
-      if(elem){
-        elem.value=setValue;
-      }
-    }
 
     setFromOptions(markdownOptions){
 
       let options = markdownOptions?.options ? markdownOptions.options : {};
 
-      this.setCheckBoxFrom(".markdown-options .borderbars input", options?.borderBars, true);
-      this.setCheckBoxFrom(".markdown-options .emboldenheaders input", options?.emboldenHeaders, false);
-      this.setCheckBoxFrom(".markdown-options .emphasisheaders input", options?.emphasisHeaders, false);
+      this.htmlData.setCheckBoxFrom(".markdown-options .borderbars input", options?.borderBars, true);
+      this.htmlData.setCheckBoxFrom(".markdown-options .emboldenheaders input", options?.emboldenHeaders, false);
+      this.htmlData.setCheckBoxFrom(".markdown-options .emphasisheaders input", options?.emphasisHeaders, false);
 
-      this.setDropDownOptionToKeyValue(".markdown-options div.spacepadding select", options?.spacePadding, "none");
-      this.setDropDownOptionToKeyValue(".markdown-options div.tabpadding select", options?.tabPadding, "none");
-      this.setDropDownOptionToKeyValue(".markdown-options div.globalcolumnalign select", options?.globalColumnAlign, "default");
+      this.htmlData.setDropDownOptionToKeyValue(".markdown-options div.spacepadding select", options?.spacePadding, "none");
+      this.htmlData.setDropDownOptionToKeyValue(".markdown-options div.tabpadding select", options?.tabPadding, "none");
+      this.htmlData.setDropDownOptionToKeyValue(".markdown-options div.globalcolumnalign select", options?.globalColumnAlign, "default");
 
       let values = options?.emboldenColumns?.join(" ");
-      this.setTextFieldToValue(".markdown-options .emboldencolumns input", values);
+      this.htmlData.setTextFieldToValue(".markdown-options .emboldencolumns input", values);
 
       values = options?.emphasisColumns?.join(" ");
-      this.setTextFieldToValue(".markdown-options .emphasiscolumns input", values);
+      this.htmlData.setTextFieldToValue(".markdown-options .emphasiscolumns input", values);
     }
 
 }

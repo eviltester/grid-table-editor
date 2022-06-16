@@ -115,7 +115,7 @@ describe("Can convert markdown tables to data suitable for a data grid",()=>{
 
         let data = new MarkdownConvertor().markdownTableToDataRows(basicTable);
 
-        //todo: convert data to a GenericDataTable here and use that in all our tests, then migrate the code to use GenericDataTable
+        //TODO : convert data to a GenericDataTable here and use that in all our tests, then migrate the code to use GenericDataTable
         //console.log(data);
 
         expect(data.length).toBe(3);
@@ -148,7 +148,7 @@ describe("Can convert markdown tables to data suitable for a data grid",()=>{
 
         let data = new MarkdownConvertor().markdownTableToDataRows(basicTable);
 
-        //todo: convert data to a GenericDataTable here and use that in all our tests, then migrate the code to use GenericDataTable
+        //TODO : convert data to a GenericDataTable here and use that in all our tests, then migrate the code to use GenericDataTable
         //console.log(data);
 
         expect(data.length).toBe(3);
@@ -171,7 +171,7 @@ describe("Can convert markdown tables to data suitable for a data grid",()=>{
 
         let data = new MarkdownConvertor().markdownTableToDataRows(basicTable);
 
-        //todo: convert data to a GenericDataTable here and use that in all our tests, then migrate the code to use GenericDataTable
+        //TODO : convert data to a GenericDataTable here and use that in all our tests, then migrate the code to use GenericDataTable
         //console.log(data);
 
         expect(data.length).toBe(0);
@@ -201,7 +201,7 @@ describe("Can convert markdown tables to data suitable for a data grid",()=>{
 
         let data = new MarkdownConvertor().markdownTableToDataRows(basicTable);
 
-        //todo: convert data to a GenericDataTable here and use that in all our tests, then migrate the code to use GenericDataTable
+        //TODO : convert data to a GenericDataTable here and use that in all our tests, then migrate the code to use GenericDataTable
         //console.log(data);
 
         expect(data.length).toBe(3);
@@ -237,7 +237,7 @@ describe("Can convert markdown tables to data suitable for a data grid",()=>{
 
         let data = new MarkdownConvertor().markdownTableToDataRows(basicTable);
 
-        //todo: convert data to a GenericDataTable here and use that in all our tests, then migrate the code to use GenericDataTable
+        //TODO : convert data to a GenericDataTable here and use that in all our tests, then migrate the code to use GenericDataTable
         //console.log(data);
 
         expect(data.length).toBe(3);
@@ -271,7 +271,7 @@ describe("Can convert markdown tables to data suitable for a data grid",()=>{
 
         let data = new MarkdownConvertor().markdownTableToDataRows(basicTable);
 
-        //todo: convert data to a GenericDataTable here and use that in all our tests, then migrate the code to use GenericDataTable
+        //TODO : convert data to a GenericDataTable here and use that in all our tests, then migrate the code to use GenericDataTable
         expect(data.length).toBe(2);
         expect(data[0][0]).toBe('heading -1');
         expect(data[0][1]).toBe('heading -2');
@@ -297,7 +297,7 @@ describe("Can convert markdown tables to data suitable for a data grid",()=>{
 
         let data = new MarkdownConvertor(options).markdownTableToDataRows(basicTable);
 
-        //todo: convert data to a GenericDataTable here and use that in all our tests, then migrate the code to use GenericDataTable
+        //TODO : convert data to a GenericDataTable here and use that in all our tests, then migrate the code to use GenericDataTable
 
         expect(data.length).toBe(0);
     });
@@ -324,7 +324,7 @@ describe("Can convert markdown tables to data suitable for a data grid",()=>{
 
         let data = new MarkdownConvertor().markdownTableToDataRows(basicTable);
 
-        //todo: convert data to a GenericDataTable here and use that in all our tests, then migrate the code to use GenericDataTable
+        //TODO : convert data to a GenericDataTable here and use that in all our tests, then migrate the code to use GenericDataTable
         expect(data.length).toBe(2);
         expect(data[0][0]).toBe('heading -1');
         expect(data[0][1]).toBe('heading -2');
@@ -352,7 +352,7 @@ describe("Can convert markdown tables to data suitable for a data grid",()=>{
 
         let data = new MarkdownConvertor().markdownTableToDataRows(basicTable);
 
-        //todo: convert data to a GenericDataTable here and use that in all our tests, then migrate the code to use GenericDataTable
+        //TODO : convert data to a GenericDataTable here and use that in all our tests, then migrate the code to use GenericDataTable
         //console.log(data);
 
         expect(data.length).toBe(3);

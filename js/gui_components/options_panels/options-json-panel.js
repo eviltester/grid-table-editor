@@ -5,14 +5,14 @@ class JsonOptionsPanel{
 
     constructor(parentElement) {
         this.parent = parentElement;
-        this.divLocator= ".json-options";
+        this.parentDivClass= "json-options";
         this.htmlData = new HtmlDataValues(this.parent);
     }
 
     addToGui(){
         this.parent.innerHTML =
         `
-        <div class="json-options" style="width:100%">
+        <div class="${this.parentDivClass}" style="width:100%">
           <div><p><strong>Options</strong></p></div>
 
       
@@ -70,7 +70,7 @@ class JsonOptionsPanel{
 
     setApplyCallback(callbackFunc){
 
-      let button = this.parent.querySelector(this.divLocator + " .apply button");
+      let button = this.parent.querySelector(".apply button");
       button.onclick = function (){
           callbackFunc(this.getOptionsFromGui())
       }.bind(this);
@@ -82,10 +82,10 @@ class JsonOptionsPanel{
 
       let newOptions = new JsonConvertorOptions();
 
-      newOptions.options.makeNumbersNumeric = this.htmlData.getCheckBoxValueFrom(this.divLocator + " .numbersnumeric input");
-      newOptions.options.prettyPrint = this.htmlData.getCheckBoxValueFrom(this.divLocator + " .prettyprint input");
-      newOptions.options.asObject = this.htmlData.getCheckBoxValueFrom(this.divLocator + " .asobject input");
-      newOptions.options.asPropertyNamed = this.htmlData.getTextInputValueFrom(this.divLocator + " .propertynamed input");
+      newOptions.options.makeNumbersNumeric = this.htmlData.getCheckBoxValueFrom(".numbersnumeric input");
+      newOptions.options.prettyPrint = this.htmlData.getCheckBoxValueFrom(".prettyprint input");
+      newOptions.options.asObject = this.htmlData.getCheckBoxValueFrom(".asobject input");
+      newOptions.options.asPropertyNamed = this.htmlData.getTextInputValueFrom(".propertynamed input");
 
       let prettyPrintDelimiter = this.htmlData.getSelectWithCustomInput("select[name='prettydelimiter']", "custom", 
                                             ".custom-pretty-delimiter input", newOptions.delimiterMappings,  "\t");
@@ -101,10 +101,10 @@ class JsonOptionsPanel{
 
       let options = mainOptions?.options ? mainOptions.options : {};
 
-      this.htmlData.setCheckBoxFrom(this.divLocator + " .numbersnumeric input", options?.makeNumbersNumeric, false);
-      this.htmlData.setCheckBoxFrom(this.divLocator + " .prettyprint input", options?.prettyPrint, true);
-      this.htmlData.setCheckBoxFrom(this.divLocator + " .asobject input", options?.asObject, false);
-      this.htmlData.setTextFieldToValue(this.divLocator + " .propertynamed input", options?.asPropertyNamed);
+      this.htmlData.setCheckBoxFrom(".numbersnumeric input", options?.makeNumbersNumeric, false);
+      this.htmlData.setCheckBoxFrom(".prettyprint input", options?.prettyPrint, true);
+      this.htmlData.setCheckBoxFrom(".asobject input", options?.asObject, false);
+      this.htmlData.setTextFieldToValue(".propertynamed input", options?.asPropertyNamed);
 
       this.htmlData.setSelectWithCustomInput(`select[name='prettydelimiter']`, "custom",
                                       ".custom-pretty-delimiter input", mainOptions.delimiterMappings,

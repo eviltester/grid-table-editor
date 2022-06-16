@@ -21,7 +21,14 @@ class DelimitedOptions{
         this.htmlData = new HtmlDataValues(this.parent);
     }
 
+        // TODO: create some HTML constructor objects to make building the options panels simpler
+        // e.g.         let html = new HtmlControlPanelElements();
+        // html.selectWithCustomInput({select:{name:"delimiter",text:"Delimiter", }})
+        // but that feels a bit clumsy, possibly factory methods
     addToGui(){
+
+
+
         this.parent.innerHTML =
         `
         <div class="delimited-options" style="width:100%">
@@ -128,7 +135,6 @@ class DelimitedOptions{
       this.htmlData.setTextFieldToValue(".quoteChar input", options.quoteChar, "\"");
       this.htmlData.setTextFieldToValue(".escapeChar input", options.escapeChar, "\"");
 
-      // TODO : turn this into a custom method
       this.htmlData.setSelectWithCustomInput(`select[name='delimiter']`, "custom",
                                       ".custom-delimiter input", this.delimiterMappings,
                                       options.delimiter);

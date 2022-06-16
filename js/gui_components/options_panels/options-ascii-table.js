@@ -8,7 +8,6 @@ class AsciiTableOptionsPanel{
         this.htmlData = new HtmlDataValues(this.parent);
     }
 
-    // TODO: create some HTML constructor objects to make building the options panels simpler
     addToGui(){
 
       let stylesAsOptions = "";

@@ -5,6 +5,7 @@ import { DelimitedOptions } from "./options_panels/options-delimited-controls.js
 import { AsciiTableOptionsPanel } from "./options_panels/options-ascii-table.js";
 import { MarkdownOptionsPanel } from "./options_panels/options-markdown-panel.js";
 import { JsonOptionsPanel } from "./options_panels/options-json-panel.js";
+import { JavascriptOptionsPanel } from "./options_panels/options-javascript-panel.js";
 
 class ImportExportControls {
 
@@ -166,6 +167,7 @@ class ImportExportControls {
                 this.optionsPanels["asciitable"] =new AsciiTableOptionsPanel(optionsparent);
                 this.optionsPanels["markdown"] =new MarkdownOptionsPanel(optionsparent);
                 this.optionsPanels["json"] =new JsonOptionsPanel(optionsparent);
+                this.optionsPanels["javascript"] =new JavascriptOptionsPanel(optionsparent);
             }
         }
     }

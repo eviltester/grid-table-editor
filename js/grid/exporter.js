@@ -21,6 +21,7 @@ class Exporter {
         this.options["asciitable"] = new AsciiTableOptions();
         this.options["markdown"] = new MarkdownOptions();
         this.options["json"] = new JsonConvertorOptions();
+        this.options["javascript"] = new JsonConvertorOptions();
         
         this.exporters = {};
         this.exporters["markdown"]= new MarkdownConvertor();

@@ -3,9 +3,9 @@ import {HtmlDataValues} from "./html-options-data-utils.js";
 
 class JsonOptionsPanel{
 
-    constructor(parentElement) {
+    constructor(parentElement, parentDivClassname) {
         this.parent = parentElement;
-        this.parentDivClass= "json-options";
+        this.parentDivClass= parentDivClassname ? parentDivClassname : "json-options";
         this.htmlData = new HtmlDataValues(this.parent);
     }
 

@@ -10,6 +10,10 @@ export class JavascriptConvertor {
         this.delegateTo = new JsonConvertor({headerNameConvertor: convertStringToJavaScriptValidName});
     }
 
+    setOptions(newOptions){
+        this.delegateTo.config.mergeOptions(newOptions);
+    }
+
     formatAsObjects(dataTable){
         return this.delegateTo.formatAsObjects(dataTable);
     }

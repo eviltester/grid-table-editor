@@ -1,19 +1,25 @@
 import { GenericDataTable } from "./generic-data-table.js";
 
 // TODO : expand import by sanitising the cell values to remove html - possibly make this an option
-// TODO : options - add thead - add a thead as parent for tr, with th items for header
-// TODO : options - add tbody - add a tbody as parent for tr, with td items for cells
-//     without thead and tbody it is just a list of tr within a table element
 // TODO : options - divs - use nested divs with classes "table", "header", "heading", "row", "cell"
 // TODO : options - configurable div class names by user
 
 class HtmlConvertorOptions{
 
     constructor(){
+
+        this.delimiterMappings ={
+            "tab": "\t",
+            "space": " ",
+        };
+
         this.options = {
             compact: false, // - no line breaks or indents
             prettyPrint: false, // formatted - indent HTML and add new lines
-            prettyPrintDelimiter: "\t" // can configure delimiter to pad for pretty print
+            prettyPrintDelimiter: "\t", // can configure delimiter to pad for pretty print
+            // without thead and tbody it is just a list of tr within a table element
+            addTheadToTable: false, // add a thead as parent for tr, with th items for header
+            addTbodyToTable: false, //add a tbody as parent for tr, with td items for cells
         }
     }
 
@@ -31,19 +37,39 @@ class Indent{
     constructor(indentChar) {
         this.currIndent=0;
         this.indentChar = indentChar ? indentChar : "\t";
+        this.amIndenting=true;
+    }
+
+    activateIndentation(onOff){
+        this.amIndenting=onOff;
+
+        // at the moment if we switch of indenting it goes back to no indenting
+        // currently no use case where we would want to 'stick' at current level
+        // of indentation
+        if(!this.amIndenting){
+            this.currIndent=0;
+        }
     }
 
     indent(){
+
+        if(!this.amIndenting){return;}
+
         this.currIndent++;
     }
 
     outdent(){
+        if(!this.amIndenting){return;}
+
         if(this.currIndent>0){
             this.currIndent--;
         }
     }
 
     getIndent(){
+
+        if(!this.amIndenting){return "";}
+
         let retString = "";
         for(let x=0; x<this.currIndent; x++){
             retString+=this.indentChar;
@@ -68,82 +94,92 @@ class HtmlConvertor {
         this.exportOptions.mergeOptions(newOptions);
     }
 
+    // TODO: this might be cleaner with factory methods that also control indent with an 'addChildElement'
+    // without factory methods indent before a <openelement> and outdent before a </closelement>
+    // TODO: the pretty print controlling here is overly complicated, need to simplify and probably pretty print 'after' the HTML is created
     fromDataTable(dataTable){
 
         let delim = "\n";
         let indenter = new Indent(this.exportOptions.options.prettyPrintDelimiter);
+        indenter.activateIndentation(this.exportOptions.options.prettyPrint);
 
        if(this.exportOptions.options.compact){
             delim="";
        }
 
+        // start table
         var html = indenter.getIndent() + "<table>" + delim;
-
-        if(this.exportOptions.options.prettyPrint){
-            indenter.indent();
-        }
        
+        // process headers
+
+        // thead
+        if(this.exportOptions.options.addTheadToTable){
+            indenter.indent();
+            html += indenter.getIndent() + "<thead>" + delim;
+        }
+
+        // tr
+        indenter.indent();
         html = html + indenter.getIndent() + "<tr>" + delim;
         var renderHeaders = dataTable.getHeaders().map(header => this.validHTMLCellValue(header));
 
-        if(this.exportOptions.options.prettyPrint){
-            indenter.indent();
-        }
 
+        // th
+        indenter.indent();
         renderHeaders.forEach((header)=>{
             html +=  indenter.getIndent() + '<th>' + header + `</th>${delim}`;
+        });
+        // /th was inline so no need to outdent
 
-        })
-        //html +=  indenter.getIndent() + '<th>' + renderHeaders.join(`</th>${delim}${indenter.indent()}<th>`) + '</th>' + delim;
-
-        if(this.exportOptions.options.prettyPrint){
-            indenter.outdent();
-        }
-
+        // /tr
+        indenter.outdent();
         html = html + indenter.getIndent() + "</tr>" + delim;
         
-        if(this.exportOptions.options.prettyPrint){
+        // thead
+        if(this.exportOptions.options.addTheadToTable){
             indenter.outdent();
+            html += indenter.getIndent() + "</thead>" + delim;
+        }
+
+        // process table body
+
+        // tbody
+        if(this.exportOptions.options.addTbodyToTable){
+            // would only need to indent if there were no headers
+            // currently we don't support that option
+            // indenter.indent(); 
+            html += indenter.getIndent() + "<tbody>" + delim;
+
+            // need to indent the <tr>
+            indenter.indent();
         }
 
         for(let rowIndex=0; rowIndex<dataTable.getRowCount(); rowIndex++){
             let row = dataTable.getRow(rowIndex);
             
-            if(this.exportOptions.options.prettyPrint){
-                indenter.indent();
-            }
-
+            // no need to indent because tr at same level as before
             html = html + indenter.getIndent() + "<tr>" + delim;
             
-            if(this.exportOptions.options.prettyPrint){
-                indenter.indent();
-            }
-
+            indenter.indent();
             var renderValues = row.map(value => this.validHTMLCellValue(value));
             renderValues.forEach((value)=>{
                 html +=  indenter.getIndent() + '<td>' + value + `</td>${delim}`;
             })
+            // /td was inline so no need to outdent
 
-            //html = html + indenter.getIndent() +'<td>' + renderValues.join('</td><td>') + '</td>' + delim;
-
-            if(this.exportOptions.options.prettyPrint){
-                indenter.outdent();
-            }
-
+            indenter.outdent();
             html = html + indenter.getIndent() +"</tr>" + delim;
-
-            if(this.exportOptions.options.prettyPrint){
-                indenter.outdent();
-            }
         };
 
-        if(this.exportOptions.options.prettyPrint){
+        // tbody
+        if(this.exportOptions.options.addTbodyToTable){
             indenter.outdent();
+            html += indenter.getIndent() + "</tbody>" + delim;
         }
 
+        indenter.outdent();
         html += indenter.getIndent() +"</table>";
-
-        console.log(html);
+        
         return html;
     }
 

@@ -139,4 +139,90 @@ describe("Can convert generic data grids to html tables",()=>{
         expect(output).toBe(expected);
     });  
 
+
+    test('can add thead to table output', () => {
+        const expected =
+`<table>
+<thead>
+<tr>
+<th>h1</th>
+</tr>
+</thead>
+<tr>
+<td>data</td>
+</tr>
+</table>`    
+
+        let table = new GenericDataTable();
+        table.setHeaders(["h1"]);
+        table.appendDataRow(["data"])
+
+        let newOptions = new HtmlConvertorOptions();
+        newOptions.options.addTheadToTable = true;
+
+        let convertor = new HtmlConvertor();
+        convertor.setOptions(newOptions);
+        let output = convertor.fromDataTable(table);
+
+        expect(output).toBe(expected);
+    });
+
+    test('can add tbody to table output', () => {
+        const expected =
+`<table>
+<tr>
+<th>h1</th>
+</tr>
+<tbody>
+<tr>
+<td>data</td>
+</tr>
+</tbody>
+</table>`    
+
+        let table = new GenericDataTable();
+        table.setHeaders(["h1"]);
+        table.appendDataRow(["data"])
+
+        let newOptions = new HtmlConvertorOptions();
+        newOptions.options.addTbodyToTable = true;
+
+        let convertor = new HtmlConvertor();
+        convertor.setOptions(newOptions);
+        let output = convertor.fromDataTable(table);
+
+        expect(output).toBe(expected);
+    });    
+
+    test('can pretty print with all table elements on', () => {
+        const expected =
+`<table>
+  <thead>
+    <tr>
+      <th>h1</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>data</td>
+    </tr>
+  </tbody>
+</table>`    
+
+        let table = new GenericDataTable();
+        table.setHeaders(["h1"]);
+        table.appendDataRow(["data"])
+
+        let newOptions = new HtmlConvertorOptions();
+        newOptions.options.addTbodyToTable = true;
+        newOptions.options.addTheadToTable = true;
+        newOptions.options.prettyPrint = true;
+        newOptions.options.prettyPrintDelimiter = "  ";
+
+        let convertor = new HtmlConvertor();
+        convertor.setOptions(newOptions);
+        let output = convertor.fromDataTable(table);
+
+        expect(output).toBe(expected);
+    });       
 });

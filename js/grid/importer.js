@@ -1,10 +1,10 @@
 import { DelimiterOptions } from "../data_formats/delimiter-options.js";
 import { GherkinConvertor } from "../data_formats/gherkin-convertor.js";
-import { MarkdownConvertor } from "../data_formats/markdown-convertor.js";
-import { HtmlConvertor } from "../data_formats/html-convertor.js";
+import { MarkdownConvertor, MarkdownOptions } from "../data_formats/markdown-convertor.js";
+import { HtmlConvertor, HtmlConvertorOptions } from "../data_formats/html-convertor.js";
 import { DelimiterConvertor } from "../data_formats/delimiter-convertor.js";
 import { CsvConvertor } from "../data_formats/csv-convertor.js";
-import { JsonConvertor } from "../data_formats/json-convertor.js";
+import { JsonConvertor, JsonConvertorOptions } from "../data_formats/json-convertor.js";
 import { JavascriptConvertor } from "../data_formats/javascript-convertor.js";
 import { fileTypes } from "../data_formats/file-types.js";
 
@@ -13,7 +13,15 @@ class Importer{
     constructor(gridApi,gridExtension) {
         this.gridApi = gridApi;
         this.gridExtras=gridExtension;
-        this.importOptions= new DelimiterOptions();
+
+        this.options={};
+        this.options["csv"] = new DelimiterOptions('"');
+        this.options["dsv"] = new DelimiterOptions("\t");
+       // this.options["asciitable"] = new AsciiTableOptions();
+        this.options["markdown"] = new MarkdownOptions();
+        this.options["json"] = new JsonConvertorOptions();
+        this.options["javascript"] = new JsonConvertorOptions();
+        this.options["html"] = new HtmlConvertorOptions();
 
         this.convertors = {};
         this.convertors["markdown"] = new MarkdownConvertor();
@@ -34,8 +42,12 @@ class Importer{
         return fileTypes[type]?.fileExtension;
     }
 
-    setImportOptions(options){
-      this.importOptions=options;
+    setOptionsForType(type, options){
+
+      if(this.options[type]){
+        let optionsToUse = this.options[type];
+        optionsToUse.mergeOptions(options);        
+      }
     }
 
     // text area import
@@ -46,9 +58,14 @@ class Importer{
         return;
       }
 
+      let optionsToUse = {};
+      if(this.options[typeToImport]){
+        optionsToUse = this.options[typeToImport];     
+      }
+
       let convertorToUse = this.convertors[typeToImport];
       if(convertorToUse !== undefined){
-        convertorToUse?.setOptions?.(this.importOptions);
+        convertorToUse?.setOptions?.(optionsToUse);
         this.setGridFromGenericDataTable(convertorToUse.toDataTable(textToImport));
         return;
       }

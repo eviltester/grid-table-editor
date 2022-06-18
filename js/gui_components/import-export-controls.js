@@ -6,7 +6,9 @@ import { AsciiTableOptionsPanel } from "./options_panels/options-ascii-table.js"
 import { MarkdownOptionsPanel } from "./options_panels/options-markdown-panel.js";
 import { JsonOptionsPanel } from "./options_panels/options-json-panel.js";
 import { JavascriptOptionsPanel } from "./options_panels/options-javascript-panel.js";
+import { HtmlOptionsPanel } from "./options_panels/options-html-panel.js";
 
+// TODO: fix bug in markdown export where styles are exported into the grid when setTextFromGrid button used e.g. bold columns and headers
 class ImportExportControls {
 
     constructor(){
@@ -33,6 +35,8 @@ class ImportExportControls {
 
         this.fileInputElement = parentelement.querySelector('#csvinput');
         let csvinputchangelistener = this.loadFile.bind(this);
+        // clear file upload on click to allow re-uploading same file after option changes e.g for delimiters
+        this.fileInputElement.addEventListener('click', (e)=>{e.currentTarget.value = ""}, false);
         this.fileInputElement.addEventListener('change', csvinputchangelistener, false);
 
         // setup the drop zone
@@ -68,23 +72,8 @@ class ImportExportControls {
        this.exportControls.renderTextFromGrid();
     }
 
-      // use papa parse for csv parsing https://www.papaparse.com/demo
     loadFile() {
-
-        let type = document.querySelector("li.active-type a").getAttribute("data-type");
-    
-        // TODO : why is this 'different' and not just using the normal readFile approach?
-        if(type=="csv" || type=="dsv") {
-        //console.log(this.files[0]);
-        Papa.parse(this.fileInputElement.files[0], {
-            complete: function (results) {
-            this.importer.setGridFromData(results.data);
-            this.exportControls.renderTextFromGrid();
-            }.bind(this)
-        });
-        return;
-        }
-    
+        let type = document.querySelector("li.active-type a").getAttribute("data-type");    
         this.readFile(this.fileInputElement.files[0]);
     }
   
@@ -142,15 +131,6 @@ class ImportExportControls {
 
         exportControls.forEach(e => e.style.visibility = exportVisibility);
 
-        // set options for type
-        // TODO : why are we not setting export options here too
-        if(type==="csv"){
-            this.importer.setImportOptions(this.csvDelimiter);
-        }
-        if(type==="dsv"){
-            this.importer.setImportOptions(this.delimiter);
-        }
-
         // TODO : allow export and import to have different file types
         // configure file type display
         const fileType = this.importer.getFileExtensionFor(type);
@@ -168,6 +148,7 @@ class ImportExportControls {
                 this.optionsPanels["markdown"] =new MarkdownOptionsPanel(optionsparent);
                 this.optionsPanels["json"] =new JsonOptionsPanel(optionsparent);
                 this.optionsPanels["javascript"] =new JavascriptOptionsPanel(optionsparent);
+                this.optionsPanels["html"] =new HtmlOptionsPanel(optionsparent);
             }
         }
     }
@@ -209,9 +190,7 @@ class ImportExportControls {
 
 
         if(optionsPanel){
-            console.log("using generic panel setup for " + type);
             optionsPanel.addToGui();
-            //this.optionsPanel.setFromOptions(this.typeOptions[type]);
             optionsPanel.setFromOptions(this.exporter.getOptionsForType(type));
             optionsPanel.setApplyCallback(this.setCurrentTypeOptions.bind(this));
         }
@@ -221,7 +200,7 @@ class ImportExportControls {
 
     setCurrentTypeOptions(options){
         const type = document.querySelector("li.active-type a").getAttribute("data-type");
-        console.log("using generic options setting for " + type);
+        this.importer.setOptionsForType(type,options);
         this.exporter.setOptionsForType(type,options);
         this.renderTextFromGrid();
     }

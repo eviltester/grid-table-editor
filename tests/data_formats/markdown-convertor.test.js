@@ -1,6 +1,59 @@
 import {MarkdownConvertor, MarkdownOptions} from '../../js/data_formats/markdown-convertor.js';
 import { GenericDataTable } from '../../js/data_formats/generic-data-table.js';
 
+describe("can get values from a markdown table cell", ()=>{
+
+    test("cell contents are trimmed",()=>{
+        let input = "  contents   ";
+        let output = "contents";
+        let value = new MarkdownConvertor().getValidTableCellValueFromMarkdownCell(input);
+        expect(value).toEqual(output);
+    });
+
+    test("escape bars are transformed",()=>{
+        let input =  "con&#124;ten&#124;ts";
+        let output ="con|ten|ts";
+        let value = new MarkdownConvertor().getValidTableCellValueFromMarkdownCell(input);
+        expect(value).toEqual(output);
+    });
+
+    // emphasis
+    it.each([
+        ['normalise inline emphasis',  "word _emphasised_ inline", "word emphasised inline"],
+        ['normalise inline emphasis start',  "_emphasised_ at start", "emphasised at start"],
+        ['normalise inline emphasis end',  "at end _emphasised_", "at end emphasised"],
+        ['normalise only emphasis',  "_emphasised_", "emphasised"],
+        ['padded emphasis',  "  _emphasised_  ", "emphasised"],
+        ['incomplete emphasis',  "  _emphasis  ", "_emphasis"],
+        ['not started emphasis',  " emphasis_  ", "emphasis_"],
+        ['not emphasis',  " _ emphasis_  ", "_ emphasis_"],
+        ['not emphasis either',  "  _emphasis _  ", "_emphasis _"],
+        ['not emphasis without contents',  " __ test  ", "__ test"],
+    ])
+        ("emphasis markdown: %s - `%s` to `%s`",(when, input,output)=>{
+        let value = new MarkdownConvertor().getValidTableCellValueFromMarkdownCell(input);
+        expect(value).toEqual(output);
+    });
+
+    // bold
+    it.each([
+        ['normalise inline bold',  "word **bold** inline", "word bold inline"],
+        ['normalise inline bold start',  "**bold** at start", "bold at start"],
+        ['normalise inline bold end',  "at end **bold**", "at end bold"],
+        ['normalise only bold',  "**bold**", "bold"],
+        ['padded bold',  "  **bold**  ", "bold"],
+        ['incomplete bold',  "  **bold  ", "**bold"],
+        ['not started bold',  "  bold**  ", "bold**"],
+        ['not bold',  "  ** bold**  ", "** bold**"],
+        ['not bold either',  "  **bold **  ", "**bold **"],
+        ['not bold without contents',  "  ****  ", "****"],
+    ])
+        ("emphasis markdown: %s - `%s` to `%s`",(when, input,output)=>{
+        let value = new MarkdownConvertor().getValidTableCellValueFromMarkdownCell(input);
+        expect(value).toEqual(output);
+    });
+
+});
 
 describe("can get values from a markdown table row", ()=>{
 

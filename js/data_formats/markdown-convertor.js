@@ -111,15 +111,15 @@ class MarkdownConvertor {
       // remove formatting
 
       // remove emphasis _ _  
-      // (?:) non capture group
-      // (?:^| ) for at start or preceeded by space
-      // (?:$| ) for at end or followed by space
-      const emRegexp = /(?:^| )_(.+)_(?:$| )/g;
-      actualContents = actualContents.replace(emRegexp,"$1");
+      // (^| ) for at start or preceeded by space
+      // ([\S]+) sequence of non white space characters
+      // ($| ) for at end or followed by space
+      const emRegexp = /(^| )_([\S]+)_($| )/g;
+      actualContents = actualContents.replace(emRegexp,"$1$2$3");
 
       // remove bold ** **
-      const boldRegexp = /(?:^| )\*\*(.+)\*\*(?:$| )/g;
-      actualContents = actualContents.replace(boldRegexp,"$1");
+      const boldRegexp = /(^| )\*\*([\S]+)\*\*($| )/g;
+      actualContents = actualContents.replace(boldRegexp,"$1$2$3");
       
       return actualContents;
     }

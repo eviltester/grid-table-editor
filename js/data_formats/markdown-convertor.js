@@ -99,6 +99,27 @@ class MarkdownConvertor {
 
       return true;
     }
+
+
+    // TODO: wrap with unit tests
+    getValidTableCellValueFromMarkdownCell(aCellValue){
+      let actualContents = aCellValue.trim();
+
+      // handle any special character conversions for markdown
+      actualContents = actualContents.replaceAll("&#124;","|")
+
+      // remove formatting
+
+      // remove emphasis _ _
+      const emRegexp = /(?:^| )_(.+)_(?:$| )/g;
+      actualContents = actualContents.replace(emRegexp,"$1");
+
+      // remove bold ** **
+      const boldRegexp = /(?:^| )\*\*(.+)\*\*(?:$| )/g;
+      actualContents = actualContents.replace(boldRegexp,"$1");
+      
+      return actualContents;
+    }
     
     getValuesFromMarkdownTableRow(aRowString){
 
@@ -114,12 +135,8 @@ class MarkdownConvertor {
       var values = rowString.split("|");
 
       var cellValues = values.map(contents => {
-          let actualContents = contents.trim();
-
-          // handle any special character conversions for markdown
-          actualContents = actualContents.replaceAll("&#124;","|")
-          
-          return actualContents;
+        let actualContents = this.getValidTableCellValueFromMarkdownCell(contents);
+        return actualContents;
       });
 
       return cellValues;

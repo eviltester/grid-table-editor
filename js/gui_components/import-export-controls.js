@@ -8,7 +8,6 @@ import { JsonOptionsPanel } from "./options_panels/options-json-panel.js";
 import { JavascriptOptionsPanel } from "./options_panels/options-javascript-panel.js";
 import { HtmlOptionsPanel } from "./options_panels/options-html-panel.js";
 
-// TODO: fix bug in markdown export where styles are exported into the grid when setTextFromGrid button used e.g. bold columns and headers
 class ImportExportControls {
 
     constructor(){

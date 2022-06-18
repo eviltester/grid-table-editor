@@ -110,7 +110,10 @@ class MarkdownConvertor {
 
       // remove formatting
 
-      // remove emphasis _ _
+      // remove emphasis _ _  
+      // (?:) non capture group
+      // (?:^| ) for at start or preceeded by space
+      // (?:$| ) for at end or followed by space
       const emRegexp = /(?:^| )_(.+)_(?:$| )/g;
       actualContents = actualContents.replace(emRegexp,"$1");
 

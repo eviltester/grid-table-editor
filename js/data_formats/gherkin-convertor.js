@@ -1,5 +1,12 @@
 import { GenericDataTable } from "./generic-data-table.js";
 
+// TODO: options left indent tabs, 2 spaces, 4 spaces, custom
+// TODO: in cell pad left, right, both (by 1 space)
+// TODO: include/hide headings
+// TODO: pretty print (calculate max width of each col, pad out entries on export for columns)
+// e.g. | title              | author          |
+//      | quite a long title | the author name |
+
 export class GherkinConvertor {
 
     constructor(params) {

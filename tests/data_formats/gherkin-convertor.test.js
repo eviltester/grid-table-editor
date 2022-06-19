@@ -344,7 +344,6 @@ describe("can apply options to Gherkin Table Generation", ()=>{
         let convertor =  new GherkinConvertor();
         convertor.setOptions(convertorOptions);
         let output = convertor.fromDataTable(table);
-        console.log(output);
         expect(output).toEqual(expected);
     });
 
@@ -361,7 +360,6 @@ describe("can apply options to Gherkin Table Generation", ()=>{
         let convertor =  new GherkinConvertor();
         convertor.setOptions(convertorOptions);
         let output = convertor.fromDataTable(table);
-        console.log(output);
         expect(output).toEqual(expected);
     });
 
@@ -378,7 +376,7 @@ describe("can apply options to Gherkin Table Generation", ()=>{
         let convertor =  new GherkinConvertor();
         convertor.setOptions(convertorOptions);
         let output = convertor.fromDataTable(table);
-        console.log(output);
+
         expect(output).toEqual(expected);
     }); 
     
@@ -395,7 +393,7 @@ describe("can apply options to Gherkin Table Generation", ()=>{
         let convertor =  new GherkinConvertor();
         convertor.setOptions(convertorOptions);
         let output = convertor.fromDataTable(table);
-        console.log(output);
+
         expect(output).toEqual(expected);
     });     
 
@@ -413,7 +411,7 @@ describe("can apply options to Gherkin Table Generation", ()=>{
         let convertor =  new GherkinConvertor();
         convertor.setOptions(convertorOptions);
         let output = convertor.fromDataTable(table);
-        console.log(output);
+
         expect(output).toEqual(expected);
     });       
 
@@ -430,7 +428,7 @@ describe("can apply options to Gherkin Table Generation", ()=>{
         let convertor =  new GherkinConvertor();
         convertor.setOptions(convertorOptions);
         let output = convertor.fromDataTable(table);
-        console.log(output);
+
         expect(output).toEqual(expected);
     });
 
@@ -452,7 +450,6 @@ describe("can apply options to Gherkin Table Generation", ()=>{
         let convertor =  new GherkinConvertor();
         convertor.setOptions(convertorOptions);
         let output = convertor.fromDataTable(authortable);
-        console.log(output);
         expect(output).toEqual(expected);
     });   
     
@@ -475,7 +472,7 @@ describe("can apply options to Gherkin Table Generation", ()=>{
         let convertor =  new GherkinConvertor(convertorOptions);
 
         let output = convertor.fromDataTable(authortable);
-        console.log(output);
+
         expect(output).toEqual(expected);
     });    
 });

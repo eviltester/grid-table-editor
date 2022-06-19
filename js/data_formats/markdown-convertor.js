@@ -23,7 +23,8 @@ class MarkdownOptions{
           // support alignment with a global config "default align", "left align", "center", "right alignment"
           //alignment on headers --- :--- :---: ---:
           globalColumnAlign: 'default', //default, left, center, right
-          // TODO:  pretty print to size out the columns - like Gherkin 
+          // pretty print to size out the columns - like Gherkin
+          prettyPrint: false,
       }
       this.validateSeparatorLength = false;
   }
@@ -256,12 +257,61 @@ class MarkdownConvertor {
       return leftPadding + this.getValidOutputFormatCellValue(value) + rightPadding;
     }
 
+
+    getPrettyPrintColumnWidths(dataTable){
+
+      let prettyPrintColumnWidths=[];
+
+      dataTable.getHeaders().forEach(
+          (header, index) =>{
+              let output = this.formatCell(header, true, index+1);
+              prettyPrintColumnWidths[index] = output.length;
+          } 
+      );
+
+      for(let rowIndex=0; rowIndex<dataTable.getRowCount(); rowIndex++){
+          let row = dataTable.getRow(rowIndex);               
+          row.forEach((cellvalue, index) =>{
+              let output =this.formatCell(cellvalue, false, index+1);
+              if(output.length > prettyPrintColumnWidths[index]){
+                  prettyPrintColumnWidths[index] = output.length;
+              }
+          });
+      }
+
+      return prettyPrintColumnWidths;
+    }
+
+    padCell(value, maxWidth, charToPadWith){
+
+      if(maxWidth===null || maxWidth===undefined){
+        return value;
+      }
+
+      let padChar = charToPadWith ? charToPadWith : " ";
+
+      let padding="";
+      if(maxWidth > value.length){
+          let padBy = maxWidth - value.length;
+          padding = Array(padBy+1).join(padChar);
+      }
+      return value + padding;
+    }
+
     // https://www.markdownguide.org/extended-syntax/
     fromDataTable(dataTable){
       // display a pipe (|) character in a table by using its HTML character code (&#124;).
 
+      let prettyPrintColumnWidths=[];
+      if(this.options.options.prettyPrint){
+          // pre-process the table and work out the maximum length for each column cell
+          prettyPrintColumnWidths = this.getPrettyPrintColumnWidths(dataTable);
+      }
+
       let renderHeaders = dataTable.getHeaders().map((header, index) => {
-          return this.formatCell(header, true, index+1);
+          return this.padCell(
+                        this.formatCell(header, true, index+1),
+                        prettyPrintColumnWidths[index]);
       });
 
       let border = '|';
@@ -273,15 +323,29 @@ class MarkdownConvertor {
 
       // TODO : use length of header to adjust the number of ---- output
       markdownTable =
-          markdownTable + border + dataTable.getHeaders().map(name =>{
-           return this.formatCell('-----', false, undefined);
+          markdownTable + border + dataTable.getHeaders().map((name, index) =>{
+           // for the horizontal line we want to pad it them format to add borders etc.
+           let sep = this.formatCell(
+                          this.padCell("-----", prettyPrintColumnWidths[index], "-")
+                             ,false, undefined);
+            // handle special cases where formatting added values to header
+            if(sep.length >  prettyPrintColumnWidths[index]){
+              let removeCount = sep.length-prettyPrintColumnWidths[index];
+              while(removeCount>0){
+                sep=sep.replace("-","");
+                removeCount--;
+              }
+            }
+            return sep;
           }).join('|') + border + '\n';
 
       for(let rowIndex=0; rowIndex<dataTable.getRowCount(); rowIndex++){
           let row = dataTable.getRow(rowIndex);
 
           let renderValues = row.map((value, index) => {
-            return this.formatCell(value, false, index+1);
+            return this.padCell(
+                          this.formatCell(value, false, index+1),
+                          prettyPrintColumnWidths[index]);
           });
 
           markdownTable = markdownTable + border + renderValues.join('|') + border + '\n';

@@ -148,6 +148,11 @@ class GherkinConvertor {
     }
 
     padCell(value, maxWidth){
+
+        if(maxWidth===null || maxWidth===undefined){
+            return value;
+        }
+
         let padding="";
         if(maxWidth > value.length){
             let padBy = maxWidth - value.length;

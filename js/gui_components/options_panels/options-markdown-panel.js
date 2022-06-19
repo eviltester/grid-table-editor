@@ -67,7 +67,13 @@ class MarkdownOptionsPanel{
           <label for="emphasiscolumns">Italics on Cols</label>
           <input type="text" name="emphasiscolumns" value='"' style="width:5em">
           <br>
-        </div>
+          </div>
+
+          <div class="prettyprint">
+          <label for="prettyprint">Pretty Print</label>
+          <input type="checkbox" name="prettyprint" value="prettyprint">
+          <br>
+          </div>
 
         <div class="globalcolumnalign">
         <label for="globalcolumnalign">Column Align</label>
@@ -110,6 +116,7 @@ class MarkdownOptionsPanel{
       newOptions.options.borderBars = this.htmlData.getCheckBoxValueFrom(".markdown-options .borderbars input");
       newOptions.options.emboldenHeaders = this.htmlData.getCheckBoxValueFrom(".markdown-options .emboldenheaders input");
       newOptions.options.emphasisHeaders = this.htmlData.getCheckBoxValueFrom(".markdown-options .emphasisheaders input");
+      newOptions.options.prettyPrint = this.htmlData.getCheckBoxValueFrom(".markdown-options .prettyprint input");
 
       newOptions.options.globalColumnAlign = this.htmlData.getSelectedValueFrom(".markdown-options div.globalcolumnalign select", "default");
 
@@ -144,6 +151,9 @@ class MarkdownOptionsPanel{
 
       values = options?.emphasisColumns?.join(" ");
       this.htmlData.setTextFieldToValue(".markdown-options .emphasiscolumns input", values);
+
+      this.htmlData.setCheckBoxFrom(".markdown-options .prettyprint input", options?.prettyPrint, false);
+
     }
 
 }

@@ -688,6 +688,33 @@ row 1 cell 0|row 1 cell 1
             expect(output).toBe(expectedOutputTable);
         });
 
+        test('can pretty print a table', () => {
+            const basicTable =
+`|heading 1|heading 2|
+|-------|-------|
+|row 0 cell 0|row 0 cell 1|
+|row 1 cell 0|row 1 cell 1|
+`    
+    
+            let table = new MarkdownConvertor().toDataTable(basicTable);
+    
+ 
+
+            let markdownOptions = new MarkdownOptions();
+            markdownOptions.options.prettyPrint=true;
+           
+            let convertor = new MarkdownConvertor(markdownOptions);
+
+            let output = convertor.fromDataTable(table);
+    
+            const expected =
+`|heading 1   |heading 2   |
+|------------|------------|
+|row 0 cell 0|row 0 cell 1|
+|row 1 cell 0|row 1 cell 1|
+`
+            expect(output).toBe(expected);
+        });
     });
 
 });

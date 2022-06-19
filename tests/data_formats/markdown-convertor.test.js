@@ -6,14 +6,14 @@ describe("can get values from a markdown table cell", ()=>{
     test("cell contents are trimmed",()=>{
         let input = "  contents   ";
         let output = "contents";
-        let value = new MarkdownConvertor().getValidTableCellValueFromMarkdownCell(input);
+        let value = new MarkdownConvertor().getValidTableCellValueFromInputFormatCell(input);
         expect(value).toEqual(output);
     });
 
     test("escape bars are transformed",()=>{
         let input =  "con&#124;ten&#124;ts";
         let output ="con|ten|ts";
-        let value = new MarkdownConvertor().getValidTableCellValueFromMarkdownCell(input);
+        let value = new MarkdownConvertor().getValidTableCellValueFromInputFormatCell(input);
         expect(value).toEqual(output);
     });
 
@@ -31,7 +31,7 @@ describe("can get values from a markdown table cell", ()=>{
         ['not emphasis without contents',  " __ test  ", "__ test"],
     ])
         ("emphasis markdown: %s - `%s` to `%s`",(when, input,output)=>{
-        let value = new MarkdownConvertor().getValidTableCellValueFromMarkdownCell(input);
+        let value = new MarkdownConvertor().getValidTableCellValueFromInputFormatCell(input);
         expect(value).toEqual(output);
     });
 
@@ -49,7 +49,7 @@ describe("can get values from a markdown table cell", ()=>{
         ['not bold without contents',  "  ****  ", "****"],
     ])
         ("emphasis markdown: %s - `%s` to `%s`",(when, input,output)=>{
-        let value = new MarkdownConvertor().getValidTableCellValueFromMarkdownCell(input);
+        let value = new MarkdownConvertor().getValidTableCellValueFromInputFormatCell(input);
         expect(value).toEqual(output);
     });
 
@@ -59,7 +59,7 @@ describe("can get values from a markdown table row", ()=>{
 
     test('even if malformed with no start', () => {
 
-        let values = new MarkdownConvertor().getValuesFromMarkdownTableRow("1|2|");
+        let values = new MarkdownConvertor().getOutputCellsFromTableRow("1|2|");
 
         expect(values).toEqual(expect.arrayContaining([1,2].map(s => s.toString())));
         expect(values.length).toBe(2);
@@ -67,7 +67,7 @@ describe("can get values from a markdown table row", ()=>{
 
     test('even if malformed with no end', () => {
 
-        let values = new MarkdownConvertor().getValuesFromMarkdownTableRow("|1|2");
+        let values = new MarkdownConvertor().getOutputCellsFromTableRow("|1|2");
 
         expect(values).toEqual(expect.arrayContaining([1,2].map(s => s.toString())));
         expect(values.length).toBe(2);
@@ -75,7 +75,7 @@ describe("can get values from a markdown table row", ()=>{
 
     test('even if malformed with no start or end', () => {
 
-        let values = new MarkdownConvertor().getValuesFromMarkdownTableRow("1|2");
+        let values = new MarkdownConvertor().getOutputCellsFromTableRow("1|2");
 
         expect(values).toEqual(expect.arrayContaining([1,2].map(s => s.toString())));
         expect(values.length).toBe(2);
@@ -83,7 +83,7 @@ describe("can get values from a markdown table row", ()=>{
 
     test('surrounding spaces are ignored', () => {
 
-        let values = new MarkdownConvertor().getValuesFromMarkdownTableRow(" |  1    |   2    |    ");
+        let values = new MarkdownConvertor().getOutputCellsFromTableRow(" |  1    |   2    |    ");
 
         expect(values).toEqual(expect.arrayContaining([1,2].map(s => s.toString())));
         expect(values.length).toBe(2);
@@ -91,7 +91,7 @@ describe("can get values from a markdown table row", ()=>{
 
     test('spaces in a cell are significant', () => {
 
-        let values = new MarkdownConvertor().getValuesFromMarkdownTableRow("|1|2 3|");
+        let values = new MarkdownConvertor().getOutputCellsFromTableRow("|1|2 3|");
 
         expect(values).toEqual(expect.arrayContaining(["1","2 3"]));
         expect(values.length).toBe(2);

@@ -1,11 +1,11 @@
-import { GenericDataTable } from '../../js/data_formats/generic-data-table';
-import {GherkinConvertor} from '../../js/data_formats/gherkin-convertor';
+import { GenericDataTable } from '../../js/data_formats/generic-data-table.js';
+import {GherkinConvertor, GherkinOptions} from '../../js/data_formats/gherkin-convertor.js';
 
 describe("can get values from a markdown table row", ()=>{
 
     test('even if malformed with no start', () => {
 
-        let values = new GherkinConvertor().getValuesFromTableRow("1|2|");
+        let values = new GherkinConvertor().getOutputCellsFromTableRow("1|2|");
 
         expect(values).toEqual(expect.arrayContaining([1,2].map(s => s.toString())));
         expect(values.length).toBe(2);
@@ -13,7 +13,7 @@ describe("can get values from a markdown table row", ()=>{
 
     test('even if malformed with no end', () => {
 
-        let values = new GherkinConvertor().getValuesFromTableRow("|1|2");
+        let values = new GherkinConvertor().getOutputCellsFromTableRow("|1|2");
 
         expect(values).toEqual(expect.arrayContaining([1,2].map(s => s.toString())));
         expect(values.length).toBe(2);
@@ -21,7 +21,7 @@ describe("can get values from a markdown table row", ()=>{
 
     test('even if malformed with no start or end', () => {
 
-        let values = new GherkinConvertor().getValuesFromTableRow("1|2");
+        let values = new GherkinConvertor().getOutputCellsFromTableRow("1|2");
 
         expect(values).toEqual(expect.arrayContaining([1,2].map(s => s.toString())));
         expect(values.length).toBe(2);
@@ -29,7 +29,7 @@ describe("can get values from a markdown table row", ()=>{
 
     test('surrounding spaces are ignored', () => {
 
-        let values = new GherkinConvertor().getValuesFromTableRow(" |  1    |   2    |    ");
+        let values = new GherkinConvertor().getOutputCellsFromTableRow(" |  1    |   2    |    ");
 
         expect(values).toEqual(expect.arrayContaining([1,2].map(s => s.toString())));
         expect(values.length).toBe(2);
@@ -37,7 +37,7 @@ describe("can get values from a markdown table row", ()=>{
 
     test('spaces in a cell are significant', () => {
 
-        let values = new GherkinConvertor().getValuesFromTableRow("|1|2 3|");
+        let values = new GherkinConvertor().getOutputCellsFromTableRow("|1|2 3|");
 
         expect(values).toEqual(expect.arrayContaining(["1","2 3"]));
         expect(values.length).toBe(2);
@@ -45,7 +45,7 @@ describe("can get values from a markdown table row", ()=>{
 
     test('blank values are processed', () => {
 
-        let values = new GherkinConvertor().getValuesFromTableRow("||2 3|");
+        let values = new GherkinConvertor().getOutputCellsFromTableRow("||2 3|");
 
         expect(values).toEqual(expect.arrayContaining(["","2 3"]));
         expect(values.length).toBe(2);
@@ -309,6 +309,175 @@ describe("Can convert markdown tables to data suitable for a data grid",()=>{
         });
 
     });
-
-
 });
+
+
+describe("can pad cells", ()=>{
+
+
+    test('pad a cell', ()=>{
+        let convertor = new GherkinConvertor();
+
+        expect(convertor.padCell("h1",4)).toEqual("h1  ");
+        expect(convertor.padCell("h1",10)).toEqual("h1        ");
+        expect(convertor.padCell("h1",1)).toEqual("h1");
+    })
+});
+
+
+describe("can apply options to Gherkin Table Generation", ()=>{
+
+    const table = new GenericDataTable();
+    table.setHeaders(["h1","h2"]);
+    table.appendDataRow(["r0c0","r0c1"]);
+    table.appendDataRow(["r1c0","r1c1"]);
+
+    test('can hide headings', () => {
+        const expected =
+`|r0c0|r0c1|
+|r1c0|r1c1|
+`;
+
+        let convertorOptions = new GherkinOptions();
+        convertorOptions.options.showHeadings=false;
+
+        let convertor =  new GherkinConvertor();
+        convertor.setOptions(convertorOptions);
+        let output = convertor.fromDataTable(table);
+        console.log(output);
+        expect(output).toEqual(expected);
+    });
+
+    test('can indent table from left', () => {
+        const expected =
+` |h1|h2|
+ |r0c0|r0c1|
+ |r1c0|r1c1|
+`;
+
+        let convertorOptions = new GherkinOptions();
+        convertorOptions.options.leftIndent=" ";
+
+        let convertor =  new GherkinConvertor();
+        convertor.setOptions(convertorOptions);
+        let output = convertor.fromDataTable(table);
+        console.log(output);
+        expect(output).toEqual(expected);
+    });
+
+    test('can pad in cell on left', () => {
+        const expected =
+`| h1| h2|
+| r0c0| r0c1|
+| r1c0| r1c1|
+`;
+
+        let convertorOptions = new GherkinOptions();
+        convertorOptions.options.inCellPadding="left";
+
+        let convertor =  new GherkinConvertor();
+        convertor.setOptions(convertorOptions);
+        let output = convertor.fromDataTable(table);
+        console.log(output);
+        expect(output).toEqual(expected);
+    }); 
+    
+    test('can pad in cell on both sides', () => {
+        const expected =
+`| h1 | h2 |
+| r0c0 | r0c1 |
+| r1c0 | r1c1 |
+`;
+
+        let convertorOptions = new GherkinOptions();
+        convertorOptions.options.inCellPadding="both";
+
+        let convertor =  new GherkinConvertor();
+        convertor.setOptions(convertorOptions);
+        let output = convertor.fromDataTable(table);
+        console.log(output);
+        expect(output).toEqual(expected);
+    });     
+
+
+    test('can pad in cell on right sides', () => {
+        const expected =
+`|h1 |h2 |
+|r0c0 |r0c1 |
+|r1c0 |r1c1 |
+`;
+
+        let convertorOptions = new GherkinOptions();
+        convertorOptions.options.inCellPadding="right";
+
+        let convertor =  new GherkinConvertor();
+        convertor.setOptions(convertorOptions);
+        let output = convertor.fromDataTable(table);
+        console.log(output);
+        expect(output).toEqual(expected);
+    });       
+
+    test('can pretty print table', () => {
+        const expected =
+`|h1  |h2  |
+|r0c0|r0c1|
+|r1c0|r1c1|
+`;
+
+        let convertorOptions = new GherkinOptions();
+        convertorOptions.options.prettyPrint=true;
+
+        let convertor =  new GherkinConvertor();
+        convertor.setOptions(convertorOptions);
+        let output = convertor.fromDataTable(table);
+        console.log(output);
+        expect(output).toEqual(expected);
+    });
+
+    test('can pretty print table with row cell length mix', () => {
+        const expected =
+`|title is            |author is             |
+|quite a long title  |the longer author name|
+|an even longer title|the author name       |
+`;
+
+        let authortable = new GenericDataTable();
+        authortable.setHeaders(["title is", "author is"]);
+        authortable.appendDataRow(["quite a long title","the longer author name"])
+        authortable.appendDataRow(["an even longer title","the author name"])
+
+        let convertorOptions = new GherkinOptions();
+        convertorOptions.options.prettyPrint=true;
+
+        let convertor =  new GherkinConvertor();
+        convertor.setOptions(convertorOptions);
+        let output = convertor.fromDataTable(authortable);
+        console.log(output);
+        expect(output).toEqual(expected);
+    });   
+    
+    test('can combine formatting options', () => {
+        const expected =
+` | title              | author          |
+ | quite a long title | the author name |
+`;
+
+        let authortable = new GenericDataTable();
+        authortable.setHeaders(["title", "author"]);
+        authortable.appendDataRow(["quite a long title","the author name"])
+
+        let convertorOptions = new GherkinOptions();
+        convertorOptions.options.prettyPrint=true;
+        convertorOptions.options.leftIndent=" ";
+        convertorOptions.options.inCellPadding="both";
+        convertorOptions.options.inCellPadder=" ";
+
+        let convertor =  new GherkinConvertor(convertorOptions);
+
+        let output = convertor.fromDataTable(authortable);
+        console.log(output);
+        expect(output).toEqual(expected);
+    });    
+});
+
+// TODO: cover character escaping and cell formatting implemented by getValidTableCellValueFromInputFormatCell

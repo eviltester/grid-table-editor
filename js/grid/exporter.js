@@ -1,5 +1,5 @@
 import { GenericDataTable } from "../data_formats/generic-data-table.js";
-import { GherkinConvertor } from "../data_formats/gherkin-convertor.js";
+import { GherkinConvertor, GherkinOptions } from "../data_formats/gherkin-convertor.js";
 import { MarkdownConvertor, MarkdownOptions } from "../data_formats/markdown-convertor.js";
 import { HtmlConvertor, HtmlConvertorOptions } from "../data_formats/html-convertor.js";
 import { JsonConvertor, JsonConvertorOptions } from "../data_formats/json-convertor.js";
@@ -23,6 +23,7 @@ class Exporter {
         this.options["json"] = new JsonConvertorOptions();
         this.options["javascript"] = new JsonConvertorOptions();
         this.options["html"] = new HtmlConvertorOptions();
+        this.options["gherkin"] = new GherkinOptions();
         
         this.exporters = {};
         this.exporters["markdown"]= new MarkdownConvertor();

@@ -6,8 +6,6 @@ class MarkdownOptions{
 
   constructor(){
       this.options = {
-          // was going to add readable but the ascii output will handle that
-          compact: true,
           // space padding add space (left, right, both ) e.g. | value| or |value | or | value |
           spacePadding: 'none', // none, left, right, both
           // tab padding add tab (left, right, both ) e.g. | value| or |value | or | value |
@@ -24,7 +22,8 @@ class MarkdownOptions{
           emphasisColumns: [],
           // support alignment with a global config "default align", "left align", "center", "right alignment"
           //alignment on headers --- :--- :---: ---:
-          globalColumnAlign: 'default', //default, left, center, right 
+          globalColumnAlign: 'default', //default, left, center, right
+          // TODO:  pretty print to size out the columns - like Gherkin 
       }
       this.validateSeparatorLength = false;
   }
@@ -68,7 +67,7 @@ class MarkdownConvertor {
         return false; // last char should be |
       }
 
-      let cellValues = this.getValuesFromMarkdownTableRow(rowString);
+      let cellValues = this.getOutputCellsFromTableRow(rowString);
 
       let sizeCheckedValues = cellValues.filter(value => {
 
@@ -101,8 +100,7 @@ class MarkdownConvertor {
     }
 
 
-    // TODO: wrap with unit tests
-    getValidTableCellValueFromMarkdownCell(aCellValue){
+    getValidTableCellValueFromInputFormatCell(aCellValue){
       let actualContents = aCellValue.trim();
 
       // handle any special character conversions for markdown
@@ -124,7 +122,7 @@ class MarkdownConvertor {
       return actualContents;
     }
     
-    getValuesFromMarkdownTableRow(aRowString){
+    getOutputCellsFromTableRow(aRowString){
 
       let rowString = aRowString.trim();
 
@@ -138,7 +136,7 @@ class MarkdownConvertor {
       var values = rowString.split("|");
 
       var cellValues = values.map(contents => {
-        let actualContents = this.getValidTableCellValueFromMarkdownCell(contents);
+        let actualContents = this.getValidTableCellValueFromInputFormatCell(contents);
         return actualContents;
       });
 
@@ -172,7 +170,7 @@ class MarkdownConvertor {
 
         // it is the header row
         if(rowString.length>0 && rowCount===0){
-            var headerValues = this.getValuesFromMarkdownTableRow(rowString);
+            var headerValues = this.getOutputCellsFromTableRow(rowString);
             dataTable.setHeaders(headerValues);
         }
 
@@ -188,7 +186,7 @@ class MarkdownConvertor {
 
         // it is row data
         if(rowString.length>0 && rowCount>=2){
-          var cellValues = this.getValuesFromMarkdownTableRow(rowString);
+          var cellValues = this.getOutputCellsFromTableRow(rowString);
           dataTable.appendDataRow(cellValues);
         }
   
@@ -199,13 +197,14 @@ class MarkdownConvertor {
   }
 
 
-   // TODO : migrate away from this and use the Generic Data Table
+   // TODO : remove this, it is out of date and only used by tests
     markdownTableToDataRows(markdownTable){
       return this.toDataTable(markdownTable).asDataArray();
     }
 
 
-    validMarkdownCellValue(data){
+    // make sure it is valid markdown
+    getValidOutputFormatCellValue(data){
       return data.replaceAll("|","&#124;");
     }
 
@@ -254,7 +253,7 @@ class MarkdownConvertor {
         rightPadding = rightPadding + "\t";
       }
 
-      return leftPadding + this.validMarkdownCellValue(value) + rightPadding;
+      return leftPadding + this.getValidOutputFormatCellValue(value) + rightPadding;
     }
 
     // https://www.markdownguide.org/extended-syntax/

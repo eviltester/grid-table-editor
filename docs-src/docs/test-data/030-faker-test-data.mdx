@@ -1,0 +1,83 @@
+---
+sidebar_position: 3
+title: "Faker Based Data"
+description: "Generate data using Faker"
+---
+
+import ReactPlayer from 'react-player'
+
+# Faker Data Generation
+
+[Faker.js](https://fakerjs.dev/guide/) is a test data generation library for JavaScript.
+
+This is used by the tool to generate 'typed' data i.e. non-regex based data.
+
+The values shown in the 'type' drop down menu match the values in the Faker.js API.
+
+## Tips Video
+
+<ReactPlayer controls url='https://www.youtube.com/watch?v=E8lYiPEugJQ' />
+
+## Read The Faker API Docs
+
+I recommend using Faker API documentation to understand some of the test data generation functions.
+
+https://fakerjs.dev/api/address.html
+
+Most of the Faker API is implemented.
+
+e.g. I can add a column called "first name" and generate values using faker by using the "name.firstName" function.
+
+Listed in the API here: https://fakerjs.dev/api/name.html#firstName
+
+## Create Test Data Schema as Text then Edit in Grid
+
+I tend to use the "Test Data Text Schema" text input to create an initial schema.
+
+e.g.
+
+```
+first name
+a
+last name
+b
+email
+e
+address
+a
+```
+
+And then edit in the grid to pick the faker api functions from the pop up list in the editor.
+
+## Use the Fake Function to join Faker API functinos
+
+We support the use of the 'fake' function in Faker.
+
+The `fake` function makes it easy to combine text and Faker calls into a single string.
+
+https://fakerjs.dev/api/fake.html
+
+e.g. we can use `fake` in a schema to create an address:
+
+```
+address
+fake {{address.buildingNumber}} {{address.streetName}}
+```
+
+## Copy Schemas For Re-use
+And because the schema text field is just a text field, I can copy the schema into Evernote and re-use it later to generate more data:
+
+```
+first name
+name.firstName
+last name
+name.lastName
+email
+internet.email
+address
+fake {{address.buildingNumber}} {{address.streetName}}
+```
+
+
+
+

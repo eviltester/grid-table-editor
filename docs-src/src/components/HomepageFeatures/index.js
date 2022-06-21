@@ -11,6 +11,10 @@ const FeatureList = [
         The Data Table Editor is designed to be easy to use and 
         uses AG Grid's Community Edition Data Grid to create an intuitive
         editing experience.
+
+        You can create and edit data in the grid and "Set Test From Grid"
+        to view data in your chosen format. Or paste data into the text area
+        and "Set Grid From Text". You can even import and export from files.
       </>
     ),
   },

@@ -4,6 +4,7 @@ import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
 import HomepageFeatures from '@site/src/components/HomepageFeatures';
+import ReactPlayer from 'react-player';
 
 import styles from './index.module.css';
 
@@ -26,6 +27,21 @@ function HomepageHeader() {
   );
 }
 
+function ShowCaseVideo({title, description, videourl}) {
+  return (
+    <section className={styles.features}>
+      <div className="videocontainer">
+        <div className="text--center">
+          <h2>{title}</h2>
+          <p>{description}</p>
+        <ReactPlayer style={{margin: "auto"}} controls url={videourl} />
+        </div>
+      </div>        
+
+    </section>
+  );
+}
+
 export default function Home() {
   const {siteConfig} = useDocusaurusContext();
   return (
@@ -35,6 +51,11 @@ export default function Home() {
       <HomepageHeader />
       <main>
         <HomepageFeatures />
+        <ShowCaseVideo
+          title="Generate Test Data Using Faker"
+          description="It is possible to easilty generate random data into the Data Grid for editing or export."
+          videourl = "https://www.youtube.com/watch?v=E8lYiPEugJQ"
+        />
       </main>
     </Layout>
   );

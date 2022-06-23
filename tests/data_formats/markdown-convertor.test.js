@@ -717,4 +717,60 @@ row 1 cell 0|row 1 cell 1
         });
     });
 
+
+    test('can center a pretty printed ', () => {
+        const basicTable =
+`|heading 1|heading 2|
+|-------|-------|
+|row 0 c 0|row 0 and in cell 1|
+|row of the 1 cell 0|row1cell1|
+`    
+
+        let table = new MarkdownConvertor().toDataTable(basicTable);
+
+        let markdownOptions = new MarkdownOptions();
+        markdownOptions.options.prettyPrint=true;
+        markdownOptions.options.globalColumnAlign="center";
+       
+        let convertor = new MarkdownConvertor(markdownOptions);
+
+        let output = convertor.fromDataTable(table);
+
+        const expected =
+`|     heading 1     |     heading 2     |
+|:-----------------:|:-----------------:|
+|     row 0 c 0     |row 0 and in cell 1|
+|row of the 1 cell 0|     row1cell1     |
+`
+        expect(output).toBe(expected);
+    });    
+
+
+    test('can right align a pretty printed ', () => {
+        const basicTable =
+`|heading 1|heading 2|
+|-------|-------|
+|row 0 c 0|row 0 and in cell 1|
+|row of the 1 cell 0|row1cell1|
+`    
+
+        let table = new MarkdownConvertor().toDataTable(basicTable);
+
+        let markdownOptions = new MarkdownOptions();
+        markdownOptions.options.prettyPrint=true;
+        markdownOptions.options.globalColumnAlign="right";
+       
+        let convertor = new MarkdownConvertor(markdownOptions);
+
+        let output = convertor.fromDataTable(table);
+
+        const expected =
+`|          heading 1|          heading 2|
+|------------------:|------------------:|
+|          row 0 c 0|row 0 and in cell 1|
+|row of the 1 cell 0|          row1cell1|
+`
+        expect(output).toBe(expected);
+    });   
+
 });

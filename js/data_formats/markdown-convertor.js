@@ -295,7 +295,34 @@ class MarkdownConvertor {
           let padBy = maxWidth - value.length;
           padding = Array(padBy+1).join(padChar);
       }
-      return value + padding;
+
+      let lpadding = "";
+      let rpadding = "";
+
+      // by default right padding
+      rpadding = padding;
+
+      // handle alignment
+      if(this.options.options.globalColumnAlign==="right"){
+        lpadding = padding;
+        rpadding = "";
+      }
+
+      if(this.options.options.globalColumnAlign==="center"){
+        if(padding.length>0){
+          let lpadlen = Math.floor(padding.length/2);
+          if(lpadlen>0){
+            lpadding =  Array(lpadlen+1).join(padChar);
+          }
+          let rpadlen = padding.length-lpadlen;
+          if(rpadlen>0){
+            rpadding =  Array(rpadlen+1).join(padChar);
+          }
+        }
+      }
+
+
+      return lpadding + value + rpadding;
     }
 
     // https://www.markdownguide.org/extended-syntax/

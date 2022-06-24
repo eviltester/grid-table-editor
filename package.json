@@ -6,7 +6,9 @@
   "scripts": {
     "test": "jest",
     "testverbose": "jest --verbose",
-    "anywaydata": "npm run anywaydata --prefix docs-src && cp ./index.html ./build/app.html && cp -R ./js ./build/js && cp -R ./libs ./build/libs && cp ./styles.css ./build/styles.css && cp -R ./build/ ../../anywaydata-com"
+    "anywaydata": "npm run anywaydata --prefix docs-src && cp ./index.html ./build/app.html && cp -R ./js ./build/js && cp -R ./libs ./build/libs && cp ./styles.css ./build/styles.css && cp -R ./build/ ../../anywaydata-com",
+    "previewdocs": "npm run start --prefix docs-src"
+
   },
   "jest": {
     "verbose": true,

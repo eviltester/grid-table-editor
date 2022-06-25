@@ -1,0 +1,9 @@
+{
+  "label": "Misc",
+  "position": 5,
+  "link": {
+    "type": "generated-index",
+    "description": "Learn about related tools either for converting between data formats or working with data in the format e.g. previewing Markdown"
+  },
+  "collapsed": false
+}

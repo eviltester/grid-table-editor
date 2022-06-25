@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 title: "Editable Data Grid"
-description: "Learn to use the Editable Data Grid"
+description: "Learn to use AnyWayData.com Editable Data Grid to edit tabular data from multiple formats, add and delete rows and columns to customize the data exports."
 ---
 
 # Edit Data in The Grid

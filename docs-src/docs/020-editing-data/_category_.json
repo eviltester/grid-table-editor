@@ -1,0 +1,9 @@
+{
+  "label": "Editing Data",
+  "position": 2,
+  "link": {
+    "type": "generated-index",
+    "description": "Learn how to edit data with the data editor. Data can also be edited in the Text Area and exported to the grid. Additionally you can import from, and export files or the clipboard."
+  },
+  "collapsed": false
+}

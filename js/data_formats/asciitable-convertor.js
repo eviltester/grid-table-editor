@@ -25,7 +25,7 @@ class AsciiTableOptions{
             "clean":"ascii-clean",
             "girder":"ascii-girder",
             "markdown (github)":"github-markdown",
-            "markdown (reddot)":"reddit-markdown",
+            "markdown (reddit)":"reddit-markdown",
             "reStructuredText":"ascii-reStructuredText",
             "reStructuredText simple":"ascii-reStructuredText-simple",
             "rounded":"ascii-rounded",

@@ -21,7 +21,7 @@ class AsciiTableOptionsPanel{
         this.parent.innerHTML =
         `
         <div class="delimited-options" style="width:100%">
-          <div><p><strong>Options</strong></p></div>
+          <div><p><strong>Options</strong> <span data-help="ascii-table-options" class="helpicon"></span></p></div>
           <div class="style">
             <label for="style">Style</label>
             <select name="style">

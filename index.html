@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 
 <head>
@@ -70,7 +71,7 @@
     </ul>
     <div class="footer">
     <p>
-      v20220619.001 Built by <a href="https://eviltester.com" target="_blank">Alan Richardson</a>
+      v20220625.001 Built by <a href="https://eviltester.com" target="_blank">Alan Richardson</a>
     </p>
     <p>Using 
       <a href="https://ag-grid.com" target="_blank">AG Grid</a> Community Edition, 
@@ -96,7 +97,7 @@
 
     <div class="testDataDefnGui">
       <details>
-        <summary>Test Data</summary>
+        <summary>Test Data <span data-help="test-data-summary-title" class="helpicon"></span></summary>
         <div id="testDataGeneratorContainer"></div>
       </details>
     </div>
@@ -106,9 +107,80 @@
 
 <!-- loading message -->
 <h1 id="initial-load">Please Wait, Loading...</h1>
+
+
+<!-- 
+  add tippy for help icon popups
+  https://atomiks.github.io/tippyjs/v6/getting-started/
+-->
+<script src="https://unpkg.com/@popperjs/core@2"></script>
+<script src="https://unpkg.com/tippy.js@6"></script>
+
+
+<div id="inline-help-items" style="display:none">
+
+    <div name="test-data-summary-title">
+      <p>The Test Data section allows you to randomly generate data to populate the grid. You can then export to the various supported formats.</p>
+      <p><a class="helplink" href="/docs/test-data/test-data-generation" target="anywaydatadocs">Learn more</a></p>
+    </div>
+
+    <div name="import-export-controls">
+      <p>Using the import and export controls you can:</p>
+      <ul>
+        <li>"Set Text From Grid"<br> to refresh the text box for the chosen output format.</li>
+        <li>"Set Grid From Text"<br> to <a class="helplink" href="/docs/editing-data/text-editing" target="anywaydatadocs">import the text box content</a> into the grid.</li>
+        <li>"Choose File"<br> to <a class="helplink" href="docs/editing-data/import-from-file" target="anywaydatadocs">import a text file</a> of the chosen format.</li>
+        <li>"Download File"<br> to <a class="helplink" href="docs/editing-data/exporting-data" target="anywaydatadocs">export the Data Grid</a> items in the chosen format.</li>
+        <li>"Drag and Drop File"<br> to <a class="helplink" href="docs/editing-data/import-from-file" target="anywaydatadocs">import the file</a> contents using the currenlty chosen format.</li>
+      </ul>
+      <p>The options shown depend on the output type, some types are not supported for input and so only the output options will be shown.</p>
+    </div>
+
+    <!-- Data Format Options -->
+    <div name="markdown-table-options">
+      <p>Export the table data as <a class="helplink" href="docs/data-formats/markdown/markdown" target="anywaydatadocs">Markdown</a>, a human readable format which can be easily converted to HTML or PDF.</p>
+      <p>Choose from the list of <a class="helplink" href="docs/data-formats/markdown/options" target="anywaydatadocs">formatting options</a> and press the [Apply] button to render the grid in the chosen style.</p>
+      <p><a class="helplink" href="docs/data-formats/markdown/options" target="anywaydatadocs">Learn more</a></p>
+    </div>
+
+    <div name="ascii-table-options">
+      <p>Export the table data as Ascii Table suitable for adding to an email or text file.</p>
+      <p>Choose from a list of predefined formats and press the [Apply] button to render the grid in the chosen style.</p>
+      <p><a class="helplink" href="docs/data-formats/ascii-tables/options" target="anywaydatadocs">Learn more</a></p>
+    </div>
+
+</div>
+
 <script>
+
+  function updateHelpHints(){
+    tippy('.helpicon', {
+        content(reference) {
+          const id = reference.getAttribute('data-help');
+
+          // look up help text
+          const helpItems = document.getElementById("inline-help-items");
+          const helpText = helpItems.querySelector(`div[name='${id}']`);
+
+          // return help text
+          if(helpText){
+            return helpText.innerHTML;
+          }else{
+            console.log("TODO: Create help for " + id);
+          }
+          
+        },
+        placement: 'top-start',
+        allowHTML: true,
+        interactive: true,
+      }
+    );
+  }
+
+
   window.addEventListener('load', (event) => {
     document.getElementById("initial-load").remove();
+    updateHelpHints();
 });
 </script>
 

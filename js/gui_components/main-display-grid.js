@@ -48,8 +48,9 @@ class ExtendedDataGrid {
 
         new agGrid.Grid(gridDiv, this.gridOptions);
 
-        // having setup the grid, make it a little more responsive
-        setTimeout(function(gridDiv){gridDiv.style.height="40%";},1000, gridDiv);
+        // having setup the grid, make it a little more responsive - removed when adding tippy as it need doctype html
+        // TODO: add some resizing div controls
+        //setTimeout(function(gridDiv){gridDiv.style.height="40%";},1000, gridDiv);
 
         this.gridExtras = new GridExtension(this.gridOptions.api, this.gridOptions.columnApi);
 

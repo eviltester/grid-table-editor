@@ -1,0 +1,9 @@
+{
+  "label": "Generating Data",
+  "position": 4,
+  "link": {
+    "type": "generated-index",
+    "description": "The Data can be populated with randomly generated data using a data set definition with field types from Faker or from Regular Expressions."
+  },
+  "collapsed": false
+}

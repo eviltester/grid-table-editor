@@ -45,11 +45,10 @@ div.header div{
 }
 
 
-
 /* Conversion Types List */
 
 .conversionTabs{
-  height: 3em;
+  display: flex;
 }
 
 .type-select{
@@ -61,12 +60,14 @@ div.header div{
   border-style: solid;
   border-width: 1px 1px 0px 1px;
   border-color: #61A5C2 #61A5C2 #A9D6E5;
+  margin: -1px -1px 0px -1px;
 }
 
 .active-type{
   border-style: solid;
   border-width: 1px 1px 0px 1px;
   border-color: #014F86 #014F86 #A9D6E5;
+  margin: -1px -1px 0px -1px;
 }
 
 .conversionTypesList{
@@ -81,7 +82,7 @@ div.header div{
 
 a.type-select-action {
   text-decoration: none;
-  color:black
+  color:black;
 }
 
 
@@ -96,16 +97,19 @@ a.type-select-action {
 
 /* add set of buttons to the right of the tabs */
 
-.conversionTypes{
-  float: left;
-}
+/*.conversionTypes{
+
+}*/
 .rightbuttons{
-  float: right;
+  display: flex;
+  margin-left: auto;
+  margin-right: auto;
+  align-items: flex-end;
 }
 
-.rightbuttons button{
+/*.rightbuttons button{
   margin-top: 2em;
-}
+}*/
 
 /* Instructions */
 
@@ -142,7 +146,7 @@ button{
 /* The text conversion box */
 
 .textrepresentation{
-  height: 100%;
+  height: 200px;
   width:100%;
   white-space: pre-wrap;
   background-color: #ebf9f2;
@@ -151,7 +155,7 @@ button{
 
 .testDataDefn{
   height: 10em;
-  width:100%;
+  width:95%;
   white-space: pre-wrap;
   resize: vertical;
 }
@@ -240,3 +244,15 @@ Custom header styles for default items
   color: #000000;
 }
 
+/* Styling for inline application help */
+/* use in a div or span to avoid having a border, which would happen on img if no src attribute present */
+.helpicon{
+  background: url("/images/circle-question-solid.svg");
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+}
+
+.helplink{
+  color: #00a05b;
+}

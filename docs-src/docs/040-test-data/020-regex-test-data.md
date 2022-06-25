@@ -34,3 +34,25 @@ Regex Testers, these can be used to see if a particular Regex matches a list of 
 - [regexone.com](https://regexone.com) Interactive Regex tutorial
 - [regular-expressions.info](https://www.regular-expressions.info)
 - [rexegg.com](https://www.rexegg.com)
+
+
+## Examples
+
+### Words of Random Length
+
+e.g. `[A-Z ]{3,12}`
+
+By using a character group `[A-Z ]` which contains the letters A to Z and the space character we can generate a string between 3 and 12 characters long `{3,12}`.
+
+For example, this could be used to generate a table with the multiple columns of random 'word' lengths:
+
+
+```
+col1
+[A-Z ]{3,12}
+col2
+[A-Z ]{5,12}
+col3
+[A-Z ]{1,12}
+```
+

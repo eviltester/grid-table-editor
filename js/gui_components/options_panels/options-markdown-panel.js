@@ -13,7 +13,7 @@ class MarkdownOptionsPanel{
         this.parent.innerHTML =
         `
         <div class="markdown-options" style="width:100%">
-          <div><p><strong>Options</strong></p></div>
+          <div><p><strong>Options</strong> <span data-help="markdown-table-options" class="helpicon"></span></p></div>
 
           <div class="spacepadding">
             <label for="spacepadding">Space Padding</label>

@@ -12,7 +12,7 @@ class CsvDelimitedOptions{
         this.parent.innerHTML =
         `
         <div class="delimited-options" style="width:100%">
-          <div><p><strong>Options</strong></p></div>
+          <div><p><strong>Options</strong> <span data-help="csv-options" class="helpicon"></span></p></div>
           <div class="quotes">            
             <label>
               <input type="checkbox" name="quotes" value="quotes">

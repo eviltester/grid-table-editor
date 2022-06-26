@@ -32,7 +32,7 @@ class DelimitedOptions{
         this.parent.innerHTML =
         `
         <div class="delimited-options" style="width:100%">
-          <div><p><strong>Options</strong></p></div>
+          <div><p><strong>Options</strong>  <span data-help="delimiter-options" class="helpicon"></span></p></div>
 
           <div class="delimiter">
             <label>Delimiter

@@ -35,60 +35,71 @@ class DelimitedOptions{
           <div><p><strong>Options</strong></p></div>
 
           <div class="delimiter">
-            <label for="delimiter">Delimiter</label>
-            <select name="delimiter">
-              <option value="tab">Tab [\\t]</option>
-              <option value="comma">Comma [,]</option>
-              <option value="hash">Hash [#]</option>
-              <option value="colon">Colon [:]</option>
-              <option value="pipe">Pipe [|]</option>
-              <option value="space">Space [ ]</option>
-              <option value="semicolon">Semicolon [;]</option>
-              <option value="slash">Slash [/]</option>
-              <option value="backslash">Slash [\\]</option>
-              <option value="custom">Custom Value</option>
-            </select>
+            <label>Delimiter
+              <select name="delimiter">
+                <option value="tab">Tab [\\t]</option>
+                <option value="comma">Comma [,]</option>
+                <option value="hash">Hash [#]</option>
+                <option value="colon">Colon [:]</option>
+                <option value="pipe">Pipe [|]</option>
+                <option value="space">Space [ ]</option>
+                <option value="semicolon">Semicolon [;]</option>
+                <option value="slash">Slash [/]</option>
+                <option value="backslash">Slash [\\]</option>
+                <option value="custom">Custom Value</option>
+              </select>
+            </label>
             <br>
           </div>
           <div class="custom-delimiter">
-            <label for="custom-delimiter">Custom</label>
-            <input type="text" name="custom-delimiter" value='' style="width:5em">
+            <label>Custom
+              <input type="text" name="custom-delimiter" value='' style="width:5em">
+            </label>
             <br>
           </div>  
 
           <div class="quotes">            
-            <label for="quotes"> Use Quotes</label>
-            <input type="checkbox" name="quotes" value="quotes">
+            <label>
+              <input type="checkbox" name="quotes" value="quotes">
+              Use Quotes
+            </label>
             <br>
           </div>
 
           <div class="headerval">            
-            <label for="header"> Use Header</label>
-            <input type="checkbox" name="header" value="header">
+            <label>
+              <input type="checkbox" name="header" value="header">
+              Use Header
+            </label>
             <br>
           </div>
           
 
           <div class="quoteChar">
-            <label for="quoteChar">Quote Char</label>
-            <input type="text" name="quoteChar" value='"' style="width:5em">
+            <label>
+              <input type="text" name="quoteChar" value='"' style="width:5em">
+              Quote Char
+            </label>
             <br>
           </div>
 
           <div class="escapeChar">
-            <label for="escapeChar">Escape Char</label>
-            <input type="text" name="escapeChar" value='"' style="width:5em">
+            <label>
+              <input type="text" name="escapeChar" value='"' style="width:5em">
+              Escape Char
+            </label>
             <br>
           </div>
 
           <!--
           <div class="newline">
-            <label for="newline">Newline</label>
-            <select name="newline">
-              <option value="lf">\n</option>
-              <option value="crlf">\r\n</option>
-            </select>
-            <input type="text" name="newline" value='"' style="width:5em">
+            <label>Newline
+              <select name="newline">
+                <option value="lf">\n</option>
+                <option value="crlf">\r\n</option>
+              </select>
+              <input type="text" name="newline" value='"' style="width:5em">
+            </label>
             <br>
           </div>
           -->
@@ -116,12 +127,12 @@ class DelimitedOptions{
       let delimiterOptions = new DelimiterOptions("\t");
 
       // special type for htmlData getSelectWithCustomInput(selectLocator, inputLocator, default)
-      let delimiter = this.htmlData.getSelectWithCustomInput("div.delimiter select", "custom", ".custom-delimiter input", this.delimiterMappings,  "\t");
+      let delimiter = this.htmlData.getSelectWithCustomInput("div.delimiter label select", "custom", ".custom-delimiter label input", this.delimiterMappings,  "\t");
       delimiterOptions.options.delimiter = delimiter;
-      delimiterOptions.options.quotes = this.htmlData.getCheckBoxValueFrom(".quotes input");
-      delimiterOptions.options.header = this.htmlData.getCheckBoxValueFrom(".headerVal input");
-      delimiterOptions.options.quoteChar = this.htmlData.getTextInputValueFrom(".quoteChar input");
-      delimiterOptions.options.escapeChar = this.htmlData.getTextInputValueFrom(".escapeChar input");
+      delimiterOptions.options.quotes = this.htmlData.getCheckBoxValueFrom(".quotes label input");
+      delimiterOptions.options.header = this.htmlData.getCheckBoxValueFrom(".headerval label input");
+      delimiterOptions.options.quoteChar = this.htmlData.getTextInputValueFrom(".quoteChar label input");
+      delimiterOptions.options.escapeChar = this.htmlData.getTextInputValueFrom(".escapeChar label input");
 
       return delimiterOptions;
     }
@@ -130,13 +141,13 @@ class DelimitedOptions{
 
       let options = delimiterOptions.options;
 
-      this.htmlData.setCheckBoxFrom(".quotes input", options.quotes, true);
-      this.htmlData.setCheckBoxFrom(".headerVal input", options.header, true);
-      this.htmlData.setTextFieldToValue(".quoteChar input", options.quoteChar, "\"");
-      this.htmlData.setTextFieldToValue(".escapeChar input", options.escapeChar, "\"");
+      this.htmlData.setCheckBoxFrom(".quotes label input", options.quotes, true);
+      this.htmlData.setCheckBoxFrom(".headerval label input", options.header, true);
+      this.htmlData.setTextFieldToValue(".quoteChar label input", options.quoteChar, "\"");
+      this.htmlData.setTextFieldToValue(".escapeChar label input", options.escapeChar, "\"");
 
       this.htmlData.setSelectWithCustomInput(`select[name='delimiter']`, "custom",
-                                      ".custom-delimiter input", this.delimiterMappings,
+                                      ".custom-delimiter label input", this.delimiterMappings,
                                       options.delimiter);
 
     }

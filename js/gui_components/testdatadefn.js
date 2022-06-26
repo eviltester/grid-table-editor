@@ -279,7 +279,7 @@ function enableTestDataGenerationInterface(parentId, anImporter, theExportContro
     let parentElem = document.getElementById(parentId);
     parentElem.innerHTML = `
         <div>
-            <button id="generatedata">Generate</button><label id="howmanygenerate" for="generateCount"> How Many?</label><input type="number" id="generateCount"/>
+            <button id="generatedata">Generate</button><label> How Many?<input type="number" id="generateCount"/></label>
         </div>
         <div class="defn-edit-zone">
             <div class="defn-grid-container" id="defngrid" class="ag-theme-alpine" style="float:left">

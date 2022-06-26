@@ -14,38 +14,45 @@ class CsvDelimitedOptions{
         <div class="delimited-options" style="width:100%">
           <div><p><strong>Options</strong></p></div>
           <div class="quotes">            
-            <label for="quotes"> Use Quotes</label>
-            <input type="checkbox" name="quotes" value="quotes">
+            <label>
+              <input type="checkbox" name="quotes" value="quotes">
+              Use Quotes
+            </label>
             <br>
           </div>
 
           <div class="headerval">            
-            <label for="header"> Use Header</label>
-            <input type="checkbox" name="header" value="header">
+            <label>
+              <input type="checkbox" name="header" value="header">
+              Use Header
+            </label>
             <br>
           </div>
           
 
           <div class="quoteChar">
-            <label for="quoteChar">Quote Char</label>
-            <input type="text" name="quoteChar" value='"' style="width:5em">
+            <label>Quote Char
+              <input type="text" name="quoteChar" value='"' style="width:5em">
+            </label>
             <br>
           </div>
 
           <div class="escapeChar">
-            <label for="escapeChar">Escape Char</label>
-            <input type="text" name="escapeChar" value='"' style="width:5em">
+            <label>Escape Char
+              <input type="text" name="escapeChar" value='"' style="width:5em">
+            </label>
             <br>
           </div>
 
           <!--
           <div class="newline">
-            <label for="newline">Newline</label>
-            <select name="newline">
-              <option value="lf">\n</option>
-              <option value="crlf">\r\n</option>
-            </select>
-            <input type="text" name="newline" value='"' style="width:5em">
+            <label>Newline
+              <select name="newline">
+                <option value="lf">\n</option>
+                <option value="crlf">\r\n</option>
+              </select>
+              <input type="text" name="newline" value='"' style="width:5em">
+            </label>
             <br>
           </div>
           -->
@@ -73,10 +80,10 @@ class CsvDelimitedOptions{
       // TODO : create a CsvDelimiterOptions()
       let delimiterOptions = new DelimiterOptions(",");
 
-      delimiterOptions.options.quotes = this.htmlData.getCheckBoxValueFrom(".quotes input");
-      delimiterOptions.options.header = this.htmlData.getCheckBoxValueFrom(".headerVal input");
-      delimiterOptions.options.quoteChar =  this.htmlData.getTextInputValueFrom(".quoteChar input");
-      delimiterOptions.options.escapeChar = this.htmlData.getTextInputValueFrom(".escapeChar input");
+      delimiterOptions.options.quotes = this.htmlData.getCheckBoxValueFrom(".quotes label input");
+      delimiterOptions.options.header = this.htmlData.getCheckBoxValueFrom(".headerval label input");
+      delimiterOptions.options.quoteChar =  this.htmlData.getTextInputValueFrom(".quoteChar label input");
+      delimiterOptions.options.escapeChar = this.htmlData.getTextInputValueFrom(".escapeChar label input");
       return delimiterOptions;
     }
 
@@ -88,10 +95,10 @@ class CsvDelimitedOptions{
 
       let options = delimiterOptions.options;
 
-      this.htmlData.setCheckBoxFrom(".quotes input", options.quotes, true);
-      this.htmlData.setCheckBoxFrom(".headerVal input", options.header, true);
-      this.htmlData.setTextFieldToValue(".quoteChar input", options.quoteChar, "\"");
-      this.htmlData.setTextFieldToValue(".escapeChar input", options.escapeChar, "\"");
+      this.htmlData.setCheckBoxFrom(".quotes label input", options.quotes, true);
+      this.htmlData.setCheckBoxFrom(".headerval label input", options.header, true);
+      this.htmlData.setTextFieldToValue(".quoteChar label input", options.quoteChar, "\"");
+      this.htmlData.setTextFieldToValue(".escapeChar label input", options.escapeChar, "\"");
     }
 
 }

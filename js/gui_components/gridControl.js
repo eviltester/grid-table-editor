@@ -28,7 +28,7 @@ class GridControl {
             <button id="addRowsAboveButton">Add Rows Above</button>
             <button id="addRowsBelowButton">Add Rows Below</button>
             <button id="deleteSelectedRowsButton">Delete Selected Rows</button>
-            <label for="filter-text-box">Filter:</label> <input type="text" id="filter-text-box" placeholder="Filter...">
+            <label>Filter: <input type="text" id="filter-text-box" placeholder="Filter..."></label>
             <button id="clearFiltersButton" title="Clear Filters">Clear Filters</button>
             <button id="clearTableButton" title="Clear All Data">Reset Table</button>
         </div>

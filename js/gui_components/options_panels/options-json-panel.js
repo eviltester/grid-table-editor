@@ -17,45 +17,54 @@ class JsonOptionsPanel{
 
       
           <div class="numbersnumeric">            
-            <label for="numbersnumeric">Number Convert</label>
-            <input type="checkbox" name="numbersnumeric" value="numbersnumeric">
+            <label>
+              <input type="checkbox" name="numbersnumeric" value="numbersnumeric">
+              Number Convert
+            </label>
             <br>
           </div>
 
           <div class="prettyprint">            
-            <label for="prettyprint">Pretty Print</label>
-            <input type="checkbox" name="prettyprint" value="prettyprint">
+            <label>
+              <input type="checkbox" name="prettyprint" value="prettyprint">
+              Pretty Print
+            </label>
             <br>
           </div>
 
           <div class="prettydelimiter">
-            <label for="prettydelimiter">Delimiter</label>
-            <select name="prettydelimiter">
-              <option value="tab">Tab [\\t]</option>
-              <option value="space">Space [ ]</option>
-              <!--<option value="dot">Dot [.]</option>
-              <option value="dash">Dash- [-]</option>
-              <option value="underline">Underline [_]</option>
-              <option value="plus">Plus [+]</option>-->
-              <option value="custom">Custom Value</option>
-            </select>
+            <label>Delimiter
+              <select name="prettydelimiter">
+                <option value="tab">Tab [\\t]</option>
+                <option value="space">Space [ ]</option>
+                <!--<option value="dot">Dot [.]</option>
+                <option value="dash">Dash- [-]</option>
+                <option value="underline">Underline [_]</option>
+                <option value="plus">Plus [+]</option>-->
+                <option value="custom">Custom Value</option>
+              </select>
+            </label>
           <br>
           </div>
           <div class="custom-pretty-delimiter">
-            <label for="custom-pretty-delimiter">Custom</label>
-            <input type="text" name="custom-pretty-delimiter" value='' style="width:5em">
+            <label>Custom
+              <input type="text" name="custom-pretty-delimiter" value='' style="width:5em">
+            </label>
             <br>
           </div>  
 
           <div class="asobject">            
-            <label for="asobject">As Object</label>
-            <input type="checkbox" name="asobject" value="asobject">
+            <label>
+              <input type="checkbox" name="asobject" value="asobject">
+              As Object
+            </label>
             <br>
           </div>
           
           <div class="propertynamed">
-            <label for="propertynamed">Property Name</label>
-            <input type="text" name="propertynamed" value='"' style="width:10em">
+            <label>Property Name
+              <input type="text" name="propertynamed" value='"' style="width:10em">
+            </label>
             <br>
           </div>
           
@@ -82,13 +91,13 @@ class JsonOptionsPanel{
 
       let newOptions = new JsonConvertorOptions();
 
-      newOptions.options.makeNumbersNumeric = this.htmlData.getCheckBoxValueFrom(".numbersnumeric input");
-      newOptions.options.prettyPrint = this.htmlData.getCheckBoxValueFrom(".prettyprint input");
-      newOptions.options.asObject = this.htmlData.getCheckBoxValueFrom(".asobject input");
-      newOptions.options.asPropertyNamed = this.htmlData.getTextInputValueFrom(".propertynamed input");
+      newOptions.options.makeNumbersNumeric = this.htmlData.getCheckBoxValueFrom(".numbersnumeric label input");
+      newOptions.options.prettyPrint = this.htmlData.getCheckBoxValueFrom(".prettyprint label input");
+      newOptions.options.asObject = this.htmlData.getCheckBoxValueFrom(".asobject label input");
+      newOptions.options.asPropertyNamed = this.htmlData.getTextInputValueFrom(".propertynamed label input");
 
       let prettyPrintDelimiter = this.htmlData.getSelectWithCustomInput("select[name='prettydelimiter']", "custom", 
-                                            ".custom-pretty-delimiter input", newOptions.delimiterMappings,  "\t");
+                                            ".custom-pretty-delimiter label input", newOptions.delimiterMappings,  "\t");
 
       newOptions.options.prettyPrintDelimiter = prettyPrintDelimiter;
 
@@ -101,13 +110,13 @@ class JsonOptionsPanel{
 
       let options = mainOptions?.options ? mainOptions.options : {};
 
-      this.htmlData.setCheckBoxFrom(".numbersnumeric input", options?.makeNumbersNumeric, false);
-      this.htmlData.setCheckBoxFrom(".prettyprint input", options?.prettyPrint, true);
-      this.htmlData.setCheckBoxFrom(".asobject input", options?.asObject, false);
-      this.htmlData.setTextFieldToValue(".propertynamed input", options?.asPropertyNamed);
+      this.htmlData.setCheckBoxFrom(".numbersnumeric label input", options?.makeNumbersNumeric, false);
+      this.htmlData.setCheckBoxFrom(".prettyprint label input", options?.prettyPrint, true);
+      this.htmlData.setCheckBoxFrom(".asobject label input", options?.asObject, false);
+      this.htmlData.setTextFieldToValue(".propertynamed label input", options?.asPropertyNamed);
 
       this.htmlData.setSelectWithCustomInput(`select[name='prettydelimiter']`, "custom",
-                                      ".custom-pretty-delimiter input", mainOptions.delimiterMappings,
+                                      ".custom-pretty-delimiter label input", mainOptions.delimiterMappings,
                                       options.prettyPrintDelimiter);
     }
 

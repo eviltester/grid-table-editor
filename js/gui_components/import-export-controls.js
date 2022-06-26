@@ -18,39 +18,13 @@ class ImportExportControls {
         parentelement.innerHTML = `<span data-help="import-export-controls" class="helpicon"></span>
             <button id="settextfromgridbutton">v Set Text From Grid v</button>
             <button id="setgridfromtextbutton">^ Set Grid From Text ^</button>
-            <label id="csvinputlabel" for="csvinput"><span class="fileFormat">.csv</span> import ^:</label><input type="file" id="csvinput"/>
+            <label><span class="fileFormat">.csv</span> import ^:<input type="file" id="csvinput"/></label>
             <button id="filedownload"><span class="fileFormat">.csv</span> Download</button>
             <label id="dropzone">
             <span>[Drag And Drop <span class="fileFormat">.csv</span> File Here]</span>
             </label>
         `;
 
-        // tippy(parentelement.querySelector(".helpicon"), {
-        //     content: 'My tooltip!',
-        //     followCursor: true,
-        //     // getReferenceClientRect: () => {
-        //     //     var rect=parentelement.querySelector(".helpicon").getBoundingClientRect();
-        //     //     return {width:10, height:10, left:rect.left, right: rect.right, bottom:rect.bottom, top:rect.top};
-        //     // },
-        //     appendTo: document.body, //()=>parentelement.querySelector(".helpicon"),
-        //     onShow(instance){
-        //         console.log(instance);
-        //     },
-        //     inlinePositioning: true,
-        //     interactive: true,
-        //     onMount(instance) {
-        //         instance.popperInstance.update();
-        //     },
-        //     popperOptions: {
-        //         positionFixed: false,
-        //         modifiers: [{
-        //             name: 'computeStyles',
-        //             options: {
-        //                 gpuAcceleration: false, // true by default
-        //             },
-        //         }]
-        //     }
-        //   });
 
         let settextfromgridbutton = parentelement.querySelector("#settextfromgridbutton");
         let setTextAreaClickListener = this.renderTextFromGrid.bind(this);

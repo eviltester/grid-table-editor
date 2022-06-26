@@ -15,32 +15,38 @@ class GherkinOptionsPanel{
           <div><p><strong>Options</strong></p></div>
 
           <div class="incellpadding">
-            <label for="incellpadding">In Cell Padding</label>
-            <select name="incellpadding">
-              <option value="none">None</option>
-              <option value="left">Left</option>
-              <option value="right">Right</option>
-              <option value="both">Both</option>
-            </select>
+            <label>In Cell Padding
+              <select name="incellpadding">
+                <option value="none">None</option>
+                <option value="left">Left</option>
+                <option value="right">Right</option>
+                <option value="both">Both</option>
+              </select>
+            </label>
             <br>
           </div>
 
           
           <div class="prettyprint">            
-            <label for="prettyprint">Pretty Print</label>
-            <input type="checkbox" name="prettyprint" value="prettyprint">
+            <label>
+              <input type="checkbox" name="prettyprint" value="prettyprint">
+              Pretty Print
+            </label>
             <br>
           </div>
 
           <div class="showheadings">            
-            <label for="showheadings">Show Headers</label>
-            <input type="checkbox" name="showheadings" value="showheadings">
+            <label>
+              <input type="checkbox" name="showheadings" value="showheadings">
+              Show Headers
+            </label>
             <br>
           </div>
           
           <div class="leftindent">
-            <label for="leftindent">Left Indent</label>
-            <input type="text" name="leftindent" value='' style="width:5em">
+            <label>Left Indent
+              <input type="text" name="leftindent" value='' style="width:5em">
+            </label>
             <br>
           </div>
           
@@ -69,14 +75,14 @@ class GherkinOptionsPanel{
       let newOptions = {};
       newOptions.options = {};
 
-      newOptions.options.showHeadings = this.htmlData.getCheckBoxValueFrom(".showheadings input");
+      newOptions.options.showHeadings = this.htmlData.getCheckBoxValueFrom(".showheadings label input");
 
       // todo: have the hard coded tab, space, custom options
-      newOptions.options.leftIndent = this.htmlData.getTextInputValueFrom(".leftindent input");
+      newOptions.options.leftIndent = this.htmlData.getTextInputValueFrom(".leftindent label input");
 
-      newOptions.options.inCellPadding = this.htmlData.getSelectedValueFrom(".incellpadding select", "none");
+      newOptions.options.inCellPadding = this.htmlData.getSelectedValueFrom(".incellpadding label select", "none");
       // todo: control the in cell padder
-      newOptions.options.prettyPrint = this.htmlData.getCheckBoxValueFrom(".prettyprint input");
+      newOptions.options.prettyPrint = this.htmlData.getCheckBoxValueFrom(".prettyprint label input");
 
       options.mergeOptions(newOptions);
       return options;
@@ -88,10 +94,10 @@ class GherkinOptionsPanel{
 
       let options = theOptions?.options ? theOptions.options : {};
 
-      this.htmlData.setCheckBoxFrom(".showheadings input", options?.showHeadings, true);
-      this.htmlData.setTextFieldToValue(".leftindent input", options?.leftIndent);
-      this.htmlData.setDropDownOptionToKeyValue(".incellpadding select", options?.inCellPadding);
-      this.htmlData.setCheckBoxFrom(".prettyprint input", options?.prettyPrint, false);
+      this.htmlData.setCheckBoxFrom(".showheadings label input", options?.showHeadings, true);
+      this.htmlData.setTextFieldToValue(".leftindent label input", options?.leftIndent);
+      this.htmlData.setDropDownOptionToKeyValue(".incellpadding label select", options?.inCellPadding);
+      this.htmlData.setCheckBoxFrom(".prettyprint label input", options?.prettyPrint, false);
     }
 
 }

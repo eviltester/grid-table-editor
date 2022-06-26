@@ -23,11 +23,13 @@ class AsciiTableOptionsPanel{
         <div class="delimited-options" style="width:100%">
           <div><p><strong>Options</strong> <span data-help="ascii-table-options" class="helpicon"></span></p></div>
           <div class="style">
-            <label for="style">Style</label>
+            <label>Style
             <select name="style">
               ${stylesAsOptions}
             </select>
+            </label>
             <br>
+            
           </div>
 
           <div class="apply">

@@ -17,41 +17,51 @@ class HtmlOptionsPanel{
 
       
           <div class="compacthtml">            
-            <label for="compacthtml">Compact</label>
-            <input type="checkbox" name="compacthtml" value="compacthtml">
+            <label>
+              <input type="checkbox" name="compacthtml" value="compacthtml">
+              Compact
+            </label>
             <br>
           </div>
 
           <div class="prettyprint">            
-            <label for="prettyprint">Pretty Print</label>
-            <input type="checkbox" name="prettyprint" value="prettyprint">
+            <label>
+              <input type="checkbox" name="prettyprint" value="prettyprint">
+              Pretty Print
+            </label>
             <br>
           </div>
 
           <div class="prettydelimiter">
-            <label for="prettydelimiter">Delimiter</label>
-            <select name="prettydelimiter">
-              <option value="tab">Tab [\\t]</option>
-              <option value="space">Space [ ]</option>
-              <option value="custom">Custom Value</option>
-            </select>
+            <label>Delimiter
+              <select name="prettydelimiter">
+                <option value="tab">Tab [\\t]</option>
+                <option value="space">Space [ ]</option>
+                <option value="custom">Custom Value</option>
+              </select>
+            </label>
           <br>
           </div>
           <div class="custom-pretty-delimiter">
-            <label for="custom-pretty-delimiter">Custom</label>
-            <input type="text" name="custom-pretty-delimiter" value='' style="width:5em">
+            <label>Custom
+              <input type="text" name="custom-pretty-delimiter" value='' style="width:5em">
+            </label>
             <br>
           </div>  
 
           <div class="addthead">            
-            <label for="addthead">Add &lt;thead&gt;</label>
-            <input type="checkbox" name="addthead" value="addthead">
+            <label>
+              <input type="checkbox" name="addthead" value="addthead">
+              Add &lt;thead&gt;
+            </label>
             <br>
           </div>
 
           <div class="addtbody">            
-            <label for="addtbody">Add &lt;tbody&gt;</label>
-            <input type="checkbox" name="addtbody" value="addtbody">
+            <label>
+              <input type="checkbox" name="addtbody" value="addtbody">
+              Add &lt;tbody&gt;
+            </label>
             <br>
           </div>
   
@@ -78,15 +88,15 @@ class HtmlOptionsPanel{
 
       let newOptions = new HtmlConvertorOptions();
 
-      newOptions.options.compact = this.htmlData.getCheckBoxValueFrom(".compacthtml input");
-      newOptions.options.prettyPrint = this.htmlData.getCheckBoxValueFrom(".prettyprint input");
+      newOptions.options.compact = this.htmlData.getCheckBoxValueFrom(".compacthtml label input");
+      newOptions.options.prettyPrint = this.htmlData.getCheckBoxValueFrom(".prettyprint label input");
 
       let prettyPrintDelimiter = this.htmlData.getSelectWithCustomInput("select[name='prettydelimiter']", "custom", 
-                                            ".custom-pretty-delimiter input", newOptions.delimiterMappings,  "\t");
+                                            ".custom-pretty-delimiter label input", newOptions.delimiterMappings,  "\t");
       newOptions.options.prettyPrintDelimiter = prettyPrintDelimiter;
 
-      newOptions.options.addTheadToTable = this.htmlData.getCheckBoxValueFrom(".addthead input");
-      newOptions.options.addTbodyToTable = this.htmlData.getCheckBoxValueFrom(".addtbody input");
+      newOptions.options.addTheadToTable = this.htmlData.getCheckBoxValueFrom(".addthead label input");
+      newOptions.options.addTbodyToTable = this.htmlData.getCheckBoxValueFrom(".addtbody label input");
 
       return newOptions;
 
@@ -98,13 +108,13 @@ class HtmlOptionsPanel{
       let options = mainOptions?.options ? mainOptions.options : {};
 
       // TODO: create 'defaults' in the main options class and use these in the panel settings
-      this.htmlData.setCheckBoxFrom(".compacthtml input", options?.compact, false);
-      this.htmlData.setCheckBoxFrom(".prettyprint input", options?.prettyPrint, false);
-      this.htmlData.setCheckBoxFrom(".addthead input", options?.addTheadToTable, false);
-      this.htmlData.setCheckBoxFrom(".addtbody input", options?.addTbodyToTable, false);
+      this.htmlData.setCheckBoxFrom(".compacthtml label input", options?.compact, false);
+      this.htmlData.setCheckBoxFrom(".prettyprint label input", options?.prettyPrint, false);
+      this.htmlData.setCheckBoxFrom(".addthead label input", options?.addTheadToTable, false);
+      this.htmlData.setCheckBoxFrom(".addtbody label input", options?.addTbodyToTable, false);
 
       this.htmlData.setSelectWithCustomInput(`select[name='prettydelimiter']`, "custom",
-                                      ".custom-pretty-delimiter input", mainOptions.delimiterMappings,
+                                      ".custom-pretty-delimiter label input", mainOptions.delimiterMappings,
                                       options.prettyPrintDelimiter);
     }
 

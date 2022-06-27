@@ -13,7 +13,7 @@ class HtmlOptionsPanel{
         this.parent.innerHTML =
         `
         <div class="${this.parentDivClass}" style="width:100%">
-          <div><p><strong>Options</strong></p></div>
+          <div><p><strong>Options</strong> <span data-help="html-table-options" class="helpicon"></span></p></div>
 
       
           <div class="compacthtml">            

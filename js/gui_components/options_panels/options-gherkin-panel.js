@@ -12,7 +12,7 @@ class GherkinOptionsPanel{
         this.parent.innerHTML =
         `
         <div class="gherkin-options" style="width:100%">
-          <div><p><strong>Options</strong></p></div>
+          <div><p><strong>Options</strong>  <span data-help="gherkin-options" class="helpicon"></span></p></div>
 
           <div class="incellpadding">
             <label>In Cell Padding

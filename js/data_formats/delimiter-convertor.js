@@ -2,6 +2,7 @@ import { DelimiterOptions } from "./delimiter-options.js";
 import { GenericDataTable } from "./generic-data-table.js";
 import { JsonConvertor } from "./json-convertor.js";
 
+
 export class DelimiterConvertor {
 
     constructor(params) {

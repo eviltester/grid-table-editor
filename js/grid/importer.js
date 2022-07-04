@@ -5,7 +5,7 @@ import { HtmlConvertor, HtmlConvertorOptions } from "../data_formats/html-conver
 import { DelimiterConvertor } from "../data_formats/delimiter-convertor.js";
 import { CsvConvertor } from "../data_formats/csv-convertor.js";
 import { JsonConvertor, JsonConvertorOptions } from "../data_formats/json-convertor.js";
-import { JavascriptConvertor } from "../data_formats/javascript-convertor.js";
+import { JavascriptConvertor, JavascriptConvertorOptions } from "../data_formats/javascript-convertor.js";
 import { fileTypes } from "../data_formats/file-types.js";
 
 class Importer{
@@ -20,7 +20,7 @@ class Importer{
        // this.options["asciitable"] = new AsciiTableOptions();
         this.options["markdown"] = new MarkdownOptions();
         this.options["json"] = new JsonConvertorOptions();
-        this.options["javascript"] = new JsonConvertorOptions();
+        this.options["javascript"] = new JavascriptConvertorOptions();
         this.options["html"] = new HtmlConvertorOptions();
 
         this.convertors = {};

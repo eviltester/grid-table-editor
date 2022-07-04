@@ -1,9 +1,6 @@
 import { GenericDataTable } from '../../js/data_formats/generic-data-table.js';
 import {JsonConvertor, JsonConvertorOptions} from '../../js/data_formats/json-convertor.js';
 
-
-
-
 describe("Can use options to configure json output",()=>{
 
     const basicInputTable = new GenericDataTable();
@@ -112,6 +109,8 @@ describe("Can use options to configure json output",()=>{
         expect(output).toBe(expectedJson);
     });
 
+
+
     test('can supply a header name converter intended for javascript naming', () => {
         const expectedJson =
 `[
@@ -155,6 +154,71 @@ describe("Can use options to configure json output",()=>{
         expect(output).toBe(expectedJson);
     });
 
+    // TODO: wrap papaparse to allow it to be mocked and used in tests
+    // describe("Can convert from data table to json output",()=>{
+
+    //     const basicInputTable = new GenericDataTable();
+    //     basicInputTable.setHeaders(["h1", "h2"]);
+    //     basicInputTable.appendDataRow(["r0c0", "r0c1"]);
+    //     basicInputTable.appendDataRow(["r1c0", "r1c1"]);
+
+    //     // these test methods make the assumption that we can conver to data table
+    //     test('can convert json with default asObject property to data table', () => {
+
+
+    //         const expectedJson =
+    // `{"data":[{"h1":"r0c0","h2":"r0c1"},{"h1":"r1c0","h2":"r1c1"}]}`    
+    //         let config = new JsonConvertorOptions();
+    //         config.options.prettyPrint=false;
+    //         config.options.asObject=true;
+    //         let convertor = new JsonConvertor(config);
+    //         debugger;
+    //         convertor.setPapaParse((x)=>{return Papa.parse(x)});
+    //         convertor.setPapaUnparse((x)=>{return Papa.unparse(x)});
+    //         let table = convertor.toDataTable(expectedJson);
+    //         let json = convertor.fromDataTable(table);
+    //         expect(json).toBe(expectedJson);
+    //     });
+
+    //     test('can convert json with default asObject property to data table', () => {
+    //         const expectedJson =
+    // `{"data":[{"h1":"r0c0","h2":"r0c1"},{"h1":"r1c0","h2":"r1c1"}]}`    
+    //         let config = new JsonConvertorOptions();
+    //         config.options.prettyPrint=false;
+    //         config.options.asObject=true;
+    //         config.options.asPropertyNamed="data";
+    //         let convertor = new JsonConvertor(config);
+    //         let table = convertor.toDataTable(expectedJson);
+    //         let json = convertor.fromDataTable(table);
+    //         expect(json).toBe(expectedJson);
+    //     });
+
+    //     test('can convert json with custom property to data table', () => {
+    //         const expectedJson =
+    // `{"table":[{"h1":"r0c0","h2":"r0c1"},{"h1":"r1c0","h2":"r1c1"}]}`    
+    //         let config = new JsonConvertorOptions();
+    //         config.options.prettyPrint=false;
+    //         config.options.asObject=true;
+    //         config.options.asPropertyNamed="table";
+    //         let convertor = new JsonConvertor(config);
+    //         let table = convertor.toDataTable(expectedJson);
+    //         let json = convertor.fromDataTable(table);
+    //         expect(json).toBe(expectedJson);
+    //     });
+
+    //     test('can convert json with custom property spaced to data table', () => {
+    //         const expectedJson =
+    // `{"tab le":[{"h1":"r0c0","h2":"r0c1"},{"h1":"r1c0","h2":"r1c1"}]}`    
+    //         let config = new JsonConvertorOptions();
+    //         config.options.prettyPrint=false;
+    //         config.options.asObject=true;
+    //         config.options.asPropertyNamed="tab le";
+    //         let convertor = new JsonConvertor(config);
+    //         let table = convertor.toDataTable(expectedJson);
+    //         let json = convertor.fromDataTable(table);
+    //         expect(json).toBe(expectedJson);
+    //     });
+    // });
 
     //TODO : if pretty print delimiter is a number then convert to an actual number to pass to stringify
 

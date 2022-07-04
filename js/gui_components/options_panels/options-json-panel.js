@@ -1,3 +1,4 @@
+import { JavascriptConvertorOptions } from "../../data_formats/javascript-convertor.js";
 import { JsonConvertorOptions } from "../../data_formats/json-convertor.js";
 import {HtmlDataValues} from "./html-options-data-utils.js";
 
@@ -90,6 +91,11 @@ class JsonOptionsPanel{
     getOptionsFromGui(){
 
       let newOptions = new JsonConvertorOptions();
+
+      // todo: split this into javascript options panel
+      if(this.parentDivClass.startsWith("javascript-")){
+        newOptions = new JavascriptConvertorOptions();
+      }
 
       newOptions.options.makeNumbersNumeric = this.htmlData.getCheckBoxValueFrom(".numbersnumeric label input");
       newOptions.options.prettyPrint = this.htmlData.getCheckBoxValueFrom(".prettyprint label input");

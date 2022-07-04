@@ -1,6 +1,8 @@
 import { isNumber } from "../utils/number-convertor.js";
 import { GenericDataTable } from "./generic-data-table.js";
 
+
+
 class JsonConvertorOptions{
 
     constructor(){
@@ -103,8 +105,27 @@ class JsonConvertor {
         return JSON.stringify(toOutput, replacer, delimiter);
     }
     
+    setPapaParse(papaparse){
+        this.papaparse=papaparse;
+    }
+    setPapaUnparse(papaunparse){
+        this.papaunparse=papaunparse;
+    }
+
     toDataTable(textToImport){
-        let results = Papa.parse(Papa.unparse(JSON.parse(textToImport)));
+
+        let results = {data:[]};
+
+        // TODO: handle as Object having different name from 'data'
+        if(this.config.options.asObject){
+            let parsedJson = JSON.parse(textToImport);
+            let jsonArray = parsedJson[this.config.options.asPropertyNamed];
+            // TODO: fix overhead of too many conversions
+            results =Papa.parse(Papa.unparse(JSON.stringify(jsonArray)));
+        }else{
+            results =Papa.parse(Papa.unparse(JSON.parse(textToImport)));
+        }
+
         let dataTable = new GenericDataTable();
         dataTable.setFromDataArray(results.data);
         return dataTable;

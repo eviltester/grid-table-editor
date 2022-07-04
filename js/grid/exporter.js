@@ -9,6 +9,7 @@ import { DelimiterConvertor } from "../data_formats/delimiter-convertor.js";
 import { DelimiterOptions } from "../data_formats/delimiter-options.js";
 import { AsciiTableConvertor, AsciiTableOptions } from "../data_formats/asciitable-convertor.js";
 import {fileTypes} from '../data_formats/file-types.js';
+import { PapaWrappa } from "../utils/papawrappa.js";
 
 class Exporter {
 
@@ -28,9 +29,13 @@ class Exporter {
         this.exporters = {};
         this.exporters["markdown"]= new MarkdownConvertor();
         this.exporters["csv"]= new CsvConvertor();
+        this.exporters["csv"].setPapaParse(new PapaWrappa())
         this.exporters["dsv"]= new DelimiterConvertor();
+        this.exporters["dsv"].setPapaParse(new PapaWrappa())
         this.exporters["json"] = new JsonConvertor();
+        this.exporters["json"].setPapaParse(new PapaWrappa())
         this.exporters["javascript"] = new JavascriptConvertor();
+        this.exporters["javascript"].setPapaParse(new PapaWrappa())
         this.exporters["gherkin"] = new GherkinConvertor();
         this.exporters["html"] = new HtmlConvertor();
         this.exporters["asciitable"] = new AsciiTableConvertor();

@@ -43,6 +43,11 @@ export class JavascriptConvertor {
         return this.delegateTo.formatAsObjects(dataTable);
     }
 
+    setPapaParse(papaparse){
+        this.papaparse=papaparse;
+        this.delegateTo.setPapaParse(papaparse)
+    }
+
     // TODO: these regex conversions are all a little 'delicate'
     // am using regex because under covers the JSON.stringify and parse functions are used
     // which require quoted keys, but the javascript is non-quoted keys

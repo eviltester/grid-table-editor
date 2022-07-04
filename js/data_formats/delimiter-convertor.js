@@ -19,9 +19,13 @@ export class DelimiterConvertor {
       this.delimiterOptions.mergeOptions(newOptions);
     }
 
+    setPapaParse(papaparse){
+      this.papaparse=papaparse;
+    }
+
     fromDataTable(dataTable){      
         let objects = new JsonConvertor().formatAsObjects(dataTable);
-        return Papa.unparse(objects, this.delimiterOptions.options);
+        return this.papaparse.unparse(objects, this.delimiterOptions.options);
     }
 
     toDataTable(textToImport){
@@ -32,7 +36,7 @@ export class DelimiterConvertor {
             // if we have any stored headers then add them to the input
             let headers = this.delimiterOptions.headers;
             if(headers!==undefined && headers.length>0){
-              headerText = Papa.unparse([this.delimiterOptions.headers], this.delimiterOptions.options)
+              headerText = this.papaparse.unparse([this.delimiterOptions.headers], this.delimiterOptions.options)
               headerText = headerText+this.delimiterOptions.options.newline;
             }
             
@@ -47,7 +51,7 @@ export class DelimiterConvertor {
           this.delimiterOptions.options.header=false;
         }
         
-        var results=Papa.parse(headerText + textToImport, this.delimiterOptions.options);
+        var results=this.papaparse.parse(headerText + textToImport, this.delimiterOptions.options);
 
         if(rememberOptionsHeader!==undefined){
           this.delimiterOptions.options.header=rememberOptionsHeader;

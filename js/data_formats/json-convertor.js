@@ -108,9 +108,6 @@ class JsonConvertor {
     setPapaParse(papaparse){
         this.papaparse=papaparse;
     }
-    setPapaUnparse(papaunparse){
-        this.papaunparse=papaunparse;
-    }
 
     toDataTable(textToImport){
 
@@ -121,9 +118,9 @@ class JsonConvertor {
             let parsedJson = JSON.parse(textToImport);
             let jsonArray = parsedJson[this.config.options.asPropertyNamed];
             // TODO: fix overhead of too many conversions
-            results =Papa.parse(Papa.unparse(JSON.stringify(jsonArray)));
+            results = this.papaparse.parse( this.papaparse.unparse(JSON.stringify(jsonArray)));
         }else{
-            results =Papa.parse(Papa.unparse(JSON.parse(textToImport)));
+            results = this.papaparse.parse( this.papaparse.unparse(JSON.parse(textToImport)));
         }
 
         let dataTable = new GenericDataTable();

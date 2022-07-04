@@ -7,6 +7,7 @@ import { CsvConvertor } from "../data_formats/csv-convertor.js";
 import { JsonConvertor, JsonConvertorOptions } from "../data_formats/json-convertor.js";
 import { JavascriptConvertor, JavascriptConvertorOptions } from "../data_formats/javascript-convertor.js";
 import { fileTypes } from "../data_formats/file-types.js";
+import {PapaWrappa} from "../utils/papawrappa.js"
 
 class Importer{
 
@@ -28,9 +29,13 @@ class Importer{
         this.convertors["gherkin"] = new GherkinConvertor();
         this.convertors["html"] = new HtmlConvertor();
         this.convertors["dsv"] = new DelimiterConvertor();
+        this.convertors["dsv"].setPapaParse(new PapaWrappa())
         this.convertors["csv"] = new CsvConvertor();
+        this.convertors["csv"].setPapaParse(new PapaWrappa())
         this.convertors["json"] = new JsonConvertor();
+        this.convertors["json"].setPapaParse(new PapaWrappa())
         this.convertors["javascript"] = new JavascriptConvertor();
+        this.convertors["javascript"].setPapaParse(new PapaWrappa())
 
     }
 

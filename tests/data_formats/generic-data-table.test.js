@@ -139,6 +139,92 @@ describe("Can convert Generic Data Table to old data format", ()=>{
     });
 });
 
+describe("Can create Generic Data Table from Array of Javascript Objects", ()=>{
+
+    // [x] undefined creates empty table
+    // [x] null creates empty table
+    // [x] empty array creates empty table
+    // [x] array with one object with one property creates table with header and one row of data with one cell
+    // [x] array with one object creates table with headers and one row of data
+    // [x] array with multiple objects with same keys, fills rows and headers
+    // [x] array with properties in different order still works
+    // todo: array with objects with different headers creates headers as necessary and data items are empty strings
+
+    test('undefined creates empty table', () => {
+        let dataTable = new GenericDataTable();
+        dataTable.setFromDataObjects();
+        expect(dataTable.getHeaders().length).toBe(0);
+        expect(dataTable.getRowCount()).toBe(0);
+    });
+
+    test('null creates empty table', () => {
+        let dataTable = new GenericDataTable();
+        dataTable.setFromDataObjects(null);
+        expect(dataTable.getHeaders().length).toBe(0);
+        expect(dataTable.getRowCount()).toBe(0);
+    });
+
+    test('empty array creates empty table', () => {
+        let dataTable = new GenericDataTable();
+        dataTable.setFromDataObjects([]);
+        expect(dataTable.getHeaders().length).toBe(0);
+        expect(dataTable.getRowCount()).toBe(0);
+    });
+
+    test('array with one object with one property creates table with header and one row of data with one cell', () => {
+        let dataTable = new GenericDataTable();
+        dataTable.setFromDataObjects([{"header":"cellvalue"}]);
+        expect(dataTable.getHeaders().length).toBe(1);
+        expect(dataTable.getHeaders()[0]).toBe("header");
+        expect(dataTable.getRowCount()).toBe(1);
+        expect(dataTable.getCell(0,0)).toBe("cellvalue");
+    });
+
+    test('array with one object creates table with headers and one row of data', ()=>{
+        let dataTable = new GenericDataTable();
+        dataTable.setFromDataObjects([{"header1":"cellvalue1", "header2":"cellvalue2"}]);
+        expect(dataTable.getHeaders().length).toBe(2);
+        expect(dataTable.getHeaders()[0]).toBe("header1");
+        expect(dataTable.getHeaders()[1]).toBe("header2");
+        expect(dataTable.getRowCount()).toBe(1);
+        expect(dataTable.getCell(0,0)).toBe("cellvalue1");
+        expect(dataTable.getCell(0,1)).toBe("cellvalue2");
+    })
+
+    test('array with multiple objects with same keys, fills rows and headers', ()=>{
+        let dataTable = new GenericDataTable();
+        dataTable.setFromDataObjects([
+            {"header1":"cellvalue1", "header2":"cellvalue2"},
+            {"header1":"cellvalue3", "header2":"cellvalue4"}
+        ]);
+        expect(dataTable.getHeaders().length).toBe(2);
+        expect(dataTable.getHeaders()[0]).toBe("header1");
+        expect(dataTable.getHeaders()[1]).toBe("header2");
+        expect(dataTable.getRowCount()).toBe(2);
+        expect(dataTable.getCell(0,0)).toBe("cellvalue1");
+        expect(dataTable.getCell(0,1)).toBe("cellvalue2");
+        expect(dataTable.getCell(1,0)).toBe("cellvalue3");
+        expect(dataTable.getCell(1,1)).toBe("cellvalue4");
+    })
+
+    test('array with properties in different order still works', ()=>{
+        let dataTable = new GenericDataTable();
+        dataTable.setFromDataObjects([
+            {"header1":"cellvalue1", "header2":"cellvalue2"},
+            {"header2":"cellvalue4", "header1":"cellvalue3"}
+        ]);
+        expect(dataTable.getHeaders().length).toBe(2);
+        expect(dataTable.getHeaders()[0]).toBe("header1");
+        expect(dataTable.getHeaders()[1]).toBe("header2");
+        expect(dataTable.getRowCount()).toBe(2);
+        expect(dataTable.getCell(0,0)).toBe("cellvalue1");
+        expect(dataTable.getCell(0,1)).toBe("cellvalue2");
+        expect(dataTable.getCell(1,0)).toBe("cellvalue3");
+        expect(dataTable.getCell(1,1)).toBe("cellvalue4");
+    })
+
+});
+
 /*
 
 TODO : unsupported scenarios

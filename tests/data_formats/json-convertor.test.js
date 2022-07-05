@@ -158,11 +158,17 @@ describe("Can use options to configure json output",()=>{
 
     class PapaWrappa{
 
-        parse(value){
+        parse(value, options){
+            if(options){
+                return Papa.parse(value, options);
+            }
             return Papa.parse(value);
         }
     
-        unparse(value){
+        unparse(value, options){
+            if(options){
+                return Papa.unparse(value, options);
+            }
             return Papa.unparse(value);
         }
     }

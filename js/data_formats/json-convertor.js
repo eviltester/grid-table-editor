@@ -105,26 +105,19 @@ class JsonConvertor {
         return JSON.stringify(toOutput, replacer, delimiter);
     }
     
-    setPapaParse(papaparse){
-        this.papaparse=papaparse;
-    }
 
     toDataTable(textToImport){
 
-        let results = {data:[]};
-
-        // TODO: handle as Object having different name from 'data'
+        let jsonArray = [];
         if(this.config.options.asObject){
             let parsedJson = JSON.parse(textToImport);
-            let jsonArray = parsedJson[this.config.options.asPropertyNamed];
-            // TODO: fix overhead of too many conversions
-            results = this.papaparse.parse( this.papaparse.unparse(JSON.stringify(jsonArray)));
+            jsonArray = parsedJson[this.config.options.asPropertyNamed];
         }else{
-            results = this.papaparse.parse( this.papaparse.unparse(JSON.parse(textToImport)));
+            jsonArray = JSON.parse(textToImport);
         }
 
         let dataTable = new GenericDataTable();
-        dataTable.setFromDataArray(results.data);
+        dataTable.setFromDataObjects(jsonArray)
         return dataTable;
     }
 

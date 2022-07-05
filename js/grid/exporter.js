@@ -33,9 +33,7 @@ class Exporter {
         this.exporters["dsv"]= new DelimiterConvertor();
         this.exporters["dsv"].setPapaParse(new PapaWrappa())
         this.exporters["json"] = new JsonConvertor();
-        this.exporters["json"].setPapaParse(new PapaWrappa())
         this.exporters["javascript"] = new JavascriptConvertor();
-        this.exporters["javascript"].setPapaParse(new PapaWrappa())
         this.exporters["gherkin"] = new GherkinConvertor();
         this.exporters["html"] = new HtmlConvertor();
         this.exporters["asciitable"] = new AsciiTableConvertor();

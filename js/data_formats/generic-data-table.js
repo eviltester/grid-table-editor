@@ -80,6 +80,43 @@ class GenericDataTable {
         return true;
     }
 
+    setFromDataObjects(dataObjects){
+
+        if(dataObjects===undefined){
+            return;
+        }
+
+        if(dataObjects===null){
+            return;
+        }
+
+        if(dataObjects.length===0){
+            return;
+        }
+
+        // assume all headers are in the first object
+        let headers = [];
+        for(const header in dataObjects[0]){
+            headers.push(header);
+        }
+
+        this.setHeaders(headers);
+
+        // process all rows
+        dataObjects.forEach(row => {
+            let rowData = [];
+            headers.forEach(header => {
+                let cellValue = row[header];
+                if(cellValue===undefined){
+                    cellValue="";
+                }
+                rowData.push(cellValue);
+            });
+            this.appendDataRow(rowData);
+        });   
+
+    }
+
     // convert to the old format to ease migration
     asDataArray(){
 

@@ -14,7 +14,7 @@ class JsonOptionsPanel{
         this.parent.innerHTML =
         `
         <div class="${this.parentDivClass}" style="width:100%">
-          <div><p><strong>Options</strong></p></div>
+          <div><p><strong>Options</strong> <span data-help="${this.parentDivClass}" class="helpicon"></p></div>
 
       
           <div class="numbersnumeric">            

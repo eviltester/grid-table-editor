@@ -156,32 +156,14 @@ describe("Can use options to configure json output",()=>{
         expect(output).toBe(expectedJson);
     });
 
-    class PapaWrappa{
-
-        parse(value, options){
-            if(options){
-                return Papa.parse(value, options);
-            }
-            return Papa.parse(value);
-        }
-    
-        unparse(value, options){
-            if(options){
-                return Papa.unparse(value, options);
-            }
-            return Papa.unparse(value);
-        }
-    }
-
-    //TODO: wrap papaparse to allow it to be mocked and used in tests
-    describe("Can convert from data table to json output",()=>{
+    describe("Can convert from json to data table",()=>{
 
         const basicInputTable = new GenericDataTable();
         basicInputTable.setHeaders(["h1", "h2"]);
         basicInputTable.appendDataRow(["r0c0", "r0c1"]);
         basicInputTable.appendDataRow(["r1c0", "r1c1"]);
 
-        // these test methods make the assumption that we can conver to data table
+        // these test methods make the assumption that we can convert to data table
         test('can convert json with default asObject property to data table', () => {
 
 
@@ -191,7 +173,6 @@ describe("Can use options to configure json output",()=>{
             config.options.prettyPrint=false;
             config.options.asObject=true;
             let convertor = new JsonConvertor(config);
-            convertor.setPapaParse(new PapaWrappa());
             let table = convertor.toDataTable(expectedJson);
             let json = convertor.fromDataTable(table);
             expect(json).toBe(expectedJson);
@@ -205,7 +186,6 @@ describe("Can use options to configure json output",()=>{
             config.options.asObject=true;
             config.options.asPropertyNamed="data";
             let convertor = new JsonConvertor(config);
-            convertor.setPapaParse(new PapaWrappa());
             let table = convertor.toDataTable(expectedJson);
             let json = convertor.fromDataTable(table);
             expect(json).toBe(expectedJson);
@@ -219,7 +199,6 @@ describe("Can use options to configure json output",()=>{
             config.options.asObject=true;
             config.options.asPropertyNamed="table";
             let convertor = new JsonConvertor(config);
-            convertor.setPapaParse(new PapaWrappa());
             let table = convertor.toDataTable(expectedJson);
             let json = convertor.fromDataTable(table);
             expect(json).toBe(expectedJson);
@@ -233,13 +212,10 @@ describe("Can use options to configure json output",()=>{
             config.options.asObject=true;
             config.options.asPropertyNamed="tab le";
             let convertor = new JsonConvertor(config);
-            convertor.setPapaParse(new PapaWrappa());
             let table = convertor.toDataTable(expectedJson);
             let json = convertor.fromDataTable(table);
             expect(json).toBe(expectedJson);
         });
     });
-
-    //TODO : if pretty print delimiter is a number then convert to an actual number to pass to stringify
 
 });

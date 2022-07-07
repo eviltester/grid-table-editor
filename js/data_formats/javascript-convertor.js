@@ -31,8 +31,11 @@ export class JavascriptConvertorOptions{
 
 export class JavascriptConvertor {
 
-    constructor() {
+    constructor(options) {
         this.delegateTo = new JsonConvertor(new JavascriptConvertorOptions());
+        if(options){
+            this.setOptions(options);
+        }
     }
 
     setOptions(newOptions){
@@ -59,6 +62,11 @@ export class JavascriptConvertor {
         const arrayNameRegex = /(\s|^]*){([\s]*)"([a-zA-Z0-9_ ]+)"( ?):( ?)\[/g
         if(this.delegateTo.config.options.asObject){
             json=json.replace(arrayNameRegex, '$1{$2$3$4:$5[');
+
+            let jsPropertyName = convertStringToJavaScriptValidName(this.delegateTo.config.options.asPropertyNamed);
+            if(jsPropertyName!==this.delegateTo.config.options.asPropertyNamed){
+                json=json.replace(this.delegateTo.config.options.asPropertyNamed, jsPropertyName);
+            }
         }
 
         // regex replace all to convert json keys to javascript literals

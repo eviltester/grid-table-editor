@@ -88,6 +88,10 @@ const config = {
                 label: 'Tutorial',
                 to: '/docs/intro',
               },
+              {
+                label: 'Privacy Policy',
+                to: '/privacy',
+              },
             ],
           },
           {

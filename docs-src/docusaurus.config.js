@@ -40,7 +40,9 @@ const config = {
           //  'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
         },
         blog: {
+          blogSidebarCount: 'ALL',
           showReadingTime: true,
+          blogDescription: "Feature updates, hints and tips for generating and editing tables of CSV, JSON, Markdown, Gherkin and HTML."
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           //editUrl:

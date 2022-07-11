@@ -197,7 +197,7 @@ class HtmlConvertor {
         // find the table
         let table = container.querySelector("table");
 
-        if(table===undefined){
+        if(table===null){
             // TODO : create some error surfacing protocol
             console.log("Error: could not find table in the HTML import");
             return dataTable;
@@ -206,7 +206,7 @@ class HtmlConvertor {
         // get the rows
         let rows = table.querySelectorAll("tr");
 
-        if(rows===undefined){
+        if(rows===null || rows===undefined || rows.length===0){
             console.log("Error: could not find any rows in the table");
             return dataTable;
         }
@@ -215,7 +215,7 @@ class HtmlConvertor {
         let header = rows[0];
 
         let headerCells = header.querySelectorAll("td, th");
-        if(headerCells===undefined || headerCells.length===0){
+        if(headerCells===null || headerCells.length===0){
             console.log("Error: could not find any headers in the table");
             return dataTable;
         }
@@ -246,7 +246,11 @@ class HtmlConvertor {
 
     // get the text, not the HTML and remove any characters that might mess up the data conversion
     getTableCellContents(tableCell){
-        return tableCell.innerText.replaceAll("\n"," ").trim();
+        let text = tableCell.innerText;
+        if(text===undefined){
+            text = tableCell.textContent;
+        }
+        return text.replaceAll("\n"," ").trim();
     }
 
 }

@@ -33,6 +33,7 @@ class MarkdownOptions{
       if(newoptions.options){
           this.options = {...this.options, ...newoptions.options}
       }else{
+          console.log("Warning: Using legacy fallback options setter in markdown-convertor.js");
           this.options = {...this.options, ...newoptions}
       }
       if(newoptions.validateSeparatorLength){

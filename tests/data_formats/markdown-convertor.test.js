@@ -125,6 +125,19 @@ describe("a valid header is a minimum of |---|---| but we also support :", ()=>{
         expect(new MarkdownConvertor().isMarkdownTableSeparatorRowValid("|---|")).toBe(true);
     });
 
+    test('when missing start bar - it fails', () => {
+        expect(new MarkdownConvertor().isMarkdownTableSeparatorRowValid("---|---|")).toBe(false);
+    });
+
+
+    test('when missing end bar - it fails', () => {
+        expect(new MarkdownConvertor().isMarkdownTableSeparatorRowValid("|---|---")).toBe(false);
+    });
+
+    test('when missing start and end bars - it fails', () => {
+        expect(new MarkdownConvertor().isMarkdownTableSeparatorRowValid("---|---")).toBe(false);
+    });
+
     test('when mix of valid  it passes', () => {
         expect(new MarkdownConvertor().isMarkdownTableSeparatorRowValid("|---|----|-----|------|")).toBe(true);
     });

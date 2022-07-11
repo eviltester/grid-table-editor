@@ -1,5 +1,6 @@
 import { GenericDataTable } from '../../js/data_formats/generic-data-table';
 import {HtmlConvertor, HtmlConvertorOptions, Indent} from '../../js/data_formats/html-convertor';
+import { JSDOM } from "jsdom";
 
 
 describe("Can use indent class as expected",()=>{
@@ -225,4 +226,116 @@ describe("Can convert generic data grids to html tables",()=>{
 
         expect(output).toBe(expected);
     });       
+});
+
+describe("Can convert html tables to generic data grids",()=>{
+
+    const documentHTML = '<!doctype html><html><body><div id="root"></div></body></html>';
+    global.dom = new JSDOM(documentHTML);
+    global.window = dom.window;
+    global.document = dom.window.document;
+    global.navigator = global.window.navigator;
+
+    
+    console.log(global.document);
+    console.log(global.document.createElement);
+
+    test('convert minimal table to grid', () => {
+        const inputtable =
+`<table>
+<tr>
+<th>h1</th>
+</tr>
+<tr>
+<td>data</td>
+</tr>
+</table>`    
+
+        let newOptions = new HtmlConvertorOptions();
+
+        let convertor = new HtmlConvertor();
+        convertor.setOptions(newOptions);
+        let output = convertor.toDataTable(inputtable);
+
+        expect(output.getHeaders()[0]).toBe("h1");
+        expect(output.getRow(0)[0]).toBe("data");
+
+    });    
+
+    test('no table no grid', () => {
+        const inputtable =
+``    
+
+        let newOptions = new HtmlConvertorOptions();
+
+        let convertor = new HtmlConvertor();
+        convertor.setOptions(newOptions);
+        let output = convertor.toDataTable(inputtable);
+
+        expect(output.getHeaders().length).toBe(0);
+        expect(output.getRowCount()).toBe(0);
+
+    }); 
+
+
+    test('no rows no grid', () => {
+        const inputtable =
+`<table></table>`;
+
+        let newOptions = new HtmlConvertorOptions();
+
+        let convertor = new HtmlConvertor();
+        convertor.setOptions(newOptions);
+        let output = convertor.toDataTable(inputtable);
+
+        expect(output.getHeaders().length).toBe(0);
+        expect(output.getRowCount()).toBe(0);
+
+    }); 
+
+    test('no headers no grid', () => {
+        const inputtable =
+`<table><tr></tr></table>`;
+
+        let newOptions = new HtmlConvertorOptions();
+
+        let convertor = new HtmlConvertor();
+        convertor.setOptions(newOptions);
+        let output = convertor.toDataTable(inputtable);
+
+        expect(output.getHeaders().length).toBe(0);
+        expect(output.getRowCount()).toBe(0);
+
+    }); 
+
+    test('header can come from td', () => {
+        const inputtable =
+`<table><tr><td>h1</td></tr></table>`;
+
+        let newOptions = new HtmlConvertorOptions();
+
+        let convertor = new HtmlConvertor();
+        convertor.setOptions(newOptions);
+        let output = convertor.toDataTable(inputtable);
+
+        expect(output.getHeaders().length).toBe(1);
+        expect(output.getHeaders()[0]).toBe("h1");
+        expect(output.getRowCount()).toBe(0);
+    }); 
+
+    test('table can come from all tr td', () => {
+        const inputtable =
+`<table><tr><td>h1</td></tr><tr><td>data</td></tr></table>`;
+
+        let newOptions = new HtmlConvertorOptions();
+
+        let convertor = new HtmlConvertor();
+        convertor.setOptions(newOptions);
+        let output = convertor.toDataTable(inputtable);
+
+        expect(output.getHeaders().length).toBe(1);
+        expect(output.getHeaders()[0]).toBe("h1");
+        expect(output.getRowCount()).toBe(1);
+        expect(output.getRow(0)[0]).toBe("data");
+    }); 
 });

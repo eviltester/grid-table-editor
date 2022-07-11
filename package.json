@@ -8,7 +8,6 @@
     "testverbose": "jest --verbose",
     "anywaydata": "npm run anywaydata --prefix docs-src && cp ./index.html ./build/app.html && cp -R ./images ./build/images && cp -R ./js ./build/js && cp -R ./libs ./build/libs && cp ./styles.css ./build/styles.css && cp -R ./build/ ../../anywaydata-com",
     "previewdocs": "npm run start --prefix docs-src"
-
   },
   "jest": {
     "verbose": true,
@@ -37,6 +36,7 @@
   "homepage": "https://github.com/eviltester/grid-table-editor#readme",
   "dependencies": {
     "jest": "^28.1.0",
+    "jsdom": "^20.0.0",
     "papaparse": "^5.3.2",
     "randexp": "^0.5.3"
   },

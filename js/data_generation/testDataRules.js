@@ -32,6 +32,7 @@ class TestDataRules{
         return generateDataFromRules(thisMany, this.rules);
     }
 
+    // TODO: create a validate Rule on each rule
     validateRules(){
 
         this.errors = [];
@@ -138,12 +139,25 @@ class RulesParser{
     faker.lorem.paragraph
 
     faker.helper is deliberately excluded
-
  */
 
 function generateUsingFaker(ruleSpec){
 
-    const parts = ruleSpec.split("\.");
+    var parts=[];
+
+    var fakerFunctionCallHasArgs=false;
+    var fakerFunctionName;
+    var fakerFunctionCallArgs = "";
+
+    if(ruleSpec.includes("(")){
+        // it has arguments, get rid of them at the moment
+        fakerFunctionName = ruleSpec.split("(")[0];
+        fakerFunctionCallHasArgs=true;
+        fakerFunctionCallArgs = ruleSpec.substr(fakerFunctionName.length);
+        parts=fakerFunctionName.split("\.");
+    }else{
+        parts = ruleSpec.split("\.");
+    }
 
     if(parts.length===0){
         return undefined;
@@ -152,6 +166,7 @@ function generateUsingFaker(ruleSpec){
     var command="";
     var callFake=false;
     var callFakeArgs="";
+
 
     var fakerThing = faker;
     for(var part of parts){
@@ -164,17 +179,17 @@ function generateUsingFaker(ruleSpec){
                 continue;
             }
 
-            if(part==="helpers"){
-                // faker helpers not supported
-                console.log("Faker helpers not supported");
-                return undefined;
-            }
-            else{
+            // if(part==="helpers"){
+            //     // faker helpers not supported
+            //     console.log("Faker helpers not supported");
+            //     return undefined;
+            // }
+           // else{
                 fakerThing = fakerThing[part];
                 if(fakerThing===undefined){
                     return undefined;
                 }
-            }
+            //}
         }
 
         if(part.startsWith("fake")){
@@ -204,7 +219,28 @@ function generateUsingFaker(ruleSpec){
     }
 
     if(typeof fakerThing === "function"){
-        return fakerThing();
+        if(fakerFunctionCallHasArgs){
+            var fakerPrefix="this.";
+            if(command.startsWith("faker.")){
+                command = command.replace("faker.","");
+            }
+            if(command.endsWith(".")){
+                command = command.substring(0,command.length-1);
+            }
+            const commandToRun = "return "+ fakerPrefix + command + fakerFunctionCallArgs;
+            try{
+                return Function(commandToRun).bind(faker)();
+            }catch(e){
+                console.log(commandToRun);
+                console.log(e);
+                return undefined;
+            }
+            
+        }else{
+            // make the call
+            return fakerThing();
+        }
+        
     }
 
 }
@@ -230,11 +266,14 @@ function generateDataFromRules(thisMany, fromRules){
 
         const aRow = fromRules.map((rule) => {
 
+            // TODO: move this to a TestRuleDataGenerator to support easier tesitng
+
             // is faker?
             if(rule.type==="faker"){
                 return generateUsingFaker(rule.ruleSpec);
             }
 
+            // TODO: move this to a regex generator
             if(rule.type==="regex"){
                 return new RandExp(new RegExp(rule.ruleSpec)).gen();
             }
@@ -249,4 +288,4 @@ function generateDataFromRules(thisMany, fromRules){
     return data;
 }
 
-export {TestDataRules, TestDataRule, RulesParser, removeStartAndEnd};
+export {TestDataRules, TestDataRule, RulesParser, removeStartAndEnd, generateUsingFaker};

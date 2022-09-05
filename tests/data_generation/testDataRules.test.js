@@ -1,4 +1,5 @@
-import {TestDataRules, TestDataRule, removeStartAndEnd, RulesParser, generateUsingFaker} from '../../js/data_generation/testDataRules';
+import {TestDataRule} from  '../../js/data_generation/testDataRule.js';
+import {TestDataRules, RulesParser} from '../../js/data_generation/testDataRules';
 
 // to get import and export workign from tests
 // https://stackoverflow.com/questions/35756479/does-jest-support-es6-import-export
@@ -25,21 +26,6 @@ describe("TestDataRule is the simple type that underpins the rule processing",()
 
 });
 
-describe("removeStartAndEnd is a function to help with parsing",()=>{
-
-    test('can find content in single quotes', () => {
-        const result = removeStartAndEnd("'","'","'bob'");
-        expect(result).toBe("bob");
-    });
-    test('leave alone if not fully matching', () => {
-        const result = removeStartAndEnd("'",")","'bob'");
-        expect(result).toBe("'bob'");
-    });
-    test('only removes the first and last character', () => {
-        const result = removeStartAndEnd(" '","' "," 'bob' ");
-        expect(result).toBe("'bob'");
-    });
-});
 
 describe("Random Data From Regex",()=>{
 
@@ -50,39 +36,3 @@ describe("Random Data From Regex",()=>{
         // expect(rulesParser.isValid()).toBe(true);
     });
 });
-
-describe("Random Data From Faker",()=>{
-
-    test('can instantiate a Faker Rule and generate', () => {
-        const rule = new TestDataRule("Test", "internet.email");
-        rule.type="faker";
-        debugger;
-        const myData = generateUsingFaker(rule.ruleSpec);
-        expect(myData.length > 0).toBe(true);
-        expect(myData.includes("@")).toBe(true);
-    });
-
-    test('can instantiate a Faker Rule and generate with a function', () => {
-        const rule = new TestDataRule("Test", "random.alpha(5)");
-        rule.type="faker";
-        const myData = generateUsingFaker(rule.ruleSpec);
-        expect(myData.length).toBe(5);
-    });
-
-    test('can instantiate a Faker Rule and generate with a function which mentions faker', () => {
-        const rule = new TestDataRule("Test", "faker.random.alpha(4)");
-        rule.type="faker";
-        const myData = generateUsingFaker(rule.ruleSpec);
-        expect(myData.length).toBe(4);
-    });
-
-    test('can use mustache helper with functions', () => {
-        const rule = new TestDataRule("Test", "helpers.mustache('{{word}}',{word:()=>`${this.random.alpha(15)}`})");
-        rule.type="faker";
-        const myData = generateUsingFaker(rule.ruleSpec);
-        expect(myData.length).toBe(15);
-    });
-
-});
-
-// TODO: faker 'fake' method which allows chaining methods is being remove so we need a new templating system

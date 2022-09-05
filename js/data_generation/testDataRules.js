@@ -1,12 +1,6 @@
 // requires randExp
-// requires faker.js
-
-//  https://fakerjs.dev/guide/#environments
-// https://cdn.skypack.dev/@faker-js/faker
-
-// use a moduleNameMapper in jest to allow importing from https
-//import { faker } from '@faker-js/faker';
-import { faker } from "https://cdn.skypack.dev/@faker-js/faker@v7.1.0";
+import {TestDataRule} from "./testDataRule.js";
+import {FakerTestDataRule} from "./fakerTestDataRule.js";
 
 class TestDataRules{
 
@@ -39,39 +33,24 @@ class TestDataRules{
 
         this.rules.forEach((rule)=>{
             // is it a faker function?
-            try{
-                const whatDidWeGet = generateUsingFaker(rule.ruleSpec);
-                if(whatDidWeGet !== undefined && whatDidWeGet !==null){
-                    rule.type="faker";
-                    return "faker";
+            const fakerRule = new FakerTestDataRule(rule);
+            if(fakerRule.isValid()){
+                rule.type="faker";
+            }else{
+                // does the regex generation work?
+                try{
+                    new RandExp(new RegExp(rule.ruleSpec)).gen();
+                    rule.type="regex";
+                    return "regex";
+                }catch(err){
+                    this.errors.push(`Error evaluating _${rule.name}_ as a Regex generator or Faker : ` + err);
                 }
-            }catch(err){
-                // ignore and try as regex
-            }
-
-            // does the regex generation work?
-            try{
-                new RandExp(new RegExp(rule.ruleSpec)).gen();
-                rule.type="regex";
-                return "regex";
-            }catch(err){
-                this.errors.push(`Error evaluating _${rule.name}_ as a Regex generator : ` + err);
             }
         });
-
     }
-
 }
 
-class TestDataRule{
 
-    constructor(aName, aRule="") {
-        this.name = aName;
-        this.ruleSpec = aRule;
-        this.type="regex"; // 'regex' by default, or 'faker'
-    }
-
-}
 
 class RulesParser{
 
@@ -126,131 +105,7 @@ class RulesParser{
     }
 }
 
-/*
-    Support for much of the faker APi
 
-    http://marak.github.io/faker.js/
-    https://github.com/Marak/faker.js
-
-    e.g.
-
-    faker.name.firstName
-    faker.fake {{name.lastName}}, {{name.firstName}}
-    faker.lorem.paragraph
-
-    faker.helper is deliberately excluded
- */
-
-function generateUsingFaker(ruleSpec){
-
-    var parts=[];
-
-    var fakerFunctionCallHasArgs=false;
-    var fakerFunctionName;
-    var fakerFunctionCallArgs = "";
-
-    if(ruleSpec.includes("(")){
-        // it has arguments, get rid of them at the moment
-        fakerFunctionName = ruleSpec.split("(")[0];
-        fakerFunctionCallHasArgs=true;
-        fakerFunctionCallArgs = ruleSpec.substr(fakerFunctionName.length);
-        parts=fakerFunctionName.split("\.");
-    }else{
-        parts = ruleSpec.split("\.");
-    }
-
-    if(parts.length===0){
-        return undefined;
-    }
-
-    var command="";
-    var callFake=false;
-    var callFakeArgs="";
-
-
-    var fakerThing = faker;
-    for(var part of parts){
-
-        const possibleFakerCommandRegex = new RegExp("^([A-Za-z]*)$");
-        if(possibleFakerCommandRegex.test(part)){
-            command = command + part + ".";
-            if(part==="faker"){
-                // ignore
-                continue;
-            }
-
-            // if(part==="helpers"){
-            //     // faker helpers not supported
-            //     console.log("Faker helpers not supported");
-            //     return undefined;
-            // }
-           // else{
-                fakerThing = fakerThing[part];
-                if(fakerThing===undefined){
-                    return undefined;
-                }
-            //}
-        }
-
-        if(part.startsWith("fake")){
-            // it is a call to fake
-            callFake=true;
-            callFakeArgs = ruleSpec.replace(command+"fake","");
-            break;
-        }
-    }
-
-    if(callFake){
-        callFakeArgs = callFakeArgs.trim();
-        // remove ()
-        callFakeArgs = removeStartAndEnd("(", ")", callFakeArgs);
-        var removeQuote=undefined;
-        if(callFakeArgs.startsWith('"')){
-            removeQuote='"';
-        }
-        if(callFakeArgs.startsWith("'")){
-            removeQuote="'";
-        }
-        if(removeQuote!==undefined){
-            callFakeArgs = removeStartAndEnd(removeQuote, removeQuote, callFakeArgs);
-        }
-
-        return faker.fake(callFakeArgs);
-    }
-
-    if(typeof fakerThing === "function"){
-        if(fakerFunctionCallHasArgs){
-            var fakerPrefix="this.";
-            if(command.startsWith("faker.")){
-                command = command.replace("faker.","");
-            }
-            if(command.endsWith(".")){
-                command = command.substring(0,command.length-1);
-            }
-            const commandToRun = "return "+ fakerPrefix + command + fakerFunctionCallArgs;
-            try{
-                return Function(commandToRun).bind(faker)();
-            }catch(e){
-                console.log(commandToRun);
-                console.log(e);
-                return undefined;
-            }
-            
-        }else{
-            // make the call
-            return fakerThing();
-        }
-        
-    }
-
-}
-
-function removeStartAndEnd(start, end, from){
-    if(from.startsWith(start,0) && from.endsWith(end)){
-        return from.substr(1,from.length-2);
-    }
-    return from;
-}
 
 function generateDataFromRules(thisMany, fromRules){
 
@@ -266,11 +121,9 @@ function generateDataFromRules(thisMany, fromRules){
 
         const aRow = fromRules.map((rule) => {
 
-            // TODO: move this to a TestRuleDataGenerator to support easier tesitng
-
             // is faker?
             if(rule.type==="faker"){
-                return generateUsingFaker(rule.ruleSpec);
+                return new FakerTestDataRule(rule).generateData();
             }
 
             // TODO: move this to a regex generator
@@ -288,4 +141,4 @@ function generateDataFromRules(thisMany, fromRules){
     return data;
 }
 
-export {TestDataRules, TestDataRule, RulesParser, removeStartAndEnd, generateUsingFaker};
+export {TestDataRules, RulesParser};

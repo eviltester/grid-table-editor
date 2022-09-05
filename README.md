@@ -24,7 +24,7 @@ A simple Data Table Editor that generates Markdown, CSV or JSON. It can also be 
 
 - [Use on gitPages](https://eviltester.github.io/grid-table-editor/)
 - [Edit on StackBlitz ⚡️](https://stackblitz.com/edit/grid-table-editor)
-- Or clone and run locally by opening index.html in a browser
+- Or clone and run locally by opening index.html in a browser after starting a web server in the folder e.g. `python3 -m http.server`
 
 ## To Generate Test Data
 

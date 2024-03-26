@@ -77,6 +77,7 @@ Free online tools for generating test data.
 - [Mock Turtle](https://mockturtle.net/) - uses an interesting tree based GUI to generate fairly complex JSON data structures.
 - [LambdaTest Data Generator](https://www.lambdatest.com/free-online-tools/test-data-generator) Very simple data generator with 9 data types. Export as JSON, CSV or XML, but no control over the number of rows of data generated.
 - [Mobile Fish Random Test Data Generator](https://www.mobilefish.com/services/random_test_data_generator/random_test_data_generator.php) - generate up to 5000 records of a 'people' type data.
+- [Mockium](https://softwium.com/mockium/) - generate random data in the browser for JSON, CSV, SQL, and XML.
 
 ### Online CSV Editor
 

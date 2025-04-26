@@ -4,8 +4,8 @@
 // https://cdn.skypack.dev/@faker-js/faker
 
 // use a moduleNameMapper in jest to allow importing from https
-//import { faker } from '@faker-js/faker';
-import { faker } from "https://cdn.skypack.dev/@faker-js/faker@v9.7.0";
+import { faker } from '@faker-js/faker';
+// import { faker } from "https://cdn.skypack.dev/@faker-js/faker@v7.1.0";
 
 class FakerTestDataRule{
 
@@ -35,7 +35,10 @@ class FakerTestDataRule{
     }
 
     generateData(){
-        return generateUsingFaker(this.rule.ruleSpec).data;
+        // faker.js now always returns an object
+        // we could check for error here
+        const value = generateUsingFaker(this.rule.ruleSpec);
+        return value.data ? value.data : "**ERROR**";
     }
 
     getValidationError(){

@@ -1,0 +1,4 @@
+Company
+company.name
+Person
+person.fullName

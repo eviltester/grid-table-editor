@@ -137,6 +137,7 @@ bun build ./index.ts --compile --minify --sourcemap --target=bun-windows-x64 --o
 
 
 // ENOENT: Failed to move cross-compiled bun binary into cache directory C:\Users\user\.bun\install\cache\bun-linux-x64-v1.2.10
+// need to build on the c:\ drive
 ```
 bun build ./index.ts --compile --outfile ./out/linux-x64/anywaydata --target=bun-linux-x64
 ```

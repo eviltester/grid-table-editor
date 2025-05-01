@@ -106,3 +106,13 @@ This tool falls in to the categories:
 - markdown table editor
 - Online Test Data Generation
 - Online CSV Editor
+
+
+
+## Probable TODO:
+
+- TODO: convert all JS to TypeScript
+  - https://blog.logrocket.com/a-simple-guide-for-migrating-from-javascript-to-typescript/
+- TODO: improve and expand the test data generation - written in TypeScript, don't use faker directly - create a full semantic abstraction
+- TODO: create a DSL for the test data generation... probably just JSON initially
+- TODO: convert UI to use React

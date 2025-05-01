@@ -59,9 +59,10 @@ describe("Random Data From FakerTestDataRule",()=>{
         const fakerRule = new FakerTestDataRule(rule);
         expect(fakerRule.isValid()).toBe(true);
 
+        // generateData returns the actual string data value
         const myData = fakerRule.generateData();
-        expect(myData.data.length > 0).toBe(true);
-        expect(myData.data.includes("@")).toBe(true);
+        expect(myData.length > 0).toBe(true);
+        expect(myData.includes("@")).toBe(true);
     });
 
 

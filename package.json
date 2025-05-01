@@ -12,7 +12,7 @@
   "jest": {
     "verbose": true,
     "moduleNameMapper": {
-      "https://cdn.skypack.dev/@faker-js/faker@v7.1.0": "@faker-js/faker",
+      "https://cdn.skypack.dev/@faker-js/faker@v9.7.0": "@faker-js/faker",
       "https://unpkg.com/papaparse@5.3.2/papaparse.min.js": "papaparse"
     }
   },

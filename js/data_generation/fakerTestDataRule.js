@@ -4,6 +4,7 @@
 // https://cdn.skypack.dev/@faker-js/faker
 
 // use a moduleNameMapper in jest to allow importing from https
+// see package.json for the jest config
 //import { faker } from '@faker-js/faker';
 import { faker } from "https://cdn.skypack.dev/@faker-js/faker@v9.7.0";
 

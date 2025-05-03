@@ -22,28 +22,29 @@ class TestDataRules{
         this.rules.push(new TestDataRule(aName.trim(), aRule));
     }
 
-    generate(thisMany){
-        return generateDataFromRules(thisMany, this.rules);
+    generate(thisMany, aFaker, RandExp){
+        return generateDataFromRules(thisMany, this.rules, aFaker, RandExp);
     }
 
     // TODO: create a validate Rule on each rule
-    validateRules(){
+    validateRules(faker, RandExp){
 
         this.errors = [];
 
         this.rules.forEach((rule)=>{
             // is it a faker function?
-            const fakerRule = new FakerTestDataRule(rule);
+            const fakerRule = new FakerTestDataRule(rule, faker);
             if(fakerRule.isValid()){
                 rule.type="faker";
             }else{
                 // does the regex generation work?
                 try{
-                    new RandExp(new RegExp(rule.ruleSpec)).gen();
+                    new RandExp(rule.ruleSpec).gen();
                     rule.type="regex";
                     return "regex";
                 }catch(err){
                     this.errors.push(`Error evaluating _${rule.name}_ as a Regex generator or Faker : ` + err);
+                    console.log(err);
                 }
             }
         });
@@ -54,7 +55,9 @@ class TestDataRules{
 
 class RulesParser{
 
-    constructor(){
+    constructor(aFaker, RandExp){
+        this.faker = aFaker;
+        this.RandExp = RandExp;
         this.testDataRules = new TestDataRules();
         this.errors = [];
     }
@@ -96,18 +99,22 @@ class RulesParser{
             this.testDataRules.addRule(name.trim(), rule.trim())
         }
 
-        this.testDataRules.validateRules();
+        this.testDataRules.validateRules(this.faker, this.RandExp);
         this.errors = this.errors.concat(this.testDataRules.errors);
     }
 
     isValid(){
         return this.errors.length === 0;
     }
+
+    generate(thisMany){
+        return this.testDataRules.generate(thisMany, this.faker, this.RandExp);
+    }
 }
 
 
 
-function generateDataFromRules(thisMany, fromRules){
+function generateDataFromRules(thisMany, fromRules, aFaker, RandExp){
 
     // given some rules
     // generate thisMany instances
@@ -123,12 +130,12 @@ function generateDataFromRules(thisMany, fromRules){
 
             // is faker?
             if(rule.type==="faker"){
-                return new FakerTestDataRule(rule).generateData();
+                return new FakerTestDataRule(rule, aFaker).generateData();
             }
 
             // TODO: move this to a regex generator
             if(rule.type==="regex"){
-                return new RandExp(new RegExp(rule.ruleSpec)).gen();
+                return new RandExp(rule.ruleSpec).gen();
             }
 
             return "";

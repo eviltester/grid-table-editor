@@ -1,9 +1,11 @@
 import yargs from "yargs"
 import { hideBin } from "yargs/helpers"
-import { RulesParser } from "./data_generation/testDataRules";
+import { RulesParser } from "../../js/data_generation/testDataRules";
 import { convertDataToArrayOfStrings } from "./outputData";
 import Papa from "papaparse";
 import type { UnparseConfig } from "papaparse";
+import { faker } from '@faker-js/faker';
+const RandExp = require('randexp');
 
 const argv = yargs(hideBin(process.argv))
     .usage('Usage: anywaydata <command> [options]')
@@ -19,6 +21,7 @@ const argv = yargs(hideBin(process.argv))
       .nargs('n', 1)
       .describe('n', 'Number of Lines of Data to Generate')
       .demandOption(['n'])
+      .default('n',1, "Default 1 to test the rules")
       .alias('o', 'outputfile')
       .nargs('o', 1)
       .describe('o', 'Output file')
@@ -46,12 +49,12 @@ const argv = yargs(hideBin(process.argv))
 
     outputProgressLog("> Parsing Input File into Test Data Generation Rules", enableProgressLog);
 
-    const rulesParser = new RulesParser();
+    const rulesParser = new RulesParser(faker, RandExp);
     rulesParser.parseText(testDataSpec);
 
     if(!rulesParser.isValid()){
-      outputProgressLog("Invalid Rules File:", true);
-      outputProgressLog(rulesParser.errors.join("\n"), true)
+      outputProgressLog("Invalid Rules File:", false);
+      outputProgressLog(rulesParser.errors.join("\n"), false)
     }else{
 
       const papaParseConfig = {} as UnparseConfig;
@@ -63,14 +66,14 @@ const argv = yargs(hideBin(process.argv))
       //console.log(rulesParser.testDataRules)
       outputProgressLog(`> Generating ${argv.numberOfLines} lines of random data`, enableProgressLog);
       outputProgressLog("e.g.", enableProgressLog);
-      const exampleData = rulesParser.testDataRules.generate(1);
+      const exampleData = rulesParser.generate(1);
       outputProgressLog(`${convertDataToArrayOfStrings(exampleData)[0]}`, enableProgressLog)
       outputProgressLog(`${convertDataToArrayOfStrings(exampleData)[1]}`, enableProgressLog)
 
-      //console.log(convertDataToArrayOfStrings(rulesParser.testDataRules.generate(1)))
+      //console.log(convertDataToArrayOfStrings(rulesParser.generate(1)))
 
       const csvOutput = Papa.unparse(
-        rulesParser.testDataRules.generate(argv.numberOfLines),
+        rulesParser.generate(argv.numberOfLines),
         // v9 was returning objects bu amended fakerTestDataRule to handle this
         //convertDataToArrayOfStrings(rulesParser.testDataRules.generate(argv.numberOfLines)),
         papaParseConfig

@@ -120,6 +120,10 @@ This is a prototype using Bun
 
 https://bun.sh/
 
+```
+bun link anywaydata
+```
+
 
 
 ```

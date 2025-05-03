@@ -58,7 +58,7 @@ e.g.
 - `faker.name.firstName`
 - `faker.hacker.noun`
 
-The `fake` method is also supporter, which takes a mustache template style string combining api methods e.g.
+The `fake` method is also supported, which takes a mustache template style string combining api methods e.g.
 
 - `faker.fake {{name.lastName}}, {{name.firstName}}`
 

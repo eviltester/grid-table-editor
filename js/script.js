@@ -5,8 +5,6 @@ import { ExtendedDataGrid } from "./gui_components/main-display-grid.js";
 import {TabbedTextControl} from "./gui_components/tabbed-text-control.js"
 import { ImportExportControls } from "./gui_components/import-export-controls.js";
 
-
-
 var importer, exporter;
 var mainDataGrid;
 var importExportController;

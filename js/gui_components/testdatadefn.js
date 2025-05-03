@@ -24,13 +24,17 @@ import {Debouncer} from '../utils/debouncer.js';
 import {GridExtension} from '../grid/gridExtension.js';
 import { SelectFilterEditor} from '../grid/select-filter-editor.js';
 
+import { faker } from "https://cdn.skypack.dev/@faker-js/faker@v9.7.0";
+
 var debouncer = new Debouncer();
 let importer=undefined;
 let exportControls=undefined;
 
 function getRulesParserFromTextArea(){
 
-    const rulesParser = new RulesParser();
+    // faker imported in script.js
+    // RandExp brought in via index.html script
+    const rulesParser = new RulesParser(faker, RandExp);
     const areaText = document.getElementById('testdatadefntext').value;
     rulesParser.parseText(areaText);
 
@@ -63,7 +67,7 @@ function generateTestData(){
 
     
     // generate
-    const data = rulesParser.testDataRules.generate(desiredRowCount);
+    const data = rulesParser.generate(desiredRowCount);
 
     // add data to table
     importer.setGridFromData(data);

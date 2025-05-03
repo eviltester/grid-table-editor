@@ -6,13 +6,14 @@
 // use a moduleNameMapper in jest to allow importing from https
 // see package.json for the jest config
 //import { faker } from '@faker-js/faker';
-import { faker } from "https://cdn.skypack.dev/@faker-js/faker@v9.7.0";
+//import { faker } from "https://cdn.skypack.dev/@faker-js/faker@v9.7.0";
 
 class FakerTestDataRule{
 
-    constructor(aTestDataRule) {
+    constructor(aTestDataRule, aFaker) {
         this.rule = aTestDataRule;
         this.validationError="";
+        this.faker = aFaker;
     }
 
     isValid(){
@@ -20,7 +21,7 @@ class FakerTestDataRule{
 
         // is it a faker function?
         try{
-            const whatDidWeGet = generateUsingFaker(this.rule.ruleSpec);
+            const whatDidWeGet = generateUsingFaker(this.rule.ruleSpec, this.faker);
             if(whatDidWeGet !== undefined && whatDidWeGet !==null && whatDidWeGet.isError===false){
                 this.rule.type="faker";
                 return true;
@@ -36,7 +37,10 @@ class FakerTestDataRule{
     }
 
     generateData(){
-        return generateUsingFaker(this.rule.ruleSpec).data;
+        // faker.js always returns an object
+        // we could check for error here
+        const value = generateUsingFaker(this.rule.ruleSpec, this.faker);
+        return value.data ? value.data : "**ERROR**";
     }
 
     getValidationError(){
@@ -59,7 +63,7 @@ class FakerTestDataRule{
     faker.helper is deliberately excluded
  */
 
-function generateUsingFaker(ruleSpec){
+function generateUsingFaker(ruleSpec, aFaker){
 
     var returnResult = {isError: false, errorMessage: "", data: ""};
 
@@ -91,7 +95,7 @@ function generateUsingFaker(ruleSpec){
     var commandConjoiner = "";
 
 
-    var fakerThing = faker;
+    var fakerThing = aFaker;
     for(var part of parts){
 
         const possibleFakerCommandRegex = new RegExp("^([A-Za-z]*)$");
@@ -139,7 +143,7 @@ function generateUsingFaker(ruleSpec){
         try{
             returnResult.isError= false;
             returnResult.errorMessage="";
-            returnResult.data =  faker.fake(callFakeArgs);
+            returnResult.data =  aFaker.fake(callFakeArgs);
             return returnResult;
         }catch(err){
             returnResult.isError= true;
@@ -160,7 +164,7 @@ function generateUsingFaker(ruleSpec){
             try{
                 returnResult.isError= false;
                 returnResult.errorMessage="";
-                returnResult.data = Function(commandToRun).bind(faker)();
+                returnResult.data = Function(commandToRun).bind(aFaker)();
                 return returnResult;
             }catch(e){
                 console.log(commandToRun);

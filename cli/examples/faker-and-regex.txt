@@ -1,0 +1,4 @@
+Company
+company.name
+Regex Generated Field
+[A-Z]{3,6}[0-9]{0,6}

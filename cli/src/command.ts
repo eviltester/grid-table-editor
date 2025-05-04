@@ -1,6 +1,6 @@
 import yargs from "yargs"
 import { hideBin } from "yargs/helpers"
-import { RulesParser } from "../../js/data_generation/testDataRules";
+import { TestDataGenerator } from "../../js/data_generation/testDataGenerator";
 import { convertDataToArrayOfStrings } from "./outputData";
 import Papa from "papaparse";
 import type { UnparseConfig } from "papaparse";
@@ -49,12 +49,13 @@ const argv = yargs(hideBin(process.argv))
 
     outputProgressLog("> Parsing Input File into Test Data Generation Rules", enableProgressLog);
 
-    const rulesParser = new RulesParser(faker, RandExp);
-    rulesParser.parseText(testDataSpec);
+    const generator = new TestDataGenerator(faker, RandExp);
+    generator.importSpec(testDataSpec);
+    generator.compile();
 
-    if(!rulesParser.isValid()){
+    if(!generator.isValid()){
       outputProgressLog("Invalid Rules File:", false);
-      outputProgressLog(rulesParser.errors.join("\n"), false)
+      outputProgressLog(generator.errors().join("\n"), false)
     }else{
 
       const papaParseConfig = {} as UnparseConfig;
@@ -66,14 +67,14 @@ const argv = yargs(hideBin(process.argv))
       //console.log(rulesParser.testDataRules)
       outputProgressLog(`> Generating ${argv.numberOfLines} lines of random data`, enableProgressLog);
       outputProgressLog("e.g.", enableProgressLog);
-      const exampleData = rulesParser.generate(1);
+      const exampleData = generator.generate(1);
       outputProgressLog(`${convertDataToArrayOfStrings(exampleData)[0]}`, enableProgressLog)
       outputProgressLog(`${convertDataToArrayOfStrings(exampleData)[1]}`, enableProgressLog)
 
       //console.log(convertDataToArrayOfStrings(rulesParser.generate(1)))
 
       const csvOutput = Papa.unparse(
-        rulesParser.generate(argv.numberOfLines),
+        generator.generate(argv.numberOfLines),
         // v9 was returning objects bu amended fakerTestDataRule to handle this
         //convertDataToArrayOfStrings(rulesParser.testDataRules.generate(argv.numberOfLines)),
         papaParseConfig

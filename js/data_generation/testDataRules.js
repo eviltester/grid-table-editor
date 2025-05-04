@@ -1,6 +1,7 @@
 // requires randExp
 import {TestDataRule} from "./testDataRule.js";
 import {FakerTestDataRule} from "./fakerTestDataRule.js";
+import {FakerTestDataGenerator} from "./faker/fakerTestDataGenerator.js"
 
 class TestDataRules{
 
@@ -66,12 +67,13 @@ class RulesParser{
 
         const defnLines = textContent.split("\n");
 
-        if(defnLines.length === 0){
-            this.errors.push("No Rules Defined")
+        if(defnLines.length%2 !==0){
+            this.errors.push("ERROR: Specification should be ColumnName followed by RuleDefinition with an even number of lines");
         }
 
-        if(defnLines.length%2 !==0){
-            this.errors.push("Definition should be ColumnName followed by RuleDefinition with an even number of lines")
+        if(defnLines.length === 0 || (defnLines.length === 1 && defnLines[0].length === 0)){
+            this.errors.push("ERROR: No Rules Defined");
+            return;
         }
 
         // add rules to dataDefn
@@ -80,25 +82,28 @@ class RulesParser{
             const name = defnLines[index].trim();
 
             if(name.length===0){
-                this.errors.push(`Missing Name on line ${index+1}`);
+                this.errors.push(`ERROR: Missing Name on line ${index+1}`);
                 return;
             }
 
             if(index+1==defnLines.length){
-                this.errors.push(`Missing Rule Definition for ${name}`);
+                this.errors.push(`ERROR: Missing Rule Definition for ${name}`);
                 return;
             }
 
             const rule = defnLines[index+1];
 
             if(name.length===0){
-                this.errors.push(`Missing Rule on line ${index+2}`);
+                this.errors.push(`ERROR: Missing Rule on line ${index+2}`);
                 return;
             }
 
             this.testDataRules.addRule(name.trim(), rule.trim())
         }
 
+    }
+
+    compile(){
         this.testDataRules.validateRules(this.faker, this.RandExp);
         this.errors = this.errors.concat(this.testDataRules.errors);
     }
@@ -124,13 +129,16 @@ function generateDataFromRules(thisMany, fromRules, aFaker, RandExp){
     const headers = fromRules.map((rule) => rule.name);
     data.push(headers);
 
+    const fakerGenerator = new FakerTestDataGenerator(aFaker);
+
     for(var row=0; row<thisMany; row++){
 
         const aRow = fromRules.map((rule) => {
 
             // is faker?
             if(rule.type==="faker"){
-                return new FakerTestDataRule(rule, aFaker).generateData();
+                const value = fakerGenerator.generateFrom(rule)
+                return value.data ? value.data : "**ERROR**";;
             }
 
             // TODO: move this to a regex generator

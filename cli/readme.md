@@ -114,17 +114,22 @@ Would generate something like:
 "LVQF5162"
 ```
 
-### Building
+### Dev Notes
 
 This is a prototype using Bun
 
 https://bun.sh/
 
+To dev and test
+
 ```
 bun link anywaydata
 ```
 
+Then edit and test.
 
+
+### Building Executables
 
 ```
 bun build ./index.ts --outdir ./out --target bun
@@ -157,3 +162,8 @@ bun build ./index.ts --compile --outfile ./out/macos-x64/anywaydata --target=bun
 ```
 bun build ./index.ts --compile --outfile ./out/macos-arm64/anywaydata --target=bun-darwin-arm64
 ```
+
+## TODO
+
+- Add tests around the CLI code
+- Auto generate executables from within Github 

@@ -19,7 +19,7 @@
 
 // TODO :wrap this as a class and make components
 
-import {RulesParser} from '../data_generation/testDataRules.js';
+import {TestDataGenerator} from '../data_generation/testDataGenerator.js';
 import {Debouncer} from '../utils/debouncer.js';
 import {GridExtension} from '../grid/gridExtension.js';
 import { SelectFilterEditor} from '../grid/select-filter-editor.js';
@@ -34,11 +34,12 @@ function getRulesParserFromTextArea(){
 
     // faker imported in script.js
     // RandExp brought in via index.html script
-    const rulesParser = new RulesParser(faker, RandExp);
+    const generator = new TestDataGenerator(faker, RandExp);
     const areaText = document.getElementById('testdatadefntext').value;
-    rulesParser.parseText(areaText);
+    generator.importSpec(areaText);
+    generator.compile();
 
-    return rulesParser;
+    return generator;
 
 }
 
@@ -50,10 +51,10 @@ function generateTestData(){
 
     const desiredRowCount = document.getElementById('generateCount').value;
 
-    const rulesParser = getRulesParserFromTextArea();
-    if(!rulesParser.isValid()){
-        console.log(rulesParser.errors);
-        alert(rulesParser.errors.join("\n"));
+    const generator = getRulesParserFromTextArea();
+    if(!generator.isValid()){
+        console.log(generator.errors());
+        alert(generator.errors().join("\n"));
         return;
     }
 
@@ -67,7 +68,7 @@ function generateTestData(){
 
     
     // generate
-    const data = rulesParser.generate(desiredRowCount);
+    const data = generator.generate(desiredRowCount);
 
     // add data to table
     importer.setGridFromData(data);
@@ -102,9 +103,9 @@ var defnGridOptions;
 // populate Test Data Grid From Rules in Text Area
 function populateTestDataGridFromRules(){
 
-    const rulesParser = getRulesParserFromTextArea();
+    const generator = getRulesParserFromTextArea();
 
-    if(!rulesParser.isValid()){
+    if(!generator.isValid()){
         return;
     }
 
@@ -112,7 +113,7 @@ function populateTestDataGridFromRules(){
     // now add the rules
     defnGridOptions.api.setRowData([]);
 
-    for(let rule of rulesParser.testDataRules.rules){
+    for(let rule of generator.testDataRules()){
         let data={};
         data.columnName = rule.name;
         if(rule.type=="faker"){

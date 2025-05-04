@@ -1,4 +1,4 @@
-import { FakerTestDataGenerator } from "./faker/fakerTestDataGenerator.js";
+import { FakerTestDataGenerator } from "./fakerTestDataGenerator.js";
 
 // requires faker.js which should be passed in via constructor
 // faker can be imported in different ways
@@ -11,22 +11,21 @@ import { FakerTestDataGenerator } from "./faker/fakerTestDataGenerator.js";
 //import { faker } from '@faker-js/faker';
 //import { faker } from "https://cdn.skypack.dev/@faker-js/faker@v9.7.0";
 
-class FakerTestDataRule{
+class FakerTestDataRuleValidator{
 
-    constructor(aTestDataRule, aFaker) {
-        this.rule = aTestDataRule;
+    constructor(aFaker) {
         this.validationError="";
         this.faker = aFaker;
     }
 
-    isValid(){
+    validate(aTestDataRule){
         this.validationError="";
 
         // is it a faker function?
         try{
-            const whatDidWeGet = new FakerTestDataGenerator(this.faker).generateFrom(this.rule);
+            const whatDidWeGet = new FakerTestDataGenerator(this.faker).generateFrom(aTestDataRule);
             if(whatDidWeGet !== undefined && whatDidWeGet !==null && whatDidWeGet.isError===false){
-                this.rule.type="faker";
+                aTestDataRule.type="faker";
                 return true;
             }else{
                 this.validationError=whatDidWeGet.errorMessage;
@@ -34,16 +33,12 @@ class FakerTestDataRule{
             }
         }catch(err){
             this.validationError=err;
-            console.log(err);
             return false;
         }
     }
 
-    generateData(){
-        // faker.js always returns an object
-        // we could check for error here
-        const value = new FakerTestDataGenerator(this.faker).generateFrom(this.rule);
-        return value.data ? value.data : "**ERROR**";
+    isValid(){
+        return this.validationError.length == 0;
     }
 
     getValidationError(){
@@ -52,4 +47,4 @@ class FakerTestDataRule{
 }
 
 
-export {FakerTestDataRule};
+export {FakerTestDataRuleValidator};

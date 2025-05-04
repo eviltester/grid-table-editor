@@ -38,6 +38,7 @@ function getRulesParserFromTextArea(){
     const areaText = document.getElementById('testdatadefntext').value;
     generator.importSpec(areaText);
     generator.compile();
+    console.log(generator.compilationReport());
 
     return generator;
 
@@ -52,6 +53,7 @@ function generateTestData(){
     const desiredRowCount = document.getElementById('generateCount').value;
 
     const generator = getRulesParserFromTextArea();
+
     if(!generator.isValid()){
         console.log(generator.errors());
         alert(generator.errors().join("\n"));

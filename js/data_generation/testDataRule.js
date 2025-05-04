@@ -3,7 +3,9 @@ class TestDataRule{
     constructor(aName, aRule="") {
         this.name = aName;
         this.ruleSpec = aRule;
-        this.type="regex"; // 'regex' by default, or 'faker'
+        this.type="";   // by default no type,
+                        // can be assigned 'regex' or 'faker' or 'literal'
+                        // in future more types can be created
     }
 
 }

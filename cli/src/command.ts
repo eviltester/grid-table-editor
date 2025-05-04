@@ -5,6 +5,7 @@ import { convertDataToArrayOfStrings } from "./outputData";
 import Papa from "papaparse";
 import type { UnparseConfig } from "papaparse";
 import { faker } from '@faker-js/faker';
+import { number } from "yargs";
 const RandExp = require('randexp');
 
 const argv = yargs(hideBin(process.argv))
@@ -25,6 +26,9 @@ const argv = yargs(hideBin(process.argv))
       .alias('o', 'outputfile')
       .nargs('o', 1)
       .describe('o', 'Output file')
+      .alias('t', 'testMode')
+      .nargs('t', 0)
+      .describe('t', 'Test the input spec by writing all output to console and only generating 1 line')
     .help('h')
     .alias('h', 'help')
     .epilog('copyright 2025 Compendium Developments Ltd')
@@ -36,22 +40,39 @@ const argv = yargs(hideBin(process.argv))
 
     const inputFile = Bun.file(argv.inputfile);
 
+    if(!await inputFile.exists()){
+      console.log(`Input file does not exist`);  
+    }
+
     const testDataSpec = await inputFile.text();
 
     // const testDataSpec = readFileContentsSync(argv.inputfile)
 
-    const enableProgressLog = !argv.outputfile
+    var numberToGenerate = argv.numberOfLines;
 
-    outputProgressLog("> Processing Input File " + argv.inputfile, enableProgressLog );
-    outputProgressLog("", enableProgressLog);
-    outputProgressLog(testDataSpec, enableProgressLog);
-    outputProgressLog("", enableProgressLog);
+    // if no output file provided then by default output no progress log
+    var hideProgressLog = !argv.outputfile
 
-    outputProgressLog("> Parsing Input File into Test Data Generation Rules", enableProgressLog);
+    if(argv.testMode==true){
+      numberToGenerate = 1;
+      hideProgressLog = false;
+      outputProgressLog("> Operating in Test Mode - showing progress and generating 1 entry", hideProgressLog);
+    }
+
+    outputProgressLog("> Processing Input File " + argv.inputfile, hideProgressLog );
+    outputProgressLog("", hideProgressLog);
+    outputProgressLog(testDataSpec, hideProgressLog);
+    outputProgressLog("", hideProgressLog);
+
+    outputProgressLog("> Parsing Input File into Test Data Generation Rules", hideProgressLog);
 
     const generator = new TestDataGenerator(faker, RandExp);
     generator.importSpec(testDataSpec);
     generator.compile();
+
+    outputProgressLog("", hideProgressLog);
+    outputProgressLog(generator.compilationReport(), hideProgressLog);
+    outputProgressLog("", hideProgressLog);
 
     if(!generator.isValid()){
       outputProgressLog("Invalid Rules File:", false);
@@ -64,23 +85,23 @@ const argv = yargs(hideBin(process.argv))
       papaParseConfig.quotes = true;
       papaParseConfig.header = true;
 
-      //console.log(rulesParser.testDataRules)
-      outputProgressLog(`> Generating ${argv.numberOfLines} lines of random data`, enableProgressLog);
-      outputProgressLog("e.g.", enableProgressLog);
+      outputProgressLog("", hideProgressLog);
+      outputProgressLog(`> Generating ${argv.numberOfLines} lines of random data`, hideProgressLog);
+      outputProgressLog("", hideProgressLog);
+      outputProgressLog("e.g.", hideProgressLog);
       const exampleData = generator.generate(1);
-      outputProgressLog(`${convertDataToArrayOfStrings(exampleData)[0]}`, enableProgressLog)
-      outputProgressLog(`${convertDataToArrayOfStrings(exampleData)[1]}`, enableProgressLog)
-
-      //console.log(convertDataToArrayOfStrings(rulesParser.generate(1)))
+      outputProgressLog(`${convertDataToArrayOfStrings(exampleData)[0]}`, hideProgressLog)
+      outputProgressLog(`${convertDataToArrayOfStrings(exampleData)[1]}`, hideProgressLog)
+      outputProgressLog("", hideProgressLog);
 
       const csvOutput = Papa.unparse(
         generator.generate(argv.numberOfLines),
-        // v9 was returning objects bu amended fakerTestDataRule to handle this
-        //convertDataToArrayOfStrings(rulesParser.testDataRules.generate(argv.numberOfLines)),
         papaParseConfig
       );
 
-      outputProgressLog(`> Writing to CSV - ${argv.outputfile}`, enableProgressLog)
+      const displayOutputFileName = argv.outputfile ? argv.outputfile : "OUTPUT TO CONSOLE";
+      outputProgressLog(`> Writing to CSV - ${displayOutputFileName}`, hideProgressLog)
+      outputProgressLog("", hideProgressLog);
 
       if(argv.outputfile){
         await Bun.write(argv.outputfile, csvOutput);

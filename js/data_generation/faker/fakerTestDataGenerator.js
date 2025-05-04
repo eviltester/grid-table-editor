@@ -18,7 +18,11 @@ export class FakerTestDataGenerator{
     faker.lorem.paragraph
 
     faker.helper is deliberately excluded
+
+    returns a result object that also says if an error happened
  */
+
+    // TODO: faker 'fake' method which allows chaining methods is being remove so we need a new templating system
 
     generateFrom(aRule){
 
@@ -126,8 +130,8 @@ export class FakerTestDataGenerator{
                     returnResult.data = Function(commandToRun).bind(this.faker)();
                     return returnResult;
                 }catch(e){
-                    console.log(commandToRun);
-                    console.log(e);
+                    // console.log(commandToRun);
+                    // console.log(e);
                     returnResult.isError= true;
                     returnResult.errorMessage="Error running Commmand " + command + fakerFunctionCallArgs + " ERR: " + e;
                     returnResult.data = "";

@@ -1,6 +1,8 @@
 name: create-bun-exe
 on:
     workflow_dispatch:
+      inputs:
+        tag:
 jobs:
   bun-build:
     name: build-bun-exes
@@ -23,3 +25,4 @@ jobs:
           draft: true
           artifacts: "./out/windows64/anywaydata.exe"
           body: 'AnyWayData CLI versions'
+          allowUpdates: true

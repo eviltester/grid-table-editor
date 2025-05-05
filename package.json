@@ -7,7 +7,8 @@
     "test": "jest",
     "testverbose": "jest --verbose",
     "testcoverage": "jest --coverage",
-    "anywaydata": "npm run anywaydata --prefix docs-src && cp ./index.html ./build/app.html && cp -R ./images ./build/images && cp -R ./js ./build/js && cp -R ./libs ./build/libs && cp ./styles.css ./build/styles.css && cp -R ./build/ ../../anywaydata-com",
+    "anywaydata:mac": "npm run anywaydata --prefix docs-src && cp ./index.html ./build/app.html && cp -R ./images ./build/images && cp -R ./js ./build/js && cp -R ./libs ./build/libs && cp ./styles.css ./build/styles.css && cp -R ./build/ ../../anywaydata-com",
+    "anywaydata:win": "npm run anywaydata --prefix docs-src && echo copying index && copy .\\index.html .\\build\\app.html && echo copying images && xcopy .\\images .\\build\\images /e /k /i && xcopy .\\js .\\build\\js /e /k /i && xcopy .\\libs .\\build\\libs /e /k /i && copy .\\styles.css .\\build\\styles.css && echo cleaning anywaydata for deployment && ..\\anywaydata-com\\make-ready-for-prod.bat",
     "previewdocs": "npm run start --prefix docs-src"
   },
   "jest": {

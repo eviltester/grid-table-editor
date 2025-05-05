@@ -53,7 +53,7 @@ export default function Home() {
         <HomepageFeatures />
         <ShowCaseVideo
           title="Generate Test Data Using Faker"
-          description="It is possible to easilty generate random data into the Data Grid for editing or export."
+          description="It is possible to easily generate random data into the Data Grid for editing or export."
           videourl = "https://www.youtube.com/watch?v=E8lYiPEugJQ"
         />
       </main>

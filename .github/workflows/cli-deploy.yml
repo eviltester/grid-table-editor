@@ -24,6 +24,7 @@ jobs:
       - uses: ncipollo/release-action@v1
         with:
           tag: ${{github.events.inputs.tag}}
+          commit: ${{github.events.inputs.commit}}
           name: Draft Release ${{ github.ref }}
           draft: true
           artifacts: "./out/windows64/anywaydata.exe"

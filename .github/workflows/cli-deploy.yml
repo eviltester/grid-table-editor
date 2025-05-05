@@ -1,0 +1,24 @@
+name: create-bun-exe
+on:
+    workflow_dispatch:
+jobs:
+  bun-build:
+    name: build-bun-exes
+    runs-on: ubuntu-latest
+    defaults:
+        run:
+          working-directory: ./cli
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.2.10
+      - name: install dependencies
+        run: bun install
+      - name: build windows
+        run: bun build ./index.ts --compile --minify --sourcemap --target=bun-windows-x64 --outfile ./out/windows64/anywaydata.exe  
+      - uses: ncipollo/release-action@v1
+        with:
+          draft: true
+          artifacts: "./out/windows64/anywaydata.exe"
+          body: 'AnyWayData CLI versions'

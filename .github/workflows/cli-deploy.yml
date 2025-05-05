@@ -20,7 +20,7 @@ jobs:
       - name: install dependencies
         run: bun install
       - name: build windows
-        run: bun build ./index.ts --compile --minify --sourcemap --target=bun-windows-x64 --outfile ./out/windows64/anywaydata.exe
+        run: bun build ./index.ts --compile --minify --sourcemap --target=bun-windows-x64 --outfile ${{ github.workspace }}/out/windows64/anywaydata.exe
       - name: check dir  
         run: ls -R ./out
       - name: workspace dir
@@ -32,7 +32,7 @@ jobs:
           name: Draft Release ${{ github.ref }}
           draft: true
           artifacts:  |
-            ./out/windows64/anywaydata.exe
+            ${{ github.workspace }}/out/windows64/anywaydata.exe
           body: 'AnyWayData CLI versions'
           allowUpdates: true
     

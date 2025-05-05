@@ -3,6 +3,8 @@ on:
     workflow_dispatch:
       inputs:
         tag:
+        commit:
+          default: "master"
 jobs:
   bun-build:
     name: build-bun-exes

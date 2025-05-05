@@ -214,7 +214,11 @@ function setupTestDataEditGrid(gridDiv){
                 //"_randomizer.next","_randomizer.seed",
                 "datatype.boolean",
                 "date.month","date.weekday","date.timeZone","date.anytime","date.past","date.future","date.between","date.betweens","date.recent","date.soon","date.birthdate",
-                // "helpers.fake","helpers.slugify","helpers.replaceSymbols","helpers.replaceCreditCardSymbols","helpers.fromRegExp","helpers.shuffle","helpers.uniqueArray","helpers.mustache","helpers.maybe","helpers.objectKey","helpers.objectValue","helpers.objectEntry","helpers.arrayElement","helpers.weightedArrayElement","helpers.arrayElements","helpers.enumValue","helpers.rangeToNumber","helpers.multiple",
+                // Some helpers work just fine
+                "helpers.fake","helpers.mustache","helpers.fromRegExp","helpers.maybe","helpers.arrayElement", "helpers.slugify","helpers.replaceSymbols",
+                "helpers.replaceCreditCardSymbols","helpers.shuffle","helpers.uniqueArray",
+                "helpers.weightedArrayElement","helpers.arrayElements","helpers.rangeToNumber","helpers.multiple",
+                // "helpers.objectKey","helpers.objectValue","helpers.objectEntry","helpers.enumValue",
                 "number.int","number.float","number.binary","number.octal","number.hex","number.bigInt","number.romanNumeral",
                 "string.fromCharacters","string.alpha","string.alphanumeric","string.binary","string.octal","string.hexadecimal","string.numeric","string.sample","string.uuid","string.ulid","string.nanoid","string.symbol",
                 "airline.airport","airline.airline","airline.airplane","airline.recordLocator","airline.seat","airline.aircraftType","airline.flightNumber",

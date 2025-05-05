@@ -51,16 +51,23 @@ A `rule` can be a regex string e.g.
 
 A `rule` can also be a faker API call.
 
-Faker API can be found here: http://marak.github.io/faker.js/
+Faker API can be found here: https://fakerjs.dev/api/
 
 e.g.
 
-- `faker.name.firstName`
+- `faker.person.firstName`
 - `faker.hacker.noun`
+
+The `faker` prefix is optional:
+
+e.g.
+
+- `person.firstName`
+- `hacker.noun`
 
 The `fake` method is also supported, which takes a mustache template style string combining api methods e.g.
 
-- `faker.fake {{name.lastName}}, {{name.firstName}}`
+- `helpers.fake {{name.lastName}}, {{name.firstName}}`
 
 So a sample test data spec might look like:
 

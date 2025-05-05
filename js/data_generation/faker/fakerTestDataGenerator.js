@@ -1,3 +1,5 @@
+import {removeStartAndEnd} from "./parsingUtils.js"
+
 export class FakerTestDataGenerator{
 
     constructor(aFaker){
@@ -53,8 +55,8 @@ export class FakerTestDataGenerator{
         }
 
         var command="";
-        var callFake=false;
-        var callFakeArgs="";
+        // var callFake=false;
+        // var callFakeArgs="";
         var commandConjoiner = "";
 
 
@@ -80,42 +82,44 @@ export class FakerTestDataGenerator{
                 }
             }
 
-            if(part.startsWith("fake")){
-                // it is a call to fake
-                callFake=true;
-                callFakeArgs = ruleSpec.replace(command+".fake","");
-                break;
-            }
+            // if(part.startsWith("fake")){
+            //     // it is a call to fake
+            //     callFake=true;
+            //     callFakeArgs = ruleSpec.replace(parts.join("."),"");
+            //     break;
+            // }
         }
 
-        if(callFake){
-            callFakeArgs = callFakeArgs.trim();
-            // remove ()
-            callFakeArgs = removeStartAndEnd("(", ")", callFakeArgs);
-            var removeQuote=undefined;
-            if(callFakeArgs.startsWith('"')){
-                removeQuote='"';
-            }
-            if(callFakeArgs.startsWith("'")){
-                removeQuote="'";
-            }
-            if(removeQuote!==undefined){
-                callFakeArgs = removeStartAndEnd(removeQuote, removeQuote, callFakeArgs);
-            }
+        // now that fake has moved to helpers it no longer requires special handling
+        //
+        // if(callFake){
+        //     callFakeArgs = callFakeArgs.trim();
+        //     // remove ()
+        //     callFakeArgs = removeStartAndEnd("(", ")", callFakeArgs);
+        //     var removeQuote=undefined;
+        //     if(callFakeArgs.startsWith('"')){
+        //         removeQuote='"';
+        //     }
+        //     if(callFakeArgs.startsWith("'")){
+        //         removeQuote="'";
+        //     }
+        //     if(removeQuote!==undefined){
+        //         callFakeArgs = removeStartAndEnd(removeQuote, removeQuote, callFakeArgs);
+        //     }
 
-            try{
-                returnResult.isError= false;
-                returnResult.errorMessage="";
-                returnResult.data =  this.faker.fake(callFakeArgs);
-                return returnResult;
-            }catch(err){
-                returnResult.isError= true;
-                returnResult.errorMessage="Call to fake failed " + err;
-                returnResult.data = "";
-                return returnResult;
-            }
+        //     try{
+        //         returnResult.isError= false;
+        //         returnResult.errorMessage="";
+        //         returnResult.data =  this.faker.helpers.fake(callFakeArgs);
+        //         return returnResult;
+        //     }catch(err){
+        //         returnResult.isError= true;
+        //         returnResult.errorMessage="Call to fake failed " + err;
+        //         returnResult.data = "";
+        //         return returnResult;
+        //     }
 
-        }
+        // }
 
         if(typeof fakerThing === "function"){
             if(fakerFunctionCallHasArgs){

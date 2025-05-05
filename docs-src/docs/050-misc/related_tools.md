@@ -66,6 +66,7 @@ Online tools for editing and converting to markdown tables.
 
 Free online tools for generating test data.
 
+- [AnyWayData.com](https://anywaydata.com) free generation of data, unlimited number of rows generated. Convert to CSV, delimited, JSON, JavaScript, Markdown, Ascii tables, HTML tables.
 - [Mockaroo.com](https://www.mockaroo.com/) free plan for Mockaroo allows generation of 1,000 rows of data, many data types are supported including formulas. Export formats include CSV, JSON, Tab delimited, SQL, Cassandra CQL, Firebase, InfluxDB, Excel, XML.
 - [Cobbl.io](https://cobbl.io/) - generate up to 10,000 rows of data in CSV, JSON and JSONL.
 - [Online Data Generator](https://www.onlinedatagenerator.com/) build a set of column definitions, and export up to 100,000 records to CSV, JSON, Excel, SQL, XML
@@ -78,6 +79,7 @@ Free online tools for generating test data.
 - [LambdaTest Data Generator](https://www.lambdatest.com/free-online-tools/test-data-generator) Very simple data generator with 9 data types. Export as JSON, CSV or XML, but no control over the number of rows of data generated.
 - [Mobile Fish Random Test Data Generator](https://www.mobilefish.com/services/random_test_data_generator/random_test_data_generator.php) - generate up to 5000 records of a 'people' type data.
 - [Mockium](https://softwium.com/mockium/) - generate random data in the browser for JSON, CSV, SQL, and XML.
+- [AutoTestData.com](https://https://autotestdata.com) can only generate 100 rows if not logged in.
 
 ### Online CSV Editor
 

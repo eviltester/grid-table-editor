@@ -10,13 +10,15 @@ We have enhanced the faker compatibility for test data generation so it is now p
 
 <!--truncate-->
 
+Updated: 05 May 2025 to cover Faker v9.
+
 ## Faker
 
 [Faker](https://fakerjs.dev/guide/) is the test data generation library used by AnyWayData.
 
-It has an extensive API of function calls. e.g. `address.buildingNumber` to generate a random building number.
+It has an extensive API of function calls. e.g. `location.buildingNumber` to generate a random building number.
 
-In AG Grid you can find a list of faker function calls in the drop down used on the Test Data Generation data grid.
+In the test data type definition drop down you can find a list of faker function calls in the drop down used on the Test Data Generation data grid.
 
 The items in the drop down are a subset of the function calls, without any parameters.
 
@@ -24,16 +26,16 @@ When you read through the API documentation for faker you will see a lot of opti
 
 e.g.
 
-From the drop down menu it is possible to generate a random direction with `address.cardinalDirection` this will generate `North`, `South` etc.
+From the drop down menu it is possible to generate a random direction with `location.cardinalDirection` this will generate `North`, `South` etc.
 
-But with the text area it is possible to take advantage of the API for [cardinalDirection](https://fakerjs.dev/api/address.html#cardinalDirection) and pass in a parameter e.g.
+But with the text area it is possible to take advantage of the API for [cardinalDirection](https://fakerjs.dev/api/location.html#cardinaldirection) and pass in a parameter e.g.
 
 ```
 Direction
-address.cardinalDirection(true)
+location.cardinalDirection({ abbreviated: true })
 ```
 
-The `true` parameter will generate short versions of the direction e.g. `N`, `S`, `E`:
+The `true` value for `abbreviated` parameter will generate short versions of the direction e.g. `N`, `S`, `E`:
 
 |Direction|
 |-----|
@@ -51,23 +53,23 @@ We can now generate dates within a certain range: say [between](https://fakerjs.
 
 ```
 Date
-date.between('2020-01-01T00:00:00.000Z', '2022-08-01T00:00:00.000Z')
+date.between({ from: '2020-01-01T00:00:00.000Z', to: '2022-08-01T00:00:00.000Z' })
 ```
 
 or
 
 ```
 Date
-date.between('2020-01-01', '2022-08-01')
+date.between({ from: '2020-01-01', to: '2022-08-01' })
 ```
 
 Or if we were working with Finance we could generate banking [IBAN](https://fakerjs.dev/api/finance.html#iban) numbers for a specific country.
 
 ```
 IBAN
-finance.iban(true, 'GB')
+finance.iban({ formatted: true, countryCode: 'GB' })
 IBANDE
-finance.iban(false, 'DE')
+finance.iban({ formatted: false, countryCode: 'DE' })
 ```
 
 e.g.
@@ -81,13 +83,13 @@ e.g.
 |GB02 IMHN 0089 8110 0662 92|DE74800040080510006033|
 
 
-## DataTypes
+## Numbers
 
-Now we can control the ranges of Data Types e.g. generate a number between 32 and 47
+Now we can control the ranges of Number Data Types e.g. generate a number between 32 and 47
 
 ```
 Num
-datatype.number({ min: 32, max: 47 })
+number.int({ min: 32, max: 47 })
 ```
 
 e.g.
@@ -101,28 +103,6 @@ e.g.
 |41|
 
 
-## Unique values
-
-Faker has a `Unique` generator that we can now take advantage of to generate unique values in our data sets.
-
-[unique(https://fakerjs.dev/api/unique.html) calls another faker function and we have to prefix it with `this`.
-
-```
-Unique Num
-unique(this.datatype.number)
-```
-
-e.g.
-
-|Unique Num|
-|-----|
-|92795|
-|23809|
-|25476|
-|63287|
-|14541|
-
-
 ## Helpers and Templates
 
 We have also enabled the helper functions. This allows using Mustache templates directly to create very complex data values.
@@ -131,7 +111,7 @@ The [Mustache](https://fakerjs.dev/api/helpers.html#mustache) documentation show
 
 ```
 Sentence
-helpers.mustache('I found {{count}} instances of "{{word}}".', {count: () => `${this.datatype.number()}`,word: "this word",}) 
+helpers.mustache('I found {{count}} instances of "{{word}}".', {count: () => `${this.number.int()}`,word: "this word",}) 
 ```
 
 e.g.
@@ -172,3 +152,5 @@ helpers.mustache('{{ex}}, A {{adj}} {{noun}}.', {ex: `${this.word.interjection()
 You can now use most of the API functions listed in the Faker API documenation and create very complicated data sets using the parameters for the API.
 
 Read through the Faker docs and experiment.
+
+[fakerjs.dev/api/helpers.html#mustache](https://fakerjs.dev/api/helpers.html#mustache)

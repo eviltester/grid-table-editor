@@ -41,8 +41,6 @@ jobs:
           zip -j ${{ github.workspace }}/macos-arm64.zip ${{ github.workspace }}/out/macos-arm64/anywaydata
       - name: check dir  
         run: ls -R ${{ github.workspace }}/out
-      - name: workspace dir
-        run: ls -R ${{ github.workspace }}
       - uses: ncipollo/release-action@v1.16.0
         with:
           tag: ${ inputs.tag }}

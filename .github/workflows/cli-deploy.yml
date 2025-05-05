@@ -23,6 +23,8 @@ jobs:
         run: bun build ./index.ts --compile --minify --sourcemap --target=bun-windows-x64 --outfile ./out/windows64/anywaydata.exe
       - name: check dir  
         run: ls -R ./out
+      - name: workspace dir
+        run: ls -R ${{ github.workspace }}
       - uses: ncipollo/release-action@v1.16.0
         with:
           tag: ${ inputs.tag }}
@@ -33,3 +35,4 @@ jobs:
             ./out/windows64/anywaydata.exe
           body: 'AnyWayData CLI versions'
           allowUpdates: true
+    

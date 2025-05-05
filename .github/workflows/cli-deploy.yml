@@ -50,11 +50,11 @@ jobs:
           name: Draft Release ${{ github.ref }}
           draft: true
           artifacts:  |
-            ${{ github.workspace }}/out/windows64.zip
-            ${{ github.workspace }}/out/linux-x64.zip
-            ${{ github.workspace }}/out/linux-arm64.zip
-            ${{ github.workspace }}/out/macos-x64.zip
-            ${{ github.workspace }}/out/macos-arm64.zip
+            ${{ github.workspace }}/windows64.zip
+            ${{ github.workspace }}/linux-x64.zip
+            ${{ github.workspace }}/linux-arm64.zip
+            ${{ github.workspace }}/macos-x64.zip
+            ${{ github.workspace }}/macos-arm64.zip
           body: 'AnyWayData CLI versions'
           allowUpdates: true
     

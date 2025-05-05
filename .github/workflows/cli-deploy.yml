@@ -23,6 +23,7 @@ jobs:
         run: bun build ./index.ts --compile --minify --sourcemap --target=bun-windows-x64 --outfile ./out/windows64/anywaydata.exe  
       - uses: ncipollo/release-action@v1
         with:
+          tag: ${{github.events.inputs.tag}}
           release_name: Draft Release ${{ github.ref }}
           draft: true
           artifacts: "./out/windows64/anywaydata.exe"

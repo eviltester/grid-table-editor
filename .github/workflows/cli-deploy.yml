@@ -22,23 +22,23 @@ jobs:
       - name: build windows
         run: |
           bun build ./index.ts --compile --minify --sourcemap --target=bun-windows-x64 --outfile ${{ github.workspace }}/out/windows64/anywaydata.exe
-          zip ${{ github.workspace }}/windows64.zip ${{ github.workspace }}/out/windows64/anywaydata.exe
+          zip -j ${{ github.workspace }}/windows64.zip ${{ github.workspace }}/out/windows64/anywaydata.exe
       - name: build linux-x64
         run: |
           bun build ./index.ts --compile --target=bun-linux-x64 --outfile ${{ github.workspace }}/out/linux-x64/anywaydata
-          zip ${{ github.workspace }}/linux-x64.zip ${{ github.workspace }}/out/linux-x64/anywaydata
+          zip -j ${{ github.workspace }}/linux-x64.zip ${{ github.workspace }}/out/linux-x64/anywaydata
       - name: build linux-arm64
         run: |
           bun build ./index.ts --compile --outfile ${{ github.workspace }}/out/linux-arm64/anywaydata --target=bun-linux-arm64
-          zip ${{ github.workspace }}/linux-arm64.zip ${{ github.workspace }}/out/linux-arm64/anywaydata
+          zip -j ${{ github.workspace }}/linux-arm64.zip ${{ github.workspace }}/out/linux-arm64/anywaydata
       - name: build mac-x64
         run: |
           bun build ./index.ts --compile --outfile ${{ github.workspace }}/out/macos-x64/anywaydata --target=bun-darwin-x64
-          zip ${{ github.workspace }}/macos-x64.zip ${{ github.workspace }}/out/macos-x64/anywaydata
+          zip -j ${{ github.workspace }}/macos-x64.zip ${{ github.workspace }}/out/macos-x64/anywaydata
       - name: build mac-arm64
         run: |
           bun build ./index.ts --compile --outfile ${{ github.workspace }}/out/macos-arm64/anywaydata --target=bun-darwin-arm64
-          zip ${{ github.workspace }}/macos-arm64.zip ${{ github.workspace }}/out/macos-arm64/anywaydata
+          zip -j ${{ github.workspace }}/macos-arm64.zip ${{ github.workspace }}/out/macos-arm64/anywaydata
       - name: check dir  
         run: ls -R ${{ github.workspace }}/out
       - name: workspace dir

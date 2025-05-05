@@ -21,7 +21,7 @@ jobs:
         run: bun install
       - name: build windows
         run: bun build ./index.ts --compile --minify --sourcemap --target=bun-windows-x64 --outfile ./out/windows64/anywaydata.exe  
-      - uses: ncipollo/release-action@v1
+      - uses: ncipollo/release-action@v1.16.0
         with:
           tag: ${{github.events.inputs.tag}}
           commit: ${{github.events.inputs.commit}}

@@ -22,7 +22,7 @@ jobs:
       - name: build windows
         run: bun build ./index.ts --compile --minify --sourcemap --target=bun-windows-x64 --outfile ${{ github.workspace }}/out/windows64/anywaydata.exe
       - name: check dir  
-        run: ls -R ./out
+        run: ls -R ${{ github.workspace }}/out
       - name: workspace dir
         run: ls -R ${{ github.workspace }}
       - uses: ncipollo/release-action@v1.16.0

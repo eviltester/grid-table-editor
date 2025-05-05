@@ -86,7 +86,7 @@ const argv = yargs(hideBin(process.argv))
       papaParseConfig.header = true;
 
       outputProgressLog("", hideProgressLog);
-      outputProgressLog(`> Generating ${argv.numberOfLines} lines of random data`, hideProgressLog);
+      outputProgressLog(`> Generating ${numberToGenerate} lines of random data`, hideProgressLog);
       outputProgressLog("", hideProgressLog);
       outputProgressLog("e.g.", hideProgressLog);
       const exampleData = generator.generate(1);
@@ -95,7 +95,7 @@ const argv = yargs(hideBin(process.argv))
       outputProgressLog("", hideProgressLog);
 
       const csvOutput = Papa.unparse(
-        generator.generate(argv.numberOfLines),
+        generator.generate(numberToGenerate),
         papaParseConfig
       );
 

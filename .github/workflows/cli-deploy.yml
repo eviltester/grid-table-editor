@@ -43,7 +43,7 @@ jobs:
         run: ls -R ${{ github.workspace }}/out
       - uses: ncipollo/release-action@v1.16.0
         with:
-          tag: ${ inputs.tag }}
+          tag: ${{ inputs.tag }}
           commit: ${{ inputs.commit }}
           name: Draft Release ${{ github.ref }}
           draft: true

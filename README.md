@@ -121,7 +121,7 @@ Test - `npm test`
 
 Preview Docs - `npm run previewdocs`
 
-Build for release - 
+Build for release - `npm run anywaydata:win`
 
 ## Probable TODO:
 

@@ -10,8 +10,6 @@ We have enhanced the faker compatibility for test data generation so it is now p
 
 <!--truncate-->
 
-Updated: 05 May 2025 to cover Faker v9.
-
 ## Faker
 
 [Faker](https://fakerjs.dev/guide/) is the test data generation library used by AnyWayData.
@@ -24,128 +22,27 @@ The items in the drop down are a subset of the function calls, without any param
 
 When you read through the API documentation for faker you will see a lot of options available for the API calls. These are now also available from AnyWayData by typing the data spec into the text area editor.
 
-e.g.
-
-From the drop down menu it is possible to generate a random direction with `location.cardinalDirection` this will generate `North`, `South` etc.
-
-But with the text area it is possible to take advantage of the API for [cardinalDirection](https://fakerjs.dev/api/location.html#cardinaldirection) and pass in a parameter e.g.
-
-```
-Direction
-location.cardinalDirection({ abbreviated: true })
-```
-
-The `true` value for `abbreviated` parameter will generate short versions of the direction e.g. `N`, `S`, `E`:
-
-|Direction|
-|-----|
-|W|
-|N|
-|S|
-|W|
-
-
-## More Advanced
-
-Reading through the Faker API documentation we can see that this opens up a lot more possibilities in terms of data generation.
-
-We can now generate dates within a certain range: say [between](https://fakerjs.dev/api/date.html#between) `01/01/2020` and `01/08/2022`
-
-```
-Date
-date.between({ from: '2020-01-01T00:00:00.000Z', to: '2022-08-01T00:00:00.000Z' })
-```
-
-or
-
-```
-Date
-date.between({ from: '2020-01-01', to: '2022-08-01' })
-```
-
-Or if we were working with Finance we could generate banking [IBAN](https://fakerjs.dev/api/finance.html#iban) numbers for a specific country.
-
-```
-IBAN
-finance.iban({ formatted: true, countryCode: 'GB' })
-IBANDE
-finance.iban({ formatted: false, countryCode: 'DE' })
-```
+AnyWayData also implements most of the helper functionality to create templates and fake data.
 
 e.g.
 
-|IBAN|IBANDE|
-|-----|-----|
-|GB93 ELAC 1500 7007 0044 81|DE05059809588200970058|
-|GB58 UFYS 0460 3540 0705 65|DE58252902443001009070|
-|GB79 WKWS 0040 5932 0004 96|DE38438921300010561024|
-|GB72 PRIY 9000 7326 7888 74|DE27900409653220700650|
-|GB02 IMHN 0089 8110 0662 92|DE74800040080510006033|
-
-
-## Numbers
-
-Now we can control the ranges of Number Data Types e.g. generate a number between 32 and 47
-
 ```
-Num
-number.int({ min: 32, max: 47 })
-```
-
-e.g.
-
-|Num|
-|-----|
-|35|
-|41|
-|32|
-|43|
-|41|
-
-
-## Helpers and Templates
-
-We have also enabled the helper functions. This allows using Mustache templates directly to create very complex data values.
-
-The [Mustache](https://fakerjs.dev/api/helpers.html#mustache) documentation shows some of the capabilities:
-
-```
+address
+helpers.fake('{{location.buildingNumber}} {{location.streetAddress}}')
 Sentence
 helpers.mustache('I found {{count}} instances of "{{word}}".', {count: () => `${this.number.int()}`,word: "this word",}) 
 ```
 
-e.g.
-
-|Sentence|
-|-----|
-|I found 76980 instances of "this word".|
-|I found 21667 instances of "this word".|
-|I found 23679 instances of "this word".|
-|I found 18850 instances of "this word".|
-|I found 3422 instances of "this word".|
-
-
-The main difference to be aware of when using examples form the faker documentation is that any use of `faker` in the parameters should be replaced with `this`.
-
-But now we can create quick complex data strings.
+Could generate:
 
 ```
-Sentence
-helpers.mustache('{{ex}}, A {{adj}} {{noun}}.', {ex: `${this.word.interjection()}`, adj: `${this.word.adjective()}`, noun: `${this.word.noun()}`})
+"address","Sentence"
+"333 798 N Main Avenue","I found 4485653369866095 instances of ""this word""."
+"2065 866 Theodora Corners","I found 6979689506928155 instances of ""this word""."
+"4405 147 Alvena Mountain","I found 646049465038696 instances of ""this word""."
 ```
 
-|Sentence|
-|-----|
-|tsk tsk, A awkward seed.|
-|ugh, A trustworthy lesson.|
-|aw, A nasty casement.|
-|drat, A unlucky accordion.|
-|yuck, A monthly manhunt.|
-|phooey, A intent bulk.|
-|phooey, A agitated hubcap.|
-|duh, A silent behold.|
-|hmph, A sticky drapes.|
-|er, A suburban tan.|
+[Learn more about the Faker functionality in the docs](https://anywaydata.com/docs/test-data/faker-test-data)
 
 ## Summary
 

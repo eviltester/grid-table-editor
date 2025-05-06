@@ -115,6 +115,13 @@ This tool falls in to the categories:
 - Online CSV Editor
 
 
+## Building
+
+Test - `npm test`
+
+Preview Docs - `npm run previewdocs`
+
+Build for release - 
 
 ## Probable TODO:
 

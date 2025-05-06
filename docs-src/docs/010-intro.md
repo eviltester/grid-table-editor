@@ -46,6 +46,59 @@ Free to use and Open source.
 - Define Test Data using Faker.js functions
 - No limit to the number of rows you can generate
 
+
+## CLI Version - Windows, Mac, Linux
+
+An experimental CLI version is available to download from the [releases page on Github](https://github.com/eviltester/grid-table-editor/releases).
+
+Currently this implements the Test Data Generation using the same Test Data Spec format as the web version and outputs to CSV format.
+
+- [Downloads for Windows, Mac, Linux](https://github.com/eviltester/grid-table-editor/releases)
+
+e.g. given an input file called `faker-regex.txt`
+
+```
+Company
+company.name
+Regex Generated Field
+[A-Z]{3,6}[0-9]{0,6}
+```
+
+The following command would generate 3000 records into `output.txt`
+
+```
+./anywaydata generate –i ./company.txt -n 3000 –o output.txt 
+```
+
+Example output:
+
+```
+"Company","Regex Generated Field"
+"Jones and Sons","QZRGC"
+"Kunze, Morissette and Daniel","YMHV89"
+"Cole, Padberg and Cronin","QGG"
+```
+
+### CLI on Mac
+
+For Mac you will need to give the application permissions to run.
+
+Allow it to run – either from `System Settings > Privacy & Security` 
+
+Or:
+
+```
+xattr -dr com.apple.quarantine "/path/to/your/app.app/Contents/MacOS/executable" 
+``` 
+
+e.g. `xattr -dr com.apple.quarantine "$(pwd)/anywaydata"` 
+
+Set as executable in command line: 
+
+```
+chmod +x anywaydata 
+```
+
 ---
 
 Built by [Alan Richardson](https://eviltester.com)

@@ -18,7 +18,7 @@ class ImportExportControls {
         parentelement.innerHTML = `<span data-help="import-export-controls" class="helpicon"></span>
             <button id="settextfromgridbutton">v Set Text From Grid v</button>
             <button id="setgridfromtextbutton">^ Set Grid From Text ^</button>
-            <label><span class="fileFormat">.csv</span> import ^:<input type="file" id="csvinput"/></label>
+            <label id="csvinputlabel"><span class="fileFormat">.csv</span> import ^:<input type="file" id="csvinput"/></label>
             <button id="filedownload"><span class="fileFormat">.csv</span> Download</button>
             <label id="dropzone">
             <span>[Drag And Drop <span class="fileFormat">.csv</span> File Here]</span>

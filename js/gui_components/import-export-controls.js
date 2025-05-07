@@ -75,7 +75,8 @@ class ImportExportControls {
     }
 
     loadFile() {
-        let type = document.querySelector("li.active-type a").getAttribute("data-type");  
+        let type = document.querySelector("li.active-type a").getAttribute("data-type"); 
+        this.setCurrentTypeOptions();
         this.readFile(this.fileInputElement.files[0]);
     }
   

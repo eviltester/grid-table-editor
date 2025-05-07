@@ -66,6 +66,7 @@ class ImportExportControls {
         const typeToImport = document.querySelector("li.active-type a").getAttribute("data-type");
         const textToImport = document.getElementById("markdownarea").value;
 
+        this.setCurrentTypeOptions();
         this.importer.importText(typeToImport, textToImport);
     }
 
@@ -74,7 +75,7 @@ class ImportExportControls {
     }
 
     loadFile() {
-        let type = document.querySelector("li.active-type a").getAttribute("data-type");    
+        let type = document.querySelector("li.active-type a").getAttribute("data-type");  
         this.readFile(this.fileInputElement.files[0]);
     }
   
@@ -194,14 +195,20 @@ class ImportExportControls {
         if(optionsPanel){
             optionsPanel.addToGui();
             optionsPanel.setFromOptions(this.exporter.getOptionsForType(type));
-            optionsPanel.setApplyCallback(this.setCurrentTypeOptions.bind(this));
+            optionsPanel.setApplyCallback(this.applyCurrentTypeOptions.bind(this));
             window.updateHelpHints();
         }
 
         optionsparent.style.display = "block";
     }
 
-    setCurrentTypeOptions(options){
+    setCurrentTypeOptions(){
+        const type = document.querySelector("li.active-type a").getAttribute("data-type");
+        this.importer.setOptionsForType(type,this.optionsPanels[type].getOptionsFromGui());
+        this.exporter.setOptionsForType(type,this.optionsPanels[type].getOptionsFromGui());
+    }
+
+    applyCurrentTypeOptions(options){
         const type = document.querySelector("li.active-type a").getAttribute("data-type");
         this.importer.setOptionsForType(type,options);
         this.exporter.setOptionsForType(type,options);

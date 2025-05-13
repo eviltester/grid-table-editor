@@ -289,7 +289,7 @@ function setupTestDataEditGrid(gridDiv){
     };
 
     const addNewRowButton = document.createElement("button");
-    addNewRowButton.innerText="+ Add Row";
+    addNewRowButton.innerText="+ Add Column";
     gridDiv.appendChild(addNewRowButton);
 
 

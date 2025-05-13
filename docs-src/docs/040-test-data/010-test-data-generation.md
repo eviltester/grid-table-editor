@@ -14,7 +14,7 @@ The Test Data Grid contains the 'schema' or 'template' to use to generate data f
 
 Each row represents a Column in the final data grid.
 
-Add a new column by pressing the `+ Add Row` button.
+Add a new column by pressing the `+ Add Column` button.
 
 You can rename the column by double clicking on the `Column Name` field.
 

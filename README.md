@@ -67,17 +67,17 @@ e.g.
 
 The `fake` method is also supported, which takes a mustache template style string combining api methods e.g.
 
-- `helpers.fake {{name.lastName}}, {{name.firstName}}`
+- `helpers.fake("{{name.lastName}}, {{name.firstName}}")`
 
 So a sample test data spec might look like:
 
 ```
 name
-faker.fake {{name.lastName}}, {{name.firstName}}
+helpers.fake("{{name.lastName}}, {{name.firstName}}")
 desc
 faker.lorem.paragraph
 collects
-faker.hacker.noun
+hacker.noun
 prefers
 (Connie|Bob)
 ```

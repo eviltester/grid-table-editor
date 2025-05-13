@@ -119,19 +119,19 @@ function populateTestDataGridFromRules(){
         let data={};
         data.columnName = rule.name;
         if(rule.type=="faker"){
-            if(rule.ruleSpec.startsWith("fake ")){
-                data.type = "fake";
-                data.value= rule.ruleSpec.replace("fake ","");
-            }else{
-                const fakerCommand = findFakerCommand(rule.ruleSpec);
-                if(fakerCommand==""){
-                    data.type = rule.ruleSpec;
-                    data.value=rule.ruleSpec.replace("fake ","");
-                }else{
-                    data.type = fakerCommand;
-                    data.value=rule.ruleSpec.replace(fakerCommand,"");
+            // remove faker.
+            let fakerFreeRule = rule.ruleSpec;
+                if(fakerFreeRule.startsWith("faker.")){
+                    fakerFreeRule= fakerFreeRule.replace("faker.","");
                 }
-                
+            const fakerCommand = findFakerCommand(fakerFreeRule);
+            if(fakerCommand==""){
+                console.log(`Unknown faker command in ruleSpec ${fakerFreeRule}`)
+                data.type = "";
+                data.value=fakerFreeRule;
+            }else{
+                data.type = fakerCommand;
+                data.value=fakerFreeRule.replace(fakerCommand,"");
             }
 
         }else{
@@ -144,7 +144,7 @@ function populateTestDataGridFromRules(){
     }
 }
 
-const FAKER_COMMANDS = ['RegEx', "fake",
+const FAKER_COMMANDS = ['RegEx',
                 // "mersenne.rand",
                 // // "mersenne.seed",
                 // // "mersenne.seed_array",
@@ -323,17 +323,18 @@ function convertGridToText(){
             case "RegEx":
                 outputText = outputText + rowNode.data.value;
                 break;
-            case "fake":
-                outputText = outputText + "helpers.fake" + rowNode.data.value;
-                break;
             // TODO Literal
             default:
-                if(FAKER_COMMANDS.includes(rowNode.data.type)){
-                    outputText = outputText + rowNode.data.type + rowNode.data.value;
+                let dataType = rowNode.data.type;
+                if(dataType.startsWith("faker.")){
+                    dataType= dataType.replace("faker.","");
+                }
+                if(FAKER_COMMANDS.includes(dataType)){
+                    outputText = outputText + dataType + rowNode.data.value;
                 }else{
                     // throw error? ignore? don't know what the command is so it won't parse
                     // ignoring
-                    console.log(`UNKNOWN COMMAND: ${rowNode.data.type} ${rowNode.data.value}`)
+                    console.log(`UNKNOWN COMMAND: ${dataType} ${rowNode.data.value}`)
                 }
         }
         prefix="\n";

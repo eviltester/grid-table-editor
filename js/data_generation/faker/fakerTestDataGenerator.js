@@ -16,15 +16,11 @@ export class FakerTestDataGenerator{
     e.g.
 
     faker.name.firstName
-    faker.fake {{name.lastName}}, {{name.firstName}}
+    faker.helpers.fake("{{name.lastName}}, {{name.firstName}}")
     faker.lorem.paragraph
-
-    faker.helper is deliberately excluded
 
     returns a result object that also says if an error happened
  */
-
-    // TODO: faker 'fake' method which allows chaining methods is being remove so we need a new templating system
 
     generateFrom(aRule){
 
@@ -81,45 +77,8 @@ export class FakerTestDataGenerator{
                     return returnResult;
                 }
             }
-
-            // if(part.startsWith("fake")){
-            //     // it is a call to fake
-            //     callFake=true;
-            //     callFakeArgs = ruleSpec.replace(parts.join("."),"");
-            //     break;
-            // }
         }
 
-        // now that fake has moved to helpers it no longer requires special handling
-        //
-        // if(callFake){
-        //     callFakeArgs = callFakeArgs.trim();
-        //     // remove ()
-        //     callFakeArgs = removeStartAndEnd("(", ")", callFakeArgs);
-        //     var removeQuote=undefined;
-        //     if(callFakeArgs.startsWith('"')){
-        //         removeQuote='"';
-        //     }
-        //     if(callFakeArgs.startsWith("'")){
-        //         removeQuote="'";
-        //     }
-        //     if(removeQuote!==undefined){
-        //         callFakeArgs = removeStartAndEnd(removeQuote, removeQuote, callFakeArgs);
-        //     }
-
-        //     try{
-        //         returnResult.isError= false;
-        //         returnResult.errorMessage="";
-        //         returnResult.data =  this.faker.helpers.fake(callFakeArgs);
-        //         return returnResult;
-        //     }catch(err){
-        //         returnResult.isError= true;
-        //         returnResult.errorMessage="Call to fake failed " + err;
-        //         returnResult.data = "";
-        //         return returnResult;
-        //     }
-
-        // }
 
         if(typeof fakerThing === "function"){
             if(fakerFunctionCallHasArgs){

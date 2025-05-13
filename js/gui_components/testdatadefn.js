@@ -123,8 +123,15 @@ function populateTestDataGridFromRules(){
                 data.type = "fake";
                 data.value= rule.ruleSpec.replace("fake ","");
             }else{
-                data.type = rule.ruleSpec;
-                data.value="";
+                const fakerCommand = findFakerCommand(rule.ruleSpec);
+                if(fakerCommand==""){
+                    data.type = rule.ruleSpec;
+                    data.value=rule.ruleSpec.replace("fake ","");
+                }else{
+                    data.type = fakerCommand;
+                    data.value=rule.ruleSpec.replace(fakerCommand,"");
+                }
+                
             }
 
         }else{
@@ -135,54 +142,9 @@ function populateTestDataGridFromRules(){
         // todo, should be a bigger transaction for efficiency
         defnGridOptions.api.applyTransaction({add: [data]},)
     }
-
 }
 
-function setupTestDataEditGrid(gridDiv){
-
-
-    const defnRowData = [];
-
-    /* for version 9 use https://fakerjs.dev/playground/
-
-    let codegen="";
-    let lastK="";
-    let skipKeys = ["definitions", "helpers"];
-    let skipValues = ["mersenne.seed", "mersenne.seed_array"];
-    let fakerKeys = Object.keys(faker);
-    fakerKeys.forEach(k=>{
-        Object.getOwnPropertyNames(faker[k]).
-             filter(item => {return typeof faker[k][item] === 'function'})
-             .forEach(
-                 k2 => {
-                     if(lastK!=k){
-                         codegen=codegen+"\n";
-                         lastK=k;
-                         if(skipKeys.includes(k)){
-                             codegen=codegen+"// ";
-                         }
-                     }
-                     let eol = "";
-                     if(skipValues.includes(`${k}.${k2}`)){
-                         codegen=codegen+"\n// ";
-                         eol = "\n";
-                     }
-                     codegen=codegen+`"${k}.${k2}",${eol}`;
-                    }
-             )
-    });
-    console.log(codegen);
-
-    */
-    const defnColumnDefs = [
-        {
-            field: 'columnName',
-
-        },
-        {   field: 'type',
-            cellEditor: SelectFilterEditor,
-            cellEditorParams: {
-                values: ['RegEx', "fake",
+const FAKER_COMMANDS = ['RegEx', "fake",
                 // "mersenne.rand",
                 // // "mersenne.seed",
                 // // "mersenne.seed_array",
@@ -243,7 +205,66 @@ function setupTestDataEditGrid(gridDiv){
                 "system.fileName","system.commonFileName","system.mimeType","system.commonFileType","system.commonFileExt","system.fileType","system.fileExt","system.directoryPath","system.filePath","system.semver","system.networkInterface","system.cron",
                 "vehicle.vehicle","vehicle.manufacturer","vehicle.model","vehicle.type","vehicle.fuel","vehicle.vin","vehicle.color","vehicle.vrm","vehicle.bicycle",
                 "word.adjective","word.adverb","word.conjunction","word.interjection","word.noun","word.preposition","word.verb","word.sample","word.words",
-            ]},
+            ];
+
+// TODO: add fakerCommand to the TestDataRule already parsed out
+function findFakerCommand(aString){
+    for(let command of FAKER_COMMANDS){
+        if(aString.startsWith(command)){
+            return command;
+        }
+    }
+    return null;
+}
+
+// TODO: instantiate this from the current faker object, rather than running on external site
+
+function setupTestDataEditGrid(gridDiv){
+
+
+    const defnRowData = [];
+
+    /* for version 9 use https://fakerjs.dev/playground/
+
+    let codegen="";
+    let lastK="";
+    let skipKeys = ["definitions", "helpers"];
+    let skipValues = ["mersenne.seed", "mersenne.seed_array"];
+    let fakerKeys = Object.keys(faker);
+    fakerKeys.forEach(k=>{
+        Object.getOwnPropertyNames(faker[k]).
+             filter(item => {return typeof faker[k][item] === 'function'})
+             .forEach(
+                 k2 => {
+                     if(lastK!=k){
+                         codegen=codegen+"\n";
+                         lastK=k;
+                         if(skipKeys.includes(k)){
+                             codegen=codegen+"// ";
+                         }
+                     }
+                     let eol = "";
+                     if(skipValues.includes(`${k}.${k2}`)){
+                         codegen=codegen+"\n// ";
+                         eol = "\n";
+                     }
+                     codegen=codegen+`"${k}.${k2}",${eol}`;
+                    }
+             )
+    });
+    console.log(codegen);
+
+    */
+    const defnColumnDefs = [
+        {
+            field: 'columnName',
+
+        },
+        {   field: 'type',
+            cellEditor: SelectFilterEditor,
+            cellEditorParams: {
+                values: FAKER_COMMANDS
+            },
         },
         {field: 'value'}
     ];
@@ -297,14 +318,23 @@ function convertGridToText(){
     defnGridOptions.api.forEachNode((rowNode, index) => {
         outputText = outputText + prefix;
         outputText = outputText + rowNode.data.columnName + "\n";
-        if( rowNode.data.type == "RegEx"){
-            outputText = outputText + rowNode.data.value;
-        }else{
-            if(rowNode.data.type == "fake") {
-                outputText = outputText + rowNode.data.type + " " + rowNode.data.value;
-            }else{
-                outputText = outputText + rowNode.data.type;
-            }
+
+        switch(rowNode.data.type){
+            case "RegEx":
+                outputText = outputText + rowNode.data.value;
+                break;
+            case "fake":
+                outputText = outputText + "helpers.fake" + rowNode.data.value;
+                break;
+            // TODO Literal
+            default:
+                if(FAKER_COMMANDS.includes(rowNode.data.type)){
+                    outputText = outputText + rowNode.data.type + rowNode.data.value;
+                }else{
+                    // throw error? ignore? don't know what the command is so it won't parse
+                    // ignoring
+                    console.log(`UNKNOWN COMMAND: ${rowNode.data.type} ${rowNode.data.value}`)
+                }
         }
         prefix="\n";
     });

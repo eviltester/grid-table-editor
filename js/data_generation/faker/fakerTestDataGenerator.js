@@ -7,21 +7,6 @@ export class FakerTestDataGenerator{
     }
 
     
-/*
-    Support for much of the faker APi
-
-    http://marak.github.io/faker.js/
-    https://github.com/Marak/faker.js
-
-    e.g.
-
-    faker.name.firstName
-    faker.helpers.fake("{{name.lastName}}, {{name.firstName}}")
-    faker.lorem.paragraph
-
-    returns a result object that also says if an error happened
- */
-
     generateFrom(aRule){
 
         const fakerCommand = new FakerCommand(aRule.ruleSpec);

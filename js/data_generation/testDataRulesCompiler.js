@@ -33,6 +33,7 @@ export class TestDataRulesCompiler{
         this.errors = [];
 
         const fakerValidator = new FakerTestDataRuleValidator(this.faker)
+        // TODO: create a RegexTestDataRuleValidator
 
         const validTypes = ["regex","faker","literal"];
 

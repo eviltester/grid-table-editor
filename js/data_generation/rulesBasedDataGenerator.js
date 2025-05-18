@@ -1,4 +1,7 @@
 import {FakerTestDataGenerator} from "./faker/fakerTestDataGenerator.js";
+import {RegexTestDataGenerator} from "./regex/regexTestDataGenerator.js";
+import { LiteralTestDataGenerator } from "./literal/literalTestDataGenerator.js";
+import { dataResponse } from "./ruleResponse.js";
 
 export class RulesBasedDataGenerator{
 
@@ -18,32 +21,42 @@ export class RulesBasedDataGenerator{
         data.push(headers);
     
         const fakerGenerator = new FakerTestDataGenerator(this.faker);
+        const regexGenerator = new RegexTestDataGenerator(this.RandExp);
+        const literalGenerator = new LiteralTestDataGenerator();
+        const defaultGenerator = new DefaultTestDataGenerator();
     
         for(var row=0; row<thisMany; row++){
     
             const aRow = fromRules.map((rule) => {
     
                 var dataGen = "";
+                var generator;
+                var value;
     
-                // TODO: there should be a generator for each type
-                // TODO: all generator should return an executionResult object .e.g {isError: , errorMessage: , data}
                 switch (rule.type) {
                     case "faker": // is faker?
-                        const value = fakerGenerator.generateFrom(rule)
-                        dataGen = value.data ? value.data : "**ERROR**";
+                        generator = fakerGenerator;
                         break;
     
                     case "regex":
-                        dataGen = new this.RandExp(rule.ruleSpec).gen();
+                        generator  = regexGenerator;
                         break;
     
                     case "literal":
-                        dataGen = rule.ruleSpec;
+                        generator = literalGenerator;
                         break;
     
                     default:
                         console.warn(`${rule.name} has Unidentified rule type ${rule.type} with spec ${rule.ruleSpec}`);
-                        dataGen = rule.ruleSpec;
+                        generator = defaultGenerator;
+                }
+
+                value = generator.generateFrom(rule);
+
+                if(value.isError){
+                    dataGen = "**ERROR**";
+                }else{
+                    dataGen = value.data;
                 }
     
                 return dataGen;
@@ -54,5 +67,15 @@ export class RulesBasedDataGenerator{
         }
     
         return data;
+    }
+}
+
+class DefaultTestDataGenerator{
+
+    constructor(){
+    }
+
+    generateFrom(aRule){
+        return dataResponse(aRule.ruleSpec);
     }
 }

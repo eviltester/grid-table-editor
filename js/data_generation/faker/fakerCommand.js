@@ -1,6 +1,19 @@
 import { dataResponse, errorResponse, RuleResponse } from "../ruleResponse.js";
 import { runFakerCommand } from "./fakerCommandRunner.js";
 
+/*
+    Support for much of the faker APi
+
+    http://marak.github.io/faker.js/
+    https://github.com/Marak/faker.js
+
+    e.g.
+
+    faker.person.firstName
+    faker.helpers.fake("{{name.lastName}}, {{name.firstName}}")
+    faker.lorem.paragraph
+ */
+
 export class FakerCommand{
 
     constructor(aCommand){
@@ -77,6 +90,7 @@ export class FakerCommand{
         }
     }
 
+    // TODO: create a class for this FakerFunction object
     // returns an object {fakerFunction: theFunctionFound, commandName: theFakerCommandMatchingTheFunction}
     findFakerFunction(forCommand, withFaker){
 
@@ -123,6 +137,7 @@ export class FakerCommand{
         return this.validationResult;
     }
 
+    // returns a RuleResponse object that also says if an error happened
     execute(usingFaker){
 
         if(this.validationResult.isError){

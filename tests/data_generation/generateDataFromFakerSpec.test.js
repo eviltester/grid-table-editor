@@ -30,6 +30,7 @@ describe("TestDataGenerator handles Faker API",()=>{
             expect(generator.testDataRules()[0].name).toBe("Faker");
             expect(generator.testDataRules()[0].type).toBe("faker");
             expect(generator.testDataRules()[0].ruleSpec).toBe("helpers.arrayElement(['cat', 'dog', 'mouse'])");
+            expect(generator.testDataRules()[0].fakerCommand).toBe("helpers.arrayElement");
             expect(generator.testDataRules().length).toBe(1)
 
         });
@@ -47,6 +48,7 @@ describe("TestDataGenerator handles Faker API",()=>{
             expect(generator.testDataRules()[0].name).toBe("Faker");
             expect(generator.testDataRules()[0].type).toBe("faker");
             expect(generator.testDataRules()[0].ruleSpec).toBe("faker.helpers.arrayElement(['cat', 'dog', 'mouse'])");
+            expect(generator.testDataRules()[0].fakerCommand).toBe("helpers.arrayElement");
             expect(generator.testDataRules().length).toBe(1)
 
         });
@@ -68,6 +70,7 @@ describe("TestDataGenerator handles Faker API",()=>{
             expect(generator.testDataRules()[0].ruleSpec).toBe(
                 "helpers.fake('Hi, my name is {{person.firstName}} {{person.lastName}}!')"
             );
+            expect(generator.testDataRules()[0].fakerCommand).toBe("helpers.fake");
             expect(generator.testDataRules().length).toBe(1)
 
         });
@@ -93,6 +96,7 @@ helpers.mustache('I found {{count}} instances of "{{word}}".', {count: () => \`\
             expect(generator.testDataRules()[0].ruleSpec).toBe(
                 `helpers.mustache('I found {{count}} instances of "{{word}}".', {count: () => \`\${this.number.int()}\`,word: "this word",})`
             );
+            expect(generator.testDataRules()[0].fakerCommand).toBe("helpers.mustache");
             expect(generator.testDataRules().length).toBe(1)
 
             //console.log(generator.generate(3));

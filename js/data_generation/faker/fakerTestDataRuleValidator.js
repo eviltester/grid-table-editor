@@ -1,4 +1,4 @@
-import { FakerTestDataGenerator } from "./fakerTestDataGenerator.js";
+import { FakerCommand } from "./fakerCommand.js";
 
 // requires faker.js which should be passed in via constructor
 // faker can be imported in different ways
@@ -23,9 +23,14 @@ class FakerTestDataRuleValidator{
 
         // is it a faker function?
         try{
-            const whatDidWeGet = new FakerTestDataGenerator(this.faker).generateFrom(aTestDataRule);
+            const fakerCommand = new FakerCommand(aTestDataRule.ruleSpec);
+            fakerCommand.parse();
+            fakerCommand.compile(this.faker);
+            const whatDidWeGet =  fakerCommand.validate(this.faker);
+
             if(whatDidWeGet !== undefined && whatDidWeGet !==null && whatDidWeGet.isError===false){
                 aTestDataRule.type="faker";
+                aTestDataRule.fakerCommand = fakerCommand.fakerFunctionName;
                 return true;
             }else{
                 this.validationError=whatDidWeGet.errorMessage;

@@ -49,7 +49,7 @@ describe("Can generate Random Data using Faker",()=>{
             
             const result = new FakerTestDataGenerator(faker).generateFrom(rule);
             expect(result.isError).toBe(true);
-            expect(result.errorMessage).toBe("Could not find Faker API Command internet.ea");
+            expect(result.errorMessage).toBe("Could not find Faker API Command internet.ea {internet.ea}");
 
         });
     });

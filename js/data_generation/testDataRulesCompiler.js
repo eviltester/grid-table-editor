@@ -1,4 +1,5 @@
 import {FakerTestDataRuleValidator} from "./faker/fakerTestDataRuleValidator.js";
+import {RegexTestDataRuleValidator} from "./regex/regexTestDataRuleValidator.js";
 
 /*
     'Compilation' of rules is where we try to identify if the rules are
@@ -32,8 +33,8 @@ export class TestDataRulesCompiler{
         this.compilationReportLines = [];
         this.errors = [];
 
-        const fakerValidator = new FakerTestDataRuleValidator(this.faker)
-        // TODO: create a RegexTestDataRuleValidator
+        const fakerValidator = new FakerTestDataRuleValidator(this.faker);
+        const regexValidator = new RegexTestDataRuleValidator(this.RandExp);
 
         const validTypes = ["regex","faker","literal"];
 
@@ -51,12 +52,12 @@ export class TestDataRulesCompiler{
                 }else{
                     this.compilationReportLines.push(`${rule.name} is not a 'faker': ${fakerValidator.getValidationError()}`);
                     // does the regex generation work?
-                    try{
-                        new this.RandExp(rule.ruleSpec).gen();
-                        rule.type="regex";
+                    regexValidator.validate(rule);
+                    if(regexValidator.isValid()){      
                         this.compilationReportLines.push(`${rule.name} is a valid 'regex': ${rule.ruleSpec}`);
-                    }catch(err){
-                        this.compilationReportLines.push(`${rule.name} is not a 'regex': ${err}`);
+                        rule.type="regex";
+                    }else{
+                        this.compilationReportLines.push(`${rule.name} is not a 'regex': ${regexValidator.getValidationError()}`);
                         this.errors.push(`Evaluating _${rule.name}_ as 'literal'`);
                         rule.type="literal";
                     }
@@ -79,12 +80,13 @@ export class TestDataRulesCompiler{
 
         this.errors = [];
 
-        const fakerValidator = new FakerTestDataRuleValidator(this.faker)
+        const fakerValidator = new FakerTestDataRuleValidator(this.faker);
+        const regexValidator = new RegexTestDataRuleValidator(this.RandExp);
 
         this.rules.forEach((rule)=>{
             switch (rule.type) {
                 case "faker":
-            // is it a faker function?
+                    // is it a faker function?
                     fakerValidator.validate(rule);
                     if(!fakerValidator.isValid()){
                         this.errors.push(`ERROR: ${rule.name} failed faker validation - ${fakerValidator.getValidationError()}`)
@@ -92,11 +94,11 @@ export class TestDataRulesCompiler{
                     break;
                 case "regex":
                     // does the regex generation work?
-                    try{
-                        new this.RandExp(rule.ruleSpec).gen();
-                    }catch(err){
-                        this.errors.push(`ERROR: ${rule.name} failed Regex validation - ${err}`);
+                    regexValidator.validate(rule);
+                    if(!regexValidator.isValid()){
+                        this.errors.push(`ERROR: ${rule.name} failed Regex validation - ${regexValidator.getValidationError()}`)
                     }
+                    break;
                 case "literal":
                     // literals always work
                     break;

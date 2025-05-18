@@ -25,6 +25,8 @@ export class RulesBasedDataGenerator{
     
                 var dataGen = "";
     
+                // TODO: there should be a generator for each type
+                // TODO: all generator should return an executionResult object .e.g {isError: , errorMessage: , data}
                 switch (rule.type) {
                     case "faker": // is faker?
                         const value = fakerGenerator.generateFrom(rule)

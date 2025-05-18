@@ -1,3 +1,4 @@
+import { dataResponse, errorResponse, RuleResponse } from "../ruleResponse.js";
 import { runFakerCommand } from "./fakerCommandRunner.js";
 
 export class FakerCommand{
@@ -9,7 +10,7 @@ export class FakerCommand{
         this.fakerFunctionName="";
         this.fakerFunctionCallArgs = "";
 
-        this.validationResult = {isError: true, errorMessage: "Not Parsed", data: ""};
+        this.validationResult = errorResponse("Not Parsed");
     }
 
     parse(){
@@ -40,20 +41,16 @@ export class FakerCommand{
         }
 
         if(parts.length===0 || parts[0].length===0){
-            this.validationResult.isError= true;
-            this.validationResult.errorMessage="Syntax Error: No faker API command found";
+            this.validationResult = errorResponse("Syntax Error: No faker API command found");
             return this.validationResult;
         }
         
         if(parts.length===1){
-            this.validationResult.isError= true;
-            this.validationResult.errorMessage="Syntax Error: No faker API command found - commands have a minimum of two parts module.command";
-            return this.validationResult;
+            this.validationResult = errorResponse("Syntax Error: No faker API command found - commands have a minimum of two parts module.command");
+           return this.validationResult;
         }
         
-       
-        this.validationResult.isError= false;
-        this.validationResult.errorMessage="Parsed but Not Compiled";
+        this.validationResult = new RuleResponse(false, "Parsed but Not Compiled", "");
         return this.validationResult;
     
     }
@@ -68,14 +65,12 @@ export class FakerCommand{
         const fakerFunction = this.findFakerFunction(this.fakerFunctionName, withFaker);
 
         if(fakerFunction.fakerFunction===undefined){
-            this.validationResult.isError= true;
-            this.validationResult.errorMessage="Could not find Faker API Command " + this.fakerFunctionName + ` {${fakerFunction.commandName}}`;
+            this.validationResult = errorResponse("Could not find Faker API Command " + this.fakerFunctionName + ` {${fakerFunction.commandName}}`);
             return this.validationResult;
         }
 
         if(typeof fakerFunction.fakerFunction === "function"){
-            this.validationResult.isError= false;
-            this.validationResult.errorMessage="";
+            this.validationResult = dataResponse("");
             // compiled command name
             this.fakerFunctionName = fakerFunction.commandName;
             return this.validationResult;
@@ -120,10 +115,11 @@ export class FakerCommand{
         }
 
         const executionResult = this.execute(againstFaker);
-            
-        this.validationResult.isError = executionResult.isError;
-        this.validationResult.errorMessage = "Invalid Faker API Call " + executionResult.errorMessage;
-        this.validationResult.data = executionResult.data;
+        this.validationResult = new RuleResponse(
+            executionResult.isError,
+            "Invalid Faker API Call " + executionResult.errorMessage,
+            executionResult.data
+        );
         return this.validationResult;
     }
 

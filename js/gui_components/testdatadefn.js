@@ -144,33 +144,7 @@ function populateTestDataGridFromRules(){
     }
 }
 
-const FAKER_COMMANDS = ['RegEx',
-                // "mersenne.rand",
-                // // "mersenne.seed",
-                // // "mersenne.seed_array",
-                // "random.word","random.words","random.locale","random.alpha","random.alphaNumeric","random.numeric",
-                // // "helpers.slugify","helpers.replaceSymbolWithNumber","helpers.replaceSymbols","helpers.replaceCreditCardSymbols","helpers.repeatString","helpers.regexpStyleStringParse","helpers.shuffle","helpers.uniqueArray","helpers.mustache","helpers.maybe","helpers.objectKey","helpers.objectValue","helpers.arrayElement","helpers.arrayElements",
-                // "datatype.number","datatype.float","datatype.datetime","datatype.string","datatype.uuid","datatype.boolean","datatype.hexadecimal","datatype.json","datatype.array","datatype.bigInt",
-                // "address.zipCode","address.zipCodeByState","address.city","address.cityPrefix","address.citySuffix","address.cityName","address.buildingNumber","address.street","address.streetName","address.streetAddress","address.streetSuffix","address.streetPrefix","address.secondaryAddress","address.county","address.country","address.countryCode","address.state","address.stateAbbr","address.latitude","address.longitude","address.direction","address.cardinalDirection","address.ordinalDirection","address.nearbyGPSCoordinate","address.timeZone",
-                // "animal.dog","animal.cat","animal.snake","animal.bear","animal.lion","animal.cetacean","animal.horse","animal.bird","animal.cow","animal.fish","animal.crocodilia","animal.insect","animal.rabbit","animal.type",
-                // "color.human","color.space","color.cssSupportedFunction","color.cssSupportedSpace","color.rgb","color.cmyk","color.hsl","color.hwb","color.lab","color.lch","color.colorByCSSColorSpace",
-                // "commerce.color","commerce.department","commerce.productName","commerce.price","commerce.productAdjective","commerce.productMaterial","commerce.product","commerce.productDescription",
-                // "company.suffixes","company.companyName","company.companySuffix","company.catchPhrase","company.bs","company.catchPhraseAdjective","company.catchPhraseDescriptor","company.catchPhraseNoun","company.bsAdjective","company.bsBuzz","company.bsNoun",
-                // "database.column","database.type","database.collation","database.engine","database.mongodbObjectId",
-                // "date.past","date.future","date.between","date.betweens","date.recent","date.soon","date.month","date.weekday","date.birthdate",
-                // "finance.account","finance.accountName","finance.routingNumber","finance.mask","finance.amount","finance.transactionType","finance.currencyCode","finance.currencyName","finance.currencySymbol","finance.bitcoinAddress","finance.litecoinAddress","finance.creditCardNumber","finance.creditCardCVV","finance.creditCardIssuer","finance.pin","finance.ethereumAddress","finance.iban","finance.bic","finance.transactionDescription",
-                // "git.branch","git.commitEntry","git.commitMessage","git.commitSha","git.shortSha",
-                // "hacker.abbreviation","hacker.adjective","hacker.noun","hacker.verb","hacker.ingverb","hacker.phrase",
-                // "image.image","image.avatar","image.imageUrl","image.abstract","image.animals","image.business","image.cats","image.city","image.food","image.nightlife","image.fashion","image.people","image.nature","image.sports","image.technics","image.transport","image.dataUri",
-                // "internet.avatar","internet.email","internet.exampleEmail","internet.userName","internet.protocol","internet.httpMethod","internet.httpStatusCode","internet.url","internet.domainName","internet.domainSuffix","internet.domainWord","internet.ip","internet.ipv4","internet.ipv6","internet.port","internet.userAgent","internet.color","internet.mac","internet.password","internet.emoji",
-                // "lorem.word","lorem.words","lorem.sentence","lorem.slug","lorem.sentences","lorem.paragraph","lorem.paragraphs","lorem.text","lorem.lines",
-                // "music.genre","music.songName",
-                // "name.firstName","name.lastName","name.middleName","name.findName","name.gender","name.prefix","name.suffix","name.jobTitle","name.jobDescriptor","name.jobArea","name.jobType",
-                // "phone.phoneNumber","phone.phoneNumberFormat","phone.phoneFormats","phone.imei",
-                // "system.fileName","system.commonFileName","system.mimeType","system.commonFileType","system.commonFileExt","system.fileType","system.fileExt","system.directoryPath","system.filePath","system.semver",
-                // "vehicle.vehicle","vehicle.manufacturer","vehicle.model","vehicle.type","vehicle.fuel","vehicle.vin","vehicle.color","vehicle.vrm","vehicle.bicycle",
-                // "word.adjective","word.adverb","word.conjunction","word.interjection","word.noun","word.preposition","word.verb",
-            
+const KNOWN_FAKER_COMMANDS = ['RegEx',
             
                 // v9.7.0
                 //"_randomizer.next","_randomizer.seed",
@@ -207,6 +181,8 @@ const FAKER_COMMANDS = ['RegEx',
                 "word.adjective","word.adverb","word.conjunction","word.interjection","word.noun","word.preposition","word.verb","word.sample","word.words",
             ];
 
+const FAKER_COMMANDS = []; 
+
 // TODO: add fakerCommand to the TestDataRule already parsed out
 function findFakerCommand(aString){
     for(let command of FAKER_COMMANDS){
@@ -217,44 +193,69 @@ function findFakerCommand(aString){
     return null;
 }
 
-// TODO: instantiate this from the current faker object, rather than running on external site
+function outputListOfCommands(){
+
+}
+
+function identifyFakerCommands(aFaker){
+    
+   FAKER_COMMANDS.length = 0;
+
+   // add our internal values
+   FAKER_COMMANDS.push('RegEx');
+
+   // any classes of commands that do not work? e.g. definitions, helpers used to be bad
+   const skipKeys = [];
+
+   // faker commands that we know will not work well for test data generation
+   const skipValues = [
+        "_randomizer.next","_randomizer.seed",
+        "helpers.objectKey","helpers.objectValue","helpers.objectEntry","helpers.enumValue",
+    ];
+
+    let fakerKeys = Object.keys(faker);
+    fakerKeys.forEach(k=>{
+        Object.getOwnPropertyNames(faker[k]).
+            filter(item => {return typeof faker[k][item] === 'function'})
+            .forEach(
+                k2 => {
+                    if(skipKeys.includes(k) || skipValues.includes(`${k}.${k2}`)){
+                        // ignore this value
+                        console.log(`skipping command ${k}.${k2}`)
+                    }else{
+                        // add the valid function
+                        FAKER_COMMANDS.push(`${k}.${k2}`)
+                    }
+                }
+            )
+    });
+
+    // copy paste into KNOWN_FAKER_COMMANDS when updating a faker version after tesitng for new exclusions and removals
+    // console.log(FAKER_COMMANDS);
+
+    // Sanity check
+    let sanityCheckCommands = KNOWN_FAKER_COMMANDS.slice();
+    FAKER_COMMANDS.forEach((command) => {
+        let foundIndex = sanityCheckCommands.indexOf(command);
+        if(foundIndex == -1){
+            // new command found
+            console.log("Found new Faker command " + command);
+        }else{
+            sanityCheckCommands[foundIndex] = "";
+        }
+    });
+
+    sanityCheckCommands.filter(value => {return value.length > 0}).forEach(value => console.log("Previously known faker command not present: " + value));
+}
+
 
 function setupTestDataEditGrid(gridDiv){
 
 
     const defnRowData = [];
 
-    /* for version 9 use https://fakerjs.dev/playground/
+    // FAKER_COMMANDS must have been previously populated
 
-    let codegen="";
-    let lastK="";
-    let skipKeys = ["definitions", "helpers"];
-    let skipValues = ["mersenne.seed", "mersenne.seed_array"];
-    let fakerKeys = Object.keys(faker);
-    fakerKeys.forEach(k=>{
-        Object.getOwnPropertyNames(faker[k]).
-             filter(item => {return typeof faker[k][item] === 'function'})
-             .forEach(
-                 k2 => {
-                     if(lastK!=k){
-                         codegen=codegen+"\n";
-                         lastK=k;
-                         if(skipKeys.includes(k)){
-                             codegen=codegen+"// ";
-                         }
-                     }
-                     let eol = "";
-                     if(skipValues.includes(`${k}.${k2}`)){
-                         codegen=codegen+"\n// ";
-                         eol = "\n";
-                     }
-                     codegen=codegen+`"${k}.${k2}",${eol}`;
-                    }
-             )
-    });
-    console.log(codegen);
-
-    */
     const defnColumnDefs = [
         {
             field: 'columnName',
@@ -345,6 +346,11 @@ function convertGridToText(){
 
 
 function enableTestDataGenerationInterface(parentId, anImporter, theExportControls){
+
+
+    // dynamically setup the faker commands from loaded library
+    // and check for any changes
+    identifyFakerCommands(faker);
 
     importer = anImporter;
     exportControls = theExportControls;

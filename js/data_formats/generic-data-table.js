@@ -27,110 +27,11 @@ class GenericDataTable {
         this.rows = [];
     }
 
-    setFromDataArray(aDataArray){
-        // first row are headings
-        // rest are data
-        if(aDataArray===undefined){
-            return true;
-        }
-        if(aDataArray===null){
-            // clear the table
-            this.headers = [];
-            this.rows=[];
-            return true;
-        }
-        if(aDataArray.length == 0){
-            return false;
-        }
-
-        // process headers
-        const dataHeaders = aDataArray[0];
-        if(dataHeaders===undefined){
-            // do not change the headers
-        }else{
-            if(dataHeaders===null){
-                // bad idea to try and set headers to null
-                // leave data as it is
-                console.log("Cannot set headers to null, data unchanged");
-                return false;
-            }
-            if(dataHeaders.length==0){
-                // what are you doing? table needs headers
-                // leave data as it is
-                console.log("Cannot set headers to none, data unchanged");
-                return false;
-            }
-        }
-
+    clear(){
+        // clear the table
         this.headers = [];
-        for(let header of dataHeaders){
-            // add header value to the grid
-            this.addHeader(header);
-        }
-
         this.rows=[];
-        // process data
-        for( let rowId = 1; rowId<aDataArray.length; rowId++){
-            let rowData = aDataArray[rowId];
-            if(!this.appendDataRow(rowData)){
-                return false;
-            }
-        }
-
         return true;
-    }
-
-    setFromDataObjects(dataObjects){
-
-        if(dataObjects===undefined){
-            return;
-        }
-
-        if(dataObjects===null){
-            return;
-        }
-
-        if(dataObjects.length===0){
-            return;
-        }
-
-        // assume all headers are in the first object
-        let headers = [];
-        for(const header in dataObjects[0]){
-            headers.push(header);
-        }
-
-        this.setHeaders(headers);
-
-        // process all rows
-        dataObjects.forEach(row => {
-            let rowData = [];
-            headers.forEach(header => {
-                let cellValue = row[header];
-                if(cellValue===undefined){
-                    cellValue="";
-                }
-                rowData.push(cellValue);
-            });
-            this.appendDataRow(rowData);
-        });   
-
-    }
-
-    // convert to the old format to ease migration
-    asDataArray(){
-
-        let data = [];
-
-        if(this.headers.length==0){
-            return data;
-        }
-
-        data.push(this.headers.map(header => header));
-        for(let row of this.rows){
-            data.push(row.map(cell => cell));
-        }
-        return data;
     }
 
     appendDataRow(rowData){
@@ -196,14 +97,8 @@ class GenericDataTable {
     }
 
     getRowAsObject(rowIndex){
-
       let fieldnames = this.getHeaders();
-      let vals = {};
-      let row = this.getRow(rowIndex);
-      for (const propertyid in fieldnames) {
-        vals[fieldnames[propertyid]] = row[propertyid];
-      }
-      return vals;
+      return this.getRowAsObjectUsingHeadings(rowIndex, fieldnames);
     }
 
     getRowAsObjectUsingHeadings(rowIndex, fieldnames){

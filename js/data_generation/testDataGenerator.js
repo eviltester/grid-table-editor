@@ -49,4 +49,12 @@ export class TestDataGenerator{
     generate(thisMany){
         return this.generator.generateFromRules(thisMany, this.rulesParser.testDataRules.rules);
     }
+
+    generateHeadersArray(){
+        return this.rulesParser.testDataRules.rules.map((rule) => rule.name);
+    }
+
+    generateRow(){
+        return this.generator.generateRandomRow(this.rulesParser.testDataRules.rules);
+    }
 }

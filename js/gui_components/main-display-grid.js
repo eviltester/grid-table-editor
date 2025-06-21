@@ -2,6 +2,18 @@ import { GridExtension } from "../grid/gridExtension.js";
 import { GridControl, GridControlsPageMap } from "./gridControl.js"
 import { CustomHeader } from "../grid/customHeader.js";
 
+/*
+    Grid Features Used:
+    - custom column header to add buttons for add new etc.
+    - in cell editing
+    - user row moving - drag drop
+    - user column dragging - left right
+    - column sorting
+    - table filtering
+    - row select (for deleting row, and adding above below)
+*/
+
+
 class ExtendedDataGrid {
 
     constructor() {

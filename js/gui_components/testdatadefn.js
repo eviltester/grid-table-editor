@@ -25,6 +25,7 @@ import {GridExtension} from '../grid/gridExtension.js';
 import { SelectFilterEditor} from '../grid/select-filter-editor.js';
 
 import { faker } from "https://cdn.skypack.dev/@faker-js/faker@v9.7.0";
+import { GenericDataTable } from "../data_formats/generic-data-table.js";
 
 var debouncer = new Debouncer();
 let importer=undefined;
@@ -68,12 +69,12 @@ function generateTestData(){
     // TODO : it would lower memory requirements if we did
     // this in tranches of 100 and appended the transaction as we go
 
-    
-    // generate
-    const data = generator.generate(desiredRowCount);
-
+    // todo: a grid backed generic table would render directly into table
     // add data to table
-    importer.setGridFromData(data);
+    const dataTable = new GenericDataTable();
+    generateDataIntoGenericDataTableFromRules(desiredRowCount, generator, dataTable);
+
+    importer.setGridFromGenericDataTable(dataTable);
 
     // and refresh the export
     exportControls.renderTextFromGrid();
@@ -81,6 +82,15 @@ function generateTestData(){
     // set the grid to use the rules
     populateTestDataGridFromRules();
 
+}
+
+function generateDataIntoGenericDataTableFromRules(thisMany, generator, dataTable){
+            
+    dataTable.setHeaders(generator.generateHeadersArray());
+
+    for(var row=0; row<thisMany; row++){
+        dataTable.appendDataRow(generator.generateRow());
+    }
 }
 
 function createTestDataGrid(){

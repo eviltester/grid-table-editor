@@ -4,6 +4,7 @@ import { enableTestDataGenerationInterface } from "./gui_components/testdatadefn
 import { ExtendedDataGrid } from "./gui_components/main-display-grid.js";
 import {TabbedTextControl} from "./gui_components/tabbed-text-control.js"
 import { ImportExportControls } from "./gui_components/import-export-controls.js";
+import { GenericDataTable } from "./data_formats/generic-data-table.js";
 
 var importer, exporter;
 var mainDataGrid;
@@ -44,12 +45,12 @@ document.addEventListener('DOMContentLoaded', function() {
 function setTextFromInstructions(){
   mainDataGrid.getGridExtras().clearGrid();
   const instructions = document.querySelectorAll("div.instructions details ul li");
-  let textData = [];
-  textData.push(["Instructions"]);
+  let textData = new GenericDataTable();
+  textData.addHeader("Instructions");
   instructions.forEach(instruction => {
-    textData.push([instruction.textContent]);
+    textData.appendDataRow([instruction.textContent]);
   })
-  importer.setGridFromData(textData);
+  importer.setGridFromGenericDataTable(textData);
   // set the instructions to fit grid size
   mainDataGrid.getGridApi().sizeColumnsToFit()
 }

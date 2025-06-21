@@ -1,7 +1,6 @@
 import { isNumber } from "../utils/number-convertor.js";
+import { GenericDataTableUtils } from "./generic-data-table-utils.js";
 import { GenericDataTable } from "./generic-data-table.js";
-
-
 
 class JsonConvertorOptions{
 
@@ -116,8 +115,10 @@ class JsonConvertor {
             jsonArray = JSON.parse(textToImport);
         }
 
+        const utils = new GenericDataTableUtils();
         let dataTable = new GenericDataTable();
-        dataTable.setFromDataObjects(jsonArray)
+        utils.setGenericDataTableFromDataObjects(dataTable, jsonArray);
+
         return dataTable;
     }
 

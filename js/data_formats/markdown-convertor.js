@@ -198,13 +198,6 @@ class MarkdownConvertor {
       return dataTable;
   }
 
-
-   // TODO : remove this, it is out of date and only used by tests
-    markdownTableToDataRows(markdownTable){
-      return this.toDataTable(markdownTable).asDataArray();
-    }
-
-
     // make sure it is valid markdown
     getValidOutputFormatCellValue(data){
       return data.replaceAll("|","&#124;");

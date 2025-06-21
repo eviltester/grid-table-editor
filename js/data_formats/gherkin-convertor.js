@@ -238,11 +238,6 @@ class GherkinConvertor {
     
         return dataTable;
     }
-
-     // TODO : remove this, it is out of date and only used by tests
-    gherkinTableToDataRows(gherkinTable){
-        return this.toDataTable(gherkinTable).asDataArray();
-    }
 }
 
 

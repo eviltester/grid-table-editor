@@ -71,17 +71,6 @@ describe("Can convert markdown tables to data suitable for a data grid",()=>{
         expect(table.getCell(0,1)).toBe('row 0 cell 1');
         expect(table.getCell(1,0)).toBe('row 1 cell 0');
         expect(table.getCell(1,1)).toBe('row 1 cell 1');
-
-        let data = new GherkinConvertor().gherkinTableToDataRows(basicTable);
-
-        expect(data.length).toBe(3);
-        expect(data[0][0]).toBe('heading 1');
-        expect(data[0][1]).toBe('heading 2');
-        expect(data[1][0]).toBe('row 0 cell 0');
-        expect(data[1][1]).toBe('row 0 cell 1');
-        expect(data[2][0]).toBe('row 1 cell 0');
-        expect(data[2][1]).toBe('row 1 cell 1');
-
     });
 
     test('can handle embedded bars', () => {
@@ -100,15 +89,6 @@ describe("Can convert markdown tables to data suitable for a data grid",()=>{
         expect(table.getCell(1,0)).toBe('row 1 cell 0');
         expect(table.getCell(1,1)).toBe('row 1 |cell 1');
 
-        let data = new GherkinConvertor().gherkinTableToDataRows(basicTable);
-
-        expect(data.length).toBe(3);
-        expect(data[0][0]).toBe('head|ing 1');
-        expect(data[0][1]).toBe('heading 2');
-        expect(data[1][0]).toBe('row 0| cell 0');
-        expect(data[1][1]).toBe('row 0 cell 1');
-        expect(data[2][0]).toBe('row 1 cell 0');
-        expect(data[2][1]).toBe('row 1 |cell 1');
     });
 
     test('empty table returns empty array', () => {
@@ -118,10 +98,6 @@ describe("Can convert markdown tables to data suitable for a data grid",()=>{
 
         expect(table.getRowCount()).toBe(0);
         expect(table.getColumnCount()).toBe(0);
-
-        let data = new GherkinConvertor().gherkinTableToDataRows(basicTable);
-
-        expect(data.length).toBe(0);
     });
 
 
@@ -144,17 +120,6 @@ describe("Can convert markdown tables to data suitable for a data grid",()=>{
         expect(table.getCell(0,1)).toBe('row 0 cell 1');
         expect(table.getCell(1,0)).toBe('row 1 cell 0');
         expect(table.getCell(1,1)).toBe('row 1 cell 1');
-
-        let data = new GherkinConvertor().gherkinTableToDataRows(basicTable);
-
-        expect(data.length).toBe(3);
-        expect(data[0][0]).toBe('heading 1');
-        expect(data[0][1]).toBe('heading 2');
-        expect(data[1][0]).toBe('row 0 cell 0');
-        expect(data[1][1]).toBe('row 0 cell 1');
-        expect(data[2][0]).toBe('row 1 cell 0');
-        expect(data[2][1]).toBe('row 1 cell 1');
-
     });
 
     test('skips empty rows at end', () => {
@@ -176,17 +141,6 @@ describe("Can convert markdown tables to data suitable for a data grid",()=>{
         expect(table.getCell(0,1)).toBe('row 0 cell 1');
         expect(table.getCell(1,0)).toBe('row 1 cell 0');
         expect(table.getCell(1,1)).toBe('row 1 cell 1');
-
-        let data = new GherkinConvertor().gherkinTableToDataRows(basicTable);
-
-        expect(data.length).toBe(3);
-        expect(data[0][0]).toBe('heading 1');
-        expect(data[0][1]).toBe('heading 2');
-        expect(data[1][0]).toBe('row 0 cell 0');
-        expect(data[1][1]).toBe('row 0 cell 1');
-        expect(data[2][0]).toBe('row 1 cell 0');
-        expect(data[2][1]).toBe('row 1 cell 1');
-
     });
 
 
@@ -207,14 +161,6 @@ describe("Can convert markdown tables to data suitable for a data grid",()=>{
         expect(table.getHeader(1)).toBe('heading -2');
         expect(table.getCell(0,0)).toBe('row 0 cell 0');
         expect(table.getCell(0,1)).toBe('row 0 cell 1');
-
-        let data = new GherkinConvertor().gherkinTableToDataRows(basicTable);
-
-        expect(data.length).toBe(2);
-        expect(data[0][0]).toBe('heading -1');
-        expect(data[0][1]).toBe('heading -2');
-        expect(data[1][0]).toBe('row 0 cell 0');
-        expect(data[1][1]).toBe('row 0 cell 1');
     });
 
 
@@ -236,14 +182,6 @@ describe("Can convert markdown tables to data suitable for a data grid",()=>{
         expect(table.getHeader(1)).toBe('heading -2');
         expect(table.getCell(0,0)).toBe('row 0 cell 0');
         expect(table.getCell(0,1)).toBe('row 0 cell 1');
-
-        let data = new GherkinConvertor().gherkinTableToDataRows(basicTable);
-
-        expect(data.length).toBe(2);
-        expect(data[0][0]).toBe('heading -1');
-        expect(data[0][1]).toBe('heading -2');
-        expect(data[1][0]).toBe('row 0 cell 0');
-        expect(data[1][1]).toBe('row 0 cell 1');
     });
 
     test('handle empty column on left', () => {
@@ -263,16 +201,6 @@ describe("Can convert markdown tables to data suitable for a data grid",()=>{
         expect(table.getCell(0,1)).toBe('row 0 cell 1');
         expect(table.getCell(1,0)).toBe('');
         expect(table.getCell(1,1)).toBe('row 1 cell 1');
-
-        let data = new GherkinConvertor().gherkinTableToDataRows(basicTable);
-
-        expect(data.length).toBe(3);
-        expect(data[0][0]).toBe('heading 1');
-        expect(data[0][1]).toBe('heading 2');
-        expect(data[1][0]).toBe('');
-        expect(data[1][1]).toBe('row 0 cell 1');
-        expect(data[2][0]).toBe('');
-        expect(data[2][1]).toBe('row 1 cell 1');
     });
 
 

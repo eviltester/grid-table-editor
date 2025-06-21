@@ -64,6 +64,8 @@ class Exporter {
         }
     }
 
+    // TODO: consider creating a GridBackedGenericDataTable such that it is a generic wrapper
+    // then we don't have to copy the data out into a new structure
     getGridAsGenericDataTable(){
         let dataTable = new GenericDataTable();
         dataTable.setHeaders(this.gridApi.getColumnDefs().map(col => col.headerName));

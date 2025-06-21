@@ -74,34 +74,6 @@ class Importer{
       }
     }
 
-    // TODO : phase this out and use the GenericDataTable
-    setGridFromData(data){
-
-        // data is row of values where the first row is the headers
-
-        var header = true;
-
-        var addRows = [];
-
-        data.forEach(row => {
-          if (header) {
-            this.gridExtras.createColumns(row);
-            header = false;
-            this.gridApi.setRowData([]);
-          } else {
-            var fieldnames = this.gridApi
-              .getColumnDefs()
-              .map(col => col.field);
-            var vals = {};
-            for (const propertyid in fieldnames) {
-              vals[fieldnames[propertyid]] = row[propertyid];
-            }
-            addRows.push(vals);
-          }
-        });
-
-        this.gridApi.applyTransaction({ add: addRows });
-    }
 
     setGridFromGenericDataTable(dataTable){
 

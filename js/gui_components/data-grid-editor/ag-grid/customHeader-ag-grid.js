@@ -16,18 +16,18 @@ class CustomHeaderAgGrid {
       this.eGui.classList.add('headerWrapper');
       this.eGui.innerHTML = `
                <div class="customHeaderTop">
-                <div class="customFilterMenuButton">
+                <div  data-ref="eFilterButton" class="customFilterMenuButton">
                     <i class="ag-icon ag-icon-filter"></i>
                 </div>
-                <div class="customHeaderLabel">${this.agParams.displayName}</div>
+                <div data-ref="eLabel" class="customHeaderLabel">${this.agParams.displayName}</div>
                 <div class="customSort">
-                  <span class="customSortDownLabel inactive">
+                  <span  data-ref="eSortDesc" class="customSortDownLabel inactive">
                       <i class="ag-icon ag-icon-desc"></i>
                   </span>
-                  <span class="customSortUpLabel inactive">
+                  <span data-ref="eSortAsc" class="customSortUpLabel inactive">
                       <i class="ag-icon ag-icon-asc"></i>
                   </span>
-                  <span class="customSortRemoveLabel inactive">
+                  <span data-ref="eSortNone" class="customSortRemoveLabel inactive">
                       <i class="ag-icon ag-icon-cancel"></i>
                   </span>
                 </div>
@@ -41,7 +41,7 @@ class CustomHeaderAgGrid {
             </div>
           `;
 
-      this.guardedColumnEdits = new GuardedColumnEdits(new GridExtension(this.agParams.api, this.agParams.columnApi));
+      this.guardedColumnEdits = new GuardedColumnEdits(new GridExtension(this.agParams.api));
   
       this.eMenuButton = this.eGui.querySelector('.customFilterMenuButton');
       this.eSortDownButton = this.eGui.querySelector('.customSortDownLabel');
@@ -49,7 +49,6 @@ class CustomHeaderAgGrid {
       this.eSortRemoveButton = this.eGui.querySelector('.customSortRemoveLabel');
 
     
-  
       this.headerAddLeftButton = this.eGui.querySelector('.customHeaderAddLeftButton');
       this.onAddLeftButtonListener = this.onAddLeftButtonClick.bind(this);
       this.headerAddLeftButton.addEventListener('click', this.onAddLeftButtonListener);
@@ -75,7 +74,8 @@ class CustomHeaderAgGrid {
         this.onMenuClickListener = this.onMenuClick.bind(this);
         this.eMenuButton.addEventListener('click', this.onMenuClickListener);
       } else {
-        this.eGui.removeChild(this.eMenuButton);
+        this.eMenuButton.remove();
+        //this.eGui.removeChild(this.eMenuButton);
       }
   
       if (this.agParams.enableSorting) {
@@ -113,9 +113,12 @@ class CustomHeaderAgGrid {
         this.onFilterChanged();
 
       } else {
-        this.eGui.removeChild(this.eSortDownButton);
-        this.eGui.removeChild(this.eSortUpButton);
-        this.eGui.removeChild(this.eSortRemoveButton);
+        this.eSortDownButton.remove();
+        this.eSortUpButton.remove();
+        this.eSortRemoveButton.remove();
+        // this.eGui.removeChild(this.eSortDownButton);
+        // this.eGui.removeChild(this.eSortUpButton);
+        // this.eGui.removeChild(this.eSortRemoveButton);
       }
     }
 

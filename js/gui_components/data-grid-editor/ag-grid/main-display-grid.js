@@ -46,7 +46,12 @@ class ExtendedDataGrid {
             
             rowDragManaged: true,
             rowDragMultiRow: true,
-            rowSelection: 'multiple',
+            rowSelection: {
+                mode: 'multiRow',
+                checkboxes: false,
+                headerCheckbox: false,
+                enableClickSelection: true,
+            },
             //onColumnResized: (params) => {params.api.resetRowHeights();}
         };
     }
@@ -58,20 +63,20 @@ class ExtendedDataGrid {
 
         let gridDiv = document.querySelector('#myGrid');
 
-        new agGrid.Grid(gridDiv, this.gridOptions);
+        this.gridApi = agGrid.createGrid(gridDiv, this.gridOptions);
 
         // having setup the grid, make it a little more responsive - removed when adding tippy as it need doctype html
         // TODO: add some resizing div controls
         //setTimeout(function(gridDiv){gridDiv.style.height="40%";},1000, gridDiv);
 
-        this.gridExtras = new GridExtension(this.gridOptions.api, this.gridOptions.columnApi);
+        this.gridExtras = new GridExtension(this.gridApi);
 
         gridControls.useThisGridFunctionality(this.gridExtras);
         gridControls.addHooksToPage(document);
     }
 
-    getGridApi(){
-        return this.gridOptions.api;
+    sizeColumnsToFit(){
+        this.gridApi.sizeColumnsToFit();
     }
 
     getGridExtras(){

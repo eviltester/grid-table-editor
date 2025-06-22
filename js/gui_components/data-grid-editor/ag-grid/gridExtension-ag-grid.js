@@ -8,9 +8,8 @@ import { GenericDataTable } from "../../../data_formats/generic-data-table.js"
 */
 class GridExtensionAgGrid{
 
-    constructor(gridApi, columnApi) {
+    constructor(gridApi) {
         this.gridApi = gridApi;
-        this.columnApi = columnApi;
         this.cellRendererText = (params) => {
             let val = params.value;
             if(val && val.replaceAll){
@@ -28,17 +27,17 @@ class GridExtensionAgGrid{
                 field: 'column1'
             }
         ];
-        this.gridApi.setColumnDefs(columnDefs);
-        this.gridApi.setRowData([]);
+        this.gridApi.setGridOption("columnDefs",columnDefs);
+        this.gridApi.setGridOption("rowData",[]);
     }
 
     clearFilters(){
-        this.gridApi.setQuickFilter(null);
+        this.gridApi.setGridOption("quickFilterText",null);
         this.gridApi.setFilterModel(null);
     }
 
     filterText(text){
-        this.gridApi.setQuickFilter(text);
+        this.gridApi.setGridOption("quickFilterText",text);
     }
 
     getNextFieldNumber(){
@@ -75,7 +74,7 @@ class GridExtensionAgGrid{
             colDefs.push(newCol);
             fieldId++;
         });
-        this.gridApi.setColumnDefs(colDefs);
+        this.gridApi.setGridOption("columnDefs",colDefs);
         var fieldNames = colDefs.map(colDef => colDef.field);
         this.addFieldsToData(fieldNames, '')
     }
@@ -125,7 +124,7 @@ class GridExtensionAgGrid{
         // add to right
         colDefs.push(newCol);
 
-        this.gridApi.setColumnDefs(colDefs);
+        this.gridApi.setGridOption("columnDefs",colDefs);
 
         this.addFieldToData(newCol.field, '')
 
@@ -136,7 +135,7 @@ class GridExtensionAgGrid{
         // need to use column-state to set the order
         // https://www.ag-grid.com/javascript-grid/column-state/
 
-        let columnState = this.columnApi.getColumnState();
+        let columnState = this.gridApi.getColumnState();
         let newColumnStates = [];
         let currentColumnState;
         let newColumnState;
@@ -181,7 +180,7 @@ class GridExtensionAgGrid{
             }
         })
 
-        this.columnApi.applyColumnState(
+        this.gridApi.applyColumnState(
             { state: newColumnStates,
                 applyOrder: true }
         );
@@ -209,7 +208,7 @@ class GridExtensionAgGrid{
           }
         })
         
-        this.gridApi.setColumnDefs(newColDefs);      
+        this.gridApi.setGridOption("columnDefs",newColDefs);      
 
         // TODO : consider deleting all the data as well
     }
@@ -254,7 +253,7 @@ class GridExtensionAgGrid{
             }
           })
         editColDef.headerName = name;
-        this.gridApi.setColumnDefs(colDefs);
+        this.gridApi.setGridOption("columnDefs",colDefs);
     }
 
     deleteSelectedRows(){
@@ -376,7 +375,7 @@ class GridExtensionAgGrid{
       }
 
       this.createColumns(dataTable.getHeaders());
-      this.gridApi.setRowData([]);
+      this.gridApi.setGridOption("rowData",[]);
 
       let addRows = [];
       

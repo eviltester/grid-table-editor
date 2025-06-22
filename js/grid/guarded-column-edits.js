@@ -4,6 +4,8 @@ class GuardedColumnEdits{
         this.gridExtras = gridExtension;
     }
 
+    // todo: ids here look suspiciously ag-grid specific
+
     renameColId(id) {
         var editColDef = this.gridExtras.getColumnDef(id);
         var colTitle = prompt('Column Name?', editColDef.headerName);

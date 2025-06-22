@@ -52,5 +52,5 @@ function setTextFromInstructions(){
   })
   importer.setGridFromGenericDataTable(textData);
   // set the instructions to fit grid size
-  mainDataGrid.getGridApi().sizeColumnsToFit()
+  mainDataGrid.sizeColumnsToFit()
 }

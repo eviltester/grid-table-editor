@@ -18,6 +18,7 @@
  */
 
 // TODO :wrap this as a class and make components
+// Also this is too AG Grid specific
 
 import {TestDataGenerator} from '../data_generation/testDataGenerator.js';
 import {Debouncer} from '../utils/debouncer.js';
@@ -110,7 +111,9 @@ function createTestDataGrid(){
 }
 
 
+// todo: this all really needs to be wrapped in a class
 var defnGridOptions;
+var defnGridApi;
 
 // populate Test Data Grid From Rules in Text Area
 function populateTestDataGridFromRules(){
@@ -123,7 +126,7 @@ function populateTestDataGridFromRules(){
 
     // clear data
     // now add the rules
-    defnGridOptions.api.setRowData([]);
+    defnGridApi.setGridOption("rowData",[]);
 
     for(let rule of generator.testDataRules()){
         let data={};
@@ -150,7 +153,7 @@ function populateTestDataGridFromRules(){
         }
 
         // todo, should be a bigger transaction for efficiency
-        defnGridOptions.api.applyTransaction({add: [data]},)
+        defnGridApi.applyTransaction({add: [data]},)
     }
 }
 
@@ -290,11 +293,19 @@ function setupTestDataEditGrid(gridDiv){
             resizable: true,
             editable: true,
             rowDrag: true,
+            sortable: false
         },
+
+        suppressMovableColumns: true,
 
         rowDragManaged: true,
         rowDragMultiRow: true,
-        rowSelection: 'multiple',
+        rowSelection: {
+            mode: 'multiRow',
+            checkboxes: false,
+            headerCheckbox: false,
+            enableClickSelection: true,
+        },
         onCellEditingStopped: ( e => { convertGridToText();}),
         onRowDragEnd:  ( e => { convertGridToText();})
     };
@@ -309,16 +320,17 @@ function setupTestDataEditGrid(gridDiv){
     gridDiv.appendChild(deleteRowsButton);
 
 
-    new agGrid.Grid(gridDiv, defnGridOptions);
+    defnGridApi = agGrid.createGrid(gridDiv, defnGridOptions);
 
-    const defnGridExtras = new GridExtension(defnGridOptions.api, defnGridOptions.columnApi);
+    const defnGridExtras = new GridExtension(defnGridApi);
 
     addNewRowButton.addEventListener('click', function(){
-        defnGridOptions.api.applyTransaction({ add: [{columnName: "", type:"RegEx", value:""}] });
+        defnGridApi.applyTransaction({ add: [{columnName: "", type:"RegEx", value:""}] });
     });
 
     deleteRowsButton.addEventListener('click', function(){
         defnGridExtras.deleteSelectedRows();
+        convertGridToText();
     });
 }
 
@@ -326,7 +338,7 @@ function convertGridToText(){
 
     let outputText = "";
     let prefix = "";
-    defnGridOptions.api.forEachNode((rowNode, index) => {
+    defnGridApi.forEachNode((rowNode, index) => {
         outputText = outputText + prefix;
         outputText = outputText + rowNode.data.columnName + "\n";
 

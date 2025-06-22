@@ -206,9 +206,6 @@ function findFakerCommand(aString){
     return null;
 }
 
-function outputListOfCommands(){
-
-}
 
 function identifyFakerCommands(aFaker){
     

@@ -1,3 +1,4 @@
+import { GenericDataTable } from "../../../data_formats/generic-data-table.js"
 /*
     A wrapper for AG Grid that makes it easier to add new columns
     and perform high level operations with the grid that we need
@@ -331,6 +332,64 @@ class GridExtensionAgGrid{
         )
         return minIndex;
     }
+
+
+    /*
+        Export grid extensions
+    */
+    // TODO: consider creating a GridBackedGenericDataTable such that it is a generic wrapper
+    // then we don't have to copy the data out into a new structure
+    getGridAsGenericDataTable(){
+        let dataTable = new GenericDataTable();
+        dataTable.setHeaders(this.gridApi.getColumnDefs().map(col => col.headerName));
+
+        var fieldnames = this.gridApi.getColumnDefs().map(col => col.field);
+    
+        // since we can filter and sort...
+        // if we use forEachNode then it ignores the filter and does not honour the sorting
+        this.gridApi.forEachNodeAfterFilterAndSort(node => {
+            var vals = [];
+
+            for (const propertyid in fieldnames) {
+                var property = fieldnames[propertyid];
+                vals.push(node.data[property] ? String(node.data[property]) : '');
+            }
+            dataTable.appendDataRow(vals);
+        });
+
+        return dataTable;
+    }
+
+    getHeadersFromGrid(){
+        return this.gridApi.getColumnDefs().map(col => col.headerName);
+    }
+
+
+    /*
+        Import Grid Extensions
+    */
+    setGridFromGenericDataTable(dataTable){
+
+      if(dataTable.getColumnCount()==0){
+        // will not create a table with no columns
+        // TODO : report errors on screen
+      }
+
+      this.createColumns(dataTable.getHeaders());
+      this.gridApi.setRowData([]);
+
+      let addRows = [];
+      
+      let fieldnames = this.gridApi.getColumnDefs().map(col => col.field);
+
+      for(let rowIndex=0; rowIndex<dataTable.getRowCount(); rowIndex++){
+          addRows.push(dataTable.getRowAsObjectUsingHeadings(rowIndex,fieldnames));
+      }
+
+      // TODO : apply transactions incrementally for larger data sets
+      this.gridApi.applyTransaction({ add: addRows });
+    }   
+
 }
 
 export {GridExtensionAgGrid as GridExtension}

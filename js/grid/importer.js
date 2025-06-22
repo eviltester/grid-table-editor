@@ -7,13 +7,12 @@ import { CsvConvertor } from "../data_formats/csv-convertor.js";
 import { JsonConvertor, JsonConvertorOptions } from "../data_formats/json-convertor.js";
 import { JavascriptConvertor, JavascriptConvertorOptions } from "../data_formats/javascript-convertor.js";
 import { fileTypes } from "../data_formats/file-types.js";
-import {PapaWrappa} from "../utils/papawrappa.js"
+import { PapaWrappa } from "../utils/papawrappa.js"
 
 class Importer{
 
-    constructor(gridApi,gridExtension) {
-        this.gridApi = gridApi;
-        this.gridExtras=gridExtension;
+    constructor(gridExtension) {
+        this.gridExtensions=gridExtension;
 
         this.options={};
         this.options["csv"] = new DelimiterOptions('"');
@@ -76,25 +75,7 @@ class Importer{
 
 
     setGridFromGenericDataTable(dataTable){
-
-      if(dataTable.getColumnCount()==0){
-        // will not create a table with no columns
-        // TODO : report errors on screen
-      }
-
-      this.gridExtras.createColumns(dataTable.getHeaders());
-      this.gridApi.setRowData([]);
-
-      let addRows = [];
-      
-      let fieldnames = this.gridApi.getColumnDefs().map(col => col.field);
-
-      for(let rowIndex=0; rowIndex<dataTable.getRowCount(); rowIndex++){
-          addRows.push(dataTable.getRowAsObjectUsingHeadings(rowIndex,fieldnames));
-      }
-
-      // TODO : apply transactions incrementally for larger data sets
-      this.gridApi.applyTransaction({ add: addRows });
+      return this.gridExtensions.setGridFromGenericDataTable(dataTable);
     }
 }
 

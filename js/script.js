@@ -24,8 +24,8 @@ document.addEventListener('DOMContentLoaded', function() {
   new TabbedTextControl(document.getElementById("tabbedTextArea"), importExportController).addToGui();
 
 
-  exporter = new Exporter(mainDataGrid.getGridApi());
-  importer = new Importer(mainDataGrid.getGridApi(), mainDataGrid.getGridExtras());
+  exporter = new Exporter(mainDataGrid.getGridExtras());
+  importer = new Importer(mainDataGrid.getGridExtras());
   importExportController.setExporter(exporter);
   importExportController.setImporter(importer);
 

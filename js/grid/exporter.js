@@ -1,4 +1,3 @@
-import { GenericDataTable } from "../data_formats/generic-data-table.js";
 import { GherkinConvertor, GherkinOptions } from "../data_formats/gherkin-convertor.js";
 import { MarkdownConvertor, MarkdownOptions } from "../data_formats/markdown-convertor.js";
 import { HtmlConvertor, HtmlConvertorOptions } from "../data_formats/html-convertor.js";
@@ -8,15 +7,15 @@ import { CsvConvertor } from "../data_formats/csv-convertor.js";
 import { DelimiterConvertor } from "../data_formats/delimiter-convertor.js";
 import { DelimiterOptions } from "../data_formats/delimiter-options.js";
 import { AsciiTableConvertor, AsciiTableOptions } from "../data_formats/asciitable-convertor.js";
-import {fileTypes} from '../data_formats/file-types.js';
+import { fileTypes } from '../data_formats/file-types.js';
 import { PapaWrappa } from "../utils/papawrappa.js";
 
 class Exporter {
 
-    constructor(gridApi) {
+    constructor(gridExtensions) {
         // TODO: this should be a higher level api than the low level ag-grid api
         // e.g. move to grid extensions or a GridExportExtensions
-        this.gridApi = gridApi;
+        this.gridExtensions = gridExtensions;
 
         this.options={};
         this.options["csv"] = new DelimiterOptions('"');
@@ -66,31 +65,12 @@ class Exporter {
         }
     }
 
-    // TODO: consider creating a GridBackedGenericDataTable such that it is a generic wrapper
-    // then we don't have to copy the data out into a new structure
     getGridAsGenericDataTable(){
-        let dataTable = new GenericDataTable();
-        dataTable.setHeaders(this.gridApi.getColumnDefs().map(col => col.headerName));
-
-        var fieldnames = this.gridApi.getColumnDefs().map(col => col.field);
-    
-        // since we can filter and sort...
-        // if we use forEachNode then it ignores the filter and does not honour the sorting
-        this.gridApi.forEachNodeAfterFilterAndSort(node => {
-            var vals = [];
-
-            for (const propertyid in fieldnames) {
-                var property = fieldnames[propertyid];
-                vals.push(node.data[property] ? String(node.data[property]) : '');
-            }
-            dataTable.appendDataRow(vals);
-        });
-
-        return dataTable;
+        return this.gridExtensions.getGridAsGenericDataTable();
     }
 
     getHeadersFromGrid(){
-        return this.gridApi.getColumnDefs().map(col => col.headerName);
+        return this.gridExtensions.getHeadersFromGrid();
     }
 
  

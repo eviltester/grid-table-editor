@@ -21,8 +21,8 @@
 
 import {TestDataGenerator} from '../data_generation/testDataGenerator.js';
 import {Debouncer} from '../utils/debouncer.js';
-import {GridExtension} from '../grid/gridExtension.js';
-import { SelectFilterEditor} from '../grid/select-filter-editor.js';
+import {GridExtension} from './data-grid-editor/ag-grid/gridExtension-ag-grid.js';
+import { SelectFilterEditor} from './data-grid-editor/ag-grid/select-filter-editor.js';
 
 import { faker } from "https://cdn.skypack.dev/@faker-js/faker@v9.7.0";
 import { GenericDataTable } from "../data_formats/generic-data-table.js";
@@ -231,7 +231,7 @@ function identifyFakerCommands(aFaker){
                 k2 => {
                     if(skipKeys.includes(k) || skipValues.includes(`${k}.${k2}`)){
                         // ignore this value
-                        console.log(`skipping command ${k}.${k2}`)
+                        console.log(`expected: ignoring known faker command ${k}.${k2}`)
                     }else{
                         // add the valid function
                         FAKER_COMMANDS.push(`${k}.${k2}`)
@@ -249,13 +249,13 @@ function identifyFakerCommands(aFaker){
         let foundIndex = sanityCheckCommands.indexOf(command);
         if(foundIndex == -1){
             // new command found
-            console.log("Found new Faker command " + command);
+            console.log("unexpected: Found new Faker command " + command);
         }else{
             sanityCheckCommands[foundIndex] = "";
         }
     });
 
-    sanityCheckCommands.filter(value => {return value.length > 0}).forEach(value => console.log("Previously known faker command not present: " + value));
+    sanityCheckCommands.filter(value => {return value.length > 0}).forEach(value => console.log("unexpected: Previously known faker command not present: " + value));
 }
 
 

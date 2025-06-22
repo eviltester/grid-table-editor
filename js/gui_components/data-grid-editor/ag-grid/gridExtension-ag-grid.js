@@ -2,8 +2,10 @@
     A wrapper for AG Grid that makes it easier to add new columns
     and perform high level operations with the grid that we need
     for editing the grid.
+
+    GridExtension would be an interface
 */
-class GridExtension{
+class GridExtensionAgGrid{
 
     constructor(gridApi, columnApi) {
         this.gridApi = gridApi;
@@ -331,4 +333,4 @@ class GridExtension{
     }
 }
 
-export {GridExtension}
+export {GridExtensionAgGrid as GridExtension}

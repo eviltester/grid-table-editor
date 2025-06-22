@@ -1,6 +1,6 @@
-import { GridExtension } from "../grid/gridExtension.js";
-import { GridControl, GridControlsPageMap } from "./gridControl.js"
-import { CustomHeader } from "../grid/customHeader.js";
+import { GridExtension } from "./gridExtension-ag-grid.js";
+import { GridControl, GridControlsPageMap } from "../gridControl.js"
+import { CustomHeaderAgGrid } from "./customHeader-ag-grid.js";
 
 /*
     Grid Features Used:
@@ -41,7 +41,7 @@ class ExtendedDataGrid {
             },
 
             components: {
-                agColumnHeader: CustomHeader,
+                agColumnHeader: CustomHeaderAgGrid,
             },
             
             rowDragManaged: true,

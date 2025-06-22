@@ -42,6 +42,8 @@ class GenericDataTableUtils {
             aGenericDataTable.addHeader(header);
         }
 
+        // todo: consider, rather than copying array we remove header line and use the array as the data
+        // or have an index offset and keep header where it is e.g. GenericDataTableHeaderArrayBacked
         this.rows=[];
         // process data
         for( let rowId = 1; rowId<aDataArray.length; rowId++){

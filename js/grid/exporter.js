@@ -14,6 +14,8 @@ import { PapaWrappa } from "../utils/papawrappa.js";
 class Exporter {
 
     constructor(gridApi) {
+        // TODO: this should be a higher level api than the low level ag-grid api
+        // e.g. move to grid extensions or a GridExportExtensions
         this.gridApi = gridApi;
 
         this.options={};

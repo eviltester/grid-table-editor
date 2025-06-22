@@ -6,10 +6,10 @@
 
  */
 
-import { GridExtension } from "./gridExtension.js";
-import { GuardedColumnEdits } from "./guarded-column-edits.js";
+import { GridExtension } from "./gridExtension-ag-grid.js";
+import { GuardedColumnEdits } from "../../../grid/guarded-column-edits.js";
 
-class CustomHeader {
+class CustomHeaderAgGrid {
     init(agParams) {
       this.agParams = agParams;
       this.eGui = document.createElement('div');
@@ -213,4 +213,4 @@ class CustomHeader {
     }
   }
   
-export {CustomHeader}
+export {CustomHeaderAgGrid}

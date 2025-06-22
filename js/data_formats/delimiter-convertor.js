@@ -1,4 +1,5 @@
 import { DelimiterOptions } from "./delimiter-options.js";
+import { GenericDataTableUtils } from "./generic-data-table-utils.js";
 import { GenericDataTable } from "./generic-data-table.js";
 import { JsonConvertor } from "./json-convertor.js";
 
@@ -58,7 +59,8 @@ export class DelimiterConvertor {
         }
 
         let dataTable = new GenericDataTable();
-        dataTable.setFromDataArray(results.data);
+        let utils = new GenericDataTableUtils();
+        utils.setGenericDataTableFromDataArray(dataTable, results.data);
         return dataTable;
     }
 }

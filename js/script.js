@@ -1,7 +1,8 @@
 import { Importer } from "./grid/importer.js";
 import { Exporter } from "./grid/exporter.js";
 import { enableTestDataGenerationInterface } from "./gui_components/testdatadefn.js";
-import { ExtendedDataGrid } from "./gui_components/data-grid-editor/ag-grid/main-display-grid.js";
+//import { ExtendedDataGrid } from "./gui_components/data-grid-editor/ag-grid/main-display-grid.js";
+import { ExtendedDataGrid } from "./gui_components/data-grid-editor/tabulator/main-display-grid.js";
 import { TabbedTextControl } from "./gui_components/tabbed-text-control.js"
 import { ImportExportControls } from "./gui_components/import-export-controls.js";
 import { GenericDataTable } from "./data_formats/generic-data-table.js";
@@ -31,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
   // give a clue what to do by importing the instructions into the grid
-  setTextFromInstructions();
+  setTimeout(setTextFromInstructions,3000);
 
   importExportController.renderTextFromGrid();
   importExportController.setFileFormatType();
@@ -43,6 +44,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 function setTextFromInstructions(){
+  console.log("Setting Grid Instructions");
   mainDataGrid.getGridExtras().clearGrid();
   const instructions = document.querySelectorAll("div.instructions details ul li");
   let textData = new GenericDataTable();

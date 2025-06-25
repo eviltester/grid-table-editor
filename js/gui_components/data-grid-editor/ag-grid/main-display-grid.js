@@ -73,6 +73,7 @@ class ExtendedDataGrid {
 
         gridControls.useThisGridFunctionality(this.gridExtras);
         gridControls.addHooksToPage(document);
+
     }
 
     sizeColumnsToFit(){

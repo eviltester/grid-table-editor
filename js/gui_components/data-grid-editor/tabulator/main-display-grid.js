@@ -45,6 +45,7 @@ class ExtendedDataGrid {
             input.value = column.getHeaderFilterValue() || "";
 
             input.addEventListener("keyup", (e) => {
+                //console.log("set filter to " + input.value);
                 column.setHeaderFilterValue(input.value);
             });
 
@@ -99,13 +100,6 @@ class ExtendedDataGrid {
             return document.createElement("div");;
         }
 
-    function onDuplicateButtonClick(){
-      this.guardedColumnEdits.duplicateColumnId(1, this.agParams.column.colId);
-    }
-
-
-
-
 
         this.gridOptions = {
             columns: columnDefs,
@@ -121,8 +115,11 @@ class ExtendedDataGrid {
                 //filter:true,
                 sorter: "string",
 
-                headerPopup:headerPopupFormatter,
-                //headerPopupIcon:"<i class='fas fa-filter' title='Filter column'>[...]</i>", headerFilter:emptyHeaderFilter,
+                //headerFilter: "input",
+                headerPopup: headerPopupFormatter,
+                //headerPopupIcon:"<i class='fas fa-filter' title='Filter column'>[...]</i>",
+                
+                headerFilter:emptyHeaderFilter,
                 headerFilterFunc:"like"
             },
 

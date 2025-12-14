@@ -41,7 +41,8 @@ class GridExtensionTabulator{
 
     // [x] convert to tabulature
     clearFilters(){
-        this.tabulator.clearFilter();
+        // true means clear all header filters as well
+        this.tabulator.clearFilter(true);
     }
 
     // [x] convert to tabulature

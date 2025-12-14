@@ -1,15 +1,23 @@
 import { GenericDataTable } from "../../../data_formats/generic-data-table.js"
+import { TabulatorHelper } from "./tabulator-helpers.js"
 /*
-    A wrapper for AG Grid that makes it easier to add new columns
+    A wrapper for Tabulature to conform to the main abstraction
+    that makes it easier to add new columns
     and perform high level operations with the grid that we need
     for editing the grid.
 
-    GridExtension would be an interface
+    todo: GridExtension would be an interface so we need to identify all the
+    functions which are used externally and all those which are internal
+    only - mark internals as _functionName
+    todo: then carry do the same on the AG Grid wrapper
+
 */
 class GridExtensionTabulator{
 
-    constructor(gridApi) {
-        this.gridApi = gridApi;
+    constructor(tabulator) {
+        this.tabulator = tabulator;
+        this.tabUtils = new TabulatorHelper(tabulator);
+
         // this.cellRendererText = (params) => {
         //     let val = params.value;
         //     if(val && val.replaceAll){
@@ -20,28 +28,30 @@ class GridExtensionTabulator{
     }
 
 
+    // [x] convert to tabulature
     clearGrid(){
-        // const columnDefs = [
-        //     {
-        //         headerName: '~rename-me',
-        //         field: 'column1'
-        //     }
-        // ];
-        // this.gridApi.setGridOption("columnDefs",columnDefs);
-        // this.gridApi.setGridOption("rowData",[]);
+        this.tabulator.clearData();          // removes **all rows**
+
+        const columnDefs = [
+            { title: "~rename-me", field: "column1" }
+        ];
+        this.tabulator.setColumns(columnDefs);
+        this.tabulator.setData([]);
     }
 
+    // [x] convert to tabulature
     clearFilters(){
-        this.gridApi.setGridOption("quickFilterText",null);
-        this.gridApi.setFilterModel(null);
+        this.tabulator.clearFilter();
     }
 
+    // [x] convert to tabulature
     filterText(text){
-        this.gridApi.setGridOption("quickFilterText",text);
+        this.tabUtils.filterAcrossAllColumns(text);
     }
 
+     // [x] convert to tabulature
     getNextFieldNumber(){
-        const columnDefs = this.gridApi.getColumnDefs()
+        const columnDefs = this.tabulator.getColumnDefinitions()
         let largestNumber=0;
         columnDefs.forEach(column => {
             let fieldName = column.field;
@@ -53,10 +63,11 @@ class GridExtensionTabulator{
         return largestNumber+1;
     }
 
+     // [x] convert to tabulature
     getNewCol(named, fieldId){
 
         let newCol = {};
-        newCol.headerName = named;
+        newCol.title = named;
         if(fieldId===undefined){
             fieldId = this.getNextFieldNumber();
         }
@@ -74,42 +85,44 @@ class GridExtensionTabulator{
             colDefs.push(newCol);
             fieldId++;
         });
-        this.gridApi.setGridOption("columnDefs",colDefs);
+        this.tabulator.setGridOption("columnDefs",colDefs);
         var fieldNames = colDefs.map(colDef => colDef.field);
-        this.addFieldsToData(fieldNames, '')
+        this._addFieldsToData(fieldNames, '')
     }
 
-    addFieldsToData(fieldNames, defaultValue){
+    _addFieldsToData(fieldNames, defaultValue){
         fieldNames.forEach(fieldName => {
             this.addFieldToData(fieldName, defaultValue);
         });
     }
 
-    addFieldToData(fieldName, defaultValue){
-        this.gridApi.forEachNode(node => {
+    _addFieldToData(fieldName, defaultValue){
+        this.tabulator.forEachNode(node => {
             node.setDataValue(fieldName, defaultValue);
         });
     }
 
-    duplicateColumn(position, id, colTitle) {
+    // [x] convert to tabulature
+    duplicateColumn(position, column, colTitle) {
 
-        this.addNeighbourColumnId(position, id, colTitle);
+        this.addNeighbourColumn(position, column, colTitle);
 
-        let colDefsHunt = this.gridApi.getColumnDefs();
+        let colDefsHunt = this.tabulator.getColumnDefinitions();
         let colDataToCopy;
         let destinationCol;
 
         colDefsHunt.forEach(col =>{
-            if(col.headerName == colTitle){
+            if(col.title == colTitle){
                 destinationCol = col;
-            }
-            if(col.colId == id){
-                colDataToCopy = col;
             }
         })
 
-        this.gridApi.forEachNode(node => {
-            node.setDataValue(destinationCol.field, node.data[colDataToCopy.field])
+        this.tabulator.getRows().forEach(row => {
+            console.log(destinationCol);
+            const fieldName = destinationCol.field;
+            let obj = {};
+            obj[fieldName] = row.getData()[column.getDefinition().field];
+            row.update(obj);
         });
 
     }
@@ -118,13 +131,13 @@ class GridExtensionTabulator{
 
     appendColumnToGrid(colTitle){
 
-        let colDefs = this.gridApi.getColumnDefs();
+        let colDefs = this.tabulator.getColumnDefs();
 
         let newCol = this.getNewCol(colTitle);
         // add to right
         colDefs.push(newCol);
 
-        this.gridApi.setGridOption("columnDefs",colDefs);
+        this.tabulator.setGridOption("columnDefs",colDefs);
 
         this.addFieldToData(newCol.field, '')
 
@@ -135,13 +148,13 @@ class GridExtensionTabulator{
         // need to use column-state to set the order
         // https://www.ag-grid.com/javascript-grid/column-state/
 
-        let columnState = this.gridApi.getColumnState();
+        let columnState = this.tabulator.getColumnState();
         let newColumnStates = [];
         let currentColumnState;
         let newColumnState;
 
         // find new columnId
-        let colDefsHunt = this.gridApi.getColumnDefs();
+        let colDefsHunt = this.tabulator.getColumnDefs();
         let newColId;
         colDefsHunt.forEach(col =>{
             if(col.field == columnToMove.field){
@@ -180,52 +193,46 @@ class GridExtensionTabulator{
             }
         })
 
-        this.gridApi.applyColumnState(
+        this.tabulator.applyColumnState(
             { state: newColumnStates,
                 applyOrder: true }
         );
 
     }
 
-    addNeighbourColumnId(position, id, colTitle){
+    // [x] convert to tabulature
+    addNeighbourColumn(position, existingColumn, colTitle){
 
         if(colTitle === undefined || colTitle==="" || colTitle.length==0)
             return;
 
-        let newCol = this.appendColumnToGrid(colTitle);
-        this.moveColumnTo(position, id, newCol);
+        const column = this.getNewCol(colTitle);
 
+        var addToLeft = true;
+        if(position>0){
+            addToLeft=false;
+        }
+        this.tabulator.addColumn(column, addToLeft, existingColumn);
     }
 
-    deleteColumnId(id){
-
-        let colDefs = this.gridApi.getColumnDefs();
-        let newColDefs = [];
-
-        colDefs.forEach(colDef =>{
-          if(colDef.colId!=id){
-            newColDefs.push(colDef)
-          }
-        })
-        
-        this.gridApi.setGridOption("columnDefs",newColDefs);      
-
-        // TODO : consider deleting all the data as well
+    // [x] convert to tabulature
+    deleteColumn(column){
+        column.delete();
     }
 
+    // [x] convert to tabulature
     getNumberOfColumns(){
-        return this.gridApi.getColumnDefs().length;
+        return this.tabulator.getColumnDefinitions().length;
     }
 
+    // [x] convert to tabulature
     getNumberOfSelectedRows(){
-        return this.gridApi.getSelectedNodes().length;
+        return this.tabulator.getSelectedRows().length;
     }
-
-
 
     getColumnDef(id){
 
-        let colDefs = this.gridApi.getColumnDefs();
+        let colDefs = this.tabulator.getColumnDefinitions();
         for(let colDef of colDefs){
             if(colDef.colId==id){
                 return colDef;
@@ -233,35 +240,31 @@ class GridExtensionTabulator{
         }
     }
 
+    // [x] convert to tabulature
     nameAlreadyExists(name){
-        var colDefs = this.gridApi.getColumnDefs();
+        var colDefs = this.tabulator.getColumnDefinitions();
         for(const  colDef of colDefs){
-            if(colDef.headerName===name){
+            if(colDef.title===name){
                 return true;
             }
         }
         return false;
     }
 
-    renameColId(id,name){
-
-        var colDefs = this.gridApi.getColumnDefs();
-        var editColDef;
-        colDefs.forEach(colDef =>{
-            if(colDef.colId==id){
-              editColDef = colDef;
-            }
-          })
-        editColDef.headerName = name;
-        this.gridApi.setGridOption("columnDefs",colDefs);
+    // [x] convert to tabulature
+    renameColumn(column,name){
+        this.tabulator.updateColumnDefinition(column, {title:name});
     }
 
+    // [x] convert to tabulature
     deleteSelectedRows(){
-        this.gridApi.applyTransaction({ remove: this.gridApi.getSelectedRows() });
+        const rows = this.tabulator.getSelectedRows();
+        this.tabulator.deleteRow(rows);
     }
 
-    getBlankRowData(){
-        var colDefs = this.gridApi.getColumnDefs();
+    // [x] convert to tabulature
+    _getBlankRowData(){
+        var colDefs = this.tabulator.getColumnDefinitions();
         var newRowObject = {}
         colDefs.forEach(colDef =>{
             newRowObject[colDef.field] = '';
@@ -269,67 +272,74 @@ class GridExtensionTabulator{
         return newRowObject;
     }
 
+    // [x] convert to tabulature
     addRow(){
-        this.gridApi.applyTransaction({ add: [this.getBlankRowData()] });
+        this.tabUtils.addRowToBottom(this._getBlankRowData());
     }
     
 
+    // [x] convert to tabulature
     addRowsRelativeToSelection(position){
         // -1 above, 1 below
-        var rowsToAdd = this.gridApi.getSelectedNodes();
+        var selectedRows = this.tabulator.getSelectedRows();
 
         var positionIndexToAddAt = 0;
 
-        if(rowsToAdd.length==0){
-            if(this.gridApi.getDisplayedRowCount()==0 || position<0){
-            rowsToAdd = [{rowIndex:0}];
+        // if nothing is selected, just call add row above or below
+        if(selectedRows.length==0){
+            // and there are no rows then add to top
+            if(this.tabulator.getDataCount()==0 || position<0){
+                this.tabUtils.addRowToTop(this._getBlankRowData());
+                return;
             }else{
-            rowsToAdd = [{rowIndex: this.gridApi.getDisplayedRowCount()}];
+                this.tabUtils.addRowToBottom(this._getBlankRowData());
+                return;
             }
         }
         
+        var relativeToRow;
         if(position<0){
-            positionIndexToAddAt = this.getMinRowIndex(rowsToAdd);
+            relativeToRow = this._getMinRow(selectedRows);
         }else{
-            positionIndexToAddAt = this.getMaxRowIndex(rowsToAdd)+position;
-        }
-
-        if(positionIndexToAddAt<0){
-            positionIndexToAddAt=0;
+            relativeToRow = this._getMaxRow(selectedRows);
         }
 
         var objectsToAdd = [];
-        var numberOfRowsToAdd = rowsToAdd.length;
+        var numberOfRowsToAdd = selectedRows.length;
         for(var objectCountToAdd=0; objectCountToAdd<numberOfRowsToAdd; objectCountToAdd++){
-            objectsToAdd.push(this.getBlankRowData());
+            objectsToAdd.push(this._getBlankRowData());
         }
 
-        this.gridApi.applyTransaction({ add: objectsToAdd, addIndex: positionIndexToAddAt });
+        var addAbove = true;
+        if(position>0){
+            addAbove = false;
+        }
+        this.tabulator.addData(objectsToAdd, addAbove, relativeToRow); 
     }
 
-    // calculate the max row index from a selection of rows
-    getMaxRowIndex(rowNodes){
+    // calculate the max row from a selection of rows
+    _getMaxRow(rowComponents){
 
-        var maxIndex=0;
-        rowNodes.forEach( node =>{
-            if(node.rowIndex>maxIndex){
-              maxIndex=node.rowIndex;
+        var maxRow=rowComponents[0];
+        rowComponents.forEach( node =>{
+            if(node.getPosition()>maxRow.getPosition()){
+              maxRow=node;
             }
           }
         )
-        return maxIndex;
+        return maxRow;
     }
       
-    // calculate the first row index from a selection of rows
-    getMinRowIndex(rowNodes){      
-        var minIndex=rowNodes[0].rowIndex;
-        rowNodes.forEach( node =>{
-            if(node.rowIndex<minIndex){
-              minIndex=node.rowIndex;
+    // calculate the first row from a selection of rows
+    _getMinRow(rowComponents){      
+        var minRow=rowComponents[0];
+        rowComponents.forEach( node =>{
+            if(node.getPosition()<minRow.getPosition()){
+              minRow=node;
             }
           }
         )
-        return minIndex;
+        return minRow;
     }
 
 
@@ -338,35 +348,42 @@ class GridExtensionTabulator{
     */
     // TODO: consider creating a GridBackedGenericDataTable such that it is a generic wrapper
     // then we don't have to copy the data out into a new structure
+    // [x] convert to tabulature
     getGridAsGenericDataTable(){
+
         let dataTable = new GenericDataTable();
-        dataTable.setHeaders(this.gridApi.getColumnDefinitions().map(col => col.title));
+        dataTable.setHeaders(this.tabulator.getColumnDefinitions().map(col => col.title));
 
-        var fieldnames = this.gridApi.getColumnDefinitions().map(col => col.field);
+        var fieldnames = this.tabulator.getColumnDefinitions().map(col => col.field);
     
-        // since we can filter and sort...
-        // if we use forEachNode then it ignores the filter and does not honour the sorting
-        this.gridApi.getData("active").forEach(node => {
-            var vals = [];
-
-            for (const propertyid in fieldnames) {
-                var property = fieldnames[propertyid];
-                vals.push(node.data[property] ? String(node.data[property]) : '');
-            }
+        // since we can filter and sort...        
+        this.tabulator.getData("active").forEach(node => {
+            var vals = this._getRowAsGenericDataValsArray(node, fieldnames);
             dataTable.appendDataRow(vals);
         });
 
         return dataTable;
     }
 
+    _getRowAsGenericDataValsArray(aRow, fieldnames){
+        var vals = [];
+        for (const propertyid in fieldnames) {
+            var property = fieldnames[propertyid];
+            vals.push(aRow[property] ? String(aRow[property]) : '');
+        }
+        return vals;
+    }
+
+    // [x] convert to tabulature
     getHeadersFromGrid(){
-        return this.gridApi.getColumnDefs().map(col => col.headerName);
+        return this.tabulator.getColumnDefinitions().map(col => col.title);
     }
 
 
     /*
         Import Grid Extensions
     */
+   // [x] convert to tabulature
     setGridFromGenericDataTable(dataTable){
 
       if(dataTable.getColumnCount()==0){
@@ -374,11 +391,11 @@ class GridExtensionTabulator{
         // TODO : report errors on screen
       }
 
-      this.gridApi.clearData();
+      this.tabulator.clearData();
 
       // auto columns is set so we don't do this
       //this.createColumns(dataTable.getHeaders());
-      //this.gridApi.setGridOption("rowData",[]);
+      //this.tabulator.setGridOption("rowData",[]);
 
       let addRows = [];
       
@@ -388,10 +405,10 @@ class GridExtensionTabulator{
           addRows.push(dataTable.getRowAsObject(rowIndex));
       }
 
-      this.gridApi.setData(addRows);
+      this.tabulator.setData(addRows);
 
       // TODO : apply transactions incrementally for larger data sets
-      //this.gridApi.applyTransaction({ add: addRows });
+      //this.tabulator.applyTransaction({ add: addRows });
     }   
 
 }

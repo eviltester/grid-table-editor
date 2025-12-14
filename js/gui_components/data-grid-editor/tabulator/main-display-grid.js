@@ -1,7 +1,7 @@
 import { GridExtension } from "./gridExtension-tabulator.js";
 import { GridControl, GridControlsPageMap } from "../gridControl.js"
 import { GenericDataTable } from "../../../data_formats/generic-data-table.js";
-//import { CustomHeaderAgGrid } from "./customHeader-ag-grid.js";
+import { GuardedTabulatorColumnEdits } from "./guarded-tabulator-column-edits.js";
 
 
 /*
@@ -29,6 +29,84 @@ class ExtendedDataGrid {
             }
         ];
 
+
+
+        //create header popup contents
+        const headerPopupFormatter = function(e, column, onRendered){
+            var container = document.createElement("div");
+
+            var label = document.createElement("label");
+            label.innerHTML = "Filter Column:";
+            label.style.display = "block";
+            label.style.fontSize = ".7em";
+
+            var input = document.createElement("input");
+            input.placeholder = "Filter Column...";
+            input.value = column.getHeaderFilterValue() || "";
+
+            input.addEventListener("keyup", (e) => {
+                column.setHeaderFilterValue(input.value);
+            });
+
+            var buttons = document.createElement("div");
+            buttons.classList.add("headerbuttons");
+            buttons.innerHTML = `
+                        <hr>
+                        <span class="customHeaderAddLeftButton" title="add left">[<+]</span>
+                        <span class="customHeaderRenameButton" title="rename">[~]</span>
+                        <span class="customHeaderDeleteButton" title="delete">[x]</span>
+                        <span class="customHeaderDuplicateButton" title="duplicate">[+=]</span>
+                        <span class="customHeaderAddRightButton" title="add right">[+>]</span>
+            `;
+
+            container.appendChild(label);
+            container.appendChild(input);
+            container.appendChild(buttons);
+
+            this.guardedColumnEdits = new GuardedTabulatorColumnEdits(new GridExtension(column.getTable()));
+
+            const headerAddLeftButton = buttons.querySelector('.customHeaderAddLeftButton');
+            headerAddLeftButton.addEventListener('click', 
+                function(){
+                    this.guardedColumnEdits.addNeighbourColumn(-1,column);
+                    //document.activeElement.blur()
+                }.bind(this));
+
+            const headerRenameButton = buttons.querySelector('.customHeaderRenameButton');
+            headerRenameButton.addEventListener('click', 
+                function(){this.guardedColumnEdits.renameColumn(column)}.bind(this));
+
+            const headerDeleteButton = buttons.querySelector('.customHeaderDeleteButton');
+            headerDeleteButton.addEventListener('click', 
+                function(){
+                    this.guardedColumnEdits.deleteColumn(column);
+                    document.activeElement.blur();
+                }.bind(this));
+
+            const headerDuplicateButton = buttons.querySelector('.customHeaderDuplicateButton');
+            headerDuplicateButton.addEventListener('click', 
+                function(){this.guardedColumnEdits.duplicateColumn(1,column)}.bind(this));
+
+            const headerAddRightButton = buttons.querySelector('.customHeaderAddRightButton');
+            headerAddRightButton.addEventListener('click', 
+                function(){this.guardedColumnEdits.addNeighbourColumn(1,column)}.bind(this));
+
+            return container;
+        }
+
+        //create dummy header filter to allow popup to filter
+        const emptyHeaderFilter = function(){
+            return document.createElement("div");;
+        }
+
+    function onDuplicateButtonClick(){
+      this.guardedColumnEdits.duplicateColumnId(1, this.agParams.column.colId);
+    }
+
+
+
+
+
         this.gridOptions = {
             columns: columnDefs,
             data: rowData,
@@ -39,19 +117,28 @@ class ExtendedDataGrid {
                 resizable: true,
                 rowHandle: true,
                 //editable: true,
+                editor:"input", editorParams:{selectContents:true},
                 //filter:true,
                 sorter: "string",
+
+                headerPopup:headerPopupFormatter,
+                //headerPopupIcon:"<i class='fas fa-filter' title='Filter column'>[...]</i>", headerFilter:emptyHeaderFilter,
+                headerFilterFunc:"like"
             },
 
             autoColumns: true,
             headerSort: true,
 
-            // components: {
-            //     agColumnHeader: CustomHeaderAgGrid,
-            // },
-            
+            movableColumns: true,
+
+            movableRows: true,
             // rowDragManaged: true,
             // rowDragMultiRow: true,
+
+            // make rows selectable when clicked,
+            // with multi-row selection where click first then click last with shift
+            selectableRows:true,
+            selectableRowsRangeMode:"click",
             // rowSelection: {
             //     mode: 'multiRow',
             //     checkboxes: false,
@@ -61,6 +148,7 @@ class ExtendedDataGrid {
             //onColumnResized: (params) => {params.api.resetRowHeights();}
         };
     }
+
 
     createChildGrid(parentGridDiv){
 
@@ -79,7 +167,7 @@ class ExtendedDataGrid {
         // TODO: add some resizing div controls
         //setTimeout(function(gridDiv){gridDiv.style.height="40%";},1000, gridDiv);
 
-        // gridControls.useThisGridFunctionality(this.gridExtras);
+        gridControls.useThisGridFunctionality(this.gridExtras);
         gridControls.addHooksToPage(document);
     }
 

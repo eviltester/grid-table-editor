@@ -2,6 +2,7 @@ import { Importer } from "./grid/importer.js";
 import { Exporter } from "./grid/exporter.js";
 import { enableTestDataGenerationInterface } from "./gui_components/testdatadefn.js";
 import { ExtendedDataGrid, activeGridEngine } from "./gui_components/data-grid-editor/main-display-grid.js";
+import { ensureGridLibraryLoaded } from "./gui_components/data-grid-editor/grid-library-loader.js";
 import { TabbedTextControl } from "./gui_components/tabbed-text-control.js"
 import { ImportExportControls } from "./gui_components/import-export-controls.js";
 import { GenericDataTable } from "./data_formats/generic-data-table.js";
@@ -11,37 +12,63 @@ var mainDataGrid;
 var importExportController;
 
 
-// setup the grid after the page has finished loading
-document.addEventListener('DOMContentLoaded', function() {
+async function bootstrapApp({
+  documentObj = document,
+  ensureGridLibraryLoadedFn = ensureGridLibraryLoaded,
+  activeGridEngineName = activeGridEngine,
+  ExtendedDataGridClass = ExtendedDataGrid,
+  ImportExportControlsClass = ImportExportControls,
+  TabbedTextControlClass = TabbedTextControl,
+  ExporterClass = Exporter,
+  ImporterClass = Importer,
+  enableTestDataGenerationInterfaceFn = enableTestDataGenerationInterface,
+  scheduleInitialInstructions = true,
+  setTimeoutFn = setTimeout
+} = {}) {
 
-  console.log(`Using grid engine: ${activeGridEngine}`);
+  console.log(`Using grid engine: ${activeGridEngineName}`);
+  try{
+    await ensureGridLibraryLoadedFn({ engine: activeGridEngineName });
+  }catch(error){
+    console.error(`Failed to load ${activeGridEngineName} library`, error);
+    return;
+  }
   
-  let mainGridArea = document.getElementById("main-grid-view");
-  mainDataGrid = new ExtendedDataGrid();
+  let mainGridArea = documentObj.getElementById("main-grid-view");
+  mainDataGrid = new ExtendedDataGridClass();
   mainDataGrid.createChildGrid(mainGridArea);
 
-  importExportController = new ImportExportControls();
-  importExportController.addHTMLtoGui(document.getElementById("import-export-controls"));
+  importExportController = new ImportExportControlsClass();
+  importExportController.addHTMLtoGui(documentObj.getElementById("import-export-controls"));
 
-  new TabbedTextControl(document.getElementById("tabbedTextArea"), importExportController).addToGui();
+  new TabbedTextControlClass(documentObj.getElementById("tabbedTextArea"), importExportController).addToGui();
 
 
-  exporter = new Exporter(mainDataGrid.getGridExtras());
-  importer = new Importer(mainDataGrid.getGridExtras());
+  exporter = new ExporterClass(mainDataGrid.getGridExtras());
+  importer = new ImporterClass(mainDataGrid.getGridExtras());
   importExportController.setExporter(exporter);
   importExportController.setImporter(importer);
 
 
   // give a clue what to do by importing the instructions into the grid
-  setTimeout(setTextFromInstructions,3000);
+  if(scheduleInitialInstructions){
+    setTimeoutFn(setTextFromInstructions,3000);
+  }
 
   importExportController.renderTextFromGrid();
   importExportController.setFileFormatType();
   importExportController.setOptionsViewForFormatType();
 
-  enableTestDataGenerationInterface("testDataGeneratorContainer", importer, importExportController.getExportControls());
+  enableTestDataGenerationInterfaceFn("testDataGeneratorContainer", importer, importExportController.getExportControls(), documentObj);
 
-});
+}
+
+// setup the grid after the page has finished loading
+if(typeof document !== "undefined"){
+  document.addEventListener('DOMContentLoaded', async function() {
+    await bootstrapApp();
+  });
+}
 
 
 function setTextFromInstructions(){
@@ -57,3 +84,5 @@ function setTextFromInstructions(){
   // set the instructions to fit grid size
   mainDataGrid.sizeColumnsToFit()
 }
+
+export { bootstrapApp }

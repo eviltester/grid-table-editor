@@ -1,7 +1,6 @@
 import { GridExtension } from "./gridExtension-tabulator.js";
 import { GridControl, GridControlsPageMap } from "../gridControl.js"
-import { GenericDataTable } from "../../../data_formats/generic-data-table.js";
-import { GuardedTabulatorColumnEdits } from "./guarded-tabulator-column-edits.js";
+import { GuardedColumnEdits } from "../../../grid/guarded-column-edits.js";
 
 
 /*
@@ -31,74 +30,103 @@ class ExtendedDataGrid {
 
 
 
-        //create header popup contents
-        const headerPopupFormatter = function(e, column, onRendered){
-            var container = document.createElement("div");
+        const escapeHtml = function(value){
+            return String(value ?? "")
+                .replaceAll("&", "&amp;")
+                .replaceAll("<", "&lt;")
+                .replaceAll(">", "&gt;");
+        };
 
-            var label = document.createElement("label");
-            label.innerHTML = "Filter Column:";
-            label.style.display = "block";
-            label.style.fontSize = ".7em";
-
-            var input = document.createElement("input");
-            input.placeholder = "Filter Column...";
-            input.value = column.getHeaderFilterValue() || "";
-
-            input.addEventListener("keyup", (e) => {
-                //console.log("set filter to " + input.value);
-                column.setHeaderFilterValue(input.value);
-            });
-
-            var buttons = document.createElement("div");
-            buttons.classList.add("headerbuttons");
-            buttons.innerHTML = `
-                        <hr>
-                        <span class="customHeaderAddLeftButton" title="add left">[<+]</span>
-                        <span class="customHeaderRenameButton" title="rename">[~]</span>
-                        <span class="customHeaderDeleteButton" title="delete">[x]</span>
-                        <span class="customHeaderDuplicateButton" title="duplicate">[+=]</span>
-                        <span class="customHeaderAddRightButton" title="add right">[+>]</span>
+        const customHeaderFormatter = function(cell){
+            const columnName = typeof cell.getValue === "function" ? cell.getValue() : "";
+            return `
+                <div class="headerWrapper">
+                    <div class="customHeaderTop">
+                        <div class="customFilterMenuButton" data-action="filter" title="Filter Column">
+                            <i class="ag-icon ag-icon-filter"></i>
+                        </div>
+                        <div class="customHeaderLabel">${escapeHtml(columnName)}</div>
+                        <div class="customSort">
+                            <span class="customSortDownLabel" data-action="sort-desc" title="Sort Desc">
+                                <i class="ag-icon ag-icon-desc"></i>
+                            </span>
+                            <span class="customSortUpLabel" data-action="sort-asc" title="Sort Asc">
+                                <i class="ag-icon ag-icon-asc"></i>
+                            </span>
+                            <span class="customSortRemoveLabel" data-action="sort-none" title="Clear Sort">
+                                <i class="ag-icon ag-icon-cancel"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="headerbuttons">
+                        <span data-action="add-left" title="add left">[<+]</span>
+                        <span data-action="rename" title="rename">[~]</span>
+                        <span data-action="delete" title="delete">[x]</span>
+                        <span data-action="duplicate" title="duplicate">[+=]</span>
+                        <span data-action="add-right" title="add right">[+>]</span>
+                    </div>
+                </div>
             `;
+        };
 
-            container.appendChild(label);
-            container.appendChild(input);
-            container.appendChild(buttons);
+        const onCustomHeaderClick = function(e, column){
+            const action = e?.target?.dataset?.action;
+            if(!action){
+                return;
+            }
 
-            this.guardedColumnEdits = new GuardedTabulatorColumnEdits(new GridExtension(column.getTable()));
+            e.preventDefault();
+            e.stopPropagation();
 
-            const headerAddLeftButton = buttons.querySelector('.customHeaderAddLeftButton');
-            headerAddLeftButton.addEventListener('click', 
-                function(){
-                    this.guardedColumnEdits.addNeighbourColumn(-1,column);
-                    //document.activeElement.blur()
-                }.bind(this));
+            const guardedColumnEdits = new GuardedColumnEdits(new GridExtension(column.getTable()));
+            const columnId = column.getDefinition().colId || column.getDefinition().field;
+            const fieldName = column.getField();
+            const table = column.getTable();
 
-            const headerRenameButton = buttons.querySelector('.customHeaderRenameButton');
-            headerRenameButton.addEventListener('click', 
-                function(){this.guardedColumnEdits.renameColumn(column)}.bind(this));
+            if(action === "filter"){
+                const existingFilter = column.getHeaderFilterValue?.() || "";
+                const newFilter = prompt("Filter Column:", existingFilter);
+                if(newFilter !== null){
+                    column.setHeaderFilterValue?.(newFilter);
+                }
+                return;
+            }
 
-            const headerDeleteButton = buttons.querySelector('.customHeaderDeleteButton');
-            headerDeleteButton.addEventListener('click', 
-                function(){
-                    this.guardedColumnEdits.deleteColumn(column);
-                    document.activeElement.blur();
-                }.bind(this));
+            if(action === "sort-asc"){
+                table.setSort(fieldName, "asc");
+                return;
+            }
 
-            const headerDuplicateButton = buttons.querySelector('.customHeaderDuplicateButton');
-            headerDuplicateButton.addEventListener('click', 
-                function(){this.guardedColumnEdits.duplicateColumn(1,column)}.bind(this));
+            if(action === "sort-desc"){
+                table.setSort(fieldName, "desc");
+                return;
+            }
 
-            const headerAddRightButton = buttons.querySelector('.customHeaderAddRightButton');
-            headerAddRightButton.addEventListener('click', 
-                function(){this.guardedColumnEdits.addNeighbourColumn(1,column)}.bind(this));
+            if(action === "sort-none"){
+                table.clearSort();
+                return;
+            }
 
-            return container;
-        }
-
-        //create dummy header filter to allow popup to filter
-        const emptyHeaderFilter = function(){
-            return document.createElement("div");;
-        }
+            if(action === "add-left"){
+                guardedColumnEdits.addNeighbourColumnId(-1, columnId);
+                return;
+            }
+            if(action === "rename"){
+                guardedColumnEdits.renameColId(columnId);
+                return;
+            }
+            if(action === "delete"){
+                guardedColumnEdits.deleteColId(columnId);
+                return;
+            }
+            if(action === "duplicate"){
+                guardedColumnEdits.duplicateColumnId(1, columnId);
+                return;
+            }
+            if(action === "add-right"){
+                guardedColumnEdits.addNeighbourColumnId(1, columnId);
+            }
+        };
 
 
         this.gridOptions = {
@@ -112,18 +140,16 @@ class ExtendedDataGrid {
                 rowHandle: true,
                 //editable: true,
                 editor:"input", editorParams:{selectContents:true},
-                //filter:true,
+                headerFilter:"input",
+                headerFilterFunc:"like",
                 sorter: "string",
-
-                //headerFilter: "input",
-                headerPopup: headerPopupFormatter,
-                //headerPopupIcon:"<i class='fas fa-filter' title='Filter column'>[...]</i>",
-                
-                headerFilter:emptyHeaderFilter,
-                headerFilterFunc:"like"
+                titleFormatter: customHeaderFormatter,
+                headerClick: onCustomHeaderClick
             },
 
-            autoColumns: true,
+            // Keep parity with AG Grid: headers come from our grid extension abstraction,
+            // not from inferred object keys during setData/import.
+            autoColumns: false,
             headerSort: true,
 
             movableColumns: true,

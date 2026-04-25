@@ -26,12 +26,12 @@ class TabulatorHelper{
 
     addRowToBottom(rowToAdd){
         // add row to bottom of table - false for bottom, true for top
-        addRow(rowToAdd, false);
+        this.addRow(rowToAdd, false);
     }
 
-    addRowToBottom(rowToAdd){
-        // add row to bottom of table - false for bottom, true for top
-        addRow(rowToAdd, true);
+    addRowToTop(rowToAdd){
+        // add row to top of table - false for bottom, true for top
+        this.addRow(rowToAdd, true);
     }
 
     addRow(rowToAdd,addToTop){

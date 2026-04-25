@@ -33,7 +33,7 @@ class GridExtensionTabulator{
         this.tabulator.clearData();          // removes **all rows**
 
         const columnDefs = [
-            { title: "~rename-me", field: "column1" }
+            { title: "~rename-me", headerName: "~rename-me", field: "column1", colId: "column1" }
         ];
         this.tabulator.setColumns(columnDefs);
         this.tabulator.setData([]);
@@ -69,11 +69,12 @@ class GridExtensionTabulator{
 
         let newCol = {};
         newCol.title = named;
+        newCol.headerName = named;
         if(fieldId===undefined){
             fieldId = this.getNextFieldNumber();
         }
         newCol.field = 'column' + fieldId;
-        newCol.cellRenderer = this.cellRendererText;
+        newCol.colId = newCol.field;
         return newCol;
       }
 
@@ -86,40 +87,38 @@ class GridExtensionTabulator{
             colDefs.push(newCol);
             fieldId++;
         });
-        this.tabulator.setGridOption("columnDefs",colDefs);
+        this.tabulator.setColumns(colDefs);
         var fieldNames = colDefs.map(colDef => colDef.field);
         this._addFieldsToData(fieldNames, '')
     }
 
     _addFieldsToData(fieldNames, defaultValue){
         fieldNames.forEach(fieldName => {
-            this.addFieldToData(fieldName, defaultValue);
+            this._addFieldToData(fieldName, defaultValue);
         });
     }
 
     _addFieldToData(fieldName, defaultValue){
-        this.tabulator.forEachNode(node => {
-            node.setDataValue(fieldName, defaultValue);
+        this.tabulator.getRows().forEach(row => {
+            let rowPatch = {};
+            rowPatch[fieldName] = defaultValue;
+            row.update(rowPatch);
         });
     }
 
     // [x] convert to tabulature
-    duplicateColumn(position, column, colTitle) {
+    duplicateColumn(position, columnOrId, colTitle) {
+        const column = this._resolveColumn(columnOrId);
+        if(!column){
+            return;
+        }
 
-        this.addNeighbourColumn(position, column, colTitle);
-
-        let colDefsHunt = this.tabulator.getColumnDefinitions();
-        let colDataToCopy;
-        let destinationCol;
-
-        colDefsHunt.forEach(col =>{
-            if(col.title == colTitle){
-                destinationCol = col;
-            }
-        })
+        const destinationCol = this.addNeighbourColumn(position, column, colTitle);
+        if(!destinationCol){
+            return;
+        }
 
         this.tabulator.getRows().forEach(row => {
-            console.log(destinationCol);
             const fieldName = destinationCol.field;
             let obj = {};
             obj[fieldName] = row.getData()[column.getDefinition().field];
@@ -131,74 +130,27 @@ class GridExtensionTabulator{
 
 
     appendColumnToGrid(colTitle){
-
-        let colDefs = this.tabulator.getColumnDefs();
-
         let newCol = this.getNewCol(colTitle);
-        // add to right
-        colDefs.push(newCol);
+        this.tabulator.addColumn(newCol, false);
 
-        this.tabulator.setGridOption("columnDefs",colDefs);
-
-        this.addFieldToData(newCol.field, '')
+        this._addFieldToData(newCol.field, '')
 
         return newCol
     }
 
     moveColumnTo(position, id, columnToMove){
-        // need to use column-state to set the order
-        // https://www.ag-grid.com/javascript-grid/column-state/
+        if(!id || !columnToMove){
+            return;
+        }
 
-        let columnState = this.tabulator.getColumnState();
-        let newColumnStates = [];
-        let currentColumnState;
-        let newColumnState;
+        const moveToAfter = position > 0;
+        const resolvedColumn = this._resolveColumn(columnToMove);
+        if(!resolvedColumn){
+            return;
+        }
 
-        // find new columnId
-        let colDefsHunt = this.tabulator.getColumnDefs();
-        let newColId;
-        colDefsHunt.forEach(col =>{
-            if(col.field == columnToMove.field){
-                newColId = col.colId;
-            }
-        })
-
-
-        // find main column state
-        columnState.forEach(col =>{
-            if(col.colId== id){
-                currentColumnState=col;
-            }
-        })
-
-        // find new column id
-        columnState.forEach(col =>{
-            if(col.colId== newColId){
-                newColumnState=col;
-            }
-        })
-
-        // shuffle by creating a new state
-        columnState.forEach(colDef =>{
-            if(colDef.colId==id){
-                if(position<0){
-                    newColumnStates.push(newColumnState)
-                    newColumnStates.push(currentColumnState)
-                }else{
-                    newColumnStates.push(currentColumnState)
-                    newColumnStates.push(newColumnState)      }
-            }else{
-                if(colDef.colId!=newColId){
-                    newColumnStates.push(colDef);
-                }
-            }
-        })
-
-        this.tabulator.applyColumnState(
-            { state: newColumnStates,
-                applyOrder: true }
-        );
-
+        const targetId = this._normaliseId(id);
+        resolvedColumn.move(targetId, moveToAfter);
     }
 
     // [x] convert to tabulature
@@ -208,17 +160,35 @@ class GridExtensionTabulator{
             return;
 
         const column = this.getNewCol(colTitle);
+        const resolvedExistingColumn = this._resolveColumn(existingColumn);
+        if(!resolvedExistingColumn){
+            return;
+        }
 
         var addToLeft = true;
         if(position>0){
             addToLeft=false;
         }
-        this.tabulator.addColumn(column, addToLeft, existingColumn);
+        this.tabulator.addColumn(column, addToLeft, resolvedExistingColumn);
+        return column;
+    }
+
+    addNeighbourColumnId(position, id, colTitle){
+        const existingColumn = this._getColumnById(id);
+        this.addNeighbourColumn(position, existingColumn, colTitle);
     }
 
     // [x] convert to tabulature
-    deleteColumn(column){
+    deleteColumn(columnOrId){
+        const column = this._resolveColumn(columnOrId);
+        if(!column){
+            return;
+        }
         column.delete();
+    }
+
+    deleteColumnId(id){
+        this.deleteColumn(id);
     }
 
     // [x] convert to tabulature
@@ -232,13 +202,17 @@ class GridExtensionTabulator{
     }
 
     getColumnDef(id){
-
-        let colDefs = this.tabulator.getColumnDefinitions();
-        for(let colDef of colDefs){
-            if(colDef.colId==id){
-                return colDef;
-            }  
+        const colDef = this.tabulator.getColumnDefinitions().find((definition) => {
+            return definition.colId === id || definition.field === id || definition.title === id;
+        });
+        if(!colDef){
+            return undefined;
         }
+        return {
+            ...colDef,
+            colId: colDef.colId || colDef.field,
+            headerName: colDef.headerName || colDef.title
+        };
     }
 
     // [x] convert to tabulature
@@ -253,8 +227,16 @@ class GridExtensionTabulator{
     }
 
     // [x] convert to tabulature
-    renameColumn(column,name){
-        this.tabulator.updateColumnDefinition(column, {title:name});
+    renameColumn(columnOrId,name){
+        const column = this._resolveColumn(columnOrId);
+        if(!column){
+            return;
+        }
+        column.updateDefinition({title:name, headerName:name});
+    }
+
+    renameColId(id, name){
+        this.renameColumn(id, name);
     }
 
     // [x] convert to tabulature
@@ -384,7 +366,7 @@ class GridExtensionTabulator{
     /*
         Import Grid Extensions
     */
-   // [x] convert to tabulature
+    // [x] convert to tabulature
     setGridFromGenericDataTable(dataTable){
 
       if(dataTable.getColumnCount()==0){
@@ -394,23 +376,67 @@ class GridExtensionTabulator{
 
       this.tabulator.clearData();
 
-      // auto columns is set so we don't do this
-      //this.createColumns(dataTable.getHeaders());
-      //this.tabulator.setGridOption("rowData",[]);
+      const headers = dataTable.getHeaders();
+
+      // Rebuild columns deterministically on import so header titles are preserved
+      // and field ids start from column1 each time (parity with AG Grid import flow).
+      const columnDefs = headers.map((header, index) => {
+        const field = `column${index + 1}`;
+        return { title: header, headerName: header, field, colId: field };
+      });
 
       let addRows = [];
-      
-      //let fieldnames = dataTable.getColumnDefs().map(col => col.field);
-
+      let fieldnames = columnDefs.map(col => col.field);
       for(let rowIndex=0; rowIndex<dataTable.getRowCount(); rowIndex++){
-          addRows.push(dataTable.getRowAsObject(rowIndex));
+          addRows.push(dataTable.getRowAsObjectUsingHeadings(rowIndex, fieldnames));
       }
 
-      this.tabulator.setData(addRows);
+      // Tabulator column resets are async; chain operations to avoid fallback headers.
+      Promise.resolve(this.tabulator.setColumns(columnDefs))
+          .then(() => this.tabulator.setData(addRows))
+          .then(() => this._applyHeaderTitles(headers));
 
       // TODO : apply transactions incrementally for larger data sets
       //this.tabulator.applyTransaction({ add: addRows });
     }   
+
+    _applyHeaderTitles(headers){
+        const columns = this.tabulator.getColumns();
+        columns.forEach((column, index) => {
+            const header = headers[index];
+            if(header !== undefined){
+                column.updateDefinition({ title: header, headerName: header });
+            }
+        });
+    }
+
+    _normaliseId(idOrColumn){
+        if(typeof idOrColumn === "string"){
+            return idOrColumn;
+        }
+        if(idOrColumn?.getDefinition){
+            const definition = idOrColumn.getDefinition();
+            return definition.colId || definition.field || definition.title;
+        }
+        return undefined;
+    }
+
+    _getColumnById(id){
+        const normalisedId = this._normaliseId(id);
+        return this.tabulator.getColumns().find((column) => {
+            const definition = column.getDefinition();
+            return definition.colId === normalisedId ||
+                   definition.field === normalisedId ||
+                   definition.title === normalisedId;
+        });
+    }
+
+    _resolveColumn(columnOrId){
+        if(columnOrId?.getDefinition){
+            return columnOrId;
+        }
+        return this._getColumnById(columnOrId);
+    }
 
 }
 

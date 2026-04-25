@@ -26,6 +26,14 @@ The application is live at [AnyWayData.com](https://anywaydata.com)
 
 - Or clone and run locally by opening index.html in a browser after starting a web server in the folder e.g. `python3 -m http.server`
 
+### Select Grid Engine
+
+The editor can run with AG Grid or Tabulator using the same import/export and toolbar processing layer.
+
+- Query string: `?grid=ag-grid` or `?grid=tabulator`
+- Global override before app load: `window.ANYWAYDATA_GRID_ENGINE = "ag-grid"`
+- Persisted setting key: `localStorage["anywaydata:grid-engine"]`
+
 ## To Generate Test Data
 
 Expand the "> Test Data" section.

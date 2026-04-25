@@ -1,8 +1,7 @@
 import { Importer } from "./grid/importer.js";
 import { Exporter } from "./grid/exporter.js";
 import { enableTestDataGenerationInterface } from "./gui_components/testdatadefn.js";
-//import { ExtendedDataGrid } from "./gui_components/data-grid-editor/ag-grid/main-display-grid.js";
-import { ExtendedDataGrid } from "./gui_components/data-grid-editor/tabulator/main-display-grid.js";
+import { ExtendedDataGrid, activeGridEngine } from "./gui_components/data-grid-editor/main-display-grid.js";
 import { TabbedTextControl } from "./gui_components/tabbed-text-control.js"
 import { ImportExportControls } from "./gui_components/import-export-controls.js";
 import { GenericDataTable } from "./data_formats/generic-data-table.js";
@@ -14,6 +13,8 @@ var importExportController;
 
 // setup the grid after the page has finished loading
 document.addEventListener('DOMContentLoaded', function() {
+
+  console.log(`Using grid engine: ${activeGridEngine}`);
   
   let mainGridArea = document.getElementById("main-grid-view");
   mainDataGrid = new ExtendedDataGrid();

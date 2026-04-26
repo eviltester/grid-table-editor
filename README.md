@@ -144,9 +144,22 @@ This tool falls in to the categories:
 
 Test - `npm test`
 
+Coverage - `npm run testcoverage`
+
 Preview Docs - `npm run previewdocs`
 
 Build for release - `npm run anywaydata:win`
+
+## CI Coverage Artifacts
+
+GitHub Actions runs linting and tests for pushes and pull requests to `master`.
+
+The workflow also publishes coverage output as build artifacts on each run:
+
+- `coverage-report-node-18.x` contains the full `coverage/` directory
+- `coverage-html-report-node-18.x` contains the HTML report from `coverage/lcov-report/`
+
+Open the workflow run in the Actions tab and download the artifact from the run summary page.
 
 ## Probable TODO:
 

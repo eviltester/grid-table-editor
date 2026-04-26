@@ -62,7 +62,7 @@ async function bootstrapApp({
   enableTestDataGenerationInterfaceFn(
     "testDataGeneratorContainer",
     importer,
-    importExportController.getExportControls(),
+    importExportController,
     mainDataGrid.getGridExtras()
   );
 

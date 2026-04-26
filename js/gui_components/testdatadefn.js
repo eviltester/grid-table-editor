@@ -31,7 +31,7 @@ import { faker } from "https://cdn.skypack.dev/@faker-js/faker@v9.7.0";
 
 var debouncer = new Debouncer();
 let importer=undefined;
-let exportControls=undefined;
+let textPreviewRenderer=undefined;
 let mainGridExtras=undefined;
 let testDataStatusResetTimeoutId = null;
 let activeDefnCellEdit = null;
@@ -163,7 +163,7 @@ async function generateTestData(){
 }
 
 async function refreshTestDataPreview(){
-    if(!exportControls){
+    if(!textPreviewRenderer){
         return;
     }
     const refreshButton = document.getElementById("refreshtestdatapreview");
@@ -175,7 +175,7 @@ async function refreshTestDataPreview(){
 
     try{
         await yieldToUi();
-        await Promise.resolve(exportControls.renderTextFromGrid());
+        await Promise.resolve(textPreviewRenderer.renderTextFromGrid());
         setTestDataStatus("Text preview refreshed.", false);
         scheduleTestDataStatusReset();
     }catch(error){
@@ -677,7 +677,7 @@ function convertGridToText(){
 }
 
 
-function enableTestDataGenerationInterface(parentId, anImporter, theExportControls, aGridExtras){
+function enableTestDataGenerationInterface(parentId, anImporter, aTextPreviewRenderer, aGridExtras){
 
 
     // dynamically setup the faker commands from loaded library
@@ -685,7 +685,7 @@ function enableTestDataGenerationInterface(parentId, anImporter, theExportContro
     identifyFakerCommands(faker);
 
     importer = anImporter;
-    exportControls = theExportControls;
+    textPreviewRenderer = aTextPreviewRenderer;
     mainGridExtras = aGridExtras;
 
     let parentElem = document.getElementById(parentId);

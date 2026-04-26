@@ -1,0 +1,563 @@
+
+> grid-table-editor@1.0.0 testcoverage
+> jest --coverage
+
+  console.log
+    rename column column1 with this name: Renamed
+
+      at GuardedColumnEdits.log [as renameColId] (js/grid/guarded-column-edits.js:13:15)
+
+  console.log
+    rename column column1 with this name: Renamed
+
+      at GuardedColumnEdits.log [as renameColId] (js/grid/guarded-column-edits.js:13:15)
+
+  console.log
+    duplicate a column with this name: Copy
+
+      at GuardedColumnEdits.log [as duplicateColumnId] (js/grid/guarded-column-edits.js:43:15)
+
+  console.log
+    create a new neighbour column with this name: Neighbour
+
+      at GuardedColumnEdits.log [as addNeighbourColumnId] (js/grid/guarded-column-edits.js:60:15)
+
+  console.log
+    rename column Old Name with this name: Renamed
+
+      at GuardedTabulatorColumnEdits.log [as renameColumn] (js/gui_components/data-grid-editor/tabulator/guarded-tabulator-column-edits.js:17:15)
+
+  console.log
+    rename column Old Name with this name: Renamed
+
+      at GuardedTabulatorColumnEdits.log [as renameColumn] (js/gui_components/data-grid-editor/tabulator/guarded-tabulator-column-edits.js:17:15)
+
+  console.log
+    duplicate a column with this name: Copy
+
+      at GuardedTabulatorColumnEdits.log [as duplicateColumn] (js/gui_components/data-grid-editor/tabulator/guarded-tabulator-column-edits.js:50:15)
+
+  console.log
+    create a new neighbour column with this name: Neighbour
+
+      at GuardedTabulatorColumnEdits.log [as addNeighbourColumn] (js/gui_components/data-grid-editor/tabulator/guarded-tabulator-column-edits.js:72:15)
+
+  console.log
+    Sentence
+    helpers.mustache('I found {{count}} instances of "{{word}}".', {count: () => `${this.number.int()}`,word: "this word",})
+
+      at Object.log (tests/data_generation/generateDataFromFakerSpec.test.js:74:15)
+
+  console.log
+    create a new neighbour column with this name: Neighbour
+
+      at GuardedColumnEdits.log [as addNeighbourColumnId] (js/grid/guarded-column-edits.js:60:15)
+
+  console.log
+    rename column column2 with this name: Renamed First
+
+      at GuardedColumnEdits.log [as renameColId] (js/grid/guarded-column-edits.js:13:15)
+
+  console.log
+    duplicate a column with this name: Second Copy
+
+      at GuardedColumnEdits.log [as duplicateColumnId] (js/grid/guarded-column-edits.js:43:15)
+
+  console.log
+    create a new neighbour column with this name: Neighbour
+
+      at GuardedColumnEdits.log [as addNeighbourColumnId] (js/grid/guarded-column-edits.js:60:15)
+
+  console.log
+    rename column column1 with this name: Renamed First
+
+      at GuardedColumnEdits.log [as renameColId] (js/grid/guarded-column-edits.js:13:15)
+
+  console.log
+    duplicate a column with this name: Second Copy
+
+      at GuardedColumnEdits.log [as duplicateColumnId] (js/grid/guarded-column-edits.js:43:15)
+
+  console.log
+    ΓöîΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö¼ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö¼ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö¼ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö¼ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö¼ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö¼ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö¼ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÉ
+    Γöé (index) Γöé rows  Γöé cols Γöé importMs Γöé filterMs Γöé createColsMs Γöé duplicateMs Γöé exportMs Γöé
+    Γö£ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö╝ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö╝ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö╝ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö╝ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö╝ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö╝ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö╝ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöñ
+    Γöé 0       Γöé 10000 Γöé 12   Γöé 77.46    Γöé 119.32   Γöé 15.5         Γöé 11.42       Γöé 179.58   Γöé
+    Γöé 1       Γöé 25000 Γöé 12   Γöé 165.84   Γöé 320.27   Γöé 24.39        Γöé 23.91       Γöé 408.56   Γöé
+    ΓööΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö┤ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö┤ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö┤ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö┤ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö┤ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö┤ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö┤ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÿ
+
+      at table (tests/grid/tabulator-performance.benchmark.test.js:233:13)
+
+  console.log
+    no rows selected
+
+      at GridControl.log [as deleteSelectedRows] (js/gui_components/data-grid-editor/gridControl.js:93:15)
+
+  console.log
+    expected: ignoring known faker command helpers.objectKey
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command helpers.objectValue
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command helpers.objectEntry
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command helpers.enumValue
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command _randomizer.next
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command _randomizer.seed
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    Document { location: [Getter/Setter] }
+
+      at log (tests/data_formats/html-convertor.test.js:225:11)
+
+  console.warn
+    No supported grid library loaded; test data definition grid editor disabled.
+
+      717 |     setupTabulatorDefnEditor(tableDiv);
+      718 |   } else {
+    > 719 |     console.warn('No supported grid library loaded; test data definition grid editor disabled.');
+          |             ^
+      720 |     return;
+      721 |   }
+      722 |
+
+      at warn (js/gui_components/testdatadefn.js:719:13)
+      at setupTestDataEditGrid (js/gui_components/testdatadefn.js:281:3)
+      at createTestDataGrid (js/gui_components/testdatadefn.js:970:3)
+      at tests/grid/test-data-defn-engine-compat.test.js:35:7
+      at Object.<anonymous> (node_modules/expect/build/toThrowMatchers.js:83:11)
+      at Object.throwingMatcher [as toThrow] (node_modules/expect/build/index.js:342:21)
+      at Object.toThrow (tests/grid/test-data-defn-engine-compat.test.js:45:12)
+
+  console.log
+    [Function: createElement]
+
+      at log (tests/data_formats/html-convertor.test.js:226:11)
+
+  console.log
+    expected: ignoring known faker command helpers.objectKey
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command helpers.objectValue
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command helpers.objectEntry
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command helpers.enumValue
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command _randomizer.next
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command _randomizer.seed
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    Error: could not find table in the HTML import
+
+      at HtmlConvertor.log [as toDataTable] (js/data_formats/html-convertor.js:197:15)
+
+  console.log
+    Error: could not find any rows in the table
+
+      at HtmlConvertor.log [as toDataTable] (js/data_formats/html-convertor.js:205:15)
+
+  console.log
+    expected: ignoring known faker command helpers.objectKey
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command helpers.objectValue
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command helpers.objectEntry
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    Error: could not find any headers in the table
+
+      at HtmlConvertor.log [as toDataTable] (js/data_formats/html-convertor.js:214:15)
+
+  console.log
+    expected: ignoring known faker command helpers.enumValue
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command _randomizer.next
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command _randomizer.seed
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.warn
+    No supported grid library loaded; test data definition grid editor disabled.
+
+      717 |     setupTabulatorDefnEditor(tableDiv);
+      718 |   } else {
+    > 719 |     console.warn('No supported grid library loaded; test data definition grid editor disabled.');
+          |             ^
+      720 |     return;
+      721 |   }
+      722 |
+
+      at warn (js/gui_components/testdatadefn.js:719:13)
+      at setupTestDataEditGrid (js/gui_components/testdatadefn.js:281:3)
+      at createTestDataGrid (js/gui_components/testdatadefn.js:970:3)
+      at Object.<anonymous> (tests/grid/test-data-defn-engine-compat.test.js:123:5)
+
+  console.log
+    expected: ignoring known faker command helpers.objectKey
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command helpers.objectValue
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command helpers.objectEntry
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command helpers.enumValue
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command _randomizer.next
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command _randomizer.seed
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    Identifying type for name
+    name is a valid 'faker': lorem.word
+
+      at log (js/gui_components/testdatadefn.js:46:11)
+
+  console.log
+    Data Type csv not supported for exporting
+
+      at ExportControls.log [as renderTextFromGrid] (js/gui_components/exportControls.js:67:15)
+
+  console.log
+    Data Type csv not supported
+
+      at ExportControls.log [as fileDownload] (js/gui_components/exportControls.js:33:15)
+
+  console.log
+    rename column column1 with this name: Instructions
+
+      at GuardedColumnEdits.log [as renameColId] (js/grid/guarded-column-edits.js:13:15)
+
+  console.log
+    File(s) dropped
+
+      at DragDropControl.log [as fileDropHandler] (js/gui_components/drag-drop-control.js:52:13)
+
+  console.log
+    create a new neighbour column with this name: Added
+
+      at GuardedColumnEdits.log [as addNeighbourColumnId] (js/grid/guarded-column-edits.js:60:15)
+
+  console.log
+    ... file[1].name = demo.csv
+
+      at DragDropControl.log [as fileDropHandler] (js/gui_components/drag-drop-control.js:64:19)
+
+  console.log
+    expected: ignoring known faker command helpers.objectKey
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command helpers.objectValue
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command helpers.objectEntry
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command helpers.enumValue
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command _randomizer.next
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command _randomizer.seed
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.warn
+    No supported grid library loaded; test data definition grid editor disabled.
+
+      717 |     setupTabulatorDefnEditor(tableDiv);
+      718 |   } else {
+    > 719 |     console.warn('No supported grid library loaded; test data definition grid editor disabled.');
+          |             ^
+      720 |     return;
+      721 |   }
+      722 |
+
+      at warn (js/gui_components/testdatadefn.js:719:13)
+      at setupTestDataEditGrid (js/gui_components/testdatadefn.js:281:3)
+      at createTestDataGrid (js/gui_components/testdatadefn.js:970:3)
+      at _callee2$ (tests/grid/test-data-defn-engine-compat.test.js:230:5)
+      at tryCatch (tests/grid/test-data-defn-engine-compat.test.js:9:2404)
+      at Generator._invoke (tests/grid/test-data-defn-engine-compat.test.js:9:1964)
+      at Generator.next (tests/grid/test-data-defn-engine-compat.test.js:9:3255)
+
+  console.log
+    File(s) dropped
+
+      at DragDropControl.log [as fileDropHandler] (js/gui_components/drag-drop-control.js:52:13)
+
+  console.log
+    Using grid engine: tabulator
+
+      at log (js/script.js:27:11)
+
+  console.log
+    Using grid engine: tabulator
+
+      at log (js/script.js:27:11)
+
+  console.log
+    expected: ignoring known faker command helpers.objectKey
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command helpers.objectValue
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command helpers.objectEntry
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command helpers.enumValue
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command _randomizer.next
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command _randomizer.seed
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+----------------------------------------------|---------|----------|---------|---------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+File                                          | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s                                                                                                                                                                                                                                                  
+----------------------------------------------|---------|----------|---------|---------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+All files                                     |   62.04 |    55.76 |   62.17 |   62.26 |                                                                                                                                                                                                                                                                    
+ js                                           |   69.56 |       20 |   33.33 |   69.56 |                                                                                                                                                                                                                                                                    
+  generator-script.js                         |   84.61 |    22.22 |      50 |   84.61 | 34-35                                                                                                                                                                                                                                                              
+  script.js                                   |   63.63 |    18.75 |      25 |   63.63 | 51,68-84                                                                                                                                                                                                                                                           
+ js/data_formats                              |    88.2 |    81.75 |   90.35 |   88.03 |                                                                                                                                                                                                                                                                    
+  asciitable-convertor.js                     |      16 |     7.14 |   28.57 |      16 | 38-69,78-93                                                                                                                                                                                                                                                        
+  csv-convertor.js                            |   83.33 |       50 |      80 |   83.33 | 10,31                                                                                                                                                                                                                                                              
+  delimiter-convertor.js                      |      28 |    14.28 |      80 |      28 | 29-59                                                                                                                                                                                                                                                              
+  delimiter-options.js                        |   72.72 |    66.66 |   66.66 |      80 | 25,31                                                                                                                                                                                                                                                              
+  file-types.js                               |     100 |      100 |     100 |     100 |                                                                                                                                                                                                                                                                    
+  generic-data-table-utils.js                 |   83.72 |    72.72 |     100 |   83.33 | 16,27-28,33-34,51,85                                                                                                                                                                                                                                               
+  generic-data-table.js                       |   89.47 |       70 |     100 |   88.88 | 42-43,55-56                                                                                                                                                                                                                                                        
+  gherkin-convertor.js                        |    96.8 |    92.85 |     100 |   96.73 | 29,34,38                                                                                                                                                                                                                                                           
+  html-convertor.js                           |   98.98 |    91.89 |     100 |   98.92 | 28                                                                                                                                                                                                                                                                 
+  javascript-convertor.js                     |   78.94 |    58.33 |   66.66 |   78.94 | 18-25,43-48                                                                                                                                                                                                                                                        
+  json-convertor.js                           |   95.74 |       85 |     100 |   95.45 | 36,107                                                                                                                                                                                                                                                             
+  markdown-convertor.js                       |   98.75 |    96.49 |     100 |   98.74 | 35-36                                                                                                                                                                                                                                                              
+ js/data_generation                           |   81.15 |    71.42 |   81.57 |    81.2 |                                                                                                                                                                                                                                                                    
+  ruleResponse.js                             |     100 |      100 |     100 |     100 |                                                                                                                                                                                                                                                                    
+  rulesBasedDataGenerator.js                  |   81.81 |       50 |   85.71 |   80.64 | 50-55,61,77                                                                                                                                                                                                                                                        
+  rulesParser.js                              |      92 |     92.3 |     100 |   91.66 | 42-43                                                                                                                                                                                                                                                              
+  testDataGenerator.js                        |   93.75 |      100 |    90.9 |   93.33 | 57                                                                                                                                                                                                                                                                 
+  testDataRule.js                             |     100 |      100 |     100 |     100 |                                                                                                                                                                                                                                                                    
+  testDataRules.js                            |   42.85 |      100 |      40 |      50 | 10-15                                                                                                                                                                                                                                                              
+  testDataRulesCompiler.js                    |   72.91 |       50 |      75 |   72.91 | 57-69,90,97,102-110,118                                                                                                                                                                                                                                            
+ js/data_generation/faker                     |   98.09 |    97.29 |     100 |   98.09 |                                                                                                                                                                                                                                                                    
+  fakerCommand.js                             |     100 |    96.15 |     100 |     100 | 86                                                                                                                                                                                                                                                                 
+  fakerCommandRunner.js                       |     100 |      100 |     100 |     100 |                                                                                                                                                                                                                                                                    
+  fakerTestDataGenerator.js                   |     100 |      100 |     100 |     100 |                                                                                                                                                                                                                                                                    
+  fakerTestDataRuleValidator.js               |   88.88 |      100 |     100 |   88.88 | 39-40                                                                                                                                                                                                                                                              
+  parsingUtils.js                             |     100 |      100 |     100 |     100 |                                                                                                                                                                                                                                                                    
+ js/data_generation/literal                   |       0 |      100 |      50 |       0 |                                                                                                                                                                                                                                                                    
+  literalTestDataGenerator.js                 |       0 |      100 |      50 |       0 | 7                                                                                                                                                                                                                                                                  
+ js/data_generation/regex                     |   73.33 |      100 |   83.33 |   73.33 |                                                                                                                                                                                                                                                                    
+  regexTestDataGenerator.js                   |      80 |      100 |     100 |      80 | 13                                                                                                                                                                                                                                                                 
+  regexTestDataRuleValidator.js               |      70 |      100 |      75 |      70 | 14-15,24                                                                                                                                                                                                                                                           
+ js/grid                                      |   77.19 |    52.17 |   71.42 |   76.99 |                                                                                                                                                                                                                                                                    
+  exporter.js                                 |    73.8 |    21.42 |   55.55 |    73.8 | 47,56-57,75-92                                                                                                                                                                                                                                                     
+  guarded-column-edits.js                     |   78.78 |    77.27 |     100 |   78.12 | 15,45,49-50,62,66-67                                                                                                                                                                                                                                               
+  importer.js                                 |   79.48 |       40 |   71.42 |   79.48 | 42-48,56,63-64,77                                                                                                                                                                                                                                                  
+ js/gui_components                            |    65.6 |    55.58 |   67.17 |   65.77 |                                                                                                                                                                                                                                                                    
+  data-generator-page.js                      |   73.89 |       60 |   80.39 |   74.29 | 35,72,90,96,104,138,157,160,248,254,267,290-291,322,329,342-346,356-369,375,417,423,428,439-489,496,515,533,551-552,568-569,574-575,580-581                                                                                                                        
+  download.js                                 |    12.5 |      100 |      50 |    12.5 | 7-16                                                                                                                                                                                                                                                               
+  drag-drop-control.js                        |     100 |      100 |     100 |     100 |                                                                                                                                                                                                                                                                    
+  exportControls.js                           |   97.05 |      100 |    87.5 |   97.05 | 56                                                                                                                                                                                                                                                                 
+  import-export-controls.js                   |   38.86 |       32 |   39.02 |   39.32 | 46,58-69,94-150,156,164-170,179-294,304-307,315,344-345,376,397                                                                                                                                                                                                    
+  tabbed-text-control.js                      |   68.96 |     62.5 |   66.66 |   71.42 | 56-65,71,89                                                                                                                                                                                                                                                        
+  test-data-amend.js                          |   90.27 |    74.07 |     100 |   89.55 | 41,88-89,96-97,120,135                                                                                                                                                                                                                                             
+  testdatadefn.js                             |   64.48 |    50.69 |   58.62 |   64.89 | 70-73,77-79,91,95-97,113,119-121,126-141,146-148,154-156,166,181-182,209,217,225,243,254-255,272,318-357,634-639,687,697,715,724-728,732-793,818-821,826-828,833-835,841-844,857,868,881,886,907,914,964,979                                                       
+ js/gui_components/data-grid-editor           |   91.36 |    84.48 |   92.85 |   92.53 |                                                                                                                                                                                                                                                                    
+  grid-engine.js                              |      90 |     93.1 |     100 |      90 | 40,44,49                                                                                                                                                                                                                                                           
+  grid-library-loader.js                      |   84.48 |    71.42 |   84.61 |   87.03 | 20-21,26-28,44,89                                                                                                                                                                                                                                                  
+  gridControl.js                              |     100 |      100 |     100 |     100 |                                                                                                                                                                                                                                                                    
+  main-display-grid.js                        |     100 |       50 |     100 |     100 | 10                                                                                                                                                                                                                                                                 
+ js/gui_components/data-grid-editor/ag-grid   |   56.38 |    57.36 |   63.15 |    55.4 |                                                                                                                                                                                                                                                                    
+  customHeader-ag-grid.js                     |       0 |        0 |       0 |       0 | 14-180                                                                                                                                                                                                                                                             
+  gridExtension-ag-grid.js                    |    79.4 |    63.24 |   88.23 |   79.36 | 13-17,213-217,230,238-255,262,280,359,387,410-419,427,494-502,507,513-525,532                                                                                                                                                                                      
+  main-display-grid.js                        |       0 |      100 |       0 |       0 | 18-80                                                                                                                                                                                                                                                              
+  select-filter-editor.js                     |       0 |      100 |       0 |       0 | 12-60                                                                                                                                                                                                                                                              
+ js/gui_components/data-grid-editor/tabulator |   69.69 |     52.1 |   82.11 |   69.36 |                                                                                                                                                                                                                                                                    
+  gridExtension-tabulator.js                  |    67.3 |    46.09 |      80 |   66.81 | 90,112,117,134,140,154,174,180,198-201,207,213,217,228,236,244-257,262,268,274,284,301,325,376,387,394-400,408,429-435,449-454,507,515,522,546-553,567,581,588,594,599,607,614-615,647-666,697,717-724,731-735,759,770-822,827,842-873,878,883-885,894,899-900,904 
+  guarded-tabulator-column-edits.js           |    82.5 |    85.29 |     100 |   82.05 | 19,52,56-57,74,78-79                                                                                                                                                                                                                                               
+  main-display-grid.js                        |   77.77 |       60 |   85.71 |   77.77 | 70,82-87,106-107,114-115,118-119                                                                                                                                                                                                                                   
+  tabulator-helpers.js                        |   77.27 |    66.66 |     100 |   77.27 | 14-16,26,30                                                                                                                                                                                                                                                        
+ js/gui_components/options_panels             |       0 |        0 |       0 |       0 |                                                                                                                                                                                                                                                                    
+  html-options-data-utils.js                  |       0 |        0 |       0 |       0 | 3-105                                                                                                                                                                                                                                                              
+  options-ascii-table.js                      |       0 |      100 |       0 |       0 | 6-53                                                                                                                                                                                                                                                               
+  options-csv-delimited-controls.js           |       0 |        0 |       0 |       0 | 6-95                                                                                                                                                                                                                                                               
+  options-delimited-controls.js               |       0 |      100 |       0 |       0 | 5-145                                                                                                                                                                                                                                                              
+  options-gherkin-panel.js                    |       0 |        0 |       0 |       0 | 6-92                                                                                                                                                                                                                                                               
+  options-html-panel.js                       |       0 |        0 |       0 |       0 | 6-112                                                                                                                                                                                                                                                              
+  options-javascript-panel.js                 |       0 |      100 |       0 |       0 | 5-26                                                                                                                                                                                                                                                               
+  options-json-panel.js                       |       0 |        0 |       0 |       0 | 7-120                                                                                                                                                                                                                                                              
+  options-markdown-panel.js                   |       0 |        0 |       0 |       0 | 7-185                                                                                                                                                                                                                                                              
+ js/libs/ascii-table3                         |    3.43 |        0 |       0 |    3.76 |                                                                                                                                                                                                                                                                    
+  ascii-table3-styles.js                      |     100 |      100 |     100 |     100 |                                                                                                                                                                                                                                                                    
+  ascii-table3.js                             |    0.56 |        0 |       0 |    0.62 | 44-1343                                                                                                                                                                                                                                                            
+  printable-characters.js                     |   38.46 |        0 |       0 |      40 | 24-51                                                                                                                                                                                                                                                              
+ js/utils                                     |   86.66 |    73.68 |   85.71 |   86.66 |                                                                                                                                                                                                                                                                    
+  debouncer.js                                |     100 |      100 |     100 |     100 |                                                                                                                                                                                                                                                                    
+  number-convertor.js                         |     100 |    86.66 |     100 |     100 | 28-30                                                                                                                                                                                                                                                              
+  papawrappa.js                               |   33.33 |       25 |      50 |   33.33 | 7-10,17                                                                                                                                                                                                                                                            
+----------------------------------------------|---------|----------|---------|---------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

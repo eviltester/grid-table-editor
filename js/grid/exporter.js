@@ -51,6 +51,11 @@ class Exporter {
     return this.getDataTableAs(type, this.getGridAsGenericDataTable());
   }
 
+  async getGridAsAsync(type, progressCallback) {
+    const dataTable = await this.getGridAsGenericDataTableAsync(undefined, progressCallback);
+    return this.getDataTableAsAsync(type, dataTable, progressCallback);
+  }
+
   getDataTableAs(type, dataTable) {
     if (!this.canExport(type)) {
       console.log(`Data Type ${type} not supported for exporting`);
@@ -67,7 +72,43 @@ class Exporter {
     }
   }
 
+  async getDataTableAsAsync(type, dataTable, progressCallback) {
+    if (!this.canExport(type)) {
+      console.log(`Data Type ${type} not supported for exporting`);
+      return '';
+    }
+
+    if (Object.prototype.hasOwnProperty.call(this.exporters, type)) {
+      let exporterToUse = this.exporters[type];
+      let optionsToUse = this.options[type];
+      if (optionsToUse !== undefined) {
+        exporterToUse?.setOptions?.(optionsToUse);
+      }
+
+      const prefixedProgress = (message) => {
+        if (!message) {
+          return;
+        }
+        progressCallback?.(`${type.toUpperCase()}: ${message}`);
+      };
+
+      prefixedProgress('Formatting... 0%');
+      if (typeof exporterToUse?.fromDataTableAsync === 'function') {
+        return exporterToUse.fromDataTableAsync(dataTable, prefixedProgress);
+      }
+      return exporterToUse?.fromDataTable(dataTable);
+    }
+  }
+
   getGridAsGenericDataTable(maxRows) {
+    return this.gridExtensions.getGridAsGenericDataTable(maxRows);
+  }
+
+  async getGridAsGenericDataTableAsync(maxRows, progressCallback) {
+    progressCallback?.('Reading grid data... 0%');
+    if (typeof this.gridExtensions.getGridAsGenericDataTableAsync === 'function') {
+      return this.gridExtensions.getGridAsGenericDataTableAsync(maxRows, progressCallback);
+    }
     return this.gridExtensions.getGridAsGenericDataTable(maxRows);
   }
 

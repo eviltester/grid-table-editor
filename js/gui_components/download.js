@@ -4,8 +4,10 @@ class Download {
   }
 
   downloadFile(text) {
-    var element = document.createElement('a');
-    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const element = document.createElement('a');
+    element.setAttribute('href', url);
     element.setAttribute('download', this.filename);
 
     element.style.display = 'none';
@@ -14,6 +16,7 @@ class Download {
     element.click();
 
     document.body.removeChild(element);
+    URL.revokeObjectURL(url);
   }
 }
 

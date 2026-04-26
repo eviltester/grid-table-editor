@@ -171,4 +171,51 @@ describe('Exporter direct table conversion', () => {
     expect(exporter.canExport('json')).toBe(true);
     expect(exporter.getDataTableAs('json', table)).toBeUndefined();
   });
+
+  test('getGridAsAsync matches sync output when async grid extension is available', async () => {
+    const table = createTable(['Name', 'Role'], [['Connie', 'QA']]);
+    const exporter = new Exporter({
+      getGridAsGenericDataTable: () => table,
+      getGridAsGenericDataTableAsync: async () => table,
+      getHeadersFromGrid: () => table.getHeaders(),
+    });
+
+    const syncOutput = exporter.getGridAs('csv');
+    const asyncOutput = await exporter.getGridAsAsync('csv');
+
+    expect(asyncOutput).toBe(syncOutput);
+  });
+
+  test('getDataTableAsAsync falls back to sync exporter when async method is missing', async () => {
+    const table = createTable(['Name'], [['Connie']]);
+    const exporter = new Exporter({
+      getGridAsGenericDataTable: () => table,
+      getHeadersFromGrid: () => table.getHeaders(),
+    });
+    exporter.exporters.json = {
+      setOptions: jest.fn(),
+      fromDataTable: jest.fn(() => 'sync json output'),
+    };
+
+    const output = await exporter.getDataTableAsAsync('json', table);
+
+    expect(output).toBe('sync json output');
+  });
+
+  test('getDataTableAsAsync uses async exporter when available', async () => {
+    const table = createTable(['Name'], [['Connie']]);
+    const exporter = new Exporter({
+      getGridAsGenericDataTable: () => table,
+      getHeadersFromGrid: () => table.getHeaders(),
+    });
+    exporter.exporters.markdown = {
+      setOptions: jest.fn(),
+      fromDataTableAsync: jest.fn(async () => 'async markdown output'),
+    };
+
+    const output = await exporter.getDataTableAsAsync('markdown', table, jest.fn());
+
+    expect(output).toBe('async markdown output');
+    expect(exporter.exporters.markdown.fromDataTableAsync).toHaveBeenCalledWith(table, expect.any(Function));
+  });
 });

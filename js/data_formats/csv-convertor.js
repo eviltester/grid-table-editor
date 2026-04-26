@@ -1,10 +1,12 @@
 import { DelimiterConvertor } from './delimiter-convertor.js';
 import { DelimiterOptions } from './delimiter-options.js';
+import { CsvExporter } from './dsv-exporter.js';
 
 export class CsvConvertor {
   constructor(params) {
     this.options = new DelimiterOptions(',');
     this.delegateTo = new DelimiterConvertor(this.options);
+    this.csvExporter = new CsvExporter(this.options.options);
 
     if (params !== undefined) {
       this.setOptions(params);
@@ -16,6 +18,7 @@ export class CsvConvertor {
     this.options.delimiter = ',';
     this.delegateTo = new DelimiterConvertor(this.options);
     this.delegateTo.setPapaParse(this.papaparse);
+    this.csvExporter.setOptions(this.options.options);
   }
 
   setPapaParse(papaparse) {
@@ -24,7 +27,11 @@ export class CsvConvertor {
   }
 
   fromDataTable(dataTable) {
-    return this.delegateTo.fromDataTable(dataTable);
+    return this.csvExporter.fromDataTable(dataTable);
+  }
+
+  async fromDataTableAsync(dataTable, progressCallback) {
+    return this.csvExporter.fromDataTableAsync(dataTable, progressCallback);
   }
 
   toDataTable(textToImport) {

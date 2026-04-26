@@ -634,4 +634,25 @@ row 1 cell 0|row 1 cell 1
 `;
     expect(output).toBe(expected);
   });
+
+  test('fromDataTableAsync matches fromDataTable and reports progress', async () => {
+    const basicTable = `|heading 1|heading 2|
+|-------|-------|
+|row 0 c 0|row 0 and in cell 1|
+|row of the 1 cell 0|row1cell1|
+`;
+
+    let table = new MarkdownConvertor().toDataTable(basicTable);
+
+    let markdownOptions = new MarkdownOptions();
+    markdownOptions.options.prettyPrint = true;
+    let convertor = new MarkdownConvertor(markdownOptions);
+    const progressSpy = jest.fn();
+
+    const asyncOutput = await convertor.fromDataTableAsync(table, progressSpy);
+    const syncOutput = convertor.fromDataTable(table);
+
+    expect(asyncOutput).toBe(syncOutput);
+    expect(progressSpy).toHaveBeenCalled();
+  });
 });

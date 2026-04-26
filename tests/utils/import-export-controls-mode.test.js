@@ -39,6 +39,7 @@ describe('ImportExportControls preview/edit mode', () => {
     controls.exportControls = {
       setTextFromString: jest.fn(),
       renderTextFromGrid: jest.fn(),
+      setImportBusyState: jest.fn(),
     };
     controls.exporter = {
       getGridAsGenericDataTable: jest.fn((maxRows) => {
@@ -184,6 +185,7 @@ describe('ImportExportControls file reading and visibility', () => {
     controls.exportControls = {
       setTextFromString: jest.fn(),
       renderTextFromGrid: jest.fn(),
+      setImportBusyState: jest.fn(),
     };
     controls.exporter = {
       canExport: jest.fn(() => true),
@@ -224,12 +226,16 @@ describe('ImportExportControls file reading and visibility', () => {
 
     expect(status.textContent).toBe('');
     expect(status.style.display).toBe('none');
+    expect(controls.exportControls.setImportBusyState).toHaveBeenCalledWith(false);
   });
 
   test('readFile in preview mode updates progress and previews imported data', async () => {
     controls._yieldToUi = jest.fn(() => Promise.resolve());
+    const setTextButton = document.getElementById('settextfromgridbutton');
 
     controls.readFile({ name: 'sample.csv' });
+    expect(setTextButton.disabled).toBe(true);
+    expect(controls.exportControls.setImportBusyState).toHaveBeenCalledWith(true);
     readerInstance.emit('progress', { lengthComputable: true, loaded: 5, total: 10 });
     expect(document.getElementById('import-progress-status').textContent).toContain('50%');
 
@@ -239,18 +245,24 @@ describe('ImportExportControls file reading and visibility', () => {
     expect(controls.importer.toGenericDataTable).toHaveBeenCalledWith('csv', 'a,b\n1,2');
     expect(controls.importer.setGridFromGenericDataTable).toHaveBeenCalled();
     expect(controls.exportControls.setTextFromString).toHaveBeenCalledWith('rows:10');
+    expect(setTextButton.disabled).toBe(false);
+    expect(controls.exportControls.setImportBusyState).toHaveBeenLastCalledWith(false);
   });
 
   test('readFile in edit mode loads text area and imports full data', async () => {
     controls._yieldToUi = jest.fn(() => Promise.resolve());
     controls.textEditMode = 'edit';
+    const setTextButton = document.getElementById('settextfromgridbutton');
 
     controls.readFile({ name: 'full.csv' });
+    expect(setTextButton.disabled).toBe(true);
     readerInstance.emit('load', { target: { result: 'a,b\n1,2' } });
     await flushAsyncWork();
 
     expect(controls.exportControls.setTextFromString).toHaveBeenCalledWith('a,b\n1,2');
     expect(controls.importer.importText).toHaveBeenCalledWith('csv', 'a,b\n1,2');
+    expect(setTextButton.disabled).toBe(false);
+    expect(controls.exportControls.setImportBusyState).toHaveBeenLastCalledWith(false);
   });
 
   test('readFile handles non-computable progress and failure statuses', () => {
@@ -261,9 +273,11 @@ describe('ImportExportControls file reading and visibility', () => {
 
     readerInstance.emit('error');
     expect(document.getElementById('import-progress-status').textContent).toBe('File read failed.');
+    expect(controls.exportControls.setImportBusyState).toHaveBeenLastCalledWith(false);
 
     readerInstance.emit('abort');
     expect(document.getElementById('import-progress-status').textContent).toBe('File read cancelled.');
+    expect(controls.exportControls.setImportBusyState).toHaveBeenLastCalledWith(false);
   });
 
   test('setFileFormatType hides unsupported import and export controls', () => {

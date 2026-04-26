@@ -22,6 +22,7 @@ class ImportExportControls {
             <button id="setgridfromtextbutton" disabled>^ Set Grid From Text ^</button>
             <label id="csvinputlabel"><span class="fileFormat">.csv</span> import ^:<input type="file" id="csvinput"/></label>
             <button id="filedownload"><span class="fileFormat">.csv</span> Download</button>
+            <div id="export-progress-status" class="import-progress-status" style="display:none;" aria-live="polite"></div>
             <label id="dropzone">
             <span>[Drag And Drop <span class="fileFormat">.csv</span> File Here]</span>
             </label>
@@ -98,10 +99,12 @@ class ImportExportControls {
 
   readFile(aFile) {
     if (!aFile) {
+      this._setExportActionsBusyState(false);
       this._clearImportProgressStatus();
       return;
     }
 
+    this._setExportActionsBusyState(true);
     const reader = new FileReader();
     this._setImportProgressStatus(`Loading ${aFile.name}... 0%`, true);
 
@@ -133,6 +136,8 @@ class ImportExportControls {
           console.error('Failed importing file', error);
           this._setImportProgressStatus('Import failed. Check file format/options.', false);
           return;
+        } finally {
+          this._setExportActionsBusyState(false);
         }
 
         setTimeout(() => this._clearImportProgressStatus(), 1200);
@@ -141,10 +146,12 @@ class ImportExportControls {
 
     reader.addEventListener('error', () => {
       this._setImportProgressStatus('File read failed.', false);
+      this._setExportActionsBusyState(false);
     });
 
     reader.addEventListener('abort', () => {
       this._setImportProgressStatus('File read cancelled.', false);
+      this._setExportActionsBusyState(false);
     });
 
     reader.readAsText(aFile);
@@ -180,6 +187,17 @@ class ImportExportControls {
         setTimeout(resolve, 0);
       });
     });
+  }
+
+  _setExportActionsBusyState(isBusy) {
+    const setTextFromGridButton = document.querySelector('#settextfromgridbutton');
+    if (setTextFromGridButton) {
+      const busy = isBusy === true;
+      setTextFromGridButton.disabled = busy;
+      setTextFromGridButton.setAttribute('aria-busy', busy ? 'true' : 'false');
+    }
+
+    this.exportControls?.setImportBusyState?.(isBusy === true);
   }
 
   setFileFormatType() {

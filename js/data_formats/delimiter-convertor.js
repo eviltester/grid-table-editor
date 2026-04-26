@@ -1,11 +1,12 @@
 import { DelimiterOptions } from './delimiter-options.js';
 import { GenericDataTableUtils } from './generic-data-table-utils.js';
 import { GenericDataTable } from './generic-data-table.js';
-import { JsonConvertor } from './json-convertor.js';
+import { DsvExporter } from './dsv-exporter.js';
 
 export class DelimiterConvertor {
   constructor(params) {
     this.delimiterOptions = new DelimiterOptions();
+    this.dsvExporter = new DsvExporter(this.delimiterOptions.options);
 
     if (params !== undefined) {
       this.setOptions(params);
@@ -14,6 +15,7 @@ export class DelimiterConvertor {
 
   setOptions(newOptions) {
     this.delimiterOptions.mergeOptions(newOptions);
+    this.dsvExporter.setOptions(this.delimiterOptions.options);
   }
 
   setPapaParse(papaparse) {
@@ -21,8 +23,7 @@ export class DelimiterConvertor {
   }
 
   fromDataTable(dataTable) {
-    let objects = new JsonConvertor().formatAsObjects(dataTable);
-    return this.papaparse.unparse(objects, this.delimiterOptions.options);
+    return this.dsvExporter.fromDataTable(dataTable);
   }
 
   toDataTable(textToImport) {

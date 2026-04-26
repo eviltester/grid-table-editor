@@ -2,6 +2,12 @@ import { JSDOM } from 'jsdom';
 import { ExportControls } from '../../js/gui_components/exportControls.js';
 import { Download } from '../../js/gui_components/download.js';
 
+async function flushAsyncWork() {
+  await Promise.resolve();
+  await Promise.resolve();
+  await new Promise((resolve) => setTimeout(resolve, 0));
+}
+
 describe('ExportControls', () => {
   let dom;
   let exporter;
@@ -13,10 +19,12 @@ describe('ExportControls', () => {
       <button id="filedownload">Download</button>
       <button id="copyTextButton">Copy</button>
       <textarea id="markdownarea">existing</textarea>
+      <div id="export-progress-status" class="import-progress-status" style="display:none;"></div>
     </body></html>`);
 
     global.window = dom.window;
     global.document = dom.window.document;
+    global.requestAnimationFrame = (callback) => callback();
 
     exporter = {
       canExport: jest.fn(() => true),
@@ -33,24 +41,63 @@ describe('ExportControls', () => {
     dom.window.close();
   });
 
-  test('fileDownload renders text and downloads using extension for active type', () => {
+  test('fileDownload renders text and downloads using extension for active type', async () => {
     const downloadSpy = jest.spyOn(Download.prototype, 'downloadFile').mockImplementation(() => {});
+    const button = document.getElementById('filedownload');
+    const statusElem = document.getElementById('export-progress-status');
 
-    controls.fileDownload();
+    const inFlightDownload = controls.fileDownload();
+    expect(button.disabled).toBe(true);
+    expect(statusElem.style.display).toBe('inline-block');
+
+    await inFlightDownload;
+    await flushAsyncWork();
 
     expect(exporter.getGridAs).toHaveBeenCalledWith('csv');
     expect(exporter.getFileExtensionFor).toHaveBeenCalledWith('csv');
     expect(downloadSpy).toHaveBeenCalledWith('row1,row2');
+    expect(statusElem.textContent).toContain('Download started.');
+    expect(button.disabled).toBe(false);
   });
 
-  test('fileDownload exits when type is not exportable', () => {
+  test('fileDownload exits when type is not exportable', async () => {
     exporter.canExport.mockReturnValue(false);
     const downloadSpy = jest.spyOn(Download.prototype, 'downloadFile').mockImplementation(() => {});
+    const button = document.getElementById('filedownload');
+    const statusElem = document.getElementById('export-progress-status');
 
-    controls.fileDownload();
+    await controls.fileDownload();
+    await flushAsyncWork();
 
     expect(exporter.getGridAs).not.toHaveBeenCalled();
     expect(downloadSpy).not.toHaveBeenCalled();
+    expect(statusElem.textContent).toContain('Export not available');
+    expect(button.disabled).toBe(false);
+  });
+
+  test('fileDownload uses async exporter path when available', async () => {
+    exporter.getGridAsAsync = jest.fn(async (_type, progressCallback) => {
+      progressCallback('Formatting CSV... 100%');
+      return 'async,row';
+    });
+    const downloadSpy = jest.spyOn(Download.prototype, 'downloadFile').mockImplementation(() => {});
+
+    await controls.fileDownload();
+
+    expect(exporter.getGridAsAsync).toHaveBeenCalledWith('csv', expect.any(Function));
+    expect(downloadSpy).toHaveBeenCalledWith('async,row');
+  });
+
+  test('import busy state keeps download button disabled', () => {
+    const button = document.getElementById('filedownload');
+
+    controls.setImportBusyState(true);
+    expect(button.disabled).toBe(true);
+    expect(button.getAttribute('aria-busy')).toBe('true');
+
+    controls.setImportBusyState(false);
+    expect(button.disabled).toBe(false);
+    expect(button.getAttribute('aria-busy')).toBe('false');
   });
 
   test('copyText selects textarea and updates button label', () => {

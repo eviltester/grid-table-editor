@@ -360,6 +360,83 @@ class MarkdownConvertor {
 
     return markdownTable;
   }
+
+  async fromDataTableAsync(dataTable, progressCallback) {
+    let prettyPrintColumnWidths = [];
+    if (this.options.options.prettyPrint) {
+      progressCallback?.('Calculating widths...');
+      prettyPrintColumnWidths = this.getPrettyPrintColumnWidths(dataTable);
+      await this._yieldToUi();
+    }
+
+    let renderHeaders = dataTable.getHeaders().map((header, index) => {
+      return this.padCell(this.formatCell(header, true, index + 1), prettyPrintColumnWidths[index]);
+    });
+
+    let border = '|';
+    if (this.options.options.borderBars === false) {
+      border = '';
+    }
+
+    let lines = [];
+    lines.push(border + renderHeaders.join('|') + border);
+
+    lines.push(
+      border +
+        dataTable
+          .getHeaders()
+          .map((name, index) => {
+            let sep = this.formatCell(this.padCell('-----', prettyPrintColumnWidths[index], '-'), false, undefined);
+            if (sep.length > prettyPrintColumnWidths[index]) {
+              let removeCount = sep.length - prettyPrintColumnWidths[index];
+              while (removeCount > 0) {
+                sep = sep.replace('-', '');
+                removeCount--;
+              }
+            }
+            return sep;
+          })
+          .join('|') +
+        border
+    );
+
+    const rowCount = dataTable.getRowCount();
+    const batchSize = 150;
+    progressCallback?.(`Formatting rows... 0/${rowCount} (0%)`);
+
+    for (let start = 0; start < rowCount; start += batchSize) {
+      const end = Math.min(start + batchSize, rowCount);
+      for (let rowIndex = start; rowIndex < end; rowIndex++) {
+        let row = dataTable.getRow(rowIndex);
+
+        let renderValues = row.map((value, index) => {
+          return this.padCell(this.formatCell(value, false, index + 1), prettyPrintColumnWidths[index]);
+        });
+
+        lines.push(border + renderValues.join('|') + border);
+      }
+
+      const percent = Math.round((end / Math.max(rowCount, 1)) * 100);
+      progressCallback?.(`Formatting rows... ${end}/${rowCount} (${percent}%)`);
+      if (end < rowCount) {
+        await this._yieldToUi();
+      }
+    }
+
+    return lines.join('\n') + '\n';
+  }
+
+  _yieldToUi() {
+    return new Promise((resolve) => {
+      if (typeof requestAnimationFrame !== 'function') {
+        setTimeout(resolve, 0);
+        return;
+      }
+      requestAnimationFrame(() => {
+        setTimeout(resolve, 0);
+      });
+    });
+  }
 }
 
 export { MarkdownConvertor, MarkdownOptions };

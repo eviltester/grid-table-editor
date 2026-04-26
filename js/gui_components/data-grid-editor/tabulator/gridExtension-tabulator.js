@@ -445,6 +445,39 @@ class GridExtensionTabulator {
     return dataTable;
   }
 
+  async getGridAsGenericDataTableAsync(maxRows, progressCallback) {
+    const dataTable = new GenericDataTable();
+    const columnDefs = this.tabulator.getColumnDefinitions();
+    dataTable.setHeaders(columnDefs.map((col) => col.title));
+
+    const fieldnames = columnDefs.map((col) => col.field);
+    const rowLimit = this._normaliseRowLimit(maxRows);
+    const sourceRows = rowLimit !== undefined ? this._getLimitedActiveRowData(rowLimit) : this.tabulator.getData('active');
+
+    const totalRows = Array.isArray(sourceRows) ? sourceRows.length : 0;
+    const rows = new Array(totalRows);
+    const batchSize = 200;
+
+    progressCallback?.(`Reading grid data... 0/${totalRows} rows (0%)`);
+
+    for (let start = 0; start < totalRows; start += batchSize) {
+      const end = Math.min(start + batchSize, totalRows);
+      for (let rowIndex = start; rowIndex < end; rowIndex++) {
+        rows[rowIndex] = this._rowObjectToValues(sourceRows[rowIndex], fieldnames);
+      }
+
+      const percent = Math.round((end / Math.max(totalRows, 1)) * 100);
+      progressCallback?.(`Reading grid data... ${end}/${totalRows} rows (${percent}%)`);
+
+      if (end < totalRows) {
+        await this._yieldToBrowser();
+      }
+    }
+
+    dataTable.rows = rows;
+    return dataTable;
+  }
+
   _getRowAsGenericDataValsArray(aRow, fieldnames) {
     var vals = [];
     for (const propertyid in fieldnames) {

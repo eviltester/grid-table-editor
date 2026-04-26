@@ -144,6 +144,10 @@ button{
 
 button:disabled{
   cursor: not-allowed;
+  background-color: #b4c4bc;
+  border-color: #8ea197;
+  color: #4d5c54;
+  opacity: 0.7;
 }
 
 #setgridfromtextbutton:disabled{
@@ -281,6 +285,28 @@ Custom header styles for default items
 .import-progress-status.is-loading{
   background: #fff4e5;
   color: #6b3d00;
+}
+
+.import-progress-status.is-loading::before{
+  content: '';
+  display: inline-block;
+  width: 0.75rem;
+  height: 0.75rem;
+  margin-right: 0.45rem;
+  border: 2px solid #d5a56b;
+  border-top-color: #6b3d00;
+  border-radius: 50%;
+  animation: status-spinner 0.8s linear infinite;
+  vertical-align: -0.1rem;
+}
+
+@keyframes status-spinner{
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Data generator page */

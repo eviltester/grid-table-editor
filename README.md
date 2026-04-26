@@ -126,6 +126,7 @@ There is a maintained list in the documentation:
     - http://marak.github.io/faker.js
 - [RandExp.js](http://fent.github.io/randexp.js/) for regular expression based random data generation
     - http://fent.github.io/randexp.js/
+- [Tabulator](https://tabulator.info/) for light weight tables
 - [AG Grid](https://ag-grid.com) for the data table
 - [PapaParse](https://www.papaparse.com/) for csv processing
 

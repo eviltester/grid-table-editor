@@ -3,6 +3,14 @@ import { TestDataGenerator } from '../data_generation/testDataGenerator.js';
 import { Exporter } from '../grid/exporter.js';
 import { Download } from './download.js';
 import { GridExtension as TabulatorGridExtension } from './data-grid-editor/tabulator/gridExtension-tabulator.js';
+import { CsvDelimitedOptions } from './options_panels/options-csv-delimited-controls.js';
+import { DelimitedOptions } from './options_panels/options-delimited-controls.js';
+import { MarkdownOptionsPanel } from './options_panels/options-markdown-panel.js';
+import { JsonOptionsPanel } from './options_panels/options-json-panel.js';
+import { JavascriptOptionsPanel } from './options_panels/options-javascript-panel.js';
+import { HtmlOptionsPanel } from './options_panels/options-html-panel.js';
+import { GherkinOptionsPanel } from './options_panels/options-gherkin-panel.js';
+import { AsciiTableOptionsPanel } from './options_panels/options-ascii-table.js';
 
 const SOURCE_TYPE_FAKER = 'faker';
 const SOURCE_TYPE_REGEX = 'regex';
@@ -150,6 +158,8 @@ class DataGeneratorPage {
     this.fakerCommands = buildFakerCommands(this.faker);
     this.fakerCommandsLongestFirst = [...this.fakerCommands].sort((a, b) => b.length - a.length);
     this.isTextMode = false;
+    this.optionsPanels = {};
+    this.generationStatusTimer = undefined;
   }
 
   init() {
@@ -184,6 +194,8 @@ class DataGeneratorPage {
     });
     this.previewGrid = new this.GridExtensionClass(this.previewTableApi);
     this.exporter = new this.ExporterClass(this.previewGrid);
+    this.setupOptionsPanels();
+    this.renderOptionsPanelForSelectedFormat();
 
     this.attachEventHandlers();
   }
@@ -210,6 +222,10 @@ class DataGeneratorPage {
                         <select id="generatorOutputFormat"></select>
                     </label>
                     <button id="generateDataButton">Generate Data</button>
+                  <div class="generator-options-wrapper">
+                    <div id="generatorOptionsPanel" class="generator-options-panel"></div>
+                    <div id="generatorStatusText" class="generator-status-text" aria-live="polite" role="status"></div>
+                  </div>
                 </div>
                 <div class="generator-schema">
                     <div class="generator-schema-head">
@@ -274,12 +290,108 @@ class DataGeneratorPage {
     previewDataButton.addEventListener('click', () => this.previewData());
 
     const generateDataButton = this.documentObj.getElementById('generateDataButton');
-    generateDataButton.addEventListener('click', () => this.generateDataFile());
+    generateDataButton.addEventListener('click', () => {
+      void this.generateDataFile();
+    });
+
+    const outputFormat = this.documentObj.getElementById('generatorOutputFormat');
+    outputFormat.addEventListener('change', () => this.renderOptionsPanelForSelectedFormat());
 
     const schemaRowsContainer = this.documentObj.getElementById('generatorSchemaRows');
     schemaRowsContainer.addEventListener('input', (event) => this.handleRowInputChange(event));
     schemaRowsContainer.addEventListener('change', (event) => this.handleRowInputChange(event));
     schemaRowsContainer.addEventListener('click', (event) => this.handleRowButtonClick(event));
+  }
+
+  setupOptionsPanels() {
+    const optionsParent = this.documentObj.getElementById('generatorOptionsPanel');
+    if (!optionsParent) {
+      return;
+    }
+
+    this.optionsPanels = {};
+    this.optionsPanels['csv'] = new CsvDelimitedOptions(optionsParent);
+    this.optionsPanels['dsv'] = new DelimitedOptions(optionsParent);
+    this.optionsPanels['markdown'] = new MarkdownOptionsPanel(optionsParent);
+    this.optionsPanels['json'] = new JsonOptionsPanel(optionsParent);
+    this.optionsPanels['javascript'] = new JavascriptOptionsPanel(optionsParent);
+    this.optionsPanels['html'] = new HtmlOptionsPanel(optionsParent);
+    this.optionsPanels['gherkin'] = new GherkinOptionsPanel(optionsParent);
+    this.optionsPanels['asciitable'] = new AsciiTableOptionsPanel(optionsParent);
+  }
+
+  getSelectedOutputType() {
+    return this.documentObj.getElementById('generatorOutputFormat')?.value;
+  }
+
+  renderOptionsPanelForSelectedFormat() {
+    const type = this.getSelectedOutputType();
+    const optionsParent = this.documentObj.getElementById('generatorOptionsPanel');
+    if (!optionsParent) {
+      return;
+    }
+
+    optionsParent.innerHTML = '';
+    const panel = this.optionsPanels[type];
+    if (!panel) {
+      return;
+    }
+
+    panel.addToGui();
+    const currentOptions = this.exporter?.getOptionsForType?.(type);
+    if (currentOptions && typeof panel.setFromOptions === 'function') {
+      panel.setFromOptions(currentOptions);
+    }
+
+    if (typeof panel.setApplyCallback === 'function') {
+      panel.setApplyCallback((options) => this.applyCurrentTypeOptions(options));
+    }
+  }
+
+  applyCurrentTypeOptions(options) {
+    const type = this.getSelectedOutputType();
+    if (!type || !options) {
+      return;
+    }
+    this.exporter?.setOptionsForType?.(type, options);
+    this.setGenerationStatus(`${type.toUpperCase()} options applied.`);
+    this.scheduleClearGenerationStatus();
+  }
+
+  setGenerationButtonBusy(isBusy) {
+    const generateDataButton = this.documentObj.getElementById('generateDataButton');
+    if (!generateDataButton) {
+      return;
+    }
+    generateDataButton.disabled = isBusy;
+    generateDataButton.setAttribute('aria-busy', isBusy ? 'true' : 'false');
+  }
+
+  setGenerationStatus(message, isLoading = false) {
+    const statusElement = this.documentObj.getElementById('generatorStatusText');
+    if (!statusElement) {
+      return;
+    }
+    statusElement.textContent = message || '';
+    statusElement.classList.toggle('is-loading', isLoading && Boolean(message));
+  }
+
+  clearGenerationStatus() {
+    if (this.generationStatusTimer) {
+      clearTimeout(this.generationStatusTimer);
+      this.generationStatusTimer = undefined;
+    }
+    this.setGenerationStatus('', false);
+  }
+
+  scheduleClearGenerationStatus(delay = 1200) {
+    if (this.generationStatusTimer) {
+      clearTimeout(this.generationStatusTimer);
+    }
+    this.generationStatusTimer = setTimeout(() => {
+      this.generationStatusTimer = undefined;
+      this.setGenerationStatus('', false);
+    }, delay);
   }
 
   toggleSchemaEditMode() {
@@ -562,7 +674,7 @@ class DataGeneratorPage {
     this.previewGrid.setGridFromGenericDataTable(dataTable);
   }
 
-  generateDataFile() {
+  async generateDataFile() {
     const rowCount = this.parseRowCount('generateRowsCount');
     if (rowCount.errors.length > 0) {
       this.alertFn(rowCount.errors.join('\n'));
@@ -575,17 +687,41 @@ class DataGeneratorPage {
       return;
     }
 
-    const type = this.documentObj.getElementById('generatorOutputFormat').value;
+    const type = this.getSelectedOutputType();
     if (!this.exporter.canExport(type)) {
       this.alertFn(`Output format ${type} is not supported.`);
       return;
     }
 
-    const dataTable = this.buildDataTable(configured.generator, rowCount.value);
-    const text = this.exporter.getDataTableAs(type, dataTable);
-    const filename = `generated-data${this.exporter.getFileExtensionFor(type)}`;
-    const downloader = new this.DownloadClass(filename);
-    downloader.downloadFile(text);
+    this.clearGenerationStatus();
+    this.setGenerationButtonBusy(true);
+    this.setGenerationStatus(`Preparing ${type.toUpperCase()} export...`, true);
+
+    try {
+      const dataTable = this.buildDataTable(configured.generator, rowCount.value);
+      let text = '';
+      if (typeof this.exporter.getDataTableAsAsync === 'function') {
+        text = await this.exporter.getDataTableAsAsync(type, dataTable, (message) => {
+          if (message) {
+            this.setGenerationStatus(message, true);
+          }
+        });
+      } else {
+        text = this.exporter.getDataTableAs(type, dataTable);
+      }
+
+      const filename = `generated-data${this.exporter.getFileExtensionFor(type)}`;
+      const downloader = new this.DownloadClass(filename);
+      downloader.downloadFile(text);
+      this.setGenerationStatus(`Download ready: ${filename}`);
+      this.scheduleClearGenerationStatus();
+    } catch (error) {
+      console.error(error);
+      this.alertFn('Unable to generate data file.');
+      this.setGenerationStatus('Failed to generate data file.');
+    } finally {
+      this.setGenerationButtonBusy(false);
+    }
   }
 
   escapeHtml(value) {

@@ -21,7 +21,23 @@ class FakeGridExtension {
 }
 
 class FakeExporter {
-  constructor() {}
+  constructor() {
+    this.options = {
+      csv: { options: { header: true, quoteChar: '"' } },
+      json: { options: { prettyPrint: false } },
+      markdown: { options: { prettyPrint: true } },
+    };
+    this.getDataTableAsAsync = jest.fn(async (type, dataTable, progressCallback) => {
+      progressCallback?.(`Formatting ${type}`);
+      return `${type}:async:${dataTable.getRowCount()}`;
+    });
+    this.getDataTableAs = jest.fn((type, dataTable) => `${type}:sync:${dataTable.getRowCount()}`);
+    this.setOptionsForType = jest.fn((type, options) => {
+      this.options[type] = options;
+    });
+    this.getOptionsForType = jest.fn((type) => this.options[type]);
+    FakeExporter.lastInstance = this;
+  }
 
   canExport(type) {
     return ['csv', 'json', 'markdown'].includes(type);
@@ -35,10 +51,6 @@ class FakeExporter {
       return '.md';
     }
     return '.csv';
-  }
-
-  getDataTableAs(type, dataTable) {
-    return `${type}:${dataTable.getRowCount()}`;
   }
 }
 
@@ -123,6 +135,7 @@ describe('DataGeneratorPage', () => {
     alertFn = jest.fn();
     FakeDownload.lastDownload = undefined;
     FakeGridExtension.lastInstance = undefined;
+    FakeExporter.lastInstance = undefined;
   });
 
   afterEach(() => {
@@ -183,7 +196,7 @@ describe('DataGeneratorPage', () => {
     expect(tableArg.getHeaders()).toEqual(['Name', 'Code']);
   });
 
-  test('generate downloads file using selected output format', () => {
+  test('generate downloads file using selected output format', async () => {
     const page = new DataGeneratorPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
@@ -203,12 +216,76 @@ describe('DataGeneratorPage', () => {
     document.getElementById('generateRowsCount').value = '4';
     document.getElementById('generatorOutputFormat').value = 'json';
 
-    document.getElementById('generateDataButton').click();
+    await page.generateDataFile();
 
     expect(alertFn).not.toHaveBeenCalled();
+    expect(FakeExporter.lastInstance.getDataTableAsAsync).toHaveBeenCalledTimes(1);
     expect(FakeDownload.lastDownload).toEqual({
       filename: 'generated-data.json',
-      text: 'json:4',
+      text: 'json:async:4',
+    });
+  });
+
+  test('renders options panel and applies options for selected type', () => {
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker: { word: { noun: () => 'x' } },
+      RandExp: function RandExp() {},
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: FakeTestDataGenerator,
+    });
+    page.init();
+
+    expect(document.querySelector('#generatorOptionsPanel .delimited-options')).not.toBeNull();
+    expect(FakeExporter.lastInstance.getOptionsForType).toHaveBeenCalledWith('csv');
+
+    const outputSelect = document.getElementById('generatorOutputFormat');
+    outputSelect.value = 'json';
+    outputSelect.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+
+    expect(document.querySelector('#generatorOptionsPanel .json-options')).not.toBeNull();
+    expect(FakeExporter.lastInstance.getOptionsForType).toHaveBeenCalledWith('json');
+
+    document.querySelector('#generatorOptionsPanel .apply-options').click();
+
+    expect(FakeExporter.lastInstance.setOptionsForType).toHaveBeenCalledTimes(1);
+    expect(FakeExporter.lastInstance.setOptionsForType.mock.calls[0][0]).toBe('json');
+    expect(document.getElementById('generatorStatusText').textContent).toContain('JSON options applied.');
+  });
+
+  test('generate falls back to sync export when async export utility is unavailable', async () => {
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker: { word: { noun: () => 'x' } },
+      RandExp: function RandExp() {},
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: FakeTestDataGenerator,
+    });
+    page.init();
+
+    page.schemaRows = [{ id: '1', name: 'Name', sourceType: 'literal', command: '', params: '', value: 'fixed' }];
+    page.renderSchemaRows();
+    document.getElementById('generateRowsCount').value = '2';
+    document.getElementById('generatorOutputFormat').value = 'csv';
+
+    delete FakeExporter.lastInstance.getDataTableAsAsync;
+
+    await page.generateDataFile();
+
+    expect(FakeExporter.lastInstance.getDataTableAs).toHaveBeenCalledTimes(1);
+    expect(FakeDownload.lastDownload).toEqual({
+      filename: 'generated-data.csv',
+      text: 'csv:sync:2',
     });
   });
 

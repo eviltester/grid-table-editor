@@ -4,6 +4,53 @@ import { enableTestDataGenerationInterface } from '../../js/gui_components/testd
 describe('test data definition editor engine compatibility', () => {
   let dom;
 
+  function installTabulatorMock() {
+    class TabulatorMock {
+      static latestInstance;
+      constructor(_element, options) {
+        this.rows = [];
+        this.options = options;
+        TabulatorMock.latestInstance = this;
+      }
+      setData(data) {
+        this.rows = data.map((row) => ({ ...row }));
+        return Promise.resolve();
+      }
+      addData(rows) {
+        this.rows.push(...rows.map((row) => ({ ...row })));
+        return Promise.resolve();
+      }
+      getData() {
+        return this.rows;
+      }
+      getSelectedRows() {
+        return [];
+      }
+      deleteRow() {}
+      getColumnDefinitions() {
+        return [{ title: 'columnName', field: 'columnName' }];
+      }
+      getRows() {
+        return [];
+      }
+      clearFilter() {}
+      setFilter() {}
+      addColumn() {}
+      getDataCount() {
+        return this.rows.length;
+      }
+      getColumns() {
+        return [];
+      }
+      blockRedraw() {}
+      restoreRedraw() {}
+      redraw() {}
+    }
+
+    global.Tabulator = TabulatorMock;
+    return TabulatorMock;
+  }
+
   async function flushUi() {
     await new Promise((resolve) => setTimeout(resolve, 0));
     await new Promise((resolve) => setTimeout(resolve, 0));
@@ -49,46 +96,7 @@ describe('test data definition editor engine compatibility', () => {
   });
 
   test('uses tabulator path when ag-grid is unavailable', () => {
-    class TabulatorMock {
-      constructor() {
-        this.rows = [];
-      }
-      setData(data) {
-        this.rows = data.map((row) => ({ ...row }));
-        return Promise.resolve();
-      }
-      addData(rows) {
-        this.rows.push(...rows.map((row) => ({ ...row })));
-        return Promise.resolve();
-      }
-      getData() {
-        return this.rows;
-      }
-      getSelectedRows() {
-        return [];
-      }
-      deleteRow() {}
-      getColumnDefinitions() {
-        return [{ title: 'columnName', field: 'columnName' }];
-      }
-      getRows() {
-        return [];
-      }
-      clearFilter() {}
-      setFilter() {}
-      addColumn() {}
-      getDataCount() {
-        return this.rows.length;
-      }
-      getColumns() {
-        return [];
-      }
-      blockRedraw() {}
-      restoreRedraw() {}
-      redraw() {}
-    }
-
-    global.Tabulator = TabulatorMock;
+    installTabulatorMock();
 
     const gridExtras = {
       getRowCount: jest.fn(() => 0),
@@ -148,47 +156,7 @@ describe('test data definition editor engine compatibility', () => {
   test('generate does not auto-refresh text preview', async () => {
     global.alert = jest.fn();
     const renderTextFromGrid = jest.fn();
-    class TabulatorMock {
-      static latestInstance;
-      constructor() {
-        this.rows = [];
-        TabulatorMock.latestInstance = this;
-      }
-      setData(data) {
-        this.rows = data.map((row) => ({ ...row }));
-        return Promise.resolve();
-      }
-      addData(rows) {
-        this.rows.push(...rows.map((row) => ({ ...row })));
-        return Promise.resolve();
-      }
-      getData() {
-        return this.rows;
-      }
-      getSelectedRows() {
-        return [];
-      }
-      deleteRow() {}
-      getColumnDefinitions() {
-        return [{ title: 'columnName', field: 'columnName' }];
-      }
-      getRows() {
-        return [];
-      }
-      clearFilter() {}
-      setFilter() {}
-      addColumn() {}
-      getDataCount() {
-        return this.rows.length;
-      }
-      getColumns() {
-        return [];
-      }
-      blockRedraw() {}
-      restoreRedraw() {}
-      redraw() {}
-    }
-    global.Tabulator = TabulatorMock;
+    const TabulatorMock = installTabulatorMock();
     const gridExtras = {
       getRowCount: jest.fn(() => 1),
       getSelectedRowIndexes: jest.fn(() => []),
@@ -248,50 +216,150 @@ describe('test data definition editor engine compatibility', () => {
     expect(document.getElementById('testdata-status').textContent).toBe('');
   });
 
-  test('tabulator schema text updates while editing a cell', async () => {
-    class TabulatorMock {
-      static latestInstance;
-      constructor(_element, options) {
-        this.rows = [];
-        this.options = options;
-        TabulatorMock.latestInstance = this;
-      }
-      setData(data) {
-        this.rows = data.map((row) => ({ ...row }));
-        return Promise.resolve();
-      }
-      addData(rows) {
-        this.rows.push(...rows.map((row) => ({ ...row })));
-        return Promise.resolve();
-      }
-      getData() {
-        return this.rows;
-      }
-      getSelectedRows() {
-        return [];
-      }
-      deleteRow() {}
-      getColumnDefinitions() {
-        return [{ title: 'columnName', field: 'columnName' }];
-      }
-      getRows() {
-        return [];
-      }
-      clearFilter() {}
-      setFilter() {}
-      addColumn() {}
-      getDataCount() {
-        return this.rows.length;
-      }
-      getColumns() {
-        return [];
-      }
-      blockRedraw() {}
-      restoreRedraw() {}
-      redraw() {}
-    }
+  test('refresh text preview shows failure status when renderer rejects', async () => {
+    const renderTextFromGrid = jest.fn(() => Promise.reject(new Error('refresh failed')));
 
-    global.Tabulator = TabulatorMock;
+    enableTestDataGenerationInterface(
+      'host',
+      {
+        setGridFromGenericDataTable: jest.fn(),
+      },
+      {
+        renderTextFromGrid,
+      },
+      {
+        getRowCount: jest.fn(() => 0),
+        getSelectedRowIndexes: jest.fn(() => []),
+      }
+    );
+
+    document.getElementById('refreshtestdatapreview').click();
+    await flushUi();
+
+    expect(document.getElementById('testdata-status').textContent).toContain('Text preview refresh failed');
+    expect(document.getElementById('refreshtestdatapreview').disabled).toBe(false);
+  });
+
+  test('generate reports schema validation failure for invalid rules', async () => {
+    global.alert = jest.fn();
+    const TabulatorMock = installTabulatorMock();
+
+    enableTestDataGenerationInterface(
+      'host',
+      {
+        setGridFromGenericDataTable: jest.fn(),
+      },
+      {
+        renderTextFromGrid: jest.fn(),
+      },
+      {
+        getRowCount: jest.fn(() => 0),
+        getSelectedRowIndexes: jest.fn(() => []),
+      }
+    );
+
+    TabulatorMock.latestInstance.rows = [];
+    document.getElementById('testdatadefntext').value = 'OnlyAHeader';
+    document.getElementById('generatedata').click();
+    await flushUi();
+
+    expect(global.alert).toHaveBeenCalled();
+    expect(document.getElementById('testdata-status').textContent).toContain('Schema validation failed');
+    expect(document.getElementById('generatedata').disabled).toBe(false);
+  });
+
+  test('generate reports invalid row count for negative values', async () => {
+    global.alert = jest.fn();
+    const TabulatorMock = installTabulatorMock();
+    const importer = {
+      setGridFromGenericDataTable: jest.fn(),
+    };
+
+    enableTestDataGenerationInterface(
+      'host',
+      importer,
+      {
+        renderTextFromGrid: jest.fn(),
+      },
+      {
+        getRowCount: jest.fn(() => 0),
+        getSelectedRowIndexes: jest.fn(() => []),
+      }
+    );
+
+    TabulatorMock.latestInstance.rows = [{ columnName: 'Name', type: 'person.fullName', value: '' }];
+    document.getElementById('generateCount').value = '-1';
+    document.getElementById('generatedata').click();
+    await flushUi();
+
+    expect(global.alert).toHaveBeenCalledWith('Enter how many rows to generate.');
+    expect(document.getElementById('testdata-status').textContent).toContain('Invalid row count');
+    expect(importer.setGridFromGenericDataTable).not.toHaveBeenCalled();
+  });
+
+  test('amend selected reports when no rows are selected', async () => {
+    global.alert = jest.fn();
+    const TabulatorMock = installTabulatorMock();
+    const gridExtras = {
+      getRowCount: jest.fn(() => 2),
+      getSelectedRowIndexes: jest.fn(() => []),
+      applyGeneratedSchemaAmend: jest.fn(() => Promise.resolve({ noSelectedRows: true, amendedRows: 0 })),
+    };
+
+    enableTestDataGenerationInterface(
+      'host',
+      {
+        setGridFromGenericDataTable: jest.fn(),
+      },
+      {
+        renderTextFromGrid: jest.fn(),
+      },
+      gridExtras
+    );
+
+    TabulatorMock.latestInstance.rows = [{ columnName: 'name', type: 'person.fullName', value: '' }];
+    const amendSelectedRadio = document.querySelector('input[value="amend-selected"]');
+    amendSelectedRadio.checked = true;
+    amendSelectedRadio.dispatchEvent(new Event('change'));
+    document.getElementById('generatedata').click();
+    await flushUi();
+
+    expect(global.alert).toHaveBeenCalledWith('No rows selected.');
+    expect(document.getElementById('testdata-status').textContent).toContain('No selected rows to amend');
+    delete global.Tabulator;
+  });
+
+  test('generate shows failure status when importer throws', async () => {
+    global.alert = jest.fn();
+    const TabulatorMock = installTabulatorMock();
+    const importer = {
+      setGridFromGenericDataTable: jest.fn(() => Promise.reject(new Error('boom'))),
+    };
+
+    enableTestDataGenerationInterface(
+      'host',
+      importer,
+      {
+        renderTextFromGrid: jest.fn(),
+      },
+      {
+        getRowCount: jest.fn(() => 0),
+        getSelectedRowIndexes: jest.fn(() => []),
+      }
+    );
+
+    TabulatorMock.latestInstance.rows = [{ columnName: 'Name', type: 'person.fullName', value: '' }];
+    document.getElementById('generateCount').value = '1';
+    document.getElementById('generatedata').click();
+    await flushUi();
+
+    expect(global.alert).toHaveBeenCalledWith('Generate failed. Check console for details.');
+    expect(document.getElementById('testdata-status').textContent).toContain('Generate failed');
+    expect(document.getElementById('generatedata').disabled).toBe(false);
+  });
+
+  test('tabulator schema text updates while editing a cell', async () => {
+    const TabulatorMock = installTabulatorMock();
 
     enableTestDataGenerationInterface(
       'host',

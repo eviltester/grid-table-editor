@@ -94,6 +94,20 @@ describe('JsonOptionsPanel', () => {
     expect(parent.querySelector("input[name='custom-pretty-delimiter']").value).toBe('--');
   });
 
+  test('setFromOptions handles missing options object by using defaults', () => {
+    const panel = new JsonOptionsPanel(parent);
+    panel.addToGui();
+
+    panel.setFromOptions({ delimiterMappings: { tab: '\t', space: ' ' } });
+
+    expect(parent.querySelector("input[name='numbersnumeric']").checked).toBe(false);
+    expect(parent.querySelector("input[name='prettyprint']").checked).toBe(true);
+    expect(parent.querySelector("input[name='asobject']").checked).toBe(false);
+    expect(parent.querySelector("input[name='propertynamed']").value).toBe('');
+    expect(parent.querySelector("select[name='prettydelimiter']").value).toBe('custom');
+    expect(parent.querySelector("input[name='custom-pretty-delimiter']").value).toBe('undefined');
+  });
+
   test('setApplyCallback invokes callback with current GUI options', () => {
     const panel = new JsonOptionsPanel(parent);
     const callback = jest.fn();

@@ -87,7 +87,7 @@ class Exporter {
       // because we can switch headers off for these types
       // we need to remember them
       if (type === 'csv' || type === 'dsv') {
-        if (optionsToUse.header === false) {
+        if (optionsToUse.options?.header === false) {
           // store headers from the grid in the options
           optionsToUse.headers = this.getHeadersFromGrid();
         }

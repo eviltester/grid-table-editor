@@ -4,3 +4,7 @@ build
 .idea
 coverage
 .playwright-mcp
+coverage_final.txt
+coverage_output.txt
+coverage.txt
+test_output.txt

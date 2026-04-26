@@ -33,4 +33,142 @@ describe('Exporter direct table conversion', () => {
 
     expect(direct).toBe(fromGrid);
   });
+
+  test('reports supported types and file extensions', () => {
+    const table = createTable(['Name'], [['Connie']]);
+    const exporter = new Exporter({
+      getGridAsGenericDataTable: () => table,
+      getHeadersFromGrid: () => table.getHeaders(),
+    });
+
+    expect(exporter.canExport('csv')).toBe(true);
+    expect(exporter.canExport('unknown')).toBe(false);
+    expect(exporter.getFileExtensionFor('csv')).toBe('.csv');
+    expect(exporter.getOptionsForType('json')).toBeDefined();
+  });
+
+  test('returns empty string for unsupported export types', () => {
+    const table = createTable(['Name'], [['Connie']]);
+    const exporter = new Exporter({
+      getGridAsGenericDataTable: () => table,
+      getHeadersFromGrid: () => table.getHeaders(),
+    });
+    const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+
+    const result = exporter.getDataTableAs('unknown', table);
+
+    expect(result).toBe('');
+    expect(consoleSpy).toHaveBeenCalledWith('Data Type unknown not supported for exporting');
+  });
+
+  test('delegates maxRows and headers to grid extensions', () => {
+    const table = createTable(['Name'], [['Connie']]);
+    const getGridAsGenericDataTable = jest.fn(() => table);
+    const getHeadersFromGrid = jest.fn(() => ['Name']);
+    const exporter = new Exporter({
+      getGridAsGenericDataTable,
+      getHeadersFromGrid,
+    });
+
+    expect(exporter.getGridAsGenericDataTable(5)).toBe(table);
+    expect(getGridAsGenericDataTable).toHaveBeenCalledWith(5);
+    expect(exporter.getHeadersFromGrid()).toEqual(['Name']);
+    expect(getHeadersFromGrid).toHaveBeenCalledTimes(1);
+  });
+
+  test('setOptionsForType merges options and stores headers when csv export disables header output', () => {
+    const table = createTable(['Name', 'Role'], [['Connie', 'QA']]);
+    const exporter = new Exporter({
+      getGridAsGenericDataTable: () => table,
+      getHeadersFromGrid: () => table.getHeaders(),
+    });
+
+    exporter.setOptionsForType('csv', { options: { header: false, quoteChar: "'" } });
+    exporter.setOptionsForType('unknown', { options: { anything: true } });
+
+    expect(exporter.options.csv.options.header).toBe(false);
+    expect(exporter.options.csv.options.quoteChar).toBe("'");
+    expect(exporter.options.csv.headers).toEqual(['Name', 'Role']);
+    expect(exporter.options.unknown).toBeUndefined();
+  });
+
+  test('applies configured options to exporter instances before conversion', () => {
+    const exporter = new Exporter({
+      getGridAsGenericDataTable: jest.fn(),
+      getHeadersFromGrid: jest.fn(() => []),
+    });
+    const table = createTable(['Name'], [['Connie']]);
+    const setOptions = jest.fn();
+    const fromDataTable = jest.fn(() => 'rendered');
+    exporter.options.json = { marker: 'options' };
+    exporter.exporters.json = {
+      setOptions,
+      fromDataTable,
+    };
+
+    const result = exporter.getDataTableAs('json', table);
+
+    expect(setOptions).toHaveBeenCalledWith({ marker: 'options' });
+    expect(fromDataTable).toHaveBeenCalledWith(table);
+    expect(result).toBe('rendered');
+  });
+
+  test('still exports when no options object is configured for the type', () => {
+    const exporter = new Exporter({
+      getGridAsGenericDataTable: jest.fn(),
+      getHeadersFromGrid: jest.fn(() => []),
+    });
+    const table = createTable(['Name'], [['Connie']]);
+    const setOptions = jest.fn();
+    const fromDataTable = jest.fn(() => 'rendered without options');
+    exporter.options.json = undefined;
+    exporter.exporters.json = {
+      setOptions,
+      fromDataTable,
+    };
+
+    const result = exporter.getDataTableAs('json', table);
+
+    expect(setOptions).not.toHaveBeenCalled();
+    expect(fromDataTable).toHaveBeenCalledWith(table);
+    expect(result).toBe('rendered without options');
+  });
+
+  test('setOptionsForType stores headers for dsv export when header output is disabled', () => {
+    const table = createTable(['Name', 'Role'], [['Connie', 'QA']]);
+    const exporter = new Exporter({
+      getGridAsGenericDataTable: () => table,
+      getHeadersFromGrid: () => table.getHeaders(),
+    });
+
+    exporter.setOptionsForType('dsv', { options: { header: false } });
+
+    expect(exporter.options.dsv.options.header).toBe(false);
+    expect(exporter.options.dsv.headers).toEqual(['Name', 'Role']);
+  });
+
+  test('does not store headers when csv header output stays enabled', () => {
+    const table = createTable(['Name', 'Role'], [['Connie', 'QA']]);
+    const exporter = new Exporter({
+      getGridAsGenericDataTable: () => table,
+      getHeadersFromGrid: () => table.getHeaders(),
+    });
+
+    exporter.setOptionsForType('csv', { options: { header: true } });
+
+    expect(exporter.options.csv.options.header).toBe(true);
+    expect(exporter.options.csv.headers).toEqual([]);
+  });
+
+  test('returns undefined when a registered exporter instance is missing', () => {
+    const table = createTable(['Name'], [['Connie']]);
+    const exporter = new Exporter({
+      getGridAsGenericDataTable: () => table,
+      getHeadersFromGrid: () => table.getHeaders(),
+    });
+    exporter.exporters.json = undefined;
+
+    expect(exporter.canExport('json')).toBe(true);
+    expect(exporter.getDataTableAs('json', table)).toBeUndefined();
+  });
 });

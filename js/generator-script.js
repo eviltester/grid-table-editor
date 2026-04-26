@@ -23,6 +23,11 @@ async function bootstrapGeneratorPage({
         RandExp: globalThis?.RandExp
     });
     page.init();
+
+    const loadingMessage = documentObj.getElementById("generator-initial-load");
+    if(loadingMessage){
+        loadingMessage.remove();
+    }
 }
 
 if(typeof document !== "undefined"){

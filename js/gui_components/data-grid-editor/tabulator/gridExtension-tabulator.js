@@ -332,7 +332,7 @@ class GridExtensionTabulator{
     // TODO: consider creating a GridBackedGenericDataTable such that it is a generic wrapper
     // then we don't have to copy the data out into a new structure
     // [x] convert to tabulature
-    getGridAsGenericDataTable(){
+    getGridAsGenericDataTable(maxRows){
 
         let dataTable = new GenericDataTable();
         const columnDefs = this.tabulator.getColumnDefinitions();
@@ -340,10 +340,12 @@ class GridExtensionTabulator{
 
         const fieldnames = columnDefs.map(col => col.field);
         const activeRows = this.tabulator.getData("active");
+        const rowLimit = this._normaliseRowLimit(maxRows);
+        const rowsToExport = rowLimit === undefined ? activeRows.length : Math.min(rowLimit, activeRows.length);
 
         // Fast path for large exports: build rows in memory once, then assign.
-        const rows = new Array(activeRows.length);
-        for(let rowIndex=0; rowIndex<activeRows.length; rowIndex++){
+        const rows = new Array(rowsToExport);
+        for(let rowIndex=0; rowIndex<rowsToExport; rowIndex++){
             const sourceRow = activeRows[rowIndex];
             const vals = new Array(fieldnames.length);
             for(let colIndex=0; colIndex<fieldnames.length; colIndex++){
@@ -392,17 +394,20 @@ class GridExtensionTabulator{
         return { title: header, field };
       });
 
-      let addRows = [];
+      const rowCount = dataTable.getRowCount();
+      const addRows = new Array(rowCount);
       let fieldnames = columnDefs.map(col => col.field);
-      for(let rowIndex=0; rowIndex<dataTable.getRowCount(); rowIndex++){
-          addRows.push(dataTable.getRowAsObjectUsingHeadings(rowIndex, fieldnames));
+      for(let rowIndex=0; rowIndex<rowCount; rowIndex++){
+          addRows[rowIndex] = dataTable.getRowAsObjectUsingHeadings(rowIndex, fieldnames);
       }
 
       // Tabulator column resets are async; chain operations to avoid fallback headers.
-      this._enqueueGridMutation(() => {
-          return Promise.resolve(this.tabulator.setColumns(columnDefs))
-              .then(() => this.tabulator.setData(addRows))
-              .then(() => this._applyHeaderTitles(headers));
+      return this._enqueueGridMutation(async () => {
+          await Promise.resolve(this.tabulator.setColumns(columnDefs));
+          await Promise.resolve(this._setBulkData(addRows));
+
+          this._applyHeaderTitles(headers);
+          await this._autoFitFirstColumn();
       });
 
       // TODO : apply transactions incrementally for larger data sets
@@ -486,6 +491,45 @@ class GridExtensionTabulator{
         return this._pendingGridMutation;
     }
 
+    _yieldToBrowser(){
+        return new Promise((resolve) => setTimeout(resolve, 0));
+    }
+
+    _setBulkData(rows){
+        if(typeof this.tabulator.replaceData === "function"){
+            return this.tabulator.replaceData(rows);
+        }
+        return this.tabulator.setData(rows);
+    }
+
+    async _autoFitFirstColumn(){
+        if(typeof this.tabulator.getColumnDefinitions !== "function"){
+            return;
+        }
+
+        const columnDefinitions = this.tabulator.getColumnDefinitions();
+        const firstColumnField = columnDefinitions?.[0]?.field;
+        if(!firstColumnField){
+            return;
+        }
+
+        let firstColumn = undefined;
+        if(typeof this.tabulator.getColumn === "function"){
+            firstColumn = this.tabulator.getColumn(firstColumnField);
+        }
+
+        if(!firstColumn && typeof this.tabulator.getColumns === "function"){
+            firstColumn = this.tabulator.getColumns()?.[0];
+        }
+
+        if(!firstColumn || typeof firstColumn.fitToData !== "function"){
+            return;
+        }
+
+        await this._yieldToBrowser();
+        await Promise.resolve(firstColumn.fitToData());
+    }
+
     _normaliseId(idOrColumn){
         if(typeof idOrColumn === "string"){
             return idOrColumn;
@@ -512,6 +556,13 @@ class GridExtensionTabulator{
             return columnOrId;
         }
         return this._getColumnById(columnOrId);
+    }
+
+    _normaliseRowLimit(maxRows){
+        if(typeof maxRows !== "number" || !Number.isFinite(maxRows)){
+            return undefined;
+        }
+        return Math.max(0, Math.floor(maxRows));
     }
 
 }

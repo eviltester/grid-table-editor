@@ -5,7 +5,7 @@ describe("generator bootstrap", () => {
     let dom;
 
     beforeEach(() => {
-        dom = new JSDOM(`<!doctype html><html><body><div id="generator-app"></div></body></html>`);
+        dom = new JSDOM(`<!doctype html><html><body><p id="generator-initial-load">Please Wait, Loading Libraries...</p><div id="generator-app"></div></body></html>`);
         global.document = dom.window.document;
         global.window = dom.window;
     });
@@ -40,6 +40,7 @@ describe("generator bootstrap", () => {
             engine: "tabulator",
             document: dom.window.document
         });
+        expect(dom.window.document.getElementById("generator-initial-load")).toBeNull();
     });
 
     test("returns early when tabulator library fails to load", async () => {

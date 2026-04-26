@@ -257,6 +257,21 @@ Custom header styles for default items
   color: #afdfff;
 }
 
+.import-progress-status{
+  margin-top: 0.45rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  background: #e9f5ff;
+  color: #114a70;
+  font-size: 0.9rem;
+  border: 1px solid #b7dcf5;
+}
+
+.import-progress-status.is-loading{
+  background: #fff4e5;
+  color: #6b3d00;
+}
+
 /* Data generator page */
 .generator-page{
   display: flex;
@@ -299,10 +314,23 @@ Custom header styles for default items
   margin-bottom: 0.6rem;
 }
 
+.generator-schema-footer{
+  margin-top: 0.6rem;
+}
+
 .generator-schema-rows{
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+}
+
+.generator-schema-text{
+  margin-top: 0.2rem;
+}
+
+.generator-schema-text textarea{
+  width: 100%;
+  min-height: 12rem;
 }
 
 .generator-schema-row{
@@ -329,6 +357,26 @@ Custom header styles for default items
   padding: 0.6rem;
 }
 
+.generator-preview-head{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.generator-preview-controls{
+  display: flex;
+  align-items: end;
+  gap: 0.6rem;
+}
+
+.generator-preview-controls label{
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 0.9rem;
+}
+
 #generator-preview-grid{
   margin-top: 0.4rem;
   width: 100%;
@@ -341,5 +389,12 @@ Custom header styles for default items
   }
   .generator-row-actions{
     grid-column: span 2;
+  }
+  .generator-preview-head{
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .generator-preview-controls{
+    justify-content: flex-start;
   }
 }

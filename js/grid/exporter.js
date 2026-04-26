@@ -69,8 +69,8 @@ class Exporter {
         }
     }
 
-    getGridAsGenericDataTable(){
-        return this.gridExtensions.getGridAsGenericDataTable();
+    getGridAsGenericDataTable(maxRows){
+        return this.gridExtensions.getGridAsGenericDataTable(maxRows);
     }
 
     getHeadersFromGrid(){

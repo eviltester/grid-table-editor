@@ -143,6 +143,8 @@ class DataGeneratorPage {
         this.rowIdCounter = 1;
         this.schemaRows = [];
         this.fakerCommands = buildFakerCommands(this.faker);
+        this.fakerCommandsLongestFirst = [...this.fakerCommands].sort((a, b) => b.length - a.length);
+        this.isTextMode = false;
     }
 
     init(){
@@ -156,6 +158,7 @@ class DataGeneratorPage {
         this.renderPageShell();
         this.schemaRows = [this.createBlankSchemaRow()];
         this.renderSchemaRows();
+        this.updateSchemaEditModeView();
 
         this.previewTableApi = new this.TabulatorCtor(this.documentObj.getElementById("generator-preview-grid"), {
             data: [],
@@ -195,27 +198,37 @@ class DataGeneratorPage {
         this.parentElement.innerHTML = `
             <section class="generator-page">
                 <div class="generator-controls">
-                    <label>Preview Rows
-                        <input type="number" id="previewRowsCount" min="0" value="50">
-                    </label>
                     <label>Generate Rows
                         <input type="number" id="generateRowsCount" min="0" value="1000">
                     </label>
                     <label>Output Format
                         <select id="generatorOutputFormat"></select>
                     </label>
-                    <button id="previewDataButton">Preview</button>
                     <button id="generateDataButton">Generate Data</button>
                 </div>
                 <div class="generator-schema">
                     <div class="generator-schema-head">
                         <strong>Schema</strong>
-                        <button id="addSchemaRowButton" class="icon-button" title="Add row">+</button>
+                        <button id="schemaModeToggleButton" class="icon-button" title="Toggle schema text mode">Edit as Text</button>
                     </div>
                     <div id="generatorSchemaRows" class="generator-schema-rows"></div>
+                    <div id="generatorSchemaTextContainer" class="generator-schema-text">
+                        <textarea id="generatorSchemaText" class="testDataDefn" placeholder="Column Name&#10;rule&#10;Column Name&#10;rule"></textarea>
+                    </div>
+                    <div class="generator-schema-footer">
+                        <button id="addSchemaRowButton" title="Add field">+ Add Field</button>
+                    </div>
                 </div>
                 <div class="generator-preview">
-                    <strong>Preview</strong>
+                    <div class="generator-preview-head">
+                        <strong>Preview</strong>
+                        <div class="generator-preview-controls">
+                            <label>Preview Rows
+                                <input type="number" id="previewRowsCount" min="0" value="50">
+                            </label>
+                            <button id="previewDataButton">Preview</button>
+                        </div>
+                    </div>
                     <div id="generator-preview-grid" class="ag-theme-alpine"></div>
                 </div>
             </section>
@@ -249,6 +262,9 @@ class DataGeneratorPage {
             this.addRowAfter(this.schemaRows.length - 1);
         });
 
+        const schemaModeToggleButton = this.documentObj.getElementById("schemaModeToggleButton");
+        schemaModeToggleButton.addEventListener("click", () => this.toggleSchemaEditMode());
+
         const previewDataButton = this.documentObj.getElementById("previewDataButton");
         previewDataButton.addEventListener("click", () => this.previewData());
 
@@ -259,6 +275,93 @@ class DataGeneratorPage {
         schemaRowsContainer.addEventListener("input", (event) => this.handleRowInputChange(event));
         schemaRowsContainer.addEventListener("change", (event) => this.handleRowInputChange(event));
         schemaRowsContainer.addEventListener("click", (event) => this.handleRowButtonClick(event));
+    }
+
+    toggleSchemaEditMode(){
+        if(this.isTextMode){
+            const textArea = this.documentObj.getElementById("generatorSchemaText");
+            const parsed = this.parseSchemaTextToRows(textArea?.value || "");
+            if(parsed.errors.length > 0){
+                this.alertFn(parsed.errors.join("\n"));
+                return;
+            }
+            this.schemaRows = parsed.rows.length > 0 ? parsed.rows : [this.createBlankSchemaRow()];
+            this.renderSchemaRows();
+            this.isTextMode = false;
+            this.updateSchemaEditModeView();
+            return;
+        }
+
+        const textArea = this.documentObj.getElementById("generatorSchemaText");
+        textArea.value = schemaRowsToSpec(this.schemaRows);
+        this.isTextMode = true;
+        this.updateSchemaEditModeView();
+    }
+
+    updateSchemaEditModeView(){
+        const rowsContainer = this.documentObj.getElementById("generatorSchemaRows");
+        const textContainer = this.documentObj.getElementById("generatorSchemaTextContainer");
+        const footer = this.documentObj.querySelector(".generator-schema-footer");
+        const toggleButton = this.documentObj.getElementById("schemaModeToggleButton");
+
+        const inTextMode = this.isTextMode === true;
+        rowsContainer.style.display = inTextMode ? "none" : "flex";
+        textContainer.style.display = inTextMode ? "block" : "none";
+        footer.style.display = inTextMode ? "none" : "block";
+        toggleButton.textContent = inTextMode ? "Edit as Schema" : "Edit as Text";
+    }
+
+    parseSchemaTextToRows(schemaText){
+        const text = String(schemaText ?? "");
+        if(text.trim().length === 0){
+            return { rows: [], errors: [] };
+        }
+
+        const generator = new this.TestDataGeneratorClass(this.faker, this.RandExp);
+        generator.importSpec(text);
+        generator.compile();
+        if(!generator.isValid()){
+            return { rows: [], errors: generator.errors() };
+        }
+
+        const rows = generator.testDataRules().map((rule) => this.ruleToSchemaRow(rule));
+        return { rows, errors: [] };
+    }
+
+    ruleToSchemaRow(rule){
+        const row = this.createBlankSchemaRow();
+        row.name = String(rule?.name ?? "");
+        row.sourceType = normaliseSourceType(rule?.type);
+
+        if(row.sourceType === SOURCE_TYPE_FAKER){
+            const parts = this.extractFakerCommandAndParams(rule?.ruleSpec);
+            row.command = parts.command;
+            row.params = parts.params;
+            row.value = "";
+            return row;
+        }
+
+        row.value = String(rule?.ruleSpec ?? "");
+        row.command = "";
+        row.params = "";
+        return row;
+    }
+
+    extractFakerCommandAndParams(ruleSpec){
+        const normalisedSpec = normaliseFakerCommand(String(ruleSpec ?? "").trim());
+        for(const command of this.fakerCommandsLongestFirst){
+            if(normalisedSpec === command){
+                return { command, params: "" };
+            }
+            if(normalisedSpec.startsWith(command)){
+                return {
+                    command,
+                    params: normalisedSpec.slice(command.length)
+                };
+            }
+        }
+
+        return { command: "", params: normalisedSpec };
     }
 
     renderSchemaRows(){
@@ -291,8 +394,8 @@ class DataGeneratorPage {
                 <input type="text" data-field="params" placeholder="Params e.g. (10)" value="${this.escapeHtml(row.params)}" ${isFakerSource ? "" : "hidden disabled"}>
                 <input type="text" data-field="value" placeholder="Value / Regex" value="${this.escapeHtml(row.value)}" ${isFakerSource ? "hidden disabled" : ""}>
                 <div class="generator-row-actions">
-                    <button class="icon-button" data-action="add" data-row-id="${row.id}" title="Add row">+</button>
-                    <button class="icon-button" data-action="remove" data-row-id="${row.id}" title="Remove row">-</button>
+                    <button class="icon-button" data-action="add" data-row-id="${row.id}" title="Add field">+</button>
+                    <button class="icon-button" data-action="remove" data-row-id="${row.id}" title="Remove field">-</button>
                     <button class="icon-button" data-action="up" data-row-id="${row.id}" title="Move up" ${index === 0 ? "disabled" : ""}>↑</button>
                     <button class="icon-button" data-action="down" data-row-id="${row.id}" title="Move down" ${index === this.schemaRows.length - 1 ? "disabled" : ""}>↓</button>
                 </div>

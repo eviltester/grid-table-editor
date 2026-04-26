@@ -76,7 +76,20 @@ class FakeTestDataGenerator {
         }
     }
 
-    compile() {}
+    compile() {
+        this.rules.forEach((rule) => {
+            const spec = String(rule.ruleSpec || "");
+            if(spec.startsWith("word.")){
+                rule.type = "faker";
+                return;
+            }
+            if(spec.startsWith("[") || spec.includes("{")){
+                rule.type = "regex";
+                return;
+            }
+            rule.type = "literal";
+        });
+    }
 
     testDataRules() {
         return this.rules;
@@ -255,5 +268,45 @@ describe("DataGeneratorPage", () => {
 
         expect(() => page.previewData()).not.toThrow();
         expect(dom.window.alert).toHaveBeenCalled();
+    });
+
+    test("toggles between schema controls and text editing with round trip", () => {
+        const page = new DataGeneratorPage({
+            parentElement: document.getElementById("app"),
+            documentObj: document,
+            alertFn,
+            faker: { word: { noun: () => "x" } },
+            RandExp: function RandExp() {},
+            TabulatorCtor: FakeTabulator,
+            GridExtensionClass: FakeGridExtension,
+            ExporterClass: FakeExporter,
+            DownloadClass: FakeDownload,
+            TestDataGeneratorClass: FakeTestDataGenerator
+        });
+        page.init();
+        page.schemaRows = [
+            { id: "1", name: "Name", sourceType: "faker", command: "word.noun", params: "()", value: "" }
+        ];
+        page.renderSchemaRows();
+
+        const toggle = document.getElementById("schemaModeToggleButton");
+        toggle.click();
+
+        const textArea = document.getElementById("generatorSchemaText");
+        expect(document.getElementById("generatorSchemaTextContainer").style.display).toBe("block");
+        expect(document.getElementById("generatorSchemaRows").style.display).toBe("none");
+        expect(toggle.textContent).toBe("Edit as Schema");
+        expect(textArea.value).toContain("Name");
+        expect(textArea.value).toContain("word.noun()");
+
+        textArea.value = "City\n[A-Z]{4}";
+        toggle.click();
+
+        expect(document.getElementById("generatorSchemaTextContainer").style.display).toBe("none");
+        expect(document.getElementById("generatorSchemaRows").style.display).toBe("flex");
+        expect(toggle.textContent).toBe("Edit as Text");
+        expect(page.schemaRows[0].name).toBe("City");
+        expect(page.schemaRows[0].value).toBe("[A-Z]{4}");
+        expect(page.schemaRows[0].sourceType).toBe("regex");
     });
 });

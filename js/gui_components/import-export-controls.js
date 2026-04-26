@@ -8,21 +8,25 @@ import { JsonOptionsPanel } from "./options_panels/options-json-panel.js";
 import { JavascriptOptionsPanel } from "./options_panels/options-javascript-panel.js";
 import { GherkinOptionsPanel } from "./options_panels/options-gherkin-panel.js";
 import { HtmlOptionsPanel } from "./options_panels/options-html-panel.js";
+import { GenericDataTable } from "../data_formats/generic-data-table.js";
 
 class ImportExportControls {
 
     constructor(){
+        this.previewRowLimit = 10;
+        this.textEditMode = "preview";
     }
 
     addHTMLtoGui(parentelement){
         parentelement.innerHTML = `<span data-help="import-export-controls" class="helpicon"></span>
             <button id="settextfromgridbutton">v Set Text From Grid v</button>
-            <button id="setgridfromtextbutton">^ Set Grid From Text ^</button>
+            <button id="setgridfromtextbutton" disabled>^ Set Grid From Text ^</button>
             <label id="csvinputlabel"><span class="fileFormat">.csv</span> import ^:<input type="file" id="csvinput"/></label>
             <button id="filedownload"><span class="fileFormat">.csv</span> Download</button>
             <label id="dropzone">
             <span>[Drag And Drop <span class="fileFormat">.csv</span> File Here]</span>
             </label>
+            <div id="import-progress-status" class="import-progress-status" style="display:none;" aria-live="polite"></div>
         `;
 
 
@@ -33,6 +37,7 @@ class ImportExportControls {
         let setgridfromtextbutton = parentelement.querySelector("#setgridfromtextbutton");
         let importTextAreaClickListener = this.importTextArea.bind(this);
         setgridfromtextbutton.addEventListener('click', importTextAreaClickListener, false);
+        this._syncGridFromTextButtonState();
 
         this.fileInputElement = parentelement.querySelector('#csvinput');
         let csvinputchangelistener = this.loadFile.bind(this);
@@ -63,30 +68,117 @@ class ImportExportControls {
     }
 
     importTextArea(){
+        if(this.isPreviewTextMode()){
+            alert("Grid to Text only availalable in Edit mode");
+            return;
+        }
+
         const typeToImport = document.querySelector("li.active-type a").getAttribute("data-type");
         const textToImport = document.getElementById("markdownarea").value;
 
         this.setCurrentTypeOptions();
-        this.importer.importText(typeToImport, textToImport);
+        return this.importer.importText(typeToImport, textToImport);
     }
 
     renderTextFromGrid() {
+       if(this.isPreviewTextMode()){
+            this._renderPreviewTextFromGrid();
+            return;
+       }
        this.exportControls.renderTextFromGrid();
     }
 
     loadFile() {
         let type = document.querySelector("li.active-type a").getAttribute("data-type"); 
         this.setCurrentTypeOptions();
+        this._setImportProgressStatus("Preparing file import...", true);
         this.readFile(this.fileInputElement.files[0]);
     }
   
     readFile(aFile){
+        if(!aFile){
+            this._clearImportProgressStatus();
+            return;
+        }
+
         const reader = new FileReader();
-        reader.addEventListener('load', (event)=>{
-          this.exportControls.setTextFromString(event.target.result);
-          this.importTextArea();
+        this._setImportProgressStatus(`Loading ${aFile.name}... 0%`, true);
+
+        reader.addEventListener("progress", (event) => {
+            if(event.lengthComputable){
+                const pct = Math.min(100, Math.round((event.loaded / event.total) * 100));
+                this._setImportProgressStatus(`Loading ${aFile.name}... ${pct}%`, true);
+                return;
+            }
+            this._setImportProgressStatus(`Loading ${aFile.name}...`, true);
         });
+
+        reader.addEventListener('load', (event)=>{
+          this._setImportProgressStatus(this.isPreviewTextMode() ? "Preparing preview..." : "Importing into grid...", true);
+          this._yieldToUi().then(async () => {
+            try{
+                const type = this._getActiveType();
+                const importedText = event.target.result;
+                if(this.isPreviewTextMode()){
+                    await this._previewThenImportToGrid(type, importedText);
+                }else{
+                    this.exportControls.setTextFromString(importedText);
+                    this._setImportProgressStatus("Importing full data into grid...", true);
+                    await this._yieldToUi();
+                    await Promise.resolve(this.importer.importText(type, importedText));
+                    this._setImportProgressStatus("Import complete.", false);
+                }
+            }catch(error){
+                console.error("Failed importing file", error);
+                this._setImportProgressStatus("Import failed. Check file format/options.", false);
+                return;
+            }
+
+            setTimeout(() => this._clearImportProgressStatus(), 1200);
+          });
+        });
+
+        reader.addEventListener("error", () => {
+            this._setImportProgressStatus("File read failed.", false);
+        });
+
+        reader.addEventListener("abort", () => {
+            this._setImportProgressStatus("File read cancelled.", false);
+        });
+
         reader.readAsText(aFile);
+    }
+
+    _setImportProgressStatus(message, isLoading){
+        const statusElem = document.querySelector("#import-progress-status");
+        if(!statusElem){
+            return;
+        }
+        statusElem.textContent = message;
+        statusElem.style.display = "inline-block";
+        statusElem.classList.toggle("is-loading", isLoading === true);
+    }
+
+    _clearImportProgressStatus(){
+        const statusElem = document.querySelector("#import-progress-status");
+        if(!statusElem){
+            return;
+        }
+        statusElem.textContent = "";
+        statusElem.style.display = "none";
+        statusElem.classList.remove("is-loading");
+    }
+
+    _yieldToUi(){
+        return new Promise((resolve) => {
+            if(typeof requestAnimationFrame !== "function"){
+                setTimeout(resolve, 0);
+                return;
+            }
+            requestAnimationFrame(() => {
+                setTimeout(resolve, 0);
+            });
+        });
     }
 
     setFileFormatType(){
@@ -114,6 +206,7 @@ class ImportExportControls {
         }
         
         importControls.forEach(e => e.style.visibility = importVisibility);
+        this._syncGridFromTextButtonState();
 
         // set export controls visibility
         const exportControlLocators = ["#filedownload"];
@@ -214,6 +307,95 @@ class ImportExportControls {
         this.importer.setOptionsForType(type,options);
         this.exporter.setOptionsForType(type,options);
         this.renderTextFromGrid();
+    }
+
+    isPreviewTextMode(){
+        return this.textEditMode === "preview";
+    }
+
+    getPreviewRowLimit(){
+        return this.previewRowLimit;
+    }
+
+    toggleTextEditMode(){
+        if(this.isPreviewTextMode()){
+            this.textEditMode = "edit";
+            this._syncGridFromTextButtonState();
+            if(confirm("Do you want to Set Text From Grid?")){
+                this.renderTextFromGrid();
+            }else{
+                this.exportControls.setTextFromString("");
+            }
+            return this.textEditMode;
+        }
+
+        this.textEditMode = "preview";
+        this._syncGridFromTextButtonState();
+        this.renderTextFromGrid();
+        return this.textEditMode;
+    }
+
+    _renderPreviewTextFromGrid(){
+        const type = this._getActiveType();
+        const previewDataTable = this.exporter.getGridAsGenericDataTable(this.previewRowLimit);
+        const textToRender = this.exporter.getDataTableAs(type, previewDataTable);
+        this.exportControls.setTextFromString(textToRender);
+    }
+
+    _renderPreviewTextFromInput(type, textToImport){
+        const dataTable = this.importer.toGenericDataTable(type, textToImport);
+        this._renderPreviewTextFromDataTable(type, dataTable);
+    }
+
+    _renderPreviewTextFromDataTable(type, dataTable){
+        const limitedDataTable = this._limitDataTableRows(dataTable, this.previewRowLimit);
+        const textToRender = this.exporter.getDataTableAs(type, limitedDataTable);
+        this.exportControls.setTextFromString(textToRender);
+    }
+
+    async _previewThenImportToGrid(type, textToImport){
+        const dataTable = this.importer.toGenericDataTable(type, textToImport);
+        if(!dataTable){
+            throw new Error("Unable to parse input into data table.");
+        }
+
+        this._renderPreviewTextFromDataTable(type, dataTable);
+        this._setImportProgressStatus(`Preview loaded (first ${this.previewRowLimit} items). Loading full data into grid...`, true);
+        await this._yieldToUi();
+        this._setImportProgressStatus("Importing full data into grid...", true);
+        await this._yieldToUi();
+
+        await Promise.resolve(this.importer.setGridFromGenericDataTable(dataTable));
+        this._setImportProgressStatus("Import complete.", false);
+    }
+
+    _limitDataTableRows(dataTable, maxRows){
+        const limited = new GenericDataTable();
+        if(!dataTable){
+            return limited;
+        }
+
+        const headers = dataTable.getHeaders ? dataTable.getHeaders() : [];
+        limited.setHeaders(headers);
+
+        const rowCount = dataTable.getRowCount ? dataTable.getRowCount() : 0;
+        const limit = Math.min(Math.max(maxRows, 0), rowCount);
+        for(let rowIndex = 0; rowIndex < limit; rowIndex++){
+            limited.appendDataRow(dataTable.getRow(rowIndex));
+        }
+        return limited;
+    }
+
+    _getActiveType(){
+        return document.querySelector("li.active-type a").getAttribute("data-type");
+    }
+
+    _syncGridFromTextButtonState(){
+        const importButton = document.querySelector("#setgridfromtextbutton");
+        if(!importButton){
+            return;
+        }
+        importButton.disabled = this.isPreviewTextMode();
     }
 }
 

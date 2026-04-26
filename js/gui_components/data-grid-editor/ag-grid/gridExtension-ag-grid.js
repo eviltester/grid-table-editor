@@ -338,22 +338,37 @@ class GridExtensionAgGrid{
     */
     // TODO: consider creating a GridBackedGenericDataTable such that it is a generic wrapper
     // then we don't have to copy the data out into a new structure
-    getGridAsGenericDataTable(){
+    getGridAsGenericDataTable(maxRows){
         let dataTable = new GenericDataTable();
         dataTable.setHeaders(this.gridApi.getColumnDefs().map(col => col.headerName));
 
         var fieldnames = this.gridApi.getColumnDefs().map(col => col.field);
+        const rowLimit = this._normaliseRowLimit(maxRows);
+
+        if(rowLimit !== undefined &&
+           typeof this.gridApi.getDisplayedRowCount === "function" &&
+           typeof this.gridApi.getDisplayedRowAtIndex === "function"){
+            const totalRows = this.gridApi.getDisplayedRowCount();
+            const maxRowsToRead = Math.min(rowLimit, totalRows);
+            for(let rowIndex=0; rowIndex<maxRowsToRead; rowIndex++){
+                const node = this.gridApi.getDisplayedRowAtIndex(rowIndex);
+                if(!node){
+                    continue;
+                }
+                dataTable.appendDataRow(this._nodeToRowValues(node, fieldnames));
+            }
+            return dataTable;
+        }
     
         // since we can filter and sort...
         // if we use forEachNode then it ignores the filter and does not honour the sorting
+        let rowsAdded = 0;
         this.gridApi.forEachNodeAfterFilterAndSort(node => {
-            var vals = [];
-
-            for (const propertyid in fieldnames) {
-                var property = fieldnames[propertyid];
-                vals.push(node.data[property] ? String(node.data[property]) : '');
+            if(rowLimit !== undefined && rowsAdded >= rowLimit){
+                return;
             }
-            dataTable.appendDataRow(vals);
+            dataTable.appendDataRow(this._nodeToRowValues(node, fieldnames));
+            rowsAdded++;
         });
 
         return dataTable;
@@ -388,6 +403,22 @@ class GridExtensionAgGrid{
       // TODO : apply transactions incrementally for larger data sets
       this.gridApi.applyTransaction({ add: addRows });
     }   
+
+    _nodeToRowValues(node, fieldnames){
+        const vals = [];
+        for (const propertyid in fieldnames) {
+            const property = fieldnames[propertyid];
+            vals.push(node?.data?.[property] ? String(node.data[property]) : '');
+        }
+        return vals;
+    }
+
+    _normaliseRowLimit(maxRows){
+        if(typeof maxRows !== "number" || !Number.isFinite(maxRows)){
+            return undefined;
+        }
+        return Math.max(0, Math.floor(maxRows));
+    }
 
 }
 

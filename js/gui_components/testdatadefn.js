@@ -22,7 +22,8 @@
 
 import {TestDataGenerator} from '../data_generation/testDataGenerator.js';
 import {Debouncer} from '../utils/debouncer.js';
-import {GridExtension} from './data-grid-editor/ag-grid/gridExtension-ag-grid.js';
+import {GridExtension as AgGridExtension} from './data-grid-editor/ag-grid/gridExtension-ag-grid.js';
+import {GridExtension as TabulatorGridExtension} from './data-grid-editor/tabulator/gridExtension-tabulator.js';
 import { SelectFilterEditor} from './data-grid-editor/ag-grid/select-filter-editor.js';
 
 import { faker } from "https://cdn.skypack.dev/@faker-js/faker@v9.7.0";
@@ -97,16 +98,36 @@ function generateDataIntoGenericDataTableFromRules(thisMany, generator, dataTabl
 function createTestDataGrid(){
 
     var gridDiv = document.querySelector('#defngrid');
-    gridDiv.style.height = '200px';
+    const editorPaneHeight = '220px';
+    gridDiv.style.height = editorPaneHeight;
     gridDiv.style.width = '70%';
-    gridDiv.classList.add("ag-theme-alpine");
     setupTestDataEditGrid(gridDiv);
 
     var textEdit = document.querySelector(".defn-text-container");
-    textEdit.style.width="30%";
+    textEdit.style.width = defnGridApi ? "30%" : "100%";
+    textEdit.style.paddingTop = "0";
+    textEdit.style.height = editorPaneHeight;
+    textEdit.style.display = "flex";
+    textEdit.style.flexDirection = "column";
+
+    const textHeading = textEdit.querySelector("p");
+    if(textHeading){
+        textHeading.style.margin = "0 0 0.4rem 0";
+    }
+
+    const textArea = textEdit.querySelector("textarea");
+    if(textArea){
+        textArea.style.flex = "1";
+        textArea.style.width = "100%";
+        textArea.style.height = "100%";
+        textArea.style.boxSizing = "border-box";
+    }
 
     var zone = document.querySelector(".defn-edit-zone");
-    zone.style.height = "250px";
+    zone.style.height = editorPaneHeight;
+    zone.style.display = "flex";
+    zone.style.alignItems = "flex-start";
+    zone.style.gap = "0.75rem";
 
 }
 
@@ -114,9 +135,14 @@ function createTestDataGrid(){
 // todo: this all really needs to be wrapped in a class
 var defnGridOptions;
 var defnGridApi;
+var defnGridExtras;
+var defnGridBridge;
 
 // populate Test Data Grid From Rules in Text Area
 function populateTestDataGridFromRules(){
+    if(!defnGridBridge){
+        return;
+    }
 
     const generator = getRulesParserFromTextArea();
 
@@ -124,10 +150,10 @@ function populateTestDataGridFromRules(){
         return;
     }
 
-    // clear data
-    // now add the rules
-    defnGridApi.setGridOption("rowData",[]);
+    // clear data then add rules
+    defnGridBridge.clearRows();
 
+    const rowsToAdd = [];
     for(let rule of generator.testDataRules()){
         let data={};
         data.columnName = rule.name;
@@ -152,9 +178,9 @@ function populateTestDataGridFromRules(){
             data.value = rule.ruleSpec;            
         }
 
-        // todo, should be a bigger transaction for efficiency
-        defnGridApi.applyTransaction({add: [data]},)
+        rowsToAdd.push(data);
     }
+    defnGridBridge.addRows(rowsToAdd);
 }
 
 const KNOWN_FAKER_COMMANDS = ['RegEx',
@@ -260,30 +286,60 @@ function identifyFakerCommands(aFaker){
 
 
 function setupTestDataEditGrid(gridDiv){
+    const tableDiv = document.createElement("div");
+    tableDiv.style.height = "160px";
+    tableDiv.style.width = "100%";
+    gridDiv.appendChild(tableDiv);
 
+    const addNewRowButton = document.createElement("button");
+    addNewRowButton.innerText = "+ Add Column";
+    gridDiv.appendChild(addNewRowButton);
 
+    const deleteRowsButton = document.createElement("button");
+    deleteRowsButton.innerText = " - Delete Selected";
+    gridDiv.appendChild(deleteRowsButton);
+
+    if(typeof agGrid !== "undefined" && typeof agGrid.createGrid === "function"){
+        setupAgGridDefnEditor(tableDiv);
+    }else if(typeof Tabulator !== "undefined"){
+        setupTabulatorDefnEditor(tableDiv);
+    }else{
+        console.warn("No supported grid library loaded; test data definition grid editor disabled.");
+        return;
+    }
+
+    addNewRowButton.addEventListener('click', function(){
+        if(!defnGridBridge){
+            return;
+        }
+        defnGridBridge.addRows([{columnName: "", type:"RegEx", value:""}]);
+        convertGridToText();
+    });
+
+    deleteRowsButton.addEventListener('click', function(){
+        if(!defnGridExtras){
+            return;
+        }
+        defnGridExtras.deleteSelectedRows();
+        convertGridToText();
+    });
+}
+
+function setupAgGridDefnEditor(tableDiv){
     const defnRowData = [];
-
-    // FAKER_COMMANDS must have been previously populated
-
     const defnColumnDefs = [
+        {field: "columnName"},
         {
-            field: 'columnName',
-
-        },
-        {   field: 'type',
+            field: "type",
             cellEditor: SelectFilterEditor,
-            cellEditorParams: {
-                values: FAKER_COMMANDS
-            },
+            cellEditorParams: {values: FAKER_COMMANDS}
         },
-        {field: 'value'}
+        {field: "value"}
     ];
 
     defnGridOptions = {
         columnDefs: defnColumnDefs,
         rowData: defnRowData,
-
         defaultColDef: {
             wrapText: true,
             autoHeight: true,
@@ -292,69 +348,96 @@ function setupTestDataEditGrid(gridDiv){
             rowDrag: true,
             sortable: false
         },
-
         suppressMovableColumns: true,
-
         rowDragManaged: true,
         rowDragMultiRow: true,
         rowSelection: {
-            mode: 'multiRow',
+            mode: "multiRow",
             checkboxes: false,
             headerCheckbox: false,
-            enableClickSelection: true,
+            enableClickSelection: true
         },
-        onCellEditingStopped: ( e => { convertGridToText();}),
-        onRowDragEnd:  ( e => { convertGridToText();})
+        onCellEditingStopped: () => { convertGridToText(); },
+        onRowDragEnd: () => { convertGridToText(); }
     };
 
-    const addNewRowButton = document.createElement("button");
-    addNewRowButton.innerText="+ Add Column";
-    gridDiv.appendChild(addNewRowButton);
+    tableDiv.classList.add("ag-theme-alpine");
+    defnGridApi = agGrid.createGrid(tableDiv, defnGridOptions);
+    defnGridExtras = new AgGridExtension(defnGridApi);
+    defnGridBridge = {
+        clearRows: () => defnGridApi.setGridOption("rowData", []),
+        addRows: (rows) => {
+            if(rows && rows.length>0){
+                defnGridApi.applyTransaction({add: rows});
+            }
+        },
+        getRows: () => {
+            const rows = [];
+            defnGridApi.forEachNode((rowNode) => rows.push({...rowNode.data}));
+            return rows;
+        }
+    };
+}
 
-
-    const deleteRowsButton = document.createElement("button");
-    deleteRowsButton.innerText=" - Delete Selected";
-    gridDiv.appendChild(deleteRowsButton);
-
-
-    defnGridApi = agGrid.createGrid(gridDiv, defnGridOptions);
-
-    const defnGridExtras = new GridExtension(defnGridApi);
-
-    addNewRowButton.addEventListener('click', function(){
-        defnGridApi.applyTransaction({ add: [{columnName: "", type:"RegEx", value:""}] });
+function setupTabulatorDefnEditor(tableDiv){
+    defnGridApi = new Tabulator(tableDiv, {
+        data: [],
+        columns: [
+            {title: "columnName", field: "columnName", editor: "input"},
+            {
+                title: "type",
+                field: "type",
+                editor: "list",
+                editorParams: {values: FAKER_COMMANDS}
+            },
+            {title: "value", field: "value", editor: "input"}
+        ],
+        selectableRows: true,
+        movableRows: true,
+        columnDefaults: {resizable: true},
+        cellEdited: () => { convertGridToText(); },
+        rowMoved: () => { convertGridToText(); }
     });
 
-    deleteRowsButton.addEventListener('click', function(){
-        defnGridExtras.deleteSelectedRows();
-        convertGridToText();
-    });
+    defnGridExtras = new TabulatorGridExtension(defnGridApi);
+    defnGridBridge = {
+        clearRows: () => defnGridApi.setData([]),
+        addRows: (rows) => {
+            if(rows && rows.length>0){
+                defnGridApi.addData(rows);
+            }
+        },
+        getRows: () => defnGridApi.getData().map((row) => ({...row}))
+    };
 }
 
 function convertGridToText(){
+    if(!defnGridBridge){
+        return;
+    }
 
     let outputText = "";
     let prefix = "";
-    defnGridApi.forEachNode((rowNode, index) => {
+    defnGridBridge.getRows().forEach((rowData) => {
         outputText = outputText + prefix;
-        outputText = outputText + rowNode.data.columnName + "\n";
+        outputText = outputText + rowData.columnName + "\n";
 
-        switch(rowNode.data.type){
+        switch(rowData.type){
             case "RegEx":
-                outputText = outputText + rowNode.data.value;
+                outputText = outputText + rowData.value;
                 break;
             // TODO Literal
             default:
-                let dataType = rowNode.data.type;
+                let dataType = rowData.type;
                 if(dataType.startsWith("faker.")){
                     dataType= dataType.replace("faker.","");
                 }
                 if(FAKER_COMMANDS.includes(dataType)){
-                    outputText = outputText + dataType + rowNode.data.value;
+                    outputText = outputText + dataType + (rowData.value || "");
                 }else{
                     // throw error? ignore? don't know what the command is so it won't parse
                     // ignoring
-                    console.log(`UNKNOWN COMMAND: ${dataType} ${rowNode.data.value}`)
+                    console.log(`UNKNOWN COMMAND: ${dataType} ${rowData.value}`)
                 }
         }
         prefix="\n";
@@ -380,9 +463,9 @@ function enableTestDataGenerationInterface(parentId, anImporter, theExportContro
             <button id="generatedata">Generate</button><label> How Many?<input type="number" id="generateCount"/></label>
         </div>
         <div class="defn-edit-zone">
-            <div class="defn-grid-container" id="defngrid" class="ag-theme-alpine" style="float:left">
+            <div class="defn-grid-container" id="defngrid" class="ag-theme-alpine">
             </div>
-            <div class="defn-text-container" style="float:right;padding-top:2em">
+            <div class="defn-text-container">
                 <p>Test Data Text Schema</p>
                 <textarea class="testDataDefn" name="testdatadefntext" id="testdatadefntext"></textarea>
             </div>

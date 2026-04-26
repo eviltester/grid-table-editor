@@ -55,22 +55,30 @@ class Importer{
     // text area import
     importText(typeToImport, textToImport){
 
+      const dataTable = this.toGenericDataTable(typeToImport, textToImport);
+      if(!dataTable){
+        return;
+      }
+      return this.setGridFromGenericDataTable(dataTable);
+    }
+
+    toGenericDataTable(typeToImport, textToImport){
       if(!this.canImport(typeToImport)){
         console.log(`Data Type ${typeToImport} not supported for importing`);
-        return;
+        return undefined;
       }
 
       let optionsToUse = {};
       if(this.options[typeToImport]){
-        optionsToUse = this.options[typeToImport];     
+        optionsToUse = this.options[typeToImport];
       }
 
       let convertorToUse = this.convertors[typeToImport];
       if(convertorToUse !== undefined){
         convertorToUse?.setOptions?.(optionsToUse);
-        this.setGridFromGenericDataTable(convertorToUse.toDataTable(textToImport));
-        return;
+        return convertorToUse.toDataTable(textToImport);
       }
+      return undefined;
     }
 
 

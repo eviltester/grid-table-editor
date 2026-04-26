@@ -39,6 +39,7 @@ class TabbedTextControl{
             </ul>
           </div>
           <div class="rightbuttons">
+            <button title="Toggle Preview/Edit mode" id="previewEditModeButton">Preview</button>
             <button title="Copy text to clipboard" id="copyTextButton">Copy</button>
           </div>
         </div>
@@ -55,7 +56,7 @@ class TabbedTextControl{
       this.parent.querySelectorAll(".type-select-action").forEach( lielem => lielem.addEventListener("click", (e) => {
 
           // set the display buttons
-          this.parent.querySelectorAll(".type-select").forEach(elem => elem.classList.remove("active-type"));
+      this.parent.querySelectorAll(".type-select").forEach(elem => elem.classList.remove("active-type"));
       
           e.target.parentElement.classList.add("active-type");
       
@@ -73,7 +74,30 @@ class TabbedTextControl{
       })
     );
 
+      const modeButton = this.parent.querySelector("#previewEditModeButton");
+      if(modeButton){
+        modeButton.addEventListener("click", () => {
+          this.importExportController.toggleTextEditMode();
+          this._syncPreviewEditButtonLabel();
+        });
+      }
 
+      this._syncPreviewEditButtonLabel();
+
+    }
+
+    _syncPreviewEditButtonLabel(){
+      const modeButton = this.parent.querySelector("#previewEditModeButton");
+      if(!modeButton){
+        return;
+      }
+
+      if(this.importExportController?.isPreviewTextMode?.()){
+        const rowLimit = this.importExportController?.getPreviewRowLimit?.() ?? 10;
+        modeButton.innerText = `Preview (${rowLimit})`;
+        return;
+      }
+      modeButton.innerText = "Edit";
     }
     
 }

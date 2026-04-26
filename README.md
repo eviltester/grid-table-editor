@@ -34,11 +34,28 @@ The editor can run with AG Grid or Tabulator using the same import/export and to
 - Global override before app load: `window.ANYWAYDATA_GRID_ENGINE = "ag-grid"`
 - Persisted setting key: `localStorage["anywaydata:grid-engine"]`
 
+Default is Tabulator.
+
 ## To Generate Test Data
+
+Use the Generator to create test data rules using a nicer UI.
+
+You can preview the data prior to generating.
+
+You can copy the schema into the editor UI and use it to populate existing tables.
+
+
+## To Generate Test Data in an Grid
+
+You can add data to an existing data table e.g. you import a CSV file and want to a new column of dates, or you want to amend an entire column (perhaps to obfuscate PII Data)
 
 Expand the "> Test Data" section.
 
-Enter a spec.
+Choose the Data fields to add or amend in the table or enter a spec.
+
+You can then create a new table, or amend the existing table or selected rows.
+
+## Test Data Text Spec
 
 The spec is a paragraph of text where each line is either a 'name' or a 'rule':
 

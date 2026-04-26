@@ -221,6 +221,92 @@ class GridExtensionAgGrid{
         return this.gridApi.getSelectedNodes().length;
     }
 
+    getRowCount(){
+        if(typeof this.gridApi.getDisplayedRowCount === "function"){
+            return this.gridApi.getDisplayedRowCount();
+        }
+
+        let rowCount = 0;
+        this.gridApi.forEachNodeAfterFilterAndSort(() => {
+            rowCount++;
+        });
+        return rowCount;
+    }
+
+    getSelectedRowIndexes(){
+        const selectedNodes = this.gridApi.getSelectedNodes();
+        return selectedNodes
+            .map((node) => node?.rowIndex)
+            .filter((rowIndex) => Number.isFinite(rowIndex) && rowIndex >= 0)
+            .sort((a, b) => a - b);
+    }
+
+    async applyGeneratedSchemaAmend({
+        mode,
+        desiredRowCount,
+        schemaHeaders,
+        generateRow,
+        selectedRowIndexes = []
+    } = {}){
+        if(!Array.isArray(schemaHeaders) || schemaHeaders.length === 0 || typeof generateRow !== "function"){
+            return { noSelectedRows: mode === "amend-selected", amendedRows: 0 };
+        }
+
+        const desiredCount = Math.max(0, Number.parseInt(desiredRowCount ?? 0, 10) || 0);
+        const headerToField = this._ensureColumnsForHeaders(schemaHeaders);
+
+        let targetNodes = [];
+        if(mode === "amend-selected"){
+            const sortedSelected = [...new Set(
+                (Array.isArray(selectedRowIndexes) ? selectedRowIndexes : [])
+                    .filter((value) => Number.isFinite(value))
+                    .map((value) => Math.floor(value))
+                    .filter((value) => value >= 0)
+            )].sort((a, b) => a - b);
+
+            if(sortedSelected.length === 0){
+                return { noSelectedRows: true, amendedRows: 0 };
+            }
+
+            const rowsToAmend = Math.min(desiredCount, sortedSelected.length);
+            for(let index = 0; index < rowsToAmend; index++){
+                const node = this._getDisplayedRowNodeAt(sortedSelected[index]);
+                if(node){
+                    targetNodes.push(node);
+                }
+            }
+        }else{
+            const currentRowCount = this.getRowCount();
+            const rowsToAppend = Math.max(0, desiredCount - currentRowCount);
+            if(rowsToAppend > 0){
+                this._appendBlankRows(rowsToAppend);
+            }
+
+            for(let index = 0; index < desiredCount; index++){
+                const node = this._getDisplayedRowNodeAt(index);
+                if(node){
+                    targetNodes.push(node);
+                }
+            }
+        }
+
+        for(let targetIndex = 0; targetIndex < targetNodes.length; targetIndex++){
+            const node = targetNodes[targetIndex];
+            const generated = generateRow();
+            for(let schemaIndex = 0; schemaIndex < schemaHeaders.length; schemaIndex++){
+                const header = schemaHeaders[schemaIndex];
+                const field = headerToField[header];
+                if(!field){
+                    continue;
+                }
+                const value = generated?.[schemaIndex];
+                node.setDataValue(field, value === undefined || value === null ? "" : String(value));
+            }
+        }
+
+        return { noSelectedRows: false, amendedRows: targetNodes.length };
+    }
+
 
 
     getColumnDef(id){
@@ -411,6 +497,61 @@ class GridExtensionAgGrid{
             vals.push(node?.data?.[property] ? String(node.data[property]) : '');
         }
         return vals;
+    }
+
+    _ensureColumnsForHeaders(schemaHeaders){
+        const headerToField = {};
+        this.gridApi.getColumnDefs().forEach((definition) => {
+            if(definition?.headerName){
+                headerToField[definition.headerName] = definition.field;
+            }
+        });
+
+        for(let index = 0; index < schemaHeaders.length; index++){
+            const header = schemaHeaders[index];
+            if(headerToField[header]){
+                continue;
+            }
+            const appended = this.appendColumnToGrid(header);
+            headerToField[header] = appended?.field;
+        }
+
+        return headerToField;
+    }
+
+    _appendBlankRows(count){
+        if(count <= 0){
+            return;
+        }
+
+        const rows = [];
+        for(let index = 0; index < count; index++){
+            rows.push(this.getBlankRowData());
+        }
+        this.gridApi.applyTransaction({ add: rows });
+    }
+
+    _getDisplayedRowNodeAt(index){
+        if(index < 0){
+            return undefined;
+        }
+        if(typeof this.gridApi.getDisplayedRowAtIndex === "function"){
+            return this.gridApi.getDisplayedRowAtIndex(index);
+        }
+
+        let foundNode = undefined;
+        let currentIndex = 0;
+        this.gridApi.forEachNodeAfterFilterAndSort((node) => {
+            if(foundNode){
+                return;
+            }
+            if(currentIndex === index){
+                foundNode = node;
+                return;
+            }
+            currentIndex++;
+        });
+        return foundNode;
     }
 
     _normaliseRowLimit(maxRows){

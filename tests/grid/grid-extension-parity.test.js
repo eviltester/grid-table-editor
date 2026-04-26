@@ -110,6 +110,13 @@ class AgGridApiMock {
     getDisplayedRowCount() {
         return this.rowData.length;
     }
+
+    getDisplayedRowAtIndex(index) {
+        if(index < 0 || index >= this.rowData.length){
+            return undefined;
+        }
+        return this._makeNode(index);
+    }
 }
 
 class TabulatorColumnMock {
@@ -652,12 +659,15 @@ describe("Shared grid interface contract (both implementations)", () => {
         "createColumns",
         "getNumberOfColumns",
         "getNumberOfSelectedRows",
+        "getRowCount",
+        "getSelectedRowIndexes",
         "addRow",
         "addRowsRelativeToSelection",
         "deleteSelectedRows",
         "getGridAsGenericDataTable",
         "getHeadersFromGrid",
-        "setGridFromGenericDataTable"
+        "setGridFromGenericDataTable",
+        "applyGeneratedSchemaAmend"
     ];
 
     const agStyleIdMethods = [
@@ -741,6 +751,57 @@ describe("Shared grid interface contract (both implementations)", () => {
 
             expect(extension.getNumberOfColumns()).toBeGreaterThanOrEqual(4);
             expect(api.rowData.length).toBe(1);
+        }
+    );
+
+    test.each(harnessFactories)(
+        "%s exposes row count and selected indexes for test-data amend modes",
+        async (_name, createHarness) => {
+            const { api, extension } = createHarness();
+            extension.setGridFromGenericDataTable(
+                createGenericDataTable(["A"], [["r0"], ["r1"], ["r2"]])
+            );
+            await flushAsync();
+            await flushAsync();
+
+            api.selectedIndexes = [2, 0];
+            expect(extension.getRowCount()).toBe(3);
+            expect(extension.getSelectedRowIndexes()).toEqual([0, 2]);
+        }
+    );
+
+    test.each(harnessFactories)(
+        "%s applies direct schema amend without replacing untouched columns",
+        async (_name, createHarness) => {
+            const { api, extension } = createHarness();
+            extension.setGridFromGenericDataTable(
+                createGenericDataTable(["keep", "name"], [["k0", "old0"], ["k1", "old1"]])
+            );
+            await flushAsync();
+            await flushAsync();
+
+            const rows = [["new0", "extra0"], ["new1", "extra1"]];
+            let cursor = 0;
+            const result = await extension.applyGeneratedSchemaAmend({
+                mode: "amend-table",
+                desiredRowCount: 2,
+                schemaHeaders: ["name", "extra"],
+                generateRow: () => rows[cursor++]
+            });
+
+            expect(result.noSelectedRows).toBe(false);
+            const fields = Array.isArray(api.getColumnDefs?.())
+                ? api.getColumnDefs().map((definition) => definition.field)
+                : api.getColumnDefinitions().map((definition) => definition.field);
+            const keepField = fields[0];
+            const nameField = fields[1];
+            const extraField = fields[2];
+            expect(api.rowData[0][keepField]).toBe("k0");
+            expect(api.rowData[0][nameField]).toBe("new0");
+            expect(api.rowData[0][extraField]).toBe("extra0");
+            expect(api.rowData[1][keepField]).toBe("k1");
+            expect(api.rowData[1][nameField]).toBe("new1");
+            expect(api.rowData[1][extraField]).toBe("extra1");
         }
     );
 });

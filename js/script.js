@@ -59,7 +59,12 @@ async function bootstrapApp({
   importExportController.setFileFormatType();
   importExportController.setOptionsViewForFormatType();
 
-  enableTestDataGenerationInterfaceFn("testDataGeneratorContainer", importer, importExportController.getExportControls(), documentObj);
+  enableTestDataGenerationInterfaceFn(
+    "testDataGeneratorContainer",
+    importer,
+    importExportController.getExportControls(),
+    mainDataGrid.getGridExtras()
+  );
 
 }
 

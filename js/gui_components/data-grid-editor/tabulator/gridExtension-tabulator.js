@@ -201,6 +201,116 @@ class GridExtensionTabulator{
         return this.tabulator.getSelectedRows().length;
     }
 
+    getRowCount(){
+        const activeDataCount = this._getActiveDataCount();
+        if(Number.isFinite(activeDataCount)){
+            return activeDataCount;
+        }
+        if(typeof this.tabulator.getDataCount === "function"){
+            return this.tabulator.getDataCount();
+        }
+        return 0;
+    }
+
+    getSelectedRowIndexes(){
+        const selectedRows = this.tabulator.getSelectedRows();
+        if(!Array.isArray(selectedRows)){
+            return [];
+        }
+
+        const rawPositions = selectedRows
+            .map((rowComponent) => {
+                if(typeof rowComponent?.getPosition !== "function"){
+                    return undefined;
+                }
+                const rawPosition = rowComponent.getPosition();
+                if(!Number.isFinite(rawPosition)){
+                    return undefined;
+                }
+                return Number.parseInt(rawPosition, 10);
+            })
+            .filter((index) => Number.isFinite(index));
+
+        const isZeroBased = rawPositions.includes(0);
+        const selectedIndexes = rawPositions.map((position) => {
+            if(isZeroBased){
+                return Math.max(0, position);
+            }
+            return Math.max(0, position - 1);
+        });
+
+        return [...new Set(selectedIndexes)].sort((a, b) => a - b);
+    }
+
+    async applyGeneratedSchemaAmend({
+        mode,
+        desiredRowCount,
+        schemaHeaders,
+        generateRow,
+        selectedRowIndexes = []
+    } = {}){
+        if(!Array.isArray(schemaHeaders) || schemaHeaders.length === 0 || typeof generateRow !== "function"){
+            return { noSelectedRows: mode === "amend-selected", amendedRows: 0 };
+        }
+
+        const desiredCount = Math.max(0, Number.parseInt(desiredRowCount ?? 0, 10) || 0);
+        const headerToField = await this._ensureColumnsForHeaders(schemaHeaders);
+
+        let targetIndexes = [];
+        if(mode === "amend-selected"){
+            const selected = Array.isArray(selectedRowIndexes) ? selectedRowIndexes : [];
+            const sortedSelected = [...new Set(
+                selected
+                    .filter((value) => Number.isFinite(value))
+                    .map((value) => Math.floor(value))
+                    .filter((value) => value >= 0)
+            )].sort((a, b) => a - b);
+
+            if(sortedSelected.length === 0){
+                return { noSelectedRows: true, amendedRows: 0 };
+            }
+            targetIndexes = sortedSelected.slice(0, Math.min(desiredCount, sortedSelected.length));
+        }else{
+            const rowCount = this.getRowCount();
+            const requiredRows = Math.max(0, desiredCount - rowCount);
+            if(requiredRows > 0){
+                await this._appendBlankRows(requiredRows);
+            }
+        }
+
+        let targetRows = [];
+        if(mode === "amend-selected"){
+            targetRows = targetIndexes
+                .map((rowIndex) => this._getActiveRowDataAt(rowIndex))
+                .filter((rowData) => rowData);
+        }else{
+            targetRows = this._getActiveRowDataSlice(Math.max(0, desiredCount))
+                .filter((rowData) => rowData);
+        }
+
+        if(targetRows.length === 0){
+            return { noSelectedRows: false, amendedRows: 0 };
+        }
+
+        const maxSchemaColumns = schemaHeaders.length;
+        targetRows.forEach((rowData) => {
+            const generated = generateRow();
+            for(let schemaIndex = 0; schemaIndex < maxSchemaColumns; schemaIndex++){
+                const header = schemaHeaders[schemaIndex];
+                const field = headerToField[header];
+                if(!field){
+                    continue;
+                }
+                const value = generated?.[schemaIndex];
+                rowData[field] = value === undefined || value === null ? "" : String(value);
+            }
+        });
+
+        this._refreshTableAfterBulkMutation();
+
+        return { noSelectedRows: false, amendedRows: targetRows.length };
+    }
+
     getColumnDef(id){
         const colDef = this.tabulator.getColumnDefinitions().find((definition) => {
             return definition.colId === id || definition.field === id || definition.title === id;
@@ -339,20 +449,22 @@ class GridExtensionTabulator{
         dataTable.setHeaders(columnDefs.map(col => col.title));
 
         const fieldnames = columnDefs.map(col => col.field);
-        const activeRows = this.tabulator.getData("active");
         const rowLimit = this._normaliseRowLimit(maxRows);
-        const rowsToExport = rowLimit === undefined ? activeRows.length : Math.min(rowLimit, activeRows.length);
-
-        // Fast path for large exports: build rows in memory once, then assign.
-        const rows = new Array(rowsToExport);
-        for(let rowIndex=0; rowIndex<rowsToExport; rowIndex++){
-            const sourceRow = activeRows[rowIndex];
-            const vals = new Array(fieldnames.length);
-            for(let colIndex=0; colIndex<fieldnames.length; colIndex++){
-                const value = sourceRow[fieldnames[colIndex]];
-                vals[colIndex] = value === undefined || value === null ? "" : String(value);
+        if(rowLimit !== undefined){
+            // Preview/export-limited path: avoid materialising full active row data.
+            const limitedRows = this._getLimitedActiveRowData(rowLimit);
+            const rows = new Array(limitedRows.length);
+            for(let rowIndex=0; rowIndex<limitedRows.length; rowIndex++){
+                rows[rowIndex] = this._rowObjectToValues(limitedRows[rowIndex], fieldnames);
             }
-            rows[rowIndex] = vals;
+            dataTable.rows = rows;
+            return dataTable;
+        }
+
+        const activeRows = this.tabulator.getData("active");
+        const rows = new Array(activeRows.length);
+        for(let rowIndex=0; rowIndex<activeRows.length; rowIndex++){
+            rows[rowIndex] = this._rowObjectToValues(activeRows[rowIndex], fieldnames);
         }
         dataTable.rows = rows;
 
@@ -522,12 +634,124 @@ class GridExtensionTabulator{
             firstColumn = this.tabulator.getColumns()?.[0];
         }
 
-        if(!firstColumn || typeof firstColumn.fitToData !== "function"){
+        if(!firstColumn){
             return;
         }
 
         await this._yieldToBrowser();
-        await Promise.resolve(firstColumn.fitToData());
+        const estimatedWidth = this._estimateFirstColumnWidth(firstColumnField);
+
+        if(typeof firstColumn.setWidth === "function"){
+            firstColumn.setWidth(estimatedWidth);
+            return;
+        }
+
+        if(typeof firstColumn.updateDefinition === "function"){
+            await Promise.resolve(firstColumn.updateDefinition({ width: estimatedWidth }));
+        }
+    }
+
+    _estimateFirstColumnWidth(firstColumnField){
+        const columnDefinitions = this.tabulator.getColumnDefinitions?.() || [];
+        const firstDefinition = columnDefinitions.find((definition) => definition.field === firstColumnField) || columnDefinitions[0] || {};
+        const titleLength = String(firstDefinition.title || "").length;
+
+        const activeRows = typeof this.tabulator.getData === "function" ? this.tabulator.getData("active") : [];
+        let maxTextLength = titleLength;
+        if(Array.isArray(activeRows)){
+            for(let rowIndex = 0; rowIndex < activeRows.length; rowIndex++){
+                const value = activeRows[rowIndex]?.[firstColumnField];
+                const valueLength = String(value ?? "").length;
+                if(valueLength > maxTextLength){
+                    maxTextLength = valueLength;
+                }
+            }
+        }
+
+        // Approximate width: average monospace-ish character size + padding.
+        const estimatedWidth = Math.ceil(maxTextLength * 8 + 32);
+        return Math.max(120, Math.min(estimatedWidth, 900));
+    }
+
+    _getLimitedActiveRowData(limit){
+        if(limit <= 0){
+            return [];
+        }
+
+        // Prefer row components for limited preview because it avoids full data cloning.
+        if(typeof this.tabulator.getRows === "function"){
+            const rowComponents = this.tabulator.getRows("active");
+            if(Array.isArray(rowComponents)){
+                const maxRows = Math.min(limit, rowComponents.length);
+                const rows = new Array(maxRows);
+                for(let index = 0; index < maxRows; index++){
+                    const component = rowComponents[index];
+                    rows[index] = typeof component?.getData === "function" ? component.getData() : {};
+                }
+                return rows;
+            }
+        }
+
+        const activeRows = this.tabulator.getData("active");
+        return Array.isArray(activeRows) ? activeRows.slice(0, limit) : [];
+    }
+
+    _rowObjectToValues(sourceRow, fieldnames){
+        const vals = new Array(fieldnames.length);
+        for(let colIndex=0; colIndex<fieldnames.length; colIndex++){
+            const value = sourceRow?.[fieldnames[colIndex]];
+            vals[colIndex] = value === undefined || value === null ? "" : String(value);
+        }
+        return vals;
+    }
+
+    async _ensureColumnsForHeaders(schemaHeaders){
+        const headerToField = {};
+        const existingDefinitions = this.tabulator.getColumnDefinitions();
+        existingDefinitions.forEach((definition) => {
+            if(definition?.title){
+                headerToField[definition.title] = definition.field;
+            }
+        });
+
+        const missingHeaders = [];
+        for(let index = 0; index < schemaHeaders.length; index++){
+            const header = schemaHeaders[index];
+            if(headerToField[header]){
+                continue;
+            }
+            missingHeaders.push(header);
+        }
+
+        if(missingHeaders.length === 0){
+            return headerToField;
+        }
+
+        const nextFieldNumber = this.getNextFieldNumber();
+        const appendedDefinitions = missingHeaders.map((header, index) => {
+            const newColumn = this.getNewCol(header, nextFieldNumber + index);
+            headerToField[header] = newColumn.field;
+            return newColumn;
+        });
+
+        await Promise.resolve(this.tabulator.setColumns([...existingDefinitions, ...appendedDefinitions]));
+        await this._addFieldsToExistingRowsBulk(
+            appendedDefinitions.map((definition) => definition.field),
+            ""
+        );
+
+        return headerToField;
+    }
+
+    async _appendBlankRows(count){
+        if(count <= 0){
+            return;
+        }
+        const newRows = [];
+        for(let index = 0; index < count; index++){
+            newRows.push(this._getBlankRowData());
+        }
+        await Promise.resolve(this.tabulator.addData(newRows, false));
     }
 
     _normaliseId(idOrColumn){
@@ -563,6 +787,152 @@ class GridExtensionTabulator{
             return undefined;
         }
         return Math.max(0, Math.floor(maxRows));
+    }
+
+    _getActiveDataCount(){
+        if(typeof this.tabulator.getDataCount === "function"){
+            const activeCount = this.tabulator.getDataCount("active");
+            if(Number.isFinite(activeCount)){
+                return activeCount;
+            }
+        }
+
+        const activeRows = this.tabulator?.rowManager?.activeRows;
+        if(Array.isArray(activeRows)){
+            return activeRows.length;
+        }
+
+        return undefined;
+    }
+
+    _getActiveRowComponentAt(index){
+        if(index < 0){
+            return undefined;
+        }
+
+        const activeRows = this.tabulator?.rowManager?.activeRows;
+        if(Array.isArray(activeRows) && activeRows[index]){
+            const row = activeRows[index];
+            if(typeof row.getComponent === "function"){
+                return row.getComponent();
+            }
+            return row;
+        }
+
+        if(typeof this.tabulator.getRows === "function"){
+            const activeRowComponents = this.tabulator.getRows("active");
+            if(Array.isArray(activeRowComponents)){
+                return activeRowComponents[index];
+            }
+        }
+
+        return undefined;
+    }
+
+    _getActiveRowComponentsSlice(limit){
+        if(limit <= 0){
+            return [];
+        }
+
+        const activeRows = this.tabulator?.rowManager?.activeRows;
+        if(Array.isArray(activeRows)){
+            return activeRows
+                .slice(0, limit)
+                .map((row) => typeof row?.getComponent === "function" ? row.getComponent() : row)
+                .filter(Boolean);
+        }
+
+        if(typeof this.tabulator.getRows === "function"){
+            const activeRowComponents = this.tabulator.getRows("active");
+            if(Array.isArray(activeRowComponents)){
+                return activeRowComponents.slice(0, limit);
+            }
+        }
+
+        return [];
+    }
+
+    async _addFieldsToExistingRowsBulk(fieldNames, defaultValue){
+        if(!Array.isArray(fieldNames) || fieldNames.length === 0){
+            return;
+        }
+
+        const allData = typeof this.tabulator.getData === "function" ? this.tabulator.getData() : undefined;
+        if(Array.isArray(allData)){
+            for(let rowIndex = 0; rowIndex < allData.length; rowIndex++){
+                const rowData = allData[rowIndex];
+                for(let fieldIndex = 0; fieldIndex < fieldNames.length; fieldIndex++){
+                    rowData[fieldNames[fieldIndex]] = defaultValue;
+                }
+            }
+            this._refreshTableAfterBulkMutation();
+            return;
+        }
+
+        const patchTemplate = {};
+        fieldNames.forEach((fieldName) => {
+            patchTemplate[fieldName] = defaultValue;
+        });
+
+        const rowComponents = typeof this.tabulator.getRows === "function" ? this.tabulator.getRows() : [];
+        if(!Array.isArray(rowComponents) || rowComponents.length === 0){
+            return;
+        }
+
+        const updates = rowComponents.map((rowComponent) => {
+            return Promise.resolve(rowComponent.update({...patchTemplate}));
+        });
+        await Promise.all(updates);
+    }
+
+    _getActiveRowDataAt(index){
+        if(index < 0){
+            return undefined;
+        }
+
+        const activeRows = this.tabulator?.rowManager?.activeRows;
+        if(Array.isArray(activeRows) && activeRows[index]){
+            return activeRows[index]?.data;
+        }
+
+        const activeData = typeof this.tabulator.getData === "function" ? this.tabulator.getData("active") : undefined;
+        if(Array.isArray(activeData)){
+            return activeData[index];
+        }
+
+        return undefined;
+    }
+
+    _getActiveRowDataSlice(limit){
+        if(limit <= 0){
+            return [];
+        }
+
+        const activeRows = this.tabulator?.rowManager?.activeRows;
+        if(Array.isArray(activeRows)){
+            return activeRows
+                .slice(0, limit)
+                .map((row) => row?.data)
+                .filter(Boolean);
+        }
+
+        const activeData = typeof this.tabulator.getData === "function" ? this.tabulator.getData("active") : undefined;
+        if(Array.isArray(activeData)){
+            return activeData.slice(0, limit);
+        }
+
+        return [];
+    }
+
+    _refreshTableAfterBulkMutation(){
+        if(typeof this.tabulator.refreshData === "function"){
+            this.tabulator.refreshData();
+            return;
+        }
+
+        if(typeof this.tabulator.redraw === "function"){
+            this.tabulator.redraw(true);
+        }
     }
 
 }

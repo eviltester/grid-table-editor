@@ -25,13 +25,16 @@ import {Debouncer} from '../utils/debouncer.js';
 import {GridExtension as AgGridExtension} from './data-grid-editor/ag-grid/gridExtension-ag-grid.js';
 import {GridExtension as TabulatorGridExtension} from './data-grid-editor/tabulator/gridExtension-tabulator.js';
 import { SelectFilterEditor} from './data-grid-editor/ag-grid/select-filter-editor.js';
+import { TEST_DATA_MODES, createAmendedTable, createTableFromGenerator, normaliseCount } from './test-data-amend.js';
 
 import { faker } from "https://cdn.skypack.dev/@faker-js/faker@v9.7.0";
-import { GenericDataTable } from "../data_formats/generic-data-table.js";
 
 var debouncer = new Debouncer();
 let importer=undefined;
 let exportControls=undefined;
+let mainGridExtras=undefined;
+let testDataStatusResetTimeoutId = null;
+let activeDefnCellEdit = null;
 
 function getRulesParserFromTextArea(){
 
@@ -48,51 +51,227 @@ function getRulesParserFromTextArea(){
 }
 
 // https://www.npmjs.com/package/randexp
-function generateTestData(){
+async function generateTestData(){
 
 
     debouncer.clear("populateTestDataGrid");
-
-    const desiredRowCount = document.getElementById('generateCount').value;
-
-    const generator = getRulesParserFromTextArea();
-
-    if(!generator.isValid()){
-        console.log(generator.errors());
-        alert(generator.errors().join("\n"));
-        return;
+    syncSchemaTextFromGridBeforeGenerate();
+    const generateButton = document.getElementById("generatedata");
+    setTestDataStatus("Validating schema...", true);
+    if(generateButton){
+        generateButton.disabled = true;
     }
 
-    if(desiredRowCount<0){
-        alert("Enter how many rows to generate.");
-        return;
+    try{
+        const desiredRowCountRaw = document.getElementById('generateCount').value;
+        const desiredRowCountParsed = Number.parseInt(desiredRowCountRaw, 10);
+        const desiredRowCount = normaliseCount(desiredRowCountRaw);
+        const generationMode = getGenerationMode();
+
+        const generator = getRulesParserFromTextArea();
+
+        if(!generator.isValid()){
+            console.log(generator.errors());
+            alert(generator.errors().join("\n"));
+            setTestDataStatus("Schema validation failed.", false);
+            return;
+        }
+
+        if(!Number.isFinite(desiredRowCountParsed) || desiredRowCountParsed < 0){
+            alert("Enter how many rows to generate.");
+            setTestDataStatus("Invalid row count.", false);
+            return;
+        }
+
+        await yieldToUi();
+        setTestDataStatus(generationMode === TEST_DATA_MODES.NEW_TABLE ? "Generating rows..." : "Preparing table amend...", true);
+        await yieldToUi();
+
+        let dataTable;
+        if(generationMode === TEST_DATA_MODES.NEW_TABLE){
+            dataTable = createTableFromGenerator(desiredRowCount, generator);
+        }else{
+            const gridExtras = getMainGridExtras();
+            if(!gridExtras){
+                alert("Grid interface unavailable for amend mode.");
+                setTestDataStatus("Grid interface unavailable.", false);
+                return;
+            }
+
+            const selectedRowIndexes = generationMode === TEST_DATA_MODES.AMEND_SELECTED ?
+                gridExtras.getSelectedRowIndexes() :
+                [];
+
+            // Fast path for Tabulator (and any engine that supports direct amend):
+            // update only targeted rows/columns without full table export/import.
+            if(typeof gridExtras.applyGeneratedSchemaAmend === "function"){
+                setTestDataStatus("Amending rows...", true);
+                await yieldToUi();
+                const directAmendResult = await Promise.resolve(gridExtras.applyGeneratedSchemaAmend({
+                    mode: generationMode,
+                    desiredRowCount,
+                    schemaHeaders: generator.generateHeadersArray(),
+                    generateRow: () => generator.generateRow(),
+                    selectedRowIndexes
+                }));
+
+                if(generationMode === TEST_DATA_MODES.AMEND_SELECTED && directAmendResult?.noSelectedRows){
+                    alert("No rows selected.");
+                    setTestDataStatus("No selected rows to amend.", false);
+                    return;
+                }
+
+                dataTable = null;
+            }else{
+                const currentDataTable = gridExtras.getGridAsGenericDataTable();
+                const amendResult = createAmendedTable({
+                    mode: generationMode,
+                    desiredRowCount,
+                    generator,
+                    currentDataTable,
+                    selectedRowIndexes
+                });
+
+                if(generationMode === TEST_DATA_MODES.AMEND_SELECTED && amendResult.noSelectedRows){
+                    alert("No rows selected.");
+                    setTestDataStatus("No selected rows to amend.", false);
+                    return;
+                }
+
+                dataTable = amendResult.dataTable;
+            }
+        }
+
+        if(dataTable){
+            setTestDataStatus("Applying data to grid...", true);
+            await yieldToUi();
+            await Promise.resolve(importer.setGridFromGenericDataTable(dataTable));
+        }
+
+        const completedModeLabel = generationMode === TEST_DATA_MODES.NEW_TABLE ? "Generate" : "Amend";
+        setTestDataStatus(`${completedModeLabel} complete. Refresh text preview if needed.`, false);
+    }catch(error){
+        console.error("Generate/amend failed", error);
+        setTestDataStatus("Generate failed. Check console for details.", false);
+        alert("Generate failed. Check console for details.");
+    }finally{
+        if(generateButton){
+            generateButton.disabled = false;
+        }
     }
-
-    // TODO : it would lower memory requirements if we did
-    // this in tranches of 100 and appended the transaction as we go
-
-    // todo: a grid backed generic table would render directly into table
-    // add data to table
-    const dataTable = new GenericDataTable();
-    generateDataIntoGenericDataTableFromRules(desiredRowCount, generator, dataTable);
-
-    importer.setGridFromGenericDataTable(dataTable);
-
-    // and refresh the export
-    exportControls.renderTextFromGrid();
-
-    // set the grid to use the rules
-    populateTestDataGridFromRules();
 
 }
 
-function generateDataIntoGenericDataTableFromRules(thisMany, generator, dataTable){
-            
-    dataTable.setHeaders(generator.generateHeadersArray());
-
-    for(var row=0; row<thisMany; row++){
-        dataTable.appendDataRow(generator.generateRow());
+async function refreshTestDataPreview(){
+    if(!exportControls){
+        return;
     }
+    const refreshButton = document.getElementById("refreshtestdatapreview");
+    clearPendingTestDataStatusReset();
+    setTestDataStatus("Refreshing text preview...", true);
+    if(refreshButton){
+        refreshButton.disabled = true;
+    }
+
+    try{
+        await yieldToUi();
+        await Promise.resolve(exportControls.renderTextFromGrid());
+        setTestDataStatus("Text preview refreshed.", false);
+        scheduleTestDataStatusReset();
+    }catch(error){
+        console.error("Failed to refresh text preview", error);
+        setTestDataStatus("Text preview refresh failed. Check console for details.", false);
+    }finally{
+        if(refreshButton){
+            refreshButton.disabled = false;
+        }
+    }
+}
+
+function syncSchemaTextFromGridBeforeGenerate(){
+    // Tabulator keeps editor value in-flight until edit is committed; blur first so
+    // clicking Generate while typing still captures the latest schema values.
+    if(typeof document !== "undefined" && typeof document.activeElement?.blur === "function"){
+        document.activeElement.blur();
+    }
+
+    if(defnGridBridge){
+        convertGridToText();
+    }
+}
+
+function getMainGridExtras(){
+    return mainGridExtras || importer?.gridExtensions;
+}
+
+function getGenerationMode(){
+    const selectedOption = document.querySelector('input[name="testDataGenerationMode"]:checked');
+    if(!selectedOption){
+        return TEST_DATA_MODES.NEW_TABLE;
+    }
+    return selectedOption.value;
+}
+
+function setGenerateCountToCurrentRows(){
+    const gridExtras = getMainGridExtras();
+    if(!gridExtras){
+        return;
+    }
+    document.getElementById("generateCount").value = gridExtras.getRowCount();
+}
+
+function setGenerateCountToSelectedRows(){
+    const gridExtras = getMainGridExtras();
+    if(!gridExtras){
+        return;
+    }
+    document.getElementById("generateCount").value = gridExtras.getSelectedRowIndexes().length;
+}
+
+function applyModeDefaultRowCount(mode){
+    if(mode === TEST_DATA_MODES.AMEND_TABLE){
+        setGenerateCountToCurrentRows();
+        return;
+    }
+    if(mode === TEST_DATA_MODES.AMEND_SELECTED){
+        setGenerateCountToSelectedRows();
+    }
+}
+
+function setTestDataStatus(message, isLoading){
+    const statusElement = document.getElementById("testdata-status");
+    if(!statusElement){
+        return;
+    }
+    statusElement.textContent = message || "";
+    statusElement.style.display = message ? "inline-block" : "none";
+    statusElement.classList.toggle("is-loading", isLoading === true);
+}
+
+function clearPendingTestDataStatusReset(){
+    if(testDataStatusResetTimeoutId === null){
+        return;
+    }
+    clearTimeout(testDataStatusResetTimeoutId);
+    testDataStatusResetTimeoutId = null;
+}
+
+function scheduleTestDataStatusReset(delayMs = 1800){
+    clearPendingTestDataStatusReset();
+    testDataStatusResetTimeoutId = setTimeout(() => {
+        setTestDataStatus("", false);
+        testDataStatusResetTimeoutId = null;
+    }, delayMs);
+}
+
+function yieldToUi(){
+    return new Promise((resolve) => {
+        if(typeof requestAnimationFrame !== "function"){
+            setTimeout(resolve, 0);
+            return;
+        }
+        requestAnimationFrame(() => setTimeout(resolve, 0));
+    });
 }
 
 function createTestDataGrid(){
@@ -395,8 +574,23 @@ function setupTabulatorDefnEditor(tableDiv){
         selectableRows: true,
         movableRows: true,
         columnDefaults: {resizable: true},
+        cellEditing: (cell) => { beginTabulatorDraftTracking(cell); },
         cellEdited: () => { convertGridToText(); },
         rowMoved: () => { convertGridToText(); }
+    });
+
+    tableDiv.addEventListener("focusout", () => {
+        setTimeout(() => {
+            clearTabulatorDraftTracking();
+            convertGridToText();
+        }, 0);
+    });
+
+    tableDiv.addEventListener("change", () => {
+        setTimeout(() => {
+            clearTabulatorDraftTracking();
+            convertGridToText();
+        }, 0);
     });
 
     defnGridExtras = new TabulatorGridExtension(defnGridApi);
@@ -407,8 +601,41 @@ function setupTabulatorDefnEditor(tableDiv){
                 defnGridApi.addData(rows);
             }
         },
-        getRows: () => defnGridApi.getData().map((row) => ({...row}))
+        getRows: () => defnGridApi.getData()
     };
+}
+
+function beginTabulatorDraftTracking(cell){
+    setTimeout(() => {
+        const editorElement = cell?.getElement?.()?.querySelector?.("input, select, textarea");
+        const rowData = cell?.getRow?.()?.getData?.();
+        const field = cell?.getField?.() || cell?.getColumn?.()?.getDefinition?.()?.field;
+        if(!editorElement || !rowData || !field){
+            return;
+        }
+
+        activeDefnCellEdit = {
+            field,
+            rowData,
+            value: editorElement.value ?? ""
+        };
+
+        const pushDraftValueToText = () => {
+            if(activeDefnCellEdit?.rowData !== rowData || activeDefnCellEdit?.field !== field){
+                return;
+            }
+            activeDefnCellEdit.value = editorElement.value ?? "";
+            convertGridToText();
+        };
+
+        editorElement.addEventListener("input", pushDraftValueToText);
+        editorElement.addEventListener("change", pushDraftValueToText);
+        pushDraftValueToText();
+    }, 0);
+}
+
+function clearTabulatorDraftTracking(){
+    activeDefnCellEdit = null;
 }
 
 function convertGridToText(){
@@ -419,25 +646,28 @@ function convertGridToText(){
     let outputText = "";
     let prefix = "";
     defnGridBridge.getRows().forEach((rowData) => {
+        const resolvedRowData = activeDefnCellEdit?.rowData === rowData ?
+            {...rowData, [activeDefnCellEdit.field]: activeDefnCellEdit.value} :
+            rowData;
         outputText = outputText + prefix;
-        outputText = outputText + rowData.columnName + "\n";
+        outputText = outputText + (resolvedRowData.columnName || "") + "\n";
 
-        switch(rowData.type){
+        switch(resolvedRowData.type){
             case "RegEx":
-                outputText = outputText + rowData.value;
+                outputText = outputText + (resolvedRowData.value || "");
                 break;
             // TODO Literal
             default:
-                let dataType = rowData.type;
+                let dataType = resolvedRowData.type || "";
                 if(dataType.startsWith("faker.")){
                     dataType= dataType.replace("faker.","");
                 }
                 if(FAKER_COMMANDS.includes(dataType)){
-                    outputText = outputText + dataType + (rowData.value || "");
+                    outputText = outputText + dataType + (resolvedRowData.value || "");
                 }else{
                     // throw error? ignore? don't know what the command is so it won't parse
                     // ignoring
-                    console.log(`UNKNOWN COMMAND: ${dataType} ${rowData.value}`)
+                    console.log(`UNKNOWN COMMAND: ${dataType} ${resolvedRowData.value}`)
                 }
         }
         prefix="\n";
@@ -447,7 +677,7 @@ function convertGridToText(){
 }
 
 
-function enableTestDataGenerationInterface(parentId, anImporter, theExportControls){
+function enableTestDataGenerationInterface(parentId, anImporter, theExportControls, aGridExtras){
 
 
     // dynamically setup the faker commands from loaded library
@@ -456,11 +686,18 @@ function enableTestDataGenerationInterface(parentId, anImporter, theExportContro
 
     importer = anImporter;
     exportControls = theExportControls;
+    mainGridExtras = aGridExtras;
 
     let parentElem = document.getElementById(parentId);
     parentElem.innerHTML = `
         <div>
-            <button id="generatedata">Generate</button><label> How Many?<input type="number" id="generateCount"/></label>
+            <button id="generatedata">Generate</button>
+            <button id="refreshtestdatapreview">Refresh Text Preview</button>
+            <label> How Many?<input type="number" id="generateCount"/></label>
+            <label><input type="radio" name="testDataGenerationMode" value="${TEST_DATA_MODES.NEW_TABLE}" checked>New Table</label>
+            <label><input type="radio" name="testDataGenerationMode" value="${TEST_DATA_MODES.AMEND_TABLE}">Amend Table</label>
+            <label><input type="radio" name="testDataGenerationMode" value="${TEST_DATA_MODES.AMEND_SELECTED}">Amend Selected</label>
+            <span id="testdata-status" class="import-progress-status" style="display:none;" aria-live="polite"></span>
         </div>
         <div class="defn-edit-zone">
             <div class="defn-grid-container" id="defngrid" class="ag-theme-alpine">
@@ -474,6 +711,19 @@ function enableTestDataGenerationInterface(parentId, anImporter, theExportContro
 
     var element = document.querySelector("#generatedata");
     element.addEventListener('click', generateTestData, false);
+    document.querySelector("#refreshtestdatapreview").addEventListener("click", refreshTestDataPreview, false);
+
+    const generateCountInput = document.getElementById("generateCount");
+    generateCountInput.value = "1";
+
+    parentElem.querySelectorAll('input[name="testDataGenerationMode"]').forEach((modeRadio) => {
+        modeRadio.addEventListener("change", () => {
+            if(!modeRadio.checked){
+                return;
+            }
+            applyModeDefaultRowCount(modeRadio.value);
+        });
+    });
 
     createTestDataGrid();
 

@@ -1,32 +1,30 @@
-import {JsonOptionsPanel} from './options-json-panel.js';
+import { JsonOptionsPanel } from './options-json-panel.js';
 
-class JavascriptOptionsPanel{
+class JavascriptOptionsPanel {
+  constructor(parentElement) {
+    this.parent = parentElement;
+    this.panel = new JsonOptionsPanel(parentElement, 'javascript-options');
+  }
 
-    constructor(parentElement) {
-        this.parent = parentElement;
-        this.panel = new JsonOptionsPanel(parentElement, "javascript-options");
-    }
+  addToGui() {
+    this.panel.addToGui();
+  }
 
-    addToGui(){
-        this.panel.addToGui();
-    }
+  setApplyCallback(callbackFunc) {
+    this.panel.setApplyCallback(
+      function () {
+        callbackFunc(this.getOptionsFromGui());
+      }.bind(this)
+    );
+  }
 
-    setApplyCallback(callbackFunc){
-        this.panel.setApplyCallback( function (){
-          callbackFunc(this.getOptionsFromGui())
-      }.bind(this));
+  getOptionsFromGui() {
+    return this.panel.getOptionsFromGui();
+  }
 
-    }
-
-
-    getOptionsFromGui(){
-      return this.panel.getOptionsFromGui();
-    }
-
-    setFromOptions(mainOptions){
-      this.panel.setFromOptions(mainOptions);
-    }
-
+  setFromOptions(mainOptions) {
+    this.panel.setFromOptions(mainOptions);
+  }
 }
 
-export {JavascriptOptionsPanel};
+export { JavascriptOptionsPanel };

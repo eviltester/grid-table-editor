@@ -1,17 +1,15 @@
-import { MarkdownOptions } from "../../data_formats/markdown-convertor.js";
-import {getNumberArrayFrom} from "../../utils/number-convertor.js";
-import {HtmlDataValues} from "./html-options-data-utils.js";
+import { MarkdownOptions } from '../../data_formats/markdown-convertor.js';
+import { getNumberArrayFrom } from '../../utils/number-convertor.js';
+import { HtmlDataValues } from './html-options-data-utils.js';
 
-class MarkdownOptionsPanel{
+class MarkdownOptionsPanel {
+  constructor(parentElement) {
+    this.parent = parentElement;
+    this.htmlData = new HtmlDataValues(this.parent);
+  }
 
-    constructor(parentElement) {
-        this.parent = parentElement;
-        this.htmlData = new HtmlDataValues(this.parent);
-    }
-
-    addToGui(){
-        this.parent.innerHTML =
-        `
+  addToGui() {
+    this.parent.innerHTML = `
         <div class="markdown-options" style="width:100%">
           <div><p><strong>Options</strong> <span data-help="markdown-table-options" class="helpicon"></span></p></div>
 
@@ -106,69 +104,86 @@ class MarkdownOptionsPanel{
       
         </div>
         `;
-    }
+  }
 
-    setApplyCallback(callbackFunc){
+  setApplyCallback(callbackFunc) {
+    let button = this.parent.querySelector('.markdown-options .apply button');
+    button.onclick = function () {
+      callbackFunc(this.getOptionsFromGui());
+    }.bind(this);
+  }
 
-      let button = this.parent.querySelector(".markdown-options .apply button");
-      button.onclick = function (){
-          callbackFunc(this.getOptionsFromGui())
-      }.bind(this);
+  getOptionsFromGui() {
+    let options = new MarkdownOptions();
 
-    }
+    let newOptions = {};
+    newOptions.options = {};
+    newOptions.options.spacePadding = this.htmlData.getSelectedValueFrom(
+      '.markdown-options div.spacepadding label select',
+      'none'
+    );
+    newOptions.options.tabPadding = this.htmlData.getSelectedValueFrom(
+      '.markdown-options div.tabpadding label select',
+      'none'
+    );
 
-    getOptionsFromGui(){
+    newOptions.options.borderBars = this.htmlData.getCheckBoxValueFrom('.markdown-options .borderbars label input');
+    newOptions.options.emboldenHeaders = this.htmlData.getCheckBoxValueFrom(
+      '.markdown-options .emboldenheaders label input'
+    );
+    newOptions.options.emphasisHeaders = this.htmlData.getCheckBoxValueFrom(
+      '.markdown-options .emphasisheaders label input'
+    );
+    newOptions.options.prettyPrint = this.htmlData.getCheckBoxValueFrom('.markdown-options .prettyprint label input');
 
-      let options = new MarkdownOptions();
+    newOptions.options.globalColumnAlign = this.htmlData.getSelectedValueFrom(
+      '.markdown-options div.globalcolumnalign label select',
+      'default'
+    );
 
-      let newOptions = {};
-      newOptions.options = {};
-      newOptions.options.spacePadding = this.htmlData.getSelectedValueFrom(".markdown-options div.spacepadding label select", "none");
-      newOptions.options.tabPadding = this.htmlData.getSelectedValueFrom(".markdown-options div.tabpadding label select", "none");
+    newOptions.options.emboldenColumns = getNumberArrayFrom(
+      this.parent.querySelector('.markdown-options .emboldencolumns label input').value
+    );
 
-      newOptions.options.borderBars = this.htmlData.getCheckBoxValueFrom(".markdown-options .borderbars label input");
-      newOptions.options.emboldenHeaders = this.htmlData.getCheckBoxValueFrom(".markdown-options .emboldenheaders label input");
-      newOptions.options.emphasisHeaders = this.htmlData.getCheckBoxValueFrom(".markdown-options .emphasisheaders label input");
-      newOptions.options.prettyPrint = this.htmlData.getCheckBoxValueFrom(".markdown-options .prettyprint label input");
+    newOptions.options.emphasisColumns = getNumberArrayFrom(
+      this.parent.querySelector('.markdown-options .emphasiscolumns label input').value
+    );
 
-      newOptions.options.globalColumnAlign = this.htmlData.getSelectedValueFrom(".markdown-options div.globalcolumnalign label select", "default");
+    options.mergeOptions(newOptions);
+    return options;
+  }
 
-      newOptions.options.emboldenColumns = getNumberArrayFrom(
-        this.parent.querySelector(".markdown-options .emboldencolumns label input").value,
-      );
+  setFromOptions(markdownOptions) {
+    let options = markdownOptions?.options ? markdownOptions.options : {};
 
-      newOptions.options.emphasisColumns = getNumberArrayFrom(
-        this.parent.querySelector(".markdown-options .emphasiscolumns label input").value,
-      );
+    this.htmlData.setCheckBoxFrom('.markdown-options .borderbars label input', options?.borderBars, true);
+    this.htmlData.setCheckBoxFrom('.markdown-options .emboldenheaders label input', options?.emboldenHeaders, false);
+    this.htmlData.setCheckBoxFrom('.markdown-options .emphasisheaders label input', options?.emphasisHeaders, false);
 
-      options.mergeOptions(newOptions);
-      return options;
+    this.htmlData.setDropDownOptionToKeyValue(
+      '.markdown-options div.spacepadding label select',
+      options?.spacePadding,
+      'none'
+    );
+    this.htmlData.setDropDownOptionToKeyValue(
+      '.markdown-options div.tabpadding label select',
+      options?.tabPadding,
+      'none'
+    );
+    this.htmlData.setDropDownOptionToKeyValue(
+      '.markdown-options div.globalcolumnalign label select',
+      options?.globalColumnAlign,
+      'default'
+    );
 
-    }
+    let values = options?.emboldenColumns?.join(' ');
+    this.htmlData.setTextFieldToValue('.markdown-options .emboldencolumns label input', values);
 
+    values = options?.emphasisColumns?.join(' ');
+    this.htmlData.setTextFieldToValue('.markdown-options .emphasiscolumns label input', values);
 
-    setFromOptions(markdownOptions){
-
-      let options = markdownOptions?.options ? markdownOptions.options : {};
-
-      this.htmlData.setCheckBoxFrom(".markdown-options .borderbars label input", options?.borderBars, true);
-      this.htmlData.setCheckBoxFrom(".markdown-options .emboldenheaders label input", options?.emboldenHeaders, false);
-      this.htmlData.setCheckBoxFrom(".markdown-options .emphasisheaders label input", options?.emphasisHeaders, false);
-
-      this.htmlData.setDropDownOptionToKeyValue(".markdown-options div.spacepadding label select", options?.spacePadding, "none");
-      this.htmlData.setDropDownOptionToKeyValue(".markdown-options div.tabpadding label select", options?.tabPadding, "none");
-      this.htmlData.setDropDownOptionToKeyValue(".markdown-options div.globalcolumnalign label select", options?.globalColumnAlign, "default");
-
-      let values = options?.emboldenColumns?.join(" ");
-      this.htmlData.setTextFieldToValue(".markdown-options .emboldencolumns label input", values);
-
-      values = options?.emphasisColumns?.join(" ");
-      this.htmlData.setTextFieldToValue(".markdown-options .emphasiscolumns label input", values);
-
-      this.htmlData.setCheckBoxFrom(".markdown-options .prettyprint label input", options?.prettyPrint, false);
-
-    }
-
+    this.htmlData.setCheckBoxFrom('.markdown-options .prettyprint label input', options?.prettyPrint, false);
+  }
 }
 
-export {MarkdownOptionsPanel};
+export { MarkdownOptionsPanel };

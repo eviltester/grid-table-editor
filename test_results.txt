@@ -1,0 +1,956 @@
+
+> grid-table-editor@1.0.0 testverbose
+> jest --verbose
+
+PASS tests/data_generation/unit/faker/fakerCommand.test.js
+  Can parse, compile, validate and execute Faker commands
+    can parse commands
+      ΓêÜ can parse commands without faker prefix (3 ms)
+      ΓêÜ can parse commands without arguments (1 ms)
+      ΓêÜ can parse commands which are prefixed with faker
+      ΓêÜ can identify syntax error empty command
+      ΓêÜ can identify syntax error faker commands have two parts
+    Can compile commands to get more detailed validation errors
+      ΓêÜ can identify commands that do not exist (1 ms)
+      ΓêÜ can identify modules that do not exist (1 ms)
+      ΓêÜ will report invalid parts that are not valid (1 ms)
+      ΓêÜ will fail when extra separators e.g. person..fullName (1 ms)
+    Can validate to identify execution errors
+      ΓêÜ can identify commands that do not exist (1 ms)
+      ΓêÜ can retreive validation from command (1 ms)
+    Can execute and generate data
+      ΓêÜ can generate data using faker (2 ms)
+
+PASS tests/utils/test-data-amend.test.js
+  test-data amend behavior
+    ΓêÜ new table mode generates exact row count (8 ms)
+    ΓêÜ amend table updates schema columns, preserves others, and appends rows when needed (5 ms)
+    ΓêÜ amend selected updates only selected rows up to desired count (1 ms)
+    ΓêÜ amend selected with no rows selected is a no-op flag
+
+  console.log
+    rename column column1 with this name: Renamed
+
+      at GuardedColumnEdits.log [as renameColId] (js/grid/guarded-column-edits.js:13:15)
+
+  console.log
+    rename column column1 with this name: Renamed
+
+      at GuardedColumnEdits.log [as renameColId] (js/grid/guarded-column-edits.js:13:15)
+
+  console.log
+    duplicate a column with this name: Copy
+
+      at GuardedColumnEdits.log [as duplicateColumnId] (js/grid/guarded-column-edits.js:43:15)
+
+  console.log
+    create a new neighbour column with this name: Neighbour
+
+      at GuardedColumnEdits.log [as addNeighbourColumnId] (js/grid/guarded-column-edits.js:60:15)
+
+  console.log
+    rename column Old Name with this name: Renamed
+
+      at GuardedTabulatorColumnEdits.log [as renameColumn] (js/gui_components/data-grid-editor/tabulator/guarded-tabulator-column-edits.js:17:15)
+
+  console.log
+    rename column Old Name with this name: Renamed
+
+      at GuardedTabulatorColumnEdits.log [as renameColumn] (js/gui_components/data-grid-editor/tabulator/guarded-tabulator-column-edits.js:17:15)
+
+  console.log
+    duplicate a column with this name: Copy
+
+      at GuardedTabulatorColumnEdits.log [as duplicateColumn] (js/gui_components/data-grid-editor/tabulator/guarded-tabulator-column-edits.js:50:15)
+
+  console.log
+    create a new neighbour column with this name: Neighbour
+
+      at GuardedTabulatorColumnEdits.log [as addNeighbourColumn] (js/gui_components/data-grid-editor/tabulator/guarded-tabulator-column-edits.js:72:15)
+
+PASS tests/grid/guarded-column-edits.test.js
+  GuardedColumnEdits (AG abstraction)
+    ΓêÜ rename validates and delegates (86 ms)
+    ΓêÜ delete prevents removing last column and requires confirm (3 ms)
+    ΓêÜ duplicate and add-neighbour validate names (4 ms)
+  GuardedTabulatorColumnEdits
+    ΓêÜ rename validates column existence and uniqueness (6 ms)
+    ΓêÜ delete validates constraints and confirmation (1 ms)
+    ΓêÜ duplicate and add-neighbour prompt-driven actions delegate (4 ms)
+
+PASS tests/grid/exporter.test.js
+  Exporter direct table conversion
+    ΓêÜ getDataTableAs(csv) matches grid-based output (6 ms)
+    ΓêÜ getDataTableAs(json) matches grid-based output (1 ms)
+    ΓêÜ getDataTableAs(markdown) matches grid-based output (2 ms)
+
+PASS tests/data_formats/json-convertor.test.js
+  Can use options to configure json output
+    ΓêÜ can create json table from default config (2 ms)
+    ΓêÜ can create json table using space delimiter
+    ΓêÜ can create json table using string delimiter (1 ms)
+    ΓêÜ can create json table using numeric delimiter
+    ΓêÜ can create json table minified (1 ms)
+    ΓêÜ can create json object from default config
+    ΓêÜ can create json object with custom property
+    ΓêÜ can supply a header name converter intended for javascript naming (1 ms)
+    ΓêÜ can create json table using numbers
+    Can convert from json to data table
+      ΓêÜ can convert json with default asObject property to data table (1 ms)
+      ΓêÜ can convert json with default asObject property to data table (1 ms)
+      ΓêÜ can convert json with custom property to data table
+      ΓêÜ can convert json with custom property spaced to data table
+
+PASS tests/utils/debouncer.test.js
+  Debouncer will call a function after a delay
+    ΓêÜ will only call debouncer once (218 ms)
+    ΓêÜ can clear debounce and it will not fire (214 ms)
+
+PASS tests/data_formats/gherkin-convertor.test.js
+  can get values from a markdown table row
+    ΓêÜ even if malformed with no start (1 ms)
+    ΓêÜ even if malformed with no end (1 ms)
+    ΓêÜ even if malformed with no start or end
+    ΓêÜ surrounding spaces are ignored
+    ΓêÜ spaces in a cell are significant
+    ΓêÜ blank values are processed (1 ms)
+  Can convert markdown tables to data suitable for a data grid
+    ΓêÜ can convert a simple 2x3 table (1 ms)
+    ΓêÜ can handle embedded bars (1 ms)
+    ΓêÜ empty table returns empty array (2 ms)
+    ΓêÜ skips empty rows at start (1 ms)
+    ΓêÜ skips empty rows at end (4 ms)
+    ΓêÜ terminate processing if empty rows in middle (1 ms)
+    ΓêÜ handle new line formats (1 ms)
+    ΓêÜ handle empty column on left
+    Can convert generic data grids to gherkin tables
+      ΓêÜ can convert a simple 2x3 table to gherkin table (1 ms)
+      ΓêÜ can a table and escape bars
+  can pad cells
+    ΓêÜ pad a cell
+  can apply options to Gherkin Table Generation
+    ΓêÜ can hide headings (1 ms)
+    ΓêÜ can indent table from left
+    ΓêÜ can pad in cell on left (1 ms)
+    ΓêÜ can pad in cell on both sides
+    ΓêÜ can pad in cell on right sides
+    ΓêÜ can pretty print table
+    ΓêÜ can pretty print table with row cell length mix
+    ΓêÜ can combine formatting options (1 ms)
+
+PASS tests/data_formats/generic-data-table-utils.test.js
+  Can convert an array where headers are first array format to Generic Data Table
+    ΓêÜ convert a table with header and rows (3 ms)
+    ΓêÜ undefined leaves data grid alone (1 ms)
+    ΓêÜ null clears data grid (1 ms)
+  Can create Generic Data Table from Array of Javascript Objects
+    ΓêÜ undefined does nothing
+    ΓêÜ null does nothing (1 ms)
+    ΓêÜ empty array does nothing
+    ΓêÜ array with one object with one property creates table with header and one row of data with one cell
+    ΓêÜ array with one object creates table with headers and one row of data (1 ms)
+    ΓêÜ array with multiple objects with same keys, fills rows and headers (1 ms)
+    ΓêÜ array with properties in different order still works (1 ms)
+
+PASS tests/data_formats/markdown-convertor.test.js
+  can get values from a markdown table cell
+    ΓêÜ cell contents are trimmed (2 ms)
+    ΓêÜ escape bars are transformed
+    ΓêÜ emphasis markdown: normalise inline emphasis - `word _emphasised_ inline` to `word emphasised inline`
+    ΓêÜ emphasis markdown: normalise inline emphasis start - `_emphasised_ at start` to `emphasised at start`
+    ΓêÜ emphasis markdown: normalise inline emphasis end - `at end _emphasised_` to `at end emphasised` (1 ms)
+    ΓêÜ emphasis markdown: normalise only emphasis - `_emphasised_` to `emphasised`
+    ΓêÜ emphasis markdown: padded emphasis - `  _emphasised_  ` to `emphasised` (1 ms)
+    ΓêÜ emphasis markdown: incomplete emphasis - `  _emphasis  ` to `_emphasis`
+    ΓêÜ emphasis markdown: not started emphasis - ` emphasis_  ` to `emphasis_` (1 ms)
+    ΓêÜ emphasis markdown: not emphasis - ` _ emphasis_  ` to `_ emphasis_`
+    ΓêÜ emphasis markdown: not emphasis either - `  _emphasis _  ` to `_emphasis _` (1 ms)
+    ΓêÜ emphasis markdown: not emphasis without contents - ` __ test  ` to `__ test`
+    ΓêÜ emphasis markdown: normalise inline bold - `word **bold** inline` to `word bold inline`
+    ΓêÜ emphasis markdown: normalise inline bold start - `**bold** at start` to `bold at start`
+    ΓêÜ emphasis markdown: normalise inline bold end - `at end **bold**` to `at end bold` (1 ms)
+    ΓêÜ emphasis markdown: normalise only bold - `**bold**` to `bold`
+    ΓêÜ emphasis markdown: padded bold - `  **bold**  ` to `bold`
+    ΓêÜ emphasis markdown: incomplete bold - `  **bold  ` to `**bold` (1 ms)
+    ΓêÜ emphasis markdown: not started bold - `  bold**  ` to `bold**` (1 ms)
+    ΓêÜ emphasis markdown: not bold - `  ** bold**  ` to `** bold**`
+    ΓêÜ emphasis markdown: not bold either - `  **bold **  ` to `**bold **`
+    ΓêÜ emphasis markdown: not bold without contents - `  ****  ` to `****`
+  can get values from a markdown table row
+    ΓêÜ even if malformed with no start (1 ms)
+    ΓêÜ even if malformed with no end (1 ms)
+    ΓêÜ even if malformed with no start or end
+    ΓêÜ surrounding spaces are ignored (1 ms)
+    ΓêÜ spaces in a cell are significant (1 ms)
+  a valid header is a minimum of |---|---| but we also support :
+    ΓêÜ when only - it fails (1 ms)
+    ΓêÜ when only -- it fails (1 ms)
+    ΓêÜ when empty it fails
+    ΓêÜ when very empty it fails
+    ΓêÜ when only - single column (1 ms)
+    ΓêÜ when ---  it passes
+    ΓêÜ when missing start bar - it fails
+    ΓêÜ when missing end bar - it fails
+    ΓêÜ when missing start and end bars - it fails
+    ΓêÜ when mix of valid  it passes
+    ΓêÜ in theory there is npt a limit to length
+    ΓêÜ preceding and trailing spaces are ignored
+    ΓêÜ alignment values are allowed (1 ms)
+    ΓêÜ alignment values are validated
+  Can convert markdown tables to data suitable for a data grid
+    ΓêÜ can convert a simple 2x3 table (1 ms)
+    ΓêÜ can handle embedded bars
+    ΓêÜ empty table returns empty array (1 ms)
+    ΓêÜ skips empty rows at start
+    ΓêÜ skips empty rows at end
+    ΓêÜ terminate processing if empty rows in middle (1 ms)
+    ΓêÜ table should have 3 or more - 1 is not valid
+    ΓêÜ handle new line formats (1 ms)
+    ΓêÜ handle empty column on left (1 ms)
+    ΓêÜ can center a pretty printed 
+    ΓêÜ can right align a pretty printed 
+    Can convert generic data grids to markdown tables
+      ΓêÜ can convert a simple 2x3 table to markdown table
+      ΓêÜ convert a table and escape bars (1 ms)
+    Can use options to configure output of markdown
+      ΓêÜ can create markdown table without borders
+      ΓêÜ can create markdown table with emboldened headers (1 ms)
+      ΓêÜ can create markdown table with emphasised headers
+      ΓêÜ can create markdown table with space padding to left
+      ΓêÜ can create markdown table with space padding to right (1 ms)
+      ΓêÜ can create markdown table with space padding to left and right
+      ΓêÜ can create markdown table with tab padding to left
+      ΓêÜ can create markdown table with tab padding to left and right
+      ΓêÜ can create markdown table with tab padding to right
+      ΓêÜ can create markdown table with emboldend columns (1 ms)
+      ΓêÜ can create markdown table with ephasised columns
+      ΓêÜ can align columns at global level by default nothing happens (1 ms)
+      ΓêÜ can align columns at global level to left align
+      ΓêÜ can align columns at global level to right align
+      ΓêÜ can align columns at global level to center align
+      ΓêÜ can pretty print a table
+
+PASS tests/data_generation/unit/testDataRules.test.js
+  TestDataRule is the simple type that underpins the rule processing
+    ΓêÜ can instantiate a TestDataRule with just a name (1 ms)
+    ΓêÜ can instantiate a TestDataRule with a rule too
+    ΓêÜ can instantiate a TestDataRule with an empty constructor but it will not help much (1 ms)
+
+PASS tests/utils/grid-engine.test.js
+  Grid engine selection
+    ΓêÜ normalises expected aliases (1 ms)
+    ΓêÜ prefers explicit engine over other sources
+    ΓêÜ uses query parameter when explicit value absent (1 ms)
+    ΓêÜ falls back to tabulator by default
+
+PASS tests/data_generation/unit/faker/parsingUtils.test.js
+  removeStartAndEnd is a function to help with parsing
+    ΓêÜ can find content in single quotes (1 ms)
+    ΓêÜ leave alone if not fully matching
+    ΓêÜ only removes the first and last character
+
+PASS tests/data_formats/papa-parse.test.js
+  Check papa parse can meet multi char delimiter requirements
+    ΓêÜ basic one char example to check it all works (6 ms)
+    ΓêÜ ,space as simple delimiter
+    ΓêÜ ,space as simple delmiter with multi line input
+    ΓêÜ ,space as delimiter and experiment with options (1 ms)
+    ΓêÜ string as arbitrary delimiter (1 ms)
+
+PASS tests/data_formats/delimiter-convertor.test.js
+  Can test stuff
+    ΓêÜ can assert stuff (1 ms)
+
+PASS tests/data_formats/generic-data-table.test.js
+  Can create Generic Data Table from scratch
+    ΓêÜ create empty table (1 ms)
+    ΓêÜ can add headers (1 ms)
+    ΓêÜ can add headers in bulk (1 ms)
+    ΓêÜ can get headers in bulk
+    ΓêÜ can get rows as objects (1 ms)
+    ΓêÜ can clear table
+
+PASS tests/data_formats/javascript-convertor.test.js
+  Can convert to javascript output
+    ΓêÜ can create javascript from default config (2 ms)
+    ΓêÜ can create javascript table using space delimiter
+    ΓêÜ can create javascript table using string delimiter (1 ms)
+    ΓêÜ can create javas table using numeric delimiter
+    ΓêÜ can create javascript table minified
+    ΓêÜ can create javascript object from default config (1 ms)
+    ΓêÜ can create javascript object with custom property
+    ΓêÜ can create javascript using numbers (1 ms)
+    Can convert from javascript to data table
+      ΓêÜ can convert javascript with default asObject property to data table (1 ms)
+      ΓêÜ can convert javascript with custom property to data table
+
+PASS tests/data_generation/unit/faker/fakerTestDataRuleValidator.test.js
+  Can validate Faker TestDataRules using FakerTestDataRuleValidator
+    ΓêÜ can determine a invalid Faker TestDataRule (4 ms)
+    ΓêÜ can determine a invalid Faker TestDataRule does not match faker call
+    ΓêÜ can determine a syntax error for Faker TestDataRule (1 ms)
+    ΓêÜ will not process empty Faker TestDataRule (1 ms)
+
+PASS tests/data_generation/unit/faker/fakerTestDataGenerator.test.js
+  Can generate Random Data using Faker
+    Valid rules generate data
+      ΓêÜ can generate from simple direct faker api command (7 ms)
+      ΓêÜ can generate with a faker api that is a function with arguments (1 ms)
+      ΓêÜ can generate with a function which is prefixed with faker
+      ΓêÜ can use mustache helper with functions
+    Invalid rules generate error response
+      ΓêÜ can determine a invalid TestDataRule
+
+PASS tests/data_generation/unit/rulesParser.test.js
+  RulesParser parses a block of text to return a collection of rules
+    ΓêÜ can parse a valid two line string into rules (5 ms)
+
+PASS tests/data_generation/generateDataFromMultiLineSpec.test.js
+  TestDataGenerator meets Acceptance Criteria
+    TestDataGenerator can parse a block of text to return a collection of rules
+      ΓêÜ can parse a valid two line string into faker rule (7 ms)
+      ΓêÜ can parse a valid two line spec and identify Regex rule (3 ms)
+      ΓêÜ can have a spec with empty value for column (1 ms)
+      ΓêÜ can parse multi-column spec with faker, regex and literal (3 ms)
+    TestDataGenerator can generate data from a spec
+      ΓêÜ can generate data from a faker rule (3 ms)
+      ΓêÜ can generate data from a Regex rule (1 ms)
+      ΓêÜ can generate a field with empty string data (1 ms)
+      ΓêÜ can generate data from a multi-column spec with faker, regex and literal (4 ms)
+    TestDataGenerator parsing detects errors in spec
+      ΓêÜ can identify empty file (1 ms)
+      ΓêÜ can identify malformed file (1 ms)
+      ΓêÜ can identify Rule with a missing definition (3 ms)
+      ΓêÜ can identify Rule with a missing name (1 ms)
+
+PASS tests/utils/number-converter.test.js
+  Can convert string with list of numbers to numbers
+    ΓêÜ will return empty array when blank (8 ms)
+    ΓêÜ will ignore non number symbols (1 ms)
+    ΓêÜ will find buried numbers (1 ms)
+    ΓêÜ can handle csv (2 ms)
+    ΓêÜ can handle mixed delims (1 ms)
+
+  console.log
+    Sentence
+    helpers.mustache('I found {{count}} instances of "{{word}}".', {count: () => `${this.number.int()}`,word: "this word",})
+
+      at Object.log (tests/data_generation/generateDataFromFakerSpec.test.js:74:15)
+
+PASS tests/data_generation/generateDataFromFakerSpec.test.js
+  TestDataGenerator handles Faker API
+    TestDataGenerator can parse a block of helper faker rules
+      ΓêÜ can parse a helper command into faker rule (7 ms)
+      ΓêÜ adding faker at the start is optional when parsing a faker command into faker rule (1 ms)
+      ΓêÜ can parse a helper.fake command into faker rule (2 ms)
+      ΓêÜ can parse a helper.mustache command into faker rule (77 ms)
+      ΓêÜ should be a valid helper faker rule [helpers.arrayElement(['cat', 'dog', 'mouse'])] (5 ms)
+      ΓêÜ should be a valid helper faker rule [faker.helpers.arrayElements(['cat', 'dog', 'mouse'])] (3 ms)
+      ΓêÜ should be a valid helper faker rule [helpers.arrayElements(['cat', 'dog', 'mouse'])] (1 ms)
+      ΓêÜ should be a valid helper faker rule [helpers.fake('Hi, my name is {{person.firstName}} {{person.lastName}}!')] (1 ms)
+      ΓêÜ should be a valid helper faker rule [helpers.fromRegExp('[a-d0-6]{2,8}')] (2 ms)
+      ΓêÜ should be a valid helper faker rule [helpers.fromRegExp(/bee+p/)] (1 ms)
+      ΓêÜ should be a valid helper faker rule [helpers.maybe(() => 'Hello World!', { probability: 0.9 }) ?? "default"] (1 ms)
+      ΓêÜ should be a valid helper faker rule [helpers.multiple(() => this.person.firstName())] (1 ms)
+      ΓêÜ should be a valid helper faker rule [helpers.mustache('I found {{count}} instances of "{{word}}".', {count: () => `${this.number.int()}`,word: "this word",})] (1 ms)
+      ΓêÜ should be a valid helper faker rule [helpers.mustache('{{ex}}, A {{adj}} {{noun}}.', {ex: `${this.word.interjection()}`, adj: `${this.word.adjective()}`, noun: `${this.word.noun()}`})] (1 ms)
+      ΓêÜ should be a valid helper faker rule [helpers.rangeToNumber({ min: 1, max: 10 })] (1 ms)
+      ΓêÜ should be a valid helper faker rule [helpers.replaceCreditCardSymbols()] (2 ms)
+      ΓêÜ should be a valid helper faker rule [helpers.replaceCreditCardSymbols('1234-[4-9]-##!!-L')] (1 ms)
+      ΓêÜ should be a valid helper faker rule [helpers.replaceSymbols('Your pin is: #?*#?*')] (1 ms)
+      ΓêÜ should be a valid helper faker rule [helpers.shuffle(['a', 'b', 'c'], { inplace: true })]
+      ΓêÜ should be a valid helper faker rule [helpers.slugify("Hello world!")] (1 ms)
+      ΓêÜ should be a valid helper faker rule [helpers.uniqueArray(this.word.sample, 3)] (2 ms)
+      ΓêÜ should be a valid helper faker rule [helpers.weightedArrayElement([{ weight: 5, value: 'sunny' }, { weight: 4, value: 'rainy' }, { weight: 1, value: 'snowy' }])]
+
+  console.log
+    create a new neighbour column with this name: Neighbour
+
+      at GuardedColumnEdits.log [as addNeighbourColumnId] (js/grid/guarded-column-edits.js:60:15)
+
+  console.log
+    rename column column2 with this name: Renamed First
+
+      at GuardedColumnEdits.log [as renameColId] (js/grid/guarded-column-edits.js:13:15)
+
+  console.log
+    duplicate a column with this name: Second Copy
+
+      at GuardedColumnEdits.log [as duplicateColumnId] (js/grid/guarded-column-edits.js:43:15)
+
+  console.log
+    create a new neighbour column with this name: Neighbour
+
+      at GuardedColumnEdits.log [as addNeighbourColumnId] (js/grid/guarded-column-edits.js:60:15)
+
+  console.log
+    rename column column1 with this name: Renamed First
+
+      at GuardedColumnEdits.log [as renameColId] (js/grid/guarded-column-edits.js:13:15)
+
+  console.log
+    duplicate a column with this name: Second Copy
+
+      at GuardedColumnEdits.log [as duplicateColumnId] (js/grid/guarded-column-edits.js:43:15)
+
+PASS tests/grid/grid-extension-parity.test.js
+  AG Grid extension parity contract
+    ΓêÜ clearGrid resets to a single default column (38 ms)
+    ΓêÜ filter API can set and clear text filters (17 ms)
+    ΓêÜ createColumns creates titled fields and name lookup works (18 ms)
+    ΓêÜ addRow adds a blank row with all fields (32 ms)
+    ΓêÜ addRowsRelativeToSelection inserts one row per selected row (32 ms)
+    ΓêÜ addRowsRelativeToSelection supports no-selection add above and below (23 ms)
+    ΓêÜ deleteSelectedRows removes selected rows (33 ms)
+    ΓêÜ column operations match expected behavior (93 ms)
+    ΓêÜ duplicate column copies underlying row values (30 ms)
+    ΓêÜ add neighbour with blank title is a no-op (18 ms)
+    ΓêÜ setGridFromGenericDataTable and export preserve headers and rows (9 ms)
+    ΓêÜ getNextFieldNumber increments from highest numeric suffix (14 ms)
+    ΓêÜ selection and column counts are reported (16 ms)
+  Tabulator extension parity contract
+    ΓêÜ clearGrid resets to a single default column (16 ms)
+    ΓêÜ filter API can set and clear text filters (15 ms)
+    ΓêÜ createColumns creates titled fields and name lookup works (16 ms)
+    ΓêÜ addRow adds a blank row with all fields (30 ms)
+    ΓêÜ addRowsRelativeToSelection inserts one row per selected row (22 ms)
+    ΓêÜ addRowsRelativeToSelection supports no-selection add above and below (43 ms)
+    ΓêÜ deleteSelectedRows removes selected rows (32 ms)
+    ΓêÜ column operations match expected behavior (107 ms)
+    ΓêÜ duplicate column copies underlying row values (14 ms)
+    ΓêÜ add neighbour with blank title is a no-op (31 ms)
+    ΓêÜ setGridFromGenericDataTable and export preserve headers and rows (17 ms)
+    ΓêÜ getNextFieldNumber increments from highest numeric suffix (15 ms)
+    ΓêÜ selection and column counts are reported (19 ms)
+  Shared grid interface contract (both implementations)
+    ΓêÜ ag-grid exposes shared interface methods (2 ms)
+    ΓêÜ tabulator exposes shared interface methods (1 ms)
+    ΓêÜ import/export round trip for markdown matches between implementations (55 ms)
+    ΓêÜ import/export round trip for csv matches between implementations (61 ms)
+    ΓêÜ import/export round trip for json matches between implementations (62 ms)
+    ΓêÜ ag-grid supports AG-style guarded id operations through shared interface (171 ms)
+    ΓêÜ tabulator supports AG-style guarded id operations through shared interface (63 ms)
+    ΓêÜ ag-grid exposes row count and selected indexes for test-data amend modes (32 ms)
+    ΓêÜ tabulator exposes row count and selected indexes for test-data amend modes (14 ms)
+    ΓêÜ ag-grid applies direct schema amend without replacing untouched columns (31 ms)
+    ΓêÜ tabulator applies direct schema amend without replacing untouched columns (30 ms)
+
+  console.log
+    rename column column1 with this name: Instructions
+
+      at GuardedColumnEdits.log [as renameColId] (js/grid/guarded-column-edits.js:13:15)
+
+  console.log
+    create a new neighbour column with this name: Added
+
+      at GuardedColumnEdits.log [as addNeighbourColumnId] (js/grid/guarded-column-edits.js:60:15)
+
+FAIL tests/grid/tabulator-main-display-grid.test.js
+  Tabulator main display grid
+    ΓêÜ uses non-auto columns and builds custom header formatter (124 ms)
+    ΓêÜ createChildGrid instantiates Tabulator with #myGrid (50 ms)
+    ├ù header click action rename updates the column definition (100 ms)
+    ΓêÜ header click add-right delegates to table addColumn (14 ms)
+    ΓêÜ header click sort actions delegate to table sorting (13 ms)
+
+  ΓùÅ Tabulator main display grid ΓÇ║ header click action rename updates the column definition
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    - Expected
+    + Received
+
+      Object {
+    -   "headerName": "Instructions",
+        "title": "Instructions",
+      },
+
+    Number of calls: 1
+
+      86 |     expect(event.preventDefault).toHaveBeenCalled();
+      87 |     expect(event.stopPropagation).toHaveBeenCalled();
+    > 88 |     expect(column.updateDefinition).toHaveBeenCalledWith({
+         |                                     ^
+      89 |       title: 'Instructions',
+      90 |       headerName: 'Instructions',
+      91 |     });
+
+      at Object.toHaveBeenCalledWith (tests/grid/tabulator-main-display-grid.test.js:88:37)
+
+PASS tests/utils/import-export-controls-mode.test.js
+  ImportExportControls preview/edit mode
+    ΓêÜ blocks Set Grid From Text in preview mode (121 ms)
+    ΓêÜ renders only first 10 rows when previewing from grid (30 ms)
+    ΓêÜ toggle to edit with no-confirm clears textarea for manual editing (16 ms)
+    ΓêÜ Set Grid From Text button is disabled in preview mode and enabled in edit mode (20 ms)
+    ΓêÜ preview mode import renders preview and still loads full data into grid (24 ms)
+
+  console.log
+    Document { location: [Getter/Setter] }
+
+      at log (tests/data_formats/html-convertor.test.js:225:11)
+
+  console.log
+    [Function: createElement]
+
+      at log (tests/data_formats/html-convertor.test.js:226:11)
+
+PASS tests/utils/tabbed-text-control-mode.test.js
+  TabbedTextControl preview/edit button
+    ΓêÜ shows preview row count label and updates after toggle (140 ms)
+
+  console.log
+    ΓöîΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö¼ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö¼ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö¼ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö¼ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö¼ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö¼ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö¼ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÉ
+    Γöé (index) Γöé rows  Γöé cols Γöé importMs Γöé filterMs Γöé createColsMs Γöé duplicateMs Γöé exportMs Γöé
+    Γö£ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö╝ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö╝ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö╝ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö╝ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö╝ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö╝ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö╝ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöñ
+    Γöé 0       Γöé 10000 Γöé 12   Γöé 72.11    Γöé 119.93   Γöé 12.94        Γöé 9.36        Γöé 168.92   Γöé
+    Γöé 1       Γöé 25000 Γöé 12   Γöé 140.08   Γöé 294.77   Γöé 22.4         Γöé 16.42       Γöé 349.01   Γöé
+    ΓööΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö┤ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö┤ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö┤ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö┤ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö┤ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö┤ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö┤ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÿ
+
+      at table (tests/grid/tabulator-performance.benchmark.test.js:233:13)
+
+  console.log
+    expected: ignoring known faker command helpers.objectKey
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command helpers.objectValue
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command helpers.objectEntry
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command helpers.enumValue
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command _randomizer.next
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command _randomizer.seed
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+PASS tests/grid/tabulator-performance.benchmark.test.js
+  Tabulator benchmark (large data)
+    ΓêÜ reports timing for key extension operations (1683 ms)
+
+  console.log
+    Error: could not find table in the HTML import
+
+      at HtmlConvertor.log [as toDataTable] (js/data_formats/html-convertor.js:197:15)
+
+PASS tests/generator/data-generator-page.test.js
+  DataGeneratorPage
+    ΓêÜ schema helper mapping supports faker, regex and literal (93 ms)
+    ΓêÜ schema validation reports missing column names and faker command (14 ms)
+    ΓêÜ preview generates data into tabulator grid extension (85 ms)
+    ΓêÜ generate downloads file using selected output format (33 ms)
+    ΓêÜ shows faker fields only for faker source and value only for regex/literal (53 ms)
+    ΓêÜ default alert invocation does not throw on validation errors (46 ms)
+    ΓêÜ toggles between schema controls and text editing with round trip (35 ms)
+
+  console.log
+    Error: could not find any rows in the table
+
+      at HtmlConvertor.log [as toDataTable] (js/data_formats/html-convertor.js:205:15)
+
+  console.log
+    Error: could not find any headers in the table
+
+      at HtmlConvertor.log [as toDataTable] (js/data_formats/html-convertor.js:214:15)
+
+  console.log
+    no rows selected
+
+      at GridControl.log [as deleteSelectedRows] (js/gui_components/data-grid-editor/gridControl.js:93:15)
+
+PASS tests/utils/grid-library-loader.test.js
+  grid-library-loader
+    ΓêÜ ag-grid path injects ag-grid script only (110 ms)
+    ΓêÜ tabulator path injects tabulator script and css only (23 ms)
+    ΓêÜ repeated loads are idempotent and do not duplicate tags (16 ms)
+    ΓêÜ failed load rejects promise (23 ms)
+    ΓêÜ query-string engine ag-grid injects only ag-grid assets (10 ms)
+    ΓêÜ query-string engine tabulator injects only tabulator assets (12 ms)
+
+PASS tests/data_formats/html-convertor.test.js
+  Can use indent class as expected
+    ΓêÜ by default no indent (3 ms)
+    ΓêÜ can indent using tabs (1 ms)
+    ΓêÜ can indent using multiple tabs (1 ms)
+    ΓêÜ can indent using multiple spaces (1 ms)
+  Can convert generic data grids to html tables
+    ΓêÜ convert an HTML and escape chars (1 ms)
+    ΓêÜ compact output (1 ms)
+    ΓêÜ tabbed pretty print HTML
+    ΓêÜ spaces pretty print HTML
+    ΓêÜ can add thead to table output
+    ΓêÜ can add tbody to table output
+    ΓêÜ can pretty print with all table elements on (1 ms)
+  Can convert html tables to generic data grids
+    ΓêÜ convert minimal table to grid (24 ms)
+    ΓêÜ no table no grid (8 ms)
+    ΓêÜ no rows no grid (4 ms)
+    ΓêÜ no headers no grid (5 ms)
+    ΓêÜ header can come from td (2 ms)
+    ΓêÜ table can come from all tr td (4 ms)
+
+  console.warn
+    No supported grid library loaded; test data definition grid editor disabled.
+
+      717 |     setupTabulatorDefnEditor(tableDiv);
+      718 |   } else {
+    > 719 |     console.warn('No supported grid library loaded; test data definition grid editor disabled.');
+          |             ^
+      720 |     return;
+      721 |   }
+      722 |
+
+      at warn (js/gui_components/testdatadefn.js:719:13)
+      at setupTestDataEditGrid (js/gui_components/testdatadefn.js:281:3)
+      at createTestDataGrid (js/gui_components/testdatadefn.js:970:3)
+      at tests/grid/test-data-defn-engine-compat.test.js:35:7
+      at Object.<anonymous> (node_modules/expect/build/toThrowMatchers.js:83:11)
+      at Object.throwingMatcher [as toThrow] (node_modules/expect/build/index.js:342:21)
+      at Object.toThrow (tests/grid/test-data-defn-engine-compat.test.js:45:12)
+
+PASS tests/grid/grid-control.test.js
+  GridControl
+    ΓêÜ wires toolbar buttons to grid actions (127 ms)
+    ΓêÜ delete selected rows respects selected count and confirmation (84 ms)
+    ΓêÜ filter textbox input and clear filters are wired (19 ms)
+    ΓêÜ clear table honors confirmation (16 ms)
+
+  console.log
+    expected: ignoring known faker command helpers.objectKey
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command helpers.objectValue
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command helpers.objectEntry
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command helpers.enumValue
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command _randomizer.next
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command _randomizer.seed
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command helpers.objectKey
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command helpers.objectValue
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command helpers.objectEntry
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command helpers.enumValue
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command _randomizer.next
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command _randomizer.seed
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.warn
+    No supported grid library loaded; test data definition grid editor disabled.
+
+      717 |     setupTabulatorDefnEditor(tableDiv);
+      718 |   } else {
+    > 719 |     console.warn('No supported grid library loaded; test data definition grid editor disabled.');
+          |             ^
+      720 |     return;
+      721 |   }
+      722 |
+
+      at warn (js/gui_components/testdatadefn.js:719:13)
+      at setupTestDataEditGrid (js/gui_components/testdatadefn.js:281:3)
+      at createTestDataGrid (js/gui_components/testdatadefn.js:970:3)
+      at Object.<anonymous> (tests/grid/test-data-defn-engine-compat.test.js:123:5)
+
+  console.log
+    expected: ignoring known faker command helpers.objectKey
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command helpers.objectValue
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command helpers.objectEntry
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command helpers.enumValue
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command _randomizer.next
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command _randomizer.seed
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    Identifying type for name
+    name is a valid 'faker': lorem.word
+
+      at log (js/gui_components/testdatadefn.js:46:11)
+
+  console.log
+    expected: ignoring known faker command helpers.objectKey
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command helpers.objectValue
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command helpers.objectEntry
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command helpers.enumValue
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command _randomizer.next
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command _randomizer.seed
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+PASS tests/generator/generator-script.test.js
+  generator bootstrap
+    ΓêÜ loads tabulator library before initializing page (94 ms)
+    ΓêÜ returns early when tabulator library fails to load (14 ms)
+
+  console.warn
+    No supported grid library loaded; test data definition grid editor disabled.
+
+      717 |     setupTabulatorDefnEditor(tableDiv);
+      718 |   } else {
+    > 719 |     console.warn('No supported grid library loaded; test data definition grid editor disabled.');
+          |             ^
+      720 |     return;
+      721 |   }
+      722 |
+
+      at warn (js/gui_components/testdatadefn.js:719:13)
+      at setupTestDataEditGrid (js/gui_components/testdatadefn.js:281:3)
+      at createTestDataGrid (js/gui_components/testdatadefn.js:970:3)
+      at _callee2$ (tests/grid/test-data-defn-engine-compat.test.js:230:5)
+      at tryCatch (tests/grid/test-data-defn-engine-compat.test.js:9:2404)
+      at Generator._invoke (tests/grid/test-data-defn-engine-compat.test.js:9:1964)
+      at Generator.next (tests/grid/test-data-defn-engine-compat.test.js:9:3255)
+
+  console.log
+    Using grid engine: tabulator
+
+      at log (js/script.js:27:11)
+
+  console.log
+    Using grid engine: tabulator
+
+      at log (js/script.js:27:11)
+
+PASS tests/script-bootstrap.test.js (5.051 s)
+  script bootstrap
+    ΓêÜ awaits grid library loader before creating grid (157 ms)
+    ΓêÜ returns early when grid library fails to load (15 ms)
+
+  console.log
+    expected: ignoring known faker command helpers.objectKey
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command helpers.objectValue
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command helpers.objectEntry
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command helpers.enumValue
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command _randomizer.next
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+  console.log
+    expected: ignoring known faker command _randomizer.seed
+
+      at log (js/gui_components/testdatadefn.js:670:19)
+          at Array.forEach (<anonymous>)
+          at Array.forEach (<anonymous>)
+
+PASS tests/grid/test-data-defn-engine-compat.test.js (7.128 s)
+  test data definition editor engine compatibility
+    ΓêÜ does not throw when AG Grid library is unavailable (266 ms)
+    ΓêÜ uses tabulator path when ag-grid is unavailable (32 ms)
+    ΓêÜ mode radios update How Many from grid context (29 ms)
+    ΓêÜ generate does not auto-refresh text preview (66 ms)
+    ΓêÜ refresh text preview button renders text on demand (1962 ms)
+    ΓêÜ tabulator schema text updates while editing a cell (139 ms)
+
+Summary of all failing tests
+FAIL tests/grid/tabulator-main-display-grid.test.js
+  ΓùÅ Tabulator main display grid ΓÇ║ header click action rename updates the column definition
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    - Expected
+    + Received
+
+      Object {
+    -   "headerName": "Instructions",
+        "title": "Instructions",
+      },
+
+    Number of calls: 1
+
+      86 |     expect(event.preventDefault).toHaveBeenCalled();
+      87 |     expect(event.stopPropagation).toHaveBeenCalled();
+    > 88 |     expect(column.updateDefinition).toHaveBeenCalledWith({
+         |                                     ^
+      89 |       title: 'Instructions',
+      90 |       headerName: 'Instructions',
+      91 |     });
+
+      at Object.toHaveBeenCalledWith (tests/grid/tabulator-main-display-grid.test.js:88:37)
+
+
+Test Suites: 1 failed, 33 passed, 34 total
+Tests:       1 failed, 318 passed, 319 total
+Snapshots:   0 total
+Time:        8.237 s
+Ran all test suites.

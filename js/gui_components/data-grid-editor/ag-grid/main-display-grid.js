@@ -1,6 +1,6 @@
-import { GridExtension } from "./gridExtension-ag-grid.js";
-import { GridControl, GridControlsPageMap } from "../gridControl.js"
-import { CustomHeaderAgGrid } from "./customHeader-ag-grid.js";
+import { GridExtension } from './gridExtension-ag-grid.js';
+import { GridControl, GridControlsPageMap } from '../gridControl.js';
+import { CustomHeaderAgGrid } from './customHeader-ag-grid.js';
 
 /*
     Grid Features Used:
@@ -13,76 +13,72 @@ import { CustomHeaderAgGrid } from "./customHeader-ag-grid.js";
     - row select (for deleting row, and adding above below)
 */
 
-
 class ExtendedDataGrid {
+  constructor() {
+    var rowData = [];
 
-    constructor() {
-        var rowData = [];
+    var columnDefs = [
+      {
+        headerName: '~rename-me',
+        field: 'column1',
+      },
+    ];
 
-        var columnDefs = [
-            {
-                headerName: '~rename-me',
-                field: 'column1'
-            }
-        ];
+    this.gridOptions = {
+      columnDefs: columnDefs,
+      rowData: rowData,
 
-        this.gridOptions = {
-            columnDefs: columnDefs,
-            rowData: rowData,
+      defaultColDef: {
+        wrapText: true,
+        autoHeight: true,
+        resizable: true,
+        rowDrag: true,
+        editable: true,
+        filter: true,
+        sortable: true,
+      },
 
-            defaultColDef: {
-                wrapText: true,
-                autoHeight: true,
-                resizable: true,
-                rowDrag: true,
-                editable: true,
-                filter:true,
-                sortable:true,
-            },
+      components: {
+        agColumnHeader: CustomHeaderAgGrid,
+      },
 
-            components: {
-                agColumnHeader: CustomHeaderAgGrid,
-            },
-            
-            rowDragManaged: true,
-            rowDragMultiRow: true,
-            rowSelection: {
-                mode: 'multiRow',
-                checkboxes: false,
-                headerCheckbox: false,
-                enableClickSelection: true,
-            },
-            //onColumnResized: (params) => {params.api.resetRowHeights();}
-        };
-    }
+      rowDragManaged: true,
+      rowDragMultiRow: true,
+      rowSelection: {
+        mode: 'multiRow',
+        checkboxes: false,
+        headerCheckbox: false,
+        enableClickSelection: true,
+      },
+      //onColumnResized: (params) => {params.api.resetRowHeights();}
+    };
+  }
 
-    createChildGrid(parentGridDiv){
+  createChildGrid(parentGridDiv) {
+    let gridControls = new GridControl(new GridControlsPageMap());
+    gridControls.addGuiIn(parentGridDiv);
 
-        let gridControls = new GridControl(new GridControlsPageMap());
-        gridControls.addGuiIn(parentGridDiv)
+    let gridDiv = document.querySelector('#myGrid');
 
-        let gridDiv = document.querySelector('#myGrid');
+    this.gridApi = agGrid.createGrid(gridDiv, this.gridOptions);
 
-        this.gridApi = agGrid.createGrid(gridDiv, this.gridOptions);
+    // having setup the grid, make it a little more responsive - removed when adding tippy as it need doctype html
+    // TODO: add some resizing div controls
+    //setTimeout(function(gridDiv){gridDiv.style.height="40%";},1000, gridDiv);
 
-        // having setup the grid, make it a little more responsive - removed when adding tippy as it need doctype html
-        // TODO: add some resizing div controls
-        //setTimeout(function(gridDiv){gridDiv.style.height="40%";},1000, gridDiv);
+    this.gridExtras = new GridExtension(this.gridApi);
 
-        this.gridExtras = new GridExtension(this.gridApi);
+    gridControls.useThisGridFunctionality(this.gridExtras);
+    gridControls.addHooksToPage(document);
+  }
 
-        gridControls.useThisGridFunctionality(this.gridExtras);
-        gridControls.addHooksToPage(document);
+  sizeColumnsToFit() {
+    this.gridApi.sizeColumnsToFit();
+  }
 
-    }
-
-    sizeColumnsToFit(){
-        this.gridApi.sizeColumnsToFit();
-    }
-
-    getGridExtras(){
-        return this.gridExtras;
-    }
+  getGridExtras() {
+    return this.gridExtras;
+  }
 }
 
-export {ExtendedDataGrid};
+export { ExtendedDataGrid };

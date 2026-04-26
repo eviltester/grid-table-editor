@@ -7,6 +7,10 @@
     "test": "jest",
     "testverbose": "jest --verbose",
     "testcoverage": "jest --coverage",
+    "lint": "eslint \"js/**/*.js\" \"tests/**/*.js\"",
+    "lint:fix": "eslint --fix \"js/**/*.js\" \"tests/**/*.js\"",
+    "format": "prettier --write \"*.json\" \"js/**/*.js\" \"tests/**/*.js\" \".github/workflows/*.yml\"",
+    "format:check": "prettier --check \"*.json\" \"js/**/*.js\" \"tests/**/*.js\" \".github/workflows/*.yml\"",
     "benchmark:tabulator": "jest tests/grid/tabulator-performance.benchmark.test.js --runInBand",
     "anywaydata:mac": "npm run anywaydata --prefix docs-src && cp ./index.html ./build/app.html && cp -R ./images ./build/images && cp -R ./js ./build/js && cp -R ./libs ./build/libs && cp ./styles.css ./build/styles.css && cp -R ./build/ ../../anywaydata-com",
     "anywaydata:win": "npm run anywaydata --prefix docs-src && echo copying index && copy .\\index.html .\\build\\app.html && echo copying images && xcopy .\\images .\\build\\images /e /k /i && xcopy .\\js .\\build\\js /e /k /i && xcopy .\\libs .\\build\\libs /e /k /i && copy .\\styles.css .\\build\\styles.css && echo cleaning anywaydata for deployment && ..\\anywaydata-com\\make-ready-for-prod.bat",
@@ -48,6 +52,9 @@
     "@babel/preset-env": "^7.18.0",
     "@faker-js/faker": "^9.7.0",
     "babel-jest": "^28.1.0",
-    "jest-extended": "^2.0.0"
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^9.1.0",
+    "jest-extended": "^2.0.0",
+    "prettier": "^3.3.3"
   }
 }

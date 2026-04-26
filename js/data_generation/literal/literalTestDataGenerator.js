@@ -1,12 +1,9 @@
-import { dataResponse } from "../ruleResponse.js";
+import { dataResponse } from '../ruleResponse.js';
 
-export class LiteralTestDataGenerator{
+export class LiteralTestDataGenerator {
+  constructor() {}
 
-    constructor(){
-    }
-
-    
-    generateFrom(aRule){
-        return dataResponse(aRule.ruleSpec);
-    }
+  generateFrom(aRule) {
+    return dataResponse(aRule.ruleSpec);
+  }
 }

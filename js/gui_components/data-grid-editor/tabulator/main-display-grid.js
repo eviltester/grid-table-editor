@@ -1,7 +1,6 @@
-import { GridExtension } from "./gridExtension-tabulator.js";
-import { GridControl, GridControlsPageMap } from "../gridControl.js"
-import { GuardedColumnEdits } from "../../../grid/guarded-column-edits.js";
-
+import { GridExtension } from './gridExtension-tabulator.js';
+import { GridControl, GridControlsPageMap } from '../gridControl.js';
+import { GuardedColumnEdits } from '../../../grid/guarded-column-edits.js';
 
 /*
     Grid Features Used:
@@ -14,32 +13,28 @@ import { GuardedColumnEdits } from "../../../grid/guarded-column-edits.js";
     - row select (for deleting row, and adding above below)
 */
 
-
 class ExtendedDataGrid {
+  constructor() {
+    var rowData = [];
 
-    constructor() {
-        var rowData = [];
+    var columnDefs = [
+      {
+        title: '~rename-me',
+        field: 'column1',
+        sorter: 'string',
+      },
+    ];
 
-        var columnDefs = [
-            {
-                title: '~rename-me',
-                field: 'column1',
-                sorter: "string"
-            }
-        ];
+    const escapeHtml = function (value) {
+      return String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;');
+    };
 
-
-
-        const escapeHtml = function(value){
-            return String(value ?? "")
-                .replaceAll("&", "&amp;")
-                .replaceAll("<", "&lt;")
-                .replaceAll(">", "&gt;");
-        };
-
-        const customHeaderFormatter = function(cell){
-            const columnName = typeof cell.getValue === "function" ? cell.getValue() : "";
-            return `
+    const customHeaderFormatter = function (cell) {
+      const columnName = typeof cell.getValue === 'function' ? cell.getValue() : '';
+      return `
                 <div class="headerWrapper">
                     <div class="customHeaderTop">
                         <div class="customFilterMenuButton" data-action="filter" title="Filter Column">
@@ -67,140 +62,138 @@ class ExtendedDataGrid {
                     </div>
                 </div>
             `;
-        };
+    };
 
-        const onCustomHeaderClick = function(e, column){
-            const action = e?.target?.dataset?.action;
-            if(!action){
-                return;
-            }
+    const onCustomHeaderClick = function (e, column) {
+      const action = e?.target?.dataset?.action;
+      if (!action) {
+        return;
+      }
 
-            e.preventDefault();
-            e.stopPropagation();
+      e.preventDefault();
+      e.stopPropagation();
 
-            const guardedColumnEdits = new GuardedColumnEdits(new GridExtension(column.getTable()));
-            const columnId = column.getDefinition().colId || column.getDefinition().field;
-            const fieldName = column.getField();
-            const table = column.getTable();
+      const guardedColumnEdits = new GuardedColumnEdits(new GridExtension(column.getTable()));
+      const columnId = column.getDefinition().colId || column.getDefinition().field;
+      const fieldName = column.getField();
+      const table = column.getTable();
 
-            if(action === "filter"){
-                const existingFilter = column.getHeaderFilterValue?.() || "";
-                const newFilter = prompt("Filter Column:", existingFilter);
-                if(newFilter !== null){
-                    column.setHeaderFilterValue?.(newFilter);
-                }
-                return;
-            }
+      if (action === 'filter') {
+        const existingFilter = column.getHeaderFilterValue?.() || '';
+        const newFilter = prompt('Filter Column:', existingFilter);
+        if (newFilter !== null) {
+          column.setHeaderFilterValue?.(newFilter);
+        }
+        return;
+      }
 
-            if(action === "sort-asc"){
-                table.setSort(fieldName, "asc");
-                return;
-            }
+      if (action === 'sort-asc') {
+        table.setSort(fieldName, 'asc');
+        return;
+      }
 
-            if(action === "sort-desc"){
-                table.setSort(fieldName, "desc");
-                return;
-            }
+      if (action === 'sort-desc') {
+        table.setSort(fieldName, 'desc');
+        return;
+      }
 
-            if(action === "sort-none"){
-                table.clearSort();
-                return;
-            }
+      if (action === 'sort-none') {
+        table.clearSort();
+        return;
+      }
 
-            if(action === "add-left"){
-                guardedColumnEdits.addNeighbourColumnId(-1, columnId);
-                return;
-            }
-            if(action === "rename"){
-                guardedColumnEdits.renameColId(columnId);
-                return;
-            }
-            if(action === "delete"){
-                guardedColumnEdits.deleteColId(columnId);
-                return;
-            }
-            if(action === "duplicate"){
-                guardedColumnEdits.duplicateColumnId(1, columnId);
-                return;
-            }
-            if(action === "add-right"){
-                guardedColumnEdits.addNeighbourColumnId(1, columnId);
-            }
-        };
+      if (action === 'add-left') {
+        guardedColumnEdits.addNeighbourColumnId(-1, columnId);
+        return;
+      }
+      if (action === 'rename') {
+        guardedColumnEdits.renameColId(columnId);
+        return;
+      }
+      if (action === 'delete') {
+        guardedColumnEdits.deleteColId(columnId);
+        return;
+      }
+      if (action === 'duplicate') {
+        guardedColumnEdits.duplicateColumnId(1, columnId);
+        return;
+      }
+      if (action === 'add-right') {
+        guardedColumnEdits.addNeighbourColumnId(1, columnId);
+      }
+    };
 
+    this.gridOptions = {
+      columns: columnDefs,
+      data: rowData,
 
-        this.gridOptions = {
-            columns: columnDefs,
-            data: rowData,
+      columnDefaults: {
+        //wrapText: true,
+        //autoHeight: true,
+        resizable: true,
+        rowHandle: true,
+        //editable: true,
+        editor: 'input',
+        editorParams: { selectContents: true },
+        headerFilter: 'input',
+        headerFilterFunc: 'like',
+        sorter: 'string',
+        titleFormatter: customHeaderFormatter,
+        headerClick: onCustomHeaderClick,
+      },
 
-            columnDefaults: {
-                //wrapText: true,
-                //autoHeight: true,
-                resizable: true,
-                rowHandle: true,
-                //editable: true,
-                editor:"input", editorParams:{selectContents:true},
-                headerFilter:"input",
-                headerFilterFunc:"like",
-                sorter: "string",
-                titleFormatter: customHeaderFormatter,
-                headerClick: onCustomHeaderClick
-            },
+      // Keep parity with AG Grid: headers come from our grid extension abstraction,
+      // not from inferred object keys during setData/import.
+      autoColumns: false,
+      headerSort: true,
 
-            // Keep parity with AG Grid: headers come from our grid extension abstraction,
-            // not from inferred object keys during setData/import.
-            autoColumns: false,
-            headerSort: true,
+      movableColumns: true,
 
-            movableColumns: true,
+      movableRows: true,
+      // rowDragManaged: true,
+      // rowDragMultiRow: true,
 
-            movableRows: true,
-            // rowDragManaged: true,
-            // rowDragMultiRow: true,
+      // make rows selectable when clicked,
+      // with multi-row selection where click first then click last with shift
+      selectableRows: true,
+      selectableRowsRangeMode: 'click',
+      // rowSelection: {
+      //     mode: 'multiRow',
+      //     checkboxes: false,
+      //     headerCheckbox: false,
+      //     enableClickSelection: true,
+      // },
+      //onColumnResized: (params) => {params.api.resetRowHeights();}
+    };
+  }
 
-            // make rows selectable when clicked,
-            // with multi-row selection where click first then click last with shift
-            selectableRows:true,
-            selectableRowsRangeMode:"click",
-            // rowSelection: {
-            //     mode: 'multiRow',
-            //     checkboxes: false,
-            //     headerCheckbox: false,
-            //     enableClickSelection: true,
-            // },
-            //onColumnResized: (params) => {params.api.resetRowHeights();}
-        };
-    }
+  createChildGrid(parentGridDiv) {
+    let gridControls = new GridControl(new GridControlsPageMap());
+    gridControls.addGuiIn(parentGridDiv);
 
+    //let gridDiv = document.querySelector('#myGrid');
 
-    createChildGrid(parentGridDiv){
+    this.gridApi = new Tabulator('#myGrid', this.gridOptions);
 
-        let gridControls = new GridControl(new GridControlsPageMap());
-        gridControls.addGuiIn(parentGridDiv)
+    this.gridExtras = new GridExtension(this.gridApi);
 
-        //let gridDiv = document.querySelector('#myGrid');
+    // this.gridApi = agGrid.createGrid(gridDiv, this.gridOptions);
 
-        this.gridApi = new Tabulator("#myGrid", this.gridOptions);
+    // having setup the grid, make it a little more responsive - removed when adding tippy as it need doctype html
+    // TODO: add some resizing div controls
+    //setTimeout(function(gridDiv){gridDiv.style.height="40%";},1000, gridDiv);
 
-        this.gridExtras = new GridExtension(this.gridApi);
+    gridControls.useThisGridFunctionality(this.gridExtras);
+    gridControls.addHooksToPage(document);
+  }
 
-        // this.gridApi = agGrid.createGrid(gridDiv, this.gridOptions);
+  sizeColumnsToFit() {
+    //this.gridApi.sizeColumnsToFit();
+  }
 
-        // having setup the grid, make it a little more responsive - removed when adding tippy as it need doctype html
-        // TODO: add some resizing div controls
-        //setTimeout(function(gridDiv){gridDiv.style.height="40%";},1000, gridDiv);
-
-        gridControls.useThisGridFunctionality(this.gridExtras);
-        gridControls.addHooksToPage(document);
-    }
-
-    sizeColumnsToFit(){
-        //this.gridApi.sizeColumnsToFit();
-    }
-
-    getGridExtras(){
-        return this.gridExtras;
-    }
+  getGridExtras() {
+    return this.gridExtras;
+  }
 }
 
-export {ExtendedDataGrid};
+export { ExtendedDataGrid };

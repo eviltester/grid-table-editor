@@ -1,36 +1,30 @@
-import { DelimiterOptions } from "../../data_formats/delimiter-options.js";
-import {HtmlDataValues} from "./html-options-data-utils.js";
+import { DelimiterOptions } from '../../data_formats/delimiter-options.js';
+import { HtmlDataValues } from './html-options-data-utils.js';
 
-class DelimitedOptions{
+class DelimitedOptions {
+  delimiterMappings = {
+    tab: '\t',
+    comma: ',',
+    hash: '#',
+    colon: ':',
+    pipe: '|',
+    space: ' ',
+    semicolon: ';',
+    slash: '/',
+    backslash: '\\',
+  };
 
-    delimiterMappings={
-      "tab": "\t",
-      "comma": ",",
-      "hash": "#",
-      "colon": ":",
-      "pipe": "|",
-      "space": " ",
-      "semicolon": ";",
-      "slash": "/",
-      "backslash": "\\",
-      "semicolon": ";",
-    }
+  constructor(parentElement) {
+    this.parent = parentElement;
+    this.htmlData = new HtmlDataValues(this.parent);
+  }
 
-    constructor(parentElement) {
-        this.parent = parentElement;
-        this.htmlData = new HtmlDataValues(this.parent);
-    }
-
-        // TODO: create some HTML constructor objects to make building the options panels simpler
-        // e.g.         let html = new HtmlControlPanelElements();
-        // html.selectWithCustomInput({select:{name:"delimiter",text:"Delimiter", }})
-        // but that feels a bit clumsy, possibly factory methods
-    addToGui(){
-
-
-
-        this.parent.innerHTML =
-        `
+  // TODO: create some HTML constructor objects to make building the options panels simpler
+  // e.g.         let html = new HtmlControlPanelElements();
+  // html.selectWithCustomInput({select:{name:"delimiter",text:"Delimiter", }})
+  // but that feels a bit clumsy, possibly factory methods
+  addToGui() {
+    this.parent.innerHTML = `
         <div class="delimited-options" style="width:100%">
           <div><p><strong>Options</strong>  <span data-help="delimiter-options" class="helpicon"></span></p></div>
 
@@ -111,47 +105,51 @@ class DelimitedOptions{
       
         </div>
         `;
-    }
+  }
 
-    setApplyCallback(callbackFunc){
+  setApplyCallback(callbackFunc) {
+    let button = this.parent.querySelector('.delimited-options .apply button');
+    button.onclick = function () {
+      callbackFunc(this.getOptionsFromGui());
+    }.bind(this);
+  }
 
-      let button = this.parent.querySelector(".delimited-options .apply button");
-      button.onclick = function (){
-          callbackFunc(this.getOptionsFromGui())
-      }.bind(this);
+  getOptionsFromGui() {
+    let delimiterOptions = new DelimiterOptions('\t');
 
-    }
+    // special type for htmlData getSelectWithCustomInput(selectLocator, inputLocator, default)
+    let delimiter = this.htmlData.getSelectWithCustomInput(
+      'div.delimiter label select',
+      'custom',
+      '.custom-delimiter label input',
+      this.delimiterMappings,
+      '\t'
+    );
+    delimiterOptions.options.delimiter = delimiter;
+    delimiterOptions.options.quotes = this.htmlData.getCheckBoxValueFrom('.quotes label input');
+    delimiterOptions.options.header = this.htmlData.getCheckBoxValueFrom('.headerval label input');
+    delimiterOptions.options.quoteChar = this.htmlData.getTextInputValueFrom('.quoteChar label input');
+    delimiterOptions.options.escapeChar = this.htmlData.getTextInputValueFrom('.escapeChar label input');
 
-    getOptionsFromGui(){
+    return delimiterOptions;
+  }
 
-      let delimiterOptions = new DelimiterOptions("\t");
+  setFromOptions(delimiterOptions) {
+    let options = delimiterOptions.options;
 
-      // special type for htmlData getSelectWithCustomInput(selectLocator, inputLocator, default)
-      let delimiter = this.htmlData.getSelectWithCustomInput("div.delimiter label select", "custom", ".custom-delimiter label input", this.delimiterMappings,  "\t");
-      delimiterOptions.options.delimiter = delimiter;
-      delimiterOptions.options.quotes = this.htmlData.getCheckBoxValueFrom(".quotes label input");
-      delimiterOptions.options.header = this.htmlData.getCheckBoxValueFrom(".headerval label input");
-      delimiterOptions.options.quoteChar = this.htmlData.getTextInputValueFrom(".quoteChar label input");
-      delimiterOptions.options.escapeChar = this.htmlData.getTextInputValueFrom(".escapeChar label input");
+    this.htmlData.setCheckBoxFrom('.quotes label input', options.quotes, true);
+    this.htmlData.setCheckBoxFrom('.headerval label input', options.header, true);
+    this.htmlData.setTextFieldToValue('.quoteChar label input', options.quoteChar, '"');
+    this.htmlData.setTextFieldToValue('.escapeChar label input', options.escapeChar, '"');
 
-      return delimiterOptions;
-    }
-
-    setFromOptions(delimiterOptions){
-
-      let options = delimiterOptions.options;
-
-      this.htmlData.setCheckBoxFrom(".quotes label input", options.quotes, true);
-      this.htmlData.setCheckBoxFrom(".headerval label input", options.header, true);
-      this.htmlData.setTextFieldToValue(".quoteChar label input", options.quoteChar, "\"");
-      this.htmlData.setTextFieldToValue(".escapeChar label input", options.escapeChar, "\"");
-
-      this.htmlData.setSelectWithCustomInput(`select[name='delimiter']`, "custom",
-                                      ".custom-delimiter label input", this.delimiterMappings,
-                                      options.delimiter);
-
-    }
-
+    this.htmlData.setSelectWithCustomInput(
+      `select[name='delimiter']`,
+      'custom',
+      '.custom-delimiter label input',
+      this.delimiterMappings,
+      options.delimiter
+    );
+  }
 }
 
-export {DelimitedOptions};
+export { DelimitedOptions };

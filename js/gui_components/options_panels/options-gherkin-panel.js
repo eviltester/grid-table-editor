@@ -1,16 +1,14 @@
-import { GherkinOptions } from "../../data_formats/gherkin-convertor.js";
-import {HtmlDataValues} from "./html-options-data-utils.js";
+import { GherkinOptions } from '../../data_formats/gherkin-convertor.js';
+import { HtmlDataValues } from './html-options-data-utils.js';
 
-class GherkinOptionsPanel{
+class GherkinOptionsPanel {
+  constructor(parentElement) {
+    this.parent = parentElement;
+    this.htmlData = new HtmlDataValues(this.parent);
+  }
 
-    constructor(parentElement) {
-        this.parent = parentElement;
-        this.htmlData = new HtmlDataValues(this.parent);
-    }
-
-    addToGui(){
-        this.parent.innerHTML =
-        `
+  addToGui() {
+    this.parent.innerHTML = `
         <div class="gherkin-options" style="width:100%">
           <div><p><strong>Options</strong>  <span data-help="gherkin-options" class="helpicon"></span></p></div>
 
@@ -57,49 +55,42 @@ class GherkinOptionsPanel{
       
         </div>
         `;
-    }
+  }
 
-    setApplyCallback(callbackFunc){
+  setApplyCallback(callbackFunc) {
+    let button = this.parent.querySelector('.gherkin-options .apply button');
+    button.onclick = function () {
+      callbackFunc(this.getOptionsFromGui());
+    }.bind(this);
+  }
 
-      let button = this.parent.querySelector(".gherkin-options .apply button");
-      button.onclick = function (){
-          callbackFunc(this.getOptionsFromGui())
-      }.bind(this);
+  getOptionsFromGui() {
+    let options = new GherkinOptions();
 
-    }
+    let newOptions = {};
+    newOptions.options = {};
 
-    getOptionsFromGui(){
+    newOptions.options.showHeadings = this.htmlData.getCheckBoxValueFrom('.showheadings label input');
 
-      let options = new GherkinOptions();
+    // todo: have the hard coded tab, space, custom options
+    newOptions.options.leftIndent = this.htmlData.getTextInputValueFrom('.leftindent label input');
 
-      let newOptions = {};
-      newOptions.options = {};
+    newOptions.options.inCellPadding = this.htmlData.getSelectedValueFrom('.incellpadding label select', 'none');
+    // todo: control the in cell padder
+    newOptions.options.prettyPrint = this.htmlData.getCheckBoxValueFrom('.prettyprint label input');
 
-      newOptions.options.showHeadings = this.htmlData.getCheckBoxValueFrom(".showheadings label input");
+    options.mergeOptions(newOptions);
+    return options;
+  }
 
-      // todo: have the hard coded tab, space, custom options
-      newOptions.options.leftIndent = this.htmlData.getTextInputValueFrom(".leftindent label input");
+  setFromOptions(theOptions) {
+    let options = theOptions?.options ? theOptions.options : {};
 
-      newOptions.options.inCellPadding = this.htmlData.getSelectedValueFrom(".incellpadding label select", "none");
-      // todo: control the in cell padder
-      newOptions.options.prettyPrint = this.htmlData.getCheckBoxValueFrom(".prettyprint label input");
-
-      options.mergeOptions(newOptions);
-      return options;
-
-    }
-
-
-    setFromOptions(theOptions){
-
-      let options = theOptions?.options ? theOptions.options : {};
-
-      this.htmlData.setCheckBoxFrom(".showheadings label input", options?.showHeadings, true);
-      this.htmlData.setTextFieldToValue(".leftindent label input", options?.leftIndent);
-      this.htmlData.setDropDownOptionToKeyValue(".incellpadding label select", options?.inCellPadding);
-      this.htmlData.setCheckBoxFrom(".prettyprint label input", options?.prettyPrint, false);
-    }
-
+    this.htmlData.setCheckBoxFrom('.showheadings label input', options?.showHeadings, true);
+    this.htmlData.setTextFieldToValue('.leftindent label input', options?.leftIndent);
+    this.htmlData.setDropDownOptionToKeyValue('.incellpadding label select', options?.inCellPadding);
+    this.htmlData.setCheckBoxFrom('.prettyprint label input', options?.prettyPrint, false);
+  }
 }
 
-export {GherkinOptionsPanel};
+export { GherkinOptionsPanel };

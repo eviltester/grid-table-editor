@@ -1,18 +1,14 @@
-import { FakerCommand } from "./fakerCommand.js";
+import { FakerCommand } from './fakerCommand.js';
 
-export class FakerTestDataGenerator{
+export class FakerTestDataGenerator {
+  constructor(aFaker) {
+    this.faker = aFaker;
+  }
 
-    constructor(aFaker){
-        this.faker = aFaker;
-    }
-
-    
-    generateFrom(aRule){
-
-        const fakerCommand = new FakerCommand(aRule.ruleSpec);
-        fakerCommand.parse();
-        fakerCommand.compile(this.faker);
-        return fakerCommand.execute(this.faker);
-
-    }
+  generateFrom(aRule) {
+    const fakerCommand = new FakerCommand(aRule.ruleSpec);
+    fakerCommand.parse();
+    fakerCommand.compile(this.faker);
+    return fakerCommand.execute(this.faker);
+  }
 }

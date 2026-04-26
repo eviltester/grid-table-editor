@@ -1,17 +1,15 @@
-import { HtmlConvertorOptions } from "../../data_formats/html-convertor.js";
-import {HtmlDataValues} from "./html-options-data-utils.js";
+import { HtmlConvertorOptions } from '../../data_formats/html-convertor.js';
+import { HtmlDataValues } from './html-options-data-utils.js';
 
-class HtmlOptionsPanel{
+class HtmlOptionsPanel {
+  constructor(parentElement) {
+    this.parent = parentElement;
+    this.parentDivClass = 'html-options';
+    this.htmlData = new HtmlDataValues(this.parent);
+  }
 
-    constructor(parentElement) {
-        this.parent = parentElement;
-        this.parentDivClass= "html-options";
-        this.htmlData = new HtmlDataValues(this.parent);
-    }
-
-    addToGui(){
-        this.parent.innerHTML =
-        `
+  addToGui() {
+    this.parent.innerHTML = `
         <div class="${this.parentDivClass}" style="width:100%">
           <div><p><strong>Options</strong> <span data-help="html-table-options" class="helpicon"></span></p></div>
 
@@ -72,52 +70,53 @@ class HtmlOptionsPanel{
       
         </div>
         `;
-    }
+  }
 
-    setApplyCallback(callbackFunc){
+  setApplyCallback(callbackFunc) {
+    let button = this.parent.querySelector('.apply button');
+    button.onclick = function () {
+      callbackFunc(this.getOptionsFromGui());
+    }.bind(this);
+  }
 
-      let button = this.parent.querySelector(".apply button");
-      button.onclick = function (){
-          callbackFunc(this.getOptionsFromGui())
-      }.bind(this);
+  getOptionsFromGui() {
+    let newOptions = new HtmlConvertorOptions();
 
-    }
+    newOptions.options.compact = this.htmlData.getCheckBoxValueFrom('.compacthtml label input');
+    newOptions.options.prettyPrint = this.htmlData.getCheckBoxValueFrom('.prettyprint label input');
 
+    let prettyPrintDelimiter = this.htmlData.getSelectWithCustomInput(
+      "select[name='prettydelimiter']",
+      'custom',
+      '.custom-pretty-delimiter label input',
+      newOptions.delimiterMappings,
+      '\t'
+    );
+    newOptions.options.prettyPrintDelimiter = prettyPrintDelimiter;
 
-    getOptionsFromGui(){
+    newOptions.options.addTheadToTable = this.htmlData.getCheckBoxValueFrom('.addthead label input');
+    newOptions.options.addTbodyToTable = this.htmlData.getCheckBoxValueFrom('.addtbody label input');
 
-      let newOptions = new HtmlConvertorOptions();
+    return newOptions;
+  }
 
-      newOptions.options.compact = this.htmlData.getCheckBoxValueFrom(".compacthtml label input");
-      newOptions.options.prettyPrint = this.htmlData.getCheckBoxValueFrom(".prettyprint label input");
+  setFromOptions(mainOptions) {
+    let options = mainOptions?.options ? mainOptions.options : {};
 
-      let prettyPrintDelimiter = this.htmlData.getSelectWithCustomInput("select[name='prettydelimiter']", "custom", 
-                                            ".custom-pretty-delimiter label input", newOptions.delimiterMappings,  "\t");
-      newOptions.options.prettyPrintDelimiter = prettyPrintDelimiter;
+    // TODO: create 'defaults' in the main options class and use these in the panel settings
+    this.htmlData.setCheckBoxFrom('.compacthtml label input', options?.compact, false);
+    this.htmlData.setCheckBoxFrom('.prettyprint label input', options?.prettyPrint, false);
+    this.htmlData.setCheckBoxFrom('.addthead label input', options?.addTheadToTable, false);
+    this.htmlData.setCheckBoxFrom('.addtbody label input', options?.addTbodyToTable, false);
 
-      newOptions.options.addTheadToTable = this.htmlData.getCheckBoxValueFrom(".addthead label input");
-      newOptions.options.addTbodyToTable = this.htmlData.getCheckBoxValueFrom(".addtbody label input");
-
-      return newOptions;
-
-    }
-
-
-    setFromOptions(mainOptions){
-
-      let options = mainOptions?.options ? mainOptions.options : {};
-
-      // TODO: create 'defaults' in the main options class and use these in the panel settings
-      this.htmlData.setCheckBoxFrom(".compacthtml label input", options?.compact, false);
-      this.htmlData.setCheckBoxFrom(".prettyprint label input", options?.prettyPrint, false);
-      this.htmlData.setCheckBoxFrom(".addthead label input", options?.addTheadToTable, false);
-      this.htmlData.setCheckBoxFrom(".addtbody label input", options?.addTbodyToTable, false);
-
-      this.htmlData.setSelectWithCustomInput(`select[name='prettydelimiter']`, "custom",
-                                      ".custom-pretty-delimiter label input", mainOptions.delimiterMappings,
-                                      options.prettyPrintDelimiter);
-    }
-
+    this.htmlData.setSelectWithCustomInput(
+      `select[name='prettydelimiter']`,
+      'custom',
+      '.custom-pretty-delimiter label input',
+      mainOptions.delimiterMappings,
+      options.prettyPrintDelimiter
+    );
+  }
 }
 
-export {HtmlOptionsPanel};
+export { HtmlOptionsPanel };

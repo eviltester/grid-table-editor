@@ -1,14 +1,12 @@
-class TabbedTextControl{
+class TabbedTextControl {
+  constructor(parentElement, theImportExportControls) {
+    this.parent = parentElement;
+    this.importExportController = theImportExportControls;
+  }
 
-    constructor(parentElement, theImportExportControls) {
-        this.parent = parentElement;
-        this.importExportController = theImportExportControls;
-    }
-
-    // TODO : populate this from the registered importers and exporters rather than hard coding
-    addToGui(){
-        this.parent.innerHTML =
-        `
+  // TODO : populate this from the registered importers and exporters rather than hard coding
+  addToGui() {
+    this.parent.innerHTML = `
         <div class="conversionTabs">
           <div id="conversionTypes" class="conversionTypes">
             <ul class="conversionTypesList">
@@ -52,54 +50,52 @@ class TabbedTextControl{
         </div>
         `;
 
+    this.parent.querySelectorAll('.type-select-action').forEach((lielem) =>
+      lielem.addEventListener('click', (e) => {
+        // set the display buttons
+        this.parent.querySelectorAll('.type-select').forEach((elem) => elem.classList.remove('active-type'));
 
-      this.parent.querySelectorAll(".type-select-action").forEach( lielem => lielem.addEventListener("click", (e) => {
+        e.target.parentElement.classList.add('active-type');
 
-          // set the display buttons
-      this.parent.querySelectorAll(".type-select").forEach(elem => elem.classList.remove("active-type"));
-      
-          e.target.parentElement.classList.add("active-type");
-      
-          // switched tab so re-render text
-          this.importExportController.renderTextFromGrid();
-          this.importExportController.setFileFormatType();
-          this.importExportController.setOptionsViewForFormatType();
-          // don't try to navigate
-          return false;
-        })
-      );
-
-      this.parent.querySelectorAll("li.type-select").forEach( lielem => lielem.addEventListener("click", (e) => {  
-        e.target.querySelector("a.type-select-action")?.click();
+        // switched tab so re-render text
+        this.importExportController.renderTextFromGrid();
+        this.importExportController.setFileFormatType();
+        this.importExportController.setOptionsViewForFormatType();
+        // don't try to navigate
+        return false;
       })
     );
 
-      const modeButton = this.parent.querySelector("#previewEditModeButton");
-      if(modeButton){
-        modeButton.addEventListener("click", () => {
-          this.importExportController.toggleTextEditMode();
-          this._syncPreviewEditButtonLabel();
-        });
-      }
+    this.parent.querySelectorAll('li.type-select').forEach((lielem) =>
+      lielem.addEventListener('click', (e) => {
+        e.target.querySelector('a.type-select-action')?.click();
+      })
+    );
 
-      this._syncPreviewEditButtonLabel();
-
+    const modeButton = this.parent.querySelector('#previewEditModeButton');
+    if (modeButton) {
+      modeButton.addEventListener('click', () => {
+        this.importExportController.toggleTextEditMode();
+        this._syncPreviewEditButtonLabel();
+      });
     }
 
-    _syncPreviewEditButtonLabel(){
-      const modeButton = this.parent.querySelector("#previewEditModeButton");
-      if(!modeButton){
-        return;
-      }
+    this._syncPreviewEditButtonLabel();
+  }
 
-      if(this.importExportController?.isPreviewTextMode?.()){
-        const rowLimit = this.importExportController?.getPreviewRowLimit?.() ?? 10;
-        modeButton.innerText = `Preview (${rowLimit})`;
-        return;
-      }
-      modeButton.innerText = "Edit";
+  _syncPreviewEditButtonLabel() {
+    const modeButton = this.parent.querySelector('#previewEditModeButton');
+    if (!modeButton) {
+      return;
     }
-    
+
+    if (this.importExportController?.isPreviewTextMode?.()) {
+      const rowLimit = this.importExportController?.getPreviewRowLimit?.() ?? 10;
+      modeButton.innerText = `Preview (${rowLimit})`;
+      return;
+    }
+    modeButton.innerText = 'Edit';
+  }
 }
 
-export {TabbedTextControl};
+export { TabbedTextControl };

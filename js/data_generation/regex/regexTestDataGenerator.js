@@ -1,18 +1,16 @@
-import { dataResponse, errorResponse } from "../ruleResponse.js";
+import { dataResponse, errorResponse } from '../ruleResponse.js';
 
-export class RegexTestDataGenerator{
+export class RegexTestDataGenerator {
+  constructor(aRandExp) {
+    this.RandExp = aRandExp;
+  }
 
-    constructor(aRandExp){
-        this.RandExp = aRandExp;
+  generateFrom(aRule) {
+    try {
+      const data = new this.RandExp(aRule.ruleSpec).gen();
+      return dataResponse(data);
+    } catch (e) {
+      return errorResponse('Regex Generation Error ' + e);
     }
-
-    
-    generateFrom(aRule){
-        try{
-            const data = new this.RandExp(aRule.ruleSpec).gen();
-            return dataResponse(data);
-        }catch(e){
-            return errorResponse("Regex Generation Error " + e);
-        }
-    }
+  }
 }

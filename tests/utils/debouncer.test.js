@@ -1,46 +1,43 @@
-import {Debouncer} from '../../js/utils/debouncer.js';
+import { Debouncer } from '../../js/utils/debouncer.js';
 
-describe("Debouncer will call a function after a delay",()=>{
+describe('Debouncer will call a function after a delay', () => {
+  function delay(time) {
+    return new Promise((resolve) => setTimeout(resolve, time));
+  }
 
-    function delay(time) {
-        return new Promise(resolve => setTimeout(resolve, time));
+  test('will only call debouncer once', async () => {
+    let countOfCalls = 0;
+
+    function makeCall() {
+      countOfCalls++;
     }
 
-    test('will only call debouncer once', async () => {
+    let debouncer = new Debouncer();
 
-        let countOfCalls = 0;
+    for (let x = 0; x < 100; x++) {
+      debouncer.debounce('makecall', makeCall, 50);
+    }
 
-        function makeCall(){
-            countOfCalls++;
-        }
+    await delay(200);
+    expect(countOfCalls).toBe(1);
+  });
 
-        let debouncer = new Debouncer();
+  test('can clear debounce and it will not fire', async () => {
+    let countOfCalls = 0;
 
-        for(let x=0;x<100;x++){
-            debouncer.debounce("makecall", makeCall, 50);
-        }
+    function makeCall() {
+      countOfCalls++;
+    }
 
-        await delay(200);
-        expect(countOfCalls).toBe(1);
-    });
+    let debouncer = new Debouncer();
 
-    test('can clear debounce and it will not fire', async () => {
+    for (let x = 0; x < 100; x++) {
+      debouncer.debounce('makecall', makeCall, 50);
+    }
 
-        let countOfCalls = 0;
+    debouncer.clear('makecall');
 
-        function makeCall(){
-            countOfCalls++;
-        }
-
-        let debouncer = new Debouncer();
-
-        for(let x=0;x<100;x++){
-            debouncer.debounce("makecall", makeCall, 50);
-        }
-
-        debouncer.clear("makecall");
-
-        await delay(200);
-        expect(countOfCalls).toBe(0);
-    });
+    await delay(200);
+    expect(countOfCalls).toBe(0);
+  });
 });

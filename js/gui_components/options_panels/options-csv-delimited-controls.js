@@ -1,16 +1,14 @@
-import { DelimiterOptions } from "../../data_formats/delimiter-options.js";
-import {HtmlDataValues} from "./html-options-data-utils.js";
+import { DelimiterOptions } from '../../data_formats/delimiter-options.js';
+import { HtmlDataValues } from './html-options-data-utils.js';
 
-class CsvDelimitedOptions{
+class CsvDelimitedOptions {
+  constructor(parentElement) {
+    this.parent = parentElement;
+    this.htmlData = new HtmlDataValues(this.parent);
+  }
 
-    constructor(parentElement) {
-        this.parent = parentElement;
-        this.htmlData = new HtmlDataValues(this.parent);
-    }
-
-    addToGui(){
-        this.parent.innerHTML =
-        `
+  addToGui() {
+    this.parent.innerHTML = `
         <div class="delimited-options" style="width:100%">
           <div><p><strong>Options</strong> <span data-help="csv-options" class="helpicon"></span></p></div>
           <div class="quotes">            
@@ -64,43 +62,38 @@ class CsvDelimitedOptions{
       
         </div>
         `;
+  }
+
+  setApplyCallback(callbackFunc) {
+    let button = this.parent.querySelector('.delimited-options .apply button');
+    button.onclick = function () {
+      callbackFunc(this.getOptionsFromGui());
+    }.bind(this);
+  }
+
+  getOptionsFromGui() {
+    // TODO : create a CsvDelimiterOptions()
+    let delimiterOptions = new DelimiterOptions(',');
+
+    delimiterOptions.options.quotes = this.htmlData.getCheckBoxValueFrom('.quotes label input');
+    delimiterOptions.options.header = this.htmlData.getCheckBoxValueFrom('.headerval label input');
+    delimiterOptions.options.quoteChar = this.htmlData.getTextInputValueFrom('.quoteChar label input');
+    delimiterOptions.options.escapeChar = this.htmlData.getTextInputValueFrom('.escapeChar label input');
+    return delimiterOptions;
+  }
+
+  setFromOptions(delimiterOptions) {
+    if (!delimiterOptions.options) {
+      return;
     }
 
-    setApplyCallback(callbackFunc){
+    let options = delimiterOptions.options;
 
-      let button = this.parent.querySelector(".delimited-options .apply button");
-      button.onclick = function (){
-          callbackFunc(this.getOptionsFromGui())
-      }.bind(this);
-
-    }
-
-    getOptionsFromGui(){
-
-      // TODO : create a CsvDelimiterOptions()
-      let delimiterOptions = new DelimiterOptions(",");
-
-      delimiterOptions.options.quotes = this.htmlData.getCheckBoxValueFrom(".quotes label input");
-      delimiterOptions.options.header = this.htmlData.getCheckBoxValueFrom(".headerval label input");
-      delimiterOptions.options.quoteChar =  this.htmlData.getTextInputValueFrom(".quoteChar label input");
-      delimiterOptions.options.escapeChar = this.htmlData.getTextInputValueFrom(".escapeChar label input");
-      return delimiterOptions;
-    }
-
-    setFromOptions(delimiterOptions){
-
-      if(!delimiterOptions.options){
-        return;
-      }
-
-      let options = delimiterOptions.options;
-
-      this.htmlData.setCheckBoxFrom(".quotes label input", options.quotes, true);
-      this.htmlData.setCheckBoxFrom(".headerval label input", options.header, true);
-      this.htmlData.setTextFieldToValue(".quoteChar label input", options.quoteChar, "\"");
-      this.htmlData.setTextFieldToValue(".escapeChar label input", options.escapeChar, "\"");
-    }
-
+    this.htmlData.setCheckBoxFrom('.quotes label input', options.quotes, true);
+    this.htmlData.setCheckBoxFrom('.headerval label input', options.header, true);
+    this.htmlData.setTextFieldToValue('.quoteChar label input', options.quoteChar, '"');
+    this.htmlData.setTextFieldToValue('.escapeChar label input', options.escapeChar, '"');
+  }
 }
 
-export {CsvDelimitedOptions};
+export { CsvDelimitedOptions };

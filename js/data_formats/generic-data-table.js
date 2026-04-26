@@ -21,94 +21,93 @@ can be more easily unit tested.
 
 */
 class GenericDataTable {
+  constructor() {
+    this.headers = [];
+    this.rows = [];
+  }
 
-    constructor() {
-        this.headers = [];
-        this.rows = [];
+  clear() {
+    // clear the table
+    this.headers = [];
+    this.rows = [];
+    return true;
+  }
+
+  appendDataRow(rowData) {
+    let numberOfEmptyCellsToAdd = this.headers.length;
+    let rowToAdd = [];
+    if (rowData !== undefined && rowData !== null) {
+      if (rowData.length > this.headers.length) {
+        // problem, the row is too long for the table
+        console.log('Tried to add ' + rowData.length + ' columns to a table with ' + this.headers.length + ' columns');
+        return false;
+      }
+      // add the data into the row
+      numberOfEmptyCellsToAdd = this.headers.length - rowData.length;
+
+      for (let cell of rowData) {
+        rowToAdd.push(cell ? String(cell) : '');
+      }
     }
 
-    clear(){
-        // clear the table
-        this.headers = [];
-        this.rows=[];
-        return true;
+    // add the empty cells
+    while (numberOfEmptyCellsToAdd > 0) {
+      rowToAdd.push('');
+      numberOfEmptyCellsToAdd--;
     }
 
-    appendDataRow(rowData){
-        let numberOfEmptyCellsToAdd = this.headers.length;
-        let rowToAdd = [];
-        if(rowData!==undefined && rowData !==null){
-            if(rowData.length>this.headers.length){
-                // problem, the row is too long for the table
-                console.log("Tried to add " + rowData.length + " columns to a table with " + this.headers.length + " columns");
-                return false;
-            }
-            // add the data into the row
-            numberOfEmptyCellsToAdd = this.headers.length - rowData.length;
+    this.rows.push(rowData);
+    return true;
+  }
 
-            for(let cell of rowData){
-                rowToAdd.push(cell ? String(cell) : '');
-            }
-        }
-        
-        // add the empty cells
-        while(numberOfEmptyCellsToAdd>0){
-            rowToAdd.push("");
-            numberOfEmptyCellsToAdd--;
-        }
+  addHeader(aHeader) {
+    this.headers.push(aHeader ? String(aHeader) : '');
+  }
 
-        this.rows.push(rowData);
-        return true;
+  setHeaders(aHeaderArray) {
+    this.headers = [];
+    for (let header of aHeaderArray) {
+      this.addHeader(header);
     }
+  }
 
-    addHeader(aHeader){
-        this.headers.push(aHeader ? String(aHeader) : '');
-    }
+  getColumnCount() {
+    return this.headers.length;
+  }
 
-    setHeaders(aHeaderArray){
-        this.headers = [];
-        for(let header of aHeaderArray){
-            this.addHeader(header);
-        }
-    }
+  getHeader(headerIndex) {
+    return this.headers[headerIndex];
+  }
 
-    getColumnCount(){
-        return this.headers.length;
-    }
+  getHeaders() {
+    return this.headers.map((header) => header);
+  }
 
-    getHeader(headerIndex){
-        return this.headers[headerIndex];
-    }
+  getRowCount() {
+    return this.rows.length;
+  }
 
-    getHeaders(){
-        return this.headers.map(header => header);
-    }
+  getCell(rowIndex, colIndex) {
+    return this.rows[rowIndex][colIndex];
+  }
 
-    getRowCount(){
-        return this.rows.length;
-    }
+  getRow(rowIndex) {
+    return this.rows[rowIndex].map((cell) => cell);
+  }
 
-    getCell(rowIndex, colIndex){
-        return this.rows[rowIndex][colIndex];
-    }
+  getRowAsObject(rowIndex) {
+    let fieldnames = this.getHeaders();
+    return this.getRowAsObjectUsingHeadings(rowIndex, fieldnames);
+  }
 
-    getRow(rowIndex){
-        return this.rows[rowIndex].map(cell => cell);
+  getRowAsObjectUsingHeadings(rowIndex, fieldnames) {
+    let vals = {};
+    let row = this.getRow(rowIndex);
+    for (const propertyid in fieldnames) {
+      vals[fieldnames[propertyid]] = row[propertyid];
     }
-
-    getRowAsObject(rowIndex){
-      let fieldnames = this.getHeaders();
-      return this.getRowAsObjectUsingHeadings(rowIndex, fieldnames);
-    }
-
-    getRowAsObjectUsingHeadings(rowIndex, fieldnames){
-        let vals = {};
-        let row = this.getRow(rowIndex);
-        for (const propertyid in fieldnames) {
-            vals[fieldnames[propertyid]] = row[propertyid];
-        }
-        return vals;
-    }
+    return vals;
+  }
 }
 
-export {GenericDataTable}
+export { GenericDataTable };

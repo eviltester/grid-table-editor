@@ -1,17 +1,17 @@
 name: create-bun-exe
 on:
-    workflow_dispatch:
-      inputs:
-        tag:
-        commit:
-          default: "master"
+  workflow_dispatch:
+    inputs:
+      tag:
+      commit:
+        default: 'master'
 jobs:
   bun-build:
     name: build-bun-exes
     runs-on: ubuntu-latest
     defaults:
-        run:
-          working-directory: ./cli
+      run:
+        working-directory: ./cli
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
@@ -39,7 +39,7 @@ jobs:
         run: |
           bun build ./index.ts --compile --outfile ${{ github.workspace }}/out/macos-arm64/anywaydata --target=bun-darwin-arm64
           zip -j ${{ github.workspace }}/macos-arm64.zip ${{ github.workspace }}/out/macos-arm64/anywaydata
-      - name: check dir  
+      - name: check dir
         run: ls -R ${{ github.workspace }}/out
       - uses: ncipollo/release-action@v1.16.0
         with:
@@ -47,7 +47,7 @@ jobs:
           commit: ${{ inputs.commit }}
           name: Draft Release ${{ github.ref }}
           draft: true
-          artifacts:  |
+          artifacts: |
             ${{ github.workspace }}/windows64.zip
             ${{ github.workspace }}/linux-x64.zip
             ${{ github.workspace }}/linux-arm64.zip
@@ -55,4 +55,3 @@ jobs:
             ${{ github.workspace }}/macos-arm64.zip
           body: 'AnyWayData CLI versions'
           allowUpdates: true
-    

@@ -17,6 +17,7 @@ class GridExtensionTabulator{
     constructor(tabulator) {
         this.tabulator = tabulator;
         this.tabUtils = new TabulatorHelper(tabulator);
+        this._pendingGridMutation = Promise.resolve();
 
         // this.cellRendererText = (params) => {
         //     let val = params.value;
@@ -30,13 +31,13 @@ class GridExtensionTabulator{
 
     // [x] convert to tabulature
     clearGrid(){
-        this.tabulator.clearData();          // removes **all rows**
-
         const columnDefs = [
             { title: "~rename-me", headerName: "~rename-me", field: "column1", colId: "column1" }
         ];
-        this.tabulator.setColumns(columnDefs);
-        this.tabulator.setData([]);
+        this._enqueueGridMutation(() => {
+            return Promise.resolve(this.tabulator.setColumns(columnDefs))
+                .then(() => this.tabulator.setData([]));
+        });
     }
 
     // [x] convert to tabulature
@@ -93,17 +94,23 @@ class GridExtensionTabulator{
     }
 
     _addFieldsToData(fieldNames, defaultValue){
-        fieldNames.forEach(fieldName => {
-            this._addFieldToData(fieldName, defaultValue);
+        if(!fieldNames || fieldNames.length===0){
+            return;
+        }
+
+        this._runWithoutRedraw(() => {
+            this.tabulator.getRows().forEach(row => {
+                let rowPatch = {};
+                fieldNames.forEach(fieldName => {
+                    rowPatch[fieldName] = defaultValue;
+                });
+                row.update(rowPatch);
+            });
         });
     }
 
     _addFieldToData(fieldName, defaultValue){
-        this.tabulator.getRows().forEach(row => {
-            let rowPatch = {};
-            rowPatch[fieldName] = defaultValue;
-            row.update(rowPatch);
-        });
+        this._addFieldsToData([fieldName], defaultValue);
     }
 
     // [x] convert to tabulature
@@ -118,12 +125,7 @@ class GridExtensionTabulator{
             return;
         }
 
-        this.tabulator.getRows().forEach(row => {
-            const fieldName = destinationCol.field;
-            let obj = {};
-            obj[fieldName] = row.getData()[column.getDefinition().field];
-            row.update(obj);
-        });
+        this._copyColumnData(column.getDefinition().field, destinationCol.field);
 
     }
 
@@ -335,15 +337,24 @@ class GridExtensionTabulator{
     getGridAsGenericDataTable(){
 
         let dataTable = new GenericDataTable();
-        dataTable.setHeaders(this.tabulator.getColumnDefinitions().map(col => col.title));
+        const columnDefs = this.tabulator.getColumnDefinitions();
+        dataTable.setHeaders(columnDefs.map(col => col.title));
 
-        var fieldnames = this.tabulator.getColumnDefinitions().map(col => col.field);
-    
-        // since we can filter and sort...        
-        this.tabulator.getData("active").forEach(node => {
-            var vals = this._getRowAsGenericDataValsArray(node, fieldnames);
-            dataTable.appendDataRow(vals);
-        });
+        const fieldnames = columnDefs.map(col => col.field);
+        const activeRows = this.tabulator.getData("active");
+
+        // Fast path for large exports: build rows in memory once, then assign.
+        const rows = new Array(activeRows.length);
+        for(let rowIndex=0; rowIndex<activeRows.length; rowIndex++){
+            const sourceRow = activeRows[rowIndex];
+            const vals = new Array(fieldnames.length);
+            for(let colIndex=0; colIndex<fieldnames.length; colIndex++){
+                const value = sourceRow[fieldnames[colIndex]];
+                vals[colIndex] = value === undefined || value === null ? "" : String(value);
+            }
+            rows[rowIndex] = vals;
+        }
+        dataTable.rows = rows;
 
         return dataTable;
     }
@@ -374,8 +385,6 @@ class GridExtensionTabulator{
         // TODO : report errors on screen
       }
 
-      this.tabulator.clearData();
-
       const headers = dataTable.getHeaders();
 
       // Rebuild columns deterministically on import so header titles are preserved
@@ -392,9 +401,11 @@ class GridExtensionTabulator{
       }
 
       // Tabulator column resets are async; chain operations to avoid fallback headers.
-      Promise.resolve(this.tabulator.setColumns(columnDefs))
-          .then(() => this.tabulator.setData(addRows))
-          .then(() => this._applyHeaderTitles(headers));
+      this._enqueueGridMutation(() => {
+          return Promise.resolve(this.tabulator.setColumns(columnDefs))
+              .then(() => this.tabulator.setData(addRows))
+              .then(() => this._applyHeaderTitles(headers));
+      });
 
       // TODO : apply transactions incrementally for larger data sets
       //this.tabulator.applyTransaction({ add: addRows });
@@ -402,12 +413,79 @@ class GridExtensionTabulator{
 
     _applyHeaderTitles(headers){
         const columns = this.tabulator.getColumns();
-        columns.forEach((column, index) => {
-            const header = headers[index];
-            if(header !== undefined){
+        this._runWithoutRedraw(() => {
+            columns.forEach((column, index) => {
+                const header = headers[index];
+                if(header === undefined){
+                    return;
+                }
+
+                const definition = column.getDefinition ? column.getDefinition() : {};
+                if(definition.title === header && definition.headerName === header){
+                    return;
+                }
+
                 column.updateDefinition({ title: header, headerName: header });
-            }
+            });
         });
+    }
+
+    _runWithoutRedraw(callback){
+        if(typeof callback !== "function"){
+            return;
+        }
+
+        const supportsRedrawControl =
+            typeof this.tabulator.blockRedraw === "function" &&
+            typeof this.tabulator.restoreRedraw === "function";
+
+        if(!supportsRedrawControl){
+            callback();
+            return;
+        }
+
+        this.tabulator.blockRedraw();
+        try{
+            callback();
+        }finally{
+            this.tabulator.restoreRedraw();
+        }
+    }
+
+    _copyColumnData(sourceFieldName, destinationFieldName){
+        const allData = typeof this.tabulator.getData === "function" ? this.tabulator.getData() : null;
+        const canUseBulkDataPath = Array.isArray(allData) && typeof this.tabulator.redraw === "function";
+
+        if(canUseBulkDataPath){
+            this._runWithoutRedraw(() => {
+                for(let rowIndex=0; rowIndex<allData.length; rowIndex++){
+                    const rowData = allData[rowIndex];
+                    rowData[destinationFieldName] = rowData[sourceFieldName];
+                }
+            });
+            this.tabulator.redraw(true);
+            return;
+        }
+
+        this._runWithoutRedraw(() => {
+            this.tabulator.getRows().forEach(row => {
+                let obj = {};
+                obj[destinationFieldName] = row.getData()[sourceFieldName];
+                row.update(obj);
+            });
+        });
+    }
+
+    _enqueueGridMutation(mutationFn){
+        if(typeof mutationFn !== "function"){
+            return this._pendingGridMutation;
+        }
+
+        this._pendingGridMutation = this._pendingGridMutation
+            .catch(() => undefined)
+            .then(() => mutationFn());
+
+        return this._pendingGridMutation;
     }
 
     _normaliseId(idOrColumn){

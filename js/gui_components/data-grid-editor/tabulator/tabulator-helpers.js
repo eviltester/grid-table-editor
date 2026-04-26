@@ -2,25 +2,38 @@ class TabulatorHelper{
 
     constructor(tabulator) {
         this.tabulator = tabulator;
+        this._activeGlobalFilterQuery = "";
     }
 
 
     filterAcrossAllColumns(value) {
-        const query = value.trim().toLowerCase();
+        const query = String(value ?? "").trim().toLowerCase();
 
         // If nothing typed, clear all filters
         if (!query) {
             this.tabulator.clearFilter();
+            this._activeGlobalFilterQuery = "";
             return;
         }
 
-        // Custom filter – keep rows where *any* value contains the query
-        this.tabulator.setFilter(function (row) {
-            const values = Object.values(row);
-            return values.some(val => {
-                // Convert to string and search case‑insensitively
-                return String(val).toLowerCase().includes(query);
-            });
+        this._activeGlobalFilterQuery = query;
+
+        // Custom filter - keep rows where any primitive value contains the query.
+        this.tabulator.setFilter((row) => {
+            const activeQuery = this._activeGlobalFilterQuery;
+            for (const key in row) {
+                if (!Object.prototype.hasOwnProperty.call(row, key)) {
+                    continue;
+                }
+                const value = row[key];
+                if (value === null || value === undefined) {
+                    continue;
+                }
+                if (String(value).toLowerCase().includes(activeQuery)) {
+                    return true;
+                }
+            }
+            return false;
         });
     }
 

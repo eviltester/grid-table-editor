@@ -41,7 +41,14 @@ describe('DsvExporter', () => {
         ['Bob', 'Dev'],
       ]
     );
-    const exporter = new DsvExporter({ delimiter: '\t', quoteChar: '"', escapeChar: '"', quotes: true, newline: '\r\n', header: true });
+    const exporter = new DsvExporter({
+      delimiter: '\t',
+      quoteChar: '"',
+      escapeChar: '"',
+      quotes: true,
+      newline: '\r\n',
+      header: true,
+    });
 
     const output = exporter.fromDataTable(table);
 
@@ -50,7 +57,14 @@ describe('DsvExporter', () => {
 
   test('omits header row when header option is false', () => {
     const table = createTable(['Name'], [['Connie']]);
-    const exporter = new DsvExporter({ delimiter: ',', quoteChar: '"', escapeChar: '"', quotes: true, newline: '\n', header: false });
+    const exporter = new DsvExporter({
+      delimiter: ',',
+      quoteChar: '"',
+      escapeChar: '"',
+      quotes: true,
+      newline: '\n',
+      header: false,
+    });
 
     expect(exporter.fromDataTable(table)).toBe('"Connie"');
   });
@@ -60,7 +74,14 @@ describe('DsvExporter', () => {
       ['Name'],
       Array.from({ length: 1200 }, (_unused, idx) => [`User ${idx}`])
     );
-    const exporter = new DsvExporter({ delimiter: ',', quoteChar: '"', escapeChar: '"', quotes: true, newline: '\n', header: true });
+    const exporter = new DsvExporter({
+      delimiter: ',',
+      quoteChar: '"',
+      escapeChar: '"',
+      quotes: true,
+      newline: '\n',
+      header: true,
+    });
     const progressSpy = jest.fn();
 
     const asyncOutput = await exporter.fromDataTableAsync(table, progressSpy);
@@ -74,7 +95,14 @@ describe('DsvExporter', () => {
 describe('Convenience wrappers', () => {
   test('CsvExporter always uses comma delimiter', () => {
     const table = createTable(['Name', 'Role'], [['Connie', 'QA']]);
-    const exporter = new CsvExporter({ delimiter: '\t', quoteChar: '"', escapeChar: '"', quotes: true, newline: '\n', header: true });
+    const exporter = new CsvExporter({
+      delimiter: '\t',
+      quoteChar: '"',
+      escapeChar: '"',
+      quotes: true,
+      newline: '\n',
+      header: true,
+    });
 
     expect(exporter.fromDataTable(table)).toBe('"Name","Role"\n"Connie","QA"');
 
@@ -84,7 +112,14 @@ describe('Convenience wrappers', () => {
 
   test('TsvExporter always uses tab delimiter', () => {
     const table = createTable(['Name', 'Role'], [['Connie', 'QA']]);
-    const exporter = new TsvExporter({ delimiter: ',', quoteChar: '"', escapeChar: '"', quotes: true, newline: '\n', header: true });
+    const exporter = new TsvExporter({
+      delimiter: ',',
+      quoteChar: '"',
+      escapeChar: '"',
+      quotes: true,
+      newline: '\n',
+      header: true,
+    });
 
     expect(exporter.fromDataTable(table)).toBe('"Name"\t"Role"\n"Connie"\t"QA"');
 

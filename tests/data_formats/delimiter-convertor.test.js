@@ -10,7 +10,9 @@ function createTable(headers, rows) {
 
 describe('DelimiterConvertor', () => {
   test('fromDataTable bypasses papaparse and uses internal dsv exporter', () => {
-    const convertor = new DelimiterConvertor({ options: { delimiter: ',', header: true, quoteChar: '"', escapeChar: '"', quotes: true } });
+    const convertor = new DelimiterConvertor({
+      options: { delimiter: ',', header: true, quoteChar: '"', escapeChar: '"', quotes: true },
+    });
     const papaparse = {
       parse: jest.fn(),
       unparse: jest.fn(() => 'should not be used for writes'),
@@ -33,7 +35,12 @@ describe('DelimiterConvertor', () => {
   test('toDataTable continues to use papaparse parse path', () => {
     const convertor = new DelimiterConvertor({ options: { delimiter: ',', header: true } });
     const papaparse = {
-      parse: jest.fn(() => ({ data: [['Name', 'Role'], ['Connie', 'QA']] })),
+      parse: jest.fn(() => ({
+        data: [
+          ['Name', 'Role'],
+          ['Connie', 'QA'],
+        ],
+      })),
       unparse: jest.fn(),
     };
     convertor.setPapaParse(papaparse);
@@ -51,7 +58,12 @@ describe('DelimiterConvertor', () => {
       headers: ['Name', 'Role'],
     });
     const papaparse = {
-      parse: jest.fn(() => ({ data: [['Name', 'Role'], ['Connie', 'QA']] })),
+      parse: jest.fn(() => ({
+        data: [
+          ['Name', 'Role'],
+          ['Connie', 'QA'],
+        ],
+      })),
       unparse: jest.fn(() => '"Name","Role"'),
     };
     convertor.setPapaParse(papaparse);

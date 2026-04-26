@@ -452,7 +452,8 @@ class GridExtensionTabulator {
 
     const fieldnames = columnDefs.map((col) => col.field);
     const rowLimit = this._normaliseRowLimit(maxRows);
-    const sourceRows = rowLimit !== undefined ? this._getLimitedActiveRowData(rowLimit) : this.tabulator.getData('active');
+    const sourceRows =
+      rowLimit !== undefined ? this._getLimitedActiveRowData(rowLimit) : this.tabulator.getData('active');
 
     const totalRows = Array.isArray(sourceRows) ? sourceRows.length : 0;
     const rows = new Array(totalRows);

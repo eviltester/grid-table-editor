@@ -24,9 +24,7 @@ describe('Download', () => {
     const download = new Download('report.txt');
     const appendSpy = jest.spyOn(document.body, 'appendChild');
     const removeSpy = jest.spyOn(document.body, 'removeChild');
-    const clickSpy = jest
-      .spyOn(window.HTMLAnchorElement.prototype, 'click')
-      .mockImplementation(() => {});
+    const clickSpy = jest.spyOn(window.HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
 
     download.downloadFile('hello world');
 

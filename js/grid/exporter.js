@@ -49,6 +49,10 @@ class Exporter {
     }
 
     getGridAs(type){
+        return this.getDataTableAs(type, this.getGridAsGenericDataTable());
+    }
+
+    getDataTableAs(type, dataTable){
 
         if(!this.canExport(type)){
             console.log(`Data Type ${type} not supported for exporting`);
@@ -61,7 +65,7 @@ class Exporter {
             if(optionsToUse!==undefined){
                 exporterToUse?.setOptions?.(optionsToUse);
             }
-            return exporterToUse?.fromDataTable(this.getGridAsGenericDataTable());
+            return exporterToUse?.fromDataTable(dataTable);
         }
     }
 

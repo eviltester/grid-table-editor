@@ -32,7 +32,7 @@ class GridExtensionTabulator{
     // [x] convert to tabulature
     clearGrid(){
         const columnDefs = [
-            { title: "~rename-me", headerName: "~rename-me", field: "column1", colId: "column1" }
+            { title: "~rename-me", field: "column1" }
         ];
         this._enqueueGridMutation(() => {
             return Promise.resolve(this.tabulator.setColumns(columnDefs))
@@ -70,12 +70,10 @@ class GridExtensionTabulator{
 
         let newCol = {};
         newCol.title = named;
-        newCol.headerName = named;
         if(fieldId===undefined){
             fieldId = this.getNextFieldNumber();
         }
         newCol.field = 'column' + fieldId;
-        newCol.colId = newCol.field;
         return newCol;
       }
 
@@ -213,7 +211,7 @@ class GridExtensionTabulator{
         return {
             ...colDef,
             colId: colDef.colId || colDef.field,
-            headerName: colDef.headerName || colDef.title
+            headerName: colDef.title
         };
     }
 
@@ -234,7 +232,7 @@ class GridExtensionTabulator{
         if(!column){
             return;
         }
-        column.updateDefinition({title:name, headerName:name});
+        column.updateDefinition({title:name});
     }
 
     renameColId(id, name){
@@ -391,7 +389,7 @@ class GridExtensionTabulator{
       // and field ids start from column1 each time (parity with AG Grid import flow).
       const columnDefs = headers.map((header, index) => {
         const field = `column${index + 1}`;
-        return { title: header, headerName: header, field, colId: field };
+        return { title: header, field };
       });
 
       let addRows = [];
@@ -421,11 +419,11 @@ class GridExtensionTabulator{
                 }
 
                 const definition = column.getDefinition ? column.getDefinition() : {};
-                if(definition.title === header && definition.headerName === header){
+                if(definition.title === header){
                     return;
                 }
 
-                column.updateDefinition({ title: header, headerName: header });
+                column.updateDefinition({ title: header });
             });
         });
     }

@@ -214,23 +214,10 @@ class DataGeneratorPage {
 
   renderPageShell() {
     this.parentElement.innerHTML = `
-            <section class="generator-page">
-                <div class="generator-controls">
-                    <label>Generate Rows
-                        <input type="number" id="generateRowsCount" min="0" value="1000">
-                    </label>
-                    <label>Output Format
-                        <select id="generatorOutputFormat"></select>
-                    </label>
-                    <button id="generateDataButton">Generate Data</button>
-                  <div class="generator-options-wrapper">
-                    <div id="generatorOptionsPanel" class="generator-options-panel"></div>
-                    <div id="generatorStatusText" class="generator-status-text" aria-live="polite" role="status"></div>
-                  </div>
-                </div>
-                <div class="generator-schema">
+        <section class="generator-page" aria-label="Data Generator">
+          <section class="generator-schema" id="generatorSchemaSection" data-section-order="2" aria-labelledby="generatorSchemaHeading">
                     <div class="generator-schema-head">
-                        <strong>Schema</strong>
+              <strong id="generatorSchemaHeading">Schema</strong>
                         <button id="schemaModeToggleButton" class="icon-button" title="Toggle schema text mode">Edit as Text</button>
                     </div>
                     <div id="generatorSchemaRows" class="generator-schema-rows"></div>
@@ -240,23 +227,43 @@ class DataGeneratorPage {
                     <div class="generator-schema-footer">
                         <button id="addSchemaRowButton" title="Add field">+ Add Field</button>
                     </div>
-                </div>
-                <div class="generator-preview">
+          </section>
+
+            <section class="generator-controls" id="generatorGenerateOptionsSection" data-section-order="3" aria-labelledby="generatorGenerateOptionsHeading">
+                      <div class="generator-controls-head">
+              <strong id="generatorGenerateOptionsHeading">Generate Data and Options</strong>
+                      </div>
+                      <label>Generate Rows
+                        <input type="number" id="generateRowsCount" min="0" value="1000">
+                      </label>
+                      <label>Output Format
+                        <select id="generatorOutputFormat"></select>
+                      </label>
+                      <button id="generateDataButton">Generate Data</button>
+                      <div class="generator-options-wrapper">
+                        <div id="generatorOptionsPanel" class="generator-options-panel"></div>
+                        <div id="generatorStatusText" class="generator-status-text" aria-live="polite" role="status"></div>
+                      </div>
+                    </section>
+
+                <section class="generator-preview" id="generatorPreviewSection" data-section-order="4" aria-labelledby="generatorPreviewHeading">
                     <div class="generator-preview-head">
-                        <strong>Preview</strong>
-                        <div class="generator-preview-controls">
-                            <label>Preview Rows
-                        <input type="number" id="previewRowsCount" min="0" max="50" value="10">
-                            </label>
-                            <button id="previewDataButton">Preview</button>
-                        </div>
+                        <strong id="generatorPreviewHeading">Preview</strong>
                     </div>
-                    <div id="generator-preview-grid" class="ag-theme-alpine"></div>
-                  <div class="generator-output-preview">
-                    <label for="generatorOutputPreview">Output Preview</label>
-                    <textarea id="generatorOutputPreview" readonly spellcheck="false"></textarea>
-                  </div>
-                </div>
+                      <div class="generator-preview-controls" id="generatorPreviewControlsSection" data-subsection-order="1" aria-label="Preview Controls">
+                        <label for="previewRowsCount" class="generator-preview-count-label">Preview Items Count</label>
+                        <input type="number" id="previewRowsCount" min="0" max="50" value="10">
+                        <button id="previewDataButton">Preview</button>
+                      </div>
+                      <div class="generator-output-preview" id="generatorOutputPreviewSection" data-subsection-order="2" aria-label="Output Preview">
+                        <label for="generatorOutputPreview">Output Preview</label>
+                        <textarea id="generatorOutputPreview" readonly spellcheck="false"></textarea>
+                      </div>
+                      <div class="generator-data-table-preview" id="generatorDataTablePreviewSection" data-subsection-order="3" aria-label="Data Table Preview">
+                        <label for="generator-preview-grid">Data Table Preview</label>
+                        <div id="generator-preview-grid" class="ag-theme-alpine"></div>
+                      </div>
+                </section>
             </section>
         `;
 

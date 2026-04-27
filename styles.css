@@ -326,6 +326,10 @@ Custom header styles for default items
   background: #f8fcff;
 }
 
+.generator-controls-head{
+  flex: 1 1 100%;
+}
+
 .generator-controls > label{
   display: flex;
   flex-direction: column;
@@ -412,27 +416,24 @@ Custom header styles for default items
 }
 
 .generator-preview-head{
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.8rem;
+  margin-bottom: 0.4rem;
 }
 
 .generator-preview-controls{
   display: flex;
-  align-items: end;
+  align-items: center;
   gap: 0.6rem;
 }
 
-.generator-preview-controls label{
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
+.generator-preview-count-label{
   font-size: 0.9rem;
 }
 
+#previewRowsCount{
+  width: 6rem;
+}
+
 #generator-preview-grid{
-  margin-top: 0.4rem;
   width: 100%;
   height: 420px;
 }
@@ -455,16 +456,22 @@ Custom header styles for default items
   resize: vertical;
 }
 
+.generator-data-table-preview{
+  margin-top: 0.6rem;
+}
+
+.generator-data-table-preview label{
+  display: block;
+  font-size: 0.9rem;
+  margin-bottom: 0.2rem;
+}
+
 @media (max-width: 980px){
   .generator-schema-row{
     grid-template-columns: 1fr 1fr;
   }
   .generator-row-actions{
     grid-column: span 2;
-  }
-  .generator-preview-head{
-    flex-direction: column;
-    align-items: stretch;
   }
   .generator-preview-controls{
     justify-content: flex-start;

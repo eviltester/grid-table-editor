@@ -44,13 +44,16 @@ describe('Exporter direct table conversion', () => {
     expect(exporter.canExport('csv')).toBe(true);
     expect(exporter.canExport('xml')).toBe(true);
     expect(exporter.canExport('jsonl')).toBe(true);
+    expect(exporter.canExport('sql')).toBe(true);
     expect(exporter.canExport('unknown')).toBe(false);
     expect(exporter.getFileExtensionFor('csv')).toBe('.csv');
     expect(exporter.getFileExtensionFor('xml')).toBe('.xml');
     expect(exporter.getFileExtensionFor('jsonl')).toBe('.jsonl');
+    expect(exporter.getFileExtensionFor('sql')).toBe('.sql');
     expect(exporter.getOptionsForType('json')).toBeDefined();
     expect(exporter.getOptionsForType('jsonl')).toBeDefined();
     expect(exporter.getOptionsForType('xml')).toBeDefined();
+    expect(exporter.getOptionsForType('sql')).toBeDefined();
   });
 
   test('jsonl defaults force compact line-delimited output settings', () => {

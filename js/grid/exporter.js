@@ -4,6 +4,7 @@ import { HtmlConvertor, HtmlConvertorOptions } from '../data_formats/html-conver
 import { JsonConvertor, JsonConvertorOptions } from '../data_formats/json-convertor.js';
 import { JavascriptConvertor, JavascriptConvertorOptions } from '../data_formats/javascript-convertor.js';
 import { XmlConvertor, XmlConvertorOptions } from '../data_formats/xml-convertor.js';
+import { SqlConvertor, SqlConvertorOptions } from '../data_formats/sql-convertor.js';
 import { CsvConvertor } from '../data_formats/csv-convertor.js';
 import { DelimiterConvertor } from '../data_formats/delimiter-convertor.js';
 import { DelimiterOptions } from '../data_formats/delimiter-options.js';
@@ -34,6 +35,7 @@ class Exporter {
     });
     this.options['javascript'] = new JavascriptConvertorOptions();
     this.options['xml'] = new XmlConvertorOptions();
+    this.options['sql'] = new SqlConvertorOptions();
     this.options['html'] = new HtmlConvertorOptions();
     this.options['gherkin'] = new GherkinOptions();
 
@@ -47,6 +49,7 @@ class Exporter {
     this.exporters['jsonl'] = new JsonConvertor();
     this.exporters['javascript'] = new JavascriptConvertor();
     this.exporters['xml'] = new XmlConvertor();
+    this.exporters['sql'] = new SqlConvertor();
     this.exporters['gherkin'] = new GherkinConvertor();
     this.exporters['html'] = new HtmlConvertor();
     this.exporters['asciitable'] = new AsciiTableConvertor();

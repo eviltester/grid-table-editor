@@ -9,6 +9,7 @@ import { MarkdownOptionsPanel } from './options_panels/options-markdown-panel.js
 import { JsonOptionsPanel } from './options_panels/options-json-panel.js';
 import { JavascriptOptionsPanel } from './options_panels/options-javascript-panel.js';
 import { XmlOptionsPanel } from './options_panels/options-xml-panel.js';
+import { SqlOptionsPanel } from './options_panels/options-sql-panel.js';
 import { HtmlOptionsPanel } from './options_panels/options-html-panel.js';
 import { GherkinOptionsPanel } from './options_panels/options-gherkin-panel.js';
 import { AsciiTableOptionsPanel } from './options_panels/options-ascii-table.js';
@@ -254,6 +255,7 @@ class DataGeneratorPage {
       'json',
       'jsonl',
       'xml',
+      'sql',
       'markdown',
       'javascript',
       'dsv',
@@ -321,6 +323,7 @@ class DataGeneratorPage {
     this.optionsPanels['jsonl'] = new JsonOptionsPanel(optionsParent, 'jsonl-options', { jsonlMode: true });
     this.optionsPanels['javascript'] = new JavascriptOptionsPanel(optionsParent);
     this.optionsPanels['xml'] = new XmlOptionsPanel(optionsParent);
+    this.optionsPanels['sql'] = new SqlOptionsPanel(optionsParent);
     this.optionsPanels['html'] = new HtmlOptionsPanel(optionsParent);
     this.optionsPanels['gherkin'] = new GherkinOptionsPanel(optionsParent);
     this.optionsPanels['asciitable'] = new AsciiTableOptionsPanel(optionsParent);

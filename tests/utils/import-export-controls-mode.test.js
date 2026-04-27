@@ -369,6 +369,25 @@ describe('ImportExportControls file reading and visibility', () => {
     expect(document.querySelector("input[name='prettyprint']")).toBeNull();
   });
 
+  test('renders SQL options panel when sql format is selected', () => {
+    document.querySelector('li.active-type a').setAttribute('data-type', 'sql');
+    controls.optionsPanels = undefined;
+    controls.exporter.getOptionsForType.mockReturnValue({
+      options: {
+        tableName: 'myTable',
+        maxValuesPerInsert: 100,
+        quoteNumeric: true,
+      },
+    });
+
+    controls.setOptionsViewForFormatType();
+
+    expect(document.querySelector('.sql-options')).not.toBeNull();
+    expect(document.querySelector("input[name='table-name']")).not.toBeNull();
+    expect(document.querySelector("input[name='max-values-per-insert']")).not.toBeNull();
+    expect(document.querySelector("input[name='quote-numeric']")).not.toBeNull();
+  });
+
   test('jsonl format hides import controls but keeps export visible and updates extension', () => {
     document.querySelector('li.active-type a').setAttribute('data-type', 'jsonl');
     controls.importer.canImport.mockReturnValue(false);
@@ -381,5 +400,19 @@ describe('ImportExportControls file reading and visibility', () => {
     expect(document.getElementById('dropzone').style.visibility).toBe('hidden');
     expect(document.getElementById('filedownload').style.visibility).toBe('visible');
     expect(document.querySelector('.fileFormat').innerText).toBe('.jsonl');
+  });
+
+  test('sql format hides import controls but keeps export visible and updates extension', () => {
+    document.querySelector('li.active-type a').setAttribute('data-type', 'sql');
+    controls.importer.canImport.mockReturnValue(false);
+    controls.exporter.canExport.mockImplementation((type) => type === 'sql');
+    controls.importer.getFileExtensionFor.mockReturnValue('.sql');
+
+    controls.setFileFormatType();
+
+    expect(document.getElementById('setgridfromtextbutton').style.visibility).toBe('hidden');
+    expect(document.getElementById('dropzone').style.visibility).toBe('hidden');
+    expect(document.getElementById('filedownload').style.visibility).toBe('visible');
+    expect(document.querySelector('.fileFormat').innerText).toBe('.sql');
   });
 });

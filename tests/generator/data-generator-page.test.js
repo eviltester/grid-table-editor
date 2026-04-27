@@ -27,6 +27,7 @@ class FakeExporter {
       json: { options: { prettyPrint: false } },
       jsonl: { options: { outputAsJsonLines: true, prettyPrint: false, asObject: false } },
       xml: { options: { rootElementName: 'root', itemElementName: 'item', includeXmlHeader: true } },
+      sql: { options: { tableName: 'myTable', maxValuesPerInsert: 100, quoteNumeric: true } },
       markdown: { options: { prettyPrint: true } },
     };
     this.getDataTableAsAsync = jest.fn(async (type, dataTable, progressCallback) => {
@@ -43,7 +44,7 @@ class FakeExporter {
   }
 
   canExport(type) {
-    return ['csv', 'json', 'jsonl', 'xml', 'markdown'].includes(type);
+    return ['csv', 'json', 'jsonl', 'xml', 'sql', 'markdown'].includes(type);
   }
 
   getFileExtensionFor(type) {
@@ -58,6 +59,9 @@ class FakeExporter {
     }
     if (type === 'xml') {
       return '.xml';
+    }
+    if (type === 'sql') {
+      return '.sql';
     }
     return '.csv';
   }
@@ -342,6 +346,36 @@ describe('DataGeneratorPage', () => {
     expect(document.getElementById('generatorOutputPreview').value).toBe('jsonl:sync:2');
   });
 
+  test('output format list includes SQL and preview updates for SQL', () => {
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker: { word: { noun: () => 'x' } },
+      RandExp: function RandExp() {},
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: FakeTestDataGenerator,
+    });
+    page.init();
+
+    const outputSelect = document.getElementById('generatorOutputFormat');
+    const availableTypes = Array.from(outputSelect.options).map((option) => option.value);
+    expect(availableTypes).toContain('sql');
+
+    page.schemaRows = [{ id: '1', name: 'Name', sourceType: 'literal', command: '', params: '', value: 'fixed' }];
+    page.renderSchemaRows();
+    document.getElementById('previewRowsCount').value = '2';
+    page.previewData();
+
+    outputSelect.value = 'sql';
+    outputSelect.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+
+    expect(document.getElementById('generatorOutputPreview').value).toBe('sql:sync:2');
+  });
+
   test('generate downloads file using selected output format', async () => {
     const page = new DataGeneratorPage({
       parentElement: document.getElementById('app'),
@@ -487,6 +521,57 @@ describe('DataGeneratorPage', () => {
 
     expect(document.querySelector('#generatorOptionsPanel .xml-options')).not.toBeNull();
     expect(FakeExporter.lastInstance.getOptionsForType).toHaveBeenCalledWith('xml');
+  });
+
+  test('renders SQL options panel when selected', () => {
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker: { word: { noun: () => 'x' } },
+      RandExp: function RandExp() {},
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: FakeTestDataGenerator,
+    });
+    page.init();
+
+    const outputSelect = document.getElementById('generatorOutputFormat');
+    outputSelect.value = 'sql';
+    outputSelect.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+
+    expect(document.querySelector('#generatorOptionsPanel .sql-options')).not.toBeNull();
+    expect(FakeExporter.lastInstance.getOptionsForType).toHaveBeenCalledWith('sql');
+  });
+
+  test('generate downloads sql file when SQL format is selected', async () => {
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker: { word: { noun: () => 'x' } },
+      RandExp: function RandExp() {},
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: FakeTestDataGenerator,
+    });
+    page.init();
+
+    page.schemaRows = [{ id: '1', name: 'Name', sourceType: 'literal', command: '', params: '', value: 'fixed' }];
+    page.renderSchemaRows();
+    document.getElementById('generateRowsCount').value = '4';
+    document.getElementById('generatorOutputFormat').value = 'sql';
+
+    await page.generateDataFile();
+
+    expect(FakeDownload.lastDownload).toEqual({
+      filename: 'generated-data.sql',
+      text: 'sql:async:4',
+    });
   });
 
   test('generate falls back to sync export when async export utility is unavailable', async () => {

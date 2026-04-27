@@ -9,6 +9,7 @@ fileTypes['json'] = { type: 'json', fileExtension: '.json' };
 fileTypes['jsonl'] = { type: 'jsonl', fileExtension: '.jsonl' };
 fileTypes['javascript'] = { type: 'javascript', fileExtension: '.js' };
 fileTypes['xml'] = { type: 'xml', fileExtension: '.xml' };
+fileTypes['sql'] = { type: 'sql', fileExtension: '.sql' };
 fileTypes['gherkin'] = { type: 'gherkin', fileExtension: '.gherkin' };
 fileTypes['html'] = { type: 'html', fileExtension: '.html' };
 fileTypes['asciitable'] = { type: 'asciitable', fileExtension: '.txt' };

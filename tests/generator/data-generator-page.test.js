@@ -170,6 +170,8 @@ describe('DataGeneratorPage', () => {
       TestDataGeneratorClass: FakeTestDataGenerator,
     });
     page.init();
+    page.schemaRows[0].sourceType = 'faker';
+    page.renderSchemaRows();
 
     const commandSelect = document.querySelector('[data-field="command"]');
     const optionValues = Array.from(commandSelect.querySelectorAll('option'))
@@ -421,17 +423,70 @@ describe('DataGeneratorPage', () => {
     page.renderSchemaRows();
 
     let rowElem = document.querySelector('.generator-schema-row');
-    expect(rowElem.querySelector('[data-field="command"]').hidden).toBe(true);
-    expect(rowElem.querySelector('[data-field="params"]').hidden).toBe(true);
-    expect(rowElem.querySelector('[data-field="value"]').hidden).toBe(false);
+    expect(rowElem.querySelector('[data-field="command"]')).toBeNull();
+    expect(rowElem.querySelector('[data-field="faker-doc-link"]').hidden).toBe(false);
+    expect(rowElem.querySelector('[data-field="faker-doc-link"]').getAttribute('href')).toBe(
+      'https://anywaydata.com/docs/test-data/regex-test-data'
+    );
+    expect(rowElem.querySelector('[data-field="params"]')).toBeNull();
+    expect(rowElem.querySelector('[data-field="value"]')).not.toBeNull();
 
     rowElem.querySelector('[data-field="sourceType"]').value = 'faker';
     rowElem.querySelector('[data-field="sourceType"]').dispatchEvent(new dom.window.Event('change', { bubbles: true }));
 
     rowElem = document.querySelector('.generator-schema-row');
-    expect(rowElem.querySelector('[data-field="command"]').hidden).toBe(false);
-    expect(rowElem.querySelector('[data-field="params"]').hidden).toBe(false);
-    expect(rowElem.querySelector('[data-field="value"]').hidden).toBe(true);
+    expect(rowElem.querySelector('[data-field="command"]')).not.toBeNull();
+    expect(rowElem.querySelector('[data-field="faker-doc-link"]').hidden).toBe(false);
+    expect(rowElem.querySelector('[data-field="faker-doc-link"]').getAttribute('href')).toBe(
+      'https://fakerjs.dev/api/word'
+    );
+    expect(rowElem.querySelector('[data-field="params"]')).not.toBeNull();
+    expect(rowElem.querySelector('[data-field="value"]')).toBeNull();
+  });
+
+  test('shows schema help link for faker, regex and literal sources', () => {
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker: { word: { noun: () => 'x' } },
+      RandExp: function RandExp() {},
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: FakeTestDataGenerator,
+    });
+    page.init();
+
+    page.schemaRows = [{ id: '1', name: 'Plane', sourceType: 'faker', command: '', params: '', value: '' }];
+    page.renderSchemaRows();
+
+    let helpLink = document.querySelector('[data-field="faker-doc-link"]');
+    expect(helpLink.hidden).toBe(false);
+    expect(helpLink.getAttribute('href')).toBe('https://anywaydata.com/docs/test-data/faker-test-data');
+    expect(helpLink.getAttribute('target')).toBe('_blank');
+    expect(helpLink.getAttribute('rel')).toBe('noopener noreferrer');
+
+    const commandSelect = document.querySelector('[data-field="command"]');
+    commandSelect.value = 'helpers.fake';
+    commandSelect.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+
+    helpLink = document.querySelector('[data-field="faker-doc-link"]');
+    expect(helpLink.hidden).toBe(false);
+    expect(helpLink.getAttribute('href')).toBe('https://fakerjs.dev/api/helpers');
+
+    page.schemaRows[0].sourceType = 'regex';
+    page.renderSchemaRows();
+    helpLink = document.querySelector('[data-field="faker-doc-link"]');
+    expect(helpLink.hidden).toBe(false);
+    expect(helpLink.getAttribute('href')).toBe('https://anywaydata.com/docs/test-data/regex-test-data');
+
+    page.schemaRows[0].sourceType = 'literal';
+    page.renderSchemaRows();
+    helpLink = document.querySelector('[data-field="faker-doc-link"]');
+    expect(helpLink.hidden).toBe(false);
+    expect(helpLink.getAttribute('href')).toBe('https://anywaydata.com/docs/category/generating-data');
   });
 
   test('default alert invocation does not throw on validation errors', () => {

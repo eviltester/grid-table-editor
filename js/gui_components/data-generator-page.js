@@ -16,6 +16,9 @@ import { getKnownFakerCommandsAlphabetical, getKnownFakerCommandsLongestFirst } 
 const SOURCE_TYPE_FAKER = 'faker';
 const SOURCE_TYPE_REGEX = 'regex';
 const SOURCE_TYPE_LITERAL = 'literal';
+const REGEX_HELP_URL = 'https://anywaydata.com/docs/test-data/regex-test-data';
+const FAKER_HELP_URL = 'https://anywaydata.com/docs/test-data/faker-test-data';
+const LITERAL_HELP_URL = 'https://anywaydata.com/docs/category/generating-data';
 
 function normaliseFakerCommand(commandValue) {
   const command = String(commandValue || '').trim();
@@ -512,18 +515,38 @@ class DataGeneratorPage {
     container.innerHTML = '';
 
     this.schemaRows.forEach((row, index) => {
-      const isFakerSource = row.sourceType === SOURCE_TYPE_FAKER;
+      const normalisedSourceType = normaliseSourceType(row.sourceType);
+      const isFakerSource = normalisedSourceType === SOURCE_TYPE_FAKER;
+      const rowHelpUrl = this.getSchemaHelpUrl(normalisedSourceType, row.command);
+      const showRowHelpLink = rowHelpUrl.length > 0;
+      const hasSelectedFakerCommand = isFakerSource && normaliseFakerCommand(row.command).length > 0;
+      const rowHelpTitle =
+        normalisedSourceType === SOURCE_TYPE_REGEX
+          ? 'Open Regex docs'
+          : normalisedSourceType === SOURCE_TYPE_LITERAL
+            ? 'Open Anywaydata docs'
+            : hasSelectedFakerCommand
+              ? 'Open Faker API docs'
+              : 'Open Faker docs';
       const rowElem = this.documentObj.createElement('div');
-      rowElem.className = 'generator-schema-row';
+      rowElem.className = `generator-schema-row ${isFakerSource ? 'generator-schema-row-faker' : 'generator-schema-row-non-faker'}`;
       rowElem.setAttribute('data-row-id', row.id);
       rowElem.innerHTML = `
+                <div class="generator-row-actions">
+                    <button class="icon-button" data-action="add" data-row-id="${row.id}" title="Add field">+</button>
+                    <button class="icon-button" data-action="remove" data-row-id="${row.id}" title="Remove field">-</button>
+                    <button class="icon-button" data-action="up" data-row-id="${row.id}" title="Move up" ${index === 0 ? 'disabled' : ''}>↑</button>
+                    <button class="icon-button" data-action="down" data-row-id="${row.id}" title="Move down" ${index === this.schemaRows.length - 1 ? 'disabled' : ''}>↓</button>
+                </div>
                 <input type="text" data-field="name" placeholder="Column Name" value="${this.escapeHtml(row.name)}">
                 <select data-field="sourceType">
                     <option value="${SOURCE_TYPE_FAKER}" ${row.sourceType === SOURCE_TYPE_FAKER ? 'selected' : ''}>faker</option>
                     <option value="${SOURCE_TYPE_REGEX}" ${row.sourceType === SOURCE_TYPE_REGEX ? 'selected' : ''}>regex</option>
                     <option value="${SOURCE_TYPE_LITERAL}" ${row.sourceType === SOURCE_TYPE_LITERAL ? 'selected' : ''}>literal</option>
                 </select>
-                <select data-field="command" ${isFakerSource ? '' : 'hidden disabled'}>
+                ${
+                  isFakerSource
+                    ? `<select data-field="command">
                     <option value="">Select faker command</option>
                     ${this.fakerCommands
                       .map((command) => {
@@ -531,15 +554,24 @@ class DataGeneratorPage {
                         return `<option value="${this.escapeHtml(command)}" ${selected}>${this.escapeHtml(command)}</option>`;
                       })
                       .join('')}
-                </select>
-                <input type="text" data-field="params" placeholder="Params e.g. (10)" value="${this.escapeHtml(row.params)}" ${isFakerSource ? '' : 'hidden disabled'}>
-                <input type="text" data-field="value" placeholder="Value / Regex" value="${this.escapeHtml(row.value)}" ${isFakerSource ? 'hidden disabled' : ''}>
-                <div class="generator-row-actions">
-                    <button class="icon-button" data-action="add" data-row-id="${row.id}" title="Add field">+</button>
-                    <button class="icon-button" data-action="remove" data-row-id="${row.id}" title="Remove field">-</button>
-                    <button class="icon-button" data-action="up" data-row-id="${row.id}" title="Move up" ${index === 0 ? 'disabled' : ''}>↑</button>
-                    <button class="icon-button" data-action="down" data-row-id="${row.id}" title="Move down" ${index === this.schemaRows.length - 1 ? 'disabled' : ''}>↓</button>
-                </div>
+                </select>`
+                    : ''
+                }
+                <a
+                    data-field="faker-doc-link"
+                    class="helpicon generator-schema-help-link"
+                    href="${this.escapeHtml(rowHelpUrl)}"
+                    title="${this.escapeHtml(rowHelpTitle)}"
+                    aria-label="${this.escapeHtml(rowHelpTitle)}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    ${showRowHelpLink ? '' : 'hidden'}
+                ></a>
+                ${
+                  isFakerSource
+                    ? `<input type="text" data-field="params" placeholder="Params e.g. (10)" value="${this.escapeHtml(row.params)}">`
+                    : `<input type="text" data-field="value" placeholder="Value / Regex" value="${this.escapeHtml(row.value)}">`
+                }
             `;
       container.appendChild(rowElem);
     });
@@ -565,6 +597,12 @@ class DataGeneratorPage {
     row[fieldName] = event.target.value;
     if (fieldName === 'sourceType') {
       row.sourceType = normaliseSourceType(row.sourceType);
+      this.renderSchemaRows();
+      return;
+    }
+
+    if (fieldName === 'command') {
+      row.command = normaliseFakerCommand(row.command);
       this.renderSchemaRows();
     }
   }
@@ -783,6 +821,34 @@ class DataGeneratorPage {
       .replaceAll('<', '&lt;')
       .replaceAll('>', '&gt;')
       .replaceAll('"', '&quot;');
+  }
+
+  getFakerHelpUrl(commandValue) {
+    const command = normaliseFakerCommand(commandValue);
+    if (!command) {
+      return FAKER_HELP_URL;
+    }
+
+    const moduleName = command.split('.')[0];
+    if (!moduleName) {
+      return FAKER_HELP_URL;
+    }
+
+    return `https://fakerjs.dev/api/${moduleName}`;
+  }
+
+  getSchemaHelpUrl(sourceType, commandValue) {
+    const normalisedSourceType = normaliseSourceType(sourceType);
+    if (normalisedSourceType === SOURCE_TYPE_REGEX) {
+      return REGEX_HELP_URL;
+    }
+    if (normalisedSourceType === SOURCE_TYPE_FAKER) {
+      return this.getFakerHelpUrl(commandValue);
+    }
+    if (normalisedSourceType === SOURCE_TYPE_LITERAL) {
+      return LITERAL_HELP_URL;
+    }
+    return '';
   }
 }
 

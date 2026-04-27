@@ -393,9 +393,20 @@ Custom header styles for default items
 
 .generator-schema-row{
   display: grid;
-  grid-template-columns: minmax(130px, 1fr) 110px minmax(150px, 1fr) minmax(120px, 1fr) minmax(120px, 1fr) auto;
   gap: 0.4rem;
   align-items: center;
+}
+
+.generator-schema-row-faker{
+  grid-template-columns: auto 380px 110px minmax(180px, 1.3fr) max-content minmax(140px, 1fr);
+}
+
+.generator-schema-row-non-faker{
+  grid-template-columns: auto 380px 110px max-content minmax(220px, 1fr);
+}
+
+.generator-schema-help-link{
+  justify-self: start;
 }
 
 .generator-row-actions{

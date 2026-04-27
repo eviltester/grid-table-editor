@@ -141,6 +141,7 @@ describe('DataGeneratorPage', () => {
     dom = new JSDOM(`<!doctype html><html><body><div id="app"></div></body></html>`);
     global.document = dom.window.document;
     global.window = dom.window;
+    document.execCommand = jest.fn(() => true);
     alertFn = jest.fn();
     FakeDownload.lastDownload = undefined;
     FakeGridExtension.lastInstance = undefined;
@@ -575,6 +576,58 @@ describe('DataGeneratorPage', () => {
       text: 'xml:async:2',
     });
     expect(document.getElementById('generatorStatusText').textContent).toContain('Download ready with warnings');
+  });
+
+  test('copy output preview button copies text and updates button label', async () => {
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker: { word: { noun: () => 'x' } },
+      RandExp: function RandExp() {},
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: FakeTestDataGenerator,
+    });
+    page.init();
+
+    const previewOutput = document.getElementById('generatorOutputPreview');
+    const copyButton = document.getElementById('generatorCopyOutputButton');
+    previewOutput.value = 'copiable text';
+
+    copyButton.click();
+
+    await Promise.resolve();
+    expect(document.execCommand).toHaveBeenCalledWith('copy');
+    expect(copyButton.innerText).toBe('Copied');
+    expect(document.getElementById('generatorStatusText').textContent).toContain('Output preview copied to clipboard.');
+  });
+
+  test('copy output preview shows status when there is no preview text', async () => {
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker: { word: { noun: () => 'x' } },
+      RandExp: function RandExp() {},
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: FakeTestDataGenerator,
+    });
+    page.init();
+
+    const copyButton = document.getElementById('generatorCopyOutputButton');
+    copyButton.click();
+    await Promise.resolve();
+
+    expect(document.getElementById('generatorStatusText').textContent).toContain(
+      'Nothing to copy from Output Preview.'
+    );
+    expect(document.execCommand).not.toHaveBeenCalled();
   });
 
   test('shows faker fields only for faker source and value only for regex/literal', () => {

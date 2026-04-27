@@ -226,7 +226,10 @@ class DataGeneratorPage {
                         <button id="previewDataButton">Preview</button>
                       </div>
                       <div class="generator-output-preview" id="generatorOutputPreviewSection" data-subsection-order="2" aria-label="Output Preview">
-                        <label for="generatorOutputPreview">Output Preview</label>
+                        <div class="generator-output-preview-head">
+                          <label for="generatorOutputPreview">Output Preview</label>
+                          <button id="generatorCopyOutputButton" type="button" title="Copy output preview to clipboard">Copy</button>
+                        </div>
                         <textarea id="generatorOutputPreview" readonly spellcheck="false"></textarea>
                       </div>
                       <div class="generator-data-table-preview" id="generatorDataTablePreviewSection" data-subsection-order="3" aria-label="Data Table Preview">
@@ -291,6 +294,11 @@ class DataGeneratorPage {
     outputFormat.addEventListener('change', () => {
       this.renderOptionsPanelForSelectedFormat();
       this.renderOutputPreviewForCurrentSelection();
+    });
+
+    const copyOutputButton = this.documentObj.getElementById('generatorCopyOutputButton');
+    copyOutputButton?.addEventListener('click', () => {
+      void this.copyOutputPreviewToClipboard();
     });
 
     const schemaRowsContainer = this.documentObj.getElementById('generatorSchemaRows');
@@ -709,6 +717,49 @@ class DataGeneratorPage {
     } catch (error) {
       console.error(error);
       outputPreviewElem.value = '';
+    }
+  }
+
+  async copyOutputPreviewToClipboard() {
+    const previewTextArea = this.documentObj.getElementById('generatorOutputPreview');
+    const copyButton = this.documentObj.getElementById('generatorCopyOutputButton');
+    if (!previewTextArea || !copyButton) {
+      return;
+    }
+
+    const textToCopy = previewTextArea.value || '';
+    if (textToCopy.length === 0) {
+      this.setGenerationStatus('Nothing to copy from Output Preview.');
+      this.scheduleClearGenerationStatus();
+      return;
+    }
+
+    try {
+      if (
+        this.documentObj?.defaultView?.navigator?.clipboard &&
+        typeof this.documentObj.defaultView.navigator.clipboard.writeText === 'function'
+      ) {
+        await this.documentObj.defaultView.navigator.clipboard.writeText(textToCopy);
+      } else {
+        previewTextArea.select();
+        previewTextArea.setSelectionRange(0, 99999);
+        this.documentObj.execCommand('copy');
+      }
+
+      copyButton.innerText = 'Copied';
+      setTimeout(
+        function (aButton) {
+          aButton.innerText = 'Copy';
+        },
+        3000,
+        copyButton
+      );
+      this.setGenerationStatus('Output preview copied to clipboard.');
+      this.scheduleClearGenerationStatus();
+    } catch (error) {
+      console.error(error);
+      this.setGenerationStatus('Unable to copy output preview.');
+      this.scheduleClearGenerationStatus();
     }
   }
 

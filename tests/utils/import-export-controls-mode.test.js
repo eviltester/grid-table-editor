@@ -301,4 +301,38 @@ describe('ImportExportControls file reading and visibility', () => {
     expect(controls.exporter.setOptionsForType).toHaveBeenCalledWith('csv', { delimiter: '|' });
     expect(controls.renderTextFromGrid).toHaveBeenCalledTimes(1);
   });
+
+  test('options apply button is enabled only when options are dirty', () => {
+    controls.optionsPanels.csv = {
+      addToGui: jest.fn(() => {
+        document.querySelector('div.options-parent').innerHTML = `
+          <div class="csv-options">
+            <label>Delimiter <input type="text" id="test-delimiter" value=","></label>
+            <div class="apply"><button class="apply-options">Apply</button></div>
+          </div>
+        `;
+      }),
+      setFromOptions: jest.fn(),
+      setApplyCallback: jest.fn((callbackFunc) => {
+        const button = document.querySelector('div.options-parent .apply-options');
+        button.onclick = () => callbackFunc({ delimiter: '|' });
+      }),
+      getOptionsFromGui: jest.fn(() => ({ delimiter: '|' })),
+    };
+
+    controls.setOptionsViewForFormatType();
+
+    const applyButton = document.querySelector('div.options-parent .apply-options');
+    const delimiterInput = document.getElementById('test-delimiter');
+    expect(applyButton.disabled).toBe(true);
+
+    delimiterInput.value = '|';
+    delimiterInput.dispatchEvent(new dom.window.Event('input', { bubbles: true }));
+    expect(applyButton.disabled).toBe(false);
+
+    applyButton.click();
+    expect(controls.importer.setOptionsForType).toHaveBeenCalledWith('csv', { delimiter: '|' });
+    expect(controls.exporter.setOptionsForType).toHaveBeenCalledWith('csv', { delimiter: '|' });
+    expect(applyButton.disabled).toBe(true);
+  });
 });

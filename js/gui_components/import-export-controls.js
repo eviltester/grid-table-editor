@@ -305,11 +305,48 @@ class ImportExportControls {
     if (optionsPanel) {
       optionsPanel.addToGui();
       optionsPanel.setFromOptions(this.exporter.getOptionsForType(type));
-      optionsPanel.setApplyCallback(this.applyCurrentTypeOptions.bind(this));
+      this.configureOptionsApplyDirtyState(optionsparent);
+      optionsPanel.setApplyCallback((options) => {
+        this.applyCurrentTypeOptions(options);
+        this.setOptionsApplyDirtyState(optionsparent, false);
+      });
       window.updateHelpHints();
     }
 
     optionsparent.style.display = 'block';
+  }
+
+  setOptionsApplyDirtyState(optionsparent, isDirty) {
+    const applyButton = optionsparent?.querySelector?.('.apply-options');
+    if (!applyButton) {
+      return;
+    }
+
+    applyButton.disabled = isDirty !== true;
+    applyButton.setAttribute('aria-disabled', applyButton.disabled ? 'true' : 'false');
+  }
+
+  configureOptionsApplyDirtyState(optionsparent) {
+    const panelRoot = optionsparent?.firstElementChild;
+    if (!panelRoot) {
+      return;
+    }
+
+    this.setOptionsApplyDirtyState(optionsparent, false);
+
+    const markDirty = (event) => {
+      const target = event?.target;
+      if (!target || typeof target.closest !== 'function') {
+        return;
+      }
+      if (target.closest('.apply-options')) {
+        return;
+      }
+      this.setOptionsApplyDirtyState(optionsparent, true);
+    };
+
+    panelRoot.addEventListener('input', markDirty);
+    panelRoot.addEventListener('change', markDirty);
   }
 
   setCurrentTypeOptions() {

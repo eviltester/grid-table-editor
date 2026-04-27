@@ -359,12 +359,49 @@ class DataGeneratorPage {
     }
 
     if (typeof panel.setApplyCallback === 'function') {
-      panel.setApplyCallback((options) => this.applyCurrentTypeOptions(options));
+      this.configureOptionsApplyDirtyState(optionsParent);
+      panel.setApplyCallback((options) => {
+        this.applyCurrentTypeOptions(options);
+        this.setOptionsApplyDirtyState(optionsParent, false);
+      });
     }
 
     if (typeof window !== 'undefined' && typeof window.updateHelpHints === 'function') {
       window.updateHelpHints();
     }
+  }
+
+  setOptionsApplyDirtyState(optionsParent, isDirty) {
+    const applyButton = optionsParent?.querySelector?.('.apply-options');
+    if (!applyButton) {
+      return;
+    }
+
+    applyButton.disabled = isDirty !== true;
+    applyButton.setAttribute('aria-disabled', applyButton.disabled ? 'true' : 'false');
+  }
+
+  configureOptionsApplyDirtyState(optionsParent) {
+    const panelRoot = optionsParent?.firstElementChild;
+    if (!panelRoot) {
+      return;
+    }
+
+    this.setOptionsApplyDirtyState(optionsParent, false);
+
+    const markDirty = (event) => {
+      const target = event?.target;
+      if (!target || typeof target.closest !== 'function') {
+        return;
+      }
+      if (target.closest('.apply-options')) {
+        return;
+      }
+      this.setOptionsApplyDirtyState(optionsParent, true);
+    };
+
+    panelRoot.addEventListener('input', markDirty);
+    panelRoot.addEventListener('change', markDirty);
   }
 
   applyCurrentTypeOptions(options) {

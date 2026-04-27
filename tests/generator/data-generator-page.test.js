@@ -326,11 +326,20 @@ describe('DataGeneratorPage', () => {
     expect(document.querySelector('#generatorOptionsPanel .json-options')).not.toBeNull();
     expect(FakeExporter.lastInstance.getOptionsForType).toHaveBeenCalledWith('json');
 
-    document.querySelector('#generatorOptionsPanel .apply-options').click();
+    const applyButton = document.querySelector('#generatorOptionsPanel .apply-options');
+    expect(applyButton.disabled).toBe(true);
+
+    const dirtyTrigger = document.querySelector('#generatorOptionsPanel input[type="checkbox"]');
+    dirtyTrigger.checked = !dirtyTrigger.checked;
+    dirtyTrigger.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+    expect(applyButton.disabled).toBe(false);
+
+    applyButton.click();
 
     expect(FakeExporter.lastInstance.setOptionsForType).toHaveBeenCalledTimes(1);
     expect(FakeExporter.lastInstance.setOptionsForType.mock.calls[0][0]).toBe('json');
     expect(document.getElementById('generatorStatusText').textContent).toContain('JSON options applied.');
+    expect(applyButton.disabled).toBe(true);
   });
 
   test('generate falls back to sync export when async export utility is unavailable', async () => {

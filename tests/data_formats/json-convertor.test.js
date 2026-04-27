@@ -142,6 +142,35 @@ describe('Can use options to configure json output', () => {
     expect(output).toBe(expectedJson);
   });
 
+  test('can create jsonl output with one json object per line and no wrapping array', () => {
+    const expectedJsonl = `{"h1":"r0c0","h2":"r0c1"}\n{"h1":"r1c0","h2":"r1c1"}`;
+    let config = new JsonConvertorOptions();
+    config.options.outputAsJsonLines = true;
+    config.options.prettyPrint = true;
+    config.options.asObject = true;
+    config.options.asPropertyNamed = 'ignoredForJsonl';
+
+    let output = new JsonConvertor(config).fromDataTable(basicInputTable);
+
+    expect(output).toBe(expectedJsonl);
+  });
+
+  test('can create jsonl output with Number Convert enabled', () => {
+    const inputTable = new GenericDataTable();
+    inputTable.setHeaders(['h1', 'h2']);
+    inputTable.appendDataRow(['0.0', '2']);
+    inputTable.appendDataRow(['3', 'value']);
+
+    const expectedJsonl = `{"h1":0,"h2":2}\n{"h1":3,"h2":"value"}`;
+    let config = new JsonConvertorOptions();
+    config.options.outputAsJsonLines = true;
+    config.options.makeNumbersNumeric = true;
+
+    let output = new JsonConvertor(config).fromDataTable(inputTable);
+
+    expect(output).toBe(expectedJsonl);
+  });
+
   describe('Can convert from json to data table', () => {
     const basicInputTable = new GenericDataTable();
     basicInputTable.setHeaders(['h1', 'h2']);

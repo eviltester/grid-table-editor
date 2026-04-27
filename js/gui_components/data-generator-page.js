@@ -246,7 +246,18 @@ class DataGeneratorPage {
       return;
     }
 
-    const orderedTypes = ['csv', 'json', 'xml', 'markdown', 'javascript', 'dsv', 'html', 'gherkin', 'asciitable'];
+    const orderedTypes = [
+      'csv',
+      'json',
+      'jsonl',
+      'xml',
+      'markdown',
+      'javascript',
+      'dsv',
+      'html',
+      'gherkin',
+      'asciitable',
+    ];
     orderedTypes.forEach((type) => {
       if (!this.exporter?.canExport?.(type) && this.exporter) {
         return;
@@ -299,6 +310,7 @@ class DataGeneratorPage {
     this.optionsPanels['dsv'] = new DelimitedOptions(optionsParent);
     this.optionsPanels['markdown'] = new MarkdownOptionsPanel(optionsParent);
     this.optionsPanels['json'] = new JsonOptionsPanel(optionsParent);
+    this.optionsPanels['jsonl'] = new JsonOptionsPanel(optionsParent, 'jsonl-options', { jsonlMode: true });
     this.optionsPanels['javascript'] = new JavascriptOptionsPanel(optionsParent);
     this.optionsPanels['xml'] = new XmlOptionsPanel(optionsParent);
     this.optionsPanels['html'] = new HtmlOptionsPanel(optionsParent);

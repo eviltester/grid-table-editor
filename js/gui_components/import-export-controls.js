@@ -262,6 +262,7 @@ class ImportExportControls {
         this.optionsPanels['asciitable'] = new AsciiTableOptionsPanel(optionsparent);
         this.optionsPanels['markdown'] = new MarkdownOptionsPanel(optionsparent);
         this.optionsPanels['json'] = new JsonOptionsPanel(optionsparent);
+        this.optionsPanels['jsonl'] = new JsonOptionsPanel(optionsparent, 'jsonl-options', { jsonlMode: true });
         this.optionsPanels['javascript'] = new JavascriptOptionsPanel(optionsparent);
         this.optionsPanels['xml'] = new XmlOptionsPanel(optionsparent);
         this.optionsPanels['html'] = new HtmlOptionsPanel(optionsparent);

@@ -24,6 +24,8 @@ class JsonConvertorOptions {
       asObject: false,
       // as object with user configurable key name e.g. {"table":[...jsonrows]}
       asPropertyNamed: 'data',
+      // when true output one JSON object per line with no wrapping array/object
+      outputAsJsonLines: false,
     };
 
     this.headerNameConvertor = (x) => x;
@@ -78,6 +80,12 @@ class JsonConvertor {
       };
     }
 
+    let data = this.formatAsObjects(dataTable);
+
+    if (this.config.options.outputAsJsonLines) {
+      return data.map((rowObject) => JSON.stringify(rowObject, replacer)).join('\n');
+    }
+
     let delimiter = null;
     if (this.config.options.prettyPrint) {
       delimiter = this.config.options.prettyPrintDelimiter;
@@ -85,8 +93,6 @@ class JsonConvertor {
     if (isNumber(delimiter)) {
       delimiter = delimiter * 1;
     }
-
-    let data = this.formatAsObjects(dataTable);
 
     let toOutput = undefined;
     if (this.config.options.asObject) {

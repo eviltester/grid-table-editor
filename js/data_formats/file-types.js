@@ -6,6 +6,7 @@ fileTypes['csv'] = { type: 'csv', fileExtension: '.csv' };
 fileTypes['dsv'] = { type: 'dsv', fileExtension: '.txt' };
 fileTypes['markdown'] = { type: 'markdown', fileExtension: '.md' };
 fileTypes['json'] = { type: 'json', fileExtension: '.json' };
+fileTypes['jsonl'] = { type: 'jsonl', fileExtension: '.jsonl' };
 fileTypes['javascript'] = { type: 'javascript', fileExtension: '.js' };
 fileTypes['xml'] = { type: 'xml', fileExtension: '.xml' };
 fileTypes['gherkin'] = { type: 'gherkin', fileExtension: '.gherkin' };

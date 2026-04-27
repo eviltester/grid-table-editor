@@ -23,6 +23,15 @@ class Exporter {
     this.options['asciitable'] = new AsciiTableOptions();
     this.options['markdown'] = new MarkdownOptions();
     this.options['json'] = new JsonConvertorOptions();
+    this.options['jsonl'] = new JsonConvertorOptions();
+    this.options['jsonl'].mergeOptions({
+      options: {
+        prettyPrint: false,
+        asObject: false,
+        asPropertyNamed: '',
+        outputAsJsonLines: true,
+      },
+    });
     this.options['javascript'] = new JavascriptConvertorOptions();
     this.options['xml'] = new XmlConvertorOptions();
     this.options['html'] = new HtmlConvertorOptions();
@@ -35,6 +44,7 @@ class Exporter {
     this.exporters['dsv'] = new DelimiterConvertor();
     this.exporters['dsv'].setPapaParse(new PapaWrappa());
     this.exporters['json'] = new JsonConvertor();
+    this.exporters['jsonl'] = new JsonConvertor();
     this.exporters['javascript'] = new JavascriptConvertor();
     this.exporters['xml'] = new XmlConvertor();
     this.exporters['gherkin'] = new GherkinConvertor();

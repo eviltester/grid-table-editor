@@ -120,4 +120,46 @@ describe('JsonOptionsPanel', () => {
     expect(callback).toHaveBeenCalledTimes(1);
     expect(callback.mock.calls[0][0].options.asObject).toBe(true);
   });
+
+  test('jsonl mode renders only number convert option plus apply button', () => {
+    const panel = new JsonOptionsPanel(parent, 'jsonl-options', { jsonlMode: true });
+    panel.addToGui();
+
+    expect(parent.querySelector('.jsonl-options')).toBeTruthy();
+    expect(parent.querySelector("input[name='numbersnumeric']")).toBeTruthy();
+    expect(parent.querySelector("input[name='prettyprint']")).toBeNull();
+    expect(parent.querySelector("select[name='prettydelimiter']")).toBeNull();
+    expect(parent.querySelector("input[name='asobject']")).toBeNull();
+    expect(parent.querySelector("input[name='propertynamed']")).toBeNull();
+    expect(parent.querySelector('.apply-options')).toBeTruthy();
+  });
+
+  test('jsonl mode forces one-line jsonl options from gui', () => {
+    const panel = new JsonOptionsPanel(parent, 'jsonl-options', { jsonlMode: true });
+    panel.addToGui();
+    parent.querySelector("input[name='numbersnumeric']").checked = true;
+
+    const options = panel.getOptionsFromGui();
+
+    expect(options).toBeInstanceOf(JsonConvertorOptions);
+    expect(options.options.makeNumbersNumeric).toBe(true);
+    expect(options.options.prettyPrint).toBe(false);
+    expect(options.options.asObject).toBe(false);
+    expect(options.options.asPropertyNamed).toBe('');
+    expect(options.options.outputAsJsonLines).toBe(true);
+  });
+
+  test('jsonl mode setFromOptions only syncs number convert checkbox', () => {
+    const panel = new JsonOptionsPanel(parent, 'jsonl-options', { jsonlMode: true });
+    panel.addToGui();
+    const options = new JsonConvertorOptions();
+    options.options.makeNumbersNumeric = true;
+    options.options.prettyPrint = true;
+    options.options.asObject = true;
+
+    panel.setFromOptions(options);
+
+    expect(parent.querySelector("input[name='numbersnumeric']").checked).toBe(true);
+    expect(parent.querySelector("input[name='prettyprint']")).toBeNull();
+  });
 });

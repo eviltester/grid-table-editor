@@ -22,6 +22,9 @@ class TabbedTextControl {
               <li id="type-json" class="type-select">
                 <a class="type-select-action" data-type="json" href="#">JSON</a>
               </li>
+              <li id="type-jsonl" class="type-select">
+                <a class="type-select-action" data-type="jsonl" href="#">JSONL</a>
+              </li>
               <li id="type-javascript" class="type-select">
                 <a class="type-select-action" data-type="javascript" href="#">JavaScript</a>
               </li>

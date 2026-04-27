@@ -31,6 +31,7 @@ describe('TabbedTextControl preview/edit button', () => {
     const tabs = new TabbedTextControl(host, controller);
     tabs.addToGui();
     expect(host.querySelector("a.type-select-action[data-type='xml']")).toBeTruthy();
+    expect(host.querySelector("a.type-select-action[data-type='jsonl']")).toBeTruthy();
 
     const modeButton = host.querySelector('#previewEditModeButton');
     expect(modeButton.innerText).toBe('Preview (10)');

@@ -351,4 +351,35 @@ describe('ImportExportControls file reading and visibility', () => {
 
     expect(document.querySelector('.xml-options')).not.toBeNull();
   });
+
+  test('renders JSONL options panel when jsonl format is selected', () => {
+    document.querySelector('li.active-type a').setAttribute('data-type', 'jsonl');
+    controls.optionsPanels = undefined;
+    controls.exporter.getOptionsForType.mockReturnValue({
+      options: {
+        outputAsJsonLines: true,
+        makeNumbersNumeric: false,
+      },
+    });
+
+    controls.setOptionsViewForFormatType();
+
+    expect(document.querySelector('.jsonl-options')).not.toBeNull();
+    expect(document.querySelector("input[name='numbersnumeric']")).not.toBeNull();
+    expect(document.querySelector("input[name='prettyprint']")).toBeNull();
+  });
+
+  test('jsonl format hides import controls but keeps export visible and updates extension', () => {
+    document.querySelector('li.active-type a').setAttribute('data-type', 'jsonl');
+    controls.importer.canImport.mockReturnValue(false);
+    controls.exporter.canExport.mockImplementation((type) => type === 'jsonl');
+    controls.importer.getFileExtensionFor.mockReturnValue('.jsonl');
+
+    controls.setFileFormatType();
+
+    expect(document.getElementById('setgridfromtextbutton').style.visibility).toBe('hidden');
+    expect(document.getElementById('dropzone').style.visibility).toBe('hidden');
+    expect(document.getElementById('filedownload').style.visibility).toBe('visible');
+    expect(document.querySelector('.fileFormat').innerText).toBe('.jsonl');
+  });
 });

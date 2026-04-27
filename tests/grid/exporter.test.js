@@ -43,11 +43,27 @@ describe('Exporter direct table conversion', () => {
 
     expect(exporter.canExport('csv')).toBe(true);
     expect(exporter.canExport('xml')).toBe(true);
+    expect(exporter.canExport('jsonl')).toBe(true);
     expect(exporter.canExport('unknown')).toBe(false);
     expect(exporter.getFileExtensionFor('csv')).toBe('.csv');
     expect(exporter.getFileExtensionFor('xml')).toBe('.xml');
+    expect(exporter.getFileExtensionFor('jsonl')).toBe('.jsonl');
     expect(exporter.getOptionsForType('json')).toBeDefined();
+    expect(exporter.getOptionsForType('jsonl')).toBeDefined();
     expect(exporter.getOptionsForType('xml')).toBeDefined();
+  });
+
+  test('jsonl defaults force compact line-delimited output settings', () => {
+    const table = createTable(['Name'], [['Connie']]);
+    const exporter = new Exporter({
+      getGridAsGenericDataTable: () => table,
+      getHeadersFromGrid: () => table.getHeaders(),
+    });
+
+    expect(exporter.options.jsonl.options.prettyPrint).toBe(false);
+    expect(exporter.options.jsonl.options.asObject).toBe(false);
+    expect(exporter.options.jsonl.options.asPropertyNamed).toBe('');
+    expect(exporter.options.jsonl.options.outputAsJsonLines).toBe(true);
   });
 
   test('returns empty string for unsupported export types', () => {

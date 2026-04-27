@@ -16,6 +16,7 @@ class HtmlOptionsPanel {
       
           <div class="compacthtml">            
             <label>
+              <span class="helpicon option-help-icon" data-help="html-option-compact" data-help-text="Minify table markup by removing extra whitespace."></span>
               <input type="checkbox" name="compacthtml" value="compacthtml">
               Compact
             </label>
@@ -24,6 +25,7 @@ class HtmlOptionsPanel {
 
           <div class="prettyprint">            
             <label>
+              <span class="helpicon option-help-icon" data-help="html-option-pretty-print" data-help-text="Format HTML with indentation and line breaks for readability."></span>
               <input type="checkbox" name="prettyprint" value="prettyprint">
               Pretty Print
             </label>
@@ -31,7 +33,7 @@ class HtmlOptionsPanel {
           </div>
 
           <div class="prettydelimiter">
-            <label>Delimiter
+            <label><span class="helpicon option-help-icon" data-help="html-option-delimiter" data-help-text="Indentation character used for pretty printed HTML output."></span>Delimiter
               <select name="prettydelimiter">
                 <option value="tab">Tab [\\t]</option>
                 <option value="space">Space [ ]</option>
@@ -41,7 +43,7 @@ class HtmlOptionsPanel {
           <br>
           </div>
           <div class="custom-pretty-delimiter">
-            <label>Custom
+            <label><span class="helpicon option-help-icon" data-help="html-option-custom-delimiter" data-help-text="When Delimiter is Custom Value, enter the indentation character here."></span>Custom
               <input type="text" name="custom-pretty-delimiter" value='' style="width:5em">
             </label>
             <br>
@@ -49,6 +51,7 @@ class HtmlOptionsPanel {
 
           <div class="addthead">            
             <label>
+              <span class="helpicon option-help-icon" data-help="html-option-add-thead" data-help-text="Include a thead section containing header cells."></span>
               <input type="checkbox" name="addthead" value="addthead">
               Add &lt;thead&gt;
             </label>
@@ -57,6 +60,7 @@ class HtmlOptionsPanel {
 
           <div class="addtbody">            
             <label>
+              <span class="helpicon option-help-icon" data-help="html-option-add-tbody" data-help-text="Include a tbody section containing data rows."></span>
               <input type="checkbox" name="addtbody" value="addtbody">
               Add &lt;tbody&gt;
             </label>

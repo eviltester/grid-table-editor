@@ -105,6 +105,10 @@
         content(reference) {
           const id = reference.getAttribute('data-help');
           const helpItems = document.getElementById('inline-help-items');
+          const inlineHelpText = reference.getAttribute('data-help-text');
+          if (inlineHelpText) {
+            return inlineHelpText;
+          }
           if (!helpItems || !id) {
             return '';
           }

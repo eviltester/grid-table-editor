@@ -194,21 +194,28 @@
 <script>
 
   function updateHelpHints(){
-    tippy('.helpicon', {
+    tippy('.helpicon[data-help]', {
         content(reference) {
           const id = reference.getAttribute('data-help');
+          const inlineHelpText = reference.getAttribute('data-help-text');
+          if (inlineHelpText) {
+            return inlineHelpText;
+          }
 
           // look up help text
           const helpItems = document.getElementById("inline-help-items");
+          if (!helpItems || !id) {
+            return '';
+          }
           const helpText = helpItems.querySelector(`div[data-name='${id}']`);
 
           // return help text
           if(helpText){
             return helpText.innerHTML;
-          }else{
-            console.log("TODO: Create help for " + id);
           }
-          
+
+          console.log("TODO: Create help for " + id);
+          return '';
         },
         placement: 'top-start',
         allowHTML: true,

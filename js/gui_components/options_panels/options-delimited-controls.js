@@ -29,7 +29,7 @@ class DelimitedOptions {
           <div><p><strong>Options</strong>  <span data-help="delimiter-options" class="helpicon"></span></p></div>
 
           <div class="delimiter">
-            <label>Delimiter
+            <label><span class="helpicon option-help-icon" data-help="dsv-option-delimiter" data-help-text="Choose the delimiter character used between values in each row."></span>Delimiter
               <select name="delimiter">
                 <option value="tab">Tab [\\t]</option>
                 <option value="comma">Comma [,]</option>
@@ -46,7 +46,7 @@ class DelimitedOptions {
             <br>
           </div>
           <div class="custom-delimiter">
-            <label>Custom
+            <label><span class="helpicon option-help-icon" data-help="dsv-option-custom-delimiter" data-help-text="When Delimiter is set to Custom Value, enter the delimiter character here."></span>Custom
               <input type="text" name="custom-delimiter" value='' style="width:5em">
             </label>
             <br>
@@ -54,6 +54,7 @@ class DelimitedOptions {
 
           <div class="quotes">            
             <label>
+              <span class="helpicon option-help-icon" data-help="dsv-option-quotes" data-help-text="Wrap fields in quote characters when exporting delimited data."></span>
               <input type="checkbox" name="quotes" value="quotes">
               Use Quotes
             </label>
@@ -62,6 +63,7 @@ class DelimitedOptions {
 
           <div class="headerval">            
             <label>
+              <span class="helpicon option-help-icon" data-help="dsv-option-header" data-help-text="Include the header row as the first line of output."></span>
               <input type="checkbox" name="header" value="header">
               Use Header
             </label>
@@ -71,6 +73,7 @@ class DelimitedOptions {
 
           <div class="quoteChar">
             <label>
+              <span class="helpicon option-help-icon" data-help="dsv-option-quote-char" data-help-text="Character used to quote string values."></span>
               <input type="text" name="quoteChar" value='"' style="width:5em">
               Quote Char
             </label>
@@ -79,6 +82,7 @@ class DelimitedOptions {
 
           <div class="escapeChar">
             <label>
+              <span class="helpicon option-help-icon" data-help="dsv-option-escape-char" data-help-text="Character used to escape quote characters inside field values."></span>
               <input type="text" name="escapeChar" value='"' style="width:5em">
               Escape Char
             </label>

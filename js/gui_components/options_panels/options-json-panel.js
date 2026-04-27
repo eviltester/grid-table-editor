@@ -17,6 +17,7 @@ class JsonOptionsPanel {
       
           <div class="numbersnumeric">            
             <label>
+              <span class="helpicon option-help-icon" data-help="json-option-number-convert" data-help-text="Convert numeric-looking strings to numbers in the output."></span>
               <input type="checkbox" name="numbersnumeric" value="numbersnumeric">
               Number Convert
             </label>
@@ -25,6 +26,7 @@ class JsonOptionsPanel {
 
           <div class="prettyprint">            
             <label>
+              <span class="helpicon option-help-icon" data-help="json-option-pretty-print" data-help-text="Format output with indentation and line breaks for readability."></span>
               <input type="checkbox" name="prettyprint" value="prettyprint">
               Pretty Print
             </label>
@@ -32,7 +34,7 @@ class JsonOptionsPanel {
           </div>
 
           <div class="prettydelimiter">
-            <label>Delimiter
+            <label><span class="helpicon option-help-icon" data-help="json-option-delimiter" data-help-text="Indentation character used for pretty print output."></span>Delimiter
               <select name="prettydelimiter">
                 <option value="tab">Tab [\\t]</option>
                 <option value="space">Space [ ]</option>
@@ -46,7 +48,7 @@ class JsonOptionsPanel {
           <br>
           </div>
           <div class="custom-pretty-delimiter">
-            <label>Custom
+            <label><span class="helpicon option-help-icon" data-help="json-option-custom-delimiter" data-help-text="When Delimiter is Custom Value, enter the indentation character here."></span>Custom
               <input type="text" name="custom-pretty-delimiter" value='' style="width:5em">
             </label>
             <br>
@@ -54,6 +56,7 @@ class JsonOptionsPanel {
 
           <div class="asobject">            
             <label>
+              <span class="helpicon option-help-icon" data-help="json-option-as-object" data-help-text="Wrap rows in a single named object property instead of returning only an array."></span>
               <input type="checkbox" name="asobject" value="asobject">
               As Object
             </label>
@@ -61,7 +64,7 @@ class JsonOptionsPanel {
           </div>
           
           <div class="propertynamed">
-            <label>Property Name
+            <label><span class="helpicon option-help-icon" data-help="json-option-property-name" data-help-text="Name of the object property used when As Object is enabled."></span>Property Name
               <input type="text" name="propertynamed" value='"' style="width:10em">
             </label>
             <br>

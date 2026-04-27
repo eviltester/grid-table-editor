@@ -409,6 +409,11 @@ Custom header styles for default items
   justify-self: start;
 }
 
+.option-help-icon{
+  margin-right: 0.35rem;
+  cursor: help;
+}
+
 .generator-row-actions{
   display: flex;
   gap: 0.2rem;

@@ -19,7 +19,7 @@ class AsciiTableOptionsPanel {
         <div class="delimited-options" style="width:100%">
           <div><p><strong>Options</strong> <span data-help="ascii-table-options" class="helpicon"></span></p></div>
           <div class="style">
-            <label>Style
+            <label><span class="helpicon option-help-icon" data-help="ascii-option-style" data-help-text="Choose the border and separator style used to render the ASCII table."></span>Style
             <select name="style">
               ${stylesAsOptions}
             </select>

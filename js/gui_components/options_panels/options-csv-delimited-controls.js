@@ -13,6 +13,7 @@ class CsvDelimitedOptions {
           <div><p><strong>Options</strong> <span data-help="csv-options" class="helpicon"></span></p></div>
           <div class="quotes">            
             <label>
+              <span class="helpicon option-help-icon" data-help="csv-option-quotes" data-help-text="Wrap fields in quote characters when exporting CSV."></span>
               <input type="checkbox" name="quotes" value="quotes">
               Use Quotes
             </label>
@@ -21,6 +22,7 @@ class CsvDelimitedOptions {
 
           <div class="headerval">            
             <label>
+              <span class="helpicon option-help-icon" data-help="csv-option-header" data-help-text="Include the column header row as the first line of output."></span>
               <input type="checkbox" name="header" value="header">
               Use Header
             </label>
@@ -29,14 +31,14 @@ class CsvDelimitedOptions {
           
 
           <div class="quoteChar">
-            <label>Quote Char
+            <label><span class="helpicon option-help-icon" data-help="csv-option-quote-char" data-help-text="Character used to quote string values, for example double quote."></span>Quote Char
               <input type="text" name="quoteChar" value='"' style="width:5em">
             </label>
             <br>
           </div>
 
           <div class="escapeChar">
-            <label>Escape Char
+            <label><span class="helpicon option-help-icon" data-help="csv-option-escape-char" data-help-text="Character used to escape quote characters inside field values."></span>Escape Char
               <input type="text" name="escapeChar" value='"' style="width:5em">
             </label>
             <br>

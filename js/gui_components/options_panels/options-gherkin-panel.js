@@ -13,7 +13,7 @@ class GherkinOptionsPanel {
           <div><p><strong>Options</strong>  <span data-help="gherkin-options" class="helpicon"></span></p></div>
 
           <div class="incellpadding">
-            <label>In Cell Padding
+            <label><span class="helpicon option-help-icon" data-help="gherkin-option-in-cell-padding" data-help-text="Add spacing inside each gherkin table cell."></span>In Cell Padding
               <select name="incellpadding">
                 <option value="none">None</option>
                 <option value="left">Left</option>
@@ -27,6 +27,7 @@ class GherkinOptionsPanel {
           
           <div class="prettyprint">            
             <label>
+              <span class="helpicon option-help-icon" data-help="gherkin-option-pretty-print" data-help-text="Align and format table rows for easier reading in feature files."></span>
               <input type="checkbox" name="prettyprint" value="prettyprint">
               Pretty Print
             </label>
@@ -35,6 +36,7 @@ class GherkinOptionsPanel {
 
           <div class="showheadings">            
             <label>
+              <span class="helpicon option-help-icon" data-help="gherkin-option-show-headers" data-help-text="Include column header row in the output table."></span>
               <input type="checkbox" name="showheadings" value="showheadings">
               Show Headers
             </label>
@@ -42,7 +44,7 @@ class GherkinOptionsPanel {
           </div>
           
           <div class="leftindent">
-            <label>Left Indent
+            <label><span class="helpicon option-help-icon" data-help="gherkin-option-left-indent" data-help-text="Characters prefixed to each row, typically spaces or tabs for scenario indentation."></span>Left Indent
               <input type="text" name="leftindent" value='' style="width:5em">
             </label>
             <br>

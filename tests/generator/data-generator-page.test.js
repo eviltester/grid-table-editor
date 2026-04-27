@@ -425,7 +425,7 @@ describe('DataGeneratorPage', () => {
     let rowElem = document.querySelector('.generator-schema-row');
     expect(rowElem.querySelector('[data-field="command"]')).toBeNull();
     expect(rowElem.querySelector('[data-field="faker-doc-link"]').hidden).toBe(false);
-    expect(rowElem.querySelector('[data-field="faker-doc-link"]').getAttribute('href')).toBe(
+    expect(rowElem.querySelector('[data-field="faker-doc-link"]').getAttribute('data-help-text')).toContain(
       'https://anywaydata.com/docs/test-data/regex-test-data'
     );
     expect(rowElem.querySelector('[data-field="params"]')).toBeNull();
@@ -437,14 +437,14 @@ describe('DataGeneratorPage', () => {
     rowElem = document.querySelector('.generator-schema-row');
     expect(rowElem.querySelector('[data-field="command"]')).not.toBeNull();
     expect(rowElem.querySelector('[data-field="faker-doc-link"]').hidden).toBe(false);
-    expect(rowElem.querySelector('[data-field="faker-doc-link"]').getAttribute('href')).toBe(
+    expect(rowElem.querySelector('[data-field="faker-doc-link"]').getAttribute('data-help-text')).toContain(
       'https://fakerjs.dev/api/word'
     );
     expect(rowElem.querySelector('[data-field="params"]')).not.toBeNull();
     expect(rowElem.querySelector('[data-field="value"]')).toBeNull();
   });
 
-  test('shows schema help link for faker, regex and literal sources', () => {
+  test('shows schema help tippy content for faker, regex and literal sources', () => {
     const page = new DataGeneratorPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
@@ -464,29 +464,38 @@ describe('DataGeneratorPage', () => {
 
     let helpLink = document.querySelector('[data-field="faker-doc-link"]');
     expect(helpLink.hidden).toBe(false);
-    expect(helpLink.getAttribute('href')).toBe('https://anywaydata.com/docs/test-data/faker-test-data');
-    expect(helpLink.getAttribute('target')).toBe('_blank');
-    expect(helpLink.getAttribute('rel')).toBe('noopener noreferrer');
+    let helpText = helpLink.getAttribute('data-help-text');
+    expect(helpText).toContain('Faker');
+    expect(helpText).toContain('https://anywaydata.com/docs/test-data/faker-test-data');
 
     const commandSelect = document.querySelector('[data-field="command"]');
-    commandSelect.value = 'helpers.fake';
+    commandSelect.value = 'person.firstName';
     commandSelect.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
 
     helpLink = document.querySelector('[data-field="faker-doc-link"]');
     expect(helpLink.hidden).toBe(false);
-    expect(helpLink.getAttribute('href')).toBe('https://fakerjs.dev/api/helpers');
+    helpText = helpLink.getAttribute('data-help-text');
+    expect(helpText).toContain('faker.person.firstName');
+    expect(helpText).toContain('https://fakerjs.dev/api/person');
+    expect(helpText).toContain('Params:');
+    expect(helpText).toContain("sex?: 'female' | 'male'");
+    expect(helpText).toContain('Example:');
 
     page.schemaRows[0].sourceType = 'regex';
     page.renderSchemaRows();
     helpLink = document.querySelector('[data-field="faker-doc-link"]');
     expect(helpLink.hidden).toBe(false);
-    expect(helpLink.getAttribute('href')).toBe('https://anywaydata.com/docs/test-data/regex-test-data');
+    helpText = helpLink.getAttribute('data-help-text');
+    expect(helpText).toContain('Regex');
+    expect(helpText).toContain('https://anywaydata.com/docs/test-data/regex-test-data');
 
     page.schemaRows[0].sourceType = 'literal';
     page.renderSchemaRows();
     helpLink = document.querySelector('[data-field="faker-doc-link"]');
     expect(helpLink.hidden).toBe(false);
-    expect(helpLink.getAttribute('href')).toBe('https://anywaydata.com/docs/category/generating-data');
+    helpText = helpLink.getAttribute('data-help-text');
+    expect(helpText).toContain('Literal');
+    expect(helpText).toContain('https://anywaydata.com/docs/category/generating-data');
   });
 
   test('default alert invocation does not throw on validation errors', () => {

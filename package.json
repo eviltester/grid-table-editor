@@ -7,6 +7,7 @@
     "test": "jest",
     "testverbose": "jest --verbose",
     "testcoverage": "jest --coverage",
+    "generate:faker-help": "node ./scripts/generate-faker-help.js",
     "lint": "eslint \"js/**/*.js\" \"tests/**/*.js\"",
     "lint:fix": "eslint --fix \"js/**/*.js\" \"tests/**/*.js\"",
     "format": "prettier --write \"*.json\" \"js/**/*.js\" \"tests/**/*.js\" \".github/workflows/*.yml\"",

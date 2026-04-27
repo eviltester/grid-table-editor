@@ -12,6 +12,7 @@ import { HtmlOptionsPanel } from './options_panels/options-html-panel.js';
 import { GherkinOptionsPanel } from './options_panels/options-gherkin-panel.js';
 import { AsciiTableOptionsPanel } from './options_panels/options-ascii-table.js';
 import { getKnownFakerCommandsAlphabetical, getKnownFakerCommandsLongestFirst } from './faker-commands.js';
+import { getFakerCommandHelp } from './faker-command-help-metadata.js';
 
 const SOURCE_TYPE_FAKER = 'faker';
 const SOURCE_TYPE_REGEX = 'regex';
@@ -517,17 +518,8 @@ class DataGeneratorPage {
     this.schemaRows.forEach((row, index) => {
       const normalisedSourceType = normaliseSourceType(row.sourceType);
       const isFakerSource = normalisedSourceType === SOURCE_TYPE_FAKER;
-      const rowHelpUrl = this.getSchemaHelpUrl(normalisedSourceType, row.command);
-      const showRowHelpLink = rowHelpUrl.length > 0;
-      const hasSelectedFakerCommand = isFakerSource && normaliseFakerCommand(row.command).length > 0;
-      const rowHelpTitle =
-        normalisedSourceType === SOURCE_TYPE_REGEX
-          ? 'Open Regex docs'
-          : normalisedSourceType === SOURCE_TYPE_LITERAL
-            ? 'Open Anywaydata docs'
-            : hasSelectedFakerCommand
-              ? 'Open Faker API docs'
-              : 'Open Faker docs';
+      const schemaHelp = this.getSchemaHelpData(normalisedSourceType, row.command);
+      const showRowHelpLink = schemaHelp.show;
       const rowElem = this.documentObj.createElement('div');
       rowElem.className = `generator-schema-row ${isFakerSource ? 'generator-schema-row-faker' : 'generator-schema-row-non-faker'}`;
       rowElem.setAttribute('data-row-id', row.id);
@@ -557,24 +549,30 @@ class DataGeneratorPage {
                 </select>`
                     : ''
                 }
-                <a
+                <span
                     data-field="faker-doc-link"
                     class="helpicon generator-schema-help-link"
-                    href="${this.escapeHtml(rowHelpUrl)}"
-                    title="${this.escapeHtml(rowHelpTitle)}"
-                    aria-label="${this.escapeHtml(rowHelpTitle)}"
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    data-help="generator-schema-help"
+                    title="${this.escapeHtml(schemaHelp.title)}"
+                    aria-label="${this.escapeHtml(schemaHelp.title)}"
                     ${showRowHelpLink ? '' : 'hidden'}
-                ></a>
+                ></span>
                 ${
                   isFakerSource
                     ? `<input type="text" data-field="params" placeholder="Params e.g. (10)" value="${this.escapeHtml(row.params)}">`
                     : `<input type="text" data-field="value" placeholder="Value / Regex" value="${this.escapeHtml(row.value)}">`
                 }
             `;
+      const schemaHelpElement = rowElem.querySelector('[data-field="faker-doc-link"]');
+      if (schemaHelpElement) {
+        schemaHelpElement.setAttribute('data-help-text', schemaHelp.html);
+      }
       container.appendChild(rowElem);
     });
+
+    if (typeof window !== 'undefined' && typeof window.updateHelpHints === 'function') {
+      window.updateHelpHints();
+    }
   }
 
   handleRowInputChange(event) {
@@ -837,18 +835,88 @@ class DataGeneratorPage {
     return `https://fakerjs.dev/api/${moduleName}`;
   }
 
-  getSchemaHelpUrl(sourceType, commandValue) {
+  getSchemaHelpData(sourceType, commandValue) {
     const normalisedSourceType = normaliseSourceType(sourceType);
     if (normalisedSourceType === SOURCE_TYPE_REGEX) {
-      return REGEX_HELP_URL;
+      return {
+        show: true,
+        title: 'Regex data help',
+        html: this.buildTypeHelpHtml(
+          'Regex',
+          'Regex patterns generate random values that match the specified expression.',
+          REGEX_HELP_URL
+        ),
+      };
     }
-    if (normalisedSourceType === SOURCE_TYPE_FAKER) {
-      return this.getFakerHelpUrl(commandValue);
-    }
+
     if (normalisedSourceType === SOURCE_TYPE_LITERAL) {
-      return LITERAL_HELP_URL;
+      return {
+        show: true,
+        title: 'Literal data help',
+        html: this.buildTypeHelpHtml(
+          'Literal',
+          'Literal data repeats the exact text you enter for every generated row.',
+          LITERAL_HELP_URL
+        ),
+      };
     }
-    return '';
+
+    if (normalisedSourceType === SOURCE_TYPE_FAKER) {
+      const command = normaliseFakerCommand(commandValue);
+      if (!command) {
+        return {
+          show: true,
+          title: 'Faker data help',
+          html: this.buildTypeHelpHtml(
+            'Faker',
+            'Faker commands generate realistic random values such as names, addresses, and dates.',
+            FAKER_HELP_URL
+          ),
+        };
+      }
+
+      const commandHelp = getFakerCommandHelp(command);
+      const docsUrl = commandHelp?.docsUrl || this.getFakerHelpUrl(command);
+      const heading = `faker.${command}`;
+      const summary = commandHelp?.summary || `Generates data using ${heading}.`;
+      return {
+        show: true,
+        title: `Faker command help: ${command}`,
+        html: this.buildFakerCommandHelpHtml({ heading, summary, docsUrl, params: commandHelp?.params || [] }),
+      };
+    }
+
+    return { show: false, title: '', html: '' };
+  }
+
+  buildTypeHelpHtml(typeName, summary, docsUrl) {
+    return [
+      `<p><strong>${this.escapeHtml(typeName)}</strong></p>`,
+      `<p>${this.escapeHtml(summary)}</p>`,
+      `<p><a class="helplink" href="${this.escapeHtml(docsUrl)}" target="_blank" rel="noopener noreferrer">Learn more</a></p>`,
+    ].join('');
+  }
+
+  buildFakerCommandHelpHtml({ heading, summary, docsUrl, params }) {
+    const sections = [`<p><strong>${this.escapeHtml(heading)}</strong></p>`, `<p>${this.escapeHtml(summary)}</p>`];
+
+    if (Array.isArray(params) && params.length > 0) {
+      const paramHints = params
+        .map((param) => `${this.escapeHtml(param.name)}${param.optional ? '?' : ''}: ${this.escapeHtml(param.type)}`)
+        .join(', ');
+      sections.push(`<p><strong>Params:</strong> <code>${paramHints}</code></p>`);
+    }
+
+    const commandName = heading.startsWith('faker.') ? heading.replace('faker.', '') : heading;
+    const helpData = getFakerCommandHelp(commandName);
+    if (helpData?.example) {
+      sections.push(`<p><strong>Example:</strong> <code>${this.escapeHtml(helpData.example)}</code></p>`);
+    }
+
+    sections.push(
+      `<p><a class="helplink" href="${this.escapeHtml(docsUrl)}" target="_blank" rel="noopener noreferrer">Learn more</a></p>`
+    );
+    return sections.join('');
   }
 }
 

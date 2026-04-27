@@ -160,6 +160,7 @@ class DataGeneratorPage {
     this.isTextMode = false;
     this.optionsPanels = {};
     this.generationStatusTimer = undefined;
+    this.lastPreviewDataTable = undefined;
   }
 
   init() {
@@ -245,12 +246,16 @@ class DataGeneratorPage {
                         <strong>Preview</strong>
                         <div class="generator-preview-controls">
                             <label>Preview Rows
-                                <input type="number" id="previewRowsCount" min="0" value="50">
+                        <input type="number" id="previewRowsCount" min="0" max="50" value="10">
                             </label>
                             <button id="previewDataButton">Preview</button>
                         </div>
                     </div>
                     <div id="generator-preview-grid" class="ag-theme-alpine"></div>
+                  <div class="generator-output-preview">
+                    <label for="generatorOutputPreview">Output Preview</label>
+                    <textarea id="generatorOutputPreview" readonly spellcheck="false"></textarea>
+                  </div>
                 </div>
             </section>
         `;
@@ -295,7 +300,10 @@ class DataGeneratorPage {
     });
 
     const outputFormat = this.documentObj.getElementById('generatorOutputFormat');
-    outputFormat.addEventListener('change', () => this.renderOptionsPanelForSelectedFormat());
+    outputFormat.addEventListener('change', () => {
+      this.renderOptionsPanelForSelectedFormat();
+      this.renderOutputPreviewForCurrentSelection();
+    });
 
     const schemaRowsContainer = this.documentObj.getElementById('generatorSchemaRows');
     schemaRowsContainer.addEventListener('input', (event) => this.handleRowInputChange(event));
@@ -358,6 +366,7 @@ class DataGeneratorPage {
       return;
     }
     this.exporter?.setOptionsForType?.(type, options);
+    this.renderOutputPreviewForCurrentSelection();
     this.setGenerationStatus(`${type.toUpperCase()} options applied.`);
     this.scheduleClearGenerationStatus();
   }
@@ -611,7 +620,36 @@ class DataGeneratorPage {
     if (Number.isNaN(rawValue) || rawValue < 0) {
       return { value: 0, errors: [`${inputId} must be a number greater than or equal to zero.`] };
     }
+
+    if (inputElem?.max) {
+      const maxValue = Number.parseInt(inputElem.max, 10);
+      if (!Number.isNaN(maxValue) && rawValue > maxValue) {
+        return { value: maxValue, errors: [`${inputId} must be less than or equal to ${maxValue}.`] };
+      }
+    }
+
     return { value: rawValue, errors: [] };
+  }
+
+  renderOutputPreviewForCurrentSelection() {
+    const outputPreviewElem = this.documentObj.getElementById('generatorOutputPreview');
+    if (!outputPreviewElem) {
+      return;
+    }
+
+    const type = this.getSelectedOutputType();
+    const dataTable = this.lastPreviewDataTable;
+    if (!type || !dataTable || !this.exporter?.canExport(type)) {
+      outputPreviewElem.value = '';
+      return;
+    }
+
+    try {
+      outputPreviewElem.value = this.exporter.getDataTableAs(type, dataTable);
+    } catch (error) {
+      console.error(error);
+      outputPreviewElem.value = '';
+    }
   }
 
   createConfiguredGenerator() {
@@ -675,7 +713,9 @@ class DataGeneratorPage {
     }
 
     const dataTable = this.buildDataTable(configured.generator, rowCount.value);
+    this.lastPreviewDataTable = dataTable;
     this.previewGrid.setGridFromGenericDataTable(dataTable);
+    this.renderOutputPreviewForCurrentSelection();
   }
 
   async generateDataFile() {

@@ -194,6 +194,81 @@ describe('DataGeneratorPage', () => {
     const tableArg = FakeGridExtension.lastInstance.setGridFromGenericDataTable.mock.calls[0][0];
     expect(tableArg.getRowCount()).toBe(3);
     expect(tableArg.getHeaders()).toEqual(['Name', 'Code']);
+    expect(document.getElementById('generatorOutputPreview').value).toBe('csv:sync:3');
+  });
+
+  test('preview rows input defaults to 10 and has max 50', () => {
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker: { word: { noun: () => 'x' } },
+      RandExp: function RandExp() {},
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: FakeTestDataGenerator,
+    });
+    page.init();
+
+    const previewRowsInput = document.getElementById('previewRowsCount');
+    expect(previewRowsInput.value).toBe('10');
+    expect(previewRowsInput.max).toBe('50');
+  });
+
+  test('preview rows above max show validation error', () => {
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker: { word: { noun: () => 'x' } },
+      RandExp: function RandExp() {},
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: FakeTestDataGenerator,
+    });
+    page.init();
+    page.schemaRows = [{ id: '1', name: 'Name', sourceType: 'literal', command: '', params: '', value: 'fixed' }];
+    page.renderSchemaRows();
+
+    document.getElementById('previewRowsCount').value = '51';
+    page.previewData();
+
+    expect(alertFn).toHaveBeenCalledWith('previewRowsCount must be less than or equal to 50.');
+    expect(FakeGridExtension.lastInstance.setGridFromGenericDataTable).not.toHaveBeenCalled();
+  });
+
+  test('output preview updates when changing output type after preview', () => {
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker: { word: { noun: () => 'x' } },
+      RandExp: function RandExp() {},
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: FakeTestDataGenerator,
+    });
+    page.init();
+
+    page.schemaRows = [{ id: '1', name: 'Name', sourceType: 'literal', command: '', params: '', value: 'fixed' }];
+    page.renderSchemaRows();
+    document.getElementById('previewRowsCount').value = '2';
+    page.previewData();
+
+    const previewOutput = document.getElementById('generatorOutputPreview');
+    expect(previewOutput.value).toBe('csv:sync:2');
+
+    const outputSelect = document.getElementById('generatorOutputFormat');
+    outputSelect.value = 'json';
+    outputSelect.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+
+    expect(previewOutput.value).toBe('json:sync:2');
   });
 
   test('generate downloads file using selected output format', async () => {

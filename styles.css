@@ -437,6 +437,24 @@ Custom header styles for default items
   height: 420px;
 }
 
+.generator-output-preview{
+  margin-top: 0.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.generator-output-preview label{
+  font-size: 0.9rem;
+}
+
+#generatorOutputPreview{
+  width: 100%;
+  min-height: 8rem;
+  white-space: pre;
+  resize: vertical;
+}
+
 @media (max-width: 980px){
   .generator-schema-row{
     grid-template-columns: 1fr 1fr;

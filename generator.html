@@ -10,6 +10,8 @@
 
   <script src="https://unpkg.com/papaparse@5.3.2/papaparse.min.js"></script>
   <script src="libs/randexp.min.js"></script>
+  <script src="https://unpkg.com/@popperjs/core@2"></script>
+  <script src="https://unpkg.com/tippy.js@6"></script>
   <script type="module" src="./js/generator-script.js"></script>
 
   <link rel="stylesheet" type="text/css" href="styles.css">
@@ -40,5 +42,88 @@
     <p id="generator-initial-load">Please Wait, Loading Libraries...</p>
     <div id="generator-app"></div>
   </div>
+
+  <div id="inline-help-items" style="display:none">
+    <div data-name="markdown-table-options">
+      <p>Export the table data as <a class="helplink" href="docs/data-formats/markdown/markdown" target="anywaydatadocs">Markdown</a>, a human readable format which can be easily converted to HTML or PDF.</p>
+      <p>Choose from the list of <a class="helplink" href="docs/data-formats/markdown/options" target="anywaydatadocs">formatting options</a> and press the [Apply] button to render the data in the chosen style.</p>
+      <p><a class="helplink" href="docs/data-formats/markdown/options" target="anywaydatadocs">Learn more</a></p>
+    </div>
+
+    <div data-name="ascii-table-options">
+      <p>Export the table data as Ascii Table suitable for adding to an email or text file.</p>
+      <p>Choose from a list of predefined formats and press the [Apply] button to render the table in the chosen style.</p>
+      <p><a class="helplink" href="docs/data-formats/ascii-tables/options" target="anywaydatadocs">Learn more</a></p>
+    </div>
+
+    <div data-name="csv-options">
+      <p>Export the table data as <a class="helplink" href="docs/data-formats/csv/csv" target="anywaydatadocs">CSV (Comma Separated Values)</a> suitable for importing into a spreadsheet.</p>
+      <p>Choose from the formatting options and press the [Apply] button to render the data in the chosen style.</p>
+      <p><a class="helplink" href="docs/data-formats/csv/options" target="anywaydatadocs">Learn more</a></p>
+    </div>
+
+    <div data-name="delimiter-options">
+      <p>Export the table data as a <a class="helplink" href="docs/data-formats/delimited/delimited" target="anywaydatadocs">Delimited</a> output suitable for importing or copy and pasting into a spreadsheet.</p>
+      <p>Choose from the formatting options and press the [Apply] button to render the data in the chosen style.</p>
+      <p><em>Hint: Use Tab delimiter if copying into another table editing application like a spreadsheet.</em></p>
+      <p><a class="helplink" href="docs/data-formats/delimited/options" target="anywaydatadocs">Learn more</a></p>
+    </div>
+
+    <div data-name="json-options">
+      <p>Export the table data as a <a class="helplink" href="docs/data-formats/json/json" target="anywaydatadocs">JSON</a> output suitable for JSON interchange messages e.g. APIs.</p>
+      <p>Choose from the formatting options and press the [Apply] button to render the JSON in the chosen style.</p>
+      <p><a class="helplink" href="docs/data-formats/json/options" target="anywaydatadocs">Learn more</a></p>
+    </div>
+
+    <div data-name="javascript-options">
+      <p>Export the table data as a <a class="helplink" href="docs/data-formats/javascript/javascript" target="anywaydatadocs">Javascript</a> output suitable for using in a Javascript application or unit testing code.</p>
+      <p>Choose from the formatting options and press the [Apply] button to render the Javascript in the chosen style.</p>
+      <p><a class="helplink" href="docs/data-formats/javascript/options" target="anywaydatadocs">Learn more</a></p>
+    </div>
+
+    <div data-name="gherkin-options">
+      <p>Export the table data as <a class="helplink" href="docs/data-formats/gherkin/gherkin" target="anywaydatadocs">Gherkin</a>, a human readable format used in BDD automation.</p>
+      <p>The <a class="helplink" href="docs/data-formats/gherkin/options" target="anywaydatadocs">formatting options</a> help pretty print the output to fit in the specification.</p>
+      <p><a class="helplink" href="docs/data-formats/gherkin/options" target="anywaydatadocs">Learn more</a></p>
+    </div>
+
+    <div data-name="html-table-options">
+      <p>Export the table data as a <a class="helplink" href="docs/data-formats/html/html-tables" target="anywaydatadocs">HTML Table</a> suitable for adding to a web page.</p>
+      <p>Choose from the formatting options and press the [Apply] button to render the data as HTML code.</p>
+      <p>Import any HTML code by pasting the `table` contents into the text area and pressing `Set Grid From Text`</p>
+      <p><a class="helplink" href="docs/data-formats/html/options" target="anywaydatadocs">Learn more</a></p>
+    </div>
+  </div>
+
+  <script>
+    function updateHelpHints(){
+      if (typeof tippy !== 'function') {
+        return;
+      }
+
+      tippy('.helpicon', {
+        content(reference) {
+          const id = reference.getAttribute('data-help');
+          const helpItems = document.getElementById('inline-help-items');
+          if (!helpItems || !id) {
+            return '';
+          }
+
+          const helpText = helpItems.querySelector(`div[data-name='${id}']`);
+          if (helpText) {
+            return helpText.innerHTML;
+          }
+
+          console.log('TODO: Create help for ' + id);
+          return '';
+        },
+        placement: 'top-start',
+        allowHTML: true,
+        interactive: true,
+      });
+    }
+
+    window.updateHelpHints = updateHelpHints;
+  </script>
 </body>
 </html>

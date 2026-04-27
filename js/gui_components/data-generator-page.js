@@ -346,6 +346,10 @@ class DataGeneratorPage {
     if (typeof panel.setApplyCallback === 'function') {
       panel.setApplyCallback((options) => this.applyCurrentTypeOptions(options));
     }
+
+    if (typeof window !== 'undefined' && typeof window.updateHelpHints === 'function') {
+      window.updateHelpHints();
+    }
   }
 
   applyCurrentTypeOptions(options) {

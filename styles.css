@@ -326,15 +326,15 @@ Custom header styles for default items
   background: #f8fcff;
 }
 
-.generator-controls label{
+.generator-controls > label{
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
   font-size: 0.9rem;
 }
 
-.generator-controls input,
-.generator-controls select{
+.generator-controls > label input,
+.generator-controls > label select{
   min-width: 9rem;
 }
 

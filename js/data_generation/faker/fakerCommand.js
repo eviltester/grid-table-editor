@@ -21,6 +21,7 @@ export class FakerCommand {
     this.fakerFunctionCallHasArgs = false;
     this.fakerFunctionName = '';
     this.fakerFunctionCallArgs = '';
+    this.propertyAccessors = []; // Property chain for object-returning functions (e.g., [name, iataTypeCode] for airline.airplane.name)
 
     this.validationResult = errorResponse('Not Parsed');
   }
@@ -87,22 +88,30 @@ export class FakerCommand {
       this.validationResult = dataResponse('');
       // compiled command name
       this.fakerFunctionName = fakerFunction.commandName;
+      // Store property accessors if any (for accessing properties on object-returning functions)
+      this.propertyAccessors = fakerFunction.propertyAccessors || [];
       return this.validationResult;
     }
   }
 
   // TODO: create a class for this FakerFunction object
-  // returns an object {fakerFunction: theFunctionFound, commandName: theFakerCommandMatchingTheFunction}
+  // returns an object {fakerFunction: theFunctionFound, commandName: theFakerCommandMatchingTheFunction, propertyAccessors: []}
   findFakerFunction(forCommand, withFaker) {
     var fakerThing = withFaker;
     var parts = forCommand.split('.');
 
     var command = '';
     var commandConjoiner = '';
+    var foundFunctionIndex = -1;
 
-    for (var part of parts) {
+    for (var i = 0; i < parts.length; i++) {
+      var part = parts[i];
       const possibleFakerCommandRegex = new RegExp('^([A-Za-z]*)$');
       if (possibleFakerCommandRegex.test(part)) {
+        if (foundFunctionIndex !== -1) {
+          break;
+        }
+
         command = command + commandConjoiner;
         command = command + part;
         commandConjoiner = '.';
@@ -111,13 +120,28 @@ export class FakerCommand {
         if (fakerThing === undefined) {
           break;
         }
+
+        // Check if we've found a function (and we haven't yet recorded finding one)
+        if (foundFunctionIndex === -1 && typeof fakerThing === 'function') {
+          foundFunctionIndex = i;
+        }
       } else {
         fakerThing = undefined;
         break;
       }
     }
 
-    return { fakerFunction: fakerThing, commandName: command };
+    // If we found a function but there are more parts, those are property accessors
+    const propertyAccessors = [];
+    if (foundFunctionIndex !== -1 && foundFunctionIndex < parts.length - 1) {
+      for (let j = foundFunctionIndex + 1; j < parts.length; j++) {
+        propertyAccessors.push(parts[j]);
+      }
+      command = parts.slice(0, foundFunctionIndex + 1).join('.');
+      fakerThing = this.findFakerFunction(command, withFaker).fakerFunction;
+    }
+
+    return { fakerFunction: fakerThing, commandName: command, propertyAccessors };
   }
 
   validate(againstFaker) {
@@ -144,7 +168,8 @@ export class FakerCommand {
     return runFakerCommand(
       this.fakerFunctionName,
       this.fakerFunctionCallHasArgs ? this.fakerFunctionCallArgs : null,
-      usingFaker
+      usingFaker,
+      this.propertyAccessors
     );
   }
 

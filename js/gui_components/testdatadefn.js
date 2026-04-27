@@ -26,6 +26,7 @@ import { GridExtension as AgGridExtension } from './data-grid-editor/ag-grid/gri
 import { GridExtension as TabulatorGridExtension } from './data-grid-editor/tabulator/gridExtension-tabulator.js';
 import { SelectFilterEditor } from './data-grid-editor/ag-grid/select-filter-editor.js';
 import { TEST_DATA_MODES, createAmendedTable, createTableFromGenerator, normaliseCount } from './test-data-amend.js';
+import { getKnownFakerCommandsAlphabetical, getKnownFakerCommandsLongestFirst } from './faker-commands.js';
 
 import { faker } from 'https://cdn.skypack.dev/@faker-js/faker@v9.7.0';
 
@@ -357,281 +358,12 @@ function populateTestDataGridFromRules() {
   defnGridBridge.addRows(rowsToAdd);
 }
 
-const KNOWN_FAKER_COMMANDS = [
-  'RegEx',
-
-  // v9.7.0
-  //"_randomizer.next","_randomizer.seed",
-  'datatype.boolean',
-  'date.month',
-  'date.weekday',
-  'date.timeZone',
-  'date.anytime',
-  'date.past',
-  'date.future',
-  'date.between',
-  'date.betweens',
-  'date.recent',
-  'date.soon',
-  'date.birthdate',
-  // Some helpers work just fine
-  'helpers.fake',
-  'helpers.mustache',
-  'helpers.fromRegExp',
-  'helpers.maybe',
-  'helpers.arrayElement',
-  'helpers.slugify',
-  'helpers.replaceSymbols',
-  'helpers.replaceCreditCardSymbols',
-  'helpers.shuffle',
-  'helpers.uniqueArray',
-  'helpers.weightedArrayElement',
-  'helpers.arrayElements',
-  'helpers.rangeToNumber',
-  'helpers.multiple',
-  // "helpers.objectKey","helpers.objectValue","helpers.objectEntry","helpers.enumValue",
-  'number.int',
-  'number.float',
-  'number.binary',
-  'number.octal',
-  'number.hex',
-  'number.bigInt',
-  'number.romanNumeral',
-  'string.fromCharacters',
-  'string.alpha',
-  'string.alphanumeric',
-  'string.binary',
-  'string.octal',
-  'string.hexadecimal',
-  'string.numeric',
-  'string.sample',
-  'string.uuid',
-  'string.ulid',
-  'string.nanoid',
-  'string.symbol',
-  'airline.airport',
-  'airline.airline',
-  'airline.airplane',
-  'airline.recordLocator',
-  'airline.seat',
-  'airline.aircraftType',
-  'airline.flightNumber',
-  'animal.dog',
-  'animal.cat',
-  'animal.snake',
-  'animal.bear',
-  'animal.lion',
-  'animal.cetacean',
-  'animal.horse',
-  'animal.bird',
-  'animal.cow',
-  'animal.fish',
-  'animal.crocodilia',
-  'animal.insect',
-  'animal.rabbit',
-  'animal.rodent',
-  'animal.type',
-  'animal.petName',
-  'book.author',
-  'book.format',
-  'book.genre',
-  'book.publisher',
-  'book.series',
-  'book.title',
-  'color.human',
-  'color.space',
-  'color.cssSupportedFunction',
-  'color.cssSupportedSpace',
-  'color.rgb',
-  'color.cmyk',
-  'color.hsl',
-  'color.hwb',
-  'color.lab',
-  'color.lch',
-  'color.colorByCSSColorSpace',
-  'commerce.department',
-  'commerce.productName',
-  'commerce.price',
-  'commerce.productAdjective',
-  'commerce.productMaterial',
-  'commerce.product',
-  'commerce.productDescription',
-  'commerce.isbn',
-  'company.name',
-  'company.catchPhrase',
-  'company.buzzPhrase',
-  'company.catchPhraseAdjective',
-  'company.catchPhraseDescriptor',
-  'company.catchPhraseNoun',
-  'company.buzzAdjective',
-  'company.buzzVerb',
-  'company.buzzNoun',
-  'database.column',
-  'database.type',
-  'database.collation',
-  'database.engine',
-  'database.mongodbObjectId',
-  'finance.accountNumber',
-  'finance.accountName',
-  'finance.routingNumber',
-  'finance.maskedNumber',
-  'finance.amount',
-  'finance.transactionType',
-  'finance.currency',
-  'finance.currencyCode',
-  'finance.currencyName',
-  'finance.currencySymbol',
-  'finance.currencyNumericCode',
-  'finance.bitcoinAddress',
-  'finance.litecoinAddress',
-  'finance.creditCardNumber',
-  'finance.creditCardCVV',
-  'finance.creditCardIssuer',
-  'finance.pin',
-  'finance.ethereumAddress',
-  'finance.iban',
-  'finance.bic',
-  'finance.transactionDescription',
-  'food.adjective',
-  'food.description',
-  'food.dish',
-  'food.ethnicCategory',
-  'food.fruit',
-  'food.ingredient',
-  'food.meat',
-  'food.spice',
-  'food.vegetable',
-  'git.branch',
-  'git.commitEntry',
-  'git.commitMessage',
-  'git.commitDate',
-  'git.commitSha',
-  'hacker.abbreviation',
-  'hacker.adjective',
-  'hacker.noun',
-  'hacker.verb',
-  'hacker.ingverb',
-  'hacker.phrase',
-  'image.avatar',
-  'image.avatarGitHub',
-  'image.personPortrait',
-  'image.avatarLegacy',
-  'image.url',
-  'image.urlLoremFlickr',
-  'image.urlPicsumPhotos',
-  'image.urlPlaceholder',
-  'image.dataUri',
-  'internet.email',
-  'internet.exampleEmail',
-  'internet.userName',
-  'internet.username',
-  'internet.displayName',
-  'internet.protocol',
-  'internet.httpMethod',
-  'internet.httpStatusCode',
-  'internet.url',
-  'internet.domainName',
-  'internet.domainSuffix',
-  'internet.domainWord',
-  'internet.ip',
-  'internet.ipv4',
-  'internet.ipv6',
-  'internet.port',
-  'internet.userAgent',
-  'internet.color',
-  'internet.mac',
-  'internet.password',
-  'internet.emoji',
-  'internet.jwtAlgorithm',
-  'internet.jwt',
-  'location.zipCode',
-  'location.city',
-  'location.buildingNumber',
-  'location.street',
-  'location.streetAddress',
-  'location.secondaryAddress',
-  'location.county',
-  'location.country',
-  'location.continent',
-  'location.countryCode',
-  'location.state',
-  'location.latitude',
-  'location.longitude',
-  'location.direction',
-  'location.cardinalDirection',
-  'location.ordinalDirection',
-  'location.nearbyGPSCoordinate',
-  'location.timeZone',
-  'location.language',
-  'lorem.word',
-  'lorem.words',
-  'lorem.sentence',
-  'lorem.slug',
-  'lorem.sentences',
-  'lorem.paragraph',
-  'lorem.paragraphs',
-  'lorem.text',
-  'lorem.lines',
-  'music.album',
-  'music.artist',
-  'music.genre',
-  'music.songName',
-  'person.firstName',
-  'person.lastName',
-  'person.middleName',
-  'person.fullName',
-  'person.gender',
-  'person.sex',
-  'person.sexType',
-  'person.bio',
-  'person.prefix',
-  'person.suffix',
-  'person.jobTitle',
-  'person.jobDescriptor',
-  'person.jobArea',
-  'person.jobType',
-  'person.zodiacSign',
-  'phone.number',
-  'phone.imei',
-  'science.chemicalElement',
-  'science.unit',
-  'system.fileName',
-  'system.commonFileName',
-  'system.mimeType',
-  'system.commonFileType',
-  'system.commonFileExt',
-  'system.fileType',
-  'system.fileExt',
-  'system.directoryPath',
-  'system.filePath',
-  'system.semver',
-  'system.networkInterface',
-  'system.cron',
-  'vehicle.vehicle',
-  'vehicle.manufacturer',
-  'vehicle.model',
-  'vehicle.type',
-  'vehicle.fuel',
-  'vehicle.vin',
-  'vehicle.color',
-  'vehicle.vrm',
-  'vehicle.bicycle',
-  'word.adjective',
-  'word.adverb',
-  'word.conjunction',
-  'word.interjection',
-  'word.noun',
-  'word.preposition',
-  'word.verb',
-  'word.sample',
-  'word.words',
-];
-
 const FAKER_COMMANDS = [];
+const FAKER_COMMANDS_LONGEST_FIRST = [];
 
 // TODO: add fakerCommand to the TestDataRule already parsed out
 function findFakerCommand(aString) {
-  for (let command of FAKER_COMMANDS) {
+  for (let command of FAKER_COMMANDS_LONGEST_FIRST) {
     if (aString.startsWith(command)) {
       return command;
     }
@@ -639,62 +371,47 @@ function findFakerCommand(aString) {
   return null;
 }
 
+/**
+ * Helper function to safely probe a faker command and detect its return type.
+ * Used during dropdown discovery to identify commands that return objects (unsuitable for literals).
+ * @param {string} command - The faker command (e.g., 'airline.airplane')
+ * @param {object} fakerLib - The faker library instance
+ * @returns {string|null} 'primitive' if returns primitive, 'object' if returns object, null if error
+ * @deprecated - This function is kept for backward compatibility but is no longer used
+ */
+function probeCommandReturnType(command, fakerLib) {
+  try {
+    // Execute command with no arguments, e.g., `faker.airline.airplane()`
+    const fakerPrefix = 'this.';
+    const commandToRun = `return ${fakerPrefix}${command}()`;
+    const result = Function(commandToRun).bind(fakerLib)();
+
+    // Classify return type
+    const typeOfResult = typeof result;
+    if (
+      typeOfResult === 'string' ||
+      typeOfResult === 'number' ||
+      typeOfResult === 'boolean' ||
+      typeOfResult === 'bigint'
+    ) {
+      return 'primitive';
+    }
+    if (typeOfResult === 'object' && result !== null && !(result instanceof Date) && !Array.isArray(result)) {
+      return 'object';
+    }
+    return null; // null, undefined, function, or other unsupported type
+  } catch (e) {
+    // Silently skip commands that error during probing
+    return null;
+  }
+}
+
 function identifyFakerCommands() {
   FAKER_COMMANDS.length = 0;
+  FAKER_COMMANDS_LONGEST_FIRST.length = 0;
 
-  // add our internal values
-  FAKER_COMMANDS.push('RegEx');
-
-  // any classes of commands that do not work? e.g. definitions, helpers used to be bad
-  const skipKeys = [];
-
-  // faker commands that we know will not work well for test data generation
-  const skipValues = [
-    '_randomizer.next',
-    '_randomizer.seed',
-    'helpers.objectKey',
-    'helpers.objectValue',
-    'helpers.objectEntry',
-    'helpers.enumValue',
-  ];
-
-  let fakerKeys = Object.keys(faker);
-  fakerKeys.forEach((k) => {
-    Object.getOwnPropertyNames(faker[k])
-      .filter((item) => {
-        return typeof faker[k][item] === 'function';
-      })
-      .forEach((k2) => {
-        if (skipKeys.includes(k) || skipValues.includes(`${k}.${k2}`)) {
-          // ignore this value
-          console.log(`expected: ignoring known faker command ${k}.${k2}`);
-        } else {
-          // add the valid function
-          FAKER_COMMANDS.push(`${k}.${k2}`);
-        }
-      });
-  });
-
-  // copy paste into KNOWN_FAKER_COMMANDS when updating a faker version after tesitng for new exclusions and removals
-  // console.log(FAKER_COMMANDS);
-
-  // Sanity check
-  let sanityCheckCommands = KNOWN_FAKER_COMMANDS.slice();
-  FAKER_COMMANDS.forEach((command) => {
-    let foundIndex = sanityCheckCommands.indexOf(command);
-    if (foundIndex == -1) {
-      // new command found
-      console.log('unexpected: Found new Faker command ' + command);
-    } else {
-      sanityCheckCommands[foundIndex] = '';
-    }
-  });
-
-  sanityCheckCommands
-    .filter((value) => {
-      return value.length > 0;
-    })
-    .forEach((value) => console.log('unexpected: Previously known faker command not present: ' + value));
+  getKnownFakerCommandsAlphabetical().forEach((command) => FAKER_COMMANDS.push(command));
+  getKnownFakerCommandsLongestFirst().forEach((command) => FAKER_COMMANDS_LONGEST_FIRST.push(command));
 }
 
 function setupTestDataEditGrid(gridDiv) {
@@ -982,4 +699,12 @@ function enableTestDataGenerationInterface(parentId, anImporter, aTextPreviewRen
   );
 }
 
-export { enableTestDataGenerationInterface };
+export { enableTestDataGenerationInterface, probeCommandReturnType, identifyFakerCommands, getFakerCommands };
+
+/**
+ * Getter function for FAKER_COMMANDS array (for testing purposes).
+ * @returns {string[]} Array of discovered faker commands
+ */
+function getFakerCommands() {
+  return [...FAKER_COMMANDS];
+}

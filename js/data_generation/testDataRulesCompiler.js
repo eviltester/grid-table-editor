@@ -60,7 +60,7 @@ export class TestDataRulesCompiler {
           }
         }
       } else {
-        if (!validTypes.contains(rule.type)) {
+        if (!validTypes.includes(rule.type)) {
           this.compilationReportLines.push(
             `Warning: Unrecognised Type for '${rule.name}' - '${rule.type}' converting to 'literal'`
           );

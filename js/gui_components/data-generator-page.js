@@ -11,19 +11,11 @@ import { JavascriptOptionsPanel } from './options_panels/options-javascript-pane
 import { HtmlOptionsPanel } from './options_panels/options-html-panel.js';
 import { GherkinOptionsPanel } from './options_panels/options-gherkin-panel.js';
 import { AsciiTableOptionsPanel } from './options_panels/options-ascii-table.js';
+import { getKnownFakerCommandsAlphabetical, getKnownFakerCommandsLongestFirst } from './faker-commands.js';
 
 const SOURCE_TYPE_FAKER = 'faker';
 const SOURCE_TYPE_REGEX = 'regex';
 const SOURCE_TYPE_LITERAL = 'literal';
-
-const FAKER_SKIP_VALUES = [
-  '_randomizer.next',
-  '_randomizer.seed',
-  'helpers.objectKey',
-  'helpers.objectValue',
-  'helpers.objectEntry',
-  'helpers.enumValue',
-];
 
 function normaliseFakerCommand(commandValue) {
   const command = String(commandValue || '').trim();
@@ -92,33 +84,6 @@ function validateSchemaRows(schemaRows) {
   return { errors, rows };
 }
 
-function buildFakerCommands(fakerObj) {
-  const commands = [];
-  if (!fakerObj || typeof fakerObj !== 'object') {
-    return commands;
-  }
-
-  Object.keys(fakerObj).forEach((domainKey) => {
-    const domain = fakerObj[domainKey];
-    if (!domain || typeof domain !== 'object') {
-      return;
-    }
-
-    Object.getOwnPropertyNames(domain)
-      .filter((methodName) => typeof domain[methodName] === 'function')
-      .forEach((methodName) => {
-        const command = `${domainKey}.${methodName}`;
-        if (FAKER_SKIP_VALUES.includes(command)) {
-          return;
-        }
-        commands.push(command);
-      });
-  });
-
-  commands.sort();
-  return commands;
-}
-
 class DataGeneratorPage {
   constructor({
     parentElement,
@@ -155,8 +120,8 @@ class DataGeneratorPage {
 
     this.rowIdCounter = 1;
     this.schemaRows = [];
-    this.fakerCommands = buildFakerCommands(this.faker);
-    this.fakerCommandsLongestFirst = [...this.fakerCommands].sort((a, b) => b.length - a.length);
+    this.fakerCommands = getKnownFakerCommandsAlphabetical().filter((command) => command !== 'RegEx');
+    this.fakerCommandsLongestFirst = getKnownFakerCommandsLongestFirst().filter((command) => command !== 'RegEx');
     this.isTextMode = false;
     this.optionsPanels = {};
     this.generationStatusTimer = undefined;

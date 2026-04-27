@@ -156,6 +156,35 @@ describe('DataGeneratorPage', () => {
     expect(spec).toBe('A\nword.noun()\nB\nx');
   });
 
+  test('uses curated alphabetical faker command list in schema editor', () => {
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker: { word: { noun: () => 'x' } },
+      RandExp: function RandExp() {},
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: FakeTestDataGenerator,
+    });
+    page.init();
+
+    const commandSelect = document.querySelector('[data-field="command"]');
+    const optionValues = Array.from(commandSelect.querySelectorAll('option'))
+      .map((option) => option.value)
+      .filter(Boolean);
+    const airplaneEntries = optionValues.filter((value) => value.startsWith('airline.airplane.'));
+    const sortedOptionValues = [...optionValues].sort((left, right) => left.localeCompare(right));
+
+    expect(optionValues).toContain('airline.airplane.name');
+    expect(optionValues).toContain('airline.airplane.iataTypeCode');
+    expect(optionValues).not.toContain('airline.airplane');
+    expect(optionValues).toEqual(sortedOptionValues);
+    expect(airplaneEntries).toEqual(['airline.airplane.iataTypeCode', 'airline.airplane.name']);
+  });
+
   test('schema validation reports missing column names and faker command', () => {
     const result = validateSchemaRows([
       { name: '', sourceType: 'regex', value: '[0-9]' },

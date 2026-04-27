@@ -1,4 +1,4 @@
-export function runFakerCommand(thisCommand, theseArguments, usingFaker) {
+export function runFakerCommand(thisCommand, theseArguments, usingFaker, propertyAccessors = []) {
   const executionResult = { isError: true, errorMessage: 'Not Executed', data: '' };
 
   const useArguments = theseArguments ? theseArguments : '()';
@@ -9,7 +9,19 @@ export function runFakerCommand(thisCommand, theseArguments, usingFaker) {
   try {
     executionResult.isError = false;
     executionResult.errorMessage = '';
-    executionResult.data = Function(commandToRun).bind(usingFaker)();
+    let result = Function(commandToRun).bind(usingFaker)();
+
+    // If we have property accessors, navigate the object properties
+    if (propertyAccessors && propertyAccessors.length > 0) {
+      for (const accessor of propertyAccessors) {
+        result = result[accessor];
+        if (result === undefined) {
+          throw new Error(`Property accessor '${accessor}' returned undefined`);
+        }
+      }
+    }
+
+    executionResult.data = result;
     return executionResult;
   } catch (e) {
     // console.log(commandToRun);

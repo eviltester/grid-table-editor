@@ -21,7 +21,7 @@ const SOURCE_TYPE_REGEX = 'regex';
 const SOURCE_TYPE_LITERAL = 'literal';
 const REGEX_HELP_URL = 'https://anywaydata.com/docs/test-data/regex-test-data';
 const FAKER_HELP_URL = 'https://anywaydata.com/docs/test-data/faker-test-data';
-const LITERAL_HELP_URL = 'https://anywaydata.com/docs/category/generating-data';
+const LITERAL_HELP_URL = 'https://anywaydata.com/docs/test-data/literal-test-data';
 
 function normaliseFakerCommand(commandValue) {
   const command = String(commandValue || '').trim();

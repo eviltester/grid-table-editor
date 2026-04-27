@@ -56,3 +56,8 @@ col3
 [A-Z ]{1,12}
 ```
 
+## See Also
+
+- [Literal Data](/docs/test-data/literal-test-data)
+- [Faker Based Data](/docs/test-data/faker-test-data)
+

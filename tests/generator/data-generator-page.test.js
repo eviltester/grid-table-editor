@@ -806,7 +806,7 @@ describe('DataGeneratorPage', () => {
     expect(helpLink.hidden).toBe(false);
     helpText = helpLink.getAttribute('data-help-text');
     expect(helpText).toContain('Literal');
-    expect(helpText).toContain('https://anywaydata.com/docs/category/generating-data');
+    expect(helpText).toContain('https://anywaydata.com/docs/test-data/literal-test-data');
   });
 
   test('default alert invocation does not throw on validation errors', () => {

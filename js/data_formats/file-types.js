@@ -7,6 +7,7 @@ fileTypes['dsv'] = { type: 'dsv', fileExtension: '.txt' };
 fileTypes['markdown'] = { type: 'markdown', fileExtension: '.md' };
 fileTypes['json'] = { type: 'json', fileExtension: '.json' };
 fileTypes['javascript'] = { type: 'javascript', fileExtension: '.js' };
+fileTypes['xml'] = { type: 'xml', fileExtension: '.xml' };
 fileTypes['gherkin'] = { type: 'gherkin', fileExtension: '.gherkin' };
 fileTypes['html'] = { type: 'html', fileExtension: '.html' };
 fileTypes['asciitable'] = { type: 'asciitable', fileExtension: '.txt' };

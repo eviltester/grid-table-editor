@@ -335,4 +335,20 @@ describe('ImportExportControls file reading and visibility', () => {
     expect(controls.exporter.setOptionsForType).toHaveBeenCalledWith('csv', { delimiter: '|' });
     expect(applyButton.disabled).toBe(true);
   });
+
+  test('renders XML options panel when xml format is selected', () => {
+    document.querySelector('li.active-type a').setAttribute('data-type', 'xml');
+    controls.optionsPanels = undefined;
+    controls.exporter.getOptionsForType.mockReturnValue({
+      options: {
+        rootElementName: 'root',
+        itemElementName: 'item',
+        includeXmlHeader: true,
+      },
+    });
+
+    controls.setOptionsViewForFormatType();
+
+    expect(document.querySelector('.xml-options')).not.toBeNull();
+  });
 });

@@ -30,6 +30,7 @@ describe('ExportControls', () => {
       canExport: jest.fn(() => true),
       getFileExtensionFor: jest.fn(() => '.csv'),
       getGridAs: jest.fn(() => 'row1,row2'),
+      getLastWarningsForType: jest.fn(() => []),
     };
 
     controls = new ExportControls(exporter);
@@ -88,6 +89,21 @@ describe('ExportControls', () => {
     expect(downloadSpy).toHaveBeenCalledWith('async,row');
   });
 
+  test('fileDownload surfaces warnings with status and alert', async () => {
+    const alertSpy = jest.fn();
+    global.alert = alertSpy;
+    exporter.getLastWarningsForType.mockReturnValue(['Auto-fixed XML name', 'Ignored unknown attribute']);
+    const downloadSpy = jest.spyOn(Download.prototype, 'downloadFile').mockImplementation(() => {});
+
+    await controls.fileDownload();
+
+    expect(downloadSpy).toHaveBeenCalled();
+    expect(document.getElementById('export-progress-status').textContent).toContain('warning');
+    expect(alertSpy).toHaveBeenCalledWith(
+      expect.stringContaining('CSV warnings:\nAuto-fixed XML name\nIgnored unknown attribute')
+    );
+  });
+
   test('import busy state keeps download button disabled', () => {
     const button = document.getElementById('filedownload');
 
@@ -112,5 +128,16 @@ describe('ExportControls', () => {
     expect(rangeSpy).toHaveBeenCalledWith(0, 99999);
     expect(document.execCommand).toHaveBeenCalledWith('copy');
     expect(document.getElementById('copyTextButton').innerText).toBe('Copied');
+  });
+
+  test('renderTextFromGrid surfaces warnings with status and alert', () => {
+    const alertSpy = jest.fn();
+    global.alert = alertSpy;
+    exporter.getLastWarningsForType.mockReturnValue(['One warning']);
+
+    controls.renderTextFromGrid();
+
+    expect(document.getElementById('export-progress-status').textContent).toContain('warning');
+    expect(alertSpy).toHaveBeenCalledWith(expect.stringContaining('CSV warning:\nOne warning'));
   });
 });

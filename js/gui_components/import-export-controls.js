@@ -6,6 +6,7 @@ import { AsciiTableOptionsPanel } from './options_panels/options-ascii-table.js'
 import { MarkdownOptionsPanel } from './options_panels/options-markdown-panel.js';
 import { JsonOptionsPanel } from './options_panels/options-json-panel.js';
 import { JavascriptOptionsPanel } from './options_panels/options-javascript-panel.js';
+import { XmlOptionsPanel } from './options_panels/options-xml-panel.js';
 import { GherkinOptionsPanel } from './options_panels/options-gherkin-panel.js';
 import { HtmlOptionsPanel } from './options_panels/options-html-panel.js';
 import { GenericDataTable } from '../data_formats/generic-data-table.js';
@@ -262,6 +263,7 @@ class ImportExportControls {
         this.optionsPanels['markdown'] = new MarkdownOptionsPanel(optionsparent);
         this.optionsPanels['json'] = new JsonOptionsPanel(optionsparent);
         this.optionsPanels['javascript'] = new JavascriptOptionsPanel(optionsparent);
+        this.optionsPanels['xml'] = new XmlOptionsPanel(optionsparent);
         this.optionsPanels['html'] = new HtmlOptionsPanel(optionsparent);
         this.optionsPanels['gherkin'] = new GherkinOptionsPanel(optionsparent);
       }
@@ -393,6 +395,7 @@ class ImportExportControls {
     const previewDataTable = this.exporter.getGridAsGenericDataTable(this.previewRowLimit);
     const textToRender = this.exporter.getDataTableAs(type, previewDataTable);
     this.exportControls.setTextFromString(textToRender);
+    this.exportControls?.showWarnings?.(type, 'Preview contains export warnings.');
   }
 
   _renderPreviewTextFromInput(type, textToImport) {
@@ -404,6 +407,7 @@ class ImportExportControls {
     const limitedDataTable = this._limitDataTableRows(dataTable, this.previewRowLimit);
     const textToRender = this.exporter.getDataTableAs(type, limitedDataTable);
     this.exportControls.setTextFromString(textToRender);
+    this.exportControls?.showWarnings?.(type, 'Preview contains export warnings.');
   }
 
   async _previewThenImportToGrid(type, textToImport) {

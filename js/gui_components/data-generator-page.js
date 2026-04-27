@@ -8,6 +8,7 @@ import { DelimitedOptions } from './options_panels/options-delimited-controls.js
 import { MarkdownOptionsPanel } from './options_panels/options-markdown-panel.js';
 import { JsonOptionsPanel } from './options_panels/options-json-panel.js';
 import { JavascriptOptionsPanel } from './options_panels/options-javascript-panel.js';
+import { XmlOptionsPanel } from './options_panels/options-xml-panel.js';
 import { HtmlOptionsPanel } from './options_panels/options-html-panel.js';
 import { GherkinOptionsPanel } from './options_panels/options-gherkin-panel.js';
 import { AsciiTableOptionsPanel } from './options_panels/options-ascii-table.js';
@@ -245,7 +246,7 @@ class DataGeneratorPage {
       return;
     }
 
-    const orderedTypes = ['csv', 'json', 'markdown', 'javascript', 'dsv', 'html', 'gherkin', 'asciitable'];
+    const orderedTypes = ['csv', 'json', 'xml', 'markdown', 'javascript', 'dsv', 'html', 'gherkin', 'asciitable'];
     orderedTypes.forEach((type) => {
       if (!this.exporter?.canExport?.(type) && this.exporter) {
         return;
@@ -299,6 +300,7 @@ class DataGeneratorPage {
     this.optionsPanels['markdown'] = new MarkdownOptionsPanel(optionsParent);
     this.optionsPanels['json'] = new JsonOptionsPanel(optionsParent);
     this.optionsPanels['javascript'] = new JavascriptOptionsPanel(optionsParent);
+    this.optionsPanels['xml'] = new XmlOptionsPanel(optionsParent);
     this.optionsPanels['html'] = new HtmlOptionsPanel(optionsParent);
     this.optionsPanels['gherkin'] = new GherkinOptionsPanel(optionsParent);
     this.optionsPanels['asciitable'] = new AsciiTableOptionsPanel(optionsParent);
@@ -691,6 +693,7 @@ class DataGeneratorPage {
 
     try {
       outputPreviewElem.value = this.exporter.getDataTableAs(type, dataTable);
+      this.reportExportWarnings(type, 'Preview contains export warnings.');
     } catch (error) {
       console.error(error);
       outputPreviewElem.value = '';
@@ -802,7 +805,12 @@ class DataGeneratorPage {
       const filename = `generated-data${this.exporter.getFileExtensionFor(type)}`;
       const downloader = new this.DownloadClass(filename);
       downloader.downloadFile(text);
-      this.setGenerationStatus(`Download ready: ${filename}`);
+      const warnings = this.reportExportWarnings(type, 'Download completed with export warnings.');
+      if (warnings.length > 0) {
+        this.setGenerationStatus(`Download ready with warnings: ${filename}`);
+      } else {
+        this.setGenerationStatus(`Download ready: ${filename}`);
+      }
       this.scheduleClearGenerationStatus();
     } catch (error) {
       console.error(error);
@@ -811,6 +819,18 @@ class DataGeneratorPage {
     } finally {
       this.setGenerationButtonBusy(false);
     }
+  }
+
+  reportExportWarnings(type, context) {
+    const warnings = this.exporter?.getLastWarningsForType?.(type) || [];
+    if (warnings.length === 0) {
+      return [];
+    }
+
+    const warningLabel = warnings.length === 1 ? 'warning' : 'warnings';
+    this.setGenerationStatus(`${type.toUpperCase()} ${warningLabel}: ${warnings.length}. ${context}`);
+    this.alertFn(`${type.toUpperCase()} ${warningLabel}:\n${warnings.join('\n')}`);
+    return warnings;
   }
 
   escapeHtml(value) {

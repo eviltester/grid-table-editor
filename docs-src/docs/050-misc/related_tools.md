@@ -71,7 +71,7 @@ Online tools for editing and converting to markdown tables.
 Free online tools for generating test data.
 
 - [AnyWayData.com](https://anywaydata.com) free generation of data, unlimited number of rows generated. Convert to CSV, delimited, JSON, JavaScript, Markdown, Ascii tables, HTML tables.
-- [AutoTestData.com](https://https://autotestdata.com) can only generate 100 rows if not logged in.
+- [AutoTestData.com](https://autotestdata.com) can only generate 100 rows if not logged in.
 - [Cobbl.io](https://cobbl.io/) - generate up to 10,000 rows of data in CSV, JSON and JSONL.
 - [ConvertCSV.com Test Data Generator](https://www.convertcsv.com/generate-test-data.htm) - generate random data for CSV format.
 - [DatabaseTestData.com](https://www.databasetestdata.com/) generate small amounts of data in CSV, JSON

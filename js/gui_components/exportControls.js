@@ -62,10 +62,16 @@ class ExportControls {
         text = this.exporter.getGridAs(type);
       }
 
+      const warnings = this.showWarnings(type, 'Download completed with export warnings.');
+
       this._setExportProgressStatus('Starting download...', true);
       await this._yieldToUi();
       new Download(filename).downloadFile(text);
-      this._setExportProgressStatus('Download started.', false);
+      if (warnings.length > 0) {
+        this._setExportProgressStatus(`Download started with ${warnings.length} warning(s).`, false);
+      } else {
+        this._setExportProgressStatus('Download started.', false);
+      }
     } catch (error) {
       console.error('Failed exporting download', error);
       this._setExportProgressStatus('Download failed. Please try again.', false);
@@ -105,6 +111,7 @@ class ExportControls {
 
     let textToRender = this.exporter.getGridAs(type);
     this.setTextFromString(textToRender);
+    this.showWarnings(type, 'Preview contains export warnings.');
   }
 
   setTextFromString(someText) {
@@ -161,6 +168,24 @@ class ExportControls {
     statusElem.textContent = '';
     statusElem.style.display = 'none';
     statusElem.classList.remove('is-loading');
+  }
+
+  showWarnings(type, context) {
+    const warnings = this.exporter?.getLastWarningsForType?.(type) || [];
+    if (warnings.length === 0) {
+      return [];
+    }
+
+    const warningLabel = warnings.length === 1 ? 'warning' : 'warnings';
+    this._setExportProgressStatus(`${type.toUpperCase()} ${warningLabel}: ${warnings.length}. ${context}`, false);
+
+    const alertFunc = globalThis?.alert || document?.defaultView?.alert;
+    if (typeof alertFunc === 'function') {
+      alertFunc(`${type.toUpperCase()} ${warningLabel}:\n${warnings.join('\n')}`);
+    }
+
+    setTimeout(() => this._clearExportProgressStatus(), 4000);
+    return warnings;
   }
 
   _yieldToUi() {

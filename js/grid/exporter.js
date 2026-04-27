@@ -3,6 +3,7 @@ import { MarkdownConvertor, MarkdownOptions } from '../data_formats/markdown-con
 import { HtmlConvertor, HtmlConvertorOptions } from '../data_formats/html-convertor.js';
 import { JsonConvertor, JsonConvertorOptions } from '../data_formats/json-convertor.js';
 import { JavascriptConvertor, JavascriptConvertorOptions } from '../data_formats/javascript-convertor.js';
+import { XmlConvertor, XmlConvertorOptions } from '../data_formats/xml-convertor.js';
 import { CsvConvertor } from '../data_formats/csv-convertor.js';
 import { DelimiterConvertor } from '../data_formats/delimiter-convertor.js';
 import { DelimiterOptions } from '../data_formats/delimiter-options.js';
@@ -23,6 +24,7 @@ class Exporter {
     this.options['markdown'] = new MarkdownOptions();
     this.options['json'] = new JsonConvertorOptions();
     this.options['javascript'] = new JavascriptConvertorOptions();
+    this.options['xml'] = new XmlConvertorOptions();
     this.options['html'] = new HtmlConvertorOptions();
     this.options['gherkin'] = new GherkinOptions();
 
@@ -34,9 +36,12 @@ class Exporter {
     this.exporters['dsv'].setPapaParse(new PapaWrappa());
     this.exporters['json'] = new JsonConvertor();
     this.exporters['javascript'] = new JavascriptConvertor();
+    this.exporters['xml'] = new XmlConvertor();
     this.exporters['gherkin'] = new GherkinConvertor();
     this.exporters['html'] = new HtmlConvertor();
     this.exporters['asciitable'] = new AsciiTableConvertor();
+
+    this.lastWarnings = {};
   }
 
   canExport(type) {
@@ -59,6 +64,7 @@ class Exporter {
   getDataTableAs(type, dataTable) {
     if (!this.canExport(type)) {
       console.log(`Data Type ${type} not supported for exporting`);
+      this.lastWarnings[type] = [];
       return '';
     }
 
@@ -68,13 +74,18 @@ class Exporter {
       if (optionsToUse !== undefined) {
         exporterToUse?.setOptions?.(optionsToUse);
       }
-      return exporterToUse?.fromDataTable(dataTable);
+      const output = exporterToUse?.fromDataTable(dataTable);
+      this._storeWarnings(type, exporterToUse);
+      return output;
     }
+
+    this.lastWarnings[type] = [];
   }
 
   async getDataTableAsAsync(type, dataTable, progressCallback) {
     if (!this.canExport(type)) {
       console.log(`Data Type ${type} not supported for exporting`);
+      this.lastWarnings[type] = [];
       return '';
     }
 
@@ -94,10 +105,16 @@ class Exporter {
 
       prefixedProgress('Formatting... 0%');
       if (typeof exporterToUse?.fromDataTableAsync === 'function') {
-        return exporterToUse.fromDataTableAsync(dataTable, prefixedProgress);
+        const output = await exporterToUse.fromDataTableAsync(dataTable, prefixedProgress);
+        this._storeWarnings(type, exporterToUse);
+        return output;
       }
-      return exporterToUse?.fromDataTable(dataTable);
+      const output = exporterToUse?.fromDataTable(dataTable);
+      this._storeWarnings(type, exporterToUse);
+      return output;
     }
+
+    this.lastWarnings[type] = [];
   }
 
   getGridAsGenericDataTable(maxRows) {
@@ -120,6 +137,14 @@ class Exporter {
     return this.options[type];
   }
 
+  getLastWarningsForType(type) {
+    const warnings = this.lastWarnings[type];
+    if (!Array.isArray(warnings)) {
+      return [];
+    }
+    return warnings.map((warning) => warning);
+  }
+
   setOptionsForType(type, options) {
     if (this.options[type]) {
       let optionsToUse = this.options[type];
@@ -134,6 +159,15 @@ class Exporter {
         }
       }
     }
+  }
+
+  _storeWarnings(type, exporterToUse) {
+    if (typeof exporterToUse?.getWarnings === 'function') {
+      const warnings = exporterToUse.getWarnings();
+      this.lastWarnings[type] = Array.isArray(warnings) ? warnings.map((warning) => warning) : [];
+      return;
+    }
+    this.lastWarnings[type] = [];
   }
 }
 

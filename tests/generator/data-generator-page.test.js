@@ -25,6 +25,7 @@ class FakeExporter {
     this.options = {
       csv: { options: { header: true, quoteChar: '"' } },
       json: { options: { prettyPrint: false } },
+      xml: { options: { rootElementName: 'root', itemElementName: 'item', includeXmlHeader: true } },
       markdown: { options: { prettyPrint: true } },
     };
     this.getDataTableAsAsync = jest.fn(async (type, dataTable, progressCallback) => {
@@ -36,11 +37,12 @@ class FakeExporter {
       this.options[type] = options;
     });
     this.getOptionsForType = jest.fn((type) => this.options[type]);
+    this.getLastWarningsForType = jest.fn(() => []);
     FakeExporter.lastInstance = this;
   }
 
   canExport(type) {
-    return ['csv', 'json', 'markdown'].includes(type);
+    return ['csv', 'json', 'xml', 'markdown'].includes(type);
   }
 
   getFileExtensionFor(type) {
@@ -49,6 +51,9 @@ class FakeExporter {
     }
     if (type === 'markdown') {
       return '.md';
+    }
+    if (type === 'xml') {
+      return '.xml';
     }
     return '.csv';
   }
@@ -373,6 +378,29 @@ describe('DataGeneratorPage', () => {
     expect(applyButton.disabled).toBe(true);
   });
 
+  test('renders XML options panel when selected', () => {
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker: { word: { noun: () => 'x' } },
+      RandExp: function RandExp() {},
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: FakeTestDataGenerator,
+    });
+    page.init();
+
+    const outputSelect = document.getElementById('generatorOutputFormat');
+    outputSelect.value = 'xml';
+    outputSelect.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+
+    expect(document.querySelector('#generatorOptionsPanel .xml-options')).not.toBeNull();
+    expect(FakeExporter.lastInstance.getOptionsForType).toHaveBeenCalledWith('xml');
+  });
+
   test('generate falls back to sync export when async export utility is unavailable', async () => {
     const page = new DataGeneratorPage({
       parentElement: document.getElementById('app'),
@@ -402,6 +430,64 @@ describe('DataGeneratorPage', () => {
       filename: 'generated-data.csv',
       text: 'csv:sync:2',
     });
+  });
+
+  test('preview surfaces export warnings via status and alert function', () => {
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker: { word: { noun: () => 'x' } },
+      RandExp: function RandExp() {},
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: FakeTestDataGenerator,
+    });
+    page.init();
+
+    FakeExporter.lastInstance.getLastWarningsForType.mockReturnValue(['Auto-fixed XML item name']);
+    page.schemaRows = [{ id: '1', name: 'Name', sourceType: 'literal', command: '', params: '', value: 'fixed' }];
+    page.renderSchemaRows();
+    document.getElementById('generatorOutputFormat').value = 'xml';
+    document.getElementById('previewRowsCount').value = '1';
+
+    page.previewData();
+
+    expect(alertFn).toHaveBeenCalledWith('XML warning:\nAuto-fixed XML item name');
+    expect(document.getElementById('generatorStatusText').textContent).toContain('XML warning');
+  });
+
+  test('generate surfaces warnings and keeps xml filename', async () => {
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker: { word: { noun: () => 'x' } },
+      RandExp: function RandExp() {},
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: FakeTestDataGenerator,
+    });
+    page.init();
+
+    FakeExporter.lastInstance.getLastWarningsForType.mockReturnValue(['Ignored unknown XML attribute column: Missing']);
+    page.schemaRows = [{ id: '1', name: 'Name', sourceType: 'literal', command: '', params: '', value: 'fixed' }];
+    page.renderSchemaRows();
+    document.getElementById('generateRowsCount').value = '2';
+    document.getElementById('generatorOutputFormat').value = 'xml';
+
+    await page.generateDataFile();
+
+    expect(alertFn).toHaveBeenCalledWith('XML warning:\nIgnored unknown XML attribute column: Missing');
+    expect(FakeDownload.lastDownload).toEqual({
+      filename: 'generated-data.xml',
+      text: 'xml:async:2',
+    });
+    expect(document.getElementById('generatorStatusText').textContent).toContain('Download ready with warnings');
   });
 
   test('shows faker fields only for faker source and value only for regex/literal', () => {

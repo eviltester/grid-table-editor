@@ -42,9 +42,12 @@ describe('Exporter direct table conversion', () => {
     });
 
     expect(exporter.canExport('csv')).toBe(true);
+    expect(exporter.canExport('xml')).toBe(true);
     expect(exporter.canExport('unknown')).toBe(false);
     expect(exporter.getFileExtensionFor('csv')).toBe('.csv');
+    expect(exporter.getFileExtensionFor('xml')).toBe('.xml');
     expect(exporter.getOptionsForType('json')).toBeDefined();
+    expect(exporter.getOptionsForType('xml')).toBeDefined();
   });
 
   test('returns empty string for unsupported export types', () => {
@@ -170,6 +173,62 @@ describe('Exporter direct table conversion', () => {
 
     expect(exporter.canExport('json')).toBe(true);
     expect(exporter.getDataTableAs('json', table)).toBeUndefined();
+  });
+
+  test('setOptionsForType merges options for xml exports', () => {
+    const table = createTable(['Name'], [['Connie']]);
+    const exporter = new Exporter({
+      getGridAsGenericDataTable: () => table,
+      getHeadersFromGrid: () => table.getHeaders(),
+    });
+
+    exporter.setOptionsForType('xml', {
+      options: {
+        rootElementName: 'orders',
+        itemElementName: 'order',
+        includeXmlHeader: false,
+      },
+    });
+
+    expect(exporter.options.xml.options.rootElementName).toBe('orders');
+    expect(exporter.options.xml.options.itemElementName).toBe('order');
+    expect(exporter.options.xml.options.includeXmlHeader).toBe(false);
+  });
+
+  test('stores export warnings from convertors that expose warnings', () => {
+    const table = createTable(['Name'], [['Connie']]);
+    const exporter = new Exporter({
+      getGridAsGenericDataTable: () => table,
+      getHeadersFromGrid: () => table.getHeaders(),
+    });
+
+    exporter.exporters.xml = {
+      setOptions: jest.fn(),
+      fromDataTable: jest.fn(() => '<xml />'),
+      getWarnings: jest.fn(() => ['warning one', 'warning two']),
+    };
+
+    exporter.getDataTableAs('xml', table);
+
+    expect(exporter.getLastWarningsForType('xml')).toEqual(['warning one', 'warning two']);
+  });
+
+  test('clears warnings for convertors that do not expose warnings', () => {
+    const table = createTable(['Name'], [['Connie']]);
+    const exporter = new Exporter({
+      getGridAsGenericDataTable: () => table,
+      getHeadersFromGrid: () => table.getHeaders(),
+    });
+
+    exporter.lastWarnings.xml = ['old warning'];
+    exporter.exporters.xml = {
+      setOptions: jest.fn(),
+      fromDataTable: jest.fn(() => '<xml />'),
+    };
+
+    exporter.getDataTableAs('xml', table);
+
+    expect(exporter.getLastWarningsForType('xml')).toEqual([]);
   });
 
   test('getGridAsAsync matches sync output when async grid extension is available', async () => {

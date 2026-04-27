@@ -25,6 +25,9 @@ class TabbedTextControl {
               <li id="type-javascript" class="type-select">
                 <a class="type-select-action" data-type="javascript" href="#">JavaScript</a>
               </li>
+              <li id="type-xml" class="type-select">
+                <a class="type-select-action" data-type="xml" href="#">XML</a>
+              </li>
               <li id="type-gherkin" class="type-select">
                 <a class="type-select-action" data-type="gherkin" href="#">Gherkin</a>
               </li>

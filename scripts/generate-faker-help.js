@@ -93,8 +93,13 @@ function resolveKnownAlias(typeText, aliases, enumValues, depth = 0) {
   return null;
 }
 
+function stripTypeComments(typeText) {
+  return String(typeText || '').replace(/\/\*\*[\s\S]*?\*\//g, '').replace(/\/\*[\s\S]*?\*\//g, '');
+}
+
 function simplifyType(typeText, aliases, enumValues) {
-  const squashed = String(typeText || '').replace(/\s+/g, ' ').trim();
+  const withoutComments = stripTypeComments(typeText);
+  const squashed = String(withoutComments || '').replace(/\s+/g, ' ').trim();
   if (!squashed) {
     return 'unknown';
   }

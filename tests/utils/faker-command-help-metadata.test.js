@@ -44,4 +44,16 @@ describe('faker command help metadata', () => {
     expect(nestedPropertyAccess.summary.length).toBeGreaterThan(0);
     expect(Array.isArray(nestedPropertyAccess.params)).toBe(true);
   });
+
+  test('strips inline comments from parameter types', () => {
+    const allEntries = Object.values(FAKER_COMMAND_HELP_METADATA);
+    allEntries.forEach((entry) => {
+      (entry.params || []).forEach((param) => {
+        const type = String(param.type || '');
+        expect(type).not.toContain('/**');
+        expect(type).not.toContain('*/');
+        expect(type.toLowerCase()).not.toContain('when true this will generate');
+      });
+    });
+  });
 });

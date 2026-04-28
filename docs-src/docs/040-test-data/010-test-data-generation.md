@@ -18,7 +18,7 @@ Add a new column by pressing the `+ Add Column` button.
 
 You can rename the column by double clicking on the `Column Name` field.
 
-The Type is the `type` of data that will be generated in the column. This can be a `RegEx` (Regular Expression), or one of the predefined random data types e.g. `random.word` or `random.boolean` etc.
+The Type is the `type` of data that will be generated in the column. This can be a `Literal` (static text), a `RegEx` (Regular Expression), or one of the predefined random data types from Faker.
 
 ## Types
 
@@ -59,3 +59,9 @@ column 1
 ```
 
 When no type is present it is assumed to be a Regex e.g. `1234` is a Regex that represents the string "1234"
+
+## Learn More About Types
+
+- [Literal Data](/docs/test-data/literal-test-data)
+- [Regex Based Data](/docs/test-data/regex-test-data)
+- [Faker Based Data](/docs/test-data/faker-test-data)

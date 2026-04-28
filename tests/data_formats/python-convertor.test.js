@@ -131,6 +131,16 @@ describe('PythonConvertor - anonymous dicts (default)', () => {
     expect(output).toContain("{'name': 'O\\'Neil'}");
   });
 
+  test('escapes control characters in string values', () => {
+    const table = new GenericDataTable();
+    table.setHeaders(['text']);
+    table.appendDataRow(['line1\nline2\r\nend\ttab']);
+
+    const convertor = new PythonConvertor();
+    const output = convertor.fromDataTable(table);
+    expect(output).toContain('"line1\\nline2\\r\\nend\\ttab"');
+  });
+
   test('includes configured imports when includeImports is enabled', () => {
     const convertor = new PythonConvertor();
     convertor.setOptions({

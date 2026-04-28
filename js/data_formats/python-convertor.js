@@ -93,6 +93,9 @@ class PythonConvertor {
   _escapeForQuoteStyle(textValue) {
     const quote = this._quoteChar();
     let escaped = String(textValue).replace(/\\/g, '\\\\');
+    escaped = escaped.replace(/\n/g, '\\n');
+    escaped = escaped.replace(/\r/g, '\\r');
+    escaped = escaped.replace(/\t/g, '\\t');
     if (quote === "'") {
       escaped = escaped.replace(/'/g, "\\'");
     } else {

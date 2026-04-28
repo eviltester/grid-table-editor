@@ -176,6 +176,34 @@ describe('JavaConvertor - named class (POJO)', () => {
     expect(output).not.toContain('import java.util.Map;');
     expect(output).toContain('import java.util.List;');
   });
+
+  test('named class uses boxed Integer when integer column has blanks (blankValueBehavior null)', () => {
+    const table = new GenericDataTable();
+    table.setHeaders(['name', 'score']);
+    table.appendDataRow(['Alice', '42']);
+    table.appendDataRow(['Bob', '']);
+    const convertor = new JavaConvertor();
+    convertor.setOptions({ useAnonymousMaps: false, blankValueBehavior: 'null' });
+    const output = convertor.fromDataTable(table);
+    expect(output).toContain('    Integer score;');
+    expect(output).toContain('Row(String name, Integer score)');
+    expect(output).toContain('new Row("Alice", 42)');
+    expect(output).toContain('new Row("Bob", null)');
+  });
+
+  test('named class uses boxed Double when decimal column has blanks (blankValueBehavior null)', () => {
+    const table = new GenericDataTable();
+    table.setHeaders(['name', 'price']);
+    table.appendDataRow(['Item A', '9.99']);
+    table.appendDataRow(['Item B', '']);
+    const convertor = new JavaConvertor();
+    convertor.setOptions({ useAnonymousMaps: false, blankValueBehavior: 'null' });
+    const output = convertor.fromDataTable(table);
+    expect(output).toContain('    Double price;');
+    expect(output).toContain('Row(String name, Double price)');
+    expect(output).toContain('new Row("Item A", 9.99)');
+    expect(output).toContain('new Row("Item B", null)');
+  });
 });
 
 describe('JavaConvertor - more than 10 columns (Map.ofEntries)', () => {

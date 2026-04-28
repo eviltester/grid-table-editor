@@ -116,10 +116,12 @@ class JavaConvertor {
     let allInteger = true;
     let allNumeric = true;
     let hasAnyValue = false;
+    let hasBlanks = false;
     for (let i = 0; i < dataTable.getRowCount(); i++) {
       const row = dataTable.getRow(i);
       const value = row[colIndex];
       if (value === '' || value === null || value === undefined) {
+        hasBlanks = true;
         continue;
       }
       hasAnyValue = true;
@@ -134,6 +136,9 @@ class JavaConvertor {
     }
     if (!hasAnyValue || !allNumeric) {
       return 'String';
+    }
+    if (hasBlanks) {
+      return allInteger ? 'Integer' : 'Double';
     }
     return allInteger ? 'int' : 'double';
   }

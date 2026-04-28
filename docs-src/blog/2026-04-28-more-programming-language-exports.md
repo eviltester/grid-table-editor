@@ -3,8 +3,7 @@ slug: more-programming-language-exports
 title: More Programming Language Exports
 authors: alan
 tags: [release]
-date: 2026-04-28T19:00
-draft: true
+date: 2026-04-28T18:00
 ---
 
 We've expanded export options for programming-language-style output so it is easier to move table data into application code.

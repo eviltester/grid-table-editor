@@ -47,3 +47,22 @@ test('generator page initializes without browser errors', async ({ page }) => {
     textValue: 'Preview',
   });
 });
+
+test('generator schema help shows tippy tooltip content for faker and literal', async ({ page }) => {
+  await expectPageToInitialize(page, '/generator.html', {
+    loadingSelector: '#generator-initial-load',
+    readySelectors: ['#generator-app .generator-page', '#generatorOutputFormat', '#generator-preview-grid'],
+  });
+
+  await page.selectOption('[data-field="sourceType"]', 'faker');
+  const helpIcon = page.locator('[data-field="faker-doc-link"]').first();
+
+  await helpIcon.hover();
+  await expect(
+    page.locator('.tippy-content').filter({ hasText: 'Faker commands generate realistic random values' })
+  ).toBeVisible();
+
+  await page.selectOption('[data-field="sourceType"]', 'literal');
+  await page.locator('[data-field="faker-doc-link"]').first().hover();
+  await expect(page.locator('.tippy-content').filter({ hasText: 'Literal data repeats the exact text' })).toBeVisible();
+});

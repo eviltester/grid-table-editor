@@ -475,18 +475,81 @@ describe('DataGeneratorPage', () => {
     helpLink = document.querySelector('[data-field="faker-doc-link"]');
     expect(helpLink.hidden).toBe(false);
     expect(helpLink.getAttribute('href')).toBe('https://fakerjs.dev/api/helpers');
+    expect(helpLink.getAttribute('aria-label')).toBe('Faker command help: helpers.fake');
+    expect(helpLink.getAttribute('data-help-text')).toContain('<strong>faker.helpers.fake</strong>');
+    expect(helpLink.getAttribute('data-help-text')).toContain('helpers');
+    expect(helpLink.getAttribute('data-help-text')).toContain('<strong>Call:</strong>');
+    expect(helpLink.getAttribute('data-help-text')).toContain('<strong>Schema params field:</strong>');
+    expect(helpLink.getAttribute('data-help-text')).toContain('Learn more: faker.helpers.fake');
 
     page.schemaRows[0].sourceType = 'regex';
     page.renderSchemaRows();
     helpLink = document.querySelector('[data-field="faker-doc-link"]');
     expect(helpLink.hidden).toBe(false);
     expect(helpLink.getAttribute('href')).toBe('https://anywaydata.com/docs/test-data/regex-test-data');
+    expect(helpLink.getAttribute('aria-label')).toBe('Regex data help');
+    expect(helpLink.getAttribute('data-help-text')).toContain('Regex patterns generate random values');
 
     page.schemaRows[0].sourceType = 'literal';
     page.renderSchemaRows();
     helpLink = document.querySelector('[data-field="faker-doc-link"]');
     expect(helpLink.hidden).toBe(false);
     expect(helpLink.getAttribute('href')).toBe('https://anywaydata.com/docs/category/generating-data');
+    expect(helpLink.getAttribute('aria-label')).toBe('Literal data help');
+    expect(helpLink.getAttribute('data-help-text')).toContain('Literal data repeats the exact text');
+  });
+
+  test('shows command metadata summary and params in faker help tooltip', () => {
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker: { word: { noun: () => 'x' } },
+      RandExp: function RandExp() {},
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: FakeTestDataGenerator,
+    });
+    page.init();
+
+    page.schemaRows = [{ id: '1', name: 'X', sourceType: 'faker', command: 'number.int', params: '', value: '' }];
+    page.renderSchemaRows();
+
+    const helpLink = document.querySelector('[data-field="faker-doc-link"]');
+    expect(helpLink.hidden).toBe(false);
+    expect(helpLink.getAttribute('href')).toBe('https://fakerjs.dev/api/number');
+    expect(helpLink.getAttribute('aria-label')).toBe('Faker command help: number.int');
+    expect(helpLink.getAttribute('data-help-text')).toContain('<strong>faker.number.int</strong>');
+    expect(helpLink.getAttribute('data-help-text')).toContain('<strong>Call:</strong>');
+    expect(helpLink.getAttribute('data-help-text')).toContain('<strong>Params:</strong>');
+    expect(helpLink.getAttribute('data-help-text')).toContain('<strong>Schema params field:</strong>');
+    expect(helpLink.getAttribute('data-help-text')).toContain('<strong>Example:</strong>');
+    expect(helpLink.getAttribute('data-help-text')).toContain('Learn more: faker.number.int');
+  });
+
+  test('rebinds help hints when schema rows are re-rendered', () => {
+    window.updateHelpHints = jest.fn();
+
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker: { word: { noun: () => 'x' } },
+      RandExp: function RandExp() {},
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: FakeTestDataGenerator,
+    });
+    page.init();
+
+    window.updateHelpHints.mockClear();
+    page.renderSchemaRows();
+
+    expect(window.updateHelpHints).toHaveBeenCalledTimes(1);
   });
 
   test('populateFormatOptions adds Code optgroup after other format options', () => {
@@ -536,6 +599,65 @@ describe('DataGeneratorPage', () => {
     expect(codeOptionValues).toContain('javascript');
     expect(codeOptionValues).toContain('python');
     expect(codeOptionValues).toContain('typescript');
+  });
+
+  test('populateFormatOptions includes all supported output formats', () => {
+    class FakeExporterAllFormats extends FakeExporter {
+      canExport(type) {
+        return [
+          'csv',
+          'json',
+          'jsonl',
+          'xml',
+          'sql',
+          'markdown',
+          'dsv',
+          'html',
+          'gherkin',
+          'asciitable',
+          'java',
+          'javascript',
+          'python',
+          'typescript',
+        ].includes(type);
+      }
+    }
+
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker: { word: { noun: () => 'x' } },
+      RandExp: function RandExp() {},
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporterAllFormats,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: FakeTestDataGenerator,
+    });
+    page.init();
+
+    const outputSelect = document.getElementById('generatorOutputFormat');
+    const optionValues = Array.from(outputSelect.querySelectorAll('option')).map((option) => option.value);
+
+    expect(optionValues).toEqual(
+      expect.arrayContaining([
+        'csv',
+        'json',
+        'jsonl',
+        'xml',
+        'sql',
+        'markdown',
+        'dsv',
+        'html',
+        'gherkin',
+        'asciitable',
+        'java',
+        'javascript',
+        'python',
+        'typescript',
+      ])
+    );
   });
 
   test('default alert invocation does not throw on validation errors', () => {

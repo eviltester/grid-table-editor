@@ -89,4 +89,39 @@ describe('TabbedTextControl preview/edit button', () => {
     expect(host.querySelector('#type-csv').classList.contains('active-type')).toBe(true);
     expect(host.querySelector('#conversionSubtasks').style.display).toBe('none');
   });
+
+  test('renders all expected app tabs', () => {
+    const controller = {
+      renderTextFromGrid: jest.fn(),
+      setFileFormatType: jest.fn(),
+      setOptionsViewForFormatType: jest.fn(),
+      isPreviewTextMode: () => true,
+      getPreviewRowLimit: () => 10,
+      toggleTextEditMode: jest.fn(),
+    };
+
+    const host = document.getElementById('host');
+    const tabs = new TabbedTextControl(host, controller);
+    tabs.addToGui();
+
+    const tabIds = Array.from(host.querySelectorAll('.conversionTypesList li.type-select')).map((li) =>
+      li.id.replace('type-', '')
+    );
+
+    expect(tabIds).toEqual(
+      expect.arrayContaining([
+        'markdown',
+        'csv',
+        'dsv',
+        'json',
+        'jsonl',
+        'xml',
+        'sql',
+        'code',
+        'gherkin',
+        'html',
+        'asciitable',
+      ])
+    );
+  });
 });

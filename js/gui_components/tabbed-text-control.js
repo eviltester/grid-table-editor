@@ -8,6 +8,9 @@ class TabbedTextControl {
       { id: 'csv', label: 'CSV', type: 'csv' },
       { id: 'dsv', label: 'Delimited', type: 'dsv' },
       { id: 'json', label: 'JSON', type: 'json' },
+      { id: 'jsonl', label: 'JSONL', type: 'jsonl' },
+      { id: 'xml', label: 'XML', type: 'xml' },
+      { id: 'sql', label: 'SQL', type: 'sql' },
       {
         id: 'code',
         label: 'Code',

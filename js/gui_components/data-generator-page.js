@@ -11,10 +11,13 @@ import { JavaOptionsPanel } from './options_panels/options-java-panel.js';
 import { JavascriptOptionsPanel } from './options_panels/options-javascript-panel.js';
 import { PythonOptionsPanel } from './options_panels/options-python-panel.js';
 import { TypeScriptOptionsPanel } from './options_panels/options-typescript-panel.js';
+import { XmlOptionsPanel } from './options_panels/options-xml-panel.js';
+import { SqlOptionsPanel } from './options_panels/options-sql-panel.js';
 import { HtmlOptionsPanel } from './options_panels/options-html-panel.js';
 import { GherkinOptionsPanel } from './options_panels/options-gherkin-panel.js';
 import { AsciiTableOptionsPanel } from './options_panels/options-ascii-table.js';
 import { getKnownFakerCommandsAlphabetical, getKnownFakerCommandsLongestFirst } from './faker-commands.js';
+import { getFakerCommandHelp } from './faker-command-help-metadata.js';
 
 const SOURCE_TYPE_FAKER = 'faker';
 const SOURCE_TYPE_REGEX = 'regex';
@@ -247,7 +250,7 @@ class DataGeneratorPage {
       return;
     }
 
-    const orderedTypes = ['csv', 'json', 'markdown', 'dsv', 'html', 'gherkin', 'asciitable'];
+    const orderedTypes = ['csv', 'json', 'jsonl', 'xml', 'sql', 'markdown', 'dsv', 'html', 'gherkin', 'asciitable'];
     orderedTypes.forEach((type) => {
       if (!this.exporter?.canExport?.(type) && this.exporter) {
         return;
@@ -320,10 +323,13 @@ class DataGeneratorPage {
     this.optionsPanels['dsv'] = new DelimitedOptions(optionsParent);
     this.optionsPanels['markdown'] = new MarkdownOptionsPanel(optionsParent);
     this.optionsPanels['json'] = new JsonOptionsPanel(optionsParent);
+    this.optionsPanels['jsonl'] = new JsonOptionsPanel(optionsParent, 'jsonl-options', { jsonlMode: true });
     this.optionsPanels['javascript'] = new JavascriptOptionsPanel(optionsParent);
     this.optionsPanels['java'] = new JavaOptionsPanel(optionsParent);
     this.optionsPanels['python'] = new PythonOptionsPanel(optionsParent);
     this.optionsPanels['typescript'] = new TypeScriptOptionsPanel(optionsParent);
+    this.optionsPanels['xml'] = new XmlOptionsPanel(optionsParent);
+    this.optionsPanels['sql'] = new SqlOptionsPanel(optionsParent);
     this.optionsPanels['html'] = new HtmlOptionsPanel(optionsParent);
     this.optionsPanels['gherkin'] = new GherkinOptionsPanel(optionsParent);
     this.optionsPanels['asciitable'] = new AsciiTableOptionsPanel(optionsParent);
@@ -543,17 +549,8 @@ class DataGeneratorPage {
     this.schemaRows.forEach((row, index) => {
       const normalisedSourceType = normaliseSourceType(row.sourceType);
       const isFakerSource = normalisedSourceType === SOURCE_TYPE_FAKER;
-      const rowHelpUrl = this.getSchemaHelpUrl(normalisedSourceType, row.command);
-      const showRowHelpLink = rowHelpUrl.length > 0;
-      const hasSelectedFakerCommand = isFakerSource && normaliseFakerCommand(row.command).length > 0;
-      const rowHelpTitle =
-        normalisedSourceType === SOURCE_TYPE_REGEX
-          ? 'Open Regex docs'
-          : normalisedSourceType === SOURCE_TYPE_LITERAL
-            ? 'Open Anywaydata docs'
-            : hasSelectedFakerCommand
-              ? 'Open Faker API docs'
-              : 'Open Faker docs';
+      const schemaHelp = this.getSchemaHelpData(normalisedSourceType, row.command);
+      const showRowHelpLink = schemaHelp.show;
       const rowElem = this.documentObj.createElement('div');
       rowElem.className = `generator-schema-row ${isFakerSource ? 'generator-schema-row-faker' : 'generator-schema-row-non-faker'}`;
       rowElem.setAttribute('data-row-id', row.id);
@@ -586,9 +583,9 @@ class DataGeneratorPage {
                 <a
                     data-field="faker-doc-link"
                     class="helpicon generator-schema-help-link"
-                    href="${this.escapeHtml(rowHelpUrl)}"
-                    title="${this.escapeHtml(rowHelpTitle)}"
-                    aria-label="${this.escapeHtml(rowHelpTitle)}"
+                  data-help="generator-schema-help"
+                  href="${this.escapeHtml(schemaHelp.docsUrl)}"
+                  aria-label="${this.escapeHtml(schemaHelp.title)}"
                     target="_blank"
                     rel="noopener noreferrer"
                     ${showRowHelpLink ? '' : 'hidden'}
@@ -599,8 +596,17 @@ class DataGeneratorPage {
                     : `<input type="text" data-field="value" placeholder="Value / Regex" value="${this.escapeHtml(row.value)}">`
                 }
             `;
+      const schemaHelpElement = rowElem.querySelector('[data-field="faker-doc-link"]');
+      if (schemaHelpElement) {
+        schemaHelpElement.setAttribute('data-help-text', schemaHelp.html);
+      }
       container.appendChild(rowElem);
     });
+
+    // Schema rows are re-rendered dynamically, so tooltips must be rebound each time.
+    if (typeof window !== 'undefined' && typeof window.updateHelpHints === 'function') {
+      window.updateHelpHints();
+    }
   }
 
   handleRowInputChange(event) {
@@ -875,6 +881,145 @@ class DataGeneratorPage {
       return LITERAL_HELP_URL;
     }
     return '';
+  }
+
+  getSchemaHelpData(sourceType, commandValue) {
+    const normalisedSourceType = normaliseSourceType(sourceType);
+    if (normalisedSourceType === SOURCE_TYPE_REGEX) {
+      return {
+        show: true,
+        title: 'Regex data help',
+        docsUrl: REGEX_HELP_URL,
+        html: this.buildTypeHelpHtml(
+          'Regex',
+          'Regex patterns generate random values that match the specified expression.',
+          REGEX_HELP_URL
+        ),
+      };
+    }
+
+    if (normalisedSourceType === SOURCE_TYPE_LITERAL) {
+      return {
+        show: true,
+        title: 'Literal data help',
+        docsUrl: LITERAL_HELP_URL,
+        html: this.buildTypeHelpHtml(
+          'Literal',
+          'Literal data repeats the exact text you enter for every generated row.',
+          LITERAL_HELP_URL
+        ),
+      };
+    }
+
+    if (normalisedSourceType === SOURCE_TYPE_FAKER) {
+      const command = normaliseFakerCommand(commandValue);
+      if (!command) {
+        return {
+          show: true,
+          title: 'Faker data help',
+          docsUrl: FAKER_HELP_URL,
+          html: this.buildTypeHelpHtml(
+            'Faker',
+            'Faker commands generate realistic random values such as names, addresses, and dates.',
+            FAKER_HELP_URL
+          ),
+        };
+      }
+
+      const commandHelp = getFakerCommandHelp(command);
+      const docsUrl = commandHelp?.docsUrl || this.getFakerHelpUrl(command);
+      const heading = `faker.${command}`;
+      const summary = commandHelp?.summary || `Generates data using ${heading}.`;
+      return {
+        show: true,
+        title: `Faker command help: ${command}`,
+        docsUrl,
+        html: this.buildFakerCommandHelpHtml({
+          heading,
+          summary,
+          docsUrl,
+          params: commandHelp?.params || [],
+          example: commandHelp?.example,
+        }),
+      };
+    }
+
+    return { show: false, title: '', docsUrl: '', html: '' };
+  }
+
+  buildTypeHelpHtml(typeName, summary, docsUrl) {
+    return [
+      `<p><strong>${this.escapeHtml(typeName)}</strong></p>`,
+      `<p>${this.escapeHtml(summary)}</p>`,
+      `<p><a class="helplink" href="${this.escapeHtml(docsUrl)}" target="_blank" rel="noopener noreferrer">Learn more</a></p>`,
+    ].join('');
+  }
+
+  cleanFakerParamTypeForHelp(typeText) {
+    const withoutDocComments = String(typeText || '').replace(/\/\*\*[\s\S]*?\*\//g, ' ');
+    return withoutDocComments.replace(/\s+/g, ' ').trim();
+  }
+
+  buildFakerCallSignature(heading, params) {
+    const commandName = heading.startsWith('faker.') ? heading : `faker.${heading}`;
+    if (!Array.isArray(params) || params.length === 0) {
+      return `${commandName}()`;
+    }
+
+    const args = params.map((param) => `${param.name}${param.optional ? '?' : ''}`).join(', ');
+    return `${commandName}(${args})`;
+  }
+
+  buildSchemaParamsHint(params) {
+    if (!Array.isArray(params) || params.length === 0) {
+      return '()';
+    }
+    return `(${params.map((param) => param.name).join(', ')})`;
+  }
+
+  cleanFakerParamDescriptionForHelp(descriptionText) {
+    return String(descriptionText || '')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  buildFakerCommandHelpHtml({ heading, summary, docsUrl, params, example }) {
+    const sections = [`<p><strong>${this.escapeHtml(heading)}</strong></p>`, `<p>${this.escapeHtml(summary)}</p>`];
+
+    sections.push(
+      `<p><strong>Call:</strong> <code>${this.escapeHtml(this.buildFakerCallSignature(heading, params))}</code></p>`
+    );
+
+    if (Array.isArray(params) && params.length > 0) {
+      const paramItems = params
+        .map((param) => {
+          const paramName = `${param.name}${param.optional ? '?' : ''}`;
+          const paramType = this.cleanFakerParamTypeForHelp(param.type);
+          const paramDescription = this.cleanFakerParamDescriptionForHelp(param.description);
+          const descriptionHtml = paramDescription.length > 0 ? ` - ${this.escapeHtml(paramDescription)}` : '';
+          return `<li><code>${this.escapeHtml(paramName)}</code>: <code>${this.escapeHtml(paramType)}</code>${descriptionHtml}</li>`;
+        })
+        .join('');
+
+      sections.push(
+        `<p><strong>Schema params field:</strong> <code>${this.escapeHtml(this.buildSchemaParamsHint(params))}</code></p>`
+      );
+      sections.push(`<p><strong>Params:</strong></p><ul>${paramItems}</ul>`);
+    }
+
+    if (String(example || '').length > 0) {
+      sections.push(`<p><strong>Example:</strong> <code>${this.escapeHtml(example)}</code></p>`);
+    } else {
+      sections.push('<p><strong>Example:</strong> Output depends on your selected params.</p>');
+    }
+
+    const commandName = heading.startsWith('faker.') ? heading.replace('faker.', '') : heading;
+    const docsLinkText = commandName.length > 0 ? `Learn more: faker.${commandName}` : 'Learn more';
+    sections.push(
+      `<p><a class="helplink" href="${this.escapeHtml(docsUrl)}" target="_blank" rel="noopener noreferrer">${this.escapeHtml(docsLinkText)}</a></p>`
+    );
+
+    return sections.join('');
   }
 }
 

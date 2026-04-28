@@ -9,6 +9,8 @@ import { JavaOptionsPanel } from './options_panels/options-java-panel.js';
 import { JavascriptOptionsPanel } from './options_panels/options-javascript-panel.js';
 import { PythonOptionsPanel } from './options_panels/options-python-panel.js';
 import { TypeScriptOptionsPanel } from './options_panels/options-typescript-panel.js';
+import { XmlOptionsPanel } from './options_panels/options-xml-panel.js';
+import { SqlOptionsPanel } from './options_panels/options-sql-panel.js';
 import { GherkinOptionsPanel } from './options_panels/options-gherkin-panel.js';
 import { HtmlOptionsPanel } from './options_panels/options-html-panel.js';
 import { GenericDataTable } from '../data_formats/generic-data-table.js';
@@ -264,10 +266,13 @@ class ImportExportControls {
         this.optionsPanels['asciitable'] = new AsciiTableOptionsPanel(optionsparent);
         this.optionsPanels['markdown'] = new MarkdownOptionsPanel(optionsparent);
         this.optionsPanels['json'] = new JsonOptionsPanel(optionsparent);
+        this.optionsPanels['jsonl'] = new JsonOptionsPanel(optionsparent, 'jsonl-options', { jsonlMode: true });
         this.optionsPanels['javascript'] = new JavascriptOptionsPanel(optionsparent);
         this.optionsPanels['java'] = new JavaOptionsPanel(optionsparent);
         this.optionsPanels['python'] = new PythonOptionsPanel(optionsparent);
         this.optionsPanels['typescript'] = new TypeScriptOptionsPanel(optionsparent);
+        this.optionsPanels['xml'] = new XmlOptionsPanel(optionsparent);
+        this.optionsPanels['sql'] = new SqlOptionsPanel(optionsparent);
         this.optionsPanels['html'] = new HtmlOptionsPanel(optionsparent);
         this.optionsPanels['gherkin'] = new GherkinOptionsPanel(optionsparent);
       }

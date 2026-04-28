@@ -6,6 +6,8 @@ import { JavaConvertor, JavaConvertorOptions } from '../data_formats/java-conver
 import { JavascriptConvertor, JavascriptConvertorOptions } from '../data_formats/javascript-convertor.js';
 import { PythonConvertor, PythonConvertorOptions } from '../data_formats/python-convertor.js';
 import { TypeScriptConvertor, TypeScriptConvertorOptions } from '../data_formats/typescript-convertor.js';
+import { XmlConvertor, XmlConvertorOptions } from '../data_formats/xml-convertor.js';
+import { SqlConvertor, SqlConvertorOptions } from '../data_formats/sql-convertor.js';
 import { CsvConvertor } from '../data_formats/csv-convertor.js';
 import { DelimiterConvertor } from '../data_formats/delimiter-convertor.js';
 import { DelimiterOptions } from '../data_formats/delimiter-options.js';
@@ -25,10 +27,21 @@ class Exporter {
     this.options['asciitable'] = new AsciiTableOptions();
     this.options['markdown'] = new MarkdownOptions();
     this.options['json'] = new JsonConvertorOptions();
+    this.options['jsonl'] = new JsonConvertorOptions();
+    this.options['jsonl'].mergeOptions({
+      options: {
+        prettyPrint: false,
+        asObject: false,
+        asPropertyNamed: '',
+        outputAsJsonLines: true,
+      },
+    });
     this.options['java'] = new JavaConvertorOptions();
     this.options['javascript'] = new JavascriptConvertorOptions();
     this.options['python'] = new PythonConvertorOptions();
     this.options['typescript'] = new TypeScriptConvertorOptions();
+    this.options['xml'] = new XmlConvertorOptions();
+    this.options['sql'] = new SqlConvertorOptions();
     this.options['html'] = new HtmlConvertorOptions();
     this.options['gherkin'] = new GherkinOptions();
 
@@ -39,10 +52,13 @@ class Exporter {
     this.exporters['dsv'] = new DelimiterConvertor();
     this.exporters['dsv'].setPapaParse(new PapaWrappa());
     this.exporters['json'] = new JsonConvertor();
+    this.exporters['jsonl'] = new JsonConvertor();
     this.exporters['java'] = new JavaConvertor();
     this.exporters['javascript'] = new JavascriptConvertor();
     this.exporters['python'] = new PythonConvertor();
     this.exporters['typescript'] = new TypeScriptConvertor();
+    this.exporters['xml'] = new XmlConvertor();
+    this.exporters['sql'] = new SqlConvertor();
     this.exporters['gherkin'] = new GherkinConvertor();
     this.exporters['html'] = new HtmlConvertor();
     this.exporters['asciitable'] = new AsciiTableConvertor();

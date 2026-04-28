@@ -60,8 +60,8 @@ describe('TabbedTextControl preview/edit button', () => {
 
     expect(host.querySelector('#type-code').classList.contains('active-main-type')).toBe(true);
     expect(host.querySelector('#conversionSubtasks').style.display).toBe('block');
-    expect(host.querySelector('.subtask-select.active-type .subtask-select-action').textContent).toBe('JavaScript');
-    expect(host.querySelector('li.active-type a').getAttribute('data-type')).toBe('javascript');
+    expect(host.querySelector('.subtask-select.active-type .subtask-select-action').textContent).toBe('Java');
+    expect(host.querySelector('li.active-type a').getAttribute('data-type')).toBe('java');
     expect(controller.renderTextFromGrid).toHaveBeenCalledTimes(1);
     expect(controller.setFileFormatType).toHaveBeenCalledTimes(1);
     expect(controller.setOptionsViewForFormatType).toHaveBeenCalledTimes(1);

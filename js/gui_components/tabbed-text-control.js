@@ -12,6 +12,7 @@ class TabbedTextControl {
         id: 'code',
         label: 'Code',
         subtasks: [
+          { id: 'java', label: 'Java', type: 'java' },
           { id: 'javascript', label: 'JavaScript', type: 'javascript' },
           { id: 'python', label: 'Python', type: 'python' },
         ],

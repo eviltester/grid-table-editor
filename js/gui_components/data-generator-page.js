@@ -7,6 +7,7 @@ import { CsvDelimitedOptions } from './options_panels/options-csv-delimited-cont
 import { DelimitedOptions } from './options_panels/options-delimited-controls.js';
 import { MarkdownOptionsPanel } from './options_panels/options-markdown-panel.js';
 import { JsonOptionsPanel } from './options_panels/options-json-panel.js';
+import { JavaOptionsPanel } from './options_panels/options-java-panel.js';
 import { JavascriptOptionsPanel } from './options_panels/options-javascript-panel.js';
 import { PythonOptionsPanel } from './options_panels/options-python-panel.js';
 import { HtmlOptionsPanel } from './options_panels/options-html-panel.js';
@@ -257,6 +258,7 @@ class DataGeneratorPage {
     });
 
     const codeTypes = [
+      { type: 'java', label: 'Java' },
       { type: 'javascript', label: 'JavaScript' },
       { type: 'python', label: 'Python' },
     ];
@@ -317,6 +319,7 @@ class DataGeneratorPage {
     this.optionsPanels['markdown'] = new MarkdownOptionsPanel(optionsParent);
     this.optionsPanels['json'] = new JsonOptionsPanel(optionsParent);
     this.optionsPanels['javascript'] = new JavascriptOptionsPanel(optionsParent);
+    this.optionsPanels['java'] = new JavaOptionsPanel(optionsParent);
     this.optionsPanels['python'] = new PythonOptionsPanel(optionsParent);
     this.optionsPanels['html'] = new HtmlOptionsPanel(optionsParent);
     this.optionsPanels['gherkin'] = new GherkinOptionsPanel(optionsParent);

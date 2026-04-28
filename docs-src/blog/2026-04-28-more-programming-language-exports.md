@@ -9,7 +9,7 @@ draft: true
 
 We've expanded export options for programming-language-style output so it is easier to move table data into application code.
 
-This release builds on the existing JavaScript export and adds both Python and Java export support with configurable output options.
+This release builds on the existing JavaScript export and adds Python, Java, and TypeScript export support with configurable output options.
 
 <!--truncate-->
 
@@ -38,6 +38,15 @@ Read the docs:
 
 - [Java Data Format](/docs/data-formats/java/java)
 - [Java Options](/docs/data-formats/java/options)
+
+## TypeScript
+
+TypeScript export supports both anonymous-object and class-instance output and includes options for collection type (`Array<T>` or `T[]`), variable assignment, number conversion, and pretty printing with custom delimiters.
+
+Read the docs:
+
+- [TypeScript Data Format](/docs/data-formats/typescript/typescript)
+- [TypeScript Options](/docs/data-formats/typescript/options)
 
 ## JavaScript
 

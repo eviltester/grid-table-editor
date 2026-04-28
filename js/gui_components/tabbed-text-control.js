@@ -15,6 +15,7 @@ class TabbedTextControl {
           { id: 'java', label: 'Java', type: 'java' },
           { id: 'javascript', label: 'JavaScript', type: 'javascript' },
           { id: 'python', label: 'Python', type: 'python' },
+          { id: 'typescript', label: 'TypeScript', type: 'typescript' },
         ],
       },
       { id: 'gherkin', label: 'Gherkin', type: 'gherkin' },

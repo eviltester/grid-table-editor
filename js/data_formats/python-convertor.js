@@ -221,7 +221,26 @@ class PythonConvertor {
   fromDataTable(dataTable) {
     const opts = this.config.options;
     const rawHeaders = dataTable.getHeaders();
-    const headers = rawHeaders.map((h) => convertStringToPythonValidName(h));
+    const sanitizedHeaders = rawHeaders.map((h) => convertStringToPythonValidName(h));
+    // De-duplicate sanitized header names by suffixing with _2, _3, ...
+    const usedNames = new Set();
+    const headers = sanitizedHeaders.map((h) => {
+      if (!usedNames.has(h)) {
+        usedNames.add(h);
+        return h;
+      }
+      let counter = 2;
+      let candidate = `${h}_${counter}`;
+      while (usedNames.has(candidate)) {
+        counter++;
+        candidate = `${h}_${counter}`;
+      }
+      usedNames.add(candidate);
+      return candidate;
+    });
+    // Sanitize user-provided identifier names to ensure valid Python identifiers.
+    const variableName = convertStringToPythonValidName(opts.variableName || 'data');
+    const objectClassName = convertStringToPythonValidName(opts.objectClassName || 'Row');
     this.usedDecimal = false;
     this.decimalColumnNamesSet = this._getDecimalColumnNamesSet(rawHeaders);
 
@@ -232,7 +251,7 @@ class PythonConvertor {
     const classNestedIndent = '        ';
 
     if (!opts.useAnonymousDicts) {
-      lines.push(`class ${opts.objectClassName}:`);
+      lines.push(`class ${objectClassName}:`);
       lines.push(`${classIndent}def __init__(self, ${headers.join(', ')}):`);
       headers.forEach((h) => {
         lines.push(`${classNestedIndent}self.${h} = ${h}`);
@@ -242,7 +261,7 @@ class PythonConvertor {
 
     const openBracket = opts.collectionType === 'tuple' ? '(' : '[';
     const closeBracket = opts.collectionType === 'tuple' ? ')' : ']';
-    const prefix = opts.assignToVariable ? `${opts.variableName} = ` : '';
+    const prefix = opts.assignToVariable ? `${variableName} = ` : '';
 
     for (let rowIndex = 0; rowIndex < dataTable.getRowCount(); rowIndex++) {
       const row = dataTable.getRow(rowIndex);
@@ -258,9 +277,9 @@ class PythonConvertor {
       } else {
         const pairs = headers.map((h, i) => `${h}=${this._formatValue(row[i], rawHeaders[i], h)}`);
         if (opts.prettyPrint) {
-          collectionRows.push(`${this._indent(1)}${opts.objectClassName}(${pairs.join(', ')})`);
+          collectionRows.push(`${this._indent(1)}${objectClassName}(${pairs.join(', ')})`);
         } else {
-          collectionRows.push(`${opts.objectClassName}(${pairs.join(', ')})`);
+          collectionRows.push(`${objectClassName}(${pairs.join(', ')})`);
         }
       }
     }

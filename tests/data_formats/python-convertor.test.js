@@ -231,6 +231,60 @@ describe('PythonConvertor - header name sanitisation', () => {
     const output = convertor.fromDataTable(table);
     expect(output).toContain('"_1col"');
   });
+
+  test('de-duplicates headers that collapse to the same Python name', () => {
+    const table = new GenericDataTable();
+    table.setHeaders(['a-b', 'a b', 'a_b']);
+    table.appendDataRow(['x', 'y', 'z']);
+    const convertor = new PythonConvertor();
+    const output = convertor.fromDataTable(table);
+    expect(output).toContain('"a_b"');
+    expect(output).toContain('"a_b_2"');
+    expect(output).toContain('"a_b_3"');
+  });
+
+  test('de-duplication avoids overwriting an existing suffixed name', () => {
+    const table = new GenericDataTable();
+    table.setHeaders(['a b', 'a_b_2', 'a-b']);
+    table.appendDataRow(['1', '2', '3']);
+    const convertor = new PythonConvertor();
+    const output = convertor.fromDataTable(table);
+    expect(output).toContain('"a_b"');
+    expect(output).toContain('"a_b_2"');
+    expect(output).toContain('"a_b_3"');
+  });
+});
+
+describe('PythonConvertor - identifier sanitisation', () => {
+  test('sanitises variableName with spaces and hyphens to valid Python identifier', () => {
+    const convertor = new PythonConvertor();
+    convertor.setOptions({ variableName: 'my-list' });
+    const output = convertor.fromDataTable(basicTable);
+    expect(output.startsWith('my_list = [')).toBe(true);
+  });
+
+  test('sanitises variableName starting with a digit', () => {
+    const convertor = new PythonConvertor();
+    convertor.setOptions({ variableName: '1data' });
+    const output = convertor.fromDataTable(basicTable);
+    expect(output.startsWith('_1data = [')).toBe(true);
+  });
+
+  test('sanitises objectClassName with spaces to valid Python identifier', () => {
+    const convertor = new PythonConvertor();
+    convertor.setOptions({ useAnonymousDicts: false, objectClassName: 'My Row' });
+    const output = convertor.fromDataTable(basicTable);
+    expect(output).toContain('class My_Row:');
+    expect(output).toContain('My_Row(name=');
+  });
+
+  test('sanitises objectClassName starting with a digit', () => {
+    const convertor = new PythonConvertor();
+    convertor.setOptions({ useAnonymousDicts: false, objectClassName: '2Row' });
+    const output = convertor.fromDataTable(basicTable);
+    expect(output).toContain('class _2Row:');
+    expect(output).toContain('_2Row(name=');
+  });
 });
 
 describe('PythonConvertorOptions', () => {

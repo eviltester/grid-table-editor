@@ -489,6 +489,43 @@ describe('DataGeneratorPage', () => {
     expect(helpLink.getAttribute('href')).toBe('https://anywaydata.com/docs/category/generating-data');
   });
 
+  test('populateFormatOptions adds Code optgroup after other format options', () => {
+    class FakeExporterWithCode extends FakeExporter {
+      canExport(type) {
+        return ['csv', 'json', 'markdown', 'dsv', 'html', 'gherkin', 'asciitable', 'javascript', 'python'].includes(
+          type
+        );
+      }
+    }
+
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker: { word: { noun: () => 'x' } },
+      RandExp: function RandExp() {},
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporterWithCode,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: FakeTestDataGenerator,
+    });
+    page.init();
+
+    const outputSelect = document.getElementById('generatorOutputFormat');
+    const children = Array.from(outputSelect.children);
+
+    // Last child must be the Code optgroup
+    const lastChild = children[children.length - 1];
+    expect(lastChild.tagName.toLowerCase()).toBe('optgroup');
+    expect(lastChild.label).toBe('-- Code --');
+
+    // Optgroup must contain javascript and python options
+    const codeOptionValues = Array.from(lastChild.querySelectorAll('option')).map((o) => o.value);
+    expect(codeOptionValues).toContain('javascript');
+    expect(codeOptionValues).toContain('python');
+  });
+
   test('default alert invocation does not throw on validation errors', () => {
     dom.window.alert = jest.fn();
     const page = new DataGeneratorPage({

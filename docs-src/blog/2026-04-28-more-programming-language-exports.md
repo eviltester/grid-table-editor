@@ -9,7 +9,7 @@ draft: true
 
 We've expanded export options for programming-language-style output so it is easier to move table data into application code.
 
-This release builds on the existing JavaScript export and adds Python export support with configurable output options.
+This release builds on the existing JavaScript export and adds both Python and Java export support with configurable output options.
 
 <!--truncate-->
 
@@ -29,6 +29,15 @@ Read the docs:
 
 - [Python Data Format](/docs/data-formats/python/python)
 - [Python Options](/docs/data-formats/python/options)
+
+## Java
+
+Java export supports both map-style and object-style output and includes options for collection type (list or array), variable assignment, number conversion, import inclusion, and pretty printing with custom delimiters.
+
+Read the docs:
+
+- [Java Data Format](/docs/data-formats/java/java)
+- [Java Options](/docs/data-formats/java/options)
 
 ## JavaScript
 

@@ -114,6 +114,19 @@ List<Map<String, Object>> data = new ArrayList<>(List.of(
     const output = convertor.fromDataTable(basicTable);
     expect(output).toContain('    Map.of(');
   });
+
+  test('leading-zero integer is normalized (09 -> 9)', () => {
+    const table = new GenericDataTable();
+    table.setHeaders(['name', 'code']);
+    table.appendDataRow(['Alice', '09']);
+    table.appendDataRow(['Bob', '010']);
+    const convertor = new JavaConvertor();
+    const output = convertor.fromDataTable(table);
+    expect(output).toContain('"code", 9');
+    expect(output).toContain('"code", 10');
+    expect(output).not.toContain('"code", 09');
+    expect(output).not.toContain('"code", 010');
+  });
 });
 
 describe('JavaConvertor - named class (POJO)', () => {
@@ -203,6 +216,17 @@ describe('JavaConvertor - named class (POJO)', () => {
     expect(output).toContain('Row(String name, Double price)');
     expect(output).toContain('new Row("Item A", 9.99)');
     expect(output).toContain('new Row("Item B", null)');
+  });
+
+  test('named class normalizes leading-zero integers (09 -> 9)', () => {
+    const table = new GenericDataTable();
+    table.setHeaders(['name', 'code']);
+    table.appendDataRow(['Alice', '09']);
+    const convertor = new JavaConvertor();
+    convertor.setOptions({ useAnonymousMaps: false });
+    const output = convertor.fromDataTable(table);
+    expect(output).toContain('new Row("Alice", 9)');
+    expect(output).not.toContain('new Row("Alice", 09)');
   });
 });
 

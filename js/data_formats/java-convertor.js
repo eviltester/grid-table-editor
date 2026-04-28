@@ -91,7 +91,7 @@ class JavaConvertor {
     }
 
     if (!opts.quoteNumbers && isNumericValue(value)) {
-      return String(value);
+      return String(Number(value));
     }
 
     return this._quote(value);
@@ -191,7 +191,7 @@ class JavaConvertor {
         return this._quote('');
       }
       if (columnTypes[i] !== 'String' && isNumericValue(value)) {
-        return String(value);
+        return String(Number(value));
       }
       return this._quote(value);
     });

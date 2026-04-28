@@ -298,7 +298,11 @@ class PythonConvertor {
       return lines.join('\n');
     }
 
-    const compactCollection = `${openBracket}${this._joinRows(collectionRows)}${closeBracket}`;
+    const compactRows = this._joinRows(collectionRows);
+    const compactCollection =
+      opts.collectionType === 'tuple' && collectionRows.length === 1
+        ? `${openBracket}${compactRows},${closeBracket}`
+        : `${openBracket}${compactRows}${closeBracket}`;
     lines.push(`${prefix}${compactCollection}`);
     return lines.join('\n');
   }

@@ -80,6 +80,46 @@ div.header div{
   list-style: none;
 }
 
+.conversionSubtasks{
+  border-bottom: 1px solid #A9D6E5;
+  margin-bottom: 0.5rem;
+}
+
+.conversionSubtasksList{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  list-style: none;
+  margin: 0;
+  padding: 0.35rem 0 0.35rem 0.5rem;
+}
+
+.subtask-select{
+  display: block;
+  padding: 0.25rem 0.75rem;
+  border: 1px solid #A9D6E5;
+  border-radius: 999px;
+  background: #f5fbff;
+}
+
+.active-main-type{
+  border-style: solid;
+  border-width: 1px 1px 0px 1px;
+  border-color: #014F86 #014F86 #A9D6E5;
+  margin: -1px -1px 0px -1px;
+  background: #f5fbff;
+}
+
+.subtask-select.active-type{
+  border-width: 1px;
+  margin: 0;
+}
+
+a.subtask-select-action {
+  text-decoration: none;
+  color: black;
+}
+
 a.type-select-action {
   text-decoration: none;
   color:black;

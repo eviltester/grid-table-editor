@@ -39,6 +39,12 @@ jobs:
       - name: Run tests with coverage
         run: npm run testcoverage
 
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Run browser smoke tests
+        run: npm run test:browser
+
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v4
         with:

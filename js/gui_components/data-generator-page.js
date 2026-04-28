@@ -1,4 +1,4 @@
-﻿import { GenericDataTable } from '../data_formats/generic-data-table.js';
+import { GenericDataTable } from '../data_formats/generic-data-table.js';
 import { TestDataGenerator } from '../data_generation/testDataGenerator.js';
 import { Exporter } from '../grid/exporter.js';
 import { Download } from './download.js';

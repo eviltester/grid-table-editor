@@ -8,6 +8,7 @@ import { JsonOptionsPanel } from './options_panels/options-json-panel.js';
 import { JavaOptionsPanel } from './options_panels/options-java-panel.js';
 import { JavascriptOptionsPanel } from './options_panels/options-javascript-panel.js';
 import { PythonOptionsPanel } from './options_panels/options-python-panel.js';
+import { TypeScriptOptionsPanel } from './options_panels/options-typescript-panel.js';
 import { GherkinOptionsPanel } from './options_panels/options-gherkin-panel.js';
 import { HtmlOptionsPanel } from './options_panels/options-html-panel.js';
 import { GenericDataTable } from '../data_formats/generic-data-table.js';
@@ -266,6 +267,7 @@ class ImportExportControls {
         this.optionsPanels['javascript'] = new JavascriptOptionsPanel(optionsparent);
         this.optionsPanels['java'] = new JavaOptionsPanel(optionsparent);
         this.optionsPanels['python'] = new PythonOptionsPanel(optionsparent);
+        this.optionsPanels['typescript'] = new TypeScriptOptionsPanel(optionsparent);
         this.optionsPanels['html'] = new HtmlOptionsPanel(optionsparent);
         this.optionsPanels['gherkin'] = new GherkinOptionsPanel(optionsparent);
       }

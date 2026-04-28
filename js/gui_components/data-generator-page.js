@@ -10,6 +10,7 @@ import { JsonOptionsPanel } from './options_panels/options-json-panel.js';
 import { JavaOptionsPanel } from './options_panels/options-java-panel.js';
 import { JavascriptOptionsPanel } from './options_panels/options-javascript-panel.js';
 import { PythonOptionsPanel } from './options_panels/options-python-panel.js';
+import { TypeScriptOptionsPanel } from './options_panels/options-typescript-panel.js';
 import { HtmlOptionsPanel } from './options_panels/options-html-panel.js';
 import { GherkinOptionsPanel } from './options_panels/options-gherkin-panel.js';
 import { AsciiTableOptionsPanel } from './options_panels/options-ascii-table.js';
@@ -261,6 +262,7 @@ class DataGeneratorPage {
       { type: 'java', label: 'Java' },
       { type: 'javascript', label: 'JavaScript' },
       { type: 'python', label: 'Python' },
+      { type: 'typescript', label: 'TypeScript' },
     ];
     const codeGroup = this.documentObj.createElement('optgroup');
     codeGroup.label = '-- Code --';
@@ -321,6 +323,7 @@ class DataGeneratorPage {
     this.optionsPanels['javascript'] = new JavascriptOptionsPanel(optionsParent);
     this.optionsPanels['java'] = new JavaOptionsPanel(optionsParent);
     this.optionsPanels['python'] = new PythonOptionsPanel(optionsParent);
+    this.optionsPanels['typescript'] = new TypeScriptOptionsPanel(optionsParent);
     this.optionsPanels['html'] = new HtmlOptionsPanel(optionsParent);
     this.optionsPanels['gherkin'] = new GherkinOptionsPanel(optionsParent);
     this.optionsPanels['asciitable'] = new AsciiTableOptionsPanel(optionsParent);

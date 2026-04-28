@@ -492,9 +492,19 @@ describe('DataGeneratorPage', () => {
   test('populateFormatOptions adds Code optgroup after other format options', () => {
     class FakeExporterWithCode extends FakeExporter {
       canExport(type) {
-        return ['csv', 'json', 'markdown', 'dsv', 'html', 'gherkin', 'asciitable', 'javascript', 'python'].includes(
-          type
-        );
+        return [
+          'csv',
+          'json',
+          'markdown',
+          'dsv',
+          'html',
+          'gherkin',
+          'asciitable',
+          'java',
+          'javascript',
+          'python',
+          'typescript',
+        ].includes(type);
       }
     }
 
@@ -520,10 +530,12 @@ describe('DataGeneratorPage', () => {
     expect(lastChild.tagName.toLowerCase()).toBe('optgroup');
     expect(lastChild.label).toBe('-- Code --');
 
-    // Optgroup must contain javascript and python options
+    // Optgroup must contain all programming-language options
     const codeOptionValues = Array.from(lastChild.querySelectorAll('option')).map((o) => o.value);
+    expect(codeOptionValues).toContain('java');
     expect(codeOptionValues).toContain('javascript');
     expect(codeOptionValues).toContain('python');
+    expect(codeOptionValues).toContain('typescript');
   });
 
   test('default alert invocation does not throw on validation errors', () => {

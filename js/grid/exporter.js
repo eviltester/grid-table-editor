@@ -3,6 +3,7 @@ import { MarkdownConvertor, MarkdownOptions } from '../data_formats/markdown-con
 import { HtmlConvertor, HtmlConvertorOptions } from '../data_formats/html-convertor.js';
 import { JsonConvertor, JsonConvertorOptions } from '../data_formats/json-convertor.js';
 import { JavascriptConvertor, JavascriptConvertorOptions } from '../data_formats/javascript-convertor.js';
+import { PythonConvertor, PythonConvertorOptions } from '../data_formats/python-convertor.js';
 import { CsvConvertor } from '../data_formats/csv-convertor.js';
 import { DelimiterConvertor } from '../data_formats/delimiter-convertor.js';
 import { DelimiterOptions } from '../data_formats/delimiter-options.js';
@@ -23,6 +24,7 @@ class Exporter {
     this.options['markdown'] = new MarkdownOptions();
     this.options['json'] = new JsonConvertorOptions();
     this.options['javascript'] = new JavascriptConvertorOptions();
+    this.options['python'] = new PythonConvertorOptions();
     this.options['html'] = new HtmlConvertorOptions();
     this.options['gherkin'] = new GherkinOptions();
 
@@ -34,6 +36,7 @@ class Exporter {
     this.exporters['dsv'].setPapaParse(new PapaWrappa());
     this.exporters['json'] = new JsonConvertor();
     this.exporters['javascript'] = new JavascriptConvertor();
+    this.exporters['python'] = new PythonConvertor();
     this.exporters['gherkin'] = new GherkinConvertor();
     this.exporters['html'] = new HtmlConvertor();
     this.exporters['asciitable'] = new AsciiTableConvertor();

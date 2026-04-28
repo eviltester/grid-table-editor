@@ -1,4 +1,4 @@
-import { GenericDataTable } from '../data_formats/generic-data-table.js';
+﻿import { GenericDataTable } from '../data_formats/generic-data-table.js';
 import { TestDataGenerator } from '../data_generation/testDataGenerator.js';
 import { Exporter } from '../grid/exporter.js';
 import { Download } from './download.js';
@@ -8,6 +8,7 @@ import { DelimitedOptions } from './options_panels/options-delimited-controls.js
 import { MarkdownOptionsPanel } from './options_panels/options-markdown-panel.js';
 import { JsonOptionsPanel } from './options_panels/options-json-panel.js';
 import { JavascriptOptionsPanel } from './options_panels/options-javascript-panel.js';
+import { PythonOptionsPanel } from './options_panels/options-python-panel.js';
 import { HtmlOptionsPanel } from './options_panels/options-html-panel.js';
 import { GherkinOptionsPanel } from './options_panels/options-gherkin-panel.js';
 import { AsciiTableOptionsPanel } from './options_panels/options-ascii-table.js';
@@ -244,7 +245,7 @@ class DataGeneratorPage {
       return;
     }
 
-    const orderedTypes = ['csv', 'json', 'markdown', 'javascript', 'dsv', 'html', 'gherkin', 'asciitable'];
+    const orderedTypes = ['csv', 'json', 'markdown', 'dsv', 'html', 'gherkin', 'asciitable'];
     orderedTypes.forEach((type) => {
       if (!this.exporter?.canExport?.(type) && this.exporter) {
         return;
@@ -254,9 +255,27 @@ class DataGeneratorPage {
       option.textContent = type.toUpperCase();
       outputSelect.appendChild(option);
     });
+
+    const codeTypes = [
+      { type: 'javascript', label: 'JavaScript' },
+      { type: 'python', label: 'Python' },
+    ];
+    const codeGroup = this.documentObj.createElement('optgroup');
+    codeGroup.label = '-- Code --';
+    codeTypes.forEach(({ type, label }) => {
+      if (!this.exporter?.canExport?.(type) && this.exporter) {
+        return;
+      }
+      const option = this.documentObj.createElement('option');
+      option.value = type;
+      option.textContent = label;
+      codeGroup.appendChild(option);
+    });
+    if (codeGroup.children.length > 0) {
+      outputSelect.appendChild(codeGroup);
+    }
     outputSelect.value = 'csv';
   }
-
   attachEventHandlers() {
     const addSchemaRowButton = this.documentObj.getElementById('addSchemaRowButton');
     addSchemaRowButton.addEventListener('click', () => {
@@ -298,6 +317,7 @@ class DataGeneratorPage {
     this.optionsPanels['markdown'] = new MarkdownOptionsPanel(optionsParent);
     this.optionsPanels['json'] = new JsonOptionsPanel(optionsParent);
     this.optionsPanels['javascript'] = new JavascriptOptionsPanel(optionsParent);
+    this.optionsPanels['python'] = new PythonOptionsPanel(optionsParent);
     this.optionsPanels['html'] = new HtmlOptionsPanel(optionsParent);
     this.optionsPanels['gherkin'] = new GherkinOptionsPanel(optionsParent);
     this.optionsPanels['asciitable'] = new AsciiTableOptionsPanel(optionsParent);

@@ -6,6 +6,7 @@ import { AsciiTableOptionsPanel } from './options_panels/options-ascii-table.js'
 import { MarkdownOptionsPanel } from './options_panels/options-markdown-panel.js';
 import { JsonOptionsPanel } from './options_panels/options-json-panel.js';
 import { JavascriptOptionsPanel } from './options_panels/options-javascript-panel.js';
+import { PythonOptionsPanel } from './options_panels/options-python-panel.js';
 import { GherkinOptionsPanel } from './options_panels/options-gherkin-panel.js';
 import { HtmlOptionsPanel } from './options_panels/options-html-panel.js';
 import { GenericDataTable } from '../data_formats/generic-data-table.js';
@@ -262,6 +263,7 @@ class ImportExportControls {
         this.optionsPanels['markdown'] = new MarkdownOptionsPanel(optionsparent);
         this.optionsPanels['json'] = new JsonOptionsPanel(optionsparent);
         this.optionsPanels['javascript'] = new JavascriptOptionsPanel(optionsparent);
+        this.optionsPanels['python'] = new PythonOptionsPanel(optionsparent);
         this.optionsPanels['html'] = new HtmlOptionsPanel(optionsparent);
         this.optionsPanels['gherkin'] = new GherkinOptionsPanel(optionsparent);
       }

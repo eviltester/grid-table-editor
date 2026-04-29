@@ -80,3 +80,34 @@ test('MCP server accepts key/value style textSpec for faker rules', () => {
   assert.deepEqual(payload.headers, ['first_name', 'last_name']);
   assert.equal(payload.rows.length, 2);
 });
+
+test('MCP server rejects unsafe faker expression arguments', () => {
+  const scriptPath = path.resolve('src/index.js');
+  const callRequest = `${JSON.stringify({
+    jsonrpc: '2.0',
+    id: 4,
+    method: 'tools/call',
+    params: {
+      name: 'generate_data_from_spec',
+      arguments: {
+        textSpec: 'Sentence\nhelpers.mustache("x", {count: () => `${this.number.int()}`})',
+        rowCount: 1,
+        outputFormat: 'json',
+      },
+    },
+  })}\n`;
+
+  const output = execFileSync(process.execPath, [scriptPath], {
+    input: callRequest,
+    encoding: 'utf8',
+    cwd: path.resolve('.'),
+  });
+
+  const line = firstJsonLine(output);
+  assert.ok(line);
+  const response = JSON.parse(line);
+  const payload = JSON.parse(response?.result?.content?.[0]?.text || '{}');
+  assert.equal(response?.result?.isError, true);
+  assert.equal(payload.ok, false);
+  assert.match(payload.errors[0], /Unsafe faker rule syntax detected/);
+});

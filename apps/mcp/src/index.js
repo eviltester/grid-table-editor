@@ -1,5 +1,5 @@
 import readline from 'node:readline';
-import { generateFromTextSpec, SUPPORTED_FORMATS } from '@anywaydata/core';
+import { generateFromTextSpec, SUPPORTED_FORMATS, validateSafeFakerRules } from '@anywaydata/core';
 
 const serverInfo = {
   name: 'anywaydata-mcp',
@@ -108,6 +108,22 @@ function handleRequest(request) {
       ...args,
       textSpec: maybeConvertKeyValueSpec(args.textSpec),
     };
+    const validation = validateSafeFakerRules(normalizedArgs.textSpec);
+    if (!validation.ok) {
+      return writeMessage({
+        jsonrpc: '2.0',
+        id,
+        result: {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({ ok: false, errors: [validation.error] }),
+            },
+          ],
+          isError: true,
+        },
+      });
+    }
     const result = generateFromTextSpec(normalizedArgs);
     return writeMessage({
       jsonrpc: '2.0',

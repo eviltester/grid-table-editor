@@ -28,13 +28,23 @@ const argv = yargs(hideBin(process.argv))
     default: false,
     describe: 'Generate one line and log diagnostics',
   })
+  .option('unsafe-faker-expressions', {
+    type: 'boolean',
+    default: false,
+    describe: 'Allow expression-style faker arguments (unsafe for untrusted input)',
+  })
   .help('h')
   .alias('h', 'help').argv;
 
 const filePath = argv.inputfile;
 const textSpec = await fs.readFile(filePath, 'utf8');
 const rowCount = argv.testMode ? 1 : argv.numberOfLines;
-const result = generateFromTextSpec({ textSpec, rowCount, outputFormat: argv.format });
+const result = generateFromTextSpec({
+  textSpec,
+  rowCount,
+  outputFormat: argv.format,
+  unsafeFakerExpressions: argv['unsafe-faker-expressions'] === true,
+});
 
 if (!result.ok) {
   console.error(result.errors.join('\n'));

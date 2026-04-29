@@ -5,7 +5,7 @@ import { convertDataToArrayOfStrings } from "./outputData";
 import Papa from "papaparse";
 import type { UnparseConfig } from "papaparse";
 import { faker } from '@faker-js/faker';
-import { number } from "yargs";
+import { validateSafeFakerRules } from "../../packages/core/src/index.js";
 const RandExp = require('randexp');
 
 const argv = yargs(hideBin(process.argv))
@@ -29,6 +29,11 @@ const argv = yargs(hideBin(process.argv))
       .alias('t', 'testMode')
       .nargs('t', 0)
       .describe('t', 'Test the input spec by writing all output to console and only generating 1 line')
+      .option('unsafe-faker-expressions', {
+        type: 'boolean',
+        default: false,
+        describe: 'Allow expression-style faker arguments (unsafe for untrusted input)'
+      })
     .help('h')
     .alias('h', 'help')
     .epilog('copyright 2025 Compendium Developments Ltd')
@@ -65,6 +70,15 @@ const argv = yargs(hideBin(process.argv))
     outputProgressLog("", hideProgressLog);
 
     outputProgressLog("> Parsing Input File into Test Data Generation Rules", hideProgressLog);
+
+    if(argv["unsafe-faker-expressions"]!==true){
+      const safetyValidation = validateSafeFakerRules(testDataSpec);
+      if(!safetyValidation.ok){
+        outputProgressLog("Invalid Rules File:", false);
+        outputProgressLog(safetyValidation.error, false);
+        process.exit(1);
+      }
+    }
 
     const generator = new TestDataGenerator(faker, RandExp);
     generator.importSpec(testDataSpec);
@@ -116,4 +130,3 @@ const argv = yargs(hideBin(process.argv))
         console.log(logMessage)
       }
     }
-

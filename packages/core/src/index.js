@@ -23,6 +23,65 @@ const SUPPORTED_FORMATS = [
   'asciitable',
 ];
 
+function extractRuleLines(textSpec) {
+  if (typeof textSpec !== 'string') {
+    return [];
+  }
+  const lines = textSpec.split(/\r?\n/);
+  const ruleLines = [];
+  for (let i = 1; i < lines.length; i += 2) {
+    ruleLines.push(lines[i].trim());
+  }
+  return ruleLines;
+}
+
+function looksLikeFakerRule(ruleLine) {
+  return /^(faker\.)?[A-Za-z][A-Za-z0-9_]*(\.[A-Za-z][A-Za-z0-9_]*)+/.test(ruleLine);
+}
+
+function hasDisallowedFakerSyntax(ruleLine) {
+  return /=>|\bfunction\b|\bthis\b|;|`|\?\?|\bnew\b|process|globalThis|constructor|__proto__|prototype/.test(ruleLine);
+}
+
+function hasSafeFakerArguments(ruleLine) {
+  const openParen = ruleLine.indexOf('(');
+  if (openParen === -1) {
+    return true;
+  }
+
+  if (!ruleLine.endsWith(')')) {
+    return false;
+  }
+
+  const argsBody = ruleLine.slice(openParen + 1, -1).trim();
+  if (argsBody.length === 0) {
+    return true;
+  }
+
+  const literalTokenPattern = String.raw`(?:'(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"|-?\d+(?:\.\d+)?|true|false|null)`;
+  const argsListPattern = new RegExp(`^\\s*${literalTokenPattern}(\\s*,\\s*${literalTokenPattern})*\\s*$`);
+  return argsListPattern.test(argsBody);
+}
+
+export function validateSafeFakerRules(textSpec) {
+  const ruleLines = extractRuleLines(textSpec);
+  for (const ruleLine of ruleLines) {
+    if (!looksLikeFakerRule(ruleLine)) {
+      continue;
+    }
+
+    if (hasDisallowedFakerSyntax(ruleLine) || !hasSafeFakerArguments(ruleLine)) {
+      return {
+        ok: false,
+        error:
+          'Unsafe faker rule syntax detected. Accepted syntax is faker commands with no args or literal args (string/number/boolean/null). Use --unsafe-faker-expressions to opt in.',
+      };
+    }
+  }
+
+  return { ok: true };
+}
+
 function createExporter() {
   return new Exporter({
     getGridAsGenericDataTable: () => new GenericDataTable(),
@@ -39,7 +98,14 @@ function tableToRows(dataTable) {
   return { headers, rows };
 }
 
-export function generateFromTextSpec({ textSpec, rowCount, outputFormat = DEFAULT_FORMAT, options = {}, seed } = {}) {
+export function generateFromTextSpec({
+  textSpec,
+  rowCount,
+  outputFormat = DEFAULT_FORMAT,
+  options = {},
+  seed,
+  unsafeFakerExpressions = false,
+} = {}) {
   const errors = [];
   if (typeof textSpec !== 'string' || textSpec.trim().length === 0) {
     errors.push('textSpec is required and must be a non-empty string.');
@@ -56,6 +122,19 @@ export function generateFromTextSpec({ textSpec, rowCount, outputFormat = DEFAUL
 
   if (errors.length > 0) {
     return { ok: false, errors, diagnostics: { supportedFormats: SUPPORTED_FORMATS } };
+  }
+
+  if (!unsafeFakerExpressions) {
+    const safetyValidation = validateSafeFakerRules(textSpec);
+    if (!safetyValidation.ok) {
+      return {
+        ok: false,
+        errors: [safetyValidation.error],
+        diagnostics: {
+          report: 'Rejected unsafe faker expression syntax',
+        },
+      };
+    }
   }
 
   if (typeof seed === 'number') {

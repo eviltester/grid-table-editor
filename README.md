@@ -206,6 +206,7 @@ Supported options:
 - `-f, --format` output format (default `csv`)
 - `-o, --outputfile` write output to file instead of stdout
 - `-t, --testMode` enable diagnostics mode and generate one row
+- `--unsafe-faker-expressions` allow expression-style faker args (disabled by default)
 
 ## REST API Quick Start
 
@@ -309,6 +310,12 @@ Inputs:
 - `outputFormat` (required string e.g. `csv`, `json`, `jsonl`, `xml`, `sql`)
 - `options` (optional object)
 - `seed` (optional number)
+
+Security note:
+
+- MCP input validation restricts faker rule arguments to literals only (string/number/boolean/null) or no args.
+- Expression-style faker arguments (e.g. arrow functions, `this`, template expressions) are rejected in MCP mode.
+- Node and Bun CLIs are also safe-by-default with the same rule; use `--unsafe-faker-expressions` to opt in.
 
 ### Using MCP With Codex
 

@@ -7,8 +7,40 @@ on:
         default: 'master'
 jobs:
   bun-build:
-    name: build-bun-exes
-    runs-on: ubuntu-latest
+    name: build-${{ matrix.name }}
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: windows-x64
+            runner: windows-latest
+            bun_target: bun-windows-x64
+            bin_relpath: out/windows64/anywaydata.exe
+            zip_name: windows64.zip
+            smoke_command: .\out\windows64\anywaydata.exe --help
+            bun_build_flags: --compile --minify --sourcemap
+          - name: linux-x64
+            runner: ubuntu-latest
+            bun_target: bun-linux-x64
+            bin_relpath: out/linux-x64/anywaydata
+            zip_name: linux-x64.zip
+            smoke_command: ./out/linux-x64/anywaydata --help
+            bun_build_flags: --compile
+          - name: linux-arm64
+            runner: ubuntu-24.04-arm
+            bun_target: bun-linux-arm64
+            bin_relpath: out/linux-arm64/anywaydata
+            zip_name: linux-arm64.zip
+            smoke_command: ./out/linux-arm64/anywaydata --help
+            bun_build_flags: --compile
+          - name: macos-arm64
+            runner: macos-latest
+            bun_target: bun-darwin-arm64
+            bin_relpath: out/macos-arm64/anywaydata
+            zip_name: macos-arm64.zip
+            smoke_command: ./out/macos-arm64/anywaydata --help
+            bun_build_flags: --compile
     defaults:
       run:
         working-directory: ./cli
@@ -19,39 +51,41 @@ jobs:
           bun-version: 1.2.10
       - name: install dependencies
         run: bun install
-      - name: build windows
+      - name: build binary
+        shell: bash
         run: |
-          bun build ./index.ts --compile --minify --sourcemap --target=bun-windows-x64 --outfile ${{ github.workspace }}/out/windows64/anywaydata.exe
-          zip -j ${{ github.workspace }}/windows64.zip ${{ github.workspace }}/out/windows64/anywaydata.exe
-      - name: build linux-x64
-        run: |
-          bun build ./index.ts --compile --target=bun-linux-x64 --outfile ${{ github.workspace }}/out/linux-x64/anywaydata
-          zip -j ${{ github.workspace }}/linux-x64.zip ${{ github.workspace }}/out/linux-x64/anywaydata
-      - name: build linux-arm64
-        run: |
-          bun build ./index.ts --compile --outfile ${{ github.workspace }}/out/linux-arm64/anywaydata --target=bun-linux-arm64
-          zip -j ${{ github.workspace }}/linux-arm64.zip ${{ github.workspace }}/out/linux-arm64/anywaydata
-      - name: build mac-x64
-        run: |
-          bun build ./index.ts --compile --outfile ${{ github.workspace }}/out/macos-x64/anywaydata --target=bun-darwin-x64
-          zip -j ${{ github.workspace }}/macos-x64.zip ${{ github.workspace }}/out/macos-x64/anywaydata
-      - name: build mac-arm64
-        run: |
-          bun build ./index.ts --compile --outfile ${{ github.workspace }}/out/macos-arm64/anywaydata --target=bun-darwin-arm64
-          zip -j ${{ github.workspace }}/macos-arm64.zip ${{ github.workspace }}/out/macos-arm64/anywaydata
-      - name: check dir
-        run: ls -R ${{ github.workspace }}/out
+          bun build ./index.ts ${{ matrix.bun_build_flags }} --target=${{ matrix.bun_target }} --outfile "${{ github.workspace }}/${{ matrix.bin_relpath }}"
+      - name: smoke test binary
+        run: ${{ matrix.smoke_command }}
+      - name: package zip (windows)
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: Compress-Archive -Path "${{ github.workspace }}\${{ matrix.bin_relpath }}" -DestinationPath "${{ github.workspace }}\${{ matrix.zip_name }}" -Force
+      - name: package zip (non-windows)
+        if: runner.os != 'Windows'
+        shell: bash
+        run: zip -j "${{ github.workspace }}/${{ matrix.zip_name }}" "${{ github.workspace }}/${{ matrix.bin_relpath }}"
+      - name: upload zip artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.zip_name }}
+          path: ${{ github.workspace }}/${{ matrix.zip_name }}
+          if-no-files-found: error
+  create-draft-release:
+    name: create-draft-release
+    needs: bun-build
+    runs-on: ubuntu-latest
+    steps:
+      - name: download built zips
+        uses: actions/download-artifact@v4
+        with:
+          path: ${{ github.workspace }}/release-assets
       - uses: ncipollo/release-action@v1.16.0
         with:
           tag: ${{ inputs.tag }}
           commit: ${{ inputs.commit }}
           name: Draft Release ${{ github.ref }}
           draft: true
-          artifacts: |
-            ${{ github.workspace }}/windows64.zip
-            ${{ github.workspace }}/linux-x64.zip
-            ${{ github.workspace }}/linux-arm64.zip
-            ${{ github.workspace }}/macos-x64.zip
-            ${{ github.workspace }}/macos-arm64.zip
+          artifacts: ${{ github.workspace }}/release-assets/**/*.zip
           body: 'AnyWayData CLI versions'
           allowUpdates: true

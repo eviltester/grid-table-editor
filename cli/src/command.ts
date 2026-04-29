@@ -1,6 +1,6 @@
 import yargs from "yargs"
 import { hideBin } from "yargs/helpers"
-import { TestDataGenerator } from "../../js/data_generation/testDataGenerator";
+import { TestDataGenerator } from "../../packages/core/js/data_generation/testDataGenerator.js";
 import { convertDataToArrayOfStrings } from "./outputData";
 import Papa from "papaparse";
 import type { UnparseConfig } from "papaparse";

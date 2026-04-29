@@ -7,6 +7,7 @@ COPY index.html ./index.html
 COPY app.html ./app.html
 COPY generator.html ./generator.html
 COPY styles.css ./styles.css
-COPY js ./js
+COPY packages/core ./packages/core
+COPY packages/core-ui ./packages/core-ui
 COPY libs ./libs
 COPY images ./images

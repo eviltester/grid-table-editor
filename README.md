@@ -157,6 +157,9 @@ This repository now uses npm workspaces:
 - `apps/api` -> REST API (`@anywaydata/api`)
 - `apps/mcp` -> MCP server (`@anywaydata/mcp`)
 
+Imports now resolve directly from package sources.
+Use `packages/core/js/*` and `packages/core-ui/js/*` paths in local runtime/test code.
+
 Install all dependencies from the repo root:
 
 `npm install`

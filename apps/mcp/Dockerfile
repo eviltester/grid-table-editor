@@ -13,6 +13,5 @@ ENV NODE_ENV=production
 COPY --from=deps /app/node_modules ./node_modules
 COPY package.json ./package.json
 COPY packages/core ./packages/core
-COPY js ./js
 COPY apps/mcp ./apps/mcp
 CMD ["node", "apps/mcp/src/index.js"]

@@ -6,6 +6,43 @@ const serverInfo = {
   version: '0.1.0',
 };
 
+function normalizeRuleText(ruleText) {
+  const trimmed = ruleText.trim();
+  if (trimmed.startsWith('{{') && trimmed.endsWith('}}')) {
+    return trimmed.slice(2, -2).trim();
+  }
+  return trimmed;
+}
+
+function maybeConvertKeyValueSpec(textSpec) {
+  if (typeof textSpec !== 'string') {
+    return textSpec;
+  }
+
+  const lines = textSpec
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0);
+
+  if (lines.length === 0 || lines.some((line) => !line.includes(':'))) {
+    return textSpec;
+  }
+
+  const converted = [];
+  for (const line of lines) {
+    const separatorIndex = line.indexOf(':');
+    const name = line.slice(0, separatorIndex).trim();
+    const rule = line.slice(separatorIndex + 1).trim();
+    if (name.length === 0 || rule.length === 0) {
+      return textSpec;
+    }
+    converted.push(name);
+    converted.push(normalizeRuleText(rule));
+  }
+
+  return converted.join('\n');
+}
+
 function writeMessage(message) {
   process.stdout.write(`${JSON.stringify(message)}\n`);
 }
@@ -33,11 +70,16 @@ function handleRequest(request) {
         tools: [
           {
             name: 'generate_data_from_spec',
-            description: 'Generate data rows and formatted output from a multiline text specification.',
+            description:
+              'Generate data rows and formatted output from a multiline text specification. Supported textSpec forms: (1) alternating lines: ColumnName then RuleDefinition, (2) key/value lines: ColumnName: RuleDefinition (auto-converted).',
             inputSchema: {
               type: 'object',
               properties: {
-                textSpec: { type: 'string' },
+                textSpec: {
+                  type: 'string',
+                  description:
+                    'Examples:\nName\\nperson.firstName\\nSurname\\nperson.lastName\nor\nname: faker.person.firstName()\nlast_name: person.lastName',
+                },
                 rowCount: { type: 'integer', minimum: 0 },
                 outputFormat: { type: 'string', enum: SUPPORTED_FORMATS },
                 options: { type: 'object' },
@@ -62,7 +104,11 @@ function handleRequest(request) {
     }
 
     const args = params?.arguments || {};
-    const result = generateFromTextSpec(args);
+    const normalizedArgs = {
+      ...args,
+      textSpec: maybeConvertKeyValueSpec(args.textSpec),
+    };
+    const result = generateFromTextSpec(normalizedArgs);
     return writeMessage({
       jsonrpc: '2.0',
       id,

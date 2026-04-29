@@ -274,6 +274,38 @@ Inputs:
 - `options` (optional object)
 - `seed` (optional number)
 
+### Using MCP With Codex
+
+Codex connects to this server as an MCP tool provider over `stdio` (not HTTP).
+
+1. Ensure dependencies are installed from repo root:
+   - `npm install`
+2. Start MCP server (or let your MCP host launch it):
+   - `npm run start --workspace @anywaydata/mcp`
+3. Configure your MCP host/Codex to launch the server command.
+
+Example MCP server config:
+
+```json
+{
+  "mcpServers": {
+    "anywaydata": {
+      "command": "node",
+      "args": ["apps/mcp/src/index.js"],
+      "cwd": "D:/github/grid-table-editor"
+    }
+  }
+}
+```
+
+For MCP hosts, prefer direct `node` execution as shown above. `npm run` can emit non-JSON stdout lines, which may interfere with `stdio` MCP message parsing in some clients.
+
+Notes:
+
+- Transport is `stdio`, so `PORT` / `--port` do not apply to MCP.
+- Use REST API (`@anywaydata/api`) for HTTP/OpenAPI/Swagger use cases.
+- MCP tool name exposed is `generate_data_from_spec`.
+
 ## Publishing to npm
 
 Packages are configured with `publishConfig.access=public`.
@@ -311,8 +343,8 @@ GitHub Actions runs linting and tests for pushes and pull requests to `master`.
 
 The workflow also publishes coverage output as build artifacts on each run:
 
-- `coverage-report-node-18.x` contains the full `coverage/` directory
-- `coverage-html-report-node-18.x` contains the HTML report from `coverage/lcov-report/`
+- `coverage-report-node-20.x` contains the full `coverage/` directory
+- `coverage-html-report-node-20.x` contains the HTML report from `coverage/lcov-report/`
 
 Open the workflow run in the Actions tab and download the artifact from the run summary page.
 

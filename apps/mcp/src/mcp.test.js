@@ -49,3 +49,34 @@ test('MCP server handles generate_data_from_spec tool call', () => {
   const payload = JSON.parse(response?.result?.content?.[0]?.text || '{}');
   assert.equal(payload.ok, true);
 });
+
+test('MCP server accepts key/value style textSpec for faker rules', () => {
+  const scriptPath = path.resolve('src/index.js');
+  const callRequest = `${JSON.stringify({
+    jsonrpc: '2.0',
+    id: 3,
+    method: 'tools/call',
+    params: {
+      name: 'generate_data_from_spec',
+      arguments: {
+        textSpec: 'first_name: faker.person.firstName()\nlast_name: person.lastName',
+        rowCount: 2,
+        outputFormat: 'json',
+      },
+    },
+  })}\n`;
+
+  const output = execFileSync(process.execPath, [scriptPath], {
+    input: callRequest,
+    encoding: 'utf8',
+    cwd: path.resolve('.'),
+  });
+
+  const line = firstJsonLine(output);
+  assert.ok(line);
+  const response = JSON.parse(line);
+  const payload = JSON.parse(response?.result?.content?.[0]?.text || '{}');
+  assert.equal(payload.ok, true);
+  assert.deepEqual(payload.headers, ['first_name', 'last_name']);
+  assert.equal(payload.rows.length, 2);
+});

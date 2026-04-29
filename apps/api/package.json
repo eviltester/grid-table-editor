@@ -1,0 +1,27 @@
+{
+  "name": "@anywaydata/api",
+  "version": "0.1.0",
+  "type": "module",
+  "private": false,
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "src",
+    "Dockerfile"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "node -e \"console.log('api: no build step')\"",
+    "start": "node ./src/index.js",
+    "test": "node --test ./src/*.test.js"
+  },
+  "dependencies": {
+    "@anywaydata/core": "file:../../packages/core",
+    "express": "^4.21.2",
+    "swagger-ui-express": "^5.0.1"
+  }
+}

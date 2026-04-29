@@ -1,0 +1,14 @@
+version: '3.9'
+services:
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    ports:
+      - "3000:3000"
+  mcp:
+    build:
+      context: .
+      dockerfile: apps/mcp/Dockerfile
+    stdin_open: true
+    tty: true

@@ -20,6 +20,17 @@ test('validateSafeFakerRules rejects unsafe expression syntax', () => {
   assert.equal(result.ok, false);
 });
 
+test('validateSafeFakerRules rejects unknown faker commands in safe mode', () => {
+  const result = validateSafeFakerRules('Name\nfaker.person.madeUpMethod()');
+  assert.equal(result.ok, false);
+  assert.match(result.error, /Unknown faker command in safe mode/);
+});
+
+test('validateSafeFakerRules accepts known faker commands with literal args', () => {
+  const result = validateSafeFakerRules('Name\nperson.firstName("female")');
+  assert.equal(result.ok, true);
+});
+
 test('generateFromTextSpec rejects unsafe faker expressions by default', () => {
   const result = generateFromTextSpec({
     textSpec: 'Sentence\nhelpers.mustache("x", {count: () => `${this.number.int()}`})',

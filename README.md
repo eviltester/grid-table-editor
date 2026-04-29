@@ -152,6 +152,7 @@ Build for release - `npm run anywaydata:win`
 This repository now uses npm workspaces:
 
 - `packages/core` -> shared generation engine (`@anywaydata/core`)
+- `packages/core-ui` -> browser UI modules (`@anywaydata/core-ui`)
 - `packages/cli` -> CLI wrapper (`@anywaydata/cli`)
 - `apps/api` -> REST API (`@anywaydata/api`)
 - `apps/mcp` -> MCP server (`@anywaydata/mcp`)
@@ -168,6 +169,7 @@ Run workspace build/test orchestration from root:
 Run an individual workspace command:
 
 - `npm run test --workspace @anywaydata/core`
+- `npm run test --workspace @anywaydata/core-ui`
 - `npm run start --workspace @anywaydata/api`
 - `npm run start --workspace @anywaydata/mcp`
 
@@ -380,6 +382,7 @@ or minor / major / exact like 1.2.3
 Publish a single workspace package manually:
 
 - `npm publish --workspace @anywaydata/core`
+- `npm publish --workspace @anywaydata/core-ui`
 - `npm publish --workspace @anywaydata/cli`
 
 ## Docker API

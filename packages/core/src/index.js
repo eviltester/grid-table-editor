@@ -1,9 +1,10 @@
 import { faker } from '@faker-js/faker';
 import RandExp from 'randexp';
 import Papa from 'papaparse';
-import { TestDataGenerator } from '../../../js/data_generation/testDataGenerator.js';
-import { GenericDataTable } from '../../../js/data_formats/generic-data-table.js';
-import { Exporter } from '../../../js/grid/exporter.js';
+import { TestDataGenerator } from '../js/data_generation/testDataGenerator.js';
+import { GenericDataTable } from '../js/data_formats/generic-data-table.js';
+import { Exporter } from '../js/grid/exporter.js';
+import { KNOWN_FAKER_COMMANDS } from '../js/faker/faker-commands.js';
 
 const DEFAULT_FORMAT = 'json';
 const SUPPORTED_FORMATS = [
@@ -39,6 +40,15 @@ function looksLikeFakerRule(ruleLine) {
   return /^(faker\.)?[A-Za-z][A-Za-z0-9_]*(\.[A-Za-z][A-Za-z0-9_]*)+/.test(ruleLine);
 }
 
+function getFakerCommandFromRule(ruleLine) {
+  const trimmed = String(ruleLine || '').trim();
+  const commandMatch = trimmed.match(/^((?:faker\.)?[A-Za-z][A-Za-z0-9_]*(?:\.[A-Za-z][A-Za-z0-9_]*)+)/);
+  if (!commandMatch) {
+    return '';
+  }
+  return commandMatch[1].replace(/^faker\./, '');
+}
+
 function hasDisallowedFakerSyntax(ruleLine) {
   return /=>|\bfunction\b|\bthis\b|;|`|\?\?|\bnew\b|process|globalThis|constructor|__proto__|prototype/.test(ruleLine);
 }
@@ -65,9 +75,19 @@ function hasSafeFakerArguments(ruleLine) {
 
 export function validateSafeFakerRules(textSpec) {
   const ruleLines = extractRuleLines(textSpec);
+  const knownCommandSet = new Set(KNOWN_FAKER_COMMANDS.filter((command) => command !== 'RegEx'));
+
   for (const ruleLine of ruleLines) {
     if (!looksLikeFakerRule(ruleLine)) {
       continue;
+    }
+
+    const fakerCommand = getFakerCommandFromRule(ruleLine);
+    if (!knownCommandSet.has(fakerCommand)) {
+      return {
+        ok: false,
+        error: `Unknown faker command in safe mode: ${fakerCommand}. Use --unsafe-faker-expressions to opt in.`,
+      };
     }
 
     if (hasDisallowedFakerSyntax(ruleLine) || !hasSafeFakerArguments(ruleLine)) {
@@ -87,6 +107,10 @@ function createExporter() {
     getGridAsGenericDataTable: () => new GenericDataTable(),
     getHeadersFromGrid: () => [],
   });
+}
+
+export function createExporterForDefaults() {
+  return createExporter();
 }
 
 function tableToRows(dataTable) {
@@ -196,3 +220,4 @@ export function generateFromTextSpec({
 }
 
 export { SUPPORTED_FORMATS };
+export { Exporter, GenericDataTable };

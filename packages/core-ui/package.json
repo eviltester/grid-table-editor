@@ -1,0 +1,26 @@
+{
+  "name": "@anywaydata/core-ui",
+  "version": "0.1.0",
+  "type": "module",
+  "private": false,
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./script": "./js/script.js",
+    "./generator-script": "./js/generator-script.js"
+  },
+  "files": [
+    "src",
+    "js"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "node -e \"console.log('core-ui: no build step')\"",
+    "test": "node -e \"console.log('core-ui: no tests')\""
+  },
+  "dependencies": {
+    "@anywaydata/core": "^0.1.0"
+  }
+}

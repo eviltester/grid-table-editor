@@ -1,10 +1,12 @@
 import express from 'express';
-import { generateFromTextSpec, SUPPORTED_FORMATS } from '@anywaydata/core';
+import {
+  createExporterForDefaults as createCoreExporterForDefaults,
+  generateFromTextSpec,
+  SUPPORTED_FORMATS,
+} from '@anywaydata/core';
 import { fileURLToPath } from 'node:url';
 import swaggerUi from 'swagger-ui-express';
 import { openApiDocument } from './openapi.js';
-import { Exporter } from '../../../js/grid/exporter.js';
-import { GenericDataTable } from '../../../js/data_formats/generic-data-table.js';
 
 const app = express();
 app.use(express.json({ limit: '1mb' }));
@@ -118,10 +120,7 @@ const UI_OPTION_TIPS_BY_FORMAT = {
 };
 
 function createExporterForDefaults() {
-  return new Exporter({
-    getGridAsGenericDataTable: () => new GenericDataTable(),
-    getHeadersFromGrid: () => [],
-  });
+  return createCoreExporterForDefaults();
 }
 
 function contentTypeForFormat(outputFormat) {

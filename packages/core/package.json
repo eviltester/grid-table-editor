@@ -5,10 +5,17 @@
   "private": false,
   "main": "./src/index.js",
   "exports": {
-    ".": "./src/index.js"
+    ".": "./src/index.js",
+    "./faker/*": "./js/faker/*",
+    "./data_formats/*": "./js/data_formats/*",
+    "./data_generation/*": "./js/data_generation/*",
+    "./grid/*": "./js/grid/*",
+    "./utils/*": "./js/utils/*",
+    "./libs/*": "./js/libs/*"
   },
   "files": [
-    "src"
+    "src",
+    "js"
   ],
   "publishConfig": {
     "access": "public"

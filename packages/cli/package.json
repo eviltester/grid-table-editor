@@ -21,7 +21,7 @@
     "test": "node ./src/index.js --help"
   },
   "dependencies": {
-    "@anywaydata/core": "file:../core",
+    "@anywaydata/core": "^0.1.0",
     "yargs": "^17.7.2"
   }
 }

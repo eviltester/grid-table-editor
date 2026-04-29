@@ -1,0 +1,39 @@
+import { ensureGridLibraryLoaded } from './gui_components/data-grid-editor/grid-library-loader.js';
+import { DataGeneratorPage } from './gui_components/data-generator-page.js';
+import { faker } from 'https://cdn.skypack.dev/@faker-js/faker@v9.7.0';
+
+async function bootstrapGeneratorPage({
+  documentObj = document,
+  ensureGridLibraryLoadedFn = ensureGridLibraryLoaded,
+  DataGeneratorPageClass = DataGeneratorPage,
+  fakerInstance = faker,
+} = {}) {
+  try {
+    await ensureGridLibraryLoadedFn({ engine: 'tabulator', document: documentObj });
+  } catch (error) {
+    console.error('Failed to load tabulator library', error);
+    return;
+  }
+
+  const appRoot = documentObj.getElementById('generator-app');
+  const page = new DataGeneratorPageClass({
+    parentElement: appRoot,
+    documentObj,
+    faker: fakerInstance,
+    RandExp: globalThis?.RandExp,
+  });
+  page.init();
+
+  const loadingMessage = documentObj.getElementById('generator-initial-load');
+  if (loadingMessage) {
+    loadingMessage.remove();
+  }
+}
+
+if (typeof document !== 'undefined') {
+  document.addEventListener('DOMContentLoaded', async () => {
+    await bootstrapGeneratorPage();
+  });
+}
+
+export { bootstrapGeneratorPage };

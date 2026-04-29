@@ -20,6 +20,6 @@
     "test": "node --test ./src/*.test.js"
   },
   "dependencies": {
-    "@anywaydata/core": "file:../../packages/core"
+    "@anywaydata/core": "^0.1.0"
   }
 }

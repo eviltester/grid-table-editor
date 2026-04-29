@@ -5,7 +5,7 @@ const { pathToFileURL } = require('url');
 
 const repoRoot = path.resolve(__dirname, '..');
 const fakerDistDir = path.join(repoRoot, 'node_modules', '@faker-js', 'faker', 'dist');
-const outputFile = path.join(repoRoot, 'js', 'gui_components', 'faker-command-help-metadata.js');
+const outputFile = path.join(repoRoot, 'packages', 'core', 'js', 'faker', 'faker-command-help-metadata.js');
 
 function sanitizeDocLine(line) {
   return line
@@ -431,7 +431,7 @@ function formatExampleValue(value) {
 }
 
 function loadKnownCommandsFromSource() {
-  const sourcePath = path.join(repoRoot, 'js', 'gui_components', 'faker-commands.js');
+  const sourcePath = path.join(repoRoot, 'packages', 'core', 'js', 'faker', 'faker-commands.js');
   const sourceText = fs.readFileSync(sourcePath, 'utf8');
   const arrayMatch = sourceText.match(/const KNOWN_FAKER_COMMANDS = \[([\s\S]*?)\];/);
   if (!arrayMatch) {

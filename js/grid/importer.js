@@ -14,7 +14,7 @@ class Importer {
     this.gridExtensions = gridExtension;
 
     this.options = {};
-    this.options['csv'] = new DelimiterOptions('"');
+    this.options['csv'] = new DelimiterOptions(',');
     this.options['dsv'] = new DelimiterOptions('\t');
     // this.options["asciitable"] = new AsciiTableOptions();
     this.options['markdown'] = new MarkdownOptions();

@@ -403,6 +403,27 @@ Notes:
 - Connect from your machine at `http://localhost:8082`.
 - Inside the container, the app still listens on port `3000`.
 
+## Docker Web App
+
+Build the browser app image from repo root:
+
+- `docker build -f apps/web/Dockerfile -t anywaydata-web .`
+
+Run the browser app container:
+
+- `docker run --rm -p 8080:80 anywaydata-web`
+
+Then open:
+
+- `http://localhost:8080/`
+- `http://localhost:8080/app.html`
+- `http://localhost:8080/generator.html`
+
+Notes:
+
+- This image serves the static browser app assets only.
+- It does not build or include Docusaurus (`docs-src` pipeline).
+
 ## Docker MCP
 
 Build images from repo root:

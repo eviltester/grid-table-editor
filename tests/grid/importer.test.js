@@ -1,6 +1,6 @@
 import Papa from 'papaparse';
 import { Importer } from '../../js/grid/importer.js';
-import { GenericDataTable } from '../../js/data_formats/generic-data-table.js';
+import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 
 beforeAll(() => {
   global.Papa = Papa;

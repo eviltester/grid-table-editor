@@ -1,4 +1,4 @@
-import { JavaConvertorOptions } from '../../data_formats/java-convertor.js';
+import { JavaConvertorOptions } from '@anywaydata/core/data_formats/java-convertor.js';
 import { HtmlDataValues } from './html-options-data-utils.js';
 
 class JavaOptionsPanel {

@@ -1,5 +1,5 @@
-import { CsvExporter, DsvCellFormatter, DsvExporter, TsvExporter } from '../../js/data_formats/dsv-exporter.js';
-import { GenericDataTable } from '../../js/data_formats/generic-data-table.js';
+import { CsvExporter, DsvCellFormatter, DsvExporter, TsvExporter } from '@anywaydata/core/data_formats/dsv-exporter.js';
+import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 
 function createTable(headers, rows) {
   const table = new GenericDataTable();

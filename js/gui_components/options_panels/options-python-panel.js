@@ -1,4 +1,4 @@
-import { PythonConvertorOptions } from '../../data_formats/python-convertor.js';
+import { PythonConvertorOptions } from '@anywaydata/core/data_formats/python-convertor.js';
 import { HtmlDataValues } from './html-options-data-utils.js';
 
 class PythonOptionsPanel {

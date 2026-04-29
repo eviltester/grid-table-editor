@@ -1,5 +1,5 @@
-import { CsvConvertor } from '../../js/data_formats/csv-convertor.js';
-import { GenericDataTable } from '../../js/data_formats/generic-data-table.js';
+import { CsvConvertor } from '@anywaydata/core/data_formats/csv-convertor.js';
+import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 
 function createTable(headers, rows) {
   const table = new GenericDataTable();

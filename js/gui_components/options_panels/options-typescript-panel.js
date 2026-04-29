@@ -1,4 +1,4 @@
-import { TypeScriptConvertorOptions } from '../../data_formats/typescript-convertor.js';
+import { TypeScriptConvertorOptions } from '@anywaydata/core/data_formats/typescript-convertor.js';
 import { HtmlDataValues } from './html-options-data-utils.js';
 
 class TypeScriptOptionsPanel {

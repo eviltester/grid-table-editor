@@ -1,6 +1,6 @@
 import { JSDOM } from 'jsdom';
 import { JavascriptOptionsPanel } from '../../js/gui_components/options_panels/options-javascript-panel.js';
-import { JavascriptConvertorOptions } from '../../js/data_formats/javascript-convertor.js';
+import { JavascriptConvertorOptions } from '@anywaydata/core/data_formats/javascript-convertor.js';
 
 describe('JavascriptOptionsPanel', () => {
   let dom;

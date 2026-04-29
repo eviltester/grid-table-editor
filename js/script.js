@@ -5,7 +5,7 @@ import { ExtendedDataGrid, activeGridEngine } from './gui_components/data-grid-e
 import { ensureGridLibraryLoaded } from './gui_components/data-grid-editor/grid-library-loader.js';
 import { TabbedTextControl } from './gui_components/tabbed-text-control.js';
 import { ImportExportControls } from './gui_components/import-export-controls.js';
-import { GenericDataTable } from './data_formats/generic-data-table.js';
+import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 
 var importer, exporter;
 var mainDataGrid;

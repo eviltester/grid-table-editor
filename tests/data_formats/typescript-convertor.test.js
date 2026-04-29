@@ -1,5 +1,5 @@
-import { GenericDataTable } from '../../js/data_formats/generic-data-table.js';
-import { TypeScriptConvertor, TypeScriptConvertorOptions } from '../../js/data_formats/typescript-convertor.js';
+import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
+import { TypeScriptConvertor, TypeScriptConvertorOptions } from '@anywaydata/core/data_formats/typescript-convertor.js';
 
 const basicTable = new GenericDataTable();
 basicTable.setHeaders(['name', 'age']);

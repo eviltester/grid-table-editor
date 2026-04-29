@@ -1,5 +1,5 @@
-import { GenericDataTable } from '../../js/data_formats/generic-data-table.js';
-import { GherkinConvertor, GherkinOptions } from '../../js/data_formats/gherkin-convertor.js';
+import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
+import { GherkinConvertor, GherkinOptions } from '@anywaydata/core/data_formats/gherkin-convertor.js';
 
 describe('can get values from a markdown table row', () => {
   test('even if malformed with no start', () => {

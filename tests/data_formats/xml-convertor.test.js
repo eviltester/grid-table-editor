@@ -1,6 +1,6 @@
 import { JSDOM } from 'jsdom';
-import { GenericDataTable } from '../../js/data_formats/generic-data-table.js';
-import { XmlConvertor, XmlConvertorOptions } from '../../js/data_formats/xml-convertor.js';
+import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
+import { XmlConvertor, XmlConvertorOptions } from '@anywaydata/core/data_formats/xml-convertor.js';
 
 function createTable(headers, rows) {
   const table = new GenericDataTable();

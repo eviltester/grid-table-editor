@@ -1,4 +1,4 @@
-import { GenericDataTable } from '../../../data_formats/generic-data-table.js';
+import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 import { TabulatorHelper } from './tabulator-helpers.js';
 /*
     A wrapper for Tabulature to conform to the main abstraction

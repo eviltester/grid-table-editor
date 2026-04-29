@@ -1,18 +1,18 @@
-import { GherkinConvertor, GherkinOptions } from '../data_formats/gherkin-convertor.js';
-import { MarkdownConvertor, MarkdownOptions } from '../data_formats/markdown-convertor.js';
-import { HtmlConvertor, HtmlConvertorOptions } from '../data_formats/html-convertor.js';
-import { JsonConvertor, JsonConvertorOptions } from '../data_formats/json-convertor.js';
-import { JavaConvertor, JavaConvertorOptions } from '../data_formats/java-convertor.js';
-import { JavascriptConvertor, JavascriptConvertorOptions } from '../data_formats/javascript-convertor.js';
-import { PythonConvertor, PythonConvertorOptions } from '../data_formats/python-convertor.js';
-import { TypeScriptConvertor, TypeScriptConvertorOptions } from '../data_formats/typescript-convertor.js';
-import { XmlConvertor, XmlConvertorOptions } from '../data_formats/xml-convertor.js';
-import { SqlConvertor, SqlConvertorOptions } from '../data_formats/sql-convertor.js';
-import { CsvConvertor } from '../data_formats/csv-convertor.js';
-import { DelimiterConvertor } from '../data_formats/delimiter-convertor.js';
-import { DelimiterOptions } from '../data_formats/delimiter-options.js';
-import { AsciiTableConvertor, AsciiTableOptions } from '../data_formats/asciitable-convertor.js';
-import { fileTypes } from '../data_formats/file-types.js';
+import { GherkinConvertor, GherkinOptions } from '@anywaydata/core/data_formats/gherkin-convertor.js';
+import { MarkdownConvertor, MarkdownOptions } from '@anywaydata/core/data_formats/markdown-convertor.js';
+import { HtmlConvertor, HtmlConvertorOptions } from '@anywaydata/core/data_formats/html-convertor.js';
+import { JsonConvertor, JsonConvertorOptions } from '@anywaydata/core/data_formats/json-convertor.js';
+import { JavaConvertor, JavaConvertorOptions } from '@anywaydata/core/data_formats/java-convertor.js';
+import { JavascriptConvertor, JavascriptConvertorOptions } from '@anywaydata/core/data_formats/javascript-convertor.js';
+import { PythonConvertor, PythonConvertorOptions } from '@anywaydata/core/data_formats/python-convertor.js';
+import { TypeScriptConvertor, TypeScriptConvertorOptions } from '@anywaydata/core/data_formats/typescript-convertor.js';
+import { XmlConvertor, XmlConvertorOptions } from '@anywaydata/core/data_formats/xml-convertor.js';
+import { SqlConvertor, SqlConvertorOptions } from '@anywaydata/core/data_formats/sql-convertor.js';
+import { CsvConvertor } from '@anywaydata/core/data_formats/csv-convertor.js';
+import { DelimiterConvertor } from '@anywaydata/core/data_formats/delimiter-convertor.js';
+import { DelimiterOptions } from '@anywaydata/core/data_formats/delimiter-options.js';
+import { AsciiTableConvertor, AsciiTableOptions } from '@anywaydata/core/data_formats/asciitable-convertor.js';
+import { fileTypes } from '@anywaydata/core/data_formats/file-types.js';
 import { PapaWrappa } from '../utils/papawrappa.js';
 
 class Exporter {

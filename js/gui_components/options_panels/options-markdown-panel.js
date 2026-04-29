@@ -1,4 +1,4 @@
-import { MarkdownOptions } from '../../data_formats/markdown-convertor.js';
+import { MarkdownOptions } from '@anywaydata/core/data_formats/markdown-convertor.js';
 import { getNumberArrayFrom } from '../../utils/number-convertor.js';
 import { HtmlDataValues } from './html-options-data-utils.js';
 

@@ -1,5 +1,5 @@
-import { GenericDataTable } from '../../js/data_formats/generic-data-table.js';
-import { JsonConvertor, JsonConvertorOptions } from '../../js/data_formats/json-convertor.js';
+import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
+import { JsonConvertor, JsonConvertorOptions } from '@anywaydata/core/data_formats/json-convertor.js';
 
 describe('Can use options to configure json output', () => {
   const basicInputTable = new GenericDataTable();

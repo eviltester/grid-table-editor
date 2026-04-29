@@ -1,6 +1,6 @@
 import { JSDOM } from 'jsdom';
 import { CsvDelimitedOptions } from '../../js/gui_components/options_panels/options-csv-delimited-controls.js';
-import { DelimiterOptions } from '../../js/data_formats/delimiter-options.js';
+import { DelimiterOptions } from '@anywaydata/core/data_formats/delimiter-options.js';
 
 describe('CsvDelimitedOptions', () => {
   let dom;

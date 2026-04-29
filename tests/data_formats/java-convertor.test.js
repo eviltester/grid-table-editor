@@ -1,5 +1,5 @@
-import { GenericDataTable } from '../../js/data_formats/generic-data-table.js';
-import { JavaConvertor, JavaConvertorOptions } from '../../js/data_formats/java-convertor.js';
+import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
+import { JavaConvertor, JavaConvertorOptions } from '@anywaydata/core/data_formats/java-convertor.js';
 
 const basicTable = new GenericDataTable();
 basicTable.setHeaders(['name', 'age']);

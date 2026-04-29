@@ -1,4 +1,4 @@
-import { AsciiTableConvertor, AsciiTableOptions } from '../../data_formats/asciitable-convertor.js';
+import { AsciiTableConvertor, AsciiTableOptions } from '@anywaydata/core/data_formats/asciitable-convertor.js';
 import { HtmlDataValues } from './html-options-data-utils.js';
 
 class AsciiTableOptionsPanel {

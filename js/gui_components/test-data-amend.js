@@ -1,4 +1,4 @@
-import { GenericDataTable } from '../data_formats/generic-data-table.js';
+import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 
 const TEST_DATA_MODES = Object.freeze({
   NEW_TABLE: 'new-table',

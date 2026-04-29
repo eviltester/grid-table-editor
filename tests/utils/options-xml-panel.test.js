@@ -1,6 +1,6 @@
 import { JSDOM } from 'jsdom';
 import { XmlOptionsPanel } from '../../js/gui_components/options_panels/options-xml-panel.js';
-import { XmlConvertorOptions } from '../../js/data_formats/xml-convertor.js';
+import { XmlConvertorOptions } from '@anywaydata/core/data_formats/xml-convertor.js';
 
 describe('XmlOptionsPanel', () => {
   let dom;

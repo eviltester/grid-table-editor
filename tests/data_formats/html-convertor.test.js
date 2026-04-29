@@ -1,5 +1,5 @@
-import { GenericDataTable } from '../../js/data_formats/generic-data-table';
-import { HtmlConvertor, HtmlConvertorOptions, Indent } from '../../js/data_formats/html-convertor';
+import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table';
+import { HtmlConvertor, HtmlConvertorOptions, Indent } from '@anywaydata/core/data_formats/html-convertor';
 import { JSDOM } from 'jsdom';
 
 describe('Can use indent class as expected', () => {

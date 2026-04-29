@@ -1,4 +1,4 @@
-import { HtmlConvertorOptions } from '../../data_formats/html-convertor.js';
+import { HtmlConvertorOptions } from '@anywaydata/core/data_formats/html-convertor.js';
 import { HtmlDataValues } from './html-options-data-utils.js';
 
 class HtmlOptionsPanel {

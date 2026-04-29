@@ -1,4 +1,4 @@
-import { XmlConvertorOptions } from '../../data_formats/xml-convertor.js';
+import { XmlConvertorOptions } from '@anywaydata/core/data_formats/xml-convertor.js';
 import { HtmlDataValues } from './html-options-data-utils.js';
 
 class XmlOptionsPanel {

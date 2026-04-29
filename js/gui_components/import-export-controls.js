@@ -13,7 +13,7 @@ import { XmlOptionsPanel } from './options_panels/options-xml-panel.js';
 import { SqlOptionsPanel } from './options_panels/options-sql-panel.js';
 import { GherkinOptionsPanel } from './options_panels/options-gherkin-panel.js';
 import { HtmlOptionsPanel } from './options_panels/options-html-panel.js';
-import { GenericDataTable } from '../data_formats/generic-data-table.js';
+import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 
 class ImportExportControls {
   constructor() {

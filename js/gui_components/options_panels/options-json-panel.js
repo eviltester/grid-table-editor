@@ -1,5 +1,5 @@
-import { JavascriptConvertorOptions } from '../../data_formats/javascript-convertor.js';
-import { JsonConvertorOptions } from '../../data_formats/json-convertor.js';
+import { JavascriptConvertorOptions } from '@anywaydata/core/data_formats/javascript-convertor.js';
+import { JsonConvertorOptions } from '@anywaydata/core/data_formats/json-convertor.js';
 import { HtmlDataValues } from './html-options-data-utils.js';
 
 class JsonOptionsPanel {

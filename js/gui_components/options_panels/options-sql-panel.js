@@ -1,4 +1,4 @@
-import { SqlConvertorOptions } from '../../data_formats/sql-convertor.js';
+import { SqlConvertorOptions } from '@anywaydata/core/data_formats/sql-convertor.js';
 import { HtmlDataValues } from './html-options-data-utils.js';
 
 class SqlOptionsPanel {

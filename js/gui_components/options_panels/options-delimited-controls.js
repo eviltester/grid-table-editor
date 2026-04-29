@@ -1,4 +1,4 @@
-import { DelimiterOptions } from '../../data_formats/delimiter-options.js';
+import { DelimiterOptions } from '@anywaydata/core/data_formats/delimiter-options.js';
 import { HtmlDataValues } from './html-options-data-utils.js';
 
 class DelimitedOptions {

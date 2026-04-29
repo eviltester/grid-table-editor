@@ -1,4 +1,4 @@
-import { GherkinOptions } from '../../data_formats/gherkin-convertor.js';
+import { GherkinOptions } from '@anywaydata/core/data_formats/gherkin-convertor.js';
 import { HtmlDataValues } from './html-options-data-utils.js';
 
 class GherkinOptionsPanel {

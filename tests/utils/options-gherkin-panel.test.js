@@ -1,6 +1,6 @@
 import { JSDOM } from 'jsdom';
 import { GherkinOptionsPanel } from '../../js/gui_components/options_panels/options-gherkin-panel.js';
-import { GherkinOptions } from '../../js/data_formats/gherkin-convertor.js';
+import { GherkinOptions } from '@anywaydata/core/data_formats/gherkin-convertor.js';
 
 describe('GherkinOptionsPanel', () => {
   let dom;

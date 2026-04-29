@@ -1,4 +1,4 @@
-import { GenericDataTable } from '../../../data_formats/generic-data-table.js';
+import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 /*
     A wrapper for AG Grid that makes it easier to add new columns
     and perform high level operations with the grid that we need

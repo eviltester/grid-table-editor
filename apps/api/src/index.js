@@ -269,13 +269,27 @@ function runGeneration(payload = {}) {
       ? getDefaultOptionsForFormat(concreteOutputFormat)
       : sanitiseOptionsForFormat(concreteOutputFormat, options);
 
+  const parsedSeed = parseSeed(seed);
+  if (!parsedSeed.ok) {
+    return {
+      ok: false,
+      ...toErrorResponse(
+        {
+          errors: [parsedSeed.error],
+          diagnostics: {},
+        },
+        400
+      ),
+    };
+  }
+
   try {
     const result = generateFromTextSpec({
       textSpec,
       rowCount,
       outputFormat: concreteOutputFormat,
       options: effectiveOptions,
-      seed,
+      seed: parsedSeed.seed,
     });
     if (!result?.ok) {
       return { ok: false, ...toErrorResponse(result, 400) };
@@ -293,6 +307,19 @@ function runGeneration(payload = {}) {
       ),
     };
   }
+}
+
+function parseSeed(seed) {
+  if (seed === undefined || seed === null || seed === '') {
+    return { ok: true, seed: undefined };
+  }
+
+  const parsed = Number(seed);
+  if (!Number.isFinite(parsed)) {
+    return { ok: false, error: 'seed must be a finite number when provided.' };
+  }
+
+  return { ok: true, seed: parsed };
 }
 
 function parseResponseFormat(value) {

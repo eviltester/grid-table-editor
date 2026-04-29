@@ -101,3 +101,31 @@ test('/v1/generate/fromschema rejects invalid outputFormat', async () => {
 
   assert.equal(response.status, 400);
 });
+
+test('/v1/generate/fromschema accepts seed from query string and produces deterministic faker output', async () => {
+  const path = '/v1/generate/fromschema?rowCount=1&seed=12345';
+  const headers = { 'content-type': 'text/plain' };
+  const body = 'firstName\nperson.firstName';
+
+  const responseA = await fetch(url(path), { method: 'POST', headers, body });
+  const responseB = await fetch(url(path), { method: 'POST', headers, body });
+
+  assert.equal(responseA.status, 200);
+  assert.equal(responseB.status, 200);
+
+  const payloadA = await responseA.json();
+  const payloadB = await responseB.json();
+  assert.deepEqual(payloadA.rows, payloadB.rows);
+});
+
+test('/v1/generate/fromschema rejects invalid seed query value', async () => {
+  const response = await fetch(url('/v1/generate/fromschema?rowCount=1&seed=not-a-number'), {
+    method: 'POST',
+    headers: { 'content-type': 'text/plain' },
+    body: 'iata\nairline.airline.iataCode',
+  });
+
+  assert.equal(response.status, 400);
+  const payload = await response.json();
+  assert.match(payload.errors?.[0] || '', /seed must be a finite number/i);
+});

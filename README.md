@@ -171,6 +171,42 @@ Run an individual workspace command:
 - `npm run start --workspace @anywaydata/api`
 - `npm run start --workspace @anywaydata/mcp`
 
+## npm CLI Usage (`@anywaydata/cli`)
+
+The npm CLI package is the workspace package `@anywaydata/cli` (separate from the Bun CLI in `cli/`).
+
+Install globally from npm:
+
+`npm install -g @anywaydata/cli`
+
+Or run without installing:
+
+`npx @anywaydata/cli --help`
+
+Show CLI help:
+
+`anywaydata --help`
+
+Generate output to console:
+
+`anywaydata generate -i input.txt -n 10 -f csv`
+
+Generate output to a file:
+
+`anywaydata generate -i input.txt -n 10 -f json -o output.json`
+
+Run in test mode (forces a single generated row and prints diagnostics):
+
+`anywaydata generate -i input.txt -n 10 -f markdown -t`
+
+Supported options:
+
+- `-i, --inputfile` path to the input text spec (required)
+- `-n, --numberOfLines` number of rows to generate (default `1`)
+- `-f, --format` output format (default `csv`)
+- `-o, --outputfile` write output to file instead of stdout
+- `-t, --testMode` enable diagnostics mode and generate one row
+
 ## REST API Quick Start
 
 Start the API:

@@ -53,6 +53,21 @@ class GherkinConvertor {
     this.options.mergeOptions(newOptions);
   }
 
+  unescapeGherkinCellValue(value) {
+    let output = '';
+    for (let index = 0; index < value.length; index++) {
+      const char = value[index];
+      const next = index + 1 < value.length ? value[index + 1] : '';
+      if (char === '\\' && (next === '\\' || next === '|')) {
+        output += next;
+        index++;
+        continue;
+      }
+      output += char;
+    }
+    return output;
+  }
+
   getValidTableCellValueFromInputFormatCell(contents) {
     let actualContents = contents.trim();
 
@@ -60,7 +75,7 @@ class GherkinConvertor {
     actualContents = actualContents.replaceAll('&#124;', '\\|');
 
     // handle any special character conversions for gherkin
-    actualContents = actualContents.replaceAll('\\\\', '\\').replaceAll('\\|', '|');
+    actualContents = this.unescapeGherkinCellValue(actualContents);
 
     return actualContents;
   }

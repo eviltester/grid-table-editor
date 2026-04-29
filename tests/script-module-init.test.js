@@ -48,24 +48,24 @@ describe('script module initialization', () => {
       getHeadersFromGrid: jest.fn(() => []),
     };
 
-    jest.doMock('../js/grid/importer.js', () => ({
+    jest.doMock('@anywaydata/core/grid/importer.js', () => ({
       Importer: class Importer {
         constructor(extras) {
           this.extras = extras;
         }
       },
     }));
-    jest.doMock('../js/grid/exporter.js', () => ({
+    jest.doMock('@anywaydata/core/grid/exporter.js', () => ({
       Exporter: class Exporter {
         constructor(extras) {
           this.extras = extras;
         }
       },
     }));
-    jest.doMock('../js/gui_components/testdatadefn.js', () => ({
+    jest.doMock('../packages/core-ui/js/gui_components/testdatadefn.js', () => ({
       enableTestDataGenerationInterface,
     }));
-    jest.doMock('../js/gui_components/data-grid-editor/main-display-grid.js', () => ({
+    jest.doMock('../packages/core-ui/js/gui_components/data-grid-editor/main-display-grid.js', () => ({
       activeGridEngine: 'tabulator',
       ExtendedDataGrid: class ExtendedDataGrid {
         createChildGrid() {}
@@ -75,15 +75,15 @@ describe('script module initialization', () => {
         sizeColumnsToFit() {}
       },
     }));
-    jest.doMock('../js/gui_components/data-grid-editor/grid-library-loader.js', () => ({
+    jest.doMock('../packages/core-ui/js/gui_components/data-grid-editor/grid-library-loader.js', () => ({
       ensureGridLibraryLoaded,
     }));
-    jest.doMock('../js/gui_components/tabbed-text-control.js', () => ({
+    jest.doMock('../packages/core-ui/js/gui_components/tabbed-text-control.js', () => ({
       TabbedTextControl: class TabbedTextControl {
         addToGui() {}
       },
     }));
-    jest.doMock('../js/gui_components/import-export-controls.js', () => ({
+    jest.doMock('../packages/core-ui/js/gui_components/import-export-controls.js', () => ({
       ImportExportControls: class ImportExportControls {
         addHTMLtoGui = addHTMLtoGui;
         setExporter = setExporter;

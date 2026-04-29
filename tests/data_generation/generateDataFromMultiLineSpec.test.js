@@ -48,17 +48,15 @@ describe('TestDataGenerator meets Acceptance Criteria', () => {
       expect(generator.testDataRules().length).toBe(1);
     });
 
-    test('can have a spec with empty value for column', () => {
+    test('reports error when a spec has an empty value for column', () => {
       const generator = new TestDataGenerator(faker, RandExp);
 
       generator.importSpec('Column1\n');
       generator.compile();
 
-      expect(generator.isValid()).toBe(true);
-      expect(generator.testDataRules()[0].name).toBe('Column1');
-      expect(generator.testDataRules()[0].type).toBe('regex');
-      expect(generator.testDataRules()[0].ruleSpec).toBe('');
-      expect(generator.testDataRules().length).toBe(1);
+      expect(generator.isValid()).toBe(false);
+      expect(generator.errors()).toContain('ERROR: Missing Rule on line 2');
+      expect(generator.testDataRules().length).toBe(0);
     });
 
     test('can parse multi-column spec with faker, regex and literal', () => {
@@ -116,7 +114,7 @@ describe('TestDataGenerator meets Acceptance Criteria', () => {
       expect(data[1][0].match(/[A-Z]/g).length).toBe(1);
     });
 
-    test('can generate a field with empty string data', () => {
+    test('does not generate data when spec has empty field rule', () => {
       const generator = new TestDataGenerator(faker, RandExp);
       generator.importSpec('Column1\n');
 
@@ -124,7 +122,9 @@ describe('TestDataGenerator meets Acceptance Criteria', () => {
 
       const data = generator.generate(1);
 
-      expect(data).toStrictEqual([['Column1'], ['']]);
+      expect(generator.isValid()).toBe(false);
+      expect(generator.errors()).toContain('ERROR: Missing Rule on line 2');
+      expect(data).toStrictEqual([[], []]);
     });
 
     test('can generate data from a multi-column spec with faker, regex and literal', () => {

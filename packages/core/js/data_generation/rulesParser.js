@@ -38,7 +38,7 @@ export class RulesParser {
 
       const rule = defnLines[index + 1];
 
-      if (name.length === 0) {
+      if (rule.trim().length === 0) {
         this.errors.push(`ERROR: Missing Rule on line ${index + 2}`);
         return;
       }

@@ -42,7 +42,7 @@ let printableChars = {
     let result = '',
       length = 0;
 
-    for (const [nonPrintable, printable] of module.exports.partition(s)) {
+    for (const [nonPrintable, printable] of printableChars.partition(s)) {
       const text = Array.from(printable).slice(0, n - length); // Array.from solves the emoji problem as described here: http://blog.jonnew.com/posts/poo-dot-length-equals-two
       result += nonPrintable + text.join('');
       length += text.length;

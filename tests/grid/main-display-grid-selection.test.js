@@ -8,13 +8,13 @@ describe('Main display grid engine selection wrapper', () => {
     const agGridClass = class AgGridExtendedDataGrid {};
     const tabulatorClass = class TabulatorExtendedDataGrid {};
 
-    jest.doMock('../../js/gui_components/data-grid-editor/ag-grid/main-display-grid.js', () => ({
+    jest.doMock('../../packages/core-ui/js/gui_components/data-grid-editor/ag-grid/main-display-grid.js', () => ({
       ExtendedDataGrid: agGridClass,
     }));
-    jest.doMock('../../js/gui_components/data-grid-editor/tabulator/main-display-grid.js', () => ({
+    jest.doMock('../../packages/core-ui/js/gui_components/data-grid-editor/tabulator/main-display-grid.js', () => ({
       ExtendedDataGrid: tabulatorClass,
     }));
-    jest.doMock('../../js/gui_components/data-grid-editor/grid-engine.js', () => ({
+    jest.doMock('../../packages/core-ui/js/gui_components/data-grid-editor/grid-engine.js', () => ({
       GRID_ENGINE_AG_GRID: 'ag-grid',
       GRID_ENGINE_TABULATOR: 'tabulator',
       resolveGridEngine: jest.fn(() => engine),

@@ -11,7 +11,15 @@ class TestDataRules {
   }
 
   getRule(aName) {
-    const retRules = this.rules.filter((name) => name == aName.toLowerCase().trim());
+    const normalizedName = String(aName ?? '')
+      .toLowerCase()
+      .trim();
+    const retRules = this.rules.filter(
+      (rule) =>
+        String(rule.name ?? '')
+          .toLowerCase()
+          .trim() === normalizedName
+    );
     return retRules[0];
   }
 

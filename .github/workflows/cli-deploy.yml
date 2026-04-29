@@ -5,6 +5,8 @@ on:
       tag:
       commit:
         default: 'master'
+permissions:
+  contents: read
 jobs:
   bun-build:
     name: build-${{ matrix.name }}
@@ -75,6 +77,8 @@ jobs:
     name: create-draft-release
     needs: bun-build
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: download built zips
         uses: actions/download-artifact@v4

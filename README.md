@@ -346,28 +346,93 @@ Notes:
 
 Packages are configured with `publishConfig.access=public`.
 
+- `npm login`
+- `npm install`
+- `npm run verify:local`
+
 Versioning and release notes are managed with Changesets:
 
-1. `npx changeset`
-2. Commit the generated changeset file
-3. `npx changeset version`
-4. `npx changeset publish`
+- Create new changeset
+- `npx changeset`
+- Commit the generated changeset file
+- Bump version
+- `npx changeset version`
+- publish package
+- `npx changeset publish`
+
+## npm adhoc publish
+
+For manual one-off publish, set the version in that package’s `package.json` first, then publish.
+
+Bump version:
+
+- `npm version patch --workspace @anywaydata/cli`
+
+or minor / major / exact like 1.2.3
 
 Publish a single workspace package manually:
 
 - `npm publish --workspace @anywaydata/core`
 - `npm publish --workspace @anywaydata/cli`
 
-## Docker
+## Docker API
 
 Build images from repo root:
 
 - `docker build -f apps/api/Dockerfile -t anywaydata-api .`
-- `docker build -f apps/mcp/Dockerfile -t anywaydata-mcp .`
 
 Run the API container:
 
-`docker run --rm -p 3000:3000 anywaydata-api`
+`docker run --rm -p 8082:3000 anywaydata-api`
+
+Then sent requests to:
+
+`localhost:8082`
+
+e.g.
+
+- `GET http://localhost:8082/health`
+- `GET http://localhost:8082/v1/generate/options/csv`
+
+Notes:
+
+- `docker run`: starts a new container from an image.
+- `--rm`: automatically removes the container when it stops.
+- `-p 8082:3000`: maps host port `8082` to container port `3000`.
+- `anywaydata-api`: the image name to run.
+- Connect from your machine at `http://localhost:8082`.
+- Inside the container, the app still listens on port `3000`.
+
+## Docker MCP
+
+Build images from repo root:
+
+- `docker build -f apps/mcp/Dockerfile -t anywaydata-mcp .`
+
+Configure MCP with stdio for Docker
+
+Example MCP config:
+
+```json
+{
+  "mcpServers": {
+    "anywaydata-docker": {
+      "command": "docker",
+      "args": ["run", "--rm", "-i", "anywaydata-mcp"]
+    }
+  }
+}
+```
+
+Notes:
+
+- Build first: `d`ocker build -f apps/mcp/Dockerfile -t anywaydata-mcp .`
+- `-i` is required for stdio transport.
+- No `-p` mapping is needed for MCP.
+
+If you need local files available inside the container, add a bind mount, e.g. `-v /host/path:/workspace`.
+
+## Docker Compose
 
 Start both services with Compose:
 

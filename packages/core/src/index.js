@@ -1,4 +1,4 @@
-import { faker } from '@faker-js/faker';
+import { Faker, faker } from '@faker-js/faker';
 import RandExp from 'randexp';
 import { TestDataGenerator } from '../js/data_generation/testDataGenerator.js';
 import { GenericDataTable } from '../js/data_formats/generic-data-table.js';
@@ -108,6 +108,14 @@ function createExporter() {
   });
 }
 
+function createScopedFaker(seed) {
+  const scopedFaker = new Faker({ locale: faker.rawDefinitions });
+  if (typeof seed === 'number') {
+    scopedFaker.seed(seed);
+  }
+  return scopedFaker;
+}
+
 export function createExporterForDefaults() {
   return createExporter();
 }
@@ -160,11 +168,8 @@ export function generateFromTextSpec({
     }
   }
 
-  if (typeof seed === 'number') {
-    faker.seed(seed);
-  }
-
-  const generator = new TestDataGenerator(faker, RandExp);
+  const scopedFaker = createScopedFaker(seed);
+  const generator = new TestDataGenerator(scopedFaker, RandExp);
   generator.importSpec(textSpec);
   generator.compile();
 

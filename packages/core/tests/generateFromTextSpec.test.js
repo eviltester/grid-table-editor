@@ -59,3 +59,47 @@ test('generateFromTextSpec applies csv options via exporter pipeline', () => {
   assert.match(withHeader.rendered, /Name/);
   assert.doesNotMatch(withoutHeader.rendered, /Name/);
 });
+
+test('generateFromTextSpec is deterministic for repeated seeded runs', () => {
+  const payload = {
+    textSpec: 'firstName\nperson.firstName',
+    rowCount: 5,
+    outputFormat: 'json',
+    seed: 4242,
+  };
+
+  const first = generateFromTextSpec(payload);
+  const second = generateFromTextSpec(payload);
+
+  assert.equal(first.ok, true);
+  assert.equal(second.ok, true);
+  assert.deepEqual(first.rows, second.rows);
+});
+
+test('generateFromTextSpec isolates faker state across different seeds', () => {
+  const spec = 'firstName\nperson.firstName';
+  const seededA1 = generateFromTextSpec({ textSpec: spec, rowCount: 5, outputFormat: 'json', seed: 101 });
+  const seededB = generateFromTextSpec({ textSpec: spec, rowCount: 5, outputFormat: 'json', seed: 202 });
+  const seededA2 = generateFromTextSpec({ textSpec: spec, rowCount: 5, outputFormat: 'json', seed: 101 });
+
+  assert.equal(seededA1.ok, true);
+  assert.equal(seededB.ok, true);
+  assert.equal(seededA2.ok, true);
+  assert.deepEqual(seededA1.rows, seededA2.rows);
+  assert.notDeepEqual(seededA1.rows, seededB.rows);
+});
+
+test('generateFromTextSpec remains deterministic under overlapping seeded invocations', async () => {
+  const spec = 'firstName\nperson.firstName';
+  const run = async (seed, delayMs) => {
+    await new Promise((resolve) => setTimeout(resolve, delayMs));
+    return generateFromTextSpec({ textSpec: spec, rowCount: 5, outputFormat: 'json', seed });
+  };
+
+  const [a, b, aAgain] = await Promise.all([run(303, 0), run(404, 1), run(303, 2)]);
+  assert.equal(a.ok, true);
+  assert.equal(b.ok, true);
+  assert.equal(aAgain.ok, true);
+  assert.deepEqual(a.rows, aAgain.rows);
+  assert.notDeepEqual(a.rows, b.rows);
+});

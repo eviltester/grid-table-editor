@@ -1,6 +1,5 @@
 import { faker } from '@faker-js/faker';
 import RandExp from 'randexp';
-import Papa from 'papaparse';
 import { TestDataGenerator } from '../js/data_generation/testDataGenerator.js';
 import { GenericDataTable } from '../js/data_formats/generic-data-table.js';
 import { Exporter } from '../js/grid/exporter.js';
@@ -191,18 +190,7 @@ export function generateFromTextSpec({
   }
 
   let rendered = '';
-  if (outputFormat === 'csv') {
-    rendered = Papa.unparse(
-      [dataTable.getHeaders(), ...Array.from({ length: dataTable.getRowCount() }, (_, idx) => dataTable.getRow(idx))],
-      {
-        quoteChar: '"',
-        quotes: true,
-        header: false,
-      }
-    );
-  } else {
-    rendered = exporter.getDataTableAs(outputFormat, dataTable) || '';
-  }
+  rendered = exporter.getDataTableAs(outputFormat, dataTable) || '';
 
   const { headers, rows } = tableToRows(dataTable);
   return {

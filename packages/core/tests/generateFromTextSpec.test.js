@@ -40,3 +40,22 @@ test('generateFromTextSpec rejects unsafe faker expressions by default', () => {
   assert.equal(result.ok, false);
   assert.match(result.errors[0], /Unsafe faker rule syntax detected/);
 });
+
+test('generateFromTextSpec applies csv options via exporter pipeline', () => {
+  const withHeader = generateFromTextSpec({
+    textSpec: 'Name\nBob',
+    rowCount: 1,
+    outputFormat: 'csv',
+  });
+  const withoutHeader = generateFromTextSpec({
+    textSpec: 'Name\nBob',
+    rowCount: 1,
+    outputFormat: 'csv',
+    options: { header: false },
+  });
+
+  assert.equal(withHeader.ok, true);
+  assert.equal(withoutHeader.ok, true);
+  assert.match(withHeader.rendered, /Name/);
+  assert.doesNotMatch(withoutHeader.rendered, /Name/);
+});

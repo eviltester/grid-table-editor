@@ -1,4 +1,4 @@
-import { removeStartAndEnd } from '../../../../js/data_generation/faker/parsingUtils.js';
+import { removeStartAndEnd } from '../../../../packages/core/js/data_generation/faker/parsingUtils.js';
 
 describe('removeStartAndEnd is a function to help with parsing', () => {
   test('can find content in single quotes', () => {

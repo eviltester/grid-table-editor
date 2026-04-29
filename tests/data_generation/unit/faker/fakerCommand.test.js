@@ -1,4 +1,4 @@
-import { FakerCommand } from '../../../../js/data_generation/faker/fakerCommand.js';
+import { FakerCommand } from '../../../../packages/core/js/data_generation/faker/fakerCommand.js';
 import { faker } from '@faker-js/faker';
 
 describe('Can parse, compile, validate and execute Faker commands', () => {

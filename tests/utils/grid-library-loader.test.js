@@ -2,7 +2,7 @@ import { JSDOM } from 'jsdom';
 import {
   ensureGridLibraryLoaded,
   resetEnginePromise,
-} from '../../js/gui_components/data-grid-editor/grid-library-loader.js';
+} from '../../packages/core-ui/js/gui_components/data-grid-editor/grid-library-loader.js';
 
 describe('grid-library-loader', () => {
   let dom;

@@ -1,5 +1,5 @@
 import { JSDOM } from 'jsdom';
-import { JsonOptionsPanel } from '../../js/gui_components/options_panels/options-json-panel.js';
+import { JsonOptionsPanel } from '../../packages/core-ui/js/gui_components/options_panels/options-json-panel.js';
 import { JsonConvertorOptions } from '@anywaydata/core/data_formats/json-convertor.js';
 import { JavascriptConvertorOptions } from '@anywaydata/core/data_formats/javascript-convertor.js';
 

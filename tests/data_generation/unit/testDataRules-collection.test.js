@@ -1,4 +1,4 @@
-import { TestDataRules } from '../../../js/data_generation/testDataRules.js';
+import { TestDataRules } from '../../../packages/core/js/data_generation/testDataRules.js';
 
 describe('TestDataRules collection behavior', () => {
   test('getRule finds a rule by name', () => {

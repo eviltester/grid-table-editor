@@ -1,4 +1,4 @@
-import { Exporter } from '../../js/grid/exporter.js';
+import { Exporter } from '../../packages/core/js/grid/exporter.js';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 import Papa from 'papaparse';
 

@@ -1,5 +1,5 @@
 import { JSDOM } from 'jsdom';
-import { DragDropControl } from '../../js/gui_components/drag-drop-control.js';
+import { DragDropControl } from '../../packages/core-ui/js/gui_components/drag-drop-control.js';
 
 describe('DragDropControl', () => {
   let dom;

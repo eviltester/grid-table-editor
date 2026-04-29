@@ -20,7 +20,7 @@ describe('Main display grid engine selection wrapper', () => {
       resolveGridEngine: jest.fn(() => engine),
     }));
 
-    const moduleUnderTest = require('../../js/gui_components/data-grid-editor/main-display-grid.js');
+    const moduleUnderTest = require('../../packages/core-ui/js/gui_components/data-grid-editor/main-display-grid.js');
 
     return { moduleUnderTest, agGridClass, tabulatorClass };
   }

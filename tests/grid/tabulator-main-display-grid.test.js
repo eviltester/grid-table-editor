@@ -1,4 +1,4 @@
-import { ExtendedDataGrid } from '../../js/gui_components/data-grid-editor/tabulator/main-display-grid.js';
+import { ExtendedDataGrid } from '../../packages/core-ui/js/gui_components/data-grid-editor/tabulator/main-display-grid.js';
 import { JSDOM } from 'jsdom';
 
 describe('Tabulator main display grid', () => {

@@ -1,4 +1,4 @@
-import { TestDataRule } from '../../../js/data_generation/testDataRule.js';
+import { TestDataRule } from '../../../packages/core/js/data_generation/testDataRule.js';
 
 // to get import and export working from tests
 // https://stackoverflow.com/questions/35756479/does-jest-support-es6-import-export

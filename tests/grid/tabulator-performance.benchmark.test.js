@@ -1,5 +1,5 @@
 import { performance } from 'perf_hooks';
-import { GridExtension as TabulatorGridExtension } from '../../js/gui_components/data-grid-editor/tabulator/gridExtension-tabulator.js';
+import { GridExtension as TabulatorGridExtension } from '../../packages/core-ui/js/gui_components/data-grid-editor/tabulator/gridExtension-tabulator.js';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 
 class TabulatorColumnMock {

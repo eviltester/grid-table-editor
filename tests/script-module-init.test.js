@@ -14,7 +14,7 @@ describe('script module initialization', () => {
 
     expect(() => {
       jest.isolateModules(() => {
-        require('../js/script.js');
+        require('../packages/core-ui/js/script.js');
       });
     }).not.toThrow();
 
@@ -102,7 +102,7 @@ describe('script module initialization', () => {
     });
 
     jest.isolateModules(() => {
-      require('../js/script.js');
+      require('../packages/core-ui/js/script.js');
     });
 
     expect(addEventListenerSpy).toHaveBeenCalledWith('DOMContentLoaded', expect.any(Function));

@@ -1,5 +1,5 @@
 import { JSDOM } from 'jsdom';
-import { AsciiTableOptionsPanel } from '../../js/gui_components/options_panels/options-ascii-table.js';
+import { AsciiTableOptionsPanel } from '../../packages/core-ui/js/gui_components/options_panels/options-ascii-table.js';
 import { AsciiTableOptions } from '@anywaydata/core/data_formats/asciitable-convertor.js';
 
 describe('AsciiTableOptionsPanel', () => {

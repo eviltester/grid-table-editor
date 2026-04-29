@@ -1,5 +1,5 @@
 import { JSDOM } from 'jsdom';
-import { ImportExportControls } from '../../js/gui_components/import-export-controls.js';
+import { ImportExportControls } from '../../packages/core-ui/js/gui_components/import-export-controls.js';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 
 function makeDataTable(rowCount) {

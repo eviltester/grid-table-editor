@@ -1,5 +1,5 @@
 import { JSDOM } from 'jsdom';
-import { ExtendedDataGrid } from '../../js/gui_components/data-grid-editor/ag-grid/main-display-grid.js';
+import { ExtendedDataGrid } from '../../packages/core-ui/js/gui_components/data-grid-editor/ag-grid/main-display-grid.js';
 
 describe('AG Grid main display grid', () => {
   let dom;

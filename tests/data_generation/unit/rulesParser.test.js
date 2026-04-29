@@ -1,4 +1,4 @@
-import { RulesParser } from '../../../js/data_generation/rulesParser.js';
+import { RulesParser } from '../../../packages/core/js/data_generation/rulesParser.js';
 import { faker } from '@faker-js/faker';
 
 const RandExp = require('randexp');

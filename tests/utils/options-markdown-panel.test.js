@@ -1,5 +1,5 @@
 import { JSDOM } from 'jsdom';
-import { MarkdownOptionsPanel } from '../../js/gui_components/options_panels/options-markdown-panel.js';
+import { MarkdownOptionsPanel } from '../../packages/core-ui/js/gui_components/options_panels/options-markdown-panel.js';
 import { MarkdownOptions } from '@anywaydata/core/data_formats/markdown-convertor.js';
 
 describe('MarkdownOptionsPanel', () => {

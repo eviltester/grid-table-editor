@@ -1,5 +1,5 @@
 import { JSDOM } from 'jsdom';
-import { TypeScriptOptionsPanel } from '../../js/gui_components/options_panels/options-typescript-panel.js';
+import { TypeScriptOptionsPanel } from '../../packages/core-ui/js/gui_components/options_panels/options-typescript-panel.js';
 import { TypeScriptConvertorOptions } from '@anywaydata/core/data_formats/typescript-convertor.js';
 
 describe('TypeScriptOptionsPanel', () => {

@@ -1,5 +1,5 @@
 import { JSDOM } from 'jsdom';
-import { enableTestDataGenerationInterface } from '../../js/gui_components/testdatadefn.js';
+import { enableTestDataGenerationInterface } from '../../packages/core-ui/js/gui_components/testdatadefn.js';
 
 describe('test data definition editor engine compatibility', () => {
   let dom;

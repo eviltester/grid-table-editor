@@ -1,5 +1,5 @@
 import { JSDOM } from 'jsdom';
-import { JavascriptOptionsPanel } from '../../js/gui_components/options_panels/options-javascript-panel.js';
+import { JavascriptOptionsPanel } from '../../packages/core-ui/js/gui_components/options_panels/options-javascript-panel.js';
 import { JavascriptConvertorOptions } from '@anywaydata/core/data_formats/javascript-convertor.js';
 
 describe('JavascriptOptionsPanel', () => {

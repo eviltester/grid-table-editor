@@ -188,6 +188,10 @@ Or run without installing:
 
 `npx @anywaydata/cli --help`
 
+Run a one-off generation command with `npx`:
+
+`npx @anywaydata/cli generate -i input.txt -n 10 -f csv`
+
 Show CLI help:
 
 `anywaydata --help`
@@ -218,6 +222,21 @@ Supported options:
 Start the API:
 
 `npm run start --workspace @anywaydata/api`
+
+Run the published API package directly with `npx`:
+
+`npx -y @anywaydata/api`
+
+Or run it by binary name:
+
+`npx -y anywaydata-api`
+
+For interactive local development (foreground process with `Ctrl+C` stop), prefer:
+
+- `npm run start --workspace @anywaydata/api -- --port 3001`
+- `node apps/api/src/index.js --port 3001`
+
+Use `npx` primarily for consumer-style package execution/testing.
 
 Choose a specific port:
 
@@ -332,7 +351,20 @@ Codex connects to this server as an MCP tool provider over `stdio` (not HTTP).
    - `npm run start --workspace @anywaydata/mcp`
 3. Configure your MCP host/Codex to launch the server command.
 
-Example MCP server config:
+Example MCP server config (published package via `npx`):
+
+```json
+{
+  "mcpServers": {
+    "anywaydata": {
+      "command": "npx",
+      "args": ["-y", "@anywaydata/mcp"]
+    }
+  }
+}
+```
+
+Example MCP server config (local repo):
 
 ```json
 {
@@ -346,7 +378,7 @@ Example MCP server config:
 }
 ```
 
-For MCP hosts, prefer direct `node` execution as shown above. `npm run` can emit non-JSON stdout lines, which may interfere with `stdio` MCP message parsing in some clients.
+For MCP hosts, prefer direct `node` execution or `npx` as shown above. `npm run` can emit non-JSON stdout lines, which may interfere with `stdio` MCP message parsing in some clients.
 
 Notes:
 

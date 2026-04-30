@@ -1,9 +1,12 @@
+#!/usr/bin/env node
+
 import express from 'express';
 import {
   createExporterForDefaults as createCoreExporterForDefaults,
   generateFromTextSpec,
   SUPPORTED_FORMATS,
 } from '@anywaydata/core';
+import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import swaggerUi from 'swagger-ui-express';
 import { openApiDocument } from './openapi.js';
@@ -616,8 +619,26 @@ async function startApiServer(
   };
 }
 
-const isDirectRun = process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1];
+function isRunningFromApiBin(argv = process.argv) {
+  const entry = argv[1];
+  if (!entry) {
+    return false;
+  }
+
+  const normalizedEntry = path.resolve(entry).toLowerCase();
+  const currentModulePath = path.resolve(fileURLToPath(import.meta.url)).toLowerCase();
+  const entryBaseName = path.basename(normalizedEntry);
+
+  return (
+    normalizedEntry === currentModulePath ||
+    entryBaseName === 'anywaydata-api' ||
+    entryBaseName === 'anywaydata-api.cmd'
+  );
+}
+
+const isDirectRun = isRunningFromApiBin(process.argv);
 if (isDirectRun) {
+  console.log('Starting anywaydata-api...');
   const result = await startApiServer(app, {
     argv: process.argv,
     env: process.env,
@@ -626,6 +647,16 @@ if (isDirectRun) {
   if (!result.ok) {
     console.error(result.message);
     process.exit(1);
+  }
+
+  const sourceLabel = result.source === 'cli' ? 'CLI --port' : result.source === 'env' ? 'PORT env' : result.source;
+  const baseUrl = `http://localhost:${result.port}`;
+  console.log(`API base URL: ${baseUrl}`);
+  console.log(`Swagger UI: ${baseUrl}/docs`);
+  console.log(`OpenAPI spec: ${baseUrl}/openapi.json`);
+  console.log(`Port source: ${sourceLabel}`);
+  if (result.source === 'fallback') {
+    console.log(`Port fallback sequence tried: ${result.attemptedPorts.join(', ')}`);
   }
 }
 

@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import readline from 'node:readline';
 import { generateFromTextSpec, SUPPORTED_FORMATS, validateSafeFakerRules } from '@anywaydata/core';
 

@@ -364,6 +364,19 @@ Example MCP server config (published package via `npx`):
 }
 ```
 
+Windows-safe alternative (avoids `npx` bin resolution issues in some shells):
+
+```json
+{
+  "mcpServers": {
+    "anywaydata": {
+      "command": "node",
+      "args": ["-e", "import('@anywaydata/mcp')"]
+    }
+  }
+}
+```
+
 Example MCP server config (local repo):
 
 ```json

@@ -323,9 +323,10 @@ Start the MCP server:
 Note: MCP runs over stdio in this version and does not bind to a TCP port.
 OpenAPI/Swagger routes are available on the REST API only.
 
-The server exposes one tool:
+The server exposes tools:
 
 - `generate_data_from_spec`
+- `get_output_format_options_schema`
 
 Inputs:
 
@@ -335,11 +336,31 @@ Inputs:
 - `options` (optional object)
 - `seed` (optional number)
 
+Discoverability support:
+
+- `tools/list` publishes typed `inputSchema` and `outputSchema`
+- `get_output_format_options_schema` returns per-format defaults and typed option schema
+- `resources/list` and `resources/read` expose:
+  - `anywaydata://schemas/output-format-options`
+  - `anywaydata://install/config-examples`
+
 Security note:
 
 - MCP input validation restricts faker rule arguments to literals only (string/number/boolean/null) or no args.
 - Expression-style faker arguments (e.g. arrow functions, `this`, template expressions) are rejected in MCP mode.
 - Node and Bun CLIs are also safe-by-default with the same rule; use `--unsafe-faker-expressions` to opt in.
+
+Error conventions:
+
+- Tool-level validation/safety failures return `result.isError=true`
+- Tool payload shape for failures is:
+  - `{ "ok": false, "error": { "code": "...", "message": "...", "details": ... } }`
+- Common `error.code` values:
+  - `invalid_output_format`
+  - `unsafe_faker_rule`
+  - `text_spec_too_large`
+  - `row_count_too_large`
+  - `generation_failed`
 
 ### Using MCP With Codex
 
@@ -359,6 +380,33 @@ Example MCP server config (published package via `npx`):
     "anywaydata": {
       "command": "npx",
       "args": ["-y", "@anywaydata/mcp"]
+    }
+  }
+}
+```
+
+Example MCP server config (Claude Desktop style):
+
+```json
+{
+  "mcpServers": {
+    "anywaydata": {
+      "command": "npx",
+      "args": ["-y", "@anywaydata/mcp"]
+    }
+  }
+}
+```
+
+Example MCP server config (Cursor/Cline-style local repo command):
+
+```json
+{
+  "mcpServers": {
+    "anywaydata-local": {
+      "command": "node",
+      "args": ["apps/mcp/src/index.js"],
+      "cwd": "D:/github/grid-table-editor"
     }
   }
 }

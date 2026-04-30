@@ -13,6 +13,13 @@ const serverInfo = {
   version: '0.1.0',
 };
 
+const MAX_TEXT_SPEC_LENGTH = 200000;
+
+const RESOURCE_URIS = {
+  optionCatalog: 'anywaydata://schemas/output-format-options',
+  installGuide: 'anywaydata://install/config-examples',
+};
+
 const FORMAT_OPTION_NOTES = {
   xml: {
     rootElementName: 'XML root tag name.',
@@ -97,6 +104,131 @@ function buildGenerateOptionsSchema() {
 
 const GENERATE_OPTIONS_SCHEMA = buildGenerateOptionsSchema();
 
+const TOOL_ERROR_SCHEMA = {
+  type: 'object',
+  properties: {
+    ok: { type: 'boolean', const: false },
+    error: {
+      type: 'object',
+      properties: {
+        code: { type: 'string' },
+        message: { type: 'string' },
+        details: {},
+      },
+      required: ['code', 'message'],
+    },
+  },
+  required: ['ok', 'error'],
+};
+
+const GENERATE_RESULT_SCHEMA = {
+  type: 'object',
+  properties: {
+    ok: { type: 'boolean' },
+    errors: { type: 'array', items: { type: 'string' } },
+    headers: { type: 'array', items: { type: 'string' } },
+    rows: { type: 'array', items: { type: 'array', items: { type: 'string' } } },
+    rendered: { type: 'string' },
+    format: { type: 'string', enum: SUPPORTED_FORMATS },
+    diagnostics: {
+      type: 'object',
+      properties: {
+        report: { type: 'string' },
+        rowCount: { type: 'integer' },
+      },
+      additionalProperties: true,
+    },
+  },
+  required: ['ok'],
+};
+
+function createToolError(code, message, details) {
+  return {
+    ok: false,
+    error: {
+      code,
+      message,
+      details: details ?? null,
+    },
+  };
+}
+
+function createToolSuccess(payload) {
+  return {
+    ok: true,
+    ...payload,
+  };
+}
+
+function writeToolResult(id, payload, isError = false) {
+  return writeMessage({
+    jsonrpc: '2.0',
+    id,
+    result: {
+      content: [
+        {
+          type: 'text',
+          text: JSON.stringify(payload),
+        },
+      ],
+      structuredContent: payload,
+      isError,
+    },
+  });
+}
+
+function getResources() {
+  return [
+    {
+      uri: RESOURCE_URIS.optionCatalog,
+      name: 'Output Format Option Schemas',
+      description: 'Discoverable formatter option defaults and schema per output format.',
+      mimeType: 'application/json',
+    },
+    {
+      uri: RESOURCE_URIS.installGuide,
+      name: 'Install Config Examples',
+      description: 'MCP install/config examples for common hosts and environments.',
+      mimeType: 'application/json',
+    },
+  ];
+}
+
+function getResourceByUri(uri) {
+  if (uri === RESOURCE_URIS.optionCatalog) {
+    return {
+      ok: true,
+      supportedFormats: SUPPORTED_FORMATS,
+      formats: FORMAT_OPTIONS_CATALOG,
+    };
+  }
+
+  if (uri === RESOURCE_URIS.installGuide) {
+    return {
+      ok: true,
+      transport: 'stdio',
+      examples: {
+        codex_local_repo: {
+          command: 'node',
+          args: ['apps/mcp/src/index.js'],
+          cwd: 'D:/github/grid-table-editor',
+        },
+        codex_npx: {
+          command: 'npx',
+          args: ['-y', '@anywaydata/mcp'],
+        },
+        docker_stdio: {
+          command: 'docker',
+          args: ['run', '--rm', '-i', 'anywaydata-mcp'],
+        },
+      },
+      notes: ['Use stdio transport.', 'Avoid npm run wrappers in MCP hosts to prevent non-JSON stdout noise.'],
+    };
+  }
+
+  return null;
+}
+
 function normalizeRuleText(ruleText) {
   const trimmed = ruleText.trim();
   if (trimmed.startsWith('{{') && trimmed.endsWith('}}')) {
@@ -148,7 +280,7 @@ function handleRequest(request) {
       result: {
         protocolVersion: '2024-11-05',
         serverInfo,
-        capabilities: { tools: {} },
+        capabilities: { tools: {}, resources: {} },
       },
     });
   }
@@ -178,6 +310,9 @@ function handleRequest(request) {
               },
               required: ['textSpec', 'rowCount', 'outputFormat'],
             },
+            outputSchema: {
+              oneOf: [GENERATE_RESULT_SCHEMA, TOOL_ERROR_SCHEMA],
+            },
           },
           {
             name: 'get_output_format_options_schema',
@@ -193,6 +328,57 @@ function handleRequest(request) {
                 },
               },
             },
+            outputSchema: {
+              oneOf: [
+                {
+                  type: 'object',
+                  properties: {
+                    ok: { type: 'boolean', const: true },
+                    supportedFormats: { type: 'array', items: { type: 'string' } },
+                    selectedFormat: { type: 'string' },
+                    formatSchema: { type: 'object' },
+                    formats: { type: 'object' },
+                  },
+                  required: ['ok', 'supportedFormats'],
+                },
+                TOOL_ERROR_SCHEMA,
+              ],
+            },
+          },
+        ],
+      },
+    });
+  }
+
+  if (method === 'resources/list') {
+    return writeMessage({
+      jsonrpc: '2.0',
+      id,
+      result: {
+        resources: getResources(),
+      },
+    });
+  }
+
+  if (method === 'resources/read') {
+    const uri = params?.uri;
+    const payload = getResourceByUri(uri);
+    if (!payload) {
+      return writeMessage({
+        jsonrpc: '2.0',
+        id,
+        error: { code: -32602, message: `Unknown resource: ${uri}` },
+      });
+    }
+    return writeMessage({
+      jsonrpc: '2.0',
+      id,
+      result: {
+        contents: [
+          {
+            uri,
+            mimeType: 'application/json',
+            text: JSON.stringify(payload),
           },
         ],
       },
@@ -205,49 +391,27 @@ function handleRequest(request) {
       const args = params?.arguments || {};
       const outputFormat = args.outputFormat;
       if (outputFormat && !SUPPORTED_FORMATS.includes(outputFormat)) {
-        return writeMessage({
-          jsonrpc: '2.0',
+        return writeToolResult(
           id,
-          result: {
-            content: [
-              {
-                type: 'text',
-                text: JSON.stringify({
-                  ok: false,
-                  errors: [`outputFormat must be one of: ${SUPPORTED_FORMATS.join(', ')}`],
-                }),
-              },
-            ],
-            isError: true,
-          },
-        });
+          createToolError('invalid_output_format', `outputFormat must be one of: ${SUPPORTED_FORMATS.join(', ')}`, {
+            outputFormat,
+            supportedFormats: SUPPORTED_FORMATS,
+          }),
+          true
+        );
       }
       const payload = outputFormat
-        ? {
-            ok: true,
+        ? createToolSuccess({
             supportedFormats: SUPPORTED_FORMATS,
             selectedFormat: outputFormat,
             formatSchema: FORMAT_OPTIONS_CATALOG[outputFormat],
-          }
-        : {
-            ok: true,
+          })
+        : createToolSuccess({
             supportedFormats: SUPPORTED_FORMATS,
             formats: FORMAT_OPTIONS_CATALOG,
-          };
+          });
 
-      return writeMessage({
-        jsonrpc: '2.0',
-        id,
-        result: {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(payload),
-            },
-          ],
-          isError: false,
-        },
-      });
+      return writeToolResult(id, payload, false);
     }
 
     if (name !== 'generate_data_from_spec') {
@@ -259,40 +423,42 @@ function handleRequest(request) {
     }
 
     const args = params?.arguments || {};
+    if (typeof args.textSpec === 'string' && args.textSpec.length > MAX_TEXT_SPEC_LENGTH) {
+      return writeToolResult(
+        id,
+        createToolError('text_spec_too_large', `textSpec exceeds max length of ${MAX_TEXT_SPEC_LENGTH}`, {
+          maxLength: MAX_TEXT_SPEC_LENGTH,
+          actualLength: args.textSpec.length,
+        }),
+        true
+      );
+    }
     const normalizedArgs = {
       ...args,
       textSpec: maybeConvertKeyValueSpec(args.textSpec),
     };
     const validation = validateSafeFakerRules(normalizedArgs.textSpec);
     if (!validation.ok) {
-      return writeMessage({
-        jsonrpc: '2.0',
+      return writeToolResult(
         id,
-        result: {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify({ ok: false, errors: [validation.error] }),
-            },
-          ],
-          isError: true,
-        },
-      });
+        createToolError('unsafe_faker_rule', validation.error, {
+          mode: 'safe',
+        }),
+        true
+      );
     }
     const result = generateFromTextSpec(normalizedArgs);
-    return writeMessage({
-      jsonrpc: '2.0',
-      id,
-      result: {
-        content: [
-          {
-            type: 'text',
-            text: JSON.stringify(result),
-          },
-        ],
-        isError: !result.ok,
-      },
-    });
+    if (!result.ok) {
+      return writeToolResult(
+        id,
+        createToolError('generation_failed', 'Failed to generate data from specification.', {
+          errors: result.errors,
+          diagnostics: result.diagnostics,
+        }),
+        true
+      );
+    }
+    return writeToolResult(id, result, false);
   }
 
   if (method === 'notifications/initialized') {

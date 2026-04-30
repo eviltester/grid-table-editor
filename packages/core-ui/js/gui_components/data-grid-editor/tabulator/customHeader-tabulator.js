@@ -1,5 +1,5 @@
 //create header popup contents
-var headerPopupFormatter = function (e, column, onRendered) {
+export const headerPopupFormatter = function (_e, column, _onRendered) {
   var container = document.createElement('div');
 
   var label = document.createElement('label');
@@ -11,7 +11,7 @@ var headerPopupFormatter = function (e, column, onRendered) {
   input.placeholder = 'Filter Column...';
   input.value = column.getHeaderFilterValue() || '';
 
-  input.addEventListener('keyup', (e) => {
+  input.addEventListener('keyup', () => {
     column.setHeaderFilterValue(input.value);
   });
 
@@ -53,6 +53,6 @@ var headerPopupFormatter = function (e, column, onRendered) {
 };
 
 //create dummy header filter to allow popup to filter
-var emptyHeaderFilter = function () {
+export const emptyHeaderFilter = function () {
   return document.createElement('div');
 };

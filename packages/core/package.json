@@ -1,0 +1,32 @@
+{
+  "name": "@anywaydata/core",
+  "version": "0.1.0",
+  "type": "module",
+  "private": false,
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./faker/*": "./js/faker/*",
+    "./data_formats/*": "./js/data_formats/*",
+    "./data_generation/*": "./js/data_generation/*",
+    "./grid/*": "./js/grid/*",
+    "./utils/*": "./js/utils/*",
+    "./libs/*": "./js/libs/*"
+  },
+  "files": [
+    "src",
+    "js"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "node -e \"console.log('core: no build step')\"",
+    "test": "node --test ./tests/*.test.js"
+  },
+  "dependencies": {
+    "@faker-js/faker": "^9.7.0",
+    "papaparse": "^5.5.2",
+    "randexp": "^0.5.3"
+  }
+}

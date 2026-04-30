@@ -1,4 +1,4 @@
-import { GenericDataTable } from '../../js/data_formats/generic-data-table';
+import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table';
 
 describe('Can create Generic Data Table from scratch', () => {
   test('create empty table', () => {

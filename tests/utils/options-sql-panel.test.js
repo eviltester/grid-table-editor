@@ -1,6 +1,6 @@
 import { JSDOM } from 'jsdom';
-import { SqlOptionsPanel } from '../../js/gui_components/options_panels/options-sql-panel.js';
-import { SqlConvertorOptions } from '../../js/data_formats/sql-convertor.js';
+import { SqlOptionsPanel } from '../../packages/core-ui/js/gui_components/options_panels/options-sql-panel.js';
+import { SqlConvertorOptions } from '@anywaydata/core/data_formats/sql-convertor.js';
 
 describe('SqlOptionsPanel', () => {
   let dom;

@@ -1,4 +1,4 @@
-import { TestDataGenerator } from '../../js/data_generation/testDataGenerator.js';
+import { TestDataGenerator } from '../../packages/core/js/data_generation/testDataGenerator.js';
 import { faker } from '@faker-js/faker';
 
 const RandExp = require('randexp');

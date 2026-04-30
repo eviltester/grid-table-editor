@@ -1,12 +1,12 @@
 import { describe, it, expect, beforeEach } from '@jest/globals';
 import { faker } from '@faker-js/faker';
 import RandExp from 'randexp';
-import { TestDataGenerator } from '../../js/data_generation/testDataGenerator';
+import { TestDataGenerator } from '../../packages/core/js/data_generation/testDataGenerator';
 import {
   probeCommandReturnType,
   identifyFakerCommands,
   getFakerCommands,
-} from '../../js/gui_components/testdatadefn.js';
+} from '../../packages/core-ui/js/gui_components/testdatadefn.js';
 
 describe('Faker Dropdown Literal Commands', () => {
   beforeEach(() => {

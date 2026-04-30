@@ -1,5 +1,5 @@
-import { GenericDataTable } from '../../js/data_formats/generic-data-table.js';
-import { PythonConvertor, PythonConvertorOptions } from '../../js/data_formats/python-convertor.js';
+import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
+import { PythonConvertor, PythonConvertorOptions } from '@anywaydata/core/data_formats/python-convertor.js';
 
 const basicTable = new GenericDataTable();
 basicTable.setHeaders(['name', 'age']);

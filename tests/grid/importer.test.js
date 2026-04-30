@@ -1,6 +1,6 @@
 import Papa from 'papaparse';
-import { Importer } from '../../js/grid/importer.js';
-import { GenericDataTable } from '../../js/data_formats/generic-data-table.js';
+import { Importer } from '../../packages/core/js/grid/importer.js';
+import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 
 beforeAll(() => {
   global.Papa = Papa;
@@ -46,6 +46,14 @@ describe('Importer', () => {
     expect(dataTable.getRow(1)).toEqual(['Bob', 'Dev']);
   });
 
+  test('uses comma delimiter by default for csv options', () => {
+    const importer = new Importer({ setGridFromGenericDataTable: jest.fn() });
+
+    expect(importer.options.csv.options.delimiter).toBe(',');
+    expect(importer.options.csv.options.quoteChar).toBe('"');
+    expect(importer.options.csv.options.escapeChar).toBe('"');
+  });
+
   test('toGenericDataTable applies configured options to the selected convertor', () => {
     const importer = new Importer({ setGridFromGenericDataTable: jest.fn() });
     const expectedTable = new GenericDataTable();
@@ -89,6 +97,24 @@ describe('Importer', () => {
 
     expect(setOptions).toHaveBeenCalledWith({});
     expect(toDataTable).toHaveBeenCalledWith('| Name |');
+    expect(result).toBe(expectedTable);
+  });
+
+  test('toGenericDataTable passes configured csv delimiter options to csv convertor', () => {
+    const importer = new Importer({ setGridFromGenericDataTable: jest.fn() });
+    const expectedTable = new GenericDataTable();
+    const setOptions = jest.fn();
+    const toDataTable = jest.fn(() => expectedTable);
+    importer.convertors.csv = {
+      setOptions,
+      toDataTable,
+    };
+
+    const result = importer.toGenericDataTable('csv', 'Name,Role\nConnie,QA');
+
+    expect(setOptions).toHaveBeenCalledWith(importer.options.csv);
+    expect(importer.options.csv.options.delimiter).toBe(',');
+    expect(toDataTable).toHaveBeenCalledWith('Name,Role\nConnie,QA');
     expect(result).toBe(expectedTable);
   });
 

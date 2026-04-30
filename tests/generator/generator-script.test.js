@@ -1,5 +1,5 @@
 import { JSDOM } from 'jsdom';
-import { bootstrapGeneratorPage } from '../../js/generator-script.js';
+import { bootstrapGeneratorPage } from '../../packages/core-ui/js/generator-script.js';
 
 describe('generator bootstrap', () => {
   let dom;

@@ -1,9 +1,9 @@
-import { GridExtension as AgGridExtension } from '../../js/gui_components/data-grid-editor/ag-grid/gridExtension-ag-grid.js';
-import { GridExtension as TabulatorGridExtension } from '../../js/gui_components/data-grid-editor/tabulator/gridExtension-tabulator.js';
-import { GenericDataTable } from '../../js/data_formats/generic-data-table.js';
-import { Importer } from '../../js/grid/importer.js';
-import { Exporter } from '../../js/grid/exporter.js';
-import { GuardedColumnEdits } from '../../js/grid/guarded-column-edits.js';
+import { GridExtension as AgGridExtension } from '../../packages/core-ui/js/gui_components/data-grid-editor/ag-grid/gridExtension-ag-grid.js';
+import { GridExtension as TabulatorGridExtension } from '../../packages/core-ui/js/gui_components/data-grid-editor/tabulator/gridExtension-tabulator.js';
+import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
+import { Importer } from '../../packages/core/js/grid/importer.js';
+import { Exporter } from '../../packages/core/js/grid/exporter.js';
+import { GuardedColumnEdits } from '../../packages/core-ui/js/grid/guarded-column-edits.js';
 import Papa from 'papaparse';
 
 function flushAsync() {

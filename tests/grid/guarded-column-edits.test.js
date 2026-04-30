@@ -1,5 +1,5 @@
-import { GuardedColumnEdits } from '../../js/grid/guarded-column-edits.js';
-import { GuardedTabulatorColumnEdits } from '../../js/gui_components/data-grid-editor/tabulator/guarded-tabulator-column-edits.js';
+import { GuardedColumnEdits } from '../../packages/core-ui/js/grid/guarded-column-edits.js';
+import { GuardedTabulatorColumnEdits } from '../../packages/core-ui/js/gui_components/data-grid-editor/tabulator/guarded-tabulator-column-edits.js';
 
 function createColumn(title = 'Old Name') {
   const definition = { title };

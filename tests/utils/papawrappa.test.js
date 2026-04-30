@@ -1,4 +1,4 @@
-import { PapaWrappa } from '../../js/utils/papawrappa.js';
+import { PapaWrappa } from '../../packages/core/js/utils/papawrappa.js';
 
 describe('PapaWrappa', () => {
   let originalPapa;

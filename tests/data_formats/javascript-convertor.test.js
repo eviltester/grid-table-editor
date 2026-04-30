@@ -1,5 +1,5 @@
-import { GenericDataTable } from '../../js/data_formats/generic-data-table.js';
-import { JavascriptConvertor, JavascriptConvertorOptions } from '../../js/data_formats/javascript-convertor.js';
+import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
+import { JavascriptConvertor, JavascriptConvertorOptions } from '@anywaydata/core/data_formats/javascript-convertor.js';
 
 // because Javascript convertor wraps JSON convertor we mainly test the Javascript specific formatting
 

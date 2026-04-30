@@ -1,5 +1,5 @@
-import { DelimiterConvertor } from '../../js/data_formats/delimiter-convertor.js';
-import { GenericDataTable } from '../../js/data_formats/generic-data-table.js';
+import { DelimiterConvertor } from '@anywaydata/core/data_formats/delimiter-convertor.js';
+import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 
 function createTable(headers, rows) {
   const table = new GenericDataTable();

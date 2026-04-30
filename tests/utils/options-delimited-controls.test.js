@@ -1,6 +1,6 @@
 import { JSDOM } from 'jsdom';
-import { DelimitedOptions } from '../../js/gui_components/options_panels/options-delimited-controls.js';
-import { DelimiterOptions } from '../../js/data_formats/delimiter-options.js';
+import { DelimitedOptions } from '../../packages/core-ui/js/gui_components/options_panels/options-delimited-controls.js';
+import { DelimiterOptions } from '@anywaydata/core/data_formats/delimiter-options.js';
 
 describe('DelimitedOptions', () => {
   let dom;

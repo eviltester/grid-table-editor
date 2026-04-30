@@ -1,6 +1,6 @@
 import { JSDOM } from 'jsdom';
-import { ImportExportControls } from '../../js/gui_components/import-export-controls.js';
-import { GenericDataTable } from '../../js/data_formats/generic-data-table.js';
+import { ImportExportControls } from '../../packages/core-ui/js/gui_components/import-export-controls.js';
+import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 
 function makeDataTable(rowCount) {
   const table = new GenericDataTable();

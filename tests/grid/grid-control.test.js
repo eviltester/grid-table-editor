@@ -1,4 +1,7 @@
-import { GridControl, GridControlsPageMap } from '../../js/gui_components/data-grid-editor/gridControl.js';
+import {
+  GridControl,
+  GridControlsPageMap,
+} from '../../packages/core-ui/js/gui_components/data-grid-editor/gridControl.js';
 import { JSDOM } from 'jsdom';
 
 describe('GridControl', () => {

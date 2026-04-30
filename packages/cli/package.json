@@ -1,0 +1,27 @@
+{
+  "name": "@anywaydata/cli",
+  "version": "1.0.0",
+  "type": "module",
+  "private": false,
+  "bin": {
+    "anywaydata": "src/index.js"
+  },
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "src"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "node -e \"console.log('cli: no build step')\"",
+    "test": "node ./src/index.js --help"
+  },
+  "dependencies": {
+    "@anywaydata/core": "^0.1.0",
+    "yargs": "^17.7.2"
+  }
+}

@@ -1,5 +1,5 @@
-import { TestDataRule } from '../../../../js/data_generation/testDataRule.js';
-import { FakerTestDataRuleValidator } from '../../../../js/data_generation/faker/fakerTestDataRuleValidator.js';
+import { TestDataRule } from '../../../../packages/core/js/data_generation/testDataRule.js';
+import { FakerTestDataRuleValidator } from '../../../../packages/core/js/data_generation/faker/fakerTestDataRuleValidator.js';
 import { faker } from '@faker-js/faker';
 
 describe('Can validate Faker TestDataRules using FakerTestDataRuleValidator', () => {

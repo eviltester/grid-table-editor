@@ -1,5 +1,5 @@
-import { GenericDataTable } from '../../js/data_formats/generic-data-table.js';
-import { GherkinConvertor, GherkinOptions } from '../../js/data_formats/gherkin-convertor.js';
+import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
+import { GherkinConvertor, GherkinOptions } from '@anywaydata/core/data_formats/gherkin-convertor.js';
 
 describe('can get values from a markdown table row', () => {
   test('even if malformed with no start', () => {
@@ -77,6 +77,23 @@ describe('Can convert markdown tables to data suitable for a data grid', () => {
     expect(table.getCell(0, 1)).toBe('row 0 cell 1');
     expect(table.getCell(1, 0)).toBe('row 1 cell 0');
     expect(table.getCell(1, 1)).toBe('row 1 |cell 1');
+  });
+
+  test('can round-trip backslashes and escaped bars without double unescaping', () => {
+    const basicTable = `|heading 1|heading 2|
+|path \\\\server\\|share|row 0 cell 1|
+|row 1 cell 0|value with \\\\\\| literal|
+`;
+    let table = new GherkinConvertor().toDataTable(basicTable);
+
+    expect(table.getRowCount()).toBe(2);
+    expect(table.getCell(0, 0)).toBe('path \\server|share');
+    expect(table.getCell(1, 1)).toBe('value with \\| literal');
+
+    const output = new GherkinConvertor().fromDataTable(table);
+    const roundTripped = new GherkinConvertor().toDataTable(output);
+    expect(roundTripped.getCell(0, 0)).toBe('path \\server|share');
+    expect(roundTripped.getCell(1, 1)).toBe('value with \\| literal');
   });
 
   test('empty table returns empty array', () => {

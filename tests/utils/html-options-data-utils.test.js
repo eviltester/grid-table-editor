@@ -1,5 +1,5 @@
 import { JSDOM } from 'jsdom';
-import { HtmlDataValues } from '../../js/gui_components/options_panels/html-options-data-utils.js';
+import { HtmlDataValues } from '../../packages/core-ui/js/gui_components/options_panels/html-options-data-utils.js';
 
 describe('HtmlDataValues', () => {
   let dom;

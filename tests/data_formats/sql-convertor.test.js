@@ -1,5 +1,5 @@
-import { GenericDataTable } from '../../js/data_formats/generic-data-table.js';
-import { SqlConvertor, SqlConvertorOptions } from '../../js/data_formats/sql-convertor.js';
+import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
+import { SqlConvertor, SqlConvertorOptions } from '@anywaydata/core/data_formats/sql-convertor.js';
 
 function createTable(headers, rows) {
   const table = new GenericDataTable();

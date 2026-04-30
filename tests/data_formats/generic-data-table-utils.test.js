@@ -1,5 +1,5 @@
-import { GenericDataTable } from '../../js/data_formats/generic-data-table';
-import { GenericDataTableUtils } from '../../js/data_formats/generic-data-table-utils';
+import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table';
+import { GenericDataTableUtils } from '@anywaydata/core/data_formats/generic-data-table-utils';
 
 describe('Can convert an array where headers are first array format to Generic Data Table', () => {
   test('convert a table with header and rows', () => {

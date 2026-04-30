@@ -1,5 +1,5 @@
 import { JSDOM } from 'jsdom';
-import { TabbedTextControl } from '../../js/gui_components/tabbed-text-control.js';
+import { TabbedTextControl } from '../../packages/core-ui/js/gui_components/tabbed-text-control.js';
 
 describe('TabbedTextControl preview/edit button', () => {
   let dom;

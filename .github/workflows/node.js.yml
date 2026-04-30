@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18.x]
+        node-version: [20.x]
 
     steps:
       - name: Check out repository
@@ -30,20 +30,11 @@ jobs:
       - name: Build
         run: npm run build --if-present
 
-      - name: Check formatting
-        run: npm run format:check
-
-      - name: Run linter
-        run: npm run lint
-
-      - name: Run tests with coverage
-        run: npm run testcoverage
-
       - name: Install Playwright browser
         run: npx playwright install --with-deps chromium
 
-      - name: Run browser smoke tests
-        run: npm run test:browser
+      - name: Verify
+        run: npm run verify:ci
 
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v4

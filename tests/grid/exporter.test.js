@@ -1,5 +1,5 @@
-import { Exporter } from '../../js/grid/exporter.js';
-import { GenericDataTable } from '../../js/data_formats/generic-data-table.js';
+import { Exporter } from '../../packages/core/js/grid/exporter.js';
+import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 import Papa from 'papaparse';
 
 beforeAll(() => {

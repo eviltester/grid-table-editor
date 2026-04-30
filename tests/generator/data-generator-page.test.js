@@ -4,7 +4,7 @@ import {
   buildRuleSpecFromSchemaRow,
   schemaRowsToSpec,
   validateSchemaRows,
-} from '../../js/gui_components/data-generator-page.js';
+} from '../../packages/core-ui/js/gui_components/data-generator-page.js';
 
 class FakeTabulator {
   constructor(element, options) {

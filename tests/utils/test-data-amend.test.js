@@ -1,9 +1,9 @@
-import { GenericDataTable } from '../../js/data_formats/generic-data-table.js';
+import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 import {
   TEST_DATA_MODES,
   createAmendedTable,
   createTableFromGenerator,
-} from '../../js/gui_components/test-data-amend.js';
+} from '../../packages/core-ui/js/gui_components/test-data-amend.js';
 
 function createGenerator(headers, rows) {
   let cursor = 0;

@@ -1,4 +1,4 @@
-import { getNumberArrayFrom } from '../../js/utils/number-convertor.js';
+import { getNumberArrayFrom } from '../../packages/core/js/utils/number-convertor.js';
 // https://www.npmjs.com/package/jest-extended#tobearrayofsize
 import { toBeArrayOfSize } from 'jest-extended';
 

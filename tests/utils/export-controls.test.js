@@ -1,6 +1,6 @@
 import { JSDOM } from 'jsdom';
-import { ExportControls } from '../../js/gui_components/exportControls.js';
-import { Download } from '../../js/gui_components/download.js';
+import { ExportControls } from '../../packages/core-ui/js/gui_components/exportControls.js';
+import { Download } from '../../packages/core-ui/js/gui_components/download.js';
 
 async function flushAsyncWork() {
   await Promise.resolve();

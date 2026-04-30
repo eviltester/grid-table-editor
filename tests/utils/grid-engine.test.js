@@ -3,7 +3,7 @@ import {
   GRID_ENGINE_TABULATOR,
   normaliseGridEngineName,
   resolveGridEngine,
-} from '../../js/gui_components/data-grid-editor/grid-engine.js';
+} from '../../packages/core-ui/js/gui_components/data-grid-editor/grid-engine.js';
 
 describe('Grid engine selection', () => {
   test('normalises expected aliases', () => {

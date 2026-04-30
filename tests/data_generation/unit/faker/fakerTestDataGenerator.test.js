@@ -1,5 +1,5 @@
-import { TestDataRule } from '../../../../js/data_generation/testDataRule.js';
-import { FakerTestDataGenerator } from '../../../../js/data_generation/faker/fakerTestDataGenerator.js';
+import { TestDataRule } from '../../../../packages/core/js/data_generation/testDataRule.js';
+import { FakerTestDataGenerator } from '../../../../packages/core/js/data_generation/faker/fakerTestDataGenerator.js';
 import { faker } from '@faker-js/faker';
 
 describe('Can generate Random Data using Faker', () => {

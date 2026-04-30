@@ -14,7 +14,7 @@ test.describe('Filtering and Sorting', () => {
     for (let i = 0; i < fruits.length; i++) {
       // Add row
       await app.toolbar.clickAddRow();
-      await app.wait(300);
+      
       await app.grid.editCell((await app.grid.getRowCount()) - 1, 0, fruits[i]);
     }
     
@@ -27,7 +27,7 @@ test.describe('Filtering and Sorting', () => {
     // 2. Enter 'App' in the global Filter textbox
     const filterInput = app.toolbar.filterTextbox;
     await filterInput.fill('App');
-    await app.wait(500);
+    
     
     // expect: Only rows containing 'App' are displayed
     // The visible rows should only be those with 'Apple'
@@ -48,7 +48,7 @@ test.describe('Filtering and Sorting', () => {
     // expect: Filter is case-insensitive
     await filterInput.clear();
     await filterInput.fill('app');
-    await app.wait(500);
+    
     
     // Same result with lowercase
     const lowerCaseVisibleRows = app.grid.visibleRows;
@@ -57,7 +57,7 @@ test.describe('Filtering and Sorting', () => {
     
     // 3. Clear the filter text
     await filterInput.clear();
-    await app.wait(500);
+    
     
     // expect: All rows become visible again
     const allRowsCount = await app.grid.getRowCount();

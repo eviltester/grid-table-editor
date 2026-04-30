@@ -11,13 +11,13 @@ test.describe('Advanced Grid Features', () => {
     app.enableDefaultDialogHandling();
 
     await app.grid.addColumnRight();
-    await app.wait(500);
+    
 
     for (const value of ['Row1-Col1', 'Row2-Col1', 'Row3-Col1']) {
       await app.toolbar.clickAddRow();
-      await app.wait(300);
+      
       await app.grid.editCell((await app.grid.getRowCount()) - 1, 0, value);
-      await app.wait(200);
+      
     }
 
     await expect(app.grid.rows.last()).toBeVisible();
@@ -25,7 +25,7 @@ test.describe('Advanced Grid Features', () => {
     const firstRow = app.grid.visibleRows.first();
     const thirdRow = app.grid.visibleRows.nth(2);
     await firstRow.dragTo(thirdRow);
-    await app.wait(1000);
+    
 
     await expect(app.grid.headers.first()).toBeVisible();
     await expect(app.grid.grid).toBeVisible();

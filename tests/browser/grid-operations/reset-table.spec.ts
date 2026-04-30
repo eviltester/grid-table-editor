@@ -11,11 +11,11 @@ test.describe('Grid Basic Operations', () => {
 
     // 1. Add several rows with data
     await app.toolbar.clickAddRow();
-    await app.wait(300);
+    
     await app.toolbar.clickAddRow();
-    await app.wait(300);
+    
     await app.toolbar.clickAddRow();
-    await app.wait(500);
+    
     
     // Add some data to the newly added rows (they should be at the end)
     const rowCount = await app.grid.getRowCount();
@@ -23,7 +23,7 @@ test.describe('Grid Basic Operations', () => {
     // Add data to the last few rows (these should be the ones we added)
     for (let i = Math.max(0, rowCount - 3); i < rowCount; i++) {
       await app.grid.editCell(i, 0, `Test Data ${i}`);
-      await app.wait(200);
+      
     }
     
     // 2. Click 'Reset Table' button

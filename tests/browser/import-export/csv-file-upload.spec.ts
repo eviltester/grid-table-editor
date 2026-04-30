@@ -12,7 +12,7 @@ test.describe('Import Export Basic', () => {
     
     // Make sure CSV tab is selected
     await app.export.clickTab('csv');
-    await app.wait(500);
+    
     
     // Create a test CSV file
     const testCsvContent = 'Name,Age,City\nJohn,30,New York\nJane,25,London\nBob,35,Paris';
@@ -29,7 +29,7 @@ test.describe('Import Export Basic', () => {
       // Find the file input element
       const fileInput = app.export.csvFileInput;
       await fileInput.setInputFiles(testCsvPath);
-      await app.wait(1000);
+      
       
       // expect: File is loaded successfully
       // expect: Grid is populated with file data
@@ -40,14 +40,14 @@ test.describe('Import Export Basic', () => {
       
       // 3. Test with invalid file format
       await app.toolbar.clickResetTable();
-      await app.wait(500);
+      
       
       // Create a text file with invalid content
       const invalidPath = 'D:\\github\\grid-table-editor\\tests\\invalid.txt';
       writeFileSync(invalidPath, 'This is not a CSV file');
       
       await fileInput.setInputFiles(invalidPath);
-      await app.wait(1000);
+      
       
       // expect: Appropriate error message is displayed (if any)
       // expect: Grid remains in previous state

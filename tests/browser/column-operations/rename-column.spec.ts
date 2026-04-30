@@ -11,7 +11,7 @@ test.describe('Column Operations', () => {
     const app = new AppPage(page);
     await app.goto();
     await app.toolbar.clickResetTable();
-    await app.wait(500);
+    
 
     // Set up dialog handler
     app.page.on('dialog', async (dialog) => {
@@ -32,7 +32,7 @@ test.describe('Column Operations', () => {
 
     // 1. Click '[~] Rename Column' control
     await app.grid.clickColumnControl('rename');
-    await app.wait(1000);
+    
 
     // expect: Column header updates with new name
     const headerText = await app.page.locator('#myGrid .tabulator-col').first().textContent();
@@ -40,10 +40,10 @@ test.describe('Column Operations', () => {
 
     // 3. Verify change is reflected in export formats
     await app.export.clickTab('CSV');
-    await app.wait(500);
+    
 
     await app.export.clickSetTextFromGrid();
-    await app.wait(500);
+    
 
     const textAreaContent = await app.export.getTextAreaContent();
     expect(textAreaContent).toContain('TestColumn1');

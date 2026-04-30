@@ -11,7 +11,7 @@ test.describe('Column Operations', () => {
     const app = new AppPage(page);
     await app.goto();
     await app.toolbar.clickResetTable();
-    await app.wait(500);
+    
 
     // Set up dialog handler
     app.page.on('dialog', async (dialog) => {
@@ -32,14 +32,14 @@ test.describe('Column Operations', () => {
 
     // First, add a column to have multiple columns.
     await app.grid.clickColumnControl('Instructions', 'add-right');
-    await app.wait(1000);
+    
 
     // Get initial column count.
     const initialColumnCount = await app.page.locator('#myGrid .tabulator-col').count();
 
     // 1. Click '[x] Delete Column' control.
     await app.grid.clickColumnControl('Instructions', 'delete');
-    await app.wait(1000);
+    
 
     // expect: Target column is removed.
     const afterDeleteColumnCount = await app.page.locator('#myGrid .tabulator-col').count();

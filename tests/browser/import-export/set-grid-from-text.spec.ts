@@ -11,23 +11,23 @@ test.describe('Import Export Basic', () => {
     
     // 1. Clear the grid and enter valid CSV data in the text area
     await app.toolbar.clickResetTable();
-    await app.wait(500);
+    
     
     // Make sure CSV tab is selected
     await app.export.clickTab('csv');
-    await app.wait(500);
+    
 
     // Switch to edit mode so "Set Grid From Text" is enabled
     app.page.once('dialog', async (dialog) => {
       await dialog.accept();
     });
     await app.export.clickPreview();
-    await app.wait(300);
+    
     
     // Enter CSV data in the text area
     const csvData = 'Name,Age,City\nJohn,30,New York\nJane,25,London\nBob,35,Paris';
     await app.export.setTextAreaContent(csvData);
-    await app.wait(500);
+    
     
     // expect: Text area contains properly formatted CSV
     const textContent = await app.export.textArea.inputValue();
@@ -39,7 +39,7 @@ test.describe('Import Export Basic', () => {
     
     // 2. Click 'Set Grid From Text' button
     await setGridBtn.click();
-    await app.wait(1000);
+    
     
     // expect: Grid is populated with data from text area
     const rowCount = await app.grid.getVisibleRowCount();
@@ -56,14 +56,14 @@ test.describe('Import Export Basic', () => {
     
     // 3. Test with malformed CSV data
     await app.toolbar.clickResetTable();
-    await app.wait(500);
+    
     
     const malformedCsv = 'Name,Age\nJohn,30\nJane\nBob,35,Paris,Extra';
     await app.export.setTextAreaContent(malformedCsv);
-    await app.wait(500);
+    
     
     await setGridBtn.click();
-    await app.wait(1000);
+    
     
     // expect: Error handling displays appropriate message
     // The app might show an error or handle it gracefully

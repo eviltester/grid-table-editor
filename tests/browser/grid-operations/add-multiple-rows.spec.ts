@@ -10,7 +10,7 @@ test.describe('Grid Basic Operations', () => {
     const app = new AppPage(page);
     await app.goto();
     await app.toolbar.clickResetTable();
-    await app.wait(500);
+    
   });
 
   test('Add Multiple Rows', async ({ page }) => {
@@ -26,7 +26,7 @@ test.describe('Grid Basic Operations', () => {
     }
 
     await app.toolbar.clickAddRowsAbove();
-    await app.wait(500);
+    
 
     // expect: New row is added above current selection
     const afterAboveCount = await app.grid.getRowCount();
@@ -37,10 +37,10 @@ test.describe('Grid Basic Operations', () => {
 
     // 2. Click 'Add Rows Below' button
     await app.grid.clickRow(0);
-    await app.wait(300);
+    
 
     await app.toolbar.clickAddRowsBelow();
-    await app.wait(500);
+    
 
     // expect: New row is added below current selection
     const afterBelowCount = await app.grid.getRowCount();
@@ -51,13 +51,13 @@ test.describe('Grid Basic Operations', () => {
 
     // 3. Add multiple rows and verify positioning
     await app.grid.clickRow(0);
-    await app.wait(300);
+    
 
     // Add a few more rows
     await app.toolbar.clickAddRowsBelow();
-    await app.wait(300);
+    
     await app.toolbar.clickAddRowsBelow();
-    await app.wait(500);
+    
 
     // expect: All rows are added in correct positions
     const finalCount = await app.grid.getRowCount();

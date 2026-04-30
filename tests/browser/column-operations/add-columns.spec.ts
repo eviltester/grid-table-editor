@@ -11,7 +11,7 @@ test.describe('Column Operations', () => {
     const app = new AppPage(page);
     await app.goto();
     await app.toolbar.clickResetTable();
-    await app.wait(500);
+    
     
     // Set up dialog handler with unique column names
     app.page.on('dialog', async (dialog) => {
@@ -33,7 +33,7 @@ test.describe('Column Operations', () => {
 
     // 1. Click '[<+] Add Column Left' control
     await app.grid.clickColumnControl('Instructions', 'add-left');
-    await app.wait(1500);
+    
 
     // expect: New column is added to the left of current column
     const afterLeftColumnCount = await app.grid.getColumnCount();
@@ -41,7 +41,7 @@ test.describe('Column Operations', () => {
 
     // 2. Click '[+>] Add Column Right' control
     await app.grid.clickColumnControl('Instructions', 'add-right');
-    await app.wait(1500);
+    
 
     // expect: New column is added to the right of current column
     const afterRightColumnCount = await app.grid.getColumnCount();

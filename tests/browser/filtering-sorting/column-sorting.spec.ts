@@ -14,14 +14,14 @@ test.describe('Filtering and Sorting', () => {
     const fruits = ['Cherry', 'Apple', 'Banana', 'Date'];
     for (let i = 0; i < fruits.length; i++) {
       await app.toolbar.clickAddRow();
-      await app.wait(300);
+      
       await app.grid.editCell((await app.grid.getRowCount()) - 1, 0, fruits[i]);
-      await app.wait(200);
+      
     }
     
     // 1. Click 'Sort Asc' arrow in column header
     await app.grid.clickSortAsc(0);
-    await app.wait(500);
+    
     
     // expect: Column data is sorted in ascending order
     const firstCell = await (await app.grid.getVisibleCell(0, 0)).textContent();
@@ -40,7 +40,7 @@ test.describe('Filtering and Sorting', () => {
     
     // 2. Click 'Sort Desc' arrow in same column
     await app.grid.clickSortDesc(0);
-    await app.wait(500);
+    
     
     // expect: Column data is sorted in descending order
     const descFirstCell = await (await app.grid.getVisibleCell(0, 0)).textContent();
@@ -55,7 +55,7 @@ test.describe('Filtering and Sorting', () => {
     
     // 3. Click 'Clear Sort' (x) control
     await app.grid.clickSortNone(0);
-    await app.wait(500);
+    
     
     // expect: Column returns to original order
     // expect: Sort indicators are removed

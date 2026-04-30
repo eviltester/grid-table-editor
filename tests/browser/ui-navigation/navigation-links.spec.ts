@@ -18,7 +18,7 @@ test.describe('User Interface and Navigation', () => {
     
     // 2. Click on 'Generator' link
     await app.gotoGenerator();
-    await app.wait(1000);
+    
     
     // expect: Navigates to generator.html page
     await expect(page).toHaveURL(/generator\.html/);
@@ -28,7 +28,7 @@ test.describe('User Interface and Navigation', () => {
     
     // 3. Navigate back to app.html
     await app.goBack();
-    await app.wait(1000);
+    
     
     // expect: Can navigate back to app.html
     await expect(page).toHaveURL(/app\.html/);
@@ -38,7 +38,7 @@ test.describe('User Interface and Navigation', () => {
     
     // 4. Test 'Docs' and 'Blog' links
     await app.gotoDocs();
-    await app.wait(1000);
+    
     
     // expect: External links open appropriately
     // Docs link goes to /docs/intro
@@ -47,7 +47,7 @@ test.describe('User Interface and Navigation', () => {
     
     // Go back
     await app.goBack();
-    await app.wait(500);
+    
     
     // expect: Navigation doesn't break current session
     await expect(app.grid.grid).toBeVisible();

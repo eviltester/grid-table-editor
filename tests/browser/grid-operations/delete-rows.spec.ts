@@ -10,7 +10,7 @@ test.describe('Grid Basic Operations', () => {
     const app = new AppPage(page);
     await app.goto();
     await app.toolbar.clickResetTable();
-    await app.wait(500);
+    
   });
 
   test('Delete Rows', async ({ page }) => {
@@ -26,14 +26,14 @@ test.describe('Grid Basic Operations', () => {
 
     // Add a new row
     await app.toolbar.clickAddRow();
-    await app.wait(500);
+    
 
     const rowCountAfterAdd = await app.grid.getRowCount();
     expect(rowCountAfterAdd).toBe(initialRowCount + 1);
 
     // Click on the last row (the one we just added)
     await app.grid.clickRow(rowCountAfterAdd - 1);
-    await app.wait(500);
+    
 
     // Verify row is selected
     const selectedRow = app.page.locator('#myGrid .tabulator-row.tabulator-selected');
@@ -41,7 +41,7 @@ test.describe('Grid Basic Operations', () => {
 
     // Click 'Delete Selected Rows' button
     await app.toolbar.clickDeleteSelectedRows();
-    await app.wait(500);
+    
 
     // Verify the row was deleted
     const afterDeleteCount = await app.grid.getRowCount();

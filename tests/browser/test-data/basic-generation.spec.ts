@@ -33,7 +33,7 @@ test.describe('Test Data Generation', () => {
     // 4. Set 'How Many?' to 5 and click 'Generate' button
     await app.testData.setHowMany('5');
     await app.testData.clickGenerate();
-    await app.wait(1500); // Wait for generation to complete
+     // Wait for generation to complete
 
     // expect: 5 rows of test data are generated
     const rowCount = await app.grid.getVisibleRowCount();

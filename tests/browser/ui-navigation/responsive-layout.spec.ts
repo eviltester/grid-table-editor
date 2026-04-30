@@ -12,7 +12,7 @@ test.describe('User Interface and Navigation', () => {
     // 1. Resize browser window to test responsive behavior
     // Test with a medium-sized window
     await app.setViewport(1024, 768);
-    await app.wait(500);
+    
     
     // expect: Layout adapts to different screen sizes
     await expect(app.grid.grid).toBeVisible();
@@ -29,7 +29,7 @@ test.describe('User Interface and Navigation', () => {
     
     // 2. Test interface on mobile viewport sizes
     await app.setViewport(375, 667); // iPhone SE size
-    await app.wait(500);
+    
     
     // expect: Interface remains functional on smaller screens
     await expect(app.grid.grid).toBeVisible();
@@ -45,7 +45,7 @@ test.describe('User Interface and Navigation', () => {
     
     // Reset to default size
     await app.setViewport(1280, 720);
-    await app.wait(500);
+    
     
     await expect(app.grid.grid).toBeVisible();
   });

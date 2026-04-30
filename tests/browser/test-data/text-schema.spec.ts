@@ -23,7 +23,7 @@ Email|faker|faker.internet.email
 Status|regex|(Active|Inactive)`;
 
     await schemaTextArea.fill(schemaDefinition);
-    await app.wait(500);
+    
 
     // expect: Text schema accepts manual input
     const textContent = await schemaTextArea.inputValue();
@@ -31,7 +31,7 @@ Status|regex|(Active|Inactive)`;
 
     // expect: Definition grid updates to match text input
     await app.testData.clickRefreshPreview();
-    await app.wait(500);
+    
 
     // 3. Use complex faker expressions and RegEx patterns
     const complexSchema = `Product|faker|faker.commerce.productName
@@ -39,14 +39,14 @@ Price|faker|faker.commerce.price
 Category|(Electronics|Clothing|Food|Books)`;
 
     await schemaTextArea.fill(complexSchema);
-    await app.wait(500);
+    
 
     // expect: Complex expressions are parsed correctly
     // expect: Generated data matches complex patterns
 
     // Click 'Refresh Text Preview' button
     await app.testData.clickRefreshPreview();
-    await app.wait(500);
+    
 
     // expect: Text schema is synchronized with definition grid
     // expect: Preview reflects current definitions
@@ -54,7 +54,7 @@ Category|(Electronics|Clothing|Food|Books)`;
     // Generate data to verify
     await app.testData.setHowMany('3');
     await app.testData.clickGenerate();
-    await app.wait(1500);
+    
 
     // Verify data was generated
     const rows = app.page.locator('#myGrid .tabulator-row:visible');

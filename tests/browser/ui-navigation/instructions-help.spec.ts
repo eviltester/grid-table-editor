@@ -28,7 +28,7 @@ test.describe('User Interface and Navigation', () => {
     const firstHelpIcon = helpIcons.first();
     if (await firstHelpIcon.isVisible()) {
       await firstHelpIcon.hover();
-      await app.wait(500);
+      
       // Tooltip may appear as a title attribute or custom tooltip
     }
     

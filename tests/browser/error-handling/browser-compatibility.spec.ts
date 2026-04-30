@@ -12,18 +12,18 @@ test.describe('Error Handling and Edge Cases', () => {
     // 1. Test copy to clipboard functionality
     // Add some data first
     await app.toolbar.clickAddRow();
-    await app.wait(300);
+    
     
     await app.grid.editCell((await app.grid.getRowCount()) - 1, 0, 'Test Copy');
-    await app.wait(500);
+    
     
     // Make sure CSV tab is selected
     await app.export.clickTab('csv');
-    await app.wait(500);
+    
     
     // Click Set Text From Grid
     await app.export.clickSetTextFromGrid();
-    await app.wait(500);
+    
     
     // Try to copy
     const copyButton = app.export.copyButton;
@@ -32,7 +32,7 @@ test.describe('Error Handling and Edge Cases', () => {
     // Note: Playwright may not have clipboard permissions in all browsers
     // Just verify the button is clickable
     await copyButton.click();
-    await app.wait(500);
+    
     
     // expect: Fallback methods work if clipboard API is unavailable
     // This is handled by the app
@@ -53,7 +53,7 @@ test.describe('Error Handling and Edge Cases', () => {
     try {
       // expect: File type detection works correctly
       await fileInput.setInputFiles(csvPath);
-      await app.wait(1000);
+      
       
       // Grid should have data
       const rowCount = await app.grid.getVisibleRowCount();
@@ -61,11 +61,11 @@ test.describe('Error Handling and Edge Cases', () => {
       
       // Test with invalid file
       await app.toolbar.clickResetTable();
-      await app.wait(500);
+      
       
       // expect: Unsupported files are rejected gracefully
       await fileInput.setInputFiles(txtPath);
-      await app.wait(1000);
+      
       
       // Grid should handle this gracefully
       await expect(app.grid.grid).toBeVisible();
@@ -82,12 +82,12 @@ test.describe('Error Handling and Edge Cases', () => {
     // 3. Test download functionality
     // Reset and add data
     await app.toolbar.clickResetTable();
-    await app.wait(500);
+    
     
     await app.toolbar.clickAddRow();
-    await app.wait(300);
+    
     await app.grid.editCell((await app.grid.getRowCount()) - 1, 0, 'Download Test');
-    await app.wait(500);
+    
     
     // expect: File downloads work across browsers
     const downloadPromise = app.waitForDownload(async () => {

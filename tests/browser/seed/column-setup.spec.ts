@@ -14,7 +14,7 @@ test.describe('Seed: Column Setup', () => {
 
     // Reset table to clear instructions
     await app.toolbar.clickResetTable();
-    await app.wait(500);
+    
 
     // Verify basic elements are present
     await app.expectPageLoaded();

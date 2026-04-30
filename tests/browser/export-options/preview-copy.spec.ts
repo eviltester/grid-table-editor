@@ -12,23 +12,23 @@ test.describe('Export Options and Controls', () => {
     // Add sample data
     for (let i = 0; i < 15; i++) {
       await app.toolbar.clickAddRow();
-      await app.wait(200);
+      
       await app.grid.editCell((await app.grid.getRowCount()) - 1, 0, `Test Data ${i + 1}`);
-      await app.wait(100);
+      
     }
     
     // Make sure CSV tab is selected
     await app.export.clickTab('csv');
-    await app.wait(500);
+    
     
     // Click Set Text From Grid
     await app.export.clickSetTextFromGrid();
-    await app.wait(500);
+    
     
     // 1. Click 'Preview (10)' button
     const previewButton = app.export.previewButton;
     await previewButton.click();
-    await app.wait(500);
+    
     
     // expect: Preview mode is activated
     // expect: Only first 10 rows are displayed
@@ -40,7 +40,7 @@ test.describe('Export Options and Controls', () => {
     
     // 2. Toggle back to full view
     await previewButton.click();
-    await app.wait(500);
+    
     
     // expect: All data is displayed again
     const fullText = await app.export.textArea.inputValue();
@@ -59,7 +59,7 @@ test.describe('Export Options and Controls', () => {
     });
     
     await copyButton.click();
-    await app.wait(500);
+    
     
     // Clipboard read permission is not guaranteed in all environments.
     await expect(copyButton).toBeVisible();

@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { AppPage } from '../pages/AppPage';
-import { writeFileSync, unlinkSync } from 'fs';
+import { existsSync, mkdirSync, unlinkSync, writeFileSync } from 'fs';
+import { join } from 'path';
 
 // spec: tests/app-html-test-plan.md
 // seed: tests/seed/import-export-setup.spec.ts
@@ -9,15 +10,19 @@ test.describe('Import Export Basic', () => {
   test('Drag and Drop Import', async ({ page }) => {
     const app = new AppPage(page);
     await app.goto();
-    await app.wait(1000);
+    
     
     // Make sure CSV tab is selected
     await app.export.clickTab('csv');
-    await app.wait(500);
+    
     
     // Create a test CSV file for drag and drop
     const testCsvContent = 'Name,Age,City\nJohn,30,New York\nJane,25,London\nBob,35,Paris';
-    const testCsvPath = 'D:\\github\\grid-table-editor\\tests\\drag-drop-test.csv';
+    const tempDir = join(process.cwd(), 'tests', '.tmp');
+    if (!existsSync(tempDir)) {
+      mkdirSync(tempDir, { recursive: true });
+    }
+    const testCsvPath = join(tempDir, 'drag-drop-test.csv');
     writeFileSync(testCsvPath, testCsvContent);
     
     try {
@@ -29,11 +34,11 @@ test.describe('Import Export Basic', () => {
       // expect: Drop zone responds to drag event
       // expect: Visual feedback indicates valid drop target
       await dropZone.hover();
-      await app.wait(300);
+      
       
       // 2. Drop the CSV file in the drop zone
       await fileInput.setInputFiles(testCsvPath);
-      await app.wait(1000);
+      
       
       // expect: File is processed successfully
       // expect: Grid is updated with file content
@@ -44,14 +49,15 @@ test.describe('Import Export Basic', () => {
       
       // 3. Test drag and drop with invalid file type
       await app.toolbar.clickResetTable();
-      await app.wait(500);
+      
       
       // Create an invalid file
-      const invalidPath = 'D:\\github\\grid-table-editor\\tests\\invalid.txt';
+      const invalidPath = join(tempDir, 'invalid.txt');
       writeFileSync(invalidPath, 'This is not a CSV file');
+      expect(existsSync(invalidPath)).toBe(true);
       
       await fileInput.setInputFiles(invalidPath);
-      await app.wait(1000);
+      
       
       // expect: Error message indicates unsupported file type (if any)
       // expect: Grid remains unchanged

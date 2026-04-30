@@ -13,18 +13,18 @@ test.describe('Advanced Grid Features', () => {
     // Add multiple rows with data
     for (let i = 0; i < 5; i++) {
       await app.toolbar.clickAddRow();
-      await app.wait(300);
+      
       await app.grid.editCell((await app.grid.getRowCount()) - 1, 0, `Row ${i + 1}`);
-      await app.wait(200);
+      
     }
     
     // 1. Select multiple rows using Ctrl+click
     await app.grid.clickRow(0);
-    await app.wait(200);
+    
     await app.grid.selectRowWithCtrl(1);
-    await app.wait(200);
+    
     await app.grid.selectRowWithCtrl(2);
-    await app.wait(500);
+    
     
     // expect: Multiple rows are selected simultaneously
     const selectedRows = app.grid.selectedRows;
@@ -37,9 +37,9 @@ test.describe('Advanced Grid Features', () => {
     // 2. Select range of rows using Shift+click
     // First click on the first row
     await app.grid.clickRow(0);
-    await app.wait(200);
+    
     await app.grid.selectRowWithShift(3);
-    await app.wait(500);
+    
     
     // expect: Range selection works correctly
     // expect: All rows in range are selected
@@ -49,7 +49,7 @@ test.describe('Advanced Grid Features', () => {
     // 3. Perform operations on multi-selected rows (delete, edit)
     const deleteBtn = app.toolbar.deleteSelectedRowsButton;
     await deleteBtn.click();
-    await app.wait(500);
+    
     
     // expect: Operations apply to all selected rows
     // expect: Unselected rows are unaffected

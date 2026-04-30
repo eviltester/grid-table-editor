@@ -10,7 +10,7 @@ test.describe('Grid Basic Operations', () => {
     const app = new AppPage(page);
     await app.goto();
     await app.toolbar.clickResetTable();
-    await app.wait(500);
+    
   });
 
   test('Add Single Row', async ({ page }) => {
@@ -24,7 +24,7 @@ test.describe('Grid Basic Operations', () => {
     
     // 2. Click 'Add Row' button
     await app.toolbar.clickAddRow();
-    await app.wait(500);
+    
     
     // expect: A new empty row is added to the grid
     const newRowCount = await app.grid.getRowCount();
@@ -39,12 +39,12 @@ test.describe('Grid Basic Operations', () => {
     
     // expect: Cell becomes editable
     await cell.dblclick();
-    await app.wait(300);
+    
     
     // expect: Text is entered successfully
     await app.type('Test Data');
     await app.press('Enter');
-    await app.wait(500);
+    
     
     // expect: Cell content is saved
     await expect(cell).toHaveText('Test Data');

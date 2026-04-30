@@ -30,16 +30,16 @@ test.describe('Export Formats', () => {
     
     for (let i = 0; i < testData.length; i++) {
       await app.toolbar.clickAddRow();
-      await app.wait(300);
+      
       
       const newRow = app.page.locator('#myGrid .tabulator-row').last();
       
       const cell1 = newRow.locator('.tabulator-cell').first();
       await cell1.dblclick();
-      await app.wait(200);
+      
       await app.type(testData[i].col1);
       await app.press('Enter');
-      await app.wait(200);
+      
       
     }
     

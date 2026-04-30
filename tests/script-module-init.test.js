@@ -105,7 +105,11 @@ describe('script module initialization', () => {
       require('../packages/core-ui/js/script.js');
     });
 
-    expect(addEventListenerSpy).toHaveBeenCalledWith('DOMContentLoaded', expect.any(Function));
+    expect(addEventListenerSpy).toHaveBeenCalledWith(
+      'DOMContentLoaded',
+      expect.any(Function),
+      expect.objectContaining({ once: true })
+    );
 
     await domContentLoadedHandler();
 

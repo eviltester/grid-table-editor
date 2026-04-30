@@ -6,6 +6,7 @@ import { ensureGridLibraryLoaded } from './gui_components/data-grid-editor/grid-
 import { TabbedTextControl } from './gui_components/tabbed-text-control.js';
 import { ImportExportControls } from './gui_components/import-export-controls.js';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
+import { initHelpTooltips } from './help/help-tooltips.js';
 
 var importer, exporter;
 var mainDataGrid;
@@ -54,6 +55,12 @@ async function bootstrapApp({
   importExportController.renderTextFromGrid();
   importExportController.setFileFormatType();
   importExportController.setOptionsViewForFormatType();
+  initHelpTooltips({ documentObj, includeAppOnlyEntries: true });
+
+  const loadingMessage = documentObj.getElementById('initial-load');
+  if (loadingMessage) {
+    loadingMessage.remove();
+  }
 
   enableTestDataGenerationInterfaceFn(
     'testDataGeneratorContainer',
@@ -65,9 +72,15 @@ async function bootstrapApp({
 
 // setup the grid after the page has finished loading
 if (typeof document !== 'undefined') {
-  document.addEventListener('DOMContentLoaded', async function () {
+  const runBootstrap = async function () {
     await bootstrapApp();
-  });
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', runBootstrap, { once: true });
+  } else {
+    runBootstrap();
+  }
 }
 
 function setTextFromInstructions() {

@@ -321,7 +321,9 @@ class ImportExportControls {
         this.applyCurrentTypeOptions(options);
         this.setOptionsApplyDirtyState(optionsparent, false);
       });
-      window.updateHelpHints();
+      if (typeof window !== 'undefined' && typeof window.updateHelpHints === 'function') {
+        window.updateHelpHints();
+      }
     }
 
     optionsparent.style.display = 'block';

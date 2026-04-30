@@ -1,6 +1,7 @@
 import { ensureGridLibraryLoaded } from './gui_components/data-grid-editor/grid-library-loader.js';
 import { DataGeneratorPage } from './gui_components/data-generator-page.js';
 import { faker } from 'https://cdn.skypack.dev/@faker-js/faker@v9.7.0';
+import { initHelpTooltips } from './help/help-tooltips.js';
 
 async function bootstrapGeneratorPage({
   documentObj = document,
@@ -23,6 +24,7 @@ async function bootstrapGeneratorPage({
     RandExp: globalThis?.RandExp,
   });
   page.init();
+  initHelpTooltips({ documentObj });
 
   const loadingMessage = documentObj.getElementById('generator-initial-load');
   if (loadingMessage) {

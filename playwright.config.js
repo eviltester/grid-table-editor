@@ -6,6 +6,7 @@ const baseURL = `http://127.0.0.1:${port}`;
 module.exports = defineConfig({
   testDir: './tests/browser',
   timeout: 30000,
+  workers: process.env.CI ? 6 : 4,
   expect: {
     timeout: 15000,
   },

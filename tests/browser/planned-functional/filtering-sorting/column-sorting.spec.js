@@ -14,6 +14,10 @@ test.describe('3. Filtering and Sorting', () => {
     await expect.poll(async () => appPage.gridEditor.renderer.getCellTextByColumnName(col, 0)).toBe('Cherry');
     await expect.poll(async () => appPage.gridEditor.header.getColumnSortState(col)).toContain('desc');
 
+    await appPage.gridEditor.clearSort();
+    await expect.poll(async () => appPage.gridEditor.renderer.getCellTextByColumnName(col, 0)).toBe('Banana');
+    await expect.poll(async () => appPage.gridEditor.header.getColumnSortState(col)).toBe('none');
+
     expectNoPageErrors(pageErrors);
   });
 });

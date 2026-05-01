@@ -229,6 +229,8 @@ Custom header styles for default items
 .customSort{
   display: flex;
   flex: 0;
+  align-items: center;
+  gap: 6px;
 }
 .customHeaderMenuButton {
   flex:0;
@@ -241,16 +243,22 @@ Custom header styles for default items
 }
 
 .customSortDownLabel {
-  margin: 0 0 0 3px;
+  margin: 0 0 0 6px;
+  padding: 0 2px;
+  cursor: pointer;
 }
 
 .customSortUpLabel {
   margin: 0;
+  padding: 0 2px;
+  cursor: pointer;
 }
 
 .customSortRemoveLabel {
-  margin: 0 0 0 3px;
+  margin: 0 0 0 2px;
+  padding: 0 2px;
   font-size: 11px;
+  cursor: pointer;
 }
 
 .active {

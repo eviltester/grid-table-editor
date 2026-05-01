@@ -32,15 +32,6 @@ class GridHeaderComponent {
     };
     const title = actionTitleMap[action] || action;
     const headerRoot = headerTitle.locator(`xpath=ancestor::*[contains(@class,'tabulator-col')]`);
-    if (action === 'sort-asc') {
-      await headerTitle.click();
-      return;
-    }
-    if (action === 'sort-desc') {
-      await headerTitle.click();
-      await headerTitle.click();
-      return;
-    }
     const actionLocator = headerRoot.locator(`[title="${title}"], [title*="${title}"]`).first();
     await actionLocator.evaluate((el) => el.click());
   }
@@ -85,8 +76,7 @@ class GridHeaderComponent {
   }
 
   async sortDesc(columnName) {
-    const headerTitle = this._headerTitleByName(columnName);
-    await headerTitle.click();
+    await this.clickAction(columnName, 'sort-desc');
   }
 
   async setColumnFilter(columnName, value) {

@@ -34,6 +34,19 @@ class GridExtensionAgGrid {
     this.gridApi.setFilterModel(null);
   }
 
+  clearSort() {
+    if (typeof this.gridApi.applyColumnState === 'function') {
+      this.gridApi.applyColumnState({
+        defaultState: { sort: null },
+      });
+      return;
+    }
+
+    if (typeof this.gridApi.setSortModel === 'function') {
+      this.gridApi.setSortModel(null);
+    }
+  }
+
   filterText(text) {
     this.gridApi.setGridOption('quickFilterText', text);
   }

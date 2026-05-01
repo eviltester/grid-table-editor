@@ -14,6 +14,7 @@ class GridEditorComponent {
     this.deleteSelectedRowsButton = page.getByRole('button', { name: 'Delete Selected Rows' });
     this.quickFilterInput = page.getByLabel('Filter:');
     this.clearFiltersButton = page.getByRole('button', { name: 'Clear Filters' });
+    this.clearSortButton = page.getByRole('button', { name: 'Clear Sort' });
     this.resetTableButton = page.getByRole('button', { name: 'Reset Table' });
   }
 
@@ -26,6 +27,7 @@ class GridEditorComponent {
     await this.deleteSelectedRowsButton.waitFor({ state: 'visible' });
     await this.quickFilterInput.waitFor({ state: 'visible' });
     await this.clearFiltersButton.waitFor({ state: 'visible' });
+    await this.clearSortButton.waitFor({ state: 'visible' });
     await this.resetTableButton.waitFor({ state: 'visible' });
   }
 
@@ -77,6 +79,10 @@ class GridEditorComponent {
 
   async clearFilters() {
     await this.clearFiltersButton.click();
+  }
+
+  async clearSort() {
+    await this.clearSortButton.click();
   }
 
   async resetTable() {

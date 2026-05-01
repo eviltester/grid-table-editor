@@ -43,13 +43,13 @@ class ExtendedDataGrid {
                         <div class="customHeaderLabel">${escapeHtml(columnName)}</div>
                         <div class="customSort">
                             <span class="customSortDownLabel" data-action="sort-desc" title="Sort Desc">
-                                <i class="ag-icon ag-icon-desc"></i>
+                                ↓
                             </span>
                             <span class="customSortUpLabel" data-action="sort-asc" title="Sort Asc">
-                                <i class="ag-icon ag-icon-asc"></i>
+                                ↑
                             </span>
                             <span class="customSortRemoveLabel" data-action="sort-none" title="Clear Sort">
-                                <i class="ag-icon ag-icon-cancel"></i>
+                                ×
                             </span>
                         </div>
                     </div>

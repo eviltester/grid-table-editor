@@ -41,6 +41,12 @@ class GridExtensionTabulator {
     this.tabulator.clearFilter(true);
   }
 
+  clearSort() {
+    if (typeof this.tabulator.clearSort === 'function') {
+      this.tabulator.clearSort();
+    }
+  }
+
   // [x] convert to tabulature
   filterText(text) {
     this.tabUtils.filterAcrossAllColumns(text);

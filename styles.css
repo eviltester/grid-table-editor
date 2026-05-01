@@ -228,6 +228,8 @@ button:disabled{
   flex: 0 0 8px;
   opacity: 0.7;
   transition: background-color 120ms ease, opacity 120ms ease;
+  touch-action: none;
+  -webkit-user-select: none;
 }
 
 .options-preview-splitter:hover{

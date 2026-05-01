@@ -27,6 +27,7 @@ class ImportExportControls {
     this.defaultOptionsPanelWidthPx = 272;
     this.minOptionsPanelWidthPx = 180;
     this.maxOptionsPanelWidthPx = 520;
+    this.minPreviewPanelWidthPx = 220;
     this.currentOptionsPanelWidthPx = null;
     this._activeSplitDrag = null;
   }
@@ -327,7 +328,8 @@ class ImportExportControls {
     text_area.style.width = '100%';
     text_area.style.height = '100%';
 
-    this._setOptionsPanelWidth(optionsparent, this._getInitialOptionsPanelWidthPx());
+    const initialWidth = this._clampOptionsPanelWidth(this._getInitialOptionsPanelWidthPx(), edit_area);
+    this._setOptionsPanelWidth(optionsparent, initialWidth);
     optionsparent.style.height = '100%';
 
     optionsparent.innerHTML = '';
@@ -494,6 +496,7 @@ class ImportExportControls {
 
     splitter.style.display = 'block';
     textArea.style.flex = '1 1 auto';
+    this._updateSplitterAriaValues(splitter, optionsParent, editArea);
 
     if (splitter.dataset.splitterInitialised === 'true') {
       return;
@@ -501,10 +504,16 @@ class ImportExportControls {
 
     splitter.dataset.splitterInitialised = 'true';
     splitter.addEventListener('pointerdown', (event) => this._beginSplitterDrag(event, editArea, optionsParent));
+    splitter.addEventListener('keydown', (event) =>
+      this._handleSplitterKeyDown(event, optionsParent, editArea, splitter)
+    );
   }
 
   _beginSplitterDrag(event, editArea, optionsParent) {
     if (!event || event.button > 0) {
+      return;
+    }
+    if (this._activeSplitDrag) {
       return;
     }
 
@@ -541,6 +550,10 @@ class ImportExportControls {
     const requestedWidth = dragState.startWidth + deltaX;
     const boundedWidth = this._clampOptionsPanelWidth(requestedWidth, dragState.editArea);
     this._setOptionsPanelWidth(dragState.optionsParent, boundedWidth);
+    const splitter = document.querySelector('div.options-preview-splitter');
+    if (splitter) {
+      this._updateSplitterAriaValues(splitter, dragState.optionsParent, dragState.editArea);
+    }
   }
 
   _endSplitterDrag(event, onMove, onEnd) {
@@ -567,6 +580,37 @@ class ImportExportControls {
     this.currentOptionsPanelWidthPx = safeWidth;
   }
 
+  _handleSplitterKeyDown(event, optionsParent, editArea, splitter) {
+    if (!event) {
+      return;
+    }
+
+    const step = event.shiftKey ? 24 : 12;
+    let requestedWidth = this._readOptionsPanelWidthPx(optionsParent);
+    let handled = true;
+
+    if (event.key === 'ArrowLeft') {
+      requestedWidth -= step;
+    } else if (event.key === 'ArrowRight') {
+      requestedWidth += step;
+    } else if (event.key === 'Home') {
+      requestedWidth = this.minOptionsPanelWidthPx;
+    } else if (event.key === 'End') {
+      requestedWidth = this.maxOptionsPanelWidthPx;
+    } else {
+      handled = false;
+    }
+
+    if (!handled) {
+      return;
+    }
+
+    event.preventDefault();
+    const boundedWidth = this._clampOptionsPanelWidth(requestedWidth, editArea);
+    this._setOptionsPanelWidth(optionsParent, boundedWidth);
+    this._updateSplitterAriaValues(splitter, optionsParent, editArea);
+  }
+
   _readOptionsPanelWidthPx(optionsParent) {
     const parsed = Number.parseFloat(optionsParent?.style?.width || '');
     if (Number.isFinite(parsed)) {
@@ -585,9 +629,23 @@ class ImportExportControls {
   _clampOptionsPanelWidth(widthPx, editArea) {
     const editWidth = editArea?.getBoundingClientRect?.().width || 0;
     const maxByContainer =
-      editWidth > 0 ? Math.max(this.minOptionsPanelWidthPx, editWidth - 220) : this.maxOptionsPanelWidthPx;
+      editWidth > 0
+        ? Math.max(this.minOptionsPanelWidthPx, editWidth - this.minPreviewPanelWidthPx)
+        : this.maxOptionsPanelWidthPx;
     const maxAllowed = Math.min(this.maxOptionsPanelWidthPx, maxByContainer);
     return Math.min(Math.max(widthPx, this.minOptionsPanelWidthPx), maxAllowed);
+  }
+
+  _updateSplitterAriaValues(splitter, optionsParent, editArea) {
+    if (!splitter) {
+      return;
+    }
+    const min = this.minOptionsPanelWidthPx;
+    const max = this._clampOptionsPanelWidth(this.maxOptionsPanelWidthPx, editArea);
+    const now = this._clampOptionsPanelWidth(this._readOptionsPanelWidthPx(optionsParent), editArea);
+    splitter.setAttribute('aria-valuemin', `${min}`);
+    splitter.setAttribute('aria-valuemax', `${max}`);
+    splitter.setAttribute('aria-valuenow', `${now}`);
   }
 }
 

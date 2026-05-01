@@ -50,10 +50,23 @@ describe('PhpConvertor', () => {
     expect(convertor.fromDataTable(basicTable)).toContain('(object)array(');
   });
 
-  test('supports unquoted array keys option', () => {
+  test('unquoted array key mode keeps string keys quoted for PHP safety', () => {
     const convertor = new PhpConvertor();
     convertor.setOptions({ arrayKeyQuoteStyle: 'unquoted' });
-    expect(convertor.fromDataTable(basicTable)).toContain('name =>');
+    const output = convertor.fromDataTable(basicTable);
+    expect(output).toContain("'name' =>");
+    expect(output).not.toContain('name =>');
+  });
+
+  test('unquoted array key mode keeps sanitized numeric-like headers quoted', () => {
+    const table = new GenericDataTable();
+    table.setHeaders(['1', '2.5']);
+    table.appendDataRow(['Alice', '30']);
+    const convertor = new PhpConvertor();
+    convertor.setOptions({ arrayKeyQuoteStyle: 'unquoted' });
+    const output = convertor.fromDataTable(table);
+    expect(output).toContain("'_1' =>");
+    expect(output).toContain("'_2_5' =>");
   });
 
   test('supports null/boolean coercion options', () => {

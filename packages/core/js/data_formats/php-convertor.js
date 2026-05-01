@@ -104,7 +104,12 @@ class PhpConvertor {
 
   _buildAssocArrayPairs(headers, row) {
     return headers.map((header, index) => {
-      const key = this.config.options.arrayKeyQuoteStyle === 'unquoted' ? header : this._quote(header);
+      const headerText = String(header);
+      const keyCanBeBareNumeric = /^-?(?:\d+\.?\d*|\.\d+)$/.test(headerText);
+      const key =
+        this.config.options.arrayKeyQuoteStyle === 'unquoted' && keyCanBeBareNumeric
+          ? headerText
+          : this._quote(headerText);
       return `${key} => ${this._formatValue(row[index])}`;
     });
   }

@@ -58,7 +58,7 @@ When **Anonymous Objects** is disabled, choose the row object style:
 
 - `class` generates a class with `attr_accessor` and `initialize`
 - `struct` generates `Struct.new(...)`
-- `data` generates `Data.new(...)`
+- `data` generates `Data.define(...)`
 
 ## Field Name Style
 

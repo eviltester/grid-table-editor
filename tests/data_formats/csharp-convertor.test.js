@@ -37,6 +37,18 @@ describe('CSharpConvertor', () => {
     expect(output).toContain('new PersonRow {');
   });
 
+  test('deduplicates colliding PascalCase member names in class mode', () => {
+    const table = new GenericDataTable();
+    table.setHeaders(['name', 'Name']);
+    table.appendDataRow(['Alice', 'Alicia']);
+    const convertor = new CSharpConvertor();
+    convertor.setOptions({ useAnonymousObjects: false, objectClassName: 'person row' });
+    const output = convertor.fromDataTable(table);
+    expect(output).toContain('public object Name { get; set; }');
+    expect(output).toContain('public object Name_2 { get; set; }');
+    expect(output).toContain('new PersonRow { Name = "Alice", Name_2 = "Alicia" }');
+  });
+
   test('escapes C# keyword identifiers', () => {
     const table = new GenericDataTable();
     table.setHeaders(['class']);
@@ -63,6 +75,15 @@ describe('CSharpConvertor', () => {
     const convertor = new CSharpConvertor();
     convertor.setOptions({ quoteNumbers: true, dictionaryValueType: 'object' });
     expect(convertor.fromDataTable(basicTable)).toContain('new Dictionary<string, object>');
+  });
+
+  test('dictionary string override quotes numeric values even when Number Convert is off', () => {
+    const convertor = new CSharpConvertor();
+    convertor.setOptions({ quoteNumbers: false, dictionaryValueType: 'string' });
+    const output = convertor.fromDataTable(basicTable);
+    expect(output).toContain('new Dictionary<string, string>');
+    expect(output).toContain('{ "age", "30" }');
+    expect(output).not.toContain('{ "age", 30 }');
   });
 });
 

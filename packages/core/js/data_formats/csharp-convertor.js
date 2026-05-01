@@ -161,11 +161,11 @@ class CSharpConvertor {
     return `"${escaped}"`;
   }
 
-  _formatValue(value) {
+  _formatValue(value, forceStringOutput = false) {
     if (value === '' || value === null || value === undefined) {
       return this._quote('');
     }
-    if (!this.config.options.quoteNumbers && isNumericValue(value)) {
+    if (!forceStringOutput && !this.config.options.quoteNumbers && isNumericValue(value)) {
       return String(value);
     }
     return this._quote(value);
@@ -180,7 +180,6 @@ class CSharpConvertor {
   }
 
   _buildAnonymousRow(headers, row) {
-    const pairs = headers.map((header, index) => `{ ${this._quote(header)}, ${this._formatValue(row[index])} }`);
     const configuredType = this.config.options.dictionaryValueType || 'auto';
     const valueType =
       configuredType === 'string'
@@ -190,28 +189,28 @@ class CSharpConvertor {
           : this.config.options.quoteNumbers
             ? 'string'
             : 'object';
+    const forceStringOutput = valueType === 'string';
+    const pairs = headers.map(
+      (header, index) => `{ ${this._quote(header)}, ${this._formatValue(row[index], forceStringOutput)} }`
+    );
     if (!this.config.options.prettyPrint) {
       return `new Dictionary<string, ${valueType}> { ${pairs.join(', ')} }`;
     }
     return `${this._indent(1)}new Dictionary<string, ${valueType}> { ${pairs.join(', ')} }`;
   }
 
-  _buildObjectRow(headers, row, className) {
-    const props = headers.map(
-      (header, index) => `${escapeCSharpIdentifier(convertToPascalCase(header))} = ${this._formatValue(row[index])}`
-    );
+  _buildObjectRow(memberNames, row, className) {
+    const props = memberNames.map((memberName, index) => `${memberName} = ${this._formatValue(row[index])}`);
     if (!this.config.options.prettyPrint) {
       return `new ${className} { ${props.join(', ')} }`;
     }
     return `${this._indent(1)}new ${className} { ${props.join(', ')} }`;
   }
 
-  _buildClassDefinition(headers, className) {
+  _buildClassDefinition(memberNames, className) {
     const lines = [`public class ${className}`, '{'];
-    headers.forEach((header) => {
-      lines.push(
-        `${this._indent(1)}public object ${escapeCSharpIdentifier(convertToPascalCase(header))} { get; set; }`
-      );
+    memberNames.forEach((memberName) => {
+      lines.push(`${this._indent(1)}public object ${memberName} { get; set; }`);
     });
     lines.push('}');
     lines.push('');
@@ -240,6 +239,27 @@ class CSharpConvertor {
 
     const variableName = escapeCSharpIdentifier(convertStringToCSharpValidName(opts.variableName || 'data'));
     const objectClassName = escapeCSharpIdentifier(convertToPascalCase(opts.objectClassName || 'Row'));
+    const objectMemberNames = [];
+    const usedObjectMemberNames = new Set();
+    headers.forEach((header) => {
+      const baseMemberName = escapeCSharpIdentifier(convertToPascalCase(header));
+      if (!usedObjectMemberNames.has(baseMemberName)) {
+        usedObjectMemberNames.add(baseMemberName);
+        objectMemberNames.push(baseMemberName);
+        return;
+      }
+
+      const escapedPrefix = baseMemberName.startsWith('@') ? '@' : '';
+      const rawBaseName = escapedPrefix ? baseMemberName.slice(1) : baseMemberName;
+      let counter = 2;
+      let candidate = `${escapedPrefix}${rawBaseName}_${counter}`;
+      while (usedObjectMemberNames.has(candidate)) {
+        counter++;
+        candidate = `${escapedPrefix}${rawBaseName}_${counter}`;
+      }
+      usedObjectMemberNames.add(candidate);
+      objectMemberNames.push(candidate);
+    });
 
     const rows = [];
     for (let rowIndex = 0; rowIndex < dataTable.getRowCount(); rowIndex++) {
@@ -247,7 +267,7 @@ class CSharpConvertor {
       if (opts.useAnonymousObjects) {
         rows.push(this._buildAnonymousRow(headers, row));
       } else {
-        rows.push(this._buildObjectRow(headers, row, objectClassName));
+        rows.push(this._buildObjectRow(objectMemberNames, row, objectClassName));
       }
     }
 
@@ -267,7 +287,7 @@ class CSharpConvertor {
     const lines = [];
 
     if (!opts.useAnonymousObjects) {
-      lines.push(...this._buildClassDefinition(headers, objectClassName));
+      lines.push(...this._buildClassDefinition(objectMemberNames, objectClassName));
     }
 
     if (opts.prettyPrint) {

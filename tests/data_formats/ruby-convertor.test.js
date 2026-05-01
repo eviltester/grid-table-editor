@@ -36,6 +36,19 @@ describe('RubyConvertor', () => {
     expect(output).toContain('Person.new(name:');
   });
 
+  test('class mode normalizes uppercase headers to ruby-safe keyword args', () => {
+    const table = new GenericDataTable();
+    table.setHeaders(['Name', 'Last Name']);
+    table.appendDataRow(['Alice', 'Jones']);
+    const convertor = new RubyConvertor();
+    convertor.setOptions({ useAnonymousObjects: false, objectRepresentation: 'class', objectClassName: 'Person' });
+    const output = convertor.fromDataTable(table);
+    expect(output).toContain('attr_accessor :name, :last_name');
+    expect(output).toContain('def initialize(name:, last_name:)');
+    expect(output).toContain('Person.new(name:');
+    expect(output).toContain('last_name:');
+  });
+
   test('supports symbol hash keys', () => {
     const convertor = new RubyConvertor();
     convertor.setOptions({ hashKeyStyle: 'symbol' });
@@ -53,7 +66,7 @@ describe('RubyConvertor', () => {
   test('supports Data object representation', () => {
     const convertor = new RubyConvertor();
     convertor.setOptions({ useAnonymousObjects: false, objectRepresentation: 'data', objectClassName: 'Person' });
-    expect(convertor.fromDataTable(basicTable)).toContain('Person = Data.new(:name, :age)');
+    expect(convertor.fromDataTable(basicTable)).toContain('Person = Data.define(:name, :age)');
   });
 
   test('supports aligned pretty hash style', () => {

@@ -144,19 +144,14 @@ class RubyConvertor {
   }
 
   _buildStructDefinition(headers, className) {
-    const kinds = this.config.options.objectRepresentation === 'data' ? 'Data' : 'Struct';
-    return [`${className} = ${kinds}.new(${headers.map((h) => `:${h}`).join(', ')})`, ''];
+    const definitionMethod = this.config.options.objectRepresentation === 'data' ? 'define' : 'new';
+    const kind = this.config.options.objectRepresentation === 'data' ? 'Data' : 'Struct';
+    return [`${className} = ${kind}.${definitionMethod}(${headers.map((h) => `:${h}`).join(', ')})`, ''];
   }
 
-  fromDataTable(dataTable) {
-    const opts = this.config.options;
-    const rawHeaders = dataTable.getHeaders();
-    const sanitizedHeaders = rawHeaders.map((h) => {
-      const base = opts.fieldNameStyle === 'snake_case' ? toSnakeCase(h) : String(h);
-      return convertStringToRubyValidName(base);
-    });
+  _dedupeHeaders(headers) {
     const usedNames = new Set();
-    const headers = sanitizedHeaders.map((h) => {
+    return headers.map((h) => {
       if (!usedNames.has(h)) {
         usedNames.add(h);
         return h;
@@ -170,6 +165,17 @@ class RubyConvertor {
       usedNames.add(candidate);
       return candidate;
     });
+  }
+
+  fromDataTable(dataTable) {
+    const opts = this.config.options;
+    const rawHeaders = dataTable.getHeaders();
+    const sanitizedHeaders = rawHeaders.map((h) => {
+      const base = opts.fieldNameStyle === 'snake_case' ? toSnakeCase(h) : String(h);
+      return convertStringToRubyValidName(base);
+    });
+    const headers = this._dedupeHeaders(sanitizedHeaders);
+    const objectHeaders = this._dedupeHeaders(rawHeaders.map((h) => convertStringToRubyValidName(toSnakeCase(h))));
 
     const variableName = convertStringToRubyValidName(opts.variableName || 'data');
     const objectClassName = convertStringToRubyValidName(opts.objectClassName || 'Row');
@@ -180,9 +186,9 @@ class RubyConvertor {
       if (opts.useAnonymousObjects) {
         rows.push(this._buildAnonymousRow(headers, row));
       } else if (opts.objectRepresentation === 'struct' || opts.objectRepresentation === 'data') {
-        rows.push(this._buildStructRow(headers, row, objectClassName));
+        rows.push(this._buildStructRow(objectHeaders, row, objectClassName));
       } else {
-        rows.push(this._buildObjectRow(headers, row, objectClassName));
+        rows.push(this._buildObjectRow(objectHeaders, row, objectClassName));
       }
     }
 
@@ -192,12 +198,12 @@ class RubyConvertor {
 
     const lines = [];
     if (!opts.useAnonymousObjects && opts.objectRepresentation === 'class') {
-      lines.push(...this._buildClassDefinition(headers, objectClassName));
+      lines.push(...this._buildClassDefinition(objectHeaders, objectClassName));
     } else if (
       !opts.useAnonymousObjects &&
       (opts.objectRepresentation === 'struct' || opts.objectRepresentation === 'data')
     ) {
-      lines.push(...this._buildStructDefinition(headers, objectClassName));
+      lines.push(...this._buildStructDefinition(objectHeaders, objectClassName));
     }
 
     const prefix =

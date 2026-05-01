@@ -3,6 +3,7 @@ slug: even-more-programming-language-exports
 title: "Even More Programming Language Exports: PHP, Ruby, Kotlin, C#, and Perl"
 authors: [alan]
 tags: [release, export, php, ruby, kotlin, csharp, perl]
+date: 2026-05-01T17:00
 ---
 
 We have added **Perl export support** to the grid editor and generator, alongside the new C#, Kotlin, Ruby, and PHP export capabilities.
@@ -75,7 +76,6 @@ C# export supports:
 
 Perl export supports:
 
-- collection type (array ref `\\(... )` or list `(... )`)
 - collection type (array ref `[ ... ]` or list `(... )`)
 - assign to variable (custom variable name)
 - Number Convert (quoted vs unquoted numbers)

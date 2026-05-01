@@ -7,7 +7,11 @@ test.describe('5. Export Formats', () => {
     await seedRows(appPage, ['Alpha', 'Beta']);
     await appPage.tabbedText.selectFormat('XML');
     await appPage.importExportControls.setTextFromGrid();
-    await expect.poll(async () => (await appPage.tabbedText.getOutputText()).length).toBeGreaterThan(0);
+
+    const text = await appPage.tabbedText.getOutputText();
+    expect(text).toContain('<');
+    expect(text).toContain('Alpha');
+
     expectNoPageErrors(pageErrors);
   });
 });

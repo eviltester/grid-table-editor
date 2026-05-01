@@ -4,10 +4,14 @@ const { openApp, seedRows, expectNoPageErrors, expect } = require('../helpers/sc
 test.describe('5. Export Formats', () => {
   test('SQL Export', async ({ page }) => {
     const { appPage, pageErrors } = await openApp(page);
-    await seedRows(appPage, ['Alpha', 'Beta']);
+    await seedRows(appPage, ['Alpha', "O'Reilly"]);
     await appPage.tabbedText.selectFormat('SQL');
     await appPage.importExportControls.setTextFromGrid();
-    await expect.poll(async () => (await appPage.tabbedText.getOutputText()).length).toBeGreaterThan(0);
+
+    const text = await appPage.tabbedText.getOutputText();
+    expect(text.toLowerCase()).toContain('insert');
+    expect(text).toContain("O''Reilly");
+
     expectNoPageErrors(pageErrors);
   });
 });

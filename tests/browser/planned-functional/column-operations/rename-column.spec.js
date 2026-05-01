@@ -4,8 +4,13 @@ const { openApp, seedRows, expectNoPageErrors, expect } = require('../helpers/sc
 test.describe('2. Column Operations', () => {
   test('Rename Column', async ({ page }) => {
     const { appPage, pageErrors } = await openApp(page);
-    await appPage.gridEditor.header.renameColumn('Instructions', 'New Column Name');
+    const oldName = await seedRows(appPage, ['x']);
+
+    await appPage.gridEditor.header.renameColumn(oldName, 'New Column Name');
     await expect.poll(async () => appPage.gridEditor.header.getColumnNames()).toContain('New Column Name');
+
+    await appPage.importExportControls.setTextFromGrid();
+    await expect.poll(async () => appPage.tabbedText.getOutputText()).toContain('New Column Name');
     expectNoPageErrors(pageErrors);
   });
 });

@@ -4,15 +4,15 @@ const { openApp, seedRows, expectNoPageErrors, expect } = require('../helpers/sc
 test.describe('3. Filtering and Sorting', () => {
   test('Column Specific Filter', async ({ page }) => {
     const { appPage, pageErrors } = await openApp(page);
-    await seedRows(appPage, ['A', 'B', 'C']);
-    const [columnName] = await appPage.gridEditor.header.getColumnNames();
-    await appPage.gridEditor.header.addColumnRight(columnName, 'Status');
-    await expect.poll(async () => appPage.gridEditor.header.getColumnNames()).toContain('Status');
-    await appPage.gridEditor.renderer.setCellTextByColumnName('Status', 0, 'Open');
-    await appPage.gridEditor.renderer.setCellTextByColumnName('Status', 1, 'Closed');
-    await appPage.gridEditor.renderer.setCellTextByColumnName('Status', 2, 'Open');
-    await appPage.gridEditor.header.setColumnFilter('Status', 'Open');
-    await expect.poll(async () => appPage.gridEditor.header.getColumnFilterValue('Status')).toBe('Open');
+    const col = await seedRows(appPage, ['Open', 'Closed', 'Open']);
+
+    await appPage.gridEditor.header.setColumnFilter(col, 'Open');
+    await expect.poll(async () => appPage.gridEditor.header.getColumnFilterValue(col)).toBe('Open');
+    await expect.poll(async () => appPage.gridEditor.renderer.countVisibleRows()).toBe(2);
+
+    await appPage.gridEditor.setQuickFilter('Open');
+    await expect.poll(async () => appPage.gridEditor.renderer.countVisibleRows()).toBe(2);
+
     expectNoPageErrors(pageErrors);
   });
 });

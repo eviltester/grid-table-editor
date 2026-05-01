@@ -15,6 +15,14 @@ async function seedRows(appPage, values) {
   return primaryColumnName;
 }
 
+async function ensureTextEditMode(appPage) {
+  const enabled = await appPage.importExportControls.isSetGridFromTextEnabled();
+  if (!enabled) {
+    await appPage.tabbedText.togglePreviewEdit(true);
+  }
+  await expect.poll(async () => appPage.importExportControls.isSetGridFromTextEnabled()).toBeTruthy();
+}
+
 function expectNoPageErrors(pageErrors) {
   expect(pageErrors).toEqual([]);
 }
@@ -22,6 +30,7 @@ function expectNoPageErrors(pageErrors) {
 module.exports = {
   openApp,
   seedRows,
+  ensureTextEditMode,
   expectNoPageErrors,
   expect,
 };

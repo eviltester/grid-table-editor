@@ -2,13 +2,18 @@ const { test } = require('@playwright/test');
 const { openApp, seedRows, expectNoPageErrors, expect } = require('../helpers/scenario-helpers');
 
 test.describe('9. Error Handling and Edge Cases', () => {
-  test('Browser Compatibility', async ({ page }) => {
+  test('Browser Compatibility', async ({ page, context }) => {
+    await context.grantPermissions(['clipboard-read', 'clipboard-write']);
     const { appPage, pageErrors } = await openApp(page);
-    const before = await appPage.gridEditor.renderer.countRows();
-    await appPage.tabbedText.selectFormat('CSV');
-    await appPage.tabbedText.setOutputText('"bad csv');
-    await expect.poll(async () => appPage.importExportControls.isSetGridFromTextEnabled()).toBeFalsy();
-    await expect.poll(async () => appPage.gridEditor.renderer.countRows()).toBeGreaterThanOrEqual(before);
+
+    await seedRows(appPage, ['Clip']);
+    await appPage.importExportControls.setTextFromGrid();
+    await appPage.tabbedText.copyButton.click();
+    await expect.poll(async () => page.evaluate(() => navigator.clipboard.readText())).toContain('Clip');
+
+    const download = await appPage.importExportControls.clickDownloadAndWaitForEvent();
+    expect(download.suggestedFilename().length).toBeGreaterThan(3);
+
     expectNoPageErrors(pageErrors);
   });
 });

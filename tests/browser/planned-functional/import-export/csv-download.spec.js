@@ -4,11 +4,14 @@ const { openApp, seedRows, expectNoPageErrors, expect } = require('../helpers/sc
 test.describe('4. Import Export Basic', () => {
   test('CSV Download', async ({ page }) => {
     const { appPage, pageErrors } = await openApp(page);
-    await seedRows(appPage, ['A']);
+    await seedRows(appPage, ['Alpha', 'Beta']);
+
     await appPage.tabbedText.selectFormat('CSV');
     await appPage.importExportControls.setTextFromGrid();
+
     const download = await appPage.importExportControls.clickDownloadAndWaitForEvent();
-    await expect(await download.suggestedFilename()).toContain('.csv');
+    expect(download.suggestedFilename().toLowerCase()).toContain('.csv');
+
     expectNoPageErrors(pageErrors);
   });
 });

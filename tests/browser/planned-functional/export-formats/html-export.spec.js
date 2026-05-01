@@ -7,7 +7,12 @@ test.describe('5. Export Formats', () => {
     await seedRows(appPage, ['Alpha', 'Beta']);
     await appPage.tabbedText.selectFormat('HTML');
     await appPage.importExportControls.setTextFromGrid();
-    await expect.poll(async () => (await appPage.tabbedText.getOutputText()).length).toBeGreaterThan(0);
+
+    const text = await appPage.tabbedText.getOutputText().then((v) => v.toLowerCase());
+    expect(text).toContain('<table');
+    expect(text).toContain('<th');
+    expect(text).toContain('<td');
+
     expectNoPageErrors(pageErrors);
   });
 });

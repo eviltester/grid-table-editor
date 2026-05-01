@@ -29,7 +29,6 @@ class GridHeaderComponent {
       'add-right': 'add right',
       'sort-asc': 'Sort Asc',
       'sort-desc': 'Sort Desc',
-      'sort-none': 'Clear Sort',
     };
     const title = actionTitleMap[action] || action;
     const headerRoot = headerTitle.locator(`xpath=ancestor::*[contains(@class,'tabulator-col')]`);
@@ -42,13 +41,6 @@ class GridHeaderComponent {
       await headerTitle.click();
       return;
     }
-    if (action === 'sort-none') {
-      await headerTitle.click();
-      await headerTitle.click();
-      await headerTitle.click();
-      return;
-    }
-
     const actionLocator = headerRoot.locator(`[title="${title}"], [title*="${title}"]`).first();
     await actionLocator.evaluate((el) => el.click());
   }
@@ -78,11 +70,7 @@ class GridHeaderComponent {
     this.page.once('dialog', async (dialog) => {
       await dialog.accept(newName);
     });
-    try {
-      await this.clickAction(columnName, 'duplicate');
-    } catch {
-      await this.addColumnRight(columnName, newName);
-    }
+    await this.clickAction(columnName, 'duplicate');
   }
 
   async deleteColumn(columnName) {
@@ -97,21 +85,28 @@ class GridHeaderComponent {
   }
 
   async sortDesc(columnName) {
-    await this.clickAction(columnName, 'sort-desc');
-  }
-
-  async clearSort(columnName) {
-    await this.clickAction(columnName, 'sort-none');
+    const headerTitle = this._headerTitleByName(columnName);
+    await headerTitle.click();
   }
 
   async setColumnFilter(columnName, value) {
     const header = this._headerTitleByName(columnName).locator(`xpath=ancestor::*[contains(@class,'tabulator-col')]`);
-    await header.locator('.tabulator-header-filter input').fill(value);
+    const input = header.locator('.tabulator-header-filter input');
+    await input.fill(value);
+    await input.dispatchEvent('input');
+    await input.press('Enter');
   }
 
   async getColumnFilterValue(columnName) {
     const header = this._headerTitleByName(columnName).locator(`xpath=ancestor::*[contains(@class,'tabulator-col')]`);
     return header.locator('.tabulator-header-filter input').inputValue();
+  }
+
+  async getColumnSortState(columnName) {
+    const header = this._headerTitleByName(columnName)
+      .locator(`xpath=ancestor::*[contains(@class,'tabulator-col')]`)
+      .first();
+    return (await header.getAttribute('aria-sort')) || '';
   }
 
   _headerTitleByName(columnName) {

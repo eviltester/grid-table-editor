@@ -51,7 +51,9 @@ test('grid header sorting and per-column filter change visible results', async (
     .not.toBe(initialFirst);
 
   await appPage.gridEditor.header.sortAsc(targetColumnName);
-  await appPage.gridEditor.header.clearSort(targetColumnName);
+  await expect
+    .poll(async () => appPage.gridEditor.renderer.getCellTextByColumnName(targetColumnName, 0))
+    .toBe(initialFirst);
 
   await appPage.gridEditor.header.setColumnFilter(targetColumnName, 'Rename Column');
   await expect.poll(async () => appPage.gridEditor.header.getColumnFilterValue(targetColumnName)).toBe('Rename Column');

@@ -7,7 +7,12 @@ test.describe('5. Export Formats', () => {
     await seedRows(appPage, ['Alpha', 'Beta']);
     await appPage.tabbedText.selectFormat('JSON');
     await appPage.importExportControls.setTextFromGrid();
-    await expect.poll(async () => (await appPage.tabbedText.getOutputText()).length).toBeGreaterThan(0);
+
+    const text = await appPage.tabbedText.getOutputText();
+    const parsed = JSON.parse(text);
+    expect(Array.isArray(parsed)).toBe(true);
+    expect(text).toContain('Alpha');
+
     expectNoPageErrors(pageErrors);
   });
 });

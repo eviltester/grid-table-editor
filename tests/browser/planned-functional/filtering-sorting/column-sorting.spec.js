@@ -4,12 +4,16 @@ const { openApp, seedRows, expectNoPageErrors, expect } = require('../helpers/sc
 test.describe('3. Filtering and Sorting', () => {
   test('Column Sorting', async ({ page }) => {
     const { appPage, pageErrors } = await openApp(page);
-    const columnName = await seedRows(appPage, ['Banana', 'Apple', 'Cherry']);
-    await appPage.gridEditor.header.sortAsc(columnName);
-    await expect.poll(async () => appPage.gridEditor.renderer.getCellTextByColumnName(columnName, 0)).toBe('Apple');
-    await appPage.gridEditor.header.sortDesc(columnName);
-    await expect.poll(async () => appPage.gridEditor.renderer.countRows()).toBe(3);
-    await appPage.gridEditor.header.clearSort(columnName);
+    const col = await seedRows(appPage, ['Banana', 'Apple', 'Cherry']);
+
+    await appPage.gridEditor.header.sortAsc(col);
+    await expect.poll(async () => appPage.gridEditor.renderer.getCellTextByColumnName(col, 0)).toBe('Apple');
+    await expect.poll(async () => appPage.gridEditor.header.getColumnSortState(col)).toContain('asc');
+
+    await appPage.gridEditor.header.sortDesc(col);
+    await expect.poll(async () => appPage.gridEditor.renderer.getCellTextByColumnName(col, 0)).toBe('Cherry');
+    await expect.poll(async () => appPage.gridEditor.header.getColumnSortState(col)).toContain('desc');
+
     expectNoPageErrors(pageErrors);
   });
 });

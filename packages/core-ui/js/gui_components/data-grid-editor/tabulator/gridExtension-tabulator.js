@@ -573,27 +573,25 @@ class GridExtensionTabulator {
   }
 
   _copyColumnData(sourceFieldName, destinationFieldName) {
-    const allData = typeof this.tabulator.getData === 'function' ? this.tabulator.getData() : null;
-    const canUseBulkDataPath = Array.isArray(allData) && typeof this.tabulator.redraw === 'function';
-
-    if (canUseBulkDataPath) {
+    const rowComponents = typeof this.tabulator.getRows === 'function' ? this.tabulator.getRows() : null;
+    if (Array.isArray(rowComponents) && rowComponents.length > 0) {
       this._runWithoutRedraw(() => {
-        for (let rowIndex = 0; rowIndex < allData.length; rowIndex++) {
-          const rowData = allData[rowIndex];
-          rowData[destinationFieldName] = rowData[sourceFieldName];
-        }
+        rowComponents.forEach((row) => {
+          const sourceValue = row.getData?.()[sourceFieldName];
+          row.update({ [destinationFieldName]: sourceValue });
+        });
       });
-      this.tabulator.redraw(true);
       return;
     }
 
-    this._runWithoutRedraw(() => {
-      this.tabulator.getRows().forEach((row) => {
-        let obj = {};
-        obj[destinationFieldName] = row.getData()[sourceFieldName];
-        row.update(obj);
-      });
-    });
+    const allData = typeof this.tabulator.getData === 'function' ? this.tabulator.getData() : null;
+    if (Array.isArray(allData) && allData.length > 0) {
+      const updatedRows = allData.map((rowData) => ({
+        ...rowData,
+        [destinationFieldName]: rowData[sourceFieldName],
+      }));
+      this._setBulkData(updatedRows);
+    }
   }
 
   _enqueueGridMutation(mutationFn) {

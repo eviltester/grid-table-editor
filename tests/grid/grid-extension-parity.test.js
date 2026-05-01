@@ -734,6 +734,13 @@ describe('Shared grid interface contract (both implementations)', () => {
       expect(headers).toContain('Neighbour');
       expect(headers).toContain('Second Copy');
 
+      const table = extension.getGridAsGenericDataTable();
+      const firstIndex = table.getHeaders().indexOf('Renamed First');
+      const copyIndex = table.getHeaders().indexOf('Second Copy');
+      expect(firstIndex).toBeGreaterThanOrEqual(0);
+      expect(copyIndex).toBeGreaterThanOrEqual(0);
+      expect(table.getRow(0)[copyIndex]).toBe(table.getRow(0)[firstIndex]);
+
       expect(extension.getNumberOfColumns()).toBeGreaterThanOrEqual(4);
       expect(api.rowData.length).toBe(1);
     }

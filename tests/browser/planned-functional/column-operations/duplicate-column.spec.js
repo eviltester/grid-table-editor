@@ -10,7 +10,7 @@ test.describe('2. Column Operations', () => {
     await expect.poll(async () => appPage.gridEditor.header.getColumnNames()).toContain('Instructions Copy');
     await expect
       .poll(async () => appPage.gridEditor.renderer.getColumnTextsByName('Instructions Copy'))
-      .toEqual(['', '']);
+      .toEqual(['Alpha', 'Beta']);
 
     await appPage.gridEditor.renderer.setCellTextByColumnName('Instructions Copy', 0, 'Edited Copy');
     await expect.poll(async () => appPage.gridEditor.renderer.getCellTextByColumnName(col, 0)).toBe('Alpha');

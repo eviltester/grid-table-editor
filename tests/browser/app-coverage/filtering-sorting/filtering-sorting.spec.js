@@ -15,7 +15,7 @@ test('global filter, column filter, sort, and clear filters produce expected vis
     .poll(async () => appPage.gridEditor.renderer.getCellTextByColumnName(primaryColumnName, 0))
     .toContain('Apple');
 
-  await appPage.gridEditor.header.setColumnFilter(primaryColumnName, 'Ban');
+  await appPage.gridEditor.header.setColumnFilter(primaryColumnName, 'App');
   await expect.poll(async () => appPage.gridEditor.renderer.countVisibleRows()).toBe(1);
 
   await appPage.gridEditor.clearFilters();

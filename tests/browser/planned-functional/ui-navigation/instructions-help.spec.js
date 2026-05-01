@@ -9,7 +9,7 @@ test.describe('10. User Interface and Navigation', () => {
     await expect(await appPage.topNavigation.isInstructionsExpanded()).toBeTruthy();
     await expect(page.locator('.instructions details')).toContainText('Grid');
 
-    expect(await page.locator('[title]').count()).toBeGreaterThan(0);
+    expect(await page.locator('.instructions [title]').count()).toBeGreaterThan(0);
 
     await appPage.topNavigation.collapseInstructions();
     await expect(await appPage.topNavigation.isInstructionsExpanded()).toBeFalsy();

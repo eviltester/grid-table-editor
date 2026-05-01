@@ -42,9 +42,9 @@ class TabbedTextComponent {
       throw new Error(`Unknown format "${name}"`);
     }
 
-    await this.page.getByRole('link', { name: config.main, exact: true }).click();
+    await this.tabsList.getByRole('link', { name: config.main, exact: true }).click();
     if (config.sub) {
-      await this.page.getByRole('link', { name: config.sub, exact: true }).click();
+      await this.subtasks.getByRole('link', { name: config.sub, exact: true }).click();
     }
   }
 

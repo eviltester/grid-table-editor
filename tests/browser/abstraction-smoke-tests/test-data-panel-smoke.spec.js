@@ -40,11 +40,20 @@ test('test data panel generates rows from faker and regex schema', async ({ page
   await appPage.testDataPanel.setModeNewTable();
   await appPage.testDataPanel.setGenerateCount(3);
 
-  await appPage.testDataPanel.setSchemaText(`Name
-person.fullName
-Code
-[A-Z]{3}`);
-  await page.waitForTimeout(1300);
+  const initialSchemaRows = await appPage.testDataPanel.getSchemaRowCount();
+  if (initialSchemaRows < 2) {
+    for (let index = initialSchemaRows; index < 2; index += 1) {
+      await appPage.testDataPanel.addSchemaRow();
+    }
+    await expect.poll(async () => appPage.testDataPanel.getSchemaRowCount()).toBe(2);
+  }
+
+  await appPage.testDataPanel.setSchemaCell(0, 'columnName', 'Name');
+  await appPage.testDataPanel.setSchemaTypeValue(0, 'faker');
+  await appPage.testDataPanel.setSchemaCell(0, 'value', 'faker.person.fullName');
+  await appPage.testDataPanel.setSchemaCell(1, 'columnName', 'Code');
+  await appPage.testDataPanel.setSchemaTypeValue(1, 'RegEx');
+  await appPage.testDataPanel.setSchemaCell(1, 'value', '[A-Z]{3}');
 
   await appPage.testDataPanel.clickGenerate();
   await expect.poll(async () => appPage.testDataPanel.getStatusText()).toContain('complete');

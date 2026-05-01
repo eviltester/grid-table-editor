@@ -33,17 +33,21 @@ test('csv file upload imports into the grid and malformed csv does not crash pag
   await appPage.goto();
 
   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'app-html-upload-'));
-  const goodCsvPath = path.join(tempDir, 'good.csv');
-  fs.writeFileSync(goodCsvPath, 'ColA,ColB\nA1,B1\nA2,B2', 'utf8');
+  try {
+    const goodCsvPath = path.join(tempDir, 'good.csv');
+    fs.writeFileSync(goodCsvPath, 'ColA,ColB\nA1,B1\nA2,B2', 'utf8');
 
-  await appPage.importExportControls.uploadFile(goodCsvPath);
-  await expect.poll(async () => appPage.gridEditor.header.getColumnNames()).toEqual(['ColA', 'ColB']);
-  await expect.poll(async () => appPage.gridEditor.renderer.countRows()).toBe(2);
+    await appPage.importExportControls.uploadFile(goodCsvPath);
+    await expect.poll(async () => appPage.gridEditor.header.getColumnNames()).toEqual(['ColA', 'ColB']);
+    await expect.poll(async () => appPage.gridEditor.renderer.countRows()).toBe(2);
 
-  await appPage.tabbedText.togglePreviewEdit(false);
-  await appPage.tabbedText.setOutputText('"unterminated,quote\nfoo,bar');
-  await appPage.importExportControls.setGridFromText();
-  await expect.poll(async () => (await appPage.gridEditor.header.getColumnNames()).length).toBeGreaterThan(0);
+    await appPage.tabbedText.togglePreviewEdit(false);
+    await appPage.tabbedText.setOutputText('"unterminated,quote\nfoo,bar');
+    await appPage.importExportControls.setGridFromText();
+    await expect.poll(async () => (await appPage.gridEditor.header.getColumnNames()).length).toBeGreaterThan(0);
 
-  expect(pageErrors).toEqual([]);
+    expect(pageErrors).toEqual([]);
+  } finally {
+    fs.rmSync(tempDir, { recursive: true, force: true });
+  }
 });

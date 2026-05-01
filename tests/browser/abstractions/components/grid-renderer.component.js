@@ -1,3 +1,5 @@
+const { expect } = require('@playwright/test');
+
 class GridRendererComponent {
   constructor(page, gridRootLocator) {
     this.page = page;
@@ -101,7 +103,7 @@ class GridRendererComponent {
 
     await editor.fill(String(value));
     await editor.press('Enter');
-    await this.page.getByText(String(value), { exact: true }).first().waitFor({ state: 'visible' });
+    await this._waitForCellValue(cell, value);
   }
 
   async setCellTextByColumnName(columnName, rowIndex, value) {
@@ -117,7 +119,7 @@ class GridRendererComponent {
     }
     await editor.fill(String(value));
     await editor.press('Enter');
-    await this.page.getByText(String(value), { exact: true }).first().waitFor({ state: 'visible' });
+    await this._waitForCellValue(cell, value);
   }
 
   async doubleClickCellByColumnName(columnName, rowIndex) {
@@ -150,6 +152,10 @@ class GridRendererComponent {
     return String(rawText || '')
       .split('\n')[0]
       .trim();
+  }
+
+  async _waitForCellValue(cell, value) {
+    await expect.poll(async () => (await cell.innerText()).trim()).toBe(String(value));
   }
 }
 

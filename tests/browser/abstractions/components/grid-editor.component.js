@@ -63,10 +63,17 @@ class GridEditorComponent {
   }
 
   async deleteSelectedRows() {
-    this.page.once('dialog', async (dialog) => {
-      await dialog.accept();
-    });
-    await this.deleteSelectedRowsButton.click();
+    const handler = async (dialog) => {
+      if (dialog.message() === 'Are you Sure You Want to Delete Rows?') {
+        await dialog.accept();
+      }
+    };
+    this.page.on('dialog', handler);
+    try {
+      await this.deleteSelectedRowsButton.click();
+    } finally {
+      this.page.off('dialog', handler);
+    }
   }
 
   async selectRow(rowIndex) {

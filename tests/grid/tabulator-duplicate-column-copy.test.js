@@ -42,12 +42,12 @@ function createTabulatorStub() {
 }
 
 describe('GridExtensionTabulator duplicate column', () => {
-  test('copies source column values into duplicate column', () => {
+  test('copies source column values into duplicate column', async () => {
     const tabulator = createTabulatorStub();
     const extension = new GridExtensionTabulator(tabulator);
 
     const sourceColumn = tabulator.getColumns()[0];
-    extension.duplicateColumn(1, sourceColumn, 'Instructions Copy');
+    await extension.duplicateColumn(1, sourceColumn, 'Instructions Copy');
 
     const duplicatedField = tabulator
       .getColumnDefinitions()

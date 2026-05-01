@@ -2,13 +2,14 @@ const { test } = require('@playwright/test');
 const { openApp, seedRows, expectNoPageErrors, expect } = require('../helpers/scenario-helpers');
 
 test.describe('6. Export Options and Controls', () => {
-  test('CSV Export Options', async ({ page }) => {
+  test('CSV Options Unquote Safe Value', async ({ page }) => {
     const { appPage, pageErrors } = await openApp(page);
-    await seedRows(appPage, ['A,Quoted']);
+    await seedRows(appPage, ['Alpha']);
 
     await appPage.tabbedText.selectFormat('CSV');
     await appPage.importExportControls.setTextFromGrid();
     const before = await appPage.tabbedText.getOutputText();
+    expect(before).toContain('"Alpha"');
 
     await appPage.formatOptionsPanel.setOption('quotes', false);
     await expect(await appPage.formatOptionsPanel.isApplyEnabled()).toBeTruthy();
@@ -17,7 +18,8 @@ test.describe('6. Export Options and Controls', () => {
 
     const after = await appPage.tabbedText.getOutputText();
     expect(after).not.toBe(before);
-    expect(after).toContain('A,Quoted');
+    expect(after).toContain('Alpha');
+    expect(after).not.toContain('"Alpha"');
 
     expectNoPageErrors(pageErrors);
   });

@@ -92,9 +92,9 @@ class FormatOptionsPanelComponent {
     const select = this.container.locator('select').first();
     if (await select.count()) {
       const current = await select.inputValue();
-      const options = await select.locator('option').allTextContents();
-      const next = options.length > 1 && options[1] !== current ? 1 : 0;
-      await select.selectOption({ index: next });
+      const values = await select.locator('option').evaluateAll((options) => options.map((option) => option.value));
+      const next = values.findIndex((value) => value !== current);
+      await select.selectOption({ index: next === -1 ? 0 : next });
       return 'select';
     }
 

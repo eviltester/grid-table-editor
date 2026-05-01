@@ -9,8 +9,12 @@ test.describe('5. Export Formats', () => {
     await appPage.importExportControls.setTextFromGrid();
 
     const text = await appPage.tabbedText.getOutputText();
-    expect(text).toContain('<');
     expect(text).toContain('Alpha');
+    const isValidXml = await page.evaluate((xml) => {
+      const doc = new DOMParser().parseFromString(xml, 'application/xml');
+      return !doc.querySelector('parsererror');
+    }, text);
+    expect(isValidXml).toBe(true);
 
     expectNoPageErrors(pageErrors);
   });

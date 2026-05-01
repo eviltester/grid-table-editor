@@ -39,7 +39,7 @@ test('test data modes new table, amend table and amend selected produce expected
   await appPage.testDataPanel.setGenerateCount(2);
   await appPage.testDataPanel.clickGenerate();
   await expect.poll(async () => appPage.testDataPanel.getStatusText()).toContain('complete');
-  await expect.poll(async () => appPage.gridEditor.renderer.countRows()).toBeGreaterThan(0);
+  await expect.poll(async () => appPage.gridEditor.renderer.countRows()).toBe(2);
 
   await appPage.testDataPanel.setModeAmendTable();
   const currentRows = await appPage.gridEditor.renderer.countRows();

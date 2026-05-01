@@ -1,3 +1,4 @@
+const { expect } = require('@playwright/test');
 const { GridRendererComponent } = require('./grid-renderer.component');
 
 class TestDataPanelComponent {
@@ -5,7 +6,7 @@ class TestDataPanelComponent {
     this.page = page;
     this.container = page.locator('.testDataDefnGui');
     this.details = this.container.locator('details');
-    this.heading = page.getByText('Test Data', { exact: true });
+    this.heading = this.container.getByText('Test Data', { exact: true });
     this.generateButton = page.getByRole('button', { name: 'Generate' });
     this.refreshTextPreviewButton = page.getByRole('button', { name: 'Refresh Text Preview' });
     this.generateCountInput = page.locator('#generateCount');
@@ -30,11 +31,15 @@ class TestDataPanelComponent {
   }
 
   async expand() {
-    await this.heading.click();
+    if (!(await this.isExpanded())) {
+      await this.heading.click();
+    }
   }
 
   async collapse() {
-    await this.heading.click();
+    if (await this.isExpanded()) {
+      await this.heading.click();
+    }
   }
 
   async expectExpanded() {
@@ -113,7 +118,9 @@ class TestDataPanelComponent {
     let editor = this.schemaGrid
       .locator('.tabulator-editing input, .tabulator-editing textarea, .tabulator-editing select')
       .first();
-    if ((await editor.count()) === 0) {
+    try {
+      await expect.poll(async () => editor.count(), { timeout: 1000 }).toBeGreaterThan(0);
+    } catch {
       await this.schemaRenderer.setCellTextByField('type', rowIndex, value);
       return;
     }

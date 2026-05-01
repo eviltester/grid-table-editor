@@ -388,7 +388,7 @@ function defineParityTests(label, createHarness) {
       await flushAsync();
 
       const secondRef = getColumnRefByIndex(api, 1);
-      duplicateColumn(extension, 1, secondRef, 'Second Copy');
+      await duplicateColumn(extension, 1, secondRef, 'Second Copy');
       await flushAsync();
 
       const copyRef = getColumnRefByHeader(api, 'Second Copy');
@@ -422,7 +422,7 @@ function defineParityTests(label, createHarness) {
       await flushAsync();
 
       const secondRef = getColumnRefByIndex(api, 1);
-      duplicateColumn(extension, 1, secondRef, 'Second Copy');
+      await duplicateColumn(extension, 1, secondRef, 'Second Copy');
       await flushAsync();
 
       const sourceField = getFields(api)[1];
@@ -537,7 +537,7 @@ defineParityTests('AG Grid extension parity contract', () => {
       extension.addNeighbourColumnId(position, columnRef, colTitle);
     },
     duplicateColumn: (extension, position, columnRef, colTitle) => {
-      extension.duplicateColumn(position, columnRef, colTitle);
+      return extension.duplicateColumn(position, columnRef, colTitle);
     },
     renameColumn: (extension, columnRef, newName) => {
       extension.renameColId(columnRef, newName);
@@ -599,7 +599,7 @@ defineParityTests('Tabulator extension parity contract', () => {
       extension.addNeighbourColumn(position, columnRef, colTitle);
     },
     duplicateColumn: (extension, position, columnRef, colTitle) => {
-      extension.duplicateColumn(position, columnRef, colTitle);
+      return extension.duplicateColumn(position, columnRef, colTitle);
     },
     renameColumn: (extension, columnRef, newName) => {
       extension.renameColumn(columnRef, newName);

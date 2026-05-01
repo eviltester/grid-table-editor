@@ -1,14 +1,6 @@
 const { test, expect } = require('@playwright/test');
 const { AppPage } = require('../abstractions/app.page');
-const { seedInstructionsRows } = require('../app-coverage/helpers/test-helpers');
-
-function trackPageErrors(page) {
-  const pageErrors = [];
-  page.on('pageerror', (error) => {
-    pageErrors.push(error.message);
-  });
-  return pageErrors;
-}
+const { trackPageErrors, seedInstructionsRows } = require('../app-coverage/helpers/test-helpers');
 
 test('grid header actions rename/add/duplicate/delete columns', async ({ page }) => {
   const pageErrors = trackPageErrors(page);

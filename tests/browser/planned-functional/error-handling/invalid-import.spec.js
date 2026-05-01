@@ -29,10 +29,12 @@ test.describe('9. Error Handling and Edge Cases', () => {
 
       const malformedUpload = path.join(tempDir, 'malformed.csv');
       fs.writeFileSync(malformedUpload, '"bad csv');
+      const rowsBeforeMalformedUpload = await appPage.gridEditor.renderer.countRows();
       await appPage.importExportControls.uploadFile(malformedUpload);
-      // For malformed uploads, we only require visible import feedback (status text lifecycle),
-      // not state preservation.
-      await expect.poll(async () => appPage.importExportControls.getProgressStatusText()).toContain('Import');
+      // For malformed uploads, product permits fast-fail without rollback/preservation.
+      // Assert an upload-driven outcome (grid reset), not stale status text.
+      expect(rowsBeforeMalformedUpload).toBeGreaterThan(0);
+      await expect.poll(async () => appPage.gridEditor.renderer.countRows()).toBe(0);
     } finally {
       fs.rmSync(tempDir, { recursive: true, force: true });
     }

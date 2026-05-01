@@ -10,7 +10,7 @@ test.describe('4. Import Export Basic', () => {
     await appPage.importExportControls.setTextFromGrid();
 
     const download = await appPage.importExportControls.clickDownloadAndWaitForEvent();
-    expect(download.suggestedFilename().toLowerCase()).toContain('.csv');
+    expect(download.suggestedFilename()).toMatch(/\.csv$/i);
 
     expectNoPageErrors(pageErrors);
   });

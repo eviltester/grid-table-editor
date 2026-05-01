@@ -112,7 +112,7 @@ class GridExtensionTabulator {
   }
 
   // [x] convert to tabulature
-  duplicateColumn(position, columnOrId, colTitle) {
+  async duplicateColumn(position, columnOrId, colTitle) {
     const column = this._resolveColumn(columnOrId);
     if (!column) {
       return;
@@ -123,7 +123,7 @@ class GridExtensionTabulator {
       return;
     }
 
-    this._copyColumnData(column.getDefinition().field, destinationCol.field);
+    await this._copyColumnData(column.getDefinition().field, destinationCol.field);
   }
 
   appendColumnToGrid(colTitle) {
@@ -578,15 +578,17 @@ class GridExtensionTabulator {
     }
   }
 
-  _copyColumnData(sourceFieldName, destinationFieldName) {
+  async _copyColumnData(sourceFieldName, destinationFieldName) {
     const rowComponents = typeof this.tabulator.getRows === 'function' ? this.tabulator.getRows() : null;
     if (Array.isArray(rowComponents) && rowComponents.length > 0) {
+      const updates = [];
       this._runWithoutRedraw(() => {
         rowComponents.forEach((row) => {
           const sourceValue = row.getData?.()[sourceFieldName];
-          row.update({ [destinationFieldName]: sourceValue });
+          updates.push(Promise.resolve(row.update({ [destinationFieldName]: sourceValue })));
         });
       });
+      await Promise.all(updates);
       return;
     }
 
@@ -596,7 +598,7 @@ class GridExtensionTabulator {
         ...rowData,
         [destinationFieldName]: rowData[sourceFieldName],
       }));
-      this._setBulkData(updatedRows);
+      await Promise.resolve(this._setBulkData(updatedRows));
     }
   }
 

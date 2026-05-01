@@ -74,8 +74,10 @@ class GridControl {
     element.addEventListener('click', clearFiltersListener, false);
 
     element = container.querySelector(this.pageMap.clearSortButtonQuery);
-    let clearSortListener = this.clearSort.bind(this);
-    element.addEventListener('click', clearSortListener, false);
+    if (element) {
+      const clearSortListener = this.clearSort.bind(this);
+      element.addEventListener('click', clearSortListener, false);
+    }
 
     element = container.querySelector(this.pageMap.filtersTextBoxQuery);
     let filterTextListener = this.filterTextBoxChanged.bind(this);

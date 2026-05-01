@@ -29,11 +29,12 @@ class GridHeaderComponent {
       'add-right': 'add right',
       'sort-asc': 'Sort Asc',
       'sort-desc': 'Sort Desc',
+      'sort-none': 'Clear Sort',
     };
     const title = actionTitleMap[action] || action;
     const headerRoot = headerTitle.locator(`xpath=ancestor::*[contains(@class,'tabulator-col')]`);
     const actionLocator = headerRoot.locator(`[title="${title}"], [title*="${title}"]`).first();
-    await actionLocator.evaluate((el) => el.click());
+    await actionLocator.click();
   }
 
   async renameColumn(columnName, newName) {
@@ -77,6 +78,10 @@ class GridHeaderComponent {
 
   async sortDesc(columnName) {
     await this.clickAction(columnName, 'sort-desc');
+  }
+
+  async clearSort(columnName) {
+    await this.clickAction(columnName, 'sort-none');
   }
 
   async setColumnFilter(columnName, value) {

@@ -12,9 +12,10 @@ test.describe('7. Test Data Generation', () => {
     await appPage.testDataPanel.addSchemaRow();
     await expect.poll(async () => appPage.testDataPanel.getSchemaRowCount()).toBe(beforeSchema + 1);
 
-    await appPage.testDataPanel.setSchemaCell(0, 'columnName', 'First Name');
-    await appPage.testDataPanel.setSchemaTypeValue(0, 'faker');
-    await appPage.testDataPanel.setSchemaCell(0, 'value', 'faker.person.firstName');
+    const schemaRowIndex = beforeSchema;
+    await appPage.testDataPanel.setSchemaCell(schemaRowIndex, 'columnName', 'First Name');
+    await appPage.testDataPanel.setSchemaTypeValue(schemaRowIndex, 'faker');
+    await appPage.testDataPanel.setSchemaCell(schemaRowIndex, 'value', 'faker.person.firstName');
     await appPage.testDataPanel.setGenerateCount(5);
 
     await appPage.testDataPanel.clickGenerate();

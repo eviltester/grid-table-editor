@@ -49,15 +49,15 @@ class ImportExportControlsComponent {
   }
 
   async isImportVisible() {
-    return this.importLabel.evaluate((el) => getComputedStyle(el).visibility !== 'hidden');
+    return this.importLabel.isVisible();
   }
 
   async isDropZoneVisible() {
-    return this.dropZone.evaluate((el) => getComputedStyle(el).visibility !== 'hidden');
+    return this.dropZone.isVisible();
   }
 
   async isDownloadVisible() {
-    return this.downloadButton.evaluate((el) => getComputedStyle(el).visibility !== 'hidden');
+    return this.downloadButton.isVisible();
   }
 
   async getProgressStatusText() {

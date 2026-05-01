@@ -27,20 +27,33 @@ class FormatOptionsPanelComponent {
   }
 
   async getCurrentOptionState() {
-    return this.container.evaluate((root) => {
-      const state = {};
-      root.querySelectorAll('input,select,textarea').forEach((el) => {
-        const key = el.name || el.id || el.className || el.tagName;
-        if (el.tagName.toLowerCase() === 'select') {
-          state[key] = el.value;
-        } else if (el.type === 'checkbox' || el.type === 'radio') {
-          state[key] = !!el.checked;
-        } else {
-          state[key] = el.value;
-        }
-      });
-      return state;
-    });
+    const state = {};
+    const fields = this.container.locator('input,select,textarea');
+    const total = await fields.count();
+    for (let index = 0; index < total; index += 1) {
+      const field = fields.nth(index);
+      const key =
+        (await field.getAttribute('name')) ||
+        (await field.getAttribute('id')) ||
+        (await field.getAttribute('class')) ||
+        `field-${index}`;
+
+      const isSelect = (await field.locator('xpath=self::select').count()) > 0;
+      const isTextarea = (await field.locator('xpath=self::textarea').count()) > 0;
+      if (isSelect || isTextarea) {
+        state[key] = await field.inputValue();
+        continue;
+      }
+
+      const type = ((await field.getAttribute('type')) || '').toLowerCase();
+      if (type === 'checkbox' || type === 'radio') {
+        state[key] = await field.isChecked();
+      } else {
+        state[key] = await field.inputValue();
+      }
+    }
+
+    return state;
   }
 
   async setOption(controlName, value) {

@@ -1,5 +1,5 @@
 const { test } = require('@playwright/test');
-const { openApp, expectNoPageErrors, expect } = require('../helpers/scenario-helpers');
+const { openApp, ensureTextEditMode, expectNoPageErrors, expect } = require('../helpers/scenario-helpers');
 
 test.describe('9. Error Handling and Edge Cases', () => {
   test('Boundary Conditions', async ({ page }) => {
@@ -13,9 +13,26 @@ test.describe('9. Error Handling and Edge Cases', () => {
 
     await appPage.testDataPanel.expand();
     await appPage.testDataPanel.expectExpanded();
+    await appPage.testDataPanel.addSchemaRow();
+    await appPage.testDataPanel.setSchemaCell(0, 'columnName', 'Boundary Value');
+    await appPage.testDataPanel.setSchemaTypeValue(0, 'literal');
+    await appPage.testDataPanel.setSchemaCell(0, 'value', 'BOUNDARY');
+    await appPage.testDataPanel.setModeNewTable();
     await appPage.testDataPanel.setGenerateCount(50);
     await appPage.testDataPanel.clickGenerate();
-    await expect.poll(async () => appPage.gridEditor.renderer.countRows()).toBeGreaterThanOrEqual(0);
+    await expect.poll(async () => appPage.testDataPanel.getStatusText()).toContain('complete');
+    await appPage.tabbedText.selectFormat('CSV');
+    await ensureTextEditMode(appPage);
+    await appPage.importExportControls.setTextFromGrid();
+    await expect
+      .poll(async () => {
+        const csvText = await appPage.tabbedText.getOutputText();
+        return csvText
+          .split(/\r?\n/)
+          .map((line) => line.trim())
+          .filter((line) => line.length > 0).length;
+      })
+      .toBe(51);
 
     await appPage.gridEditor.resetTable();
     await expect.poll(async () => appPage.gridEditor.renderer.countRows()).toBe(0);

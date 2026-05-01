@@ -76,7 +76,7 @@ describe('Tabulator main display grid', () => {
       updateDefinition: jest.fn(),
     };
     const event = {
-      target: { dataset: { action: 'rename' } },
+      target: { closest: jest.fn(() => ({ dataset: { action: 'rename' } })) },
       preventDefault: jest.fn(),
       stopPropagation: jest.fn(),
     };
@@ -110,7 +110,7 @@ describe('Tabulator main display grid', () => {
 
     grid.gridOptions.columnDefaults.headerClick(
       {
-        target: { dataset: { action: 'add-right' } },
+        target: { closest: jest.fn(() => ({ dataset: { action: 'add-right' } })) },
         preventDefault: jest.fn(),
         stopPropagation: jest.fn(),
       },
@@ -136,15 +136,27 @@ describe('Tabulator main display grid', () => {
     };
 
     grid.gridOptions.columnDefaults.headerClick(
-      { target: { dataset: { action: 'sort-asc' } }, preventDefault: jest.fn(), stopPropagation: jest.fn() },
+      {
+        target: { closest: jest.fn(() => ({ dataset: { action: 'sort-asc' } })) },
+        preventDefault: jest.fn(),
+        stopPropagation: jest.fn(),
+      },
       column
     );
     grid.gridOptions.columnDefaults.headerClick(
-      { target: { dataset: { action: 'sort-desc' } }, preventDefault: jest.fn(), stopPropagation: jest.fn() },
+      {
+        target: { closest: jest.fn(() => ({ dataset: { action: 'sort-desc' } })) },
+        preventDefault: jest.fn(),
+        stopPropagation: jest.fn(),
+      },
       column
     );
     grid.gridOptions.columnDefaults.headerClick(
-      { target: { dataset: { action: 'sort-none' } }, preventDefault: jest.fn(), stopPropagation: jest.fn() },
+      {
+        target: { closest: jest.fn(() => ({ dataset: { action: 'sort-none' } })) },
+        preventDefault: jest.fn(),
+        stopPropagation: jest.fn(),
+      },
       column
     );
 

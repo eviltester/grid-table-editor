@@ -46,7 +46,7 @@ class TestDataPanelComponent {
   }
 
   async isExpanded() {
-    return this.details.evaluate((d) => d.hasAttribute('open'));
+    return (await this.details.getAttribute('open')) !== null;
   }
 
   async setGenerateCount(count) {
@@ -118,8 +118,7 @@ class TestDataPanelComponent {
       return;
     }
 
-    const tag = await editor.evaluate((el) => el.tagName.toLowerCase());
-    if (tag === 'select') {
+    if (await editor.locator('xpath=self::select').count()) {
       await editor.selectOption(String(value));
       await editor.press('Enter');
     } else {

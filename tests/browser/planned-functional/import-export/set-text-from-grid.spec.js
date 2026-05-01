@@ -10,10 +10,9 @@ test.describe('4. Import Export Basic', () => {
     await expect.poll(async () => appPage.importExportControls.getExtensionLabel()).toBe('.csv');
     await appPage.importExportControls.setTextFromGrid();
 
-    const text = await appPage.tabbedText.getOutputText();
-    expect(text).toContain('A');
-    expect(text).toContain('B');
-    expect(text).toContain('\n');
+    await expect.poll(async () => appPage.tabbedText.getOutputText()).toContain('A');
+    await expect.poll(async () => appPage.tabbedText.getOutputText()).toContain('B');
+    await expect.poll(async () => appPage.tabbedText.getOutputText()).toContain('\n');
 
     expectNoPageErrors(pageErrors);
   });

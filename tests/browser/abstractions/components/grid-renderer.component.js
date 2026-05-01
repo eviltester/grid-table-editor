@@ -134,15 +134,22 @@ class GridRendererComponent {
   }
 
   async _columnIndexByName(columnName) {
+    const expected = this._normalizeColumnTitle(columnName);
     const totalColumns = await this.headerTitles.count();
     for (let index = 0; index < totalColumns; index += 1) {
-      const title = (await this.headerTitles.nth(index).innerText()).trim();
-      if (title.includes(columnName)) {
+      const title = this._normalizeColumnTitle(await this.headerTitles.nth(index).innerText());
+      if (title === expected) {
         return index;
       }
     }
 
     throw new Error(`Column "${columnName}" was not found in Tabulator header.`);
+  }
+
+  _normalizeColumnTitle(rawText) {
+    return String(rawText || '')
+      .split('\n')[0]
+      .trim();
   }
 }
 

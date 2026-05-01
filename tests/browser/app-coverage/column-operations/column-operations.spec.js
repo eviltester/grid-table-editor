@@ -19,8 +19,12 @@ test('column add, rename, duplicate and delete controls update table shape and d
   await expect.poll(async () => appPage.gridEditor.header.getColumnNames()).toContain('New Column Name');
 
   await appPage.gridEditor.renderer.setCellTextByColumnName('New Column Name', 0, 'Seed Value');
+  const sourceValuesBeforeDuplicate = await appPage.gridEditor.renderer.getColumnTextsByName('New Column Name');
   await appPage.gridEditor.header.duplicateColumn('New Column Name', 'New Column Copy');
   await expect.poll(async () => appPage.gridEditor.header.getColumnNames()).toContain('New Column Copy');
+  await expect
+    .poll(async () => appPage.gridEditor.renderer.getColumnTextsByName('New Column Copy'))
+    .toEqual(sourceValuesBeforeDuplicate);
   await appPage.gridEditor.renderer.setCellTextByColumnName('New Column Copy', 0, 'Copied Value');
   await expect
     .poll(async () => appPage.gridEditor.renderer.getCellTextByColumnName('New Column Copy', 0))

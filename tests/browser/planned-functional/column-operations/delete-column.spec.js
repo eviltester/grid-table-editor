@@ -10,6 +10,7 @@ test.describe('2. Column Operations', () => {
     await expect.poll(async () => appPage.gridEditor.renderer.countRows()).toBeGreaterThanOrEqual(1);
 
     await appPage.gridEditor.header.addColumnRight(base, 'ToDelete');
+    await expect.poll(async () => appPage.gridEditor.header.getColumnNames()).toContain('ToDelete');
     await appPage.gridEditor.renderer.setCellTextByColumnName('ToDelete', 0, 'gone');
     await appPage.gridEditor.renderer.setCellTextByColumnName(base, 0, 'keep');
 

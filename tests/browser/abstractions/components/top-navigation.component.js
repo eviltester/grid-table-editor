@@ -45,21 +45,21 @@ class TopNavigationComponent {
   }
 
   async expandInstructions() {
-    const expanded = await this.instructionsDetails.evaluate((el) => el.hasAttribute('open'));
+    const expanded = (await this.instructionsDetails.getAttribute('open')) !== null;
     if (!expanded) {
       await this.instructionsSummary.click();
     }
   }
 
   async collapseInstructions() {
-    const expanded = await this.instructionsDetails.evaluate((el) => el.hasAttribute('open'));
+    const expanded = (await this.instructionsDetails.getAttribute('open')) !== null;
     if (expanded) {
       await this.instructionsSummary.click();
     }
   }
 
   async isInstructionsExpanded() {
-    return this.instructionsDetails.evaluate((el) => el.hasAttribute('open'));
+    return (await this.instructionsDetails.getAttribute('open')) !== null;
   }
 }
 

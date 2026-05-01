@@ -15,14 +15,21 @@ test.describe('7. Test Data Generation', () => {
     await appPage.testDataPanel.setSchemaCell(0, 'columnName', 'First Name');
     await appPage.testDataPanel.setSchemaTypeValue(0, 'faker');
     await appPage.testDataPanel.setSchemaCell(0, 'value', 'faker.person.firstName');
+    await appPage.testDataPanel.addSchemaRow();
+    await expect.poll(async () => appPage.testDataPanel.getSchemaRowCount()).toBe(beforeSchema + 2);
+    await appPage.testDataPanel.setSchemaCell(1, 'columnName', 'Status');
+    await appPage.testDataPanel.setSchemaTypeValue(1, 'literal');
+    await appPage.testDataPanel.setSchemaCell(1, 'value', 'Active');
     await appPage.testDataPanel.setGenerateCount(5);
 
     await appPage.testDataPanel.clickGenerate();
     await expect.poll(async () => appPage.gridEditor.renderer.countRows()).toBe(5);
-    await expect.poll(async () => appPage.gridEditor.header.getColumnNames()).toContain('First Name');
+    await expect.poll(async () => appPage.gridEditor.header.getColumnNames()).toEqual(['First Name', 'Status']);
 
-    const values = await appPage.gridEditor.renderer.getColumnTextsByName('First Name');
-    expect(values.filter(Boolean).length).toBe(5);
+    const firstNameValues = await appPage.gridEditor.renderer.getColumnTextsByName('First Name');
+    const statusValues = await appPage.gridEditor.renderer.getColumnTextsByName('Status');
+    expect(firstNameValues.filter(Boolean).length).toBe(5);
+    expect(statusValues).toEqual(['Active', 'Active', 'Active', 'Active', 'Active']);
     expectNoPageErrors(pageErrors);
   });
 });

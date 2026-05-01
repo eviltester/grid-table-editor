@@ -1,5 +1,6 @@
 const { test, expect } = require('@playwright/test');
 const { AppPage } = require('../abstractions/app.page');
+const { seedInstructionsRows } = require('../app-coverage/helpers/test-helpers');
 
 function trackPageErrors(page) {
   const pageErrors = [];
@@ -41,19 +42,16 @@ test('grid header sorting and per-column filter change visible results', async (
   const appPage = new AppPage(page);
 
   await appPage.goto();
-  await appPage.gridEditor.addRow();
+  await seedInstructionsRows(appPage, ['Banana', 'Apple', 'Cherry']);
   const targetColumnName = (await appPage.gridEditor.header.getColumnNames())[0];
-  const initialFirst = await appPage.gridEditor.renderer.getCellTextByColumnName(targetColumnName, 0);
 
   await appPage.gridEditor.header.sortDesc(targetColumnName);
   await expect
     .poll(async () => appPage.gridEditor.renderer.getCellTextByColumnName(targetColumnName, 0))
-    .not.toBe(initialFirst);
+    .toBe('Cherry');
 
   await appPage.gridEditor.header.sortAsc(targetColumnName);
-  await expect
-    .poll(async () => appPage.gridEditor.renderer.getCellTextByColumnName(targetColumnName, 0))
-    .toBe(initialFirst);
+  await expect.poll(async () => appPage.gridEditor.renderer.getCellTextByColumnName(targetColumnName, 0)).toBe('Apple');
 
   await appPage.gridEditor.header.setColumnFilter(targetColumnName, 'Rename Column');
   await expect.poll(async () => appPage.gridEditor.header.getColumnFilterValue(targetColumnName)).toBe('Rename Column');

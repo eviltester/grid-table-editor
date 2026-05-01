@@ -65,7 +65,9 @@ class ExtendedDataGrid {
     };
 
     const onCustomHeaderClick = function (e, column) {
-      const action = e?.target?.dataset?.action;
+      const targetElement = e?.target && typeof e.target.closest === 'function' ? e.target : null;
+      const actionElement = targetElement?.closest?.('[data-action]');
+      const action = actionElement?.dataset?.action;
       if (!action) {
         return;
       }
@@ -146,6 +148,8 @@ class ExtendedDataGrid {
       // not from inferred object keys during setData/import.
       autoColumns: false,
       headerSort: true,
+      // Prevent accidental table re-order when clicking non-sort controls in custom headers.
+      headerSortClickElement: 'icon',
 
       movableColumns: true,
 

@@ -107,6 +107,24 @@ describe('PhpConvertor', () => {
     const output = convertor.fromDataTable(basicTable);
     expect(output).toContain("new Row('Alice', 30)");
   });
+
+  test('blank headers are normalized to valid non-empty identifiers', () => {
+    const table = new GenericDataTable();
+    table.setHeaders(['', '']);
+    table.appendDataRow(['Alice', 'Bob']);
+    const convertor = new PhpConvertor();
+    convertor.setOptions({
+      objectRepresentation: 'class',
+      constructorArgStyle: 'named',
+      phpCompatibility: '8+',
+      objectClassName: 'Person',
+    });
+    const output = convertor.fromDataTable(table);
+    expect(output).toContain('public $field;');
+    expect(output).toContain('public $field_2;');
+    expect(output).toContain('public function __construct($field, $field_2)');
+    expect(output).toContain("new Person(field: 'Alice', field_2: 'Bob')");
+  });
 });
 
 describe('PhpConvertorOptions', () => {

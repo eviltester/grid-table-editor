@@ -187,7 +187,10 @@ class PhpConvertor {
   fromDataTable(dataTable) {
     const opts = this.config.options;
     const rawHeaders = dataTable.getHeaders();
-    const sanitizedHeaders = rawHeaders.map((h) => convertStringToPhpValidName(h));
+    const sanitizedHeaders = rawHeaders.map((h) => {
+      const candidate = convertStringToPhpValidName(h);
+      return candidate === '' ? 'field' : candidate;
+    });
     const usedNames = new Set();
     const headers = sanitizedHeaders.map((h) => {
       if (!usedNames.has(h)) {

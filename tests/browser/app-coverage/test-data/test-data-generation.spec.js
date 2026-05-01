@@ -15,7 +15,7 @@ test('test data panel can define faker/regex schema and generate rows', async ({
   await expect.poll(async () => appPage.testDataPanel.getSchemaRowCount()).toBe(2);
 
   await appPage.testDataPanel.clickGenerate();
-  await expect.poll(async () => appPage.testDataPanel.getStatusText()).toContain('complete');
+  await expect.poll(async () => appPage.testDataPanel.getStatusText()).toMatch(/\bcomplete\b/i);
   await expect.poll(async () => appPage.gridEditor.renderer.countRows()).toBe(5);
   await expect.poll(async () => appPage.gridEditor.header.getColumnNames()).toContain('First Name');
   await expect.poll(async () => appPage.gridEditor.header.getColumnNames()).toContain('Code');
@@ -38,7 +38,7 @@ test('test data modes new table, amend table and amend selected produce expected
   await appPage.testDataPanel.setModeNewTable();
   await appPage.testDataPanel.setGenerateCount(2);
   await appPage.testDataPanel.clickGenerate();
-  await expect.poll(async () => appPage.testDataPanel.getStatusText()).toContain('complete');
+  await expect.poll(async () => appPage.testDataPanel.getStatusText()).toMatch(/\bcomplete\b/i);
   await expect.poll(async () => appPage.gridEditor.renderer.countRows()).toBe(2);
 
   await appPage.testDataPanel.setModeAmendTable();
@@ -49,7 +49,7 @@ test('test data modes new table, amend table and amend selected produce expected
   await appPage.testDataPanel.setModeAmendSelected();
   await expect.poll(async () => Number(await appPage.testDataPanel.getGenerateCount())).toBeGreaterThan(0);
   await appPage.testDataPanel.clickGenerate();
-  await expect.poll(async () => appPage.testDataPanel.getStatusText()).toContain('complete');
+  await expect.poll(async () => appPage.testDataPanel.getStatusText()).toMatch(/\bcomplete\b/i);
 
   expect(pageErrors).toEqual([]);
 });

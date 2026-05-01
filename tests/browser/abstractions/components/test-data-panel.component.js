@@ -132,6 +132,7 @@ class TestDataPanelComponent {
       await editor.fill(String(value));
       await editor.press('Enter');
     }
+    await expect.poll(async () => editor.count()).toBe(0);
     return;
   }
 

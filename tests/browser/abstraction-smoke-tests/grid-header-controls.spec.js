@@ -45,10 +45,14 @@ test('grid header sorting and per-column filter change visible results', async (
   await appPage.gridEditor.header.sortAsc(targetColumnName);
   await expect.poll(async () => appPage.gridEditor.renderer.getCellTextByColumnName(targetColumnName, 0)).toBe('Apple');
 
-  await appPage.gridEditor.header.setColumnFilter(targetColumnName, 'Rename Column');
-  await expect.poll(async () => appPage.gridEditor.header.getColumnFilterValue(targetColumnName)).toBe('Rename Column');
+  await appPage.gridEditor.header.setColumnFilter(targetColumnName, 'Cherry');
+  await expect.poll(async () => appPage.gridEditor.header.getColumnFilterValue(targetColumnName)).toBe('Cherry');
+  await expect
+    .poll(async () => appPage.gridEditor.renderer.getCellTextByColumnName(targetColumnName, 0))
+    .toBe('Cherry');
 
   await appPage.gridEditor.header.setColumnFilter(targetColumnName, '');
   await expect.poll(async () => appPage.gridEditor.header.getColumnFilterValue(targetColumnName)).toBe('');
+  await expect.poll(async () => appPage.gridEditor.renderer.getCellTextByColumnName(targetColumnName, 0)).toBe('Apple');
   expect(pageErrors).toEqual([]);
 });

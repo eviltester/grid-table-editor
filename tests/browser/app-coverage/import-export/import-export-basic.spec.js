@@ -42,9 +42,12 @@ test('csv file upload imports into the grid and malformed csv does not crash pag
     await expect.poll(async () => appPage.gridEditor.renderer.countRows()).toBe(2);
 
     await appPage.tabbedText.togglePreviewEdit(false);
+    await expect.poll(async () => appPage.importExportControls.isSetGridFromTextEnabled()).toBe(true);
+    const rowsBeforeMalformedImport = await appPage.gridEditor.renderer.countRows();
     await appPage.tabbedText.setOutputText('"unterminated,quote\nfoo,bar');
     await appPage.importExportControls.setGridFromText();
-    await expect.poll(async () => (await appPage.gridEditor.header.getColumnNames()).length).toBeGreaterThan(0);
+    expect(rowsBeforeMalformedImport).toBeGreaterThan(0);
+    await expect.poll(async () => appPage.gridEditor.renderer.countRows()).toBe(0);
 
     expect(pageErrors).toEqual([]);
   } finally {

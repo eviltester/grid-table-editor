@@ -10,6 +10,11 @@ import { JsonOptionsPanel } from './options_panels/options-json-panel.js';
 import { JavaOptionsPanel } from './options_panels/options-java-panel.js';
 import { JavascriptOptionsPanel } from './options_panels/options-javascript-panel.js';
 import { PythonOptionsPanel } from './options_panels/options-python-panel.js';
+import { PhpOptionsPanel } from './options_panels/options-php-panel.js';
+import { RubyOptionsPanel } from './options_panels/options-ruby-panel.js';
+import { KotlinOptionsPanel } from './options_panels/options-kotlin-panel.js';
+import { CSharpOptionsPanel } from './options_panels/options-csharp-panel.js';
+import { PerlOptionsPanel } from './options_panels/options-perl-panel.js';
 import { TypeScriptOptionsPanel } from './options_panels/options-typescript-panel.js';
 import { XmlOptionsPanel } from './options_panels/options-xml-panel.js';
 import { SqlOptionsPanel } from './options_panels/options-sql-panel.js';
@@ -262,9 +267,14 @@ class DataGeneratorPage {
     });
 
     const codeTypes = [
+      { type: 'csharp', label: 'C#' },
       { type: 'java', label: 'Java' },
       { type: 'javascript', label: 'JavaScript' },
+      { type: 'kotlin', label: 'Kotlin' },
+      { type: 'perl', label: 'Perl' },
+      { type: 'php', label: 'PHP' },
       { type: 'python', label: 'Python' },
+      { type: 'ruby', label: 'Ruby' },
       { type: 'typescript', label: 'TypeScript' },
     ];
     const codeGroup = this.documentObj.createElement('optgroup');
@@ -327,6 +337,11 @@ class DataGeneratorPage {
     this.optionsPanels['javascript'] = new JavascriptOptionsPanel(optionsParent);
     this.optionsPanels['java'] = new JavaOptionsPanel(optionsParent);
     this.optionsPanels['python'] = new PythonOptionsPanel(optionsParent);
+    this.optionsPanels['kotlin'] = new KotlinOptionsPanel(optionsParent);
+    this.optionsPanels['csharp'] = new CSharpOptionsPanel(optionsParent);
+    this.optionsPanels['perl'] = new PerlOptionsPanel(optionsParent);
+    this.optionsPanels['php'] = new PhpOptionsPanel(optionsParent);
+    this.optionsPanels['ruby'] = new RubyOptionsPanel(optionsParent);
     this.optionsPanels['typescript'] = new TypeScriptOptionsPanel(optionsParent);
     this.optionsPanels['xml'] = new XmlOptionsPanel(optionsParent);
     this.optionsPanels['sql'] = new SqlOptionsPanel(optionsParent);

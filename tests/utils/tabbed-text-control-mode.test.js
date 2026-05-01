@@ -38,7 +38,7 @@ describe('TabbedTextControl preview/edit button', () => {
     expect(modeButton.innerText).toBe('Edit');
   });
 
-  test('selecting Code shows JavaScript subtask and keeps javascript as active export type', () => {
+  test('selecting Code defaults to C# subtask and exposes code subtasks alphabetically', () => {
     const controller = {
       renderTextFromGrid: jest.fn(),
       setFileFormatType: jest.fn(),
@@ -60,8 +60,12 @@ describe('TabbedTextControl preview/edit button', () => {
 
     expect(host.querySelector('#type-code').classList.contains('active-main-type')).toBe(true);
     expect(host.querySelector('#conversionSubtasks').style.display).toBe('block');
-    expect(host.querySelector('.subtask-select.active-type .subtask-select-action').textContent).toBe('Java');
-    expect(host.querySelector('li.active-type a').getAttribute('data-type')).toBe('java');
+    expect(host.querySelector('.subtask-select.active-type .subtask-select-action').textContent).toBe('C#');
+    expect(host.querySelector('li.active-type a').getAttribute('data-type')).toBe('csharp');
+    const codeSubtasks = Array.from(host.querySelectorAll('#conversionSubtasks .subtask-select-action')).map((elem) =>
+      elem.textContent.trim()
+    );
+    expect(codeSubtasks).toEqual(['C#', 'Java', 'JavaScript', 'Kotlin', 'Perl', 'PHP', 'Python', 'Ruby', 'TypeScript']);
     expect(controller.renderTextFromGrid).toHaveBeenCalledTimes(1);
     expect(controller.setFileFormatType).toHaveBeenCalledTimes(1);
     expect(controller.setOptionsViewForFormatType).toHaveBeenCalledTimes(1);

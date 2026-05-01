@@ -56,6 +56,32 @@ const sharedInlineHelpEntries = {
       <p>Configure collection type, variable/class naming, decimal handling, quote style, import statements, and pretty printing before pressing [Apply].</p>
       <p><a class="helplink" href="docs/data-formats/python/options" target="anywaydatadocs">Learn more</a></p>
     `,
+  'php-options': `
+      <p>Export the table data as PHP code using associative arrays or named class instances.</p>
+      <p>Configure collection type, PHP tag, variable/class naming, stdClass or class instances, number and scalar coercion, compatibility mode, constructor style, and pretty printing before pressing [Apply].</p>
+      <p><em>Named constructor arguments require PHP 8+.</em></p>
+      <p><a class="helplink" href="docs/data-formats/php/options" target="anywaydatadocs">Learn more</a></p>
+    `,
+  'ruby-options': `
+      <p>Export the table data as Ruby code using hashes or named class instances.</p>
+      <p>Configure collection type, variable/class naming, number quoting, object style, and pretty printing before pressing [Apply].</p>
+      <p><a class="helplink" href="docs/data-formats/ruby/options" target="anywaydatadocs">Learn more</a></p>
+    `,
+  'perl-options': `
+      <p>Export the table data as Perl code using hash references or blessed object instances.</p>
+      <p>Configure collection type, variable/class naming, number quoting, hash key style, object style (bless or constructor), and pretty printing before pressing [Apply].</p>
+      <p><a class="helplink" href="docs/data-formats/perl/options" target="anywaydatadocs">Learn more</a></p>
+    `,
+  'kotlin-options': `
+      <p>Export the table data as Kotlin code using maps or named data class instances.</p>
+      <p>Configure collection type, val/var assignment, mutable collections, Kotlin-safe naming, number quoting, object style, and pretty printing (including trailing comma) before pressing [Apply].</p>
+      <p><a class="helplink" href="docs/data-formats/kotlin/options" target="anywaydatadocs">Learn more</a></p>
+    `,
+  'csharp-options': `
+      <p>Export the table data as C# code using dictionaries or named class instances.</p>
+      <p>Configure collection target type, variable/class naming, number quoting, dictionary value typing, keyword-safe identifiers, object style, and pretty printing before pressing [Apply].</p>
+      <p><a class="helplink" href="docs/data-formats/csharp/options" target="anywaydatadocs">Learn more</a></p>
+    `,
   'typescript-options': `
       <p>Export the table data as TypeScript code using anonymous objects or named class instances.</p>
       <p>Configure collection type, variable/class naming, blank value handling, number quoting, and pretty printing before pressing [Apply].</p>

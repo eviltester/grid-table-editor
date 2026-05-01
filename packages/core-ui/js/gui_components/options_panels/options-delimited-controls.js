@@ -45,7 +45,7 @@ class DelimitedOptions {
             </label>
             <br>
           </div>
-          <div class="custom-delimiter">
+          <div class="custom-delimiter option-child">
             <label><span class="helpicon option-help-icon" data-help="dsv-option-custom-delimiter" data-help-text="When Delimiter is set to Custom Value, enter the delimiter character here."></span>Custom
               <input type="text" name="custom-delimiter" value='' style="width:5em">
             </label>
@@ -71,7 +71,7 @@ class DelimitedOptions {
           </div>
           
 
-          <div class="quoteChar">
+          <div class="quoteChar option-child">
             <label>
               <span class="helpicon option-help-icon" data-help="dsv-option-quote-char" data-help-text="Character used to quote string values."></span>
               <input type="text" name="quoteChar" value='"' style="width:5em">
@@ -80,7 +80,7 @@ class DelimitedOptions {
             <br>
           </div>
 
-          <div class="escapeChar">
+          <div class="escapeChar option-child">
             <label>
               <span class="helpicon option-help-icon" data-help="dsv-option-escape-char" data-help-text="Character used to escape quote characters inside field values."></span>
               <input type="text" name="escapeChar" value='"' style="width:5em">

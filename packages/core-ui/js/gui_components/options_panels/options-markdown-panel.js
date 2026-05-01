@@ -66,14 +66,14 @@ class MarkdownOptionsPanel {
           </div>
           
 
-          <div class="emboldencolumns">
+          <div class="emboldencolumns option-child">
             <label><span class="helpicon option-help-icon" data-help="md-option-bold-columns" data-help-text="Column indexes to bold, separated by spaces. Example: 1 3 4"></span>Add Bold to Cols
               <input type="text" name="emboldencolumns" value='"' style="width:5em">
             </label>
             <br>
           </div>
 
-          <div class="emphasiscolumns">
+          <div class="emphasiscolumns option-child">
           <label><span class="helpicon option-help-icon" data-help="md-option-italic-columns" data-help-text="Column indexes to italicise, separated by spaces. Example: 2 5"></span>Italics on Cols
             <input type="text" name="emphasiscolumns" value='"' style="width:5em">
           </label>

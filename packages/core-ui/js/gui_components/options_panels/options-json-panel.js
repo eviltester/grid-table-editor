@@ -26,7 +26,7 @@ class JsonOptionsPanel {
             <br>
           </div>
 
-          <div class="prettydelimiter">
+          <div class="prettydelimiter option-child">
             <label><span class="helpicon option-help-icon" data-help="json-option-delimiter" data-help-text="Indentation character used for pretty print output."></span>Delimiter
               <select name="prettydelimiter">
                 <option value="tab">Tab [\\t]</option>
@@ -40,7 +40,7 @@ class JsonOptionsPanel {
             </label>
           <br>
           </div>
-          <div class="custom-pretty-delimiter">
+          <div class="custom-pretty-delimiter option-child">
             <label><span class="helpicon option-help-icon" data-help="json-option-custom-delimiter" data-help-text="When Delimiter is Custom Value, enter the indentation character here."></span>Custom
               <input type="text" name="custom-pretty-delimiter" value='' style="width:5em">
             </label>
@@ -56,7 +56,7 @@ class JsonOptionsPanel {
             <br>
           </div>
           
-          <div class="propertynamed">
+          <div class="propertynamed option-child">
             <label><span class="helpicon option-help-icon" data-help="json-option-property-name" data-help-text="Name of the object property used when As Object is enabled."></span>Property Name
               <input type="text" name="propertynamed" value='"' style="width:10em">
             </label>

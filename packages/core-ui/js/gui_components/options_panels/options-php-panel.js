@@ -28,7 +28,7 @@ class PhpOptionsPanel {
         <div class="assigntovariable">
           <label><input type="checkbox" name="assigntovariable"> Assign to Variable</label>
         </div>
-        <div class="variablename">
+        <div class="variablename option-child">
           <label>Variable Name <input type="text" name="variablename" value="data" style="width:8em"></label>
         </div>
         <div class="quotenumbers">
@@ -43,7 +43,7 @@ class PhpOptionsPanel {
             </select>
           </label>
         </div>
-        <div class="objectclassname">
+        <div class="objectclassname option-child">
           <label>Object Name <input type="text" name="objectclassname" value="Row" style="width:8em"></label>
         </div>
         <div class="arraykeyquotestyle">
@@ -76,7 +76,7 @@ class PhpOptionsPanel {
             </select>
           </label>
         </div>
-        <div class="classpropertytyping">
+        <div class="classpropertytyping option-child">
           <label>Class Property Typing
             <select name="classpropertytyping">
               <option value="none">Untyped Properties</option>
@@ -84,10 +84,10 @@ class PhpOptionsPanel {
             </select>
           </label>
         </div>
-        <div class="useconstructorpromotion">
+        <div class="useconstructorpromotion option-child">
           <label><input type="checkbox" name="useconstructorpromotion"> Use Constructor Promotion (PHP 8+)</label>
         </div>
-        <div class="constructorargstyle">
+        <div class="constructorargstyle option-child">
           <label>Constructor Arg Style
             <select name="constructorargstyle">
               <option value="positional">Positional Args</option>
@@ -98,7 +98,7 @@ class PhpOptionsPanel {
         <div class="prettyprint">
           <label><input type="checkbox" name="prettyprint"> Pretty Print</label>
         </div>
-        <div class="prettydelimiter">
+        <div class="prettydelimiter option-child">
           <label>Delimiter
             <select name="prettydelimiter">
               <option value="tab">Tab [\t]</option>
@@ -107,7 +107,7 @@ class PhpOptionsPanel {
             </select>
           </label>
         </div>
-        <div class="custom-pretty-delimiter">
+        <div class="custom-pretty-delimiter option-child">
           <label>Custom Delimiter <input type="text" name="custom-pretty-delimiter" value="" style="width:8em"></label>
         </div>
         <div class="apply">

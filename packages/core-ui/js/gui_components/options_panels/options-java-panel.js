@@ -33,7 +33,7 @@ class JavaOptionsPanel {
             <br>
           </div>
 
-          <div class="variablename">
+          <div class="variablename option-child">
             <label>
               <span class="helpicon option-help-icon" data-help="java-option-variable-name" data-help-text="Name of the Java variable the collection is assigned to."></span>
               Variable Name
@@ -60,7 +60,7 @@ class JavaOptionsPanel {
             <br>
           </div>
 
-          <div class="objectclassname">
+          <div class="objectclassname option-child">
             <label>
               <span class="helpicon option-help-icon" data-help="java-option-class-name" data-help-text="Class name used when Use Anonymous Maps is unchecked."></span>
               Class Name
@@ -99,7 +99,7 @@ class JavaOptionsPanel {
             <br>
           </div>
 
-          <div class="prettydelimiter">
+          <div class="prettydelimiter option-child">
             <label>
               <span class="helpicon option-help-icon" data-help="java-option-delimiter" data-help-text="Indentation character used when Pretty Print is enabled."></span>
               Delimiter
@@ -112,7 +112,7 @@ class JavaOptionsPanel {
             <br>
           </div>
 
-          <div class="custom-pretty-delimiter">
+          <div class="custom-pretty-delimiter option-child">
             <label>
               <span class="helpicon option-help-icon" data-help="java-option-custom-delimiter" data-help-text="When Delimiter is Custom Value, this value is used as indentation."></span>
               Custom Delimiter

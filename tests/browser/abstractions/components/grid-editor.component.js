@@ -38,6 +38,12 @@ class GridEditorComponent {
     await this.addRowButton.click();
   }
 
+  async addRowAndWaitForCountIncrease() {
+    const before = await this.renderer.countRows();
+    await this.addRow();
+    return before + 1;
+  }
+
   async filterBy(text) {
     await this.quickFilterInput.fill(text);
   }
@@ -56,6 +62,14 @@ class GridEditorComponent {
 
   async deleteSelectedRows() {
     await this.deleteSelectedRowsButton.click();
+  }
+
+  async selectRow(rowIndex) {
+    await this.renderer.selectRow(rowIndex);
+  }
+
+  async selectRows(rowIndexes) {
+    await this.renderer.selectRows(rowIndexes);
   }
 
   async clearFilters() {

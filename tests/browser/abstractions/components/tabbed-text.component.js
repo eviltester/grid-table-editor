@@ -3,7 +3,7 @@ class TabbedTextComponent {
     this.page = page;
     this.container = page.locator('#tabbedTextArea');
     this.tabsList = page.locator('#tabbedTextArea .conversionTypesList');
-    this.outputTextArea = page.locator('#tabbedTextArea textarea');
+    this.outputTextArea = page.locator('#tabbedTextArea textarea.textrepresentation').first();
     this.previewOrEditButton = page.locator('#previewEditModeButton');
     this.copyButton = page.locator('#copyTextButton');
     this.subtasks = page.locator('#conversionSubtasks');

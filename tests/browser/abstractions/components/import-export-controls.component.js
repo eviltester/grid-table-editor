@@ -6,8 +6,10 @@ class ImportExportControlsComponent {
     this.setGridFromTextButton = page.locator('#setgridfromtextbutton');
     this.downloadButton = page.locator('#filedownload');
     this.importLabel = page.locator('#csvinputlabel');
+    this.fileInput = page.locator('#csvinput');
     this.dropZone = page.locator('#dropzone');
     this.fileFormatLabel = page.locator('.fileFormat').first();
+    this.progressStatus = page.locator('#import-progress-status');
   }
 
   async expectVisible() {
@@ -28,6 +30,10 @@ class ImportExportControlsComponent {
     await this.setGridFromTextButton.click();
   }
 
+  async uploadFile(filePath) {
+    await this.fileInput.setInputFiles(filePath);
+  }
+
   async isSetGridFromTextEnabled() {
     return this.setGridFromTextButton.isEnabled();
   }
@@ -46,6 +52,10 @@ class ImportExportControlsComponent {
 
   async isDownloadVisible() {
     return this.downloadButton.evaluate((el) => getComputedStyle(el).visibility !== 'hidden');
+  }
+
+  async getProgressStatusText() {
+    return (await this.progressStatus.innerText()).trim();
   }
 }
 

@@ -5,6 +5,8 @@ class TopNavigationComponent {
     this.generatorLink = page.getByRole('link', { name: 'Generator' });
     this.docsLink = page.getByRole('link', { name: 'Docs' });
     this.blogLink = page.getByRole('link', { name: 'Blog' });
+    this.instructionsSummary = page.locator('.instructions summary');
+    this.instructionsDetails = page.locator('.instructions details');
   }
 
   async expectVisible() {
@@ -16,6 +18,36 @@ class TopNavigationComponent {
 
   async expectReady() {
     await this.expectVisible();
+  }
+
+  async gotoGenerator() {
+    await this.generatorLink.click();
+  }
+
+  async clickDocs() {
+    await this.docsLink.click();
+  }
+
+  async clickBlog() {
+    await this.blogLink.click();
+  }
+
+  async expandInstructions() {
+    const expanded = await this.instructionsDetails.evaluate((el) => el.hasAttribute('open'));
+    if (!expanded) {
+      await this.instructionsSummary.click();
+    }
+  }
+
+  async collapseInstructions() {
+    const expanded = await this.instructionsDetails.evaluate((el) => el.hasAttribute('open'));
+    if (expanded) {
+      await this.instructionsSummary.click();
+    }
+  }
+
+  async isInstructionsExpanded() {
+    return this.instructionsDetails.evaluate((el) => el.hasAttribute('open'));
   }
 }
 

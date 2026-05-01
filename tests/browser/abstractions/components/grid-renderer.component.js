@@ -67,6 +67,16 @@ class GridRendererComponent {
     await this.clickCell(0, rowIndex);
   }
 
+  async selectRows(rowIndexes) {
+    if (!rowIndexes || rowIndexes.length === 0) {
+      return;
+    }
+    await this.selectRow(rowIndexes[0]);
+    for (let i = 1; i < rowIndexes.length; i += 1) {
+      await this.rows.nth(rowIndexes[i]).click({ modifiers: ['Control'] });
+    }
+  }
+
   async setCellTextByField(field, rowIndex, value) {
     const cell = this._cellByField(field, rowIndex);
     await cell.click();
@@ -81,7 +91,23 @@ class GridRendererComponent {
 
     await editor.fill(String(value));
     await editor.press('Enter');
-    await this.page.waitForTimeout(50);
+    await this.page.getByText(String(value), { exact: true }).first().waitFor({ state: 'visible' });
+  }
+
+  async setCellTextByColumnName(columnName, rowIndex, value) {
+    const columnIndex = await this._columnIndexByName(columnName);
+    const cell = this._cellByIndexes(columnIndex, rowIndex);
+    await cell.click();
+    await cell.click();
+    let editor = cell.locator('input,textarea,select').first();
+    if ((await editor.count()) === 0) {
+      editor = this.gridRoot
+        .locator('.tabulator-editing input, .tabulator-editing textarea, .tabulator-editing select')
+        .first();
+    }
+    await editor.fill(String(value));
+    await editor.press('Enter');
+    await this.page.getByText(String(value), { exact: true }).first().waitFor({ state: 'visible' });
   }
 
   _cellByIndexes(columnIndex, rowIndex) {

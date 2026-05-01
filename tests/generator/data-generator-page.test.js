@@ -563,9 +563,14 @@ describe('DataGeneratorPage', () => {
           'html',
           'gherkin',
           'asciitable',
+          'csharp',
           'java',
           'javascript',
+          'kotlin',
+          'perl',
+          'php',
           'python',
+          'ruby',
           'typescript',
         ].includes(type);
       }
@@ -597,7 +602,12 @@ describe('DataGeneratorPage', () => {
     const codeOptionValues = Array.from(lastChild.querySelectorAll('option')).map((o) => o.value);
     expect(codeOptionValues).toContain('java');
     expect(codeOptionValues).toContain('javascript');
+    expect(codeOptionValues).toContain('kotlin');
+    expect(codeOptionValues).toContain('perl');
+    expect(codeOptionValues).toContain('csharp');
+    expect(codeOptionValues).toContain('php');
     expect(codeOptionValues).toContain('python');
+    expect(codeOptionValues).toContain('ruby');
     expect(codeOptionValues).toContain('typescript');
   });
 
@@ -615,9 +625,14 @@ describe('DataGeneratorPage', () => {
           'html',
           'gherkin',
           'asciitable',
+          'csharp',
           'java',
           'javascript',
+          'kotlin',
+          'perl',
+          'php',
           'python',
+          'ruby',
           'typescript',
         ].includes(type);
       }
@@ -652,9 +667,14 @@ describe('DataGeneratorPage', () => {
         'html',
         'gherkin',
         'asciitable',
+        'csharp',
         'java',
         'javascript',
+        'kotlin',
+        'perl',
+        'php',
         'python',
+        'ruby',
         'typescript',
       ])
     );

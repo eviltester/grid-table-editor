@@ -5,6 +5,11 @@ import { JsonConvertor, JsonConvertorOptions } from '../data_formats/json-conver
 import { JavaConvertor, JavaConvertorOptions } from '../data_formats/java-convertor.js';
 import { JavascriptConvertor, JavascriptConvertorOptions } from '../data_formats/javascript-convertor.js';
 import { PythonConvertor, PythonConvertorOptions } from '../data_formats/python-convertor.js';
+import { PhpConvertor, PhpConvertorOptions } from '../data_formats/php-convertor.js';
+import { RubyConvertor, RubyConvertorOptions } from '../data_formats/ruby-convertor.js';
+import { KotlinConvertor, KotlinConvertorOptions } from '../data_formats/kotlin-convertor.js';
+import { CSharpConvertor, CSharpConvertorOptions } from '../data_formats/csharp-convertor.js';
+import { PerlConvertor, PerlConvertorOptions } from '../data_formats/perl-convertor.js';
 import { TypeScriptConvertor, TypeScriptConvertorOptions } from '../data_formats/typescript-convertor.js';
 import { XmlConvertor, XmlConvertorOptions } from '../data_formats/xml-convertor.js';
 import { SqlConvertor, SqlConvertorOptions } from '../data_formats/sql-convertor.js';
@@ -39,6 +44,11 @@ class Exporter {
     this.options['java'] = new JavaConvertorOptions();
     this.options['javascript'] = new JavascriptConvertorOptions();
     this.options['python'] = new PythonConvertorOptions();
+    this.options['php'] = new PhpConvertorOptions();
+    this.options['ruby'] = new RubyConvertorOptions();
+    this.options['kotlin'] = new KotlinConvertorOptions();
+    this.options['csharp'] = new CSharpConvertorOptions();
+    this.options['perl'] = new PerlConvertorOptions();
     this.options['typescript'] = new TypeScriptConvertorOptions();
     this.options['xml'] = new XmlConvertorOptions();
     this.options['sql'] = new SqlConvertorOptions();
@@ -56,6 +66,11 @@ class Exporter {
     this.exporters['java'] = new JavaConvertor();
     this.exporters['javascript'] = new JavascriptConvertor();
     this.exporters['python'] = new PythonConvertor();
+    this.exporters['php'] = new PhpConvertor();
+    this.exporters['ruby'] = new RubyConvertor();
+    this.exporters['kotlin'] = new KotlinConvertor();
+    this.exporters['csharp'] = new CSharpConvertor();
+    this.exporters['perl'] = new PerlConvertor();
     this.exporters['typescript'] = new TypeScriptConvertor();
     this.exporters['xml'] = new XmlConvertor();
     this.exporters['sql'] = new SqlConvertor();

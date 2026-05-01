@@ -50,6 +50,14 @@ class TabbedTextControl {
 
         <div class="edit-area">
             <div class="options-parent" style="display: none"></div>
+            <div
+              class="options-preview-splitter"
+              style="display: none"
+              role="separator"
+              tabindex="0"
+              aria-orientation="vertical"
+              aria-label="Resize options panel"
+            ></div>
             <div id="markdown" style="height: 30%; width:100%;">
               <textarea class="textrepresentation" name="Markdown" id="markdownarea"></textarea>
             </div>

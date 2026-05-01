@@ -24,6 +24,12 @@ class ImportExportControls {
   constructor() {
     this.previewRowLimit = 10;
     this.textEditMode = 'preview';
+    this.defaultOptionsPanelWidthPx = 272;
+    this.minOptionsPanelWidthPx = 180;
+    this.maxOptionsPanelWidthPx = 520;
+    this.minPreviewPanelWidthPx = 220;
+    this.currentOptionsPanelWidthPx = null;
+    this._activeSplitDrag = null;
   }
 
   addHTMLtoGui(parentelement) {
@@ -293,6 +299,7 @@ class ImportExportControls {
 
     const edit_area = document.querySelector('div.edit-area');
     const optionsparent = document.querySelector('div.options-parent');
+    const splitter = document.querySelector('div.options-preview-splitter');
     const text_area = document.getElementById('markdown');
 
     edit_area.style.width = '100%';
@@ -308,6 +315,9 @@ class ImportExportControls {
       console.log('undefined panel type for ' + type);
       edit_area.style.display = 'block';
       optionsparent.style.display = 'none';
+      if (splitter) {
+        splitter.style.display = 'none';
+      }
       text_area.style.width = '100%';
       text_area.style.height = '100%';
       return;
@@ -318,7 +328,8 @@ class ImportExportControls {
     text_area.style.width = '100%';
     text_area.style.height = '100%';
 
-    optionsparent.style.width = '17em';
+    const initialWidth = this._clampOptionsPanelWidth(this._getInitialOptionsPanelWidthPx(), edit_area);
+    this._setOptionsPanelWidth(optionsparent, initialWidth);
     optionsparent.style.height = '100%';
 
     optionsparent.innerHTML = '';
@@ -337,6 +348,7 @@ class ImportExportControls {
     }
 
     optionsparent.style.display = 'block';
+    this._configureOptionsPreviewSplitter(edit_area, optionsparent, splitter, text_area);
   }
 
   setOptionsApplyDirtyState(optionsparent, isDirty) {
@@ -475,6 +487,165 @@ class ImportExportControls {
       return;
     }
     importButton.disabled = this.isPreviewTextMode();
+  }
+
+  _configureOptionsPreviewSplitter(editArea, optionsParent, splitter, textArea) {
+    if (!splitter || !editArea || !optionsParent || !textArea) {
+      return;
+    }
+
+    splitter.style.display = 'block';
+    textArea.style.flex = '1 1 auto';
+    this._updateSplitterAriaValues(splitter, optionsParent, editArea);
+
+    if (splitter.dataset.splitterInitialised === 'true') {
+      return;
+    }
+
+    splitter.dataset.splitterInitialised = 'true';
+    splitter.addEventListener('pointerdown', (event) => this._beginSplitterDrag(event, editArea, optionsParent));
+    splitter.addEventListener('keydown', (event) =>
+      this._handleSplitterKeyDown(event, optionsParent, editArea, splitter)
+    );
+  }
+
+  _beginSplitterDrag(event, editArea, optionsParent) {
+    if (!event || event.button > 0) {
+      return;
+    }
+    if (this._activeSplitDrag) {
+      return;
+    }
+
+    const pointerId = event.pointerId;
+    const startX = event.clientX;
+    const startWidth = this._readOptionsPanelWidthPx(optionsParent);
+
+    this._activeSplitDrag = {
+      pointerId,
+      startX,
+      startWidth,
+      editArea,
+      optionsParent,
+    };
+
+    event.preventDefault();
+    document.body.classList.add('is-resizing-split');
+
+    const onMove = (moveEvent) => this._handleSplitterDragMove(moveEvent);
+    const onEnd = (endEvent) => this._endSplitterDrag(endEvent, onMove, onEnd);
+    document.addEventListener('pointermove', onMove);
+    document.addEventListener('pointerup', onEnd);
+    document.addEventListener('pointercancel', onEnd);
+  }
+
+  _handleSplitterDragMove(event) {
+    const dragState = this._activeSplitDrag;
+    if (!dragState || event.pointerId !== dragState.pointerId) {
+      return;
+    }
+
+    event.preventDefault();
+    const deltaX = event.clientX - dragState.startX;
+    const requestedWidth = dragState.startWidth + deltaX;
+    const boundedWidth = this._clampOptionsPanelWidth(requestedWidth, dragState.editArea);
+    this._setOptionsPanelWidth(dragState.optionsParent, boundedWidth);
+    const splitter = document.querySelector('div.options-preview-splitter');
+    if (splitter) {
+      this._updateSplitterAriaValues(splitter, dragState.optionsParent, dragState.editArea);
+    }
+  }
+
+  _endSplitterDrag(event, onMove, onEnd) {
+    if (!this._activeSplitDrag) {
+      return;
+    }
+    if (event && event.pointerId !== this._activeSplitDrag.pointerId) {
+      return;
+    }
+
+    document.removeEventListener('pointermove', onMove);
+    document.removeEventListener('pointerup', onEnd);
+    document.removeEventListener('pointercancel', onEnd);
+    document.body.classList.remove('is-resizing-split');
+    this._activeSplitDrag = null;
+  }
+
+  _setOptionsPanelWidth(optionsParent, widthPx) {
+    const safeWidth = Math.round(widthPx);
+    optionsParent.style.width = `${safeWidth}px`;
+    optionsParent.style.minWidth = `${safeWidth}px`;
+    optionsParent.style.maxWidth = `${safeWidth}px`;
+    optionsParent.style.flex = '0 0 auto';
+    this.currentOptionsPanelWidthPx = safeWidth;
+  }
+
+  _handleSplitterKeyDown(event, optionsParent, editArea, splitter) {
+    if (!event) {
+      return;
+    }
+
+    const step = event.shiftKey ? 24 : 12;
+    let requestedWidth = this._readOptionsPanelWidthPx(optionsParent);
+    let handled = true;
+
+    if (event.key === 'ArrowLeft') {
+      requestedWidth -= step;
+    } else if (event.key === 'ArrowRight') {
+      requestedWidth += step;
+    } else if (event.key === 'Home') {
+      requestedWidth = this.minOptionsPanelWidthPx;
+    } else if (event.key === 'End') {
+      requestedWidth = this.maxOptionsPanelWidthPx;
+    } else {
+      handled = false;
+    }
+
+    if (!handled) {
+      return;
+    }
+
+    event.preventDefault();
+    const boundedWidth = this._clampOptionsPanelWidth(requestedWidth, editArea);
+    this._setOptionsPanelWidth(optionsParent, boundedWidth);
+    this._updateSplitterAriaValues(splitter, optionsParent, editArea);
+  }
+
+  _readOptionsPanelWidthPx(optionsParent) {
+    const parsed = Number.parseFloat(optionsParent?.style?.width || '');
+    if (Number.isFinite(parsed)) {
+      return parsed;
+    }
+    return this._getInitialOptionsPanelWidthPx();
+  }
+
+  _getInitialOptionsPanelWidthPx() {
+    if (Number.isFinite(this.currentOptionsPanelWidthPx)) {
+      return this.currentOptionsPanelWidthPx;
+    }
+    return this.defaultOptionsPanelWidthPx;
+  }
+
+  _clampOptionsPanelWidth(widthPx, editArea) {
+    const editWidth = editArea?.getBoundingClientRect?.().width || 0;
+    const maxByContainer =
+      editWidth > 0
+        ? Math.max(this.minOptionsPanelWidthPx, editWidth - this.minPreviewPanelWidthPx)
+        : this.maxOptionsPanelWidthPx;
+    const maxAllowed = Math.min(this.maxOptionsPanelWidthPx, maxByContainer);
+    return Math.min(Math.max(widthPx, this.minOptionsPanelWidthPx), maxAllowed);
+  }
+
+  _updateSplitterAriaValues(splitter, optionsParent, editArea) {
+    if (!splitter) {
+      return;
+    }
+    const min = this.minOptionsPanelWidthPx;
+    const max = this._clampOptionsPanelWidth(this.maxOptionsPanelWidthPx, editArea);
+    const now = this._clampOptionsPanelWidth(this._readOptionsPanelWidthPx(optionsParent), editArea);
+    splitter.setAttribute('aria-valuemin', `${min}`);
+    splitter.setAttribute('aria-valuemax', `${max}`);
+    splitter.setAttribute('aria-valuenow', `${now}`);
   }
 }
 

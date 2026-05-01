@@ -208,6 +208,59 @@ button:disabled{
   resize: vertical;
 }
 
+.edit-area{
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  min-height: 14rem;
+}
+
+.options-parent{
+  overflow: auto;
+}
+
+.options-preview-splitter{
+  width: 8px;
+  cursor: col-resize;
+  background: #f5f8fa;
+  border-left: 1px solid #d7e2e8;
+  border-right: 1px solid #d7e2e8;
+  flex: 0 0 8px;
+  opacity: 0.7;
+  transition: background-color 120ms ease, opacity 120ms ease;
+}
+
+.options-preview-splitter:hover{
+  background: #ebf2f6;
+  opacity: 0.95;
+}
+
+body.is-resizing-split{
+  user-select: none;
+  cursor: col-resize;
+}
+
+#markdown{
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+@media (max-width: 640px){
+  .edit-area{
+    flex-direction: column;
+  }
+
+  .options-preview-splitter{
+    display: none !important;
+  }
+
+  .options-parent{
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+}
+
 .testDataDefn{
   height: 10em;
   width:95%;

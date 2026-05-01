@@ -169,6 +169,7 @@ describe('ImportExportControls file reading and visibility', () => {
             <div id="markdown"></div>
             <div class="edit-area"></div>
             <div class="options-parent"></div>
+            <div class="options-preview-splitter"></div>
             <div id="importExportRoot"></div>
             <button id="copyTextButton">Copy</button>
         </body></html>`);
@@ -334,5 +335,47 @@ describe('ImportExportControls file reading and visibility', () => {
     expect(controls.importer.setOptionsForType).toHaveBeenCalledWith('csv', { delimiter: '|' });
     expect(controls.exporter.setOptionsForType).toHaveBeenCalledWith('csv', { delimiter: '|' });
     expect(applyButton.disabled).toBe(true);
+  });
+
+  test('shows splitter when options panel is active and hides for unsupported format', () => {
+    const splitter = document.querySelector('div.options-preview-splitter');
+    const editArea = document.querySelector('div.edit-area');
+    const textAreaContainer = document.getElementById('markdown');
+
+    controls.setOptionsViewForFormatType();
+
+    expect(splitter.style.display).toBe('block');
+    expect(editArea.style.display).toBe('flex');
+    expect(textAreaContainer.style.flex).toBe('1 1 auto');
+
+    document.querySelector('li.active-type a').setAttribute('data-type', 'unknown');
+    controls.setOptionsViewForFormatType();
+
+    expect(splitter.style.display).toBe('none');
+  });
+
+  test('splitter drag resizes options panel width and clamps to min/max', () => {
+    controls.setOptionsViewForFormatType();
+    const splitter = document.querySelector('div.options-preview-splitter');
+    const optionsParent = document.querySelector('div.options-parent');
+    const editArea = document.querySelector('div.edit-area');
+
+    editArea.getBoundingClientRect = () => ({ width: 1000 });
+
+    splitter.dispatchEvent(
+      new dom.window.MouseEvent('pointerdown', { bubbles: true, button: 0, clientX: 300, pointerId: 1 })
+    );
+    document.dispatchEvent(new dom.window.MouseEvent('pointermove', { bubbles: true, clientX: 380, pointerId: 1 }));
+    expect(Number.parseFloat(optionsParent.style.width)).toBeGreaterThan(272);
+    expect(document.body.classList.contains('is-resizing-split')).toBe(true);
+
+    document.dispatchEvent(new dom.window.MouseEvent('pointermove', { bubbles: true, clientX: -500, pointerId: 1 }));
+    expect(Number.parseFloat(optionsParent.style.width)).toBe(controls.minOptionsPanelWidthPx);
+
+    document.dispatchEvent(new dom.window.MouseEvent('pointermove', { bubbles: true, clientX: 9999, pointerId: 1 }));
+    expect(Number.parseFloat(optionsParent.style.width)).toBe(controls.maxOptionsPanelWidthPx);
+
+    document.dispatchEvent(new dom.window.MouseEvent('pointerup', { bubbles: true, pointerId: 1 }));
+    expect(document.body.classList.contains('is-resizing-split')).toBe(false);
   });
 });

@@ -32,7 +32,7 @@ class HtmlOptionsPanel {
             <br>
           </div>
 
-          <div class="prettydelimiter">
+          <div class="prettydelimiter option-child">
             <label><span class="helpicon option-help-icon" data-help="html-option-delimiter" data-help-text="Indentation character used for pretty printed HTML output."></span>Delimiter
               <select name="prettydelimiter">
                 <option value="tab">Tab [\\t]</option>
@@ -42,7 +42,7 @@ class HtmlOptionsPanel {
             </label>
           <br>
           </div>
-          <div class="custom-pretty-delimiter">
+          <div class="custom-pretty-delimiter option-child">
             <label><span class="helpicon option-help-icon" data-help="html-option-custom-delimiter" data-help-text="When Delimiter is Custom Value, enter the indentation character here."></span>Custom
               <input type="text" name="custom-pretty-delimiter" value='' style="width:5em">
             </label>

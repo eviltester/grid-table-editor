@@ -24,7 +24,7 @@ class CSharpOptionsPanel {
         <div class="assigntovariable">
           <label><input type="checkbox" name="assigntovariable"> Assign to Variable</label>
         </div>
-        <div class="variablename">
+        <div class="variablename option-child">
           <label>Variable Name <input type="text" name="variablename" value="data" style="width:8em"></label>
         </div>
         <div class="quotenumbers">
@@ -42,13 +42,13 @@ class CSharpOptionsPanel {
         <div class="useanonymousobjects">
           <label><input type="checkbox" name="useanonymousobjects"> Anonymous Objects (Dictionary/Map)</label>
         </div>
-        <div class="objectclassname">
+        <div class="objectclassname option-child">
           <label>Object Name <input type="text" name="objectclassname" value="Row" style="width:8em"></label>
         </div>
         <div class="prettyprint">
           <label><input type="checkbox" name="prettyprint"> Pretty Print</label>
         </div>
-        <div class="prettydelimiter">
+        <div class="prettydelimiter option-child">
           <label>Delimiter
             <select name="prettydelimiter">
               <option value="tab">Tab [\t]</option>
@@ -57,7 +57,7 @@ class CSharpOptionsPanel {
             </select>
           </label>
         </div>
-        <div class="custom-pretty-delimiter">
+        <div class="custom-pretty-delimiter option-child">
           <label>Custom Delimiter <input type="text" name="custom-pretty-delimiter" value="" style="width:8em"></label>
         </div>
         <div class="apply">

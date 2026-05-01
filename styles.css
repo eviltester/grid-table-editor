@@ -237,6 +237,19 @@ button:disabled{
   opacity: 0.95;
 }
 
+.option-child{
+  margin-left: 1rem;
+  padding-left: 0.75rem;
+  border-left: 2px solid #d7e2e8;
+}
+
+@media (max-width: 640px){
+  .option-child{
+    margin-left: 0.6rem;
+    padding-left: 0.5rem;
+  }
+}
+
 body.is-resizing-split{
   user-select: none;
   cursor: col-resize;

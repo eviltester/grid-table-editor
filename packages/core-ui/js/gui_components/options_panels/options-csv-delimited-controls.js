@@ -30,14 +30,14 @@ class CsvDelimitedOptions {
           </div>
           
 
-          <div class="quoteChar">
+          <div class="quoteChar option-child">
             <label><span class="helpicon option-help-icon" data-help="csv-option-quote-char" data-help-text="Character used to quote string values, for example double quote."></span>Quote Char
               <input type="text" name="quoteChar" value='"' style="width:5em">
             </label>
             <br>
           </div>
 
-          <div class="escapeChar">
+          <div class="escapeChar option-child">
             <label><span class="helpicon option-help-icon" data-help="csv-option-escape-char" data-help-text="Character used to escape quote characters inside field values."></span>Escape Char
               <input type="text" name="escapeChar" value='"' style="width:5em">
             </label>

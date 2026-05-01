@@ -33,7 +33,7 @@ class TypeScriptOptionsPanel {
             <br>
           </div>
 
-          <div class="variablename">
+          <div class="variablename option-child">
             <label>
               <span class="helpicon option-help-icon" data-help="typescript-option-variable-name" data-help-text="Name of the TypeScript variable the collection is assigned to."></span>
               Variable Name
@@ -60,7 +60,7 @@ class TypeScriptOptionsPanel {
             <br>
           </div>
 
-          <div class="objectclassname">
+          <div class="objectclassname option-child">
             <label>
               <span class="helpicon option-help-icon" data-help="typescript-option-class-name" data-help-text="Class name used when Use Anonymous Objects is unchecked."></span>
               Class Name
@@ -90,7 +90,7 @@ class TypeScriptOptionsPanel {
             <br>
           </div>
 
-          <div class="prettydelimiter">
+          <div class="prettydelimiter option-child">
             <label>
               <span class="helpicon option-help-icon" data-help="typescript-option-delimiter" data-help-text="Indentation character used when Pretty Print is enabled."></span>
               Delimiter
@@ -103,7 +103,7 @@ class TypeScriptOptionsPanel {
             <br>
           </div>
 
-          <div class="custom-pretty-delimiter">
+          <div class="custom-pretty-delimiter option-child">
             <label>
               <span class="helpicon option-help-icon" data-help="typescript-option-custom-delimiter" data-help-text="When Delimiter is Custom Value, this value is used as indentation."></span>
               Custom Delimiter

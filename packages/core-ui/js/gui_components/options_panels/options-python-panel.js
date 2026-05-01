@@ -33,7 +33,7 @@ class PythonOptionsPanel {
             <br>
           </div>
 
-          <div class="variablename">
+          <div class="variablename option-child">
             <label>
               <span class="helpicon option-help-icon" data-help="python-option-variable-name" data-help-text="Name of the Python variable the collection is assigned to."></span>
               Variable Name
@@ -60,7 +60,7 @@ class PythonOptionsPanel {
             <br>
           </div>
 
-          <div class="decimalcolumnscsv">
+          <div class="decimalcolumnscsv option-child">
             <label>
               <span class="helpicon option-help-icon" data-help="python-option-decimal-columns" data-help-text="Comma-separated list of columns to treat as Decimal candidates. Example: Money, Column 2"></span>
               Decimal Columns (CSV)
@@ -69,7 +69,7 @@ class PythonOptionsPanel {
             <br>
           </div>
 
-          <div class="decimaltreatintegers">
+          <div class="decimaltreatintegers option-child">
             <label>
               <span class="helpicon option-help-icon" data-help="python-option-decimal-integers" data-help-text="When checked, integer-looking values in decimal columns are also output as Decimal values."></span>
               <input type="checkbox" name="decimaltreatintegers" value="decimaltreatintegers">
@@ -111,7 +111,7 @@ class PythonOptionsPanel {
             <br>
           </div>
 
-          <div class="prettydelimiter">
+          <div class="prettydelimiter option-child">
             <label>
               <span class="helpicon option-help-icon" data-help="python-option-delimiter" data-help-text="Indentation character used when Pretty Print is enabled."></span>
               Delimiter
@@ -124,7 +124,7 @@ class PythonOptionsPanel {
             <br>
           </div>
 
-          <div class="custom-pretty-delimiter">
+          <div class="custom-pretty-delimiter option-child">
             <label>
               <span class="helpicon option-help-icon" data-help="python-option-custom-delimiter" data-help-text="When Delimiter is Custom Value, this value is used as indentation."></span>
               Custom Delimiter
@@ -142,7 +142,7 @@ class PythonOptionsPanel {
             <br>
           </div>
 
-          <div class="importstatements">
+          <div class="importstatements option-child">
             <label>
               <span class="helpicon option-help-icon" data-help="python-option-import-statements" data-help-text="One import statement per line, for example: from dataclasses import dataclass."></span>
               Import Statements
@@ -160,7 +160,7 @@ class PythonOptionsPanel {
             <br>
           </div>
 
-          <div class="objectclassname">
+          <div class="objectclassname option-child">
             <label>
               <span class="helpicon option-help-icon" data-help="python-option-class-name" data-help-text="Class name used when Anonymous Dicts is unchecked."></span>
               Class Name

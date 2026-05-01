@@ -22,10 +22,10 @@ class KotlinOptionsPanel {
         <div class="assigntovariable">
           <label><input type="checkbox" name="assigntovariable"> Assign to Variable</label>
         </div>
-        <div class="mutableassignment">
+        <div class="mutableassignment option-child">
           <label><input type="checkbox" name="mutableassignment"> Mutable Assignment (var)</label>
         </div>
-        <div class="variablename">
+        <div class="variablename option-child">
           <label>Variable Name <input type="text" name="variablename" value="data" style="width:8em"></label>
         </div>
         <div class="quotenumbers">
@@ -37,13 +37,13 @@ class KotlinOptionsPanel {
         <div class="usemutablecollections">
           <label><input type="checkbox" name="usemutablecollections"> Mutable Collections</label>
         </div>
-        <div class="objectclassname">
+        <div class="objectclassname option-child">
           <label>Object Name <input type="text" name="objectclassname" value="Row" style="width:8em"></label>
         </div>
         <div class="prettyprint">
           <label><input type="checkbox" name="prettyprint"> Pretty Print</label>
         </div>
-        <div class="prettydelimiter">
+        <div class="prettydelimiter option-child">
           <label>Delimiter
             <select name="prettydelimiter">
               <option value="tab">Tab [\t]</option>
@@ -52,10 +52,10 @@ class KotlinOptionsPanel {
             </select>
           </label>
         </div>
-        <div class="custom-pretty-delimiter">
+        <div class="custom-pretty-delimiter option-child">
           <label>Custom Delimiter <input type="text" name="custom-pretty-delimiter" value="" style="width:8em"></label>
         </div>
-        <div class="trailingcomma">
+        <div class="trailingcomma option-child">
           <label><input type="checkbox" name="trailingcomma"> Trailing Comma</label>
         </div>
         <div class="apply">

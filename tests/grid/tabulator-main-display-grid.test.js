@@ -3,6 +3,16 @@ import { JSDOM } from 'jsdom';
 
 describe('Tabulator main display grid', () => {
   let dom;
+  const makeHeaderClickEvent = (action) => {
+    const actionElement = { dataset: { action } };
+    const closest = jest.fn((selector) => (selector === '[data-action]' ? actionElement : null));
+    return {
+      target: { closest },
+      preventDefault: jest.fn(),
+      stopPropagation: jest.fn(),
+      closest,
+    };
+  };
 
   beforeEach(() => {
     dom = new JSDOM(`<!doctype html><html><body></body></html>`);
@@ -75,14 +85,11 @@ describe('Tabulator main display grid', () => {
       getField: () => 'column1',
       updateDefinition: jest.fn(),
     };
-    const event = {
-      target: { dataset: { action: 'rename' } },
-      preventDefault: jest.fn(),
-      stopPropagation: jest.fn(),
-    };
+    const event = makeHeaderClickEvent('rename');
 
     grid.gridOptions.columnDefaults.headerClick(event, column);
 
+    expect(event.closest).toHaveBeenCalledWith('[data-action]');
     expect(event.preventDefault).toHaveBeenCalled();
     expect(event.stopPropagation).toHaveBeenCalled();
     expect(column.updateDefinition).toHaveBeenCalledWith({
@@ -108,15 +115,10 @@ describe('Tabulator main display grid', () => {
       clearSort: jest.fn(),
     };
 
-    grid.gridOptions.columnDefaults.headerClick(
-      {
-        target: { dataset: { action: 'add-right' } },
-        preventDefault: jest.fn(),
-        stopPropagation: jest.fn(),
-      },
-      column
-    );
+    const event = makeHeaderClickEvent('add-right');
+    grid.gridOptions.columnDefaults.headerClick(event, column);
 
+    expect(event.closest).toHaveBeenCalledWith('[data-action]');
     expect(table.addColumn).toHaveBeenCalledWith(expect.objectContaining({ title: 'Added' }), false, column);
   });
 
@@ -135,19 +137,17 @@ describe('Tabulator main display grid', () => {
       getField: () => 'column1',
     };
 
-    grid.gridOptions.columnDefaults.headerClick(
-      { target: { dataset: { action: 'sort-asc' } }, preventDefault: jest.fn(), stopPropagation: jest.fn() },
-      column
-    );
-    grid.gridOptions.columnDefaults.headerClick(
-      { target: { dataset: { action: 'sort-desc' } }, preventDefault: jest.fn(), stopPropagation: jest.fn() },
-      column
-    );
-    grid.gridOptions.columnDefaults.headerClick(
-      { target: { dataset: { action: 'sort-none' } }, preventDefault: jest.fn(), stopPropagation: jest.fn() },
-      column
-    );
+    const sortAscEvent = makeHeaderClickEvent('sort-asc');
+    const sortDescEvent = makeHeaderClickEvent('sort-desc');
+    const sortNoneEvent = makeHeaderClickEvent('sort-none');
 
+    grid.gridOptions.columnDefaults.headerClick(sortAscEvent, column);
+    grid.gridOptions.columnDefaults.headerClick(sortDescEvent, column);
+    grid.gridOptions.columnDefaults.headerClick(sortNoneEvent, column);
+
+    expect(sortAscEvent.closest).toHaveBeenCalledWith('[data-action]');
+    expect(sortDescEvent.closest).toHaveBeenCalledWith('[data-action]');
+    expect(sortNoneEvent.closest).toHaveBeenCalledWith('[data-action]');
     expect(table.setSort).toHaveBeenNthCalledWith(1, 'column1', 'asc');
     expect(table.setSort).toHaveBeenNthCalledWith(2, 'column1', 'desc');
     expect(table.clearSort).toHaveBeenCalledTimes(1);

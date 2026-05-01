@@ -5,6 +5,7 @@ class GridControlsPageMap {
     this.addRowsBelowButtonQuery = '#addRowsBelowButton';
     this.deleteSelectedRowsButtonQuery = '#deleteSelectedRowsButton';
     this.clearFiltersButtonQuery = '#clearFiltersButton';
+    this.clearSortButtonQuery = '#clearSortButton';
     this.filtersTextBoxQuery = '#filter-text-box';
     this.clearTableButtonQuery = '#clearTableButton';
   }
@@ -27,6 +28,7 @@ class GridControl {
             <button id="deleteSelectedRowsButton">Delete Selected Rows</button>
             <label>Filter: <input type="text" id="filter-text-box" placeholder="Filter..."></label>
             <button id="clearFiltersButton" title="Clear Filters">Clear Filters</button>
+            <button id="clearSortButton" title="Clear Sort">Clear Sort</button>
             <button id="clearTableButton" title="Clear All Data">Reset Table</button>
         </div>
         <!-- ag-theme-alpine -->
@@ -71,6 +73,12 @@ class GridControl {
     let clearFiltersListener = this.clearFilters.bind(this);
     element.addEventListener('click', clearFiltersListener, false);
 
+    element = container.querySelector(this.pageMap.clearSortButtonQuery);
+    if (element) {
+      const clearSortListener = this.clearSort.bind(this);
+      element.addEventListener('click', clearSortListener, false);
+    }
+
     element = container.querySelector(this.pageMap.filtersTextBoxQuery);
     let filterTextListener = this.filterTextBoxChanged.bind(this);
     element.addEventListener('input', filterTextListener, false);
@@ -102,6 +110,12 @@ class GridControl {
   clearFilters() {
     document.getElementById('filter-text-box').value = '';
     this.gridExtras.clearFilters();
+  }
+
+  clearSort() {
+    if (typeof this.gridExtras.clearSort === 'function') {
+      this.gridExtras.clearSort();
+    }
   }
 
   filterTextBoxChanged() {

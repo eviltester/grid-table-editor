@@ -41,6 +41,12 @@ class GridExtensionTabulator {
     this.tabulator.clearFilter(true);
   }
 
+  clearSort() {
+    if (typeof this.tabulator.clearSort === 'function') {
+      this.tabulator.clearSort();
+    }
+  }
+
   // [x] convert to tabulature
   filterText(text) {
     this.tabUtils.filterAcrossAllColumns(text);
@@ -106,7 +112,7 @@ class GridExtensionTabulator {
   }
 
   // [x] convert to tabulature
-  duplicateColumn(position, columnOrId, colTitle) {
+  async duplicateColumn(position, columnOrId, colTitle) {
     const column = this._resolveColumn(columnOrId);
     if (!column) {
       return;
@@ -117,7 +123,7 @@ class GridExtensionTabulator {
       return;
     }
 
-    this._copyColumnData(column.getDefinition().field, destinationCol.field);
+    await this._copyColumnData(column.getDefinition().field, destinationCol.field);
   }
 
   appendColumnToGrid(colTitle) {
@@ -572,28 +578,28 @@ class GridExtensionTabulator {
     }
   }
 
-  _copyColumnData(sourceFieldName, destinationFieldName) {
-    const allData = typeof this.tabulator.getData === 'function' ? this.tabulator.getData() : null;
-    const canUseBulkDataPath = Array.isArray(allData) && typeof this.tabulator.redraw === 'function';
-
-    if (canUseBulkDataPath) {
+  async _copyColumnData(sourceFieldName, destinationFieldName) {
+    const rowComponents = typeof this.tabulator.getRows === 'function' ? this.tabulator.getRows() : null;
+    if (Array.isArray(rowComponents) && rowComponents.length > 0) {
+      const updates = [];
       this._runWithoutRedraw(() => {
-        for (let rowIndex = 0; rowIndex < allData.length; rowIndex++) {
-          const rowData = allData[rowIndex];
-          rowData[destinationFieldName] = rowData[sourceFieldName];
-        }
+        rowComponents.forEach((row) => {
+          const sourceValue = row.getData?.()[sourceFieldName];
+          updates.push(Promise.resolve(row.update({ [destinationFieldName]: sourceValue })));
+        });
       });
-      this.tabulator.redraw(true);
+      await Promise.all(updates);
       return;
     }
 
-    this._runWithoutRedraw(() => {
-      this.tabulator.getRows().forEach((row) => {
-        let obj = {};
-        obj[destinationFieldName] = row.getData()[sourceFieldName];
-        row.update(obj);
-      });
-    });
+    const allData = typeof this.tabulator.getData === 'function' ? this.tabulator.getData() : null;
+    if (Array.isArray(allData) && allData.length > 0) {
+      const updatedRows = allData.map((rowData) => ({
+        ...rowData,
+        [destinationFieldName]: rowData[sourceFieldName],
+      }));
+      await Promise.resolve(this._setBulkData(updatedRows));
+    }
   }
 
   _enqueueGridMutation(mutationFn) {

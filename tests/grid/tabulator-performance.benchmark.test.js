@@ -211,7 +211,7 @@ describe('Tabulator benchmark (large data)', () => {
 
       const duplicateMs = await measureMs(async () => {
         const columnToCopy = api.getColumns()[1];
-        extension.duplicateColumn(1, columnToCopy, 'B copy');
+        await extension.duplicateColumn(1, columnToCopy, 'B copy');
       });
 
       const exportMs = await measureMs(async () => {

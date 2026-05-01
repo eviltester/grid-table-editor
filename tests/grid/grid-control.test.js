@@ -29,6 +29,7 @@ describe('GridControl', () => {
       getNumberOfSelectedRows: jest.fn(() => 1),
       deleteSelectedRows: jest.fn(),
       clearFilters: jest.fn(),
+      clearSort: jest.fn(),
       filterText: jest.fn(),
       clearGrid: jest.fn(),
     };
@@ -76,6 +77,9 @@ describe('GridControl', () => {
     parent.querySelector('#clearFiltersButton').click();
     expect(filterInput.value).toBe('');
     expect(gridExtras.clearFilters).toHaveBeenCalledTimes(1);
+
+    parent.querySelector('#clearSortButton').click();
+    expect(gridExtras.clearSort).toHaveBeenCalledTimes(1);
   });
 
   test('clear table honors confirmation', () => {

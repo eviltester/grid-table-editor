@@ -388,7 +388,7 @@ function defineParityTests(label, createHarness) {
       await flushAsync();
 
       const secondRef = getColumnRefByIndex(api, 1);
-      duplicateColumn(extension, 1, secondRef, 'Second Copy');
+      await duplicateColumn(extension, 1, secondRef, 'Second Copy');
       await flushAsync();
 
       const copyRef = getColumnRefByHeader(api, 'Second Copy');
@@ -422,7 +422,7 @@ function defineParityTests(label, createHarness) {
       await flushAsync();
 
       const secondRef = getColumnRefByIndex(api, 1);
-      duplicateColumn(extension, 1, secondRef, 'Second Copy');
+      await duplicateColumn(extension, 1, secondRef, 'Second Copy');
       await flushAsync();
 
       const sourceField = getFields(api)[1];
@@ -537,7 +537,7 @@ defineParityTests('AG Grid extension parity contract', () => {
       extension.addNeighbourColumnId(position, columnRef, colTitle);
     },
     duplicateColumn: (extension, position, columnRef, colTitle) => {
-      extension.duplicateColumn(position, columnRef, colTitle);
+      return extension.duplicateColumn(position, columnRef, colTitle);
     },
     renameColumn: (extension, columnRef, newName) => {
       extension.renameColId(columnRef, newName);
@@ -599,7 +599,7 @@ defineParityTests('Tabulator extension parity contract', () => {
       extension.addNeighbourColumn(position, columnRef, colTitle);
     },
     duplicateColumn: (extension, position, columnRef, colTitle) => {
-      extension.duplicateColumn(position, columnRef, colTitle);
+      return extension.duplicateColumn(position, columnRef, colTitle);
     },
     renameColumn: (extension, columnRef, newName) => {
       extension.renameColumn(columnRef, newName);
@@ -733,6 +733,13 @@ describe('Shared grid interface contract (both implementations)', () => {
       expect(headers).toContain('Renamed First');
       expect(headers).toContain('Neighbour');
       expect(headers).toContain('Second Copy');
+
+      const table = extension.getGridAsGenericDataTable();
+      const firstIndex = table.getHeaders().indexOf('Renamed First');
+      const copyIndex = table.getHeaders().indexOf('Second Copy');
+      expect(firstIndex).toBeGreaterThanOrEqual(0);
+      expect(copyIndex).toBeGreaterThanOrEqual(0);
+      expect(table.getRow(0)[copyIndex]).toBe(table.getRow(0)[firstIndex]);
 
       expect(extension.getNumberOfColumns()).toBeGreaterThanOrEqual(4);
       expect(api.rowData.length).toBe(1);

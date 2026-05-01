@@ -1,0 +1,90 @@
+class TabbedTextComponent {
+  constructor(page) {
+    this.page = page;
+    this.container = page.locator('#tabbedTextArea');
+    this.tabsList = page.locator('#tabbedTextArea .conversionTypesList');
+    this.outputTextArea = page.locator('#tabbedTextArea textarea.textrepresentation').first();
+    this.previewOrEditButton = page.locator('#previewEditModeButton');
+    this.copyButton = page.locator('#copyTextButton');
+    this.subtasks = page.locator('#conversionSubtasks');
+
+    this.formatMap = {
+      Markdown: { main: 'Markdown' },
+      CSV: { main: 'CSV' },
+      Delimited: { main: 'Delimited' },
+      JSON: { main: 'JSON' },
+      JSONL: { main: 'JSONL' },
+      XML: { main: 'XML' },
+      SQL: { main: 'SQL' },
+      Java: { main: 'Code', sub: 'Java' },
+      JavaScript: { main: 'Code', sub: 'JavaScript' },
+      Python: { main: 'Code', sub: 'Python' },
+      TypeScript: { main: 'Code', sub: 'TypeScript' },
+      Gherkin: { main: 'Gherkin' },
+      HTML: { main: 'HTML' },
+      ASCII: { main: 'ASCII' },
+    };
+  }
+
+  async expectVisible() {
+    await this.container.waitFor({ state: 'visible' });
+    await this.tabsList.waitFor({ state: 'visible' });
+    await this.copyButton.waitFor({ state: 'visible' });
+  }
+
+  async expectReady() {
+    await this.expectVisible();
+  }
+
+  async selectFormat(name) {
+    const config = this.formatMap[name];
+    if (!config) {
+      throw new Error(`Unknown format "${name}"`);
+    }
+
+    await this.tabsList.getByRole('link', { name: config.main, exact: true }).click();
+    if (config.sub) {
+      await this.subtasks.getByRole('link', { name: config.sub, exact: true }).click();
+    }
+  }
+
+  async preview() {
+    this.page.once('dialog', async (dialog) => {
+      await dialog.accept();
+    });
+    await this.previewOrEditButton.click();
+  }
+
+  async togglePreviewEdit(confirmPrompt = true) {
+    if (confirmPrompt === true) {
+      this.page.once('dialog', async (dialog) => {
+        await dialog.accept();
+      });
+    } else if (confirmPrompt === false) {
+      this.page.once('dialog', async (dialog) => {
+        await dialog.dismiss();
+      });
+    }
+    await this.previewOrEditButton.click();
+  }
+
+  async isCopyButtonVisible() {
+    return this.copyButton.isVisible();
+  }
+
+  async getPreviewEditLabel() {
+    return (await this.previewOrEditButton.innerText()).trim();
+  }
+
+  async setOutputText(value) {
+    await this.outputTextArea.fill(value);
+    await this.outputTextArea.dispatchEvent('input');
+    await this.outputTextArea.dispatchEvent('change');
+  }
+
+  async getOutputText() {
+    return this.outputTextArea.inputValue();
+  }
+}
+
+module.exports = { TabbedTextComponent };

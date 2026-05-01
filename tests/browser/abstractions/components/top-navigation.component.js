@@ -13,6 +13,10 @@ class TopNavigationComponent {
     await this.docsLink.waitFor({ state: 'visible' });
     await this.blogLink.waitFor({ state: 'visible' });
   }
+
+  async expectReady() {
+    await this.expectVisible();
+  }
 }
 
 module.exports = { TopNavigationComponent };

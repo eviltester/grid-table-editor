@@ -10,6 +10,23 @@ class GridRendererComponent {
     return this.rows.count();
   }
 
+  async getColumnNames() {
+    const count = await this.headerTitles.count();
+    const names = [];
+    for (let index = 0; index < count; index += 1) {
+      names.push((await this.headerTitles.nth(index).innerText()).trim());
+    }
+    return names;
+  }
+
+  async countVisibleRows() {
+    return this.rows.evaluateAll((rowEls) => rowEls.filter((row) => row.offsetParent !== null).length);
+  }
+
+  async countSelectedRows() {
+    return this.gridRoot.locator('.tabulator-row.tabulator-selected').count();
+  }
+
   async waitForColumnName(columnName) {
     await this.gridRoot
       .locator('.tabulator-col-title')
@@ -36,6 +53,10 @@ class GridRendererComponent {
   async clickCellByColumnName(columnName, rowIndex) {
     const columnIndex = await this._columnIndexByName(columnName);
     await this.clickCell(columnIndex, rowIndex);
+  }
+
+  async selectRow(rowIndex) {
+    await this.clickCell(0, rowIndex);
   }
 
   _cellByIndexes(columnIndex, rowIndex) {

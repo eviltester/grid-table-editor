@@ -4,8 +4,26 @@ class TabbedTextComponent {
     this.container = page.locator('#tabbedTextArea');
     this.tabsList = page.locator('#tabbedTextArea .conversionTypesList');
     this.outputTextArea = page.locator('#tabbedTextArea textarea');
-    this.previewOrEditButton = page.getByRole('button', { name: /Preview|Edit/i });
-    this.copyButton = page.getByRole('button', { name: 'Copy', exact: true });
+    this.previewOrEditButton = page.locator('#previewEditModeButton');
+    this.copyButton = page.locator('#copyTextButton');
+    this.subtasks = page.locator('#conversionSubtasks');
+
+    this.formatMap = {
+      Markdown: { main: 'Markdown' },
+      CSV: { main: 'CSV' },
+      Delimited: { main: 'Delimited' },
+      JSON: { main: 'JSON' },
+      JSONL: { main: 'JSONL' },
+      XML: { main: 'XML' },
+      SQL: { main: 'SQL' },
+      Java: { main: 'Code', sub: 'Java' },
+      JavaScript: { main: 'Code', sub: 'JavaScript' },
+      Python: { main: 'Code', sub: 'Python' },
+      TypeScript: { main: 'Code', sub: 'TypeScript' },
+      Gherkin: { main: 'Gherkin' },
+      HTML: { main: 'HTML' },
+      ASCII: { main: 'ASCII' },
+    };
   }
 
   async expectVisible() {
@@ -14,8 +32,20 @@ class TabbedTextComponent {
     await this.copyButton.waitFor({ state: 'visible' });
   }
 
+  async expectReady() {
+    await this.expectVisible();
+  }
+
   async selectFormat(name) {
-    await this.page.getByRole('link', { name, exact: true }).click();
+    const config = this.formatMap[name];
+    if (!config) {
+      throw new Error(`Unknown format "${name}"`);
+    }
+
+    await this.page.getByRole('link', { name: config.main, exact: true }).click();
+    if (config.sub) {
+      await this.page.getByRole('link', { name: config.sub, exact: true }).click();
+    }
   }
 
   async preview() {
@@ -23,6 +53,35 @@ class TabbedTextComponent {
       await dialog.accept();
     });
     await this.previewOrEditButton.click();
+  }
+
+  async togglePreviewEdit(confirmPrompt = true) {
+    if (confirmPrompt === true) {
+      this.page.once('dialog', async (dialog) => {
+        await dialog.accept();
+      });
+    } else if (confirmPrompt === false) {
+      this.page.once('dialog', async (dialog) => {
+        await dialog.dismiss();
+      });
+    }
+    await this.previewOrEditButton.click();
+  }
+
+  async isCopyButtonVisible() {
+    return this.copyButton.isVisible();
+  }
+
+  async getPreviewEditLabel() {
+    return (await this.previewOrEditButton.innerText()).trim();
+  }
+
+  async setOutputText(value) {
+    await this.outputTextArea.fill(value);
+  }
+
+  async getOutputText() {
+    return this.outputTextArea.inputValue();
   }
 }
 

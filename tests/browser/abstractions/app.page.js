@@ -3,6 +3,7 @@ const { GridEditorComponent } = require('./components/grid-editor.component');
 const { ImportExportControlsComponent } = require('./components/import-export-controls.component');
 const { TabbedTextComponent } = require('./components/tabbed-text.component');
 const { TestDataPanelComponent } = require('./components/test-data-panel.component');
+const { FormatOptionsPanelComponent } = require('./components/format-options-panel.component');
 
 class AppPage {
   constructor(page) {
@@ -12,6 +13,7 @@ class AppPage {
     this.gridEditor = new GridEditorComponent(page);
     this.importExportControls = new ImportExportControlsComponent(page);
     this.tabbedText = new TabbedTextComponent(page);
+    this.formatOptionsPanel = new FormatOptionsPanelComponent(page);
     this.testDataPanel = new TestDataPanelComponent(page);
 
     this.initialLoading = page.locator('#initial-load');
@@ -24,11 +26,12 @@ class AppPage {
 
   async waitUntilReady() {
     await this.initialLoading.waitFor({ state: 'hidden' });
-    await this.topNavigation.expectVisible();
-    await this.gridEditor.expectVisible();
-    await this.gridEditor.renderer.waitForColumnName('Instructions');
-    await this.importExportControls.expectVisible();
-    await this.tabbedText.expectVisible();
+    await this.topNavigation.expectReady();
+    await this.gridEditor.expectReady();
+    await this.importExportControls.expectReady();
+    await this.tabbedText.expectReady();
+    await this.formatOptionsPanel.expectReady();
+    await this.testDataPanel.expectReady();
   }
 }
 

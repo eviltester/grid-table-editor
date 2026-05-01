@@ -1,8 +1,11 @@
+const { GridRendererComponent } = require('./grid-renderer.component');
+
 class GridEditorComponent {
   constructor(page) {
     this.page = page;
     this.container = page.locator('#main-grid-view');
     this.grid = page.locator('#myGrid');
+    this.renderer = new GridRendererComponent(page, this.grid);
     this.addRowButton = page.getByRole('button', { name: 'Add Row', exact: true });
     this.quickFilterInput = page.getByLabel('Filter:');
     this.clearFiltersButton = page.getByRole('button', { name: 'Clear Filters' });

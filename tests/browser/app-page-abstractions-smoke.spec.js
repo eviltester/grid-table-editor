@@ -36,3 +36,21 @@ test('app component abstractions can interact without errors', async ({ page }) 
 
   expect(pageErrors).toEqual([]);
 });
+
+test('add row button creates row in grid', async ({ page }) => {
+  const pageErrors = trackPageErrors(page);
+  const appPage = new AppPage(page);
+
+  await appPage.goto();
+
+  const initialRowCount = await appPage.gridEditor.renderer.countRows();
+  await appPage.gridEditor.addRow();
+  const rowCountAfterAdd = await appPage.gridEditor.renderer.countRows();
+
+  expect(rowCountAfterAdd).toBe(initialRowCount + 1);
+
+  const lastRowIndex = rowCountAfterAdd - 1;
+  const lastInstructionsCell = await appPage.gridEditor.renderer.getCellTextByColumnName('Instructions', lastRowIndex);
+  expect(lastInstructionsCell).toBe('');
+  expect(pageErrors).toEqual([]);
+});

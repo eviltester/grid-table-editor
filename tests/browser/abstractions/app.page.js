@@ -26,6 +26,7 @@ class AppPage {
     await this.initialLoading.waitFor({ state: 'hidden' });
     await this.topNavigation.expectVisible();
     await this.gridEditor.expectVisible();
+    await this.gridEditor.renderer.waitForColumnName('Instructions');
     await this.importExportControls.expectVisible();
     await this.tabbedText.expectVisible();
   }

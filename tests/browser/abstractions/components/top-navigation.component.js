@@ -24,12 +24,24 @@ class TopNavigationComponent {
     await this.generatorLink.click();
   }
 
+  async clickBrand() {
+    await this.brandLink.click();
+  }
+
   async clickDocs() {
     await this.docsLink.click();
   }
 
   async clickBlog() {
     await this.blogLink.click();
+  }
+
+  async getDocsHref() {
+    return this.docsLink.getAttribute('href');
+  }
+
+  async getBlogHref() {
+    return this.blogLink.getAttribute('href');
   }
 
   async expandInstructions() {

@@ -58,6 +58,16 @@ class GridRendererComponent {
     return this.getCellText(columnIndex, rowIndex);
   }
 
+  async getColumnTextsByName(columnName) {
+    const columnIndex = await this._columnIndexByName(columnName);
+    const rowCount = await this.countRows();
+    const values = [];
+    for (let rowIndex = 0; rowIndex < rowCount; rowIndex += 1) {
+      values.push(await this.getCellText(columnIndex, rowIndex));
+    }
+    return values;
+  }
+
   async clickCellByColumnName(columnName, rowIndex) {
     const columnIndex = await this._columnIndexByName(columnName);
     await this.clickCell(columnIndex, rowIndex);
@@ -108,6 +118,11 @@ class GridRendererComponent {
     await editor.fill(String(value));
     await editor.press('Enter');
     await this.page.getByText(String(value), { exact: true }).first().waitFor({ state: 'visible' });
+  }
+
+  async doubleClickCellByColumnName(columnName, rowIndex) {
+    const columnIndex = await this._columnIndexByName(columnName);
+    await this._cellByIndexes(columnIndex, rowIndex).dblclick();
   }
 
   _cellByIndexes(columnIndex, rowIndex) {

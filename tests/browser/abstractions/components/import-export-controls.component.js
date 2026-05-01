@@ -34,6 +34,12 @@ class ImportExportControlsComponent {
     await this.fileInput.setInputFiles(filePath);
   }
 
+  async clickDownloadAndWaitForEvent() {
+    const downloadPromise = this.page.waitForEvent('download');
+    await this.downloadButton.click();
+    return downloadPromise;
+  }
+
   async isSetGridFromTextEnabled() {
     return this.setGridFromTextButton.isEnabled();
   }

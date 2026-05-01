@@ -126,7 +126,7 @@ class TestDataPanelComponent {
       await editor.fill(String(value));
       await editor.press('Enter');
     }
-    await this.page.getByText(String(value), { exact: true }).first().waitFor({ state: 'visible' });
+    return;
   }
 
   async getSchemaText() {

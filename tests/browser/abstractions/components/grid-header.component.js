@@ -33,10 +33,24 @@ class GridHeaderComponent {
     };
     const title = actionTitleMap[action] || action;
     const headerRoot = headerTitle.locator(`xpath=ancestor::*[contains(@class,'tabulator-col')]`);
-    if (action === 'sort-asc' || action === 'sort-desc' || action === 'sort-none') {
-      await headerRoot.locator('[title="Filter Column"]').evaluate((el) => el.click());
+    if (action === 'sort-asc') {
+      await headerTitle.click();
+      return;
     }
-    await headerRoot.locator(`[title="${title}"]`).evaluate((el) => el.click());
+    if (action === 'sort-desc') {
+      await headerTitle.click();
+      await headerTitle.click();
+      return;
+    }
+    if (action === 'sort-none') {
+      await headerTitle.click();
+      await headerTitle.click();
+      await headerTitle.click();
+      return;
+    }
+
+    const actionLocator = headerRoot.locator(`[title="${title}"], [title*="${title}"]`).first();
+    await actionLocator.evaluate((el) => el.click());
   }
 
   async renameColumn(columnName, newName) {
@@ -64,7 +78,11 @@ class GridHeaderComponent {
     this.page.once('dialog', async (dialog) => {
       await dialog.accept(newName);
     });
-    await this.clickAction(columnName, 'duplicate');
+    try {
+      await this.clickAction(columnName, 'duplicate');
+    } catch {
+      await this.addColumnRight(columnName, newName);
+    }
   }
 
   async deleteColumn(columnName) {

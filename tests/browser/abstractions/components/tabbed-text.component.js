@@ -78,6 +78,8 @@ class TabbedTextComponent {
 
   async setOutputText(value) {
     await this.outputTextArea.fill(value);
+    await this.outputTextArea.dispatchEvent('input');
+    await this.outputTextArea.dispatchEvent('change');
   }
 
   async getOutputText() {

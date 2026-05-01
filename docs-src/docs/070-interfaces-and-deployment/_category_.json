@@ -1,0 +1,9 @@
+{
+  "label": "Interfaces & Deployment",
+  "position": 7,
+  "link": {
+    "type": "generated-index",
+    "description": "How to use AnyWayData through the Web UI, REST API, MCP, and CLI across local and Docker environments."
+  },
+  "collapsed": false
+}

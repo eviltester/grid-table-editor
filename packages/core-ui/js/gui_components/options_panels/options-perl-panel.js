@@ -14,7 +14,7 @@ class PerlOptionsPanel {
         <div class="collectiontype">
           <label>Collection Type
             <select name="collectiontype">
-              <option value="array">Array Ref (\\(...))</option>
+              <option value="array">Array Ref ([...])</option>
               <option value="list">List (...) </option>
             </select>
           </label>

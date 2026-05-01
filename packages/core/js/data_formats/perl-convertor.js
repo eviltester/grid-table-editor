@@ -132,11 +132,12 @@ class PerlConvertor {
     const objectClassName = convertStringToPerlValidName(opts.objectClassName || 'Row');
     const variablePrefix = opts.collectionType === 'list' ? '@' : '$';
 
+    const anonymousHeaders = opts.hashKeyStyle === 'bareword' ? headers : rawHeaders;
     const rows = [];
     for (let rowIndex = 0; rowIndex < dataTable.getRowCount(); rowIndex++) {
       const row = dataTable.getRow(rowIndex);
       if (opts.useAnonymousObjects) {
-        rows.push(this._buildAnonymousRow(rawHeaders, row));
+        rows.push(this._buildAnonymousRow(anonymousHeaders, row));
       } else {
         rows.push(this._buildObjectRow(headers, row, objectClassName));
       }

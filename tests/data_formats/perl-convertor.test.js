@@ -45,6 +45,16 @@ describe('PerlConvertor', () => {
     expect(convertor.fromDataTable(table)).toContain("{ 'First Name' => 'Alice'");
   });
 
+  test('bareword hash keys use sanitized identifiers for anonymous hashes', () => {
+    const table = new GenericDataTable();
+    table.setHeaders(['First Name']);
+    table.appendDataRow(['Alice']);
+    const convertor = new PerlConvertor();
+    convertor.setOptions({ hashKeyStyle: 'bareword' });
+    expect(convertor.fromDataTable(table)).toContain("{ First_Name => 'Alice'");
+    expect(convertor.fromDataTable(table)).not.toContain("{ First Name => 'Alice'");
+  });
+
   test('supports constructor object instantiation style', () => {
     const convertor = new PerlConvertor();
     convertor.setOptions({

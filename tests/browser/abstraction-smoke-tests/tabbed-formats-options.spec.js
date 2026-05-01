@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { AppPage } = require('./abstractions/app.page');
+const { AppPage } = require('../abstractions/app.page');
 
 const ALL_FORMATS = [
   'Markdown',

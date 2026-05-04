@@ -28,6 +28,7 @@ app.get('/v1/health', (_req, res) => {
 const RESPONSE_FORMATS = new Set(['rows', 'rendered', 'all', 'raw']);
 const formatDefaultOptions = new Map();
 const formatCustomTips = new Map();
+let globalUnsafeFakerEnabled = false;
 const UI_OPTION_KEYS_BY_FORMAT = {
   csv: ['quotes', 'header', 'quoteChar', 'escapeChar'],
   dsv: ['delimiter', 'quotes', 'header', 'quoteChar', 'escapeChar'],
@@ -184,7 +185,7 @@ function sanitiseOptionsForFormat(format, payload) {
       filteredOptions[key] = sourceOptions[key];
     }
   }
-  return { options: filteredOptions };
+  return filteredOptions;
 }
 
 function getTipsForFormat(format) {
@@ -235,7 +236,8 @@ function getDefaultOptionsForFormat(format) {
 
   const exporter = createExporterForDefaults();
   const builtInDefaults = exporter.getOptionsForType(normalisedFormat);
-  return sanitiseOptionsForFormat(normalisedFormat, cloneValue(builtInDefaults || {}));
+  const result = sanitiseOptionsForFormat(normalisedFormat, cloneValue(builtInDefaults || {}));
+  return result;
 }
 
 function setDefaultOptionsForFormat(format, options) {
@@ -251,7 +253,7 @@ function resetDefaultOptionsForFormat(format) {
 }
 
 function runGeneration(payload = {}) {
-  const { textSpec, rowCount, outputFormat = 'csv', options, seed } = payload;
+  const { textSpec, rowCount, outputFormat = 'csv', options, seed, unsafeFakerExpressions } = payload;
   const concreteOutputFormat = String(outputFormat || 'csv').toLowerCase();
 
   if (!SUPPORTED_FORMATS.includes(String(outputFormat).toLowerCase())) {
@@ -293,7 +295,7 @@ function runGeneration(payload = {}) {
       outputFormat: concreteOutputFormat,
       options: effectiveOptions,
       seed: parsedSeed.seed,
-      unsafeFakerExpressions: true, // Allow complex faker expressions for API
+      unsafeFakerExpressions: unsafeFakerExpressions || false,
     });
     if (!result?.ok) {
       return { ok: false, ...toErrorResponse(result, 400) };
@@ -334,13 +336,23 @@ function parseResponseFormat(value) {
   return { ok: true, mode };
 }
 
+function parseBooleanFlag(value) {
+  return value === true || value === 'true';
+}
+
 function sendGenerateResponse(req, res) {
   const modeResult = parseResponseFormat(req.body?.responseFormat);
   if (!modeResult.ok) {
     return res.status(400).json({ errors: modeResult.errors, diagnostics: {} });
   }
 
-  const generated = runGeneration({ ...(req.body || {}), acceptHeader: req.headers.accept });
+  const allowUnsafe = globalUnsafeFakerEnabled || parseBooleanFlag(req.body?.unsafeFakerExpressions);
+
+  const generated = runGeneration({
+    ...(req.body || {}),
+    acceptHeader: req.headers.accept,
+    unsafeFakerExpressions: allowUnsafe,
+  });
   if (!generated.ok) {
     return res.status(generated.statusCode).json(generated.body);
   }
@@ -368,13 +380,14 @@ function sendGenerateResponse(req, res) {
 
 function buildFromSchemaPayload(req) {
   const textSpec = typeof req.body === 'string' ? req.body : '';
-  const { rowCount, outputFormat, seed, responseFormat } = req.query || {};
+  const { rowCount, outputFormat, seed, responseFormat, unsafeFakerExpressions } = req.query || {};
   return {
     textSpec,
     rowCount,
     outputFormat: outputFormat || 'csv',
     seed,
     responseFormat,
+    unsafeFakerExpressions: unsafeFakerExpressions === 'true',
   };
 }
 
@@ -391,7 +404,13 @@ function sendFromSchemaResponse(req, res) {
     return res.status(400).json({ errors: modeResult.errors, diagnostics: {} });
   }
 
-  const generated = runGeneration({ ...payload, acceptHeader: req.headers.accept });
+  // Allow unsafe expressions if globally enabled or explicitly requested via query param
+  const allowUnsafe = globalUnsafeFakerEnabled || payload.unsafeFakerExpressions === true;
+  const generated = runGeneration({
+    ...payload,
+    acceptHeader: req.headers.accept,
+    unsafeFakerExpressions: allowUnsafe,
+  });
   if (!generated.ok) {
     return res.status(generated.statusCode).json(generated.body);
   }
@@ -463,7 +482,8 @@ function sendGetDefaultOptionsResponse(req, res) {
 
   const options = getDefaultOptionsForFormat(format) || {};
   const source = formatDefaultOptions.has(format) ? 'custom-default' : 'built-in-default';
-  return res.status(200).json({ format, options, tips: getTipsForFormat(format), source });
+  const response = { format, options, tips: getTipsForFormat(format), source };
+  return res.status(200).json(response);
 }
 
 function sendResetDefaultOptionsResponse(req, res) {
@@ -511,6 +531,28 @@ function parseCliPort(argv = []) {
     }
   }
   return undefined;
+}
+
+function parseUnsafeFaker(argv = []) {
+  for (let index = 0; index < argv.length; index += 1) {
+    const token = argv[index];
+    if (token === '--unsafe-faker=true') {
+      return true;
+    }
+    if (token === '--unsafe-faker=false') {
+      return false;
+    }
+    if (token === '--unsafe-faker') {
+      // Check the next argument for bare --unsafe-faker flag
+      const nextToken = argv[index + 1];
+      if (nextToken === 'false') {
+        return false;
+      }
+      // If next token is 'true', missing, or another flag, treat as enabled
+      return true;
+    }
+  }
+  return false;
 }
 
 function parsePortValue(rawPort, sourceLabel) {
@@ -563,6 +605,13 @@ async function startApiServer(
   expressApp,
   { argv = process.argv, env = process.env, logger = console.log, defaultPort = 3000 } = {}
 ) {
+  // Parse unsafe faker setting from command line
+  const unsafeFakerFromCli = parseUnsafeFaker(argv);
+  globalUnsafeFakerEnabled = unsafeFakerFromCli;
+  if (globalUnsafeFakerEnabled) {
+    logger('WARNING: Unsafe faker expressions enabled globally via command line');
+  }
+
   const portConfig = resolvePortConfiguration({ argv, env, defaultPort });
   if (!portConfig.ok) {
     return { ok: false, code: 'INVALID_PORT', message: portConfig.error };
@@ -662,4 +711,4 @@ if (isDirectRun) {
   }
 }
 
-export { app, parseCliPort, resolvePortConfiguration, startApiServer };
+export { app, parseCliPort, parseUnsafeFaker, resolvePortConfiguration, startApiServer };

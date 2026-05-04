@@ -33,7 +33,7 @@ describe('Can generate Random Data using Faker', () => {
     test('can use mustache helper with functions', () => {
       const rule = new TestDataRule('Test', "helpers.mustache('{{word}}',{word:()=>`${this.string.alpha(15)}`})");
       rule.type = 'faker';
-      const myData = new FakerTestDataGenerator(faker).generateFrom(rule);
+      const myData = new FakerTestDataGenerator(faker, { unsafeFakerExpressions: true }).generateFrom(rule);
       expect(myData.data.length).toBe(15);
     });
   });

@@ -64,6 +64,11 @@ const openApiDocument = {
                   },
                   options: { type: 'object' },
                   seed: { type: 'number' },
+                  unsafeFakerExpressions: {
+                    type: 'boolean',
+                    default: false,
+                    description: 'Allow expression-style faker arguments (unsafe for untrusted input)',
+                  },
                   responseFormat: { type: 'string', enum: ['rows', 'rendered', 'all', 'raw'], default: 'rows' },
                 },
               },
@@ -96,6 +101,11 @@ const openApiDocument = {
                     default: 'csv',
                   },
                   seed: { type: 'number' },
+                  unsafeFakerExpressions: {
+                    type: 'boolean',
+                    default: false,
+                    description: 'Allow expression-style faker arguments (unsafe for untrusted input)',
+                  },
                   responseFormat: { type: 'string', enum: ['rows', 'rendered', 'all', 'raw'], default: 'rows' },
                 },
               },
@@ -201,6 +211,16 @@ const openApiDocument = {
             name: 'seed',
             required: false,
             schema: { type: 'number' },
+          },
+          {
+            in: 'query',
+            name: 'unsafeFakerExpressions',
+            required: false,
+            schema: {
+              type: 'boolean',
+              default: false,
+            },
+            description: 'Allow expression-style faker arguments (unsafe for untrusted input)',
           },
           {
             in: 'query',

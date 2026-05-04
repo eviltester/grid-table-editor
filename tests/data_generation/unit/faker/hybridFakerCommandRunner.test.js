@@ -36,7 +36,9 @@ describe('Hybrid Faker Command Runner', () => {
 
   test('should fall back to Function for complex expressions with this references', () => {
     // This has to use fallback because of the `this.` reference which can't be parsed by JSON
-    const result = runFakerCommand('helpers.multiple', '(() => this.person.firstName())', faker);
+    const result = runFakerCommand('helpers.multiple', '(() => this.person.firstName())', faker, [], {
+      unsafeFakerExpressions: true,
+    });
 
     expect(result.isError).toBe(false);
     expect(Array.isArray(result.data)).toBe(true);
@@ -44,7 +46,9 @@ describe('Hybrid Faker Command Runner', () => {
 
   test('should fall back to Function for arrow functions', () => {
     // This needs fallback due to arrow function syntax
-    const result = runFakerCommand('helpers.maybe', '(() => "Hello World!", { probability: 0.9 })', faker);
+    const result = runFakerCommand('helpers.maybe', '(() => "Hello World!", { probability: 0.9 })', faker, [], {
+      unsafeFakerExpressions: true,
+    });
 
     expect(result.isError).toBe(false);
     // Result should be either "Hello World!" or undefined

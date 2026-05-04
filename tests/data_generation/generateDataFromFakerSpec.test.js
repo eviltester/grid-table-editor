@@ -73,7 +73,7 @@ helpers.mustache('I found {{count}} instances of "{{word}}".', {count: () => \`\
 
       console.log(inputText);
 
-      const generator = new TestDataGenerator(faker, RandExp);
+      const generator = new TestDataGenerator(faker, RandExp, { unsafeFakerExpressions: true });
 
       generator.importSpec(inputText);
       generator.compile();
@@ -120,7 +120,7 @@ helpers.mustache('I found {{count}} instances of "{{word}}".', {count: () => \`\
 
       //console.log(inputText);
 
-      const generator = new TestDataGenerator(faker, RandExp);
+      const generator = new TestDataGenerator(faker, RandExp, { unsafeFakerExpressions: true });
 
       generator.importSpec(inputText);
       generator.compile();

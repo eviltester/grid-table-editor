@@ -1,9 +1,10 @@
 import { TestDataRules } from './testDataRules.js';
 
 export class RulesParser {
-  constructor(aFaker, RandExp) {
+  constructor(aFaker, RandExp, options = {}) {
     this.faker = aFaker;
     this.RandExp = RandExp;
+    this.options = options;
     this.testDataRules = new TestDataRules();
     this.errors = [];
   }

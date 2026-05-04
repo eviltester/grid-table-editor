@@ -1,4 +1,5 @@
-const { execSync } = require('child_process');
+const { execSync, spawnSync } = require('child_process');
+const fs = require('fs');
 const path = require('path');
 
 function isDockerAvailable() {
@@ -19,11 +20,27 @@ function runDockerLinting() {
 
   try {
     console.log('Running hadolint on API Dockerfile...');
-    execSync(`docker run --rm -i hadolint/hadolint < "${apiDockerfile}"`, { stdio: 'inherit' });
+    const apiDockerfileContent = fs.readFileSync(apiDockerfile, 'utf8');
+    const apiResult = spawnSync('docker', ['run', '--rm', '-i', 'hadolint/hadolint'], {
+      input: apiDockerfileContent,
+      stdio: ['pipe', 'inherit', 'inherit']
+    });
     
+    if (apiResult.error || apiResult.status !== 0) {
+      throw new Error(`hadolint failed for API Dockerfile with status ${apiResult.status}`);
+    }
+
     console.log('Running hadolint on MCP Dockerfile...');
-    execSync(`docker run --rm -i hadolint/hadolint < "${mcpDockerfile}"`, { stdio: 'inherit' });
+    const mcpDockerfileContent = fs.readFileSync(mcpDockerfile, 'utf8');
+    const mcpResult = spawnSync('docker', ['run', '--rm', '-i', 'hadolint/hadolint'], {
+      input: mcpDockerfileContent,
+      stdio: ['pipe', 'inherit', 'inherit']
+    });
     
+    if (mcpResult.error || mcpResult.status !== 0) {
+      throw new Error(`hadolint failed for MCP Dockerfile with status ${mcpResult.status}`);
+    }
+
     console.log('Docker linting completed successfully!');
   } catch (error) {
     console.error('Docker linting failed:', error.message);

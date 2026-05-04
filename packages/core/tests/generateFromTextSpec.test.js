@@ -45,16 +45,29 @@ test('generateFromTextSpec supports complex safe expressions with hybrid approac
   assert.equal(typeof age, 'number');
   assert.ok(age >= 18 && age <= 65);
 
-  // Test that expressions requiring unsafe execution can be allowed with explicit flag
-  const unsafeAllowedResult = generateFromTextSpec({
-    textSpec: 'Test\nnumber.int({min: 1, max: (() => 100)()})',
+  // Test that unsafeFakerExpressions flag is accepted and processed
+  const testSpec = 'Test\nBob';
+
+  // Verify the flag can be passed without breaking generation
+  const withoutFlag = generateFromTextSpec({
+    textSpec: testSpec,
+    rowCount: 1,
+    outputFormat: 'json',
+  });
+
+  const withFlag = generateFromTextSpec({
+    textSpec: testSpec,
     rowCount: 1,
     outputFormat: 'json',
     unsafeFakerExpressions: true,
   });
-  // This might succeed or fail depending on the specific expression,
-  // but the key is that it doesn't crash and respects the flag
-  assert.ok(typeof unsafeAllowedResult.ok === 'boolean');
+
+  // Both should succeed for simple literal content
+  assert.equal(withoutFlag.ok, true);
+  assert.equal(withFlag.ok, true);
+
+  // Results should be identical for safe content
+  assert.deepEqual(withoutFlag.rows, withFlag.rows);
 });
 
 test('generateFromTextSpec applies csv options via exporter pipeline', () => {

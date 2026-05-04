@@ -532,11 +532,20 @@ function parseCliPort(argv = []) {
 function parseUnsafeFaker(argv = []) {
   for (let index = 0; index < argv.length; index += 1) {
     const token = argv[index];
-    if (token === '--unsafe-faker' || token === '--unsafe-faker=true') {
+    if (token === '--unsafe-faker=true') {
       return true;
     }
     if (token === '--unsafe-faker=false') {
       return false;
+    }
+    if (token === '--unsafe-faker') {
+      // Check the next argument for bare --unsafe-faker flag
+      const nextToken = argv[index + 1];
+      if (nextToken === 'false') {
+        return false;
+      }
+      // If next token is 'true', missing, or another flag, treat as enabled
+      return true;
     }
   }
   return false;

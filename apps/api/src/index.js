@@ -336,14 +336,18 @@ function parseResponseFormat(value) {
   return { ok: true, mode };
 }
 
+function parseBooleanFlag(value) {
+  return value === true || value === 'true';
+}
+
 function sendGenerateResponse(req, res) {
   const modeResult = parseResponseFormat(req.body?.responseFormat);
   if (!modeResult.ok) {
     return res.status(400).json({ errors: modeResult.errors, diagnostics: {} });
   }
 
-  // Allow unsafe expressions if globally enabled or explicitly requested
-  const allowUnsafe = globalUnsafeFakerEnabled || req.body?.unsafeFakerExpressions === true;
+  const allowUnsafe = globalUnsafeFakerEnabled || parseBooleanFlag(req.body?.unsafeFakerExpressions);
+
   const generated = runGeneration({
     ...(req.body || {}),
     acceptHeader: req.headers.accept,

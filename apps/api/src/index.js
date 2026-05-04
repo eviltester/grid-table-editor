@@ -15,13 +15,13 @@ const app = express();
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.text({ type: 'text/plain', limit: '1mb' }));
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(openApiDocument));
+app.use('/v1/docs', swaggerUi.serve, swaggerUi.setup(openApiDocument));
 
-app.get('/openapi.json', (_req, res) => {
+app.get('/v1/openapi.json', (_req, res) => {
   res.status(200).json(openApiDocument);
 });
 
-app.get('/health', (_req, res) => {
+app.get('/v1/health', (_req, res) => {
   res.status(200).json({ ok: true, service: 'anywaydata-api' });
 });
 
@@ -293,6 +293,7 @@ function runGeneration(payload = {}) {
       outputFormat: concreteOutputFormat,
       options: effectiveOptions,
       seed: parsedSeed.seed,
+      unsafeFakerExpressions: true, // Allow complex faker expressions for API
     });
     if (!result?.ok) {
       return { ok: false, ...toErrorResponse(result, 400) };
@@ -427,7 +428,7 @@ function sendSetDefaultOptionsResponse(req, res) {
 
   if (typeof req.body !== 'object' || req.body === null || Array.isArray(req.body)) {
     return res.status(400).json({
-      errors: ['Options payload must be a JSON object.'],
+      errors: ['Options payload must be a JSON object'],
       diagnostics: {},
     });
   }
@@ -437,7 +438,7 @@ function sendSetDefaultOptionsResponse(req, res) {
     (typeof req.body.tips !== 'object' || req.body.tips === null || Array.isArray(req.body.tips))
   ) {
     return res.status(400).json({
-      errors: ['tips must be a JSON object when provided.'],
+      errors: ['tips must be a JSON object when provided'],
       diagnostics: {},
     });
   }
@@ -484,9 +485,7 @@ function sendResetDefaultOptionsResponse(req, res) {
 }
 
 app.post('/v1/generate', sendGenerateResponse);
-app.post('/generate', sendGenerateResponse);
 app.post('/v1/generate/fromschema', sendFromSchemaResponse);
-app.post('/generate/fromschema', sendFromSchemaResponse);
 app.get('/v1/generate/options/:format', sendGetDefaultOptionsResponse);
 app.post('/v1/generate/options/:format', sendSetDefaultOptionsResponse);
 app.post('/v1/generate/options/:format/default', sendResetDefaultOptionsResponse);
@@ -574,8 +573,9 @@ async function startApiServer(
 
   try {
     const server = await listenOnPort(expressApp, portConfig.port);
-    logger(`anywaydata-api listening on ${portConfig.port}`);
-    return { ok: true, server, port: portConfig.port, source: portConfig.source, attemptedPorts };
+    const actualPort = server.address().port; // Get the actual assigned port
+    logger(`anywaydata-api listening on ${actualPort}`);
+    return { ok: true, server, port: actualPort, source: portConfig.source, attemptedPorts };
   } catch (error) {
     if (error?.code !== 'EADDRINUSE') {
       return {
@@ -599,8 +599,9 @@ async function startApiServer(
     attemptedPorts.push(candidatePort);
     try {
       const server = await listenOnPort(expressApp, candidatePort);
-      logger(`anywaydata-api listening on ${candidatePort}`);
-      return { ok: true, server, port: candidatePort, source: 'fallback', attemptedPorts };
+      const actualPort = server.address().port; // Get the actual assigned port
+      logger(`anywaydata-api listening on ${actualPort}`);
+      return { ok: true, server, port: actualPort, source: 'fallback', attemptedPorts };
     } catch (error) {
       if (error?.code !== 'EADDRINUSE') {
         return {
@@ -652,8 +653,9 @@ if (isDirectRun) {
   const sourceLabel = result.source === 'cli' ? 'CLI --port' : result.source === 'env' ? 'PORT env' : result.source;
   const baseUrl = `http://localhost:${result.port}`;
   console.log(`API base URL: ${baseUrl}`);
-  console.log(`Swagger UI: ${baseUrl}/docs`);
-  console.log(`OpenAPI spec: ${baseUrl}/openapi.json`);
+  console.log(`Swagger UI: ${baseUrl}/v1/docs`);
+  console.log(`OpenAPI spec: ${baseUrl}/v1/openapi.json`);
+  console.log(`Health check: ${baseUrl}/v1/health`);
   console.log(`Port source: ${sourceLabel}`);
   if (result.source === 'fallback') {
     console.log(`Port fallback sequence tried: ${result.attemptedPorts.join(', ')}`);

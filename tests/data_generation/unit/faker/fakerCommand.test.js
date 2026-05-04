@@ -104,7 +104,7 @@ describe('Can parse, compile, validate and execute Faker commands', () => {
 
       expect(validation.isError).toBe(true);
       expect(validation.errorMessage).toBe(
-        'Invalid Faker API Call Error running Commmand string.alpha(4 ERR: SyntaxError: missing ) after argument list'
+        'Invalid Faker API Call Error running Command string.alpha(4 ERR: SyntaxError: missing ) after argument list'
       );
     });
 
@@ -117,7 +117,7 @@ describe('Can parse, compile, validate and execute Faker commands', () => {
       expect(command.isError()).toBe(true);
       expect(command.isValid()).toBe(false);
       expect(command.validationError()).toBe(
-        'Invalid Faker API Call Error running Commmand string.alpha(4 ERR: SyntaxError: missing ) after argument list'
+        'Invalid Faker API Call Error running Command string.alpha(4 ERR: SyntaxError: missing ) after argument list'
       );
     });
   });

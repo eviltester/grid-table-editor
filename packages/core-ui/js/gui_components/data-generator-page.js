@@ -21,6 +21,7 @@ import { SqlOptionsPanel } from './options_panels/options-sql-panel.js';
 import { HtmlOptionsPanel } from './options_panels/options-html-panel.js';
 import { GherkinOptionsPanel } from './options_panels/options-gherkin-panel.js';
 import { AsciiTableOptionsPanel } from './options_panels/options-ascii-table.js';
+import { TestFrameworkOptionsPanel } from './options_panels/options-test-framework-panel.js';
 import { getKnownFakerCommandsAlphabetical, getKnownFakerCommandsLongestFirst } from './faker-commands.js';
 import { getFakerCommandHelp } from './faker-command-help-metadata.js';
 
@@ -277,6 +278,19 @@ class DataGeneratorPage {
       { type: 'ruby', label: 'Ruby' },
       { type: 'typescript', label: 'TypeScript' },
     ];
+    const unitTestCodeTypes = [
+      { type: 'junit4', label: 'JUnit4' },
+      { type: 'junit5', label: 'JUnit5' },
+      { type: 'junit6', label: 'JUnit6' },
+      { type: 'testng', label: 'TestNG' },
+      { type: 'pytest', label: 'PyTest' },
+      { type: 'jest', label: 'Jest' },
+      { type: 'xunit', label: 'xUnit' },
+      { type: 'rspec', label: 'RSpec' },
+      { type: 'phpunit', label: 'PHPUnit' },
+      { type: 'kotest', label: 'Kotest' },
+      { type: 'test-more', label: 'Test::More' },
+    ];
     const codeGroup = this.documentObj.createElement('optgroup');
     codeGroup.label = '-- Code --';
     codeTypes.forEach(({ type, label }) => {
@@ -290,6 +304,20 @@ class DataGeneratorPage {
     });
     if (codeGroup.children.length > 0) {
       outputSelect.appendChild(codeGroup);
+    }
+    const unitTestCodeGroup = this.documentObj.createElement('optgroup');
+    unitTestCodeGroup.label = '-- Code (Unit Test) --';
+    unitTestCodeTypes.forEach(({ type, label }) => {
+      if (!this.exporter?.canExport?.(type) && this.exporter) {
+        return;
+      }
+      const option = this.documentObj.createElement('option');
+      option.value = type;
+      option.textContent = label;
+      unitTestCodeGroup.appendChild(option);
+    });
+    if (unitTestCodeGroup.children.length > 0) {
+      outputSelect.appendChild(unitTestCodeGroup);
     }
     outputSelect.value = 'csv';
   }
@@ -348,6 +376,17 @@ class DataGeneratorPage {
     this.optionsPanels['html'] = new HtmlOptionsPanel(optionsParent);
     this.optionsPanels['gherkin'] = new GherkinOptionsPanel(optionsParent);
     this.optionsPanels['asciitable'] = new AsciiTableOptionsPanel(optionsParent);
+    this.optionsPanels['junit4'] = new TestFrameworkOptionsPanel(optionsParent);
+    this.optionsPanels['junit5'] = new TestFrameworkOptionsPanel(optionsParent);
+    this.optionsPanels['junit6'] = new TestFrameworkOptionsPanel(optionsParent);
+    this.optionsPanels['testng'] = new TestFrameworkOptionsPanel(optionsParent);
+    this.optionsPanels['pytest'] = new TestFrameworkOptionsPanel(optionsParent);
+    this.optionsPanels['jest'] = new TestFrameworkOptionsPanel(optionsParent);
+    this.optionsPanels['xunit'] = new TestFrameworkOptionsPanel(optionsParent);
+    this.optionsPanels['rspec'] = new TestFrameworkOptionsPanel(optionsParent);
+    this.optionsPanels['phpunit'] = new TestFrameworkOptionsPanel(optionsParent);
+    this.optionsPanels['kotest'] = new TestFrameworkOptionsPanel(optionsParent);
+    this.optionsPanels['test-more'] = new TestFrameworkOptionsPanel(optionsParent);
   }
 
   getSelectedOutputType() {

@@ -105,6 +105,17 @@ const UI_OPTION_KEYS_BY_FORMAT = {
   ],
   gherkin: ['showHeadings', 'leftIndent', 'inCellPadding', 'prettyPrint'],
   asciitable: ['style'],
+  junit4: ['suiteName', 'testNamePrefix', 'assertionStyle', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
+  junit5: ['suiteName', 'testNamePrefix', 'assertionStyle', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
+  junit6: ['suiteName', 'testNamePrefix', 'assertionStyle', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
+  testng: ['suiteName', 'testNamePrefix', 'assertionStyle', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
+  pytest: ['suiteName', 'testNamePrefix', 'assertionStyle', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
+  jest: ['suiteName', 'testNamePrefix', 'assertionStyle', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
+  xunit: ['suiteName', 'testNamePrefix', 'assertionStyle', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
+  rspec: ['suiteName', 'testNamePrefix', 'assertionStyle', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
+  phpunit: ['suiteName', 'testNamePrefix', 'assertionStyle', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
+  kotest: ['suiteName', 'testNamePrefix', 'assertionStyle', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
+  'test-more': ['suiteName', 'testNamePrefix', 'assertionStyle', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
 };
 const UI_OPTION_TIPS_BY_FORMAT = {
   csv: {
@@ -137,6 +148,15 @@ function contentTypeForFormat(outputFormat) {
   if (format === 'python') return 'text/x-python; charset=utf-8';
   if (format === 'java') return 'text/x-java-source; charset=utf-8';
   if (format === 'typescript') return 'application/typescript; charset=utf-8';
+  if (format === 'junit4' || format === 'junit5' || format === 'junit6' || format === 'testng')
+    return 'text/x-java-source; charset=utf-8';
+  if (format === 'pytest') return 'text/x-python; charset=utf-8';
+  if (format === 'jest') return 'text/javascript; charset=utf-8';
+  if (format === 'xunit') return 'text/x-csharp; charset=utf-8';
+  if (format === 'rspec') return 'text/x-ruby; charset=utf-8';
+  if (format === 'phpunit') return 'application/x-httpd-php; charset=utf-8';
+  if (format === 'kotest') return 'text/x-kotlin; charset=utf-8';
+  if (format === 'test-more') return 'text/x-perl; charset=utf-8';
   if (format === 'xml') return 'application/xml; charset=utf-8';
   if (format === 'sql') return 'application/sql; charset=utf-8';
   if (format === 'gherkin') return 'text/x-gherkin; charset=utf-8';

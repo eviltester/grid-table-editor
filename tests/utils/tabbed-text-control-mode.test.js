@@ -38,7 +38,7 @@ describe('TabbedTextControl preview/edit button', () => {
     expect(modeButton.innerText).toBe('Edit');
   });
 
-  test('selecting Code defaults to C# subtask and exposes code subtasks alphabetically', () => {
+  test('selecting Code defaults to C# subtask and exposes language code subtasks', () => {
     const controller = {
       renderTextFromGrid: jest.fn(),
       setFileFormatType: jest.fn(),
@@ -69,6 +69,24 @@ describe('TabbedTextControl preview/edit button', () => {
     expect(controller.renderTextFromGrid).toHaveBeenCalledTimes(1);
     expect(controller.setFileFormatType).toHaveBeenCalledTimes(1);
     expect(controller.setOptionsViewForFormatType).toHaveBeenCalledTimes(1);
+
+    host.querySelector('#type-code-unit-test .type-select-action').click();
+    const unitTestSubtasks = Array.from(host.querySelectorAll('#conversionSubtasks .subtask-select-action')).map(
+      (elem) => elem.textContent.trim()
+    );
+    expect(unitTestSubtasks).toEqual([
+      'JUnit4',
+      'JUnit5',
+      'JUnit6',
+      'TestNG',
+      'PyTest',
+      'Jest',
+      'xUnit',
+      'RSpec',
+      'PHPUnit',
+      'Kotest',
+      'Test::More',
+    ]);
   });
 
   test('initial default tab selection does not notify controller before bootstrap wiring completes', () => {
@@ -122,6 +140,7 @@ describe('TabbedTextControl preview/edit button', () => {
         'xml',
         'sql',
         'code',
+        'code-unit-test',
         'gherkin',
         'html',
         'asciitable',

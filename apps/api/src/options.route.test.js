@@ -51,6 +51,17 @@ test('/v1/generate/options/:format returns tips for all returned option keys', a
     'html',
     'gherkin',
     'asciitable',
+    'junit4',
+    'junit5',
+    'junit6',
+    'testng',
+    'pytest',
+    'jest',
+    'xunit',
+    'rspec',
+    'phpunit',
+    'kotest',
+    'test-more',
   ];
 
   for (const format of formats) {
@@ -144,6 +155,17 @@ test('/v1/generate/options/:format exposes only UI-supported option keys', async
     html: ['addTbodyToTable', 'addTheadToTable', 'compact', 'prettyPrint', 'prettyPrintDelimiter'],
     gherkin: ['inCellPadding', 'leftIndent', 'prettyPrint', 'showHeadings'],
     asciitable: ['style'],
+    junit4: ['assertionStyle', 'dataSourceStrategy', 'includeSetup', 'prettyPrint', 'suiteName', 'testNamePrefix'],
+    junit5: ['assertionStyle', 'dataSourceStrategy', 'includeSetup', 'prettyPrint', 'suiteName', 'testNamePrefix'],
+    junit6: ['assertionStyle', 'dataSourceStrategy', 'includeSetup', 'prettyPrint', 'suiteName', 'testNamePrefix'],
+    testng: ['assertionStyle', 'dataSourceStrategy', 'includeSetup', 'prettyPrint', 'suiteName', 'testNamePrefix'],
+    pytest: ['assertionStyle', 'dataSourceStrategy', 'includeSetup', 'prettyPrint', 'suiteName', 'testNamePrefix'],
+    jest: ['assertionStyle', 'dataSourceStrategy', 'includeSetup', 'prettyPrint', 'suiteName', 'testNamePrefix'],
+    xunit: ['assertionStyle', 'dataSourceStrategy', 'includeSetup', 'prettyPrint', 'suiteName', 'testNamePrefix'],
+    rspec: ['assertionStyle', 'dataSourceStrategy', 'includeSetup', 'prettyPrint', 'suiteName', 'testNamePrefix'],
+    phpunit: ['assertionStyle', 'dataSourceStrategy', 'includeSetup', 'prettyPrint', 'suiteName', 'testNamePrefix'],
+    kotest: ['assertionStyle', 'dataSourceStrategy', 'includeSetup', 'prettyPrint', 'suiteName', 'testNamePrefix'],
+    'test-more': ['assertionStyle', 'dataSourceStrategy', 'includeSetup', 'prettyPrint', 'suiteName', 'testNamePrefix'],
   };
 
   for (const [format, expectedKeys] of Object.entries(expectedKeysByFormat)) {

@@ -15,6 +15,13 @@ test('generateFromTextSpec generates rows for valid spec', () => {
   assert.equal(result.rows.length, 2);
 });
 
+test('generateFromTextSpec renders test framework output', () => {
+  const result = generateFromTextSpec({ textSpec: 'Name\nBob', rowCount: 1, outputFormat: 'pytest' });
+  assert.equal(result.ok, true);
+  assert.equal(result.format, 'pytest');
+  assert.match(result.rendered, /@pytest\.mark\.parametrize/);
+});
+
 test('validateSafeFakerRules rejects unsafe expression syntax', () => {
   const result = validateSafeFakerRules('Sentence\nhelpers.mustache("x", {count: () => `${this.number.int()}`})');
   assert.equal(result.ok, false);

@@ -50,6 +50,22 @@ test('MCP server handles generate_data_from_spec tool call', () => {
   assert.equal(response?.result?.structuredContent?.ok, true);
 });
 
+test('MCP server handles test framework output format', () => {
+  const response = requestServer({
+    jsonrpc: '2.0',
+    id: 21,
+    method: 'tools/call',
+    params: {
+      name: 'generate_data_from_spec',
+      arguments: { textSpec: 'Name\nBob', rowCount: 1, outputFormat: 'junit5' },
+    },
+  });
+  const payload = JSON.parse(response?.result?.content?.[0]?.text || '{}');
+  assert.equal(payload.ok, true);
+  assert.equal(payload.format, 'junit5');
+  assert.match(payload.rendered, /@ParameterizedTest/);
+});
+
 test('MCP server accepts key/value style textSpec for faker rules', () => {
   const response = requestServer({
     jsonrpc: '2.0',

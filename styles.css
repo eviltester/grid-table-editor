@@ -1,4 +1,3 @@
-
 /*
 
 styles tried
@@ -18,60 +17,58 @@ Light to dark grey green: F6FFF8, EAF4F4, CCE3DE, A4C3B2, 2D6A4F, 6B9080, 3D5249
 00a05b, ebf9f2 
 */
 
-
 body {
   background: #ffffff;
   font-family: Arial, Helvetica, sans-serif;
 }
 
-.main-app{
-  margin:10px;
+.main-app {
+  margin: 10px;
 }
 
 /* was #3D5249 - then docusaurus uses #2e8555*/
-.header{
+.header {
   background-color: #2e8555;
   color: white;
   display: flex;
   height: 2.4em;
 }
 
-div.header div{
+div.header div {
   margin-top: 1em;
 }
 
-.footer{
-  text-align:center;
+.footer {
+  text-align: center;
 }
-
 
 /* Conversion Types List */
 
-.conversionTabs{
+.conversionTabs {
   display: flex;
 }
 
-.type-select{
+.type-select {
   display: block;
-  padding: .5rem 1rem;
+  padding: 0.5rem 1rem;
 }
 
-.type-select:hover{
+.type-select:hover {
   border-style: solid;
   border-width: 1px 1px 0px 1px;
-  border-color: #61A5C2 #61A5C2 #A9D6E5;
+  border-color: #61a5c2 #61a5c2 #a9d6e5;
   margin: -1px -1px 0px -1px;
 }
 
-.active-type{
+.active-type {
   border-style: solid;
   border-width: 1px 1px 0px 1px;
-  border-color: #014F86 #014F86 #A9D6E5;
+  border-color: #014f86 #014f86 #a9d6e5;
   margin: -1px -1px 0px -1px;
 }
 
-.conversionTypesList{
-  border-bottom: 1px solid #A9D6E5;
+.conversionTypesList {
+  border-bottom: 1px solid #a9d6e5;
   display: flex;
   -ms-flex-wrap: wrap;
   flex-wrap: wrap;
@@ -80,12 +77,12 @@ div.header div{
   list-style: none;
 }
 
-.conversionSubtasks{
-  border-bottom: 1px solid #A9D6E5;
+.conversionSubtasks {
+  border-bottom: 1px solid #a9d6e5;
   margin-bottom: 0.5rem;
 }
 
-.conversionSubtasksList{
+.conversionSubtasksList {
   display: flex;
   flex-wrap: wrap;
   gap: 0.35rem;
@@ -94,25 +91,28 @@ div.header div{
   padding: 0.35rem 0 0.35rem 0.5rem;
 }
 
-.subtask-select{
+.subtask-select {
   display: block;
   padding: 0.25rem 0.75rem;
-  border: 1px solid #A9D6E5;
+  border: 1px solid #a9d6e5;
   border-radius: 999px;
   background: #f5fbff;
 }
 
-.active-main-type{
+.active-main-type {
   border-style: solid;
   border-width: 1px 1px 0px 1px;
-  border-color: #014F86 #014F86 #A9D6E5;
+  border-color: #014f86 #014f86 #a9d6e5;
   margin: -1px -1px 0px -1px;
   background: #f5fbff;
 }
 
-.subtask-select.active-type{
+.subtask-select.active-type {
   border-width: 1px;
   margin: 0;
+  border-color: #014f86;
+  background: #dceffd;
+  box-shadow: inset 0 0 0 1px #89c2d9;
 }
 
 a.subtask-select-action {
@@ -120,18 +120,22 @@ a.subtask-select-action {
   color: black;
 }
 
-a.type-select-action {
-  text-decoration: none;
-  color:black;
+.subtask-select.active-type a.subtask-select-action {
+  color: #013a63;
+  font-weight: 700;
 }
 
+a.type-select-action {
+  text-decoration: none;
+  color: black;
+}
 
 /* file drag and dropping */
 .dragdropzone.is-dragover {
   background-color: grey;
 }
 
-.dragdropzone{
+.dragdropzone {
   background-color: rgb(209, 243, 224);
 }
 
@@ -140,7 +144,7 @@ a.type-select-action {
 /*.conversionTypes{
 
 }*/
-.rightbuttons{
+.rightbuttons {
   display: flex;
   margin-left: auto;
   margin-right: auto;
@@ -153,36 +157,36 @@ a.type-select-action {
 
 /* Instructions */
 
-.instructions{
-  padding:10px;
+.instructions {
+  padding: 10px;
   color: rgb(0, 0, 0);
 }
 
-details[open]{
+details[open] {
   background-color: white;
   border-style: dashed;
   color: black;
 }
 
-details[open] ul{
+details[open] ul {
   margin-right: 10px;
 }
 
-details[open] ul li:last-child{
+details[open] ul li:last-child {
   padding-bottom: 10px;
 }
 
-.appheading{
+.appheading {
   text-align: center;
   margin: 0px;
 }
 
-button{
-  background-color: #2D6A4F;
-  color: white
+button {
+  background-color: #2d6a4f;
+  color: white;
 }
 
-button:disabled{
+button:disabled {
   cursor: not-allowed;
   background-color: #b4c4bc;
   border-color: #8ea197;
@@ -190,36 +194,35 @@ button:disabled{
   opacity: 0.7;
 }
 
-#setgridfromtextbutton:disabled{
+#setgridfromtextbutton:disabled {
   background-color: #b4c4bc;
   border-color: #8ea197;
   color: #4d5c54;
   opacity: 0.7;
 }
 
-
 /* The text conversion box */
 
-.textrepresentation{
+.textrepresentation {
   height: 200px;
-  width:100%;
+  width: 100%;
   white-space: pre-wrap;
   background-color: #ebf9f2;
   resize: vertical;
 }
 
-.edit-area{
+.edit-area {
   display: flex;
   align-items: stretch;
   width: 100%;
   min-height: 14rem;
 }
 
-.options-parent{
+.options-parent {
   overflow: auto;
 }
 
-.options-preview-splitter{
+.options-preview-splitter {
   width: 8px;
   cursor: col-resize;
   background: #f5f8fa;
@@ -227,58 +230,60 @@ button:disabled{
   border-right: 1px solid #d7e2e8;
   flex: 0 0 8px;
   opacity: 0.7;
-  transition: background-color 120ms ease, opacity 120ms ease;
+  transition:
+    background-color 120ms ease,
+    opacity 120ms ease;
   touch-action: none;
   -webkit-user-select: none;
 }
 
-.options-preview-splitter:hover{
+.options-preview-splitter:hover {
   background: #ebf2f6;
   opacity: 0.95;
 }
 
-.option-child{
+.option-child {
   margin-left: 1rem;
   padding-left: 0.75rem;
   border-left: 2px solid #d7e2e8;
 }
 
-@media (max-width: 640px){
-  .option-child{
+@media (max-width: 640px) {
+  .option-child {
     margin-left: 0.6rem;
     padding-left: 0.5rem;
   }
 }
 
-body.is-resizing-split{
+body.is-resizing-split {
   user-select: none;
   cursor: col-resize;
 }
 
-#markdown{
+#markdown {
   flex: 1 1 auto;
   min-width: 0;
 }
 
-@media (max-width: 640px){
-  .edit-area{
+@media (max-width: 640px) {
+  .edit-area {
     flex-direction: column;
   }
 
-  .options-preview-splitter{
+  .options-preview-splitter {
     display: none !important;
   }
 
-  .options-parent{
+  .options-parent {
     width: 100% !important;
     min-width: 0 !important;
     max-width: 100% !important;
   }
 }
 
-.testDataDefn{
+.testDataDefn {
   height: 10em;
-  width:95%;
+  width: 95%;
   white-space: pre-wrap;
   resize: vertical;
 }
@@ -287,26 +292,26 @@ body.is-resizing-split{
 Custom header styles for default items
  */
 
-.headerWrapper{
-  width:100%;
+.headerWrapper {
+  width: 100%;
 }
-.customHeaderTop{
+.customHeaderTop {
   display: flex;
 }
 
-.customSort{
+.customSort {
   display: flex;
   flex: 0;
   align-items: center;
   gap: 6px;
 }
 .customHeaderMenuButton {
-  flex:0;
+  flex: 0;
   margin: 0 3px 0 3px;
 }
 
-.customHeaderLabel{
-  flex:3;
+.customHeaderLabel {
+  flex: 3;
   text-align: center;
 }
 
@@ -333,62 +338,62 @@ Custom header styles for default items
   color: #00a05b;
 }
 
-
 /* The grid heading control buttons */
-.headerbuttons{
+.headerbuttons {
   text-align: center;
   color: #1e4a01;
 }
 
 /* Docs */
 
-.bodycontent{
+.bodycontent {
   max-width: 1200px;
   margin: auto;
 }
 
-.header .pageheading{
+.header .pageheading {
   font-size: 1em;
   display: inline;
   padding-left: 1em;
 }
 
-.header .pageheading a{
+.header .pageheading a {
   color: white;
   text-decoration: none;
 }
 
-.header .mainmenu{
+.header .mainmenu {
   display: inline;
   padding-left: 2em;
 }
 
-.header .mainmenu a{
+.header .mainmenu a {
   text-decoration: none;
 }
 
-.header .mainmenu a{
+.header .mainmenu a {
   color: white;
 }
 
-.mainmenu a:hover, .header .pageheading a:hover{
+.mainmenu a:hover,
+.header .pageheading a:hover {
   color: #000000;
 }
 
 /* Styling for inline application help */
 /* use in a div or span to avoid having a border, which would happen on img if no src attribute present */
-.helpicon{
-  background: url("/images/circle-question-solid.svg");
+.helpicon {
+  background: url('/images/circle-question-solid.svg');
   width: 1em;
   height: 1em;
   display: inline-block;
 }
 
-.helplink{
+.helplink {
   color: #afdfff;
 }
 
-.import-progress-status{
+.import-progress-status {
   margin-top: 0.45rem;
   padding: 0.2rem 0.5rem;
   border-radius: 4px;
@@ -398,12 +403,12 @@ Custom header styles for default items
   border: 1px solid #b7dcf5;
 }
 
-.import-progress-status.is-loading{
+.import-progress-status.is-loading {
   background: #fff4e5;
   color: #6b3d00;
 }
 
-.import-progress-status.is-loading::before{
+.import-progress-status.is-loading::before {
   content: '';
   display: inline-block;
   width: 0.75rem;
@@ -416,7 +421,7 @@ Custom header styles for default items
   vertical-align: -0.1rem;
 }
 
-@keyframes status-spinner{
+@keyframes status-spinner {
   from {
     transform: rotate(0deg);
   }
@@ -426,13 +431,13 @@ Custom header styles for default items
 }
 
 /* Data generator page */
-.generator-page{
+.generator-page {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
-.generator-controls{
+.generator-controls {
   display: flex;
   gap: 0.8rem;
   flex-wrap: wrap;
@@ -442,11 +447,11 @@ Custom header styles for default items
   background: #f8fcff;
 }
 
-.generator-controls-head{
+.generator-controls-head {
   flex: 1 1 100%;
 }
 
-.generator-controls > label{
+.generator-controls > label {
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
@@ -454,158 +459,158 @@ Custom header styles for default items
 }
 
 .generator-controls > label input,
-.generator-controls > label select{
+.generator-controls > label select {
   min-width: 9rem;
 }
 
-.generator-options-wrapper{
+.generator-options-wrapper {
   flex: 1 1 100%;
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
 }
 
-.generator-options-panel{
+.generator-options-panel {
   width: 100%;
 }
 
-.generator-status-text{
+.generator-status-text {
   min-height: 1.1rem;
   font-size: 0.85rem;
   color: #1b4965;
 }
 
-.generator-schema{
+.generator-schema {
   border: 1px solid #a9d6e5;
   background: #ffffff;
   padding: 0.6rem;
 }
 
-.generator-schema-head{
+.generator-schema-head {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 0.6rem;
 }
 
-.generator-schema-footer{
+.generator-schema-footer {
   margin-top: 0.6rem;
 }
 
-.generator-schema-rows{
+.generator-schema-rows {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
-.generator-schema-text{
+.generator-schema-text {
   margin-top: 0.2rem;
 }
 
-.generator-schema-text textarea{
+.generator-schema-text textarea {
   width: 100%;
   min-height: 12rem;
 }
 
-.generator-schema-row{
+.generator-schema-row {
   display: grid;
   gap: 0.4rem;
   align-items: center;
 }
 
-.generator-schema-row-faker{
+.generator-schema-row-faker {
   grid-template-columns: auto 380px 110px minmax(180px, 1.3fr) max-content minmax(140px, 1fr);
 }
 
-.generator-schema-row-non-faker{
+.generator-schema-row-non-faker {
   grid-template-columns: auto 380px 110px max-content minmax(220px, 1fr);
 }
 
-.generator-schema-help-link{
+.generator-schema-help-link {
   justify-self: start;
 }
 
-.option-help-icon{
+.option-help-icon {
   margin-right: 0.35rem;
   cursor: help;
 }
 
-.generator-row-actions{
+.generator-row-actions {
   display: flex;
   gap: 0.2rem;
 }
 
-.icon-button{
+.icon-button {
   min-width: 2rem;
   height: 2rem;
   line-height: 1;
 }
 
-.generator-preview{
+.generator-preview {
   border: 1px solid #a9d6e5;
   background: #ffffff;
   padding: 0.6rem;
 }
 
-.generator-preview-head{
+.generator-preview-head {
   margin-bottom: 0.4rem;
 }
 
-.generator-preview-controls{
+.generator-preview-controls {
   display: flex;
   align-items: center;
   gap: 0.6rem;
 }
 
-.generator-preview-count-label{
+.generator-preview-count-label {
   font-size: 0.9rem;
 }
 
-#previewRowsCount{
+#previewRowsCount {
   width: 6rem;
 }
 
-#generator-preview-grid{
+#generator-preview-grid {
   width: 100%;
   height: 420px;
 }
 
-.generator-output-preview{
+.generator-output-preview {
   margin-top: 0.6rem;
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
 }
 
-.generator-output-preview label{
+.generator-output-preview label {
   font-size: 0.9rem;
 }
 
-#generatorOutputPreview{
+#generatorOutputPreview {
   width: 100%;
   min-height: 8rem;
   white-space: pre;
   resize: vertical;
 }
 
-.generator-data-table-preview{
+.generator-data-table-preview {
   margin-top: 0.6rem;
 }
 
-.generator-data-table-preview label{
+.generator-data-table-preview label {
   display: block;
   font-size: 0.9rem;
   margin-bottom: 0.2rem;
 }
 
-@media (max-width: 980px){
-  .generator-schema-row{
+@media (max-width: 980px) {
+  .generator-schema-row {
     grid-template-columns: 1fr 1fr;
   }
-  .generator-row-actions{
+  .generator-row-actions {
     grid-column: span 2;
   }
-  .generator-preview-controls{
+  .generator-preview-controls {
     justify-content: flex-start;
   }
 }

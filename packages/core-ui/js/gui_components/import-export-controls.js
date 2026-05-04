@@ -18,6 +18,7 @@ import { XmlOptionsPanel } from './options_panels/options-xml-panel.js';
 import { SqlOptionsPanel } from './options_panels/options-sql-panel.js';
 import { GherkinOptionsPanel } from './options_panels/options-gherkin-panel.js';
 import { HtmlOptionsPanel } from './options_panels/options-html-panel.js';
+import { TestFrameworkOptionsPanel } from './options_panels/options-test-framework-panel.js';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 
 class ImportExportControls {
@@ -291,6 +292,17 @@ class ImportExportControls {
         this.optionsPanels['sql'] = new SqlOptionsPanel(optionsparent);
         this.optionsPanels['html'] = new HtmlOptionsPanel(optionsparent);
         this.optionsPanels['gherkin'] = new GherkinOptionsPanel(optionsparent);
+        this.optionsPanels['junit4'] = new TestFrameworkOptionsPanel(optionsparent);
+        this.optionsPanels['junit5'] = new TestFrameworkOptionsPanel(optionsparent);
+        this.optionsPanels['junit6'] = new TestFrameworkOptionsPanel(optionsparent);
+        this.optionsPanels['testng'] = new TestFrameworkOptionsPanel(optionsparent);
+        this.optionsPanels['pytest'] = new TestFrameworkOptionsPanel(optionsparent);
+        this.optionsPanels['jest'] = new TestFrameworkOptionsPanel(optionsparent);
+        this.optionsPanels['xunit'] = new TestFrameworkOptionsPanel(optionsparent);
+        this.optionsPanels['rspec'] = new TestFrameworkOptionsPanel(optionsparent);
+        this.optionsPanels['phpunit'] = new TestFrameworkOptionsPanel(optionsparent);
+        this.optionsPanels['kotest'] = new TestFrameworkOptionsPanel(optionsparent);
+        this.optionsPanels['test-more'] = new TestFrameworkOptionsPanel(optionsparent);
       }
     }
   }

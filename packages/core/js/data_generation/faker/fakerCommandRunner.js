@@ -180,12 +180,12 @@ export function runFakerCommand(thisCommand, theseArguments, usingFaker, propert
     // First, try the safe approach (direct function calls)
     return runFakerCommandSafely(thisCommand, theseArguments, usingFaker, propertyAccessors);
   } catch (error) {
-    // If the safe approach fails, check if unsafe expressions are allowed
-    if (options.unsafeFakerExpressions === false) {
-      // If unsafe expressions are not allowed, return a safety error
+    // If the safe approach fails, only allow unsafe expressions when explicitly enabled
+    if (options.unsafeFakerExpressions !== true) {
+      // If unsafe expressions are not explicitly allowed, return a safety error
       return errorResponse(`Unsafe faker rule syntax detected: ${error.message}`);
     }
-    // If unsafe expressions are allowed, fall back to Function() with enhanced security
+    // If unsafe expressions are explicitly allowed, fall back to Function() with enhanced security
     return runFakerCommandWithFallback(thisCommand, theseArguments, usingFaker, propertyAccessors, options);
   }
 }

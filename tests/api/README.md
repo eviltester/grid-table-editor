@@ -44,7 +44,7 @@ The API tests use a separate Playwright configuration (`playwright-api.config.js
 
 - **No browser UI** - Uses request context only
 - **Faster execution** - No page loading overhead
-- **Isolated environment** - Each test gets fresh server instance
+- **Isolated environment** - Each spec file gets its own server instance, reused across tests in that file
 - **Comprehensive reporting** - JSON and HTML reports
 - **CI optimized** - Different settings for CI vs local development
 

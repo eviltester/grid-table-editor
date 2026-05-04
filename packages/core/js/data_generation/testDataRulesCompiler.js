@@ -9,9 +9,10 @@ import { RegexTestDataRuleValidator } from './regex/regexTestDataRuleValidator.j
     during compilation.
 */
 export class TestDataRulesCompiler {
-  constructor(aFaker, aRandExp) {
+  constructor(aFaker, aRandExp, options = {}) {
     this.faker = aFaker;
     this.RandExp = aRandExp;
+    this.options = options;
 
     // compilation report
     this.rules = [];
@@ -31,7 +32,7 @@ export class TestDataRulesCompiler {
     this.compilationReportLines = [];
     this.errors = [];
 
-    const fakerValidator = new FakerTestDataRuleValidator(this.faker);
+    const fakerValidator = new FakerTestDataRuleValidator(this.faker, this.options);
     const regexValidator = new RegexTestDataRuleValidator(this.RandExp);
 
     const validTypes = ['regex', 'faker', 'literal'];
@@ -78,7 +79,7 @@ export class TestDataRulesCompiler {
   validate() {
     this.errors = [];
 
-    const fakerValidator = new FakerTestDataRuleValidator(this.faker);
+    const fakerValidator = new FakerTestDataRuleValidator(this.faker, this.options);
     const regexValidator = new RegexTestDataRuleValidator(this.RandExp);
 
     this.rules.forEach((rule) => {

@@ -236,7 +236,8 @@ function getDefaultOptionsForFormat(format) {
 
   const exporter = createExporterForDefaults();
   const builtInDefaults = exporter.getOptionsForType(normalisedFormat);
-  return sanitiseOptionsForFormat(normalisedFormat, cloneValue(builtInDefaults || {}));
+  const result = sanitiseOptionsForFormat(normalisedFormat, cloneValue(builtInDefaults || {}));
+  return result;
 }
 
 function setDefaultOptionsForFormat(format, options) {
@@ -477,7 +478,8 @@ function sendGetDefaultOptionsResponse(req, res) {
 
   const options = getDefaultOptionsForFormat(format) || {};
   const source = formatDefaultOptions.has(format) ? 'custom-default' : 'built-in-default';
-  return res.status(200).json({ format, options, tips: getTipsForFormat(format), source });
+  const response = { format, options, tips: getTipsForFormat(format), source };
+  return res.status(200).json(response);
 }
 
 function sendResetDefaultOptionsResponse(req, res) {

@@ -4,11 +4,12 @@ import { LiteralTestDataGenerator } from './literal/literalTestDataGenerator.js'
 import { dataResponse } from './ruleResponse.js';
 
 export class RulesBasedDataGenerator {
-  constructor(aFaker, RandExp) {
+  constructor(aFaker, RandExp, options = {}) {
     this.faker = aFaker;
     this.RandExp = RandExp;
+    this.options = options;
 
-    this.fakerGenerator = new FakerTestDataGenerator(aFaker);
+    this.fakerGenerator = new FakerTestDataGenerator(aFaker, options);
     this.regexGenerator = new RegexTestDataGenerator(RandExp);
     this.literalGenerator = new LiteralTestDataGenerator();
     this.defaultGenerator = new DefaultTestDataGenerator();

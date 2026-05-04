@@ -2,6 +2,8 @@
  * Hybrid approach: Try safe direct function calls first, fallback to Function() with security checks
  */
 
+import { errorResponse } from '../ruleResponse.js';
+
 function parseArgumentsSafely(argString) {
   if (!argString || argString === '()') {
     return [];
@@ -74,12 +76,13 @@ function runFakerCommandSafely(thisCommand, theseArguments, usingFaker, property
   return executionResult;
 }
 
-function runFakerCommandWithFallback(thisCommand, theseArguments, usingFaker, propertyAccessors = []) {
+function runFakerCommandWithFallback(thisCommand, theseArguments, usingFaker, propertyAccessors = [], options = {}) {
   const executionResult = { isError: true, errorMessage: 'Not Executed', data: '' };
   const useArguments = theseArguments ? theseArguments : '()';
 
-  // Enhanced security checks before using Function()
-  const dangerousPatterns = [
+  // Check for dangerous patterns before using Function() constructor
+  // Always block genuinely dangerous patterns regardless of unsafeFakerExpressions
+  const alwaysDangerousPatterns = [
     /require\s*\(/,
     /process\./,
     /globalThis\./,
@@ -103,14 +106,14 @@ function runFakerCommandWithFallback(thisCommand, theseArguments, usingFaker, pr
     /await\s+/,
   ];
 
-  for (const pattern of dangerousPatterns) {
+  for (const pattern of alwaysDangerousPatterns) {
     if (pattern.test(useArguments) || pattern.test(thisCommand)) {
       executionResult.errorMessage = `Security: Potentially unsafe pattern detected`;
       return executionResult;
     }
   }
 
-  // Additional string-based checks for dangerous content
+  // Additional string-based checks for always dangerous content
   const argStr = String(useArguments || '');
   const cmdStr = String(thisCommand || '');
 
@@ -124,6 +127,24 @@ function runFakerCommandWithFallback(thisCommand, theseArguments, usingFaker, pr
   ) {
     executionResult.errorMessage = `Security: Dangerous function call detected`;
     return executionResult;
+  }
+
+  // Only apply additional restrictions if unsafeFakerExpressions is not explicitly enabled
+  if (!options.unsafeFakerExpressions) {
+    const additionalPatterns = [
+      /=>/, // Arrow functions
+      /`/, // Template literals
+      /\bthis\b/, // 'this' keyword
+      /\bfunction\b/, // Function keyword
+      /;/, // Semicolons (command separation)
+    ];
+
+    for (const pattern of additionalPatterns) {
+      if (pattern.test(useArguments) || pattern.test(thisCommand)) {
+        executionResult.errorMessage = `Security: Potentially unsafe pattern detected`;
+        return executionResult;
+      }
+    }
   }
 
   var fakerPrefix = 'this.';
@@ -154,12 +175,17 @@ function runFakerCommandWithFallback(thisCommand, theseArguments, usingFaker, pr
   }
 }
 
-export function runFakerCommand(thisCommand, theseArguments, usingFaker, propertyAccessors = []) {
+export function runFakerCommand(thisCommand, theseArguments, usingFaker, propertyAccessors = [], options = {}) {
   try {
     // First, try the safe approach (direct function calls)
     return runFakerCommandSafely(thisCommand, theseArguments, usingFaker, propertyAccessors);
   } catch (error) {
-    // If the safe approach fails, fall back to Function() with enhanced security
-    return runFakerCommandWithFallback(thisCommand, theseArguments, usingFaker, propertyAccessors);
+    // If the safe approach fails, check if unsafe expressions are allowed
+    if (options.unsafeFakerExpressions === false) {
+      // If unsafe expressions are not allowed, return a safety error
+      return errorResponse(`Unsafe faker rule syntax detected: ${error.message}`);
+    }
+    // If unsafe expressions are allowed, fall back to Function() with enhanced security
+    return runFakerCommandWithFallback(thisCommand, theseArguments, usingFaker, propertyAccessors, options);
   }
 }

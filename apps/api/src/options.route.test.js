@@ -57,7 +57,7 @@ test('/v1/generate/options/:format returns tips for all returned option keys', a
     const response = await fetch(url(`/v1/generate/options/${format}`));
     assert.equal(response.status, 200);
     const body = await response.json();
-    const optionKeys = Object.keys(body?.options?.options || {});
+    const optionKeys = Object.keys(body?.options || {});
     for (const key of optionKeys) {
       assert.equal(typeof body?.tips?.[key], 'string');
       assert.ok(body.tips[key].trim().length > 0);
@@ -150,7 +150,7 @@ test('/v1/generate/options/:format exposes only UI-supported option keys', async
     const response = await fetch(url(`/v1/generate/options/${format}`));
     assert.equal(response.status, 200);
     const body = await response.json();
-    const keys = Object.keys(body?.options?.options || {}).sort();
+    const keys = Object.keys(body?.options || {}).sort();
     assert.deepEqual(keys, [...expectedKeys].sort());
   }
 });
@@ -162,9 +162,9 @@ test('/v1/generate/options/csv returns built-in defaults and built-in tips', asy
   const body = await response.json();
   assert.equal(body.format, 'csv');
   assert.equal(body.source, 'built-in-default');
-  assert.equal(body.options?.options?.header, true);
-  assert.equal(body.options?.options?.quotes, true);
-  assert.equal(Object.hasOwn(body.options?.options || {}, 'delimiter'), false);
+  assert.equal(body.options?.header, true);
+  assert.equal(body.options?.quotes, true);
+  assert.equal(Object.hasOwn(body.options || {}, 'delimiter'), false);
   assert.equal(typeof body.tips?.header, 'string');
   assert.notEqual(body.tips?.header, CUSTOM_HEADER_TIP);
 });
@@ -182,8 +182,8 @@ test('/v1/generate/options/csv accepts posted options and tips', async () => {
   assert.equal(response.status, 200);
   const body = await response.json();
   assert.equal(body.source, 'custom-default');
-  assert.equal(body.options?.options?.header, false);
-  assert.equal(body.options?.options?.quotes, true);
+  assert.equal(body.options?.header, false);
+  assert.equal(body.options?.quotes, true);
   assert.equal(body.tips?.header, CUSTOM_HEADER_TIP);
 });
 
@@ -202,7 +202,7 @@ test('/v1/generate/options/csv returns custom defaults after POST', async () => 
   assert.equal(response.status, 200);
   const body = await response.json();
   assert.equal(body.source, 'custom-default');
-  assert.equal(body.options?.options?.header, false);
+  assert.equal(body.options?.header, false);
   assert.equal(body.tips?.header, CUSTOM_HEADER_TIP);
 });
 
@@ -240,6 +240,6 @@ test('/v1/generate/options/csv/default resets options and tips to built-in defau
   assert.equal(response.status, 200);
   const body = await response.json();
   assert.equal(body.source, 'built-in-default');
-  assert.equal(body.options?.options?.header, true);
+  assert.equal(body.options?.header, true);
   assert.notEqual(body.tips?.header, CUSTOM_HEADER_TIP);
 });

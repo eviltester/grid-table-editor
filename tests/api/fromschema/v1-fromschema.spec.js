@@ -117,9 +117,9 @@ firstName
 Email  
 email
 Age
-datatype.number({"min": 18, "max": 65})
+number.int({"min": 18, "max": 65})
 City
-address.cityName`;
+location.city`;
 
       const response = await request.post(apiUrl('/v1/generate/fromschema?rowCount=3'), {
         data: complexSchema,

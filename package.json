@@ -21,7 +21,7 @@
     "test:api:verbose": "playwright test --config=playwright-api.config.js --reporter=verbose",
     "lint": "eslint \"tests/**/*.js\" \"apps/**/*.js\" \"packages/**/*.js\"",
     "lint:fix": "eslint --fix \"tests/**/*.js\" \"apps/**/*.js\" \"packages/**/*.js\"",
-    "lint:docker": "docker run --rm -i hadolint/hadolint < apps/api/Dockerfile && docker run --rm -i hadolint/hadolint < apps/mcp/Dockerfile",
+    "lint:docker": "node scripts/lint-docker.js",
     "format": "prettier --write \"*.json\" \"apps/**/*.json\" \"packages/**/*.json\" \"apps/**/*.js\" \"packages/**/*.js\" \"tests/**/*.js\" \"*.md\" \".github/workflows/*.yml\"",
     "format:check": "prettier --check \"*.json\" \"apps/**/*.json\" \"packages/**/*.json\" \"apps/**/*.js\" \"packages/**/*.js\" \"tests/**/*.js\" \"*.md\" \".github/workflows/*.yml\"",
     "verify:local": "npm run lint && npm run format:check && npm test && npm run test:workspaces && npm run test:api",

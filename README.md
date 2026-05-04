@@ -314,6 +314,62 @@ Example request body:
 }
 ```
 
+## Security: Unsafe Faker Expressions
+
+For security, complex faker expressions that use `eval`-like functionality are disabled by default. The API uses a hybrid approach that tries safe method calls first, then falls back to secure execution when needed.
+
+### Enable Unsafe Expressions Globally
+
+Start the API with unsafe expressions enabled for all requests:
+
+```bash
+# Via command line flag
+node apps/api/src/index.js --unsafe-faker
+
+# Or via npm workspace
+npm run start --workspace @anywaydata/api -- --unsafe-faker
+
+# Or via npx
+npx -y @anywaydata/api --unsafe-faker
+```
+
+### Enable Unsafe Expressions Per Request
+
+Add `unsafeFakerExpressions: true` to individual requests:
+
+```json
+{
+  "textSpec": "Name\nperson.firstName\nScore\nnumber.int({\"min\": 18, \"max\": 65})",
+  "rowCount": 5,
+  "outputFormat": "json",
+  "unsafeFakerExpressions": true
+}
+```
+
+For `/fromschema` endpoint, use the query parameter:
+
+```
+POST /v1/generate/fromschema?rowCount=10&unsafeFakerExpressions=true
+```
+
+### Security Details
+
+- **Safe by default**: Most faker expressions use direct method calls without eval
+- **Hybrid approach**: Tries safe `.apply()` method first, falls back to `Function()` constructor with security filtering
+- **Expression patterns blocked**: `process`, `require`, `import`, `eval`, `__`, `constructor`, `prototype`
+- **Granular control**: Enable globally via CLI or per-request via parameter
+
+Examples of expressions that work safely without the flag:
+
+- `person.firstName` or `person.firstName()`
+- `number.int({"min": 10, "max": 100})`
+- `helpers.arrayElement(["red", "green", "blue"])`
+
+Examples that require the unsafe flag:
+
+- `() => this.person.firstName()` (arrow functions with `this`)
+- `{count: () => \`${this.number.int()}\`}` (template literals)
+
 ## MCP Quick Start
 
 Start the MCP server:

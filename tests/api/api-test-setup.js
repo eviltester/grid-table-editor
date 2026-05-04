@@ -115,7 +115,7 @@ export const TestHelpers = {
     if (!Array.isArray(body.errors)) {
       throw new Error('Expected errors array in response body');
     }
-    if (typeof body.diagnostics !== 'object') {
+    if (body.diagnostics === null || typeof body.diagnostics !== 'object' || Array.isArray(body.diagnostics)) {
       throw new Error('Expected diagnostics object in response body');
     }
   },
@@ -170,21 +170,22 @@ export const TestHelpers = {
 
     const results = [];
     for (const method of unsupportedMethods) {
-      try {
-        const response = await request[method.toLowerCase()](endpoint);
+      const methodFn = request[method.toLowerCase()];
+      if (typeof methodFn !== 'function') {
         results.push({
           method,
-          status: response.status(),
-          expected: method === 'OPTIONS' ? 200 : 404, // Express.js returns 404 for undefined routes
+          status: 404,
+          expected: method === 'OPTIONS' ? 200 : 404,
         });
-      } catch (error) {
-        // Some methods might not be implemented in Playwright request
-        results.push({
-          method,
-          status: 404, // Express.js default for undefined routes
-          expected: 404,
-        });
+        continue;
       }
+
+      const response = await methodFn.call(request, endpoint);
+      results.push({
+        method,
+        status: response.status(),
+        expected: method === 'OPTIONS' ? 200 : 404, // Express.js returns 404 for undefined routes
+      });
     }
 
     return results;

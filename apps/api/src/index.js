@@ -28,6 +28,7 @@ app.get('/v1/health', (_req, res) => {
 const RESPONSE_FORMATS = new Set(['rows', 'rendered', 'all', 'raw']);
 const formatDefaultOptions = new Map();
 const formatCustomTips = new Map();
+let globalUnsafeFakerEnabled = false;
 const UI_OPTION_KEYS_BY_FORMAT = {
   csv: ['quotes', 'header', 'quoteChar', 'escapeChar'],
   dsv: ['delimiter', 'quotes', 'header', 'quoteChar', 'escapeChar'],
@@ -251,7 +252,7 @@ function resetDefaultOptionsForFormat(format) {
 }
 
 function runGeneration(payload = {}) {
-  const { textSpec, rowCount, outputFormat = 'csv', options, seed } = payload;
+  const { textSpec, rowCount, outputFormat = 'csv', options, seed, unsafeFakerExpressions } = payload;
   const concreteOutputFormat = String(outputFormat || 'csv').toLowerCase();
 
   if (!SUPPORTED_FORMATS.includes(String(outputFormat).toLowerCase())) {
@@ -293,7 +294,7 @@ function runGeneration(payload = {}) {
       outputFormat: concreteOutputFormat,
       options: effectiveOptions,
       seed: parsedSeed.seed,
-      unsafeFakerExpressions: true, // Allow complex faker expressions for API
+      unsafeFakerExpressions: unsafeFakerExpressions || false,
     });
     if (!result?.ok) {
       return { ok: false, ...toErrorResponse(result, 400) };
@@ -340,7 +341,13 @@ function sendGenerateResponse(req, res) {
     return res.status(400).json({ errors: modeResult.errors, diagnostics: {} });
   }
 
-  const generated = runGeneration({ ...(req.body || {}), acceptHeader: req.headers.accept });
+  // Allow unsafe expressions if globally enabled or explicitly requested
+  const allowUnsafe = globalUnsafeFakerEnabled || req.body?.unsafeFakerExpressions === true;
+  const generated = runGeneration({
+    ...(req.body || {}),
+    acceptHeader: req.headers.accept,
+    unsafeFakerExpressions: allowUnsafe,
+  });
   if (!generated.ok) {
     return res.status(generated.statusCode).json(generated.body);
   }
@@ -368,13 +375,14 @@ function sendGenerateResponse(req, res) {
 
 function buildFromSchemaPayload(req) {
   const textSpec = typeof req.body === 'string' ? req.body : '';
-  const { rowCount, outputFormat, seed, responseFormat } = req.query || {};
+  const { rowCount, outputFormat, seed, responseFormat, unsafeFakerExpressions } = req.query || {};
   return {
     textSpec,
     rowCount,
     outputFormat: outputFormat || 'csv',
     seed,
     responseFormat,
+    unsafeFakerExpressions: unsafeFakerExpressions === 'true',
   };
 }
 
@@ -391,7 +399,13 @@ function sendFromSchemaResponse(req, res) {
     return res.status(400).json({ errors: modeResult.errors, diagnostics: {} });
   }
 
-  const generated = runGeneration({ ...payload, acceptHeader: req.headers.accept });
+  // Allow unsafe expressions if globally enabled or explicitly requested via query param
+  const allowUnsafe = globalUnsafeFakerEnabled || payload.unsafeFakerExpressions === true;
+  const generated = runGeneration({
+    ...payload,
+    acceptHeader: req.headers.accept,
+    unsafeFakerExpressions: allowUnsafe,
+  });
   if (!generated.ok) {
     return res.status(generated.statusCode).json(generated.body);
   }
@@ -513,6 +527,19 @@ function parseCliPort(argv = []) {
   return undefined;
 }
 
+function parseUnsafeFaker(argv = []) {
+  for (let index = 0; index < argv.length; index += 1) {
+    const token = argv[index];
+    if (token === '--unsafe-faker' || token === '--unsafe-faker=true') {
+      return true;
+    }
+    if (token === '--unsafe-faker=false') {
+      return false;
+    }
+  }
+  return false;
+}
+
 function parsePortValue(rawPort, sourceLabel) {
   if (rawPort === undefined || rawPort === null || rawPort === '') {
     return { ok: false, error: `${sourceLabel} is empty.` };
@@ -563,6 +590,13 @@ async function startApiServer(
   expressApp,
   { argv = process.argv, env = process.env, logger = console.log, defaultPort = 3000 } = {}
 ) {
+  // Parse unsafe faker setting from command line
+  const unsafeFakerFromCli = parseUnsafeFaker(argv);
+  globalUnsafeFakerEnabled = unsafeFakerFromCli;
+  if (globalUnsafeFakerEnabled) {
+    logger('WARNING: Unsafe faker expressions enabled globally via command line');
+  }
+
   const portConfig = resolvePortConfiguration({ argv, env, defaultPort });
   if (!portConfig.ok) {
     return { ok: false, code: 'INVALID_PORT', message: portConfig.error };
@@ -662,4 +696,4 @@ if (isDirectRun) {
   }
 }
 
-export { app, parseCliPort, resolvePortConfiguration, startApiServer };
+export { app, parseCliPort, parseUnsafeFaker, resolvePortConfiguration, startApiServer };

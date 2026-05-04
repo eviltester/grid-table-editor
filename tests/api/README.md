@@ -96,10 +96,10 @@ datatype.number({"min": 18, "max": 65})
 
 ### View Test Results
 ```bash
-# Open HTML report (generated after test run)
+# Open HTML report (generated after local test runs)
 npx playwright show-report test-results/api-report
 
-# View JSON results
-cat test-results/api-results.json
+# JSON results are generated in CI when the JSON reporter is enabled
+# Local `npm run test:api` runs use the list and HTML reporters only
 ```
 

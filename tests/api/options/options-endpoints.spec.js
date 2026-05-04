@@ -85,9 +85,9 @@ test.describe('/v1/generate/options/{format} Endpoints', () => {
       expect(body).toHaveProperty('source', 'custom-default');
 
       // Verify the options were set
-      expect(body.options.options.header).toBe(false);
-      expect(body.options.options.quotes).toBe(true);
-      expect(body.options.options.quoteChar).toBe("'");
+      expect(body.options.header).toBe(false);
+      expect(body.options.quotes).toBe(true);
+      expect(body.options.quoteChar).toBe("'");
     });
 
     test('should set custom tips along with options', async ({ request }) => {
@@ -261,9 +261,9 @@ test.describe('/v1/generate/options/{format} Endpoints', () => {
 
       const body = await getResponse.json();
       expect(body.source).toBe('custom-default');
-      expect(body.options.options.header).toBe(false);
-      expect(body.options.options.quotes).toBe(true);
-      expect(body.options.options.quoteChar).toBe('|');
+      expect(body.options.header).toBe(false);
+      expect(body.options.quotes).toBe(true);
+      expect(body.options.quoteChar).toBe('|');
     });
 
     test('should maintain separate options for different formats', async ({ request }) => {

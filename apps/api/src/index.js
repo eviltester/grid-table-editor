@@ -185,7 +185,7 @@ function sanitiseOptionsForFormat(format, payload) {
       filteredOptions[key] = sourceOptions[key];
     }
   }
-  return { options: filteredOptions };
+  return filteredOptions;
 }
 
 function getTipsForFormat(format) {

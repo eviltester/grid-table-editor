@@ -12,7 +12,7 @@ module.exports = defineConfig({
   expect: {
     timeout: 15000,
   },
-  fullyParallel: true,
+  fullyParallel: false,
   retries: process.env.CI ? 2 : 1,
   reporter: process.env.CI 
     ? [['list'], ['json', { outputFile: 'test-results/api-results.json' }], ['html', { open: 'never', outputFolder: 'test-results/api-report' }]] 

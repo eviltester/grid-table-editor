@@ -251,7 +251,7 @@ Port behavior:
 
 Health check:
 
-`GET http://localhost:3000/health`
+`GET http://localhost:3000/v1/health`
 
 Generate data:
 
@@ -298,11 +298,11 @@ Notes:
 
 OpenAPI spec:
 
-`GET http://localhost:3000/openapi.json`
+`GET http://localhost:3000/v1/openapi.json`
 
 Swagger UI:
 
-`GET http://localhost:3000/docs`
+`GET http://localhost:3000/v1/docs`
 
 Example request body:
 
@@ -497,7 +497,7 @@ Then sent requests to:
 
 e.g.
 
-- `GET http://localhost:8082/health`
+- `GET http://localhost:8082/v1/health`
 - `GET http://localhost:8082/v1/generate/options/csv`
 
 Notes:

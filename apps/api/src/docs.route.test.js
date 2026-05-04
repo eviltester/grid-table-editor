@@ -23,8 +23,8 @@ function url(path) {
   return `http://127.0.0.1:${port}${path}`;
 }
 
-test('/openapi.json is available', async () => {
-  const response = await fetch(url('/openapi.json'));
+test('/v1/openapi.json is available', async () => {
+  const response = await fetch(url('/v1/openapi.json'));
   assert.equal(response.status, 200);
   const body = await response.json();
   assert.ok(body?.openapi);
@@ -32,8 +32,8 @@ test('/openapi.json is available', async () => {
   assert.ok(body?.paths?.['/v1/generate/options/{format}']);
 });
 
-test('/docs serves Swagger UI', async () => {
-  const response = await fetch(url('/docs'));
+test('/v1/docs serves Swagger UI', async () => {
+  const response = await fetch(url('/v1/docs'));
   assert.equal(response.status, 200);
   const html = await response.text();
   assert.match(html.toLowerCase(), /swagger/);

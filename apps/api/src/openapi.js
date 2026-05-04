@@ -7,7 +7,7 @@ const openApiDocument = {
   },
   servers: [{ url: '/' }],
   paths: {
-    '/health': {
+    '/v1/health': {
       get: {
         summary: 'Health check',
         responses: {

@@ -180,10 +180,51 @@ export function runFakerCommand(thisCommand, theseArguments, usingFaker, propert
     // First, try the safe approach (direct function calls)
     return runFakerCommandSafely(thisCommand, theseArguments, usingFaker, propertyAccessors);
   } catch (error) {
-    // If the safe approach fails, only allow unsafe expressions when explicitly enabled
+    // If the safe approach fails, handle different error types appropriately
     if (options.unsafeFakerExpressions !== true) {
-      // If unsafe expressions are not explicitly allowed, return a safety error
-      return errorResponse(`Unsafe faker rule syntax detected: ${error.message}`);
+      // For parse failures, check if it's due to dangerous patterns that should be properly handled
+      if (error?.message === 'NEEDS_FALLBACK') {
+        // Check if the arguments contain dangerous patterns - if so, let fallback handle them
+        const useArguments = theseArguments || '';
+        const dangerousPatterns = [
+          /require\s*\(/,
+          /process\./,
+          /eval\s*\(/,
+          /Function\s*\(/,
+          /constructor/,
+          /__proto__/,
+          /prototype\./,
+        ];
+
+        const hasDangerousPattern = dangerousPatterns.some(
+          (pattern) => pattern.test(useArguments) || pattern.test(thisCommand)
+        );
+
+        // Check if it's likely just simple arguments that should be allowed (like faker templates and arrays)
+        // These should be allowed even without unsafeFakerExpressions
+        const looksLikeSimpleArgs =
+          // Simple string arguments: ('string') or ('str1', 'str2')
+          /^\(\s*['"][^'"]*['"]\s*(?:,\s*['"][^'"]*['"]\s*)*\)$/.test(useArguments) ||
+          // Simple array arguments: (['item1', 'item2'])
+          /^\(\s*\[\s*['"][^'"]*['"]\s*(?:,\s*['"][^'"]*['"]\s*)*\s*\]\s*\)$/.test(useArguments) ||
+          // Simple number arguments: (42) or (1, 2, 3)
+          /^\(\s*\d+\s*(?:,\s*\d+\s*)*\)$/.test(useArguments) ||
+          // Empty arguments: ()
+          /^\(\s*\)$/.test(useArguments);
+
+        if (hasDangerousPattern) {
+          // Let the fallback function handle dangerous patterns properly
+          return runFakerCommandWithFallback(thisCommand, theseArguments, usingFaker, propertyAccessors, options);
+        } else if (looksLikeSimpleArgs) {
+          // Allow simple arguments (strings, arrays, numbers) to use fallback even without unsafe mode
+          return runFakerCommandWithFallback(thisCommand, theseArguments, usingFaker, propertyAccessors, options);
+        }
+
+        // For other complex syntax, return unsafe syntax error
+        return errorResponse(`Unsafe faker rule syntax detected: requires complex argument parsing`);
+      }
+      // For other errors (missing functions, bad property accessors), return original error
+      return errorResponse(error?.message || 'Error running faker command');
     }
     // If unsafe expressions are explicitly allowed, fall back to Function() with enhanced security
     return runFakerCommandWithFallback(thisCommand, theseArguments, usingFaker, propertyAccessors, options);

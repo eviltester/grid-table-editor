@@ -44,16 +44,26 @@ Published package options:
 
 ```bash
 npx -y @anywaydata/api
-# or
-npx -y anywaydata-api
+```
+
+Note: If `npx` fails on Windows, install globally instead:
+
+```bash
+npm install -g @anywaydata/api
+anywaydata-api
 ```
 
 Published package on a specific port:
 
 ```bash
 npx -y @anywaydata/api --port 3001
-# or
-npx -y anywaydata-api --port 3001
+```
+
+Note: If `npx` fails, use global installation instead:
+
+```bash
+npm install -g @anywaydata/api
+anywaydata-api --port 3001
 ```
 
 ## Local Run

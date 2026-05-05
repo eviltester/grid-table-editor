@@ -227,9 +227,9 @@ Run the published API package directly with `npx`:
 
 `npx -y @anywaydata/api`
 
-Or run it by binary name:
+Note: If `npx` fails on Windows, use direct execution instead:
 
-`npx -y anywaydata-api`
+`npm install -g @anywaydata/api && anywaydata-api`
 
 For interactive local development (foreground process with `Ctrl+C` stop), prefer:
 

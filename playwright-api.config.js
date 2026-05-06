@@ -16,7 +16,7 @@ module.exports = defineConfig({
   retries: process.env.CI ? 2 : 1,
   reporter: process.env.CI 
     ? [['list'], ['json', { outputFile: 'test-results/api-results.json' }], ['html', { open: 'never', outputFolder: 'test-results/api-report' }]] 
-    : [['list'], ['html', { open: 'on-failure', outputFolder: 'test-results/api-report' }]],
+    : [['list'], ['html', { open: 'never', outputFolder: 'test-results/api-report' }]],
   
   // API testing doesn't need browser contexts, only request contexts
   use: {

@@ -108,7 +108,7 @@ Built by [Alan Richardson](https://eviltester.com)
 
 Using:
 
-- [AG Grid](https://ag-grid.com) Community Edition
+- [Tabulator](https://tabulator.info) Data Grid
 - [RandExp.js](http://fent.github.io/randexp.js/)
 - [Faker.js](https://fakerjs.dev/)
 - [PapaParse](https://www.papaparse.com/)

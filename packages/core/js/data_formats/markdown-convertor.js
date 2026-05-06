@@ -191,7 +191,8 @@ class MarkdownConvertor {
 
   // make sure it is valid markdown
   getValidOutputFormatCellValue(data) {
-    return data.replaceAll('|', '&#124;');
+    // Convert to string first to handle non-string values (numbers, booleans, etc.)
+    return String(data).replaceAll('|', '&#124;');
   }
 
   formatCell(value, isHeader, index) {

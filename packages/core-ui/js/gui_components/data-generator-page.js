@@ -1,5 +1,6 @@
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 import { TestDataGenerator } from '@anywaydata/core/data_generation/testDataGenerator.js';
+import { PairwiseTestDataGenerator } from '@anywaydata/core/data_generation/all-pairs/pairwiseTestDataGenerator.js';
 import { Exporter } from '@anywaydata/core/grid/exporter.js';
 import { Download } from './download.js';
 import { GridExtension as TabulatorGridExtension } from './data-grid-editor/tabulator/gridExtension-tabulator.js';
@@ -27,9 +28,11 @@ import { getFakerCommandHelp } from './faker-command-help-metadata.js';
 const SOURCE_TYPE_FAKER = 'faker';
 const SOURCE_TYPE_REGEX = 'regex';
 const SOURCE_TYPE_LITERAL = 'literal';
+const SOURCE_TYPE_ENUM = 'enum';
 const REGEX_HELP_URL = 'https://anywaydata.com/docs/test-data/regex-test-data';
 const FAKER_HELP_URL = 'https://anywaydata.com/docs/test-data/faker-test-data';
 const LITERAL_HELP_URL = 'https://anywaydata.com/docs/category/generating-data';
+const ENUM_HELP_URL = 'https://anywaydata.com/docs/category/generating-data';
 
 function normaliseFakerCommand(commandValue) {
   const command = String(commandValue || '').trim();
@@ -43,7 +46,12 @@ function normaliseSourceType(sourceType) {
   const normalised = String(sourceType || '')
     .trim()
     .toLowerCase();
-  if (normalised === SOURCE_TYPE_FAKER || normalised === SOURCE_TYPE_REGEX || normalised === SOURCE_TYPE_LITERAL) {
+  if (
+    normalised === SOURCE_TYPE_FAKER ||
+    normalised === SOURCE_TYPE_REGEX ||
+    normalised === SOURCE_TYPE_LITERAL ||
+    normalised === SOURCE_TYPE_ENUM
+  ) {
     return normalised;
   }
   return SOURCE_TYPE_REGEX;
@@ -219,6 +227,7 @@ class DataGeneratorPage {
                         <select id="generatorOutputFormat"></select>
                       </label>
                       <button id="generateDataButton">Generate Data</button>
+                      <button id="generateAllPairsButton" style="display:none;">Generate Pairwise</button>
                       <div class="generator-options-wrapper">
                         <div id="generatorOptionsPanel" class="generator-options-panel"></div>
                         <div id="generatorStatusText" class="generator-status-text" aria-live="polite" role="status"></div>
@@ -308,6 +317,11 @@ class DataGeneratorPage {
     const generateDataButton = this.documentObj.getElementById('generateDataButton');
     generateDataButton.addEventListener('click', () => {
       void this.generateDataFile();
+    });
+
+    const generateAllPairsButton = this.documentObj.getElementById('generateAllPairsButton');
+    generateAllPairsButton.addEventListener('click', () => {
+      void this.generateAllPairsDataFile();
     });
 
     const outputFormat = this.documentObj.getElementById('generatorOutputFormat');
@@ -432,11 +446,16 @@ class DataGeneratorPage {
 
   setGenerationButtonBusy(isBusy) {
     const generateDataButton = this.documentObj.getElementById('generateDataButton');
-    if (!generateDataButton) {
-      return;
+    if (generateDataButton) {
+      generateDataButton.disabled = isBusy;
+      generateDataButton.setAttribute('aria-busy', isBusy ? 'true' : 'false');
     }
-    generateDataButton.disabled = isBusy;
-    generateDataButton.setAttribute('aria-busy', isBusy ? 'true' : 'false');
+
+    const generateAllPairsButton = this.documentObj.getElementById('generateAllPairsButton');
+    if (generateAllPairsButton) {
+      generateAllPairsButton.disabled = isBusy;
+      generateAllPairsButton.setAttribute('aria-busy', isBusy ? 'true' : 'false');
+    }
   }
 
   setGenerationStatus(message, isLoading = false) {
@@ -581,6 +600,7 @@ class DataGeneratorPage {
                     <option value="${SOURCE_TYPE_FAKER}" ${row.sourceType === SOURCE_TYPE_FAKER ? 'selected' : ''}>faker</option>
                     <option value="${SOURCE_TYPE_REGEX}" ${row.sourceType === SOURCE_TYPE_REGEX ? 'selected' : ''}>regex</option>
                     <option value="${SOURCE_TYPE_LITERAL}" ${row.sourceType === SOURCE_TYPE_LITERAL ? 'selected' : ''}>literal</option>
+                    <option value="${SOURCE_TYPE_ENUM}" ${row.sourceType === SOURCE_TYPE_ENUM ? 'selected' : ''}>enum</option>
                 </select>
                 ${
                   isFakerSource
@@ -622,6 +642,9 @@ class DataGeneratorPage {
     if (typeof window !== 'undefined' && typeof window.updateHelpHints === 'function') {
       window.updateHelpHints();
     }
+
+    // Update pairwise button visibility when schema rows change
+    this.updateAllPairsButtonVisibility();
   }
 
   handleRowInputChange(event) {
@@ -652,6 +675,9 @@ class DataGeneratorPage {
       row.command = normaliseFakerCommand(row.command);
       this.renderSchemaRows();
     }
+
+    // Update pairwise button visibility when schema changes
+    this.updateAllPairsButtonVisibility();
   }
 
   handleRowButtonClick(event) {
@@ -772,6 +798,11 @@ class DataGeneratorPage {
         rule.ruleSpec = row.value;
         return;
       }
+      if (row.sourceType === SOURCE_TYPE_ENUM) {
+        rule.type = SOURCE_TYPE_ENUM;
+        rule.ruleSpec = row.value;
+        return;
+      }
       rule.type = SOURCE_TYPE_REGEX;
       rule.ruleSpec = row.value;
     });
@@ -862,6 +893,111 @@ class DataGeneratorPage {
     }
   }
 
+  async generateAllPairsDataFile() {
+    const configured = this.createConfiguredGenerator();
+    if (configured.errors?.length > 0) {
+      this.alertFn(configured.errors.join('\n'));
+      return;
+    }
+
+    // Count enum columns
+    const enumCount = this.countEnumColumns();
+    if (enumCount < 2) {
+      this.alertFn('Pairwise generation requires at least 2 enum columns.');
+      return;
+    }
+
+    const type = this.getSelectedOutputType();
+    if (!this.exporter.canExport(type)) {
+      this.alertFn(`Output format ${type} is not supported.`);
+      return;
+    }
+
+    this.clearGenerationStatus();
+    this.setGenerationButtonBusy(true);
+    this.setGenerationStatus('Generating pairwise combinations...', true);
+
+    try {
+      const dataTable = this.buildAllPairsDataTable(configured.generator);
+      if (!dataTable) {
+        this.alertFn('Failed to generate pairwise data.');
+        this.setGenerationStatus('Pairwise generation failed.');
+        return;
+      }
+
+      let text = '';
+      if (typeof this.exporter.getDataTableAsAsync === 'function') {
+        text = await this.exporter.getDataTableAsAsync(type, dataTable, (message) => {
+          if (message) {
+            this.setGenerationStatus(message, true);
+          }
+        });
+      } else {
+        text = this.exporter.getDataTableAs(type, dataTable);
+      }
+
+      const filename = `all-pairs-data${this.exporter.getFileExtensionFor(type)}`;
+      const downloader = new this.DownloadClass(filename);
+      downloader.downloadFile(text);
+      this.setGenerationStatus(`Download ready: ${filename} (${dataTable.getRowCount()} combinations)`);
+      this.scheduleClearGenerationStatus();
+    } catch (error) {
+      console.error(error);
+      this.alertFn('Unable to generate pairwise data file.');
+      this.setGenerationStatus('Failed to generate pairwise data file.');
+    } finally {
+      this.setGenerationButtonBusy(false);
+    }
+  }
+
+  countEnumColumns() {
+    const { errors, rows } = validateSchemaRows(this.schemaRows);
+    if (errors.length > 0) {
+      return 0;
+    }
+    return rows.filter((row) => row.sourceType === SOURCE_TYPE_ENUM).length;
+  }
+
+  buildAllPairsDataTable(generator) {
+    try {
+      // Pass the same faker and RandExp instances used by the main generator
+      const pairwiseGenerator = new PairwiseTestDataGenerator(this.faker, this.RandExp);
+      const initResult = pairwiseGenerator.initializeFromRules(generator.testDataRules());
+
+      if (initResult.isError) {
+        console.error('Pairwise initialization error:', initResult.errorMessage);
+        return null;
+      }
+
+      const dataResult = pairwiseGenerator.generateAllDataRecordsAsRows();
+      if (dataResult.isError) {
+        console.error('Pairwise generation error:', dataResult.errorMessage);
+        return null;
+      }
+
+      // Convert to GenericDataTable format
+      const dataTable = new GenericDataTable();
+      const [headers, ...rows] = dataResult.data.data; // Access the nested data array
+      dataTable.setHeaders(headers);
+      rows.forEach((row) => {
+        dataTable.appendDataRow(row);
+      });
+
+      return dataTable;
+    } catch (error) {
+      console.error('Pairwise table creation error:', error);
+      return null;
+    }
+  }
+
+  updateAllPairsButtonVisibility() {
+    const enumCount = this.countEnumColumns();
+    const button = this.documentObj.getElementById('generateAllPairsButton');
+    if (button) {
+      button.style.display = enumCount >= 2 ? '' : 'none';
+    }
+  }
+
   escapeHtml(value) {
     return String(value ?? '')
       .replaceAll('&', '&amp;')
@@ -895,6 +1031,9 @@ class DataGeneratorPage {
     if (normalisedSourceType === SOURCE_TYPE_LITERAL) {
       return LITERAL_HELP_URL;
     }
+    if (normalisedSourceType === SOURCE_TYPE_ENUM) {
+      return ENUM_HELP_URL;
+    }
     return '';
   }
 
@@ -922,6 +1061,19 @@ class DataGeneratorPage {
           'Literal',
           'Literal data repeats the exact text you enter for every generated row.',
           LITERAL_HELP_URL
+        ),
+      };
+    }
+
+    if (normalisedSourceType === SOURCE_TYPE_ENUM) {
+      return {
+        show: true,
+        title: 'Enum data help',
+        docsUrl: ENUM_HELP_URL,
+        html: this.buildTypeHelpHtml(
+          'Enum',
+          'Enum values allow you to specify a list of discrete options. Use formats like "Red,Blue,Green" or "enum("Option1", "Option2")".',
+          ENUM_HELP_URL
         ),
       };
     }

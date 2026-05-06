@@ -104,7 +104,8 @@ class GherkinConvertor {
 
   // make sure it is valid gherkin
   getValidOutputFormatCellValue(data) {
-    return data.replaceAll('\\', '\\\\').replaceAll('|', '\\|');
+    // Convert to string first to handle non-string values (numbers, booleans, etc.)
+    return String(data).replaceAll('\\', '\\\\').replaceAll('|', '\\|');
   }
 
   // apply cell formatting style options

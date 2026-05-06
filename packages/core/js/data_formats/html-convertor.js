@@ -85,7 +85,8 @@ class HtmlConvertor {
   }
 
   validHTMLCellValue(data) {
-    return data.replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+    // Convert to string first to handle non-string values (numbers, booleans, etc.)
+    return String(data).replaceAll('<', '&lt;').replaceAll('>', '&gt;');
   }
 
   setOptions(newOptions) {

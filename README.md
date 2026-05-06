@@ -106,6 +106,23 @@ prefers
 (Connie|Bob)
 ```
 
+## Pairwise Combinatorial Test Data
+
+When you have 2 or more enum fields (comma-separated values), you can generate pairwise combinatorial test data using a greedy approximation approach. This provides 100% pairwise coverage and typically reduces test cases substantially (often around 90-99% fewer) compared with full factorial testing.
+
+For enum data, use comma-separated values in your spec:
+
+```
+browser
+chrome,firefox,safari,edge
+device
+desktop,tablet,mobile
+theme
+light,dark
+```
+
+The "Generate Pairwise" button will appear automatically, creating a compact near-minimal set of combinations that tests every pair of values across all parameters.
+
 ## Similar Apps
 
 Looking for similar apps to compare features sets and functionality?

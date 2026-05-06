@@ -429,7 +429,21 @@ class ImportExportControls {
     if (!type) {
       return;
     }
-    const subtaskElem = document.querySelector(`.subtask-select[data-types*="${type}"]`);
+
+    const supportsType = (elem) => {
+      const typesAttr = elem?.getAttribute?.('data-types') || '';
+      return typesAttr
+        .split(',')
+        .map((value) => value.trim())
+        .includes(type);
+    };
+
+    const activeSubtaskElem = document.querySelector('.subtask-select.active-type');
+    const subtaskElem =
+      activeSubtaskElem && supportsType(activeSubtaskElem)
+        ? activeSubtaskElem
+        : document.querySelector(`.subtask-select[data-types*="${type}"]`);
+
     if (subtaskElem) {
       subtaskElem.setAttribute('data-type', type);
       const actionElem = subtaskElem.querySelector('.subtask-select-action');

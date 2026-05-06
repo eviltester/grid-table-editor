@@ -394,6 +394,123 @@ describe('test framework convertor', () => {
     expect(inlineRendered).toMatch(/rows\.forEach \{ row ->/);
   });
 
+  test('junit5-kotlin is distinct from kotest and uses junit imports', () => {
+    const convertor = new TestFrameworkConvertor(new TestFrameworkConvertorOptions());
+    convertor.setFramework('junit5-kotlin');
+    convertor.setOptions({ options: { dataSourceStrategy: 'provider' } });
+    const junitKotlin = convertor.fromDataTable(makeTable());
+
+    convertor.setFramework('kotest');
+    const kotest = convertor.fromDataTable(makeTable());
+
+    expect(junitKotlin).toMatch(/import org\.junit\.jupiter\.params\.provider\.Arguments/);
+    expect(junitKotlin).toMatch(/@MethodSource\("rows"\)/);
+    expect(kotest).toMatch(/import io\.kotest\.core\.spec\.style\.StringSpec/);
+    expect(junitKotlin).not.toEqual(kotest);
+  });
+
+  test('nose2 is distinct from unittest and uses nose2 params conventions', () => {
+    const convertor = new TestFrameworkConvertor(new TestFrameworkConvertorOptions());
+    convertor.setFramework('nose2');
+    convertor.setOptions({ options: { dataSourceStrategy: 'provider' } });
+    const nose2 = convertor.fromDataTable(makeTable());
+
+    convertor.setFramework('unittest');
+    const unittest = convertor.fromDataTable(makeTable());
+
+    expect(nose2).toMatch(/from nose2\.tools import params/);
+    expect(nose2).toMatch(/@params\(\*row_provider\(\)\)/);
+    expect(nose2).not.toEqual(unittest);
+  });
+
+  test('mocha uses mocha/assert idioms distinct from jest', () => {
+    const convertor = new TestFrameworkConvertor(new TestFrameworkConvertorOptions());
+    convertor.setFramework('mocha');
+    const mocha = convertor.fromDataTable(makeTable());
+
+    convertor.setFramework('jest');
+    const jest = convertor.fromDataTable(makeTable());
+
+    expect(mocha).toMatch(/const assert = require\('node:assert\/strict'\)/);
+    expect(mocha).toMatch(/rows\.forEach\(\(row, index\) => \{/);
+    expect(mocha).not.toMatch(/test\.each/);
+    expect(mocha).not.toEqual(jest);
+  });
+
+  test('vitest uses vitest import/it.each idioms distinct from jest', () => {
+    const convertor = new TestFrameworkConvertor(new TestFrameworkConvertorOptions());
+    convertor.setFramework('vitest');
+    const vitest = convertor.fromDataTable(makeTable());
+
+    convertor.setFramework('jest');
+    const jest = convertor.fromDataTable(makeTable());
+
+    expect(vitest).toMatch(/from 'vitest'/);
+    expect(vitest).toMatch(/it\.each/);
+    expect(vitest).not.toEqual(jest);
+  });
+
+  test('nunit uses NUnit attributes and assertions', () => {
+    const convertor = new TestFrameworkConvertor(new TestFrameworkConvertorOptions());
+    convertor.setFramework('nunit');
+    const rendered = convertor.fromDataTable(makeTable());
+
+    expect(rendered).toMatch(/using NUnit\.Framework;/);
+    expect(rendered).toMatch(/\[TestCaseSource\(nameof\(Rows\)\)\]/);
+    expect(rendered).toMatch(/Assert\.AreEqual/);
+  });
+
+  test('mstest uses MSTest attributes and dynamic data', () => {
+    const convertor = new TestFrameworkConvertor(new TestFrameworkConvertorOptions());
+    convertor.setFramework('mstest');
+    const rendered = convertor.fromDataTable(makeTable());
+
+    expect(rendered).toMatch(/using Microsoft\.VisualStudio\.TestTools\.UnitTesting;/);
+    expect(rendered).toMatch(/\[DataTestMethod\]/);
+    expect(rendered).toMatch(/\[DynamicData\(nameof\(Rows\), DynamicDataSourceType\.Method\)\]/);
+  });
+
+  test('minitest uses minitest idioms distinct from rspec', () => {
+    const convertor = new TestFrameworkConvertor(new TestFrameworkConvertorOptions());
+    convertor.setFramework('minitest');
+    const minitest = convertor.fromDataTable(makeTable());
+
+    convertor.setFramework('rspec');
+    const rspec = convertor.fromDataTable(makeTable());
+
+    expect(minitest).toMatch(/require 'minitest\/autorun'/);
+    expect(minitest).toMatch(/< Minitest::Test/);
+    expect(minitest).toMatch(/assert_equal|assert\(/);
+    expect(minitest).not.toEqual(rspec);
+  });
+
+  test('pest uses pest test idioms distinct from phpunit', () => {
+    const convertor = new TestFrameworkConvertor(new TestFrameworkConvertorOptions());
+    convertor.setFramework('pest');
+    const pest = convertor.fromDataTable(makeTable());
+
+    convertor.setFramework('phpunit');
+    const phpunit = convertor.fromDataTable(makeTable());
+
+    expect(pest).toMatch(/it\('row parameterized'/);
+    expect(pest).toMatch(/->with\(rowProvider\(\)\)/);
+    expect(pest).toMatch(/expect\(\$actual\[/);
+    expect(pest).not.toEqual(phpunit);
+  });
+
+  test('spek uses spek structure distinct from kotest', () => {
+    const convertor = new TestFrameworkConvertor(new TestFrameworkConvertorOptions());
+    convertor.setFramework('spek');
+    const spek = convertor.fromDataTable(makeTable());
+
+    convertor.setFramework('kotest');
+    const kotest = convertor.fromDataTable(makeTable());
+
+    expect(spek).toMatch(/import org\.spekframework\.spek2\.Spek/);
+    expect(spek).toMatch(/describe\("/);
+    expect(spek).not.toEqual(kotest);
+  });
+
   test('test-more provider/inline data source strategies render different structures', () => {
     const convertor = new TestFrameworkConvertor(new TestFrameworkConvertorOptions());
     convertor.setFramework('test-more');

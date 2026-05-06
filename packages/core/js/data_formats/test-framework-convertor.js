@@ -820,84 +820,534 @@ function renderTestMore(model) {
 }
 
 function renderUnittest(model) {
-  return renderPyTest(model)
-    .replace('import pytest', 'import unittest')
-    .replace(/@pytest\.fixture[\s\S]*?def setup_context\(\):\n\s{4}return \{\}\n\n/g, '')
-    .replace(/@pytest\.mark\.parametrize\("([^"]+)", ([^)]+)\)\n/g, '')
-    .replace(/def test_[^(]+\(([^)]*)\):/, 'def test_parameterized(self):')
-    .replace(/def row_provider\(\):/g, 'def row_provider(self):')
-    .replace(/ROWS = /g, 'rows = ')
-    .replace(/expected = row/g, 'expected = row')
-    .replace(/actual = map_row_under_test\(row\)/g, 'actual = map_row_under_test(row)')
-    .replace(/assert\s/g, 'self.assertTrue(')
-    .replace(/\n/g, '\n')
-    .concat('\n\nif __name__ == "__main__":\n    unittest.main()');
+  const strictAssertions = isStrictAssertionStyle(model);
+  const assertionLines = model.headers.flatMap((header) => {
+    const valueAssertion = `            self.assertEqual(actual[${JSON.stringify(header)}], expected[${JSON.stringify(header)}])`;
+    if (!strictAssertions) {
+      return [valueAssertion];
+    }
+    return [
+      valueAssertion,
+      `            self.assertIs(type(actual[${JSON.stringify(header)}]), type(expected[${JSON.stringify(header)}]))`,
+    ];
+  });
+  const rowData = formatRowCollection(model.rows, pythonValue, model.prettyPrint, '        ');
+  const setupLines = model.includeSetup ? ['    def setUp(self):', '        self.setup_context = {}', ''] : [];
+  const providerLines =
+    model.dataSourceStrategy === 'provider'
+      ? ['    @staticmethod', '    def row_provider():', `        return ${rowData}`, '']
+      : [`    ROWS = ${rowData}`, ''];
+  const rowsExpression = model.dataSourceStrategy === 'provider' ? 'self.row_provider()' : 'self.ROWS';
+  const lines = [
+    'import unittest',
+    '',
+    'def map_row_under_test(row):',
+    '    # Example: return normalize_person(row)',
+    '    return row  # replace with your system-under-test call',
+    '',
+    `class ${model.suiteName}(unittest.TestCase):`,
+    ...setupLines,
+    ...providerLines,
+    `    def test_${model.testNamePrefix}_parameterized(self):`,
+    `        for ${model.testNamePrefix} in ${rowsExpression}:`,
+    `            expected = ${model.testNamePrefix}`,
+    `            actual = map_row_under_test(${model.testNamePrefix})`,
+    ...assertionLines,
+    '',
+    "if __name__ == '__main__':",
+    '    unittest.main()',
+  ];
+  return lines.join('\n');
 }
 
 function renderNose2(model) {
-  return renderUnittest(model);
+  const strictAssertions = isStrictAssertionStyle(model);
+  const assertionLines = model.headers.flatMap((header) => {
+    const valueAssertion = `        self.assertEqual(actual[${JSON.stringify(header)}], expected[${JSON.stringify(header)}])`;
+    if (!strictAssertions) {
+      return [valueAssertion];
+    }
+    return [
+      valueAssertion,
+      `        self.assertIs(type(actual[${JSON.stringify(header)}]), type(expected[${JSON.stringify(header)}]))`,
+    ];
+  });
+  const rowData = formatRowCollection(model.rows, pythonValue, model.prettyPrint, '    ');
+  const setupLines = model.includeSetup ? ['    def setUp(self):', '        self.setup_context = {}', ''] : [];
+  const providerLines =
+    model.dataSourceStrategy === 'provider'
+      ? ['def row_provider():', `    return ${rowData}`, '']
+      : [`ROWS = ${rowData}`, ''];
+  const paramsExpression = model.dataSourceStrategy === 'provider' ? 'row_provider()' : 'ROWS';
+  const lines = [
+    'import unittest',
+    'from nose2.tools import params',
+    '',
+    'def map_row_under_test(row):',
+    '    # Example: return normalize_person(row)',
+    '    return row  # replace with your system-under-test call',
+    '',
+    ...providerLines,
+    `class ${model.suiteName}(unittest.TestCase):`,
+    ...setupLines,
+    `    @params(*${paramsExpression})`,
+    `    def test_${model.testNamePrefix}_parameterized(self, ${model.testNamePrefix}):`,
+    `        expected = ${model.testNamePrefix}`,
+    `        actual = map_row_under_test(${model.testNamePrefix})`,
+    ...assertionLines,
+    '',
+    "if __name__ == '__main__':",
+    '    unittest.main()',
+  ];
+  return lines.join('\n');
 }
 
 function renderVitest(model) {
-  return renderJest(model).replace(/test\.each/g, 'it.each');
+  const rowData = formatRowCollection(model.rows, jsValue, model.prettyPrint, '  ');
+  const assertionMethod = isStrictAssertionStyle(model) ? 'toStrictEqual' : 'toEqual';
+  const setupLines = model.includeSetup ? ['  beforeEach(() => {', '    // setup', '  });', ''] : [];
+  if (model.dataSourceStrategy === 'provider') {
+    const providerLines = [
+      "import { describe, it, expect, beforeEach } from 'vitest';",
+      '',
+      `const getRows = () => ${rowData};`,
+      'const mapRowUnderTest = (row) => {',
+      '  // Example: return normalizePerson(row);',
+      '  return row; // replace with your system-under-test call',
+      '};',
+      '',
+      `describe('${model.suiteName}', () => {`,
+      ...setupLines,
+      `  it.each(getRows())('${model.testNamePrefix} parameterized', (row) => {`,
+      '    const expected = row;',
+      '    const actual = mapRowUnderTest(row);',
+      ...model.headers.map(
+        (header) =>
+          `    expect(actual[${JSON.stringify(header)}]).${assertionMethod}(expected[${JSON.stringify(header)}]);`
+      ),
+      '  });',
+      '});',
+    ];
+    return providerLines.join('\n');
+  }
+  const lines = [
+    "import { describe, it, expect, beforeEach } from 'vitest';",
+    '',
+    `const rows = ${rowData};`,
+    'const mapRowUnderTest = (row) => {',
+    '  // Example: return normalizePerson(row);',
+    '  return row; // replace with your system-under-test call',
+    '};',
+    '',
+    `describe('${model.suiteName}', () => {`,
+    ...setupLines,
+    `  it.each(rows)('${model.testNamePrefix} parameterized', (row) => {`,
+    '    const expected = row;',
+    '    const actual = mapRowUnderTest(row);',
+    ...model.headers.map(
+      (header) =>
+        `    expect(actual[${JSON.stringify(header)}]).${assertionMethod}(expected[${JSON.stringify(header)}]);`
+    ),
+    '  });',
+    '});',
+  ];
+  return lines.join('\n');
 }
 
 function renderMocha(model) {
-  return renderJest(model)
-    .replace("describe('", "describe('")
-    .replace(/test\.each\(([^)]+)\)\('([^']+)'/g, "$1.forEach((row) => { it('$2'")
-    .replace(/expect\(([^)]+)\)\.toStrictEqual\(([^)]+)\);/g, "require('assert').deepStrictEqual($1, $2);")
-    .replace(/expect\(([^)]+)\)\.toEqual\(([^)]+)\);/g, "require('assert').deepEqual($1, $2);")
-    .replace(/\n\s*\}\);\n\}\);\n$/m, '\n  });\n});\n');
+  const rowData = formatRowCollection(model.rows, jsValue, model.prettyPrint, '  ');
+  const assertMethod = isStrictAssertionStyle(model) ? 'deepStrictEqual' : 'deepEqual';
+  const setupLines = model.includeSetup ? ['  beforeEach(() => {', '    // setup', '  });', ''] : [];
+  const rowsBinding =
+    model.dataSourceStrategy === 'provider'
+      ? [`const getRows = () => ${rowData};`, 'const rows = getRows();']
+      : [`const rows = ${rowData};`];
+  const lines = [
+    "const assert = require('node:assert/strict');",
+    '',
+    ...rowsBinding,
+    'const mapRowUnderTest = (row) => {',
+    '  // Example: return normalizePerson(row);',
+    '  return row; // replace with your system-under-test call',
+    '};',
+    '',
+    `describe('${model.suiteName}', () => {`,
+    ...setupLines,
+    '  rows.forEach((row, index) => {',
+    `    it(\`${model.testNamePrefix} parameterized \${index}\`, () => {`,
+    '      const expected = row;',
+    '      const actual = mapRowUnderTest(row);',
+    ...model.headers.map(
+      (header) =>
+        `      assert.${assertMethod}(actual[${JSON.stringify(header)}], expected[${JSON.stringify(header)}]);`
+    ),
+    '    });',
+    '  });',
+    '});',
+  ];
+  return lines.join('\n');
 }
 
 function renderNunit(model) {
-  return renderXunit(model)
-    .replace('using Xunit;', 'using NUnit.Framework;')
-    .replace(/\[Theory\]/g, '[Test]')
-    .replace(/\[MemberData\(nameof\(Rows\)\)\]\n/g, '')
-    .replace(/Assert\.Equal/g, 'Assert.AreEqual')
-    .replace(/Assert\.True/g, 'Assert.That');
+  const strictAssertions = isStrictAssertionStyle(model);
+  const assertLine = (index, header) =>
+    strictAssertions
+      ? `            Assert.AreEqual(expected[${index}], actual[${index}], "${header}");`
+      : `            Assert.That(object.Equals(expected[${index}], actual[${index}]), Is.True, "${header}");`;
+  const setupLines = model.includeSetup
+    ? ['    [SetUp]', '    public void SetUp() {', '        // setup', '    }', '']
+    : [];
+  const inlineRows = model.rows.map(
+    (row) =>
+      `        new object[] { ${Object.values(row)
+        .map((value) => jsValue(value))
+        .join(', ')} }`
+  );
+  const lines = [
+    'using System.Collections.Generic;',
+    'using NUnit.Framework;',
+    '',
+    `public class ${model.suiteName}`,
+    '{',
+    ...setupLines,
+    ...(model.dataSourceStrategy === 'provider'
+      ? [
+          '    public static IEnumerable<object[]> Rows()',
+          '    {',
+          '        return new[]',
+          '        {',
+          ...model.rows.map(
+            (row) =>
+              `            new object[] { ${Object.values(row)
+                .map((value) => jsValue(value))
+                .join(', ')} },`
+          ),
+          '        };',
+          '    }',
+          '',
+          '    [TestCaseSource(nameof(Rows))]',
+          `    public void ${model.testNamePrefix}_parameterized(params object[] row)`,
+          '    {',
+          '        var expected = row;',
+          '        var actual = MapRowUnderTest(row);',
+          ...model.headers.map((header, index) => assertLine(index, header)),
+          '    }',
+        ]
+      : [
+          '    private static readonly object[][] Rows = new object[][]',
+          '    {',
+          inlineRows.join(',\n'),
+          '    };',
+          '',
+          '    [Test]',
+          `    public void ${model.testNamePrefix}_parameterized()`,
+          '    {',
+          '        foreach (var row in Rows)',
+          '        {',
+          '            var expected = row;',
+          '            var actual = MapRowUnderTest(row);',
+          ...model.headers.map((header, index) => assertLine(index, header)),
+          '        }',
+          '    }',
+        ]),
+    '',
+    '    private object[] MapRowUnderTest(object[] input)',
+    '    {',
+    '        // Example: return PersonMapper.Normalize(input);',
+    '        return input; // replace with your system-under-test call',
+    '    }',
+    '}',
+  ];
+  return lines.join('\n');
 }
 
 function renderMsTest(model) {
-  return renderXunit(model)
-    .replace('using Xunit;', 'using Microsoft.VisualStudio.TestTools.UnitTesting;')
-    .replace(/\[Theory\]/g, '[TestMethod]')
-    .replace(/\[MemberData\(nameof\(Rows\)\)\]\n/g, '')
-    .replace(/Assert\.Equal/g, 'Assert.AreEqual')
-    .replace(/Assert\.True/g, 'Assert.IsTrue');
+  const strictAssertions = isStrictAssertionStyle(model);
+  const assertLine = (index, header) =>
+    strictAssertions
+      ? `            Assert.AreEqual(expected[${index}], actual[${index}], "${header}");`
+      : `            Assert.IsTrue(object.Equals(expected[${index}], actual[${index}]), "${header}");`;
+  const setupLines = model.includeSetup
+    ? ['    [TestInitialize]', '    public void SetUp() {', '        // setup', '    }', '']
+    : [];
+  const inlineRows = model.rows.map(
+    (row) =>
+      `        new object[] { ${Object.values(row)
+        .map((value) => jsValue(value))
+        .join(', ')} }`
+  );
+  const lines = [
+    'using System.Collections.Generic;',
+    'using Microsoft.VisualStudio.TestTools.UnitTesting;',
+    '',
+    '[TestClass]',
+    `public class ${model.suiteName}`,
+    '{',
+    ...setupLines,
+    ...(model.dataSourceStrategy === 'provider'
+      ? [
+          '    public static IEnumerable<object[]> Rows()',
+          '    {',
+          '        return new[]',
+          '        {',
+          ...model.rows.map(
+            (row) =>
+              `            new object[] { ${Object.values(row)
+                .map((value) => jsValue(value))
+                .join(', ')} },`
+          ),
+          '        };',
+          '    }',
+          '',
+          '    [DataTestMethod]',
+          '    [DynamicData(nameof(Rows), DynamicDataSourceType.Method)]',
+          `    public void ${model.testNamePrefix}_parameterized(params object[] row)`,
+          '    {',
+          '        var expected = row;',
+          '        var actual = MapRowUnderTest(row);',
+          ...model.headers.map((header, index) => assertLine(index, header)),
+          '    }',
+        ]
+      : [
+          '    private static readonly object[][] Rows = new object[][]',
+          '    {',
+          inlineRows.join(',\n'),
+          '    };',
+          '',
+          '    [TestMethod]',
+          `    public void ${model.testNamePrefix}_parameterized()`,
+          '    {',
+          '        foreach (var row in Rows)',
+          '        {',
+          '            var expected = row;',
+          '            var actual = MapRowUnderTest(row);',
+          ...model.headers.map((header, index) => assertLine(index, header)),
+          '        }',
+          '    }',
+        ]),
+    '',
+    '    private object[] MapRowUnderTest(object[] input)',
+    '    {',
+    '        // Example: return PersonMapper.Normalize(input);',
+    '        return input; // replace with your system-under-test call',
+    '    }',
+    '}',
+  ];
+  return lines.join('\n');
 }
 
 function renderMiniTest(model) {
-  return renderRspec(model)
-    .replace(`RSpec.describe '${model.suiteName}' do`, `class ${model.suiteName} < Minitest::Test`)
-    .replace(/^/m, "require 'minitest/autorun'\n\n")
-    .replace(/it '([^']+)' do/, 'def test_$1')
-    .replace(/expect\(([^)]+)\)\.to eql\(([^)]+)\)/g, 'assert_equal($2, $1)')
-    .replace(/expect\(([^)]+)\)\.to eq\(([^)]+)\)/g, 'assert(($1) == ($2))')
-    .replace(/^end$/m, 'end');
+  const strictAssertions = isStrictAssertionStyle(model);
+  const rowData = formatRowCollection(model.rows, rubyValue, model.prettyPrint, '    ');
+  const setupLines = model.includeSetup ? ['  def setup', '    @setup_context = {}', '  end', ''] : [];
+  const lines = [
+    "require 'minitest/autorun'",
+    '',
+    'def map_row_under_test(row)',
+    '  # Example: PersonNormalizer.normalize(row)',
+    '  row # replace with your system-under-test call',
+    'end',
+    '',
+    `class ${model.suiteName} < Minitest::Test`,
+    ...setupLines,
+    ...(model.dataSourceStrategy === 'provider'
+      ? ['  def row_provider', `    ${rowData.replace(/\n/g, '\n    ')}`, '  end', '']
+      : [`  ROWS = ${rowData}`, '']),
+    `  def test_${model.testNamePrefix}_parameterized`,
+    model.dataSourceStrategy === 'provider' ? '    rows = row_provider' : '    rows = ROWS',
+    '    rows.each do |row|',
+    '      expected = row',
+    '      actual = map_row_under_test(row)',
+    ...model.headers.map((header) =>
+      strictAssertions
+        ? `      assert_equal(expected[${JSON.stringify(header)}], actual[${JSON.stringify(header)}], '${model.testNamePrefix} ${header}')`
+        : `      assert(actual[${JSON.stringify(header)}] == expected[${JSON.stringify(header)}], '${model.testNamePrefix} ${header}')`
+    ),
+    '    end',
+    '  end',
+    'end',
+  ];
+  return lines.join('\n');
 }
 
 function renderPest(model) {
-  const phpunit = renderPhpUnit(model);
-  return phpunit
-    .replace(
-      '<?php\n\nuse PHPUnit\\Framework\\TestCase;\n\nfinal class',
-      "<?php\n\nit('row parameterized', function (...$row): void {"
-    )
-    .replace(/final class[\s\S]*?{[\s\S]*?public static function rowProvider\(\): array\s*{/, '')
-    .replace(/\}\s*$/, '});');
+  const assertionMethod = isStrictAssertionStyle(model)
+    ? 'expect($actual[%i])->toBe($expected[%i]);'
+    : 'expect($actual[%i])->toEqual($expected[%i]);';
+  const rowData = model.rows.map(
+    (row) =>
+      `    [${Object.values(row)
+        .map((value) => phpValue(value))
+        .join(', ')}]`
+  );
+  const headerAssertions = model.headers.map((_, index) => assertionMethod.replaceAll('%i', String(index)));
+  const lines = [
+    '<?php',
+    '',
+    'function mapRowUnderTest(array $row): array',
+    '{',
+    '    // Example: return PersonMapper::normalize($row);',
+    '    return $row; // replace with your system-under-test call',
+    '}',
+    '',
+    ...(model.dataSourceStrategy === 'provider'
+      ? [
+          'function rowProvider(): array',
+          '{',
+          '    return [',
+          rowData.join(',\n'),
+          '    ];',
+          '}',
+          '',
+          `it('${model.testNamePrefix} parameterized', function (array $row): void {`,
+          '    $expected = $row;',
+          '    $actual = mapRowUnderTest($row);',
+          ...headerAssertions.map((line) => `    ${line}`),
+          '})->with(rowProvider());',
+        ]
+      : [
+          '$rows = [',
+          rowData.join(',\n'),
+          '];',
+          '',
+          `it('${model.testNamePrefix} parameterized', function (): void {`,
+          '    foreach ($rows as $row) {',
+          '        $expected = $row;',
+          '        $actual = mapRowUnderTest($row);',
+          ...headerAssertions.map((line) => `        ${line}`),
+          '    }',
+          '});',
+        ]),
+  ];
+  return lines.join('\n');
 }
 
 function renderJUnit5Kotlin(model) {
-  return renderKotest(model).replace('StringSpec', 'StringSpec');
+  const safeIdentifier = (value) => {
+    const raw = value == null ? '' : String(value);
+    const normalized = raw
+      .replace(/[^A-Za-z0-9_]/g, '_')
+      .replace(/^[^A-Za-z_]/, '_$&')
+      .replace(/_+/g, '_')
+      .replace(/^_+/, '');
+    return normalized || 'value';
+  };
+  const rowsData = formatRowCollection(model.rows, jsValue, model.prettyPrint, '        ');
+  const strictAssertions = isStrictAssertionStyle(model);
+  const assertionLines = model.headers.flatMap((header) => {
+    if (strictAssertions) {
+      return [
+        `        assertEquals(expected[${JSON.stringify(header)}], actual[${JSON.stringify(header)}])`,
+        `        assertEquals(expected[${JSON.stringify(header)}]?.let { it::class }, actual[${JSON.stringify(header)}]?.let { it::class })`,
+      ];
+    }
+    return [
+      `        assertTrue(Objects.equals(expected[${JSON.stringify(header)}], actual[${JSON.stringify(header)}]))`,
+    ];
+  });
+  const setupLines = model.includeSetup
+    ? ['    @BeforeEach', '    fun setup() {', '        // setup', '    }', '']
+    : [];
+  const providerLines = [
+    '    companion object {',
+    '        @JvmStatic',
+    '        fun rows(): Stream<Arguments> = Stream.of(',
+    model.rows
+      .map((row) => `            Arguments.of(${model.headers.map((header) => jsValue(row[header])).join(', ')})`)
+      .join(',\n'),
+    '        )',
+    '    }',
+    '',
+  ];
+  const inlineLines = [`    private val rows = ${rowsData}`, ''];
+  const lines = [
+    'import org.junit.jupiter.api.Assertions.assertEquals',
+    'import org.junit.jupiter.api.Assertions.assertTrue',
+    'import org.junit.jupiter.api.BeforeEach',
+    'import org.junit.jupiter.api.Test',
+    'import org.junit.jupiter.params.ParameterizedTest',
+    'import org.junit.jupiter.params.provider.Arguments',
+    ...(model.dataSourceStrategy === 'provider' ? ['import org.junit.jupiter.params.provider.MethodSource'] : []),
+    'import java.util.Objects',
+    'import java.util.stream.Stream',
+    '',
+    `class ${model.suiteName} {`,
+    ...setupLines,
+    '    private fun mapRowUnderTest(row: Map<String, Any?>): Map<String, Any?> {',
+    '        // Example: PersonMapper.normalize(row)',
+    '        return row // replace with your system-under-test call',
+    '    }',
+    '',
+    ...(model.dataSourceStrategy === 'provider' ? providerLines : inlineLines),
+    ...(model.dataSourceStrategy === 'provider'
+      ? [
+          `    @ParameterizedTest(name = "${model.testNamePrefix} {index}")`,
+          '    @MethodSource("rows")',
+          `    fun ${safeIdentifier(model.testNamePrefix)}Parameterized(${model.headers
+            .map((header) => `${safeIdentifier(header)}: Any?`)
+            .join(', ')}) {`,
+          `        val expected = mapOf(${model.headers.map((header) => `${JSON.stringify(header)} to ${safeIdentifier(header)}`).join(', ')})`,
+          '        val actual = mapRowUnderTest(expected)',
+          ...assertionLines,
+          '    }',
+        ]
+      : [
+          '    @Test',
+          `    fun ${safeIdentifier(model.testNamePrefix)}ParameterizedInline() {`,
+          '        rows.forEach { row ->',
+          '            val expected = row',
+          '            val actual = mapRowUnderTest(row)',
+          ...assertionLines,
+          '        }',
+          '    }',
+        ]),
+    '}',
+  ];
+  return lines.join('\n');
 }
 
 function renderSpek(model) {
-  return renderKotest(model)
-    .replace('import io.kotest.core.spec.style.StringSpec', 'import org.spekframework.spek2.Spek')
-    .replace(`class ${model.suiteName} : StringSpec({`, `object ${model.suiteName} : Spek({`);
+  const strictAssertions = isStrictAssertionStyle(model);
+  const rowData = formatRowCollection(model.rows, jsValue, model.prettyPrint, '            ');
+  const assertionLines = model.headers.flatMap((header) => {
+    const valueAssertion = `                    assertEquals(expected[${JSON.stringify(header)}], actual[${JSON.stringify(header)}])`;
+    if (!strictAssertions) {
+      return [valueAssertion];
+    }
+    return [
+      valueAssertion,
+      `                    assertEquals(expected[${JSON.stringify(header)}]?.let { it::class }, actual[${JSON.stringify(header)}]?.let { it::class })`,
+    ];
+  });
+  const lines = [
+    'import kotlin.test.assertEquals',
+    'import org.spekframework.spek2.Spek',
+    'import org.spekframework.spek2.style.specification.describe',
+    '',
+    `object ${model.suiteName} : Spek({`,
+    ...(model.includeSetup ? ['    beforeEachTest {', '        // setup', '    }', ''] : []),
+    '    fun mapRowUnderTest(row: Map<String, Any?>): Map<String, Any?> {',
+    '        // Example: PersonMapper.normalize(row)',
+    '        return row // replace with your system-under-test call',
+    '    }',
+    '',
+    ...(model.dataSourceStrategy === 'provider'
+      ? ['    fun rowProvider() = ' + rowData, '']
+      : ['    val rows = ' + rowData, '']),
+    `    describe("${model.testNamePrefix} parameterized") {`,
+    model.dataSourceStrategy === 'provider'
+      ? '        rowProvider().forEachIndexed { index, row ->'
+      : '        rows.forEachIndexed { index, row ->',
+    '            it("row $index") {',
+    '                val expected = row',
+    '                val actual = mapRowUnderTest(row)',
+    ...assertionLines,
+    '            }',
+    '        }',
+    '    }',
+    '})',
+  ];
+  return lines.join('\n');
 }
 
 function renderTest2Suite(model) {

@@ -15,8 +15,9 @@ import { runFakerCommand } from './fakerCommandRunner.js';
  */
 
 export class FakerCommand {
-  constructor(aCommand) {
+  constructor(aCommand, options = {}) {
     this.givenCommand = aCommand;
+    this.options = options;
 
     this.fakerFunctionCallHasArgs = false;
     this.fakerFunctionName = '';
@@ -169,7 +170,8 @@ export class FakerCommand {
       this.fakerFunctionName,
       this.fakerFunctionCallHasArgs ? this.fakerFunctionCallArgs : null,
       usingFaker,
-      this.propertyAccessors
+      this.propertyAccessors,
+      this.options
     );
   }
 

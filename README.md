@@ -106,6 +106,23 @@ prefers
 (Connie|Bob)
 ```
 
+## Pairwise Combinatorial Test Data
+
+When you have 2 or more enum fields (comma-separated values), you can generate pairwise combinatorial test data using a greedy approximation approach. This provides 100% pairwise coverage and typically reduces test cases substantially (often around 90-99% fewer) compared with full factorial testing.
+
+For enum data, use comma-separated values in your spec:
+
+```
+browser
+chrome,firefox,safari,edge
+device
+desktop,tablet,mobile
+theme
+light,dark
+```
+
+The "Generate Pairwise" button will appear automatically, creating a compact near-minimal set of combinations that tests every pair of values across all parameters.
+
 ## Similar Apps
 
 Looking for similar apps to compare features sets and functionality?
@@ -227,9 +244,9 @@ Run the published API package directly with `npx`:
 
 `npx -y @anywaydata/api`
 
-Or run it by binary name:
+Note: If `npx` fails on Windows, use direct execution instead:
 
-`npx -y anywaydata-api`
+`npm install -g @anywaydata/api && anywaydata-api`
 
 For interactive local development (foreground process with `Ctrl+C` stop), prefer:
 
@@ -251,7 +268,7 @@ Port behavior:
 
 Health check:
 
-`GET http://localhost:3000/health`
+`GET http://localhost:3000/v1/health`
 
 Generate data:
 
@@ -298,11 +315,11 @@ Notes:
 
 OpenAPI spec:
 
-`GET http://localhost:3000/openapi.json`
+`GET http://localhost:3000/v1/openapi.json`
 
 Swagger UI:
 
-`GET http://localhost:3000/docs`
+`GET http://localhost:3000/v1/docs`
 
 Example request body:
 
@@ -313,6 +330,62 @@ Example request body:
   "outputFormat": "json"
 }
 ```
+
+## Security: Unsafe Faker Expressions
+
+For security, complex faker expressions that use `eval`-like functionality are disabled by default. The API uses a hybrid approach that tries safe method calls first, then falls back to secure execution when needed.
+
+### Enable Unsafe Expressions Globally
+
+Start the API with unsafe expressions enabled for all requests:
+
+```bash
+# Via command line flag
+node apps/api/src/index.js --unsafe-faker
+
+# Or via npm workspace
+npm run start --workspace @anywaydata/api -- --unsafe-faker
+
+# Or via npx
+npx -y @anywaydata/api --unsafe-faker
+```
+
+### Enable Unsafe Expressions Per Request
+
+Add `unsafeFakerExpressions: true` to individual requests:
+
+```json
+{
+  "textSpec": "Name\nperson.firstName\nScore\nnumber.int({\"min\": 18, \"max\": 65})",
+  "rowCount": 5,
+  "outputFormat": "json",
+  "unsafeFakerExpressions": true
+}
+```
+
+For `/fromschema` endpoint, use the query parameter:
+
+```
+POST /v1/generate/fromschema?rowCount=10&unsafeFakerExpressions=true
+```
+
+### Security Details
+
+- **Safe by default**: Most faker expressions use direct method calls without eval
+- **Hybrid approach**: Tries safe `.apply()` method first, falls back to `Function()` constructor with security filtering
+- **Expression patterns blocked**: `process`, `require`, `import`, `eval`, `__`, `constructor`, `prototype`
+- **Granular control**: Enable globally via CLI or per-request via parameter
+
+Examples of expressions that work safely without the flag:
+
+- `person.firstName` or `person.firstName()`
+- `number.int({"min": 10, "max": 100})`
+- `helpers.arrayElement(["red", "green", "blue"])`
+
+Examples that require the unsafe flag:
+
+- `() => this.person.firstName()` (arrow functions with `this`)
+- `{count: () => \`${this.number.int()}\`}` (template literals)
 
 ## MCP Quick Start
 
@@ -497,7 +570,7 @@ Then sent requests to:
 
 e.g.
 
-- `GET http://localhost:8082/health`
+- `GET http://localhost:8082/v1/health`
 - `GET http://localhost:8082/v1/generate/options/csv`
 
 Notes:

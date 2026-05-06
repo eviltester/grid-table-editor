@@ -18,7 +18,9 @@ Add a new column by pressing the `+ Add Column` button.
 
 You can rename the column by double clicking on the `Column Name` field.
 
-The Type is the `type` of data that will be generated in the column. This can be a `Literal` (static text), a `RegEx` (Regular Expression), or one of the predefined random data types from Faker.
+The Type is the `type` of data that will be generated in the column. This can be a `Literal` (static text), a `RegEx` (Regular Expression), an `Enum` (comma-separated values), or one of the predefined random data types from Faker.
+
+When you have 2 or more `Enum` type columns, the `Generate Pairwise` button will appear, allowing you to generate optimal combinatorial test data with complete pairwise coverage.
 
 ## Types
 
@@ -63,5 +65,6 @@ When no type is present it is assumed to be a Regex e.g. `1234` is a Regex that 
 ## Learn More About Types
 
 - [Literal Data](/docs/test-data/literal-test-data)
-- [Regex Based Data](/docs/test-data/regex-test-data)
+- [Regex Based Data](/docs/test-data/regex-test-data)  
 - [Faker Based Data](/docs/test-data/faker-test-data)
+- [All Pairs Combinatorial Testing](/docs/test-data/pairwise-testing) - Generate optimal test combinations from enum data

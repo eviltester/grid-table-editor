@@ -182,21 +182,8 @@ export function generateFromTextSpec({
     return { ok: false, errors, diagnostics: { supportedFormats: SUPPORTED_FORMATS } };
   }
 
-  if (!unsafeFakerExpressions) {
-    const safetyValidation = validateSafeFakerRules(textSpec);
-    if (!safetyValidation.ok) {
-      return {
-        ok: false,
-        errors: [safetyValidation.error],
-        diagnostics: {
-          report: 'Rejected unsafe faker expression syntax',
-        },
-      };
-    }
-  }
-
   const scopedFaker = createScopedFaker(seed);
-  const generator = new TestDataGenerator(scopedFaker, RandExp);
+  const generator = new TestDataGenerator(scopedFaker, RandExp, { unsafeFakerExpressions });
   generator.importSpec(textSpec);
   generator.compile();
 

@@ -11,12 +11,13 @@ import { TestDataRulesCompiler } from './testDataRulesCompiler.js';
     then be compiled and could then generate.
 */
 export class TestDataGenerator {
-  constructor(aFaker, aRandExp) {
+  constructor(aFaker, aRandExp, options = {}) {
     this.faker = aFaker;
     this.RandExp = aRandExp;
-    this.rulesParser = new RulesParser(aFaker, aRandExp);
-    this.generator = new RulesBasedDataGenerator(aFaker, aRandExp);
-    this.compiler = new TestDataRulesCompiler(aFaker, aRandExp);
+    this.options = options;
+    this.rulesParser = new RulesParser(aFaker, aRandExp, options);
+    this.generator = new RulesBasedDataGenerator(aFaker, aRandExp, options);
+    this.compiler = new TestDataRulesCompiler(aFaker, aRandExp, options);
   }
 
   importSpec(textContent) {

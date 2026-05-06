@@ -10,6 +10,8 @@ We have added **Perl export support** to the grid editor and generator, alongsid
 
 This extends the programming-language export options beyond JavaScript, Python, Java, and TypeScript with PHP-, Ruby-, Kotlin-, C#-, and Perl-focused formats.
 
+<!--truncate-->
+
 All new language exports are available in:
 
 - the app **Code** language tab

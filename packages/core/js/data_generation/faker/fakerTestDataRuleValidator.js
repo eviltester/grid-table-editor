@@ -12,9 +12,10 @@ import { FakerCommand } from './fakerCommand.js';
 //import { faker } from "https://cdn.skypack.dev/@faker-js/faker@v9.7.0";
 
 class FakerTestDataRuleValidator {
-  constructor(aFaker) {
+  constructor(aFaker, options = {}) {
     this.validationError = '';
     this.faker = aFaker;
+    this.options = options;
   }
 
   validate(aTestDataRule) {
@@ -22,7 +23,7 @@ class FakerTestDataRuleValidator {
 
     // is it a faker function?
     try {
-      const fakerCommand = new FakerCommand(aTestDataRule.ruleSpec);
+      const fakerCommand = new FakerCommand(aTestDataRule.ruleSpec, this.options);
       fakerCommand.parse();
       fakerCommand.compile(this.faker);
       const whatDidWeGet = fakerCommand.validate(this.faker);

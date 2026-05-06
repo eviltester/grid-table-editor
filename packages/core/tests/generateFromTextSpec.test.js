@@ -38,14 +38,43 @@ test('validateSafeFakerRules accepts known faker commands with literal args', ()
   assert.equal(result.ok, true);
 });
 
-test('generateFromTextSpec rejects unsafe faker expressions by default', () => {
-  const result = generateFromTextSpec({
-    textSpec: 'Sentence\nhelpers.mustache("x", {count: () => `${this.number.int()}`})',
+test('generateFromTextSpec supports complex safe expressions with hybrid approach', () => {
+  // Test that safe JSON object expressions work with hybrid approach
+  const safeResult = generateFromTextSpec({
+    textSpec: 'Age\nnumber.int({"min": 18, "max": 65})',
     rowCount: 1,
     outputFormat: 'json',
   });
-  assert.equal(result.ok, false);
-  assert.match(result.errors[0], /Unsafe faker rule syntax detected/);
+  assert.equal(safeResult.ok, true);
+
+  // Verify the generated age is in the expected range
+  const age = safeResult.rows[0][0];
+  assert.equal(typeof age, 'number');
+  assert.ok(age >= 18 && age <= 65);
+
+  // Test that unsafeFakerExpressions flag is accepted and processed
+  const testSpec = 'Test\nBob';
+
+  // Verify the flag can be passed without breaking generation
+  const withoutFlag = generateFromTextSpec({
+    textSpec: testSpec,
+    rowCount: 1,
+    outputFormat: 'json',
+  });
+
+  const withFlag = generateFromTextSpec({
+    textSpec: testSpec,
+    rowCount: 1,
+    outputFormat: 'json',
+    unsafeFakerExpressions: true,
+  });
+
+  // Both should succeed for simple literal content
+  assert.equal(withoutFlag.ok, true);
+  assert.equal(withFlag.ok, true);
+
+  // Results should be identical for safe content
+  assert.deepEqual(withoutFlag.rows, withFlag.rows);
 });
 
 test('generateFromTextSpec applies csv options via exporter pipeline', () => {

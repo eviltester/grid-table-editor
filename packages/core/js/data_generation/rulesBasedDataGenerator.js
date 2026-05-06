@@ -1,16 +1,19 @@
 import { FakerTestDataGenerator } from './faker/fakerTestDataGenerator.js';
 import { RegexTestDataGenerator } from './regex/regexTestDataGenerator.js';
 import { LiteralTestDataGenerator } from './literal/literalTestDataGenerator.js';
+import { EnumTestDataGenerator } from './enum/enumTestDataGenerator.js';
 import { dataResponse } from './ruleResponse.js';
 
 export class RulesBasedDataGenerator {
-  constructor(aFaker, RandExp) {
+  constructor(aFaker, RandExp, options = {}) {
     this.faker = aFaker;
     this.RandExp = RandExp;
+    this.options = options;
 
-    this.fakerGenerator = new FakerTestDataGenerator(aFaker);
+    this.fakerGenerator = new FakerTestDataGenerator(aFaker, options);
     this.regexGenerator = new RegexTestDataGenerator(RandExp);
     this.literalGenerator = new LiteralTestDataGenerator();
+    this.enumGenerator = new EnumTestDataGenerator();
     this.defaultGenerator = new DefaultTestDataGenerator();
   }
 
@@ -48,6 +51,10 @@ export class RulesBasedDataGenerator {
 
         case 'literal':
           generator = this.literalGenerator;
+          break;
+
+        case 'enum':
+          generator = this.enumGenerator;
           break;
 
         default:

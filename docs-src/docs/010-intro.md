@@ -44,6 +44,9 @@ Free to use and Open source.
 - Define Columns in an editable Grid
 - Define Test Data as Regular Expressions
 - Define Test Data using Faker.js functions
+- Define Test Data as Literal values
+- Define Test Data as Enum values (comma-separated lists)
+- **Generate pairwise combinatorial test data** for optimal coverage across enum parameters
 - No limit to the number of rows you can generate
 
 

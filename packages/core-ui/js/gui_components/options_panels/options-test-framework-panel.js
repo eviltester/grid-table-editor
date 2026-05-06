@@ -111,7 +111,7 @@ class TestFrameworkOptionsPanel {
         <div><p><strong>Options</strong> <span data-help="test-framework-options" class="helpicon"></span></p></div>
 
         <div class="framework-id">
-          <label>Framework
+          <label><span class="helpicon option-help-icon" data-help="test-framework-option-framework" data-help-text="Choose the unit test framework for the current language tab. Output syntax and available strategies depend on this choice."></span>Framework
             <select name="framework-id" ${frameworkOptions.length <= 1 ? 'disabled' : ''}>
               ${frameworkOptionsHtml}
             </select>
@@ -120,21 +120,21 @@ class TestFrameworkOptionsPanel {
         </div>
 
         <div class="suite-name">
-          <label>Suite Name
+          <label><span class="helpicon option-help-icon" data-help="test-framework-option-suite-name" data-help-text="Class, module, or suite identifier used in generated test code where the framework supports naming."></span>Suite Name
             <input type="text" name="suite-name" value="GeneratedDataTests" style="width:12em">
           </label>
           <br>
         </div>
 
         <div class="test-name-prefix">
-          <label>Test Name Prefix
+          <label><span class="helpicon option-help-icon" data-help="test-framework-option-test-name-prefix" data-help-text="Prefix used for generated test method names and test titles."></span>Test Name Prefix
             <input type="text" name="test-name-prefix" value="row" style="width:12em">
           </label>
           <br>
         </div>
 
         <div class="assertion-style">
-          <label>Assertion Style
+          <label><span class="helpicon option-help-icon" data-help="test-framework-option-assertion-style" data-help-text="Strict uses stricter equality semantics where supported. Basic uses looser or idiomatic equality for that framework."></span>Assertion Style
             <select name="assertion-style">
               <option value="strict">Strict</option>
               <option value="basic">Basic</option>
@@ -144,7 +144,7 @@ class TestFrameworkOptionsPanel {
         </div>
 
         <div class="data-source-strategy">
-          <label>Data Source Strategy
+          <label><span class="helpicon option-help-icon" data-help="test-framework-option-data-source-strategy" data-help-text="Controls how row data is supplied to tests: provider/method source, inline constants, or CSV source when supported by the selected framework."></span>Data Source Strategy
             <select name="data-source-strategy">
               ${dataSourceOptions}
             </select>
@@ -154,6 +154,7 @@ class TestFrameworkOptionsPanel {
 
         <div class="include-setup">
           <label>
+            <span class="helpicon option-help-icon" data-help="test-framework-option-include-setup" data-help-text="Include framework-specific setup scaffolding such as beforeEach, SetUp, fixture, or setup methods."></span>
             <input type="checkbox" name="include-setup" checked>
             Include Setup
           </label>
@@ -162,6 +163,7 @@ class TestFrameworkOptionsPanel {
 
         <div class="pretty-print">
           <label>
+            <span class="helpicon option-help-icon" data-help="test-framework-option-pretty-print" data-help-text="Format generated row data and test source for readability with one row per line where supported."></span>
             <input type="checkbox" name="pretty-print" checked>
             Pretty Print
           </label>

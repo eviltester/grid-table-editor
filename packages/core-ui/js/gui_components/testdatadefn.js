@@ -27,6 +27,8 @@ import { GridExtension as TabulatorGridExtension } from './data-grid-editor/tabu
 import { SelectFilterEditor } from './data-grid-editor/ag-grid/select-filter-editor.js';
 import { TEST_DATA_MODES, createAmendedTable, createTableFromGenerator, normaliseCount } from './test-data-amend.js';
 import { getKnownFakerCommandsAlphabetical, getKnownFakerCommandsLongestFirst } from './faker-commands.js';
+import { PairwiseTestDataGenerator } from '@anywaydata/core/data_generation/all-pairs/pairwiseTestDataGenerator.js';
+import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 
 import { faker } from 'https://cdn.skypack.dev/@faker-js/faker@v9.7.0';
 
@@ -50,6 +52,127 @@ function getRulesParserFromTextArea() {
 }
 
 // https://www.npmjs.com/package/randexp
+async function generatePairwiseTestData() {
+  debouncer.clear('populateTestDataGrid');
+  syncSchemaTextFromGridBeforeGenerate();
+  const generateButton = document.getElementById('generateallpairs');
+  setTestDataStatus('Generating pairwise...', true);
+  if (generateButton) {
+    generateButton.disabled = true;
+  }
+
+  try {
+    const generator = getRulesParserFromTextArea();
+
+    if (!generator.isValid()) {
+      console.log(generator.errors());
+      alert(generator.errors().join('\n'));
+      setTestDataStatus('Schema validation failed.', false);
+      return;
+    }
+
+    const enumCount = countEnumRules(generator.testDataRules());
+    if (enumCount < 2) {
+      alert('Pairwise generation requires at least 2 enum columns.');
+      setTestDataStatus('Insufficient enum columns.', false);
+      return;
+    }
+
+    await yieldToUi();
+    setTestDataStatus('Generating pairwise combinations...', true);
+    await yieldToUi();
+
+    const dataTable = createPairwiseTableFromGenerator(generator);
+    if (!dataTable) {
+      alert('Failed to generate pairwise data.');
+      setTestDataStatus('Pairwise generation failed.', false);
+      return;
+    }
+
+    if (dataTable) {
+      setTestDataStatus('Applying data to grid...', true);
+      await yieldToUi();
+      await Promise.resolve(importer.setGridFromGenericDataTable(dataTable));
+    }
+
+    setTestDataStatus(`Generated ${dataTable.getRowCount()} pairwise combinations.`, false);
+    await yieldToUi();
+  } catch (error) {
+    console.error('Pairwise generation error:', error);
+    alert(`Pairwise generation failed: ${error.message}`);
+    setTestDataStatus('Pairwise generation failed.', false);
+  } finally {
+    if (generateButton) {
+      generateButton.disabled = false;
+    }
+  }
+}
+
+function createPairwiseTableFromGenerator(generator) {
+  try {
+    // Pass the same faker and RandExp instances used by the main generator
+    const pairwiseGenerator = new PairwiseTestDataGenerator(faker, RandExp);
+    const initResult = pairwiseGenerator.initializeFromRules(generator.testDataRules());
+
+    if (initResult.isError) {
+      console.error('Pairwise initialization error:', initResult.errorMessage);
+      return null;
+    }
+
+    const dataResult = pairwiseGenerator.generateAllDataRecordsAsRows();
+    if (dataResult.isError) {
+      console.error('Pairwise generation error:', dataResult.errorMessage);
+      return null;
+    }
+
+    // Convert to the expected data table format
+    const dataTable = new GenericDataTable();
+    const [headers, ...rows] = dataResult.data.data; // Access the nested data array
+    dataTable.setHeaders(headers);
+    rows.forEach((row) => {
+      dataTable.appendDataRow(row);
+    });
+
+    return dataTable;
+  } catch (error) {
+    console.error('Pairwise table creation error:', error);
+    return null;
+  }
+}
+
+function countEnumRules(rules) {
+  return rules.filter((rule) => rule.type === 'enum').length;
+}
+
+function updatePairwiseButtonVisibility() {
+  const generator = getRulesParserFromTextArea();
+  if (!generator.isValid()) {
+    hidePairwiseButton();
+    return;
+  }
+
+  const enumCount = countEnumRules(generator.testDataRules());
+  if (enumCount >= 2) {
+    showPairwiseButton();
+  } else {
+    hidePairwiseButton();
+  }
+}
+
+function showPairwiseButton() {
+  const button = document.getElementById('generateallpairs');
+  if (button) {
+    button.style.display = '';
+  }
+}
+
+function hidePairwiseButton() {
+  const button = document.getElementById('generateallpairs');
+  if (button) {
+    button.style.display = 'none';
+  }
+}
+
 async function generateTestData() {
   debouncer.clear('populateTestDataGrid');
   syncSchemaTextFromGridBeforeGenerate();
@@ -348,6 +471,9 @@ function populateTestDataGridFromRules() {
         data.type = fakerCommand;
         data.value = fakerFreeRule.replace(fakerCommand, '');
       }
+    } else if (rule.type == 'enum') {
+      data.type = 'enum';
+      data.value = rule.ruleSpec;
     } else {
       data.type = 'RegEx';
       data.value = rule.ruleSpec;
@@ -356,6 +482,7 @@ function populateTestDataGridFromRules() {
     rowsToAdd.push(data);
   }
   defnGridBridge.addRows(rowsToAdd);
+  updatePairwiseButtonVisibility();
 }
 
 const FAKER_COMMANDS = [];
@@ -617,6 +744,9 @@ function convertGridToText() {
       case 'RegEx':
         outputText = outputText + (resolvedRowData.value || '');
         break;
+      case 'enum':
+        outputText = outputText + (resolvedRowData.value || '');
+        break;
       // TODO Literal
       default: {
         let dataType = resolvedRowData.type || '';
@@ -636,6 +766,7 @@ function convertGridToText() {
   });
 
   document.getElementById('testdatadefntext').value = outputText;
+  updatePairwiseButtonVisibility();
 }
 
 function enableTestDataGenerationInterface(parentId, anImporter, aTextPreviewRenderer, aGridExtras) {
@@ -651,6 +782,7 @@ function enableTestDataGenerationInterface(parentId, anImporter, aTextPreviewRen
   parentElem.innerHTML = `
         <div>
             <button id="generatedata">Generate</button>
+            <button id="generateallpairs" style="display:none;">Generate Pairwise</button>
             <button id="refreshtestdatapreview">Refresh Text Preview</button>
             <label> How Many?<input type="number" id="generateCount"/></label>
             <label><input type="radio" name="testDataGenerationMode" value="${TEST_DATA_MODES.NEW_TABLE}" checked>New Table</label>
@@ -670,6 +802,7 @@ function enableTestDataGenerationInterface(parentId, anImporter, aTextPreviewRen
 
   var element = document.querySelector('#generatedata');
   element.addEventListener('click', generateTestData, false);
+  document.querySelector('#generateallpairs').addEventListener('click', generatePairwiseTestData, false);
   document.querySelector('#refreshtestdatapreview').addEventListener('click', refreshTestDataPreview, false);
 
   const generateCountInput = document.getElementById('generateCount');

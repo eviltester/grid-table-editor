@@ -106,6 +106,23 @@ prefers
 (Connie|Bob)
 ```
 
+## Pairwise Combinatorial Test Data
+
+When you have 2 or more enum fields (comma-separated values), you can generate optimal pairwise combinatorial test data. This provides 100% pairwise coverage with 90-99% fewer test cases than full factorial testing.
+
+For enum data, use comma-separated values in your spec:
+
+```
+browser
+chrome,firefox,safari,edge
+device
+desktop,tablet,mobile
+theme
+light,dark
+```
+
+The "Generate Pairwise" button will appear automatically, creating the minimal set of combinations that tests every pair of values across all parameters.
+
 ## Similar Apps
 
 Looking for similar apps to compare features sets and functionality?

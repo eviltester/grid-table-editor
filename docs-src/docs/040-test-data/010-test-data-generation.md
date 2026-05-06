@@ -67,4 +67,4 @@ When no type is present it is assumed to be a Regex e.g. `1234` is a Regex that 
 - [Literal Data](/docs/test-data/literal-test-data)
 - [Regex Based Data](/docs/test-data/regex-test-data)  
 - [Faker Based Data](/docs/test-data/faker-test-data)
-- [All Pairs Combinatorial Testing](/docs/test-data/all-pairs-testing) - Generate optimal test combinations from enum data
+- [All Pairs Combinatorial Testing](/docs/test-data/pairwise-testing) - Generate optimal test combinations from enum data

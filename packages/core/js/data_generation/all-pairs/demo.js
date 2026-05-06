@@ -43,7 +43,7 @@ ecommerceGenerator
   });
 
 // Example 2: Mobile App Configuration Testing
-console.log('\\n\\n=== Example 2: Mobile App Configuration ===');
+console.log('\n\n=== Example 2: Mobile App Configuration ===');
 const mobileParams = [
   { name: 'Platform', values: ['iOS', 'Android'] },
   { name: 'Version', values: ['Latest', 'Previous', 'Legacy'] },
@@ -97,7 +97,7 @@ if (!mixedResult.isError) {
     );
   });
 
-  console.log(`\\nAll ${3 * 2} Browser×Theme pairs are covered with ${dataRows.length} records`);
+  console.log(`\nAll ${3 * 2} Browser×Theme pairs are covered with ${dataRows.length} records`);
 }
 
 // Create rules using the existing TestDataRule format with ENUM types
@@ -186,7 +186,7 @@ exported.forEach((record, i) => {
 });
 
 // Manually verify pairs are covered
-console.log('\\nPair coverage verification:');
+console.log('\nPair coverage verification:');
 const aPairs = new Set();
 const bPairs = new Set();
 const cPairs = new Set();
@@ -201,10 +201,4 @@ console.log('A-B pairs covered:', Array.from(aPairs).join(', '));
 console.log('B-C pairs covered:', Array.from(bPairs).join(', '));
 console.log('A-C pairs covered:', Array.from(cPairs).join(', '));
 
-console.log('\n✅ Pairwise Demo Complete!');
-console.log('\\n💡 Key Benefits:');
-console.log('   • Dramatically reduces data records while maintaining coverage');
-console.log('   • Guarantees all parameter pairs are tested at least once');
-console.log('   • Integrates seamlessly with existing data generation system');
-console.log('   • Efficient algorithms handle large parameter spaces');
-console.log('   • Provides detailed coverage statistics and validation');
+console.log('\n Pairwise Demo Complete');

@@ -1,5 +1,6 @@
 import { PairwiseGenerator } from './pairwiseGenerator.js';
 import { dataResponse, errorResponse } from '../ruleResponse.js';
+import { EnumParser } from '../utils/enumParser.js';
 
 /**
  * Pairwise Matching Data Generator
@@ -37,9 +38,21 @@ export class PairwiseTestDataGenerator {
    */
   initializeFromRules(rules) {
     try {
-      // Separate enum rules from non-enum rules
-      this.enumRules = rules.filter((rule) => rule.isType('enum'));
-      this.nonEnumRules = rules.filter((rule) => !rule.isType('enum'));
+      // Separate enum rules from non-enum rules in a single iteration
+      const { enumRules, nonEnumRules } = rules.reduce(
+        (acc, rule) => {
+          if (rule.isType('enum')) {
+            acc.enumRules.push(rule);
+          } else {
+            acc.nonEnumRules.push(rule);
+          }
+          return acc;
+        },
+        { enumRules: [], nonEnumRules: [] }
+      );
+
+      this.enumRules = enumRules;
+      this.nonEnumRules = nonEnumRules;
 
       if (this.enumRules.length < 2) {
         return errorResponse('Pairwise testing requires at least 2 ENUM parameters');
@@ -78,7 +91,7 @@ export class PairwiseTestDataGenerator {
     for (const rule of enumRules) {
       const param = {
         name: rule.name,
-        values: this.extractEnumValues(rule.ruleSpec),
+        values: EnumParser.extractEnumValues(rule.ruleSpec),
       };
 
       if (param.values.length > 0) {
@@ -138,79 +151,6 @@ export class PairwiseTestDataGenerator {
         }
       },
     };
-  }
-
-  /**
-   * Extract values from ENUM rule specification
-   * Handles both formats:
-   * - Simple: "value1,value2,value3"
-   * - Function: enum("value1","value2","value3") or enum(value1,value2,value3)
-   */
-  extractEnumValues(ruleSpec) {
-    const spec = String(ruleSpec || '').trim();
-
-    // Check if it's a formal enum function format
-    if (/^(enum|datatype\.enum|awd\.datatype\.enum)\s*\(/.test(spec)) {
-      return this.extractAwdEnumValues(spec);
-    }
-
-    // Simple comma-separated format
-    return spec.split(',').map((v) => v.trim());
-  }
-
-  /**
-   * Extract values from formal enum function formats
-   * Handles: enum(value1,value2) and enum("value1", "value2", "value3")
-   */
-  extractAwdEnumValues(ruleSpec) {
-    // Match patterns like: enum(value1,value2) or enum("value1", "value2", "value3")
-    const match = ruleSpec.match(/^(?:enum|datatype\.enum|awd\.datatype\.enum)\s*\(\s*(.+)\s*\)$/);
-    if (!match) {
-      throw new Error('Invalid enum format');
-    }
-
-    const paramsStr = match[1].trim();
-    const values = [];
-    let currentValue = '';
-    let inQuotes = false;
-    let i = 0;
-
-    while (i < paramsStr.length) {
-      const char = paramsStr[i];
-
-      if (char === '"' && (i === 0 || paramsStr[i - 1] !== '\\')) {
-        // Toggle quote state for unescaped quotes
-        inQuotes = !inQuotes;
-      } else if (char === ',' && !inQuotes) {
-        // Found separator outside quotes
-        if (currentValue.trim().length > 0) {
-          values.push(currentValue.trim());
-        }
-        currentValue = '';
-      } else {
-        // Add character to current value
-        currentValue += char;
-      }
-      i++;
-    }
-
-    // Add final value
-    if (currentValue.trim().length > 0) {
-      values.push(currentValue.trim());
-    }
-
-    if (values.length === 0) {
-      throw new Error('No valid values found in enum');
-    }
-
-    // Remove surrounding quotes from quoted values
-    return values.map((value) => {
-      const trimmed = value.trim();
-      if (trimmed.startsWith('"') && trimmed.endsWith('"') && trimmed.length >= 2) {
-        return trimmed.slice(1, -1);
-      }
-      return trimmed;
-    });
   }
 
   /**

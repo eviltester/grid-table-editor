@@ -1,5 +1,6 @@
 import { EnumTestDataGenerator } from '../../../../packages/core/js/data_generation/enum/enumTestDataGenerator.js';
 import { TestDataRule } from '../../../../packages/core/js/data_generation/testDataRule.js';
+import { EnumParser } from '../../../../packages/core/js/data_generation/utils/enumParser.js';
 
 describe('EnumTestDataGenerator', () => {
   describe('generates values from enum rules', () => {
@@ -90,12 +91,10 @@ describe('EnumTestDataGenerator', () => {
 
   describe('format detection', () => {
     test('detects awd enum formats', () => {
-      const generator = new EnumTestDataGenerator();
-
-      expect(generator.isAwdEnumFormat('enum("A", "B")')).toBe(true);
-      expect(generator.isAwdEnumFormat('datatype.enum("A", "B")')).toBe(true);
-      expect(generator.isAwdEnumFormat('awd.datatype.enum("A", "B")')).toBe(true);
-      expect(generator.isAwdEnumFormat('A,B,C')).toBe(false);
+      expect(EnumParser.isAwdEnumFormat('enum("A", "B")')).toBe(true);
+      expect(EnumParser.isAwdEnumFormat('datatype.enum("A", "B")')).toBe(true);
+      expect(EnumParser.isAwdEnumFormat('awd.datatype.enum("A", "B")')).toBe(true);
+      expect(EnumParser.isAwdEnumFormat('A,B,C')).toBe(false);
     });
   });
 });

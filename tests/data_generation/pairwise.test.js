@@ -214,7 +214,7 @@ describe('Pairwise Combinatorial Matching Data Generation', () => {
       });
 
       const stats = generator.getCoverageStats();
-      console.log(`\\nCoverage: ${stats.coveragePercentage.toFixed(1)}% of ${stats.totalPairs} pairs`);
+      console.log(`\nCoverage: ${stats.coveragePercentage.toFixed(1)}% of ${stats.totalPairs} pairs`);
     });
 
     test('API testing with different parameters', () => {

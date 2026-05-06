@@ -1,6 +1,7 @@
 import { EnumTestDataRuleValidator } from '../../packages/core/js/data_generation/enum/enumTestDataRuleValidator.js';
 import { TestDataRule } from '../../packages/core/js/data_generation/testDataRule.js';
 import { PairwiseTestDataGenerator } from '../../packages/core/js/data_generation/all-pairs/pairwiseTestDataGenerator.js';
+import { EnumParser } from '../../packages/core/js/data_generation/utils/enumParser.js';
 
 describe('Quoted Enum Values', () => {
   let validator;
@@ -16,7 +17,7 @@ describe('Quoted Enum Values', () => {
       const isValid = validator.validate(rule);
       expect(isValid).toBe(true);
 
-      const values = validator.extractAwdEnumValues('enum("active, pending","inactive","completed, finished")');
+      const values = EnumParser.extractAwdEnumValues('enum("active, pending","inactive","completed, finished")');
       expect(values).toEqual(['active, pending', 'inactive', 'completed, finished']);
     });
 
@@ -26,7 +27,7 @@ describe('Quoted Enum Values', () => {
       const isValid = validator.validate(rule);
       expect(isValid).toBe(true);
 
-      const values = validator.extractAwdEnumValues('enum("high, urgent",medium,low)');
+      const values = EnumParser.extractAwdEnumValues('enum("high, urgent",medium,low)');
       expect(values).toEqual(['high, urgent', 'medium', 'low']);
     });
 
@@ -36,7 +37,7 @@ describe('Quoted Enum Values', () => {
       const isValid = validator.validate(rule);
       expect(isValid).toBe(true);
 
-      const values = validator.extractAwdEnumValues('datatype.enum("tech, software","business","design, ui")');
+      const values = EnumParser.extractAwdEnumValues('datatype.enum("tech, software","business","design, ui")');
       expect(values).toEqual(['tech, software', 'business', 'design, ui']);
     });
 
@@ -46,25 +47,23 @@ describe('Quoted Enum Values', () => {
       const isValid = validator.validate(rule);
       expect(isValid).toBe(true);
 
-      const values = validator.extractAwdEnumValues('awd.datatype.enum("admin, super","user","guest, visitor")');
+      const values = EnumParser.extractAwdEnumValues('awd.datatype.enum("admin, super","user","guest, visitor")');
       expect(values).toEqual(['admin, super', 'user', 'guest, visitor']);
     });
   });
 
   describe('PairwiseTestDataGenerator with quoted enum values', () => {
     test('should properly extract quoted enum values for pairwise generation', () => {
-      const generator = new PairwiseTestDataGenerator();
-
       // Test simple format
-      const simpleValues = generator.extractEnumValues('red,blue,green');
+      const simpleValues = EnumParser.extractEnumValues('red,blue,green');
       expect(simpleValues).toEqual(['red', 'blue', 'green']);
 
       // Test quoted format with commas
-      const quotedValues = generator.extractEnumValues('enum("red, crimson","blue, navy","green")');
+      const quotedValues = EnumParser.extractEnumValues('enum("red, crimson","blue, navy","green")');
       expect(quotedValues).toEqual(['red, crimson', 'blue, navy', 'green']);
 
       // Test mixed format
-      const mixedValues = generator.extractEnumValues('enum("high, urgent",medium,low)');
+      const mixedValues = EnumParser.extractEnumValues('enum("high, urgent",medium,low)');
       expect(mixedValues).toEqual(['high, urgent', 'medium', 'low']);
     });
   });

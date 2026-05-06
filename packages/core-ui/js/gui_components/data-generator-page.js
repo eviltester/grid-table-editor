@@ -896,7 +896,7 @@ class DataGeneratorPage {
   async generateAllPairsDataFile() {
     const configured = this.createConfiguredGenerator();
     if (configured.errors?.length > 0) {
-      this.alertFn(configured.errors.join('\\n'));
+      this.alertFn(configured.errors.join('\n'));
       return;
     }
 

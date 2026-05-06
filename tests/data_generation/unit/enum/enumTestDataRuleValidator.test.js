@@ -1,5 +1,6 @@
 import { EnumTestDataRuleValidator } from '../../../../packages/core/js/data_generation/enum/enumTestDataRuleValidator.js';
 import { TestDataRule } from '../../../../packages/core/js/data_generation/testDataRule.js';
+import { EnumParser } from '../../../../packages/core/js/data_generation/utils/enumParser.js';
 
 describe('EnumTestDataRuleValidator', () => {
   describe('validates enum formats', () => {
@@ -83,29 +84,25 @@ describe('EnumTestDataRuleValidator', () => {
 
   describe('extractAwdEnumValues', () => {
     test('extracts values from datatype.enum format', () => {
-      const validator = new EnumTestDataRuleValidator();
-      const values = validator.extractAwdEnumValues('datatype.enum("A", "B", "C")');
+      const values = EnumParser.extractAwdEnumValues('datatype.enum("A", "B", "C")');
 
       expect(values).toEqual(['A', 'B', 'C']);
     });
 
     test('handles spaces in enum format', () => {
-      const validator = new EnumTestDataRuleValidator();
-      const values = validator.extractAwdEnumValues('enum( "First" , "Second" , "Third" )');
+      const values = EnumParser.extractAwdEnumValues('enum( "First" , "Second" , "Third" )');
 
       expect(values).toEqual(['First', 'Second', 'Third']);
     });
 
     test('extracts unquoted values from enum format', () => {
-      const validator = new EnumTestDataRuleValidator();
-      const values = validator.extractAwdEnumValues('enum(GET,POST,PUT,DELETE)');
+      const values = EnumParser.extractAwdEnumValues('enum(GET,POST,PUT,DELETE)');
 
       expect(values).toEqual(['GET', 'POST', 'PUT', 'DELETE']);
     });
 
     test('extracts mixed quoted and unquoted values from enum format', () => {
-      const validator = new EnumTestDataRuleValidator();
-      const values = validator.extractAwdEnumValues('enum(basic,"with space",advanced)');
+      const values = EnumParser.extractAwdEnumValues('enum(basic,"with space",advanced)');
 
       expect(values).toEqual(['basic', 'with space', 'advanced']);
     });

@@ -131,141 +131,6 @@ describe('test framework convertor', () => {
     expect(rendered).not.toMatch(pattern);
   });
 
-  test('jest strict/basic assertion style changes matcher', () => {
-    const convertor = new TestFrameworkConvertor(new TestFrameworkConvertorOptions());
-    convertor.setFramework('jest');
-    convertor.setOptions({ options: { assertionStyle: 'strict' } });
-    const strictRendered = convertor.fromDataTable(makeTable());
-    expect(strictRendered).toMatch(/toStrictEqual/);
-    expect(strictRendered).not.toMatch(/toEqual\(/);
-
-    convertor.setOptions({ options: { assertionStyle: 'basic' } });
-    const basicRendered = convertor.fromDataTable(makeTable());
-    expect(basicRendered).toMatch(/toEqual/);
-    expect(basicRendered).not.toMatch(/toStrictEqual/);
-  });
-
-  test('phpunit strict/basic assertion style changes assertion api', () => {
-    const convertor = new TestFrameworkConvertor(new TestFrameworkConvertorOptions());
-    convertor.setFramework('phpunit');
-    convertor.setOptions({ options: { assertionStyle: 'strict' } });
-    const strictRendered = convertor.fromDataTable(makeTable());
-    expect(strictRendered).toMatch(/assertSame/);
-    expect(strictRendered).not.toMatch(/assertEquals/);
-
-    convertor.setOptions({ options: { assertionStyle: 'basic' } });
-    const basicRendered = convertor.fromDataTable(makeTable());
-    expect(basicRendered).toMatch(/assertEquals/);
-    expect(basicRendered).not.toMatch(/assertSame/);
-  });
-
-  test('test-more strict/basic assertion style changes scalar assertion function', () => {
-    const convertor = new TestFrameworkConvertor(new TestFrameworkConvertorOptions());
-    convertor.setFramework('test-more');
-    convertor.setOptions({ options: { assertionStyle: 'strict' } });
-    const strictRendered = convertor.fromDataTable(makeTable());
-    expect(strictRendered).toMatch(/is_deeply/);
-    expect(strictRendered).not.toMatch(/\sis\(/);
-
-    convertor.setOptions({ options: { assertionStyle: 'basic' } });
-    const basicRendered = convertor.fromDataTable(makeTable());
-    expect(basicRendered).toMatch(/\sis\(/);
-  });
-
-  test('junit4 strict/basic assertion style changes assertion api', () => {
-    const convertor = new TestFrameworkConvertor(new TestFrameworkConvertorOptions());
-    convertor.setFramework('junit4');
-    convertor.setOptions({ options: { assertionStyle: 'strict' } });
-    const strictRendered = convertor.fromDataTable(makeTable());
-    expect(strictRendered).toMatch(/assertEquals/);
-    expect(strictRendered).not.toMatch(/assertTrue\(Objects\.equals/);
-
-    convertor.setOptions({ options: { assertionStyle: 'basic' } });
-    const basicRendered = convertor.fromDataTable(makeTable());
-    expect(basicRendered).toMatch(/assertTrue\(Objects\.equals/);
-    expect(basicRendered).not.toMatch(/assertEquals/);
-  });
-
-  test('junit5 strict/basic assertion style changes assertion api', () => {
-    const convertor = new TestFrameworkConvertor(new TestFrameworkConvertorOptions());
-    convertor.setFramework('junit5');
-    convertor.setOptions({ options: { assertionStyle: 'strict' } });
-    const strictRendered = convertor.fromDataTable(makeTable());
-    expect(strictRendered).toMatch(/assertEquals/);
-    expect(strictRendered).not.toMatch(/assertTrue\(Objects\.equals/);
-
-    convertor.setOptions({ options: { assertionStyle: 'basic' } });
-    const basicRendered = convertor.fromDataTable(makeTable());
-    expect(basicRendered).toMatch(/assertTrue\(Objects\.equals/);
-    expect(basicRendered).not.toMatch(/assertEquals/);
-  });
-
-  test('pytest strict/basic assertion style changes assertions', () => {
-    const convertor = new TestFrameworkConvertor(new TestFrameworkConvertorOptions());
-    convertor.setFramework('pytest');
-    convertor.setOptions({ options: { assertionStyle: 'strict' } });
-    const strictRendered = convertor.fromDataTable(makeTable());
-    expect(strictRendered).toMatch(/assert type\(actual\[/);
-
-    convertor.setOptions({ options: { assertionStyle: 'basic' } });
-    const basicRendered = convertor.fromDataTable(makeTable());
-    expect(basicRendered).not.toMatch(/assert type\(actual\[/);
-  });
-
-  test('testng strict/basic assertion style changes assertion api', () => {
-    const convertor = new TestFrameworkConvertor(new TestFrameworkConvertorOptions());
-    convertor.setFramework('testng');
-    convertor.setOptions({ options: { assertionStyle: 'strict' } });
-    const strictRendered = convertor.fromDataTable(makeTable());
-    expect(strictRendered).toMatch(/assertEquals/);
-    expect(strictRendered).not.toMatch(/assertTrue\(Objects\.equals/);
-
-    convertor.setOptions({ options: { assertionStyle: 'basic' } });
-    const basicRendered = convertor.fromDataTable(makeTable());
-    expect(basicRendered).toMatch(/assertTrue\(Objects\.equals/);
-    expect(basicRendered).not.toMatch(/assertEquals/);
-  });
-
-  test('xunit strict/basic assertion style changes assertion api', () => {
-    const convertor = new TestFrameworkConvertor(new TestFrameworkConvertorOptions());
-    convertor.setFramework('xunit');
-    convertor.setOptions({ options: { assertionStyle: 'strict' } });
-    const strictRendered = convertor.fromDataTable(makeTable());
-    expect(strictRendered).toMatch(/Assert\.Equal/);
-    expect(strictRendered).not.toMatch(/Assert\.True\(object\.Equals/);
-
-    convertor.setOptions({ options: { assertionStyle: 'basic' } });
-    const basicRendered = convertor.fromDataTable(makeTable());
-    expect(basicRendered).toMatch(/Assert\.True\(object\.Equals/);
-    expect(basicRendered).not.toMatch(/Assert\.Equal/);
-  });
-
-  test('rspec strict/basic assertion style changes matcher', () => {
-    const convertor = new TestFrameworkConvertor(new TestFrameworkConvertorOptions());
-    convertor.setFramework('rspec');
-    convertor.setOptions({ options: { assertionStyle: 'strict' } });
-    const strictRendered = convertor.fromDataTable(makeTable());
-    expect(strictRendered).toMatch(/\.to eql\(/);
-    expect(strictRendered).not.toMatch(/\.to eq\(/);
-
-    convertor.setOptions({ options: { assertionStyle: 'basic' } });
-    const basicRendered = convertor.fromDataTable(makeTable());
-    expect(basicRendered).toMatch(/\.to eq\(/);
-    expect(basicRendered).not.toMatch(/\.to eql\(/);
-  });
-
-  test('kotest strict/basic assertion style changes assertions', () => {
-    const convertor = new TestFrameworkConvertor(new TestFrameworkConvertorOptions());
-    convertor.setFramework('kotest');
-    convertor.setOptions({ options: { assertionStyle: 'strict' } });
-    const strictRendered = convertor.fromDataTable(makeTable());
-    expect(strictRendered).toMatch(/::class \} shouldBe/);
-
-    convertor.setOptions({ options: { assertionStyle: 'basic' } });
-    const basicRendered = convertor.fromDataTable(makeTable());
-    expect(basicRendered).not.toMatch(/::class \} shouldBe/);
-  });
-
   test('junit4 provider/inline data source strategies render different structures', () => {
     const convertor = new TestFrameworkConvertor(new TestFrameworkConvertorOptions());
     convertor.setFramework('junit4');
@@ -526,12 +391,12 @@ describe('test framework convertor', () => {
   });
 
   test.each(['junit5', 'pytest', 'jest', 'xunit', 'phpunit', 'kotest', 'test-more'])(
-    '%s matches golden snapshot (strict + setup)',
+    '%s matches golden snapshot (setup + provider)',
     (frameworkId) => {
       const convertor = new TestFrameworkConvertor(new TestFrameworkConvertorOptions());
       convertor.setFramework(frameworkId);
       convertor.setOptions({
-        options: { includeSetup: true, assertionStyle: 'strict', dataSourceStrategy: 'provider' },
+        options: { includeSetup: true, dataSourceStrategy: 'provider' },
       });
       const rendered = convertor.fromDataTable(makeTable());
       expect(rendered).toMatchSnapshot();

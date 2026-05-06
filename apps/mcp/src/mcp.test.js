@@ -67,7 +67,7 @@ test('MCP server handles test framework output format', () => {
   assert.match(payload.rendered, /@ParameterizedTest/);
 });
 
-test('MCP schema notes reflect assertion and setup behavior for unit test formats', () => {
+test('MCP schema notes reflect setup behavior for unit test formats', () => {
   const response = requestServer({
     jsonrpc: '2.0',
     id: 22,
@@ -80,11 +80,10 @@ test('MCP schema notes reflect assertion and setup behavior for unit test format
   const payload = JSON.parse(response?.result?.content?.[0]?.text || '{}');
   assert.equal(payload.ok, true);
   const props = payload?.formatSchema?.optionSchema?.properties || {};
-  assert.match(props?.assertionStyle?.description || '', /toStrictEqual|toEqual/);
   assert.match(props?.includeSetup?.description || '', /beforeEach/i);
 });
 
-test('MCP generation uses assertionStyle and includeSetup for representative frameworks', () => {
+test('MCP generation uses includeSetup for representative frameworks', () => {
   const jestResponse = requestServer({
     jsonrpc: '2.0',
     id: 23,
@@ -95,14 +94,13 @@ test('MCP generation uses assertionStyle and includeSetup for representative fra
         textSpec: 'Name\nBob',
         rowCount: 1,
         outputFormat: 'jest',
-        options: { outputFormat: 'jest', options: { assertionStyle: 'basic', includeSetup: true } },
+        options: { outputFormat: 'jest', options: { includeSetup: true } },
       },
     },
   });
   const jestPayload = JSON.parse(jestResponse?.result?.content?.[0]?.text || '{}');
   assert.match(jestPayload.rendered, /beforeEach/);
-  assert.match(jestPayload.rendered, /toEqual/);
-  assert.equal(jestPayload.rendered.includes('toStrictEqual'), false);
+  assert.match(jestPayload.rendered, /expect\(/);
 
   const phpunitResponse = requestServer({
     jsonrpc: '2.0',
@@ -114,7 +112,7 @@ test('MCP generation uses assertionStyle and includeSetup for representative fra
         textSpec: 'Name\nBob',
         rowCount: 1,
         outputFormat: 'phpunit',
-        options: { outputFormat: 'phpunit', options: { assertionStyle: 'strict', includeSetup: true } },
+        options: { outputFormat: 'phpunit', options: { includeSetup: true } },
       },
     },
   });
@@ -305,7 +303,6 @@ test('MCP parity: rendered output matches core for all unit-test frameworks', ()
       outputFormat,
       options: {
         includeSetup: true,
-        assertionStyle: 'strict',
         prettyPrint: true,
         dataSourceStrategy: 'provider',
       },

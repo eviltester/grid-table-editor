@@ -31,7 +31,6 @@ const FORMAT_OPTION_NOTES = {
   junit4: {
     suiteName: 'Name of generated test suite/class.',
     testNamePrefix: 'Prefix used for generated test method names.',
-    assertionStyle: 'Use strict/basic assertion mapping for JUnit output (both map to assertEquals in v1).',
     includeSetup: 'Include @Before setup scaffold in generated class.',
     prettyPrint: 'Format generated output for readability.',
     dataSourceStrategy: 'Data-driven strategy: provider/method, inline, or csv source.',
@@ -39,7 +38,6 @@ const FORMAT_OPTION_NOTES = {
   junit5: {
     suiteName: 'Name of generated test suite/class.',
     testNamePrefix: 'Prefix used for generated test method names.',
-    assertionStyle: 'Use strict/basic assertion mapping for JUnit output (both map to assertEquals in v1).',
     includeSetup: 'Include @BeforeEach setup scaffold in generated class.',
     prettyPrint: 'Format generated output for readability.',
     dataSourceStrategy: 'Data-driven strategy: provider/method, inline, or csv source.',
@@ -47,7 +45,6 @@ const FORMAT_OPTION_NOTES = {
   junit6: {
     suiteName: 'Name of generated test suite/class.',
     testNamePrefix: 'Prefix used for generated test method names.',
-    assertionStyle: 'Use strict/basic assertion mapping for JUnit output (both map to assertEquals in v1).',
     includeSetup: 'Include @BeforeEach setup scaffold in generated class.',
     prettyPrint: 'Format generated output for readability.',
     dataSourceStrategy: 'Data-driven strategy: provider/method, inline, or csv source.',
@@ -55,7 +52,6 @@ const FORMAT_OPTION_NOTES = {
   testng: {
     suiteName: 'Name of generated test suite/class.',
     testNamePrefix: 'Prefix used for generated test method names.',
-    assertionStyle: 'Use strict/basic assertion mapping for TestNG output (both map to assertEquals in v1).',
     includeSetup: 'Include @BeforeMethod setup scaffold in generated class.',
     prettyPrint: 'Format generated output for readability.',
     dataSourceStrategy: 'Data-driven strategy: provider/method or inline.',
@@ -63,7 +59,6 @@ const FORMAT_OPTION_NOTES = {
   pytest: {
     suiteName: 'Name of generated test suite/class.',
     testNamePrefix: 'Prefix used for generated test method names.',
-    assertionStyle: 'Use strict/basic assertion mapping for PyTest output (both map to == in v1).',
     includeSetup: 'Include pytest fixture scaffold and wire it into the test signature.',
     prettyPrint: 'Format generated output for readability.',
     dataSourceStrategy: 'Data-driven strategy: provider function or inline rows.',
@@ -71,7 +66,6 @@ const FORMAT_OPTION_NOTES = {
   jest: {
     suiteName: 'Name of generated test suite/class.',
     testNamePrefix: 'Prefix used for generated test method names.',
-    assertionStyle: 'Use strict (toStrictEqual) or basic (toEqual) Jest assertions.',
     includeSetup: 'Include beforeEach setup scaffold in generated suite.',
     prettyPrint: 'Format generated output for readability.',
     dataSourceStrategy: 'Data-driven strategy: provider function or inline rows.',
@@ -79,7 +73,6 @@ const FORMAT_OPTION_NOTES = {
   xunit: {
     suiteName: 'Name of generated test suite/class.',
     testNamePrefix: 'Prefix used for generated test method names.',
-    assertionStyle: 'Use strict/basic assertion mapping for xUnit output (both map to Assert.Equal in v1).',
     includeSetup: 'Include constructor setup scaffold in generated class.',
     prettyPrint: 'Format generated output for readability.',
     dataSourceStrategy: 'Data-driven strategy: MemberData provider or InlineData.',
@@ -87,7 +80,6 @@ const FORMAT_OPTION_NOTES = {
   rspec: {
     suiteName: 'Name of generated test suite/class.',
     testNamePrefix: 'Prefix used for generated test method names.',
-    assertionStyle: 'Use strict/basic assertion mapping for RSpec output (both map to eq in v1).',
     includeSetup: 'Include before block scaffold in generated spec.',
     prettyPrint: 'Format generated output for readability.',
     dataSourceStrategy: 'Data-driven strategy: rows constant iteration.',
@@ -95,7 +87,6 @@ const FORMAT_OPTION_NOTES = {
   phpunit: {
     suiteName: 'Name of generated test suite/class.',
     testNamePrefix: 'Prefix used for generated test method names.',
-    assertionStyle: 'Use strict (assertSame) or basic (assertEquals) PHPUnit assertions.',
     includeSetup: 'Include setUp() scaffold in generated test class.',
     prettyPrint: 'Format generated output for readability.',
     dataSourceStrategy: 'Data-driven strategy: data provider rows.',
@@ -103,7 +94,6 @@ const FORMAT_OPTION_NOTES = {
   kotest: {
     suiteName: 'Name of generated test suite/class.',
     testNamePrefix: 'Prefix used for generated test method names.',
-    assertionStyle: 'Use strict/basic assertion mapping for Kotest output (both map to shouldBe in v1).',
     includeSetup: 'Include beforeTest setup scaffold in generated spec.',
     prettyPrint: 'Format generated output for readability.',
     dataSourceStrategy: 'Data-driven strategy: rows collection iteration.',
@@ -111,7 +101,6 @@ const FORMAT_OPTION_NOTES = {
   'test-more': {
     suiteName: 'Name of generated test suite/class.',
     testNamePrefix: 'Prefix used for generated test method names.',
-    assertionStyle: 'Use strict (is_deeply) or basic (is where scalar-safe, else is_deeply) assertions.',
     includeSetup: 'Include setup variable scaffold in generated script.',
     prettyPrint: 'Format generated output for readability.',
     dataSourceStrategy: 'Data-driven strategy: row hash iteration.',

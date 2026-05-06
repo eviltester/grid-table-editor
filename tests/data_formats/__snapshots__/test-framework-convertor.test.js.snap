@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`test framework convertor jest matches golden snapshot (strict + setup) 1`] = `
+exports[`test framework convertor jest matches golden snapshot (setup + provider) 1`] = `
 "const getRows = () => [
     {\\"Name\\":\\"Connie\\",\\"Age\\":21},
     {\\"Name\\":\\"Miles\\",\\"Age\\":34}
@@ -24,7 +24,7 @@ describe('GeneratedDataTests', () => {
 });"
 `;
 
-exports[`test framework convertor junit5 matches golden snapshot (strict + setup) 1`] = `
+exports[`test framework convertor junit5 matches golden snapshot (setup + provider) 1`] = `
 "import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
@@ -61,7 +61,7 @@ public class GeneratedDataTests {
 }"
 `;
 
-exports[`test framework convertor kotest matches golden snapshot (strict + setup) 1`] = `
+exports[`test framework convertor kotest matches golden snapshot (setup + provider) 1`] = `
 "import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 
@@ -93,7 +93,7 @@ class GeneratedDataTests : StringSpec({
 })"
 `;
 
-exports[`test framework convertor phpunit matches golden snapshot (strict + setup) 1`] = `
+exports[`test framework convertor phpunit matches golden snapshot (setup + provider) 1`] = `
 "<?php
 
 use PHPUnit\\\\Framework\\\\TestCase;
@@ -130,7 +130,7 @@ final class GeneratedDataTests extends TestCase
 }"
 `;
 
-exports[`test framework convertor pytest matches golden snapshot (strict + setup) 1`] = `
+exports[`test framework convertor pytest matches golden snapshot (setup + provider) 1`] = `
 "import pytest
 
 def map_row_under_test(row):
@@ -157,7 +157,7 @@ def test_row_parameterized(row, setup_context):
     assert type(actual[\\"Age\\"]) is type(expected[\\"Age\\"])"
 `;
 
-exports[`test framework convertor test-more matches golden snapshot (strict + setup) 1`] = `
+exports[`test framework convertor test-more matches golden snapshot (setup + provider) 1`] = `
 "use strict;
 use warnings;
 use Test::More;
@@ -189,7 +189,7 @@ foreach my $row (@$rows) {
 done_testing();"
 `;
 
-exports[`test framework convertor xunit matches golden snapshot (strict + setup) 1`] = `
+exports[`test framework convertor xunit matches golden snapshot (setup + provider) 1`] = `
 "using System.Collections.Generic;
 using Xunit;
 

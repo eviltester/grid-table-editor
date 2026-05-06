@@ -130,11 +130,11 @@ test('/v1/generate/fromschema rejects invalid seed query value', async () => {
   assert.match(payload.errors?.[0] || '', /seed must be a finite number/i);
 });
 
-test('/v1/generate/fromschema applies unit-test defaults for includeSetup and assertionStyle', async () => {
+test('/v1/generate/fromschema applies unit-test defaults for includeSetup', async () => {
   const setDefaults = await fetch(url('/v1/generate/options/jest'), {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ options: { includeSetup: true, assertionStyle: 'basic' } }),
+    body: JSON.stringify({ options: { includeSetup: true } }),
   });
   assert.equal(setDefaults.status, 200);
 
@@ -147,6 +147,5 @@ test('/v1/generate/fromschema applies unit-test defaults for includeSetup and as
   assert.equal(response.status, 200);
   const body = await response.json();
   assert.match(body.rendered, /beforeEach/);
-  assert.match(body.rendered, /toEqual/);
-  assert.equal(body.rendered.includes('toStrictEqual'), false);
+  assert.match(body.rendered, /expect\(/);
 });

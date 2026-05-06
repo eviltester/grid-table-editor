@@ -25,7 +25,6 @@ describe('TestFrameworkOptionsPanel', () => {
     expect(parent.querySelector("select[name='framework-id']")).toBeTruthy();
     expect(parent.querySelector("input[name='suite-name']")).toBeTruthy();
     expect(parent.querySelector("input[name='test-name-prefix']")).toBeTruthy();
-    expect(parent.querySelector("select[name='assertion-style']")).toBeTruthy();
     expect(parent.querySelector("select[name='data-source-strategy']")).toBeTruthy();
   });
 
@@ -35,7 +34,6 @@ describe('TestFrameworkOptionsPanel', () => {
     parent.querySelector("select[name='framework-id']").value = 'junit4';
     parent.querySelector("input[name='suite-name']").value = 'MySuite';
     parent.querySelector("input[name='test-name-prefix']").value = 'case';
-    parent.querySelector("select[name='assertion-style']").value = 'basic';
     parent.querySelector("select[name='data-source-strategy']").value = 'inline';
     parent.querySelector("input[name='include-setup']").checked = false;
 
@@ -44,7 +42,6 @@ describe('TestFrameworkOptionsPanel', () => {
     expect(options.outputFormat).toBe('junit4');
     expect(options.options.suiteName).toBe('MySuite');
     expect(options.options.testNamePrefix).toBe('case');
-    expect(options.options.assertionStyle).toBe('basic');
     expect(options.options.dataSourceStrategy).toBe('inline');
     expect(options.options.includeSetup).toBe(false);
   });

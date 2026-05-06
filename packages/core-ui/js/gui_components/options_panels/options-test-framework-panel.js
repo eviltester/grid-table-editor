@@ -133,16 +133,6 @@ class TestFrameworkOptionsPanel {
           <br>
         </div>
 
-        <div class="assertion-style">
-          <label><span class="helpicon option-help-icon" data-help="test-framework-option-assertion-style" data-help-text="Strict uses stricter equality semantics where supported. Basic uses looser or idiomatic equality for that framework."></span>Assertion Style
-            <select name="assertion-style">
-              <option value="strict">Strict</option>
-              <option value="basic">Basic</option>
-            </select>
-          </label>
-          <br>
-        </div>
-
         <div class="data-source-strategy">
           <label><span class="helpicon option-help-icon" data-help="test-framework-option-data-source-strategy" data-help-text="Controls how row data is supplied to tests: provider/method source, inline constants, or CSV source when supported by the selected framework."></span>Data Source Strategy
             <select name="data-source-strategy">
@@ -214,8 +204,6 @@ class TestFrameworkOptionsPanel {
       this.htmlData.getTextInputValueFrom("input[name='suite-name']") || newOptions.options.suiteName;
     newOptions.options.testNamePrefix =
       this.htmlData.getTextInputValueFrom("input[name='test-name-prefix']") || newOptions.options.testNamePrefix;
-    newOptions.options.assertionStyle =
-      this.htmlData.getSelectedValueFrom("select[name='assertion-style']", 'strict') || 'strict';
     newOptions.options.dataSourceStrategy =
       this.htmlData.getSelectedValueFrom("select[name='data-source-strategy']", 'provider') || 'provider';
     newOptions.options.includeSetup = this.htmlData.getCheckBoxValueFrom("input[name='include-setup']");
@@ -231,7 +219,6 @@ class TestFrameworkOptionsPanel {
     this.refreshDataSourceStrategyOptions();
     this.htmlData.setTextFieldToValue("input[name='suite-name']", options.suiteName ?? 'GeneratedDataTests');
     this.htmlData.setTextFieldToValue("input[name='test-name-prefix']", options.testNamePrefix ?? 'row');
-    this.htmlData.setDropDownOptionToKeyValue("select[name='assertion-style']", options.assertionStyle, 'strict');
     this.htmlData.setDropDownOptionToKeyValue(
       "select[name='data-source-strategy']",
       options.dataSourceStrategy,

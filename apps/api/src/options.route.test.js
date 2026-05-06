@@ -76,17 +76,15 @@ test('/v1/generate/options/:format returns tips for all returned option keys', a
   }
 });
 
-test('/v1/generate/options/:format returns framework-specific assertion/setup tips', async () => {
+test('/v1/generate/options/:format returns framework-specific setup tips', async () => {
   const jestResponse = await fetch(url('/v1/generate/options/jest'));
   assert.equal(jestResponse.status, 200);
   const jestBody = await jestResponse.json();
-  assert.match(jestBody?.tips?.assertionStyle || '', /toStrictEqual|toEqual/);
   assert.match(jestBody?.tips?.includeSetup || '', /beforeEach/i);
 
   const phpunitResponse = await fetch(url('/v1/generate/options/phpunit'));
   assert.equal(phpunitResponse.status, 200);
   const phpunitBody = await phpunitResponse.json();
-  assert.match(phpunitBody?.tips?.assertionStyle || '', /assertSame|assertEquals/);
   assert.match(phpunitBody?.tips?.includeSetup || '', /setUp/i);
 });
 
@@ -169,17 +167,17 @@ test('/v1/generate/options/:format exposes only UI-supported option keys', async
     html: ['addTbodyToTable', 'addTheadToTable', 'compact', 'prettyPrint', 'prettyPrintDelimiter'],
     gherkin: ['inCellPadding', 'leftIndent', 'prettyPrint', 'showHeadings'],
     asciitable: ['style'],
-    junit4: ['assertionStyle', 'dataSourceStrategy', 'includeSetup', 'prettyPrint', 'suiteName', 'testNamePrefix'],
-    junit5: ['assertionStyle', 'dataSourceStrategy', 'includeSetup', 'prettyPrint', 'suiteName', 'testNamePrefix'],
-    junit6: ['assertionStyle', 'dataSourceStrategy', 'includeSetup', 'prettyPrint', 'suiteName', 'testNamePrefix'],
-    testng: ['assertionStyle', 'dataSourceStrategy', 'includeSetup', 'prettyPrint', 'suiteName', 'testNamePrefix'],
-    pytest: ['assertionStyle', 'dataSourceStrategy', 'includeSetup', 'prettyPrint', 'suiteName', 'testNamePrefix'],
-    jest: ['assertionStyle', 'dataSourceStrategy', 'includeSetup', 'prettyPrint', 'suiteName', 'testNamePrefix'],
-    xunit: ['assertionStyle', 'dataSourceStrategy', 'includeSetup', 'prettyPrint', 'suiteName', 'testNamePrefix'],
-    rspec: ['assertionStyle', 'dataSourceStrategy', 'includeSetup', 'prettyPrint', 'suiteName', 'testNamePrefix'],
-    phpunit: ['assertionStyle', 'dataSourceStrategy', 'includeSetup', 'prettyPrint', 'suiteName', 'testNamePrefix'],
-    kotest: ['assertionStyle', 'dataSourceStrategy', 'includeSetup', 'prettyPrint', 'suiteName', 'testNamePrefix'],
-    'test-more': ['assertionStyle', 'dataSourceStrategy', 'includeSetup', 'prettyPrint', 'suiteName', 'testNamePrefix'],
+    junit4: ['dataSourceStrategy', 'includeSetup', 'prettyPrint', 'suiteName', 'testNamePrefix'],
+    junit5: ['dataSourceStrategy', 'includeSetup', 'prettyPrint', 'suiteName', 'testNamePrefix'],
+    junit6: ['dataSourceStrategy', 'includeSetup', 'prettyPrint', 'suiteName', 'testNamePrefix'],
+    testng: ['dataSourceStrategy', 'includeSetup', 'prettyPrint', 'suiteName', 'testNamePrefix'],
+    pytest: ['dataSourceStrategy', 'includeSetup', 'prettyPrint', 'suiteName', 'testNamePrefix'],
+    jest: ['dataSourceStrategy', 'includeSetup', 'prettyPrint', 'suiteName', 'testNamePrefix'],
+    xunit: ['dataSourceStrategy', 'includeSetup', 'prettyPrint', 'suiteName', 'testNamePrefix'],
+    rspec: ['dataSourceStrategy', 'includeSetup', 'prettyPrint', 'suiteName', 'testNamePrefix'],
+    phpunit: ['dataSourceStrategy', 'includeSetup', 'prettyPrint', 'suiteName', 'testNamePrefix'],
+    kotest: ['dataSourceStrategy', 'includeSetup', 'prettyPrint', 'suiteName', 'testNamePrefix'],
+    'test-more': ['dataSourceStrategy', 'includeSetup', 'prettyPrint', 'suiteName', 'testNamePrefix'],
   };
 
   for (const [format, expectedKeys] of Object.entries(expectedKeysByFormat)) {
@@ -261,7 +259,7 @@ test('/v1/generate uses saved default options when request options are omitted',
   await resetDsvDefaults();
 });
 
-test('/v1/generate applies includeSetup and assertionStyle for unit-test formats', async () => {
+test('/v1/generate applies includeSetup for unit-test formats', async () => {
   const response = await fetch(url('/v1/generate'), {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
@@ -270,14 +268,13 @@ test('/v1/generate applies includeSetup and assertionStyle for unit-test formats
       rowCount: 1,
       outputFormat: 'jest',
       responseFormat: 'rendered',
-      options: { options: { includeSetup: true, assertionStyle: 'basic' } },
+      options: { options: { includeSetup: true } },
     }),
   });
   assert.equal(response.status, 200);
   const body = await response.json();
   assert.match(body.rendered, /beforeEach/);
-  assert.match(body.rendered, /toEqual/);
-  assert.equal(body.rendered.includes('toStrictEqual'), false);
+  assert.match(body.rendered, /expect\(/);
 });
 
 test('/v1/generate/options/csv/default resets options and tips to built-in defaults', async () => {

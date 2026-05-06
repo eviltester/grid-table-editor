@@ -107,7 +107,6 @@ test('/v1/generate parity: REST rendered matches core for all unit-test framewor
     const options = {
       options: {
         includeSetup: true,
-        assertionStyle: 'strict',
         prettyPrint: true,
         dataSourceStrategy: 'provider',
       },

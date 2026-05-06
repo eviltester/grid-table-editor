@@ -28,7 +28,6 @@ describe('unit-test export parity: UI exporter vs core pipeline', () => {
     const options = {
       options: {
         includeSetup: true,
-        assertionStyle: 'strict',
         prettyPrint: true,
         dataSourceStrategy: format === 'junit5' || format === 'junit6' ? 'provider' : 'provider',
       },

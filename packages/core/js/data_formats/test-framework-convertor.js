@@ -3,7 +3,6 @@ class TestFrameworkConvertorOptions {
     this.options = {
       suiteName: 'GeneratedDataTests',
       testNamePrefix: 'row',
-      assertionStyle: 'strict',
       includeSetup: true,
       prettyPrint: true,
       dataSourceStrategy: 'provider',
@@ -82,7 +81,6 @@ function buildCanonicalModel(dataTable, config) {
     suiteName: config.suiteName,
     testNamePrefix: config.testNamePrefix,
     includeSetup: config.includeSetup,
-    assertionStyle: config.assertionStyle,
     prettyPrint: config.prettyPrint,
     dataSourceStrategy: config.dataSourceStrategy,
     headers,
@@ -98,8 +96,8 @@ function formatRowCollection(rows, valueFormatter, prettyPrint, baseIndent = '')
   return `[\n${rows.map((row) => `${indent}${valueFormatter(row)}`).join(',\n')}\n${baseIndent}]`;
 }
 
-function isStrictAssertionStyle(model) {
-  return model.assertionStyle !== 'basic';
+function isStrictAssertionStyle(_model) {
+  return true;
 }
 
 function isScalarValue(value) {

@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import http from 'node:http';
 import { app } from './index.js';
+import { generateFromTextSpec } from '@anywaydata/core';
 
 let server;
 let port;
@@ -22,6 +23,20 @@ test.after(async () => {
 function url(path) {
   return `http://127.0.0.1:${port}${path}`;
 }
+
+const FRAMEWORKS = [
+  'junit4',
+  'junit5',
+  'junit6',
+  'testng',
+  'pytest',
+  'jest',
+  'xunit',
+  'rspec',
+  'phpunit',
+  'kotest',
+  'test-more',
+];
 
 test('/v1/generate returns rows payload for valid JSON request', async () => {
   const response = await fetch(url('/v1/generate'), {
@@ -85,4 +100,41 @@ test('/v1/generate supports responseFormat=raw', async () => {
 
   assert.equal(response.status, 200);
   assert.match(response.headers.get('content-type') || '', /text\/csv/i);
+});
+
+test('/v1/generate parity: REST rendered matches core for all unit-test frameworks', async () => {
+  for (const outputFormat of FRAMEWORKS) {
+    const options = {
+      options: {
+        includeSetup: true,
+        assertionStyle: 'strict',
+        prettyPrint: true,
+        dataSourceStrategy: 'provider',
+      },
+    };
+    const coreResult = generateFromTextSpec({
+      textSpec: 'Name\nBob\nAge\n21',
+      rowCount: 2,
+      outputFormat,
+      options,
+      seed: 123,
+    });
+    assert.equal(coreResult.ok, true, `core generation failed for ${outputFormat}`);
+
+    const response = await fetch(url('/v1/generate'), {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        textSpec: 'Name\nBob\nAge\n21',
+        rowCount: 2,
+        outputFormat,
+        responseFormat: 'rendered',
+        options,
+        seed: 123,
+      }),
+    });
+    assert.equal(response.status, 200, `api status failed for ${outputFormat}`);
+    const body = await response.json();
+    assert.equal(body.rendered, coreResult.rendered, `render mismatch for ${outputFormat}`);
+  }
 });

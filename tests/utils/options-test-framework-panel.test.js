@@ -22,6 +22,7 @@ describe('TestFrameworkOptionsPanel', () => {
     panel.addToGui();
 
     expect(parent.querySelector('.test-framework-options')).toBeTruthy();
+    expect(parent.querySelector("select[name='framework-id']")).toBeTruthy();
     expect(parent.querySelector("input[name='suite-name']")).toBeTruthy();
     expect(parent.querySelector("input[name='test-name-prefix']")).toBeTruthy();
     expect(parent.querySelector("select[name='assertion-style']")).toBeTruthy();
@@ -29,8 +30,9 @@ describe('TestFrameworkOptionsPanel', () => {
   });
 
   test('getOptionsFromGui reads values', () => {
-    const panel = new TestFrameworkOptionsPanel(parent);
+    const panel = new TestFrameworkOptionsPanel(parent, 'junit5');
     panel.addToGui();
+    parent.querySelector("select[name='framework-id']").value = 'junit4';
     parent.querySelector("input[name='suite-name']").value = 'MySuite';
     parent.querySelector("input[name='test-name-prefix']").value = 'case';
     parent.querySelector("select[name='assertion-style']").value = 'basic';
@@ -39,10 +41,43 @@ describe('TestFrameworkOptionsPanel', () => {
 
     const options = panel.getOptionsFromGui();
     expect(options).toBeInstanceOf(TestFrameworkConvertorOptions);
+    expect(options.outputFormat).toBe('junit4');
     expect(options.options.suiteName).toBe('MySuite');
     expect(options.options.testNamePrefix).toBe('case');
     expect(options.options.assertionStyle).toBe('basic');
     expect(options.options.dataSourceStrategy).toBe('inline');
     expect(options.options.includeSetup).toBe(false);
+  });
+
+  test('shows csv source strategy only for junit5/junit6', () => {
+    const junit5Panel = new TestFrameworkOptionsPanel(parent, 'junit5');
+    junit5Panel.addToGui();
+    const junit5Options = Array.from(parent.querySelectorAll("select[name='data-source-strategy'] option")).map(
+      (option) => option.value
+    );
+    expect(junit5Options).toContain('csv');
+
+    const pytestPanel = new TestFrameworkOptionsPanel(parent, 'pytest');
+    pytestPanel.addToGui();
+    const pytestOptions = Array.from(parent.querySelectorAll("select[name='data-source-strategy'] option")).map(
+      (option) => option.value
+    );
+    expect(pytestOptions).not.toContain('csv');
+  });
+
+  test('framework selector only shows frameworks for the selected language group', () => {
+    const javaPanel = new TestFrameworkOptionsPanel(parent, 'junit5');
+    javaPanel.addToGui();
+    const javaFrameworks = Array.from(parent.querySelectorAll("select[name='framework-id'] option")).map(
+      (option) => option.value
+    );
+    expect(javaFrameworks).toEqual(['junit4', 'junit5', 'junit6', 'testng']);
+
+    const pythonPanel = new TestFrameworkOptionsPanel(parent, 'pytest');
+    pythonPanel.addToGui();
+    const pythonFrameworks = Array.from(parent.querySelectorAll("select[name='framework-id'] option")).map(
+      (option) => option.value
+    );
+    expect(pythonFrameworks).toEqual(['pytest', 'unittest', 'nose2']);
   });
 });

@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import path from 'node:path';
+import { generateFromTextSpec } from '@anywaydata/core';
 
 function firstJsonLine(output) {
   return output
@@ -64,6 +65,62 @@ test('MCP server handles test framework output format', () => {
   assert.equal(payload.ok, true);
   assert.equal(payload.format, 'junit5');
   assert.match(payload.rendered, /@ParameterizedTest/);
+});
+
+test('MCP schema notes reflect assertion and setup behavior for unit test formats', () => {
+  const response = requestServer({
+    jsonrpc: '2.0',
+    id: 22,
+    method: 'tools/call',
+    params: {
+      name: 'get_output_format_options_schema',
+      arguments: { outputFormat: 'jest' },
+    },
+  });
+  const payload = JSON.parse(response?.result?.content?.[0]?.text || '{}');
+  assert.equal(payload.ok, true);
+  const props = payload?.formatSchema?.optionSchema?.properties || {};
+  assert.match(props?.assertionStyle?.description || '', /toStrictEqual|toEqual/);
+  assert.match(props?.includeSetup?.description || '', /beforeEach/i);
+});
+
+test('MCP generation uses assertionStyle and includeSetup for representative frameworks', () => {
+  const jestResponse = requestServer({
+    jsonrpc: '2.0',
+    id: 23,
+    method: 'tools/call',
+    params: {
+      name: 'generate_data_from_spec',
+      arguments: {
+        textSpec: 'Name\nBob',
+        rowCount: 1,
+        outputFormat: 'jest',
+        options: { outputFormat: 'jest', options: { assertionStyle: 'basic', includeSetup: true } },
+      },
+    },
+  });
+  const jestPayload = JSON.parse(jestResponse?.result?.content?.[0]?.text || '{}');
+  assert.match(jestPayload.rendered, /beforeEach/);
+  assert.match(jestPayload.rendered, /toEqual/);
+  assert.equal(jestPayload.rendered.includes('toStrictEqual'), false);
+
+  const phpunitResponse = requestServer({
+    jsonrpc: '2.0',
+    id: 24,
+    method: 'tools/call',
+    params: {
+      name: 'generate_data_from_spec',
+      arguments: {
+        textSpec: 'Name\nBob',
+        rowCount: 1,
+        outputFormat: 'phpunit',
+        options: { outputFormat: 'phpunit', options: { assertionStyle: 'strict', includeSetup: true } },
+      },
+    },
+  });
+  const phpunitPayload = JSON.parse(phpunitResponse?.result?.content?.[0]?.text || '{}');
+  assert.match(phpunitPayload.rendered, /setUp/);
+  assert.match(phpunitPayload.rendered, /assertSame/);
 });
 
 test('MCP server accepts key/value style textSpec for faker rules', () => {
@@ -226,4 +283,59 @@ test('MCP server rejects excessive textSpec length', () => {
 test('MCP server returns method not found for unknown methods', () => {
   const response = requestServer({ jsonrpc: '2.0', id: 14, method: 'nope/method' });
   assert.equal(response?.error?.code, -32601);
+});
+
+test('MCP parity: rendered output matches core for all unit-test frameworks', () => {
+  const frameworks = [
+    'junit4',
+    'junit5',
+    'junit6',
+    'testng',
+    'pytest',
+    'jest',
+    'xunit',
+    'rspec',
+    'phpunit',
+    'kotest',
+    'test-more',
+  ];
+
+  for (const outputFormat of frameworks) {
+    const options = {
+      outputFormat,
+      options: {
+        includeSetup: true,
+        assertionStyle: 'strict',
+        prettyPrint: true,
+        dataSourceStrategy: 'provider',
+      },
+    };
+    const coreResult = generateFromTextSpec({
+      textSpec: 'Name\nBob\nAge\n21',
+      rowCount: 2,
+      outputFormat,
+      options,
+      seed: 123,
+    });
+    assert.equal(coreResult.ok, true, `core generation failed for ${outputFormat}`);
+
+    const response = requestServer({
+      jsonrpc: '2.0',
+      id: `parity-${outputFormat}`,
+      method: 'tools/call',
+      params: {
+        name: 'generate_data_from_spec',
+        arguments: {
+          textSpec: 'Name\nBob\nAge\n21',
+          rowCount: 2,
+          outputFormat,
+          options,
+          seed: 123,
+        },
+      },
+    });
+    const payload = JSON.parse(response?.result?.content?.[0]?.text || '{}');
+    assert.equal(payload.ok, true, `mcp generation failed for ${outputFormat}`);
+    assert.equal(payload.rendered, coreResult.rendered, `render mismatch for ${outputFormat}`);
+  }
 });

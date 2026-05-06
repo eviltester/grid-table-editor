@@ -75,18 +75,25 @@ describe('TabbedTextControl preview/edit button', () => {
       (elem) => elem.textContent.trim()
     );
     expect(unitTestSubtasks).toEqual([
-      'JUnit4',
-      'JUnit5',
-      'JUnit6',
-      'TestNG',
-      'PyTest',
-      'Jest',
-      'xUnit',
-      'RSpec',
-      'PHPUnit',
-      'Kotest',
-      'Test::More',
+      'C#',
+      'Java',
+      'JavaScript',
+      'Kotlin',
+      'Perl',
+      'PHP',
+      'Python',
+      'Ruby',
+      'TypeScript',
     ]);
+    expect(host.querySelector('.subtask-select.active-type .subtask-select-action').textContent).toBe('C#');
+    expect(host.querySelector('li.active-type a').getAttribute('data-type')).toBe('xunit');
+
+    const typeScriptUnitTestTab = Array.from(host.querySelectorAll('#conversionSubtasks .subtask-select-action')).find(
+      (elem) => elem.textContent.trim() === 'TypeScript'
+    );
+    typeScriptUnitTestTab.click();
+    expect(host.querySelector('.subtask-select.active-type .subtask-select-action').textContent).toBe('TypeScript');
+    expect(host.querySelector('li.active-type a').getAttribute('data-type')).toBe('jest');
   });
 
   test('initial default tab selection does not notify controller before bootstrap wiring completes', () => {

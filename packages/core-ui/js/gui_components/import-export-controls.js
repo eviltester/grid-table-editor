@@ -292,17 +292,28 @@ class ImportExportControls {
         this.optionsPanels['sql'] = new SqlOptionsPanel(optionsparent);
         this.optionsPanels['html'] = new HtmlOptionsPanel(optionsparent);
         this.optionsPanels['gherkin'] = new GherkinOptionsPanel(optionsparent);
-        this.optionsPanels['junit4'] = new TestFrameworkOptionsPanel(optionsparent);
-        this.optionsPanels['junit5'] = new TestFrameworkOptionsPanel(optionsparent);
-        this.optionsPanels['junit6'] = new TestFrameworkOptionsPanel(optionsparent);
-        this.optionsPanels['testng'] = new TestFrameworkOptionsPanel(optionsparent);
-        this.optionsPanels['pytest'] = new TestFrameworkOptionsPanel(optionsparent);
-        this.optionsPanels['jest'] = new TestFrameworkOptionsPanel(optionsparent);
-        this.optionsPanels['xunit'] = new TestFrameworkOptionsPanel(optionsparent);
-        this.optionsPanels['rspec'] = new TestFrameworkOptionsPanel(optionsparent);
-        this.optionsPanels['phpunit'] = new TestFrameworkOptionsPanel(optionsparent);
-        this.optionsPanels['kotest'] = new TestFrameworkOptionsPanel(optionsparent);
-        this.optionsPanels['test-more'] = new TestFrameworkOptionsPanel(optionsparent);
+        this.optionsPanels['junit4'] = new TestFrameworkOptionsPanel(optionsparent, 'junit4');
+        this.optionsPanels['junit5'] = new TestFrameworkOptionsPanel(optionsparent, 'junit5');
+        this.optionsPanels['junit6'] = new TestFrameworkOptionsPanel(optionsparent, 'junit6');
+        this.optionsPanels['testng'] = new TestFrameworkOptionsPanel(optionsparent, 'testng');
+        this.optionsPanels['pytest'] = new TestFrameworkOptionsPanel(optionsparent, 'pytest');
+        this.optionsPanels['unittest'] = new TestFrameworkOptionsPanel(optionsparent, 'unittest');
+        this.optionsPanels['nose2'] = new TestFrameworkOptionsPanel(optionsparent, 'nose2');
+        this.optionsPanels['jest'] = new TestFrameworkOptionsPanel(optionsparent, 'jest');
+        this.optionsPanels['vitest'] = new TestFrameworkOptionsPanel(optionsparent, 'vitest');
+        this.optionsPanels['mocha'] = new TestFrameworkOptionsPanel(optionsparent, 'mocha');
+        this.optionsPanels['xunit'] = new TestFrameworkOptionsPanel(optionsparent, 'xunit');
+        this.optionsPanels['nunit'] = new TestFrameworkOptionsPanel(optionsparent, 'nunit');
+        this.optionsPanels['mstest'] = new TestFrameworkOptionsPanel(optionsparent, 'mstest');
+        this.optionsPanels['rspec'] = new TestFrameworkOptionsPanel(optionsparent, 'rspec');
+        this.optionsPanels['minitest'] = new TestFrameworkOptionsPanel(optionsparent, 'minitest');
+        this.optionsPanels['phpunit'] = new TestFrameworkOptionsPanel(optionsparent, 'phpunit');
+        this.optionsPanels['pest'] = new TestFrameworkOptionsPanel(optionsparent, 'pest');
+        this.optionsPanels['kotest'] = new TestFrameworkOptionsPanel(optionsparent, 'kotest');
+        this.optionsPanels['junit5-kotlin'] = new TestFrameworkOptionsPanel(optionsparent, 'junit5-kotlin');
+        this.optionsPanels['spek'] = new TestFrameworkOptionsPanel(optionsparent, 'spek');
+        this.optionsPanels['test-more'] = new TestFrameworkOptionsPanel(optionsparent, 'test-more');
+        this.optionsPanels['test2-suite'] = new TestFrameworkOptionsPanel(optionsparent, 'test2-suite');
       }
     }
   }
@@ -397,16 +408,35 @@ class ImportExportControls {
   }
 
   setCurrentTypeOptions() {
-    const type = document.querySelector('li.active-type a').getAttribute('data-type');
-    this.importer.setOptionsForType(type, this.optionsPanels[type].getOptionsFromGui());
-    this.exporter.setOptionsForType(type, this.optionsPanels[type].getOptionsFromGui());
+    const activeType = document.querySelector('li.active-type a').getAttribute('data-type');
+    const guiOptions = this.optionsPanels[activeType].getOptionsFromGui();
+    const type = guiOptions?.outputFormat || activeType;
+    this._setActiveTypeIfPresent(type);
+    this.importer.setOptionsForType(type, guiOptions);
+    this.exporter.setOptionsForType(type, guiOptions);
   }
 
   applyCurrentTypeOptions(options) {
-    const type = document.querySelector('li.active-type a').getAttribute('data-type');
+    const activeType = document.querySelector('li.active-type a').getAttribute('data-type');
+    const type = options?.outputFormat || activeType;
+    this._setActiveTypeIfPresent(type);
     this.importer.setOptionsForType(type, options);
     this.exporter.setOptionsForType(type, options);
     this.renderTextFromGrid();
+  }
+
+  _setActiveTypeIfPresent(type) {
+    if (!type) {
+      return;
+    }
+    const subtaskElem = document.querySelector(`.subtask-select[data-types*="${type}"]`);
+    if (subtaskElem) {
+      subtaskElem.setAttribute('data-type', type);
+      const actionElem = subtaskElem.querySelector('.subtask-select-action');
+      if (actionElem) {
+        actionElem.setAttribute('data-type', type);
+      }
+    }
   }
 
   isPreviewTextMode() {

@@ -110,7 +110,9 @@ const sharedInlineHelpEntries = {
     `,
   'test-framework-options': `
       <p>Export the table data as unit test code for a selected framework.</p>
-      <p>Configure suite name, test name prefix, data source strategy, JUnit source strategy, assertion style, and formatting options before pressing [Apply].</p>
+      <p>Configure suite name, test name prefix, data source strategy, assertion style, setup inclusion, and formatting options before pressing [Apply].</p>
+      <p><em>Assertion style and setup scaffolding are framework-dependent. Some frameworks map basic/strict to the same assertion API.</em></p>
+      <p><a class="helplink" href="docs/unit-test-export-options.md" target="anywaydatadocs">See full unit-test option mapping</a></p>
     `,
 };
 

@@ -284,12 +284,23 @@ class DataGeneratorPage {
       { type: 'junit6', label: 'JUnit6' },
       { type: 'testng', label: 'TestNG' },
       { type: 'pytest', label: 'PyTest' },
+      { type: 'unittest', label: 'unittest' },
+      { type: 'nose2', label: 'nose2' },
       { type: 'jest', label: 'Jest' },
+      { type: 'vitest', label: 'Vitest' },
+      { type: 'mocha', label: 'Mocha' },
       { type: 'xunit', label: 'xUnit' },
+      { type: 'nunit', label: 'NUnit' },
+      { type: 'mstest', label: 'MSTest' },
       { type: 'rspec', label: 'RSpec' },
+      { type: 'minitest', label: 'Minitest' },
       { type: 'phpunit', label: 'PHPUnit' },
+      { type: 'pest', label: 'Pest' },
       { type: 'kotest', label: 'Kotest' },
+      { type: 'junit5-kotlin', label: 'JUnit5 Kotlin' },
+      { type: 'spek', label: 'Spek' },
       { type: 'test-more', label: 'Test::More' },
+      { type: 'test2-suite', label: 'Test2::Suite' },
     ];
     const codeGroup = this.documentObj.createElement('optgroup');
     codeGroup.label = '-- Code --';
@@ -376,17 +387,28 @@ class DataGeneratorPage {
     this.optionsPanels['html'] = new HtmlOptionsPanel(optionsParent);
     this.optionsPanels['gherkin'] = new GherkinOptionsPanel(optionsParent);
     this.optionsPanels['asciitable'] = new AsciiTableOptionsPanel(optionsParent);
-    this.optionsPanels['junit4'] = new TestFrameworkOptionsPanel(optionsParent);
-    this.optionsPanels['junit5'] = new TestFrameworkOptionsPanel(optionsParent);
-    this.optionsPanels['junit6'] = new TestFrameworkOptionsPanel(optionsParent);
-    this.optionsPanels['testng'] = new TestFrameworkOptionsPanel(optionsParent);
-    this.optionsPanels['pytest'] = new TestFrameworkOptionsPanel(optionsParent);
-    this.optionsPanels['jest'] = new TestFrameworkOptionsPanel(optionsParent);
-    this.optionsPanels['xunit'] = new TestFrameworkOptionsPanel(optionsParent);
-    this.optionsPanels['rspec'] = new TestFrameworkOptionsPanel(optionsParent);
-    this.optionsPanels['phpunit'] = new TestFrameworkOptionsPanel(optionsParent);
-    this.optionsPanels['kotest'] = new TestFrameworkOptionsPanel(optionsParent);
-    this.optionsPanels['test-more'] = new TestFrameworkOptionsPanel(optionsParent);
+    this.optionsPanels['junit4'] = new TestFrameworkOptionsPanel(optionsParent, 'junit4');
+    this.optionsPanels['junit5'] = new TestFrameworkOptionsPanel(optionsParent, 'junit5');
+    this.optionsPanels['junit6'] = new TestFrameworkOptionsPanel(optionsParent, 'junit6');
+    this.optionsPanels['testng'] = new TestFrameworkOptionsPanel(optionsParent, 'testng');
+    this.optionsPanels['pytest'] = new TestFrameworkOptionsPanel(optionsParent, 'pytest');
+    this.optionsPanels['unittest'] = new TestFrameworkOptionsPanel(optionsParent, 'unittest');
+    this.optionsPanels['nose2'] = new TestFrameworkOptionsPanel(optionsParent, 'nose2');
+    this.optionsPanels['jest'] = new TestFrameworkOptionsPanel(optionsParent, 'jest');
+    this.optionsPanels['vitest'] = new TestFrameworkOptionsPanel(optionsParent, 'vitest');
+    this.optionsPanels['mocha'] = new TestFrameworkOptionsPanel(optionsParent, 'mocha');
+    this.optionsPanels['xunit'] = new TestFrameworkOptionsPanel(optionsParent, 'xunit');
+    this.optionsPanels['nunit'] = new TestFrameworkOptionsPanel(optionsParent, 'nunit');
+    this.optionsPanels['mstest'] = new TestFrameworkOptionsPanel(optionsParent, 'mstest');
+    this.optionsPanels['rspec'] = new TestFrameworkOptionsPanel(optionsParent, 'rspec');
+    this.optionsPanels['minitest'] = new TestFrameworkOptionsPanel(optionsParent, 'minitest');
+    this.optionsPanels['phpunit'] = new TestFrameworkOptionsPanel(optionsParent, 'phpunit');
+    this.optionsPanels['pest'] = new TestFrameworkOptionsPanel(optionsParent, 'pest');
+    this.optionsPanels['kotest'] = new TestFrameworkOptionsPanel(optionsParent, 'kotest');
+    this.optionsPanels['junit5-kotlin'] = new TestFrameworkOptionsPanel(optionsParent, 'junit5-kotlin');
+    this.optionsPanels['spek'] = new TestFrameworkOptionsPanel(optionsParent, 'spek');
+    this.optionsPanels['test-more'] = new TestFrameworkOptionsPanel(optionsParent, 'test-more');
+    this.optionsPanels['test2-suite'] = new TestFrameworkOptionsPanel(optionsParent, 'test2-suite');
   }
 
   getSelectedOutputType() {
@@ -459,10 +481,20 @@ class DataGeneratorPage {
   }
 
   applyCurrentTypeOptions(options) {
-    const type = this.getSelectedOutputType();
-    if (!type || !options) {
+    if (!options) {
       return;
     }
+    const requestedType = options.outputFormat || this.getSelectedOutputType();
+    if (!requestedType) {
+      return;
+    }
+    const outputSelect = this.documentObj.getElementById('generatorOutputFormat');
+    if (outputSelect && outputSelect.value !== requestedType) {
+      outputSelect.value = requestedType;
+      this.renderOptionsPanelForSelectedFormat();
+    }
+
+    const type = this.getSelectedOutputType();
     this.exporter?.setOptionsForType?.(type, options);
     this.renderOutputPreviewForCurrentSelection();
     this.setGenerationStatus(`${type.toUpperCase()} options applied.`);

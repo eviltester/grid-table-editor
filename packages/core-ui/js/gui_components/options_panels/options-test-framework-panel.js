@@ -2,15 +2,122 @@ import { TestFrameworkConvertorOptions } from '@anywaydata/core/data_formats/tes
 import { HtmlDataValues } from './html-options-data-utils.js';
 
 class TestFrameworkOptionsPanel {
-  constructor(parentElement) {
+  constructor(parentElement, frameworkId = 'junit4') {
     this.parent = parentElement;
     this.htmlData = new HtmlDataValues(this.parent);
+    this.frameworkId = frameworkId;
+  }
+
+  static FRAMEWORK_GROUPS = {
+    java: ['junit4', 'junit5', 'junit6', 'testng'],
+    python: ['pytest', 'unittest', 'nose2'],
+    javascript: ['jest', 'vitest', 'mocha'],
+    csharp: ['xunit', 'nunit', 'mstest'],
+    ruby: ['rspec', 'minitest'],
+    php: ['phpunit', 'pest'],
+    kotlin: ['kotest', 'junit5-kotlin', 'spek'],
+    perl: ['test-more', 'test2-suite'],
+  };
+
+  static FRAMEWORK_LABELS = {
+    junit4: 'JUnit4',
+    junit5: 'JUnit5',
+    junit6: 'JUnit6',
+    testng: 'TestNG',
+    pytest: 'PyTest',
+    unittest: 'unittest',
+    nose2: 'nose2',
+    jest: 'Jest',
+    vitest: 'Vitest',
+    mocha: 'Mocha',
+    xunit: 'xUnit',
+    nunit: 'NUnit',
+    mstest: 'MSTest',
+    rspec: 'RSpec',
+    minitest: 'Minitest',
+    phpunit: 'PHPUnit',
+    pest: 'Pest',
+    kotest: 'Kotest',
+    'junit5-kotlin': 'JUnit5 Kotlin',
+    spek: 'Spek',
+    'test-more': 'Test::More',
+    'test2-suite': 'Test2::Suite',
+  };
+
+  getFrameworkGroupName() {
+    const frameworkId = this.frameworkId;
+    return (
+      Object.keys(TestFrameworkOptionsPanel.FRAMEWORK_GROUPS).find((groupName) =>
+        TestFrameworkOptionsPanel.FRAMEWORK_GROUPS[groupName].includes(frameworkId)
+      ) || 'java'
+    );
+  }
+
+  getFrameworkOptions() {
+    const groupName = this.getFrameworkGroupName();
+    return TestFrameworkOptionsPanel.FRAMEWORK_GROUPS[groupName].map((frameworkId) => ({
+      value: frameworkId,
+      label: TestFrameworkOptionsPanel.FRAMEWORK_LABELS[frameworkId] || frameworkId,
+    }));
+  }
+
+  getDataSourceStrategyOptions() {
+    const selectedFrameworkId =
+      this.parent?.querySelector?.("select[name='framework-id']")?.value?.trim?.() || this.frameworkId;
+
+    if (selectedFrameworkId === 'junit5' || selectedFrameworkId === 'junit6') {
+      return [
+        { value: 'provider', label: 'Provider/Method' },
+        { value: 'inline', label: 'Inline' },
+        { value: 'csv', label: 'CSV Source (JUnit)' },
+      ];
+    }
+    if (selectedFrameworkId === 'junit4' || selectedFrameworkId === 'testng') {
+      return [
+        { value: 'provider', label: 'Provider/Method' },
+        { value: 'inline', label: 'Inline' },
+      ];
+    }
+    if (
+      selectedFrameworkId === 'pytest' ||
+      selectedFrameworkId === 'unittest' ||
+      selectedFrameworkId === 'nose2' ||
+      selectedFrameworkId === 'jest' ||
+      selectedFrameworkId === 'vitest' ||
+      selectedFrameworkId === 'mocha' ||
+      selectedFrameworkId === 'xunit' ||
+      selectedFrameworkId === 'nunit' ||
+      selectedFrameworkId === 'mstest'
+    ) {
+      return [
+        { value: 'provider', label: 'Provider/Method' },
+        { value: 'inline', label: 'Inline' },
+      ];
+    }
+    return [{ value: 'provider', label: 'Provider/Method' }];
   }
 
   addToGui() {
+    const frameworkOptions = this.getFrameworkOptions();
+    const dataSourceOptions = this.getDataSourceStrategyOptions()
+      .map((option) => `<option value="${option.value}">${option.label}</option>`)
+      .join('');
+    const frameworkOptionsHtml = frameworkOptions
+      .map((option) => `<option value="${option.value}">${option.label}</option>`)
+      .join('');
+
     this.parent.innerHTML = `
       <div class="test-framework-options" style="width:100%">
         <div><p><strong>Options</strong> <span data-help="test-framework-options" class="helpicon"></span></p></div>
+
+        <div class="framework-id">
+          <label>Framework
+            <select name="framework-id" ${frameworkOptions.length <= 1 ? 'disabled' : ''}>
+              ${frameworkOptionsHtml}
+            </select>
+          </label>
+          <br>
+        </div>
 
         <div class="suite-name">
           <label>Suite Name
@@ -39,9 +146,7 @@ class TestFrameworkOptionsPanel {
         <div class="data-source-strategy">
           <label>Data Source Strategy
             <select name="data-source-strategy">
-              <option value="provider">Provider/Method</option>
-              <option value="inline">Inline</option>
-              <option value="csv">CSV Source (JUnit)</option>
+              ${dataSourceOptions}
             </select>
           </label>
           <br>
@@ -68,6 +173,28 @@ class TestFrameworkOptionsPanel {
         </div>
       </div>
     `;
+
+    const frameworkSelect = this.parent.querySelector("select[name='framework-id']");
+    if (frameworkSelect) {
+      frameworkSelect.value = frameworkOptions.some((option) => option.value === this.frameworkId)
+        ? this.frameworkId
+        : frameworkOptions[0]?.value;
+      frameworkSelect.addEventListener('change', () => this.refreshDataSourceStrategyOptions());
+    }
+    this.refreshDataSourceStrategyOptions();
+  }
+
+  refreshDataSourceStrategyOptions() {
+    const strategySelect = this.parent.querySelector("select[name='data-source-strategy']");
+    if (!strategySelect) {
+      return;
+    }
+    const currentValue = strategySelect.value;
+    const options = this.getDataSourceStrategyOptions();
+    strategySelect.innerHTML = options
+      .map((option) => `<option value="${option.value}">${option.label}</option>`)
+      .join('');
+    strategySelect.value = options.some((option) => option.value === currentValue) ? currentValue : options[0]?.value;
   }
 
   setApplyCallback(callbackFunc) {
@@ -79,6 +206,8 @@ class TestFrameworkOptionsPanel {
 
   getOptionsFromGui() {
     const newOptions = new TestFrameworkConvertorOptions();
+    newOptions.outputFormat =
+      this.htmlData.getSelectedValueFrom("select[name='framework-id']", this.frameworkId) || this.frameworkId;
     newOptions.options.suiteName =
       this.htmlData.getTextInputValueFrom("input[name='suite-name']") || newOptions.options.suiteName;
     newOptions.options.testNamePrefix =
@@ -94,13 +223,17 @@ class TestFrameworkOptionsPanel {
 
   setFromOptions(mainOptions) {
     const options = mainOptions?.options ?? {};
+    const selectedFramework = mainOptions?.outputFormat || this.frameworkId;
+    this.htmlData.setDropDownOptionToKeyValue("select[name='framework-id']", selectedFramework, this.frameworkId);
+    this.frameworkId = selectedFramework;
+    this.refreshDataSourceStrategyOptions();
     this.htmlData.setTextFieldToValue("input[name='suite-name']", options.suiteName ?? 'GeneratedDataTests');
     this.htmlData.setTextFieldToValue("input[name='test-name-prefix']", options.testNamePrefix ?? 'row');
     this.htmlData.setDropDownOptionToKeyValue("select[name='assertion-style']", options.assertionStyle, 'strict');
     this.htmlData.setDropDownOptionToKeyValue(
       "select[name='data-source-strategy']",
       options.dataSourceStrategy,
-      'provider'
+      this.getDataSourceStrategyOptions()[0]?.value || 'provider'
     );
     this.htmlData.setCheckBoxFrom("input[name='include-setup']", options.includeSetup, true);
     this.htmlData.setCheckBoxFrom("input[name='pretty-print']", options.prettyPrint, true);

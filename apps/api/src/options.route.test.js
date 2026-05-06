@@ -76,6 +76,20 @@ test('/v1/generate/options/:format returns tips for all returned option keys', a
   }
 });
 
+test('/v1/generate/options/:format returns framework-specific assertion/setup tips', async () => {
+  const jestResponse = await fetch(url('/v1/generate/options/jest'));
+  assert.equal(jestResponse.status, 200);
+  const jestBody = await jestResponse.json();
+  assert.match(jestBody?.tips?.assertionStyle || '', /toStrictEqual|toEqual/);
+  assert.match(jestBody?.tips?.includeSetup || '', /beforeEach/i);
+
+  const phpunitResponse = await fetch(url('/v1/generate/options/phpunit'));
+  assert.equal(phpunitResponse.status, 200);
+  const phpunitBody = await phpunitResponse.json();
+  assert.match(phpunitBody?.tips?.assertionStyle || '', /assertSame|assertEquals/);
+  assert.match(phpunitBody?.tips?.includeSetup || '', /setUp/i);
+});
+
 test('/v1/generate/options/:format exposes only UI-supported option keys', async () => {
   await resetCsvDefaults();
   const expectedKeysByFormat = {
@@ -245,6 +259,25 @@ test('/v1/generate uses saved default options when request options are omitted',
   const body = await response.text();
   assert.equal(body.includes('Name'), false);
   await resetDsvDefaults();
+});
+
+test('/v1/generate applies includeSetup and assertionStyle for unit-test formats', async () => {
+  const response = await fetch(url('/v1/generate'), {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+      textSpec: 'Name\nBob',
+      rowCount: 1,
+      outputFormat: 'jest',
+      responseFormat: 'rendered',
+      options: { options: { includeSetup: true, assertionStyle: 'basic' } },
+    }),
+  });
+  assert.equal(response.status, 200);
+  const body = await response.json();
+  assert.match(body.rendered, /beforeEach/);
+  assert.match(body.rendered, /toEqual/);
+  assert.equal(body.rendered.includes('toStrictEqual'), false);
 });
 
 test('/v1/generate/options/csv/default resets options and tips to built-in defaults', async () => {

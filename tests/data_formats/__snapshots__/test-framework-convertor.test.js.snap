@@ -1,0 +1,225 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`test framework convertor jest matches golden snapshot (strict + setup) 1`] = `
+"const getRows = () => [
+    {\\"Name\\":\\"Connie\\",\\"Age\\":21},
+    {\\"Name\\":\\"Miles\\",\\"Age\\":34}
+  ];
+const mapRowUnderTest = (row) => {
+  // Example: return normalizePerson(row);
+  return row; // replace with your system-under-test call
+};
+
+describe('GeneratedDataTests', () => {
+  beforeEach(() => {
+    // setup
+  });
+
+  test.each(getRows())('row parameterized', (row) => {
+    const expected = row;
+    const actual = mapRowUnderTest(row);
+    expect(actual[\\"Name\\"]).toStrictEqual(expected[\\"Name\\"]);
+    expect(actual[\\"Age\\"]).toStrictEqual(expected[\\"Age\\"]);
+  });
+});"
+`;
+
+exports[`test framework convertor junit5 matches golden snapshot (strict + setup) 1`] = `
+"import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.util.stream.Stream;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+public class GeneratedDataTests {
+    static Stream<Arguments> data() {
+        return Stream.of(
+            Arguments.of(\\"Connie\\", 21),
+            Arguments.of(\\"Miles\\", 34)
+        );
+    }
+
+    @BeforeEach
+    void setUp() {
+        // setup
+    }
+
+    @ParameterizedTest
+    @MethodSource(\\"data\\")
+    void row_parameterized(Object... row) {
+        Object[] expected = row;
+        Object[] actual = mapRowUnderTest(row);
+        assertEquals(expected[0], actual[0]); // Name
+        assertEquals(expected[1], actual[1]); // Age
+    }
+
+    private Object[] mapRowUnderTest(Object[] input) {
+        // Example: return PersonMapper.normalize(input);
+        return input; // replace with your system-under-test call
+    }
+}"
+`;
+
+exports[`test framework convertor kotest matches golden snapshot (strict + setup) 1`] = `
+"import io.kotest.core.spec.style.StringSpec
+import io.kotest.matchers.shouldBe
+
+class GeneratedDataTests : StringSpec({
+    beforeTest {
+        // setup
+    }
+
+    val mapRowUnderTest: (Map<String, Any?>) -> Map<String, Any?> = { row ->
+        // Example: PersonMapper.normalize(row)
+        row // replace with your system-under-test call
+    }
+
+    fun rowProvider() = [
+          {\\"Name\\":\\"Connie\\",\\"Age\\":21},
+          {\\"Name\\":\\"Miles\\",\\"Age\\":34}
+        ]
+
+    \\"row parameterized\\" {
+        rowProvider().forEach { row ->
+            val expected = row
+            val actual = mapRowUnderTest(row)
+            actual[\\"Name\\"] shouldBe expected[\\"Name\\"]
+            actual[\\"Name\\"]?.let { it::class } shouldBe expected[\\"Name\\"]?.let { it::class }
+            actual[\\"Age\\"] shouldBe expected[\\"Age\\"]
+            actual[\\"Age\\"]?.let { it::class } shouldBe expected[\\"Age\\"]?.let { it::class }
+        }
+    }
+})"
+`;
+
+exports[`test framework convertor phpunit matches golden snapshot (strict + setup) 1`] = `
+"<?php
+
+use PHPUnit\\\\Framework\\\\TestCase;
+
+final class GeneratedDataTests extends TestCase
+{
+    public static function rowProvider(): array
+    {
+        return [
+            ['Connie', 21],
+            ['Miles', 34]
+        ];
+    }
+
+    protected function setUp(): void
+    {
+        // setup
+    }
+
+    /** @dataProvider rowProvider */
+    public function test_row_parameterized(...$row): void
+    {
+        $expected = $row;
+        $actual = $this->mapRowUnderTest($row);
+        $this->assertSame($expected[0], $actual[0]); // Name
+        $this->assertSame($expected[1], $actual[1]); // Age
+    }
+
+    private function mapRowUnderTest(array $row): array
+    {
+        // Example: return PersonMapper::normalize($row);
+        return $row; // replace with your system-under-test call
+    }
+}"
+`;
+
+exports[`test framework convertor pytest matches golden snapshot (strict + setup) 1`] = `
+"import pytest
+
+def map_row_under_test(row):
+    # Example: return normalize_person(row)
+    return row  # replace with your system-under-test call
+
+@pytest.fixture
+def setup_context():
+    return {}
+
+def row_provider():
+    return [
+      {\\"Name\\": \\"Connie\\", \\"Age\\": 21},
+      {\\"Name\\": \\"Miles\\", \\"Age\\": 34}
+    ]
+
+@pytest.mark.parametrize(\\"row\\", row_provider())
+def test_row_parameterized(row, setup_context):
+    expected = row
+    actual = map_row_under_test(row)
+    assert actual[\\"Name\\"] == expected[\\"Name\\"]
+    assert type(actual[\\"Name\\"]) is type(expected[\\"Name\\"])
+    assert actual[\\"Age\\"] == expected[\\"Age\\"]
+    assert type(actual[\\"Age\\"]) is type(expected[\\"Age\\"])"
+`;
+
+exports[`test framework convertor test-more matches golden snapshot (strict + setup) 1`] = `
+"use strict;
+use warnings;
+use Test::More;
+
+sub map_row_under_test {
+    my ($row) = @_;
+    # Example: return normalize_person($row);
+    return $row; # replace with your system-under-test call
+}
+
+my $setup = {};
+
+sub row_provider {
+    return [
+  {\\"Name\\":\\"Connie\\",\\"Age\\":21},
+  {\\"Name\\":\\"Miles\\",\\"Age\\":34}
+];
+}
+
+my $rows = row_provider();
+
+foreach my $row (@$rows) {
+    my $expected = $row;
+    my $actual = map_row_under_test($row);
+    is_deeply($actual->{\\"Name\\"}, $expected->{\\"Name\\"}, 'row Name');
+    is_deeply($actual->{\\"Age\\"}, $expected->{\\"Age\\"}, 'row Age');
+}
+
+done_testing();"
+`;
+
+exports[`test framework convertor xunit matches golden snapshot (strict + setup) 1`] = `
+"using System.Collections.Generic;
+using Xunit;
+
+public class GeneratedDataTests
+{
+    public GeneratedDataTests()
+    {
+        // setup
+    }
+
+    public static IEnumerable<object[]> Rows => new List<object[]>
+    {
+            new object[] { \\"Connie\\", 21 },
+            new object[] { \\"Miles\\", 34 }
+    };
+
+    [Theory]
+    [MemberData(nameof(Rows))]
+    public void row_parameterized(params object[] row)
+    {
+        var expected = row;
+        var actual = MapRowUnderTest(row);
+        Assert.Equal(expected[0], actual[0]); // Name
+        Assert.Equal(expected[1], actual[1]); // Age
+    }
+
+    private object[] MapRowUnderTest(object[] input)
+    {
+        // Example: return PersonMapper.Normalize(input);
+        return input; // replace with your system-under-test call
+    }
+}"
+`;

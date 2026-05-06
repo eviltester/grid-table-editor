@@ -10,15 +10,7 @@ export class EnumTestDataRuleValidator {
 
     try {
       const ruleSpec = String(aTestDataRule.ruleSpec || '');
-
-      // Handle different enum formats
-      let enumValues;
-      if (EnumParser.isAwdEnumFormat(ruleSpec)) {
-        enumValues = EnumParser.extractAwdEnumValues(ruleSpec);
-      } else {
-        // Simple comma-separated format
-        enumValues = ruleSpec.split(',').map((v) => v.trim());
-      }
+      const enumValues = EnumParser.extractEnumValues(ruleSpec);
 
       // Must have at least 2 values
       if (enumValues.length < 2) {

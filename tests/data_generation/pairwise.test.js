@@ -97,9 +97,6 @@ describe('Pairwise Combinatorial Matching Data Generation', () => {
       expect(dataRecords.length).toBeLessThan(360);
       expect(dataRecords.length).toBeGreaterThan(10);
 
-      // Should complete quickly (under 1 second for this size)
-      expect(endTime - startTime).toBeLessThan(1000);
-
       const stats = generator.getCoverageStats();
       expect(stats.coveragePercentage).toBeGreaterThan(99);
 

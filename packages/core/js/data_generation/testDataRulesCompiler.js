@@ -146,8 +146,10 @@ export class TestDataRulesCompiler {
       if (values.length >= 2) {
         // Values should be reasonably short (not code/expressions)
         if (values.every((v) => v.length > 0 && v.length <= 50)) {
-          // Values shouldn't look like faker commands or regex
-          if (!values.some((v) => v.includes('.') || /[\[\]{}()^$*+?|\\]/.test(v))) {
+          // Values shouldn't look like regex/function syntax.
+          // Dotted literals such as versions (1.0) or domains (example.com) are valid,
+          // but faker-like dotted member paths (e.g. person.firstName) should not be enums.
+          if (!values.some((v) => /[\[\]{}()^$*+?|\\]/.test(v) || (v.includes('.') && /[A-Z]/.test(v)))) {
             return true;
           }
         }

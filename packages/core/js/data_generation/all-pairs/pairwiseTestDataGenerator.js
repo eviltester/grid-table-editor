@@ -205,7 +205,7 @@ export class PairwiseTestDataGenerator {
       // Use the same generator logic as the regular test data generator
       if (this.fakerGenerator) {
         const result = this.fakerGenerator.generateFrom(rule);
-        return result.data || rule.ruleSpec;
+        return result.data ?? rule.ruleSpec;
       }
 
       // Fallback: try to execute faker command directly
@@ -238,7 +238,7 @@ export class PairwiseTestDataGenerator {
     try {
       if (this.randExpGenerator) {
         const result = this.randExpGenerator.generateFrom(rule);
-        return result.data || rule.ruleSpec;
+        return result.data ?? rule.ruleSpec;
       }
 
       // Fallback: try to use RandExp directly
@@ -257,16 +257,16 @@ export class PairwiseTestDataGenerator {
    * Generate a specific data record by index
    */
   generateDataRecord(index) {
-    if (!this.dataRecords || index >= this.dataRecords.length) {
+    if (!this.dataRecords || !Number.isInteger(index) || index < 0 || index >= this.dataRecords.length) {
       return errorResponse('No pairwise data records available');
     }
 
     const record = this.dataRecords[index];
-    return {
+    return dataResponse({
       recordIndex: index,
       totalRecords: this.dataRecords.length,
       dataRecord: record,
-    };
+    });
   }
 
   /**
@@ -296,7 +296,7 @@ export class PairwiseTestDataGenerator {
 
     const rows = [headers]; // First row is headers
     for (const record of this.dataRecords) {
-      const row = headers.map((header) => record[header] || '');
+      const row = headers.map((header) => record[header] ?? '');
       rows.push(row);
     }
 

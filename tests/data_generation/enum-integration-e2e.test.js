@@ -61,7 +61,7 @@ Code
       result.rows.forEach((row) => {
         expect(typeof row[0]).toBe('string'); // Name (faker)
         expect(['Active', 'Inactive']).toContain(row[1]); // Status (enum)
-        expect(row[2]).toMatch(/[A-Z]{3}/); // Code (regex)
+        expect(row[2]).toMatch(/^[A-Z]{3}$/); // Code (regex)
       });
     });
 

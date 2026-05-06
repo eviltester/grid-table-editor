@@ -87,10 +87,10 @@ const mixedResult = mixedGenerator.initializeFromRules(mixedRules);
 
 if (!mixedResult.isError) {
   const mixedData = mixedGenerator.generateAllDataRecordsAsRows();
-  console.log(`Generated ${mixedData.data.length - 1} data records`);
+  console.log(`Generated ${mixedData.data.data.length - 1} data records`);
   console.log('Pairwise combinations for ENUM rules (Browser×Theme):');
 
-  const dataRows = mixedData.data.slice(1); // Skip headers
+  const dataRows = mixedData.data.data.slice(1); // Skip headers
   dataRows.slice(0, 6).forEach((row, index) => {
     console.log(
       `Row ${index + 1}: Browser=${row[0]}, Theme=${row[1]}, AppName=${row[2]}, IsEnabled=${row[3]}, UserID=${row[4]}`
@@ -111,7 +111,7 @@ const testRules = [
 // Set rule types to enum for pairwise generation
 testRules.forEach((rule) => rule.setType(RuleType.ENUM));
 
-const pairwiseGenerator = new PairwiseTestDataGenerator({
+const pairwiseGenerator = new PairwiseTestDataGenerator(null, null, {
   enableLogging: true,
 });
 
@@ -120,16 +120,16 @@ if (!initResult.isError) {
   const dataResult = pairwiseGenerator.generateAllDataRecordsAsRows();
 
   console.log('Generated test data in tabular format:');
-  console.log('Headers:', dataResult.data[0].join(' | '));
+  console.log('Headers:', dataResult.data.data[0].join(' | '));
   console.log('---');
 
   // Show first few rows
-  dataResult.data.slice(1, 6).forEach((row, i) => {
+  dataResult.data.data.slice(1, 6).forEach((row, i) => {
     console.log(`Row ${i + 1}: ${row.join(' | ')}`);
   });
 
-  console.log(`\nTotal: ${dataResult.data.length - 1} data records`);
-  console.log(`Coverage: ${dataResult.stats.coveragePercentage.toFixed(1)}%`);
+  console.log(`\nTotal: ${dataResult.data.data.length - 1} data records`);
+  console.log(`Coverage: ${dataResult.data.stats.coveragePercentage.toFixed(1)}%`);
 } else {
   console.log('Error:', initResult.data);
 }

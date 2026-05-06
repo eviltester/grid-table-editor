@@ -19,6 +19,14 @@ export class PairwiseGenerator {
     this.initializeAllPairs();
   }
 
+  serializeTuple(first, second) {
+    return JSON.stringify([first, second]);
+  }
+
+  deserializeTuple(tupleKey) {
+    return JSON.parse(tupleKey);
+  }
+
   /**
    * Generate all possible pairs between parameters
    * Creates a map of parameter pairs to all possible value combinations
@@ -28,12 +36,12 @@ export class PairwiseGenerator {
       for (let j = i + 1; j < this.parameters.length; j++) {
         const param1 = this.parameters[i];
         const param2 = this.parameters[j];
-        const pairKey = `${param1.name}::${param2.name}`;
+        const pairKey = this.serializeTuple(param1.name, param2.name);
 
         const valuePairs = new Set();
         for (const val1 of param1.values) {
           for (const val2 of param2.values) {
-            valuePairs.add(`${val1}|${val2}`);
+            valuePairs.add(this.serializeTuple(val1, val2));
           }
         }
 
@@ -69,13 +77,13 @@ export class PairwiseGenerator {
     let bestRecord = null;
 
     // Try all possible combinations of first uncovered pair
-    const firstUncovertPair = this.getFirstUncoveredPair();
-    if (!firstUncovertPair) {
+    const firstUncoveredPair = this.getFirstUncoveredPair();
+    if (!firstUncoveredPair) {
       // Fallback: generate random data record
       return this.generateRandomRecord();
     }
 
-    const baseRecords = this.generateRecordsForPair(firstUncovertPair);
+    const baseRecords = this.generateRecordsForPair(firstUncoveredPair);
 
     for (const baseRecord of baseRecords) {
       // Complete the data record and calculate score
@@ -99,8 +107,8 @@ export class PairwiseGenerator {
       const covered = this.coverage.get(pairKey);
       for (const valuePair of valuePairs) {
         if (!covered.has(valuePair)) {
-          const [param1, param2] = pairKey.split('::');
-          const [val1, val2] = valuePair.split('|');
+          const [param1, param2] = this.deserializeTuple(pairKey);
+          const [val1, val2] = this.deserializeTuple(valuePair);
           return { param1, param2, val1, val2 };
         }
       }
@@ -160,11 +168,11 @@ export class PairwiseGenerator {
       for (let j = i + 1; j < this.parameters.length; j++) {
         const param1 = this.parameters[i];
         const param2 = this.parameters[j];
-        const pairKey = `${param1.name}::${param2.name}`;
+        const pairKey = this.serializeTuple(param1.name, param2.name);
 
         const val1 = record.get(param1.name);
         const val2 = record.get(param2.name);
-        const valuePair = `${val1}|${val2}`;
+        const valuePair = this.serializeTuple(val1, val2);
 
         const covered = this.coverage.get(pairKey);
         if (!covered.has(valuePair)) {
@@ -184,11 +192,11 @@ export class PairwiseGenerator {
       for (let j = i + 1; j < this.parameters.length; j++) {
         const param1 = this.parameters[i];
         const param2 = this.parameters[j];
-        const pairKey = `${param1.name}::${param2.name}`;
+        const pairKey = this.serializeTuple(param1.name, param2.name);
 
         const val1 = record.get(param1.name);
         const val2 = record.get(param2.name);
-        const valuePair = `${val1}|${val2}`;
+        const valuePair = this.serializeTuple(val1, val2);
 
         this.coverage.get(pairKey).add(valuePair);
       }

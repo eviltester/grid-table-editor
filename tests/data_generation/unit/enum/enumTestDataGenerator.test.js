@@ -64,17 +64,28 @@ describe('EnumTestDataGenerator', () => {
       const rule = new TestDataRule('Binary', 'Yes,No');
       rule.type = 'enum';
 
-      const results = [];
-      for (let i = 0; i < 10; i++) {
-        const result = generator.generateFrom(rule);
-        expect(result.isError).toBe(false);
-        expect(['Yes', 'No']).toContain(result.data);
-        results.push(result.data);
-      }
+      const randomSpy = jest.spyOn(Math, 'random');
+      try {
+        randomSpy.mockImplementationOnce(() => 0.1); // Yes
+        randomSpy.mockImplementationOnce(() => 0.9); // No
+        for (let i = 0; i < 8; i++) {
+          randomSpy.mockImplementationOnce(() => 0.1);
+        }
 
-      // Should have both values at some point
-      expect(results).toContain('Yes');
-      expect(results).toContain('No');
+        const results = [];
+        for (let i = 0; i < 10; i++) {
+          const result = generator.generateFrom(rule);
+          expect(result.isError).toBe(false);
+          expect(['Yes', 'No']).toContain(result.data);
+          results.push(result.data);
+        }
+
+        // Should have both values at some point
+        expect(results).toContain('Yes');
+        expect(results).toContain('No');
+      } finally {
+        randomSpy.mockRestore();
+      }
     });
 
     test('handles malformed enum gracefully', () => {

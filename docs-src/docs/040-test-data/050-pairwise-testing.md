@@ -44,7 +44,7 @@ Pairwise testing is most effective when:
    wood,metal
    ```
 3. **Click "Generate Pairwise"** - the button appears automatically when you have 2+ enum fields
-4. **Review the results** - optimal combinations will populate the main grid
+4. **Review the results** - compact pairwise combinations will populate the main grid
 5. **Export as needed** using any of the available export formats (CSV, JSON, etc.)
 
 ### In the Data Generator (generator.html)
@@ -154,7 +154,7 @@ faker.number.int
 
 This configuration generates test data where:
 
-- **HTTP Method and Content Type** use pairwise to ensure every combination is tested (4 × 3 = 12 pairs covered optimally)
+- **HTTP Method and Content Type** use pairwise to ensure every combination is tested (4 × 3 = 12 pairs covered)
 - **User ID, Email, Timestamp, Token, and Response Time** generate unique random values for each test case
 
 ### Example Output
@@ -183,7 +183,7 @@ POST,text/plain,19873,frank.miller@qa.org,2026-04-30T13:50:09Z,ABCDEF1234567890F
 - **Use pairwise for categorical parameters** with limited, well-defined values
 - **Use random generation for data fields** that need variety (IDs, timestamps, names)
 - **Keep enum parameters meaningful** - they should represent real configuration choices
-- **Balance test data size** - more enum parameters = larger optimal sets
+- **Balance test data size** - more enum parameters = larger pairwise sets
 - **Validate generated combinations** to ensure they make business sense
 
 ## Algorithm Details
@@ -193,7 +193,7 @@ AnyWayData uses a greedy set cover approximation algorithm that:
 - **Achieves 90-99% data reduction** compared to full factorial testing
 - **Guarantees 100% pairwise coverage** - every pair of values is tested at least once
 - **Runs in O(n² × v² × log(pairs)) time** where n is parameters and v is values per parameter
-- **Generates deterministic results** - same input always produces the same optimal set
+- **Generates deterministic results** - same input always produces the same pairwise set
 
 ## Example Output
 
@@ -236,7 +236,7 @@ Pairwise data integrates with AnyWayData's other capabilities:
 - **Choose appropriate enum formats** - simple comma-separated for basic cases, function formats for complex schemas
 - **Review generated combinations** to ensure they make sense for your use case
 - **Combine with other test data types** - use pairwise for categorical parameters and faker/regex for random data fields
-- **Balance categorical vs. random parameters** - more enum fields increase the optimal test set size
+- **Balance categorical vs. random parameters** - more enum fields increase the pairwise test set size
 - **Validate mixed scenarios** - ensure pairwise combinations work with random data values
 - **Document your test coverage** - export results to show what parameter interactions are tested
 - **Test your enum formats** - verify that quoted and complex enum values work as expected

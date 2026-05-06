@@ -7,15 +7,7 @@ export class EnumTestDataGenerator {
   generateFrom(aRule) {
     try {
       const ruleSpec = String(aRule.ruleSpec || '');
-      let enumValues;
-
-      // Handle different enum formats
-      if (EnumParser.isAwdEnumFormat(ruleSpec)) {
-        enumValues = EnumParser.extractAwdEnumValues(ruleSpec);
-      } else {
-        // Simple comma-separated format
-        enumValues = ruleSpec.split(',').map((v) => v.trim());
-      }
+      const enumValues = EnumParser.extractEnumValues(ruleSpec);
 
       // Randomly select one of the enum values
       const randomIndex = Math.floor(Math.random() * enumValues.length);

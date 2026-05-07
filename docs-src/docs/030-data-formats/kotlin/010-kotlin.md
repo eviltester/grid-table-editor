@@ -31,3 +31,11 @@ Kotlin output uses Kotlin syntax directly, including:
 AnyWayData currently supports exporting data to Kotlin format.
 
 See [Kotlin Options](/docs/data-formats/kotlin/options) for configuration details.
+
+
+## Unit Test Code Generation
+
+You can also generate data-driven test scaffolding for Kotlin using frameworks: `kotest`, `junit5-kotlin`, `spek`.
+
+For more information, see [Unit Test Code Generation](/docs/data-formats/unit-test-code).
+

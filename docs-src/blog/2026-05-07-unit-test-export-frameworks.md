@@ -90,6 +90,7 @@ The detailed option behavior and framework mapping are documented here:
 - PHPUnit: [phpunit.de](https://phpunit.de/)
 - Pest: [pestphp.com](https://pestphp.com/)
 - Kotest: [kotest.io](https://kotest.io/)
+- JUnit 5 Kotlin: [junit.org/junit5](https://junit.org/junit5/)
 - Spek: [spekframework.github.io](https://spekframework.github.io/)
 - Test::More: [metacpan.org/pod/Test::More](https://metacpan.org/pod/Test::More)
 - Test2::Suite: [metacpan.org/pod/Test2::Suite](https://metacpan.org/pod/Test2::Suite)

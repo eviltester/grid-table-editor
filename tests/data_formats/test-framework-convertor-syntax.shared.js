@@ -38,10 +38,12 @@ function writeAndCheck({ framework, ext, checkCmd, checkArgsBuilder }) {
   const result = spawnSync(checkCmd, args, { encoding: 'utf-8' });
   fs.rmSync(tempDir, { recursive: true, force: true });
 
-  expect(result.status).toBe(
-    0,
-    `${framework} syntax check failed.\nSTDOUT:\n${result.stdout || ''}\nSTDERR:\n${result.stderr || ''}`
-  );
+  if (result.status !== 0) {
+    throw new Error(
+      `${framework} syntax check failed.\nSTDOUT:\n${result.stdout || ''}\nSTDERR:\n${result.stderr || ''}`
+    );
+  }
+  expect(result.status).toBe(0);
 }
 
 export { hasCommand, hasPerlModule, writeAndCheck };

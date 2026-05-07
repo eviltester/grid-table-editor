@@ -1324,7 +1324,7 @@ function renderPest(model) {
           rowData.join(',\n'),
           '];',
           '',
-          `it('${phpSingleQuoteLiteral(model.testNamePrefix)} parameterized', function (): void {`,
+          `it('${phpSingleQuoteLiteral(model.testNamePrefix)} parameterized', function () use ($rows): void {`,
           '    foreach ($rows as $row) {',
           '        $expected = $row;',
           '        $actual = mapRowUnderTest($row);',

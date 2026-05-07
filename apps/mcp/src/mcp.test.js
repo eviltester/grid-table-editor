@@ -1,5 +1,3 @@
-import test from 'node:test';
-import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import path from 'node:path';
 import { generateFromTextSpec } from '@anywaydata/core';
@@ -20,19 +18,19 @@ function requestServer(payload) {
     cwd: path.resolve('.'),
   });
   const line = firstJsonLine(output);
-  assert.ok(line);
+  expect(line).toBeTruthy();
   return JSON.parse(line);
 }
 
 test('MCP server lists tools', () => {
   const response = requestServer({ jsonrpc: '2.0', id: 1, method: 'tools/list' });
-  assert.equal(response?.result?.tools?.[0]?.name, 'generate_data_from_spec');
-  assert.equal(response?.result?.tools?.[1]?.name, 'get_output_format_options_schema');
+  expect(response?.result?.tools?.[0]?.name).toBe('generate_data_from_spec');
+  expect(response?.result?.tools?.[1]?.name).toBe('get_output_format_options_schema');
   const generateSchema = response?.result?.tools?.[0]?.inputSchema?.properties?.options;
-  assert.equal(generateSchema?.type, 'object');
-  assert.ok(Array.isArray(generateSchema?.oneOf));
-  assert.ok(response?.result?.tools?.[0]?.outputSchema);
-  assert.ok(response?.result?.tools?.[1]?.outputSchema);
+  expect(generateSchema?.type).toBe('object');
+  expect(Array.isArray(generateSchema?.oneOf)).toBeTruthy();
+  expect(response?.result?.tools?.[0]?.outputSchema).toBeTruthy();
+  expect(response?.result?.tools?.[1]?.outputSchema).toBeTruthy();
 });
 
 test('MCP server handles generate_data_from_spec tool call', () => {
@@ -46,9 +44,9 @@ test('MCP server handles generate_data_from_spec tool call', () => {
     },
   });
   const payload = JSON.parse(response?.result?.content?.[0]?.text || '{}');
-  assert.equal(payload.ok, true);
-  assert.equal(response?.result?.isError, false);
-  assert.equal(response?.result?.structuredContent?.ok, true);
+  expect(payload.ok).toBe(true);
+  expect(response?.result?.isError).toBe(false);
+  expect(response?.result?.structuredContent?.ok).toBe(true);
 });
 
 test('MCP server handles test framework output format', () => {
@@ -62,9 +60,9 @@ test('MCP server handles test framework output format', () => {
     },
   });
   const payload = JSON.parse(response?.result?.content?.[0]?.text || '{}');
-  assert.equal(payload.ok, true);
-  assert.equal(payload.format, 'junit5');
-  assert.match(payload.rendered, /@ParameterizedTest/);
+  expect(payload.ok).toBe(true);
+  expect(payload.format).toBe('junit5');
+  expect(payload.rendered).toMatch(/@ParameterizedTest/);
 });
 
 test('MCP schema notes reflect setup behavior for unit test formats', () => {
@@ -78,9 +76,9 @@ test('MCP schema notes reflect setup behavior for unit test formats', () => {
     },
   });
   const payload = JSON.parse(response?.result?.content?.[0]?.text || '{}');
-  assert.equal(payload.ok, true);
+  expect(payload.ok).toBe(true);
   const props = payload?.formatSchema?.optionSchema?.properties || {};
-  assert.match(props?.includeSetup?.description || '', /beforeEach/i);
+  expect(props?.includeSetup?.description || '').toMatch(/beforeEach/i);
 });
 
 test('MCP generation uses includeSetup for representative frameworks', () => {
@@ -99,8 +97,8 @@ test('MCP generation uses includeSetup for representative frameworks', () => {
     },
   });
   const jestPayload = JSON.parse(jestResponse?.result?.content?.[0]?.text || '{}');
-  assert.match(jestPayload.rendered, /beforeEach/);
-  assert.match(jestPayload.rendered, /expect\(/);
+  expect(jestPayload.rendered).toMatch(/beforeEach/);
+  expect(jestPayload.rendered).toMatch(/expect\(/);
 
   const phpunitResponse = requestServer({
     jsonrpc: '2.0',
@@ -117,8 +115,8 @@ test('MCP generation uses includeSetup for representative frameworks', () => {
     },
   });
   const phpunitPayload = JSON.parse(phpunitResponse?.result?.content?.[0]?.text || '{}');
-  assert.match(phpunitPayload.rendered, /setUp/);
-  assert.match(phpunitPayload.rendered, /assertSame/);
+  expect(phpunitPayload.rendered).toMatch(/setUp/);
+  expect(phpunitPayload.rendered).toMatch(/assertSame/);
 });
 
 test('MCP server accepts key/value style textSpec for faker rules', () => {
@@ -136,9 +134,9 @@ test('MCP server accepts key/value style textSpec for faker rules', () => {
     },
   });
   const payload = JSON.parse(response?.result?.content?.[0]?.text || '{}');
-  assert.equal(payload.ok, true);
-  assert.deepEqual(payload.headers, ['first_name', 'last_name']);
-  assert.equal(payload.rows.length, 2);
+  expect(payload.ok).toBe(true);
+  expect(payload.headers).toEqual(['first_name', 'last_name']);
+  expect(payload.rows.length).toBe(2);
 });
 
 test('MCP server rejects unsafe faker expression arguments', () => {
@@ -156,10 +154,10 @@ test('MCP server rejects unsafe faker expression arguments', () => {
     },
   });
   const payload = JSON.parse(response?.result?.content?.[0]?.text || '{}');
-  assert.equal(response?.result?.isError, true);
-  assert.equal(payload.ok, false);
-  assert.equal(payload.error.code, 'unsafe_faker_rule');
-  assert.match(payload.error.message, /Unsafe faker rule syntax detected/);
+  expect(response?.result?.isError).toBe(true);
+  expect(payload.ok).toBe(false);
+  expect(payload.error.code).toBe('unsafe_faker_rule');
+  expect(payload.error.message).toMatch(/Unsafe faker rule syntax detected/);
 });
 
 test('MCP server returns discoverable options schema for xml output format', () => {
@@ -175,23 +173,23 @@ test('MCP server returns discoverable options schema for xml output format', () 
     },
   });
   const payload = JSON.parse(response?.result?.content?.[0]?.text || '{}');
-  assert.equal(payload.ok, true);
-  assert.equal(payload.selectedFormat, 'xml');
-  assert.equal(payload.formatSchema.optionDefaults.rootElementName, 'root');
-  assert.equal(payload.formatSchema.optionDefaults.itemElementName, 'item');
-  assert.equal(payload.formatSchema.optionSchema.properties.rootElementName.type, 'string');
+  expect(payload.ok).toBe(true);
+  expect(payload.selectedFormat).toBe('xml');
+  expect(payload.formatSchema.optionDefaults.rootElementName).toBe('root');
+  expect(payload.formatSchema.optionDefaults.itemElementName).toBe('item');
+  expect(payload.formatSchema.optionSchema.properties.rootElementName.type).toBe('string');
 });
 
 test('MCP server initialize advertises tools and resources capability', () => {
   const response = requestServer({ jsonrpc: '2.0', id: 6, method: 'initialize' });
-  assert.ok(response?.result?.capabilities?.tools);
-  assert.ok(response?.result?.capabilities?.resources);
+  expect(response?.result?.capabilities?.tools).toBeTruthy();
+  expect(response?.result?.capabilities?.resources).toBeTruthy();
 });
 
 test('MCP server lists discoverable resources', () => {
   const response = requestServer({ jsonrpc: '2.0', id: 7, method: 'resources/list' });
-  assert.equal(response?.result?.resources?.length, 2);
-  assert.equal(response?.result?.resources?.[0]?.mimeType, 'application/json');
+  expect(response?.result?.resources?.length).toBe(2);
+  expect(response?.result?.resources?.[0]?.mimeType).toBe('application/json');
 });
 
 test('MCP server reads output format options resource', () => {
@@ -202,8 +200,8 @@ test('MCP server reads output format options resource', () => {
     params: { uri: 'anywaydata://schemas/output-format-options' },
   });
   const payload = JSON.parse(response?.result?.contents?.[0]?.text || '{}');
-  assert.equal(payload.ok, true);
-  assert.ok(payload.formats.xml);
+  expect(payload.ok).toBe(true);
+  expect(payload.formats.xml).toBeTruthy();
 });
 
 test('MCP server reads install guide resource', () => {
@@ -214,9 +212,9 @@ test('MCP server reads install guide resource', () => {
     params: { uri: 'anywaydata://install/config-examples' },
   });
   const payload = JSON.parse(response?.result?.contents?.[0]?.text || '{}');
-  assert.equal(payload.ok, true);
-  assert.equal(payload.transport, 'stdio');
-  assert.ok(payload.examples.codex_npx);
+  expect(payload.ok).toBe(true);
+  expect(payload.transport).toBe('stdio');
+  expect(payload.examples.codex_npx).toBeTruthy();
 });
 
 test('MCP server rejects unknown resource URI', () => {
@@ -226,7 +224,7 @@ test('MCP server rejects unknown resource URI', () => {
     method: 'resources/read',
     params: { uri: 'anywaydata://missing' },
   });
-  assert.equal(response?.error?.code, -32602);
+  expect(response?.error?.code).toBe(-32602);
 });
 
 test('MCP server returns invalid_output_format for schema tool', () => {
@@ -240,8 +238,8 @@ test('MCP server returns invalid_output_format for schema tool', () => {
     },
   });
   const payload = JSON.parse(response?.result?.content?.[0]?.text || '{}');
-  assert.equal(response?.result?.isError, true);
-  assert.equal(payload.error.code, 'invalid_output_format');
+  expect(response?.result?.isError).toBe(true);
+  expect(payload.error.code).toBe('invalid_output_format');
 });
 
 test('MCP server allows large rowCount values', () => {
@@ -259,8 +257,8 @@ test('MCP server allows large rowCount values', () => {
     },
   });
   const payload = JSON.parse(response?.result?.content?.[0]?.text || '{}');
-  assert.equal(response?.result?.isError, true);
-  assert.equal(payload.error.code, 'unsafe_faker_rule');
+  expect(response?.result?.isError).toBe(true);
+  expect(payload.error.code).toBe('unsafe_faker_rule');
 });
 
 test('MCP server rejects excessive textSpec length', () => {
@@ -275,12 +273,12 @@ test('MCP server rejects excessive textSpec length', () => {
     },
   });
   const payload = JSON.parse(response?.result?.content?.[0]?.text || '{}');
-  assert.equal(payload.error.code, 'text_spec_too_large');
+  expect(payload.error.code).toBe('text_spec_too_large');
 });
 
 test('MCP server returns method not found for unknown methods', () => {
   const response = requestServer({ jsonrpc: '2.0', id: 14, method: 'nope/method' });
-  assert.equal(response?.error?.code, -32601);
+  expect(response?.error?.code).toBe(-32601);
 });
 
 test('MCP parity: rendered output matches core for all unit-test frameworks', () => {
@@ -314,7 +312,7 @@ test('MCP parity: rendered output matches core for all unit-test frameworks', ()
       options,
       seed: 123,
     });
-    assert.equal(coreResult.ok, true, `core generation failed for ${outputFormat}`);
+    expect(coreResult.ok).toBe(true);
 
     const response = requestServer({
       jsonrpc: '2.0',
@@ -332,7 +330,7 @@ test('MCP parity: rendered output matches core for all unit-test frameworks', ()
       },
     });
     const payload = JSON.parse(response?.result?.content?.[0]?.text || '{}');
-    assert.equal(payload.ok, true, `mcp generation failed for ${outputFormat}`);
-    assert.equal(payload.rendered, coreResult.rendered, `render mismatch for ${outputFormat}`);
+    expect(payload.ok).toBe(true);
+    expect(payload.rendered).toBe(coreResult.rendered);
   }
 });

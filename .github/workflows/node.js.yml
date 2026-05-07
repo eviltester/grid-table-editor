@@ -119,6 +119,7 @@ jobs:
           api_curl -X POST "http://127.0.0.1:18082/v1/generate" \
             -H "content-type: application/json" \
             -d '{"textSpec":"Name\nBob","rowCount":2,"outputFormat":"json"}' | grep -q '"format":"json"'
+          echo "API docker smoke test passed"
 
       - name: Docker smoke test (Web)
         run: |
@@ -140,6 +141,7 @@ jobs:
           done
           curl -fsS http://127.0.0.1:18080/app.html | grep -q "AnyWayData"
           curl -fsS http://127.0.0.1:18080/generator.html | grep -q "AnyWayData"
+          echo "Web docker smoke test passed"
 
       - name: Docker smoke test (AnyWayData full site)
         run: |
@@ -161,6 +163,7 @@ jobs:
           done
           curl -fsS http://127.0.0.1:18081/ | grep -q "AnyWayData"
           curl -fsS http://127.0.0.1:18081/app.html | grep -q "AnyWayData"
+          echo "AnyWayData full-site docker smoke test passed"
 
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v4

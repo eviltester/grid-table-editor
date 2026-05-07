@@ -18,7 +18,7 @@ docker build -f apps/anywaydata/Dockerfile -t anywaydata-site .
 ## Run
 
 ```bash
-docker run --rm -p 8080:80 anywaydata-site
+docker run --rm -p 8080:8080 anywaydata-site
 ```
 
 Then open:

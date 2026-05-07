@@ -83,6 +83,57 @@ jobs:
       - name: Verify
         run: npm run verify:ci
 
+      - name: Docker smoke test (API)
+        run: |
+          set -euo pipefail
+
+          cleanup() {
+            docker rm -f api-ci >/dev/null 2>&1 || true
+          }
+          trap cleanup EXIT
+
+          docker build -f apps/api/Dockerfile -t anywaydata-api-ci .
+          docker run -d --rm --name api-ci -p 18082:3000 anywaydata-api-ci
+
+          for i in {1..20}; do
+            if curl -fsS http://127.0.0.1:18082/v1/health >/dev/null; then
+              break
+            fi
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:18082/v1/health | grep -qi "ok"
+          curl -fsS -X POST "http://127.0.0.1:18082/v1/generate" \
+            -H "content-type: application/json" \
+            -d '{"textSpec":"Name\nBob","rowCount":2,"outputFormat":"json"}' | grep -q '"ok":true'
+
+      - name: Docker smoke test (Web)
+        run: |
+          set -euo pipefail
+
+          cleanup() {
+            docker rm -f web-ci >/dev/null 2>&1 || true
+          }
+          trap cleanup EXIT
+
+          docker build -f apps/web/Dockerfile -t anywaydata-web-ci .
+          docker run -d --rm --name web-ci -p 18080:80 anywaydata-web-ci
+          curl -fsS http://127.0.0.1:18080/app.html | grep -q "AnyWayData"
+          curl -fsS http://127.0.0.1:18080/generator.html | grep -q "AnyWayData"
+
+      - name: Docker smoke test (AnyWayData full site)
+        run: |
+          set -euo pipefail
+
+          cleanup() {
+            docker rm -f site-ci >/dev/null 2>&1 || true
+          }
+          trap cleanup EXIT
+
+          docker build -f apps/anywaydata/Dockerfile -t anywaydata-site-ci .
+          docker run -d --rm --name site-ci -p 18081:8080 anywaydata-site-ci
+          curl -fsS http://127.0.0.1:18081/ | grep -q "AnyWayData"
+          curl -fsS http://127.0.0.1:18081/app.html | grep -q "AnyWayData"
+
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v4
         with:

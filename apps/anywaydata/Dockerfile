@@ -11,11 +11,12 @@ COPY packages ./packages
 COPY scripts ./scripts
 
 RUN npm ci
+RUN npm ci --prefix docs-src
 RUN npm run anywaydata --prefix docs-src
 RUN npm run build:web
 RUN node ./scripts/merge-web-build-into-docs-build.js
 
-FROM nginx:1.27-alpine
+FROM nginxinc/nginx-unprivileged:1.27-alpine
 WORKDIR /usr/share/nginx/html
 
 COPY --from=builder /app/build/ ./

@@ -1,5 +1,5 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
     <title>Test Data Generator and Table Editor for Markdown, CSV, JSON, Gherkin and HTML - AnyWayData</title>
     <meta
@@ -9,15 +9,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="author" content="Alan Richardson" />
-  <script src="https://unpkg.com/papaparse@5.3.2/papaparse.min.js"></script>
-  <script type="module" src="/src/app-entry.js"></script>
+    <script type="module" src="/src/app-entry.js"></script>
 
     <script defer data-domain="anywaydata.com" src="https://plausible.io/js/plausible.js"></script>
-
-    <!-- random data generation -->
-    <!-- http://fent.github.io/randexp.js/ -->
-    <!-- this creates a top level RandExp -->
-    <script src="libs/randexp.min.js"></script>
 
     <link rel="stylesheet" type="text/css" href="styles.css" />
   </head>
@@ -74,16 +68,27 @@
           <li>Rule can be a RegEx expression or a faker API call e.g. (Connie|Bob) or faker.name.firstName</li>
         </ul>
         <div class="footer">
-          <p>v20220801.001 Built by <a href="https://eviltester.com" target="_blank">Alan Richardson</a></p>
           <p>
-            Using <a href="https://tabulator.info" target="_blank">Tabulator</a> Data Grid,
-            <a href="http://fent.github.io/randexp.js/" target="_blank">RandExp.js</a>,
-            <a href="https://fakerjs.dev/" target="_blank">Faker.dev</a>,
-            <a href="https://github.com/AllMightySauron/ascii-table3" target="_blank">Ascii-Table3</a>,
-            <a href="https://github.com/xpl/printable-characters" target="_blank">Printable-Characters</a>, and
-            <a href="https://www.papaparse.com/" target="_blank">PapaParse</a>
+            v20220801.001 Built by
+            <a href="https://eviltester.com" target="_blank" rel="noopener noreferrer">Alan Richardson</a>
           </p>
-          <p>- [<a href="https://github.com/eviltester/grid-table-editor" target="_blank">github source</a>]</p>
+          <p>
+            Using <a href="https://tabulator.info" target="_blank" rel="noopener noreferrer">Tabulator</a> Data Grid,
+            <a href="https://fent.github.io/randexp.js/" target="_blank" rel="noopener noreferrer">RandExp.js</a>,
+            <a href="https://fakerjs.dev/" target="_blank" rel="noopener noreferrer">Faker.dev</a>,
+            <a href="https://github.com/AllMightySauron/ascii-table3" target="_blank" rel="noopener noreferrer"
+              >Ascii-Table3</a
+            >,
+            <a href="https://github.com/xpl/printable-characters" target="_blank" rel="noopener noreferrer"
+              >Printable-Characters</a
+            >, and
+            <a href="https://www.papaparse.com/" target="_blank" rel="noopener noreferrer">PapaParse</a>
+          </p>
+          <p>
+            - [<a href="https://github.com/eviltester/grid-table-editor" target="_blank" rel="noopener noreferrer"
+              >github source</a
+            >]
+          </p>
         </div>
       </details>
     </div>
@@ -106,12 +111,6 @@
     <!-- loading message -->
     <p style="font-size: xx-large" id="initial-load">Please Wait, Loading Libraries...</p>
 
-    <!-- 
-  add tippy for help icon popups
-  https://atomiks.github.io/tippyjs/v6/getting-started/
--->
-    <script src="https://unpkg.com/@popperjs/core@2"></script>
-    <script src="https://unpkg.com/tippy.js@6"></script>
     <script>
       document.getElementById('initial-load')?.remove();
     </script>

@@ -5,5 +5,4 @@ coverage
 build
 test-results
 tests
-docs-src
 *.log

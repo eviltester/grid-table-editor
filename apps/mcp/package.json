@@ -1,6 +1,6 @@
 {
   "name": "@anywaydata/mcp",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "type": "module",
   "private": false,
   "bin": {
@@ -23,6 +23,6 @@
     "test": "node --test ./src/*.test.js"
   },
   "dependencies": {
-    "@anywaydata/core": "^1.0.0"
+    "@anywaydata/core": "^1.1.0"
   }
 }

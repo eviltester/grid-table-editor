@@ -1,6 +1,6 @@
 {
   "name": "@anywaydata/cli",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "type": "module",
   "private": false,
   "bin": {
@@ -21,7 +21,7 @@
     "test": "node ./src/index.js --help"
   },
   "dependencies": {
-    "@anywaydata/core": "^1.0.0",
+    "@anywaydata/core": "^1.1.0",
     "yargs": "^17.7.2"
   }
 }

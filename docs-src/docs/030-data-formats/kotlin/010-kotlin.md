@@ -37,5 +37,5 @@ See [Kotlin Options](/docs/data-formats/kotlin/options) for configuration detail
 
 You can also generate data-driven test scaffolding for Kotlin using frameworks: `kotest`, `junit5-kotlin`, `spek`.
 
-For more information, see [Unit Test Code Generation](/docs/data-formats/unit-test-code).
+For more information, see [Unit Test Code Generation](/docs/data-formats/unit-test-code/description).
 

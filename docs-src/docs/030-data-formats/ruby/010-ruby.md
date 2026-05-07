@@ -35,5 +35,5 @@ See [Ruby Options](/docs/data-formats/ruby/options) for configuration details.
 
 You can also generate data-driven test scaffolding for Ruby using frameworks: `rspec`, `minitest`.
 
-For more information, see [Unit Test Code Generation](/docs/data-formats/unit-test-code).
+For more information, see [Unit Test Code Generation](/docs/data-formats/unit-test-code/description).
 

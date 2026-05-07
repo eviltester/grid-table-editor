@@ -35,14 +35,14 @@ See [Unit Test Code Options](/docs/data-formats/unit-test-code/options) for conf
 
 For more information on language-specific data output support, see:
 
-- [C#](/docs/data-formats/csharp)
-- [Java](/docs/data-formats/java)
-- [JavaScript](/docs/data-formats/javascript)
-- [Kotlin](/docs/data-formats/kotlin)
-- [Perl](/docs/data-formats/perl)
-- [PHP](/docs/data-formats/php)
-- [Python](/docs/data-formats/python)
-- [Ruby](/docs/data-formats/ruby)
-- [TypeScript](/docs/data-formats/typescript)
+- [C#](/docs/data-formats/csharp/csharp)
+- [Java](/docs/data-formats/java/java)
+- [JavaScript](/docs/data-formats/javascript/javascript)
+- [Kotlin](/docs/data-formats/kotlin/kotlin)
+- [Perl](/docs/data-formats/perl/perl)
+- [PHP](/docs/data-formats/php/php)
+- [Python](/docs/data-formats/python/python)
+- [Ruby](/docs/data-formats/ruby/ruby)
+- [TypeScript](/docs/data-formats/typescript/typescript)
 
 

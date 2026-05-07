@@ -35,5 +35,5 @@ See [C# Options](/docs/data-formats/csharp/options) for configuration details.
 
 You can also generate data-driven test scaffolding for C# using frameworks: `xunit`, `nunit`, `mstest`.
 
-For more information, see [Unit Test Code Generation](/docs/data-formats/unit-test-code).
+For more information, see [Unit Test Code Generation](/docs/data-formats/unit-test-code/description).
 

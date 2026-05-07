@@ -63,5 +63,5 @@ Not all formatting and spacing will be supported by AnyWayData so you may need t
 
 You can also generate data-driven test scaffolding for JavaScript using frameworks: `jest`, `vitest`, `mocha`.
 
-For more information, see [Unit Test Code Generation](/docs/data-formats/unit-test-code).
+For more information, see [Unit Test Code Generation](/docs/data-formats/unit-test-code/description).
 

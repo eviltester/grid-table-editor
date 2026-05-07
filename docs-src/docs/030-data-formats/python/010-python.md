@@ -66,5 +66,5 @@ Python output can be generated from the same grid data used for the other suppor
 
 You can also generate data-driven test scaffolding for Python using frameworks: `pytest`, `unittest`, `nose2`.
 
-For more information, see [Unit Test Code Generation](/docs/data-formats/unit-test-code).
+For more information, see [Unit Test Code Generation](/docs/data-formats/unit-test-code/description).
 

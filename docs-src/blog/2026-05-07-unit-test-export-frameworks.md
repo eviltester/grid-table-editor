@@ -3,7 +3,7 @@ slug: unit-test-export-frameworks
 title: "Unit-Test Export Frameworks Across UI, REST, and MCP"
 authors: [alan]
 tags: [release, feature, unit-test, codegen, api, mcp, ui]
-date: 2026-05-06T18:30
+date: 2026-05-07T11:30
 ---
 
 We added a dedicated **Code (Unit Test)** export capability that now works consistently across the UI, REST API, and MCP tool interfaces.

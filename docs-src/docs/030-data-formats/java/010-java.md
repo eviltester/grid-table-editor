@@ -64,5 +64,5 @@ Java output can be generated from the same grid data used for the other supporte
 
 You can also generate data-driven test scaffolding for Java using frameworks: `junit4`, `junit5`, `junit6`, `testng`.
 
-For more information, see [Unit Test Code Generation](/docs/data-formats/unit-test-code).
+For more information, see [Unit Test Code Generation](/docs/data-formats/unit-test-code/description).
 

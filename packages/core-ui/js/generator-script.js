@@ -33,9 +33,15 @@ async function bootstrapGeneratorPage({
 }
 
 if (typeof document !== 'undefined') {
-  document.addEventListener('DOMContentLoaded', async () => {
+  const runBootstrap = async function () {
     await bootstrapGeneratorPage();
-  });
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', runBootstrap, { once: true });
+  } else {
+    runBootstrap();
+  }
 }
 
 export { bootstrapGeneratorPage };

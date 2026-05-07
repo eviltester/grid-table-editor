@@ -117,6 +117,13 @@ jobs:
 
           docker build -f apps/web/Dockerfile -t anywaydata-web-ci .
           docker run -d --rm --name web-ci -p 18080:80 anywaydata-web-ci
+
+          for i in {1..20}; do
+            if curl -fsS http://127.0.0.1:18080/app.html >/dev/null; then
+              break
+            fi
+            sleep 1
+          done
           curl -fsS http://127.0.0.1:18080/app.html | grep -q "AnyWayData"
           curl -fsS http://127.0.0.1:18080/generator.html | grep -q "AnyWayData"
 
@@ -131,6 +138,13 @@ jobs:
 
           docker build -f apps/anywaydata/Dockerfile -t anywaydata-site-ci .
           docker run -d --rm --name site-ci -p 18081:8080 anywaydata-site-ci
+
+          for i in {1..20}; do
+            if curl -fsS http://127.0.0.1:18081/ >/dev/null; then
+              break
+            fi
+            sleep 1
+          done
           curl -fsS http://127.0.0.1:18081/ | grep -q "AnyWayData"
           curl -fsS http://127.0.0.1:18081/app.html | grep -q "AnyWayData"
 

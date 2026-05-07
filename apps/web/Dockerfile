@@ -1,13 +1,17 @@
 # syntax=docker/dockerfile:1
+
+FROM node:20-alpine AS builder
+WORKDIR /app
+
+COPY package*.json ./
+COPY apps ./apps
+COPY packages ./packages
+
+RUN npm ci
+RUN npm run build:web
+
 FROM nginx:1.27-alpine
 WORKDIR /usr/share/nginx/html
 
-# Serve the browser app only (no docs-src / docusaurus build pipeline)
-COPY index.html ./index.html
-COPY app.html ./app.html
-COPY generator.html ./generator.html
-COPY styles.css ./styles.css
-COPY packages/core ./packages/core
-COPY packages/core-ui ./packages/core-ui
-COPY libs ./libs
-COPY images ./images
+# Serve the built browser app only (no docs-src / docusaurus build pipeline)
+COPY --from=builder /app/apps/web/dist/ ./

@@ -1,6 +1,6 @@
 import { ensureGridLibraryLoaded } from './gui_components/data-grid-editor/grid-library-loader.js';
 import { DataGeneratorPage } from './gui_components/data-generator-page.js';
-import { faker } from 'https://cdn.skypack.dev/@faker-js/faker@v9.7.0';
+import { faker } from '@faker-js/faker';
 import { initHelpTooltips } from './help/help-tooltips.js';
 
 async function bootstrapGeneratorPage({
@@ -33,9 +33,19 @@ async function bootstrapGeneratorPage({
 }
 
 if (typeof document !== 'undefined') {
-  document.addEventListener('DOMContentLoaded', async () => {
-    await bootstrapGeneratorPage();
-  });
+  const runBootstrap = async function () {
+    try {
+      await bootstrapGeneratorPage();
+    } catch (error) {
+      console.error('Failed to bootstrap generator page', error);
+    }
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', runBootstrap, { once: true });
+  } else {
+    runBootstrap();
+  }
 }
 
 export { bootstrapGeneratorPage };

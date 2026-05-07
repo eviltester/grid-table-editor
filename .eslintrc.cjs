@@ -32,7 +32,7 @@ module.exports = {
   },
   overrides: [
     {
-      files: ["tests/**/*.js"],
+      files: ["tests/**/*.js", "apps/web/src/tests/jest/**/*.js"],
       env: {
         jest: true,
         node: true,

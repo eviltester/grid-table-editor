@@ -3,7 +3,7 @@ import path from 'node:path';
 import {
   appOnlyInlineHelpEntries,
   sharedInlineHelpEntries,
-} from '../../packages/core-ui/js/help/inline-help-content.js';
+} from '../../../../../../packages/core-ui/js/help/inline-help-content.js';
 
 function collectTemplateHelpTags(content) {
   const tags = [];
@@ -28,7 +28,7 @@ describe('help content coverage', () => {
   const helpMapApp = { ...sharedInlineHelpEntries, ...appOnlyInlineHelpEntries };
 
   test('app html help icons resolve to inline text or help entries', () => {
-    const appHtml = fs.readFileSync(path.join(repoRoot, 'app.html'), 'utf8');
+    const appHtml = fs.readFileSync(path.join(repoRoot, 'apps', 'web', 'app.html'), 'utf8');
     const tags = collectTemplateHelpTags(appHtml);
 
     const missing = tags.filter((tag) => !tag.hasInlineText && !Object.hasOwn(helpMapApp, tag.helpId));
@@ -36,7 +36,7 @@ describe('help content coverage', () => {
   });
 
   test('generator html help icons resolve to inline text or help entries', () => {
-    const generatorHtml = fs.readFileSync(path.join(repoRoot, 'generator.html'), 'utf8');
+    const generatorHtml = fs.readFileSync(path.join(repoRoot, 'apps', 'web', 'generator.html'), 'utf8');
     const tags = collectTemplateHelpTags(generatorHtml);
 
     const missing = tags.filter((tag) => !tag.hasInlineText && !Object.hasOwn(sharedInlineHelpEntries, tag.helpId));

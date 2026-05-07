@@ -4,7 +4,7 @@ const port = process.env.PLAYWRIGHT_PORT || '4173';
 const baseURL = `http://127.0.0.1:${port}`;
 
 module.exports = defineConfig({
-  testDir: './tests/browser',
+  testDir: './apps/web/src/tests/browser',
   timeout: 30000,
   workers: process.env.CI ? 6 : 4,
   expect: {
@@ -20,7 +20,7 @@ module.exports = defineConfig({
     trace: 'on-first-retry',
   },
   webServer: {
-    command: `npx http-server . -p ${port} -c-1 --silent`,
+    command: `npx vite --config ./apps/web/vite.config.mjs --host 127.0.0.1 --port ${port}`,
     url: `${baseURL}/app.html`,
     reuseExistingServer: !process.env.CI,
     timeout: 30000,

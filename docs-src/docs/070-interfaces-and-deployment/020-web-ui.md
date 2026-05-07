@@ -19,16 +19,18 @@ The Web UI is best for interactive editing, import/export, and conversion.
 
 ## Local Run
 
-From the repo root of [grid-table-editor](https://github.com/eviltester/grid-table-editor), start a static web server and open the pages.
+From the repo root of [grid-table-editor](https://github.com/eviltester/grid-table-editor), install dependencies and start the Vite dev server.
 
 ```bash
-python3 -m http.server
+npm install
+npm run dev:web
 ```
 
 Then open:
 
-- `http://localhost:8000/app.html`
-- `http://localhost:8000/generator.html`
+- `http://127.0.0.1:4173/`
+- `http://127.0.0.1:4173/app.html`
+- `http://127.0.0.1:4173/generator.html`
 
 ## Docker Run
 
@@ -52,5 +54,7 @@ Open:
 
 ## Notes
 
-- The Web image serves static app assets.
+- The Docker image uses a multi-stage build:
+- Node builds the web app with `npm run build:web`.
+- Nginx serves the built static files from `apps/web/dist`.
 - API endpoints are documented in [REST API](/docs/interfaces-and-deployment/rest-api).

@@ -5,4 +5,6 @@ docs-src/build/
 node_modules/
 js/libs/
 packages/core/js/libs/
+apps/web/libs/
+apps/web/dist/
 js/gui_components/data-grid-editor/tabulator/customHeader-tabulator.js

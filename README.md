@@ -24,7 +24,13 @@ A simple Data Table Editor that generates Markdown, CSV or JSON. It can also be 
 
 The application is live at [AnyWayData.com](https://anywaydata.com)
 
-- Or clone and run locally by opening index.html in a browser after starting a web server in the folder e.g. `python3 -m http.server`
+- Or clone and run locally with Vite:
+- `npm install`
+- `npm run dev:web`
+- open `http://127.0.0.1:4173/app.html` or `http://127.0.0.1:4173/generator.html`
+
+Use `npm run build:web` to create a production build and `npm run preview:web` to preview the built output.
+The old static-server flow (e.g. `python3 -m http.server`) is no longer the recommended local runtime path.
 
 ### Select Grid Engine
 

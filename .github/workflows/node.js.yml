@@ -95,12 +95,19 @@ jobs:
           docker build -f apps/api/Dockerfile -t anywaydata-api-ci .
           docker run -d --rm --name api-ci -p 18082:3000 anywaydata-api-ci
 
+          ready=0
           for i in {1..20}; do
             if curl -fsS http://127.0.0.1:18082/v1/health >/dev/null; then
+              ready=1
               break
             fi
             sleep 1
           done
+          if [ "$ready" -ne 1 ]; then
+            docker logs api-ci || true
+            echo "API container did not become ready within timeout"
+            exit 1
+          fi
           curl -fsS http://127.0.0.1:18082/v1/health | grep -qi "ok"
           curl -fsS -X POST "http://127.0.0.1:18082/v1/generate" \
             -H "content-type: application/json" \

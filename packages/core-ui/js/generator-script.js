@@ -34,7 +34,11 @@ async function bootstrapGeneratorPage({
 
 if (typeof document !== 'undefined') {
   const runBootstrap = async function () {
-    await bootstrapGeneratorPage();
+    try {
+      await bootstrapGeneratorPage();
+    } catch (error) {
+      console.error('Failed to bootstrap generator page', error);
+    }
   };
 
   if (document.readyState === 'loading') {

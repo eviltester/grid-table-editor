@@ -69,7 +69,6 @@ class TestFrameworkOptionsPanel {
       return [
         { value: 'provider', label: 'Provider/Method' },
         { value: 'inline', label: 'Inline' },
-        { value: 'csv', label: 'CSV Source (JUnit)' },
       ];
     }
     if (selectedFrameworkId === 'junit4' || selectedFrameworkId === 'testng') {
@@ -134,7 +133,7 @@ class TestFrameworkOptionsPanel {
         </div>
 
         <div class="data-source-strategy">
-          <label><span class="helpicon option-help-icon" data-help="test-framework-option-data-source-strategy" data-help-text="Controls how row data is supplied to tests: provider/method source, inline constants, or CSV source when supported by the selected framework."></span>Data Source Strategy
+          <label><span class="helpicon option-help-icon" data-help="test-framework-option-data-source-strategy" data-help-text="Controls how row data is supplied to tests: provider/method source or inline values."></span>Data Source Strategy
             <select name="data-source-strategy">
               ${dataSourceOptions}
             </select>
@@ -214,6 +213,10 @@ class TestFrameworkOptionsPanel {
   setFromOptions(mainOptions) {
     const options = mainOptions?.options ?? {};
     const selectedFramework = mainOptions?.outputFormat || this.frameworkId;
+    const selectedDataSourceStrategy =
+      (selectedFramework === 'junit5' || selectedFramework === 'junit6') && options.dataSourceStrategy === 'csv'
+        ? 'inline'
+        : options.dataSourceStrategy;
     this.htmlData.setDropDownOptionToKeyValue("select[name='framework-id']", selectedFramework, this.frameworkId);
     this.frameworkId = selectedFramework;
     this.refreshDataSourceStrategyOptions();
@@ -221,7 +224,7 @@ class TestFrameworkOptionsPanel {
     this.htmlData.setTextFieldToValue("input[name='test-name-prefix']", options.testNamePrefix ?? 'row');
     this.htmlData.setDropDownOptionToKeyValue(
       "select[name='data-source-strategy']",
-      options.dataSourceStrategy,
+      selectedDataSourceStrategy,
       this.getDataSourceStrategyOptions()[0]?.value || 'provider'
     );
     this.htmlData.setCheckBoxFrom("input[name='include-setup']", options.includeSetup, true);

@@ -13,6 +13,27 @@ function makeTable() {
   return table;
 }
 
+function makePhpEscapingTable() {
+  const table = new GenericDataTable();
+  table.setHeaders(['Payload']);
+  table.appendDataRow([{ "O'Reilly\\Team": "Alice\\Bob's" }]);
+  return table;
+}
+
+function makeCsvEscapingTable() {
+  const table = new GenericDataTable();
+  table.setHeaders(['Value']);
+  table.appendDataRow(['Path C:\\temp\\file "quoted"']);
+  return table;
+}
+
+function makeRubyHeaderEscapingTable() {
+  const table = new GenericDataTable();
+  table.setHeaders(['First Name', 'user-id', '123code']);
+  table.appendDataRow(['Connie', 'qa-1', 'X1']);
+  return table;
+}
+
 describe('test framework convertor', () => {
   test('buildCanonicalModel maps headers and rows', () => {
     const model = buildCanonicalModel(makeTable(), {
@@ -51,27 +72,56 @@ describe('test framework convertor', () => {
     expect(rendered).toMatch(pattern);
   });
 
-  test('junit5 csv strategy uses csv source', () => {
+  test('junit5 inline strategy uses csv source', () => {
     const convertor = new TestFrameworkConvertor(new TestFrameworkConvertorOptions());
     convertor.setFramework('junit5');
-    convertor.setOptions({ options: { dataSourceStrategy: 'csv' } });
+    convertor.setOptions({ options: { dataSourceStrategy: 'inline' } });
     const rendered = convertor.fromDataTable(makeTable());
     expect(rendered).toMatch(/@CsvSource/);
+    expect(rendered).toMatch(/quoteCharacter = '\"'/);
   });
 
-  test.each(['pytest', 'jest', 'kotest', 'test-more'])(
-    '%s prettyPrint=true renders one row per line',
-    (frameworkId) => {
-      const convertor = new TestFrameworkConvertor(new TestFrameworkConvertorOptions());
-      convertor.setFramework(frameworkId);
-      convertor.setOptions({ options: { prettyPrint: true } });
-      const rendered = convertor.fromDataTable(makeTable());
+  test('junit5 inline strategy escapes backslashes and quotes in string fields', () => {
+    const convertor = new TestFrameworkConvertor(new TestFrameworkConvertorOptions());
+    convertor.setFramework('junit5');
+    convertor.setOptions({ options: { dataSourceStrategy: 'inline' } });
+    const rendered = convertor.fromDataTable(makeCsvEscapingTable());
 
-      expect(rendered).toMatch(/\[\s*\n[\s\S]*\n[\s\S]*\n[\s\S]*\]/);
-      expect(rendered).toMatch(/"Name":\s*"Connie"/);
-      expect(rendered).toMatch(/"Name":\s*"Miles"/);
-    }
-  );
+    expect(rendered).toContain('Path C:\\\\\\\\temp\\\\\\\\file \\\\\\"quoted\\\\\\"');
+  });
+
+  test.each(['pytest', 'jest'])('%s prettyPrint=true renders one row per line', (frameworkId) => {
+    const convertor = new TestFrameworkConvertor(new TestFrameworkConvertorOptions());
+    convertor.setFramework(frameworkId);
+    convertor.setOptions({ options: { prettyPrint: true } });
+    const rendered = convertor.fromDataTable(makeTable());
+
+    expect(rendered).toMatch(/\[\s*\n[\s\S]*\n[\s\S]*\n[\s\S]*\]/);
+    expect(rendered).toMatch(/"Name":\s*"Connie"/);
+    expect(rendered).toMatch(/"Name":\s*"Miles"/);
+  });
+
+  test('test-more prettyPrint=true renders one row per line', () => {
+    const convertor = new TestFrameworkConvertor(new TestFrameworkConvertorOptions());
+    convertor.setFramework('test-more');
+    convertor.setOptions({ options: { prettyPrint: true } });
+    const rendered = convertor.fromDataTable(makeTable());
+
+    expect(rendered).toMatch(/\[\s*\n[\s\S]*\n[\s\S]*\n[\s\S]*\]/);
+    expect(rendered).toMatch(/\{'Name' => 'Connie', 'Age' => 21\}/);
+    expect(rendered).toMatch(/\{'Name' => 'Miles', 'Age' => 34\}/);
+  });
+
+  test('kotest prettyPrint=true renders one row per line', () => {
+    const convertor = new TestFrameworkConvertor(new TestFrameworkConvertorOptions());
+    convertor.setFramework('kotest');
+    convertor.setOptions({ options: { prettyPrint: true } });
+    const rendered = convertor.fromDataTable(makeTable());
+
+    expect(rendered).toMatch(/\[\s*\n[\s\S]*\n[\s\S]*\n[\s\S]*\]/);
+    expect(rendered).toMatch(/mapOf\("Name" to "Connie", "Age" to 21\)/);
+    expect(rendered).toMatch(/mapOf\("Name" to "Miles", "Age" to 34\)/);
+  });
 
   test('pytest prettyPrint=false keeps row data inline', () => {
     const convertor = new TestFrameworkConvertor(new TestFrameworkConvertorOptions());
@@ -82,13 +132,31 @@ describe('test framework convertor', () => {
     expect(rendered).toContain('[{"Name": "Connie", "Age": 21}, {"Name": "Miles", "Age": 34}]');
   });
 
-  test.each(['jest', 'kotest', 'test-more'])('%s prettyPrint=false keeps row data inline', (frameworkId) => {
+  test('test-more prettyPrint=false keeps row data inline', () => {
+    const convertor = new TestFrameworkConvertor(new TestFrameworkConvertorOptions());
+    convertor.setFramework('test-more');
+    convertor.setOptions({ options: { prettyPrint: false } });
+    const rendered = convertor.fromDataTable(makeTable());
+
+    expect(rendered).toContain("[{'Name' => 'Connie', 'Age' => 21}, {'Name' => 'Miles', 'Age' => 34}]");
+  });
+
+  test.each(['jest'])('%s prettyPrint=false keeps row data inline', (frameworkId) => {
     const convertor = new TestFrameworkConvertor(new TestFrameworkConvertorOptions());
     convertor.setFramework(frameworkId);
     convertor.setOptions({ options: { prettyPrint: false } });
     const rendered = convertor.fromDataTable(makeTable());
 
     expect(rendered).toContain('[{"Name":"Connie","Age":21}, {"Name":"Miles","Age":34}]');
+  });
+
+  test('kotest prettyPrint=false keeps row data inline', () => {
+    const convertor = new TestFrameworkConvertor(new TestFrameworkConvertorOptions());
+    convertor.setFramework('kotest');
+    convertor.setOptions({ options: { prettyPrint: false } });
+    const rendered = convertor.fromDataTable(makeTable());
+
+    expect(rendered).toContain('[mapOf("Name" to "Connie", "Age" to 21), mapOf("Name" to "Miles", "Age" to 34)]');
   });
 
   test.each([
@@ -146,7 +214,7 @@ describe('test framework convertor', () => {
     expect(inlineRendered).toMatch(/@Theory/);
   });
 
-  test('junit5 provider/csv data source strategies render different structures', () => {
+  test('junit5 provider/inline data source strategies render different structures', () => {
     const convertor = new TestFrameworkConvertor(new TestFrameworkConvertorOptions());
     convertor.setFramework('junit5');
     convertor.setOptions({ options: { dataSourceStrategy: 'provider' } });
@@ -154,10 +222,25 @@ describe('test framework convertor', () => {
     expect(providerRendered).toMatch(/@MethodSource/);
     expect(providerRendered).toMatch(/Stream<Arguments>/);
 
+    convertor.setOptions({ options: { dataSourceStrategy: 'inline' } });
+    const inlineRendered = convertor.fromDataTable(makeTable());
+    expect(inlineRendered).toMatch(/@CsvSource/);
+    expect(inlineRendered).not.toMatch(/@MethodSource/);
+  });
+
+  test.each(['junit5', 'junit6'])('%s legacy csv strategy is supported as inline alias', (frameworkId) => {
+    const convertor = new TestFrameworkConvertor(new TestFrameworkConvertorOptions());
+    convertor.setFramework(frameworkId);
+    convertor.setOptions({ options: { dataSourceStrategy: 'inline' } });
+    const inlineRendered = convertor.fromDataTable(makeTable());
+    expect(inlineRendered).toMatch(/@CsvSource/);
+    expect(inlineRendered).not.toMatch(/@MethodSource/);
+
     convertor.setOptions({ options: { dataSourceStrategy: 'csv' } });
     const csvRendered = convertor.fromDataTable(makeTable());
     expect(csvRendered).toMatch(/@CsvSource/);
     expect(csvRendered).not.toMatch(/@MethodSource/);
+    expect(csvRendered).toBe(inlineRendered);
   });
 
   test('pytest provider/inline data source strategies render different structures', () => {
@@ -349,6 +432,16 @@ describe('test framework convertor', () => {
     expect(minitest).not.toEqual(rspec);
   });
 
+  test('ruby framework renderers quote non-identifier hash keys safely', () => {
+    const convertor = new TestFrameworkConvertor(new TestFrameworkConvertorOptions());
+    convertor.setFramework('rspec');
+    const rspec = convertor.fromDataTable(makeRubyHeaderEscapingTable());
+
+    expect(rspec).toContain('"First Name" =>');
+    expect(rspec).toContain('"user-id" =>');
+    expect(rspec).toContain('"123code" =>');
+  });
+
   test('pest uses pest test idioms distinct from phpunit', () => {
     const convertor = new TestFrameworkConvertor(new TestFrameworkConvertorOptions());
     convertor.setFramework('pest');
@@ -361,6 +454,15 @@ describe('test framework convertor', () => {
     expect(pest).toMatch(/->with\(rowProvider\(\)\)/);
     expect(pest).toMatch(/expect\(\$actual\[/);
     expect(pest).not.toEqual(phpunit);
+  });
+
+  test('php serializers escape object keys containing backslashes and quotes', () => {
+    const convertor = new TestFrameworkConvertor(new TestFrameworkConvertorOptions());
+    convertor.setFramework('phpunit');
+    convertor.setOptions({ options: { dataSourceStrategy: 'provider' } });
+    const rendered = convertor.fromDataTable(makePhpEscapingTable());
+
+    expect(rendered).toContain("['O\\'Reilly\\\\Team' => 'Alice\\\\Bob\\'s']");
   });
 
   test('spek uses spek structure distinct from kotest', () => {

@@ -131,21 +131,30 @@ test('/v1/generate/fromschema rejects invalid seed query value', async () => {
 });
 
 test('/v1/generate/fromschema applies unit-test defaults for includeSetup', async () => {
-  const setDefaults = await fetch(url('/v1/generate/options/jest'), {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ options: { includeSetup: true } }),
-  });
-  assert.equal(setDefaults.status, 200);
+  try {
+    const setDefaults = await fetch(url('/v1/generate/options/jest'), {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ options: { includeSetup: true } }),
+    });
+    assert.equal(setDefaults.status, 200);
 
-  const response = await fetch(url('/v1/generate/fromschema?rowCount=1&outputFormat=jest&responseFormat=rendered'), {
-    method: 'POST',
-    headers: { 'content-type': 'text/plain' },
-    body: 'Name\nBob',
-  });
+    const response = await fetch(url('/v1/generate/fromschema?rowCount=1&outputFormat=jest&responseFormat=rendered'), {
+      method: 'POST',
+      headers: { 'content-type': 'text/plain' },
+      body: 'Name\nBob',
+    });
 
-  assert.equal(response.status, 200);
-  const body = await response.json();
-  assert.match(body.rendered, /beforeEach/);
-  assert.match(body.rendered, /expect\(/);
+    assert.equal(response.status, 200);
+    const body = await response.json();
+    assert.match(body.rendered, /beforeEach/);
+    assert.match(body.rendered, /expect\(/);
+  } finally {
+    const resetDefaults = await fetch(url('/v1/generate/options/jest/default'), {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({}),
+    });
+    assert.equal(resetDefaults.status, 200);
+  }
 });

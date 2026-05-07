@@ -502,14 +502,17 @@ class DataGeneratorPage {
     if (!requestedType) {
       return;
     }
+
+    // Persist options for the target format before rendering its panel.
+    this.exporter?.setOptionsForType?.(requestedType, options);
+
     const outputSelect = this.documentObj.getElementById('generatorOutputFormat');
     if (outputSelect && outputSelect.value !== requestedType) {
       outputSelect.value = requestedType;
       this.renderOptionsPanelForSelectedFormat();
     }
 
-    const type = this.getSelectedOutputType();
-    this.exporter?.setOptionsForType?.(type, options);
+    const type = this.getSelectedOutputType() || requestedType;
     this.renderOutputPreviewForCurrentSelection();
     this.setGenerationStatus(`${type.toUpperCase()} options applied.`);
     this.scheduleClearGenerationStatus();

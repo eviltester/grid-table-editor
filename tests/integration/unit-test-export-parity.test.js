@@ -16,6 +16,20 @@ const FRAMEWORKS = [
   'test-more',
 ];
 
+const DATA_SOURCE_STRATEGY_BY_FRAMEWORK = {
+  junit4: 'inline',
+  junit5: 'inline',
+  junit6: 'provider',
+  testng: 'inline',
+  pytest: 'inline',
+  jest: 'inline',
+  xunit: 'inline',
+  rspec: 'inline',
+  phpunit: 'inline',
+  kotest: 'inline',
+  'test-more': 'inline',
+};
+
 function buildTable(headers, rows) {
   const table = new GenericDataTable();
   table.setHeaders(headers);
@@ -25,11 +39,12 @@ function buildTable(headers, rows) {
 
 describe('unit-test export parity: UI exporter vs core pipeline', () => {
   test.each(FRAMEWORKS)('%s parity', (format) => {
+    const dataSourceStrategy = DATA_SOURCE_STRATEGY_BY_FRAMEWORK[format] || 'provider';
     const options = {
       options: {
         includeSetup: true,
         prettyPrint: true,
-        dataSourceStrategy: format === 'junit5' || format === 'junit6' ? 'provider' : 'provider',
+        dataSourceStrategy,
       },
     };
     const coreResult = generateFromTextSpec({

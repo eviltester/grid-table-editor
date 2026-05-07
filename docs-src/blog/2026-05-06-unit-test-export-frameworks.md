@@ -68,7 +68,7 @@ function mapRowUnderTest(input: Record<string, unknown>) {
 
 The detailed option behavior and framework mapping are documented here:
 
-- [Unit Test Export Options](/docs/unit-test-export-options.md)
+- [Unit Test Export Options](/docs/unit-test-export-options)
 
 ## Official Framework References
 

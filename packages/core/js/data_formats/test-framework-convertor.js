@@ -30,6 +30,19 @@ function jsValue(value) {
   return JSON.stringify(value);
 }
 
+function kotlinValue(value) {
+  if (value === null) return 'null';
+  if (typeof value === 'string') return JSON.stringify(String(value));
+  if (typeof value === 'number' || typeof value === 'boolean') return String(value);
+  if (Array.isArray(value)) return `listOf(${value.map((entry) => kotlinValue(entry)).join(', ')})`;
+  if (typeof value === 'object') {
+    return `mapOf(${Object.entries(value)
+      .map(([key, entry]) => `${JSON.stringify(String(key))} to ${kotlinValue(entry)}`)
+      .join(', ')})`;
+  }
+  return 'null';
+}
+
 function pythonValue(value) {
   if (value === null) return 'None';
   if (typeof value === 'string') return JSON.stringify(value);
@@ -50,10 +63,24 @@ function rubyValue(value) {
   if (Array.isArray(value)) return `[${value.map((entry) => rubyValue(entry)).join(', ')}]`;
   if (typeof value === 'object') {
     return `{ ${Object.entries(value)
-      .map(([key, entry]) => `${key}: ${rubyValue(entry)}`)
+      .map(([key, entry]) => `${JSON.stringify(String(key))} => ${rubyValue(entry)}`)
       .join(', ')} }`;
   }
   return JSON.stringify(value);
+}
+
+function perlValue(value) {
+  if (value === null) return 'undef';
+  if (typeof value === 'string') return `'${String(value).replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`;
+  if (typeof value === 'number') return String(value);
+  if (typeof value === 'boolean') return value ? '1' : '0';
+  if (Array.isArray(value)) return `[${value.map((entry) => perlValue(entry)).join(', ')}]`;
+  if (typeof value === 'object') {
+    return `{${Object.entries(value)
+      .map(([key, entry]) => `'${String(key).replace(/\\/g, '\\\\').replace(/'/g, "\\'")}' => ${perlValue(entry)}`)
+      .join(', ')}}`;
+  }
+  return 'undef';
 }
 
 function phpValue(value) {
@@ -63,7 +90,7 @@ function phpValue(value) {
   if (Array.isArray(value)) return `[${value.map((entry) => phpValue(entry)).join(', ')}]`;
   if (typeof value === 'object') {
     return `[${Object.entries(value)
-      .map(([key, entry]) => `'${String(key).replace(/'/g, "\\'")}' => ${phpValue(entry)}`)
+      .map(([key, entry]) => `'${String(key).replace(/\\/g, '\\\\').replace(/'/g, "\\'")}' => ${phpValue(entry)}`)
       .join(', ')}]`;
   }
   return 'null';
@@ -220,7 +247,9 @@ function renderJavaJUnit5(model) {
   if (model.dataSourceStrategy === 'inline' || model.dataSourceStrategy === 'csv') {
     const csvRows = model.rows.map((row) =>
       Object.values(row)
-        .map((value) => (typeof value === 'string' ? `"${String(value).replace(/"/g, '\\"')}"` : String(value)))
+        .map((value) =>
+          typeof value === 'string' ? `"${String(value).replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"` : String(value)
+        )
         .join(', ')
     );
     const setupLines = model.includeSetup
@@ -238,9 +267,9 @@ function renderJavaJUnit5(model) {
       `public class ${model.suiteName} {`,
       ...setupLines,
       '    @ParameterizedTest',
-      '    @CsvSource({',
+      '    @CsvSource(value = {',
       ...csvRows.map((row) => `        ${JSON.stringify(row)},`),
-      '    })',
+      "    }, quoteCharacter = '\"')",
       `    void ${model.testNamePrefix}_parameterized(Object... row) {`,
       '        Object[] expected = row;',
       '        Object[] actual = mapRowUnderTest(row);',
@@ -730,7 +759,7 @@ function renderKotest(model) {
       `            actual[${JSON.stringify(header)}]?.let { it::class } shouldBe expected[${JSON.stringify(header)}]?.let { it::class }`,
     ];
   });
-  const rowData = formatRowCollection(model.rows, jsValue, model.prettyPrint, '        ');
+  const rowData = formatRowCollection(model.rows, kotlinValue, model.prettyPrint, '        ');
   const setupLines = model.includeSetup ? ['    beforeTest {', '        // setup', '    }', ''] : [];
   if (model.dataSourceStrategy === 'provider') {
     const providerLines = [
@@ -782,7 +811,7 @@ function renderKotest(model) {
 }
 
 function renderTestMore(model) {
-  const rowData = formatRowCollection(model.rows, jsValue, model.prettyPrint, '');
+  const rowData = formatRowCollection(model.rows, perlValue, model.prettyPrint, '');
   const useBasicAssertions = !isStrictAssertionStyle(model);
   const lines = [
     'use strict;',
@@ -1230,7 +1259,7 @@ function renderJUnit5Kotlin(model) {
       .replace(/^_+/, '');
     return normalized || 'value';
   };
-  const rowsData = formatRowCollection(model.rows, jsValue, model.prettyPrint, '        ');
+  const rowsData = formatRowCollection(model.rows, kotlinValue, model.prettyPrint, '        ');
   const strictAssertions = isStrictAssertionStyle(model);
   const assertionLines = model.headers.flatMap((header) => {
     if (strictAssertions) {
@@ -1251,7 +1280,7 @@ function renderJUnit5Kotlin(model) {
     '        @JvmStatic',
     '        fun rows(): Stream<Arguments> = Stream.of(',
     model.rows
-      .map((row) => `            Arguments.of(${model.headers.map((header) => jsValue(row[header])).join(', ')})`)
+      .map((row) => `            Arguments.of(${model.headers.map((header) => kotlinValue(row[header])).join(', ')})`)
       .join(',\n'),
     '        )',
     '    }',
@@ -1306,7 +1335,7 @@ function renderJUnit5Kotlin(model) {
 
 function renderSpek(model) {
   const strictAssertions = isStrictAssertionStyle(model);
-  const rowData = formatRowCollection(model.rows, jsValue, model.prettyPrint, '            ');
+  const rowData = formatRowCollection(model.rows, kotlinValue, model.prettyPrint, '            ');
   const assertionLines = model.headers.flatMap((header) => {
     const valueAssertion = `                    assertEquals(expected[${JSON.stringify(header)}], actual[${JSON.stringify(header)}])`;
     if (!strictAssertions) {

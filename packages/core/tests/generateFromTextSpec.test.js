@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { generateFromTextSpec, validateSafeFakerRules } from '../src/index.js';
+import { generateFromTextSpec, validateSafeFakerRules, SUPPORTED_FORMATS } from '../src/index.js';
 
 test('generateFromTextSpec returns validation error for missing spec', () => {
   const result = generateFromTextSpec({ textSpec: '', rowCount: 1, outputFormat: 'json' });
@@ -20,6 +20,43 @@ test('generateFromTextSpec renders test framework output', () => {
   assert.equal(result.ok, true);
   assert.equal(result.format, 'pytest');
   assert.match(result.rendered, /@pytest\.mark\.parametrize/);
+  assert.match(result.rendered, /Bob/);
+});
+
+test('generateFromTextSpec renders data-bearing output for all unit test frameworks', () => {
+  const unitTestFrameworks = [
+    'junit4',
+    'junit5',
+    'junit6',
+    'testng',
+    'pytest',
+    'unittest',
+    'nose2',
+    'jest',
+    'vitest',
+    'mocha',
+    'xunit',
+    'nunit',
+    'mstest',
+    'rspec',
+    'minitest',
+    'phpunit',
+    'pest',
+    'kotest',
+    'junit5-kotlin',
+    'spek',
+    'test-more',
+    'test2-suite',
+  ].filter((format) => SUPPORTED_FORMATS.includes(format));
+
+  for (const outputFormat of unitTestFrameworks) {
+    const result = generateFromTextSpec({ textSpec: 'Name\nBob', rowCount: 1, outputFormat });
+    assert.equal(result.ok, true, `expected ${outputFormat} generation to succeed`);
+    assert.equal(result.format, outputFormat);
+    assert.equal(typeof result.rendered, 'string');
+    assert.ok(result.rendered.length > 0, `expected ${outputFormat} rendered output to be non-empty`);
+    assert.match(result.rendered, /Bob/, `expected ${outputFormat} rendered output to include row data`);
+  }
 });
 
 test('validateSafeFakerRules rejects unsafe expression syntax', () => {

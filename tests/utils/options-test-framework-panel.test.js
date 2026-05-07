@@ -46,13 +46,13 @@ describe('TestFrameworkOptionsPanel', () => {
     expect(options.options.includeSetup).toBe(false);
   });
 
-  test('shows csv source strategy only for junit5/junit6', () => {
+  test('junit5/junit6 data source strategies are provider+inline only', () => {
     const junit5Panel = new TestFrameworkOptionsPanel(parent, 'junit5');
     junit5Panel.addToGui();
     const junit5Options = Array.from(parent.querySelectorAll("select[name='data-source-strategy'] option")).map(
       (option) => option.value
     );
-    expect(junit5Options).toContain('csv');
+    expect(junit5Options).toEqual(['provider', 'inline']);
 
     const pytestPanel = new TestFrameworkOptionsPanel(parent, 'pytest');
     pytestPanel.addToGui();

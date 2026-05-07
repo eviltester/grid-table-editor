@@ -408,8 +408,18 @@ class ImportExportControls {
   }
 
   setCurrentTypeOptions() {
-    const activeType = document.querySelector('li.active-type a').getAttribute('data-type');
-    const guiOptions = this.optionsPanels[activeType].getOptionsFromGui();
+    const activeTypeElem = document.querySelector('li.active-type a');
+    const activeType = activeTypeElem?.getAttribute('data-type');
+    if (!activeType) {
+      return;
+    }
+
+    const optionsPanel = this.optionsPanels?.[activeType];
+    if (!optionsPanel || typeof optionsPanel.getOptionsFromGui !== 'function') {
+      return;
+    }
+
+    const guiOptions = optionsPanel.getOptionsFromGui();
     const type = guiOptions?.outputFormat || activeType;
     this._setActiveTypeIfPresent(type);
     this.importer.setOptionsForType(type, guiOptions);

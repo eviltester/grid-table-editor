@@ -76,8 +76,8 @@ class GeneratedDataTests : StringSpec({
     }
 
     fun rowProvider() = [
-          {\\"Name\\":\\"Connie\\",\\"Age\\":21},
-          {\\"Name\\":\\"Miles\\",\\"Age\\":34}
+          mapOf(\\"Name\\" to \\"Connie\\", \\"Age\\" to 21),
+          mapOf(\\"Name\\" to \\"Miles\\", \\"Age\\" to 34)
         ]
 
     \\"row parameterized\\" {
@@ -172,8 +172,8 @@ my $setup = {};
 
 sub row_provider {
     return [
-  {\\"Name\\":\\"Connie\\",\\"Age\\":21},
-  {\\"Name\\":\\"Miles\\",\\"Age\\":34}
+  {'Name' => 'Connie', 'Age' => 21},
+  {'Name' => 'Miles', 'Age' => 34}
 ];
 }
 

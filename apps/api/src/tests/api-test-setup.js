@@ -13,7 +13,7 @@ let baseUrl;
 export async function setupApiServer() {
   // Dynamic import to avoid top-level await issues
   if (!apiModule) {
-    apiModule = await import('../../apps/api/src/index.js');
+    apiModule = await import('../index.js');
   }
 
   const result = await apiModule.startApiServer(apiModule.app, {

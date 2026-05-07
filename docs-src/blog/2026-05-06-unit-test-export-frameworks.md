@@ -10,7 +10,7 @@ We added a dedicated **Code (Unit Test)** export capability that now works consi
 
 Generated output is data-driven (parameterized) test code, with shared options for suite naming, setup scaffolding, pretty print, and data source strategy.
 
-<!--truncate-->
+<!-- truncate -->
 
 ## Code vs Code (Unit Test)
 
@@ -68,7 +68,7 @@ function mapRowUnderTest(input: Record<string, unknown>) {
 
 The detailed option behavior and framework mapping are documented here:
 
-- [Unit Test Export Options](/docs/unit-test-export-options)
+- [Unit Test Code Options](/docs/data-formats/unit-test-code/options)
 
 ## Official Framework References
 

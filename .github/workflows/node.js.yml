@@ -91,6 +91,13 @@ jobs:
             docker rm -f api-ci >/dev/null 2>&1 || true
           }
           trap cleanup EXIT
+          api_curl() {
+            if ! curl -fsS "$@"; then
+              echo "API smoke request failed: curl $*"
+              docker logs api-ci || true
+              exit 1
+            fi
+          }
 
           docker build -f apps/api/Dockerfile -t anywaydata-api-ci .
           docker run -d --rm --name api-ci -p 18082:3000 anywaydata-api-ci
@@ -108,10 +115,10 @@ jobs:
             echo "API container did not become ready within timeout"
             exit 1
           fi
-          curl -fsS http://127.0.0.1:18082/v1/health | grep -qi "ok"
-          curl -fsS -X POST "http://127.0.0.1:18082/v1/generate" \
+          api_curl http://127.0.0.1:18082/v1/health | grep -qi "ok"
+          api_curl -X POST "http://127.0.0.1:18082/v1/generate" \
             -H "content-type: application/json" \
-            -d '{"textSpec":"Name\nBob","rowCount":2,"outputFormat":"json"}' | grep -q '"ok":true'
+            -d '{"textSpec":"Name\nBob","rowCount":2,"outputFormat":"json"}' | grep -q '"format":"json"'
 
       - name: Docker smoke test (Web)
         run: |

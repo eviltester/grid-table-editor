@@ -7,4 +7,6 @@ globalThis.Papa = Papa;
 globalThis.RandExp = RandExp;
 globalThis.tippy = tippy;
 
-await import('../../../packages/core-ui/js/script.js');
+void import('../../../packages/core-ui/js/script.js').catch((error) => {
+  console.error('Failed to load app script', error);
+});

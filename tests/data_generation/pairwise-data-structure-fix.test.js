@@ -82,12 +82,14 @@ describe('Pairwise Data Structure Fix', () => {
 
     // This would cause the "object is not iterable" error
     expect(() => {
-      const [headers, ...rows] = dataResult.data; // Wrong: trying to destructure object
+      const [first] = dataResult.data; // Wrong: trying to destructure object
+      void first;
     }).toThrow();
 
     // But this works correctly (the fix)
     expect(() => {
-      const [headers, ...rows] = dataResult.data.data; // Correct: accessing nested array
+      const [first] = dataResult.data.data; // Correct: accessing nested array
+      void first;
     }).not.toThrow();
   });
 });

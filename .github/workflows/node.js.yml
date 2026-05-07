@@ -24,6 +24,53 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Install Perl and Kotlin compiler
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y perl unzip
+          KOTLIN_VERSION=2.1.21
+          wget -q "https://github.com/JetBrains/kotlin/releases/download/v${KOTLIN_VERSION}/kotlin-compiler-${KOTLIN_VERSION}.zip"
+          unzip -q "kotlin-compiler-${KOTLIN_VERSION}.zip"
+          sudo mv kotlinc /opt/kotlinc
+          echo "/opt/kotlinc/bin" >> "$GITHUB_PATH"
+
+      - name: Verify language toolchains
+        run: |
+          node --version
+          python --version
+          ruby --version
+          php --version
+          perl --version
+          javac -version
+          dotnet --version
+          kotlinc -version
+
       - name: Install dependencies
         run: npm ci
 

@@ -56,7 +56,7 @@ describe('Pairwise Combinatorial Matching Data Generation', () => {
       ];
 
       const generator = new PairwiseGenerator(parameters);
-      const dataRecords = generator.generateDataSet();
+      generator.generateDataSet();
 
       // Manually verify specific pairs are covered
       const exported = generator.exportDataRecords();

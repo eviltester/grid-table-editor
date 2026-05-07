@@ -13,7 +13,6 @@ ENV NODE_ENV=production
 COPY --from=deps /app/node_modules ./node_modules
 COPY package.json ./package.json
 COPY packages/core ./packages/core
-COPY js ./js
 COPY apps/api ./apps/api
 EXPOSE 3000
 CMD ["node", "apps/api/src/index.js"]

@@ -1,5 +1,5 @@
 import { JSDOM } from 'jsdom';
-import { bootstrapApp } from '../packages/core-ui/js/script.js';
+import { bootstrapApp } from '../../../../../packages/core-ui/js/script.js';
 
 describe('script bootstrap', () => {
   let dom;

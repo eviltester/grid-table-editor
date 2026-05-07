@@ -14,7 +14,7 @@ describe('script module initialization', () => {
 
     expect(() => {
       jest.isolateModules(() => {
-        require('../packages/core-ui/js/script.js');
+        require('../../../../../packages/core-ui/js/script.js');
       });
     }).not.toThrow();
 
@@ -62,10 +62,10 @@ describe('script module initialization', () => {
         }
       },
     }));
-    jest.doMock('../packages/core-ui/js/gui_components/testdatadefn.js', () => ({
+    jest.doMock('../../../../../packages/core-ui/js/gui_components/testdatadefn.js', () => ({
       enableTestDataGenerationInterface,
     }));
-    jest.doMock('../packages/core-ui/js/gui_components/data-grid-editor/main-display-grid.js', () => ({
+    jest.doMock('../../../../../packages/core-ui/js/gui_components/data-grid-editor/main-display-grid.js', () => ({
       activeGridEngine: 'tabulator',
       ExtendedDataGrid: class ExtendedDataGrid {
         createChildGrid() {}
@@ -75,15 +75,15 @@ describe('script module initialization', () => {
         sizeColumnsToFit() {}
       },
     }));
-    jest.doMock('../packages/core-ui/js/gui_components/data-grid-editor/grid-library-loader.js', () => ({
+    jest.doMock('../../../../../packages/core-ui/js/gui_components/data-grid-editor/grid-library-loader.js', () => ({
       ensureGridLibraryLoaded,
     }));
-    jest.doMock('../packages/core-ui/js/gui_components/tabbed-text-control.js', () => ({
+    jest.doMock('../../../../../packages/core-ui/js/gui_components/tabbed-text-control.js', () => ({
       TabbedTextControl: class TabbedTextControl {
         addToGui() {}
       },
     }));
-    jest.doMock('../packages/core-ui/js/gui_components/import-export-controls.js', () => ({
+    jest.doMock('../../../../../packages/core-ui/js/gui_components/import-export-controls.js', () => ({
       ImportExportControls: class ImportExportControls {
         addHTMLtoGui = addHTMLtoGui;
         setExporter = setExporter;
@@ -102,7 +102,7 @@ describe('script module initialization', () => {
     });
 
     jest.isolateModules(() => {
-      require('../packages/core-ui/js/script.js');
+      require('../../../../../packages/core-ui/js/script.js');
     });
 
     expect(addEventListenerSpy).toHaveBeenCalledWith(

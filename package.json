@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "description": "A simple Data Table Editor that generates Markdown, CSV or JSON. It can also be used to interchange data between the formats, supporting editing in the grid.",
-  "main": "index.html",
+  "main": "apps/web/index.html",
   "workspaces": [
     "packages/*",
     "apps/*"
@@ -22,13 +22,17 @@
     "lint": "eslint \"tests/**/*.js\" \"apps/**/*.js\" \"packages/**/*.js\"",
     "lint:fix": "eslint --fix \"tests/**/*.js\" \"apps/**/*.js\" \"packages/**/*.js\"",
     "lint:docker": "node scripts/lint-docker.js",
-    "format": "prettier --write \"*.json\" \"apps/**/*.json\" \"packages/**/*.json\" \"apps/**/*.js\" \"packages/**/*.js\" \"tests/**/*.js\" \"*.md\" \".github/workflows/*.yml\"",
-    "format:check": "prettier --check \"*.json\" \"apps/**/*.json\" \"packages/**/*.json\" \"apps/**/*.js\" \"packages/**/*.js\" \"tests/**/*.js\" \"*.md\" \".github/workflows/*.yml\"",
+    "format": "prettier --write \"*.json\" \"apps/**/*.json\" \"packages/**/*.json\" \"apps/**/*.js\" \"!apps/web/libs/**/*.js\" \"!apps/web/dist/**/*.js\" \"packages/**/*.js\" \"tests/**/*.js\" \"*.md\" \".github/workflows/*.yml\"",
+    "format:check": "prettier --check \"*.json\" \"apps/**/*.json\" \"packages/**/*.json\" \"apps/**/*.js\" \"!apps/web/libs/**/*.js\" \"!apps/web/dist/**/*.js\" \"packages/**/*.js\" \"tests/**/*.js\" \"*.md\" \".github/workflows/*.yml\"",
     "verify:local": "npm run lint && npm run format:check && npm test && npm run test:workspaces && npm run test:api",
     "verify:ci": "npm run lint && npm run format:check && npm run testcoverage && npm run test:workspaces && npm run lint:docker && npm run test:browser && npm run test:api",
+    "dev:web": "vite --config ./apps/web/vite.config.mjs",
+    "build:web": "vite build --config ./apps/web/vite.config.mjs",
+    "preview:web": "vite preview --config ./apps/web/vite.config.mjs",
+    "serve:web": "npm run dev:web",
     "benchmark:tabulator": "jest tests/grid/tabulator-performance.benchmark.test.js --runInBand",
-    "anywaydata:mac": "npm run anywaydata --prefix docs-src && cp ./app.html ./build/app.html && cp ./generator.html ./build/generator.html && cp -R ./images ./build/images && mkdir -p ./build/packages && cp -R ./packages/core ./build/packages/core && cp -R ./packages/core-ui ./build/packages/core-ui && cp -R ./libs ./build/libs && cp ./styles.css ./build/styles.css && cp -R ./build/ ../../anywaydata-com",
-    "anywaydata:win": "npm run anywaydata --prefix docs-src && echo copying index && copy .\\app.html .\\build\\app.html && echo copying images && copy .\\generator.html .\\build\\generator.html && xcopy .\\images .\\build\\images /e /k /i && if not exist .\\build\\packages mkdir .\\build\\packages && xcopy .\\packages\\core .\\build\\packages\\core /e /k /i && xcopy .\\packages\\core-ui .\\build\\packages\\core-ui /e /k /i && xcopy .\\libs .\\build\\libs /e /k /i && copy .\\styles.css .\\build\\styles.css && echo cleaning anywaydata for deployment && ..\\anywaydata-com\\make-ready-for-prod.bat",
+    "anywaydata:mac": "npm run anywaydata --prefix docs-src && npm run build:web && node ./scripts/merge-web-build-into-docs-build.js && cp -R ./build/ ../../anywaydata-com",
+    "anywaydata:win": "npm run anywaydata --prefix docs-src && npm run build:web && node .\\scripts\\merge-web-build-into-docs-build.js && echo cleaning anywaydata for deployment && ..\\anywaydata-com\\make-ready-for-prod.bat",
     "previewdocs": "npm run start --prefix docs-src",
     "prepare": "husky",
     "build:workspaces": "npm run build -ws --if-present",
@@ -40,11 +44,13 @@
       "^.+\\.js$": "babel-jest"
     },
     "testMatch": [
-      "<rootDir>/tests/**/*.test.js"
+      "<rootDir>/tests/**/*.test.js",
+      "<rootDir>/apps/web/src/tests/jest/**/*.test.js"
     ],
     "testPathIgnorePatterns": [
       "/node_modules/",
-      "/tests/browser/"
+      "/tests/browser/",
+      "/apps/web/src/tests/browser/"
     ],
     "collectCoverageFrom": [
       "packages/**/*.js",
@@ -89,9 +95,9 @@
     "babel-jest": "^28.1.0",
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^9.1.0",
-    "http-server": "^14.1.1",
     "husky": "^9.1.7",
     "jest-extended": "^2.0.0",
-    "prettier": "^3.3.3"
+    "prettier": "^3.3.3",
+    "vite": "^5.4.21"
   }
 }

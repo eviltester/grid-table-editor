@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Data Generator - AnyWayData</title>
+    <meta
+      name="description"
+      content="Generate test data with a schema builder, preview it in a table, and export directly as a file."
+    />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="author" content="Alan Richardson" />
+
+    <script src="https://unpkg.com/papaparse@5.3.2/papaparse.min.js"></script>
+    <script src="libs/randexp.min.js"></script>
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://unpkg.com/tippy.js@6"></script>
+    <script type="module" src="/src/generator-entry.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="styles.css" />
+  </head>
+
+  <body>
+    <div class="header">
+      <div class="pageheading"><a href="/">AnyWayData</a></div>
+      <div class="mainmenu"><a href="/app.html">App</a></div>
+      <div class="mainmenu">&nbsp;Generator&nbsp;</div>
+      <div class="mainmenu"><a href="/docs/intro">Docs</a></div>
+      <div class="mainmenu"><a href="/blog">Blog</a></div>
+    </div>
+
+    <div class="main-app">
+      <div class="instructions">
+        <details>
+          <summary>Data Generator Instructions</summary>
+          <ul>
+            <li>Define schema rows with column name, source type, and rule details.</li>
+            <li>Use + and - to add or remove rows and arrows to reorder.</li>
+            <li>Use Preview to generate a sample set into the table.</li>
+            <li>Use Generate Data to download file output in the selected format.</li>
+            <li>Preview and Generate row counts are independent.</li>
+          </ul>
+        </details>
+      </div>
+      <p id="generator-initial-load">Please Wait, Loading Libraries...</p>
+      <div id="generator-app"></div>
+    </div>
+  </body>
+</html>

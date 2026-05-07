@@ -74,6 +74,7 @@ The detailed option behavior and framework mapping are documented here:
 
 - JUnit 4: [junit.org/junit4](https://junit.org/junit4/)
 - JUnit 5 (Jupiter): [junit.org/junit5](https://junit.org/junit5/)
+- JUnit 6: [docs.junit.org/6.0.3](https://docs.junit.org/6.0.3/overview.html)
 - TestNG: [testng.org](https://testng.org/)
 - pytest: [docs.pytest.org](https://docs.pytest.org/)
 - unittest: [docs.python.org unittest](https://docs.python.org/3/library/unittest.html)

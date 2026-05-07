@@ -46,7 +46,8 @@ function kotlinValue(value) {
 function pythonValue(value) {
   if (value === null) return 'None';
   if (typeof value === 'string') return JSON.stringify(value);
-  if (typeof value === 'number' || typeof value === 'boolean') return String(value);
+  if (typeof value === 'boolean') return value ? 'True' : 'False';
+  if (typeof value === 'number') return String(value);
   if (Array.isArray(value)) return `[${value.map((entry) => pythonValue(entry)).join(', ')}]`;
   if (typeof value === 'object') {
     return `{${Object.entries(value)
@@ -636,8 +637,7 @@ function renderRspec(model) {
       '      expected = row',
       '      actual = map_row_under_test(row)',
       ...model.headers.map(
-        (header) =>
-          `      expect(actual[:${header}] || actual[${JSON.stringify(header)}]).to ${matcher}(expected[:${header}] || expected[${JSON.stringify(header)}])`
+        (header) => `      expect(actual[${JSON.stringify(header)}]).to ${matcher}(expected[${JSON.stringify(header)}])`
       ),
       '    end',
       '  end',
@@ -659,8 +659,7 @@ function renderRspec(model) {
     '      expected = row',
     '      actual = map_row_under_test(row)',
     ...model.headers.map(
-      (header) =>
-        `      expect(actual[:${header}] || actual[${JSON.stringify(header)}]).to ${matcher}(expected[:${header}] || expected[${JSON.stringify(header)}])`
+      (header) => `      expect(actual[${JSON.stringify(header)}]).to ${matcher}(expected[${JSON.stringify(header)}])`
     ),
     '    end',
     '  end',
@@ -1252,12 +1251,11 @@ function renderPest(model) {
 function renderJUnit5Kotlin(model) {
   const safeIdentifier = (value) => {
     const raw = value == null ? '' : String(value);
-    const normalized = raw
-      .replace(/[^A-Za-z0-9_]/g, '_')
-      .replace(/^[^A-Za-z_]/, '_$&')
-      .replace(/_+/g, '_')
-      .replace(/^_+/, '');
-    return normalized || 'value';
+    const normalized = raw.replace(/[^A-Za-z0-9_]/g, '_').replace(/_+/g, '_');
+    if (!normalized) {
+      return 'value';
+    }
+    return /^[A-Za-z_]/.test(normalized) ? normalized : `_${normalized}`;
   };
   const rowsData = formatRowCollection(model.rows, kotlinValue, model.prettyPrint, '        ');
   const strictAssertions = isStrictAssertionStyle(model);

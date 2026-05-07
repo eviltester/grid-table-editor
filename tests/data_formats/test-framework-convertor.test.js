@@ -34,6 +34,20 @@ function makeRubyHeaderEscapingTable() {
   return table;
 }
 
+function makePythonBooleanTable() {
+  const table = new GenericDataTable();
+  table.setHeaders(['Name', 'Enabled', 'Verified']);
+  table.appendDataRow(['Connie', true, false]);
+  return table;
+}
+
+function makeKotlinIdentifierTable() {
+  const table = new GenericDataTable();
+  table.setHeaders(['123code', '__test', 'user-id']);
+  table.appendDataRow(['X1', 'ok', 'qa-1']);
+  return table;
+}
+
 describe('test framework convertor', () => {
   test('buildCanonicalModel maps headers and rows', () => {
     const model = buildCanonicalModel(makeTable(), {
@@ -357,6 +371,17 @@ describe('test framework convertor', () => {
     expect(junitKotlin).not.toEqual(kotest);
   });
 
+  test('junit5-kotlin sanitizes digit-led identifiers to valid Kotlin names', () => {
+    const convertor = new TestFrameworkConvertor(new TestFrameworkConvertorOptions());
+    convertor.setFramework('junit5-kotlin');
+    convertor.setOptions({ options: { dataSourceStrategy: 'provider', testNamePrefix: '123row' } });
+    const rendered = convertor.fromDataTable(makeKotlinIdentifierTable());
+
+    expect(rendered).toMatch(/fun _123rowParameterized\(/);
+    expect(rendered).toContain('_123code: Any?');
+    expect(rendered).toContain('"123code" to _123code');
+  });
+
   test('nose2 is distinct from unittest and uses nose2 params conventions', () => {
     const convertor = new TestFrameworkConvertor(new TestFrameworkConvertorOptions());
     convertor.setFramework('nose2');
@@ -369,6 +394,18 @@ describe('test framework convertor', () => {
     expect(nose2).toMatch(/from nose2\.tools import params/);
     expect(nose2).toMatch(/@params\(\*row_provider\(\)\)/);
     expect(nose2).not.toEqual(unittest);
+  });
+
+  test.each(['pytest', 'unittest', 'nose2'])('%s renders Python boolean literals as True/False', (frameworkId) => {
+    const convertor = new TestFrameworkConvertor(new TestFrameworkConvertorOptions());
+    convertor.setFramework(frameworkId);
+    convertor.setOptions({ options: { dataSourceStrategy: 'provider' } });
+    const rendered = convertor.fromDataTable(makePythonBooleanTable());
+
+    expect(rendered).toContain('True');
+    expect(rendered).toContain('False');
+    expect(rendered).not.toContain(' true');
+    expect(rendered).not.toContain(' false');
   });
 
   test('mocha uses mocha/assert idioms distinct from jest', () => {
@@ -440,6 +477,12 @@ describe('test framework convertor', () => {
     expect(rspec).toContain('"First Name" =>');
     expect(rspec).toContain('"user-id" =>');
     expect(rspec).toContain('"123code" =>');
+    expect(rspec).toContain('actual["First Name"]');
+    expect(rspec).toContain('actual["user-id"]');
+    expect(rspec).toContain('actual["123code"]');
+    expect(rspec).not.toContain('actual[:First Name]');
+    expect(rspec).not.toContain('actual[:user-id]');
+    expect(rspec).not.toContain('actual[:123code]');
   });
 
   test('pest uses pest test idioms distinct from phpunit', () => {

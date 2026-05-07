@@ -1,0 +1,33 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`test framework convertor - Kotlin kotest matches golden snapshot (setup + provider) 1`] = `
+"import io.kotest.core.spec.style.StringSpec
+import io.kotest.matchers.shouldBe
+
+class GeneratedDataTests : StringSpec({
+    beforeTest {
+        // setup
+    }
+
+    val mapRowUnderTest: (Map<String, Any?>) -> Map<String, Any?> = { row ->
+        // Example: PersonMapper.normalize(row)
+        row // replace with your system-under-test call
+    }
+
+    fun rowProvider() = [
+          mapOf(\\"Name\\" to \\"Connie\\", \\"Age\\" to 21),
+          mapOf(\\"Name\\" to \\"Miles\\", \\"Age\\" to 34)
+        ]
+
+    \\"row parameterized\\" {
+        rowProvider().forEach { row ->
+            val expected = row
+            val actual = mapRowUnderTest(row)
+            actual[\\"Name\\"] shouldBe expected[\\"Name\\"]
+            actual[\\"Name\\"]?.let { it::class } shouldBe expected[\\"Name\\"]?.let { it::class }
+            actual[\\"Age\\"] shouldBe expected[\\"Age\\"]
+            actual[\\"Age\\"]?.let { it::class } shouldBe expected[\\"Age\\"]?.let { it::class }
+        }
+    }
+})"
+`;

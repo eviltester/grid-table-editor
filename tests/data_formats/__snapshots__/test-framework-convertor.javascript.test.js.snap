@@ -1,0 +1,26 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`test framework convertor - JavaScript jest matches golden snapshot (setup + provider) 1`] = `
+"const mapRowUnderTest = (row) => {
+  // Example: return normalizePerson(row);
+  return row; // replace with your system-under-test call
+};
+
+const getRows = () => [
+    {\\"Name\\":\\"Connie\\",\\"Age\\":21},
+    {\\"Name\\":\\"Miles\\",\\"Age\\":34}
+  ];
+
+describe('GeneratedDataTests', () => {
+  beforeEach(() => {
+    // setup
+  });
+
+  test.each(getRows())('row parameterized', (row) => {
+    const expected = row;
+    const actual = mapRowUnderTest(row);
+    expect(actual[\\"Name\\"]).toStrictEqual(expected[\\"Name\\"]);
+    expect(actual[\\"Age\\"]).toStrictEqual(expected[\\"Age\\"]);
+  });
+});"
+`;

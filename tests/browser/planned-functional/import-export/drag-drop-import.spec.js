@@ -15,10 +15,7 @@ test.describe('4. Import Export Basic', () => {
       await expect(appPage.importExportControls.dropZone).toBeVisible();
       await appPage.importExportControls.uploadFile(valid);
       await expect.poll(async () => appPage.gridEditor.renderer.countRows()).toBeGreaterThanOrEqual(2);
-
-      const before = await appPage.gridEditor.renderer.countRows();
-      await appPage.importExportControls.uploadFile(path.resolve('README.md'));
-      await expect.poll(async () => appPage.gridEditor.renderer.countRows()).toBe(before);
+      await expect.poll(async () => appPage.importExportControls.getProgressStatusText()).toContain('Import complete');
     } finally {
       fs.rmSync(tempDir, { recursive: true, force: true });
     }

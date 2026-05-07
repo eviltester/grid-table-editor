@@ -149,7 +149,7 @@ export class TestDataRulesCompiler {
           // Values shouldn't look like regex/function syntax.
           // Dotted literals such as versions (1.0) or domains (example.com) are valid,
           // but faker-like dotted member paths (e.g. person.firstName) should not be enums.
-          if (!values.some((v) => /[\[\]{}()^$*+?|\\]/.test(v) || (v.includes('.') && /[A-Z]/.test(v)))) {
+          if (!values.some((v) => /[[\]{}()^$*+?|\\]/.test(v) || (v.includes('.') && /[A-Z]/.test(v)))) {
             return true;
           }
         }

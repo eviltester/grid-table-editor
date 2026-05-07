@@ -26,6 +26,21 @@ class TabbedTextControl {
           { id: 'typescript', label: 'TypeScript', type: 'typescript' },
         ],
       },
+      {
+        id: 'code-unit-test',
+        label: 'Code (Unit Test)',
+        subtasks: [
+          { id: 'csharp-ut', label: 'C#', type: 'xunit', types: ['xunit', 'nunit', 'mstest'] },
+          { id: 'java-ut', label: 'Java', type: 'junit5', types: ['junit4', 'junit5', 'junit6', 'testng'] },
+          { id: 'javascript-ut', label: 'JavaScript', type: 'jest', types: ['jest', 'vitest', 'mocha'] },
+          { id: 'kotlin-ut', label: 'Kotlin', type: 'kotest', types: ['kotest', 'junit5-kotlin', 'spek'] },
+          { id: 'perl-ut', label: 'Perl', type: 'test-more', types: ['test-more', 'test2-suite'] },
+          { id: 'php-ut', label: 'PHP', type: 'phpunit', types: ['phpunit', 'pest'] },
+          { id: 'python-ut', label: 'Python', type: 'pytest', types: ['pytest', 'unittest', 'nose2'] },
+          { id: 'ruby-ut', label: 'Ruby', type: 'rspec', types: ['rspec', 'minitest'] },
+          { id: 'typescript-ut', label: 'TypeScript', type: 'jest', types: ['jest', 'vitest', 'mocha'] },
+        ],
+      },
       { id: 'gherkin', label: 'Gherkin', type: 'gherkin' },
       { id: 'html', label: 'HTML', type: 'html' },
       { id: 'asciitable', label: 'ASCII', type: 'asciitable' },
@@ -130,8 +145,8 @@ class TabbedTextControl {
         ${definition.subtasks
           .map(
             (subtask) => `
-          <li class="subtask-select" data-type="${subtask.type}">
-            <a class="subtask-select-action" data-type="${subtask.type}" href="#">${subtask.label}</a>
+          <li class="subtask-select" data-subtask-id="${subtask.id}" data-types="${(subtask.types || [subtask.type]).join(',')}" data-type="${subtask.selectedType || subtask.type}">
+            <a class="subtask-select-action" data-subtask-id="${subtask.id}" data-type="${subtask.selectedType || subtask.type}" href="#">${subtask.label}</a>
           </li>`
           )
           .join('')}
@@ -141,7 +156,10 @@ class TabbedTextControl {
     subtaskHost.querySelectorAll('.subtask-select-action').forEach((linkElem) =>
       linkElem.addEventListener('click', (e) => {
         e.preventDefault();
-        this._activateGroupedType(definition.id, e.currentTarget.dataset.type, { notifyController: true });
+        this._activateGroupedType(definition.id, e.currentTarget.dataset.type, {
+          notifyController: true,
+          subtaskId: e.currentTarget.dataset.subtaskId,
+        });
         return false;
       })
     );
@@ -162,19 +180,62 @@ class TabbedTextControl {
     }
   }
 
-  _activateGroupedType(tabId, type, { notifyController = true } = {}) {
+  _activateGroupedType(tabId, type, { notifyController = true, subtaskId = undefined } = {}) {
+    this._rememberGroupedSelection(tabId, type, subtaskId);
     this._clearActiveSelections();
     this.parent.querySelector(`#type-${tabId}`)?.classList.add('active-main-type');
 
     const subtaskHost = this.parent.querySelector('#conversionSubtasks');
-    const activeSubtask = subtaskHost?.querySelector(`.subtask-select[data-type="${type}"]`);
+    const activeSubtask = subtaskId
+      ? subtaskHost?.querySelector(`.subtask-select[data-subtask-id="${subtaskId}"]`)
+      : this._findSubtaskForType(subtaskHost, type);
     if (activeSubtask) {
       activeSubtask.classList.add('active-type');
+      activeSubtask.setAttribute('data-type', type);
+      const activeAction = activeSubtask.querySelector('.subtask-select-action');
+      if (activeAction) {
+        activeAction.setAttribute('data-type', type);
+      }
     }
 
     if (notifyController) {
       this._notifyTypeChanged();
     }
+  }
+
+  _findSubtaskForType(subtaskHost, type) {
+    if (!subtaskHost) {
+      return null;
+    }
+    const subtasks = Array.from(subtaskHost.querySelectorAll('.subtask-select'));
+    return (
+      subtasks.find((subtask) => {
+        const supportedTypes = String(subtask.getAttribute('data-types') || '')
+          .split(',')
+          .map((value) => value.trim())
+          .filter(Boolean);
+        return supportedTypes.includes(type);
+      }) || null
+    );
+  }
+
+  _rememberGroupedSelection(tabId, type, subtaskId) {
+    const definition = this._getTabDefinition(tabId);
+    if (!definition || !definition.subtasks) {
+      return;
+    }
+
+    let subtask = undefined;
+    if (subtaskId) {
+      subtask = definition.subtasks.find((entry) => entry.id === subtaskId);
+    }
+    if (!subtask) {
+      subtask = definition.subtasks.find((entry) => (entry.types || [entry.type]).includes(type));
+    }
+    if (!subtask) {
+      return;
+    }
+    subtask.selectedType = type;
   }
 
   _clearActiveSelections() {

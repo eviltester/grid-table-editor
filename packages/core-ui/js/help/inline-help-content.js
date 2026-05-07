@@ -108,6 +108,11 @@ const sharedInlineHelpEntries = {
       <p>Import any HTML code by pasting the \`table\` contents into the text area and pressing \`Set Grid From Text\`</p>
       <p><a class="helplink" href="docs/data-formats/html/options" target="anywaydatadocs">Learn more</a></p>
     `,
+  'test-framework-options': `
+      <p>Export the table data as unit test code for a selected framework.</p>
+      <p>Configure suite name, test name prefix, data source strategy, setup inclusion, and formatting options before pressing [Apply].</p>
+      <p><a class="helplink" href="docs/data-formats/unit-test-code/options" target="anywaydatadocs">See full unit-test option mapping</a></p>
+    `,
 };
 
 const appOnlyInlineHelpEntries = {

@@ -138,6 +138,30 @@ describe('ImportExportControls preview/edit mode', () => {
       'Unable to parse input into data table.'
     );
   });
+
+  test('_setActiveTypeIfPresent updates active unit-test subtab before fallback match', () => {
+    document.body.insertAdjacentHTML(
+      'beforeend',
+      `
+      <ul id="conversionSubtasks">
+        <li class="subtask-select" data-type="jest" data-types="jest,vitest,mocha">
+          <a class="subtask-select-action" data-type="jest">JavaScript</a>
+        </li>
+        <li class="subtask-select active-type" data-type="jest" data-types="jest,vitest,mocha">
+          <a class="subtask-select-action" data-type="jest">TypeScript</a>
+        </li>
+      </ul>
+      `
+    );
+
+    controls._setActiveTypeIfPresent('vitest');
+
+    const active = document.querySelector('.subtask-select.active-type');
+    const inactive = document.querySelectorAll('.subtask-select')[0];
+    expect(active.getAttribute('data-type')).toBe('vitest');
+    expect(active.querySelector('.subtask-select-action').getAttribute('data-type')).toBe('vitest');
+    expect(inactive.getAttribute('data-type')).toBe('jest');
+  });
 });
 
 describe('ImportExportControls file reading and visibility', () => {

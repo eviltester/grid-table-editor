@@ -38,7 +38,7 @@ describe('TabbedTextControl preview/edit button', () => {
     expect(modeButton.innerText).toBe('Edit');
   });
 
-  test('selecting Code defaults to C# subtask and exposes code subtasks alphabetically', () => {
+  test('selecting Code defaults to C# subtask and exposes language code subtasks', () => {
     const controller = {
       renderTextFromGrid: jest.fn(),
       setFileFormatType: jest.fn(),
@@ -69,6 +69,31 @@ describe('TabbedTextControl preview/edit button', () => {
     expect(controller.renderTextFromGrid).toHaveBeenCalledTimes(1);
     expect(controller.setFileFormatType).toHaveBeenCalledTimes(1);
     expect(controller.setOptionsViewForFormatType).toHaveBeenCalledTimes(1);
+
+    host.querySelector('#type-code-unit-test .type-select-action').click();
+    const unitTestSubtasks = Array.from(host.querySelectorAll('#conversionSubtasks .subtask-select-action')).map(
+      (elem) => elem.textContent.trim()
+    );
+    expect(unitTestSubtasks).toEqual([
+      'C#',
+      'Java',
+      'JavaScript',
+      'Kotlin',
+      'Perl',
+      'PHP',
+      'Python',
+      'Ruby',
+      'TypeScript',
+    ]);
+    expect(host.querySelector('.subtask-select.active-type .subtask-select-action').textContent).toBe('C#');
+    expect(host.querySelector('li.active-type a').getAttribute('data-type')).toBe('xunit');
+
+    const typeScriptUnitTestTab = Array.from(host.querySelectorAll('#conversionSubtasks .subtask-select-action')).find(
+      (elem) => elem.textContent.trim() === 'TypeScript'
+    );
+    typeScriptUnitTestTab.click();
+    expect(host.querySelector('.subtask-select.active-type .subtask-select-action').textContent).toBe('TypeScript');
+    expect(host.querySelector('li.active-type a').getAttribute('data-type')).toBe('jest');
   });
 
   test('initial default tab selection does not notify controller before bootstrap wiring completes', () => {
@@ -122,6 +147,7 @@ describe('TabbedTextControl preview/edit button', () => {
         'xml',
         'sql',
         'code',
+        'code-unit-test',
         'gherkin',
         'html',
         'asciitable',

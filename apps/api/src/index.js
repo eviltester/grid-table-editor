@@ -106,6 +106,28 @@ const UI_OPTION_KEYS_BY_FORMAT = {
   ],
   gherkin: ['showHeadings', 'leftIndent', 'inCellPadding', 'prettyPrint'],
   asciitable: ['style'],
+  junit4: ['suiteName', 'testNamePrefix', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
+  junit5: ['suiteName', 'testNamePrefix', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
+  junit6: ['suiteName', 'testNamePrefix', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
+  testng: ['suiteName', 'testNamePrefix', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
+  pytest: ['suiteName', 'testNamePrefix', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
+  unittest: ['suiteName', 'testNamePrefix', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
+  nose2: ['suiteName', 'testNamePrefix', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
+  jest: ['suiteName', 'testNamePrefix', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
+  vitest: ['suiteName', 'testNamePrefix', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
+  mocha: ['suiteName', 'testNamePrefix', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
+  xunit: ['suiteName', 'testNamePrefix', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
+  nunit: ['suiteName', 'testNamePrefix', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
+  mstest: ['suiteName', 'testNamePrefix', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
+  rspec: ['suiteName', 'testNamePrefix', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
+  minitest: ['suiteName', 'testNamePrefix', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
+  phpunit: ['suiteName', 'testNamePrefix', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
+  pest: ['suiteName', 'testNamePrefix', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
+  kotest: ['suiteName', 'testNamePrefix', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
+  'junit5-kotlin': ['suiteName', 'testNamePrefix', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
+  spek: ['suiteName', 'testNamePrefix', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
+  'test-more': ['suiteName', 'testNamePrefix', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
+  'test2-suite': ['suiteName', 'testNamePrefix', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
 };
 const UI_OPTION_TIPS_BY_FORMAT = {
   csv: {
@@ -120,6 +142,83 @@ const UI_OPTION_TIPS_BY_FORMAT = {
     header: 'Include the header row as the first line of output.',
     quoteChar: 'Character used to quote string values.',
     escapeChar: 'Character used to escape quote characters inside field values.',
+  },
+  junit4: {
+    suiteName: 'Name of generated Java test class.',
+    testNamePrefix: 'Prefix for generated test method name.',
+    includeSetup: 'Include @Before setup scaffold.',
+    prettyPrint: 'Format generated output for readability.',
+    dataSourceStrategy: 'Provider/method, inline, or csv source style.',
+  },
+  junit5: {
+    suiteName: 'Name of generated Java test class.',
+    testNamePrefix: 'Prefix for generated test method name.',
+    includeSetup: 'Include @BeforeEach setup scaffold.',
+    prettyPrint: 'Format generated output for readability.',
+    dataSourceStrategy: 'Provider/method, inline, or csv source style.',
+  },
+  junit6: {
+    suiteName: 'Name of generated Java test class.',
+    testNamePrefix: 'Prefix for generated test method name.',
+    includeSetup: 'Include @BeforeEach setup scaffold.',
+    prettyPrint: 'Format generated output for readability.',
+    dataSourceStrategy: 'Provider/method, inline, or csv source style.',
+  },
+  testng: {
+    suiteName: 'Name of generated Java test class.',
+    testNamePrefix: 'Prefix for generated test method name.',
+    includeSetup: 'Include @BeforeMethod setup scaffold.',
+    prettyPrint: 'Format generated output for readability.',
+    dataSourceStrategy: 'Provider/method or inline style.',
+  },
+  pytest: {
+    suiteName: 'Name hint for generated test suite.',
+    testNamePrefix: 'Prefix for generated test function name.',
+    includeSetup: 'Include fixture scaffold and inject it into test signature.',
+    prettyPrint: 'Format generated output for readability.',
+    dataSourceStrategy: 'Provider function or inline rows.',
+  },
+  jest: {
+    suiteName: 'Name of generated Jest describe block.',
+    testNamePrefix: 'Prefix for generated test name.',
+    includeSetup: 'Include beforeEach setup scaffold.',
+    prettyPrint: 'Format generated output for readability.',
+    dataSourceStrategy: 'Provider function or inline rows.',
+  },
+  xunit: {
+    suiteName: 'Name of generated C# test class.',
+    testNamePrefix: 'Prefix for generated test method name.',
+    includeSetup: 'Include constructor setup scaffold.',
+    prettyPrint: 'Format generated output for readability.',
+    dataSourceStrategy: 'MemberData provider or InlineData.',
+  },
+  rspec: {
+    suiteName: 'Name of generated RSpec describe block.',
+    testNamePrefix: 'Prefix for generated test name.',
+    includeSetup: 'Include before block scaffold.',
+    prettyPrint: 'Format generated output for readability.',
+    dataSourceStrategy: 'Rows constant iteration style.',
+  },
+  phpunit: {
+    suiteName: 'Name of generated PHPUnit test class.',
+    testNamePrefix: 'Prefix for generated test method name.',
+    includeSetup: 'Include setUp() scaffold.',
+    prettyPrint: 'Format generated output for readability.',
+    dataSourceStrategy: 'Data provider rows style.',
+  },
+  kotest: {
+    suiteName: 'Name of generated Kotest spec class.',
+    testNamePrefix: 'Prefix for generated test name.',
+    includeSetup: 'Include beforeTest setup scaffold.',
+    prettyPrint: 'Format generated output for readability.',
+    dataSourceStrategy: 'Rows collection iteration style.',
+  },
+  'test-more': {
+    suiteName: 'Name hint for generated Perl test script.',
+    testNamePrefix: 'Prefix used in assertion labels.',
+    includeSetup: 'Include setup variable scaffold.',
+    prettyPrint: 'Format generated output for readability.',
+    dataSourceStrategy: 'Row hash iteration style.',
   },
 };
 
@@ -138,6 +237,15 @@ function contentTypeForFormat(outputFormat) {
   if (format === 'python') return 'text/x-python; charset=utf-8';
   if (format === 'java') return 'text/x-java-source; charset=utf-8';
   if (format === 'typescript') return 'application/typescript; charset=utf-8';
+  if (format === 'junit4' || format === 'junit5' || format === 'junit6' || format === 'testng')
+    return 'text/x-java-source; charset=utf-8';
+  if (format === 'pytest' || format === 'unittest' || format === 'nose2') return 'text/x-python; charset=utf-8';
+  if (format === 'jest' || format === 'vitest' || format === 'mocha') return 'text/javascript; charset=utf-8';
+  if (format === 'xunit' || format === 'nunit' || format === 'mstest') return 'text/x-csharp; charset=utf-8';
+  if (format === 'rspec' || format === 'minitest') return 'text/x-ruby; charset=utf-8';
+  if (format === 'phpunit' || format === 'pest') return 'application/x-httpd-php; charset=utf-8';
+  if (format === 'kotest' || format === 'junit5-kotlin' || format === 'spek') return 'text/x-kotlin; charset=utf-8';
+  if (format === 'test-more' || format === 'test2-suite') return 'text/x-perl; charset=utf-8';
   if (format === 'xml') return 'application/xml; charset=utf-8';
   if (format === 'sql') return 'application/sql; charset=utf-8';
   if (format === 'gherkin') return 'text/x-gherkin; charset=utf-8';

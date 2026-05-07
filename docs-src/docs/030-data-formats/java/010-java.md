@@ -58,3 +58,11 @@ You can configure output options such as:
 - import inclusion
 
 Java output can be generated from the same grid data used for the other supported export formats.
+
+
+## Unit Test Code Generation
+
+You can also generate data-driven test scaffolding for Java using frameworks: `junit4`, `junit5`, `junit6`, `testng`.
+
+For more information, see [Unit Test Code Generation](/docs/data-formats/unit-test-code/description).
+

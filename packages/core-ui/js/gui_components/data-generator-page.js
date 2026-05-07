@@ -22,6 +22,7 @@ import { SqlOptionsPanel } from './options_panels/options-sql-panel.js';
 import { HtmlOptionsPanel } from './options_panels/options-html-panel.js';
 import { GherkinOptionsPanel } from './options_panels/options-gherkin-panel.js';
 import { AsciiTableOptionsPanel } from './options_panels/options-ascii-table.js';
+import { TestFrameworkOptionsPanel } from './options_panels/options-test-framework-panel.js';
 import { getKnownFakerCommandsAlphabetical, getKnownFakerCommandsLongestFirst } from './faker-commands.js';
 import { getFakerCommandHelp } from './faker-command-help-metadata.js';
 
@@ -286,6 +287,30 @@ class DataGeneratorPage {
       { type: 'ruby', label: 'Ruby' },
       { type: 'typescript', label: 'TypeScript' },
     ];
+    const unitTestCodeTypes = [
+      { type: 'junit4', label: 'JUnit4' },
+      { type: 'junit5', label: 'JUnit5' },
+      { type: 'junit6', label: 'JUnit6' },
+      { type: 'testng', label: 'TestNG' },
+      { type: 'pytest', label: 'PyTest' },
+      { type: 'unittest', label: 'unittest' },
+      { type: 'nose2', label: 'nose2' },
+      { type: 'jest', label: 'Jest' },
+      { type: 'vitest', label: 'Vitest' },
+      { type: 'mocha', label: 'Mocha' },
+      { type: 'xunit', label: 'xUnit' },
+      { type: 'nunit', label: 'NUnit' },
+      { type: 'mstest', label: 'MSTest' },
+      { type: 'rspec', label: 'RSpec' },
+      { type: 'minitest', label: 'Minitest' },
+      { type: 'phpunit', label: 'PHPUnit' },
+      { type: 'pest', label: 'Pest' },
+      { type: 'kotest', label: 'Kotest' },
+      { type: 'junit5-kotlin', label: 'JUnit5 Kotlin' },
+      { type: 'spek', label: 'Spek' },
+      { type: 'test-more', label: 'Test::More' },
+      { type: 'test2-suite', label: 'Test2::Suite' },
+    ];
     const codeGroup = this.documentObj.createElement('optgroup');
     codeGroup.label = '-- Code --';
     codeTypes.forEach(({ type, label }) => {
@@ -299,6 +324,20 @@ class DataGeneratorPage {
     });
     if (codeGroup.children.length > 0) {
       outputSelect.appendChild(codeGroup);
+    }
+    const unitTestCodeGroup = this.documentObj.createElement('optgroup');
+    unitTestCodeGroup.label = '-- Code (Unit Test) --';
+    unitTestCodeTypes.forEach(({ type, label }) => {
+      if (!this.exporter?.canExport?.(type) && this.exporter) {
+        return;
+      }
+      const option = this.documentObj.createElement('option');
+      option.value = type;
+      option.textContent = label;
+      unitTestCodeGroup.appendChild(option);
+    });
+    if (unitTestCodeGroup.children.length > 0) {
+      outputSelect.appendChild(unitTestCodeGroup);
     }
     outputSelect.value = 'csv';
   }
@@ -362,6 +401,28 @@ class DataGeneratorPage {
     this.optionsPanels['html'] = new HtmlOptionsPanel(optionsParent);
     this.optionsPanels['gherkin'] = new GherkinOptionsPanel(optionsParent);
     this.optionsPanels['asciitable'] = new AsciiTableOptionsPanel(optionsParent);
+    this.optionsPanels['junit4'] = new TestFrameworkOptionsPanel(optionsParent, 'junit4');
+    this.optionsPanels['junit5'] = new TestFrameworkOptionsPanel(optionsParent, 'junit5');
+    this.optionsPanels['junit6'] = new TestFrameworkOptionsPanel(optionsParent, 'junit6');
+    this.optionsPanels['testng'] = new TestFrameworkOptionsPanel(optionsParent, 'testng');
+    this.optionsPanels['pytest'] = new TestFrameworkOptionsPanel(optionsParent, 'pytest');
+    this.optionsPanels['unittest'] = new TestFrameworkOptionsPanel(optionsParent, 'unittest');
+    this.optionsPanels['nose2'] = new TestFrameworkOptionsPanel(optionsParent, 'nose2');
+    this.optionsPanels['jest'] = new TestFrameworkOptionsPanel(optionsParent, 'jest');
+    this.optionsPanels['vitest'] = new TestFrameworkOptionsPanel(optionsParent, 'vitest');
+    this.optionsPanels['mocha'] = new TestFrameworkOptionsPanel(optionsParent, 'mocha');
+    this.optionsPanels['xunit'] = new TestFrameworkOptionsPanel(optionsParent, 'xunit');
+    this.optionsPanels['nunit'] = new TestFrameworkOptionsPanel(optionsParent, 'nunit');
+    this.optionsPanels['mstest'] = new TestFrameworkOptionsPanel(optionsParent, 'mstest');
+    this.optionsPanels['rspec'] = new TestFrameworkOptionsPanel(optionsParent, 'rspec');
+    this.optionsPanels['minitest'] = new TestFrameworkOptionsPanel(optionsParent, 'minitest');
+    this.optionsPanels['phpunit'] = new TestFrameworkOptionsPanel(optionsParent, 'phpunit');
+    this.optionsPanels['pest'] = new TestFrameworkOptionsPanel(optionsParent, 'pest');
+    this.optionsPanels['kotest'] = new TestFrameworkOptionsPanel(optionsParent, 'kotest');
+    this.optionsPanels['junit5-kotlin'] = new TestFrameworkOptionsPanel(optionsParent, 'junit5-kotlin');
+    this.optionsPanels['spek'] = new TestFrameworkOptionsPanel(optionsParent, 'spek');
+    this.optionsPanels['test-more'] = new TestFrameworkOptionsPanel(optionsParent, 'test-more');
+    this.optionsPanels['test2-suite'] = new TestFrameworkOptionsPanel(optionsParent, 'test2-suite');
   }
 
   getSelectedOutputType() {
@@ -434,11 +495,24 @@ class DataGeneratorPage {
   }
 
   applyCurrentTypeOptions(options) {
-    const type = this.getSelectedOutputType();
-    if (!type || !options) {
+    if (!options) {
       return;
     }
-    this.exporter?.setOptionsForType?.(type, options);
+    const requestedType = options.outputFormat || this.getSelectedOutputType();
+    if (!requestedType) {
+      return;
+    }
+
+    // Persist options for the target format before rendering its panel.
+    this.exporter?.setOptionsForType?.(requestedType, options);
+
+    const outputSelect = this.documentObj.getElementById('generatorOutputFormat');
+    if (outputSelect && outputSelect.value !== requestedType) {
+      outputSelect.value = requestedType;
+      this.renderOptionsPanelForSelectedFormat();
+    }
+
+    const type = this.getSelectedOutputType() || requestedType;
     this.renderOutputPreviewForCurrentSelection();
     this.setGenerationStatus(`${type.toUpperCase()} options applied.`);
     this.scheduleClearGenerationStatus();

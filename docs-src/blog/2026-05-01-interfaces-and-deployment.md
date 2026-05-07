@@ -10,6 +10,8 @@ This release adds major new ways to run and integrate AnyWayData: a CLI workflow
 
 You can now choose the interface that best matches your workflow, from local scripting to service integrations and agent/tooling connections.
 
+<!-- truncate -->
+
 ## What Is New
 
 - CLI usage for local scripts and automation.

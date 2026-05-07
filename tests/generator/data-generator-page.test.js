@@ -572,6 +572,17 @@ describe('DataGeneratorPage', () => {
           'python',
           'ruby',
           'typescript',
+          'junit4',
+          'junit5',
+          'junit6',
+          'testng',
+          'pytest',
+          'jest',
+          'xunit',
+          'rspec',
+          'phpunit',
+          'kotest',
+          'test-more',
         ].includes(type);
       }
     }
@@ -593,13 +604,16 @@ describe('DataGeneratorPage', () => {
     const outputSelect = document.getElementById('generatorOutputFormat');
     const children = Array.from(outputSelect.children);
 
-    // Last child must be the Code optgroup
-    const lastChild = children[children.length - 1];
-    expect(lastChild.tagName.toLowerCase()).toBe('optgroup');
-    expect(lastChild.label).toBe('-- Code --');
+    const codeGroup = children.find(
+      (child) => child.tagName.toLowerCase() === 'optgroup' && child.label === '-- Code --'
+    );
+    const unitTestGroup = children.find(
+      (child) => child.tagName.toLowerCase() === 'optgroup' && child.label === '-- Code (Unit Test) --'
+    );
+    expect(codeGroup).toBeTruthy();
+    expect(unitTestGroup).toBeTruthy();
 
-    // Optgroup must contain all programming-language options
-    const codeOptionValues = Array.from(lastChild.querySelectorAll('option')).map((o) => o.value);
+    const codeOptionValues = Array.from(codeGroup.querySelectorAll('option')).map((o) => o.value);
     expect(codeOptionValues).toContain('java');
     expect(codeOptionValues).toContain('javascript');
     expect(codeOptionValues).toContain('kotlin');
@@ -609,6 +623,20 @@ describe('DataGeneratorPage', () => {
     expect(codeOptionValues).toContain('python');
     expect(codeOptionValues).toContain('ruby');
     expect(codeOptionValues).toContain('typescript');
+    expect(codeOptionValues).not.toContain('junit4');
+
+    const unitTestOptionValues = Array.from(unitTestGroup.querySelectorAll('option')).map((o) => o.value);
+    expect(unitTestOptionValues).toContain('junit4');
+    expect(unitTestOptionValues).toContain('junit5');
+    expect(unitTestOptionValues).toContain('junit6');
+    expect(unitTestOptionValues).toContain('testng');
+    expect(unitTestOptionValues).toContain('pytest');
+    expect(unitTestOptionValues).toContain('jest');
+    expect(unitTestOptionValues).toContain('xunit');
+    expect(unitTestOptionValues).toContain('rspec');
+    expect(unitTestOptionValues).toContain('phpunit');
+    expect(unitTestOptionValues).toContain('kotest');
+    expect(unitTestOptionValues).toContain('test-more');
   });
 
   test('populateFormatOptions includes all supported output formats', () => {
@@ -634,6 +662,17 @@ describe('DataGeneratorPage', () => {
           'python',
           'ruby',
           'typescript',
+          'junit4',
+          'junit5',
+          'junit6',
+          'testng',
+          'pytest',
+          'jest',
+          'xunit',
+          'rspec',
+          'phpunit',
+          'kotest',
+          'test-more',
         ].includes(type);
       }
     }
@@ -676,6 +715,17 @@ describe('DataGeneratorPage', () => {
         'python',
         'ruby',
         'typescript',
+        'junit4',
+        'junit5',
+        'junit6',
+        'testng',
+        'pytest',
+        'jest',
+        'xunit',
+        'rspec',
+        'phpunit',
+        'kotest',
+        'test-more',
       ])
     );
   });

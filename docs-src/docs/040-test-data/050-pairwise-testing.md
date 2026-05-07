@@ -197,6 +197,15 @@ AnyWayData uses a greedy set cover approximation algorithm that:
 
 ## Example Output
 
+Example Input Schema:
+
+```csv
+color
+red,blue,green,yellow
+size  
+small,medium,large
+```
+
 Given the color and size example above, pairwise generates these 12 combinations:
 
 ```csv

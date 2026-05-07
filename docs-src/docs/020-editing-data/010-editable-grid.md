@@ -56,3 +56,12 @@ You can drag and drop both rows and columns to re-order them.
 ## Clearing The Grid
 
 All data in the grid can be deleted by pressing the `[Reset Table]` button.
+
+## Amending Grid Data with Test Data Generation
+
+The editable grid can also be updated using random test-data generation modes:
+
+- `Amend Table` updates data across the current table
+- `Amend Selected` updates only the selected rows
+
+For a focused walkthrough of generation in the editable grid, see [Data Grid Editable Test Data Generation](/docs/test-data/data-grid-editable).

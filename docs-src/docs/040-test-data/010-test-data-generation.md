@@ -1,70 +1,48 @@
 ---
 sidebar_position: 1
-title: "Random Data"
-description: "Generate random data for the grid"
+title: "Test Data Generation"
+description: "Overview of test-data generation workflows in app.html and generate.html."
 ---
 
-# Test Data Generation
+AnyWayData offers two main web UI workflows for generating and working with test data:
 
-By 'opening' the `Test Data` section in the GUI it is possible to Generate a Data Grid filled with Random Data.
+- **Data Grid Editable** (`app.html`) for interactive grid-first editing and generation
+- **Generate to File** (`generate.html`) for schema-driven generation and direct file output
 
-## Test Data Grid
+## Choose a Workflow
 
-The Test Data Grid contains the 'schema' or 'template' to use to generate data for the grid.
+### Data Grid Editable (`app.html`)
 
-Each row represents a Column in the final data grid.
+Use this when you want to:
 
-Add a new column by pressing the `+ Add Column` button.
+- edit/import/export table data directly in a grid
+- define generation rules and generate rows into the same editable grid
+- refine data interactively before exporting
 
-You can rename the column by double clicking on the `Column Name` field.
+See [Data Grid Editable](/docs/test-data/data-grid-editable).
 
-The Type is the `type` of data that will be generated in the column. This can be a `Literal` (static text), a `RegEx` (Regular Expression), an `Enum` (comma-separated values), or one of the predefined random data types from Faker.
+### Generate to File (`generate.html`)
 
-When you have 2 or more `Enum` type columns, the `Generate Pairwise` button will appear, allowing you to generate optimal combinatorial test data with complete pairwise coverage.
+Use this when you want to:
 
-## Types
+- define a schema and preview generated rows
+- configure output format-specific options
+- generate and download output directly as a file
 
-The Types of data available can be chosen from the drop down value.
+See [Generate to File](/docs/test-data/generate-to-file).
 
-The drop down is an `option` select so you can type in a filter e.g `email` and you will see any matching options for email.
+## Data Types
 
-## Number of Rows to Generate
+Both workflows support generation rules such as:
 
-Configure how many rows of data to generate by typing the numeric value in the `How Many?` text field.
+- `Literal`
+- `RegEx`
+- `Faker`
+- `Enum` (including pairwise combinations when applicable)
 
-e.g. to generate 1000 rows of data enter `1000` in the `How Many?` text input field.
-
-## Generating Data
-
-Press the `[Generate]` button to generate the data.
-
-The schema in the Column Definition Data Grid will be used to generate the data.
-
-All data generation happens in the browser so the amount of data you can generate is limited only by the performance and memory of your computer.
-
-## Text Area
-
-When you add rows using the data grid, you will see the information is also copied into the text area in the right. This allows you to copy and paste schema definitions for re-use.
-
-The Schema format in the Text Area uses the format
-
-```
-column name
-type value
-```
-
-e.g.
-
-```
-column 1
-1234
-```
-
-When no type is present it is assumed to be a Regex e.g. `1234` is a Regex that represents the string "1234"
-
-## Learn More About Types
+## Learn More About Rule Types
 
 - [Literal Data](/docs/test-data/literal-test-data)
-- [Regex Based Data](/docs/test-data/regex-test-data)  
+- [Regex Based Data](/docs/test-data/regex-test-data)
 - [Faker Based Data](/docs/test-data/faker-test-data)
 - [All Pairs Combinatorial Testing](/docs/test-data/pairwise-testing) - Generate optimal test combinations from enum data

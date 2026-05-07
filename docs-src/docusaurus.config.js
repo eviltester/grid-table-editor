@@ -133,7 +133,12 @@ const config = {
       prism: {
         theme: lightTheme,
         darkTheme: darkTheme,
-      }
+      },
+      docs: {
+        sidebar: {
+          autoCollapseCategories: true,
+        },
+      },
     }),
     scripts: [
       {src: 'https://plausible.io/js/script.js', defer: true, 'data-domain': 'anywaydata.com'},

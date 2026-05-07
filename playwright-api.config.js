@@ -5,7 +5,7 @@ const { defineConfig } = require('@playwright/test');
  * This configuration is optimized for REST API testing without browser UI
  */
 module.exports = defineConfig({
-  testDir: './tests/api',
+  testDir: './apps/api/src/tests',
   testMatch: '**/*.spec.js',
   timeout: 30000,
   workers: process.env.CI ? 6 : 4,
@@ -35,7 +35,7 @@ module.exports = defineConfig({
   projects: [
     {
       name: 'api-tests',
-      testDir: './tests/api',
+      testDir: './apps/api/src/tests',
       use: {
         // Configuration specific to API testing
       },
@@ -46,6 +46,6 @@ module.exports = defineConfig({
   outputDir: 'test-results/api-output',
   
   // Global setup and teardown
-  globalSetup: './tests/api/global-setup.js',
-  globalTeardown: './tests/api/global-teardown.js',
+  globalSetup: './apps/api/src/tests/global-setup.js',
+  globalTeardown: './apps/api/src/tests/global-teardown.js',
 });

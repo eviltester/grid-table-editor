@@ -44,7 +44,13 @@ function getRulesParserFromTextArea() {
   // faker imported in script.js
   // RandExp brought in via index.html script
   const generator = new TestDataGenerator(faker, RandExp);
-  const areaText = document.getElementById('testdatadefntext').value;
+  const schemaTextArea = document.getElementById('testdatadefntext');
+  if (!schemaTextArea) {
+    generator.importSpec('');
+    generator.compile();
+    return generator;
+  }
+  const areaText = schemaTextArea.value;
   generator.importSpec(areaText);
   generator.compile();
   console.log(generator.compilationReport());
@@ -412,8 +418,7 @@ Regex Example
 [A-Z]{3}-\\d{4}
 Faker Example
 person.fullName`;
-
-  schemaTextArea.dispatchEvent(new Event('input', { bubbles: true }));
+  populateTestDataGridFromRules();
 }
 
 function createTestDataGrid() {

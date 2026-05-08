@@ -662,7 +662,9 @@ class DataGeneratorPage {
       return parsed;
     }
 
-    this.schemaRows = parsed.rows.length > 0 ? parsed.rows : [this.createBlankSchemaRow()];
+    // Keep empty text schemas as zero rows while in text mode so validation can
+    // report "Add at least one schema row." instead of introducing a synthetic blank row.
+    this.schemaRows = parsed.rows;
     return { rows: this.schemaRows, errors: [] };
   }
 

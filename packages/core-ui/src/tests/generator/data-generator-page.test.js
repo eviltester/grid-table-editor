@@ -846,4 +846,31 @@ describe('DataGeneratorPage', () => {
       text: 'csv:async:2',
     });
   });
+
+  test('empty text mode schema keeps zero rows and shows add-row validation', async () => {
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker: { word: { noun: () => 'x' } },
+      RandExp: function RandExp() {},
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: FakeTestDataGenerator,
+    });
+    page.init();
+
+    const toggle = document.getElementById('schemaModeToggleButton');
+    toggle.click();
+
+    const textArea = document.getElementById('generatorSchemaText');
+    textArea.value = '';
+
+    await page.generateDataFile();
+
+    expect(alertFn).toHaveBeenCalledWith('Add at least one schema row.');
+    expect(page.schemaRows).toEqual([]);
+  });
 });

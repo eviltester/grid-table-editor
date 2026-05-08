@@ -32,10 +32,20 @@ describe('TabbedTextControl preview/edit button', () => {
     tabs.addToGui();
 
     const modeButton = host.querySelector('#previewEditModeButton');
+    const modeHelpIcon = host.querySelector('#previewEditModeHelpIcon');
+    expect(modeHelpIcon).not.toBeNull();
+    modeHelpIcon._tippy = { setContent: jest.fn() };
+    tabs._syncPreviewEditButtonLabel();
     expect(modeButton.innerText).toBe('Preview (10)');
+    expect(modeHelpIcon.getAttribute('data-help-text')).toContain('sample of the first 10 rows');
+    expect(modeHelpIcon.getAttribute('data-help-text')).toContain('switch to Edit mode');
+    expect(modeHelpIcon._tippy.setContent).toHaveBeenCalledWith(expect.stringContaining('sample of the first 10 rows'));
 
     modeButton.click();
     expect(modeButton.innerText).toBe('Edit');
+    expect(modeHelpIcon.getAttribute('data-help-text')).toContain('full grid text');
+    expect(modeHelpIcon.getAttribute('data-help-text')).toContain('Set Grid From Text');
+    expect(modeHelpIcon._tippy.setContent).toHaveBeenLastCalledWith(expect.stringContaining('full grid text'));
   });
 
   test('selecting Code defaults to C# subtask and exposes language code subtasks', () => {

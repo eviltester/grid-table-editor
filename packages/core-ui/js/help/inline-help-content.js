@@ -116,6 +116,29 @@ const sharedInlineHelpEntries = {
 };
 
 const appOnlyInlineHelpEntries = {
+  'test-data-text-schema-help': `
+      <p>Define schema as repeating line pairs:</p>
+      <ul>
+        <li>Line 1: column header name</li>
+        <li>Line 2: data definition</li>
+      </ul>
+      <p>Definition types:</p>
+      <ul>
+        <li><strong>Literal</strong>: fixed text value for every generated row.</li>
+        <li><strong>Enum</strong>: choose from listed values, e.g. <code>enum("Open","In Progress","Closed")</code>.</li>
+        <li><strong>RegEx</strong>: generate values from a regex pattern, e.g. <code>[A-Z]{3}-\\d{4}</code>.</li>
+        <li><strong>Faker</strong>: realistic random values, e.g. <code>person.fullName</code>.</li>
+      </ul>
+      <button type="button" class="testdata-schema-sample-button">Load Sample Schema</button>
+    `,
+  'instructions-summary-title': `
+      <p>This app converts table data between formats, and lets you edit directly in the grid.</p>
+      <ul>
+        <li>Use import/export controls to switch between text formats and grid data.</li>
+        <li>Use column and row controls directly in the grid to shape your table.</li>
+      </ul>
+      <button type="button" class="instructions-sample-data-button">Load Sample Data</button>
+    `,
   'test-data-summary-title': `
       <p>The Test Data section allows you to randomly generate data to populate the grid. You can then export to the various supported formats.</p>
       <p><a class="helplink" href="/docs/test-data/test-data-generation" target="anywaydatadocs">Learn more</a></p>

@@ -45,6 +45,8 @@ class TabbedTextControl {
       { id: 'html', label: 'HTML', type: 'html' },
       { id: 'asciitable', label: 'ASCII', type: 'asciitable' },
     ];
+    this.editModeHelpText =
+      'Edit mode shows the full grid text in the chosen format. You can edit this text and use Set Grid From Text to apply changes back into the grid.';
   }
 
   // TODO : populate this from the registered importers and exporters rather than hard coding
@@ -57,6 +59,12 @@ class TabbedTextControl {
             </ul>
           </div>
           <div class="rightbuttons">
+            <span
+              title="Preview/Edit mode help"
+              id="previewEditModeHelpIcon"
+              data-help="preview-edit-mode-help"
+              class="helpicon option-help-icon"
+            ></span>
             <button title="Toggle Preview/Edit mode" id="previewEditModeButton">Preview</button>
             <button title="Copy text to clipboard" id="copyTextButton">Copy</button>
           </div>
@@ -268,6 +276,7 @@ class TabbedTextControl {
 
   _syncPreviewEditButtonLabel() {
     const modeButton = this.parent.querySelector('#previewEditModeButton');
+    const modeHelpIcon = this.parent.querySelector('#previewEditModeHelpIcon');
     if (!modeButton) {
       return;
     }
@@ -275,9 +284,18 @@ class TabbedTextControl {
     if (this.importExportController?.isPreviewTextMode?.()) {
       const rowLimit = this.importExportController?.getPreviewRowLimit?.() ?? 10;
       modeButton.innerText = `Preview (${rowLimit})`;
+      if (modeHelpIcon) {
+        const previewHelpText = `Preview mode shows a sample of the first ${rowLimit} rows from the data grid in the chosen format. Click Preview to switch to Edit mode and show full grid data.`;
+        modeHelpIcon.setAttribute('data-help-text', previewHelpText);
+        modeHelpIcon._tippy?.setContent?.(previewHelpText);
+      }
       return;
     }
     modeButton.innerText = 'Edit';
+    if (modeHelpIcon) {
+      modeHelpIcon.setAttribute('data-help-text', this.editModeHelpText);
+      modeHelpIcon._tippy?.setContent?.(this.editModeHelpText);
+    }
   }
 }
 

@@ -126,7 +126,7 @@ describe('script module initialization', () => {
       expect.any(Object),
       gridExtras
     );
-    expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 3000);
+    expect(setTimeoutSpy).not.toHaveBeenCalledWith(expect.any(Function), 3000);
 
     dom.window.close();
   });

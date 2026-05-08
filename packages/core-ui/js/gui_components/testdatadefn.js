@@ -38,12 +38,19 @@ let textPreviewRenderer = undefined;
 let mainGridExtras = undefined;
 let testDataStatusResetTimeoutId = null;
 let activeDefnCellEdit = null;
+let schemaSampleButtonClickHandler = null;
 
 function getRulesParserFromTextArea() {
   // faker imported in script.js
   // RandExp brought in via index.html script
   const generator = new TestDataGenerator(faker, RandExp);
-  const areaText = document.getElementById('testdatadefntext').value;
+  const schemaTextArea = document.getElementById('testdatadefntext');
+  if (!schemaTextArea) {
+    generator.importSpec('');
+    generator.compile();
+    return generator;
+  }
+  const areaText = schemaTextArea.value;
   generator.importSpec(areaText);
   generator.compile();
   console.log(generator.compilationReport());
@@ -395,6 +402,23 @@ function yieldToUi() {
     }
     requestAnimationFrame(() => setTimeout(resolve, 0));
   });
+}
+
+function loadSampleSchemaIntoTextArea() {
+  const schemaTextArea = document.getElementById('testdatadefntext');
+  if (!schemaTextArea) {
+    return;
+  }
+
+  schemaTextArea.value = `Literal Example
+Pending Review
+Enum Example
+enum("Open","In Progress","Closed")
+Regex Example
+[A-Z]{3}-\\d{4}
+Faker Example
+person.fullName`;
+  populateTestDataGridFromRules();
 }
 
 function createTestDataGrid() {
@@ -794,7 +818,13 @@ function enableTestDataGenerationInterface(parentId, anImporter, aTextPreviewRen
             <div class="defn-grid-container" id="defngrid" class="ag-theme-alpine">
             </div>
             <div class="defn-text-container">
-                <p>Test Data Text Schema</p>
+                <p>
+                  Test Data Text Schema
+                  <span
+                    data-help="test-data-text-schema-help"
+                    class="helpicon option-help-icon"
+                  ></span>
+                </p>
                 <textarea class="testDataDefn" name="testdatadefntext" id="testdatadefntext"></textarea>
             </div>
         </div>
@@ -804,7 +834,6 @@ function enableTestDataGenerationInterface(parentId, anImporter, aTextPreviewRen
   element.addEventListener('click', generateTestData, false);
   document.querySelector('#generateallpairs').addEventListener('click', generatePairwiseTestData, false);
   document.querySelector('#refreshtestdatapreview').addEventListener('click', refreshTestDataPreview, false);
-
   const generateCountInput = document.getElementById('generateCount');
   generateCountInput.value = '1';
 
@@ -830,6 +859,23 @@ function enableTestDataGenerationInterface(parentId, anImporter, aTextPreviewRen
     },
     false
   );
+
+  if (schemaSampleButtonClickHandler) {
+    document.removeEventListener('click', schemaSampleButtonClickHandler);
+  }
+  schemaSampleButtonClickHandler = (event) => {
+    if (!event.target.closest('.testdata-schema-sample-button')) {
+      return;
+    }
+    event.preventDefault();
+    event.stopPropagation();
+    loadSampleSchemaIntoTextArea();
+  };
+  document.addEventListener('click', schemaSampleButtonClickHandler);
+
+  if (typeof window !== 'undefined' && typeof window.updateHelpHints === 'function') {
+    window.updateHelpHints();
+  }
 }
 
 export { enableTestDataGenerationInterface, probeCommandReturnType, identifyFakerCommands, getFakerCommands };

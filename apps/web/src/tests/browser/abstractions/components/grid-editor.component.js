@@ -33,7 +33,7 @@ class GridEditorComponent {
 
   async expectReady() {
     await this.expectVisible();
-    await this.renderer.waitForColumnName('Instructions');
+    await this.grid.locator('.tabulator-col-title').first().waitFor({ state: 'visible' });
   }
 
   async addRow() {

@@ -393,6 +393,14 @@ Custom header styles for default items
   color: #afdfff;
 }
 
+.instructions-sample-data-button {
+  margin-top: 0.4rem;
+}
+
+.instructions-copy-to-grid-button {
+  margin-top: 0.4rem;
+}
+
 .import-progress-status {
   margin-top: 0.45rem;
   padding: 0.2rem 0.5rem;

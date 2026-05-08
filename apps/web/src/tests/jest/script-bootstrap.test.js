@@ -71,7 +71,6 @@ describe('script bootstrap', () => {
       ExporterClass,
       ImporterClass,
       enableTestDataGenerationInterfaceFn: () => {},
-      scheduleInitialInstructions: false,
     });
 
     expect(calls[0]).toBe('ensureGridLibraryLoaded');
@@ -102,15 +101,13 @@ describe('script bootstrap', () => {
       ExporterClass: class {},
       ImporterClass: class {},
       enableTestDataGenerationInterfaceFn: () => {},
-      scheduleInitialInstructions: false,
     });
 
     expect(calls).toEqual([]);
     expect(consoleSpy).toHaveBeenCalled();
   });
 
-  test('wires controller, test data integration, and schedules initial instructions by default', async () => {
-    const setTimeoutFn = jest.fn();
+  test('wires controller and test data integration without scheduling instructions import', async () => {
     const enableTestDataGenerationInterfaceFn = jest.fn();
     const gridExtras = {
       clearGrid: jest.fn(),
@@ -176,7 +173,6 @@ describe('script bootstrap', () => {
       ExporterClass,
       ImporterClass,
       enableTestDataGenerationInterfaceFn,
-      setTimeoutFn,
     });
 
     expect(addHTMLtoGui).toHaveBeenCalledWith(dom.window.document.getElementById('import-export-controls'));
@@ -197,21 +193,17 @@ describe('script bootstrap', () => {
       expect.any(ImportExportControlsClass),
       gridExtras
     );
-    expect(setTimeoutFn).toHaveBeenCalledWith(expect.any(Function), 3000);
   });
 
-  test('scheduled instructions callback clears grid, imports instructions, and sizes columns', async () => {
+  test('instructions tooltip sample button loads sample data table', async () => {
     const clearGrid = jest.fn();
     const sizeColumnsToFit = jest.fn();
-    const setGridFromGenericDataTable = jest.fn();
-    let scheduledCallback;
 
     class ExtendedDataGridClass {
       createChildGrid() {}
       getGridExtras() {
         return {
           clearGrid,
-          setGridFromGenericDataTable,
           getGridAsGenericDataTable: jest.fn(() => ({ getHeaders: () => [] })),
           getHeadersFromGrid: jest.fn(() => []),
         };
@@ -250,12 +242,74 @@ describe('script bootstrap', () => {
       ExporterClass: class {},
       ImporterClass,
       enableTestDataGenerationInterfaceFn: () => {},
-      setTimeoutFn: (callback) => {
-        scheduledCallback = callback;
-      },
     });
 
-    scheduledCallback();
+    const button = dom.window.document.createElement('button');
+    button.className = 'instructions-sample-data-button';
+    dom.window.document.body.appendChild(button);
+    button.click();
+
+    expect(clearGrid).toHaveBeenCalledTimes(1);
+    expect(importerInstance.setGridFromGenericDataTable).toHaveBeenCalledTimes(1);
+    const dataTable = importerInstance.setGridFromGenericDataTable.mock.calls[0][0];
+    expect(dataTable.getHeaders()).toEqual(['First Name', 'Last Name', 'Department', 'Role', 'Status']);
+    expect(dataTable.getRowCount()).toBe(4);
+    expect(sizeColumnsToFit).toHaveBeenCalledTimes(1);
+  });
+
+  test('instructions details button copies instructions list into grid', async () => {
+    const clearGrid = jest.fn();
+    const sizeColumnsToFit = jest.fn();
+
+    class ExtendedDataGridClass {
+      createChildGrid() {}
+      getGridExtras() {
+        return {
+          clearGrid,
+          getGridAsGenericDataTable: jest.fn(() => ({ getHeaders: () => [] })),
+          getHeadersFromGrid: jest.fn(() => []),
+        };
+      }
+      sizeColumnsToFit() {
+        sizeColumnsToFit();
+      }
+    }
+
+    class ImportExportControlsClass {
+      addHTMLtoGui() {}
+      setExporter() {}
+      setImporter() {}
+      renderTextFromGrid() {}
+      setFileFormatType() {}
+      setOptionsViewForFormatType() {}
+    }
+
+    let importerInstance;
+    class ImporterClass {
+      constructor() {
+        importerInstance = this;
+      }
+      setGridFromGenericDataTable = jest.fn();
+    }
+
+    await bootstrapApp({
+      documentObj: dom.window.document,
+      ensureGridLibraryLoadedFn: jest.fn(() => Promise.resolve()),
+      activeGridEngineName: 'tabulator',
+      ExtendedDataGridClass,
+      ImportExportControlsClass,
+      TabbedTextControlClass: class {
+        addToGui() {}
+      },
+      ExporterClass: class {},
+      ImporterClass,
+      enableTestDataGenerationInterfaceFn: () => {},
+    });
+
+    const button = dom.window.document.createElement('button');
+    button.className = 'instructions-copy-to-grid-button';
+    dom.window.document.body.appendChild(button);
+    button.click();
 
     expect(clearGrid).toHaveBeenCalledTimes(1);
     expect(importerInstance.setGridFromGenericDataTable).toHaveBeenCalledTimes(1);

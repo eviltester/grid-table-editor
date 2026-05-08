@@ -73,11 +73,11 @@ class GridHeaderComponent {
   }
 
   async sortAsc(columnName) {
-    await this.clickAction(columnName, 'sort-asc');
+    await this._ensureSortState(columnName, 'asc', 'sort-asc');
   }
 
   async sortDesc(columnName) {
-    await this.clickAction(columnName, 'sort-desc');
+    await this._ensureSortState(columnName, 'desc', 'sort-desc');
   }
 
   async clearSort(columnName) {
@@ -102,6 +102,20 @@ class GridHeaderComponent {
       .locator(`xpath=ancestor::*[contains(@class,'tabulator-col')]`)
       .first();
     return (await header.getAttribute('aria-sort')) || '';
+  }
+
+  async _ensureSortState(columnName, expectedState, action) {
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      await this.clickAction(columnName, action);
+      for (let check = 0; check < 10; check += 1) {
+        const state = await this.getColumnSortState(columnName);
+        if (String(state).includes(expectedState)) {
+          return;
+        }
+        await this.page.waitForTimeout(50);
+      }
+    }
+    throw new Error(`Failed to set sort state '${expectedState}' for column '${columnName}'.`);
   }
 
   _headerTitleByName(columnName) {

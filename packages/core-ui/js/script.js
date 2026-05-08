@@ -11,6 +11,7 @@ import { initHelpTooltips } from './help/help-tooltips.js';
 var importer, exporter;
 var mainDataGrid;
 var importExportController;
+var instructionsSampleButtonClickHandler;
 
 async function bootstrapApp({
   documentObj = document,
@@ -22,8 +23,6 @@ async function bootstrapApp({
   ExporterClass = Exporter,
   ImporterClass = Importer,
   enableTestDataGenerationInterfaceFn = enableTestDataGenerationInterface,
-  scheduleInitialInstructions = true,
-  setTimeoutFn = setTimeout,
 } = {}) {
   console.log(`Using grid engine: ${activeGridEngineName}`);
   try {
@@ -47,15 +46,11 @@ async function bootstrapApp({
   importExportController.setExporter(exporter);
   importExportController.setImporter(importer);
 
-  // give a clue what to do by importing the instructions into the grid
-  if (scheduleInitialInstructions) {
-    setTimeoutFn(setTextFromInstructions, 3000);
-  }
-
   importExportController.renderTextFromGrid();
   importExportController.setFileFormatType();
   importExportController.setOptionsViewForFormatType();
   initHelpTooltips({ documentObj, includeAppOnlyEntries: true });
+  wireInstructionsSampleButton(documentObj);
 
   const loadingMessage = documentObj.getElementById('initial-load');
   if (loadingMessage) {
@@ -83,18 +78,68 @@ if (typeof document !== 'undefined') {
   }
 }
 
-function setTextFromInstructions() {
-  console.log('Setting Grid Instructions');
+function setSampleGridData() {
+  if (!mainDataGrid || !importer) {
+    return;
+  }
+
+  const sampleData = new GenericDataTable();
+  sampleData.addHeader('First Name');
+  sampleData.addHeader('Last Name');
+  sampleData.addHeader('Department');
+  sampleData.addHeader('Role');
+  sampleData.addHeader('Status');
+
+  sampleData.appendDataRow(['Ava', 'Nguyen', 'Engineering', 'QA Engineer', 'Active']);
+  sampleData.appendDataRow(['Liam', 'Patel', 'Sales', 'Account Executive', 'Onboarding']);
+  sampleData.appendDataRow(['Noah', 'Carter', 'Finance', 'Analyst', 'Active']);
+  sampleData.appendDataRow(['Mia', 'Roberts', 'Support', 'Team Lead', 'On Leave']);
+
   mainDataGrid.getGridExtras().clearGrid();
-  const instructions = document.querySelectorAll('div.instructions details ul li');
-  let textData = new GenericDataTable();
-  textData.addHeader('Instructions');
-  instructions.forEach((instruction) => {
-    textData.appendDataRow([instruction.textContent]);
-  });
-  importer.setGridFromGenericDataTable(textData);
-  // set the instructions to fit grid size
+  importer.setGridFromGenericDataTable(sampleData);
   mainDataGrid.sizeColumnsToFit();
+}
+
+function setInstructionsGridData(documentObj = document) {
+  if (!mainDataGrid || !importer) {
+    return;
+  }
+
+  const instructions = documentObj.querySelectorAll('div.instructions details ul li');
+  const instructionsData = new GenericDataTable();
+  instructionsData.addHeader('Instructions');
+
+  instructions.forEach((instruction) => {
+    instructionsData.appendDataRow([instruction.textContent]);
+  });
+
+  mainDataGrid.getGridExtras().clearGrid();
+  importer.setGridFromGenericDataTable(instructionsData);
+  mainDataGrid.sizeColumnsToFit();
+}
+
+function wireInstructionsSampleButton(documentObj = document) {
+  if (instructionsSampleButtonClickHandler) {
+    documentObj.removeEventListener('click', instructionsSampleButtonClickHandler);
+  }
+
+  const handleInstructionsSampleButtonClick = (event) => {
+    if (event.target.closest('.instructions-sample-data-button')) {
+      event.preventDefault();
+      event.stopPropagation();
+      setSampleGridData();
+      return;
+    }
+
+    if (event.target.closest('.instructions-copy-to-grid-button')) {
+      event.preventDefault();
+      event.stopPropagation();
+      setInstructionsGridData(documentObj);
+    }
+  };
+
+  instructionsSampleButtonClickHandler = handleInstructionsSampleButtonClick;
+  documentObj.addEventListener('click', instructionsSampleButtonClickHandler);
 }
 
 export { bootstrapApp };

@@ -42,7 +42,7 @@ Parameter guide for the examples:
 - `-f, --format`: output format (for example `csv`, `json`, `markdown`, `sql`).
 - `-o, --outputfile`: optional output file path. If omitted, output is written to stdout.
 - `-t, --testMode`: generate one row and print diagnostics for troubleshooting.
-- `--show-progress`: explicitly control progress logs (`true` or `false`).
+- `--show-progress`: explicitly control progress logs (for example `--show-progress true` or `--show-progress false`).
 - `--stream`: enable streaming generation when supported (currently `csv` and `jsonl`).
 - `--stream-threshold`: auto-enable streaming when `rowCount >= threshold` and `--outputfile` is set (default `5000`).
 - `--unsafe-faker-expressions`: opt-in to expression-style faker arguments (unsafe for untrusted input).

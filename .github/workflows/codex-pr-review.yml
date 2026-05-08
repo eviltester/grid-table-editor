@@ -9,12 +9,11 @@ permissions:
   issues: write
 
 concurrency:
-  group: codex-pr-review-${{ github.event.pull_request.number }}
+  group: codex-pr-review-${{ github.workflow }}-${{ github.ref_name }}
   cancel-in-progress: true
 
 jobs:
   codex-review:
-    if: github.event.pull_request.draft == false && secrets.OPENAI_API_KEY != ''
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

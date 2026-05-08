@@ -1,5 +1,3 @@
-import test from 'node:test';
-import assert from 'node:assert/strict';
 import http from 'node:http';
 import { app } from './index.js';
 
@@ -9,13 +7,13 @@ const CUSTOM_HEADER_TIP = 'Include column headers in the first row.';
 let server;
 let port;
 
-test.before(async () => {
+beforeAll(async () => {
   server = http.createServer(app);
   await new Promise((resolve) => server.listen(0, resolve));
   port = server.address().port;
 });
 
-test.after(async () => {
+afterAll(async () => {
   if (!server) {
     return;
   }
@@ -66,26 +64,26 @@ test('/v1/generate/options/:format returns tips for all returned option keys', a
 
   for (const format of formats) {
     const response = await fetch(url(`/v1/generate/options/${format}`));
-    assert.equal(response.status, 200);
+    expect(response.status).toBe(200);
     const body = await response.json();
     const optionKeys = Object.keys(body?.options || {});
     for (const key of optionKeys) {
-      assert.equal(typeof body?.tips?.[key], 'string');
-      assert.ok(body.tips[key].trim().length > 0);
+      expect(typeof body?.tips?.[key]).toBe('string');
+      expect(body.tips[key].trim().length > 0).toBeTruthy();
     }
   }
 });
 
 test('/v1/generate/options/:format returns framework-specific setup tips', async () => {
   const jestResponse = await fetch(url('/v1/generate/options/jest'));
-  assert.equal(jestResponse.status, 200);
+  expect(jestResponse.status).toBe(200);
   const jestBody = await jestResponse.json();
-  assert.match(jestBody?.tips?.includeSetup || '', /beforeEach/i);
+  expect(jestBody?.tips?.includeSetup || '').toMatch(/beforeEach/i);
 
   const phpunitResponse = await fetch(url('/v1/generate/options/phpunit'));
-  assert.equal(phpunitResponse.status, 200);
+  expect(phpunitResponse.status).toBe(200);
   const phpunitBody = await phpunitResponse.json();
-  assert.match(phpunitBody?.tips?.includeSetup || '', /setUp/i);
+  expect(phpunitBody?.tips?.includeSetup || '').toMatch(/setUp/i);
 });
 
 test('/v1/generate/options/:format exposes only UI-supported option keys', async () => {
@@ -182,25 +180,25 @@ test('/v1/generate/options/:format exposes only UI-supported option keys', async
 
   for (const [format, expectedKeys] of Object.entries(expectedKeysByFormat)) {
     const response = await fetch(url(`/v1/generate/options/${format}`));
-    assert.equal(response.status, 200);
+    expect(response.status).toBe(200);
     const body = await response.json();
     const keys = Object.keys(body?.options || {}).sort();
-    assert.deepEqual(keys, [...expectedKeys].sort());
+    expect(keys).toEqual([...expectedKeys].sort());
   }
 });
 
 test('/v1/generate/options/csv returns built-in defaults and built-in tips', async () => {
   await resetCsvDefaults();
   const response = await fetch(url('/v1/generate/options/csv'));
-  assert.equal(response.status, 200);
+  expect(response.status).toBe(200);
   const body = await response.json();
-  assert.equal(body.format, 'csv');
-  assert.equal(body.source, 'built-in-default');
-  assert.equal(body.options?.header, true);
-  assert.equal(body.options?.quotes, true);
-  assert.equal(Object.hasOwn(body.options || {}, 'delimiter'), false);
-  assert.equal(typeof body.tips?.header, 'string');
-  assert.notEqual(body.tips?.header, CUSTOM_HEADER_TIP);
+  expect(body.format).toBe('csv');
+  expect(body.source).toBe('built-in-default');
+  expect(body.options?.header).toBe(true);
+  expect(body.options?.quotes).toBe(true);
+  expect(Object.hasOwn(body.options || {}, 'delimiter')).toBe(false);
+  expect(typeof body.tips?.header).toBe('string');
+  expect(body.tips?.header).not.toBe(CUSTOM_HEADER_TIP);
 });
 
 test('/v1/generate/options/csv accepts posted options and tips', async () => {
@@ -213,12 +211,12 @@ test('/v1/generate/options/csv accepts posted options and tips', async () => {
       tips: { header: CUSTOM_HEADER_TIP },
     }),
   });
-  assert.equal(response.status, 200);
+  expect(response.status).toBe(200);
   const body = await response.json();
-  assert.equal(body.source, 'custom-default');
-  assert.equal(body.options?.header, false);
-  assert.equal(body.options?.quotes, true);
-  assert.equal(body.tips?.header, CUSTOM_HEADER_TIP);
+  expect(body.source).toBe('custom-default');
+  expect(body.options?.header).toBe(false);
+  expect(body.options?.quotes).toBe(true);
+  expect(body.tips?.header).toBe(CUSTOM_HEADER_TIP);
 });
 
 test('/v1/generate/options/csv returns custom defaults after POST', async () => {
@@ -233,11 +231,11 @@ test('/v1/generate/options/csv returns custom defaults after POST', async () => 
   });
 
   const response = await fetch(url('/v1/generate/options/csv'));
-  assert.equal(response.status, 200);
+  expect(response.status).toBe(200);
   const body = await response.json();
-  assert.equal(body.source, 'custom-default');
-  assert.equal(body.options?.header, false);
-  assert.equal(body.tips?.header, CUSTOM_HEADER_TIP);
+  expect(body.source).toBe('custom-default');
+  expect(body.options?.header).toBe(false);
+  expect(body.tips?.header).toBe(CUSTOM_HEADER_TIP);
 });
 
 test('/v1/generate uses saved default options when request options are omitted', async () => {
@@ -253,9 +251,9 @@ test('/v1/generate uses saved default options when request options are omitted',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ textSpec: 'Name\nBob', rowCount: 1, outputFormat: 'dsv', responseFormat: 'raw' }),
   });
-  assert.equal(response.status, 200);
+  expect(response.status).toBe(200);
   const body = await response.text();
-  assert.equal(body.includes('Name'), false);
+  expect(body.includes('Name')).toBe(false);
   await resetDsvDefaults();
 });
 
@@ -271,10 +269,10 @@ test('/v1/generate applies includeSetup for unit-test formats', async () => {
       options: { options: { includeSetup: true } },
     }),
   });
-  assert.equal(response.status, 200);
+  expect(response.status).toBe(200);
   const body = await response.json();
-  assert.match(body.rendered, /beforeEach/);
-  assert.match(body.rendered, /expect\(/);
+  expect(body.rendered).toMatch(/beforeEach/);
+  expect(body.rendered).toMatch(/expect\(/);
 });
 
 test('/v1/generate/options/csv/default resets options and tips to built-in defaults', async () => {
@@ -289,9 +287,9 @@ test('/v1/generate/options/csv/default resets options and tips to built-in defau
   });
 
   const response = await fetch(url('/v1/generate/options/csv/default'), { method: 'POST' });
-  assert.equal(response.status, 200);
+  expect(response.status).toBe(200);
   const body = await response.json();
-  assert.equal(body.source, 'built-in-default');
-  assert.equal(body.options?.header, true);
-  assert.notEqual(body.tips?.header, CUSTOM_HEADER_TIP);
+  expect(body.source).toBe('built-in-default');
+  expect(body.options?.header).toBe(true);
+  expect(body.tips?.header).not.toBe(CUSTOM_HEADER_TIP);
 });

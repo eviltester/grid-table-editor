@@ -1,18 +1,16 @@
-import test from 'node:test';
-import assert from 'node:assert/strict';
 import http from 'node:http';
 import { app } from './index.js';
 
 let server;
 let port;
 
-test.before(async () => {
+beforeAll(async () => {
   server = http.createServer(app);
   await new Promise((resolve) => server.listen(0, resolve));
   port = server.address().port;
 });
 
-test.after(async () => {
+afterAll(async () => {
   if (!server) {
     return;
   }
@@ -30,10 +28,10 @@ test('/v1/generate/fromschema defaults to rows response', async () => {
     body: 'iata\nairline.airline.iataCode',
   });
 
-  assert.equal(response.status, 200);
+  expect(response.status).toBe(200);
   const body = await response.json();
-  assert.ok(Array.isArray(body.headers));
-  assert.ok(Array.isArray(body.rows));
+  expect(Array.isArray(body.headers)).toBeTruthy();
+  expect(Array.isArray(body.rows)).toBeTruthy();
 });
 
 test('/v1/generate/fromschema supports responseFormat=rendered', async () => {
@@ -43,9 +41,9 @@ test('/v1/generate/fromschema supports responseFormat=rendered', async () => {
     body: 'iata\nairline.airline.iataCode',
   });
 
-  assert.equal(response.status, 200);
+  expect(response.status).toBe(200);
   const body = await response.json();
-  assert.equal(typeof body.rendered, 'string');
+  expect(typeof body.rendered).toBe('string');
 });
 
 test('/v1/generate/fromschema supports responseFormat=all', async () => {
@@ -55,10 +53,10 @@ test('/v1/generate/fromschema supports responseFormat=all', async () => {
     body: 'iata\nairline.airline.iataCode',
   });
 
-  assert.equal(response.status, 200);
+  expect(response.status).toBe(200);
   const body = await response.json();
-  assert.ok(Array.isArray(body.rows));
-  assert.equal(typeof body.rendered, 'string');
+  expect(Array.isArray(body.rows)).toBeTruthy();
+  expect(typeof body.rendered).toBe('string');
 });
 
 test('/v1/generate/fromschema supports responseFormat=raw', async () => {
@@ -68,8 +66,8 @@ test('/v1/generate/fromschema supports responseFormat=raw', async () => {
     body: 'iata\nairline.airline.iataCode',
   });
 
-  assert.equal(response.status, 200);
-  assert.match(response.headers.get('content-type') || '', /text\/csv/i);
+  expect(response.status).toBe(200);
+  expect(response.headers.get('content-type') || '').toMatch(/text\/csv/i);
 });
 
 test('/v1/generate/fromschema rejects missing rowCount', async () => {
@@ -79,7 +77,7 @@ test('/v1/generate/fromschema rejects missing rowCount', async () => {
     body: 'iata\nairline.airline.iataCode',
   });
 
-  assert.equal(response.status, 400);
+  expect(response.status).toBe(400);
 });
 
 test('/v1/generate/fromschema rejects invalid responseFormat', async () => {
@@ -89,7 +87,7 @@ test('/v1/generate/fromschema rejects invalid responseFormat', async () => {
     body: 'iata\nairline.airline.iataCode',
   });
 
-  assert.equal(response.status, 400);
+  expect(response.status).toBe(400);
 });
 
 test('/v1/generate/fromschema rejects invalid outputFormat', async () => {
@@ -99,7 +97,7 @@ test('/v1/generate/fromschema rejects invalid outputFormat', async () => {
     body: 'iata\nairline.airline.iataCode',
   });
 
-  assert.equal(response.status, 400);
+  expect(response.status).toBe(400);
 });
 
 test('/v1/generate/fromschema accepts seed from query string and produces deterministic faker output', async () => {
@@ -110,12 +108,12 @@ test('/v1/generate/fromschema accepts seed from query string and produces determ
   const responseA = await fetch(url(path), { method: 'POST', headers, body });
   const responseB = await fetch(url(path), { method: 'POST', headers, body });
 
-  assert.equal(responseA.status, 200);
-  assert.equal(responseB.status, 200);
+  expect(responseA.status).toBe(200);
+  expect(responseB.status).toBe(200);
 
   const payloadA = await responseA.json();
   const payloadB = await responseB.json();
-  assert.deepEqual(payloadA.rows, payloadB.rows);
+  expect(payloadA.rows).toEqual(payloadB.rows);
 });
 
 test('/v1/generate/fromschema rejects invalid seed query value', async () => {
@@ -125,9 +123,9 @@ test('/v1/generate/fromschema rejects invalid seed query value', async () => {
     body: 'iata\nairline.airline.iataCode',
   });
 
-  assert.equal(response.status, 400);
+  expect(response.status).toBe(400);
   const payload = await response.json();
-  assert.match(payload.errors?.[0] || '', /seed must be a finite number/i);
+  expect(payload.errors?.[0] || '').toMatch(/seed must be a finite number/i);
 });
 
 test('/v1/generate/fromschema applies unit-test defaults for includeSetup', async () => {
@@ -137,7 +135,7 @@ test('/v1/generate/fromschema applies unit-test defaults for includeSetup', asyn
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ options: { includeSetup: true } }),
     });
-    assert.equal(setDefaults.status, 200);
+    expect(setDefaults.status).toBe(200);
 
     const response = await fetch(url('/v1/generate/fromschema?rowCount=1&outputFormat=jest&responseFormat=rendered'), {
       method: 'POST',
@@ -145,16 +143,16 @@ test('/v1/generate/fromschema applies unit-test defaults for includeSetup', asyn
       body: 'Name\nBob',
     });
 
-    assert.equal(response.status, 200);
+    expect(response.status).toBe(200);
     const body = await response.json();
-    assert.match(body.rendered, /beforeEach/);
-    assert.match(body.rendered, /expect\(/);
+    expect(body.rendered).toMatch(/beforeEach/);
+    expect(body.rendered).toMatch(/expect\(/);
   } finally {
     const resetDefaults = await fetch(url('/v1/generate/options/jest/default'), {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({}),
     });
-    assert.equal(resetDefaults.status, 200);
+    expect(resetDefaults.status).toBe(200);
   }
 });

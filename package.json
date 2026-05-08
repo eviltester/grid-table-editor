@@ -19,18 +19,18 @@
     "test:api": "playwright test --config=playwright-api.config.js",
     "test:api:headed": "playwright test --config=playwright-api.config.js --headed",
     "test:api:verbose": "playwright test --config=playwright-api.config.js --reporter=verbose",
-    "lint": "eslint \"tests/**/*.js\" \"apps/**/*.js\" \"packages/**/*.js\"",
-    "lint:fix": "eslint --fix \"tests/**/*.js\" \"apps/**/*.js\" \"packages/**/*.js\"",
+    "lint": "eslint \"apps/**/*.js\" \"packages/**/*.js\"",
+    "lint:fix": "eslint --fix \"apps/**/*.js\" \"packages/**/*.js\"",
     "lint:docker": "node scripts/lint-docker.js",
-    "format": "prettier --write \"*.json\" \"apps/**/*.json\" \"packages/**/*.json\" \"apps/**/*.js\" \"!apps/web/libs/**/*.js\" \"!apps/web/dist/**/*.js\" \"packages/**/*.js\" \"tests/**/*.js\" \"*.md\" \".github/workflows/*.yml\"",
-    "format:check": "prettier --check \"*.json\" \"apps/**/*.json\" \"packages/**/*.json\" \"apps/**/*.js\" \"!apps/web/libs/**/*.js\" \"!apps/web/dist/**/*.js\" \"packages/**/*.js\" \"tests/**/*.js\" \"*.md\" \".github/workflows/*.yml\"",
+    "format": "prettier --write \"*.json\" \"apps/**/*.json\" \"packages/**/*.json\" \"apps/**/*.js\" \"!apps/web/libs/**/*.js\" \"!apps/web/dist/**/*.js\" \"packages/**/*.js\" \"*.md\" \".github/workflows/*.yml\"",
+    "format:check": "prettier --check \"*.json\" \"apps/**/*.json\" \"packages/**/*.json\" \"apps/**/*.js\" \"!apps/web/libs/**/*.js\" \"!apps/web/dist/**/*.js\" \"packages/**/*.js\" \"*.md\" \".github/workflows/*.yml\"",
     "verify:local": "npm run lint && npm run format:check && npm test && npm run test:workspaces && npm run test:api",
     "verify:ci": "npm run lint && npm run format:check && npm run testcoverage && npm run test:workspaces && npm run lint:docker && npm run test:browser && npm run test:api",
     "dev:web": "vite --config ./apps/web/vite.config.mjs",
     "build:web": "vite build --config ./apps/web/vite.config.mjs",
     "preview:web": "vite preview --config ./apps/web/vite.config.mjs",
     "serve:web": "npm run dev:web",
-    "benchmark:tabulator": "jest tests/grid/tabulator-performance.benchmark.test.js --runInBand",
+    "benchmark:tabulator": "jest packages/core-ui/src/tests/grid/tabulator-performance.benchmark.test.js --runInBand",
     "anywaydata:mac": "npm run anywaydata --prefix docs-src && npm run build:web && node ./scripts/merge-web-build-into-docs-build.js && cp -R ./build/ ../../anywaydata-com",
     "anywaydata:win": "npm run anywaydata --prefix docs-src && npm run build:web && node .\\scripts\\merge-web-build-into-docs-build.js && echo cleaning anywaydata for deployment && ..\\anywaydata-com\\make-ready-for-prod.bat",
     "previewdocs": "npm run start --prefix docs-src",
@@ -44,7 +44,9 @@
       "^.+\\.js$": "babel-jest"
     },
     "testMatch": [
-      "<rootDir>/tests/**/*.test.js",
+      "<rootDir>/packages/core/src/tests/**/*.test.js",
+      "<rootDir>/packages/core-ui/src/tests/**/*.test.js",
+      "<rootDir>/tests/integration/**/*.test.js",
       "<rootDir>/apps/web/src/tests/jest/**/*.test.js"
     ],
     "testPathIgnorePatterns": [
@@ -52,11 +54,15 @@
       "/tests/browser/",
       "/apps/web/src/tests/browser/"
     ],
+    "modulePathIgnorePatterns": [
+      "<rootDir>/build/"
+    ],
     "collectCoverageFrom": [
       "packages/**/*.js",
       "!packages/core/js/libs/**"
     ],
     "moduleNameMapper": {
+      "^@anywaydata/core$": "<rootDir>/packages/core/src/index.js",
       "^@anywaydata/core/data_formats/(.*)$": "<rootDir>/packages/core/js/data_formats/$1",
       "https://cdn.skypack.dev/@faker-js/faker@v9.7.0": "@faker-js/faker",
       "https://unpkg.com/papaparse@5.3.2/papaparse.min.js": "papaparse",

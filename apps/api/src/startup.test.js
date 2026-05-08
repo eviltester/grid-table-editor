@@ -1,5 +1,3 @@
-import test from 'node:test';
-import assert from 'node:assert/strict';
 import express from 'express';
 import { parseCliPort, resolvePortConfiguration, startApiServer } from './index.js';
 
@@ -12,9 +10,9 @@ function createTestApp() {
 }
 
 test('parseCliPort supports --port and --port=value', () => {
-  assert.equal(parseCliPort(['node', 'index.js', '--port', '3001']), '3001');
-  assert.equal(parseCliPort(['node', 'index.js', '--port=3002']), '3002');
-  assert.equal(parseCliPort(['node', 'index.js']), undefined);
+  expect(parseCliPort(['node', 'index.js', '--port', '3001'])).toBe('3001');
+  expect(parseCliPort(['node', 'index.js', '--port=3002'])).toBe('3002');
+  expect(parseCliPort(['node', 'index.js'])).toBe(undefined);
 });
 
 test('resolvePortConfiguration uses cli over env', () => {
@@ -22,24 +20,24 @@ test('resolvePortConfiguration uses cli over env', () => {
     argv: ['node', 'index.js', '--port', '3010'],
     env: { PORT: '3020' },
   });
-  assert.equal(config.ok, true);
-  assert.equal(config.port, 3010);
-  assert.equal(config.source, 'cli');
-  assert.equal(config.explicit, true);
+  expect(config.ok).toBe(true);
+  expect(config.port).toBe(3010);
+  expect(config.source).toBe('cli');
+  expect(config.explicit).toBe(true);
 });
 
 test('resolvePortConfiguration uses env when cli absent', () => {
   const config = resolvePortConfiguration({ argv: ['node', 'index.js'], env: { PORT: '3020' } });
-  assert.equal(config.ok, true);
-  assert.equal(config.port, 3020);
-  assert.equal(config.source, 'env');
-  assert.equal(config.explicit, true);
+  expect(config.ok).toBe(true);
+  expect(config.port).toBe(3020);
+  expect(config.source).toBe('env');
+  expect(config.explicit).toBe(true);
 });
 
 test('resolvePortConfiguration rejects invalid explicit port', () => {
   const config = resolvePortConfiguration({ argv: ['node', 'index.js', '--port', 'abc'], env: {} });
-  assert.equal(config.ok, false);
-  assert.match(config.error, /--port must be an integer/);
+  expect(config.ok).toBe(false);
+  expect(config.error).toMatch(/--port must be an integer/);
 });
 
 test('startApiServer fails fast with clean EADDRINUSE for explicit port', async () => {
@@ -51,7 +49,7 @@ test('startApiServer fails fast with clean EADDRINUSE for explicit port', async 
     defaultPort: 41000,
   });
 
-  assert.equal(blockerResult.ok, true);
+  expect(blockerResult.ok).toBe(true);
 
   try {
     const app = createTestApp();
@@ -61,9 +59,9 @@ test('startApiServer fails fast with clean EADDRINUSE for explicit port', async 
       logger: () => {},
     });
 
-    assert.equal(result.ok, false);
-    assert.equal(result.code, 'EADDRINUSE');
-    assert.match(result.message, /already in use/);
+    expect(result.ok).toBe(false);
+    expect(result.code).toBe('EADDRINUSE');
+    expect(result.message).toMatch(/already in use/);
   } finally {
     blockerResult.server.close();
   }
@@ -78,7 +76,7 @@ test('startApiServer auto-falls back when default port is busy', async () => {
     defaultPort: 42000,
   });
 
-  assert.equal(blockerResult.ok, true);
+  expect(blockerResult.ok).toBe(true);
 
   let result;
   try {
@@ -90,8 +88,8 @@ test('startApiServer auto-falls back when default port is busy', async () => {
       defaultPort: blockerResult.port,
     });
 
-    assert.equal(result.ok, true);
-    assert.equal(result.port, blockerResult.port + 1);
+    expect(result.ok).toBe(true);
+    expect(result.port).toBe(blockerResult.port + 1);
   } finally {
     blockerResult.server.close();
     if (result?.server) {

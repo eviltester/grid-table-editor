@@ -20,7 +20,7 @@
   "scripts": {
     "build": "node -e \"console.log('api: no build step')\"",
     "start": "node ./src/index.js",
-    "test": "node --test ./src/*.test.js"
+    "test": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js --config ./jest.config.cjs"
   },
   "dependencies": {
     "@anywaydata/core": "^1.1.0",

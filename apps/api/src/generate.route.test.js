@@ -1,5 +1,3 @@
-import test from 'node:test';
-import assert from 'node:assert/strict';
 import http from 'node:http';
 import { app } from './index.js';
 import { generateFromTextSpec } from '@anywaydata/core';
@@ -7,13 +5,13 @@ import { generateFromTextSpec } from '@anywaydata/core';
 let server;
 let port;
 
-test.before(async () => {
+beforeAll(async () => {
   server = http.createServer(app);
   await new Promise((resolve) => server.listen(0, resolve));
   port = server.address().port;
 });
 
-test.after(async () => {
+afterAll(async () => {
   if (!server) {
     return;
   }
@@ -45,11 +43,11 @@ test('/v1/generate returns rows payload for valid JSON request', async () => {
     body: JSON.stringify({ textSpec: 'Name\nBob', rowCount: 1, outputFormat: 'json' }),
   });
 
-  assert.equal(response.status, 200);
+  expect(response.status).toBe(200);
   const body = await response.json();
-  assert.ok(Array.isArray(body.headers));
-  assert.ok(Array.isArray(body.rows));
-  assert.equal(Object.hasOwn(body, 'ok'), false);
+  expect(Array.isArray(body.headers)).toBeTruthy();
+  expect(Array.isArray(body.rows)).toBeTruthy();
+  expect(Object.hasOwn(body, 'ok')).toBe(false);
 });
 
 test('/v1/generate returns 400 + JSON diagnostics for invalid spec', async () => {
@@ -59,10 +57,10 @@ test('/v1/generate returns 400 + JSON diagnostics for invalid spec', async () =>
     body: JSON.stringify({ textSpec: '', rowCount: 1, outputFormat: 'json' }),
   });
 
-  assert.equal(response.status, 400);
+  expect(response.status).toBe(400);
   const body = await response.json();
-  assert.ok(Array.isArray(body.errors));
-  assert.equal(typeof body.diagnostics, 'object');
+  expect(Array.isArray(body.errors)).toBeTruthy();
+  expect(typeof body.diagnostics).toBe('object');
 });
 
 test('/v1/generate returns JSON parse errors as JSON payload', async () => {
@@ -72,10 +70,10 @@ test('/v1/generate returns JSON parse errors as JSON payload', async () => {
     body: '{"textSpec":"line1\nline2","rowCount":1,"outputFormat":"csv"}',
   });
 
-  assert.equal(response.status, 400);
-  assert.match(response.headers.get('content-type') || '', /application\/json/i);
+  expect(response.status).toBe(400);
+  expect(response.headers.get('content-type') || '').toMatch(/application\/json/i);
   const body = await response.json();
-  assert.ok(Array.isArray(body.errors));
+  expect(Array.isArray(body.errors)).toBeTruthy();
 });
 
 test('/v1/generate supports responseFormat=rendered', async () => {
@@ -85,10 +83,10 @@ test('/v1/generate supports responseFormat=rendered', async () => {
     body: JSON.stringify({ textSpec: 'Name\nBob', rowCount: 1, outputFormat: 'json', responseFormat: 'rendered' }),
   });
 
-  assert.equal(response.status, 200);
+  expect(response.status).toBe(200);
   const body = await response.json();
-  assert.equal(typeof body.rendered, 'string');
-  assert.equal(Object.hasOwn(body, 'rows'), false);
+  expect(typeof body.rendered).toBe('string');
+  expect(Object.hasOwn(body, 'rows')).toBe(false);
 });
 
 test('/v1/generate supports responseFormat=raw', async () => {
@@ -98,8 +96,8 @@ test('/v1/generate supports responseFormat=raw', async () => {
     body: JSON.stringify({ textSpec: 'Name\nBob', rowCount: 1, outputFormat: 'csv', responseFormat: 'raw' }),
   });
 
-  assert.equal(response.status, 200);
-  assert.match(response.headers.get('content-type') || '', /text\/csv/i);
+  expect(response.status).toBe(200);
+  expect(response.headers.get('content-type') || '').toMatch(/text\/csv/i);
 });
 
 test('/v1/generate parity: REST rendered matches core for all unit-test frameworks', async () => {
@@ -118,7 +116,7 @@ test('/v1/generate parity: REST rendered matches core for all unit-test framewor
       options,
       seed: 123,
     });
-    assert.equal(coreResult.ok, true, `core generation failed for ${outputFormat}`);
+    expect(coreResult.ok).toBe(true);
 
     const response = await fetch(url('/v1/generate'), {
       method: 'POST',
@@ -132,8 +130,8 @@ test('/v1/generate parity: REST rendered matches core for all unit-test framewor
         seed: 123,
       }),
     });
-    assert.equal(response.status, 200, `api status failed for ${outputFormat}`);
+    expect(response.status).toBe(200);
     const body = await response.json();
-    assert.equal(body.rendered, coreResult.rendered, `render mismatch for ${outputFormat}`);
+    expect(body.rendered).toBe(coreResult.rendered);
   }
 });

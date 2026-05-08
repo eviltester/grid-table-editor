@@ -1,5 +1,3 @@
-import test from 'node:test';
-import assert from 'node:assert/strict';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 import readline from 'node:readline';
@@ -81,25 +79,25 @@ for (const launchCase of launchMatrix) {
     const server = startServer(launchCase);
     try {
       const init = await server.rpc('initialize', {});
-      assert.equal(init?.result?.protocolVersion, '2024-11-05');
+      expect(init?.result?.protocolVersion).toBe('2024-11-05');
 
       const tools = await server.rpc('tools/list');
       const toolNames = (tools?.result?.tools || []).map((tool) => tool.name);
-      assert.ok(toolNames.includes('generate_data_from_spec'));
-      assert.ok(toolNames.includes('get_output_format_options_schema'));
+      expect(toolNames.includes('generate_data_from_spec')).toBeTruthy();
+      expect(toolNames.includes('get_output_format_options_schema')).toBeTruthy();
 
       const resources = await server.rpc('resources/list');
       const uris = (resources?.result?.resources || []).map((resource) => resource.uri);
-      assert.ok(uris.includes('anywaydata://schemas/output-format-options'));
-      assert.ok(uris.includes('anywaydata://install/config-examples'));
+      expect(uris.includes('anywaydata://schemas/output-format-options')).toBeTruthy();
+      expect(uris.includes('anywaydata://install/config-examples')).toBeTruthy();
 
       const schemaTool = await server.rpc('tools/call', {
         name: 'get_output_format_options_schema',
         arguments: { outputFormat: 'xml' },
       });
       const schemaPayload = JSON.parse(schemaTool?.result?.content?.[0]?.text || '{}');
-      assert.equal(schemaPayload.ok, true);
-      assert.equal(schemaPayload.selectedFormat, 'xml');
+      expect(schemaPayload.ok).toBe(true);
+      expect(schemaPayload.selectedFormat).toBe('xml');
     } finally {
       await server.stop();
     }

@@ -1,9 +1,7 @@
 name: Codex PR Review
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
-    branches: ['master']
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -16,11 +14,19 @@ concurrency:
 
 jobs:
   codex-review:
-    if: github.event.pull_request.draft == false
+    if: github.event.pull_request.draft == false && secrets.OPENAI_API_KEY != ''
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Verify OpenAI key is configured
+        shell: bash
+        run: |
+          if [ -z "${{ secrets.OPENAI_API_KEY }}" ]; then
+            echo "OPENAI_API_KEY is not configured for this run."
+            exit 1
+          fi
 
       - name: Run Codex PR review
         uses: openai/codex-action@v1

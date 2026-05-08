@@ -176,7 +176,7 @@ This repository now uses npm workspaces:
 
 - `packages/core` -> shared generation engine (`@anywaydata/core`)
 - `packages/core-ui` -> browser UI modules (`@anywaydata/core-ui`)
-- `packages/cli` -> CLI wrapper (`@anywaydata/cli`)
+- `apps/cli` -> npm CLI package (`@anywaydata/cli`)
 - `apps/api` -> REST API (`@anywaydata/api`)
 - `apps/mcp` -> MCP server (`@anywaydata/mcp`)
 
@@ -201,7 +201,7 @@ Run an individual workspace command:
 
 ## npm CLI Usage (`@anywaydata/cli`)
 
-The npm CLI package is the workspace package `@anywaydata/cli` (separate from the Bun CLI in `cli/`).
+The npm CLI package is the workspace app `apps/cli` (`@anywaydata/cli`), and Bun executable builds also use `apps/cli` as the source.
 
 Install globally from npm:
 

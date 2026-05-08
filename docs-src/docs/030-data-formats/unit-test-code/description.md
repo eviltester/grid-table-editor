@@ -27,6 +27,41 @@ Unit Test Code output produces executable test scaffolding that:
 - loops/parameterizes rows as test cases
 - emits assertion templates for each column
 
+## Example Scaffold (JUnit 5)
+
+Example output using a provider strategy:
+
+```java
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.util.stream.Stream;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+public class GeneratedDataTests {
+    static Stream<Arguments> data() {
+        return Stream.of(
+            Arguments.of("Connie", 21),
+            Arguments.of("Miles", 34)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("data")
+    void row_parameterized(Object... row) {
+        Object[] expected = row;
+        Object[] actual = mapRowUnderTest(row);
+        assertEquals(expected[0], actual[0]); // Name
+        assertEquals(expected[1], actual[1]); // Age
+    }
+
+    private Object[] mapRowUnderTest(Object[] input) {
+        // Example: return PersonMapper.normalize(input);
+        return input; // replace with your system-under-test call
+    }
+}
+```
+
 ## AnyWayData Support for Unit Test Code
 
 AnyWayData currently supports exporting to multiple unit-test frameworks across Java, JavaScript/TypeScript, Python, Ruby, PHP, Kotlin, and Perl.
@@ -44,5 +79,4 @@ For more information on language-specific data output support, see:
 - [Python](/docs/data-formats/python/python)
 - [Ruby](/docs/data-formats/ruby/ruby)
 - [TypeScript](/docs/data-formats/typescript/typescript)
-
 

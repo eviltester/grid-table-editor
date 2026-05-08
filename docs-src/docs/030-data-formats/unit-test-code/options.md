@@ -60,3 +60,58 @@ Notes:
 
 - strategy availability depends on framework
 - for JUnit 5/6, legacy `csv` input is normalized to the `inline` strategy for compatibility
+
+### Strategy Availability by Framework
+
+- `junit5`, `junit6`: `provider`, `inline`, `csv`
+- `junit4`, `testng`, `pytest`, `unittest`, `nose2`, `jest`, `vitest`, `mocha`, `xunit`, `nunit`, `mstest`: `provider`, `inline`
+- `rspec`, `minitest`, `phpunit`, `pest`, `kotest`, `junit5-kotlin`, `spek`, `test-more`, `test2-suite`: `provider`
+
+## includeSetup Mapping by Framework
+
+When `includeSetup` is enabled, AnyWayData generates framework-idiomatic setup scaffolding:
+
+- JUnit4: `@Before`
+- JUnit5/6: `@BeforeEach`
+- TestNG: `@BeforeMethod`
+- PyTest: fixture scaffold
+- unittest: `setUp`
+- nose2: `setUp`
+- Jest: `beforeEach`
+- Vitest: `beforeEach`
+- Mocha: `beforeEach`
+- xUnit: constructor setup
+- NUnit: `[SetUp]`
+- MSTest: `[TestInitialize]`
+- RSpec: `before`
+- Minitest: `setup`
+- PHPUnit: `setUp()`
+- Kotest: `beforeTest`
+- JUnit5 Kotlin: `@BeforeEach`
+- Spek: `beforeEachTest`
+- Test::More: setup variable scaffold
+- Test2::Suite: setup variable scaffold
+
+## Official Framework References
+
+- JUnit 4: https://junit.org/junit4/
+- JUnit 5 (Jupiter): https://junit.org/junit5/
+- TestNG: https://testng.org/
+- pytest: https://docs.pytest.org/
+- unittest: https://docs.python.org/3/library/unittest.html
+- nose2: https://docs.nose2.io/
+- Jest: https://jestjs.io/
+- Vitest: https://vitest.dev/
+- Mocha: https://mochajs.org/
+- xUnit.net: https://xunit.net/
+- NUnit: https://nunit.org/
+- MSTest: https://learn.microsoft.com/dotnet/core/testing/unit-testing-with-mstest
+- RSpec: https://rspec.info/
+- Minitest: https://github.com/minitest/minitest
+- PHPUnit: https://phpunit.de/
+- Pest: https://pestphp.com/
+- Kotest: https://kotest.io/
+- JUnit 5 for Kotlin (Jupiter): https://junit.org/junit5/
+- Spek: https://spekframework.github.io/
+- Test::More: https://metacpan.org/pod/Test::More
+- Test2::Suite: https://metacpan.org/pod/Test2::Suite

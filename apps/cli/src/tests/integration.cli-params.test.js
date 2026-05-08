@@ -51,7 +51,7 @@ test('param -i is required', () => {
 });
 
 test('params -i and -n drive row count', () => {
-  const inputPath = path.join(repoRoot, 'cli', 'examples', 'company-literal.txt');
+  const inputPath = path.join(repoRoot, 'apps', 'cli', 'examples', 'company-literal.txt');
   const result = runCli(['generate', '-i', inputPath, '-n', '3', '-f', 'csv', '--show-progress', 'false']);
   expect(result.status).toBe(0);
 
@@ -61,7 +61,7 @@ test('params -i and -n drive row count', () => {
 });
 
 test('param -f controls output format (jsonl)', () => {
-  const inputPath = path.join(repoRoot, 'cli', 'examples', 'company-literal.txt');
+  const inputPath = path.join(repoRoot, 'apps', 'cli', 'examples', 'company-literal.txt');
   const result = runCli(['generate', '-i', inputPath, '-n', '2', '-f', 'jsonl', '--show-progress', 'false']);
   expect(result.status).toBe(0);
 
@@ -73,7 +73,7 @@ test('param -f controls output format (jsonl)', () => {
 });
 
 test('param -o writes output file', async () => {
-  const inputPath = path.join(repoRoot, 'cli', 'examples', 'company-literal.txt');
+  const inputPath = path.join(repoRoot, 'apps', 'cli', 'examples', 'company-literal.txt');
   const outputPath = tempFile('out');
   const result = runCli(['generate', '-i', inputPath, '-n', '2', '-f', 'csv', '-o', outputPath]);
   expect(result.status).toBe(0);
@@ -84,7 +84,7 @@ test('param -o writes output file', async () => {
 });
 
 test('param -t forces single row and enables test-mode diagnostics', () => {
-  const inputPath = path.join(repoRoot, 'cli', 'examples', 'company-literal.txt');
+  const inputPath = path.join(repoRoot, 'apps', 'cli', 'examples', 'company-literal.txt');
   const result = runCli(['generate', '-i', inputPath, '-n', '8', '-f', 'csv', '-t']);
   expect(result.status).toBe(0);
   expect(result.stdout).toContain('> Operating in Test Mode - generating 1 entry');
@@ -94,7 +94,7 @@ test('param -t forces single row and enables test-mode diagnostics', () => {
 });
 
 test('param --show-progress false suppresses progress logs', () => {
-  const inputPath = path.join(repoRoot, 'cli', 'examples', 'company-literal.txt');
+  const inputPath = path.join(repoRoot, 'apps', 'cli', 'examples', 'company-literal.txt');
   const result = runCli(['generate', '-i', inputPath, '-n', '1', '-f', 'csv', '--show-progress', 'false']);
   expect(result.status).toBe(0);
   expect(result.stdout).not.toContain('> Processing Input File');
@@ -102,7 +102,7 @@ test('param --show-progress false suppresses progress logs', () => {
 });
 
 test('params --stream and --show-progress true use streaming path for csv/jsonl', async () => {
-  const inputPath = path.join(repoRoot, 'cli', 'examples', 'company-literal.txt');
+  const inputPath = path.join(repoRoot, 'apps', 'cli', 'examples', 'company-literal.txt');
   const outputPath = tempFile('stream');
   const result = runCli([
     'generate',
@@ -126,7 +126,7 @@ test('params --stream and --show-progress true use streaming path for csv/jsonl'
 });
 
 test('param --stream-threshold auto-enables stream mode when threshold reached', () => {
-  const inputPath = path.join(repoRoot, 'cli', 'examples', 'company-literal.txt');
+  const inputPath = path.join(repoRoot, 'apps', 'cli', 'examples', 'company-literal.txt');
   const outputPath = tempFile('threshold');
   const result = runCli([
     'generate',

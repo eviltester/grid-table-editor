@@ -17,7 +17,7 @@ function runCli(args) {
 }
 
 test('integration: writes generated content to stdout when no output file is provided', () => {
-  const inputPath = path.join(repoRoot, 'cli', 'examples', 'company-literal.txt');
+  const inputPath = path.join(repoRoot, 'apps', 'cli', 'examples', 'company-literal.txt');
   const result = runCli(['-i', inputPath, '-n', '2', '-f', 'csv']);
 
   expect(result.status).toBe(0);
@@ -27,7 +27,7 @@ test('integration: writes generated content to stdout when no output file is pro
 });
 
 test('integration: writes generated content to file and keeps stdout progress-only in test mode', async () => {
-  const inputPath = path.join(repoRoot, 'cli', 'examples', 'company-literal.txt');
+  const inputPath = path.join(repoRoot, 'apps', 'cli', 'examples', 'company-literal.txt');
   const outputPath = path.join(os.tmpdir(), `anywaydata-cli-test-${Date.now()}.csv`);
   try {
     const result = runCli(['-i', inputPath, '-n', '2', '-f', 'csv', '-o', outputPath, '--testMode']);

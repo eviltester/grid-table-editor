@@ -399,4 +399,39 @@ describe('test data definition editor engine compatibility', () => {
 
     delete global.Tabulator;
   });
+
+  test('load sample schema button populates text schema with literal, enum, regex, and faker examples', () => {
+    installTabulatorMock();
+
+    enableTestDataGenerationInterface(
+      'host',
+      {
+        setGridFromGenericDataTable: jest.fn(),
+      },
+      {
+        renderTextFromGrid: jest.fn(),
+      },
+      {
+        getRowCount: jest.fn(() => 0),
+        getSelectedRowIndexes: jest.fn(() => []),
+      }
+    );
+
+    const tooltipButton = document.createElement('button');
+    tooltipButton.className = 'testdata-schema-sample-button';
+    document.body.appendChild(tooltipButton);
+    tooltipButton.click();
+    const value = document.getElementById('testdatadefntext').value;
+
+    expect(value).toContain('Literal Example');
+    expect(value).toContain('Pending Review');
+    expect(value).toContain('Enum Example');
+    expect(value).toContain('enum("Open","In Progress","Closed")');
+    expect(value).toContain('Regex Example');
+    expect(value).toContain('[A-Z]{3}-\\d{4}');
+    expect(value).toContain('Faker Example');
+    expect(value).toContain('person.fullName');
+
+    delete global.Tabulator;
+  });
 });

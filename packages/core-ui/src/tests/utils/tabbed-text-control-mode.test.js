@@ -33,6 +33,7 @@ describe('TabbedTextControl preview/edit button', () => {
 
     const modeButton = host.querySelector('#previewEditModeButton');
     const modeHelpIcon = host.querySelector('#previewEditModeHelpIcon');
+    expect(modeHelpIcon).not.toBeNull();
     modeHelpIcon._tippy = { setContent: jest.fn() };
     tabs._syncPreviewEditButtonLabel();
     expect(modeButton.innerText).toBe('Preview (10)');

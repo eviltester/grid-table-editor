@@ -463,6 +463,35 @@ Custom header styles for default items
   min-width: 9rem;
 }
 
+.generator-button-with-help {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.generator-file-icon {
+  display: inline-block;
+  width: 0.8rem;
+  height: 0.95rem;
+  margin-right: 0.4rem;
+  vertical-align: -0.1rem;
+  background: #ffffff;
+  border: 1px solid #d8f3dc;
+  border-radius: 1px;
+  position: relative;
+}
+
+.generator-file-icon::after {
+  content: '';
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  width: 0.28rem;
+  height: 0.28rem;
+  background: #74c69d;
+  clip-path: polygon(100% 0, 0 0, 100% 100%);
+}
+
 .generator-options-wrapper {
   flex: 1 1 100%;
   display: flex;

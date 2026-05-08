@@ -101,6 +101,56 @@ describe('ImportExportControls preview/edit mode', () => {
     expect(button.disabled).toBe(true);
   });
 
+  test('Set Grid From Text button enables in preview mode when text area is edited', () => {
+    const button = document.querySelector('#setgridfromtextbutton');
+    const textArea = document.getElementById('markdownarea');
+
+    expect(button.disabled).toBe(true);
+    textArea.value = 'a,b\n1,2';
+    textArea.dispatchEvent(new dom.window.Event('input', { bubbles: true }));
+    expect(button.disabled).toBe(false);
+  });
+
+  test('Set Grid From Text input listener binds when textarea is added after controls', () => {
+    const lateDom = new JSDOM(`<!doctype html><html><body>
+            <ul><li class="active-type"><a data-type="csv" href="#">CSV</a></li></ul>
+            <div id="importExportRoot"></div>
+        </body></html>`);
+    global.window = lateDom.window;
+    global.document = lateDom.window.document;
+
+    const lateControls = new ImportExportControls();
+    lateControls.addHTMLtoGui(document.getElementById('importExportRoot'));
+
+    const textArea = document.createElement('textarea');
+    textArea.id = 'markdownarea';
+    document.body.appendChild(textArea);
+
+    lateControls._syncGridFromTextButtonState();
+    const button = document.querySelector('#setgridfromtextbutton');
+    expect(button.disabled).toBe(true);
+
+    textArea.value = 'a,b\n1,2';
+    textArea.dispatchEvent(new lateDom.window.Event('input', { bubbles: true }));
+    expect(button.disabled).toBe(false);
+
+    lateDom.window.close();
+  });
+
+  test('Set Grid From Text button disables again after preview mode import', async () => {
+    const button = document.querySelector('#setgridfromtextbutton');
+    const textArea = document.getElementById('markdownarea');
+
+    textArea.value = 'a,b\n1,2';
+    textArea.dispatchEvent(new dom.window.Event('input', { bubbles: true }));
+    expect(button.disabled).toBe(false);
+
+    await controls.importTextArea();
+
+    expect(controls.importer.setGridFromGenericDataTable).toHaveBeenCalled();
+    expect(button.disabled).toBe(true);
+  });
+
   test('preview mode import renders preview and still loads full data into grid', async () => {
     const fullTable = makeDataTable(25);
     controls.importer.toGenericDataTable.mockReturnValue(fullTable);

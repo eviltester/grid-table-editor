@@ -8,6 +8,7 @@ const thisFilePath = fileURLToPath(import.meta.url);
 const thisDir = path.dirname(thisFilePath);
 const repoRoot = path.resolve(thisDir, '../../../../');
 const cliEntry = path.join(repoRoot, 'apps', 'cli', 'src', 'node-entry.js');
+const tempPaths = new Set();
 
 function runCli(args) {
   return spawnSync('node', [cliEntry, ...args], {
@@ -17,8 +18,25 @@ function runCli(args) {
 }
 
 function tempFile(name) {
-  return path.join(os.tmpdir(), `anywaydata-${name}-${Date.now()}-${Math.random().toString(16).slice(2)}.txt`);
+  const tempPath = path.join(
+    os.tmpdir(),
+    `anywaydata-${name}-${Date.now()}-${Math.random().toString(16).slice(2)}.txt`
+  );
+  tempPaths.add(tempPath);
+  return tempPath;
 }
+
+afterAll(async () => {
+  await Promise.all(
+    [...tempPaths].map(async (tempPath) => {
+      try {
+        await fs.unlink(tempPath);
+      } catch (_error) {
+        // Ignore missing files or cleanup race conditions.
+      }
+    })
+  );
+});
 
 test('param -h shows help', () => {
   const result = runCli(['-h']);

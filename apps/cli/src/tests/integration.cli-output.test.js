@@ -29,17 +29,24 @@ test('integration: writes generated content to stdout when no output file is pro
 test('integration: writes generated content to file and keeps stdout progress-only in test mode', async () => {
   const inputPath = path.join(repoRoot, 'cli', 'examples', 'company-literal.txt');
   const outputPath = path.join(os.tmpdir(), `anywaydata-cli-test-${Date.now()}.csv`);
+  try {
+    const result = runCli(['-i', inputPath, '-n', '2', '-f', 'csv', '-o', outputPath, '--testMode']);
 
-  const result = runCli(['-i', inputPath, '-n', '2', '-f', 'csv', '-o', outputPath, '--testMode']);
+    expect(result.status).toBe(0);
+    expect(result.stderr).toBe('');
+    expect(result.stdout).toContain('> Processing Input File');
+    expect(result.stdout).toContain('> Writing output to');
+    expect(result.stdout).not.toMatch(/^"Company"(?:,|$)/m);
+    expect(result.stdout).not.toMatch(/^"AnyWayData"(?:,|$)/m);
 
-  expect(result.status).toBe(0);
-  expect(result.stderr).toBe('');
-  expect(result.stdout).toContain('> Processing Input File');
-  expect(result.stdout).toContain('> Writing output to');
-  expect(result.stdout).not.toMatch(/^"Company"(?:,|$)/m);
-  expect(result.stdout).not.toMatch(/^"AnyWayData"(?:,|$)/m);
-
-  const written = await fs.readFile(outputPath, 'utf8');
-  expect(written).toContain('"Company"');
-  expect(written).toContain('AnyWayData');
+    const written = await fs.readFile(outputPath, 'utf8');
+    expect(written).toContain('"Company"');
+    expect(written).toContain('AnyWayData');
+  } finally {
+    try {
+      await fs.unlink(outputPath);
+    } catch (_error) {
+      // Ignore missing file cleanup races.
+    }
+  }
 });

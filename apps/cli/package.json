@@ -1,8 +1,8 @@
 {
-  "name": "@anywaydata/cli-next",
+  "name": "@anywaydata/cli",
   "version": "0.1.0",
   "type": "module",
-  "private": true,
+  "private": false,
   "bin": {
     "anywaydata": "./src/node-entry.js"
   },
@@ -13,6 +13,9 @@
   "files": [
     "src"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "node -e \"console.log('cli-next: no build step')\"",
     "test": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js --config ./jest.config.cjs"

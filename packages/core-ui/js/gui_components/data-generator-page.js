@@ -71,8 +71,13 @@ function buildRuleSpecFromSchemaRow(row) {
 function schemaRowsToSpec(schemaRows) {
   const lines = [];
   (schemaRows || []).forEach((row) => {
-    lines.push(String(row?.name ?? '').trim());
-    lines.push(buildRuleSpecFromSchemaRow(row));
+    const name = String(row?.name ?? '').trim();
+    const ruleSpec = buildRuleSpecFromSchemaRow(row);
+    if (name.length === 0 && ruleSpec.length === 0) {
+      return;
+    }
+    lines.push(name);
+    lines.push(ruleSpec);
   });
   return lines.join('\n');
 }
@@ -227,8 +232,28 @@ class DataGeneratorPage {
                       <label>Output Format
                         <select id="generatorOutputFormat"></select>
                       </label>
-                      <button id="generateDataButton">Generate Data</button>
-                      <button id="generateAllPairsButton" style="display:none;">Generate Pairwise</button>
+                      <span class="generator-button-with-help">
+                        <span
+                          class="helpicon"
+                          data-help="generator-generate-data-help"
+                          data-help-text='
+                            <p>Generate Data for currently defined rows and output format to file.</p>
+                            <p><a class="helplink" href="https://anywaydata.com/docs/test-data/generate-to-file" target="_blank" rel="noopener noreferrer">Generate To File docs</a></p>
+                          '
+                        ></span>
+                        <button id="generateDataButton"><span class="generator-file-icon" aria-hidden="true"></span>Generate Data</button>
+                      </span>
+                      <span class="generator-button-with-help" id="generateAllPairsButtonWrapper" style="display:none;">
+                        <span
+                          class="helpicon"
+                          data-help="generator-pairwise-help"
+                          data-help-text='
+                            <p>Generate Pairwise Data from schema to a file.</p>
+                            <p><a class="helplink" href="https://anywaydata.com/docs/test-data/pairwise-testing" target="_blank" rel="noopener noreferrer">Pairwise testing docs</a></p>
+                          '
+                        ></span>
+                        <button id="generateAllPairsButton"><span class="generator-file-icon" aria-hidden="true"></span>Generate Pairwise</button>
+                      </span>
                       <div class="generator-options-wrapper">
                         <div id="generatorOptionsPanel" class="generator-options-panel"></div>
                         <div id="generatorStatusText" class="generator-status-text" aria-live="polite" role="status"></div>
@@ -242,7 +267,16 @@ class DataGeneratorPage {
                       <div class="generator-preview-controls" id="generatorPreviewControlsSection" data-subsection-order="1" aria-label="Preview Controls">
                         <label for="previewRowsCount" class="generator-preview-count-label">Preview Items Count</label>
                         <input type="number" id="previewRowsCount" min="0" max="50" value="10">
-                        <button id="previewDataButton">Preview</button>
+                        <span class="generator-button-with-help">
+                          <span
+                            class="helpicon"
+                            data-help="generator-preview-help"
+                            data-help-text='
+                              <p>Show a preview of the defined items count in the Output Preview area.</p>
+                            '
+                          ></span>
+                          <button id="previewDataButton">Preview</button>
+                        </span>
                       </div>
                       <div class="generator-output-preview" id="generatorOutputPreviewSection" data-subsection-order="2" aria-label="Output Preview">
                         <label for="generatorOutputPreview">Output Preview</label>
@@ -349,6 +383,10 @@ class DataGeneratorPage {
 
     const schemaModeToggleButton = this.documentObj.getElementById('schemaModeToggleButton');
     schemaModeToggleButton.addEventListener('click', () => this.toggleSchemaEditMode());
+    const schemaTextArea = this.documentObj.getElementById('generatorSchemaText');
+    schemaTextArea?.addEventListener('input', () => {
+      this.updateAllPairsButtonVisibility();
+    });
 
     const previewDataButton = this.documentObj.getElementById('previewDataButton');
     previewDataButton.addEventListener('click', () => this.previewData());
@@ -610,6 +648,26 @@ class DataGeneratorPage {
     return { rows, errors: [] };
   }
 
+  syncSchemaRowsFromTextMode({ showErrors = false } = {}) {
+    if (!this.isTextMode) {
+      return { rows: this.schemaRows, errors: [] };
+    }
+
+    const textArea = this.documentObj.getElementById('generatorSchemaText');
+    const parsed = this.parseSchemaTextToRows(textArea?.value || '');
+    if (parsed.errors.length > 0) {
+      if (showErrors) {
+        this.alertFn(parsed.errors.join('\n'));
+      }
+      return parsed;
+    }
+
+    // Keep empty text schemas as zero rows while in text mode so validation can
+    // report "Add at least one schema row." instead of introducing a synthetic blank row.
+    this.schemaRows = parsed.rows;
+    return { rows: this.schemaRows, errors: [] };
+  }
+
   ruleToSchemaRow(rule) {
     const row = this.createBlankSchemaRow();
     row.name = String(rule?.name ?? '');
@@ -847,7 +905,12 @@ class DataGeneratorPage {
   }
 
   createConfiguredGenerator() {
-    const { errors, rows } = validateSchemaRows(this.schemaRows);
+    const parsed = this.syncSchemaRowsFromTextMode({ showErrors: false });
+    if (parsed.errors?.length > 0) {
+      return { errors: parsed.errors };
+    }
+
+    const { errors, rows } = validateSchemaRows(parsed.rows);
     if (errors.length > 0) {
       return { errors };
     }
@@ -1025,7 +1088,12 @@ class DataGeneratorPage {
   }
 
   countEnumColumns() {
-    const { errors, rows } = validateSchemaRows(this.schemaRows);
+    const parsed = this.syncSchemaRowsFromTextMode({ showErrors: false });
+    if (parsed.errors?.length > 0) {
+      return 0;
+    }
+
+    const { errors, rows } = validateSchemaRows(parsed.rows);
     if (errors.length > 0) {
       return 0;
     }
@@ -1066,9 +1134,9 @@ class DataGeneratorPage {
 
   updateAllPairsButtonVisibility() {
     const enumCount = this.countEnumColumns();
-    const button = this.documentObj.getElementById('generateAllPairsButton');
-    if (button) {
-      button.style.display = enumCount >= 2 ? '' : 'none';
+    const buttonWrapper = this.documentObj.getElementById('generateAllPairsButtonWrapper');
+    if (buttonWrapper) {
+      buttonWrapper.style.display = enumCount >= 2 ? 'inline-flex' : 'none';
     }
   }
 

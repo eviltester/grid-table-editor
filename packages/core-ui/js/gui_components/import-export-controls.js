@@ -25,12 +25,14 @@ class ImportExportControls {
   constructor() {
     this.previewRowLimit = 10;
     this.textEditMode = 'preview';
+    this.previewTextDirty = false;
     this.defaultOptionsPanelWidthPx = 272;
     this.minOptionsPanelWidthPx = 180;
     this.maxOptionsPanelWidthPx = 520;
     this.minPreviewPanelWidthPx = 220;
     this.currentOptionsPanelWidthPx = null;
     this._activeSplitDrag = null;
+    this._hasBoundPreviewTextInput = false;
   }
 
   addHTMLtoGui(parentelement) {
@@ -54,6 +56,8 @@ class ImportExportControls {
     let importTextAreaClickListener = this.importTextArea.bind(this);
     setgridfromtextbutton.addEventListener('click', importTextAreaClickListener, false);
     this._syncGridFromTextButtonState();
+
+    this._bindPreviewTextInputIfAvailable();
 
     this.fileInputElement = parentelement.querySelector('#csvinput');
     let csvinputchangelistener = this.loadFile.bind(this);
@@ -89,8 +93,16 @@ class ImportExportControls {
 
   importTextArea() {
     if (this.isPreviewTextMode()) {
-      alert('Grid to Text only availalable in Edit mode');
-      return;
+      if (!this.previewTextDirty) {
+        alert('Grid to Text only availalable in Edit mode');
+        return;
+      }
+      const typeToImport = document.querySelector('li.active-type a').getAttribute('data-type');
+      const textToImport = document.getElementById('markdownarea').value;
+      this.setCurrentTypeOptions();
+      return Promise.resolve(this._previewThenImportToGrid(typeToImport, textToImport)).then(() => {
+        this._setPreviewTextDirty(false);
+      });
     }
 
     const typeToImport = document.querySelector('li.active-type a').getAttribute('data-type');
@@ -474,6 +486,7 @@ class ImportExportControls {
   toggleTextEditMode() {
     if (this.isPreviewTextMode()) {
       this.textEditMode = 'edit';
+      this._setPreviewTextDirty(false);
       this._syncGridFromTextButtonState();
       if (confirm('Do you want to Set Text From Grid?')) {
         this.renderTextFromGrid();
@@ -484,6 +497,7 @@ class ImportExportControls {
     }
 
     this.textEditMode = 'preview';
+    this._setPreviewTextDirty(false);
     this._syncGridFromTextButtonState();
     this.renderTextFromGrid();
     return this.textEditMode;
@@ -494,6 +508,7 @@ class ImportExportControls {
     const previewDataTable = this.exporter.getGridAsGenericDataTable(this.previewRowLimit);
     const textToRender = this.exporter.getDataTableAs(type, previewDataTable);
     this.exportControls.setTextFromString(textToRender);
+    this._setPreviewTextDirty(false);
   }
 
   _renderPreviewTextFromInput(type, textToImport) {
@@ -505,6 +520,7 @@ class ImportExportControls {
     const limitedDataTable = this._limitDataTableRows(dataTable, this.previewRowLimit);
     const textToRender = this.exporter.getDataTableAs(type, limitedDataTable);
     this.exportControls.setTextFromString(textToRender);
+    this._setPreviewTextDirty(false);
   }
 
   async _previewThenImportToGrid(type, textToImport) {
@@ -548,11 +564,34 @@ class ImportExportControls {
   }
 
   _syncGridFromTextButtonState() {
+    this._bindPreviewTextInputIfAvailable();
     const importButton = document.querySelector('#setgridfromtextbutton');
     if (!importButton) {
       return;
     }
-    importButton.disabled = this.isPreviewTextMode();
+    importButton.disabled = this.isPreviewTextMode() ? !this.previewTextDirty : false;
+  }
+
+  _bindPreviewTextInputIfAvailable() {
+    if (this._hasBoundPreviewTextInput) {
+      return;
+    }
+    const textArea = document.getElementById('markdownarea');
+    if (!textArea) {
+      return;
+    }
+    textArea.addEventListener('input', () => {
+      if (!this.isPreviewTextMode()) {
+        return;
+      }
+      this._setPreviewTextDirty(true);
+    });
+    this._hasBoundPreviewTextInput = true;
+  }
+
+  _setPreviewTextDirty(isDirty) {
+    this.previewTextDirty = isDirty === true;
+    this._syncGridFromTextButtonState();
   }
 
   _configureOptionsPreviewSplitter(editArea, optionsParent, splitter, textArea) {

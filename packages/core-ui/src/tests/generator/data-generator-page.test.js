@@ -156,6 +156,11 @@ describe('DataGeneratorPage', () => {
     expect(spec).toBe('A\nword.noun()\nB\nx');
   });
 
+  test('schemaRowsToSpec omits fully blank rows', () => {
+    const spec = schemaRowsToSpec([{ name: '', sourceType: 'regex', value: '' }]);
+    expect(spec).toBe('');
+  });
+
   test('uses curated alphabetical faker command list in schema editor', () => {
     const page = new DataGeneratorPage({
       parentElement: document.getElementById('app'),
@@ -787,5 +792,85 @@ describe('DataGeneratorPage', () => {
     expect(page.schemaRows[0].name).toBe('City');
     expect(page.schemaRows[0].value).toBe('[A-Z]{4}');
     expect(page.schemaRows[0].sourceType).toBe('regex');
+  });
+
+  test('edit as text shows empty textarea for untouched blank schema', () => {
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker: { word: { noun: () => 'x' } },
+      RandExp: function RandExp() {},
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: FakeTestDataGenerator,
+    });
+    page.init();
+
+    const toggle = document.getElementById('schemaModeToggleButton');
+    toggle.click();
+
+    const textArea = document.getElementById('generatorSchemaText');
+    expect(textArea.value).toBe('');
+  });
+
+  test('can generate directly from text mode without toggling back to schema mode', async () => {
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker: { word: { noun: () => 'x' } },
+      RandExp: function RandExp() {},
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: FakeTestDataGenerator,
+    });
+    page.init();
+
+    const toggle = document.getElementById('schemaModeToggleButton');
+    toggle.click();
+
+    const textArea = document.getElementById('generatorSchemaText');
+    textArea.value = 'City\nLondon';
+    document.getElementById('generateRowsCount').value = '2';
+
+    await page.generateDataFile();
+
+    expect(alertFn).not.toHaveBeenCalled();
+    expect(FakeDownload.lastDownload).toEqual({
+      filename: 'generated-data.csv',
+      text: 'csv:async:2',
+    });
+  });
+
+  test('empty text mode schema keeps zero rows and shows add-row validation', async () => {
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker: { word: { noun: () => 'x' } },
+      RandExp: function RandExp() {},
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: FakeTestDataGenerator,
+    });
+    page.init();
+
+    const toggle = document.getElementById('schemaModeToggleButton');
+    toggle.click();
+
+    const textArea = document.getElementById('generatorSchemaText');
+    textArea.value = '';
+
+    await page.generateDataFile();
+
+    expect(alertFn).toHaveBeenCalledWith('Add at least one schema row.');
+    expect(page.schemaRows).toEqual([]);
   });
 });

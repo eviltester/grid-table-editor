@@ -201,7 +201,7 @@ Run an individual workspace command:
 
 ## npm CLI Usage (`@anywaydata/cli`)
 
-The npm CLI package is the workspace app `apps/cli` (`@anywaydata/cli`), separate from the Bun executable wrapper in `cli/`.
+The npm CLI package is the workspace app `apps/cli` (`@anywaydata/cli`), and Bun executable builds also use `apps/cli` as the source.
 
 Install globally from npm:
 

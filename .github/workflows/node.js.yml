@@ -80,9 +80,13 @@ jobs:
           set -euo pipefail
           rm -rf .tmp-pack
           mkdir -p .tmp-pack
-          TARBALL="$(npm pack --workspace apps/cli --pack-destination ./.tmp-pack | tail -n 1)"
-          npm exec --yes --package "./.tmp-pack/${TARBALL}" anywaydata -- --help >/dev/null
-          echo "CLI npm pack smoke test passed: ${TARBALL}"
+          CORE_TARBALL="$(npm pack --workspace packages/core --pack-destination ./.tmp-pack | tail -n 1)"
+          CLI_TARBALL="$(npm pack --workspace apps/cli --pack-destination ./.tmp-pack | tail -n 1)"
+          npm exec --yes \
+            --package "./.tmp-pack/${CORE_TARBALL}" \
+            --package "./.tmp-pack/${CLI_TARBALL}" \
+            anywaydata -- --help >/dev/null
+          echo "CLI npm pack smoke test passed with local core+cli tarballs: ${CORE_TARBALL}, ${CLI_TARBALL}"
 
       - name: Build
         run: npm run build --if-present

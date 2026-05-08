@@ -226,5 +226,143 @@ export function generateFromTextSpec({
   };
 }
 
+function createAndValidateGenerator({
+  textSpec,
+  rowCount,
+  outputFormat = DEFAULT_FORMAT,
+  unsafeFakerExpressions = false,
+  seed,
+} = {}) {
+  const errors = [];
+  if (typeof textSpec !== 'string' || textSpec.trim().length === 0) {
+    errors.push('textSpec is required and must be a non-empty string.');
+  }
+
+  const safeRowCount = Number.parseInt(rowCount, 10);
+  if (!Number.isInteger(safeRowCount) || safeRowCount < 0) {
+    errors.push('rowCount is required and must be an integer greater than or equal to zero.');
+  }
+
+  if (!SUPPORTED_FORMATS.includes(outputFormat)) {
+    errors.push(`outputFormat must be one of: ${SUPPORTED_FORMATS.join(', ')}`);
+  }
+
+  if (errors.length > 0) {
+    return { ok: false, errors, diagnostics: { supportedFormats: SUPPORTED_FORMATS } };
+  }
+
+  const scopedFaker = createScopedFaker(seed);
+  const generator = new TestDataGenerator(scopedFaker, RandExp, { unsafeFakerExpressions });
+  generator.importSpec(textSpec);
+  generator.compile();
+
+  if (!generator.isValid()) {
+    return {
+      ok: false,
+      errors: generator.errors(),
+      diagnostics: {
+        report: generator.compilationReport(),
+      },
+    };
+  }
+
+  return { ok: true, generator, safeRowCount };
+}
+
+function getCsvStreamSettings(options = {}) {
+  const quoteChar = typeof options.quoteChar === 'string' && options.quoteChar.length > 0 ? options.quoteChar : '"';
+  const escapeChar =
+    typeof options.escapeChar === 'string' && options.escapeChar.length > 0 ? options.escapeChar : quoteChar;
+  const includeHeader = options.header !== false;
+  return { quoteChar, escapeChar, includeHeader };
+}
+
+function quoteCsvValue(value, { quoteChar, escapeChar }) {
+  const text = String(value ?? '');
+  const escapedQuote = `${escapeChar}${quoteChar}`;
+  const escaped = text.split(quoteChar).join(escapedQuote);
+  return `${quoteChar}${escaped}${quoteChar}`;
+}
+
+function rowToCsv(headers, row, csvSettings) {
+  return headers.map((header) => quoteCsvValue(row[header], csvSettings)).join(',');
+}
+
+function rowToJsonLine(row) {
+  return JSON.stringify(row);
+}
+
+export async function streamFromTextSpec({
+  textSpec,
+  rowCount,
+  outputFormat = DEFAULT_FORMAT,
+  options = {},
+  seed,
+  unsafeFakerExpressions = false,
+  onChunk,
+} = {}) {
+  if (typeof onChunk !== 'function') {
+    return {
+      ok: false,
+      errors: ['onChunk callback is required and must be a function.'],
+      diagnostics: {},
+    };
+  }
+
+  const validation = createAndValidateGenerator({
+    textSpec,
+    rowCount,
+    outputFormat,
+    unsafeFakerExpressions,
+    seed,
+  });
+  if (!validation.ok) {
+    return validation;
+  }
+
+  if (outputFormat !== 'csv' && outputFormat !== 'jsonl') {
+    return {
+      ok: false,
+      errors: ['Streaming currently supports only csv and jsonl formats.'],
+      diagnostics: {
+        supportedStreamingFormats: ['csv', 'jsonl'],
+      },
+    };
+  }
+
+  const { generator, safeRowCount } = validation;
+  const headers = generator.generateHeadersArray();
+  const rows = [];
+  const report = generator.compilationReport();
+  const csvSettings = outputFormat === 'csv' ? getCsvStreamSettings(options) : null;
+
+  if (outputFormat === 'csv' && csvSettings.includeHeader) {
+    await onChunk(headers.map((header) => quoteCsvValue(header, csvSettings)).join(','));
+  }
+
+  for (let index = 0; index < safeRowCount; index += 1) {
+    const row = generator.generateRow();
+    rows.push(row);
+    if (outputFormat === 'csv') {
+      await onChunk(rowToCsv(headers, row, csvSettings));
+    } else {
+      await onChunk(rowToJsonLine(row));
+    }
+  }
+
+  return {
+    ok: true,
+    errors: [],
+    headers,
+    rows,
+    format: outputFormat,
+    diagnostics: {
+      report,
+      rowCount: safeRowCount,
+      streamed: true,
+    },
+  };
+}
+
 export { SUPPORTED_FORMATS };
 export { Exporter, GenericDataTable };

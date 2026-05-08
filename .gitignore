@@ -10,3 +10,4 @@ coverage.txt
 test_output.txt
 playwright-report
 test-results
+.tmp

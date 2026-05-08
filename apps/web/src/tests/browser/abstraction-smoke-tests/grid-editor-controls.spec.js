@@ -24,6 +24,8 @@ test('add rows above and below increase row count', async ({ page }) => {
   const appPage = new AppPage(page);
 
   await appPage.goto();
+  await appPage.gridEditor.addRow();
+  await appPage.gridEditor.addRow();
   const initialRows = await appPage.gridEditor.renderer.countRows();
 
   await appPage.gridEditor.renderer.selectRow(1);
@@ -55,9 +57,15 @@ test('quick filter and clear filters update visible rows', async ({ page }) => {
   const appPage = new AppPage(page);
 
   await appPage.goto();
+  await appPage.gridEditor.addRow();
+  await appPage.gridEditor.addRow();
+  await expect.poll(async () => appPage.gridEditor.renderer.countRows()).toBe(2);
+  const [primaryColumnName] = await appPage.gridEditor.header.getColumnNames();
+  await appPage.gridEditor.renderer.setCellTextByColumnName(primaryColumnName, 0, 'Filter Match');
+  await appPage.gridEditor.renderer.setCellTextByColumnName(primaryColumnName, 1, 'Different Value');
   const totalRows = await appPage.gridEditor.renderer.countRows();
 
-  await appPage.gridEditor.filterBy('Rename Column');
+  await appPage.gridEditor.filterBy('Filter Match');
   await expect.poll(async () => appPage.gridEditor.renderer.countVisibleRows()).toBeLessThan(totalRows);
 
   await appPage.gridEditor.clearFilters();

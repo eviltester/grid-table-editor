@@ -47,10 +47,11 @@ test('add row button creates row in grid', async ({ page }) => {
   await appPage.gridEditor.addRow();
   await expect.poll(async () => appPage.gridEditor.renderer.countRows()).toBe(initialRowCount + 1);
   const rowCountAfterAdd = await appPage.gridEditor.renderer.countRows();
+  const [primaryColumnName] = await appPage.gridEditor.header.getColumnNames();
 
   const lastRowIndex = rowCountAfterAdd - 1;
   await expect
-    .poll(async () => appPage.gridEditor.renderer.getCellTextByColumnName('Instructions', lastRowIndex))
+    .poll(async () => appPage.gridEditor.renderer.getCellTextByColumnName(primaryColumnName, lastRowIndex))
     .toBe('');
   expect(pageErrors).toEqual([]);
 });

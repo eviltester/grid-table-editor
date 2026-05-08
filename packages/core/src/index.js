@@ -300,6 +300,7 @@ export async function streamFromTextSpec({
   seed,
   unsafeFakerExpressions = false,
   onChunk,
+  collectRows = false,
 } = {}) {
   if (typeof onChunk !== 'function') {
     return {
@@ -332,7 +333,8 @@ export async function streamFromTextSpec({
 
   const { generator, safeRowCount } = validation;
   const headers = generator.generateHeadersArray();
-  const rows = [];
+  const rows = collectRows ? [] : null;
+  let firstRow = null;
   const report = generator.compilationReport();
   const csvSettings = outputFormat === 'csv' ? getCsvStreamSettings(options) : null;
 
@@ -342,7 +344,12 @@ export async function streamFromTextSpec({
 
   for (let index = 0; index < safeRowCount; index += 1) {
     const row = generator.generateRow();
-    rows.push(row);
+    if (firstRow === null) {
+      firstRow = row;
+    }
+    if (rows) {
+      rows.push(row);
+    }
     if (outputFormat === 'csv') {
       await onChunk(rowToCsv(headers, row, csvSettings));
     } else {
@@ -354,12 +361,14 @@ export async function streamFromTextSpec({
     ok: true,
     errors: [],
     headers,
-    rows,
+    rows: rows || [],
     format: outputFormat,
     diagnostics: {
       report,
       rowCount: safeRowCount,
       streamed: true,
+      firstRow,
+      collectRows,
     },
   };
 }

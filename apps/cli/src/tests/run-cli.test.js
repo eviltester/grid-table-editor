@@ -75,3 +75,30 @@ test('writes output file in buffered mode', async () => {
   expect(platform.writes.length).toBe(1);
   expect(platform.writes[0].path).toBe('out.csv');
 });
+
+test('returns error when stream writer fails', async () => {
+  const platform = makePlatform();
+  platform.createLineWriter = () => ({
+    async writeLine() {
+      throw new Error('disk full');
+    },
+    async close() {},
+  });
+
+  const code = await runCliCommand({
+    platform,
+    options: {
+      inputFile: 'spec.txt',
+      outputFile: 'out.csv',
+      format: 'csv',
+      rowCount: 2,
+      testMode: false,
+      showProgress: false,
+      shouldStream: true,
+      unsafeFakerExpressions: false,
+    },
+  });
+
+  expect(code).toBe(1);
+  expect(platform.err.join('')).toContain('Streaming generation failed');
+});

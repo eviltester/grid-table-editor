@@ -2,8 +2,11 @@ import { spawnSync } from 'node:child_process';
 import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const repoRoot = path.resolve(process.cwd(), '../..');
+const thisFilePath = fileURLToPath(import.meta.url);
+const thisDir = path.dirname(thisFilePath);
+const repoRoot = path.resolve(thisDir, '../../../../');
 const cliEntry = path.join(repoRoot, 'apps', 'cli', 'src', 'node-entry.js');
 
 function runCli(args) {

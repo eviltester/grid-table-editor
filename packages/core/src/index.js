@@ -356,7 +356,7 @@ export function amendFromTextSpecAndData({
     return { ok: false, errors, diagnostics: { supportedFormats: SUPPORTED_FORMATS } };
   }
 
-  const normalisedInputFormat = String(inputFormat).toLowerCase();
+  const normalisedInputFormat = String(inputFormat).trim().toLowerCase();
   const importer = createImporter();
   if (!importer.canImport(normalisedInputFormat)) {
     return {

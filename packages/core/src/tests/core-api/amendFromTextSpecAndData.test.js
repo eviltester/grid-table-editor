@@ -51,6 +51,17 @@ test('invalid input format returns clear error', () => {
   expect(result.errors[0]).toContain('inputFormat must be one of');
 });
 
+test('accepts inputFormat values with surrounding whitespace', () => {
+  const result = amendFromTextSpecAndData({
+    textSpec: 'Name\nBob',
+    inputData: '"Name"\n"Alice"',
+    inputFormat: ' csv ',
+    outputFormat: 'json',
+  });
+  expect(result.ok).toBe(true);
+  expect(result.rows).toEqual([['Bob']]);
+});
+
 test('rowCount cannot exceed imported rows', () => {
   const result = amendFromTextSpecAndData({
     textSpec: 'Name\nBob',
@@ -128,6 +139,23 @@ test('preserves legitimate trailing blank records from structured formats', () =
   expect(result.rows).toEqual([
     ['Alice', ''],
     ['', ''],
+  ]);
+  expect(result.diagnostics.importedRowCount).toBe(2);
+});
+
+test('preserves explicit empty CSV records while ignoring terminal newline artifacts', () => {
+  const result = amendFromTextSpecAndData({
+    textSpec: 'Status\nActive',
+    inputData: '"Name","Age"\n"Alice","30"\n"",""\n',
+    inputFormat: 'csv',
+    rowCount: 0,
+    outputFormat: 'json',
+  });
+  expect(result.ok).toBe(true);
+  expect(result.rows).toHaveLength(2);
+  expect(result.rows).toEqual([
+    ['Alice', '30', ''],
+    ['', '', ''],
   ]);
   expect(result.diagnostics.importedRowCount).toBe(2);
 });

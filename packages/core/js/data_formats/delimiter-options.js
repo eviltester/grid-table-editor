@@ -7,7 +7,9 @@ class DelimiterOptions {
       delimiter: '"',
       header: true,
       newline: '\n',
-      skipEmptyLines: false, //other option is 'greedy', meaning skip delimiters, quotes, and whitespace.
+      // Prevent parser artifacts: terminal newlines should not create synthetic rows.
+      // Use `true` (not `greedy`) so explicit empty records are preserved.
+      skipEmptyLines: true,
       columns: null, //or array of strings
     };
 

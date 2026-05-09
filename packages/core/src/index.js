@@ -1,10 +1,16 @@
 import { Faker, faker } from '@faker-js/faker';
 import RandExp from 'randexp';
+import Papa from 'papaparse';
 import { TestDataGenerator } from '../js/data_generation/testDataGenerator.js';
 import { GenericDataTable } from '../js/data_formats/generic-data-table.js';
 import { Exporter } from '../js/grid/exporter.js';
+import { Importer } from '../js/grid/importer.js';
 import { KNOWN_FAKER_COMMANDS } from '../js/faker/faker-commands.js';
 import { PairwiseTestDataGenerator } from '../js/data_generation/all-pairs/pairwiseTestDataGenerator.js';
+
+if (typeof globalThis.Papa === 'undefined') {
+  globalThis.Papa = Papa;
+}
 
 const DEFAULT_FORMAT = 'json';
 const SUPPORTED_FORMATS = [
@@ -136,6 +142,12 @@ function createExporter() {
   });
 }
 
+function createImporter() {
+  return new Importer({
+    setGridFromGenericDataTable: (dataTable) => dataTable,
+  });
+}
+
 function createScopedFaker(seed) {
   const scopedFaker = new Faker({ locale: faker.rawDefinitions });
   if (typeof seed === 'number') {
@@ -146,6 +158,44 @@ function createScopedFaker(seed) {
 
 export function createExporterForDefaults() {
   return createExporter();
+}
+
+function createBlankRow(columnCount) {
+  return new Array(columnCount).fill('');
+}
+
+function normaliseAmendCount(value, fallbackCount) {
+  if (value === undefined || value === null || value === '') {
+    return fallbackCount;
+  }
+  if (typeof value === 'number') {
+    if (!Number.isInteger(value) || value < 0) {
+      return undefined;
+    }
+    return value;
+  }
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    if (!/^\d+$/.test(trimmed)) {
+      return undefined;
+    }
+    const parsed = Number(trimmed);
+    return Number.isSafeInteger(parsed) ? parsed : undefined;
+  }
+  return undefined;
+}
+
+function toRowsWithHeaderMap(dataTable) {
+  const headers = dataTable.getHeaders();
+  const rows = [];
+  for (let index = 0; index < dataTable.getRowCount(); index += 1) {
+    const row = dataTable.getRow(index);
+    while (row.length < headers.length) {
+      row.push('');
+    }
+    rows.push(row);
+  }
+  return { headers, rows };
 }
 
 function tableToRows(dataTable) {
@@ -271,6 +321,158 @@ export function generateFromTextSpec({
       report: generator.compilationReport(),
       rowCount: effectiveRowCount,
       pairwise,
+      warnings: diagnosticsWarnings,
+    },
+  };
+}
+
+export function amendFromTextSpecAndData({
+  textSpec,
+  inputData,
+  inputFormat,
+  rowCount,
+  outputFormat = DEFAULT_FORMAT,
+  options = {},
+  seed,
+  unsafeFakerExpressions = false,
+  stream = false,
+} = {}) {
+  const errors = [];
+  const diagnosticsWarnings = [];
+
+  if (typeof textSpec !== 'string' || textSpec.trim().length === 0) {
+    errors.push('textSpec is required and must be a non-empty string.');
+  }
+  if (typeof inputData !== 'string' || inputData.length === 0) {
+    errors.push('inputData is required and must be a non-empty string.');
+  }
+  if (typeof inputFormat !== 'string' || inputFormat.trim().length === 0) {
+    errors.push('inputFormat is required and must be a non-empty string.');
+  }
+  if (!SUPPORTED_FORMATS.includes(outputFormat)) {
+    errors.push(`outputFormat must be one of: ${SUPPORTED_FORMATS.join(', ')}`);
+  }
+  if (errors.length > 0) {
+    return { ok: false, errors, diagnostics: { supportedFormats: SUPPORTED_FORMATS } };
+  }
+
+  const normalisedInputFormat = String(inputFormat).trim().toLowerCase();
+  const importer = createImporter();
+  if (!importer.canImport(normalisedInputFormat)) {
+    return {
+      ok: false,
+      errors: [`inputFormat must be one of: ${Object.keys(importer.convertors).sort().join(', ')}`],
+      diagnostics: {},
+    };
+  }
+
+  let sourceTable;
+  try {
+    sourceTable = importer.toGenericDataTable(normalisedInputFormat, inputData);
+  } catch (error) {
+    return {
+      ok: false,
+      errors: [`Unable to parse inputData using inputFormat "${normalisedInputFormat}".`],
+      diagnostics: { message: error?.message || 'Input parsing failed.' },
+    };
+  }
+  if (!sourceTable || !Array.isArray(sourceTable.rows)) {
+    return {
+      ok: false,
+      errors: [`Unable to parse inputData using inputFormat "${normalisedInputFormat}".`],
+      diagnostics: {},
+    };
+  }
+
+  const importedRowCount = sourceTable.getRowCount();
+  const amendCount = normaliseAmendCount(rowCount, importedRowCount);
+  if (amendCount === undefined) {
+    return {
+      ok: false,
+      errors: ['rowCount must be an integer greater than or equal to zero when provided.'],
+      diagnostics: {},
+    };
+  }
+  if (amendCount > importedRowCount) {
+    return {
+      ok: false,
+      errors: [`rowCount must be less than or equal to imported row count (${importedRowCount}).`],
+      diagnostics: { importedRowCount },
+    };
+  }
+
+  const scopedFaker = createScopedFaker(seed);
+  const generator = new TestDataGenerator(scopedFaker, RandExp, { unsafeFakerExpressions });
+  generator.importSpec(textSpec);
+  generator.compile();
+  if (!generator.isValid()) {
+    return {
+      ok: false,
+      errors: generator.errors(),
+      diagnostics: {
+        report: generator.compilationReport(),
+      },
+    };
+  }
+
+  if (stream === true || stream === 'true') {
+    diagnosticsWarnings.push('stream is ignored for amend operations and buffered mode is always used.');
+  }
+
+  const schemaHeaders = generator.generateHeadersArray();
+  const baseHeaders = sourceTable.getHeaders();
+  const mergedHeaders = [...baseHeaders];
+  for (const header of schemaHeaders) {
+    if (!mergedHeaders.includes(header)) {
+      mergedHeaders.push(header);
+    }
+  }
+
+  const headerIndexMap = new Map(mergedHeaders.map((header, index) => [header, index]));
+  const schemaHeaderIndexes = schemaHeaders.map((header) => headerIndexMap.get(header));
+  const { rows } = toRowsWithHeaderMap(sourceTable);
+  for (const row of rows) {
+    while (row.length < mergedHeaders.length) {
+      row.push('');
+    }
+  }
+
+  for (let rowIndex = 0; rowIndex < amendCount; rowIndex += 1) {
+    const targetRow = rows[rowIndex] || createBlankRow(mergedHeaders.length);
+    while (targetRow.length < mergedHeaders.length) {
+      targetRow.push('');
+    }
+    const generatedRow = generator.generateRow();
+    for (let schemaIndex = 0; schemaIndex < schemaHeaderIndexes.length; schemaIndex += 1) {
+      const targetIndex = schemaHeaderIndexes[schemaIndex];
+      const generatedValue = generatedRow[schemaIndex];
+      targetRow[targetIndex] = generatedValue === undefined || generatedValue === null ? '' : String(generatedValue);
+    }
+    rows[rowIndex] = targetRow;
+  }
+
+  const outputTable = new GenericDataTable();
+  outputTable.setHeaders(mergedHeaders);
+  outputTable.rows = rows;
+
+  const exporter = createExporter();
+  if (options && Object.keys(options).length > 0) {
+    exporter.setOptionsForType(outputFormat, options);
+  }
+  const rendered = exporter.getDataTableAs(outputFormat, outputTable) || '';
+  const { headers, rows: resultRows } = tableToRows(outputTable);
+
+  return {
+    ok: true,
+    errors: [],
+    headers,
+    rows: resultRows,
+    rendered,
+    format: outputFormat,
+    diagnostics: {
+      report: generator.compilationReport(),
+      rowCount: amendCount,
+      importedRowCount,
       warnings: diagnosticsWarnings,
     },
   };

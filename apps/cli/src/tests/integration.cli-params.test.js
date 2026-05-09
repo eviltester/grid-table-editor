@@ -8,6 +8,7 @@ const thisFilePath = fileURLToPath(import.meta.url);
 const thisDir = path.dirname(thisFilePath);
 const repoRoot = path.resolve(thisDir, '../../../../');
 const cliEntry = path.join(repoRoot, 'apps', 'cli', 'src', 'node-entry.js');
+const amendFixturesDir = path.join(repoRoot, 'test-fixtures', 'amend-cross-format');
 const tempPaths = new Set();
 
 function runCli(args) {
@@ -41,13 +42,13 @@ afterAll(async () => {
 test('param -h shows help', () => {
   const result = runCli(['-h']);
   expect(result.status).toBe(0);
-  expect(result.stdout).toContain('Usage: anywaydata generate');
+  expect(result.stdout).toContain('Usage: anywaydata <generate|amend>');
 });
 
 test('param -i is required', () => {
   const result = runCli(['generate', '-n', '1']);
   expect(result.status).toBe(1);
-  expect(result.stderr).toContain('Missing required argument');
+  expect(result.stderr).toContain('Missing required argument: input file');
 });
 
 test('params -i and -n drive row count', () => {
@@ -170,4 +171,84 @@ test('param --unsafe-faker-expressions is accepted', async () => {
   ]);
   expect(withFlag.status).toBe(0);
   expect(withFlag.stdout).toContain('"Company"');
+});
+
+test('amend command applies schema to existing data', async () => {
+  const schemaPath = tempFile('schema');
+  const dataPath = tempFile('data');
+  await fs.writeFile(schemaPath, 'Name\nBob', 'utf8');
+  await fs.writeFile(dataPath, '"Name"\n"Alice"\n"Eve"', 'utf8');
+
+  const result = runCli([
+    'amend',
+    '--schema-file',
+    schemaPath,
+    '--data-file',
+    dataPath,
+    '--input-format',
+    'csv',
+    '-n',
+    '1',
+    '-f',
+    'json',
+    '--show-progress',
+    'false',
+  ]);
+  expect(result.status).toBe(0);
+  expect(JSON.parse(result.stdout.trim())).toEqual([{ Name: 'Bob' }, { Name: 'Eve' }]);
+});
+
+test('amend command fixture flow: CSV input to DSV output on stdout', async () => {
+  const schemaPath = path.join(amendFixturesDir, 'schema.txt');
+  const dataPath = path.join(amendFixturesDir, 'input.csv');
+  const expectedPath = path.join(amendFixturesDir, 'expected-output.dsv');
+
+  const result = runCli([
+    'amend',
+    '--schema-file',
+    schemaPath,
+    '--data-file',
+    dataPath,
+    '--input-format',
+    'csv',
+    '-n',
+    '2',
+    '-f',
+    'dsv',
+    '--show-progress',
+    'false',
+  ]);
+
+  expect(result.status).toBe(0);
+  const expected = await fs.readFile(expectedPath, 'utf8');
+  expect(result.stdout.trimEnd()).toBe(expected.trimEnd());
+});
+
+test('amend command fixture flow: DSV input to CSV output file', async () => {
+  const schemaPath = path.join(amendFixturesDir, 'schema.txt');
+  const dataPath = path.join(amendFixturesDir, 'input.dsv');
+  const expectedPath = path.join(amendFixturesDir, 'expected-output.csv');
+  const outputPath = tempFile('amend-cross-format-output');
+
+  const result = runCli([
+    'amend',
+    '--schema-file',
+    schemaPath,
+    '--data-file',
+    dataPath,
+    '--input-format',
+    'dsv',
+    '-n',
+    '2',
+    '-f',
+    'csv',
+    '-o',
+    outputPath,
+    '--show-progress',
+    'false',
+  ]);
+
+  expect(result.status).toBe(0);
+  const [actual, expected] = await Promise.all([fs.readFile(outputPath, 'utf8'), fs.readFile(expectedPath, 'utf8')]);
+  expect(actual.trimEnd()).toBe(expected.trimEnd());
 });

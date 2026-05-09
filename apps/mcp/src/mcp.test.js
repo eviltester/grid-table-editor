@@ -1,6 +1,6 @@
 import { execFileSync } from 'node:child_process';
 import path from 'node:path';
-import { generateFromTextSpec } from '@anywaydata/core';
+import { amendFromTextSpecAndData, generateFromTextSpec } from '@anywaydata/core';
 
 function firstJsonLine(output) {
   return output
@@ -24,13 +24,15 @@ function requestServer(payload) {
 
 test('MCP server lists tools', () => {
   const response = requestServer({ jsonrpc: '2.0', id: 1, method: 'tools/list' });
-  expect(response?.result?.tools?.[0]?.name).toBe('generate_data_from_spec');
-  expect(response?.result?.tools?.[1]?.name).toBe('get_output_format_options_schema');
-  const generateSchema = response?.result?.tools?.[0]?.inputSchema?.properties?.options;
+  const names = (response?.result?.tools || []).map((tool) => tool.name);
+  expect(names.includes('generate_data_from_spec')).toBe(true);
+  expect(names.includes('amend_data_from_spec')).toBe(true);
+  expect(names.includes('get_output_format_options_schema')).toBe(true);
+  const generateTool = response?.result?.tools?.find((tool) => tool.name === 'generate_data_from_spec');
+  const generateSchema = generateTool?.inputSchema?.properties?.options;
   expect(generateSchema?.type).toBe('object');
   expect(Array.isArray(generateSchema?.oneOf)).toBeTruthy();
-  expect(response?.result?.tools?.[0]?.outputSchema).toBeTruthy();
-  expect(response?.result?.tools?.[1]?.outputSchema).toBeTruthy();
+  expect(generateTool?.outputSchema).toBeTruthy();
 });
 
 test('MCP server handles generate_data_from_spec tool call', () => {
@@ -327,6 +329,82 @@ test('MCP server rejects excessive textSpec length', () => {
 test('MCP server returns method not found for unknown methods', () => {
   const response = requestServer({ jsonrpc: '2.0', id: 14, method: 'nope/method' });
   expect(response?.error?.code).toBe(-32601);
+});
+
+test('MCP server handles amend_data_from_spec tool call', () => {
+  const response = requestServer({
+    jsonrpc: '2.0',
+    id: 15,
+    method: 'tools/call',
+    params: {
+      name: 'amend_data_from_spec',
+      arguments: {
+        textSpec: 'Name\nBob',
+        inputData: '"Name"\n"Alice"\n"Eve"',
+        inputFormat: 'csv',
+        rowCount: 1,
+        outputFormat: 'json',
+        stream: true,
+      },
+    },
+  });
+  const payload = JSON.parse(response?.result?.content?.[0]?.text || '{}');
+  expect(payload.ok).toBe(true);
+  expect(payload.rows).toEqual([['Bob'], ['Eve']]);
+  expect((payload.diagnostics?.warnings || []).join(' ')).toContain('stream is ignored');
+});
+
+test('MCP amend parity matches core', () => {
+  const coreResult = amendFromTextSpecAndData({
+    textSpec: 'Name\nBob',
+    inputData: '"Name"\n"Alice"\n"Eve"',
+    inputFormat: 'csv',
+    rowCount: 1,
+    outputFormat: 'json',
+  });
+  expect(coreResult.ok).toBe(true);
+
+  const response = requestServer({
+    jsonrpc: '2.0',
+    id: 16,
+    method: 'tools/call',
+    params: {
+      name: 'amend_data_from_spec',
+      arguments: {
+        textSpec: 'Name\nBob',
+        inputData: '"Name"\n"Alice"\n"Eve"',
+        inputFormat: 'csv',
+        rowCount: 1,
+        outputFormat: 'json',
+      },
+    },
+  });
+  const payload = JSON.parse(response?.result?.content?.[0]?.text || '{}');
+  expect(payload.ok).toBe(true);
+  expect(payload.rendered).toBe(coreResult.rendered);
+});
+
+test('MCP amend tool returns amend-specific failure message', () => {
+  const response = requestServer({
+    jsonrpc: '2.0',
+    id: 161,
+    method: 'tools/call',
+    params: {
+      name: 'amend_data_from_spec',
+      arguments: {
+        textSpec: 'Name\nBob',
+        inputData: '"Name"\n"Alice"',
+        inputFormat: 'csv',
+        rowCount: 2,
+        outputFormat: 'json',
+      },
+    },
+  });
+  const payload = JSON.parse(response?.result?.content?.[0]?.text || '{}');
+  expect(response?.result?.isError).toBe(true);
+  expect(payload.ok).toBe(false);
+  expect(payload.error.code).toBe('amend_failed');
+  expect(payload.error.message).toBe('Failed to amend data from specification.');
 });
 
 test('MCP parity: rendered output matches core for all unit-test frameworks', () => {

@@ -1,4 +1,9 @@
-import { generateFromTextSpec, streamFromTextSpec, SUPPORTED_FORMATS } from '@anywaydata/core';
+import {
+  amendFromTextSpecAndData,
+  generateFromTextSpec,
+  streamFromTextSpec,
+  SUPPORTED_FORMATS,
+} from '@anywaydata/core';
 
 function writeLine(output, text = '') {
   output(`${text}\n`);
@@ -16,6 +21,25 @@ export async function runCliCommand({ options, platform }) {
     return 1;
   }
 
+  if (!options.inputFile) {
+    writeLine(platform.stderr, 'Missing required argument: input file (use -i or --schema-file)');
+    return 1;
+  }
+
+  if (options.command === 'amend') {
+    if (!options.dataFile) {
+      writeLine(platform.stderr, 'Missing required argument: --data-file');
+      return 1;
+    }
+    if (!options.inputFormat) {
+      writeLine(platform.stderr, 'Missing required argument: --input-format');
+      return 1;
+    }
+  } else if (!Number.isInteger(options.rowCount) || options.rowCount < 0) {
+    writeLine(platform.stderr, 'Missing required argument: -n/--numberOfLines');
+    return 1;
+  }
+
   let textSpec = '';
   try {
     textSpec = await platform.readText(options.inputFile);
@@ -25,6 +49,48 @@ export async function runCliCommand({ options, platform }) {
   }
 
   progress(`> Processing Input File ${options.inputFile}`);
+  if (options.command === 'amend') {
+    let inputData = '';
+    try {
+      inputData = await platform.readText(options.dataFile);
+    } catch (error) {
+      writeLine(platform.stderr, `Unable to read data file: ${error.message}`);
+      return 1;
+    }
+
+    if (options.shouldStream || options.pairwise) {
+      progress('WARNING: Streaming and pairwise flags are ignored for amend mode.');
+    }
+
+    const result = amendFromTextSpecAndData({
+      textSpec,
+      inputData,
+      inputFormat: options.inputFormat,
+      rowCount: options.rowCount,
+      outputFormat: options.format,
+      unsafeFakerExpressions: options.unsafeFakerExpressions,
+      stream: options.shouldStream,
+    });
+
+    if (!result.ok) {
+      writeLine(platform.stderr, result.errors.join('\n'));
+      return 1;
+    }
+
+    if (Array.isArray(result.diagnostics?.warnings)) {
+      for (const warning of result.diagnostics.warnings) {
+        progress(`WARNING: ${warning}`);
+      }
+    }
+    if (options.outputFile) {
+      await platform.writeText(options.outputFile, result.rendered);
+      progress(`> Writing output to ${options.outputFile}`);
+    } else {
+      platform.stdout(`${result.rendered}\n`);
+    }
+    return 0;
+  }
+
   if (options.testMode) {
     progress('> Operating in Test Mode - generating 1 entry');
   }

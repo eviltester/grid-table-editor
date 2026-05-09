@@ -4,15 +4,17 @@ import { SUPPORTED_FORMATS } from '@anywaydata/core';
 
 export function parseCliOptions(argvInput = process.argv) {
   const parsed = yargs(hideBin(argvInput))
-    .usage('Usage: anywaydata generate -i input.txt -n 10 -f csv [-o output.txt]')
+    .usage('Usage: anywaydata <generate|amend> [options]')
     .command('generate', 'Generate test data from an input spec')
-    .option('i', { alias: 'inputfile', type: 'string', demandOption: true, describe: 'Text file with a data spec' })
+    .command('amend', 'Amend existing input data from a schema')
+    .option('i', { alias: 'inputfile', type: 'string', describe: 'Text file with a data spec' })
+    .option('schema-file', { type: 'string', describe: 'Schema file path for amend command' })
+    .option('data-file', { type: 'string', describe: 'Input data file path for amend command' })
+    .option('input-format', { type: 'string', describe: 'Input data format for amend command (e.g. csv, json)' })
     .option('n', {
       alias: 'numberOfLines',
       type: 'number',
-      demandOption: true,
-      default: 1,
-      describe: 'Number of lines to generate',
+      describe: 'Number of rows to generate (generate) or rows to amend from top of input (amend)',
     })
     .option('f', {
       alias: 'format',
@@ -56,14 +58,21 @@ export function parseCliOptions(argvInput = process.argv) {
     .alias('h', 'help')
     .parseSync();
 
-  const rowCount = parsed.testMode ? 1 : parsed.numberOfLines;
+  const command = parsed._[0] === 'amend' ? 'amend' : 'generate';
+  const rowCount = command === 'generate' ? (parsed.testMode ? 1 : parsed.numberOfLines) : parsed.numberOfLines;
   const streamThreshold = Number.isFinite(parsed.streamThreshold) ? Math.max(0, parsed.streamThreshold) : 5000;
-  const shouldStream = parsed.stream === true || (!!parsed.outputfile && rowCount >= streamThreshold);
+  const shouldStream =
+    command === 'generate' && (parsed.stream === true || (!!parsed.outputfile && rowCount >= streamThreshold));
   const showProgress =
     parsed.showProgress !== undefined ? parsed.showProgress === true : parsed.testMode || !parsed.outputfile;
 
+  const inputFile = command === 'amend' ? parsed['schema-file'] || parsed.inputfile : parsed.inputfile;
+
   return {
-    inputFile: parsed.inputfile,
+    command,
+    inputFile,
+    dataFile: parsed['data-file'],
+    inputFormat: parsed['input-format'] ? String(parsed['input-format']).toLowerCase() : undefined,
     outputFile: parsed.outputfile,
     format: String(parsed.format || 'csv').toLowerCase(),
     rowCount,

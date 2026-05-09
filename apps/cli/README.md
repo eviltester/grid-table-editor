@@ -61,6 +61,7 @@ Use included examples in this workspace:
 anywaydata generate -i ./apps/cli/examples/company-literal.txt -n 3 -f csv
 anywaydata generate -i ./apps/cli/examples/company.txt -n 3 -f csv
 anywaydata generate -i ./apps/cli/examples/regex-field.txt -n 3 -f csv
+anywaydata amend --schema-file schema.txt --data-file input.csv --input-format csv -f json -o amended.json
 ```
 
 ## CLI Options
@@ -74,6 +75,7 @@ anywaydata generate -i ./apps/cli/examples/regex-field.txt -n 3 -f csv
 - `--stream` enable stream mode when supported
 - `--stream-threshold` auto-enable stream mode when rows >= threshold and output file is set (default `5000`)
 - `--unsafe-faker-expressions` allow expression-style faker args (unsafe for untrusted input)
+- `amend --schema-file <file> --data-file <file> --input-format <format>` amend existing input data with schema rules
 
 ## Streaming Behavior
 
@@ -83,6 +85,8 @@ Streaming is currently supported for:
 - `jsonl`
 
 Other formats use buffered generation.
+
+For `amend`, streaming flags are accepted for compatibility but ignored (always buffered).
 
 Examples:
 

@@ -263,6 +263,10 @@ Supported options:
 - `-t, --testMode` enable diagnostics mode and generate one row
 - `--unsafe-faker-expressions` allow expression-style faker args (disabled by default)
 
+Amend existing data with a schema:
+
+`anywaydata amend --schema-file schema.txt --data-file input.csv --input-format csv -f json -o amended.json`
+
 Pairwise note:
 
 - when `--pairwise` is enabled, `--numberOfLines` is accepted but ignored (the pairwise engine determines row count)
@@ -324,6 +328,14 @@ Raw multiline schema/spec endpoint:
 - request body is the full multiline spec
 - query params: `rowCount` (required), `outputFormat` (optional), `seed` (optional), `pairwise` (optional), `responseFormat` (optional: `rows|rendered|all|raw`)
 - pairwise note: when `pairwise=true`, `rowCount` is accepted for compatibility but ignored (pairwise output size is computed automatically)
+
+Amend imported data endpoint:
+
+`POST http://localhost:3000/v1/generate/amend`
+
+- JSON body fields: `textSpec` (required), `inputData` (required raw text), `inputFormat` (required), `rowCount` (optional, defaults to input row count), `outputFormat` (optional), `responseFormat` (optional), `stream` (optional and ignored)
+- `rowCount` must be `<=` imported row count
+- response returns the full resulting dataset after amendment
 
 Set format default options:
 
@@ -433,6 +445,7 @@ OpenAPI/Swagger routes are available on the REST API only.
 The server exposes tools:
 
 - `generate_data_from_spec`
+- `amend_data_from_spec`
 - `get_output_format_options_schema`
 
 Inputs:

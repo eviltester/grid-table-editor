@@ -77,6 +77,22 @@ test('stream is ignored with warning', () => {
   );
 });
 
+test('ignores parser-only trailing blank row so output row count matches semantic input rows', () => {
+  const result = amendFromTextSpecAndData({
+    textSpec: 'Name\nUpdated Name\nStatus\nActive',
+    inputData: '"Name","Age"\n"Alice","30"\n"Eve","40"\n',
+    inputFormat: 'csv',
+    rowCount: 2,
+    outputFormat: 'json',
+  });
+  expect(result.ok).toBe(true);
+  expect(result.rows).toHaveLength(2);
+  expect(result.rows).toEqual([
+    ['Updated Name', '30', 'Active'],
+    ['Updated Name', '40', 'Active'],
+  ]);
+});
+
 test('malformed input data returns structured error', () => {
   const result = amendFromTextSpecAndData({
     textSpec: 'Name\nBob',

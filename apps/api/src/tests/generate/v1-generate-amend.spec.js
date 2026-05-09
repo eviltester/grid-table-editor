@@ -1,5 +1,17 @@
 import { test, expect } from '@playwright/test';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { setupApiServer, teardownApiServer, apiUrl, RESPONSE_FORMATS, TestHelpers } from '../api-test-setup.js';
+
+const thisFilePath = fileURLToPath(import.meta.url);
+const thisDir = path.dirname(thisFilePath);
+const repoRoot = path.resolve(thisDir, '../../../../../');
+const fixturesDir = path.join(repoRoot, 'test-fixtures', 'amend-cross-format');
+
+async function readFixture(fileName) {
+  return fs.readFile(path.join(fixturesDir, fileName), 'utf8');
+}
 
 test.describe('POST /v1/generate/amend', () => {
   test.beforeAll(async () => {
@@ -91,5 +103,53 @@ test.describe('POST /v1/generate/amend', () => {
       const body = await response.json();
       TestHelpers.assertErrorResponse(body, 400);
     }
+  });
+
+  test('CSV input amends and renders exact DSV output from fixtures', async ({ request }) => {
+    const [textSpec, inputData, expectedRendered] = await Promise.all([
+      readFixture('schema.txt'),
+      readFixture('input.csv'),
+      readFixture('expected-output.dsv'),
+    ]);
+
+    const response = await request.post(apiUrl('/v1/generate/amend'), {
+      data: {
+        textSpec,
+        inputData,
+        inputFormat: 'csv',
+        rowCount: 2,
+        outputFormat: 'dsv',
+        responseFormat: 'all',
+      },
+    });
+
+    expect(response.status()).toBe(200);
+    const body = await response.json();
+    expect(body.rendered.trimEnd()).toBe(expectedRendered.trimEnd());
+    expect(body.headers).toEqual(['Name', 'Age', 'Status']);
+  });
+
+  test('DSV input amends and renders exact CSV output from fixtures', async ({ request }) => {
+    const [textSpec, inputData, expectedRendered] = await Promise.all([
+      readFixture('schema.txt'),
+      readFixture('input.dsv'),
+      readFixture('expected-output.csv'),
+    ]);
+
+    const response = await request.post(apiUrl('/v1/generate/amend'), {
+      data: {
+        textSpec,
+        inputData,
+        inputFormat: 'dsv',
+        rowCount: 2,
+        outputFormat: 'csv',
+        responseFormat: 'all',
+      },
+    });
+
+    expect(response.status()).toBe(200);
+    const body = await response.json();
+    expect(body.rendered.trimEnd()).toBe(expectedRendered.trimEnd());
+    expect(body.headers).toEqual(['Name', 'Age', 'Status']);
   });
 });

@@ -188,6 +188,24 @@ function toRowsWithHeaderMap(dataTable) {
   return { headers, rows };
 }
 
+function isBlankCell(value) {
+  return value === undefined || value === null || String(value).trim() === '';
+}
+
+function trimTrailingBlankRows(dataTable) {
+  if (!Array.isArray(dataTable?.rows)) {
+    return;
+  }
+  while (dataTable.rows.length > 0) {
+    const lastRow = dataTable.rows[dataTable.rows.length - 1];
+    if (!Array.isArray(lastRow) || lastRow.every((cell) => isBlankCell(cell))) {
+      dataTable.rows.pop();
+      continue;
+    }
+    break;
+  }
+}
+
 function tableToRows(dataTable) {
   const headers = dataTable.getHeaders();
   const rows = [];
@@ -373,6 +391,10 @@ export function amendFromTextSpecAndData({
       diagnostics: {},
     };
   }
+
+  // Some import formats can produce a trailing blank row for terminal newlines.
+  // Amend mode should preserve semantic row count from input data, not parser artifacts.
+  trimTrailingBlankRows(sourceTable);
 
   const importedRowCount = sourceTable.getRowCount();
   const amendCount = normaliseAmendCount(rowCount, importedRowCount);

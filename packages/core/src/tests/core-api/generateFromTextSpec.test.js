@@ -174,3 +174,80 @@ test('generateFromTextSpec remains deterministic under overlapping seeded invoca
   expect(a.rows).toEqual(aAgain.rows);
   expect(a.rows).not.toEqual(b.rows);
 });
+
+test('generateFromTextSpec supports pairwise generation for enum rules', () => {
+  const result = generateFromTextSpec({
+    textSpec: 'Browser\nChrome,Firefox,Safari\nTheme\nLight,Dark\nRegion\nUS,EU',
+    rowCount: 100,
+    outputFormat: 'json',
+    pairwise: true,
+  });
+
+  expect(result.ok).toBe(true);
+  expect(result.headers).toEqual(['Browser', 'Theme', 'Region']);
+  expect(result.rows.length).toBeLessThan(3 * 2 * 2);
+
+  const valuesByHeader = {
+    Browser: ['Chrome', 'Firefox', 'Safari'],
+    Theme: ['Light', 'Dark'],
+    Region: ['US', 'EU'],
+  };
+  const getValue = (row, header) => row[result.headers.indexOf(header)];
+
+  const coveredPairs = new Set();
+  for (const row of result.rows) {
+    coveredPairs.add(`Browser:${getValue(row, 'Browser')}|Theme:${getValue(row, 'Theme')}`);
+    coveredPairs.add(`Browser:${getValue(row, 'Browser')}|Region:${getValue(row, 'Region')}`);
+    coveredPairs.add(`Theme:${getValue(row, 'Theme')}|Region:${getValue(row, 'Region')}`);
+  }
+
+  for (const browser of valuesByHeader.Browser) {
+    for (const theme of valuesByHeader.Theme) {
+      expect(coveredPairs.has(`Browser:${browser}|Theme:${theme}`)).toBe(true);
+    }
+    for (const region of valuesByHeader.Region) {
+      expect(coveredPairs.has(`Browser:${browser}|Region:${region}`)).toBe(true);
+    }
+  }
+  for (const theme of valuesByHeader.Theme) {
+    for (const region of valuesByHeader.Region) {
+      expect(coveredPairs.has(`Theme:${theme}|Region:${region}`)).toBe(true);
+    }
+  }
+
+  expect(result.diagnostics.pairwise).toBe(true);
+  expect(result.diagnostics.rowCount).toBe(result.rows.length);
+  expect(result.diagnostics.warnings).toContain('rowCount is ignored when pairwise generation is enabled.');
+});
+
+test('generateFromTextSpec rejects pairwise mode with fewer than 2 enum rules', () => {
+  const result = generateFromTextSpec({
+    textSpec: 'OnlyOne\nA,B,C',
+    rowCount: 10,
+    outputFormat: 'json',
+    pairwise: true,
+  });
+
+  expect(result.ok).toBe(false);
+  expect(result.errors[0]).toMatch(/requires at least 2 ENUM parameters/i);
+});
+
+test('generateFromTextSpec pairwise preserves original interleaved column order', () => {
+  const result = generateFromTextSpec({
+    textSpec: 'Name\nBob\nBrowser\nChrome,Firefox,Safari\nAge\n30\nTheme\nLight,Dark',
+    rowCount: 100,
+    outputFormat: 'json',
+    pairwise: true,
+  });
+
+  expect(result.ok).toBe(true);
+  expect(result.headers).toEqual(['Name', 'Browser', 'Age', 'Theme']);
+  expect(result.rows).toEqual([
+    ['Bob', 'Chrome', '30', 'Light'],
+    ['Bob', 'Chrome', '30', 'Dark'],
+    ['Bob', 'Firefox', '30', 'Light'],
+    ['Bob', 'Firefox', '30', 'Dark'],
+    ['Bob', 'Safari', '30', 'Light'],
+    ['Bob', 'Safari', '30', 'Dark'],
+  ]);
+});

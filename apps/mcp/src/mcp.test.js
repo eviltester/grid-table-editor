@@ -49,6 +49,34 @@ test('MCP server handles generate_data_from_spec tool call', () => {
   expect(response?.result?.structuredContent?.ok).toBe(true);
 });
 
+test('MCP server supports pairwise generation', () => {
+  const response = requestServer({
+    jsonrpc: '2.0',
+    id: 200,
+    method: 'tools/call',
+    params: {
+      name: 'generate_data_from_spec',
+      arguments: {
+        textSpec: 'Browser\nChrome,Firefox,Safari\nTheme\nLight,Dark',
+        rowCount: 100,
+        outputFormat: 'json',
+        pairwise: true,
+      },
+    },
+  });
+  const payload = JSON.parse(response?.result?.content?.[0]?.text || '{}');
+  expect(payload.ok).toBe(true);
+  expect(payload.headers).toEqual(['Browser', 'Theme']);
+  expect(payload.rows).toEqual([
+    ['Chrome', 'Light'],
+    ['Chrome', 'Dark'],
+    ['Firefox', 'Light'],
+    ['Firefox', 'Dark'],
+    ['Safari', 'Light'],
+    ['Safari', 'Dark'],
+  ]);
+});
+
 test('MCP server handles test framework output format', () => {
   const response = requestServer({
     jsonrpc: '2.0',

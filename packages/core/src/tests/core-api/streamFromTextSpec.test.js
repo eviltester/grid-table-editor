@@ -45,3 +45,16 @@ test('streamFromTextSpec rejects unsupported formats', async () => {
   expect(result.ok).toBe(false);
   expect(result.errors[0]).toContain('supports only csv and jsonl');
 });
+
+test('streamFromTextSpec rejects pairwise mode', async () => {
+  const result = await streamFromTextSpec({
+    textSpec: 'Browser\nChrome,Firefox\nTheme\nLight,Dark',
+    rowCount: 10,
+    outputFormat: 'csv',
+    pairwise: true,
+    onChunk: async () => {},
+  });
+
+  expect(result.ok).toBe(false);
+  expect(result.errors[0]).toContain('does not support pairwise');
+});

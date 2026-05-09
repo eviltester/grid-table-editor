@@ -35,3 +35,8 @@ test('stream auto-enabled for large file outputs', () => {
   ]);
   expect(opts.shouldStream).toBe(true);
 });
+
+test('pairwise flag is parsed', () => {
+  const opts = parseCliOptions(['node', 'cli', 'generate', '-i', 'spec.txt', '-n', '5', '--pairwise']);
+  expect(opts.pairwise).toBe(true);
+});

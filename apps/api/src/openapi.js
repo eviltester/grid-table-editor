@@ -41,7 +41,11 @@ const openApiDocument = {
                 required: ['textSpec', 'rowCount'],
                 properties: {
                   textSpec: { type: 'string' },
-                  rowCount: { type: 'integer', minimum: 0 },
+                  rowCount: {
+                    type: 'integer',
+                    minimum: 0,
+                    description: 'Requested row count. Ignored when pairwise is true.',
+                  },
                   outputFormat: {
                     type: 'string',
                     enum: [
@@ -86,6 +90,11 @@ const openApiDocument = {
                   },
                   options: { type: 'object' },
                   seed: { type: 'number' },
+                  pairwise: {
+                    type: 'boolean',
+                    default: false,
+                    description: 'Generate pairwise combinations for ENUM fields (requires at least 2 ENUM rules).',
+                  },
                   unsafeFakerExpressions: {
                     type: 'boolean',
                     default: false,
@@ -101,7 +110,11 @@ const openApiDocument = {
                 required: ['textSpec', 'rowCount'],
                 properties: {
                   textSpec: { type: 'string' },
-                  rowCount: { type: 'integer', minimum: 0 },
+                  rowCount: {
+                    type: 'integer',
+                    minimum: 0,
+                    description: 'Requested row count. Ignored when pairwise is true.',
+                  },
                   outputFormat: {
                     type: 'string',
                     enum: [
@@ -145,6 +158,11 @@ const openApiDocument = {
                     default: 'csv',
                   },
                   seed: { type: 'number' },
+                  pairwise: {
+                    type: 'boolean',
+                    default: false,
+                    description: 'Generate pairwise combinations for ENUM fields (requires at least 2 ENUM rules).',
+                  },
                   unsafeFakerExpressions: {
                     type: 'boolean',
                     default: false,
@@ -223,7 +241,7 @@ const openApiDocument = {
             name: 'rowCount',
             required: true,
             schema: { type: 'integer', minimum: 0 },
-            description: 'Number of rows to generate',
+            description: 'Number of rows to generate. Ignored when pairwise=true.',
           },
           {
             in: 'query',
@@ -277,6 +295,17 @@ const openApiDocument = {
             name: 'seed',
             required: false,
             schema: { type: 'number' },
+          },
+          {
+            in: 'query',
+            name: 'pairwise',
+            required: false,
+            schema: {
+              type: 'boolean',
+              default: false,
+            },
+            description:
+              'Generate pairwise combinations for ENUM fields (requires at least 2 ENUM rules). When true, rowCount is ignored.',
           },
           {
             in: 'query',

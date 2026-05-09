@@ -28,8 +28,14 @@ export async function runCliCommand({ options, platform }) {
   if (options.testMode) {
     progress('> Operating in Test Mode - generating 1 entry');
   }
+  const useStreamMode = options.shouldStream && !options.pairwise;
+  if (options.pairwise && options.shouldStream) {
+    if (options.testMode) {
+      progress('WARNING: Streaming is ignored when pairwise generation is enabled; using buffered mode.');
+    }
+  }
 
-  if (options.shouldStream && (options.format === 'csv' || options.format === 'jsonl')) {
+  if (useStreamMode && (options.format === 'csv' || options.format === 'jsonl')) {
     const streamedLines = [];
     const writer = options.outputFile ? platform.createLineWriter(options.outputFile) : null;
     let writerClosed = false;
@@ -38,6 +44,7 @@ export async function runCliCommand({ options, platform }) {
         textSpec,
         rowCount: options.rowCount,
         outputFormat: options.format,
+        pairwise: options.pairwise,
         unsafeFakerExpressions: options.unsafeFakerExpressions,
         onChunk: async (chunk) => {
           if (writer) {
@@ -86,6 +93,7 @@ export async function runCliCommand({ options, platform }) {
     textSpec,
     rowCount: options.rowCount,
     outputFormat: options.format,
+    pairwise: options.pairwise,
     unsafeFakerExpressions: options.unsafeFakerExpressions,
   });
 

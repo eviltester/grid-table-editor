@@ -86,6 +86,11 @@ const openApiDocument = {
                   },
                   options: { type: 'object' },
                   seed: { type: 'number' },
+                  pairwise: {
+                    type: 'boolean',
+                    default: false,
+                    description: 'Generate pairwise combinations for ENUM fields (requires at least 2 ENUM rules).',
+                  },
                   unsafeFakerExpressions: {
                     type: 'boolean',
                     default: false,
@@ -145,6 +150,11 @@ const openApiDocument = {
                     default: 'csv',
                   },
                   seed: { type: 'number' },
+                  pairwise: {
+                    type: 'boolean',
+                    default: false,
+                    description: 'Generate pairwise combinations for ENUM fields (requires at least 2 ENUM rules).',
+                  },
                   unsafeFakerExpressions: {
                     type: 'boolean',
                     default: false,
@@ -277,6 +287,16 @@ const openApiDocument = {
             name: 'seed',
             required: false,
             schema: { type: 'number' },
+          },
+          {
+            in: 'query',
+            name: 'pairwise',
+            required: false,
+            schema: {
+              type: 'boolean',
+              default: false,
+            },
+            description: 'Generate pairwise combinations for ENUM fields (requires at least 2 ENUM rules).',
           },
           {
             in: 'query',

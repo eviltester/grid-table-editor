@@ -135,3 +135,54 @@ test('/v1/generate parity: REST rendered matches core for all unit-test framewor
     expect(body.rendered).toBe(coreResult.rendered);
   }
 });
+
+test('/v1/generate supports pairwise mode', async () => {
+  const response = await fetch(url('/v1/generate'), {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+      textSpec: 'Browser\nChrome,Firefox,Safari\nTheme\nLight,Dark',
+      rowCount: 99,
+      outputFormat: 'json',
+      pairwise: true,
+    }),
+  });
+
+  expect(response.status).toBe(200);
+  const body = await response.json();
+  expect(body.headers).toEqual(['Browser', 'Theme']);
+  expect(body.rows).toEqual([
+    ['Chrome', 'Light'],
+    ['Chrome', 'Dark'],
+    ['Firefox', 'Light'],
+    ['Firefox', 'Dark'],
+    ['Safari', 'Light'],
+    ['Safari', 'Dark'],
+  ]);
+});
+
+test('/v1/generate supports pairwise for x-www-form-urlencoded payloads', async () => {
+  const form = new URLSearchParams();
+  form.set('textSpec', 'Browser\nChrome,Firefox,Safari\nTheme\nLight,Dark');
+  form.set('rowCount', '99');
+  form.set('outputFormat', 'json');
+  form.set('pairwise', 'true');
+
+  const response = await fetch(url('/v1/generate'), {
+    method: 'POST',
+    headers: { 'content-type': 'application/x-www-form-urlencoded' },
+    body: form.toString(),
+  });
+
+  expect(response.status).toBe(200);
+  const body = await response.json();
+  expect(body.headers).toEqual(['Browser', 'Theme']);
+  expect(body.rows).toEqual([
+    ['Chrome', 'Light'],
+    ['Chrome', 'Dark'],
+    ['Firefox', 'Light'],
+    ['Firefox', 'Dark'],
+    ['Safari', 'Light'],
+    ['Safari', 'Dark'],
+  ]);
+});

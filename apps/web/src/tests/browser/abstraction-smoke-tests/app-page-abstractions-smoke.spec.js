@@ -47,7 +47,9 @@ test('add row button creates row in grid', async ({ page }) => {
   await appPage.gridEditor.addRow();
   await expect.poll(async () => appPage.gridEditor.renderer.countRows()).toBe(initialRowCount + 1);
   const rowCountAfterAdd = await appPage.gridEditor.renderer.countRows();
+  await expect.poll(async () => (await appPage.gridEditor.header.getColumnNames()).length).toBeGreaterThan(0);
   const [primaryColumnName] = await appPage.gridEditor.header.getColumnNames();
+  expect(primaryColumnName).toBeTruthy();
 
   const lastRowIndex = rowCountAfterAdd - 1;
   await expect

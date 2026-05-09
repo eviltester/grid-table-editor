@@ -47,6 +47,11 @@ export function parseCliOptions(argvInput = process.argv) {
       default: false,
       describe: 'Allow expression-style faker arguments (unsafe for untrusted input)',
     })
+    .option('pairwise', {
+      type: 'boolean',
+      default: false,
+      describe: 'Generate pairwise combinations for ENUM fields (requires at least 2 ENUM rules)',
+    })
     .help('h')
     .alias('h', 'help')
     .parseSync();
@@ -66,5 +71,6 @@ export function parseCliOptions(argvInput = process.argv) {
     showProgress,
     shouldStream,
     unsafeFakerExpressions: parsed['unsafe-faker-expressions'] === true,
+    pairwise: parsed.pairwise === true,
   };
 }

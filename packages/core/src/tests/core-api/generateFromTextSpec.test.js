@@ -174,3 +174,37 @@ test('generateFromTextSpec remains deterministic under overlapping seeded invoca
   expect(a.rows).toEqual(aAgain.rows);
   expect(a.rows).not.toEqual(b.rows);
 });
+
+test('generateFromTextSpec supports pairwise generation for enum rules', () => {
+  const result = generateFromTextSpec({
+    textSpec: 'Browser\nChrome,Firefox,Safari\nTheme\nLight,Dark',
+    rowCount: 100,
+    outputFormat: 'json',
+    pairwise: true,
+  });
+
+  expect(result.ok).toBe(true);
+  expect(result.headers).toEqual(['Browser', 'Theme']);
+  expect(result.rows).toEqual([
+    ['Chrome', 'Light'],
+    ['Chrome', 'Dark'],
+    ['Firefox', 'Light'],
+    ['Firefox', 'Dark'],
+    ['Safari', 'Light'],
+    ['Safari', 'Dark'],
+  ]);
+  expect(result.diagnostics.pairwise).toBe(true);
+  expect(result.diagnostics.rowCount).toBe(6);
+});
+
+test('generateFromTextSpec rejects pairwise mode with fewer than 2 enum rules', () => {
+  const result = generateFromTextSpec({
+    textSpec: 'OnlyOne\nA,B,C',
+    rowCount: 10,
+    outputFormat: 'json',
+    pairwise: true,
+  });
+
+  expect(result.ok).toBe(false);
+  expect(result.errors[0]).toMatch(/requires at least 2 ENUM parameters/i);
+});

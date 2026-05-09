@@ -4,6 +4,7 @@ import { TestDataGenerator } from '../js/data_generation/testDataGenerator.js';
 import { GenericDataTable } from '../js/data_formats/generic-data-table.js';
 import { Exporter } from '../js/grid/exporter.js';
 import { KNOWN_FAKER_COMMANDS } from '../js/faker/faker-commands.js';
+import { PairwiseTestDataGenerator } from '../js/data_generation/all-pairs/pairwiseTestDataGenerator.js';
 
 const DEFAULT_FORMAT = 'json';
 const SUPPORTED_FORMATS = [
@@ -162,6 +163,7 @@ export function generateFromTextSpec({
   outputFormat = DEFAULT_FORMAT,
   options = {},
   seed,
+  pairwise = false,
   unsafeFakerExpressions = false,
 } = {}) {
   const errors = [];
@@ -198,9 +200,44 @@ export function generateFromTextSpec({
   }
 
   const dataTable = new GenericDataTable();
-  dataTable.setHeaders(generator.generateHeadersArray());
-  for (let index = 0; index < safeRowCount; index += 1) {
-    dataTable.appendDataRow(generator.generateRow());
+  let effectiveRowCount = safeRowCount;
+
+  if (pairwise) {
+    const pairwiseGenerator = new PairwiseTestDataGenerator(scopedFaker, RandExp);
+    const initResult = pairwiseGenerator.initializeFromRules(generator.testDataRules());
+    if (initResult?.isError) {
+      return {
+        ok: false,
+        errors: [initResult.errorMessage || 'Failed to initialize pairwise generation.'],
+        diagnostics: {
+          report: generator.compilationReport(),
+        },
+      };
+    }
+
+    const rowsResult = pairwiseGenerator.generateAllDataRecordsAsRows();
+    if (rowsResult?.isError) {
+      return {
+        ok: false,
+        errors: [rowsResult.errorMessage || 'Failed to generate pairwise rows.'],
+        diagnostics: {
+          report: generator.compilationReport(),
+        },
+      };
+    }
+
+    const generatedRows = rowsResult?.data?.data || [];
+    const headers = Array.isArray(generatedRows[0]) ? generatedRows[0] : [];
+    dataTable.setHeaders(headers);
+    for (let rowIndex = 1; rowIndex < generatedRows.length; rowIndex += 1) {
+      dataTable.appendDataRow(generatedRows[rowIndex]);
+    }
+    effectiveRowCount = Math.max(generatedRows.length - 1, 0);
+  } else {
+    dataTable.setHeaders(generator.generateHeadersArray());
+    for (let index = 0; index < safeRowCount; index += 1) {
+      dataTable.appendDataRow(generator.generateRow());
+    }
   }
 
   const exporter = createExporter();
@@ -221,7 +258,8 @@ export function generateFromTextSpec({
     format: outputFormat,
     diagnostics: {
       report: generator.compilationReport(),
-      rowCount: safeRowCount,
+      rowCount: effectiveRowCount,
+      pairwise,
     },
   };
 }
@@ -298,6 +336,7 @@ export async function streamFromTextSpec({
   outputFormat = DEFAULT_FORMAT,
   options = {},
   seed,
+  pairwise = false,
   unsafeFakerExpressions = false,
   onChunk,
   collectRows = false,
@@ -319,6 +358,14 @@ export async function streamFromTextSpec({
   });
   if (!validation.ok) {
     return validation;
+  }
+
+  if (pairwise) {
+    return {
+      ok: false,
+      errors: ['Streaming does not support pairwise generation.'],
+      diagnostics: {},
+    };
   }
 
   if (outputFormat !== 'csv' && outputFormat !== 'jsonl') {

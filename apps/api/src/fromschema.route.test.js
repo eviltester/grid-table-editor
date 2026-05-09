@@ -156,3 +156,23 @@ test('/v1/generate/fromschema applies unit-test defaults for includeSetup', asyn
     expect(resetDefaults.status).toBe(200);
   }
 });
+
+test('/v1/generate/fromschema supports pairwise query flag', async () => {
+  const response = await fetch(url('/v1/generate/fromschema?rowCount=50&pairwise=true&outputFormat=json'), {
+    method: 'POST',
+    headers: { 'content-type': 'text/plain' },
+    body: 'Browser\nChrome,Firefox,Safari\nTheme\nLight,Dark',
+  });
+
+  expect(response.status).toBe(200);
+  const body = await response.json();
+  expect(body.headers).toEqual(['Browser', 'Theme']);
+  expect(body.rows).toEqual([
+    ['Chrome', 'Light'],
+    ['Chrome', 'Dark'],
+    ['Firefox', 'Light'],
+    ['Firefox', 'Dark'],
+    ['Safari', 'Light'],
+    ['Safari', 'Dark'],
+  ]);
+});

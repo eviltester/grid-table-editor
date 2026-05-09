@@ -384,6 +384,10 @@ function handleRequest(request) {
                 outputFormat: { type: 'string', enum: SUPPORTED_FORMATS },
                 options: GENERATE_OPTIONS_SCHEMA,
                 seed: { type: 'number' },
+                pairwise: {
+                  type: 'boolean',
+                  description: 'Generate pairwise combinations for ENUM fields (requires at least 2 ENUM rules).',
+                },
               },
               required: ['textSpec', 'rowCount', 'outputFormat'],
             },

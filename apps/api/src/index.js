@@ -361,7 +361,7 @@ function resetDefaultOptionsForFormat(format) {
 }
 
 function runGeneration(payload = {}) {
-  const { textSpec, rowCount, outputFormat = 'csv', options, seed, unsafeFakerExpressions } = payload;
+  const { textSpec, rowCount, outputFormat = 'csv', options, seed, pairwise, unsafeFakerExpressions } = payload;
   const concreteOutputFormat = String(outputFormat || 'csv').toLowerCase();
 
   if (!SUPPORTED_FORMATS.includes(String(outputFormat).toLowerCase())) {
@@ -403,6 +403,7 @@ function runGeneration(payload = {}) {
       outputFormat: concreteOutputFormat,
       options: effectiveOptions,
       seed: parsedSeed.seed,
+      pairwise: parseBooleanFlag(pairwise),
       unsafeFakerExpressions: unsafeFakerExpressions || false,
     });
     if (!result?.ok) {
@@ -494,6 +495,7 @@ function buildFromSchemaPayload(req) {
     rowCount,
     outputFormat: outputFormat || 'csv',
     seed,
+    pairwise: req.query?.pairwise === 'true',
     responseFormat,
     unsafeFakerExpressions: unsafeFakerExpressions === 'true',
   };

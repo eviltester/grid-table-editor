@@ -7,10 +7,14 @@ test.describe('1. Grid Basic Operations', () => {
     const columnName = await seedRows(appPage, ['A', 'B', 'C', 'D']);
 
     await appPage.gridEditor.header.sortDesc(columnName);
-    await expect.poll(async () => appPage.gridEditor.renderer.getCellTextByColumnName(columnName, 0)).toBe('D');
+    await expect
+      .poll(async () => (await appPage.gridEditor.renderer.getColumnTextsByName(columnName)).slice(0, 4))
+      .toEqual(['D', 'C', 'B', 'A']);
 
     await appPage.gridEditor.clearSort();
-    await expect.poll(async () => appPage.gridEditor.renderer.getCellTextByColumnName(columnName, 0)).toBe('A');
+    await expect
+      .poll(async () => (await appPage.gridEditor.renderer.getColumnTextsByName(columnName)).slice(0, 4))
+      .toEqual(['A', 'B', 'C', 'D']);
 
     await appPage.gridEditor.selectRows([1, 2]);
     await expect.poll(async () => appPage.gridEditor.renderer.countSelectedRows()).toBe(2);

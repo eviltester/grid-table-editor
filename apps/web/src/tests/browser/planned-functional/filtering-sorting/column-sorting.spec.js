@@ -7,11 +7,15 @@ test.describe('3. Filtering and Sorting', () => {
     const col = await seedRows(appPage, ['Banana', 'Apple', 'Cherry']);
 
     await appPage.gridEditor.header.sortAsc(col);
-    await expect.poll(async () => appPage.gridEditor.renderer.getCellTextByColumnName(col, 0)).toBe('Apple');
+    await expect
+      .poll(async () => (await appPage.gridEditor.renderer.getColumnTextsByName(col)).slice(0, 3))
+      .toEqual(['Apple', 'Banana', 'Cherry']);
     await expect.poll(async () => appPage.gridEditor.header.getColumnSortState(col)).toContain('asc');
 
     await appPage.gridEditor.header.sortDesc(col);
-    await expect.poll(async () => appPage.gridEditor.renderer.getCellTextByColumnName(col, 0)).toBe('Cherry');
+    await expect
+      .poll(async () => (await appPage.gridEditor.renderer.getColumnTextsByName(col)).slice(0, 3))
+      .toEqual(['Cherry', 'Banana', 'Apple']);
     await expect.poll(async () => appPage.gridEditor.header.getColumnSortState(col)).toContain('desc');
 
     await appPage.gridEditor.header.clearSort(col);

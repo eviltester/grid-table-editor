@@ -85,7 +85,20 @@ class GridEditorComponent {
   }
 
   async clearFilters() {
-    await this.clearFiltersButton.click();
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      await this.clearFiltersButton.click();
+      for (let check = 0; check < 20; check += 1) {
+        const quickFilterValue = await this.quickFilterInput.inputValue();
+        const hasActiveColumnFilter = await this.grid
+          .locator('.tabulator-header-filter input')
+          .evaluateAll((inputs) => inputs.some((input) => String(input.value || '').trim().length > 0));
+        if (quickFilterValue === '' && !hasActiveColumnFilter) {
+          return;
+        }
+        await this.page.waitForTimeout(50);
+      }
+    }
+    throw new Error('Failed to clear all filters.');
   }
 
   async clearSort() {

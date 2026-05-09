@@ -235,10 +235,15 @@ Supported options:
 
 - `-i, --inputfile` path to the input text spec (required)
 - `-n, --numberOfLines` number of rows to generate (default `1`)
+- `--pairwise` generate pairwise combinations for enum fields (requires at least 2 enum rules)
 - `-f, --format` output format (default `csv`)
 - `-o, --outputfile` write output to file instead of stdout
 - `-t, --testMode` enable diagnostics mode and generate one row
 - `--unsafe-faker-expressions` allow expression-style faker args (disabled by default)
+
+Pairwise note:
+
+- when `--pairwise` is enabled, `--numberOfLines` is accepted but ignored (the pairwise engine determines row count)
 
 ## REST API Quick Start
 
@@ -295,7 +300,8 @@ Raw multiline schema/spec endpoint:
 
 - `Content-Type` must be `text/plain`
 - request body is the full multiline spec
-- query params: `rowCount` (required), `outputFormat` (optional), `seed` (optional), `responseFormat` (optional: `rows|rendered|all|raw`)
+- query params: `rowCount` (required), `outputFormat` (optional), `seed` (optional), `pairwise` (optional), `responseFormat` (optional: `rows|rendered|all|raw`)
+- pairwise note: when `pairwise=true`, `rowCount` is accepted for compatibility but ignored (pairwise output size is computed automatically)
 
 Set format default options:
 
@@ -411,6 +417,7 @@ Inputs:
 
 - `textSpec` (required string)
 - `rowCount` (required integer, >= 0)
+- `pairwise` (optional boolean, default `false`; when `true`, `rowCount` is ignored)
 - `outputFormat` (required string e.g. `csv`, `json`, `jsonl`, `xml`, `sql`)
 - `options` (optional object)
 - `seed` (optional number)

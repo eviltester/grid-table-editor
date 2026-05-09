@@ -103,6 +103,11 @@ export async function runCliCommand({ options, platform }) {
   }
 
   progress(result.diagnostics.report);
+  if (Array.isArray(result.diagnostics.warnings)) {
+    for (const warning of result.diagnostics.warnings) {
+      progress(`WARNING: ${warning}`);
+    }
+  }
   if (options.testMode && result.rows.length > 0) {
     progress('e.g.');
     progress(JSON.stringify(result.rows[0]));

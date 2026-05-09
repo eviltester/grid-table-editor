@@ -41,7 +41,11 @@ const openApiDocument = {
                 required: ['textSpec', 'rowCount'],
                 properties: {
                   textSpec: { type: 'string' },
-                  rowCount: { type: 'integer', minimum: 0 },
+                  rowCount: {
+                    type: 'integer',
+                    minimum: 0,
+                    description: 'Requested row count. Ignored when pairwise is true.',
+                  },
                   outputFormat: {
                     type: 'string',
                     enum: [
@@ -106,7 +110,11 @@ const openApiDocument = {
                 required: ['textSpec', 'rowCount'],
                 properties: {
                   textSpec: { type: 'string' },
-                  rowCount: { type: 'integer', minimum: 0 },
+                  rowCount: {
+                    type: 'integer',
+                    minimum: 0,
+                    description: 'Requested row count. Ignored when pairwise is true.',
+                  },
                   outputFormat: {
                     type: 'string',
                     enum: [
@@ -233,7 +241,7 @@ const openApiDocument = {
             name: 'rowCount',
             required: true,
             schema: { type: 'integer', minimum: 0 },
-            description: 'Number of rows to generate',
+            description: 'Number of rows to generate. Ignored when pairwise=true.',
           },
           {
             in: 'query',
@@ -296,7 +304,8 @@ const openApiDocument = {
               type: 'boolean',
               default: false,
             },
-            description: 'Generate pairwise combinations for ENUM fields (requires at least 2 ENUM rules).',
+            description:
+              'Generate pairwise combinations for ENUM fields (requires at least 2 ENUM rules). When true, rowCount is ignored.',
           },
           {
             in: 'query',

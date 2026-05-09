@@ -146,6 +146,7 @@ test('reports warning in test mode when stream mode is ignored for pairwise', as
   });
   expect(code).toBe(0);
   expect(platform.out.join('')).toContain('WARNING: Streaming is ignored when pairwise generation is enabled');
+  expect(platform.out.join('')).toContain('WARNING: rowCount is ignored when pairwise generation is enabled.');
 });
 
 test('generates deterministic pairwise output in buffered mode', async () => {

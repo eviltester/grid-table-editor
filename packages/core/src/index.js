@@ -201,8 +201,12 @@ export function generateFromTextSpec({
 
   const dataTable = new GenericDataTable();
   let effectiveRowCount = safeRowCount;
+  const diagnosticsWarnings = [];
 
   if (pairwise) {
+    if (rowCount !== undefined && rowCount !== null) {
+      diagnosticsWarnings.push('rowCount is ignored when pairwise generation is enabled.');
+    }
     const pairwiseGenerator = new PairwiseTestDataGenerator(scopedFaker, RandExp);
     const initResult = pairwiseGenerator.initializeFromRules(generator.testDataRules());
     if (initResult?.isError) {
@@ -227,10 +231,17 @@ export function generateFromTextSpec({
     }
 
     const generatedRows = rowsResult?.data?.data || [];
-    const headers = Array.isArray(generatedRows[0]) ? generatedRows[0] : [];
-    dataTable.setHeaders(headers);
+    const generatedHeaders = Array.isArray(generatedRows[0]) ? generatedRows[0] : [];
+    const originalHeaders = generator.generateHeadersArray();
+    const generatedHeaderIndexes = new Map(generatedHeaders.map((header, index) => [header, index]));
+    dataTable.setHeaders(originalHeaders);
     for (let rowIndex = 1; rowIndex < generatedRows.length; rowIndex += 1) {
-      dataTable.appendDataRow(generatedRows[rowIndex]);
+      const generatedRow = Array.isArray(generatedRows[rowIndex]) ? generatedRows[rowIndex] : [];
+      const reorderedRow = originalHeaders.map((header) => {
+        const generatedIndex = generatedHeaderIndexes.get(header);
+        return generatedIndex === undefined ? '' : generatedRow[generatedIndex];
+      });
+      dataTable.appendDataRow(reorderedRow);
     }
     effectiveRowCount = Math.max(generatedRows.length - 1, 0);
   } else {
@@ -260,6 +271,7 @@ export function generateFromTextSpec({
       report: generator.compilationReport(),
       rowCount: effectiveRowCount,
       pairwise,
+      warnings: diagnosticsWarnings,
     },
   };
 }

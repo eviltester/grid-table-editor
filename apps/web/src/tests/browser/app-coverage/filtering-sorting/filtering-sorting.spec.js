@@ -7,7 +7,9 @@ test('global filter, column filter, sort, and clear filters produce expected vis
   const appPage = new AppPage(page);
   await appPage.goto();
   await seedInstructionsRows(appPage, ['Apple', 'Banana', 'Cherry']);
+  await expect.poll(async () => (await appPage.gridEditor.header.getColumnNames()).length).toBeGreaterThan(0);
   const [primaryColumnName] = await appPage.gridEditor.header.getColumnNames();
+  expect(primaryColumnName).toBeTruthy();
 
   await appPage.gridEditor.setQuickFilter('App');
   await expect.poll(async () => appPage.gridEditor.renderer.countVisibleRows()).toBe(1);
@@ -20,6 +22,7 @@ test('global filter, column filter, sort, and clear filters produce expected vis
 
   await appPage.gridEditor.clearFilters();
   await expect.poll(async () => appPage.gridEditor.renderer.countVisibleRows()).toBe(3);
+  await expect.poll(async () => appPage.gridEditor.quickFilterInput.inputValue()).toBe('');
   await expect.poll(async () => appPage.gridEditor.header.getColumnFilterValue(primaryColumnName)).toBe('');
 
   await appPage.gridEditor.header.sortAsc(primaryColumnName);

@@ -11,3 +11,5 @@ test_output.txt
 playwright-report
 test-results
 .tmp
+apps/web/dist
+apps/web/dist/

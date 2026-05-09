@@ -8,12 +8,12 @@ test.describe('1. Grid Basic Operations', () => {
 
     await appPage.gridEditor.header.sortDesc(columnName);
     await expect
-      .poll(async () => (await appPage.gridEditor.renderer.getColumnTextsByName(columnName)).slice(0, 4))
+      .poll(async () => appPage.gridEditor.renderer.getTopVisibleColumnTextsByName(columnName, 4))
       .toEqual(['D', 'C', 'B', 'A']);
 
     await appPage.gridEditor.clearSort();
     await expect
-      .poll(async () => (await appPage.gridEditor.renderer.getColumnTextsByName(columnName)).slice(0, 4))
+      .poll(async () => appPage.gridEditor.renderer.getTopVisibleColumnTextsByName(columnName, 4))
       .toEqual(['A', 'B', 'C', 'D']);
 
     await appPage.gridEditor.selectRows([1, 2]);

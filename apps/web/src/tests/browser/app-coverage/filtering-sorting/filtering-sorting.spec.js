@@ -27,12 +27,12 @@ test('global filter, column filter, sort, and clear filters produce expected vis
 
   await appPage.gridEditor.header.sortAsc(primaryColumnName);
   await expect
-    .poll(async () => (await appPage.gridEditor.renderer.getColumnTextsByName(primaryColumnName)).slice(0, 3))
+    .poll(async () => appPage.gridEditor.renderer.getTopVisibleColumnTextsByName(primaryColumnName, 3))
     .toEqual(['Apple', 'Banana', 'Cherry']);
 
   await appPage.gridEditor.header.sortDesc(primaryColumnName);
   await expect
-    .poll(async () => (await appPage.gridEditor.renderer.getColumnTextsByName(primaryColumnName)).slice(0, 3))
+    .poll(async () => appPage.gridEditor.renderer.getTopVisibleColumnTextsByName(primaryColumnName, 3))
     .toEqual(['Cherry', 'Banana', 'Apple']);
 
   expect(pageErrors).toEqual([]);

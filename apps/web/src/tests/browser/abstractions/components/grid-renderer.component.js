@@ -70,6 +70,22 @@ class GridRendererComponent {
     return values;
   }
 
+  async getTopVisibleColumnTextsByName(columnName, count) {
+    const desiredCount = Number(count) || 0;
+    if (desiredCount <= 0) {
+      return [];
+    }
+    const visibleRows = await this.countVisibleRows();
+    if (visibleRows < desiredCount) {
+      return [];
+    }
+    const values = [];
+    for (let rowIndex = 0; rowIndex < desiredCount; rowIndex += 1) {
+      values.push(await this.getCellTextByColumnName(columnName, rowIndex));
+    }
+    return values;
+  }
+
   async clickCellByColumnName(columnName, rowIndex) {
     const columnIndex = await this._columnIndexByName(columnName);
     await this.clickCell(columnIndex, rowIndex);

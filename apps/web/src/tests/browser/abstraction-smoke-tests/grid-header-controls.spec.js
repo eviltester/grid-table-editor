@@ -39,12 +39,12 @@ test('grid header sorting and per-column filter change visible results', async (
 
   await appPage.gridEditor.header.sortDesc(targetColumnName);
   await expect
-    .poll(async () => (await appPage.gridEditor.renderer.getColumnTextsByName(targetColumnName)).slice(0, 3))
+    .poll(async () => appPage.gridEditor.renderer.getTopVisibleColumnTextsByName(targetColumnName, 3))
     .toEqual(['Cherry', 'Banana', 'Apple']);
 
   await appPage.gridEditor.header.sortAsc(targetColumnName);
   await expect
-    .poll(async () => (await appPage.gridEditor.renderer.getColumnTextsByName(targetColumnName)).slice(0, 3))
+    .poll(async () => appPage.gridEditor.renderer.getTopVisibleColumnTextsByName(targetColumnName, 3))
     .toEqual(['Apple', 'Banana', 'Cherry']);
 
   await appPage.gridEditor.header.setColumnFilter(targetColumnName, 'Cherry');
@@ -56,7 +56,7 @@ test('grid header sorting and per-column filter change visible results', async (
   await appPage.gridEditor.header.setColumnFilter(targetColumnName, '');
   await expect.poll(async () => appPage.gridEditor.header.getColumnFilterValue(targetColumnName)).toBe('');
   await expect
-    .poll(async () => (await appPage.gridEditor.renderer.getColumnTextsByName(targetColumnName)).slice(0, 3))
+    .poll(async () => appPage.gridEditor.renderer.getTopVisibleColumnTextsByName(targetColumnName, 3))
     .toEqual(['Apple', 'Banana', 'Cherry']);
   expect(pageErrors).toEqual([]);
 });

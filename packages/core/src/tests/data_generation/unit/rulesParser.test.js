@@ -65,13 +65,24 @@ enum(active,inactive,pending)
     expect(parser.testDataRules.rules).toHaveLength(0);
   });
 
-  test('rejects comment lines between header and rule definition', () => {
+  test('rejects blank lines between header and rule definition', () => {
     const parser = new RulesParser(faker, RandExp);
-    parser.parseText('Priority\n# not allowed here\nenum(high,medium,low)');
+    parser.parseText('Priority\n\nenum(high,medium,low)');
 
     expect(parser.isValid()).toBe(false);
     expect(parser.errors).toContain('ERROR: Missing Rule Definition for Priority');
     expect(parser.testDataRules.rules).toHaveLength(0);
+  });
+
+  test('accepts rule lines that begin with # when header is pending', () => {
+    const parser = new RulesParser(faker, RandExp);
+    parser.parseText('Color\n#[A-F0-9]{6}');
+
+    expect(parser.isValid()).toBe(true);
+    expect(parser.errors).toHaveLength(0);
+    expect(parser.testDataRules.rules).toHaveLength(1);
+    expect(parser.testDataRules.rules[0].name).toBe('Color');
+    expect(parser.testDataRules.rules[0].ruleSpec).toBe('#[A-F0-9]{6}');
   });
 
   test('preserves comments and blank lines when rebuilding from parsed tokens', () => {

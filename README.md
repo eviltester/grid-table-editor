@@ -64,6 +64,12 @@ You can then create a new table, or amend the existing table or selected rows.
 
 The spec is a paragraph of text where each line is either a 'name' or a 'rule':
 
+### Schema Formatting
+
+- **Comments**: lines starting with `#` (optionally prefixed by whitespace) are treated as comments.
+- **Blank lines**: blank lines are allowed and ignored, so you can separate column groups for readability.
+- **Column definitions**: each column is defined as `name` followed by `rule` on the next logical content line.
+
 ```
 # optional comment
 

@@ -31,6 +31,14 @@ Pairwise testing is most effective when:
 
 ## How to Generate Pairwise Data
 
+## Schema Formatting
+
+Schema text supports:
+
+- **Comments**: lines starting with `#` (after optional leading whitespace) are treated as comments.
+- **Blank lines**: allowed and ignored, useful for readability between column groups.
+- **Column definitions**: each column name must be followed by its generation rule on the next logical content line.
+
 ### In the Main App (app.html)
 
 1. **Open the Test Data section** by clicking the "Test Data" header

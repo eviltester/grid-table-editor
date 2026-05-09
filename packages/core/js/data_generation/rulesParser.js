@@ -39,17 +39,12 @@ export class RulesParser {
         continue;
       }
 
-      if (/^\s*#/.test(line)) {
-        if (pendingName !== null) {
-          this.errors.push(`ERROR: Missing Rule Definition for ${pendingName}`);
-          return;
-        }
-        this.schemaTokens.push({ kind: 'comment', text: line, line: index + 1 });
-        pendingLeadingTextLines.push(line);
-        continue;
-      }
-
       if (pendingName === null) {
+        if (/^\s*#/.test(line)) {
+          this.schemaTokens.push({ kind: 'comment', text: line, line: index + 1 });
+          pendingLeadingTextLines.push(line);
+          continue;
+        }
         pendingName = trimmed;
         pendingNameLine = index + 1;
         continue;

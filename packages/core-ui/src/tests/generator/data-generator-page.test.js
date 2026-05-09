@@ -81,6 +81,7 @@ class FakeTestDataGenerator {
   importSpec(text) {
     const lines = text.split('\n');
     this.rules = [];
+    this._errors = [];
     this._tokens = [];
     let pendingName = null;
     let pendingComments = [];
@@ -88,11 +89,15 @@ class FakeTestDataGenerator {
       const line = lines[i];
       const trimmed = String(line ?? '').trim();
       if (trimmed.length === 0) {
+        if (pendingName !== null) {
+          this._errors.push(`ERROR: Missing Rule Definition for ${pendingName}`);
+          return;
+        }
         this._tokens.push({ kind: 'blank', text: line });
         pendingComments.push(line);
         continue;
       }
-      if (/^\s*#/.test(line)) {
+      if (pendingName === null && /^\s*#/.test(line)) {
         this._tokens.push({ kind: 'comment', text: line });
         pendingComments.push(line);
         continue;
@@ -110,6 +115,13 @@ class FakeTestDataGenerator {
       this._tokens.push({ kind: 'rule', name: pendingName, rule: trimmed });
       pendingName = null;
       pendingComments = [];
+    }
+    if (pendingName !== null) {
+      this._errors.push(`ERROR: Missing Rule Definition for ${pendingName}`);
+      return;
+    }
+    if (this.rules.length === 0) {
+      this._errors.push('ERROR: No Rules Defined');
     }
   }
 
@@ -858,6 +870,34 @@ describe('DataGeneratorPage', () => {
 
     toggle.click();
     expect(document.getElementById('generatorSchemaText').value).toContain('# note');
+  });
+
+  test('text mode accepts hash-prefixed rule text after a column name', () => {
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker: { word: { noun: () => 'x' } },
+      RandExp: function RandExp() {},
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: FakeTestDataGenerator,
+    });
+    page.init();
+
+    const toggle = document.getElementById('schemaModeToggleButton');
+    toggle.click();
+
+    const textArea = document.getElementById('generatorSchemaText');
+    textArea.value = 'Color\n#[A-F0-9]{6}';
+    toggle.click();
+
+    expect(alertFn).not.toHaveBeenCalled();
+    expect(page.schemaRows.length).toBe(1);
+    expect(page.schemaRows[0].name).toBe('Color');
+    expect(page.schemaRows[0].value).toBe('#[A-F0-9]{6}');
   });
 
   test('adding schema rows does not discard existing parsed comments', () => {

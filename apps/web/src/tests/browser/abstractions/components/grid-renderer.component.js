@@ -86,6 +86,41 @@ class GridRendererComponent {
     return values;
   }
 
+  async getTopActiveColumnTextsByName(columnName, count) {
+    const desiredCount = Number(count) || 0;
+    if (desiredCount <= 0) {
+      return [];
+    }
+    const normalizedName = this._normalizeColumnTitle(columnName);
+    return this.page.evaluate(
+      ({ normalizedName: targetColumnName, desiredCount: limit }) => {
+        const tables = globalThis?.Tabulator?.findTable?.('#myGrid') || [];
+        const table = tables[0];
+        if (!table) {
+          return [];
+        }
+
+        const normalize = (value) =>
+          String(value || '')
+            .split('\n')[0]
+            .trim();
+
+        const columnDef = (table.getColumnDefinitions?.() || []).find((definition) => {
+          const byTitle = normalize(definition?.title) === targetColumnName;
+          const byField = normalize(definition?.field) === targetColumnName;
+          return byTitle || byField;
+        });
+        if (!columnDef?.field) {
+          return [];
+        }
+
+        const rows = table.getData?.('active') || [];
+        return rows.slice(0, limit).map((row) => String(row?.[columnDef.field] ?? '').trim());
+      },
+      { normalizedName, desiredCount }
+    );
+  }
+
   async clickCellByColumnName(columnName, rowIndex) {
     const columnIndex = await this._columnIndexByName(columnName);
     await this.clickCell(columnIndex, rowIndex);

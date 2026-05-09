@@ -8,13 +8,13 @@ test.describe('3. Filtering and Sorting', () => {
 
     await appPage.gridEditor.header.sortAsc(col);
     await expect
-      .poll(async () => appPage.gridEditor.renderer.getTopVisibleColumnTextsByName(col, 3))
+      .poll(async () => appPage.gridEditor.renderer.getTopActiveColumnTextsByName(col, 3))
       .toEqual(['Apple', 'Banana', 'Cherry']);
     await expect.poll(async () => appPage.gridEditor.header.getColumnSortState(col)).toContain('asc');
 
     await appPage.gridEditor.header.sortDesc(col);
     await expect
-      .poll(async () => appPage.gridEditor.renderer.getTopVisibleColumnTextsByName(col, 3))
+      .poll(async () => appPage.gridEditor.renderer.getTopActiveColumnTextsByName(col, 3))
       .toEqual(['Cherry', 'Banana', 'Apple']);
     await expect.poll(async () => appPage.gridEditor.header.getColumnSortState(col)).toContain('desc');
 

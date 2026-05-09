@@ -146,6 +146,7 @@ Both endpoints generate data from the same schema language and output formats. T
 - if `rowCount` is provided and smaller, only first `N` rows are amended
 - output always returns the full resulting dataset
 - `stream` is accepted for compatibility and ignored
+- `inputFormat` is normalized (trimmed and lower-cased), so values like `" csv "` are accepted
 
 ## Schema Formatting
 
@@ -200,6 +201,28 @@ curl -X POST "http://localhost:3000/v1/generate/fromschema?outputFormat=markdown
   -H "Content-Type: text/plain" \
   --data-binary $'# markdown sample\n\nName\nBob\n\n# numeric id\nId\n1'
 ```
+
+Amend imported data (CSV input to tab-delimited output):
+
+```bash
+curl -X POST http://localhost:3000/v1/generate/amend \
+  -H "Content-Type: application/json" \
+  -d '{
+    "textSpec": "Name\nUpdated Name\nStatus\nActive",
+    "inputData": "\"Name\",\"Age\"\n\"Alice\",\"30\"\n\"Eve\",\"40\"\n",
+    "inputFormat": "csv",
+    "rowCount": 2,
+    "outputFormat": "dsv",
+    "responseFormat": "all",
+    "stream": true
+  }'
+```
+
+Notes for this example:
+
+- `stream` is ignored for amend and included only for compatibility.
+- `responseFormat: "all"` returns `headers`, `rows`, `rendered`, and `format`.
+- even when only part of the dataset is amended, the full resulting dataset is returned.
 
 Get current options for a format:
 

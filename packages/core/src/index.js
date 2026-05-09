@@ -168,11 +168,21 @@ function normaliseAmendCount(value, fallbackCount) {
   if (value === undefined || value === null || value === '') {
     return fallbackCount;
   }
-  const parsed = Number.parseInt(value, 10);
-  if (!Number.isInteger(parsed) || parsed < 0) {
-    return undefined;
+  if (typeof value === 'number') {
+    if (!Number.isInteger(value) || value < 0) {
+      return undefined;
+    }
+    return value;
   }
-  return parsed;
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    if (!/^\d+$/.test(trimmed)) {
+      return undefined;
+    }
+    const parsed = Number(trimmed);
+    return Number.isSafeInteger(parsed) ? parsed : undefined;
+  }
+  return undefined;
 }
 
 function toRowsWithHeaderMap(dataTable) {
@@ -186,24 +196,6 @@ function toRowsWithHeaderMap(dataTable) {
     rows.push(row);
   }
   return { headers, rows };
-}
-
-function isBlankCell(value) {
-  return value === undefined || value === null || String(value).trim() === '';
-}
-
-function trimTrailingBlankRows(dataTable) {
-  if (!Array.isArray(dataTable?.rows)) {
-    return;
-  }
-  while (dataTable.rows.length > 0) {
-    const lastRow = dataTable.rows[dataTable.rows.length - 1];
-    if (!Array.isArray(lastRow) || lastRow.every((cell) => isBlankCell(cell))) {
-      dataTable.rows.pop();
-      continue;
-    }
-    break;
-  }
 }
 
 function tableToRows(dataTable) {
@@ -391,10 +383,6 @@ export function amendFromTextSpecAndData({
       diagnostics: {},
     };
   }
-
-  // Some import formats can produce a trailing blank row for terminal newlines.
-  // Amend mode should preserve semantic row count from input data, not parser artifacts.
-  trimTrailingBlankRows(sourceTable);
 
   const importedRowCount = sourceTable.getRowCount();
   const amendCount = normaliseAmendCount(rowCount, importedRowCount);

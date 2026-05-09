@@ -92,6 +92,8 @@ test.describe('POST /v1/generate/amend', () => {
     const invalidPayloads = [
       { textSpec: 'Name\nBob' },
       { textSpec: 'Name\nBob', inputData: '"Name"\n"Alice"', inputFormat: 'csv', rowCount: -1 },
+      { textSpec: 'Name\nBob', inputData: '"Name"\n"Alice"', inputFormat: 'csv', rowCount: '1.5' },
+      { textSpec: 'Name\nBob', inputData: '"Name"\n"Alice"', inputFormat: 'csv', rowCount: '2abc' },
       { textSpec: 'Name\nBob', inputData: '"Name"\n"Alice"', inputFormat: 'csv', rowCount: 3 },
       { textSpec: 'Name\nBob', inputData: '"Name"\n"Alice"', inputFormat: 'bad' },
       { textSpec: 'Name\nBob', inputData: '{', inputFormat: 'json' },

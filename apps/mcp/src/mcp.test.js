@@ -384,6 +384,29 @@ test('MCP amend parity matches core', () => {
   expect(payload.rendered).toBe(coreResult.rendered);
 });
 
+test('MCP amend tool returns amend-specific failure message', () => {
+  const response = requestServer({
+    jsonrpc: '2.0',
+    id: 161,
+    method: 'tools/call',
+    params: {
+      name: 'amend_data_from_spec',
+      arguments: {
+        textSpec: 'Name\nBob',
+        inputData: '"Name"\n"Alice"',
+        inputFormat: 'csv',
+        rowCount: 2,
+        outputFormat: 'json',
+      },
+    },
+  });
+  const payload = JSON.parse(response?.result?.content?.[0]?.text || '{}');
+  expect(response?.result?.isError).toBe(true);
+  expect(payload.ok).toBe(false);
+  expect(payload.error.code).toBe('amend_failed');
+  expect(payload.error.message).toBe('Failed to amend data from specification.');
+});
+
 test('MCP parity: rendered output matches core for all unit-test frameworks', () => {
   const frameworks = [
     'junit4',

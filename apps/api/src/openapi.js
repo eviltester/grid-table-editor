@@ -342,7 +342,15 @@ const openApiDocument = {
                   type: 'object',
                   properties: {
                     headers: { type: 'array', items: { type: 'string' } },
-                    rows: { type: 'array', items: { type: 'array', items: { type: 'string' } } },
+                    rows: {
+                      type: 'array',
+                      items: {
+                        type: 'array',
+                        items: {
+                          oneOf: [{ type: 'string' }, { type: 'number' }, { type: 'boolean' }, { type: 'object' }],
+                        },
+                      },
+                    },
                     rendered: { type: 'string' },
                     format: { type: 'string' },
                   },

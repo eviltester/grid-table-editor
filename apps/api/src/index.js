@@ -412,12 +412,13 @@ function runGeneration(payload = {}) {
     }
     return { ok: true, result };
   } catch (error) {
+    console.error('Generation request failed', error);
     return {
       ok: false,
       ...toErrorResponse(
         {
-          errors: [error?.message || 'Unhandled generation error'],
-          diagnostics: { stack: error?.stack },
+          errors: ['Internal server error while generating data.'],
+          diagnostics: {},
         },
         500
       ),
@@ -551,12 +552,13 @@ function runAmend(payload = {}) {
     }
     return { ok: true, result };
   } catch (error) {
+    console.error('Amend request failed', error);
     return {
       ok: false,
       ...toErrorResponse(
         {
-          errors: [error?.message || 'Unhandled amend error'],
-          diagnostics: { stack: error?.stack },
+          errors: ['Internal server error while amending data.'],
+          diagnostics: {},
         },
         500
       ),

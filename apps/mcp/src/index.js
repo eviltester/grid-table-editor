@@ -557,12 +557,17 @@ function handleRequest(request) {
     const result =
       name === 'amend_data_from_spec' ? amendFromTextSpecAndData(normalizedArgs) : generateFromTextSpec(normalizedArgs);
     if (!result.ok) {
+      const isAmendTool = name === 'amend_data_from_spec';
       return writeToolResult(
         id,
-        createToolError('generation_failed', 'Failed to generate data from specification.', {
-          errors: result.errors,
-          diagnostics: result.diagnostics,
-        }),
+        createToolError(
+          isAmendTool ? 'amend_failed' : 'generation_failed',
+          isAmendTool ? 'Failed to amend data from specification.' : 'Failed to generate data from specification.',
+          {
+            errors: result.errors,
+            diagnostics: result.diagnostics,
+          }
+        ),
         true
       );
     }

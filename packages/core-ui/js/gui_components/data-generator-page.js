@@ -76,10 +76,54 @@ function schemaRowsToSpec(schemaRows) {
     if (name.length === 0 && ruleSpec.length === 0) {
       return;
     }
+    const comments = String(row?.comments ?? '');
+    if (comments.length > 0) {
+      lines.push(...comments.split('\n'));
+    }
     lines.push(name);
     lines.push(ruleSpec);
   });
   return lines.join('\n');
+}
+
+function schemaRowsToSpecWithTokens(schemaRows, schemaTokens) {
+  const hasRowComments = (schemaRows || []).some((row) => String(row?.comments ?? '').length > 0);
+  if (hasRowComments) {
+    return schemaRowsToSpec(schemaRows);
+  }
+  const rows = (schemaRows || []).map((row) => ({
+    name: String(row?.name ?? '').trim(),
+    rule: buildRuleSpecFromSchemaRow(row),
+  }));
+  const tokens = Array.isArray(schemaTokens) ? schemaTokens : [];
+  if (tokens.length === 0) {
+    return schemaRowsToSpec(schemaRows);
+  }
+
+  const outputLines = [];
+  let rowIndex = 0;
+  tokens.forEach((token) => {
+    if (token?.kind === 'comment' || token?.kind === 'blank') {
+      outputLines.push(token.text ?? '');
+      return;
+    }
+    if (token?.kind === 'rule' && rowIndex < rows.length) {
+      outputLines.push(rows[rowIndex].name);
+      outputLines.push(rows[rowIndex].rule);
+      rowIndex += 1;
+    }
+  });
+
+  while (rowIndex < rows.length) {
+    if (outputLines.length > 0) {
+      outputLines.push('');
+    }
+    outputLines.push(rows[rowIndex].name);
+    outputLines.push(rows[rowIndex].rule);
+    rowIndex += 1;
+  }
+
+  return outputLines.join('\n');
 }
 
 function validateSchemaRows(schemaRows) {
@@ -92,6 +136,7 @@ function validateSchemaRows(schemaRows) {
       command: normaliseFakerCommand(row?.command),
       params: String(row?.params ?? '').trim(),
       value: String(row?.value ?? '').trim(),
+      comments: String(row?.comments ?? ''),
       order: index,
     };
   });
@@ -148,6 +193,7 @@ class DataGeneratorPage {
 
     this.rowIdCounter = 1;
     this.schemaRows = [];
+    this.schemaTextTokens = [];
     this.fakerCommands = getKnownFakerCommandsAlphabetical().filter((command) => command !== 'RegEx');
     this.fakerCommandsLongestFirst = getKnownFakerCommandsLongestFirst().filter((command) => command !== 'RegEx');
     this.isTextMode = false;
@@ -202,6 +248,7 @@ class DataGeneratorPage {
       command: '',
       params: '',
       value: '',
+      comments: '',
     };
   }
 
@@ -606,6 +653,7 @@ class DataGeneratorPage {
         return;
       }
       this.schemaRows = parsed.rows.length > 0 ? parsed.rows : [this.createBlankSchemaRow()];
+      this.schemaTextTokens = parsed.tokens || [];
       this.renderSchemaRows();
       this.isTextMode = false;
       this.updateSchemaEditModeView();
@@ -613,7 +661,7 @@ class DataGeneratorPage {
     }
 
     const textArea = this.documentObj.getElementById('generatorSchemaText');
-    textArea.value = schemaRowsToSpec(this.schemaRows);
+    textArea.value = schemaRowsToSpecWithTokens(this.schemaRows, this.schemaTextTokens);
     this.isTextMode = true;
     this.updateSchemaEditModeView();
   }
@@ -634,23 +682,25 @@ class DataGeneratorPage {
   parseSchemaTextToRows(schemaText) {
     const text = String(schemaText ?? '');
     if (text.trim().length === 0) {
-      return { rows: [], errors: [] };
+      return { rows: [], errors: [], tokens: [] };
     }
 
     const generator = new this.TestDataGeneratorClass(this.faker, this.RandExp);
     generator.importSpec(text);
     generator.compile();
     if (!generator.isValid()) {
-      return { rows: [], errors: generator.errors() };
+      return { rows: [], errors: generator.errors(), tokens: [] };
     }
 
     const rows = generator.testDataRules().map((rule) => this.ruleToSchemaRow(rule));
-    return { rows, errors: [] };
+    const tokens =
+      typeof generator.rulesParser?.getSchemaTokens === 'function' ? generator.rulesParser.getSchemaTokens() : [];
+    return { rows, errors: [], tokens };
   }
 
   syncSchemaRowsFromTextMode({ showErrors = false } = {}) {
     if (!this.isTextMode) {
-      return { rows: this.schemaRows, errors: [] };
+      return { rows: this.schemaRows, errors: [], tokens: this.schemaTextTokens };
     }
 
     const textArea = this.documentObj.getElementById('generatorSchemaText');
@@ -665,12 +715,14 @@ class DataGeneratorPage {
     // Keep empty text schemas as zero rows while in text mode so validation can
     // report "Add at least one schema row." instead of introducing a synthetic blank row.
     this.schemaRows = parsed.rows;
-    return { rows: this.schemaRows, errors: [] };
+    this.schemaTextTokens = parsed.tokens || [];
+    return { rows: this.schemaRows, errors: [], tokens: this.schemaTextTokens };
   }
 
   ruleToSchemaRow(rule) {
     const row = this.createBlankSchemaRow();
     row.name = String(rule?.name ?? '');
+    row.comments = String(rule?.comments ?? '');
     row.sourceType = normaliseSourceType(rule?.type);
 
     if (row.sourceType === SOURCE_TYPE_FAKER) {
@@ -1332,4 +1384,11 @@ class DataGeneratorPage {
   }
 }
 
-export { DataGeneratorPage, buildRuleSpecFromSchemaRow, schemaRowsToSpec, validateSchemaRows, normaliseFakerCommand };
+export {
+  DataGeneratorPage,
+  buildRuleSpecFromSchemaRow,
+  schemaRowsToSpec,
+  schemaRowsToSpecWithTokens,
+  validateSchemaRows,
+  normaliseFakerCommand,
+};

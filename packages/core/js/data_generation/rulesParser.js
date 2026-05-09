@@ -7,45 +7,134 @@ export class RulesParser {
     this.options = options;
     this.testDataRules = new TestDataRules();
     this.errors = [];
+    this.schemaTokens = [];
   }
 
   parseText(textContent) {
-    const defnLines = textContent.split('\n');
+    this.testDataRules = new TestDataRules();
+    this.errors = [];
+    this.schemaTokens = [];
 
-    if (defnLines.length % 2 !== 0) {
-      this.errors.push(
-        'ERROR: Specification should be ColumnName followed by RuleDefinition with an even number of lines'
-      );
-    }
-
-    if (defnLines.length === 0 || (defnLines.length === 1 && defnLines[0].length === 0)) {
+    const defnLines = String(textContent ?? '').split('\n');
+    if (defnLines.length === 0 || (defnLines.length === 1 && defnLines[0].trim().length === 0)) {
       this.errors.push('ERROR: No Rules Defined');
       return;
     }
 
-    // add rules to dataDefn
-    for (var index = 0; index < defnLines.length; index += 2) {
-      const name = defnLines[index].trim();
+    let pendingName = null;
+    let pendingNameLine = null;
+    let pendingLeadingTextLines = [];
 
-      if (name.length === 0) {
-        this.errors.push(`ERROR: Missing Name on line ${index + 1}`);
-        return;
+    for (let index = 0; index < defnLines.length; index++) {
+      const line = defnLines[index];
+      const trimmed = line.trim();
+
+      if (trimmed.length === 0) {
+        if (pendingName !== null) {
+          this.errors.push(`ERROR: Missing Rule Definition for ${pendingName}`);
+          return;
+        }
+        this.schemaTokens.push({ kind: 'blank', text: line, line: index + 1 });
+        pendingLeadingTextLines.push(line);
+        continue;
       }
 
-      if (index + 1 == defnLines.length) {
-        this.errors.push(`ERROR: Missing Rule Definition for ${name}`);
-        return;
+      if (/^\s*#/.test(line)) {
+        if (pendingName !== null) {
+          this.errors.push(`ERROR: Missing Rule Definition for ${pendingName}`);
+          return;
+        }
+        this.schemaTokens.push({ kind: 'comment', text: line, line: index + 1 });
+        pendingLeadingTextLines.push(line);
+        continue;
       }
 
-      const rule = defnLines[index + 1];
-
-      if (rule.trim().length === 0) {
-        this.errors.push(`ERROR: Missing Rule on line ${index + 2}`);
-        return;
+      if (pendingName === null) {
+        pendingName = trimmed;
+        pendingNameLine = index + 1;
+        continue;
       }
 
-      this.testDataRules.addRule(name.trim(), rule.trim());
+      const rule = trimmed;
+      this.testDataRules.addRule(pendingName, rule, {
+        comments: pendingLeadingTextLines.join('\n'),
+      });
+      this.schemaTokens.push({
+        kind: 'rule',
+        name: pendingName,
+        rule,
+        headerLine: pendingNameLine,
+        ruleLine: index + 1,
+      });
+      pendingName = null;
+      pendingNameLine = null;
+      pendingLeadingTextLines = [];
     }
+
+    if (pendingName !== null) {
+      this.errors.push(`ERROR: Missing Rule Definition for ${pendingName}`);
+      return;
+    }
+
+    if (this.testDataRules.rules.length === 0) {
+      this.errors.push('ERROR: No Rules Defined');
+    }
+  }
+
+  getSchemaTokens() {
+    return this.schemaTokens.map((token) => ({ ...token }));
+  }
+
+  renderSpecFromRulesWithTokens(rules) {
+    const rows = Array.isArray(rules)
+      ? rules.map((rule) => ({
+          name: String(rule?.name ?? ''),
+          rule: String(rule?.ruleSpec ?? ''),
+        }))
+      : [];
+    const outputLines = [];
+    let rowIndex = 0;
+
+    this.schemaTokens.forEach((token) => {
+      if (token.kind === 'comment' || token.kind === 'blank') {
+        outputLines.push(token.text ?? '');
+        return;
+      }
+      if (token.kind === 'rule') {
+        if (rowIndex < rows.length) {
+          outputLines.push(rows[rowIndex].name);
+          outputLines.push(rows[rowIndex].rule);
+          rowIndex += 1;
+        }
+      }
+    });
+
+    while (rowIndex < rows.length) {
+      if (outputLines.length > 0) {
+        outputLines.push('');
+      }
+      outputLines.push(rows[rowIndex].name);
+      outputLines.push(rows[rowIndex].rule);
+      rowIndex += 1;
+    }
+
+    return outputLines.join('\n');
+  }
+
+  renderSpecFromRulesWithComments(rules) {
+    const safeRules = Array.isArray(rules) ? rules : [];
+    const outputLines = [];
+    safeRules.forEach((rule) => {
+      const comments = String(rule?.comments ?? '');
+      if (comments.length > 0) {
+        const commentLines = comments.split('\n');
+        outputLines.push(...commentLines);
+      }
+
+      outputLines.push(String(rule?.name ?? ''));
+      outputLines.push(String(rule?.ruleSpec ?? ''));
+    });
+    return outputLines.join('\n');
   }
 
   isValid() {

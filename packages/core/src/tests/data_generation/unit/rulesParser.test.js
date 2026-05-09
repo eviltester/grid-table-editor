@@ -27,7 +27,81 @@ person.fullName`;
     parser.parseText(inputText);
 
     expect(parser.isValid()).toBe(false);
-    expect(parser.errors).toContain('ERROR: Missing Rule on line 2');
+    expect(parser.errors).toContain('ERROR: Missing Rule Definition for Name');
     expect(parser.testDataRules.rules).toHaveLength(0);
+  });
+
+  test('allows comment and blank lines around schema definitions', () => {
+    const inputText = `# top comment
+
+Priority
+enum(high,medium,low)
+
+  # in between
+Status
+enum(active,inactive,pending)
+`;
+
+    const parser = new RulesParser(faker, RandExp);
+    parser.parseText(inputText);
+
+    expect(parser.isValid()).toBe(true);
+    expect(parser.testDataRules.rules).toHaveLength(2);
+    expect(parser.testDataRules.rules[0].name).toBe('Priority');
+    expect(parser.testDataRules.rules[1].name).toBe('Status');
+    expect(parser.testDataRules.rules[0].comments).toContain('# top comment');
+    expect(parser.testDataRules.rules[1].comments).toContain('# in between');
+    const tokens = parser.getSchemaTokens();
+    expect(tokens.some((token) => token.kind === 'comment')).toBe(true);
+    expect(tokens.some((token) => token.kind === 'blank')).toBe(true);
+  });
+
+  test('rejects comment-only or blank-only schema text', () => {
+    const parser = new RulesParser(faker, RandExp);
+    parser.parseText('# note\n\n  # another');
+
+    expect(parser.isValid()).toBe(false);
+    expect(parser.errors).toContain('ERROR: No Rules Defined');
+    expect(parser.testDataRules.rules).toHaveLength(0);
+  });
+
+  test('rejects comment lines between header and rule definition', () => {
+    const parser = new RulesParser(faker, RandExp);
+    parser.parseText('Priority\n# not allowed here\nenum(high,medium,low)');
+
+    expect(parser.isValid()).toBe(false);
+    expect(parser.errors).toContain('ERROR: Missing Rule Definition for Priority');
+    expect(parser.testDataRules.rules).toHaveLength(0);
+  });
+
+  test('preserves comments and blank lines when rebuilding from parsed tokens', () => {
+    const inputText = `# a comment that should be skipped
+Priority
+enum(high,medium,low)
+
+Status
+enum(active,inactive,pending)`;
+
+    const parser = new RulesParser(faker, RandExp);
+    parser.parseText(inputText);
+
+    const output = parser.renderSpecFromRulesWithTokens(parser.testDataRules.rules);
+    expect(output).toBe(inputText);
+  });
+
+  test('preserves comments and blank lines when rebuilding from rule comments', () => {
+    const inputText = `# one
+
+Priority
+enum(high,medium,low)
+
+# two
+Status
+enum(active,inactive,pending)`;
+    const parser = new RulesParser(faker, RandExp);
+    parser.parseText(inputText);
+
+    const output = parser.renderSpecFromRulesWithComments(parser.testDataRules.rules);
+    expect(output).toBe(inputText);
   });
 });

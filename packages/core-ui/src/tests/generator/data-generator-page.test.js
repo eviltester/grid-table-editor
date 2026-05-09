@@ -3,6 +3,7 @@ import {
   DataGeneratorPage,
   buildRuleSpecFromSchemaRow,
   schemaRowsToSpec,
+  schemaRowsToSpecWithTokens,
   validateSchemaRows,
 } from '../../../js/gui_components/data-generator-page.js';
 
@@ -68,6 +69,10 @@ class FakeTestDataGenerator {
   constructor() {
     this.rules = [];
     this._errors = [];
+    this._tokens = [];
+    this.rulesParser = {
+      getSchemaTokens: () => this._tokens.map((token) => ({ ...token })),
+    };
     this.compiler = {
       validate: () => {},
     };
@@ -76,15 +81,35 @@ class FakeTestDataGenerator {
   importSpec(text) {
     const lines = text.split('\n');
     this.rules = [];
-    for (let i = 0; i < lines.length; i += 2) {
-      if (lines[i] === undefined || lines[i + 1] === undefined) {
+    this._tokens = [];
+    let pendingName = null;
+    let pendingComments = [];
+    for (let i = 0; i < lines.length; i += 1) {
+      const line = lines[i];
+      const trimmed = String(line ?? '').trim();
+      if (trimmed.length === 0) {
+        this._tokens.push({ kind: 'blank', text: line });
+        pendingComments.push(line);
+        continue;
+      }
+      if (/^\s*#/.test(line)) {
+        this._tokens.push({ kind: 'comment', text: line });
+        pendingComments.push(line);
+        continue;
+      }
+      if (pendingName === null) {
+        pendingName = trimmed;
         continue;
       }
       this.rules.push({
-        name: lines[i],
-        ruleSpec: lines[i + 1],
+        name: pendingName,
+        ruleSpec: trimmed,
+        comments: pendingComments.join('\n'),
         type: '',
       });
+      this._tokens.push({ kind: 'rule', name: pendingName, rule: trimmed });
+      pendingName = null;
+      pendingComments = [];
     }
   }
 
@@ -159,6 +184,17 @@ describe('DataGeneratorPage', () => {
   test('schemaRowsToSpec omits fully blank rows', () => {
     const spec = schemaRowsToSpec([{ name: '', sourceType: 'regex', value: '' }]);
     expect(spec).toBe('');
+  });
+
+  test('schemaRowsToSpecWithTokens preserves comments and blank lines', () => {
+    const spec = schemaRowsToSpecWithTokens(
+      [
+        { name: 'Priority', sourceType: 'enum', value: 'enum(high,medium,low)' },
+        { name: 'Status', sourceType: 'enum', value: 'enum(active,inactive,pending)' },
+      ],
+      [{ kind: 'comment', text: '# top' }, { kind: 'rule' }, { kind: 'blank', text: '' }, { kind: 'rule' }]
+    );
+    expect(spec).toBe('# top\nPriority\nenum(high,medium,low)\n\nStatus\nenum(active,inactive,pending)');
   });
 
   test('uses curated alphabetical faker command list in schema editor', () => {
@@ -792,6 +828,71 @@ describe('DataGeneratorPage', () => {
     expect(page.schemaRows[0].name).toBe('City');
     expect(page.schemaRows[0].value).toBe('[A-Z]{4}');
     expect(page.schemaRows[0].sourceType).toBe('regex');
+  });
+
+  test('text mode preserves comments while schema rows exclude them', () => {
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker: { word: { noun: () => 'x' } },
+      RandExp: function RandExp() {},
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: FakeTestDataGenerator,
+    });
+    page.init();
+
+    const toggle = document.getElementById('schemaModeToggleButton');
+    toggle.click();
+
+    const textArea = document.getElementById('generatorSchemaText');
+    textArea.value = '# note\nPriority\nenum(high,medium,low)\n\nStatus\nenum(active,inactive,pending)';
+    toggle.click();
+
+    expect(page.schemaRows.length).toBe(2);
+    expect(page.schemaRows[0].name).toBe('Priority');
+    expect(page.schemaRows[1].name).toBe('Status');
+
+    toggle.click();
+    expect(document.getElementById('generatorSchemaText').value).toContain('# note');
+  });
+
+  test('adding schema rows does not discard existing parsed comments', () => {
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker: { word: { noun: () => 'x' } },
+      RandExp: function RandExp() {},
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: FakeTestDataGenerator,
+    });
+    page.init();
+
+    let toggle = document.getElementById('schemaModeToggleButton');
+    toggle.click();
+    const textArea = document.getElementById('generatorSchemaText');
+    textArea.value = '# note one\nFirst\none\n\n# note two\nSecond\ntwo';
+    toggle.click();
+
+    page.addRowAfter(page.schemaRows.length - 1);
+    const newRow = page.schemaRows[page.schemaRows.length - 1];
+    newRow.name = 'Third';
+    newRow.sourceType = 'literal';
+    newRow.value = 'three';
+
+    toggle = document.getElementById('schemaModeToggleButton');
+    toggle.click();
+    const rebuilt = document.getElementById('generatorSchemaText').value;
+    expect(rebuilt).toContain('# note one');
+    expect(rebuilt).toContain('# note two');
+    expect(rebuilt).toContain('Third\nthree');
   });
 
   test('edit as text shows empty textarea for untouched blank schema', () => {

@@ -49,6 +49,26 @@ test('MCP server handles generate_data_from_spec tool call', () => {
   expect(response?.result?.structuredContent?.ok).toBe(true);
 });
 
+test('MCP server accepts comments and blank lines in textSpec', () => {
+  const response = requestServer({
+    jsonrpc: '2.0',
+    id: 201,
+    method: 'tools/call',
+    params: {
+      name: 'generate_data_from_spec',
+      arguments: {
+        textSpec: '# comment\n\nPriority\nenum(high,medium,low)\nStatus\nenum(active,inactive,pending)',
+        rowCount: 1,
+        outputFormat: 'json',
+      },
+    },
+  });
+  const payload = JSON.parse(response?.result?.content?.[0]?.text || '{}');
+  expect(payload.ok).toBe(true);
+  expect(payload.headers).toEqual(['Priority', 'Status']);
+  expect(payload.rows).toHaveLength(1);
+});
+
 test('MCP server supports pairwise generation', () => {
   const response = requestServer({
     jsonrpc: '2.0',

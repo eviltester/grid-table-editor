@@ -65,8 +65,12 @@ You can then create a new table, or amend the existing table or selected rows.
 The spec is a paragraph of text where each line is either a 'name' or a 'rule':
 
 ```
+# optional comment
+
 name
 rule
+
+# another comment
 name
 rule
 ```
@@ -102,12 +106,19 @@ The `fake` method is also supported, which takes a mustache template style strin
 So a sample test data spec might look like:
 
 ```
+# person details
 name
 helpers.fake("{{name.lastName}}, {{name.firstName}}")
+
+# profile text
 desc
 faker.lorem.paragraph
+
+# preference data
 collects
 hacker.noun
+
+# regex example
 prefers
 (Connie|Bob)
 ```
@@ -119,10 +130,15 @@ When you have 2 or more enum fields (comma-separated values), you can generate p
 For enum data, use comma-separated values in your spec:
 
 ```
+# pairwise parameters
 browser
 chrome,firefox,safari,edge
+
+# viewport class
 device
 desktop,tablet,mobile
+
+# style variant
 theme
 light,dark
 ```
@@ -337,7 +353,7 @@ Example request body:
 
 ```json
 {
-  "textSpec": "Name\nBob",
+  "textSpec": "# literal example\\n\\nName\\nBob",
   "rowCount": 3,
   "outputFormat": "json"
 }
@@ -368,7 +384,7 @@ Add `unsafeFakerExpressions: true` to individual requests:
 
 ```json
 {
-  "textSpec": "Name\nperson.firstName\nScore\nnumber.int({\"min\": 18, \"max\": 65})",
+  "textSpec": "# faker + numeric range\\n\\nName\\nperson.firstName\\n\\nScore\\nnumber.int({\"min\": 18, \"max\": 65})",
   "rowCount": 5,
   "outputFormat": "json",
   "unsafeFakerExpressions": true

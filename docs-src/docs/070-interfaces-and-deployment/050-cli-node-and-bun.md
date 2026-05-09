@@ -61,10 +61,15 @@ Parameter guide for the examples:
 Example `input.txt` schema file:
 
 ```text
+# identity fields
 Name
 person.fullName
+
+# contact details
 Email
 internet.email
+
+# historical date
 JoinedOn
 date.past
 ```

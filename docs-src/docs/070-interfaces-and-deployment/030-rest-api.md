@@ -151,7 +151,7 @@ Generate JSON output with a JSON payload:
 curl -X POST http://localhost:3000/v1/generate \
   -H "Content-Type: application/json" \
   -d '{
-    "textSpec": "Name\nBob\n\nCity\nlondon",
+    "textSpec": "# literal values\n\nName\nBob\n\n# lower-case city\nCity\nlondon",
     "rowCount": 3,
     "outputFormat": "json"
   }'
@@ -163,7 +163,7 @@ Generate CSV output with CSV-specific options:
 curl -X POST http://localhost:3000/v1/generate \
   -H "Content-Type: application/json" \
   -d '{
-    "textSpec": "Name\nBob",
+    "textSpec": "# basic csv schema\n\nName\nBob",
     "rowCount": 2,
     "outputFormat": "csv",
     "options": {
@@ -180,7 +180,7 @@ Generate using raw schema text (`fromschema`):
 ```bash
 curl -X POST "http://localhost:3000/v1/generate/fromschema?outputFormat=markdown&rowCount=2" \
   -H "Content-Type: text/plain" \
-  --data-binary $'Name\nBob\n\nId\n1'
+  --data-binary $'# markdown sample\n\nName\nBob\n\n# numeric id\nId\n1'
 ```
 
 Get current options for a format:

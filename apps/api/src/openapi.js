@@ -383,6 +383,75 @@ const openApiDocument = {
         },
       },
     },
+    '/v1/generate/amend': {
+      post: {
+        summary: 'Import input data and amend it using a multiline schema',
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['textSpec', 'inputData', 'inputFormat'],
+                properties: {
+                  textSpec: { type: 'string' },
+                  inputData: { type: 'string' },
+                  inputFormat: {
+                    type: 'string',
+                    enum: ['csv', 'dsv', 'markdown', 'json', 'javascript', 'html', 'gherkin'],
+                  },
+                  rowCount: {
+                    type: 'integer',
+                    minimum: 0,
+                    description: 'Defaults to imported row count; must be <= imported rows when provided.',
+                  },
+                  outputFormat: { type: 'string', default: 'csv' },
+                  options: { type: 'object' },
+                  seed: { type: 'number' },
+                  unsafeFakerExpressions: { type: 'boolean', default: false },
+                  responseFormat: { type: 'string', enum: ['rows', 'rendered', 'all', 'raw'], default: 'rows' },
+                  stream: { type: 'boolean', description: 'Accepted for compatibility and ignored for amend mode.' },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          200: {
+            description: 'Amend result',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    headers: { type: 'array', items: { type: 'string' } },
+                    rows: { type: 'array', items: { type: 'array', items: { type: 'string' } } },
+                    rendered: { type: 'string' },
+                    format: { type: 'string' },
+                    diagnostics: { type: 'object' },
+                  },
+                },
+              },
+            },
+          },
+          400: {
+            description: 'Validation failure',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    errors: { type: 'array', items: { type: 'string' } },
+                    diagnostics: { type: 'object' },
+                  },
+                  required: ['errors'],
+                },
+              },
+            },
+          },
+        },
+      },
+    },
     '/v1/generate/options/{format}': {
       get: {
         summary: 'Get current default generation options for a format',

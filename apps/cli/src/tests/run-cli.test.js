@@ -201,3 +201,31 @@ test('supports comments and blank lines in input schema', async () => {
   expect(parsed).toHaveLength(2);
   expect(Object.keys(parsed[0])).toEqual(['Priority', 'Status']);
 });
+
+test('amend mode updates only first N rows and keeps full output', async () => {
+  const platform = makePlatform({ textSpec: 'Name\nBob' });
+  platform.readText = async (file) => {
+    if (file === 'schema.txt') return 'Name\nBob';
+    if (file === 'data.csv') return '"Name"\n"Alice"\n"Eve"';
+    throw new Error('missing');
+  };
+  const code = await runCliCommand({
+    platform,
+    options: {
+      command: 'amend',
+      inputFile: 'schema.txt',
+      dataFile: 'data.csv',
+      inputFormat: 'csv',
+      outputFile: null,
+      format: 'json',
+      rowCount: 1,
+      testMode: false,
+      showProgress: false,
+      shouldStream: true,
+      unsafeFakerExpressions: false,
+      pairwise: false,
+    },
+  });
+  expect(code).toBe(0);
+  expect(JSON.parse(platform.out.join('').trim())).toEqual([{ Name: 'Bob' }, { Name: 'Eve' }]);
+});

@@ -40,3 +40,27 @@ test('pairwise flag is parsed', () => {
   const opts = parseCliOptions(['node', 'cli', 'generate', '-i', 'spec.txt', '-n', '5', '--pairwise']);
   expect(opts.pairwise).toBe(true);
 });
+
+test('amend command options are parsed', () => {
+  const opts = parseCliOptions([
+    'node',
+    'cli',
+    'amend',
+    '--schema-file',
+    'schema.txt',
+    '--data-file',
+    'data.csv',
+    '--input-format',
+    'csv',
+    '-n',
+    '3',
+    '-f',
+    'json',
+  ]);
+  expect(opts.command).toBe('amend');
+  expect(opts.inputFile).toBe('schema.txt');
+  expect(opts.dataFile).toBe('data.csv');
+  expect(opts.inputFormat).toBe('csv');
+  expect(opts.rowCount).toBe(3);
+  expect(opts.shouldStream).toBe(false);
+});

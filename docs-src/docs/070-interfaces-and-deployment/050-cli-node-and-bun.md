@@ -32,6 +32,7 @@ anywaydata --help
 anywaydata generate -i input.txt -n 10 -f csv
 anywaydata generate -i input.txt -n 10 -f json -o output.json
 anywaydata generate -i input.txt -n 10 -f markdown -t
+anywaydata amend --schema-file schema.txt --data-file input.csv --input-format csv -f json -o amended.json
 ```
 
 Parameter guide for the examples:
@@ -47,6 +48,7 @@ Parameter guide for the examples:
 - `--stream-threshold`: auto-enable streaming when `rowCount >= threshold` and `--outputfile` is set (default `5000`).
 - `--unsafe-faker-expressions`: opt-in to expression-style faker arguments (unsafe for untrusted input).
 - `--help`: show CLI usage and options.
+- `amend --schema-file --data-file --input-format`: import input data and amend it with schema rules.
 
 ## Schema Formatting
 
@@ -64,6 +66,7 @@ Schema text supports:
   - on for `--testMode`
   - off for file output unless `--show-progress true` is provided
 - Streaming is currently implemented for `csv` and `jsonl` exports. Other formats use buffered generation.
+- `amend` always uses buffered generation; stream flags are ignored for this command.
 - Auto-streaming (`--stream-threshold`) applies only when writing to a file. For stdout workflows, use `--stream` explicitly.
 
 Example `input.txt` schema file:

@@ -2,6 +2,7 @@
 
 import express from 'express';
 import {
+  amendFromTextSpecAndData,
   createExporterForDefaults as createCoreExporterForDefaults,
   generateFromTextSpec,
   SUPPORTED_FORMATS,
@@ -487,6 +488,121 @@ function sendGenerateResponse(req, res) {
   return res.status(200).json({ headers: result.headers, rows: result.rows, format: result.format });
 }
 
+function runAmend(payload = {}) {
+  const {
+    textSpec,
+    inputData,
+    inputFormat,
+    rowCount,
+    outputFormat = 'csv',
+    options,
+    seed,
+    unsafeFakerExpressions,
+    stream,
+  } = payload;
+  const concreteOutputFormat = String(outputFormat || 'csv').toLowerCase();
+
+  if (!SUPPORTED_FORMATS.includes(concreteOutputFormat)) {
+    return {
+      ok: false,
+      ...toErrorResponse(
+        {
+          errors: [`outputFormat must be one of: ${SUPPORTED_FORMATS.join(', ')}`],
+          diagnostics: {},
+        },
+        400
+      ),
+    };
+  }
+
+  const effectiveOptions =
+    options === undefined
+      ? getDefaultOptionsForFormat(concreteOutputFormat)
+      : sanitiseOptionsForFormat(concreteOutputFormat, options);
+
+  const parsedSeed = parseSeed(seed);
+  if (!parsedSeed.ok) {
+    return {
+      ok: false,
+      ...toErrorResponse(
+        {
+          errors: [parsedSeed.error],
+          diagnostics: {},
+        },
+        400
+      ),
+    };
+  }
+
+  try {
+    const result = amendFromTextSpecAndData({
+      textSpec,
+      inputData,
+      inputFormat,
+      rowCount,
+      outputFormat: concreteOutputFormat,
+      options: effectiveOptions,
+      seed: parsedSeed.seed,
+      unsafeFakerExpressions: unsafeFakerExpressions || false,
+      stream,
+    });
+    if (!result?.ok) {
+      return { ok: false, ...toErrorResponse(result, 400) };
+    }
+    return { ok: true, result };
+  } catch (error) {
+    return {
+      ok: false,
+      ...toErrorResponse(
+        {
+          errors: [error?.message || 'Unhandled amend error'],
+          diagnostics: { stack: error?.stack },
+        },
+        500
+      ),
+    };
+  }
+}
+
+function sendAmendResponse(req, res) {
+  const modeResult = parseResponseFormat(req.body?.responseFormat);
+  if (!modeResult.ok) {
+    return res.status(400).json({ errors: modeResult.errors, diagnostics: {} });
+  }
+
+  const allowUnsafe = globalUnsafeFakerEnabled || parseBooleanFlag(req.body?.unsafeFakerExpressions);
+  const amended = runAmend({
+    ...(req.body || {}),
+    unsafeFakerExpressions: allowUnsafe,
+  });
+  if (!amended.ok) {
+    return res.status(amended.statusCode).json(amended.body);
+  }
+
+  const result = amended.result;
+  if (modeResult.mode === 'raw') {
+    return res
+      .status(200)
+      .type(contentTypeForFormat(result.format))
+      .send(result.rendered || '');
+  }
+  if (modeResult.mode === 'rendered') {
+    return res.status(200).json({ rendered: result.rendered, format: result.format });
+  }
+  if (modeResult.mode === 'all') {
+    return res.status(200).json({
+      headers: result.headers,
+      rows: result.rows,
+      rendered: result.rendered,
+      format: result.format,
+      diagnostics: result.diagnostics,
+    });
+  }
+  return res
+    .status(200)
+    .json({ headers: result.headers, rows: result.rows, format: result.format, diagnostics: result.diagnostics });
+}
+
 function buildFromSchemaPayload(req) {
   const textSpec = typeof req.body === 'string' ? req.body : '';
   const { rowCount, outputFormat, seed, responseFormat, unsafeFakerExpressions } = req.query || {};
@@ -616,6 +732,7 @@ function sendResetDefaultOptionsResponse(req, res) {
 
 app.post('/v1/generate', sendGenerateResponse);
 app.post('/v1/generate/fromschema', sendFromSchemaResponse);
+app.post('/v1/generate/amend', sendAmendResponse);
 app.get('/v1/generate/options/:format', sendGetDefaultOptionsResponse);
 app.post('/v1/generate/options/:format', sendSetDefaultOptionsResponse);
 app.post('/v1/generate/options/:format/default', sendResetDefaultOptionsResponse);

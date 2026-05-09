@@ -114,6 +114,8 @@ Use endpoints at `http://localhost:8082`.
   - Main JSON endpoint for generation from a structured request body.
 - `POST /v1/generate/fromschema`
   - Generation endpoint for raw text schema input (`text/plain`) plus query parameters.
+- `POST /v1/generate/amend`
+  - Import raw input data and amend rows using schema rules.
 - `GET /v1/generate/options/<format>`
   - Returns current export options for a format (for example `json`, `csv`, `python`).
 - `POST /v1/generate/options/<format>`
@@ -136,6 +138,14 @@ Use endpoints at `http://localhost:8082`.
   - Useful for CLI-like flows or quick text-based integrations.
 
 Both endpoints generate data from the same schema language and output formats. The key difference is request shape and content type, not generation capability.
+
+`POST /v1/generate/amend` behavior:
+
+- accepts `textSpec`, `inputData`, `inputFormat`, optional `rowCount`, `outputFormat`, `responseFormat`
+- defaults `rowCount` to imported row count
+- if `rowCount` is provided and smaller, only first `N` rows are amended
+- output always returns the full resulting dataset
+- `stream` is accepted for compatibility and ignored
 
 ## Schema Formatting
 

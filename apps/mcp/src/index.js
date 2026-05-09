@@ -2,6 +2,7 @@
 
 import readline from 'node:readline';
 import {
+  amendFromTextSpecAndData,
   createExporterForDefaults,
   generateFromTextSpec,
   SUPPORTED_FORMATS,
@@ -396,6 +397,34 @@ function handleRequest(request) {
             },
           },
           {
+            name: 'amend_data_from_spec',
+            description:
+              'Import existing raw input data using inputFormat and amend rows using a multiline text specification. Returns the full amended dataset.',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                textSpec: { type: 'string' },
+                inputData: { type: 'string' },
+                inputFormat: {
+                  type: 'string',
+                  enum: ['csv', 'dsv', 'markdown', 'json', 'javascript', 'html', 'gherkin'],
+                },
+                rowCount: { type: 'integer', minimum: 0 },
+                outputFormat: { type: 'string', enum: SUPPORTED_FORMATS },
+                options: GENERATE_OPTIONS_SCHEMA,
+                seed: { type: 'number' },
+                stream: {
+                  type: 'boolean',
+                  description: 'Accepted for compatibility and ignored for amend operation (always buffered).',
+                },
+              },
+              required: ['textSpec', 'inputData', 'inputFormat', 'outputFormat'],
+            },
+            outputSchema: {
+              oneOf: [GENERATE_RESULT_SCHEMA, TOOL_ERROR_SCHEMA],
+            },
+          },
+          {
             name: 'get_output_format_options_schema',
             description:
               'Return discoverable formatter option defaults and typed JSON schema for supported output formats. Use this to discover valid options before calling generate_data_from_spec.',
@@ -495,7 +524,7 @@ function handleRequest(request) {
       return writeToolResult(id, payload, false);
     }
 
-    if (name !== 'generate_data_from_spec') {
+    if (name !== 'generate_data_from_spec' && name !== 'amend_data_from_spec') {
       return writeMessage({
         jsonrpc: '2.0',
         id,
@@ -514,10 +543,7 @@ function handleRequest(request) {
         true
       );
     }
-    const normalizedArgs = {
-      ...args,
-      textSpec: maybeConvertKeyValueSpec(args.textSpec),
-    };
+    const normalizedArgs = { ...args, textSpec: maybeConvertKeyValueSpec(args.textSpec) };
     const validation = validateSafeFakerRules(normalizedArgs.textSpec);
     if (!validation.ok) {
       return writeToolResult(
@@ -528,7 +554,8 @@ function handleRequest(request) {
         true
       );
     }
-    const result = generateFromTextSpec(normalizedArgs);
+    const result =
+      name === 'amend_data_from_spec' ? amendFromTextSpecAndData(normalizedArgs) : generateFromTextSpec(normalizedArgs);
     if (!result.ok) {
       return writeToolResult(
         id,

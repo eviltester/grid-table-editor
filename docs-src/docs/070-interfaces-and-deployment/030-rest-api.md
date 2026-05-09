@@ -137,6 +137,14 @@ Use endpoints at `http://localhost:8082`.
 
 Both endpoints generate data from the same schema language and output formats. The key difference is request shape and content type, not generation capability.
 
+## Schema Formatting
+
+Schema text supports:
+
+- **Comments**: lines starting with `#` (after optional leading whitespace) are treated as comments.
+- **Blank lines**: allowed and ignored, useful for readability between column groups.
+- **Column definitions**: each column name must be followed by its generation rule on the next logical content line.
+
 ## API Examples
 
 Health check:
@@ -151,7 +159,7 @@ Generate JSON output with a JSON payload:
 curl -X POST http://localhost:3000/v1/generate \
   -H "Content-Type: application/json" \
   -d '{
-    "textSpec": "Name\nBob\n\nCity\nlondon",
+    "textSpec": "# literal values\n\nName\nBob\n\n# lower-case city\nCity\nlondon",
     "rowCount": 3,
     "outputFormat": "json"
   }'
@@ -163,7 +171,7 @@ Generate CSV output with CSV-specific options:
 curl -X POST http://localhost:3000/v1/generate \
   -H "Content-Type: application/json" \
   -d '{
-    "textSpec": "Name\nBob",
+    "textSpec": "# basic csv schema\n\nName\nBob",
     "rowCount": 2,
     "outputFormat": "csv",
     "options": {
@@ -180,7 +188,7 @@ Generate using raw schema text (`fromschema`):
 ```bash
 curl -X POST "http://localhost:3000/v1/generate/fromschema?outputFormat=markdown&rowCount=2" \
   -H "Content-Type: text/plain" \
-  --data-binary $'Name\nBob\n\nId\n1'
+  --data-binary $'# markdown sample\n\nName\nBob\n\n# numeric id\nId\n1'
 ```
 
 Get current options for a format:

@@ -23,8 +23,8 @@ class TestDataRules {
     return retRules[0];
   }
 
-  addRule(aName, aRule) {
-    this.rules.push(new TestDataRule(aName.trim(), aRule));
+  addRule(aName, aRule, options = {}) {
+    this.rules.push(new TestDataRule(aName.trim(), aRule, options));
   }
 }
 

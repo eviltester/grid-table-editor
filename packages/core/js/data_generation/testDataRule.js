@@ -11,9 +11,11 @@ export const RuleType = {
 };
 
 class TestDataRule {
-  constructor(aName, aRule = '') {
+  constructor(aName, aRule = '', options = {}) {
     this.name = aName;
     this.ruleSpec = aRule;
+    // Preserve comment/blank-line text found immediately before this rule in schema text.
+    this.comments = String(options?.comments ?? '');
     // we don't know what the command is until we compile it
     this.fakerCommand = '';
     this.type = RuleType.UNKNOWN; // by default unknown type,

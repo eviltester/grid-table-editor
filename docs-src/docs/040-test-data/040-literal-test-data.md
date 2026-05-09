@@ -31,6 +31,7 @@ Schema text format uses:
 For a literal column:
 
 ```text
+# deployment context
 Environment
 UAT
 ```
@@ -42,10 +43,15 @@ If you generate 5 rows, every row in `Environment` will be `UAT`.
 You can define several static columns at once:
 
 ```text
+# locale defaults
 Country
 UK
+
+# currency defaults
 Currency
 GBP
+
+# workflow state
 Status
 ACTIVE
 ```
@@ -57,12 +63,19 @@ This is useful for creating baseline datasets quickly.
 Literal values are often combined with Faker and Regex columns.
 
 ```text
+# constant label
 Environment
 UAT
+
+# generated identity
 Customer Name
 person.fullName
+
+# generated order id
 Order Ref
 [A-Z]{3}-[0-9]{6}
+
+# constant flag
 Is Premium
 true
 ```

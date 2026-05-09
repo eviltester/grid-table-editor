@@ -31,15 +31,28 @@ Pairwise testing is most effective when:
 
 ## How to Generate Pairwise Data
 
+## Schema Formatting
+
+Schema text supports:
+
+- **Comments**: lines starting with `#` (after optional leading whitespace) are treated as comments.
+- **Blank lines**: allowed and ignored, useful for readability between column groups.
+- **Column definitions**: each column name must be followed by its generation rule on the next logical content line.
+
 ### In the Main App (app.html)
 
 1. **Open the Test Data section** by clicking the "Test Data" header
 2. **Define your enum parameters** in the Test Data Text Schema:
    ```
+   # categorical parameters
    color
    red,blue,green,yellow
+
+   # sizing options
    size  
    small,medium,large
+
+   # material choices
    material
    wood,metal
    ```
@@ -66,8 +79,11 @@ AnyWayData supports multiple formats for specifying enum values in pairwise test
 The basic format uses comma-separated values:
 
 ```
+# pairwise field 1
 Priority
 high,medium,low
+
+# pairwise field 2
 Status  
 active,inactive,pending
 ```
@@ -78,24 +94,33 @@ For more complex scenarios, you can use function-based formats:
 
 #### Basic enum() Function
 ```
+# function style enum
 Priority
 enum(high,medium,low)
+
+# another function style enum
 Status
 enum(active,inactive,pending)
 ```
 
 #### Datatype enum() Function  
 ```
+# datatype enum form
 Priority
 datatype.enum(high,medium,low)
+
+# second datatype enum
 Status
 datatype.enum(active,inactive,pending)
 ```
 
 #### Full AWD enum() Function
 ```
+# fully-qualified enum form
 Priority
 awd.datatype.enum(high,medium,low)
+
+# fully-qualified enum form
 Status
 awd.datatype.enum(active,inactive,pending)
 ```
@@ -105,10 +130,15 @@ awd.datatype.enum(active,inactive,pending)
 When your enum values contain commas or special characters, use quoted values:
 
 ```
+# values containing commas
 Product Category
 enum("Hardware, Electronics","Software, Applications","Books, Media")
+
+# geo values containing commas
 Location
 enum("New York, NY","Los Angeles, CA","Chicago, IL")
+
+# status text with commas
 Status Message
 enum("Ready, waiting for input","Processing, please wait","Error, check configuration")
 ```
@@ -118,8 +148,11 @@ enum("Ready, waiting for input","Processing, please wait","Error, check configur
 You can mix quoted and unquoted values in the same enum:
 
 ```
+# mixed quoting example
 Environment
 enum("Production, Live",staging,development,"Test, QA")
+
+# mixed quoting example
 User Type
 enum("Admin, Full Access",editor,viewer,"Guest, Limited")
 ```
@@ -136,10 +169,15 @@ Consider testing an API with both categorical parameters (that need pairwise cov
 - Then random values User ID, etc.
 
 ```
+# pairwise enums
 HTTP Method
 enum(GET,POST,PUT,DELETE)
+
+# pairwise enums
 Content Type  
 enum("application/json","application/xml","text/plain")
+
+# randomized fields
 User ID
 faker.number.int
 Email Address
@@ -200,8 +238,11 @@ AnyWayData uses a greedy set cover approximation algorithm that:
 Example Input Schema:
 
 ```csv
+# simple pairwise schema
 color
 red,blue,green,yellow
+
+# simple pairwise schema
 size  
 small,medium,large
 ```

@@ -48,6 +48,14 @@ Parameter guide for the examples:
 - `--unsafe-faker-expressions`: opt-in to expression-style faker arguments (unsafe for untrusted input).
 - `--help`: show CLI usage and options.
 
+## Schema Formatting
+
+Schema text supports:
+
+- **Comments**: lines starting with `#` (after optional leading whitespace) are treated as comments.
+- **Blank lines**: allowed and ignored, useful for readability between column groups.
+- **Column definitions**: each column name must be followed by its generation rule on the next logical content line.
+
 ## Behavior Notes
 
 - `--testMode` always forces generation to a single row (`rowCount = 1`) and prints diagnostic/example output.
@@ -61,10 +69,15 @@ Parameter guide for the examples:
 Example `input.txt` schema file:
 
 ```text
+# identity fields
 Name
 person.fullName
+
+# contact details
 Email
 internet.email
+
+# historical date
 JoinedOn
 date.past
 ```

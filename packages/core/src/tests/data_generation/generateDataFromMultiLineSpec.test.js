@@ -55,7 +55,7 @@ describe('TestDataGenerator meets Acceptance Criteria', () => {
       generator.compile();
 
       expect(generator.isValid()).toBe(false);
-      expect(generator.errors()).toContain('ERROR: Missing Rule on line 2');
+      expect(generator.errors()).toContain('ERROR: Missing Rule Definition for Column1');
       expect(generator.testDataRules().length).toBe(0);
     });
 
@@ -123,7 +123,7 @@ describe('TestDataGenerator meets Acceptance Criteria', () => {
       const data = generator.generate(1);
 
       expect(generator.isValid()).toBe(false);
-      expect(generator.errors()).toContain('ERROR: Missing Rule on line 2');
+      expect(generator.errors()).toContain('ERROR: Missing Rule Definition for Column1');
       expect(data).toStrictEqual([[], []]);
     });
 
@@ -157,11 +157,8 @@ describe('TestDataGenerator meets Acceptance Criteria', () => {
       generator.compile();
 
       expect(generator.isValid()).toBe(false);
-      expect(generator.errors()[0]).toBe(
-        'ERROR: Specification should be ColumnName followed by RuleDefinition with an even number of lines'
-      );
-      expect(generator.errors()[1]).toBe('ERROR: No Rules Defined');
-      expect(generator.errors().length).toBe(2);
+      expect(generator.errors()[0]).toBe('ERROR: No Rules Defined');
+      expect(generator.errors().length).toBe(1);
     });
 
     test('can identify malformed file', () => {
@@ -171,11 +168,8 @@ describe('TestDataGenerator meets Acceptance Criteria', () => {
       generator.compile();
 
       expect(generator.isValid()).toBe(false);
-      expect(generator.errors()[0]).toBe(
-        'ERROR: Specification should be ColumnName followed by RuleDefinition with an even number of lines'
-      );
-      expect(generator.errors()[1]).toBe('ERROR: Missing Rule Definition for Field1');
-      expect(generator.errors().length).toBe(2);
+      expect(generator.errors()[0]).toBe('ERROR: Missing Rule Definition for Field1');
+      expect(generator.errors().length).toBe(1);
     });
 
     test('can identify Rule with a missing definition', () => {
@@ -185,21 +179,18 @@ describe('TestDataGenerator meets Acceptance Criteria', () => {
       generator.compile();
 
       expect(generator.isValid()).toBe(false);
-      expect(generator.errors()[0]).toBe(
-        'ERROR: Specification should be ColumnName followed by RuleDefinition with an even number of lines'
-      );
-      expect(generator.errors()[1]).toBe('ERROR: Missing Rule Definition for Field2');
-      expect(generator.errors().length).toBe(2);
+      expect(generator.errors()[0]).toBe('ERROR: Missing Rule Definition for Field2');
+      expect(generator.errors().length).toBe(1);
     });
 
-    test('can identify Rule with a missing name', () => {
+    test('can identify rule with missing definition after comment/blank lines', () => {
       const generator = new TestDataGenerator(faker, RandExp);
-      generator.importSpec('Field1\nvalue1\n\n');
+      generator.importSpec('Field1\nvalue1\n\n# trailing comment\nField2\n');
 
       generator.compile();
 
       expect(generator.isValid()).toBe(false);
-      expect(generator.errors()[0]).toBe('ERROR: Missing Name on line 3');
+      expect(generator.errors()[0]).toBe('ERROR: Missing Rule Definition for Field2');
       expect(generator.errors().length).toBe(1);
     });
   });

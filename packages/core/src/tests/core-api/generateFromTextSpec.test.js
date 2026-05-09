@@ -13,6 +13,28 @@ test('generateFromTextSpec generates rows for valid spec', () => {
   expect(result.rows.length).toBe(2);
 });
 
+test('generateFromTextSpec accepts comments and blank lines in spec', () => {
+  const result = generateFromTextSpec({
+    textSpec: '# comment\n\nPriority\nenum(high,medium,low)\n\nStatus\nenum(active,inactive,pending)',
+    rowCount: 2,
+    outputFormat: 'json',
+  });
+  expect(result.ok).toBe(true);
+  expect(result.headers).toEqual(['Priority', 'Status']);
+  expect(result.rows.length).toBe(2);
+});
+
+test('generateFromTextSpec accepts # prefixed rule content lines', () => {
+  const result = generateFromTextSpec({
+    textSpec: 'Color\n#[A-F0-9]{6}',
+    rowCount: 2,
+    outputFormat: 'json',
+  });
+  expect(result.ok).toBe(true);
+  expect(result.headers).toEqual(['Color']);
+  expect(result.rows).toHaveLength(2);
+});
+
 test('generateFromTextSpec renders test framework output', () => {
   const result = generateFromTextSpec({ textSpec: 'Name\nBob', rowCount: 1, outputFormat: 'pytest' });
   expect(result.ok).toBe(true);

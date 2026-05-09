@@ -480,6 +480,7 @@ function populateTestDataGridFromRules() {
   for (let rule of generator.testDataRules()) {
     let data = {};
     data.columnName = rule.name;
+    data.comments = String(rule.comments ?? '');
     if (rule.type == 'faker') {
       // remove faker.
       let fakerFreeRule = rule.ruleSpec;
@@ -592,7 +593,7 @@ function setupTestDataEditGrid(gridDiv) {
     if (!defnGridBridge) {
       return;
     }
-    defnGridBridge.addRows([{ columnName: '', type: 'RegEx', value: '' }]);
+    defnGridBridge.addRows([{ columnName: '', type: 'RegEx', value: '', comments: '' }]);
     convertGridToText();
   });
 
@@ -754,22 +755,26 @@ function convertGridToText() {
     return;
   }
 
-  let outputText = '';
-  let prefix = '';
+  const outputLines = [];
   defnGridBridge.getRows().forEach((rowData) => {
     const resolvedRowData =
       activeDefnCellEdit?.rowData === rowData
         ? { ...rowData, [activeDefnCellEdit.field]: activeDefnCellEdit.value }
         : rowData;
-    outputText = outputText + prefix;
-    outputText = outputText + (resolvedRowData.columnName || '') + '\n';
+    const leadingComments = String(resolvedRowData.comments ?? '');
+    if (leadingComments.length > 0) {
+      outputLines.push(...leadingComments.split('\n'));
+    }
 
+    outputLines.push(resolvedRowData.columnName || '');
+
+    let ruleLine = '';
     switch (resolvedRowData.type) {
       case 'RegEx':
-        outputText = outputText + (resolvedRowData.value || '');
+        ruleLine = resolvedRowData.value || '';
         break;
       case 'enum':
-        outputText = outputText + (resolvedRowData.value || '');
+        ruleLine = resolvedRowData.value || '';
         break;
       // TODO Literal
       default: {
@@ -778,7 +783,7 @@ function convertGridToText() {
           dataType = dataType.replace('faker.', '');
         }
         if (FAKER_COMMANDS.includes(dataType)) {
-          outputText = outputText + dataType + (resolvedRowData.value || '');
+          ruleLine = dataType + (resolvedRowData.value || '');
         } else {
           // throw error? ignore? don't know what the command is so it won't parse
           // ignoring
@@ -786,10 +791,10 @@ function convertGridToText() {
         }
       }
     }
-    prefix = '\n';
+    outputLines.push(ruleLine);
   });
 
-  document.getElementById('testdatadefntext').value = outputText;
+  document.getElementById('testdatadefntext').value = outputLines.join('\n');
   updatePairwiseButtonVisibility();
 }
 

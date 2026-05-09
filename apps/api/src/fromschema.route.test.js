@@ -176,3 +176,16 @@ test('/v1/generate/fromschema supports pairwise query flag', async () => {
     ['Safari', 'Dark'],
   ]);
 });
+
+test('/v1/generate/fromschema accepts comments and blank lines in schema text', async () => {
+  const response = await fetch(url('/v1/generate/fromschema?rowCount=2&outputFormat=json'), {
+    method: 'POST',
+    headers: { 'content-type': 'text/plain' },
+    body: '# skip me\n\nPriority\nenum(high,medium,low)\n\n# and me\nStatus\nenum(active,inactive,pending)',
+  });
+
+  expect(response.status).toBe(200);
+  const body = await response.json();
+  expect(body.headers).toEqual(['Priority', 'Status']);
+  expect(body.rows).toHaveLength(2);
+});

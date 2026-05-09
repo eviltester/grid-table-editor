@@ -400,6 +400,39 @@ describe('test data definition editor engine compatibility', () => {
     delete global.Tabulator;
   });
 
+  test('schema text comments survive text-to-grid parse and add-column grid sync', async () => {
+    const TabulatorMock = installTabulatorMock();
+
+    enableTestDataGenerationInterface(
+      'host',
+      {
+        setGridFromGenericDataTable: jest.fn(),
+      },
+      {
+        renderTextFromGrid: jest.fn(),
+      },
+      {
+        getRowCount: jest.fn(() => 0),
+        getSelectedRowIndexes: jest.fn(() => []),
+      }
+    );
+
+    const schemaTextArea = document.getElementById('testdatadefntext');
+    schemaTextArea.value =
+      '# first comment\n\nPriority\nenum(high,medium,low)\n\n# second comment\nStatus\nenum(active,inactive)';
+    schemaTextArea.dispatchEvent(new Event('input', { bubbles: true }));
+    await new Promise((resolve) => setTimeout(resolve, 1100));
+    await flushUi();
+
+    expect(TabulatorMock.latestInstance.rows).toHaveLength(2);
+    document.querySelector('#defngrid button').click();
+    await flushUi();
+
+    const rebuilt = document.getElementById('testdatadefntext').value;
+    expect(rebuilt).toContain('# first comment');
+    expect(rebuilt).toContain('# second comment');
+  });
+
   test('load sample schema button populates text schema with literal, enum, regex, and faker examples', () => {
     installTabulatorMock();
 

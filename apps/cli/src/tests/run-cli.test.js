@@ -177,3 +177,27 @@ test('generates deterministic pairwise output in buffered mode', async () => {
     { Browser: 'Safari', Theme: 'Dark' },
   ]);
 });
+
+test('supports comments and blank lines in input schema', async () => {
+  const platform = makePlatform({
+    textSpec: '# comment\n\nPriority\nenum(high,medium,low)\n\nStatus\nenum(active,inactive,pending)',
+  });
+  const code = await runCliCommand({
+    platform,
+    options: {
+      inputFile: 'spec.txt',
+      outputFile: null,
+      format: 'json',
+      rowCount: 2,
+      testMode: false,
+      showProgress: false,
+      shouldStream: false,
+      unsafeFakerExpressions: false,
+      pairwise: false,
+    },
+  });
+  expect(code).toBe(0);
+  const parsed = JSON.parse(platform.out.join('').trim());
+  expect(parsed).toHaveLength(2);
+  expect(Object.keys(parsed[0])).toEqual(['Priority', 'Status']);
+});

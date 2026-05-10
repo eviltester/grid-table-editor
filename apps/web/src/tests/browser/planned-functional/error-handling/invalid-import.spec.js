@@ -25,7 +25,7 @@ test.describe('9. Error Handling and Edge Cases', () => {
       fs.writeFileSync(large, lines.join('\n'));
       await appPage.importExportControls.uploadFile(large);
       await expect.poll(async () => appPage.gridEditor.renderer.countRows()).toBeGreaterThan(0);
-      await expect.poll(async () => appPage.importExportControls.getProgressStatusText()).toBe('Import complete.');
+      await appPage.importExportControls.expectProgressStatusContains('Import complete.');
 
       const malformedUpload = path.join(tempDir, 'malformed.csv');
       fs.writeFileSync(malformedUpload, '"bad csv');

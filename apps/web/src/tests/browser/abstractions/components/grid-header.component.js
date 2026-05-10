@@ -1,8 +1,12 @@
+const { expect } = require('@playwright/test');
+const { GridRendererComponent } = require('./grid-renderer.component');
+
 class GridHeaderComponent {
-  constructor(page, gridRootLocator) {
+  constructor(page, gridRootLocator, renderer = undefined) {
     this.page = page;
     this.gridRoot = gridRootLocator;
     this.headers = this.gridRoot.locator('.tabulator-col');
+    this.renderer = renderer || new GridRendererComponent(page, gridRootLocator);
   }
 
   async getColumnNames() {
@@ -17,6 +21,10 @@ class GridHeaderComponent {
 
   async countColumns() {
     return this.gridRoot.locator('.tabulator-col .tabulator-col-title').count();
+  }
+
+  async expectHasAnyColumns() {
+    await expect(this.gridRoot.locator('.tabulator-col .tabulator-col-title').first()).toBeVisible();
   }
 
   async clickAction(columnName, action) {
@@ -74,10 +82,12 @@ class GridHeaderComponent {
 
   async sortAsc(columnName) {
     await this._ensureSortState(columnName, 'asc', 'sort-asc');
+    await this.renderer.waitForGridSettle({ columnName });
   }
 
   async sortDesc(columnName) {
     await this._ensureSortState(columnName, 'desc', 'sort-desc');
+    await this.renderer.waitForGridSettle({ columnName });
   }
 
   async clearSort(columnName) {
@@ -105,17 +115,11 @@ class GridHeaderComponent {
   }
 
   async _ensureSortState(columnName, expectedState, action) {
-    for (let attempt = 0; attempt < 3; attempt += 1) {
+    await expect(async () => {
       await this.clickAction(columnName, action);
-      for (let check = 0; check < 10; check += 1) {
-        const state = await this.getColumnSortState(columnName);
-        if (String(state).includes(expectedState)) {
-          return;
-        }
-        await this.page.waitForTimeout(50);
-      }
-    }
-    throw new Error(`Failed to set sort state '${expectedState}' for column '${columnName}'.`);
+      const state = await this.getColumnSortState(columnName);
+      expect(String(state)).toContain(expectedState);
+    }).toPass({ timeout: 3000, intervals: [100, 200, 400] });
   }
 
   _headerTitleByName(columnName) {

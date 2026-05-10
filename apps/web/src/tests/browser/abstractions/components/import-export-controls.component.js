@@ -1,3 +1,5 @@
+const { expect } = require('@playwright/test');
+
 class ImportExportControlsComponent {
   constructor(page) {
     this.page = page;
@@ -13,9 +15,9 @@ class ImportExportControlsComponent {
   }
 
   async expectVisible() {
-    await this.container.waitFor({ state: 'visible' });
-    await this.setTextFromGridButton.waitFor({ state: 'visible' });
-    await this.downloadButton.waitFor({ state: 'visible' });
+    await expect(this.container).toBeVisible();
+    await expect(this.setTextFromGridButton).toBeVisible();
+    await expect(this.downloadButton).toBeVisible();
   }
 
   async expectReady() {
@@ -44,8 +46,20 @@ class ImportExportControlsComponent {
     return this.setGridFromTextButton.isEnabled();
   }
 
+  async expectSetGridFromTextEnabled(enabled = true) {
+    if (enabled) {
+      await expect(this.setGridFromTextButton).toBeEnabled();
+      return;
+    }
+    await expect(this.setGridFromTextButton).toBeDisabled();
+  }
+
   async getExtensionLabel() {
     return (await this.fileFormatLabel.innerText()).trim();
+  }
+
+  async expectExtensionLabel(value) {
+    await expect(this.fileFormatLabel).toHaveText(value);
   }
 
   async isImportVisible() {
@@ -62,6 +76,10 @@ class ImportExportControlsComponent {
 
   async getProgressStatusText() {
     return (await this.progressStatus.innerText()).trim();
+  }
+
+  async expectProgressStatusContains(value) {
+    await expect(this.progressStatus).toContainText(value);
   }
 }
 

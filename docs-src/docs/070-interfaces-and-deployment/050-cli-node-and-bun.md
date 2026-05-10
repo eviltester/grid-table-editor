@@ -68,6 +68,42 @@ Schema text supports:
 - Streaming is currently implemented for `csv` and `jsonl` exports. Other formats use buffered generation.
 - `amend` always uses buffered generation; stream flags are ignored for this command.
 - Auto-streaming (`--stream-threshold`) applies only when writing to a file. For stdout workflows, use `--stream` explicitly.
+- For `amend`, if `-n/--numberOfLines` is omitted, all imported rows are amended.
+- For `amend`, if `-n/--numberOfLines` is smaller than imported rows, only the first `N` rows are amended and full output is still returned.
+
+## Amend Examples
+
+CSV input to tab-delimited output:
+
+```bash
+anywaydata amend \
+  --schema-file schema.txt \
+  --data-file input.csv \
+  --input-format csv \
+  -f dsv
+```
+
+Tab-delimited input to CSV output file:
+
+```bash
+anywaydata amend \
+  --schema-file schema.txt \
+  --data-file input.dsv \
+  --input-format dsv \
+  -f csv \
+  -o amended.csv
+```
+
+Amend only first two rows:
+
+```bash
+anywaydata amend \
+  --schema-file schema.txt \
+  --data-file input.csv \
+  --input-format csv \
+  -n 2 \
+  -f json
+```
 
 Example `input.txt` schema file:
 

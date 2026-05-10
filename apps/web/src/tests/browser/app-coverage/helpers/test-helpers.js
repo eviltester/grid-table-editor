@@ -27,6 +27,8 @@ async function seedInstructionsRows(appPage, values) {
       .poll(async () => appPage.gridEditor.renderer.getCellTextByColumnName(primaryColumnName, i))
       .toBe(values[i]);
   }
+
+  await appPage.gridEditor.renderer.waitForGridSettle({ columnName: primaryColumnName, sampleSize: values.length });
 }
 
 module.exports = {

@@ -1,3 +1,5 @@
+const { expect } = require('@playwright/test');
+
 class TabbedTextComponent {
   constructor(page) {
     this.page = page;
@@ -32,9 +34,9 @@ class TabbedTextComponent {
   }
 
   async expectVisible() {
-    await this.container.waitFor({ state: 'visible' });
-    await this.tabsList.waitFor({ state: 'visible' });
-    await this.copyButton.waitFor({ state: 'visible' });
+    await expect(this.container).toBeVisible();
+    await expect(this.tabsList).toBeVisible();
+    await expect(this.copyButton).toBeVisible();
   }
 
   async expectReady() {
@@ -81,6 +83,14 @@ class TabbedTextComponent {
     return (await this.previewOrEditButton.innerText()).trim();
   }
 
+  async expectPreviewEditLabel(value) {
+    await expect(this.previewOrEditButton).toHaveText(value);
+  }
+
+  async expectPreviewEditLabelContains(value) {
+    await expect(this.previewOrEditButton).toContainText(value);
+  }
+
   async setOutputText(value) {
     await this.outputTextArea.fill(value);
     await this.outputTextArea.dispatchEvent('input');
@@ -89,6 +99,10 @@ class TabbedTextComponent {
 
   async getOutputText() {
     return this.outputTextArea.inputValue();
+  }
+
+  async expectOutputContains(value) {
+    await expect(this.outputTextArea).toHaveValue(new RegExp(value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
   }
 }
 

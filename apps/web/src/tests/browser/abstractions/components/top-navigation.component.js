@@ -1,3 +1,5 @@
+const { expect } = require('@playwright/test');
+
 class TopNavigationComponent {
   constructor(page) {
     this.page = page;
@@ -10,10 +12,10 @@ class TopNavigationComponent {
   }
 
   async expectVisible() {
-    await this.brandLink.waitFor({ state: 'visible' });
-    await this.generatorLink.waitFor({ state: 'visible' });
-    await this.docsLink.waitFor({ state: 'visible' });
-    await this.blogLink.waitFor({ state: 'visible' });
+    await expect(this.brandLink).toBeVisible();
+    await expect(this.generatorLink).toBeVisible();
+    await expect(this.docsLink).toBeVisible();
+    await expect(this.blogLink).toBeVisible();
   }
 
   async expectReady() {
@@ -60,6 +62,10 @@ class TopNavigationComponent {
 
   async isInstructionsExpanded() {
     return (await this.instructionsDetails.getAttribute('open')) !== null;
+  }
+
+  async expectInstructionsExpanded(expanded = true) {
+    await expect(this.instructionsDetails).toHaveJSProperty('open', expanded === true);
   }
 }
 

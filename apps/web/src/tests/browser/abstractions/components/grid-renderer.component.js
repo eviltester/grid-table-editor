@@ -30,11 +30,7 @@ class GridRendererComponent {
   }
 
   async waitForColumnName(columnName) {
-    await this.gridRoot
-      .locator('.tabulator-col-title')
-      .filter({ hasText: columnName })
-      .first()
-      .waitFor({ state: 'visible' });
+    await expect(this.gridRoot.locator('.tabulator-col-title').filter({ hasText: columnName }).first()).toBeVisible();
   }
 
   async clickCell(columnIndex, rowIndex) {
@@ -68,6 +64,130 @@ class GridRendererComponent {
       values.push(await this.getCellText(columnIndex, rowIndex));
     }
     return values;
+  }
+
+  async getTopVisibleColumnTextsByName(columnName, count) {
+    const desiredCount = Number(count) || 0;
+    if (desiredCount <= 0) {
+      return [];
+    }
+    const columnIndex = await this._columnIndexByName(columnName);
+    return this.gridRoot.evaluate(
+      (root, { targetColumnIndex, limit }) => {
+        const rowEls = Array.from(root.querySelectorAll('.tabulator-row')).filter((row) => row.offsetParent !== null);
+        if (rowEls.length < limit) {
+          return [];
+        }
+        return rowEls.slice(0, limit).map((row) => {
+          const cell = row.querySelectorAll('.tabulator-cell')[targetColumnIndex];
+          return String(cell?.textContent ?? '').trim();
+        });
+      },
+      { targetColumnIndex: columnIndex, limit: desiredCount }
+    );
+  }
+
+  async getTopActiveColumnTextsByName(columnName, count) {
+    const desiredCount = Number(count) || 0;
+    if (desiredCount <= 0) {
+      return [];
+    }
+    const normalizedName = this._normalizeColumnTitle(columnName);
+    return this.gridRoot.evaluate(
+      (root, { normalizedName: targetColumnName, desiredCount: limit }) => {
+        const tableFromRoot = root?.__tabulator;
+        const tableFromGlobal = globalThis?.Tabulator?.findTable?.('#myGrid')?.[0];
+        const table = tableFromRoot || tableFromGlobal;
+        if (!table) {
+          return [];
+        }
+
+        const normalize = (value) =>
+          String(value || '')
+            .split('\n')[0]
+            .trim();
+
+        const columnDef = (table.getColumnDefinitions?.() || []).find((definition) => {
+          const byTitle = normalize(definition?.title) === targetColumnName;
+          const byField = normalize(definition?.field) === targetColumnName;
+          return byTitle || byField;
+        });
+        if (!columnDef?.field) {
+          return [];
+        }
+
+        const rows = table.getData?.('active') || [];
+        return rows.slice(0, limit).map((row) => String(row?.[columnDef.field] ?? '').trim());
+      },
+      { normalizedName, desiredCount }
+    );
+  }
+
+  async getActiveRowCount() {
+    return this.gridRoot.evaluate((root) => {
+      const tableFromRoot = root?.__tabulator;
+      const tableFromGlobal = globalThis?.Tabulator?.findTable?.('#myGrid')?.[0];
+      const table = tableFromRoot || tableFromGlobal;
+      if (!table) {
+        return 0;
+      }
+      const rows = table.getData?.('active') || [];
+      return Array.isArray(rows) ? rows.length : 0;
+    });
+  }
+
+  async getActiveColumnTextsByName(columnName, count) {
+    const desiredCount = Number(count) || 0;
+    if (desiredCount <= 0) {
+      return [];
+    }
+    return this.getTopActiveColumnTextsByName(columnName, desiredCount);
+  }
+
+  async getActiveTableSnapshot(columnName, sampleSize = 3) {
+    const desiredSampleSize = Math.max(0, Number(sampleSize) || 0);
+    const activeRowCount = await this.getActiveRowCount();
+    const topValues =
+      desiredSampleSize > 0 && columnName ? await this.getActiveColumnTextsByName(columnName, desiredSampleSize) : [];
+    return { activeRowCount, topValues };
+  }
+
+  async waitForGridSettle({
+    columnName,
+    sampleSize = 3,
+    stablePolls = 3,
+    stableForMs = 800,
+    timeoutMs = 5000,
+    pollIntervalMs = 75,
+  } = {}) {
+    const requiredStablePolls = Math.max(2, Number(stablePolls) || 2);
+    const desiredSampleSize = Math.max(0, Number(sampleSize) || 0);
+    const requiredStableForMs = Math.max(0, Number(stableForMs) || 0);
+    let stableCount = 0;
+    let lastSignature = '';
+    let stableSince = 0;
+
+    await expect
+      .poll(
+        async () => {
+          const now = Date.now();
+          const snapshot = await this.getActiveTableSnapshot(columnName, desiredSampleSize);
+          const signature = JSON.stringify(snapshot);
+          if (signature === lastSignature) {
+            stableCount += 1;
+          } else {
+            stableCount = 1;
+            lastSignature = signature;
+            stableSince = now;
+          }
+          const stableDuration = stableSince > 0 ? now - stableSince : 0;
+          return stableCount >= requiredStablePolls && stableDuration >= requiredStableForMs;
+        },
+        { timeout: timeoutMs, intervals: [pollIntervalMs] }
+      )
+      .toBe(true);
+
+    return this.getActiveTableSnapshot(columnName, desiredSampleSize);
   }
 
   async clickCellByColumnName(columnName, rowIndex) {

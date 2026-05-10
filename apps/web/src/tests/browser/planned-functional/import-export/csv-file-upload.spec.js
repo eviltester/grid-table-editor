@@ -14,7 +14,7 @@ test.describe('4. Import Export Basic', () => {
     try {
       await appPage.importExportControls.uploadFile(valid);
       await expect.poll(async () => appPage.gridEditor.renderer.countRows()).toBeGreaterThanOrEqual(2);
-      await expect.poll(async () => appPage.importExportControls.getProgressStatusText()).toContain('complete');
+      await appPage.importExportControls.expectProgressStatusContains('complete');
 
       const rowsBefore = await appPage.gridEditor.renderer.countRows();
       await appPage.importExportControls.uploadFile(path.resolve('README.md'));

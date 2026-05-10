@@ -20,7 +20,7 @@ async function ensureTextEditMode(appPage) {
   if (!enabled) {
     await appPage.tabbedText.togglePreviewEdit(true);
   }
-  await expect.poll(async () => appPage.importExportControls.isSetGridFromTextEnabled()).toBeTruthy();
+  await appPage.importExportControls.expectSetGridFromTextEnabled(true);
 }
 
 function expectNoPageErrors(pageErrors) {

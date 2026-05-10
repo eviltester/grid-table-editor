@@ -38,9 +38,9 @@ test('all export formats can render output text via page abstractions', async ({
   }
 
   await appPage.tabbedText.selectFormat('CSV');
-  await expect.poll(async () => appPage.importExportControls.getExtensionLabel()).toBe('.csv');
+  await appPage.importExportControls.expectExtensionLabel('.csv');
   await appPage.tabbedText.selectFormat('JSON');
-  await expect.poll(async () => appPage.importExportControls.getExtensionLabel()).toBe('.json');
+  await appPage.importExportControls.expectExtensionLabel('.json');
 
   expect(pageErrors).toEqual([]);
 });

@@ -1,3 +1,5 @@
+const { expect } = require('@playwright/test');
+
 class FormatOptionsPanelComponent {
   constructor(page) {
     this.page = page;
@@ -5,12 +7,12 @@ class FormatOptionsPanelComponent {
   }
 
   async expectVisible() {
-    await this.container.waitFor({ state: 'visible' });
+    await expect(this.container).toBeVisible();
   }
 
   async expectReady() {
     await this.expectVisible();
-    await this.container.locator('.apply-options').first().waitFor({ state: 'visible' });
+    await expect(this.container.locator('.apply-options').first()).toBeVisible();
   }
 
   async hasApplyButton() {
@@ -20,6 +22,15 @@ class FormatOptionsPanelComponent {
   async isApplyEnabled() {
     const button = this.container.locator('.apply-options').first();
     return button.isEnabled();
+  }
+
+  async expectApplyEnabled(enabled = true) {
+    const button = this.container.locator('.apply-options').first();
+    if (enabled) {
+      await expect(button).toBeEnabled();
+      return;
+    }
+    await expect(button).toBeDisabled();
   }
 
   async apply() {

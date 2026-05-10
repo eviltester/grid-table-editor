@@ -14,7 +14,7 @@ test.describe('6. Export Options and Controls', () => {
     await appPage.tabbedText.getOutputText();
 
     await appPage.tabbedText.togglePreviewEdit(true);
-    await expect.poll(async () => appPage.tabbedText.getPreviewEditLabel()).toContain('Edit');
+    await appPage.tabbedText.expectPreviewEditLabelContains('Edit');
     const previewText = await appPage.tabbedText.getOutputText();
     expect(previewText.length).toBeGreaterThan(0);
 
@@ -24,7 +24,7 @@ test.describe('6. Export Options and Controls', () => {
       .toContain(previewText.split('\n')[0]);
 
     await appPage.tabbedText.togglePreviewEdit(true);
-    await expect.poll(async () => appPage.tabbedText.getPreviewEditLabel()).toContain('Preview');
+    await appPage.tabbedText.expectPreviewEditLabelContains('Preview');
 
     expectNoPageErrors(pageErrors);
   });

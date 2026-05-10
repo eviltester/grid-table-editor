@@ -1,3 +1,4 @@
+const { expect } = require('@playwright/test');
 const { GridRendererComponent } = require('./grid-renderer.component');
 const { GridHeaderComponent } = require('./grid-header.component');
 
@@ -85,65 +86,89 @@ class GridEditorComponent {
   }
 
   async clearFilters({ expectedActiveRowCount } = {}) {
+    const context = await this._buildClearFiltersContext(expectedActiveRowCount);
+
+    try {
+      await expect(async () => {
+        await this._attemptClearFilters(context);
+      }).toPass({ timeout: 15000, intervals: [100, 200, 400, 800] });
+      return;
+    } catch (error) {
+      // fall through to detailed diagnostics
+    }
+
+    await this._throwClearFiltersDiagnostics(context);
+  }
+
+  async _attemptClearFilters(context) {
+    await this.clearFiltersButton.click();
+    await expect(this.quickFilterInput).toHaveValue('');
+    await this._expectHeaderFiltersCleared();
+    await this._expectActiveRowCountRecovered(context);
+    await this.renderer.waitForGridSettle({ columnName: context.diagnosticColumn, stableForMs: 2000, timeoutMs: 7000 });
+    await this._expectHeaderFiltersCleared();
+    await this._expectActiveRowCountRecovered(context);
+  }
+
+  async _buildClearFiltersContext(expectedActiveRowCount) {
     const initialActiveRowCount = await this.renderer.getActiveRowCount();
     const columnNames = await this.header.getColumnNames();
     const diagnosticColumn = columnNames[0];
-    for (let attempt = 0; attempt < 3; attempt += 1) {
-      await this.clearFiltersButton.click();
-      for (let check = 0; check < 30; check += 1) {
-        const quickFilterValue = await this.quickFilterInput.inputValue();
-        const headerFilterValues = await this.grid
-          .locator('.tabulator-header-filter input')
-          .evaluateAll((inputs) => inputs.map((input) => String(input.value || '').trim()));
-        const hasActiveColumnFilter = headerFilterValues.some((value) => value.length > 0);
-        const activeRowCount = await this.renderer.getActiveRowCount();
+    const hadActiveFiltersBeforeClear = await this._hasActiveFilters();
+    const minRecoveredRowCount =
+      hadActiveFiltersBeforeClear && !Number.isFinite(expectedActiveRowCount)
+        ? initialActiveRowCount + 1
+        : initialActiveRowCount;
+    return {
+      expectedActiveRowCount,
+      initialActiveRowCount,
+      diagnosticColumn,
+      minRecoveredRowCount,
+    };
+  }
 
-        const filtersAreCleared = quickFilterValue === '' && !hasActiveColumnFilter;
-        const rowCountRecovered = Number.isFinite(expectedActiveRowCount)
-          ? activeRowCount === expectedActiveRowCount
-          : activeRowCount >= initialActiveRowCount;
-
-        if (filtersAreCleared && rowCountRecovered) {
-          try {
-            await this.renderer.waitForGridSettle({ columnName: diagnosticColumn, stableForMs: 2000, timeoutMs: 7000 });
-          } catch (error) {
-            // Let retry loop continue so we can recover from transient settle timing.
-            await this.page.waitForTimeout(50);
-            continue;
-          }
-
-          const quickFilterAfterSettle = await this.quickFilterInput.inputValue();
-          const headerFilterValuesAfterSettle = await this.grid
-            .locator('.tabulator-header-filter input')
-            .evaluateAll((inputs) => inputs.map((input) => String(input.value || '').trim()));
-          const activeRowCountAfterSettle = await this.renderer.getActiveRowCount();
-          const filtersStillCleared =
-            quickFilterAfterSettle === '' && !headerFilterValuesAfterSettle.some((value) => value.length > 0);
-          const rowCountStillRecovered = Number.isFinite(expectedActiveRowCount)
-            ? activeRowCountAfterSettle === expectedActiveRowCount
-            : activeRowCountAfterSettle >= initialActiveRowCount;
-          if (filtersStillCleared && rowCountStillRecovered) {
-            return;
-          }
-        }
-        await this.page.waitForTimeout(50);
-      }
-    }
-
+  async _hasActiveFilters() {
     const quickFilterValue = await this.quickFilterInput.inputValue();
-    const headerFilterValues = await this.grid
+    if (String(quickFilterValue || '').trim().length > 0) {
+      return true;
+    }
+    const headerFilterValues = await this._getHeaderFilterValues();
+    return headerFilterValues.some((value) => value.length > 0);
+  }
+
+  async _getHeaderFilterValues() {
+    return this.grid
       .locator('.tabulator-header-filter input')
       .evaluateAll((inputs) => inputs.map((input) => String(input.value || '').trim()));
+  }
+
+  async _expectHeaderFiltersCleared() {
+    const headerFilterValues = await this._getHeaderFilterValues();
+    expect(headerFilterValues.some((value) => value.length > 0)).toBe(false);
+  }
+
+  async _expectActiveRowCountRecovered(context) {
     const activeRowCount = await this.renderer.getActiveRowCount();
-    const snapshot = await this.renderer.getActiveTableSnapshot(diagnosticColumn, 3);
+    if (Number.isFinite(context.expectedActiveRowCount)) {
+      expect(activeRowCount).toBe(context.expectedActiveRowCount);
+    } else {
+      expect(activeRowCount).toBeGreaterThanOrEqual(context.minRecoveredRowCount);
+    }
+  }
+
+  async _throwClearFiltersDiagnostics(context) {
+    const quickFilterValue = await this.quickFilterInput.inputValue();
+    const headerFilterValues = await this._getHeaderFilterValues();
+    const activeRowCount = await this.renderer.getActiveRowCount();
+    const snapshot = await this.renderer.getActiveTableSnapshot(context.diagnosticColumn, 3);
     throw new Error(
       [
         'Failed to clear all filters and restore active rows.',
         `quickFilter="${quickFilterValue}"`,
         `headerFilters=${JSON.stringify(headerFilterValues)}`,
         `activeRowCount=${activeRowCount}`,
-        `expectedActiveRowCount=${Number.isFinite(expectedActiveRowCount) ? expectedActiveRowCount : 'n/a'}`,
-        `diagnosticColumn=${diagnosticColumn || 'n/a'}`,
+        `expectedActiveRowCount=${Number.isFinite(context.expectedActiveRowCount) ? context.expectedActiveRowCount : 'n/a'}`,
+        `diagnosticColumn=${context.diagnosticColumn || 'n/a'}`,
         `topValues=${JSON.stringify(snapshot.topValues || [])}`,
       ].join(' ')
     );

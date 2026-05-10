@@ -22,13 +22,13 @@ test('instructions panel expands and collapses with visible help content', async
   await appPage.goto();
 
   await appPage.topNavigation.expandInstructions();
-  await expect.poll(async () => appPage.topNavigation.isInstructionsExpanded()).toBe(true);
+  await appPage.topNavigation.expectInstructionsExpanded(true);
   await expect(
     page.locator('.instructions li', { hasText: 'Use tabs to switch between the type of text representation' })
   ).toBeVisible();
 
   await appPage.topNavigation.collapseInstructions();
-  await expect.poll(async () => appPage.topNavigation.isInstructionsExpanded()).toBe(false);
+  await appPage.topNavigation.expectInstructionsExpanded(false);
 
   expect(pageErrors).toEqual([]);
 });

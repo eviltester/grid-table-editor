@@ -83,6 +83,14 @@ class TabbedTextComponent {
     return (await this.previewOrEditButton.innerText()).trim();
   }
 
+  async expectPreviewEditLabel(value) {
+    await expect(this.previewOrEditButton).toHaveText(value);
+  }
+
+  async expectPreviewEditLabelContains(value) {
+    await expect(this.previewOrEditButton).toContainText(value);
+  }
+
   async setOutputText(value) {
     await this.outputTextArea.fill(value);
     await this.outputTextArea.dispatchEvent('input');
@@ -91,6 +99,10 @@ class TabbedTextComponent {
 
   async getOutputText() {
     return this.outputTextArea.inputValue();
+  }
+
+  async expectOutputContains(value) {
+    await expect(this.outputTextArea).toHaveValue(new RegExp(value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
   }
 }
 

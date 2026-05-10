@@ -60,7 +60,7 @@ test('quick filter and clear filters update visible rows', async ({ page }) => {
   await appPage.gridEditor.addRow();
   await appPage.gridEditor.addRow();
   await expect.poll(async () => appPage.gridEditor.renderer.countRows()).toBe(2);
-  await expect.poll(async () => (await appPage.gridEditor.header.getColumnNames()).length).toBeGreaterThan(0);
+  await appPage.gridEditor.header.expectHasAnyColumns();
   const [primaryColumnName] = await appPage.gridEditor.header.getColumnNames();
   expect(primaryColumnName).toBeTruthy();
   await appPage.gridEditor.renderer.setCellTextByColumnName(primaryColumnName, 0, 'Filter Match');

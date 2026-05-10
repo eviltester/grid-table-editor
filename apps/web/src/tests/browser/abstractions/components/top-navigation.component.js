@@ -63,6 +63,10 @@ class TopNavigationComponent {
   async isInstructionsExpanded() {
     return (await this.instructionsDetails.getAttribute('open')) !== null;
   }
+
+  async expectInstructionsExpanded(expanded = true) {
+    await expect(this.instructionsDetails).toHaveJSProperty('open', expanded === true);
+  }
 }
 
 module.exports = { TopNavigationComponent };

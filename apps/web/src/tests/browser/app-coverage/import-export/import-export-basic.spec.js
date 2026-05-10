@@ -13,10 +13,10 @@ test('set text from grid and set grid from text round trip with csv', async ({ p
   await seedInstructionsRows(appPage, ['One', 'Two']);
   await appPage.tabbedText.selectFormat('CSV');
   await appPage.importExportControls.setTextFromGrid();
-  await expect.poll(async () => appPage.tabbedText.getOutputText()).toContain('One');
+  await appPage.tabbedText.expectOutputContains('One');
 
   await appPage.tabbedText.togglePreviewEdit(false);
-  await expect.poll(async () => appPage.importExportControls.isSetGridFromTextEnabled()).toBe(true);
+  await appPage.importExportControls.expectSetGridFromTextEnabled(true);
 
   await appPage.tabbedText.setOutputText('Name,Code\nAlice,A1\nBob,B2');
   await appPage.importExportControls.setGridFromText();
@@ -42,7 +42,7 @@ test('csv file upload imports into the grid and malformed csv does not crash pag
     await expect.poll(async () => appPage.gridEditor.renderer.countRows()).toBe(2);
 
     await appPage.tabbedText.togglePreviewEdit(false);
-    await expect.poll(async () => appPage.importExportControls.isSetGridFromTextEnabled()).toBe(true);
+    await appPage.importExportControls.expectSetGridFromTextEnabled(true);
     const rowsBeforeMalformedImport = await appPage.gridEditor.renderer.countRows();
     await appPage.tabbedText.setOutputText('"unterminated,quote\nfoo,bar');
     await appPage.importExportControls.setGridFromText();

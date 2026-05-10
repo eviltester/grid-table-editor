@@ -1,5 +1,5 @@
 const { test } = require('@playwright/test');
-const { openApp, seedRows, expectNoPageErrors, expect } = require('../helpers/scenario-helpers');
+const { openApp, seedRows, expectNoPageErrors } = require('../helpers/scenario-helpers');
 
 test.describe('4. Import Export Basic', () => {
   test('Set Text From Grid', async ({ page }) => {
@@ -7,12 +7,12 @@ test.describe('4. Import Export Basic', () => {
     await seedRows(appPage, ['A', 'B']);
 
     await appPage.tabbedText.selectFormat('CSV');
-    await expect.poll(async () => appPage.importExportControls.getExtensionLabel()).toBe('.csv');
+    await appPage.importExportControls.expectExtensionLabel('.csv');
     await appPage.importExportControls.setTextFromGrid();
 
-    await expect.poll(async () => appPage.tabbedText.getOutputText()).toContain('A');
-    await expect.poll(async () => appPage.tabbedText.getOutputText()).toContain('B');
-    await expect.poll(async () => appPage.tabbedText.getOutputText()).toContain('\n');
+    await appPage.tabbedText.expectOutputContains('A');
+    await appPage.tabbedText.expectOutputContains('B');
+    await appPage.tabbedText.expectOutputContains('\n');
 
     expectNoPageErrors(pageErrors);
   });

@@ -15,7 +15,7 @@ test.describe('4. Import Export Basic', () => {
       await expect(appPage.importExportControls.dropZone).toBeVisible();
       await appPage.importExportControls.uploadFile(valid);
       await expect.poll(async () => appPage.gridEditor.renderer.countRows()).toBeGreaterThanOrEqual(2);
-      await expect.poll(async () => appPage.importExportControls.getProgressStatusText()).toContain('Import complete');
+      await appPage.importExportControls.expectProgressStatusContains('Import complete');
     } finally {
       fs.rmSync(tempDir, { recursive: true, force: true });
     }

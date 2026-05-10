@@ -23,6 +23,10 @@ class GridHeaderComponent {
     return this.gridRoot.locator('.tabulator-col .tabulator-col-title').count();
   }
 
+  async expectHasAnyColumns() {
+    await expect(this.gridRoot.locator('.tabulator-col .tabulator-col-title').first()).toBeVisible();
+  }
+
   async clickAction(columnName, action) {
     const headerTitle = this._headerTitleByName(columnName);
     const actionTitleMap = {

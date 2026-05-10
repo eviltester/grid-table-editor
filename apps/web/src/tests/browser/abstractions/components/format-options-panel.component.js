@@ -24,6 +24,15 @@ class FormatOptionsPanelComponent {
     return button.isEnabled();
   }
 
+  async expectApplyEnabled(enabled = true) {
+    const button = this.container.locator('.apply-options').first();
+    if (enabled) {
+      await expect(button).toBeEnabled();
+      return;
+    }
+    await expect(button).toBeDisabled();
+  }
+
   async apply() {
     await this.container.locator('.apply-options').first().click();
   }

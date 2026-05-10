@@ -8,7 +8,7 @@ test('global filter, column filter, sort, and clear filters produce expected vis
   const appPage = new AppPage(page);
   await appPage.goto();
   await seedInstructionsRows(appPage, seededValues);
-  await expect.poll(async () => (await appPage.gridEditor.header.getColumnNames()).length).toBeGreaterThan(0);
+  await appPage.gridEditor.header.expectHasAnyColumns();
   const [primaryColumnName] = await appPage.gridEditor.header.getColumnNames();
   const baselineActiveRowCount = seededValues.length;
   expect(primaryColumnName).toBeTruthy();

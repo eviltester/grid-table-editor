@@ -11,11 +11,11 @@ test('format options become dirty, apply, and update output state', async ({ pag
   await appPage.importExportControls.setTextFromGrid();
   const before = await appPage.tabbedText.getOutputText();
 
-  await expect.poll(async () => appPage.formatOptionsPanel.isApplyEnabled()).toBe(false);
+  await appPage.formatOptionsPanel.expectApplyEnabled(false);
   await appPage.formatOptionsPanel.setFirstEditableOption();
-  await expect.poll(async () => appPage.formatOptionsPanel.isApplyEnabled()).toBe(true);
+  await appPage.formatOptionsPanel.expectApplyEnabled(true);
   await appPage.formatOptionsPanel.apply();
-  await expect.poll(async () => appPage.formatOptionsPanel.isApplyEnabled()).toBe(false);
+  await appPage.formatOptionsPanel.expectApplyEnabled(false);
 
   const after = await appPage.tabbedText.getOutputText();
   expect(after.length).toBeGreaterThan(0);
@@ -28,12 +28,12 @@ test('preview edit mode toggles and controls set-grid-from-text availability', a
   const appPage = new AppPage(page);
   await appPage.goto();
 
-  await expect.poll(async () => appPage.importExportControls.isSetGridFromTextEnabled()).toBe(false);
+  await appPage.importExportControls.expectSetGridFromTextEnabled(false);
   await appPage.tabbedText.togglePreviewEdit(false);
-  await expect.poll(async () => appPage.tabbedText.getPreviewEditLabel()).toBe('Edit');
-  await expect.poll(async () => appPage.importExportControls.isSetGridFromTextEnabled()).toBe(true);
+  await appPage.tabbedText.expectPreviewEditLabel('Edit');
+  await appPage.importExportControls.expectSetGridFromTextEnabled(true);
   await appPage.tabbedText.togglePreviewEdit();
-  await expect.poll(async () => appPage.tabbedText.getPreviewEditLabel()).toContain('Preview');
+  await appPage.tabbedText.expectPreviewEditLabelContains('Preview');
 
   expect(pageErrors).toEqual([]);
 });

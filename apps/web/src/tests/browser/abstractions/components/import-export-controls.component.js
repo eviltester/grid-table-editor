@@ -46,8 +46,20 @@ class ImportExportControlsComponent {
     return this.setGridFromTextButton.isEnabled();
   }
 
+  async expectSetGridFromTextEnabled(enabled = true) {
+    if (enabled) {
+      await expect(this.setGridFromTextButton).toBeEnabled();
+      return;
+    }
+    await expect(this.setGridFromTextButton).toBeDisabled();
+  }
+
   async getExtensionLabel() {
     return (await this.fileFormatLabel.innerText()).trim();
+  }
+
+  async expectExtensionLabel(value) {
+    await expect(this.fileFormatLabel).toHaveText(value);
   }
 
   async isImportVisible() {
@@ -64,6 +76,10 @@ class ImportExportControlsComponent {
 
   async getProgressStatusText() {
     return (await this.progressStatus.innerText()).trim();
+  }
+
+  async expectProgressStatusContains(value) {
+    await expect(this.progressStatus).toContainText(value);
   }
 }
 

@@ -75,15 +75,20 @@ class GridRendererComponent {
     if (desiredCount <= 0) {
       return [];
     }
-    const visibleRows = await this.countVisibleRows();
-    if (visibleRows < desiredCount) {
-      return [];
-    }
-    const values = [];
-    for (let rowIndex = 0; rowIndex < desiredCount; rowIndex += 1) {
-      values.push(await this.getCellTextByColumnName(columnName, rowIndex));
-    }
-    return values;
+    const columnIndex = await this._columnIndexByName(columnName);
+    return this.gridRoot.evaluate(
+      (root, { targetColumnIndex, limit }) => {
+        const rowEls = Array.from(root.querySelectorAll('.tabulator-row')).filter((row) => row.offsetParent !== null);
+        if (rowEls.length < limit) {
+          return [];
+        }
+        return rowEls.slice(0, limit).map((row) => {
+          const cell = row.querySelectorAll('.tabulator-cell')[targetColumnIndex];
+          return String(cell?.textContent ?? '').trim();
+        });
+      },
+      { targetColumnIndex: columnIndex, limit: desiredCount }
+    );
   }
 
   async getTopActiveColumnTextsByName(columnName, count) {
@@ -92,10 +97,11 @@ class GridRendererComponent {
       return [];
     }
     const normalizedName = this._normalizeColumnTitle(columnName);
-    return this.page.evaluate(
-      ({ normalizedName: targetColumnName, desiredCount: limit }) => {
-        const tables = globalThis?.Tabulator?.findTable?.('#myGrid') || [];
-        const table = tables[0];
+    return this.gridRoot.evaluate(
+      (root, { normalizedName: targetColumnName, desiredCount: limit }) => {
+        const tableFromRoot = root?.__tabulator;
+        const tableFromGlobal = globalThis?.Tabulator?.findTable?.('#myGrid')?.[0];
+        const table = tableFromRoot || tableFromGlobal;
         if (!table) {
           return [];
         }

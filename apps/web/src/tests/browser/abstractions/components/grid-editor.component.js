@@ -7,7 +7,7 @@ class GridEditorComponent {
     this.container = page.locator('#main-grid-view');
     this.grid = page.locator('#myGrid');
     this.renderer = new GridRendererComponent(page, this.grid);
-    this.header = new GridHeaderComponent(page, this.grid);
+    this.header = new GridHeaderComponent(page, this.grid, this.renderer);
     this.addRowButton = page.getByRole('button', { name: 'Add Row', exact: true });
     this.addRowsAboveButton = page.getByRole('button', { name: 'Add Rows Above' });
     this.addRowsBelowButton = page.getByRole('button', { name: 'Add Rows Below' });
@@ -84,21 +84,63 @@ class GridEditorComponent {
     await this.renderer.selectRows(rowIndexes);
   }
 
-  async clearFilters() {
+  async clearFilters({ expectedActiveRowCount } = {}) {
+    const initialActiveRowCount = await this.renderer.getActiveRowCount();
+    const columnNames = await this.header.getColumnNames();
+    const diagnosticColumn = columnNames[0];
     for (let attempt = 0; attempt < 3; attempt += 1) {
       await this.clearFiltersButton.click();
-      for (let check = 0; check < 20; check += 1) {
+      for (let check = 0; check < 30; check += 1) {
         const quickFilterValue = await this.quickFilterInput.inputValue();
-        const hasActiveColumnFilter = await this.grid
+        const headerFilterValues = await this.grid
           .locator('.tabulator-header-filter input')
-          .evaluateAll((inputs) => inputs.some((input) => String(input.value || '').trim().length > 0));
-        if (quickFilterValue === '' && !hasActiveColumnFilter) {
-          return;
+          .evaluateAll((inputs) => inputs.map((input) => String(input.value || '').trim()));
+        const hasActiveColumnFilter = headerFilterValues.some((value) => value.length > 0);
+        const activeRowCount = await this.renderer.getActiveRowCount();
+
+        const filtersAreCleared = quickFilterValue === '' && !hasActiveColumnFilter;
+        const rowCountRecovered = Number.isFinite(expectedActiveRowCount)
+          ? activeRowCount === expectedActiveRowCount
+          : activeRowCount > initialActiveRowCount;
+
+        if (filtersAreCleared && rowCountRecovered) {
+          await this.renderer.waitForGridSettle({ columnName: diagnosticColumn, stableForMs: 2000, timeoutMs: 7000 });
+
+          const quickFilterAfterSettle = await this.quickFilterInput.inputValue();
+          const headerFilterValuesAfterSettle = await this.grid
+            .locator('.tabulator-header-filter input')
+            .evaluateAll((inputs) => inputs.map((input) => String(input.value || '').trim()));
+          const activeRowCountAfterSettle = await this.renderer.getActiveRowCount();
+          const filtersStillCleared =
+            quickFilterAfterSettle === '' && !headerFilterValuesAfterSettle.some((value) => value.length > 0);
+          const rowCountStillRecovered = Number.isFinite(expectedActiveRowCount)
+            ? activeRowCountAfterSettle === expectedActiveRowCount
+            : activeRowCountAfterSettle > initialActiveRowCount;
+          if (filtersStillCleared && rowCountStillRecovered) {
+            return;
+          }
         }
         await this.page.waitForTimeout(50);
       }
     }
-    throw new Error('Failed to clear all filters.');
+
+    const quickFilterValue = await this.quickFilterInput.inputValue();
+    const headerFilterValues = await this.grid
+      .locator('.tabulator-header-filter input')
+      .evaluateAll((inputs) => inputs.map((input) => String(input.value || '').trim()));
+    const activeRowCount = await this.renderer.getActiveRowCount();
+    const snapshot = await this.renderer.getActiveTableSnapshot(diagnosticColumn, 3);
+    throw new Error(
+      [
+        'Failed to clear all filters and restore active rows.',
+        `quickFilter="${quickFilterValue}"`,
+        `headerFilters=${JSON.stringify(headerFilterValues)}`,
+        `activeRowCount=${activeRowCount}`,
+        `expectedActiveRowCount=${Number.isFinite(expectedActiveRowCount) ? expectedActiveRowCount : 'n/a'}`,
+        `diagnosticColumn=${diagnosticColumn || 'n/a'}`,
+        `topValues=${JSON.stringify(snapshot.topValues || [])}`,
+      ].join(' ')
+    );
   }
 
   async clearSort() {

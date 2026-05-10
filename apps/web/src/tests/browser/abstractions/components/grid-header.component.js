@@ -1,8 +1,11 @@
+const { GridRendererComponent } = require('./grid-renderer.component');
+
 class GridHeaderComponent {
-  constructor(page, gridRootLocator) {
+  constructor(page, gridRootLocator, renderer = undefined) {
     this.page = page;
     this.gridRoot = gridRootLocator;
     this.headers = this.gridRoot.locator('.tabulator-col');
+    this.renderer = renderer || new GridRendererComponent(page, gridRootLocator);
   }
 
   async getColumnNames() {
@@ -74,10 +77,12 @@ class GridHeaderComponent {
 
   async sortAsc(columnName) {
     await this._ensureSortState(columnName, 'asc', 'sort-asc');
+    await this.renderer.waitForGridSettle({ columnName });
   }
 
   async sortDesc(columnName) {
     await this._ensureSortState(columnName, 'desc', 'sort-desc');
+    await this.renderer.waitForGridSettle({ columnName });
   }
 
   async clearSort(columnName) {

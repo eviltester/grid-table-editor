@@ -20,21 +20,21 @@ class GridEditorComponent {
   }
 
   async expectVisible() {
-    await this.container.waitFor({ state: 'visible' });
-    await this.grid.waitFor({ state: 'visible' });
-    await this.addRowButton.waitFor({ state: 'visible' });
-    await this.addRowsAboveButton.waitFor({ state: 'visible' });
-    await this.addRowsBelowButton.waitFor({ state: 'visible' });
-    await this.deleteSelectedRowsButton.waitFor({ state: 'visible' });
-    await this.quickFilterInput.waitFor({ state: 'visible' });
-    await this.clearFiltersButton.waitFor({ state: 'visible' });
-    await this.clearSortButton.waitFor({ state: 'visible' });
-    await this.resetTableButton.waitFor({ state: 'visible' });
+    await expect(this.container).toBeVisible();
+    await expect(this.grid).toBeVisible();
+    await expect(this.addRowButton).toBeVisible();
+    await expect(this.addRowsAboveButton).toBeVisible();
+    await expect(this.addRowsBelowButton).toBeVisible();
+    await expect(this.deleteSelectedRowsButton).toBeVisible();
+    await expect(this.quickFilterInput).toBeVisible();
+    await expect(this.clearFiltersButton).toBeVisible();
+    await expect(this.clearSortButton).toBeVisible();
+    await expect(this.resetTableButton).toBeVisible();
   }
 
   async expectReady() {
     await this.expectVisible();
-    await this.grid.locator('.tabulator-col-title').first().waitFor({ state: 'visible' });
+    await expect(this.grid.locator('.tabulator-col-title').first()).toBeVisible();
   }
 
   async addRow() {

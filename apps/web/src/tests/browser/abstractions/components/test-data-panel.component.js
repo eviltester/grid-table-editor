@@ -22,8 +22,8 @@ class TestDataPanelComponent {
   }
 
   async expectVisible() {
-    await this.container.waitFor({ state: 'visible' });
-    await this.heading.waitFor({ state: 'visible' });
+    await expect(this.container).toBeVisible();
+    await expect(this.heading).toBeVisible();
   }
 
   async expectReady() {
@@ -43,11 +43,11 @@ class TestDataPanelComponent {
   }
 
   async expectExpanded() {
-    await this.generateButton.waitFor({ state: 'visible' });
-    await this.refreshTextPreviewButton.waitFor({ state: 'visible' });
-    await this.generateCountInput.waitFor({ state: 'visible' });
-    await this.schemaTextArea.waitFor({ state: 'visible' });
-    await this.schemaGrid.waitFor({ state: 'visible' });
+    await expect(this.generateButton).toBeVisible();
+    await expect(this.refreshTextPreviewButton).toBeVisible();
+    await expect(this.generateCountInput).toBeVisible();
+    await expect(this.schemaTextArea).toBeVisible();
+    await expect(this.schemaGrid).toBeVisible();
   }
 
   async isExpanded() {

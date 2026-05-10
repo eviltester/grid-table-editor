@@ -1,3 +1,5 @@
+const { expect } = require('@playwright/test');
+
 class TabbedTextComponent {
   constructor(page) {
     this.page = page;
@@ -32,9 +34,9 @@ class TabbedTextComponent {
   }
 
   async expectVisible() {
-    await this.container.waitFor({ state: 'visible' });
-    await this.tabsList.waitFor({ state: 'visible' });
-    await this.copyButton.waitFor({ state: 'visible' });
+    await expect(this.container).toBeVisible();
+    await expect(this.tabsList).toBeVisible();
+    await expect(this.copyButton).toBeVisible();
   }
 
   async expectReady() {

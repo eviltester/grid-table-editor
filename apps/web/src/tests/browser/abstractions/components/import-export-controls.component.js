@@ -1,3 +1,5 @@
+const { expect } = require('@playwright/test');
+
 class ImportExportControlsComponent {
   constructor(page) {
     this.page = page;
@@ -13,9 +15,9 @@ class ImportExportControlsComponent {
   }
 
   async expectVisible() {
-    await this.container.waitFor({ state: 'visible' });
-    await this.setTextFromGridButton.waitFor({ state: 'visible' });
-    await this.downloadButton.waitFor({ state: 'visible' });
+    await expect(this.container).toBeVisible();
+    await expect(this.setTextFromGridButton).toBeVisible();
+    await expect(this.downloadButton).toBeVisible();
   }
 
   async expectReady() {

@@ -14,6 +14,7 @@ describe('ExportControls', () => {
   let controls;
 
   beforeEach(() => {
+    jest.useRealTimers();
     dom = new JSDOM(`<!doctype html><html><body>
       <ul><li class="active-type"><a data-type="csv" href="#">CSV</a></li></ul>
       <button id="filedownload">Download</button>
@@ -37,6 +38,7 @@ describe('ExportControls', () => {
   });
 
   afterEach(() => {
+    jest.useRealTimers();
     jest.restoreAllMocks();
     dom.window.close();
   });
@@ -63,6 +65,7 @@ describe('ExportControls', () => {
   test('fileDownload exits when type is not exportable', async () => {
     exporter.canExport.mockReturnValue(false);
     const downloadSpy = jest.spyOn(Download.prototype, 'downloadFile').mockImplementation(() => {});
+    const statusSpy = jest.spyOn(controls, '_setExportProgressStatus');
     const button = document.getElementById('filedownload');
     const statusElem = document.getElementById('export-progress-status');
 
@@ -71,7 +74,8 @@ describe('ExportControls', () => {
 
     expect(exporter.getGridAs).not.toHaveBeenCalled();
     expect(downloadSpy).not.toHaveBeenCalled();
-    expect(statusElem.textContent).toContain('Export not available');
+    expect(statusSpy).toHaveBeenCalledWith('Export not available for this format.', false);
+    expect(statusElem.style.display).toBe('inline-block');
     expect(button.disabled).toBe(false);
   });
 

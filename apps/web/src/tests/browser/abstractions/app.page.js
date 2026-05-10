@@ -1,3 +1,4 @@
+const { expect } = require('@playwright/test');
 const { TopNavigationComponent } = require('./components/top-navigation.component');
 const { GridEditorComponent } = require('./components/grid-editor.component');
 const { ImportExportControlsComponent } = require('./components/import-export-controls.component');
@@ -25,7 +26,7 @@ class AppPage {
   }
 
   async waitUntilReady() {
-    await this.initialLoading.waitFor({ state: 'hidden' });
+    await expect(this.initialLoading).toBeHidden();
     await this.topNavigation.expectReady();
     await this.gridEditor.expectReady();
     await this.importExportControls.expectReady();

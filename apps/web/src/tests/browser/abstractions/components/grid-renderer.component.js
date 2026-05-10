@@ -30,11 +30,7 @@ class GridRendererComponent {
   }
 
   async waitForColumnName(columnName) {
-    await this.gridRoot
-      .locator('.tabulator-col-title')
-      .filter({ hasText: columnName })
-      .first()
-      .waitFor({ state: 'visible' });
+    await expect(this.gridRoot.locator('.tabulator-col-title').filter({ hasText: columnName }).first()).toBeVisible();
   }
 
   async clickCell(columnIndex, rowIndex) {

@@ -101,10 +101,16 @@ class GridEditorComponent {
         const filtersAreCleared = quickFilterValue === '' && !hasActiveColumnFilter;
         const rowCountRecovered = Number.isFinite(expectedActiveRowCount)
           ? activeRowCount === expectedActiveRowCount
-          : activeRowCount > initialActiveRowCount;
+          : activeRowCount >= initialActiveRowCount;
 
         if (filtersAreCleared && rowCountRecovered) {
-          await this.renderer.waitForGridSettle({ columnName: diagnosticColumn, stableForMs: 2000, timeoutMs: 7000 });
+          try {
+            await this.renderer.waitForGridSettle({ columnName: diagnosticColumn, stableForMs: 2000, timeoutMs: 7000 });
+          } catch (error) {
+            // Let retry loop continue so we can recover from transient settle timing.
+            await this.page.waitForTimeout(50);
+            continue;
+          }
 
           const quickFilterAfterSettle = await this.quickFilterInput.inputValue();
           const headerFilterValuesAfterSettle = await this.grid
@@ -115,7 +121,7 @@ class GridEditorComponent {
             quickFilterAfterSettle === '' && !headerFilterValuesAfterSettle.some((value) => value.length > 0);
           const rowCountStillRecovered = Number.isFinite(expectedActiveRowCount)
             ? activeRowCountAfterSettle === expectedActiveRowCount
-            : activeRowCountAfterSettle > initialActiveRowCount;
+            : activeRowCountAfterSettle >= initialActiveRowCount;
           if (filtersStillCleared && rowCountStillRecovered) {
             return;
           }

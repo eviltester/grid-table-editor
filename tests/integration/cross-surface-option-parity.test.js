@@ -8,11 +8,19 @@ import {
   sanitizeUiOptionsForFormat,
 } from '../../packages/core-ui/js/gui_components/options-catalog-adapter.js';
 
-function firstJsonLine(output) {
+function jsonRpcMessages(output) {
   return output
     .split(/\r?\n/)
     .map((line) => line.trim())
-    .find((line) => line.startsWith('{'));
+    .filter((line) => line.startsWith('{'))
+    .map((line) => {
+      try {
+        return JSON.parse(line);
+      } catch {
+        return null;
+      }
+    })
+    .filter(Boolean);
 }
 
 function requestMcpServer(payload) {
@@ -23,10 +31,13 @@ function requestMcpServer(payload) {
     input: request,
     encoding: 'utf8',
     cwd: repoRoot,
+    timeout: 15000,
   });
-  const line = firstJsonLine(output);
-  expect(line).toBeTruthy();
-  return JSON.parse(line);
+  const messages = jsonRpcMessages(output);
+  expect(messages.length).toBeGreaterThan(0);
+  const response = messages.find((message) => message?.id === payload.id);
+  expect(response).toBeTruthy();
+  return response;
 }
 
 describe('cross-surface option parity (API vs MCP vs CLI helper)', () => {
@@ -56,9 +67,8 @@ describe('cross-surface option parity (API vs MCP vs CLI helper)', () => {
     expect(mcpPayload.ok).toBe(true);
     const props = mcpPayload?.formatSchema?.optionSchema?.properties || {};
     for (const [key, tip] of Object.entries(tips)) {
-      if (props[key]) {
-        expect(props[key].description).toBe(tip);
-      }
+      expect(Object.hasOwn(props, key)).toBe(true);
+      expect(props[key].description).toBe(tip);
     }
 
     const normalized = normalizeAndValidateFormat(format.toUpperCase());

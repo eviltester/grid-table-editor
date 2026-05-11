@@ -24,6 +24,8 @@ test.describe('POST /v1/generate/amend', () => {
     expect(response.status()).toBe(200);
     const body = await response.json();
     expect(body.rows).toEqual([['Bob'], ['Eve']]);
+    expect(body.diagnostics).not.toBeNull();
+    expect(Array.isArray(body.diagnostics)).toBe(false);
     expect(typeof body.diagnostics).toBe('object');
   });
 
@@ -35,6 +37,8 @@ test.describe('POST /v1/generate/amend', () => {
     expect(response.status()).toBe(400);
     const body = await response.json();
     expect(Array.isArray(body.errors)).toBe(true);
+    expect(body.diagnostics).not.toBeNull();
+    expect(Array.isArray(body.diagnostics)).toBe(false);
     expect(typeof body.diagnostics).toBe('object');
   });
 });

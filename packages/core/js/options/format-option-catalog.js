@@ -392,9 +392,9 @@ function getTipsForFormat(format, { customTips } = {}) {
   const tips = {};
   for (const key of keys) {
     tips[key] =
-      runtimeCustomTips[key] ||
-      configuredTips[key] ||
-      COMMON_OPTION_TIPS_BY_KEY[key] ||
+      runtimeCustomTips[key] ??
+      configuredTips[key] ??
+      COMMON_OPTION_TIPS_BY_KEY[key] ??
       `Configure ${key.replace(/([A-Z])/g, ' $1').toLowerCase()}.`;
   }
   return tips;

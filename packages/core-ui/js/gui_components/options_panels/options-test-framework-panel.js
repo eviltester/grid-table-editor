@@ -225,6 +225,7 @@ class TestFrameworkOptionsPanel {
     );
     this.htmlData.setCheckBoxFrom("input[name='include-setup']", options.includeSetup, true);
     this.htmlData.setCheckBoxFrom("input[name='pretty-print']", options.prettyPrint, true);
+    this.refreshHelpTipsForSelectedFramework();
   }
 }
 

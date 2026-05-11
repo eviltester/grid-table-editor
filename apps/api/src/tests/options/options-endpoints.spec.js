@@ -34,6 +34,8 @@ test.describe('/v1/generate/options endpoints', () => {
     expect(response.status()).toBe(400);
     const body = await response.json();
     expect(Array.isArray(body.errors)).toBe(true);
+    expect(body.diagnostics).not.toBeNull();
     expect(typeof body.diagnostics).toBe('object');
+    expect(Array.isArray(body.diagnostics)).toBe(false);
   });
 });

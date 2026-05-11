@@ -60,6 +60,7 @@ describe('option panel help parity with core tips', () => {
     ];
 
     for (const panel of panels) {
+      host.innerHTML = '';
       panel.addToGui();
       const helpIcons = Array.from(host.querySelectorAll('.option-help-icon'));
       expect(helpIcons.length).toBeGreaterThan(0);

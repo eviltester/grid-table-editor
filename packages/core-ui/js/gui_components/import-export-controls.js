@@ -1,26 +1,8 @@
 import { ExportControls } from './exportControls.js';
 import { DragDropControl } from './drag-drop-control.js';
-import { CsvDelimitedOptions } from './options_panels/options-csv-delimited-controls.js';
-import { DelimitedOptions } from './options_panels/options-delimited-controls.js';
-import { AsciiTableOptionsPanel } from './options_panels/options-ascii-table.js';
-import { MarkdownOptionsPanel } from './options_panels/options-markdown-panel.js';
-import { JsonOptionsPanel } from './options_panels/options-json-panel.js';
-import { JavaOptionsPanel } from './options_panels/options-java-panel.js';
-import { JavascriptOptionsPanel } from './options_panels/options-javascript-panel.js';
-import { PythonOptionsPanel } from './options_panels/options-python-panel.js';
-import { PhpOptionsPanel } from './options_panels/options-php-panel.js';
-import { RubyOptionsPanel } from './options_panels/options-ruby-panel.js';
-import { KotlinOptionsPanel } from './options_panels/options-kotlin-panel.js';
-import { CSharpOptionsPanel } from './options_panels/options-csharp-panel.js';
-import { PerlOptionsPanel } from './options_panels/options-perl-panel.js';
-import { TypeScriptOptionsPanel } from './options_panels/options-typescript-panel.js';
-import { XmlOptionsPanel } from './options_panels/options-xml-panel.js';
-import { SqlOptionsPanel } from './options_panels/options-sql-panel.js';
-import { GherkinOptionsPanel } from './options_panels/options-gherkin-panel.js';
-import { HtmlOptionsPanel } from './options_panels/options-html-panel.js';
-import { TestFrameworkOptionsPanel } from './options_panels/options-test-framework-panel.js';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
-import { getTestFrameworkFormats, sanitizeUiOptionsForFormat } from './options-catalog-adapter.js';
+import { sanitizeUiOptionsForFormat } from './options-catalog-adapter.js';
+import { createOptionsPanelsForParent } from './options-ui-schema.js';
 
 class ImportExportControls {
   constructor() {
@@ -285,29 +267,7 @@ class ImportExportControls {
   setupOptionsPanelsWithin(optionsparent) {
     if (this.optionsPanels === undefined) {
       if (optionsparent) {
-        this.optionsPanels = {};
-        this.optionsPanels['csv'] = new CsvDelimitedOptions(optionsparent);
-        this.optionsPanels['dsv'] = new DelimitedOptions(optionsparent);
-        this.optionsPanels['asciitable'] = new AsciiTableOptionsPanel(optionsparent);
-        this.optionsPanels['markdown'] = new MarkdownOptionsPanel(optionsparent);
-        this.optionsPanels['json'] = new JsonOptionsPanel(optionsparent);
-        this.optionsPanels['jsonl'] = new JsonOptionsPanel(optionsparent, 'jsonl-options', { jsonlMode: true });
-        this.optionsPanels['javascript'] = new JavascriptOptionsPanel(optionsparent);
-        this.optionsPanels['java'] = new JavaOptionsPanel(optionsparent);
-        this.optionsPanels['python'] = new PythonOptionsPanel(optionsparent);
-        this.optionsPanels['kotlin'] = new KotlinOptionsPanel(optionsparent);
-        this.optionsPanels['csharp'] = new CSharpOptionsPanel(optionsparent);
-        this.optionsPanels['perl'] = new PerlOptionsPanel(optionsparent);
-        this.optionsPanels['php'] = new PhpOptionsPanel(optionsparent);
-        this.optionsPanels['ruby'] = new RubyOptionsPanel(optionsparent);
-        this.optionsPanels['typescript'] = new TypeScriptOptionsPanel(optionsparent);
-        this.optionsPanels['xml'] = new XmlOptionsPanel(optionsparent);
-        this.optionsPanels['sql'] = new SqlOptionsPanel(optionsparent);
-        this.optionsPanels['html'] = new HtmlOptionsPanel(optionsparent);
-        this.optionsPanels['gherkin'] = new GherkinOptionsPanel(optionsparent);
-        for (const framework of getTestFrameworkFormats()) {
-          this.optionsPanels[framework] = new TestFrameworkOptionsPanel(optionsparent, framework);
-        }
+        this.optionsPanels = createOptionsPanelsForParent(optionsparent);
       }
     }
   }

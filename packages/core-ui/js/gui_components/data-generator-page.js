@@ -4,30 +4,8 @@ import { PairwiseTestDataGenerator } from '@anywaydata/core/data_generation/all-
 import { Exporter } from '@anywaydata/core/grid/exporter.js';
 import { Download } from './download.js';
 import { GridExtension as TabulatorGridExtension } from './data-grid-editor/tabulator/gridExtension-tabulator.js';
-import { CsvDelimitedOptions } from './options_panels/options-csv-delimited-controls.js';
-import { DelimitedOptions } from './options_panels/options-delimited-controls.js';
-import { MarkdownOptionsPanel } from './options_panels/options-markdown-panel.js';
-import { JsonOptionsPanel } from './options_panels/options-json-panel.js';
-import { JavaOptionsPanel } from './options_panels/options-java-panel.js';
-import { JavascriptOptionsPanel } from './options_panels/options-javascript-panel.js';
-import { PythonOptionsPanel } from './options_panels/options-python-panel.js';
-import { PhpOptionsPanel } from './options_panels/options-php-panel.js';
-import { RubyOptionsPanel } from './options_panels/options-ruby-panel.js';
-import { KotlinOptionsPanel } from './options_panels/options-kotlin-panel.js';
-import { CSharpOptionsPanel } from './options_panels/options-csharp-panel.js';
-import { PerlOptionsPanel } from './options_panels/options-perl-panel.js';
-import { TypeScriptOptionsPanel } from './options_panels/options-typescript-panel.js';
-import { XmlOptionsPanel } from './options_panels/options-xml-panel.js';
-import { SqlOptionsPanel } from './options_panels/options-sql-panel.js';
-import { HtmlOptionsPanel } from './options_panels/options-html-panel.js';
-import { GherkinOptionsPanel } from './options_panels/options-gherkin-panel.js';
-import { AsciiTableOptionsPanel } from './options_panels/options-ascii-table.js';
-import { TestFrameworkOptionsPanel } from './options_panels/options-test-framework-panel.js';
-import {
-  getTestFrameworkFormats,
-  getTestFrameworkLabel,
-  sanitizeUiOptionsForFormat,
-} from './options-catalog-adapter.js';
+import { sanitizeUiOptionsForFormat } from './options-catalog-adapter.js';
+import { createOptionsPanelsForParent, getOutputFormatGroups } from './options-ui-schema.js';
 import { getKnownFakerCommandsAlphabetical, getKnownFakerCommandsLongestFirst } from './faker-commands.js';
 import { getFakerCommandHelp } from './faker-command-help-metadata.js';
 
@@ -351,32 +329,20 @@ class DataGeneratorPage {
       return;
     }
 
-    const orderedTypes = ['csv', 'json', 'jsonl', 'xml', 'sql', 'markdown', 'dsv', 'html', 'gherkin', 'asciitable'];
-    orderedTypes.forEach((type) => {
+    const formatGroups = getOutputFormatGroups();
+    formatGroups.core.forEach(({ type, label }) => {
       if (!this.exporter?.canExport?.(type) && this.exporter) {
         return;
       }
       const option = this.documentObj.createElement('option');
       option.value = type;
-      option.textContent = type.toUpperCase();
+      option.textContent = label;
       outputSelect.appendChild(option);
     });
 
-    const codeTypes = [
-      { type: 'csharp', label: 'C#' },
-      { type: 'java', label: 'Java' },
-      { type: 'javascript', label: 'JavaScript' },
-      { type: 'kotlin', label: 'Kotlin' },
-      { type: 'perl', label: 'Perl' },
-      { type: 'php', label: 'PHP' },
-      { type: 'python', label: 'Python' },
-      { type: 'ruby', label: 'Ruby' },
-      { type: 'typescript', label: 'TypeScript' },
-    ];
-    const unitTestCodeTypes = getTestFrameworkFormats().map((type) => ({ type, label: getTestFrameworkLabel(type) }));
     const codeGroup = this.documentObj.createElement('optgroup');
     codeGroup.label = '-- Code --';
-    codeTypes.forEach(({ type, label }) => {
+    formatGroups.code.forEach(({ type, label }) => {
       if (!this.exporter?.canExport?.(type) && this.exporter) {
         return;
       }
@@ -390,7 +356,7 @@ class DataGeneratorPage {
     }
     const unitTestCodeGroup = this.documentObj.createElement('optgroup');
     unitTestCodeGroup.label = '-- Code (Unit Test) --';
-    unitTestCodeTypes.forEach(({ type, label }) => {
+    formatGroups.unitTest.forEach(({ type, label }) => {
       if (!this.exporter?.canExport?.(type) && this.exporter) {
         return;
       }
@@ -448,29 +414,7 @@ class DataGeneratorPage {
       return;
     }
 
-    this.optionsPanels = {};
-    this.optionsPanels['csv'] = new CsvDelimitedOptions(optionsParent);
-    this.optionsPanels['dsv'] = new DelimitedOptions(optionsParent);
-    this.optionsPanels['markdown'] = new MarkdownOptionsPanel(optionsParent);
-    this.optionsPanels['json'] = new JsonOptionsPanel(optionsParent);
-    this.optionsPanels['jsonl'] = new JsonOptionsPanel(optionsParent, 'jsonl-options', { jsonlMode: true });
-    this.optionsPanels['javascript'] = new JavascriptOptionsPanel(optionsParent);
-    this.optionsPanels['java'] = new JavaOptionsPanel(optionsParent);
-    this.optionsPanels['python'] = new PythonOptionsPanel(optionsParent);
-    this.optionsPanels['kotlin'] = new KotlinOptionsPanel(optionsParent);
-    this.optionsPanels['csharp'] = new CSharpOptionsPanel(optionsParent);
-    this.optionsPanels['perl'] = new PerlOptionsPanel(optionsParent);
-    this.optionsPanels['php'] = new PhpOptionsPanel(optionsParent);
-    this.optionsPanels['ruby'] = new RubyOptionsPanel(optionsParent);
-    this.optionsPanels['typescript'] = new TypeScriptOptionsPanel(optionsParent);
-    this.optionsPanels['xml'] = new XmlOptionsPanel(optionsParent);
-    this.optionsPanels['sql'] = new SqlOptionsPanel(optionsParent);
-    this.optionsPanels['html'] = new HtmlOptionsPanel(optionsParent);
-    this.optionsPanels['gherkin'] = new GherkinOptionsPanel(optionsParent);
-    this.optionsPanels['asciitable'] = new AsciiTableOptionsPanel(optionsParent);
-    for (const framework of getTestFrameworkFormats()) {
-      this.optionsPanels[framework] = new TestFrameworkOptionsPanel(optionsParent, framework);
-    }
+    this.optionsPanels = createOptionsPanelsForParent(optionsParent);
   }
 
   getSelectedOutputType() {

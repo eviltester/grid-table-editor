@@ -1,5 +1,6 @@
 import { PerlConvertorOptions } from '@anywaydata/core/data_formats/perl-convertor.js';
 import { HtmlDataValues } from './html-options-data-utils.js';
+import { applySharedOptionTips } from './options-help-tips.js';
 import { applyUiPanelOnlyTips } from './options-help-tips-ui.js';
 
 class PerlOptionsPanel {
@@ -71,7 +72,19 @@ class PerlOptionsPanel {
         </div>
       </div>
     `;
-    applyUiPanelOnlyTips(this.parent);
+    applySharedOptionTips(this.parent, 'perl', [
+      { selector: "[data-help='perl-option-collection-type']", key: 'collectionType' },
+      { selector: "[data-help='perl-option-assign-variable']", key: 'assignToVariable' },
+      { selector: "[data-help='perl-option-variable-name']", key: 'variableName' },
+      { selector: "[data-help='perl-option-quote-numbers']", key: 'quoteNumbers' },
+      { selector: "[data-help='perl-option-hash-key-style']", key: 'hashKeyStyle' },
+      { selector: "[data-help='perl-option-anonymous-objects']", key: 'useAnonymousObjects' },
+      { selector: "[data-help='perl-option-class-name']", key: 'objectClassName' },
+      { selector: "[data-help='perl-option-object-instantiation-style']", key: 'objectInstantiationStyle' },
+      { selector: "[data-help='perl-option-pretty-print']", key: 'prettyPrint' },
+      { selector: "[data-help='perl-option-delimiter']", key: 'prettyPrintDelimiter' },
+    ]);
+    applyUiPanelOnlyTips(this.parent, ['perl-option-custom-delimiter']);
   }
 
   setApplyCallback(callbackFunc) {

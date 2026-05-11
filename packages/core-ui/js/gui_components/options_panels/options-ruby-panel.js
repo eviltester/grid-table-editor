@@ -1,5 +1,6 @@
 import { RubyConvertorOptions } from '@anywaydata/core/data_formats/ruby-convertor.js';
 import { HtmlDataValues } from './html-options-data-utils.js';
+import { applySharedOptionTips } from './options-help-tips.js';
 import { applyUiPanelOnlyTips } from './options-help-tips-ui.js';
 
 class RubyOptionsPanel {
@@ -96,7 +97,22 @@ class RubyOptionsPanel {
         </div>
       </div>
     `;
-    applyUiPanelOnlyTips(this.parent);
+    applySharedOptionTips(this.parent, 'ruby', [
+      { selector: "[data-help='ruby-option-collection-type']", key: 'collectionType' },
+      { selector: "[data-help='ruby-option-assign-variable']", key: 'assignToVariable' },
+      { selector: "[data-help='ruby-option-variable-name']", key: 'variableName' },
+      { selector: "[data-help='ruby-option-output-wrapper']", key: 'outputWrapper' },
+      { selector: "[data-help='ruby-option-quote-numbers']", key: 'quoteNumbers' },
+      { selector: "[data-help='ruby-option-hash-key-style']", key: 'hashKeyStyle' },
+      { selector: "[data-help='ruby-option-anonymous-objects']", key: 'useAnonymousObjects' },
+      { selector: "[data-help='ruby-option-class-name']", key: 'objectClassName' },
+      { selector: "[data-help='ruby-option-object-representation']", key: 'objectRepresentation' },
+      { selector: "[data-help='ruby-option-field-name-style']", key: 'fieldNameStyle' },
+      { selector: "[data-help='ruby-option-pretty-print']", key: 'prettyPrint' },
+      { selector: "[data-help='ruby-option-hash-pretty-style']", key: 'hashPrettyStyle' },
+      { selector: "[data-help='ruby-option-delimiter']", key: 'prettyPrintDelimiter' },
+    ]);
+    applyUiPanelOnlyTips(this.parent, ['ruby-option-custom-delimiter']);
   }
 
   setApplyCallback(callbackFunc) {

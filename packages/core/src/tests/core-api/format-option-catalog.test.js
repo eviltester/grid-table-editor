@@ -27,4 +27,14 @@ describe('format option catalog helpers', () => {
     expect(Array.isArray(OPTION_KEYS_BY_FORMAT.json)).toBe(true);
     expect(Array.isArray(OPTION_KEYS_BY_FORMAT.junit5)).toBe(true);
   });
+
+  test('all cataloged keys resolve to descriptive tips (no generic fallback)', () => {
+    for (const [format, keys] of Object.entries(OPTION_KEYS_BY_FORMAT)) {
+      const tips = getTipsForFormat(format);
+      for (const key of keys) {
+        expect(tips[key]).toBeTruthy();
+        expect(tips[key].startsWith('Configure ')).toBe(false);
+      }
+    }
+  });
 });

@@ -1,5 +1,6 @@
 import { KotlinConvertorOptions } from '@anywaydata/core/data_formats/kotlin-convertor.js';
 import { HtmlDataValues } from './html-options-data-utils.js';
+import { applySharedOptionTips } from './options-help-tips.js';
 import { applyUiPanelOnlyTips } from './options-help-tips-ui.js';
 
 class KotlinOptionsPanel {
@@ -64,7 +65,20 @@ class KotlinOptionsPanel {
         </div>
       </div>
     `;
-    applyUiPanelOnlyTips(this.parent);
+    applySharedOptionTips(this.parent, 'kotlin', [
+      { selector: "[data-help='kotlin-option-collection-type']", key: 'collectionType' },
+      { selector: "[data-help='kotlin-option-assign-variable']", key: 'assignToVariable' },
+      { selector: "[data-help='kotlin-option-mutable-assignment']", key: 'mutableAssignment' },
+      { selector: "[data-help='kotlin-option-variable-name']", key: 'variableName' },
+      { selector: "[data-help='kotlin-option-quote-numbers']", key: 'quoteNumbers' },
+      { selector: "[data-help='kotlin-option-anonymous-objects']", key: 'useAnonymousObjects' },
+      { selector: "[data-help='kotlin-option-mutable-collections']", key: 'useMutableCollections' },
+      { selector: "[data-help='kotlin-option-class-name']", key: 'objectClassName' },
+      { selector: "[data-help='kotlin-option-pretty-print']", key: 'prettyPrint' },
+      { selector: "[data-help='kotlin-option-delimiter']", key: 'prettyPrintDelimiter' },
+      { selector: "[data-help='kotlin-option-trailing-comma']", key: 'trailingComma' },
+    ]);
+    applyUiPanelOnlyTips(this.parent, ['kotlin-option-custom-delimiter']);
   }
 
   setApplyCallback(callbackFunc) {

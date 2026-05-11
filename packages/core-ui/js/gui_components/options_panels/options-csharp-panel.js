@@ -1,5 +1,6 @@
 import { CSharpConvertorOptions } from '@anywaydata/core/data_formats/csharp-convertor.js';
 import { HtmlDataValues } from './html-options-data-utils.js';
+import { applySharedOptionTips } from './options-help-tips.js';
 import { applyUiPanelOnlyTips } from './options-help-tips-ui.js';
 
 class CSharpOptionsPanel {
@@ -66,7 +67,18 @@ class CSharpOptionsPanel {
         </div>
       </div>
     `;
-    applyUiPanelOnlyTips(this.parent);
+    applySharedOptionTips(this.parent, 'csharp', [
+      { selector: "[data-help='csharp-option-collection-type']", key: 'collectionTargetType' },
+      { selector: "[data-help='csharp-option-assign-variable']", key: 'assignToVariable' },
+      { selector: "[data-help='csharp-option-variable-name']", key: 'variableName' },
+      { selector: "[data-help='csharp-option-quote-numbers']", key: 'quoteNumbers' },
+      { selector: "[data-help='csharp-option-dictionary-value-type']", key: 'dictionaryValueType' },
+      { selector: "[data-help='csharp-option-anonymous-objects']", key: 'useAnonymousObjects' },
+      { selector: "[data-help='csharp-option-class-name']", key: 'objectClassName' },
+      { selector: "[data-help='csharp-option-pretty-print']", key: 'prettyPrint' },
+      { selector: "[data-help='csharp-option-delimiter']", key: 'prettyPrintDelimiter' },
+    ]);
+    applyUiPanelOnlyTips(this.parent, ['csharp-option-custom-delimiter']);
   }
 
   setApplyCallback(callbackFunc) {

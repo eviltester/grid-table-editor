@@ -1,6 +1,6 @@
 {
   "name": "@anywaydata/mcp",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "type": "module",
   "private": false,
   "bin": {
@@ -23,6 +23,6 @@
     "test": "jest --config ../../package.json --testMatch \"<rootDir>/apps/mcp/src/*.test.js\""
   },
   "dependencies": {
-    "@anywaydata/core": "^1.1.0"
+    "@anywaydata/core": "^1.2.0"
   }
 }

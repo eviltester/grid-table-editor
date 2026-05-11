@@ -1,5 +1,11 @@
 # @anywaydata/core
 
+## 1.2.0
+
+### Minor Changes
+
+- pairwise and unit test export updates
+
 ## 1.1.0
 
 ### Minor Changes

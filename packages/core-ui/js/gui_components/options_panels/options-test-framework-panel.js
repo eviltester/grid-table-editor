@@ -2,6 +2,7 @@ import { TestFrameworkConvertorOptions } from '@anywaydata/core/data_formats/tes
 import { getTipsForFormat } from '@anywaydata/core';
 import { HtmlDataValues } from './html-options-data-utils.js';
 import { applyUiPanelOnlyTips } from './options-help-tips-ui.js';
+import { TEST_FRAMEWORK_GROUPS, getTestFrameworkLabel } from '../options-catalog-adapter.js';
 
 class TestFrameworkOptionsPanel {
   constructor(parentElement, frameworkId = 'junit4') {
@@ -10,56 +11,19 @@ class TestFrameworkOptionsPanel {
     this.frameworkId = frameworkId;
   }
 
-  static FRAMEWORK_GROUPS = {
-    java: ['junit4', 'junit5', 'junit6', 'testng'],
-    python: ['pytest', 'unittest', 'nose2'],
-    javascript: ['jest', 'vitest', 'mocha'],
-    csharp: ['xunit', 'nunit', 'mstest'],
-    ruby: ['rspec', 'minitest'],
-    php: ['phpunit', 'pest'],
-    kotlin: ['kotest', 'junit5-kotlin', 'spek'],
-    perl: ['test-more', 'test2-suite'],
-  };
-
-  static FRAMEWORK_LABELS = {
-    junit4: 'JUnit4',
-    junit5: 'JUnit5',
-    junit6: 'JUnit6',
-    testng: 'TestNG',
-    pytest: 'PyTest',
-    unittest: 'unittest',
-    nose2: 'nose2',
-    jest: 'Jest',
-    vitest: 'Vitest',
-    mocha: 'Mocha',
-    xunit: 'xUnit',
-    nunit: 'NUnit',
-    mstest: 'MSTest',
-    rspec: 'RSpec',
-    minitest: 'Minitest',
-    phpunit: 'PHPUnit',
-    pest: 'Pest',
-    kotest: 'Kotest',
-    'junit5-kotlin': 'JUnit5 Kotlin',
-    spek: 'Spek',
-    'test-more': 'Test::More',
-    'test2-suite': 'Test2::Suite',
-  };
-
   getFrameworkGroupName() {
     const frameworkId = this.frameworkId;
     return (
-      Object.keys(TestFrameworkOptionsPanel.FRAMEWORK_GROUPS).find((groupName) =>
-        TestFrameworkOptionsPanel.FRAMEWORK_GROUPS[groupName].includes(frameworkId)
-      ) || 'java'
+      Object.keys(TEST_FRAMEWORK_GROUPS).find((groupName) => TEST_FRAMEWORK_GROUPS[groupName].includes(frameworkId)) ||
+      'java'
     );
   }
 
   getFrameworkOptions() {
     const groupName = this.getFrameworkGroupName();
-    return TestFrameworkOptionsPanel.FRAMEWORK_GROUPS[groupName].map((frameworkId) => ({
+    return TEST_FRAMEWORK_GROUPS[groupName].map((frameworkId) => ({
       value: frameworkId,
-      label: TestFrameworkOptionsPanel.FRAMEWORK_LABELS[frameworkId] || frameworkId,
+      label: getTestFrameworkLabel(frameworkId),
     }));
   }
 

@@ -30,7 +30,7 @@ function requestMcpServer(payload) {
 }
 
 describe('cross-surface option parity (API vs MCP vs CLI helper)', () => {
-  const representativeFormats = ['csv', 'xml', 'junit5'];
+  const representativeFormats = ['csv', 'xml', 'jsonl', 'junit5', 'jest', 'test-more'];
 
   test.each(representativeFormats)('format %s stays aligned across surfaces', (format) => {
     const tips = getTipsForFormat(format);

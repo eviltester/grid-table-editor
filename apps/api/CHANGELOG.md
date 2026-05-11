@@ -1,5 +1,16 @@
 # @anywaydata/api
 
+## 2.2.0
+
+### Minor Changes
+
+- pairwise and unit test export updates
+
+### Patch Changes
+
+- Updated dependencies
+  - @anywaydata/core@1.2.0
+
 ## 2.1.0
 
 ### Minor Changes

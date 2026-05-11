@@ -44,7 +44,7 @@ Parameter guide for the examples:
 - `-o, --outputfile`: optional output file path. If omitted, output is written to stdout.
 - `-t, --testMode`: generate one row and print diagnostics for troubleshooting.
 - `--show-progress`: explicitly control progress logs (for example `--show-progress true` or `--show-progress false`).
-- `--stream`: enable streaming generation when supported (currently `csv` and `jsonl`).
+- `--stream`: enable streaming generation when supported (`csv`, `jsonl`, `dsv`, `json`, `xml`).
 - `--stream-threshold`: auto-enable streaming when `rowCount >= threshold` and `--outputfile` is set (default `5000`).
 - `--unsafe-faker-expressions`: opt-in to expression-style faker arguments (unsafe for untrusted input).
 - `--help`: show CLI usage and options.
@@ -65,7 +65,9 @@ Schema text supports:
   - on for stdout mode (no `--outputfile`)
   - on for `--testMode`
   - off for file output unless `--show-progress true` is provided
-- Streaming is currently implemented for `csv` and `jsonl` exports. Other formats use buffered generation.
+- Streaming is currently implemented for `csv`, `jsonl`, `dsv`, `json`, and `xml` exports. Other formats use buffered generation.
+- JSON stream mode emits a valid JSON array payload.
+- If a stream mode cannot honor some format options, generation continues and warnings are reported.
 - `amend` always uses buffered generation; stream flags are ignored for this command.
 - Auto-streaming (`--stream-threshold`) applies only when writing to a file. For stdout workflows, use `--stream` explicitly.
 - For `amend`, if `-n/--numberOfLines` is omitted, all imported rows are amended.

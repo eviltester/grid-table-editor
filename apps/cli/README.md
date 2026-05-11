@@ -83,8 +83,15 @@ Streaming is currently supported for:
 
 - `csv`
 - `jsonl`
+- `dsv`
+- `json`
+- `xml`
 
-Other formats use buffered generation.
+Notes:
+
+- `json` stream mode emits a valid JSON array payload.
+- For stream-mode option mismatches, generation continues and warnings are reported when applicable.
+- Other formats use buffered generation.
 
 For `amend`, streaming flags are accepted for compatibility but ignored (always buffered).
 
@@ -93,6 +100,9 @@ Examples:
 ```bash
 anywaydata generate -i ./apps/cli/examples/company-literal.txt -n 100000 -f jsonl -o output.jsonl --stream
 anywaydata generate -i ./apps/cli/examples/company-literal.txt -n 100000 -f csv -o output.csv --stream-threshold 1000
+anywaydata generate -i ./apps/cli/examples/company-literal.txt -n 100000 -f dsv -o output.dsv --stream
+anywaydata generate -i ./apps/cli/examples/company-literal.txt -n 100000 -f json -o output.json --stream
+anywaydata generate -i ./apps/cli/examples/company-literal.txt -n 100000 -f xml -o output.xml --stream
 ```
 
 ## Spec File Format

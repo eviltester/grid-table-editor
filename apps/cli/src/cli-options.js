@@ -37,7 +37,7 @@ export function parseCliOptions(argvInput = process.argv) {
     .option('stream', {
       type: 'boolean',
       default: false,
-      describe: 'Use streaming generation path when available (exporting CSV or JSONL)',
+      describe: 'Use streaming generation path when available (exporting CSV, JSONL, DSV, JSON or XML)',
     })
     .option('stream-threshold', {
       type: 'number',

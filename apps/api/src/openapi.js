@@ -32,6 +32,8 @@ const openApiDocument = {
     '/v1/generate': {
       post: {
         summary: 'Generate data from text spec with selectable response shape',
+        description:
+          'Streaming generation is available for csv, jsonl, dsv, json and xml. In stream mode, incompatible format options are reported as warnings and ignored where needed.',
         requestBody: {
           required: true,
           content: {

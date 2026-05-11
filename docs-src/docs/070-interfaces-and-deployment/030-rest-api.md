@@ -148,6 +148,12 @@ Both endpoints generate data from the same schema language and output formats. T
 - `stream` is accepted for compatibility and ignored
 - `inputFormat` is normalized (trimmed and lower-cased), so values like `" csv "` are accepted
 
+Generation streaming behavior:
+
+- stream mode supports: `csv`, `jsonl`, `dsv`, `json`, `xml`
+- `json` stream mode emits a valid JSON array payload
+- if stream mode cannot honor some format options, generation continues and warnings are reported
+
 ## Schema Formatting
 
 Schema text supports:

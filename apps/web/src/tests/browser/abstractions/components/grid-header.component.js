@@ -98,7 +98,6 @@ class GridHeaderComponent {
     const header = this._headerTitleByName(columnName).locator(`xpath=ancestor::*[contains(@class,'tabulator-col')]`);
     const input = header.locator('.tabulator-header-filter input');
     await input.fill(value);
-    await input.dispatchEvent('input');
     await input.press('Enter');
   }
 

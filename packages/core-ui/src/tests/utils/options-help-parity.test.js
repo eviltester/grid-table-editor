@@ -2,7 +2,10 @@ import { JSDOM } from 'jsdom';
 import { getTipsForFormat } from '@anywaydata/core';
 import { CsvDelimitedOptions } from '../../../js/gui_components/options_panels/options-csv-delimited-controls.js';
 import { DelimitedOptions } from '../../../js/gui_components/options_panels/options-delimited-controls.js';
+import { CSharpOptionsPanel } from '../../../js/gui_components/options_panels/options-csharp-panel.js';
 import { JsonOptionsPanel } from '../../../js/gui_components/options_panels/options-json-panel.js';
+import { JavascriptOptionsPanel } from '../../../js/gui_components/options_panels/options-javascript-panel.js';
+import { KotlinOptionsPanel } from '../../../js/gui_components/options_panels/options-kotlin-panel.js';
 import { XmlOptionsPanel } from '../../../js/gui_components/options_panels/options-xml-panel.js';
 import { SqlOptionsPanel } from '../../../js/gui_components/options_panels/options-sql-panel.js';
 import { MarkdownOptionsPanel } from '../../../js/gui_components/options_panels/options-markdown-panel.js';
@@ -10,7 +13,10 @@ import { HtmlOptionsPanel } from '../../../js/gui_components/options_panels/opti
 import { GherkinOptionsPanel } from '../../../js/gui_components/options_panels/options-gherkin-panel.js';
 import { AsciiTableOptionsPanel } from '../../../js/gui_components/options_panels/options-ascii-table.js';
 import { JavaOptionsPanel } from '../../../js/gui_components/options_panels/options-java-panel.js';
+import { PerlOptionsPanel } from '../../../js/gui_components/options_panels/options-perl-panel.js';
+import { PhpOptionsPanel } from '../../../js/gui_components/options_panels/options-php-panel.js';
 import { PythonOptionsPanel } from '../../../js/gui_components/options_panels/options-python-panel.js';
+import { RubyOptionsPanel } from '../../../js/gui_components/options_panels/options-ruby-panel.js';
 import { TypeScriptOptionsPanel } from '../../../js/gui_components/options_panels/options-typescript-panel.js';
 import { TestFrameworkOptionsPanel } from '../../../js/gui_components/options_panels/options-test-framework-panel.js';
 
@@ -33,8 +39,11 @@ describe('option panel help parity with core tips', () => {
     const panels = [
       new CsvDelimitedOptions(host),
       new DelimitedOptions(host),
+      new CSharpOptionsPanel(host),
       new JsonOptionsPanel(host),
       new JsonOptionsPanel(host, 'jsonl-options', { jsonlMode: true }),
+      new JavascriptOptionsPanel(host),
+      new KotlinOptionsPanel(host),
       new XmlOptionsPanel(host),
       new SqlOptionsPanel(host),
       new MarkdownOptionsPanel(host),
@@ -42,7 +51,10 @@ describe('option panel help parity with core tips', () => {
       new GherkinOptionsPanel(host),
       new AsciiTableOptionsPanel(host),
       new JavaOptionsPanel(host),
+      new PerlOptionsPanel(host),
+      new PhpOptionsPanel(host),
       new PythonOptionsPanel(host),
+      new RubyOptionsPanel(host),
       new TypeScriptOptionsPanel(host),
       new TestFrameworkOptionsPanel(host, 'junit5'),
     ];

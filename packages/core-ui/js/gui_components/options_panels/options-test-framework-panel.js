@@ -1,4 +1,5 @@
 import { TestFrameworkConvertorOptions } from '@anywaydata/core/data_formats/test-framework-convertor.js';
+import { getTipsForFormat } from '@anywaydata/core';
 import { HtmlDataValues } from './html-options-data-utils.js';
 
 class TestFrameworkOptionsPanel {
@@ -97,6 +98,7 @@ class TestFrameworkOptionsPanel {
   }
 
   addToGui() {
+    const tips = getTipsForFormat(this.frameworkId);
     const frameworkOptions = this.getFrameworkOptions();
     const dataSourceOptions = this.getDataSourceStrategyOptions()
       .map((option) => `<option value="${option.value}">${option.label}</option>`)
@@ -119,21 +121,21 @@ class TestFrameworkOptionsPanel {
         </div>
 
         <div class="suite-name">
-          <label><span class="helpicon option-help-icon" data-help="test-framework-option-suite-name" data-help-text="Class, module, or suite identifier used in generated test code where the framework supports naming."></span>Suite Name
+          <label><span class="helpicon option-help-icon" data-help="test-framework-option-suite-name" data-help-text="${tips.suiteName || 'Class, module, or suite identifier used in generated test code where the framework supports naming.'}"></span>Suite Name
             <input type="text" name="suite-name" value="GeneratedDataTests" style="width:12em">
           </label>
           <br>
         </div>
 
         <div class="test-name-prefix">
-          <label><span class="helpicon option-help-icon" data-help="test-framework-option-test-name-prefix" data-help-text="Prefix used for generated test method names and test titles."></span>Test Name Prefix
+          <label><span class="helpicon option-help-icon" data-help="test-framework-option-test-name-prefix" data-help-text="${tips.testNamePrefix || 'Prefix used for generated test method names and test titles.'}"></span>Test Name Prefix
             <input type="text" name="test-name-prefix" value="row" style="width:12em">
           </label>
           <br>
         </div>
 
         <div class="data-source-strategy">
-          <label><span class="helpicon option-help-icon" data-help="test-framework-option-data-source-strategy" data-help-text="Controls how row data is supplied to tests: provider/method source or inline values."></span>Data Source Strategy
+          <label><span class="helpicon option-help-icon" data-help="test-framework-option-data-source-strategy" data-help-text="${tips.dataSourceStrategy || 'Controls how row data is supplied to tests: provider/method source or inline values.'}"></span>Data Source Strategy
             <select name="data-source-strategy">
               ${dataSourceOptions}
             </select>
@@ -143,7 +145,7 @@ class TestFrameworkOptionsPanel {
 
         <div class="include-setup">
           <label>
-            <span class="helpicon option-help-icon" data-help="test-framework-option-include-setup" data-help-text="Include framework-specific setup scaffolding such as beforeEach, SetUp, fixture, or setup methods."></span>
+            <span class="helpicon option-help-icon" data-help="test-framework-option-include-setup" data-help-text="${tips.includeSetup || 'Include framework-specific setup scaffolding such as beforeEach, SetUp, fixture, or setup methods.'}"></span>
             <input type="checkbox" name="include-setup" checked>
             Include Setup
           </label>
@@ -152,7 +154,7 @@ class TestFrameworkOptionsPanel {
 
         <div class="pretty-print">
           <label>
-            <span class="helpicon option-help-icon" data-help="test-framework-option-pretty-print" data-help-text="Format generated row data and test source for readability with one row per line where supported."></span>
+            <span class="helpicon option-help-icon" data-help="test-framework-option-pretty-print" data-help-text="${tips.prettyPrint || 'Format generated row data and test source for readability with one row per line where supported.'}"></span>
             <input type="checkbox" name="pretty-print" checked>
             Pretty Print
           </label>
@@ -170,9 +172,34 @@ class TestFrameworkOptionsPanel {
       frameworkSelect.value = frameworkOptions.some((option) => option.value === this.frameworkId)
         ? this.frameworkId
         : frameworkOptions[0]?.value;
-      frameworkSelect.addEventListener('change', () => this.refreshDataSourceStrategyOptions());
+      frameworkSelect.addEventListener('change', () => {
+        this.frameworkId = frameworkSelect.value || this.frameworkId;
+        this.refreshDataSourceStrategyOptions();
+        this.refreshHelpTipsForSelectedFramework();
+      });
     }
     this.refreshDataSourceStrategyOptions();
+    this.refreshHelpTipsForSelectedFramework();
+  }
+
+  refreshHelpTipsForSelectedFramework() {
+    const selectedFrameworkId =
+      this.parent?.querySelector?.("select[name='framework-id']")?.value?.trim?.() || this.frameworkId;
+    const tips = getTipsForFormat(selectedFrameworkId);
+    const tipBindings = [
+      { selector: "[data-help='test-framework-option-suite-name']", key: 'suiteName' },
+      { selector: "[data-help='test-framework-option-test-name-prefix']", key: 'testNamePrefix' },
+      { selector: "[data-help='test-framework-option-data-source-strategy']", key: 'dataSourceStrategy' },
+      { selector: "[data-help='test-framework-option-include-setup']", key: 'includeSetup' },
+      { selector: "[data-help='test-framework-option-pretty-print']", key: 'prettyPrint' },
+    ];
+
+    for (const binding of tipBindings) {
+      const elem = this.parent?.querySelector?.(binding.selector);
+      if (elem && tips?.[binding.key]) {
+        elem.setAttribute('data-help-text', tips[binding.key]);
+      }
+    }
   }
 
   refreshDataSourceStrategyOptions() {

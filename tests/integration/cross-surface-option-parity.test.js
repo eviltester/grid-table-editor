@@ -3,6 +3,10 @@ import path from 'node:path';
 import { OPTION_KEYS_BY_FORMAT, getTipsForFormat } from '@anywaydata/core';
 import { createApiService } from '../../apps/api/src/api-service.js';
 import { normalizeAndValidateFormat, sanitizeCliOptionsForFormat } from '../../apps/cli/src/format-options.js';
+import {
+  getTestFrameworkFormats,
+  sanitizeUiOptionsForFormat,
+} from '../../packages/core-ui/js/gui_components/options-catalog-adapter.js';
 
 function firstJsonLine(output) {
   return output
@@ -63,5 +67,19 @@ describe('cross-surface option parity (API vs MCP vs CLI helper)', () => {
     const firstKey = expectedKeys[0];
     const sanitized = sanitizeCliOptionsForFormat(format, { [firstKey]: 'keep-me', __invalid__: 'drop-me' });
     expect(sanitized).toEqual({ [firstKey]: 'keep-me' });
+
+    const uiSanitized = sanitizeUiOptionsForFormat(format, { [firstKey]: 'keep-me', __invalid__: 'drop-me' });
+    expect(uiSanitized).toEqual({ outputFormat: format, options: { [firstKey]: 'keep-me' } });
+  });
+
+  test('UI adapter framework set stays aligned with shared catalog', () => {
+    const frameworkFormats = getTestFrameworkFormats();
+    expect(frameworkFormats).toContain('junit5');
+    for (const format of frameworkFormats) {
+      expect(Array.isArray(OPTION_KEYS_BY_FORMAT[format])).toBe(true);
+      expect(OPTION_KEYS_BY_FORMAT[format]).toEqual(
+        expect.arrayContaining(['suiteName', 'testNamePrefix', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'])
+      );
+    }
   });
 });

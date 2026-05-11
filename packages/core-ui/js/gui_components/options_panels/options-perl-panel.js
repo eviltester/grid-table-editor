@@ -1,5 +1,6 @@
 import { PerlConvertorOptions } from '@anywaydata/core/data_formats/perl-convertor.js';
 import { HtmlDataValues } from './html-options-data-utils.js';
+import { applyUiPanelOnlyTips } from './options-help-tips-ui.js';
 
 class PerlOptionsPanel {
   constructor(parentElement) {
@@ -12,7 +13,7 @@ class PerlOptionsPanel {
       <div class="perl-options" style="width:100%">
         <div><p><strong>Options</strong> <span data-help="perl-options" class="helpicon"></span></p></div>
         <div class="collectiontype">
-          <label>Collection Type
+          <label><span class="helpicon option-help-icon" data-help="perl-option-collection-type"></span>Collection Type
             <select name="collectiontype">
               <option value="array">Array Ref ([...])</option>
               <option value="list">List (...) </option>
@@ -20,16 +21,16 @@ class PerlOptionsPanel {
           </label>
         </div>
         <div class="assigntovariable">
-          <label><input type="checkbox" name="assigntovariable"> Assign to Variable</label>
+          <label><span class="helpicon option-help-icon" data-help="perl-option-assign-variable"></span><input type="checkbox" name="assigntovariable"> Assign to Variable</label>
         </div>
         <div class="variablename option-child">
-          <label>Variable Name <input type="text" name="variablename" value="data" style="width:8em"></label>
+          <label><span class="helpicon option-help-icon" data-help="perl-option-variable-name"></span>Variable Name <input type="text" name="variablename" value="data" style="width:8em"></label>
         </div>
         <div class="quotenumbers">
-          <label><input type="checkbox" name="quotenumbers"> Number Convert (Quote Numbers)</label>
+          <label><span class="helpicon option-help-icon" data-help="perl-option-quote-numbers"></span><input type="checkbox" name="quotenumbers"> Number Convert (Quote Numbers)</label>
         </div>
         <div class="hashkeystyle">
-          <label>Hash Key Style
+          <label><span class="helpicon option-help-icon" data-help="perl-option-hash-key-style"></span>Hash Key Style
             <select name="hashkeystyle">
               <option value="quoted">Quoted Keys ('name' =>)</option>
               <option value="bareword">Bareword Keys (name =>)</option>
@@ -37,13 +38,13 @@ class PerlOptionsPanel {
           </label>
         </div>
         <div class="useanonymousobjects">
-          <label><input type="checkbox" name="useanonymousobjects"> Anonymous Objects (Hash/Map)</label>
+          <label><span class="helpicon option-help-icon" data-help="perl-option-anonymous-objects"></span><input type="checkbox" name="useanonymousobjects"> Anonymous Objects (Hash/Map)</label>
         </div>
         <div class="objectclassname option-child">
-          <label>Object Name <input type="text" name="objectclassname" value="Row" style="width:8em"></label>
+          <label><span class="helpicon option-help-icon" data-help="perl-option-class-name"></span>Object Name <input type="text" name="objectclassname" value="Row" style="width:8em"></label>
         </div>
         <div class="objectinstantiationstyle option-child">
-          <label>Object Instantiation
+          <label><span class="helpicon option-help-icon" data-help="perl-option-object-instantiation-style"></span>Object Instantiation
             <select name="objectinstantiationstyle">
               <option value="bless">bless(...)</option>
               <option value="constructor">Class-&gt;new(...)</option>
@@ -51,10 +52,10 @@ class PerlOptionsPanel {
           </label>
         </div>
         <div class="prettyprint">
-          <label><input type="checkbox" name="prettyprint"> Pretty Print</label>
+          <label><span class="helpicon option-help-icon" data-help="perl-option-pretty-print"></span><input type="checkbox" name="prettyprint"> Pretty Print</label>
         </div>
         <div class="prettydelimiter option-child">
-          <label>Delimiter
+          <label><span class="helpicon option-help-icon" data-help="perl-option-delimiter"></span>Delimiter
             <select name="prettydelimiter">
               <option value="tab">Tab [\t]</option>
               <option value="space">Space [ ]</option>
@@ -63,13 +64,14 @@ class PerlOptionsPanel {
           </label>
         </div>
         <div class="custom-pretty-delimiter option-child">
-          <label>Custom Delimiter <input type="text" name="custom-pretty-delimiter" value="" style="width:8em"></label>
+          <label><span class="helpicon option-help-icon" data-help="perl-option-custom-delimiter"></span>Custom Delimiter <input type="text" name="custom-pretty-delimiter" value="" style="width:8em"></label>
         </div>
         <div class="apply">
           <button class="apply-options">Apply</button>
         </div>
       </div>
     `;
+    applyUiPanelOnlyTips(this.parent);
   }
 
   setApplyCallback(callbackFunc) {

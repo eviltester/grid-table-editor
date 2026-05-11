@@ -1,5 +1,6 @@
 import { RubyConvertorOptions } from '@anywaydata/core/data_formats/ruby-convertor.js';
 import { HtmlDataValues } from './html-options-data-utils.js';
+import { applyUiPanelOnlyTips } from './options-help-tips-ui.js';
 
 class RubyOptionsPanel {
   constructor(parentElement) {
@@ -12,7 +13,7 @@ class RubyOptionsPanel {
       <div class="ruby-options" style="width:100%">
         <div><p><strong>Options</strong> <span data-help="ruby-options" class="helpicon"></span></p></div>
         <div class="collectiontype">
-          <label>Collection Type
+          <label><span class="helpicon option-help-icon" data-help="ruby-option-collection-type"></span>Collection Type
             <select name="collectiontype">
               <option value="array">Array [ ]</option>
               <option value="list">List Array[ ]</option>
@@ -20,13 +21,13 @@ class RubyOptionsPanel {
           </label>
         </div>
         <div class="assigntovariable">
-          <label><input type="checkbox" name="assigntovariable"> Assign to Variable</label>
+          <label><span class="helpicon option-help-icon" data-help="ruby-option-assign-variable"></span><input type="checkbox" name="assigntovariable"> Assign to Variable</label>
         </div>
         <div class="variablename option-child">
-          <label>Variable Name <input type="text" name="variablename" value="data" style="width:8em"></label>
+          <label><span class="helpicon option-help-icon" data-help="ruby-option-variable-name"></span>Variable Name <input type="text" name="variablename" value="data" style="width:8em"></label>
         </div>
         <div class="outputwrapper">
-          <label>Output Wrapper
+          <label><span class="helpicon option-help-icon" data-help="ruby-option-output-wrapper"></span>Output Wrapper
             <select name="outputwrapper">
               <option value="plain">Plain Assignment</option>
               <option value="rspec-let">RSpec let</option>
@@ -34,10 +35,10 @@ class RubyOptionsPanel {
           </label>
         </div>
         <div class="quotenumbers">
-          <label><input type="checkbox" name="quotenumbers"> Number Convert (Quote Numbers)</label>
+          <label><span class="helpicon option-help-icon" data-help="ruby-option-quote-numbers"></span><input type="checkbox" name="quotenumbers"> Number Convert (Quote Numbers)</label>
         </div>
         <div class="hashkeystyle">
-          <label>Hash Key Style
+          <label><span class="helpicon option-help-icon" data-help="ruby-option-hash-key-style"></span>Hash Key Style
             <select name="hashkeystyle">
               <option value="string">String Keys ('name' =>)</option>
               <option value="symbol">Symbol Keys (name:)</option>
@@ -45,13 +46,13 @@ class RubyOptionsPanel {
           </label>
         </div>
         <div class="useanonymousobjects">
-          <label><input type="checkbox" name="useanonymousobjects"> Anonymous Objects (Hash/Map)</label>
+          <label><span class="helpicon option-help-icon" data-help="ruby-option-anonymous-objects"></span><input type="checkbox" name="useanonymousobjects"> Anonymous Objects (Hash/Map)</label>
         </div>
         <div class="objectclassname option-child">
-          <label>Object Name <input type="text" name="objectclassname" value="Row" style="width:8em"></label>
+          <label><span class="helpicon option-help-icon" data-help="ruby-option-class-name"></span>Object Name <input type="text" name="objectclassname" value="Row" style="width:8em"></label>
         </div>
         <div class="objectrepresentation option-child">
-          <label>Object Representation
+          <label><span class="helpicon option-help-icon" data-help="ruby-option-object-representation"></span>Object Representation
             <select name="objectrepresentation">
               <option value="class">Class</option>
               <option value="struct">Struct</option>
@@ -60,7 +61,7 @@ class RubyOptionsPanel {
           </label>
         </div>
         <div class="fieldnamestyle">
-          <label>Field Name Style
+          <label><span class="helpicon option-help-icon" data-help="ruby-option-field-name-style"></span>Field Name Style
             <select name="fieldnamestyle">
               <option value="preserve">Preserve</option>
               <option value="snake_case">snake_case</option>
@@ -68,10 +69,10 @@ class RubyOptionsPanel {
           </label>
         </div>
         <div class="prettyprint">
-          <label><input type="checkbox" name="prettyprint"> Pretty Print</label>
+          <label><span class="helpicon option-help-icon" data-help="ruby-option-pretty-print"></span><input type="checkbox" name="prettyprint"> Pretty Print</label>
         </div>
         <div class="hashprettystyle option-child">
-          <label>Hash Pretty Style
+          <label><span class="helpicon option-help-icon" data-help="ruby-option-hash-pretty-style"></span>Hash Pretty Style
             <select name="hashprettystyle">
               <option value="compact">Compact</option>
               <option value="aligned">Aligned Multi-line</option>
@@ -79,7 +80,7 @@ class RubyOptionsPanel {
           </label>
         </div>
         <div class="prettydelimiter option-child">
-          <label>Delimiter
+          <label><span class="helpicon option-help-icon" data-help="ruby-option-delimiter"></span>Delimiter
             <select name="prettydelimiter">
               <option value="tab">Tab [\t]</option>
               <option value="space">Space [ ]</option>
@@ -88,13 +89,14 @@ class RubyOptionsPanel {
           </label>
         </div>
         <div class="custom-pretty-delimiter option-child">
-          <label>Custom Delimiter <input type="text" name="custom-pretty-delimiter" value="" style="width:8em"></label>
+          <label><span class="helpicon option-help-icon" data-help="ruby-option-custom-delimiter"></span>Custom Delimiter <input type="text" name="custom-pretty-delimiter" value="" style="width:8em"></label>
         </div>
         <div class="apply">
           <button class="apply-options">Apply</button>
         </div>
       </div>
     `;
+    applyUiPanelOnlyTips(this.parent);
   }
 
   setApplyCallback(callbackFunc) {

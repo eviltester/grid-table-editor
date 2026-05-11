@@ -62,10 +62,14 @@ describe('option panel help parity with core tips', () => {
     for (const panel of panels) {
       panel.addToGui();
       const helpIcons = Array.from(host.querySelectorAll('.option-help-icon'));
+      expect(helpIcons.length).toBeGreaterThan(0);
       for (const icon of helpIcons) {
         const hasCoreTag = icon.hasAttribute('data-option-key') && icon.hasAttribute('data-option-format');
         const hasUiTag = icon.hasAttribute('data-ui-tip-key');
         expect(hasCoreTag || hasUiTag).toBe(true);
+        const helpText = icon.getAttribute('data-help-text');
+        expect(helpText).toBeTruthy();
+        expect(helpText.startsWith("Help for option '")).toBe(false);
       }
 
       const icons = Array.from(host.querySelectorAll('.option-help-icon[data-option-key][data-option-format]'));

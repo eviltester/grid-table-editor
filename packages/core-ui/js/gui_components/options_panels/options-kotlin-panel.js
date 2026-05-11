@@ -1,5 +1,6 @@
 import { KotlinConvertorOptions } from '@anywaydata/core/data_formats/kotlin-convertor.js';
 import { HtmlDataValues } from './html-options-data-utils.js';
+import { applyUiPanelOnlyTips } from './options-help-tips-ui.js';
 
 class KotlinOptionsPanel {
   constructor(parentElement) {
@@ -12,7 +13,7 @@ class KotlinOptionsPanel {
       <div class="kotlin-options" style="width:100%">
         <div><p><strong>Options</strong> <span data-help="kotlin-options" class="helpicon"></span></p></div>
         <div class="collectiontype">
-          <label>Collection Type
+          <label><span class="helpicon option-help-icon" data-help="kotlin-option-collection-type"></span>Collection Type
             <select name="collectiontype">
               <option value="array">Array arrayOf()</option>
               <option value="list">List listOf()</option>
@@ -20,31 +21,31 @@ class KotlinOptionsPanel {
           </label>
         </div>
         <div class="assigntovariable">
-          <label><input type="checkbox" name="assigntovariable"> Assign to Variable</label>
+          <label><span class="helpicon option-help-icon" data-help="kotlin-option-assign-variable"></span><input type="checkbox" name="assigntovariable"> Assign to Variable</label>
         </div>
         <div class="mutableassignment option-child">
-          <label><input type="checkbox" name="mutableassignment"> Mutable Assignment (var)</label>
+          <label><span class="helpicon option-help-icon" data-help="kotlin-option-mutable-assignment"></span><input type="checkbox" name="mutableassignment"> Mutable Assignment (var)</label>
         </div>
         <div class="variablename option-child">
-          <label>Variable Name <input type="text" name="variablename" value="data" style="width:8em"></label>
+          <label><span class="helpicon option-help-icon" data-help="kotlin-option-variable-name"></span>Variable Name <input type="text" name="variablename" value="data" style="width:8em"></label>
         </div>
         <div class="quotenumbers">
-          <label><input type="checkbox" name="quotenumbers"> Number Convert (Quote Numbers)</label>
+          <label><span class="helpicon option-help-icon" data-help="kotlin-option-quote-numbers"></span><input type="checkbox" name="quotenumbers"> Number Convert (Quote Numbers)</label>
         </div>
         <div class="useanonymousobjects">
-          <label><input type="checkbox" name="useanonymousobjects"> Anonymous Objects (Map)</label>
+          <label><span class="helpicon option-help-icon" data-help="kotlin-option-anonymous-objects"></span><input type="checkbox" name="useanonymousobjects"> Anonymous Objects (Map)</label>
         </div>
         <div class="usemutablecollections">
-          <label><input type="checkbox" name="usemutablecollections"> Mutable Collections</label>
+          <label><span class="helpicon option-help-icon" data-help="kotlin-option-mutable-collections"></span><input type="checkbox" name="usemutablecollections"> Mutable Collections</label>
         </div>
         <div class="objectclassname option-child">
-          <label>Object Name <input type="text" name="objectclassname" value="Row" style="width:8em"></label>
+          <label><span class="helpicon option-help-icon" data-help="kotlin-option-class-name"></span>Object Name <input type="text" name="objectclassname" value="Row" style="width:8em"></label>
         </div>
         <div class="prettyprint">
-          <label><input type="checkbox" name="prettyprint"> Pretty Print</label>
+          <label><span class="helpicon option-help-icon" data-help="kotlin-option-pretty-print"></span><input type="checkbox" name="prettyprint"> Pretty Print</label>
         </div>
         <div class="prettydelimiter option-child">
-          <label>Delimiter
+          <label><span class="helpicon option-help-icon" data-help="kotlin-option-delimiter"></span>Delimiter
             <select name="prettydelimiter">
               <option value="tab">Tab [\t]</option>
               <option value="space">Space [ ]</option>
@@ -53,16 +54,17 @@ class KotlinOptionsPanel {
           </label>
         </div>
         <div class="custom-pretty-delimiter option-child">
-          <label>Custom Delimiter <input type="text" name="custom-pretty-delimiter" value="" style="width:8em"></label>
+          <label><span class="helpicon option-help-icon" data-help="kotlin-option-custom-delimiter"></span>Custom Delimiter <input type="text" name="custom-pretty-delimiter" value="" style="width:8em"></label>
         </div>
         <div class="trailingcomma option-child">
-          <label><input type="checkbox" name="trailingcomma"> Trailing Comma</label>
+          <label><span class="helpicon option-help-icon" data-help="kotlin-option-trailing-comma"></span><input type="checkbox" name="trailingcomma"> Trailing Comma</label>
         </div>
         <div class="apply">
           <button class="apply-options">Apply</button>
         </div>
       </div>
     `;
+    applyUiPanelOnlyTips(this.parent);
   }
 
   setApplyCallback(callbackFunc) {

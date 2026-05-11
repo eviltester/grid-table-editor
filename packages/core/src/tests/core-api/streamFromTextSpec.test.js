@@ -14,6 +14,8 @@ test('streamFromTextSpec streams csv rows with header', async () => {
   expect(result.ok).toBe(true);
   expect(chunks.length).toBe(3);
   expect(chunks[0]).toContain('"Name"');
+  expect(chunks[1]).toContain('"Bob"');
+  expect(chunks[2]).toContain('"Bob"');
 });
 
 test('streamFromTextSpec streams jsonl rows', async () => {
@@ -30,7 +32,10 @@ test('streamFromTextSpec streams jsonl rows', async () => {
   expect(result.ok).toBe(true);
   expect(chunks.length).toBe(2);
   for (const chunk of chunks) {
-    expect(() => JSON.parse(chunk)).not.toThrow();
+    const parsed = JSON.parse(chunk);
+    expect(Array.isArray(parsed)).toBe(false);
+    expect(parsed).toHaveProperty('Name');
+    expect(parsed.Name).toBe('Bob');
   }
 });
 
@@ -73,6 +78,8 @@ test('streamFromTextSpec streams dsv rows with delimiter and header', async () =
   expect(result.ok).toBe(true);
   expect(chunks.length).toBe(3);
   expect(chunks[0]).toContain('"Name"');
+  expect(chunks[1]).toContain('"Bob"');
+  expect(chunks[2]).toContain('"Bob"');
 });
 
 test('streamFromTextSpec streams json as valid array payload', async () => {
@@ -91,6 +98,8 @@ test('streamFromTextSpec streams json as valid array payload', async () => {
   expect(Array.isArray(parsed)).toBe(true);
   expect(parsed.length).toBe(2);
   expect(parsed[0]).toHaveProperty('Name');
+  expect(parsed[0].Name).toBe('Bob');
+  expect(parsed[1].Name).toBe('Bob');
 });
 
 test('streamFromTextSpec streams xml as a well-formed document', async () => {
@@ -109,6 +118,7 @@ test('streamFromTextSpec streams xml as a well-formed document', async () => {
   expect(payload).toContain('<root>');
   expect(payload).toContain('</root>');
   expect(payload).toContain('<item>');
+  expect(payload).toContain('<Name>Bob</Name>');
 });
 
 test('streamFromTextSpec warns for json options that are unsupported in stream mode', async () => {
@@ -125,4 +135,21 @@ test('streamFromTextSpec warns for json options that are unsupported in stream m
   expect(result.ok).toBe(true);
   expect(Array.isArray(result.diagnostics.warnings)).toBe(true);
   expect(result.diagnostics.warnings.join(' ')).toContain('ignores option asObject');
+});
+
+test('streamFromTextSpec json makeNumbersNumeric preserves empty strings', async () => {
+  const chunks = [];
+  const result = await streamFromTextSpec({
+    textSpec: 'Quantity\n()',
+    rowCount: 1,
+    outputFormat: 'json',
+    options: { makeNumbersNumeric: true },
+    onChunk: async (chunk) => {
+      chunks.push(chunk);
+    },
+  });
+
+  expect(result.ok).toBe(true);
+  const parsed = JSON.parse(chunks.join(''));
+  expect(parsed[0].Quantity).toBe('');
 });

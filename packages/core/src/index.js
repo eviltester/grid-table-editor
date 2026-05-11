@@ -553,15 +553,16 @@ function quoteCsvValue(value, { quoteChar, escapeChar }) {
 }
 
 function rowToCsv(headers, row, csvSettings) {
-  return headers.map((header) => quoteCsvValue(row[header], csvSettings)).join(',');
+  return headers.map((_, index) => quoteCsvValue(row[index], csvSettings)).join(',');
 }
 
 function rowToDsv(headers, row, dsvSettings) {
-  return headers.map((header) => quoteCsvValue(row[header], dsvSettings)).join(dsvSettings.delimiter);
+  return headers.map((_, index) => quoteCsvValue(row[index], dsvSettings)).join(dsvSettings.delimiter);
 }
 
-function rowToJsonLine(row) {
-  return JSON.stringify(row);
+function rowToJsonLine(headers, rowArray, options = {}) {
+  const rowObject = rowArrayToObject(headers, rowArray, options);
+  return JSON.stringify(rowObject);
 }
 
 function rowArrayToObject(headers, rowArray, options = {}) {
@@ -571,10 +572,13 @@ function rowArrayToObject(headers, rowArray, options = {}) {
     const header = headers[i];
     const value = rowArray[i] === undefined || rowArray[i] === null ? '' : rowArray[i];
     if (makeNumbersNumeric) {
-      if (value * 1 == 0) {
-        rowObject[header] = 0;
+      const text = String(value);
+      if (text.trim().length === 0) {
+        rowObject[header] = value;
+      } else if (Number.isFinite(Number(text))) {
+        rowObject[header] = Number(text);
       } else {
-        rowObject[header] = value == value * 1 ? value * 1 : value;
+        rowObject[header] = value;
       }
     } else {
       rowObject[header] = value;
@@ -789,7 +793,7 @@ export async function streamFromTextSpec({
     } else if (outputFormat === 'dsv') {
       await onChunk(rowToDsv(headers, rowArray, dsvSettings));
     } else if (outputFormat === 'jsonl') {
-      await onChunk(rowToJsonLine(rowArray));
+      await onChunk(rowToJsonLine(headers, rowArray, options));
     } else if (outputFormat === 'json') {
       const rowObject = rowArrayToObject(headers, rowArray, options);
       await onChunk(index === 0 ? JSON.stringify(rowObject) : `,${JSON.stringify(rowObject)}`);

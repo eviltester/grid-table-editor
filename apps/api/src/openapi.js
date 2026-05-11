@@ -33,7 +33,7 @@ const openApiDocument = {
       post: {
         summary: 'Generate data from text spec with selectable response shape',
         description:
-          'Streaming generation is available for csv, jsonl, dsv, json and xml. In stream mode, incompatible format options are reported as warnings and ignored where needed.',
+          'Generation requests are currently processed in buffered mode for all formats. Stream-mode behavior is available in the core helper and CLI, not this REST endpoint.',
         requestBody: {
           required: true,
           content: {

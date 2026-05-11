@@ -359,11 +359,12 @@ Notes:
 - for JSON requests, newline characters inside string literals must be escaped as `\\n`
 - use `/v1/generate/fromschema` when you want to paste raw multiline text directly
 
-Streaming notes for generation:
+Streaming notes for CLI/core generation:
 
 - stream mode supports: `csv`, `jsonl`, `dsv`, `json`, `xml`
 - `json` stream mode emits a valid JSON array payload
 - incompatible format options in stream mode are warned and ignored where needed
+- REST API generation endpoints currently run in buffered mode
 
 OpenAPI spec:
 

@@ -1,5 +1,8 @@
 import { TestFrameworkConvertorOptions } from '@anywaydata/core/data_formats/test-framework-convertor.js';
+import { getTipsForFormat } from '@anywaydata/core';
 import { HtmlDataValues } from './html-options-data-utils.js';
+import { applyUiPanelOnlyTips } from './options-help-tips-ui.js';
+import { TEST_FRAMEWORK_GROUPS, getTestFrameworkLabel } from '../options-catalog-adapter.js';
 
 class TestFrameworkOptionsPanel {
   constructor(parentElement, frameworkId = 'junit4') {
@@ -8,56 +11,19 @@ class TestFrameworkOptionsPanel {
     this.frameworkId = frameworkId;
   }
 
-  static FRAMEWORK_GROUPS = {
-    java: ['junit4', 'junit5', 'junit6', 'testng'],
-    python: ['pytest', 'unittest', 'nose2'],
-    javascript: ['jest', 'vitest', 'mocha'],
-    csharp: ['xunit', 'nunit', 'mstest'],
-    ruby: ['rspec', 'minitest'],
-    php: ['phpunit', 'pest'],
-    kotlin: ['kotest', 'junit5-kotlin', 'spek'],
-    perl: ['test-more', 'test2-suite'],
-  };
-
-  static FRAMEWORK_LABELS = {
-    junit4: 'JUnit4',
-    junit5: 'JUnit5',
-    junit6: 'JUnit6',
-    testng: 'TestNG',
-    pytest: 'PyTest',
-    unittest: 'unittest',
-    nose2: 'nose2',
-    jest: 'Jest',
-    vitest: 'Vitest',
-    mocha: 'Mocha',
-    xunit: 'xUnit',
-    nunit: 'NUnit',
-    mstest: 'MSTest',
-    rspec: 'RSpec',
-    minitest: 'Minitest',
-    phpunit: 'PHPUnit',
-    pest: 'Pest',
-    kotest: 'Kotest',
-    'junit5-kotlin': 'JUnit5 Kotlin',
-    spek: 'Spek',
-    'test-more': 'Test::More',
-    'test2-suite': 'Test2::Suite',
-  };
-
   getFrameworkGroupName() {
     const frameworkId = this.frameworkId;
     return (
-      Object.keys(TestFrameworkOptionsPanel.FRAMEWORK_GROUPS).find((groupName) =>
-        TestFrameworkOptionsPanel.FRAMEWORK_GROUPS[groupName].includes(frameworkId)
-      ) || 'java'
+      Object.keys(TEST_FRAMEWORK_GROUPS).find((groupName) => TEST_FRAMEWORK_GROUPS[groupName].includes(frameworkId)) ||
+      'java'
     );
   }
 
   getFrameworkOptions() {
     const groupName = this.getFrameworkGroupName();
-    return TestFrameworkOptionsPanel.FRAMEWORK_GROUPS[groupName].map((frameworkId) => ({
+    return TEST_FRAMEWORK_GROUPS[groupName].map((frameworkId) => ({
       value: frameworkId,
-      label: TestFrameworkOptionsPanel.FRAMEWORK_LABELS[frameworkId] || frameworkId,
+      label: getTestFrameworkLabel(frameworkId),
     }));
   }
 
@@ -110,7 +76,7 @@ class TestFrameworkOptionsPanel {
         <div><p><strong>Options</strong> <span data-help="test-framework-options" class="helpicon"></span></p></div>
 
         <div class="framework-id">
-          <label><span class="helpicon option-help-icon" data-help="test-framework-option-framework" data-help-text="Choose the unit test framework for the current language tab. Output syntax and available strategies depend on this choice."></span>Framework
+          <label><span class="helpicon option-help-icon" data-help="test-framework-option-framework"></span>Framework
             <select name="framework-id" ${frameworkOptions.length <= 1 ? 'disabled' : ''}>
               ${frameworkOptionsHtml}
             </select>
@@ -119,21 +85,21 @@ class TestFrameworkOptionsPanel {
         </div>
 
         <div class="suite-name">
-          <label><span class="helpicon option-help-icon" data-help="test-framework-option-suite-name" data-help-text="Class, module, or suite identifier used in generated test code where the framework supports naming."></span>Suite Name
+          <label><span class="helpicon option-help-icon" data-help="test-framework-option-suite-name"></span>Suite Name
             <input type="text" name="suite-name" value="GeneratedDataTests" style="width:12em">
           </label>
           <br>
         </div>
 
         <div class="test-name-prefix">
-          <label><span class="helpicon option-help-icon" data-help="test-framework-option-test-name-prefix" data-help-text="Prefix used for generated test method names and test titles."></span>Test Name Prefix
+          <label><span class="helpicon option-help-icon" data-help="test-framework-option-test-name-prefix"></span>Test Name Prefix
             <input type="text" name="test-name-prefix" value="row" style="width:12em">
           </label>
           <br>
         </div>
 
         <div class="data-source-strategy">
-          <label><span class="helpicon option-help-icon" data-help="test-framework-option-data-source-strategy" data-help-text="Controls how row data is supplied to tests: provider/method source or inline values."></span>Data Source Strategy
+          <label><span class="helpicon option-help-icon" data-help="test-framework-option-data-source-strategy"></span>Data Source Strategy
             <select name="data-source-strategy">
               ${dataSourceOptions}
             </select>
@@ -143,7 +109,7 @@ class TestFrameworkOptionsPanel {
 
         <div class="include-setup">
           <label>
-            <span class="helpicon option-help-icon" data-help="test-framework-option-include-setup" data-help-text="Include framework-specific setup scaffolding such as beforeEach, SetUp, fixture, or setup methods."></span>
+            <span class="helpicon option-help-icon" data-help="test-framework-option-include-setup"></span>
             <input type="checkbox" name="include-setup" checked>
             Include Setup
           </label>
@@ -152,7 +118,7 @@ class TestFrameworkOptionsPanel {
 
         <div class="pretty-print">
           <label>
-            <span class="helpicon option-help-icon" data-help="test-framework-option-pretty-print" data-help-text="Format generated row data and test source for readability with one row per line where supported."></span>
+            <span class="helpicon option-help-icon" data-help="test-framework-option-pretty-print"></span>
             <input type="checkbox" name="pretty-print" checked>
             Pretty Print
           </label>
@@ -170,9 +136,39 @@ class TestFrameworkOptionsPanel {
       frameworkSelect.value = frameworkOptions.some((option) => option.value === this.frameworkId)
         ? this.frameworkId
         : frameworkOptions[0]?.value;
-      frameworkSelect.addEventListener('change', () => this.refreshDataSourceStrategyOptions());
+      frameworkSelect.addEventListener('change', () => {
+        this.frameworkId = frameworkSelect.value || this.frameworkId;
+        this.refreshDataSourceStrategyOptions();
+        this.refreshHelpTipsForSelectedFramework();
+      });
     }
     this.refreshDataSourceStrategyOptions();
+    applyUiPanelOnlyTips(this.parent, ['test-framework-option-framework']);
+    this.refreshHelpTipsForSelectedFramework();
+  }
+
+  refreshHelpTipsForSelectedFramework() {
+    const selectedFrameworkId =
+      this.parent?.querySelector?.("select[name='framework-id']")?.value?.trim?.() || this.frameworkId;
+    const tips = getTipsForFormat(selectedFrameworkId);
+    const tipBindings = [
+      { selector: "[data-help='test-framework-option-suite-name']", key: 'suiteName' },
+      { selector: "[data-help='test-framework-option-test-name-prefix']", key: 'testNamePrefix' },
+      { selector: "[data-help='test-framework-option-data-source-strategy']", key: 'dataSourceStrategy' },
+      { selector: "[data-help='test-framework-option-include-setup']", key: 'includeSetup' },
+      { selector: "[data-help='test-framework-option-pretty-print']", key: 'prettyPrint' },
+    ];
+
+    for (const binding of tipBindings) {
+      const elem = this.parent?.querySelector?.(binding.selector);
+      if (elem && tips?.[binding.key]) {
+        elem.setAttribute('data-help-text', tips[binding.key]);
+      }
+      if (elem) {
+        elem.setAttribute('data-option-key', binding.key);
+        elem.setAttribute('data-option-format', selectedFrameworkId);
+      }
+    }
   }
 
   refreshDataSourceStrategyOptions() {
@@ -229,6 +225,7 @@ class TestFrameworkOptionsPanel {
     );
     this.htmlData.setCheckBoxFrom("input[name='include-setup']", options.includeSetup, true);
     this.htmlData.setCheckBoxFrom("input[name='pretty-print']", options.prettyPrint, true);
+    this.refreshHelpTipsForSelectedFramework();
   }
 }
 

@@ -1,6 +1,7 @@
 import { MarkdownOptions } from '@anywaydata/core/data_formats/markdown-convertor.js';
 import { getNumberArrayFrom } from '@anywaydata/core/utils/number-convertor.js';
 import { HtmlDataValues } from './html-options-data-utils.js';
+import { applySharedOptionTips } from './options-help-tips.js';
 
 class MarkdownOptionsPanel {
   constructor(parentElement) {
@@ -14,7 +15,7 @@ class MarkdownOptionsPanel {
           <div><p><strong>Options</strong> <span data-help="markdown-table-options" class="helpicon"></span></p></div>
 
           <div class="spacepadding">
-            <label><span class="helpicon option-help-icon" data-help="md-option-space-padding" data-help-text="Add spaces around each cell value in markdown output."></span>Space Padding
+            <label><span class="helpicon option-help-icon" data-help="md-option-space-padding"></span>Space Padding
               <select name="spacepadding">
                 <option value="none">None</option>
                 <option value="left">Left</option>
@@ -26,7 +27,7 @@ class MarkdownOptionsPanel {
           </div>
 
           <div class="tabpadding">
-            <label><span class="helpicon option-help-icon" data-help="md-option-tab-padding" data-help-text="Add tab characters around cell values. Useful when aligning output in tab-aware editors."></span>Tab Padding
+            <label><span class="helpicon option-help-icon" data-help="md-option-tab-padding"></span>Tab Padding
               <select name="tabpadding">
                 <option value="none">None</option>
                 <option value="left">Left</option>
@@ -40,7 +41,7 @@ class MarkdownOptionsPanel {
 
           <div class="borderbars">            
             <label>
-              <span class="helpicon option-help-icon" data-help="md-option-border-bars" data-help-text="Include leading and trailing pipe characters on each markdown row."></span>
+              <span class="helpicon option-help-icon" data-help="md-option-border-bars"></span>
               <input type="checkbox" name="borderbars" value="borderbars">
               Border Bars
             </label>
@@ -49,7 +50,7 @@ class MarkdownOptionsPanel {
 
           <div class="emboldenheaders">            
             <label>
-             <span class="helpicon option-help-icon" data-help="md-option-bold-headers" data-help-text="Render header cells using markdown bold formatting."></span>
+             <span class="helpicon option-help-icon" data-help="md-option-bold-headers"></span>
              <input type="checkbox" name="emboldenheaders" value="emboldenheaders">
              Bold Headers
             </label>
@@ -58,7 +59,7 @@ class MarkdownOptionsPanel {
 
           <div class="emphasisheaders">            
             <label>
-              <span class="helpicon option-help-icon" data-help="md-option-italic-headers" data-help-text="Render header cells using markdown italic formatting."></span>
+              <span class="helpicon option-help-icon" data-help="md-option-italic-headers"></span>
               <input type="checkbox" name="emphasisheaders" value="emphasisheaders">
               Italic Headers
             </label>
@@ -67,14 +68,14 @@ class MarkdownOptionsPanel {
           
 
           <div class="emboldencolumns option-child">
-            <label><span class="helpicon option-help-icon" data-help="md-option-bold-columns" data-help-text="Column indexes to bold, separated by spaces. Example: 1 3 4"></span>Add Bold to Cols
+            <label><span class="helpicon option-help-icon" data-help="md-option-bold-columns"></span>Add Bold to Cols
               <input type="text" name="emboldencolumns" value='"' style="width:5em">
             </label>
             <br>
           </div>
 
           <div class="emphasiscolumns option-child">
-          <label><span class="helpicon option-help-icon" data-help="md-option-italic-columns" data-help-text="Column indexes to italicise, separated by spaces. Example: 2 5"></span>Italics on Cols
+          <label><span class="helpicon option-help-icon" data-help="md-option-italic-columns"></span>Italics on Cols
             <input type="text" name="emphasiscolumns" value='"' style="width:5em">
           </label>
           <br>
@@ -82,7 +83,7 @@ class MarkdownOptionsPanel {
 
           <div class="prettyprint">
           <label>
-            <span class="helpicon option-help-icon" data-help="md-option-pretty-print" data-help-text="Align column widths and spacing for easier reading."></span>
+            <span class="helpicon option-help-icon" data-help="md-option-pretty-print"></span>
             <input type="checkbox" name="prettyprint" value="prettyprint">
             Pretty Print
           </label>
@@ -90,7 +91,7 @@ class MarkdownOptionsPanel {
           </div>
 
         <div class="globalcolumnalign">
-        <label><span class="helpicon option-help-icon" data-help="md-option-column-align" data-help-text="Set a default text alignment for all columns in markdown output."></span>Column Align
+        <label><span class="helpicon option-help-icon" data-help="md-option-column-align"></span>Column Align
           <select name="globalcolumnalign">
             <option value="default">Default</option>
             <option value="left">Left</option>
@@ -108,6 +109,17 @@ class MarkdownOptionsPanel {
       
         </div>
         `;
+    applySharedOptionTips(this.parent, 'markdown', [
+      { selector: "[data-help='md-option-space-padding']", key: 'spacePadding' },
+      { selector: "[data-help='md-option-tab-padding']", key: 'tabPadding' },
+      { selector: "[data-help='md-option-border-bars']", key: 'borderBars' },
+      { selector: "[data-help='md-option-bold-headers']", key: 'emboldenHeaders' },
+      { selector: "[data-help='md-option-italic-headers']", key: 'emphasisHeaders' },
+      { selector: "[data-help='md-option-bold-columns']", key: 'emboldenColumns' },
+      { selector: "[data-help='md-option-italic-columns']", key: 'emphasisColumns' },
+      { selector: "[data-help='md-option-pretty-print']", key: 'prettyPrint' },
+      { selector: "[data-help='md-option-column-align']", key: 'globalColumnAlign' },
+    ]);
   }
 
   setApplyCallback(callbackFunc) {

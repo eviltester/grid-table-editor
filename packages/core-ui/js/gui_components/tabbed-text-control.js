@@ -1,3 +1,5 @@
+import { getCodeLanguageSubtasks, getUnitTestLanguageSubtasks } from './options-catalog-adapter.js';
+
 class TabbedTextControl {
   constructor(parentElement, theImportExportControls) {
     this.parent = parentElement;
@@ -14,32 +16,12 @@ class TabbedTextControl {
       {
         id: 'code',
         label: 'Code',
-        subtasks: [
-          { id: 'csharp', label: 'C#', type: 'csharp' },
-          { id: 'java', label: 'Java', type: 'java' },
-          { id: 'javascript', label: 'JavaScript', type: 'javascript' },
-          { id: 'kotlin', label: 'Kotlin', type: 'kotlin' },
-          { id: 'perl', label: 'Perl', type: 'perl' },
-          { id: 'php', label: 'PHP', type: 'php' },
-          { id: 'python', label: 'Python', type: 'python' },
-          { id: 'ruby', label: 'Ruby', type: 'ruby' },
-          { id: 'typescript', label: 'TypeScript', type: 'typescript' },
-        ],
+        subtasks: getCodeLanguageSubtasks(),
       },
       {
         id: 'code-unit-test',
         label: 'Code (Unit Test)',
-        subtasks: [
-          { id: 'csharp-ut', label: 'C#', type: 'xunit', types: ['xunit', 'nunit', 'mstest'] },
-          { id: 'java-ut', label: 'Java', type: 'junit5', types: ['junit4', 'junit5', 'junit6', 'testng'] },
-          { id: 'javascript-ut', label: 'JavaScript', type: 'jest', types: ['jest', 'vitest', 'mocha'] },
-          { id: 'kotlin-ut', label: 'Kotlin', type: 'kotest', types: ['kotest', 'junit5-kotlin', 'spek'] },
-          { id: 'perl-ut', label: 'Perl', type: 'test-more', types: ['test-more', 'test2-suite'] },
-          { id: 'php-ut', label: 'PHP', type: 'phpunit', types: ['phpunit', 'pest'] },
-          { id: 'python-ut', label: 'Python', type: 'pytest', types: ['pytest', 'unittest', 'nose2'] },
-          { id: 'ruby-ut', label: 'Ruby', type: 'rspec', types: ['rspec', 'minitest'] },
-          { id: 'typescript-ut', label: 'TypeScript', type: 'jest', types: ['jest', 'vitest', 'mocha'] },
-        ],
+        subtasks: getUnitTestLanguageSubtasks(),
       },
       { id: 'gherkin', label: 'Gherkin', type: 'gherkin' },
       { id: 'html', label: 'HTML', type: 'html' },

@@ -1,5 +1,7 @@
 import { TypeScriptConvertorOptions } from '@anywaydata/core/data_formats/typescript-convertor.js';
 import { HtmlDataValues } from './html-options-data-utils.js';
+import { applySharedOptionTips } from './options-help-tips.js';
+import { applyUiPanelOnlyTips } from './options-help-tips-ui.js';
 
 class TypeScriptOptionsPanel {
   constructor(parentElement) {
@@ -14,7 +16,7 @@ class TypeScriptOptionsPanel {
 
           <div class="collectiontype">
             <label>
-              <span class="helpicon option-help-icon" data-help="typescript-option-collection-type" data-help-text="The TypeScript collection type used for the outer container."></span>
+              <span class="helpicon option-help-icon" data-help="typescript-option-collection-type"></span>
               Collection Type
               <select name="collectiontype">
                 <option value="list">List (Array&lt;T&gt;)</option>
@@ -26,7 +28,7 @@ class TypeScriptOptionsPanel {
 
           <div class="assigntovariable">
             <label>
-              <span class="helpicon option-help-icon" data-help="typescript-option-assign-variable" data-help-text="Assign the collection to a named TypeScript variable."></span>
+              <span class="helpicon option-help-icon" data-help="typescript-option-assign-variable"></span>
               <input type="checkbox" name="assigntovariable" value="assigntovariable" checked>
               Assign to Variable
             </label>
@@ -35,7 +37,7 @@ class TypeScriptOptionsPanel {
 
           <div class="variablename option-child">
             <label>
-              <span class="helpicon option-help-icon" data-help="typescript-option-variable-name" data-help-text="Name of the TypeScript variable the collection is assigned to."></span>
+              <span class="helpicon option-help-icon" data-help="typescript-option-variable-name"></span>
               Variable Name
               <input type="text" name="variablename" value="data" style="width:8em">
             </label>
@@ -44,7 +46,7 @@ class TypeScriptOptionsPanel {
 
           <div class="quotenumbers">
             <label>
-              <span class="helpicon option-help-icon" data-help="typescript-option-quote-numbers" data-help-text="When checked, numeric values are output as quoted strings. When unchecked, they are output as numeric literals."></span>
+              <span class="helpicon option-help-icon" data-help="typescript-option-quote-numbers"></span>
               <input type="checkbox" name="quotenumbers" value="quotenumbers">
               Number Convert (Quote Numbers)
             </label>
@@ -53,7 +55,7 @@ class TypeScriptOptionsPanel {
 
           <div class="useanonymousobjects">
             <label>
-              <span class="helpicon option-help-icon" data-help="typescript-option-anonymous-objects" data-help-text="When checked, each row is output as an anonymous object literal. When unchecked, each row is output as a named class instance."></span>
+              <span class="helpicon option-help-icon" data-help="typescript-option-anonymous-objects"></span>
               <input type="checkbox" name="useanonymousobjects" value="useanonymousobjects" checked>
               Use Anonymous Objects
             </label>
@@ -62,7 +64,7 @@ class TypeScriptOptionsPanel {
 
           <div class="objectclassname option-child">
             <label>
-              <span class="helpicon option-help-icon" data-help="typescript-option-class-name" data-help-text="Class name used when Use Anonymous Objects is unchecked."></span>
+              <span class="helpicon option-help-icon" data-help="typescript-option-class-name"></span>
               Class Name
               <input type="text" name="objectclassname" value="Row" style="width:8em">
             </label>
@@ -71,7 +73,7 @@ class TypeScriptOptionsPanel {
 
           <div class="blankvaluebehavior">
             <label>
-              <span class="helpicon option-help-icon" data-help="typescript-option-blank-value" data-help-text="Choose how blank values are exported."></span>
+              <span class="helpicon option-help-icon" data-help="typescript-option-blank-value"></span>
               Blank Values
               <select name="blankvaluebehavior">
                 <option value="null">null</option>
@@ -83,7 +85,7 @@ class TypeScriptOptionsPanel {
 
           <div class="prettyprint">
             <label>
-              <span class="helpicon option-help-icon" data-help="typescript-option-pretty-print" data-help-text="Format output with line breaks and indentation."></span>
+              <span class="helpicon option-help-icon" data-help="typescript-option-pretty-print"></span>
               <input type="checkbox" name="prettyprint" value="prettyprint" checked>
               Pretty Print
             </label>
@@ -92,7 +94,7 @@ class TypeScriptOptionsPanel {
 
           <div class="prettydelimiter option-child">
             <label>
-              <span class="helpicon option-help-icon" data-help="typescript-option-delimiter" data-help-text="Indentation character used when Pretty Print is enabled."></span>
+              <span class="helpicon option-help-icon" data-help="typescript-option-delimiter"></span>
               Delimiter
               <select name="prettydelimiter">
                 <option value="tab">Tab [\t]</option>
@@ -105,7 +107,7 @@ class TypeScriptOptionsPanel {
 
           <div class="custom-pretty-delimiter option-child">
             <label>
-              <span class="helpicon option-help-icon" data-help="typescript-option-custom-delimiter" data-help-text="When Delimiter is Custom Value, this value is used as indentation."></span>
+              <span class="helpicon option-help-icon" data-help="typescript-option-custom-delimiter"></span>
               Custom Delimiter
               <input type="text" name="custom-pretty-delimiter" value="" style="width:8em">
             </label>
@@ -117,6 +119,18 @@ class TypeScriptOptionsPanel {
           </div>
         </div>
         `;
+    applySharedOptionTips(this.parent, 'typescript', [
+      { selector: "[data-help='typescript-option-collection-type']", key: 'collectionType' },
+      { selector: "[data-help='typescript-option-assign-variable']", key: 'assignToVariable' },
+      { selector: "[data-help='typescript-option-variable-name']", key: 'variableName' },
+      { selector: "[data-help='typescript-option-quote-numbers']", key: 'quoteNumbers' },
+      { selector: "[data-help='typescript-option-anonymous-objects']", key: 'useAnonymousObjects' },
+      { selector: "[data-help='typescript-option-class-name']", key: 'objectClassName' },
+      { selector: "[data-help='typescript-option-blank-value']", key: 'blankValueBehavior' },
+      { selector: "[data-help='typescript-option-pretty-print']", key: 'prettyPrint' },
+      { selector: "[data-help='typescript-option-delimiter']", key: 'prettyPrintDelimiter' },
+    ]);
+    applyUiPanelOnlyTips(this.parent, ['typescript-option-custom-delimiter']);
   }
 
   setApplyCallback(callbackFunc) {

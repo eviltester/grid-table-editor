@@ -1,5 +1,6 @@
 import { AsciiTableConvertor, AsciiTableOptions } from '@anywaydata/core/data_formats/asciitable-convertor.js';
 import { HtmlDataValues } from './html-options-data-utils.js';
+import { applySharedOptionTips } from './options-help-tips.js';
 
 class AsciiTableOptionsPanel {
   constructor(parentElement) {
@@ -19,7 +20,7 @@ class AsciiTableOptionsPanel {
         <div class="delimited-options" style="width:100%">
           <div><p><strong>Options</strong> <span data-help="ascii-table-options" class="helpicon"></span></p></div>
           <div class="style">
-            <label><span class="helpicon option-help-icon" data-help="ascii-option-style" data-help-text="Choose the border and separator style used to render the ASCII table."></span>Style
+            <label><span class="helpicon option-help-icon" data-help="ascii-option-style"></span>Style
             <select name="style">
               ${stylesAsOptions}
             </select>
@@ -34,6 +35,7 @@ class AsciiTableOptionsPanel {
       
         </div>
         `;
+    applySharedOptionTips(this.parent, 'asciitable', [{ selector: "[data-help='ascii-option-style']", key: 'style' }]);
   }
 
   setApplyCallback(callbackFunc) {

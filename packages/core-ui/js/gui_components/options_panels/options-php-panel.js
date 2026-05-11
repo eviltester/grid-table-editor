@@ -1,5 +1,7 @@
 import { PhpConvertorOptions } from '@anywaydata/core/data_formats/php-convertor.js';
 import { HtmlDataValues } from './html-options-data-utils.js';
+import { applySharedOptionTips } from './options-help-tips.js';
+import { applyUiPanelOnlyTips } from './options-help-tips-ui.js';
 
 class PhpOptionsPanel {
   constructor(parentElement) {
@@ -12,7 +14,7 @@ class PhpOptionsPanel {
       <div class="php-options" style="width:100%">
         <div><p><strong>Options</strong> <span data-help="php-options" class="helpicon"></span></p></div>
         <div class="collectiontype">
-          <label>Collection Type
+          <label><span class="helpicon option-help-icon" data-help="php-option-collection-type"></span>Collection Type
             <select name="collectiontype">
               <option value="array">Array array()</option>
               <option value="list">List [ ]</option>
@@ -20,22 +22,22 @@ class PhpOptionsPanel {
           </label>
         </div>
         <div class="includephptag">
-          <label><input type="checkbox" name="includephptag"> Include &lt;?php Tag</label>
+          <label><span class="helpicon option-help-icon" data-help="php-option-include-php-tag"></span><input type="checkbox" name="includephptag"> Include &lt;?php Tag</label>
         </div>
         <div class="shortarraysyntax">
-          <label><input type="checkbox" name="shortarraysyntax"> Prefer Short Array Syntax [ ]</label>
+          <label><span class="helpicon option-help-icon" data-help="php-option-short-array-syntax"></span><input type="checkbox" name="shortarraysyntax"> Prefer Short Array Syntax [ ]</label>
         </div>
         <div class="assigntovariable">
-          <label><input type="checkbox" name="assigntovariable"> Assign to Variable</label>
+          <label><span class="helpicon option-help-icon" data-help="php-option-assign-variable"></span><input type="checkbox" name="assigntovariable"> Assign to Variable</label>
         </div>
         <div class="variablename option-child">
-          <label>Variable Name <input type="text" name="variablename" value="data" style="width:8em"></label>
+          <label><span class="helpicon option-help-icon" data-help="php-option-variable-name"></span>Variable Name <input type="text" name="variablename" value="data" style="width:8em"></label>
         </div>
         <div class="quotenumbers">
-          <label><input type="checkbox" name="quotenumbers"> Number Convert (Quote Numbers)</label>
+          <label><span class="helpicon option-help-icon" data-help="php-option-quote-numbers"></span><input type="checkbox" name="quotenumbers"> Number Convert (Quote Numbers)</label>
         </div>
         <div class="useanonymousobjects">
-          <label>Object Representation
+          <label><span class="helpicon option-help-icon" data-help="php-option-object-representation"></span>Object Representation
             <select name="objectrepresentation">
               <option value="array">Associative Array</option>
               <option value="stdclass">stdClass (object cast)</option>
@@ -44,10 +46,10 @@ class PhpOptionsPanel {
           </label>
         </div>
         <div class="objectclassname option-child">
-          <label>Object Name <input type="text" name="objectclassname" value="Row" style="width:8em"></label>
+          <label><span class="helpicon option-help-icon" data-help="php-option-class-name"></span>Object Name <input type="text" name="objectclassname" value="Row" style="width:8em"></label>
         </div>
         <div class="arraykeyquotestyle">
-          <label>Array Key Quote Style
+          <label><span class="helpicon option-help-icon" data-help="php-option-array-key-quote-style"></span>Array Key Quote Style
             <select name="arraykeyquotestyle">
               <option value="quoted">Quoted Keys</option>
               <option value="unquoted">Unquoted Keys</option>
@@ -55,7 +57,7 @@ class PhpOptionsPanel {
           </label>
         </div>
         <div class="blankvaluebehavior">
-          <label>Blank Value Behavior
+          <label><span class="helpicon option-help-icon" data-help="php-option-blank-value-behavior"></span>Blank Value Behavior
             <select name="blankvaluebehavior">
               <option value="empty-string">Empty String</option>
               <option value="null">null</option>
@@ -63,13 +65,13 @@ class PhpOptionsPanel {
           </label>
         </div>
         <div class="coercebooleanliterals">
-          <label><input type="checkbox" name="coercebooleanliterals"> Coerce "true"/"false" to booleans</label>
+          <label><span class="helpicon option-help-icon" data-help="php-option-coerce-boolean-literals"></span><input type="checkbox" name="coercebooleanliterals"> Coerce "true"/"false" to booleans</label>
         </div>
         <div class="coercenullliteral">
-          <label><input type="checkbox" name="coercenullliteral"> Coerce "null" to null</label>
+          <label><span class="helpicon option-help-icon" data-help="php-option-coerce-null-literal"></span><input type="checkbox" name="coercenullliteral"> Coerce "null" to null</label>
         </div>
         <div class="phpcompatibility">
-          <label>PHP Compatibility
+          <label><span class="helpicon option-help-icon" data-help="php-option-php-compatibility"></span>PHP Compatibility
             <select name="phpcompatibility">
               <option value="7+">PHP 7+</option>
               <option value="8+">PHP 8+</option>
@@ -77,7 +79,7 @@ class PhpOptionsPanel {
           </label>
         </div>
         <div class="classpropertytyping option-child">
-          <label>Class Property Typing
+          <label><span class="helpicon option-help-icon" data-help="php-option-class-property-typing"></span>Class Property Typing
             <select name="classpropertytyping">
               <option value="none">Untyped Properties</option>
               <option value="typed">Typed Properties (mixed)</option>
@@ -85,10 +87,10 @@ class PhpOptionsPanel {
           </label>
         </div>
         <div class="useconstructorpromotion option-child">
-          <label><input type="checkbox" name="useconstructorpromotion"> Use Constructor Promotion (PHP 8+)</label>
+          <label><span class="helpicon option-help-icon" data-help="php-option-use-constructor-promotion"></span><input type="checkbox" name="useconstructorpromotion"> Use Constructor Promotion (PHP 8+)</label>
         </div>
         <div class="constructorargstyle option-child">
-          <label>Constructor Arg Style
+          <label><span class="helpicon option-help-icon" data-help="php-option-constructor-arg-style"></span>Constructor Arg Style
             <select name="constructorargstyle">
               <option value="positional">Positional Args</option>
               <option value="named">Named Args (PHP 8+)</option>
@@ -96,10 +98,10 @@ class PhpOptionsPanel {
           </label>
         </div>
         <div class="prettyprint">
-          <label><input type="checkbox" name="prettyprint"> Pretty Print</label>
+          <label><span class="helpicon option-help-icon" data-help="php-option-pretty-print"></span><input type="checkbox" name="prettyprint"> Pretty Print</label>
         </div>
         <div class="prettydelimiter option-child">
-          <label>Delimiter
+          <label><span class="helpicon option-help-icon" data-help="php-option-delimiter"></span>Delimiter
             <select name="prettydelimiter">
               <option value="tab">Tab [\t]</option>
               <option value="space">Space [ ]</option>
@@ -108,13 +110,34 @@ class PhpOptionsPanel {
           </label>
         </div>
         <div class="custom-pretty-delimiter option-child">
-          <label>Custom Delimiter <input type="text" name="custom-pretty-delimiter" value="" style="width:8em"></label>
+          <label><span class="helpicon option-help-icon" data-help="php-option-custom-delimiter"></span>Custom Delimiter <input type="text" name="custom-pretty-delimiter" value="" style="width:8em"></label>
         </div>
         <div class="apply">
           <button class="apply-options">Apply</button>
         </div>
       </div>
     `;
+    applySharedOptionTips(this.parent, 'php', [
+      { selector: "[data-help='php-option-collection-type']", key: 'collectionType' },
+      { selector: "[data-help='php-option-include-php-tag']", key: 'includePhpTag' },
+      { selector: "[data-help='php-option-short-array-syntax']", key: 'preferShortArraySyntax' },
+      { selector: "[data-help='php-option-assign-variable']", key: 'assignToVariable' },
+      { selector: "[data-help='php-option-variable-name']", key: 'variableName' },
+      { selector: "[data-help='php-option-quote-numbers']", key: 'quoteNumbers' },
+      { selector: "[data-help='php-option-object-representation']", key: 'objectRepresentation' },
+      { selector: "[data-help='php-option-class-name']", key: 'objectClassName' },
+      { selector: "[data-help='php-option-array-key-quote-style']", key: 'arrayKeyQuoteStyle' },
+      { selector: "[data-help='php-option-blank-value-behavior']", key: 'blankValueBehavior' },
+      { selector: "[data-help='php-option-coerce-boolean-literals']", key: 'coerceBooleanLiterals' },
+      { selector: "[data-help='php-option-coerce-null-literal']", key: 'coerceNullLiteral' },
+      { selector: "[data-help='php-option-php-compatibility']", key: 'phpCompatibility' },
+      { selector: "[data-help='php-option-class-property-typing']", key: 'classPropertyTyping' },
+      { selector: "[data-help='php-option-use-constructor-promotion']", key: 'useConstructorPromotion' },
+      { selector: "[data-help='php-option-constructor-arg-style']", key: 'constructorArgStyle' },
+      { selector: "[data-help='php-option-pretty-print']", key: 'prettyPrint' },
+      { selector: "[data-help='php-option-delimiter']", key: 'prettyPrintDelimiter' },
+    ]);
+    applyUiPanelOnlyTips(this.parent, ['php-option-custom-delimiter']);
   }
 
   setApplyCallback(callbackFunc) {

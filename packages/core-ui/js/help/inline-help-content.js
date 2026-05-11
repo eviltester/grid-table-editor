@@ -113,6 +113,13 @@ const sharedInlineHelpEntries = {
       <p>Configure suite name, test name prefix, data source strategy, setup inclusion, and formatting options before pressing [Apply].</p>
       <p><a class="helplink" href="docs/data-formats/unit-test-code/options" target="anywaydatadocs">See full unit-test option mapping</a></p>
     `,
+  'generator-screen-overview': `
+      <p><strong>Generator Screen Overview</strong></p>
+      <p><strong>Schema:</strong> Define fields and rules using row-based schema editing or text schema mode.</p>
+      <p><strong>Generate Data and Options:</strong> Choose output format, configure options, then generate files.</p>
+      <p><strong>Preview:</strong> Generate a small sample to validate output before downloading larger files.</p>
+      <p><a class="helplink" href="https://anywaydata.com/docs/test-data/generate-to-file" target="_blank" rel="noopener noreferrer">Generate To File docs</a></p>
+    `,
 };
 
 const appOnlyInlineHelpEntries = {

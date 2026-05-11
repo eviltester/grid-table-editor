@@ -1,25 +1,8 @@
 import { ExportControls } from './exportControls.js';
 import { DragDropControl } from './drag-drop-control.js';
-import { CsvDelimitedOptions } from './options_panels/options-csv-delimited-controls.js';
-import { DelimitedOptions } from './options_panels/options-delimited-controls.js';
-import { AsciiTableOptionsPanel } from './options_panels/options-ascii-table.js';
-import { MarkdownOptionsPanel } from './options_panels/options-markdown-panel.js';
-import { JsonOptionsPanel } from './options_panels/options-json-panel.js';
-import { JavaOptionsPanel } from './options_panels/options-java-panel.js';
-import { JavascriptOptionsPanel } from './options_panels/options-javascript-panel.js';
-import { PythonOptionsPanel } from './options_panels/options-python-panel.js';
-import { PhpOptionsPanel } from './options_panels/options-php-panel.js';
-import { RubyOptionsPanel } from './options_panels/options-ruby-panel.js';
-import { KotlinOptionsPanel } from './options_panels/options-kotlin-panel.js';
-import { CSharpOptionsPanel } from './options_panels/options-csharp-panel.js';
-import { PerlOptionsPanel } from './options_panels/options-perl-panel.js';
-import { TypeScriptOptionsPanel } from './options_panels/options-typescript-panel.js';
-import { XmlOptionsPanel } from './options_panels/options-xml-panel.js';
-import { SqlOptionsPanel } from './options_panels/options-sql-panel.js';
-import { GherkinOptionsPanel } from './options_panels/options-gherkin-panel.js';
-import { HtmlOptionsPanel } from './options_panels/options-html-panel.js';
-import { TestFrameworkOptionsPanel } from './options_panels/options-test-framework-panel.js';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
+import { sanitizeUiOptionsForFormat } from './options-catalog-adapter.js';
+import { createOptionsPanelsForParent } from './options-ui-schema.js';
 
 class ImportExportControls {
   constructor() {
@@ -284,48 +267,7 @@ class ImportExportControls {
   setupOptionsPanelsWithin(optionsparent) {
     if (this.optionsPanels === undefined) {
       if (optionsparent) {
-        this.optionsPanels = {};
-        this.optionsPanels['csv'] = new CsvDelimitedOptions(optionsparent);
-        this.optionsPanels['dsv'] = new DelimitedOptions(optionsparent);
-        this.optionsPanels['asciitable'] = new AsciiTableOptionsPanel(optionsparent);
-        this.optionsPanels['markdown'] = new MarkdownOptionsPanel(optionsparent);
-        this.optionsPanels['json'] = new JsonOptionsPanel(optionsparent);
-        this.optionsPanels['jsonl'] = new JsonOptionsPanel(optionsparent, 'jsonl-options', { jsonlMode: true });
-        this.optionsPanels['javascript'] = new JavascriptOptionsPanel(optionsparent);
-        this.optionsPanels['java'] = new JavaOptionsPanel(optionsparent);
-        this.optionsPanels['python'] = new PythonOptionsPanel(optionsparent);
-        this.optionsPanels['kotlin'] = new KotlinOptionsPanel(optionsparent);
-        this.optionsPanels['csharp'] = new CSharpOptionsPanel(optionsparent);
-        this.optionsPanels['perl'] = new PerlOptionsPanel(optionsparent);
-        this.optionsPanels['php'] = new PhpOptionsPanel(optionsparent);
-        this.optionsPanels['ruby'] = new RubyOptionsPanel(optionsparent);
-        this.optionsPanels['typescript'] = new TypeScriptOptionsPanel(optionsparent);
-        this.optionsPanels['xml'] = new XmlOptionsPanel(optionsparent);
-        this.optionsPanels['sql'] = new SqlOptionsPanel(optionsparent);
-        this.optionsPanels['html'] = new HtmlOptionsPanel(optionsparent);
-        this.optionsPanels['gherkin'] = new GherkinOptionsPanel(optionsparent);
-        this.optionsPanels['junit4'] = new TestFrameworkOptionsPanel(optionsparent, 'junit4');
-        this.optionsPanels['junit5'] = new TestFrameworkOptionsPanel(optionsparent, 'junit5');
-        this.optionsPanels['junit6'] = new TestFrameworkOptionsPanel(optionsparent, 'junit6');
-        this.optionsPanels['testng'] = new TestFrameworkOptionsPanel(optionsparent, 'testng');
-        this.optionsPanels['pytest'] = new TestFrameworkOptionsPanel(optionsparent, 'pytest');
-        this.optionsPanels['unittest'] = new TestFrameworkOptionsPanel(optionsparent, 'unittest');
-        this.optionsPanels['nose2'] = new TestFrameworkOptionsPanel(optionsparent, 'nose2');
-        this.optionsPanels['jest'] = new TestFrameworkOptionsPanel(optionsparent, 'jest');
-        this.optionsPanels['vitest'] = new TestFrameworkOptionsPanel(optionsparent, 'vitest');
-        this.optionsPanels['mocha'] = new TestFrameworkOptionsPanel(optionsparent, 'mocha');
-        this.optionsPanels['xunit'] = new TestFrameworkOptionsPanel(optionsparent, 'xunit');
-        this.optionsPanels['nunit'] = new TestFrameworkOptionsPanel(optionsparent, 'nunit');
-        this.optionsPanels['mstest'] = new TestFrameworkOptionsPanel(optionsparent, 'mstest');
-        this.optionsPanels['rspec'] = new TestFrameworkOptionsPanel(optionsparent, 'rspec');
-        this.optionsPanels['minitest'] = new TestFrameworkOptionsPanel(optionsparent, 'minitest');
-        this.optionsPanels['phpunit'] = new TestFrameworkOptionsPanel(optionsparent, 'phpunit');
-        this.optionsPanels['pest'] = new TestFrameworkOptionsPanel(optionsparent, 'pest');
-        this.optionsPanels['kotest'] = new TestFrameworkOptionsPanel(optionsparent, 'kotest');
-        this.optionsPanels['junit5-kotlin'] = new TestFrameworkOptionsPanel(optionsparent, 'junit5-kotlin');
-        this.optionsPanels['spek'] = new TestFrameworkOptionsPanel(optionsparent, 'spek');
-        this.optionsPanels['test-more'] = new TestFrameworkOptionsPanel(optionsparent, 'test-more');
-        this.optionsPanels['test2-suite'] = new TestFrameworkOptionsPanel(optionsparent, 'test2-suite');
+        this.optionsPanels = createOptionsPanelsForParent(optionsparent);
       }
     }
   }
@@ -433,17 +375,19 @@ class ImportExportControls {
 
     const guiOptions = optionsPanel.getOptionsFromGui();
     const type = guiOptions?.outputFormat || activeType;
+    const sanitized = sanitizeUiOptionsForFormat(type, guiOptions?.options || guiOptions);
     this._setActiveTypeIfPresent(type);
-    this.importer.setOptionsForType(type, guiOptions);
-    this.exporter.setOptionsForType(type, guiOptions);
+    this.importer.setOptionsForType(type, sanitized);
+    this.exporter.setOptionsForType(type, sanitized);
   }
 
   applyCurrentTypeOptions(options) {
     const activeType = document.querySelector('li.active-type a').getAttribute('data-type');
     const type = options?.outputFormat || activeType;
+    const sanitized = sanitizeUiOptionsForFormat(type, options?.options || options);
     this._setActiveTypeIfPresent(type);
-    this.importer.setOptionsForType(type, options);
-    this.exporter.setOptionsForType(type, options);
+    this.importer.setOptionsForType(type, sanitized);
+    this.exporter.setOptionsForType(type, sanitized);
     this.renderTextFromGrid();
   }
 

@@ -1,5 +1,6 @@
 import { JSDOM } from 'jsdom';
 import { TestFrameworkOptionsPanel } from '../../../js/gui_components/options_panels/options-test-framework-panel.js';
+import { getTipsForFormat } from '@anywaydata/core';
 import { TestFrameworkConvertorOptions } from '@anywaydata/core/data_formats/test-framework-convertor.js';
 
 describe('TestFrameworkOptionsPanel', () => {
@@ -76,5 +77,19 @@ describe('TestFrameworkOptionsPanel', () => {
       (option) => option.value
     );
     expect(pythonFrameworks).toEqual(['pytest', 'unittest', 'nose2']);
+  });
+
+  test('help text tips are sourced from shared catalog and refresh on framework change', () => {
+    const panel = new TestFrameworkOptionsPanel(parent, 'junit5');
+    panel.addToGui();
+
+    const includeSetupHelp = parent.querySelector("[data-help='test-framework-option-include-setup']");
+    expect(includeSetupHelp.getAttribute('data-help-text')).toBe(getTipsForFormat('junit5').includeSetup);
+
+    const frameworkSelect = parent.querySelector("select[name='framework-id']");
+    frameworkSelect.value = 'testng';
+    frameworkSelect.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+
+    expect(includeSetupHelp.getAttribute('data-help-text')).toBe(getTipsForFormat('testng').includeSetup);
   });
 });

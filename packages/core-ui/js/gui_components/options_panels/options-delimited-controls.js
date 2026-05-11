@@ -1,5 +1,7 @@
 import { DelimiterOptions } from '@anywaydata/core/data_formats/delimiter-options.js';
 import { HtmlDataValues } from './html-options-data-utils.js';
+import { applySharedOptionTips } from './options-help-tips.js';
+import { applyUiPanelOnlyTips } from './options-help-tips-ui.js';
 
 class DelimitedOptions {
   delimiterMappings = {
@@ -29,7 +31,7 @@ class DelimitedOptions {
           <div><p><strong>Options</strong>  <span data-help="delimiter-options" class="helpicon"></span></p></div>
 
           <div class="delimiter">
-            <label><span class="helpicon option-help-icon" data-help="dsv-option-delimiter" data-help-text="Choose the delimiter character used between values in each row."></span>Delimiter
+            <label><span class="helpicon option-help-icon" data-help="dsv-option-delimiter"></span>Delimiter
               <select name="delimiter">
                 <option value="tab">Tab [\\t]</option>
                 <option value="comma">Comma [,]</option>
@@ -46,7 +48,7 @@ class DelimitedOptions {
             <br>
           </div>
           <div class="custom-delimiter option-child">
-            <label><span class="helpicon option-help-icon" data-help="dsv-option-custom-delimiter" data-help-text="When Delimiter is set to Custom Value, enter the delimiter character here."></span>Custom
+            <label><span class="helpicon option-help-icon" data-help="dsv-option-custom-delimiter"></span>Custom
               <input type="text" name="custom-delimiter" value='' style="width:5em">
             </label>
             <br>
@@ -54,7 +56,7 @@ class DelimitedOptions {
 
           <div class="quotes">            
             <label>
-              <span class="helpicon option-help-icon" data-help="dsv-option-quotes" data-help-text="Wrap fields in quote characters when exporting delimited data."></span>
+              <span class="helpicon option-help-icon" data-help="dsv-option-quotes"></span>
               <input type="checkbox" name="quotes" value="quotes">
               Use Quotes
             </label>
@@ -63,7 +65,7 @@ class DelimitedOptions {
 
           <div class="headerval">            
             <label>
-              <span class="helpicon option-help-icon" data-help="dsv-option-header" data-help-text="Include the header row as the first line of output."></span>
+              <span class="helpicon option-help-icon" data-help="dsv-option-header"></span>
               <input type="checkbox" name="header" value="header">
               Use Header
             </label>
@@ -73,7 +75,7 @@ class DelimitedOptions {
 
           <div class="quoteChar option-child">
             <label>
-              <span class="helpicon option-help-icon" data-help="dsv-option-quote-char" data-help-text="Character used to quote string values."></span>
+              <span class="helpicon option-help-icon" data-help="dsv-option-quote-char"></span>
               <input type="text" name="quoteChar" value='"' style="width:5em">
               Quote Char
             </label>
@@ -82,7 +84,7 @@ class DelimitedOptions {
 
           <div class="escapeChar option-child">
             <label>
-              <span class="helpicon option-help-icon" data-help="dsv-option-escape-char" data-help-text="Character used to escape quote characters inside field values."></span>
+              <span class="helpicon option-help-icon" data-help="dsv-option-escape-char"></span>
               <input type="text" name="escapeChar" value='"' style="width:5em">
               Escape Char
             </label>
@@ -109,6 +111,14 @@ class DelimitedOptions {
       
         </div>
         `;
+    applySharedOptionTips(this.parent, 'dsv', [
+      { selector: "[data-help='dsv-option-delimiter']", key: 'delimiter' },
+      { selector: "[data-help='dsv-option-quotes']", key: 'quotes' },
+      { selector: "[data-help='dsv-option-header']", key: 'header' },
+      { selector: "[data-help='dsv-option-quote-char']", key: 'quoteChar' },
+      { selector: "[data-help='dsv-option-escape-char']", key: 'escapeChar' },
+    ]);
+    applyUiPanelOnlyTips(this.parent, ['dsv-option-custom-delimiter']);
   }
 
   setApplyCallback(callbackFunc) {

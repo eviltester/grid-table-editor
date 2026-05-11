@@ -7,6 +7,13 @@ import { Exporter } from '../js/grid/exporter.js';
 import { Importer } from '../js/grid/importer.js';
 import { KNOWN_FAKER_COMMANDS } from '../js/faker/faker-commands.js';
 import { PairwiseTestDataGenerator } from '../js/data_generation/all-pairs/pairwiseTestDataGenerator.js';
+import {
+  OPTION_KEYS_BY_FORMAT,
+  OPTION_TIPS_BY_FORMAT,
+  normalizeFormat,
+  sanitizeOptionsForFormat,
+  getTipsForFormat,
+} from '../js/options/format-option-catalog.js';
 
 if (typeof globalThis.Papa === 'undefined') {
   globalThis.Papa = Papa;
@@ -636,3 +643,4 @@ export async function streamFromTextSpec({
 
 export { SUPPORTED_FORMATS };
 export { Exporter, GenericDataTable };
+export { OPTION_KEYS_BY_FORMAT, OPTION_TIPS_BY_FORMAT, normalizeFormat, sanitizeOptionsForFormat, getTipsForFormat };

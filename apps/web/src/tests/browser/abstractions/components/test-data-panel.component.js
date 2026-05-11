@@ -76,6 +76,7 @@ class TestDataPanelComponent {
 
   async setSchemaText(specText) {
     await this.schemaTextArea.fill(specText);
+    await this.schemaTextArea.press('Tab');
   }
 
   async clickGenerate() {

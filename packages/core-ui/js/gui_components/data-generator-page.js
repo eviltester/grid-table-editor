@@ -4,25 +4,8 @@ import { PairwiseTestDataGenerator } from '@anywaydata/core/data_generation/all-
 import { Exporter } from '@anywaydata/core/grid/exporter.js';
 import { Download } from './download.js';
 import { GridExtension as TabulatorGridExtension } from './data-grid-editor/tabulator/gridExtension-tabulator.js';
-import { CsvDelimitedOptions } from './options_panels/options-csv-delimited-controls.js';
-import { DelimitedOptions } from './options_panels/options-delimited-controls.js';
-import { MarkdownOptionsPanel } from './options_panels/options-markdown-panel.js';
-import { JsonOptionsPanel } from './options_panels/options-json-panel.js';
-import { JavaOptionsPanel } from './options_panels/options-java-panel.js';
-import { JavascriptOptionsPanel } from './options_panels/options-javascript-panel.js';
-import { PythonOptionsPanel } from './options_panels/options-python-panel.js';
-import { PhpOptionsPanel } from './options_panels/options-php-panel.js';
-import { RubyOptionsPanel } from './options_panels/options-ruby-panel.js';
-import { KotlinOptionsPanel } from './options_panels/options-kotlin-panel.js';
-import { CSharpOptionsPanel } from './options_panels/options-csharp-panel.js';
-import { PerlOptionsPanel } from './options_panels/options-perl-panel.js';
-import { TypeScriptOptionsPanel } from './options_panels/options-typescript-panel.js';
-import { XmlOptionsPanel } from './options_panels/options-xml-panel.js';
-import { SqlOptionsPanel } from './options_panels/options-sql-panel.js';
-import { HtmlOptionsPanel } from './options_panels/options-html-panel.js';
-import { GherkinOptionsPanel } from './options_panels/options-gherkin-panel.js';
-import { AsciiTableOptionsPanel } from './options_panels/options-ascii-table.js';
-import { TestFrameworkOptionsPanel } from './options_panels/options-test-framework-panel.js';
+import { sanitizeUiOptionsForFormat } from './options-catalog-adapter.js';
+import { createOptionsPanelsForParent, getOutputFormatGroups } from './options-ui-schema.js';
 import { getKnownFakerCommandsAlphabetical, getKnownFakerCommandsLongestFirst } from './faker-commands.js';
 import { getFakerCommandHelp } from './faker-command-help-metadata.js';
 
@@ -34,6 +17,25 @@ const REGEX_HELP_URL = 'https://anywaydata.com/docs/test-data/regex-test-data';
 const FAKER_HELP_URL = 'https://anywaydata.com/docs/test-data/faker-test-data';
 const LITERAL_HELP_URL = 'https://anywaydata.com/docs/category/generating-data';
 const ENUM_HELP_URL = 'https://anywaydata.com/docs/category/generating-data';
+const GENERATE_TO_FILE_HELP_URL = 'https://anywaydata.com/docs/test-data/generate-to-file';
+const DEFAULT_EXAMPLE_SCHEMA_TEXT = `# Example schema
+First Name
+person.firstName
+
+Last Name
+person.lastName
+
+Email
+internet.email
+
+Status
+enum(active,inactive,pending)
+
+Priority
+enum(high,medium,low)
+
+Created Date
+date.recent`;
 
 function normaliseFakerCommand(commandValue) {
   const command = String(commandValue || '').trim();
@@ -258,7 +260,10 @@ class DataGeneratorPage {
           <section class="generator-schema" id="generatorSchemaSection" data-section-order="2" aria-labelledby="generatorSchemaHeading">
                     <div class="generator-schema-head">
               <strong id="generatorSchemaHeading">Schema</strong>
-                        <button id="schemaModeToggleButton" class="icon-button" title="Toggle schema text mode">Edit as Text</button>
+                        <span class="generator-button-with-help">
+                          <span id="schemaModeHelpIcon" class="helpicon" data-help="generator-schema-mode-help"></span>
+                          <button id="schemaModeToggleButton" class="icon-button" title="Toggle schema text mode">Edit as Text</button>
+                        </span>
                     </div>
                     <div id="generatorSchemaRows" class="generator-schema-rows"></div>
                     <div id="generatorSchemaTextContainer" class="generator-schema-text">
@@ -346,55 +351,20 @@ class DataGeneratorPage {
       return;
     }
 
-    const orderedTypes = ['csv', 'json', 'jsonl', 'xml', 'sql', 'markdown', 'dsv', 'html', 'gherkin', 'asciitable'];
-    orderedTypes.forEach((type) => {
+    const formatGroups = getOutputFormatGroups();
+    formatGroups.core.forEach(({ type, label }) => {
       if (!this.exporter?.canExport?.(type) && this.exporter) {
         return;
       }
       const option = this.documentObj.createElement('option');
       option.value = type;
-      option.textContent = type.toUpperCase();
+      option.textContent = label;
       outputSelect.appendChild(option);
     });
 
-    const codeTypes = [
-      { type: 'csharp', label: 'C#' },
-      { type: 'java', label: 'Java' },
-      { type: 'javascript', label: 'JavaScript' },
-      { type: 'kotlin', label: 'Kotlin' },
-      { type: 'perl', label: 'Perl' },
-      { type: 'php', label: 'PHP' },
-      { type: 'python', label: 'Python' },
-      { type: 'ruby', label: 'Ruby' },
-      { type: 'typescript', label: 'TypeScript' },
-    ];
-    const unitTestCodeTypes = [
-      { type: 'junit4', label: 'JUnit4' },
-      { type: 'junit5', label: 'JUnit5' },
-      { type: 'junit6', label: 'JUnit6' },
-      { type: 'testng', label: 'TestNG' },
-      { type: 'pytest', label: 'PyTest' },
-      { type: 'unittest', label: 'unittest' },
-      { type: 'nose2', label: 'nose2' },
-      { type: 'jest', label: 'Jest' },
-      { type: 'vitest', label: 'Vitest' },
-      { type: 'mocha', label: 'Mocha' },
-      { type: 'xunit', label: 'xUnit' },
-      { type: 'nunit', label: 'NUnit' },
-      { type: 'mstest', label: 'MSTest' },
-      { type: 'rspec', label: 'RSpec' },
-      { type: 'minitest', label: 'Minitest' },
-      { type: 'phpunit', label: 'PHPUnit' },
-      { type: 'pest', label: 'Pest' },
-      { type: 'kotest', label: 'Kotest' },
-      { type: 'junit5-kotlin', label: 'JUnit5 Kotlin' },
-      { type: 'spek', label: 'Spek' },
-      { type: 'test-more', label: 'Test::More' },
-      { type: 'test2-suite', label: 'Test2::Suite' },
-    ];
     const codeGroup = this.documentObj.createElement('optgroup');
     codeGroup.label = '-- Code --';
-    codeTypes.forEach(({ type, label }) => {
+    formatGroups.code.forEach(({ type, label }) => {
       if (!this.exporter?.canExport?.(type) && this.exporter) {
         return;
       }
@@ -408,7 +378,7 @@ class DataGeneratorPage {
     }
     const unitTestCodeGroup = this.documentObj.createElement('optgroup');
     unitTestCodeGroup.label = '-- Code (Unit Test) --';
-    unitTestCodeTypes.forEach(({ type, label }) => {
+    formatGroups.unitTest.forEach(({ type, label }) => {
       if (!this.exporter?.canExport?.(type) && this.exporter) {
         return;
       }
@@ -434,6 +404,7 @@ class DataGeneratorPage {
     schemaTextArea?.addEventListener('input', () => {
       this.updateAllPairsButtonVisibility();
     });
+    this.documentObj.addEventListener('click', (event) => this.handleGlobalButtonClick(event));
 
     const previewDataButton = this.documentObj.getElementById('previewDataButton');
     previewDataButton.addEventListener('click', () => this.previewData());
@@ -466,48 +437,7 @@ class DataGeneratorPage {
       return;
     }
 
-    this.optionsPanels = {};
-    this.optionsPanels['csv'] = new CsvDelimitedOptions(optionsParent);
-    this.optionsPanels['dsv'] = new DelimitedOptions(optionsParent);
-    this.optionsPanels['markdown'] = new MarkdownOptionsPanel(optionsParent);
-    this.optionsPanels['json'] = new JsonOptionsPanel(optionsParent);
-    this.optionsPanels['jsonl'] = new JsonOptionsPanel(optionsParent, 'jsonl-options', { jsonlMode: true });
-    this.optionsPanels['javascript'] = new JavascriptOptionsPanel(optionsParent);
-    this.optionsPanels['java'] = new JavaOptionsPanel(optionsParent);
-    this.optionsPanels['python'] = new PythonOptionsPanel(optionsParent);
-    this.optionsPanels['kotlin'] = new KotlinOptionsPanel(optionsParent);
-    this.optionsPanels['csharp'] = new CSharpOptionsPanel(optionsParent);
-    this.optionsPanels['perl'] = new PerlOptionsPanel(optionsParent);
-    this.optionsPanels['php'] = new PhpOptionsPanel(optionsParent);
-    this.optionsPanels['ruby'] = new RubyOptionsPanel(optionsParent);
-    this.optionsPanels['typescript'] = new TypeScriptOptionsPanel(optionsParent);
-    this.optionsPanels['xml'] = new XmlOptionsPanel(optionsParent);
-    this.optionsPanels['sql'] = new SqlOptionsPanel(optionsParent);
-    this.optionsPanels['html'] = new HtmlOptionsPanel(optionsParent);
-    this.optionsPanels['gherkin'] = new GherkinOptionsPanel(optionsParent);
-    this.optionsPanels['asciitable'] = new AsciiTableOptionsPanel(optionsParent);
-    this.optionsPanels['junit4'] = new TestFrameworkOptionsPanel(optionsParent, 'junit4');
-    this.optionsPanels['junit5'] = new TestFrameworkOptionsPanel(optionsParent, 'junit5');
-    this.optionsPanels['junit6'] = new TestFrameworkOptionsPanel(optionsParent, 'junit6');
-    this.optionsPanels['testng'] = new TestFrameworkOptionsPanel(optionsParent, 'testng');
-    this.optionsPanels['pytest'] = new TestFrameworkOptionsPanel(optionsParent, 'pytest');
-    this.optionsPanels['unittest'] = new TestFrameworkOptionsPanel(optionsParent, 'unittest');
-    this.optionsPanels['nose2'] = new TestFrameworkOptionsPanel(optionsParent, 'nose2');
-    this.optionsPanels['jest'] = new TestFrameworkOptionsPanel(optionsParent, 'jest');
-    this.optionsPanels['vitest'] = new TestFrameworkOptionsPanel(optionsParent, 'vitest');
-    this.optionsPanels['mocha'] = new TestFrameworkOptionsPanel(optionsParent, 'mocha');
-    this.optionsPanels['xunit'] = new TestFrameworkOptionsPanel(optionsParent, 'xunit');
-    this.optionsPanels['nunit'] = new TestFrameworkOptionsPanel(optionsParent, 'nunit');
-    this.optionsPanels['mstest'] = new TestFrameworkOptionsPanel(optionsParent, 'mstest');
-    this.optionsPanels['rspec'] = new TestFrameworkOptionsPanel(optionsParent, 'rspec');
-    this.optionsPanels['minitest'] = new TestFrameworkOptionsPanel(optionsParent, 'minitest');
-    this.optionsPanels['phpunit'] = new TestFrameworkOptionsPanel(optionsParent, 'phpunit');
-    this.optionsPanels['pest'] = new TestFrameworkOptionsPanel(optionsParent, 'pest');
-    this.optionsPanels['kotest'] = new TestFrameworkOptionsPanel(optionsParent, 'kotest');
-    this.optionsPanels['junit5-kotlin'] = new TestFrameworkOptionsPanel(optionsParent, 'junit5-kotlin');
-    this.optionsPanels['spek'] = new TestFrameworkOptionsPanel(optionsParent, 'spek');
-    this.optionsPanels['test-more'] = new TestFrameworkOptionsPanel(optionsParent, 'test-more');
-    this.optionsPanels['test2-suite'] = new TestFrameworkOptionsPanel(optionsParent, 'test2-suite');
+    this.optionsPanels = createOptionsPanelsForParent(optionsParent);
   }
 
   getSelectedOutputType() {
@@ -589,7 +519,8 @@ class DataGeneratorPage {
     }
 
     // Persist options for the target format before rendering its panel.
-    this.exporter?.setOptionsForType?.(requestedType, options);
+    const sanitized = sanitizeUiOptionsForFormat(requestedType, options?.options || options);
+    this.exporter?.setOptionsForType?.(requestedType, sanitized);
 
     const outputSelect = this.documentObj.getElementById('generatorOutputFormat');
     if (outputSelect && outputSelect.value !== requestedType) {
@@ -671,12 +602,68 @@ class DataGeneratorPage {
     const textContainer = this.documentObj.getElementById('generatorSchemaTextContainer');
     const footer = this.documentObj.querySelector('.generator-schema-footer');
     const toggleButton = this.documentObj.getElementById('schemaModeToggleButton');
+    const modeHelpIcon = this.documentObj.getElementById('schemaModeHelpIcon');
+    const addSchemaRowButton = this.documentObj.getElementById('addSchemaRowButton');
 
     const inTextMode = this.isTextMode === true;
     rowsContainer.style.display = inTextMode ? 'none' : 'flex';
     textContainer.style.display = inTextMode ? 'block' : 'none';
-    footer.style.display = inTextMode ? 'none' : 'block';
+    footer.style.display = 'block';
+    if (addSchemaRowButton) {
+      addSchemaRowButton.style.display = inTextMode ? 'none' : 'inline-block';
+    }
     toggleButton.textContent = inTextMode ? 'Edit as Schema' : 'Edit as Text';
+    if (modeHelpIcon) {
+      modeHelpIcon.setAttribute('data-help-text', this.buildSchemaModeHelpHtml(inTextMode));
+    }
+    if (typeof window !== 'undefined' && typeof window.updateHelpHints === 'function') {
+      window.updateHelpHints();
+    }
+  }
+
+  handleGlobalButtonClick(event) {
+    if (!event?.target?.closest) {
+      return;
+    }
+    if (event.target.closest('.generator-schema-sample-button')) {
+      event.preventDefault();
+      event.stopPropagation();
+      this.insertExampleSchema();
+    }
+  }
+
+  insertExampleSchema() {
+    const textArea = this.documentObj.getElementById('generatorSchemaText');
+    if (textArea) {
+      textArea.value = DEFAULT_EXAMPLE_SCHEMA_TEXT;
+    }
+    this.isTextMode = true;
+    this.updateSchemaEditModeView();
+    this.syncSchemaRowsFromTextMode({ showErrors: true });
+    this.renderSchemaRows();
+  }
+
+  buildSchemaModeHelpHtml(inTextMode) {
+    if (inTextMode) {
+      return `
+        <p><strong>Edit as Schema</strong></p>
+        <p>You are currently editing as text. Click <strong>Edit as Schema</strong> to return to row-based editing.</p>
+        <button type="button" class="generator-schema-sample-button">Insert Example Schema</button>
+        <p>Text schema uses name/rule pairs, for example:</p>
+        <pre>First Name
+person.firstName
+
+Status
+enum(active,inactive,pending)</pre>
+        <p><a class="helplink" href="${GENERATE_TO_FILE_HELP_URL}" target="_blank" rel="noopener noreferrer">Generate To File docs</a></p>
+      `;
+    }
+    return `
+      <p><strong>Edit as Text</strong></p>
+      <p>You are currently using row-based schema editing. Click <strong>Edit as Text</strong> to switch to text schema mode.</p>
+      <button type="button" class="generator-schema-sample-button">Insert Example Schema</button>
+      <p><a class="helplink" href="${GENERATE_TO_FILE_HELP_URL}" target="_blank" rel="noopener noreferrer">Generate To File docs</a></p>
+    `;
   }
 
   parseSchemaTextToRows(schemaText) {

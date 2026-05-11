@@ -1,5 +1,7 @@
 import { JavaConvertorOptions } from '@anywaydata/core/data_formats/java-convertor.js';
 import { HtmlDataValues } from './html-options-data-utils.js';
+import { applySharedOptionTips } from './options-help-tips.js';
+import { applyUiPanelOnlyTips } from './options-help-tips-ui.js';
 
 class JavaOptionsPanel {
   constructor(parentElement) {
@@ -14,7 +16,7 @@ class JavaOptionsPanel {
 
           <div class="collectiontype">
             <label>
-              <span class="helpicon option-help-icon" data-help="java-option-collection-type" data-help-text="The Java collection type used for the outer container."></span>
+              <span class="helpicon option-help-icon" data-help="java-option-collection-type"></span>
               Collection Type
               <select name="collectiontype">
                 <option value="list">List (ArrayList)</option>
@@ -26,7 +28,7 @@ class JavaOptionsPanel {
 
           <div class="assigntovariable">
             <label>
-              <span class="helpicon option-help-icon" data-help="java-option-assign-variable" data-help-text="Assign the collection to a named Java variable."></span>
+              <span class="helpicon option-help-icon" data-help="java-option-assign-variable"></span>
               <input type="checkbox" name="assigntovariable" value="assigntovariable" checked>
               Assign to Variable
             </label>
@@ -35,7 +37,7 @@ class JavaOptionsPanel {
 
           <div class="variablename option-child">
             <label>
-              <span class="helpicon option-help-icon" data-help="java-option-variable-name" data-help-text="Name of the Java variable the collection is assigned to."></span>
+              <span class="helpicon option-help-icon" data-help="java-option-variable-name"></span>
               Variable Name
               <input type="text" name="variablename" value="data" style="width:8em">
             </label>
@@ -44,7 +46,7 @@ class JavaOptionsPanel {
 
           <div class="quotenumbers">
             <label>
-              <span class="helpicon option-help-icon" data-help="java-option-quote-numbers" data-help-text="When checked, numeric values are output as quoted strings. When unchecked, they are output as numeric literals."></span>
+              <span class="helpicon option-help-icon" data-help="java-option-quote-numbers"></span>
               <input type="checkbox" name="quotenumbers" value="quotenumbers">
               Number Convert (Quote Numbers)
             </label>
@@ -53,7 +55,7 @@ class JavaOptionsPanel {
 
           <div class="useanonymousmaps">
             <label>
-              <span class="helpicon option-help-icon" data-help="java-option-anonymous-maps" data-help-text="When checked, each row is output as a Map. When unchecked, each row is output as a named class instance."></span>
+              <span class="helpicon option-help-icon" data-help="java-option-anonymous-maps"></span>
               <input type="checkbox" name="useanonymousmaps" value="useanonymousmaps" checked>
               Use Anonymous Maps (Map.of)
             </label>
@@ -62,7 +64,7 @@ class JavaOptionsPanel {
 
           <div class="objectclassname option-child">
             <label>
-              <span class="helpicon option-help-icon" data-help="java-option-class-name" data-help-text="Class name used when Use Anonymous Maps is unchecked."></span>
+              <span class="helpicon option-help-icon" data-help="java-option-class-name"></span>
               Class Name
               <input type="text" name="objectclassname" value="Row" style="width:8em">
             </label>
@@ -71,7 +73,7 @@ class JavaOptionsPanel {
 
           <div class="blankvaluebehavior">
             <label>
-              <span class="helpicon option-help-icon" data-help="java-option-blank-value" data-help-text="Choose how blank values are exported."></span>
+              <span class="helpicon option-help-icon" data-help="java-option-blank-value"></span>
               Blank Values
               <select name="blankvaluebehavior">
                 <option value="null">null</option>
@@ -83,7 +85,7 @@ class JavaOptionsPanel {
 
           <div class="includeimports">
             <label>
-              <span class="helpicon option-help-icon" data-help="java-option-imports" data-help-text="Include import statements at the top of the output."></span>
+              <span class="helpicon option-help-icon" data-help="java-option-imports"></span>
               <input type="checkbox" name="includeimports" value="includeimports" checked>
               Include Imports
             </label>
@@ -92,7 +94,7 @@ class JavaOptionsPanel {
 
           <div class="prettyprint">
             <label>
-              <span class="helpicon option-help-icon" data-help="java-option-pretty-print" data-help-text="Format output with line breaks and indentation."></span>
+              <span class="helpicon option-help-icon" data-help="java-option-pretty-print"></span>
               <input type="checkbox" name="prettyprint" value="prettyprint" checked>
               Pretty Print
             </label>
@@ -101,7 +103,7 @@ class JavaOptionsPanel {
 
           <div class="prettydelimiter option-child">
             <label>
-              <span class="helpicon option-help-icon" data-help="java-option-delimiter" data-help-text="Indentation character used when Pretty Print is enabled."></span>
+              <span class="helpicon option-help-icon" data-help="java-option-delimiter"></span>
               Delimiter
               <select name="prettydelimiter">
                 <option value="tab">Tab [\t]</option>
@@ -114,7 +116,7 @@ class JavaOptionsPanel {
 
           <div class="custom-pretty-delimiter option-child">
             <label>
-              <span class="helpicon option-help-icon" data-help="java-option-custom-delimiter" data-help-text="When Delimiter is Custom Value, this value is used as indentation."></span>
+              <span class="helpicon option-help-icon" data-help="java-option-custom-delimiter"></span>
               Custom Delimiter
               <input type="text" name="custom-pretty-delimiter" value="" style="width:8em">
             </label>
@@ -126,6 +128,19 @@ class JavaOptionsPanel {
           </div>
         </div>
         `;
+    applySharedOptionTips(this.parent, 'java', [
+      { selector: "[data-help='java-option-collection-type']", key: 'collectionType' },
+      { selector: "[data-help='java-option-assign-variable']", key: 'assignToVariable' },
+      { selector: "[data-help='java-option-variable-name']", key: 'variableName' },
+      { selector: "[data-help='java-option-quote-numbers']", key: 'quoteNumbers' },
+      { selector: "[data-help='java-option-anonymous-maps']", key: 'useAnonymousMaps' },
+      { selector: "[data-help='java-option-class-name']", key: 'objectClassName' },
+      { selector: "[data-help='java-option-blank-value']", key: 'blankValueBehavior' },
+      { selector: "[data-help='java-option-imports']", key: 'includeImports' },
+      { selector: "[data-help='java-option-pretty-print']", key: 'prettyPrint' },
+      { selector: "[data-help='java-option-delimiter']", key: 'prettyPrintDelimiter' },
+    ]);
+    applyUiPanelOnlyTips(this.parent, ['java-option-custom-delimiter']);
   }
 
   setApplyCallback(callbackFunc) {

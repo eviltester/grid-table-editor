@@ -1,5 +1,6 @@
 import { DelimiterOptions } from '@anywaydata/core/data_formats/delimiter-options.js';
 import { HtmlDataValues } from './html-options-data-utils.js';
+import { applySharedOptionTips } from './options-help-tips.js';
 
 class CsvDelimitedOptions {
   constructor(parentElement) {
@@ -13,7 +14,7 @@ class CsvDelimitedOptions {
           <div><p><strong>Options</strong> <span data-help="csv-options" class="helpicon"></span></p></div>
           <div class="quotes">            
             <label>
-              <span class="helpicon option-help-icon" data-help="csv-option-quotes" data-help-text="Wrap fields in quote characters when exporting CSV."></span>
+              <span class="helpicon option-help-icon" data-help="csv-option-quotes"></span>
               <input type="checkbox" name="quotes" value="quotes">
               Use Quotes
             </label>
@@ -22,7 +23,7 @@ class CsvDelimitedOptions {
 
           <div class="headerval">            
             <label>
-              <span class="helpicon option-help-icon" data-help="csv-option-header" data-help-text="Include the column header row as the first line of output."></span>
+              <span class="helpicon option-help-icon" data-help="csv-option-header"></span>
               <input type="checkbox" name="header" value="header">
               Use Header
             </label>
@@ -31,14 +32,14 @@ class CsvDelimitedOptions {
           
 
           <div class="quoteChar option-child">
-            <label><span class="helpicon option-help-icon" data-help="csv-option-quote-char" data-help-text="Character used to quote string values, for example double quote."></span>Quote Char
+            <label><span class="helpicon option-help-icon" data-help="csv-option-quote-char"></span>Quote Char
               <input type="text" name="quoteChar" value='"' style="width:5em">
             </label>
             <br>
           </div>
 
           <div class="escapeChar option-child">
-            <label><span class="helpicon option-help-icon" data-help="csv-option-escape-char" data-help-text="Character used to escape quote characters inside field values."></span>Escape Char
+            <label><span class="helpicon option-help-icon" data-help="csv-option-escape-char"></span>Escape Char
               <input type="text" name="escapeChar" value='"' style="width:5em">
             </label>
             <br>
@@ -64,6 +65,12 @@ class CsvDelimitedOptions {
       
         </div>
         `;
+    applySharedOptionTips(this.parent, 'csv', [
+      { selector: "[data-help='csv-option-quotes']", key: 'quotes' },
+      { selector: "[data-help='csv-option-header']", key: 'header' },
+      { selector: "[data-help='csv-option-quote-char']", key: 'quoteChar' },
+      { selector: "[data-help='csv-option-escape-char']", key: 'escapeChar' },
+    ]);
   }
 
   setApplyCallback(callbackFunc) {

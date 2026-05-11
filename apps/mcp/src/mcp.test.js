@@ -1,6 +1,6 @@
 import { execFileSync } from 'node:child_process';
 import path from 'node:path';
-import { amendFromTextSpecAndData, generateFromTextSpec } from '@anywaydata/core';
+import { amendFromTextSpecAndData, generateFromTextSpec, getTipsForFormat } from '@anywaydata/core';
 
 function firstJsonLine(output) {
   return output
@@ -228,6 +228,26 @@ test('MCP server returns discoverable options schema for xml output format', () 
   expect(payload.formatSchema.optionDefaults.rootElementName).toBe('root');
   expect(payload.formatSchema.optionDefaults.itemElementName).toBe('item');
   expect(payload.formatSchema.optionSchema.properties.rootElementName.type).toBe('string');
+});
+
+test('MCP option schema descriptions align to shared tips for overlapping keys', () => {
+  const response = requestServer({
+    jsonrpc: '2.0',
+    id: 501,
+    method: 'tools/call',
+    params: {
+      name: 'get_output_format_options_schema',
+      arguments: { outputFormat: 'xml' },
+    },
+  });
+  const payload = JSON.parse(response?.result?.content?.[0]?.text || '{}');
+  const props = payload?.formatSchema?.optionSchema?.properties || {};
+  const tips = getTipsForFormat('xml');
+  for (const [key, tip] of Object.entries(tips)) {
+    if (props[key]) {
+      expect(props[key].description).toBe(tip);
+    }
+  }
 });
 
 test('MCP server initialize advertises tools and resources capability', () => {

@@ -4,6 +4,7 @@ import readline from 'node:readline';
 import {
   amendFromTextSpecAndData,
   createExporterForDefaults,
+  getTipsForFormat,
   generateFromTextSpec,
   SUPPORTED_FORMATS,
   validateSafeFakerRules,
@@ -19,93 +20,6 @@ const MAX_TEXT_SPEC_LENGTH = 200000;
 const RESOURCE_URIS = {
   optionCatalog: 'anywaydata://schemas/output-format-options',
   installGuide: 'anywaydata://install/config-examples',
-};
-
-const FORMAT_OPTION_NOTES = {
-  xml: {
-    rootElementName: 'XML root tag name.',
-    itemElementName: 'Per-row XML tag name.',
-    attributeColumnsCsv: 'Comma-separated columns to render as XML attributes on each item tag.',
-    includeXmlHeader: 'Include XML declaration header.',
-    xmlns: 'Namespace URI, rendered as xmlns attribute on the root tag.',
-  },
-  junit4: {
-    suiteName: 'Name of generated test suite/class.',
-    testNamePrefix: 'Prefix used for generated test method names.',
-    includeSetup: 'Include @Before setup scaffold in generated class.',
-    prettyPrint: 'Format generated output for readability.',
-    dataSourceStrategy: 'Data-driven strategy: provider/method, inline, or csv source.',
-  },
-  junit5: {
-    suiteName: 'Name of generated test suite/class.',
-    testNamePrefix: 'Prefix used for generated test method names.',
-    includeSetup: 'Include @BeforeEach setup scaffold in generated class.',
-    prettyPrint: 'Format generated output for readability.',
-    dataSourceStrategy: 'Data-driven strategy: provider/method, inline, or csv source.',
-  },
-  junit6: {
-    suiteName: 'Name of generated test suite/class.',
-    testNamePrefix: 'Prefix used for generated test method names.',
-    includeSetup: 'Include @BeforeEach setup scaffold in generated class.',
-    prettyPrint: 'Format generated output for readability.',
-    dataSourceStrategy: 'Data-driven strategy: provider/method, inline, or csv source.',
-  },
-  testng: {
-    suiteName: 'Name of generated test suite/class.',
-    testNamePrefix: 'Prefix used for generated test method names.',
-    includeSetup: 'Include @BeforeMethod setup scaffold in generated class.',
-    prettyPrint: 'Format generated output for readability.',
-    dataSourceStrategy: 'Data-driven strategy: provider/method or inline.',
-  },
-  pytest: {
-    suiteName: 'Name of generated test suite/class.',
-    testNamePrefix: 'Prefix used for generated test method names.',
-    includeSetup: 'Include pytest fixture scaffold and wire it into the test signature.',
-    prettyPrint: 'Format generated output for readability.',
-    dataSourceStrategy: 'Data-driven strategy: provider function or inline rows.',
-  },
-  jest: {
-    suiteName: 'Name of generated test suite/class.',
-    testNamePrefix: 'Prefix used for generated test method names.',
-    includeSetup: 'Include beforeEach setup scaffold in generated suite.',
-    prettyPrint: 'Format generated output for readability.',
-    dataSourceStrategy: 'Data-driven strategy: provider function or inline rows.',
-  },
-  xunit: {
-    suiteName: 'Name of generated test suite/class.',
-    testNamePrefix: 'Prefix used for generated test method names.',
-    includeSetup: 'Include constructor setup scaffold in generated class.',
-    prettyPrint: 'Format generated output for readability.',
-    dataSourceStrategy: 'Data-driven strategy: MemberData provider or InlineData.',
-  },
-  rspec: {
-    suiteName: 'Name of generated test suite/class.',
-    testNamePrefix: 'Prefix used for generated test method names.',
-    includeSetup: 'Include before block scaffold in generated spec.',
-    prettyPrint: 'Format generated output for readability.',
-    dataSourceStrategy: 'Data-driven strategy: rows constant iteration.',
-  },
-  phpunit: {
-    suiteName: 'Name of generated test suite/class.',
-    testNamePrefix: 'Prefix used for generated test method names.',
-    includeSetup: 'Include setUp() scaffold in generated test class.',
-    prettyPrint: 'Format generated output for readability.',
-    dataSourceStrategy: 'Data-driven strategy: data provider rows.',
-  },
-  kotest: {
-    suiteName: 'Name of generated test suite/class.',
-    testNamePrefix: 'Prefix used for generated test method names.',
-    includeSetup: 'Include beforeTest setup scaffold in generated spec.',
-    prettyPrint: 'Format generated output for readability.',
-    dataSourceStrategy: 'Data-driven strategy: rows collection iteration.',
-  },
-  'test-more': {
-    suiteName: 'Name of generated test suite/class.',
-    testNamePrefix: 'Prefix used for generated test method names.',
-    includeSetup: 'Include setup variable scaffold in generated script.',
-    prettyPrint: 'Format generated output for readability.',
-    dataSourceStrategy: 'Data-driven strategy: row hash iteration.',
-  },
 };
 
 function inferJsonSchemaType(value) {
@@ -128,12 +42,13 @@ function inferJsonSchemaType(value) {
 }
 
 function buildOptionsPropertySchema(defaultOptions, format) {
+  const optionTips = getTipsForFormat(format);
   const properties = {};
   for (const [optionName, defaultValue] of Object.entries(defaultOptions || {})) {
     properties[optionName] = {
       type: inferJsonSchemaType(defaultValue),
       default: defaultValue,
-      description: FORMAT_OPTION_NOTES[format]?.[optionName] || undefined,
+      description: optionTips?.[optionName] || undefined,
     };
   }
 

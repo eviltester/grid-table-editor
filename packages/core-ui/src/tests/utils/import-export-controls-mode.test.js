@@ -370,10 +370,16 @@ describe('ImportExportControls file reading and visibility', () => {
   test('applyCurrentTypeOptions updates importer/exporter and rerenders text', () => {
     controls.renderTextFromGrid = jest.fn();
 
-    controls.applyCurrentTypeOptions({ delimiter: '|' });
+    controls.applyCurrentTypeOptions({ header: false });
 
-    expect(controls.importer.setOptionsForType).toHaveBeenCalledWith('csv', { delimiter: '|' });
-    expect(controls.exporter.setOptionsForType).toHaveBeenCalledWith('csv', { delimiter: '|' });
+    expect(controls.importer.setOptionsForType).toHaveBeenCalledWith('csv', {
+      outputFormat: 'csv',
+      options: { header: false },
+    });
+    expect(controls.exporter.setOptionsForType).toHaveBeenCalledWith('csv', {
+      outputFormat: 'csv',
+      options: { header: false },
+    });
     expect(controls.renderTextFromGrid).toHaveBeenCalledTimes(1);
   });
 
@@ -390,9 +396,9 @@ describe('ImportExportControls file reading and visibility', () => {
       setFromOptions: jest.fn(),
       setApplyCallback: jest.fn((callbackFunc) => {
         const button = document.querySelector('div.options-parent .apply-options');
-        button.onclick = () => callbackFunc({ delimiter: '|' });
+        button.onclick = () => callbackFunc({ header: false });
       }),
-      getOptionsFromGui: jest.fn(() => ({ delimiter: '|' })),
+      getOptionsFromGui: jest.fn(() => ({ header: false })),
     };
 
     controls.setOptionsViewForFormatType();
@@ -406,8 +412,14 @@ describe('ImportExportControls file reading and visibility', () => {
     expect(applyButton.disabled).toBe(false);
 
     applyButton.click();
-    expect(controls.importer.setOptionsForType).toHaveBeenCalledWith('csv', { delimiter: '|' });
-    expect(controls.exporter.setOptionsForType).toHaveBeenCalledWith('csv', { delimiter: '|' });
+    expect(controls.importer.setOptionsForType).toHaveBeenCalledWith('csv', {
+      outputFormat: 'csv',
+      options: { header: false },
+    });
+    expect(controls.exporter.setOptionsForType).toHaveBeenCalledWith('csv', {
+      outputFormat: 'csv',
+      options: { header: false },
+    });
     expect(applyButton.disabled).toBe(true);
   });
 

@@ -1,6 +1,7 @@
 import { MarkdownOptions } from '@anywaydata/core/data_formats/markdown-convertor.js';
 import { getNumberArrayFrom } from '@anywaydata/core/utils/number-convertor.js';
 import { HtmlDataValues } from './html-options-data-utils.js';
+import { applySharedOptionTips } from './options-help-tips.js';
 
 class MarkdownOptionsPanel {
   constructor(parentElement) {
@@ -108,6 +109,17 @@ class MarkdownOptionsPanel {
       
         </div>
         `;
+    applySharedOptionTips(this.parent, 'markdown', [
+      { selector: "[data-help='md-option-space-padding']", key: 'spacePadding' },
+      { selector: "[data-help='md-option-tab-padding']", key: 'tabPadding' },
+      { selector: "[data-help='md-option-border-bars']", key: 'borderBars' },
+      { selector: "[data-help='md-option-bold-headers']", key: 'emboldenHeaders' },
+      { selector: "[data-help='md-option-italic-headers']", key: 'emphasisHeaders' },
+      { selector: "[data-help='md-option-bold-columns']", key: 'emboldenColumns' },
+      { selector: "[data-help='md-option-italic-columns']", key: 'emphasisColumns' },
+      { selector: "[data-help='md-option-pretty-print']", key: 'prettyPrint' },
+      { selector: "[data-help='md-option-column-align']", key: 'globalColumnAlign' },
+    ]);
   }
 
   setApplyCallback(callbackFunc) {

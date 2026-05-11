@@ -1,6 +1,7 @@
 import { JavascriptConvertorOptions } from '@anywaydata/core/data_formats/javascript-convertor.js';
 import { JsonConvertorOptions } from '@anywaydata/core/data_formats/json-convertor.js';
 import { HtmlDataValues } from './html-options-data-utils.js';
+import { applySharedOptionTips } from './options-help-tips.js';
 
 class JsonOptionsPanel {
   constructor(parentElement, parentDivClassname, panelConfig = {}) {
@@ -85,6 +86,14 @@ class JsonOptionsPanel {
       
         </div>
         `;
+    const tipFormat = this.panelConfig.jsonlMode ? 'jsonl' : 'json';
+    applySharedOptionTips(this.parent, tipFormat, [
+      { selector: "[data-help='json-option-number-convert']", key: 'makeNumbersNumeric' },
+      { selector: "[data-help='json-option-pretty-print']", key: 'prettyPrint' },
+      { selector: "[data-help='json-option-as-object']", key: 'asObject' },
+      { selector: "[data-help='json-option-property-name']", key: 'asPropertyNamed' },
+      { selector: "[data-help='json-option-delimiter']", key: 'prettyPrintDelimiter' },
+    ]);
   }
 
   setApplyCallback(callbackFunc) {

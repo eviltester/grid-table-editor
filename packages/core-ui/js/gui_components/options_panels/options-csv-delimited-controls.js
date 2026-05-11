@@ -1,5 +1,6 @@
 import { DelimiterOptions } from '@anywaydata/core/data_formats/delimiter-options.js';
 import { HtmlDataValues } from './html-options-data-utils.js';
+import { applySharedOptionTips } from './options-help-tips.js';
 
 class CsvDelimitedOptions {
   constructor(parentElement) {
@@ -64,6 +65,12 @@ class CsvDelimitedOptions {
       
         </div>
         `;
+    applySharedOptionTips(this.parent, 'csv', [
+      { selector: "[data-help='csv-option-quotes']", key: 'quotes' },
+      { selector: "[data-help='csv-option-header']", key: 'header' },
+      { selector: "[data-help='csv-option-quote-char']", key: 'quoteChar' },
+      { selector: "[data-help='csv-option-escape-char']", key: 'escapeChar' },
+    ]);
   }
 
   setApplyCallback(callbackFunc) {

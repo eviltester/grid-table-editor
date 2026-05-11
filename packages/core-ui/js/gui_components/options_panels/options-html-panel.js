@@ -1,5 +1,6 @@
 import { HtmlConvertorOptions } from '@anywaydata/core/data_formats/html-convertor.js';
 import { HtmlDataValues } from './html-options-data-utils.js';
+import { applySharedOptionTips } from './options-help-tips.js';
 
 class HtmlOptionsPanel {
   constructor(parentElement) {
@@ -74,6 +75,13 @@ class HtmlOptionsPanel {
       
         </div>
         `;
+    applySharedOptionTips(this.parent, 'html', [
+      { selector: "[data-help='html-option-compact']", key: 'compact' },
+      { selector: "[data-help='html-option-pretty-print']", key: 'prettyPrint' },
+      { selector: "[data-help='html-option-delimiter']", key: 'prettyPrintDelimiter' },
+      { selector: "[data-help='html-option-add-thead']", key: 'addTheadToTable' },
+      { selector: "[data-help='html-option-add-tbody']", key: 'addTbodyToTable' },
+    ]);
   }
 
   setApplyCallback(callbackFunc) {

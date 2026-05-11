@@ -1,5 +1,6 @@
 import { SqlConvertorOptions } from '@anywaydata/core/data_formats/sql-convertor.js';
 import { HtmlDataValues } from './html-options-data-utils.js';
+import { applySharedOptionTips } from './options-help-tips.js';
 
 class SqlOptionsPanel {
   constructor(parentElement) {
@@ -81,6 +82,15 @@ class SqlOptionsPanel {
         </div>
       </div>
     `;
+    applySharedOptionTips(this.parent, 'sql', [
+      { selector: "[data-help='sql-option-table-name']", key: 'tableName' },
+      { selector: "[data-help='sql-option-max-values']", key: 'maxValuesPerInsert' },
+      { selector: "[data-help='sql-option-quote-numeric']", key: 'quoteNumeric' },
+      { selector: "[data-help='sql-option-dialect']", key: 'sqlDialect' },
+      { selector: "[data-help='sql-option-quote-identifiers']", key: 'quoteIdentifiers' },
+      { selector: "[data-help='sql-option-null-handling']", key: 'nullHandling' },
+      { selector: "[data-help='sql-option-wrap-transaction']", key: 'wrapTransaction' },
+    ]);
   }
 
   setApplyCallback(callbackFunc) {

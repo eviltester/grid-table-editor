@@ -1,5 +1,6 @@
 import { GherkinOptions } from '@anywaydata/core/data_formats/gherkin-convertor.js';
 import { HtmlDataValues } from './html-options-data-utils.js';
+import { applySharedOptionTips } from './options-help-tips.js';
 
 class GherkinOptionsPanel {
   constructor(parentElement) {
@@ -57,6 +58,12 @@ class GherkinOptionsPanel {
       
         </div>
         `;
+    applySharedOptionTips(this.parent, 'gherkin', [
+      { selector: "[data-help='gherkin-option-in-cell-padding']", key: 'inCellPadding' },
+      { selector: "[data-help='gherkin-option-pretty-print']", key: 'prettyPrint' },
+      { selector: "[data-help='gherkin-option-show-headers']", key: 'showHeadings' },
+      { selector: "[data-help='gherkin-option-left-indent']", key: 'leftIndent' },
+    ]);
   }
 
   setApplyCallback(callbackFunc) {

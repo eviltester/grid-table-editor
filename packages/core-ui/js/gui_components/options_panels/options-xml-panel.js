@@ -1,5 +1,6 @@
 import { XmlConvertorOptions } from '@anywaydata/core/data_formats/xml-convertor.js';
 import { HtmlDataValues } from './html-options-data-utils.js';
+import { applySharedOptionTips } from './options-help-tips.js';
 
 class XmlOptionsPanel {
   constructor(parentElement) {
@@ -54,6 +55,13 @@ class XmlOptionsPanel {
         </div>
       </div>
     `;
+    applySharedOptionTips(this.parent, 'xml', [
+      { selector: "[data-help='xml-option-root-element']", key: 'rootElementName' },
+      { selector: "[data-help='xml-option-item-element']", key: 'itemElementName' },
+      { selector: "[data-help='xml-option-attributes']", key: 'attributeColumnsCsv' },
+      { selector: "[data-help='xml-option-header']", key: 'includeXmlHeader' },
+      { selector: "[data-help='xml-option-xmlns']", key: 'xmlns' },
+    ]);
   }
 
   setApplyCallback(callbackFunc) {

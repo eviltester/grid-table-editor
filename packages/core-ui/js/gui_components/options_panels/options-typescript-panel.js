@@ -1,5 +1,6 @@
 import { TypeScriptConvertorOptions } from '@anywaydata/core/data_formats/typescript-convertor.js';
 import { HtmlDataValues } from './html-options-data-utils.js';
+import { applySharedOptionTips } from './options-help-tips.js';
 
 class TypeScriptOptionsPanel {
   constructor(parentElement) {
@@ -117,6 +118,17 @@ class TypeScriptOptionsPanel {
           </div>
         </div>
         `;
+    applySharedOptionTips(this.parent, 'typescript', [
+      { selector: "[data-help='typescript-option-collection-type']", key: 'collectionType' },
+      { selector: "[data-help='typescript-option-assign-variable']", key: 'assignToVariable' },
+      { selector: "[data-help='typescript-option-variable-name']", key: 'variableName' },
+      { selector: "[data-help='typescript-option-quote-numbers']", key: 'quoteNumbers' },
+      { selector: "[data-help='typescript-option-anonymous-objects']", key: 'useAnonymousObjects' },
+      { selector: "[data-help='typescript-option-class-name']", key: 'objectClassName' },
+      { selector: "[data-help='typescript-option-blank-value']", key: 'blankValueBehavior' },
+      { selector: "[data-help='typescript-option-pretty-print']", key: 'prettyPrint' },
+      { selector: "[data-help='typescript-option-delimiter']", key: 'prettyPrintDelimiter' },
+    ]);
   }
 
   setApplyCallback(callbackFunc) {

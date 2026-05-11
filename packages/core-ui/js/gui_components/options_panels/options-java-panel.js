@@ -1,5 +1,6 @@
 import { JavaConvertorOptions } from '@anywaydata/core/data_formats/java-convertor.js';
 import { HtmlDataValues } from './html-options-data-utils.js';
+import { applySharedOptionTips } from './options-help-tips.js';
 
 class JavaOptionsPanel {
   constructor(parentElement) {
@@ -126,6 +127,18 @@ class JavaOptionsPanel {
           </div>
         </div>
         `;
+    applySharedOptionTips(this.parent, 'java', [
+      { selector: "[data-help='java-option-collection-type']", key: 'collectionType' },
+      { selector: "[data-help='java-option-assign-variable']", key: 'assignToVariable' },
+      { selector: "[data-help='java-option-variable-name']", key: 'variableName' },
+      { selector: "[data-help='java-option-quote-numbers']", key: 'quoteNumbers' },
+      { selector: "[data-help='java-option-anonymous-maps']", key: 'useAnonymousMaps' },
+      { selector: "[data-help='java-option-class-name']", key: 'objectClassName' },
+      { selector: "[data-help='java-option-blank-value']", key: 'blankValueBehavior' },
+      { selector: "[data-help='java-option-imports']", key: 'includeImports' },
+      { selector: "[data-help='java-option-pretty-print']", key: 'prettyPrint' },
+      { selector: "[data-help='java-option-delimiter']", key: 'prettyPrintDelimiter' },
+    ]);
   }
 
   setApplyCallback(callbackFunc) {

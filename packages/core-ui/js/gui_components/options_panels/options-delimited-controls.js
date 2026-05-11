@@ -1,5 +1,6 @@
 import { DelimiterOptions } from '@anywaydata/core/data_formats/delimiter-options.js';
 import { HtmlDataValues } from './html-options-data-utils.js';
+import { applySharedOptionTips } from './options-help-tips.js';
 
 class DelimitedOptions {
   delimiterMappings = {
@@ -109,6 +110,13 @@ class DelimitedOptions {
       
         </div>
         `;
+    applySharedOptionTips(this.parent, 'dsv', [
+      { selector: "[data-help='dsv-option-delimiter']", key: 'delimiter' },
+      { selector: "[data-help='dsv-option-quotes']", key: 'quotes' },
+      { selector: "[data-help='dsv-option-header']", key: 'header' },
+      { selector: "[data-help='dsv-option-quote-char']", key: 'quoteChar' },
+      { selector: "[data-help='dsv-option-escape-char']", key: 'escapeChar' },
+    ]);
   }
 
   setApplyCallback(callbackFunc) {

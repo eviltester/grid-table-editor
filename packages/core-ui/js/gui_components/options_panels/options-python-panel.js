@@ -1,5 +1,6 @@
 import { PythonConvertorOptions } from '@anywaydata/core/data_formats/python-convertor.js';
 import { HtmlDataValues } from './html-options-data-utils.js';
+import { applySharedOptionTips } from './options-help-tips.js';
 
 class PythonOptionsPanel {
   constructor(parentElement) {
@@ -174,6 +175,23 @@ class PythonOptionsPanel {
           </div>
         </div>
         `;
+    applySharedOptionTips(this.parent, 'python', [
+      { selector: "[data-help='python-option-collection-type']", key: 'collectionType' },
+      { selector: "[data-help='python-option-assign-variable']", key: 'assignToVariable' },
+      { selector: "[data-help='python-option-variable-name']", key: 'variableName' },
+      { selector: "[data-help='python-option-quote-numbers']", key: 'quoteNumbers' },
+      { selector: "[data-help='python-option-use-decimal']", key: 'useDecimalType' },
+      { selector: "[data-help='python-option-decimal-columns']", key: 'decimalColumnsCsv' },
+      { selector: "[data-help='python-option-decimal-integers']", key: 'decimalTreatIntegersAsDecimal' },
+      { selector: "[data-help='python-option-blank-value']", key: 'blankValueBehavior' },
+      { selector: "[data-help='python-option-quote-style']", key: 'quoteStyle' },
+      { selector: "[data-help='python-option-pretty-print']", key: 'prettyPrint' },
+      { selector: "[data-help='python-option-delimiter']", key: 'prettyPrintDelimiter' },
+      { selector: "[data-help='python-option-imports']", key: 'includeImports' },
+      { selector: "[data-help='python-option-import-statements']", key: 'importStatements' },
+      { selector: "[data-help='python-option-anonymous-dicts']", key: 'useAnonymousDicts' },
+      { selector: "[data-help='python-option-class-name']", key: 'objectClassName' },
+    ]);
   }
 
   setApplyCallback(callbackFunc) {

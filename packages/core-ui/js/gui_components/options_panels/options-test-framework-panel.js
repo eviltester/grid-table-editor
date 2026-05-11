@@ -199,6 +199,10 @@ class TestFrameworkOptionsPanel {
       if (elem && tips?.[binding.key]) {
         elem.setAttribute('data-help-text', tips[binding.key]);
       }
+      if (elem) {
+        elem.setAttribute('data-option-key', binding.key);
+        elem.setAttribute('data-option-format', selectedFrameworkId);
+      }
     }
   }
 

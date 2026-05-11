@@ -204,7 +204,10 @@ async function generateTestData() {
       return;
     }
 
-    if (!Number.isFinite(desiredRowCountParsed) || desiredRowCountParsed < 0) {
+    if (
+      !Number.isFinite(desiredRowCountParsed) ||
+      (desiredRowCountParsed < 1 && generationMode !== TEST_DATA_MODES.AMEND_SELECTED)
+    ) {
       alert('Enter how many rows to generate.');
       setTestDataStatus('Invalid row count.', false);
       return;
@@ -815,7 +818,7 @@ function enableTestDataGenerationInterface(parentId, anImporter, aTextPreviewRen
             <button id="generatedata">Generate</button>
             <button id="generateallpairs" style="display:none;">Generate Pairwise</button>
             <button id="refreshtestdatapreview">Refresh Text Preview</button>
-            <label> How Many?<input type="number" id="generateCount"/></label>
+            <label> How Many?<input type="number" id="generateCount" min="1" step="1"/></label>
             <label><input type="radio" name="testDataGenerationMode" value="${TEST_DATA_MODES.NEW_TABLE}" checked>New Table</label>
             <label><input type="radio" name="testDataGenerationMode" value="${TEST_DATA_MODES.AMEND_TABLE}">Amend Table</label>
             <label><input type="radio" name="testDataGenerationMode" value="${TEST_DATA_MODES.AMEND_SELECTED}">Amend Selected</label>
@@ -843,6 +846,14 @@ function enableTestDataGenerationInterface(parentId, anImporter, aTextPreviewRen
   document.querySelector('#refreshtestdatapreview').addEventListener('click', refreshTestDataPreview, false);
   const generateCountInput = document.getElementById('generateCount');
   generateCountInput.value = '1';
+  generateCountInput.setAttribute('min', '1');
+  generateCountInput.setAttribute('step', '1');
+  generateCountInput.addEventListener('input', () => {
+    const parsedCount = Number.parseInt(generateCountInput.value, 10);
+    if (!Number.isFinite(parsedCount) || parsedCount < 1) {
+      generateCountInput.value = '1';
+    }
+  });
 
   parentElem.querySelectorAll('input[name="testDataGenerationMode"]').forEach((modeRadio) => {
     modeRadio.addEventListener('change', () => {

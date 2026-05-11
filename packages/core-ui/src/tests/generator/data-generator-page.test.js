@@ -842,6 +842,58 @@ describe('DataGeneratorPage', () => {
     expect(page.schemaRows[0].sourceType).toBe('regex');
   });
 
+  test('toggle clears visible help tooltips before switching schema mode', () => {
+    const hideAll = jest.fn();
+    window.tippy = { hideAll };
+
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker: { word: { noun: () => 'x' } },
+      RandExp: function RandExp() {},
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: FakeTestDataGenerator,
+    });
+    page.init();
+
+    const hideInstance = jest.fn();
+    document.getElementById('schemaModeHelpIcon')._tippy = { hide: hideInstance };
+    document.getElementById('schemaModeToggleButton').click();
+
+    expect(hideInstance).toHaveBeenCalledTimes(1);
+    expect(hideAll).toHaveBeenCalledWith({ duration: 0 });
+  });
+
+  test('schema mode help shows docs link only for Edit as Text and keeps sample button at end', () => {
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker: { word: { noun: () => 'x' } },
+      RandExp: function RandExp() {},
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: FakeTestDataGenerator,
+    });
+    page.init();
+
+    const helpIcon = document.getElementById('schemaModeHelpIcon');
+    const editAsTextHtml = helpIcon.getAttribute('data-help-text');
+    expect(editAsTextHtml).toContain('Generate To File docs');
+    expect(editAsTextHtml.trim().endsWith('Insert Example Schema</button>')).toBe(true);
+
+    document.getElementById('schemaModeToggleButton').click();
+    const editAsSchemaHtml = helpIcon.getAttribute('data-help-text');
+    expect(editAsSchemaHtml).not.toContain('Generate To File docs');
+    expect(editAsSchemaHtml.trim().endsWith('Insert Example Schema</button>')).toBe(true);
+  });
+
   test('text mode preserves comments while schema rows exclude them', () => {
     const page = new DataGeneratorPage({
       parentElement: document.getElementById('app'),

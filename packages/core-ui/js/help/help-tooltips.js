@@ -29,6 +29,10 @@ function createUpdateHelpHints(documentObj) {
       return;
     }
 
+    documentObj.querySelectorAll('.helpicon[data-help]').forEach((element) => {
+      element?._tippy?.destroy?.();
+    });
+
     tippyFn('.helpicon[data-help]', {
       content(reference) {
         const id = reference.getAttribute('data-help');

@@ -414,6 +414,8 @@ function loadSampleSchemaIntoTextArea() {
 Pending Review
 Enum Example
 enum("Open","In Progress","Closed")
+Enum Example 2
+enum("High","Medium","Low")
 Regex Example
 [A-Z]{3}-\\d{4}
 Faker Example

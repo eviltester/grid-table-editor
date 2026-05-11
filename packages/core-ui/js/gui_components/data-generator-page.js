@@ -17,6 +17,25 @@ const REGEX_HELP_URL = 'https://anywaydata.com/docs/test-data/regex-test-data';
 const FAKER_HELP_URL = 'https://anywaydata.com/docs/test-data/faker-test-data';
 const LITERAL_HELP_URL = 'https://anywaydata.com/docs/category/generating-data';
 const ENUM_HELP_URL = 'https://anywaydata.com/docs/category/generating-data';
+const GENERATE_TO_FILE_HELP_URL = 'https://anywaydata.com/docs/test-data/generate-to-file';
+const DEFAULT_EXAMPLE_SCHEMA_TEXT = `# Example schema
+First Name
+person.firstName
+
+Last Name
+person.lastName
+
+Email
+internet.email
+
+Status
+enum(active,inactive,pending)
+
+Priority
+enum(high,medium,low)
+
+Created Date
+date.recent`;
 
 function normaliseFakerCommand(commandValue) {
   const command = String(commandValue || '').trim();
@@ -241,7 +260,10 @@ class DataGeneratorPage {
           <section class="generator-schema" id="generatorSchemaSection" data-section-order="2" aria-labelledby="generatorSchemaHeading">
                     <div class="generator-schema-head">
               <strong id="generatorSchemaHeading">Schema</strong>
-                        <button id="schemaModeToggleButton" class="icon-button" title="Toggle schema text mode">Edit as Text</button>
+                        <span class="generator-button-with-help">
+                          <span id="schemaModeHelpIcon" class="helpicon" data-help="generator-schema-mode-help"></span>
+                          <button id="schemaModeToggleButton" class="icon-button" title="Toggle schema text mode">Edit as Text</button>
+                        </span>
                     </div>
                     <div id="generatorSchemaRows" class="generator-schema-rows"></div>
                     <div id="generatorSchemaTextContainer" class="generator-schema-text">
@@ -382,6 +404,7 @@ class DataGeneratorPage {
     schemaTextArea?.addEventListener('input', () => {
       this.updateAllPairsButtonVisibility();
     });
+    this.documentObj.addEventListener('click', (event) => this.handleGlobalButtonClick(event));
 
     const previewDataButton = this.documentObj.getElementById('previewDataButton');
     previewDataButton.addEventListener('click', () => this.previewData());
@@ -579,12 +602,68 @@ class DataGeneratorPage {
     const textContainer = this.documentObj.getElementById('generatorSchemaTextContainer');
     const footer = this.documentObj.querySelector('.generator-schema-footer');
     const toggleButton = this.documentObj.getElementById('schemaModeToggleButton');
+    const modeHelpIcon = this.documentObj.getElementById('schemaModeHelpIcon');
+    const addSchemaRowButton = this.documentObj.getElementById('addSchemaRowButton');
 
     const inTextMode = this.isTextMode === true;
     rowsContainer.style.display = inTextMode ? 'none' : 'flex';
     textContainer.style.display = inTextMode ? 'block' : 'none';
-    footer.style.display = inTextMode ? 'none' : 'block';
+    footer.style.display = 'block';
+    if (addSchemaRowButton) {
+      addSchemaRowButton.style.display = inTextMode ? 'none' : 'inline-block';
+    }
     toggleButton.textContent = inTextMode ? 'Edit as Schema' : 'Edit as Text';
+    if (modeHelpIcon) {
+      modeHelpIcon.setAttribute('data-help-text', this.buildSchemaModeHelpHtml(inTextMode));
+    }
+    if (typeof window !== 'undefined' && typeof window.updateHelpHints === 'function') {
+      window.updateHelpHints();
+    }
+  }
+
+  handleGlobalButtonClick(event) {
+    if (!event?.target?.closest) {
+      return;
+    }
+    if (event.target.closest('.generator-schema-sample-button')) {
+      event.preventDefault();
+      event.stopPropagation();
+      this.insertExampleSchema();
+    }
+  }
+
+  insertExampleSchema() {
+    const textArea = this.documentObj.getElementById('generatorSchemaText');
+    if (textArea) {
+      textArea.value = DEFAULT_EXAMPLE_SCHEMA_TEXT;
+    }
+    this.isTextMode = true;
+    this.updateSchemaEditModeView();
+    this.syncSchemaRowsFromTextMode({ showErrors: true });
+    this.renderSchemaRows();
+  }
+
+  buildSchemaModeHelpHtml(inTextMode) {
+    if (inTextMode) {
+      return `
+        <p><strong>Edit as Schema</strong></p>
+        <p>You are currently editing as text. Click <strong>Edit as Schema</strong> to return to row-based editing.</p>
+        <button type="button" class="generator-schema-sample-button">Insert Example Schema</button>
+        <p>Text schema uses name/rule pairs, for example:</p>
+        <pre>First Name
+person.firstName
+
+Status
+enum(active,inactive,pending)</pre>
+        <p><a class="helplink" href="${GENERATE_TO_FILE_HELP_URL}" target="_blank" rel="noopener noreferrer">Generate To File docs</a></p>
+      `;
+    }
+    return `
+      <p><strong>Edit as Text</strong></p>
+      <p>You are currently using row-based schema editing. Click <strong>Edit as Text</strong> to switch to text schema mode.</p>
+      <button type="button" class="generator-schema-sample-button">Insert Example Schema</button>
+      <p><a class="helplink" href="${GENERATE_TO_FILE_HELP_URL}" target="_blank" rel="noopener noreferrer">Generate To File docs</a></p>
+    `;
   }
 
   parseSchemaTextToRows(schemaText) {

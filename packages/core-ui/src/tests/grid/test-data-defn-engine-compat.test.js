@@ -460,6 +460,8 @@ describe('test data definition editor engine compatibility', () => {
     expect(value).toContain('Pending Review');
     expect(value).toContain('Enum Example');
     expect(value).toContain('enum("Open","In Progress","Closed")');
+    expect(value).toContain('Enum Example 2');
+    expect(value).toContain('enum("High","Medium","Low")');
     expect(value).toContain('Regex Example');
     expect(value).toContain('[A-Z]{3}-\\d{4}');
     expect(value).toContain('Faker Example');

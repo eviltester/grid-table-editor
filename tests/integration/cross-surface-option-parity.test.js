@@ -1,8 +1,8 @@
 import { execFileSync } from 'node:child_process';
 import path from 'node:path';
 import { OPTION_KEYS_BY_FORMAT, getTipsForFormat } from '@anywaydata/core';
-import { createApiService } from '../../api/src/api-service.js';
-import { normalizeAndValidateFormat, sanitizeCliOptionsForFormat } from '../../cli/src/format-options.js';
+import { createApiService } from '../../apps/api/src/api-service.js';
+import { normalizeAndValidateFormat, sanitizeCliOptionsForFormat } from '../../apps/cli/src/format-options.js';
 
 function firstJsonLine(output) {
   return output
@@ -12,12 +12,13 @@ function firstJsonLine(output) {
 }
 
 function requestMcpServer(payload) {
-  const scriptPath = path.resolve('src/index.js');
+  const repoRoot = path.resolve(__dirname, '../..');
+  const scriptPath = path.join(repoRoot, 'apps', 'mcp', 'src', 'index.js');
   const request = `${JSON.stringify(payload)}\n`;
   const output = execFileSync(process.execPath, [scriptPath], {
     input: request,
     encoding: 'utf8',
-    cwd: path.resolve('.'),
+    cwd: repoRoot,
   });
   const line = firstJsonLine(output);
   expect(line).toBeTruthy();

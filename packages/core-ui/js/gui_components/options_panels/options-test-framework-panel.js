@@ -1,6 +1,7 @@
 import { TestFrameworkConvertorOptions } from '@anywaydata/core/data_formats/test-framework-convertor.js';
 import { getTipsForFormat } from '@anywaydata/core';
 import { HtmlDataValues } from './html-options-data-utils.js';
+import { applyUiPanelOnlyTips } from './options-help-tips-ui.js';
 
 class TestFrameworkOptionsPanel {
   constructor(parentElement, frameworkId = 'junit4') {
@@ -98,7 +99,6 @@ class TestFrameworkOptionsPanel {
   }
 
   addToGui() {
-    const tips = getTipsForFormat(this.frameworkId);
     const frameworkOptions = this.getFrameworkOptions();
     const dataSourceOptions = this.getDataSourceStrategyOptions()
       .map((option) => `<option value="${option.value}">${option.label}</option>`)
@@ -112,7 +112,7 @@ class TestFrameworkOptionsPanel {
         <div><p><strong>Options</strong> <span data-help="test-framework-options" class="helpicon"></span></p></div>
 
         <div class="framework-id">
-          <label><span class="helpicon option-help-icon" data-help="test-framework-option-framework" data-help-text="Choose the unit test framework for the current language tab. Output syntax and available strategies depend on this choice."></span>Framework
+          <label><span class="helpicon option-help-icon" data-help="test-framework-option-framework"></span>Framework
             <select name="framework-id" ${frameworkOptions.length <= 1 ? 'disabled' : ''}>
               ${frameworkOptionsHtml}
             </select>
@@ -121,21 +121,21 @@ class TestFrameworkOptionsPanel {
         </div>
 
         <div class="suite-name">
-          <label><span class="helpicon option-help-icon" data-help="test-framework-option-suite-name" data-help-text="${tips.suiteName || 'Class, module, or suite identifier used in generated test code where the framework supports naming.'}"></span>Suite Name
+          <label><span class="helpicon option-help-icon" data-help="test-framework-option-suite-name"></span>Suite Name
             <input type="text" name="suite-name" value="GeneratedDataTests" style="width:12em">
           </label>
           <br>
         </div>
 
         <div class="test-name-prefix">
-          <label><span class="helpicon option-help-icon" data-help="test-framework-option-test-name-prefix" data-help-text="${tips.testNamePrefix || 'Prefix used for generated test method names and test titles.'}"></span>Test Name Prefix
+          <label><span class="helpicon option-help-icon" data-help="test-framework-option-test-name-prefix"></span>Test Name Prefix
             <input type="text" name="test-name-prefix" value="row" style="width:12em">
           </label>
           <br>
         </div>
 
         <div class="data-source-strategy">
-          <label><span class="helpicon option-help-icon" data-help="test-framework-option-data-source-strategy" data-help-text="${tips.dataSourceStrategy || 'Controls how row data is supplied to tests: provider/method source or inline values.'}"></span>Data Source Strategy
+          <label><span class="helpicon option-help-icon" data-help="test-framework-option-data-source-strategy"></span>Data Source Strategy
             <select name="data-source-strategy">
               ${dataSourceOptions}
             </select>
@@ -145,7 +145,7 @@ class TestFrameworkOptionsPanel {
 
         <div class="include-setup">
           <label>
-            <span class="helpicon option-help-icon" data-help="test-framework-option-include-setup" data-help-text="${tips.includeSetup || 'Include framework-specific setup scaffolding such as beforeEach, SetUp, fixture, or setup methods.'}"></span>
+            <span class="helpicon option-help-icon" data-help="test-framework-option-include-setup"></span>
             <input type="checkbox" name="include-setup" checked>
             Include Setup
           </label>
@@ -154,7 +154,7 @@ class TestFrameworkOptionsPanel {
 
         <div class="pretty-print">
           <label>
-            <span class="helpicon option-help-icon" data-help="test-framework-option-pretty-print" data-help-text="${tips.prettyPrint || 'Format generated row data and test source for readability with one row per line where supported.'}"></span>
+            <span class="helpicon option-help-icon" data-help="test-framework-option-pretty-print"></span>
             <input type="checkbox" name="pretty-print" checked>
             Pretty Print
           </label>
@@ -179,6 +179,7 @@ class TestFrameworkOptionsPanel {
       });
     }
     this.refreshDataSourceStrategyOptions();
+    applyUiPanelOnlyTips(this.parent, ['test-framework-option-framework']);
     this.refreshHelpTipsForSelectedFramework();
   }
 

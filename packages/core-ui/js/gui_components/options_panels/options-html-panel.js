@@ -1,6 +1,7 @@
 import { HtmlConvertorOptions } from '@anywaydata/core/data_formats/html-convertor.js';
 import { HtmlDataValues } from './html-options-data-utils.js';
 import { applySharedOptionTips } from './options-help-tips.js';
+import { applyUiPanelOnlyTips } from './options-help-tips-ui.js';
 
 class HtmlOptionsPanel {
   constructor(parentElement) {
@@ -17,7 +18,7 @@ class HtmlOptionsPanel {
       
           <div class="compacthtml">            
             <label>
-              <span class="helpicon option-help-icon" data-help="html-option-compact" data-help-text="Minify table markup by removing extra whitespace."></span>
+              <span class="helpicon option-help-icon" data-help="html-option-compact"></span>
               <input type="checkbox" name="compacthtml" value="compacthtml">
               Compact
             </label>
@@ -26,7 +27,7 @@ class HtmlOptionsPanel {
 
           <div class="prettyprint">            
             <label>
-              <span class="helpicon option-help-icon" data-help="html-option-pretty-print" data-help-text="Format HTML with indentation and line breaks for readability."></span>
+              <span class="helpicon option-help-icon" data-help="html-option-pretty-print"></span>
               <input type="checkbox" name="prettyprint" value="prettyprint">
               Pretty Print
             </label>
@@ -34,7 +35,7 @@ class HtmlOptionsPanel {
           </div>
 
           <div class="prettydelimiter option-child">
-            <label><span class="helpicon option-help-icon" data-help="html-option-delimiter" data-help-text="Indentation character used for pretty printed HTML output."></span>Delimiter
+            <label><span class="helpicon option-help-icon" data-help="html-option-delimiter"></span>Delimiter
               <select name="prettydelimiter">
                 <option value="tab">Tab [\\t]</option>
                 <option value="space">Space [ ]</option>
@@ -44,7 +45,7 @@ class HtmlOptionsPanel {
           <br>
           </div>
           <div class="custom-pretty-delimiter option-child">
-            <label><span class="helpicon option-help-icon" data-help="html-option-custom-delimiter" data-help-text="When Delimiter is Custom Value, enter the indentation character here."></span>Custom
+            <label><span class="helpicon option-help-icon" data-help="html-option-custom-delimiter"></span>Custom
               <input type="text" name="custom-pretty-delimiter" value='' style="width:5em">
             </label>
             <br>
@@ -52,7 +53,7 @@ class HtmlOptionsPanel {
 
           <div class="addthead">            
             <label>
-              <span class="helpicon option-help-icon" data-help="html-option-add-thead" data-help-text="Include a thead section containing header cells."></span>
+              <span class="helpicon option-help-icon" data-help="html-option-add-thead"></span>
               <input type="checkbox" name="addthead" value="addthead">
               Add &lt;thead&gt;
             </label>
@@ -61,7 +62,7 @@ class HtmlOptionsPanel {
 
           <div class="addtbody">            
             <label>
-              <span class="helpicon option-help-icon" data-help="html-option-add-tbody" data-help-text="Include a tbody section containing data rows."></span>
+              <span class="helpicon option-help-icon" data-help="html-option-add-tbody"></span>
               <input type="checkbox" name="addtbody" value="addtbody">
               Add &lt;tbody&gt;
             </label>
@@ -82,6 +83,7 @@ class HtmlOptionsPanel {
       { selector: "[data-help='html-option-add-thead']", key: 'addTheadToTable' },
       { selector: "[data-help='html-option-add-tbody']", key: 'addTbodyToTable' },
     ]);
+    applyUiPanelOnlyTips(this.parent, ['html-option-custom-delimiter']);
   }
 
   setApplyCallback(callbackFunc) {

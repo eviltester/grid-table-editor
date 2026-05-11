@@ -51,6 +51,10 @@ describe('help content coverage', () => {
     panelFiles.forEach((filename) => {
       const fullPath = path.join(optionsDir, filename);
       const source = fs.readFileSync(fullPath, 'utf8');
+      const usesCentralTipAssignment =
+        source.includes('applySharedOptionTips(') ||
+        source.includes('applyUiPanelOnlyTips(') ||
+        source.includes('refreshHelpTipsForSelectedFramework(');
       const tags = collectTemplateHelpTags(source);
       tags.forEach((tag) => {
         // Template string placeholder handled by explicit known keys below.
@@ -61,6 +65,9 @@ describe('help content coverage', () => {
           return;
         }
         if (Object.hasOwn(helpMapApp, tag.helpId)) {
+          return;
+        }
+        if (usesCentralTipAssignment) {
           return;
         }
         missing.push({ filename, helpId: tag.helpId });

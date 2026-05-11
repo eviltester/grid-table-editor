@@ -14,14 +14,14 @@ class SqlOptionsPanel {
         <div><p><strong>Options</strong> <span data-help="sql-options" class="helpicon"></span></p></div>
 
         <div class="table-name">
-          <label><span class="helpicon option-help-icon" data-help="sql-option-table-name" data-help-text="Name of the table used in INSERT statements."></span>Table Name
+          <label><span class="helpicon option-help-icon" data-help="sql-option-table-name"></span>Table Name
             <input type="text" name="table-name" value="" style="width:10em">
           </label>
           <br>
         </div>
 
         <div class="max-values-per-insert">
-          <label><span class="helpicon option-help-icon" data-help="sql-option-max-values" data-help-text="Maximum number of value tuples per INSERT statement. Additional rows create more INSERT statements."></span>Max Values
+          <label><span class="helpicon option-help-icon" data-help="sql-option-max-values"></span>Max Values
             <input type="number" name="max-values-per-insert" min="1" value="100" style="width:6em">
           </label>
           <br>
@@ -29,7 +29,7 @@ class SqlOptionsPanel {
 
         <div class="quote-numeric">
           <label>
-            <span class="helpicon option-help-icon" data-help="sql-option-quote-numeric" data-help-text="When checked, numeric-looking values are quoted as strings. When unchecked, numeric-looking values are emitted without quotes."></span>
+            <span class="helpicon option-help-icon" data-help="sql-option-quote-numeric"></span>
             <input type="checkbox" name="quote-numeric" value="quote-numeric">
             Quote Numeric
           </label>
@@ -37,7 +37,7 @@ class SqlOptionsPanel {
         </div>
 
         <div class="sql-dialect">
-          <label><span class="helpicon option-help-icon" data-help="sql-option-dialect" data-help-text="SQL dialect controls identifier quoting style and transaction wrapper syntax."></span>Dialect
+          <label><span class="helpicon option-help-icon" data-help="sql-option-dialect"></span>Dialect
             <select name="sql-dialect">
               <option value="ansi">ANSI SQL</option>
               <option value="postgresql">PostgreSQL</option>
@@ -50,7 +50,7 @@ class SqlOptionsPanel {
 
         <div class="quote-identifiers">
           <label>
-            <span class="helpicon option-help-icon" data-help="sql-option-quote-identifiers" data-help-text="Quote table and column identifiers using the selected SQL dialect."></span>
+            <span class="helpicon option-help-icon" data-help="sql-option-quote-identifiers"></span>
             <input type="checkbox" name="quote-identifiers" value="quote-identifiers">
             Quote Identifiers
           </label>
@@ -58,7 +58,7 @@ class SqlOptionsPanel {
         </div>
 
         <div class="null-handling">
-          <label><span class="helpicon option-help-icon" data-help="sql-option-null-handling" data-help-text="Choose how empty values and NULL literals are exported."></span>Null Handling
+          <label><span class="helpicon option-help-icon" data-help="sql-option-null-handling"></span>Null Handling
             <select name="null-handling">
               <option value="empty-string">Keep Empty As ''</option>
               <option value="empty-as-null">Empty As NULL</option>
@@ -70,7 +70,7 @@ class SqlOptionsPanel {
 
         <div class="wrap-transaction">
           <label>
-            <span class="helpicon option-help-icon" data-help="sql-option-wrap-transaction" data-help-text="Wrap generated INSERT statements with BEGIN/COMMIT transaction statements."></span>
+            <span class="helpicon option-help-icon" data-help="sql-option-wrap-transaction"></span>
             <input type="checkbox" name="wrap-transaction" value="wrap-transaction">
             Wrap Transaction
           </label>

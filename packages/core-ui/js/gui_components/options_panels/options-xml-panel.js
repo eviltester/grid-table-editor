@@ -14,21 +14,21 @@ class XmlOptionsPanel {
         <div><p><strong>Options</strong> <span data-help="xml-options" class="helpicon"></span></p></div>
 
         <div class="root-element-name">
-          <label><span class="helpicon option-help-icon" data-help="xml-option-root-element" data-help-text="Name of the XML root element. Invalid XML names are auto-fixed."></span>Root Element
+          <label><span class="helpicon option-help-icon" data-help="xml-option-root-element"></span>Root Element
             <input type="text" name="root-element-name" value="" style="width:10em">
           </label>
           <br>
         </div>
 
         <div class="item-element-name">
-          <label><span class="helpicon option-help-icon" data-help="xml-option-item-element" data-help-text="Name of the XML item element for each row. Invalid XML names are auto-fixed."></span>Item Element
+          <label><span class="helpicon option-help-icon" data-help="xml-option-item-element"></span>Item Element
             <input type="text" name="item-element-name" value="" style="width:10em">
           </label>
           <br>
         </div>
 
         <div class="attributes-columns-csv">
-          <label><span class="helpicon option-help-icon" data-help="xml-option-attributes" data-help-text="Comma-separated list of column names to output as item attributes. Unknown names are ignored."></span>Attributes
+          <label><span class="helpicon option-help-icon" data-help="xml-option-attributes"></span>Attributes
             <input type="text" name="attribute-columns-csv" value="" style="width:15em">
           </label>
           <br>
@@ -36,7 +36,7 @@ class XmlOptionsPanel {
 
         <div class="xml-header">
           <label>
-            <span class="helpicon option-help-icon" data-help="xml-option-header" data-help-text="Add XML declaration header to output."></span>
+            <span class="helpicon option-help-icon" data-help="xml-option-header"></span>
             <input type="checkbox" name="include-xml-header" value="include-xml-header">
             XML Header
           </label>
@@ -44,7 +44,7 @@ class XmlOptionsPanel {
         </div>
 
         <div class="xml-namespace">
-          <label><span class="helpicon option-help-icon" data-help="xml-option-xmlns" data-help-text="Optional XML namespace URI added as xmlns on the root element."></span>XMLNS
+          <label><span class="helpicon option-help-icon" data-help="xml-option-xmlns"></span>XMLNS
             <input type="text" name="xml-namespace" value="" style="width:15em">
           </label>
           <br>

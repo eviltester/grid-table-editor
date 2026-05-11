@@ -1,6 +1,7 @@
 import { PythonConvertorOptions } from '@anywaydata/core/data_formats/python-convertor.js';
 import { HtmlDataValues } from './html-options-data-utils.js';
 import { applySharedOptionTips } from './options-help-tips.js';
+import { applyUiPanelOnlyTips } from './options-help-tips-ui.js';
 
 class PythonOptionsPanel {
   constructor(parentElement) {
@@ -15,7 +16,7 @@ class PythonOptionsPanel {
 
           <div class="collectiontype">
             <label>
-              <span class="helpicon option-help-icon" data-help="python-option-collection-type" data-help-text="The Python collection type used for the outer container."></span>
+              <span class="helpicon option-help-icon" data-help="python-option-collection-type"></span>
               Collection Type
               <select name="collectiontype">
                 <option value="list">List [ ]</option>
@@ -27,7 +28,7 @@ class PythonOptionsPanel {
 
           <div class="assigntovariable">
             <label>
-              <span class="helpicon option-help-icon" data-help="python-option-assign-variable" data-help-text="Assign the collection to a named Python variable."></span>
+              <span class="helpicon option-help-icon" data-help="python-option-assign-variable"></span>
               <input type="checkbox" name="assigntovariable" value="assigntovariable">
               Assign to Variable
             </label>
@@ -36,7 +37,7 @@ class PythonOptionsPanel {
 
           <div class="variablename option-child">
             <label>
-              <span class="helpicon option-help-icon" data-help="python-option-variable-name" data-help-text="Name of the Python variable the collection is assigned to."></span>
+              <span class="helpicon option-help-icon" data-help="python-option-variable-name"></span>
               Variable Name
               <input type="text" name="variablename" value="data" style="width:8em">
             </label>
@@ -45,7 +46,7 @@ class PythonOptionsPanel {
 
           <div class="quotenumbers">
             <label>
-              <span class="helpicon option-help-icon" data-help="python-option-quote-numbers" data-help-text="When checked, numeric values are output as quoted strings. When unchecked, they are output as numeric literals."></span>
+              <span class="helpicon option-help-icon" data-help="python-option-quote-numbers"></span>
               <input type="checkbox" name="quotenumbers" value="quotenumbers">
               Quote Numbers
             </label>
@@ -54,7 +55,7 @@ class PythonOptionsPanel {
 
           <div class="usedecimaltype">
             <label>
-              <span class="helpicon option-help-icon" data-help="python-option-use-decimal" data-help-text="When checked, decimal-looking numeric values are output as Decimal values."></span>
+              <span class="helpicon option-help-icon" data-help="python-option-use-decimal"></span>
               <input type="checkbox" name="usedecimaltype" value="usedecimaltype">
               Use Decimal Type
             </label>
@@ -63,7 +64,7 @@ class PythonOptionsPanel {
 
           <div class="decimalcolumnscsv option-child">
             <label>
-              <span class="helpicon option-help-icon" data-help="python-option-decimal-columns" data-help-text="Comma-separated list of columns to treat as Decimal candidates. Example: Money, Column 2"></span>
+              <span class="helpicon option-help-icon" data-help="python-option-decimal-columns"></span>
               Decimal Columns (CSV)
               <input type="text" name="decimalcolumnscsv" value="" style="width:100%">
             </label>
@@ -72,7 +73,7 @@ class PythonOptionsPanel {
 
           <div class="decimaltreatintegers option-child">
             <label>
-              <span class="helpicon option-help-icon" data-help="python-option-decimal-integers" data-help-text="When checked, integer-looking values in decimal columns are also output as Decimal values."></span>
+              <span class="helpicon option-help-icon" data-help="python-option-decimal-integers"></span>
               <input type="checkbox" name="decimaltreatintegers" value="decimaltreatintegers">
               Treat Integers As Decimal
             </label>
@@ -81,7 +82,7 @@ class PythonOptionsPanel {
 
           <div class="blankvaluebehavior">
             <label>
-              <span class="helpicon option-help-icon" data-help="python-option-blank-value" data-help-text="Choose how blank values are exported."></span>
+              <span class="helpicon option-help-icon" data-help="python-option-blank-value"></span>
               Blank Values
               <select name="blankvaluebehavior">
                 <option value="empty-string">Empty String</option>
@@ -93,7 +94,7 @@ class PythonOptionsPanel {
 
           <div class="quotestyle">
             <label>
-              <span class="helpicon option-help-icon" data-help="python-option-quote-style" data-help-text="Choose single or double quotes for Python string output."></span>
+              <span class="helpicon option-help-icon" data-help="python-option-quote-style"></span>
               Quote Style
               <select name="quotestyle">
                 <option value="double">Double Quotes</option>
@@ -105,7 +106,7 @@ class PythonOptionsPanel {
 
           <div class="prettyprint">
             <label>
-              <span class="helpicon option-help-icon" data-help="python-option-pretty-print" data-help-text="Format output with line breaks and indentation."></span>
+              <span class="helpicon option-help-icon" data-help="python-option-pretty-print"></span>
               <input type="checkbox" name="prettyprint" value="prettyprint">
               Pretty Print
             </label>
@@ -114,7 +115,7 @@ class PythonOptionsPanel {
 
           <div class="prettydelimiter option-child">
             <label>
-              <span class="helpicon option-help-icon" data-help="python-option-delimiter" data-help-text="Indentation character used when Pretty Print is enabled."></span>
+              <span class="helpicon option-help-icon" data-help="python-option-delimiter"></span>
               Delimiter
               <select name="prettydelimiter">
                 <option value="tab">Tab [\t]</option>
@@ -127,7 +128,7 @@ class PythonOptionsPanel {
 
           <div class="custom-pretty-delimiter option-child">
             <label>
-              <span class="helpicon option-help-icon" data-help="python-option-custom-delimiter" data-help-text="When Delimiter is Custom Value, this value is used as indentation."></span>
+              <span class="helpicon option-help-icon" data-help="python-option-custom-delimiter"></span>
               Custom Delimiter
               <input type="text" name="custom-pretty-delimiter" value="" style="width:8em">
             </label>
@@ -136,7 +137,7 @@ class PythonOptionsPanel {
 
           <div class="includeimports">
             <label>
-              <span class="helpicon option-help-icon" data-help="python-option-imports" data-help-text="Include import statements at the top of the output."></span>
+              <span class="helpicon option-help-icon" data-help="python-option-imports"></span>
               <input type="checkbox" name="includeimports" value="includeimports">
               Include Imports
             </label>
@@ -145,7 +146,7 @@ class PythonOptionsPanel {
 
           <div class="importstatements option-child">
             <label>
-              <span class="helpicon option-help-icon" data-help="python-option-import-statements" data-help-text="One import statement per line, for example: from dataclasses import dataclass."></span>
+              <span class="helpicon option-help-icon" data-help="python-option-import-statements"></span>
               Import Statements
               <textarea name="importstatements" rows="3" style="width:100%"></textarea>
             </label>
@@ -154,7 +155,7 @@ class PythonOptionsPanel {
 
           <div class="useanonymousdicts">
             <label>
-              <span class="helpicon option-help-icon" data-help="python-option-anonymous-dicts" data-help-text="When checked, each row is output as a plain dictionary. When unchecked, each row is output as a named class instance."></span>
+              <span class="helpicon option-help-icon" data-help="python-option-anonymous-dicts"></span>
               <input type="checkbox" name="useanonymousdicts" value="useanonymousdicts">
               Anonymous Dicts
             </label>
@@ -163,7 +164,7 @@ class PythonOptionsPanel {
 
           <div class="objectclassname option-child">
             <label>
-              <span class="helpicon option-help-icon" data-help="python-option-class-name" data-help-text="Class name used when Anonymous Dicts is unchecked."></span>
+              <span class="helpicon option-help-icon" data-help="python-option-class-name"></span>
               Class Name
               <input type="text" name="objectclassname" value="Row" style="width:8em">
             </label>
@@ -192,6 +193,7 @@ class PythonOptionsPanel {
       { selector: "[data-help='python-option-anonymous-dicts']", key: 'useAnonymousDicts' },
       { selector: "[data-help='python-option-class-name']", key: 'objectClassName' },
     ]);
+    applyUiPanelOnlyTips(this.parent, ['python-option-custom-delimiter']);
   }
 
   setApplyCallback(callbackFunc) {

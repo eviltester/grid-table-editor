@@ -1,4 +1,4 @@
-import { SUPPORTED_FORMATS } from '@anywaydata/core';
+import { getTipsForFormat, OPTION_KEYS_BY_FORMAT, SUPPORTED_FORMATS } from '@anywaydata/core';
 import { createConcreteService } from './api-service.test-helpers.js';
 
 describe('api-service options service calls', () => {
@@ -111,5 +111,13 @@ describe('api-service options service calls', () => {
       service.handleSetOptionsRequest({ format: 'invalid-format', body: { someOption: 'value' } }).statusCode
     ).toBe(400);
     expect(service.handleResetOptionsRequest({ format: 'invalid-format' }).statusCode).toBe(400);
+  });
+
+  test('options keys and tips are sourced from shared catalog', () => {
+    const { service } = createConcreteService();
+    const result = service.handleGetOptionsRequest({ format: 'csv' });
+
+    expect(Object.keys(result.body.tips)).toEqual(OPTION_KEYS_BY_FORMAT.csv);
+    expect(result.body.tips).toEqual(getTipsForFormat('csv'));
   });
 });

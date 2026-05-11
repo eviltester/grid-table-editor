@@ -2,142 +2,13 @@ import {
   amendFromTextSpecAndData as coreAmendFromTextSpecAndData,
   createExporterForDefaults as coreCreateExporterForDefaults,
   generateFromTextSpec as coreGenerateFromTextSpec,
+  getTipsForFormat as getTipsForFormatFromCatalog,
+  normalizeFormat,
+  sanitizeOptionsForFormat,
   SUPPORTED_FORMATS as CORE_SUPPORTED_FORMATS,
 } from '@anywaydata/core';
 
 const RESPONSE_FORMATS = new Set(['rows', 'rendered', 'all', 'raw']);
-
-const UI_OPTION_KEYS_BY_FORMAT = {
-  csv: ['quotes', 'header', 'quoteChar', 'escapeChar'],
-  dsv: ['delimiter', 'quotes', 'header', 'quoteChar', 'escapeChar'],
-  json: ['makeNumbersNumeric', 'prettyPrint', 'asObject', 'asPropertyNamed', 'prettyPrintDelimiter'],
-  jsonl: ['makeNumbersNumeric'],
-  xml: ['rootElementName', 'itemElementName', 'attributeColumnsCsv', 'includeXmlHeader', 'xmlns'],
-  sql: [
-    'tableName',
-    'maxValuesPerInsert',
-    'quoteNumeric',
-    'sqlDialect',
-    'quoteIdentifiers',
-    'nullHandling',
-    'wrapTransaction',
-  ],
-  markdown: [
-    'spacePadding',
-    'tabPadding',
-    'borderBars',
-    'emboldenHeaders',
-    'emphasisHeaders',
-    'emboldenColumns',
-    'emphasisColumns',
-    'prettyPrint',
-    'globalColumnAlign',
-  ],
-  html: ['compact', 'prettyPrint', 'prettyPrintDelimiter', 'addTheadToTable', 'addTbodyToTable'],
-  javascript: [
-    'makeNumbersNumeric',
-    'prettyPrint',
-    'asObject',
-    'asPropertyNamed',
-    'outputAsJsonLines',
-    'prettyPrintDelimiter',
-  ],
-  python: [
-    'collectionType',
-    'assignToVariable',
-    'variableName',
-    'quoteNumbers',
-    'useDecimalType',
-    'decimalColumnsCsv',
-    'decimalTreatIntegersAsDecimal',
-    'blankValueBehavior',
-    'quoteStyle',
-    'prettyPrint',
-    'prettyPrintDelimiter',
-    'includeImports',
-    'importStatements',
-    'useAnonymousDicts',
-    'objectClassName',
-  ],
-  java: [
-    'collectionType',
-    'assignToVariable',
-    'variableName',
-    'quoteNumbers',
-    'useAnonymousMaps',
-    'objectClassName',
-    'blankValueBehavior',
-    'includeImports',
-    'prettyPrint',
-    'prettyPrintDelimiter',
-  ],
-  typescript: [
-    'collectionType',
-    'assignToVariable',
-    'variableName',
-    'quoteNumbers',
-    'useAnonymousObjects',
-    'objectClassName',
-    'blankValueBehavior',
-    'prettyPrint',
-    'prettyPrintDelimiter',
-  ],
-  gherkin: ['showHeadings', 'leftIndent', 'inCellPadding', 'prettyPrint'],
-  asciitable: ['style'],
-  junit4: ['suiteName', 'testNamePrefix', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
-  junit5: ['suiteName', 'testNamePrefix', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
-  junit6: ['suiteName', 'testNamePrefix', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
-  testng: ['suiteName', 'testNamePrefix', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
-  pytest: ['suiteName', 'testNamePrefix', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
-  unittest: ['suiteName', 'testNamePrefix', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
-  nose2: ['suiteName', 'testNamePrefix', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
-  jest: ['suiteName', 'testNamePrefix', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
-  vitest: ['suiteName', 'testNamePrefix', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
-  mocha: ['suiteName', 'testNamePrefix', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
-  xunit: ['suiteName', 'testNamePrefix', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
-  nunit: ['suiteName', 'testNamePrefix', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
-  mstest: ['suiteName', 'testNamePrefix', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
-  rspec: ['suiteName', 'testNamePrefix', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
-  minitest: ['suiteName', 'testNamePrefix', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
-  phpunit: ['suiteName', 'testNamePrefix', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
-  pest: ['suiteName', 'testNamePrefix', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
-  kotest: ['suiteName', 'testNamePrefix', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
-  'junit5-kotlin': ['suiteName', 'testNamePrefix', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
-  spek: ['suiteName', 'testNamePrefix', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
-  'test-more': ['suiteName', 'testNamePrefix', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
-  'test2-suite': ['suiteName', 'testNamePrefix', 'includeSetup', 'prettyPrint', 'dataSourceStrategy'],
-};
-
-const UI_OPTION_TIPS_BY_FORMAT = {
-  csv: {
-    quotes: 'Wrap fields in quote characters when exporting CSV.',
-    header: 'Include the column header row as the first line of output.',
-    quoteChar: 'Character used to quote string values, for example double quote.',
-    escapeChar: 'Character used to escape quote characters inside field values.',
-  },
-  dsv: {
-    delimiter: 'Choose the delimiter character used between values in each row.',
-    quotes: 'Wrap fields in quote characters when exporting delimited data.',
-    header: 'Include the header row as the first line of output.',
-    quoteChar: 'Character used to quote string values.',
-    escapeChar: 'Character used to escape quote characters inside field values.',
-  },
-  junit4: { includeSetup: 'Include @Before setup scaffold.' },
-  junit5: { includeSetup: 'Include @BeforeEach setup scaffold.' },
-  junit6: { includeSetup: 'Include @BeforeEach setup scaffold.' },
-  testng: { includeSetup: 'Include @BeforeMethod setup scaffold.' },
-  pytest: { includeSetup: 'Include fixture scaffold and inject it into test signature.' },
-  jest: { includeSetup: 'Include beforeEach setup scaffold.' },
-  xunit: { includeSetup: 'Include constructor setup scaffold.' },
-  rspec: { includeSetup: 'Include before block scaffold.' },
-  phpunit: { includeSetup: 'Include setUp() scaffold.' },
-  kotest: { includeSetup: 'Include beforeTest setup scaffold.' },
-  'test-more': { includeSetup: 'Include setup variable scaffold.' },
-};
-
-function normaliseFormat(format) {
-  return String(format || '').toLowerCase();
-}
 
 function parseBooleanFlag(value) {
   return value === true || value === 'true';
@@ -180,7 +51,7 @@ function toErrorResponse(result, statusCode = 400) {
 }
 
 function contentTypeForFormat(outputFormat) {
-  const format = normaliseFormat(outputFormat);
+  const format = normalizeFormat(outputFormat);
   if (format === 'csv') return 'text/csv; charset=utf-8';
   if (format === 'dsv') return 'text/tab-separated-values; charset=utf-8';
   if (format === 'markdown') return 'text/markdown; charset=utf-8';
@@ -206,7 +77,7 @@ function contentTypeForFormat(outputFormat) {
 }
 
 function parseResponseFormat(value) {
-  const mode = normaliseFormat(value || 'rows');
+  const mode = normalizeFormat(value || 'rows');
   if (!RESPONSE_FORMATS.has(mode)) {
     return { ok: false, errors: ['responseFormat must be one of: rows, rendered, all, raw'] };
   }
@@ -245,36 +116,18 @@ export function createApiService({
   logger = console,
 } = {}) {
   function isSupportedFormat(format) {
-    return supportedFormats.includes(normaliseFormat(format));
-  }
-
-  function sanitiseOptionsForFormat(format, payload) {
-    const keys = UI_OPTION_KEYS_BY_FORMAT[normaliseFormat(format)] || [];
-    const sourceOptions = toOptionsObject(payload);
-    const filteredOptions = {};
-    for (const key of keys) {
-      if (sourceOptions[key] !== undefined) filteredOptions[key] = sourceOptions[key];
-    }
-    return filteredOptions;
+    return supportedFormats.includes(normalizeFormat(format));
   }
 
   function getTipsForFormat(format) {
-    const normalised = normaliseFormat(format);
-    const keys = UI_OPTION_KEYS_BY_FORMAT[normalised] || [];
-    const configuredTips = UI_OPTION_TIPS_BY_FORMAT[normalised] || {};
-    const customTips = state.formatCustomTips.get(normalised) || {};
-    const tips = {};
-    for (const key of keys) {
-      const tip =
-        customTips[key] || configuredTips[key] || `Configure ${key.replace(/([A-Z])/g, ' $1').toLowerCase()}.`;
-      tips[key] = tip;
-    }
-    return tips;
+    return getTipsForFormatFromCatalog(format, {
+      customTips: state.formatCustomTips.get(normalizeFormat(format)) || {},
+    });
   }
 
   function setCustomTipsForFormat(format, tipsPayload) {
-    const normalised = normaliseFormat(format);
-    const keys = UI_OPTION_KEYS_BY_FORMAT[normalised] || [];
+    const normalised = normalizeFormat(format);
+    const keys = Object.keys(getTipsForFormatFromCatalog(normalised));
     const nextTips = {};
     for (const key of keys) {
       const value = tipsPayload?.[key];
@@ -288,31 +141,31 @@ export function createApiService({
   }
 
   function getDefaultOptionsForFormat(format) {
-    const normalisedFormat = normaliseFormat(format);
+    const normalisedFormat = normalizeFormat(format);
     if (state.formatDefaultOptions.has(normalisedFormat)) {
       return cloneValue(state.formatDefaultOptions.get(normalisedFormat));
     }
     const exporter = createExporterForDefaults();
     const builtInDefaults = exporter.getOptionsForType(normalisedFormat);
-    return sanitiseOptionsForFormat(normalisedFormat, cloneValue(builtInDefaults || {}));
+    return sanitizeOptionsForFormat(normalisedFormat, cloneValue(builtInDefaults || {}));
   }
 
   function setDefaultOptionsForFormat(format, options) {
-    const normalisedFormat = normaliseFormat(format);
+    const normalisedFormat = normalizeFormat(format);
     const currentDefaults = getDefaultOptionsForFormat(normalisedFormat);
     const mergedOptions = { ...toOptionsObject(currentDefaults), ...toOptionsObject(options) };
-    state.formatDefaultOptions.set(normalisedFormat, sanitiseOptionsForFormat(normalisedFormat, mergedOptions));
+    state.formatDefaultOptions.set(normalisedFormat, sanitizeOptionsForFormat(normalisedFormat, mergedOptions));
   }
 
   function resetDefaultOptionsForFormat(format) {
-    const normalised = normaliseFormat(format);
+    const normalised = normalizeFormat(format);
     state.formatDefaultOptions.delete(normalised);
     state.formatCustomTips.delete(normalised);
   }
 
   function runGeneration(payload = {}) {
     const { textSpec, rowCount, outputFormat = 'csv', options, seed, pairwise, unsafeFakerExpressions } = payload;
-    const concreteOutputFormat = normaliseFormat(outputFormat || 'csv');
+    const concreteOutputFormat = normalizeFormat(outputFormat || 'csv');
 
     if (!supportedFormats.includes(concreteOutputFormat)) {
       return toErrorResponse(
@@ -324,7 +177,7 @@ export function createApiService({
     const effectiveOptions =
       options === undefined
         ? getDefaultOptionsForFormat(concreteOutputFormat)
-        : sanitiseOptionsForFormat(concreteOutputFormat, options);
+        : sanitizeOptionsForFormat(concreteOutputFormat, options);
 
     const parsedSeed = parseSeed(seed);
     if (!parsedSeed.ok) {
@@ -361,7 +214,7 @@ export function createApiService({
       unsafeFakerExpressions,
       stream,
     } = payload;
-    const concreteOutputFormat = normaliseFormat(outputFormat || 'csv');
+    const concreteOutputFormat = normalizeFormat(outputFormat || 'csv');
 
     if (!supportedFormats.includes(concreteOutputFormat)) {
       return toErrorResponse(
@@ -373,7 +226,7 @@ export function createApiService({
     const effectiveOptions =
       options === undefined
         ? getDefaultOptionsForFormat(concreteOutputFormat)
-        : sanitiseOptionsForFormat(concreteOutputFormat, options);
+        : sanitizeOptionsForFormat(concreteOutputFormat, options);
 
     const parsedSeed = parseSeed(seed);
     if (!parsedSeed.ok) {
@@ -453,7 +306,7 @@ export function createApiService({
   }
 
   function handleGetOptionsRequest({ format } = {}) {
-    const normalisedFormat = normaliseFormat(format);
+    const normalisedFormat = normalizeFormat(format);
     if (!isSupportedFormat(normalisedFormat)) {
       return {
         ok: false,
@@ -471,7 +324,7 @@ export function createApiService({
   }
 
   function handleSetOptionsRequest({ format, body } = {}) {
-    const normalisedFormat = normaliseFormat(format);
+    const normalisedFormat = normalizeFormat(format);
     if (!isSupportedFormat(normalisedFormat)) {
       return {
         ok: false,
@@ -510,7 +363,7 @@ export function createApiService({
   }
 
   function handleResetOptionsRequest({ format } = {}) {
-    const normalisedFormat = normaliseFormat(format);
+    const normalisedFormat = normalizeFormat(format);
     if (!isSupportedFormat(normalisedFormat)) {
       return {
         ok: false,

@@ -4,6 +4,7 @@ import {
   streamFromTextSpec,
   SUPPORTED_FORMATS,
 } from '@anywaydata/core';
+import { normalizeAndValidateFormat, sanitizeCliOptionsForFormat } from './format-options.js';
 
 function writeLine(output, text = '') {
   output(`${text}\n`);
@@ -16,10 +17,13 @@ export async function runCliCommand({ options, platform }) {
     }
   };
 
-  if (!SUPPORTED_FORMATS.includes(options.format)) {
+  const { format: normalizedFormat, isSupported } = normalizeAndValidateFormat(options.format);
+  if (!isSupported) {
     writeLine(platform.stderr, `outputFormat must be one of: ${SUPPORTED_FORMATS.join(', ')}`);
     return 1;
   }
+  const outputFormat = normalizedFormat;
+  const formatterOptions = sanitizeCliOptionsForFormat(outputFormat, options.formatOptions);
 
   if (!options.inputFile) {
     writeLine(platform.stderr, 'Missing required argument: input file (use -i or --schema-file)');
@@ -67,7 +71,8 @@ export async function runCliCommand({ options, platform }) {
       inputData,
       inputFormat: options.inputFormat,
       rowCount: options.rowCount,
-      outputFormat: options.format,
+      outputFormat,
+      options: formatterOptions,
       unsafeFakerExpressions: options.unsafeFakerExpressions,
       stream: options.shouldStream,
     });
@@ -101,7 +106,7 @@ export async function runCliCommand({ options, platform }) {
     }
   }
 
-  if (useStreamMode && (options.format === 'csv' || options.format === 'jsonl')) {
+  if (useStreamMode && (outputFormat === 'csv' || outputFormat === 'jsonl')) {
     const streamedLines = [];
     const writer = options.outputFile ? platform.createLineWriter(options.outputFile) : null;
     let writerClosed = false;
@@ -109,7 +114,8 @@ export async function runCliCommand({ options, platform }) {
       const streamResult = await streamFromTextSpec({
         textSpec,
         rowCount: options.rowCount,
-        outputFormat: options.format,
+        outputFormat,
+        options: formatterOptions,
         pairwise: options.pairwise,
         unsafeFakerExpressions: options.unsafeFakerExpressions,
         onChunk: async (chunk) => {
@@ -158,7 +164,8 @@ export async function runCliCommand({ options, platform }) {
   const result = generateFromTextSpec({
     textSpec,
     rowCount: options.rowCount,
-    outputFormat: options.format,
+    outputFormat,
+    options: formatterOptions,
     pairwise: options.pairwise,
     unsafeFakerExpressions: options.unsafeFakerExpressions,
   });

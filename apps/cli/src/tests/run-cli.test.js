@@ -229,3 +229,23 @@ test('amend mode updates only first N rows and keeps full output', async () => {
   expect(code).toBe(0);
   expect(JSON.parse(platform.out.join('').trim())).toEqual([{ Name: 'Bob' }, { Name: 'Eve' }]);
 });
+
+test('accepts uppercase format names via shared normalization', async () => {
+  const platform = makePlatform();
+  const code = await runCliCommand({
+    platform,
+    options: {
+      inputFile: 'spec.txt',
+      outputFile: null,
+      format: 'CSV',
+      rowCount: 1,
+      testMode: false,
+      showProgress: false,
+      shouldStream: false,
+      unsafeFakerExpressions: false,
+      pairwise: false,
+    },
+  });
+  expect(code).toBe(0);
+  expect(platform.err.join('')).toBe('');
+});

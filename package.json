@@ -91,7 +91,7 @@
     "@popperjs/core": "2.11.8",
     "jest": "29.7.0",
     "jest-environment-jsdom": "29.7.0",
-    "jsdom": "22.1.0",
+    "jsdom": "26.1.0",
     "papaparse": "5.5.2",
     "randexp": "0.5.3",
     "tippy.js": "6.3.7"

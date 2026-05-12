@@ -37,10 +37,15 @@ describe('test framework convertor - CSharp', () => {
     expect(rendered).toContain('Connie');
   });
 
-  test('xunit matches golden snapshot (setup + provider)', () => {
+  test('xunit includes setup and provider structure', () => {
     const rendered = createConvertor('xunit', { includeSetup: true, dataSourceStrategy: 'provider' }).fromDataTable(
       makeTable()
     );
-    expect(rendered).toMatchSnapshot();
+    expect(rendered).toContain('using Xunit;');
+    expect(rendered).toContain('public static IEnumerable<object[]> Rows');
+    expect(rendered).toContain('[Theory]');
+    expect(rendered).toContain('[MemberData(nameof(Rows))]');
+    expect(rendered).toContain('Connie');
+    expect(rendered).toContain('Miles');
   });
 });

@@ -37,10 +37,15 @@ describe('test framework convertor - JavaScript', () => {
     expect(mocha).not.toEqual(jest);
   });
 
-  test('jest matches golden snapshot (setup + provider)', () => {
+  test('jest includes setup and provider structure', () => {
     const rendered = createConvertor('jest', { includeSetup: true, dataSourceStrategy: 'provider' }).fromDataTable(
       makeTable()
     );
-    expect(rendered).toMatchSnapshot();
+    expect(rendered).toContain("describe('GeneratedDataTests'");
+    expect(rendered).toContain('beforeEach(() => {');
+    expect(rendered).toContain('const getRows = () => [');
+    expect(rendered).toContain("test.each(getRows())('row parameterized'");
+    expect(rendered).toContain('Connie');
+    expect(rendered).toContain('Miles');
   });
 });

@@ -13,6 +13,7 @@ WORKDIR /app
 ENV NODE_ENV=production
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/apps/api/node_modules ./apps/api/node_modules
+COPY --from=deps /app/packages/core/node_modules ./packages/core/node_modules
 COPY package.json ./package.json
 COPY packages/core ./packages/core
 COPY apps/api ./apps/api

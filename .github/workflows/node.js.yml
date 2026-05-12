@@ -169,27 +169,24 @@ jobs:
           test -f "${CORE_TARBALL_ABS}"
           test -f "${CLI_TARBALL_ABS}"
           SMOKE_DIR="$(mktemp -d)"
-          cat > "${SMOKE_DIR}/package.json" <<JSON
-          {
-            "name": "cli-pack-smoke",
-            "private": true,
-            "type": "module",
-            "dependencies": {
-              "@anywaydata/core": "file:${CORE_TARBALL_ABS}",
-              "@anywaydata/cli": "file:${CLI_TARBALL_ABS}"
-            },
-            "pnpm": {
-              "overrides": {
-                "@anywaydata/core": "file:${CORE_TARBALL_ABS}"
-              }
-            }
-          }
-          JSON
-          cat "${SMOKE_DIR}/package.json"
-          pnpm --dir "${SMOKE_DIR}" install --frozen-lockfile=false
-          pnpm --dir "${SMOKE_DIR}" list --depth 0
-          ls -la "${SMOKE_DIR}/node_modules/.bin" || true
-          pnpm --dir "${SMOKE_DIR}" exec anywaydata --help
+          export SMOKE_DIR
+          mkdir -p "${SMOKE_DIR}/core" "${SMOKE_DIR}/cli"
+          tar -xzf "${CORE_TARBALL_ABS}" -C "${SMOKE_DIR}/core"
+          tar -xzf "${CLI_TARBALL_ABS}" -C "${SMOKE_DIR}/cli"
+          node - <<NODE
+          const fs = require('node:fs');
+          const path = require('node:path');
+          const cliPkgPath = path.join(process.env.SMOKE_DIR, 'cli', 'package', 'package.json');
+          const cliPkg = JSON.parse(fs.readFileSync(cliPkgPath, 'utf8'));
+          cliPkg.dependencies = cliPkg.dependencies || {};
+          cliPkg.dependencies['@anywaydata/core'] = 'file:../../core/package';
+          fs.writeFileSync(cliPkgPath, JSON.stringify(cliPkg, null, 2));
+          NODE
+          cat "${SMOKE_DIR}/cli/package/package.json"
+          pnpm --dir "${SMOKE_DIR}/cli/package" install --frozen-lockfile=false
+          pnpm --dir "${SMOKE_DIR}/cli/package" list --depth 0
+          ls -la "${SMOKE_DIR}/cli/package/node_modules/.bin" || true
+          pnpm --dir "${SMOKE_DIR}/cli/package" exec anywaydata --help
           echo "CLI pack smoke test passed with local core+cli tarballs: ${CORE_TARBALL}, ${CLI_TARBALL}"
 
       - name: Build

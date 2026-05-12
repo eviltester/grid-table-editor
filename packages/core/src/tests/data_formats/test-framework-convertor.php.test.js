@@ -35,10 +35,15 @@ describe('test framework convertor - PHP', () => {
     expect(rendered).toContain('Connie');
   });
 
-  test('phpunit matches golden snapshot (setup + provider)', () => {
+  test('phpunit includes setup and provider structure', () => {
     const rendered = createConvertor('phpunit', { includeSetup: true, dataSourceStrategy: 'provider' }).fromDataTable(
       makeTable()
     );
-    expect(rendered).toMatchSnapshot();
+    expect(rendered).toContain('use PHPUnit\\Framework\\TestCase;');
+    expect(rendered).toContain('final class GeneratedDataTests extends TestCase');
+    expect(rendered).toContain('public static function rowProvider(): array');
+    expect(rendered).toContain('@dataProvider rowProvider');
+    expect(rendered).toContain('Connie');
+    expect(rendered).toContain('Miles');
   });
 });

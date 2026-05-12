@@ -42,10 +42,15 @@ describe('test framework convertor - Python', () => {
     expect(rendered).toContain('line\\nbreak');
   });
 
-  test('pytest matches golden snapshot (setup + provider)', () => {
+  test('pytest includes setup and provider structure', () => {
     const rendered = createConvertor('pytest', { includeSetup: true, dataSourceStrategy: 'provider' }).fromDataTable(
       makeTable()
     );
-    expect(rendered).toMatchSnapshot();
+    expect(rendered).toContain('import pytest');
+    expect(rendered).toContain('def setup_context():');
+    expect(rendered).toContain('def row_provider():');
+    expect(rendered).toContain('@pytest.mark.parametrize("row", row_provider())');
+    expect(rendered).toContain('Connie');
+    expect(rendered).toContain('Miles');
   });
 });

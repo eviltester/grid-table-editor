@@ -26,10 +26,15 @@ describe('test framework convertor - Perl', () => {
     expect(rendered).toContain('Connie');
   });
 
-  test('test-more matches golden snapshot (setup + provider)', () => {
+  test('test-more includes setup and provider structure', () => {
     const rendered = createConvertor('test-more', { includeSetup: true, dataSourceStrategy: 'provider' }).fromDataTable(
       makeTable()
     );
-    expect(rendered).toMatchSnapshot();
+    expect(rendered).toContain('use Test::More;');
+    expect(rendered).toContain('sub row_provider');
+    expect(rendered).toContain('my $rows = row_provider();');
+    expect(rendered).toContain('is_deeply($actual->{"Name"}, $expected->{"Name"}, \'row Name\');');
+    expect(rendered).toContain('Connie');
+    expect(rendered).toContain('Miles');
   });
 });

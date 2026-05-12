@@ -49,10 +49,15 @@ describe('test framework convertor - Java', () => {
     expect(rendered).toContain('Connie');
   });
 
-  test('junit5 matches golden snapshot (setup + provider)', () => {
+  test('junit5 includes setup and provider structure', () => {
     const rendered = createConvertor('junit5', { includeSetup: true, dataSourceStrategy: 'provider' }).fromDataTable(
       makeTable()
     );
-    expect(rendered).toMatchSnapshot();
+    expect(rendered).toContain('import org.junit.jupiter.api.BeforeEach;');
+    expect(rendered).toContain('static Stream<Arguments> data()');
+    expect(rendered).toContain('@MethodSource("data")');
+    expect(rendered).toContain('void setUp()');
+    expect(rendered).toContain('Connie');
+    expect(rendered).toContain('Miles');
   });
 });

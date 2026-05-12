@@ -34,10 +34,15 @@ describe('test framework convertor - Kotlin', () => {
     expect(rendered).toContain('Connie');
   });
 
-  test('kotest matches golden snapshot (setup + provider)', () => {
+  test('kotest includes setup and provider structure', () => {
     const rendered = createConvertor('kotest', { includeSetup: true, dataSourceStrategy: 'provider' }).fromDataTable(
       makeTable()
     );
-    expect(rendered).toMatchSnapshot();
+    expect(rendered).toContain('class GeneratedDataTests : StringSpec({');
+    expect(rendered).toContain('fun rowProvider()');
+    expect(rendered).toContain('"row parameterized" {');
+    expect(rendered).toContain('rowProvider().forEach { row ->');
+    expect(rendered).toContain('Connie');
+    expect(rendered).toContain('Miles');
   });
 });

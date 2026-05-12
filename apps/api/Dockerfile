@@ -2,7 +2,7 @@
 FROM node:20-alpine AS deps
 WORKDIR /app
 ENV HUSKY=0
-RUN corepack enable && corepack prepare pnpm@11.1.1 --activate
+RUN corepack enable && corepack prepare pnpm@10.19.0 --activate
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY packages/core/package.json ./packages/core/package.json
 COPY apps/api/package.json ./apps/api/package.json
@@ -17,4 +17,5 @@ COPY packages/core ./packages/core
 COPY apps/api ./apps/api
 EXPOSE 3000
 CMD ["node", "apps/api/src/index.js"]
+
 

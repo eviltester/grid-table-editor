@@ -3,7 +3,7 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
 
-RUN corepack enable && corepack prepare pnpm@11.1.1 --activate
+RUN corepack enable && corepack prepare pnpm@10.19.0 --activate
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY docs-src/package.json ./docs-src/
@@ -23,4 +23,5 @@ FROM nginxinc/nginx-unprivileged:1.27-alpine
 WORKDIR /usr/share/nginx/html
 
 COPY --from=builder /app/build/ ./
+
 

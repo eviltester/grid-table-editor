@@ -3,7 +3,7 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
 
-RUN corepack enable && corepack prepare pnpm@11.1.1 --activate
+RUN corepack enable && corepack prepare pnpm@10.19.0 --activate
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps ./apps
@@ -18,4 +18,5 @@ WORKDIR /usr/share/nginx/html
 
 # Serve the built browser app only (no docs-src / docusaurus build pipeline)
 COPY --from=builder /app/apps/web/dist/ ./
+
 

@@ -10,7 +10,8 @@ COPY docs-src ./docs-src
 COPY packages ./packages
 COPY scripts ./scripts
 
-RUN npm ci
+RUN npm ci --include=dev --include=optional
+RUN node -e "require.resolve('@rolldown/binding-linux-x64-musl')" >/dev/null 2>&1 || npm install --no-save --no-package-lock --include=dev --include=optional @rolldown/binding-linux-x64-musl@1.0.0
 RUN npm ci --prefix docs-src
 RUN npm run anywaydata --prefix docs-src
 RUN npm run build:web

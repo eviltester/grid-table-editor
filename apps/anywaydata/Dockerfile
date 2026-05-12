@@ -14,8 +14,8 @@ COPY scripts ./scripts
 
 RUN pnpm install --frozen-lockfile
 RUN node -e "require.resolve('@rolldown/binding-linux-x64-musl')" >/dev/null 2>&1 || pnpm add -Dw @rolldown/binding-linux-x64-musl@1.0.0
-RUN npm ci --prefix docs-src
-RUN npm run anywaydata --prefix docs-src
+RUN pnpm --dir docs-src install
+RUN pnpm --dir docs-src run anywaydata
 RUN pnpm run build:web
 RUN node ./scripts/merge-web-build-into-docs-build.js
 

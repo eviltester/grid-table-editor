@@ -29,10 +29,10 @@ Use this checklist when adding/changing/removing output format options.
 
 ## 4. Browser/UI Test Validation (for UI changes)
 
-- Run `npm run test:browser`.
-- Run `npm test` for UI Jest suites (or full `npm test`).
+- Run `pnpm run test:browser`.
+- Run `pnpm test` for UI Jest suites (or full `pnpm test`).
 
 ## 5. Final Gate
 
-- Run `npm run verify:local`.
+- Run `pnpm run verify:local`.
 - Do not mark complete unless gate passes.

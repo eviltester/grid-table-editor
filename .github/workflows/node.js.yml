@@ -161,6 +161,10 @@ jobs:
           CLI_TARBALL="$(pnpm --filter @anywaydata/cli pack --pack-destination ./.tmp-pack | tail -n 1)"
           CORE_TARBALL_ABS="$(realpath "${CORE_TARBALL}")"
           CLI_TARBALL_ABS="$(realpath "${CLI_TARBALL}")"
+          echo "Core tarball: ${CORE_TARBALL_ABS}"
+          echo "CLI tarball: ${CLI_TARBALL_ABS}"
+          test -f "${CORE_TARBALL_ABS}"
+          test -f "${CLI_TARBALL_ABS}"
           mkdir -p .tmp-pack/smoke
           cat > .tmp-pack/smoke/package.json <<JSON
           {
@@ -178,8 +182,11 @@ jobs:
             }
           }
           JSON
+          cat .tmp-pack/smoke/package.json
           pnpm --dir .tmp-pack/smoke install --frozen-lockfile=false
-          pnpm --dir .tmp-pack/smoke exec anywaydata --help >/dev/null
+          pnpm --dir .tmp-pack/smoke list --depth 0
+          ls -la .tmp-pack/smoke/node_modules/.bin || true
+          pnpm --dir .tmp-pack/smoke exec anywaydata --help
           echo "CLI pack smoke test passed with local core+cli tarballs: ${CORE_TARBALL}, ${CLI_TARBALL}"
 
       - name: Build
@@ -218,10 +225,16 @@ jobs:
           }
 
           docker build -f apps/api/Dockerfile -t anywaydata-api-ci .
-          docker run -d --rm --name api-ci -p 18082:3000 anywaydata-api-ci
+          docker run -d --name api-ci -p 18082:3000 anywaydata-api-ci
 
           ready=0
-          for i in {1..20}; do
+          for i in {1..40}; do
+            if ! docker ps --format '{{.Names}}' | grep -q '^api-ci$'; then
+              echo "API container exited before readiness check completed"
+              docker ps -a --filter "name=api-ci" || true
+              docker logs api-ci || true
+              exit 1
+            fi
             if curl -fsS http://127.0.0.1:18082/v1/health >/dev/null; then
               ready=1
               break

@@ -4,20 +4,32 @@ Unified CLI implementation for Node and Bun, backed by `@anywaydata/core`.
 
 This workspace is the source of truth for:
 
-- npm/npx CLI usage (`anywaydata`)
+- npm/npx published CLI usage (`anywaydata`)
 - Node runtime entrypoint (`src/node-entry.js`)
 - Bun runtime entrypoint (`src/bun-entry.js`)
 - Bun executable builds
 
 ## Quick Start
 
-Install globally:
+Install dependencies in the monorepo:
+
+```bash
+pnpm install
+```
+
+Run workspace tests:
+
+```bash
+pnpm --filter @anywaydata/cli run test
+```
+
+Published package global install:
 
 ```bash
 npm install -g @anywaydata/cli
 ```
 
-Run with npx:
+Published package usage with npx:
 
 ```bash
 npx @anywaydata/cli --help

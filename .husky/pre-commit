@@ -1,4 +1,4 @@
 #!/usr/bin/env sh
 
-npm run format:check
-npm run testverbose
+pnpm run format:check
+pnpm run testverbose

@@ -154,3 +154,4 @@ anywaydata generate -i input.txt -n 10 -f csv --unsafe-faker-expressions
 - Choose **CLI** for local scripts and shell pipelines.
 - Choose [REST API](/docs/interfaces-and-deployment/rest-api) for HTTP integrations and OpenAPI.
 - Choose [MCP](/docs/interfaces-and-deployment/mcp) for stdio tool integrations with MCP hosts.
+

@@ -6,22 +6,25 @@ This directory contains REST API tests for the AnyWayData API using Playwright.
 
 ### Run All API Tests
 ```bash
-npm run test:api
+pnpm run test:api
 ```
 
 ### Run Specific Test Suites
+
+Run these from the repository root:
+
 ```bash
 # Health and documentation endpoints
-npx playwright test tests/api/health/ --config=playwright-api.config.js
+pnpm exec playwright test apps/api/src/tests/health/ --config=playwright-api.config.js
 
 # Data generation endpoints
-npx playwright test tests/api/generate/ --config=playwright-api.config.js
+pnpm exec playwright test apps/api/src/tests/generate/ --config=playwright-api.config.js
 
 # Schema-based generation endpoints
-npx playwright test tests/api/fromschema/ --config=playwright-api.config.js
+pnpm exec playwright test apps/api/src/tests/fromschema/ --config=playwright-api.config.js
 
 # Options management endpoints
-npx playwright test tests/api/options/ --config=playwright-api.config.js
+pnpm exec playwright test apps/api/src/tests/options/ --config=playwright-api.config.js
 ```
 
 ### Endpoint Structure
@@ -32,10 +35,10 @@ npx playwright test tests/api/options/ --config=playwright-api.config.js
 ### Debug Tests
 ```bash
 # Run with verbose output
-npm run test:api:verbose
+pnpm run test:api:verbose
 
 # Run in headed mode (for debugging)
-npm run test:api:headed
+pnpm run test:api:headed
 ```
 
 ## Configuration
@@ -54,10 +57,10 @@ API tests are integrated into the build verification process:
 
 ```bash
 # Local verification (includes API tests)
-npm run verify:local
+pnpm run verify:local
 
 # CI verification (includes API tests)  
-npm run verify:ci
+pnpm run verify:ci
 ```
 
 ## Test Data Examples
@@ -97,9 +100,8 @@ datatype.number({"min": 18, "max": 65})
 ### View Test Results
 ```bash
 # Open HTML report (generated after local test runs)
-npx playwright show-report test-results/api-report
+pnpm exec playwright show-report test-results/api-report
 
 # JSON results are generated in CI when the JSON reporter is enabled
-# Local `npm run test:api` runs use the list and HTML reporters only
+# Local `pnpm run test:api` runs use the list and HTML reporters only
 ```
-

@@ -25,11 +25,11 @@ A simple Data Table Editor that generates Markdown, CSV or JSON. It can also be 
 The application is live at [AnyWayData.com](https://anywaydata.com)
 
 - Or clone and run locally with Vite:
-- `npm install`
-- `npm run dev:web`
+- `pnpm install`
+- `pnpm run dev:web`
 - open `http://127.0.0.1:4173/app.html` or `http://127.0.0.1:4173/generator.html`
 
-Use `npm run build:web` to create a production build and `npm run preview:web` to preview the built output.
+Use `pnpm run build:web` to create a production build and `pnpm run preview:web` to preview the built output.
 The old static-server flow (e.g. `python3 -m http.server`) is no longer the recommended local runtime path.
 
 ### Select Grid Engine
@@ -184,17 +184,17 @@ This tool falls in to the categories:
 
 ## Building
 
-Test - `npm test`
+Test - `pnpm test`
 
-Coverage - `npm run testcoverage`
+Coverage - `pnpm run testcoverage`
 
-Preview Docs - `npm run previewdocs`
+Preview Docs - `pnpm run previewdocs`
 
-Build for release - `npm run anywaydata:win`
+Build for release - `pnpm run anywaydata:win`
 
 ## Monorepo Workspaces
 
-This repository now uses npm workspaces:
+This repository now uses pnpm workspaces:
 
 - `packages/core` -> shared generation engine (`@anywaydata/core`)
 - `packages/core-ui` -> browser UI modules (`@anywaydata/core-ui`)
@@ -207,19 +207,19 @@ Use `packages/core/js/*` and `packages/core-ui/js/*` paths in local runtime/test
 
 Install all dependencies from the repo root:
 
-`npm install`
+`pnpm install`
 
 Run workspace build/test orchestration from root:
 
-- `npm run build:workspaces`
-- `npm run test:workspaces`
+- `pnpm run build:workspaces`
+- `pnpm run test:workspaces`
 
 Run an individual workspace command:
 
-- `npm run test --workspace @anywaydata/core`
-- `npm run test --workspace @anywaydata/core-ui`
-- `npm run start --workspace @anywaydata/api`
-- `npm run start --workspace @anywaydata/mcp`
+- `pnpm --filter @anywaydata/core run test`
+- `pnpm --filter @anywaydata/core-ui run test`
+- `pnpm --filter @anywaydata/api run start`
+- `pnpm --filter @anywaydata/mcp run start`
 
 ## npm CLI Usage (`@anywaydata/cli`)
 
@@ -275,7 +275,7 @@ Pairwise note:
 
 Start the API:
 
-`npm run start --workspace @anywaydata/api`
+`pnpm --filter @anywaydata/api run start`
 
 Run the published API package directly with `npx`:
 
@@ -287,15 +287,15 @@ Note: If `npx` fails on Windows, use direct execution instead:
 
 For interactive local development (foreground process with `Ctrl+C` stop), prefer:
 
-- `npm run start --workspace @anywaydata/api -- --port 3001`
+- `pnpm --filter @anywaydata/api run start -- --port 3001`
 - `node apps/api/src/index.js --port 3001`
 
 Use `npx` primarily for consumer-style package execution/testing.
 
 Choose a specific port:
 
-- `npm run start --workspace @anywaydata/api -- --port 3001`
-- PowerShell: `$env:PORT=3001; npm run start --workspace @anywaydata/api`
+- `pnpm --filter @anywaydata/api run start -- --port 3001`
+- PowerShell: `$env:PORT=3001; pnpm --filter @anywaydata/api run start`
 
 Port behavior:
 
@@ -397,7 +397,7 @@ Start the API with unsafe expressions enabled for all requests:
 node apps/api/src/index.js --unsafe-faker
 
 # Or via npm workspace
-npm run start --workspace @anywaydata/api -- --unsafe-faker
+pnpm --filter @anywaydata/api run start -- --unsafe-faker
 
 # Or via npx
 npx -y @anywaydata/api --unsafe-faker
@@ -444,7 +444,7 @@ Examples that require the unsafe flag:
 
 Start the MCP server:
 
-`npm run start --workspace @anywaydata/mcp`
+`pnpm --filter @anywaydata/mcp run start`
 
 Note: MCP runs over stdio in this version and does not bind to a TCP port.
 OpenAPI/Swagger routes are available on the REST API only.
@@ -495,9 +495,9 @@ Error conventions:
 Codex connects to this server as an MCP tool provider over `stdio` (not HTTP).
 
 1. Ensure dependencies are installed from repo root:
-   - `npm install`
+   - `pnpm install`
 2. Start MCP server (or let your MCP host launch it):
-   - `npm run start --workspace @anywaydata/mcp`
+   - `pnpm --filter @anywaydata/mcp run start`
 3. Configure your MCP host/Codex to launch the server command.
 
 Example MCP server config (published package via `npx`):
@@ -534,7 +534,7 @@ Example MCP server config (Cursor/Cline-style local repo command):
     "anywaydata-local": {
       "command": "node",
       "args": ["apps/mcp/src/index.js"],
-      "cwd": "D:/github/grid-table-editor"
+      "cwd": "/path/to/grid-table-editor"
     }
   }
 }
@@ -561,13 +561,13 @@ Example MCP server config (local repo):
     "anywaydata": {
       "command": "node",
       "args": ["apps/mcp/src/index.js"],
-      "cwd": "D:/github/grid-table-editor"
+      "cwd": "/path/to/grid-table-editor"
     }
   }
 }
 ```
 
-For MCP hosts, prefer direct `node` execution or `npx` as shown above. `npm run` can emit non-JSON stdout lines, which may interfere with `stdio` MCP message parsing in some clients.
+For MCP hosts, prefer direct `node` execution or `npx` as shown above. `pnpm run` can emit non-JSON stdout lines, which may interfere with `stdio` MCP message parsing in some clients.
 
 Notes:
 
@@ -580,18 +580,18 @@ Notes:
 Packages are configured with `publishConfig.access=public`.
 
 - `npm login`
-- `npm install`
-- `npm run verify:local`
+- `pnpm install`
+- `pnpm run verify:local`
 
 Versioning and release notes are managed with Changesets:
 
 - Create new changeset
-- `npx changeset`
+- `pnpm changeset`
 - Commit the generated changeset file
 - Bump version
-- `npx changeset version`
+- `pnpm changeset version`
 - publish package
-- `npx changeset publish`
+- `pnpm changeset publish`
 
 ## npm adhoc publish
 
@@ -599,15 +599,15 @@ For manual one-off publish, set the version in that package’s `package.json` f
 
 Bump version:
 
-- `npm version patch --workspace @anywaydata/cli`
+- `pnpm --filter @anywaydata/cli version patch`
 
 or minor / major / exact like 1.2.3
 
 Publish a single workspace package manually:
 
-- `npm publish --workspace @anywaydata/core`
-- `npm publish --workspace @anywaydata/core-ui`
-- `npm publish --workspace @anywaydata/cli`
+- `pnpm --filter @anywaydata/core publish`
+- `pnpm --filter @anywaydata/core-ui publish`
+- `pnpm --filter @anywaydata/cli publish`
 
 ## Docker API
 
@@ -681,7 +681,7 @@ Example MCP config:
 
 Notes:
 
-- Build first: `d`ocker build -f apps/mcp/Dockerfile -t anywaydata-mcp .`
+- Build first: `docker build -f apps/mcp/Dockerfile -t anywaydata-mcp .`
 - `-i` is required for stdio transport.
 - No `-p` mapping is needed for MCP.
 

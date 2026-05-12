@@ -20,7 +20,7 @@ module.exports = defineConfig({
     trace: 'on-first-retry',
   },
   webServer: {
-    command: `npx vite --config ./apps/web/vite.config.mjs --host 127.0.0.1 --port ${port}`,
+    command: `pnpm exec vite --config ./apps/web/vite.config.mjs --host 127.0.0.1 --port ${port}`,
     url: `${baseURL}/app.html`,
     reuseExistingServer: !process.env.CI,
     timeout: 30000,

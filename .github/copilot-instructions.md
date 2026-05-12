@@ -3,18 +3,18 @@
 ## Build and Test
 
 ```bash
-npm run format:check   # Prettier formatting check
-npm run lint           # ESLint
-npm test               # Jest unit/integration tests (54 suites)
-npm run test:browser   # Playwright browser smoke tests (app.html, generator.html)
+pnpm run format:check   # Prettier formatting check
+pnpm run lint           # ESLint
+pnpm run verify:local # Jest unit/integration tests (54 suites)
+pnpm run test:browser   # Playwright browser smoke tests (app.html, generator.html)
 ```
 
 ## Definition of Done
 
 After making **any code changes**, you MUST run the following before calling `task_complete`:
 
-1. `npm run format:check` — if it fails, run `npm run format` to fix, then re-check
-2. `npm test` — all Jest tests must pass
-3. `npm run test:browser` — Playwright smoke tests must pass
+1. `pnpm run format:check` — if it fails, run `pnpm run format` to fix, then re-check
+2. `pnpm test` — all Jest tests must pass
+3. `pnpm run test:browser` — Playwright smoke tests must pass
 
 Do not call `task_complete` until all three commands exit successfully.

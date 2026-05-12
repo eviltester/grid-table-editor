@@ -5,7 +5,7 @@
 Before reporting a coding task as complete, run:
 
 ```bash
-npm run verify:local
+pnpm run verify:local
 ```
 
 and include the result status in the final update.
@@ -26,8 +26,8 @@ If verification fails:
 
 When changing UI code, UI test abstractions, or browser tests:
 
-- run `npm run test:browser`
-- run `npm test` (or targeted UI Jest suites) for `packages/core-ui/src/tests` and `apps/web/src/tests/jest`
+- run `pnpm run test:browser`
+- run `pnpm test` (or targeted UI Jest suites) for `packages/core-ui/src/tests` and `apps/web/src/tests/jest`
 
 For browser tests and page-object abstractions:
 

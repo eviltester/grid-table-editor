@@ -1,0 +1,13 @@
+packages:
+  - 'packages/*'
+  - 'apps/*'
+
+minimumReleaseAge: 10080
+minimumReleaseAgeStrict: false
+minimumReleaseAgeExclude:
+  - '@anywaydata/*'
+  - 'rolldown'
+  - '@rolldown/*'
+allowBuilds:
+  '@scarf/scarf': true
+  unrs-resolver: true

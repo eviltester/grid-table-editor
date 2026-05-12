@@ -17,7 +17,7 @@ The REST API is best for HTTP automation, service integration, and schema-driven
 From the repo root of [grid-table-editor](https://github.com/eviltester/grid-table-editor):
 
 ```bash
-npm run start --workspace @anywaydata/api
+pnpm --filter @anywaydata/api run start
 ```
 
 By default this starts on port `3000`, and yes, you can change the port with `--port` or `PORT` (see Local Run).
@@ -71,7 +71,7 @@ anywaydata-api --port 3001
 Pick a specific port:
 
 ```bash
-npm run start --workspace @anywaydata/api -- --port 3001
+pnpm --filter @anywaydata/api run start -- --port 3001
 # or
 node apps/api/src/index.js --port 3001
 # or
@@ -81,7 +81,7 @@ npx -y @anywaydata/api --port 3001
 PowerShell `PORT` example:
 
 ```powershell
-$env:PORT=3001; npm run start --workspace @anywaydata/api
+$env:PORT=3001; pnpm --filter @anywaydata/api run start
 ```
 
 Port behavior:
@@ -267,3 +267,5 @@ curl http://localhost:3000/openapi.json
 
 - If you run on a non-default port, replace `3000` in all examples.
 - For MCP tool integrations, see [MCP](/docs/interfaces-and-deployment/mcp).
+
+

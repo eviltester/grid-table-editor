@@ -2,10 +2,11 @@
 FROM node:20-alpine AS deps
 WORKDIR /app
 ENV HUSKY=0
-COPY package.json package-lock.json ./
+RUN corepack enable && corepack prepare pnpm@11.1.1 --activate
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY packages/core/package.json ./packages/core/package.json
 COPY apps/api/package.json ./apps/api/package.json
-RUN npm ci --omit=dev --ignore-scripts
+RUN pnpm install --frozen-lockfile --prod --ignore-scripts --filter @anywaydata/api...
 
 FROM node:20-alpine AS runtime
 WORKDIR /app
@@ -16,3 +17,4 @@ COPY packages/core ./packages/core
 COPY apps/api ./apps/api
 EXPOSE 3000
 CMD ["node", "apps/api/src/index.js"]
+

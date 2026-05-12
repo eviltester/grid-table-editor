@@ -24,7 +24,14 @@ jobs:
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
+          cache: 'pnpm'
+
+      - name: Set up pnpm
+        shell: bash
+        run: |
+          corepack enable
+          corepack prepare pnpm@11.1.1 --activate
+          pnpm --version
 
       - name: Set up Python
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
@@ -74,7 +81,7 @@ jobs:
           kotlinc -version
 
       - name: Install dependencies
-        run: npm ci --include=dev --include=optional
+        run: pnpm install --frozen-lockfile
 
       - name: Ensure Linux rolldown native binding
         if: runner.os == 'Linux'
@@ -85,7 +92,7 @@ jobs:
             echo "rolldown Linux binding already present"
           else
             echo "rolldown Linux binding missing; installing fallback package"
-            npm install --no-save --no-package-lock --include=dev --include=optional @rolldown/binding-linux-x64-gnu@1.0.0
+            npm install --no-save --no-package-lock @rolldown/binding-linux-x64-gnu@1.0.0
           fi
 
       - name: Verify test toolchain dependencies
@@ -102,16 +109,16 @@ jobs:
           set -euo pipefail
           rm -rf .tmp-pack
           mkdir -p .tmp-pack
-          CORE_TARBALL="$(npm pack --workspace packages/core --pack-destination ./.tmp-pack | tail -n 1)"
-          CLI_TARBALL="$(npm pack --workspace apps/cli --pack-destination ./.tmp-pack | tail -n 1)"
-          npm exec --yes \
+          CORE_TARBALL="$(pnpm --filter @anywaydata/core pack --pack-destination ./.tmp-pack | tail -n 1)"
+          CLI_TARBALL="$(pnpm --filter @anywaydata/cli pack --pack-destination ./.tmp-pack | tail -n 1)"
+          pnpm dlx \
             --package "./.tmp-pack/${CORE_TARBALL}" \
             --package "./.tmp-pack/${CLI_TARBALL}" \
             anywaydata -- --help >/dev/null
-          echo "CLI npm pack smoke test passed with local core+cli tarballs: ${CORE_TARBALL}, ${CLI_TARBALL}"
+          echo "CLI pack smoke test passed with local core+cli tarballs: ${CORE_TARBALL}, ${CLI_TARBALL}"
 
       - name: Build
-        run: npm run build --if-present
+        run: pnpm run build --if-present
 
       - name: Set up Bun
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
@@ -122,10 +129,10 @@ jobs:
         run: bun run apps/cli/src/bun-entry.js --help
 
       - name: Install Playwright browser
-        run: npx playwright install --with-deps chromium
+        run: pnpm exec playwright install --with-deps chromium
 
       - name: Verify
-        run: npm run verify:ci
+        run: pnpm run verify:ci
 
       - name: Docker smoke test (API)
         run: |

@@ -1,0 +1,17 @@
+packages:
+  - 'packages/*'
+  - 'apps/*'
+
+minimumReleaseAge: 10080
+minimumReleaseAgeStrict: false
+minimumReleaseAgeExclude:
+  - '@anywaydata/*'
+  - 'rolldown'
+  - '@rolldown/*'
+onlyBuiltDependencies:
+  - 'unrs-resolver'
+  - '@scarf/scarf'
+dangerouslyAllowAllBuilds: true
+allowBuilds:
+  '@scarf/scarf': set this to true or false
+  unrs-resolver: set this to true or false

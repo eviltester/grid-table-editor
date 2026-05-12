@@ -22,8 +22,8 @@ The Web UI is best for interactive editing, import/export, and conversion.
 From the repo root of [grid-table-editor](https://github.com/eviltester/grid-table-editor), install dependencies and start the Vite dev server.
 
 ```bash
-npm install
-npm run dev:web
+pnpm install
+pnpm run dev:web
 ```
 
 Then open:
@@ -55,6 +55,7 @@ Open:
 ## Notes
 
 - The Docker image uses a multi-stage build:
-- Node builds the web app with `npm run build:web`.
+- Node builds the web app with `pnpm run build:web`.
 - Nginx serves the built static files from `apps/web/dist`.
 - API endpoints are documented in [REST API](/docs/interfaces-and-deployment/rest-api).
+

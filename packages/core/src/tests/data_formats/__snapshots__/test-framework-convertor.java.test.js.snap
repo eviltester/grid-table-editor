@@ -11,8 +11,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 public class GeneratedDataTests {
     static Stream<Arguments> data() {
         return Stream.of(
-            Arguments.of(\\"Connie\\", 21),
-            Arguments.of(\\"Miles\\", 34)
+            Arguments.of("Connie", 21),
+            Arguments.of("Miles", 34)
         );
     }
 
@@ -22,7 +22,7 @@ public class GeneratedDataTests {
     }
 
     @ParameterizedTest
-    @MethodSource(\\"data\\")
+    @MethodSource("data")
     void row_parameterized(Object... row) {
         Object[] expected = row;
         Object[] actual = mapRowUnderTest(row);

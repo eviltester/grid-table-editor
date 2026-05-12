@@ -13,8 +13,8 @@ public class GeneratedDataTests
 
     public static IEnumerable<object[]> Rows => new List<object[]>
     {
-            new object[] { \\"Connie\\", 21 },
-            new object[] { \\"Miles\\", 34 }
+            new object[] { "Connie", 21 },
+            new object[] { "Miles", 34 }
     };
 
     [Theory]

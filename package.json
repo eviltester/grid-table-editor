@@ -65,7 +65,7 @@
       "^@anywaydata/core$": "<rootDir>/packages/core/src/index.js",
       "^@anywaydata/core/data_formats/(.*)$": "<rootDir>/packages/core/js/data_formats/$1",
       "https://cdn.skypack.dev/@faker-js/faker@v9.7.0": "@faker-js/faker",
-      "https://unpkg.com/papaparse@5.3.2/papaparse.min.js": "papaparse",
+      "https://unpkg.com/papaparse@5.5.2/papaparse.min.js": "papaparse",
       "/libs/randexp.min.js": "randexp"
     }
   },
@@ -89,9 +89,10 @@
   "homepage": "https://github.com/eviltester/grid-table-editor#readme",
   "dependencies": {
     "@popperjs/core": "2.11.8",
-    "jest": "28.1.0",
-    "jsdom": "20.0.0",
-    "papaparse": "5.3.2",
+    "jest": "29.7.0",
+    "jest-environment-jsdom": "29.7.0",
+    "jsdom": "22.1.0",
+    "papaparse": "5.5.2",
     "randexp": "0.5.3",
     "tippy.js": "6.3.7"
   },
@@ -100,12 +101,12 @@
     "@changesets/cli": "2.31.0",
     "@faker-js/faker": "9.7.0",
     "@playwright/test": "1.59.1",
-    "babel-jest": "28.1.0",
+    "babel-jest": "29.7.0",
     "eslint": "8.57.1",
     "eslint-config-prettier": "9.1.0",
     "husky": "9.1.7",
     "jest-extended": "2.0.0",
     "prettier": "3.3.3",
-    "vite": "5.4.21"
+    "vite": "8.0.12"
   }
 }

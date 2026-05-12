@@ -3,7 +3,7 @@
 exports[`test framework convertor - PHP phpunit matches golden snapshot (setup + provider) 1`] = `
 "<?php
 
-use PHPUnit\\\\Framework\\\\TestCase;
+use PHPUnit\\Framework\\TestCase;
 
 final class GeneratedDataTests extends TestCase
 {

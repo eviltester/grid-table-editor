@@ -7,8 +7,8 @@ exports[`test framework convertor - JavaScript jest matches golden snapshot (set
 };
 
 const getRows = () => [
-    {\\"Name\\":\\"Connie\\",\\"Age\\":21},
-    {\\"Name\\":\\"Miles\\",\\"Age\\":34}
+    {"Name":"Connie","Age":21},
+    {"Name":"Miles","Age":34}
   ];
 
 describe('GeneratedDataTests', () => {
@@ -19,8 +19,8 @@ describe('GeneratedDataTests', () => {
   test.each(getRows())('row parameterized', (row) => {
     const expected = row;
     const actual = mapRowUnderTest(row);
-    expect(actual[\\"Name\\"]).toStrictEqual(expected[\\"Name\\"]);
-    expect(actual[\\"Age\\"]).toStrictEqual(expected[\\"Age\\"]);
+    expect(actual["Name"]).toStrictEqual(expected["Name"]);
+    expect(actual["Age"]).toStrictEqual(expected["Age"]);
   });
 });"
 `;

@@ -25,8 +25,8 @@ my $rows = row_provider();
 foreach my $row (@$rows) {
     my $expected = $row;
     my $actual = map_row_under_test($row);
-    is_deeply($actual->{\\"Name\\"}, $expected->{\\"Name\\"}, 'row Name');
-    is_deeply($actual->{\\"Age\\"}, $expected->{\\"Age\\"}, 'row Age');
+    is_deeply($actual->{"Name"}, $expected->{"Name"}, 'row Name');
+    is_deeply($actual->{"Age"}, $expected->{"Age"}, 'row Age');
 }
 
 done_testing();"

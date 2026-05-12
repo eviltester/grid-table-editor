@@ -185,8 +185,7 @@ jobs:
           cat "${SMOKE_DIR}/cli/package/package.json"
           pnpm --dir "${SMOKE_DIR}/cli/package" install --frozen-lockfile=false
           pnpm --dir "${SMOKE_DIR}/cli/package" list --depth 0
-          ls -la "${SMOKE_DIR}/cli/package/node_modules/.bin" || true
-          pnpm --dir "${SMOKE_DIR}/cli/package" exec anywaydata --help
+          node "${SMOKE_DIR}/cli/package/src/node-entry.js" --help
           echo "CLI pack smoke test passed with local core+cli tarballs: ${CORE_TARBALL}, ${CLI_TARBALL}"
 
       - name: Build

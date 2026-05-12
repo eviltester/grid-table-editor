@@ -7,7 +7,76 @@ on:
     branches: ['master']
 
 jobs:
-  build:
+  verify-ci:
+    name: Verify CI
+    runs-on: ubuntu-latest
+    env:
+      NODE_ENV: development
+
+    strategy:
+      matrix:
+        node-version: [22.21.1]
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Set up pnpm
+        shell: bash
+        run: |
+          corepack enable
+          corepack prepare pnpm@11.1.1 --activate
+          pnpm --version
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Ensure Linux rolldown native binding
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          set -euo pipefail
+          if node -e "require.resolve('@rolldown/binding-linux-x64-gnu')" >/dev/null 2>&1; then
+            echo "rolldown Linux binding already present"
+          else
+            echo "rolldown Linux binding missing; forcing reinstall with minimumReleaseAge disabled"
+            pnpm install --force --frozen-lockfile --config.minimumReleaseAge=0
+            node -e "require.resolve('@rolldown/binding-linux-x64-gnu')"
+          fi
+
+      - name: Verify test toolchain dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          node -e "require.resolve('jest')"
+          node -e "require.resolve('babel-jest')"
+          node -e "require.resolve('jest-environment-jsdom')"
+
+      - name: Install Playwright browser
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Verify
+        run: pnpm run verify:ci
+
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: coverage-report-node-${{ matrix.node-version }}
+          path: coverage/
+
+      - name: Upload HTML coverage report
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: coverage-html-report-node-${{ matrix.node-version }}
+          path: coverage/lcov-report/
+
+  cross-language-toolchain:
+    name: Cross-Language Toolchain
     runs-on: ubuntu-latest
     env:
       NODE_ENV: development
@@ -82,27 +151,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Ensure Linux rolldown native binding
-        if: runner.os == 'Linux'
-        shell: bash
-        run: |
-          set -euo pipefail
-          if node -e "require.resolve('@rolldown/binding-linux-x64-gnu')" >/dev/null 2>&1; then
-            echo "rolldown Linux binding already present"
-          else
-            echo "rolldown Linux binding missing; forcing reinstall with minimumReleaseAge disabled"
-            pnpm install --force --frozen-lockfile --config.minimumReleaseAge=0
-            node -e "require.resolve('@rolldown/binding-linux-x64-gnu')"
-          fi
-
-      - name: Verify test toolchain dependencies
-        shell: bash
-        run: |
-          set -euo pipefail
-          node -e "require.resolve('jest')"
-          node -e "require.resolve('babel-jest')"
-          node -e "require.resolve('jest-environment-jsdom')"
-
       - name: CLI pack smoke test
         shell: bash
         run: |
@@ -128,11 +176,13 @@ jobs:
       - name: Bun CLI entry smoke test
         run: bun run apps/cli/src/bun-entry.js --help
 
-      - name: Install Playwright browser
-        run: pnpm exec playwright install --with-deps chromium
+  docker-smoke:
+    name: Docker Smoke Tests
+    runs-on: ubuntu-latest
 
-      - name: Verify
-        run: pnpm run verify:ci
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
       - name: Docker smoke test (API)
         run: |
@@ -215,15 +265,3 @@ jobs:
           curl -fsS http://127.0.0.1:18081/ | grep -q "AnyWayData"
           curl -fsS http://127.0.0.1:18081/app.html | grep -q "AnyWayData"
           echo "AnyWayData full-site docker smoke test passed"
-
-      - name: Upload coverage artifact
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        with:
-          name: coverage-report-node-${{ matrix.node-version }}
-          path: coverage/
-
-      - name: Upload HTML coverage report
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        with:
-          name: coverage-html-report-node-${{ matrix.node-version }}
-          path: coverage/lcov-report/

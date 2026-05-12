@@ -23,6 +23,6 @@
     "test": "jest --config ../../package.json --testMatch \"<rootDir>/apps/mcp/src/*.test.js\""
   },
   "dependencies": {
-    "@anywaydata/core": "^1.2.0"
+    "@anywaydata/core": "1.2.0"
   }
 }

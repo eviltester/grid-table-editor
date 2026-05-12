@@ -91,7 +91,7 @@ jobs:
             echo "rolldown Linux binding already present"
           else
             echo "rolldown Linux binding missing; installing fallback package"
-            npm install --no-save --no-package-lock @rolldown/binding-linux-x64-gnu@1.0.0
+            pnpm add -Dw @rolldown/binding-linux-x64-gnu@1.0.0
           fi
 
       - name: Verify test toolchain dependencies

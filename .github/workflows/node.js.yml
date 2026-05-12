@@ -159,10 +159,27 @@ jobs:
           mkdir -p .tmp-pack
           CORE_TARBALL="$(pnpm --filter @anywaydata/core pack --pack-destination ./.tmp-pack | tail -n 1)"
           CLI_TARBALL="$(pnpm --filter @anywaydata/cli pack --pack-destination ./.tmp-pack | tail -n 1)"
-          pnpm dlx \
-            --package "${CORE_TARBALL}" \
-            --package "${CLI_TARBALL}" \
-            anywaydata --help >/dev/null
+          CORE_TARBALL_ABS="$(realpath "${CORE_TARBALL}")"
+          CLI_TARBALL_ABS="$(realpath "${CLI_TARBALL}")"
+          mkdir -p .tmp-pack/smoke
+          cat > .tmp-pack/smoke/package.json <<JSON
+          {
+            "name": "cli-pack-smoke",
+            "private": true,
+            "type": "module",
+            "dependencies": {
+              "@anywaydata/core": "file:${CORE_TARBALL_ABS}",
+              "@anywaydata/cli": "file:${CLI_TARBALL_ABS}"
+            },
+            "pnpm": {
+              "overrides": {
+                "@anywaydata/core": "file:${CORE_TARBALL_ABS}"
+              }
+            }
+          }
+          JSON
+          pnpm --dir .tmp-pack/smoke install --frozen-lockfile=false
+          pnpm --dir .tmp-pack/smoke exec anywaydata --help >/dev/null
           echo "CLI pack smoke test passed with local core+cli tarballs: ${CORE_TARBALL}, ${CLI_TARBALL}"
 
       - name: Build

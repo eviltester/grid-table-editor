@@ -5,7 +5,7 @@
 ```bash
 pnpm run format:check   # Prettier formatting check
 pnpm run lint           # ESLint
-pnpm test               # Jest unit/integration tests (54 suites)
+pnpm run verify:local # Jest unit/integration tests (54 suites)
 pnpm run test:browser   # Playwright browser smoke tests (app.html, generator.html)
 ```
 

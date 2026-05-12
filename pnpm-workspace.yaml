@@ -9,5 +9,5 @@ minimumReleaseAgeExclude:
   - 'rolldown'
   - '@rolldown/*'
 allowBuilds:
-  '@scarf/scarf': set this to true or false
-  unrs-resolver: set this to true or false
+  '@scarf/scarf': true
+  unrs-resolver: true

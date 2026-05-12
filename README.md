@@ -217,7 +217,7 @@ Run workspace build/test orchestration from root:
 Run an individual workspace command:
 
 - `pnpm --filter @anywaydata/core run test`
-- `pnpm --filter @anywaydata/core run test-ui`
+- `pnpm --filter @anywaydata/core-ui run test`
 - `pnpm --filter @anywaydata/api run start`
 - `pnpm --filter @anywaydata/mcp run start`
 

@@ -10,6 +10,9 @@ pnpm run test:api
 ```
 
 ### Run Specific Test Suites
+
+Run these from the repository root (`D:\github\grid-table-editor`):
+
 ```bash
 # Health and documentation endpoints
 pnpm exec playwright test apps/api/src/tests/health/ --config=playwright-api.config.js

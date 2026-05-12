@@ -113,7 +113,7 @@ jobs:
           pnpm dlx \
             --package "./.tmp-pack/${CORE_TARBALL}" \
             --package "./.tmp-pack/${CLI_TARBALL}" \
-            anywaydata -- --help >/dev/null
+            anywaydata --help >/dev/null
           echo "CLI pack smoke test passed with local core+cli tarballs: ${CORE_TARBALL}, ${CLI_TARBALL}"
 
       - name: Build

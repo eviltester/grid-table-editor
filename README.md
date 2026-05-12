@@ -534,7 +534,7 @@ Example MCP server config (Cursor/Cline-style local repo command):
     "anywaydata-local": {
       "command": "node",
       "args": ["apps/mcp/src/index.js"],
-      "cwd": "D:/github/grid-table-editor"
+      "cwd": "/path/to/grid-table-editor"
     }
   }
 }
@@ -561,7 +561,7 @@ Example MCP server config (local repo):
     "anywaydata": {
       "command": "node",
       "args": ["apps/mcp/src/index.js"],
-      "cwd": "D:/github/grid-table-editor"
+      "cwd": "/path/to/grid-table-editor"
     }
   }
 }
@@ -681,7 +681,7 @@ Example MCP config:
 
 Notes:
 
-- Build first: `d`ocker build -f apps/mcp/Dockerfile -t anywaydata-mcp .`
+- Build first: `docker build -f apps/mcp/Dockerfile -t anywaydata-mcp .`
 - `-i` is required for stdio transport.
 - No `-p` mapping is needed for MCP.
 

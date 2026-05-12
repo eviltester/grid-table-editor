@@ -11,7 +11,7 @@ pnpm run test:api
 
 ### Run Specific Test Suites
 
-Run these from the repository root (`D:\github\grid-table-editor`):
+Run these from the repository root:
 
 ```bash
 # Health and documentation endpoints

@@ -148,6 +148,11 @@ Both endpoints generate data from the same schema language and output formats. T
 - `stream` is accepted for compatibility and ignored
 - `inputFormat` is normalized (trimmed and lower-cased), so values like `" csv "` are accepted
 
+Generation mode behavior:
+
+- REST generation endpoints currently run in buffered mode.
+- Stream-mode generation behavior is available via the core helper/CLI paths, not via `/v1/generate`.
+
 ## Schema Formatting
 
 Schema text supports:

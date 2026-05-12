@@ -32,6 +32,8 @@ const openApiDocument = {
     '/v1/generate': {
       post: {
         summary: 'Generate data from text spec with selectable response shape',
+        description:
+          'Generation requests are currently processed in buffered mode for all formats. Stream-mode behavior is available in the core helper and CLI, not this REST endpoint.',
         requestBody: {
           required: true,
           content: {

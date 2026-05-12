@@ -536,6 +536,15 @@ function getCsvStreamSettings(options = {}) {
   return { quoteChar, escapeChar, includeHeader };
 }
 
+function getDsvStreamSettings(options = {}) {
+  const delimiter = typeof options.delimiter === 'string' && options.delimiter.length > 0 ? options.delimiter : '\t';
+  const quoteChar = typeof options.quoteChar === 'string' && options.quoteChar.length > 0 ? options.quoteChar : '"';
+  const escapeChar =
+    typeof options.escapeChar === 'string' && options.escapeChar.length > 0 ? options.escapeChar : quoteChar;
+  const includeHeader = options.header !== false;
+  return { delimiter, quoteChar, escapeChar, includeHeader };
+}
+
 function quoteCsvValue(value, { quoteChar, escapeChar }) {
   const text = String(value ?? '');
   const escapedQuote = `${escapeChar}${quoteChar}`;
@@ -544,11 +553,157 @@ function quoteCsvValue(value, { quoteChar, escapeChar }) {
 }
 
 function rowToCsv(headers, row, csvSettings) {
-  return headers.map((header) => quoteCsvValue(row[header], csvSettings)).join(',');
+  return headers.map((_, index) => quoteCsvValue(row[index], csvSettings)).join(',');
 }
 
-function rowToJsonLine(row) {
-  return JSON.stringify(row);
+function rowToDsv(headers, row, dsvSettings) {
+  return headers.map((_, index) => quoteCsvValue(row[index], dsvSettings)).join(dsvSettings.delimiter);
+}
+
+function rowToJsonLine(headers, rowArray, options = {}) {
+  const rowObject = rowArrayToObject(headers, rowArray, options);
+  return JSON.stringify(rowObject);
+}
+
+function rowArrayToObject(headers, rowArray, options = {}) {
+  const makeNumbersNumeric = options?.makeNumbersNumeric === true;
+  const rowObject = {};
+  for (let i = 0; i < headers.length; i += 1) {
+    const header = headers[i];
+    const value = rowArray[i] === undefined || rowArray[i] === null ? '' : rowArray[i];
+    if (makeNumbersNumeric) {
+      const text = String(value);
+      if (text.trim().length === 0) {
+        rowObject[header] = value;
+      } else if (Number.isFinite(Number(text))) {
+        rowObject[header] = Number(text);
+      } else {
+        rowObject[header] = value;
+      }
+    } else {
+      rowObject[header] = value;
+    }
+  }
+  return rowObject;
+}
+
+function getUnsupportedStreamingOptionWarnings(outputFormat, options = {}) {
+  const warnings = [];
+  if (outputFormat === 'json') {
+    if (options.asObject === true) {
+      warnings.push('Streaming JSON ignores option asObject=true and always emits a JSON array.');
+    }
+    if (typeof options.asPropertyNamed === 'string' && options.asPropertyNamed.trim().length > 0) {
+      warnings.push('Streaming JSON ignores option asPropertyNamed and always emits a JSON array.');
+    }
+    if (options.prettyPrint === true || options.prettyPrintDelimiter !== undefined) {
+      warnings.push('Streaming JSON ignores prettyPrint options and emits compact JSON.');
+    }
+    if (options.outputAsJsonLines === true) {
+      warnings.push('Streaming JSON ignores outputAsJsonLines=true and emits a JSON array.');
+    }
+  }
+  return warnings;
+}
+
+function parseXmlAttributeColumns(attributeColumnsCsv) {
+  return String(attributeColumnsCsv ?? '')
+    .split(',')
+    .map((column) => column.trim())
+    .filter((column) => column.length > 0);
+}
+
+function normaliseXmlName(originalName, fallbackName, contextLabel, usedNames, warnings) {
+  const namesInUse = usedNames || new Set();
+  const inputName = String(originalName ?? '').trim();
+  let normalised = inputName.length > 0 ? inputName : fallbackName;
+  normalised = normalised.replace(/\s+/g, '_').replace(/[^A-Za-z0-9_.-]/g, '_');
+  if (!/^[A-Za-z_]/.test(normalised)) normalised = `_${normalised}`;
+  if (/^xml/i.test(normalised)) normalised = `_${normalised}`;
+  if (normalised.length === 0) normalised = fallbackName;
+  let deduplicated = normalised;
+  let suffix = 2;
+  while (namesInUse.has(deduplicated)) {
+    deduplicated = `${normalised}_${suffix}`;
+    suffix += 1;
+  }
+  namesInUse.add(deduplicated);
+  if (inputName !== deduplicated) {
+    warnings.push(`Auto-fixed XML ${contextLabel} name "${inputName}" -> "${deduplicated}"`);
+  }
+  return deduplicated;
+}
+
+function sanitizeXmlCharacters(value) {
+  const text = String(value ?? '');
+  let sanitized = '';
+  for (const char of text) {
+    const codePoint = char.codePointAt(0);
+    const isValidXmlChar =
+      codePoint === 0x9 ||
+      codePoint === 0xa ||
+      codePoint === 0xd ||
+      (codePoint >= 0x20 && codePoint <= 0xd7ff) ||
+      (codePoint >= 0xe000 && codePoint <= 0xfffd) ||
+      (codePoint >= 0x10000 && codePoint <= 0x10ffff);
+    if (isValidXmlChar) sanitized += char;
+  }
+  return sanitized;
+}
+
+function escapeXmlValue(value) {
+  return String(value ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&apos;');
+}
+
+function createXmlStreamContext(headers, options = {}, warnings = []) {
+  const includeXmlHeader = options.includeXmlHeader !== false;
+  const rootElementName = normaliseXmlName(options.rootElementName, 'root', 'root element', new Set(), warnings);
+  const itemElementName = normaliseXmlName(options.itemElementName, 'item', 'item element', new Set(), warnings);
+  const attributeColumnNames = parseXmlAttributeColumns(options.attributeColumnsCsv);
+  const knownAttributeColumnNames = new Set();
+  attributeColumnNames.forEach((attributeColumnName) => {
+    if (headers.includes(attributeColumnName)) {
+      knownAttributeColumnNames.add(attributeColumnName);
+    } else {
+      warnings.push(`Ignored unknown XML attribute column: ${attributeColumnName}`);
+    }
+  });
+  const usedColumnXmlNames = new Set();
+  const headerXmlNames = headers.map((header) => {
+    const context = knownAttributeColumnNames.has(header) ? 'attribute column' : 'child element column';
+    return normaliseXmlName(header, 'column', context, usedColumnXmlNames, warnings);
+  });
+  const xmlnsValue = String(options.xmlns ?? '').trim();
+  const xmlnsAttribute = xmlnsValue.length > 0 ? ` xmlns="${escapeXmlValue(xmlnsValue)}"` : '';
+  return {
+    includeXmlHeader,
+    rootElementName,
+    itemElementName,
+    knownAttributeColumnNames,
+    headerXmlNames,
+    xmlnsAttribute,
+  };
+}
+
+function rowToXmlItem(headers, headerXmlNames, rowArray, knownAttributeColumnNames, itemElementName) {
+  const itemAttributes = [];
+  const childElements = [];
+  headers.forEach((header, columnIndex) => {
+    const value = sanitizeXmlCharacters(rowArray[columnIndex]);
+    const xmlName = headerXmlNames[columnIndex];
+    if (knownAttributeColumnNames.has(header)) {
+      itemAttributes.push(`${xmlName}="${escapeXmlValue(value)}"`);
+      return;
+    }
+    childElements.push(`    <${xmlName}>${escapeXmlValue(value)}</${xmlName}>`);
+  });
+  const attributesSuffix = itemAttributes.length > 0 ? ` ${itemAttributes.join(' ')}` : '';
+  return [`  <${itemElementName}${attributesSuffix}>`, ...childElements, `  </${itemElementName}>`].join('\n');
 }
 
 export async function streamFromTextSpec({
@@ -589,12 +744,12 @@ export async function streamFromTextSpec({
     };
   }
 
-  if (outputFormat !== 'csv' && outputFormat !== 'jsonl') {
+  if (!['csv', 'jsonl', 'dsv', 'json', 'xml'].includes(outputFormat)) {
     return {
       ok: false,
-      errors: ['Streaming currently supports only csv and jsonl formats.'],
+      errors: ['Streaming currently supports only csv, jsonl, dsv, json and xml formats.'],
       diagnostics: {
-        supportedStreamingFormats: ['csv', 'jsonl'],
+        supportedStreamingFormats: ['csv', 'jsonl', 'dsv', 'json', 'xml'],
       },
     };
   }
@@ -605,24 +760,60 @@ export async function streamFromTextSpec({
   let firstRow = null;
   const report = generator.compilationReport();
   const csvSettings = outputFormat === 'csv' ? getCsvStreamSettings(options) : null;
+  const dsvSettings = outputFormat === 'dsv' ? getDsvStreamSettings(options) : null;
+  const diagnosticsWarnings = getUnsupportedStreamingOptionWarnings(outputFormat, options);
+  const xmlContext = outputFormat === 'xml' ? createXmlStreamContext(headers, options, diagnosticsWarnings) : null;
 
   if (outputFormat === 'csv' && csvSettings.includeHeader) {
     await onChunk(headers.map((header) => quoteCsvValue(header, csvSettings)).join(','));
   }
+  if (outputFormat === 'dsv' && dsvSettings.includeHeader) {
+    await onChunk(headers.map((header) => quoteCsvValue(header, dsvSettings)).join(dsvSettings.delimiter));
+  }
+  if (outputFormat === 'json') {
+    await onChunk('[');
+  }
+  if (outputFormat === 'xml') {
+    if (xmlContext.includeXmlHeader) {
+      await onChunk('<?xml version="1.0" encoding="utf-8"?>');
+    }
+    await onChunk(`<${xmlContext.rootElementName}${xmlContext.xmlnsAttribute}>`);
+  }
 
   for (let index = 0; index < safeRowCount; index += 1) {
-    const row = generator.generateRow();
+    const rowArray = generator.generateRow();
     if (firstRow === null) {
-      firstRow = row;
+      firstRow = rowArray;
     }
     if (rows) {
-      rows.push(row);
+      rows.push(rowArray);
     }
     if (outputFormat === 'csv') {
-      await onChunk(rowToCsv(headers, row, csvSettings));
-    } else {
-      await onChunk(rowToJsonLine(row));
+      await onChunk(rowToCsv(headers, rowArray, csvSettings));
+    } else if (outputFormat === 'dsv') {
+      await onChunk(rowToDsv(headers, rowArray, dsvSettings));
+    } else if (outputFormat === 'jsonl') {
+      await onChunk(rowToJsonLine(headers, rowArray, options));
+    } else if (outputFormat === 'json') {
+      const rowObject = rowArrayToObject(headers, rowArray, options);
+      await onChunk(index === 0 ? JSON.stringify(rowObject) : `,${JSON.stringify(rowObject)}`);
+    } else if (outputFormat === 'xml') {
+      await onChunk(
+        rowToXmlItem(
+          headers,
+          xmlContext.headerXmlNames,
+          rowArray,
+          xmlContext.knownAttributeColumnNames,
+          xmlContext.itemElementName
+        )
+      );
     }
+  }
+  if (outputFormat === 'json') {
+    await onChunk(']');
+  }
+  if (outputFormat === 'xml') {
+    await onChunk(`</${xmlContext.rootElementName}>`);
   }
 
   return {
@@ -637,6 +828,7 @@ export async function streamFromTextSpec({
       streamed: true,
       firstRow,
       collectRows,
+      warnings: diagnosticsWarnings,
     },
   };
 }

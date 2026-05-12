@@ -102,28 +102,30 @@ test('param --show-progress false suppresses progress logs', () => {
   expect(result.stdout).toContain('"Company"');
 });
 
-test('params --stream and --show-progress true use streaming path for csv/jsonl', async () => {
+test('params --stream and --show-progress true use streaming path for csv/jsonl/dsv/json/xml', async () => {
   const inputPath = path.join(repoRoot, 'apps', 'cli', 'examples', 'company-literal.txt');
-  const outputPath = tempFile('stream');
-  const result = runCli([
-    'generate',
-    '-i',
-    inputPath,
-    '-n',
-    '2',
-    '-f',
-    'csv',
-    '-o',
-    outputPath,
-    '--stream',
-    '--show-progress',
-    'true',
-  ]);
-  expect(result.status).toBe(0);
-  expect(result.stdout).toContain('using stream mode');
-
-  const written = await fs.readFile(outputPath, 'utf8');
-  expect(written).toContain('"Company"');
+  const formats = ['csv', 'jsonl', 'dsv', 'json', 'xml'];
+  for (const format of formats) {
+    const outputPath = tempFile(`stream-${format}`);
+    const result = runCli([
+      'generate',
+      '-i',
+      inputPath,
+      '-n',
+      '2',
+      '-f',
+      format,
+      '-o',
+      outputPath,
+      '--stream',
+      '--show-progress',
+      'true',
+    ]);
+    expect(result.status).toBe(0);
+    expect(result.stdout).toContain('using stream mode');
+    const written = await fs.readFile(outputPath, 'utf8');
+    expect(written.length).toBeGreaterThan(0);
+  }
 });
 
 test('param --stream-threshold auto-enables stream mode when threshold reached', () => {

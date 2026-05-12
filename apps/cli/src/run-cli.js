@@ -106,7 +106,7 @@ export async function runCliCommand({ options, platform }) {
     }
   }
 
-  if (useStreamMode && (outputFormat === 'csv' || outputFormat === 'jsonl')) {
+  if (useStreamMode && ['csv', 'jsonl', 'dsv', 'json', 'xml'].includes(outputFormat)) {
     const streamedLines = [];
     const writer = options.outputFile ? platform.createLineWriter(options.outputFile) : null;
     let writerClosed = false;
@@ -133,6 +133,11 @@ export async function runCliCommand({ options, platform }) {
       }
 
       progress(streamResult.diagnostics.report);
+      if (Array.isArray(streamResult.diagnostics?.warnings)) {
+        for (const warning of streamResult.diagnostics.warnings) {
+          progress(`WARNING: ${warning}`);
+        }
+      }
       if (options.testMode && streamResult.diagnostics.firstRow) {
         progress('e.g.');
         progress(JSON.stringify(streamResult.diagnostics.firstRow));

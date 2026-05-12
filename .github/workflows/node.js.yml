@@ -72,7 +72,19 @@ jobs:
           kotlinc -version
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --include=optional
+
+      - name: Ensure Linux rolldown native binding
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          set -euo pipefail
+          if node -e "require.resolve('@rolldown/binding-linux-x64-gnu')" >/dev/null 2>&1; then
+            echo "rolldown Linux binding already present"
+          else
+            echo "rolldown Linux binding missing; installing fallback package"
+            npm install --no-save @rolldown/binding-linux-x64-gnu
+          fi
 
       - name: CLI pack smoke test
         shell: bash

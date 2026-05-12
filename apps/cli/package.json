@@ -21,7 +21,7 @@
     "test": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js --config ./jest.config.cjs"
   },
   "dependencies": {
-    "@anywaydata/core": "^1.2.0",
-    "yargs": "^17.7.2"
+    "@anywaydata/core": "1.2.0",
+    "yargs": "17.7.2"
   }
 }

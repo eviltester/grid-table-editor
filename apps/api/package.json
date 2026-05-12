@@ -23,8 +23,8 @@
     "test": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js --config ./jest.config.cjs"
   },
   "dependencies": {
-    "@anywaydata/core": "^1.2.0",
-    "express": "^4.21.2",
-    "swagger-ui-express": "^5.0.1"
+    "@anywaydata/core": "1.2.0",
+    "express": "4.21.2",
+    "swagger-ui-express": "5.0.1"
   }
 }

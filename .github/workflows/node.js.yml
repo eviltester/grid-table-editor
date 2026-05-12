@@ -72,7 +72,7 @@ jobs:
           kotlinc -version
 
       - name: Install dependencies
-        run: npm ci --include=optional
+        run: npm ci --include=dev --include=optional
 
       - name: Ensure Linux rolldown native binding
         if: runner.os == 'Linux'
@@ -85,6 +85,14 @@ jobs:
             echo "rolldown Linux binding missing; installing fallback package"
             npm install --no-save @rolldown/binding-linux-x64-gnu
           fi
+
+      - name: Verify test toolchain dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          node -e "require.resolve('jest')"
+          node -e "require.resolve('babel-jest')"
+          node -e "require.resolve('jest-environment-jsdom')"
 
       - name: CLI pack smoke test
         shell: bash

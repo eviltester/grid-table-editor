@@ -13,7 +13,7 @@ COPY packages ./packages
 COPY scripts ./scripts
 
 RUN pnpm install --frozen-lockfile
-RUN node -e "require.resolve('@rolldown/binding-linux-x64-musl')" >/dev/null 2>&1 || (pnpm install --frozen-lockfile --config.minimumReleaseAge=0 && node -e "require.resolve('@rolldown/binding-linux-x64-musl')")
+RUN node -e "require.resolve('@rolldown/binding-linux-x64-musl')" >/dev/null 2>&1 || (pnpm install --force --frozen-lockfile --config.minimumReleaseAge=0 && node -e "require.resolve('@rolldown/binding-linux-x64-musl')")
 RUN pnpm --dir docs-src install
 RUN pnpm --dir docs-src run anywaydata
 RUN pnpm run build:web

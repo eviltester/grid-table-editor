@@ -63,6 +63,13 @@ importers:
       vite:
         specifier: 8.0.12
         version: 8.0.12(@types/node@25.7.0)
+    optionalDependencies:
+      '@rolldown/binding-linux-x64-gnu':
+        specifier: 1.0.0
+        version: 1.0.0
+      '@rolldown/binding-linux-x64-musl':
+        specifier: 1.0.0
+        version: 1.0.0
 
   apps/api:
     dependencies:

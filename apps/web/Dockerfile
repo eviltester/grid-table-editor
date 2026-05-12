@@ -10,7 +10,7 @@ COPY apps ./apps
 COPY packages ./packages
 
 RUN pnpm install --frozen-lockfile
-RUN node -e "require.resolve('@rolldown/binding-linux-x64-musl')" >/dev/null 2>&1 || (pnpm install --frozen-lockfile --config.minimumReleaseAge=0 && node -e "require.resolve('@rolldown/binding-linux-x64-musl')")
+RUN node -e "require.resolve('@rolldown/binding-linux-x64-musl')" >/dev/null 2>&1 || (pnpm install --force --frozen-lockfile --config.minimumReleaseAge=0 && node -e "require.resolve('@rolldown/binding-linux-x64-musl')")
 RUN pnpm run build:web
 
 FROM nginx:1.27-alpine

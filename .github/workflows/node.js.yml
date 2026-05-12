@@ -90,8 +90,8 @@ jobs:
           if node -e "require.resolve('@rolldown/binding-linux-x64-gnu')" >/dev/null 2>&1; then
             echo "rolldown Linux binding already present"
           else
-            echo "rolldown Linux binding missing; reinstalling locked deps with minimumReleaseAge disabled"
-            pnpm install --frozen-lockfile --config.minimumReleaseAge=0
+            echo "rolldown Linux binding missing; forcing reinstall with minimumReleaseAge disabled"
+            pnpm install --force --frozen-lockfile --config.minimumReleaseAge=0
             node -e "require.resolve('@rolldown/binding-linux-x64-gnu')"
           fi
 

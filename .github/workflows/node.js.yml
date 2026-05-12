@@ -14,7 +14,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [20.x]
+        node-version: [22.21.1]
 
     steps:
       - name: Check out repository
@@ -29,7 +29,7 @@ jobs:
         shell: bash
         run: |
           corepack enable
-          corepack prepare pnpm@10.19.0 --activate
+          corepack prepare pnpm@11.1.1 --activate
           pnpm --version
 
       - name: Set up Python
@@ -90,8 +90,9 @@ jobs:
           if node -e "require.resolve('@rolldown/binding-linux-x64-gnu')" >/dev/null 2>&1; then
             echo "rolldown Linux binding already present"
           else
-            echo "rolldown Linux binding missing; installing fallback package"
-            pnpm add -Dw @rolldown/binding-linux-x64-gnu@1.0.0
+            echo "rolldown Linux binding missing; reinstalling locked deps with minimumReleaseAge disabled"
+            pnpm install --frozen-lockfile --config.minimumReleaseAge=0
+            node -e "require.resolve('@rolldown/binding-linux-x64-gnu')"
           fi
 
       - name: Verify test toolchain dependencies

@@ -58,9 +58,15 @@ describe('GridExtensionTabulator duplicate column', () => {
   test('destroy unregisters shared tabulator grid-change listeners', () => {
     const tabulator = createTabulatorStub();
     const extension = new GridExtensionTabulator(tabulator);
-    const cellEditedHandler = tabulator.on.mock.calls.find((call) => call[0] === 'cellEdited')?.[1];
-    const rowMovedHandler = tabulator.on.mock.calls.find((call) => call[0] === 'rowMoved')?.[1];
-    const columnMovedHandler = tabulator.on.mock.calls.find((call) => call[0] === 'columnMoved')?.[1];
+    const cellEditedCall = tabulator.on.mock.calls.find((call) => call[0] === 'cellEdited');
+    const rowMovedCall = tabulator.on.mock.calls.find((call) => call[0] === 'rowMoved');
+    const columnMovedCall = tabulator.on.mock.calls.find((call) => call[0] === 'columnMoved');
+    expect(cellEditedCall).toBeDefined();
+    expect(rowMovedCall).toBeDefined();
+    expect(columnMovedCall).toBeDefined();
+    const cellEditedHandler = cellEditedCall[1];
+    const rowMovedHandler = rowMovedCall[1];
+    const columnMovedHandler = columnMovedCall[1];
 
     extension.destroy();
 

@@ -45,6 +45,7 @@ async function bootstrapApp({
   importer = new ImporterClass(mainDataGrid.getGridExtras());
   importExportController.setExporter(exporter);
   importExportController.setImporter(importer);
+  importExportController.setGridChangeSource?.(mainDataGrid.getGridExtras());
 
   importExportController.renderTextFromGrid();
   importExportController.setFileFormatType();

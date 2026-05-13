@@ -25,6 +25,7 @@ describe('ImportExportControls preview/edit mode', () => {
   beforeEach(() => {
     dom = new JSDOM(`<!doctype html><html><body>
             <ul><li class="active-type"><a data-type="csv" href="#">CSV</a></li></ul>
+            <label id="autoPreviewLabel"><input type="checkbox" id="autoPreviewCheckbox"/>Auto Preview</label>
             <textarea id="markdownarea"></textarea>
             <div id="importExportRoot"></div>
         </body></html>`);
@@ -109,6 +110,75 @@ describe('ImportExportControls preview/edit mode', () => {
     textArea.value = 'a,b\n1,2';
     textArea.dispatchEvent(new dom.window.Event('input', { bubbles: true }));
     expect(button.disabled).toBe(false);
+  });
+
+  test('Auto Preview defaults unchecked and is enabled in preview mode', () => {
+    controls._syncGridFromTextButtonState();
+    const autoPreviewCheckbox = document.getElementById('autoPreviewCheckbox');
+    expect(autoPreviewCheckbox.checked).toBe(false);
+    expect(autoPreviewCheckbox.disabled).toBe(false);
+  });
+
+  test('Auto Preview checkbox is disabled in edit mode', () => {
+    controls.toggleTextEditMode();
+    const autoPreviewCheckbox = document.getElementById('autoPreviewCheckbox');
+    expect(autoPreviewCheckbox.disabled).toBe(true);
+  });
+
+  test('grid change auto-renders preview when Auto Preview is enabled in preview mode', () => {
+    const autoPreviewCheckbox = document.getElementById('autoPreviewCheckbox');
+    autoPreviewCheckbox.checked = true;
+    autoPreviewCheckbox.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+
+    const renderSpy = jest.spyOn(controls, 'renderTextFromGrid').mockImplementation(() => {});
+    controls._maybeAutoPreviewFromGridChange();
+    expect(renderSpy).toHaveBeenCalledTimes(1);
+  });
+
+  test('enabling Auto Preview immediately refreshes preview text from grid', () => {
+    const autoPreviewCheckbox = document.getElementById('autoPreviewCheckbox');
+    const renderSpy = jest.spyOn(controls, 'renderTextFromGrid').mockImplementation(() => {});
+
+    autoPreviewCheckbox.checked = true;
+    autoPreviewCheckbox.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+
+    expect(renderSpy).toHaveBeenCalledTimes(1);
+  });
+
+  test('grid change does not auto-render when Auto Preview is disabled', () => {
+    const renderSpy = jest.spyOn(controls, 'renderTextFromGrid').mockImplementation(() => {});
+    controls._maybeAutoPreviewFromGridChange();
+    expect(renderSpy).not.toHaveBeenCalled();
+  });
+
+  test('grid change does not auto-render in edit mode even when Auto Preview is enabled', () => {
+    const autoPreviewCheckbox = document.getElementById('autoPreviewCheckbox');
+    autoPreviewCheckbox.checked = true;
+    autoPreviewCheckbox.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+
+    controls.toggleTextEditMode();
+    const renderSpy = jest.spyOn(controls, 'renderTextFromGrid').mockImplementation(() => {});
+    controls._maybeAutoPreviewFromGridChange();
+    expect(renderSpy).not.toHaveBeenCalled();
+  });
+
+  test('setGridChangeSource subscribes and auto-renders on callbacks', () => {
+    const callbacks = [];
+    const source = {
+      onGridChanged: jest.fn((cb) => {
+        callbacks.push(cb);
+      }),
+    };
+    const autoPreviewCheckbox = document.getElementById('autoPreviewCheckbox');
+    autoPreviewCheckbox.checked = true;
+    autoPreviewCheckbox.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+    const renderSpy = jest.spyOn(controls, 'renderTextFromGrid').mockImplementation(() => {});
+
+    controls.setGridChangeSource(source);
+    expect(source.onGridChanged).toHaveBeenCalledTimes(1);
+
+    callbacks[0]();
+    expect(renderSpy).toHaveBeenCalledTimes(1);
   });
 
   test('Set Grid From Text input listener binds when textarea is added after controls', () => {
@@ -239,6 +309,7 @@ describe('ImportExportControls file reading and visibility', () => {
   beforeEach(() => {
     dom = new JSDOM(`<!doctype html><html><body>
             <ul><li class="active-type"><a data-type="csv" href="#">CSV</a></li></ul>
+            <label id="autoPreviewLabel"><input type="checkbox" id="autoPreviewCheckbox"/>Auto Preview</label>
             <textarea id="markdownarea"></textarea>
             <div id="markdown"></div>
             <div class="edit-area"></div>

@@ -17,6 +17,12 @@ class GridExtensionTabulator {
     this.tabulator = tabulator;
     this.tabUtils = new TabulatorHelper(tabulator);
     this._pendingGridMutation = Promise.resolve();
+    this._gridChangedCallbacks = new Set();
+
+    if (typeof this.tabulator?.on === 'function') {
+      this.tabulator.on('cellEdited', () => this._notifyGridChanged());
+      this.tabulator.on('rowMoved', () => this._notifyGridChanged());
+    }
 
     // this.cellRendererText = (params) => {
     //     let val = params.value;
@@ -33,6 +39,7 @@ class GridExtensionTabulator {
     this._enqueueGridMutation(() => {
       return Promise.resolve(this.tabulator.setColumns(columnDefs)).then(() => this.tabulator.setData([]));
     });
+    this._notifyGridChanged();
   }
 
   // [x] convert to tabulature
@@ -89,6 +96,7 @@ class GridExtensionTabulator {
     this.tabulator.setColumns(colDefs);
     var fieldNames = colDefs.map((colDef) => colDef.field);
     this._addFieldsToData(fieldNames, '');
+    this._notifyGridChanged();
   }
 
   _addFieldsToData(fieldNames, defaultValue) {
@@ -131,6 +139,7 @@ class GridExtensionTabulator {
     this.tabulator.addColumn(newCol, false);
 
     this._addFieldToData(newCol.field, '');
+    this._notifyGridChanged();
 
     return newCol;
   }
@@ -165,6 +174,7 @@ class GridExtensionTabulator {
       addToLeft = false;
     }
     this.tabulator.addColumn(column, addToLeft, resolvedExistingColumn);
+    this._notifyGridChanged();
     return column;
   }
 
@@ -180,6 +190,7 @@ class GridExtensionTabulator {
       return;
     }
     column.delete();
+    this._notifyGridChanged();
   }
 
   deleteColumnId(id) {
@@ -295,6 +306,7 @@ class GridExtensionTabulator {
     });
 
     this._refreshTableAfterBulkMutation();
+    this._notifyGridChanged();
 
     return { noSelectedRows: false, amendedRows: targetRows.length };
   }
@@ -331,6 +343,7 @@ class GridExtensionTabulator {
       return;
     }
     column.updateDefinition({ title: name });
+    this._notifyGridChanged();
   }
 
   renameColId(id, name) {
@@ -341,6 +354,7 @@ class GridExtensionTabulator {
   deleteSelectedRows() {
     const rows = this.tabulator.getSelectedRows();
     this.tabulator.deleteRow(rows);
+    this._notifyGridChanged();
   }
 
   // [x] convert to tabulature
@@ -356,6 +370,7 @@ class GridExtensionTabulator {
   // [x] convert to tabulature
   addRow() {
     this.tabUtils.addRowToBottom(this._getBlankRowData());
+    this._notifyGridChanged();
   }
 
   // [x] convert to tabulature
@@ -368,9 +383,11 @@ class GridExtensionTabulator {
       // and there are no rows then add to top
       if (this.tabulator.getDataCount() == 0 || position < 0) {
         this.tabUtils.addRowToTop(this._getBlankRowData());
+        this._notifyGridChanged();
         return;
       } else {
         this.tabUtils.addRowToBottom(this._getBlankRowData());
+        this._notifyGridChanged();
         return;
       }
     }
@@ -393,6 +410,7 @@ class GridExtensionTabulator {
       addAbove = false;
     }
     this.tabulator.addData(objectsToAdd, addAbove, relativeToRow);
+    this._notifyGridChanged();
   }
 
   // calculate the max row from a selection of rows
@@ -532,6 +550,7 @@ class GridExtensionTabulator {
 
       this._applyHeaderTitles(headers);
       await this._autoFitFirstColumn();
+      this._notifyGridChanged();
     });
 
     // TODO : apply transactions incrementally for larger data sets
@@ -943,6 +962,26 @@ class GridExtensionTabulator {
     if (typeof this.tabulator.redraw === 'function') {
       this.tabulator.redraw(true);
     }
+  }
+
+  onGridChanged(callback) {
+    if (typeof callback !== 'function') {
+      return () => {};
+    }
+    this._gridChangedCallbacks.add(callback);
+    return () => {
+      this._gridChangedCallbacks.delete(callback);
+    };
+  }
+
+  _notifyGridChanged() {
+    this._gridChangedCallbacks.forEach((callback) => {
+      try {
+        callback();
+      } catch (error) {
+        console.error('Grid change callback failed', error);
+      }
+    });
   }
 }
 

@@ -18,10 +18,7 @@ class GridExtensionTabulator {
     this.tabUtils = new TabulatorHelper(tabulator);
     this._pendingGridMutation = Promise.resolve();
 
-    if (typeof this.tabulator?.on === 'function') {
-      this.tabulator.on('cellEdited', () => this._notifyGridChanged());
-      this.tabulator.on('rowMoved', () => this._notifyGridChanged());
-    }
+    this._bindSharedGridChangeEventListeners();
 
     // this.cellRendererText = (params) => {
     //     let val = params.value;
@@ -35,10 +32,11 @@ class GridExtensionTabulator {
   // [x] convert to tabulature
   clearGrid() {
     const columnDefs = [{ title: '~rename-me', field: 'column1' }];
-    this._enqueueGridMutation(() => {
+    return this._enqueueGridMutation(() => {
       return Promise.resolve(this.tabulator.setColumns(columnDefs)).then(() => this.tabulator.setData([]));
+    }).then(() => {
+      this._notifyGridChanged();
     });
-    this._notifyGridChanged();
   }
 
   // [x] convert to tabulature
@@ -131,6 +129,7 @@ class GridExtensionTabulator {
     }
 
     await this._copyColumnData(column.getDefinition().field, destinationCol.field);
+    this._notifyGridChanged();
   }
 
   appendColumnToGrid(colTitle) {
@@ -156,6 +155,7 @@ class GridExtensionTabulator {
 
     const targetId = this._normaliseId(id);
     resolvedColumn.move(targetId, moveToAfter);
+    this._notifyGridChanged();
   }
 
   // [x] convert to tabulature
@@ -992,6 +992,48 @@ class GridExtensionTabulator {
       this.tabulator.__gridChangedCallbacks = new Set();
     }
     return this.tabulator.__gridChangedCallbacks;
+  }
+
+  _bindSharedGridChangeEventListeners() {
+    if (!this.tabulator || typeof this.tabulator.on !== 'function') {
+      return;
+    }
+    if (this.tabulator.__gridChangedEventsBound === true) {
+      return;
+    }
+
+    const handlers = {
+      cellEdited: () => this._notifyGridChanged(),
+      rowMoved: () => this._notifyGridChanged(),
+      columnMoved: () => this._notifyGridChanged(),
+    };
+    this.tabulator.__gridChangedEventHandlers = handlers;
+    this.tabulator.on('cellEdited', handlers.cellEdited);
+    this.tabulator.on('rowMoved', handlers.rowMoved);
+    this.tabulator.on('columnMoved', handlers.columnMoved);
+    this.tabulator.__gridChangedEventsBound = true;
+  }
+
+  destroy() {
+    if (!this.tabulator || typeof this.tabulator.off !== 'function') {
+      return;
+    }
+    const handlers = this.tabulator.__gridChangedEventHandlers;
+    if (!handlers) {
+      return;
+    }
+
+    if (typeof handlers.cellEdited === 'function') {
+      this.tabulator.off('cellEdited', handlers.cellEdited);
+    }
+    if (typeof handlers.rowMoved === 'function') {
+      this.tabulator.off('rowMoved', handlers.rowMoved);
+    }
+    if (typeof handlers.columnMoved === 'function') {
+      this.tabulator.off('columnMoved', handlers.columnMoved);
+    }
+    this.tabulator.__gridChangedEventsBound = false;
+    delete this.tabulator.__gridChangedEventHandlers;
   }
 }
 

@@ -1,6 +1,7 @@
 import { JSDOM } from 'jsdom';
 import { ImportExportControls } from '../../../js/gui_components/import-export-controls.js';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
+import { GridExtension as GridExtensionTabulator } from '../../../js/gui_components/data-grid-editor/tabulator/gridExtension-tabulator.js';
 
 function makeDataTable(rowCount) {
   const table = new GenericDataTable();
@@ -15,6 +16,12 @@ async function flushAsyncWork() {
   await Promise.resolve();
   await Promise.resolve();
   await new Promise((resolve) => setTimeout(resolve, 0));
+}
+
+function createSharedTabulatorTableStub() {
+  return {
+    on: jest.fn(),
+  };
 }
 
 describe('ImportExportControls preview/edit mode', () => {
@@ -181,57 +188,35 @@ describe('ImportExportControls preview/edit mode', () => {
     expect(renderSpy).toHaveBeenCalledTimes(1);
   });
 
+  test('setGridChangeSource unsubscribes previous listener before re-subscribing', () => {
+    const firstUnsubscribe = jest.fn();
+    const secondUnsubscribe = jest.fn();
+    const firstSource = { onGridChanged: jest.fn(() => firstUnsubscribe) };
+    const secondSource = { onGridChanged: jest.fn(() => secondUnsubscribe) };
+
+    controls.setGridChangeSource(firstSource);
+    expect(firstSource.onGridChanged).toHaveBeenCalledTimes(1);
+    expect(firstUnsubscribe).not.toHaveBeenCalled();
+
+    controls.setGridChangeSource(secondSource);
+    expect(firstUnsubscribe).toHaveBeenCalledTimes(1);
+    expect(secondSource.onGridChanged).toHaveBeenCalledTimes(1);
+    expect(secondUnsubscribe).not.toHaveBeenCalled();
+  });
+
   test('tabulator grid-change callbacks are shared across wrapper instances for same table', () => {
-    const tabulatorTable = {};
-    const callbacksFromFirst = [];
-    const callbacksFromSecond = [];
-
-    const firstWrapperLike = {
-      tabulator: tabulatorTable,
-      _getSharedGridChangedCallbacks() {
-        if (!this.tabulator.__gridChangedCallbacks) {
-          this.tabulator.__gridChangedCallbacks = new Set();
-        }
-        return this.tabulator.__gridChangedCallbacks;
-      },
-      onGridChanged(callback) {
-        const callbacks = this._getSharedGridChangedCallbacks();
-        callbacks.add(callback);
-        callbacksFromFirst.push(callback);
-      },
-      _notifyGridChanged() {
-        this._getSharedGridChangedCallbacks().forEach((callback) => callback());
-      },
-    };
-
-    const secondWrapperLike = {
-      tabulator: tabulatorTable,
-      _getSharedGridChangedCallbacks() {
-        if (!this.tabulator.__gridChangedCallbacks) {
-          this.tabulator.__gridChangedCallbacks = new Set();
-        }
-        return this.tabulator.__gridChangedCallbacks;
-      },
-      onGridChanged(callback) {
-        const callbacks = this._getSharedGridChangedCallbacks();
-        callbacks.add(callback);
-        callbacksFromSecond.push(callback);
-      },
-      _notifyGridChanged() {
-        this._getSharedGridChangedCallbacks().forEach((callback) => callback());
-      },
-    };
+    const tabulatorTable = createSharedTabulatorTableStub();
+    const firstWrapper = new GridExtensionTabulator(tabulatorTable);
+    const secondWrapper = new GridExtensionTabulator(tabulatorTable);
 
     const spyA = jest.fn();
     const spyB = jest.fn();
-    firstWrapperLike.onGridChanged(spyA);
-    secondWrapperLike.onGridChanged(spyB);
+    firstWrapper.onGridChanged(spyA);
+    secondWrapper.onGridChanged(spyB);
 
-    secondWrapperLike._notifyGridChanged();
+    secondWrapper._notifyGridChanged();
     expect(spyA).toHaveBeenCalledTimes(1);
     expect(spyB).toHaveBeenCalledTimes(1);
-    expect(callbacksFromFirst[0]).toBe(spyA);
-    expect(callbacksFromSecond[0]).toBe(spyB);
   });
 
   test('Set Grid From Text input listener binds when textarea is added after controls', () => {

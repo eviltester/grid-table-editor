@@ -78,7 +78,7 @@ class GridExtensionAgGrid {
   }
 
   // given an array of String column names, set the grid to have those columns
-  createColumns(columnNames) {
+  createColumns(columnNames, { notify = true } = {}) {
     let colDefs = [];
     let fieldId = this.getNextFieldNumber();
     columnNames.forEach((column) => {
@@ -89,7 +89,9 @@ class GridExtensionAgGrid {
     this.gridApi.setGridOption('columnDefs', colDefs);
     var fieldNames = colDefs.map((colDef) => colDef.field);
     this.addFieldsToData(fieldNames, '');
-    this._notifyGridChanged();
+    if (notify) {
+      this._notifyGridChanged();
+    }
   }
 
   addFieldsToData(fieldNames, defaultValue) {
@@ -469,7 +471,7 @@ class GridExtensionAgGrid {
       // TODO : report errors on screen
     }
 
-    this.createColumns(dataTable.getHeaders());
+    this.createColumns(dataTable.getHeaders(), { notify: false });
     this.gridApi.setGridOption('rowData', []);
 
     let addRows = [];

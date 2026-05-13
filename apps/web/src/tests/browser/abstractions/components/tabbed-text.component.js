@@ -110,12 +110,20 @@ class TabbedTextComponent {
     await this.autoPreviewCheckbox.uncheck();
   }
 
-  async expectAutoPreviewEnabled(enabled = true) {
-    if (enabled) {
+  async expectAutoPreviewInteractive(interactive = true) {
+    if (interactive) {
       await expect(this.autoPreviewCheckbox).toBeEnabled();
       return;
     }
     await expect(this.autoPreviewCheckbox).toBeDisabled();
+  }
+
+  async expectAutoPreviewChecked(checked = true) {
+    if (checked) {
+      await expect(this.autoPreviewCheckbox).toBeChecked();
+      return;
+    }
+    await expect(this.autoPreviewCheckbox).not.toBeChecked();
   }
 
   async expectOutputContains(value) {

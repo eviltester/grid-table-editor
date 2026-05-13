@@ -18,6 +18,7 @@ class ImportExportControls {
     this._hasBoundPreviewTextInput = false;
     this.autoPreviewEnabled = false;
     this._hasBoundAutoPreviewInput = false;
+    this._gridChangeUnsubscribe = null;
   }
 
   addHTMLtoGui(parentelement) {
@@ -73,10 +74,14 @@ class ImportExportControls {
   }
 
   setGridChangeSource(gridChangeSource) {
+    if (typeof this._gridChangeUnsubscribe === 'function') {
+      this._gridChangeUnsubscribe();
+      this._gridChangeUnsubscribe = null;
+    }
     if (!gridChangeSource || typeof gridChangeSource.onGridChanged !== 'function') {
       return;
     }
-    gridChangeSource.onGridChanged(() => {
+    this._gridChangeUnsubscribe = gridChangeSource.onGridChanged(() => {
       this._maybeAutoPreviewFromGridChange();
     });
   }

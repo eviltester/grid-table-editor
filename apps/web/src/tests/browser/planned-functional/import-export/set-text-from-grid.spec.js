@@ -23,13 +23,15 @@ test.describe('4. Import Export Basic', () => {
 
     await appPage.tabbedText.selectFormat('CSV');
     await appPage.tabbedText.setAutoPreview(true);
-    await appPage.tabbedText.expectAutoPreviewEnabled(true);
+    await appPage.tabbedText.expectAutoPreviewInteractive(true);
+    await appPage.tabbedText.expectAutoPreviewChecked(true);
 
     await appPage.gridEditor.renderer.setCellTextByColumnName(primaryColumnName, 0, 'A-updated');
     await appPage.tabbedText.expectOutputContains('A-updated');
 
     await appPage.tabbedText.togglePreviewEdit(true);
-    await appPage.tabbedText.expectAutoPreviewEnabled(false);
+    await appPage.tabbedText.expectAutoPreviewInteractive(false);
+    await appPage.tabbedText.expectAutoPreviewChecked(true);
     await appPage.tabbedText.setOutputText('manual-text');
 
     await appPage.gridEditor.renderer.setCellTextByColumnName(primaryColumnName, 1, 'B-updated');

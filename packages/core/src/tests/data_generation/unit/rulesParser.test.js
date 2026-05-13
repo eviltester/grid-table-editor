@@ -1,7 +1,6 @@
 import { RulesParser } from '../../../../js/data_generation/rulesParser.js';
 import { faker } from '@faker-js/faker';
-
-const RandExp = require('randexp');
+import RandExp from 'randexp';
 
 describe('RulesParser parses a block of text to return a collection of rules', () => {
   test('can parse a valid two line string into rules', () => {

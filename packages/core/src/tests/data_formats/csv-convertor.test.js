@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals';
 import { CsvConvertor } from '@anywaydata/core/data_formats/csv-convertor.js';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 

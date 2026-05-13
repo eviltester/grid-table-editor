@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
 import { TabbedTextControl } from '../../../js/gui_components/tabbed-text-control.js';
 

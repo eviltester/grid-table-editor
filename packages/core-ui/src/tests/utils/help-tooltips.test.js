@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
 import { initHelpTooltips } from '../../../js/help/help-tooltips.js';
 

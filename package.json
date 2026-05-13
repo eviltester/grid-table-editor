@@ -10,9 +10,9 @@
     "apps/*"
   ],
   "scripts": {
-    "test": "jest",
-    "testverbose": "jest --verbose",
-    "testcoverage": "jest --coverage",
+    "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js",
+    "testverbose": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --verbose",
+    "testcoverage": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --coverage",
     "generate:faker-help": "node ./scripts/generate-faker-help.js",
     "test:browser": "node ./node_modules/@playwright/test/cli.js test",
     "test:browser:headed": "node ./node_modules/@playwright/test/cli.js test --headed",
@@ -31,7 +31,7 @@
     "build:web": "vite build --config ./apps/web/vite.config.mjs",
     "preview:web": "vite preview --config ./apps/web/vite.config.mjs",
     "serve:web": "pnpm run dev:web",
-    "benchmark:tabulator": "jest packages/core-ui/src/tests/grid/tabulator-performance.benchmark.test.js --runInBand",
+    "benchmark:tabulator": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js packages/core-ui/src/tests/grid/tabulator-performance.benchmark.test.js --runInBand",
     "anywaydata:mac": "pnpm --dir docs-src run anywaydata && pnpm run build:web && node ./scripts/merge-web-build-into-docs-build.js && cp -R ./build/ ../../anywaydata-com",
     "anywaydata:win": "pnpm --dir docs-src run anywaydata && pnpm run build:web && node .\\scripts\\merge-web-build-into-docs-build.js && echo cleaning anywaydata for deployment && ..\\anywaydata-com\\make-ready-for-prod.bat",
     "previewdocs": "pnpm --dir docs-src run start",
@@ -41,9 +41,7 @@
   },
   "jest": {
     "verbose": true,
-    "transform": {
-      "^.+\\.js$": "babel-jest"
-    },
+    "transform": {},
     "testMatch": [
       "<rootDir>/packages/core/src/tests/**/*.test.js",
       "<rootDir>/packages/core-ui/src/tests/**/*.test.js",
@@ -64,6 +62,7 @@
     ],
     "moduleNameMapper": {
       "^@anywaydata/core$": "<rootDir>/packages/core/src/index.js",
+      "^@anywaydata/core/(.*)$": "<rootDir>/packages/core/js/$1",
       "^@anywaydata/core/data_formats/(.*)$": "<rootDir>/packages/core/js/data_formats/$1",
       "https://cdn.skypack.dev/@faker-js/faker@v9.7.0": "@faker-js/faker",
       "https://unpkg.com/papaparse@5.5.2/papaparse.min.js": "papaparse",
@@ -100,7 +99,6 @@
     "@changesets/cli": "2.31.0",
     "@faker-js/faker": "9.7.0",
     "@playwright/test": "1.59.1",
-    "babel-jest": "30.3.0",
     "eslint": "10.2.1",
     "eslint-config-prettier": "10.1.8",
     "globals": "16.5.0",
@@ -108,7 +106,7 @@
     "jest": "30.3.0",
     "jest-environment-jsdom": "30.3.0",
     "jest-extended": "7.0.0",
-    "jsdom": "29.1.0",
+    "jsdom": "26.1.0",
     "prettier": "3.3.3",
     "vite": "8.0.12"
   },

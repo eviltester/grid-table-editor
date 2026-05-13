@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
 import { JsonOptionsPanel } from '../../../js/gui_components/options_panels/options-json-panel.js';
 import { JsonConvertorOptions } from '@anywaydata/core/data_formats/json-convertor.js';

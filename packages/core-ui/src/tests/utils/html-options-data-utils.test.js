@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
 import { HtmlDataValues } from '../../../js/gui_components/options_panels/html-options-data-utils.js';
 

@@ -1,5 +1,6 @@
 import { execFileSync } from 'node:child_process';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { OPTION_KEYS_BY_FORMAT, getTipsForFormat } from '@anywaydata/core';
 import { createApiService } from '../../apps/api/src/api-service.js';
 import { normalizeAndValidateFormat, sanitizeCliOptionsForFormat } from '../../apps/cli/src/format-options.js';
@@ -7,6 +8,9 @@ import {
   getTestFrameworkFormats,
   sanitizeUiOptionsForFormat,
 } from '../../packages/core-ui/js/gui_components/options-catalog-adapter.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 function jsonRpcMessages(output) {
   return output

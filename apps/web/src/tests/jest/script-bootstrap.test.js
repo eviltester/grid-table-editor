@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
 import { bootstrapApp } from '../../../../../packages/core-ui/js/script.js';
 

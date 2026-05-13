@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals';
 import { GridExtension as GridExtensionTabulator } from '../../../js/gui_components/data-grid-editor/tabulator/gridExtension-tabulator.js';
 
 function createColumnComponent(definition) {

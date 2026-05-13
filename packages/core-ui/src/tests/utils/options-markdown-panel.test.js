@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
 import { MarkdownOptionsPanel } from '../../../js/gui_components/options_panels/options-markdown-panel.js';
 import { MarkdownOptions } from '@anywaydata/core/data_formats/markdown-convertor.js';

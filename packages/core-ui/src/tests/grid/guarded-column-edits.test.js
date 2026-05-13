@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals';
 import { GuardedColumnEdits } from '../../../js/grid/guarded-column-edits.js';
 import { GuardedTabulatorColumnEdits } from '../../../js/gui_components/data-grid-editor/tabulator/guarded-tabulator-column-edits.js';
 

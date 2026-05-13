@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
 import { SqlOptionsPanel } from '../../../js/gui_components/options_panels/options-sql-panel.js';
 import { SqlConvertorOptions } from '@anywaydata/core/data_formats/sql-convertor.js';

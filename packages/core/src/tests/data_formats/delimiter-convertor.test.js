@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals';
 import { DelimiterConvertor } from '@anywaydata/core/data_formats/delimiter-convertor.js';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 

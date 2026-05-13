@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals';
 import { MarkdownConvertor, MarkdownOptions } from '@anywaydata/core/data_formats/markdown-convertor.js';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 

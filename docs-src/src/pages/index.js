@@ -34,7 +34,13 @@ function ShowCaseVideo({title, description, videourl}) {
         <div className="text--center">
           <h2>{title}</h2>
           <p>{description}</p>
-        <ReactPlayer style={{margin: "auto"}} controls url={videourl} />
+        <ReactPlayer
+          controls
+          src={videourl}
+          width="100%"
+          height="100%"
+          style={{width: "100%", maxWidth: "960px", aspectRatio: "16 / 9", margin: "0 auto"}}
+        />
         </div>
       </div>        
 

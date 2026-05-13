@@ -57,7 +57,6 @@ jobs:
         run: |
           set -euo pipefail
           node -e "require.resolve('jest')"
-          node -e "require.resolve('babel-jest')"
           node -e "require.resolve('jest-environment-jsdom')"
 
       - name: Install Playwright browser

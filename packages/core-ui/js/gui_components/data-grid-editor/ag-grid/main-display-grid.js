@@ -50,6 +50,17 @@ class ExtendedDataGrid {
         headerCheckbox: false,
         enableClickSelection: true,
       },
+      onCellValueChanged: () => {
+        this.gridExtras?.notifyGridChanged?.();
+      },
+      onRowDragEnd: () => {
+        this.gridExtras?.notifyGridChanged?.();
+      },
+      onColumnMoved: (params) => {
+        if (params?.finished) {
+          this.gridExtras?.notifyGridChanged?.();
+        }
+      },
       //onColumnResized: (params) => {params.api.resetRowHeights();}
     };
   }

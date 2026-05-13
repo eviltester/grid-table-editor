@@ -37,11 +37,45 @@ function createTabulatorStub() {
     setData(rows) {
       this._rowData = rows.map((row) => ({ ...row }));
     },
+    on: jest.fn(),
+    off: jest.fn(),
     redraw() {},
   };
 }
 
 describe('GridExtensionTabulator duplicate column', () => {
+  test('binds tabulator change listeners only once per table across wrapper instances', () => {
+    const tabulator = createTabulatorStub();
+    new GridExtensionTabulator(tabulator);
+    new GridExtensionTabulator(tabulator);
+
+    expect(tabulator.on).toHaveBeenCalledTimes(3);
+    expect(tabulator.on).toHaveBeenNthCalledWith(1, 'cellEdited', expect.any(Function));
+    expect(tabulator.on).toHaveBeenNthCalledWith(2, 'rowMoved', expect.any(Function));
+    expect(tabulator.on).toHaveBeenNthCalledWith(3, 'columnMoved', expect.any(Function));
+  });
+
+  test('destroy unregisters shared tabulator grid-change listeners', () => {
+    const tabulator = createTabulatorStub();
+    const extension = new GridExtensionTabulator(tabulator);
+    const cellEditedCall = tabulator.on.mock.calls.find((call) => call[0] === 'cellEdited');
+    const rowMovedCall = tabulator.on.mock.calls.find((call) => call[0] === 'rowMoved');
+    const columnMovedCall = tabulator.on.mock.calls.find((call) => call[0] === 'columnMoved');
+    expect(cellEditedCall).toBeDefined();
+    expect(rowMovedCall).toBeDefined();
+    expect(columnMovedCall).toBeDefined();
+    const cellEditedHandler = cellEditedCall[1];
+    const rowMovedHandler = rowMovedCall[1];
+    const columnMovedHandler = columnMovedCall[1];
+
+    extension.destroy();
+
+    expect(tabulator.off).toHaveBeenCalledTimes(3);
+    expect(tabulator.off).toHaveBeenNthCalledWith(1, 'cellEdited', cellEditedHandler);
+    expect(tabulator.off).toHaveBeenNthCalledWith(2, 'rowMoved', rowMovedHandler);
+    expect(tabulator.off).toHaveBeenNthCalledWith(3, 'columnMoved', columnMovedHandler);
+  });
+
   test('copies source column values into duplicate column', async () => {
     const tabulator = createTabulatorStub();
     const extension = new GridExtensionTabulator(tabulator);

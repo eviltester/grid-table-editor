@@ -18,6 +18,8 @@ class GridExtensionTabulator {
     this.tabUtils = new TabulatorHelper(tabulator);
     this._pendingGridMutation = Promise.resolve();
 
+    this._bindSharedGridChangeEventListeners();
+
     // this.cellRendererText = (params) => {
     //     let val = params.value;
     //     if(val && val.replaceAll){
@@ -30,8 +32,10 @@ class GridExtensionTabulator {
   // [x] convert to tabulature
   clearGrid() {
     const columnDefs = [{ title: '~rename-me', field: 'column1' }];
-    this._enqueueGridMutation(() => {
+    return this._enqueueGridMutation(() => {
       return Promise.resolve(this.tabulator.setColumns(columnDefs)).then(() => this.tabulator.setData([]));
+    }).then(() => {
+      this._notifyGridChanged();
     });
   }
 
@@ -89,6 +93,7 @@ class GridExtensionTabulator {
     this.tabulator.setColumns(colDefs);
     var fieldNames = colDefs.map((colDef) => colDef.field);
     this._addFieldsToData(fieldNames, '');
+    this._notifyGridChanged();
   }
 
   _addFieldsToData(fieldNames, defaultValue) {
@@ -124,6 +129,7 @@ class GridExtensionTabulator {
     }
 
     await this._copyColumnData(column.getDefinition().field, destinationCol.field);
+    this._notifyGridChanged();
   }
 
   appendColumnToGrid(colTitle) {
@@ -131,6 +137,7 @@ class GridExtensionTabulator {
     this.tabulator.addColumn(newCol, false);
 
     this._addFieldToData(newCol.field, '');
+    this._notifyGridChanged();
 
     return newCol;
   }
@@ -148,6 +155,7 @@ class GridExtensionTabulator {
 
     const targetId = this._normaliseId(id);
     resolvedColumn.move(targetId, moveToAfter);
+    this._notifyGridChanged();
   }
 
   // [x] convert to tabulature
@@ -165,6 +173,7 @@ class GridExtensionTabulator {
       addToLeft = false;
     }
     this.tabulator.addColumn(column, addToLeft, resolvedExistingColumn);
+    this._notifyGridChanged();
     return column;
   }
 
@@ -180,6 +189,7 @@ class GridExtensionTabulator {
       return;
     }
     column.delete();
+    this._notifyGridChanged();
   }
 
   deleteColumnId(id) {
@@ -295,6 +305,7 @@ class GridExtensionTabulator {
     });
 
     this._refreshTableAfterBulkMutation();
+    this._notifyGridChanged();
 
     return { noSelectedRows: false, amendedRows: targetRows.length };
   }
@@ -331,6 +342,7 @@ class GridExtensionTabulator {
       return;
     }
     column.updateDefinition({ title: name });
+    this._notifyGridChanged();
   }
 
   renameColId(id, name) {
@@ -341,6 +353,7 @@ class GridExtensionTabulator {
   deleteSelectedRows() {
     const rows = this.tabulator.getSelectedRows();
     this.tabulator.deleteRow(rows);
+    this._notifyGridChanged();
   }
 
   // [x] convert to tabulature
@@ -356,6 +369,7 @@ class GridExtensionTabulator {
   // [x] convert to tabulature
   addRow() {
     this.tabUtils.addRowToBottom(this._getBlankRowData());
+    this._notifyGridChanged();
   }
 
   // [x] convert to tabulature
@@ -368,9 +382,11 @@ class GridExtensionTabulator {
       // and there are no rows then add to top
       if (this.tabulator.getDataCount() == 0 || position < 0) {
         this.tabUtils.addRowToTop(this._getBlankRowData());
+        this._notifyGridChanged();
         return;
       } else {
         this.tabUtils.addRowToBottom(this._getBlankRowData());
+        this._notifyGridChanged();
         return;
       }
     }
@@ -393,6 +409,7 @@ class GridExtensionTabulator {
       addAbove = false;
     }
     this.tabulator.addData(objectsToAdd, addAbove, relativeToRow);
+    this._notifyGridChanged();
   }
 
   // calculate the max row from a selection of rows
@@ -532,6 +549,7 @@ class GridExtensionTabulator {
 
       this._applyHeaderTitles(headers);
       await this._autoFitFirstColumn();
+      this._notifyGridChanged();
     });
 
     // TODO : apply transactions incrementally for larger data sets
@@ -943,6 +961,79 @@ class GridExtensionTabulator {
     if (typeof this.tabulator.redraw === 'function') {
       this.tabulator.redraw(true);
     }
+  }
+
+  onGridChanged(callback) {
+    if (typeof callback !== 'function') {
+      return () => {};
+    }
+    const callbacks = this._getSharedGridChangedCallbacks();
+    callbacks.add(callback);
+    return () => {
+      callbacks.delete(callback);
+    };
+  }
+
+  _notifyGridChanged() {
+    this._getSharedGridChangedCallbacks().forEach((callback) => {
+      try {
+        callback();
+      } catch (error) {
+        console.error('Grid change callback failed', error);
+      }
+    });
+  }
+
+  _getSharedGridChangedCallbacks() {
+    if (!this.tabulator) {
+      return new Set();
+    }
+    if (!this.tabulator.__gridChangedCallbacks) {
+      this.tabulator.__gridChangedCallbacks = new Set();
+    }
+    return this.tabulator.__gridChangedCallbacks;
+  }
+
+  _bindSharedGridChangeEventListeners() {
+    if (!this.tabulator || typeof this.tabulator.on !== 'function') {
+      return;
+    }
+    if (this.tabulator.__gridChangedEventsBound === true) {
+      return;
+    }
+
+    const handlers = {
+      cellEdited: () => this._notifyGridChanged(),
+      rowMoved: () => this._notifyGridChanged(),
+      columnMoved: () => this._notifyGridChanged(),
+    };
+    this.tabulator.__gridChangedEventHandlers = handlers;
+    this.tabulator.on('cellEdited', handlers.cellEdited);
+    this.tabulator.on('rowMoved', handlers.rowMoved);
+    this.tabulator.on('columnMoved', handlers.columnMoved);
+    this.tabulator.__gridChangedEventsBound = true;
+  }
+
+  destroy() {
+    if (!this.tabulator || typeof this.tabulator.off !== 'function') {
+      return;
+    }
+    const handlers = this.tabulator.__gridChangedEventHandlers;
+    if (!handlers) {
+      return;
+    }
+
+    if (typeof handlers.cellEdited === 'function') {
+      this.tabulator.off('cellEdited', handlers.cellEdited);
+    }
+    if (typeof handlers.rowMoved === 'function') {
+      this.tabulator.off('rowMoved', handlers.rowMoved);
+    }
+    if (typeof handlers.columnMoved === 'function') {
+      this.tabulator.off('columnMoved', handlers.columnMoved);
+    }
+    this.tabulator.__gridChangedEventsBound = false;
+    delete this.tabulator.__gridChangedEventHandlers;
   }
 }
 

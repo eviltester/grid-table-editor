@@ -9,6 +9,7 @@ import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-tab
 class GridExtensionAgGrid {
   constructor(gridApi) {
     this.gridApi = gridApi;
+    this._gridChangedCallbacks = new Set();
     this.cellRendererText = (params) => {
       let val = params.value;
       if (val && val.replaceAll) {
@@ -27,6 +28,7 @@ class GridExtensionAgGrid {
     ];
     this.gridApi.setGridOption('columnDefs', columnDefs);
     this.gridApi.setGridOption('rowData', []);
+    this._notifyGridChanged();
   }
 
   clearFilters() {
@@ -76,7 +78,7 @@ class GridExtensionAgGrid {
   }
 
   // given an array of String column names, set the grid to have those columns
-  createColumns(columnNames) {
+  createColumns(columnNames, { notify = true } = {}) {
     let colDefs = [];
     let fieldId = this.getNextFieldNumber();
     columnNames.forEach((column) => {
@@ -87,6 +89,9 @@ class GridExtensionAgGrid {
     this.gridApi.setGridOption('columnDefs', colDefs);
     var fieldNames = colDefs.map((colDef) => colDef.field);
     this.addFieldsToData(fieldNames, '');
+    if (notify) {
+      this._notifyGridChanged();
+    }
   }
 
   addFieldsToData(fieldNames, defaultValue) {
@@ -132,6 +137,7 @@ class GridExtensionAgGrid {
     this.gridApi.setGridOption('columnDefs', colDefs);
 
     this.addFieldToData(newCol.field, '');
+    this._notifyGridChanged();
 
     return newCol;
   }
@@ -206,6 +212,7 @@ class GridExtensionAgGrid {
     });
 
     this.gridApi.setGridOption('columnDefs', newColDefs);
+    this._notifyGridChanged();
 
     // TODO : consider deleting all the data as well
   }
@@ -297,6 +304,7 @@ class GridExtensionAgGrid {
       }
     }
 
+    this._notifyGridChanged();
     return { noSelectedRows: false, amendedRows: targetNodes.length };
   }
 
@@ -329,10 +337,12 @@ class GridExtensionAgGrid {
     });
     editColDef.headerName = name;
     this.gridApi.setGridOption('columnDefs', colDefs);
+    this._notifyGridChanged();
   }
 
   deleteSelectedRows() {
     this.gridApi.applyTransaction({ remove: this.gridApi.getSelectedRows() });
+    this._notifyGridChanged();
   }
 
   getBlankRowData() {
@@ -346,6 +356,7 @@ class GridExtensionAgGrid {
 
   addRow() {
     this.gridApi.applyTransaction({ add: [this.getBlankRowData()] });
+    this._notifyGridChanged();
   }
 
   addRowsRelativeToSelection(position) {
@@ -379,6 +390,7 @@ class GridExtensionAgGrid {
     }
 
     this.gridApi.applyTransaction({ add: objectsToAdd, addIndex: positionIndexToAddAt });
+    this._notifyGridChanged();
   }
 
   // calculate the max row index from a selection of rows
@@ -459,7 +471,7 @@ class GridExtensionAgGrid {
       // TODO : report errors on screen
     }
 
-    this.createColumns(dataTable.getHeaders());
+    this.createColumns(dataTable.getHeaders(), { notify: false });
     this.gridApi.setGridOption('rowData', []);
 
     let addRows = [];
@@ -472,6 +484,31 @@ class GridExtensionAgGrid {
 
     // TODO : apply transactions incrementally for larger data sets
     this.gridApi.applyTransaction({ add: addRows });
+    this._notifyGridChanged();
+  }
+
+  onGridChanged(callback) {
+    if (typeof callback !== 'function') {
+      return () => {};
+    }
+    this._gridChangedCallbacks.add(callback);
+    return () => {
+      this._gridChangedCallbacks.delete(callback);
+    };
+  }
+
+  notifyGridChanged() {
+    this._notifyGridChanged();
+  }
+
+  _notifyGridChanged() {
+    this._gridChangedCallbacks.forEach((callback) => {
+      try {
+        callback();
+      } catch (error) {
+        console.error('Grid change callback failed', error);
+      }
+    });
   }
 
   _nodeToRowValues(node, fieldnames) {

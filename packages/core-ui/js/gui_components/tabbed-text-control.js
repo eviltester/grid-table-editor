@@ -41,6 +41,10 @@ class TabbedTextControl {
             </ul>
           </div>
           <div class="rightbuttons">
+            <label id="autoPreviewLabel" class="auto-preview-control">
+              <input type="checkbox" id="autoPreviewCheckbox" />
+              Auto Preview
+            </label>
             <span
               title="Preview/Edit mode help"
               id="previewEditModeHelpIcon"

@@ -1,6 +1,7 @@
 import { JSDOM } from 'jsdom';
 import { ImportExportControls } from '../../../js/gui_components/import-export-controls.js';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
+import { GridExtension as GridExtensionTabulator } from '../../../js/gui_components/data-grid-editor/tabulator/gridExtension-tabulator.js';
 
 function makeDataTable(rowCount) {
   const table = new GenericDataTable();
@@ -17,6 +18,12 @@ async function flushAsyncWork() {
   await new Promise((resolve) => setTimeout(resolve, 0));
 }
 
+function createSharedTabulatorTableStub() {
+  return {
+    on: jest.fn(),
+  };
+}
+
 describe('ImportExportControls preview/edit mode', () => {
   let dom;
   let controls;
@@ -25,6 +32,7 @@ describe('ImportExportControls preview/edit mode', () => {
   beforeEach(() => {
     dom = new JSDOM(`<!doctype html><html><body>
             <ul><li class="active-type"><a data-type="csv" href="#">CSV</a></li></ul>
+            <label id="autoPreviewLabel"><input type="checkbox" id="autoPreviewCheckbox"/>Auto Preview</label>
             <textarea id="markdownarea"></textarea>
             <div id="importExportRoot"></div>
         </body></html>`);
@@ -109,6 +117,106 @@ describe('ImportExportControls preview/edit mode', () => {
     textArea.value = 'a,b\n1,2';
     textArea.dispatchEvent(new dom.window.Event('input', { bubbles: true }));
     expect(button.disabled).toBe(false);
+  });
+
+  test('Auto Preview defaults unchecked and is enabled in preview mode', () => {
+    controls._syncGridFromTextButtonState();
+    const autoPreviewCheckbox = document.getElementById('autoPreviewCheckbox');
+    expect(autoPreviewCheckbox.checked).toBe(false);
+    expect(autoPreviewCheckbox.disabled).toBe(false);
+  });
+
+  test('Auto Preview checkbox is disabled in edit mode', () => {
+    controls.toggleTextEditMode();
+    const autoPreviewCheckbox = document.getElementById('autoPreviewCheckbox');
+    expect(autoPreviewCheckbox.disabled).toBe(true);
+  });
+
+  test('grid change auto-renders preview when Auto Preview is enabled in preview mode', () => {
+    const autoPreviewCheckbox = document.getElementById('autoPreviewCheckbox');
+    autoPreviewCheckbox.checked = true;
+    autoPreviewCheckbox.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+
+    const renderSpy = jest.spyOn(controls, 'renderTextFromGrid').mockImplementation(() => {});
+    controls._maybeAutoPreviewFromGridChange();
+    expect(renderSpy).toHaveBeenCalledTimes(1);
+  });
+
+  test('enabling Auto Preview immediately refreshes preview text from grid', () => {
+    const autoPreviewCheckbox = document.getElementById('autoPreviewCheckbox');
+    const renderSpy = jest.spyOn(controls, 'renderTextFromGrid').mockImplementation(() => {});
+
+    autoPreviewCheckbox.checked = true;
+    autoPreviewCheckbox.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+
+    expect(renderSpy).toHaveBeenCalledTimes(1);
+  });
+
+  test('grid change does not auto-render when Auto Preview is disabled', () => {
+    const renderSpy = jest.spyOn(controls, 'renderTextFromGrid').mockImplementation(() => {});
+    controls._maybeAutoPreviewFromGridChange();
+    expect(renderSpy).not.toHaveBeenCalled();
+  });
+
+  test('grid change does not auto-render in edit mode even when Auto Preview is enabled', () => {
+    const autoPreviewCheckbox = document.getElementById('autoPreviewCheckbox');
+    autoPreviewCheckbox.checked = true;
+    autoPreviewCheckbox.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+
+    controls.toggleTextEditMode();
+    const renderSpy = jest.spyOn(controls, 'renderTextFromGrid').mockImplementation(() => {});
+    controls._maybeAutoPreviewFromGridChange();
+    expect(renderSpy).not.toHaveBeenCalled();
+  });
+
+  test('setGridChangeSource subscribes and auto-renders on callbacks', () => {
+    const callbacks = [];
+    const source = {
+      onGridChanged: jest.fn((cb) => {
+        callbacks.push(cb);
+      }),
+    };
+    const autoPreviewCheckbox = document.getElementById('autoPreviewCheckbox');
+    autoPreviewCheckbox.checked = true;
+    autoPreviewCheckbox.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+    const renderSpy = jest.spyOn(controls, 'renderTextFromGrid').mockImplementation(() => {});
+
+    controls.setGridChangeSource(source);
+    expect(source.onGridChanged).toHaveBeenCalledTimes(1);
+
+    callbacks[0]();
+    expect(renderSpy).toHaveBeenCalledTimes(1);
+  });
+
+  test('setGridChangeSource unsubscribes previous listener before re-subscribing', () => {
+    const firstUnsubscribe = jest.fn();
+    const secondUnsubscribe = jest.fn();
+    const firstSource = { onGridChanged: jest.fn(() => firstUnsubscribe) };
+    const secondSource = { onGridChanged: jest.fn(() => secondUnsubscribe) };
+
+    controls.setGridChangeSource(firstSource);
+    expect(firstSource.onGridChanged).toHaveBeenCalledTimes(1);
+    expect(firstUnsubscribe).not.toHaveBeenCalled();
+
+    controls.setGridChangeSource(secondSource);
+    expect(firstUnsubscribe).toHaveBeenCalledTimes(1);
+    expect(secondSource.onGridChanged).toHaveBeenCalledTimes(1);
+    expect(secondUnsubscribe).not.toHaveBeenCalled();
+  });
+
+  test('tabulator grid-change callbacks are shared across wrapper instances for same table', () => {
+    const tabulatorTable = createSharedTabulatorTableStub();
+    const firstWrapper = new GridExtensionTabulator(tabulatorTable);
+    const secondWrapper = new GridExtensionTabulator(tabulatorTable);
+
+    const spyA = jest.fn();
+    const spyB = jest.fn();
+    firstWrapper.onGridChanged(spyA);
+    secondWrapper.onGridChanged(spyB);
+
+    secondWrapper._notifyGridChanged();
+    expect(spyA).toHaveBeenCalledTimes(1);
+    expect(spyB).toHaveBeenCalledTimes(1);
   });
 
   test('Set Grid From Text input listener binds when textarea is added after controls', () => {
@@ -239,6 +347,7 @@ describe('ImportExportControls file reading and visibility', () => {
   beforeEach(() => {
     dom = new JSDOM(`<!doctype html><html><body>
             <ul><li class="active-type"><a data-type="csv" href="#">CSV</a></li></ul>
+            <label id="autoPreviewLabel"><input type="checkbox" id="autoPreviewCheckbox"/>Auto Preview</label>
             <textarea id="markdownarea"></textarea>
             <div id="markdown"></div>
             <div class="edit-area"></div>

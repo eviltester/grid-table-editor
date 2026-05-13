@@ -16,6 +16,9 @@ class ImportExportControls {
     this.currentOptionsPanelWidthPx = null;
     this._activeSplitDrag = null;
     this._hasBoundPreviewTextInput = false;
+    this.autoPreviewEnabled = false;
+    this._hasBoundAutoPreviewInput = false;
+    this._gridChangeUnsubscribe = null;
   }
 
   addHTMLtoGui(parentelement) {
@@ -70,6 +73,19 @@ class ImportExportControls {
     this.exportControls.addHooksToPage(document);
   }
 
+  setGridChangeSource(gridChangeSource) {
+    if (typeof this._gridChangeUnsubscribe === 'function') {
+      this._gridChangeUnsubscribe();
+      this._gridChangeUnsubscribe = null;
+    }
+    if (!gridChangeSource || typeof gridChangeSource.onGridChanged !== 'function') {
+      return;
+    }
+    this._gridChangeUnsubscribe = gridChangeSource.onGridChanged(() => {
+      this._maybeAutoPreviewFromGridChange();
+    });
+  }
+
   getExportControls() {
     return this.exportControls;
   }
@@ -101,6 +117,16 @@ class ImportExportControls {
       return;
     }
     this.exportControls.renderTextFromGrid();
+  }
+
+  _maybeAutoPreviewFromGridChange() {
+    if (!this.isPreviewTextMode()) {
+      return;
+    }
+    if (!this.autoPreviewEnabled) {
+      return;
+    }
+    this.renderTextFromGrid();
   }
 
   loadFile() {
@@ -509,11 +535,13 @@ class ImportExportControls {
 
   _syncGridFromTextButtonState() {
     this._bindPreviewTextInputIfAvailable();
+    this._bindAutoPreviewCheckboxIfAvailable();
     const importButton = document.querySelector('#setgridfromtextbutton');
     if (!importButton) {
       return;
     }
     importButton.disabled = this.isPreviewTextMode() ? !this.previewTextDirty : false;
+    this._syncAutoPreviewControlState();
   }
 
   _bindPreviewTextInputIfAvailable() {
@@ -531,6 +559,36 @@ class ImportExportControls {
       this._setPreviewTextDirty(true);
     });
     this._hasBoundPreviewTextInput = true;
+  }
+
+  _bindAutoPreviewCheckboxIfAvailable() {
+    if (this._hasBoundAutoPreviewInput) {
+      return;
+    }
+    const autoPreviewCheckbox = document.getElementById('autoPreviewCheckbox');
+    if (!autoPreviewCheckbox) {
+      return;
+    }
+
+    autoPreviewCheckbox.addEventListener('change', (event) => {
+      this.autoPreviewEnabled = event?.currentTarget?.checked === true;
+      this._syncAutoPreviewControlState();
+      if (this.autoPreviewEnabled && this.isPreviewTextMode()) {
+        this.renderTextFromGrid();
+      }
+    });
+    this._hasBoundAutoPreviewInput = true;
+  }
+
+  _syncAutoPreviewControlState() {
+    const autoPreviewCheckbox = document.getElementById('autoPreviewCheckbox');
+    if (!autoPreviewCheckbox) {
+      return;
+    }
+
+    const isPreviewMode = this.isPreviewTextMode();
+    autoPreviewCheckbox.disabled = !isPreviewMode;
+    autoPreviewCheckbox.checked = this.autoPreviewEnabled;
   }
 
   _setPreviewTextDirty(isDirty) {

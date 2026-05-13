@@ -7,6 +7,7 @@ class TabbedTextComponent {
     this.tabsList = page.locator('#tabbedTextArea .conversionTypesList');
     this.outputTextArea = page.locator('#tabbedTextArea textarea.textrepresentation').first();
     this.previewOrEditButton = page.locator('#previewEditModeButton');
+    this.autoPreviewCheckbox = page.locator('#autoPreviewCheckbox');
     this.copyButton = page.locator('#copyTextButton');
     this.subtasks = page.locator('#conversionSubtasks');
 
@@ -37,6 +38,7 @@ class TabbedTextComponent {
     await expect(this.container).toBeVisible();
     await expect(this.tabsList).toBeVisible();
     await expect(this.copyButton).toBeVisible();
+    await expect(this.autoPreviewCheckbox).toBeVisible();
   }
 
   async expectReady() {
@@ -98,6 +100,30 @@ class TabbedTextComponent {
 
   async getOutputText() {
     return this.outputTextArea.inputValue();
+  }
+
+  async setAutoPreview(enabled = true) {
+    if (enabled) {
+      await this.autoPreviewCheckbox.check();
+      return;
+    }
+    await this.autoPreviewCheckbox.uncheck();
+  }
+
+  async expectAutoPreviewInteractive(interactive = true) {
+    if (interactive) {
+      await expect(this.autoPreviewCheckbox).toBeEnabled();
+      return;
+    }
+    await expect(this.autoPreviewCheckbox).toBeDisabled();
+  }
+
+  async expectAutoPreviewChecked(checked = true) {
+    if (checked) {
+      await expect(this.autoPreviewCheckbox).toBeChecked();
+      return;
+    }
+    await expect(this.autoPreviewCheckbox).not.toBeChecked();
   }
 
   async expectOutputContains(value) {

@@ -58,13 +58,16 @@ describe('GridExtensionTabulator duplicate column', () => {
   test('destroy unregisters shared tabulator grid-change listeners', () => {
     const tabulator = createTabulatorStub();
     const extension = new GridExtensionTabulator(tabulator);
+    const cellEditedHandler = tabulator.on.mock.calls.find((call) => call[0] === 'cellEdited')?.[1];
+    const rowMovedHandler = tabulator.on.mock.calls.find((call) => call[0] === 'rowMoved')?.[1];
+    const columnMovedHandler = tabulator.on.mock.calls.find((call) => call[0] === 'columnMoved')?.[1];
 
     extension.destroy();
 
     expect(tabulator.off).toHaveBeenCalledTimes(3);
-    expect(tabulator.off).toHaveBeenNthCalledWith(1, 'cellEdited', expect.any(Function));
-    expect(tabulator.off).toHaveBeenNthCalledWith(2, 'rowMoved', expect.any(Function));
-    expect(tabulator.off).toHaveBeenNthCalledWith(3, 'columnMoved', expect.any(Function));
+    expect(tabulator.off).toHaveBeenNthCalledWith(1, 'cellEdited', cellEditedHandler);
+    expect(tabulator.off).toHaveBeenNthCalledWith(2, 'rowMoved', rowMovedHandler);
+    expect(tabulator.off).toHaveBeenNthCalledWith(3, 'columnMoved', columnMovedHandler);
   });
 
   test('copies source column values into duplicate column', async () => {

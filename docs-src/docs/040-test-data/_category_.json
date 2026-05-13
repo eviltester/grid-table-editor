@@ -5,5 +5,5 @@
     "type": "generated-index",
     "description": "The Data can be populated with randomly generated data using a data set definition with field types from Faker, Regular Expressions, or pairwise combinatorial testing for enum parameters."
   },
-  "collapsed": false
+  "collapsed": true
 }

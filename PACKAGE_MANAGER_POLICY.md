@@ -24,10 +24,6 @@ This repository is **pnpm-first**.
 
 - changelog references to npm remain as historical records.
 
-4. `docs-src` transitional scope:
-
-- Until Docusaurus migration is completed, `docs-src` may retain its own lockfile/tooling behavior.
-
 ## Disallowed Locations For `npm`/`npx`
 
 - `.github/workflows/*`

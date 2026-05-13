@@ -1,6 +1,7 @@
 packages:
   - 'packages/*'
   - 'apps/*'
+  - 'docs-src'
 
 minimumReleaseAge: 10080
 minimumReleaseAgeStrict: false
@@ -10,4 +11,5 @@ minimumReleaseAgeExclude:
   - '@rolldown/*'
 allowBuilds:
   '@scarf/scarf': true
+  core-js: true
   unrs-resolver: true

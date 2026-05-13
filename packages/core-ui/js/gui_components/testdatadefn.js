@@ -738,15 +738,17 @@ function setupAgGridDefnEditor(tableDiv) {
 function setupTabulatorDefnEditor(tableDiv) {
   defnGridApi = new Tabulator(tableDiv, {
     data: [],
+    layout: 'fitColumns',
     columns: [
-      { title: 'columnName', field: 'columnName', editor: 'input', headerSort: false },
+      { title: 'columnName', field: 'columnName', editor: 'input', headerSort: false, widthGrow: 1 },
       {
         title: 'type',
         field: 'type',
         editor: tabulatorTypeSelectEditor,
         headerSort: false,
+        widthGrow: 1,
       },
-      { title: 'value', field: 'value', editor: 'input', headerSort: false },
+      { title: 'value', field: 'value', editor: 'input', headerSort: false, widthGrow: 2 },
     ],
     selectableRows: true,
     movableRows: true,

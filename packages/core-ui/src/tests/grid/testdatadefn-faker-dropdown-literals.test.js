@@ -35,7 +35,9 @@ describe('Faker Dropdown Literal Commands', () => {
     it('should populate FAKER_COMMANDS array', () => {
       const commands = getFakerCommands();
       expect(commands.length).toBeGreaterThan(0);
-      expect(commands).toContain('RegEx');
+      expect(commands.slice(0, 3)).toEqual(['enum', 'literal', 'regex']);
+      expect(commands).not.toContain('FAKER');
+      expect(commands).not.toContain('-------');
     });
 
     it('should include primitive-returning commands', () => {

@@ -49,10 +49,9 @@ test('test data panel generates rows from faker and regex schema', async ({ page
   }
 
   await appPage.testDataPanel.setSchemaCell(0, 'columnName', 'Name');
-  await appPage.testDataPanel.setSchemaTypeValue(0, 'faker');
-  await appPage.testDataPanel.setSchemaCell(0, 'value', 'faker.person.fullName');
+  await appPage.testDataPanel.setSchemaTypeValue(0, 'person.fullName');
   await appPage.testDataPanel.setSchemaCell(1, 'columnName', 'Code');
-  await appPage.testDataPanel.setSchemaTypeValue(1, 'RegEx');
+  await appPage.testDataPanel.setSchemaTypeValue(1, 'regex');
   await appPage.testDataPanel.setSchemaCell(1, 'value', '[A-Z]{3}');
 
   await appPage.testDataPanel.clickGenerate();
@@ -83,7 +82,7 @@ test('embedded schema grid editing syncs to schema text and generates data', asy
 
   const targetRow = initialSchemaRows;
   await appPage.testDataPanel.setSchemaCell(targetRow, 'columnName', 'Code');
-  await appPage.testDataPanel.setSchemaTypeValue(targetRow, 'RegEx');
+  await appPage.testDataPanel.setSchemaTypeValue(targetRow, 'regex');
   await appPage.testDataPanel.setSchemaCell(targetRow, 'value', '[A-Z]{3}');
 
   await expect.poll(async () => appPage.testDataPanel.getSchemaText()).toContain('Code');

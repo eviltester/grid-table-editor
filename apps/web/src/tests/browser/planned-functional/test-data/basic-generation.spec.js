@@ -14,8 +14,7 @@ test.describe('7. Test Data Generation', () => {
 
     const schemaRowIndex = beforeSchema;
     await appPage.testDataPanel.setSchemaCell(schemaRowIndex, 'columnName', 'First Name');
-    await appPage.testDataPanel.setSchemaTypeValue(schemaRowIndex, 'faker');
-    await appPage.testDataPanel.setSchemaCell(schemaRowIndex, 'value', 'faker.person.firstName');
+    await appPage.testDataPanel.setSchemaTypeValue(schemaRowIndex, 'person.firstName');
     await appPage.testDataPanel.setGenerateCount(5);
 
     await appPage.testDataPanel.clickGenerate();

@@ -128,7 +128,6 @@ class TestDataPanelComponent {
 
     if (await editor.locator('xpath=self::select').count()) {
       await editor.selectOption(String(value));
-      await editor.press('Enter');
     } else {
       await editor.fill(String(value));
       await editor.press('Enter');

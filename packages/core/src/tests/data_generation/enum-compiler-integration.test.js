@@ -104,4 +104,19 @@ describe('TestDataRulesCompiler with Enum Support', () => {
       expect(rules[4].type).toBe('enum');
     });
   });
+
+  describe('literal pattern detection', () => {
+    test('detects explicit literal formats', () => {
+      expect(compiler.isLiteralPattern('literal(.)')).toBe(true);
+      expect(compiler.isLiteralPattern('datatype.literal(1,2,3)')).toBe(true);
+      expect(compiler.isLiteralPattern('awd.datatype.literal(value)')).toBe(true);
+    });
+
+    test('explicit literal compiles to literal type and unwraps value', () => {
+      const rules = [new TestDataRule('DotLiteral', 'literal(.)')];
+      compiler.compile(rules);
+      expect(rules[0].type).toBe('literal');
+      expect(rules[0].ruleSpec).toBe('.');
+    });
+  });
 });

@@ -433,6 +433,58 @@ describe('test data definition editor engine compatibility', () => {
     expect(rebuilt).toContain('# second comment');
   });
 
+  test('enum type rows are emitted as enum(...) definitions in schema text', async () => {
+    const TabulatorMock = installTabulatorMock();
+
+    enableTestDataGenerationInterface(
+      'host',
+      {
+        setGridFromGenericDataTable: jest.fn(),
+      },
+      {
+        renderTextFromGrid: jest.fn(),
+      },
+      {
+        getRowCount: jest.fn(() => 0),
+        getSelectedRowIndexes: jest.fn(() => []),
+      }
+    );
+
+    TabulatorMock.latestInstance.rows = [{ columnName: 'Priority', type: 'enum', value: '1,2,3,4' }];
+    TabulatorMock.latestInstance.options.cellEdited();
+    await flushUi();
+
+    expect(document.getElementById('testdatadefntext').value).toContain('Priority\nenum(1,2,3,4)');
+
+    delete global.Tabulator;
+  });
+
+  test('literal type rows are emitted as literal(...) definitions in schema text', async () => {
+    const TabulatorMock = installTabulatorMock();
+
+    enableTestDataGenerationInterface(
+      'host',
+      {
+        setGridFromGenericDataTable: jest.fn(),
+      },
+      {
+        renderTextFromGrid: jest.fn(),
+      },
+      {
+        getRowCount: jest.fn(() => 0),
+        getSelectedRowIndexes: jest.fn(() => []),
+      }
+    );
+
+    TabulatorMock.latestInstance.rows = [{ columnName: 'Separator', type: 'literal', value: '.' }];
+    TabulatorMock.latestInstance.options.cellEdited();
+    await flushUi();
+
+    expect(document.getElementById('testdatadefntext').value).toContain('Separator\nliteral(.)');
+
+    delete global.Tabulator;
+  });
+
   test('load sample schema button populates text schema with literal, enum, regex, and faker examples', () => {
     installTabulatorMock();
 

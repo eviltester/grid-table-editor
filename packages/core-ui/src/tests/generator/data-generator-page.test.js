@@ -198,6 +198,27 @@ describe('DataGeneratorPage', () => {
     expect(spec).toBe('');
   });
 
+  test('schema source type dropdown uses enum, literal, regex, faker order', () => {
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker: { word: { noun: () => 'x' } },
+      RandExp: function RandExp() {},
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: FakeTestDataGenerator,
+    });
+    page.init();
+
+    const sourceTypeSelect = document.querySelector('[data-field="sourceType"]');
+    const optionValues = Array.from(sourceTypeSelect.querySelectorAll('option')).map((option) => option.value);
+
+    expect(optionValues).toEqual(['enum', 'literal', 'regex', 'faker']);
+  });
+
   test('schemaRowsToSpecWithTokens preserves comments and blank lines', () => {
     const spec = schemaRowsToSpecWithTokens(
       [

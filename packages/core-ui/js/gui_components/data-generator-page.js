@@ -778,10 +778,10 @@ enum(active,inactive,pending)</pre>
                 </div>
                 <input type="text" data-field="name" placeholder="Column Name" value="${this.escapeHtml(row.name)}">
                 <select data-field="sourceType">
-                    <option value="${SOURCE_TYPE_FAKER}" ${row.sourceType === SOURCE_TYPE_FAKER ? 'selected' : ''}>faker</option>
-                    <option value="${SOURCE_TYPE_REGEX}" ${row.sourceType === SOURCE_TYPE_REGEX ? 'selected' : ''}>regex</option>
-                    <option value="${SOURCE_TYPE_LITERAL}" ${row.sourceType === SOURCE_TYPE_LITERAL ? 'selected' : ''}>literal</option>
                     <option value="${SOURCE_TYPE_ENUM}" ${row.sourceType === SOURCE_TYPE_ENUM ? 'selected' : ''}>enum</option>
+                    <option value="${SOURCE_TYPE_LITERAL}" ${row.sourceType === SOURCE_TYPE_LITERAL ? 'selected' : ''}>literal</option>
+                    <option value="${SOURCE_TYPE_REGEX}" ${row.sourceType === SOURCE_TYPE_REGEX ? 'selected' : ''}>regex</option>
+                    <option value="${SOURCE_TYPE_FAKER}" ${row.sourceType === SOURCE_TYPE_FAKER ? 'selected' : ''}>faker</option>
                 </select>
                 ${
                   isFakerSource

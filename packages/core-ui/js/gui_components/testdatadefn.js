@@ -504,8 +504,11 @@ function populateTestDataGridFromRules() {
     } else if (rule.type == 'enum') {
       data.type = 'enum';
       data.value = rule.ruleSpec;
+    } else if (rule.type == 'literal') {
+      data.type = 'literal';
+      data.value = rule.ruleSpec;
     } else {
-      data.type = 'RegEx';
+      data.type = 'regex';
       data.value = rule.ruleSpec;
     }
 
@@ -517,6 +520,9 @@ function populateTestDataGridFromRules() {
 
 const FAKER_COMMANDS = [];
 const FAKER_COMMANDS_LONGEST_FIRST = [];
+const TOP_LEVEL_TYPE_OPTIONS = ['enum', 'literal', 'regex'];
+const FAKER_SECTION_LABEL = '-- faker --';
+const FAKER_SECTION_VALUE = '__faker_section__';
 
 // TODO: add fakerCommand to the TestDataRule already parsed out
 function findFakerCommand(aString) {
@@ -567,8 +573,68 @@ function identifyFakerCommands() {
   FAKER_COMMANDS.length = 0;
   FAKER_COMMANDS_LONGEST_FIRST.length = 0;
 
-  getKnownFakerCommandsAlphabetical().forEach((command) => FAKER_COMMANDS.push(command));
+  TOP_LEVEL_TYPE_OPTIONS.forEach((typeOption) => FAKER_COMMANDS.push(typeOption));
+  getKnownFakerCommandsAlphabetical()
+    .filter((command) => command !== 'RegEx')
+    .forEach((command) => FAKER_COMMANDS.push(command));
   getKnownFakerCommandsLongestFirst().forEach((command) => FAKER_COMMANDS_LONGEST_FIRST.push(command));
+}
+
+function getTabulatorTypeEditorValues() {
+  const typeValues = TOP_LEVEL_TYPE_OPTIONS.map((typeOption) => ({ value: typeOption, label: typeOption }));
+  const fakerHeader = {
+    value: FAKER_SECTION_VALUE,
+    label: FAKER_SECTION_LABEL,
+    elementAttributes: { disabled: true },
+  };
+  const fakerCommandValues = getKnownFakerCommandsAlphabetical()
+    .filter((command) => command !== 'RegEx')
+    .map((command) => ({ value: command, label: command }));
+  return [...typeValues, fakerHeader, ...fakerCommandValues];
+}
+
+function tabulatorTypeSelectEditor(cell, onRendered, success, cancel) {
+  const editor = document.createElement('select');
+  editor.style.width = '100%';
+  editor.style.boxSizing = 'border-box';
+
+  const values = getTabulatorTypeEditorValues();
+  values.forEach((entry) => {
+    const option = document.createElement('option');
+    option.value = entry.value;
+    option.textContent = entry.label;
+    if (entry.value === FAKER_SECTION_VALUE) {
+      option.disabled = true;
+    }
+    editor.appendChild(option);
+  });
+
+  const currentValue = String(cell.getValue() ?? '').trim();
+  editor.value = currentValue;
+
+  onRendered(() => {
+    editor.focus();
+  });
+
+  editor.addEventListener('change', () => {
+    const selectedValue = String(editor.value ?? '').trim();
+    if (selectedValue === FAKER_SECTION_VALUE) {
+      cancel();
+      return;
+    }
+    success(selectedValue);
+  });
+
+  editor.addEventListener('blur', () => {
+    const selectedValue = String(editor.value ?? '').trim();
+    if (selectedValue === FAKER_SECTION_VALUE) {
+      cancel();
+      return;
+    }
+    success(selectedValue);
+  });
+
+  return editor;
 }
 
 function setupTestDataEditGrid(gridDiv) {
@@ -598,7 +664,7 @@ function setupTestDataEditGrid(gridDiv) {
     if (!defnGridBridge) {
       return;
     }
-    defnGridBridge.addRows([{ columnName: '', type: 'RegEx', value: '', comments: '' }]);
+    defnGridBridge.addRows([{ columnName: '', type: 'regex', value: '', comments: '' }]);
     convertGridToText();
   });
 
@@ -673,14 +739,14 @@ function setupTabulatorDefnEditor(tableDiv) {
   defnGridApi = new Tabulator(tableDiv, {
     data: [],
     columns: [
-      { title: 'columnName', field: 'columnName', editor: 'input' },
+      { title: 'columnName', field: 'columnName', editor: 'input', headerSort: false },
       {
         title: 'type',
         field: 'type',
-        editor: 'list',
-        editorParams: { values: FAKER_COMMANDS },
+        editor: tabulatorTypeSelectEditor,
+        headerSort: false,
       },
-      { title: 'value', field: 'value', editor: 'input' },
+      { title: 'value', field: 'value', editor: 'input', headerSort: false },
     ],
     selectableRows: true,
     movableRows: true,
@@ -688,7 +754,15 @@ function setupTabulatorDefnEditor(tableDiv) {
     cellEditing: (cell) => {
       beginTabulatorDraftTracking(cell);
     },
-    cellEdited: () => {
+    cellEdited: (cell) => {
+      const field = cell?.getField?.() || cell?.getColumn?.()?.getDefinition?.()?.field;
+      if (field === 'type') {
+        const selectedValue = String(cell?.getValue?.() ?? '').trim();
+        if (selectedValue === FAKER_SECTION_VALUE) {
+          const previousValue = cell?.getOldValue?.();
+          cell?.setValue?.(previousValue || '', true);
+        }
+      }
       convertGridToText();
     },
     rowMoved: () => {
@@ -755,6 +829,29 @@ function clearTabulatorDraftTracking() {
   activeDefnCellEdit = null;
 }
 
+function normalizeEnumRuleDefinition(value) {
+  const rawValue = String(value ?? '').trim();
+  if (rawValue.length === 0) {
+    return '';
+  }
+  if (/^enum\s*\(/i.test(rawValue)) {
+    return rawValue;
+  }
+  return `enum(${rawValue})`;
+}
+
+function normalizeLiteralRuleDefinition(value) {
+  const rawValue = String(value ?? '');
+  const trimmedValue = rawValue.trim();
+  if (trimmedValue.length === 0) {
+    return '';
+  }
+  if (/^(literal|datatype\.literal|awd\.datatype\.literal)\s*\(/i.test(trimmedValue)) {
+    return trimmedValue;
+  }
+  return `literal(${rawValue})`;
+}
+
 function convertGridToText() {
   if (!defnGridBridge) {
     return;
@@ -774,16 +871,26 @@ function convertGridToText() {
     outputLines.push(resolvedRowData.columnName || '');
 
     let ruleLine = '';
-    switch (resolvedRowData.type) {
-      case 'RegEx':
+    const resolvedType = String(resolvedRowData.type || '').trim();
+    const lowerType = resolvedType.toLowerCase();
+    switch (lowerType) {
+      case 'regex':
         ruleLine = resolvedRowData.value || '';
         break;
       case 'enum':
+        ruleLine = normalizeEnumRuleDefinition(resolvedRowData.value);
+        break;
+      case 'literal':
+        ruleLine = normalizeLiteralRuleDefinition(resolvedRowData.value);
+        break;
+      case 'faker':
         ruleLine = resolvedRowData.value || '';
         break;
-      // TODO Literal
+      case '__faker_section__':
+        ruleLine = '';
+        break;
       default: {
-        let dataType = resolvedRowData.type || '';
+        let dataType = resolvedType;
         if (dataType.startsWith('faker.')) {
           dataType = dataType.replace('faker.', '');
         }

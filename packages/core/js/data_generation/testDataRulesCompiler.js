@@ -44,6 +44,15 @@ export class TestDataRulesCompiler {
         // unassigned a type, try and generate one
         this.compilationReportLines.push(`Identifying type for ${rule.name}`);
 
+        // Check for explicit literal patterns first
+        if (this.isLiteralPattern(rule.ruleSpec)) {
+          const literalValue = this.extractLiteralValue(rule.ruleSpec);
+          this.compilationReportLines.push(`${rule.name} is a valid 'literal': ${rule.ruleSpec}`);
+          rule.ruleSpec = literalValue;
+          rule.type = 'literal';
+          return;
+        }
+
         // Check for enum patterns first
         if (this.isEnumPattern(rule.ruleSpec)) {
           enumValidator.validate(rule);
@@ -157,6 +166,20 @@ export class TestDataRulesCompiler {
     }
 
     return false;
+  }
+
+  isLiteralPattern(ruleSpec) {
+    const spec = String(ruleSpec || '').trim();
+    return /^(literal|datatype\.literal|awd\.datatype\.literal)\s*\(/i.test(spec);
+  }
+
+  extractLiteralValue(ruleSpec) {
+    const spec = String(ruleSpec || '').trim();
+    const match = spec.match(/^(?:literal|datatype\.literal|awd\.datatype\.literal)\s*\(([\s\S]*)\)\s*$/i);
+    if (!match) {
+      return spec;
+    }
+    return match[1];
   }
 
   isValid() {

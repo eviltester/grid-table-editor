@@ -90,7 +90,7 @@
   "homepage": "https://github.com/eviltester/grid-table-editor#readme",
   "dependencies": {
     "@popperjs/core": "2.11.8",
-    "papaparse": "5.5.2",
+    "papaparse": "5.5.3",
     "randexp": "0.5.3",
     "tippy.js": "6.3.7"
   },

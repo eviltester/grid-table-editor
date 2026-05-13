@@ -12,8 +12,8 @@ importers:
         specifier: 2.11.8
         version: 2.11.8
       papaparse:
-        specifier: 5.5.2
-        version: 5.5.2
+        specifier: 5.5.3
+        version: 5.5.3
       randexp:
         specifier: 0.5.3
         version: 0.5.3
@@ -135,8 +135,8 @@ importers:
         specifier: 9.7.0
         version: 9.7.0
       papaparse:
-        specifier: 5.5.2
-        version: 5.5.2
+        specifier: 5.5.3
+        version: 5.5.3
       randexp:
         specifier: 0.5.3
         version: 0.5.3
@@ -5049,8 +5049,8 @@ packages:
   package-manager-detector@0.2.11:
     resolution: {integrity: sha512-BEnLolu+yuz22S56CU1SUKq3XC3PkwD5wv4ikR4MfGvnRVcmzXR9DwSlW2fEamyTPyXHomBJRzgapeuBvRNzJQ==}
 
-  papaparse@5.5.2:
-    resolution: {integrity: sha512-PZXg8UuAc4PcVwLosEEDYjPyfWnTEhOrUfdv+3Bx+NuAb+5NhDmXzg5fHWmdCh1mP5p7JAZfFr3IMQfcntNAdA==}
+  papaparse@5.5.3:
+    resolution: {integrity: sha512-5QvjGxYVjxO59MGU2lHVYpRWBBtKHnlIAcSe1uNFCkkptUh63NFRj0FJQm7nR67puEruUci/ZkjmEFrjCAyP4A==}
 
   param-case@3.0.4:
     resolution: {integrity: sha512-RXlj7zCYokReqWpOPH9oYivUzLYZ5vAPIfEmCTNViosC78F8F0H9y7T7gG2M39ymgutxF5gcFEsyZQSph9Bp3A==}
@@ -13373,7 +13373,7 @@ snapshots:
     dependencies:
       quansync: 0.2.11
 
-  papaparse@5.5.2: {}
+  papaparse@5.5.3: {}
 
   param-case@3.0.4:
     dependencies:

@@ -1,0 +1,46 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "npm"
+    reviewers:
+      - "eviltester"
+    cooldown:
+      semver-major-days: 14
+      semver-minor-days: 7
+      semver-patch-days: 3
+    groups:
+      eslint:
+        patterns:
+          - "eslint*"
+      types:
+        patterns:
+          - "@types/*"
+      testing:
+        patterns:
+          - "jest*"
+          - "@jest/*"
+          - "playwright*"
+          - "@playwright/*"
+      babel:
+        patterns:
+          - "@babel/*"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    reviewers:
+      - "eviltester"
+    groups:
+      github-actions:
+        patterns:
+          - "*"

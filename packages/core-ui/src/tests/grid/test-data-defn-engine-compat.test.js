@@ -509,7 +509,7 @@ describe('test data definition editor engine compatibility', () => {
     const value = document.getElementById('testdatadefntext').value;
 
     expect(value).toContain('Literal Example');
-    expect(value).toContain('Pending Review');
+    expect(value).toContain('literal(Pending Review)');
     expect(value).toContain('Enum Example');
     expect(value).toContain('enum("Open","In Progress","Closed")');
     expect(value).toContain('Enum Example 2');

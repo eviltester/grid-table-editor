@@ -414,7 +414,7 @@ function loadSampleSchemaIntoTextArea() {
   }
 
   schemaTextArea.value = `Literal Example
-Pending Review
+literal(Pending Review)
 Enum Example
 enum("Open","In Progress","Closed")
 Enum Example 2

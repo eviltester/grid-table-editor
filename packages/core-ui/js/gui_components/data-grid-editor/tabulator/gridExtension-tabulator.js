@@ -17,7 +17,6 @@ class GridExtensionTabulator {
     this.tabulator = tabulator;
     this.tabUtils = new TabulatorHelper(tabulator);
     this._pendingGridMutation = Promise.resolve();
-    this._gridChangedCallbacks = new Set();
 
     if (typeof this.tabulator?.on === 'function') {
       this.tabulator.on('cellEdited', () => this._notifyGridChanged());
@@ -968,20 +967,31 @@ class GridExtensionTabulator {
     if (typeof callback !== 'function') {
       return () => {};
     }
-    this._gridChangedCallbacks.add(callback);
+    const callbacks = this._getSharedGridChangedCallbacks();
+    callbacks.add(callback);
     return () => {
-      this._gridChangedCallbacks.delete(callback);
+      callbacks.delete(callback);
     };
   }
 
   _notifyGridChanged() {
-    this._gridChangedCallbacks.forEach((callback) => {
+    this._getSharedGridChangedCallbacks().forEach((callback) => {
       try {
         callback();
       } catch (error) {
         console.error('Grid change callback failed', error);
       }
     });
+  }
+
+  _getSharedGridChangedCallbacks() {
+    if (!this.tabulator) {
+      return new Set();
+    }
+    if (!this.tabulator.__gridChangedCallbacks) {
+      this.tabulator.__gridChangedCallbacks = new Set();
+    }
+    return this.tabulator.__gridChangedCallbacks;
   }
 }
 

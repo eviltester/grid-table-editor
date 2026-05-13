@@ -181,6 +181,59 @@ describe('ImportExportControls preview/edit mode', () => {
     expect(renderSpy).toHaveBeenCalledTimes(1);
   });
 
+  test('tabulator grid-change callbacks are shared across wrapper instances for same table', () => {
+    const tabulatorTable = {};
+    const callbacksFromFirst = [];
+    const callbacksFromSecond = [];
+
+    const firstWrapperLike = {
+      tabulator: tabulatorTable,
+      _getSharedGridChangedCallbacks() {
+        if (!this.tabulator.__gridChangedCallbacks) {
+          this.tabulator.__gridChangedCallbacks = new Set();
+        }
+        return this.tabulator.__gridChangedCallbacks;
+      },
+      onGridChanged(callback) {
+        const callbacks = this._getSharedGridChangedCallbacks();
+        callbacks.add(callback);
+        callbacksFromFirst.push(callback);
+      },
+      _notifyGridChanged() {
+        this._getSharedGridChangedCallbacks().forEach((callback) => callback());
+      },
+    };
+
+    const secondWrapperLike = {
+      tabulator: tabulatorTable,
+      _getSharedGridChangedCallbacks() {
+        if (!this.tabulator.__gridChangedCallbacks) {
+          this.tabulator.__gridChangedCallbacks = new Set();
+        }
+        return this.tabulator.__gridChangedCallbacks;
+      },
+      onGridChanged(callback) {
+        const callbacks = this._getSharedGridChangedCallbacks();
+        callbacks.add(callback);
+        callbacksFromSecond.push(callback);
+      },
+      _notifyGridChanged() {
+        this._getSharedGridChangedCallbacks().forEach((callback) => callback());
+      },
+    };
+
+    const spyA = jest.fn();
+    const spyB = jest.fn();
+    firstWrapperLike.onGridChanged(spyA);
+    secondWrapperLike.onGridChanged(spyB);
+
+    secondWrapperLike._notifyGridChanged();
+    expect(spyA).toHaveBeenCalledTimes(1);
+    expect(spyB).toHaveBeenCalledTimes(1);
+    expect(callbacksFromFirst[0]).toBe(spyA);
+    expect(callbacksFromSecond[0]).toBe(spyB);
+  });
+
   test('Set Grid From Text input listener binds when textarea is added after controls', () => {
     const lateDom = new JSDOM(`<!doctype html><html><body>
             <ul><li class="active-type"><a data-type="csv" href="#">CSV</a></li></ul>

@@ -584,7 +584,6 @@ class ImportExportControls {
     const isPreviewMode = this.isPreviewTextMode();
     autoPreviewCheckbox.disabled = !isPreviewMode;
     autoPreviewCheckbox.checked = this.autoPreviewEnabled;
-    autoPreviewCheckbox.setAttribute('aria-disabled', autoPreviewCheckbox.disabled ? 'true' : 'false');
   }
 
   _setPreviewTextDirty(isDirty) {

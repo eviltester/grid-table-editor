@@ -113,8 +113,8 @@ importers:
         specifier: 2.1.1
         version: 2.1.1
       prism-react-renderer:
-        specifier: 2.1.0
-        version: 2.1.0(react@18.2.0)
+        specifier: 2.4.1
+        version: 2.4.1(react@18.2.0)
       react:
         specifier: 18.2.0
         version: 18.2.0
@@ -2858,10 +2858,6 @@ packages:
 
   clone-deep@4.0.1:
     resolution: {integrity: sha512-neHB9xuzh/wk0dIHweyAXv2aPGZIVk3pLMe+/RNzINf17fe0OG96QroktYAUm7SM1PBnzTabaLboqqxDyMU+SQ==}
-    engines: {node: '>=6'}
-
-  clsx@1.2.1:
-    resolution: {integrity: sha512-EcR6r5a8bj6pu3ycsa/E/cKVGuTgZJZdsyUYHOksG/UHIiKfjxzRxYJpyVBwYaQeOvghal9fcc4PidlgzugAQg==}
     engines: {node: '>=6'}
 
   clsx@2.1.1:
@@ -5608,11 +5604,6 @@ packages:
   pretty-time@1.1.0:
     resolution: {integrity: sha512-28iF6xPQrP8Oa6uxE6a1biz+lWeTOAPKggvjB8HAs6nVMKZwf5bG++632Dx614hIWgUPkgivRfG+a8uAXGTIbA==}
     engines: {node: '>=4'}
-
-  prism-react-renderer@2.1.0:
-    resolution: {integrity: sha512-I5cvXHjA1PVGbGm1MsWCpvBCRrYyxEri0MC7/JbfIfYfcXAxHyO5PaUjs3A8H5GW6kJcLhTHxxMaOZZpRZD2iQ==}
-    peerDependencies:
-      react: '>=16.0.0'
 
   prism-react-renderer@2.4.1:
     resolution: {integrity: sha512-ey8Ls/+Di31eqzUxC46h8MksNuGx/n0AAC8uKpwFau4RPDYLuE3EXTp8N8G2vX2N7UC/+IXeNUnlWBGGcAG+Ig==}
@@ -10680,8 +10671,6 @@ snapshots:
       kind-of: 6.0.3
       shallow-clone: 3.0.1
 
-  clsx@1.2.1: {}
-
   clsx@2.1.1: {}
 
   co@4.6.0: {}
@@ -14043,12 +14032,6 @@ snapshots:
       react-is: 18.3.1
 
   pretty-time@1.1.0: {}
-
-  prism-react-renderer@2.1.0(react@18.2.0):
-    dependencies:
-      '@types/prismjs': 1.26.6
-      clsx: 1.2.1
-      react: 18.2.0
 
   prism-react-renderer@2.4.1(react@18.2.0):
     dependencies:

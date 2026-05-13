@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "@anywaydata/core": "workspace:^",
-    "express": "4.22.2",
+    "express": "5.2.1",
     "swagger-ui-express": "5.0.1"
   }
 }

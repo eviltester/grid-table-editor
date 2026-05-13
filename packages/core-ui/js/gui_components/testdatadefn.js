@@ -597,6 +597,7 @@ function tabulatorTypeSelectEditor(cell, onRendered, success, cancel) {
   const editor = document.createElement('select');
   editor.style.width = '100%';
   editor.style.boxSizing = 'border-box';
+  let completed = false;
 
   const values = getTabulatorTypeEditorValues();
   values.forEach((entry) => {
@@ -616,23 +617,22 @@ function tabulatorTypeSelectEditor(cell, onRendered, success, cancel) {
     editor.focus();
   });
 
-  editor.addEventListener('change', () => {
+  const finishEdit = () => {
+    if (completed) {
+      return;
+    }
     const selectedValue = String(editor.value ?? '').trim();
     if (selectedValue === FAKER_SECTION_VALUE) {
+      completed = true;
       cancel();
       return;
     }
+    completed = true;
     success(selectedValue);
-  });
+  };
 
-  editor.addEventListener('blur', () => {
-    const selectedValue = String(editor.value ?? '').trim();
-    if (selectedValue === FAKER_SECTION_VALUE) {
-      cancel();
-      return;
-    }
-    success(selectedValue);
-  });
+  editor.addEventListener('change', finishEdit);
+  editor.addEventListener('blur', finishEdit);
 
   return editor;
 }
@@ -834,7 +834,7 @@ function normalizeEnumRuleDefinition(value) {
   if (rawValue.length === 0) {
     return '';
   }
-  if (/^enum\s*\(/i.test(rawValue)) {
+  if (/^(enum|datatype\.enum|awd\.datatype\.enum)\s*\(/i.test(rawValue)) {
     return rawValue;
   }
   return `enum(${rawValue})`;

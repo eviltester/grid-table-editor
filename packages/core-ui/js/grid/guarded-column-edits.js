@@ -25,10 +25,14 @@ class GuardedColumnEdits {
 
   async renameColId(id) {
     var editColDef = this.gridExtras.getColumnDef(id);
+    if (!editColDef) {
+      this.showError('Column not found');
+      return false;
+    }
     const currentName = String(editColDef?.headerName ?? '');
     const colTitle = await this.requestTextInput({
       title: 'Column Name',
-      initialValue: editColDef.headerName,
+      initialValue: currentName,
     });
 
     if (colTitle != null && colTitle != '') {
@@ -56,10 +60,15 @@ class GuardedColumnEdits {
     }
 
     let editColDef = this.gridExtras.getColumnDef(id);
+    if (!editColDef) {
+      this.showError('Column not found');
+      return false;
+    }
+    const currentName = String(editColDef?.headerName ?? '');
 
     const confirmed = await this.requestConfirm({
       title: 'Delete Column',
-      message: `Are you Sure You Want to Delete Column Named ${editColDef.headerName}?`,
+      message: `Are you Sure You Want to Delete Column Named ${currentName}?`,
     });
     if (!confirmed) return;
 

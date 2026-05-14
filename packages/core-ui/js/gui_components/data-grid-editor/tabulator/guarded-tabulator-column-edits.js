@@ -74,6 +74,11 @@ class GuardedTabulatorColumnEdits {
   }
 
   async duplicateColumn(position, column) {
+    if (column == null || column == undefined) {
+      this.showError('Column not found');
+      return;
+    }
+
     const colTitle = await this.requestTextInput({
       title: 'Copy Column As',
       initialValue: '',

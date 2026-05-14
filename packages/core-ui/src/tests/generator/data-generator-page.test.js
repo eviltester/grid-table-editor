@@ -5,6 +5,7 @@ import RandExp from 'randexp';
 import {
   DataGeneratorPage,
   buildRuleSpecFromSchemaRow,
+  extractLiteralValueFromRuleSpec,
   schemaRowsToSpec,
   schemaRowsToSpecWithTokens,
   validateSchemaRows,
@@ -105,6 +106,14 @@ describe('DataGeneratorPage', () => {
       { name: 'B', sourceType: 'literal', value: 'x' },
     ]);
     expect(spec).toBe('A\nword.noun()\nB\nliteral(x)');
+  });
+
+  test('literal rule extraction unwraps literal(...) variants for generation', () => {
+    expect(extractLiteralValueFromRuleSpec('literal(Fixed)')).toBe('Fixed');
+    expect(extractLiteralValueFromRuleSpec('literal()')).toBe('');
+    expect(extractLiteralValueFromRuleSpec('datatype.literal(   123)')).toBe('   123');
+    expect(extractLiteralValueFromRuleSpec('awd.datatype.literal(value)')).toBe('value');
+    expect(extractLiteralValueFromRuleSpec('plain value')).toBe('plain value');
   });
 
   test('schemaRowsToSpec omits fully blank rows', () => {
@@ -241,6 +250,30 @@ describe('DataGeneratorPage', () => {
 
     const tableArg = FakeGridExtension.lastInstance.setGridFromGenericDataTable.mock.calls[0][0];
     expect(tableArg.getCell(0, 0)).toBe('');
+  });
+
+  test('literal row value entered as literal(...) generates raw literal content', () => {
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker,
+      RandExp,
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: TestDataGenerator,
+    });
+    page.init();
+
+    page.schemaRows = [{ id: '1', name: 't', sourceType: 'literal', command: '', params: '', value: 'literal(abc)' }];
+    page.renderSchemaRows();
+    document.getElementById('previewRowsCount').value = '1';
+    page.previewData();
+
+    const tableArg = FakeGridExtension.lastInstance.setGridFromGenericDataTable.mock.calls[0][0];
+    expect(tableArg.getCell(0, 0)).toBe('abc');
   });
 
   test('preview rows input defaults to 10 and has max 50', () => {

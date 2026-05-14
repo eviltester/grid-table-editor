@@ -66,10 +66,12 @@ class GridHeaderComponent {
   }
 
   async deleteColumn(columnName) {
-    this.page.once('dialog', async (dialog) => {
-      await dialog.accept();
-    });
     await this.clickAction(columnName, 'delete');
+    const confirmBackdrop = this.page.locator('#confirm-modal-backdrop');
+    if ((await confirmBackdrop.count()) > 0 && (await confirmBackdrop.isVisible())) {
+      await confirmBackdrop.locator('#confirm-modal-ok').click();
+      await expect(confirmBackdrop).toBeHidden();
+    }
   }
 
   async sortAsc(columnName) {

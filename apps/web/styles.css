@@ -803,13 +803,6 @@ body.theme-dark .generator-status-text {
 
 body.theme-dark .testDataDefn,
 body.theme-dark .generator-schema-text textarea,
-body.theme-dark #generatorOutputPreview {
-  color: #d6d9de !important;
-  -webkit-text-fill-color: #d6d9de;
-  background-color: #1f2023;
-  border-color: #3a3b3c;
-}
-
 body.theme-dark #testdatadefntext,
 body.theme-dark #generatorSchemaText,
 body.theme-dark #generatorOutputPreview {

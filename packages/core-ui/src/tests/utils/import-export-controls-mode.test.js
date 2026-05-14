@@ -248,6 +248,16 @@ describe('ImportExportControls preview/edit mode', () => {
     lateDom.window.close();
   });
 
+  test('recreating import-export HTML clears prior timed error display instance', () => {
+    const clearSpy = jest.fn();
+    controls.errorDisplay = { clear: clearSpy };
+
+    controls.addHTMLtoGui(importExportRoot);
+
+    expect(clearSpy).toHaveBeenCalledTimes(1);
+    expect(controls.errorDisplay).toBeDefined();
+  });
+
   test('Set Grid From Text button disables again after preview mode import', async () => {
     const button = document.querySelector('#setgridfromtextbutton');
     const textArea = document.getElementById('markdownarea');

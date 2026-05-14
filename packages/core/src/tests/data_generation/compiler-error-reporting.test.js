@@ -39,7 +39,10 @@ describe('compiler error reporting through functional compiler flows', () => {
     expect(compiler.errors[0].message).toContain(' failed faker validation - ');
     expect(compiler.errors[1].message).toContain(' failed Regex validation - ');
     expect(compiler.errors[2].message).toContain(' failed enum validation - ');
-    expect(compiler.errors[3].message).toBe(' has no defined type');
+    expect(compiler.errors[0].message).toContain('__ failed faker validation - ');
+    expect(compiler.errors[1].message).toContain('__ failed Regex validation - ');
+    expect(compiler.errors[2].message).toContain('__ failed enum validation - ');
+    expect(compiler.errors[3].message).toBe('__ has no defined type');
     expect(compiler.errors.every((error) => error.column === undefined)).toBe(true);
   });
 });

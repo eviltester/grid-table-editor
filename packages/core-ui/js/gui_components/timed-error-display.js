@@ -14,7 +14,12 @@ export class TimedErrorDisplay {
     const element = this.documentObj.getElementById(this.elementId);
     if (element) {
       element.textContent = '';
+      element.removeAttribute('data-severity');
     }
+  }
+
+  destroy() {
+    this.clear();
   }
 
   show(message, { severity = 'error', timeoutMs = this.timeoutMs, sticky = false } = {}) {

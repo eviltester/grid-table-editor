@@ -66,6 +66,7 @@ test('grid header validation errors render in inline grid error surface', async 
   const appPage = new AppPage(page);
 
   await appPage.goto();
+  await appPage.gridEditor.setUniqueColumnNames(true);
   const initialColumnName = (await appPage.gridEditor.header.getColumnNames())[0];
   const gridError = page.locator('#grid-column-error');
 

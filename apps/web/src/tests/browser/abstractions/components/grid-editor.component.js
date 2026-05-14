@@ -17,6 +17,7 @@ class GridEditorComponent {
     this.clearFiltersButton = page.getByRole('button', { name: 'Clear Filters' });
     this.clearSortButton = page.getByRole('button', { name: 'Clear Sort' });
     this.resetTableButton = page.getByRole('button', { name: 'Reset Table' });
+    this.uniqueColumnNamesCheckbox = page.locator('#uniqueColumnNamesCheckbox');
   }
 
   async expectVisible() {
@@ -64,17 +65,8 @@ class GridEditorComponent {
   }
 
   async deleteSelectedRows() {
-    const handler = async (dialog) => {
-      if (dialog.message() === 'Are you Sure You Want to Delete Rows?') {
-        await dialog.accept();
-      }
-    };
-    this.page.on('dialog', handler);
-    try {
-      await this.deleteSelectedRowsButton.click();
-    } finally {
-      this.page.off('dialog', handler);
-    }
+    await this.deleteSelectedRowsButton.click();
+    await this._acceptConfirmIfVisible();
   }
 
   async selectRow(rowIndex) {
@@ -179,10 +171,24 @@ class GridEditorComponent {
   }
 
   async resetTable() {
-    this.page.once('dialog', async (dialog) => {
-      await dialog.accept();
-    });
     await this.resetTableButton.click();
+    await this._acceptConfirmIfVisible();
+  }
+
+  async setUniqueColumnNames(enabled = true) {
+    if (enabled) {
+      await this.uniqueColumnNamesCheckbox.check();
+      return;
+    }
+    await this.uniqueColumnNamesCheckbox.uncheck();
+  }
+
+  async _acceptConfirmIfVisible() {
+    const confirmBackdrop = this.page.locator('#confirm-modal-backdrop');
+    if ((await confirmBackdrop.count()) > 0 && (await confirmBackdrop.isVisible())) {
+      await confirmBackdrop.locator('#confirm-modal-ok').click();
+      await expect(confirmBackdrop).toBeHidden();
+    }
   }
 }
 

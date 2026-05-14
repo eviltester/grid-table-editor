@@ -85,10 +85,14 @@ function showTextInputModal({
     cancelButton.addEventListener('click', onCancel);
     okButton.addEventListener('click', onOk);
     inputElem.addEventListener('keydown', onKeyDown);
-    setTimeout(() => {
+    const scheduleFocus =
+      typeof window !== 'undefined' && typeof window.requestAnimationFrame === 'function'
+        ? window.requestAnimationFrame.bind(window)
+        : (callback) => setTimeout(callback, 0);
+    scheduleFocus(() => {
       inputElem.focus();
       inputElem.select();
-    }, 0);
+    });
     modal?.setAttribute('aria-describedby', 'text-input-modal-field');
   });
 }

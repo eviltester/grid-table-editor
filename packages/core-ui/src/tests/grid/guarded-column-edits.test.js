@@ -48,6 +48,14 @@ describe('GuardedColumnEdits (AG abstraction)', () => {
     expect(surfaceError).toHaveBeenCalled();
   });
 
+  test('rename surfaces missing column when definition is unavailable', async () => {
+    gridExtras.getColumnDef.mockReturnValue(null);
+    await guarded.renameColId('missing-column');
+    expect(surfaceError).toHaveBeenCalledWith('Column not found');
+    expect(requestTextInput).not.toHaveBeenCalled();
+    expect(gridExtras.renameColId).not.toHaveBeenCalled();
+  });
+
   test('delete prevents removing last column and requires confirm', async () => {
     gridExtras.getNumberOfColumns.mockReturnValue(1);
     await guarded.deleteColId('column1');
@@ -62,6 +70,15 @@ describe('GuardedColumnEdits (AG abstraction)', () => {
     requestConfirm.mockResolvedValue(true);
     await guarded.deleteColId('column1');
     expect(gridExtras.deleteColumnId).toHaveBeenCalledWith('column1');
+  });
+
+  test('delete surfaces missing column when definition is unavailable', async () => {
+    gridExtras.getNumberOfColumns.mockReturnValue(2);
+    gridExtras.getColumnDef.mockReturnValue(null);
+    await guarded.deleteColId('missing-column');
+    expect(surfaceError).toHaveBeenCalledWith('Column not found');
+    expect(requestConfirm).not.toHaveBeenCalled();
+    expect(gridExtras.deleteColumnId).not.toHaveBeenCalled();
   });
 
   test('duplicate and add-neighbour validate names', async () => {
@@ -150,6 +167,10 @@ describe('GuardedTabulatorColumnEdits', () => {
   });
 
   test('duplicate and add-neighbour prompt-driven actions delegate', async () => {
+    await guarded.duplicateColumn(1, null);
+    expect(surfaceError).toHaveBeenCalledWith('Column not found');
+    expect(gridExtras.duplicateColumn).not.toHaveBeenCalled();
+
     requestTextInput.mockResolvedValue('Copy');
     await guarded.duplicateColumn(1, column);
     expect(gridExtras.duplicateColumn).toHaveBeenCalledWith(1, column, 'Copy');

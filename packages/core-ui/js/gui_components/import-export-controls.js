@@ -29,6 +29,7 @@ class ImportExportControls {
   }
 
   addHTMLtoGui(parentelement) {
+    this.errorDisplay?.clear?.();
     parentelement.innerHTML = `<span data-help="import-export-controls" class="helpicon"></span>
             <button id="settextfromgridbutton">v Set Text From Grid v</button>
             <button id="setgridfromtextbutton" disabled>^ Set Grid From Text ^</button>

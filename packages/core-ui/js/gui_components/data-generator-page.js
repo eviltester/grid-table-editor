@@ -87,6 +87,15 @@ function buildRuleSpecFromSchemaRow(row) {
   return String(row?.value ?? '').trim();
 }
 
+function extractLiteralValueFromRuleSpec(ruleSpec) {
+  const value = String(ruleSpec ?? '');
+  const match = value.match(/^(?:literal|datatype\.literal|awd\.datatype\.literal)\s*\(([\s\S]*)\)$/i);
+  if (!match) {
+    return value;
+  }
+  return match[1];
+}
+
 function schemaRowsToSpec(schemaRows) {
   const renderResult = dataRulesToSchemaText({
     dataRules: schemaRowsToDataRules({ schemaRows }).dataRules,
@@ -975,7 +984,7 @@ enum(active,inactive,pending)</pre>
       }
       if (row.sourceType === SOURCE_TYPE_LITERAL) {
         rule.type = SOURCE_TYPE_LITERAL;
-        rule.ruleSpec = String(row?.value ?? '');
+        rule.ruleSpec = extractLiteralValueFromRuleSpec(buildRuleSpecFromSchemaRow(row));
         return;
       }
       if (row.sourceType === SOURCE_TYPE_ENUM) {
@@ -1378,6 +1387,7 @@ enum(active,inactive,pending)</pre>
 export {
   DataGeneratorPage,
   buildRuleSpecFromSchemaRow,
+  extractLiteralValueFromRuleSpec,
   schemaRowsToSpec,
   schemaRowsToSpecWithTokens,
   validateSchemaRows,

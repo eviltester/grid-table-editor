@@ -1,4 +1,9 @@
 export class SchemaParsingErrors {
+  static #columnLabel(column) {
+    const text = String(column ?? '').trim();
+    return text.length > 0 ? text : '__';
+  }
+
   static missingSchemaRows() {
     return {
       code: 'missing_schema_rows',
@@ -39,41 +44,46 @@ export class SchemaParsingErrors {
   }
 
   static evaluatingAsLiteral(column) {
+    const columnLabel = SchemaParsingErrors.#columnLabel(column);
     return {
       code: 'compiler_validation_error',
-      message: `Evaluating _${column}_ as 'literal'`,
+      message: `Evaluating ${columnLabel} as 'literal'`,
       ...(column ? { column } : {}),
     };
   }
 
   static fakerValidationFailed(column, reason) {
+    const columnLabel = SchemaParsingErrors.#columnLabel(column);
     return {
       code: 'compiler_validation_error',
-      message: `${column} failed faker validation - ${reason}`,
+      message: `${columnLabel} failed faker validation - ${reason}`,
       ...(column ? { column } : {}),
     };
   }
 
   static regexValidationFailed(column, reason) {
+    const columnLabel = SchemaParsingErrors.#columnLabel(column);
     return {
       code: 'compiler_validation_error',
-      message: `${column} failed Regex validation - ${reason}`,
+      message: `${columnLabel} failed Regex validation - ${reason}`,
       ...(column ? { column } : {}),
     };
   }
 
   static enumValidationFailed(column, reason) {
+    const columnLabel = SchemaParsingErrors.#columnLabel(column);
     return {
       code: 'compiler_validation_error',
-      message: `${column} failed enum validation - ${reason}`,
+      message: `${columnLabel} failed enum validation - ${reason}`,
       ...(column ? { column } : {}),
     };
   }
 
   static unknownRuleType(column) {
+    const columnLabel = SchemaParsingErrors.#columnLabel(column);
     return {
       code: 'unknown_rule_type',
-      message: `${column} has no defined type`,
+      message: `${columnLabel} has no defined type`,
       ...(column ? { column } : {}),
     };
   }

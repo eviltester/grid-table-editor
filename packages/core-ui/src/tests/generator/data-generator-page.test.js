@@ -372,7 +372,9 @@ describe('DataGeneratorPage', () => {
     document.getElementById('previewRowsCount').value = '51';
     page.previewData();
 
-    expect(alertFn).toHaveBeenCalledWith('previewRowsCount must be less than or equal to 50.');
+    expect(document.getElementById('generatorStatusText').textContent).toBe(
+      'previewRowsCount must be less than or equal to 50.'
+    );
     expect(FakeGridExtension.lastInstance.setGridFromGenericDataTable).not.toHaveBeenCalled();
   });
 
@@ -834,8 +836,7 @@ describe('DataGeneratorPage', () => {
     );
   });
 
-  test('default alert invocation does not throw on validation errors', () => {
-    dom.window.alert = jest.fn();
+  test('default validation errors surface inline and do not throw', () => {
     const page = new DataGeneratorPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
@@ -852,7 +853,7 @@ describe('DataGeneratorPage', () => {
     page.renderSchemaRows();
 
     expect(() => page.previewData()).not.toThrow();
-    expect(dom.window.alert).toHaveBeenCalled();
+    expect(document.getElementById('generatorSchemaErrorText').textContent).toBe('Row 1: column name is required.');
   });
 
   test('toggles between schema controls and text editing with round trip', () => {
@@ -1211,7 +1212,7 @@ describe('DataGeneratorPage', () => {
 
     await page.generateDataFile();
 
-    expect(alertFn).toHaveBeenCalledWith('Add at least one schema row.');
+    expect(document.getElementById('generatorSchemaErrorText').textContent).toBe('Add at least one schema row.');
     expect(page.schemaRows).toEqual([]);
   });
 });

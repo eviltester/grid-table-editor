@@ -1,6 +1,7 @@
 import { GridExtension } from './gridExtension-tabulator.js';
 import { GridControl, GridControlsPageMap } from '../gridControl.js';
 import { GuardedColumnEdits } from '../../../grid/guarded-column-edits.js';
+import { showGridError } from '../grid-error-surface.js';
 
 /*
     Grid Features Used:
@@ -75,7 +76,9 @@ class ExtendedDataGrid {
       e.preventDefault();
       e.stopPropagation();
 
-      const guardedColumnEdits = new GuardedColumnEdits(new GridExtension(column.getTable()));
+      const guardedColumnEdits = new GuardedColumnEdits(new GridExtension(column.getTable()), {
+        surfaceError: showGridError,
+      });
       const columnId = column.getDefinition().colId || column.getDefinition().field;
       const fieldName = column.getField();
       const table = column.getTable();

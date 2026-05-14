@@ -8,6 +8,7 @@
 
 import { GridExtension } from './gridExtension-ag-grid.js';
 import { GuardedColumnEdits } from '../../../grid/guarded-column-edits.js';
+import { showGridError } from '../grid-error-surface.js';
 
 class CustomHeaderAgGrid {
   init(agParams) {
@@ -41,7 +42,9 @@ class CustomHeaderAgGrid {
             </div>
           `;
 
-    this.guardedColumnEdits = new GuardedColumnEdits(new GridExtension(this.agParams.api));
+    this.guardedColumnEdits = new GuardedColumnEdits(new GridExtension(this.agParams.api), {
+      surfaceError: showGridError,
+    });
 
     this.eMenuButton = this.eGui.querySelector('.customFilterMenuButton');
     this.eSortDownButton = this.eGui.querySelector('.customSortDownLabel');

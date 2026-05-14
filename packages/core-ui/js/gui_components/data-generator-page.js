@@ -111,7 +111,6 @@ class DataGeneratorPage {
   constructor({
     parentElement,
     documentObj = document,
-    alertFn,
     faker,
     RandExp,
     TabulatorCtor = globalThis?.Tabulator,
@@ -122,17 +121,6 @@ class DataGeneratorPage {
   } = {}) {
     this.parentElement = parentElement;
     this.documentObj = documentObj;
-    this.alertFn =
-      typeof alertFn === 'function'
-        ? alertFn
-        : (message) => {
-            const windowAlert = this.documentObj?.defaultView?.alert || globalThis?.alert;
-            if (typeof windowAlert === 'function') {
-              windowAlert.call(this.documentObj?.defaultView || globalThis, message);
-              return;
-            }
-            console.error(message);
-          };
     this.faker = faker;
     this.RandExp = RandExp;
     this.TabulatorCtor = TabulatorCtor;
@@ -541,7 +529,6 @@ class DataGeneratorPage {
       this.setGenerationStatus(text, false);
       this.scheduleClearGenerationStatus(5000);
     }
-    this.alertFn(text);
   }
 
   toggleSchemaEditMode() {

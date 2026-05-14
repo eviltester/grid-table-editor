@@ -12,6 +12,7 @@ function createColumn(title = 'Old Name') {
 describe('GuardedColumnEdits (AG abstraction)', () => {
   let gridExtras;
   let guarded;
+  let surfaceError;
 
   beforeEach(() => {
     gridExtras = {
@@ -23,10 +24,10 @@ describe('GuardedColumnEdits (AG abstraction)', () => {
       duplicateColumn: jest.fn(),
       addNeighbourColumnId: jest.fn(),
     };
-    guarded = new GuardedColumnEdits(gridExtras);
+    surfaceError = jest.fn();
+    guarded = new GuardedColumnEdits(gridExtras, { surfaceError });
     global.prompt = jest.fn();
     global.confirm = jest.fn(() => true);
-    global.alert = jest.fn();
   });
 
   test('rename validates and delegates', () => {
@@ -34,15 +35,21 @@ describe('GuardedColumnEdits (AG abstraction)', () => {
     guarded.renameColId('column1');
     expect(gridExtras.renameColId).toHaveBeenCalledWith('column1', 'Renamed');
 
-    gridExtras.nameAlreadyExists.mockReturnValue(true);
+    global.prompt.mockReturnValue('Old Name');
     guarded.renameColId('column1');
-    expect(global.alert).toHaveBeenCalled();
+    expect(gridExtras.renameColId).toHaveBeenCalledTimes(1);
+    expect(surfaceError).not.toHaveBeenCalled();
+
+    gridExtras.nameAlreadyExists.mockReturnValue(true);
+    global.prompt.mockReturnValue('Existing');
+    guarded.renameColId('column1');
+    expect(surfaceError).toHaveBeenCalled();
   });
 
   test('delete prevents removing last column and requires confirm', () => {
     gridExtras.getNumberOfColumns.mockReturnValue(1);
     guarded.deleteColId('column1');
-    expect(global.alert).toHaveBeenCalledWith('Cannot Delete The Only Column');
+    expect(surfaceError).toHaveBeenCalledWith('Cannot Delete The Only Column');
     expect(gridExtras.deleteColumnId).not.toHaveBeenCalled();
 
     gridExtras.getNumberOfColumns.mockReturnValue(2);
@@ -70,6 +77,7 @@ describe('GuardedTabulatorColumnEdits', () => {
   let gridExtras;
   let guarded;
   let column;
+  let surfaceError;
 
   beforeEach(() => {
     gridExtras = {
@@ -80,33 +88,38 @@ describe('GuardedTabulatorColumnEdits', () => {
       duplicateColumn: jest.fn(),
       addNeighbourColumn: jest.fn(),
     };
-    guarded = new GuardedTabulatorColumnEdits(gridExtras);
+    surfaceError = jest.fn();
+    guarded = new GuardedTabulatorColumnEdits(gridExtras, { surfaceError });
     column = createColumn('Old Name');
     global.prompt = jest.fn();
     global.confirm = jest.fn(() => true);
-    global.alert = jest.fn();
   });
 
   test('rename validates column existence and uniqueness', () => {
     guarded.renameColumn(null);
-    expect(global.alert).toHaveBeenCalledWith('Column not found');
+    expect(surfaceError).toHaveBeenCalledWith('Column not found');
 
     global.prompt.mockReturnValue('Renamed');
     guarded.renameColumn(column);
     expect(gridExtras.renameColumn).toHaveBeenCalledWith(column, 'Renamed');
 
-    gridExtras.nameAlreadyExists.mockReturnValue(true);
+    global.prompt.mockReturnValue('Old Name');
     guarded.renameColumn(column);
-    expect(global.alert).toHaveBeenCalled();
+    expect(gridExtras.renameColumn).toHaveBeenCalledTimes(1);
+
+    gridExtras.nameAlreadyExists.mockReturnValue(true);
+    global.prompt.mockReturnValue('Existing');
+    guarded.renameColumn(column);
+    expect(surfaceError).toHaveBeenCalled();
   });
 
   test('delete validates constraints and confirmation', () => {
     guarded.deleteColumn(undefined);
-    expect(global.alert).toHaveBeenCalledWith('Column not found');
+    expect(surfaceError).toHaveBeenCalledWith('Column not found');
 
     gridExtras.getNumberOfColumns.mockReturnValue(1);
     guarded.deleteColumn(column);
-    expect(global.alert).toHaveBeenCalledWith('Cannot Delete The Only Column');
+    expect(surfaceError).toHaveBeenCalledWith('Cannot Delete The Only Column');
 
     gridExtras.getNumberOfColumns.mockReturnValue(2);
     global.confirm.mockReturnValue(false);
@@ -124,7 +137,7 @@ describe('GuardedTabulatorColumnEdits', () => {
     expect(gridExtras.duplicateColumn).toHaveBeenCalledWith(1, column, 'Copy');
 
     guarded.addNeighbourColumn(1, null);
-    expect(global.alert).toHaveBeenCalledWith('Column not found');
+    expect(surfaceError).toHaveBeenCalledWith('Column not found');
 
     global.prompt.mockReturnValue('Neighbour');
     guarded.addNeighbourColumn(-1, column);

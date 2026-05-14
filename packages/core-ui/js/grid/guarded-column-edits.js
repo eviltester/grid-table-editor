@@ -1,12 +1,22 @@
 class GuardedColumnEdits {
-  constructor(gridExtension) {
+  constructor(gridExtension, { surfaceError } = {}) {
     this.gridExtras = gridExtension;
+    this.surfaceError = typeof surfaceError === 'function' ? surfaceError : null;
   }
 
   // todo: ids here look suspiciously ag-grid specific
 
+  showError(message) {
+    if (this.surfaceError) {
+      this.surfaceError(message);
+      return;
+    }
+    console.error(message);
+  }
+
   renameColId(id) {
     var editColDef = this.gridExtras.getColumnDef(id);
+    const currentName = String(editColDef?.headerName ?? '');
     var colTitle = prompt('Column Name?', editColDef.headerName);
 
     if (colTitle != null && colTitle != '') {
@@ -15,8 +25,12 @@ class GuardedColumnEdits {
       return false;
     }
 
+    if (colTitle === currentName) {
+      return true;
+    }
+
     if (this.gridExtras.nameAlreadyExists(colTitle)) {
-      alert(`A column with name ${colTitle} already exists`);
+      this.showError(`A column with name ${colTitle} already exists`);
       return false;
     }
 
@@ -25,7 +39,7 @@ class GuardedColumnEdits {
 
   deleteColId(id) {
     if (this.gridExtras.getNumberOfColumns() == 1) {
-      alert('Cannot Delete The Only Column');
+      this.showError('Cannot Delete The Only Column');
       return;
     }
 
@@ -46,7 +60,7 @@ class GuardedColumnEdits {
     }
 
     if (this.gridExtras.nameAlreadyExists(colTitle)) {
-      alert(`A column with name ${colTitle} already exists`);
+      this.showError(`A column with name ${colTitle} already exists`);
       return false;
     }
 
@@ -63,7 +77,7 @@ class GuardedColumnEdits {
     }
 
     if (this.gridExtras.nameAlreadyExists(colTitle)) {
-      alert(`A column with name ${colTitle} already exists`);
+      this.showError(`A column with name ${colTitle} already exists`);
       return false;
     }
 

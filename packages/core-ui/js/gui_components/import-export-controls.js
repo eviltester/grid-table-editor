@@ -3,6 +3,7 @@ import { DragDropControl } from './drag-drop-control.js';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 import { sanitizeUiOptionsForFormat } from './options-catalog-adapter.js';
 import { createOptionsPanelsForParent } from './options-ui-schema.js';
+import { TimedErrorDisplay } from './timed-error-display.js';
 
 class ImportExportControls {
   constructor() {
@@ -19,6 +20,7 @@ class ImportExportControls {
     this.autoPreviewEnabled = false;
     this._hasBoundAutoPreviewInput = false;
     this._gridChangeUnsubscribe = null;
+    this.errorDisplay = null;
   }
 
   addHTMLtoGui(parentelement) {
@@ -32,7 +34,13 @@ class ImportExportControls {
             <span>[Drag And Drop <span class="fileFormat">.csv</span> File Here]</span>
             </label>
             <div id="import-progress-status" class="import-progress-status" style="display:none;" aria-live="polite"></div>
+            <div id="import-export-error" class="generator-schema-error-text" aria-live="polite" role="status"></div>
         `;
+    this.errorDisplay = new TimedErrorDisplay({
+      documentObj: document,
+      elementId: 'import-export-error',
+      timeoutMs: 5000,
+    });
 
     let settextfromgridbutton = parentelement.querySelector('#settextfromgridbutton');
     let setTextAreaClickListener = this.renderTextFromGrid.bind(this);
@@ -93,7 +101,7 @@ class ImportExportControls {
   importTextArea() {
     if (this.isPreviewTextMode()) {
       if (!this.previewTextDirty) {
-        alert('Grid to Text only availalable in Edit mode');
+        this._showError('Grid to Text only availalable in Edit mode');
         return;
       }
       const typeToImport = document.querySelector('li.active-type a').getAttribute('data-type');
@@ -109,6 +117,14 @@ class ImportExportControls {
 
     this.setCurrentTypeOptions();
     return this.importer.importText(typeToImport, textToImport);
+  }
+
+  _showError(message, options = {}) {
+    const text = String(message ?? '').trim();
+    if (!text) {
+      return;
+    }
+    this.errorDisplay?.show(text, options);
   }
 
   renderTextFromGrid() {

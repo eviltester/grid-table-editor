@@ -1,16 +1,26 @@
 class GuardedTabulatorColumnEdits {
-  constructor(gridExtension) {
+  constructor(gridExtension, { surfaceError } = {}) {
     this.gridExtras = gridExtension;
+    this.surfaceError = typeof surfaceError === 'function' ? surfaceError : null;
   }
 
   // todo: ids here look suspiciously ag-grid specific
 
+  showError(message) {
+    if (this.surfaceError) {
+      this.surfaceError(message);
+      return;
+    }
+    console.error(message);
+  }
+
   renameColumn(column) {
     if (column == null || column == undefined) {
-      alert('Column not found');
+      this.showError('Column not found');
       return;
     }
 
+    const currentName = String(column.getDefinition()?.title ?? '');
     var colTitle = prompt('Column Name?', column.getDefinition().title);
 
     if (colTitle != null && colTitle != '') {
@@ -19,8 +29,12 @@ class GuardedTabulatorColumnEdits {
       return false;
     }
 
+    if (colTitle === currentName) {
+      return true;
+    }
+
     if (this.gridExtras.nameAlreadyExists(colTitle)) {
-      alert(`A column with name ${colTitle} already exists`);
+      this.showError(`A column with name ${colTitle} already exists`);
       return false;
     }
 
@@ -29,12 +43,12 @@ class GuardedTabulatorColumnEdits {
 
   deleteColumn(column) {
     if (column == null || column == undefined) {
-      alert('Column not found');
+      this.showError('Column not found');
       return;
     }
 
     if (this.gridExtras.getNumberOfColumns() == 1) {
-      alert('Cannot Delete The Only Column');
+      this.showError('Cannot Delete The Only Column');
       return;
     }
 
@@ -53,7 +67,7 @@ class GuardedTabulatorColumnEdits {
     }
 
     if (this.gridExtras.nameAlreadyExists(colTitle)) {
-      alert(`A column with name ${colTitle} already exists`);
+      this.showError(`A column with name ${colTitle} already exists`);
       return false;
     }
 
@@ -62,7 +76,7 @@ class GuardedTabulatorColumnEdits {
 
   addNeighbourColumn(position, existingColumn) {
     if (existingColumn == null || existingColumn == undefined) {
-      alert('Column not found');
+      this.showError('Column not found');
       return;
     }
 
@@ -75,7 +89,7 @@ class GuardedTabulatorColumnEdits {
     }
 
     if (this.gridExtras.nameAlreadyExists(colTitle)) {
-      alert(`A column with name ${colTitle} already exists`);
+      this.showError(`A column with name ${colTitle} already exists`);
       return false;
     }
 

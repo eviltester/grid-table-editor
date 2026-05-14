@@ -119,7 +119,7 @@ async function generatePairwiseTestData() {
 
     const enumCount = countEnumRules(generator.testDataRules());
     if (enumCount < 2) {
-      alert('Pairwise generation requires at least 2 enum columns.');
+      showTestDataSchemaError('Pairwise generation requires at least 2 enum columns.');
       setTestDataStatus('Insufficient enum columns.', false);
       return;
     }
@@ -130,7 +130,7 @@ async function generatePairwiseTestData() {
 
     const dataTable = createPairwiseTableFromGenerator(generator);
     if (!dataTable) {
-      alert('Failed to generate pairwise data.');
+      showTestDataSchemaError('Failed to generate pairwise data.');
       setTestDataStatus('Pairwise generation failed.', false);
       return;
     }
@@ -145,7 +145,7 @@ async function generatePairwiseTestData() {
     await yieldToUi();
   } catch (error) {
     console.error('Pairwise generation error:', error);
-    alert(`Pairwise generation failed: ${error.message}`);
+    showTestDataSchemaError(`Pairwise generation failed: ${error.message}`);
     setTestDataStatus('Pairwise generation failed.', false);
   } finally {
     if (generateButton) {
@@ -248,7 +248,7 @@ async function generateTestData() {
       !Number.isFinite(desiredRowCountParsed) ||
       (desiredRowCountParsed < 1 && generationMode !== TEST_DATA_MODES.AMEND_SELECTED)
     ) {
-      alert('Enter how many rows to generate.');
+      showTestDataSchemaError('Enter how many rows to generate.');
       setTestDataStatus('Invalid row count.', false);
       return;
     }
@@ -266,7 +266,7 @@ async function generateTestData() {
     } else {
       const gridExtras = getMainGridExtras();
       if (!gridExtras) {
-        alert('Grid interface unavailable for amend mode.');
+        showTestDataSchemaError('Grid interface unavailable for amend mode.');
         setTestDataStatus('Grid interface unavailable.', false);
         return;
       }
@@ -290,7 +290,7 @@ async function generateTestData() {
         );
 
         if (generationMode === TEST_DATA_MODES.AMEND_SELECTED && directAmendResult?.noSelectedRows) {
-          alert('No rows selected.');
+          showTestDataSchemaError('No rows selected.');
           setTestDataStatus('No selected rows to amend.', false);
           return;
         }
@@ -307,7 +307,7 @@ async function generateTestData() {
         });
 
         if (generationMode === TEST_DATA_MODES.AMEND_SELECTED && amendResult.noSelectedRows) {
-          alert('No rows selected.');
+          showTestDataSchemaError('No rows selected.');
           setTestDataStatus('No selected rows to amend.', false);
           return;
         }
@@ -327,7 +327,7 @@ async function generateTestData() {
   } catch (error) {
     console.error('Generate/amend failed', error);
     setTestDataStatus('Generate failed. Check console for details.', false);
-    alert('Generate failed. Check console for details.');
+    showTestDataSchemaError('Generate failed. Check console for details.');
   } finally {
     if (generateButton) {
       generateButton.disabled = false;
@@ -521,8 +521,7 @@ function populateTestDataGridFromRules() {
   if (parseResult.errors.length > 0) {
     const errorText = schemaErrorsToText(parseResult.errors);
     showTestDataSchemaError(errorText);
-    setTestDataStatus(errorText, false);
-    scheduleTestDataStatusReset(5000);
+    setTestDataStatus('', false);
     return;
   }
 

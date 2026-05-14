@@ -17,8 +17,8 @@ export class TimedErrorDisplay {
     }
   }
 
-  show(message) {
-    const text = String(message || '').trim();
+  show(message, { severity = 'error', timeoutMs = this.timeoutMs, sticky = false } = {}) {
+    const text = String(message ?? '').trim();
     if (!text) {
       this.clear();
       return;
@@ -31,10 +31,18 @@ export class TimedErrorDisplay {
       clearTimeout(this.timeoutId);
       this.timeoutId = null;
     }
+    element.setAttribute('data-severity', severity);
     element.textContent = text;
+
+    if (sticky) {
+      return;
+    }
+
+    const delayMs = Number.isFinite(timeoutMs) ? timeoutMs : this.timeoutMs;
     this.timeoutId = setTimeout(() => {
       this.timeoutId = null;
       element.textContent = '';
-    }, this.timeoutMs);
+      element.removeAttribute('data-severity');
+    }, delayMs);
   }
 }

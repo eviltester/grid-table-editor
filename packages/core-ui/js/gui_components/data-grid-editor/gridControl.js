@@ -31,6 +31,7 @@ class GridControl {
             <button id="clearSortButton" title="Clear Sort">Clear Sort</button>
             <button id="clearTableButton" title="Clear All Data">Reset Table</button>
         </div>
+        <div id="grid-column-error" class="generator-schema-error-text" aria-live="polite" role="status"></div>
         <!-- ag-theme-alpine -->
         <div id="myGrid" style="height: 500px; width:100%;" class="ag-theme-alpine"></div>
         `;

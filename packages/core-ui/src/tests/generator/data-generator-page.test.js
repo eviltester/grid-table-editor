@@ -1,5 +1,7 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
+import { faker } from '@faker-js/faker';
+import RandExp from 'randexp';
 import {
   DataGeneratorPage,
   buildRuleSpecFromSchemaRow,
@@ -7,7 +9,7 @@ import {
   schemaRowsToSpecWithTokens,
   validateSchemaRows,
 } from '../../../js/gui_components/data-generator-page.js';
-import { SchemaParsingErrors } from '../../../../core/js/data_generation/schema-parsing-errors.js';
+import { TestDataGenerator } from '../../../../core/js/data_generation/testDataGenerator.js';
 
 class FakeTabulator {
   constructor(element, options) {
@@ -67,102 +69,6 @@ class FakeDownload {
   }
 }
 
-class FakeTestDataGenerator {
-  constructor() {
-    this.rules = [];
-    this._errors = [];
-    this._tokens = [];
-    this.rulesParser = {
-      getSchemaTokens: () => this._tokens.map((token) => ({ ...token })),
-    };
-    this.compiler = {
-      validate: () => {},
-    };
-  }
-
-  importSpec(text) {
-    const lines = text.split('\n');
-    this.rules = [];
-    this._errors = [];
-    this._tokens = [];
-    let pendingName = null;
-    let pendingComments = [];
-    for (let i = 0; i < lines.length; i += 1) {
-      const line = lines[i];
-      const trimmed = String(line ?? '').trim();
-      if (trimmed.length === 0) {
-        if (pendingName !== null) {
-          this._errors.push(SchemaParsingErrors.missingRuleDefinition(pendingName, i + 1));
-          return;
-        }
-        this._tokens.push({ kind: 'blank', text: line });
-        pendingComments.push(line);
-        continue;
-      }
-      if (pendingName === null && /^\s*#/.test(line)) {
-        this._tokens.push({ kind: 'comment', text: line });
-        pendingComments.push(line);
-        continue;
-      }
-      if (pendingName === null) {
-        pendingName = trimmed;
-        continue;
-      }
-      this.rules.push({
-        name: pendingName,
-        ruleSpec: trimmed,
-        comments: pendingComments.join('\n'),
-        type: '',
-      });
-      this._tokens.push({ kind: 'rule', name: pendingName, rule: trimmed });
-      pendingName = null;
-      pendingComments = [];
-    }
-    if (pendingName !== null) {
-      this._errors.push(SchemaParsingErrors.missingRuleDefinition(pendingName, lines.length));
-      return;
-    }
-    if (this.rules.length === 0) {
-      this._errors.push(SchemaParsingErrors.invalidSchemaPairing());
-    }
-  }
-
-  compile() {
-    this.rules.forEach((rule) => {
-      const spec = String(rule.ruleSpec || '');
-      if (spec.startsWith('word.')) {
-        rule.type = 'faker';
-        return;
-      }
-      if (spec.startsWith('[') || spec.includes('{')) {
-        rule.type = 'regex';
-        return;
-      }
-      rule.type = 'literal';
-    });
-  }
-
-  testDataRules() {
-    return this.rules;
-  }
-
-  isValid() {
-    return this._errors.length === 0;
-  }
-
-  errors() {
-    return this._errors;
-  }
-
-  generateHeadersArray() {
-    return this.rules.map((rule) => rule.name);
-  }
-
-  generateRow() {
-    return this.rules.map((rule) => `${rule.type}:${rule.ruleSpec}`);
-  }
-}
-
 describe('DataGeneratorPage', () => {
   let dom;
   let alertFn;
@@ -186,14 +92,14 @@ describe('DataGeneratorPage', () => {
       'person.firstName()'
     );
     expect(buildRuleSpecFromSchemaRow({ sourceType: 'regex', value: '[A-Z]{3}' })).toBe('[A-Z]{3}');
-    expect(buildRuleSpecFromSchemaRow({ sourceType: 'literal', value: 'Fixed' })).toBe('Fixed');
-    expect(buildRuleSpecFromSchemaRow({ sourceType: 'literal', value: '   ' })).toBe('');
+    expect(buildRuleSpecFromSchemaRow({ sourceType: 'literal', value: 'Fixed' })).toBe('literal(Fixed)');
+    expect(buildRuleSpecFromSchemaRow({ sourceType: 'literal', value: '   ' })).toBe('literal()');
 
     const spec = schemaRowsToSpec([
       { name: 'A', sourceType: 'faker', command: 'word.noun', params: '()' },
       { name: 'B', sourceType: 'literal', value: 'x' },
     ]);
-    expect(spec).toBe('A\nword.noun()\nB\nx');
+    expect(spec).toBe('A\nword.noun()\nB\nliteral(x)');
   });
 
   test('schemaRowsToSpec omits fully blank rows', () => {
@@ -212,7 +118,7 @@ describe('DataGeneratorPage', () => {
       GridExtensionClass: FakeGridExtension,
       ExporterClass: FakeExporter,
       DownloadClass: FakeDownload,
-      TestDataGeneratorClass: FakeTestDataGenerator,
+      TestDataGeneratorClass: TestDataGenerator,
     });
     page.init();
 
@@ -244,7 +150,7 @@ describe('DataGeneratorPage', () => {
       GridExtensionClass: FakeGridExtension,
       ExporterClass: FakeExporter,
       DownloadClass: FakeDownload,
-      TestDataGeneratorClass: FakeTestDataGenerator,
+      TestDataGeneratorClass: TestDataGenerator,
     });
     page.init();
     page.schemaRows[0].sourceType = 'faker';
@@ -281,18 +187,18 @@ describe('DataGeneratorPage', () => {
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
-      faker: { word: { noun: () => 'x' } },
-      RandExp: function RandExp() {},
+      faker,
+      RandExp,
       TabulatorCtor: FakeTabulator,
       GridExtensionClass: FakeGridExtension,
       ExporterClass: FakeExporter,
       DownloadClass: FakeDownload,
-      TestDataGeneratorClass: FakeTestDataGenerator,
+      TestDataGeneratorClass: TestDataGenerator,
     });
     page.init();
 
     page.schemaRows = [
-      { id: '1', name: 'Name', sourceType: 'faker', command: 'word.noun', params: '()', value: '' },
+      { id: '1', name: 'Name', sourceType: 'faker', command: 'person.firstName', params: '()', value: '' },
       { id: '2', name: 'Code', sourceType: 'regex', command: '', params: '', value: '[A-Z]{3}' },
     ];
     page.renderSchemaRows();
@@ -313,13 +219,13 @@ describe('DataGeneratorPage', () => {
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
-      faker: { word: { noun: () => 'x' } },
-      RandExp: function RandExp() {},
+      faker,
+      RandExp,
       TabulatorCtor: FakeTabulator,
       GridExtensionClass: FakeGridExtension,
       ExporterClass: FakeExporter,
       DownloadClass: FakeDownload,
-      TestDataGeneratorClass: FakeTestDataGenerator,
+      TestDataGeneratorClass: TestDataGenerator,
     });
     page.init();
 
@@ -329,7 +235,7 @@ describe('DataGeneratorPage', () => {
     page.previewData();
 
     const tableArg = FakeGridExtension.lastInstance.setGridFromGenericDataTable.mock.calls[0][0];
-    expect(tableArg.getCell(0, 0)).toBe('literal:');
+    expect(tableArg.getCell(0, 0)).toBe('');
   });
 
   test('preview rows input defaults to 10 and has max 50', () => {
@@ -343,7 +249,7 @@ describe('DataGeneratorPage', () => {
       GridExtensionClass: FakeGridExtension,
       ExporterClass: FakeExporter,
       DownloadClass: FakeDownload,
-      TestDataGeneratorClass: FakeTestDataGenerator,
+      TestDataGeneratorClass: TestDataGenerator,
     });
     page.init();
 
@@ -363,7 +269,7 @@ describe('DataGeneratorPage', () => {
       GridExtensionClass: FakeGridExtension,
       ExporterClass: FakeExporter,
       DownloadClass: FakeDownload,
-      TestDataGeneratorClass: FakeTestDataGenerator,
+      TestDataGeneratorClass: TestDataGenerator,
     });
     page.init();
     page.schemaRows = [{ id: '1', name: 'Name', sourceType: 'literal', command: '', params: '', value: 'fixed' }];
@@ -389,7 +295,7 @@ describe('DataGeneratorPage', () => {
       GridExtensionClass: FakeGridExtension,
       ExporterClass: FakeExporter,
       DownloadClass: FakeDownload,
-      TestDataGeneratorClass: FakeTestDataGenerator,
+      TestDataGeneratorClass: TestDataGenerator,
     });
     page.init();
 
@@ -419,7 +325,7 @@ describe('DataGeneratorPage', () => {
       GridExtensionClass: FakeGridExtension,
       ExporterClass: FakeExporter,
       DownloadClass: FakeDownload,
-      TestDataGeneratorClass: FakeTestDataGenerator,
+      TestDataGeneratorClass: TestDataGenerator,
     });
     page.init();
 
@@ -449,7 +355,7 @@ describe('DataGeneratorPage', () => {
       GridExtensionClass: FakeGridExtension,
       ExporterClass: FakeExporter,
       DownloadClass: FakeDownload,
-      TestDataGeneratorClass: FakeTestDataGenerator,
+      TestDataGeneratorClass: TestDataGenerator,
     });
     page.init();
 
@@ -490,7 +396,7 @@ describe('DataGeneratorPage', () => {
       GridExtensionClass: FakeGridExtension,
       ExporterClass: FakeExporter,
       DownloadClass: FakeDownload,
-      TestDataGeneratorClass: FakeTestDataGenerator,
+      TestDataGeneratorClass: TestDataGenerator,
     });
     page.init();
 
@@ -521,7 +427,7 @@ describe('DataGeneratorPage', () => {
       GridExtensionClass: FakeGridExtension,
       ExporterClass: FakeExporter,
       DownloadClass: FakeDownload,
-      TestDataGeneratorClass: FakeTestDataGenerator,
+      TestDataGeneratorClass: TestDataGenerator,
     });
     page.init();
 
@@ -561,7 +467,7 @@ describe('DataGeneratorPage', () => {
       GridExtensionClass: FakeGridExtension,
       ExporterClass: FakeExporter,
       DownloadClass: FakeDownload,
-      TestDataGeneratorClass: FakeTestDataGenerator,
+      TestDataGeneratorClass: TestDataGenerator,
     });
     page.init();
 
@@ -616,7 +522,7 @@ describe('DataGeneratorPage', () => {
       GridExtensionClass: FakeGridExtension,
       ExporterClass: FakeExporter,
       DownloadClass: FakeDownload,
-      TestDataGeneratorClass: FakeTestDataGenerator,
+      TestDataGeneratorClass: TestDataGenerator,
     });
     page.init();
 
@@ -648,7 +554,7 @@ describe('DataGeneratorPage', () => {
       GridExtensionClass: FakeGridExtension,
       ExporterClass: FakeExporter,
       DownloadClass: FakeDownload,
-      TestDataGeneratorClass: FakeTestDataGenerator,
+      TestDataGeneratorClass: TestDataGenerator,
     });
     page.init();
 
@@ -703,7 +609,7 @@ describe('DataGeneratorPage', () => {
       GridExtensionClass: FakeGridExtension,
       ExporterClass: FakeExporterWithCode,
       DownloadClass: FakeDownload,
-      TestDataGeneratorClass: FakeTestDataGenerator,
+      TestDataGeneratorClass: TestDataGenerator,
     });
     page.init();
 
@@ -793,7 +699,7 @@ describe('DataGeneratorPage', () => {
       GridExtensionClass: FakeGridExtension,
       ExporterClass: FakeExporterAllFormats,
       DownloadClass: FakeDownload,
-      TestDataGeneratorClass: FakeTestDataGenerator,
+      TestDataGeneratorClass: TestDataGenerator,
     });
     page.init();
 
@@ -846,7 +752,7 @@ describe('DataGeneratorPage', () => {
       GridExtensionClass: FakeGridExtension,
       ExporterClass: FakeExporter,
       DownloadClass: FakeDownload,
-      TestDataGeneratorClass: FakeTestDataGenerator,
+      TestDataGeneratorClass: TestDataGenerator,
     });
     page.init();
     page.schemaRows = [{ id: '1', name: '', sourceType: 'regex', command: '', params: '', value: '' }];
@@ -861,13 +767,13 @@ describe('DataGeneratorPage', () => {
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
-      faker: { word: { noun: () => 'x' } },
-      RandExp: function RandExp() {},
+      faker,
+      RandExp,
       TabulatorCtor: FakeTabulator,
       GridExtensionClass: FakeGridExtension,
       ExporterClass: FakeExporter,
       DownloadClass: FakeDownload,
-      TestDataGeneratorClass: FakeTestDataGenerator,
+      TestDataGeneratorClass: TestDataGenerator,
     });
     page.init();
     page.schemaRows = [{ id: '1', name: 'Name', sourceType: 'faker', command: 'word.noun', params: '()', value: '' }];
@@ -894,6 +800,39 @@ describe('DataGeneratorPage', () => {
     expect(page.schemaRows[0].sourceType).toBe('regex');
   });
 
+  test('text to schema to text preserves literal type as literal(...)', () => {
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker,
+      RandExp,
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: TestDataGenerator,
+    });
+    page.init();
+
+    const toggle = document.getElementById('schemaModeToggleButton');
+    toggle.click();
+    const textArea = document.getElementById('generatorSchemaText');
+    textArea.value = 'dfffs\nt';
+    toggle.click();
+
+    const sourceSelect = document.querySelector('[data-field="sourceType"]');
+    const valueInput = document.querySelector('[data-field="value"]');
+    sourceSelect.value = 'literal';
+    sourceSelect.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+    const refreshedValueInput = document.querySelector('[data-field="value"]');
+    refreshedValueInput.value = valueInput?.value || 't';
+    refreshedValueInput.dispatchEvent(new dom.window.Event('input', { bubbles: true }));
+
+    toggle.click();
+    expect(document.getElementById('generatorSchemaText').value).toBe('dfffs\nliteral(t)');
+  });
+
   test('row action buttons work immediately after switching from text mode to schema mode', () => {
     const page = new DataGeneratorPage({
       parentElement: document.getElementById('app'),
@@ -905,7 +844,7 @@ describe('DataGeneratorPage', () => {
       GridExtensionClass: FakeGridExtension,
       ExporterClass: FakeExporter,
       DownloadClass: FakeDownload,
-      TestDataGeneratorClass: FakeTestDataGenerator,
+      TestDataGeneratorClass: TestDataGenerator,
     });
     page.init();
 
@@ -935,7 +874,7 @@ describe('DataGeneratorPage', () => {
       GridExtensionClass: FakeGridExtension,
       ExporterClass: FakeExporter,
       DownloadClass: FakeDownload,
-      TestDataGeneratorClass: FakeTestDataGenerator,
+      TestDataGeneratorClass: TestDataGenerator,
     });
     page.init();
 
@@ -958,7 +897,7 @@ describe('DataGeneratorPage', () => {
       GridExtensionClass: FakeGridExtension,
       ExporterClass: FakeExporter,
       DownloadClass: FakeDownload,
-      TestDataGeneratorClass: FakeTestDataGenerator,
+      TestDataGeneratorClass: TestDataGenerator,
     });
     page.init();
 
@@ -984,7 +923,7 @@ describe('DataGeneratorPage', () => {
       GridExtensionClass: FakeGridExtension,
       ExporterClass: FakeExporter,
       DownloadClass: FakeDownload,
-      TestDataGeneratorClass: FakeTestDataGenerator,
+      TestDataGeneratorClass: TestDataGenerator,
     });
     page.init();
 
@@ -1014,7 +953,7 @@ describe('DataGeneratorPage', () => {
       GridExtensionClass: FakeGridExtension,
       ExporterClass: FakeExporter,
       DownloadClass: FakeDownload,
-      TestDataGeneratorClass: FakeTestDataGenerator,
+      TestDataGeneratorClass: TestDataGenerator,
     });
     page.init();
 
@@ -1041,7 +980,7 @@ describe('DataGeneratorPage', () => {
       GridExtensionClass: FakeGridExtension,
       ExporterClass: FakeExporter,
       DownloadClass: FakeDownload,
-      TestDataGeneratorClass: FakeTestDataGenerator,
+      TestDataGeneratorClass: TestDataGenerator,
     });
     page.init();
 
@@ -1069,7 +1008,7 @@ describe('DataGeneratorPage', () => {
       GridExtensionClass: FakeGridExtension,
       ExporterClass: FakeExporter,
       DownloadClass: FakeDownload,
-      TestDataGeneratorClass: FakeTestDataGenerator,
+      TestDataGeneratorClass: TestDataGenerator,
     });
     page.init();
 
@@ -1090,7 +1029,7 @@ describe('DataGeneratorPage', () => {
     const rebuilt = document.getElementById('generatorSchemaText').value;
     expect(rebuilt).toContain('# note one');
     expect(rebuilt).toContain('# note two');
-    expect(rebuilt).toContain('Third\nthree');
+    expect(rebuilt).toContain('Third\nliteral(three)');
   });
 
   test('edit as text shows empty textarea for untouched blank schema', () => {
@@ -1104,7 +1043,7 @@ describe('DataGeneratorPage', () => {
       GridExtensionClass: FakeGridExtension,
       ExporterClass: FakeExporter,
       DownloadClass: FakeDownload,
-      TestDataGeneratorClass: FakeTestDataGenerator,
+      TestDataGeneratorClass: TestDataGenerator,
     });
     page.init();
 
@@ -1126,7 +1065,7 @@ describe('DataGeneratorPage', () => {
       GridExtensionClass: FakeGridExtension,
       ExporterClass: FakeExporter,
       DownloadClass: FakeDownload,
-      TestDataGeneratorClass: FakeTestDataGenerator,
+      TestDataGeneratorClass: TestDataGenerator,
     });
     page.init();
 
@@ -1159,7 +1098,7 @@ describe('DataGeneratorPage', () => {
         GridExtensionClass: FakeGridExtension,
         ExporterClass: FakeExporter,
         DownloadClass: FakeDownload,
-        TestDataGeneratorClass: FakeTestDataGenerator,
+        TestDataGeneratorClass: TestDataGenerator,
       });
       page.init();
 
@@ -1200,7 +1139,7 @@ describe('DataGeneratorPage', () => {
       GridExtensionClass: FakeGridExtension,
       ExporterClass: FakeExporter,
       DownloadClass: FakeDownload,
-      TestDataGeneratorClass: FakeTestDataGenerator,
+      TestDataGeneratorClass: TestDataGenerator,
     });
     page.init();
 

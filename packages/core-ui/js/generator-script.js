@@ -2,6 +2,7 @@ import { ensureGridLibraryLoaded } from './gui_components/data-grid-editor/grid-
 import { DataGeneratorPage } from './gui_components/data-generator-page.js';
 import { faker } from '@faker-js/faker';
 import { initHelpTooltips } from './help/help-tooltips.js';
+import { initThemeToggle } from './gui_components/theme-toggle.js';
 
 async function bootstrapGeneratorPage({
   documentObj = document,
@@ -9,6 +10,8 @@ async function bootstrapGeneratorPage({
   DataGeneratorPageClass = DataGeneratorPage,
   fakerInstance = faker,
 } = {}) {
+  initThemeToggle({ documentObj, windowObj: documentObj?.defaultView || window });
+
   try {
     await ensureGridLibraryLoadedFn({ engine: 'tabulator', document: documentObj });
   } catch (error) {

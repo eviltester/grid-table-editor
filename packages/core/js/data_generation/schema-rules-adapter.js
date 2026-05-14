@@ -38,7 +38,14 @@ function buildRuleSpecFromRow(row) {
   }
   if (sourceType === SOURCE_TYPE_LITERAL) {
     const value = String(row?.value ?? '');
-    return value.trim().length === 0 ? 'literal()' : value.trim();
+    const trimmedValue = value.trim();
+    if (trimmedValue.length === 0) {
+      return 'literal()';
+    }
+    if (/^(literal|datatype\.literal|awd\.datatype\.literal)\s*\(/i.test(trimmedValue)) {
+      return trimmedValue;
+    }
+    return `literal(${value})`;
   }
   return String(row?.value ?? '').trim();
 }
@@ -75,7 +82,7 @@ export function schemaRowsToDataRules({ schemaRows = [] } = {}) {
       sourceType: normaliseSourceType(row?.sourceType),
       command: normaliseFakerCommand(row?.command),
       params: String(row?.params ?? '').trim(),
-      value: String(row?.value ?? '').trim(),
+      value: String(row?.value ?? ''),
       comments: String(row?.comments ?? ''),
       order: index,
     };

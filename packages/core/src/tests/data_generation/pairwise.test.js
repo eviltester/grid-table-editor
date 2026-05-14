@@ -184,6 +184,31 @@ describe('Pairwise Combinatorial Matching Data Generation', () => {
       expect(initResult.isError).toBe(true);
       expect(initResult.errorMessage).toContain('at least 2 ENUM parameters');
     });
+
+    test('should generate pairwise data from canonical plain rule objects', () => {
+      const rules = [
+        { name: 'Literal Example', type: 'literal', ruleSpec: 'Pending Review' },
+        { name: 'Enum Example', type: 'enum', ruleSpec: 'enum("Open","In Progress","Closed")' },
+        { name: 'Enum Example 2', type: 'enum', ruleSpec: 'enum("High","Medium","Low")' },
+        { name: 'Regex Example', type: 'regex', ruleSpec: '[A-Z]{3}-\\d{4}' },
+        { name: 'Faker Example', type: 'faker', ruleSpec: 'person.fullName' },
+      ];
+
+      const generator = new PairwiseTestDataGenerator();
+      const initResult = generator.initializeFromRules(rules);
+      expect(initResult.isError).toBe(false);
+
+      const result = generator.generateAllDataRecordsAsRows();
+      expect(result.isError).toBe(false);
+      expect(result.data.data[0]).toEqual([
+        'Literal Example',
+        'Enum Example',
+        'Enum Example 2',
+        'Regex Example',
+        'Faker Example',
+      ]);
+      expect(result.data.data.length).toBeGreaterThan(1);
+    });
   });
 
   describe('Real-world scenarios', () => {

@@ -73,6 +73,17 @@ function buildRuleSpecFromSchemaRow(row) {
     const params = String(row?.params ?? '').trim();
     return `${command}${params}`;
   }
+  if (sourceType === SOURCE_TYPE_LITERAL) {
+    const literalValue = String(row?.value ?? '');
+    const trimmedLiteralValue = literalValue.trim();
+    if (trimmedLiteralValue.length === 0) {
+      return 'literal()';
+    }
+    if (/^(literal|datatype\.literal|awd\.datatype\.literal)\s*\(/i.test(trimmedLiteralValue)) {
+      return trimmedLiteralValue;
+    }
+    return `literal(${literalValue})`;
+  }
   return String(row?.value ?? '').trim();
 }
 
@@ -948,7 +959,7 @@ enum(active,inactive,pending)</pre>
       }
       if (row.sourceType === SOURCE_TYPE_LITERAL) {
         rule.type = SOURCE_TYPE_LITERAL;
-        rule.ruleSpec = buildRuleSpecFromSchemaRow(row);
+        rule.ruleSpec = String(row?.value ?? '');
         return;
       }
       if (row.sourceType === SOURCE_TYPE_ENUM) {

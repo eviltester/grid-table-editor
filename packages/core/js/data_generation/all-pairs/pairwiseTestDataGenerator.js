@@ -43,7 +43,7 @@ export class PairwiseTestDataGenerator {
       // Separate enum rules from non-enum rules in a single iteration
       const { enumRules, nonEnumRules } = rules.reduce(
         (acc, rule) => {
-          if (rule.isType('enum')) {
+          if (this.isRuleType(rule, 'enum')) {
             acc.enumRules.push(rule);
           } else {
             acc.nonEnumRules.push(rule);
@@ -165,7 +165,7 @@ export class PairwiseTestDataGenerator {
 
       // Preserve original schema order across enum and non-enum columns.
       for (const rule of this.orderedRules) {
-        if (rule.isType('enum')) {
+        if (this.isRuleType(rule, 'enum')) {
           completeRecord[rule.name] = enumRecord.get(rule.name);
         } else {
           completeRecord[rule.name] = this.generateRandomValueForRule(rule);
@@ -310,8 +310,22 @@ export class PairwiseTestDataGenerator {
    * Requires at least 2 ENUM rules for pairwise combinations
    */
   canGeneratePairwise(rules) {
-    const enumRules = rules.filter((rule) => rule.isType('enum'));
+    const enumRules = rules.filter((rule) => this.isRuleType(rule, 'enum'));
     return enumRules.length >= 2;
+  }
+
+  /**
+   * Support both TestDataRule instances (isType function) and canonical plain rule objects.
+   */
+  isRuleType(rule, typeName) {
+    if (rule && typeof rule.isType === 'function') {
+      return rule.isType(typeName);
+    }
+    return (
+      String(rule?.type || '')
+        .trim()
+        .toLowerCase() === String(typeName).trim().toLowerCase()
+    );
   }
 
   /**

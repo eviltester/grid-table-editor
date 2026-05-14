@@ -121,7 +121,7 @@ class ExtendedDataGrid {
         return;
       }
       if (action === 'delete') {
-        guardedColumnEdits.deleteColId(columnId);
+        await guardedColumnEdits.deleteColId(columnId);
         return;
       }
       if (action === 'duplicate') {

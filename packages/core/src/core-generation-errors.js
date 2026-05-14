@@ -1,7 +1,7 @@
 export class CoreGenerationErrors {
   static invalidTextSpecRequired() {
     return {
-      code: 'invalid_schema_pairing',
+      code: 'invalid_text_spec',
       message: 'textSpec is required and must be a non-empty string.',
     };
   }

@@ -106,7 +106,7 @@ class ImportExportControls {
   importTextArea() {
     if (this.isPreviewTextMode()) {
       if (!this.previewTextDirty) {
-        this._showError('Grid to Text only availalable in Edit mode');
+        this._showError('Grid to Text only available in Edit mode');
         return;
       }
       const typeToImport = document.querySelector('li.active-type a').getAttribute('data-type');

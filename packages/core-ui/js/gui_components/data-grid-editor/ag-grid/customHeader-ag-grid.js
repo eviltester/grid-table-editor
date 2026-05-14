@@ -114,8 +114,8 @@ class CustomHeaderAgGrid {
     await this.guardedColumnEdits.renameColId(this.agParams.column.colId);
   }
 
-  onDeleteButtonClick() {
-    this.guardedColumnEdits.deleteColId(this.agParams.column.colId);
+  async onDeleteButtonClick() {
+    await this.guardedColumnEdits.deleteColId(this.agParams.column.colId);
   }
 
   async onDuplicateButtonClick() {

@@ -95,8 +95,24 @@ function schemaRowsToSpec(schemaRows) {
 }
 
 function schemaRowsToSpecWithTokens(schemaRows, schemaTokens) {
+  const dataRules = (Array.isArray(schemaRows) ? schemaRows : [])
+    .map((row) => {
+      const name = String(row?.name ?? '').trim();
+      const ruleSpec = buildRuleSpecFromSchemaRow(row);
+      const comments = String(row?.comments ?? '');
+      if (name.length === 0 && ruleSpec.length === 0) {
+        return null;
+      }
+      return {
+        name,
+        ruleSpec,
+        comments,
+      };
+    })
+    .filter(Boolean);
+
   const renderResult = dataRulesToSchemaText({
-    dataRules: schemaRowsToDataRules({ schemaRows }).dataRules,
+    dataRules,
     schemaTokens,
   });
   return renderResult.text;

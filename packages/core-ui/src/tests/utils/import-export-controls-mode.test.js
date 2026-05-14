@@ -82,9 +82,7 @@ describe('ImportExportControls preview/edit mode', () => {
 
   test('blocks Set Grid From Text in preview mode', () => {
     controls.importTextArea();
-    expect(document.getElementById('import-export-error').textContent).toBe(
-      'Grid to Text only available in Edit mode'
-    );
+    expect(document.getElementById('import-export-error').textContent).toBe('Grid to Text only available in Edit mode');
     expect(controls.importer.importText).not.toHaveBeenCalled();
   });
 

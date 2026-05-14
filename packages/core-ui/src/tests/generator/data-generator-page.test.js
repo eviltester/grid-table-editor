@@ -779,6 +779,28 @@ describe('DataGeneratorPage', () => {
     expect(document.getElementById('generatorSchemaText').value).toBe('dfffs\nliteral(t)');
   });
 
+  test('row mode to text mode preserves in-progress faker row with empty command', () => {
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker,
+      RandExp,
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: TestDataGenerator,
+    });
+    page.init();
+
+    page.schemaRows = [{ id: '1', name: 'User Name', sourceType: 'faker', command: '', params: '', value: '' }];
+    page.renderSchemaRows();
+
+    document.getElementById('schemaModeToggleButton').click();
+    expect(document.getElementById('generatorSchemaText').value).toBe('User Name\n');
+  });
+
   test('row action buttons work immediately after switching from text mode to schema mode', () => {
     const page = new DataGeneratorPage({
       parentElement: document.getElementById('app'),

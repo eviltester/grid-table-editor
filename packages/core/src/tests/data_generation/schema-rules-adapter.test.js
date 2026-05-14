@@ -1,0 +1,132 @@
+import { faker } from '@faker-js/faker';
+import RandExp from 'randexp';
+import {
+  schemaTextToDataRules,
+  dataRulesToSchemaText,
+  schemaRowsToDataRules,
+} from '../../../js/data_generation/schema-rules-adapter.js';
+
+describe('schema rules adapter', () => {
+  test('returns dataRules for valid schema text', () => {
+    const result = schemaTextToDataRules({
+      schemaText: 'Name\nperson.fullName\nStatus\nenum(active,inactive)',
+      faker,
+      RandExp,
+    });
+
+    expect(result.errors).toEqual([]);
+    expect(result.dataRules).toHaveLength(2);
+    expect(result.dataRules[0].name).toBe('Name');
+    expect(result.dataRules[1].name).toBe('Status');
+  });
+
+  test('returns errors for invalid schema text', () => {
+    const result = schemaTextToDataRules({
+      schemaText: 't1\n',
+      faker,
+      RandExp,
+    });
+
+    expect(result.dataRules).toEqual([]);
+    expect(result.errors).toHaveLength(1);
+    expect(result.errors[0].code).toBe('missing_rule_definition');
+    expect(result.errors[0].column).toBe('t1');
+    expect(result.errors[0].message).toBe("column t1 requires a data definition, use 'literal()' for blank data");
+  });
+
+  test('returns invalid schema pairing for comment-only schema text', () => {
+    const result = schemaTextToDataRules({
+      schemaText: '# only a comment\n\n# still only comments',
+      faker,
+      RandExp,
+    });
+
+    expect(result.dataRules).toEqual([]);
+    expect(result.errors).toContainEqual(
+      expect.objectContaining({
+        code: 'invalid_schema_pairing',
+      })
+    );
+  });
+
+  test('renders data rules to schema text preserving blank literal wrapper', () => {
+    const rendered = dataRulesToSchemaText({
+      dataRules: [
+        { name: 't1', ruleSpec: 'literal()', comments: '' },
+        { name: 't2', ruleSpec: 'literal(   123)', comments: '' },
+      ],
+    });
+
+    expect(rendered.errors).toEqual([]);
+    expect(rendered.text).toBe('t1\nliteral()\nt2\nliteral(   123)');
+  });
+
+  test('prefers schema tokens when rendering so blank lines are preserved', () => {
+    const rendered = dataRulesToSchemaText({
+      dataRules: [
+        { name: 'Priority', ruleSpec: 'enum(high,medium,low)', comments: '# old comment' },
+        { name: 'Status', ruleSpec: 'enum(active,inactive,pending)', comments: '' },
+      ],
+      schemaTokens: [
+        { kind: 'comment', text: '# top' },
+        { kind: 'blank', text: '' },
+        { kind: 'rule' },
+        { kind: 'blank', text: '' },
+        { kind: 'blank', text: '' },
+        { kind: 'rule' },
+      ],
+    });
+
+    expect(rendered.errors).toEqual([]);
+    expect(rendered.text).toBe('# top\n\nPriority\nenum(high,medium,low)\n\n\nStatus\nenum(active,inactive,pending)');
+  });
+
+  test('converts schema rows to data rules with canonical validation errors', () => {
+    const result = schemaRowsToDataRules({
+      schemaRows: [
+        { name: '', sourceType: 'regex', value: '[0-9]' },
+        { name: 'First', sourceType: 'faker', command: '' },
+      ],
+    });
+
+    expect(result.dataRules).toEqual([]);
+    expect(result.errors.map((error) => error.code)).toEqual(['missing_column_name', 'missing_faker_command']);
+  });
+
+  test('returns missing schema rows error for empty schema row list', () => {
+    const result = schemaRowsToDataRules({
+      schemaRows: [],
+    });
+
+    expect(result.dataRules).toEqual([]);
+    expect(result.errors).toContainEqual(
+      expect.objectContaining({
+        code: 'missing_schema_rows',
+      })
+    );
+  });
+
+  test('converts valid schema rows to data rules', () => {
+    const result = schemaRowsToDataRules({
+      schemaRows: [
+        { name: 'A', sourceType: 'literal', value: 'literal(   123)' },
+        { name: 'B', sourceType: 'faker', command: 'word.noun', params: '()' },
+      ],
+    });
+
+    expect(result.errors).toEqual([]);
+    expect(result.dataRules).toEqual([
+      { name: 'A', ruleSpec: 'literal(   123)', comments: '', type: 'literal' },
+      { name: 'B', ruleSpec: 'word.noun()', comments: '', type: 'faker' },
+    ]);
+  });
+
+  test('converts empty literal schema row value to literal()', () => {
+    const result = schemaRowsToDataRules({
+      schemaRows: [{ name: 'A', sourceType: 'literal', value: '   ' }],
+    });
+
+    expect(result.errors).toEqual([]);
+    expect(result.dataRules).toEqual([{ name: 'A', ruleSpec: 'literal()', comments: '', type: 'literal' }]);
+  });
+});

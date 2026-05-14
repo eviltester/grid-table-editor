@@ -1,17 +1,39 @@
+import { showTextInputModal } from '../../modal-text-input.js';
+import { showConfirmModal } from '../../modal-confirm.js';
+
 class GuardedTabulatorColumnEdits {
-  constructor(gridExtension) {
+  constructor(gridExtension, { surfaceError, requestTextInput, requestConfirm, shouldEnforceUniqueNames } = {}) {
     this.gridExtras = gridExtension;
+    this.surfaceError = typeof surfaceError === 'function' ? surfaceError : null;
+    this.requestTextInput =
+      typeof requestTextInput === 'function' ? requestTextInput : (options) => showTextInputModal(options);
+    this.requestConfirm =
+      typeof requestConfirm === 'function' ? requestConfirm : (options) => showConfirmModal(options);
+    this.shouldEnforceUniqueNames =
+      typeof shouldEnforceUniqueNames === 'function' ? shouldEnforceUniqueNames : () => true;
   }
 
   // todo: ids here look suspiciously ag-grid specific
 
-  renameColumn(column) {
+  showError(message) {
+    if (this.surfaceError) {
+      this.surfaceError(message);
+      return;
+    }
+    console.error(message);
+  }
+
+  async renameColumn(column) {
     if (column == null || column == undefined) {
-      alert('Column not found');
+      this.showError('Column not found');
       return;
     }
 
-    var colTitle = prompt('Column Name?', column.getDefinition().title);
+    const currentName = String(column.getDefinition()?.title ?? '');
+    const colTitle = await this.requestTextInput({
+      title: 'Column Name',
+      initialValue: column.getDefinition().title,
+    });
 
     if (colTitle != null && colTitle != '') {
       console.log('rename column ' + column.getDefinition().title + ' with this name: ' + colTitle);
@@ -19,32 +41,48 @@ class GuardedTabulatorColumnEdits {
       return false;
     }
 
-    if (this.gridExtras.nameAlreadyExists(colTitle)) {
-      alert(`A column with name ${colTitle} already exists`);
+    if (colTitle === currentName) {
+      return true;
+    }
+
+    if (this.shouldEnforceUniqueNames() && this.gridExtras.nameAlreadyExists(colTitle)) {
+      this.showError(`A column with name ${colTitle} already exists`);
       return false;
     }
 
     this.gridExtras.renameColumn(column, colTitle);
   }
 
-  deleteColumn(column) {
+  async deleteColumn(column) {
     if (column == null || column == undefined) {
-      alert('Column not found');
+      this.showError('Column not found');
       return;
     }
 
     if (this.gridExtras.getNumberOfColumns() == 1) {
-      alert('Cannot Delete The Only Column');
+      this.showError('Cannot Delete The Only Column');
       return;
     }
 
-    if (!confirm('Are you Sure You Want to Delete Column Named ' + column.getDefinition().title + '?')) return;
+    const confirmed = await this.requestConfirm({
+      title: 'Delete Column',
+      message: `Are you Sure You Want to Delete Column Named ${column.getDefinition().title}?`,
+    });
+    if (!confirmed) return;
 
     this.gridExtras.deleteColumn(column);
   }
 
-  duplicateColumn(position, column) {
-    let colTitle = prompt('Copy Column As?');
+  async duplicateColumn(position, column) {
+    if (column == null || column == undefined) {
+      this.showError('Column not found');
+      return;
+    }
+
+    const colTitle = await this.requestTextInput({
+      title: 'Copy Column As',
+      initialValue: '',
+    });
 
     if (colTitle != null && colTitle != '') {
       console.log('duplicate a column with this name: ' + colTitle);
@@ -52,21 +90,24 @@ class GuardedTabulatorColumnEdits {
       return;
     }
 
-    if (this.gridExtras.nameAlreadyExists(colTitle)) {
-      alert(`A column with name ${colTitle} already exists`);
+    if (this.shouldEnforceUniqueNames() && this.gridExtras.nameAlreadyExists(colTitle)) {
+      this.showError(`A column with name ${colTitle} already exists`);
       return false;
     }
 
     this.gridExtras.duplicateColumn(position, column, colTitle);
   }
 
-  addNeighbourColumn(position, existingColumn) {
+  async addNeighbourColumn(position, existingColumn) {
     if (existingColumn == null || existingColumn == undefined) {
-      alert('Column not found');
+      this.showError('Column not found');
       return;
     }
 
-    let colTitle = prompt('New Column Name?');
+    const colTitle = await this.requestTextInput({
+      title: 'New Column Name',
+      initialValue: '',
+    });
 
     if (colTitle != null && colTitle != '') {
       console.log('create a new neighbour column with this name: ' + colTitle);
@@ -74,8 +115,8 @@ class GuardedTabulatorColumnEdits {
       return;
     }
 
-    if (this.gridExtras.nameAlreadyExists(colTitle)) {
-      alert(`A column with name ${colTitle} already exists`);
+    if (this.shouldEnforceUniqueNames() && this.gridExtras.nameAlreadyExists(colTitle)) {
+      this.showError(`A column with name ${colTitle} already exists`);
       return false;
     }
 

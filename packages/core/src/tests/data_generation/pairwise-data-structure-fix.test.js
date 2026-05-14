@@ -92,4 +92,36 @@ describe('Pairwise Data Structure Fix', () => {
       void first;
     }).not.toThrow();
   });
+
+  test('preserves original column order when enum and non-enum rules are interleaved', () => {
+    const rules = [
+      new TestDataRule('t1', 'enum(1,2,3)'),
+      new TestDataRule('t8', 'literal(1,3)'),
+      new TestDataRule('t2', 'datatype.enum(4,5,6)'),
+      new TestDataRule('t6', 'awd.datatype.enum(7,8,9)'),
+      new TestDataRule('t7', 'enum(a,b,d)'),
+      new TestDataRule('t9', 'enum(4,5,6)'),
+    ];
+
+    rules[0].setType('enum');
+    rules[1].setType('literal');
+    rules[2].setType('enum');
+    rules[3].setType('enum');
+    rules[4].setType('enum');
+    rules[5].setType('enum');
+
+    const generator = new PairwiseTestDataGenerator();
+    const initResult = generator.initializeFromRules(rules);
+    expect(initResult.isError).toBe(false);
+
+    const dataResult = generator.generateAllDataRecordsAsRows();
+    expect(dataResult.isError).toBe(false);
+
+    const [headers, ...rows] = dataResult.data.data;
+    expect(headers).toEqual(['t1', 't8', 't2', 't6', 't7', 't9']);
+    expect(rows.length).toBeGreaterThan(0);
+    rows.forEach((row) => {
+      expect(row[1]).toBe('literal(1,3)');
+    });
+  });
 });

@@ -46,38 +46,32 @@ class GridHeaderComponent {
   }
 
   async renameColumn(columnName, newName) {
-    this.page.once('dialog', async (dialog) => {
-      await dialog.accept(newName);
-    });
     await this.clickAction(columnName, 'rename');
+    await this.fillTextInputModal(newName);
   }
 
   async addColumnLeft(columnName, newName) {
-    this.page.once('dialog', async (dialog) => {
-      await dialog.accept(newName);
-    });
     await this.clickAction(columnName, 'add-left');
+    await this.fillTextInputModal(newName);
   }
 
   async addColumnRight(columnName, newName) {
-    this.page.once('dialog', async (dialog) => {
-      await dialog.accept(newName);
-    });
     await this.clickAction(columnName, 'add-right');
+    await this.fillTextInputModal(newName);
   }
 
   async duplicateColumn(columnName, newName) {
-    this.page.once('dialog', async (dialog) => {
-      await dialog.accept(newName);
-    });
     await this.clickAction(columnName, 'duplicate');
+    await this.fillTextInputModal(newName);
   }
 
   async deleteColumn(columnName) {
-    this.page.once('dialog', async (dialog) => {
-      await dialog.accept();
-    });
     await this.clickAction(columnName, 'delete');
+    const confirmBackdrop = this.page.locator('#confirm-modal-backdrop');
+    if ((await confirmBackdrop.count()) > 0 && (await confirmBackdrop.isVisible())) {
+      await confirmBackdrop.locator('#confirm-modal-ok').click();
+      await expect(confirmBackdrop).toBeHidden();
+    }
   }
 
   async sortAsc(columnName) {
@@ -130,6 +124,15 @@ class GridHeaderComponent {
     return String(rawText || '')
       .split('\n')[0]
       .trim();
+  }
+
+  async fillTextInputModal(value) {
+    const backdrop = this.page.locator('#text-input-modal-backdrop');
+    await expect(backdrop).toBeVisible();
+    const input = backdrop.locator('#text-input-modal-field');
+    await input.fill(String(value ?? ''));
+    await backdrop.locator('#text-input-modal-ok').click();
+    await expect(backdrop).toBeHidden();
   }
 }
 

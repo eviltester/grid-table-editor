@@ -60,3 +60,26 @@ test('grid header sorting and per-column filter change visible results', async (
     .toEqual(['Apple', 'Banana', 'Cherry']);
   expect(pageErrors).toEqual([]);
 });
+
+test('grid header validation errors render in inline grid error surface', async ({ page }) => {
+  const pageErrors = trackPageErrors(page);
+  const appPage = new AppPage(page);
+
+  await appPage.goto();
+  await appPage.gridEditor.setUniqueColumnNames(true);
+  const initialColumnName = (await appPage.gridEditor.header.getColumnNames())[0];
+  const gridError = page.locator('#grid-column-error');
+
+  await appPage.gridEditor.header.addColumnRight(initialColumnName, 'Existing Name');
+  await expect.poll(async () => appPage.gridEditor.header.getColumnNames()).toContain('Existing Name');
+
+  await appPage.gridEditor.header.renameColumn(initialColumnName, 'Existing Name');
+  await expect(gridError).toContainText('A column with name Existing Name already exists');
+
+  await appPage.gridEditor.header.deleteColumn('Existing Name');
+  await expect.poll(async () => appPage.gridEditor.header.getColumnNames()).toEqual([initialColumnName]);
+  await appPage.gridEditor.header.deleteColumn(initialColumnName);
+  await expect(gridError).toContainText('Cannot Delete The Only Column');
+
+  expect(pageErrors).toEqual([]);
+});

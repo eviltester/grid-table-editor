@@ -12,6 +12,9 @@ function createColumn(title = 'Old Name') {
 describe('GuardedColumnEdits (AG abstraction)', () => {
   let gridExtras;
   let guarded;
+  let surfaceError;
+  let requestTextInput;
+  let requestConfirm;
 
   beforeEach(() => {
     gridExtras = {
@@ -23,46 +26,83 @@ describe('GuardedColumnEdits (AG abstraction)', () => {
       duplicateColumn: jest.fn(),
       addNeighbourColumnId: jest.fn(),
     };
-    guarded = new GuardedColumnEdits(gridExtras);
-    global.prompt = jest.fn();
-    global.confirm = jest.fn(() => true);
-    global.alert = jest.fn();
+    surfaceError = jest.fn();
+    requestTextInput = jest.fn();
+    requestConfirm = jest.fn(async () => true);
+    guarded = new GuardedColumnEdits(gridExtras, { surfaceError, requestTextInput, requestConfirm });
   });
 
-  test('rename validates and delegates', () => {
-    global.prompt.mockReturnValue('Renamed');
-    guarded.renameColId('column1');
+  test('rename validates and delegates', async () => {
+    requestTextInput.mockResolvedValue('Renamed');
+    await guarded.renameColId('column1');
     expect(gridExtras.renameColId).toHaveBeenCalledWith('column1', 'Renamed');
 
+    requestTextInput.mockResolvedValue('Old Name');
+    await guarded.renameColId('column1');
+    expect(gridExtras.renameColId).toHaveBeenCalledTimes(1);
+    expect(surfaceError).not.toHaveBeenCalled();
+
     gridExtras.nameAlreadyExists.mockReturnValue(true);
-    guarded.renameColId('column1');
-    expect(global.alert).toHaveBeenCalled();
+    requestTextInput.mockResolvedValue('Existing');
+    await guarded.renameColId('column1');
+    expect(surfaceError).toHaveBeenCalled();
   });
 
-  test('delete prevents removing last column and requires confirm', () => {
+  test('rename surfaces missing column when definition is unavailable', async () => {
+    gridExtras.getColumnDef.mockReturnValue(null);
+    await guarded.renameColId('missing-column');
+    expect(surfaceError).toHaveBeenCalledWith('Column not found');
+    expect(requestTextInput).not.toHaveBeenCalled();
+    expect(gridExtras.renameColId).not.toHaveBeenCalled();
+  });
+
+  test('delete prevents removing last column and requires confirm', async () => {
     gridExtras.getNumberOfColumns.mockReturnValue(1);
-    guarded.deleteColId('column1');
-    expect(global.alert).toHaveBeenCalledWith('Cannot Delete The Only Column');
+    await guarded.deleteColId('column1');
+    expect(surfaceError).toHaveBeenCalledWith('Cannot Delete The Only Column');
     expect(gridExtras.deleteColumnId).not.toHaveBeenCalled();
 
     gridExtras.getNumberOfColumns.mockReturnValue(2);
-    global.confirm.mockReturnValue(false);
-    guarded.deleteColId('column1');
+    requestConfirm.mockResolvedValue(false);
+    await guarded.deleteColId('column1');
     expect(gridExtras.deleteColumnId).not.toHaveBeenCalled();
 
-    global.confirm.mockReturnValue(true);
-    guarded.deleteColId('column1');
+    requestConfirm.mockResolvedValue(true);
+    await guarded.deleteColId('column1');
     expect(gridExtras.deleteColumnId).toHaveBeenCalledWith('column1');
   });
 
-  test('duplicate and add-neighbour validate names', () => {
-    global.prompt.mockReturnValue('Copy');
-    guarded.duplicateColumnId(1, 'column1');
+  test('delete surfaces missing column when definition is unavailable', async () => {
+    gridExtras.getNumberOfColumns.mockReturnValue(2);
+    gridExtras.getColumnDef.mockReturnValue(null);
+    await guarded.deleteColId('missing-column');
+    expect(surfaceError).toHaveBeenCalledWith('Column not found');
+    expect(requestConfirm).not.toHaveBeenCalled();
+    expect(gridExtras.deleteColumnId).not.toHaveBeenCalled();
+  });
+
+  test('duplicate and add-neighbour validate names', async () => {
+    requestTextInput.mockResolvedValue('Copy');
+    await guarded.duplicateColumnId(1, 'column1');
     expect(gridExtras.duplicateColumn).toHaveBeenCalledWith(1, 'column1', 'Copy');
 
-    global.prompt.mockReturnValue('Neighbour');
-    guarded.addNeighbourColumnId(-1, 'column1');
+    requestTextInput.mockResolvedValue('Neighbour');
+    await guarded.addNeighbourColumnId(-1, 'column1');
     expect(gridExtras.addNeighbourColumnId).toHaveBeenCalledWith(-1, 'column1', 'Neighbour');
+  });
+
+  test('duplicate name checks can be disabled', async () => {
+    gridExtras.nameAlreadyExists.mockReturnValue(true);
+    const unguarded = new GuardedColumnEdits(gridExtras, {
+      surfaceError,
+      requestTextInput: jest.fn(async () => 'Existing'),
+      requestConfirm,
+      shouldEnforceUniqueNames: () => false,
+    });
+
+    await unguarded.renameColId('column1');
+    expect(gridExtras.renameColId).toHaveBeenCalledWith('column1', 'Existing');
+    expect(surfaceError).not.toHaveBeenCalled();
   });
 });
 
@@ -70,6 +110,9 @@ describe('GuardedTabulatorColumnEdits', () => {
   let gridExtras;
   let guarded;
   let column;
+  let surfaceError;
+  let requestTextInput;
+  let requestConfirm;
 
   beforeEach(() => {
     gridExtras = {
@@ -80,54 +123,77 @@ describe('GuardedTabulatorColumnEdits', () => {
       duplicateColumn: jest.fn(),
       addNeighbourColumn: jest.fn(),
     };
-    guarded = new GuardedTabulatorColumnEdits(gridExtras);
+    surfaceError = jest.fn();
+    requestTextInput = jest.fn();
+    requestConfirm = jest.fn(async () => true);
+    guarded = new GuardedTabulatorColumnEdits(gridExtras, { surfaceError, requestTextInput, requestConfirm });
     column = createColumn('Old Name');
-    global.prompt = jest.fn();
-    global.confirm = jest.fn(() => true);
-    global.alert = jest.fn();
   });
 
-  test('rename validates column existence and uniqueness', () => {
-    guarded.renameColumn(null);
-    expect(global.alert).toHaveBeenCalledWith('Column not found');
+  test('rename validates column existence and uniqueness', async () => {
+    await guarded.renameColumn(null);
+    expect(surfaceError).toHaveBeenCalledWith('Column not found');
 
-    global.prompt.mockReturnValue('Renamed');
-    guarded.renameColumn(column);
+    requestTextInput.mockResolvedValue('Renamed');
+    await guarded.renameColumn(column);
     expect(gridExtras.renameColumn).toHaveBeenCalledWith(column, 'Renamed');
 
+    requestTextInput.mockResolvedValue('Old Name');
+    await guarded.renameColumn(column);
+    expect(gridExtras.renameColumn).toHaveBeenCalledTimes(1);
+
     gridExtras.nameAlreadyExists.mockReturnValue(true);
-    guarded.renameColumn(column);
-    expect(global.alert).toHaveBeenCalled();
+    requestTextInput.mockResolvedValue('Existing');
+    await guarded.renameColumn(column);
+    expect(surfaceError).toHaveBeenCalled();
   });
 
-  test('delete validates constraints and confirmation', () => {
-    guarded.deleteColumn(undefined);
-    expect(global.alert).toHaveBeenCalledWith('Column not found');
+  test('delete validates constraints and confirmation', async () => {
+    await guarded.deleteColumn(undefined);
+    expect(surfaceError).toHaveBeenCalledWith('Column not found');
 
     gridExtras.getNumberOfColumns.mockReturnValue(1);
-    guarded.deleteColumn(column);
-    expect(global.alert).toHaveBeenCalledWith('Cannot Delete The Only Column');
+    await guarded.deleteColumn(column);
+    expect(surfaceError).toHaveBeenCalledWith('Cannot Delete The Only Column');
 
     gridExtras.getNumberOfColumns.mockReturnValue(2);
-    global.confirm.mockReturnValue(false);
-    guarded.deleteColumn(column);
+    requestConfirm.mockResolvedValue(false);
+    await guarded.deleteColumn(column);
     expect(gridExtras.deleteColumn).not.toHaveBeenCalled();
 
-    global.confirm.mockReturnValue(true);
-    guarded.deleteColumn(column);
+    requestConfirm.mockResolvedValue(true);
+    await guarded.deleteColumn(column);
     expect(gridExtras.deleteColumn).toHaveBeenCalledWith(column);
   });
 
-  test('duplicate and add-neighbour prompt-driven actions delegate', () => {
-    global.prompt.mockReturnValue('Copy');
-    guarded.duplicateColumn(1, column);
+  test('duplicate and add-neighbour prompt-driven actions delegate', async () => {
+    await guarded.duplicateColumn(1, null);
+    expect(surfaceError).toHaveBeenCalledWith('Column not found');
+    expect(gridExtras.duplicateColumn).not.toHaveBeenCalled();
+
+    requestTextInput.mockResolvedValue('Copy');
+    await guarded.duplicateColumn(1, column);
     expect(gridExtras.duplicateColumn).toHaveBeenCalledWith(1, column, 'Copy');
 
-    guarded.addNeighbourColumn(1, null);
-    expect(global.alert).toHaveBeenCalledWith('Column not found');
+    await guarded.addNeighbourColumn(1, null);
+    expect(surfaceError).toHaveBeenCalledWith('Column not found');
 
-    global.prompt.mockReturnValue('Neighbour');
-    guarded.addNeighbourColumn(-1, column);
+    requestTextInput.mockResolvedValue('Neighbour');
+    await guarded.addNeighbourColumn(-1, column);
     expect(gridExtras.addNeighbourColumn).toHaveBeenCalledWith(-1, column, 'Neighbour');
+  });
+
+  test('tabulator duplicate name checks can be disabled', async () => {
+    gridExtras.nameAlreadyExists.mockReturnValue(true);
+    const unguarded = new GuardedTabulatorColumnEdits(gridExtras, {
+      surfaceError,
+      requestTextInput: jest.fn(async () => 'Existing'),
+      requestConfirm,
+      shouldEnforceUniqueNames: () => false,
+    });
+
+    await unguarded.renameColumn(column);
+    expect(gridExtras.renameColumn).toHaveBeenCalledWith(column, 'Existing');
+    expect(surfaceError).not.toHaveBeenCalled();
   });
 });

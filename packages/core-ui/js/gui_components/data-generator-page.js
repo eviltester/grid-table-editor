@@ -1,6 +1,11 @@
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 import { TestDataGenerator } from '@anywaydata/core/data_generation/testDataGenerator.js';
 import { PairwiseTestDataGenerator } from '@anywaydata/core/data_generation/all-pairs/pairwiseTestDataGenerator.js';
+import {
+  schemaTextToDataRules,
+  dataRulesToSchemaText,
+  schemaRowsToDataRules,
+} from '@anywaydata/core/data_generation/schema-rules-adapter.js';
 import { Exporter } from '@anywaydata/core/grid/exporter.js';
 import { Download } from './download.js';
 import { GridExtension as TabulatorGridExtension } from './data-grid-editor/tabulator/gridExtension-tabulator.js';
@@ -8,6 +13,7 @@ import { sanitizeUiOptionsForFormat } from './options-catalog-adapter.js';
 import { createOptionsPanelsForParent, getOutputFormatGroups } from './options-ui-schema.js';
 import { getKnownFakerCommandsAlphabetical, getKnownFakerCommandsLongestFirst } from './faker-commands.js';
 import { getFakerCommandHelp } from './faker-command-help-metadata.js';
+import { TimedErrorDisplay } from './timed-error-display.js';
 
 const SOURCE_TYPE_FAKER = 'faker';
 const SOURCE_TYPE_REGEX = 'regex';
@@ -67,103 +73,80 @@ function buildRuleSpecFromSchemaRow(row) {
     const params = String(row?.params ?? '').trim();
     return `${command}${params}`;
   }
+  if (sourceType === SOURCE_TYPE_LITERAL) {
+    const literalValue = String(row?.value ?? '');
+    const trimmedLiteralValue = literalValue.trim();
+    if (trimmedLiteralValue.length === 0) {
+      return 'literal()';
+    }
+    if (/^(literal|datatype\.literal|awd\.datatype\.literal)\s*\(/i.test(trimmedLiteralValue)) {
+      return trimmedLiteralValue;
+    }
+    return `literal(${literalValue})`;
+  }
   return String(row?.value ?? '').trim();
 }
 
+function extractLiteralValueFromRuleSpec(ruleSpec) {
+  const value = String(ruleSpec ?? '');
+  const match = value.match(/^(?:literal|datatype\.literal|awd\.datatype\.literal)\s*\(([\s\S]*)\)$/i);
+  if (!match) {
+    return value;
+  }
+  return match[1];
+}
+
 function schemaRowsToSpec(schemaRows) {
-  const lines = [];
-  (schemaRows || []).forEach((row) => {
-    const name = String(row?.name ?? '').trim();
-    const ruleSpec = buildRuleSpecFromSchemaRow(row);
-    if (name.length === 0 && ruleSpec.length === 0) {
-      return;
-    }
-    const comments = String(row?.comments ?? '');
-    if (comments.length > 0) {
-      lines.push(...comments.split('\n'));
-    }
-    lines.push(name);
-    lines.push(ruleSpec);
+  const renderResult = dataRulesToSchemaText({
+    dataRules: schemaRowsToDataRules({ schemaRows }).dataRules,
   });
-  return lines.join('\n');
+  return renderResult.text;
 }
 
 function schemaRowsToSpecWithTokens(schemaRows, schemaTokens) {
-  const hasRowComments = (schemaRows || []).some((row) => String(row?.comments ?? '').length > 0);
-  if (hasRowComments) {
-    return schemaRowsToSpec(schemaRows);
-  }
-  const rows = (schemaRows || []).map((row) => ({
-    name: String(row?.name ?? '').trim(),
-    rule: buildRuleSpecFromSchemaRow(row),
-  }));
-  const tokens = Array.isArray(schemaTokens) ? schemaTokens : [];
-  if (tokens.length === 0) {
-    return schemaRowsToSpec(schemaRows);
-  }
+  const dataRules = (Array.isArray(schemaRows) ? schemaRows : [])
+    .map((row) => {
+      const name = String(row?.name ?? '').trim();
+      const ruleSpec = buildRuleSpecFromSchemaRow(row);
+      const comments = String(row?.comments ?? '');
+      if (name.length === 0 && ruleSpec.length === 0) {
+        return null;
+      }
+      return {
+        name,
+        ruleSpec,
+        comments,
+      };
+    })
+    .filter(Boolean);
 
-  const outputLines = [];
-  let rowIndex = 0;
-  tokens.forEach((token) => {
-    if (token?.kind === 'comment' || token?.kind === 'blank') {
-      outputLines.push(token.text ?? '');
-      return;
-    }
-    if (token?.kind === 'rule' && rowIndex < rows.length) {
-      outputLines.push(rows[rowIndex].name);
-      outputLines.push(rows[rowIndex].rule);
-      rowIndex += 1;
-    }
+  const renderResult = dataRulesToSchemaText({
+    dataRules,
+    schemaTokens,
   });
-
-  while (rowIndex < rows.length) {
-    if (outputLines.length > 0) {
-      outputLines.push('');
-    }
-    outputLines.push(rows[rowIndex].name);
-    outputLines.push(rows[rowIndex].rule);
-    rowIndex += 1;
-  }
-
-  return outputLines.join('\n');
+  return renderResult.text;
 }
 
 function validateSchemaRows(schemaRows) {
-  const errors = [];
-  const rows = (schemaRows || []).map((row, index) => {
-    return {
-      id: row?.id ?? `row-${index + 1}`,
-      name: String(row?.name ?? '').trim(),
-      sourceType: normaliseSourceType(row?.sourceType),
-      command: normaliseFakerCommand(row?.command),
-      params: String(row?.params ?? '').trim(),
-      value: String(row?.value ?? '').trim(),
-      comments: String(row?.comments ?? ''),
-      order: index,
-    };
-  });
+  const result = schemaRowsToDataRules({ schemaRows });
+  return { errors: result.errors, rows: result.rows };
+}
 
-  if (rows.length === 0) {
-    errors.push('Add at least one schema row.');
-  }
-
-  rows.forEach((row, index) => {
-    if (row.name.length === 0) {
-      errors.push(`Row ${index + 1}: column name is required.`);
-    }
-    if (row.sourceType === SOURCE_TYPE_FAKER && row.command.length === 0) {
-      errors.push(`Row ${index + 1}: faker command is required.`);
-    }
-  });
-
-  return { errors, rows };
+function schemaErrorsToText(errors = []) {
+  return (Array.isArray(errors) ? errors : [])
+    .map((error) => {
+      if (error && typeof error === 'object' && typeof error.message === 'string') {
+        return error.message;
+      }
+      return String(error ?? '');
+    })
+    .join('\n');
 }
 
 class DataGeneratorPage {
   constructor({
     parentElement,
     documentObj = document,
-    alertFn,
     faker,
     RandExp,
     TabulatorCtor = globalThis?.Tabulator,
@@ -174,17 +157,6 @@ class DataGeneratorPage {
   } = {}) {
     this.parentElement = parentElement;
     this.documentObj = documentObj;
-    this.alertFn =
-      typeof alertFn === 'function'
-        ? alertFn
-        : (message) => {
-            const windowAlert = this.documentObj?.defaultView?.alert || globalThis?.alert;
-            if (typeof windowAlert === 'function') {
-              windowAlert.call(this.documentObj?.defaultView || globalThis, message);
-              return;
-            }
-            console.error(message);
-          };
     this.faker = faker;
     this.RandExp = RandExp;
     this.TabulatorCtor = TabulatorCtor;
@@ -201,6 +173,7 @@ class DataGeneratorPage {
     this.isTextMode = false;
     this.optionsPanels = {};
     this.generationStatusTimer = undefined;
+    this.schemaErrorDisplay = undefined;
     this.lastPreviewDataTable = undefined;
   }
 
@@ -213,6 +186,11 @@ class DataGeneratorPage {
     }
 
     this.renderPageShell();
+    this.schemaErrorDisplay = new TimedErrorDisplay({
+      documentObj: this.documentObj,
+      elementId: 'generatorSchemaErrorText',
+      timeoutMs: 5000,
+    });
     this.schemaRows = [this.createBlankSchemaRow()];
     this.renderSchemaRows();
     this.updateSchemaEditModeView();
@@ -260,6 +238,7 @@ class DataGeneratorPage {
           <section class="generator-schema" id="generatorSchemaSection" data-section-order="2" aria-labelledby="generatorSchemaHeading">
                     <div class="generator-schema-head">
               <strong id="generatorSchemaHeading">Schema</strong>
+                        <span id="generatorSchemaErrorText" class="generator-schema-error-text" aria-live="polite" role="status"></span>
                         <span class="generator-button-with-help">
                           <span id="schemaModeHelpIcon" class="helpicon" data-help="generator-schema-mode-help"></span>
                           <button id="schemaModeToggleButton" class="icon-button" title="Toggle schema text mode">Edit as Text</button>
@@ -575,20 +554,34 @@ class DataGeneratorPage {
     }, delay);
   }
 
+  surfacePageError(message, { useSchemaStatus = false } = {}) {
+    const text = String(message || '').trim();
+    if (!text) {
+      return;
+    }
+    if (useSchemaStatus) {
+      this.showSchemaErrorStatus(text);
+    } else {
+      this.setGenerationStatus(text, false);
+      this.scheduleClearGenerationStatus(5000);
+    }
+  }
+
   toggleSchemaEditMode() {
     this.hideVisibleHelpTooltips();
     if (this.isTextMode) {
       const textArea = this.documentObj.getElementById('generatorSchemaText');
       const parsed = this.parseSchemaTextToRows(textArea?.value || '');
       if (parsed.errors.length > 0) {
-        this.alertFn(parsed.errors.join('\n'));
+        this.showSchemaErrorStatus(schemaErrorsToText(parsed.errors));
         return;
       }
+      this.clearSchemaErrorStatus();
       this.schemaRows = parsed.rows.length > 0 ? parsed.rows : [this.createBlankSchemaRow()];
       this.schemaTextTokens = parsed.tokens || [];
-      this.renderSchemaRows();
       this.isTextMode = false;
       this.updateSchemaEditModeView();
+      this.renderSchemaRows();
       return;
     }
 
@@ -596,6 +589,14 @@ class DataGeneratorPage {
     textArea.value = schemaRowsToSpecWithTokens(this.schemaRows, this.schemaTextTokens);
     this.isTextMode = true;
     this.updateSchemaEditModeView();
+  }
+
+  showSchemaErrorStatus(message) {
+    this.schemaErrorDisplay?.show(message);
+  }
+
+  clearSchemaErrorStatus() {
+    this.schemaErrorDisplay?.clear();
   }
 
   hideVisibleHelpTooltips() {
@@ -682,16 +683,18 @@ enum(active,inactive,pending)</pre>
       return { rows: [], errors: [], tokens: [] };
     }
 
-    const generator = new this.TestDataGeneratorClass(this.faker, this.RandExp);
-    generator.importSpec(text);
-    generator.compile();
-    if (!generator.isValid()) {
-      return { rows: [], errors: generator.errors(), tokens: [] };
+    const parseResult = schemaTextToDataRules({
+      schemaText: text,
+      faker: this.faker,
+      RandExp: this.RandExp,
+      TestDataGeneratorClass: this.TestDataGeneratorClass,
+    });
+    if (parseResult.errors.length > 0) {
+      return { rows: [], errors: parseResult.errors, tokens: [] };
     }
 
-    const rows = generator.testDataRules().map((rule) => this.ruleToSchemaRow(rule));
-    const tokens =
-      typeof generator.rulesParser?.getSchemaTokens === 'function' ? generator.rulesParser.getSchemaTokens() : [];
+    const rows = parseResult.dataRules.map((rule) => this.ruleToSchemaRow(rule));
+    const tokens = parseResult.schemaTokens || [];
     return { rows, errors: [], tokens };
   }
 
@@ -704,7 +707,7 @@ enum(active,inactive,pending)</pre>
     const parsed = this.parseSchemaTextToRows(textArea?.value || '');
     if (parsed.errors.length > 0) {
       if (showErrors) {
-        this.alertFn(parsed.errors.join('\n'));
+        this.surfacePageError(schemaErrorsToText(parsed.errors), { useSchemaStatus: true });
       }
       return parsed;
     }
@@ -981,16 +984,16 @@ enum(active,inactive,pending)</pre>
       }
       if (row.sourceType === SOURCE_TYPE_LITERAL) {
         rule.type = SOURCE_TYPE_LITERAL;
-        rule.ruleSpec = row.value;
+        rule.ruleSpec = extractLiteralValueFromRuleSpec(buildRuleSpecFromSchemaRow(row));
         return;
       }
       if (row.sourceType === SOURCE_TYPE_ENUM) {
         rule.type = SOURCE_TYPE_ENUM;
-        rule.ruleSpec = row.value;
+        rule.ruleSpec = buildRuleSpecFromSchemaRow(row);
         return;
       }
       rule.type = SOURCE_TYPE_REGEX;
-      rule.ruleSpec = row.value;
+      rule.ruleSpec = buildRuleSpecFromSchemaRow(row);
     });
 
     generator.compiler.validate();
@@ -1013,13 +1016,13 @@ enum(active,inactive,pending)</pre>
   previewData() {
     const rowCount = this.parseRowCount('previewRowsCount');
     if (rowCount.errors.length > 0) {
-      this.alertFn(rowCount.errors.join('\n'));
+      this.surfacePageError(rowCount.errors.join('\n'));
       return;
     }
 
     const configured = this.createConfiguredGenerator();
     if (configured.errors?.length > 0) {
-      this.alertFn(configured.errors.join('\n'));
+      this.surfacePageError(schemaErrorsToText(configured.errors), { useSchemaStatus: true });
       return;
     }
 
@@ -1032,19 +1035,19 @@ enum(active,inactive,pending)</pre>
   async generateDataFile() {
     const rowCount = this.parseRowCount('generateRowsCount');
     if (rowCount.errors.length > 0) {
-      this.alertFn(rowCount.errors.join('\n'));
+      this.surfacePageError(rowCount.errors.join('\n'));
       return;
     }
 
     const configured = this.createConfiguredGenerator();
     if (configured.errors?.length > 0) {
-      this.alertFn(configured.errors.join('\n'));
+      this.surfacePageError(schemaErrorsToText(configured.errors), { useSchemaStatus: true });
       return;
     }
 
     const type = this.getSelectedOutputType();
     if (!this.exporter.canExport(type)) {
-      this.alertFn(`Output format ${type} is not supported.`);
+      this.surfacePageError(`Output format ${type} is not supported.`);
       return;
     }
 
@@ -1072,7 +1075,7 @@ enum(active,inactive,pending)</pre>
       this.scheduleClearGenerationStatus();
     } catch (error) {
       console.error(error);
-      this.alertFn('Unable to generate data file.');
+      this.surfacePageError('Unable to generate data file.');
       this.setGenerationStatus('Failed to generate data file.');
     } finally {
       this.setGenerationButtonBusy(false);
@@ -1082,20 +1085,20 @@ enum(active,inactive,pending)</pre>
   async generateAllPairsDataFile() {
     const configured = this.createConfiguredGenerator();
     if (configured.errors?.length > 0) {
-      this.alertFn(configured.errors.join('\n'));
+      this.surfacePageError(schemaErrorsToText(configured.errors), { useSchemaStatus: true });
       return;
     }
 
     // Count enum columns
     const enumCount = this.countEnumColumns();
     if (enumCount < 2) {
-      this.alertFn('Pairwise generation requires at least 2 enum columns.');
+      this.surfacePageError('Pairwise generation requires at least 2 enum columns.');
       return;
     }
 
     const type = this.getSelectedOutputType();
     if (!this.exporter.canExport(type)) {
-      this.alertFn(`Output format ${type} is not supported.`);
+      this.surfacePageError(`Output format ${type} is not supported.`);
       return;
     }
 
@@ -1106,7 +1109,7 @@ enum(active,inactive,pending)</pre>
     try {
       const dataTable = this.buildAllPairsDataTable(configured.generator);
       if (!dataTable) {
-        this.alertFn('Failed to generate pairwise data.');
+        this.surfacePageError('Failed to generate pairwise data.');
         this.setGenerationStatus('Pairwise generation failed.');
         return;
       }
@@ -1129,7 +1132,7 @@ enum(active,inactive,pending)</pre>
       this.scheduleClearGenerationStatus();
     } catch (error) {
       console.error(error);
-      this.alertFn('Unable to generate pairwise data file.');
+      this.surfacePageError('Unable to generate pairwise data file.');
       this.setGenerationStatus('Failed to generate pairwise data file.');
     } finally {
       this.setGenerationButtonBusy(false);
@@ -1384,6 +1387,7 @@ enum(active,inactive,pending)</pre>
 export {
   DataGeneratorPage,
   buildRuleSpecFromSchemaRow,
+  extractLiteralValueFromRuleSpec,
   schemaRowsToSpec,
   schemaRowsToSpecWithTokens,
   validateSchemaRows,

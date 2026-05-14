@@ -155,7 +155,6 @@ describe('test data definition editor engine compatibility', () => {
   });
 
   test('generate does not auto-refresh text preview', async () => {
-    global.alert = jest.fn();
     const renderTextFromGrid = jest.fn();
     const TabulatorMock = installTabulatorMock();
     const gridExtras = {
@@ -184,7 +183,7 @@ describe('test data definition editor engine compatibility', () => {
 
     expect(renderTextFromGrid).not.toHaveBeenCalled();
     expect(document.getElementById('testdata-status').textContent).toContain('Refresh text preview if needed');
-    expect(global.alert).not.toHaveBeenCalled();
+    expect(document.getElementById('testdata-schema-error').textContent).toBe('');
     delete global.Tabulator;
   });
 
@@ -242,7 +241,6 @@ describe('test data definition editor engine compatibility', () => {
   });
 
   test('generate reports schema validation failure for invalid rules', async () => {
-    global.alert = jest.fn();
     const TabulatorMock = installTabulatorMock();
 
     enableTestDataGenerationInterface(
@@ -264,13 +262,14 @@ describe('test data definition editor engine compatibility', () => {
     document.getElementById('generatedata').click();
     await flushUi();
 
-    expect(global.alert).toHaveBeenCalled();
+    expect(document.getElementById('testdata-schema-error').textContent).toContain(
+      'No rules defined. Provide column/rule pairs.'
+    );
     expect(document.getElementById('testdata-status').textContent).toContain('Schema validation failed');
     expect(document.getElementById('generatedata').disabled).toBe(false);
   });
 
   test('generate reports invalid row count for negative values', async () => {
-    global.alert = jest.fn();
     const TabulatorMock = installTabulatorMock();
     const importer = {
       setGridFromGenericDataTable: jest.fn(),
@@ -293,13 +292,12 @@ describe('test data definition editor engine compatibility', () => {
     document.getElementById('generatedata').click();
     await flushUi();
 
-    expect(global.alert).toHaveBeenCalledWith('Enter how many rows to generate.');
+    expect(document.getElementById('testdata-schema-error').textContent).toContain('Enter how many rows to generate.');
     expect(document.getElementById('testdata-status').textContent).toContain('Invalid row count');
     expect(importer.setGridFromGenericDataTable).not.toHaveBeenCalled();
   });
 
   test('amend selected reports when no rows are selected', async () => {
-    global.alert = jest.fn();
     const TabulatorMock = installTabulatorMock();
     const gridExtras = {
       getRowCount: jest.fn(() => 2),
@@ -325,13 +323,40 @@ describe('test data definition editor engine compatibility', () => {
     document.getElementById('generatedata').click();
     await flushUi();
 
-    expect(global.alert).toHaveBeenCalledWith('No rows selected.');
+    expect(document.getElementById('testdata-schema-error').textContent).toContain('No rows selected.');
     expect(document.getElementById('testdata-status').textContent).toContain('No selected rows to amend');
     delete global.Tabulator;
   });
 
+  test('pairwise generation reports inline error when fewer than two enum columns exist', async () => {
+    const TabulatorMock = installTabulatorMock();
+
+    enableTestDataGenerationInterface(
+      'host',
+      {
+        setGridFromGenericDataTable: jest.fn(),
+      },
+      {
+        renderTextFromGrid: jest.fn(),
+      },
+      {
+        getRowCount: jest.fn(() => 0),
+        getSelectedRowIndexes: jest.fn(() => []),
+      }
+    );
+
+    TabulatorMock.latestInstance.rows = [{ columnName: 'OnlyEnum', type: 'enum', value: 'a,b' }];
+    document.getElementById('generateallpairs').click();
+    await flushUi();
+
+    expect(document.getElementById('testdata-schema-error').textContent).toContain(
+      'Pairwise generation requires at least 2 enum columns.'
+    );
+    expect(document.getElementById('testdata-status').textContent).toContain('Insufficient enum columns');
+    delete global.Tabulator;
+  });
+
   test('generate shows failure status when importer throws', async () => {
-    global.alert = jest.fn();
     const TabulatorMock = installTabulatorMock();
     const importer = {
       setGridFromGenericDataTable: jest.fn(() => Promise.reject(new Error('boom'))),
@@ -354,7 +379,9 @@ describe('test data definition editor engine compatibility', () => {
     document.getElementById('generatedata').click();
     await flushUi();
 
-    expect(global.alert).toHaveBeenCalledWith('Generate failed. Check console for details.');
+    expect(document.getElementById('testdata-schema-error').textContent).toContain(
+      'Generate failed. Check console for details.'
+    );
     expect(document.getElementById('testdata-status').textContent).toContain('Generate failed');
     expect(document.getElementById('generatedata').disabled).toBe(false);
   });
@@ -434,6 +461,41 @@ describe('test data definition editor engine compatibility', () => {
     expect(rebuilt).toContain('# second comment');
   });
 
+  test('leading blank line in schema text is preserved and plain value maps to a typed row', async () => {
+    const TabulatorMock = installTabulatorMock();
+
+    enableTestDataGenerationInterface(
+      'host',
+      {
+        setGridFromGenericDataTable: jest.fn(),
+      },
+      {
+        renderTextFromGrid: jest.fn(),
+      },
+      {
+        getRowCount: jest.fn(() => 0),
+        getSelectedRowIndexes: jest.fn(() => []),
+      }
+    );
+
+    const schemaTextArea = document.getElementById('testdatadefntext');
+    schemaTextArea.value = '\nc2\nvalue';
+    schemaTextArea.dispatchEvent(new Event('input', { bubbles: true }));
+    await new Promise((resolve) => setTimeout(resolve, 1100));
+    await flushUi();
+
+    expect(TabulatorMock.latestInstance.rows).toHaveLength(1);
+    expect(TabulatorMock.latestInstance.rows[0]).toMatchObject({
+      comments: '',
+      columnName: 'c2',
+      value: 'value',
+    });
+
+    document.querySelector('#defngrid button').click();
+    await flushUi();
+    expect(document.getElementById('testdatadefntext').value).toContain('\nc2\n');
+  });
+
   test('enum type rows are emitted as enum(...) definitions in schema text', async () => {
     const TabulatorMock = installTabulatorMock();
 
@@ -482,6 +544,97 @@ describe('test data definition editor engine compatibility', () => {
     await flushUi();
 
     expect(document.getElementById('testdatadefntext').value).toContain('Separator\nliteral(.)');
+
+    delete global.Tabulator;
+  });
+
+  test('literal type rows preserve empty and whitespace-only values in schema text', async () => {
+    const TabulatorMock = installTabulatorMock();
+
+    enableTestDataGenerationInterface(
+      'host',
+      {
+        setGridFromGenericDataTable: jest.fn(),
+      },
+      {
+        renderTextFromGrid: jest.fn(),
+      },
+      {
+        getRowCount: jest.fn(() => 0),
+        getSelectedRowIndexes: jest.fn(() => []),
+      }
+    );
+
+    TabulatorMock.latestInstance.rows = [
+      { columnName: 'EmptyLiteral', type: 'literal', value: '' },
+      { columnName: 'SpaceLiteral', type: 'literal', value: '   ' },
+    ];
+    TabulatorMock.latestInstance.options.cellEdited();
+    await flushUi();
+
+    const schemaText = document.getElementById('testdatadefntext').value;
+    expect(schemaText).toContain('EmptyLiteral\nliteral()');
+    expect(schemaText).toContain('SpaceLiteral\nliteral(   )');
+
+    delete global.Tabulator;
+  });
+
+  test('text schema literal() parses to literal row type (not regex)', async () => {
+    const TabulatorMock = installTabulatorMock();
+
+    enableTestDataGenerationInterface(
+      'host',
+      {
+        setGridFromGenericDataTable: jest.fn(),
+      },
+      {
+        renderTextFromGrid: jest.fn(),
+      },
+      {
+        getRowCount: jest.fn(() => 0),
+        getSelectedRowIndexes: jest.fn(() => []),
+      }
+    );
+
+    const schemaTextArea = document.getElementById('testdatadefntext');
+    schemaTextArea.value = 't\nliteral()';
+    schemaTextArea.dispatchEvent(new Event('input', { bubbles: true }));
+    await new Promise((resolve) => setTimeout(resolve, 1100));
+    await flushUi();
+
+    expect(TabulatorMock.latestInstance.rows).toHaveLength(1);
+    expect(TabulatorMock.latestInstance.rows[0]).toMatchObject({
+      columnName: 't',
+      type: 'literal',
+      value: '',
+    });
+
+    delete global.Tabulator;
+  });
+
+  test('literal type rows preserve leading spaces in value when mapped to schema text', async () => {
+    const TabulatorMock = installTabulatorMock();
+
+    enableTestDataGenerationInterface(
+      'host',
+      {
+        setGridFromGenericDataTable: jest.fn(),
+      },
+      {
+        renderTextFromGrid: jest.fn(),
+      },
+      {
+        getRowCount: jest.fn(() => 0),
+        getSelectedRowIndexes: jest.fn(() => []),
+      }
+    );
+
+    TabulatorMock.latestInstance.rows = [{ columnName: 'LeadingSpaceLiteral', type: 'literal', value: '   123' }];
+    TabulatorMock.latestInstance.options.cellEdited();
+    await flushUi();
+
+    const schemaText = document.getElementById('testdatadefntext').value;
+    expect(schemaText).toContain('LeadingSpaceLiteral\nliteral(   123)');
 
     delete global.Tabulator;
   });

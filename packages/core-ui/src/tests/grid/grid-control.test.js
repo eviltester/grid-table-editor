@@ -7,6 +7,7 @@ describe('GridControl', () => {
   let parent;
   let control;
   let gridExtras;
+  let requestConfirm;
 
   beforeEach(() => {
     dom = new JSDOM(`<!doctype html><html><body></body></html>`);
@@ -18,7 +19,8 @@ describe('GridControl', () => {
     parent = document.createElement('div');
     document.body.appendChild(parent);
 
-    control = new GridControl(new GridControlsPageMap());
+    requestConfirm = jest.fn(async () => true);
+    control = new GridControl(new GridControlsPageMap(), { requestConfirm });
     control.addGuiIn(parent);
 
     gridExtras = {
@@ -33,8 +35,6 @@ describe('GridControl', () => {
     };
     control.useThisGridFunctionality(gridExtras);
     control.addHooksToPage(parent);
-
-    global.confirm = jest.fn(() => true);
   });
 
   afterEach(() => {
@@ -51,18 +51,27 @@ describe('GridControl', () => {
     expect(gridExtras.addRowsRelativeToSelection).toHaveBeenNthCalledWith(2, 1);
   });
 
-  test('delete selected rows respects selected count and confirmation', () => {
+  test('renders Unique Column Names checkbox unchecked by default', () => {
+    const checkbox = parent.querySelector('#uniqueColumnNamesCheckbox');
+    expect(checkbox).toBeTruthy();
+    expect(checkbox.checked).toBe(false);
+  });
+
+  test('delete selected rows respects selected count and confirmation', async () => {
     gridExtras.getNumberOfSelectedRows.mockReturnValue(0);
     parent.querySelector('#deleteSelectedRowsButton').click();
+    await Promise.resolve();
     expect(gridExtras.deleteSelectedRows).not.toHaveBeenCalled();
 
     gridExtras.getNumberOfSelectedRows.mockReturnValue(1);
-    global.confirm = jest.fn(() => false);
+    requestConfirm.mockResolvedValue(false);
     parent.querySelector('#deleteSelectedRowsButton').click();
+    await Promise.resolve();
     expect(gridExtras.deleteSelectedRows).not.toHaveBeenCalled();
 
-    global.confirm = jest.fn(() => true);
+    requestConfirm.mockResolvedValue(true);
     parent.querySelector('#deleteSelectedRowsButton').click();
+    await Promise.resolve();
     expect(gridExtras.deleteSelectedRows).toHaveBeenCalledTimes(1);
   });
 
@@ -80,13 +89,15 @@ describe('GridControl', () => {
     expect(gridExtras.clearSort).toHaveBeenCalledTimes(1);
   });
 
-  test('clear table honors confirmation', () => {
-    global.confirm = jest.fn(() => false);
+  test('clear table honors confirmation', async () => {
+    requestConfirm.mockResolvedValue(false);
     parent.querySelector('#clearTableButton').click();
+    await Promise.resolve();
     expect(gridExtras.clearGrid).not.toHaveBeenCalled();
 
-    global.confirm = jest.fn(() => true);
+    requestConfirm.mockResolvedValue(true);
     parent.querySelector('#clearTableButton').click();
+    await Promise.resolve();
     expect(gridExtras.clearGrid).toHaveBeenCalledTimes(1);
   });
 });

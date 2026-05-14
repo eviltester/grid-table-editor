@@ -58,23 +58,13 @@ class TabbedTextComponent {
   }
 
   async preview() {
-    this.page.once('dialog', async (dialog) => {
-      await dialog.accept();
-    });
     await this.previewOrEditButton.click();
+    await this._resolveConfirmModal(true);
   }
 
   async togglePreviewEdit(confirmPrompt = true) {
-    if (confirmPrompt === true) {
-      this.page.once('dialog', async (dialog) => {
-        await dialog.accept();
-      });
-    } else if (confirmPrompt === false) {
-      this.page.once('dialog', async (dialog) => {
-        await dialog.dismiss();
-      });
-    }
     await this.previewOrEditButton.click();
+    await this._resolveConfirmModal(confirmPrompt !== false);
   }
 
   async isCopyButtonVisible() {
@@ -128,6 +118,19 @@ class TabbedTextComponent {
 
   async expectOutputContains(value) {
     await expect(this.outputTextArea).toHaveValue(new RegExp(value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  }
+
+  async _resolveConfirmModal(accept = true) {
+    const confirmBackdrop = this.page.locator('#confirm-modal-backdrop');
+    if ((await confirmBackdrop.count()) === 0 || !(await confirmBackdrop.isVisible())) {
+      return;
+    }
+    if (accept) {
+      await confirmBackdrop.locator('#confirm-modal-ok').click();
+    } else {
+      await confirmBackdrop.locator('#confirm-modal-cancel').click();
+    }
+    await expect(confirmBackdrop).toBeHidden();
   }
 }
 

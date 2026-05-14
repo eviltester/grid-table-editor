@@ -1,5 +1,50 @@
 import { amendFromTextSpecAndData } from '../../index.js';
 
+test('rejects missing inputData', () => {
+  const result = amendFromTextSpecAndData({
+    textSpec: 'Name\nBob',
+    inputData: '',
+    inputFormat: 'csv',
+    outputFormat: 'json',
+  });
+  expect(result.ok).toBe(false);
+  expect(result.errors).toContainEqual(
+    expect.objectContaining({
+      code: 'invalid_input_data',
+    })
+  );
+});
+
+test('rejects missing inputFormat', () => {
+  const result = amendFromTextSpecAndData({
+    textSpec: 'Name\nBob',
+    inputData: '"Name"\n"Alice"',
+    inputFormat: '',
+    outputFormat: 'json',
+  });
+  expect(result.ok).toBe(false);
+  expect(result.errors).toContainEqual(
+    expect.objectContaining({
+      code: 'invalid_input_format',
+    })
+  );
+});
+
+test('rejects unsupported outputFormat', () => {
+  const result = amendFromTextSpecAndData({
+    textSpec: 'Name\nBob',
+    inputData: '"Name"\n"Alice"',
+    inputFormat: 'csv',
+    outputFormat: 'not-a-format',
+  });
+  expect(result.ok).toBe(false);
+  expect(result.errors).toContainEqual(
+    expect.objectContaining({
+      code: 'invalid_output_format',
+    })
+  );
+});
+
 test('defaults rowCount to imported row count', () => {
   const result = amendFromTextSpecAndData({
     textSpec: 'Name\nBob',
@@ -48,7 +93,8 @@ test('invalid input format returns clear error', () => {
     outputFormat: 'json',
   });
   expect(result.ok).toBe(false);
-  expect(result.errors[0]).toContain('inputFormat must be one of');
+  expect(result.errors[0].code).toBe('invalid_input_format');
+  expect(result.errors[0].message).toContain('inputFormat must be one of');
 });
 
 test('accepts inputFormat values with surrounding whitespace', () => {
@@ -71,7 +117,8 @@ test('rowCount cannot exceed imported rows', () => {
     outputFormat: 'json',
   });
   expect(result.ok).toBe(false);
-  expect(result.errors[0]).toContain('less than or equal to imported row count');
+  expect(result.errors[0].code).toBe('invalid_row_count');
+  expect(result.errors[0].message).toContain('less than or equal to imported row count');
 });
 
 test('rejects non-integer rowCount strings', () => {
@@ -83,7 +130,8 @@ test('rejects non-integer rowCount strings', () => {
     outputFormat: 'json',
   });
   expect(decimal.ok).toBe(false);
-  expect(decimal.errors[0]).toContain('rowCount must be an integer');
+  expect(decimal.errors[0].code).toBe('invalid_row_count');
+  expect(decimal.errors[0].message).toContain('rowCount must be an integer');
 
   const junk = amendFromTextSpecAndData({
     textSpec: 'Name\nBob',
@@ -93,7 +141,8 @@ test('rejects non-integer rowCount strings', () => {
     outputFormat: 'json',
   });
   expect(junk.ok).toBe(false);
-  expect(junk.errors[0]).toContain('rowCount must be an integer');
+  expect(junk.errors[0].code).toBe('invalid_row_count');
+  expect(junk.errors[0].message).toContain('rowCount must be an integer');
 });
 
 test('stream is ignored with warning', () => {
@@ -168,5 +217,6 @@ test('malformed input data returns structured error', () => {
     outputFormat: 'json',
   });
   expect(result.ok).toBe(false);
-  expect(result.errors[0]).toContain('Unable to parse inputData using inputFormat "json".');
+  expect(result.errors[0].code).toBe('input_parse_error');
+  expect(result.errors[0].message).toContain('Unable to parse inputData using inputFormat "json".');
 });

@@ -3,9 +3,11 @@ import { DragDropControl } from './drag-drop-control.js';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 import { sanitizeUiOptionsForFormat } from './options-catalog-adapter.js';
 import { createOptionsPanelsForParent } from './options-ui-schema.js';
+import { TimedErrorDisplay } from './timed-error-display.js';
+import { showConfirmModal } from './modal-confirm.js';
 
 class ImportExportControls {
-  constructor() {
+  constructor({ requestConfirm } = {}) {
     this.previewRowLimit = 10;
     this.textEditMode = 'preview';
     this.previewTextDirty = false;
@@ -19,9 +21,15 @@ class ImportExportControls {
     this.autoPreviewEnabled = false;
     this._hasBoundAutoPreviewInput = false;
     this._gridChangeUnsubscribe = null;
+    this.errorDisplay = null;
+    this.requestConfirm =
+      typeof requestConfirm === 'function'
+        ? requestConfirm
+        : (options) => showConfirmModal({ documentObj: document, ...options });
   }
 
   addHTMLtoGui(parentelement) {
+    this.errorDisplay?.clear?.();
     parentelement.innerHTML = `<span data-help="import-export-controls" class="helpicon"></span>
             <button id="settextfromgridbutton">v Set Text From Grid v</button>
             <button id="setgridfromtextbutton" disabled>^ Set Grid From Text ^</button>
@@ -32,7 +40,13 @@ class ImportExportControls {
             <span>[Drag And Drop <span class="fileFormat">.csv</span> File Here]</span>
             </label>
             <div id="import-progress-status" class="import-progress-status" style="display:none;" aria-live="polite"></div>
+            <div id="import-export-error" class="generator-schema-error-text" aria-live="polite" role="status"></div>
         `;
+    this.errorDisplay = new TimedErrorDisplay({
+      documentObj: document,
+      elementId: 'import-export-error',
+      timeoutMs: 5000,
+    });
 
     let settextfromgridbutton = parentelement.querySelector('#settextfromgridbutton');
     let setTextAreaClickListener = this.renderTextFromGrid.bind(this);
@@ -93,7 +107,7 @@ class ImportExportControls {
   importTextArea() {
     if (this.isPreviewTextMode()) {
       if (!this.previewTextDirty) {
-        alert('Grid to Text only availalable in Edit mode');
+        this._showError('Grid to Text only available in Edit mode');
         return;
       }
       const typeToImport = document.querySelector('li.active-type a').getAttribute('data-type');
@@ -109,6 +123,14 @@ class ImportExportControls {
 
     this.setCurrentTypeOptions();
     return this.importer.importText(typeToImport, textToImport);
+  }
+
+  _showError(message, options = {}) {
+    const text = String(message ?? '').trim();
+    if (!text) {
+      return;
+    }
+    this.errorDisplay?.show(text, options);
   }
 
   renderTextFromGrid() {
@@ -453,12 +475,16 @@ class ImportExportControls {
     return this.previewRowLimit;
   }
 
-  toggleTextEditMode() {
+  async toggleTextEditMode() {
     if (this.isPreviewTextMode()) {
       this.textEditMode = 'edit';
       this._setPreviewTextDirty(false);
       this._syncGridFromTextButtonState();
-      if (confirm('Do you want to Set Text From Grid?')) {
+      const shouldSetTextFromGrid = await this.requestConfirm({
+        title: 'Set Text From Grid',
+        message: 'Do you want to Set Text From Grid?',
+      });
+      if (shouldSetTextFromGrid) {
         this.renderTextFromGrid();
       } else {
         this.exportControls.setTextFromString('');

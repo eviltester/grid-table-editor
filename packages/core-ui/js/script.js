@@ -7,6 +7,7 @@ import { TabbedTextControl } from './gui_components/tabbed-text-control.js';
 import { ImportExportControls } from './gui_components/import-export-controls.js';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 import { initHelpTooltips } from './help/help-tooltips.js';
+import { initThemeToggle } from './gui_components/theme-toggle.js';
 
 var importer, exporter;
 var mainDataGrid;
@@ -24,6 +25,8 @@ async function bootstrapApp({
   ImporterClass = Importer,
   enableTestDataGenerationInterfaceFn = enableTestDataGenerationInterface,
 } = {}) {
+  initThemeToggle({ documentObj, windowObj: documentObj?.defaultView || window });
+
   console.log(`Using grid engine: ${activeGridEngineName}`);
   try {
     await ensureGridLibraryLoadedFn({ engine: activeGridEngineName });

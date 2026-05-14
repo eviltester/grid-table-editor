@@ -54,7 +54,12 @@ describe('TestDataGenerator meets Acceptance Criteria', () => {
       generator.compile();
 
       expect(generator.isValid()).toBe(false);
-      expect(generator.errors()).toContain('ERROR: Missing Rule Definition for Column1');
+      expect(generator.errors()).toContainEqual(
+        expect.objectContaining({
+          code: 'missing_rule_definition',
+          column: 'Column1',
+        })
+      );
       expect(generator.testDataRules().length).toBe(0);
     });
 
@@ -122,7 +127,12 @@ describe('TestDataGenerator meets Acceptance Criteria', () => {
       const data = generator.generate(1);
 
       expect(generator.isValid()).toBe(false);
-      expect(generator.errors()).toContain('ERROR: Missing Rule Definition for Column1');
+      expect(generator.errors()).toContainEqual(
+        expect.objectContaining({
+          code: 'missing_rule_definition',
+          column: 'Column1',
+        })
+      );
       expect(data).toStrictEqual([[], []]);
     });
 
@@ -156,7 +166,7 @@ describe('TestDataGenerator meets Acceptance Criteria', () => {
       generator.compile();
 
       expect(generator.isValid()).toBe(false);
-      expect(generator.errors()[0]).toBe('ERROR: No Rules Defined');
+      expect(generator.errors()[0]).toMatchObject({ code: 'invalid_schema_pairing' });
       expect(generator.errors().length).toBe(1);
     });
 
@@ -167,7 +177,7 @@ describe('TestDataGenerator meets Acceptance Criteria', () => {
       generator.compile();
 
       expect(generator.isValid()).toBe(false);
-      expect(generator.errors()[0]).toBe('ERROR: Missing Rule Definition for Field1');
+      expect(generator.errors()[0]).toMatchObject({ code: 'missing_rule_definition', column: 'Field1' });
       expect(generator.errors().length).toBe(1);
     });
 
@@ -178,7 +188,7 @@ describe('TestDataGenerator meets Acceptance Criteria', () => {
       generator.compile();
 
       expect(generator.isValid()).toBe(false);
-      expect(generator.errors()[0]).toBe('ERROR: Missing Rule Definition for Field2');
+      expect(generator.errors()[0]).toMatchObject({ code: 'missing_rule_definition', column: 'Field2' });
       expect(generator.errors().length).toBe(1);
     });
 
@@ -189,7 +199,7 @@ describe('TestDataGenerator meets Acceptance Criteria', () => {
       generator.compile();
 
       expect(generator.isValid()).toBe(false);
-      expect(generator.errors()[0]).toBe('ERROR: Missing Rule Definition for Field2');
+      expect(generator.errors()[0]).toMatchObject({ code: 'missing_rule_definition', column: 'Field2' });
       expect(generator.errors().length).toBe(1);
     });
   });

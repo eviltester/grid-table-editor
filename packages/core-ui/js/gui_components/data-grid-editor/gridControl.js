@@ -1,3 +1,5 @@
+import { showConfirmModal } from '../modal-confirm.js';
+
 class GridControlsPageMap {
   constructor() {
     this.addRowButtonQuery = '#addRowButton';
@@ -14,8 +16,10 @@ class GridControlsPageMap {
 // TODO : don't hook into existing controls in HTML create them here and then hook into them
 // The buttons above a grid
 class GridControl {
-  constructor(pageMap) {
+  constructor(pageMap, { requestConfirm } = {}) {
     this.pageMap = pageMap;
+    this.requestConfirm =
+      typeof requestConfirm === 'function' ? requestConfirm : (options) => showConfirmModal(options);
   }
 
   // TODO : avoid hard coded IDs use relative to the parent, so store the parent e.g. like option panels
@@ -97,13 +101,17 @@ class GridControl {
     this.gridExtras.addRowsRelativeToSelection(position);
   }
 
-  deleteSelectedRows() {
+  async deleteSelectedRows() {
     if (this.gridExtras.getNumberOfSelectedRows() <= 0) {
       console.log('no rows selected');
       return;
     }
 
-    if (!confirm('Are you Sure You Want to Delete Rows?')) return;
+    const confirmed = await this.requestConfirm({
+      title: 'Delete Rows',
+      message: 'Are you Sure You Want to Delete Rows?',
+    });
+    if (!confirmed) return;
 
     this.gridExtras.deleteSelectedRows();
   }
@@ -123,8 +131,12 @@ class GridControl {
     this.gridExtras.filterText(document.getElementById('filter-text-box').value);
   }
 
-  clearTable() {
-    if (confirm('Are you sure you want to reset the table and all data?')) {
+  async clearTable() {
+    const confirmed = await this.requestConfirm({
+      title: 'Reset Table',
+      message: 'Are you sure you want to reset the table and all data?',
+    });
+    if (confirmed) {
       this.gridExtras.clearGrid();
     }
   }

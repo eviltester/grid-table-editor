@@ -14,6 +14,7 @@ describe('GuardedColumnEdits (AG abstraction)', () => {
   let guarded;
   let surfaceError;
   let requestTextInput;
+  let requestConfirm;
 
   beforeEach(() => {
     gridExtras = {
@@ -27,8 +28,8 @@ describe('GuardedColumnEdits (AG abstraction)', () => {
     };
     surfaceError = jest.fn();
     requestTextInput = jest.fn();
-    guarded = new GuardedColumnEdits(gridExtras, { surfaceError, requestTextInput });
-    global.confirm = jest.fn(() => true);
+    requestConfirm = jest.fn(async () => true);
+    guarded = new GuardedColumnEdits(gridExtras, { surfaceError, requestTextInput, requestConfirm });
   });
 
   test('rename validates and delegates', async () => {
@@ -47,19 +48,19 @@ describe('GuardedColumnEdits (AG abstraction)', () => {
     expect(surfaceError).toHaveBeenCalled();
   });
 
-  test('delete prevents removing last column and requires confirm', () => {
+  test('delete prevents removing last column and requires confirm', async () => {
     gridExtras.getNumberOfColumns.mockReturnValue(1);
-    guarded.deleteColId('column1');
+    await guarded.deleteColId('column1');
     expect(surfaceError).toHaveBeenCalledWith('Cannot Delete The Only Column');
     expect(gridExtras.deleteColumnId).not.toHaveBeenCalled();
 
     gridExtras.getNumberOfColumns.mockReturnValue(2);
-    global.confirm.mockReturnValue(false);
-    guarded.deleteColId('column1');
+    requestConfirm.mockResolvedValue(false);
+    await guarded.deleteColId('column1');
     expect(gridExtras.deleteColumnId).not.toHaveBeenCalled();
 
-    global.confirm.mockReturnValue(true);
-    guarded.deleteColId('column1');
+    requestConfirm.mockResolvedValue(true);
+    await guarded.deleteColId('column1');
     expect(gridExtras.deleteColumnId).toHaveBeenCalledWith('column1');
   });
 
@@ -80,6 +81,7 @@ describe('GuardedTabulatorColumnEdits', () => {
   let column;
   let surfaceError;
   let requestTextInput;
+  let requestConfirm;
 
   beforeEach(() => {
     gridExtras = {
@@ -92,9 +94,9 @@ describe('GuardedTabulatorColumnEdits', () => {
     };
     surfaceError = jest.fn();
     requestTextInput = jest.fn();
-    guarded = new GuardedTabulatorColumnEdits(gridExtras, { surfaceError, requestTextInput });
+    requestConfirm = jest.fn(async () => true);
+    guarded = new GuardedTabulatorColumnEdits(gridExtras, { surfaceError, requestTextInput, requestConfirm });
     column = createColumn('Old Name');
-    global.confirm = jest.fn(() => true);
   });
 
   test('rename validates column existence and uniqueness', async () => {
@@ -115,21 +117,21 @@ describe('GuardedTabulatorColumnEdits', () => {
     expect(surfaceError).toHaveBeenCalled();
   });
 
-  test('delete validates constraints and confirmation', () => {
-    guarded.deleteColumn(undefined);
+  test('delete validates constraints and confirmation', async () => {
+    await guarded.deleteColumn(undefined);
     expect(surfaceError).toHaveBeenCalledWith('Column not found');
 
     gridExtras.getNumberOfColumns.mockReturnValue(1);
-    guarded.deleteColumn(column);
+    await guarded.deleteColumn(column);
     expect(surfaceError).toHaveBeenCalledWith('Cannot Delete The Only Column');
 
     gridExtras.getNumberOfColumns.mockReturnValue(2);
-    global.confirm.mockReturnValue(false);
-    guarded.deleteColumn(column);
+    requestConfirm.mockResolvedValue(false);
+    await guarded.deleteColumn(column);
     expect(gridExtras.deleteColumn).not.toHaveBeenCalled();
 
-    global.confirm.mockReturnValue(true);
-    guarded.deleteColumn(column);
+    requestConfirm.mockResolvedValue(true);
+    await guarded.deleteColumn(column);
     expect(gridExtras.deleteColumn).toHaveBeenCalledWith(column);
   });
 

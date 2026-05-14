@@ -29,6 +29,7 @@ describe('ImportExportControls preview/edit mode', () => {
   let dom;
   let controls;
   let importExportRoot;
+  let requestConfirm;
 
   beforeEach(() => {
     dom = new JSDOM(`<!doctype html><html><body>
@@ -42,7 +43,8 @@ describe('ImportExportControls preview/edit mode', () => {
     global.alert = jest.fn();
     global.confirm = jest.fn(() => true);
 
-    controls = new ImportExportControls();
+    requestConfirm = jest.fn(async () => true);
+    controls = new ImportExportControls({ requestConfirm });
     importExportRoot = document.getElementById('importExportRoot');
     controls.addHTMLtoGui(importExportRoot);
     controls.exportControls = {
@@ -94,21 +96,21 @@ describe('ImportExportControls preview/edit mode', () => {
     expect(controls.exportControls.setTextFromString).toHaveBeenCalledWith('rows:10');
   });
 
-  test('toggle to edit with no-confirm clears textarea for manual editing', () => {
-    global.confirm = jest.fn(() => false);
-    controls.toggleTextEditMode();
+  test('toggle to edit with confirm false clears textarea for manual editing', async () => {
+    requestConfirm.mockResolvedValue(false);
+    await controls.toggleTextEditMode();
     expect(controls.isPreviewTextMode()).toBe(false);
     expect(controls.exportControls.setTextFromString).toHaveBeenCalledWith('');
   });
 
-  test('Set Grid From Text button is disabled in preview mode and enabled in edit mode', () => {
+  test('Set Grid From Text button is disabled in preview mode and enabled in edit mode', async () => {
     const button = document.querySelector('#setgridfromtextbutton');
     expect(button.disabled).toBe(true);
 
-    controls.toggleTextEditMode();
+    await controls.toggleTextEditMode();
     expect(button.disabled).toBe(false);
 
-    controls.toggleTextEditMode();
+    await controls.toggleTextEditMode();
     expect(button.disabled).toBe(true);
   });
 
@@ -129,8 +131,8 @@ describe('ImportExportControls preview/edit mode', () => {
     expect(autoPreviewCheckbox.disabled).toBe(false);
   });
 
-  test('Auto Preview checkbox is disabled in edit mode', () => {
-    controls.toggleTextEditMode();
+  test('Auto Preview checkbox is disabled in edit mode', async () => {
+    await controls.toggleTextEditMode();
     const autoPreviewCheckbox = document.getElementById('autoPreviewCheckbox');
     expect(autoPreviewCheckbox.disabled).toBe(true);
   });
@@ -161,12 +163,12 @@ describe('ImportExportControls preview/edit mode', () => {
     expect(renderSpy).not.toHaveBeenCalled();
   });
 
-  test('grid change does not auto-render in edit mode even when Auto Preview is enabled', () => {
+  test('grid change does not auto-render in edit mode even when Auto Preview is enabled', async () => {
     const autoPreviewCheckbox = document.getElementById('autoPreviewCheckbox');
     autoPreviewCheckbox.checked = true;
     autoPreviewCheckbox.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
 
-    controls.toggleTextEditMode();
+    await controls.toggleTextEditMode();
     const renderSpy = jest.spyOn(controls, 'renderTextFromGrid').mockImplementation(() => {});
     controls._maybeAutoPreviewFromGridChange();
     expect(renderSpy).not.toHaveBeenCalled();
@@ -274,19 +276,18 @@ describe('ImportExportControls preview/edit mode', () => {
     expect(controls.exportControls.setTextFromString).toHaveBeenCalledWith('rows:10');
   });
 
-  test('Set Grid From Text imports when in edit mode', () => {
+  test('Set Grid From Text imports when in edit mode', async () => {
     document.getElementById('markdownarea').value = 'a,b\n1,2';
 
-    controls.toggleTextEditMode();
+    await controls.toggleTextEditMode();
     controls.importTextArea();
 
     expect(controls.importer.importText).toHaveBeenCalledWith('csv', 'a,b\n1,2');
   });
 
-  test('toggle to edit with confirm true renders text from grid', () => {
-    global.confirm = jest.fn(() => true);
-
-    controls.toggleTextEditMode();
+  test('toggle to edit with confirm true renders text from grid', async () => {
+    requestConfirm.mockResolvedValue(true);
+    await controls.toggleTextEditMode();
 
     expect(controls.isPreviewTextMode()).toBe(false);
     expect(controls.exportControls.renderTextFromGrid).toHaveBeenCalledTimes(1);

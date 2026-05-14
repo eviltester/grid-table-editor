@@ -1,11 +1,14 @@
 import { showTextInputModal } from '../../modal-text-input.js';
+import { showConfirmModal } from '../../modal-confirm.js';
 
 class GuardedTabulatorColumnEdits {
-  constructor(gridExtension, { surfaceError, requestTextInput } = {}) {
+  constructor(gridExtension, { surfaceError, requestTextInput, requestConfirm } = {}) {
     this.gridExtras = gridExtension;
     this.surfaceError = typeof surfaceError === 'function' ? surfaceError : null;
     this.requestTextInput =
       typeof requestTextInput === 'function' ? requestTextInput : (options) => showTextInputModal(options);
+    this.requestConfirm =
+      typeof requestConfirm === 'function' ? requestConfirm : (options) => showConfirmModal(options);
   }
 
   // todo: ids here look suspiciously ag-grid specific
@@ -48,7 +51,7 @@ class GuardedTabulatorColumnEdits {
     this.gridExtras.renameColumn(column, colTitle);
   }
 
-  deleteColumn(column) {
+  async deleteColumn(column) {
     if (column == null || column == undefined) {
       this.showError('Column not found');
       return;
@@ -59,7 +62,11 @@ class GuardedTabulatorColumnEdits {
       return;
     }
 
-    if (!confirm('Are you Sure You Want to Delete Column Named ' + column.getDefinition().title + '?')) return;
+    const confirmed = await this.requestConfirm({
+      title: 'Delete Column',
+      message: `Are you Sure You Want to Delete Column Named ${column.getDefinition().title}?`,
+    });
+    if (!confirmed) return;
 
     this.gridExtras.deleteColumn(column);
   }

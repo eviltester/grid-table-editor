@@ -1,11 +1,14 @@
 import { showTextInputModal } from '../gui_components/modal-text-input.js';
+import { showConfirmModal } from '../gui_components/modal-confirm.js';
 
 class GuardedColumnEdits {
-  constructor(gridExtension, { surfaceError, requestTextInput } = {}) {
+  constructor(gridExtension, { surfaceError, requestTextInput, requestConfirm } = {}) {
     this.gridExtras = gridExtension;
     this.surfaceError = typeof surfaceError === 'function' ? surfaceError : null;
     this.requestTextInput =
       typeof requestTextInput === 'function' ? requestTextInput : (options) => showTextInputModal(options);
+    this.requestConfirm =
+      typeof requestConfirm === 'function' ? requestConfirm : (options) => showConfirmModal(options);
   }
 
   // todo: ids here look suspiciously ag-grid specific
@@ -44,7 +47,7 @@ class GuardedColumnEdits {
     this.gridExtras.renameColId(id, colTitle);
   }
 
-  deleteColId(id) {
+  async deleteColId(id) {
     if (this.gridExtras.getNumberOfColumns() == 1) {
       this.showError('Cannot Delete The Only Column');
       return;
@@ -52,7 +55,11 @@ class GuardedColumnEdits {
 
     let editColDef = this.gridExtras.getColumnDef(id);
 
-    if (!confirm('Are you Sure You Want to Delete Column Named ' + editColDef.headerName + '?')) return;
+    const confirmed = await this.requestConfirm({
+      title: 'Delete Column',
+      message: `Are you Sure You Want to Delete Column Named ${editColDef.headerName}?`,
+    });
+    if (!confirmed) return;
 
     this.gridExtras.deleteColumnId(id);
   }

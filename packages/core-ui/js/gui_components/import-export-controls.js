@@ -4,9 +4,10 @@ import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-tab
 import { sanitizeUiOptionsForFormat } from './options-catalog-adapter.js';
 import { createOptionsPanelsForParent } from './options-ui-schema.js';
 import { TimedErrorDisplay } from './timed-error-display.js';
+import { showConfirmModal } from './modal-confirm.js';
 
 class ImportExportControls {
-  constructor() {
+  constructor({ requestConfirm } = {}) {
     this.previewRowLimit = 10;
     this.textEditMode = 'preview';
     this.previewTextDirty = false;
@@ -21,6 +22,10 @@ class ImportExportControls {
     this._hasBoundAutoPreviewInput = false;
     this._gridChangeUnsubscribe = null;
     this.errorDisplay = null;
+    this.requestConfirm =
+      typeof requestConfirm === 'function'
+        ? requestConfirm
+        : (options) => showConfirmModal({ documentObj: document, ...options });
   }
 
   addHTMLtoGui(parentelement) {
@@ -469,12 +474,16 @@ class ImportExportControls {
     return this.previewRowLimit;
   }
 
-  toggleTextEditMode() {
+  async toggleTextEditMode() {
     if (this.isPreviewTextMode()) {
       this.textEditMode = 'edit';
       this._setPreviewTextDirty(false);
       this._syncGridFromTextButtonState();
-      if (confirm('Do you want to Set Text From Grid?')) {
+      const shouldSetTextFromGrid = await this.requestConfirm({
+        title: 'Set Text From Grid',
+        message: 'Do you want to Set Text From Grid?',
+      });
+      if (shouldSetTextFromGrid) {
         this.renderTextFromGrid();
       } else {
         this.exportControls.setTextFromString('');

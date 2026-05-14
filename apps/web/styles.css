@@ -648,6 +648,10 @@ body.theme-dark .generator-status-text {
   font-size: 1rem;
 }
 
+.text-input-modal-message {
+  margin: 0 0 0.6rem 0;
+}
+
 .text-input-modal-field {
   width: 100%;
   box-sizing: border-box;

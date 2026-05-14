@@ -10,6 +10,7 @@ import {
   validateSchemaRows,
 } from '../../../js/gui_components/data-generator-page.js';
 import { TestDataGenerator } from '../../../../core/js/data_generation/testDataGenerator.js';
+import { getOutputFormatGroups } from '../../../js/gui_components/options-ui-schema.js';
 
 class FakeTabulator {
   constructor(element, options) {
@@ -68,6 +69,10 @@ class FakeDownload {
     FakeDownload.lastDownload = { filename: this.filename, text };
   }
 }
+
+const outputFormatGroups = getOutputFormatGroups();
+const coreAndCodeFormats = [...outputFormatGroups.core, ...outputFormatGroups.code].map((entry) => entry.type);
+const allOutputFormats = [...coreAndCodeFormats, ...outputFormatGroups.unitTest.map((entry) => entry.type)];
 
 describe('DataGeneratorPage', () => {
   let dom;
@@ -567,35 +572,7 @@ describe('DataGeneratorPage', () => {
   test('populateFormatOptions adds Code optgroup after other format options', () => {
     class FakeExporterWithCode extends FakeExporter {
       canExport(type) {
-        return [
-          'csv',
-          'json',
-          'markdown',
-          'dsv',
-          'html',
-          'gherkin',
-          'asciitable',
-          'csharp',
-          'java',
-          'javascript',
-          'kotlin',
-          'perl',
-          'php',
-          'python',
-          'ruby',
-          'typescript',
-          'junit4',
-          'junit5',
-          'junit6',
-          'testng',
-          'pytest',
-          'jest',
-          'xunit',
-          'rspec',
-          'phpunit',
-          'kotest',
-          'test-more',
-        ].includes(type);
+        return allOutputFormats.includes(type);
       }
     }
 
@@ -654,38 +631,7 @@ describe('DataGeneratorPage', () => {
   test('populateFormatOptions includes all supported output formats', () => {
     class FakeExporterAllFormats extends FakeExporter {
       canExport(type) {
-        return [
-          'csv',
-          'json',
-          'jsonl',
-          'xml',
-          'sql',
-          'markdown',
-          'dsv',
-          'html',
-          'gherkin',
-          'asciitable',
-          'csharp',
-          'java',
-          'javascript',
-          'kotlin',
-          'perl',
-          'php',
-          'python',
-          'ruby',
-          'typescript',
-          'junit4',
-          'junit5',
-          'junit6',
-          'testng',
-          'pytest',
-          'jest',
-          'xunit',
-          'rspec',
-          'phpunit',
-          'kotest',
-          'test-more',
-        ].includes(type);
+        return allOutputFormats.includes(type);
       }
     }
 

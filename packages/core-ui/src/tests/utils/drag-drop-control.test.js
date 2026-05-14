@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
 import { DragDropControl } from '../../../js/gui_components/drag-drop-control.js';
 

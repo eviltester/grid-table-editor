@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
 import { enableTestDataGenerationInterface } from '../../../js/gui_components/testdatadefn.js';
 

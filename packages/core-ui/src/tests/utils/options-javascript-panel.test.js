@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
 import { JavascriptOptionsPanel } from '../../../js/gui_components/options_panels/options-javascript-panel.js';
 import { JavascriptConvertorOptions } from '@anywaydata/core/data_formats/javascript-convertor.js';

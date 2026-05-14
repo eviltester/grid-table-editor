@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
 import { ExportControls } from '../../../js/gui_components/exportControls.js';
 import { Download } from '../../../js/gui_components/download.js';

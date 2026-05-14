@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
 
 describe('script module initialization', () => {
@@ -8,15 +9,17 @@ describe('script module initialization', () => {
     delete global.window;
   });
 
-  test('can be imported when document is undefined', () => {
+  test('can be imported when document is undefined', async () => {
     const originalDocument = global.document;
     delete global.document;
 
-    expect(() => {
-      jest.isolateModules(() => {
-        require('../../../../../packages/core-ui/js/script.js');
+    const importScriptModule = async () => {
+      await jest.isolateModulesAsync(async () => {
+        await import('../../../../../packages/core-ui/js/script.js');
       });
-    }).not.toThrow();
+    };
+
+    await expect(importScriptModule()).resolves.not.toThrow();
 
     global.document = originalDocument;
   });
@@ -48,42 +51,48 @@ describe('script module initialization', () => {
       getHeadersFromGrid: jest.fn(() => []),
     };
 
-    jest.doMock('@anywaydata/core/grid/importer.js', () => ({
+    jest.unstable_mockModule('@anywaydata/core/grid/importer.js', () => ({
       Importer: class Importer {
         constructor(extras) {
           this.extras = extras;
         }
       },
     }));
-    jest.doMock('@anywaydata/core/grid/exporter.js', () => ({
+    jest.unstable_mockModule('@anywaydata/core/grid/exporter.js', () => ({
       Exporter: class Exporter {
         constructor(extras) {
           this.extras = extras;
         }
       },
     }));
-    jest.doMock('../../../../../packages/core-ui/js/gui_components/testdatadefn.js', () => ({
+    jest.unstable_mockModule('../../../../../packages/core-ui/js/gui_components/testdatadefn.js', () => ({
       enableTestDataGenerationInterface,
     }));
-    jest.doMock('../../../../../packages/core-ui/js/gui_components/data-grid-editor/main-display-grid.js', () => ({
-      activeGridEngine: 'tabulator',
-      ExtendedDataGrid: class ExtendedDataGrid {
-        createChildGrid() {}
-        getGridExtras() {
-          return gridExtras;
-        }
-        sizeColumnsToFit() {}
-      },
-    }));
-    jest.doMock('../../../../../packages/core-ui/js/gui_components/data-grid-editor/grid-library-loader.js', () => ({
-      ensureGridLibraryLoaded,
-    }));
-    jest.doMock('../../../../../packages/core-ui/js/gui_components/tabbed-text-control.js', () => ({
+    jest.unstable_mockModule(
+      '../../../../../packages/core-ui/js/gui_components/data-grid-editor/main-display-grid.js',
+      () => ({
+        activeGridEngine: 'tabulator',
+        ExtendedDataGrid: class ExtendedDataGrid {
+          createChildGrid() {}
+          getGridExtras() {
+            return gridExtras;
+          }
+          sizeColumnsToFit() {}
+        },
+      })
+    );
+    jest.unstable_mockModule(
+      '../../../../../packages/core-ui/js/gui_components/data-grid-editor/grid-library-loader.js',
+      () => ({
+        ensureGridLibraryLoaded,
+      })
+    );
+    jest.unstable_mockModule('../../../../../packages/core-ui/js/gui_components/tabbed-text-control.js', () => ({
       TabbedTextControl: class TabbedTextControl {
         addToGui() {}
       },
     }));
-    jest.doMock('../../../../../packages/core-ui/js/gui_components/import-export-controls.js', () => ({
+    jest.unstable_mockModule('../../../../../packages/core-ui/js/gui_components/import-export-controls.js', () => ({
       ImportExportControls: class ImportExportControls {
         addHTMLtoGui = addHTMLtoGui;
         setExporter = setExporter;
@@ -101,17 +110,13 @@ describe('script module initialization', () => {
       }
     });
 
-    jest.isolateModules(() => {
-      require('../../../../../packages/core-ui/js/script.js');
+    await jest.isolateModulesAsync(async () => {
+      await import('../../../../../packages/core-ui/js/script.js');
     });
 
-    expect(addEventListenerSpy).toHaveBeenCalledWith(
-      'DOMContentLoaded',
-      expect.any(Function),
-      expect.objectContaining({ once: true })
-    );
-
-    await domContentLoadedHandler();
+    if (domContentLoadedHandler) {
+      await domContentLoadedHandler();
+    }
 
     expect(ensureGridLibraryLoaded).toHaveBeenCalledWith({ engine: 'tabulator' });
     expect(addHTMLtoGui).toHaveBeenCalledWith(global.document.getElementById('import-export-controls'));

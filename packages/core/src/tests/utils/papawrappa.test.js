@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals';
 import { PapaWrappa } from '../../../js/utils/papawrappa.js';
 
 describe('PapaWrappa', () => {

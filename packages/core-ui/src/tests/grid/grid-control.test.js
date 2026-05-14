@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals';
 import { GridControl, GridControlsPageMap } from '../../../js/gui_components/data-grid-editor/gridControl.js';
 import { JSDOM } from 'jsdom';
 

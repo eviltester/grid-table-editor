@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
 import { ExtendedDataGrid } from '../../../js/gui_components/data-grid-editor/ag-grid/main-display-grid.js';
 

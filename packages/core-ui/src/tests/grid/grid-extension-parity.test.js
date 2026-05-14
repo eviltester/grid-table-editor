@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals';
 import { GridExtension as AgGridExtension } from '../../../js/gui_components/data-grid-editor/ag-grid/gridExtension-ag-grid.js';
 import { GridExtension as TabulatorGridExtension } from '../../../js/gui_components/data-grid-editor/tabulator/gridExtension-tabulator.js';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';

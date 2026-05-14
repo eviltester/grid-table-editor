@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
 import { bootstrapGeneratorPage } from '../../../../../../packages/core-ui/js/generator-script.js';
 

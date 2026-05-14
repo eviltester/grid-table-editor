@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals';
 import { EnumTestDataGenerator } from '../../../../../js/data_generation/enum/enumTestDataGenerator.js';
 import { TestDataRule } from '../../../../../js/data_generation/testDataRule.js';
 import { EnumParser } from '../../../../../js/data_generation/utils/enumParser.js';

@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
 import { PythonOptionsPanel } from '../../../js/gui_components/options_panels/options-python-panel.js';
 import { PythonConvertorOptions } from '@anywaydata/core/data_formats/python-convertor.js';

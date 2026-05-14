@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
 import { HtmlOptionsPanel } from '../../../js/gui_components/options_panels/options-html-panel.js';
 import { HtmlConvertorOptions } from '@anywaydata/core/data_formats/html-convertor.js';

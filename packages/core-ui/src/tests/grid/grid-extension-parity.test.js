@@ -703,7 +703,12 @@ describe('Shared grid interface contract (both implementations)', () => {
     '%s supports AG-style guarded id operations through shared interface',
     async (_name, createHarness) => {
       const { api, extension } = createHarness();
-      const guarded = new GuardedColumnEdits(extension);
+      const requestTextInput = jest
+        .fn()
+        .mockResolvedValueOnce('Neighbour')
+        .mockResolvedValueOnce('Renamed First')
+        .mockResolvedValueOnce('Second Copy');
+      const guarded = new GuardedColumnEdits(extension, { requestTextInput });
 
       extension.setGridFromGenericDataTable(createGenericDataTable(['First', 'Second'], [['A', '1']]));
       await flushAsync();
@@ -715,19 +720,13 @@ describe('Shared grid interface contract (both implementations)', () => {
       const firstColId =
         extension.getColumnDef('column1')?.colId || extension.getColumnDef('column2')?.colId || 'column1';
 
-      global.prompt = jest
-        .fn()
-        .mockReturnValueOnce('Neighbour')
-        .mockReturnValueOnce('Renamed First')
-        .mockReturnValueOnce('Second Copy');
       global.confirm = jest.fn(() => true);
-      global.alert = jest.fn();
 
-      guarded.addNeighbourColumnId(1, firstColId);
+      await guarded.addNeighbourColumnId(1, firstColId);
       await flushAsync();
-      guarded.renameColId(firstColId);
+      await guarded.renameColId(firstColId);
       await flushAsync();
-      guarded.duplicateColumnId(1, firstColId);
+      await guarded.duplicateColumnId(1, firstColId);
       await flushAsync();
 
       const headers = extension.getHeadersFromGrid();

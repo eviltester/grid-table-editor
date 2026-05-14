@@ -201,6 +201,12 @@ button:disabled {
   opacity: 0.7;
 }
 
+button:focus-visible {
+  outline: 3px solid #0b6aa2;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 3px #d6eefc;
+}
+
 /* The text conversion box */
 
 .textrepresentation {
@@ -549,6 +555,48 @@ Custom header styles for default items
 
 .generator-schema-error-text:empty {
   display: none;
+}
+
+.text-input-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 22, 16, 0.45);
+  z-index: 2000;
+}
+
+.text-input-modal {
+  width: min(92vw, 460px);
+  background: #ffffff;
+  border: 1px solid #a9d6e5;
+  border-radius: 8px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+  padding: 0.8rem;
+}
+
+.text-input-modal-title {
+  margin: 0 0 0.6rem 0;
+  font-size: 1rem;
+}
+
+.text-input-modal-field {
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 0.7rem;
+}
+
+.text-input-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.45rem;
+}
+
+.text-input-modal-actions button:focus-visible {
+  outline: 3px solid #0b6aa2;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 3px #d6eefc;
 }
 
 .generator-schema-footer {

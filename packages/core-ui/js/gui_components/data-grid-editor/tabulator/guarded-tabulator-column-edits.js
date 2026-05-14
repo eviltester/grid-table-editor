@@ -1,7 +1,11 @@
+import { showTextInputModal } from '../../modal-text-input.js';
+
 class GuardedTabulatorColumnEdits {
-  constructor(gridExtension, { surfaceError } = {}) {
+  constructor(gridExtension, { surfaceError, requestTextInput } = {}) {
     this.gridExtras = gridExtension;
     this.surfaceError = typeof surfaceError === 'function' ? surfaceError : null;
+    this.requestTextInput =
+      typeof requestTextInput === 'function' ? requestTextInput : (options) => showTextInputModal(options);
   }
 
   // todo: ids here look suspiciously ag-grid specific
@@ -14,14 +18,17 @@ class GuardedTabulatorColumnEdits {
     console.error(message);
   }
 
-  renameColumn(column) {
+  async renameColumn(column) {
     if (column == null || column == undefined) {
       this.showError('Column not found');
       return;
     }
 
     const currentName = String(column.getDefinition()?.title ?? '');
-    var colTitle = prompt('Column Name?', column.getDefinition().title);
+    const colTitle = await this.requestTextInput({
+      title: 'Column Name',
+      initialValue: column.getDefinition().title,
+    });
 
     if (colTitle != null && colTitle != '') {
       console.log('rename column ' + column.getDefinition().title + ' with this name: ' + colTitle);
@@ -57,8 +64,11 @@ class GuardedTabulatorColumnEdits {
     this.gridExtras.deleteColumn(column);
   }
 
-  duplicateColumn(position, column) {
-    let colTitle = prompt('Copy Column As?');
+  async duplicateColumn(position, column) {
+    const colTitle = await this.requestTextInput({
+      title: 'Copy Column As',
+      initialValue: '',
+    });
 
     if (colTitle != null && colTitle != '') {
       console.log('duplicate a column with this name: ' + colTitle);
@@ -74,13 +84,16 @@ class GuardedTabulatorColumnEdits {
     this.gridExtras.duplicateColumn(position, column, colTitle);
   }
 
-  addNeighbourColumn(position, existingColumn) {
+  async addNeighbourColumn(position, existingColumn) {
     if (existingColumn == null || existingColumn == undefined) {
       this.showError('Column not found');
       return;
     }
 
-    let colTitle = prompt('New Column Name?');
+    const colTitle = await this.requestTextInput({
+      title: 'New Column Name',
+      initialValue: '',
+    });
 
     if (colTitle != null && colTitle != '') {
       console.log('create a new neighbour column with this name: ' + colTitle);

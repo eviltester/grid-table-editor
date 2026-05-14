@@ -104,24 +104,24 @@ class CustomHeaderAgGrid {
     }
   }
 
-  onAddLeftButtonClick() {
-    this.guardedColumnEdits.addNeighbourColumnId(-1, this.agParams.column.colId);
+  async onAddLeftButtonClick() {
+    await this.guardedColumnEdits.addNeighbourColumnId(-1, this.agParams.column.colId);
   }
 
-  onRenameButtonClick() {
-    this.guardedColumnEdits.renameColId(this.agParams.column.colId);
+  async onRenameButtonClick() {
+    await this.guardedColumnEdits.renameColId(this.agParams.column.colId);
   }
 
   onDeleteButtonClick() {
     this.guardedColumnEdits.deleteColId(this.agParams.column.colId);
   }
 
-  onDuplicateButtonClick() {
-    this.guardedColumnEdits.duplicateColumnId(1, this.agParams.column.colId);
+  async onDuplicateButtonClick() {
+    await this.guardedColumnEdits.duplicateColumnId(1, this.agParams.column.colId);
   }
 
-  onAddRightButtonClick() {
-    this.guardedColumnEdits.addNeighbourColumnId(1, this.agParams.column.colId);
+  async onAddRightButtonClick() {
+    await this.guardedColumnEdits.addNeighbourColumnId(1, this.agParams.column.colId);
   }
 
   deactivateIcon(toDeactivateItems) {

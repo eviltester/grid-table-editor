@@ -1,7 +1,11 @@
+import { showTextInputModal } from '../gui_components/modal-text-input.js';
+
 class GuardedColumnEdits {
-  constructor(gridExtension, { surfaceError } = {}) {
+  constructor(gridExtension, { surfaceError, requestTextInput } = {}) {
     this.gridExtras = gridExtension;
     this.surfaceError = typeof surfaceError === 'function' ? surfaceError : null;
+    this.requestTextInput =
+      typeof requestTextInput === 'function' ? requestTextInput : (options) => showTextInputModal(options);
   }
 
   // todo: ids here look suspiciously ag-grid specific
@@ -14,10 +18,13 @@ class GuardedColumnEdits {
     console.error(message);
   }
 
-  renameColId(id) {
+  async renameColId(id) {
     var editColDef = this.gridExtras.getColumnDef(id);
     const currentName = String(editColDef?.headerName ?? '');
-    var colTitle = prompt('Column Name?', editColDef.headerName);
+    const colTitle = await this.requestTextInput({
+      title: 'Column Name',
+      initialValue: editColDef.headerName,
+    });
 
     if (colTitle != null && colTitle != '') {
       console.log('rename column ' + id + ' with this name: ' + colTitle);
@@ -50,8 +57,11 @@ class GuardedColumnEdits {
     this.gridExtras.deleteColumnId(id);
   }
 
-  duplicateColumnId(position, id) {
-    let colTitle = prompt('Copy Column As?');
+  async duplicateColumnId(position, id) {
+    const colTitle = await this.requestTextInput({
+      title: 'Copy Column As',
+      initialValue: '',
+    });
 
     if (colTitle != null && colTitle != '') {
       console.log('duplicate a column with this name: ' + colTitle);
@@ -67,8 +77,11 @@ class GuardedColumnEdits {
     this.gridExtras.duplicateColumn(position, id, colTitle);
   }
 
-  addNeighbourColumnId(position, id) {
-    let colTitle = prompt('New Column Name?');
+  async addNeighbourColumnId(position, id) {
+    const colTitle = await this.requestTextInput({
+      title: 'New Column Name',
+      initialValue: '',
+    });
 
     if (colTitle != null && colTitle != '') {
       console.log('create a new neighbour column with this name: ' + colTitle);

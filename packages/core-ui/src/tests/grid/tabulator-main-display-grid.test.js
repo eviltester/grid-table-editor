@@ -70,9 +70,8 @@ describe('Tabulator main display grid', () => {
     expect(grid.getGridExtras()).toBeDefined();
   });
 
-  test('header click action rename updates the column definition', () => {
+  test('header click action rename updates the column definition', async () => {
     const grid = new ExtendedDataGrid();
-    global.prompt.mockReturnValue('Instructions');
 
     const columnDefinition = { title: 'Old Name', field: 'column1' };
     const column = {
@@ -88,7 +87,11 @@ describe('Tabulator main display grid', () => {
     };
     const event = makeHeaderClickEvent('rename');
 
-    grid.gridOptions.columnDefaults.headerClick(event, column);
+    const clickPromise = grid.gridOptions.columnDefaults.headerClick(event, column);
+    const modalInput = document.getElementById('text-input-modal-field');
+    modalInput.value = 'Instructions';
+    document.getElementById('text-input-modal-ok').click();
+    await clickPromise;
 
     expect(event.closest).toHaveBeenCalledWith('[data-action]');
     expect(event.preventDefault).toHaveBeenCalled();
@@ -98,9 +101,8 @@ describe('Tabulator main display grid', () => {
     });
   });
 
-  test('header click add-right delegates to table addColumn', () => {
+  test('header click add-right delegates to table addColumn', async () => {
     const grid = new ExtendedDataGrid();
-    global.prompt.mockReturnValue('Added');
 
     const columnDefinition = { title: 'Old Name', field: 'column1', colId: 'column1' };
     const column = {
@@ -117,7 +119,11 @@ describe('Tabulator main display grid', () => {
     };
 
     const event = makeHeaderClickEvent('add-right');
-    grid.gridOptions.columnDefaults.headerClick(event, column);
+    const clickPromise = grid.gridOptions.columnDefaults.headerClick(event, column);
+    const modalInput = document.getElementById('text-input-modal-field');
+    modalInput.value = 'Added';
+    document.getElementById('text-input-modal-ok').click();
+    await clickPromise;
 
     expect(event.closest).toHaveBeenCalledWith('[data-action]');
     expect(table.addColumn).toHaveBeenCalledWith(expect.objectContaining({ title: 'Added' }), false, column);

@@ -2,6 +2,7 @@ import { GridExtension } from './gridExtension-tabulator.js';
 import { GridControl, GridControlsPageMap } from '../gridControl.js';
 import { GuardedColumnEdits } from '../../../grid/guarded-column-edits.js';
 import { showGridError } from '../grid-error-surface.js';
+import { showTextInputModal } from '../../modal-text-input.js';
 
 /*
     Grid Features Used:
@@ -65,7 +66,7 @@ class ExtendedDataGrid {
             `;
     };
 
-    const onCustomHeaderClick = function (e, column) {
+    const onCustomHeaderClick = async function (e, column) {
       const targetElement = e?.target && typeof e.target.closest === 'function' ? e.target : null;
       const actionElement = targetElement?.closest?.('[data-action]');
       const action = actionElement?.dataset?.action;
@@ -85,7 +86,10 @@ class ExtendedDataGrid {
 
       if (action === 'filter') {
         const existingFilter = column.getHeaderFilterValue?.() || '';
-        const newFilter = prompt('Filter Column:', existingFilter);
+        const newFilter = await showTextInputModal({
+          title: 'Filter Column',
+          initialValue: existingFilter,
+        });
         if (newFilter !== null) {
           column.setHeaderFilterValue?.(newFilter);
         }
@@ -108,11 +112,11 @@ class ExtendedDataGrid {
       }
 
       if (action === 'add-left') {
-        guardedColumnEdits.addNeighbourColumnId(-1, columnId);
+        await guardedColumnEdits.addNeighbourColumnId(-1, columnId);
         return;
       }
       if (action === 'rename') {
-        guardedColumnEdits.renameColId(columnId);
+        await guardedColumnEdits.renameColId(columnId);
         return;
       }
       if (action === 'delete') {
@@ -120,11 +124,11 @@ class ExtendedDataGrid {
         return;
       }
       if (action === 'duplicate') {
-        guardedColumnEdits.duplicateColumnId(1, columnId);
+        await guardedColumnEdits.duplicateColumnId(1, columnId);
         return;
       }
       if (action === 'add-right') {
-        guardedColumnEdits.addNeighbourColumnId(1, columnId);
+        await guardedColumnEdits.addNeighbourColumnId(1, columnId);
       }
     };
 

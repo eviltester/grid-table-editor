@@ -97,7 +97,7 @@
     "@eslint/js": "10.0.1",
     "@babel/preset-env": "7.29.5",
     "@changesets/cli": "2.31.0",
-    "@faker-js/faker": "9.7.0",
+    "@faker-js/faker": "10.4.0",
     "@playwright/test": "1.59.1",
     "eslint": "10.2.1",
     "eslint-config-prettier": "10.1.8",

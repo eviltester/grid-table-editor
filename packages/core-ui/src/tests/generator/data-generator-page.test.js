@@ -7,6 +7,7 @@ import {
   schemaRowsToSpecWithTokens,
   validateSchemaRows,
 } from '../../../js/gui_components/data-generator-page.js';
+import { SchemaParsingErrors } from '../../../../core/js/data_generation/schema-parsing-errors.js';
 
 class FakeTabulator {
   constructor(element, options) {
@@ -91,7 +92,7 @@ class FakeTestDataGenerator {
       const trimmed = String(line ?? '').trim();
       if (trimmed.length === 0) {
         if (pendingName !== null) {
-          this._errors.push(`ERROR: Missing Rule Definition for ${pendingName}`);
+          this._errors.push(SchemaParsingErrors.missingRuleDefinition(pendingName, i + 1));
           return;
         }
         this._tokens.push({ kind: 'blank', text: line });
@@ -118,11 +119,11 @@ class FakeTestDataGenerator {
       pendingComments = [];
     }
     if (pendingName !== null) {
-      this._errors.push(`ERROR: Missing Rule Definition for ${pendingName}`);
+      this._errors.push(SchemaParsingErrors.missingRuleDefinition(pendingName, lines.length));
       return;
     }
     if (this.rules.length === 0) {
-      this._errors.push('ERROR: No Rules Defined');
+      this._errors.push(SchemaParsingErrors.invalidSchemaPairing());
     }
   }
 
@@ -186,6 +187,7 @@ describe('DataGeneratorPage', () => {
     );
     expect(buildRuleSpecFromSchemaRow({ sourceType: 'regex', value: '[A-Z]{3}' })).toBe('[A-Z]{3}');
     expect(buildRuleSpecFromSchemaRow({ sourceType: 'literal', value: 'Fixed' })).toBe('Fixed');
+    expect(buildRuleSpecFromSchemaRow({ sourceType: 'literal', value: '   ' })).toBe('');
 
     const spec = schemaRowsToSpec([
       { name: 'A', sourceType: 'faker', command: 'word.noun', params: '()' },
@@ -267,8 +269,11 @@ describe('DataGeneratorPage', () => {
       { name: '', sourceType: 'regex', value: '[0-9]' },
       { name: 'First', sourceType: 'faker', command: '' },
     ]);
-    expect(result.errors).toContain('Row 1: column name is required.');
-    expect(result.errors).toContain('Row 2: faker command is required.');
+    expect(result.errors.map((error) => error.code)).toEqual(['missing_column_name', 'missing_faker_command']);
+    expect(result.errors.map((error) => error.message)).toEqual([
+      'Row 1: column name is required.',
+      'Row 2: faker command is required.',
+    ]);
   });
 
   test('preview generates data into tabulator grid extension', () => {
@@ -301,6 +306,30 @@ describe('DataGeneratorPage', () => {
     expect(tableArg.getRowCount()).toBe(3);
     expect(tableArg.getHeaders()).toEqual(['Name', 'Code']);
     expect(document.getElementById('generatorOutputPreview').value).toBe('csv:sync:3');
+  });
+
+  test('empty literal schema value generates blank data cell', () => {
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker: { word: { noun: () => 'x' } },
+      RandExp: function RandExp() {},
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: FakeTestDataGenerator,
+    });
+    page.init();
+
+    page.schemaRows = [{ id: '1', name: 't', sourceType: 'literal', command: '', params: '', value: '' }];
+    page.renderSchemaRows();
+    document.getElementById('previewRowsCount').value = '1';
+    page.previewData();
+
+    const tableArg = FakeGridExtension.lastInstance.setGridFromGenericDataTable.mock.calls[0][0];
+    expect(tableArg.getCell(0, 0)).toBe('literal:');
   });
 
   test('preview rows input defaults to 10 and has max 50', () => {
@@ -864,6 +893,33 @@ describe('DataGeneratorPage', () => {
     expect(page.schemaRows[0].sourceType).toBe('regex');
   });
 
+  test('row action buttons work immediately after switching from text mode to schema mode', () => {
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker: { word: { noun: () => 'x' } },
+      RandExp: function RandExp() {},
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: FakeTestDataGenerator,
+    });
+    page.init();
+
+    const toggle = document.getElementById('schemaModeToggleButton');
+    toggle.click();
+    const textArea = document.getElementById('generatorSchemaText');
+    textArea.value = 'A\none\nB\ntwo';
+    toggle.click();
+
+    expect(page.schemaRows).toHaveLength(2);
+    const removeButtons = document.querySelectorAll('[data-action="remove"]');
+    removeButtons[1].click();
+    expect(page.schemaRows).toHaveLength(1);
+  });
+
   test('toggle clears visible help tooltips before switching schema mode', () => {
     const hideAll = jest.fn();
     window.tippy = { hideAll };
@@ -944,6 +1000,33 @@ describe('DataGeneratorPage', () => {
 
     toggle.click();
     expect(document.getElementById('generatorSchemaText').value).toContain('# note');
+  });
+
+  test('text mode round-trip preserves blank lines exactly', () => {
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker: { word: { noun: () => 'x' } },
+      RandExp: function RandExp() {},
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: FakeTestDataGenerator,
+    });
+    page.init();
+
+    const originalText = '# note\n\nPriority\nenum(high,medium,low)\n\n\nStatus\nenum(active,inactive,pending)';
+    const toggle = document.getElementById('schemaModeToggleButton');
+    toggle.click();
+    const textArea = document.getElementById('generatorSchemaText');
+    textArea.value = originalText;
+
+    toggle.click();
+    toggle.click();
+
+    expect(document.getElementById('generatorSchemaText').value).toBe(originalText);
   });
 
   test('text mode accepts hash-prefixed rule text after a column name', () => {
@@ -1060,6 +1143,49 @@ describe('DataGeneratorPage', () => {
       filename: 'generated-data.csv',
       text: 'csv:async:2',
     });
+  });
+
+  test('invalid text schema shows inline missing-definition error for 5 seconds when toggling to schema mode', () => {
+    jest.useFakeTimers();
+    try {
+      const page = new DataGeneratorPage({
+        parentElement: document.getElementById('app'),
+        documentObj: document,
+        alertFn,
+        faker: { word: { noun: () => 'x' } },
+        RandExp: function RandExp() {},
+        TabulatorCtor: FakeTabulator,
+        GridExtensionClass: FakeGridExtension,
+        ExporterClass: FakeExporter,
+        DownloadClass: FakeDownload,
+        TestDataGeneratorClass: FakeTestDataGenerator,
+      });
+      page.init();
+
+      const toggle = document.getElementById('schemaModeToggleButton');
+      toggle.click();
+
+      const textArea = document.getElementById('generatorSchemaText');
+      textArea.value = 't1\n';
+      toggle.click();
+
+      const schemaErrorStatus = document.getElementById('generatorSchemaErrorText');
+      expect(schemaErrorStatus.textContent).toBe(
+        "column t1 requires a data definition, use 'literal()' for blank data"
+      );
+      expect(document.getElementById('generatorStatusText').textContent).toBe('');
+      expect(alertFn).not.toHaveBeenCalled();
+
+      jest.advanceTimersByTime(4999);
+      expect(schemaErrorStatus.textContent).toBe(
+        "column t1 requires a data definition, use 'literal()' for blank data"
+      );
+
+      jest.advanceTimersByTime(1);
+      expect(schemaErrorStatus.textContent).toBe('');
+    } finally {
+      jest.useRealTimers();
+    }
   });
 
   test('empty text mode schema keeps zero rows and shows add-row validation', async () => {

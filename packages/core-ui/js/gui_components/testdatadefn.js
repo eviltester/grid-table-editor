@@ -29,6 +29,8 @@ import { TEST_DATA_MODES, createAmendedTable, createTableFromGenerator, normalis
 import { getKnownFakerCommandsAlphabetical, getKnownFakerCommandsLongestFirst } from './faker-commands.js';
 import { PairwiseTestDataGenerator } from '@anywaydata/core/data_generation/all-pairs/pairwiseTestDataGenerator.js';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
+import { schemaTextToDataRules, dataRulesToSchemaText } from '@anywaydata/core/data_generation/schema-rules-adapter.js';
+import { TimedErrorDisplay } from './timed-error-display.js';
 
 import { faker } from 'https://cdn.skypack.dev/@faker-js/faker@v9.7.0';
 
@@ -39,23 +41,59 @@ let mainGridExtras = undefined;
 let testDataStatusResetTimeoutId = null;
 let activeDefnCellEdit = null;
 let schemaSampleButtonClickHandler = null;
+let testDataSchemaErrorDisplay = null;
+let schemaTextTokens = [];
 
-function getRulesParserFromTextArea() {
-  // faker imported in script.js
-  // RandExp brought in via index.html script
-  const generator = new TestDataGenerator(faker, RandExp);
+function schemaErrorsToText(errors = []) {
+  return (Array.isArray(errors) ? errors : [])
+    .map((error) => {
+      if (error && typeof error === 'object' && typeof error.message === 'string') {
+        return error.message;
+      }
+      return String(error ?? '');
+    })
+    .join('\n');
+}
+
+function showTestDataSchemaError(message) {
+  const text = String(message || '').trim();
+  if (!text) {
+    return;
+  }
+  testDataSchemaErrorDisplay?.show(text);
+}
+
+function getSchemaTextFromEditor() {
   const schemaTextArea = document.getElementById('testdatadefntext');
   if (!schemaTextArea) {
-    generator.importSpec('');
-    generator.compile();
-    return generator;
+    return '';
   }
-  const areaText = schemaTextArea.value;
-  generator.importSpec(areaText);
-  generator.compile();
-  console.log(generator.compilationReport());
+  return schemaTextArea.value || '';
+}
 
+function createGeneratorFromDataRules(dataRules = []) {
+  const generator = new TestDataGenerator(faker, RandExp);
+  generator.rulesParser.testDataRules.rules = dataRules.map((rule) => ({ ...rule }));
   return generator;
+}
+
+function parseSchemaFromTextArea() {
+  return schemaTextToDataRules({
+    schemaText: getSchemaTextFromEditor(),
+    faker,
+    RandExp,
+  });
+}
+
+function getRulesParserFromTextArea() {
+  const parseResult = parseSchemaFromTextArea();
+  if (parseResult.errors.length > 0) {
+    return { generator: null, errors: parseResult.errors };
+  }
+  return {
+    generator: createGeneratorFromDataRules(parseResult.dataRules),
+    errors: [],
+  };
 }
 
 // https://www.npmjs.com/package/randexp
@@ -69,11 +107,12 @@ async function generatePairwiseTestData() {
   }
 
   try {
-    const generator = getRulesParserFromTextArea();
+    const { generator, errors } = getRulesParserFromTextArea();
 
-    if (!generator.isValid()) {
-      console.log(generator.errors());
-      alert(generator.errors().join('\n'));
+    if (errors.length > 0 || !generator) {
+      const errorMessages = schemaErrorsToText(errors);
+      console.log(errorMessages);
+      showTestDataSchemaError(errorMessages);
       setTestDataStatus('Schema validation failed.', false);
       return;
     }
@@ -152,8 +191,8 @@ function countEnumRules(rules) {
 }
 
 function updatePairwiseButtonVisibility() {
-  const generator = getRulesParserFromTextArea();
-  if (!generator.isValid()) {
+  const { generator, errors } = getRulesParserFromTextArea();
+  if (errors.length > 0 || !generator) {
     hidePairwiseButton();
     return;
   }
@@ -195,11 +234,12 @@ async function generateTestData() {
     const desiredRowCount = normaliseCount(desiredRowCountRaw);
     const generationMode = getGenerationMode();
 
-    const generator = getRulesParserFromTextArea();
+    const { generator, errors } = getRulesParserFromTextArea();
 
-    if (!generator.isValid()) {
-      console.log(generator.errors());
-      alert(generator.errors().join('\n'));
+    if (errors.length > 0 || !generator) {
+      const errorMessages = schemaErrorsToText(errors);
+      console.log(errorMessages);
+      showTestDataSchemaError(errorMessages);
       setTestDataStatus('Schema validation failed.', false);
       return;
     }
@@ -472,17 +512,26 @@ function populateTestDataGridFromRules() {
     return;
   }
 
-  const generator = getRulesParserFromTextArea();
-
-  if (!generator.isValid()) {
+  const schemaTextArea = document.getElementById('testdatadefntext');
+  const parseResult = schemaTextToDataRules({
+    schemaText: schemaTextArea?.value || '',
+    faker,
+    RandExp,
+  });
+  if (parseResult.errors.length > 0) {
+    const errorText = schemaErrorsToText(parseResult.errors);
+    showTestDataSchemaError(errorText);
+    setTestDataStatus(errorText, false);
+    scheduleTestDataStatusReset(5000);
     return;
   }
 
   // clear data then add rules
   defnGridBridge.clearRows();
+  schemaTextTokens = Array.isArray(parseResult.schemaTokens) ? parseResult.schemaTokens : [];
 
   const rowsToAdd = [];
-  for (let rule of generator.testDataRules()) {
+  for (let rule of parseResult.dataRules) {
     let data = {};
     data.columnName = rule.name;
     data.comments = String(rule.comments ?? '');
@@ -845,9 +894,6 @@ function normalizeEnumRuleDefinition(value) {
 function normalizeLiteralRuleDefinition(value) {
   const rawValue = String(value ?? '');
   const trimmedValue = rawValue.trim();
-  if (trimmedValue.length === 0) {
-    return '';
-  }
   if (/^(literal|datatype\.literal|awd\.datatype\.literal)\s*\(/i.test(trimmedValue)) {
     return trimmedValue;
   }
@@ -859,18 +905,12 @@ function convertGridToText() {
     return;
   }
 
-  const outputLines = [];
+  const dataRules = [];
   defnGridBridge.getRows().forEach((rowData) => {
     const resolvedRowData =
       activeDefnCellEdit?.rowData === rowData
         ? { ...rowData, [activeDefnCellEdit.field]: activeDefnCellEdit.value }
         : rowData;
-    const leadingComments = String(resolvedRowData.comments ?? '');
-    if (leadingComments.length > 0) {
-      outputLines.push(...leadingComments.split('\n'));
-    }
-
-    outputLines.push(resolvedRowData.columnName || '');
 
     let ruleLine = '';
     const resolvedType = String(resolvedRowData.type || '').trim();
@@ -905,10 +945,15 @@ function convertGridToText() {
         }
       }
     }
-    outputLines.push(ruleLine);
+    dataRules.push({
+      name: String(resolvedRowData.columnName || ''),
+      ruleSpec: String(ruleLine || ''),
+      comments: String(resolvedRowData.comments ?? ''),
+    });
   });
 
-  document.getElementById('testdatadefntext').value = outputLines.join('\n');
+  const renderResult = dataRulesToSchemaText({ dataRules, schemaTokens: schemaTextTokens });
+  document.getElementById('testdatadefntext').value = renderResult.text;
   updatePairwiseButtonVisibility();
 }
 
@@ -932,6 +977,7 @@ function enableTestDataGenerationInterface(parentId, anImporter, aTextPreviewRen
             <label><input type="radio" name="testDataGenerationMode" value="${TEST_DATA_MODES.AMEND_TABLE}">Amend Table</label>
             <label><input type="radio" name="testDataGenerationMode" value="${TEST_DATA_MODES.AMEND_SELECTED}">Amend Selected</label>
             <span id="testdata-status" class="import-progress-status" style="display:none;" aria-live="polite"></span>
+            <span id="testdata-schema-error" class="generator-schema-error-text" aria-live="polite" role="status"></span>
         </div>
         <div class="defn-edit-zone">
             <div class="defn-grid-container" id="defngrid" class="ag-theme-alpine">
@@ -976,6 +1022,11 @@ function enableTestDataGenerationInterface(parentId, anImporter, aTextPreviewRen
   createTestDataGrid();
 
   var inputarea = document.getElementById('testdatadefntext');
+  testDataSchemaErrorDisplay = new TimedErrorDisplay({
+    documentObj: document,
+    elementId: 'testdata-schema-error',
+    timeoutMs: 5000,
+  });
   // https://stackoverflow.com/questions/2823733/textarea-onchange-detection/14029861?noredirect=1#comment19596202_14029861
 
   inputarea.addEventListener(

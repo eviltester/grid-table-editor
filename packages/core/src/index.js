@@ -1,12 +1,12 @@
 import { Faker, faker } from '@faker-js/faker';
 import RandExp from 'randexp';
 import Papa from 'papaparse';
-import { TestDataGenerator } from '../js/data_generation/testDataGenerator.js';
 import { GenericDataTable } from '../js/data_formats/generic-data-table.js';
 import { Exporter } from '../js/grid/exporter.js';
 import { Importer } from '../js/grid/importer.js';
 import { KNOWN_FAKER_COMMANDS } from '../js/faker/faker-commands.js';
 import { PairwiseTestDataGenerator } from '../js/data_generation/all-pairs/pairwiseTestDataGenerator.js';
+import { parseSchemaText } from '../js/data_generation/schema-conversion.js';
 import {
   OPTION_KEYS_BY_FORMAT,
   OPTION_TIPS_BY_FORMAT,
@@ -14,6 +14,7 @@ import {
   sanitizeOptionsForFormat,
   getTipsForFormat,
 } from '../js/options/format-option-catalog.js';
+import { CoreGenerationErrors } from './core-generation-errors.js';
 
 if (typeof globalThis.Papa === 'undefined') {
   globalThis.Papa = Papa;
@@ -163,6 +164,51 @@ function createScopedFaker(seed) {
   return scopedFaker;
 }
 
+function parseAndCompileSchema({
+  textSpec,
+  fakerInstance,
+  unsafeFakerExpressions = false,
+  rowCount,
+  outputFormat = DEFAULT_FORMAT,
+} = {}) {
+  const errors = [];
+  if (typeof textSpec !== 'string' || textSpec.trim().length === 0) {
+    errors.push(CoreGenerationErrors.invalidTextSpecRequired());
+  }
+
+  const safeRowCount = Number.parseInt(rowCount, 10);
+  if (!Number.isInteger(safeRowCount) || safeRowCount < 0) {
+    errors.push(CoreGenerationErrors.invalidRowCountRequired());
+  }
+
+  if (!SUPPORTED_FORMATS.includes(outputFormat)) {
+    errors.push(CoreGenerationErrors.invalidOutputFormat(SUPPORTED_FORMATS));
+  }
+
+  if (errors.length > 0) {
+    return { ok: false, errors, diagnostics: { supportedFormats: SUPPORTED_FORMATS } };
+  }
+
+  const parseResult = parseSchemaText({
+    schemaText: textSpec,
+    faker: fakerInstance,
+    RandExp,
+    options: { unsafeFakerExpressions },
+  });
+
+  if (!parseResult.ok) {
+    return {
+      ok: false,
+      errors: parseResult.errors,
+      diagnostics: {
+        report: parseResult.report,
+      },
+    };
+  }
+
+  return { ok: true, generator: parseResult.generator, safeRowCount };
+}
+
 export function createExporterForDefaults() {
   return createExporter();
 }
@@ -223,38 +269,18 @@ export function generateFromTextSpec({
   pairwise = false,
   unsafeFakerExpressions = false,
 } = {}) {
-  const errors = [];
-  if (typeof textSpec !== 'string' || textSpec.trim().length === 0) {
-    errors.push('textSpec is required and must be a non-empty string.');
-  }
-
-  const safeRowCount = Number.parseInt(rowCount, 10);
-  if (!Number.isInteger(safeRowCount) || safeRowCount < 0) {
-    errors.push('rowCount is required and must be an integer greater than or equal to zero.');
-  }
-
-  if (!SUPPORTED_FORMATS.includes(outputFormat)) {
-    errors.push(`outputFormat must be one of: ${SUPPORTED_FORMATS.join(', ')}`);
-  }
-
-  if (errors.length > 0) {
-    return { ok: false, errors, diagnostics: { supportedFormats: SUPPORTED_FORMATS } };
-  }
-
   const scopedFaker = createScopedFaker(seed);
-  const generator = new TestDataGenerator(scopedFaker, RandExp, { unsafeFakerExpressions });
-  generator.importSpec(textSpec);
-  generator.compile();
-
-  if (!generator.isValid()) {
-    return {
-      ok: false,
-      errors: generator.errors(),
-      diagnostics: {
-        report: generator.compilationReport(),
-      },
-    };
+  const parsed = parseAndCompileSchema({
+    textSpec,
+    fakerInstance: scopedFaker,
+    unsafeFakerExpressions,
+    rowCount,
+    outputFormat,
+  });
+  if (!parsed.ok) {
+    return parsed;
   }
+  const { generator, safeRowCount } = parsed;
 
   const dataTable = new GenericDataTable();
   let effectiveRowCount = safeRowCount;
@@ -269,7 +295,7 @@ export function generateFromTextSpec({
     if (initResult?.isError) {
       return {
         ok: false,
-        errors: [initResult.errorMessage || 'Failed to initialize pairwise generation.'],
+        errors: [CoreGenerationErrors.pairwiseInitializationFailed(initResult.errorMessage)],
         diagnostics: {
           report: generator.compilationReport(),
         },
@@ -280,7 +306,7 @@ export function generateFromTextSpec({
     if (rowsResult?.isError) {
       return {
         ok: false,
-        errors: [rowsResult.errorMessage || 'Failed to generate pairwise rows.'],
+        errors: [CoreGenerationErrors.pairwiseGenerationFailed(rowsResult.errorMessage)],
         diagnostics: {
           report: generator.compilationReport(),
         },
@@ -348,16 +374,16 @@ export function amendFromTextSpecAndData({
   const diagnosticsWarnings = [];
 
   if (typeof textSpec !== 'string' || textSpec.trim().length === 0) {
-    errors.push('textSpec is required and must be a non-empty string.');
+    errors.push(CoreGenerationErrors.invalidTextSpecRequired());
   }
   if (typeof inputData !== 'string' || inputData.length === 0) {
-    errors.push('inputData is required and must be a non-empty string.');
+    errors.push(CoreGenerationErrors.invalidInputDataRequired());
   }
   if (typeof inputFormat !== 'string' || inputFormat.trim().length === 0) {
-    errors.push('inputFormat is required and must be a non-empty string.');
+    errors.push(CoreGenerationErrors.invalidInputFormatRequired());
   }
   if (!SUPPORTED_FORMATS.includes(outputFormat)) {
-    errors.push(`outputFormat must be one of: ${SUPPORTED_FORMATS.join(', ')}`);
+    errors.push(CoreGenerationErrors.invalidOutputFormat(SUPPORTED_FORMATS));
   }
   if (errors.length > 0) {
     return { ok: false, errors, diagnostics: { supportedFormats: SUPPORTED_FORMATS } };
@@ -368,7 +394,7 @@ export function amendFromTextSpecAndData({
   if (!importer.canImport(normalisedInputFormat)) {
     return {
       ok: false,
-      errors: [`inputFormat must be one of: ${Object.keys(importer.convertors).sort().join(', ')}`],
+      errors: [CoreGenerationErrors.invalidInputFormatSupported(Object.keys(importer.convertors).sort())],
       diagnostics: {},
     };
   }
@@ -379,14 +405,14 @@ export function amendFromTextSpecAndData({
   } catch (error) {
     return {
       ok: false,
-      errors: [`Unable to parse inputData using inputFormat "${normalisedInputFormat}".`],
+      errors: [CoreGenerationErrors.inputParseError(normalisedInputFormat)],
       diagnostics: { message: error?.message || 'Input parsing failed.' },
     };
   }
   if (!sourceTable || !Array.isArray(sourceTable.rows)) {
     return {
       ok: false,
-      errors: [`Unable to parse inputData using inputFormat "${normalisedInputFormat}".`],
+      errors: [CoreGenerationErrors.inputParseError(normalisedInputFormat)],
       diagnostics: {},
     };
   }
@@ -396,31 +422,29 @@ export function amendFromTextSpecAndData({
   if (amendCount === undefined) {
     return {
       ok: false,
-      errors: ['rowCount must be an integer greater than or equal to zero when provided.'],
+      errors: [CoreGenerationErrors.invalidAmendRowCount()],
       diagnostics: {},
     };
   }
   if (amendCount > importedRowCount) {
     return {
       ok: false,
-      errors: [`rowCount must be less than or equal to imported row count (${importedRowCount}).`],
+      errors: [CoreGenerationErrors.rowCountExceedsImported(importedRowCount)],
       diagnostics: { importedRowCount },
     };
   }
 
   const scopedFaker = createScopedFaker(seed);
-  const generator = new TestDataGenerator(scopedFaker, RandExp, { unsafeFakerExpressions });
-  generator.importSpec(textSpec);
-  generator.compile();
-  if (!generator.isValid()) {
-    return {
-      ok: false,
-      errors: generator.errors(),
-      diagnostics: {
-        report: generator.compilationReport(),
-      },
-    };
+  const parseResult = parseSchemaText({
+    schemaText: textSpec,
+    faker: scopedFaker,
+    RandExp,
+    options: { unsafeFakerExpressions },
+  });
+  if (!parseResult.ok) {
+    return { ok: false, errors: parseResult.errors, diagnostics: { report: parseResult.report } };
   }
+  const generator = parseResult.generator;
 
   if (stream === true || stream === 'true') {
     diagnosticsWarnings.push('stream is ignored for amend operations and buffered mode is always used.');
@@ -492,40 +516,14 @@ function createAndValidateGenerator({
   unsafeFakerExpressions = false,
   seed,
 } = {}) {
-  const errors = [];
-  if (typeof textSpec !== 'string' || textSpec.trim().length === 0) {
-    errors.push('textSpec is required and must be a non-empty string.');
-  }
-
-  const safeRowCount = Number.parseInt(rowCount, 10);
-  if (!Number.isInteger(safeRowCount) || safeRowCount < 0) {
-    errors.push('rowCount is required and must be an integer greater than or equal to zero.');
-  }
-
-  if (!SUPPORTED_FORMATS.includes(outputFormat)) {
-    errors.push(`outputFormat must be one of: ${SUPPORTED_FORMATS.join(', ')}`);
-  }
-
-  if (errors.length > 0) {
-    return { ok: false, errors, diagnostics: { supportedFormats: SUPPORTED_FORMATS } };
-  }
-
   const scopedFaker = createScopedFaker(seed);
-  const generator = new TestDataGenerator(scopedFaker, RandExp, { unsafeFakerExpressions });
-  generator.importSpec(textSpec);
-  generator.compile();
-
-  if (!generator.isValid()) {
-    return {
-      ok: false,
-      errors: generator.errors(),
-      diagnostics: {
-        report: generator.compilationReport(),
-      },
-    };
-  }
-
-  return { ok: true, generator, safeRowCount };
+  return parseAndCompileSchema({
+    textSpec,
+    fakerInstance: scopedFaker,
+    unsafeFakerExpressions,
+    rowCount,
+    outputFormat,
+  });
 }
 
 function getCsvStreamSettings(options = {}) {

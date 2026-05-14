@@ -251,7 +251,8 @@ test('generateFromTextSpec rejects pairwise mode with fewer than 2 enum rules', 
   });
 
   expect(result.ok).toBe(false);
-  expect(result.errors[0]).toMatch(/requires at least 2 ENUM parameters/i);
+  expect(result.errors[0].code).toBe('pairwise_initialization_error');
+  expect(result.errors[0].message).toMatch(/requires at least 2 ENUM parameters/i);
 });
 
 test('generateFromTextSpec pairwise preserves original interleaved column order', () => {

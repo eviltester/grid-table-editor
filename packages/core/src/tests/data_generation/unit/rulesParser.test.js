@@ -26,7 +26,12 @@ person.fullName`;
     parser.parseText(inputText);
 
     expect(parser.isValid()).toBe(false);
-    expect(parser.errors).toContain('ERROR: Missing Rule Definition for Name');
+    expect(parser.errors).toContainEqual(
+      expect.objectContaining({
+        code: 'missing_rule_definition',
+        column: 'Name',
+      })
+    );
     expect(parser.testDataRules.rules).toHaveLength(0);
   });
 
@@ -60,7 +65,11 @@ enum(active,inactive,pending)
     parser.parseText('# note\n\n  # another');
 
     expect(parser.isValid()).toBe(false);
-    expect(parser.errors).toContain('ERROR: No Rules Defined');
+    expect(parser.errors).toContainEqual(
+      expect.objectContaining({
+        code: 'invalid_schema_pairing',
+      })
+    );
     expect(parser.testDataRules.rules).toHaveLength(0);
   });
 
@@ -69,7 +78,12 @@ enum(active,inactive,pending)
     parser.parseText('Priority\n\nenum(high,medium,low)');
 
     expect(parser.isValid()).toBe(false);
-    expect(parser.errors).toContain('ERROR: Missing Rule Definition for Priority');
+    expect(parser.errors).toContainEqual(
+      expect.objectContaining({
+        code: 'missing_rule_definition',
+        column: 'Priority',
+      })
+    );
     expect(parser.testDataRules.rules).toHaveLength(0);
   });
 

@@ -118,5 +118,19 @@ describe('TestDataRulesCompiler with Enum Support', () => {
       expect(rules[0].type).toBe('literal');
       expect(rules[0].ruleSpec).toBe('.');
     });
+
+    test('explicit empty literal compiles to literal empty string', () => {
+      const rules = [new TestDataRule('EmptyLiteral', 'literal()')];
+      compiler.compile(rules);
+      expect(rules[0].type).toBe('literal');
+      expect(rules[0].ruleSpec).toBe('');
+    });
+
+    test('explicit whitespace literal compiles to literal whitespace', () => {
+      const rules = [new TestDataRule('SpaceLiteral', 'literal(   )')];
+      compiler.compile(rules);
+      expect(rules[0].type).toBe('literal');
+      expect(rules[0].ruleSpec).toBe('   ');
+    });
   });
 });

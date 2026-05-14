@@ -1,4 +1,5 @@
 import { TestDataRules } from './testDataRules.js';
+import { SchemaParsingErrors } from './schema-parsing-errors.js';
 
 export class RulesParser {
   constructor(aFaker, RandExp, options = {}) {
@@ -17,7 +18,7 @@ export class RulesParser {
 
     const defnLines = String(textContent ?? '').split('\n');
     if (defnLines.length === 0 || (defnLines.length === 1 && defnLines[0].trim().length === 0)) {
-      this.errors.push('ERROR: No Rules Defined');
+      this.errors.push(SchemaParsingErrors.invalidSchemaPairing());
       return;
     }
 
@@ -31,7 +32,7 @@ export class RulesParser {
 
       if (trimmed.length === 0) {
         if (pendingName !== null) {
-          this.errors.push(`ERROR: Missing Rule Definition for ${pendingName}`);
+          this.errors.push(SchemaParsingErrors.missingRuleDefinition(pendingName, pendingNameLine));
           return;
         }
         this.schemaTokens.push({ kind: 'blank', text: line, line: index + 1 });
@@ -67,12 +68,12 @@ export class RulesParser {
     }
 
     if (pendingName !== null) {
-      this.errors.push(`ERROR: Missing Rule Definition for ${pendingName}`);
+      this.errors.push(SchemaParsingErrors.missingRuleDefinition(pendingName, pendingNameLine));
       return;
     }
 
     if (this.testDataRules.rules.length === 0) {
-      this.errors.push('ERROR: No Rules Defined');
+      this.errors.push(SchemaParsingErrors.invalidSchemaPairing());
     }
   }
 

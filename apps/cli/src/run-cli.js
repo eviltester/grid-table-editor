@@ -10,6 +10,20 @@ function writeLine(output, text = '') {
   output(`${text}\n`);
 }
 
+function formatCanonicalErrors(errors = []) {
+  const safeErrors = Array.isArray(errors) ? errors : [];
+  return safeErrors.map((error) => {
+    if (!error || typeof error !== 'object') {
+      return String(error ?? '');
+    }
+    const code = String(error.code || 'error');
+    const message = String(error.message || '');
+    const column = error.column ? ` column=${error.column}` : '';
+    const line = Number.isInteger(error.line) ? ` line=${error.line}` : '';
+    return `[${code}] ${message}${column}${line}`.trim();
+  });
+}
+
 export async function runCliCommand({ options, platform }) {
   const progress = (message) => {
     if (options.showProgress) {
@@ -78,7 +92,7 @@ export async function runCliCommand({ options, platform }) {
     });
 
     if (!result.ok) {
-      writeLine(platform.stderr, result.errors.join('\n'));
+      writeLine(platform.stderr, formatCanonicalErrors(result.errors).join('\n'));
       return 1;
     }
 
@@ -128,7 +142,7 @@ export async function runCliCommand({ options, platform }) {
       });
 
       if (!streamResult.ok) {
-        writeLine(platform.stderr, streamResult.errors.join('\n'));
+        writeLine(platform.stderr, formatCanonicalErrors(streamResult.errors).join('\n'));
         return 1;
       }
 
@@ -176,7 +190,7 @@ export async function runCliCommand({ options, platform }) {
   });
 
   if (!result.ok) {
-    writeLine(platform.stderr, result.errors.join('\n'));
+    writeLine(platform.stderr, formatCanonicalErrors(result.errors).join('\n'));
     return 1;
   }
 

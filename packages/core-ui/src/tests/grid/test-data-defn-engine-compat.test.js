@@ -264,7 +264,10 @@ describe('test data definition editor engine compatibility', () => {
     document.getElementById('generatedata').click();
     await flushUi();
 
-    expect(global.alert).toHaveBeenCalled();
+    expect(global.alert).not.toHaveBeenCalled();
+    expect(document.getElementById('testdata-schema-error').textContent).toContain(
+      'No rules defined. Provide column/rule pairs.'
+    );
     expect(document.getElementById('testdata-status').textContent).toContain('Schema validation failed');
     expect(document.getElementById('generatedata').disabled).toBe(false);
   });
@@ -434,6 +437,41 @@ describe('test data definition editor engine compatibility', () => {
     expect(rebuilt).toContain('# second comment');
   });
 
+  test('leading blank line in schema text is preserved and plain value maps to a typed row', async () => {
+    const TabulatorMock = installTabulatorMock();
+
+    enableTestDataGenerationInterface(
+      'host',
+      {
+        setGridFromGenericDataTable: jest.fn(),
+      },
+      {
+        renderTextFromGrid: jest.fn(),
+      },
+      {
+        getRowCount: jest.fn(() => 0),
+        getSelectedRowIndexes: jest.fn(() => []),
+      }
+    );
+
+    const schemaTextArea = document.getElementById('testdatadefntext');
+    schemaTextArea.value = '\nc2\nvalue';
+    schemaTextArea.dispatchEvent(new Event('input', { bubbles: true }));
+    await new Promise((resolve) => setTimeout(resolve, 1100));
+    await flushUi();
+
+    expect(TabulatorMock.latestInstance.rows).toHaveLength(1);
+    expect(TabulatorMock.latestInstance.rows[0]).toMatchObject({
+      comments: '',
+      columnName: 'c2',
+      value: 'value',
+    });
+
+    document.querySelector('#defngrid button').click();
+    await flushUi();
+    expect(document.getElementById('testdatadefntext').value).toContain('\nc2\n');
+  });
+
   test('enum type rows are emitted as enum(...) definitions in schema text', async () => {
     const TabulatorMock = installTabulatorMock();
 
@@ -482,6 +520,97 @@ describe('test data definition editor engine compatibility', () => {
     await flushUi();
 
     expect(document.getElementById('testdatadefntext').value).toContain('Separator\nliteral(.)');
+
+    delete global.Tabulator;
+  });
+
+  test('literal type rows preserve empty and whitespace-only values in schema text', async () => {
+    const TabulatorMock = installTabulatorMock();
+
+    enableTestDataGenerationInterface(
+      'host',
+      {
+        setGridFromGenericDataTable: jest.fn(),
+      },
+      {
+        renderTextFromGrid: jest.fn(),
+      },
+      {
+        getRowCount: jest.fn(() => 0),
+        getSelectedRowIndexes: jest.fn(() => []),
+      }
+    );
+
+    TabulatorMock.latestInstance.rows = [
+      { columnName: 'EmptyLiteral', type: 'literal', value: '' },
+      { columnName: 'SpaceLiteral', type: 'literal', value: '   ' },
+    ];
+    TabulatorMock.latestInstance.options.cellEdited();
+    await flushUi();
+
+    const schemaText = document.getElementById('testdatadefntext').value;
+    expect(schemaText).toContain('EmptyLiteral\nliteral()');
+    expect(schemaText).toContain('SpaceLiteral\nliteral(   )');
+
+    delete global.Tabulator;
+  });
+
+  test('text schema literal() parses to literal row type (not regex)', async () => {
+    const TabulatorMock = installTabulatorMock();
+
+    enableTestDataGenerationInterface(
+      'host',
+      {
+        setGridFromGenericDataTable: jest.fn(),
+      },
+      {
+        renderTextFromGrid: jest.fn(),
+      },
+      {
+        getRowCount: jest.fn(() => 0),
+        getSelectedRowIndexes: jest.fn(() => []),
+      }
+    );
+
+    const schemaTextArea = document.getElementById('testdatadefntext');
+    schemaTextArea.value = 't\nliteral()';
+    schemaTextArea.dispatchEvent(new Event('input', { bubbles: true }));
+    await new Promise((resolve) => setTimeout(resolve, 1100));
+    await flushUi();
+
+    expect(TabulatorMock.latestInstance.rows).toHaveLength(1);
+    expect(TabulatorMock.latestInstance.rows[0]).toMatchObject({
+      columnName: 't',
+      type: 'literal',
+      value: '',
+    });
+
+    delete global.Tabulator;
+  });
+
+  test('literal type rows preserve leading spaces in value when mapped to schema text', async () => {
+    const TabulatorMock = installTabulatorMock();
+
+    enableTestDataGenerationInterface(
+      'host',
+      {
+        setGridFromGenericDataTable: jest.fn(),
+      },
+      {
+        renderTextFromGrid: jest.fn(),
+      },
+      {
+        getRowCount: jest.fn(() => 0),
+        getSelectedRowIndexes: jest.fn(() => []),
+      }
+    );
+
+    TabulatorMock.latestInstance.rows = [{ columnName: 'LeadingSpaceLiteral', type: 'literal', value: '   123' }];
+    TabulatorMock.latestInstance.options.cellEdited();
+    await flushUi();
+
+    const schemaText = document.getElementById('testdatadefntext').value;
+    expect(schemaText).toContain('LeadingSpaceLiteral\nliteral(   123)');
 
     delete global.Tabulator;
   });

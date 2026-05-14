@@ -525,9 +525,30 @@ Custom header styles for default items
 
 .generator-schema-head {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
+  gap: 0.6rem;
   margin-bottom: 0.6rem;
+}
+
+.generator-schema-head .generator-button-with-help {
+  margin-left: auto;
+}
+
+.generator-schema-error-text {
+  display: inline-block;
+  min-height: 1.2rem;
+  padding: 0.2rem 0.5rem;
+  border: 1px solid #d64545;
+  border-radius: 4px;
+  background: #fff1f1;
+  color: #8d1b1b;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.generator-schema-error-text:empty {
+  display: none;
 }
 
 .generator-schema-footer {

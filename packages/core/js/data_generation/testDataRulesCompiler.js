@@ -1,6 +1,7 @@
 import { FakerTestDataRuleValidator } from './faker/fakerTestDataRuleValidator.js';
 import { RegexTestDataRuleValidator } from './regex/regexTestDataRuleValidator.js';
 import { EnumTestDataRuleValidator } from './enum/enumTestDataRuleValidator.js';
+import { SchemaParsingErrors } from './schema-parsing-errors.js';
 
 /*
     'Compilation' of rules is where we try to identify if the rules are
@@ -80,7 +81,7 @@ export class TestDataRulesCompiler {
               rule.type = 'regex';
             } else {
               this.compilationReportLines.push(`${rule.name} is not a 'regex': ${regexValidator.getValidationError()}`);
-              this.errors.push(`Evaluating _${rule.name}_ as 'literal'`);
+              this.errors.push(SchemaParsingErrors.evaluatingAsLiteral(rule.name));
               rule.type = 'literal';
             }
           }
@@ -114,14 +115,14 @@ export class TestDataRulesCompiler {
           // is it a faker function?
           fakerValidator.validate(rule);
           if (!fakerValidator.isValid()) {
-            this.errors.push(`ERROR: ${rule.name} failed faker validation - ${fakerValidator.getValidationError()}`);
+            this.errors.push(SchemaParsingErrors.fakerValidationFailed(rule.name, fakerValidator.getValidationError()));
           }
           break;
         case 'regex':
           // does the regex generation work?
           regexValidator.validate(rule);
           if (!regexValidator.isValid()) {
-            this.errors.push(`ERROR: ${rule.name} failed Regex validation - ${regexValidator.getValidationError()}`);
+            this.errors.push(SchemaParsingErrors.regexValidationFailed(rule.name, regexValidator.getValidationError()));
           }
           break;
         case 'literal':
@@ -131,11 +132,11 @@ export class TestDataRulesCompiler {
           // validate enum values
           enumValidator.validate(rule);
           if (!enumValidator.isValid()) {
-            this.errors.push(`ERROR: ${rule.name} failed enum validation - ${enumValidator.getValidationError()}`);
+            this.errors.push(SchemaParsingErrors.enumValidationFailed(rule.name, enumValidator.getValidationError()));
           }
           break;
         default:
-          this.errors.push(`ERROR: ${rule.name} has no defined type`);
+          this.errors.push(SchemaParsingErrors.unknownRuleType(rule.name));
       }
     });
   }

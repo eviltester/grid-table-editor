@@ -15,11 +15,18 @@ describe('domain keyword parser', () => {
     expect(parsedKeyword.errors).toEqual([]);
   });
 
-  test('parses string and bareword args', () => {
-    const parsedKeyword = parseKeywordInvocation('literal.value(Pending)');
+  test('parses quoted string args', () => {
+    const parsedKeyword = parseKeywordInvocation('literal.value("Pending")');
     expect(parsedKeyword.keyword).toBe('literal.value');
     expect(parsedKeyword.args).toEqual(['Pending']);
     expect(parsedKeyword.errors).toEqual([]);
+  });
+
+  test('returns error for bareword arg values', () => {
+    const parsedKeyword = parseKeywordInvocation('literal.value(Pending)');
+    expect(parsedKeyword.errors).toEqual([
+      'Invalid keyword arguments: bare values are not allowed; wrap strings in quotes',
+    ]);
   });
 
   test('parses quoted, boolean, null and number args', () => {

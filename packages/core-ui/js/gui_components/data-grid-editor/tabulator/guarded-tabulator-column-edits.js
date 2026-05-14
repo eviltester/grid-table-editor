@@ -2,13 +2,15 @@ import { showTextInputModal } from '../../modal-text-input.js';
 import { showConfirmModal } from '../../modal-confirm.js';
 
 class GuardedTabulatorColumnEdits {
-  constructor(gridExtension, { surfaceError, requestTextInput, requestConfirm } = {}) {
+  constructor(gridExtension, { surfaceError, requestTextInput, requestConfirm, shouldEnforceUniqueNames } = {}) {
     this.gridExtras = gridExtension;
     this.surfaceError = typeof surfaceError === 'function' ? surfaceError : null;
     this.requestTextInput =
       typeof requestTextInput === 'function' ? requestTextInput : (options) => showTextInputModal(options);
     this.requestConfirm =
       typeof requestConfirm === 'function' ? requestConfirm : (options) => showConfirmModal(options);
+    this.shouldEnforceUniqueNames =
+      typeof shouldEnforceUniqueNames === 'function' ? shouldEnforceUniqueNames : () => true;
   }
 
   // todo: ids here look suspiciously ag-grid specific
@@ -43,7 +45,7 @@ class GuardedTabulatorColumnEdits {
       return true;
     }
 
-    if (this.gridExtras.nameAlreadyExists(colTitle)) {
+    if (this.shouldEnforceUniqueNames() && this.gridExtras.nameAlreadyExists(colTitle)) {
       this.showError(`A column with name ${colTitle} already exists`);
       return false;
     }
@@ -83,7 +85,7 @@ class GuardedTabulatorColumnEdits {
       return;
     }
 
-    if (this.gridExtras.nameAlreadyExists(colTitle)) {
+    if (this.shouldEnforceUniqueNames() && this.gridExtras.nameAlreadyExists(colTitle)) {
       this.showError(`A column with name ${colTitle} already exists`);
       return false;
     }
@@ -108,7 +110,7 @@ class GuardedTabulatorColumnEdits {
       return;
     }
 
-    if (this.gridExtras.nameAlreadyExists(colTitle)) {
+    if (this.shouldEnforceUniqueNames() && this.gridExtras.nameAlreadyExists(colTitle)) {
       this.showError(`A column with name ${colTitle} already exists`);
       return false;
     }

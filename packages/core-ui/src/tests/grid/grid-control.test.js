@@ -51,6 +51,12 @@ describe('GridControl', () => {
     expect(gridExtras.addRowsRelativeToSelection).toHaveBeenNthCalledWith(2, 1);
   });
 
+  test('renders Unique Column Names checkbox unchecked by default', () => {
+    const checkbox = parent.querySelector('#uniqueColumnNamesCheckbox');
+    expect(checkbox).toBeTruthy();
+    expect(checkbox.checked).toBe(false);
+  });
+
   test('delete selected rows respects selected count and confirmation', async () => {
     gridExtras.getNumberOfSelectedRows.mockReturnValue(0);
     parent.querySelector('#deleteSelectedRowsButton').click();

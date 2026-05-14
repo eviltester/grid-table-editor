@@ -1,5 +1,5 @@
 import { GridExtension } from './gridExtension-tabulator.js';
-import { GridControl, GridControlsPageMap } from '../gridControl.js';
+import { GridControl, GridControlsPageMap, shouldEnforceUniqueColumnNames } from '../gridControl.js';
 import { GuardedColumnEdits } from '../../../grid/guarded-column-edits.js';
 import { showGridError } from '../grid-error-surface.js';
 import { showTextInputModal } from '../../modal-text-input.js';
@@ -79,6 +79,7 @@ class ExtendedDataGrid {
 
       const guardedColumnEdits = new GuardedColumnEdits(new GridExtension(column.getTable()), {
         surfaceError: showGridError,
+        shouldEnforceUniqueNames: () => shouldEnforceUniqueColumnNames(document),
       });
       const columnId = column.getDefinition().colId || column.getDefinition().field;
       const fieldName = column.getField();

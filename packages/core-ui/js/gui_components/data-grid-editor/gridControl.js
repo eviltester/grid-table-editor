@@ -13,6 +13,10 @@ class GridControlsPageMap {
   }
 }
 
+function shouldEnforceUniqueColumnNames(documentObj = document) {
+  return documentObj.getElementById('uniqueColumnNamesCheckbox')?.checked === true;
+}
+
 // TODO : don't hook into existing controls in HTML create them here and then hook into them
 // The buttons above a grid
 class GridControl {
@@ -34,6 +38,7 @@ class GridControl {
             <button id="clearFiltersButton" title="Clear Filters">Clear Filters</button>
             <button id="clearSortButton" title="Clear Sort">Clear Sort</button>
             <button id="clearTableButton" title="Clear All Data">Reset Table</button>
+            <label><input type="checkbox" id="uniqueColumnNamesCheckbox"> Unique Column Names</label>
         </div>
         <div id="grid-column-error" class="generator-schema-error-text" aria-live="polite" role="status"></div>
         <!-- ag-theme-alpine -->
@@ -142,4 +147,4 @@ class GridControl {
   }
 }
 
-export { GridControl, GridControlsPageMap };
+export { GridControl, GridControlsPageMap, shouldEnforceUniqueColumnNames };

@@ -9,6 +9,7 @@
 import { GridExtension } from './gridExtension-ag-grid.js';
 import { GuardedColumnEdits } from '../../../grid/guarded-column-edits.js';
 import { showGridError } from '../grid-error-surface.js';
+import { shouldEnforceUniqueColumnNames } from '../gridControl.js';
 
 class CustomHeaderAgGrid {
   init(agParams) {
@@ -44,6 +45,7 @@ class CustomHeaderAgGrid {
 
     this.guardedColumnEdits = new GuardedColumnEdits(new GridExtension(this.agParams.api), {
       surfaceError: showGridError,
+      shouldEnforceUniqueNames: () => shouldEnforceUniqueColumnNames(document),
     });
 
     this.eMenuButton = this.eGui.querySelector('.customFilterMenuButton');

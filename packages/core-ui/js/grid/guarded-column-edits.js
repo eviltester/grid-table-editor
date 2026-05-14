@@ -2,13 +2,15 @@ import { showTextInputModal } from '../gui_components/modal-text-input.js';
 import { showConfirmModal } from '../gui_components/modal-confirm.js';
 
 class GuardedColumnEdits {
-  constructor(gridExtension, { surfaceError, requestTextInput, requestConfirm } = {}) {
+  constructor(gridExtension, { surfaceError, requestTextInput, requestConfirm, shouldEnforceUniqueNames } = {}) {
     this.gridExtras = gridExtension;
     this.surfaceError = typeof surfaceError === 'function' ? surfaceError : null;
     this.requestTextInput =
       typeof requestTextInput === 'function' ? requestTextInput : (options) => showTextInputModal(options);
     this.requestConfirm =
       typeof requestConfirm === 'function' ? requestConfirm : (options) => showConfirmModal(options);
+    this.shouldEnforceUniqueNames =
+      typeof shouldEnforceUniqueNames === 'function' ? shouldEnforceUniqueNames : () => true;
   }
 
   // todo: ids here look suspiciously ag-grid specific
@@ -39,7 +41,7 @@ class GuardedColumnEdits {
       return true;
     }
 
-    if (this.gridExtras.nameAlreadyExists(colTitle)) {
+    if (this.shouldEnforceUniqueNames() && this.gridExtras.nameAlreadyExists(colTitle)) {
       this.showError(`A column with name ${colTitle} already exists`);
       return false;
     }
@@ -76,7 +78,7 @@ class GuardedColumnEdits {
       return;
     }
 
-    if (this.gridExtras.nameAlreadyExists(colTitle)) {
+    if (this.shouldEnforceUniqueNames() && this.gridExtras.nameAlreadyExists(colTitle)) {
       this.showError(`A column with name ${colTitle} already exists`);
       return false;
     }
@@ -96,7 +98,7 @@ class GuardedColumnEdits {
       return;
     }
 
-    if (this.gridExtras.nameAlreadyExists(colTitle)) {
+    if (this.shouldEnforceUniqueNames() && this.gridExtras.nameAlreadyExists(colTitle)) {
       this.showError(`A column with name ${colTitle} already exists`);
       return false;
     }

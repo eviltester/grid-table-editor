@@ -73,6 +73,20 @@ describe('GuardedColumnEdits (AG abstraction)', () => {
     await guarded.addNeighbourColumnId(-1, 'column1');
     expect(gridExtras.addNeighbourColumnId).toHaveBeenCalledWith(-1, 'column1', 'Neighbour');
   });
+
+  test('duplicate name checks can be disabled', async () => {
+    gridExtras.nameAlreadyExists.mockReturnValue(true);
+    const unguarded = new GuardedColumnEdits(gridExtras, {
+      surfaceError,
+      requestTextInput: jest.fn(async () => 'Existing'),
+      requestConfirm,
+      shouldEnforceUniqueNames: () => false,
+    });
+
+    await unguarded.renameColId('column1');
+    expect(gridExtras.renameColId).toHaveBeenCalledWith('column1', 'Existing');
+    expect(surfaceError).not.toHaveBeenCalled();
+  });
 });
 
 describe('GuardedTabulatorColumnEdits', () => {
@@ -146,5 +160,19 @@ describe('GuardedTabulatorColumnEdits', () => {
     requestTextInput.mockResolvedValue('Neighbour');
     await guarded.addNeighbourColumn(-1, column);
     expect(gridExtras.addNeighbourColumn).toHaveBeenCalledWith(-1, column, 'Neighbour');
+  });
+
+  test('tabulator duplicate name checks can be disabled', async () => {
+    gridExtras.nameAlreadyExists.mockReturnValue(true);
+    const unguarded = new GuardedTabulatorColumnEdits(gridExtras, {
+      surfaceError,
+      requestTextInput: jest.fn(async () => 'Existing'),
+      requestConfirm,
+      shouldEnforceUniqueNames: () => false,
+    });
+
+    await unguarded.renameColumn(column);
+    expect(gridExtras.renameColumn).toHaveBeenCalledWith(column, 'Existing');
+    expect(surfaceError).not.toHaveBeenCalled();
   });
 });

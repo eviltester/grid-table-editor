@@ -1,9 +1,30 @@
 import { generateFromTextSpec, validateSafeFakerRules, SUPPORTED_FORMATS } from '../../index.js';
+import { PairwiseTestDataGenerator } from '../../../js/data_generation/all-pairs/pairwiseTestDataGenerator.js';
 
 test('generateFromTextSpec returns validation error for missing spec', () => {
   const result = generateFromTextSpec({ textSpec: '', rowCount: 1, outputFormat: 'json' });
   expect(result.ok).toBe(false);
   expect(result.errors.length > 0).toBeTruthy();
+});
+
+test('generateFromTextSpec returns validation error for invalid rowCount', () => {
+  const result = generateFromTextSpec({ textSpec: 'Name\nBob', rowCount: -1, outputFormat: 'json' });
+  expect(result.ok).toBe(false);
+  expect(result.errors).toContainEqual(
+    expect.objectContaining({
+      code: 'invalid_row_count',
+    })
+  );
+});
+
+test('generateFromTextSpec returns validation error for invalid output format', () => {
+  const result = generateFromTextSpec({ textSpec: 'Name\nBob', rowCount: 1, outputFormat: 'invalid-format' });
+  expect(result.ok).toBe(false);
+  expect(result.errors).toContainEqual(
+    expect.objectContaining({
+      code: 'invalid_output_format',
+    })
+  );
 });
 
 test('generateFromTextSpec generates rows for valid spec', () => {
@@ -253,6 +274,50 @@ test('generateFromTextSpec rejects pairwise mode with fewer than 2 enum rules', 
   expect(result.ok).toBe(false);
   expect(result.errors[0].code).toBe('pairwise_initialization_error');
   expect(result.errors[0].message).toMatch(/requires at least 2 ENUM parameters/i);
+});
+
+test('generateFromTextSpec uses fallback message for pairwise initialization failures without errorMessage', () => {
+  const originalInitializeFromRules = PairwiseTestDataGenerator.prototype.initializeFromRules;
+  PairwiseTestDataGenerator.prototype.initializeFromRules = () => ({ isError: true });
+  try {
+    const result = generateFromTextSpec({
+      textSpec: 'A\n1,2\nB\nx,y',
+      rowCount: 10,
+      outputFormat: 'json',
+      pairwise: true,
+    });
+    expect(result.ok).toBe(false);
+    expect(result.errors[0]).toEqual(
+      expect.objectContaining({
+        code: 'pairwise_initialization_error',
+        message: 'Failed to initialize pairwise generation.',
+      })
+    );
+  } finally {
+    PairwiseTestDataGenerator.prototype.initializeFromRules = originalInitializeFromRules;
+  }
+});
+
+test('generateFromTextSpec uses fallback message for pairwise generation failures without errorMessage', () => {
+  const originalGenerateAllDataRecordsAsRows = PairwiseTestDataGenerator.prototype.generateAllDataRecordsAsRows;
+  PairwiseTestDataGenerator.prototype.generateAllDataRecordsAsRows = () => ({ isError: true });
+  try {
+    const result = generateFromTextSpec({
+      textSpec: 'A\n1,2\nB\nx,y',
+      rowCount: 10,
+      outputFormat: 'json',
+      pairwise: true,
+    });
+    expect(result.ok).toBe(false);
+    expect(result.errors[0]).toEqual(
+      expect.objectContaining({
+        code: 'pairwise_generation_error',
+        message: 'Failed to generate pairwise rows.',
+      })
+    );
+  } finally {
+    PairwiseTestDataGenerator.prototype.generateAllDataRecordsAsRows = originalGenerateAllDataRecordsAsRows;
+  }
 });
 
 test('generateFromTextSpec pairwise preserves original interleaved column order', () => {

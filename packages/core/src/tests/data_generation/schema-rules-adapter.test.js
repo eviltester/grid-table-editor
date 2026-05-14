@@ -34,6 +34,21 @@ describe('schema rules adapter', () => {
     expect(result.errors[0].message).toBe("column t1 requires a data definition, use 'literal()' for blank data");
   });
 
+  test('returns invalid schema pairing for comment-only schema text', () => {
+    const result = schemaTextToDataRules({
+      schemaText: '# only a comment\n\n# still only comments',
+      faker,
+      RandExp,
+    });
+
+    expect(result.dataRules).toEqual([]);
+    expect(result.errors).toContainEqual(
+      expect.objectContaining({
+        code: 'invalid_schema_pairing',
+      })
+    );
+  });
+
   test('renders data rules to schema text preserving blank literal wrapper', () => {
     const rendered = dataRulesToSchemaText({
       dataRules: [
@@ -76,6 +91,19 @@ describe('schema rules adapter', () => {
 
     expect(result.dataRules).toEqual([]);
     expect(result.errors.map((error) => error.code)).toEqual(['missing_column_name', 'missing_faker_command']);
+  });
+
+  test('returns missing schema rows error for empty schema row list', () => {
+    const result = schemaRowsToDataRules({
+      schemaRows: [],
+    });
+
+    expect(result.dataRules).toEqual([]);
+    expect(result.errors).toContainEqual(
+      expect.objectContaining({
+        code: 'missing_schema_rows',
+      })
+    );
   });
 
   test('converts valid schema rows to data rules', () => {

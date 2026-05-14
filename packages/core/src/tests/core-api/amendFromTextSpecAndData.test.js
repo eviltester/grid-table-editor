@@ -1,5 +1,50 @@
 import { amendFromTextSpecAndData } from '../../index.js';
 
+test('rejects missing inputData', () => {
+  const result = amendFromTextSpecAndData({
+    textSpec: 'Name\nBob',
+    inputData: '',
+    inputFormat: 'csv',
+    outputFormat: 'json',
+  });
+  expect(result.ok).toBe(false);
+  expect(result.errors).toContainEqual(
+    expect.objectContaining({
+      code: 'invalid_input_data',
+    })
+  );
+});
+
+test('rejects missing inputFormat', () => {
+  const result = amendFromTextSpecAndData({
+    textSpec: 'Name\nBob',
+    inputData: '"Name"\n"Alice"',
+    inputFormat: '',
+    outputFormat: 'json',
+  });
+  expect(result.ok).toBe(false);
+  expect(result.errors).toContainEqual(
+    expect.objectContaining({
+      code: 'invalid_input_format',
+    })
+  );
+});
+
+test('rejects unsupported outputFormat', () => {
+  const result = amendFromTextSpecAndData({
+    textSpec: 'Name\nBob',
+    inputData: '"Name"\n"Alice"',
+    inputFormat: 'csv',
+    outputFormat: 'not-a-format',
+  });
+  expect(result.ok).toBe(false);
+  expect(result.errors).toContainEqual(
+    expect.objectContaining({
+      code: 'invalid_output_format',
+    })
+  );
+});
+
 test('defaults rowCount to imported row count', () => {
   const result = amendFromTextSpecAndData({
     textSpec: 'Name\nBob',

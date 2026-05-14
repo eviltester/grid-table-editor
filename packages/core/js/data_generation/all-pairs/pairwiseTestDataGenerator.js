@@ -38,6 +38,7 @@ export class PairwiseTestDataGenerator {
    * Other rule types generate random values per row
    */
   initializeFromRules(rules) {
+    this.resetGenerationState();
     try {
       this.orderedRules = [...rules];
       // Separate enum rules from non-enum rules in a single iteration
@@ -81,6 +82,19 @@ export class PairwiseTestDataGenerator {
     } catch (error) {
       return errorResponse(error.message);
     }
+  }
+
+  /**
+   * Reset all state tied to a specific pairwise initialization run.
+   * Prevents stale rows/stats leaking across failed re-initializations.
+   */
+  resetGenerationState() {
+    this.pairwiseGenerator = null;
+    this.dataRecords = [];
+    this.currentRecordIndex = 0;
+    this.orderedRules = [];
+    this.enumRules = [];
+    this.nonEnumRules = [];
   }
 
   /**

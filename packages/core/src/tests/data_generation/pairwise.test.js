@@ -185,6 +185,30 @@ describe('Pairwise Combinatorial Matching Data Generation', () => {
       expect(initResult.errorMessage).toContain('at least 2 ENUM parameters');
     });
 
+    test('should clear previous generation state before failed re-initialization', () => {
+      const validRules = [new TestDataRule('Color', 'Red,Green'), new TestDataRule('Size', 'Small,Large')];
+      validRules.forEach((rule) => rule.setType(RuleType.ENUM));
+
+      const generator = new PairwiseTestDataGenerator();
+      const firstInit = generator.initializeFromRules(validRules);
+      expect(firstInit.isError).toBe(false);
+
+      const firstRows = generator.generateAllDataRecordsAsRows();
+      expect(firstRows.isError).toBe(false);
+      expect(firstRows.data.data.length).toBeGreaterThan(1);
+      expect(generator.getStats().available).toBe(true);
+
+      const invalidRules = [new TestDataRule('OnlyOne', 'value1,value2')];
+      invalidRules[0].setType(RuleType.ENUM);
+      const secondInit = generator.initializeFromRules(invalidRules);
+
+      expect(secondInit.isError).toBe(true);
+      expect(generator.dataRecords).toEqual([]);
+      expect(generator.currentRecordIndex).toBe(0);
+      expect(generator.getStats()).toEqual({ available: false });
+      expect(generator.generateAllDataRecordsAsRows().isError).toBe(true);
+    });
+
     test('should generate pairwise data from canonical plain rule objects', () => {
       const rules = [
         { name: 'Literal Example', type: 'literal', ruleSpec: 'Pending Review' },

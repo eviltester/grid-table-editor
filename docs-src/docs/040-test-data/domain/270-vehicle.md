@@ -30,8 +30,8 @@ vehicle.bicycle()
 ```
 
 Example return values:
-- `"Adventure Road Bicycle"`
-- `"Recumbent Bicycle"`
+- `"Hybrid Bicycle"`
+- `"Fitness Bicycle"`
 
 ### `vehicle.color`
 
@@ -49,8 +49,8 @@ vehicle.color()
 ```
 
 Example return values:
-- `"orange"`
-- `"white"`
+- `"yellow"`
+- `"mint green"`
 
 ### `vehicle.fuel`
 
@@ -68,7 +68,7 @@ vehicle.fuel()
 ```
 
 Example return values:
-- `"Diesel"`
+- `"Electric"`
 - `"Electric"`
 
 ### `vehicle.manufacturer`
@@ -87,8 +87,8 @@ vehicle.manufacturer()
 ```
 
 Example return values:
-- `"Suzuki"`
-- `"Ferrari"`
+- `"NIO"`
+- `"Citroën"`
 
 ### `vehicle.model`
 
@@ -106,8 +106,8 @@ vehicle.model()
 ```
 
 Example return values:
-- `"ATS"`
-- `"Jetta"`
+- `"Land Cruiser"`
+- `"Mercielago"`
 
 ### `vehicle.type`
 
@@ -125,8 +125,8 @@ vehicle.type()
 ```
 
 Example return values:
-- `"Cargo Van"`
-- `"Crew Cab Pickup"`
+- `"Sedan"`
+- `"Wagon"`
 
 ### `vehicle.vehicle`
 
@@ -144,8 +144,8 @@ vehicle.vehicle()
 ```
 
 Example return values:
-- `"Volvo Spyder"`
-- `"Chevrolet Volt"`
+- `"Rivian CTS"`
+- `"Bentley Impala"`
 
 ### `vehicle.vin`
 
@@ -163,8 +163,8 @@ vehicle.vin()
 ```
 
 Example return values:
-- `"2RWZMU3WPUYS96230"`
-- `"1HVLY8NH4CNL38755"`
+- `"D3UH0YUMBVV327816"`
+- `"Z254G22MJDSC55053"`
 
 ### `vehicle.vrm`
 
@@ -182,5 +182,5 @@ vehicle.vrm()
 ```
 
 Example return values:
-- `"OK86QLH"`
-- `"HR88MLN"`
+- `"PB29ZCN"`
+- `"ZH04BJQ"`

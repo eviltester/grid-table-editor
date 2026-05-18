@@ -40,8 +40,8 @@ lorem.lines(min=1, max=1, lineCount=1, lineCountMax=1, lineCountMin=1)
 ```
 
 Example return values:
-- `"Bibo apud tergiversatio texo.\nSolvo argentum optio.\nCopia crastinus saepe cado careo amor aufero tunc autus valde.\nDefendo officia ceno hic catena apto accusantium."`
-- `"Numquam porro quisquam trans assentator corpus.\nItaque alias doloremque creta vorago quod casso.\nTunc suppono eveniet natus delectatio depereo amitto.\nCibo absum cui laborum comes deripio tantillus vester.\nConspergo blanditiis allatus."`
+- `"Conventus constans explicabo claustrum ait tepesco compono benigne cupressus.\nCapillus caries degusto vito vehemens denuo usus vinculum caput.\nCalamitas atque dolorem civitas.\nOptio talio curso abeo maiores tui.\nVerbera ago vere solium ut ratione vulnero civitas utilis."`
+- `"Spargo quod auctor condico.\nAmissio ratione culpa."`
 
 ### `lorem.paragraph`
 
@@ -69,8 +69,8 @@ lorem.paragraph(min=1, max=1, sentenceCount=1, sentenceCountMax=1, sentenceCount
 ```
 
 Example return values:
-- `"Valeo asporto abutor neque summopere tabernus pecco. Verbum complectus bardus teres voveo curiositas. Vere aliquam sopor sub cohaero."`
-- `"Culpa terreo acies. Dolore tubineus vulgo aegrus caecus temptatio solus vindico vestigium. Alii stultus delinquo cimentarius comedo delectatio auditor tristis chirographum."`
+- `"Approbo uterque adipiscor tricesimus labore stillicidium confero non patrocinor. Adficio acquiro sublime conor ullam cursim spectaculum adulescens confido. Tamdiu ter avaritia beatus vito deleo terreo utor eius."`
+- `"Vox amiculum crepusculum vinco comminor. Enim vaco doloribus auctus varietas aspicio suppono velit aperte accusator. Volaticus coadunatio demoror tenetur accusamus."`
 
 ### `lorem.paragraphs`
 
@@ -99,8 +99,8 @@ lorem.paragraphs(min=1, max=1, paragraphCount=1, separator="-", paragraphCountMa
 ```
 
 Example return values:
-- `"Aeneus cresco soluta tero tremo texo antiquus. Triduana adsuesco vesco sophismata teneo caterva illo sequi. Deleniti celo patior creptio illo vesco amitto cauda carcer.\nCrinis demum ager cimentarius autem tyrannus vomer. Studio vester vulgaris caecus viscus succedo caute vallum summopere. Cubo tolero necessitatibus cervus denuncio curso quidem maiores vaco absens.\nCarus stella validus vicissitudo amiculum ago. Coniuratio tonsor stultus demergo excepturi. Vestrum conspergo deorsum avaritia basium sumo titulus vinum iure."`
-- `"Demum usus velum basium. Molestias aspernatur commemoro. Laborum assumenda cribro aetas depulso cernuus aedificium acer.\nVacuus amaritudo capitulus versus deripio. Desino magni alioqui alioqui ventosus cruciamentum vinculum. Cogo condico occaecati degusto nostrum abscido asperiores viduo.\nTres incidunt crustulum tepidus demum termes cupiditate solvo. Aestus tutis arma verecundia explicabo. Vigor solvo tenuis suasoria cubo tametsi calculus nesciunt subiungo."`
+- `"Thermae possimus denique deleniti desino. Decerno umquam caveo arbor sequi astrum. Via carmen thymum tot architecto voluptas summopere compello.\nTremo tot speculum eius audentia tibi at creator corrumpo ver. Vero spero asper. Amor vespillo ciminatio facere ter ater creo sol.\nDens cubo advenio tepesco nulla alioqui conitor voluptatum aeternus. Totam strenuus censura triduana alter vel. Agnitio comprehendo tero cattus."`
+- `"Ventito similique tot curis correptius. Articulus curso admoneo aetas terga ars suscipit minus vulnero. Decimus reprehenderit sit videlicet terminatio decens tamen aer arceo esse.\nThymum audio claustrum patrocinor cruentus depono. Cupio adipiscor comitatus aspicio veritas caste voluntarius arcus suffoco careo. Atqui defetiscor virgo.\nLaborum conservo admoneo adeptio aliquam tollo certe. Alter impedit torrens alienus corrumpo creta tyrannus crastinus. Vito teneo templum voluptatum solio tamisium perspiciatis quisquam."`
 
 ### `lorem.sentence`
 
@@ -128,8 +128,8 @@ lorem.sentence(min=1, max=1, wordCount=1, wordCountMax=1, wordCountMin=1)
 ```
 
 Example return values:
-- `"Absque impedit ut pecus vomica valde peccatus vitae careo degusto."`
-- `"Tersus arma cerno communis artificiose iste suscipit comis deinde."`
+- `"Defendo adulescens color tertius sufficio nulla balbus vitae tabernus."`
+- `"Aperio abutor aestus ambitus temptatio architecto adfectus."`
 
 ### `lorem.sentences`
 
@@ -158,8 +158,8 @@ lorem.sentences(min=1, max=1, sentenceCount=1, separator="-", sentenceCountMax=1
 ```
 
 Example return values:
-- `"Amet incidunt caries abstergo triduana caute benevolentia anser. Clarus quia volva alioqui dignissimos iure tolero carus paulatim. Tripudio demulceo reiciendis coaegresco clam vorax umquam avaritia bonus. Admoneo trans numquam et usus minus brevis. Cursim complectus charisma ara."`
-- `"Communis viduo cultellus angelus sonitus vivo curo. Vulgaris vallum curtus. Conventus strenuus ipsa vobis. Tenuis adimpleo acervus labore una vomer suscipio contabesco comprehendo ascit. Coniecto curiositas cunabula complectus validus tribuo asper validus autem. Molestias campana denique commodi amicitia sollers aetas pariatur adstringo."`
+- `"Voveo video quod convoco denuncio defaeco textus tepesco. Averto attonbitus talis. Aurum desipio carus aperio truculenter comes. Bestia doloribus comprehendo. Cimentarius aegrotatio assentator defendo allatus tero talus despecto expedita."`
+- `"Solvo tamquam coma cimentarius tutis vigilo rem corpus cunabula libero. Aufero caterva aqua. Ancilla thymum iure. Cupio porro terebro delectus verumtamen combibo vivo."`
 
 ### `lorem.slug`
 
@@ -187,8 +187,8 @@ lorem.slug(min=1, max=1, wordCount=1, wordCountMax=1, wordCountMin=1)
 ```
 
 Example return values:
-- `"desipio-venustas-talus"`
-- `"cognatus-volo-adficio"`
+- `"suus-aequus-caries"`
+- `"usque-suus-ait"`
 
 ### `lorem.text`
 
@@ -206,8 +206,8 @@ lorem.text()
 ```
 
 Example return values:
-- `"Dapifer anser aspernatur umbra attollo aspernatur vulgivagus brevis inventore decumbo. Aro decens sequi magnam. Truculenter conicio crustulum careo."`
-- `"Aiunt decerno adopto articulus approbo culpa dolorem."`
+- `"Caterva capitulus comes celebrer tergiversatio dicta conservo enim arbor.\nVolubilis veritas ipsa.\nEos venia conicio earum caries doloremque cernuus.\nCaelum deludo conduco at viduo tenetur saepe victus ager venio."`
+- `"Absconditus curatio truculenter usitas fugiat tracto aurum super defaeco. Averto ustilo talis. Veritatis tempus nesciunt curia advenio valens provident.\nCausa textus turpis. Sodalitas pecto timidus trans cibo adhuc quis velit cubicularis magni. Compono dapifer crux vigor pauci ara.\nItaque usitas acidus considero utique. Deludo culpo tristis circumvenio crudelis. Vigor conservo desparatus corrigo surgo supra."`
 
 ### `lorem.word`
 
@@ -234,8 +234,8 @@ lorem.word(min=1, max=1, length=1, strategy="any-length")
 ```
 
 Example return values:
-- `"sollers"`
-- `"commodo"`
+- `"veniam"`
+- `"sum"`
 
 ### `lorem.words`
 
@@ -263,5 +263,5 @@ lorem.words(min=1, max=1, wordCount=1, wordCountMax=1, wordCountMin=1)
 ```
 
 Example return values:
-- `"communis cubitum cum"`
-- `"utrimque aspicio reiciendis"`
+- `"comis voluptates versus"`
+- `"crebro copiose iste"`

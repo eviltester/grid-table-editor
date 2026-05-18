@@ -30,8 +30,8 @@ system.commonFileExt()
 ```
 
 Example return values:
-- `"m1v"`
-- `"pdf"`
+- `"gif"`
+- `"png"`
 
 ### `system.commonFileName`
 
@@ -55,8 +55,8 @@ system.commonFileName(extension="txt")
 ```
 
 Example return values:
-- `"uneven_knottily.pdf"`
-- `"unlucky_officially_over.shtml"`
+- `"monocle_unhappy.gif"`
+- `"seal_fax.gif"`
 
 ### `system.commonFileType`
 
@@ -74,7 +74,7 @@ system.commonFileType()
 ```
 
 Example return values:
-- `"audio"`
+- `"image"`
 - `"video"`
 
 ### `system.cron`
@@ -100,8 +100,8 @@ system.cron(includeNonStandard=true, includeYear=true)
 ```
 
 Example return values:
-- `"* * * 1 *"`
-- `"* 10 10 * WED"`
+- `"* * 23 * *"`
+- `"* 12 ? * ?"`
 
 ### `system.directoryPath`
 
@@ -119,8 +119,8 @@ system.directoryPath()
 ```
 
 Example return values:
-- `"/usr/libexec"`
-- `"/Network"`
+- `"/lost+found"`
+- `"/root"`
 
 ### `system.fileExt`
 
@@ -144,8 +144,8 @@ system.fileExt(mimeType="image/png")
 ```
 
 Example return values:
-- `"rar"`
-- `"3g2"`
+- `"odp"`
+- `"bz"`
 
 ### `system.fileName`
 
@@ -163,8 +163,8 @@ system.fileName()
 ```
 
 Example return values:
-- `"lovingly.dump"`
-- `"blond.ppt"`
+- `"ew_deep_mothball.webm"`
+- `"whale.ogg"`
 
 ### `system.filePath`
 
@@ -182,8 +182,8 @@ system.filePath()
 ```
 
 Example return values:
-- `"/usr/lib/phew_beautifully.boz"`
-- `"/home/user/atrium.def"`
+- `"/Applications/but_holster.dms"`
+- `"/lib/anenst_glaring.xsl"`
 
 ### `system.fileType`
 
@@ -201,8 +201,8 @@ system.fileType()
 ```
 
 Example return values:
-- `"video"`
-- `"video"`
+- `"image"`
+- `"image"`
 
 ### `system.mimeType`
 
@@ -220,8 +220,8 @@ system.mimeType()
 ```
 
 Example return values:
-- `"image/png"`
-- `"application/vnd.oasis.opendocument.presentation"`
+- `"image/jpeg"`
+- `"application/x-7z-compressed"`
 
 ### `system.networkInterface`
 
@@ -239,8 +239,8 @@ system.networkInterface()
 ```
 
 Example return values:
-- `"wlo7"`
-- `"wwxe7fb537260c4"`
+- `"ens9d1"`
+- `"wlp8s6f4"`
 
 ### `system.semver`
 
@@ -258,5 +258,5 @@ system.semver()
 ```
 
 Example return values:
-- `"3.1.13"`
-- `"4.1.12"`
+- `"1.8.17"`
+- `"5.12.0"`

@@ -110,6 +110,14 @@ describe('Faker Dropdown Literal Commands', () => {
       expect(domainOptions).toContain('science.chemicalElement');
       expect(domainOptions).not.toContain('finance.currency');
     });
+
+    it('should label faker/domain sections to reflect helpers split', () => {
+      const values = getTabulatorTypeEditorValues('');
+      const fakerSection = values.find((entry) => entry.value === '__faker_section__');
+      const domainSection = values.find((entry) => entry.value === '__domain_section__');
+      expect(fakerSection?.label).toBe('-- faker (incl helpers) --');
+      expect(domainSection?.label).toBe('-- domain (no helpers) --');
+    });
   });
 
   describe('Expanded object commands execute', () => {

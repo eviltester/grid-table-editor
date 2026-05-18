@@ -30,8 +30,8 @@ book.author()
 ```
 
 Example return values:
-- `"George R. R. Martin"`
-- `"Theodore Alois Buckley"`
+- `"Jack Kerouac"`
+- `"Jules Verne"`
 
 ### `book.format`
 
@@ -49,8 +49,8 @@ book.format()
 ```
 
 Example return values:
-- `"Paperback"`
 - `"Hardcover"`
+- `"Paperback"`
 
 ### `book.genre`
 
@@ -68,8 +68,8 @@ book.genre()
 ```
 
 Example return values:
-- `"Memoir"`
-- `"Business"`
+- `"Western"`
+- `"Romance"`
 
 ### `book.publisher`
 
@@ -87,8 +87,8 @@ book.publisher()
 ```
 
 Example return values:
-- `"Harper & Brothers"`
-- `"Athabasca University Press"`
+- `"Farrar, Straus & Giroux"`
+- `"Bowes & Bowes"`
 
 ### `book.series`
 
@@ -106,8 +106,8 @@ book.series()
 ```
 
 Example return values:
-- `"His Dark Materials"`
-- `"The Arc of a Scythe"`
+- `"The Dresden Files"`
+- `"The Inheritance Cycle"`
 
 ### `book.title`
 
@@ -125,5 +125,5 @@ book.title()
 ```
 
 Example return values:
-- `"The Handmaid's Tale"`
-- `"Nostromo"`
+- `"Nineteen Eighty Four"`
+- `"Bible"`

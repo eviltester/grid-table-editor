@@ -30,8 +30,8 @@ science.chemicalElement()
 ```
 
 Example return values:
-- `{"symbol":"Fe","name":"Iron","atomicNumber":26}`
-- `{"symbol":"Ca","name":"Calcium","atomicNumber":20}`
+- `&#123;"symbol":"N","name":"Nitrogen","atomicNumber":7&#125;`
+- `&#123;"symbol":"Sn","name":"Tin","atomicNumber":50&#125;`
 
 ### `science.chemicalElement.atomicNumber`
 
@@ -49,8 +49,8 @@ science.chemicalElement.atomicNumber()
 ```
 
 Example return values:
-- `1`
-- `61`
+- `102`
+- `78`
 
 ### `science.chemicalElement.name`
 
@@ -68,8 +68,8 @@ science.chemicalElement.name()
 ```
 
 Example return values:
-- `"Thulium"`
-- `"Hassium"`
+- `"Cobalt"`
+- `"Actinium"`
 
 ### `science.chemicalElement.symbol`
 
@@ -87,8 +87,8 @@ science.chemicalElement.symbol()
 ```
 
 Example return values:
-- `"Sn"`
-- `"Am"`
+- `"Hs"`
+- `"Bh"`
 
 ### `science.unit`
 
@@ -106,5 +106,5 @@ science.unit()
 ```
 
 Example return values:
-- `{"name":"ohm","symbol":"Ω"}`
-- `{"name":"siemens","symbol":"S"}`
+- `&#123;"name":"sievert","symbol":"Sv"&#125;`
+- `&#123;"name":"pascal","symbol":"Pa"&#125;`

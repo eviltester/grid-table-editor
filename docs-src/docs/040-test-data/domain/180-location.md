@@ -30,8 +30,8 @@ location.buildingNumber()
 ```
 
 Example return values:
-- `"695"`
-- `"922"`
+- `"5098"`
+- `"8232"`
 
 ### `location.cardinalDirection`
 
@@ -50,7 +50,7 @@ location.cardinalDirection()
 
 Example return values:
 - `"West"`
-- `"South"`
+- `"West"`
 
 ### `location.city`
 
@@ -68,8 +68,8 @@ location.city()
 ```
 
 Example return values:
-- `"Beierton"`
-- `"Hoegerhaven"`
+- `"Neldachester"`
+- `"East Libbychester"`
 
 ### `location.continent`
 
@@ -87,8 +87,8 @@ location.continent()
 ```
 
 Example return values:
+- `"Antarctica"`
 - `"Asia"`
-- `"Africa"`
 
 ### `location.country`
 
@@ -106,8 +106,8 @@ location.country()
 ```
 
 Example return values:
-- `"French Southern Territories"`
-- `"Denmark"`
+- `"Indonesia"`
+- `"Iraq"`
 
 ### `location.countryCode`
 
@@ -125,8 +125,8 @@ location.countryCode()
 ```
 
 Example return values:
-- `"NP"`
-- `"NO"`
+- `"PE"`
+- `"KI"`
 
 ### `location.county`
 
@@ -144,8 +144,8 @@ location.county()
 ```
 
 Example return values:
-- `"Jefferson County"`
-- `"County Antrim"`
+- `"Rutland"`
+- `"Washington County"`
 
 ### `location.direction`
 
@@ -169,8 +169,8 @@ location.direction(abbreviated=false)
 ```
 
 Example return values:
-- `"South"`
-- `"Southeast"`
+- `"East"`
+- `"North"`
 
 ### `location.language`
 
@@ -188,8 +188,8 @@ location.language()
 ```
 
 Example return values:
-- `{"name":"Czech","alpha2":"cs","alpha3":"ces"}`
-- `{"name":"Catalan","alpha2":"ca","alpha3":"cat"}`
+- `&#123;"name":"Tagalog","alpha2":"tl","alpha3":"tgl"&#125;`
+- `&#123;"name":"Azerbaijani","alpha2":"az","alpha3":"aze"&#125;`
 
 ### `location.latitude`
 
@@ -215,8 +215,8 @@ location.latitude(min=1, max=1, precision=1)
 ```
 
 Example return values:
-- `36.3971`
-- `-34.3025`
+- `38.5893`
+- `57.5593`
 
 ### `location.longitude`
 
@@ -242,8 +242,8 @@ location.longitude(min=1, max=1, precision=1)
 ```
 
 Example return values:
-- `66.1126`
-- `-92.7018`
+- `-174.1417`
+- `100.7973`
 
 ### `location.nearbyGPSCoordinate`
 
@@ -261,8 +261,8 @@ location.nearbyGPSCoordinate()
 ```
 
 Example return values:
-- `[27.6772,-158.4842]`
-- `[-12.7563,26.5605]`
+- `[-5.738,-37.5877]`
+- `[30.3643,59.1147]`
 
 ### `location.ordinalDirection`
 
@@ -280,8 +280,8 @@ location.ordinalDirection()
 ```
 
 Example return values:
+- `"Southwest"`
 - `"Southeast"`
-- `"Northwest"`
 
 ### `location.secondaryAddress`
 
@@ -299,8 +299,8 @@ location.secondaryAddress()
 ```
 
 Example return values:
-- `"Suite 116"`
-- `"Suite 789"`
+- `"Suite 588"`
+- `"Apt. 105"`
 
 ### `location.state`
 
@@ -324,8 +324,8 @@ location.state(abbreviated=false)
 ```
 
 Example return values:
-- `"Illinois"`
-- `"Texas"`
+- `"New Hampshire"`
+- `"Louisiana"`
 
 ### `location.street`
 
@@ -343,8 +343,8 @@ location.street()
 ```
 
 Example return values:
-- `"Eldora Path"`
-- `"Elsa Shores"`
+- `"Kemmer Forges"`
+- `"Labadie Extension"`
 
 ### `location.streetAddress`
 
@@ -369,8 +369,8 @@ location.streetAddress(useFullAddress=true, value=true)
 ```
 
 Example return values:
-- `"397 Manor Road"`
-- `"314 Rosetta Passage"`
+- `"24973 Steuber Skyway"`
+- `"555 Kali Summit"`
 
 ### `location.timeZone`
 
@@ -388,8 +388,8 @@ location.timeZone()
 ```
 
 Example return values:
-- `"Africa/Bujumbura"`
-- `"Africa/Douala"`
+- `"America/Anchorage"`
+- `"Asia/Pyongyang"`
 
 ### `location.zipCode`
 
@@ -407,5 +407,5 @@ location.zipCode()
 ```
 
 Example return values:
-- `"41035-8586"`
-- `"71512-2783"`
+- `"24867"`
+- `"55040-0535"`

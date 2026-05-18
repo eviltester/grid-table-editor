@@ -30,8 +30,8 @@ hacker.abbreviation()
 ```
 
 Example return values:
-- `"UDP"`
-- `"API"`
+- `"TLS"`
+- `"SSD"`
 
 ### `hacker.adjective`
 
@@ -49,8 +49,8 @@ hacker.adjective()
 ```
 
 Example return values:
-- `"back-end"`
-- `"mobile"`
+- `"optical"`
+- `"auxiliary"`
 
 ### `hacker.ingverb`
 
@@ -68,8 +68,8 @@ hacker.ingverb()
 ```
 
 Example return values:
-- `"transmitting"`
-- `"overriding"`
+- `"parsing"`
+- `"compressing"`
 
 ### `hacker.noun`
 
@@ -87,8 +87,8 @@ hacker.noun()
 ```
 
 Example return values:
-- `"circuit"`
-- `"panel"`
+- `"transmitter"`
+- `"transmitter"`
 
 ### `hacker.phrase`
 
@@ -106,8 +106,8 @@ hacker.phrase()
 ```
 
 Example return values:
-- `"Use the 1080p THX bus, then you can hack the mobile bandwidth!"`
-- `"Use the auxiliary USB array, then you can parse the optical sensor!"`
+- `"The TCP bus is down, synthesize the auxiliary feed so we can transmit the SSD capacitor!"`
+- `"I'll back up the redundant HEX application, that should panel the SQL interface!"`
 
 ### `hacker.verb`
 
@@ -125,5 +125,5 @@ hacker.verb()
 ```
 
 Example return values:
-- `"generate"`
-- `"bypass"`
+- `"copy"`
+- `"transmit"`

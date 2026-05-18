@@ -1,9 +1,10 @@
 {
-  "label": "Domain Keywords",
+  "label": "Domain Test Data",
   "position": 6,
   "link": {
-    "type": "generated-index",
-    "description": "Domain keyword abstraction pages with method arguments, examples, and links to Faker API docs."
+    "type": "doc",
+    "id": "domain-test-data"
   },
+  "className": "category-domain-test-data",
   "collapsed": true
 }

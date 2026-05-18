@@ -30,8 +30,8 @@ company.buzzAdjective()
 ```
 
 Example return values:
-- `"enterprise"`
-- `"global"`
+- `"cutting-edge"`
+- `"24/7"`
 
 ### `company.buzzNoun`
 
@@ -49,8 +49,8 @@ company.buzzNoun()
 ```
 
 Example return values:
-- `"partnerships"`
-- `"smart contracts"`
+- `"architectures"`
+- `"supply-chains"`
 
 ### `company.buzzPhrase`
 
@@ -68,8 +68,8 @@ company.buzzPhrase()
 ```
 
 Example return values:
-- `"harness immersive e-commerce"`
-- `"scale ubiquitous systems"`
+- `"empower sticky synergies"`
+- `"empower robust mindshare"`
 
 ### `company.buzzVerb`
 
@@ -88,7 +88,7 @@ company.buzzVerb()
 
 Example return values:
 - `"disintermediate"`
-- `"engineer"`
+- `"optimize"`
 
 ### `company.catchPhrase`
 
@@ -106,8 +106,8 @@ company.catchPhrase()
 ```
 
 Example return values:
-- `"Cross-platform 24 hour encoding"`
-- `"User-friendly regional hardware"`
+- `"Cross-platform maximized hardware"`
+- `"Monitored sustainable customer loyalty"`
 
 ### `company.catchPhraseAdjective`
 
@@ -125,8 +125,8 @@ company.catchPhraseAdjective()
 ```
 
 Example return values:
-- `"Business-focused"`
-- `"Robust"`
+- `"Virtual"`
+- `"Face to face"`
 
 ### `company.catchPhraseDescriptor`
 
@@ -144,8 +144,8 @@ company.catchPhraseDescriptor()
 ```
 
 Example return values:
-- `"optimizing"`
-- `"composite"`
+- `"leading edge"`
+- `"asynchronous"`
 
 ### `company.catchPhraseNoun`
 
@@ -163,8 +163,8 @@ company.catchPhraseNoun()
 ```
 
 Example return values:
-- `"instruction set"`
-- `"application"`
+- `"pricing structure"`
+- `"capability"`
 
 ### `company.name`
 
@@ -182,5 +182,5 @@ company.name()
 ```
 
 Example return values:
-- `"Heller, Marquardt and Bins"`
-- `"Gerhold Inc"`
+- `"Hudson, Rogahn and Hane"`
+- `"Monahan, Boyle and Crona"`

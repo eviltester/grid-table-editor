@@ -30,8 +30,8 @@ finance.accountName()
 ```
 
 Example return values:
-- `"Auto Loan Account"`
-- `"Credit Card Account"`
+- `"Savings Account"`
+- `"Home Loan Account"`
 
 ### `finance.accountNumber`
 
@@ -55,8 +55,8 @@ finance.accountNumber(length=1)
 ```
 
 Example return values:
-- `"88291458"`
-- `"72117813"`
+- `"49018866"`
+- `"60456794"`
 
 ### `finance.amount`
 
@@ -84,8 +84,8 @@ finance.amount(autoFormat=true, dec=1, max=1, min=1, symbol="$")
 ```
 
 Example return values:
-- `"860.56"`
-- `"230.37"`
+- `"149.16"`
+- `"691.98"`
 
 ### `finance.bic`
 
@@ -109,8 +109,8 @@ finance.bic(includeBranchCode=true)
 ```
 
 Example return values:
-- `"PPTHVNHP"`
-- `"ZDMNGD1B"`
+- `"JAHFCDRAXXX"`
+- `"HDJFBRUQ"`
 
 ### `finance.bitcoinAddress`
 
@@ -128,8 +128,8 @@ finance.bitcoinAddress()
 ```
 
 Example return values:
-- `"3x8wqMpoemq3ybv1yWn1AjW4NW"`
-- `"bc1a3pk2fkzvf5c9v2fvjd8yjmggeg2t6e9uletx3g"`
+- `"bc1pzsw5kl430n3mlhd5snxf8jsn8w8pkn5szswd2vdgswryyd6reuhljezh79"`
+- `"bc1y7ndstl65j0lqw6zn65e7c2aglznrqyect4sejh"`
 
 ### `finance.creditCardCVV`
 
@@ -147,8 +147,8 @@ finance.creditCardCVV()
 ```
 
 Example return values:
-- `"486"`
-- `"990"`
+- `"642"`
+- `"505"`
 
 ### `finance.creditCardIssuer`
 
@@ -166,8 +166,8 @@ finance.creditCardIssuer()
 ```
 
 Example return values:
-- `"american_express"`
 - `"diners_club"`
+- `"discover"`
 
 ### `finance.creditCardNumber`
 
@@ -191,8 +191,8 @@ finance.creditCardNumber(issuer="sample")
 ```
 
 Example return values:
-- `"6570-3453-3447-4166"`
-- `"5368-2893-3140-6714"`
+- `"4253595338386"`
+- `"3680-760929-2509"`
 
 ### `finance.currency`
 
@@ -210,8 +210,8 @@ finance.currency()
 ```
 
 Example return values:
-- `{"name":"Dong","code":"VND","symbol":"₫","numericCode":"704"}`
-- `{"name":"Gibraltar Pound","code":"GIP","symbol":"£","numericCode":"292"}`
+- `&#123;"name":"Pakistan Rupee","code":"PKR","symbol":"₨","numericCode":"586"&#125;`
+- `&#123;"name":"Bahraini Dinar","code":"BHD","symbol":"","numericCode":"048"&#125;`
 
 ### `finance.currencyCode`
 
@@ -229,8 +229,8 @@ finance.currencyCode()
 ```
 
 Example return values:
-- `"NOK"`
-- `"DJF"`
+- `"HNL"`
+- `"VND"`
 
 ### `finance.currencyName`
 
@@ -248,8 +248,8 @@ finance.currencyName()
 ```
 
 Example return values:
-- `"South Sudanese pound"`
-- `"CFP Franc"`
+- `"Tugrik"`
+- `"Lilangeni"`
 
 ### `finance.currencyNumericCode`
 
@@ -267,8 +267,8 @@ finance.currencyNumericCode()
 ```
 
 Example return values:
-- `"417"`
-- `"324"`
+- `"784"`
+- `"784"`
 
 ### `finance.currencySymbol`
 
@@ -286,8 +286,8 @@ finance.currencySymbol()
 ```
 
 Example return values:
-- `"Ft"`
-- `"руб"`
+- `"₨"`
+- `"kr"`
 
 ### `finance.ethereumAddress`
 
@@ -305,8 +305,8 @@ finance.ethereumAddress()
 ```
 
 Example return values:
-- `"0xeedc5f2fa15afedea5e6ab4cae745db0670d2edc"`
-- `"0xfc6a2707be50b391a0ce249f320e887f3bad4bab"`
+- `"0x607cf8c49d90bd4d367fd5dc2fc4af6bebdedf17"`
+- `"0xff0d2ab192cfbeb8ebcd74c4306eceb3f150ae70"`
 
 ### `finance.iban`
 
@@ -331,8 +331,8 @@ finance.iban(countryCode="GB", formatted=true)
 ```
 
 Example return values:
-- `"CZ9000876680090097910782"`
-- `"AD3250001002325310563544"`
+- `"IE60XZAD39998435857068"`
+- `"NO1827072008009"`
 
 ### `finance.litecoinAddress`
 
@@ -350,8 +350,8 @@ finance.litecoinAddress()
 ```
 
 Example return values:
-- `"3gZosYYk6RvfzNyBzC8ydnSCRWSf"`
-- `"L4nhEA39vgMdmTtc5p83G7Sydn"`
+- `"Mx5xmnGzMKFjCoEa4sP7AtsMHWMqY1M7a"`
+- `"MUt8eNXLSYpeiDoKiTof8BetGJpuM"`
 
 ### `finance.maskedNumber`
 
@@ -375,8 +375,8 @@ finance.maskedNumber(length=1)
 ```
 
 Example return values:
-- `"(...2487)"`
-- `"(...8204)"`
+- `"(...0214)"`
+- `"(...5189)"`
 
 ### `finance.pin`
 
@@ -400,8 +400,8 @@ finance.pin(length=1)
 ```
 
 Example return values:
-- `"2272"`
-- `"6321"`
+- `"3243"`
+- `"9247"`
 
 ### `finance.routingNumber`
 
@@ -419,8 +419,8 @@ finance.routingNumber()
 ```
 
 Example return values:
-- `"159195743"`
-- `"549016924"`
+- `"128948329"`
+- `"799587533"`
 
 ### `finance.transactionDescription`
 
@@ -438,8 +438,8 @@ finance.transactionDescription()
 ```
 
 Example return values:
-- `"Payment of VES 758.35 for deposit at Towne, Haley and Yost, processed with card ending ****1184 linked to account ***9937."`
-- `"A invoice of NIO 619.11 occurred at O'Conner Group using a card ending in ****8040 for account ***3345."`
+- `"Your deposit of YER 512.78 at Schoen and Sons was successful. Charged via card ****1684 to account ***5866."`
+- `"payment at Gislason, Herzog and Ankunding with a card ending in ****9045 for PYG 683.99 from account ***3048."`
 
 ### `finance.transactionType`
 
@@ -457,5 +457,5 @@ finance.transactionType()
 ```
 
 Example return values:
-- `"invoice"`
 - `"deposit"`
+- `"payment"`

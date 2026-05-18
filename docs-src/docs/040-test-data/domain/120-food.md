@@ -30,8 +30,8 @@ food.adjective()
 ```
 
 Example return values:
-- `"golden"`
-- `"fresh"`
+- `"tangy"`
+- `"juicy"`
 
 ### `food.description`
 
@@ -49,8 +49,8 @@ food.description()
 ```
 
 Example return values:
-- `"A slow-roasted Great Crested Flycatcher with a fluffy, golden exterior. Stuffed with sprout and covered in pineapple sauce. Sides with asparagus puree and wild zucchini."`
-- `"A special silver apples from Cuba. To support the strong flavor it is sided with a tablespoon of pot marjoram."`
+- `"Grilled venison kebabs, marinated in Mangalorean spices and served with a fresh rhubarb and blueberry salad."`
+- `"A slow-roasted Willow Ptarmigan with a zesty, crunchy exterior. Stuffed with banana and covered in papaw sauce. Sides with broccoli puree and wild jicama."`
 
 ### `food.dish`
 
@@ -68,8 +68,8 @@ food.dish()
 ```
 
 Example return values:
-- `"Bengali Tom Yum Soup"`
-- `"Venison Steak"`
+- `"German Chamomile-crusted Salmon"`
+- `"Linguine With Clams"`
 
 ### `food.ethnicCategory`
 
@@ -87,8 +87,8 @@ food.ethnicCategory()
 ```
 
 Example return values:
-- `"Crimean Tatar"`
-- `"Brazilian"`
+- `"Korean"`
+- `"Keralite"`
 
 ### `food.fruit`
 
@@ -106,8 +106,8 @@ food.fruit()
 ```
 
 Example return values:
-- `"snowpea"`
-- `"cherry"`
+- `"mango"`
+- `"sultana"`
 
 ### `food.ingredient`
 
@@ -125,8 +125,8 @@ food.ingredient()
 ```
 
 Example return values:
-- `"kokam"`
-- `"turkey"`
+- `"taleggio cheese"`
+- `"freekeh"`
 
 ### `food.meat`
 
@@ -144,8 +144,8 @@ food.meat()
 ```
 
 Example return values:
-- `"salmon"`
-- `"emu"`
+- `"turkey"`
+- `"venison"`
 
 ### `food.spice`
 
@@ -163,8 +163,8 @@ food.spice()
 ```
 
 Example return values:
-- `"celery"`
-- `"vanilla"`
+- `"lime leaves"`
+- `"paprika"`
 
 ### `food.vegetable`
 
@@ -182,5 +182,5 @@ food.vegetable()
 ```
 
 Example return values:
-- `"squash"`
-- `"cauliflower"`
+- `"cabbage"`
+- `"leeks"`

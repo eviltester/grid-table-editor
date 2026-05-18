@@ -30,8 +30,8 @@ person.bio()
 ```
 
 Example return values:
-- `"giggle lover"`
-- `"scientist"`
+- `"designer, engineer, developer"`
+- `"leader, leader"`
 
 ### `person.firstName`
 
@@ -55,8 +55,8 @@ person.firstName(sex="sample")
 ```
 
 Example return values:
-- `"Neoma"`
-- `"Ruthie"`
+- `"David"`
+- `"Alvera"`
 
 ### `person.fullName`
 
@@ -74,8 +74,8 @@ person.fullName()
 ```
 
 Example return values:
-- `"Barbara Cummings MD"`
-- `"Dwayne Haag"`
+- `"Miss Chelsea Heller"`
+- `"Mrs. Diane McClure"`
 
 ### `person.gender`
 
@@ -93,8 +93,8 @@ person.gender()
 ```
 
 Example return values:
-- `"Transsexual"`
-- `"Gender questioning"`
+- `"Demiflux"`
+- `"M2F"`
 
 ### `person.jobArea`
 
@@ -112,8 +112,8 @@ person.jobArea()
 ```
 
 Example return values:
-- `"Optimization"`
-- `"Implementation"`
+- `"Integration"`
+- `"Quality"`
 
 ### `person.jobDescriptor`
 
@@ -131,8 +131,8 @@ person.jobDescriptor()
 ```
 
 Example return values:
-- `"Corporate"`
-- `"Lead"`
+- `"Central"`
+- `"Human"`
 
 ### `person.jobTitle`
 
@@ -150,8 +150,8 @@ person.jobTitle()
 ```
 
 Example return values:
-- `"Regional Markets Liaison"`
-- `"Lead Solutions Architect"`
+- `"Lead Communications Assistant"`
+- `"Regional Operations Technician"`
 
 ### `person.jobType`
 
@@ -169,8 +169,8 @@ person.jobType()
 ```
 
 Example return values:
-- `"Representative"`
-- `"Administrator"`
+- `"Engineer"`
+- `"Director"`
 
 ### `person.lastName`
 
@@ -194,8 +194,8 @@ person.lastName(sex="sample")
 ```
 
 Example return values:
-- `"Schmitt-Osinski"`
-- `"Schinner"`
+- `"Heller"`
+- `"Schneider"`
 
 ### `person.middleName`
 
@@ -219,8 +219,8 @@ person.middleName(sex="sample")
 ```
 
 Example return values:
-- `"Robin"`
-- `"Dakota"`
+- `"August"`
+- `"Emerson"`
 
 ### `person.prefix`
 
@@ -244,8 +244,8 @@ person.prefix(sex="sample")
 ```
 
 Example return values:
-- `"Mr."`
-- `"Mr."`
+- `"Dr."`
+- `"Ms."`
 
 ### `person.sex`
 
@@ -263,7 +263,7 @@ person.sex()
 ```
 
 Example return values:
-- `"female"`
+- `"male"`
 - `"male"`
 
 ### `person.sexType`
@@ -283,7 +283,7 @@ person.sexType()
 
 Example return values:
 - `"male"`
-- `"female"`
+- `"male"`
 
 ### `person.suffix`
 
@@ -301,7 +301,7 @@ person.suffix()
 ```
 
 Example return values:
-- `"IV"`
+- `"DVM"`
 - `"III"`
 
 ### `person.zodiacSign`
@@ -320,5 +320,5 @@ person.zodiacSign()
 ```
 
 Example return values:
-- `"Taurus"`
-- `"Leo"`
+- `"Pisces"`
+- `"Capricorn"`

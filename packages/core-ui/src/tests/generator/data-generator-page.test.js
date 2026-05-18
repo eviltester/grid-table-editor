@@ -695,6 +695,29 @@ describe('DataGeneratorPage', () => {
     expect(help.getAttribute('data-help-text')).toContain('Params:');
   });
 
+  test('shows domain index help link when domain source has no command selected', () => {
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker,
+      RandExp,
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: TestDataGenerator,
+    });
+    page.init();
+
+    page.schemaRows = [{ id: '1', name: 'Age', sourceType: 'domain', command: '', params: '', value: '' }];
+    page.renderSchemaRows();
+
+    const help = document.querySelector('[data-field="faker-doc-link"]');
+    expect(help).not.toBeNull();
+    expect(help.getAttribute('href')).toBe('https://anywaydata.com/docs/test-data/domain/domain-test-data');
+  });
+
   test('shows command metadata summary and params in faker help tooltip', () => {
     const page = new DataGeneratorPage({
       parentElement: document.getElementById('app'),

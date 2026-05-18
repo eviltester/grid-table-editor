@@ -36,8 +36,8 @@ date.anytime(refDate=1)
 ```
 
 Example return values:
-- `"2026-11-16T12:31:26.233Z"`
-- `"2026-09-01T01:40:55.021Z"`
+- `"2025-11-22T12:30:53.535Z"`
+- `"2026-03-09T05:03:13.667Z"`
 
 ### `date.between`
 
@@ -62,8 +62,8 @@ date.between(from=1, to=1)
 ```
 
 Example return values:
-- `"2017-11-28T21:36:32.679Z"`
-- `"1986-05-03T09:28:02.047Z"`
+- `"2001-01-03T09:27:56.772Z"`
+- `"1988-04-02T17:24:17.440Z"`
 
 ### `date.betweens`
 
@@ -89,8 +89,8 @@ date.betweens(count=1, from=1, to=1)
 ```
 
 Example return values:
-- `["2003-02-24T12:13:48.103Z","2025-07-02T14:14:42.037Z"]`
-- `["2011-05-22T07:45:07.090Z","2029-10-03T22:27:10.427Z"]`
+- `["1975-03-18T01:28:47.047Z","2005-08-03T07:55:22.524Z"]`
+- `["1976-12-05T16:33:40.049Z","1978-06-04T00:02:41.826Z"]`
 
 ### `date.birthdate`
 
@@ -117,8 +117,8 @@ date.birthdate(refDate=1, max=1, min=1, mode="age")
 ```
 
 Example return values:
-- `"1947-02-19T15:30:09.049Z"`
-- `"1975-03-06T00:05:29.318Z"`
+- `"1955-05-18T19:25:36.178Z"`
+- `"1993-02-06T15:43:56.865Z"`
 
 ### `date.future`
 
@@ -143,8 +143,8 @@ date.future(refDate=1, years=1)
 ```
 
 Example return values:
-- `"2026-12-30T02:39:09.785Z"`
-- `"2026-09-23T01:35:35.111Z"`
+- `"2026-10-12T16:19:33.811Z"`
+- `"2026-11-24T03:18:00.421Z"`
 
 ### `date.month`
 
@@ -156,7 +156,7 @@ Returns a random name of a month.
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
 | `abbreviated` | `boolean` | no | Whether to return an abbreviation. |
-| `context` | `boolean` | no | Whether to return the name of a month in the context of a date. In the default en locale this has no effect, however, in other locales like fr or ru, this may affect grammar or capitalization, for example 'январь' with { context: false } and 'января' with { context: true } in ru. |
+| `context` | `boolean` | no | Whether to return the name of a month in the context of a date. In the default en locale this has no effect, however, in other locales like fr or ru, this may affect grammar or capitalization, for example 'январь' with &#123; context: false &#125; and 'января' with &#123; context: true &#125; in ru. |
 
 Examples:
 
@@ -169,8 +169,8 @@ date.month(abbreviated=false, context=false)
 ```
 
 Example return values:
-- `"January"`
-- `"April"`
+- `"May"`
+- `"August"`
 
 ### `date.past`
 
@@ -195,8 +195,8 @@ date.past(refDate=1, years=1)
 ```
 
 Example return values:
-- `"2025-09-05T09:19:52.631Z"`
-- `"2026-04-16T07:47:17.776Z"`
+- `"2025-11-21T11:30:51.789Z"`
+- `"2026-02-13T14:19:21.153Z"`
 
 ### `date.recent`
 
@@ -221,8 +221,8 @@ date.recent(days=1, refDate=1)
 ```
 
 Example return values:
-- `"2026-05-17T12:43:57.737Z"`
-- `"2026-05-17T13:05:20.410Z"`
+- `"2026-05-17T13:46:00.558Z"`
+- `"2026-05-17T22:45:20.752Z"`
 
 ### `date.soon`
 
@@ -247,8 +247,8 @@ date.soon(days=1, refDate=1)
 ```
 
 Example return values:
-- `"2026-05-19T08:43:21.767Z"`
-- `"2026-05-19T06:52:57.958Z"`
+- `"2026-05-18T15:47:09.312Z"`
+- `"2026-05-19T10:48:13.424Z"`
 
 ### `date.timeZone`
 
@@ -266,8 +266,8 @@ date.timeZone()
 ```
 
 Example return values:
-- `"Asia/Samarkand"`
-- `"America/Dominica"`
+- `"Europe/Amsterdam"`
+- `"America/Juneau"`
 
 ### `date.weekday`
 
@@ -279,7 +279,7 @@ Returns a random day of the week.
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
 | `abbreviated` | `boolean` | no | Whether to return an abbreviation. |
-| `context` | `boolean` | no | Whether to return the day of the week in the context of a date. In the default en locale this has no effect, however, in other locales like fr or ru, this may affect grammar or capitalization, for example 'Lundi' with { context: false } and 'lundi' with { context: true } in fr. |
+| `context` | `boolean` | no | Whether to return the day of the week in the context of a date. In the default en locale this has no effect, however, in other locales like fr or ru, this may affect grammar or capitalization, for example 'Lundi' with &#123; context: false &#125; and 'lundi' with &#123; context: true &#125; in fr. |
 
 Examples:
 
@@ -292,5 +292,5 @@ date.weekday(abbreviated=false, context=false)
 ```
 
 Example return values:
-- `"Wednesday"`
-- `"Saturday"`
+- `"Thursday"`
+- `"Tuesday"`

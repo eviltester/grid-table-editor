@@ -30,8 +30,8 @@ image.avatar()
 ```
 
 Example return values:
-- `"https://cdn.jsdelivr.net/gh/faker-js/assets-person-portrait/female/512/72.jpg"`
-- `"https://cdn.jsdelivr.net/gh/faker-js/assets-person-portrait/female/512/1.jpg"`
+- `"https://avatars.githubusercontent.com/u/4737631"`
+- `"https://cdn.jsdelivr.net/gh/faker-js/assets-person-portrait/male/512/74.jpg"`
 
 ### `image.avatarGitHub`
 
@@ -49,8 +49,8 @@ image.avatarGitHub()
 ```
 
 Example return values:
-- `"https://avatars.githubusercontent.com/u/50978225"`
-- `"https://avatars.githubusercontent.com/u/50925812"`
+- `"https://avatars.githubusercontent.com/u/21478609"`
+- `"https://avatars.githubusercontent.com/u/94618277"`
 
 ### `image.avatarLegacy`
 
@@ -68,8 +68,8 @@ image.avatarLegacy()
 ```
 
 Example return values:
-- `"https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/750.jpg"`
-- `"https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/624.jpg"`
+- `"https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/498.jpg"`
+- `"https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/217.jpg"`
 
 ### `image.dataUri`
 
@@ -87,8 +87,8 @@ image.dataUri()
 ```
 
 Example return values:
-- `"data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20version%3D%221.1%22%20baseProfile%3D%22full%22%20width%3D%222531%22%20height%3D%221448%22%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22%23903f6f%22%2F%3E%3Ctext%20x%3D%221265.5%22%20y%3D%22724%22%20font-size%3D%2220%22%20alignment-baseline%3D%22middle%22%20text-anchor%3D%22middle%22%20fill%3D%22white%22%3E2531x1448%3C%2Ftext%3E%3C%2Fsvg%3E"`
-- `"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgYmFzZVByb2ZpbGU9ImZ1bGwiIHdpZHRoPSI5OTciIGhlaWdodD0iNTAyIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjYmU0YjNiIi8+PHRleHQgeD0iNDk4LjUiIHk9IjI1MSIgZm9udC1zaXplPSIyMCIgYWxpZ25tZW50LWJhc2VsaW5lPSJtaWRkbGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IndoaXRlIj45OTd4NTAyPC90ZXh0Pjwvc3ZnPg=="`
+- `"data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20version%3D%221.1%22%20baseProfile%3D%22full%22%20width%3D%222411%22%20height%3D%222600%22%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22%23d474ad%22%2F%3E%3Ctext%20x%3D%221205.5%22%20y%3D%221300%22%20font-size%3D%2220%22%20alignment-baseline%3D%22middle%22%20text-anchor%3D%22middle%22%20fill%3D%22white%22%3E2411x2600%3C%2Ftext%3E%3C%2Fsvg%3E"`
+- `"data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20version%3D%221.1%22%20baseProfile%3D%22full%22%20width%3D%222648%22%20height%3D%223613%22%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22%23fe202c%22%2F%3E%3Ctext%20x%3D%221324%22%20y%3D%221806.5%22%20font-size%3D%2220%22%20alignment-baseline%3D%22middle%22%20text-anchor%3D%22middle%22%20fill%3D%22white%22%3E2648x3613%3C%2Ftext%3E%3C%2Fsvg%3E"`
 
 ### `image.personPortrait`
 
@@ -106,8 +106,8 @@ image.personPortrait()
 ```
 
 Example return values:
-- `"https://cdn.jsdelivr.net/gh/faker-js/assets-person-portrait/male/512/36.jpg"`
-- `"https://cdn.jsdelivr.net/gh/faker-js/assets-person-portrait/male/512/67.jpg"`
+- `"https://cdn.jsdelivr.net/gh/faker-js/assets-person-portrait/female/512/97.jpg"`
+- `"https://cdn.jsdelivr.net/gh/faker-js/assets-person-portrait/female/512/72.jpg"`
 
 ### `image.url`
 
@@ -132,8 +132,8 @@ image.url(height=1, width=1)
 ```
 
 Example return values:
-- `"https://loremflickr.com/292/3978?lock=1608768283317386"`
-- `"https://loremflickr.com/1134/3925?lock=593683193772099"`
+- `"https://loremflickr.com/2047/2524?lock=8418418111332618"`
+- `"https://loremflickr.com/3726/3449?lock=1810011656215161"`
 
 ### `image.urlLoremFlickr`
 
@@ -151,8 +151,8 @@ image.urlLoremFlickr()
 ```
 
 Example return values:
-- `"https://loremflickr.com/407/974?lock=6183851182833613"`
-- `"https://loremflickr.com/3491/2022?lock=33951642992663"`
+- `"https://loremflickr.com/3246/1034?lock=1014047844060749"`
+- `"https://loremflickr.com/89/2631?lock=4768337721421349"`
 
 ### `image.urlPicsumPhotos`
 
@@ -170,8 +170,8 @@ image.urlPicsumPhotos()
 ```
 
 Example return values:
-- `"https://picsum.photos/seed/Zs3K8/3727/3780?grayscale&blur=2"`
-- `"https://picsum.photos/seed/Dl6Lj/2621/1142"`
+- `"https://picsum.photos/seed/s2F0L/2185/1092?blur=7"`
+- `"https://picsum.photos/seed/BGb8i/639/1119?blur=6"`
 
 ### `image.urlPlaceholder`
 
@@ -189,5 +189,5 @@ image.urlPlaceholder()
 ```
 
 Example return values:
-- `"https://via.placeholder.com/1331x2264/fcbacf/6f71c5.png?text=cerno%20conicio%20adeo"`
-- `"https://via.placeholder.com/2483x3275/8fa3fd/2fd0f1.png?text=tertius%20excepturi%20pecus"`
+- `"https://via.placeholder.com/954x3055/45ad7e/fcd4eb.png?text=incidunt%20eos%20id"`
+- `"https://via.placeholder.com/234x1659/9dd0fd/de5f36.gif?text=agnitio%20decretum%20undique"`

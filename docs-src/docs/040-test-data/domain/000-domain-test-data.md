@@ -1,5 +1,7 @@
 ---
-sidebar_position: 1
+sidebar_position: 0
+id: domain-test-data
+slug: /test-data/domain/domain-test-data
 title: "Domain Test Data"
 description: "Domain keyword abstraction reference and examples."
 ---
@@ -10,7 +12,53 @@ Domain keywords provide a stable AnyWayData abstraction over Faker-backed genera
 
 Note: `helpers.*` is intentionally faker-only and not part of the domain abstraction.
 
+Most common Faker usage is mapped to domain methods so schemas can use a curated, stable surface.
+
 Each domain page lists methods, arguments, and executable examples.
+
+## Quick Examples
+
+```txt
+FirstName
+person.firstName()
+LastName
+person.lastName()
+Email
+internet.email()
+Address
+location.streetAddress()
+```
+
+```txt
+Direction
+location.cardinalDirection(abbreviated=true)
+```
+
+```txt
+Date
+date.between(from=1577836800000, to=1659312000000)
+```
+
+```txt
+IBAN
+finance.iban(formatted=true, countryCode="GB")
+IBANDE
+finance.iban(formatted=false, countryCode="DE")
+```
+
+```txt
+Num
+number.int(min=32, max=47)
+```
+
+## Migration
+
+- Before (invalid): `domain.helpers.fake("...")`
+- After: `faker.helpers.fake("...")` (or `helpers.fake("...")` in faker contexts)
+
+For faker helper templates and utility functions, use faker helpers:
+- [Faker Helpers](/docs/test-data/faker/helpers)
+- [fakerjs.dev/api/helpers](https://fakerjs.dev/api/helpers)
 
 ## Domains
 

@@ -39,8 +39,8 @@ word.adjective(length=1, max=1, value=1, strategy="any-length")
 ```
 
 Example return values:
-- `"mad"`
-- `"smooth"`
+- `"agile"`
+- `"oval"`
 
 ### `word.adverb`
 
@@ -67,8 +67,8 @@ word.adverb(length=1, max=1, value=1, strategy="any-length")
 ```
 
 Example return values:
-- `"uselessly"`
-- `"doubtfully"`
+- `"triumphantly"`
+- `"blindly"`
 
 ### `word.conjunction`
 
@@ -95,8 +95,8 @@ word.conjunction(length=1, max=1, value=1, strategy="any-length")
 ```
 
 Example return values:
-- `"what"`
-- `"that"`
+- `"consequently"`
+- `"consequently"`
 
 ### `word.interjection`
 
@@ -123,8 +123,8 @@ word.interjection(length=1, max=1, value=1, strategy="any-length")
 ```
 
 Example return values:
-- `"yahoo"`
-- `"hm"`
+- `"duh"`
+- `"yuck"`
 
 ### `word.noun`
 
@@ -151,8 +151,8 @@ word.noun(length=1, max=1, value=1, strategy="any-length")
 ```
 
 Example return values:
-- `"seal"`
-- `"contrail"`
+- `"freezing"`
+- `"stump"`
 
 ### `word.preposition`
 
@@ -179,8 +179,8 @@ word.preposition(length=1, max=1, value=1, strategy="any-length")
 ```
 
 Example return values:
-- `"through"`
-- `"like"`
+- `"over"`
+- `"circa"`
 
 ### `word.sample`
 
@@ -207,8 +207,8 @@ word.sample(length=1, max=1, value=1, strategy="any-length")
 ```
 
 Example return values:
-- `"comparison"`
-- `"transcend"`
+- `"smarten"`
+- `"tidy"`
 
 ### `word.verb`
 
@@ -235,8 +235,8 @@ word.verb(length=1, max=1, value=1, strategy="any-length")
 ```
 
 Example return values:
-- `"circle"`
-- `"pace"`
+- `"graft"`
+- `"banish"`
 
 ### `word.words`
 
@@ -262,5 +262,5 @@ word.words(count=1, max=1, value=1)
 ```
 
 Example return values:
-- `"provided bonfire"`
-- `"paltry"`
+- `"sternly which"`
+- `"while approach though"`

@@ -36,8 +36,8 @@ color.cmyk(format="hex")
 ```
 
 Example return values:
-- `[0.1,0.9,0.93,0.64]`
-- `[0.04,0.12,0.08,0.42]`
+- `[0.57,0.01,0.18,0.59]`
+- `[0.56,0.85,0.64,0.2]`
 
 ### `color.colorByCSSColorSpace`
 
@@ -55,8 +55,8 @@ color.colorByCSSColorSpace()
 ```
 
 Example return values:
-- `[0.4815,0.1635,0.5668]`
-- `[0.2589,0.7491,0.2178]`
+- `[0.292,0.4075,0.5189]`
+- `[0.0782,0.9207,0.6424]`
 
 ### `color.cssSupportedFunction`
 
@@ -74,7 +74,7 @@ color.cssSupportedFunction()
 ```
 
 Example return values:
-- `"hwb"`
+- `"color"`
 - `"rgba"`
 
 ### `color.cssSupportedSpace`
@@ -93,8 +93,8 @@ color.cssSupportedSpace()
 ```
 
 Example return values:
-- `"prophoto-rgb"`
-- `"prophoto-rgb"`
+- `"rec2020"`
+- `"rec2020"`
 
 ### `color.hsl`
 
@@ -119,8 +119,8 @@ color.hsl(format="hex", includeAlpha=true)
 ```
 
 Example return values:
-- `[341,0.5,0.84]`
-- `[298,0.36,0.6]`
+- `[109,0.86,0.08]`
+- `[215,0.5,0.99]`
 
 ### `color.human`
 
@@ -138,8 +138,8 @@ color.human()
 ```
 
 Example return values:
-- `"maroon"`
-- `"violet"`
+- `"orange"`
+- `"black"`
 
 ### `color.hwb`
 
@@ -163,8 +163,8 @@ color.hwb(format="hex")
 ```
 
 Example return values:
-- `[65,0.7,0.92]`
-- `[54,0.58,0.39]`
+- `[324,0.03,0.76]`
+- `[80,0.93,0.73]`
 
 ### `color.lab`
 
@@ -188,8 +188,8 @@ color.lab(format="hex")
 ```
 
 Example return values:
-- `[0.438621,65.7586,-1.9963]`
-- `[0.229125,27.2715,-19.9315]`
+- `[0.408016,47.4015,-64.2527]`
+- `[0.935836,-55.9594,38.016]`
 
 ### `color.lch`
 
@@ -213,8 +213,8 @@ color.lch(format="hex")
 ```
 
 Example return values:
-- `[0.544119,189.6,105]`
-- `[0.591094,193.5,159.6]`
+- `[0.770606,67.4,171.2]`
+- `[0.241599,78.8,2.4]`
 
 ### `color.rgb`
 
@@ -241,8 +241,8 @@ color.rgb(casing="lower", format="hex", includeAlpha=true, prefix="#")
 ```
 
 Example return values:
-- `"#64be3a"`
-- `"#31ebfe"`
+- `"#d9a378"`
+- `"#d8cd14"`
 
 ### `color.space`
 
@@ -260,5 +260,5 @@ color.space()
 ```
 
 Example return values:
-- `"Rec. 2100"`
-- `"LCh"`
+- `"Pantone Matching System (PMS)"`
+- `"ProPhoto RGB Color Space"`

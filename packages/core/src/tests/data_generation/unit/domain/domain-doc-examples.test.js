@@ -16,7 +16,7 @@ function readDomainDocExamples() {
   const docsDir = path.resolve(rootDir, 'docs-src/docs/040-test-data/domain');
   const files = fs
     .readdirSync(docsDir)
-    .filter((name) => name.endsWith('.md') && name !== '010-domain-test-data.md')
+    .filter((name) => name.endsWith('.md') && !name.endsWith('domain-test-data.md'))
     .sort((a, b) => a.localeCompare(b));
 
   const result = [];

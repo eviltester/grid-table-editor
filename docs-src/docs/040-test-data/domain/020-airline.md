@@ -30,8 +30,8 @@ airline.aircraftType()
 ```
 
 Example return values:
-- `"widebody"`
-- `"regional"`
+- `"narrowbody"`
+- `"narrowbody"`
 
 ### `airline.airline`
 
@@ -49,8 +49,8 @@ airline.airline()
 ```
 
 Example return values:
-- `{"name":"Air Mauritius","iataCode":"MK"}`
-- `{"name":"China Southern Airlines","iataCode":"CZ"}`
+- `&#123;"name":"Air China","iataCode":"CA"&#125;`
+- `&#123;"name":"TUI Airways","iataCode":"BY"&#125;`
 
 ### `airline.airline.iataCode`
 
@@ -68,8 +68,8 @@ airline.airline.iataCode()
 ```
 
 Example return values:
-- `"JT"`
-- `"W6"`
+- `"PK"`
+- `"MN"`
 
 ### `airline.airline.name`
 
@@ -87,8 +87,8 @@ airline.airline.name()
 ```
 
 Example return values:
-- `"SriLankan Airlines"`
-- `"Spring Airlines"`
+- `"Tunisair"`
+- `"SunExpress"`
 
 ### `airline.airplane`
 
@@ -106,8 +106,8 @@ airline.airplane()
 ```
 
 Example return values:
-- `{"name":"Airbus A340-300","iataTypeCode":"343"}`
-- `{"name":"Airbus A330","iataTypeCode":"330"}`
+- `&#123;"name":"Airbus A380-800","iataTypeCode":"388"&#125;`
+- `&#123;"name":"Boeing 747-400","iataTypeCode":"744"&#125;`
 
 ### `airline.airplane.iataTypeCode`
 
@@ -125,8 +125,8 @@ airline.airplane.iataTypeCode()
 ```
 
 Example return values:
-- `"346"`
-- `"773"`
+- `"M81"`
+- `"732"`
 
 ### `airline.airplane.name`
 
@@ -144,8 +144,8 @@ airline.airplane.name()
 ```
 
 Example return values:
-- `"De Havilland Canada DHC-3 Otter"`
-- `"Airbus A319"`
+- `"Boeing 737-200"`
+- `"Douglas DC-10"`
 
 ### `airline.airport`
 
@@ -163,8 +163,8 @@ airline.airport()
 ```
 
 Example return values:
-- `{"name":"Cairns Airport","iataCode":"CNS"}`
-- `{"name":"Toronto Pearson International Airport","iataCode":"YYZ"}`
+- `&#123;"name":"Noumea Magenta Airport","iataCode":"GEA"&#125;`
+- `&#123;"name":"Melbourne International Airport","iataCode":"MEL"&#125;`
 
 ### `airline.airport.iataCode`
 
@@ -182,8 +182,8 @@ airline.airport.iataCode()
 ```
 
 Example return values:
-- `"FOR"`
-- `"DME"`
+- `"HBA"`
+- `"AKL"`
 
 ### `airline.airport.name`
 
@@ -201,8 +201,8 @@ airline.airport.name()
 ```
 
 Example return values:
-- `"Zhukovsky International Airport"`
-- `"Salgado Filho International Airport"`
+- `"Chicago O'Hare International Airport"`
+- `"Murtala Muhammed International Airport"`
 
 ### `airline.flightNumber`
 
@@ -220,8 +220,8 @@ airline.flightNumber()
 ```
 
 Example return values:
-- `"97"`
-- `"490"`
+- `"99"`
+- `"15"`
 
 ### `airline.recordLocator`
 
@@ -239,8 +239,8 @@ airline.recordLocator()
 ```
 
 Example return values:
-- `"NKTNNS"`
-- `"AAHMGG"`
+- `"HSRWTV"`
+- `"BKENFS"`
 
 ### `airline.seat`
 
@@ -264,5 +264,5 @@ airline.seat(aircraftType="narrowbody")
 ```
 
 Example return values:
-- `"31E"`
-- `"21F"`
+- `"23D"`
+- `"9E"`

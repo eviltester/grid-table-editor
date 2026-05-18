@@ -587,9 +587,9 @@ const FAKER_COMMANDS_LONGEST_FIRST = [];
 const DOMAIN_COMMANDS = [];
 const DOMAIN_COMMANDS_LONGEST_FIRST = [];
 const TOP_LEVEL_TYPE_OPTIONS = ['enum', 'literal', 'regex'];
-const FAKER_SECTION_LABEL = '-- faker --';
+const FAKER_SECTION_LABEL = '-- faker (incl helpers) --';
 const FAKER_SECTION_VALUE = '__faker_section__';
-const DOMAIN_SECTION_LABEL = '-- domain --';
+const DOMAIN_SECTION_LABEL = '-- domain (no helpers) --';
 const DOMAIN_SECTION_VALUE = '__domain_section__';
 const DOMAIN_NON_SCALAR_RETURN_TYPES = new Set(['array', 'object']);
 

@@ -40,8 +40,8 @@ string.alpha(length=1, max=1, value=1, casing="lower", exclude=["sample"])
 ```
 
 Example return values:
+- `"S"`
 - `"u"`
-- `"l"`
 
 ### `string.alphanumeric`
 
@@ -69,8 +69,8 @@ string.alphanumeric(length=1, max=1, value=1, casing="lower", exclude=["sample"]
 ```
 
 Example return values:
-- `"y"`
-- `"p"`
+- `"D"`
+- `"K"`
 
 ### `string.binary`
 
@@ -96,7 +96,7 @@ string.binary(length=1, prefix="#")
 
 Example return values:
 - `"0b1"`
-- `"0b0"`
+- `"0b1"`
 
 ### `string.fromCharacters`
 
@@ -123,8 +123,8 @@ string.fromCharacters(characters="sample", min=1, max=1, length=1)
 ```
 
 Example return values:
-- `"e"`
 - `"m"`
+- `"l"`
 
 ### `string.hexadecimal`
 
@@ -150,8 +150,8 @@ string.hexadecimal(casing="lower", length=1, prefix="#")
 ```
 
 Example return values:
-- `"0xc"`
-- `"0xF"`
+- `"0xd"`
+- `"0xB"`
 
 ### `string.nanoid`
 
@@ -179,8 +179,8 @@ string.nanoid(min=1, max=1, length=1, lengthMax=1, lengthMin=1)
 ```
 
 Example return values:
-- `"nJFsM_4HKT2M8YhUfG10J"`
-- `"XzIWNTxGEEfuds_Dq0_GW"`
+- `"bt_JjqxXXh9GHz1MALPW2"`
+- `"mjTRAlIjzdQ5Tg9rjv57R"`
 
 ### `string.numeric`
 
@@ -208,8 +208,8 @@ string.numeric(length=1, max=1, value=1, allowLeadingZeros=true, exclude=["sampl
 ```
 
 Example return values:
-- `"2"`
-- `"6"`
+- `"4"`
+- `"0"`
 
 ### `string.octal`
 
@@ -234,12 +234,12 @@ string.octal(length=1, prefix="#")
 ```
 
 Example return values:
-- `"0o6"`
-- `"0o4"`
+- `"0o1"`
+- `"0o3"`
 
 ### `string.sample`
 
-Returns a string containing UTF-16 chars between 33 and 125 (`!` to `}`).
+Returns a string containing UTF-16 chars between 33 and 125 (`!` to `&#125;`).
 
 - Canonical: `awd.domain.string.sample`
 - Faker docs: [https://fakerjs.dev/api/string](https://fakerjs.dev/api/string)
@@ -263,8 +263,8 @@ string.sample(min=1, max=1, length=1, lengthMax=1, lengthMin=1)
 ```
 
 Example return values:
-- `"Vu_Sn@XCu:"`
-- `")\"aiYI3K!7"`
+- `"R4A;9BcLzj"`
+- `"X`ARt%ku=7"`
 
 ### `string.symbol`
 
@@ -292,8 +292,8 @@ string.symbol(min=1, max=1, length=1, lengthMax=1, lengthMin=1)
 ```
 
 Example return values:
-- `"="`
-- `"["`
+- `"/"`
+- `"_"`
 
 ### `string.ulid`
 
@@ -317,8 +317,8 @@ string.ulid(refDate=1)
 ```
 
 Example return values:
-- `"01KRXERHTX1WEEHCH1P6QFRWRP"`
-- `"01KRXERHTXFS99NFNYH6KD7GEP"`
+- `"01KRXH5AE8V36069S9HB6G3CKY"`
+- `"01KRXH5AE8FNGNXFP3JBW5NJXW"`
 
 ### `string.uuid`
 
@@ -343,5 +343,5 @@ string.uuid(refDate=1, version="v4")
 ```
 
 Example return values:
-- `"cdc18869-b727-44cc-a15c-7868101b753e"`
-- `"d7a94e57-9605-4aa6-ab22-44e0ecdf5415"`
+- `"522928a9-04aa-4ec4-948a-5bbbfe882f64"`
+- `"bd37a9cb-1f37-4d4a-aa6f-9681735bd00a"`

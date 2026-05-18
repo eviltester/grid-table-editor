@@ -30,8 +30,8 @@ animal.bear()
 ```
 
 Example return values:
-- `"Sun bear"`
-- `"Polar bear"`
+- `"Sloth bear"`
+- `"Giant panda"`
 
 ### `animal.bird`
 
@@ -49,8 +49,8 @@ animal.bird()
 ```
 
 Example return values:
-- `"Varied Bunting"`
-- `"Fan-tailed Warbler"`
+- `"Tropical Parula"`
+- `"Cactus Wren"`
 
 ### `animal.cat`
 
@@ -68,8 +68,8 @@ animal.cat()
 ```
 
 Example return values:
-- `"Sokoke"`
-- `"Exotic Shorthair"`
+- `"Japanese Bobtail"`
+- `"Russian Blue"`
 
 ### `animal.cetacean`
 
@@ -87,8 +87,8 @@ animal.cetacean()
 ```
 
 Example return values:
-- `"Pygmy Killer Whale"`
-- `"Burrunan Dolphin"`
+- `"Striped Dolphin"`
+- `"Spinner Dolphin"`
 
 ### `animal.cow`
 
@@ -106,8 +106,8 @@ animal.cow()
 ```
 
 Example return values:
-- `"Florida Cracker cattle"`
-- `"Ankole-Watusi"`
+- `"Dwarf Lulu"`
+- `"Pulikulam"`
 
 ### `animal.crocodilia`
 
@@ -125,8 +125,8 @@ animal.crocodilia()
 ```
 
 Example return values:
-- `"Nile Crocodile"`
-- `"Australian Freshwater Crocodile"`
+- `"Cuvier’s Dwarf Caiman"`
+- `"Yacare Caiman"`
 
 ### `animal.dog`
 
@@ -144,8 +144,8 @@ animal.dog()
 ```
 
 Example return values:
-- `"McNab dog"`
-- `"Taiwan Dog"`
+- `"Poitevin"`
+- `"Lancashire Heeler"`
 
 ### `animal.fish`
 
@@ -163,8 +163,8 @@ animal.fish()
 ```
 
 Example return values:
-- `"Largehead hairtail"`
-- `"Bombay-duck"`
+- `"Nile perch"`
+- `"Short mackerel"`
 
 ### `animal.horse`
 
@@ -182,8 +182,8 @@ animal.horse()
 ```
 
 Example return values:
-- `"Oberlander Horse"`
-- `"Irish Sport Horse sometimes called Irish Hunter"`
+- `"Noriker Horse"`
+- `"Kathiawari"`
 
 ### `animal.insect`
 
@@ -201,8 +201,8 @@ animal.insect()
 ```
 
 Example return values:
-- `"Oriental chestnut gall wasp"`
-- `"White-horned horntail"`
+- `"Silky ant"`
+- `"Red ant"`
 
 ### `animal.lion`
 
@@ -220,7 +220,7 @@ animal.lion()
 ```
 
 Example return values:
-- `"Cape lion"`
+- `"West African Lion"`
 - `"Northeast Congo Lion"`
 
 ### `animal.petName`
@@ -239,8 +239,8 @@ animal.petName()
 ```
 
 Example return values:
-- `"Ginger"`
-- `"Tuffy"`
+- `"Ollie"`
+- `"Bentley"`
 
 ### `animal.rabbit`
 
@@ -258,8 +258,8 @@ animal.rabbit()
 ```
 
 Example return values:
-- `"Champagne D’Argent"`
-- `"Dutch"`
+- `"French Lop"`
+- `"English Angora"`
 
 ### `animal.rodent`
 
@@ -277,8 +277,8 @@ animal.rodent()
 ```
 
 Example return values:
-- `"Tawny tuco-tuco"`
-- `"Haig's tuco-tuco"`
+- `"Strong tuco-tuco"`
+- `"Bennett's chinchilla rat"`
 
 ### `animal.snake`
 
@@ -296,8 +296,8 @@ animal.snake()
 ```
 
 Example return values:
-- `"Asian keelback"`
-- `"Massasauga rattlesnake"`
+- `"Green tree pit viper"`
+- `"Western ground snake"`
 
 ### `animal.type`
 
@@ -315,5 +315,5 @@ animal.type()
 ```
 
 Example return values:
-- `"deer"`
-- `"tiger"`
+- `"snake"`
+- `"zebra"`

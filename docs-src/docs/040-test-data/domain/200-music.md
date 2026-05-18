@@ -30,8 +30,8 @@ music.album()
 ```
 
 Example return values:
-- `"Chromatica"`
-- `"No More Drama"`
+- `"The Beatles (White Album)"`
+- `"Threat to Survival"`
 
 ### `music.artist`
 
@@ -49,8 +49,8 @@ music.artist()
 ```
 
 Example return values:
-- `"TWICE"`
-- `"Billy Paul"`
+- `"Fine Young Cannibals"`
+- `"The Platters"`
 
 ### `music.genre`
 
@@ -68,8 +68,8 @@ music.genre()
 ```
 
 Example return values:
-- `"Deep House"`
-- `"Mainstream Jazz"`
+- `"Easy Listening"`
+- `"Latin"`
 
 ### `music.songName`
 
@@ -87,5 +87,5 @@ music.songName()
 ```
 
 Example return values:
-- `"My Man"`
-- `"Doo Wop (That Thing)"`
+- `"Spanish Harlem"`
+- `"Rock Around the Clock"`

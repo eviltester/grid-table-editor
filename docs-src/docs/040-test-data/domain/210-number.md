@@ -59,7 +59,7 @@ number.binary(max=1, min=1)
 
 Example return values:
 - `"0"`
-- `"1"`
+- `"0"`
 
 ### `number.float`
 
@@ -105,8 +105,8 @@ number.float(multipleOf=1)
 ```
 
 Example return values:
-- `0.8195701616843261`
-- `0.9725014864681499`
+- `0.11027820838106395`
+- `0.5898499201943372`
 
 ### `number.hex`
 
@@ -132,8 +132,8 @@ number.hex(min=1, max=1, value=1)
 ```
 
 Example return values:
+- `"5"`
 - `"7"`
-- `"d"`
 
 ### `number.int`
 
@@ -159,8 +159,8 @@ number.int(min=1, max=1, multipleOf=1)
 ```
 
 Example return values:
-- `2764329535098081`
-- `3164059278034449`
+- `108688750608405`
+- `4041549375676296`
 
 ### `number.octal`
 
@@ -185,7 +185,7 @@ number.octal(max=1, min=1)
 ```
 
 Example return values:
-- `"4"`
+- `"3"`
 - `"7"`
 
 ### `number.romanNumeral`
@@ -212,5 +212,5 @@ number.romanNumeral(min=1, max=1, value=1)
 ```
 
 Example return values:
-- `"LXXVII"`
-- `"CDXCI"`
+- `"MLXXXII"`
+- `"DXXXVI"`

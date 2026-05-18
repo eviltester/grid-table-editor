@@ -38,4 +38,4 @@ datatype.boolean(probability=1, value=1)
 
 Example return values:
 - `true`
-- `false`
+- `true`

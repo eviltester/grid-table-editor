@@ -30,8 +30,8 @@ commerce.department()
 ```
 
 Example return values:
-- `"Health"`
-- `"Computers"`
+- `"Industrial"`
+- `"Baby"`
 
 ### `commerce.isbn`
 
@@ -56,8 +56,8 @@ commerce.isbn(separator="-", variant="13")
 ```
 
 Example return values:
-- `"978-0-568-62500-6"`
-- `"978-1-4751-9094-6"`
+- `"978-1-74663-962-4"`
+- `"978-1-158-06239-3"`
 
 ### `commerce.price`
 
@@ -84,8 +84,8 @@ commerce.price(dec=1, max=1, min=1, symbol="$")
 ```
 
 Example return values:
-- `"808.69"`
-- `"578.99"`
+- `"348.35"`
+- `"818.69"`
 
 ### `commerce.product`
 
@@ -103,8 +103,8 @@ commerce.product()
 ```
 
 Example return values:
-- `"Cheese"`
-- `"Soap"`
+- `"Salad"`
+- `"Pants"`
 
 ### `commerce.productAdjective`
 
@@ -122,8 +122,8 @@ commerce.productAdjective()
 ```
 
 Example return values:
-- `"Intelligent"`
-- `"Electronic"`
+- `"Modern"`
+- `"Tasty"`
 
 ### `commerce.productDescription`
 
@@ -141,8 +141,8 @@ commerce.productDescription()
 ```
 
 Example return values:
-- `"Introducing the Faroe Islands-inspired Ball, blending mundane style with local craftsmanship"`
-- `"New Soap model with 91 GB RAM, 410 GB storage, and round features"`
+- `"Roob - Wehner's most advanced Tuna technology increases concrete capabilities"`
+- `"Stylish Car designed to make you stand out with impossible looks"`
 
 ### `commerce.productMaterial`
 
@@ -160,8 +160,8 @@ commerce.productMaterial()
 ```
 
 Example return values:
-- `"Granite"`
-- `"Bronze"`
+- `"Bamboo"`
+- `"Plastic"`
 
 ### `commerce.productName`
 
@@ -179,5 +179,5 @@ commerce.productName()
 ```
 
 Example return values:
-- `"Electronic Bamboo Chair"`
-- `"Recycled Bronze Chair"`
+- `"Soft Gold Shoes"`
+- `"Recycled Concrete Bike"`

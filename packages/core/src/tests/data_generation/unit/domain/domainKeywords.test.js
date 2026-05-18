@@ -30,6 +30,8 @@ describe('domain keyword catalog', () => {
       expect(typeof entry.help.summary).toBe('string');
       expect(typeof entry.help.docsUrl).toBe('string');
       expect(typeof entry.help.example).toBe('string');
+      expect(typeof entry.help.returnType).toBe('string');
+      expect(entry.help.returnType.length).toBeGreaterThan(0);
       expect(Array.isArray(entry.help.args)).toBe(true);
       entry.help.args.forEach((arg) => {
         expect(typeof arg.name).toBe('string');
@@ -99,7 +101,7 @@ describe('domain keyword catalog', () => {
       {
         keyword: 'demo.echo',
         delegate: { type: 'custom', target: 'demo.echo' },
-        help: { summary: 'Echo', docsUrl: 'https://example.test', example: 'x', args: [] },
+        help: { summary: 'Echo', docsUrl: 'https://example.test', example: 'x', returnType: 'string', args: [] },
       },
     ]);
     expect(catalog).toHaveLength(1);

@@ -13,7 +13,11 @@ import { sanitizeUiOptionsForFormat } from './options-catalog-adapter.js';
 import { createOptionsPanelsForParent, getOutputFormatGroups } from './options-ui-schema.js';
 import { getKnownFakerCommandsAlphabetical, getKnownFakerCommandsLongestFirst } from './faker-commands.js';
 import { getFakerCommandHelp } from './faker-command-help-metadata.js';
-import { getKnownDomainCommandsAlphabetical, getKnownDomainCommandsLongestFirst } from './domain-commands.js';
+import {
+  getKnownDomainCommandsAlphabetical,
+  getKnownDomainCommandsLongestFirst,
+  getDomainKeywordByCommand,
+} from './domain-commands.js';
 import { getDomainCommandHelp } from './domain-command-help-metadata.js';
 import { TimedErrorDisplay } from './timed-error-display.js';
 
@@ -57,6 +61,14 @@ function normaliseFakerCommand(commandValue) {
 
 function normaliseDomainCommand(commandValue) {
   return String(commandValue || '').trim();
+}
+
+function getDisplayDomainCommand(keywordEntry) {
+  const shortest = String(keywordEntry?.shortestUniqueAlias || '').trim();
+  if (shortest) {
+    return shortest;
+  }
+  return String(keywordEntry?.keyword || '').trim();
 }
 
 function normaliseSourceType(sourceType) {
@@ -781,14 +793,35 @@ enum(active,inactive,pending)</pre>
 
   extractDomainCommandAndParams(ruleSpec) {
     const normalisedSpec = normaliseDomainCommand(String(ruleSpec ?? '').trim());
+    const exactKeyword = getDomainKeywordByCommand(normalisedSpec);
+    if (exactKeyword) {
+      return { command: getDisplayDomainCommand(exactKeyword), params: '' };
+    }
+
+    const openParenIndex = normalisedSpec.indexOf('(');
+    if (openParenIndex > 0) {
+      const commandPart = normalisedSpec.slice(0, openParenIndex).trim();
+      const commandKeyword = getDomainKeywordByCommand(commandPart);
+      if (commandKeyword) {
+        return {
+          command: getDisplayDomainCommand(commandKeyword),
+          params: normalisedSpec.slice(openParenIndex),
+        };
+      }
+    }
+
     for (const command of this.domainCommandsLongestFirst) {
       if (normalisedSpec === command) {
         return { command, params: '' };
       }
       if (normalisedSpec.startsWith(command)) {
+        const remainder = normalisedSpec.slice(command.length);
+        if (remainder.length > 0 && !remainder.startsWith('(')) {
+          continue;
+        }
         return {
           command,
-          params: normalisedSpec.slice(command.length),
+          params: remainder,
         };
       }
     }

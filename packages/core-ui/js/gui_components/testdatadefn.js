@@ -27,7 +27,11 @@ import { GridExtension as TabulatorGridExtension } from './data-grid-editor/tabu
 import { SelectFilterEditor } from './data-grid-editor/ag-grid/select-filter-editor.js';
 import { TEST_DATA_MODES, createAmendedTable, createTableFromGenerator, normaliseCount } from './test-data-amend.js';
 import { getKnownFakerCommandsAlphabetical, getKnownFakerCommandsLongestFirst } from './faker-commands.js';
-import { getKnownDomainCommandsAlphabetical, getKnownDomainCommandsLongestFirst } from './domain-commands.js';
+import {
+  getKnownDomainCommandsAlphabetical,
+  getKnownDomainCommandsLongestFirst,
+  getDomainKeywordByCommand,
+} from './domain-commands.js';
 import { PairwiseTestDataGenerator } from '@anywaydata/core/data_generation/all-pairs/pairwiseTestDataGenerator.js';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 import { schemaTextToDataRules, dataRulesToSchemaText } from '@anywaydata/core/data_generation/schema-rules-adapter.js';
@@ -598,8 +602,27 @@ function findFakerCommand(aString) {
 }
 
 function findDomainCommand(aString) {
+  const fullRule = String(aString || '').trim();
+  const exactKeyword = getDomainKeywordByCommand(fullRule);
+  if (exactKeyword) {
+    return String(exactKeyword.shortestUniqueAlias || exactKeyword.keyword || '').trim();
+  }
+
+  const openParenIndex = fullRule.indexOf('(');
+  if (openParenIndex > 0) {
+    const commandPart = fullRule.slice(0, openParenIndex).trim();
+    const commandKeyword = getDomainKeywordByCommand(commandPart);
+    if (commandKeyword) {
+      return String(commandKeyword.shortestUniqueAlias || commandKeyword.keyword || '').trim();
+    }
+  }
+
   for (let command of DOMAIN_COMMANDS_LONGEST_FIRST) {
-    if (aString.startsWith(command)) {
+    if (!fullRule.startsWith(command)) {
+      continue;
+    }
+    const remainder = fullRule.slice(command.length);
+    if (remainder.length === 0 || remainder.startsWith('(')) {
       return command;
     }
   }

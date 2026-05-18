@@ -56,6 +56,7 @@ function buildDomainKeywordCatalog(definitions = DOMAIN_KEYWORD_DEFINITIONS) {
         summary: String(definition?.help?.summary || '').trim(),
         docsUrl: String(definition?.help?.docsUrl || '').trim(),
         example: String(definition?.help?.example || '').trim(),
+        returnType: String(definition?.help?.returnType || '').trim(),
         args: Array.isArray(definition?.help?.args)
           ? definition.help.args.map((arg) => ({
               name: String(arg?.name || '').trim(),

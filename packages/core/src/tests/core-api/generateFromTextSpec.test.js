@@ -34,6 +34,22 @@ test('generateFromTextSpec generates rows for valid spec', () => {
   expect(result.rows.length).toBe(2);
 });
 
+test('generateFromTextSpec serializes object return values as JSON strings', () => {
+  const result = generateFromTextSpec({
+    textSpec: 'Currency\nfinance.currency',
+    rowCount: 1,
+    outputFormat: 'csv',
+  });
+
+  expect(result.ok).toBe(true);
+  expect(result.rows).toHaveLength(1);
+  expect(typeof result.rows[0][0]).toBe('string');
+  expect(result.rows[0][0].startsWith('{')).toBe(true);
+  expect(result.rows[0][0]).toContain('"code"');
+  expect(result.rows[0][0]).not.toContain('[object Object]');
+  expect(result.rendered).not.toContain('[object Object]');
+});
+
 test('generateFromTextSpec accepts comments and blank lines in spec', () => {
   const result = generateFromTextSpec({
     textSpec: '# comment\n\nPriority\nenum(high,medium,low)\n\nStatus\nenum(active,inactive,pending)',

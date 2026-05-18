@@ -1045,6 +1045,29 @@ describe('DataGeneratorPage', () => {
     expect(page.schemaRows[0].value).toBe('#[A-F0-9]{6}');
   });
 
+  test('maps science.chemicalElement.name to domain command without treating trailing name as params', () => {
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker,
+      RandExp,
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: TestDataGenerator,
+    });
+    page.init();
+
+    const parsed = page.parseSchemaTextToRows('Element\nscience.chemicalElement.name');
+    expect(parsed.errors).toEqual([]);
+    expect(parsed.rows).toHaveLength(1);
+    expect(parsed.rows[0].sourceType).toBe('domain');
+    expect(parsed.rows[0].command).toBe('chemicalElement.name');
+    expect(parsed.rows[0].params).toBe('');
+  });
+
   test('adding schema rows does not discard existing parsed comments', () => {
     const page = new DataGeneratorPage({
       parentElement: document.getElementById('app'),

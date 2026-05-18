@@ -9,6 +9,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random aircraft type.',
       docsUrl: 'https://fakerjs.dev/api/airline',
       example: 'regional',
+      returnType: 'string',
       args: [],
     },
   },
@@ -22,6 +23,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generate a value using faker airline.airline.',
       docsUrl: 'https://fakerjs.dev/api/airline',
       example: '',
+      returnType: 'object',
       args: [],
     },
   },
@@ -36,6 +38,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generate an airline IATA code.',
       docsUrl: 'https://fakerjs.dev/api/airline',
       example: 'AA',
+      returnType: 'string',
       args: [],
     },
   },
@@ -50,6 +53,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generate an airline name.',
       docsUrl: 'https://fakerjs.dev/api/airline',
       example: 'Acme Air',
+      returnType: 'string',
       args: [],
     },
   },
@@ -63,6 +67,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generate a value using faker airline.airplane.',
       docsUrl: 'https://fakerjs.dev/api/airline',
       example: '',
+      returnType: 'object',
       args: [],
     },
   },
@@ -77,6 +82,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generate an airplane IATA type code.',
       docsUrl: 'https://fakerjs.dev/api/airline',
       example: 'A320',
+      returnType: 'string',
       args: [],
     },
   },
@@ -91,6 +97,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generate an airplane model name.',
       docsUrl: 'https://fakerjs.dev/api/airline',
       example: 'Boeing 737',
+      returnType: 'string',
       args: [],
     },
   },
@@ -104,6 +111,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generate a value using faker airline.airport.',
       docsUrl: 'https://fakerjs.dev/api/airline',
       example: '',
+      returnType: 'object',
       args: [],
     },
   },
@@ -118,6 +126,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generate an airport IATA code.',
       docsUrl: 'https://fakerjs.dev/api/airline',
       example: 'LHR',
+      returnType: 'string',
       args: [],
     },
   },
@@ -132,6 +141,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generate an airport name.',
       docsUrl: 'https://fakerjs.dev/api/airline',
       example: 'London Heathrow Airport',
+      returnType: 'string',
       args: [],
     },
   },
@@ -145,6 +155,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random flight number. Flight numbers are always 1 to 4 digits long. Sometimes they are',
       docsUrl: 'https://fakerjs.dev/api/airline',
       example: '1',
+      returnType: 'string',
       args: [],
     },
   },
@@ -158,6 +169,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random record locator. Record locators',
       docsUrl: 'https://fakerjs.dev/api/airline',
       example: 'TCSJCN',
+      returnType: 'string',
       args: [],
     },
   },
@@ -172,6 +184,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random seat.',
       docsUrl: 'https://fakerjs.dev/api/airline',
       example: '17F',
+      returnType: 'string',
       args: [
         {
           name: 'aircraftType',
@@ -192,6 +205,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random bear species.',
       docsUrl: 'https://fakerjs.dev/api/animal',
       example: 'Sloth bear',
+      returnType: 'string',
       args: [],
     },
   },
@@ -205,6 +219,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random bird species.',
       docsUrl: 'https://fakerjs.dev/api/animal',
       example: 'Orange-crowned Warbler',
+      returnType: 'string',
       args: [],
     },
   },
@@ -218,6 +233,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random cat breed.',
       docsUrl: 'https://fakerjs.dev/api/animal',
       example: 'Russian Blue',
+      returnType: 'string',
       args: [],
     },
   },
@@ -231,6 +247,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random cetacean species.',
       docsUrl: 'https://fakerjs.dev/api/animal',
       example: 'Hector’s Dolphin',
+      returnType: 'string',
       args: [],
     },
   },
@@ -244,6 +261,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random cow species.',
       docsUrl: 'https://fakerjs.dev/api/animal',
       example: 'Aubrac',
+      returnType: 'string',
       args: [],
     },
   },
@@ -257,6 +275,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random crocodilian species.',
       docsUrl: 'https://fakerjs.dev/api/animal',
       example: 'Nile Crocodile',
+      returnType: 'string',
       args: [],
     },
   },
@@ -270,6 +289,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random dog breed.',
       docsUrl: 'https://fakerjs.dev/api/animal',
       example: 'Jonangi',
+      returnType: 'string',
       args: [],
     },
   },
@@ -283,6 +303,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random fish species.',
       docsUrl: 'https://fakerjs.dev/api/animal',
       example: 'Short mackerel',
+      returnType: 'string',
       args: [],
     },
   },
@@ -296,6 +317,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random horse breed.',
       docsUrl: 'https://fakerjs.dev/api/animal',
       example: 'Rottaler',
+      returnType: 'string',
       args: [],
     },
   },
@@ -309,6 +331,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random insect species.',
       docsUrl: 'https://fakerjs.dev/api/animal',
       example: 'Pigeon tremex',
+      returnType: 'string',
       args: [],
     },
   },
@@ -322,6 +345,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random lion species.',
       docsUrl: 'https://fakerjs.dev/api/animal',
       example: 'Masai Lion',
+      returnType: 'string',
       args: [],
     },
   },
@@ -335,6 +359,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random pet name.',
       docsUrl: 'https://fakerjs.dev/api/animal',
       example: 'Stella',
+      returnType: 'string',
       args: [],
     },
   },
@@ -348,6 +373,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random rabbit species.',
       docsUrl: 'https://fakerjs.dev/api/animal',
       example: 'Californian',
+      returnType: 'string',
       args: [],
     },
   },
@@ -361,6 +387,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random rodent breed.',
       docsUrl: 'https://fakerjs.dev/api/animal',
       example: "Natterer's tuco-tuco",
+      returnType: 'string',
       args: [],
     },
   },
@@ -374,6 +401,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random snake species.',
       docsUrl: 'https://fakerjs.dev/api/animal',
       example: 'White-lipped python',
+      returnType: 'string',
       args: [],
     },
   },
@@ -387,6 +415,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random animal type.',
       docsUrl: 'https://fakerjs.dev/api/animal',
       example: 'bear',
+      returnType: 'string',
       args: [],
     },
   },
@@ -400,6 +429,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random author name.',
       docsUrl: 'https://fakerjs.dev/api/book',
       example: 'Jacqueline Crooks',
+      returnType: 'string',
       args: [],
     },
   },
@@ -413,6 +443,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random book format.',
       docsUrl: 'https://fakerjs.dev/api/book',
       example: 'Paperback',
+      returnType: 'string',
       args: [],
     },
   },
@@ -426,6 +457,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random genre.',
       docsUrl: 'https://fakerjs.dev/api/book',
       example: 'Science Fiction',
+      returnType: 'string',
       args: [],
     },
   },
@@ -439,6 +471,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random publisher.',
       docsUrl: 'https://fakerjs.dev/api/book',
       example: 'Butterworth-Heinemann',
+      returnType: 'string',
       args: [],
     },
   },
@@ -452,6 +485,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random series.',
       docsUrl: 'https://fakerjs.dev/api/book',
       example: 'The Inheritance Cycle',
+      returnType: 'string',
       args: [],
     },
   },
@@ -465,6 +499,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random title.',
       docsUrl: 'https://fakerjs.dev/api/book',
       example: 'Animal Farm',
+      returnType: 'string',
       args: [],
     },
   },
@@ -479,6 +514,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a CMYK color.',
       docsUrl: 'https://fakerjs.dev/api/color',
       example: '[0.95,0.17,0.23,1]',
+      returnType: 'string',
       args: [
         {
           name: 'format',
@@ -499,6 +535,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random color based on CSS color space specified.',
       docsUrl: 'https://fakerjs.dev/api/color',
       example: '[0.5811,0.0479,0.1091]',
+      returnType: 'string',
       args: [],
     },
   },
@@ -512,6 +549,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random css supported color function name.',
       docsUrl: 'https://fakerjs.dev/api/color',
       example: 'hsla',
+      returnType: 'string',
       args: [],
     },
   },
@@ -525,6 +563,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random css supported color space name.',
       docsUrl: 'https://fakerjs.dev/api/color',
       example: 'sRGB',
+      returnType: 'string',
       args: [],
     },
   },
@@ -539,6 +578,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns an HSL color.',
       docsUrl: 'https://fakerjs.dev/api/color',
       example: '[212,0.78,0.54]',
+      returnType: 'string',
       args: [
         {
           name: 'format',
@@ -565,6 +605,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random human-readable color name.',
       docsUrl: 'https://fakerjs.dev/api/color',
       example: 'green',
+      returnType: 'string',
       args: [],
     },
   },
@@ -579,6 +620,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns an HWB color.',
       docsUrl: 'https://fakerjs.dev/api/color',
       example: '[328,0.27,0.33]',
+      returnType: 'string',
       args: [
         {
           name: 'format',
@@ -600,6 +642,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a LAB (CIELAB) color.',
       docsUrl: 'https://fakerjs.dev/api/color',
       example: '[0.071396,-55.6612,-66.7185]',
+      returnType: 'string',
       args: [
         {
           name: 'format',
@@ -621,6 +664,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns an LCH color. Even though upper bound of',
       docsUrl: 'https://fakerjs.dev/api/color',
       example: '[0.469557,212.9,204.9]',
+      returnType: 'string',
       args: [
         {
           name: 'format',
@@ -642,6 +686,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns an RGB color.',
       docsUrl: 'https://fakerjs.dev/api/color',
       example: '#ee8222',
+      returnType: 'string',
       args: [
         {
           name: 'casing',
@@ -680,6 +725,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random color space name from the worldwide accepted color spaces.',
       docsUrl: 'https://fakerjs.dev/api/color',
       example: 'HSL',
+      returnType: 'string',
       args: [],
     },
   },
@@ -693,6 +739,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a department inside a shop.',
       docsUrl: 'https://fakerjs.dev/api/commerce',
       example: 'Tools',
+      returnType: 'string',
       args: [],
     },
   },
@@ -707,6 +754,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random ISBN identifier.',
       docsUrl: 'https://fakerjs.dev/api/commerce',
       example: '978-1-996134-54-2',
+      returnType: 'string',
       args: [
         {
           name: 'separator',
@@ -735,6 +783,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a price between min and max (inclusive).',
       docsUrl: 'https://fakerjs.dev/api/commerce',
       example: '797.39',
+      returnType: 'number',
       args: [
         {
           name: 'dec',
@@ -773,6 +822,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a short product name.',
       docsUrl: 'https://fakerjs.dev/api/commerce',
       example: 'Bike',
+      returnType: 'string',
       args: [],
     },
   },
@@ -786,6 +836,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns an adjective describing a product.',
       docsUrl: 'https://fakerjs.dev/api/commerce',
       example: 'Luxurious',
+      returnType: 'string',
       args: [],
     },
   },
@@ -799,6 +850,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a product description.',
       docsUrl: 'https://fakerjs.dev/api/commerce',
       example: 'The green Hat combines Colombia aesthetics with Scandium-based durability',
+      returnType: 'string',
       args: [],
     },
   },
@@ -812,6 +864,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a material of a product.',
       docsUrl: 'https://fakerjs.dev/api/commerce',
       example: 'Steel',
+      returnType: 'string',
       args: [],
     },
   },
@@ -825,6 +878,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random descriptive product name.',
       docsUrl: 'https://fakerjs.dev/api/commerce',
       example: 'Soft Bronze Towels',
+      returnType: 'string',
       args: [],
     },
   },
@@ -838,6 +892,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random buzz adjective that can be used to demonstrate data being viewed by a manager.',
       docsUrl: 'https://fakerjs.dev/api/company',
       example: 'out-of-the-box',
+      returnType: 'string',
       args: [],
     },
   },
@@ -851,6 +906,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random buzz noun that can be used to demonstrate data being viewed by a manager.',
       docsUrl: 'https://fakerjs.dev/api/company',
       example: 'deliverables',
+      returnType: 'string',
       args: [],
     },
   },
@@ -864,6 +920,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random buzz phrase that can be used to demonstrate data being viewed by a manager.',
       docsUrl: 'https://fakerjs.dev/api/company',
       example: 'streamline cutting-edge platforms',
+      returnType: 'string',
       args: [],
     },
   },
@@ -877,6 +934,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random buzz verb that can be used to demonstrate data being viewed by a manager.',
       docsUrl: 'https://fakerjs.dev/api/company',
       example: 'disintermediate',
+      returnType: 'string',
       args: [],
     },
   },
@@ -890,6 +948,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random catch phrase that can be displayed to an end user.',
       docsUrl: 'https://fakerjs.dev/api/company',
       example: 'Diverse AI-powered flexibility',
+      returnType: 'string',
       args: [],
     },
   },
@@ -903,6 +962,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random catch phrase adjective that can be displayed to an end user..',
       docsUrl: 'https://fakerjs.dev/api/company',
       example: 'Distributed',
+      returnType: 'string',
       args: [],
     },
   },
@@ -916,6 +976,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random catch phrase descriptor that can be displayed to an end user..',
       docsUrl: 'https://fakerjs.dev/api/company',
       example: 'encompassing',
+      returnType: 'string',
       args: [],
     },
   },
@@ -929,6 +990,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random catch phrase noun that can be displayed to an end user..',
       docsUrl: 'https://fakerjs.dev/api/company',
       example: 'attitude',
+      returnType: 'string',
       args: [],
     },
   },
@@ -942,6 +1004,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random company name.',
       docsUrl: 'https://fakerjs.dev/api/company',
       example: 'Lang - Little',
+      returnType: 'string',
       args: [],
     },
   },
@@ -955,6 +1018,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random database collation.',
       docsUrl: 'https://fakerjs.dev/api/database',
       example: 'utf8_bin',
+      returnType: 'string',
       args: [],
     },
   },
@@ -968,6 +1032,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random database column name.',
       docsUrl: 'https://fakerjs.dev/api/database',
       example: 'status',
+      returnType: 'string',
       args: [],
     },
   },
@@ -981,6 +1046,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random database engine.',
       docsUrl: 'https://fakerjs.dev/api/database',
       example: 'ARCHIVE',
+      returnType: 'string',
       args: [],
     },
   },
@@ -994,6 +1060,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a MongoDB ObjectId string.',
       docsUrl: 'https://fakerjs.dev/api/database',
       example: 'e80bba2ae67c0c7dcc16bd57',
+      returnType: 'string',
       args: [],
     },
   },
@@ -1007,6 +1074,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random database column type.',
       docsUrl: 'https://fakerjs.dev/api/database',
       example: 'smallint',
+      returnType: 'string',
       args: [],
     },
   },
@@ -1021,6 +1089,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns the boolean value true or false.',
       docsUrl: 'https://fakerjs.dev/api/datatype',
       example: 'true',
+      returnType: 'boolean',
       args: [
         {
           name: 'probability',
@@ -1048,6 +1117,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random date that can be either in the past or in the future.',
       docsUrl: 'https://fakerjs.dev/api/date',
       example: '"2026-12-25T08:55:20.593Z"',
+      returnType: 'date',
       args: [
         {
           name: 'refDate',
@@ -1069,6 +1139,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random date between the given boundaries.',
       docsUrl: 'https://fakerjs.dev/api/date',
       example: '',
+      returnType: 'date',
       args: [
         {
           name: 'from',
@@ -1097,6 +1168,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
         'Generates random dates between the given boundaries. The dates will be returned in an array sorted in chronological order.',
       docsUrl: 'https://fakerjs.dev/api/date',
       example: '',
+      returnType: 'array',
       args: [
         {
           name: 'count',
@@ -1131,6 +1203,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
         'Returns a random birthdate. By default, the birthdate is generated for an adult between 18 and 80 years old.',
       docsUrl: 'https://fakerjs.dev/api/date',
       example: '"1966-09-18T08:47:31.333Z"',
+      returnType: 'date',
       args: [
         {
           name: 'refDate',
@@ -1170,6 +1243,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random date in the future.',
       docsUrl: 'https://fakerjs.dev/api/date',
       example: '"2027-02-07T18:41:48.525Z"',
+      returnType: 'date',
       args: [
         {
           name: 'refDate',
@@ -1197,6 +1271,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random name of a month.',
       docsUrl: 'https://fakerjs.dev/api/date',
       example: 'February',
+      returnType: 'object',
       args: [
         {
           name: 'abbreviated',
@@ -1225,6 +1300,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random date in the past.',
       docsUrl: 'https://fakerjs.dev/api/date',
       example: '"2025-07-01T11:48:55.347Z"',
+      returnType: 'date',
       args: [
         {
           name: 'refDate',
@@ -1252,6 +1328,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random date in the recent past.',
       docsUrl: 'https://fakerjs.dev/api/date',
       example: '"2026-04-27T23:46:16.707Z"',
+      returnType: 'date',
       args: [
         {
           name: 'days',
@@ -1279,6 +1356,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random date in the near future.',
       docsUrl: 'https://fakerjs.dev/api/date',
       example: '"2026-04-29T11:09:09.211Z"',
+      returnType: 'date',
       args: [
         {
           name: 'days',
@@ -1305,6 +1383,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random IANA time zone relevant to this locale.',
       docsUrl: 'https://fakerjs.dev/api/date',
       example: 'Europe/Stockholm',
+      returnType: 'string',
       args: [],
     },
   },
@@ -1319,6 +1398,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random day of the week.',
       docsUrl: 'https://fakerjs.dev/api/date',
       example: 'Tuesday',
+      returnType: 'object',
       args: [
         {
           name: 'abbreviated',
@@ -1346,6 +1426,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random account name.',
       docsUrl: 'https://fakerjs.dev/api/finance',
       example: 'Investment Account',
+      returnType: 'integer',
       args: [],
     },
   },
@@ -1359,6 +1440,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random account number.',
       docsUrl: 'https://fakerjs.dev/api/finance',
       example: '43208795',
+      returnType: 'integer',
       args: [
         {
           name: 'length',
@@ -1380,6 +1462,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random amount between the given bounds (inclusive).',
       docsUrl: 'https://fakerjs.dev/api/finance',
       example: '536.86',
+      returnType: 'number',
       args: [
         {
           name: 'autoFormat',
@@ -1425,6 +1508,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random SWIFT/BIC code based on the ISO-9362 format.',
       docsUrl: 'https://fakerjs.dev/api/finance',
       example: 'TXWRPYFT',
+      returnType: 'string',
       args: [
         {
           name: 'includeBranchCode',
@@ -1445,6 +1529,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random Bitcoin address.',
       docsUrl: 'https://fakerjs.dev/api/finance',
       example: '39fu5Nhnibj2xa8FPVxCbX7y4xZi5SWd',
+      returnType: 'string',
       args: [],
     },
   },
@@ -1458,6 +1543,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random credit card CVV.',
       docsUrl: 'https://fakerjs.dev/api/finance',
       example: '839',
+      returnType: 'string',
       args: [],
     },
   },
@@ -1471,6 +1557,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random credit card issuer.',
       docsUrl: 'https://fakerjs.dev/api/finance',
       example: 'jcb',
+      returnType: 'string',
       args: [],
     },
   },
@@ -1484,6 +1571,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random credit card number.',
       docsUrl: 'https://fakerjs.dev/api/finance',
       example: '6449-4462-4996-7580',
+      returnType: 'string',
       args: [
         {
           name: 'issuer',
@@ -1504,6 +1592,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random currency object, containing `code`, `name`, `symbol`, and `numericCode` properties.',
       docsUrl: 'https://fakerjs.dev/api/finance',
       example: '{"name":"Rial Omani","code":"OMR","symbol":"﷼","numericCode":"512"}',
+      returnType: 'object',
       args: [],
     },
   },
@@ -1517,6 +1606,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random currency code.',
       docsUrl: 'https://fakerjs.dev/api/finance',
       example: 'ISK',
+      returnType: 'string',
       args: [],
     },
   },
@@ -1530,6 +1620,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random currency name.',
       docsUrl: 'https://fakerjs.dev/api/finance',
       example: 'South Sudanese pound',
+      returnType: 'string',
       args: [],
     },
   },
@@ -1543,6 +1634,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random currency numeric code.',
       docsUrl: 'https://fakerjs.dev/api/finance',
       example: '270',
+      returnType: 'string',
       args: [],
     },
   },
@@ -1556,6 +1648,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random currency symbol.',
       docsUrl: 'https://fakerjs.dev/api/finance',
       example: '₩',
+      returnType: 'string',
       args: [],
     },
   },
@@ -1569,6 +1662,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Creates a random, non-checksum Ethereum address.',
       docsUrl: 'https://fakerjs.dev/api/finance',
       example: '0xf5d385aff27de9dee6eeeffd924ffd7dd2d252ca',
+      returnType: 'string',
       args: [],
     },
   },
@@ -1583,6 +1677,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random IBAN.',
       docsUrl: 'https://fakerjs.dev/api/finance',
       example: 'CH67001759079BP5WA811',
+      returnType: 'string',
       args: [
         {
           name: 'countryCode',
@@ -1610,6 +1705,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random Litecoin address.',
       docsUrl: 'https://fakerjs.dev/api/finance',
       example: 'M7nWopfUfSjA8cmGWvuENRLu6GU4C1iTK',
+      returnType: 'string',
       args: [],
     },
   },
@@ -1623,6 +1719,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random masked number.',
       docsUrl: 'https://fakerjs.dev/api/finance',
       example: '(...0934)',
+      returnType: 'string',
       args: [
         {
           name: 'length',
@@ -1643,6 +1740,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random PIN number.',
       docsUrl: 'https://fakerjs.dev/api/finance',
       example: '1107',
+      returnType: 'string',
       args: [
         {
           name: 'length',
@@ -1663,6 +1761,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random routing number.',
       docsUrl: 'https://fakerjs.dev/api/finance',
       example: '933657999',
+      returnType: 'string',
       args: [],
     },
   },
@@ -1677,6 +1776,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       docsUrl: 'https://fakerjs.dev/api/finance',
       example:
         'Transaction alert: deposit at Jones LLC using card ending ****4221 for an amount of GIP 94.88 on account ***3694.',
+      returnType: 'string',
       args: [],
     },
   },
@@ -1690,6 +1790,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random transaction type.',
       docsUrl: 'https://fakerjs.dev/api/finance',
       example: 'deposit',
+      returnType: 'string',
       args: [],
     },
   },
@@ -1703,6 +1804,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random dish adjective.',
       docsUrl: 'https://fakerjs.dev/api/food',
       example: 'salty',
+      returnType: 'string',
       args: [],
     },
   },
@@ -1716,6 +1818,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random dish description.',
       docsUrl: 'https://fakerjs.dev/api/food',
       example: 'Fresh mixed greens tossed with pimento-rubbed pigeon, bean shoots, and a light dressing.',
+      returnType: 'string',
       args: [],
     },
   },
@@ -1729,6 +1832,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random dish name.',
       docsUrl: 'https://fakerjs.dev/api/food',
       example: 'Chicken Fajitas',
+      returnType: 'string',
       args: [],
     },
   },
@@ -1742,6 +1846,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: "Generates a random food's ethnic category.",
       docsUrl: 'https://fakerjs.dev/api/food',
       example: 'Lithuanian',
+      returnType: 'string',
       args: [],
     },
   },
@@ -1755,6 +1860,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random fruit name.',
       docsUrl: 'https://fakerjs.dev/api/food',
       example: 'snowpea',
+      returnType: 'string',
       args: [],
     },
   },
@@ -1768,6 +1874,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random ingredient name.',
       docsUrl: 'https://fakerjs.dev/api/food',
       example: 'spelt',
+      returnType: 'string',
       args: [],
     },
   },
@@ -1781,6 +1888,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random meat',
       docsUrl: 'https://fakerjs.dev/api/food',
       example: 'goose',
+      returnType: 'string',
       args: [],
     },
   },
@@ -1794,6 +1902,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random spice name.',
       docsUrl: 'https://fakerjs.dev/api/food',
       example: 'poudre de colombo',
+      returnType: 'string',
       args: [],
     },
   },
@@ -1807,6 +1916,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random vegetable name.',
       docsUrl: 'https://fakerjs.dev/api/food',
       example: 'snowpea sprouts',
+      returnType: 'string',
       args: [],
     },
   },
@@ -1820,6 +1930,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random branch name.',
       docsUrl: 'https://fakerjs.dev/api/git',
       example: 'array-compress',
+      returnType: 'string',
       args: [],
     },
   },
@@ -1833,6 +1944,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a date string for a git commit using the same format as `git log`.',
       docsUrl: 'https://fakerjs.dev/api/git',
       example: 'Tue Apr 28 04:28:58 2026 -0600',
+      returnType: 'string',
       args: [],
     },
   },
@@ -1845,8 +1957,8 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     help: {
       summary: 'Generates a random commit entry as printed by `git log`.',
       docsUrl: 'https://fakerjs.dev/api/git',
-      example:
-        'commit 8d46bb3da8eefdc3fcbc80abfaef4fbada805e5c Merge: 048c354 fe20ebb Author: Thad Flatley <Thad.Flatley57@hotmail.com> Date: Mon Apr 27...',
+      example: '',
+      returnType: 'string',
       args: [],
     },
   },
@@ -1860,6 +1972,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random commit message.',
       docsUrl: 'https://fakerjs.dev/api/git',
       example: 'reboot cross-platform system',
+      returnType: 'string',
       args: [],
     },
   },
@@ -1873,6 +1986,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random commit sha.',
       docsUrl: 'https://fakerjs.dev/api/git',
       example: '3418f0e64e8eae52ebd67b11d98e571fd6a81017',
+      returnType: 'string',
       args: [],
     },
   },
@@ -1886,6 +2000,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random hacker/IT abbreviation.',
       docsUrl: 'https://fakerjs.dev/api/hacker',
       example: 'GB',
+      returnType: 'string',
       args: [],
     },
   },
@@ -1899,6 +2014,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random hacker/IT adjective.',
       docsUrl: 'https://fakerjs.dev/api/hacker',
       example: 'bluetooth',
+      returnType: 'string',
       args: [],
     },
   },
@@ -1912,6 +2028,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random hacker/IT verb for continuous actions (en: ing suffix; e.g. hacking).',
       docsUrl: 'https://fakerjs.dev/api/hacker',
       example: 'synthesizing',
+      returnType: 'string',
       args: [],
     },
   },
@@ -1925,6 +2042,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random hacker/IT noun.',
       docsUrl: 'https://fakerjs.dev/api/hacker',
       example: 'program',
+      returnType: 'string',
       args: [],
     },
   },
@@ -1938,6 +2056,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random hacker/IT phrase.',
       docsUrl: 'https://fakerjs.dev/api/hacker',
       example: "compressing the application won't do anything, we need to reboot the neural JSON hard drive!",
+      returnType: 'string',
       args: [],
     },
   },
@@ -1951,6 +2070,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random hacker/IT verb.',
       docsUrl: 'https://fakerjs.dev/api/hacker',
       example: 'program',
+      returnType: 'string',
       args: [],
     },
   },
@@ -1964,6 +2084,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates data using faker helpers array element.',
       docsUrl: 'https://fakerjs.dev/api/helpers',
       example: '',
+      returnType: 'any',
       args: [],
     },
   },
@@ -1977,6 +2098,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates data using faker helpers array elements.',
       docsUrl: 'https://fakerjs.dev/api/helpers',
       example: '',
+      returnType: 'array',
       args: [],
     },
   },
@@ -1990,6 +2112,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generate a value using faker helpers.enumValue.',
       docsUrl: 'https://fakerjs.dev/api/helpers',
       example: '',
+      returnType: 'any',
       args: [],
     },
   },
@@ -2003,6 +2126,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generator for combining faker methods based on a static string input.',
       docsUrl: 'https://fakerjs.dev/api/helpers',
       example: '',
+      returnType: 'string',
       args: [
         {
           name: 'pattern',
@@ -2023,6 +2147,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a string matching the given regex like expressions.',
       docsUrl: 'https://fakerjs.dev/api/helpers',
       example: '',
+      returnType: 'string',
       args: [
         {
           name: 'pattern',
@@ -2043,6 +2168,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates data using faker helpers maybe.',
       docsUrl: 'https://fakerjs.dev/api/helpers',
       example: '',
+      returnType: 'any',
       args: [
         {
           name: 'callback',
@@ -2069,6 +2195,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates data using faker helpers multiple.',
       docsUrl: 'https://fakerjs.dev/api/helpers',
       example: '[null,null,null]',
+      returnType: 'array',
       args: [
         {
           name: 'method',
@@ -2096,6 +2223,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Replaces the `{{placeholder}}` patterns in the given string mustache style.',
       docsUrl: 'https://fakerjs.dev/api/helpers',
       example: '',
+      returnType: 'string',
       args: [
         {
           name: 'text',
@@ -2123,6 +2251,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generate a value using faker helpers.objectEntry.',
       docsUrl: 'https://fakerjs.dev/api/helpers',
       example: '',
+      returnType: 'array',
       args: [],
     },
   },
@@ -2136,6 +2265,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generate a value using faker helpers.objectKey.',
       docsUrl: 'https://fakerjs.dev/api/helpers',
       example: '',
+      returnType: 'string',
       args: [],
     },
   },
@@ -2149,6 +2279,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generate a value using faker helpers.objectValue.',
       docsUrl: 'https://fakerjs.dev/api/helpers',
       example: '',
+      returnType: 'any',
       args: [],
     },
   },
@@ -2162,6 +2293,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Helper method that converts the given number or range to a number.',
       docsUrl: 'https://fakerjs.dev/api/helpers',
       example: '7358047432101701',
+      returnType: 'number',
       args: [
         {
           name: 'min',
@@ -2194,6 +2326,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Replaces the symbols and patterns in a credit card schema including Luhn checksum.',
       docsUrl: 'https://fakerjs.dev/api/helpers',
       example: '6453-8322-1436-2543-2787',
+      returnType: 'string',
       args: [
         {
           name: 'string',
@@ -2220,6 +2353,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Parses the given string symbol by symbols and replaces the placeholder appropriately.',
       docsUrl: 'https://fakerjs.dev/api/helpers',
       example: '',
+      returnType: 'string',
       args: [
         {
           name: 'string',
@@ -2240,6 +2374,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates data using faker helpers shuffle.',
       docsUrl: 'https://fakerjs.dev/api/helpers',
       example: '',
+      returnType: 'array',
       args: [
         {
           name: 'list',
@@ -2266,6 +2401,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Slugifies the given string.',
       docsUrl: 'https://fakerjs.dev/api/helpers',
       example: '',
+      returnType: 'string',
       args: [
         {
           name: 'string',
@@ -2286,6 +2422,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates data using faker helpers unique array.',
       docsUrl: 'https://fakerjs.dev/api/helpers',
       example: '[]',
+      returnType: 'array',
       args: [],
     },
   },
@@ -2299,6 +2436,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates data using faker helpers weighted array element.',
       docsUrl: 'https://fakerjs.dev/api/helpers',
       example: '',
+      returnType: 'any',
       args: [],
     },
   },
@@ -2312,6 +2450,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random avatar image url.',
       docsUrl: 'https://fakerjs.dev/api/image',
       example: 'https://avatars.githubusercontent.com/u/2389220',
+      returnType: 'string',
       args: [],
     },
   },
@@ -2325,6 +2464,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random avatar from GitHub.',
       docsUrl: 'https://fakerjs.dev/api/image',
       example: 'https://avatars.githubusercontent.com/u/22969292',
+      returnType: 'string',
       args: [],
     },
   },
@@ -2339,6 +2479,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
         'Generates a random avatar from `https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar`.',
       docsUrl: 'https://fakerjs.dev/api/image',
       example: 'https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/1198.jpg',
+      returnType: 'string',
       args: [],
     },
   },
@@ -2351,8 +2492,8 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     help: {
       summary: 'Generates a random data uri containing an URL-encoded SVG image or a Base64-encoded SVG image.',
       docsUrl: 'https://fakerjs.dev/api/image',
-      example:
-        'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgYmFzZVByb2ZpbGU9ImZ1bGwiIHdpZHRoPSIzNjQ...',
+      example: '',
+      returnType: 'string',
       args: [],
     },
   },
@@ -2366,6 +2507,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random square portrait (avatar) of a person.',
       docsUrl: 'https://fakerjs.dev/api/image',
       example: 'https://cdn.jsdelivr.net/gh/faker-js/assets-person-portrait/female/512/99.jpg',
+      returnType: 'string',
       args: [],
     },
   },
@@ -2380,6 +2522,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random image url.',
       docsUrl: 'https://fakerjs.dev/api/image',
       example: 'https://loremflickr.com/3255/509?lock=5223276893828872',
+      returnType: 'string',
       args: [
         {
           name: 'height',
@@ -2406,6 +2549,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random image url provided via https://loremflickr.com.',
       docsUrl: 'https://fakerjs.dev/api/image',
       example: 'https://loremflickr.com/3966/3602?lock=6417693540486546',
+      returnType: 'string',
       args: [],
     },
   },
@@ -2419,6 +2563,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random image url provided via https://picsum.photos.',
       docsUrl: 'https://fakerjs.dev/api/image',
       example: 'https://picsum.photos/seed/UBLQun43/2068/162?blur=8',
+      returnType: 'string',
       args: [],
     },
   },
@@ -2432,6 +2577,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random image url provided via https://via.placeholder.com/.',
       docsUrl: 'https://fakerjs.dev/api/image',
       example: 'https://via.placeholder.com/2302x1759/a80adf/2de69f.gif?text=utrimque%20summa%20dolores',
+      returnType: 'string',
       args: [],
     },
   },
@@ -2445,6 +2591,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random css hex color code in aesthetically pleasing color palette.',
       docsUrl: 'https://fakerjs.dev/api/internet',
       example: '#290551',
+      returnType: 'string',
       args: [],
     },
   },
@@ -2458,6 +2605,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: "Generates a display name using the given person's name as base.",
       docsUrl: 'https://fakerjs.dev/api/internet',
       example: 'Cordell0',
+      returnType: 'string',
       args: [],
     },
   },
@@ -2471,6 +2619,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random domain name.',
       docsUrl: 'https://fakerjs.dev/api/internet',
       example: 'beloved-peony.org',
+      returnType: 'string',
       args: [],
     },
   },
@@ -2484,6 +2633,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random domain suffix.',
       docsUrl: 'https://fakerjs.dev/api/internet',
       example: 'com',
+      returnType: 'string',
       args: [],
     },
   },
@@ -2497,6 +2647,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random domain word.',
       docsUrl: 'https://fakerjs.dev/api/internet',
       example: 'inexperienced-ravioli',
+      returnType: 'string',
       args: [],
     },
   },
@@ -2510,6 +2661,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates data using faker internet email.',
       docsUrl: 'https://fakerjs.dev/api/internet',
       example: 'Jana91@hotmail.com',
+      returnType: 'string',
       args: [
         {
           name: 'allowSpecialCharacters',
@@ -2550,6 +2702,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random emoji.',
       docsUrl: 'https://fakerjs.dev/api/internet',
       example: '🤨',
+      returnType: 'string',
       args: [
         {
           name: 'types',
@@ -2570,6 +2723,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates data using faker internet example email.',
       docsUrl: 'https://fakerjs.dev/api/internet',
       example: 'Jeremie37@example.net',
+      returnType: 'string',
       args: [],
     },
   },
@@ -2583,6 +2737,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random http method.',
       docsUrl: 'https://fakerjs.dev/api/internet',
       example: 'PATCH',
+      returnType: 'string',
       args: [],
     },
   },
@@ -2596,6 +2751,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random HTTP status code.',
       docsUrl: 'https://fakerjs.dev/api/internet',
       example: '303',
+      returnType: 'string',
       args: [],
     },
   },
@@ -2609,6 +2765,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random IPv4 or IPv6 address.',
       docsUrl: 'https://fakerjs.dev/api/internet',
       example: '56.23.30.52',
+      returnType: 'string',
       args: [],
     },
   },
@@ -2623,6 +2780,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random IPv4 address.',
       docsUrl: 'https://fakerjs.dev/api/internet',
       example: '',
+      returnType: 'string',
       args: [
         {
           name: 'cidrBlock',
@@ -2649,6 +2807,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random IPv6 address.',
       docsUrl: 'https://fakerjs.dev/api/internet',
       example: '',
+      returnType: 'string',
       args: [],
     },
   },
@@ -2662,8 +2821,8 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     help: {
       summary: 'Generates a random JWT (JSON Web Token).',
       docsUrl: 'https://fakerjs.dev/api/internet',
-      example:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NzczMDg0NDYsImV4cCI6MTc3NzM2MjU1NiwibmJmIjoxNzgwOTA4NDkxLCJpc3MiOiJMZXVzY2hrZSwgTWV0eiBh...',
+      example: '',
+      returnType: 'string',
       args: [
         {
           name: 'header',
@@ -2696,6 +2855,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random JWT (JSON Web Token) Algorithm.',
       docsUrl: 'https://fakerjs.dev/api/internet',
       example: 'PS384',
+      returnType: 'string',
       args: [],
     },
   },
@@ -2710,6 +2870,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random mac address.',
       docsUrl: 'https://fakerjs.dev/api/internet',
       example: 'ae:a9:d7:ba:d2:bd',
+      returnType: 'string',
       args: [
         {
           name: 'separator',
@@ -2732,6 +2893,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
         'Generates a random password-like string. Do not use this method for generating actual passwords for users.',
       docsUrl: 'https://fakerjs.dev/api/internet',
       example: 'og1ejoksrfwVbIF',
+      returnType: 'string',
       args: [
         {
           name: 'length',
@@ -2770,6 +2932,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random port number.',
       docsUrl: 'https://fakerjs.dev/api/internet',
       example: '24545',
+      returnType: 'string',
       args: [],
     },
   },
@@ -2783,6 +2946,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random web protocol. Either `http` or `https`.',
       docsUrl: 'https://fakerjs.dev/api/internet',
       example: 'http',
+      returnType: 'string',
       args: [],
     },
   },
@@ -2797,6 +2961,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random http(s) url.',
       docsUrl: 'https://fakerjs.dev/api/internet',
       example: 'https://brave-interior.biz/',
+      returnType: 'string',
       args: [
         {
           name: 'appendSlash',
@@ -2822,8 +2987,8 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     help: {
       summary: 'Generates a random user agent string.',
       docsUrl: 'https://fakerjs.dev/api/internet',
-      example:
-        'Mozilla/5.0 (Windows NT 5.1; Win64; x64) AppleWebKit/601.65 (KHTML, like Gecko) Chrome/128.0.1.6 Safari/572.88 Edg/117.8.6.15',
+      example: '',
+      returnType: 'string',
       args: [],
     },
   },
@@ -2838,6 +3003,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: "Generates a username using the given person's name as base.",
       docsUrl: 'https://fakerjs.dev/api/internet',
       example: 'Deanna51',
+      returnType: 'string',
       args: [
         {
           name: 'firstName',
@@ -2864,6 +3030,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: "Generates a username using the given person's name as base.",
       docsUrl: 'https://fakerjs.dev/api/internet',
       example: 'Ana_Keebler',
+      returnType: 'string',
       args: [],
     },
   },
@@ -2877,6 +3044,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Return the literal value provided by the caller.',
       docsUrl: 'https://anywaydata.com/docs/category/generating-data',
       example: 'Pending',
+      returnType: 'string',
       args: [
         {
           name: 'value',
@@ -2897,6 +3065,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random building number.',
       docsUrl: 'https://fakerjs.dev/api/location',
       example: '5075',
+      returnType: 'string',
       args: [],
     },
   },
@@ -2910,6 +3079,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random cardinal direction (north, east, south, west).',
       docsUrl: 'https://fakerjs.dev/api/location',
       example: 'East',
+      returnType: 'string',
       args: [],
     },
   },
@@ -2923,6 +3093,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random localized city name.',
       docsUrl: 'https://fakerjs.dev/api/location',
       example: 'Stellachester',
+      returnType: 'string',
       args: [],
     },
   },
@@ -2936,6 +3107,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random continent name.',
       docsUrl: 'https://fakerjs.dev/api/location',
       example: 'Asia',
+      returnType: 'string',
       args: [],
     },
   },
@@ -2949,6 +3121,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random country name.',
       docsUrl: 'https://fakerjs.dev/api/location',
       example: 'Svalbard & Jan Mayen Islands',
+      returnType: 'integer',
       args: [],
     },
   },
@@ -2962,6 +3135,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random ISO_3166-1 country code.',
       docsUrl: 'https://fakerjs.dev/api/location',
       example: 'MG',
+      returnType: 'integer',
       args: [],
     },
   },
@@ -2976,6 +3150,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
         "Returns a random localized county, or other equivalent second-level administrative entity for the locale's country such as a district or department.",
       docsUrl: 'https://fakerjs.dev/api/location',
       example: 'Northamptonshire',
+      returnType: 'integer',
       args: [],
     },
   },
@@ -2990,6 +3165,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random direction (cardinal and ordinal; northwest, east, etc).',
       docsUrl: 'https://fakerjs.dev/api/location',
       example: 'North',
+      returnType: 'string',
       args: [
         {
           name: 'abbreviated',
@@ -3011,6 +3187,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random spoken language.',
       docsUrl: 'https://fakerjs.dev/api/location',
       example: '{"name":"Icelandic","alpha2":"is","alpha3":"isl"}',
+      returnType: 'string',
       args: [],
     },
   },
@@ -3025,6 +3202,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random latitude.',
       docsUrl: 'https://fakerjs.dev/api/location',
       example: '51.5448',
+      returnType: 'number',
       args: [
         {
           name: 'min',
@@ -3058,6 +3236,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random longitude.',
       docsUrl: 'https://fakerjs.dev/api/location',
       example: '92.3892',
+      returnType: 'number',
       args: [
         {
           name: 'min',
@@ -3090,6 +3269,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random GPS coordinate within the specified radius from the given coordinate.',
       docsUrl: 'https://fakerjs.dev/api/location',
       example: '[58.313,9.9746]',
+      returnType: 'array',
       args: [],
     },
   },
@@ -3103,6 +3283,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random ordinal direction (northwest, southeast, etc).',
       docsUrl: 'https://fakerjs.dev/api/location',
       example: 'Northeast',
+      returnType: 'string',
       args: [],
     },
   },
@@ -3116,6 +3297,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random localized secondary address. This refers to a specific location at a given address',
       docsUrl: 'https://fakerjs.dev/api/location',
       example: 'Suite 634',
+      returnType: 'integer',
       args: [],
     },
   },
@@ -3131,6 +3313,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
         "Returns a random localized state, or other equivalent first-level administrative entity for the locale's country such as a province or region.",
       docsUrl: 'https://fakerjs.dev/api/location',
       example: 'Hawaii',
+      returnType: 'string',
       args: [
         {
           name: 'abbreviated',
@@ -3152,6 +3335,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random localized street name.',
       docsUrl: 'https://fakerjs.dev/api/location',
       example: 'Viva Harbor',
+      returnType: 'string',
       args: [],
     },
   },
@@ -3166,6 +3350,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random localized street address.',
       docsUrl: 'https://fakerjs.dev/api/location',
       example: '12056 Vandervort Common',
+      returnType: 'string',
       args: [
         {
           name: 'useFullAddress',
@@ -3192,6 +3377,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random IANA time zone name.',
       docsUrl: 'https://fakerjs.dev/api/location',
       example: 'Australia/Perth',
+      returnType: 'string',
       args: [],
     },
   },
@@ -3205,6 +3391,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates data using faker location zip code.',
       docsUrl: 'https://fakerjs.dev/api/location',
       example: '36791',
+      returnType: 'string',
       args: [],
     },
   },
@@ -3218,6 +3405,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: "Generates the given number lines of lorem separated by `'\\n'`.",
       docsUrl: 'https://fakerjs.dev/api/lorem',
       example: 'Illum qui ocer creptio. Antepono aro vergo voluptatem acervus compono apud.',
+      returnType: 'string',
       args: [
         {
           name: 'min',
@@ -3261,8 +3449,8 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     help: {
       summary: 'Generates a paragraph with the given number of sentences.',
       docsUrl: 'https://fakerjs.dev/api/lorem',
-      example:
-        'Cuius quaerat tenus denego. Caecus demitto accommodo tremo utroque vulgo adeo. Amiculum asperiores spoliatio tredecim combibo.',
+      example: '',
+      returnType: 'string',
       args: [
         {
           name: 'min',
@@ -3306,8 +3494,8 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     help: {
       summary: 'Generates the given number of paragraphs.',
       docsUrl: 'https://fakerjs.dev/api/lorem',
-      example:
-        'Fuga agnosco vicissitudo. Thesis vulgo terebro vitium adflicto bonus appositus. Chirographum explicabo assumenda arbitro cilicium distinc...',
+      example: '',
+      returnType: 'string',
       args: [
         {
           name: 'min',
@@ -3358,6 +3546,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a space separated list of words beginning with a capital letter and ending with a period.',
       docsUrl: 'https://fakerjs.dev/api/lorem',
       example: 'Auctor cum deorsum attero cum tergo aut.',
+      returnType: 'string',
       args: [
         {
           name: 'min',
@@ -3402,6 +3591,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates the given number of sentences.',
       docsUrl: 'https://fakerjs.dev/api/lorem',
       example: 'Vicissitudo amet candidus. Urbanus magni carbo artificiose tenus at ambulo.',
+      returnType: 'string',
       args: [
         {
           name: 'min',
@@ -3452,6 +3642,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a slugified text consisting of the given number of hyphen separated words.',
       docsUrl: 'https://fakerjs.dev/api/lorem',
       example: 'dolore-accusator-atqui',
+      returnType: 'string',
       args: [
         {
           name: 'min',
@@ -3495,8 +3686,8 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     help: {
       summary: 'Generates a random text based on a random lorem method.',
       docsUrl: 'https://fakerjs.dev/api/lorem',
-      example:
-        'Strues thesis arcesso. Depereo eius atrox tunc ultra comburo. Voro admiratio aestus velit voluptatum vesco caterva. Testimonium verto del...',
+      example: '',
+      returnType: 'string',
       args: [],
     },
   },
@@ -3511,6 +3702,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a word of a specified length.',
       docsUrl: 'https://fakerjs.dev/api/lorem',
       example: 'cumque',
+      returnType: 'string',
       args: [
         {
           name: 'min',
@@ -3550,6 +3742,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a space separated list of words.',
       docsUrl: 'https://fakerjs.dev/api/lorem',
       example: 'desidero conforto decimus',
+      returnType: 'string',
       args: [
         {
           name: 'min',
@@ -3594,6 +3787,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random album name.',
       docsUrl: 'https://fakerjs.dev/api/music',
       example: 'R&G (Rhythm & Gangsta): The Masterpiece',
+      returnType: 'string',
       args: [],
     },
   },
@@ -3607,6 +3801,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random artist name.',
       docsUrl: 'https://fakerjs.dev/api/music',
       example: 'Chuck Berry',
+      returnType: 'string',
       args: [],
     },
   },
@@ -3620,6 +3815,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random music genre.',
       docsUrl: 'https://fakerjs.dev/api/music',
       example: 'Mainstream Jazz',
+      returnType: 'string',
       args: [],
     },
   },
@@ -3633,6 +3829,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random song name.',
       docsUrl: 'https://fakerjs.dev/api/music',
       example: "I'm Sorry",
+      returnType: 'string',
       args: [],
     },
   },
@@ -3647,6 +3844,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a BigInt number.',
       docsUrl: 'https://fakerjs.dev/api/number',
       example: '347465151663036',
+      returnType: 'integer',
       args: [
         {
           name: 'value',
@@ -3668,6 +3866,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a binary string.',
       docsUrl: 'https://fakerjs.dev/api/number',
       example: '0',
+      returnType: 'string',
       args: [
         {
           name: 'max',
@@ -3696,6 +3895,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
         'Returns a single random floating-point number, by default between `0.0` and `1.0`. To change the range, pass a `min` and `max` value. To limit the number of decimal places, pass a `multipleOf` or `fractionDigits` parameter.',
       docsUrl: 'https://fakerjs.dev/api/number',
       example: '0.5433707701438405',
+      returnType: 'number',
       args: [
         {
           name: 'value',
@@ -3743,6 +3943,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a lowercase hexadecimal number.',
       docsUrl: 'https://fakerjs.dev/api/number',
       example: 'd',
+      returnType: 'string',
       args: [
         {
           name: 'min',
@@ -3776,6 +3977,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a single random integer between zero and the given max value or the given range.',
       docsUrl: 'https://fakerjs.dev/api/number',
       example: '5190574431878510',
+      returnType: 'integer',
       args: [
         {
           name: 'min',
@@ -3809,6 +4011,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns an octal string.',
       docsUrl: 'https://fakerjs.dev/api/number',
       example: '6',
+      returnType: 'string',
       args: [
         {
           name: 'max',
@@ -3836,6 +4039,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a roman numeral in String format.',
       docsUrl: 'https://fakerjs.dev/api/number',
       example: 'XXXV',
+      returnType: 'string',
       args: [
         {
           name: 'min',
@@ -3868,6 +4072,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random short biography',
       docsUrl: 'https://fakerjs.dev/api/person',
       example: 'musician',
+      returnType: 'string',
       args: [],
     },
   },
@@ -3881,6 +4086,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random first name.',
       docsUrl: 'https://fakerjs.dev/api/person',
       example: 'Amelie',
+      returnType: 'string',
       args: [
         {
           name: 'sex',
@@ -3901,6 +4107,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random full name.',
       docsUrl: 'https://fakerjs.dev/api/person',
       example: 'Mrs. Sheryl Zemlak DVM',
+      returnType: 'string',
       args: [],
     },
   },
@@ -3914,6 +4121,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random gender.',
       docsUrl: 'https://fakerjs.dev/api/person',
       example: 'Female to male',
+      returnType: 'string',
       args: [],
     },
   },
@@ -3927,6 +4135,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random job area.',
       docsUrl: 'https://fakerjs.dev/api/person',
       example: 'Branding',
+      returnType: 'string',
       args: [],
     },
   },
@@ -3940,6 +4149,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random job descriptor.',
       docsUrl: 'https://fakerjs.dev/api/person',
       example: 'Direct',
+      returnType: 'string',
       args: [],
     },
   },
@@ -3953,6 +4163,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random job title.',
       docsUrl: 'https://fakerjs.dev/api/person',
       example: 'Senior Identity Technician',
+      returnType: 'string',
       args: [],
     },
   },
@@ -3966,6 +4177,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random job type.',
       docsUrl: 'https://fakerjs.dev/api/person',
       example: 'Engineer',
+      returnType: 'string',
       args: [],
     },
   },
@@ -3979,6 +4191,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random last name.',
       docsUrl: 'https://fakerjs.dev/api/person',
       example: 'Bernhard',
+      returnType: 'string',
       args: [
         {
           name: 'sex',
@@ -3999,6 +4212,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random middle name.',
       docsUrl: 'https://fakerjs.dev/api/person',
       example: 'Ryan',
+      returnType: 'string',
       args: [
         {
           name: 'sex',
@@ -4019,6 +4233,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random person prefix.',
       docsUrl: 'https://fakerjs.dev/api/person',
       example: 'Miss',
+      returnType: 'string',
       args: [
         {
           name: 'sex',
@@ -4039,6 +4254,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random sex.',
       docsUrl: 'https://fakerjs.dev/api/person',
       example: 'male',
+      returnType: 'string',
       args: [],
     },
   },
@@ -4052,6 +4268,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random sex type. The `SexType` is intended to be used in parameters and conditions.',
       docsUrl: 'https://fakerjs.dev/api/person',
       example: 'male',
+      returnType: 'string',
       args: [],
     },
   },
@@ -4065,6 +4282,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random person suffix.',
       docsUrl: 'https://fakerjs.dev/api/person',
       example: 'IV',
+      returnType: 'string',
       args: [],
     },
   },
@@ -4078,6 +4296,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random zodiac sign.',
       docsUrl: 'https://fakerjs.dev/api/person',
       example: 'Cancer',
+      returnType: 'string',
       args: [],
     },
   },
@@ -4091,6 +4310,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates IMEI number.',
       docsUrl: 'https://fakerjs.dev/api/phone',
       example: '44-358223-971834-1',
+      returnType: 'string',
       args: [],
     },
   },
@@ -4105,6 +4325,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random phone number.',
       docsUrl: 'https://fakerjs.dev/api/phone',
       example: '298.756.9044',
+      returnType: 'string',
       args: [
         {
           name: 'style',
@@ -4126,6 +4347,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generate a value using faker science.chemicalElement.',
       docsUrl: 'https://fakerjs.dev/api/science',
       example: '',
+      returnType: 'object',
       args: [],
     },
   },
@@ -4140,6 +4362,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generate a chemical element atomic number.',
       docsUrl: 'https://fakerjs.dev/api/science',
       example: '8',
+      returnType: 'integer',
       args: [],
     },
   },
@@ -4154,6 +4377,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generate a chemical element name.',
       docsUrl: 'https://fakerjs.dev/api/science',
       example: 'Oxygen',
+      returnType: 'string',
       args: [],
     },
   },
@@ -4168,6 +4392,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generate a chemical element symbol.',
       docsUrl: 'https://fakerjs.dev/api/science',
       example: 'O',
+      returnType: 'string',
       args: [],
     },
   },
@@ -4181,6 +4406,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random scientific unit.',
       docsUrl: 'https://fakerjs.dev/api/science',
       example: '{"name":"farad","symbol":"F"}',
+      returnType: 'object',
       args: [],
     },
   },
@@ -4195,6 +4421,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generating a string consisting of letters in the English alphabet.',
       docsUrl: 'https://fakerjs.dev/api/string',
       example: 'R',
+      returnType: 'string',
       args: [
         {
           name: 'length',
@@ -4240,6 +4467,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generating a string consisting of alpha characters and digits.',
       docsUrl: 'https://fakerjs.dev/api/string',
       example: 's',
+      returnType: 'string',
       args: [
         {
           name: 'length',
@@ -4285,6 +4513,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a binary string.',
       docsUrl: 'https://fakerjs.dev/api/string',
       example: '0b0',
+      returnType: 'string',
       args: [
         {
           name: 'length',
@@ -4312,6 +4541,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a string from the given characters.',
       docsUrl: 'https://fakerjs.dev/api/string',
       example: '',
+      returnType: 'string',
       args: [
         {
           name: 'characters',
@@ -4351,6 +4581,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a hexadecimal string.',
       docsUrl: 'https://fakerjs.dev/api/string',
       example: '0x1',
+      returnType: 'string',
       args: [
         {
           name: 'casing',
@@ -4384,6 +4615,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a Nano ID.',
       docsUrl: 'https://fakerjs.dev/api/string',
       example: 'KLm49ferlh-eUmJpZdSIO',
+      returnType: 'string',
       args: [
         {
           name: 'min',
@@ -4429,6 +4661,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a given length string of digits.',
       docsUrl: 'https://fakerjs.dev/api/string',
       example: '7',
+      returnType: 'string',
       args: [
         {
           name: 'length',
@@ -4474,6 +4707,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns an octal string.',
       docsUrl: 'https://fakerjs.dev/api/string',
       example: '0o6',
+      returnType: 'string',
       args: [
         {
           name: 'length',
@@ -4501,6 +4735,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a string containing UTF-16 chars between 33 and 125 (`!` to `}`).',
       docsUrl: 'https://fakerjs.dev/api/string',
       example: '\\Fw;0e:G.H',
+      returnType: 'string',
       args: [
         {
           name: 'min',
@@ -4545,6 +4780,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a string containing only special characters from the following list:',
       docsUrl: 'https://fakerjs.dev/api/string',
       example: '.',
+      returnType: 'string',
       args: [
         {
           name: 'min',
@@ -4590,6 +4826,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a ULID (Universally Unique Lexicographically Sortable Identifier).',
       docsUrl: 'https://fakerjs.dev/api/string',
       example: '01KQADM2A0728G4D2HKCPWKS6N',
+      returnType: 'string',
       args: [
         {
           name: 'refDate',
@@ -4611,6 +4848,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a UUID v4 (Universally Unique Identifier).',
       docsUrl: 'https://fakerjs.dev/api/string',
       example: '0628ae51-7b6c-4d33-9f24-dae19fb245df',
+      returnType: 'string',
       args: [
         {
           name: 'refDate',
@@ -4637,6 +4875,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a commonly used file extension.',
       docsUrl: 'https://fakerjs.dev/api/system',
       example: 'pdf',
+      returnType: 'string',
       args: [],
     },
   },
@@ -4650,6 +4889,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random file name with a given extension or a commonly used extension.',
       docsUrl: 'https://fakerjs.dev/api/system',
       example: 'bleak.pdf',
+      returnType: 'string',
       args: [
         {
           name: 'extension',
@@ -4670,6 +4910,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a commonly used file type.',
       docsUrl: 'https://fakerjs.dev/api/system',
       example: 'video',
+      returnType: 'string',
       args: [],
     },
   },
@@ -4684,6 +4925,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random cron expression.',
       docsUrl: 'https://fakerjs.dev/api/system',
       example: '* 15 * * SAT',
+      returnType: 'string',
       args: [
         {
           name: 'includeNonStandard',
@@ -4710,6 +4952,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a directory path.',
       docsUrl: 'https://fakerjs.dev/api/system',
       example: '/bin',
+      returnType: 'string',
       args: [],
     },
   },
@@ -4723,6 +4966,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a file extension.',
       docsUrl: 'https://fakerjs.dev/api/system',
       example: 'xsl',
+      returnType: 'string',
       args: [
         {
           name: 'mimeType',
@@ -4743,6 +4987,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random file name with extension.',
       docsUrl: 'https://fakerjs.dev/api/system',
       example: 'unsightly.woff',
+      returnType: 'string',
       args: [],
     },
   },
@@ -4756,6 +5001,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a file path.',
       docsUrl: 'https://fakerjs.dev/api/system',
       example: '/tmp/ouch.xlt',
+      returnType: 'string',
       args: [],
     },
   },
@@ -4769,6 +5015,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a file type.',
       docsUrl: 'https://fakerjs.dev/api/system',
       example: 'font',
+      returnType: 'string',
       args: [],
     },
   },
@@ -4782,6 +5029,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a mime-type.',
       docsUrl: 'https://fakerjs.dev/api/system',
       example: 'application/gzip',
+      returnType: 'string',
       args: [],
     },
   },
@@ -4795,6 +5043,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random network interface.',
       docsUrl: 'https://fakerjs.dev/api/system',
       example: 'wlx3fba717f9f9c',
+      returnType: 'string',
       args: [],
     },
   },
@@ -4808,6 +5057,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a semantic version.',
       docsUrl: 'https://fakerjs.dev/api/system',
       example: '4.3.6',
+      returnType: 'string',
       args: [],
     },
   },
@@ -4821,6 +5071,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a type of bicycle.',
       docsUrl: 'https://fakerjs.dev/api/vehicle',
       example: 'Touring Bicycle',
+      returnType: 'string',
       args: [],
     },
   },
@@ -4834,6 +5085,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a vehicle color.',
       docsUrl: 'https://fakerjs.dev/api/vehicle',
       example: 'sky blue',
+      returnType: 'string',
       args: [],
     },
   },
@@ -4847,6 +5099,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a fuel type.',
       docsUrl: 'https://fakerjs.dev/api/vehicle',
       example: 'Gasoline',
+      returnType: 'string',
       args: [],
     },
   },
@@ -4860,6 +5113,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a manufacturer name.',
       docsUrl: 'https://fakerjs.dev/api/vehicle',
       example: 'Hyundai',
+      returnType: 'string',
       args: [],
     },
   },
@@ -4873,6 +5127,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a vehicle model.',
       docsUrl: 'https://fakerjs.dev/api/vehicle',
       example: 'Aventador',
+      returnType: 'string',
       args: [],
     },
   },
@@ -4886,6 +5141,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a vehicle type.',
       docsUrl: 'https://fakerjs.dev/api/vehicle',
       example: 'Hatchback',
+      returnType: 'string',
       args: [],
     },
   },
@@ -4899,6 +5155,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random vehicle.',
       docsUrl: 'https://fakerjs.dev/api/vehicle',
       example: 'Ford CTS',
+      returnType: 'string',
       args: [],
     },
   },
@@ -4912,6 +5169,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a vehicle identification number (VIN).',
       docsUrl: 'https://fakerjs.dev/api/vehicle',
       example: '7SJ9N0LM3LM265056',
+      returnType: 'string',
       args: [],
     },
   },
@@ -4925,6 +5183,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a vehicle registration number (Vehicle Registration Mark - VRM)',
       docsUrl: 'https://fakerjs.dev/api/vehicle',
       example: 'OD11RTZ',
+      returnType: 'string',
       args: [],
     },
   },
@@ -4939,6 +5198,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random adjective.',
       docsUrl: 'https://fakerjs.dev/api/word',
       example: 'heavenly',
+      returnType: 'string',
       args: [
         {
           name: 'length',
@@ -4979,6 +5239,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random adverb.',
       docsUrl: 'https://fakerjs.dev/api/word',
       example: 'selfishly',
+      returnType: 'string',
       args: [
         {
           name: 'length',
@@ -5019,6 +5280,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random conjunction.',
       docsUrl: 'https://fakerjs.dev/api/word',
       example: 'indeed',
+      returnType: 'string',
       args: [
         {
           name: 'length',
@@ -5059,6 +5321,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random interjection.',
       docsUrl: 'https://fakerjs.dev/api/word',
       example: 'er',
+      returnType: 'string',
       args: [
         {
           name: 'length',
@@ -5099,6 +5362,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random noun.',
       docsUrl: 'https://fakerjs.dev/api/word',
       example: 'cook',
+      returnType: 'string',
       args: [
         {
           name: 'length',
@@ -5139,6 +5403,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random preposition.',
       docsUrl: 'https://fakerjs.dev/api/word',
       example: 'beside',
+      returnType: 'string',
       args: [
         {
           name: 'length',
@@ -5180,6 +5445,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
         'Returns a random word, that can be an adjective, adverb, conjunction, interjection, noun, preposition, or verb.',
       docsUrl: 'https://fakerjs.dev/api/word',
       example: 'snoopy',
+      returnType: 'string',
       args: [
         {
           name: 'length',
@@ -5220,6 +5486,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random verb.',
       docsUrl: 'https://fakerjs.dev/api/word',
       example: 'embalm',
+      returnType: 'string',
       args: [
         {
           name: 'length',
@@ -5260,6 +5527,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random string containing some words separated by spaces.',
       docsUrl: 'https://fakerjs.dev/api/word',
       example: 'geez',
+      returnType: 'string',
       args: [
         {
           name: 'count',

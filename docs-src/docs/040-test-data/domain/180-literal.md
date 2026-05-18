@@ -6,9 +6,9 @@ description: "Domain keyword reference for literal."
 
 # literal Domain
 
-The `literal` domain maps domain keywords to underlying faker implementations.
+The `literal` domain object returns the entered value directly.
 
-## Faker Documentation
+## Documentation
 
 - [https://anywaydata.com/docs/category/generating-data](https://anywaydata.com/docs/category/generating-data)
 
@@ -36,5 +36,4 @@ literal.value(value="sample")
 ```
 
 Example return values:
-- `"sample"`
 - `"sample"`

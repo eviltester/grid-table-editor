@@ -1225,6 +1225,93 @@ describe('DataGeneratorPage', () => {
     expect(rebuilt).toContain('Third\nliteral(three)');
   });
 
+  test('adding schema rows preserves whitespace-only blank lines in parsed comment blocks', () => {
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker: { word: { noun: () => 'x' } },
+      RandExp: function RandExp() {},
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: TestDataGenerator,
+    });
+    page.init();
+
+    let toggle = document.getElementById('schemaModeToggleButton');
+    toggle.click();
+    const textArea = document.getElementById('generatorSchemaText');
+    textArea.value = '# note one\n   \nFirst\none\n\n# note two\nSecond\ntwo';
+    toggle.click();
+
+    page.addRowAfter(page.schemaRows.length - 1);
+    const newRow = page.schemaRows[page.schemaRows.length - 1];
+    newRow.name = 'Third';
+    newRow.sourceType = 'literal';
+    newRow.value = 'three';
+
+    toggle = document.getElementById('schemaModeToggleButton');
+    toggle.click();
+    const rebuilt = document.getElementById('generatorSchemaText').value;
+
+    expect(rebuilt).toContain('# note one\n   \nFirst');
+    expect(rebuilt).toContain('# note two');
+    expect(rebuilt).toContain('Third\nliteral(three)');
+  });
+
+  test('reordering schema rows keeps blank line before moved response-time row', () => {
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker,
+      RandExp,
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: TestDataGenerator,
+    });
+    page.init();
+
+    const toggle = document.getElementById('schemaModeToggleButton');
+    toggle.click();
+    const textArea = document.getElementById('generatorSchemaText');
+    textArea.value = `# pairwise enums
+HTTP Method
+enum(GET,POST,PUT,DELETE)
+
+# pairwise enums
+Content Type
+enum("application/json","application/xml","text/plain")
+
+# randomized fields
+User ID
+number.int
+Request Timestamp
+date.recent
+Email Address
+internet.email
+
+Response Time
+number.int
+
+Authorization Token
+[A-Fa-f0-9]{32}`;
+    toggle.click();
+
+    const responseIndex = page.schemaRows.findIndex((row) => row.name === 'Response Time');
+    page.moveRow(responseIndex, -1);
+    toggle.click();
+
+    const rebuilt = document.getElementById('generatorSchemaText').value;
+    expect(rebuilt).toMatch(
+      /Request Timestamp\s*\ndate\.recent\s*\n\s*\nResponse Time\s*\nnumber\.int\s*\nEmail Address\s*\ninternet\.email/
+    );
+  });
+
   test('edit as text shows empty textarea for untouched blank schema', () => {
     const page = new DataGeneratorPage({
       parentElement: document.getElementById('app'),

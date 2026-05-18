@@ -151,6 +151,9 @@ function schemaRowsToSpecWithTokens(schemaRows, schemaTokens) {
       const name = String(row?.name ?? '').trim();
       const ruleSpec = buildRuleSpecFromSchemaRow(row);
       const comments = String(row?.comments ?? '');
+      const leadingTextLines = Array.isArray(row?.leadingTextLines)
+        ? row.leadingTextLines.map((line) => String(line ?? ''))
+        : undefined;
       if (name.length === 0 && ruleSpec.length === 0) {
         return null;
       }
@@ -158,6 +161,7 @@ function schemaRowsToSpecWithTokens(schemaRows, schemaTokens) {
         name,
         ruleSpec,
         comments,
+        leadingTextLines,
       };
     })
     .filter(Boolean);
@@ -714,6 +718,35 @@ class DataGeneratorPage {
     }
   }
 
+  getTrailingTextLinesFromSchemaTokens() {
+    if (!Array.isArray(this.schemaTextTokens) || this.schemaTextTokens.length === 0) {
+      return [];
+    }
+
+    const trailing = [];
+    for (let index = this.schemaTextTokens.length - 1; index >= 0; index -= 1) {
+      const token = this.schemaTextTokens[index];
+      if (token?.kind === 'rule') {
+        break;
+      }
+      if (token?.kind === 'blank' || token?.kind === 'comment') {
+        trailing.unshift(String(token.text ?? ''));
+      }
+    }
+    return trailing;
+  }
+
+  invalidateSchemaTokensFromRows() {
+    const trailingLines = this.getTrailingTextLinesFromSchemaTokens();
+    if (trailingLines.length > 0 && this.schemaRows.length > 0) {
+      const lastRow = this.schemaRows[this.schemaRows.length - 1];
+      const existingComments = String(lastRow?.comments ?? '');
+      const trailingText = trailingLines.join('\n');
+      lastRow.comments = existingComments.length > 0 ? `${existingComments}\n${trailingText}` : trailingText;
+    }
+    this.schemaTextTokens = [];
+  }
+
   handleGlobalButtonClick(event) {
     if (!event?.target?.closest) {
       return;
@@ -776,6 +809,22 @@ enum(active,inactive,pending)</pre>
 
     const rows = parseResult.dataRules.map((rule) => this.ruleToSchemaRow(rule));
     const tokens = parseResult.schemaTokens || [];
+    const rowsByTokenOrder = [];
+    let pendingLeadingTextLines = [];
+    tokens.forEach((token) => {
+      if (token?.kind === 'comment' || token?.kind === 'blank') {
+        pendingLeadingTextLines.push(String(token?.text ?? ''));
+        return;
+      }
+      if (token?.kind === 'rule') {
+        const row = rows[rowsByTokenOrder.length];
+        if (row) {
+          row.leadingTextLines = pendingLeadingTextLines.slice();
+          rowsByTokenOrder.push(row);
+        }
+        pendingLeadingTextLines = [];
+      }
+    });
     return { rows, errors: [], tokens };
   }
 
@@ -804,6 +853,7 @@ enum(active,inactive,pending)</pre>
     const row = this.createBlankSchemaRow();
     row.name = String(rule?.name ?? '');
     row.comments = String(rule?.comments ?? '');
+    row.leadingTextLines = [];
     row.sourceType = normaliseSourceType(rule?.type);
 
     if (row.sourceType === SOURCE_TYPE_FAKER) {
@@ -976,6 +1026,7 @@ enum(active,inactive,pending)</pre>
       return;
     }
 
+    this.invalidateSchemaTokensFromRows();
     row[fieldName] = event.target.value;
     if (fieldName === 'sourceType') {
       row.sourceType = normaliseSourceType(row.sourceType);
@@ -1028,6 +1079,7 @@ enum(active,inactive,pending)</pre>
   addRowAfter(index) {
     const insertAt = Math.min(Math.max(index + 1, 0), this.schemaRows.length);
     this.schemaRows.splice(insertAt, 0, this.createBlankSchemaRow());
+    this.invalidateSchemaTokensFromRows();
     this.renderSchemaRows();
   }
 
@@ -1037,6 +1089,7 @@ enum(active,inactive,pending)</pre>
     } else {
       this.schemaRows.splice(index, 1);
     }
+    this.invalidateSchemaTokensFromRows();
     this.renderSchemaRows();
   }
 
@@ -1047,6 +1100,7 @@ enum(active,inactive,pending)</pre>
     }
     const [row] = this.schemaRows.splice(index, 1);
     this.schemaRows.splice(targetIndex, 0, row);
+    this.invalidateSchemaTokensFromRows();
     this.renderSchemaRows();
   }
 

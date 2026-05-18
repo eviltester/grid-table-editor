@@ -534,12 +534,31 @@ function populateTestDataGridFromRules() {
   // clear data then add rules
   defnGridBridge.clearRows();
   schemaTextTokens = Array.isArray(parseResult.schemaTokens) ? parseResult.schemaTokens : [];
+  const leadingTextLinesByRuleIndex = [];
+  if (schemaTextTokens.length > 0) {
+    let pendingLeadingTextLines = [];
+    let ruleIndex = 0;
+    schemaTextTokens.forEach((token) => {
+      if (token?.kind === 'comment' || token?.kind === 'blank') {
+        pendingLeadingTextLines.push(String(token?.text ?? ''));
+        return;
+      }
+      if (token?.kind === 'rule') {
+        leadingTextLinesByRuleIndex[ruleIndex] = pendingLeadingTextLines.slice();
+        pendingLeadingTextLines = [];
+        ruleIndex += 1;
+      }
+    });
+  }
 
   const rowsToAdd = [];
-  for (let rule of parseResult.dataRules) {
+  for (const [ruleIndex, rule] of parseResult.dataRules.entries()) {
     let data = {};
     data.columnName = rule.name;
     data.comments = String(rule.comments ?? '');
+    data.leadingTextLines = Array.isArray(leadingTextLinesByRuleIndex[ruleIndex])
+      ? leadingTextLinesByRuleIndex[ruleIndex].slice()
+      : [];
     if (rule.type == 'faker') {
       // remove faker.
       let fakerFreeRule = rule.ruleSpec;
@@ -872,7 +891,8 @@ function setupAgGridDefnEditor(tableDiv) {
     },
     getRows: () => {
       const rows = [];
-      defnGridApi.forEachNode((rowNode) => rows.push({ ...rowNode.data }));
+      // Respect the current visual order (including row drag reorder) when syncing to text schema.
+      defnGridApi.forEachNodeAfterFilterAndSort((rowNode) => rows.push({ ...rowNode.data }));
       return rows;
     },
   };
@@ -1044,6 +1064,9 @@ function convertGridToText() {
       name: String(resolvedRowData.columnName || ''),
       ruleSpec: String(ruleLine || ''),
       comments: String(resolvedRowData.comments ?? ''),
+      leadingTextLines: Array.isArray(resolvedRowData.leadingTextLines)
+        ? resolvedRowData.leadingTextLines.map((line) => String(line ?? ''))
+        : [],
     });
   });
 

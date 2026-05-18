@@ -557,13 +557,13 @@ function populateTestDataGridFromRules() {
       }
     } else if (rule.type == 'domain') {
       const domainRule = String(rule.ruleSpec || '').trim();
-      const domainCommand = findDomainCommand(domainRule);
-      if (!domainCommand) {
+      const domainParts = extractDomainCommandAndParams(domainRule);
+      if (!domainParts.command) {
         data.type = '';
         data.value = domainRule;
       } else {
-        data.type = domainCommand;
-        data.value = domainRule.replace(domainCommand, '');
+        data.type = domainParts.command;
+        data.value = domainParts.params;
       }
     } else if (rule.type == 'enum') {
       data.type = 'enum';
@@ -603,11 +603,18 @@ function findFakerCommand(aString) {
   return null;
 }
 
-function findDomainCommand(aString) {
-  const fullRule = String(aString || '').trim();
+function extractDomainCommandAndParams(ruleSpec) {
+  const fullRule = String(ruleSpec || '').trim();
+  if (!fullRule) {
+    return { command: '', params: '' };
+  }
+
   const exactKeyword = getDomainKeywordByCommand(fullRule);
   if (exactKeyword) {
-    return String(exactKeyword.shortestUniqueAlias || exactKeyword.keyword || '').trim();
+    return {
+      command: String(exactKeyword.shortestUniqueAlias || exactKeyword.keyword || '').trim(),
+      params: '',
+    };
   }
 
   const openParenIndex = fullRule.indexOf('(');
@@ -615,7 +622,10 @@ function findDomainCommand(aString) {
     const commandPart = fullRule.slice(0, openParenIndex).trim();
     const commandKeyword = getDomainKeywordByCommand(commandPart);
     if (commandKeyword) {
-      return String(commandKeyword.shortestUniqueAlias || commandKeyword.keyword || '').trim();
+      return {
+        command: String(commandKeyword.shortestUniqueAlias || commandKeyword.keyword || '').trim(),
+        params: fullRule.slice(openParenIndex),
+      };
     }
   }
 
@@ -625,10 +635,11 @@ function findDomainCommand(aString) {
     }
     const remainder = fullRule.slice(command.length);
     if (remainder.length === 0 || remainder.startsWith('(')) {
-      return command;
+      return { command, params: remainder };
     }
   }
-  return null;
+
+  return { command: '', params: fullRule };
 }
 
 /**

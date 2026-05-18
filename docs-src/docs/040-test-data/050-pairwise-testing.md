@@ -179,15 +179,15 @@ enum("application/json","application/xml","text/plain")
 
 # randomized fields
 User ID
-faker.number.int
+number.int
 Email Address
-faker.internet.email
+internet.email
 Request Timestamp
-faker.date.recent
+date.recent
 Authorization Token
 [A-Fa-f0-9]{32}
 Response Time
-faker.number.int
+number.int
 ```
 
 This configuration generates test data where:

@@ -294,7 +294,7 @@ function handleRequest(request) {
                 textSpec: {
                   type: 'string',
                   description:
-                    'Examples:\nName\\nperson.firstName\\nSurname\\nperson.lastName\nor\nname: faker.person.firstName()\nlast_name: person.lastName',
+                    'Examples:\nName\\nperson.firstName\\nSurname\\nperson.lastName\nor\nname: person.firstName()\nlast_name: person.lastName',
                 },
                 rowCount: { type: 'integer', minimum: 0 },
                 outputFormat: { type: 'string', enum: SUPPORTED_FORMATS },

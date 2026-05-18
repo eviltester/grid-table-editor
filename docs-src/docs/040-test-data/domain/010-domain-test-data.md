@@ -8,6 +8,8 @@ description: "Domain keyword abstraction reference and examples."
 
 Domain keywords provide a stable AnyWayData abstraction over Faker-backed generators.
 
+Note: `helpers.*` is intentionally faker-only and not part of the domain abstraction.
+
 Each domain page lists methods, arguments, and executable examples.
 
 ## Domains
@@ -25,7 +27,6 @@ Each domain page lists methods, arguments, and executable examples.
 - [food](/docs/test-data/domain/food)
 - [git](/docs/test-data/domain/git)
 - [hacker](/docs/test-data/domain/hacker)
-- [helpers](/docs/test-data/domain/helpers)
 - [image](/docs/test-data/domain/image)
 - [internet](/docs/test-data/domain/internet)
 - [literal](/docs/test-data/domain/literal)

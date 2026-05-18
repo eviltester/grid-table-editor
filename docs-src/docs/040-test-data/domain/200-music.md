@@ -1,5 +1,5 @@
 ---
-sidebar_position: 210
+sidebar_position: 200
 title: "music Domain"
 description: "Domain keyword reference for music."
 ---
@@ -30,8 +30,8 @@ music.album()
 ```
 
 Example return values:
-- `"Chocolate Factory"`
-- `"Die A Legend"`
+- `"Chromatica"`
+- `"No More Drama"`
 
 ### `music.artist`
 
@@ -49,8 +49,8 @@ music.artist()
 ```
 
 Example return values:
-- `"Vera Lynn"`
-- `"Aitana"`
+- `"TWICE"`
+- `"Billy Paul"`
 
 ### `music.genre`
 
@@ -68,8 +68,8 @@ music.genre()
 ```
 
 Example return values:
-- `"Smooth Jazz"`
-- `"Reggaeton"`
+- `"Deep House"`
+- `"Mainstream Jazz"`
 
 ### `music.songName`
 
@@ -87,5 +87,5 @@ music.songName()
 ```
 
 Example return values:
-- `"Ring of Fire"`
-- `"Fly Robin Fly"`
+- `"My Man"`
+- `"Doo Wop (That Thing)"`

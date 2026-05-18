@@ -30,8 +30,8 @@ commerce.department()
 ```
 
 Example return values:
-- `"Sports"`
-- `"Clothing"`
+- `"Health"`
+- `"Computers"`
 
 ### `commerce.isbn`
 
@@ -52,12 +52,12 @@ commerce.isbn()
 ```
 
 ```txt
-commerce.isbn(separator="-")
+commerce.isbn(separator="-", variant="13")
 ```
 
 Example return values:
-- `"978-1-02-524697-0"`
-- `"978-0-396-76603-2"`
+- `"978-0-568-62500-6"`
+- `"978-1-4751-9094-6"`
 
 ### `commerce.price`
 
@@ -80,12 +80,12 @@ commerce.price()
 ```
 
 ```txt
-commerce.price(dec=1)
+commerce.price(dec=1, max=1, min=1, symbol="$")
 ```
 
 Example return values:
-- `"575.79"`
-- `"886.65"`
+- `"808.69"`
+- `"578.99"`
 
 ### `commerce.product`
 
@@ -103,8 +103,8 @@ commerce.product()
 ```
 
 Example return values:
-- `"Salad"`
-- `"Chair"`
+- `"Cheese"`
+- `"Soap"`
 
 ### `commerce.productAdjective`
 
@@ -123,7 +123,7 @@ commerce.productAdjective()
 
 Example return values:
 - `"Intelligent"`
-- `"Rustic"`
+- `"Electronic"`
 
 ### `commerce.productDescription`
 
@@ -141,8 +141,8 @@ commerce.productDescription()
 ```
 
 Example return values:
-- `"Our hamster-friendly Shoes ensures triangular comfort for your pets"`
-- `"Savor the crispy essence in our Towels, designed for pushy culinary adventures"`
+- `"Introducing the Faroe Islands-inspired Ball, blending mundane style with local craftsmanship"`
+- `"New Soap model with 91 GB RAM, 410 GB storage, and round features"`
 
 ### `commerce.productMaterial`
 
@@ -160,8 +160,8 @@ commerce.productMaterial()
 ```
 
 Example return values:
-- `"Aluminum"`
-- `"Plastic"`
+- `"Granite"`
+- `"Bronze"`
 
 ### `commerce.productName`
 
@@ -179,5 +179,5 @@ commerce.productName()
 ```
 
 Example return values:
-- `"Soft Cotton Soap"`
-- `"Electronic Wooden Pizza"`
+- `"Electronic Bamboo Chair"`
+- `"Recycled Bronze Chair"`

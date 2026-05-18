@@ -11,6 +11,11 @@ class DomainTestDataRuleValidator {
     this.lastParsed = null;
 
     const ruleSpec = String(aTestDataRule?.ruleSpec || '').trim();
+    if (ruleSpec.startsWith('awd.domain.helpers.') || ruleSpec.startsWith('domain.helpers.')) {
+      this.validationError = 'helpers_not_supported_in_domain: helpers.* is faker-only; use faker.helpers.*';
+      return false;
+    }
+
     const parsed = parseKeywordInvocation(ruleSpec);
     if (!Array.isArray(parsed?.errors) || parsed.errors.length > 0) {
       this.validationError = Array.isArray(parsed?.errors)

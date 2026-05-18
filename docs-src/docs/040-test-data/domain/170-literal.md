@@ -1,14 +1,14 @@
 ---
-sidebar_position: 180
+sidebar_position: 170
 title: "literal Domain"
 description: "Domain keyword reference for literal."
 ---
 
 # literal Domain
 
-The `literal` domain object returns the entered value directly.
+The `literal` domain maps domain keywords to underlying faker implementations.
 
-## Documentation
+## Faker Documentation
 
 - [https://anywaydata.com/docs/category/generating-data](https://anywaydata.com/docs/category/generating-data)
 
@@ -23,7 +23,7 @@ Return the literal value provided by the caller.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `value` | `string|number|boolean|null` | yes | Literal value to return. |
+| `value` | `string|number|boolean` | yes | Literal value to return. |
 
 Examples:
 
@@ -36,4 +36,5 @@ literal.value(value="sample")
 ```
 
 Example return values:
+- `"sample"`
 - `"sample"`

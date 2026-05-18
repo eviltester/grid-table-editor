@@ -30,8 +30,8 @@ book.author()
 ```
 
 Example return values:
-- `"Judy Blume"`
-- `"W.K. Marriott"`
+- `"George R. R. Martin"`
+- `"Theodore Alois Buckley"`
 
 ### `book.format`
 
@@ -49,7 +49,7 @@ book.format()
 ```
 
 Example return values:
-- `"Hardcover"`
+- `"Paperback"`
 - `"Hardcover"`
 
 ### `book.genre`
@@ -69,7 +69,7 @@ book.genre()
 
 Example return values:
 - `"Memoir"`
-- `"Philosophy"`
+- `"Business"`
 
 ### `book.publisher`
 
@@ -87,8 +87,8 @@ book.publisher()
 ```
 
 Example return values:
-- `"Happy House"`
-- `"Martinus Nijhoff Publishers"`
+- `"Harper & Brothers"`
+- `"Athabasca University Press"`
 
 ### `book.series`
 
@@ -106,8 +106,8 @@ book.series()
 ```
 
 Example return values:
-- `"The Border Trilogy"`
-- `"The Eighth Life"`
+- `"His Dark Materials"`
+- `"The Arc of a Scythe"`
 
 ### `book.title`
 
@@ -125,5 +125,5 @@ book.title()
 ```
 
 Example return values:
-- `"U.S.A. Trilogy"`
 - `"The Handmaid's Tale"`
+- `"Nostromo"`

@@ -30,8 +30,8 @@ airline.aircraftType()
 ```
 
 Example return values:
-- `"narrowbody"`
-- `"narrowbody"`
+- `"widebody"`
+- `"regional"`
 
 ### `airline.airline`
 
@@ -49,8 +49,8 @@ airline.airline()
 ```
 
 Example return values:
-- `{"name":"Emirates Airlines","iataCode":"EK"}`
-- `{"name":"Hainan Airlines","iataCode":"HU"}`
+- `{"name":"Air Mauritius","iataCode":"MK"}`
+- `{"name":"China Southern Airlines","iataCode":"CZ"}`
 
 ### `airline.airline.iataCode`
 
@@ -68,8 +68,8 @@ airline.airline.iataCode()
 ```
 
 Example return values:
-- `"LY"`
-- `"8J"`
+- `"JT"`
+- `"W6"`
 
 ### `airline.airline.name`
 
@@ -87,8 +87,8 @@ airline.airline.name()
 ```
 
 Example return values:
-- `"Egyptair"`
-- `"Kulula.com"`
+- `"SriLankan Airlines"`
+- `"Spring Airlines"`
 
 ### `airline.airplane`
 
@@ -106,8 +106,8 @@ airline.airplane()
 ```
 
 Example return values:
-- `{"name":"De Havilland Canada DHC-6 Twin Otter","iataTypeCode":"DHT"}`
-- `{"name":"Douglas DC-9-50","iataTypeCode":"D95"}`
+- `{"name":"Airbus A340-300","iataTypeCode":"343"}`
+- `{"name":"Airbus A330","iataTypeCode":"330"}`
 
 ### `airline.airplane.iataTypeCode`
 
@@ -125,8 +125,8 @@ airline.airplane.iataTypeCode()
 ```
 
 Example return values:
-- `"7MJ"`
-- `"722"`
+- `"346"`
+- `"773"`
 
 ### `airline.airplane.name`
 
@@ -144,8 +144,8 @@ airline.airplane.name()
 ```
 
 Example return values:
-- `"Boeing 747SR"`
-- `"Embraer EMB.120 Brasilia"`
+- `"De Havilland Canada DHC-3 Otter"`
+- `"Airbus A319"`
 
 ### `airline.airport`
 
@@ -163,8 +163,8 @@ airline.airport()
 ```
 
 Example return values:
-- `{"name":"Phoenix Sky Harbor International Airport","iataCode":"PHX"}`
-- `{"name":"Brussels Airport","iataCode":"BRU"}`
+- `{"name":"Cairns Airport","iataCode":"CNS"}`
+- `{"name":"Toronto Pearson International Airport","iataCode":"YYZ"}`
 
 ### `airline.airport.iataCode`
 
@@ -182,8 +182,8 @@ airline.airport.iataCode()
 ```
 
 Example return values:
-- `"JFK"`
-- `"JNB"`
+- `"FOR"`
+- `"DME"`
 
 ### `airline.airport.name`
 
@@ -201,8 +201,8 @@ airline.airport.name()
 ```
 
 Example return values:
-- `"Auckland International Airport"`
-- `"Shanghai Hongqiao International Airport"`
+- `"Zhukovsky International Airport"`
+- `"Salgado Filho International Airport"`
 
 ### `airline.flightNumber`
 
@@ -220,8 +220,8 @@ airline.flightNumber()
 ```
 
 Example return values:
-- `"12"`
-- `"3322"`
+- `"97"`
+- `"490"`
 
 ### `airline.recordLocator`
 
@@ -239,8 +239,8 @@ airline.recordLocator()
 ```
 
 Example return values:
-- `"PNRNZE"`
-- `"VVGYDP"`
+- `"NKTNNS"`
+- `"AAHMGG"`
 
 ### `airline.seat`
 
@@ -265,4 +265,4 @@ airline.seat(aircraftType="narrowbody")
 
 Example return values:
 - `"31E"`
-- `"28A"`
+- `"21F"`

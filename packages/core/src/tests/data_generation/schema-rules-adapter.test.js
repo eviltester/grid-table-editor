@@ -101,6 +101,17 @@ describe('schema rules adapter', () => {
     expect(result.errors.map((error) => error.code)).toEqual(['missing_domain_command']);
   });
 
+  test('reports helpers_not_supported_in_domain for domain helper commands', () => {
+    const result = schemaRowsToDataRules({
+      schemaRows: [{ name: 'First', sourceType: 'domain', command: 'helpers.fake', params: '("x")' }],
+    });
+    expect(result.dataRules).toEqual([]);
+    expect(result.errors.map((error) => error.code)).toEqual(['helpers_not_supported_in_domain']);
+    expect(result.errors.map((error) => error.message)).toEqual([
+      'Row 1: helpers.* is faker-only; use faker.helpers.*',
+    ]);
+  });
+
   test('returns missing schema rows error for empty schema row list', () => {
     const result = schemaRowsToDataRules({
       schemaRows: [],

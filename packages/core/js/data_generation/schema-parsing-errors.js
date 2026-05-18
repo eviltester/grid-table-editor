@@ -34,6 +34,14 @@ export class SchemaParsingErrors {
     };
   }
 
+  static helpersNotSupportedInDomain(line) {
+    return {
+      code: 'helpers_not_supported_in_domain',
+      message: `Row ${line}: helpers.* is faker-only; use faker.helpers.*`,
+      ...(Number.isInteger(line) ? { line } : {}),
+    };
+  }
+
   static invalidSchemaPairing() {
     return {
       code: 'invalid_schema_pairing',

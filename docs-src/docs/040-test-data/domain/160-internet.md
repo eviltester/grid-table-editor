@@ -1,5 +1,5 @@
 ---
-sidebar_position: 170
+sidebar_position: 160
 title: "internet Domain"
 description: "Domain keyword reference for internet."
 ---
@@ -30,8 +30,8 @@ internet.color()
 ```
 
 Example return values:
-- `"#2a0759"`
-- `"#365a26"`
+- `"#261012"`
+- `"#5a7444"`
 
 ### `internet.displayName`
 
@@ -49,8 +49,8 @@ internet.displayName()
 ```
 
 Example return values:
-- `"Loyce_Batz"`
-- `"Albertha75"`
+- `"Ben.Hintz"`
+- `"Lydia20"`
 
 ### `internet.domainName`
 
@@ -68,8 +68,8 @@ internet.domainName()
 ```
 
 Example return values:
-- `"urban-airline.org"`
-- `"superficial-experience.info"`
+- `"every-trolley.org"`
+- `"elastic-hepatitis.name"`
 
 ### `internet.domainSuffix`
 
@@ -87,8 +87,8 @@ internet.domainSuffix()
 ```
 
 Example return values:
-- `"org"`
 - `"biz"`
+- `"com"`
 
 ### `internet.domainWord`
 
@@ -106,8 +106,8 @@ internet.domainWord()
 ```
 
 Example return values:
-- `"snoopy-compromise"`
-- `"mediocre-shore"`
+- `"ornate-vista"`
+- `"frizzy-doubter"`
 
 ### `internet.email`
 
@@ -130,12 +130,12 @@ internet.email()
 ```
 
 ```txt
-internet.email(allowSpecialCharacters=true)
+internet.email(allowSpecialCharacters=true, firstName="sample", lastName="sample", provider="sample")
 ```
 
 Example return values:
-- `"Dannie_Kunze@yahoo.com"`
-- `"Meagan40@hotmail.com"`
+- `"Marco.Bogan40@gmail.com"`
+- `"Rozella_Swaniawski37@yahoo.com"`
 
 ### `internet.emoji`
 
@@ -154,9 +154,13 @@ Examples:
 internet.emoji()
 ```
 
+```txt
+internet.emoji(types=["food","nature"])
+```
+
 Example return values:
-- `"🧄"`
-- `"⚽"`
+- `"📲"`
+- `"😀"`
 
 ### `internet.exampleEmail`
 
@@ -174,8 +178,8 @@ internet.exampleEmail()
 ```
 
 Example return values:
-- `"Ivy31@example.net"`
-- `"Morris.Mraz15@example.com"`
+- `"Elenor_Welch@example.com"`
+- `"Shayne29@example.net"`
 
 ### `internet.httpMethod`
 
@@ -193,8 +197,8 @@ internet.httpMethod()
 ```
 
 Example return values:
-- `"PUT"`
-- `"GET"`
+- `"POST"`
+- `"DELETE"`
 
 ### `internet.httpStatusCode`
 
@@ -212,8 +216,8 @@ internet.httpStatusCode()
 ```
 
 Example return values:
-- `102`
-- `502`
+- `428`
+- `305`
 
 ### `internet.ip`
 
@@ -231,8 +235,8 @@ internet.ip()
 ```
 
 Example return values:
-- `"101.110.22.59"`
-- `"7df4:0798:fa4f:f783:d11c:c7fd:c0ca:83ac"`
+- `"bcd4:cd4b:fab5:0ca9:b7c3:3cd3:da7b:e1f9"`
+- `"158.22.244.203"`
 
 ### `internet.ipv4`
 
@@ -253,12 +257,12 @@ internet.ipv4()
 ```
 
 ```txt
-internet.ipv4(cidrBlock="192.168.0.0/24")
+internet.ipv4(cidrBlock="192.168.0.0/24", network="private-a")
 ```
 
 Example return values:
-- `"247.198.247.38"`
-- `"137.28.224.104"`
+- `"206.125.206.245"`
+- `"89.168.239.153"`
 
 ### `internet.ipv6`
 
@@ -276,8 +280,8 @@ internet.ipv6()
 ```
 
 Example return values:
-- `"5bd1:390f:5ecd:8484:aa7c:ccbc:1561:9258"`
-- `"4ebd:1d97:4cc8:ea95:fb13:b4ad:9c1d:4b7e"`
+- `"02db:bfaa:afbd:de77:b75d:8904:e3fa:5108"`
+- `"3894:75f7:fffd:2df0:df39:cb88:ebf1:ad1d"`
 
 ### `internet.jwt`
 
@@ -299,12 +303,12 @@ internet.jwt()
 ```
 
 ```txt
-internet.jwt(header=["sample"])
+internet.jwt(header=["sample"], payload=["sample"], refDate=1)
 ```
 
 Example return values:
-- `"eyJhbGciOiJQUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NzkwODc5MzAsImV4cCI6MTc3OTE0NDkwMiwibmJmIjoxNzc4ODAxNjc1LCJpc3MiOiJEZW5lc2lrIC0gSGF1Y2siLCJzdWIiOiI0ZTY3N2ZkZi05MjlkLTQ4ZjgtOWY4ZC1hNGJjNmM0Yjk2OTYiLCJhdWQiOiJjYmEzMjhmZC0xNDI4LTQzNTAtYTcyNy00NTdjN2VlY2JjZmUiLCJqdGkiOiI2OTdjMmJlNi04MTg4LTQyZmYtODk3OS0wNTlhODM1ODhmNzYifQ.Snvq0mvYJPz9ejpd48TVyjK0AidfcUAUADmbbNcWmebg9P8duuUJXv77Jbz7BMaX"`
-- `"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NzkwMzk1MTAsImV4cCI6MTc3OTA5NjY4MCwibmJmIjoxNzgwODkyNTU5LCJpc3MiOiJLb2VscGluIC0gV2ludGhlaXNlciIsInN1YiI6ImY4NmZkZTE4LThjYTUtNGI0Yy04YmJjLWMzM2JiYjQ4NzViYyIsImF1ZCI6IjM2NTM3NGZiLTI4YzQtNDE0Yi04YTIxLTkyZjQ0ODlmMGM2NSIsImp0aSI6IjU5YmEwMzZhLTQ2ZjQtNDhlMC04MDE0LWQ5MWVjYzBmMmMyOCJ9.Of1DExnBrbXTwgLqpIwbmwpTwYsDYEATYafVwrHwWeXlBP0QfYvgV40Ykk3thuEi"`
+- `"eyJhbGciOiJFUzM4NCIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NzkwMzY0NzIsImV4cCI6MTc3OTA2OTM4MCwibmJmIjoxNzc0NTYyODY3LCJpc3MiOiJTbWl0aGFtLCBHdXNpa293c2tpIGFuZCBMZWdyb3MiLCJzdWIiOiIyOTI3NmUyYS05Y2I5LTQyNGEtYWNjMS1iZDdmNGZmNDRhOWUiLCJhdWQiOiJiZmNkYWZlMC00Y2ExLTRmNWQtOTZiMy1lNGZjODVlZmIyZDMiLCJqdGkiOiJkMmNiM2JjOC00YTUyLTRlOTEtYmQzMS0yN2I5NDg1N2RmYjQifQ.HCVgvP6rGliA17BNydO1KgD8ie7eVx4w1ZkgGaTgeTSYp4pIh0jye8yhMUVEXoVy"`
+- `"eyJhbGciOiJFUzUxMiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NzkwNDQzNjcsImV4cCI6MTc3OTExNjkzMCwibmJmIjoxODAxNTI1OTg4LCJpc3MiOiJIYWFnIExMQyIsInN1YiI6IjExZDcwN2IxLTllMDAtNGZiZi04NjQ0LTM2NjNiYjA5N2I2MyIsImF1ZCI6Ijc2YTc1NWQyLWU0YmUtNDI3Mi05NmM4LTBlZGRjM2QxOTBlYyIsImp0aSI6IjJkNzZiZjg4LWIxYjUtNDAxMy04ZTM4LWVjNDM3NWU1YjExNCJ9.9gBrAYYajUJTdLKhwxBzctNj8r1MXm90m2GKS9JP0kbxxMNM7xHb7O456ywOK7Xu"`
 
 ### `internet.jwtAlgorithm`
 
@@ -322,8 +326,8 @@ internet.jwtAlgorithm()
 ```
 
 Example return values:
-- `"ES256"`
-- `"RS256"`
+- `"HS512"`
+- `"RS384"`
 
 ### `internet.mac`
 
@@ -347,8 +351,8 @@ internet.mac(separator="-")
 ```
 
 Example return values:
-- `"13:60:35:43:eb:ca"`
-- `"61:3c:84:e2:92:e8"`
+- `"ed:c4:9c:15:7b:6b"`
+- `"bb:d2:c2:c8:0f:d3"`
 
 ### `internet.password`
 
@@ -371,12 +375,12 @@ internet.password()
 ```
 
 ```txt
-internet.password(length=1)
+internet.password(length=1, memorable=true, pattern="sample", prefix="#")
 ```
 
 Example return values:
-- `"robhIiQp13kS0t5"`
-- `"gsLNeZrnbhgL2Vj"`
+- `"AL__7nIYjyDwAEs"`
+- `"hVJNDFA48bX6rtv"`
 
 ### `internet.port`
 
@@ -394,8 +398,8 @@ internet.port()
 ```
 
 Example return values:
-- `61422`
-- `1624`
+- `55976`
+- `49210`
 
 ### `internet.protocol`
 
@@ -435,12 +439,12 @@ internet.url()
 ```
 
 ```txt
-internet.url(appendSlash=true)
+internet.url(appendSlash=true, protocol="sample")
 ```
 
 Example return values:
-- `"https://speedy-smog.net"`
-- `"https://tired-restaurant.biz/"`
+- `"https://failing-pants.biz/"`
+- `"https://mixed-academics.net/"`
 
 ### `internet.userAgent`
 
@@ -458,8 +462,8 @@ internet.userAgent()
 ```
 
 Example return values:
-- `"Mozilla/5.0 (Linux; Android 9; SM-G998P) AppleWebKit/542.30 (KHTML, like Gecko) Chrome/88.5.12.11 Mobile Safari/540.70"`
-- `"FakerBot/4.20.11"`
+- `"Mozilla/5.0 (Linux; Android 11; SM-G998U) AppleWebKit/542.69 (KHTML, like Gecko) Chrome/104.7.14.4 Mobile Safari/580.34"`
+- `"Mozilla/5.0 (Windows NT 6.0; Win64; x64) AppleWebKit/539.48 (KHTML, like Gecko) Chrome/111.5.9.15 Safari/581.76 Edg/121.0.5.20"`
 
 ### `internet.username`
 
@@ -480,12 +484,12 @@ internet.username()
 ```
 
 ```txt
-internet.username(firstName="sample")
+internet.username(firstName="sample", lastName="sample")
 ```
 
 Example return values:
-- `"Noel84"`
-- `"Garnett_Kihn84"`
+- `"Elizabeth.Zulauf"`
+- `"Terry64"`
 
 ### `internet.userName`
 
@@ -503,5 +507,5 @@ internet.userName()
 ```
 
 Example return values:
-- `"Aniyah_Schamberger64"`
-- `"Kelli98"`
+- `"Justine8"`
+- `"Quinton_Ritchie13"`

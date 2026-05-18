@@ -30,8 +30,8 @@ finance.accountName()
 ```
 
 Example return values:
+- `"Auto Loan Account"`
 - `"Credit Card Account"`
-- `"Money Market Account"`
 
 ### `finance.accountNumber`
 
@@ -55,8 +55,8 @@ finance.accountNumber(length=1)
 ```
 
 Example return values:
-- `"03137375"`
-- `"42973099"`
+- `"88291458"`
+- `"72117813"`
 
 ### `finance.amount`
 
@@ -80,12 +80,12 @@ finance.amount()
 ```
 
 ```txt
-finance.amount(autoFormat=true)
+finance.amount(autoFormat=true, dec=1, max=1, min=1, symbol="$")
 ```
 
 Example return values:
-- `"392.28"`
-- `"635.95"`
+- `"860.56"`
+- `"230.37"`
 
 ### `finance.bic`
 
@@ -109,8 +109,8 @@ finance.bic(includeBranchCode=true)
 ```
 
 Example return values:
-- `"UWBOMLCG"`
-- `"BRKXLU6K"`
+- `"PPTHVNHP"`
+- `"ZDMNGD1B"`
 
 ### `finance.bitcoinAddress`
 
@@ -128,8 +128,8 @@ finance.bitcoinAddress()
 ```
 
 Example return values:
-- `"3gNN1EcswoDePhssPHEwLbx1KrH1YQyN"`
-- `"3GJnZPYkp5jLiU3tPrDTmibeNP8iLC"`
+- `"3x8wqMpoemq3ybv1yWn1AjW4NW"`
+- `"bc1a3pk2fkzvf5c9v2fvjd8yjmggeg2t6e9uletx3g"`
 
 ### `finance.creditCardCVV`
 
@@ -147,8 +147,8 @@ finance.creditCardCVV()
 ```
 
 Example return values:
-- `"056"`
-- `"394"`
+- `"486"`
+- `"990"`
 
 ### `finance.creditCardIssuer`
 
@@ -166,8 +166,8 @@ finance.creditCardIssuer()
 ```
 
 Example return values:
-- `"visa"`
-- `"mastercard"`
+- `"american_express"`
+- `"diners_club"`
 
 ### `finance.creditCardNumber`
 
@@ -191,8 +191,8 @@ finance.creditCardNumber(issuer="sample")
 ```
 
 Example return values:
-- `"6555-9446-2632-4771"`
-- `"2720-5719-6089-8547"`
+- `"6570-3453-3447-4166"`
+- `"5368-2893-3140-6714"`
 
 ### `finance.currency`
 
@@ -210,8 +210,8 @@ finance.currency()
 ```
 
 Example return values:
-- `{"name":"Pataca","code":"MOP","symbol":"","numericCode":"446"}`
-- `{"name":"Euro","code":"EUR","symbol":"€","numericCode":"978"}`
+- `{"name":"Dong","code":"VND","symbol":"₫","numericCode":"704"}`
+- `{"name":"Gibraltar Pound","code":"GIP","symbol":"£","numericCode":"292"}`
 
 ### `finance.currencyCode`
 
@@ -229,8 +229,8 @@ finance.currencyCode()
 ```
 
 Example return values:
-- `"VES"`
-- `"KES"`
+- `"NOK"`
+- `"DJF"`
 
 ### `finance.currencyName`
 
@@ -248,8 +248,8 @@ finance.currencyName()
 ```
 
 Example return values:
-- `"Cayman Islands Dollar"`
-- `"Moldovan Leu"`
+- `"South Sudanese pound"`
+- `"CFP Franc"`
 
 ### `finance.currencyNumericCode`
 
@@ -267,7 +267,7 @@ finance.currencyNumericCode()
 ```
 
 Example return values:
-- `"834"`
+- `"417"`
 - `"324"`
 
 ### `finance.currencySymbol`
@@ -286,8 +286,8 @@ finance.currencySymbol()
 ```
 
 Example return values:
-- `"Kč"`
-- `"$"`
+- `"Ft"`
+- `"руб"`
 
 ### `finance.ethereumAddress`
 
@@ -305,8 +305,8 @@ finance.ethereumAddress()
 ```
 
 Example return values:
-- `"0x4eb5993200faabd55a6aba35ddd1faaaca5aa80c"`
-- `"0x5f083592cb0dc4e29042d4aa1e6ba312cbc5779e"`
+- `"0xeedc5f2fa15afedea5e6ab4cae745db0670d2edc"`
+- `"0xfc6a2707be50b391a0ce249f320e887f3bad4bab"`
 
 ### `finance.iban`
 
@@ -327,12 +327,12 @@ finance.iban()
 ```
 
 ```txt
-finance.iban(countryCode="GB")
+finance.iban(countryCode="GB", formatted=true)
 ```
 
 Example return values:
-- `"IS849506798900662060044725"`
-- `"XK782550322005043919"`
+- `"CZ9000876680090097910782"`
+- `"AD3250001002325310563544"`
 
 ### `finance.litecoinAddress`
 
@@ -350,8 +350,8 @@ finance.litecoinAddress()
 ```
 
 Example return values:
-- `"3BnL3KVe4qQVLHL9c6RyNtuKXj"`
-- `"MRzdcHBAmbwDaFJ7YJN621drBQ"`
+- `"3gZosYYk6RvfzNyBzC8ydnSCRWSf"`
+- `"L4nhEA39vgMdmTtc5p83G7Sydn"`
 
 ### `finance.maskedNumber`
 
@@ -375,8 +375,8 @@ finance.maskedNumber(length=1)
 ```
 
 Example return values:
-- `"(...7159)"`
-- `"(...1453)"`
+- `"(...2487)"`
+- `"(...8204)"`
 
 ### `finance.pin`
 
@@ -400,8 +400,8 @@ finance.pin(length=1)
 ```
 
 Example return values:
-- `"3844"`
-- `"0948"`
+- `"2272"`
+- `"6321"`
 
 ### `finance.routingNumber`
 
@@ -419,8 +419,8 @@ finance.routingNumber()
 ```
 
 Example return values:
-- `"115741982"`
-- `"803461901"`
+- `"159195743"`
+- `"549016924"`
 
 ### `finance.transactionDescription`
 
@@ -438,8 +438,8 @@ finance.transactionDescription()
 ```
 
 Example return values:
-- `"Transaction alert: invoice at Treutel, Hessel and Boyle using card ending ****5194 for an amount of VND 71.45 on account ***5536."`
-- `"A invoice for GIP 518.56 was made at Schmeler, Shanahan and Braun via card ending ****4972 on account ***7736."`
+- `"Payment of VES 758.35 for deposit at Towne, Haley and Yost, processed with card ending ****1184 linked to account ***9937."`
+- `"A invoice of NIO 619.11 occurred at O'Conner Group using a card ending in ****8040 for account ***3345."`
 
 ### `finance.transactionType`
 

@@ -76,17 +76,6 @@ function sampleValueForKeywordArg(keywordName, argName, typeName) {
   if (key === 'commerce.price.max') return 100;
   if (key === 'finance.iban.countryCode') return 'GB';
 
-  if (key === 'helpers.arrayElement.array') return ['a', 'b', 'c'];
-  if (key === 'helpers.arrayElements.array') return ['a', 'b', 'c'];
-  if (key === 'helpers.weightedArrayElement.array') {
-    return [
-      { value: 'a', weight: 1 },
-      { value: 'b', weight: 1 },
-    ];
-  }
-  if (key === 'helpers.mustache.str') return 'hello {{name}}';
-  if (key === 'helpers.mustache.data') return ['name', 'value'];
-  if (key === 'helpers.fromRegExp.expression') return '[a-z]{5}';
   if (key === 'airline.seat.aircraftType') return 'narrowbody';
   if (key === 'internet.emoji.types') return ['smiley'];
   if (key === 'internet.ipv4.cidrBlock') return '192.168.0.0/24';
@@ -152,9 +141,6 @@ function applyKeywordExecutionDefaults(keyword, args) {
   if (keyword.keyword === 'internet.ipv4') {
     args[0] = '192.168.0.0/24'; // cidrBlock
   }
-  if (keyword.keyword === 'helpers.shuffle') {
-    args[0] = ['a', 'b', 'c'];
-  }
   if (keyword.keyword === 'system.fileExt') {
     args[0] = 'image/png';
   }
@@ -162,12 +148,6 @@ function applyKeywordExecutionDefaults(keyword, args) {
 }
 
 function expectsRuntimeRejection(keywordName, argName) {
-  // TODO(domain-args): helpers.maybe callback cannot be safely represented in the current scalar/array-only arg schema.
-  if (keywordName === 'helpers.maybe' && argName === 'callback') return false;
-  // TODO(domain-args): helpers.maybe requires a callback function first; probability-only invocation is invalid with current schema.
-  if (keywordName === 'helpers.maybe' && argName === 'probability') return true;
-  // TODO(domain-args): helpers.multiple method currently expects a function callback, which is intentionally unsupported.
-  if (keywordName === 'helpers.multiple' && argName === 'method') return true;
   // TODO(domain-args): system.fileExt currently forwards mimeType as positional arg; faker expects a different shape.
   if (keywordName === 'system.fileExt' && argName === 'mimeType') return true;
   // TODO(domain-args): faker internet.password expects a RegExp for pattern, while current domain arg schema is string-only.
@@ -176,8 +156,8 @@ function expectsRuntimeRejection(keywordName, argName) {
 }
 
 function shouldSkipRuntimeExecution(keywordName, argName) {
-  // TODO(domain-args): helpers.maybe callback should eventually be represented as a non-executable schema arg.
-  if (keywordName === 'helpers.maybe' && argName === 'callback') return true;
+  void keywordName;
+  void argName;
   return false;
 }
 

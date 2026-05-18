@@ -31,6 +31,16 @@ function normaliseFakerCommand(commandValue) {
   return command;
 }
 
+function isDomainHelpersCommand(commandValue) {
+  const command = String(commandValue || '').trim();
+  if (!command) {
+    return false;
+  }
+  return (
+    command.startsWith('helpers.') || command.startsWith('domain.helpers.') || command.startsWith('awd.domain.helpers.')
+  );
+}
+
 function buildRuleSpecFromRow(row) {
   const sourceType = normaliseSourceType(row?.sourceType);
   if (sourceType === SOURCE_TYPE_FAKER || sourceType === SOURCE_TYPE_DOMAIN) {
@@ -103,6 +113,9 @@ export function schemaRowsToDataRules({ schemaRows = [] } = {}) {
     }
     if (row.sourceType === SOURCE_TYPE_DOMAIN && row.command.length === 0) {
       errors.push(SchemaParsingErrors.missingDomainCommand(row.line));
+    }
+    if (row.sourceType === SOURCE_TYPE_DOMAIN && isDomainHelpersCommand(row.command)) {
+      errors.push(SchemaParsingErrors.helpersNotSupportedInDomain(row.line));
     }
   });
 

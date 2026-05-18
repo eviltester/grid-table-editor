@@ -29,11 +29,18 @@ describe('domain keyword parser', () => {
     ]);
   });
 
-  test('parses quoted, boolean, null and number args', () => {
-    const parsedKeyword = parseKeywordInvocation('example.fn("value", true, null, 2.5)');
+  test('parses quoted, boolean and number args', () => {
+    const parsedKeyword = parseKeywordInvocation('example.fn("value", true, 2.5)');
     expect(parsedKeyword.keyword).toBe('example.fn');
-    expect(parsedKeyword.args).toEqual(['value', true, null, 2.5]);
+    expect(parsedKeyword.args).toEqual(['value', true, 2.5]);
     expect(parsedKeyword.errors).toEqual(['Unknown keyword: example.fn']);
+  });
+
+  test('returns syntax error for null literal argument', () => {
+    const parsedKeyword = parseKeywordInvocation('literal.value(null)');
+    expect(parsedKeyword.errors).toEqual([
+      'Invalid keyword arguments: bare values are not allowed; wrap strings in quotes',
+    ]);
   });
 
   test('parses array args', () => {

@@ -36,8 +36,8 @@ date.anytime(refDate=1)
 ```
 
 Example return values:
-- `"2025-08-05T17:44:20.249Z"`
-- `"2026-12-11T20:53:23.217Z"`
+- `"2026-11-16T12:31:26.233Z"`
+- `"2026-09-01T01:40:55.021Z"`
 
 ### `date.between`
 
@@ -62,8 +62,8 @@ date.between(from=1, to=1)
 ```
 
 Example return values:
-- `"1973-05-28T03:48:00.522Z"`
-- `"2031-11-26T20:33:58.073Z"`
+- `"2017-11-28T21:36:32.679Z"`
+- `"1986-05-03T09:28:02.047Z"`
 
 ### `date.betweens`
 
@@ -89,8 +89,8 @@ date.betweens(count=1, from=1, to=1)
 ```
 
 Example return values:
-- `["1994-04-21T22:56:21.974Z","2030-05-23T14:54:54.613Z"]`
-- `["1980-04-04T15:41:37.663Z","2026-06-20T08:28:52.333Z"]`
+- `["2003-02-24T12:13:48.103Z","2025-07-02T14:14:42.037Z"]`
+- `["2011-05-22T07:45:07.090Z","2029-10-03T22:27:10.427Z"]`
 
 ### `date.birthdate`
 
@@ -113,12 +113,12 @@ date.birthdate()
 ```
 
 ```txt
-date.birthdate(refDate=1)
+date.birthdate(refDate=1, max=1, min=1, mode="age")
 ```
 
 Example return values:
-- `"1954-09-12T10:56:09.274Z"`
-- `"2004-06-13T21:20:04.192Z"`
+- `"1947-02-19T15:30:09.049Z"`
+- `"1975-03-06T00:05:29.318Z"`
 
 ### `date.future`
 
@@ -139,12 +139,12 @@ date.future()
 ```
 
 ```txt
-date.future(refDate=1)
+date.future(refDate=1, years=1)
 ```
 
 Example return values:
-- `"2026-09-27T01:54:58.853Z"`
-- `"2026-12-31T21:43:48.329Z"`
+- `"2026-12-30T02:39:09.785Z"`
+- `"2026-09-23T01:35:35.111Z"`
 
 ### `date.month`
 
@@ -165,12 +165,12 @@ date.month()
 ```
 
 ```txt
-date.month(abbreviated=false)
+date.month(abbreviated=false, context=false)
 ```
 
 Example return values:
-- `"October"`
-- `"September"`
+- `"January"`
+- `"April"`
 
 ### `date.past`
 
@@ -191,12 +191,12 @@ date.past()
 ```
 
 ```txt
-date.past(refDate=1)
+date.past(refDate=1, years=1)
 ```
 
 Example return values:
-- `"2025-12-15T15:16:45.352Z"`
-- `"2025-08-22T22:02:22.320Z"`
+- `"2025-09-05T09:19:52.631Z"`
+- `"2026-04-16T07:47:17.776Z"`
 
 ### `date.recent`
 
@@ -217,12 +217,12 @@ date.recent()
 ```
 
 ```txt
-date.recent(days=1)
+date.recent(days=1, refDate=1)
 ```
 
 Example return values:
-- `"2026-05-17T17:36:54.204Z"`
-- `"2026-05-18T02:00:07.277Z"`
+- `"2026-05-17T12:43:57.737Z"`
+- `"2026-05-17T13:05:20.410Z"`
 
 ### `date.soon`
 
@@ -243,12 +243,12 @@ date.soon()
 ```
 
 ```txt
-date.soon(days=1)
+date.soon(days=1, refDate=1)
 ```
 
 Example return values:
-- `"2026-05-18T23:55:15.404Z"`
-- `"2026-05-19T00:09:48.267Z"`
+- `"2026-05-19T08:43:21.767Z"`
+- `"2026-05-19T06:52:57.958Z"`
 
 ### `date.timeZone`
 
@@ -266,8 +266,8 @@ date.timeZone()
 ```
 
 Example return values:
-- `"Australia/Sydney"`
-- `"Asia/Kuwait"`
+- `"Asia/Samarkand"`
+- `"America/Dominica"`
 
 ### `date.weekday`
 
@@ -288,9 +288,9 @@ date.weekday()
 ```
 
 ```txt
-date.weekday(abbreviated=false)
+date.weekday(abbreviated=false, context=false)
 ```
 
 Example return values:
-- `"Thursday"`
-- `"Monday"`
+- `"Wednesday"`
+- `"Saturday"`

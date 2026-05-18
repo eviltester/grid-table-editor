@@ -36,8 +36,8 @@ color.cmyk(format="hex")
 ```
 
 Example return values:
-- `[0.04,0.79,0.02,0.1]`
-- `[0,0.95,0.34,0.49]`
+- `[0.1,0.9,0.93,0.64]`
+- `[0.04,0.12,0.08,0.42]`
 
 ### `color.colorByCSSColorSpace`
 
@@ -55,8 +55,8 @@ color.colorByCSSColorSpace()
 ```
 
 Example return values:
-- `[0.4597,0.4882,0.8589]`
-- `[0.124,0.545,0.2428]`
+- `[0.4815,0.1635,0.5668]`
+- `[0.2589,0.7491,0.2178]`
 
 ### `color.cssSupportedFunction`
 
@@ -74,8 +74,8 @@ color.cssSupportedFunction()
 ```
 
 Example return values:
-- `"hsl"`
 - `"hwb"`
+- `"rgba"`
 
 ### `color.cssSupportedSpace`
 
@@ -94,7 +94,7 @@ color.cssSupportedSpace()
 
 Example return values:
 - `"prophoto-rgb"`
-- `"a98-rgb"`
+- `"prophoto-rgb"`
 
 ### `color.hsl`
 
@@ -115,12 +115,12 @@ color.hsl()
 ```
 
 ```txt
-color.hsl(format="hex")
+color.hsl(format="hex", includeAlpha=true)
 ```
 
 Example return values:
-- `[244,0.85,0.85]`
-- `[0,0.57,0.82]`
+- `[341,0.5,0.84]`
+- `[298,0.36,0.6]`
 
 ### `color.human`
 
@@ -138,8 +138,8 @@ color.human()
 ```
 
 Example return values:
-- `"green"`
-- `"grey"`
+- `"maroon"`
+- `"violet"`
 
 ### `color.hwb`
 
@@ -163,8 +163,8 @@ color.hwb(format="hex")
 ```
 
 Example return values:
-- `[346,0.21,0.92]`
-- `[67,0.53,0.34]`
+- `[65,0.7,0.92]`
+- `[54,0.58,0.39]`
 
 ### `color.lab`
 
@@ -188,8 +188,8 @@ color.lab(format="hex")
 ```
 
 Example return values:
-- `[0.134278,56.4849,-34.2824]`
-- `[0.48796,4.4509,1.0012]`
+- `[0.438621,65.7586,-1.9963]`
+- `[0.229125,27.2715,-19.9315]`
 
 ### `color.lch`
 
@@ -213,8 +213,8 @@ color.lch(format="hex")
 ```
 
 Example return values:
-- `[0.033562,182.1,62.3]`
-- `[0.114017,49.4,39.6]`
+- `[0.544119,189.6,105]`
+- `[0.591094,193.5,159.6]`
 
 ### `color.rgb`
 
@@ -237,12 +237,12 @@ color.rgb()
 ```
 
 ```txt
-color.rgb(casing="lower")
+color.rgb(casing="lower", format="hex", includeAlpha=true, prefix="#")
 ```
 
 Example return values:
-- `"#0a5ce1"`
-- `"#3a8c74"`
+- `"#64be3a"`
+- `"#31ebfe"`
 
 ### `color.space`
 
@@ -260,5 +260,5 @@ color.space()
 ```
 
 Example return values:
-- `"xvYCC"`
-- `"CIELAB"`
+- `"Rec. 2100"`
+- `"LCh"`

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 290
+sidebar_position: 280
 title: "word Domain"
 description: "Domain keyword reference for word."
 ---
@@ -35,12 +35,12 @@ word.adjective()
 ```
 
 ```txt
-word.adjective(length=1)
+word.adjective(length=1, max=1, value=1, strategy="any-length")
 ```
 
 Example return values:
-- `"posh"`
-- `"uncomfortable"`
+- `"mad"`
+- `"smooth"`
 
 ### `word.adverb`
 
@@ -63,12 +63,12 @@ word.adverb()
 ```
 
 ```txt
-word.adverb(length=1)
+word.adverb(length=1, max=1, value=1, strategy="any-length")
 ```
 
 Example return values:
-- `"questioningly"`
-- `"joyously"`
+- `"uselessly"`
+- `"doubtfully"`
 
 ### `word.conjunction`
 
@@ -91,12 +91,12 @@ word.conjunction()
 ```
 
 ```txt
-word.conjunction(length=1)
+word.conjunction(length=1, max=1, value=1, strategy="any-length")
 ```
 
 Example return values:
-- `"but"`
-- `"unless"`
+- `"what"`
+- `"that"`
 
 ### `word.interjection`
 
@@ -119,12 +119,12 @@ word.interjection()
 ```
 
 ```txt
-word.interjection(length=1)
+word.interjection(length=1, max=1, value=1, strategy="any-length")
 ```
 
 Example return values:
-- `"brr"`
-- `"er"`
+- `"yahoo"`
+- `"hm"`
 
 ### `word.noun`
 
@@ -147,12 +147,12 @@ word.noun()
 ```
 
 ```txt
-word.noun(length=1)
+word.noun(length=1, max=1, value=1, strategy="any-length")
 ```
 
 Example return values:
-- `"chap"`
-- `"flat"`
+- `"seal"`
+- `"contrail"`
 
 ### `word.preposition`
 
@@ -175,12 +175,12 @@ word.preposition()
 ```
 
 ```txt
-word.preposition(length=1)
+word.preposition(length=1, max=1, value=1, strategy="any-length")
 ```
 
 Example return values:
-- `"athwart"`
-- `"across"`
+- `"through"`
+- `"like"`
 
 ### `word.sample`
 
@@ -203,12 +203,12 @@ word.sample()
 ```
 
 ```txt
-word.sample(length=1)
+word.sample(length=1, max=1, value=1, strategy="any-length")
 ```
 
 Example return values:
-- `"mediocre"`
-- `"as"`
+- `"comparison"`
+- `"transcend"`
 
 ### `word.verb`
 
@@ -231,12 +231,12 @@ word.verb()
 ```
 
 ```txt
-word.verb(length=1)
+word.verb(length=1, max=1, value=1, strategy="any-length")
 ```
 
 Example return values:
-- `"waft"`
-- `"rebel"`
+- `"circle"`
+- `"pace"`
 
 ### `word.words`
 
@@ -258,9 +258,9 @@ word.words()
 ```
 
 ```txt
-word.words(count=1)
+word.words(count=1, max=1, value=1)
 ```
 
 Example return values:
-- `"superb"`
-- `"partial shakily"`
+- `"provided bonfire"`
+- `"paltry"`

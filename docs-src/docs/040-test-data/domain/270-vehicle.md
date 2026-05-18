@@ -1,5 +1,5 @@
 ---
-sidebar_position: 280
+sidebar_position: 270
 title: "vehicle Domain"
 description: "Domain keyword reference for vehicle."
 ---
@@ -30,8 +30,8 @@ vehicle.bicycle()
 ```
 
 Example return values:
-- `"Flat-Foot Comfort Bicycle"`
-- `"Touring Bicycle"`
+- `"Adventure Road Bicycle"`
+- `"Recumbent Bicycle"`
 
 ### `vehicle.color`
 
@@ -49,8 +49,8 @@ vehicle.color()
 ```
 
 Example return values:
-- `"purple"`
-- `"black"`
+- `"orange"`
+- `"white"`
 
 ### `vehicle.fuel`
 
@@ -68,8 +68,8 @@ vehicle.fuel()
 ```
 
 Example return values:
-- `"Gasoline"`
 - `"Diesel"`
+- `"Electric"`
 
 ### `vehicle.manufacturer`
 
@@ -87,8 +87,8 @@ vehicle.manufacturer()
 ```
 
 Example return values:
-- `"BMW"`
-- `"Mazda"`
+- `"Suzuki"`
+- `"Ferrari"`
 
 ### `vehicle.model`
 
@@ -106,8 +106,8 @@ vehicle.model()
 ```
 
 Example return values:
-- `"Silverado"`
-- `"Ranchero"`
+- `"ATS"`
+- `"Jetta"`
 
 ### `vehicle.type`
 
@@ -125,7 +125,7 @@ vehicle.type()
 ```
 
 Example return values:
-- `"Convertible"`
+- `"Cargo Van"`
 - `"Crew Cab Pickup"`
 
 ### `vehicle.vehicle`
@@ -144,8 +144,8 @@ vehicle.vehicle()
 ```
 
 Example return values:
-- `"Subaru Model S"`
-- `"Hyundai PT Cruiser"`
+- `"Volvo Spyder"`
+- `"Chevrolet Volt"`
 
 ### `vehicle.vin`
 
@@ -163,8 +163,8 @@ vehicle.vin()
 ```
 
 Example return values:
-- `"KY8RWT054BFB38512"`
-- `"8ZTV6XV5L4GJ29046"`
+- `"2RWZMU3WPUYS96230"`
+- `"1HVLY8NH4CNL38755"`
 
 ### `vehicle.vrm`
 
@@ -182,5 +182,5 @@ vehicle.vrm()
 ```
 
 Example return values:
-- `"LE26TNM"`
-- `"ZI64BJN"`
+- `"OK86QLH"`
+- `"HR88MLN"`

@@ -107,6 +107,11 @@ describe('domain keyword catalog', () => {
     expect(catalog).toHaveLength(1);
     expect(catalog[0].canonical).toBe('awd.domain.demo.echo');
   });
+
+  test('does not expose helpers.* in domain keyword catalog', () => {
+    expect(DOMAIN_KEYWORDS.some((entry) => entry.keyword.startsWith('helpers.'))).toBe(false);
+    expect(DOMAIN_KEYWORD_DEFINITIONS.some((entry) => String(entry.keyword || '').startsWith('helpers.'))).toBe(false);
+  });
 });
 
 describe('domain keyword alias mapping', () => {
@@ -158,6 +163,12 @@ describe('domain keyword alias mapping', () => {
 
   test('prebuilt index resolves canonical aliases', () => {
     expect(DOMAIN_KEYWORD_ALIAS_INDEX.byAlias['awd.domain.person.firstName']).toBeDefined();
+  });
+
+  test('does not map helpers aliases in prebuilt index', () => {
+    expect(DOMAIN_KEYWORD_ALIAS_INDEX.byAlias['helpers.fake']).toBeUndefined();
+    expect(DOMAIN_KEYWORD_ALIAS_INDEX.byAlias['domain.helpers.fake']).toBeUndefined();
+    expect(DOMAIN_KEYWORD_ALIAS_INDEX.byAlias['awd.domain.helpers.fake']).toBeUndefined();
   });
 });
 

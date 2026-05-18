@@ -1,5 +1,5 @@
 ---
-sidebar_position: 260
+sidebar_position: 250
 title: "string Domain"
 description: "Domain keyword reference for string."
 ---
@@ -36,12 +36,12 @@ string.alpha()
 ```
 
 ```txt
-string.alpha(length=1)
+string.alpha(length=1, max=1, value=1, casing="lower", exclude=["sample"])
 ```
 
 Example return values:
-- `"M"`
-- `"m"`
+- `"u"`
+- `"l"`
 
 ### `string.alphanumeric`
 
@@ -65,12 +65,12 @@ string.alphanumeric()
 ```
 
 ```txt
-string.alphanumeric(length=1)
+string.alphanumeric(length=1, max=1, value=1, casing="lower", exclude=["sample"])
 ```
 
 Example return values:
-- `"v"`
-- `"7"`
+- `"y"`
+- `"p"`
 
 ### `string.binary`
 
@@ -91,7 +91,7 @@ string.binary()
 ```
 
 ```txt
-string.binary(length=1)
+string.binary(length=1, prefix="#")
 ```
 
 Example return values:
@@ -119,12 +119,12 @@ string.fromCharacters("sample")
 ```
 
 ```txt
-string.fromCharacters(characters="sample")
+string.fromCharacters(characters="sample", min=1, max=1, length=1)
 ```
 
 Example return values:
-- `"p"`
-- `"l"`
+- `"e"`
+- `"m"`
 
 ### `string.hexadecimal`
 
@@ -146,12 +146,12 @@ string.hexadecimal()
 ```
 
 ```txt
-string.hexadecimal(casing="lower")
+string.hexadecimal(casing="lower", length=1, prefix="#")
 ```
 
 Example return values:
-- `"0x1"`
-- `"0xD"`
+- `"0xc"`
+- `"0xF"`
 
 ### `string.nanoid`
 
@@ -175,12 +175,12 @@ string.nanoid()
 ```
 
 ```txt
-string.nanoid(min=1)
+string.nanoid(min=1, max=1, length=1, lengthMax=1, lengthMin=1)
 ```
 
 Example return values:
-- `"XF4xXPuP2bTcx_gkbzorh"`
-- `"Sy5duuBJBoVuzLTO5oSIt"`
+- `"nJFsM_4HKT2M8YhUfG10J"`
+- `"XzIWNTxGEEfuds_Dq0_GW"`
 
 ### `string.numeric`
 
@@ -204,12 +204,12 @@ string.numeric()
 ```
 
 ```txt
-string.numeric(length=1)
+string.numeric(length=1, max=1, value=1, allowLeadingZeros=true, exclude=["sample"])
 ```
 
 Example return values:
-- `"9"`
-- `"5"`
+- `"2"`
+- `"6"`
 
 ### `string.octal`
 
@@ -230,12 +230,12 @@ string.octal()
 ```
 
 ```txt
-string.octal(length=1)
+string.octal(length=1, prefix="#")
 ```
 
 Example return values:
 - `"0o6"`
-- `"0o2"`
+- `"0o4"`
 
 ### `string.sample`
 
@@ -259,12 +259,12 @@ string.sample()
 ```
 
 ```txt
-string.sample(min=1)
+string.sample(min=1, max=1, length=1, lengthMax=1, lengthMin=1)
 ```
 
 Example return values:
-- `"e_H(G`zB{\\"`
-- `".{FG$ziZC\""`
+- `"Vu_Sn@XCu:"`
+- `")\"aiYI3K!7"`
 
 ### `string.symbol`
 
@@ -288,12 +288,12 @@ string.symbol()
 ```
 
 ```txt
-string.symbol(min=1)
+string.symbol(min=1, max=1, length=1, lengthMax=1, lengthMin=1)
 ```
 
 Example return values:
-- `"^"`
-- `"/"`
+- `"="`
+- `"["`
 
 ### `string.ulid`
 
@@ -317,8 +317,8 @@ string.ulid(refDate=1)
 ```
 
 Example return values:
-- `"01KRX6FW3ZS9A7RA13K713E12P"`
-- `"01KRX6FW3Z42T2TDQ8S9VXQYVQ"`
+- `"01KRXERHTX1WEEHCH1P6QFRWRP"`
+- `"01KRXERHTXFS99NFNYH6KD7GEP"`
 
 ### `string.uuid`
 
@@ -339,9 +339,9 @@ string.uuid()
 ```
 
 ```txt
-string.uuid(refDate=1)
+string.uuid(refDate=1, version="v4")
 ```
 
 Example return values:
-- `"e89f3f00-b902-4621-be6a-ed96c51ca53f"`
-- `"e0be128e-bb7f-47d1-95eb-31a9c84b9a73"`
+- `"cdc18869-b727-44cc-a15c-7868101b753e"`
+- `"d7a94e57-9605-4aa6-ab22-44e0ecdf5415"`

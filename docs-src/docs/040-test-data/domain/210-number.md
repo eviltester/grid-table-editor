@@ -1,5 +1,5 @@
 ---
-sidebar_position: 220
+sidebar_position: 210
 title: "number Domain"
 description: "Domain keyword reference for number."
 ---
@@ -54,11 +54,11 @@ number.binary()
 ```
 
 ```txt
-number.binary(max=1)
+number.binary(max=1, min=1)
 ```
 
 Example return values:
-- `"1"`
+- `"0"`
 - `"1"`
 
 ### `number.float`
@@ -82,13 +82,31 @@ Examples:
 number.float()
 ```
 
+Type-in examples (named params):
+
 ```txt
 number.float(value=1)
 ```
 
+```txt
+number.float(fractionDigits=1)
+```
+
+```txt
+number.float(max=1)
+```
+
+```txt
+number.float(min=1)
+```
+
+```txt
+number.float(multipleOf=1)
+```
+
 Example return values:
-- `0.7629624890759333`
-- `0.9828307141721478`
+- `0.8195701616843261`
+- `0.9725014864681499`
 
 ### `number.hex`
 
@@ -110,12 +128,12 @@ number.hex()
 ```
 
 ```txt
-number.hex(min=1)
+number.hex(min=1, max=1, value=1)
 ```
 
 Example return values:
+- `"7"`
 - `"d"`
-- `"5"`
 
 ### `number.int`
 
@@ -137,12 +155,12 @@ number.int()
 ```
 
 ```txt
-number.int(min=1)
+number.int(min=1, max=1, multipleOf=1)
 ```
 
 Example return values:
-- `1756010253098632`
-- `8303191971665533`
+- `2764329535098081`
+- `3164059278034449`
 
 ### `number.octal`
 
@@ -163,12 +181,12 @@ number.octal()
 ```
 
 ```txt
-number.octal(max=1)
+number.octal(max=1, min=1)
 ```
 
 Example return values:
-- `"6"`
-- `"6"`
+- `"4"`
+- `"7"`
 
 ### `number.romanNumeral`
 
@@ -190,9 +208,9 @@ number.romanNumeral()
 ```
 
 ```txt
-number.romanNumeral(min=1)
+number.romanNumeral(min=1, max=1, value=1)
 ```
 
 Example return values:
-- `"MDLXV"`
-- `"MMMCCXXI"`
+- `"LXXVII"`
+- `"CDXCI"`

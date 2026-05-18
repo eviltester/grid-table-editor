@@ -30,8 +30,8 @@ food.adjective()
 ```
 
 Example return values:
-- `"moist"`
-- `"creamy"`
+- `"golden"`
+- `"fresh"`
 
 ### `food.description`
 
@@ -49,8 +49,8 @@ food.description()
 ```
 
 Example return values:
-- `"Tender venison skewers, glazed with a sweet and tangy pear sauce, served over a bed of fragrant jasmine rice."`
-- `"A slow-roasted Stejneger's Petrel with a sour, creamy exterior. Stuffed with feijoa and covered in mulberry sauce. Sides with rhubarb puree and wild radish."`
+- `"A slow-roasted Great Crested Flycatcher with a fluffy, golden exterior. Stuffed with sprout and covered in pineapple sauce. Sides with asparagus puree and wild zucchini."`
+- `"A special silver apples from Cuba. To support the strong flavor it is sided with a tablespoon of pot marjoram."`
 
 ### `food.dish`
 
@@ -68,8 +68,8 @@ food.dish()
 ```
 
 Example return values:
-- `"Lime-glazed Ostrich Skewers"`
-- `"Pork Belly Buns"`
+- `"Bengali Tom Yum Soup"`
+- `"Venison Steak"`
 
 ### `food.ethnicCategory`
 
@@ -87,8 +87,8 @@ food.ethnicCategory()
 ```
 
 Example return values:
-- `"Mughal"`
-- `"Turkish"`
+- `"Crimean Tatar"`
+- `"Brazilian"`
 
 ### `food.fruit`
 
@@ -106,8 +106,8 @@ food.fruit()
 ```
 
 Example return values:
-- `"custard apple"`
-- `"passionfruit"`
+- `"snowpea"`
+- `"cherry"`
 
 ### `food.ingredient`
 
@@ -125,8 +125,8 @@ food.ingredient()
 ```
 
 Example return values:
-- `"arrowroot"`
-- `"beans"`
+- `"kokam"`
+- `"turkey"`
 
 ### `food.meat`
 
@@ -144,8 +144,8 @@ food.meat()
 ```
 
 Example return values:
+- `"salmon"`
 - `"emu"`
-- `"crocodile"`
 
 ### `food.spice`
 
@@ -163,8 +163,8 @@ food.spice()
 ```
 
 Example return values:
-- `"fenugreek"`
-- `"methi"`
+- `"celery"`
+- `"vanilla"`
 
 ### `food.vegetable`
 
@@ -182,5 +182,5 @@ food.vegetable()
 ```
 
 Example return values:
-- `"leeks"`
-- `"asparagus"`
+- `"squash"`
+- `"cauliflower"`

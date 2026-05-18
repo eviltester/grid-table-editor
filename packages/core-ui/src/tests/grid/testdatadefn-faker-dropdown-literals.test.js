@@ -89,6 +89,7 @@ describe('Faker Dropdown Literal Commands', () => {
       const domainCommands = getDomainCommands();
       expect(domainCommands.length).toBeGreaterThan(0);
       expect(domainCommands).toContain('number.int');
+      expect(domainCommands.some((command) => command.startsWith('helpers.'))).toBe(false);
     });
 
     it('should hide non-scalar domain commands in type dropdown for new rows', () => {

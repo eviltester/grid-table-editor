@@ -30,8 +30,8 @@ hacker.abbreviation()
 ```
 
 Example return values:
-- `"SMTP"`
-- `"SAS"`
+- `"UDP"`
+- `"API"`
 
 ### `hacker.adjective`
 
@@ -49,8 +49,8 @@ hacker.adjective()
 ```
 
 Example return values:
-- `"wireless"`
-- `"haptic"`
+- `"back-end"`
+- `"mobile"`
 
 ### `hacker.ingverb`
 
@@ -68,8 +68,8 @@ hacker.ingverb()
 ```
 
 Example return values:
-- `"synthesizing"`
-- `"compressing"`
+- `"transmitting"`
+- `"overriding"`
 
 ### `hacker.noun`
 
@@ -87,8 +87,8 @@ hacker.noun()
 ```
 
 Example return values:
-- `"bandwidth"`
-- `"pixel"`
+- `"circuit"`
+- `"panel"`
 
 ### `hacker.phrase`
 
@@ -106,8 +106,8 @@ hacker.phrase()
 ```
 
 Example return values:
-- `"Use the optical OCR pixel, then you can program the bluetooth card!"`
-- `"overriding the application won't do anything, we need to quantify the neural SAS capacitor!"`
+- `"Use the 1080p THX bus, then you can hack the mobile bandwidth!"`
+- `"Use the auxiliary USB array, then you can parse the optical sensor!"`
 
 ### `hacker.verb`
 
@@ -126,4 +126,4 @@ hacker.verb()
 
 Example return values:
 - `"generate"`
-- `"calculate"`
+- `"bypass"`

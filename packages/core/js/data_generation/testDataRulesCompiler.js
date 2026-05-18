@@ -69,6 +69,14 @@ export class TestDataRulesCompiler {
             rule.type = 'literal';
           }
         } else {
+          if (this.isDomainHelpersPattern(rule.ruleSpec)) {
+            this.compilationReportLines.push(
+              `${rule.name} is a domain helpers rule and is unsupported: helpers.* is faker-only`
+            );
+            rule.type = 'domain';
+            return;
+          }
+
           domainValidator.validate(rule);
           if (domainValidator.isValid()) {
             this.compilationReportLines.push(`${rule.name} is a valid 'domain': ${rule.ruleSpec}`);
@@ -191,6 +199,11 @@ export class TestDataRulesCompiler {
   isLiteralPattern(ruleSpec) {
     const spec = String(ruleSpec || '').trim();
     return /^(literal|datatype\.literal|awd\.datatype\.literal)\s*\(/i.test(spec);
+  }
+
+  isDomainHelpersPattern(ruleSpec) {
+    const spec = String(ruleSpec || '').trim();
+    return spec.startsWith('awd.domain.helpers.') || spec.startsWith('domain.helpers.');
   }
 
   extractLiteralValue(ruleSpec) {

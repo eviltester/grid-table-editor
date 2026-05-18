@@ -33,9 +33,9 @@ datatype.boolean()
 ```
 
 ```txt
-datatype.boolean(probability=1)
+datatype.boolean(probability=1, value=1)
 ```
 
 Example return values:
 - `true`
-- `true`
+- `false`

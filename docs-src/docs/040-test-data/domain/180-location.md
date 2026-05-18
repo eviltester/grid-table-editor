@@ -1,5 +1,5 @@
 ---
-sidebar_position: 190
+sidebar_position: 180
 title: "location Domain"
 description: "Domain keyword reference for location."
 ---
@@ -30,8 +30,8 @@ location.buildingNumber()
 ```
 
 Example return values:
-- `"42002"`
-- `"759"`
+- `"695"`
+- `"922"`
 
 ### `location.cardinalDirection`
 
@@ -49,8 +49,8 @@ location.cardinalDirection()
 ```
 
 Example return values:
+- `"West"`
 - `"South"`
-- `"North"`
 
 ### `location.city`
 
@@ -68,8 +68,8 @@ location.city()
 ```
 
 Example return values:
-- `"West Lennatown"`
-- `"Johnscester"`
+- `"Beierton"`
+- `"Hoegerhaven"`
 
 ### `location.continent`
 
@@ -87,8 +87,8 @@ location.continent()
 ```
 
 Example return values:
-- `"Antarctica"`
 - `"Asia"`
+- `"Africa"`
 
 ### `location.country`
 
@@ -106,8 +106,8 @@ location.country()
 ```
 
 Example return values:
-- `"Chile"`
-- `"United Arab Emirates"`
+- `"French Southern Territories"`
+- `"Denmark"`
 
 ### `location.countryCode`
 
@@ -125,8 +125,8 @@ location.countryCode()
 ```
 
 Example return values:
-- `"CU"`
-- `"CA"`
+- `"NP"`
+- `"NO"`
 
 ### `location.county`
 
@@ -144,8 +144,8 @@ location.county()
 ```
 
 Example return values:
-- `"Marshall County"`
-- `"Lincolnshire"`
+- `"Jefferson County"`
+- `"County Antrim"`
 
 ### `location.direction`
 
@@ -169,8 +169,8 @@ location.direction(abbreviated=false)
 ```
 
 Example return values:
-- `"West"`
-- `"Southwest"`
+- `"South"`
+- `"Southeast"`
 
 ### `location.language`
 
@@ -188,8 +188,8 @@ location.language()
 ```
 
 Example return values:
-- `{"name":"Pashto","alpha2":"ps","alpha3":"pus"}`
-- `{"name":"Swedish","alpha2":"sv","alpha3":"swe"}`
+- `{"name":"Czech","alpha2":"cs","alpha3":"ces"}`
+- `{"name":"Catalan","alpha2":"ca","alpha3":"cat"}`
 
 ### `location.latitude`
 
@@ -211,12 +211,12 @@ location.latitude()
 ```
 
 ```txt
-location.latitude(min=1)
+location.latitude(min=1, max=1, precision=1)
 ```
 
 Example return values:
-- `7.4987`
-- `60.1103`
+- `36.3971`
+- `-34.3025`
 
 ### `location.longitude`
 
@@ -238,12 +238,12 @@ location.longitude()
 ```
 
 ```txt
-location.longitude(min=1)
+location.longitude(min=1, max=1, precision=1)
 ```
 
 Example return values:
-- `-54.0395`
-- `34.0816`
+- `66.1126`
+- `-92.7018`
 
 ### `location.nearbyGPSCoordinate`
 
@@ -261,8 +261,8 @@ location.nearbyGPSCoordinate()
 ```
 
 Example return values:
-- `[-36.9967,-165.6668]`
-- `[17.8665,71.006]`
+- `[27.6772,-158.4842]`
+- `[-12.7563,26.5605]`
 
 ### `location.ordinalDirection`
 
@@ -280,8 +280,8 @@ location.ordinalDirection()
 ```
 
 Example return values:
-- `"Southwest"`
 - `"Southeast"`
+- `"Northwest"`
 
 ### `location.secondaryAddress`
 
@@ -299,8 +299,8 @@ location.secondaryAddress()
 ```
 
 Example return values:
-- `"Apt. 328"`
-- `"Suite 700"`
+- `"Suite 116"`
+- `"Suite 789"`
 
 ### `location.state`
 
@@ -324,8 +324,8 @@ location.state(abbreviated=false)
 ```
 
 Example return values:
-- `"Hawaii"`
-- `"Kentucky"`
+- `"Illinois"`
+- `"Texas"`
 
 ### `location.street`
 
@@ -343,8 +343,8 @@ location.street()
 ```
 
 Example return values:
-- `"E 12th Street"`
-- `"W Division Street"`
+- `"Eldora Path"`
+- `"Elsa Shores"`
 
 ### `location.streetAddress`
 
@@ -365,12 +365,12 @@ location.streetAddress()
 ```
 
 ```txt
-location.streetAddress(useFullAddress=true)
+location.streetAddress(useFullAddress=true, value=true)
 ```
 
 Example return values:
-- `"47720 Swaniawski Place"`
-- `"4074 Birch Grove"`
+- `"397 Manor Road"`
+- `"314 Rosetta Passage"`
 
 ### `location.timeZone`
 
@@ -388,8 +388,8 @@ location.timeZone()
 ```
 
 Example return values:
-- `"America/Campo_Grande"`
-- `"America/Denver"`
+- `"Africa/Bujumbura"`
+- `"Africa/Douala"`
 
 ### `location.zipCode`
 
@@ -407,5 +407,5 @@ location.zipCode()
 ```
 
 Example return values:
-- `"05558"`
-- `"73752"`
+- `"41035-8586"`
+- `"71512-2783"`

@@ -120,7 +120,6 @@ class DomainKeywordInvocationParser {
       stream.consume();
       if (token.value === 'true') return { ok: true, value: true };
       if (token.value === 'false') return { ok: true, value: false };
-      if (token.value === 'null') return { ok: true, value: null };
       return { ok: false, error: 'Invalid keyword arguments: bare values are not allowed; wrap strings in quotes' };
     }
 

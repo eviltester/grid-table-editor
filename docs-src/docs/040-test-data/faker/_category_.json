@@ -1,0 +1,9 @@
+{
+  "label": "Faker Commands",
+  "position": 7,
+  "link": {
+    "type": "generated-index",
+    "description": "Faker-specific command guidance and examples."
+  },
+  "collapsed": true
+}

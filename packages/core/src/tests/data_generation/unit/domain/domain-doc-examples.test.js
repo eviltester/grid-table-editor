@@ -43,6 +43,10 @@ describe('domain docs examples', () => {
     expect(docs.some((entry) => entry.invocations.length > 0)).toBe(true);
   });
 
+  test('does not include helpers domain docs page', () => {
+    expect(docs.some((entry) => entry.fileName.toLowerCase().includes('helpers'))).toBe(false);
+  });
+
   for (const doc of docs) {
     describe(doc.fileName, () => {
       test('contains at least one example', () => {

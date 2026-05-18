@@ -1,5 +1,5 @@
 ---
-sidebar_position: 270
+sidebar_position: 260
 title: "system Domain"
 description: "Domain keyword reference for system."
 ---
@@ -30,8 +30,8 @@ system.commonFileExt()
 ```
 
 Example return values:
-- `"png"`
-- `"mpga"`
+- `"m1v"`
+- `"pdf"`
 
 ### `system.commonFileName`
 
@@ -55,8 +55,8 @@ system.commonFileName(extension="txt")
 ```
 
 Example return values:
-- `"save_quash_gee.mp4"`
-- `"biodegradable_vol.gif"`
+- `"uneven_knottily.pdf"`
+- `"unlucky_officially_over.shtml"`
 
 ### `system.commonFileType`
 
@@ -74,8 +74,8 @@ system.commonFileType()
 ```
 
 Example return values:
-- `"application"`
-- `"application"`
+- `"audio"`
+- `"video"`
 
 ### `system.cron`
 
@@ -96,12 +96,12 @@ system.cron()
 ```
 
 ```txt
-system.cron(includeNonStandard=true)
+system.cron(includeNonStandard=true, includeYear=true)
 ```
 
 Example return values:
-- `"* 17 ? * MON"`
-- `"27 20 ? 3 ?"`
+- `"* * * 1 *"`
+- `"* 10 10 * WED"`
 
 ### `system.directoryPath`
 
@@ -119,8 +119,8 @@ system.directoryPath()
 ```
 
 Example return values:
-- `"/etc/ppp"`
-- `"/usr/local/bin"`
+- `"/usr/libexec"`
+- `"/Network"`
 
 ### `system.fileExt`
 
@@ -144,8 +144,8 @@ system.fileExt(mimeType="image/png")
 ```
 
 Example return values:
-- `"rmi"`
-- `"csh"`
+- `"rar"`
+- `"3g2"`
 
 ### `system.fileName`
 
@@ -163,8 +163,8 @@ system.fileName()
 ```
 
 Example return values:
-- `"disrespect.msi"`
-- `"ah.kar"`
+- `"lovingly.dump"`
+- `"blond.ppt"`
 
 ### `system.filePath`
 
@@ -182,8 +182,8 @@ system.filePath()
 ```
 
 Example return values:
-- `"/System/blend_mostly.3gp"`
-- `"/var/swath.deb"`
+- `"/usr/lib/phew_beautifully.boz"`
+- `"/home/user/atrium.def"`
 
 ### `system.fileType`
 
@@ -202,7 +202,7 @@ system.fileType()
 
 Example return values:
 - `"video"`
-- `"audio"`
+- `"video"`
 
 ### `system.mimeType`
 
@@ -220,8 +220,8 @@ system.mimeType()
 ```
 
 Example return values:
-- `"application/ld+json"`
 - `"image/png"`
+- `"application/vnd.oasis.opendocument.presentation"`
 
 ### `system.networkInterface`
 
@@ -239,8 +239,8 @@ system.networkInterface()
 ```
 
 Example return values:
-- `"wwx5ba17e137568"`
-- `"wlo9"`
+- `"wlo7"`
+- `"wwxe7fb537260c4"`
 
 ### `system.semver`
 
@@ -258,5 +258,5 @@ system.semver()
 ```
 
 Example return values:
-- `"5.6.20"`
-- `"8.15.6"`
+- `"3.1.13"`
+- `"4.1.12"`

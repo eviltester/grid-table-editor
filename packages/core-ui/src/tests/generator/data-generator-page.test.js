@@ -205,6 +205,21 @@ describe('DataGeneratorPage', () => {
     expect(result.errors.map((error) => error.message)).toEqual(['Row 1: domain command is required.']);
   });
 
+  test('schema validation rejects helpers in domain source rows', () => {
+    const result = validateSchemaRows([{ name: 'First', sourceType: 'domain', command: 'helpers.fake' }]);
+    expect(result.errors.map((error) => error.code)).toEqual(['helpers_not_supported_in_domain']);
+    expect(result.errors.map((error) => error.message)).toEqual([
+      'Row 1: helpers.* is faker-only; use faker.helpers.*',
+    ]);
+  });
+
+  test('schema validation allows helpers in faker source rows', () => {
+    const result = validateSchemaRows([
+      { name: 'First', sourceType: 'faker', command: 'helpers.fake', params: '("x")' },
+    ]);
+    expect(result.errors).toEqual([]);
+  });
+
   test('preview generates data into tabulator grid extension', () => {
     const page = new DataGeneratorPage({
       parentElement: document.getElementById('app'),

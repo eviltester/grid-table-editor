@@ -6,6 +6,11 @@ import { executeDomainKeyword } from '../packages/core/js/domain/domain-keywords
 
 const outDir = path.resolve('docs-src/docs/040-test-data/domain');
 fs.mkdirSync(outDir, { recursive: true });
+for (const fileName of fs.readdirSync(outDir)) {
+  if (fileName.endsWith('.md') && fileName !== '010-domain-test-data.md') {
+    fs.unlinkSync(path.join(outDir, fileName));
+  }
+}
 
 const byDomain = new Map();
 for (const keyword of DOMAIN_KEYWORDS) {
@@ -38,7 +43,14 @@ const indexLines = [
   '',
   'Domain keywords provide a stable AnyWayData abstraction over Faker-backed generators.',
   '',
+  'Note: `helpers.*` is intentionally faker-only and not part of the domain abstraction.',
+  '',
   'Each domain page lists methods, arguments, and executable examples.',
+  '',
+  '## Migration',
+  '',
+  '- Before (invalid): `domain.helpers.fake("...")`',
+  '- After: `faker.helpers.fake("...")` (or `helpers.fake("...")` in faker contexts)',
   '',
   '## Domains',
   ''
@@ -53,7 +65,6 @@ const valueForType = (typeName) => {
   if (first === 'number') return '1';
   if (first === 'boolean') return 'true';
   if (first === 'array') return '["sample"]';
-  if (first === 'null') return 'null';
   return '"sample"';
 };
 
@@ -120,6 +131,22 @@ function toNamedInvocation(keyword, argSpecs, typedArgs) {
   return `${keyword}(${pairs.join(', ')})`;
 }
 
+function renderInvocation(keyword, typedArgs) {
+  if (!Array.isArray(typedArgs) || typedArgs.length === 0) {
+    return `${keyword}()`;
+  }
+  const renderedArgs = typedArgs.map((value) => {
+    if (typeof value === 'string') {
+      return `"${value}"`;
+    }
+    if (Array.isArray(value)) {
+      return JSON.stringify(value);
+    }
+    return String(value);
+  });
+  return `${keyword}(${renderedArgs.join(', ')})`;
+}
+
 function sampleValueForArg(argSpec) {
   const name = String(argSpec?.name || '').trim();
   const typeName = String(argSpec?.type || '').trim();
@@ -131,13 +158,15 @@ function sampleValueForArg(argSpec) {
   if (name === 'casing') return 'lower';
   if (name === 'prefix') return '#';
   if (name === 'separator') return '-';
-  if (name === 'variant') return 13;
+  if (name === 'variant') return '13';
   if (name === 'strategy') return 'any-length';
   if (name === 'version') return 'v4';
   if (name === 'mode') return 'age';
   if (name === 'mimeType') return 'image/png';
   if (name === 'extension') return 'txt';
   if (name === 'symbol') return '$';
+  if (name === 'types') return ['food', 'nature'];
+  if (name === 'list') return ['alpha', 'beta', 'gamma'];
   if (name === 'style') return 'human';
   if (name === 'context') return false;
   if (name === 'abbreviated') return false;
@@ -146,7 +175,6 @@ function sampleValueForArg(argSpec) {
   if (first === 'number') return 1;
   if (first === 'boolean') return true;
   if (first === 'array') return ['sample'];
-  if (first === 'null') return null;
   return 'sample';
 }
 
@@ -177,20 +205,34 @@ for (const domain of domains) {
 
   for (const entry of keywords) {
     const args = entry.help.args || [];
-    const invocationArgs = args.filter((a) => a.required).map((a) => valueForType(a.type));
     const override = invocationOverrides[entry.keyword];
-    const invocation = override ? override.invocation : `${entry.keyword}(${invocationArgs.join(', ')})`;
-    const typedRequiredArgs = args.filter((a) => a.required).map((a) => {
+    const requiredArgSpecs = args.filter((a) => a.required);
+    const typedRequiredArgs = requiredArgSpecs.map((a) => {
       const first = String(a.type || '').split('|').map((s) => s.trim()).find(Boolean) || 'string';
       if (first === 'number') return 1;
       if (first === 'boolean') return true;
       if (first === 'array') return ['sample'];
-      if (first === 'null') return null;
       return 'sample';
     });
+    const sampledArgs = args.map((arg) => sampleValueForArg(arg));
+    let executableExampleArgs = override ? override.args : typedRequiredArgs;
+    if (!canExecuteInvocation(entry.keyword, executableExampleArgs)) {
+      if (canExecuteInvocation(entry.keyword, sampledArgs)) {
+        executableExampleArgs = sampledArgs;
+      } else {
+        for (let length = 1; length <= sampledArgs.length; length += 1) {
+          const trialArgs = sampledArgs.slice(0, length);
+          if (canExecuteInvocation(entry.keyword, trialArgs)) {
+            executableExampleArgs = trialArgs;
+            break;
+          }
+        }
+      }
+    }
+
     const hasExecutableExample =
       !nonDeterministicExamples.has(entry.keyword) &&
-      canExecuteInvocation(entry.keyword, override ? override.args : typedRequiredArgs);
+      canExecuteInvocation(entry.keyword, executableExampleArgs);
 
     lines.push(`### \`${entry.keyword}\``, '');
     lines.push(entry.help.summary || 'No summary provided.', '');
@@ -211,36 +253,58 @@ for (const domain of domains) {
 
     if (hasExecutableExample) {
       let namedInvocation = '';
-      if (args.length > 0) {
-        const requiredArgSpecs = args.filter((a) => a.required);
-        if (requiredArgSpecs.length > 0) {
-          namedInvocation = toNamedInvocation(
-            entry.keyword,
-            requiredArgSpecs,
-            override ? override.args : typedRequiredArgs
-          );
-        } else {
-          const sampledArgs = args.map((arg) => sampleValueForArg(arg));
-          let chosenArgs = [];
-          let chosenSpecs = [];
-          for (let length = 1; length <= sampledArgs.length; length += 1) {
-            const trialArgs = sampledArgs.slice(0, length);
-            if (canExecuteInvocation(entry.keyword, trialArgs)) {
-              chosenArgs = trialArgs;
-              chosenSpecs = args.slice(0, length);
-              break;
-            }
-          }
-          if (chosenArgs.length > 0) {
-            namedInvocation = toNamedInvocation(entry.keyword, chosenSpecs, chosenArgs);
-          }
-        }
+      const allArgsValues = sampledArgs;
+      if (args.length > 0 && canExecuteInvocation(entry.keyword, allArgsValues)) {
+        namedInvocation = toNamedInvocation(entry.keyword, args, allArgsValues);
+      } else if (requiredArgSpecs.length > 0) {
+        namedInvocation = toNamedInvocation(entry.keyword, requiredArgSpecs, override ? override.args : typedRequiredArgs);
       }
+      const invocation = override ? override.invocation : renderInvocation(entry.keyword, executableExampleArgs);
       lines.push('Examples:', '', '```txt', invocation, '```');
       if (namedInvocation) {
         lines.push('', '```txt', namedInvocation, '```');
       }
-      const returnValues = getExampleReturnValues(entry.keyword, override ? override.args : typedRequiredArgs);
+      if (args.length > 0) {
+        const typeInExamples = [];
+        const seenExamples = new Set([invocation, namedInvocation].filter(Boolean));
+        for (let index = 0; index < args.length; index += 1) {
+          const arg = args[index];
+          const value = sampleValueForArg(arg);
+          const typedArgs = args.map((entryArg, argIndex) => (argIndex === index ? value : sampleValueForArg(entryArg)));
+          const fullNamed = toNamedInvocation(entry.keyword, args, typedArgs);
+          if (fullNamed && canExecuteInvocation(entry.keyword, typedArgs)) {
+            if (!seenExamples.has(fullNamed)) {
+              typeInExamples.push(fullNamed);
+              seenExamples.add(fullNamed);
+            }
+            continue;
+          }
+
+          const singleNamed = toNamedInvocation(entry.keyword, [arg], [value]);
+          if (singleNamed && canExecuteInvocation(entry.keyword, [value])) {
+            if (!seenExamples.has(singleNamed)) {
+              typeInExamples.push(singleNamed);
+              seenExamples.add(singleNamed);
+            }
+            continue;
+          }
+
+          const positional = renderInvocation(entry.keyword, [value]);
+          if (canExecuteInvocation(entry.keyword, [value])) {
+            if (!seenExamples.has(positional)) {
+              typeInExamples.push(positional);
+              seenExamples.add(positional);
+            }
+          }
+        }
+        if (typeInExamples.length > 0) {
+          lines.push('', 'Type-in examples (named params):');
+          for (const example of typeInExamples) {
+            lines.push('', '```txt', example, '```');
+          }
+        }
+      }
+      const returnValues = getExampleReturnValues(entry.keyword, executableExampleArgs);
       if (returnValues.length > 0) {
         lines.push('', 'Example return values:');
         for (const value of returnValues) {

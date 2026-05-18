@@ -20,6 +20,15 @@ describe('commerce domain keyword execution', () => {
     expect(result).not.toBeUndefined();
   });
 
+  test('commerce.price respects dec param', () => {
+    const result = executeDomainKeyword('commerce.price', { faker, args: [2] });
+    console.log('commerce.price(dec=2)', result);
+    const numeric = Number.parseFloat(result);
+    expect(Number.isNaN(numeric)).toBe(false);
+    const fraction = String(result).split('.')[1] || '';
+    expect(fraction.length).toBeLessThanOrEqual(2);
+  });
+
   test('executes commerce.product', () => {
     const result = executeDomainKeyword('commerce.product', { faker, args: [] });
     console.log('commerce.product', result);

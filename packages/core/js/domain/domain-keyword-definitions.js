@@ -115,7 +115,14 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random seat.',
       docsUrl: 'https://fakerjs.dev/api/airline',
       example: '17F',
-      args: [],
+      args: [
+        {
+          name: 'aircraftType',
+          type: 'string',
+          required: false,
+          description: 'The aircraft type. Can be one of narrowbody, regional, widebody.',
+        },
+      ],
     },
   },
   {
@@ -414,7 +421,14 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a CMYK color.',
       docsUrl: 'https://fakerjs.dev/api/color',
       example: '[0.95,0.17,0.23,1]',
-      args: [],
+      args: [
+        {
+          name: 'format',
+          type: 'string',
+          required: false,
+          description: 'Format of generated CMYK color.',
+        },
+      ],
     },
   },
   {
@@ -466,7 +480,20 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns an HSL color.',
       docsUrl: 'https://fakerjs.dev/api/color',
       example: '[212,0.78,0.54]',
-      args: [],
+      args: [
+        {
+          name: 'format',
+          type: 'string',
+          required: false,
+          description: 'Format of generated HSL color.',
+        },
+        {
+          name: 'includeAlpha',
+          type: 'boolean',
+          required: false,
+          description: 'Adds an alpha value to the color (RGBA).',
+        },
+      ],
     },
   },
   {
@@ -492,7 +519,14 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns an HWB color.',
       docsUrl: 'https://fakerjs.dev/api/color',
       example: '[328,0.27,0.33]',
-      args: [],
+      args: [
+        {
+          name: 'format',
+          type: 'string',
+          required: false,
+          description: 'Format of generated RGB color.',
+        },
+      ],
     },
   },
   {
@@ -505,7 +539,14 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a LAB (CIELAB) color.',
       docsUrl: 'https://fakerjs.dev/api/color',
       example: '[0.071396,-55.6612,-66.7185]',
-      args: [],
+      args: [
+        {
+          name: 'format',
+          type: 'string',
+          required: false,
+          description: 'Format of generated RGB color.',
+        },
+      ],
     },
   },
   {
@@ -518,7 +559,14 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns an LCH color. Even though upper bound of',
       docsUrl: 'https://fakerjs.dev/api/color',
       example: '[0.469557,212.9,204.9]',
-      args: [],
+      args: [
+        {
+          name: 'format',
+          type: 'string',
+          required: false,
+          description: 'Format of generated RGB color.',
+        },
+      ],
     },
   },
   {
@@ -531,7 +579,32 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns an RGB color.',
       docsUrl: 'https://fakerjs.dev/api/color',
       example: '#ee8222',
-      args: [],
+      args: [
+        {
+          name: 'casing',
+          type: 'string',
+          required: false,
+          description: "Letter type case of the generated hex color. Only applied when 'hex' format is used.",
+        },
+        {
+          name: 'format',
+          type: 'string',
+          required: false,
+          description: 'Format of generated RGB color.',
+        },
+        {
+          name: 'includeAlpha',
+          type: 'boolean',
+          required: false,
+          description: 'Adds an alpha value to the color (RGBA).',
+        },
+        {
+          name: 'prefix',
+          type: 'string',
+          required: false,
+          description: "Prefix of the generated hex color. Only applied when 'hex' format is used.",
+        },
+      ],
     },
   },
   {
@@ -577,6 +650,13 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           required: false,
           description: '',
         },
+        {
+          name: 'variant',
+          type: 'string',
+          required: false,
+          description:
+            'The variant of the identifier to return. Can be either 10 (10-digit format) or 13 (13-digit format).',
+        },
       ],
     },
   },
@@ -590,7 +670,32 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a price between min and max (inclusive).',
       docsUrl: 'https://fakerjs.dev/api/commerce',
       example: '797.39',
-      args: [],
+      args: [
+        {
+          name: 'dec',
+          type: 'number',
+          required: false,
+          description: 'The number of decimal places.',
+        },
+        {
+          name: 'max',
+          type: 'number',
+          required: false,
+          description: 'The maximum price.',
+        },
+        {
+          name: 'min',
+          type: 'number',
+          required: false,
+          description: 'The minimum price.',
+        },
+        {
+          name: 'symbol',
+          type: 'string',
+          required: false,
+          description: 'The currency value to use.',
+        },
+      ],
     },
   },
   {
@@ -876,7 +981,14 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random date that can be either in the past or in the future.',
       docsUrl: 'https://fakerjs.dev/api/date',
       example: '"2026-12-25T08:55:20.593Z"',
-      args: [],
+      args: [
+        {
+          name: 'refDate',
+          type: 'number',
+          required: false,
+          description: 'The date to use as reference point for the newly generated date.',
+        },
+      ],
     },
   },
   {
@@ -884,12 +996,26 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'date.between',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Generates a random date between the given boundaries.',
       docsUrl: 'https://fakerjs.dev/api/date',
       example: '',
-      args: [],
+      args: [
+        {
+          name: 'from',
+          type: 'number',
+          required: false,
+          description: 'The early date boundary.',
+        },
+        {
+          name: 'to',
+          type: 'number',
+          required: false,
+          description: 'The late date boundary.',
+        },
+      ],
     },
   },
   {
@@ -897,13 +1023,33 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'date.betweens',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary:
         'Generates random dates between the given boundaries. The dates will be returned in an array sorted in chronological order.',
       docsUrl: 'https://fakerjs.dev/api/date',
       example: '',
-      args: [],
+      args: [
+        {
+          name: 'count',
+          type: 'number',
+          required: false,
+          description: 'The number of dates to generate.',
+        },
+        {
+          name: 'from',
+          type: 'number',
+          required: false,
+          description: 'The early date boundary.',
+        },
+        {
+          name: 'to',
+          type: 'number',
+          required: false,
+          description: 'The late date boundary.',
+        },
+      ],
     },
   },
   {
@@ -917,7 +1063,32 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
         'Returns a random birthdate. By default, the birthdate is generated for an adult between 18 and 80 years old.',
       docsUrl: 'https://fakerjs.dev/api/date',
       example: '"1966-09-18T08:47:31.333Z"',
-      args: [],
+      args: [
+        {
+          name: 'refDate',
+          type: 'number',
+          required: false,
+          description: 'The date to use as reference point for the newly generated date.',
+        },
+        {
+          name: 'max',
+          type: 'number',
+          required: false,
+          description: 'The maximum age/year to generate a birthdate for/in.',
+        },
+        {
+          name: 'min',
+          type: 'number',
+          required: false,
+          description: 'The minimum age/year to generate a birthdate for/in.',
+        },
+        {
+          name: 'mode',
+          type: 'string',
+          required: false,
+          description: "Either 'age' or 'year' to generate a birthdate based on the age or year range.",
+        },
+      ],
     },
   },
   {
@@ -930,7 +1101,20 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random date in the future.',
       docsUrl: 'https://fakerjs.dev/api/date',
       example: '"2027-02-07T18:41:48.525Z"',
-      args: [],
+      args: [
+        {
+          name: 'refDate',
+          type: 'number',
+          required: false,
+          description: 'The date to use as reference point for the newly generated date.',
+        },
+        {
+          name: 'years',
+          type: 'number',
+          required: false,
+          description: 'The range of years the date may be in the future.',
+        },
+      ],
     },
   },
   {
@@ -943,7 +1127,21 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random name of a month.',
       docsUrl: 'https://fakerjs.dev/api/date',
       example: 'February',
-      args: [],
+      args: [
+        {
+          name: 'abbreviated',
+          type: 'boolean',
+          required: false,
+          description: 'Whether to return an abbreviation.',
+        },
+        {
+          name: 'context',
+          type: 'boolean',
+          required: false,
+          description:
+            "Whether to return the name of a month in the context of a date. In the default en locale this has no effect, however, in other locales like fr or ru, this may affect grammar or capitalization, for example 'январь' with { context: false } and 'января' with { context: true } in ru.",
+        },
+      ],
     },
   },
   {
@@ -956,7 +1154,20 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random date in the past.',
       docsUrl: 'https://fakerjs.dev/api/date',
       example: '"2025-07-01T11:48:55.347Z"',
-      args: [],
+      args: [
+        {
+          name: 'refDate',
+          type: 'number',
+          required: false,
+          description: 'The date to use as reference point for the newly generated date.',
+        },
+        {
+          name: 'years',
+          type: 'number',
+          required: false,
+          description: 'The range of years the date may be in the past.',
+        },
+      ],
     },
   },
   {
@@ -969,7 +1180,20 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random date in the recent past.',
       docsUrl: 'https://fakerjs.dev/api/date',
       example: '"2026-04-27T23:46:16.707Z"',
-      args: [],
+      args: [
+        {
+          name: 'days',
+          type: 'number',
+          required: false,
+          description: 'The range of days the date may be in the past.',
+        },
+        {
+          name: 'refDate',
+          type: 'number',
+          required: false,
+          description: 'The date to use as reference point for the newly generated date.',
+        },
+      ],
     },
   },
   {
@@ -982,7 +1206,20 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random date in the near future.',
       docsUrl: 'https://fakerjs.dev/api/date',
       example: '"2026-04-29T11:09:09.211Z"',
-      args: [],
+      args: [
+        {
+          name: 'days',
+          type: 'number',
+          required: false,
+          description: 'The range of days the date may be in the future.',
+        },
+        {
+          name: 'refDate',
+          type: 'number',
+          required: false,
+          description: 'The date to use as reference point for the newly generated date.',
+        },
+      ],
     },
   },
   {
@@ -1008,7 +1245,21 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random day of the week.',
       docsUrl: 'https://fakerjs.dev/api/date',
       example: 'Tuesday',
-      args: [],
+      args: [
+        {
+          name: 'abbreviated',
+          type: 'boolean',
+          required: false,
+          description: 'Whether to return an abbreviation.',
+        },
+        {
+          name: 'context',
+          type: 'boolean',
+          required: false,
+          description:
+            "Whether to return the day of the week in the context of a date. In the default en locale this has no effect, however, in other locales like fr or ru, this may affect grammar or capitalization, for example 'Lundi' with { context: false } and 'lundi' with { context: true } in fr.",
+        },
+      ],
     },
   },
   {
@@ -1054,7 +1305,38 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random amount between the given bounds (inclusive).',
       docsUrl: 'https://fakerjs.dev/api/finance',
       example: '536.86',
-      args: [],
+      args: [
+        {
+          name: 'autoFormat',
+          type: 'boolean',
+          required: false,
+          description: 'If true this method will use Number.toLocaleString(). Otherwise it will use Number.toFixed().',
+        },
+        {
+          name: 'dec',
+          type: 'number',
+          required: false,
+          description: 'The number of decimal places for the amount.',
+        },
+        {
+          name: 'max',
+          type: 'number',
+          required: false,
+          description: 'The upper bound for the amount.',
+        },
+        {
+          name: 'min',
+          type: 'number',
+          required: false,
+          description: 'The lower bound for the amount.',
+        },
+        {
+          name: 'symbol',
+          type: 'string',
+          required: false,
+          description: 'The symbol used to prefix the amount.',
+        },
+      ],
     },
   },
   {
@@ -1067,7 +1349,14 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random SWIFT/BIC code based on the ISO-9362 format.',
       docsUrl: 'https://fakerjs.dev/api/finance',
       example: 'TXWRPYFT',
-      args: [],
+      args: [
+        {
+          name: 'includeBranchCode',
+          type: 'boolean',
+          required: false,
+          description: 'Whether to include a three-digit branch code at the end of the generated code.',
+        },
+      ],
     },
   },
   {
@@ -1217,7 +1506,21 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random IBAN.',
       docsUrl: 'https://fakerjs.dev/api/finance',
       example: 'CH67001759079BP5WA811',
-      args: [],
+      args: [
+        {
+          name: 'countryCode',
+          type: 'string',
+          required: false,
+          description:
+            'The country code from which you want to generate an IBAN, if none is provided a random country will be used.',
+        },
+        {
+          name: 'formatted',
+          type: 'boolean',
+          required: false,
+          description: 'Return a formatted version of the generated IBAN.',
+        },
+      ],
     },
   },
   {
@@ -1663,7 +1966,20 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates data using faker helpers maybe.',
       docsUrl: 'https://fakerjs.dev/api/helpers',
       example: '',
-      args: [],
+      args: [
+        {
+          name: 'callback',
+          type: 'string',
+          required: false,
+          description: 'The callback to that will be invoked if the probability check was successful.',
+        },
+        {
+          name: 'probability',
+          type: 'number',
+          required: false,
+          description: 'The probability ([0.00, 1.00]) of the callback being invoked.',
+        },
+      ],
     },
   },
   {
@@ -1676,7 +1992,21 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates data using faker helpers multiple.',
       docsUrl: 'https://fakerjs.dev/api/helpers',
       example: '[null,null,null]',
-      args: [],
+      args: [
+        {
+          name: 'method',
+          type: 'number',
+          required: false,
+          description:
+            'The method used to generate the values. The method will be called with (_, index), to allow using the index in the generated value e.g. as id.',
+        },
+        {
+          name: 'count',
+          type: 'number',
+          required: false,
+          description: 'The number or range of elements to generate.',
+        },
+      ],
     },
   },
   {
@@ -1695,6 +2025,13 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           type: 'string',
           required: true,
           description: '',
+        },
+        {
+          name: 'data',
+          type: 'array',
+          required: false,
+          description:
+            'The data used to populate the placeholders. This is a record where the key is the template placeholder, whereas the value is either a string or a function suitable for String.replace().',
         },
       ],
     },
@@ -1826,7 +2163,20 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates data using faker helpers shuffle.',
       docsUrl: 'https://fakerjs.dev/api/helpers',
       example: '',
-      args: [],
+      args: [
+        {
+          name: 'list',
+          type: 'array',
+          required: false,
+          description: 'The array to shuffle.',
+        },
+        {
+          name: 'inplace',
+          type: 'boolean',
+          required: false,
+          description: 'Whether to shuffle the array in place or return a new array.',
+        },
+      ],
     },
   },
   {
@@ -1952,7 +2302,20 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random image url.',
       docsUrl: 'https://fakerjs.dev/api/image',
       example: 'https://loremflickr.com/3255/509?lock=5223276893828872',
-      args: [],
+      args: [
+        {
+          name: 'height',
+          type: 'number',
+          required: false,
+          description: 'The height of the image.',
+        },
+        {
+          name: 'width',
+          type: 'number',
+          required: false,
+          description: 'The width of the image.',
+        },
+      ],
     },
   },
   {
@@ -2069,7 +2432,33 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates data using faker internet email.',
       docsUrl: 'https://fakerjs.dev/api/internet',
       example: 'Jana91@hotmail.com',
-      args: [],
+      args: [
+        {
+          name: 'allowSpecialCharacters',
+          type: 'boolean',
+          required: false,
+          description:
+            "Whether special characters such as .!#$%&'*+-/=?^_`{|}~ should be included in the email address.",
+        },
+        {
+          name: 'firstName',
+          type: 'string',
+          required: false,
+          description: 'The optional first name to use.',
+        },
+        {
+          name: 'lastName',
+          type: 'string',
+          required: false,
+          description: 'The optional last name to use.',
+        },
+        {
+          name: 'provider',
+          type: 'string',
+          required: false,
+          description: 'The mail provider domain to use. If not specified, a random free mail provider will be chosen.',
+        },
+      ],
     },
   },
   {
@@ -2082,7 +2471,14 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random emoji.',
       docsUrl: 'https://fakerjs.dev/api/internet',
       example: '🤨',
-      args: [],
+      args: [
+        {
+          name: 'types',
+          type: 'array',
+          required: false,
+          description: 'A list of the emoji types that should be used.',
+        },
+      ],
     },
   },
   {
@@ -2147,7 +2543,20 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random IPv4 address.',
       docsUrl: 'https://fakerjs.dev/api/internet',
       example: '',
-      args: [],
+      args: [
+        {
+          name: 'cidrBlock',
+          type: 'string',
+          required: false,
+          description: 'The optional CIDR block to use. Must be in the format x.x.x.x/y.',
+        },
+        {
+          name: 'network',
+          type: 'string',
+          required: false,
+          description: 'The optional network to use. This is intended as an alias for well-known cidrBlocks.',
+        },
+      ],
     },
   },
   {
@@ -2174,7 +2583,26 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       docsUrl: 'https://fakerjs.dev/api/internet',
       example:
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NzczMDg0NDYsImV4cCI6MTc3NzM2MjU1NiwibmJmIjoxNzgwOTA4NDkxLCJpc3MiOiJMZXVzY2hrZSwgTWV0eiBh...',
-      args: [],
+      args: [
+        {
+          name: 'header',
+          type: 'array',
+          required: false,
+          description: 'The header to use for the token. If present, it will replace any default values.',
+        },
+        {
+          name: 'payload',
+          type: 'array',
+          required: false,
+          description: 'The payload to use for the token. If present, it will replace any default values.',
+        },
+        {
+          name: 'refDate',
+          type: 'number',
+          required: false,
+          description: 'The date to use as reference point for the newly generated date.',
+        },
+      ],
     },
   },
   {
@@ -2200,7 +2628,14 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random mac address.',
       docsUrl: 'https://fakerjs.dev/api/internet',
       example: 'ae:a9:d7:ba:d2:bd',
-      args: [],
+      args: [
+        {
+          name: 'separator',
+          type: 'string',
+          required: false,
+          description: "The optional separator to use. Can be either ':', '-' or ''.",
+        },
+      ],
     },
   },
   {
@@ -2214,7 +2649,32 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
         'Generates a random password-like string. Do not use this method for generating actual passwords for users.',
       docsUrl: 'https://fakerjs.dev/api/internet',
       example: 'og1ejoksrfwVbIF',
-      args: [],
+      args: [
+        {
+          name: 'length',
+          type: 'number',
+          required: false,
+          description: 'The length of the password to generate.',
+        },
+        {
+          name: 'memorable',
+          type: 'boolean',
+          required: false,
+          description: 'Whether the generated password should be memorable.',
+        },
+        {
+          name: 'pattern',
+          type: 'string',
+          required: false,
+          description: 'The pattern that all chars should match. This option will be ignored, if memorable is true.',
+        },
+        {
+          name: 'prefix',
+          type: 'string',
+          required: false,
+          description: 'The prefix to use.',
+        },
+      ],
     },
   },
   {
@@ -2253,7 +2713,20 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random http(s) url.',
       docsUrl: 'https://fakerjs.dev/api/internet',
       example: 'https://brave-interior.biz/',
-      args: [],
+      args: [
+        {
+          name: 'appendSlash',
+          type: 'boolean',
+          required: false,
+          description: 'Whether to append a slash to the end of the url (path).',
+        },
+        {
+          name: 'protocol',
+          type: 'string',
+          required: false,
+          description: 'The protocol to use.',
+        },
+      ],
     },
   },
   {
@@ -2280,7 +2753,20 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: "Generates a username using the given person's name as base.",
       docsUrl: 'https://fakerjs.dev/api/internet',
       example: 'Deanna51',
-      args: [],
+      args: [
+        {
+          name: 'firstName',
+          type: 'string',
+          required: false,
+          description: 'The optional first name to use.',
+        },
+        {
+          name: 'lastName',
+          type: 'string',
+          required: false,
+          description: 'The optional last name to use.',
+        },
+      ],
     },
   },
   {
@@ -2418,7 +2904,15 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random direction (cardinal and ordinal; northwest, east, etc).',
       docsUrl: 'https://fakerjs.dev/api/location',
       example: 'North',
-      args: [],
+      args: [
+        {
+          name: 'abbreviated',
+          type: 'boolean',
+          required: false,
+          description:
+            'If true this will return abbreviated directions (NW, E, etc). Otherwise this will return the long name.',
+        },
+      ],
     },
   },
   {
@@ -2439,12 +2933,32 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'location.latitude',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Generates a random latitude.',
       docsUrl: 'https://fakerjs.dev/api/location',
       example: '51.5448',
-      args: [],
+      args: [
+        {
+          name: 'min',
+          type: 'number',
+          required: false,
+          description: 'The lower bound for the latitude to generate.',
+        },
+        {
+          name: 'max',
+          type: 'number',
+          required: false,
+          description: 'The upper bound for the latitude to generate.',
+        },
+        {
+          name: 'precision',
+          type: 'number',
+          required: false,
+          description: 'The number of decimal points of precision for the latitude.',
+        },
+      ],
     },
   },
   {
@@ -2452,12 +2966,32 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'location.longitude',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Generates a random longitude.',
       docsUrl: 'https://fakerjs.dev/api/location',
       example: '92.3892',
-      args: [],
+      args: [
+        {
+          name: 'min',
+          type: 'number',
+          required: false,
+          description: 'The lower bound for the longitude to generate.',
+        },
+        {
+          name: 'max',
+          type: 'number',
+          required: false,
+          description: 'The upper bound for the longitude to generate.',
+        },
+        {
+          name: 'precision',
+          type: 'number',
+          required: false,
+          description: 'The number of decimal points of precision for the longitude.',
+        },
+      ],
     },
   },
   {
@@ -2510,7 +3044,15 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
         "Returns a random localized state, or other equivalent first-level administrative entity for the locale's country such as a province or region.",
       docsUrl: 'https://fakerjs.dev/api/location',
       example: 'Hawaii',
-      args: [],
+      args: [
+        {
+          name: 'abbreviated',
+          type: 'boolean',
+          required: false,
+          description:
+            'If true this will return abbreviated first-level administrative entity names. Otherwise this will return the long name.',
+        },
+      ],
     },
   },
   {
@@ -2607,6 +3149,18 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           required: false,
           description: '',
         },
+        {
+          name: 'lineCountMax',
+          type: 'number',
+          required: false,
+          description: 'The maximum number of lines to generate.',
+        },
+        {
+          name: 'lineCountMin',
+          type: 'number',
+          required: false,
+          description: 'The minimum number of lines to generate.',
+        },
       ],
     },
   },
@@ -2639,6 +3193,18 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           type: 'number',
           required: false,
           description: '',
+        },
+        {
+          name: 'sentenceCountMax',
+          type: 'number',
+          required: false,
+          description: 'The maximum number of sentences to generate.',
+        },
+        {
+          name: 'sentenceCountMin',
+          type: 'number',
+          required: false,
+          description: 'The minimum number of sentences to generate.',
         },
       ],
     },
@@ -2679,6 +3245,18 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           required: false,
           description: '',
         },
+        {
+          name: 'paragraphCountMax',
+          type: 'number',
+          required: false,
+          description: 'The maximum number of paragraphs to generate.',
+        },
+        {
+          name: 'paragraphCountMin',
+          type: 'number',
+          required: false,
+          description: 'The minimum number of paragraphs to generate.',
+        },
       ],
     },
   },
@@ -2710,6 +3288,18 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           type: 'number',
           required: false,
           description: '',
+        },
+        {
+          name: 'wordCountMax',
+          type: 'number',
+          required: false,
+          description: 'The maximum number of words to generate.',
+        },
+        {
+          name: 'wordCountMin',
+          type: 'number',
+          required: false,
+          description: 'The minimum number of words to generate.',
         },
       ],
     },
@@ -2749,6 +3339,18 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           required: false,
           description: '',
         },
+        {
+          name: 'sentenceCountMax',
+          type: 'number',
+          required: false,
+          description: 'The maximum number of sentences to generate.',
+        },
+        {
+          name: 'sentenceCountMin',
+          type: 'number',
+          required: false,
+          description: 'The minimum number of sentences to generate.',
+        },
       ],
     },
   },
@@ -2780,6 +3382,18 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           type: 'number',
           required: false,
           description: '',
+        },
+        {
+          name: 'wordCountMax',
+          type: 'number',
+          required: false,
+          description: 'The maximum number of words to generate.',
+        },
+        {
+          name: 'wordCountMin',
+          type: 'number',
+          required: false,
+          description: 'The minimum number of words to generate.',
         },
       ],
     },
@@ -2827,6 +3441,13 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           required: false,
           description: '',
         },
+        {
+          name: 'strategy',
+          type: 'string',
+          required: false,
+          description:
+            'The strategy to apply when no words with a matching length are found. Available error handling strategies: fail: Throws an error if no words with the given length are found. shortest: Returns any of the shortest words. closest: Returns any of the words closest to the given length. longest: Returns any of the longest words. any-length: Returns a word with any length.',
+        },
       ],
     },
   },
@@ -2858,6 +3479,18 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           type: 'number',
           required: false,
           description: '',
+        },
+        {
+          name: 'wordCountMax',
+          type: 'number',
+          required: false,
+          description: 'The maximum number of words to generate.',
+        },
+        {
+          name: 'wordCountMin',
+          type: 'number',
+          required: false,
+          description: 'The minimum number of words to generate.',
         },
       ],
     },
@@ -2944,7 +3577,20 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a binary string.',
       docsUrl: 'https://fakerjs.dev/api/number',
       example: '0',
-      args: [],
+      args: [
+        {
+          name: 'max',
+          type: 'number',
+          required: false,
+          description: 'Upper bound for generated number.',
+        },
+        {
+          name: 'min',
+          type: 'number',
+          required: false,
+          description: 'Lower bound for generated number.',
+        },
+      ],
     },
   },
   {
@@ -2964,6 +3610,32 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           type: 'number',
           required: false,
           description: '',
+        },
+        {
+          name: 'fractionDigits',
+          type: 'number',
+          required: false,
+          description:
+            'The maximum number of digits to appear after the decimal point, for example 2 will round to 2 decimal points. Only one of multipleOf or fractionDigits should be passed.',
+        },
+        {
+          name: 'max',
+          type: 'number',
+          required: false,
+          description: 'Upper bound for generated number, exclusive, unless multipleOf or fractionDigits are passed.',
+        },
+        {
+          name: 'min',
+          type: 'number',
+          required: false,
+          description: 'Lower bound for generated number, inclusive.',
+        },
+        {
+          name: 'multipleOf',
+          type: 'number',
+          required: false,
+          description:
+            'The generated number will be a multiple of this parameter. Only one of multipleOf or fractionDigits should be passed.',
         },
       ],
     },
@@ -3024,6 +3696,12 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           required: false,
           description: 'Optional maximum integer.',
         },
+        {
+          name: 'multipleOf',
+          type: 'number',
+          required: false,
+          description: 'Generated number will be a multiple of the given integer.',
+        },
       ],
     },
   },
@@ -3037,7 +3715,20 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns an octal string.',
       docsUrl: 'https://fakerjs.dev/api/number',
       example: '6',
-      args: [],
+      args: [
+        {
+          name: 'max',
+          type: 'number',
+          required: false,
+          description: 'Upper bound for generated number.',
+        },
+        {
+          name: 'min',
+          type: 'number',
+          required: false,
+          description: 'Lower bound for generated number.',
+        },
+      ],
     },
   },
   {
@@ -3212,7 +3903,14 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random person prefix.',
       docsUrl: 'https://fakerjs.dev/api/person',
       example: 'Miss',
-      args: [],
+      args: [
+        {
+          name: 'sex',
+          type: 'string',
+          required: false,
+          description: "The optional sex to use. Can be either 'female' or 'male'.",
+        },
+      ],
     },
   },
   {
@@ -3290,7 +3988,15 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random phone number.',
       docsUrl: 'https://fakerjs.dev/api/phone',
       example: '298.756.9044',
-      args: [],
+      args: [
+        {
+          name: 'style',
+          type: 'string',
+          required: false,
+          description:
+            "Style of the generated phone number: 'human': (default) A human-input phone number, e.g. 555-770-7727 or 555.770.7727 x1234 'national': A phone number in a standardized national format, e.g. (555) 123-4567. 'international': A phone number in the E.123 international format, e.g. +15551234567",
+        },
+      ],
     },
   },
   {
@@ -3348,6 +4054,18 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           required: false,
           description: '',
         },
+        {
+          name: 'casing',
+          type: 'string',
+          required: false,
+          description: 'The casing of the characters.',
+        },
+        {
+          name: 'exclude',
+          type: 'array',
+          required: false,
+          description: 'An array with characters which should be excluded in the generated string.',
+        },
       ],
     },
   },
@@ -3380,6 +4098,18 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           required: false,
           description: '',
         },
+        {
+          name: 'casing',
+          type: 'string',
+          required: false,
+          description: 'The casing of the characters.',
+        },
+        {
+          name: 'exclude',
+          type: 'array',
+          required: false,
+          description: 'An array of characters and digits which should be excluded in the generated string.',
+        },
       ],
     },
   },
@@ -3393,7 +4123,21 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a binary string.',
       docsUrl: 'https://fakerjs.dev/api/string',
       example: '0b0',
-      args: [],
+      args: [
+        {
+          name: 'length',
+          type: 'number',
+          required: false,
+          description:
+            'The length of the string (excluding the prefix) to generate either as a fixed length or as a length range.',
+        },
+        {
+          name: 'prefix',
+          type: 'string',
+          required: false,
+          description: 'Prefix for the generated number.',
+        },
+      ],
     },
   },
   {
@@ -3444,7 +4188,27 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a hexadecimal string.',
       docsUrl: 'https://fakerjs.dev/api/string',
       example: '0x1',
-      args: [],
+      args: [
+        {
+          name: 'casing',
+          type: 'string',
+          required: false,
+          description: 'Casing of the generated number.',
+        },
+        {
+          name: 'length',
+          type: 'number',
+          required: false,
+          description:
+            'The length of the string (excluding the prefix) to generate either as a fixed length or as a length range.',
+        },
+        {
+          name: 'prefix',
+          type: 'string',
+          required: false,
+          description: 'Prefix for the generated number.',
+        },
+      ],
     },
   },
   {
@@ -3475,6 +4239,18 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           type: 'number',
           required: false,
           description: '',
+        },
+        {
+          name: 'lengthMax',
+          type: 'number',
+          required: false,
+          description: 'The maximum length of the Nano ID to generate.',
+        },
+        {
+          name: 'lengthMin',
+          type: 'number',
+          required: false,
+          description: 'The minimum length of the Nano ID to generate.',
         },
       ],
     },
@@ -3508,6 +4284,18 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           required: false,
           description: '',
         },
+        {
+          name: 'allowLeadingZeros',
+          type: 'boolean',
+          required: false,
+          description: 'Whether leading zeros are allowed or not.',
+        },
+        {
+          name: 'exclude',
+          type: 'array',
+          required: false,
+          description: 'An array of digits which should be excluded in the generated string.',
+        },
       ],
     },
   },
@@ -3521,7 +4309,21 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns an octal string.',
       docsUrl: 'https://fakerjs.dev/api/string',
       example: '0o6',
-      args: [],
+      args: [
+        {
+          name: 'length',
+          type: 'number',
+          required: false,
+          description:
+            'The length of the string (excluding the prefix) to generate either as a fixed length or as a length range.',
+        },
+        {
+          name: 'prefix',
+          type: 'string',
+          required: false,
+          description: 'Prefix for the generated number.',
+        },
+      ],
     },
   },
   {
@@ -3552,6 +4354,18 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           type: 'number',
           required: false,
           description: '',
+        },
+        {
+          name: 'lengthMax',
+          type: 'number',
+          required: false,
+          description: 'The maximum length of the string to generate.',
+        },
+        {
+          name: 'lengthMin',
+          type: 'number',
+          required: false,
+          description: 'The minimum length of the string to generate.',
         },
       ],
     },
@@ -3585,6 +4399,18 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           required: false,
           description: '',
         },
+        {
+          name: 'lengthMax',
+          type: 'number',
+          required: false,
+          description: 'The maximum length of the string to generate.',
+        },
+        {
+          name: 'lengthMin',
+          type: 'number',
+          required: false,
+          description: 'The minimum length of the string to generate.',
+        },
       ],
     },
   },
@@ -3598,7 +4424,15 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a ULID (Universally Unique Lexicographically Sortable Identifier).',
       docsUrl: 'https://fakerjs.dev/api/string',
       example: '01KQADM2A0728G4D2HKCPWKS6N',
-      args: [],
+      args: [
+        {
+          name: 'refDate',
+          type: 'number',
+          required: false,
+          description:
+            'The date to use as reference point for the newly generated ULID encoded timestamp. The encoded timestamp is represented by the first 10 characters of the result.',
+        },
+      ],
     },
   },
   {
@@ -3611,7 +4445,20 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a UUID v4 (Universally Unique Identifier).',
       docsUrl: 'https://fakerjs.dev/api/string',
       example: '0628ae51-7b6c-4d33-9f24-dae19fb245df',
-      args: [],
+      args: [
+        {
+          name: 'refDate',
+          type: 'number',
+          required: false,
+          description: 'The timestamp to encode into the UUID. This parameter is only relevant for UUID v7.',
+        },
+        {
+          name: 'version',
+          type: 'string',
+          required: false,
+          description: 'The specific UUID version to use.',
+        },
+      ],
     },
   },
   {
@@ -3670,7 +4517,20 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random cron expression.',
       docsUrl: 'https://fakerjs.dev/api/system',
       example: '* 15 * * SAT',
-      args: [],
+      args: [
+        {
+          name: 'includeNonStandard',
+          type: 'boolean',
+          required: false,
+          description: 'Whether to include a @yearly, @monthly, @daily, etc text labels in the generated expression.',
+        },
+        {
+          name: 'includeYear',
+          type: 'boolean',
+          required: false,
+          description: 'Whether to include a year in the generated expression.',
+        },
+      ],
     },
   },
   {
@@ -3930,6 +4790,13 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           required: false,
           description: '',
         },
+        {
+          name: 'strategy',
+          type: 'string',
+          required: false,
+          description:
+            'The strategy to apply when no words with a matching length are found. Available error handling strategies: fail: Throws an error if no words with the given length are found. shortest: Returns any of the shortest words. closest: Returns any of the words closest to the given length. longest: Returns any of the longest words. any-length: Returns a word with any length.',
+        },
       ],
     },
   },
@@ -3961,6 +4828,13 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           type: 'number',
           required: false,
           description: '',
+        },
+        {
+          name: 'strategy',
+          type: 'string',
+          required: false,
+          description:
+            'The strategy to apply when no words with a matching length are found. Available error handling strategies: fail: Throws an error if no words with the given length are found. shortest: Returns any of the shortest words. closest: Returns any of the words closest to the given length. longest: Returns any of the longest words. any-length: Returns a word with any length.',
         },
       ],
     },
@@ -3994,6 +4868,13 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           required: false,
           description: '',
         },
+        {
+          name: 'strategy',
+          type: 'string',
+          required: false,
+          description:
+            'The strategy to apply when no words with a matching length are found. Available error handling strategies: fail: Throws an error if no words with the given length are found. shortest: Returns any of the shortest words. closest: Returns any of the words closest to the given length. longest: Returns any of the longest words. any-length: Returns a word with any length.',
+        },
       ],
     },
   },
@@ -4025,6 +4906,13 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           type: 'number',
           required: false,
           description: '',
+        },
+        {
+          name: 'strategy',
+          type: 'string',
+          required: false,
+          description:
+            'The strategy to apply when no words with a matching length are found. Available error handling strategies: fail: Throws an error if no words with the given length are found. shortest: Returns any of the shortest words. closest: Returns any of the words closest to the given length. longest: Returns any of the longest words. any-length: Returns a word with any length.',
         },
       ],
     },
@@ -4058,6 +4946,13 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           required: false,
           description: '',
         },
+        {
+          name: 'strategy',
+          type: 'string',
+          required: false,
+          description:
+            'The strategy to apply when no words with a matching length are found. Available error handling strategies: fail: Throws an error if no words with the given length are found. shortest: Returns any of the shortest words. closest: Returns any of the words closest to the given length. longest: Returns any of the longest words. any-length: Returns a word with any length.',
+        },
       ],
     },
   },
@@ -4089,6 +4984,13 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           type: 'number',
           required: false,
           description: '',
+        },
+        {
+          name: 'strategy',
+          type: 'string',
+          required: false,
+          description:
+            'The strategy to apply when no words with a matching length are found. Available error handling strategies: fail: Throws an error if no words with the given length are found. shortest: Returns any of the shortest words. closest: Returns any of the words closest to the given length. longest: Returns any of the longest words. any-length: Returns a word with any length.',
         },
       ],
     },
@@ -4123,6 +5025,13 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           required: false,
           description: '',
         },
+        {
+          name: 'strategy',
+          type: 'string',
+          required: false,
+          description:
+            'The strategy to apply when no words with a matching length are found. Available error handling strategies: fail: Throws an error if no words with the given length are found. shortest: Returns any of the shortest words. closest: Returns any of the words closest to the given length. longest: Returns any of the longest words. any-length: Returns a word with any length.',
+        },
       ],
     },
   },
@@ -4154,6 +5063,13 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           type: 'number',
           required: false,
           description: '',
+        },
+        {
+          name: 'strategy',
+          type: 'string',
+          required: false,
+          description:
+            'The strategy to apply when no words with a matching length are found. Available error handling strategies: fail: Throws an error if no words with the given length are found. shortest: Returns any of the shortest words. closest: Returns any of the words closest to the given length. longest: Returns any of the longest words. any-length: Returns a word with any length.',
         },
       ],
     },

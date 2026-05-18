@@ -8,6 +8,12 @@ describe('string domain keyword execution', () => {
     expect(result).not.toBeUndefined();
   });
 
+  test('string.alpha respects length param', () => {
+    const result = executeDomainKeyword('string.alpha', { faker, args: [8] });
+    console.log('string.alpha(length=8)', result);
+    expect(result).toHaveLength(8);
+  });
+
   test('executes string.alphanumeric', () => {
     const result = executeDomainKeyword('string.alphanumeric', { faker, args: [] });
     console.log('string.alphanumeric', result);
@@ -42,6 +48,13 @@ describe('string domain keyword execution', () => {
     const result = executeDomainKeyword('string.numeric', { faker, args: [] });
     console.log('string.numeric', result);
     expect(result).not.toBeUndefined();
+  });
+
+  test('string.numeric respects length param', () => {
+    const result = executeDomainKeyword('string.numeric', { faker, args: [6] });
+    console.log('string.numeric(length=6)', result);
+    expect(result).toMatch(/^\d+$/);
+    expect(result).toHaveLength(6);
   });
 
   test('executes string.octal', () => {

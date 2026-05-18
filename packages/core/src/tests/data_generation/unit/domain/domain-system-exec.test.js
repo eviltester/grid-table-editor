@@ -14,6 +14,12 @@ describe('system domain keyword execution', () => {
     expect(result).not.toBeUndefined();
   });
 
+  test('system.commonFileName uses extension arg', () => {
+    const result = executeDomainKeyword('system.commonFileName', { faker, args: ['txt'] });
+    console.log('system.commonFileName(extension=txt)', result);
+    expect(result.endsWith('.txt')).toBe(true);
+  });
+
   test('executes system.commonFileType', () => {
     const result = executeDomainKeyword('system.commonFileType', { faker, args: [] });
     console.log('system.commonFileType', result);
@@ -26,6 +32,13 @@ describe('system domain keyword execution', () => {
     expect(result).not.toBeUndefined();
   });
 
+  test('system.cron uses includeYear arg', () => {
+    const result = executeDomainKeyword('system.cron', { faker, args: [false, true] });
+    console.log('system.cron(includeNonStandard=false,includeYear=true)', result);
+    expect(typeof result).toBe('string');
+    expect(result.length).toBeGreaterThan(0);
+  });
+
   test('executes system.directoryPath', () => {
     const result = executeDomainKeyword('system.directoryPath', { faker, args: [] });
     console.log('system.directoryPath', result);
@@ -36,6 +49,13 @@ describe('system domain keyword execution', () => {
     const result = executeDomainKeyword('system.fileExt', { faker, args: [] });
     console.log('system.fileExt', result);
     expect(result).not.toBeUndefined();
+  });
+
+  test('system.fileExt mimeType arg behavior is currently unsupported in delegate shape', () => {
+    const result = executeDomainKeyword('system.fileExt', { faker, args: ['image/png'] });
+    console.log('system.fileExt(mimeType=image/png)', result);
+    expect(typeof result).toBe('string');
+    expect(result.length).toBeGreaterThan(0);
   });
 
   test('executes system.fileName', () => {

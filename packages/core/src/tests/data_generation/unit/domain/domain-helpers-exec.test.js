@@ -3,13 +3,15 @@ import { executeDomainKeyword } from '../../../../../js/domain/domain-keywords.j
 
 describe('helpers domain keyword execution', () => {
   test('executes helpers.arrayElement', () => {
-    // TODO(domain-args): define required `array` arg and parser support for array literals/references.
-    expect(() => executeDomainKeyword('helpers.arrayElement', { faker, args: [] })).toThrow();
+    // TODO(domain-args): add array arg schema for helpers.arrayElement and then assert output membership.
+    expect(() => executeDomainKeyword('helpers.arrayElement', { faker, args: [['alpha', 'beta', 'gamma']] })).toThrow();
   });
 
   test('executes helpers.arrayElements', () => {
-    // TODO(domain-args): define required `array` arg and optional `count` mapping.
-    expect(() => executeDomainKeyword('helpers.arrayElements', { faker, args: [] })).toThrow();
+    // TODO(domain-args): add array/count arg schema for helpers.arrayElements and assert bounds/membership.
+    expect(() =>
+      executeDomainKeyword('helpers.arrayElements', { faker, args: [['alpha', 'beta', 'gamma', 'delta'], 2] })
+    ).toThrow();
   });
 
   test('executes helpers.enumValue', () => {
@@ -24,33 +26,37 @@ describe('helpers domain keyword execution', () => {
   });
 
   test('executes helpers.fromRegExp', () => {
-    const result = executeDomainKeyword('helpers.fromRegExp', { faker, args: ['test'] });
-    console.log('helpers.fromRegExp', result);
-    expect(result).not.toBeUndefined();
+    const result = executeDomainKeyword('helpers.fromRegExp', { faker, args: ['[a-z]{5}'] });
+    console.log('helpers.fromRegExp([a-z]{5})', result);
+    expect(result).toMatch(/^[a-z]{5}$/);
   });
 
   test('executes helpers.maybe', () => {
-    // TODO(domain-args): add callback/literal delegate argument contract for probabilistic execution.
-    // Current faker behavior is non-deterministic here without a callback; accept throw/no-throw until args contract is implemented.
+    // TODO(domain-args): callback is still not representable in current scalar/array-only schema.
     expect(() => {
       try {
-        executeDomainKeyword('helpers.maybe', { faker, args: [] });
-      } catch (_error) {
+        executeDomainKeyword('helpers.maybe', { faker, args: ['not-a-callback'] });
+      } catch {
         // Intentionally tolerated until callback argument support is added.
       }
     }).not.toThrow();
   });
 
   test('executes helpers.multiple', () => {
-    const result = executeDomainKeyword('helpers.multiple', { faker, args: [] });
-    console.log('helpers.multiple', result);
-    expect(result).not.toBeUndefined();
+    // TODO(domain-args): method callback is still not representable in current scalar/array-only schema.
+    expect(() => executeDomainKeyword('helpers.multiple', { faker, args: ['not-a-callback', 3] })).toThrow();
   });
 
   test('executes helpers.mustache', () => {
     const result = executeDomainKeyword('helpers.mustache', { faker, args: ['test'] });
     console.log('helpers.mustache', result);
     expect(result).not.toBeUndefined();
+  });
+
+  test('helpers.mustache uses data arg', () => {
+    const result = executeDomainKeyword('helpers.mustache', { faker, args: ['hello {{name}}', ['name', 'world']] });
+    console.log('helpers.mustache(data)', result);
+    expect(typeof result).toBe('string');
   });
 
   test('executes helpers.objectEntry', () => {
@@ -86,8 +92,11 @@ describe('helpers domain keyword execution', () => {
   });
 
   test('executes helpers.shuffle', () => {
-    // TODO(domain-args): define required `array` arg and parser support for array literals/references.
-    expect(() => executeDomainKeyword('helpers.shuffle', { faker, args: [] })).toThrow();
+    const source = ['alpha', 'beta', 'gamma', 'delta'];
+    const result = executeDomainKeyword('helpers.shuffle', { faker, args: [source, false] });
+    console.log('helpers.shuffle(inplace=false)', result);
+    expect(Array.isArray(result)).toBe(true);
+    expect(result).toHaveLength(source.length);
   });
 
   test('executes helpers.slugify', () => {
@@ -103,7 +112,17 @@ describe('helpers domain keyword execution', () => {
   });
 
   test('executes helpers.weightedArrayElement', () => {
-    // TODO(domain-args): define weighted entries arg contract with secure, non-object representation.
-    expect(() => executeDomainKeyword('helpers.weightedArrayElement', { faker, args: [] })).toThrow();
+    // TODO(domain-args): add weighted array arg schema for helpers.weightedArrayElement.
+    expect(() =>
+      executeDomainKeyword('helpers.weightedArrayElement', {
+        faker,
+        args: [
+          [
+            { value: 'alpha', weight: 1 },
+            { value: 'beta', weight: 1 },
+          ],
+        ],
+      })
+    ).toThrow();
   });
 });

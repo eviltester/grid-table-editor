@@ -9,13 +9,28 @@ describe('date domain keyword execution', () => {
   });
 
   test('executes date.between', () => {
-    // TODO(domain-args): define required `from` and `to` args in keyword help schema.
-    expect(() => executeDomainKeyword('date.between', { faker, args: [] })).toThrow();
+    const from = new Date('2020-01-01T00:00:00.000Z');
+    const to = new Date('2020-01-31T00:00:00.000Z');
+    const result = executeDomainKeyword('date.between', { faker, args: [from.getTime(), to.getTime()] });
+    console.log('date.between(from,to)', result);
+    expect(result.getTime()).toBeGreaterThanOrEqual(from.getTime());
+    expect(result.getTime()).toBeLessThanOrEqual(to.getTime());
   });
 
   test('executes date.betweens', () => {
-    // TODO(domain-args): define required `from` and `to` args (and optional `count`) in schema.
-    expect(() => executeDomainKeyword('date.betweens', { faker, args: [] })).toThrow();
+    const from = new Date('2020-02-01T00:00:00.000Z');
+    const to = new Date('2020-02-29T00:00:00.000Z');
+    const result = executeDomainKeyword('date.betweens', {
+      faker,
+      args: [3, from.getTime(), to.getTime()],
+    });
+    console.log('date.betweens(count=3,from,to)', result);
+    expect(Array.isArray(result)).toBe(true);
+    expect(result).toHaveLength(3);
+    for (const value of result) {
+      expect(value.getTime()).toBeGreaterThanOrEqual(from.getTime());
+      expect(value.getTime()).toBeLessThanOrEqual(to.getTime());
+    }
   });
 
   test('executes date.birthdate', () => {

@@ -62,10 +62,30 @@ describe('location domain keyword execution', () => {
     expect(result).not.toBeUndefined();
   });
 
+  test('location.latitude respects min/max/precision params', () => {
+    const result = executeDomainKeyword('location.latitude', { faker, args: [-10, 10, 2] });
+    console.log('location.latitude(min=-10,max=10,precision=2)', result);
+    const numeric = Number(result);
+    expect(numeric).toBeGreaterThanOrEqual(-10);
+    expect(numeric).toBeLessThanOrEqual(10);
+    const fraction = String(result).split('.')[1] || '';
+    expect(fraction.length).toBeLessThanOrEqual(2);
+  });
+
   test('executes location.longitude', () => {
     const result = executeDomainKeyword('location.longitude', { faker, args: [] });
     console.log('location.longitude', result);
     expect(result).not.toBeUndefined();
+  });
+
+  test('location.longitude respects min/max/precision params', () => {
+    const result = executeDomainKeyword('location.longitude', { faker, args: [-20, 20, 3] });
+    console.log('location.longitude(min=-20,max=20,precision=3)', result);
+    const numeric = Number(result);
+    expect(numeric).toBeGreaterThanOrEqual(-20);
+    expect(numeric).toBeLessThanOrEqual(20);
+    const fraction = String(result).split('.')[1] || '';
+    expect(fraction.length).toBeLessThanOrEqual(3);
   });
 
   test('executes location.nearbyGPSCoordinate', () => {

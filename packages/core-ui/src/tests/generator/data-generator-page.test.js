@@ -237,6 +237,37 @@ describe('DataGeneratorPage', () => {
     expect(document.getElementById('generatorOutputPreview').value).toBe('csv:sync:3');
   });
 
+  test('preview serializes object-returning domain values as JSON', () => {
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker,
+      RandExp,
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: TestDataGenerator,
+    });
+    page.init();
+
+    page.schemaRows = [
+      { id: '1', name: 't4', sourceType: 'domain', command: 'science.chemicalElement', params: '', value: '' },
+    ];
+    page.renderSchemaRows();
+    document.getElementById('previewRowsCount').value = '1';
+
+    page.previewData();
+
+    const tableArg = FakeGridExtension.lastInstance.setGridFromGenericDataTable.mock.calls[0][0];
+    const renderedValue = tableArg.getRow(0)[0];
+    expect(typeof renderedValue).toBe('string');
+    expect(renderedValue.startsWith('{')).toBe(true);
+    expect(renderedValue).toContain('"name"');
+    expect(renderedValue).not.toContain('[object Object]');
+  });
+
   test('empty literal schema value generates blank data cell', () => {
     const page = new DataGeneratorPage({
       parentElement: document.getElementById('app'),
@@ -513,6 +544,59 @@ describe('DataGeneratorPage', () => {
         (opt) => opt.value === 'number.int'
       )
     ).toBe(true);
+  });
+
+  test('hides non-scalar domain commands for new domain rows', () => {
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker: { word: { noun: () => 'x' } },
+      RandExp: function RandExp() {},
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: TestDataGenerator,
+    });
+    page.init();
+
+    page.schemaRows = [{ id: '1', name: 'A', sourceType: 'domain', command: '', params: '', value: '' }];
+    page.renderSchemaRows();
+
+    const options = Array.from(document.querySelector('[data-field="command"]').querySelectorAll('option')).map(
+      (option) => option.value
+    );
+    expect(options).toContain('number.int');
+    expect(options).not.toContain('science.chemicalElement');
+    expect(options).not.toContain('finance.currency');
+  });
+
+  test('preserves selected non-scalar domain command for existing parsed row', () => {
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker: { word: { noun: () => 'x' } },
+      RandExp: function RandExp() {},
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: TestDataGenerator,
+    });
+    page.init();
+
+    page.schemaRows = [
+      { id: '1', name: 'A', sourceType: 'domain', command: 'science.chemicalElement', params: '', value: '' },
+    ];
+    page.renderSchemaRows();
+
+    const commandSelect = document.querySelector('[data-field="command"]');
+    const options = Array.from(commandSelect.querySelectorAll('option')).map((option) => option.value);
+    expect(commandSelect.value).toBe('science.chemicalElement');
+    expect(options).toContain('science.chemicalElement');
+    expect(options).not.toContain('finance.currency');
   });
 
   test('shows schema help link for faker, regex and literal sources', () => {

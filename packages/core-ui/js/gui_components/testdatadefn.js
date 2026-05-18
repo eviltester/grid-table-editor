@@ -32,6 +32,7 @@ import {
   getKnownDomainCommandsLongestFirst,
   getDomainKeywordByCommand,
 } from './domain-commands.js';
+import { getDomainCommandHelp } from './domain-command-help-metadata.js';
 import { PairwiseTestDataGenerator } from '@anywaydata/core/data_generation/all-pairs/pairwiseTestDataGenerator.js';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 import { schemaTextToDataRules, dataRulesToSchemaText } from '@anywaydata/core/data_generation/schema-rules-adapter.js';
@@ -590,6 +591,7 @@ const FAKER_SECTION_LABEL = '-- faker --';
 const FAKER_SECTION_VALUE = '__faker_section__';
 const DOMAIN_SECTION_LABEL = '-- domain --';
 const DOMAIN_SECTION_VALUE = '__domain_section__';
+const DOMAIN_NON_SCALAR_RETURN_TYPES = new Set(['array', 'object']);
 
 // TODO: add fakerCommand to the TestDataRule already parsed out
 function findFakerCommand(aString) {
@@ -679,7 +681,32 @@ function identifyFakerCommands() {
   getKnownDomainCommandsLongestFirst().forEach((command) => DOMAIN_COMMANDS_LONGEST_FIRST.push(command));
 }
 
-function getTabulatorTypeEditorValues() {
+function normaliseReturnType(returnType) {
+  return String(returnType || '')
+    .trim()
+    .toLowerCase();
+}
+
+function isDomainCommandVisibleByDefault(command) {
+  const commandHelp = getDomainCommandHelp(command);
+  const returnType = normaliseReturnType(commandHelp?.returnType);
+  if (!returnType) {
+    return true;
+  }
+  return !DOMAIN_NON_SCALAR_RETURN_TYPES.has(returnType);
+}
+
+function getVisibleDomainTypeOptions(currentValue = '') {
+  const visible = getKnownDomainCommandsAlphabetical().filter((command) => isDomainCommandVisibleByDefault(command));
+  const selected = String(currentValue || '').trim();
+  if (selected && DOMAIN_COMMANDS.includes(selected) && !visible.includes(selected)) {
+    visible.push(selected);
+    visible.sort((a, b) => a.localeCompare(b));
+  }
+  return visible.map((command) => ({ value: command, label: command }));
+}
+
+function getTabulatorTypeEditorValues(currentValue = '') {
   const typeValues = TOP_LEVEL_TYPE_OPTIONS.map((typeOption) => ({ value: typeOption, label: typeOption }));
   const fakerHeader = {
     value: FAKER_SECTION_VALUE,
@@ -694,10 +721,7 @@ function getTabulatorTypeEditorValues() {
     label: DOMAIN_SECTION_LABEL,
     elementAttributes: { disabled: true },
   };
-  const domainCommandValues = getKnownDomainCommandsAlphabetical().map((command) => ({
-    value: command,
-    label: command,
-  }));
+  const domainCommandValues = getVisibleDomainTypeOptions(currentValue);
   return [...typeValues, fakerHeader, ...fakerCommandValues, domainHeader, ...domainCommandValues];
 }
 
@@ -707,7 +731,7 @@ function tabulatorTypeSelectEditor(cell, onRendered, success, cancel) {
   editor.style.boxSizing = 'border-box';
   let completed = false;
 
-  const values = getTabulatorTypeEditorValues();
+  const values = getTabulatorTypeEditorValues(cell.getValue());
   values.forEach((entry) => {
     const option = document.createElement('option');
     option.value = entry.value;
@@ -1122,6 +1146,7 @@ export {
   identifyFakerCommands,
   getFakerCommands,
   getDomainCommands,
+  getTabulatorTypeEditorValues,
 };
 
 /**

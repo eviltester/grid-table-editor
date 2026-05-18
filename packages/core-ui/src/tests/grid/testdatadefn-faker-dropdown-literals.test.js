@@ -7,6 +7,7 @@ import {
   identifyFakerCommands,
   getFakerCommands,
   getDomainCommands,
+  getTabulatorTypeEditorValues,
 } from '../../../js/gui_components/testdatadefn.js';
 
 describe('Faker Dropdown Literal Commands', () => {
@@ -88,6 +89,25 @@ describe('Faker Dropdown Literal Commands', () => {
       const domainCommands = getDomainCommands();
       expect(domainCommands.length).toBeGreaterThan(0);
       expect(domainCommands).toContain('number.int');
+    });
+
+    it('should hide non-scalar domain commands in type dropdown for new rows', () => {
+      const values = getTabulatorTypeEditorValues('');
+      const domainOptions = values
+        .slice(values.findIndex((entry) => entry.value === '__domain_section__') + 1)
+        .map((entry) => entry.value);
+      expect(domainOptions).toContain('number.int');
+      expect(domainOptions).not.toContain('science.chemicalElement');
+      expect(domainOptions).not.toContain('finance.currency');
+    });
+
+    it('should include selected non-scalar domain command when editing existing row', () => {
+      const values = getTabulatorTypeEditorValues('science.chemicalElement');
+      const domainOptions = values
+        .slice(values.findIndex((entry) => entry.value === '__domain_section__') + 1)
+        .map((entry) => entry.value);
+      expect(domainOptions).toContain('science.chemicalElement');
+      expect(domainOptions).not.toContain('finance.currency');
     });
   });
 

@@ -11,6 +11,7 @@ function getDomainCommandHelp(command) {
     summary: keyword.help?.summary || '',
     docsUrl: keyword.help?.docsUrl || '',
     example: keyword.help?.example || '',
+    returnType: keyword.help?.returnType || '',
     args: Array.isArray(keyword.help?.args) ? keyword.help.args : [],
   };
 }

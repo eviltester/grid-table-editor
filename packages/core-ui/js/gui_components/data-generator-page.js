@@ -29,6 +29,7 @@ const SOURCE_TYPE_ENUM = 'enum';
 const REGEX_HELP_URL = 'https://anywaydata.com/docs/test-data/regex-test-data';
 const FAKER_HELP_URL = 'https://anywaydata.com/docs/test-data/faker-test-data';
 const DOMAIN_HELP_URL = 'https://anywaydata.com/docs/test-data/faker-test-data';
+const DOMAIN_NON_SCALAR_RETURN_TYPES = new Set(['array', 'object']);
 const LITERAL_HELP_URL = 'https://anywaydata.com/docs/category/generating-data';
 const ENUM_HELP_URL = 'https://anywaydata.com/docs/category/generating-data';
 const GENERATE_TO_FILE_HELP_URL = 'https://anywaydata.com/docs/test-data/generate-to-file';
@@ -85,6 +86,21 @@ function normaliseSourceType(sourceType) {
     return normalised;
   }
   return SOURCE_TYPE_REGEX;
+}
+
+function normaliseReturnType(returnType) {
+  return String(returnType || '')
+    .trim()
+    .toLowerCase();
+}
+
+function isDomainCommandVisibleByDefault(command) {
+  const commandHelp = getDomainCommandHelp(command);
+  const returnType = normaliseReturnType(commandHelp?.returnType);
+  if (!returnType) {
+    return true;
+  }
+  return !DOMAIN_NON_SCALAR_RETURN_TYPES.has(returnType);
 }
 
 function buildRuleSpecFromSchemaRow(row) {
@@ -167,6 +183,30 @@ function schemaErrorsToText(errors = []) {
       return String(error ?? '');
     })
     .join('\n');
+}
+
+function normaliseGeneratedCellValue(value) {
+  if (value === undefined || value === null) {
+    return '';
+  }
+  if (value instanceof Date) {
+    return value.toISOString();
+  }
+  if (Array.isArray(value) || (typeof value === 'object' && value !== null)) {
+    try {
+      return JSON.stringify(value);
+    } catch {
+      return String(value);
+    }
+  }
+  return value;
+}
+
+function normaliseGeneratedRow(row = []) {
+  if (!Array.isArray(row)) {
+    return [];
+  }
+  return row.map((value) => normaliseGeneratedCellValue(value));
 }
 
 class DataGeneratorPage {
@@ -258,6 +298,19 @@ class DataGeneratorPage {
       value: '',
       comments: '',
     };
+  }
+
+  getVisibleDomainCommands(currentCommand = '') {
+    const visible = this.domainCommands.filter((command) => isDomainCommandVisibleByDefault(command));
+    const selectedCommand = normaliseDomainCommand(currentCommand);
+    if (!selectedCommand) {
+      return visible;
+    }
+    if (!visible.includes(selectedCommand) && this.domainCommands.includes(selectedCommand)) {
+      visible.push(selectedCommand);
+      visible.sort((a, b) => a.localeCompare(b));
+    }
+    return visible;
   }
 
   renderPageShell() {
@@ -865,7 +918,7 @@ enum(active,inactive,pending)</pre>
                   isCommandSource
                     ? `<select data-field="command">
                     <option value="">${isDomainSource ? 'Select domain command' : 'Select faker command'}</option>
-                    ${(isDomainSource ? this.domainCommands : this.fakerCommands)
+                    ${(isDomainSource ? this.getVisibleDomainCommands(row.command) : this.fakerCommands)
                       .map((command) => {
                         const selected = command === row.command ? 'selected' : '';
                         return `<option value="${this.escapeHtml(command)}" ${selected}>${this.escapeHtml(command)}</option>`;
@@ -1092,7 +1145,7 @@ enum(active,inactive,pending)</pre>
     const dataTable = new GenericDataTable();
     dataTable.setHeaders(generator.generateHeadersArray());
     for (let row = 0; row < rowCount; row++) {
-      dataTable.appendDataRow(generator.generateRow());
+      dataTable.appendDataRow(normaliseGeneratedRow(generator.generateRow()));
     }
     return dataTable;
   }

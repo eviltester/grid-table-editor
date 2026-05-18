@@ -6,6 +6,7 @@ import {
   probeCommandReturnType,
   identifyFakerCommands,
   getFakerCommands,
+  getDomainCommands,
 } from '../../../js/gui_components/testdatadefn.js';
 
 describe('Faker Dropdown Literal Commands', () => {
@@ -81,6 +82,12 @@ describe('Faker Dropdown Literal Commands', () => {
         // Longer command should come first (lower index)
         expect(arrayElementsIdx).toBeLessThan(arrayElementIdx);
       }
+    });
+
+    it('should also populate domain commands for the domain dropdown section', () => {
+      const domainCommands = getDomainCommands();
+      expect(domainCommands.length).toBeGreaterThan(0);
+      expect(domainCommands).toContain('number.int');
     });
   });
 

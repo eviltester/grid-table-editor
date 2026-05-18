@@ -2,6 +2,7 @@ import { parseSchemaText, renderSchemaText } from './schema-conversion.js';
 import { SchemaParsingErrors } from './schema-parsing-errors.js';
 
 const SOURCE_TYPE_FAKER = 'faker';
+const SOURCE_TYPE_DOMAIN = 'domain';
 const SOURCE_TYPE_REGEX = 'regex';
 const SOURCE_TYPE_LITERAL = 'literal';
 const SOURCE_TYPE_ENUM = 'enum';
@@ -12,6 +13,7 @@ function normaliseSourceType(sourceType) {
     .toLowerCase();
   if (
     normalised === SOURCE_TYPE_FAKER ||
+    normalised === SOURCE_TYPE_DOMAIN ||
     normalised === SOURCE_TYPE_REGEX ||
     normalised === SOURCE_TYPE_LITERAL ||
     normalised === SOURCE_TYPE_ENUM
@@ -31,7 +33,7 @@ function normaliseFakerCommand(commandValue) {
 
 function buildRuleSpecFromRow(row) {
   const sourceType = normaliseSourceType(row?.sourceType);
-  if (sourceType === SOURCE_TYPE_FAKER) {
+  if (sourceType === SOURCE_TYPE_FAKER || sourceType === SOURCE_TYPE_DOMAIN) {
     const command = normaliseFakerCommand(row?.command);
     const params = String(row?.params ?? '').trim();
     return `${command}${params}`;
@@ -98,6 +100,9 @@ export function schemaRowsToDataRules({ schemaRows = [] } = {}) {
     }
     if (row.sourceType === SOURCE_TYPE_FAKER && row.command.length === 0) {
       errors.push(SchemaParsingErrors.missingFakerCommand(row.line));
+    }
+    if (row.sourceType === SOURCE_TYPE_DOMAIN && row.command.length === 0) {
+      errors.push(SchemaParsingErrors.missingDomainCommand(row.line));
     }
   });
 

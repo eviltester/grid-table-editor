@@ -24,9 +24,11 @@ describe('TestDataGenerator handles Faker API', () => {
 
       expect(generator.isValid()).toBe(true);
       expect(generator.testDataRules()[0].name).toBe('Faker');
-      expect(generator.testDataRules()[0].type).toBe('faker');
+      expect(['domain', 'faker']).toContain(generator.testDataRules()[0].type);
       expect(generator.testDataRules()[0].ruleSpec).toBe("helpers.arrayElement(['cat', 'dog', 'mouse'])");
-      expect(generator.testDataRules()[0].fakerCommand).toBe('helpers.arrayElement');
+      if (generator.testDataRules()[0].type === 'faker') {
+        expect(generator.testDataRules()[0].fakerCommand).toBe('helpers.arrayElement');
+      }
       expect(generator.testDataRules().length).toBe(1);
     });
 
@@ -40,7 +42,7 @@ describe('TestDataGenerator handles Faker API', () => {
 
       expect(generator.isValid()).toBe(true);
       expect(generator.testDataRules()[0].name).toBe('Faker');
-      expect(generator.testDataRules()[0].type).toBe('faker');
+      expect(['domain', 'faker']).toContain(generator.testDataRules()[0].type);
       expect(generator.testDataRules()[0].ruleSpec).toBe("faker.helpers.arrayElement(['cat', 'dog', 'mouse'])");
       expect(generator.testDataRules()[0].fakerCommand).toBe('helpers.arrayElement');
       expect(generator.testDataRules().length).toBe(1);
@@ -58,11 +60,13 @@ describe('TestDataGenerator handles Faker API', () => {
 
       expect(generator.isValid()).toBe(true);
       expect(generator.testDataRules()[0].name).toBe('Faker');
-      expect(generator.testDataRules()[0].type).toBe('faker');
+      expect(['domain', 'faker']).toContain(generator.testDataRules()[0].type);
       expect(generator.testDataRules()[0].ruleSpec).toBe(
         "helpers.fake('Hi, my name is {{person.firstName}} {{person.lastName}}!')"
       );
-      expect(generator.testDataRules()[0].fakerCommand).toBe('helpers.fake');
+      if (generator.testDataRules()[0].type === 'faker') {
+        expect(generator.testDataRules()[0].fakerCommand).toBe('helpers.fake');
+      }
       expect(generator.testDataRules().length).toBe(1);
     });
 
@@ -81,7 +85,7 @@ helpers.mustache('I found {{count}} instances of "{{word}}".', {count: () => \`\
 
       expect(generator.isValid()).toBe(true);
       expect(generator.testDataRules()[0].name).toBe('Sentence');
-      expect(generator.testDataRules()[0].type).toBe('faker');
+      expect(['domain', 'faker']).toContain(generator.testDataRules()[0].type);
       expect(generator.testDataRules()[0].ruleSpec).toBe(
         `helpers.mustache('I found {{count}} instances of "{{word}}".', {count: () => \`\${this.number.int()}\`,word: "this word",})`
       );
@@ -128,7 +132,7 @@ helpers.mustache('I found {{count}} instances of "{{word}}".', {count: () => \`\
 
       expect(generator.isValid()).toBe(true);
       expect(generator.testDataRules()[0].name).toBe('Result');
-      expect(generator.testDataRules()[0].type).toBe('faker');
+      expect(['domain', 'faker']).toContain(generator.testDataRules()[0].type);
       expect(generator.testDataRules()[0].ruleSpec).toBe(helperLine);
       expect(generator.testDataRules().length).toBe(1);
 

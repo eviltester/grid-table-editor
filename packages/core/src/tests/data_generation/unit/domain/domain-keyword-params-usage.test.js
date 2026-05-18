@@ -59,6 +59,9 @@ function sampleValueForKeywordArg(keywordName, argName, typeName) {
     return new Date('2020-01-01T00:00:00.000Z').getTime();
   if (key === 'date.between.to' || key === 'date.betweens.to') return new Date('2020-12-31T00:00:00.000Z').getTime();
   if (key === 'date.betweens.count') return 3;
+  if (key === 'date.birthdate.min') return 18;
+  if (key === 'date.birthdate.max') return 65;
+  if (key === 'date.birthdate.mode') return 'age';
 
   if (key === 'location.latitude.min' || key === 'location.longitude.min') return -10;
   if (key === 'location.latitude.max' || key === 'location.longitude.max') return 10;
@@ -71,6 +74,7 @@ function sampleValueForKeywordArg(keywordName, argName, typeName) {
   if (key === 'commerce.price.dec') return 2;
   if (key === 'commerce.price.min') return 10;
   if (key === 'commerce.price.max') return 100;
+  if (key === 'finance.iban.countryCode') return 'GB';
 
   if (key === 'helpers.arrayElement.array') return ['a', 'b', 'c'];
   if (key === 'helpers.arrayElements.array') return ['a', 'b', 'c'];
@@ -83,9 +87,22 @@ function sampleValueForKeywordArg(keywordName, argName, typeName) {
   if (key === 'helpers.mustache.str') return 'hello {{name}}';
   if (key === 'helpers.mustache.data') return ['name', 'value'];
   if (key === 'helpers.fromRegExp.expression') return '[a-z]{5}';
+  if (key === 'airline.seat.aircraftType') return 'narrowbody';
+  if (key === 'internet.emoji.types') return ['smiley'];
+  if (key === 'internet.ipv4.cidrBlock') return '192.168.0.0/24';
+  if (key === 'internet.ipv4.network') return 'private';
+  if (key === 'internet.password.pattern') return '[A-Za-z0-9]';
+  if (key === 'phone.number.style') return 'human';
+  if (key === 'string.alpha.casing') return 'lower';
+  if (key === 'color.rgb.format') return 'hex';
+  if (key === 'color.cmyk.format') return 'css';
+  if (key === 'color.hsl.format') return 'css';
+  if (key === 'color.hwb.format') return 'css';
+  if (key === 'color.lab.format') return 'css';
+  if (key === 'color.lch.format') return 'css';
 
   if (argName === 'min') return 1;
-  if (argName === 'max') return 5;
+  if (argName === 'max') return 10;
   if (argName === 'count') return 3;
   if (argName === 'length') return 5;
   if (argName === 'lengthMin') return 3;
@@ -127,6 +144,14 @@ function applyKeywordExecutionDefaults(keyword, args) {
     args[1] = new Date('2020-01-01T00:00:00.000Z').getTime();
     args[2] = new Date('2020-12-31T00:00:00.000Z').getTime();
   }
+  if (keyword.keyword === 'date.birthdate') {
+    args[1] = 65; // max
+    args[2] = 18; // min
+    args[3] = 'age'; // mode
+  }
+  if (keyword.keyword === 'internet.ipv4') {
+    args[0] = '192.168.0.0/24'; // cidrBlock
+  }
   if (keyword.keyword === 'helpers.shuffle') {
     args[0] = ['a', 'b', 'c'];
   }
@@ -145,6 +170,8 @@ function expectsRuntimeRejection(keywordName, argName) {
   if (keywordName === 'helpers.multiple' && argName === 'method') return true;
   // TODO(domain-args): system.fileExt currently forwards mimeType as positional arg; faker expects a different shape.
   if (keywordName === 'system.fileExt' && argName === 'mimeType') return true;
+  // TODO(domain-args): faker internet.password expects a RegExp for pattern, while current domain arg schema is string-only.
+  if (keywordName === 'internet.password' && argName === 'pattern') return true;
   return false;
 }
 

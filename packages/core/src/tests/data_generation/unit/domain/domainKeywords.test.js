@@ -10,6 +10,7 @@ import {
   getDomainKeywordByAlias,
   validateDomainKeywordArgs,
 } from '../../../../../js/domain/domain-keywords.js';
+import { FAKER_COMMAND_HELP_METADATA } from '../../../../../js/faker/faker-command-help-metadata.js';
 
 describe('domain keyword catalog', () => {
   test('registers canonical awd.domain keywords for faker commands', () => {
@@ -37,6 +38,51 @@ describe('domain keyword catalog', () => {
         expect(typeof arg.description).toBe('string');
       });
     });
+  });
+
+  test('includes all faker metadata params except object-wrapper options', () => {
+    const byKeyword = new Map(DOMAIN_KEYWORDS.map((entry) => [entry.keyword, entry]));
+    const mismatches = [];
+
+    for (const [keyword, fakerHelp] of Object.entries(FAKER_COMMAND_HELP_METADATA)) {
+      const domainKeyword = byKeyword.get(keyword);
+      if (!domainKeyword) {
+        continue;
+      }
+
+      const fakerParams = (fakerHelp?.params || []).map((param) => param.name).filter((name) => name !== 'options');
+      const domainParams = new Set((domainKeyword.help?.args || []).map((arg) => arg.name));
+      const missing = fakerParams.filter((name) => !domainParams.has(name));
+
+      if (missing.length > 0) {
+        mismatches.push({ keyword, missing });
+      }
+    }
+
+    expect(mismatches).toEqual([]);
+  });
+
+  test('uses optionsFromHelpArgs for options-based faker commands with flattened args', () => {
+    const byKeyword = new Map(DOMAIN_KEYWORDS.map((entry) => [entry.keyword, entry]));
+    const missingTransforms = [];
+
+    for (const [keyword, fakerHelp] of Object.entries(FAKER_COMMAND_HELP_METADATA)) {
+      const domainKeyword = byKeyword.get(keyword);
+      if (!domainKeyword || domainKeyword.delegate?.type !== 'faker') {
+        continue;
+      }
+
+      const fakerParams = Array.isArray(fakerHelp?.params) ? fakerHelp.params : [];
+      const hasOptionsParam = fakerParams.some((param) => param.name === 'options');
+      const hasFlattenedArgs = Array.isArray(domainKeyword.help?.args) && domainKeyword.help.args.length > 0;
+      const hasTransform = domainKeyword.delegate?.argTransform === 'optionsFromHelpArgs';
+
+      if (hasOptionsParam && hasFlattenedArgs && !hasTransform) {
+        missingTransforms.push(keyword);
+      }
+    }
+
+    expect(missingTransforms).toEqual([]);
   });
 
   test('is defined from standalone domain definitions with explicit delegates', () => {

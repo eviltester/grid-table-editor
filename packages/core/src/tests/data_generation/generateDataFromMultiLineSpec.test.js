@@ -29,7 +29,7 @@ describe('TestDataGenerator meets Acceptance Criteria', () => {
 
       expect(generator.isValid()).toBe(true);
       expect(generator.testDataRules()[0].name).toBe('Name');
-      expect(generator.testDataRules()[0].type).toBe('faker');
+      expect(generator.testDataRules()[0].type).toBe('domain');
       expect(generator.testDataRules()[0].ruleSpec).toBe('person.fullName');
       expect(generator.testDataRules().length).toBe(1);
     });
@@ -78,7 +78,7 @@ describe('TestDataGenerator meets Acceptance Criteria', () => {
 
       expect(generator.isValid()).toBe(true);
       expect(generator.testDataRules()[0].name).toBe('Faker');
-      expect(generator.testDataRules()[0].type).toBe('faker');
+      expect(generator.testDataRules()[0].type).toBe('domain');
       expect(generator.testDataRules()[0].ruleSpec).toBe('string.alpha(10)');
       expect(generator.testDataRules()[1].name).toBe('Regex');
       expect(generator.testDataRules()[1].type).toBe('regex');

@@ -72,6 +72,13 @@ describe('domain keyword parser', () => {
     expect(parsedKeyword.errors).toEqual([]);
   });
 
+  test('parses lorem.word(min=2, max=67) as a valid domain invocation', () => {
+    const parsedKeyword = parseKeywordInvocation('lorem.word(min=2, max=67)');
+    expect(parsedKeyword.keyword).toBe('lorem.word');
+    expect(parsedKeyword.args).toEqual([2, 67]);
+    expect(parsedKeyword.errors).toEqual([]);
+  });
+
   test('parses named args with broader spacing combinations', () => {
     const first = parseKeywordInvocation('number.int(min =1, max=2)');
     expect(first.keyword).toBe('number.int');

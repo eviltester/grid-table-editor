@@ -93,9 +93,12 @@ describe('DataGeneratorPage', () => {
     dom.window.close();
   });
 
-  test('schema helper mapping supports faker, regex and literal', () => {
+  test('schema helper mapping supports faker, domain, regex and literal', () => {
     expect(buildRuleSpecFromSchemaRow({ sourceType: 'faker', command: 'faker.person.firstName', params: '()' })).toBe(
       'person.firstName()'
+    );
+    expect(buildRuleSpecFromSchemaRow({ sourceType: 'domain', command: 'number.int', params: '(1,10)' })).toBe(
+      'number.int(1,10)'
     );
     expect(buildRuleSpecFromSchemaRow({ sourceType: 'regex', value: '[A-Z]{3}' })).toBe('[A-Z]{3}');
     expect(buildRuleSpecFromSchemaRow({ sourceType: 'literal', value: 'Fixed' })).toBe('literal(Fixed)');
@@ -121,7 +124,7 @@ describe('DataGeneratorPage', () => {
     expect(spec).toBe('');
   });
 
-  test('schema source type dropdown uses enum, literal, regex, faker order', () => {
+  test('schema source type dropdown uses enum, literal, regex, faker, domain order', () => {
     const page = new DataGeneratorPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
@@ -139,7 +142,7 @@ describe('DataGeneratorPage', () => {
     const sourceTypeSelect = document.querySelector('[data-field="sourceType"]');
     const optionValues = Array.from(sourceTypeSelect.querySelectorAll('option')).map((option) => option.value);
 
-    expect(optionValues).toEqual(['enum', 'literal', 'regex', 'faker']);
+    expect(optionValues).toEqual(['enum', 'literal', 'regex', 'faker', 'domain']);
   });
 
   test('schemaRowsToSpecWithTokens preserves comments and blank lines', () => {
@@ -194,6 +197,12 @@ describe('DataGeneratorPage', () => {
       'Row 1: column name is required.',
       'Row 2: faker command is required.',
     ]);
+  });
+
+  test('schema validation reports missing domain command', () => {
+    const result = validateSchemaRows([{ name: 'First', sourceType: 'domain', command: '' }]);
+    expect(result.errors.map((error) => error.code)).toEqual(['missing_domain_command']);
+    expect(result.errors.map((error) => error.message)).toEqual(['Row 1: domain command is required.']);
   });
 
   test('preview generates data into tabulator grid extension', () => {
@@ -454,7 +463,7 @@ describe('DataGeneratorPage', () => {
     });
   });
 
-  test('shows faker fields only for faker source and value only for regex/literal', () => {
+  test('shows command selector and params for faker/domain and value for regex/literal', () => {
     const page = new DataGeneratorPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
@@ -492,6 +501,18 @@ describe('DataGeneratorPage', () => {
     );
     expect(rowElem.querySelector('[data-field="params"]')).not.toBeNull();
     expect(rowElem.querySelector('[data-field="value"]')).toBeNull();
+
+    rowElem.querySelector('[data-field="sourceType"]').value = 'domain';
+    rowElem.querySelector('[data-field="sourceType"]').dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+    rowElem = document.querySelector('.generator-schema-row');
+    expect(rowElem.querySelector('[data-field="command"]')).not.toBeNull();
+    expect(rowElem.querySelector('[data-field="params"]')).not.toBeNull();
+    expect(rowElem.querySelector('[data-field="value"]')).toBeNull();
+    expect(
+      Array.from(rowElem.querySelector('[data-field="command"]').querySelectorAll('option')).some(
+        (opt) => opt.value === 'number.int'
+      )
+    ).toBe(true);
   });
 
   test('shows schema help link for faker, regex and literal sources', () => {
@@ -547,6 +568,32 @@ describe('DataGeneratorPage', () => {
     expect(helpLink.getAttribute('href')).toBe('https://anywaydata.com/docs/category/generating-data');
     expect(helpLink.getAttribute('aria-label')).toBe('Literal data help');
     expect(helpLink.getAttribute('data-help-text')).toContain('Literal data repeats the exact text');
+  });
+
+  test('shows domain help with command metadata when domain command selected', () => {
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker,
+      RandExp,
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: TestDataGenerator,
+    });
+    page.init();
+
+    page.schemaRows = [
+      { id: '1', name: 'Age', sourceType: 'domain', command: 'number.int', params: '(1,10)', value: '' },
+    ];
+    page.renderSchemaRows();
+
+    const help = document.querySelector('[data-field="faker-doc-link"]');
+    expect(help).not.toBeNull();
+    expect(help.getAttribute('data-help-text')).toContain('awd.domain.number.int');
+    expect(help.getAttribute('data-help-text')).toContain('Params:');
   });
 
   test('shows command metadata summary and params in faker help tooltip', () => {

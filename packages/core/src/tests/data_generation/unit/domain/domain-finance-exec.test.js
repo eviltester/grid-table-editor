@@ -92,6 +92,13 @@ describe('finance domain keyword execution', () => {
     expect(result).not.toBeUndefined();
   });
 
+  test('executes finance.iban with countryCode and formatted options', () => {
+    const result = executeDomainKeyword('finance.iban', { faker, args: ['GB', true] });
+    console.log('finance.iban(countryCode=GB,formatted=true)', result);
+    expect(result).toMatch(/^GB/);
+    expect(result.includes(' ')).toBe(true);
+  });
+
   test('executes finance.litecoinAddress', () => {
     const result = executeDomainKeyword('finance.litecoinAddress', { faker, args: [] });
     console.log('finance.litecoinAddress', result);

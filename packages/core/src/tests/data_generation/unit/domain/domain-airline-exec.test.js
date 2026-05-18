@@ -14,6 +14,18 @@ describe('airline domain keyword execution', () => {
     expect(result).not.toBeUndefined();
   });
 
+  test('executes airline.airline.iataCode', () => {
+    const result = executeDomainKeyword('airline.airline.iataCode', { faker, args: [] });
+    console.log('airline.airline.iataCode', result);
+    expect(result).not.toBeUndefined();
+  });
+
+  test('executes airline.airline.name', () => {
+    const result = executeDomainKeyword('airline.airline.name', { faker, args: [] });
+    console.log('airline.airline.name', result);
+    expect(result).not.toBeUndefined();
+  });
+
   test('executes airline.airplane', () => {
     const result = executeDomainKeyword('airline.airplane', { faker, args: [] });
     console.log('airline.airplane', result);
@@ -35,6 +47,18 @@ describe('airline domain keyword execution', () => {
   test('executes airline.airport', () => {
     const result = executeDomainKeyword('airline.airport', { faker, args: [] });
     console.log('airline.airport', result);
+    expect(result).not.toBeUndefined();
+  });
+
+  test('executes airline.airport.iataCode', () => {
+    const result = executeDomainKeyword('airline.airport.iataCode', { faker, args: [] });
+    console.log('airline.airport.iataCode', result);
+    expect(result).not.toBeUndefined();
+  });
+
+  test('executes airline.airport.name', () => {
+    const result = executeDomainKeyword('airline.airport.name', { faker, args: [] });
+    console.log('airline.airport.name', result);
     expect(result).not.toBeUndefined();
   });
 

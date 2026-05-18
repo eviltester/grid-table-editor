@@ -26,6 +26,34 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     },
   },
   {
+    keyword: 'airline.airline.iataCode',
+    delegate: {
+      type: 'faker',
+      target: 'airline.airline',
+      resultPath: 'iataCode',
+    },
+    help: {
+      summary: 'Generate an airline IATA code.',
+      docsUrl: 'https://fakerjs.dev/api/airline',
+      example: 'AA',
+      args: [],
+    },
+  },
+  {
+    keyword: 'airline.airline.name',
+    delegate: {
+      type: 'faker',
+      target: 'airline.airline',
+      resultPath: 'name',
+    },
+    help: {
+      summary: 'Generate an airline name.',
+      docsUrl: 'https://fakerjs.dev/api/airline',
+      example: 'Acme Air',
+      args: [],
+    },
+  },
+  {
     keyword: 'airline.airplane',
     delegate: {
       type: 'faker',
@@ -80,6 +108,34 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     },
   },
   {
+    keyword: 'airline.airport.iataCode',
+    delegate: {
+      type: 'faker',
+      target: 'airline.airport',
+      resultPath: 'iataCode',
+    },
+    help: {
+      summary: 'Generate an airport IATA code.',
+      docsUrl: 'https://fakerjs.dev/api/airline',
+      example: 'LHR',
+      args: [],
+    },
+  },
+  {
+    keyword: 'airline.airport.name',
+    delegate: {
+      type: 'faker',
+      target: 'airline.airport',
+      resultPath: 'name',
+    },
+    help: {
+      summary: 'Generate an airport name.',
+      docsUrl: 'https://fakerjs.dev/api/airline',
+      example: 'London Heathrow Airport',
+      args: [],
+    },
+  },
+  {
     keyword: 'airline.flightNumber',
     delegate: {
       type: 'faker',
@@ -110,6 +166,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'airline.seat',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Generates a random seat.',
@@ -416,6 +473,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'color.cmyk',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Returns a CMYK color.',
@@ -475,6 +533,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'color.hsl',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Returns an HSL color.',
@@ -514,6 +573,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'color.hwb',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Returns an HWB color.',
@@ -534,6 +594,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'color.lab',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Returns a LAB (CIELAB) color.',
@@ -554,6 +615,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'color.lch',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Returns an LCH color. Even though upper bound of',
@@ -574,6 +636,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'color.rgb',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Returns an RGB color.',
@@ -638,6 +701,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'commerce.isbn',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Returns a random ISBN identifier.',
@@ -648,7 +712,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           name: 'separator',
           type: 'string',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'variant',
@@ -665,6 +729,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'commerce.price',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Generates a price between min and max (inclusive).',
@@ -950,6 +1015,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'datatype.boolean',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Returns the boolean value true or false.',
@@ -960,13 +1026,13 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           name: 'probability',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'value',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
       ],
     },
@@ -976,6 +1042,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'date.anytime',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Generates a random date that can be either in the past or in the future.',
@@ -1057,6 +1124,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'date.birthdate',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary:
@@ -1096,6 +1164,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'date.future',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Generates a random date in the future.',
@@ -1122,6 +1191,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'date.month',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Returns a random name of a month.',
@@ -1149,6 +1219,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'date.past',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Generates a random date in the past.',
@@ -1175,6 +1246,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'date.recent',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Generates a random date in the recent past.',
@@ -1201,6 +1273,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'date.soon',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Generates a random date in the near future.',
@@ -1240,6 +1313,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'date.weekday',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Returns a random day of the week.',
@@ -1290,7 +1364,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           name: 'length',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
       ],
     },
@@ -1300,6 +1374,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'finance.amount',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Generates a random amount between the given bounds (inclusive).',
@@ -1344,6 +1419,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'finance.bic',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Generates a random SWIFT/BIC code based on the ISO-9362 format.',
@@ -1413,7 +1489,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           name: 'issuer',
           type: 'string',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
       ],
     },
@@ -1501,6 +1577,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'finance.iban',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Generates a random IBAN.',
@@ -1551,7 +1628,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           name: 'length',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
       ],
     },
@@ -1571,7 +1648,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           name: 'length',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
       ],
     },
@@ -1931,7 +2008,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           name: 'pattern',
           type: 'string',
           required: true,
-          description: '',
+          description: 'No description provided.',
         },
       ],
     },
@@ -1951,7 +2028,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           name: 'pattern',
           type: 'string',
           required: true,
-          description: '',
+          description: 'No description provided.',
         },
       ],
     },
@@ -2024,7 +2101,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           name: 'text',
           type: 'string',
           required: true,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'data',
@@ -2090,19 +2167,19 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           name: 'min',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'max',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'numberOrRange',
           type: 'number',
           required: true,
-          description: '',
+          description: 'No description provided.',
         },
       ],
     },
@@ -2122,13 +2199,13 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           name: 'string',
           type: 'string',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'symbol',
           type: 'string',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
       ],
     },
@@ -2148,7 +2225,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           name: 'string',
           type: 'string',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
       ],
     },
@@ -2194,7 +2271,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           name: 'string',
           type: 'string',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
       ],
     },
@@ -2297,6 +2374,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'image.url',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Generates a random image url.',
@@ -2466,6 +2544,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'internet.emoji',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Generates a random emoji.',
@@ -2538,6 +2617,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'internet.ipv4',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Generates a random IPv4 address.',
@@ -2577,6 +2657,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'internet.jwt',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Generates a random JWT (JSON Web Token).',
@@ -2623,6 +2704,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'internet.mac',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Generates a random mac address.',
@@ -2643,6 +2725,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'internet.password',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary:
@@ -2708,6 +2791,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'internet.url',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Generates a random http(s) url.',
@@ -2748,6 +2832,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'internet.username',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: "Generates a username using the given person's name as base.",
@@ -2899,6 +2984,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'location.direction',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Returns a random direction (cardinal and ordinal; northwest, east, etc).',
@@ -3038,6 +3124,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'location.state',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary:
@@ -3073,6 +3160,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'location.streetAddress',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Generates a random localized street address.',
@@ -3083,13 +3171,13 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           name: 'useFullAddress',
           type: 'boolean',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'value',
           type: 'boolean',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
       ],
     },
@@ -3135,19 +3223,19 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           name: 'min',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'max',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'lineCount',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'lineCountMax',
@@ -3180,19 +3268,19 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           name: 'min',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'max',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'sentenceCount',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'sentenceCountMax',
@@ -3225,25 +3313,25 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           name: 'min',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'max',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'paragraphCount',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'separator',
           type: 'string',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'paragraphCountMax',
@@ -3275,19 +3363,19 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           name: 'min',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'max',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'wordCount',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'wordCountMax',
@@ -3319,25 +3407,25 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           name: 'min',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'max',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'sentenceCount',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'separator',
           type: 'string',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'sentenceCountMax',
@@ -3369,19 +3457,19 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           name: 'min',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'max',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'wordCount',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'wordCountMax',
@@ -3417,6 +3505,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'lorem.word',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Generates a word of a specified length.',
@@ -3424,22 +3513,22 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       example: 'cumque',
       args: [
         {
-          name: 'length',
+          name: 'min',
           type: 'number',
           required: false,
-          description: '',
+          description: 'Minimum word length when generating a ranged length.',
         },
         {
           name: 'max',
           type: 'number',
           required: false,
-          description: '',
+          description: 'Maximum word length when generating a ranged length.',
         },
         {
-          name: 'value',
+          name: 'length',
           type: 'number',
           required: false,
-          description: '',
+          description: 'Exact word length to generate.',
         },
         {
           name: 'strategy',
@@ -3466,19 +3555,19 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           name: 'min',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'max',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'wordCount',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'wordCountMax',
@@ -3552,6 +3641,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'number.bigInt',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Returns a BigInt number.',
@@ -3562,7 +3652,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           name: 'value',
           type: 'string|number|boolean',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
       ],
     },
@@ -3572,6 +3662,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'number.binary',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Returns a binary string.',
@@ -3598,6 +3689,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'number.float',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary:
@@ -3609,7 +3701,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           name: 'value',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'fractionDigits',
@@ -3645,6 +3737,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'number.hex',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Returns a lowercase hexadecimal number.',
@@ -3655,19 +3748,19 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           name: 'min',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'max',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'value',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
       ],
     },
@@ -3710,6 +3803,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'number.octal',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Returns an octal string.',
@@ -3736,6 +3830,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'number.romanNumeral',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Returns a roman numeral in String format.',
@@ -3746,19 +3841,19 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           name: 'min',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'max',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'value',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
       ],
     },
@@ -3786,7 +3881,14 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random first name.',
       docsUrl: 'https://fakerjs.dev/api/person',
       example: 'Amelie',
-      args: [],
+      args: [
+        {
+          name: 'sex',
+          type: 'string',
+          required: false,
+          description: 'The optional sex to use for first-name selection.',
+        },
+      ],
     },
   },
   {
@@ -3877,7 +3979,14 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random last name.',
       docsUrl: 'https://fakerjs.dev/api/person',
       example: 'Bernhard',
-      args: [],
+      args: [
+        {
+          name: 'sex',
+          type: 'string',
+          required: false,
+          description: 'The optional sex to use for last-name selection.',
+        },
+      ],
     },
   },
   {
@@ -3890,7 +3999,14 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random middle name.',
       docsUrl: 'https://fakerjs.dev/api/person',
       example: 'Ryan',
-      args: [],
+      args: [
+        {
+          name: 'sex',
+          type: 'string',
+          required: false,
+          description: 'The optional sex to use for middle-name selection.',
+        },
+      ],
     },
   },
   {
@@ -3983,6 +4099,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'phone.number',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Generates a random phone number.',
@@ -4013,6 +4130,48 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     },
   },
   {
+    keyword: 'science.chemicalElement.atomicNumber',
+    delegate: {
+      type: 'faker',
+      target: 'science.chemicalElement',
+      resultPath: 'atomicNumber',
+    },
+    help: {
+      summary: 'Generate a chemical element atomic number.',
+      docsUrl: 'https://fakerjs.dev/api/science',
+      example: '8',
+      args: [],
+    },
+  },
+  {
+    keyword: 'science.chemicalElement.name',
+    delegate: {
+      type: 'faker',
+      target: 'science.chemicalElement',
+      resultPath: 'name',
+    },
+    help: {
+      summary: 'Generate a chemical element name.',
+      docsUrl: 'https://fakerjs.dev/api/science',
+      example: 'Oxygen',
+      args: [],
+    },
+  },
+  {
+    keyword: 'science.chemicalElement.symbol',
+    delegate: {
+      type: 'faker',
+      target: 'science.chemicalElement',
+      resultPath: 'symbol',
+    },
+    help: {
+      summary: 'Generate a chemical element symbol.',
+      docsUrl: 'https://fakerjs.dev/api/science',
+      example: 'O',
+      args: [],
+    },
+  },
+  {
     keyword: 'science.unit',
     delegate: {
       type: 'faker',
@@ -4030,6 +4189,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'string.alpha',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Generating a string consisting of letters in the English alphabet.',
@@ -4040,19 +4200,19 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           name: 'length',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'max',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'value',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'casing',
@@ -4074,6 +4234,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'string.alphanumeric',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Generating a string consisting of alpha characters and digits.',
@@ -4084,19 +4245,19 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           name: 'length',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'max',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'value',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'casing',
@@ -4118,6 +4279,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'string.binary',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Returns a binary string.',
@@ -4155,25 +4317,25 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           name: 'characters',
           type: 'string|array',
           required: true,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'min',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'max',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'length',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
       ],
     },
@@ -4183,6 +4345,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'string.hexadecimal',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Returns a hexadecimal string.',
@@ -4226,19 +4389,19 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           name: 'min',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'max',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'length',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'lengthMax',
@@ -4260,6 +4423,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'string.numeric',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Generates a given length string of digits.',
@@ -4270,19 +4434,19 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           name: 'length',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'max',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'value',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'allowLeadingZeros',
@@ -4304,6 +4468,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'string.octal',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Returns an octal string.',
@@ -4341,19 +4506,19 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           name: 'min',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'max',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'length',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'lengthMax',
@@ -4385,19 +4550,19 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           name: 'min',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'max',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'length',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'lengthMax',
@@ -4419,6 +4584,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'string.ulid',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Returns a ULID (Universally Unique Lexicographically Sortable Identifier).',
@@ -4489,7 +4655,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           name: 'extension',
           type: 'string',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
       ],
     },
@@ -4512,6 +4678,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'system.cron',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Returns a random cron expression.',
@@ -4561,7 +4728,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           name: 'mimeType',
           type: 'string',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
       ],
     },
@@ -4766,6 +4933,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'word.adjective',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Returns a random adjective.',
@@ -4776,19 +4944,19 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           name: 'length',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'max',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'value',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'strategy',
@@ -4805,6 +4973,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'word.adverb',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Returns a random adverb.',
@@ -4815,19 +4984,19 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           name: 'length',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'max',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'value',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'strategy',
@@ -4844,6 +5013,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'word.conjunction',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Returns a random conjunction.',
@@ -4854,19 +5024,19 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           name: 'length',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'max',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'value',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'strategy',
@@ -4883,6 +5053,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'word.interjection',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Returns a random interjection.',
@@ -4893,19 +5064,19 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           name: 'length',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'max',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'value',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'strategy',
@@ -4922,6 +5093,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'word.noun',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Returns a random noun.',
@@ -4932,19 +5104,19 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           name: 'length',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'max',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'value',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'strategy',
@@ -4961,6 +5133,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'word.preposition',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Returns a random preposition.',
@@ -4971,19 +5144,19 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           name: 'length',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'max',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'value',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'strategy',
@@ -5000,6 +5173,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'word.sample',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary:
@@ -5011,19 +5185,19 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           name: 'length',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'max',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'value',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'strategy',
@@ -5040,6 +5214,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'word.verb',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Returns a random verb.',
@@ -5050,19 +5225,19 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           name: 'length',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'max',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'value',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'strategy',
@@ -5079,6 +5254,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'word.words',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Returns a random string containing some words separated by spaces.',
@@ -5089,19 +5265,19 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           name: 'count',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'max',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
         {
           name: 'value',
           type: 'number',
           required: false,
-          description: '',
+          description: 'No description provided.',
         },
       ],
     },

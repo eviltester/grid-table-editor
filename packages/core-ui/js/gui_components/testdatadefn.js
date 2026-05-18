@@ -27,6 +27,7 @@ import { GridExtension as TabulatorGridExtension } from './data-grid-editor/tabu
 import { SelectFilterEditor } from './data-grid-editor/ag-grid/select-filter-editor.js';
 import { TEST_DATA_MODES, createAmendedTable, createTableFromGenerator, normaliseCount } from './test-data-amend.js';
 import { getKnownFakerCommandsAlphabetical, getKnownFakerCommandsLongestFirst } from './faker-commands.js';
+import { getKnownDomainCommandsAlphabetical, getKnownDomainCommandsLongestFirst } from './domain-commands.js';
 import { PairwiseTestDataGenerator } from '@anywaydata/core/data_generation/all-pairs/pairwiseTestDataGenerator.js';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 import { schemaTextToDataRules, dataRulesToSchemaText } from '@anywaydata/core/data_generation/schema-rules-adapter.js';
@@ -549,6 +550,16 @@ function populateTestDataGridFromRules() {
         data.type = fakerCommand;
         data.value = fakerFreeRule.replace(fakerCommand, '');
       }
+    } else if (rule.type == 'domain') {
+      const domainRule = String(rule.ruleSpec || '').trim();
+      const domainCommand = findDomainCommand(domainRule);
+      if (!domainCommand) {
+        data.type = '';
+        data.value = domainRule;
+      } else {
+        data.type = domainCommand;
+        data.value = domainRule.replace(domainCommand, '');
+      }
     } else if (rule.type == 'enum') {
       data.type = 'enum';
       data.value = rule.ruleSpec;
@@ -568,13 +579,26 @@ function populateTestDataGridFromRules() {
 
 const FAKER_COMMANDS = [];
 const FAKER_COMMANDS_LONGEST_FIRST = [];
+const DOMAIN_COMMANDS = [];
+const DOMAIN_COMMANDS_LONGEST_FIRST = [];
 const TOP_LEVEL_TYPE_OPTIONS = ['enum', 'literal', 'regex'];
 const FAKER_SECTION_LABEL = '-- faker --';
 const FAKER_SECTION_VALUE = '__faker_section__';
+const DOMAIN_SECTION_LABEL = '-- domain --';
+const DOMAIN_SECTION_VALUE = '__domain_section__';
 
 // TODO: add fakerCommand to the TestDataRule already parsed out
 function findFakerCommand(aString) {
   for (let command of FAKER_COMMANDS_LONGEST_FIRST) {
+    if (aString.startsWith(command)) {
+      return command;
+    }
+  }
+  return null;
+}
+
+function findDomainCommand(aString) {
+  for (let command of DOMAIN_COMMANDS_LONGEST_FIRST) {
     if (aString.startsWith(command)) {
       return command;
     }
@@ -620,12 +644,16 @@ function probeCommandReturnType(command, fakerLib) {
 function identifyFakerCommands() {
   FAKER_COMMANDS.length = 0;
   FAKER_COMMANDS_LONGEST_FIRST.length = 0;
+  DOMAIN_COMMANDS.length = 0;
+  DOMAIN_COMMANDS_LONGEST_FIRST.length = 0;
 
   TOP_LEVEL_TYPE_OPTIONS.forEach((typeOption) => FAKER_COMMANDS.push(typeOption));
   getKnownFakerCommandsAlphabetical()
     .filter((command) => command !== 'RegEx')
     .forEach((command) => FAKER_COMMANDS.push(command));
   getKnownFakerCommandsLongestFirst().forEach((command) => FAKER_COMMANDS_LONGEST_FIRST.push(command));
+  getKnownDomainCommandsAlphabetical().forEach((command) => DOMAIN_COMMANDS.push(command));
+  getKnownDomainCommandsLongestFirst().forEach((command) => DOMAIN_COMMANDS_LONGEST_FIRST.push(command));
 }
 
 function getTabulatorTypeEditorValues() {
@@ -638,7 +666,16 @@ function getTabulatorTypeEditorValues() {
   const fakerCommandValues = getKnownFakerCommandsAlphabetical()
     .filter((command) => command !== 'RegEx')
     .map((command) => ({ value: command, label: command }));
-  return [...typeValues, fakerHeader, ...fakerCommandValues];
+  const domainHeader = {
+    value: DOMAIN_SECTION_VALUE,
+    label: DOMAIN_SECTION_LABEL,
+    elementAttributes: { disabled: true },
+  };
+  const domainCommandValues = getKnownDomainCommandsAlphabetical().map((command) => ({
+    value: command,
+    label: command,
+  }));
+  return [...typeValues, fakerHeader, ...fakerCommandValues, domainHeader, ...domainCommandValues];
 }
 
 function tabulatorTypeSelectEditor(cell, onRendered, success, cancel) {
@@ -652,7 +689,7 @@ function tabulatorTypeSelectEditor(cell, onRendered, success, cancel) {
     const option = document.createElement('option');
     option.value = entry.value;
     option.textContent = entry.label;
-    if (entry.value === FAKER_SECTION_VALUE) {
+    if (entry.value === FAKER_SECTION_VALUE || entry.value === DOMAIN_SECTION_VALUE) {
       option.disabled = true;
     }
     editor.appendChild(option);
@@ -670,7 +707,7 @@ function tabulatorTypeSelectEditor(cell, onRendered, success, cancel) {
       return;
     }
     const selectedValue = String(editor.value ?? '').trim();
-    if (selectedValue === FAKER_SECTION_VALUE) {
+    if (selectedValue === FAKER_SECTION_VALUE || selectedValue === DOMAIN_SECTION_VALUE) {
       completed = true;
       cancel();
       return;
@@ -928,6 +965,7 @@ function convertGridToText() {
         ruleLine = resolvedRowData.value || '';
         break;
       case '__faker_section__':
+      case '__domain_section__':
         ruleLine = '';
         break;
       default: {
@@ -935,7 +973,7 @@ function convertGridToText() {
         if (dataType.startsWith('faker.')) {
           dataType = dataType.replace('faker.', '');
         }
-        if (FAKER_COMMANDS.includes(dataType)) {
+        if (DOMAIN_COMMANDS.includes(dataType) || FAKER_COMMANDS.includes(dataType)) {
           ruleLine = dataType + (resolvedRowData.value || '');
         } else {
           // throw error? ignore? don't know what the command is so it won't parse
@@ -1055,7 +1093,13 @@ function enableTestDataGenerationInterface(parentId, anImporter, aTextPreviewRen
   }
 }
 
-export { enableTestDataGenerationInterface, probeCommandReturnType, identifyFakerCommands, getFakerCommands };
+export {
+  enableTestDataGenerationInterface,
+  probeCommandReturnType,
+  identifyFakerCommands,
+  getFakerCommands,
+  getDomainCommands,
+};
 
 /**
  * Getter function for FAKER_COMMANDS array (for testing purposes).
@@ -1063,4 +1107,8 @@ export { enableTestDataGenerationInterface, probeCommandReturnType, identifyFake
  */
 function getFakerCommands() {
   return [...FAKER_COMMANDS];
+}
+
+function getDomainCommands() {
+  return [...DOMAIN_COMMANDS];
 }

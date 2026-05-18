@@ -1,0 +1,411 @@
+---
+sidebar_position: 190
+title: "location Domain"
+description: "Domain keyword reference for location."
+---
+
+# location Domain
+
+The `location` domain maps domain keywords to underlying faker implementations.
+
+## Faker Documentation
+
+- [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
+
+## Methods
+
+### `location.buildingNumber`
+
+Generates a random building number.
+
+- Canonical: `awd.domain.location.buildingNumber`
+- Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
+
+No parameters.
+
+Examples:
+
+```txt
+location.buildingNumber()
+```
+
+Example return values:
+- `"42002"`
+- `"759"`
+
+### `location.cardinalDirection`
+
+Returns a random cardinal direction (north, east, south, west).
+
+- Canonical: `awd.domain.location.cardinalDirection`
+- Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
+
+No parameters.
+
+Examples:
+
+```txt
+location.cardinalDirection()
+```
+
+Example return values:
+- `"South"`
+- `"North"`
+
+### `location.city`
+
+Generates a random localized city name.
+
+- Canonical: `awd.domain.location.city`
+- Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
+
+No parameters.
+
+Examples:
+
+```txt
+location.city()
+```
+
+Example return values:
+- `"West Lennatown"`
+- `"Johnscester"`
+
+### `location.continent`
+
+Returns a random continent name.
+
+- Canonical: `awd.domain.location.continent`
+- Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
+
+No parameters.
+
+Examples:
+
+```txt
+location.continent()
+```
+
+Example return values:
+- `"Antarctica"`
+- `"Asia"`
+
+### `location.country`
+
+Returns a random country name.
+
+- Canonical: `awd.domain.location.country`
+- Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
+
+No parameters.
+
+Examples:
+
+```txt
+location.country()
+```
+
+Example return values:
+- `"Chile"`
+- `"United Arab Emirates"`
+
+### `location.countryCode`
+
+Returns a random ISO_3166-1 country code.
+
+- Canonical: `awd.domain.location.countryCode`
+- Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
+
+No parameters.
+
+Examples:
+
+```txt
+location.countryCode()
+```
+
+Example return values:
+- `"CU"`
+- `"CA"`
+
+### `location.county`
+
+Returns a random localized county, or other equivalent second-level administrative entity for the locale's country such as a district or department.
+
+- Canonical: `awd.domain.location.county`
+- Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
+
+No parameters.
+
+Examples:
+
+```txt
+location.county()
+```
+
+Example return values:
+- `"Marshall County"`
+- `"Lincolnshire"`
+
+### `location.direction`
+
+Returns a random direction (cardinal and ordinal; northwest, east, etc).
+
+- Canonical: `awd.domain.location.direction`
+- Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
+
+| Arg | Type | Required | Description |
+| --- | --- | --- | --- |
+| `abbreviated` | `boolean` | no | If true this will return abbreviated directions (NW, E, etc). Otherwise this will return the long name. |
+
+Examples:
+
+```txt
+location.direction()
+```
+
+```txt
+location.direction(abbreviated=false)
+```
+
+Example return values:
+- `"West"`
+- `"Southwest"`
+
+### `location.language`
+
+Returns a random spoken language.
+
+- Canonical: `awd.domain.location.language`
+- Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
+
+No parameters.
+
+Examples:
+
+```txt
+location.language()
+```
+
+Example return values:
+- `{"name":"Pashto","alpha2":"ps","alpha3":"pus"}`
+- `{"name":"Swedish","alpha2":"sv","alpha3":"swe"}`
+
+### `location.latitude`
+
+Generates a random latitude.
+
+- Canonical: `awd.domain.location.latitude`
+- Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
+
+| Arg | Type | Required | Description |
+| --- | --- | --- | --- |
+| `min` | `number` | no | The lower bound for the latitude to generate. |
+| `max` | `number` | no | The upper bound for the latitude to generate. |
+| `precision` | `number` | no | The number of decimal points of precision for the latitude. |
+
+Examples:
+
+```txt
+location.latitude()
+```
+
+```txt
+location.latitude(min=1)
+```
+
+Example return values:
+- `7.4987`
+- `60.1103`
+
+### `location.longitude`
+
+Generates a random longitude.
+
+- Canonical: `awd.domain.location.longitude`
+- Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
+
+| Arg | Type | Required | Description |
+| --- | --- | --- | --- |
+| `min` | `number` | no | The lower bound for the longitude to generate. |
+| `max` | `number` | no | The upper bound for the longitude to generate. |
+| `precision` | `number` | no | The number of decimal points of precision for the longitude. |
+
+Examples:
+
+```txt
+location.longitude()
+```
+
+```txt
+location.longitude(min=1)
+```
+
+Example return values:
+- `-54.0395`
+- `34.0816`
+
+### `location.nearbyGPSCoordinate`
+
+Generates a random GPS coordinate within the specified radius from the given coordinate.
+
+- Canonical: `awd.domain.location.nearbyGPSCoordinate`
+- Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
+
+No parameters.
+
+Examples:
+
+```txt
+location.nearbyGPSCoordinate()
+```
+
+Example return values:
+- `[-36.9967,-165.6668]`
+- `[17.8665,71.006]`
+
+### `location.ordinalDirection`
+
+Returns a random ordinal direction (northwest, southeast, etc).
+
+- Canonical: `awd.domain.location.ordinalDirection`
+- Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
+
+No parameters.
+
+Examples:
+
+```txt
+location.ordinalDirection()
+```
+
+Example return values:
+- `"Southwest"`
+- `"Southeast"`
+
+### `location.secondaryAddress`
+
+Generates a random localized secondary address. This refers to a specific location at a given address
+
+- Canonical: `awd.domain.location.secondaryAddress`
+- Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
+
+No parameters.
+
+Examples:
+
+```txt
+location.secondaryAddress()
+```
+
+Example return values:
+- `"Apt. 328"`
+- `"Suite 700"`
+
+### `location.state`
+
+Returns a random localized state, or other equivalent first-level administrative entity for the locale's country such as a province or region.
+
+- Canonical: `awd.domain.location.state`
+- Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
+
+| Arg | Type | Required | Description |
+| --- | --- | --- | --- |
+| `abbreviated` | `boolean` | no | If true this will return abbreviated first-level administrative entity names. Otherwise this will return the long name. |
+
+Examples:
+
+```txt
+location.state()
+```
+
+```txt
+location.state(abbreviated=false)
+```
+
+Example return values:
+- `"Hawaii"`
+- `"Kentucky"`
+
+### `location.street`
+
+Generates a random localized street name.
+
+- Canonical: `awd.domain.location.street`
+- Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
+
+No parameters.
+
+Examples:
+
+```txt
+location.street()
+```
+
+Example return values:
+- `"E 12th Street"`
+- `"W Division Street"`
+
+### `location.streetAddress`
+
+Generates a random localized street address.
+
+- Canonical: `awd.domain.location.streetAddress`
+- Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
+
+| Arg | Type | Required | Description |
+| --- | --- | --- | --- |
+| `useFullAddress` | `boolean` | no | No description provided. |
+| `value` | `boolean` | no | No description provided. |
+
+Examples:
+
+```txt
+location.streetAddress()
+```
+
+```txt
+location.streetAddress(useFullAddress=true)
+```
+
+Example return values:
+- `"47720 Swaniawski Place"`
+- `"4074 Birch Grove"`
+
+### `location.timeZone`
+
+Returns a random IANA time zone name.
+
+- Canonical: `awd.domain.location.timeZone`
+- Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
+
+No parameters.
+
+Examples:
+
+```txt
+location.timeZone()
+```
+
+Example return values:
+- `"America/Campo_Grande"`
+- `"America/Denver"`
+
+### `location.zipCode`
+
+Generates data using faker location zip code.
+
+- Canonical: `awd.domain.location.zipCode`
+- Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
+
+No parameters.
+
+Examples:
+
+```txt
+location.zipCode()
+```
+
+Example return values:
+- `"05558"`
+- `"73752"`

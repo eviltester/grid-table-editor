@@ -1,5 +1,6 @@
 const { test } = require('@playwright/test');
 const { openApp, expectNoPageErrors, expect } = require('../../abstractions/helpers/scenario-helpers');
+const { assertStrictBooleanCell } = require('../../../shared/helpers/boolean-assertions');
 
 test.describe('7. Test Data Generation', () => {
   test('Pairwise generation covers all enum combinations with valid values', async ({ page }) => {
@@ -49,8 +50,7 @@ test.describe('7. Test Data Generation', () => {
       expect(allowedPlans.has(plan)).toBe(true);
       expect(fixed).toBe('CONSTANT');
       expect(code).toMatch(/^[A-Z]{2}[0-9]{2}$/);
-      const normalizedBoolean = String(enabled).trim() === '' ? 'false' : String(enabled).toLowerCase();
-      expect(['true', 'false']).toContain(normalizedBoolean);
+      const normalizedBoolean = assertStrictBooleanCell(enabled);
       observedBooleanValues.add(normalizedBoolean);
       actualEnumPairs.add(`${browser}|${plan}`);
     }

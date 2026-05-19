@@ -1,12 +1,5 @@
 const { expect } = require('@playwright/test');
-
-function trackPageErrors(page) {
-  const pageErrors = [];
-  page.on('pageerror', (error) => {
-    pageErrors.push(error.message);
-  });
-  return pageErrors;
-}
+const { trackPageErrors } = require('../../../shared/helpers/page-error-helpers');
 
 async function seedInstructionsRows(appPage, values) {
   await appPage.gridEditor.resetTable();

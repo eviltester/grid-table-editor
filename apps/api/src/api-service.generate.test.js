@@ -142,13 +142,13 @@ describe('api-service handleGenerateRequest', () => {
     const { service, setGlobalUnsafe } = createConcreteService({ unsafeEnabled: false });
 
     const safeResult = service.handleGenerateRequest({
-      body: { textSpec: 'Name\nfaker.person.firstName', rowCount: 1, outputFormat: 'csv' },
+      body: { textSpec: 'Name\nperson.firstName', rowCount: 1, outputFormat: 'csv' },
     });
     expect(safeResult.statusCode).toBe(200);
 
     setGlobalUnsafe(true);
     const unsafeResult = service.handleGenerateRequest({
-      body: { textSpec: 'Name\nfaker.person.firstName', rowCount: 1, outputFormat: 'csv' },
+      body: { textSpec: 'Name\nperson.firstName', rowCount: 1, outputFormat: 'csv' },
     });
     expect(unsafeResult.statusCode).toBe(200);
   });

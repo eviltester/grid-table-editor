@@ -506,7 +506,8 @@ class GridExtensionTabulator {
     var vals = [];
     for (const propertyid in fieldnames) {
       var property = fieldnames[propertyid];
-      vals.push(aRow[property] ? String(aRow[property]) : '');
+      const value = aRow?.[property];
+      vals.push(value === undefined || value === null ? '' : String(value));
     }
     return vals;
   }
@@ -539,7 +540,13 @@ class GridExtensionTabulator {
     const addRows = new Array(rowCount);
     let fieldnames = columnDefs.map((col) => col.field);
     for (let rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-      addRows[rowIndex] = dataTable.getRowAsObjectUsingHeadings(rowIndex, fieldnames);
+      const rowObject = dataTable.getRowAsObjectUsingHeadings(rowIndex, fieldnames);
+      const normalisedRow = {};
+      for (const fieldName of fieldnames) {
+        const value = rowObject?.[fieldName];
+        normalisedRow[fieldName] = value === undefined || value === null ? '' : String(value);
+      }
+      addRows[rowIndex] = normalisedRow;
     }
 
     // Tabulator column resets are async; chain operations to avoid fallback headers.

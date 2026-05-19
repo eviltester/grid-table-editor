@@ -150,6 +150,10 @@ class TestDataPanelComponent {
   async getSchemaText() {
     return this.schemaTextArea.inputValue();
   }
+
+  async getSchemaCell(rowIndex, field) {
+    return this.schemaRenderer.getCellTextByField(field, rowIndex);
+  }
 }
 
 module.exports = { TestDataPanelComponent };

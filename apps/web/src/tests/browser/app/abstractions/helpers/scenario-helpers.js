@@ -1,6 +1,7 @@
 const { expect } = require('@playwright/test');
 const { AppPage } = require('../../abstractions/app.page');
-const { trackPageErrors, seedInstructionsRows } = require('./test-helpers');
+const { seedInstructionsRows } = require('./test-helpers');
+const { trackPageErrors, expectNoPageErrors } = require('../../../shared/helpers/page-error-helpers');
 
 async function openApp(page) {
   const pageErrors = trackPageErrors(page);
@@ -21,10 +22,6 @@ async function ensureTextEditMode(appPage) {
     await appPage.tabbedText.togglePreviewEdit(true);
   }
   await appPage.importExportControls.expectSetGridFromTextEnabled(true);
-}
-
-function expectNoPageErrors(pageErrors) {
-  expect(pageErrors).toEqual([]);
 }
 
 module.exports = {

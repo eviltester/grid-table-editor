@@ -927,6 +927,7 @@ function setupTabulatorDefnEditor(tableDiv) {
       { title: 'value', field: 'value', editor: 'input', headerSort: false, widthGrow: 2 },
     ],
     selectableRows: true,
+    selectableRowsRangeMode: 'click',
     movableRows: true,
     columnDefaults: { resizable: true },
     cellEditing: (cell) => {

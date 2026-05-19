@@ -22,11 +22,13 @@ test.describe('2. Column Operations', () => {
 
     await appPage.gridEditor.header.addColumnLeft(originalName, duplicateName);
     await expect.poll(async () => appPage.gridEditor.header.getColumnNames()).toContain(duplicateName);
+    const namesBeforeRejectedRename = await appPage.gridEditor.header.getColumnNames();
 
     await appPage.gridEditor.setUniqueColumnNames(true);
     await appPage.gridEditor.header.renameColumn(originalName, duplicateName);
     await expect(gridError).toBeVisible();
     await expect(gridError).toContainText(`A column with name ${duplicateName} already exists`);
+    await expect.poll(async () => appPage.gridEditor.header.getColumnNames()).toEqual(namesBeforeRejectedRename);
 
     expectNoPageErrors(pageErrors);
   });

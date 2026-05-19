@@ -31,7 +31,9 @@ export class PairwiseTestDataGenerator {
     if (RandExp) {
       this.randExpGenerator = this.createRandExpGenerator();
     }
-    this.domainGenerator = new DomainTestDataGenerator(this.faker);
+    if (faker) {
+      this.domainGenerator = new DomainTestDataGenerator(this.faker);
+    }
   }
 
   /**

@@ -17,3 +17,4 @@ apps/web/dist/
 .agentic-qe
 .tmp
 .claude
+.pet-runs

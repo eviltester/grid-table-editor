@@ -7,7 +7,7 @@ class GeneratorSchemaComponent {
     this.modeToggleButton = page.locator('#schemaModeToggleButton');
     this.textArea = page.locator('#generatorSchemaText');
     this.rowsContainer = page.locator('#generatorSchemaRows');
-    this.rows = page.locator('.generator-schema-row');
+    this.rows = this.rowsContainer.locator('.generator-schema-row');
     this.addFieldButton = page.locator('#addSchemaRowButton');
   }
 

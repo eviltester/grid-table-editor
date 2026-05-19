@@ -10,13 +10,13 @@ test.describe('1. Grid Basic Operations', () => {
     await expect.poll(async () => appPage.gridEditor.renderer.countSelectedRows()).toBe(1);
     const beforeSingleDelete = await appPage.gridEditor.renderer.countRows();
     await appPage.gridEditor.deleteSelectedRows();
-    await expect.poll(async () => appPage.gridEditor.renderer.countRows()).toBeLessThanOrEqual(beforeSingleDelete);
+    await expect.poll(async () => appPage.gridEditor.renderer.countRows()).toBe(beforeSingleDelete - 1);
 
     await appPage.gridEditor.selectRows([0, 1]);
     await expect.poll(async () => appPage.gridEditor.renderer.countSelectedRows()).toBe(2);
     const beforeMultiDelete = await appPage.gridEditor.renderer.countRows();
     await appPage.gridEditor.deleteSelectedRows();
-    await expect.poll(async () => appPage.gridEditor.renderer.countRows()).toBeLessThanOrEqual(beforeMultiDelete);
+    await expect.poll(async () => appPage.gridEditor.renderer.countRows()).toBe(beforeMultiDelete - 2);
 
     expectNoPageErrors(pageErrors);
   });

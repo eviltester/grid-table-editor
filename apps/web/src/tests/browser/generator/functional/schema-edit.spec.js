@@ -13,7 +13,7 @@ async function getSchemaRowNames(generatorPage) {
 function expectOrderedSubstrings(text, values) {
   let previousIndex = -1;
   for (const value of values) {
-    const nextIndex = text.indexOf(value);
+    const nextIndex = text.indexOf(value, previousIndex + 1);
     expect(nextIndex).toBeGreaterThan(previousIndex);
     previousIndex = nextIndex;
   }

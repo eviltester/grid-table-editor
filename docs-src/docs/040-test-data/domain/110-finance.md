@@ -42,7 +42,7 @@ Generates a random account number.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `length` | `number` | no | No description provided. |
+| `length` | `number` | no | Desired length of the generated value. |
 
 Examples:
 
@@ -178,7 +178,7 @@ Generates a random credit card number.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `issuer` | `string` | no | No description provided. |
+| `issuer` | `string` | no | Issuer or provider value used to constrain generated output. |
 
 Examples:
 
@@ -187,7 +187,7 @@ finance.creditCardNumber()
 ```
 
 ```txt
-finance.creditCardNumber(issuer="sample")
+finance.creditCardNumber(issuer="visa")
 ```
 
 Example return values:
@@ -210,8 +210,8 @@ finance.currency()
 ```
 
 Example return values:
-- `&#123;"name":"Pakistan Rupee","code":"PKR","symbol":"₨","numericCode":"586"&#125;`
-- `&#123;"name":"Bahraini Dinar","code":"BHD","symbol":"","numericCode":"048"&#125;`
+- `{"name":"Pakistan Rupee","code":"PKR","symbol":"₨","numericCode":"586"}`
+- `{"name":"Bahraini Dinar","code":"BHD","symbol":"","numericCode":"048"}`
 
 ### `finance.currencyCode`
 
@@ -267,7 +267,6 @@ finance.currencyNumericCode()
 ```
 
 Example return values:
-- `"784"`
 - `"784"`
 
 ### `finance.currencySymbol`
@@ -362,7 +361,7 @@ Generates a random masked number.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `length` | `number` | no | No description provided. |
+| `length` | `number` | no | Desired length of the generated value. |
 
 Examples:
 
@@ -387,7 +386,7 @@ Generates a random PIN number.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `length` | `number` | no | No description provided. |
+| `length` | `number` | no | Desired length of the generated value. |
 
 Examples:
 

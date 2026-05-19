@@ -28,7 +28,10 @@ class AppPage {
   async waitUntilReady() {
     try {
       await expect(this.initialLoading).toBeHidden({ timeout: 15000 });
-    } catch {
+    } catch (error) {
+      if (!isTimeoutError(error)) {
+        throw error;
+      }
       // Fallback for intermittent loader visibility under slow dev-server startup:
       // if core components are interactive, treat the page as ready.
       await expect(this.gridEditor.grid).toBeVisible({ timeout: 15000 });
@@ -40,6 +43,10 @@ class AppPage {
     await this.formatOptionsPanel.expectReady();
     await this.testDataPanel.expectReady();
   }
+}
+
+function isTimeoutError(error) {
+  return typeof error?.message === 'string' && error.message.includes('Timed out');
 }
 
 module.exports = { AppPage };

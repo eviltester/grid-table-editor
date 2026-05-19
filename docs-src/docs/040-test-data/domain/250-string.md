@@ -23,9 +23,7 @@ Generating a string consisting of letters in the English alphabet.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `length` | `number` | no | No description provided. |
-| `max` | `number` | no | No description provided. |
-| `value` | `number` | no | No description provided. |
+| `length` | `number` | no | Desired length of the generated value. |
 | `casing` | `string` | no | The casing of the characters. |
 | `exclude` | `array` | no | An array with characters which should be excluded in the generated string. |
 
@@ -36,7 +34,7 @@ string.alpha()
 ```
 
 ```txt
-string.alpha(length=1, max=1, value=1, casing="lower", exclude=["sample"])
+string.alpha(length=5, casing="lower", exclude=["a"])
 ```
 
 Example return values:
@@ -52,9 +50,7 @@ Generating a string consisting of alpha characters and digits.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `length` | `number` | no | No description provided. |
-| `max` | `number` | no | No description provided. |
-| `value` | `number` | no | No description provided. |
+| `length` | `number` | no | Desired length of the generated value. |
 | `casing` | `string` | no | The casing of the characters. |
 | `exclude` | `array` | no | An array of characters and digits which should be excluded in the generated string. |
 
@@ -65,7 +61,7 @@ string.alphanumeric()
 ```
 
 ```txt
-string.alphanumeric(length=1, max=1, value=1, casing="lower", exclude=["sample"])
+string.alphanumeric(length=5, casing="lower", exclude=["a", "1"])
 ```
 
 Example return values:
@@ -96,7 +92,6 @@ string.binary(length=1, prefix="#")
 
 Example return values:
 - `"0b1"`
-- `"0b1"`
 
 ### `string.fromCharacters`
 
@@ -107,10 +102,8 @@ Generates a string from the given characters.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `characters` | `string\|array` | yes | No description provided. |
-| `min` | `number` | no | No description provided. |
-| `max` | `number` | no | No description provided. |
-| `length` | `number` | no | No description provided. |
+| `characters` | `string\|array` | yes | Character set (string or array) used when generating output. |
+| `length` | `number` | no | Desired length of the generated value. |
 
 Examples:
 
@@ -119,7 +112,7 @@ string.fromCharacters("sample")
 ```
 
 ```txt
-string.fromCharacters(characters="sample", min=1, max=1, length=1)
+string.fromCharacters(characters="abcdef", length=3)
 ```
 
 Example return values:
@@ -162,11 +155,7 @@ Generates a Nano ID.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `min` | `number` | no | No description provided. |
-| `max` | `number` | no | No description provided. |
-| `length` | `number` | no | No description provided. |
-| `lengthMax` | `number` | no | The maximum length of the Nano ID to generate. |
-| `lengthMin` | `number` | no | The minimum length of the Nano ID to generate. |
+| `length` | `number` | no | Exact number of characters to generate. |
 
 Examples:
 
@@ -175,7 +164,7 @@ string.nanoid()
 ```
 
 ```txt
-string.nanoid(min=1, max=1, length=1, lengthMax=1, lengthMin=1)
+string.nanoid(length=10)
 ```
 
 Example return values:
@@ -191,9 +180,7 @@ Generates a given length string of digits.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `length` | `number` | no | No description provided. |
-| `max` | `number` | no | No description provided. |
-| `value` | `number` | no | No description provided. |
+| `length` | `number` | no | Desired length of the generated value. |
 | `allowLeadingZeros` | `boolean` | no | Whether leading zeros are allowed or not. |
 | `exclude` | `array` | no | An array of digits which should be excluded in the generated string. |
 
@@ -204,7 +191,7 @@ string.numeric()
 ```
 
 ```txt
-string.numeric(length=1, max=1, value=1, allowLeadingZeros=true, exclude=["sample"])
+string.numeric(length=5, allowLeadingZeros=true, exclude=["0"])
 ```
 
 Example return values:
@@ -246,11 +233,7 @@ Returns a string containing UTF-16 chars between 33 and 125 (`!` to `&#125;`).
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `min` | `number` | no | No description provided. |
-| `max` | `number` | no | No description provided. |
-| `length` | `number` | no | No description provided. |
-| `lengthMax` | `number` | no | The maximum length of the string to generate. |
-| `lengthMin` | `number` | no | The minimum length of the string to generate. |
+| `length` | `number` | no | Exact number of characters to generate. |
 
 Examples:
 
@@ -259,7 +242,7 @@ string.sample()
 ```
 
 ```txt
-string.sample(min=1, max=1, length=1, lengthMax=1, lengthMin=1)
+string.sample(length=10)
 ```
 
 Example return values:
@@ -275,11 +258,7 @@ Returns a string containing only special characters from the following list:
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `min` | `number` | no | No description provided. |
-| `max` | `number` | no | No description provided. |
-| `length` | `number` | no | No description provided. |
-| `lengthMax` | `number` | no | The maximum length of the string to generate. |
-| `lengthMin` | `number` | no | The minimum length of the string to generate. |
+| `length` | `number` | no | Exact number of characters to generate. |
 
 Examples:
 
@@ -288,7 +267,7 @@ string.symbol()
 ```
 
 ```txt
-string.symbol(min=1, max=1, length=1, lengthMax=1, lengthMin=1)
+string.symbol(length=3)
 ```
 
 Example return values:
@@ -327,19 +306,12 @@ Returns a UUID v4 (Universally Unique Identifier).
 - Canonical: `awd.domain.string.uuid`
 - Faker docs: [https://fakerjs.dev/api/string](https://fakerjs.dev/api/string)
 
-| Arg | Type | Required | Description |
-| --- | --- | --- | --- |
-| `refDate` | `number` | no | The timestamp to encode into the UUID. This parameter is only relevant for UUID v7. |
-| `version` | `string` | no | The specific UUID version to use. |
+No arguments.
 
 Examples:
 
 ```txt
 string.uuid()
-```
-
-```txt
-string.uuid(refDate=1, version="v4")
 ```
 
 Example return values:

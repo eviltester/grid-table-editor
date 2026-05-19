@@ -130,7 +130,7 @@ internet.email()
 ```
 
 ```txt
-internet.email(allowSpecialCharacters=true, firstName="sample", lastName="sample", provider="sample")
+internet.email(allowSpecialCharacters=true, firstName="Alex", lastName="Taylor", provider="gmail.com")
 ```
 
 Example return values:
@@ -294,7 +294,7 @@ Generates a random JWT (JSON Web Token).
 | --- | --- | --- | --- |
 | `header` | `array` | no | The header to use for the token. If present, it will replace any default values. |
 | `payload` | `array` | no | The payload to use for the token. If present, it will replace any default values. |
-| `refDate` | `number` | no | The date to use as reference point for the newly generated date. |
+| `refDate` | `number` | no | Reference date as a Unix timestamp in milliseconds since epoch used as the generation anchor. |
 
 Examples:
 
@@ -326,7 +326,6 @@ internet.jwtAlgorithm()
 ```
 
 Example return values:
-- `"HS384"`
 - `"HS384"`
 
 ### `internet.mac`
@@ -375,7 +374,7 @@ internet.password()
 ```
 
 ```txt
-internet.password(length=1, memorable=true, pattern="sample", prefix="#")
+internet.password(length=12, memorable=true, pattern="a", prefix="#")
 ```
 
 Example return values:
@@ -418,7 +417,6 @@ internet.protocol()
 
 Example return values:
 - `"https"`
-- `"https"`
 
 ### `internet.url`
 
@@ -439,7 +437,7 @@ internet.url()
 ```
 
 ```txt
-internet.url(appendSlash=true, protocol="sample")
+internet.url(appendSlash=true, protocol="https")
 ```
 
 Example return values:
@@ -484,7 +482,7 @@ internet.username()
 ```
 
 ```txt
-internet.username(firstName="sample", lastName="sample")
+internet.username(firstName="Alex", lastName="Taylor")
 ```
 
 Example return values:

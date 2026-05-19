@@ -42,7 +42,7 @@ Returns a random first name.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `sex` | `string` | no | The optional sex to use for first-name selection. |
+| `sex` | `string` | no | Optional sex for first-name selection. Valid values: `female` or `male`. |
 
 Examples:
 
@@ -51,7 +51,7 @@ person.firstName()
 ```
 
 ```txt
-person.firstName(sex="sample")
+person.firstName(sex="female")
 ```
 
 Example return values:
@@ -181,7 +181,7 @@ Returns a random last name.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `sex` | `string` | no | The optional sex to use for last-name selection. |
+| `sex` | `string` | no | Optional sex for last-name selection. Valid values: `female` or `male`. |
 
 Examples:
 
@@ -190,7 +190,7 @@ person.lastName()
 ```
 
 ```txt
-person.lastName(sex="sample")
+person.lastName(sex="male")
 ```
 
 Example return values:
@@ -206,7 +206,7 @@ Returns a random middle name.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `sex` | `string` | no | The optional sex to use for middle-name selection. |
+| `sex` | `string` | no | Optional sex for middle-name selection. Valid values: `female` or `male`. |
 
 Examples:
 
@@ -215,7 +215,7 @@ person.middleName()
 ```
 
 ```txt
-person.middleName(sex="sample")
+person.middleName(sex="female")
 ```
 
 Example return values:
@@ -240,7 +240,7 @@ person.prefix()
 ```
 
 ```txt
-person.prefix(sex="sample")
+person.prefix(sex="male")
 ```
 
 Example return values:
@@ -264,7 +264,6 @@ person.sex()
 
 Example return values:
 - `"male"`
-- `"male"`
 
 ### `person.sexType`
 
@@ -282,7 +281,6 @@ person.sexType()
 ```
 
 Example return values:
-- `"male"`
 - `"male"`
 
 ### `person.suffix`

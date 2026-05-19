@@ -50,7 +50,6 @@ location.cardinalDirection()
 
 Example return values:
 - `"West"`
-- `"West"`
 
 ### `location.city`
 

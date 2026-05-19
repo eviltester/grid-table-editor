@@ -106,5 +106,5 @@ science.unit()
 ```
 
 Example return values:
-- `&#123;"name":"sievert","symbol":"Sv"&#125;`
-- `&#123;"name":"pascal","symbol":"Pa"&#125;`
+- `{"name":"sievert","symbol":"Sv"}`
+- `{"name":"pascal","symbol":"Pa"}`

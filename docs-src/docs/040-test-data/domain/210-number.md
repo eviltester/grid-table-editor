@@ -23,7 +23,7 @@ Returns a BigInt number.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `value` | `string|number|boolean` | no | No description provided. |
+| `value` | `string\|number\|boolean` | no | Legacy placeholder argument from Faker signatures; currently has no effect. Use documented options instead. |
 
 Examples:
 
@@ -32,7 +32,7 @@ number.bigInt()
 ```
 
 ```txt
-number.bigInt(value="sample")
+number.bigInt(value=42)
 ```
 
 Example return values:
@@ -63,7 +63,6 @@ number.binary(max=1, min=1)
 
 Example return values:
 - `"0"`
-- `"0"`
 
 ### `number.float`
 
@@ -74,7 +73,7 @@ Returns a single random floating-point number, by default between `0.0` and `1.0
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `value` | `number` | no | No description provided. |
+| `value` | `number` | no | Legacy placeholder argument from Faker signatures; currently has no effect. Use documented options instead. |
 | `fractionDigits` | `number` | no | The maximum number of digits to appear after the decimal point, for example 2 will round to 2 decimal points. Only one of multipleOf or fractionDigits should be passed. |
 | `max` | `number` | no | Upper bound for generated number, exclusive, unless multipleOf or fractionDigits are passed. |
 | `min` | `number` | no | Lower bound for generated number, inclusive. |
@@ -121,9 +120,9 @@ Returns a lowercase hexadecimal number.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `min` | `number` | no | No description provided. |
-| `max` | `number` | no | No description provided. |
-| `value` | `number` | no | No description provided. |
+| `min` | `number` | no | Minimum bound used when generating a value. |
+| `max` | `number` | no | Maximum bound used when generating a value. |
+| `value` | `number` | no | Legacy placeholder argument from Faker signatures; currently has no effect. Use documented options instead. |
 
 Examples:
 
@@ -201,9 +200,9 @@ Returns a roman numeral in String format.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `min` | `number` | no | No description provided. |
-| `max` | `number` | no | No description provided. |
-| `value` | `number` | no | No description provided. |
+| `min` | `number` | no | Minimum bound used when generating a value. |
+| `max` | `number` | no | Maximum bound used when generating a value. |
+| `value` | `number` | no | Legacy placeholder argument from Faker signatures; currently has no effect. Use documented options instead. |
 
 Examples:
 

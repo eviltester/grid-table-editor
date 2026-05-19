@@ -23,8 +23,8 @@ Returns the boolean value true or false.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `probability` | `number` | no | No description provided. |
-| `value` | `number` | no | No description provided. |
+| `probability` | `number` | no | Probability threshold for returning `true` (between `0` and `1`). |
+| `value` | `number` | no | Numeric toggle for deterministic output: 0 returns false and 1 returns true. |
 
 Examples:
 
@@ -37,5 +37,4 @@ datatype.boolean(probability=1, value=1)
 ```
 
 Example return values:
-- `true`
 - `true`

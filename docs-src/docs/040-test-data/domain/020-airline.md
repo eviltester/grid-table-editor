@@ -31,7 +31,6 @@ airline.aircraftType()
 
 Example return values:
 - `"narrowbody"`
-- `"narrowbody"`
 
 ### `airline.airline`
 
@@ -49,8 +48,8 @@ airline.airline()
 ```
 
 Example return values:
-- `&#123;"name":"Air China","iataCode":"CA"&#125;`
-- `&#123;"name":"TUI Airways","iataCode":"BY"&#125;`
+- `{"name":"Air China","iataCode":"CA"}`
+- `{"name":"TUI Airways","iataCode":"BY"}`
 
 ### `airline.airline.iataCode`
 
@@ -106,8 +105,8 @@ airline.airplane()
 ```
 
 Example return values:
-- `&#123;"name":"Airbus A380-800","iataTypeCode":"388"&#125;`
-- `&#123;"name":"Boeing 747-400","iataTypeCode":"744"&#125;`
+- `{"name":"Airbus A380-800","iataTypeCode":"388"}`
+- `{"name":"Boeing 747-400","iataTypeCode":"744"}`
 
 ### `airline.airplane.iataTypeCode`
 
@@ -163,8 +162,8 @@ airline.airport()
 ```
 
 Example return values:
-- `&#123;"name":"Noumea Magenta Airport","iataCode":"GEA"&#125;`
-- `&#123;"name":"Melbourne International Airport","iataCode":"MEL"&#125;`
+- `{"name":"Noumea Magenta Airport","iataCode":"GEA"}`
+- `{"name":"Melbourne International Airport","iataCode":"MEL"}`
 
 ### `airline.airport.iataCode`
 

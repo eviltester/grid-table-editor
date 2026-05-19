@@ -42,7 +42,7 @@ Returns a random file name with a given extension or a commonly used extension.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `extension` | `string` | no | No description provided. |
+| `extension` | `string` | no | File extension to include in the generated filename. |
 
 Examples:
 
@@ -131,7 +131,7 @@ Returns a file extension.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `mimeType` | `string` | no | No description provided. |
+| `mimeType` | `string` | no | MIME type used to constrain generated values. |
 
 Examples:
 
@@ -201,7 +201,6 @@ system.fileType()
 ```
 
 Example return values:
-- `"image"`
 - `"image"`
 
 ### `system.mimeType`

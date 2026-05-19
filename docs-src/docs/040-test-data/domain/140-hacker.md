@@ -88,7 +88,6 @@ hacker.noun()
 
 Example return values:
 - `"transmitter"`
-- `"transmitter"`
 
 ### `hacker.phrase`
 

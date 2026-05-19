@@ -52,9 +52,9 @@ Generates a paragraph with the given number of sentences.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `min` | `number` | no | No description provided. |
-| `max` | `number` | no | No description provided. |
-| `sentenceCount` | `number` | no | No description provided. |
+| `min` | `number` | no | Minimum bound used when generating a value. |
+| `max` | `number` | no | Maximum bound used when generating a value. |
+| `sentenceCount` | `number` | no | Number of sentences to generate. |
 | `sentenceCountMax` | `number` | no | The maximum number of sentences to generate. |
 | `sentenceCountMin` | `number` | no | The minimum number of sentences to generate. |
 
@@ -81,10 +81,10 @@ Generates the given number of paragraphs.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `min` | `number` | no | No description provided. |
-| `max` | `number` | no | No description provided. |
-| `paragraphCount` | `number` | no | No description provided. |
-| `separator` | `string` | no | No description provided. |
+| `min` | `number` | no | Minimum bound used when generating a value. |
+| `max` | `number` | no | Maximum bound used when generating a value. |
+| `paragraphCount` | `number` | no | Number of paragraphs to generate. |
+| `separator` | `string` | no | Separator inserted between generated items. |
 | `paragraphCountMax` | `number` | no | The maximum number of paragraphs to generate. |
 | `paragraphCountMin` | `number` | no | The minimum number of paragraphs to generate. |
 
@@ -111,9 +111,9 @@ Generates a space separated list of words beginning with a capital letter and en
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `min` | `number` | no | No description provided. |
-| `max` | `number` | no | No description provided. |
-| `wordCount` | `number` | no | No description provided. |
+| `min` | `number` | no | Minimum bound used when generating a value. |
+| `max` | `number` | no | Maximum bound used when generating a value. |
+| `wordCount` | `number` | no | Number of words to generate. |
 | `wordCountMax` | `number` | no | The maximum number of words to generate. |
 | `wordCountMin` | `number` | no | The minimum number of words to generate. |
 
@@ -140,10 +140,10 @@ Generates the given number of sentences.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `min` | `number` | no | No description provided. |
-| `max` | `number` | no | No description provided. |
-| `sentenceCount` | `number` | no | No description provided. |
-| `separator` | `string` | no | No description provided. |
+| `min` | `number` | no | Minimum bound used when generating a value. |
+| `max` | `number` | no | Maximum bound used when generating a value. |
+| `sentenceCount` | `number` | no | Number of sentences to generate. |
+| `separator` | `string` | no | Separator inserted between generated items. |
 | `sentenceCountMax` | `number` | no | The maximum number of sentences to generate. |
 | `sentenceCountMin` | `number` | no | The minimum number of sentences to generate. |
 
@@ -170,9 +170,9 @@ Generates a slugified text consisting of the given number of hyphen separated wo
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `min` | `number` | no | No description provided. |
-| `max` | `number` | no | No description provided. |
-| `wordCount` | `number` | no | No description provided. |
+| `min` | `number` | no | Minimum bound used when generating a value. |
+| `max` | `number` | no | Maximum bound used when generating a value. |
+| `wordCount` | `number` | no | Number of words to generate. |
 | `wordCountMax` | `number` | no | The maximum number of words to generate. |
 | `wordCountMin` | `number` | no | The minimum number of words to generate. |
 
@@ -246,9 +246,9 @@ Generates a space separated list of words.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `min` | `number` | no | No description provided. |
-| `max` | `number` | no | No description provided. |
-| `wordCount` | `number` | no | No description provided. |
+| `min` | `number` | no | Minimum bound used when generating a value. |
+| `max` | `number` | no | Maximum bound used when generating a value. |
+| `wordCount` | `number` | no | Number of words to generate. |
 | `wordCountMax` | `number` | no | The maximum number of words to generate. |
 | `wordCountMin` | `number` | no | The minimum number of words to generate. |
 

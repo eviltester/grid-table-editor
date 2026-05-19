@@ -23,9 +23,9 @@ Returns a random adjective.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `length` | `number` | no | No description provided. |
-| `max` | `number` | no | No description provided. |
-| `value` | `number` | no | No description provided. |
+| `length` | `number` | no | Desired length of the generated value. |
+| `max` | `number` | no | Maximum bound used when generating a value. |
+| `value` | `number` | no | Legacy shorthand for target word length. Prefer the length option. |
 | `strategy` | `string` | no | The strategy to apply when no words with a matching length are found. Available error handling strategies: fail: Throws an error if no words with the given length are found. shortest: Returns any of the shortest words. closest: Returns any of the words closest to the given length. longest: Returns any of the longest words. any-length: Returns a word with any length. |
 
 Examples:
@@ -51,9 +51,9 @@ Returns a random adverb.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `length` | `number` | no | No description provided. |
-| `max` | `number` | no | No description provided. |
-| `value` | `number` | no | No description provided. |
+| `length` | `number` | no | Desired length of the generated value. |
+| `max` | `number` | no | Maximum bound used when generating a value. |
+| `value` | `number` | no | Legacy shorthand for target word length. Prefer the length option. |
 | `strategy` | `string` | no | The strategy to apply when no words with a matching length are found. Available error handling strategies: fail: Throws an error if no words with the given length are found. shortest: Returns any of the shortest words. closest: Returns any of the words closest to the given length. longest: Returns any of the longest words. any-length: Returns a word with any length. |
 
 Examples:
@@ -79,9 +79,9 @@ Returns a random conjunction.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `length` | `number` | no | No description provided. |
-| `max` | `number` | no | No description provided. |
-| `value` | `number` | no | No description provided. |
+| `length` | `number` | no | Desired length of the generated value. |
+| `max` | `number` | no | Maximum bound used when generating a value. |
+| `value` | `number` | no | Legacy shorthand for target word length. Prefer the length option. |
 | `strategy` | `string` | no | The strategy to apply when no words with a matching length are found. Available error handling strategies: fail: Throws an error if no words with the given length are found. shortest: Returns any of the shortest words. closest: Returns any of the words closest to the given length. longest: Returns any of the longest words. any-length: Returns a word with any length. |
 
 Examples:
@@ -96,7 +96,6 @@ word.conjunction(length=1, max=1, value=1, strategy="any-length")
 
 Example return values:
 - `"consequently"`
-- `"consequently"`
 
 ### `word.interjection`
 
@@ -107,9 +106,9 @@ Returns a random interjection.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `length` | `number` | no | No description provided. |
-| `max` | `number` | no | No description provided. |
-| `value` | `number` | no | No description provided. |
+| `length` | `number` | no | Desired length of the generated value. |
+| `max` | `number` | no | Maximum bound used when generating a value. |
+| `value` | `number` | no | Legacy shorthand for target word length. Prefer the length option. |
 | `strategy` | `string` | no | The strategy to apply when no words with a matching length are found. Available error handling strategies: fail: Throws an error if no words with the given length are found. shortest: Returns any of the shortest words. closest: Returns any of the words closest to the given length. longest: Returns any of the longest words. any-length: Returns a word with any length. |
 
 Examples:
@@ -135,9 +134,9 @@ Returns a random noun.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `length` | `number` | no | No description provided. |
-| `max` | `number` | no | No description provided. |
-| `value` | `number` | no | No description provided. |
+| `length` | `number` | no | Desired length of the generated value. |
+| `max` | `number` | no | Maximum bound used when generating a value. |
+| `value` | `number` | no | Legacy shorthand for target word length. Prefer the length option. |
 | `strategy` | `string` | no | The strategy to apply when no words with a matching length are found. Available error handling strategies: fail: Throws an error if no words with the given length are found. shortest: Returns any of the shortest words. closest: Returns any of the words closest to the given length. longest: Returns any of the longest words. any-length: Returns a word with any length. |
 
 Examples:
@@ -163,9 +162,9 @@ Returns a random preposition.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `length` | `number` | no | No description provided. |
-| `max` | `number` | no | No description provided. |
-| `value` | `number` | no | No description provided. |
+| `length` | `number` | no | Desired length of the generated value. |
+| `max` | `number` | no | Maximum bound used when generating a value. |
+| `value` | `number` | no | Legacy shorthand for target word length. Prefer the length option. |
 | `strategy` | `string` | no | The strategy to apply when no words with a matching length are found. Available error handling strategies: fail: Throws an error if no words with the given length are found. shortest: Returns any of the shortest words. closest: Returns any of the words closest to the given length. longest: Returns any of the longest words. any-length: Returns a word with any length. |
 
 Examples:
@@ -191,9 +190,9 @@ Returns a random word, that can be an adjective, adverb, conjunction, interjecti
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `length` | `number` | no | No description provided. |
-| `max` | `number` | no | No description provided. |
-| `value` | `number` | no | No description provided. |
+| `length` | `number` | no | Desired length of the generated value. |
+| `max` | `number` | no | Maximum bound used when generating a value. |
+| `value` | `number` | no | Legacy shorthand for target word length. Prefer the length option. |
 | `strategy` | `string` | no | The strategy to apply when no words with a matching length are found. Available error handling strategies: fail: Throws an error if no words with the given length are found. shortest: Returns any of the shortest words. closest: Returns any of the words closest to the given length. longest: Returns any of the longest words. any-length: Returns a word with any length. |
 
 Examples:
@@ -219,9 +218,9 @@ Returns a random verb.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `length` | `number` | no | No description provided. |
-| `max` | `number` | no | No description provided. |
-| `value` | `number` | no | No description provided. |
+| `length` | `number` | no | Desired length of the generated value. |
+| `max` | `number` | no | Maximum bound used when generating a value. |
+| `value` | `number` | no | Legacy shorthand for target word length. Prefer the length option. |
 | `strategy` | `string` | no | The strategy to apply when no words with a matching length are found. Available error handling strategies: fail: Throws an error if no words with the given length are found. shortest: Returns any of the shortest words. closest: Returns any of the words closest to the given length. longest: Returns any of the longest words. any-length: Returns a word with any length. |
 
 Examples:
@@ -247,9 +246,9 @@ Returns a random string containing some words separated by spaces.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `count` | `number` | no | No description provided. |
-| `max` | `number` | no | No description provided. |
-| `value` | `number` | no | No description provided. |
+| `count` | `number` | no | Number of items to generate. |
+| `max` | `number` | no | Maximum bound used when generating a value. |
+| `value` | `number` | no | Legacy shorthand for number of words to generate. Prefer the count option. |
 
 Examples:
 

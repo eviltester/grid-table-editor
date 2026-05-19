@@ -69,7 +69,6 @@ vehicle.fuel()
 
 Example return values:
 - `"Electric"`
-- `"Electric"`
 
 ### `vehicle.manufacturer`
 

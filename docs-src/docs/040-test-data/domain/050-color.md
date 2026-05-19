@@ -94,7 +94,6 @@ color.cssSupportedSpace()
 
 Example return values:
 - `"rec2020"`
-- `"rec2020"`
 
 ### `color.hsl`
 

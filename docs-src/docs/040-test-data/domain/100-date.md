@@ -23,7 +23,7 @@ Generates a random date that can be either in the past or in the future.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `refDate` | `number` | no | The date to use as reference point for the newly generated date. |
+| `refDate` | `number` | no | Reference date as a Unix timestamp in milliseconds since epoch used as the generation anchor. |
 
 Examples:
 
@@ -48,8 +48,8 @@ Generates a random date between the given boundaries.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `from` | `number` | no | The early date boundary. |
-| `to` | `number` | no | The late date boundary. |
+| `from` | `number` | no | Start boundary as a Unix timestamp in milliseconds since epoch. |
+| `to` | `number` | no | End boundary as a Unix timestamp in milliseconds since epoch. |
 
 Examples:
 
@@ -75,8 +75,8 @@ Generates random dates between the given boundaries. The dates will be returned 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
 | `count` | `number` | no | The number of dates to generate. |
-| `from` | `number` | no | The early date boundary. |
-| `to` | `number` | no | The late date boundary. |
+| `from` | `number` | no | Start boundary as a Unix timestamp in milliseconds since epoch. |
+| `to` | `number` | no | End boundary as a Unix timestamp in milliseconds since epoch. |
 
 Examples:
 
@@ -101,7 +101,7 @@ Returns a random birthdate. By default, the birthdate is generated for an adult 
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `refDate` | `number` | no | The date to use as reference point for the newly generated date. |
+| `refDate` | `number` | no | Reference date as a Unix timestamp in milliseconds since epoch used as the generation anchor. |
 | `max` | `number` | no | The maximum age/year to generate a birthdate for/in. |
 | `min` | `number` | no | The minimum age/year to generate a birthdate for/in. |
 | `mode` | `string` | no | Either 'age' or 'year' to generate a birthdate based on the age or year range. |
@@ -129,7 +129,7 @@ Generates a random date in the future.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `refDate` | `number` | no | The date to use as reference point for the newly generated date. |
+| `refDate` | `number` | no | Reference date as a Unix timestamp in milliseconds since epoch used as the generation anchor. |
 | `years` | `number` | no | The range of years the date may be in the future. |
 
 Examples:
@@ -156,7 +156,7 @@ Returns a random name of a month.
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
 | `abbreviated` | `boolean` | no | Whether to return an abbreviation. |
-| `context` | `boolean` | no | Whether to return the name of a month in the context of a date. In the default en locale this has no effect, however, in other locales like fr or ru, this may affect grammar or capitalization, for example 'январь' with &#123; context: false &#125; and 'января' with &#123; context: true &#125; in ru. |
+| `context` | `boolean` | no | Whether to return the name of a month in the context of a date. In the currently supported locale this has no visible effect. This option is mainly relevant for future multi-locale support (for example, locale-specific grammar/capitalization differences). |
 
 Examples:
 
@@ -181,7 +181,7 @@ Generates a random date in the past.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `refDate` | `number` | no | The date to use as reference point for the newly generated date. |
+| `refDate` | `number` | no | Reference date as a Unix timestamp in milliseconds since epoch used as the generation anchor. |
 | `years` | `number` | no | The range of years the date may be in the past. |
 
 Examples:
@@ -208,7 +208,7 @@ Generates a random date in the recent past.
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
 | `days` | `number` | no | The range of days the date may be in the past. |
-| `refDate` | `number` | no | The date to use as reference point for the newly generated date. |
+| `refDate` | `number` | no | Reference date as a Unix timestamp in milliseconds since epoch used as the generation anchor. |
 
 Examples:
 
@@ -234,7 +234,7 @@ Generates a random date in the near future.
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
 | `days` | `number` | no | The range of days the date may be in the future. |
-| `refDate` | `number` | no | The date to use as reference point for the newly generated date. |
+| `refDate` | `number` | no | Reference date as a Unix timestamp in milliseconds since epoch used as the generation anchor. |
 
 Examples:
 
@@ -279,7 +279,7 @@ Returns a random day of the week.
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
 | `abbreviated` | `boolean` | no | Whether to return an abbreviation. |
-| `context` | `boolean` | no | Whether to return the day of the week in the context of a date. In the default en locale this has no effect, however, in other locales like fr or ru, this may affect grammar or capitalization, for example 'Lundi' with &#123; context: false &#125; and 'lundi' with &#123; context: true &#125; in fr. |
+| `context` | `boolean` | no | Whether to return the day of the week in the context of a date. In the currently supported locale this has no visible effect. This option is mainly relevant for future multi-locale support (for example, locale-specific grammar/capitalization differences). |
 
 Examples:
 

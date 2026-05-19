@@ -23,7 +23,7 @@ Return the literal value provided by the caller.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `value` | `string|number|boolean` | yes | Literal value to return. |
+| `value` | `string\|number\|boolean` | yes | Literal value to return. |
 
 Examples:
 
@@ -36,5 +36,4 @@ literal.value(value="sample")
 ```
 
 Example return values:
-- `"sample"`
 - `"sample"`

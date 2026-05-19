@@ -1,6 +1,7 @@
 import { PairwiseTestDataGenerator } from '@anywaydata/core/data_generation/all-pairs/pairwiseTestDataGenerator.js';
 import { TestDataRule } from '@anywaydata/core/data_generation/testDataRule.js';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
+import { assertNoCommonErrorPatternsInRows } from '../utils/outputQualityAssertions.js';
 
 describe('Pairwise Data Structure Fix', () => {
   test('should handle the nested data structure correctly when creating GenericDataTable', () => {
@@ -29,7 +30,7 @@ describe('Pairwise Data Structure Fix', () => {
     });
 
     // Should not throw and should return a valid data table
-    expect(dataTable).toBeDefined();
+    expect(dataTable.getHeaders()).toHaveLength(2);
     expect(dataTable.getHeaders()).toEqual(['Color', 'Size']);
     expect(dataTable.getRowCount()).toBeGreaterThan(0);
 
@@ -48,6 +49,9 @@ describe('Pairwise Data Structure Fix', () => {
 
     expect(sizeValues).toContain('small');
     expect(sizeValues).toContain('large');
+    assertNoCommonErrorPatternsInRows(
+      Array.from({ length: dataTable.getRowCount() }, (_, idx) => dataTable.getRow(idx))
+    );
   });
 
   test('PairwiseTestDataGenerator returns correct nested data structure', () => {
@@ -61,14 +65,19 @@ describe('Pairwise Data Structure Fix', () => {
 
     const dataResult = generator.generateAllDataRecordsAsRows();
     expect(dataResult.isError).toBe(false);
-    expect(dataResult.data).toBeDefined();
-    expect(dataResult.data.data).toBeDefined(); // Nested data structure
-    expect(dataResult.data.stats).toBeDefined();
+    expect(Array.isArray(dataResult.data.data)).toBe(true);
+    expect(typeof dataResult.data.stats).toBe('object');
+    expect(dataResult.data.stats).not.toBeNull();
 
     // Verify the data structure we're expecting
     const [headers, ...rows] = dataResult.data.data;
     expect(headers).toEqual(['Color', 'Size']);
     expect(rows.length).toBe(4); // 2x2 full coverage for small example
+    rows.forEach((row) => {
+      expect(['red', 'blue']).toContain(row[0]);
+      expect(['small', 'large']).toContain(row[1]);
+    });
+    assertNoCommonErrorPatternsInRows(rows);
   });
 
   test('demonstrates the original error would occur with wrong data access', () => {
@@ -123,5 +132,6 @@ describe('Pairwise Data Structure Fix', () => {
     rows.forEach((row) => {
       expect(row[1]).toBe('literal(1,3)');
     });
+    assertNoCommonErrorPatternsInRows(rows);
   });
 });

@@ -193,7 +193,7 @@ Example return values:
 
 ### `color.lch`
 
-Returns an LCH color. Even though upper bound of
+Returns a random LCH color value.
 
 - Canonical: `awd.domain.color.lch`
 - Faker docs: [https://fakerjs.dev/api/color](https://fakerjs.dev/api/color)

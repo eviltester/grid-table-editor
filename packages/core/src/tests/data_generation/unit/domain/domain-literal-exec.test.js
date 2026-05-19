@@ -8,6 +8,6 @@ describe('literal domain keyword execution', () => {
         'literal.value': ({ args: runtimeArgs }) => runtimeArgs[0],
       },
     });
-    expect(result).not.toBeUndefined();
+    expect(result).toBe(1);
   });
 });

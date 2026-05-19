@@ -6,7 +6,7 @@ description: "Domain keyword reference for literal."
 
 # literal Domain
 
-The `literal` domain maps domain keywords to underlying faker implementations.
+The `literal` domain returns caller-provided values directly and does not invoke faker.
 
 ## Faker Documentation
 

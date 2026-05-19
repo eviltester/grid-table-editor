@@ -206,7 +206,7 @@ Example return values:
 
 ### `airline.flightNumber`
 
-Returns a random flight number. Flight numbers are always 1 to 4 digits long. Sometimes they are
+Returns a random flight number. Flight numbers are always 1 to 4 digits long and may include leading zeros.
 
 - Canonical: `awd.domain.airline.flightNumber`
 - Faker docs: [https://fakerjs.dev/api/airline](https://fakerjs.dev/api/airline)
@@ -225,7 +225,7 @@ Example return values:
 
 ### `airline.recordLocator`
 
-Generates a random record locator. Record locators
+Generates a random record locator. Record locators are 6-character alphanumeric booking references.
 
 - Canonical: `awd.domain.airline.recordLocator`
 - Faker docs: [https://fakerjs.dev/api/airline](https://fakerjs.dev/api/airline)

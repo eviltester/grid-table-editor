@@ -1,94 +1,95 @@
 import { faker } from '@faker-js/faker';
 import { executeDomainKeyword } from '../../../../../js/domain/domain-keywords.js';
+import { assertDomainKeywordResult } from './domain-result-assertions.test-helper.js';
 
 describe('person domain keyword execution', () => {
   test('executes person.bio', () => {
     const result = executeDomainKeyword('person.bio', { faker, args: [] });
     console.log('person.bio', result);
-    expect(result).not.toBeUndefined();
+    assertDomainKeywordResult('person.bio', result);
   });
 
   test('executes person.firstName', () => {
     const result = executeDomainKeyword('person.firstName', { faker, args: [] });
     console.log('person.firstName', result);
-    expect(result).not.toBeUndefined();
+    assertDomainKeywordResult('person.firstName', result);
   });
 
   test('executes person.fullName', () => {
     const result = executeDomainKeyword('person.fullName', { faker, args: [] });
     console.log('person.fullName', result);
-    expect(result).not.toBeUndefined();
+    assertDomainKeywordResult('person.fullName', result);
   });
 
   test('executes person.gender', () => {
     const result = executeDomainKeyword('person.gender', { faker, args: [] });
     console.log('person.gender', result);
-    expect(result).not.toBeUndefined();
+    assertDomainKeywordResult('person.gender', result);
   });
 
   test('executes person.jobArea', () => {
     const result = executeDomainKeyword('person.jobArea', { faker, args: [] });
     console.log('person.jobArea', result);
-    expect(result).not.toBeUndefined();
+    assertDomainKeywordResult('person.jobArea', result);
   });
 
   test('executes person.jobDescriptor', () => {
     const result = executeDomainKeyword('person.jobDescriptor', { faker, args: [] });
     console.log('person.jobDescriptor', result);
-    expect(result).not.toBeUndefined();
+    assertDomainKeywordResult('person.jobDescriptor', result);
   });
 
   test('executes person.jobTitle', () => {
     const result = executeDomainKeyword('person.jobTitle', { faker, args: [] });
     console.log('person.jobTitle', result);
-    expect(result).not.toBeUndefined();
+    assertDomainKeywordResult('person.jobTitle', result);
   });
 
   test('executes person.jobType', () => {
     const result = executeDomainKeyword('person.jobType', { faker, args: [] });
     console.log('person.jobType', result);
-    expect(result).not.toBeUndefined();
+    assertDomainKeywordResult('person.jobType', result);
   });
 
   test('executes person.lastName', () => {
     const result = executeDomainKeyword('person.lastName', { faker, args: [] });
     console.log('person.lastName', result);
-    expect(result).not.toBeUndefined();
+    assertDomainKeywordResult('person.lastName', result);
   });
 
   test('executes person.middleName', () => {
     const result = executeDomainKeyword('person.middleName', { faker, args: [] });
     console.log('person.middleName', result);
-    expect(result).not.toBeUndefined();
+    assertDomainKeywordResult('person.middleName', result);
   });
 
   test('executes person.prefix', () => {
     const result = executeDomainKeyword('person.prefix', { faker, args: [] });
     console.log('person.prefix', result);
-    expect(result).not.toBeUndefined();
+    assertDomainKeywordResult('person.prefix', result);
   });
 
   test('executes person.sex', () => {
     const result = executeDomainKeyword('person.sex', { faker, args: [] });
     console.log('person.sex', result);
-    expect(result).not.toBeUndefined();
+    assertDomainKeywordResult('person.sex', result);
   });
 
   test('executes person.sexType', () => {
     const result = executeDomainKeyword('person.sexType', { faker, args: [] });
     console.log('person.sexType', result);
-    expect(result).not.toBeUndefined();
+    assertDomainKeywordResult('person.sexType', result);
   });
 
   test('executes person.suffix', () => {
     const result = executeDomainKeyword('person.suffix', { faker, args: [] });
     console.log('person.suffix', result);
-    expect(result).not.toBeUndefined();
+    assertDomainKeywordResult('person.suffix', result);
   });
 
   test('executes person.zodiacSign', () => {
     const result = executeDomainKeyword('person.zodiacSign', { faker, args: [] });
     console.log('person.zodiacSign', result);
-    expect(result).not.toBeUndefined();
+    assertDomainKeywordResult('person.zodiacSign', result);
   });
 });

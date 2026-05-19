@@ -1,11 +1,12 @@
 import { faker } from '@faker-js/faker';
 import { executeDomainKeyword } from '../../../../../js/domain/domain-keywords.js';
+import { assertDomainKeywordResult } from './domain-result-assertions.test-helper.js';
 
 describe('date domain keyword execution', () => {
   test('executes date.anytime', () => {
     const result = executeDomainKeyword('date.anytime', { faker, args: [] });
     console.log('date.anytime', result);
-    expect(result).not.toBeUndefined();
+    assertDomainKeywordResult('date.anytime', result);
   });
 
   test('executes date.between', () => {
@@ -35,49 +36,49 @@ describe('date domain keyword execution', () => {
 
   test('executes date.birthdate', () => {
     const result = executeDomainKeyword('date.birthdate', { faker, args: [] });
-    console.log('date.birthdate', result);
-    expect(result).not.toBeUndefined();
+    console.log('date.between', result);
+    assertDomainKeywordResult('date.between', result);
   });
 
   test('executes date.future', () => {
     const result = executeDomainKeyword('date.future', { faker, args: [] });
     console.log('date.future', result);
-    expect(result).not.toBeUndefined();
+    assertDomainKeywordResult('date.future', result);
   });
 
   test('executes date.month', () => {
     const result = executeDomainKeyword('date.month', { faker, args: [] });
     console.log('date.month', result);
-    expect(result).not.toBeUndefined();
+    assertDomainKeywordResult('date.month', result);
   });
 
   test('executes date.past', () => {
     const result = executeDomainKeyword('date.past', { faker, args: [] });
     console.log('date.past', result);
-    expect(result).not.toBeUndefined();
+    assertDomainKeywordResult('date.past', result);
   });
 
   test('executes date.recent', () => {
     const result = executeDomainKeyword('date.recent', { faker, args: [] });
     console.log('date.recent', result);
-    expect(result).not.toBeUndefined();
+    assertDomainKeywordResult('date.recent', result);
   });
 
   test('executes date.soon', () => {
     const result = executeDomainKeyword('date.soon', { faker, args: [] });
     console.log('date.soon', result);
-    expect(result).not.toBeUndefined();
+    assertDomainKeywordResult('date.soon', result);
   });
 
   test('executes date.timeZone', () => {
     const result = executeDomainKeyword('date.timeZone', { faker, args: [] });
     console.log('date.timeZone', result);
-    expect(result).not.toBeUndefined();
+    assertDomainKeywordResult('date.timeZone', result);
   });
 
   test('executes date.weekday', () => {
     const result = executeDomainKeyword('date.weekday', { faker, args: [] });
     console.log('date.weekday', result);
-    expect(result).not.toBeUndefined();
+    assertDomainKeywordResult('date.weekday', result);
   });
 });

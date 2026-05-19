@@ -2,6 +2,7 @@ import { MarkdownConvertor } from '../../../js/data_formats/markdown-convertor.j
 import { HtmlConvertor } from '../../../js/data_formats/html-convertor.js';
 import { GherkinConvertor } from '../../../js/data_formats/gherkin-convertor.js';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
+import { assertNoCommonErrorPatternsInValue } from '../utils/outputQualityAssertions.js';
 
 describe('Export Format String Conversion Bug Fix', () => {
   let dataTable;
@@ -22,10 +23,12 @@ describe('Export Format String Conversion Bug Fix', () => {
 
     expect(() => {
       const result = convertor.fromDataTable(dataTable);
-      expect(result).toBeTruthy();
+      expect(typeof result).toBe('string');
+      expect(result.trim().length).toBeGreaterThan(0);
       expect(result).toContain('HTTP Method');
       expect(result).toContain('12345'); // numeric value
       expect(result).toContain('true'); // boolean value
+      assertNoCommonErrorPatternsInValue(result);
     }).not.toThrow();
   });
 
@@ -34,10 +37,12 @@ describe('Export Format String Conversion Bug Fix', () => {
 
     expect(() => {
       const result = convertor.fromDataTable(dataTable);
-      expect(result).toBeTruthy();
+      expect(typeof result).toBe('string');
+      expect(result.trim().length).toBeGreaterThan(0);
       expect(result).toContain('<table>');
       expect(result).toContain('12345'); // numeric value
       expect(result).toContain('true'); // boolean value
+      assertNoCommonErrorPatternsInValue(result);
     }).not.toThrow();
   });
 
@@ -46,10 +51,12 @@ describe('Export Format String Conversion Bug Fix', () => {
 
     expect(() => {
       const result = convertor.fromDataTable(dataTable);
-      expect(result).toBeTruthy();
+      expect(typeof result).toBe('string');
+      expect(result.trim().length).toBeGreaterThan(0);
       expect(result).toContain('|');
       expect(result).toContain('12345'); // numeric value
       expect(result).toContain('true'); // boolean value
+      assertNoCommonErrorPatternsInValue(result);
     }).not.toThrow();
   });
 

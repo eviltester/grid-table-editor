@@ -19,7 +19,7 @@ for (const keyword of DOMAIN_KEYWORDS) {
   byDomain.get(domain).push(keyword);
 }
 
-const domains = [...byDomain.keys()].sort((a,b)=>a.localeCompare(b));
+const domains = [...byDomain.keys()].sort((a, b) => a.localeCompare(b));
 
 const category = {
   label: 'Domain Test Data',
@@ -29,7 +29,7 @@ const category = {
     id: 'domain-test-data',
   },
   className: 'category-domain-test-data',
-  collapsed: true
+  collapsed: true,
 };
 fs.writeFileSync(path.join(outDir, '_category_.json'), JSON.stringify(category, null, 2));
 
@@ -97,20 +97,12 @@ const indexLines = [
   '- [fakerjs.dev/api/helpers](https://fakerjs.dev/api/helpers)',
   '',
   '## Domains',
-  ''
+  '',
 ];
 for (const d of domains) {
   indexLines.push(`- [${d}](/docs/test-data/domain/${d})`);
 }
 fs.writeFileSync(path.join(outDir, '000-domain-test-data.md'), indexLines.join('\n'));
-
-const valueForType = (typeName) => {
-  const first = String(typeName || '').split('|').map(s=>s.trim()).find(Boolean) || 'string';
-  if (first === 'number') return '1';
-  if (first === 'boolean') return 'true';
-  if (first === 'array') return '["sample"]';
-  return '"sample"';
-};
 
 const invocationOverrides = {
   'date.between': { invocation: 'date.between(0, 2000000000000)', args: [0, 2000000000000] },
@@ -171,11 +163,7 @@ function toNamedInvocation(keyword, argSpecs, typedArgs) {
     }
     const value = typedArgs[index];
     const rendered =
-      typeof value === 'string'
-        ? `"${value}"`
-        : Array.isArray(value)
-          ? JSON.stringify(value)
-          : String(value);
+      typeof value === 'string' ? `"${value}"` : Array.isArray(value) ? JSON.stringify(value) : String(value);
     pairs.push(`${name}=${rendered}`);
   }
   return `${keyword}(${pairs.join(', ')})`;
@@ -221,7 +209,11 @@ function sampleValueForArg(argSpec) {
   if (name === 'context') return false;
   if (name === 'abbreviated') return false;
 
-  const first = typeName.split('|').map((s) => s.trim()).find(Boolean) || 'string';
+  const first =
+    typeName
+      .split('|')
+      .map((s) => s.trim())
+      .find(Boolean) || 'string';
   if (first === 'number') return 1;
   if (first === 'boolean') return true;
   if (first === 'array') return ['sample'];
@@ -230,7 +222,7 @@ function sampleValueForArg(argSpec) {
 
 let pageIndex = 20;
 for (const domain of domains) {
-  const keywords = byDomain.get(domain).sort((a,b)=>a.keyword.localeCompare(b.keyword));
+  const keywords = byDomain.get(domain).sort((a, b) => a.keyword.localeCompare(b.keyword));
   const lines = [
     '---',
     `sidebar_position: ${pageIndex}`,
@@ -241,10 +233,10 @@ for (const domain of domains) {
     `# ${domain} Domain`,
     '',
     `The \`${domain}\` domain maps domain keywords to underlying faker implementations.`,
-    ''
+    '',
   ];
 
-  const docsByDomain = [...new Set(keywords.map(k => k.help.docsUrl).filter(Boolean))];
+  const docsByDomain = [...new Set(keywords.map((k) => k.help.docsUrl).filter(Boolean))];
   if (docsByDomain.length > 0) {
     lines.push('## Faker Documentation', '');
     for (const url of docsByDomain) lines.push(`- [${url}](${url})`);
@@ -258,7 +250,11 @@ for (const domain of domains) {
     const override = invocationOverrides[entry.keyword];
     const requiredArgSpecs = args.filter((a) => a.required);
     const typedRequiredArgs = requiredArgSpecs.map((a) => {
-      const first = String(a.type || '').split('|').map((s) => s.trim()).find(Boolean) || 'string';
+      const first =
+        String(a.type || '')
+          .split('|')
+          .map((s) => s.trim())
+          .find(Boolean) || 'string';
       if (first === 'number') return 1;
       if (first === 'boolean') return true;
       if (first === 'array') return ['sample'];
@@ -281,8 +277,7 @@ for (const domain of domains) {
     }
 
     const hasExecutableExample =
-      !nonDeterministicExamples.has(entry.keyword) &&
-      canExecuteInvocation(entry.keyword, executableExampleArgs);
+      !nonDeterministicExamples.has(entry.keyword) && canExecuteInvocation(entry.keyword, executableExampleArgs);
 
     lines.push(`### \`${entry.keyword}\``, '');
     lines.push(escapeMdxText(entry.help.summary || 'No summary provided.'), '');
@@ -309,7 +304,11 @@ for (const domain of domains) {
       if (args.length > 0 && canExecuteInvocation(entry.keyword, allArgsValues)) {
         namedInvocation = toNamedInvocation(entry.keyword, args, allArgsValues);
       } else if (requiredArgSpecs.length > 0) {
-        namedInvocation = toNamedInvocation(entry.keyword, requiredArgSpecs, override ? override.args : typedRequiredArgs);
+        namedInvocation = toNamedInvocation(
+          entry.keyword,
+          requiredArgSpecs,
+          override ? override.args : typedRequiredArgs
+        );
       }
       const invocation = override ? override.invocation : renderInvocation(entry.keyword, executableExampleArgs);
       lines.push('Examples:', '', '```txt', invocation, '```');
@@ -322,7 +321,9 @@ for (const domain of domains) {
         for (let index = 0; index < args.length; index += 1) {
           const arg = args[index];
           const value = sampleValueForArg(arg);
-          const typedArgs = args.map((entryArg, argIndex) => (argIndex === index ? value : sampleValueForArg(entryArg)));
+          const typedArgs = args.map((entryArg, argIndex) =>
+            argIndex === index ? value : sampleValueForArg(entryArg)
+          );
           const fullNamed = toNamedInvocation(entry.keyword, args, typedArgs);
           if (fullNamed && canExecuteInvocation(entry.keyword, typedArgs)) {
             if (!seenExamples.has(fullNamed)) {
@@ -377,7 +378,7 @@ for (const domain of domains) {
     }
   }
 
-  const file = `${String(pageIndex).padStart(3,'0')}-${domain}.md`;
+  const file = `${String(pageIndex).padStart(3, '0')}-${domain}.md`;
   fs.writeFileSync(path.join(outDir, file), lines.join('\n'));
   pageIndex += 10;
 }

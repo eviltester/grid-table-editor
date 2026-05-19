@@ -42,8 +42,8 @@ Returns a random ISBN identifier.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `separator` | `string` | no | No description provided. |
-| `variant` | `string` | no | The variant of the identifier to return. Can be either 10 (10-digit format) or 13 (13-digit format). |
+| `separator` | `string` | no | Character inserted between ISBN groups (for example `-`). |
+| `variant` | `string` | no | ISBN length variant: use `"10"` for ISBN-10 or `"13"` for ISBN-13. |
 
 Examples:
 

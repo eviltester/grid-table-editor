@@ -23,9 +23,9 @@ Generates the given number lines of lorem separated by `'\n'`.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `min` | `number` | no | No description provided. |
-| `max` | `number` | no | No description provided. |
-| `lineCount` | `number` | no | No description provided. |
+| `min` | `number` | no | The minimum number of words per generated line. |
+| `max` | `number` | no | The maximum number of words per generated line. |
+| `lineCount` | `number` | no | Exact number of lines to generate. |
 | `lineCountMax` | `number` | no | The maximum number of lines to generate. |
 | `lineCountMin` | `number` | no | The minimum number of lines to generate. |
 

@@ -8,6 +8,7 @@ import {
   getFakerCommands,
   getDomainCommands,
   getTabulatorTypeEditorValues,
+  getAgGridTypeEditorValues,
 } from '../../../js/gui_components/testdatadefn.js';
 
 describe('Faker Dropdown Literal Commands', () => {
@@ -117,6 +118,13 @@ describe('Faker Dropdown Literal Commands', () => {
       const domainSection = values.find((entry) => entry.value === '__domain_section__');
       expect(fakerSection?.label).toBe('-- faker (incl helpers) --');
       expect(domainSection?.label).toBe('-- domain (no helpers) --');
+    });
+
+    it('should include domain commands in AG Grid type editor values', () => {
+      const values = getAgGridTypeEditorValues('');
+      expect(values).toContain('person.firstName');
+      expect(values).toContain('number.int');
+      expect(values).not.toContain('science.chemicalElement');
     });
   });
 

@@ -124,6 +124,13 @@ describe('domain keyword parser', () => {
     ]);
   });
 
+  test('returns error for too many positional args in positional-only invocation', () => {
+    const parsedKeyword = parseKeywordInvocation('number.binary(1,2,3)');
+    expect(parsedKeyword.errors).toEqual([
+      'Invalid keyword arguments: too many positional arguments. Expected at most 2, received 3',
+    ]);
+  });
+
   test('returns unknown keyword for unknown keyword with named args', () => {
     const parsedKeyword = parseKeywordInvocation('example.fn(min=1)');
     expect(parsedKeyword.errors).toEqual(['Unknown keyword: example.fn']);

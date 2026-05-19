@@ -15,7 +15,8 @@ class DomainKeywordTokenStream {
   }
 
   match(type) {
-    if (this.peek().type !== type) {
+    const token = this.peek();
+    if (!token || token.type !== type) {
       return false;
     }
     this.consume();

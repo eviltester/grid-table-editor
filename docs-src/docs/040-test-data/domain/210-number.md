@@ -35,6 +35,10 @@ number.bigInt()
 number.bigInt(value="sample")
 ```
 
+Example return values:
+- `"347465151663036n"`
+- `"918273645546372n"`
+
 ### `number.binary`
 
 Returns a binary string.

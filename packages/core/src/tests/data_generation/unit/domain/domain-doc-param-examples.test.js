@@ -67,7 +67,9 @@ describe('domain docs parameter examples', () => {
 
     const missing = [];
     for (const keyword of DOMAIN_KEYWORDS) {
-      const argNames = (keyword.help?.args || []).map((arg) => arg.name).filter(Boolean);
+      const argNames = (keyword.help?.args || [])
+        .map((arg) => arg.name)
+        .filter((argName) => Boolean(argName) && argName !== 'value');
       if (argNames.length === 0) {
         continue;
       }

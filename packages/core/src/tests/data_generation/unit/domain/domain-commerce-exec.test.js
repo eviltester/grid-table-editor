@@ -1,23 +1,24 @@
 import { faker } from '@faker-js/faker';
 import { executeDomainKeyword } from '../../../../../js/domain/domain-keywords.js';
+import { assertDomainKeywordResult } from './domain-result-assertions.test-helper.js';
 
 describe('commerce domain keyword execution', () => {
   test('executes commerce.department', () => {
     const result = executeDomainKeyword('commerce.department', { faker, args: [] });
     console.log('commerce.department', result);
-    expect(result).not.toBeUndefined();
+    assertDomainKeywordResult('commerce.department', result);
   });
 
   test('executes commerce.isbn', () => {
     const result = executeDomainKeyword('commerce.isbn', { faker, args: [] });
     console.log('commerce.isbn', result);
-    expect(result).not.toBeUndefined();
+    assertDomainKeywordResult('commerce.isbn', result);
   });
 
   test('executes commerce.price', () => {
     const result = executeDomainKeyword('commerce.price', { faker, args: [] });
     console.log('commerce.price', result);
-    expect(result).not.toBeUndefined();
+    assertDomainKeywordResult('commerce.price', result);
   });
 
   test('commerce.price respects dec param', () => {
@@ -31,31 +32,31 @@ describe('commerce domain keyword execution', () => {
 
   test('executes commerce.product', () => {
     const result = executeDomainKeyword('commerce.product', { faker, args: [] });
-    console.log('commerce.product', result);
-    expect(result).not.toBeUndefined();
+    console.log('commerce.price', result);
+    assertDomainKeywordResult('commerce.price', result);
   });
 
   test('executes commerce.productAdjective', () => {
     const result = executeDomainKeyword('commerce.productAdjective', { faker, args: [] });
     console.log('commerce.productAdjective', result);
-    expect(result).not.toBeUndefined();
+    assertDomainKeywordResult('commerce.productAdjective', result);
   });
 
   test('executes commerce.productDescription', () => {
     const result = executeDomainKeyword('commerce.productDescription', { faker, args: [] });
     console.log('commerce.productDescription', result);
-    expect(result).not.toBeUndefined();
+    assertDomainKeywordResult('commerce.productDescription', result);
   });
 
   test('executes commerce.productMaterial', () => {
     const result = executeDomainKeyword('commerce.productMaterial', { faker, args: [] });
     console.log('commerce.productMaterial', result);
-    expect(result).not.toBeUndefined();
+    assertDomainKeywordResult('commerce.productMaterial', result);
   });
 
   test('executes commerce.productName', () => {
     const result = executeDomainKeyword('commerce.productName', { faker, args: [] });
     console.log('commerce.productName', result);
-    expect(result).not.toBeUndefined();
+    assertDomainKeywordResult('commerce.productName', result);
   });
 });

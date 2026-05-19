@@ -755,6 +755,19 @@ function getTabulatorTypeEditorValues(currentValue = '') {
   return [...typeValues, fakerHeader, ...fakerCommandValues, domainHeader, ...domainCommandValues];
 }
 
+function getAgGridTypeEditorValues(currentValue = '') {
+  const values = [...FAKER_COMMANDS];
+  const domainValues = getVisibleDomainTypeOptions(currentValue).map((entry) => entry.value);
+  const seen = new Set(values);
+  domainValues.forEach((value) => {
+    if (!seen.has(value)) {
+      values.push(value);
+      seen.add(value);
+    }
+  });
+  return values;
+}
+
 function tabulatorTypeSelectEditor(cell, onRendered, success, cancel) {
   const editor = document.createElement('select');
   editor.style.width = '100%';
@@ -846,7 +859,7 @@ function setupAgGridDefnEditor(tableDiv) {
     {
       field: 'type',
       cellEditor: SelectFilterEditor,
-      cellEditorParams: { values: FAKER_COMMANDS },
+      cellEditorParams: (params) => ({ values: getAgGridTypeEditorValues(params?.value) }),
     },
     { field: 'value' },
   ];
@@ -1181,6 +1194,7 @@ export {
   getFakerCommands,
   getDomainCommands,
   getTabulatorTypeEditorValues,
+  getAgGridTypeEditorValues,
 };
 
 /**

@@ -86,7 +86,7 @@ Returns a random cron expression.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `includeNonStandard` | `boolean` | no | Whether to include a @yearly, @monthly, @daily, etc text labels in the generated expression. |
+| `includeNonStandard` | `boolean` | no | Whether to include @yearly, @monthly, @daily, etc. text labels in the generated expression. |
 | `includeYear` | `boolean` | no | Whether to include a year in the generated expression. |
 
 Examples:

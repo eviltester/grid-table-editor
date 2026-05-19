@@ -20,13 +20,18 @@ describe('domain keyword catalog', () => {
     const airplane = DOMAIN_KEYWORDS.find(
       (entry) => entry.keyword === 'airline.airplane.name' && entry.delegate?.resultPath === 'name'
     );
-    expect(airplane).toBeDefined();
+    expect(airplane).toEqual(
+      expect.objectContaining({
+        keyword: 'airline.airplane.name',
+        canonical: 'awd.domain.airline.airplane.name',
+      })
+    );
     expect(airplane?.canonical).toBe('awd.domain.airline.airplane.name');
   });
 
   test('contains help metadata fields for each keyword', () => {
     DOMAIN_KEYWORDS.forEach((entry) => {
-      expect(entry.help).toBeDefined();
+      expect(entry.help && typeof entry.help).toBe('object');
       expect(typeof entry.help.summary).toBe('string');
       expect(typeof entry.help.docsUrl).toBe('string');
       expect(typeof entry.help.example).toBe('string');
@@ -117,7 +122,7 @@ describe('domain keyword catalog', () => {
 describe('domain keyword alias mapping', () => {
   test('creates alias chain including awd.domain, domain, module path, and minimal path when unique', () => {
     const command = getDomainKeywordByAlias('awd.domain.airline.airplane.name');
-    expect(command).toBeDefined();
+    expect(command?.canonical).toBe('awd.domain.airline.airplane.name');
 
     const byDomain = getDomainKeywordByAlias('domain.airline.airplane.name');
     const byModule = getDomainKeywordByAlias('airline.airplane.name');
@@ -162,7 +167,9 @@ describe('domain keyword alias mapping', () => {
   });
 
   test('prebuilt index resolves canonical aliases', () => {
-    expect(DOMAIN_KEYWORD_ALIAS_INDEX.byAlias['awd.domain.person.firstName']).toBeDefined();
+    expect(DOMAIN_KEYWORD_ALIAS_INDEX.byAlias['awd.domain.person.firstName']?.canonical).toBe(
+      'awd.domain.person.firstName'
+    );
   });
 
   test('does not map helpers aliases in prebuilt index', () => {

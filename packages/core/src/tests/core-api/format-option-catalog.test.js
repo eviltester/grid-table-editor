@@ -19,7 +19,8 @@ describe('format option catalog helpers', () => {
   test('getTipsForFormat returns custom override with fallback tips', () => {
     const tips = getTipsForFormat('csv', { customTips: { header: 'custom header tip' } });
     expect(tips.header).toBe('custom header tip');
-    expect(tips.quoteChar).toBeTruthy();
+    expect(typeof tips.quoteChar).toBe('string');
+    expect(tips.quoteChar.trim().length).toBeGreaterThan(0);
   });
 
   test('option keys exist for representative formats', () => {
@@ -32,7 +33,8 @@ describe('format option catalog helpers', () => {
     for (const [format, keys] of Object.entries(OPTION_KEYS_BY_FORMAT)) {
       const tips = getTipsForFormat(format);
       for (const key of keys) {
-        expect(tips[key]).toBeTruthy();
+        expect(typeof tips[key]).toBe('string');
+        expect(tips[key].trim().length).toBeGreaterThan(0);
         expect(tips[key].startsWith('Configure ')).toBe(false);
       }
     }

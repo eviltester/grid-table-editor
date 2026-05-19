@@ -1,5 +1,6 @@
 const { test } = require('@playwright/test');
 const { openApp, expectNoPageErrors, expect } = require('../helpers/scenario-helpers');
+const { assertNoCommonErrorPatterns } = require('../helpers/output-quality-helpers');
 
 test.describe('7. Test Data Generation', () => {
   test('Test Data Text Schema', async ({ page }) => {
@@ -22,8 +23,15 @@ test.describe('7. Test Data Generation', () => {
     // comments are not rendered as schema rows
     expect(await appPage.testDataPanel.getSchemaRowCount()).toBe(beforeSchema + 2);
 
-    const values = await appPage.gridEditor.renderer.getColumnTextsByName('First Name');
-    expect(values.filter(Boolean).length).toBe(5);
+    const firstNameValues = await appPage.gridEditor.renderer.getColumnTextsByName('First Name');
+    const statusValues = await appPage.gridEditor.renderer.getColumnTextsByName('Status');
+    expect(firstNameValues).toHaveLength(5);
+    expect(statusValues).toHaveLength(5);
+    assertNoCommonErrorPatterns(firstNameValues);
+    assertNoCommonErrorPatterns(statusValues);
+    for (const value of statusValues) {
+      expect(['active', 'inactive', 'pending']).toContain(String(value).toLowerCase());
+    }
     expectNoPageErrors(pageErrors);
   });
 });

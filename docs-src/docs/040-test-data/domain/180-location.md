@@ -188,8 +188,8 @@ location.language()
 ```
 
 Example return values:
-- `&#123;"name":"Tagalog","alpha2":"tl","alpha3":"tgl"&#125;`
-- `&#123;"name":"Azerbaijani","alpha2":"az","alpha3":"aze"&#125;`
+- `{"name":"Tagalog","alpha2":"tl","alpha3":"tgl"}`
+- `{"name":"Azerbaijani","alpha2":"az","alpha3":"aze"}`
 
 ### `location.latitude`
 
@@ -355,8 +355,7 @@ Generates a random localized street address.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `useFullAddress` | `boolean` | no | No description provided. |
-| `value` | `boolean` | no | No description provided. |
+| `useFullAddress` | `boolean` | no | When true, generates a fuller address variant (for example including additional address detail). When false or omitted, generates a standard street address. |
 
 Examples:
 
@@ -365,7 +364,7 @@ location.streetAddress()
 ```
 
 ```txt
-location.streetAddress(useFullAddress=true, value=true)
+location.streetAddress(useFullAddress=true)
 ```
 
 Example return values:

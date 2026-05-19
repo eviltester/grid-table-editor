@@ -61,15 +61,15 @@ class DomainKeywordParser {
       positional.push(item.value);
     }
 
-    if (Object.keys(named).length === 0) {
-      return { ok: true, args: positional };
-    }
-
-    if (positional.length > schema.length) {
+    if (keywordMetadata && positional.length > schema.length) {
       return {
         ok: false,
         error: `Invalid keyword arguments: too many positional arguments. Expected at most ${schema.length}, received ${positional.length}`,
       };
+    }
+
+    if (Object.keys(named).length === 0) {
+      return { ok: true, args: positional };
     }
 
     const schemaByName = new Map(schema.map((entry, index) => [entry.name, index]));

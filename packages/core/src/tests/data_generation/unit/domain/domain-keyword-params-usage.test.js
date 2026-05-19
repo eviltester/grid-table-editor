@@ -1,5 +1,6 @@
 import { DOMAIN_KEYWORDS, executeDomainKeyword } from '../../../../../js/domain/domain-keywords.js';
 import { faker } from '@faker-js/faker';
+import { assertDomainKeywordResult } from './domain-result-assertions.test-helper.js';
 
 function setDeepMethod(root, target, fn) {
   const parts = String(target || '')
@@ -148,8 +149,6 @@ function applyKeywordExecutionDefaults(keyword, args) {
 }
 
 function expectsRuntimeRejection(keywordName, argName) {
-  // TODO(domain-args): system.fileExt currently forwards mimeType as positional arg; faker expects a different shape.
-  if (keywordName === 'system.fileExt' && argName === 'mimeType') return true;
   // TODO(domain-args): faker internet.password expects a RegExp for pattern, while current domain arg schema is string-only.
   if (keywordName === 'internet.password' && argName === 'pattern') return true;
   return false;
@@ -209,9 +208,11 @@ describe('domain keyword parameter usage', () => {
           return;
         }
 
-        expect(() => executeDomainKeyword(keyword.keyword, { faker, args })).not.toThrow();
-        const result = executeDomainKeyword(keyword.keyword, { faker, args });
-        expect(result).not.toBeUndefined();
+        let result;
+        expect(() => {
+          result = executeDomainKeyword(keyword.keyword, { faker, args });
+        }).not.toThrow();
+        assertDomainKeywordResult(keyword, result);
       });
     }
   }

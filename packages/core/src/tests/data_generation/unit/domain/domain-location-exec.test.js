@@ -1,65 +1,66 @@
 import { faker } from '@faker-js/faker';
 import { executeDomainKeyword } from '../../../../../js/domain/domain-keywords.js';
+import { assertDomainKeywordResult } from './domain-result-assertions.test-helper.js';
 
 describe('location domain keyword execution', () => {
   test('executes location.buildingNumber', () => {
     const result = executeDomainKeyword('location.buildingNumber', { faker, args: [] });
     console.log('location.buildingNumber', result);
-    expect(result).not.toBeUndefined();
+    assertDomainKeywordResult('location.buildingNumber', result);
   });
 
   test('executes location.cardinalDirection', () => {
     const result = executeDomainKeyword('location.cardinalDirection', { faker, args: [] });
     console.log('location.cardinalDirection', result);
-    expect(result).not.toBeUndefined();
+    assertDomainKeywordResult('location.cardinalDirection', result);
   });
 
   test('executes location.city', () => {
     const result = executeDomainKeyword('location.city', { faker, args: [] });
     console.log('location.city', result);
-    expect(result).not.toBeUndefined();
+    assertDomainKeywordResult('location.city', result);
   });
 
   test('executes location.continent', () => {
     const result = executeDomainKeyword('location.continent', { faker, args: [] });
     console.log('location.continent', result);
-    expect(result).not.toBeUndefined();
+    assertDomainKeywordResult('location.continent', result);
   });
 
   test('executes location.country', () => {
     const result = executeDomainKeyword('location.country', { faker, args: [] });
     console.log('location.country', result);
-    expect(result).not.toBeUndefined();
+    assertDomainKeywordResult('location.country', result);
   });
 
   test('executes location.countryCode', () => {
     const result = executeDomainKeyword('location.countryCode', { faker, args: [] });
     console.log('location.countryCode', result);
-    expect(result).not.toBeUndefined();
+    assertDomainKeywordResult('location.countryCode', result);
   });
 
   test('executes location.county', () => {
     const result = executeDomainKeyword('location.county', { faker, args: [] });
     console.log('location.county', result);
-    expect(result).not.toBeUndefined();
+    assertDomainKeywordResult('location.county', result);
   });
 
   test('executes location.direction', () => {
     const result = executeDomainKeyword('location.direction', { faker, args: [] });
     console.log('location.direction', result);
-    expect(result).not.toBeUndefined();
+    assertDomainKeywordResult('location.direction', result);
   });
 
   test('executes location.language', () => {
     const result = executeDomainKeyword('location.language', { faker, args: [] });
     console.log('location.language', result);
-    expect(result).not.toBeUndefined();
+    assertDomainKeywordResult('location.language', result);
   });
 
   test('executes location.latitude', () => {
     const result = executeDomainKeyword('location.latitude', { faker, args: [] });
     console.log('location.latitude', result);
-    expect(result).not.toBeUndefined();
+    assertDomainKeywordResult('location.latitude', result);
   });
 
   test('location.latitude respects min/max/precision params', () => {
@@ -74,8 +75,8 @@ describe('location domain keyword execution', () => {
 
   test('executes location.longitude', () => {
     const result = executeDomainKeyword('location.longitude', { faker, args: [] });
-    console.log('location.longitude', result);
-    expect(result).not.toBeUndefined();
+    console.log('location.latitude', result);
+    assertDomainKeywordResult('location.latitude', result);
   });
 
   test('location.longitude respects min/max/precision params', () => {
@@ -90,49 +91,49 @@ describe('location domain keyword execution', () => {
 
   test('executes location.nearbyGPSCoordinate', () => {
     const result = executeDomainKeyword('location.nearbyGPSCoordinate', { faker, args: [] });
-    console.log('location.nearbyGPSCoordinate', result);
-    expect(result).not.toBeUndefined();
+    console.log('location.longitude', result);
+    assertDomainKeywordResult('location.longitude', result);
   });
 
   test('executes location.ordinalDirection', () => {
     const result = executeDomainKeyword('location.ordinalDirection', { faker, args: [] });
     console.log('location.ordinalDirection', result);
-    expect(result).not.toBeUndefined();
+    assertDomainKeywordResult('location.ordinalDirection', result);
   });
 
   test('executes location.secondaryAddress', () => {
     const result = executeDomainKeyword('location.secondaryAddress', { faker, args: [] });
     console.log('location.secondaryAddress', result);
-    expect(result).not.toBeUndefined();
+    assertDomainKeywordResult('location.secondaryAddress', result);
   });
 
   test('executes location.state', () => {
     const result = executeDomainKeyword('location.state', { faker, args: [] });
     console.log('location.state', result);
-    expect(result).not.toBeUndefined();
+    assertDomainKeywordResult('location.state', result);
   });
 
   test('executes location.street', () => {
     const result = executeDomainKeyword('location.street', { faker, args: [] });
     console.log('location.street', result);
-    expect(result).not.toBeUndefined();
+    assertDomainKeywordResult('location.street', result);
   });
 
   test('executes location.streetAddress', () => {
     const result = executeDomainKeyword('location.streetAddress', { faker, args: [] });
     console.log('location.streetAddress', result);
-    expect(result).not.toBeUndefined();
+    assertDomainKeywordResult('location.streetAddress', result);
   });
 
   test('executes location.timeZone', () => {
     const result = executeDomainKeyword('location.timeZone', { faker, args: [] });
     console.log('location.timeZone', result);
-    expect(result).not.toBeUndefined();
+    assertDomainKeywordResult('location.timeZone', result);
   });
 
   test('executes location.zipCode', () => {
     const result = executeDomainKeyword('location.zipCode', { faker, args: [] });
     console.log('location.zipCode', result);
-    expect(result).not.toBeUndefined();
+    assertDomainKeywordResult('location.zipCode', result);
   });
 });

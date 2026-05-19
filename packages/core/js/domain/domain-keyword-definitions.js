@@ -3482,9 +3482,10 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       args: [
         {
           name: 'value',
-          type: 'string|number|boolean',
+          type: 'bigint|number|string|boolean',
           required: false,
-          description: 'No description provided.',
+          description:
+            'Base value used for generation. Supports bigint, number, string, or boolean inputs. For range constraints use min, max, and multipleOf.',
         },
       ],
     },
@@ -4595,6 +4596,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'system.fileExt',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Returns a file extension.',

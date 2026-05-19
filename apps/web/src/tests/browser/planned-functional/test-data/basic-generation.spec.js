@@ -1,5 +1,6 @@
 const { test } = require('@playwright/test');
 const { openApp, expectNoPageErrors, expect } = require('../helpers/scenario-helpers');
+const { assertNoCommonErrorPatterns } = require('../helpers/output-quality-helpers');
 
 test.describe('7. Test Data Generation', () => {
   test('Basic Test Data Generation', async ({ page }) => {
@@ -22,7 +23,12 @@ test.describe('7. Test Data Generation', () => {
     await expect.poll(async () => appPage.gridEditor.header.getColumnNames()).toContain('First Name');
 
     const values = await appPage.gridEditor.renderer.getColumnTextsByName('First Name');
-    expect(values.filter(Boolean).length).toBe(5);
+    expect(values).toHaveLength(5);
+    assertNoCommonErrorPatterns(values);
+    for (const value of values) {
+      expect(value).toMatch(/[A-Za-z]/);
+      expect(value.trim().length).toBeGreaterThanOrEqual(2);
+    }
     expectNoPageErrors(pageErrors);
   });
 });

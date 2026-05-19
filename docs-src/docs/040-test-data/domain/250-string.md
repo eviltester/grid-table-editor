@@ -107,7 +107,7 @@ Generates a string from the given characters.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `characters` | `string|array` | yes | No description provided. |
+| `characters` | `string\|array` | yes | No description provided. |
 | `min` | `number` | no | No description provided. |
 | `max` | `number` | no | No description provided. |
 | `length` | `number` | no | No description provided. |

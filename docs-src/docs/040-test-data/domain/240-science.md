@@ -30,8 +30,8 @@ science.chemicalElement()
 ```
 
 Example return values:
-- `&#123;"symbol":"N","name":"Nitrogen","atomicNumber":7&#125;`
-- `&#123;"symbol":"Sn","name":"Tin","atomicNumber":50&#125;`
+- `{"symbol":"N","name":"Nitrogen","atomicNumber":7}`
+- `{"symbol":"Sn","name":"Tin","atomicNumber":50}`
 
 ### `science.chemicalElement.atomicNumber`
 

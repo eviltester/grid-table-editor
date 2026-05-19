@@ -103,7 +103,7 @@ Noun
 domain.hacker.noun
 ```
 
-The`awd` and `domain` prefixes are optional:
+The `awd` and `domain` prefixes are optional:
 
 e.g.
 

@@ -690,7 +690,7 @@ function probeCommandReturnType(command, fakerLib) {
       return 'object';
     }
     return null; // null, undefined, function, or other unsupported type
-  } catch (e) {
+  } catch {
     // Silently skip commands that error during probing
     return null;
   }

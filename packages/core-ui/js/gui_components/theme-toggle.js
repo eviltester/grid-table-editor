@@ -10,7 +10,7 @@ function getStoredTheme(storage) {
       return docusaurusTheme;
     }
     return storage?.getItem?.(LEGACY_THEME_STORAGE_KEY) || '';
-  } catch (_error) {
+  } catch {
     return '';
   }
 }
@@ -19,7 +19,7 @@ function setStoredTheme(storage, theme) {
   try {
     storage?.setItem?.(DOCUSAURUS_THEME_STORAGE_KEY, theme);
     storage?.setItem?.(LEGACY_THEME_STORAGE_KEY, theme);
-  } catch (_error) {
+  } catch {
     // ignore storage failures
   }
 }

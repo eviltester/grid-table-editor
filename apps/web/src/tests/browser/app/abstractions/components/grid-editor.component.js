@@ -85,7 +85,7 @@ class GridEditorComponent {
         await this._attemptClearFilters(context);
       }).toPass({ timeout: 15000, intervals: [100, 200, 400, 800] });
       return;
-    } catch (error) {
+    } catch {
       // fall through to detailed diagnostics
     }
 

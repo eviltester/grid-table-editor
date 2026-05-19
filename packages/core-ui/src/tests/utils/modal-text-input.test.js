@@ -1,4 +1,3 @@
-import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
 import { showTextInputModal } from '../../../js/gui_components/modal-text-input.js';
 

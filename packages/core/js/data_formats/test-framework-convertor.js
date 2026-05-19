@@ -149,7 +149,7 @@ function doubleQuoteLiteral(value) {
 function toJsonText(value) {
   try {
     return JSON.stringify(value);
-  } catch (_error) {
+  } catch {
     return String(value);
   }
 }

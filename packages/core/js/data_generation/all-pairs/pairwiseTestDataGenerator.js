@@ -246,7 +246,7 @@ export class PairwiseTestDataGenerator {
       }
 
       return `faker_${rule.ruleSpec}_${Math.floor(Math.random() * 1000)}`;
-    } catch (error) {
+    } catch {
       return `faker_${rule.ruleSpec}_${Math.floor(Math.random() * 1000)}`;
     }
   }
@@ -268,7 +268,7 @@ export class PairwiseTestDataGenerator {
       }
 
       return `regex_match_${Math.floor(Math.random() * 1000)}`;
-    } catch (error) {
+    } catch {
       return `regex_match_${Math.floor(Math.random() * 1000)}`;
     }
   }
@@ -283,7 +283,7 @@ export class PairwiseTestDataGenerator {
         return result.data ?? `domain_${rule.ruleSpec}_${Math.floor(Math.random() * 1000)}`;
       }
       return `domain_${rule.ruleSpec}_${Math.floor(Math.random() * 1000)}`;
-    } catch (error) {
+    } catch {
       return `domain_${rule.ruleSpec}_${Math.floor(Math.random() * 1000)}`;
     }
   }

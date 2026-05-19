@@ -32,7 +32,7 @@ afterAll(async () => {
     [...tempPaths].map(async (tempPath) => {
       try {
         await fs.unlink(tempPath);
-      } catch (_error) {
+      } catch {
         // Ignore missing files or cleanup race conditions.
       }
     })

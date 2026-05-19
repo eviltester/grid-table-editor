@@ -36,7 +36,7 @@ function resolveGridEngine(context = {}) {
   let storedEngine;
   try {
     storedEngine = globalObj?.localStorage?.getItem(GRID_ENGINE_STORAGE_KEY);
-  } catch (error) {
+  } catch {
     storedEngine = undefined;
   }
   const storageEngine = normaliseGridEngineName(storedEngine);

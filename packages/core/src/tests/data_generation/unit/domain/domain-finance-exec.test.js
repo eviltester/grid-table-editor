@@ -117,7 +117,7 @@ describe('finance domain keyword execution', () => {
 
   test('executes finance.litecoinAddress', () => {
     const result = executeDomainKeyword('finance.litecoinAddress', { faker, args: [] });
-    console.log('finance.iban', result);
+    console.log('finance.litecoinAddress', result);
     expectMeaningfulString(result);
   });
 

@@ -18,7 +18,7 @@ describe('commerce domain keyword execution', () => {
 
   test('executes commerce.price', () => {
     const result = executeDomainKeyword('commerce.price', { faker, args: [] });
-    console.log('commerce.product', result);
+    console.log('commerce.price', result);
     expectMeaningfulString(result);
   });
 

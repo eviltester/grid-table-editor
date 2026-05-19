@@ -160,7 +160,7 @@ describe('location domain keyword execution', () => {
   test('executes location.timeZone', () => {
     const result = executeDomainKeyword('location.timeZone', { faker, args: [] });
     console.log('location.timeZone', result);
-    expect(result).toMatch(/^[A-Za-z_]+\/[A-Za-z_]+(?:\/[A-Za-z_]+)?$/);
+    expect(result).toMatch(/^[A-Za-z0-9_+-]+(?:\/[A-Za-z0-9_+-]+)+$/);
   });
 
   test('executes location.zipCode', () => {

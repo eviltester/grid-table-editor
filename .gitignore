@@ -14,3 +14,7 @@ test-results
 .tmp-pack
 apps/web/dist
 apps/web/dist/
+.agentic-qe
+.tmp
+.claude
+.pet-runs

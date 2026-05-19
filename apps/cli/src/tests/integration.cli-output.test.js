@@ -45,7 +45,7 @@ test('integration: writes generated content to file and keeps stdout progress-on
   } finally {
     try {
       await fs.unlink(outputPath);
-    } catch (_error) {
+    } catch {
       // Ignore missing file cleanup races.
     }
   }

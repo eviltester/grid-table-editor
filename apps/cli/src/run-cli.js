@@ -171,7 +171,7 @@ export async function runCliCommand({ options, platform }) {
       if (writer && !writerClosed) {
         try {
           await writer.close();
-        } catch (_error) {
+        } catch {
           // Ignore secondary close errors; primary failure is already reported.
         }
       }

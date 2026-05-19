@@ -260,6 +260,30 @@ function tableToRows(dataTable) {
   return { headers, rows };
 }
 
+function normaliseGeneratedCellValue(value) {
+  if (value === undefined || value === null) {
+    return '';
+  }
+  if (value instanceof Date) {
+    return value.toISOString();
+  }
+  if (Array.isArray(value) || (typeof value === 'object' && value !== null)) {
+    try {
+      return JSON.stringify(value);
+    } catch {
+      return String(value);
+    }
+  }
+  return value;
+}
+
+function normaliseGeneratedRowValues(row = []) {
+  if (!Array.isArray(row)) {
+    return [];
+  }
+  return row.map((value) => normaliseGeneratedCellValue(value));
+}
+
 export function generateFromTextSpec({
   textSpec,
   rowCount,
@@ -319,7 +343,9 @@ export function generateFromTextSpec({
     const generatedHeaderIndexes = new Map(generatedHeaders.map((header, index) => [header, index]));
     dataTable.setHeaders(originalHeaders);
     for (let rowIndex = 1; rowIndex < generatedRows.length; rowIndex += 1) {
-      const generatedRow = Array.isArray(generatedRows[rowIndex]) ? generatedRows[rowIndex] : [];
+      const generatedRow = Array.isArray(generatedRows[rowIndex])
+        ? normaliseGeneratedRowValues(generatedRows[rowIndex])
+        : [];
       const reorderedRow = originalHeaders.map((header) => {
         const generatedIndex = generatedHeaderIndexes.get(header);
         return generatedIndex === undefined ? '' : generatedRow[generatedIndex];
@@ -330,7 +356,7 @@ export function generateFromTextSpec({
   } else {
     dataTable.setHeaders(generator.generateHeadersArray());
     for (let index = 0; index < safeRowCount; index += 1) {
-      dataTable.appendDataRow(generator.generateRow());
+      dataTable.appendDataRow(normaliseGeneratedRowValues(generator.generateRow()));
     }
   }
 
@@ -477,7 +503,7 @@ export function amendFromTextSpecAndData({
     for (let schemaIndex = 0; schemaIndex < schemaHeaderIndexes.length; schemaIndex += 1) {
       const targetIndex = schemaHeaderIndexes[schemaIndex];
       const generatedValue = generatedRow[schemaIndex];
-      targetRow[targetIndex] = generatedValue === undefined || generatedValue === null ? '' : String(generatedValue);
+      targetRow[targetIndex] = normaliseGeneratedCellValue(generatedValue);
     }
     rows[rowIndex] = targetRow;
   }
@@ -544,7 +570,7 @@ function getDsvStreamSettings(options = {}) {
 }
 
 function quoteCsvValue(value, { quoteChar, escapeChar }) {
-  const text = String(value ?? '');
+  const text = String(normaliseGeneratedCellValue(value) ?? '');
   const escapedQuote = `${escapeChar}${quoteChar}`;
   const escaped = text.split(quoteChar).join(escapedQuote);
   return `${quoteChar}${escaped}${quoteChar}`;
@@ -779,7 +805,7 @@ export async function streamFromTextSpec({
   }
 
   for (let index = 0; index < safeRowCount; index += 1) {
-    const rowArray = generator.generateRow();
+    const rowArray = normaliseGeneratedRowValues(generator.generateRow());
     if (firstRow === null) {
       firstRow = rowArray;
     }

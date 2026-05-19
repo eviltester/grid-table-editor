@@ -230,7 +230,6 @@ describe('Tabulator benchmark (large data)', () => {
       });
     }
 
-    // eslint-disable-next-line no-console
     console.table(measurements);
 
     expect(measurements.length).toBe(2);

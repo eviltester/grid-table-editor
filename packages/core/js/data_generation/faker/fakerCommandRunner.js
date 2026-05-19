@@ -24,7 +24,7 @@ function parseArgumentsSafely(argString) {
     // For simple cases, try to parse as JSON array
     const jsonArray = `[${argsBody}]`;
     return JSON.parse(jsonArray);
-  } catch (error) {
+  } catch {
     // If JSON parsing fails, indicate we need fallback
     throw new Error('NEEDS_FALLBACK');
   }

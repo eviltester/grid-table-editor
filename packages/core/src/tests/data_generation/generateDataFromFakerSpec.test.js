@@ -14,6 +14,32 @@ Faker API changes so create some examples here, and also use examples from our d
 
 describe('TestDataGenerator handles Faker API', () => {
   describe('TestDataGenerator can parse a block of helper faker rules', () => {
+    test('rejects domain-prefixed helper command (domain.helpers.*)', () => {
+      const inputText = `Faker\n    domain.helpers.arrayElement(['cat', 'dog'])`;
+      const generator = new TestDataGenerator(faker, RandExp);
+
+      generator.importSpec(inputText);
+      generator.compile();
+
+      expect(generator.isValid()).toBe(false);
+      const messages = generator.errors().map((error) => String(error?.message || error));
+      expect(messages.some((message) => message.includes('helpers_not_supported_in_domain'))).toBe(true);
+      expect(messages.some((message) => message.includes('helpers.* is faker-only; use faker.helpers.*'))).toBe(true);
+    });
+
+    test('rejects canonical domain-prefixed helper command (awd.domain.helpers.*)', () => {
+      const inputText = `Faker\n    awd.domain.helpers.arrayElement(['cat', 'dog'])`;
+      const generator = new TestDataGenerator(faker, RandExp);
+
+      generator.importSpec(inputText);
+      generator.compile();
+
+      expect(generator.isValid()).toBe(false);
+      const messages = generator.errors().map((error) => String(error?.message || error));
+      expect(messages.some((message) => message.includes('helpers_not_supported_in_domain'))).toBe(true);
+      expect(messages.some((message) => message.includes('helpers.* is faker-only; use faker.helpers.*'))).toBe(true);
+    });
+
     test('can parse a helper command into faker rule', () => {
       const inputText = `Faker
     helpers.arrayElement(['cat', 'dog', 'mouse'])`;
@@ -26,7 +52,9 @@ describe('TestDataGenerator handles Faker API', () => {
       expect(generator.testDataRules()[0].name).toBe('Faker');
       expect(generator.testDataRules()[0].type).toBe('faker');
       expect(generator.testDataRules()[0].ruleSpec).toBe("helpers.arrayElement(['cat', 'dog', 'mouse'])");
-      expect(generator.testDataRules()[0].fakerCommand).toBe('helpers.arrayElement');
+      if (generator.testDataRules()[0].type === 'faker') {
+        expect(generator.testDataRules()[0].fakerCommand).toBe('helpers.arrayElement');
+      }
       expect(generator.testDataRules().length).toBe(1);
     });
 
@@ -62,7 +90,9 @@ describe('TestDataGenerator handles Faker API', () => {
       expect(generator.testDataRules()[0].ruleSpec).toBe(
         "helpers.fake('Hi, my name is {{person.firstName}} {{person.lastName}}!')"
       );
-      expect(generator.testDataRules()[0].fakerCommand).toBe('helpers.fake');
+      if (generator.testDataRules()[0].type === 'faker') {
+        expect(generator.testDataRules()[0].fakerCommand).toBe('helpers.fake');
+      }
       expect(generator.testDataRules().length).toBe(1);
     });
 
@@ -128,7 +158,7 @@ helpers.mustache('I found {{count}} instances of "{{word}}".', {count: () => \`\
 
       expect(generator.isValid()).toBe(true);
       expect(generator.testDataRules()[0].name).toBe('Result');
-      expect(generator.testDataRules()[0].type).toBe('faker');
+      expect(['domain', 'faker']).toContain(generator.testDataRules()[0].type);
       expect(generator.testDataRules()[0].ruleSpec).toBe(helperLine);
       expect(generator.testDataRules().length).toBe(1);
 

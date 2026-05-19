@@ -41,6 +41,15 @@ describe('test-data amend behavior', () => {
     expect(table.getRow(1)).toEqual(['3', '4']);
   });
 
+  test('new table mode serializes object and array cells as JSON strings', () => {
+    const generator = createGenerator(['Obj', 'Arr'], [[{ name: 'Oxygen', atomicNumber: 8 }, ['a', 'b']]]);
+    const table = createTableFromGenerator(1, generator);
+
+    expect(table.getRowCount()).toBe(1);
+    expect(table.getCell(0, 0)).toBe('{"name":"Oxygen","atomicNumber":8}');
+    expect(table.getCell(0, 1)).toBe('["a","b"]');
+  });
+
   test('amend table updates schema columns, preserves others, and appends rows when needed', () => {
     const current = createDataTable(
       ['keep', 'name'],

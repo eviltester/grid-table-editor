@@ -1,6 +1,7 @@
 import { PairwiseGenerator } from './pairwiseGenerator.js';
 import { dataResponse, errorResponse } from '../ruleResponse.js';
 import { EnumParser } from '../utils/enumParser.js';
+import { DomainTestDataGenerator } from '../domain/domainTestDataGenerator.js';
 
 /**
  * Pairwise Matching Data Generator
@@ -29,6 +30,9 @@ export class PairwiseTestDataGenerator {
     }
     if (RandExp) {
       this.randExpGenerator = this.createRandExpGenerator();
+    }
+    if (faker) {
+      this.domainGenerator = new DomainTestDataGenerator(this.faker);
     }
   }
 
@@ -207,6 +211,9 @@ export class PairwiseTestDataGenerator {
       case 'regex':
         return this.generateRegexValue(rule);
 
+      case 'domain':
+        return this.generateDomainValue(rule);
+
       default:
         return `random_${rule.name}_${Math.floor(Math.random() * 1000)}`;
     }
@@ -241,7 +248,7 @@ export class PairwiseTestDataGenerator {
       }
 
       return `faker_${rule.ruleSpec}_${Math.floor(Math.random() * 1000)}`;
-    } catch (error) {
+    } catch {
       return `faker_${rule.ruleSpec}_${Math.floor(Math.random() * 1000)}`;
     }
   }
@@ -263,8 +270,23 @@ export class PairwiseTestDataGenerator {
       }
 
       return `regex_match_${Math.floor(Math.random() * 1000)}`;
-    } catch (error) {
+    } catch {
       return `regex_match_${Math.floor(Math.random() * 1000)}`;
+    }
+  }
+
+  /**
+   * Generate a value using domain keywords
+   */
+  generateDomainValue(rule) {
+    try {
+      if (this.domainGenerator) {
+        const result = this.domainGenerator.generateFrom(rule);
+        return result.data ?? `domain_${rule.ruleSpec}_${Math.floor(Math.random() * 1000)}`;
+      }
+      return `domain_${rule.ruleSpec}_${Math.floor(Math.random() * 1000)}`;
+    } catch {
+      return `domain_${rule.ruleSpec}_${Math.floor(Math.random() * 1000)}`;
     }
   }
 

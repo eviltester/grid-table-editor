@@ -1,6 +1,7 @@
 import { FakerTestDataRuleValidator } from './faker/fakerTestDataRuleValidator.js';
 import { RegexTestDataRuleValidator } from './regex/regexTestDataRuleValidator.js';
 import { EnumTestDataRuleValidator } from './enum/enumTestDataRuleValidator.js';
+import { DomainTestDataRuleValidator } from './domain/domainTestDataRuleValidator.js';
 import { SchemaParsingErrors } from './schema-parsing-errors.js';
 
 /*
@@ -37,8 +38,9 @@ export class TestDataRulesCompiler {
     const fakerValidator = new FakerTestDataRuleValidator(this.faker, this.options);
     const regexValidator = new RegexTestDataRuleValidator(this.RandExp);
     const enumValidator = new EnumTestDataRuleValidator();
+    const domainValidator = new DomainTestDataRuleValidator();
 
-    const validTypes = ['regex', 'faker', 'literal', 'enum'];
+    const validTypes = ['regex', 'faker', 'domain', 'literal', 'enum'];
 
     this.rules.forEach((rule) => {
       if (rule.type == '') {
@@ -67,6 +69,22 @@ export class TestDataRulesCompiler {
             rule.type = 'literal';
           }
         } else {
+          if (this.isDomainHelpersPattern(rule.ruleSpec)) {
+            this.compilationReportLines.push(
+              `${rule.name} is a domain helpers rule and is unsupported: helpers.* is faker-only`
+            );
+            rule.type = 'domain';
+            return;
+          }
+
+          domainValidator.validate(rule);
+          if (domainValidator.isValid()) {
+            this.compilationReportLines.push(`${rule.name} is a valid 'domain': ${rule.ruleSpec}`);
+            rule.type = 'domain';
+            return;
+          }
+          this.compilationReportLines.push(`${rule.name} is not a 'domain': ${domainValidator.getValidationError()}`);
+
           // is it a faker function?
           fakerValidator.validate(rule);
           if (fakerValidator.isValid()) {
@@ -108,6 +126,7 @@ export class TestDataRulesCompiler {
     const fakerValidator = new FakerTestDataRuleValidator(this.faker, this.options);
     const regexValidator = new RegexTestDataRuleValidator(this.RandExp);
     const enumValidator = new EnumTestDataRuleValidator();
+    const domainValidator = new DomainTestDataRuleValidator();
 
     this.rules.forEach((rule) => {
       switch (rule.type) {
@@ -116,6 +135,14 @@ export class TestDataRulesCompiler {
           fakerValidator.validate(rule);
           if (!fakerValidator.isValid()) {
             this.errors.push(SchemaParsingErrors.fakerValidationFailed(rule.name, fakerValidator.getValidationError()));
+          }
+          break;
+        case 'domain':
+          domainValidator.validate(rule);
+          if (!domainValidator.isValid()) {
+            this.errors.push(
+              SchemaParsingErrors.domainValidationFailed(rule.name, domainValidator.getValidationError())
+            );
           }
           break;
         case 'regex':
@@ -172,6 +199,11 @@ export class TestDataRulesCompiler {
   isLiteralPattern(ruleSpec) {
     const spec = String(ruleSpec || '').trim();
     return /^(literal|datatype\.literal|awd\.datatype\.literal)\s*\(/i.test(spec);
+  }
+
+  isDomainHelpersPattern(ruleSpec) {
+    const spec = String(ruleSpec || '').trim();
+    return spec.startsWith('awd.domain.helpers.') || spec.startsWith('domain.helpers.');
   }
 
   extractLiteralValue(ruleSpec) {

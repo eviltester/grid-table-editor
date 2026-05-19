@@ -37,6 +37,7 @@ You can define columns using:
 For detailed rule behavior, see:
 
 - [Faker Based Data](/docs/test-data/faker-test-data)
+- [Domain Test Data](/docs/test-data/domain/domain-test-data)
 - [Regex Based Data](/docs/test-data/regex-test-data)
 - [Literal Data](/docs/test-data/literal-test-data)
 - [All Pairs Combinatorial Testing](/docs/test-data/pairwise-testing)

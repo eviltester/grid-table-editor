@@ -2,7 +2,7 @@ export class RuleResponse {
   constructor(isError, errorMessage, data) {
     this.isError = isError ? isError : false;
     this.errorMessage = errorMessage ? errorMessage : '';
-    this.data = data ? data : '';
+    this.data = data === undefined || data === null ? '' : data;
   }
 }
 

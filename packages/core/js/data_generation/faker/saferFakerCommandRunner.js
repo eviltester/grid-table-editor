@@ -22,7 +22,7 @@ function parseArguments(argString) {
     // For simple cases, try to parse as JSON array
     const jsonArray = `[${argsBody}]`;
     return JSON.parse(jsonArray);
-  } catch (error) {
+  } catch {
     // If JSON parsing fails, we'd need a more sophisticated parser
     // For now, throw an error indicating unsafe syntax
     throw new Error(`Cannot safely parse arguments: ${argString}. Use simple literal values.`);

@@ -177,7 +177,7 @@ test('MCP server accepts key/value style textSpec for faker rules', () => {
     params: {
       name: 'generate_data_from_spec',
       arguments: {
-        textSpec: 'first_name: faker.person.firstName()\nlast_name: person.lastName',
+        textSpec: 'first_name: person.firstName()\nlast_name: person.lastName',
         rowCount: 2,
         outputFormat: 'json',
       },

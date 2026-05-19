@@ -612,6 +612,72 @@ describe('test data definition editor engine compatibility', () => {
     delete global.Tabulator;
   });
 
+  test('text schema canonical domain alias parses to domain type without leaking prefix into value', async () => {
+    const TabulatorMock = installTabulatorMock();
+
+    enableTestDataGenerationInterface(
+      'host',
+      {
+        setGridFromGenericDataTable: jest.fn(),
+      },
+      {
+        renderTextFromGrid: jest.fn(),
+      },
+      {
+        getRowCount: jest.fn(() => 0),
+        getSelectedRowIndexes: jest.fn(() => []),
+      }
+    );
+
+    const schemaTextArea = document.getElementById('testdatadefntext');
+    schemaTextArea.value = 'r1\nawd.domain.person.firstName';
+    schemaTextArea.dispatchEvent(new Event('input', { bubbles: true }));
+    await new Promise((resolve) => setTimeout(resolve, 1100));
+    await flushUi();
+
+    expect(TabulatorMock.latestInstance.rows).toHaveLength(1);
+    expect(TabulatorMock.latestInstance.rows[0]).toMatchObject({
+      columnName: 'r1',
+      type: 'person.firstName',
+      value: '',
+    });
+
+    delete global.Tabulator;
+  });
+
+  test('text schema domain-prefixed alias parses to domain type without corrupting command name', async () => {
+    const TabulatorMock = installTabulatorMock();
+
+    enableTestDataGenerationInterface(
+      'host',
+      {
+        setGridFromGenericDataTable: jest.fn(),
+      },
+      {
+        renderTextFromGrid: jest.fn(),
+      },
+      {
+        getRowCount: jest.fn(() => 0),
+        getSelectedRowIndexes: jest.fn(() => []),
+      }
+    );
+
+    const schemaTextArea = document.getElementById('testdatadefntext');
+    schemaTextArea.value = 'r2\ndomain.hacker.noun';
+    schemaTextArea.dispatchEvent(new Event('input', { bubbles: true }));
+    await new Promise((resolve) => setTimeout(resolve, 1100));
+    await flushUi();
+
+    expect(TabulatorMock.latestInstance.rows).toHaveLength(1);
+    expect(TabulatorMock.latestInstance.rows[0]).toMatchObject({
+      columnName: 'r2',
+      type: 'hacker.noun',
+      value: '',
+    });
+
+    delete global.Tabulator;
+  });
+
   test('literal type rows preserve leading spaces in value when mapped to schema text', async () => {
     const TabulatorMock = installTabulatorMock();
 

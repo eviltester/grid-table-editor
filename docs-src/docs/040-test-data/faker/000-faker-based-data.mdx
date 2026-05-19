@@ -1,0 +1,75 @@
+---
+sidebar_position: 0
+id: faker-based-data
+title: "Faker Based Data"
+description: "Generate data using Faker"
+slug: /test-data/faker-test-data
+---
+
+import ReactPlayer from 'react-player'
+
+# Faker Data Generation
+
+[Faker.js](https://fakerjs.dev/guide/) is a test data generation library for JavaScript.
+
+AnyWayData supports Faker commands directly via the faker source path, and also via a curated Domain abstraction.
+
+For helper-specific usage, see [Faker Helpers](/docs/test-data/faker/helpers).
+
+Most common Faker usage is mapped to curated `domain.*` methods.
+Use domain docs for domain-first schemas: [Domain Test Data](/docs/test-data/domain/domain-test-data).
+
+## Tips Video
+
+<ReactPlayer
+  controls
+  src='https://www.youtube.com/watch?v=E8lYiPEugJQ'
+  width='100%'
+  height='100%'
+  style={{ width: '100%', maxWidth: '960px', aspectRatio: '16 / 9', margin: '0 auto' }}
+/>
+
+## Faker Scope
+
+- Use this page for explicit faker usage, especially `helpers.*`.
+- For non-helper generation, prefer `domain.*` methods.
+- Use domain pages for curated aliases and domain metadata.
+- `helpers.*` is faker-only and is not part of the domain abstraction.
+
+## Faker API Reference
+
+- [fakerjs.dev/api](https://fakerjs.dev/api)
+- [fakerjs.dev/api/helpers](https://fakerjs.dev/api/helpers)
+
+## Direct Faker Examples
+
+```txt
+Sentence
+helpers.mustache("I found {{count}} instances.", { count: () => `${this.number.int()}` })
+```
+
+```txt
+Sentence
+helpers.fake("Hi, my name is {{person.firstName}} {{person.lastName}}!")
+```
+
+```txt
+Direction
+faker.location.cardinalDirection({ abbreviated: true })
+```
+
+Note: non-helper faker calls may be superseded by domain mappings over time.
+
+## See Domain Examples
+
+Most practical examples and parameterized patterns are documented in:
+
+- [Domain Test Data](/docs/test-data/domain/domain-test-data)
+- [Faker Helpers](/docs/test-data/faker/helpers)
+
+## See Also
+
+- [Domain Test Data](/docs/test-data/domain/domain-test-data)
+- [Faker Helpers](/docs/test-data/faker/helpers)
+- [Literal Data](/docs/test-data/literal-test-data)
+- [Regex Based Data](/docs/test-data/regex-test-data)

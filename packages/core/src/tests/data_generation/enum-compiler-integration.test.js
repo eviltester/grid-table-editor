@@ -98,7 +98,7 @@ describe('TestDataRulesCompiler with Enum Support', () => {
       compiler.compile(rules);
 
       expect(rules[0].type).toBe('enum');
-      expect(rules[1].type).toBe('faker');
+      expect(rules[1].type).toBe('domain');
       expect(rules[2].type).toBe('regex');
       expect(rules[3].type).toBe('regex'); // Simple text is valid regex
       expect(rules[4].type).toBe('enum');

@@ -27,6 +27,12 @@ import { GridExtension as TabulatorGridExtension } from './data-grid-editor/tabu
 import { SelectFilterEditor } from './data-grid-editor/ag-grid/select-filter-editor.js';
 import { TEST_DATA_MODES, createAmendedTable, createTableFromGenerator, normaliseCount } from './test-data-amend.js';
 import { getKnownFakerCommandsAlphabetical, getKnownFakerCommandsLongestFirst } from './faker-commands.js';
+import {
+  getKnownDomainCommandsAlphabetical,
+  getKnownDomainCommandsLongestFirst,
+  getDomainKeywordByCommand,
+} from './domain-commands.js';
+import { getDomainCommandHelp } from './domain-command-help-metadata.js';
 import { PairwiseTestDataGenerator } from '@anywaydata/core/data_generation/all-pairs/pairwiseTestDataGenerator.js';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 import { schemaTextToDataRules, dataRulesToSchemaText } from '@anywaydata/core/data_generation/schema-rules-adapter.js';
@@ -528,12 +534,31 @@ function populateTestDataGridFromRules() {
   // clear data then add rules
   defnGridBridge.clearRows();
   schemaTextTokens = Array.isArray(parseResult.schemaTokens) ? parseResult.schemaTokens : [];
+  const leadingTextLinesByRuleIndex = [];
+  if (schemaTextTokens.length > 0) {
+    let pendingLeadingTextLines = [];
+    let ruleIndex = 0;
+    schemaTextTokens.forEach((token) => {
+      if (token?.kind === 'comment' || token?.kind === 'blank') {
+        pendingLeadingTextLines.push(String(token?.text ?? ''));
+        return;
+      }
+      if (token?.kind === 'rule') {
+        leadingTextLinesByRuleIndex[ruleIndex] = pendingLeadingTextLines.slice();
+        pendingLeadingTextLines = [];
+        ruleIndex += 1;
+      }
+    });
+  }
 
   const rowsToAdd = [];
-  for (let rule of parseResult.dataRules) {
+  for (const [ruleIndex, rule] of parseResult.dataRules.entries()) {
     let data = {};
     data.columnName = rule.name;
     data.comments = String(rule.comments ?? '');
+    data.leadingTextLines = Array.isArray(leadingTextLinesByRuleIndex[ruleIndex])
+      ? leadingTextLinesByRuleIndex[ruleIndex].slice()
+      : [];
     if (rule.type == 'faker') {
       // remove faker.
       let fakerFreeRule = rule.ruleSpec;
@@ -548,6 +573,16 @@ function populateTestDataGridFromRules() {
       } else {
         data.type = fakerCommand;
         data.value = fakerFreeRule.replace(fakerCommand, '');
+      }
+    } else if (rule.type == 'domain') {
+      const domainRule = String(rule.ruleSpec || '').trim();
+      const domainParts = extractDomainCommandAndParams(domainRule);
+      if (!domainParts.command) {
+        data.type = '';
+        data.value = domainRule;
+      } else {
+        data.type = domainParts.command;
+        data.value = domainParts.params;
       }
     } else if (rule.type == 'enum') {
       data.type = 'enum';
@@ -568,9 +603,14 @@ function populateTestDataGridFromRules() {
 
 const FAKER_COMMANDS = [];
 const FAKER_COMMANDS_LONGEST_FIRST = [];
+const DOMAIN_COMMANDS = [];
+const DOMAIN_COMMANDS_LONGEST_FIRST = [];
 const TOP_LEVEL_TYPE_OPTIONS = ['enum', 'literal', 'regex'];
-const FAKER_SECTION_LABEL = '-- faker --';
+const FAKER_SECTION_LABEL = '-- faker (incl helpers) --';
 const FAKER_SECTION_VALUE = '__faker_section__';
+const DOMAIN_SECTION_LABEL = '-- domain (no helpers) --';
+const DOMAIN_SECTION_VALUE = '__domain_section__';
+const DOMAIN_NON_SCALAR_RETURN_TYPES = new Set(['array', 'object']);
 
 // TODO: add fakerCommand to the TestDataRule already parsed out
 function findFakerCommand(aString) {
@@ -580,6 +620,45 @@ function findFakerCommand(aString) {
     }
   }
   return null;
+}
+
+function extractDomainCommandAndParams(ruleSpec) {
+  const fullRule = String(ruleSpec || '').trim();
+  if (!fullRule) {
+    return { command: '', params: '' };
+  }
+
+  const exactKeyword = getDomainKeywordByCommand(fullRule);
+  if (exactKeyword) {
+    return {
+      command: String(exactKeyword.shortestUniqueAlias || exactKeyword.keyword || '').trim(),
+      params: '',
+    };
+  }
+
+  const openParenIndex = fullRule.indexOf('(');
+  if (openParenIndex > 0) {
+    const commandPart = fullRule.slice(0, openParenIndex).trim();
+    const commandKeyword = getDomainKeywordByCommand(commandPart);
+    if (commandKeyword) {
+      return {
+        command: String(commandKeyword.shortestUniqueAlias || commandKeyword.keyword || '').trim(),
+        params: fullRule.slice(openParenIndex),
+      };
+    }
+  }
+
+  for (let command of DOMAIN_COMMANDS_LONGEST_FIRST) {
+    if (!fullRule.startsWith(command)) {
+      continue;
+    }
+    const remainder = fullRule.slice(command.length);
+    if (remainder.length === 0 || remainder.startsWith('(')) {
+      return { command, params: remainder };
+    }
+  }
+
+  return { command: '', params: fullRule };
 }
 
 /**
@@ -611,7 +690,7 @@ function probeCommandReturnType(command, fakerLib) {
       return 'object';
     }
     return null; // null, undefined, function, or other unsupported type
-  } catch (e) {
+  } catch {
     // Silently skip commands that error during probing
     return null;
   }
@@ -620,15 +699,44 @@ function probeCommandReturnType(command, fakerLib) {
 function identifyFakerCommands() {
   FAKER_COMMANDS.length = 0;
   FAKER_COMMANDS_LONGEST_FIRST.length = 0;
+  DOMAIN_COMMANDS.length = 0;
+  DOMAIN_COMMANDS_LONGEST_FIRST.length = 0;
 
   TOP_LEVEL_TYPE_OPTIONS.forEach((typeOption) => FAKER_COMMANDS.push(typeOption));
   getKnownFakerCommandsAlphabetical()
     .filter((command) => command !== 'RegEx')
     .forEach((command) => FAKER_COMMANDS.push(command));
   getKnownFakerCommandsLongestFirst().forEach((command) => FAKER_COMMANDS_LONGEST_FIRST.push(command));
+  getKnownDomainCommandsAlphabetical().forEach((command) => DOMAIN_COMMANDS.push(command));
+  getKnownDomainCommandsLongestFirst().forEach((command) => DOMAIN_COMMANDS_LONGEST_FIRST.push(command));
 }
 
-function getTabulatorTypeEditorValues() {
+function normaliseReturnType(returnType) {
+  return String(returnType || '')
+    .trim()
+    .toLowerCase();
+}
+
+function isDomainCommandVisibleByDefault(command) {
+  const commandHelp = getDomainCommandHelp(command);
+  const returnType = normaliseReturnType(commandHelp?.returnType);
+  if (!returnType) {
+    return true;
+  }
+  return !DOMAIN_NON_SCALAR_RETURN_TYPES.has(returnType);
+}
+
+function getVisibleDomainTypeOptions(currentValue = '') {
+  const visible = getKnownDomainCommandsAlphabetical().filter((command) => isDomainCommandVisibleByDefault(command));
+  const selected = String(currentValue || '').trim();
+  if (selected && DOMAIN_COMMANDS.includes(selected) && !visible.includes(selected)) {
+    visible.push(selected);
+    visible.sort((a, b) => a.localeCompare(b));
+  }
+  return visible.map((command) => ({ value: command, label: command }));
+}
+
+function getTabulatorTypeEditorValues(currentValue = '') {
   const typeValues = TOP_LEVEL_TYPE_OPTIONS.map((typeOption) => ({ value: typeOption, label: typeOption }));
   const fakerHeader = {
     value: FAKER_SECTION_VALUE,
@@ -638,7 +746,26 @@ function getTabulatorTypeEditorValues() {
   const fakerCommandValues = getKnownFakerCommandsAlphabetical()
     .filter((command) => command !== 'RegEx')
     .map((command) => ({ value: command, label: command }));
-  return [...typeValues, fakerHeader, ...fakerCommandValues];
+  const domainHeader = {
+    value: DOMAIN_SECTION_VALUE,
+    label: DOMAIN_SECTION_LABEL,
+    elementAttributes: { disabled: true },
+  };
+  const domainCommandValues = getVisibleDomainTypeOptions(currentValue);
+  return [...typeValues, fakerHeader, ...fakerCommandValues, domainHeader, ...domainCommandValues];
+}
+
+function getAgGridTypeEditorValues(currentValue = '') {
+  const values = [...FAKER_COMMANDS];
+  const domainValues = getVisibleDomainTypeOptions(currentValue).map((entry) => entry.value);
+  const seen = new Set(values);
+  domainValues.forEach((value) => {
+    if (!seen.has(value)) {
+      values.push(value);
+      seen.add(value);
+    }
+  });
+  return values;
 }
 
 function tabulatorTypeSelectEditor(cell, onRendered, success, cancel) {
@@ -647,12 +774,12 @@ function tabulatorTypeSelectEditor(cell, onRendered, success, cancel) {
   editor.style.boxSizing = 'border-box';
   let completed = false;
 
-  const values = getTabulatorTypeEditorValues();
+  const values = getTabulatorTypeEditorValues(cell.getValue());
   values.forEach((entry) => {
     const option = document.createElement('option');
     option.value = entry.value;
     option.textContent = entry.label;
-    if (entry.value === FAKER_SECTION_VALUE) {
+    if (entry.value === FAKER_SECTION_VALUE || entry.value === DOMAIN_SECTION_VALUE) {
       option.disabled = true;
     }
     editor.appendChild(option);
@@ -670,7 +797,7 @@ function tabulatorTypeSelectEditor(cell, onRendered, success, cancel) {
       return;
     }
     const selectedValue = String(editor.value ?? '').trim();
-    if (selectedValue === FAKER_SECTION_VALUE) {
+    if (selectedValue === FAKER_SECTION_VALUE || selectedValue === DOMAIN_SECTION_VALUE) {
       completed = true;
       cancel();
       return;
@@ -732,7 +859,7 @@ function setupAgGridDefnEditor(tableDiv) {
     {
       field: 'type',
       cellEditor: SelectFilterEditor,
-      cellEditorParams: { values: FAKER_COMMANDS },
+      cellEditorParams: (params) => ({ values: getAgGridTypeEditorValues(params?.value) }),
     },
     { field: 'value' },
   ];
@@ -777,7 +904,8 @@ function setupAgGridDefnEditor(tableDiv) {
     },
     getRows: () => {
       const rows = [];
-      defnGridApi.forEachNode((rowNode) => rows.push({ ...rowNode.data }));
+      // Respect the current visual order (including row drag reorder) when syncing to text schema.
+      defnGridApi.forEachNodeAfterFilterAndSort((rowNode) => rows.push({ ...rowNode.data }));
       return rows;
     },
   };
@@ -799,6 +927,7 @@ function setupTabulatorDefnEditor(tableDiv) {
       { title: 'value', field: 'value', editor: 'input', headerSort: false, widthGrow: 2 },
     ],
     selectableRows: true,
+    selectableRowsRangeMode: 'click',
     movableRows: true,
     columnDefaults: { resizable: true },
     cellEditing: (cell) => {
@@ -928,6 +1057,7 @@ function convertGridToText() {
         ruleLine = resolvedRowData.value || '';
         break;
       case '__faker_section__':
+      case '__domain_section__':
         ruleLine = '';
         break;
       default: {
@@ -935,7 +1065,7 @@ function convertGridToText() {
         if (dataType.startsWith('faker.')) {
           dataType = dataType.replace('faker.', '');
         }
-        if (FAKER_COMMANDS.includes(dataType)) {
+        if (DOMAIN_COMMANDS.includes(dataType) || FAKER_COMMANDS.includes(dataType)) {
           ruleLine = dataType + (resolvedRowData.value || '');
         } else {
           // throw error? ignore? don't know what the command is so it won't parse
@@ -948,6 +1078,9 @@ function convertGridToText() {
       name: String(resolvedRowData.columnName || ''),
       ruleSpec: String(ruleLine || ''),
       comments: String(resolvedRowData.comments ?? ''),
+      leadingTextLines: Array.isArray(resolvedRowData.leadingTextLines)
+        ? resolvedRowData.leadingTextLines.map((line) => String(line ?? ''))
+        : [],
     });
   });
 
@@ -1055,7 +1188,15 @@ function enableTestDataGenerationInterface(parentId, anImporter, aTextPreviewRen
   }
 }
 
-export { enableTestDataGenerationInterface, probeCommandReturnType, identifyFakerCommands, getFakerCommands };
+export {
+  enableTestDataGenerationInterface,
+  probeCommandReturnType,
+  identifyFakerCommands,
+  getFakerCommands,
+  getDomainCommands,
+  getTabulatorTypeEditorValues,
+  getAgGridTypeEditorValues,
+};
 
 /**
  * Getter function for FAKER_COMMANDS array (for testing purposes).
@@ -1063,4 +1204,8 @@ export { enableTestDataGenerationInterface, probeCommandReturnType, identifyFake
  */
 function getFakerCommands() {
   return [...FAKER_COMMANDS];
+}
+
+function getDomainCommands() {
+  return [...DOMAIN_COMMANDS];
 }

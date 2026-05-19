@@ -479,7 +479,13 @@ class GridExtensionAgGrid {
     let fieldnames = this.gridApi.getColumnDefs().map((col) => col.field);
 
     for (let rowIndex = 0; rowIndex < dataTable.getRowCount(); rowIndex++) {
-      addRows.push(dataTable.getRowAsObjectUsingHeadings(rowIndex, fieldnames));
+      const rowObject = dataTable.getRowAsObjectUsingHeadings(rowIndex, fieldnames);
+      const normalisedRow = {};
+      for (const fieldName of fieldnames) {
+        const value = rowObject?.[fieldName];
+        normalisedRow[fieldName] = value === undefined || value === null ? '' : String(value);
+      }
+      addRows.push(normalisedRow);
     }
 
     // TODO : apply transactions incrementally for larger data sets
@@ -515,7 +521,8 @@ class GridExtensionAgGrid {
     const vals = [];
     for (const propertyid in fieldnames) {
       const property = fieldnames[propertyid];
-      vals.push(node?.data?.[property] ? String(node.data[property]) : '');
+      const value = node?.data?.[property];
+      vals.push(value === undefined || value === null ? '' : String(value));
     }
     return vals;
   }

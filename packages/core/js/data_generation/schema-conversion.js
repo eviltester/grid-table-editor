@@ -8,6 +8,35 @@ function cloneRule(rule) {
   };
 }
 
+function splitCommentLines(comments) {
+  const value = String(comments ?? '');
+  if (value.length === 0) {
+    return [];
+  }
+  return value.split('\n');
+}
+
+function synthesizeTokensFromRules(rules) {
+  const safeRules = Array.isArray(rules) ? rules : [];
+  const tokens = [];
+
+  safeRules.forEach((rule) => {
+    const leadingTextLines = Array.isArray(rule?.leadingTextLines)
+      ? rule.leadingTextLines.map((line) => String(line ?? ''))
+      : splitCommentLines(rule?.comments);
+    leadingTextLines.forEach((line) => {
+      if (line.trim().length === 0) {
+        tokens.push({ kind: 'blank', text: line });
+      } else {
+        tokens.push({ kind: 'comment', text: line });
+      }
+    });
+    tokens.push({ kind: 'rule' });
+  });
+
+  return tokens;
+}
+
 function renderSpecFromRulesWithTokens(rules, schemaTokens) {
   const rows = Array.isArray(rules)
     ? rules.map((rule) => ({
@@ -46,20 +75,6 @@ function renderSpecFromRulesWithTokens(rules, schemaTokens) {
   return outputLines.join('\n');
 }
 
-function renderSpecFromRulesWithComments(rules) {
-  const safeRules = Array.isArray(rules) ? rules : [];
-  const outputLines = [];
-  safeRules.forEach((rule) => {
-    const comments = String(rule?.comments ?? '');
-    if (comments.length > 0) {
-      outputLines.push(...comments.split('\n'));
-    }
-    outputLines.push(String(rule?.name ?? ''));
-    outputLines.push(String(rule?.ruleSpec ?? ''));
-  });
-  return outputLines.join('\n');
-}
-
 export function parseSchemaText({
   schemaText,
   faker,
@@ -88,8 +103,8 @@ export function parseSchemaText({
 }
 
 export function renderSchemaText({ rules, tokens = [] } = {}) {
-  const hasTokens = Array.isArray(tokens) && tokens.length > 0;
-  const text = hasTokens ? renderSpecFromRulesWithTokens(rules, tokens) : renderSpecFromRulesWithComments(rules);
+  const resolvedTokens = Array.isArray(tokens) && tokens.length > 0 ? tokens : synthesizeTokensFromRules(rules);
+  const text = renderSpecFromRulesWithTokens(rules, resolvedTokens);
   return {
     ok: true,
     text,

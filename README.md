@@ -89,23 +89,33 @@ A `rule` can be a regex string e.g.
 - `(connie|bob)` which would generate 'connie' or 'bob'
 - `[1-9][0-9]{0,4}` which would generate number between 1 and 99999
 
-A `rule` can also be a faker API call.
+A `rule` can also be a domain mapped faker API call.
 
 Faker API can be found here: https://fakerjs.dev/api/
 
 e.g.
 
-- `faker.person.firstName`
-- `faker.hacker.noun`
+```
+First Name
+awd.domain.person.firstName
 
-The `faker` prefix is optional:
+Noun
+domain.hacker.noun
+```
+
+The `awd` and `domain` prefixes are optional:
 
 e.g.
 
-- `person.firstName`
-- `hacker.noun`
+```
+First Name
+person.firstName
 
-The `fake` method is also supported, which takes a mustache template style string combining api methods e.g.
+Noun
+hacker.noun
+```
+
+The `fake` method on faker is also supported, which takes a mustache template style string combining api methods e.g.
 
 - `helpers.fake("{{name.lastName}}, {{name.firstName}}")`
 
@@ -118,7 +128,7 @@ helpers.fake("{{name.lastName}}, {{name.firstName}}")
 
 # profile text
 desc
-faker.lorem.paragraph
+lorem.paragraph
 
 # preference data
 collects
@@ -165,8 +175,8 @@ There is a maintained list in the documentation:
 
 ## Libraries Used
 
-- [Faker.js](http://marak.github.io/faker.js) for domain api
-  - http://marak.github.io/faker.js
+- [Faker.js](https://fakerjs.dev/) for backing the domain api
+  - https://fakerjs.dev/
 - [RandExp.js](http://fent.github.io/randexp.js/) for regular expression based random data generation
   - http://fent.github.io/randexp.js/
 - [Tabulator](https://tabulator.info/) for light weight tables

@@ -1,6 +1,11 @@
 import { PairwiseGenerator } from '@anywaydata/core/data_generation/all-pairs/pairwiseGenerator.js';
 import { PairwiseTestDataGenerator } from '@anywaydata/core/data_generation/all-pairs/pairwiseTestDataGenerator.js';
 import { TestDataRule, RuleType } from '@anywaydata/core/data_generation/testDataRule.js';
+import { faker } from '@faker-js/faker';
+import {
+  assertNoCommonErrorPatternsInRows,
+  assertNoCommonErrorPatternsInValue,
+} from '../utils/outputQualityAssertions.js';
 
 describe('Pairwise Combinatorial Matching Data Generation', () => {
   describe('PairwiseGenerator', () => {
@@ -25,6 +30,12 @@ describe('Pairwise Combinatorial Matching Data Generation', () => {
       // Check coverage
       const stats = generator.getCoverageStats();
       expect(stats.coveragePercentage).toBeCloseTo(100, 1);
+      const exported = generator.exportDataRecords();
+      for (const record of exported) {
+        assertNoCommonErrorPatternsInValue(record.Browser);
+        assertNoCommonErrorPatternsInValue(record.OS);
+        assertNoCommonErrorPatternsInValue(record.Device);
+      }
 
       console.log(`Generated ${dataRecords.length} data records (vs ${27} full cartesian)`);
       console.log(`Coverage: ${stats.coveragePercentage.toFixed(1)}%`);
@@ -46,6 +57,12 @@ describe('Pairwise Combinatorial Matching Data Generation', () => {
 
       const stats = generator.getCoverageStats();
       expect(stats.coveragePercentage).toBeCloseTo(100, 1);
+      const exported = generator.exportDataRecords();
+      for (const record of exported) {
+        expect(['Red', 'Green']).toContain(record.Color);
+        expect(['Small', 'Medium', 'Large', 'XLarge']).toContain(record.Size);
+        expect(['Cotton', 'Polyester', 'Wool']).toContain(record.Material);
+      }
     });
 
     test('should verify all pairs are actually covered', () => {
@@ -131,11 +148,12 @@ describe('Pairwise Combinatorial Matching Data Generation', () => {
 
       const result = generator.generateAllDataRecordsAsRows();
 
-      expect(result.data).toBeDefined();
-      expect(result.data.data).toBeDefined();
+      expect(result.data && typeof result.data).toBe('object');
+      expect(Array.isArray(result.data.data)).toBe(true);
       expect(result.data.data[0]).toEqual(['Color', 'Size']); // Headers
       expect(result.data.data.length).toBeGreaterThan(1); // Has data rows
       expect(result.data.stats.coveragePercentage).toBeCloseTo(100, 1);
+      assertNoCommonErrorPatternsInRows(result.data.data.slice(1));
     });
 
     test('should handle mixed rule types gracefully', () => {
@@ -170,6 +188,7 @@ describe('Pairwise Combinatorial Matching Data Generation', () => {
         expect(row[2]).toBe('FixedValue'); // LiteralParam
         expect(['true', 'false']).toContain(row[3]); // BoolParam
       });
+      assertNoCommonErrorPatternsInRows(dataRows);
     });
 
     test('should provide meaningful error for insufficient parameters', () => {
@@ -232,6 +251,34 @@ describe('Pairwise Combinatorial Matching Data Generation', () => {
         'Faker Example',
       ]);
       expect(result.data.data.length).toBeGreaterThan(1);
+      assertNoCommonErrorPatternsInRows(result.data.data.slice(1));
+    });
+
+    test('should generate domain values for mixed enum+domain pairwise schemas', () => {
+      const rules = [
+        { name: 'HTTP Method', type: 'enum', ruleSpec: 'enum(GET,POST)' },
+        { name: 'Content Type', type: 'enum', ruleSpec: 'enum("application/json","text/plain")' },
+        { name: 'Email Address', type: 'domain', ruleSpec: 'internet.email' },
+      ];
+
+      const generator = new PairwiseTestDataGenerator(faker);
+      const initResult = generator.initializeFromRules(rules);
+      expect(initResult.isError).toBe(false);
+
+      const result = generator.generateAllDataRecordsAsRows();
+      expect(result.isError).toBe(false);
+
+      const [headers, ...rows] = result.data.data;
+      expect(headers).toEqual(['HTTP Method', 'Content Type', 'Email Address']);
+      expect(rows.length).toBeGreaterThan(0);
+      rows.forEach((row) => {
+        expect(['GET', 'POST']).toContain(row[0]);
+        expect(['application/json', 'text/plain']).toContain(row[1]);
+        expect(typeof row[2]).toBe('string');
+        expect(row[2]).not.toMatch(/^random_Email Address_/);
+        expect(row[2]).toContain('@');
+      });
+      assertNoCommonErrorPatternsInRows(rows);
     });
   });
 
@@ -281,6 +328,12 @@ describe('Pairwise Combinatorial Matching Data Generation', () => {
       const exported = generator.exportDataRecords();
       const hasPostJson = exported.some((rec) => rec.Method === 'POST' && rec.ContentType === 'JSON');
       const hasDeleteAuth = exported.some((rec) => rec.Method === 'DELETE' && rec.Auth === 'Bearer');
+      for (const record of exported) {
+        assertNoCommonErrorPatternsInValue(record.Method);
+        assertNoCommonErrorPatternsInValue(record.ContentType);
+        assertNoCommonErrorPatternsInValue(record.Auth);
+        assertNoCommonErrorPatternsInValue(record.ResponseCode);
+      }
 
       expect(hasPostJson).toBe(true);
       expect(hasDeleteAuth).toBe(true);

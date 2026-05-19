@@ -26,6 +26,21 @@ export class SchemaParsingErrors {
       ...(Number.isInteger(line) ? { line } : {}),
     };
   }
+  static missingDomainCommand(line) {
+    return {
+      code: 'missing_domain_command',
+      message: `Row ${line}: domain command is required.`,
+      ...(Number.isInteger(line) ? { line } : {}),
+    };
+  }
+
+  static helpersNotSupportedInDomain(line) {
+    return {
+      code: 'helpers_not_supported_in_domain',
+      message: `Row ${line}: helpers.* is faker-only; use faker.helpers.*`,
+      ...(Number.isInteger(line) ? { line } : {}),
+    };
+  }
 
   static invalidSchemaPairing() {
     return {
@@ -57,6 +72,14 @@ export class SchemaParsingErrors {
     return {
       code: 'compiler_validation_error',
       message: `${columnLabel} failed faker validation - ${reason}`,
+      ...(column ? { column } : {}),
+    };
+  }
+  static domainValidationFailed(column, reason) {
+    const columnLabel = SchemaParsingErrors.#columnLabel(column);
+    return {
+      code: 'compiler_validation_error',
+      message: `${columnLabel} failed domain validation - ${reason}`,
       ...(column ? { column } : {}),
     };
   }

@@ -6,11 +6,35 @@ const TEST_DATA_MODES = Object.freeze({
   AMEND_SELECTED: 'amend-selected',
 });
 
+function normaliseGeneratedCellValue(value) {
+  if (value === undefined || value === null) {
+    return '';
+  }
+  if (value instanceof Date) {
+    return value.toISOString();
+  }
+  if (Array.isArray(value) || (typeof value === 'object' && value !== null)) {
+    try {
+      return JSON.stringify(value);
+    } catch {
+      return String(value);
+    }
+  }
+  return value;
+}
+
+function normaliseGeneratedRowValues(row = []) {
+  if (!Array.isArray(row)) {
+    return [];
+  }
+  return row.map((value) => normaliseGeneratedCellValue(value));
+}
+
 function createTableFromGenerator(rowCount, generator) {
   const outputTable = new GenericDataTable();
   outputTable.setHeaders(generator.generateHeadersArray());
   for (let rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-    outputTable.appendDataRow(generator.generateRow());
+    outputTable.appendDataRow(normaliseGeneratedRowValues(generator.generateRow()));
   }
   return outputTable;
 }
@@ -40,7 +64,11 @@ function createAmendedTable({ mode, desiredRowCount, generator, currentDataTable
       if (targetRowIndex < 0 || targetRowIndex >= rows.length) {
         continue;
       }
-      applyGeneratedValuesToRow(rows[targetRowIndex], generator.generateRow(), schemaHeaderIndexes);
+      applyGeneratedValuesToRow(
+        rows[targetRowIndex],
+        normaliseGeneratedRowValues(generator.generateRow()),
+        schemaHeaderIndexes
+      );
     }
 
     return {
@@ -54,7 +82,11 @@ function createAmendedTable({ mode, desiredRowCount, generator, currentDataTable
     if (rowIndex >= rows.length) {
       rows.push(createBlankRow(headers.length));
     }
-    applyGeneratedValuesToRow(rows[rowIndex], generator.generateRow(), schemaHeaderIndexes);
+    applyGeneratedValuesToRow(
+      rows[rowIndex],
+      normaliseGeneratedRowValues(generator.generateRow()),
+      schemaHeaderIndexes
+    );
   }
 
   // keep existing rows untouched when desiredCount < existingRowCount
@@ -111,7 +143,7 @@ function createBlankRow(columnCount) {
 function applyGeneratedValuesToRow(targetRow, generatedRow, schemaHeaderIndexes) {
   schemaHeaderIndexes.forEach((targetIndex, schemaIndex) => {
     const generatedValue = generatedRow[schemaIndex];
-    targetRow[targetIndex] = generatedValue === undefined || generatedValue === null ? '' : String(generatedValue);
+    targetRow[targetIndex] = normaliseGeneratedCellValue(generatedValue);
   });
 }
 

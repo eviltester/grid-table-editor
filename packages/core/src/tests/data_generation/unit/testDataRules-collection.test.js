@@ -7,7 +7,12 @@ describe('TestDataRules collection behavior', () => {
     rules.addRule('LastName', 'person.lastName');
 
     const rule = rules.getRule('LastName');
-    expect(rule).toBeDefined();
+    expect(rule).toEqual(
+      expect.objectContaining({
+        name: 'LastName',
+        ruleSpec: 'person.lastName',
+      })
+    );
     expect(rule.name).toBe('LastName');
     expect(rule.ruleSpec).toBe('person.lastName');
   });
@@ -17,7 +22,12 @@ describe('TestDataRules collection behavior', () => {
     rules.addRule('  FullName  ', 'person.fullName');
 
     const rule = rules.getRule('  fullname ');
-    expect(rule).toBeDefined();
+    expect(rule).toEqual(
+      expect.objectContaining({
+        name: 'FullName',
+        ruleSpec: 'person.fullName',
+      })
+    );
     expect(rule.name).toBe('FullName');
   });
 

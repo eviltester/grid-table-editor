@@ -45,4 +45,5 @@ Both workflows support generation rules such as:
 - [Literal Data](/docs/test-data/literal-test-data)
 - [Regex Based Data](/docs/test-data/regex-test-data)
 - [Faker Based Data](/docs/test-data/faker-test-data)
+- [Domain Test Data](/docs/test-data/domain/domain-test-data)
 - [All Pairs Combinatorial Testing](/docs/test-data/pairwise-testing) - Generate optimal test combinations from enum data

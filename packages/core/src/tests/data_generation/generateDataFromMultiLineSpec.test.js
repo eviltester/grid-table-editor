@@ -1,6 +1,7 @@
 import { TestDataGenerator } from '../../../js/data_generation/testDataGenerator.js';
 import { faker } from '@faker-js/faker';
 import RandExp from 'randexp';
+import { assertNoCommonErrorPatternsInRows } from '../utils/outputQualityAssertions.js';
 
 /*
 
@@ -29,7 +30,7 @@ describe('TestDataGenerator meets Acceptance Criteria', () => {
 
       expect(generator.isValid()).toBe(true);
       expect(generator.testDataRules()[0].name).toBe('Name');
-      expect(generator.testDataRules()[0].type).toBe('faker');
+      expect(generator.testDataRules()[0].type).toBe('domain');
       expect(generator.testDataRules()[0].ruleSpec).toBe('person.fullName');
       expect(generator.testDataRules().length).toBe(1);
     });
@@ -78,7 +79,7 @@ describe('TestDataGenerator meets Acceptance Criteria', () => {
 
       expect(generator.isValid()).toBe(true);
       expect(generator.testDataRules()[0].name).toBe('Faker');
-      expect(generator.testDataRules()[0].type).toBe('faker');
+      expect(generator.testDataRules()[0].type).toBe('domain');
       expect(generator.testDataRules()[0].ruleSpec).toBe('string.alpha(10)');
       expect(generator.testDataRules()[1].name).toBe('Regex');
       expect(generator.testDataRules()[1].type).toBe('regex');
@@ -102,8 +103,9 @@ describe('TestDataGenerator meets Acceptance Criteria', () => {
       const data = generator.generate(1);
 
       expect(data[0]).toStrictEqual(['Name']);
-      expect(data[1][0].length > 4).toBe(true);
-      expect(data[1][0].includes(' ')).toBe(true);
+      expect(data[1][0].length).toBeGreaterThan(4);
+      expect(data[1][0]).toContain(' ');
+      assertNoCommonErrorPatternsInRows(data.slice(1));
     });
 
     test('can generate data from a Regex rule', () => {
@@ -115,7 +117,8 @@ describe('TestDataGenerator meets Acceptance Criteria', () => {
 
       expect(data[0]).toStrictEqual(['Head']);
       expect(data[1][0].length).toBe(1);
-      expect(data[1][0].match(/[A-Z]/g).length).toBe(1);
+      expect(data[1][0]).toMatch(/^[A-Z]$/);
+      assertNoCommonErrorPatternsInRows(data.slice(1));
     });
 
     test('does not generate data when spec has empty field rule', () => {
@@ -155,6 +158,8 @@ describe('TestDataGenerator meets Acceptance Criteria', () => {
       expect(data[1][0].length).toBe(10);
       expect(data[1][1].length).toBe(4);
       expect(data[1][2]).toStrictEqual('Bob');
+      expect(data[1][1]).toMatch(/^[A-Z]{4}$/);
+      assertNoCommonErrorPatternsInRows(data.slice(1));
     });
   });
 

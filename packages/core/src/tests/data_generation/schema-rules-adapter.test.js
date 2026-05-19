@@ -93,6 +93,25 @@ describe('schema rules adapter', () => {
     expect(result.errors.map((error) => error.code)).toEqual(['missing_column_name', 'missing_faker_command']);
   });
 
+  test('reports missing domain command for domain rows', () => {
+    const result = schemaRowsToDataRules({
+      schemaRows: [{ name: 'First', sourceType: 'domain', command: '' }],
+    });
+    expect(result.dataRules).toEqual([]);
+    expect(result.errors.map((error) => error.code)).toEqual(['missing_domain_command']);
+  });
+
+  test('reports helpers_not_supported_in_domain for domain helper commands', () => {
+    const result = schemaRowsToDataRules({
+      schemaRows: [{ name: 'First', sourceType: 'domain', command: 'helpers.fake', params: '("x")' }],
+    });
+    expect(result.dataRules).toEqual([]);
+    expect(result.errors.map((error) => error.code)).toEqual(['helpers_not_supported_in_domain']);
+    expect(result.errors.map((error) => error.message)).toEqual([
+      'Row 1: helpers.* is faker-only; use faker.helpers.*',
+    ]);
+  });
+
   test('returns missing schema rows error for empty schema row list', () => {
     const result = schemaRowsToDataRules({
       schemaRows: [],
@@ -119,6 +138,14 @@ describe('schema rules adapter', () => {
       { name: 'A', ruleSpec: 'literal(   123)', comments: '', type: 'literal' },
       { name: 'B', ruleSpec: 'word.noun()', comments: '', type: 'faker' },
     ]);
+  });
+
+  test('converts valid domain schema rows to data rules', () => {
+    const result = schemaRowsToDataRules({
+      schemaRows: [{ name: 'A', sourceType: 'domain', command: 'number.int', params: '(1,10)' }],
+    });
+    expect(result.errors).toEqual([]);
+    expect(result.dataRules).toEqual([{ name: 'A', ruleSpec: 'number.int(1,10)', comments: '', type: 'domain' }]);
   });
 
   test('converts empty literal schema row value to literal()', () => {

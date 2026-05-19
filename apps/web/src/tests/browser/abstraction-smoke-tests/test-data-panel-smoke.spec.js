@@ -1,5 +1,6 @@
 const { test, expect } = require('@playwright/test');
 const { AppPage } = require('../abstractions/app.page');
+const { assertNoCommonErrorPatterns } = require('../planned-functional/helpers/output-quality-helpers');
 
 function trackPageErrors(page) {
   const pageErrors = [];
@@ -61,8 +62,13 @@ test('test data panel generates rows from faker and regex schema', async ({ page
   const columnNames = await appPage.gridEditor.header.getColumnNames();
   expect(columnNames).toContain('Name');
   expect(columnNames).toContain('Code');
-  expect((await appPage.gridEditor.renderer.getCellTextByColumnName('Name', 0)).length).toBeGreaterThan(0);
-  expect((await appPage.gridEditor.renderer.getCellTextByColumnName('Code', 0)).length).toBeGreaterThan(0);
+  const nameValues = await appPage.gridEditor.renderer.getColumnTextsByName('Name');
+  const codeValues = await appPage.gridEditor.renderer.getColumnTextsByName('Code');
+  assertNoCommonErrorPatterns(nameValues);
+  assertNoCommonErrorPatterns(codeValues);
+  for (const value of codeValues) {
+    expect(value).toMatch(/^[A-Z]{3}$/);
+  }
   expect(pageErrors).toEqual([]);
 });
 
@@ -91,6 +97,10 @@ test('embedded schema grid editing syncs to schema text and generates data', asy
   await appPage.testDataPanel.clickGenerate();
   await expect.poll(async () => appPage.testDataPanel.getStatusText()).toContain('complete');
   await expect.poll(async () => appPage.gridEditor.renderer.countRows()).toBe(2);
-  expect((await appPage.gridEditor.renderer.getCellTextByColumnName('Code', 0)).length).toBeGreaterThan(0);
+  const codeValues = await appPage.gridEditor.renderer.getColumnTextsByName('Code');
+  assertNoCommonErrorPatterns(codeValues);
+  for (const value of codeValues) {
+    expect(value).toMatch(/^[A-Z]{3}$/);
+  }
   expect(pageErrors).toEqual([]);
 });

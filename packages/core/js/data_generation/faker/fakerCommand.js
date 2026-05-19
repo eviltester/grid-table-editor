@@ -4,14 +4,8 @@ import { runFakerCommand } from './fakerCommandRunner.js';
 /*
     Support for much of the faker APi
 
-    http://marak.github.io/faker.js/
-    https://github.com/Marak/faker.js
+    https://fakerjs.dev/
 
-    e.g.
-
-    faker.person.firstName
-    faker.helpers.fake("{{name.lastName}}, {{name.firstName}}")
-    faker.lorem.paragraph
  */
 
 export class FakerCommand {

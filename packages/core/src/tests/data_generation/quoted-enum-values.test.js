@@ -2,6 +2,7 @@ import { EnumTestDataRuleValidator } from '../../../js/data_generation/enum/enum
 import { TestDataRule } from '../../../js/data_generation/testDataRule.js';
 import { PairwiseTestDataGenerator } from '../../../js/data_generation/all-pairs/pairwiseTestDataGenerator.js';
 import { EnumParser } from '../../../js/data_generation/utils/enumParser.js';
+import { assertNoCommonErrorPatternsInRows } from '../utils/outputQualityAssertions.js';
 
 describe('Quoted Enum Values', () => {
   let validator;
@@ -85,8 +86,8 @@ describe('Quoted Enum Values', () => {
 
       const dataResult = generator.generateAllDataRecordsAsRows();
       expect(dataResult.isError).toBe(false);
-      expect(dataResult.data).toBeDefined();
-      expect(dataResult.data.data).toBeDefined();
+      expect(dataResult.data && typeof dataResult.data).toBe('object');
+      expect(Array.isArray(dataResult.data.data)).toBe(true);
 
       const [headers, ...rows] = dataResult.data.data;
       expect(headers).toEqual(['priority', 'status']);
@@ -102,6 +103,7 @@ describe('Quoted Enum Values', () => {
 
       // Verify we have all 4 possible combinations for 2x2 pairwise
       expect(rows.length).toBe(4);
+      assertNoCommonErrorPatternsInRows(rows);
     });
   });
 });

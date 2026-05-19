@@ -1,10 +1,14 @@
 import { generateFromTextSpec, validateSafeFakerRules, SUPPORTED_FORMATS } from '../../index.js';
 import { PairwiseTestDataGenerator } from '../../../js/data_generation/all-pairs/pairwiseTestDataGenerator.js';
+import {
+  assertNoCommonErrorPatternsInRows,
+  assertNoCommonErrorPatternsInValue,
+} from '../utils/outputQualityAssertions.js';
 
 test('generateFromTextSpec returns validation error for missing spec', () => {
   const result = generateFromTextSpec({ textSpec: '', rowCount: 1, outputFormat: 'json' });
   expect(result.ok).toBe(false);
-  expect(result.errors.length > 0).toBeTruthy();
+  expect(result.errors.length).toBeGreaterThan(0);
 });
 
 test('generateFromTextSpec returns validation error for invalid rowCount', () => {
@@ -32,6 +36,25 @@ test('generateFromTextSpec generates rows for valid spec', () => {
   expect(result.ok).toBe(true);
   expect(result.headers).toEqual(['Name']);
   expect(result.rows.length).toBe(2);
+  expect(result.rows).toEqual([['Bob'], ['Bob']]);
+  assertNoCommonErrorPatternsInRows(result.rows);
+});
+
+test('generateFromTextSpec serializes object return values as JSON strings', () => {
+  const result = generateFromTextSpec({
+    textSpec: 'Currency\nfinance.currency',
+    rowCount: 1,
+    outputFormat: 'csv',
+  });
+
+  expect(result.ok).toBe(true);
+  expect(result.rows).toHaveLength(1);
+  expect(typeof result.rows[0][0]).toBe('string');
+  expect(result.rows[0][0].startsWith('{')).toBe(true);
+  expect(result.rows[0][0]).toContain('"code"');
+  expect(result.rows[0][0]).not.toContain('[object Object]');
+  expect(result.rendered).not.toContain('[object Object]');
+  assertNoCommonErrorPatternsInRows(result.rows);
 });
 
 test('generateFromTextSpec accepts comments and blank lines in spec', () => {
@@ -43,6 +66,11 @@ test('generateFromTextSpec accepts comments and blank lines in spec', () => {
   expect(result.ok).toBe(true);
   expect(result.headers).toEqual(['Priority', 'Status']);
   expect(result.rows.length).toBe(2);
+  for (const row of result.rows) {
+    expect(['high', 'medium', 'low']).toContain(row[0]);
+    expect(['active', 'inactive', 'pending']).toContain(row[1]);
+  }
+  assertNoCommonErrorPatternsInRows(result.rows);
 });
 
 test('generateFromTextSpec accepts # prefixed rule content lines', () => {
@@ -54,6 +82,10 @@ test('generateFromTextSpec accepts # prefixed rule content lines', () => {
   expect(result.ok).toBe(true);
   expect(result.headers).toEqual(['Color']);
   expect(result.rows).toHaveLength(2);
+  for (const row of result.rows) {
+    expect(row[0]).toMatch(/^#[A-F0-9]{6}$/);
+  }
+  assertNoCommonErrorPatternsInRows(result.rows);
 });
 
 test('generateFromTextSpec renders test framework output', () => {
@@ -95,8 +127,9 @@ test('generateFromTextSpec renders data-bearing output for all unit test framewo
     expect(result.ok).toBe(true);
     expect(result.format).toBe(outputFormat);
     expect(typeof result.rendered).toBe('string');
-    expect(result.rendered.length > 0).toBeTruthy();
+    expect(result.rendered.length).toBeGreaterThan(0);
     expect(result.rendered).toMatch(/Bob/);
+    assertNoCommonErrorPatternsInValue(result.rendered);
   }
 });
 
@@ -128,7 +161,9 @@ test('generateFromTextSpec supports complex safe expressions with hybrid approac
   // Verify the generated age is in the expected range
   const age = safeResult.rows[0][0];
   expect(typeof age).toBe('number');
-  expect(age >= 18 && age <= 65).toBeTruthy();
+  expect(age).toBeGreaterThanOrEqual(18);
+  expect(age).toBeLessThanOrEqual(65);
+  assertNoCommonErrorPatternsInRows(safeResult.rows);
 
   // Test that unsafeFakerExpressions flag is accepted and processed
   const testSpec = 'Test\nBob';
@@ -153,6 +188,7 @@ test('generateFromTextSpec supports complex safe expressions with hybrid approac
 
   // Results should be identical for safe content
   expect(withoutFlag.rows).toEqual(withFlag.rows);
+  assertNoCommonErrorPatternsInRows(withFlag.rows);
 });
 
 test('generateFromTextSpec applies csv options via exporter pipeline', () => {
@@ -172,6 +208,8 @@ test('generateFromTextSpec applies csv options via exporter pipeline', () => {
   expect(withoutHeader.ok).toBe(true);
   expect(withHeader.rendered).toMatch(/Name/);
   expect(withoutHeader.rendered).not.toMatch(/Name/);
+  assertNoCommonErrorPatternsInValue(withHeader.rendered);
+  assertNoCommonErrorPatternsInValue(withoutHeader.rendered);
 });
 
 test('generateFromTextSpec is deterministic for repeated seeded runs', () => {
@@ -188,6 +226,7 @@ test('generateFromTextSpec is deterministic for repeated seeded runs', () => {
   expect(first.ok).toBe(true);
   expect(second.ok).toBe(true);
   expect(first.rows).toEqual(second.rows);
+  assertNoCommonErrorPatternsInRows(first.rows);
 });
 
 test('generateFromTextSpec isolates faker state across different seeds', () => {
@@ -201,6 +240,8 @@ test('generateFromTextSpec isolates faker state across different seeds', () => {
   expect(seededA2.ok).toBe(true);
   expect(seededA1.rows).toEqual(seededA2.rows);
   expect(seededA1.rows).not.toEqual(seededB.rows);
+  assertNoCommonErrorPatternsInRows(seededA1.rows);
+  assertNoCommonErrorPatternsInRows(seededB.rows);
 });
 
 test('generateFromTextSpec remains deterministic under overlapping seeded invocations', async () => {
@@ -216,6 +257,8 @@ test('generateFromTextSpec remains deterministic under overlapping seeded invoca
   expect(aAgain.ok).toBe(true);
   expect(a.rows).toEqual(aAgain.rows);
   expect(a.rows).not.toEqual(b.rows);
+  assertNoCommonErrorPatternsInRows(a.rows);
+  assertNoCommonErrorPatternsInRows(b.rows);
 });
 
 test('generateFromTextSpec supports pairwise generation for enum rules', () => {
@@ -239,10 +282,14 @@ test('generateFromTextSpec supports pairwise generation for enum rules', () => {
 
   const coveredPairs = new Set();
   for (const row of result.rows) {
+    expect(valuesByHeader.Browser).toContain(getValue(row, 'Browser'));
+    expect(valuesByHeader.Theme).toContain(getValue(row, 'Theme'));
+    expect(valuesByHeader.Region).toContain(getValue(row, 'Region'));
     coveredPairs.add(`Browser:${getValue(row, 'Browser')}|Theme:${getValue(row, 'Theme')}`);
     coveredPairs.add(`Browser:${getValue(row, 'Browser')}|Region:${getValue(row, 'Region')}`);
     coveredPairs.add(`Theme:${getValue(row, 'Theme')}|Region:${getValue(row, 'Region')}`);
   }
+  assertNoCommonErrorPatternsInRows(result.rows);
 
   for (const browser of valuesByHeader.Browser) {
     for (const theme of valuesByHeader.Theme) {
@@ -338,4 +385,5 @@ test('generateFromTextSpec pairwise preserves original interleaved column order'
     ['Bob', 'Safari', '30', 'Light'],
     ['Bob', 'Safari', '30', 'Dark'],
   ]);
+  assertNoCommonErrorPatternsInRows(result.rows);
 });

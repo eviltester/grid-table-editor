@@ -13,14 +13,23 @@ import { sanitizeUiOptionsForFormat } from './options-catalog-adapter.js';
 import { createOptionsPanelsForParent, getOutputFormatGroups } from './options-ui-schema.js';
 import { getKnownFakerCommandsAlphabetical, getKnownFakerCommandsLongestFirst } from './faker-commands.js';
 import { getFakerCommandHelp } from './faker-command-help-metadata.js';
+import {
+  getKnownDomainCommandsAlphabetical,
+  getKnownDomainCommandsLongestFirst,
+  getDomainKeywordByCommand,
+} from './domain-commands.js';
+import { getDomainCommandHelp } from './domain-command-help-metadata.js';
 import { TimedErrorDisplay } from './timed-error-display.js';
 
 const SOURCE_TYPE_FAKER = 'faker';
+const SOURCE_TYPE_DOMAIN = 'domain';
 const SOURCE_TYPE_REGEX = 'regex';
 const SOURCE_TYPE_LITERAL = 'literal';
 const SOURCE_TYPE_ENUM = 'enum';
 const REGEX_HELP_URL = 'https://anywaydata.com/docs/test-data/regex-test-data';
 const FAKER_HELP_URL = 'https://anywaydata.com/docs/test-data/faker-test-data';
+const DOMAIN_HELP_URL = 'https://anywaydata.com/docs/test-data/domain/domain-test-data';
+const DOMAIN_NON_SCALAR_RETURN_TYPES = new Set(['array', 'object']);
 const LITERAL_HELP_URL = 'https://anywaydata.com/docs/category/generating-data';
 const ENUM_HELP_URL = 'https://anywaydata.com/docs/category/generating-data';
 const GENERATE_TO_FILE_HELP_URL = 'https://anywaydata.com/docs/test-data/generate-to-file';
@@ -51,12 +60,25 @@ function normaliseFakerCommand(commandValue) {
   return command;
 }
 
+function normaliseDomainCommand(commandValue) {
+  return String(commandValue || '').trim();
+}
+
+function getDisplayDomainCommand(keywordEntry) {
+  const shortest = String(keywordEntry?.shortestUniqueAlias || '').trim();
+  if (shortest) {
+    return shortest;
+  }
+  return String(keywordEntry?.keyword || '').trim();
+}
+
 function normaliseSourceType(sourceType) {
   const normalised = String(sourceType || '')
     .trim()
     .toLowerCase();
   if (
     normalised === SOURCE_TYPE_FAKER ||
+    normalised === SOURCE_TYPE_DOMAIN ||
     normalised === SOURCE_TYPE_REGEX ||
     normalised === SOURCE_TYPE_LITERAL ||
     normalised === SOURCE_TYPE_ENUM
@@ -66,10 +88,30 @@ function normaliseSourceType(sourceType) {
   return SOURCE_TYPE_REGEX;
 }
 
+function normaliseReturnType(returnType) {
+  return String(returnType || '')
+    .trim()
+    .toLowerCase();
+}
+
+function isDomainCommandVisibleByDefault(command) {
+  const commandHelp = getDomainCommandHelp(command);
+  const returnType = normaliseReturnType(commandHelp?.returnType);
+  if (!returnType) {
+    return true;
+  }
+  return !DOMAIN_NON_SCALAR_RETURN_TYPES.has(returnType);
+}
+
 function buildRuleSpecFromSchemaRow(row) {
   const sourceType = normaliseSourceType(row?.sourceType);
   if (sourceType === SOURCE_TYPE_FAKER) {
     const command = normaliseFakerCommand(row?.command);
+    const params = String(row?.params ?? '').trim();
+    return `${command}${params}`;
+  }
+  if (sourceType === SOURCE_TYPE_DOMAIN) {
+    const command = normaliseDomainCommand(row?.command);
     const params = String(row?.params ?? '').trim();
     return `${command}${params}`;
   }
@@ -109,6 +151,9 @@ function schemaRowsToSpecWithTokens(schemaRows, schemaTokens) {
       const name = String(row?.name ?? '').trim();
       const ruleSpec = buildRuleSpecFromSchemaRow(row);
       const comments = String(row?.comments ?? '');
+      const leadingTextLines = Array.isArray(row?.leadingTextLines)
+        ? row.leadingTextLines.map((line) => String(line ?? ''))
+        : undefined;
       if (name.length === 0 && ruleSpec.length === 0) {
         return null;
       }
@@ -116,6 +161,7 @@ function schemaRowsToSpecWithTokens(schemaRows, schemaTokens) {
         name,
         ruleSpec,
         comments,
+        leadingTextLines,
       };
     })
     .filter(Boolean);
@@ -141,6 +187,30 @@ function schemaErrorsToText(errors = []) {
       return String(error ?? '');
     })
     .join('\n');
+}
+
+function normaliseGeneratedCellValue(value) {
+  if (value === undefined || value === null) {
+    return '';
+  }
+  if (value instanceof Date) {
+    return value.toISOString();
+  }
+  if (Array.isArray(value) || (typeof value === 'object' && value !== null)) {
+    try {
+      return JSON.stringify(value);
+    } catch {
+      return String(value);
+    }
+  }
+  return value;
+}
+
+function normaliseGeneratedRow(row = []) {
+  if (!Array.isArray(row)) {
+    return [];
+  }
+  return row.map((value) => normaliseGeneratedCellValue(value));
 }
 
 class DataGeneratorPage {
@@ -170,6 +240,8 @@ class DataGeneratorPage {
     this.schemaTextTokens = [];
     this.fakerCommands = getKnownFakerCommandsAlphabetical().filter((command) => command !== 'RegEx');
     this.fakerCommandsLongestFirst = getKnownFakerCommandsLongestFirst().filter((command) => command !== 'RegEx');
+    this.domainCommands = getKnownDomainCommandsAlphabetical();
+    this.domainCommandsLongestFirst = getKnownDomainCommandsLongestFirst();
     this.isTextMode = false;
     this.optionsPanels = {};
     this.generationStatusTimer = undefined;
@@ -230,6 +302,19 @@ class DataGeneratorPage {
       value: '',
       comments: '',
     };
+  }
+
+  getVisibleDomainCommands(currentCommand = '') {
+    const visible = this.domainCommands.filter((command) => isDomainCommandVisibleByDefault(command));
+    const selectedCommand = normaliseDomainCommand(currentCommand);
+    if (!selectedCommand) {
+      return visible;
+    }
+    if (!visible.includes(selectedCommand) && this.domainCommands.includes(selectedCommand)) {
+      visible.push(selectedCommand);
+      visible.sort((a, b) => a.localeCompare(b));
+    }
+    return visible;
   }
 
   renderPageShell() {
@@ -633,6 +718,35 @@ class DataGeneratorPage {
     }
   }
 
+  getTrailingTextLinesFromSchemaTokens() {
+    if (!Array.isArray(this.schemaTextTokens) || this.schemaTextTokens.length === 0) {
+      return [];
+    }
+
+    const trailing = [];
+    for (let index = this.schemaTextTokens.length - 1; index >= 0; index -= 1) {
+      const token = this.schemaTextTokens[index];
+      if (token?.kind === 'rule') {
+        break;
+      }
+      if (token?.kind === 'blank' || token?.kind === 'comment') {
+        trailing.unshift(String(token.text ?? ''));
+      }
+    }
+    return trailing;
+  }
+
+  invalidateSchemaTokensFromRows() {
+    const trailingLines = this.getTrailingTextLinesFromSchemaTokens();
+    if (trailingLines.length > 0 && this.schemaRows.length > 0) {
+      const lastRow = this.schemaRows[this.schemaRows.length - 1];
+      const existingComments = String(lastRow?.comments ?? '');
+      const trailingText = trailingLines.join('\n');
+      lastRow.comments = existingComments.length > 0 ? `${existingComments}\n${trailingText}` : trailingText;
+    }
+    this.schemaTextTokens = [];
+  }
+
   handleGlobalButtonClick(event) {
     if (!event?.target?.closest) {
       return;
@@ -695,6 +809,22 @@ enum(active,inactive,pending)</pre>
 
     const rows = parseResult.dataRules.map((rule) => this.ruleToSchemaRow(rule));
     const tokens = parseResult.schemaTokens || [];
+    const rowsByTokenOrder = [];
+    let pendingLeadingTextLines = [];
+    tokens.forEach((token) => {
+      if (token?.kind === 'comment' || token?.kind === 'blank') {
+        pendingLeadingTextLines.push(String(token?.text ?? ''));
+        return;
+      }
+      if (token?.kind === 'rule') {
+        const row = rows[rowsByTokenOrder.length];
+        if (row) {
+          row.leadingTextLines = pendingLeadingTextLines.slice();
+          rowsByTokenOrder.push(row);
+        }
+        pendingLeadingTextLines = [];
+      }
+    });
     return { rows, errors: [], tokens };
   }
 
@@ -723,10 +853,18 @@ enum(active,inactive,pending)</pre>
     const row = this.createBlankSchemaRow();
     row.name = String(rule?.name ?? '');
     row.comments = String(rule?.comments ?? '');
+    row.leadingTextLines = [];
     row.sourceType = normaliseSourceType(rule?.type);
 
     if (row.sourceType === SOURCE_TYPE_FAKER) {
       const parts = this.extractFakerCommandAndParams(rule?.ruleSpec);
+      row.command = parts.command;
+      row.params = parts.params;
+      row.value = '';
+      return row;
+    }
+    if (row.sourceType === SOURCE_TYPE_DOMAIN) {
+      const parts = this.extractDomainCommandAndParams(rule?.ruleSpec);
       row.command = parts.command;
       row.params = parts.params;
       row.value = '';
@@ -756,6 +894,43 @@ enum(active,inactive,pending)</pre>
     return { command: '', params: normalisedSpec };
   }
 
+  extractDomainCommandAndParams(ruleSpec) {
+    const normalisedSpec = normaliseDomainCommand(String(ruleSpec ?? '').trim());
+    const exactKeyword = getDomainKeywordByCommand(normalisedSpec);
+    if (exactKeyword) {
+      return { command: getDisplayDomainCommand(exactKeyword), params: '' };
+    }
+
+    const openParenIndex = normalisedSpec.indexOf('(');
+    if (openParenIndex > 0) {
+      const commandPart = normalisedSpec.slice(0, openParenIndex).trim();
+      const commandKeyword = getDomainKeywordByCommand(commandPart);
+      if (commandKeyword) {
+        return {
+          command: getDisplayDomainCommand(commandKeyword),
+          params: normalisedSpec.slice(openParenIndex),
+        };
+      }
+    }
+
+    for (const command of this.domainCommandsLongestFirst) {
+      if (normalisedSpec === command) {
+        return { command, params: '' };
+      }
+      if (normalisedSpec.startsWith(command)) {
+        const remainder = normalisedSpec.slice(command.length);
+        if (remainder.length > 0 && !remainder.startsWith('(')) {
+          continue;
+        }
+        return {
+          command,
+          params: remainder,
+        };
+      }
+    }
+    return { command: '', params: normalisedSpec };
+  }
+
   renderSchemaRows() {
     const container = this.documentObj.getElementById('generatorSchemaRows');
     if (!container) {
@@ -767,10 +942,12 @@ enum(active,inactive,pending)</pre>
     this.schemaRows.forEach((row, index) => {
       const normalisedSourceType = normaliseSourceType(row.sourceType);
       const isFakerSource = normalisedSourceType === SOURCE_TYPE_FAKER;
+      const isDomainSource = normalisedSourceType === SOURCE_TYPE_DOMAIN;
+      const isCommandSource = isFakerSource || isDomainSource;
       const schemaHelp = this.getSchemaHelpData(normalisedSourceType, row.command);
       const showRowHelpLink = schemaHelp.show;
       const rowElem = this.documentObj.createElement('div');
-      rowElem.className = `generator-schema-row ${isFakerSource ? 'generator-schema-row-faker' : 'generator-schema-row-non-faker'}`;
+      rowElem.className = `generator-schema-row ${isCommandSource ? 'generator-schema-row-faker' : 'generator-schema-row-non-faker'}`;
       rowElem.setAttribute('data-row-id', row.id);
       rowElem.innerHTML = `
                 <div class="generator-row-actions">
@@ -785,12 +962,13 @@ enum(active,inactive,pending)</pre>
                     <option value="${SOURCE_TYPE_LITERAL}" ${row.sourceType === SOURCE_TYPE_LITERAL ? 'selected' : ''}>literal</option>
                     <option value="${SOURCE_TYPE_REGEX}" ${row.sourceType === SOURCE_TYPE_REGEX ? 'selected' : ''}>regex</option>
                     <option value="${SOURCE_TYPE_FAKER}" ${row.sourceType === SOURCE_TYPE_FAKER ? 'selected' : ''}>faker</option>
+                    <option value="${SOURCE_TYPE_DOMAIN}" ${row.sourceType === SOURCE_TYPE_DOMAIN ? 'selected' : ''}>domain</option>
                 </select>
                 ${
-                  isFakerSource
+                  isCommandSource
                     ? `<select data-field="command">
-                    <option value="">Select faker command</option>
-                    ${this.fakerCommands
+                    <option value="">${isDomainSource ? 'Select domain command' : 'Select faker command'}</option>
+                    ${(isDomainSource ? this.getVisibleDomainCommands(row.command) : this.fakerCommands)
                       .map((command) => {
                         const selected = command === row.command ? 'selected' : '';
                         return `<option value="${this.escapeHtml(command)}" ${selected}>${this.escapeHtml(command)}</option>`;
@@ -810,7 +988,7 @@ enum(active,inactive,pending)</pre>
                     ${showRowHelpLink ? '' : 'hidden'}
                 ></a>
                 ${
-                  isFakerSource
+                  isCommandSource
                     ? `<input type="text" data-field="params" placeholder="Params e.g. (10)" value="${this.escapeHtml(row.params)}">`
                     : `<input type="text" data-field="value" placeholder="Value / Regex" value="${this.escapeHtml(row.value)}">`
                 }
@@ -848,6 +1026,7 @@ enum(active,inactive,pending)</pre>
       return;
     }
 
+    this.invalidateSchemaTokensFromRows();
     row[fieldName] = event.target.value;
     if (fieldName === 'sourceType') {
       row.sourceType = normaliseSourceType(row.sourceType);
@@ -856,7 +1035,11 @@ enum(active,inactive,pending)</pre>
     }
 
     if (fieldName === 'command') {
-      row.command = normaliseFakerCommand(row.command);
+      if (row.sourceType === SOURCE_TYPE_DOMAIN) {
+        row.command = normaliseDomainCommand(row.command);
+      } else {
+        row.command = normaliseFakerCommand(row.command);
+      }
       this.renderSchemaRows();
     }
 
@@ -896,6 +1079,7 @@ enum(active,inactive,pending)</pre>
   addRowAfter(index) {
     const insertAt = Math.min(Math.max(index + 1, 0), this.schemaRows.length);
     this.schemaRows.splice(insertAt, 0, this.createBlankSchemaRow());
+    this.invalidateSchemaTokensFromRows();
     this.renderSchemaRows();
   }
 
@@ -905,6 +1089,7 @@ enum(active,inactive,pending)</pre>
     } else {
       this.schemaRows.splice(index, 1);
     }
+    this.invalidateSchemaTokensFromRows();
     this.renderSchemaRows();
   }
 
@@ -915,6 +1100,7 @@ enum(active,inactive,pending)</pre>
     }
     const [row] = this.schemaRows.splice(index, 1);
     this.schemaRows.splice(targetIndex, 0, row);
+    this.invalidateSchemaTokensFromRows();
     this.renderSchemaRows();
   }
 
@@ -982,6 +1168,11 @@ enum(active,inactive,pending)</pre>
         rule.ruleSpec = buildRuleSpecFromSchemaRow(row);
         return;
       }
+      if (row.sourceType === SOURCE_TYPE_DOMAIN) {
+        rule.type = SOURCE_TYPE_DOMAIN;
+        rule.ruleSpec = buildRuleSpecFromSchemaRow(row);
+        return;
+      }
       if (row.sourceType === SOURCE_TYPE_LITERAL) {
         rule.type = SOURCE_TYPE_LITERAL;
         rule.ruleSpec = extractLiteralValueFromRuleSpec(buildRuleSpecFromSchemaRow(row));
@@ -1008,7 +1199,7 @@ enum(active,inactive,pending)</pre>
     const dataTable = new GenericDataTable();
     dataTable.setHeaders(generator.generateHeadersArray());
     for (let row = 0; row < rowCount; row++) {
-      dataTable.appendDataRow(generator.generateRow());
+      dataTable.appendDataRow(normaliseGeneratedRow(generator.generateRow()));
     }
     return dataTable;
   }
@@ -1222,6 +1413,9 @@ enum(active,inactive,pending)</pre>
     if (normalisedSourceType === SOURCE_TYPE_FAKER) {
       return this.getFakerHelpUrl(commandValue);
     }
+    if (normalisedSourceType === SOURCE_TYPE_DOMAIN) {
+      return DOMAIN_HELP_URL;
+    }
     if (normalisedSourceType === SOURCE_TYPE_LITERAL) {
       return LITERAL_HELP_URL;
     }
@@ -1304,6 +1498,37 @@ enum(active,inactive,pending)</pre>
         }),
       };
     }
+    if (normalisedSourceType === SOURCE_TYPE_DOMAIN) {
+      const command = normaliseDomainCommand(commandValue);
+      if (!command) {
+        return {
+          show: true,
+          title: 'Domain data help',
+          docsUrl: DOMAIN_HELP_URL,
+          html: this.buildTypeHelpHtml(
+            'Domain',
+            'Domain commands provide a controlled interface for data generation.',
+            DOMAIN_HELP_URL
+          ),
+        };
+      }
+      const commandHelp = getDomainCommandHelp(command);
+      const heading = commandHelp?.canonical || command;
+      const docsUrl = commandHelp?.docsUrl || DOMAIN_HELP_URL;
+      const summary = commandHelp?.summary || `Generates data using ${heading}.`;
+      return {
+        show: true,
+        title: `Domain command help: ${command}`,
+        docsUrl,
+        html: this.buildCommandHelpHtml({
+          heading,
+          summary,
+          docsUrl,
+          params: commandHelp?.args || [],
+          example: commandHelp?.example,
+        }),
+      };
+    }
 
     return { show: false, title: '', docsUrl: '', html: '' };
   }
@@ -1321,8 +1546,8 @@ enum(active,inactive,pending)</pre>
     return withoutDocComments.replace(/\s+/g, ' ').trim();
   }
 
-  buildFakerCallSignature(heading, params) {
-    const commandName = heading.startsWith('faker.') ? heading : `faker.${heading}`;
+  buildCallSignature(heading, params) {
+    const commandName = String(heading || '').trim();
     if (!Array.isArray(params) || params.length === 0) {
       return `${commandName}()`;
     }
@@ -1344,11 +1569,11 @@ enum(active,inactive,pending)</pre>
       .trim();
   }
 
-  buildFakerCommandHelpHtml({ heading, summary, docsUrl, params, example }) {
+  buildCommandHelpHtml({ heading, summary, docsUrl, params, example }) {
     const sections = [`<p><strong>${this.escapeHtml(heading)}</strong></p>`, `<p>${this.escapeHtml(summary)}</p>`];
 
     sections.push(
-      `<p><strong>Call:</strong> <code>${this.escapeHtml(this.buildFakerCallSignature(heading, params))}</code></p>`
+      `<p><strong>Call:</strong> <code>${this.escapeHtml(this.buildCallSignature(heading, params))}</code></p>`
     );
 
     if (Array.isArray(params) && params.length > 0) {
@@ -1374,13 +1599,16 @@ enum(active,inactive,pending)</pre>
       sections.push('<p><strong>Example:</strong> Output depends on your selected params.</p>');
     }
 
-    const commandName = heading.startsWith('faker.') ? heading.replace('faker.', '') : heading;
-    const docsLinkText = commandName.length > 0 ? `Learn more: faker.${commandName}` : 'Learn more';
+    const docsLinkText = `Learn more: ${heading}`;
     sections.push(
       `<p><a class="helplink" href="${this.escapeHtml(docsUrl)}" target="_blank" rel="noopener noreferrer">${this.escapeHtml(docsLinkText)}</a></p>`
     );
 
     return sections.join('');
+  }
+
+  buildFakerCommandHelpHtml({ heading, summary, docsUrl, params, example }) {
+    return this.buildCommandHelpHtml({ heading, summary, docsUrl, params, example });
   }
 }
 

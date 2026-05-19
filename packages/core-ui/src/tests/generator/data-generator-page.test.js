@@ -93,9 +93,12 @@ describe('DataGeneratorPage', () => {
     dom.window.close();
   });
 
-  test('schema helper mapping supports faker, regex and literal', () => {
+  test('schema helper mapping supports faker, domain, regex and literal', () => {
     expect(buildRuleSpecFromSchemaRow({ sourceType: 'faker', command: 'faker.person.firstName', params: '()' })).toBe(
       'person.firstName()'
+    );
+    expect(buildRuleSpecFromSchemaRow({ sourceType: 'domain', command: 'number.int', params: '(1,10)' })).toBe(
+      'number.int(1,10)'
     );
     expect(buildRuleSpecFromSchemaRow({ sourceType: 'regex', value: '[A-Z]{3}' })).toBe('[A-Z]{3}');
     expect(buildRuleSpecFromSchemaRow({ sourceType: 'literal', value: 'Fixed' })).toBe('literal(Fixed)');
@@ -121,7 +124,7 @@ describe('DataGeneratorPage', () => {
     expect(spec).toBe('');
   });
 
-  test('schema source type dropdown uses enum, literal, regex, faker order', () => {
+  test('schema source type dropdown uses enum, literal, regex, faker, domain order', () => {
     const page = new DataGeneratorPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
@@ -139,7 +142,7 @@ describe('DataGeneratorPage', () => {
     const sourceTypeSelect = document.querySelector('[data-field="sourceType"]');
     const optionValues = Array.from(sourceTypeSelect.querySelectorAll('option')).map((option) => option.value);
 
-    expect(optionValues).toEqual(['enum', 'literal', 'regex', 'faker']);
+    expect(optionValues).toEqual(['enum', 'literal', 'regex', 'faker', 'domain']);
   });
 
   test('schemaRowsToSpecWithTokens preserves comments and blank lines', () => {
@@ -196,6 +199,27 @@ describe('DataGeneratorPage', () => {
     ]);
   });
 
+  test('schema validation reports missing domain command', () => {
+    const result = validateSchemaRows([{ name: 'First', sourceType: 'domain', command: '' }]);
+    expect(result.errors.map((error) => error.code)).toEqual(['missing_domain_command']);
+    expect(result.errors.map((error) => error.message)).toEqual(['Row 1: domain command is required.']);
+  });
+
+  test('schema validation rejects helpers in domain source rows', () => {
+    const result = validateSchemaRows([{ name: 'First', sourceType: 'domain', command: 'helpers.fake' }]);
+    expect(result.errors.map((error) => error.code)).toEqual(['helpers_not_supported_in_domain']);
+    expect(result.errors.map((error) => error.message)).toEqual([
+      'Row 1: helpers.* is faker-only; use faker.helpers.*',
+    ]);
+  });
+
+  test('schema validation allows helpers in faker source rows', () => {
+    const result = validateSchemaRows([
+      { name: 'First', sourceType: 'faker', command: 'helpers.fake', params: '("x")' },
+    ]);
+    expect(result.errors).toEqual([]);
+  });
+
   test('preview generates data into tabulator grid extension', () => {
     const page = new DataGeneratorPage({
       parentElement: document.getElementById('app'),
@@ -226,6 +250,37 @@ describe('DataGeneratorPage', () => {
     expect(tableArg.getRowCount()).toBe(3);
     expect(tableArg.getHeaders()).toEqual(['Name', 'Code']);
     expect(document.getElementById('generatorOutputPreview').value).toBe('csv:sync:3');
+  });
+
+  test('preview serializes object-returning domain values as JSON', () => {
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker,
+      RandExp,
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: TestDataGenerator,
+    });
+    page.init();
+
+    page.schemaRows = [
+      { id: '1', name: 't4', sourceType: 'domain', command: 'science.chemicalElement', params: '', value: '' },
+    ];
+    page.renderSchemaRows();
+    document.getElementById('previewRowsCount').value = '1';
+
+    page.previewData();
+
+    const tableArg = FakeGridExtension.lastInstance.setGridFromGenericDataTable.mock.calls[0][0];
+    const renderedValue = tableArg.getRow(0)[0];
+    expect(typeof renderedValue).toBe('string');
+    expect(renderedValue.startsWith('{')).toBe(true);
+    expect(renderedValue).toContain('"name"');
+    expect(renderedValue).not.toContain('[object Object]');
   });
 
   test('empty literal schema value generates blank data cell', () => {
@@ -454,7 +509,7 @@ describe('DataGeneratorPage', () => {
     });
   });
 
-  test('shows faker fields only for faker source and value only for regex/literal', () => {
+  test('shows command selector and params for faker/domain and value for regex/literal', () => {
     const page = new DataGeneratorPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
@@ -492,6 +547,71 @@ describe('DataGeneratorPage', () => {
     );
     expect(rowElem.querySelector('[data-field="params"]')).not.toBeNull();
     expect(rowElem.querySelector('[data-field="value"]')).toBeNull();
+
+    rowElem.querySelector('[data-field="sourceType"]').value = 'domain';
+    rowElem.querySelector('[data-field="sourceType"]').dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+    rowElem = document.querySelector('.generator-schema-row');
+    expect(rowElem.querySelector('[data-field="command"]')).not.toBeNull();
+    expect(rowElem.querySelector('[data-field="params"]')).not.toBeNull();
+    expect(rowElem.querySelector('[data-field="value"]')).toBeNull();
+    expect(
+      Array.from(rowElem.querySelector('[data-field="command"]').querySelectorAll('option')).some(
+        (opt) => opt.value === 'number.int'
+      )
+    ).toBe(true);
+  });
+
+  test('hides non-scalar domain commands for new domain rows', () => {
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker: { word: { noun: () => 'x' } },
+      RandExp: function RandExp() {},
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: TestDataGenerator,
+    });
+    page.init();
+
+    page.schemaRows = [{ id: '1', name: 'A', sourceType: 'domain', command: '', params: '', value: '' }];
+    page.renderSchemaRows();
+
+    const options = Array.from(document.querySelector('[data-field="command"]').querySelectorAll('option')).map(
+      (option) => option.value
+    );
+    expect(options).toContain('number.int');
+    expect(options).not.toContain('science.chemicalElement');
+    expect(options).not.toContain('finance.currency');
+  });
+
+  test('preserves selected non-scalar domain command for existing parsed row', () => {
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker: { word: { noun: () => 'x' } },
+      RandExp: function RandExp() {},
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: TestDataGenerator,
+    });
+    page.init();
+
+    page.schemaRows = [
+      { id: '1', name: 'A', sourceType: 'domain', command: 'science.chemicalElement', params: '', value: '' },
+    ];
+    page.renderSchemaRows();
+
+    const commandSelect = document.querySelector('[data-field="command"]');
+    const options = Array.from(commandSelect.querySelectorAll('option')).map((option) => option.value);
+    expect(commandSelect.value).toBe('science.chemicalElement');
+    expect(options).toContain('science.chemicalElement');
+    expect(options).not.toContain('finance.currency');
   });
 
   test('shows schema help link for faker, regex and literal sources', () => {
@@ -547,6 +667,55 @@ describe('DataGeneratorPage', () => {
     expect(helpLink.getAttribute('href')).toBe('https://anywaydata.com/docs/category/generating-data');
     expect(helpLink.getAttribute('aria-label')).toBe('Literal data help');
     expect(helpLink.getAttribute('data-help-text')).toContain('Literal data repeats the exact text');
+  });
+
+  test('shows domain help with command metadata when domain command selected', () => {
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker,
+      RandExp,
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: TestDataGenerator,
+    });
+    page.init();
+
+    page.schemaRows = [
+      { id: '1', name: 'Age', sourceType: 'domain', command: 'number.int', params: '(1,10)', value: '' },
+    ];
+    page.renderSchemaRows();
+
+    const help = document.querySelector('[data-field="faker-doc-link"]');
+    expect(help).not.toBeNull();
+    expect(help.getAttribute('data-help-text')).toContain('awd.domain.number.int');
+    expect(help.getAttribute('data-help-text')).toContain('Params:');
+  });
+
+  test('shows domain index help link when domain source has no command selected', () => {
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker,
+      RandExp,
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: TestDataGenerator,
+    });
+    page.init();
+
+    page.schemaRows = [{ id: '1', name: 'Age', sourceType: 'domain', command: '', params: '', value: '' }];
+    page.renderSchemaRows();
+
+    const help = document.querySelector('[data-field="faker-doc-link"]');
+    expect(help).not.toBeNull();
+    expect(help.getAttribute('href')).toBe('https://anywaydata.com/docs/test-data/domain/domain-test-data');
   });
 
   test('shows command metadata summary and params in faker help tooltip', () => {
@@ -998,6 +1167,29 @@ describe('DataGeneratorPage', () => {
     expect(page.schemaRows[0].value).toBe('#[A-F0-9]{6}');
   });
 
+  test('maps science.chemicalElement.name to domain command without treating trailing name as params', () => {
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker,
+      RandExp,
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: TestDataGenerator,
+    });
+    page.init();
+
+    const parsed = page.parseSchemaTextToRows('Element\nscience.chemicalElement.name');
+    expect(parsed.errors).toEqual([]);
+    expect(parsed.rows).toHaveLength(1);
+    expect(parsed.rows[0].sourceType).toBe('domain');
+    expect(parsed.rows[0].command).toBe('chemicalElement.name');
+    expect(parsed.rows[0].params).toBe('');
+  });
+
   test('adding schema rows does not discard existing parsed comments', () => {
     const page = new DataGeneratorPage({
       parentElement: document.getElementById('app'),
@@ -1031,6 +1223,93 @@ describe('DataGeneratorPage', () => {
     expect(rebuilt).toContain('# note one');
     expect(rebuilt).toContain('# note two');
     expect(rebuilt).toContain('Third\nliteral(three)');
+  });
+
+  test('adding schema rows preserves whitespace-only blank lines in parsed comment blocks', () => {
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker: { word: { noun: () => 'x' } },
+      RandExp: function RandExp() {},
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: TestDataGenerator,
+    });
+    page.init();
+
+    let toggle = document.getElementById('schemaModeToggleButton');
+    toggle.click();
+    const textArea = document.getElementById('generatorSchemaText');
+    textArea.value = '# note one\n   \nFirst\none\n\n# note two\nSecond\ntwo';
+    toggle.click();
+
+    page.addRowAfter(page.schemaRows.length - 1);
+    const newRow = page.schemaRows[page.schemaRows.length - 1];
+    newRow.name = 'Third';
+    newRow.sourceType = 'literal';
+    newRow.value = 'three';
+
+    toggle = document.getElementById('schemaModeToggleButton');
+    toggle.click();
+    const rebuilt = document.getElementById('generatorSchemaText').value;
+
+    expect(rebuilt).toContain('# note one\n   \nFirst');
+    expect(rebuilt).toContain('# note two');
+    expect(rebuilt).toContain('Third\nliteral(three)');
+  });
+
+  test('reordering schema rows keeps blank line before moved response-time row', () => {
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker,
+      RandExp,
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: TestDataGenerator,
+    });
+    page.init();
+
+    const toggle = document.getElementById('schemaModeToggleButton');
+    toggle.click();
+    const textArea = document.getElementById('generatorSchemaText');
+    textArea.value = `# pairwise enums
+HTTP Method
+enum(GET,POST,PUT,DELETE)
+
+# pairwise enums
+Content Type
+enum("application/json","application/xml","text/plain")
+
+# randomized fields
+User ID
+number.int
+Request Timestamp
+date.recent
+Email Address
+internet.email
+
+Response Time
+number.int
+
+Authorization Token
+[A-Fa-f0-9]{32}`;
+    toggle.click();
+
+    const responseIndex = page.schemaRows.findIndex((row) => row.name === 'Response Time');
+    page.moveRow(responseIndex, -1);
+    toggle.click();
+
+    const rebuilt = document.getElementById('generatorSchemaText').value;
+    expect(rebuilt).toMatch(
+      /Request Timestamp\s*\ndate\.recent\s*\n\s*\nResponse Time\s*\nnumber\.int\s*\nEmail Address\s*\ninternet\.email/
+    );
   });
 
   test('edit as text shows empty textarea for untouched blank schema', () => {

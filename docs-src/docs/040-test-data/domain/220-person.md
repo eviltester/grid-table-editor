@@ -30,8 +30,7 @@ person.bio()
 ```
 
 Example return values:
-- `"designer, engineer, developer"`
-- `"leader, leader"`
+- `musician`
 
 ### `person.firstName`
 
@@ -42,7 +41,7 @@ Returns a random first name.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `sex` | `string` | no | Optional sex for first-name selection. Valid values: `female` or `male`. |
+| `sex` | `string` | no | Optional sex for first-name selection. Valid values: female or male. |
 
 Examples:
 
@@ -51,12 +50,11 @@ person.firstName()
 ```
 
 ```txt
-person.firstName(sex="female")
+person.firstName(sex="male")
 ```
 
 Example return values:
-- `"David"`
-- `"Alvera"`
+- `Amelie`
 
 ### `person.fullName`
 
@@ -74,8 +72,7 @@ person.fullName()
 ```
 
 Example return values:
-- `"Miss Chelsea Heller"`
-- `"Mrs. Diane McClure"`
+- `Mrs. Sheryl Zemlak DVM`
 
 ### `person.gender`
 
@@ -93,8 +90,7 @@ person.gender()
 ```
 
 Example return values:
-- `"Demiflux"`
-- `"M2F"`
+- `Female to male`
 
 ### `person.jobArea`
 
@@ -112,8 +108,7 @@ person.jobArea()
 ```
 
 Example return values:
-- `"Integration"`
-- `"Quality"`
+- `Branding`
 
 ### `person.jobDescriptor`
 
@@ -131,8 +126,7 @@ person.jobDescriptor()
 ```
 
 Example return values:
-- `"Central"`
-- `"Human"`
+- `Direct`
 
 ### `person.jobTitle`
 
@@ -150,8 +144,7 @@ person.jobTitle()
 ```
 
 Example return values:
-- `"Lead Communications Assistant"`
-- `"Regional Operations Technician"`
+- `Senior Identity Technician`
 
 ### `person.jobType`
 
@@ -169,8 +162,7 @@ person.jobType()
 ```
 
 Example return values:
-- `"Engineer"`
-- `"Director"`
+- `Engineer`
 
 ### `person.lastName`
 
@@ -181,7 +173,7 @@ Returns a random last name.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `sex` | `string` | no | Optional sex for last-name selection. Valid values: `female` or `male`. |
+| `sex` | `string` | no | Optional sex for last-name selection. Valid values: female or male. |
 
 Examples:
 
@@ -194,8 +186,7 @@ person.lastName(sex="male")
 ```
 
 Example return values:
-- `"Heller"`
-- `"Schneider"`
+- `Bernhard`
 
 ### `person.middleName`
 
@@ -206,7 +197,7 @@ Returns a random middle name.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `sex` | `string` | no | Optional sex for middle-name selection. Valid values: `female` or `male`. |
+| `sex` | `string` | no | Optional sex for middle-name selection. Valid values: female or male. |
 
 Examples:
 
@@ -215,12 +206,11 @@ person.middleName()
 ```
 
 ```txt
-person.middleName(sex="female")
+person.middleName(sex="male")
 ```
 
 Example return values:
-- `"August"`
-- `"Emerson"`
+- `Ryan`
 
 ### `person.prefix`
 
@@ -244,8 +234,7 @@ person.prefix(sex="male")
 ```
 
 Example return values:
-- `"Dr."`
-- `"Ms."`
+- `Miss`
 
 ### `person.sex`
 
@@ -263,7 +252,7 @@ person.sex()
 ```
 
 Example return values:
-- `"male"`
+- `male`
 
 ### `person.sexType`
 
@@ -281,7 +270,7 @@ person.sexType()
 ```
 
 Example return values:
-- `"male"`
+- `male`
 
 ### `person.suffix`
 
@@ -299,8 +288,7 @@ person.suffix()
 ```
 
 Example return values:
-- `"DVM"`
-- `"III"`
+- `IV`
 
 ### `person.zodiacSign`
 
@@ -318,5 +306,4 @@ person.zodiacSign()
 ```
 
 Example return values:
-- `"Pisces"`
-- `"Capricorn"`
+- `Cancer`

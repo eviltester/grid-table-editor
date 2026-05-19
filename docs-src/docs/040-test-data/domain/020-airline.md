@@ -30,7 +30,7 @@ airline.aircraftType()
 ```
 
 Example return values:
-- `"narrowbody"`
+- `regional`
 
 ### `airline.airline`
 
@@ -46,10 +46,6 @@ Examples:
 ```txt
 airline.airline()
 ```
-
-Example return values:
-- `{"name":"Air China","iataCode":"CA"}`
-- `{"name":"TUI Airways","iataCode":"BY"}`
 
 ### `airline.airline.iataCode`
 
@@ -67,8 +63,7 @@ airline.airline.iataCode()
 ```
 
 Example return values:
-- `"PK"`
-- `"MN"`
+- `AA`
 
 ### `airline.airline.name`
 
@@ -86,8 +81,7 @@ airline.airline.name()
 ```
 
 Example return values:
-- `"Tunisair"`
-- `"SunExpress"`
+- `Acme Air`
 
 ### `airline.airplane`
 
@@ -103,10 +97,6 @@ Examples:
 ```txt
 airline.airplane()
 ```
-
-Example return values:
-- `{"name":"Airbus A380-800","iataTypeCode":"388"}`
-- `{"name":"Boeing 747-400","iataTypeCode":"744"}`
 
 ### `airline.airplane.iataTypeCode`
 
@@ -124,8 +114,7 @@ airline.airplane.iataTypeCode()
 ```
 
 Example return values:
-- `"M81"`
-- `"732"`
+- `A320`
 
 ### `airline.airplane.name`
 
@@ -143,8 +132,7 @@ airline.airplane.name()
 ```
 
 Example return values:
-- `"Boeing 737-200"`
-- `"Douglas DC-10"`
+- `Boeing 737`
 
 ### `airline.airport`
 
@@ -160,10 +148,6 @@ Examples:
 ```txt
 airline.airport()
 ```
-
-Example return values:
-- `{"name":"Noumea Magenta Airport","iataCode":"GEA"}`
-- `{"name":"Melbourne International Airport","iataCode":"MEL"}`
 
 ### `airline.airport.iataCode`
 
@@ -181,8 +165,7 @@ airline.airport.iataCode()
 ```
 
 Example return values:
-- `"HBA"`
-- `"AKL"`
+- `LHR`
 
 ### `airline.airport.name`
 
@@ -200,12 +183,11 @@ airline.airport.name()
 ```
 
 Example return values:
-- `"Chicago O'Hare International Airport"`
-- `"Murtala Muhammed International Airport"`
+- `London Heathrow Airport`
 
 ### `airline.flightNumber`
 
-Returns a random flight number. Flight numbers are always 1 to 4 digits long and may include leading zeros.
+Returns a random flight number. Flight numbers are always 1 to 4 digits long. Sometimes they are
 
 - Canonical: `awd.domain.airline.flightNumber`
 - Faker docs: [https://fakerjs.dev/api/airline](https://fakerjs.dev/api/airline)
@@ -219,12 +201,11 @@ airline.flightNumber()
 ```
 
 Example return values:
-- `"99"`
-- `"15"`
+- `1`
 
 ### `airline.recordLocator`
 
-Generates a random record locator. Record locators are 6-character alphanumeric booking references.
+Generates a random record locator. Record locators
 
 - Canonical: `awd.domain.airline.recordLocator`
 - Faker docs: [https://fakerjs.dev/api/airline](https://fakerjs.dev/api/airline)
@@ -238,8 +219,7 @@ airline.recordLocator()
 ```
 
 Example return values:
-- `"HSRWTV"`
-- `"BKENFS"`
+- `TCSJCN`
 
 ### `airline.seat`
 
@@ -263,5 +243,4 @@ airline.seat(aircraftType="narrowbody")
 ```
 
 Example return values:
-- `"23D"`
-- `"9E"`
+- `17F`

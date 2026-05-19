@@ -30,8 +30,7 @@ commerce.department()
 ```
 
 Example return values:
-- `"Industrial"`
-- `"Baby"`
+- `Tools`
 
 ### `commerce.isbn`
 
@@ -42,8 +41,8 @@ Returns a random ISBN identifier.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `separator` | `string` | no | Character inserted between ISBN groups (for example `-`). |
-| `variant` | `string` | no | ISBN length variant: use `"10"` for ISBN-10 or `"13"` for ISBN-13. |
+| `separator` | `string` | no | Separator inserted between generated items. |
+| `variant` | `string` | no | The variant of the identifier to return. Can be either 10 (10-digit format) or 13 (13-digit format). |
 
 Examples:
 
@@ -56,8 +55,7 @@ commerce.isbn(separator="-", variant="13")
 ```
 
 Example return values:
-- `"978-1-74663-962-4"`
-- `"978-1-158-06239-3"`
+- `978-1-996134-54-2`
 
 ### `commerce.price`
 
@@ -84,8 +82,7 @@ commerce.price(dec=1, max=1, min=1, symbol="$")
 ```
 
 Example return values:
-- `"348.35"`
-- `"818.69"`
+- `797.39`
 
 ### `commerce.product`
 
@@ -103,8 +100,7 @@ commerce.product()
 ```
 
 Example return values:
-- `"Salad"`
-- `"Pants"`
+- `Bike`
 
 ### `commerce.productAdjective`
 
@@ -122,8 +118,7 @@ commerce.productAdjective()
 ```
 
 Example return values:
-- `"Modern"`
-- `"Tasty"`
+- `Luxurious`
 
 ### `commerce.productDescription`
 
@@ -141,8 +136,7 @@ commerce.productDescription()
 ```
 
 Example return values:
-- `"Roob - Wehner's most advanced Tuna technology increases concrete capabilities"`
-- `"Stylish Car designed to make you stand out with impossible looks"`
+- `The green Hat combines Colombia aesthetics with Scandium-based durability`
 
 ### `commerce.productMaterial`
 
@@ -160,8 +154,7 @@ commerce.productMaterial()
 ```
 
 Example return values:
-- `"Bamboo"`
-- `"Plastic"`
+- `Steel`
 
 ### `commerce.productName`
 
@@ -179,5 +172,4 @@ commerce.productName()
 ```
 
 Example return values:
-- `"Soft Gold Shoes"`
-- `"Recycled Concrete Bike"`
+- `Soft Bronze Towels`

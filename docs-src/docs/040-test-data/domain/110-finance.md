@@ -30,8 +30,7 @@ finance.accountName()
 ```
 
 Example return values:
-- `"Savings Account"`
-- `"Home Loan Account"`
+- `Investment Account`
 
 ### `finance.accountNumber`
 
@@ -55,8 +54,7 @@ finance.accountNumber(length=1)
 ```
 
 Example return values:
-- `"49018866"`
-- `"60456794"`
+- `43208795`
 
 ### `finance.amount`
 
@@ -84,8 +82,7 @@ finance.amount(autoFormat=true, dec=1, max=1, min=1, symbol="$")
 ```
 
 Example return values:
-- `"149.16"`
-- `"691.98"`
+- `536.86`
 
 ### `finance.bic`
 
@@ -109,8 +106,7 @@ finance.bic(includeBranchCode=true)
 ```
 
 Example return values:
-- `"JAHFCDRAXXX"`
-- `"HDJFBRUQ"`
+- `TXWRPYFT`
 
 ### `finance.bitcoinAddress`
 
@@ -128,8 +124,7 @@ finance.bitcoinAddress()
 ```
 
 Example return values:
-- `"bc1pzsw5kl430n3mlhd5snxf8jsn8w8pkn5szswd2vdgswryyd6reuhljezh79"`
-- `"bc1y7ndstl65j0lqw6zn65e7c2aglznrqyect4sejh"`
+- `39fu5Nhnibj2xa8FPVxCbX7y4xZi5SWd`
 
 ### `finance.creditCardCVV`
 
@@ -147,8 +142,7 @@ finance.creditCardCVV()
 ```
 
 Example return values:
-- `"642"`
-- `"505"`
+- `839`
 
 ### `finance.creditCardIssuer`
 
@@ -166,8 +160,7 @@ finance.creditCardIssuer()
 ```
 
 Example return values:
-- `"diners_club"`
-- `"discover"`
+- `jcb`
 
 ### `finance.creditCardNumber`
 
@@ -187,12 +180,11 @@ finance.creditCardNumber()
 ```
 
 ```txt
-finance.creditCardNumber(issuer="visa")
+finance.creditCardNumber(issuer="value")
 ```
 
 Example return values:
-- `"4253595338386"`
-- `"3680-760929-2509"`
+- `6449-4462-4996-7580`
 
 ### `finance.currency`
 
@@ -210,8 +202,7 @@ finance.currency()
 ```
 
 Example return values:
-- `{"name":"Pakistan Rupee","code":"PKR","symbol":"₨","numericCode":"586"}`
-- `{"name":"Bahraini Dinar","code":"BHD","symbol":"","numericCode":"048"}`
+- `{"name":"Rial Omani","code":"OMR","symbol":"﷼","numericCode":"512"}`
 
 ### `finance.currencyCode`
 
@@ -229,8 +220,7 @@ finance.currencyCode()
 ```
 
 Example return values:
-- `"HNL"`
-- `"VND"`
+- `ISK`
 
 ### `finance.currencyName`
 
@@ -248,8 +238,7 @@ finance.currencyName()
 ```
 
 Example return values:
-- `"Tugrik"`
-- `"Lilangeni"`
+- `South Sudanese pound`
 
 ### `finance.currencyNumericCode`
 
@@ -267,7 +256,7 @@ finance.currencyNumericCode()
 ```
 
 Example return values:
-- `"784"`
+- `270`
 
 ### `finance.currencySymbol`
 
@@ -285,8 +274,7 @@ finance.currencySymbol()
 ```
 
 Example return values:
-- `"₨"`
-- `"kr"`
+- `₩`
 
 ### `finance.ethereumAddress`
 
@@ -304,8 +292,7 @@ finance.ethereumAddress()
 ```
 
 Example return values:
-- `"0x607cf8c49d90bd4d367fd5dc2fc4af6bebdedf17"`
-- `"0xff0d2ab192cfbeb8ebcd74c4306eceb3f150ae70"`
+- `0xf5d385aff27de9dee6eeeffd924ffd7dd2d252ca`
 
 ### `finance.iban`
 
@@ -330,8 +317,7 @@ finance.iban(countryCode="GB", formatted=true)
 ```
 
 Example return values:
-- `"IE60XZAD39998435857068"`
-- `"NO1827072008009"`
+- `CH67001759079BP5WA811`
 
 ### `finance.litecoinAddress`
 
@@ -349,8 +335,7 @@ finance.litecoinAddress()
 ```
 
 Example return values:
-- `"Mx5xmnGzMKFjCoEa4sP7AtsMHWMqY1M7a"`
-- `"MUt8eNXLSYpeiDoKiTof8BetGJpuM"`
+- `M7nWopfUfSjA8cmGWvuENRLu6GU4C1iTK`
 
 ### `finance.maskedNumber`
 
@@ -374,8 +359,7 @@ finance.maskedNumber(length=1)
 ```
 
 Example return values:
-- `"(...0214)"`
-- `"(...5189)"`
+- `(...0934)`
 
 ### `finance.pin`
 
@@ -399,8 +383,7 @@ finance.pin(length=1)
 ```
 
 Example return values:
-- `"3243"`
-- `"9247"`
+- `1107`
 
 ### `finance.routingNumber`
 
@@ -418,8 +401,7 @@ finance.routingNumber()
 ```
 
 Example return values:
-- `"128948329"`
-- `"799587533"`
+- `933657999`
 
 ### `finance.transactionDescription`
 
@@ -437,8 +419,7 @@ finance.transactionDescription()
 ```
 
 Example return values:
-- `"Your deposit of YER 512.78 at Schoen and Sons was successful. Charged via card ****1684 to account ***5866."`
-- `"payment at Gislason, Herzog and Ankunding with a card ending in ****9045 for PYG 683.99 from account ***3048."`
+- `Transaction alert: deposit at Jones LLC using card ending ****4221 for an amount of GIP 94.88 on account ***3694.`
 
 ### `finance.transactionType`
 
@@ -456,5 +437,4 @@ finance.transactionType()
 ```
 
 Example return values:
-- `"deposit"`
-- `"payment"`
+- `deposit`

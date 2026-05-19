@@ -30,8 +30,7 @@ music.album()
 ```
 
 Example return values:
-- `"The Beatles (White Album)"`
-- `"Threat to Survival"`
+- `R&G (Rhythm & Gangsta): The Masterpiece`
 
 ### `music.artist`
 
@@ -49,8 +48,7 @@ music.artist()
 ```
 
 Example return values:
-- `"Fine Young Cannibals"`
-- `"The Platters"`
+- `Chuck Berry`
 
 ### `music.genre`
 
@@ -68,8 +66,7 @@ music.genre()
 ```
 
 Example return values:
-- `"Easy Listening"`
-- `"Latin"`
+- `Mainstream Jazz`
 
 ### `music.songName`
 
@@ -87,5 +84,4 @@ music.songName()
 ```
 
 Example return values:
-- `"Spanish Harlem"`
-- `"Rock Around the Clock"`
+- `I'm Sorry`

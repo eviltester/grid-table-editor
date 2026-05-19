@@ -1,4 +1,5 @@
 import { DOMAIN_KEYWORD_DEFINITIONS } from './domain-keyword-definitions.js';
+import { executeCustomCounterString } from './counterstring.js';
 
 const DOMAIN_ROOT_PREFIX = 'awd.domain.';
 const DOMAIN_PREFIX = 'domain.';
@@ -56,6 +57,12 @@ function buildDomainKeywordCatalog(definitions = DOMAIN_KEYWORD_DEFINITIONS) {
         summary: String(definition?.help?.summary || '').trim(),
         docsUrl: String(definition?.help?.docsUrl || '').trim(),
         example: String(definition?.help?.example || '').trim(),
+        examples: Array.isArray(definition?.help?.examples)
+          ? definition.help.examples.map((example) => String(example || '').trim()).filter(Boolean)
+          : [],
+        exampleReturnValues: Array.isArray(definition?.help?.exampleReturnValues)
+          ? definition.help.exampleReturnValues.map((value) => String(value || '').trim()).filter(Boolean)
+          : [],
         returnType: String(definition?.help?.returnType || '').trim(),
         args: Array.isArray(definition?.help?.args)
           ? definition.help.args.map((arg) => ({
@@ -198,6 +205,10 @@ function applyFakerArgTransform(keyword, args = []) {
   return args;
 }
 
+const BUILT_IN_CUSTOM_DELEGATES = {
+  'string.counterString': executeCustomCounterString,
+};
+
 function validateDomainKeywordArgs(keyword, args = []) {
   const argumentList = Array.isArray(args) ? args : [];
   const schema = Array.isArray(keyword?.help?.args) ? keyword.help.args : [];
@@ -252,7 +263,10 @@ function executeDomainKeyword(aliasOrCanonical, executionContext = {}, index = D
   }
 
   if (keyword.delegate.type === DELEGATE_TYPE_CUSTOM) {
-    const customDelegates = executionContext.customDelegates || {};
+    const customDelegates = {
+      ...BUILT_IN_CUSTOM_DELEGATES,
+      ...(executionContext.customDelegates || {}),
+    };
     const customFn = customDelegates[keyword.delegate.target];
     if (typeof customFn !== 'function') {
       throw new Error(`Unknown custom delegate target: ${keyword.delegate.target}`);

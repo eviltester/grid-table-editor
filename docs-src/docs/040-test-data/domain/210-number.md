@@ -23,7 +23,7 @@ Returns a BigInt number.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `value` | `string\|number\|boolean` | no | Legacy placeholder argument from Faker signatures; currently has no effect. Use documented options instead. |
+| `value` | `bigint\|number\|string\|boolean` | no | Base value used for generation. Supports bigint, number, string, or boolean inputs. For range constraints use min, max, and multipleOf. |
 
 Examples:
 
@@ -32,12 +32,11 @@ number.bigInt()
 ```
 
 ```txt
-number.bigInt(value=42)
+number.bigInt(value="value")
 ```
 
 Example return values:
-- `"347465151663036n"`
-- `"918273645546372n"`
+- `347465151663036`
 
 ### `number.binary`
 
@@ -62,7 +61,7 @@ number.binary(max=1, min=1)
 ```
 
 Example return values:
-- `"0"`
+- `0`
 
 ### `number.float`
 
@@ -73,7 +72,7 @@ Returns a single random floating-point number, by default between `0.0` and `1.0
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `value` | `number` | no | Legacy placeholder argument from Faker signatures; currently has no effect. Use documented options instead. |
+| `value` | `number` | no | Legacy placeholder argument from Faker signatures; currently has no effect. Use the documented options instead. |
 | `fractionDigits` | `number` | no | The maximum number of digits to appear after the decimal point, for example 2 will round to 2 decimal points. Only one of multipleOf or fractionDigits should be passed. |
 | `max` | `number` | no | Upper bound for generated number, exclusive, unless multipleOf or fractionDigits are passed. |
 | `min` | `number` | no | Lower bound for generated number, inclusive. |
@@ -108,8 +107,7 @@ number.float(multipleOf=1)
 ```
 
 Example return values:
-- `0.11027820838106395`
-- `0.5898499201943372`
+- `0.5433707701438405`
 
 ### `number.hex`
 
@@ -122,7 +120,7 @@ Returns a lowercase hexadecimal number.
 | --- | --- | --- | --- |
 | `min` | `number` | no | Minimum bound used when generating a value. |
 | `max` | `number` | no | Maximum bound used when generating a value. |
-| `value` | `number` | no | Legacy placeholder argument from Faker signatures; currently has no effect. Use documented options instead. |
+| `value` | `number` | no | Legacy placeholder argument from Faker signatures; currently has no effect. Use the documented options instead. |
 
 Examples:
 
@@ -135,8 +133,7 @@ number.hex(min=1, max=1, value=1)
 ```
 
 Example return values:
-- `"5"`
-- `"7"`
+- `d`
 
 ### `number.int`
 
@@ -162,8 +159,7 @@ number.int(min=1, max=1, multipleOf=1)
 ```
 
 Example return values:
-- `108688750608405`
-- `4041549375676296`
+- `5190574431878510`
 
 ### `number.octal`
 
@@ -188,8 +184,7 @@ number.octal(max=1, min=1)
 ```
 
 Example return values:
-- `"3"`
-- `"7"`
+- `6`
 
 ### `number.romanNumeral`
 
@@ -202,7 +197,7 @@ Returns a roman numeral in String format.
 | --- | --- | --- | --- |
 | `min` | `number` | no | Minimum bound used when generating a value. |
 | `max` | `number` | no | Maximum bound used when generating a value. |
-| `value` | `number` | no | Legacy placeholder argument from Faker signatures; currently has no effect. Use documented options instead. |
+| `value` | `number` | no | Legacy placeholder argument from Faker signatures; currently has no effect. Use the documented options instead. |
 
 Examples:
 
@@ -215,5 +210,4 @@ number.romanNumeral(min=1, max=1, value=1)
 ```
 
 Example return values:
-- `"MLXXXII"`
-- `"DXXXVI"`
+- `XXXV`

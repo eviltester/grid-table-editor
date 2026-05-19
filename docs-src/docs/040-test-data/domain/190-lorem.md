@@ -23,9 +23,9 @@ Generates the given number lines of lorem separated by `'\n'`.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `min` | `number` | no | The minimum number of words per generated line. |
-| `max` | `number` | no | The maximum number of words per generated line. |
-| `lineCount` | `number` | no | Exact number of lines to generate. |
+| `min` | `number` | no | Minimum bound used when generating a value. |
+| `max` | `number` | no | Maximum bound used when generating a value. |
+| `lineCount` | `number` | no | Optional number argument for this command. |
 | `lineCountMax` | `number` | no | The maximum number of lines to generate. |
 | `lineCountMin` | `number` | no | The minimum number of lines to generate. |
 
@@ -40,8 +40,7 @@ lorem.lines(min=1, max=1, lineCount=1, lineCountMax=1, lineCountMin=1)
 ```
 
 Example return values:
-- `"Conventus constans explicabo claustrum ait tepesco compono benigne cupressus.\nCapillus caries degusto vito vehemens denuo usus vinculum caput.\nCalamitas atque dolorem civitas.\nOptio talio curso abeo maiores tui.\nVerbera ago vere solium ut ratione vulnero civitas utilis."`
-- `"Spargo quod auctor condico.\nAmissio ratione culpa."`
+- `Illum qui ocer creptio. Antepono aro vergo voluptatem acervus compono apud.`
 
 ### `lorem.paragraph`
 
@@ -67,10 +66,6 @@ lorem.paragraph()
 ```txt
 lorem.paragraph(min=1, max=1, sentenceCount=1, sentenceCountMax=1, sentenceCountMin=1)
 ```
-
-Example return values:
-- `"Approbo uterque adipiscor tricesimus labore stillicidium confero non patrocinor. Adficio acquiro sublime conor ullam cursim spectaculum adulescens confido. Tamdiu ter avaritia beatus vito deleo terreo utor eius."`
-- `"Vox amiculum crepusculum vinco comminor. Enim vaco doloribus auctus varietas aspicio suppono velit aperte accusator. Volaticus coadunatio demoror tenetur accusamus."`
 
 ### `lorem.paragraphs`
 
@@ -98,10 +93,6 @@ lorem.paragraphs()
 lorem.paragraphs(min=1, max=1, paragraphCount=1, separator="-", paragraphCountMax=1, paragraphCountMin=1)
 ```
 
-Example return values:
-- `"Thermae possimus denique deleniti desino. Decerno umquam caveo arbor sequi astrum. Via carmen thymum tot architecto voluptas summopere compello.\nTremo tot speculum eius audentia tibi at creator corrumpo ver. Vero spero asper. Amor vespillo ciminatio facere ter ater creo sol.\nDens cubo advenio tepesco nulla alioqui conitor voluptatum aeternus. Totam strenuus censura triduana alter vel. Agnitio comprehendo tero cattus."`
-- `"Ventito similique tot curis correptius. Articulus curso admoneo aetas terga ars suscipit minus vulnero. Decimus reprehenderit sit videlicet terminatio decens tamen aer arceo esse.\nThymum audio claustrum patrocinor cruentus depono. Cupio adipiscor comitatus aspicio veritas caste voluntarius arcus suffoco careo. Atqui defetiscor virgo.\nLaborum conservo admoneo adeptio aliquam tollo certe. Alter impedit torrens alienus corrumpo creta tyrannus crastinus. Vito teneo templum voluptatum solio tamisium perspiciatis quisquam."`
-
 ### `lorem.sentence`
 
 Generates a space separated list of words beginning with a capital letter and ending with a period.
@@ -128,8 +119,7 @@ lorem.sentence(min=1, max=1, wordCount=1, wordCountMax=1, wordCountMin=1)
 ```
 
 Example return values:
-- `"Defendo adulescens color tertius sufficio nulla balbus vitae tabernus."`
-- `"Aperio abutor aestus ambitus temptatio architecto adfectus."`
+- `Auctor cum deorsum attero cum tergo aut.`
 
 ### `lorem.sentences`
 
@@ -158,8 +148,7 @@ lorem.sentences(min=1, max=1, sentenceCount=1, separator="-", sentenceCountMax=1
 ```
 
 Example return values:
-- `"Voveo video quod convoco denuncio defaeco textus tepesco. Averto attonbitus talis. Aurum desipio carus aperio truculenter comes. Bestia doloribus comprehendo. Cimentarius aegrotatio assentator defendo allatus tero talus despecto expedita."`
-- `"Solvo tamquam coma cimentarius tutis vigilo rem corpus cunabula libero. Aufero caterva aqua. Ancilla thymum iure. Cupio porro terebro delectus verumtamen combibo vivo."`
+- `Vicissitudo amet candidus. Urbanus magni carbo artificiose tenus at ambulo.`
 
 ### `lorem.slug`
 
@@ -187,8 +176,7 @@ lorem.slug(min=1, max=1, wordCount=1, wordCountMax=1, wordCountMin=1)
 ```
 
 Example return values:
-- `"suus-aequus-caries"`
-- `"usque-suus-ait"`
+- `dolore-accusator-atqui`
 
 ### `lorem.text`
 
@@ -204,10 +192,6 @@ Examples:
 ```txt
 lorem.text()
 ```
-
-Example return values:
-- `"Caterva capitulus comes celebrer tergiversatio dicta conservo enim arbor.\nVolubilis veritas ipsa.\nEos venia conicio earum caries doloremque cernuus.\nCaelum deludo conduco at viduo tenetur saepe victus ager venio."`
-- `"Absconditus curatio truculenter usitas fugiat tracto aurum super defaeco. Averto ustilo talis. Veritatis tempus nesciunt curia advenio valens provident.\nCausa textus turpis. Sodalitas pecto timidus trans cibo adhuc quis velit cubicularis magni. Compono dapifer crux vigor pauci ara.\nItaque usitas acidus considero utique. Deludo culpo tristis circumvenio crudelis. Vigor conservo desparatus corrigo surgo supra."`
 
 ### `lorem.word`
 
@@ -234,8 +218,7 @@ lorem.word(min=1, max=1, length=1, strategy="any-length")
 ```
 
 Example return values:
-- `"veniam"`
-- `"sum"`
+- `cumque`
 
 ### `lorem.words`
 
@@ -263,5 +246,4 @@ lorem.words(min=1, max=1, wordCount=1, wordCountMax=1, wordCountMin=1)
 ```
 
 Example return values:
-- `"comis voluptates versus"`
-- `"crebro copiose iste"`
+- `desidero conforto decimus`

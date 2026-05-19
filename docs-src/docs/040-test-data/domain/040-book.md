@@ -30,8 +30,7 @@ book.author()
 ```
 
 Example return values:
-- `"Jack Kerouac"`
-- `"Jules Verne"`
+- `Jacqueline Crooks`
 
 ### `book.format`
 
@@ -49,8 +48,7 @@ book.format()
 ```
 
 Example return values:
-- `"Hardcover"`
-- `"Paperback"`
+- `Paperback`
 
 ### `book.genre`
 
@@ -68,8 +66,7 @@ book.genre()
 ```
 
 Example return values:
-- `"Western"`
-- `"Romance"`
+- `Science Fiction`
 
 ### `book.publisher`
 
@@ -87,8 +84,7 @@ book.publisher()
 ```
 
 Example return values:
-- `"Farrar, Straus & Giroux"`
-- `"Bowes & Bowes"`
+- `Butterworth-Heinemann`
 
 ### `book.series`
 
@@ -106,8 +102,7 @@ book.series()
 ```
 
 Example return values:
-- `"The Dresden Files"`
-- `"The Inheritance Cycle"`
+- `The Inheritance Cycle`
 
 ### `book.title`
 
@@ -125,5 +120,4 @@ book.title()
 ```
 
 Example return values:
-- `"Nineteen Eighty Four"`
-- `"Bible"`
+- `Animal Farm`

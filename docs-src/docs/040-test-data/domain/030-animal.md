@@ -30,8 +30,7 @@ animal.bear()
 ```
 
 Example return values:
-- `"Sloth bear"`
-- `"Giant panda"`
+- `Sloth bear`
 
 ### `animal.bird`
 
@@ -49,8 +48,7 @@ animal.bird()
 ```
 
 Example return values:
-- `"Tropical Parula"`
-- `"Cactus Wren"`
+- `Orange-crowned Warbler`
 
 ### `animal.cat`
 
@@ -68,8 +66,7 @@ animal.cat()
 ```
 
 Example return values:
-- `"Japanese Bobtail"`
-- `"Russian Blue"`
+- `Russian Blue`
 
 ### `animal.cetacean`
 
@@ -87,8 +84,7 @@ animal.cetacean()
 ```
 
 Example return values:
-- `"Striped Dolphin"`
-- `"Spinner Dolphin"`
+- `Hector’s Dolphin`
 
 ### `animal.cow`
 
@@ -106,8 +102,7 @@ animal.cow()
 ```
 
 Example return values:
-- `"Dwarf Lulu"`
-- `"Pulikulam"`
+- `Aubrac`
 
 ### `animal.crocodilia`
 
@@ -125,8 +120,7 @@ animal.crocodilia()
 ```
 
 Example return values:
-- `"Cuvier’s Dwarf Caiman"`
-- `"Yacare Caiman"`
+- `Nile Crocodile`
 
 ### `animal.dog`
 
@@ -144,8 +138,7 @@ animal.dog()
 ```
 
 Example return values:
-- `"Poitevin"`
-- `"Lancashire Heeler"`
+- `Jonangi`
 
 ### `animal.fish`
 
@@ -163,8 +156,7 @@ animal.fish()
 ```
 
 Example return values:
-- `"Nile perch"`
-- `"Short mackerel"`
+- `Short mackerel`
 
 ### `animal.horse`
 
@@ -182,8 +174,7 @@ animal.horse()
 ```
 
 Example return values:
-- `"Noriker Horse"`
-- `"Kathiawari"`
+- `Rottaler`
 
 ### `animal.insect`
 
@@ -201,8 +192,7 @@ animal.insect()
 ```
 
 Example return values:
-- `"Silky ant"`
-- `"Red ant"`
+- `Pigeon tremex`
 
 ### `animal.lion`
 
@@ -220,8 +210,7 @@ animal.lion()
 ```
 
 Example return values:
-- `"West African Lion"`
-- `"Northeast Congo Lion"`
+- `Masai Lion`
 
 ### `animal.petName`
 
@@ -239,8 +228,7 @@ animal.petName()
 ```
 
 Example return values:
-- `"Ollie"`
-- `"Bentley"`
+- `Stella`
 
 ### `animal.rabbit`
 
@@ -258,8 +246,7 @@ animal.rabbit()
 ```
 
 Example return values:
-- `"French Lop"`
-- `"English Angora"`
+- `Californian`
 
 ### `animal.rodent`
 
@@ -277,8 +264,7 @@ animal.rodent()
 ```
 
 Example return values:
-- `"Strong tuco-tuco"`
-- `"Bennett's chinchilla rat"`
+- `Natterer's tuco-tuco`
 
 ### `animal.snake`
 
@@ -296,8 +282,7 @@ animal.snake()
 ```
 
 Example return values:
-- `"Green tree pit viper"`
-- `"Western ground snake"`
+- `White-lipped python`
 
 ### `animal.type`
 
@@ -315,5 +300,4 @@ animal.type()
 ```
 
 Example return values:
-- `"snake"`
-- `"zebra"`
+- `bear`

@@ -30,8 +30,7 @@ phone.imei()
 ```
 
 Example return values:
-- `"62-254603-841402-5"`
-- `"52-339397-830295-5"`
+- `44-358223-971834-1`
 
 ### `phone.number`
 
@@ -55,5 +54,4 @@ phone.number(style="human")
 ```
 
 Example return values:
-- `"732.568.2497 x89386"`
-- `"500-203-7039"`
+- `298.756.9044`

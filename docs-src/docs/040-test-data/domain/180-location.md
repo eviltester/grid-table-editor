@@ -30,8 +30,7 @@ location.buildingNumber()
 ```
 
 Example return values:
-- `"5098"`
-- `"8232"`
+- `5075`
 
 ### `location.cardinalDirection`
 
@@ -49,7 +48,7 @@ location.cardinalDirection()
 ```
 
 Example return values:
-- `"West"`
+- `East`
 
 ### `location.city`
 
@@ -67,8 +66,7 @@ location.city()
 ```
 
 Example return values:
-- `"Neldachester"`
-- `"East Libbychester"`
+- `Stellachester`
 
 ### `location.continent`
 
@@ -86,8 +84,7 @@ location.continent()
 ```
 
 Example return values:
-- `"Antarctica"`
-- `"Asia"`
+- `Asia`
 
 ### `location.country`
 
@@ -105,8 +102,7 @@ location.country()
 ```
 
 Example return values:
-- `"Indonesia"`
-- `"Iraq"`
+- `Svalbard & Jan Mayen Islands`
 
 ### `location.countryCode`
 
@@ -124,8 +120,7 @@ location.countryCode()
 ```
 
 Example return values:
-- `"PE"`
-- `"KI"`
+- `MG`
 
 ### `location.county`
 
@@ -143,8 +138,7 @@ location.county()
 ```
 
 Example return values:
-- `"Rutland"`
-- `"Washington County"`
+- `Northamptonshire`
 
 ### `location.direction`
 
@@ -168,8 +162,7 @@ location.direction(abbreviated=false)
 ```
 
 Example return values:
-- `"East"`
-- `"North"`
+- `North`
 
 ### `location.language`
 
@@ -187,8 +180,7 @@ location.language()
 ```
 
 Example return values:
-- `{"name":"Tagalog","alpha2":"tl","alpha3":"tgl"}`
-- `{"name":"Azerbaijani","alpha2":"az","alpha3":"aze"}`
+- `{"name":"Icelandic","alpha2":"is","alpha3":"isl"}`
 
 ### `location.latitude`
 
@@ -214,8 +206,7 @@ location.latitude(min=1, max=1, precision=1)
 ```
 
 Example return values:
-- `38.5893`
-- `57.5593`
+- `51.5448`
 
 ### `location.longitude`
 
@@ -241,8 +232,7 @@ location.longitude(min=1, max=1, precision=1)
 ```
 
 Example return values:
-- `-174.1417`
-- `100.7973`
+- `92.3892`
 
 ### `location.nearbyGPSCoordinate`
 
@@ -260,8 +250,7 @@ location.nearbyGPSCoordinate()
 ```
 
 Example return values:
-- `[-5.738,-37.5877]`
-- `[30.3643,59.1147]`
+- `[58.313,9.9746]`
 
 ### `location.ordinalDirection`
 
@@ -279,8 +268,7 @@ location.ordinalDirection()
 ```
 
 Example return values:
-- `"Southwest"`
-- `"Southeast"`
+- `Northeast`
 
 ### `location.secondaryAddress`
 
@@ -298,8 +286,7 @@ location.secondaryAddress()
 ```
 
 Example return values:
-- `"Suite 588"`
-- `"Apt. 105"`
+- `Suite 634`
 
 ### `location.state`
 
@@ -323,8 +310,7 @@ location.state(abbreviated=false)
 ```
 
 Example return values:
-- `"New Hampshire"`
-- `"Louisiana"`
+- `Hawaii`
 
 ### `location.street`
 
@@ -342,8 +328,7 @@ location.street()
 ```
 
 Example return values:
-- `"Kemmer Forges"`
-- `"Labadie Extension"`
+- `Viva Harbor`
 
 ### `location.streetAddress`
 
@@ -354,7 +339,8 @@ Generates a random localized street address.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `useFullAddress` | `boolean` | no | When true, generates a fuller address variant (for example including additional address detail). When false or omitted, generates a standard street address. |
+| `useFullAddress` | `boolean` | no | Optional boolean argument for this command. |
+| `value` | `boolean` | no | Legacy placeholder argument from Faker signatures; currently has no effect. Use the documented options instead. |
 
 Examples:
 
@@ -363,12 +349,11 @@ location.streetAddress()
 ```
 
 ```txt
-location.streetAddress(useFullAddress=true)
+location.streetAddress(useFullAddress=true, value=true)
 ```
 
 Example return values:
-- `"24973 Steuber Skyway"`
-- `"555 Kali Summit"`
+- `12056 Vandervort Common`
 
 ### `location.timeZone`
 
@@ -386,8 +371,7 @@ location.timeZone()
 ```
 
 Example return values:
-- `"America/Anchorage"`
-- `"Asia/Pyongyang"`
+- `Australia/Perth`
 
 ### `location.zipCode`
 
@@ -405,5 +389,4 @@ location.zipCode()
 ```
 
 Example return values:
-- `"24867"`
-- `"55040-0535"`
+- `36791`

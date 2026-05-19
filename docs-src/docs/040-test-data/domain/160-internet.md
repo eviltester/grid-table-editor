@@ -30,8 +30,7 @@ internet.color()
 ```
 
 Example return values:
-- `"#2d5c7d"`
-- `"#604136"`
+- `#290551`
 
 ### `internet.displayName`
 
@@ -49,8 +48,7 @@ internet.displayName()
 ```
 
 Example return values:
-- `"Donna_Willms14"`
-- `"Glenna70"`
+- `Cordell0`
 
 ### `internet.domainName`
 
@@ -68,8 +66,7 @@ internet.domainName()
 ```
 
 Example return values:
-- `"carefree-kiss.net"`
-- `"monumental-independence.net"`
+- `beloved-peony.org`
 
 ### `internet.domainSuffix`
 
@@ -87,8 +84,7 @@ internet.domainSuffix()
 ```
 
 Example return values:
-- `"name"`
-- `"org"`
+- `com`
 
 ### `internet.domainWord`
 
@@ -106,8 +102,7 @@ internet.domainWord()
 ```
 
 Example return values:
-- `"wry-outset"`
-- `"oily-paintwork"`
+- `inexperienced-ravioli`
 
 ### `internet.email`
 
@@ -130,12 +125,11 @@ internet.email()
 ```
 
 ```txt
-internet.email(allowSpecialCharacters=true, firstName="Alex", lastName="Taylor", provider="gmail.com")
+internet.email(allowSpecialCharacters=true, firstName="Alex", lastName="Taylor", provider="example.com")
 ```
 
 Example return values:
-- `"Mayra65@gmail.com"`
-- `"Antone_Kub87@hotmail.com"`
+- `Jana91@hotmail.com`
 
 ### `internet.emoji`
 
@@ -159,8 +153,7 @@ internet.emoji(types=["food","nature"])
 ```
 
 Example return values:
-- `"🥑"`
-- `"👜"`
+- `🤨`
 
 ### `internet.exampleEmail`
 
@@ -178,8 +171,7 @@ internet.exampleEmail()
 ```
 
 Example return values:
-- `"Spencer_Mante@example.com"`
-- `"Madison.Kub29@example.org"`
+- `Jeremie37@example.net`
 
 ### `internet.httpMethod`
 
@@ -197,8 +189,7 @@ internet.httpMethod()
 ```
 
 Example return values:
-- `"PUT"`
-- `"DELETE"`
+- `PATCH`
 
 ### `internet.httpStatusCode`
 
@@ -216,8 +207,7 @@ internet.httpStatusCode()
 ```
 
 Example return values:
-- `505`
-- `506`
+- `303`
 
 ### `internet.ip`
 
@@ -235,8 +225,7 @@ internet.ip()
 ```
 
 Example return values:
-- `"8eb3:eb0b:23f8:24af:dab0:32ff:b9e8:dfcb"`
-- `"224.35.99.161"`
+- `56.23.30.52`
 
 ### `internet.ipv4`
 
@@ -260,10 +249,6 @@ internet.ipv4()
 internet.ipv4(cidrBlock="192.168.0.0/24", network="private-a")
 ```
 
-Example return values:
-- `"66.234.157.133"`
-- `"87.85.6.113"`
-
 ### `internet.ipv6`
 
 Generates a random IPv6 address.
@@ -278,10 +263,6 @@ Examples:
 ```txt
 internet.ipv6()
 ```
-
-Example return values:
-- `"efab:dbdb:dbc0:f3ed:4fc0:be73:ec76:08ac"`
-- `"8ccb:adb2:6eb1:eb7e:e6eb:bc3c:cd92:a021"`
 
 ### `internet.jwt`
 
@@ -303,12 +284,8 @@ internet.jwt()
 ```
 
 ```txt
-internet.jwt(header=["sample"], payload=["sample"], refDate=1)
+internet.jwt(header=["item"], payload=["item"], refDate=1)
 ```
-
-Example return values:
-- `"eyJhbGciOiJFUzUxMiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NzkxMDUxODQsImV4cCI6MTc3OTExNjI0MCwibmJmIjoxNzU2MzczMzM2LCJpc3MiOiJIdWRzb24gSW5jIiwic3ViIjoiZDE3MTJkYzQtYjZlZi00MTA2LWIxYzUtNjlmNDJiNjljMjZjIiwiYXVkIjoiYzdlNjliODYtOWE4OS00MDZmLTgzYWItMDkzYzQ5MWNmZjQyIiwianRpIjoiMDI0NjNhNGUtMWNhNy00MGE2LWI1ZDktZGJjNTYyZWNjNDFiIn0.Gs8gUfYlSgDoJOaDI2NoNEfyMG0UUL88TkJApQkhFjIBD66avEjmn0BWxPHOq3Ub"`
-- `"eyJhbGciOiJIUzM4NCIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NzkwMjE1NDUsImV4cCI6MTc3OTA2MzMzMCwibmJmIjoxNzQ4Mjg4OTI2LCJpc3MiOiJWYW5kZXJ2b3J0LCBSb2JlbCBhbmQgQWx0ZW53ZXJ0aCIsInN1YiI6ImJkODUwNTg1LTI1YTAtNDAwOC04OWEzLTcwMDgyNGE2YjY5ZiIsImF1ZCI6IjhhYThhYzM0LWM1ZDgtNDdiZi1iMjVkLWE1MzI5NjVmMjdjNyIsImp0aSI6IjRlMjE3MDllLTg4ZGUtNDk1Ny04MzZmLTJiMTY3ODkzNDExZiJ9.o2Mmjn9y3Mfcj6N2LgWJGmv3fAbn2UyEbxIAeo1NyufQFwJA0UgzQ0e52Dv38mjo"`
 
 ### `internet.jwtAlgorithm`
 
@@ -326,7 +303,7 @@ internet.jwtAlgorithm()
 ```
 
 Example return values:
-- `"HS384"`
+- `PS384`
 
 ### `internet.mac`
 
@@ -350,8 +327,7 @@ internet.mac(separator="-")
 ```
 
 Example return values:
-- `"9d:65:b8:77:9e:e2"`
-- `"9e:d7:be:f2:62:0e"`
+- `ae:a9:d7:ba:d2:bd`
 
 ### `internet.password`
 
@@ -374,12 +350,11 @@ internet.password()
 ```
 
 ```txt
-internet.password(length=12, memorable=true, pattern="a", prefix="#")
+internet.password(length=1, memorable=false, pattern="[A-Za-z0-9]", prefix="#")
 ```
 
 Example return values:
-- `"7FRCloUvbQ8D4zB"`
-- `"J89o3mPBaw0mEv9"`
+- `og1ejoksrfwVbIF`
 
 ### `internet.port`
 
@@ -397,8 +372,7 @@ internet.port()
 ```
 
 Example return values:
-- `29644`
-- `51998`
+- `24545`
 
 ### `internet.protocol`
 
@@ -416,7 +390,7 @@ internet.protocol()
 ```
 
 Example return values:
-- `"https"`
+- `http`
 
 ### `internet.url`
 
@@ -441,8 +415,7 @@ internet.url(appendSlash=true, protocol="https")
 ```
 
 Example return values:
-- `"https://twin-newsletter.info"`
-- `"https://productive-conservation.org/"`
+- `https://brave-interior.biz/`
 
 ### `internet.userAgent`
 
@@ -458,10 +431,6 @@ Examples:
 ```txt
 internet.userAgent()
 ```
-
-Example return values:
-- `"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/556.49.37 (KHTML, like Gecko) Version/16.1 Safari/584.80.32"`
-- `"FakerBot/8.17.16"`
 
 ### `internet.username`
 
@@ -486,8 +455,7 @@ internet.username(firstName="Alex", lastName="Taylor")
 ```
 
 Example return values:
-- `"Myles_King"`
-- `"Allie_Witting"`
+- `Deanna51`
 
 ### `internet.userName`
 
@@ -505,5 +473,4 @@ internet.userName()
 ```
 
 Example return values:
-- `"Alba90"`
-- `"Keith3"`
+- `Ana_Keebler`

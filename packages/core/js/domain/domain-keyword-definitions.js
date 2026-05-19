@@ -4147,6 +4147,46 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     },
   },
   {
+    keyword: 'string.counterString',
+    delegate: {
+      type: 'custom',
+      target: 'string.counterString',
+    },
+    help: {
+      summary:
+        'Generates a counterstring for a random length between min and max (or fixed length when only one value is provided).',
+      docsUrl: '/docs/test-data/counterstrings',
+      example: '*3*5*7*9*12*15*',
+      examples: [
+        'string.counterString(15)',
+        'string.counterString(min=5, max=12)',
+        'string.counterString(min=12, max=12, delimiter="#")',
+      ],
+      exampleReturnValues: ['*3*5*7*9*12*15*', '#3#5#7#9#12#'],
+      returnType: 'string',
+      args: [
+        {
+          name: 'min',
+          type: 'number',
+          required: true,
+          description: 'Minimum counterstring length. If max is omitted, min is also used as max.',
+        },
+        {
+          name: 'max',
+          type: 'number',
+          required: false,
+          description: 'Maximum counterstring length. If less than min, values are swapped.',
+        },
+        {
+          name: 'delimiter',
+          type: 'string',
+          required: false,
+          description: 'Delimiter character used between position markers. Defaults to "*".',
+        },
+      ],
+    },
+  },
+  {
     keyword: 'string.fromCharacters',
     delegate: {
       type: 'faker',
@@ -4155,7 +4195,9 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     help: {
       summary: 'Generates a string from the given characters.',
       docsUrl: 'https://fakerjs.dev/api/string',
-      example: '',
+      example: 'A1B2',
+      examples: ['string.fromCharacters("ABC123", 6)', 'string.fromCharacters(characters=["A", "B", "C"], length=4)'],
+      exampleReturnValues: ['A1B2', 'CB2A'],
       returnType: 'string',
       args: [
         {
@@ -4720,12 +4762,6 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           description: 'Maximum bound used when generating a value.',
         },
         {
-          name: 'value',
-          type: 'number',
-          required: false,
-          description: 'Legacy shorthand for target word length. Prefer the length option.',
-        },
-        {
           name: 'strategy',
           type: 'string',
           required: false,
@@ -4759,12 +4795,6 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           type: 'number',
           required: false,
           description: 'Maximum bound used when generating a value.',
-        },
-        {
-          name: 'value',
-          type: 'number',
-          required: false,
-          description: 'Legacy shorthand for target word length. Prefer the length option.',
         },
         {
           name: 'strategy',
@@ -4802,12 +4832,6 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           description: 'Maximum bound used when generating a value.',
         },
         {
-          name: 'value',
-          type: 'number',
-          required: false,
-          description: 'Legacy shorthand for target word length. Prefer the length option.',
-        },
-        {
           name: 'strategy',
           type: 'string',
           required: false,
@@ -4841,12 +4865,6 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           type: 'number',
           required: false,
           description: 'Maximum bound used when generating a value.',
-        },
-        {
-          name: 'value',
-          type: 'number',
-          required: false,
-          description: 'Legacy shorthand for target word length. Prefer the length option.',
         },
         {
           name: 'strategy',
@@ -4884,12 +4902,6 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           description: 'Maximum bound used when generating a value.',
         },
         {
-          name: 'value',
-          type: 'number',
-          required: false,
-          description: 'Legacy shorthand for target word length. Prefer the length option.',
-        },
-        {
           name: 'strategy',
           type: 'string',
           required: false,
@@ -4923,12 +4935,6 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           type: 'number',
           required: false,
           description: 'Maximum bound used when generating a value.',
-        },
-        {
-          name: 'value',
-          type: 'number',
-          required: false,
-          description: 'Legacy shorthand for target word length. Prefer the length option.',
         },
         {
           name: 'strategy',
@@ -4967,12 +4973,6 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           description: 'Maximum bound used when generating a value.',
         },
         {
-          name: 'value',
-          type: 'number',
-          required: false,
-          description: 'Legacy shorthand for target word length. Prefer the length option.',
-        },
-        {
           name: 'strategy',
           type: 'string',
           required: false,
@@ -5008,12 +5008,6 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           description: 'Maximum bound used when generating a value.',
         },
         {
-          name: 'value',
-          type: 'number',
-          required: false,
-          description: 'Legacy shorthand for target word length. Prefer the length option.',
-        },
-        {
           name: 'strategy',
           type: 'string',
           required: false,
@@ -5047,12 +5041,6 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           type: 'number',
           required: false,
           description: 'Maximum bound used when generating a value.',
-        },
-        {
-          name: 'value',
-          type: 'number',
-          required: false,
-          description: 'Legacy shorthand for number of words to generate. Prefer the count option.',
         },
       ],
     },

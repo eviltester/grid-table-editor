@@ -30,8 +30,7 @@ hacker.abbreviation()
 ```
 
 Example return values:
-- `"TLS"`
-- `"SSD"`
+- `GB`
 
 ### `hacker.adjective`
 
@@ -49,8 +48,7 @@ hacker.adjective()
 ```
 
 Example return values:
-- `"optical"`
-- `"auxiliary"`
+- `bluetooth`
 
 ### `hacker.ingverb`
 
@@ -68,8 +66,7 @@ hacker.ingverb()
 ```
 
 Example return values:
-- `"parsing"`
-- `"compressing"`
+- `synthesizing`
 
 ### `hacker.noun`
 
@@ -87,7 +84,7 @@ hacker.noun()
 ```
 
 Example return values:
-- `"transmitter"`
+- `program`
 
 ### `hacker.phrase`
 
@@ -105,8 +102,7 @@ hacker.phrase()
 ```
 
 Example return values:
-- `"The TCP bus is down, synthesize the auxiliary feed so we can transmit the SSD capacitor!"`
-- `"I'll back up the redundant HEX application, that should panel the SQL interface!"`
+- `compressing the application won't do anything, we need to reboot the neural JSON hard drive!`
 
 ### `hacker.verb`
 
@@ -124,5 +120,4 @@ hacker.verb()
 ```
 
 Example return values:
-- `"copy"`
-- `"transmit"`
+- `program`

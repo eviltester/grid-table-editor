@@ -30,8 +30,7 @@ company.buzzAdjective()
 ```
 
 Example return values:
-- `"cutting-edge"`
-- `"24/7"`
+- `out-of-the-box`
 
 ### `company.buzzNoun`
 
@@ -49,8 +48,7 @@ company.buzzNoun()
 ```
 
 Example return values:
-- `"architectures"`
-- `"supply-chains"`
+- `deliverables`
 
 ### `company.buzzPhrase`
 
@@ -68,8 +66,7 @@ company.buzzPhrase()
 ```
 
 Example return values:
-- `"empower sticky synergies"`
-- `"empower robust mindshare"`
+- `streamline cutting-edge platforms`
 
 ### `company.buzzVerb`
 
@@ -87,8 +84,7 @@ company.buzzVerb()
 ```
 
 Example return values:
-- `"disintermediate"`
-- `"optimize"`
+- `disintermediate`
 
 ### `company.catchPhrase`
 
@@ -106,12 +102,11 @@ company.catchPhrase()
 ```
 
 Example return values:
-- `"Cross-platform maximized hardware"`
-- `"Monitored sustainable customer loyalty"`
+- `Diverse AI-powered flexibility`
 
 ### `company.catchPhraseAdjective`
 
-Returns a random catch phrase adjective that can be displayed to an end user.
+Returns a random catch phrase adjective that can be displayed to an end user..
 
 - Canonical: `awd.domain.company.catchPhraseAdjective`
 - Faker docs: [https://fakerjs.dev/api/company](https://fakerjs.dev/api/company)
@@ -125,12 +120,11 @@ company.catchPhraseAdjective()
 ```
 
 Example return values:
-- `"Virtual"`
-- `"Face to face"`
+- `Distributed`
 
 ### `company.catchPhraseDescriptor`
 
-Returns a random catch phrase descriptor that can be displayed to an end user.
+Returns a random catch phrase descriptor that can be displayed to an end user..
 
 - Canonical: `awd.domain.company.catchPhraseDescriptor`
 - Faker docs: [https://fakerjs.dev/api/company](https://fakerjs.dev/api/company)
@@ -144,12 +138,11 @@ company.catchPhraseDescriptor()
 ```
 
 Example return values:
-- `"leading edge"`
-- `"asynchronous"`
+- `encompassing`
 
 ### `company.catchPhraseNoun`
 
-Returns a random catch phrase noun that can be displayed to an end user.
+Returns a random catch phrase noun that can be displayed to an end user..
 
 - Canonical: `awd.domain.company.catchPhraseNoun`
 - Faker docs: [https://fakerjs.dev/api/company](https://fakerjs.dev/api/company)
@@ -163,8 +156,7 @@ company.catchPhraseNoun()
 ```
 
 Example return values:
-- `"pricing structure"`
-- `"capability"`
+- `attitude`
 
 ### `company.name`
 
@@ -182,5 +174,4 @@ company.name()
 ```
 
 Example return values:
-- `"Hudson, Rogahn and Hane"`
-- `"Monahan, Boyle and Crona"`
+- `Lang - Little`

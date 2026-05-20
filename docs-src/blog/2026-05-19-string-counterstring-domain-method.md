@@ -1,7 +1,7 @@
 ---
 slug: string-counterstring-domain-method
 title: "Added string.counterString to Domain Test Data"
-authors: [eviltester]
+authors: [alan]
 tags: [release, test-data, domain]
 ---
 

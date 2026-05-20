@@ -3,6 +3,7 @@ import path from 'node:path';
 import { DOMAIN_KEYWORDS } from '../packages/core/js/domain/domain-keywords.js';
 import { faker } from '@faker-js/faker';
 import { executeDomainKeyword } from '../packages/core/js/domain/domain-keywords.js';
+import { toInlineCode } from '../packages/core/js/domain/domain-doc-markdown.js';
 
 const outDir = path.resolve('docs-src/docs/040-test-data/domain');
 fs.mkdirSync(outDir, { recursive: true });
@@ -122,14 +123,6 @@ function escapeMdxText(value) {
 function escapeMarkdownTableCell(value) {
   const normalized = String(value ?? '').replaceAll('\r\n', '\n').replaceAll('\r', '\n');
   return escapeMdxText(normalized.replaceAll('\n', '<br/>')).replaceAll('|', '\\|');
-}
-
-function toInlineCode(value) {
-  const text = String(value ?? '');
-  const backtickRuns = text.match(/`+/g) || [];
-  const longestRun = backtickRuns.reduce((max, run) => Math.max(max, run.length), 0);
-  const fence = '`'.repeat(longestRun + 1);
-  return `${fence}${text}${fence}`;
 }
 
 function canExecuteInvocation(keyword, args) {

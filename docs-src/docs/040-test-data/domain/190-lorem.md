@@ -97,9 +97,7 @@ lorem.paragraphs(min=1, max=1, paragraphCount=1, separator="-", paragraphCountMa
 ```
 
 Example return values:
-- `Primus paragraphus.
-
-Secundus paragraphus.`
+- `Primus paragraphus.\n\nSecundus paragraphus.`
 
 ### `lorem.sentence`
 

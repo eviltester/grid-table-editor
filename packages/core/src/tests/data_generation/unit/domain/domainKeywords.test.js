@@ -141,6 +141,64 @@ describe('domain keyword catalog', () => {
     expect(DOMAIN_KEYWORDS.some((entry) => entry.keyword.startsWith('helpers.'))).toBe(false);
     expect(DOMAIN_KEYWORD_DEFINITIONS.some((entry) => String(entry.keyword || '').startsWith('helpers.'))).toBe(false);
   });
+
+  test('keeps critical keyword metadata contracts for documented return types and transforms', () => {
+    const byKeyword = new Map(DOMAIN_KEYWORDS.map((entry) => [entry.keyword, entry]));
+
+    expect(byKeyword.get('literal.value')?.help?.returnType).toBe('string|number|boolean');
+    expect(byKeyword.get('datatype.boolean')?.help?.args.map((arg) => arg.name)).toEqual(['probability']);
+    expect(byKeyword.get('finance.accountName')?.help?.returnType).toBe('string');
+    expect(byKeyword.get('finance.accountNumber')?.help?.returnType).toBe('string');
+    expect(byKeyword.get('date.month')?.help?.returnType).toBe('string');
+    expect(byKeyword.get('date.weekday')?.help?.returnType).toBe('string');
+    expect(byKeyword.get('internet.email')?.delegate?.argTransform).toBe('optionsFromHelpArgs');
+    expect(byKeyword.get('internet.httpStatusCode')?.help?.returnType).toBe('number');
+    expect(byKeyword.get('internet.port')?.help?.returnType).toBe('number');
+    expect(byKeyword.get('location.country')?.help?.returnType).toBe('string');
+    expect(byKeyword.get('location.countryCode')?.help?.returnType).toBe('string');
+    expect(byKeyword.get('location.county')?.help?.returnType).toBe('string');
+    expect(byKeyword.get('location.direction')?.help?.returnType).toBe('string');
+    expect(byKeyword.get('location.secondaryAddress')?.help?.returnType).toBe('string');
+    expect(byKeyword.get('location.language')?.help?.returnType).toBe('object');
+  });
+
+  test('example literals are consistent with declared returnType metadata', () => {
+    const failures = [];
+
+    for (const entry of DOMAIN_KEYWORDS) {
+      const declaredType = String(entry?.help?.returnType || '');
+      const example = String(entry?.help?.example || '');
+      const inferred = inferTypeFromExampleLiteral(example);
+      const inferredType = inferred.type;
+      const confidence = inferred.confidence;
+
+      const allowedTypes = declaredType
+        .split('|')
+        .map((part) => part.trim())
+        .filter((part) => part.length > 0);
+
+      if (allowedTypes.includes('object') && !exampleLooksLikeObjectLiteral(example)) {
+        failures.push({
+          keyword: entry.keyword,
+          returnType: declaredType,
+          example,
+          reason: 'declared object returnType requires object-like example literal',
+        });
+        continue;
+      }
+
+      if (confidence === 'high' && !allowedTypes.includes(inferredType)) {
+        failures.push({
+          keyword: entry.keyword,
+          returnType: declaredType,
+          example,
+          inferredType,
+        });
+      }
+    }
+
+    expect(failures).toEqual([]);
+  });
 });
 
 describe('domain keyword alias mapping', () => {
@@ -294,6 +352,27 @@ function valueToInvocationLiteral(value) {
     return JSON.stringify(value);
   }
   throw new Error(`Unsupported invocation literal value: ${String(value)}`);
+}
+
+function inferTypeFromExampleLiteral(example) {
+  const value = String(example || '').trim();
+  if (value.length === 0) return { type: 'unknown', confidence: 'low' };
+
+  if (value === 'true' || value === 'false') return { type: 'boolean', confidence: 'high' };
+  if (value.startsWith('[') && value.endsWith(']')) return { type: 'array', confidence: 'high' };
+  if (value.startsWith('{') && value.endsWith('}')) return { type: 'object', confidence: 'high' };
+  if (/^"?\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z"?$/.test(value)) {
+    return { type: 'date', confidence: 'high' };
+  }
+  if (/[^0-9.+-]/.test(value)) return { type: 'string', confidence: 'high' };
+  if (/^[+-]?\d+(\.\d+)?$/.test(value)) return { type: 'number', confidence: 'low' };
+
+  return { type: 'string', confidence: 'low' };
+}
+
+function exampleLooksLikeObjectLiteral(example) {
+  const value = String(example || '').trim();
+  return value.startsWith('{') && value.endsWith('}');
 }
 
 describe('faker keyword invocation styles', () => {

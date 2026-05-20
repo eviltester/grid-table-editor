@@ -10,7 +10,7 @@ const DOMAIN_FAKER_COLOR_KEYWORD_DEFINITIONS = [
       summary: 'Returns a CMYK color.',
       docsUrl: 'https://fakerjs.dev/api/color',
       example: '[0.95,0.17,0.23,1]',
-      returnType: 'string',
+      returnType: 'array',
       args: [
         {
           name: 'format',
@@ -31,7 +31,7 @@ const DOMAIN_FAKER_COLOR_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random color based on CSS color space specified.',
       docsUrl: 'https://fakerjs.dev/api/color',
       example: '[0.5811,0.0479,0.1091]',
-      returnType: 'string',
+      returnType: 'array',
       args: [],
     },
   },
@@ -74,7 +74,7 @@ const DOMAIN_FAKER_COLOR_KEYWORD_DEFINITIONS = [
       summary: 'Returns an HSL color.',
       docsUrl: 'https://fakerjs.dev/api/color',
       example: '[212,0.78,0.54]',
-      returnType: 'string',
+      returnType: 'array',
       args: [
         {
           name: 'format',
@@ -116,7 +116,7 @@ const DOMAIN_FAKER_COLOR_KEYWORD_DEFINITIONS = [
       summary: 'Returns an HWB color.',
       docsUrl: 'https://fakerjs.dev/api/color',
       example: '[328,0.27,0.33]',
-      returnType: 'string',
+      returnType: 'array',
       args: [
         {
           name: 'format',
@@ -138,7 +138,7 @@ const DOMAIN_FAKER_COLOR_KEYWORD_DEFINITIONS = [
       summary: 'Returns a LAB (CIELAB) color.',
       docsUrl: 'https://fakerjs.dev/api/color',
       example: '[0.071396,-55.6612,-66.7185]',
-      returnType: 'string',
+      returnType: 'array',
       args: [
         {
           name: 'format',
@@ -160,7 +160,7 @@ const DOMAIN_FAKER_COLOR_KEYWORD_DEFINITIONS = [
       summary: 'Returns an LCH color.',
       docsUrl: 'https://fakerjs.dev/api/color',
       example: '[0.469557,212.9,204.9]',
-      returnType: 'string',
+      returnType: 'array',
       args: [
         {
           name: 'format',

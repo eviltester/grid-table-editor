@@ -178,7 +178,7 @@ class DomainKeywordInvocationParser {
       return { ok: false, error: 'Invalid keyword arguments: unbalanced expression' };
     }
 
-    const value = {};
+    const value = Object.create(null);
 
     if (stream.match('RBRACE')) {
       return { ok: true, value };
@@ -190,6 +190,9 @@ class DomainKeywordInvocationParser {
         return { ok: false, error: 'Invalid keyword arguments: unbalanced expression' };
       }
       const key = String(stream.consume().value);
+      if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
+        return { ok: false, error: `Invalid keyword arguments: unsafe object key "${key}" is not allowed` };
+      }
 
       if (!stream.match('COLON')) {
         return { ok: false, error: 'Invalid keyword arguments: unbalanced expression' };

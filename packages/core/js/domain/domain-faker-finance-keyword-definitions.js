@@ -9,7 +9,7 @@ const DOMAIN_FAKER_FINANCE_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random account name.',
       docsUrl: 'https://fakerjs.dev/api/finance',
       example: 'Investment Account',
-      returnType: 'integer',
+      returnType: 'string',
       args: [],
     },
   },
@@ -23,7 +23,7 @@ const DOMAIN_FAKER_FINANCE_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random account number.',
       docsUrl: 'https://fakerjs.dev/api/finance',
       example: '43208795',
-      returnType: 'integer',
+      returnType: 'string',
       args: [
         {
           name: 'length',

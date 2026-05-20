@@ -11,7 +11,7 @@ const DOMAIN_CUSTOM_LITERAL_KEYWORD_DEFINITIONS = [
       example: 'Pending',
       examples: ['literal.value("Pending")', 'literal.value("")'],
       exampleReturnValues: ['Pending', ''],
-      returnType: 'string',
+      returnType: 'string|number|boolean',
       args: [
         {
           name: 'value',

@@ -74,6 +74,7 @@ const DOMAIN_FAKER_INTERNET_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'internet.email',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Generates data using faker internet email.',
@@ -169,7 +170,7 @@ const DOMAIN_FAKER_INTERNET_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random HTTP status code.',
       docsUrl: 'https://fakerjs.dev/api/internet',
       example: '303',
-      returnType: 'string',
+      returnType: 'number',
       args: [],
     },
   },
@@ -350,7 +351,7 @@ const DOMAIN_FAKER_INTERNET_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random port number.',
       docsUrl: 'https://fakerjs.dev/api/internet',
       example: '24545',
-      returnType: 'string',
+      returnType: 'number',
       args: [],
     },
   },

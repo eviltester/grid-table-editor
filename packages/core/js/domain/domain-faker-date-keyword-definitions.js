@@ -164,7 +164,7 @@ const DOMAIN_FAKER_DATE_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random name of a month.',
       docsUrl: 'https://fakerjs.dev/api/date',
       example: 'February',
-      returnType: 'object',
+      returnType: 'string',
       args: [
         {
           name: 'abbreviated',
@@ -291,7 +291,7 @@ const DOMAIN_FAKER_DATE_KEYWORD_DEFINITIONS = [
       summary: 'Returns a random day of the week.',
       docsUrl: 'https://fakerjs.dev/api/date',
       example: 'Tuesday',
-      returnType: 'object',
+      returnType: 'string',
       args: [
         {
           name: 'abbreviated',

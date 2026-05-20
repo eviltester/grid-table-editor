@@ -142,4 +142,19 @@ describe('domain keyword parser', () => {
     const parsedKeyword = parseKeywordInvocation('example.fn(min=1)');
     expect(parsedKeyword.errors).toEqual(['Unknown keyword: example.fn']);
   });
+
+  test('returns error for unsafe object key "__proto__"', () => {
+    const parsedKeyword = parseKeywordInvocation('number.int({"__proto__":{"polluted":true}})');
+    expect(parsedKeyword.errors).toEqual(['Invalid keyword arguments: unsafe object key "__proto__" is not allowed']);
+  });
+
+  test('returns error for unsafe object key "constructor"', () => {
+    const parsedKeyword = parseKeywordInvocation('number.int({"constructor":{"prototype":{"polluted":true}}})');
+    expect(parsedKeyword.errors).toEqual(['Invalid keyword arguments: unsafe object key "constructor" is not allowed']);
+  });
+
+  test('returns error for unsafe object key "prototype"', () => {
+    const parsedKeyword = parseKeywordInvocation('number.int({prototype:1})');
+    expect(parsedKeyword.errors).toEqual(['Invalid keyword arguments: unsafe object key "prototype" is not allowed']);
+  });
 });

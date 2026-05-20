@@ -18,12 +18,6 @@ const DOMAIN_FAKER_DATATYPE_KEYWORD_DEFINITIONS = [
           required: false,
           description: 'Probability threshold for returning true (between 0 and 1).',
         },
-        {
-          name: 'value',
-          type: 'number',
-          required: false,
-          description: 'Numeric toggle for deterministic output: 0 returns false and 1 returns true.',
-        },
       ],
     },
   },

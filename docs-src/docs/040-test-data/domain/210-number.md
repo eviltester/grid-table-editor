@@ -72,7 +72,6 @@ Returns a single random floating-point number, by default between `0.0` and `1.0
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `value` | `number` | no | Legacy placeholder argument from Faker signatures; currently has no effect. Use the documented options instead. |
 | `fractionDigits` | `number` | no | The maximum number of digits to appear after the decimal point, for example 2 will round to 2 decimal points. Only one of multipleOf or fractionDigits should be passed. |
 | `max` | `number` | no | Upper bound for generated number, exclusive, unless multipleOf or fractionDigits are passed. |
 | `min` | `number` | no | Lower bound for generated number, inclusive. |
@@ -85,10 +84,6 @@ number.float()
 ```
 
 Type-in examples (named params):
-
-```txt
-number.float(value=1)
-```
 
 ```txt
 number.float(fractionDigits=1)
@@ -120,7 +115,6 @@ Returns a lowercase hexadecimal number.
 | --- | --- | --- | --- |
 | `min` | `number` | no | Minimum bound used when generating a value. |
 | `max` | `number` | no | Maximum bound used when generating a value. |
-| `value` | `number` | no | Legacy placeholder argument from Faker signatures; currently has no effect. Use the documented options instead. |
 
 Examples:
 
@@ -129,7 +123,7 @@ number.hex()
 ```
 
 ```txt
-number.hex(min=1, max=1, value=1)
+number.hex(min=1, max=1)
 ```
 
 Example return values:
@@ -197,7 +191,6 @@ Returns a roman numeral in String format.
 | --- | --- | --- | --- |
 | `min` | `number` | no | Minimum bound used when generating a value. |
 | `max` | `number` | no | Maximum bound used when generating a value. |
-| `value` | `number` | no | Legacy placeholder argument from Faker signatures; currently has no effect. Use the documented options instead. |
 
 Examples:
 
@@ -206,7 +199,7 @@ number.romanNumeral()
 ```
 
 ```txt
-number.romanNumeral(min=1, max=1, value=1)
+number.romanNumeral(min=1, max=1)
 ```
 
 Example return values:

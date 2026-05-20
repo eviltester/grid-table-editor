@@ -110,6 +110,21 @@ describe('domain keyword catalog', () => {
     expect(missingExamples).toEqual([]);
   });
 
+  test('standalone domain definitions do not contain legacy placeholder argument docs', () => {
+    const legacyPlaceholderArgs = [];
+    DOMAIN_KEYWORD_DEFINITIONS.forEach((definition) => {
+      const args = Array.isArray(definition?.help?.args) ? definition.help.args : [];
+      args.forEach((arg) => {
+        const description = String(arg?.description || '');
+        if (description.includes('Legacy placeholder argument from Faker signatures')) {
+          legacyPlaceholderArgs.push(`${definition.keyword}.${arg.name}`);
+        }
+      });
+    });
+
+    expect(legacyPlaceholderArgs).toEqual([]);
+  });
+
   test('supports creating catalogs from injected definitions', () => {
     const catalog = buildDomainKeywordCatalog([
       {

@@ -65,13 +65,6 @@ const DOMAIN_FAKER_NUMBER_KEYWORD_DEFINITIONS = [
       returnType: 'number',
       args: [
         {
-          name: 'value',
-          type: 'number',
-          required: false,
-          description:
-            'Legacy placeholder argument from Faker signatures; currently has no effect. Use the documented options instead.',
-        },
-        {
           name: 'fractionDigits',
           type: 'number',
           required: false,
@@ -124,13 +117,6 @@ const DOMAIN_FAKER_NUMBER_KEYWORD_DEFINITIONS = [
           type: 'number',
           required: false,
           description: 'Maximum bound used when generating a value.',
-        },
-        {
-          name: 'value',
-          type: 'number',
-          required: false,
-          description:
-            'Legacy placeholder argument from Faker signatures; currently has no effect. Use the documented options instead.',
         },
       ],
     },
@@ -221,13 +207,6 @@ const DOMAIN_FAKER_NUMBER_KEYWORD_DEFINITIONS = [
           type: 'number',
           required: false,
           description: 'Maximum bound used when generating a value.',
-        },
-        {
-          name: 'value',
-          type: 'number',
-          required: false,
-          description:
-            'Legacy placeholder argument from Faker signatures; currently has no effect. Use the documented options instead.',
         },
       ],
     },

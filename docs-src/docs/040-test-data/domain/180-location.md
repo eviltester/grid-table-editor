@@ -339,8 +339,7 @@ Generates a random localized street address.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `useFullAddress` | `boolean` | no | Optional boolean argument for this command. |
-| `value` | `boolean` | no | Legacy placeholder argument from Faker signatures; currently has no effect. Use the documented options instead. |
+| `useFullAddress` | `boolean` | no | Whether to expand to a full address including secondary address information. |
 
 Examples:
 
@@ -349,7 +348,7 @@ location.streetAddress()
 ```
 
 ```txt
-location.streetAddress(useFullAddress=true, value=true)
+location.streetAddress(useFullAddress=true)
 ```
 
 Example return values:

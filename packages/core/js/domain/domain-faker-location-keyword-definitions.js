@@ -300,14 +300,7 @@ const DOMAIN_FAKER_LOCATION_KEYWORD_DEFINITIONS = [
           name: 'useFullAddress',
           type: 'boolean',
           required: false,
-          description: 'Optional boolean argument for this command.',
-        },
-        {
-          name: 'value',
-          type: 'boolean',
-          required: false,
-          description:
-            'Legacy placeholder argument from Faker signatures; currently has no effect. Use the documented options instead.',
+          description: 'Whether to expand to a full address including secondary address information.',
         },
       ],
     },

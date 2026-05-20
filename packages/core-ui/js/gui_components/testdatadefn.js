@@ -37,6 +37,17 @@ import { PairwiseTestDataGenerator } from '@anywaydata/core/data_generation/all-
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 import { schemaTextToDataRules, dataRulesToSchemaText } from '@anywaydata/core/data_generation/schema-rules-adapter.js';
 import { TimedErrorDisplay } from './timed-error-display.js';
+import {
+  SOURCE_TYPE_FAKER,
+  SOURCE_TYPE_DOMAIN,
+  SOURCE_TYPE_REGEX,
+  SOURCE_TYPE_LITERAL,
+  SOURCE_TYPE_ENUM,
+  buildRuleSpecFromSchemaRow,
+  extractLiteralValueFromRuleSpec,
+  extractRegexValueFromRuleSpec,
+  normaliseFakerCommand,
+} from './schema-row-rule-mapper.js';
 
 import { faker } from 'https://cdn.skypack.dev/@faker-js/faker@v9.7.0';
 
@@ -553,52 +564,56 @@ function populateTestDataGridFromRules() {
 
   const rowsToAdd = [];
   for (const [ruleIndex, rule] of parseResult.dataRules.entries()) {
-    let data = {};
-    data.columnName = rule.name;
-    data.comments = String(rule.comments ?? '');
-    data.leadingTextLines = Array.isArray(leadingTextLinesByRuleIndex[ruleIndex])
-      ? leadingTextLinesByRuleIndex[ruleIndex].slice()
-      : [];
-    if (rule.type == 'faker') {
-      // remove faker.
-      let fakerFreeRule = rule.ruleSpec;
-      if (fakerFreeRule.startsWith('faker.')) {
-        fakerFreeRule = fakerFreeRule.replace('faker.', '');
-      }
-      const fakerCommand = findFakerCommand(fakerFreeRule);
-      if (fakerCommand == '') {
-        console.log(`Unknown faker command in ruleSpec ${fakerFreeRule}`);
-        data.type = '';
-        data.value = fakerFreeRule;
-      } else {
-        data.type = fakerCommand;
-        data.value = fakerFreeRule.replace(fakerCommand, '');
-      }
-    } else if (rule.type == 'domain') {
-      const domainRule = String(rule.ruleSpec || '').trim();
-      const domainParts = extractDomainCommandAndParams(domainRule);
-      if (!domainParts.command) {
-        data.type = '';
-        data.value = domainRule;
-      } else {
-        data.type = domainParts.command;
-        data.value = domainParts.params;
-      }
-    } else if (rule.type == 'enum') {
-      data.type = 'enum';
-      data.value = rule.ruleSpec;
-    } else if (rule.type == 'literal') {
-      data.type = 'literal';
-      data.value = rule.ruleSpec;
-    } else {
-      data.type = 'regex';
-      data.value = rule.ruleSpec;
-    }
-
-    rowsToAdd.push(data);
+    rowsToAdd.push(mapDataRuleToGridRow(rule, leadingTextLinesByRuleIndex[ruleIndex] || []));
   }
   defnGridBridge.addRows(rowsToAdd);
   updatePairwiseButtonVisibility();
+}
+
+function mapDataRuleToGridRow(rule, leadingTextLines = []) {
+  const data = {
+    columnName: String(rule?.name ?? ''),
+    comments: String(rule?.comments ?? ''),
+    leadingTextLines: Array.isArray(leadingTextLines) ? leadingTextLines.slice() : [],
+    type: '',
+    value: '',
+  };
+  if (rule?.type === SOURCE_TYPE_FAKER) {
+    const fakerFreeRule = normaliseFakerCommand(rule.ruleSpec);
+    const fakerCommand = findFakerCommand(fakerFreeRule);
+    if (!fakerCommand) {
+      data.type = '';
+      data.value = fakerFreeRule;
+      return data;
+    }
+    data.type = fakerCommand;
+    data.value = fakerFreeRule.slice(fakerCommand.length);
+    return data;
+  }
+  if (rule?.type === SOURCE_TYPE_DOMAIN) {
+    const domainParts = extractDomainCommandAndParams(rule.ruleSpec);
+    if (!domainParts.command) {
+      data.type = '';
+      data.value = String(rule?.ruleSpec ?? '').trim();
+      return data;
+    }
+    data.type = domainParts.command;
+    data.value = domainParts.params;
+    return data;
+  }
+  if (rule?.type === SOURCE_TYPE_ENUM) {
+    data.type = SOURCE_TYPE_ENUM;
+    data.value = String(rule?.ruleSpec ?? '');
+    return data;
+  }
+  if (rule?.type === SOURCE_TYPE_LITERAL) {
+    data.type = SOURCE_TYPE_LITERAL;
+    data.value = extractLiteralValueFromRuleSpec(rule?.ruleSpec);
+    return data;
+  }
+  data.type = SOURCE_TYPE_REGEX;
+  data.value = extractRegexValueFromRuleSpec(rule?.ruleSpec);
+  return data;
 }
 
 const FAKER_COMMANDS = [];
@@ -1008,41 +1023,6 @@ function clearTabulatorDraftTracking() {
   activeDefnCellEdit = null;
 }
 
-function normalizeEnumRuleDefinition(value) {
-  const rawValue = String(value ?? '').trim();
-  if (rawValue.length === 0) {
-    return '';
-  }
-  if (/^(enum|datatype\.enum|awd\.datatype\.enum)\s*\(/i.test(rawValue)) {
-    return rawValue;
-  }
-  return `enum(${rawValue})`;
-}
-
-function normalizeLiteralRuleDefinition(value) {
-  const rawValue = String(value ?? '');
-  const trimmedValue = rawValue.trim();
-  if (trimmedValue.length === 0) {
-    return 'literal("")';
-  }
-  if (/^(literal|datatype\.literal|awd\.datatype\.literal)\s*\(/i.test(trimmedValue)) {
-    return trimmedValue;
-  }
-  return `literal(${rawValue})`;
-}
-
-function normalizeRegexRuleDefinition(value) {
-  const rawValue = String(value ?? '');
-  const trimmedValue = rawValue.trim();
-  if (trimmedValue.length === 0) {
-    return 'regex("")';
-  }
-  if (/^(regex|datatype\.regex|awd\.datatype\.regex)\s*\(/i.test(trimmedValue)) {
-    return trimmedValue;
-  }
-  return rawValue;
-}
-
 function convertGridToText() {
   if (!defnGridBridge) {
     return;
@@ -1055,40 +1035,8 @@ function convertGridToText() {
         ? { ...rowData, [activeDefnCellEdit.field]: activeDefnCellEdit.value }
         : rowData;
 
-    let ruleLine = '';
-    const resolvedType = String(resolvedRowData.type || '').trim();
-    const lowerType = resolvedType.toLowerCase();
-    switch (lowerType) {
-      case 'regex':
-        ruleLine = normalizeRegexRuleDefinition(resolvedRowData.value);
-        break;
-      case 'enum':
-        ruleLine = normalizeEnumRuleDefinition(resolvedRowData.value);
-        break;
-      case 'literal':
-        ruleLine = normalizeLiteralRuleDefinition(resolvedRowData.value);
-        break;
-      case 'faker':
-        ruleLine = resolvedRowData.value || '';
-        break;
-      case '__faker_section__':
-      case '__domain_section__':
-        ruleLine = '';
-        break;
-      default: {
-        let dataType = resolvedType;
-        if (dataType.startsWith('faker.')) {
-          dataType = dataType.replace('faker.', '');
-        }
-        if (DOMAIN_COMMANDS.includes(dataType) || FAKER_COMMANDS.includes(dataType)) {
-          ruleLine = dataType + (resolvedRowData.value || '');
-        } else {
-          // throw error? ignore? don't know what the command is so it won't parse
-          // ignoring
-          console.log(`UNKNOWN COMMAND: ${dataType} ${resolvedRowData.value}`);
-        }
-      }
-    }
+    const schemaRow = mapGridRowToSchemaRow(resolvedRowData);
+    const ruleLine = buildRuleSpecFromSchemaRow(schemaRow);
     dataRules.push({
       name: String(resolvedRowData.columnName || ''),
       ruleSpec: String(ruleLine || ''),
@@ -1102,6 +1050,61 @@ function convertGridToText() {
   const renderResult = dataRulesToSchemaText({ dataRules, schemaTokens: schemaTextTokens });
   document.getElementById('testdatadefntext').value = renderResult.text;
   updatePairwiseButtonVisibility();
+}
+
+function mapGridRowToSchemaRow(rowData) {
+  const resolvedType = String(rowData?.type || '').trim();
+  const lowerType = resolvedType.toLowerCase();
+  if (lowerType === SOURCE_TYPE_REGEX) {
+    return {
+      name: String(rowData?.columnName || ''),
+      sourceType: SOURCE_TYPE_REGEX,
+      value: String(rowData?.value ?? ''),
+    };
+  }
+  if (lowerType === SOURCE_TYPE_ENUM) {
+    return {
+      name: String(rowData?.columnName || ''),
+      sourceType: SOURCE_TYPE_ENUM,
+      value: String(rowData?.value ?? ''),
+    };
+  }
+  if (lowerType === SOURCE_TYPE_LITERAL) {
+    return {
+      name: String(rowData?.columnName || ''),
+      sourceType: SOURCE_TYPE_LITERAL,
+      value: String(rowData?.value ?? ''),
+    };
+  }
+  if (lowerType === FAKER_SECTION_VALUE || lowerType === DOMAIN_SECTION_VALUE) {
+    return { name: String(rowData?.columnName || ''), sourceType: SOURCE_TYPE_REGEX, value: '' };
+  }
+
+  let dataType = resolvedType;
+  if (dataType.startsWith('faker.')) {
+    dataType = dataType.replace('faker.', '');
+  }
+
+  if (DOMAIN_COMMANDS.includes(dataType)) {
+    return {
+      name: String(rowData?.columnName || ''),
+      sourceType: SOURCE_TYPE_DOMAIN,
+      command: dataType,
+      params: String(rowData?.value ?? ''),
+    };
+  }
+  if (FAKER_COMMANDS.includes(dataType)) {
+    return {
+      name: String(rowData?.columnName || ''),
+      sourceType: SOURCE_TYPE_FAKER,
+      command: dataType,
+      params: String(rowData?.value ?? ''),
+    };
+  }
+  if (lowerType === SOURCE_TYPE_FAKER) {
+    return { name: String(rowData?.columnName || ''), sourceType: SOURCE_TYPE_FAKER, command: '', params: '' };
+  }
+  return { name: String(rowData?.columnName || ''), sourceType: SOURCE_TYPE_REGEX, value: '' };
 }
 
 function enableTestDataGenerationInterface(parentId, anImporter, aTextPreviewRenderer, aGridExtras) {

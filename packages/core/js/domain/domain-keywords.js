@@ -174,6 +174,7 @@ function isTypeMatch(value, typeName) {
     if (item === 'number' && typeof value === 'number' && Number.isFinite(value)) return true;
     if (item === 'boolean' && typeof value === 'boolean') return true;
     if (item === 'array' && Array.isArray(value)) return true;
+    if (item === 'object' && value !== null && typeof value === 'object' && !Array.isArray(value)) return true;
   }
   return false;
 }

@@ -25,7 +25,7 @@ Generates the given number lines of lorem separated by `'\n'`.
 | --- | --- | --- | --- |
 | `min` | `number` | no | Minimum bound used when generating a value. |
 | `max` | `number` | no | Maximum bound used when generating a value. |
-| `lineCount` | `number` | no | Optional number argument for this command. |
+| `lineCount` | `number` | no | Exact number of lines to generate. |
 | `lineCountMax` | `number` | no | The maximum number of lines to generate. |
 | `lineCountMin` | `number` | no | The minimum number of lines to generate. |
 
@@ -67,6 +67,9 @@ lorem.paragraph()
 lorem.paragraph(min=1, max=1, sentenceCount=1, sentenceCountMax=1, sentenceCountMin=1)
 ```
 
+Example return values:
+- `Quisquam dolorum modi quae atque.`
+
 ### `lorem.paragraphs`
 
 Generates the given number of paragraphs.
@@ -92,6 +95,11 @@ lorem.paragraphs()
 ```txt
 lorem.paragraphs(min=1, max=1, paragraphCount=1, separator="-", paragraphCountMax=1, paragraphCountMin=1)
 ```
+
+Example return values:
+- `Primus paragraphus.
+
+Secundus paragraphus.`
 
 ### `lorem.sentence`
 
@@ -192,6 +200,9 @@ Examples:
 ```txt
 lorem.text()
 ```
+
+Example return values:
+- `A short sample text generated from lorem.`
 
 ### `lorem.word`
 

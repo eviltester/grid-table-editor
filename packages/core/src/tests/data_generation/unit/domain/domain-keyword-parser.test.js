@@ -105,6 +105,13 @@ describe('domain keyword parser', () => {
     expect(parsedKeyword.errors).toEqual([]);
   });
 
+  test('parses single object arg as named options for options-based domain keywords', () => {
+    const parsedKeyword = parseKeywordInvocation('number.int({"min":18,"max":65})');
+    expect(parsedKeyword.keyword).toBe('number.int');
+    expect(parsedKeyword.args).toEqual([18, 65, undefined]);
+    expect(parsedKeyword.errors).toEqual([]);
+  });
+
   test('returns error when positional arg appears after named arg', () => {
     const parsedKeyword = parseKeywordInvocation('number.int(min=1,2)');
     expect(parsedKeyword.errors).toEqual([

@@ -106,7 +106,7 @@ Example return values:
 
 ### `company.catchPhraseAdjective`
 
-Returns a random catch phrase adjective that can be displayed to an end user..
+Returns a random catch phrase adjective that can be displayed to an end user.
 
 - Canonical: `awd.domain.company.catchPhraseAdjective`
 - Faker docs: [https://fakerjs.dev/api/company](https://fakerjs.dev/api/company)
@@ -124,7 +124,7 @@ Example return values:
 
 ### `company.catchPhraseDescriptor`
 
-Returns a random catch phrase descriptor that can be displayed to an end user..
+Returns a random catch phrase descriptor that can be displayed to an end user.
 
 - Canonical: `awd.domain.company.catchPhraseDescriptor`
 - Faker docs: [https://fakerjs.dev/api/company](https://fakerjs.dev/api/company)
@@ -142,7 +142,7 @@ Example return values:
 
 ### `company.catchPhraseNoun`
 
-Returns a random catch phrase noun that can be displayed to an end user..
+Returns a random catch phrase noun that can be displayed to an end user.
 
 - Canonical: `awd.domain.company.catchPhraseNoun`
 - Faker docs: [https://fakerjs.dev/api/company](https://fakerjs.dev/api/company)

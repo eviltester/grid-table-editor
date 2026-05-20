@@ -29,6 +29,9 @@ Examples:
 science.chemicalElement()
 ```
 
+Example return values:
+- `{"name":"Oxygen","symbol":"O","atomicNumber":8}`
+
 ### `science.chemicalElement.atomicNumber`
 
 Generate a chemical element atomic number.

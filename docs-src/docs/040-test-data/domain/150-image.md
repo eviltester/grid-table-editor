@@ -83,6 +83,9 @@ Examples:
 image.dataUri()
 ```
 
+Example return values:
+- `data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciLz4=`
+
 ### `image.personPortrait`
 
 Generates a random square portrait (avatar) of a person.

@@ -126,6 +126,9 @@ class DomainKeywordInvocationParser {
     if (token.type === 'LBRACKET') {
       return this.parseArray(stream);
     }
+    if (token.type === 'LBRACE') {
+      return this.parseObject(stream);
+    }
 
     if (token.type === 'RPAREN' || token.type === 'COMMA' || token.type === 'EOF' || token.type === 'RBRACKET') {
       return { ok: false, error: 'Invalid keyword arguments: unbalanced expression' };
@@ -165,6 +168,48 @@ class DomainKeywordInvocationParser {
       }
 
       if (stream.peek().type === 'RBRACKET' || stream.peek().type === 'EOF') {
+        return { ok: false, error: 'Invalid keyword arguments: missing argument after comma' };
+      }
+    }
+  }
+
+  parseObject(stream) {
+    if (!stream.match('LBRACE')) {
+      return { ok: false, error: 'Invalid keyword arguments: unbalanced expression' };
+    }
+
+    const value = {};
+
+    if (stream.match('RBRACE')) {
+      return { ok: true, value };
+    }
+
+    while (true) {
+      const keyToken = stream.peek();
+      if (keyToken.type !== 'STRING' && keyToken.type !== 'IDENT') {
+        return { ok: false, error: 'Invalid keyword arguments: unbalanced expression' };
+      }
+      const key = String(stream.consume().value);
+
+      if (!stream.match('COLON')) {
+        return { ok: false, error: 'Invalid keyword arguments: unbalanced expression' };
+      }
+
+      const parsedValue = this.parseValue(stream);
+      if (!parsedValue.ok) {
+        return parsedValue;
+      }
+      value[key] = parsedValue.value;
+
+      if (stream.match('RBRACE')) {
+        return { ok: true, value };
+      }
+
+      if (!stream.match('COMMA')) {
+        return { ok: false, error: 'Invalid keyword arguments: unbalanced expression' };
+      }
+
+      if (stream.peek().type === 'RBRACE' || stream.peek().type === 'EOF') {
         return { ok: false, error: 'Invalid keyword arguments: missing argument after comma' };
       }
     }

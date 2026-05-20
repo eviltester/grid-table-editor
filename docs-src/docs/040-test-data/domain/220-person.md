@@ -54,7 +54,7 @@ person.firstName(sex="male")
 ```
 
 Example return values:
-- `Amelie`
+- `David`
 
 ### `person.fullName`
 
@@ -234,7 +234,7 @@ person.prefix(sex="male")
 ```
 
 Example return values:
-- `Miss`
+- `Mr.`
 
 ### `person.sex`
 

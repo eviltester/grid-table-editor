@@ -249,6 +249,9 @@ internet.ipv4()
 internet.ipv4(cidrBlock="192.168.0.0/24", network="private-a")
 ```
 
+Example return values:
+- `192.168.0.42`
+
 ### `internet.ipv6`
 
 Generates a random IPv6 address.
@@ -264,6 +267,9 @@ Examples:
 internet.ipv6()
 ```
 
+Example return values:
+- `2001:0db8:85a3:0000:0000:8a2e:0370:7334`
+
 ### `internet.jwt`
 
 Generates a random JWT (JSON Web Token).
@@ -273,8 +279,8 @@ Generates a random JWT (JSON Web Token).
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `header` | `array` | no | The header to use for the token. If present, it will replace any default values. |
-| `payload` | `array` | no | The payload to use for the token. If present, it will replace any default values. |
+| `header` | `object` | no | The header to use for the token. If present, it will replace any default values. |
+| `payload` | `object` | no | The payload to use for the token. If present, it will replace any default values. |
 | `refDate` | `number` | no | Reference date as a Unix timestamp in milliseconds since epoch used as the generation anchor. |
 
 Examples:
@@ -284,8 +290,11 @@ internet.jwt()
 ```
 
 ```txt
-internet.jwt(header=["item"], payload=["item"], refDate=1)
+internet.jwt(header={"alg":"HS256","typ":"JWT"}, payload={"iss":"Acme"}, refDate=1)
 ```
+
+Example return values:
+- `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJBY21lIn0.c2lnbmF0dXJl`
 
 ### `internet.jwtAlgorithm`
 
@@ -431,6 +440,9 @@ Examples:
 ```txt
 internet.userAgent()
 ```
+
+Example return values:
+- `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36`
 
 ### `internet.username`
 

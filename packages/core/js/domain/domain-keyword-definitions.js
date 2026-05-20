@@ -22,7 +22,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     help: {
       summary: 'Generate a value using faker airline.airline.',
       docsUrl: 'https://fakerjs.dev/api/airline',
-      example: '',
+      example: '{"name":"American Airlines","iataCode":"AA"}',
       returnType: 'object',
       args: [],
     },
@@ -66,7 +66,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     help: {
       summary: 'Generate a value using faker airline.airplane.',
       docsUrl: 'https://fakerjs.dev/api/airline',
-      example: '',
+      example: '{"name":"Airbus A320","iataTypeCode":"A320"}',
       returnType: 'object',
       args: [],
     },
@@ -110,7 +110,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     help: {
       summary: 'Generate a value using faker airline.airport.',
       docsUrl: 'https://fakerjs.dev/api/airline',
-      example: '',
+      example: '{"name":"Heathrow Airport","iataCode":"LHR"}',
       returnType: 'object',
       args: [],
     },
@@ -152,7 +152,8 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       target: 'airline.flightNumber',
     },
     help: {
-      summary: 'Returns a random flight number. Flight numbers are always 1 to 4 digits long. Sometimes they are',
+      summary:
+        'Returns a random flight number. Flight numbers are always 1 to 4 digits long and may include leading zeros.',
       docsUrl: 'https://fakerjs.dev/api/airline',
       example: '1',
       returnType: 'string',
@@ -166,7 +167,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       target: 'airline.recordLocator',
     },
     help: {
-      summary: 'Generates a random record locator. Record locators',
+      summary: 'Generates a random record locator. Record locators are 6-character alphanumeric booking references.',
       docsUrl: 'https://fakerjs.dev/api/airline',
       example: 'TCSJCN',
       returnType: 'string',
@@ -661,7 +662,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       argTransform: 'optionsFromHelpArgs',
     },
     help: {
-      summary: 'Returns an LCH color. Even though upper bound of',
+      summary: 'Returns an LCH color.',
       docsUrl: 'https://fakerjs.dev/api/color',
       example: '[0.469557,212.9,204.9]',
       returnType: 'string',
@@ -766,8 +767,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           name: 'variant',
           type: 'string',
           required: false,
-          description:
-            'The variant of the identifier to return. Can be either 10 (10-digit format) or 13 (13-digit format).',
+          description: 'ISBN length variant: use "10" for ISBN-10 or "13" for ISBN-13.',
         },
       ],
     },
@@ -959,7 +959,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       target: 'company.catchPhraseAdjective',
     },
     help: {
-      summary: 'Returns a random catch phrase adjective that can be displayed to an end user..',
+      summary: 'Returns a random catch phrase adjective that can be displayed to an end user.',
       docsUrl: 'https://fakerjs.dev/api/company',
       example: 'Distributed',
       returnType: 'string',
@@ -973,7 +973,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       target: 'company.catchPhraseDescriptor',
     },
     help: {
-      summary: 'Returns a random catch phrase descriptor that can be displayed to an end user..',
+      summary: 'Returns a random catch phrase descriptor that can be displayed to an end user.',
       docsUrl: 'https://fakerjs.dev/api/company',
       example: 'encompassing',
       returnType: 'string',
@@ -987,7 +987,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       target: 'company.catchPhraseNoun',
     },
     help: {
-      summary: 'Returns a random catch phrase noun that can be displayed to an end user..',
+      summary: 'Returns a random catch phrase noun that can be displayed to an end user.',
       docsUrl: 'https://fakerjs.dev/api/company',
       example: 'attitude',
       returnType: 'string',
@@ -1138,7 +1138,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     help: {
       summary: 'Generates a random date between the given boundaries.',
       docsUrl: 'https://fakerjs.dev/api/date',
-      example: '',
+      example: '2026-01-15T12:34:56.000Z',
       returnType: 'date',
       args: [
         {
@@ -1167,7 +1167,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
       summary:
         'Generates random dates between the given boundaries. The dates will be returned in an array sorted in chronological order.',
       docsUrl: 'https://fakerjs.dev/api/date',
-      example: '',
+      example: '["2026-01-15T12:34:56.000Z","2026-02-01T09:00:00.000Z"]',
       returnType: 'array',
       args: [
         {
@@ -1957,7 +1957,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     help: {
       summary: 'Generates a random commit entry as printed by `git log`.',
       docsUrl: 'https://fakerjs.dev/api/git',
-      example: '',
+      example: 'commit 4f9a2d1c Author: Alex Example <alex@example.com> Date: Tue May 19 2026',
       returnType: 'string',
       args: [],
     },
@@ -2126,7 +2126,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     help: {
       summary: 'Generates a random data uri containing an URL-encoded SVG image or a Base64-encoded SVG image.',
       docsUrl: 'https://fakerjs.dev/api/image',
-      example: '',
+      example: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciLz4=',
       returnType: 'string',
       args: [],
     },
@@ -2413,7 +2413,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     help: {
       summary: 'Generates a random IPv4 address.',
       docsUrl: 'https://fakerjs.dev/api/internet',
-      example: '',
+      example: '192.168.0.42',
       returnType: 'string',
       args: [
         {
@@ -2440,7 +2440,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     help: {
       summary: 'Generates a random IPv6 address.',
       docsUrl: 'https://fakerjs.dev/api/internet',
-      example: '',
+      example: '2001:0db8:85a3:0000:0000:8a2e:0370:7334',
       returnType: 'string',
       args: [],
     },
@@ -2455,18 +2455,18 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     help: {
       summary: 'Generates a random JWT (JSON Web Token).',
       docsUrl: 'https://fakerjs.dev/api/internet',
-      example: '',
+      example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJBY21lIn0.c2lnbmF0dXJl',
       returnType: 'string',
       args: [
         {
           name: 'header',
-          type: 'array',
+          type: 'object',
           required: false,
           description: 'The header to use for the token. If present, it will replace any default values.',
         },
         {
           name: 'payload',
-          type: 'array',
+          type: 'object',
           required: false,
           description: 'The payload to use for the token. If present, it will replace any default values.',
         },
@@ -2621,7 +2621,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     help: {
       summary: 'Generates a random user agent string.',
       docsUrl: 'https://fakerjs.dev/api/internet',
-      example: '',
+      example: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
       returnType: 'string',
       args: [],
     },
@@ -2677,7 +2677,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     help: {
       summary: 'Return the literal value provided by the caller.',
       docsUrl: 'https://anywaydata.com/docs/category/generating-data',
-      example: '',
+      example: 'Pending',
       examples: ['literal.value("Pending")', 'literal.value("")'],
       exampleReturnValues: ['Pending', ''],
       returnType: 'string',
@@ -3060,7 +3060,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           name: 'lineCount',
           type: 'number',
           required: false,
-          description: 'Optional number argument for this command.',
+          description: 'Exact number of lines to generate.',
         },
         {
           name: 'lineCountMax',
@@ -3086,7 +3086,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     help: {
       summary: 'Generates a paragraph with the given number of sentences.',
       docsUrl: 'https://fakerjs.dev/api/lorem',
-      example: '',
+      example: 'Quisquam dolorum modi quae atque.',
       returnType: 'string',
       args: [
         {
@@ -3131,7 +3131,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     help: {
       summary: 'Generates the given number of paragraphs.',
       docsUrl: 'https://fakerjs.dev/api/lorem',
-      example: '',
+      example: 'Primus paragraphus.\n\nSecundus paragraphus.',
       returnType: 'string',
       args: [
         {
@@ -3323,7 +3323,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     help: {
       summary: 'Generates a random text based on a random lorem method.',
       docsUrl: 'https://fakerjs.dev/api/lorem',
-      example: '',
+      example: 'A short sample text generated from lorem.',
       returnType: 'string',
       args: [],
     },
@@ -3726,7 +3726,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     help: {
       summary: 'Returns a random first name.',
       docsUrl: 'https://fakerjs.dev/api/person',
-      example: 'Amelie',
+      example: 'David',
       returnType: 'string',
       args: [
         {
@@ -3873,7 +3873,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     help: {
       summary: 'Returns a random person prefix.',
       docsUrl: 'https://fakerjs.dev/api/person',
-      example: 'Miss',
+      example: 'Mr.',
       returnType: 'string',
       args: [
         {
@@ -3987,7 +3987,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     help: {
       summary: 'Generate a value using faker science.chemicalElement.',
       docsUrl: 'https://fakerjs.dev/api/science',
-      example: '',
+      example: '{"name":"Oxygen","symbol":"O","atomicNumber":8}',
       returnType: 'object',
       args: [],
     },
@@ -4173,14 +4173,14 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
           type: 'number',
           required: false,
           description:
-            'Minimum counterstring length. If max is omitted and min is provided, min is also used as max. Defaults to 1 when omitted.',
+            'Minimum counterstring length (integer). If max is omitted and min is provided, min is also used as max. Defaults to 1 when omitted. Non-integer values throw an exception.',
         },
         {
           name: 'max',
           type: 'number',
           required: false,
           description:
-            'Maximum counterstring length. If less than min, values are swapped. Defaults to 25 when omitted.',
+            'Maximum counterstring length (integer). If less than min, values are swapped. Defaults to 25 when omitted. Non-integer values throw an exception.',
         },
         {
           name: 'delimiter',

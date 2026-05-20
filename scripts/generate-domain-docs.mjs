@@ -120,7 +120,16 @@ function escapeMdxText(value) {
 }
 
 function escapeMarkdownTableCell(value) {
-  return escapeMdxText(value).replaceAll('|', '\\|').replaceAll('\n', '<br/>');
+  const normalized = String(value ?? '').replaceAll('\r\n', '\n').replaceAll('\r', '\n');
+  return escapeMdxText(normalized.replaceAll('\n', '<br/>')).replaceAll('|', '\\|');
+}
+
+function toInlineCode(value) {
+  const text = String(value ?? '');
+  const backtickRuns = text.match(/`+/g) || [];
+  const longestRun = backtickRuns.reduce((max, run) => Math.max(max, run.length), 0);
+  const fence = '`'.repeat(longestRun + 1);
+  return `${fence}${text}${fence}`;
 }
 
 function canExecuteInvocation(keyword, args) {
@@ -160,7 +169,11 @@ function toNamedInvocation(keyword, argSpecs, typedArgs) {
     }
     const value = typedArgs[index];
     const rendered =
-      typeof value === 'string' ? `"${value}"` : Array.isArray(value) ? JSON.stringify(value) : String(value);
+      typeof value === 'string'
+        ? `"${value}"`
+        : Array.isArray(value) || (value && typeof value === 'object')
+          ? JSON.stringify(value)
+          : String(value);
     pairs.push(`${name}=${rendered}`);
   }
   return `${keyword}(${pairs.join(', ')})`;
@@ -175,6 +188,9 @@ function renderInvocation(keyword, typedArgs) {
       return `"${value}"`;
     }
     if (Array.isArray(value)) {
+      return JSON.stringify(value);
+    }
+    if (value && typeof value === 'object') {
       return JSON.stringify(value);
     }
     return String(value);
@@ -209,6 +225,8 @@ function sampleValueForArg(argSpec) {
   if (name === 'symbol') return '$';
   if (name === 'types') return ['food', 'nature'];
   if (name === 'list') return ['alpha', 'beta', 'gamma'];
+  if (name === 'header') return { alg: 'HS256', typ: 'JWT' };
+  if (name === 'payload') return { iss: 'Acme' };
   if (name === 'style') return 'human';
   if (name === 'context') return false;
   if (name === 'abbreviated') return false;
@@ -222,6 +240,7 @@ function sampleValueForArg(argSpec) {
   if (first === 'number') return 1;
   if (first === 'boolean') return true;
   if (first === 'array') return ['item'];
+  if (first === 'object') return { key: 'value' };
   return 'value';
 }
 
@@ -371,7 +390,7 @@ for (const domain of domains) {
       if (returnValues.length > 0) {
         lines.push('', 'Example return values:');
         for (const value of returnValues) {
-          lines.push(`- \`${String(value ?? '')}\``);
+          lines.push(`- ${toInlineCode(value)}`);
         }
       }
       lines.push('');

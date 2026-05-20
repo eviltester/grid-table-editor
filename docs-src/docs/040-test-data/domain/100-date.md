@@ -60,6 +60,9 @@ date.between(0, 2000000000000)
 date.between(from=1, to=1)
 ```
 
+Example return values:
+- `2026-01-15T12:34:56.000Z`
+
 ### `date.betweens`
 
 Generates random dates between the given boundaries. The dates will be returned in an array sorted in chronological order.
@@ -82,6 +85,9 @@ date.betweens(2, 0, 2000000000000)
 ```txt
 date.betweens(count=1, from=1, to=1)
 ```
+
+Example return values:
+- `["2026-01-15T12:34:56.000Z","2026-02-01T09:00:00.000Z"]`
 
 ### `date.birthdate`
 

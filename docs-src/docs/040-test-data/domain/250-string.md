@@ -100,8 +100,8 @@ Generates a counterstring for a random length between min and max (or fixed leng
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `min` | `number` | no | Minimum counterstring length. If max is omitted and min is provided, min is also used as max. Defaults to 1 when omitted. |
-| `max` | `number` | no | Maximum counterstring length. If less than min, values are swapped. Defaults to 25 when omitted. |
+| `min` | `number` | no | Minimum counterstring length (integer). If max is omitted and min is provided, min is also used as max. Defaults to 1 when omitted. Non-integer values throw an exception. |
+| `max` | `number` | no | Maximum counterstring length (integer). If less than min, values are swapped. Defaults to 25 when omitted. Non-integer values throw an exception. |
 | `delimiter` | `string` | no | Delimiter character used between position markers. Defaults to "*". |
 
 Examples:

@@ -102,6 +102,14 @@ describe('domain keyword catalog', () => {
     });
   });
 
+  test('standalone domain definitions include at least one help example', () => {
+    const missingExamples = DOMAIN_KEYWORD_DEFINITIONS.filter(
+      (definition) => typeof definition?.help?.example !== 'string' || definition.help.example.trim().length === 0
+    ).map((definition) => definition.keyword);
+
+    expect(missingExamples).toEqual([]);
+  });
+
   test('supports creating catalogs from injected definitions', () => {
     const catalog = buildDomainKeywordCatalog([
       {
@@ -253,6 +261,7 @@ function sampleValueForType(type) {
   if (allowed.includes('number')) return 7;
   if (allowed.includes('boolean')) return true;
   if (allowed.includes('array')) return ['x', 'y'];
+  if (allowed.includes('object')) return { key: 'value' };
   return 'sample';
 }
 
@@ -264,6 +273,9 @@ function valueToInvocationLiteral(value) {
     return String(value);
   }
   if (Array.isArray(value)) {
+    return JSON.stringify(value);
+  }
+  if (value && typeof value === 'object') {
     return JSON.stringify(value);
   }
   throw new Error(`Unsupported invocation literal value: ${String(value)}`);

@@ -47,6 +47,9 @@ Examples:
 airline.airline()
 ```
 
+Example return values:
+- `{"name":"American Airlines","iataCode":"AA"}`
+
 ### `airline.airline.iataCode`
 
 Generate an airline IATA code.
@@ -97,6 +100,9 @@ Examples:
 ```txt
 airline.airplane()
 ```
+
+Example return values:
+- `{"name":"Airbus A320","iataTypeCode":"A320"}`
 
 ### `airline.airplane.iataTypeCode`
 
@@ -149,6 +155,9 @@ Examples:
 airline.airport()
 ```
 
+Example return values:
+- `{"name":"Heathrow Airport","iataCode":"LHR"}`
+
 ### `airline.airport.iataCode`
 
 Generate an airport IATA code.
@@ -187,7 +196,7 @@ Example return values:
 
 ### `airline.flightNumber`
 
-Returns a random flight number. Flight numbers are always 1 to 4 digits long. Sometimes they are
+Returns a random flight number. Flight numbers are always 1 to 4 digits long and may include leading zeros.
 
 - Canonical: `awd.domain.airline.flightNumber`
 - Faker docs: [https://fakerjs.dev/api/airline](https://fakerjs.dev/api/airline)
@@ -205,7 +214,7 @@ Example return values:
 
 ### `airline.recordLocator`
 
-Generates a random record locator. Record locators
+Generates a random record locator. Record locators are 6-character alphanumeric booking references.
 
 - Canonical: `awd.domain.airline.recordLocator`
 - Faker docs: [https://fakerjs.dev/api/airline](https://fakerjs.dev/api/airline)

@@ -6,8 +6,11 @@
  */
 
 import { schemaErrorsToText } from '../../shared/test-data/schema-error-text.js';
-import { createPairwiseTableFromGenerator } from '../../shared/test-data/generation-runtime.js';
-import { parseSchemaText, countEnumRules } from '../../shared/test-data/schema-runtime.js';
+import {
+  createConfiguredGeneratorFromSchemaText,
+  createPairwiseDataTable,
+} from '../../shared/test-data/generation-controller.js';
+import { isPairwiseEligibleForDataRules } from '../../shared/test-data/ui-derived-state.js';
 
 function createTestDataGenerationService({
   schemaTextToDataRules,
@@ -31,30 +34,19 @@ function createTestDataGenerationService({
   getMainGridExtras,
   getGenerationMode,
 }) {
-  function createGeneratorFromDataRules(dataRules = []) {
-    const generator = new TestDataGeneratorClass(faker, RandExp);
-    generator.rulesParser.testDataRules.rules = dataRules.map((rule) => ({ ...rule }));
-    return generator;
-  }
-
-  function parseSchemaFromTextArea() {
-    return parseSchemaText({
+  function createGeneratorFromDataRules() {
+    return createConfiguredGeneratorFromSchemaText({
       schemaTextToDataRules,
       schemaText: getSchemaText(),
+      TestDataGeneratorClass,
       faker,
       RandExp,
     });
   }
 
   function getRulesParserFromTextArea() {
-    const parseResult = parseSchemaFromTextArea();
-    if (parseResult.errors.length > 0) {
-      return { generator: null, errors: parseResult.errors };
-    }
-    return {
-      generator: createGeneratorFromDataRules(parseResult.dataRules),
-      errors: [],
-    };
+    const parseResult = createGeneratorFromDataRules();
+    return { generator: parseResult.generator, errors: parseResult.errors };
   }
 
   function showPairwiseButton() {
@@ -78,8 +70,7 @@ function createTestDataGenerationService({
       return;
     }
 
-    const enumCount = countEnumRules(generator.testDataRules());
-    if (enumCount >= 2) {
+    if (isPairwiseEligibleForDataRules(generator.testDataRules())) {
       showPairwiseButton();
     } else {
       hidePairwiseButton();
@@ -106,8 +97,7 @@ function createTestDataGenerationService({
         return;
       }
 
-      const enumCount = countEnumRules(generator.testDataRules());
-      if (enumCount < 2) {
+      if (!isPairwiseEligibleForDataRules(generator.testDataRules())) {
         showSchemaError('Pairwise generation requires at least 2 enum columns.');
         setTestDataStatus('Insufficient enum columns.', false);
         return;
@@ -117,7 +107,7 @@ function createTestDataGenerationService({
       setTestDataStatus('Generating pairwise combinations...', true);
       await yieldToUi();
 
-      const dataTable = createPairwiseTableFromGenerator({
+      const dataTable = createPairwiseDataTable({
         generator,
         PairwiseTestDataGeneratorClass,
         GenericDataTableClass,

@@ -11,34 +11,33 @@ import { Download } from '../shared/download.js';
 import { GridExtension as TabulatorGridExtension } from '../data-grid-editor/tabulator/gridExtension-tabulator.js';
 import { sanitizeUiOptionsForFormat } from './options-catalog-adapter.js';
 import { createOptionsPanelsForParent, getOutputFormatGroups } from './options-ui-schema.js';
-import { getKnownFakerCommandsAlphabetical, getKnownFakerCommandsLongestFirst } from '../shared/faker-commands.js';
-import { getFakerCommandHelp } from '../shared/faker-command-help-metadata.js';
-import {
-  getKnownDomainCommandsAlphabetical,
-  getKnownDomainCommandsLongestFirst,
-  getDomainKeywordByCommand,
-} from '../shared/domain-commands.js';
-import { getDomainCommandHelp } from '../shared/domain-command-help-metadata.js';
+import { getKnownFakerCommandsAlphabetical } from '../shared/faker-commands.js';
+import { getKnownDomainCommandsAlphabetical } from '../shared/domain-commands.js';
 import { escapeHtml } from '../shared/html-escape.js';
 import { TimedErrorDisplay } from '../shared/timed-error-display.js';
 import { schemaErrorsToText } from '../shared/test-data/schema-error-text.js';
 import { getVisibleDomainCommands } from '../shared/test-data/type-option-provider.js';
 import { createStatusPresenter } from '../shared/test-data/status-presenter.js';
-import {
-  createTableFromGenerator as createTableFromGeneratorShared,
-  createPairwiseTableFromGenerator as createPairwiseTableFromGeneratorShared,
-  parseNonNegativeCount,
-} from '../shared/test-data/generation-runtime.js';
-import {
-  extractFakerCommandAndParams as extractFakerCommandAndParamsShared,
-  extractDomainCommandAndParams as extractDomainCommandAndParamsShared,
-} from '../shared/test-data/command-spec-parser.js';
-import { countEnumRules } from '../shared/test-data/schema-runtime.js';
+import { parseNonNegativeCount } from '../shared/test-data/generation-runtime.js';
+import { isPairwiseEligibleForSchemaRows } from '../shared/test-data/ui-derived-state.js';
 import {
   schemaRowsToSpec as schemaRowsToSpecCore,
   schemaRowsToSpecWithTokens as schemaRowsToSpecWithTokensCore,
   validateSchemaRows as validateSchemaRowsCore,
 } from '../shared/test-data/schema-editor-core.js';
+import { mapDataRuleToSchemaRow } from '../shared/test-data/schema-row-mapper.js';
+import { buildSchemaHelpModel, renderSchemaHelpHtml } from '../shared/test-data/help-model-builder.js';
+import {
+  parseSchemaTextToRows as parseSchemaTextToRowsShared,
+  addSchemaRowAfter as addSchemaRowAfterShared,
+  removeSchemaRowAt as removeSchemaRowAtShared,
+  moveSchemaRow as moveSchemaRowShared,
+} from '../shared/test-data/schema-controller.js';
+import {
+  createConfiguredGeneratorFromSchemaRows,
+  createPreviewDataTable,
+  createPairwiseDataTable,
+} from '../shared/test-data/generation-controller.js';
 import {
   SOURCE_TYPE_FAKER,
   SOURCE_TYPE_DOMAIN,
@@ -55,11 +54,6 @@ import {
 } from '../shared/schema-row-rule-mapper.js';
 import { GENERATOR_DEFAULT_EXAMPLE_SCHEMA_TEXT } from '../shared/test-data/schema-examples.js';
 
-const REGEX_HELP_URL = 'https://anywaydata.com/docs/test-data/regex-test-data';
-const FAKER_HELP_URL = 'https://anywaydata.com/docs/test-data/faker-test-data';
-const DOMAIN_HELP_URL = 'https://anywaydata.com/docs/test-data/domain/domain-test-data';
-const LITERAL_HELP_URL = 'https://anywaydata.com/docs/category/generating-data';
-const ENUM_HELP_URL = 'https://anywaydata.com/docs/category/generating-data';
 const GENERATE_TO_FILE_HELP_URL = 'https://anywaydata.com/docs/test-data/generate-to-file';
 function schemaRowsToSpec(schemaRows) {
   return schemaRowsToSpecCore({
@@ -111,9 +105,7 @@ class DataGeneratorPage {
     this.schemaRows = [];
     this.schemaTextTokens = [];
     this.fakerCommands = getKnownFakerCommandsAlphabetical().filter((command) => command !== 'RegEx');
-    this.fakerCommandsLongestFirst = getKnownFakerCommandsLongestFirst().filter((command) => command !== 'RegEx');
     this.domainCommands = getKnownDomainCommandsAlphabetical();
-    this.domainCommandsLongestFirst = getKnownDomainCommandsLongestFirst();
     this.isTextMode = false;
     this.optionsPanels = {};
     this.statusPresenter = undefined;
@@ -653,35 +645,17 @@ enum(active,inactive,pending)</pre>
       return { rows: [], errors: [], tokens: [] };
     }
 
-    const parseResult = schemaTextToDataRules({
+    return parseSchemaTextToRowsShared({
+      schemaTextToDataRules,
       schemaText: text,
       faker: this.faker,
       RandExp: this.RandExp,
-      TestDataGeneratorClass: this.TestDataGeneratorClass,
+      mapRuleToRow: (rule, leadingTextLines = []) => {
+        const row = this.ruleToSchemaRow(rule);
+        row.leadingTextLines = Array.isArray(leadingTextLines) ? leadingTextLines.slice() : [];
+        return row;
+      },
     });
-    if (parseResult.errors.length > 0) {
-      return { rows: [], errors: parseResult.errors, tokens: [] };
-    }
-
-    const rows = parseResult.dataRules.map((rule) => this.ruleToSchemaRow(rule));
-    const tokens = parseResult.schemaTokens || [];
-    const rowsByTokenOrder = [];
-    let pendingLeadingTextLines = [];
-    tokens.forEach((token) => {
-      if (token?.kind === 'comment' || token?.kind === 'blank') {
-        pendingLeadingTextLines.push(String(token?.text ?? ''));
-        return;
-      }
-      if (token?.kind === 'rule') {
-        const row = rows[rowsByTokenOrder.length];
-        if (row) {
-          row.leadingTextLines = pendingLeadingTextLines.slice();
-          rowsByTokenOrder.push(row);
-        }
-        pendingLeadingTextLines = [];
-      }
-    });
-    return { rows, errors: [], tokens };
   }
 
   syncSchemaRowsFromTextMode({ showErrors = false } = {}) {
@@ -706,38 +680,9 @@ enum(active,inactive,pending)</pre>
   }
 
   ruleToSchemaRow(rule) {
-    const row = this.createBlankSchemaRow();
-    row.name = String(rule?.name ?? '');
-    row.comments = String(rule?.comments ?? '');
-    row.leadingTextLines = [];
-    row.sourceType = normaliseSourceType(rule?.type);
-
-    if (row.sourceType === SOURCE_TYPE_FAKER) {
-      const parts = extractFakerCommandAndParamsShared(rule?.ruleSpec, {
-        normaliseFakerCommand,
-        fakerCommandsLongestFirst: this.fakerCommandsLongestFirst,
-      });
-      row.command = parts.command;
-      row.params = parts.params;
-      row.value = '';
-      return row;
-    }
-    if (row.sourceType === SOURCE_TYPE_DOMAIN) {
-      const parts = extractDomainCommandAndParamsShared(rule?.ruleSpec, {
-        normaliseDomainCommand,
-        getDomainKeywordByCommand,
-        domainCommandsLongestFirst: this.domainCommandsLongestFirst,
-      });
-      row.command = parts.command;
-      row.params = parts.params;
-      row.value = '';
-      return row;
-    }
-
-    row.value = String(rule?.ruleSpec ?? '');
-    row.command = '';
-    row.params = '';
-    return row;
+    return mapDataRuleToSchemaRow(rule, {
+      createBlankSchemaRow: () => this.createBlankSchemaRow(),
+    });
   }
 
   renderSchemaRows() {
@@ -886,29 +831,19 @@ enum(active,inactive,pending)</pre>
   }
 
   addRowAfter(index) {
-    const insertAt = Math.min(Math.max(index + 1, 0), this.schemaRows.length);
-    this.schemaRows.splice(insertAt, 0, this.createBlankSchemaRow());
+    this.schemaRows = addSchemaRowAfterShared(this.schemaRows, index, () => this.createBlankSchemaRow());
     this.invalidateSchemaTokensFromRows();
     this.renderSchemaRows();
   }
 
   removeRow(index) {
-    if (this.schemaRows.length <= 1) {
-      this.schemaRows = [this.createBlankSchemaRow()];
-    } else {
-      this.schemaRows.splice(index, 1);
-    }
+    this.schemaRows = removeSchemaRowAtShared(this.schemaRows, index, () => this.createBlankSchemaRow());
     this.invalidateSchemaTokensFromRows();
     this.renderSchemaRows();
   }
 
   moveRow(index, direction) {
-    const targetIndex = index + direction;
-    if (targetIndex < 0 || targetIndex >= this.schemaRows.length) {
-      return;
-    }
-    const [row] = this.schemaRows.splice(index, 1);
-    this.schemaRows.splice(targetIndex, 0, row);
+    this.schemaRows = moveSchemaRowShared(this.schemaRows, index, direction);
     this.invalidateSchemaTokensFromRows();
     this.renderSchemaRows();
   }
@@ -954,55 +889,26 @@ enum(active,inactive,pending)</pre>
       return { errors: parsed.errors };
     }
 
-    const { errors, rows } = validateSchemaRows(parsed.rows);
-    if (errors.length > 0) {
-      return { errors };
-    }
-
-    const generator = new this.TestDataGeneratorClass(this.faker, this.RandExp);
-    generator.importSpec(schemaRowsToSpec(rows));
-    generator.compile();
-
-    const rules = generator.testDataRules();
-    rows.forEach((row, index) => {
-      const rule = rules[index];
-      if (!rule) {
-        return;
-      }
-      if (row.sourceType === SOURCE_TYPE_FAKER) {
-        rule.type = SOURCE_TYPE_FAKER;
-        rule.ruleSpec = buildRuleSpecFromSchemaRow(row);
-        return;
-      }
-      if (row.sourceType === SOURCE_TYPE_DOMAIN) {
-        rule.type = SOURCE_TYPE_DOMAIN;
-        rule.ruleSpec = buildRuleSpecFromSchemaRow(row);
-        return;
-      }
-      if (row.sourceType === SOURCE_TYPE_LITERAL) {
-        rule.type = SOURCE_TYPE_LITERAL;
-        rule.ruleSpec = extractLiteralValueFromRuleSpec(buildRuleSpecFromSchemaRow(row));
-        return;
-      }
-      if (row.sourceType === SOURCE_TYPE_ENUM) {
-        rule.type = SOURCE_TYPE_ENUM;
-        rule.ruleSpec = buildRuleSpecFromSchemaRow(row);
-        return;
-      }
-      rule.type = SOURCE_TYPE_REGEX;
-      rule.ruleSpec = extractRegexValueFromRuleSpec(buildRuleSpecFromSchemaRow(row));
+    return createConfiguredGeneratorFromSchemaRows({
+      schemaRows: parsed.rows,
+      validateSchemaRows,
+      schemaRowsToSpec,
+      TestDataGeneratorClass: this.TestDataGeneratorClass,
+      faker: this.faker,
+      RandExp: this.RandExp,
+      buildRuleSpecFromSchemaRow,
+      extractLiteralValueFromRuleSpec,
+      extractRegexValueFromRuleSpec,
+      SOURCE_TYPE_FAKER,
+      SOURCE_TYPE_DOMAIN,
+      SOURCE_TYPE_LITERAL,
+      SOURCE_TYPE_ENUM,
+      SOURCE_TYPE_REGEX,
     });
-
-    generator.compiler.validate();
-    if (!generator.isValid()) {
-      return { errors: generator.errors() };
-    }
-
-    return { generator };
   }
 
   buildDataTable(generator, rowCount) {
-    return createTableFromGeneratorShared({
+    return createPreviewDataTable({
       rowCount,
       generator,
       GenericDataTableClass: GenericDataTable,
@@ -1145,11 +1051,16 @@ enum(active,inactive,pending)</pre>
     if (errors.length > 0) {
       return 0;
     }
-    return countEnumRules(rows.map((row) => ({ type: row.sourceType })));
+    return rows.filter(
+      (row) =>
+        String(row?.sourceType || '')
+          .trim()
+          .toLowerCase() === SOURCE_TYPE_ENUM
+    ).length;
   }
 
   buildAllPairsDataTable(generator) {
-    return createPairwiseTableFromGeneratorShared({
+    return createPairwiseDataTable({
       generator,
       PairwiseTestDataGeneratorClass: PairwiseTestDataGenerator,
       GenericDataTableClass: GenericDataTable,
@@ -1159,195 +1070,21 @@ enum(active,inactive,pending)</pre>
   }
 
   updateAllPairsButtonVisibility() {
-    const enumCount = this.countEnumColumns();
     const buttonWrapper = this.documentObj.getElementById('generateAllPairsButtonWrapper');
     if (buttonWrapper) {
-      buttonWrapper.style.display = enumCount >= 2 ? 'inline-flex' : 'none';
+      const parsed = this.syncSchemaRowsFromTextMode({ showErrors: false });
+      const { errors, rows } = validateSchemaRows(parsed.rows);
+      buttonWrapper.style.display =
+        !parsed.errors?.length && !errors.length && isPairwiseEligibleForSchemaRows(rows) ? 'inline-flex' : 'none';
     }
   }
 
   getSchemaHelpData(sourceType, commandValue) {
-    const normalisedSourceType = normaliseSourceType(sourceType);
-    if (normalisedSourceType === SOURCE_TYPE_REGEX) {
-      return {
-        show: true,
-        title: 'Regex data help',
-        docsUrl: REGEX_HELP_URL,
-        html: this.buildTypeHelpHtml(
-          'Regex',
-          'Regex patterns generate random values that match the specified expression.',
-          REGEX_HELP_URL
-        ),
-      };
-    }
-
-    if (normalisedSourceType === SOURCE_TYPE_LITERAL) {
-      return {
-        show: true,
-        title: 'Literal data help',
-        docsUrl: LITERAL_HELP_URL,
-        html: this.buildTypeHelpHtml(
-          'Literal',
-          'Literal data repeats the exact text you enter for every generated row.',
-          LITERAL_HELP_URL
-        ),
-      };
-    }
-
-    if (normalisedSourceType === SOURCE_TYPE_ENUM) {
-      return {
-        show: true,
-        title: 'Enum data help',
-        docsUrl: ENUM_HELP_URL,
-        html: this.buildTypeHelpHtml(
-          'Enum',
-          'Enum values allow you to specify a list of discrete options. Use formats like "Red,Blue,Green" or "enum("Option1", "Option2")".',
-          ENUM_HELP_URL
-        ),
-      };
-    }
-
-    if (normalisedSourceType === SOURCE_TYPE_FAKER) {
-      const command = normaliseFakerCommand(commandValue);
-      if (!command) {
-        return {
-          show: true,
-          title: 'Faker data help',
-          docsUrl: FAKER_HELP_URL,
-          html: this.buildTypeHelpHtml(
-            'Faker',
-            'Faker commands generate realistic random values such as names, addresses, and dates.',
-            FAKER_HELP_URL
-          ),
-        };
-      }
-
-      const commandHelp = getFakerCommandHelp(command);
-      const docsUrl = commandHelp?.docsUrl || FAKER_HELP_URL;
-      const heading = `faker.${command}`;
-      const summary = commandHelp?.summary || `Generates data using ${heading}.`;
-      return {
-        show: true,
-        title: `Faker command help: ${command}`,
-        docsUrl,
-        html: this.buildFakerCommandHelpHtml({
-          heading,
-          summary,
-          docsUrl,
-          params: commandHelp?.params || [],
-          example: commandHelp?.example,
-        }),
-      };
-    }
-    if (normalisedSourceType === SOURCE_TYPE_DOMAIN) {
-      const command = normaliseDomainCommand(commandValue);
-      if (!command) {
-        return {
-          show: true,
-          title: 'Domain data help',
-          docsUrl: DOMAIN_HELP_URL,
-          html: this.buildTypeHelpHtml(
-            'Domain',
-            'Domain commands provide a controlled interface for data generation.',
-            DOMAIN_HELP_URL
-          ),
-        };
-      }
-      const commandHelp = getDomainCommandHelp(command);
-      const heading = commandHelp?.canonical || command;
-      const docsUrl = commandHelp?.docsUrl || DOMAIN_HELP_URL;
-      const summary = commandHelp?.summary || `Generates data using ${heading}.`;
-      return {
-        show: true,
-        title: `Domain command help: ${command}`,
-        docsUrl,
-        html: this.buildCommandHelpHtml({
-          heading,
-          summary,
-          docsUrl,
-          params: commandHelp?.args || [],
-          example: commandHelp?.example,
-        }),
-      };
-    }
-
-    return { show: false, title: '', docsUrl: '', html: '' };
-  }
-
-  buildTypeHelpHtml(typeName, summary, docsUrl) {
-    return [
-      `<p><strong>${escapeHtml(typeName)}</strong></p>`,
-      `<p>${escapeHtml(summary)}</p>`,
-      `<p><a class="helplink" href="${escapeHtml(docsUrl)}" target="_blank" rel="noopener noreferrer">Learn more</a></p>`,
-    ].join('');
-  }
-
-  cleanFakerParamTypeForHelp(typeText) {
-    const withoutDocComments = String(typeText || '').replace(/\/\*\*[\s\S]*?\*\//g, ' ');
-    return withoutDocComments.replace(/\s+/g, ' ').trim();
-  }
-
-  buildCallSignature(heading, params) {
-    const commandName = String(heading || '').trim();
-    if (!Array.isArray(params) || params.length === 0) {
-      return `${commandName}()`;
-    }
-
-    const args = params.map((param) => `${param.name}${param.optional ? '?' : ''}`).join(', ');
-    return `${commandName}(${args})`;
-  }
-
-  buildSchemaParamsHint(params) {
-    if (!Array.isArray(params) || params.length === 0) {
-      return '()';
-    }
-    return `(${params.map((param) => param.name).join(', ')})`;
-  }
-
-  cleanFakerParamDescriptionForHelp(descriptionText) {
-    return String(descriptionText || '')
-      .replace(/\s+/g, ' ')
-      .trim();
-  }
-
-  buildCommandHelpHtml({ heading, summary, docsUrl, params, example }) {
-    const sections = [`<p><strong>${escapeHtml(heading)}</strong></p>`, `<p>${escapeHtml(summary)}</p>`];
-
-    sections.push(`<p><strong>Call:</strong> <code>${escapeHtml(this.buildCallSignature(heading, params))}</code></p>`);
-
-    if (Array.isArray(params) && params.length > 0) {
-      const paramItems = params
-        .map((param) => {
-          const paramName = `${param.name}${param.optional ? '?' : ''}`;
-          const paramType = this.cleanFakerParamTypeForHelp(param.type);
-          const paramDescription = this.cleanFakerParamDescriptionForHelp(param.description);
-          const descriptionHtml = paramDescription.length > 0 ? ` - ${escapeHtml(paramDescription)}` : '';
-          return `<li><code>${escapeHtml(paramName)}</code>: <code>${escapeHtml(paramType)}</code>${descriptionHtml}</li>`;
-        })
-        .join('');
-
-      sections.push(
-        `<p><strong>Schema params field:</strong> <code>${escapeHtml(this.buildSchemaParamsHint(params))}</code></p>`
-      );
-      sections.push(`<p><strong>Params:</strong></p><ul>${paramItems}</ul>`);
-    }
-
-    if (String(example || '').length > 0) {
-      sections.push(`<p><strong>Example:</strong> <code>${escapeHtml(example)}</code></p>`);
-    } else {
-      sections.push('<p><strong>Example:</strong> Output depends on your selected params.</p>');
-    }
-
-    const docsLinkText = `Learn more: ${heading}`;
-    sections.push(
-      `<p><a class="helplink" href="${escapeHtml(docsUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(docsLinkText)}</a></p>`
-    );
-
-    return sections.join('');
-  }
-
-  buildFakerCommandHelpHtml({ heading, summary, docsUrl, params, example }) {
-    return this.buildCommandHelpHtml({ heading, summary, docsUrl, params, example });
+    const model = buildSchemaHelpModel(sourceType, commandValue);
+    return {
+      ...model,
+      html: renderSchemaHelpHtml(model),
+    };
   }
 }
 

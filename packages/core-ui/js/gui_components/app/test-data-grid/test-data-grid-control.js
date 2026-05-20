@@ -1,8 +1,8 @@
 /*
  * Responsibilities:
- * - Main controller for the test-data grid panel in the app page.
- * - Wires DOM events, grid editors, schema text sync triggers, and generation actions.
- * - Delegates command catalog logic and UI status behavior to focused helper modules.
+ * - Exposes the app-page entrypoint for the embedded test-data generation panel.
+ * - Creates per-instance controller state instead of relying on singleton module variables.
+ * - Composes the focused helpers for panel HTML, schema-grid sync, generation, and UI bindings.
  */
 
 import { TestDataGenerator } from '@anywaydata/core/data_generation/testDataGenerator.js';
@@ -31,7 +31,6 @@ import {
 } from './test-data-ui-status.js';
 import { createTestDataGenerationService } from './test-data-generation-service.js';
 import { setupDefnGridEditor } from './test-data-grid-engine-setup.js';
-import { renderSchemaTextFromGridRows } from '../../shared/test-data/schema-editor-core.js';
 import {
   bindPrimaryActions,
   bindGenerateCountInput,
@@ -41,293 +40,236 @@ import {
 import {
   createSchemaTextSyncState,
   showSchemaError,
-  populateGridFromSchemaText,
   bindSchemaTextareaSync,
   initializeSchemaErrorDisplay,
 } from './test-data-grid-schema-text-sync.js';
-import { applyTestDataGridLayout } from './test-data-grid-layout.js';
 import { TEST_DATA_GRID_SAMPLE_SCHEMA_TEXT } from '../../shared/test-data/schema-examples.js';
 import { mapDataRuleToGridRow, mapGridRowToSchemaRow } from './test-data-grid-schema-row-mappers.js';
-import { createGridChromeElements, bindGridChromeControls } from './test-data-grid-controls.js';
+import {
+  getGenerationMode as getGenerationModeFromUi,
+  applyModeDefaultRowCount as applyModeDefaultRowCountShared,
+} from './test-data-grid-generation-mode.js';
+import {
+  renderTestDataGenerationPanel,
+  loadSampleSchemaIntoTextArea as loadSampleSchemaIntoTextAreaShared,
+} from './test-data-grid-panel-html.js';
+import { createSchemaGridController } from './test-data-grid-schema-grid-controller.js';
+import { setupTestDataGenerationPanel } from './test-data-grid-panel-coordinator.js';
+import { createTestDataGridActionAdapter } from './test-data-grid-action-adapter.js';
 
 import { faker } from 'https://cdn.skypack.dev/@faker-js/faker@v9.7.0';
 
-var debouncer = new Debouncer();
-let importer = undefined;
-let textPreviewRenderer = undefined;
-let mainGridExtras = undefined;
-let activeDefnCellEdit = null;
-let schemaSampleButtonClickHandler = null;
-const schemaTextSyncState = createSchemaTextSyncState();
-let generationService = null;
+function createTestDataGridControl({
+  documentObj,
+  windowObj,
+  DebouncerClass = Debouncer,
+  schemaTextToDataRulesFn = schemaTextToDataRules,
+  dataRulesToSchemaTextFn = dataRulesToSchemaText,
+  createTestDataGenerationServiceFn = createTestDataGenerationService,
+  createSchemaGridControllerFn = createSchemaGridController,
+  renderTestDataGenerationPanelFn = renderTestDataGenerationPanel,
+  bindPrimaryActionsFn = bindPrimaryActions,
+  bindGenerateCountInputFn = bindGenerateCountInput,
+  bindModeRadiosFn = bindModeRadios,
+  bindSchemaSampleShortcutFn = bindSchemaSampleShortcut,
+  bindSchemaTextareaSyncFn = bindSchemaTextareaSync,
+  initializeSchemaErrorDisplayFn = initializeSchemaErrorDisplay,
+  loadSampleSchemaIntoTextAreaFn = loadSampleSchemaIntoTextAreaShared,
+  setupTestDataGenerationPanelFn = setupTestDataGenerationPanel,
+  showSchemaErrorFn = showSchemaError,
+  setTestDataStatusFn = setTestDataStatus,
+  clearPendingStatusResetFn = clearPendingTestDataStatusReset,
+  scheduleStatusResetFn = scheduleTestDataStatusReset,
+  yieldToUiFn = yieldToUi,
+  setupDefnGridEditorFn = setupDefnGridEditor,
+  identifyFakerCommandsFn = identifyFakerCommands,
+  createTestDataGridActionAdapterFn = createTestDataGridActionAdapter,
+} = {}) {
+  const state = {
+    debouncer: new DebouncerClass(),
+    importer: undefined,
+    textPreviewRenderer: undefined,
+    mainGridExtras: undefined,
+    schemaSampleButtonClickHandler: null,
+    schemaTextSyncState: createSchemaTextSyncState(),
+    generationService: null,
+    schemaGridController: null,
+    actionAdapter: null,
+  };
 
-function showTestDataSchemaError(message) {
-  showSchemaError(schemaTextSyncState, message);
-}
-
-function getSchemaTextFromEditor() {
-  const schemaTextArea = document.getElementById('testdatadefntext');
-  if (!schemaTextArea) {
-    return '';
-  }
-  return schemaTextArea.value || '';
-}
-
-function updatePairwiseButtonVisibility() {
-  generationService?.updatePairwiseButtonVisibility?.();
-}
-
-async function generatePairwiseTestData() {
-  await generationService?.generatePairwiseTestData?.();
-}
-
-async function generateTestData() {
-  await generationService?.generateTestData?.();
-}
-
-async function refreshTestDataPreview() {
-  await generationService?.refreshTestDataPreview?.({
-    clearPendingStatusReset: clearPendingTestDataStatusReset,
-    scheduleStatusReset: scheduleTestDataStatusReset,
-  });
-}
-
-function syncSchemaTextFromGridBeforeGenerate() {
-  // Tabulator keeps editor value in-flight until edit is committed; blur first so
-  // clicking Generate while typing still captures the latest schema values.
-  if (typeof document !== 'undefined' && typeof document.activeElement?.blur === 'function') {
-    document.activeElement.blur();
+  function showTestDataSchemaError(message) {
+    showSchemaErrorFn(state.schemaTextSyncState, message);
   }
 
-  if (defnGridBridge) {
-    convertGridToText();
+  function getResolvedDocument() {
+    return documentObj || globalThis.document;
   }
-}
 
-function getMainGridExtras() {
-  return mainGridExtras || importer?.gridExtensions;
-}
-
-function getGenerationMode() {
-  const selectedOption = document.querySelector('input[name="testDataGenerationMode"]:checked');
-  if (!selectedOption) {
-    return TEST_DATA_MODES.NEW_TABLE;
+  function getResolvedWindow() {
+    return windowObj || globalThis.window;
   }
-  return selectedOption.value;
-}
 
-function setGenerateCountToCurrentRows() {
-  const gridExtras = getMainGridExtras();
-  if (!gridExtras) {
-    return;
+  function getSchemaTextFromEditor() {
+    const schemaTextArea = getResolvedDocument()?.getElementById('testdatadefntext');
+    if (!schemaTextArea) {
+      return '';
+    }
+    return schemaTextArea.value || '';
   }
-  document.getElementById('generateCount').value = gridExtras.getRowCount();
-}
 
-function setGenerateCountToSelectedRows() {
-  const gridExtras = getMainGridExtras();
-  if (!gridExtras) {
-    return;
+  function getMainGridExtras() {
+    return state.mainGridExtras || state.importer?.gridExtensions;
   }
-  document.getElementById('generateCount').value = gridExtras.getSelectedRowIndexes().length;
-}
 
-function applyModeDefaultRowCount(mode) {
-  if (mode === TEST_DATA_MODES.AMEND_TABLE) {
-    setGenerateCountToCurrentRows();
-    return;
+  function getGenerationMode() {
+    return getGenerationModeFromUi({
+      documentObj: getResolvedDocument(),
+      defaultMode: TEST_DATA_MODES.NEW_TABLE,
+    });
   }
-  if (mode === TEST_DATA_MODES.AMEND_SELECTED) {
-    setGenerateCountToSelectedRows();
+
+  function applyModeDefaultRowCount(mode) {
+    applyModeDefaultRowCountShared({
+      mode,
+      documentObj: getResolvedDocument(),
+      gridExtras: getMainGridExtras(),
+      amendTableMode: TEST_DATA_MODES.AMEND_TABLE,
+      amendSelectedMode: TEST_DATA_MODES.AMEND_SELECTED,
+    });
   }
-}
 
-function loadSampleSchemaIntoTextArea() {
-  const schemaTextArea = document.getElementById('testdatadefntext');
-  if (!schemaTextArea) {
-    return;
+  function updatePairwiseButtonVisibility() {
+    state.generationService?.updatePairwiseButtonVisibility?.();
   }
-  schemaTextArea.value = TEST_DATA_GRID_SAMPLE_SCHEMA_TEXT;
-  populateGridFromTextSchema();
-}
 
-function createTestDataGrid() {
-  var gridDiv = document.querySelector('#defngrid');
-  setupTestDataEditGrid(gridDiv);
-
-  var textEdit = document.querySelector('.defn-text-container');
-  var zone = document.querySelector('.defn-edit-zone');
-  applyTestDataGridLayout({
-    gridDiv,
-    textEdit,
-    zone,
-    hasGridApi: Boolean(defnGridApi),
-  });
-}
-
-// todo: this all really needs to be wrapped in a class
-var defnGridApi;
-var defnGridExtras;
-var defnGridBridge;
-
-// populate Test Data Grid From Rules in Text Area
-function populateGridFromTextSchema() {
-  populateGridFromSchemaText({
-    state: schemaTextSyncState,
-    defnGridBridge,
-    schemaTextToDataRules,
-    schemaErrorsToText: generationService?.schemaErrorsToText,
-    setTestDataStatus,
-    updatePairwiseButtonVisibility,
-    mapRuleToRow: mapDataRuleToGridRow,
-    faker,
-    RandExp,
-  });
-}
-
-function setupTestDataEditGrid(gridDiv) {
-  const { tableDiv, addNewRowButton, deleteRowsButton } = createGridChromeElements(gridDiv);
-
-  const setupResult = setupDefnGridEditor({
-    tableDiv,
-    convertGridToText,
-    onDraftCellEditChange: (draftCellEdit) => {
-      activeDefnCellEdit = draftCellEdit;
-    },
-    getAgGridTypeEditorValues,
-    getTabulatorTypeEditorValues,
-    FAKER_SECTION_VALUE,
-    DOMAIN_SECTION_VALUE,
-  });
-  if (!setupResult) {
-    console.warn('No supported grid library loaded; test data definition grid editor disabled.');
-    return;
+  function populateGridFromTextSchema() {
+    state.schemaGridController?.populateGridFromTextSchema?.();
   }
-  defnGridApi = setupResult.defnGridApi;
-  defnGridExtras = setupResult.defnGridExtras;
-  defnGridBridge = setupResult.defnGridBridge;
 
-  bindGridChromeControls({
-    addNewRowButton,
-    deleteRowsButton,
-    getBridge: () => defnGridBridge,
-    getExtras: () => defnGridExtras,
-    onSchemaChanged: convertGridToText,
-  });
+  function loadSampleSchemaIntoTextArea() {
+    loadSampleSchemaIntoTextAreaFn({
+      documentObj: getResolvedDocument(),
+      sampleSchemaText: TEST_DATA_GRID_SAMPLE_SCHEMA_TEXT,
+      onSchemaUpdated: populateGridFromTextSchema,
+    });
+  }
+
+  function createGenerationService() {
+    return createTestDataGenerationServiceFn({
+      schemaTextToDataRules: schemaTextToDataRulesFn,
+      TestDataGeneratorClass: TestDataGenerator,
+      PairwiseTestDataGeneratorClass: PairwiseTestDataGenerator,
+      GenericDataTableClass: GenericDataTable,
+      TEST_DATA_MODES,
+      normaliseCount,
+      createTableFromGenerator,
+      createAmendedTable,
+      faker,
+      RandExp,
+      debouncer: state.debouncer,
+      syncSchemaTextFromGridBeforeGenerate: () => state.schemaGridController?.syncSchemaTextFromGridBeforeGenerate?.(),
+      setTestDataStatus: setTestDataStatusFn,
+      showSchemaError: showTestDataSchemaError,
+      yieldToUi: yieldToUiFn,
+      getSchemaText: getSchemaTextFromEditor,
+      getImporter: () => state.importer,
+      getTextPreviewRenderer: () => state.textPreviewRenderer,
+      getMainGridExtras,
+      getGenerationMode,
+    });
+  }
+
+  function createGridController() {
+    return createSchemaGridControllerFn({
+      documentObj: getResolvedDocument(),
+      setupDefnGridEditor: setupDefnGridEditorFn,
+      createGridRowToSchemaRowMapper: () => (rowData) =>
+        mapGridRowToSchemaRow(rowData, {
+          FAKER_SECTION_VALUE,
+          DOMAIN_SECTION_VALUE,
+          FAKER_COMMANDS,
+          DOMAIN_COMMANDS,
+        }),
+      buildRuleSpecFromSchemaRow,
+      dataRulesToSchemaText: dataRulesToSchemaTextFn,
+      schemaTextSyncState: state.schemaTextSyncState,
+      updatePairwiseButtonVisibility,
+      schemaTextToDataRules: schemaTextToDataRulesFn,
+      schemaErrorsToText: state.generationService?.schemaErrorsToText,
+      setTestDataStatus: setTestDataStatusFn,
+      mapRuleToRow: mapDataRuleToGridRow,
+      faker,
+      RandExp,
+      getAgGridTypeEditorValues,
+      getTabulatorTypeEditorValues,
+      FAKER_SECTION_VALUE,
+      DOMAIN_SECTION_VALUE,
+    });
+  }
+
+  function enableTestDataGenerationInterface(parentId, importer, textPreviewRenderer, gridExtras) {
+    identifyFakerCommandsFn(faker);
+
+    state.importer = importer;
+    state.textPreviewRenderer = textPreviewRenderer;
+    state.mainGridExtras = gridExtras;
+    state.generationService = createGenerationService();
+    state.actionAdapter = createTestDataGridActionAdapterFn({
+      getGenerationService: () => state.generationService,
+      clearPendingStatusReset: clearPendingStatusResetFn,
+      scheduleStatusReset: scheduleStatusResetFn,
+    });
+
+    const parentElem = getResolvedDocument()?.getElementById(parentId);
+    state.schemaGridController = createGridController();
+    const activeWindow = getResolvedWindow();
+    const panelSetupResult = setupTestDataGenerationPanelFn({
+      parentElem,
+      TEST_DATA_MODES,
+      renderTestDataGenerationPanelFn,
+      bindPrimaryActionsFn,
+      bindGenerateCountInputFn,
+      bindModeRadiosFn,
+      initializeSchemaErrorDisplayFn,
+      bindSchemaTextareaSyncFn,
+      bindSchemaSampleShortcutFn,
+      schemaTextSyncState: state.schemaTextSyncState,
+      debouncer: state.debouncer,
+      onGenerate: () => state.actionAdapter.generateTestData(),
+      onGeneratePairwise: () => state.actionAdapter.generatePairwiseTestData(),
+      onRefreshPreview: () => state.actionAdapter.refreshTestDataPreview(),
+      applyModeDefaultRowCount,
+      onPopulateRequested: populateGridFromTextSchema,
+      onSampleRequested: loadSampleSchemaIntoTextArea,
+      createTestDataGrid: () => state.schemaGridController.createTestDataGrid(),
+      previousSampleHandler: state.schemaSampleButtonClickHandler,
+      updateHelpHints:
+        typeof activeWindow?.updateHelpHints === 'function' ? () => activeWindow.updateHelpHints() : undefined,
+    });
+    state.schemaSampleButtonClickHandler = panelSetupResult?.sampleHandler ?? state.schemaSampleButtonClickHandler;
+
+    return state;
+  }
+
+  return {
+    enableTestDataGenerationInterface,
+    getState: () => state,
+  };
 }
 
-function convertGridToText() {
-  if (!defnGridBridge) {
-    return;
-  }
-  const schemaText = renderSchemaTextFromGridRows({
-    rows: defnGridBridge.getRows(),
-    activeDraftCellEdit: activeDefnCellEdit,
-    mapGridRowToSchemaRow: (rowData) =>
-      mapGridRowToSchemaRow(rowData, {
-        FAKER_SECTION_VALUE,
-        DOMAIN_SECTION_VALUE,
-        FAKER_COMMANDS,
-        DOMAIN_COMMANDS,
-      }),
-    buildRuleSpecFromSchemaRow,
-    dataRulesToSchemaText,
-    schemaTokens: schemaTextSyncState.schemaTextTokens,
-  });
-  document.getElementById('testdatadefntext').value = schemaText;
-  updatePairwiseButtonVisibility();
-}
+const defaultTestDataGridControl = createTestDataGridControl();
 
-function enableTestDataGenerationInterface(parentId, anImporter, aTextPreviewRenderer, aGridExtras) {
-  // dynamically setup the faker commands from loaded library
-  // and check for any changes
-  identifyFakerCommands(faker);
-
-  importer = anImporter;
-  textPreviewRenderer = aTextPreviewRenderer;
-  mainGridExtras = aGridExtras;
-  generationService = createTestDataGenerationService({
-    schemaTextToDataRules,
-    TestDataGeneratorClass: TestDataGenerator,
-    PairwiseTestDataGeneratorClass: PairwiseTestDataGenerator,
-    GenericDataTableClass: GenericDataTable,
-    TEST_DATA_MODES,
-    normaliseCount,
-    createTableFromGenerator,
-    createAmendedTable,
-    faker,
-    RandExp,
-    debouncer,
-    syncSchemaTextFromGridBeforeGenerate,
-    setTestDataStatus,
-    showSchemaError: showTestDataSchemaError,
-    yieldToUi,
-    getSchemaText: getSchemaTextFromEditor,
-    getImporter: () => importer,
-    getTextPreviewRenderer: () => textPreviewRenderer,
-    getMainGridExtras: () => getMainGridExtras(),
-    getGenerationMode,
-  });
-
-  let parentElem = document.getElementById(parentId);
-  parentElem.innerHTML = `
-        <div>
-            <button id="generatedata">Generate</button>
-            <button id="generateallpairs" style="display:none;">Generate Pairwise</button>
-            <button id="refreshtestdatapreview">Refresh Text Preview</button>
-            <label> How Many?<input type="number" id="generateCount" min="1" step="1"/></label>
-            <label><input type="radio" name="testDataGenerationMode" value="${TEST_DATA_MODES.NEW_TABLE}" checked>New Table</label>
-            <label><input type="radio" name="testDataGenerationMode" value="${TEST_DATA_MODES.AMEND_TABLE}">Amend Table</label>
-            <label><input type="radio" name="testDataGenerationMode" value="${TEST_DATA_MODES.AMEND_SELECTED}">Amend Selected</label>
-            <span id="testdata-status" class="import-progress-status" style="display:none;" aria-live="polite"></span>
-            <span id="testdata-schema-error" class="generator-schema-error-text" aria-live="polite" role="status"></span>
-        </div>
-        <div class="defn-edit-zone">
-            <div class="defn-grid-container" id="defngrid" class="ag-theme-alpine">
-            </div>
-            <div class="defn-text-container">
-                <p>
-                  Test Data Text Schema
-                  <span
-                    data-help="test-data-text-schema-help"
-                    class="helpicon option-help-icon"
-                  ></span>
-                </p>
-                <textarea class="testDataDefn" name="testdatadefntext" id="testdatadefntext"></textarea>
-            </div>
-        </div>
-    `;
-
-  bindPrimaryActions({
-    onGenerate: generateTestData,
-    onGeneratePairwise: generatePairwiseTestData,
-    onRefreshPreview: refreshTestDataPreview,
-  });
-  bindGenerateCountInput();
-  bindModeRadios({
-    parentElem,
-    applyModeDefaultRowCount,
-  });
-
-  createTestDataGrid();
-
-  initializeSchemaErrorDisplay(schemaTextSyncState);
-  bindSchemaTextareaSync({
-    debouncer,
-    onPopulateRequested: populateGridFromTextSchema,
-  });
-
-  schemaSampleButtonClickHandler = bindSchemaSampleShortcut({
-    currentHandler: schemaSampleButtonClickHandler,
-    onSampleRequested: loadSampleSchemaIntoTextArea,
-  });
-
-  if (typeof window !== 'undefined' && typeof window.updateHelpHints === 'function') {
-    window.updateHelpHints();
-  }
+function enableTestDataGenerationInterface(parentId, importer, textPreviewRenderer, gridExtras) {
+  return defaultTestDataGridControl.enableTestDataGenerationInterface(
+    parentId,
+    importer,
+    textPreviewRenderer,
+    gridExtras
+  );
 }
 
 export {
+  createTestDataGridControl,
   enableTestDataGenerationInterface,
   identifyFakerCommands,
   getFakerCommands,
@@ -335,8 +277,3 @@ export {
   getTabulatorTypeEditorValues,
   getAgGridTypeEditorValues,
 };
-
-/**
- * Getter function for FAKER_COMMANDS array (for testing purposes).
- * @returns {string[]} Array of discovered faker commands
- */

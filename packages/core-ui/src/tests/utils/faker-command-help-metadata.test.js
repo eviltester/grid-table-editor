@@ -12,6 +12,15 @@ describe('faker command help metadata', () => {
     });
   });
 
+  test('contains docsUrl for all curated faker commands', () => {
+    const fakerCommands = KNOWN_FAKER_COMMANDS.filter((command) => command !== 'RegEx');
+    fakerCommands.forEach((command) => {
+      const help = getFakerCommandHelp(command);
+      expect(help).toBeDefined();
+      expect(String(help.docsUrl || '').trim().length).toBeGreaterThan(0);
+    });
+  });
+
   test('includes docs url and non-empty summary for sample commands', () => {
     const airline = getFakerCommandHelp('airline.recordLocator');
     const helper = getFakerCommandHelp('helpers.arrayElement');

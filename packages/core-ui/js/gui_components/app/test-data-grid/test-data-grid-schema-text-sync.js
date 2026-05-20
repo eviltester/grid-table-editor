@@ -6,7 +6,7 @@
  */
 
 import { TimedErrorDisplay } from '../../shared/timed-error-display.js';
-import { mapParsedRulesToRows } from '../../shared/test-data/schema-editor-core.js';
+import { parseSchemaTextToRows } from '../../shared/test-data/schema-controller.js';
 
 function createSchemaTextSyncState() {
   return {
@@ -39,10 +39,12 @@ function populateGridFromSchemaText({
   }
 
   const schemaTextArea = document.getElementById('testdatadefntext');
-  const parseResult = schemaTextToDataRules({
+  const parseResult = parseSchemaTextToRows({
+    schemaTextToDataRules,
     schemaText: schemaTextArea?.value || '',
     faker,
     RandExp,
+    mapRuleToRow,
   });
   if (parseResult.errors.length > 0) {
     const errorText = schemaErrorsToText?.(parseResult.errors) || '';
@@ -52,13 +54,8 @@ function populateGridFromSchemaText({
   }
 
   defnGridBridge.clearRows();
-  state.schemaTextTokens = Array.isArray(parseResult.schemaTokens) ? parseResult.schemaTokens : [];
-  const rowsToAdd = mapParsedRulesToRows({
-    dataRules: parseResult.dataRules,
-    schemaTokens: state.schemaTextTokens,
-    mapRuleToRow,
-  });
-  defnGridBridge.addRows(rowsToAdd);
+  state.schemaTextTokens = Array.isArray(parseResult.tokens) ? parseResult.tokens : [];
+  defnGridBridge.addRows(parseResult.rows);
   updatePairwiseButtonVisibility();
 }
 

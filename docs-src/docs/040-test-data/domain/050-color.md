@@ -36,8 +36,7 @@ color.cmyk(format="hex")
 ```
 
 Example return values:
-- `[0.57,0.01,0.18,0.59]`
-- `[0.56,0.85,0.64,0.2]`
+- `[0.95,0.17,0.23,1]`
 
 ### `color.colorByCSSColorSpace`
 
@@ -55,8 +54,7 @@ color.colorByCSSColorSpace()
 ```
 
 Example return values:
-- `[0.292,0.4075,0.5189]`
-- `[0.0782,0.9207,0.6424]`
+- `[0.5811,0.0479,0.1091]`
 
 ### `color.cssSupportedFunction`
 
@@ -74,8 +72,7 @@ color.cssSupportedFunction()
 ```
 
 Example return values:
-- `"color"`
-- `"rgba"`
+- `hsla`
 
 ### `color.cssSupportedSpace`
 
@@ -93,7 +90,7 @@ color.cssSupportedSpace()
 ```
 
 Example return values:
-- `"rec2020"`
+- `sRGB`
 
 ### `color.hsl`
 
@@ -118,8 +115,7 @@ color.hsl(format="hex", includeAlpha=true)
 ```
 
 Example return values:
-- `[109,0.86,0.08]`
-- `[215,0.5,0.99]`
+- `[212,0.78,0.54]`
 
 ### `color.human`
 
@@ -137,8 +133,7 @@ color.human()
 ```
 
 Example return values:
-- `"orange"`
-- `"black"`
+- `green`
 
 ### `color.hwb`
 
@@ -162,8 +157,7 @@ color.hwb(format="hex")
 ```
 
 Example return values:
-- `[324,0.03,0.76]`
-- `[80,0.93,0.73]`
+- `[328,0.27,0.33]`
 
 ### `color.lab`
 
@@ -187,12 +181,11 @@ color.lab(format="hex")
 ```
 
 Example return values:
-- `[0.408016,47.4015,-64.2527]`
-- `[0.935836,-55.9594,38.016]`
+- `[0.071396,-55.6612,-66.7185]`
 
 ### `color.lch`
 
-Returns a random LCH color value.
+Returns an LCH color.
 
 - Canonical: `awd.domain.color.lch`
 - Faker docs: [https://fakerjs.dev/api/color](https://fakerjs.dev/api/color)
@@ -212,8 +205,7 @@ color.lch(format="hex")
 ```
 
 Example return values:
-- `[0.770606,67.4,171.2]`
-- `[0.241599,78.8,2.4]`
+- `[0.469557,212.9,204.9]`
 
 ### `color.rgb`
 
@@ -240,8 +232,7 @@ color.rgb(casing="lower", format="hex", includeAlpha=true, prefix="#")
 ```
 
 Example return values:
-- `"#d9a378"`
-- `"#d8cd14"`
+- `#ee8222`
 
 ### `color.space`
 
@@ -259,5 +250,4 @@ color.space()
 ```
 
 Example return values:
-- `"Pantone Matching System (PMS)"`
-- `"ProPhoto RGB Color Space"`
+- `HSL`

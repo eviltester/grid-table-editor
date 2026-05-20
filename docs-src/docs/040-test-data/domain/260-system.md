@@ -30,8 +30,7 @@ system.commonFileExt()
 ```
 
 Example return values:
-- `"gif"`
-- `"png"`
+- `pdf`
 
 ### `system.commonFileName`
 
@@ -55,8 +54,7 @@ system.commonFileName(extension="txt")
 ```
 
 Example return values:
-- `"monocle_unhappy.gif"`
-- `"seal_fax.gif"`
+- `bleak.pdf`
 
 ### `system.commonFileType`
 
@@ -74,8 +72,7 @@ system.commonFileType()
 ```
 
 Example return values:
-- `"image"`
-- `"video"`
+- `video`
 
 ### `system.cron`
 
@@ -86,7 +83,7 @@ Returns a random cron expression.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `includeNonStandard` | `boolean` | no | Whether to include @yearly, @monthly, @daily, etc. text labels in the generated expression. |
+| `includeNonStandard` | `boolean` | no | Whether to include a @yearly, @monthly, @daily, etc text labels in the generated expression. |
 | `includeYear` | `boolean` | no | Whether to include a year in the generated expression. |
 
 Examples:
@@ -100,8 +97,7 @@ system.cron(includeNonStandard=true, includeYear=true)
 ```
 
 Example return values:
-- `"* * 23 * *"`
-- `"* 12 ? * ?"`
+- `* 15 * * SAT`
 
 ### `system.directoryPath`
 
@@ -119,8 +115,7 @@ system.directoryPath()
 ```
 
 Example return values:
-- `"/lost+found"`
-- `"/root"`
+- `/bin`
 
 ### `system.fileExt`
 
@@ -144,8 +139,7 @@ system.fileExt(mimeType="image/png")
 ```
 
 Example return values:
-- `"odp"`
-- `"bz"`
+- `xsl`
 
 ### `system.fileName`
 
@@ -163,8 +157,7 @@ system.fileName()
 ```
 
 Example return values:
-- `"ew_deep_mothball.webm"`
-- `"whale.ogg"`
+- `unsightly.woff`
 
 ### `system.filePath`
 
@@ -182,8 +175,7 @@ system.filePath()
 ```
 
 Example return values:
-- `"/Applications/but_holster.dms"`
-- `"/lib/anenst_glaring.xsl"`
+- `/tmp/ouch.xlt`
 
 ### `system.fileType`
 
@@ -201,7 +193,7 @@ system.fileType()
 ```
 
 Example return values:
-- `"image"`
+- `font`
 
 ### `system.mimeType`
 
@@ -219,8 +211,7 @@ system.mimeType()
 ```
 
 Example return values:
-- `"image/jpeg"`
-- `"application/x-7z-compressed"`
+- `application/gzip`
 
 ### `system.networkInterface`
 
@@ -238,8 +229,7 @@ system.networkInterface()
 ```
 
 Example return values:
-- `"ens9d1"`
-- `"wlp8s6f4"`
+- `wlx3fba717f9f9c`
 
 ### `system.semver`
 
@@ -257,5 +247,4 @@ system.semver()
 ```
 
 Example return values:
-- `"1.8.17"`
-- `"5.12.0"`
+- `4.3.6`

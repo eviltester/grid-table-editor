@@ -52,12 +52,24 @@ function buildRuleSpecFromRow(row) {
     const value = String(row?.value ?? '');
     const trimmedValue = value.trim();
     if (trimmedValue.length === 0) {
-      return 'literal()';
+      return 'literal("")';
     }
     if (/^(literal|datatype\.literal|awd\.datatype\.literal)\s*\(/i.test(trimmedValue)) {
       return trimmedValue;
     }
     return `literal(${value})`;
+  }
+  if (sourceType === SOURCE_TYPE_REGEX) {
+    const value = String(row?.value ?? '');
+    const trimmedValue = value.trim();
+    const hasName = String(row?.name ?? '').trim().length > 0;
+    if (trimmedValue.length === 0 && hasName) {
+      return 'regex("")';
+    }
+    if (/^(regex|datatype\.regex|awd\.datatype\.regex)\s*\(/i.test(trimmedValue)) {
+      return trimmedValue;
+    }
+    return value;
   }
   return String(row?.value ?? '').trim();
 }

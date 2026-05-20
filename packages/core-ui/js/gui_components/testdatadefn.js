@@ -1022,10 +1022,25 @@ function normalizeEnumRuleDefinition(value) {
 function normalizeLiteralRuleDefinition(value) {
   const rawValue = String(value ?? '');
   const trimmedValue = rawValue.trim();
+  if (trimmedValue.length === 0) {
+    return 'literal("")';
+  }
   if (/^(literal|datatype\.literal|awd\.datatype\.literal)\s*\(/i.test(trimmedValue)) {
     return trimmedValue;
   }
   return `literal(${rawValue})`;
+}
+
+function normalizeRegexRuleDefinition(value) {
+  const rawValue = String(value ?? '');
+  const trimmedValue = rawValue.trim();
+  if (trimmedValue.length === 0) {
+    return 'regex("")';
+  }
+  if (/^(regex|datatype\.regex|awd\.datatype\.regex)\s*\(/i.test(trimmedValue)) {
+    return trimmedValue;
+  }
+  return rawValue;
 }
 
 function convertGridToText() {
@@ -1045,7 +1060,7 @@ function convertGridToText() {
     const lowerType = resolvedType.toLowerCase();
     switch (lowerType) {
       case 'regex':
-        ruleLine = resolvedRowData.value || '';
+        ruleLine = normalizeRegexRuleDefinition(resolvedRowData.value);
         break;
       case 'enum':
         ruleLine = normalizeEnumRuleDefinition(resolvedRowData.value);

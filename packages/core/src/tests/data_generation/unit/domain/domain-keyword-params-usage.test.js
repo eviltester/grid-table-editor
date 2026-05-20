@@ -49,6 +49,9 @@ function sampleValueForType(type) {
   if (allowed.includes('array')) {
     return ['a', 'b'];
   }
+  if (allowed.includes('object')) {
+    return { key: 'value' };
+  }
   return 'sample';
 }
 
@@ -79,6 +82,8 @@ function sampleValueForKeywordArg(keywordName, argName, typeName) {
 
   if (key === 'airline.seat.aircraftType') return 'narrowbody';
   if (key === 'internet.emoji.types') return ['smiley'];
+  if (key === 'internet.jwt.header') return { alg: 'HS256', typ: 'JWT' };
+  if (key === 'internet.jwt.payload') return { iss: 'Acme' };
   if (key === 'internet.ipv4.cidrBlock') return '192.168.0.0/24';
   if (key === 'internet.ipv4.network') return 'private';
   if (key === 'internet.password.pattern') return '[A-Za-z0-9]';

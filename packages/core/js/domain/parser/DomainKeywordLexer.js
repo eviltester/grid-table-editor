@@ -27,13 +27,28 @@ class DomainKeywordLexer {
         index += 1;
         continue;
       }
+      if (ch === '{') {
+        tokens.push(this.token('LBRACE', ch, index, index + 1));
+        index += 1;
+        continue;
+      }
       if (ch === ']') {
         tokens.push(this.token('RBRACKET', ch, index, index + 1));
         index += 1;
         continue;
       }
+      if (ch === '}') {
+        tokens.push(this.token('RBRACE', ch, index, index + 1));
+        index += 1;
+        continue;
+      }
       if (ch === ',') {
         tokens.push(this.token('COMMA', ch, index, index + 1));
+        index += 1;
+        continue;
+      }
+      if (ch === ':') {
+        tokens.push(this.token('COLON', ch, index, index + 1));
         index += 1;
         continue;
       }
@@ -161,7 +176,18 @@ class DomainKeywordLexer {
   }
 
   isDelimiter(ch) {
-    return this.isWhitespace(ch) || ch === '(' || ch === ')' || ch === '[' || ch === ']' || ch === ',' || ch === '=';
+    return (
+      this.isWhitespace(ch) ||
+      ch === '(' ||
+      ch === ')' ||
+      ch === '[' ||
+      ch === ']' ||
+      ch === '{' ||
+      ch === '}' ||
+      ch === ',' ||
+      ch === ':' ||
+      ch === '='
+    );
   }
 
   isEndOrDelimiter(ch) {

@@ -1,6 +1,13 @@
 import { faker } from '@faker-js/faker';
 import { executeDomainKeyword } from '../../../../../js/domain/domain-keywords.js';
+import { parseKeywordInvocation } from '../../../../../js/domain/domain-keyword-parser.js';
 import { expectMeaningfulString } from './domain-assertions.test-helper.js';
+
+function decodeJwtPart(part) {
+  const normalized = part.replace(/-/g, '+').replace(/_/g, '/');
+  const padded = normalized + '='.repeat((4 - (normalized.length % 4)) % 4);
+  return JSON.parse(Buffer.from(padded, 'base64').toString('utf8'));
+}
 
 describe('internet domain keyword execution', () => {
   test('executes internet.color', () => {
@@ -87,6 +94,40 @@ describe('internet domain keyword execution', () => {
     const result = executeDomainKeyword('internet.jwt', { faker, args: [] });
     console.log('internet.jwt', result);
     expectMeaningfulString(result);
+    expect(result.split('.')).toHaveLength(3);
+  });
+
+  test('internet.jwt accepts positional header/payload/refDate object args', () => {
+    const header = { alg: 'HS256', typ: 'JWT' };
+    const payload = { iss: 'Acme', sub: 'user-123' };
+    const refDate = 1;
+    const result = executeDomainKeyword('internet.jwt', { faker, args: [header, payload, refDate] });
+
+    const [encodedHeader, encodedPayload] = result.split('.');
+    const decodedHeader = decodeJwtPart(encodedHeader);
+    const decodedPayload = decodeJwtPart(encodedPayload);
+
+    expect(decodedHeader.alg).toBe('HS256');
+    expect(decodedHeader.typ).toBe('JWT');
+    expect(decodedPayload.iss).toBe('Acme');
+    expect(decodedPayload.sub).toBe('user-123');
+  });
+
+  test('internet.jwt accepts named header/payload/refDate object args', () => {
+    const parsed = parseKeywordInvocation(
+      'internet.jwt(header={"alg":"HS256","typ":"JWT"}, payload={"iss":"Acme","sub":"user-123"}, refDate=1)'
+    );
+    expect(parsed.errors).toEqual([]);
+
+    const result = executeDomainKeyword(parsed.keyword, { faker, args: parsed.args });
+    const [encodedHeader, encodedPayload] = result.split('.');
+    const decodedHeader = decodeJwtPart(encodedHeader);
+    const decodedPayload = decodeJwtPart(encodedPayload);
+
+    expect(decodedHeader.alg).toBe('HS256');
+    expect(decodedHeader.typ).toBe('JWT');
+    expect(decodedPayload.iss).toBe('Acme');
+    expect(decodedPayload.sub).toBe('user-123');
   });
 
   test('executes internet.jwtAlgorithm', () => {

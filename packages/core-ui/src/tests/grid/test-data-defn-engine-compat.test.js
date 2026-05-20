@@ -573,13 +573,13 @@ describe('test data definition editor engine compatibility', () => {
     await flushUi();
 
     const schemaText = document.getElementById('testdatadefntext').value;
-    expect(schemaText).toContain('EmptyLiteral\nliteral()');
-    expect(schemaText).toContain('SpaceLiteral\nliteral(   )');
+    expect(schemaText).toContain('EmptyLiteral\nliteral("")');
+    expect(schemaText).toContain('SpaceLiteral\nliteral("")');
 
     delete global.Tabulator;
   });
 
-  test('text schema literal() parses to literal row type (not regex)', async () => {
+  test('text schema literal("") parses to literal row type (not regex)', async () => {
     const TabulatorMock = installTabulatorMock();
 
     enableTestDataGenerationInterface(
@@ -597,7 +597,7 @@ describe('test data definition editor engine compatibility', () => {
     );
 
     const schemaTextArea = document.getElementById('testdatadefntext');
-    schemaTextArea.value = 't\nliteral()';
+    schemaTextArea.value = 't\nliteral("")';
     schemaTextArea.dispatchEvent(new Event('input', { bubbles: true }));
     await new Promise((resolve) => setTimeout(resolve, 1100));
     await flushUi();

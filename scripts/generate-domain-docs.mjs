@@ -3,6 +3,7 @@ import path from 'node:path';
 import { DOMAIN_KEYWORDS } from '../packages/core/js/domain/domain-keywords.js';
 import { faker } from '@faker-js/faker';
 import { executeDomainKeyword } from '../packages/core/js/domain/domain-keywords.js';
+import { toInlineCode } from '../packages/core/js/domain/domain-doc-markdown.js';
 
 const outDir = path.resolve('docs-src/docs/040-test-data/domain');
 fs.mkdirSync(outDir, { recursive: true });
@@ -109,11 +110,19 @@ const invocationOverrides = {
   'date.betweens': { invocation: 'date.betweens(2, 0, 2000000000000)', args: [2, 0, 2000000000000] },
 };
 const nonDeterministicExamples = new Set(['helpers.maybe']);
+const domainIntroOverrides = {
+  literal: 'The `literal` domain returns caller-provided values directly and does not invoke faker.',
+};
 
 function escapeMdxText(value) {
   return String(value ?? '')
     .replaceAll('{', '&#123;')
     .replaceAll('}', '&#125;');
+}
+
+function escapeMarkdownTableCell(value) {
+  const normalized = String(value ?? '').replaceAll('\r\n', '\n').replaceAll('\r', '\n');
+  return escapeMdxText(normalized.replaceAll('\n', '<br/>')).replaceAll('|', '\\|');
 }
 
 function canExecuteInvocation(keyword, args) {
@@ -122,7 +131,7 @@ function canExecuteInvocation(keyword, args) {
       faker,
       args,
       customDelegates: {
-        'literal.value': (context) => context.args?.[0],
+        'literal.value': (context) => context.args?.[0] ?? '',
       },
     });
     return true;
@@ -131,23 +140,13 @@ function canExecuteInvocation(keyword, args) {
   }
 }
 
-function getExampleReturnValues(keyword, args, count = 2) {
-  const values = [];
-  for (let index = 0; index < count; index += 1) {
-    try {
-      const value = executeDomainKeyword(keyword, {
-        faker,
-        args,
-        customDelegates: {
-          'literal.value': (context) => context.args?.[0],
-        },
-      });
-      values.push(JSON.stringify(value));
-    } catch {
-      break;
-    }
+function getDefinitionReturnValues(entry) {
+  const explicit = Array.isArray(entry?.help?.exampleReturnValues) ? entry.help.exampleReturnValues : [];
+  if (explicit.length > 0) {
+    return explicit;
   }
-  return values;
+  const single = String(entry?.help?.example || '').trim();
+  return single ? [single] : [];
 }
 
 function toNamedInvocation(keyword, argSpecs, typedArgs) {
@@ -163,7 +162,11 @@ function toNamedInvocation(keyword, argSpecs, typedArgs) {
     }
     const value = typedArgs[index];
     const rendered =
-      typeof value === 'string' ? `"${value}"` : Array.isArray(value) ? JSON.stringify(value) : String(value);
+      typeof value === 'string'
+        ? `"${value}"`
+        : Array.isArray(value) || (value && typeof value === 'object')
+          ? JSON.stringify(value)
+          : String(value);
     pairs.push(`${name}=${rendered}`);
   }
   return `${keyword}(${pairs.join(', ')})`;
@@ -180,6 +183,9 @@ function renderInvocation(keyword, typedArgs) {
     if (Array.isArray(value)) {
       return JSON.stringify(value);
     }
+    if (value && typeof value === 'object') {
+      return JSON.stringify(value);
+    }
     return String(value);
   });
   return `${keyword}(${renderedArgs.join(', ')})`;
@@ -188,26 +194,36 @@ function renderInvocation(keyword, typedArgs) {
 function sampleValueForArg(argSpec) {
   const name = String(argSpec?.name || '').trim();
   const typeName = String(argSpec?.type || '').trim();
+  if (name === 'firstName') return 'Alex';
+  if (name === 'lastName') return 'Taylor';
+  if (name === 'provider') return 'example.com';
   if (name === 'aircraftType') return 'narrowbody';
   if (name === 'countryCode') return 'GB';
   if (name === 'cidrBlock') return '192.168.0.0/24';
   if (name === 'network') return 'private-a';
+  if (name === 'protocol') return 'https';
   if (name === 'format') return 'hex';
   if (name === 'casing') return 'lower';
   if (name === 'prefix') return '#';
   if (name === 'separator') return '-';
+  if (name === 'characters') return 'ABC123';
   if (name === 'variant') return '13';
+  if (name === 'pattern') return '[A-Za-z0-9]';
   if (name === 'strategy') return 'any-length';
   if (name === 'version') return 'v4';
   if (name === 'mode') return 'age';
+  if (name === 'sex') return 'male';
   if (name === 'mimeType') return 'image/png';
   if (name === 'extension') return 'txt';
   if (name === 'symbol') return '$';
   if (name === 'types') return ['food', 'nature'];
   if (name === 'list') return ['alpha', 'beta', 'gamma'];
+  if (name === 'header') return { alg: 'HS256', typ: 'JWT' };
+  if (name === 'payload') return { iss: 'Acme' };
   if (name === 'style') return 'human';
   if (name === 'context') return false;
   if (name === 'abbreviated') return false;
+  if (name === 'memorable') return false;
 
   const first =
     typeName
@@ -216,8 +232,9 @@ function sampleValueForArg(argSpec) {
       .find(Boolean) || 'string';
   if (first === 'number') return 1;
   if (first === 'boolean') return true;
-  if (first === 'array') return ['sample'];
-  return 'sample';
+  if (first === 'array') return ['item'];
+  if (first === 'object') return { key: 'value' };
+  return 'value';
 }
 
 let pageIndex = 20;
@@ -232,11 +249,18 @@ for (const domain of domains) {
     '',
     `# ${domain} Domain`,
     '',
-    `The \`${domain}\` domain maps domain keywords to underlying faker implementations.`,
+    domainIntroOverrides[domain] ||
+      `The \`${domain}\` domain maps domain keywords to underlying faker implementations.`,
     '',
   ];
 
-  const docsByDomain = [...new Set(keywords.map((k) => k.help.docsUrl).filter(Boolean))];
+  const docsByDomain = [
+    ...new Set(
+      keywords
+        .map((k) => String(k.help.docsUrl || '').trim())
+        .filter((url) => url.length > 0 && url.includes('fakerjs.dev/api/'))
+    ),
+  ];
   if (docsByDomain.length > 0) {
     lines.push('## Faker Documentation', '');
     for (const url of docsByDomain) lines.push(`- [${url}](${url})`);
@@ -250,15 +274,7 @@ for (const domain of domains) {
     const override = invocationOverrides[entry.keyword];
     const requiredArgSpecs = args.filter((a) => a.required);
     const typedRequiredArgs = requiredArgSpecs.map((a) => {
-      const first =
-        String(a.type || '')
-          .split('|')
-          .map((s) => s.trim())
-          .find(Boolean) || 'string';
-      if (first === 'number') return 1;
-      if (first === 'boolean') return true;
-      if (first === 'array') return ['sample'];
-      return 'sample';
+      return sampleValueForArg(a);
     });
     const sampledArgs = args.map((arg) => sampleValueForArg(arg));
     let executableExampleArgs = override ? override.args : typedRequiredArgs;
@@ -282,7 +298,10 @@ for (const domain of domains) {
     lines.push(`### \`${entry.keyword}\``, '');
     lines.push(escapeMdxText(entry.help.summary || 'No summary provided.'), '');
     lines.push(`- Canonical: \`${entry.canonical}\``);
-    if (entry.help.docsUrl) lines.push(`- Faker docs: [${entry.help.docsUrl}](${entry.help.docsUrl})`);
+    if (entry.help.docsUrl) {
+      const docsLabel = String(entry?.delegate?.type || '') === 'faker' ? 'Faker docs' : 'Docs';
+      lines.push(`- ${docsLabel}: [${entry.help.docsUrl}](${entry.help.docsUrl})`);
+    }
     lines.push('');
 
     if (args.length > 0) {
@@ -290,7 +309,7 @@ for (const domain of domains) {
       lines.push('| --- | --- | --- | --- |');
       for (const arg of args) {
         lines.push(
-          `| \`${escapeMdxText(arg.name)}\` | \`${escapeMdxText(arg.type)}\` | ${arg.required ? 'yes' : 'no'} | ${escapeMdxText(arg.description || 'No description provided.')} |`
+          `| \`${escapeMarkdownTableCell(arg.name)}\` | \`${escapeMarkdownTableCell(arg.type)}\` | ${arg.required ? 'yes' : 'no'} | ${escapeMarkdownTableCell(arg.description || 'No description provided.')} |`
         );
       }
       lines.push('');
@@ -299,6 +318,7 @@ for (const domain of domains) {
     }
 
     if (hasExecutableExample) {
+      const definitionExamples = Array.isArray(entry.help.examples) ? entry.help.examples.filter(Boolean) : [];
       let namedInvocation = '';
       const allArgsValues = sampledArgs;
       if (args.length > 0 && canExecuteInvocation(entry.keyword, allArgsValues)) {
@@ -311,13 +331,15 @@ for (const domain of domains) {
         );
       }
       const invocation = override ? override.invocation : renderInvocation(entry.keyword, executableExampleArgs);
-      lines.push('Examples:', '', '```txt', invocation, '```');
-      if (namedInvocation) {
-        lines.push('', '```txt', namedInvocation, '```');
+      const primaryExamples =
+        definitionExamples.length > 0 ? definitionExamples : [invocation, namedInvocation].filter(Boolean);
+      lines.push('Examples:');
+      for (const example of primaryExamples) {
+        lines.push('', '```txt', example, '```');
       }
-      if (args.length > 0) {
+      if (args.length > 0 && definitionExamples.length === 0) {
         const typeInExamples = [];
-        const seenExamples = new Set([invocation, namedInvocation].filter(Boolean));
+        const seenExamples = new Set(primaryExamples);
         for (let index = 0; index < args.length; index += 1) {
           const arg = args[index];
           const value = sampleValueForArg(arg);
@@ -357,11 +379,11 @@ for (const domain of domains) {
           }
         }
       }
-      const returnValues = getExampleReturnValues(entry.keyword, executableExampleArgs);
+      const returnValues = getDefinitionReturnValues(entry);
       if (returnValues.length > 0) {
         lines.push('', 'Example return values:');
         for (const value of returnValues) {
-          lines.push(`- \`${escapeMdxText(value)}\``);
+          lines.push(`- ${toInlineCode(value)}`);
         }
       }
       lines.push('');

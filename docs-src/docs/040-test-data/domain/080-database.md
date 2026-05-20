@@ -30,8 +30,7 @@ database.collation()
 ```
 
 Example return values:
-- `"ascii_bin"`
-- `"ascii_general_ci"`
+- `utf8_bin`
 
 ### `database.column`
 
@@ -49,8 +48,7 @@ database.column()
 ```
 
 Example return values:
-- `"id"`
-- `"updatedAt"`
+- `status`
 
 ### `database.engine`
 
@@ -68,8 +66,7 @@ database.engine()
 ```
 
 Example return values:
-- `"MyISAM"`
-- `"BLACKHOLE"`
+- `ARCHIVE`
 
 ### `database.mongodbObjectId`
 
@@ -87,8 +84,7 @@ database.mongodbObjectId()
 ```
 
 Example return values:
-- `"3ef8f1042addecfc81fd98f9"`
-- `"b1c85eb686a0a96e1ebbefdf"`
+- `e80bba2ae67c0c7dcc16bd57`
 
 ### `database.type`
 
@@ -106,5 +102,4 @@ database.type()
 ```
 
 Example return values:
-- `"enum"`
-- `"bigint"`
+- `smallint`

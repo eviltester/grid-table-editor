@@ -34,12 +34,11 @@ string.alpha()
 ```
 
 ```txt
-string.alpha(length=5, casing="lower", exclude=["a"])
+string.alpha(length=1, casing="lower", exclude=["item"])
 ```
 
 Example return values:
-- `"S"`
-- `"u"`
+- `R`
 
 ### `string.alphanumeric`
 
@@ -61,12 +60,11 @@ string.alphanumeric()
 ```
 
 ```txt
-string.alphanumeric(length=5, casing="lower", exclude=["a", "1"])
+string.alphanumeric(length=1, casing="lower", exclude=["item"])
 ```
 
 Example return values:
-- `"D"`
-- `"K"`
+- `s`
 
 ### `string.binary`
 
@@ -91,7 +89,42 @@ string.binary(length=1, prefix="#")
 ```
 
 Example return values:
-- `"0b1"`
+- `0b0`
+
+### `string.counterString`
+
+Generates a counterstring for a random length between min and max (or fixed length when only one value is provided). Defaults to min=1 and max=25 when omitted.
+
+- Canonical: `awd.domain.string.counterString`
+- Docs: [/docs/test-data/counterstrings](/docs/test-data/counterstrings)
+
+| Arg | Type | Required | Description |
+| --- | --- | --- | --- |
+| `min` | `number` | no | Minimum counterstring length (integer). If max is omitted and min is provided, min is also used as max. Defaults to 1 when omitted. Non-integer values throw an exception. |
+| `max` | `number` | no | Maximum counterstring length (integer). If less than min, values are swapped. Defaults to 25 when omitted. Non-integer values throw an exception. |
+| `delimiter` | `string` | no | Delimiter character used between position markers. Defaults to "*". |
+
+Examples:
+
+```txt
+string.counterString()
+```
+
+```txt
+string.counterString(15)
+```
+
+```txt
+string.counterString(min=5, max=12)
+```
+
+```txt
+string.counterString(min=12, max=12, delimiter="#")
+```
+
+Example return values:
+- `*3*5*7*9*12*15*`
+- `#3#5#7#9#12#`
 
 ### `string.fromCharacters`
 
@@ -108,16 +141,16 @@ Generates a string from the given characters.
 Examples:
 
 ```txt
-string.fromCharacters("sample")
+string.fromCharacters("ABC123", 6)
 ```
 
 ```txt
-string.fromCharacters(characters="abcdef", length=3)
+string.fromCharacters(characters=["A", "B", "C"], length=4)
 ```
 
 Example return values:
-- `"m"`
-- `"l"`
+- `A1B2`
+- `CB2A`
 
 ### `string.hexadecimal`
 
@@ -143,8 +176,7 @@ string.hexadecimal(casing="lower", length=1, prefix="#")
 ```
 
 Example return values:
-- `"0xd"`
-- `"0xB"`
+- `0x1`
 
 ### `string.nanoid`
 
@@ -164,12 +196,11 @@ string.nanoid()
 ```
 
 ```txt
-string.nanoid(length=10)
+string.nanoid(length=1)
 ```
 
 Example return values:
-- `"bt_JjqxXXh9GHz1MALPW2"`
-- `"mjTRAlIjzdQ5Tg9rjv57R"`
+- `KLm49ferlh-eUmJpZdSIO`
 
 ### `string.numeric`
 
@@ -191,12 +222,11 @@ string.numeric()
 ```
 
 ```txt
-string.numeric(length=5, allowLeadingZeros=true, exclude=["0"])
+string.numeric(length=1, allowLeadingZeros=true, exclude=["item"])
 ```
 
 Example return values:
-- `"4"`
-- `"0"`
+- `7`
 
 ### `string.octal`
 
@@ -221,8 +251,7 @@ string.octal(length=1, prefix="#")
 ```
 
 Example return values:
-- `"0o1"`
-- `"0o3"`
+- `0o6`
 
 ### `string.sample`
 
@@ -242,12 +271,11 @@ string.sample()
 ```
 
 ```txt
-string.sample(length=10)
+string.sample(length=1)
 ```
 
 Example return values:
-- `"R4A;9BcLzj"`
-- `"X`ARt%ku=7"`
+- `\Fw;0e:G.H`
 
 ### `string.symbol`
 
@@ -267,12 +295,11 @@ string.symbol()
 ```
 
 ```txt
-string.symbol(length=3)
+string.symbol(length=1)
 ```
 
 Example return values:
-- `"/"`
-- `"_"`
+- `.`
 
 ### `string.ulid`
 
@@ -296,8 +323,7 @@ string.ulid(refDate=1)
 ```
 
 Example return values:
-- `"01KRXH5AE8V36069S9HB6G3CKY"`
-- `"01KRXH5AE8FNGNXFP3JBW5NJXW"`
+- `01KQADM2A0728G4D2HKCPWKS6N`
 
 ### `string.uuid`
 
@@ -306,7 +332,7 @@ Returns a UUID v4 (Universally Unique Identifier).
 - Canonical: `awd.domain.string.uuid`
 - Faker docs: [https://fakerjs.dev/api/string](https://fakerjs.dev/api/string)
 
-No arguments.
+No parameters.
 
 Examples:
 
@@ -315,5 +341,4 @@ string.uuid()
 ```
 
 Example return values:
-- `"522928a9-04aa-4ec4-948a-5bbbfe882f64"`
-- `"bd37a9cb-1f37-4d4a-aa6f-9681735bd00a"`
+- `0628ae51-7b6c-4d33-9f24-dae19fb245df`

@@ -30,6 +30,9 @@ function sampleValueForType(typeName) {
   if (types.includes('array')) {
     return ['x', 'y'];
   }
+  if (types.includes('object')) {
+    return { key: 'value' };
+  }
   return 'sample';
 }
 
@@ -51,6 +54,8 @@ function sampleValueForKeywordArg(keywordName, argName, typeName) {
   if (argName === 'network') return 'private';
   if (argName === 'cidrBlock') return '192.168.0.0/24';
   if (argName === 'types') return ['smiley'];
+  if (argName === 'header') return { alg: 'HS256', typ: 'JWT' };
+  if (argName === 'payload') return { iss: 'Acme' };
   if (argName === 'pattern') return 'a';
   if (argName === 'mode') return 'age';
   if (argName === 'strategy') return 'any-length';
@@ -68,6 +73,9 @@ function valueToInvocationLiteral(value) {
     return String(value);
   }
   if (Array.isArray(value)) {
+    return JSON.stringify(value);
+  }
+  if (value && typeof value === 'object') {
     return JSON.stringify(value);
   }
   throw new Error(`Unsupported literal type for invocation: ${typeof value}`);

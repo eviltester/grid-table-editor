@@ -105,6 +105,13 @@ describe('domain keyword parser', () => {
     expect(parsedKeyword.errors).toEqual([]);
   });
 
+  test('parses single object arg as named options for options-based domain keywords', () => {
+    const parsedKeyword = parseKeywordInvocation('number.int({"min":18,"max":65})');
+    expect(parsedKeyword.keyword).toBe('number.int');
+    expect(parsedKeyword.args).toEqual([18, 65, undefined]);
+    expect(parsedKeyword.errors).toEqual([]);
+  });
+
   test('returns error when positional arg appears after named arg', () => {
     const parsedKeyword = parseKeywordInvocation('number.int(min=1,2)');
     expect(parsedKeyword.errors).toEqual([
@@ -134,5 +141,20 @@ describe('domain keyword parser', () => {
   test('returns unknown keyword for unknown keyword with named args', () => {
     const parsedKeyword = parseKeywordInvocation('example.fn(min=1)');
     expect(parsedKeyword.errors).toEqual(['Unknown keyword: example.fn']);
+  });
+
+  test('returns error for unsafe object key "__proto__"', () => {
+    const parsedKeyword = parseKeywordInvocation('number.int({"__proto__":{"polluted":true}})');
+    expect(parsedKeyword.errors).toEqual(['Invalid keyword arguments: unsafe object key "__proto__" is not allowed']);
+  });
+
+  test('returns error for unsafe object key "constructor"', () => {
+    const parsedKeyword = parseKeywordInvocation('number.int({"constructor":{"prototype":{"polluted":true}}})');
+    expect(parsedKeyword.errors).toEqual(['Invalid keyword arguments: unsafe object key "constructor" is not allowed']);
+  });
+
+  test('returns error for unsafe object key "prototype"', () => {
+    const parsedKeyword = parseKeywordInvocation('number.int({prototype:1})');
+    expect(parsedKeyword.errors).toEqual(['Invalid keyword arguments: unsafe object key "prototype" is not allowed']);
   });
 });

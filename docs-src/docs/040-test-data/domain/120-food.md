@@ -30,8 +30,7 @@ food.adjective()
 ```
 
 Example return values:
-- `"tangy"`
-- `"juicy"`
+- `salty`
 
 ### `food.description`
 
@@ -49,8 +48,7 @@ food.description()
 ```
 
 Example return values:
-- `"Grilled venison kebabs, marinated in Mangalorean spices and served with a fresh rhubarb and blueberry salad."`
-- `"A slow-roasted Willow Ptarmigan with a zesty, crunchy exterior. Stuffed with banana and covered in papaw sauce. Sides with broccoli puree and wild jicama."`
+- `Fresh mixed greens tossed with pimento-rubbed pigeon, bean shoots, and a light dressing.`
 
 ### `food.dish`
 
@@ -68,8 +66,7 @@ food.dish()
 ```
 
 Example return values:
-- `"German Chamomile-crusted Salmon"`
-- `"Linguine With Clams"`
+- `Chicken Fajitas`
 
 ### `food.ethnicCategory`
 
@@ -87,8 +84,7 @@ food.ethnicCategory()
 ```
 
 Example return values:
-- `"Korean"`
-- `"Keralite"`
+- `Lithuanian`
 
 ### `food.fruit`
 
@@ -106,8 +102,7 @@ food.fruit()
 ```
 
 Example return values:
-- `"mango"`
-- `"sultana"`
+- `snowpea`
 
 ### `food.ingredient`
 
@@ -125,8 +120,7 @@ food.ingredient()
 ```
 
 Example return values:
-- `"taleggio cheese"`
-- `"freekeh"`
+- `spelt`
 
 ### `food.meat`
 
@@ -144,8 +138,7 @@ food.meat()
 ```
 
 Example return values:
-- `"turkey"`
-- `"venison"`
+- `goose`
 
 ### `food.spice`
 
@@ -163,8 +156,7 @@ food.spice()
 ```
 
 Example return values:
-- `"lime leaves"`
-- `"paprika"`
+- `poudre de colombo`
 
 ### `food.vegetable`
 
@@ -182,5 +174,4 @@ food.vegetable()
 ```
 
 Example return values:
-- `"cabbage"`
-- `"leeks"`
+- `snowpea sprouts`

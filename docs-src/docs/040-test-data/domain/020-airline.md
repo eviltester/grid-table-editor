@@ -30,7 +30,7 @@ airline.aircraftType()
 ```
 
 Example return values:
-- `"narrowbody"`
+- `regional`
 
 ### `airline.airline`
 
@@ -48,8 +48,7 @@ airline.airline()
 ```
 
 Example return values:
-- `{"name":"Air China","iataCode":"CA"}`
-- `{"name":"TUI Airways","iataCode":"BY"}`
+- `{"name":"American Airlines","iataCode":"AA"}`
 
 ### `airline.airline.iataCode`
 
@@ -67,8 +66,7 @@ airline.airline.iataCode()
 ```
 
 Example return values:
-- `"PK"`
-- `"MN"`
+- `AA`
 
 ### `airline.airline.name`
 
@@ -86,8 +84,7 @@ airline.airline.name()
 ```
 
 Example return values:
-- `"Tunisair"`
-- `"SunExpress"`
+- `Acme Air`
 
 ### `airline.airplane`
 
@@ -105,8 +102,7 @@ airline.airplane()
 ```
 
 Example return values:
-- `{"name":"Airbus A380-800","iataTypeCode":"388"}`
-- `{"name":"Boeing 747-400","iataTypeCode":"744"}`
+- `{"name":"Airbus A320","iataTypeCode":"A320"}`
 
 ### `airline.airplane.iataTypeCode`
 
@@ -124,8 +120,7 @@ airline.airplane.iataTypeCode()
 ```
 
 Example return values:
-- `"M81"`
-- `"732"`
+- `A320`
 
 ### `airline.airplane.name`
 
@@ -143,8 +138,7 @@ airline.airplane.name()
 ```
 
 Example return values:
-- `"Boeing 737-200"`
-- `"Douglas DC-10"`
+- `Boeing 737`
 
 ### `airline.airport`
 
@@ -162,8 +156,7 @@ airline.airport()
 ```
 
 Example return values:
-- `{"name":"Noumea Magenta Airport","iataCode":"GEA"}`
-- `{"name":"Melbourne International Airport","iataCode":"MEL"}`
+- `{"name":"Heathrow Airport","iataCode":"LHR"}`
 
 ### `airline.airport.iataCode`
 
@@ -181,8 +174,7 @@ airline.airport.iataCode()
 ```
 
 Example return values:
-- `"HBA"`
-- `"AKL"`
+- `LHR`
 
 ### `airline.airport.name`
 
@@ -200,8 +192,7 @@ airline.airport.name()
 ```
 
 Example return values:
-- `"Chicago O'Hare International Airport"`
-- `"Murtala Muhammed International Airport"`
+- `London Heathrow Airport`
 
 ### `airline.flightNumber`
 
@@ -219,8 +210,7 @@ airline.flightNumber()
 ```
 
 Example return values:
-- `"99"`
-- `"15"`
+- `1`
 
 ### `airline.recordLocator`
 
@@ -238,8 +228,7 @@ airline.recordLocator()
 ```
 
 Example return values:
-- `"HSRWTV"`
-- `"BKENFS"`
+- `TCSJCN`
 
 ### `airline.seat`
 
@@ -263,5 +252,4 @@ airline.seat(aircraftType="narrowbody")
 ```
 
 Example return values:
-- `"23D"`
-- `"9E"`
+- `17F`

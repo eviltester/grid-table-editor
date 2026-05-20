@@ -25,7 +25,6 @@ Returns a random adjective.
 | --- | --- | --- | --- |
 | `length` | `number` | no | Desired length of the generated value. |
 | `max` | `number` | no | Maximum bound used when generating a value. |
-| `value` | `number` | no | Legacy shorthand for target word length. Prefer the length option. |
 | `strategy` | `string` | no | The strategy to apply when no words with a matching length are found. Available error handling strategies: fail: Throws an error if no words with the given length are found. shortest: Returns any of the shortest words. closest: Returns any of the words closest to the given length. longest: Returns any of the longest words. any-length: Returns a word with any length. |
 
 Examples:
@@ -35,12 +34,11 @@ word.adjective()
 ```
 
 ```txt
-word.adjective(length=1, max=1, value=1, strategy="any-length")
+word.adjective(length=1, max=1, strategy="any-length")
 ```
 
 Example return values:
-- `"agile"`
-- `"oval"`
+- `heavenly`
 
 ### `word.adverb`
 
@@ -53,7 +51,6 @@ Returns a random adverb.
 | --- | --- | --- | --- |
 | `length` | `number` | no | Desired length of the generated value. |
 | `max` | `number` | no | Maximum bound used when generating a value. |
-| `value` | `number` | no | Legacy shorthand for target word length. Prefer the length option. |
 | `strategy` | `string` | no | The strategy to apply when no words with a matching length are found. Available error handling strategies: fail: Throws an error if no words with the given length are found. shortest: Returns any of the shortest words. closest: Returns any of the words closest to the given length. longest: Returns any of the longest words. any-length: Returns a word with any length. |
 
 Examples:
@@ -63,12 +60,11 @@ word.adverb()
 ```
 
 ```txt
-word.adverb(length=1, max=1, value=1, strategy="any-length")
+word.adverb(length=1, max=1, strategy="any-length")
 ```
 
 Example return values:
-- `"triumphantly"`
-- `"blindly"`
+- `selfishly`
 
 ### `word.conjunction`
 
@@ -81,7 +77,6 @@ Returns a random conjunction.
 | --- | --- | --- | --- |
 | `length` | `number` | no | Desired length of the generated value. |
 | `max` | `number` | no | Maximum bound used when generating a value. |
-| `value` | `number` | no | Legacy shorthand for target word length. Prefer the length option. |
 | `strategy` | `string` | no | The strategy to apply when no words with a matching length are found. Available error handling strategies: fail: Throws an error if no words with the given length are found. shortest: Returns any of the shortest words. closest: Returns any of the words closest to the given length. longest: Returns any of the longest words. any-length: Returns a word with any length. |
 
 Examples:
@@ -91,11 +86,11 @@ word.conjunction()
 ```
 
 ```txt
-word.conjunction(length=1, max=1, value=1, strategy="any-length")
+word.conjunction(length=1, max=1, strategy="any-length")
 ```
 
 Example return values:
-- `"consequently"`
+- `indeed`
 
 ### `word.interjection`
 
@@ -108,7 +103,6 @@ Returns a random interjection.
 | --- | --- | --- | --- |
 | `length` | `number` | no | Desired length of the generated value. |
 | `max` | `number` | no | Maximum bound used when generating a value. |
-| `value` | `number` | no | Legacy shorthand for target word length. Prefer the length option. |
 | `strategy` | `string` | no | The strategy to apply when no words with a matching length are found. Available error handling strategies: fail: Throws an error if no words with the given length are found. shortest: Returns any of the shortest words. closest: Returns any of the words closest to the given length. longest: Returns any of the longest words. any-length: Returns a word with any length. |
 
 Examples:
@@ -118,12 +112,11 @@ word.interjection()
 ```
 
 ```txt
-word.interjection(length=1, max=1, value=1, strategy="any-length")
+word.interjection(length=1, max=1, strategy="any-length")
 ```
 
 Example return values:
-- `"duh"`
-- `"yuck"`
+- `er`
 
 ### `word.noun`
 
@@ -136,7 +129,6 @@ Returns a random noun.
 | --- | --- | --- | --- |
 | `length` | `number` | no | Desired length of the generated value. |
 | `max` | `number` | no | Maximum bound used when generating a value. |
-| `value` | `number` | no | Legacy shorthand for target word length. Prefer the length option. |
 | `strategy` | `string` | no | The strategy to apply when no words with a matching length are found. Available error handling strategies: fail: Throws an error if no words with the given length are found. shortest: Returns any of the shortest words. closest: Returns any of the words closest to the given length. longest: Returns any of the longest words. any-length: Returns a word with any length. |
 
 Examples:
@@ -146,12 +138,11 @@ word.noun()
 ```
 
 ```txt
-word.noun(length=1, max=1, value=1, strategy="any-length")
+word.noun(length=1, max=1, strategy="any-length")
 ```
 
 Example return values:
-- `"freezing"`
-- `"stump"`
+- `cook`
 
 ### `word.preposition`
 
@@ -164,7 +155,6 @@ Returns a random preposition.
 | --- | --- | --- | --- |
 | `length` | `number` | no | Desired length of the generated value. |
 | `max` | `number` | no | Maximum bound used when generating a value. |
-| `value` | `number` | no | Legacy shorthand for target word length. Prefer the length option. |
 | `strategy` | `string` | no | The strategy to apply when no words with a matching length are found. Available error handling strategies: fail: Throws an error if no words with the given length are found. shortest: Returns any of the shortest words. closest: Returns any of the words closest to the given length. longest: Returns any of the longest words. any-length: Returns a word with any length. |
 
 Examples:
@@ -174,12 +164,11 @@ word.preposition()
 ```
 
 ```txt
-word.preposition(length=1, max=1, value=1, strategy="any-length")
+word.preposition(length=1, max=1, strategy="any-length")
 ```
 
 Example return values:
-- `"over"`
-- `"circa"`
+- `beside`
 
 ### `word.sample`
 
@@ -192,7 +181,6 @@ Returns a random word, that can be an adjective, adverb, conjunction, interjecti
 | --- | --- | --- | --- |
 | `length` | `number` | no | Desired length of the generated value. |
 | `max` | `number` | no | Maximum bound used when generating a value. |
-| `value` | `number` | no | Legacy shorthand for target word length. Prefer the length option. |
 | `strategy` | `string` | no | The strategy to apply when no words with a matching length are found. Available error handling strategies: fail: Throws an error if no words with the given length are found. shortest: Returns any of the shortest words. closest: Returns any of the words closest to the given length. longest: Returns any of the longest words. any-length: Returns a word with any length. |
 
 Examples:
@@ -202,12 +190,11 @@ word.sample()
 ```
 
 ```txt
-word.sample(length=1, max=1, value=1, strategy="any-length")
+word.sample(length=1, max=1, strategy="any-length")
 ```
 
 Example return values:
-- `"smarten"`
-- `"tidy"`
+- `snoopy`
 
 ### `word.verb`
 
@@ -220,7 +207,6 @@ Returns a random verb.
 | --- | --- | --- | --- |
 | `length` | `number` | no | Desired length of the generated value. |
 | `max` | `number` | no | Maximum bound used when generating a value. |
-| `value` | `number` | no | Legacy shorthand for target word length. Prefer the length option. |
 | `strategy` | `string` | no | The strategy to apply when no words with a matching length are found. Available error handling strategies: fail: Throws an error if no words with the given length are found. shortest: Returns any of the shortest words. closest: Returns any of the words closest to the given length. longest: Returns any of the longest words. any-length: Returns a word with any length. |
 
 Examples:
@@ -230,12 +216,11 @@ word.verb()
 ```
 
 ```txt
-word.verb(length=1, max=1, value=1, strategy="any-length")
+word.verb(length=1, max=1, strategy="any-length")
 ```
 
 Example return values:
-- `"graft"`
-- `"banish"`
+- `embalm`
 
 ### `word.words`
 
@@ -248,7 +233,6 @@ Returns a random string containing some words separated by spaces.
 | --- | --- | --- | --- |
 | `count` | `number` | no | Number of items to generate. |
 | `max` | `number` | no | Maximum bound used when generating a value. |
-| `value` | `number` | no | Legacy shorthand for number of words to generate. Prefer the count option. |
 
 Examples:
 
@@ -257,9 +241,8 @@ word.words()
 ```
 
 ```txt
-word.words(count=1, max=1, value=1)
+word.words(count=1, max=1)
 ```
 
 Example return values:
-- `"sternly which"`
-- `"while approach though"`
+- `geez`

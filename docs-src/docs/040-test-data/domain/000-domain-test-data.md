@@ -51,6 +51,11 @@ Num
 number.int(min=32, max=47)
 ```
 
+## Migration
+
+- Before (invalid): `domain.helpers.fake("...")`
+- After: `faker.helpers.fake("...")` (or `helpers.fake("...")` in faker contexts)
+
 For faker helper templates and utility functions, use faker helpers:
 - [Faker Helpers](/docs/test-data/faker/helpers)
 - [fakerjs.dev/api/helpers](https://fakerjs.dev/api/helpers)

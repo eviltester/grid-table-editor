@@ -6,7 +6,8 @@ tags: [release, architecture, test-data, faker, domain]
 date: 2026-05-18T10:30
 ---
 
-As AnyWayData usage grew across UI, CLI, API, and MCP, we found that directly exposing raw faker calls created avoidable fragility.  
+As AnyWayData usage grew across UI, CLI, API, and MCP, we found that directly exposing raw faker calls created avoidable fragility.
+
 We moved to a **domain abstraction layer** so schemas describe intent (`internet.email`, `number.int`, `date.recent`) instead of vendor-specific call shapes.
 
 <!-- truncate -->

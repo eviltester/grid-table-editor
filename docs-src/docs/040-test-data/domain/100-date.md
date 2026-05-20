@@ -36,8 +36,7 @@ date.anytime(refDate=1)
 ```
 
 Example return values:
-- `"2025-11-22T12:30:53.535Z"`
-- `"2026-03-09T05:03:13.667Z"`
+- `"2026-12-25T08:55:20.593Z"`
 
 ### `date.between`
 
@@ -62,8 +61,7 @@ date.between(from=1, to=1)
 ```
 
 Example return values:
-- `"2001-01-03T09:27:56.772Z"`
-- `"1988-04-02T17:24:17.440Z"`
+- `2026-01-15T12:34:56.000Z`
 
 ### `date.betweens`
 
@@ -89,8 +87,7 @@ date.betweens(count=1, from=1, to=1)
 ```
 
 Example return values:
-- `["1975-03-18T01:28:47.047Z","2005-08-03T07:55:22.524Z"]`
-- `["1976-12-05T16:33:40.049Z","1978-06-04T00:02:41.826Z"]`
+- `["2026-01-15T12:34:56.000Z","2026-02-01T09:00:00.000Z"]`
 
 ### `date.birthdate`
 
@@ -117,8 +114,7 @@ date.birthdate(refDate=1, max=1, min=1, mode="age")
 ```
 
 Example return values:
-- `"1955-05-18T19:25:36.178Z"`
-- `"1993-02-06T15:43:56.865Z"`
+- `"1966-09-18T08:47:31.333Z"`
 
 ### `date.future`
 
@@ -143,8 +139,7 @@ date.future(refDate=1, years=1)
 ```
 
 Example return values:
-- `"2026-10-12T16:19:33.811Z"`
-- `"2026-11-24T03:18:00.421Z"`
+- `"2027-02-07T18:41:48.525Z"`
 
 ### `date.month`
 
@@ -169,8 +164,7 @@ date.month(abbreviated=false, context=false)
 ```
 
 Example return values:
-- `"May"`
-- `"August"`
+- `February`
 
 ### `date.past`
 
@@ -195,8 +189,7 @@ date.past(refDate=1, years=1)
 ```
 
 Example return values:
-- `"2025-11-21T11:30:51.789Z"`
-- `"2026-02-13T14:19:21.153Z"`
+- `"2025-07-01T11:48:55.347Z"`
 
 ### `date.recent`
 
@@ -221,8 +214,7 @@ date.recent(days=1, refDate=1)
 ```
 
 Example return values:
-- `"2026-05-17T13:46:00.558Z"`
-- `"2026-05-17T22:45:20.752Z"`
+- `"2026-04-27T23:46:16.707Z"`
 
 ### `date.soon`
 
@@ -247,8 +239,7 @@ date.soon(days=1, refDate=1)
 ```
 
 Example return values:
-- `"2026-05-18T15:47:09.312Z"`
-- `"2026-05-19T10:48:13.424Z"`
+- `"2026-04-29T11:09:09.211Z"`
 
 ### `date.timeZone`
 
@@ -266,8 +257,7 @@ date.timeZone()
 ```
 
 Example return values:
-- `"Europe/Amsterdam"`
-- `"America/Juneau"`
+- `Europe/Stockholm`
 
 ### `date.weekday`
 
@@ -292,5 +282,4 @@ date.weekday(abbreviated=false, context=false)
 ```
 
 Example return values:
-- `"Thursday"`
-- `"Tuesday"`
+- `Tuesday`

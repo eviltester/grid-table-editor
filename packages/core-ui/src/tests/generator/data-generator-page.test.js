@@ -6,6 +6,7 @@ import {
   DataGeneratorPage,
   buildRuleSpecFromSchemaRow,
   extractLiteralValueFromRuleSpec,
+  extractRegexValueFromRuleSpec,
   schemaRowsToSpec,
   schemaRowsToSpecWithTokens,
   validateSchemaRows,
@@ -101,8 +102,9 @@ describe('DataGeneratorPage', () => {
       'number.int(1,10)'
     );
     expect(buildRuleSpecFromSchemaRow({ sourceType: 'regex', value: '[A-Z]{3}' })).toBe('[A-Z]{3}');
+    expect(buildRuleSpecFromSchemaRow({ name: 'Code', sourceType: 'regex', value: '   ' })).toBe('regex("")');
     expect(buildRuleSpecFromSchemaRow({ sourceType: 'literal', value: 'Fixed' })).toBe('literal(Fixed)');
-    expect(buildRuleSpecFromSchemaRow({ sourceType: 'literal', value: '   ' })).toBe('literal()');
+    expect(buildRuleSpecFromSchemaRow({ sourceType: 'literal', value: '   ' })).toBe('literal("")');
 
     const spec = schemaRowsToSpec([
       { name: 'A', sourceType: 'faker', command: 'word.noun', params: '()' },
@@ -113,10 +115,17 @@ describe('DataGeneratorPage', () => {
 
   test('literal rule extraction unwraps literal(...) variants for generation', () => {
     expect(extractLiteralValueFromRuleSpec('literal(Fixed)')).toBe('Fixed');
-    expect(extractLiteralValueFromRuleSpec('literal()')).toBe('');
+    expect(extractLiteralValueFromRuleSpec('literal("")')).toBe('');
     expect(extractLiteralValueFromRuleSpec('datatype.literal(   123)')).toBe('   123');
     expect(extractLiteralValueFromRuleSpec('awd.datatype.literal(value)')).toBe('value');
     expect(extractLiteralValueFromRuleSpec('plain value')).toBe('plain value');
+  });
+
+  test('regex rule extraction unwraps regex(...) variants for generation', () => {
+    expect(extractRegexValueFromRuleSpec('regex("[A-Z]{3}")')).toBe('"[A-Z]{3}"');
+    expect(extractRegexValueFromRuleSpec('regex("")')).toBe('');
+    expect(extractRegexValueFromRuleSpec('datatype.regex(\\d{2})')).toBe('\\d{2}');
+    expect(extractRegexValueFromRuleSpec('plain regex')).toBe('plain regex');
   });
 
   test('schemaRowsToSpec omits fully blank rows', () => {
@@ -1391,14 +1400,14 @@ Authorization Token
 
       const schemaErrorStatus = document.getElementById('generatorSchemaErrorText');
       expect(schemaErrorStatus.textContent).toBe(
-        "column t1 requires a data definition, use 'literal()' for blank data"
+        'column t1 requires a data definition, use \'literal("")\' for blank data'
       );
       expect(document.getElementById('generatorStatusText').textContent).toBe('');
       expect(alertFn).not.toHaveBeenCalled();
 
       jest.advanceTimersByTime(4999);
       expect(schemaErrorStatus.textContent).toBe(
-        "column t1 requires a data definition, use 'literal()' for blank data"
+        'column t1 requires a data definition, use \'literal("")\' for blank data'
       );
 
       jest.advanceTimersByTime(1);

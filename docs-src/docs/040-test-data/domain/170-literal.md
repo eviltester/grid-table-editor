@@ -8,10 +8,6 @@ description: "Domain keyword reference for literal."
 
 The `literal` domain returns caller-provided values directly and does not invoke faker.
 
-## Faker Documentation
-
-- [https://anywaydata.com/docs/category/generating-data](https://anywaydata.com/docs/category/generating-data)
-
 ## Methods
 
 ### `literal.value`
@@ -19,21 +15,21 @@ The `literal` domain returns caller-provided values directly and does not invoke
 Return the literal value provided by the caller.
 
 - Canonical: `awd.domain.literal.value`
-- Faker docs: [https://anywaydata.com/docs/category/generating-data](https://anywaydata.com/docs/category/generating-data)
+- Docs: [https://anywaydata.com/docs/category/generating-data](https://anywaydata.com/docs/category/generating-data)
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `value` | `string\|number\|boolean` | yes | Literal value to return. |
+| `value` | `string\|number\|boolean` | no | Literal value to return. When omitted, defaults to an empty string. |
 
 Examples:
 
 ```txt
-literal.value("sample")
+literal.value("Pending")
 ```
 
 ```txt
-literal.value(value="sample")
+literal.value("")
 ```
 
 Example return values:
-- `"sample"`
+- `Pending`

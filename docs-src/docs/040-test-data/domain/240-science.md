@@ -30,8 +30,7 @@ science.chemicalElement()
 ```
 
 Example return values:
-- `{"symbol":"N","name":"Nitrogen","atomicNumber":7}`
-- `{"symbol":"Sn","name":"Tin","atomicNumber":50}`
+- `{"name":"Oxygen","symbol":"O","atomicNumber":8}`
 
 ### `science.chemicalElement.atomicNumber`
 
@@ -49,8 +48,7 @@ science.chemicalElement.atomicNumber()
 ```
 
 Example return values:
-- `102`
-- `78`
+- `8`
 
 ### `science.chemicalElement.name`
 
@@ -68,8 +66,7 @@ science.chemicalElement.name()
 ```
 
 Example return values:
-- `"Cobalt"`
-- `"Actinium"`
+- `Oxygen`
 
 ### `science.chemicalElement.symbol`
 
@@ -87,8 +84,7 @@ science.chemicalElement.symbol()
 ```
 
 Example return values:
-- `"Hs"`
-- `"Bh"`
+- `O`
 
 ### `science.unit`
 
@@ -106,5 +102,4 @@ science.unit()
 ```
 
 Example return values:
-- `{"name":"sievert","symbol":"Sv"}`
-- `{"name":"pascal","symbol":"Pa"}`
+- `{"name":"farad","symbol":"F"}`

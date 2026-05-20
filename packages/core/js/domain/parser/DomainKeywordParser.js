@@ -37,6 +37,7 @@ class DomainKeywordParser {
 
   mapParsedArguments(argumentsList, keywordMetadata) {
     const schema = Array.isArray(keywordMetadata?.help?.args) ? keywordMetadata.help.args : [];
+    const usesOptionsFromHelpArgs = keywordMetadata?.delegate?.argTransform === 'optionsFromHelpArgs';
     const positional = [];
     const named = {};
     let seenNamed = false;
@@ -59,6 +60,29 @@ class DomainKeywordParser {
       }
 
       positional.push(item.value);
+    }
+
+    if (
+      keywordMetadata &&
+      usesOptionsFromHelpArgs &&
+      positional.length === 1 &&
+      Object.keys(named).length === 0 &&
+      positional[0] &&
+      typeof positional[0] === 'object' &&
+      !Array.isArray(positional[0])
+    ) {
+      const providedObject = positional[0];
+      const schemaByName = new Map(schema.map((entry, index) => [entry.name, index]));
+      const resolved = new Array(schema.length);
+
+      for (const [name, value] of Object.entries(providedObject)) {
+        if (!schemaByName.has(name)) {
+          return { ok: false, error: `Invalid keyword arguments: unknown named argument "${name}"` };
+        }
+        resolved[schemaByName.get(name)] = value;
+      }
+
+      return { ok: true, args: resolved };
     }
 
     if (keywordMetadata && positional.length > schema.length) {

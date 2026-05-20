@@ -102,6 +102,29 @@ describe('domain keyword catalog', () => {
     });
   });
 
+  test('standalone domain definitions include at least one help example', () => {
+    const missingExamples = DOMAIN_KEYWORD_DEFINITIONS.filter(
+      (definition) => typeof definition?.help?.example !== 'string' || definition.help.example.trim().length === 0
+    ).map((definition) => definition.keyword);
+
+    expect(missingExamples).toEqual([]);
+  });
+
+  test('standalone domain definitions do not contain legacy placeholder argument docs', () => {
+    const legacyPlaceholderArgs = [];
+    DOMAIN_KEYWORD_DEFINITIONS.forEach((definition) => {
+      const args = Array.isArray(definition?.help?.args) ? definition.help.args : [];
+      args.forEach((arg) => {
+        const description = String(arg?.description || '');
+        if (description.includes('Legacy placeholder argument from Faker signatures')) {
+          legacyPlaceholderArgs.push(`${definition.keyword}.${arg.name}`);
+        }
+      });
+    });
+
+    expect(legacyPlaceholderArgs).toEqual([]);
+  });
+
   test('supports creating catalogs from injected definitions', () => {
     const catalog = buildDomainKeywordCatalog([
       {
@@ -117,6 +140,64 @@ describe('domain keyword catalog', () => {
   test('does not expose helpers.* in domain keyword catalog', () => {
     expect(DOMAIN_KEYWORDS.some((entry) => entry.keyword.startsWith('helpers.'))).toBe(false);
     expect(DOMAIN_KEYWORD_DEFINITIONS.some((entry) => String(entry.keyword || '').startsWith('helpers.'))).toBe(false);
+  });
+
+  test('keeps critical keyword metadata contracts for documented return types and transforms', () => {
+    const byKeyword = new Map(DOMAIN_KEYWORDS.map((entry) => [entry.keyword, entry]));
+
+    expect(byKeyword.get('literal.value')?.help?.returnType).toBe('string|number|boolean');
+    expect(byKeyword.get('datatype.boolean')?.help?.args.map((arg) => arg.name)).toEqual(['probability']);
+    expect(byKeyword.get('finance.accountName')?.help?.returnType).toBe('string');
+    expect(byKeyword.get('finance.accountNumber')?.help?.returnType).toBe('string');
+    expect(byKeyword.get('date.month')?.help?.returnType).toBe('string');
+    expect(byKeyword.get('date.weekday')?.help?.returnType).toBe('string');
+    expect(byKeyword.get('internet.email')?.delegate?.argTransform).toBe('optionsFromHelpArgs');
+    expect(byKeyword.get('internet.httpStatusCode')?.help?.returnType).toBe('number');
+    expect(byKeyword.get('internet.port')?.help?.returnType).toBe('number');
+    expect(byKeyword.get('location.country')?.help?.returnType).toBe('string');
+    expect(byKeyword.get('location.countryCode')?.help?.returnType).toBe('string');
+    expect(byKeyword.get('location.county')?.help?.returnType).toBe('string');
+    expect(byKeyword.get('location.direction')?.help?.returnType).toBe('string');
+    expect(byKeyword.get('location.secondaryAddress')?.help?.returnType).toBe('string');
+    expect(byKeyword.get('location.language')?.help?.returnType).toBe('object');
+  });
+
+  test('example literals are consistent with declared returnType metadata', () => {
+    const failures = [];
+
+    for (const entry of DOMAIN_KEYWORDS) {
+      const declaredType = String(entry?.help?.returnType || '');
+      const example = String(entry?.help?.example || '');
+      const inferred = inferTypeFromExampleLiteral(example);
+      const inferredType = inferred.type;
+      const confidence = inferred.confidence;
+
+      const allowedTypes = declaredType
+        .split('|')
+        .map((part) => part.trim())
+        .filter((part) => part.length > 0);
+
+      if (allowedTypes.includes('object') && !exampleLooksLikeObjectLiteral(example)) {
+        failures.push({
+          keyword: entry.keyword,
+          returnType: declaredType,
+          example,
+          reason: 'declared object returnType requires object-like example literal',
+        });
+        continue;
+      }
+
+      if (confidence === 'high' && !allowedTypes.includes(inferredType)) {
+        failures.push({
+          keyword: entry.keyword,
+          returnType: declaredType,
+          example,
+          inferredType,
+        });
+      }
+    }
+
+    expect(failures).toEqual([]);
   });
 });
 
@@ -204,15 +285,14 @@ describe('domain keyword delegation', () => {
     expect(result).toBe('Pending');
   });
 
-  test('blocks execution when args do not match help arg schema', () => {
-    expect(() =>
-      executeDomainKeyword('literal.value', {
-        customDelegates: {
-          'literal.value': () => 'should-not-run',
-        },
-        args: [undefined],
-      })
-    ).toThrow('Missing required argument');
+  test('allows custom literal delegate to override built-in behavior', () => {
+    const result = executeDomainKeyword('literal.value', {
+      customDelegates: {
+        'literal.value': () => 'should-run',
+      },
+      args: [undefined],
+    });
+    expect(result).toBe('should-run');
   });
 });
 
@@ -254,6 +334,7 @@ function sampleValueForType(type) {
   if (allowed.includes('number')) return 7;
   if (allowed.includes('boolean')) return true;
   if (allowed.includes('array')) return ['x', 'y'];
+  if (allowed.includes('object')) return { key: 'value' };
   return 'sample';
 }
 
@@ -267,7 +348,31 @@ function valueToInvocationLiteral(value) {
   if (Array.isArray(value)) {
     return JSON.stringify(value);
   }
+  if (value && typeof value === 'object') {
+    return JSON.stringify(value);
+  }
   throw new Error(`Unsupported invocation literal value: ${String(value)}`);
+}
+
+function inferTypeFromExampleLiteral(example) {
+  const value = String(example || '').trim();
+  if (value.length === 0) return { type: 'unknown', confidence: 'low' };
+
+  if (value === 'true' || value === 'false') return { type: 'boolean', confidence: 'high' };
+  if (value.startsWith('[') && value.endsWith(']')) return { type: 'array', confidence: 'high' };
+  if (value.startsWith('{') && value.endsWith('}')) return { type: 'object', confidence: 'high' };
+  if (/^"?\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z"?$/.test(value)) {
+    return { type: 'date', confidence: 'high' };
+  }
+  if (/[^0-9.+-]/.test(value)) return { type: 'string', confidence: 'high' };
+  if (/^[+-]?\d+(\.\d+)?$/.test(value)) return { type: 'number', confidence: 'low' };
+
+  return { type: 'string', confidence: 'low' };
+}
+
+function exampleLooksLikeObjectLiteral(example) {
+  const value = String(example || '').trim();
+  return value.startsWith('{') && value.endsWith('}');
 }
 
 describe('faker keyword invocation styles', () => {

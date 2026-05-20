@@ -30,8 +30,7 @@ vehicle.bicycle()
 ```
 
 Example return values:
-- `"Hybrid Bicycle"`
-- `"Fitness Bicycle"`
+- `Touring Bicycle`
 
 ### `vehicle.color`
 
@@ -49,8 +48,7 @@ vehicle.color()
 ```
 
 Example return values:
-- `"yellow"`
-- `"mint green"`
+- `sky blue`
 
 ### `vehicle.fuel`
 
@@ -68,7 +66,7 @@ vehicle.fuel()
 ```
 
 Example return values:
-- `"Electric"`
+- `Gasoline`
 
 ### `vehicle.manufacturer`
 
@@ -86,8 +84,7 @@ vehicle.manufacturer()
 ```
 
 Example return values:
-- `"NIO"`
-- `"Citroën"`
+- `Hyundai`
 
 ### `vehicle.model`
 
@@ -105,8 +102,7 @@ vehicle.model()
 ```
 
 Example return values:
-- `"Land Cruiser"`
-- `"Mercielago"`
+- `Aventador`
 
 ### `vehicle.type`
 
@@ -124,8 +120,7 @@ vehicle.type()
 ```
 
 Example return values:
-- `"Sedan"`
-- `"Wagon"`
+- `Hatchback`
 
 ### `vehicle.vehicle`
 
@@ -143,8 +138,7 @@ vehicle.vehicle()
 ```
 
 Example return values:
-- `"Rivian CTS"`
-- `"Bentley Impala"`
+- `Ford CTS`
 
 ### `vehicle.vin`
 
@@ -162,8 +156,7 @@ vehicle.vin()
 ```
 
 Example return values:
-- `"D3UH0YUMBVV327816"`
-- `"Z254G22MJDSC55053"`
+- `7SJ9N0LM3LM265056`
 
 ### `vehicle.vrm`
 
@@ -181,5 +174,4 @@ vehicle.vrm()
 ```
 
 Example return values:
-- `"PB29ZCN"`
-- `"ZH04BJQ"`
+- `OD11RTZ`

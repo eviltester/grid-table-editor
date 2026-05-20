@@ -30,8 +30,7 @@ company.buzzAdjective()
 ```
 
 Example return values:
-- `"cutting-edge"`
-- `"24/7"`
+- `out-of-the-box`
 
 ### `company.buzzNoun`
 
@@ -49,8 +48,7 @@ company.buzzNoun()
 ```
 
 Example return values:
-- `"architectures"`
-- `"supply-chains"`
+- `deliverables`
 
 ### `company.buzzPhrase`
 
@@ -68,8 +66,7 @@ company.buzzPhrase()
 ```
 
 Example return values:
-- `"empower sticky synergies"`
-- `"empower robust mindshare"`
+- `streamline cutting-edge platforms`
 
 ### `company.buzzVerb`
 
@@ -87,8 +84,7 @@ company.buzzVerb()
 ```
 
 Example return values:
-- `"disintermediate"`
-- `"optimize"`
+- `disintermediate`
 
 ### `company.catchPhrase`
 
@@ -106,8 +102,7 @@ company.catchPhrase()
 ```
 
 Example return values:
-- `"Cross-platform maximized hardware"`
-- `"Monitored sustainable customer loyalty"`
+- `Diverse AI-powered flexibility`
 
 ### `company.catchPhraseAdjective`
 
@@ -125,8 +120,7 @@ company.catchPhraseAdjective()
 ```
 
 Example return values:
-- `"Virtual"`
-- `"Face to face"`
+- `Distributed`
 
 ### `company.catchPhraseDescriptor`
 
@@ -144,8 +138,7 @@ company.catchPhraseDescriptor()
 ```
 
 Example return values:
-- `"leading edge"`
-- `"asynchronous"`
+- `encompassing`
 
 ### `company.catchPhraseNoun`
 
@@ -163,8 +156,7 @@ company.catchPhraseNoun()
 ```
 
 Example return values:
-- `"pricing structure"`
-- `"capability"`
+- `attitude`
 
 ### `company.name`
 
@@ -182,5 +174,4 @@ company.name()
 ```
 
 Example return values:
-- `"Hudson, Rogahn and Hane"`
-- `"Monahan, Boyle and Crona"`
+- `Lang - Little`

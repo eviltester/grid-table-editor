@@ -9,7 +9,7 @@ import {
   getDomainCommands,
   getTabulatorTypeEditorValues,
   getAgGridTypeEditorValues,
-} from '../../../js/gui_components/app/test-data-grid-control.js';
+} from '../../../js/gui_components/app/test-data-grid/test-data-grid-control.js';
 
 describe('Faker Dropdown Literal Commands', () => {
   beforeEach(() => {

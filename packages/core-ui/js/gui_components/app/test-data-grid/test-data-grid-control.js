@@ -1,42 +1,20 @@
 /*
-  Definition data is of the format:
-
-  rulename
-  regex
-  rulename
-  regex
-
+ * Responsibilities:
+ * - Main controller for the test-data grid panel in the app page.
+ * - Wires DOM events, grid editors, schema text sync triggers, and generation actions.
+ * - Delegates command catalog logic and UI status behavior to focused helper modules.
  */
-
-/*
-  Useful Regex Templates:
-
-  https://projects.lukehaas.me/regexhub/
-  https://www.regular-expressions.info/examples.html
-  http://fent.github.io/randexp.js/
-
- */
-
-// TODO :wrap this as a class and make components
-// Also this is too AG Grid specific
 
 import { TestDataGenerator } from '@anywaydata/core/data_generation/testDataGenerator.js';
 import { Debouncer } from '@anywaydata/core/utils/debouncer.js';
-import { GridExtension as AgGridExtension } from '../data-grid-editor/ag-grid/gridExtension-ag-grid.js';
-import { GridExtension as TabulatorGridExtension } from '../data-grid-editor/tabulator/gridExtension-tabulator.js';
-import { SelectFilterEditor } from '../data-grid-editor/ag-grid/select-filter-editor.js';
+import { GridExtension as AgGridExtension } from '../../data-grid-editor/ag-grid/gridExtension-ag-grid.js';
+import { GridExtension as TabulatorGridExtension } from '../../data-grid-editor/tabulator/gridExtension-tabulator.js';
+import { SelectFilterEditor } from '../../data-grid-editor/ag-grid/select-filter-editor.js';
 import { TEST_DATA_MODES, createAmendedTable, createTableFromGenerator, normaliseCount } from './test-data-amend.js';
-import { getKnownFakerCommandsAlphabetical, getKnownFakerCommandsLongestFirst } from '../shared/faker-commands.js';
-import {
-  getKnownDomainCommandsAlphabetical,
-  getKnownDomainCommandsLongestFirst,
-  getDomainKeywordByCommand,
-} from '../shared/domain-commands.js';
-import { getDomainCommandHelp } from '../shared/domain-command-help-metadata.js';
+import { schemaTextToDataRules, dataRulesToSchemaText } from '@anywaydata/core/data_generation/schema-rules-adapter.js';
+import { TimedErrorDisplay } from '../../shared/timed-error-display.js';
 import { PairwiseTestDataGenerator } from '@anywaydata/core/data_generation/all-pairs/pairwiseTestDataGenerator.js';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
-import { schemaTextToDataRules, dataRulesToSchemaText } from '@anywaydata/core/data_generation/schema-rules-adapter.js';
-import { TimedErrorDisplay } from '../shared/timed-error-display.js';
 import {
   SOURCE_TYPE_FAKER,
   SOURCE_TYPE_DOMAIN,
@@ -47,7 +25,27 @@ import {
   extractLiteralValueFromRuleSpec,
   extractRegexValueFromRuleSpec,
   normaliseFakerCommand,
-} from '../shared/schema-row-rule-mapper.js';
+} from '../../shared/schema-row-rule-mapper.js';
+import {
+  FAKER_COMMANDS,
+  DOMAIN_COMMANDS,
+  FAKER_SECTION_VALUE,
+  DOMAIN_SECTION_VALUE,
+  findFakerCommand,
+  extractDomainCommandAndParams,
+  identifyFakerCommands,
+  getTabulatorTypeEditorValues,
+  getAgGridTypeEditorValues,
+  getFakerCommands,
+  getDomainCommands,
+} from './test-data-type-catalog.js';
+import {
+  setTestDataStatus,
+  clearPendingTestDataStatusReset,
+  scheduleTestDataStatusReset,
+  yieldToUi,
+} from './test-data-ui-status.js';
+import { createTestDataGenerationService } from './test-data-generation-service.js';
 
 import { faker } from 'https://cdn.skypack.dev/@faker-js/faker@v9.7.0';
 
@@ -55,22 +53,11 @@ var debouncer = new Debouncer();
 let importer = undefined;
 let textPreviewRenderer = undefined;
 let mainGridExtras = undefined;
-let testDataStatusResetTimeoutId = null;
 let activeDefnCellEdit = null;
 let schemaSampleButtonClickHandler = null;
 let testDataSchemaErrorDisplay = null;
 let schemaTextTokens = [];
-
-function schemaErrorsToText(errors = []) {
-  return (Array.isArray(errors) ? errors : [])
-    .map((error) => {
-      if (error && typeof error === 'object' && typeof error.message === 'string') {
-        return error.message;
-      }
-      return String(error ?? '');
-    })
-    .join('\n');
-}
+let generationService = null;
 
 function showTestDataSchemaError(message) {
   const text = String(message || '').trim();
@@ -88,294 +75,23 @@ function getSchemaTextFromEditor() {
   return schemaTextArea.value || '';
 }
 
-function createGeneratorFromDataRules(dataRules = []) {
-  const generator = new TestDataGenerator(faker, RandExp);
-  generator.rulesParser.testDataRules.rules = dataRules.map((rule) => ({ ...rule }));
-  return generator;
-}
-
-function parseSchemaFromTextArea() {
-  return schemaTextToDataRules({
-    schemaText: getSchemaTextFromEditor(),
-    faker,
-    RandExp,
-  });
-}
-
-function getRulesParserFromTextArea() {
-  const parseResult = parseSchemaFromTextArea();
-  if (parseResult.errors.length > 0) {
-    return { generator: null, errors: parseResult.errors };
-  }
-  return {
-    generator: createGeneratorFromDataRules(parseResult.dataRules),
-    errors: [],
-  };
-}
-
-// https://www.npmjs.com/package/randexp
-async function generatePairwiseTestData() {
-  debouncer.clear('populateTestDataGrid');
-  syncSchemaTextFromGridBeforeGenerate();
-  const generateButton = document.getElementById('generateallpairs');
-  setTestDataStatus('Generating pairwise...', true);
-  if (generateButton) {
-    generateButton.disabled = true;
-  }
-
-  try {
-    const { generator, errors } = getRulesParserFromTextArea();
-
-    if (errors.length > 0 || !generator) {
-      const errorMessages = schemaErrorsToText(errors);
-      console.log(errorMessages);
-      showTestDataSchemaError(errorMessages);
-      setTestDataStatus('Schema validation failed.', false);
-      return;
-    }
-
-    const enumCount = countEnumRules(generator.testDataRules());
-    if (enumCount < 2) {
-      showTestDataSchemaError('Pairwise generation requires at least 2 enum columns.');
-      setTestDataStatus('Insufficient enum columns.', false);
-      return;
-    }
-
-    await yieldToUi();
-    setTestDataStatus('Generating pairwise combinations...', true);
-    await yieldToUi();
-
-    const dataTable = createPairwiseTableFromGenerator(generator);
-    if (!dataTable) {
-      showTestDataSchemaError('Failed to generate pairwise data.');
-      setTestDataStatus('Pairwise generation failed.', false);
-      return;
-    }
-
-    if (dataTable) {
-      setTestDataStatus('Applying data to grid...', true);
-      await yieldToUi();
-      await Promise.resolve(importer.setGridFromGenericDataTable(dataTable));
-    }
-
-    setTestDataStatus(`Generated ${dataTable.getRowCount()} pairwise combinations.`, false);
-    await yieldToUi();
-  } catch (error) {
-    console.error('Pairwise generation error:', error);
-    showTestDataSchemaError(`Pairwise generation failed: ${error.message}`);
-    setTestDataStatus('Pairwise generation failed.', false);
-  } finally {
-    if (generateButton) {
-      generateButton.disabled = false;
-    }
-  }
-}
-
-function createPairwiseTableFromGenerator(generator) {
-  try {
-    // Pass the same faker and RandExp instances used by the main generator
-    const pairwiseGenerator = new PairwiseTestDataGenerator(faker, RandExp);
-    const initResult = pairwiseGenerator.initializeFromRules(generator.testDataRules());
-
-    if (initResult.isError) {
-      console.error('Pairwise initialization error:', initResult.errorMessage);
-      return null;
-    }
-
-    const dataResult = pairwiseGenerator.generateAllDataRecordsAsRows();
-    if (dataResult.isError) {
-      console.error('Pairwise generation error:', dataResult.errorMessage);
-      return null;
-    }
-
-    // Convert to the expected data table format
-    const dataTable = new GenericDataTable();
-    const [headers, ...rows] = dataResult.data.data; // Access the nested data array
-    dataTable.setHeaders(headers);
-    rows.forEach((row) => {
-      dataTable.appendDataRow(row);
-    });
-
-    return dataTable;
-  } catch (error) {
-    console.error('Pairwise table creation error:', error);
-    return null;
-  }
-}
-
-function countEnumRules(rules) {
-  return rules.filter((rule) => rule.type === 'enum').length;
-}
-
 function updatePairwiseButtonVisibility() {
-  const { generator, errors } = getRulesParserFromTextArea();
-  if (errors.length > 0 || !generator) {
-    hidePairwiseButton();
-    return;
-  }
-
-  const enumCount = countEnumRules(generator.testDataRules());
-  if (enumCount >= 2) {
-    showPairwiseButton();
-  } else {
-    hidePairwiseButton();
-  }
+  generationService?.updatePairwiseButtonVisibility?.();
 }
 
-function showPairwiseButton() {
-  const button = document.getElementById('generateallpairs');
-  if (button) {
-    button.style.display = '';
-  }
-}
-
-function hidePairwiseButton() {
-  const button = document.getElementById('generateallpairs');
-  if (button) {
-    button.style.display = 'none';
-  }
+async function generatePairwiseTestData() {
+  await generationService?.generatePairwiseTestData?.();
 }
 
 async function generateTestData() {
-  debouncer.clear('populateTestDataGrid');
-  syncSchemaTextFromGridBeforeGenerate();
-  const generateButton = document.getElementById('generatedata');
-  setTestDataStatus('Validating schema...', true);
-  if (generateButton) {
-    generateButton.disabled = true;
-  }
-
-  try {
-    const desiredRowCountRaw = document.getElementById('generateCount').value;
-    const desiredRowCountParsed = Number.parseInt(desiredRowCountRaw, 10);
-    const desiredRowCount = normaliseCount(desiredRowCountRaw);
-    const generationMode = getGenerationMode();
-
-    const { generator, errors } = getRulesParserFromTextArea();
-
-    if (errors.length > 0 || !generator) {
-      const errorMessages = schemaErrorsToText(errors);
-      console.log(errorMessages);
-      showTestDataSchemaError(errorMessages);
-      setTestDataStatus('Schema validation failed.', false);
-      return;
-    }
-
-    if (
-      !Number.isFinite(desiredRowCountParsed) ||
-      (desiredRowCountParsed < 1 && generationMode !== TEST_DATA_MODES.AMEND_SELECTED)
-    ) {
-      showTestDataSchemaError('Enter how many rows to generate.');
-      setTestDataStatus('Invalid row count.', false);
-      return;
-    }
-
-    await yieldToUi();
-    setTestDataStatus(
-      generationMode === TEST_DATA_MODES.NEW_TABLE ? 'Generating rows...' : 'Preparing table amend...',
-      true
-    );
-    await yieldToUi();
-
-    let dataTable;
-    if (generationMode === TEST_DATA_MODES.NEW_TABLE) {
-      dataTable = createTableFromGenerator(desiredRowCount, generator);
-    } else {
-      const gridExtras = getMainGridExtras();
-      if (!gridExtras) {
-        showTestDataSchemaError('Grid interface unavailable for amend mode.');
-        setTestDataStatus('Grid interface unavailable.', false);
-        return;
-      }
-
-      const selectedRowIndexes =
-        generationMode === TEST_DATA_MODES.AMEND_SELECTED ? gridExtras.getSelectedRowIndexes() : [];
-
-      // Fast path for Tabulator (and any engine that supports direct amend):
-      // update only targeted rows/columns without full table export/import.
-      if (typeof gridExtras.applyGeneratedSchemaAmend === 'function') {
-        setTestDataStatus('Amending rows...', true);
-        await yieldToUi();
-        const directAmendResult = await Promise.resolve(
-          gridExtras.applyGeneratedSchemaAmend({
-            mode: generationMode,
-            desiredRowCount,
-            schemaHeaders: generator.generateHeadersArray(),
-            generateRow: () => generator.generateRow(),
-            selectedRowIndexes,
-          })
-        );
-
-        if (generationMode === TEST_DATA_MODES.AMEND_SELECTED && directAmendResult?.noSelectedRows) {
-          showTestDataSchemaError('No rows selected.');
-          setTestDataStatus('No selected rows to amend.', false);
-          return;
-        }
-
-        dataTable = null;
-      } else {
-        const currentDataTable = gridExtras.getGridAsGenericDataTable();
-        const amendResult = createAmendedTable({
-          mode: generationMode,
-          desiredRowCount,
-          generator,
-          currentDataTable,
-          selectedRowIndexes,
-        });
-
-        if (generationMode === TEST_DATA_MODES.AMEND_SELECTED && amendResult.noSelectedRows) {
-          showTestDataSchemaError('No rows selected.');
-          setTestDataStatus('No selected rows to amend.', false);
-          return;
-        }
-
-        dataTable = amendResult.dataTable;
-      }
-    }
-
-    if (dataTable) {
-      setTestDataStatus('Applying data to grid...', true);
-      await yieldToUi();
-      await Promise.resolve(importer.setGridFromGenericDataTable(dataTable));
-    }
-
-    const completedModeLabel = generationMode === TEST_DATA_MODES.NEW_TABLE ? 'Generate' : 'Amend';
-    setTestDataStatus(`${completedModeLabel} complete. Refresh text preview if needed.`, false);
-  } catch (error) {
-    console.error('Generate/amend failed', error);
-    setTestDataStatus('Generate failed. Check console for details.', false);
-    showTestDataSchemaError('Generate failed. Check console for details.');
-  } finally {
-    if (generateButton) {
-      generateButton.disabled = false;
-    }
-  }
+  await generationService?.generateTestData?.();
 }
 
 async function refreshTestDataPreview() {
-  if (!textPreviewRenderer) {
-    return;
-  }
-  const refreshButton = document.getElementById('refreshtestdatapreview');
-  clearPendingTestDataStatusReset();
-  setTestDataStatus('Refreshing text preview...', true);
-  if (refreshButton) {
-    refreshButton.disabled = true;
-  }
-
-  try {
-    await yieldToUi();
-    await Promise.resolve(textPreviewRenderer.renderTextFromGrid());
-    setTestDataStatus('Text preview refreshed.', false);
-    scheduleTestDataStatusReset();
-  } catch (error) {
-    console.error('Failed to refresh text preview', error);
-    setTestDataStatus('Text preview refresh failed. Check console for details.', false);
-  } finally {
-    if (refreshButton) {
-      refreshButton.disabled = false;
-    }
-  }
+  await generationService?.refreshTestDataPreview?.({
+    clearPendingStatusReset: clearPendingTestDataStatusReset,
+    scheduleStatusReset: scheduleTestDataStatusReset,
+  });
 }
 
 function syncSchemaTextFromGridBeforeGenerate() {
@@ -426,42 +142,6 @@ function applyModeDefaultRowCount(mode) {
   if (mode === TEST_DATA_MODES.AMEND_SELECTED) {
     setGenerateCountToSelectedRows();
   }
-}
-
-function setTestDataStatus(message, isLoading) {
-  const statusElement = document.getElementById('testdata-status');
-  if (!statusElement) {
-    return;
-  }
-  statusElement.textContent = message || '';
-  statusElement.style.display = message ? 'inline-block' : 'none';
-  statusElement.classList.toggle('is-loading', isLoading === true);
-}
-
-function clearPendingTestDataStatusReset() {
-  if (testDataStatusResetTimeoutId === null) {
-    return;
-  }
-  clearTimeout(testDataStatusResetTimeoutId);
-  testDataStatusResetTimeoutId = null;
-}
-
-function scheduleTestDataStatusReset(delayMs = 1800) {
-  clearPendingTestDataStatusReset();
-  testDataStatusResetTimeoutId = setTimeout(() => {
-    setTestDataStatus('', false);
-    testDataStatusResetTimeoutId = null;
-  }, delayMs);
-}
-
-function yieldToUi() {
-  return new Promise((resolve) => {
-    if (typeof requestAnimationFrame !== 'function') {
-      setTimeout(resolve, 0);
-      return;
-    }
-    requestAnimationFrame(() => setTimeout(resolve, 0));
-  });
 }
 
 function loadSampleSchemaIntoTextArea() {
@@ -536,7 +216,7 @@ function populateTestDataGridFromRules() {
     RandExp,
   });
   if (parseResult.errors.length > 0) {
-    const errorText = schemaErrorsToText(parseResult.errors);
+    const errorText = generationService?.schemaErrorsToText?.(parseResult.errors) || '';
     showTestDataSchemaError(errorText);
     setTestDataStatus('', false);
     return;
@@ -616,66 +296,6 @@ function mapDataRuleToGridRow(rule, leadingTextLines = []) {
   return data;
 }
 
-const FAKER_COMMANDS = [];
-const FAKER_COMMANDS_LONGEST_FIRST = [];
-const DOMAIN_COMMANDS = [];
-const DOMAIN_COMMANDS_LONGEST_FIRST = [];
-const TOP_LEVEL_TYPE_OPTIONS = ['enum', 'literal', 'regex'];
-const FAKER_SECTION_LABEL = '-- faker (incl helpers) --';
-const FAKER_SECTION_VALUE = '__faker_section__';
-const DOMAIN_SECTION_LABEL = '-- domain (no helpers) --';
-const DOMAIN_SECTION_VALUE = '__domain_section__';
-const DOMAIN_NON_SCALAR_RETURN_TYPES = new Set(['array', 'object']);
-
-// TODO: add fakerCommand to the TestDataRule already parsed out
-function findFakerCommand(aString) {
-  for (let command of FAKER_COMMANDS_LONGEST_FIRST) {
-    if (aString.startsWith(command)) {
-      return command;
-    }
-  }
-  return null;
-}
-
-function extractDomainCommandAndParams(ruleSpec) {
-  const fullRule = String(ruleSpec || '').trim();
-  if (!fullRule) {
-    return { command: '', params: '' };
-  }
-
-  const exactKeyword = getDomainKeywordByCommand(fullRule);
-  if (exactKeyword) {
-    return {
-      command: String(exactKeyword.shortestUniqueAlias || exactKeyword.keyword || '').trim(),
-      params: '',
-    };
-  }
-
-  const openParenIndex = fullRule.indexOf('(');
-  if (openParenIndex > 0) {
-    const commandPart = fullRule.slice(0, openParenIndex).trim();
-    const commandKeyword = getDomainKeywordByCommand(commandPart);
-    if (commandKeyword) {
-      return {
-        command: String(commandKeyword.shortestUniqueAlias || commandKeyword.keyword || '').trim(),
-        params: fullRule.slice(openParenIndex),
-      };
-    }
-  }
-
-  for (let command of DOMAIN_COMMANDS_LONGEST_FIRST) {
-    if (!fullRule.startsWith(command)) {
-      continue;
-    }
-    const remainder = fullRule.slice(command.length);
-    if (remainder.length === 0 || remainder.startsWith('(')) {
-      return { command, params: remainder };
-    }
-  }
-
-  return { command: '', params: fullRule };
-}
-
 /**
  * Helper function to safely probe a faker command and detect its return type.
  * Used during dropdown discovery to identify commands that return objects (unsuitable for literals).
@@ -709,78 +329,6 @@ function probeCommandReturnType(command, fakerLib) {
     // Silently skip commands that error during probing
     return null;
   }
-}
-
-function identifyFakerCommands() {
-  FAKER_COMMANDS.length = 0;
-  FAKER_COMMANDS_LONGEST_FIRST.length = 0;
-  DOMAIN_COMMANDS.length = 0;
-  DOMAIN_COMMANDS_LONGEST_FIRST.length = 0;
-
-  TOP_LEVEL_TYPE_OPTIONS.forEach((typeOption) => FAKER_COMMANDS.push(typeOption));
-  getKnownFakerCommandsAlphabetical()
-    .filter((command) => command !== 'RegEx')
-    .forEach((command) => FAKER_COMMANDS.push(command));
-  getKnownFakerCommandsLongestFirst().forEach((command) => FAKER_COMMANDS_LONGEST_FIRST.push(command));
-  getKnownDomainCommandsAlphabetical().forEach((command) => DOMAIN_COMMANDS.push(command));
-  getKnownDomainCommandsLongestFirst().forEach((command) => DOMAIN_COMMANDS_LONGEST_FIRST.push(command));
-}
-
-function normaliseReturnType(returnType) {
-  return String(returnType || '')
-    .trim()
-    .toLowerCase();
-}
-
-function isDomainCommandVisibleByDefault(command) {
-  const commandHelp = getDomainCommandHelp(command);
-  const returnType = normaliseReturnType(commandHelp?.returnType);
-  if (!returnType) {
-    return true;
-  }
-  return !DOMAIN_NON_SCALAR_RETURN_TYPES.has(returnType);
-}
-
-function getVisibleDomainTypeOptions(currentValue = '') {
-  const visible = getKnownDomainCommandsAlphabetical().filter((command) => isDomainCommandVisibleByDefault(command));
-  const selected = String(currentValue || '').trim();
-  if (selected && DOMAIN_COMMANDS.includes(selected) && !visible.includes(selected)) {
-    visible.push(selected);
-    visible.sort((a, b) => a.localeCompare(b));
-  }
-  return visible.map((command) => ({ value: command, label: command }));
-}
-
-function getTabulatorTypeEditorValues(currentValue = '') {
-  const typeValues = TOP_LEVEL_TYPE_OPTIONS.map((typeOption) => ({ value: typeOption, label: typeOption }));
-  const fakerHeader = {
-    value: FAKER_SECTION_VALUE,
-    label: FAKER_SECTION_LABEL,
-    elementAttributes: { disabled: true },
-  };
-  const fakerCommandValues = getKnownFakerCommandsAlphabetical()
-    .filter((command) => command !== 'RegEx')
-    .map((command) => ({ value: command, label: command }));
-  const domainHeader = {
-    value: DOMAIN_SECTION_VALUE,
-    label: DOMAIN_SECTION_LABEL,
-    elementAttributes: { disabled: true },
-  };
-  const domainCommandValues = getVisibleDomainTypeOptions(currentValue);
-  return [...typeValues, fakerHeader, ...fakerCommandValues, domainHeader, ...domainCommandValues];
-}
-
-function getAgGridTypeEditorValues(currentValue = '') {
-  const values = [...FAKER_COMMANDS];
-  const domainValues = getVisibleDomainTypeOptions(currentValue).map((entry) => entry.value);
-  const seen = new Set(values);
-  domainValues.forEach((value) => {
-    if (!seen.has(value)) {
-      values.push(value);
-      seen.add(value);
-    }
-  });
-  return values;
 }
 
 function tabulatorTypeSelectEditor(cell, onRendered, success, cancel) {
@@ -1115,6 +663,28 @@ function enableTestDataGenerationInterface(parentId, anImporter, aTextPreviewRen
   importer = anImporter;
   textPreviewRenderer = aTextPreviewRenderer;
   mainGridExtras = aGridExtras;
+  generationService = createTestDataGenerationService({
+    schemaTextToDataRules,
+    TestDataGeneratorClass: TestDataGenerator,
+    PairwiseTestDataGeneratorClass: PairwiseTestDataGenerator,
+    GenericDataTableClass: GenericDataTable,
+    TEST_DATA_MODES,
+    normaliseCount,
+    createTableFromGenerator,
+    createAmendedTable,
+    faker,
+    RandExp,
+    debouncer,
+    syncSchemaTextFromGridBeforeGenerate,
+    setTestDataStatus,
+    showSchemaError: showTestDataSchemaError,
+    yieldToUi,
+    getSchemaText: getSchemaTextFromEditor,
+    getImporter: () => importer,
+    getTextPreviewRenderer: () => textPreviewRenderer,
+    getMainGridExtras: () => getMainGridExtras(),
+    getGenerationMode,
+  });
 
   let parentElem = document.getElementById(parentId);
   parentElem.innerHTML = `
@@ -1220,10 +790,3 @@ export {
  * Getter function for FAKER_COMMANDS array (for testing purposes).
  * @returns {string[]} Array of discovered faker commands
  */
-function getFakerCommands() {
-  return [...FAKER_COMMANDS];
-}
-
-function getDomainCommands() {
-  return [...DOMAIN_COMMANDS];
-}

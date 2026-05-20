@@ -1,3 +1,10 @@
+/*
+ * Responsibilities:
+ * - Core table amend/new-table operations for test-data generation modes.
+ * - Converts generator row output into normalized grid row values.
+ * - Applies amend behavior for full-table and selected-row scenarios.
+ */
+
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 
 const TEST_DATA_MODES = Object.freeze({

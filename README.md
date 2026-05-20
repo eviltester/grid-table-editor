@@ -603,6 +603,27 @@ Versioning and release notes are managed with Changesets:
 - publish package
 - `pnpm changeset publish`
 
+## Refresh npm token
+
+- Get/create a new token from npm (or your registry UI).
+- Update your user .npmrc entry (Windows):
+
+```
+notepad $HOME\.npmrc
+```
+
+- Replace the auth line, e.g.:
+
+```
+//registry.npmjs.org/:_authToken=YOUR_NEW_TOKEN
+```
+
+If you use a project-level .npmrc, update/remove token there too.
+
+Verify:
+
+`npm whoami`
+
 ## npm adhoc publish
 
 For manual one-off publish, set the version in that package’s `package.json` first, then publish.

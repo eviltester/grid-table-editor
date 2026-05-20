@@ -1,5 +1,11 @@
 # @anywaydata/core
 
+## 1.3.0
+
+### Minor Changes
+
+- added counterstrings
+
 ## 1.2.0
 
 ### Minor Changes

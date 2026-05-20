@@ -6,11 +6,13 @@ description: "Use counterstrings to test length limits, truncation, and boundary
 
 A counterstring is a specially structured string where marker numbers show exact character positions.
 
-Example:
+Example of a 15 character counterstring:
 
 ```txt
 *3*5*7*9*12*15*
 ```
+
+Each `*` is preceded by the numeric position in the string. So the final `*` is at position 15.
 
 This makes it easy to see where text is cut off, wrapped, or rejected.
 
@@ -59,4 +61,7 @@ string.counterString(12, 12, "#")
 - [Domain Test Data overview](/docs/test-data/domain/domain-test-data)
 - [Counterstring reference implementation](https://github.com/eviltester/counterstringjs/blob/master/extension/js/counterstring.js)
 - [James Bach on counterstrings](https://www.satisfice.com/blog/archives/22)
+- [CounterString Chrome Extension](https://www.eviltester.com/page/tools/counterstringjs/)
+- [Alan Richardon on counterstrings](https://www.eviltester.com/categories/counterstrings/)
+
 

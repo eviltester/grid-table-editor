@@ -1,10 +1,12 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { DOMAIN_KEYWORDS } from '../../../../../js/domain/domain-keywords.js';
 import { DomainKeywordInvocationParser } from '../../../../../js/domain/parser/DomainKeywordInvocationParser.js';
 
 function readDomainDocsTxtExamples() {
-  let rootDir = process.cwd();
+  const testDir = path.dirname(fileURLToPath(import.meta.url));
+  let rootDir = testDir;
   while (rootDir && !fs.existsSync(path.join(rootDir, 'docs-src'))) {
     const parent = path.dirname(rootDir);
     if (parent === rootDir) {

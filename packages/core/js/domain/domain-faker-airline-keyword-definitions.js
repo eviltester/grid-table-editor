@@ -185,6 +185,7 @@ const DOMAIN_FAKER_AIRLINE_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random seat.',
       docsUrl: 'https://fakerjs.dev/api/airline',
       example: '17F',
+      examples: ['airline.seat', 'airline.seat(aircraftType="widebody")'],
       returnType: 'string',
       args: [
         {

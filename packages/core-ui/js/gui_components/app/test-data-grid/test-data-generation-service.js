@@ -5,16 +5,9 @@
  * - Owns generation progress/status transitions and preview refresh behavior.
  */
 
-function schemaErrorsToText(errors = []) {
-  return (Array.isArray(errors) ? errors : [])
-    .map((error) => {
-      if (error && typeof error === 'object' && typeof error.message === 'string') {
-        return error.message;
-      }
-      return String(error ?? '');
-    })
-    .join('\n');
-}
+import { schemaErrorsToText } from '../../shared/test-data/schema-error-text.js';
+import { createPairwiseTableFromGenerator } from '../../shared/test-data/generation-runtime.js';
+import { parseSchemaText, countEnumRules } from '../../shared/test-data/schema-runtime.js';
 
 function createTestDataGenerationService({
   schemaTextToDataRules,
@@ -45,7 +38,8 @@ function createTestDataGenerationService({
   }
 
   function parseSchemaFromTextArea() {
-    return schemaTextToDataRules({
+    return parseSchemaText({
+      schemaTextToDataRules,
       schemaText: getSchemaText(),
       faker,
       RandExp,
@@ -63,10 +57,6 @@ function createTestDataGenerationService({
     };
   }
 
-  function countEnumRules(rules) {
-    return rules.filter((rule) => rule.type === 'enum').length;
-  }
-
   function showPairwiseButton() {
     const button = document.getElementById('generateallpairs');
     if (button) {
@@ -78,36 +68,6 @@ function createTestDataGenerationService({
     const button = document.getElementById('generateallpairs');
     if (button) {
       button.style.display = 'none';
-    }
-  }
-
-  function createPairwiseTableFromGenerator(generator) {
-    try {
-      const pairwiseGenerator = new PairwiseTestDataGeneratorClass(faker, RandExp);
-      const initResult = pairwiseGenerator.initializeFromRules(generator.testDataRules());
-
-      if (initResult.isError) {
-        console.error('Pairwise initialization error:', initResult.errorMessage);
-        return null;
-      }
-
-      const dataResult = pairwiseGenerator.generateAllDataRecordsAsRows();
-      if (dataResult.isError) {
-        console.error('Pairwise generation error:', dataResult.errorMessage);
-        return null;
-      }
-
-      const dataTable = new GenericDataTableClass();
-      const [headers, ...rows] = dataResult.data.data;
-      dataTable.setHeaders(headers);
-      rows.forEach((row) => {
-        dataTable.appendDataRow(row);
-      });
-
-      return dataTable;
-    } catch (error) {
-      console.error('Pairwise table creation error:', error);
-      return null;
     }
   }
 
@@ -157,7 +117,13 @@ function createTestDataGenerationService({
       setTestDataStatus('Generating pairwise combinations...', true);
       await yieldToUi();
 
-      const dataTable = createPairwiseTableFromGenerator(generator);
+      const dataTable = createPairwiseTableFromGenerator({
+        generator,
+        PairwiseTestDataGeneratorClass,
+        GenericDataTableClass,
+        faker,
+        RandExp,
+      });
       if (!dataTable) {
         showSchemaError('Failed to generate pairwise data.');
         setTestDataStatus('Pairwise generation failed.', false);

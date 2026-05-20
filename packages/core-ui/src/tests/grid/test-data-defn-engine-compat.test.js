@@ -52,6 +52,39 @@ describe('test data definition editor engine compatibility', () => {
     return TabulatorMock;
   }
 
+  function installAgGridMock() {
+    const latest = { options: null, rowData: [] };
+    global.agGrid = {
+      createGrid: (_element, options) => {
+        latest.options = options;
+        const api = {
+          setGridOption: (key, value) => {
+            if (key === 'rowData') {
+              latest.rowData = Array.isArray(value) ? value.map((row) => ({ ...row })) : [];
+            }
+          },
+          applyTransaction: ({ add }) => {
+            if (Array.isArray(add)) {
+              latest.rowData.push(...add.map((row) => ({ ...row })));
+            }
+          },
+          forEachNodeAfterFilterAndSort: (callback) => {
+            latest.rowData.forEach((row) => callback({ data: row }));
+          },
+          getDisplayedRowCount: () => latest.rowData.length,
+          getSelectedNodes: () => [],
+          applyTransactionAsync: () => {},
+          getColumnDefs: () => options.columnDefs || [],
+          getAllDisplayedColumns: () => [],
+          ensureIndexVisible: () => {},
+          getCellEditorInstances: () => [],
+        };
+        return api;
+      },
+    };
+    return latest;
+  }
+
   async function flushUi() {
     await new Promise((resolve) => setTimeout(resolve, 0));
     await new Promise((resolve) => setTimeout(resolve, 0));
@@ -426,6 +459,45 @@ describe('test data definition editor engine compatibility', () => {
     expect(document.getElementById('testdatadefntext').value).toContain('customer_name');
 
     delete global.Tabulator;
+  });
+
+  test('ag-grid schema text updates while editing a cell', async () => {
+    const agGridMock = installAgGridMock();
+
+    enableTestDataGenerationInterface(
+      'host',
+      {
+        setGridFromGenericDataTable: jest.fn(),
+      },
+      {
+        renderTextFromGrid: jest.fn(),
+      },
+      {
+        getRowCount: jest.fn(() => 0),
+        getSelectedRowIndexes: jest.fn(() => []),
+      }
+    );
+
+    const rowData = { columnName: 'name', type: 'RegEx', value: '[A-Z]+' };
+    agGridMock.rowData = [rowData];
+    const editorHost = document.createElement('div');
+    const input = document.createElement('input');
+    input.value = 'person_name';
+    editorHost.appendChild(input);
+
+    agGridMock.options.onCellEditingStarted({
+      eGridCell: editorHost,
+      data: rowData,
+      colDef: { field: 'columnName' },
+    });
+
+    await flushUi();
+    expect(document.getElementById('testdatadefntext').value).toContain('person_name');
+
+    input.value = 'customer_name';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    await flushUi();
+    expect(document.getElementById('testdatadefntext').value).toContain('customer_name');
   });
 
   test('schema text comments survive text-to-grid parse and add-column grid sync', async () => {

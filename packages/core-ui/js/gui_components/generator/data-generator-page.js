@@ -19,7 +19,26 @@ import {
   getDomainKeywordByCommand,
 } from '../shared/domain-commands.js';
 import { getDomainCommandHelp } from '../shared/domain-command-help-metadata.js';
+import { escapeHtml } from '../shared/html-escape.js';
 import { TimedErrorDisplay } from '../shared/timed-error-display.js';
+import { schemaErrorsToText } from '../shared/test-data/schema-error-text.js';
+import { getVisibleDomainCommands } from '../shared/test-data/type-option-provider.js';
+import { createStatusPresenter } from '../shared/test-data/status-presenter.js';
+import {
+  createTableFromGenerator as createTableFromGeneratorShared,
+  createPairwiseTableFromGenerator as createPairwiseTableFromGeneratorShared,
+  parseNonNegativeCount,
+} from '../shared/test-data/generation-runtime.js';
+import {
+  extractFakerCommandAndParams as extractFakerCommandAndParamsShared,
+  extractDomainCommandAndParams as extractDomainCommandAndParamsShared,
+} from '../shared/test-data/command-spec-parser.js';
+import { countEnumRules } from '../shared/test-data/schema-runtime.js';
+import {
+  schemaRowsToSpec as schemaRowsToSpecCore,
+  schemaRowsToSpecWithTokens as schemaRowsToSpecWithTokensCore,
+  validateSchemaRows as validateSchemaRowsCore,
+} from '../shared/test-data/schema-editor-core.js';
 import {
   SOURCE_TYPE_FAKER,
   SOURCE_TYPE_DOMAIN,
@@ -34,113 +53,36 @@ import {
   extractRegexValueFromRuleSpec,
   buildDataRuleFromSchemaRow,
 } from '../shared/schema-row-rule-mapper.js';
+import { GENERATOR_DEFAULT_EXAMPLE_SCHEMA_TEXT } from '../shared/test-data/schema-examples.js';
 
 const REGEX_HELP_URL = 'https://anywaydata.com/docs/test-data/regex-test-data';
 const FAKER_HELP_URL = 'https://anywaydata.com/docs/test-data/faker-test-data';
 const DOMAIN_HELP_URL = 'https://anywaydata.com/docs/test-data/domain/domain-test-data';
-const DOMAIN_NON_SCALAR_RETURN_TYPES = new Set(['array', 'object']);
 const LITERAL_HELP_URL = 'https://anywaydata.com/docs/category/generating-data';
 const ENUM_HELP_URL = 'https://anywaydata.com/docs/category/generating-data';
 const GENERATE_TO_FILE_HELP_URL = 'https://anywaydata.com/docs/test-data/generate-to-file';
-const DEFAULT_EXAMPLE_SCHEMA_TEXT = `# Example schema
-First Name
-person.firstName
-
-Last Name
-person.lastName
-
-Email
-internet.email
-
-Status
-enum(active,inactive,pending)
-
-Priority
-enum(high,medium,low)
-
-Created Date
-date.recent`;
-
-function getDisplayDomainCommand(keywordEntry) {
-  const shortest = String(keywordEntry?.shortestUniqueAlias || '').trim();
-  if (shortest) {
-    return shortest;
-  }
-  return String(keywordEntry?.keyword || '').trim();
-}
-
-function normaliseReturnType(returnType) {
-  return String(returnType || '')
-    .trim()
-    .toLowerCase();
-}
-
-function isDomainCommandVisibleByDefault(command) {
-  const commandHelp = getDomainCommandHelp(command);
-  const returnType = normaliseReturnType(commandHelp?.returnType);
-  if (!returnType) {
-    return true;
-  }
-  return !DOMAIN_NON_SCALAR_RETURN_TYPES.has(returnType);
-}
-
 function schemaRowsToSpec(schemaRows) {
-  const renderResult = dataRulesToSchemaText({
-    dataRules: schemaRowsToDataRules({ schemaRows }).dataRules,
+  return schemaRowsToSpecCore({
+    schemaRows,
+    schemaRowsToDataRules,
+    dataRulesToSchemaText,
   });
-  return renderResult.text;
 }
 
 function schemaRowsToSpecWithTokens(schemaRows, schemaTokens) {
-  const dataRules = (Array.isArray(schemaRows) ? schemaRows : [])
-    .map((row) => buildDataRuleFromSchemaRow(row))
-    .filter(Boolean);
-
-  const renderResult = dataRulesToSchemaText({
-    dataRules,
+  return schemaRowsToSpecWithTokensCore({
+    schemaRows,
     schemaTokens,
+    buildDataRuleFromSchemaRow,
+    dataRulesToSchemaText,
   });
-  return renderResult.text;
 }
 
 function validateSchemaRows(schemaRows) {
-  const result = schemaRowsToDataRules({ schemaRows });
-  return { errors: result.errors, rows: result.rows };
-}
-
-function schemaErrorsToText(errors = []) {
-  return (Array.isArray(errors) ? errors : [])
-    .map((error) => {
-      if (error && typeof error === 'object' && typeof error.message === 'string') {
-        return error.message;
-      }
-      return String(error ?? '');
-    })
-    .join('\n');
-}
-
-function normaliseGeneratedCellValue(value) {
-  if (value === undefined || value === null) {
-    return '';
-  }
-  if (value instanceof Date) {
-    return value.toISOString();
-  }
-  if (Array.isArray(value) || (typeof value === 'object' && value !== null)) {
-    try {
-      return JSON.stringify(value);
-    } catch {
-      return String(value);
-    }
-  }
-  return value;
-}
-
-function normaliseGeneratedRow(row = []) {
-  if (!Array.isArray(row)) {
-    return [];
-  }
-  return row.map((value) => normaliseGeneratedCellValue(value));
+  return validateSchemaRowsCore({
+    schemaRows,
+    schemaRowsToDataRules,
+  });
 }
 
 class DataGeneratorPage {
@@ -174,7 +116,7 @@ class DataGeneratorPage {
     this.domainCommandsLongestFirst = getKnownDomainCommandsLongestFirst();
     this.isTextMode = false;
     this.optionsPanels = {};
-    this.generationStatusTimer = undefined;
+    this.statusPresenter = undefined;
     this.schemaErrorDisplay = undefined;
     this.lastPreviewDataTable = undefined;
   }
@@ -192,6 +134,11 @@ class DataGeneratorPage {
       documentObj: this.documentObj,
       elementId: 'generatorSchemaErrorText',
       timeoutMs: 5000,
+    });
+    this.statusPresenter = createStatusPresenter({
+      documentObj: this.documentObj,
+      elementId: 'generatorStatusText',
+      hideWhenEmpty: false,
     });
     this.schemaRows = [this.createBlankSchemaRow()];
     this.renderSchemaRows();
@@ -235,16 +182,10 @@ class DataGeneratorPage {
   }
 
   getVisibleDomainCommands(currentCommand = '') {
-    const visible = this.domainCommands.filter((command) => isDomainCommandVisibleByDefault(command));
-    const selectedCommand = normaliseDomainCommand(currentCommand);
-    if (!selectedCommand) {
-      return visible;
-    }
-    if (!visible.includes(selectedCommand) && this.domainCommands.includes(selectedCommand)) {
-      visible.push(selectedCommand);
-      visible.sort((a, b) => a.localeCompare(b));
-    }
-    return visible;
+    return getVisibleDomainCommands({
+      commands: this.domainCommands,
+      currentCommand: normaliseDomainCommand(currentCommand),
+    });
   }
 
   renderPageShell() {
@@ -543,30 +484,15 @@ class DataGeneratorPage {
   }
 
   setGenerationStatus(message, isLoading = false) {
-    const statusElement = this.documentObj.getElementById('generatorStatusText');
-    if (!statusElement) {
-      return;
-    }
-    statusElement.textContent = message || '';
-    statusElement.classList.toggle('is-loading', isLoading && Boolean(message));
+    this.statusPresenter?.setStatus(message, isLoading);
   }
 
   clearGenerationStatus() {
-    if (this.generationStatusTimer) {
-      clearTimeout(this.generationStatusTimer);
-      this.generationStatusTimer = undefined;
-    }
-    this.setGenerationStatus('', false);
+    this.statusPresenter?.clear();
   }
 
   scheduleClearGenerationStatus(delay = 1200) {
-    if (this.generationStatusTimer) {
-      clearTimeout(this.generationStatusTimer);
-    }
-    this.generationStatusTimer = setTimeout(() => {
-      this.generationStatusTimer = undefined;
-      this.setGenerationStatus('', false);
-    }, delay);
+    this.statusPresenter?.scheduleClear(delay);
   }
 
   surfacePageError(message, { useSchemaStatus = false } = {}) {
@@ -691,7 +617,7 @@ class DataGeneratorPage {
   insertExampleSchema() {
     const textArea = this.documentObj.getElementById('generatorSchemaText');
     if (textArea) {
-      textArea.value = DEFAULT_EXAMPLE_SCHEMA_TEXT;
+      textArea.value = GENERATOR_DEFAULT_EXAMPLE_SCHEMA_TEXT;
     }
     this.isTextMode = true;
     this.updateSchemaEditModeView();
@@ -787,14 +713,21 @@ enum(active,inactive,pending)</pre>
     row.sourceType = normaliseSourceType(rule?.type);
 
     if (row.sourceType === SOURCE_TYPE_FAKER) {
-      const parts = this.extractFakerCommandAndParams(rule?.ruleSpec);
+      const parts = extractFakerCommandAndParamsShared(rule?.ruleSpec, {
+        normaliseFakerCommand,
+        fakerCommandsLongestFirst: this.fakerCommandsLongestFirst,
+      });
       row.command = parts.command;
       row.params = parts.params;
       row.value = '';
       return row;
     }
     if (row.sourceType === SOURCE_TYPE_DOMAIN) {
-      const parts = this.extractDomainCommandAndParams(rule?.ruleSpec);
+      const parts = extractDomainCommandAndParamsShared(rule?.ruleSpec, {
+        normaliseDomainCommand,
+        getDomainKeywordByCommand,
+        domainCommandsLongestFirst: this.domainCommandsLongestFirst,
+      });
       row.command = parts.command;
       row.params = parts.params;
       row.value = '';
@@ -805,60 +738,6 @@ enum(active,inactive,pending)</pre>
     row.command = '';
     row.params = '';
     return row;
-  }
-
-  extractFakerCommandAndParams(ruleSpec) {
-    const normalisedSpec = normaliseFakerCommand(String(ruleSpec ?? '').trim());
-    for (const command of this.fakerCommandsLongestFirst) {
-      if (normalisedSpec === command) {
-        return { command, params: '' };
-      }
-      if (normalisedSpec.startsWith(command)) {
-        return {
-          command,
-          params: normalisedSpec.slice(command.length),
-        };
-      }
-    }
-
-    return { command: '', params: normalisedSpec };
-  }
-
-  extractDomainCommandAndParams(ruleSpec) {
-    const normalisedSpec = normaliseDomainCommand(String(ruleSpec ?? '').trim());
-    const exactKeyword = getDomainKeywordByCommand(normalisedSpec);
-    if (exactKeyword) {
-      return { command: getDisplayDomainCommand(exactKeyword), params: '' };
-    }
-
-    const openParenIndex = normalisedSpec.indexOf('(');
-    if (openParenIndex > 0) {
-      const commandPart = normalisedSpec.slice(0, openParenIndex).trim();
-      const commandKeyword = getDomainKeywordByCommand(commandPart);
-      if (commandKeyword) {
-        return {
-          command: getDisplayDomainCommand(commandKeyword),
-          params: normalisedSpec.slice(openParenIndex),
-        };
-      }
-    }
-
-    for (const command of this.domainCommandsLongestFirst) {
-      if (normalisedSpec === command) {
-        return { command, params: '' };
-      }
-      if (normalisedSpec.startsWith(command)) {
-        const remainder = normalisedSpec.slice(command.length);
-        if (remainder.length > 0 && !remainder.startsWith('(')) {
-          continue;
-        }
-        return {
-          command,
-          params: remainder,
-        };
-      }
-    }
-    return { command: '', params: normalisedSpec };
   }
 
   renderSchemaRows() {
@@ -886,7 +765,7 @@ enum(active,inactive,pending)</pre>
                     <button class="icon-button" data-action="up" data-row-id="${row.id}" title="Move up" ${index === 0 ? 'disabled' : ''}>↑</button>
                     <button class="icon-button" data-action="down" data-row-id="${row.id}" title="Move down" ${index === this.schemaRows.length - 1 ? 'disabled' : ''}>↓</button>
                 </div>
-                <input type="text" data-field="name" placeholder="Column Name" value="${this.escapeHtml(row.name)}">
+                <input type="text" data-field="name" placeholder="Column Name" value="${escapeHtml(row.name)}">
                 <select data-field="sourceType">
                     <option value="${SOURCE_TYPE_ENUM}" ${row.sourceType === SOURCE_TYPE_ENUM ? 'selected' : ''}>enum</option>
                     <option value="${SOURCE_TYPE_LITERAL}" ${row.sourceType === SOURCE_TYPE_LITERAL ? 'selected' : ''}>literal</option>
@@ -901,7 +780,7 @@ enum(active,inactive,pending)</pre>
                     ${(isDomainSource ? this.getVisibleDomainCommands(row.command) : this.fakerCommands)
                       .map((command) => {
                         const selected = command === row.command ? 'selected' : '';
-                        return `<option value="${this.escapeHtml(command)}" ${selected}>${this.escapeHtml(command)}</option>`;
+                        return `<option value="${escapeHtml(command)}" ${selected}>${escapeHtml(command)}</option>`;
                       })
                       .join('')}
                 </select>`
@@ -911,16 +790,16 @@ enum(active,inactive,pending)</pre>
                     data-field="faker-doc-link"
                     class="helpicon generator-schema-help-link"
                   data-help="generator-schema-help"
-                  href="${this.escapeHtml(schemaHelp.docsUrl)}"
-                  aria-label="${this.escapeHtml(schemaHelp.title)}"
+                  href="${escapeHtml(schemaHelp.docsUrl)}"
+                  aria-label="${escapeHtml(schemaHelp.title)}"
                     target="_blank"
                     rel="noopener noreferrer"
                     ${showRowHelpLink ? '' : 'hidden'}
                 ></a>
                 ${
                   isCommandSource
-                    ? `<input type="text" data-field="params" placeholder="Params e.g. (10)" value="${this.escapeHtml(row.params)}">`
-                    : `<input type="text" data-field="value" placeholder="Value / Regex" value="${this.escapeHtml(row.value)}">`
+                    ? `<input type="text" data-field="params" placeholder="Params e.g. (10)" value="${escapeHtml(row.params)}">`
+                    : `<input type="text" data-field="value" placeholder="Value / Regex" value="${escapeHtml(row.value)}">`
                 }
             `;
       const schemaHelpElement = rowElem.querySelector('[data-field="faker-doc-link"]');
@@ -1036,19 +915,16 @@ enum(active,inactive,pending)</pre>
 
   parseRowCount(inputId) {
     const inputElem = this.documentObj.getElementById(inputId);
-    const rawValue = Number.parseInt(inputElem?.value, 10);
-    if (Number.isNaN(rawValue) || rawValue < 0) {
+    const maxValue = inputElem?.max ? Number.parseInt(inputElem.max, 10) : null;
+    const parsed = parseNonNegativeCount(inputElem?.value, { min: 0, max: maxValue });
+    if (!parsed.valid) {
       return { value: 0, errors: [`${inputId} must be a number greater than or equal to zero.`] };
     }
-
-    if (inputElem?.max) {
-      const maxValue = Number.parseInt(inputElem.max, 10);
-      if (!Number.isNaN(maxValue) && rawValue > maxValue) {
-        return { value: maxValue, errors: [`${inputId} must be less than or equal to ${maxValue}.`] };
-      }
+    const rawValue = Number.parseInt(inputElem?.value, 10);
+    if (Number.isFinite(maxValue) && Number.isFinite(rawValue) && rawValue > maxValue) {
+      return { value: parsed.value, errors: [`${inputId} must be less than or equal to ${maxValue}.`] };
     }
-
-    return { value: rawValue, errors: [] };
+    return { value: parsed.value, errors: [] };
   }
 
   renderOutputPreviewForCurrentSelection() {
@@ -1126,12 +1002,11 @@ enum(active,inactive,pending)</pre>
   }
 
   buildDataTable(generator, rowCount) {
-    const dataTable = new GenericDataTable();
-    dataTable.setHeaders(generator.generateHeadersArray());
-    for (let row = 0; row < rowCount; row++) {
-      dataTable.appendDataRow(normaliseGeneratedRow(generator.generateRow()));
-    }
-    return dataTable;
+    return createTableFromGeneratorShared({
+      rowCount,
+      generator,
+      GenericDataTableClass: GenericDataTable,
+    });
   }
 
   previewData() {
@@ -1270,39 +1145,17 @@ enum(active,inactive,pending)</pre>
     if (errors.length > 0) {
       return 0;
     }
-    return rows.filter((row) => row.sourceType === SOURCE_TYPE_ENUM).length;
+    return countEnumRules(rows.map((row) => ({ type: row.sourceType })));
   }
 
   buildAllPairsDataTable(generator) {
-    try {
-      // Pass the same faker and RandExp instances used by the main generator
-      const pairwiseGenerator = new PairwiseTestDataGenerator(this.faker, this.RandExp);
-      const initResult = pairwiseGenerator.initializeFromRules(generator.testDataRules());
-
-      if (initResult.isError) {
-        console.error('Pairwise initialization error:', initResult.errorMessage);
-        return null;
-      }
-
-      const dataResult = pairwiseGenerator.generateAllDataRecordsAsRows();
-      if (dataResult.isError) {
-        console.error('Pairwise generation error:', dataResult.errorMessage);
-        return null;
-      }
-
-      // Convert to GenericDataTable format
-      const dataTable = new GenericDataTable();
-      const [headers, ...rows] = dataResult.data.data; // Access the nested data array
-      dataTable.setHeaders(headers);
-      rows.forEach((row) => {
-        dataTable.appendDataRow(row);
-      });
-
-      return dataTable;
-    } catch (error) {
-      console.error('Pairwise table creation error:', error);
-      return null;
-    }
+    return createPairwiseTableFromGeneratorShared({
+      generator,
+      PairwiseTestDataGeneratorClass: PairwiseTestDataGenerator,
+      GenericDataTableClass: GenericDataTable,
+      faker: this.faker,
+      RandExp: this.RandExp,
+    });
   }
 
   updateAllPairsButtonVisibility() {
@@ -1311,48 +1164,6 @@ enum(active,inactive,pending)</pre>
     if (buttonWrapper) {
       buttonWrapper.style.display = enumCount >= 2 ? 'inline-flex' : 'none';
     }
-  }
-
-  escapeHtml(value) {
-    return String(value ?? '')
-      .replaceAll('&', '&amp;')
-      .replaceAll('<', '&lt;')
-      .replaceAll('>', '&gt;')
-      .replaceAll('"', '&quot;');
-  }
-
-  getFakerHelpUrl(commandValue) {
-    const command = normaliseFakerCommand(commandValue);
-    if (!command) {
-      return FAKER_HELP_URL;
-    }
-
-    const moduleName = command.split('.')[0];
-    if (!moduleName) {
-      return FAKER_HELP_URL;
-    }
-
-    return `https://fakerjs.dev/api/${moduleName}`;
-  }
-
-  getSchemaHelpUrl(sourceType, commandValue) {
-    const normalisedSourceType = normaliseSourceType(sourceType);
-    if (normalisedSourceType === SOURCE_TYPE_REGEX) {
-      return REGEX_HELP_URL;
-    }
-    if (normalisedSourceType === SOURCE_TYPE_FAKER) {
-      return this.getFakerHelpUrl(commandValue);
-    }
-    if (normalisedSourceType === SOURCE_TYPE_DOMAIN) {
-      return DOMAIN_HELP_URL;
-    }
-    if (normalisedSourceType === SOURCE_TYPE_LITERAL) {
-      return LITERAL_HELP_URL;
-    }
-    if (normalisedSourceType === SOURCE_TYPE_ENUM) {
-      return ENUM_HELP_URL;
-    }
-    return '';
   }
 
   getSchemaHelpData(sourceType, commandValue) {
@@ -1412,7 +1223,7 @@ enum(active,inactive,pending)</pre>
       }
 
       const commandHelp = getFakerCommandHelp(command);
-      const docsUrl = commandHelp?.docsUrl || this.getFakerHelpUrl(command);
+      const docsUrl = commandHelp?.docsUrl || FAKER_HELP_URL;
       const heading = `faker.${command}`;
       const summary = commandHelp?.summary || `Generates data using ${heading}.`;
       return {
@@ -1465,9 +1276,9 @@ enum(active,inactive,pending)</pre>
 
   buildTypeHelpHtml(typeName, summary, docsUrl) {
     return [
-      `<p><strong>${this.escapeHtml(typeName)}</strong></p>`,
-      `<p>${this.escapeHtml(summary)}</p>`,
-      `<p><a class="helplink" href="${this.escapeHtml(docsUrl)}" target="_blank" rel="noopener noreferrer">Learn more</a></p>`,
+      `<p><strong>${escapeHtml(typeName)}</strong></p>`,
+      `<p>${escapeHtml(summary)}</p>`,
+      `<p><a class="helplink" href="${escapeHtml(docsUrl)}" target="_blank" rel="noopener noreferrer">Learn more</a></p>`,
     ].join('');
   }
 
@@ -1500,11 +1311,9 @@ enum(active,inactive,pending)</pre>
   }
 
   buildCommandHelpHtml({ heading, summary, docsUrl, params, example }) {
-    const sections = [`<p><strong>${this.escapeHtml(heading)}</strong></p>`, `<p>${this.escapeHtml(summary)}</p>`];
+    const sections = [`<p><strong>${escapeHtml(heading)}</strong></p>`, `<p>${escapeHtml(summary)}</p>`];
 
-    sections.push(
-      `<p><strong>Call:</strong> <code>${this.escapeHtml(this.buildCallSignature(heading, params))}</code></p>`
-    );
+    sections.push(`<p><strong>Call:</strong> <code>${escapeHtml(this.buildCallSignature(heading, params))}</code></p>`);
 
     if (Array.isArray(params) && params.length > 0) {
       const paramItems = params
@@ -1512,26 +1321,26 @@ enum(active,inactive,pending)</pre>
           const paramName = `${param.name}${param.optional ? '?' : ''}`;
           const paramType = this.cleanFakerParamTypeForHelp(param.type);
           const paramDescription = this.cleanFakerParamDescriptionForHelp(param.description);
-          const descriptionHtml = paramDescription.length > 0 ? ` - ${this.escapeHtml(paramDescription)}` : '';
-          return `<li><code>${this.escapeHtml(paramName)}</code>: <code>${this.escapeHtml(paramType)}</code>${descriptionHtml}</li>`;
+          const descriptionHtml = paramDescription.length > 0 ? ` - ${escapeHtml(paramDescription)}` : '';
+          return `<li><code>${escapeHtml(paramName)}</code>: <code>${escapeHtml(paramType)}</code>${descriptionHtml}</li>`;
         })
         .join('');
 
       sections.push(
-        `<p><strong>Schema params field:</strong> <code>${this.escapeHtml(this.buildSchemaParamsHint(params))}</code></p>`
+        `<p><strong>Schema params field:</strong> <code>${escapeHtml(this.buildSchemaParamsHint(params))}</code></p>`
       );
       sections.push(`<p><strong>Params:</strong></p><ul>${paramItems}</ul>`);
     }
 
     if (String(example || '').length > 0) {
-      sections.push(`<p><strong>Example:</strong> <code>${this.escapeHtml(example)}</code></p>`);
+      sections.push(`<p><strong>Example:</strong> <code>${escapeHtml(example)}</code></p>`);
     } else {
       sections.push('<p><strong>Example:</strong> Output depends on your selected params.</p>');
     }
 
     const docsLinkText = `Learn more: ${heading}`;
     sections.push(
-      `<p><a class="helplink" href="${this.escapeHtml(docsUrl)}" target="_blank" rel="noopener noreferrer">${this.escapeHtml(docsLinkText)}</a></p>`
+      `<p><a class="helplink" href="${escapeHtml(docsUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(docsLinkText)}</a></p>`
     );
 
     return sections.join('');

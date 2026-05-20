@@ -9,9 +9,8 @@ import { getKnownFakerCommandsAlphabetical, getKnownFakerCommandsLongestFirst } 
 import {
   getKnownDomainCommandsAlphabetical,
   getKnownDomainCommandsLongestFirst,
-  getDomainKeywordByCommand,
 } from '../../shared/domain-commands.js';
-import { getDomainCommandHelp } from '../../shared/domain-command-help-metadata.js';
+import { getVisibleDomainCommands } from '../../shared/test-data/type-option-provider.js';
 
 const FAKER_COMMANDS = [];
 const FAKER_COMMANDS_LONGEST_FIRST = [];
@@ -22,7 +21,6 @@ const FAKER_SECTION_LABEL = '-- faker (incl helpers) --';
 const FAKER_SECTION_VALUE = '__faker_section__';
 const DOMAIN_SECTION_LABEL = '-- domain (no helpers) --';
 const DOMAIN_SECTION_VALUE = '__domain_section__';
-const DOMAIN_NON_SCALAR_RETURN_TYPES = new Set(['array', 'object']);
 
 function findFakerCommand(aString) {
   for (let command of FAKER_COMMANDS_LONGEST_FIRST) {
@@ -31,45 +29,6 @@ function findFakerCommand(aString) {
     }
   }
   return null;
-}
-
-function extractDomainCommandAndParams(ruleSpec) {
-  const fullRule = String(ruleSpec || '').trim();
-  if (!fullRule) {
-    return { command: '', params: '' };
-  }
-
-  const exactKeyword = getDomainKeywordByCommand(fullRule);
-  if (exactKeyword) {
-    return {
-      command: String(exactKeyword.shortestUniqueAlias || exactKeyword.keyword || '').trim(),
-      params: '',
-    };
-  }
-
-  const openParenIndex = fullRule.indexOf('(');
-  if (openParenIndex > 0) {
-    const commandPart = fullRule.slice(0, openParenIndex).trim();
-    const commandKeyword = getDomainKeywordByCommand(commandPart);
-    if (commandKeyword) {
-      return {
-        command: String(commandKeyword.shortestUniqueAlias || commandKeyword.keyword || '').trim(),
-        params: fullRule.slice(openParenIndex),
-      };
-    }
-  }
-
-  for (let command of DOMAIN_COMMANDS_LONGEST_FIRST) {
-    if (!fullRule.startsWith(command)) {
-      continue;
-    }
-    const remainder = fullRule.slice(command.length);
-    if (remainder.length === 0 || remainder.startsWith('(')) {
-      return { command, params: remainder };
-    }
-  }
-
-  return { command: '', params: fullRule };
 }
 
 function identifyFakerCommands() {
@@ -87,28 +46,11 @@ function identifyFakerCommands() {
   getKnownDomainCommandsLongestFirst().forEach((command) => DOMAIN_COMMANDS_LONGEST_FIRST.push(command));
 }
 
-function normaliseReturnType(returnType) {
-  return String(returnType || '')
-    .trim()
-    .toLowerCase();
-}
-
-function isDomainCommandVisibleByDefault(command) {
-  const commandHelp = getDomainCommandHelp(command);
-  const returnType = normaliseReturnType(commandHelp?.returnType);
-  if (!returnType) {
-    return true;
-  }
-  return !DOMAIN_NON_SCALAR_RETURN_TYPES.has(returnType);
-}
-
 function getVisibleDomainTypeOptions(currentValue = '') {
-  const visible = getKnownDomainCommandsAlphabetical().filter((command) => isDomainCommandVisibleByDefault(command));
-  const selected = String(currentValue || '').trim();
-  if (selected && DOMAIN_COMMANDS.includes(selected) && !visible.includes(selected)) {
-    visible.push(selected);
-    visible.sort((a, b) => a.localeCompare(b));
-  }
+  const visible = getVisibleDomainCommands({
+    commands: getKnownDomainCommandsAlphabetical(),
+    currentCommand: String(currentValue || '').trim(),
+  });
   return visible.map((command) => ({ value: command, label: command }));
 }
 
@@ -158,7 +100,6 @@ export {
   FAKER_SECTION_VALUE,
   DOMAIN_SECTION_VALUE,
   findFakerCommand,
-  extractDomainCommandAndParams,
   identifyFakerCommands,
   getVisibleDomainTypeOptions,
   getTabulatorTypeEditorValues,

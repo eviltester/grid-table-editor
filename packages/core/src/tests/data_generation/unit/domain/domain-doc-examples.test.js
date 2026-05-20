@@ -1,11 +1,13 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { faker } from '@faker-js/faker';
 import { executeDomainKeyword } from '../../../../../js/domain/domain-keywords.js';
 import { parseKeywordInvocation } from '../../../../../js/domain/domain-keyword-parser.js';
 
 function readDomainDocExamples() {
-  let rootDir = process.cwd();
+  const testDir = path.dirname(fileURLToPath(import.meta.url));
+  let rootDir = testDir;
   while (rootDir && !fs.existsSync(path.join(rootDir, 'docs-src'))) {
     const parent = path.dirname(rootDir);
     if (parent === rootDir) {

@@ -6,6 +6,12 @@
  */
 
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
+import {
+  normaliseGeneratedCellValue,
+  normaliseGeneratedRow as normaliseGeneratedRowValues,
+  createTableFromGenerator as createTableFromGeneratorShared,
+  parseNonNegativeCount,
+} from '../../shared/test-data/generation-runtime.js';
 
 const TEST_DATA_MODES = Object.freeze({
   NEW_TABLE: 'new-table',
@@ -13,37 +19,12 @@ const TEST_DATA_MODES = Object.freeze({
   AMEND_SELECTED: 'amend-selected',
 });
 
-function normaliseGeneratedCellValue(value) {
-  if (value === undefined || value === null) {
-    return '';
-  }
-  if (value instanceof Date) {
-    return value.toISOString();
-  }
-  if (Array.isArray(value) || (typeof value === 'object' && value !== null)) {
-    try {
-      return JSON.stringify(value);
-    } catch {
-      return String(value);
-    }
-  }
-  return value;
-}
-
-function normaliseGeneratedRowValues(row = []) {
-  if (!Array.isArray(row)) {
-    return [];
-  }
-  return row.map((value) => normaliseGeneratedCellValue(value));
-}
-
 function createTableFromGenerator(rowCount, generator) {
-  const outputTable = new GenericDataTable();
-  outputTable.setHeaders(generator.generateHeadersArray());
-  for (let rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-    outputTable.appendDataRow(normaliseGeneratedRowValues(generator.generateRow()));
-  }
-  return outputTable;
+  return createTableFromGeneratorShared({
+    rowCount,
+    generator,
+    GenericDataTableClass: GenericDataTable,
+  });
 }
 
 function createAmendedTable({ mode, desiredRowCount, generator, currentDataTable, selectedRowIndexes = [] }) {
@@ -169,11 +150,7 @@ function normaliseSelectedIndexes(selectedRowIndexes) {
 }
 
 function normaliseCount(value) {
-  const parsed = Number.parseInt(value, 10);
-  if (!Number.isFinite(parsed)) {
-    return 0;
-  }
-  return Math.max(0, parsed);
+  return parseNonNegativeCount(value, { min: 0 }).value;
 }
 
 export { TEST_DATA_MODES, createAmendedTable, createTableFromGenerator, normaliseCount };

@@ -1,0 +1,34 @@
+import {
+  extractFakerCommandAndParams,
+  extractDomainCommandAndParams,
+} from '../../../js/gui_components/shared/test-data/command-spec-parser.js';
+
+describe('command-spec-parser', () => {
+  test('extractFakerCommandAndParams splits command and params by longest match', () => {
+    const result = extractFakerCommandAndParams('person.firstName(sex="male")', {
+      normaliseFakerCommand: (value) => String(value || '').trim(),
+      fakerCommandsLongestFirst: ['person.firstName', 'person'],
+    });
+
+    expect(result).toEqual({
+      command: 'person.firstName',
+      params: '(sex="male")',
+    });
+  });
+
+  test('extractDomainCommandAndParams resolves alias and params', () => {
+    const result = extractDomainCommandAndParams('string.counterString(2,4)', {
+      normaliseDomainCommand: (value) => String(value || '').trim(),
+      getDomainKeywordByCommand: (command) =>
+        command === 'string.counterString'
+          ? { keyword: 'string.counterString', shortestUniqueAlias: 'string.counterString' }
+          : null,
+      domainCommandsLongestFirst: ['string.counterString'],
+    });
+
+    expect(result).toEqual({
+      command: 'string.counterString',
+      params: '(2,4)',
+    });
+  });
+});

@@ -6,6 +6,7 @@
  */
 
 import { GridExtension as TabulatorGridExtension } from '../../data-grid-editor/tabulator/gridExtension-tabulator.js';
+import { createTabulatorDraftSync } from '../../shared/test-data/tabulator-draft-sync.js';
 
 function createTabulatorTypeSelectEditor({ getTabulatorTypeEditorValues, FAKER_SECTION_VALUE, DOMAIN_SECTION_VALUE }) {
   return function tabulatorTypeSelectEditor(cell, onRendered, success, cancel) {
@@ -68,47 +69,10 @@ function setupTabulatorDefnEditor({
     DOMAIN_SECTION_VALUE,
   });
 
-  let activeDefnCellEdit = null;
-  const setActiveDefnCellEdit = (value) => {
-    activeDefnCellEdit = value;
-    onDraftCellEditChange(activeDefnCellEdit);
-  };
-
-  const beginTabulatorDraftTracking = (cell) => {
-    setTimeout(() => {
-      const editorElement = cell?.getElement?.()?.querySelector?.('input, select, textarea');
-      const rowData = cell?.getRow?.()?.getData?.();
-      const field = cell?.getField?.() || cell?.getColumn?.()?.getDefinition?.()?.field;
-      if (!editorElement || !rowData || !field) {
-        return;
-      }
-
-      setActiveDefnCellEdit({
-        field,
-        rowData,
-        value: editorElement.value ?? '',
-      });
-
-      const pushDraftValueToText = () => {
-        if (activeDefnCellEdit?.rowData !== rowData || activeDefnCellEdit?.field !== field) {
-          return;
-        }
-        setActiveDefnCellEdit({
-          ...activeDefnCellEdit,
-          value: editorElement.value ?? '',
-        });
-        onSchemaChanged();
-      };
-
-      editorElement.addEventListener('input', pushDraftValueToText);
-      editorElement.addEventListener('change', pushDraftValueToText);
-      pushDraftValueToText();
-    }, 0);
-  };
-
-  const clearTabulatorDraftTracking = () => {
-    setActiveDefnCellEdit(null);
-  };
+  const { beginDraftTracking, clearDraftTracking } = createTabulatorDraftSync({
+    onDraftCellEditChange,
+    onSchemaChanged,
+  });
 
   const defnGridApi = new TabulatorCtor(tableDiv, {
     data: [],
@@ -129,7 +93,7 @@ function setupTabulatorDefnEditor({
     movableRows: true,
     columnDefaults: { resizable: true },
     cellEditing: (cell) => {
-      beginTabulatorDraftTracking(cell);
+      beginDraftTracking(cell);
     },
     cellEdited: (cell) => {
       const field = cell?.getField?.() || cell?.getColumn?.()?.getDefinition?.()?.field;
@@ -149,14 +113,14 @@ function setupTabulatorDefnEditor({
 
   tableDiv.addEventListener('focusout', () => {
     setTimeout(() => {
-      clearTabulatorDraftTracking();
+      clearDraftTracking();
       onSchemaChanged();
     }, 0);
   });
 
   tableDiv.addEventListener('change', () => {
     setTimeout(() => {
-      clearTabulatorDraftTracking();
+      clearDraftTracking();
       onSchemaChanged();
     }, 0);
   });

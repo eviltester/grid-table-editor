@@ -4,32 +4,39 @@
  * - Handles delayed status reset timing and lightweight UI-yield helper.
  */
 
-let testDataStatusResetTimeoutId = null;
+import { createStatusPresenter } from '../../shared/test-data/status-presenter.js';
+
+let testDataStatusPresenter = null;
+let testDataStatusPresenterDocument = null;
+
+function getStatusPresenter() {
+  const documentObj = typeof document !== 'undefined' ? document : null;
+  if (testDataStatusPresenter && testDataStatusPresenterDocument === documentObj) {
+    return testDataStatusPresenter;
+  }
+  if (testDataStatusPresenter && testDataStatusPresenterDocument !== documentObj) {
+    testDataStatusPresenter.clearPendingReset();
+  }
+  testDataStatusPresenter = createStatusPresenter({
+    documentObj,
+    elementId: 'testdata-status',
+    hideWhenEmpty: true,
+    visibleDisplay: 'inline-block',
+  });
+  testDataStatusPresenterDocument = documentObj;
+  return testDataStatusPresenter;
+}
 
 function setTestDataStatus(message, isLoading) {
-  const statusElement = document.getElementById('testdata-status');
-  if (!statusElement) {
-    return;
-  }
-  statusElement.textContent = message || '';
-  statusElement.style.display = message ? 'inline-block' : 'none';
-  statusElement.classList.toggle('is-loading', isLoading === true);
+  getStatusPresenter().setStatus(message, isLoading);
 }
 
 function clearPendingTestDataStatusReset() {
-  if (testDataStatusResetTimeoutId === null) {
-    return;
-  }
-  clearTimeout(testDataStatusResetTimeoutId);
-  testDataStatusResetTimeoutId = null;
+  getStatusPresenter().clearPendingReset();
 }
 
 function scheduleTestDataStatusReset(delayMs = 1800) {
-  clearPendingTestDataStatusReset();
-  testDataStatusResetTimeoutId = setTimeout(() => {
-    setTestDataStatus('', false);
-    testDataStatusResetTimeoutId = null;
-  }, delayMs);
+  getStatusPresenter().scheduleClear(delayMs);
 }
 
 function yieldToUi() {

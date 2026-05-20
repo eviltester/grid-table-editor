@@ -7,9 +7,21 @@
 
 import { GridExtension as AgGridExtension } from '../../data-grid-editor/ag-grid/gridExtension-ag-grid.js';
 import { SelectFilterEditor } from '../../data-grid-editor/ag-grid/select-filter-editor.js';
+import { createAgGridDraftSync } from '../../shared/test-data/ag-grid-draft-sync.js';
 
-function setupAgGridDefnEditor({ tableDiv, agGridLib, getAgGridTypeEditorValues, onSchemaChanged }) {
+function setupAgGridDefnEditor({
+  tableDiv,
+  agGridLib,
+  getAgGridTypeEditorValues,
+  onSchemaChanged,
+  onDraftCellEditChange,
+}) {
   const defnRowData = [];
+  const { onCellEditingStarted, onCellEditingStopped } = createAgGridDraftSync({
+    onDraftCellEditChange,
+    onSchemaChanged,
+  });
+
   const defnColumnDefs = [
     { field: 'columnName' },
     {
@@ -40,9 +52,8 @@ function setupAgGridDefnEditor({ tableDiv, agGridLib, getAgGridTypeEditorValues,
       headerCheckbox: false,
       enableClickSelection: true,
     },
-    onCellEditingStopped: () => {
-      onSchemaChanged();
-    },
+    onCellEditingStarted,
+    onCellEditingStopped,
     onRowDragEnd: () => {
       onSchemaChanged();
     },
@@ -61,7 +72,7 @@ function setupAgGridDefnEditor({ tableDiv, agGridLib, getAgGridTypeEditorValues,
     getRows: () => {
       const rows = [];
       // Respect visual order (including drag reorder) when syncing to text schema.
-      defnGridApi.forEachNodeAfterFilterAndSort((rowNode) => rows.push({ ...rowNode.data }));
+      defnGridApi.forEachNodeAfterFilterAndSort((rowNode) => rows.push(rowNode.data));
       return rows;
     },
   };

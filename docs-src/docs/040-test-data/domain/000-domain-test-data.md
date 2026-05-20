@@ -51,6 +51,8 @@ Num
 number.int(min=32, max=47)
 ```
 
+## Faker Helpers
+
 For faker helper templates and utility functions, use faker helpers:
 - [Faker Helpers](/docs/test-data/faker/helpers)
 - [fakerjs.dev/api/helpers](https://fakerjs.dev/api/helpers)

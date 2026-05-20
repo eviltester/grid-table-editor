@@ -206,6 +206,10 @@ function applyFakerArgTransform(keyword, args = []) {
 }
 
 const BUILT_IN_CUSTOM_DELEGATES = {
+  'literal.value': (executionContext = {}) => {
+    const args = Array.isArray(executionContext.args) ? executionContext.args : [];
+    return typeof args[0] === 'undefined' ? '' : args[0];
+  },
   'string.counterString': executeCustomCounterString,
 };
 

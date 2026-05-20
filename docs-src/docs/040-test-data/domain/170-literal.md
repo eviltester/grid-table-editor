@@ -19,16 +19,16 @@ Return the literal value provided by the caller.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `value` | `string\|number\|boolean` | yes | Literal value to return. |
+| `value` | `string\|number\|boolean` | no | Literal value to return. When omitted, defaults to an empty string. |
 
 Examples:
 
 ```txt
-literal.value("value")
+literal.value("Pending")
 ```
 
 ```txt
-literal.value(value="value")
+literal.value("")
 ```
 
 Example return values:

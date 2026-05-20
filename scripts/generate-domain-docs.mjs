@@ -129,7 +129,7 @@ function canExecuteInvocation(keyword, args) {
       faker,
       args,
       customDelegates: {
-        'literal.value': (context) => context.args?.[0],
+        'literal.value': (context) => context.args?.[0] ?? '',
       },
     });
     return true;

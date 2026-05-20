@@ -56,6 +56,14 @@ export class TestDataRulesCompiler {
           return;
         }
 
+        if (this.isRegexPattern(rule.ruleSpec)) {
+          const regexValue = this.extractRegexValue(rule.ruleSpec);
+          this.compilationReportLines.push(`${rule.name} is a valid 'regex': ${rule.ruleSpec}`);
+          rule.ruleSpec = regexValue;
+          rule.type = 'regex';
+          return;
+        }
+
         // Check for enum patterns first
         if (this.isEnumPattern(rule.ruleSpec)) {
           enumValidator.validate(rule);
@@ -112,6 +120,12 @@ export class TestDataRulesCompiler {
           rule.type = 'literal';
         } else {
           this.compilationReportLines.push(`Type for '${rule.name}' declared as '${rule.type}'`);
+          if (rule.type === 'literal' && this.isLiteralPattern(rule.ruleSpec)) {
+            rule.ruleSpec = this.extractLiteralValue(rule.ruleSpec);
+          }
+          if (rule.type === 'regex' && this.isRegexPattern(rule.ruleSpec)) {
+            rule.ruleSpec = this.extractRegexValue(rule.ruleSpec);
+          }
         }
       }
     });
@@ -206,13 +220,35 @@ export class TestDataRulesCompiler {
     return spec.startsWith('awd.domain.helpers.') || spec.startsWith('domain.helpers.');
   }
 
+  isRegexPattern(ruleSpec) {
+    const spec = String(ruleSpec || '').trim();
+    return /^(regex|datatype\.regex|awd\.datatype\.regex)\s*\(/i.test(spec);
+  }
+
   extractLiteralValue(ruleSpec) {
     const spec = String(ruleSpec || '').trim();
     const match = spec.match(/^(?:literal|datatype\.literal|awd\.datatype\.literal)\s*\(([\s\S]*)\)\s*$/i);
     if (!match) {
       return spec;
     }
-    return match[1];
+    const unwrapped = match[1];
+    if (unwrapped === '""' || unwrapped === "''") {
+      return '';
+    }
+    return unwrapped;
+  }
+
+  extractRegexValue(ruleSpec) {
+    const spec = String(ruleSpec || '').trim();
+    const match = spec.match(/^(?:regex|datatype\.regex|awd\.datatype\.regex)\s*\(([\s\S]*)\)\s*$/i);
+    if (!match) {
+      return spec;
+    }
+    const unwrapped = match[1];
+    if (unwrapped === '""' || unwrapped === "''") {
+      return '';
+    }
+    return unwrapped;
   }
 
   isValid() {

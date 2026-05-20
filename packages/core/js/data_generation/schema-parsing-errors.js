@@ -52,7 +52,7 @@ export class SchemaParsingErrors {
   static missingRuleDefinition(column, line) {
     return {
       code: 'missing_rule_definition',
-      message: `column ${column} requires a data definition, use 'literal()' for blank data`,
+      message: `column ${column} requires a data definition, use 'literal("")' for blank data`,
       column,
       ...(Number.isInteger(line) ? { line } : {}),
     };

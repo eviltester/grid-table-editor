@@ -204,15 +204,14 @@ describe('domain keyword delegation', () => {
     expect(result).toBe('Pending');
   });
 
-  test('blocks execution when args do not match help arg schema', () => {
-    expect(() =>
-      executeDomainKeyword('literal.value', {
-        customDelegates: {
-          'literal.value': () => 'should-not-run',
-        },
-        args: [undefined],
-      })
-    ).toThrow('Missing required argument');
+  test('allows custom literal delegate to override built-in behavior', () => {
+    const result = executeDomainKeyword('literal.value', {
+      customDelegates: {
+        'literal.value': () => 'should-run',
+      },
+      args: [undefined],
+    });
+    expect(result).toBe('should-run');
   });
 });
 

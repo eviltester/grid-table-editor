@@ -31,8 +31,11 @@ function getIntegerArg(value, argName) {
 
 function executeCustomCounterString(executionContext = {}) {
   const args = Array.isArray(executionContext.args) ? executionContext.args : [];
-  const minArg = getIntegerArg(args[0], 'min');
-  const maxArg = typeof args[1] === 'undefined' ? minArg : getIntegerArg(args[1], 'max');
+  const hasMin = typeof args[0] !== 'undefined';
+  const hasMax = typeof args[1] !== 'undefined';
+
+  const minArg = hasMin ? getIntegerArg(args[0], 'min') : 1;
+  const maxArg = hasMax ? getIntegerArg(args[1], 'max') : hasMin ? minArg : 25;
 
   const lowest = Math.max(1, Math.min(minArg, maxArg));
   const highest = Math.max(1, Math.max(minArg, maxArg));

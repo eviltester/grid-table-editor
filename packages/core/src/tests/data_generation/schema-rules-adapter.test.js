@@ -31,7 +31,7 @@ describe('schema rules adapter', () => {
     expect(result.errors).toHaveLength(1);
     expect(result.errors[0].code).toBe('missing_rule_definition');
     expect(result.errors[0].column).toBe('t1');
-    expect(result.errors[0].message).toBe("column t1 requires a data definition, use 'literal()' for blank data");
+    expect(result.errors[0].message).toBe('column t1 requires a data definition, use \'literal("")\' for blank data');
   });
 
   test('returns invalid schema pairing for comment-only schema text', () => {
@@ -52,13 +52,13 @@ describe('schema rules adapter', () => {
   test('renders data rules to schema text preserving blank literal wrapper', () => {
     const rendered = dataRulesToSchemaText({
       dataRules: [
-        { name: 't1', ruleSpec: 'literal()', comments: '' },
+        { name: 't1', ruleSpec: 'literal("")', comments: '' },
         { name: 't2', ruleSpec: 'literal(   123)', comments: '' },
       ],
     });
 
     expect(rendered.errors).toEqual([]);
-    expect(rendered.text).toBe('t1\nliteral()\nt2\nliteral(   123)');
+    expect(rendered.text).toBe('t1\nliteral("")\nt2\nliteral(   123)');
   });
 
   test('prefers schema tokens when rendering so blank lines are preserved', () => {
@@ -148,12 +148,21 @@ describe('schema rules adapter', () => {
     expect(result.dataRules).toEqual([{ name: 'A', ruleSpec: 'number.int(1,10)', comments: '', type: 'domain' }]);
   });
 
-  test('converts empty literal schema row value to literal()', () => {
+  test('converts empty literal schema row value to literal("")', () => {
     const result = schemaRowsToDataRules({
       schemaRows: [{ name: 'A', sourceType: 'literal', value: '   ' }],
     });
 
     expect(result.errors).toEqual([]);
-    expect(result.dataRules).toEqual([{ name: 'A', ruleSpec: 'literal()', comments: '', type: 'literal' }]);
+    expect(result.dataRules).toEqual([{ name: 'A', ruleSpec: 'literal("")', comments: '', type: 'literal' }]);
+  });
+
+  test('converts empty regex schema row value to regex("")', () => {
+    const result = schemaRowsToDataRules({
+      schemaRows: [{ name: 'A', sourceType: 'regex', value: '   ' }],
+    });
+
+    expect(result.errors).toEqual([]);
+    expect(result.dataRules).toEqual([{ name: 'A', ruleSpec: 'regex("")', comments: '', type: 'regex' }]);
   });
 });

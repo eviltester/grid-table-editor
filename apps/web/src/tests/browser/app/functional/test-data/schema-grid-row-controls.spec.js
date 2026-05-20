@@ -18,7 +18,7 @@ test.describe('7. Test Data Generation', () => {
 
     const schemaText = await appPage.testDataPanel.getSchemaText();
     expect(schemaText).toContain('New Column');
-    expect(schemaText).toContain('literal()');
+    expect(schemaText).toContain('literal("")');
     expectNoPageErrors(pageErrors);
   });
 

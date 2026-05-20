@@ -8,6 +8,13 @@ function runWithSeed(seed, keyword, args) {
 }
 
 describe('string.counterString domain keyword execution', () => {
+  test('executes string.counterString with defaults when no args are provided', () => {
+    const result = runWithSeed(999, 'string.counterString', []);
+    expect(result.length).toBeGreaterThanOrEqual(1);
+    expect(result.length).toBeLessThanOrEqual(25);
+    expect(result).toContain('*');
+  });
+
   test('executes string.counterString', () => {
     const result = runWithSeed(1000, 'string.counterString', [15]);
     expect(result).toBe('*3*5*7*9*12*15*');

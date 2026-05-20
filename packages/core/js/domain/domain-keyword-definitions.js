@@ -2677,14 +2677,16 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     help: {
       summary: 'Return the literal value provided by the caller.',
       docsUrl: 'https://anywaydata.com/docs/category/generating-data',
-      example: 'Pending',
+      example: '',
+      examples: ['literal.value("Pending")', 'literal.value("")'],
+      exampleReturnValues: ['Pending', ''],
       returnType: 'string',
       args: [
         {
           name: 'value',
           type: 'string|number|boolean',
-          required: true,
-          description: 'Literal value to return.',
+          required: false,
+          description: 'Literal value to return. When omitted, defaults to an empty string.',
         },
       ],
     },
@@ -4154,10 +4156,11 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary:
-        'Generates a counterstring for a random length between min and max (or fixed length when only one value is provided).',
+        'Generates a counterstring for a random length between min and max (or fixed length when only one value is provided). Defaults to min=1 and max=25 when omitted.',
       docsUrl: '/docs/test-data/counterstrings',
       example: '*3*5*7*9*12*15*',
       examples: [
+        'string.counterString()',
         'string.counterString(15)',
         'string.counterString(min=5, max=12)',
         'string.counterString(min=12, max=12, delimiter="#")',
@@ -4168,14 +4171,16 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
         {
           name: 'min',
           type: 'number',
-          required: true,
-          description: 'Minimum counterstring length. If max is omitted, min is also used as max.',
+          required: false,
+          description:
+            'Minimum counterstring length. If max is omitted and min is provided, min is also used as max. Defaults to 1 when omitted.',
         },
         {
           name: 'max',
           type: 'number',
           required: false,
-          description: 'Maximum counterstring length. If less than min, values are swapped.',
+          description:
+            'Maximum counterstring length. If less than min, values are swapped. Defaults to 25 when omitted.',
         },
         {
           name: 'delimiter',

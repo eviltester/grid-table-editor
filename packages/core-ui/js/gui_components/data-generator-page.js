@@ -119,12 +119,24 @@ function buildRuleSpecFromSchemaRow(row) {
     const literalValue = String(row?.value ?? '');
     const trimmedLiteralValue = literalValue.trim();
     if (trimmedLiteralValue.length === 0) {
-      return 'literal()';
+      return 'literal("")';
     }
     if (/^(literal|datatype\.literal|awd\.datatype\.literal)\s*\(/i.test(trimmedLiteralValue)) {
       return trimmedLiteralValue;
     }
     return `literal(${literalValue})`;
+  }
+  if (sourceType === SOURCE_TYPE_REGEX) {
+    const regexValue = String(row?.value ?? '');
+    const trimmedRegexValue = regexValue.trim();
+    const hasName = String(row?.name ?? '').trim().length > 0;
+    if (trimmedRegexValue.length === 0 && hasName) {
+      return 'regex("")';
+    }
+    if (/^(regex|datatype\.regex|awd\.datatype\.regex)\s*\(/i.test(trimmedRegexValue)) {
+      return trimmedRegexValue;
+    }
+    return regexValue;
   }
   return String(row?.value ?? '').trim();
 }
@@ -135,7 +147,24 @@ function extractLiteralValueFromRuleSpec(ruleSpec) {
   if (!match) {
     return value;
   }
-  return match[1];
+  const unwrapped = match[1];
+  if (unwrapped === '""' || unwrapped === "''") {
+    return '';
+  }
+  return unwrapped;
+}
+
+function extractRegexValueFromRuleSpec(ruleSpec) {
+  const value = String(ruleSpec ?? '');
+  const match = value.match(/^(?:regex|datatype\.regex|awd\.datatype\.regex)\s*\(([\s\S]*)\)$/i);
+  if (!match) {
+    return value;
+  }
+  const unwrapped = match[1];
+  if (unwrapped === '""' || unwrapped === "''") {
+    return '';
+  }
+  return unwrapped;
 }
 
 function schemaRowsToSpec(schemaRows) {
@@ -1184,7 +1213,7 @@ enum(active,inactive,pending)</pre>
         return;
       }
       rule.type = SOURCE_TYPE_REGEX;
-      rule.ruleSpec = buildRuleSpecFromSchemaRow(row);
+      rule.ruleSpec = extractRegexValueFromRuleSpec(buildRuleSpecFromSchemaRow(row));
     });
 
     generator.compiler.validate();
@@ -1616,6 +1645,7 @@ export {
   DataGeneratorPage,
   buildRuleSpecFromSchemaRow,
   extractLiteralValueFromRuleSpec,
+  extractRegexValueFromRuleSpec,
   schemaRowsToSpec,
   schemaRowsToSpecWithTokens,
   validateSchemaRows,

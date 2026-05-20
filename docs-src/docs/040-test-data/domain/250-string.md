@@ -93,18 +93,22 @@ Example return values:
 
 ### `string.counterString`
 
-Generates a counterstring for a random length between min and max (or fixed length when only one value is provided).
+Generates a counterstring for a random length between min and max (or fixed length when only one value is provided). Defaults to min=1 and max=25 when omitted.
 
 - Canonical: `awd.domain.string.counterString`
 - Docs: [/docs/test-data/counterstrings](/docs/test-data/counterstrings)
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `min` | `number` | yes | Minimum counterstring length. If max is omitted, min is also used as max. |
-| `max` | `number` | no | Maximum counterstring length. If less than min, values are swapped. |
+| `min` | `number` | no | Minimum counterstring length. If max is omitted and min is provided, min is also used as max. Defaults to 1 when omitted. |
+| `max` | `number` | no | Maximum counterstring length. If less than min, values are swapped. Defaults to 25 when omitted. |
 | `delimiter` | `string` | no | Delimiter character used between position markers. Defaults to "*". |
 
 Examples:
+
+```txt
+string.counterString()
+```
 
 ```txt
 string.counterString(15)

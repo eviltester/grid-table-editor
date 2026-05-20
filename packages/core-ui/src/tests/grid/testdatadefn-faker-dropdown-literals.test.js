@@ -3,7 +3,6 @@ import { faker } from '@faker-js/faker';
 import RandExp from 'randexp';
 import { TestDataGenerator } from '@anywaydata/core/data_generation/testDataGenerator.js';
 import {
-  probeCommandReturnType,
   identifyFakerCommands,
   getFakerCommands,
   getDomainCommands,
@@ -15,23 +14,6 @@ describe('Faker Dropdown Literal Commands', () => {
   beforeEach(() => {
     // Reset and reinitialize faker commands before each test
     identifyFakerCommands();
-  });
-
-  describe('probeCommandReturnType', () => {
-    it('should identify primitive-returning commands', () => {
-      const type = probeCommandReturnType('person.firstName', faker);
-      expect(type).toBe('primitive');
-    });
-
-    it('should identify object-returning commands', () => {
-      const type = probeCommandReturnType('airline.airplane', faker);
-      expect(type).toBe('object');
-    });
-
-    it('should handle commands that error gracefully', () => {
-      const type = probeCommandReturnType('nonexistent.command', faker);
-      expect(type).toBeNull();
-    });
   });
 
   describe('identifyFakerCommands and dropdown discovery', () => {

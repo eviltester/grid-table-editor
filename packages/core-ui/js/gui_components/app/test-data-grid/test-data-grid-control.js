@@ -7,9 +7,6 @@
 
 import { TestDataGenerator } from '@anywaydata/core/data_generation/testDataGenerator.js';
 import { Debouncer } from '@anywaydata/core/utils/debouncer.js';
-import { GridExtension as AgGridExtension } from '../../data-grid-editor/ag-grid/gridExtension-ag-grid.js';
-import { GridExtension as TabulatorGridExtension } from '../../data-grid-editor/tabulator/gridExtension-tabulator.js';
-import { SelectFilterEditor } from '../../data-grid-editor/ag-grid/select-filter-editor.js';
 import { TEST_DATA_MODES, createAmendedTable, createTableFromGenerator, normaliseCount } from './test-data-amend.js';
 import { schemaTextToDataRules, dataRulesToSchemaText } from '@anywaydata/core/data_generation/schema-rules-adapter.js';
 import { TimedErrorDisplay } from '../../shared/timed-error-display.js';
@@ -46,6 +43,8 @@ import {
   yieldToUi,
 } from './test-data-ui-status.js';
 import { createTestDataGenerationService } from './test-data-generation-service.js';
+import { setupAgGridDefnEditor } from './test-data-grid-ag-grid-editor.js';
+import { setupTabulatorDefnEditor } from './test-data-grid-tabulator-editor.js';
 
 import { faker } from 'https://cdn.skypack.dev/@faker-js/faker@v9.7.0';
 
@@ -198,7 +197,6 @@ function createTestDataGrid() {
 }
 
 // todo: this all really needs to be wrapped in a class
-var defnGridOptions;
 var defnGridApi;
 var defnGridExtras;
 var defnGridBridge;
@@ -296,85 +294,6 @@ function mapDataRuleToGridRow(rule, leadingTextLines = []) {
   return data;
 }
 
-/**
- * Helper function to safely probe a faker command and detect its return type.
- * Used during dropdown discovery to identify commands that return objects (unsuitable for literals).
- * @param {string} command - The faker command (e.g., 'airline.airplane')
- * @param {object} fakerLib - The faker library instance
- * @returns {string|null} 'primitive' if returns primitive, 'object' if returns object, null if error
- * @deprecated - This function is kept for backward compatibility but is no longer used
- */
-function probeCommandReturnType(command, fakerLib) {
-  try {
-    // Execute command with no arguments, e.g., `faker.airline.airplane()`
-    const fakerPrefix = 'this.';
-    const commandToRun = `return ${fakerPrefix}${command}()`;
-    const result = Function(commandToRun).bind(fakerLib)();
-
-    // Classify return type
-    const typeOfResult = typeof result;
-    if (
-      typeOfResult === 'string' ||
-      typeOfResult === 'number' ||
-      typeOfResult === 'boolean' ||
-      typeOfResult === 'bigint'
-    ) {
-      return 'primitive';
-    }
-    if (typeOfResult === 'object' && result !== null && !(result instanceof Date) && !Array.isArray(result)) {
-      return 'object';
-    }
-    return null; // null, undefined, function, or other unsupported type
-  } catch {
-    // Silently skip commands that error during probing
-    return null;
-  }
-}
-
-function tabulatorTypeSelectEditor(cell, onRendered, success, cancel) {
-  const editor = document.createElement('select');
-  editor.style.width = '100%';
-  editor.style.boxSizing = 'border-box';
-  let completed = false;
-
-  const values = getTabulatorTypeEditorValues(cell.getValue());
-  values.forEach((entry) => {
-    const option = document.createElement('option');
-    option.value = entry.value;
-    option.textContent = entry.label;
-    if (entry.value === FAKER_SECTION_VALUE || entry.value === DOMAIN_SECTION_VALUE) {
-      option.disabled = true;
-    }
-    editor.appendChild(option);
-  });
-
-  const currentValue = String(cell.getValue() ?? '').trim();
-  editor.value = currentValue;
-
-  onRendered(() => {
-    editor.focus();
-  });
-
-  const finishEdit = () => {
-    if (completed) {
-      return;
-    }
-    const selectedValue = String(editor.value ?? '').trim();
-    if (selectedValue === FAKER_SECTION_VALUE || selectedValue === DOMAIN_SECTION_VALUE) {
-      completed = true;
-      cancel();
-      return;
-    }
-    completed = true;
-    success(selectedValue);
-  };
-
-  editor.addEventListener('change', finishEdit);
-  editor.addEventListener('blur', finishEdit);
-
-  return editor;
-}
-
 function setupTestDataEditGrid(gridDiv) {
   const tableDiv = document.createElement('div');
   tableDiv.style.height = '160px';
@@ -390,9 +309,30 @@ function setupTestDataEditGrid(gridDiv) {
   gridDiv.appendChild(deleteRowsButton);
 
   if (typeof agGrid !== 'undefined' && typeof agGrid.createGrid === 'function') {
-    setupAgGridDefnEditor(tableDiv);
+    const setupResult = setupAgGridDefnEditor({
+      tableDiv,
+      agGridLib: agGrid,
+      getAgGridTypeEditorValues,
+      onSchemaChanged: convertGridToText,
+    });
+    defnGridApi = setupResult.defnGridApi;
+    defnGridExtras = setupResult.defnGridExtras;
+    defnGridBridge = setupResult.defnGridBridge;
   } else if (typeof Tabulator !== 'undefined') {
-    setupTabulatorDefnEditor(tableDiv);
+    const setupResult = setupTabulatorDefnEditor({
+      tableDiv,
+      TabulatorCtor: Tabulator,
+      getTabulatorTypeEditorValues,
+      FAKER_SECTION_VALUE,
+      DOMAIN_SECTION_VALUE,
+      onSchemaChanged: convertGridToText,
+      onDraftCellEditChange: (draftCellEdit) => {
+        activeDefnCellEdit = draftCellEdit;
+      },
+    });
+    defnGridApi = setupResult.defnGridApi;
+    defnGridExtras = setupResult.defnGridExtras;
+    defnGridBridge = setupResult.defnGridBridge;
   } else {
     console.warn('No supported grid library loaded; test data definition grid editor disabled.');
     return;
@@ -413,162 +353,6 @@ function setupTestDataEditGrid(gridDiv) {
     defnGridExtras.deleteSelectedRows();
     convertGridToText();
   });
-}
-
-function setupAgGridDefnEditor(tableDiv) {
-  const defnRowData = [];
-  const defnColumnDefs = [
-    { field: 'columnName' },
-    {
-      field: 'type',
-      cellEditor: SelectFilterEditor,
-      cellEditorParams: (params) => ({ values: getAgGridTypeEditorValues(params?.value) }),
-    },
-    { field: 'value' },
-  ];
-
-  defnGridOptions = {
-    columnDefs: defnColumnDefs,
-    rowData: defnRowData,
-    defaultColDef: {
-      wrapText: true,
-      autoHeight: true,
-      resizable: true,
-      editable: true,
-      rowDrag: true,
-      sortable: false,
-    },
-    suppressMovableColumns: true,
-    rowDragManaged: true,
-    rowDragMultiRow: true,
-    rowSelection: {
-      mode: 'multiRow',
-      checkboxes: false,
-      headerCheckbox: false,
-      enableClickSelection: true,
-    },
-    onCellEditingStopped: () => {
-      convertGridToText();
-    },
-    onRowDragEnd: () => {
-      convertGridToText();
-    },
-  };
-
-  tableDiv.classList.add('ag-theme-alpine');
-  defnGridApi = agGrid.createGrid(tableDiv, defnGridOptions);
-  defnGridExtras = new AgGridExtension(defnGridApi);
-  defnGridBridge = {
-    clearRows: () => defnGridApi.setGridOption('rowData', []),
-    addRows: (rows) => {
-      if (rows && rows.length > 0) {
-        defnGridApi.applyTransaction({ add: rows });
-      }
-    },
-    getRows: () => {
-      const rows = [];
-      // Respect the current visual order (including row drag reorder) when syncing to text schema.
-      defnGridApi.forEachNodeAfterFilterAndSort((rowNode) => rows.push({ ...rowNode.data }));
-      return rows;
-    },
-  };
-}
-
-function setupTabulatorDefnEditor(tableDiv) {
-  defnGridApi = new Tabulator(tableDiv, {
-    data: [],
-    layout: 'fitColumns',
-    columns: [
-      { title: 'columnName', field: 'columnName', editor: 'input', headerSort: false, widthGrow: 1 },
-      {
-        title: 'type',
-        field: 'type',
-        editor: tabulatorTypeSelectEditor,
-        headerSort: false,
-        widthGrow: 1,
-      },
-      { title: 'value', field: 'value', editor: 'input', headerSort: false, widthGrow: 2 },
-    ],
-    selectableRows: true,
-    selectableRowsRangeMode: 'click',
-    movableRows: true,
-    columnDefaults: { resizable: true },
-    cellEditing: (cell) => {
-      beginTabulatorDraftTracking(cell);
-    },
-    cellEdited: (cell) => {
-      const field = cell?.getField?.() || cell?.getColumn?.()?.getDefinition?.()?.field;
-      if (field === 'type') {
-        const selectedValue = String(cell?.getValue?.() ?? '').trim();
-        if (selectedValue === FAKER_SECTION_VALUE) {
-          const previousValue = cell?.getOldValue?.();
-          cell?.setValue?.(previousValue || '', true);
-        }
-      }
-      convertGridToText();
-    },
-    rowMoved: () => {
-      convertGridToText();
-    },
-  });
-
-  tableDiv.addEventListener('focusout', () => {
-    setTimeout(() => {
-      clearTabulatorDraftTracking();
-      convertGridToText();
-    }, 0);
-  });
-
-  tableDiv.addEventListener('change', () => {
-    setTimeout(() => {
-      clearTabulatorDraftTracking();
-      convertGridToText();
-    }, 0);
-  });
-
-  defnGridExtras = new TabulatorGridExtension(defnGridApi);
-  defnGridBridge = {
-    clearRows: () => defnGridApi.setData([]),
-    addRows: (rows) => {
-      if (rows && rows.length > 0) {
-        defnGridApi.addData(rows);
-      }
-    },
-    getRows: () => defnGridApi.getData(),
-  };
-}
-
-function beginTabulatorDraftTracking(cell) {
-  setTimeout(() => {
-    const editorElement = cell?.getElement?.()?.querySelector?.('input, select, textarea');
-    const rowData = cell?.getRow?.()?.getData?.();
-    const field = cell?.getField?.() || cell?.getColumn?.()?.getDefinition?.()?.field;
-    if (!editorElement || !rowData || !field) {
-      return;
-    }
-
-    activeDefnCellEdit = {
-      field,
-      rowData,
-      value: editorElement.value ?? '',
-    };
-
-    const pushDraftValueToText = () => {
-      if (activeDefnCellEdit?.rowData !== rowData || activeDefnCellEdit?.field !== field) {
-        return;
-      }
-      activeDefnCellEdit.value = editorElement.value ?? '';
-      convertGridToText();
-    };
-
-    editorElement.addEventListener('input', pushDraftValueToText);
-    editorElement.addEventListener('change', pushDraftValueToText);
-    pushDraftValueToText();
-  }, 0);
-}
-
-function clearTabulatorDraftTracking() {
-  activeDefnCellEdit = null;
 }
 
 function convertGridToText() {
@@ -778,7 +562,6 @@ function enableTestDataGenerationInterface(parentId, anImporter, aTextPreviewRen
 
 export {
   enableTestDataGenerationInterface,
-  probeCommandReturnType,
   identifyFakerCommands,
   getFakerCommands,
   getDomainCommands,

@@ -1,4 +1,4 @@
-import { showConfirmModal } from '../modal-confirm.js';
+import { showConfirmModal } from '../shared/modal-confirm.js';
 
 class GridControlsPageMap {
   constructor() {

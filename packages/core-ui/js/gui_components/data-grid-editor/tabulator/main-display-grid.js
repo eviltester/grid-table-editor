@@ -2,7 +2,7 @@ import { GridExtension } from './gridExtension-tabulator.js';
 import { GridControl, GridControlsPageMap, shouldEnforceUniqueColumnNames } from '../gridControl.js';
 import { GuardedColumnEdits } from '../../../grid/guarded-column-edits.js';
 import { showGridError } from '../grid-error-surface.js';
-import { showTextInputModal } from '../../modal-text-input.js';
+import { showTextInputModal } from '../../shared/modal-text-input.js';
 
 /*
     Grid Features Used:

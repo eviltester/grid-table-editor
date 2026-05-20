@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
-import { enableTestDataGenerationInterface } from '../../../js/gui_components/testdatadefn.js';
+import { enableTestDataGenerationInterface } from '../../../js/gui_components/app/test-data-grid-control.js';
 
 describe('test data definition editor engine compatibility', () => {
   let dom;

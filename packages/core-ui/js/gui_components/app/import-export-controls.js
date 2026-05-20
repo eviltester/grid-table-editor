@@ -1,10 +1,10 @@
 import { ExportControls } from './exportControls.js';
 import { DragDropControl } from './drag-drop-control.js';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
-import { sanitizeUiOptionsForFormat } from './options-catalog-adapter.js';
-import { createOptionsPanelsForParent } from './options-ui-schema.js';
-import { TimedErrorDisplay } from './timed-error-display.js';
-import { showConfirmModal } from './modal-confirm.js';
+import { sanitizeUiOptionsForFormat } from '../generator/options-catalog-adapter.js';
+import { createOptionsPanelsForParent } from '../generator/options-ui-schema.js';
+import { TimedErrorDisplay } from '../shared/timed-error-display.js';
+import { showConfirmModal } from '../shared/modal-confirm.js';
 
 class ImportExportControls {
   constructor({ requestConfirm } = {}) {

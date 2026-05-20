@@ -1,8 +1,8 @@
 import { ensureGridLibraryLoaded } from './gui_components/data-grid-editor/grid-library-loader.js';
-import { DataGeneratorPage } from './gui_components/data-generator-page.js';
+import { DataGeneratorPage } from './gui_components/generator/data-generator-page.js';
 import { faker } from '@faker-js/faker';
 import { initHelpTooltips } from './help/help-tooltips.js';
-import { initThemeToggle } from './gui_components/theme-toggle.js';
+import { initThemeToggle } from './gui_components/shared/theme-toggle.js';
 
 async function bootstrapGeneratorPage({
   documentObj = document,

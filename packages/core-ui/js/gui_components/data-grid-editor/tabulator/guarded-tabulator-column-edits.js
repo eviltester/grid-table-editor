@@ -1,5 +1,5 @@
-import { showTextInputModal } from '../../modal-text-input.js';
-import { showConfirmModal } from '../../modal-confirm.js';
+import { showTextInputModal } from '../../shared/modal-text-input.js';
+import { showConfirmModal } from '../../shared/modal-confirm.js';
 
 class GuardedTabulatorColumnEdits {
   constructor(gridExtension, { surfaceError, requestTextInput, requestConfirm, shouldEnforceUniqueNames } = {}) {

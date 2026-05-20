@@ -3,7 +3,7 @@ import {
   TEST_DATA_MODES,
   createAmendedTable,
   createTableFromGenerator,
-} from '../../../js/gui_components/test-data-amend.js';
+} from '../../../js/gui_components/app/test-data-amend.js';
 
 function createGenerator(headers, rows) {
   let cursor = 0;

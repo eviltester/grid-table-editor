@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
-import { DragDropControl } from '../../../js/gui_components/drag-drop-control.js';
+import { DragDropControl } from '../../../js/gui_components/app/drag-drop-control.js';
 
 describe('DragDropControl', () => {
   let dom;

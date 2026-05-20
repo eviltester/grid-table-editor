@@ -1,4 +1,4 @@
-import { TimedErrorDisplay } from '../timed-error-display.js';
+import { TimedErrorDisplay } from '../shared/timed-error-display.js';
 
 const GRID_ERROR_ELEMENT_ID = 'grid-column-error';
 const sharedGridErrorDisplaysByDocument = new WeakMap();

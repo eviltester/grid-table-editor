@@ -7,19 +7,19 @@ import {
   schemaRowsToDataRules,
 } from '@anywaydata/core/data_generation/schema-rules-adapter.js';
 import { Exporter } from '@anywaydata/core/grid/exporter.js';
-import { Download } from './download.js';
-import { GridExtension as TabulatorGridExtension } from './data-grid-editor/tabulator/gridExtension-tabulator.js';
+import { Download } from '../shared/download.js';
+import { GridExtension as TabulatorGridExtension } from '../data-grid-editor/tabulator/gridExtension-tabulator.js';
 import { sanitizeUiOptionsForFormat } from './options-catalog-adapter.js';
 import { createOptionsPanelsForParent, getOutputFormatGroups } from './options-ui-schema.js';
-import { getKnownFakerCommandsAlphabetical, getKnownFakerCommandsLongestFirst } from './faker-commands.js';
-import { getFakerCommandHelp } from './faker-command-help-metadata.js';
+import { getKnownFakerCommandsAlphabetical, getKnownFakerCommandsLongestFirst } from '../shared/faker-commands.js';
+import { getFakerCommandHelp } from '../shared/faker-command-help-metadata.js';
 import {
   getKnownDomainCommandsAlphabetical,
   getKnownDomainCommandsLongestFirst,
   getDomainKeywordByCommand,
-} from './domain-commands.js';
-import { getDomainCommandHelp } from './domain-command-help-metadata.js';
-import { TimedErrorDisplay } from './timed-error-display.js';
+} from '../shared/domain-commands.js';
+import { getDomainCommandHelp } from '../shared/domain-command-help-metadata.js';
+import { TimedErrorDisplay } from '../shared/timed-error-display.js';
 import {
   SOURCE_TYPE_FAKER,
   SOURCE_TYPE_DOMAIN,
@@ -33,7 +33,7 @@ import {
   extractLiteralValueFromRuleSpec,
   extractRegexValueFromRuleSpec,
   buildDataRuleFromSchemaRow,
-} from './schema-row-rule-mapper.js';
+} from '../shared/schema-row-rule-mapper.js';
 
 const REGEX_HELP_URL = 'https://anywaydata.com/docs/test-data/regex-test-data';
 const FAKER_HELP_URL = 'https://anywaydata.com/docs/test-data/faker-test-data';

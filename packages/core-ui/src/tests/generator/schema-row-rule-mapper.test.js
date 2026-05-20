@@ -11,7 +11,7 @@ import {
   extractLiteralValueFromRuleSpec,
   extractRegexValueFromRuleSpec,
   buildDataRuleFromSchemaRow,
-} from '../../../js/gui_components/schema-row-rule-mapper.js';
+} from '../../../js/gui_components/shared/schema-row-rule-mapper.js';
 
 describe('schema-row-rule-mapper', () => {
   test('exports source type constants', () => {

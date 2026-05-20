@@ -1,5 +1,5 @@
 import { JSDOM } from 'jsdom';
-import { showTextInputModal } from '../../../js/gui_components/modal-text-input.js';
+import { showTextInputModal } from '../../../js/gui_components/shared/modal-text-input.js';
 
 describe('showTextInputModal', () => {
   let dom;

@@ -1,13 +1,13 @@
 import { Importer } from '@anywaydata/core/grid/importer.js';
 import { Exporter } from '@anywaydata/core/grid/exporter.js';
-import { enableTestDataGenerationInterface } from './gui_components/testdatadefn.js';
+import { enableTestDataGenerationInterface } from './gui_components/app/test-data-grid-control.js';
 import { ExtendedDataGrid, activeGridEngine } from './gui_components/data-grid-editor/main-display-grid.js';
 import { ensureGridLibraryLoaded } from './gui_components/data-grid-editor/grid-library-loader.js';
-import { TabbedTextControl } from './gui_components/tabbed-text-control.js';
-import { ImportExportControls } from './gui_components/import-export-controls.js';
+import { TabbedTextControl } from './gui_components/app/tabbed-text-control.js';
+import { ImportExportControls } from './gui_components/app/import-export-controls.js';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 import { initHelpTooltips } from './help/help-tooltips.js';
-import { initThemeToggle } from './gui_components/theme-toggle.js';
+import { initThemeToggle } from './gui_components/shared/theme-toggle.js';
 
 var importer, exporter;
 var mainDataGrid;

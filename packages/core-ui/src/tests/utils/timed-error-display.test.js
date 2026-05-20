@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
-import { TimedErrorDisplay } from '../../../js/gui_components/timed-error-display.js';
+import { TimedErrorDisplay } from '../../../js/gui_components/shared/timed-error-display.js';
 
 describe('TimedErrorDisplay', () => {
   let dom;

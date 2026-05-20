@@ -1,4 +1,4 @@
-import { getCodeLanguageSubtasks, getUnitTestLanguageSubtasks } from './options-catalog-adapter.js';
+import { getCodeLanguageSubtasks, getUnitTestLanguageSubtasks } from '../generator/options-catalog-adapter.js';
 
 class TabbedTextControl {
   constructor(parentElement, theImportExportControls) {

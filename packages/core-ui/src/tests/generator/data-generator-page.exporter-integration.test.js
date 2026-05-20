@@ -2,7 +2,7 @@ import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
 import { faker } from '@faker-js/faker';
 import RandExp from 'randexp';
-import { DataGeneratorPage } from '../../../js/gui_components/data-generator-page.js';
+import { DataGeneratorPage } from '../../../js/gui_components/generator/data-generator-page.js';
 import { Exporter } from '../../../../core/js/grid/exporter.js';
 import { TestDataGenerator } from '../../../../core/js/data_generation/testDataGenerator.js';
 

@@ -65,7 +65,7 @@ describe('script module initialization', () => {
         }
       },
     }));
-    jest.unstable_mockModule('../../../../../packages/core-ui/js/gui_components/testdatadefn.js', () => ({
+    jest.unstable_mockModule('../../../../../packages/core-ui/js/gui_components/app/test-data-grid-control.js', () => ({
       enableTestDataGenerationInterface,
     }));
     jest.unstable_mockModule(
@@ -87,12 +87,12 @@ describe('script module initialization', () => {
         ensureGridLibraryLoaded,
       })
     );
-    jest.unstable_mockModule('../../../../../packages/core-ui/js/gui_components/tabbed-text-control.js', () => ({
+    jest.unstable_mockModule('../../../../../packages/core-ui/js/gui_components/app/tabbed-text-control.js', () => ({
       TabbedTextControl: class TabbedTextControl {
         addToGui() {}
       },
     }));
-    jest.unstable_mockModule('../../../../../packages/core-ui/js/gui_components/import-export-controls.js', () => ({
+    jest.unstable_mockModule('../../../../../packages/core-ui/js/gui_components/app/import-export-controls.js', () => ({
       ImportExportControls: class ImportExportControls {
         addHTMLtoGui = addHTMLtoGui;
         setExporter = setExporter;

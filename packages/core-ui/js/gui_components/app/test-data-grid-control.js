@@ -22,21 +22,21 @@
 
 import { TestDataGenerator } from '@anywaydata/core/data_generation/testDataGenerator.js';
 import { Debouncer } from '@anywaydata/core/utils/debouncer.js';
-import { GridExtension as AgGridExtension } from './data-grid-editor/ag-grid/gridExtension-ag-grid.js';
-import { GridExtension as TabulatorGridExtension } from './data-grid-editor/tabulator/gridExtension-tabulator.js';
-import { SelectFilterEditor } from './data-grid-editor/ag-grid/select-filter-editor.js';
+import { GridExtension as AgGridExtension } from '../data-grid-editor/ag-grid/gridExtension-ag-grid.js';
+import { GridExtension as TabulatorGridExtension } from '../data-grid-editor/tabulator/gridExtension-tabulator.js';
+import { SelectFilterEditor } from '../data-grid-editor/ag-grid/select-filter-editor.js';
 import { TEST_DATA_MODES, createAmendedTable, createTableFromGenerator, normaliseCount } from './test-data-amend.js';
-import { getKnownFakerCommandsAlphabetical, getKnownFakerCommandsLongestFirst } from './faker-commands.js';
+import { getKnownFakerCommandsAlphabetical, getKnownFakerCommandsLongestFirst } from '../shared/faker-commands.js';
 import {
   getKnownDomainCommandsAlphabetical,
   getKnownDomainCommandsLongestFirst,
   getDomainKeywordByCommand,
-} from './domain-commands.js';
-import { getDomainCommandHelp } from './domain-command-help-metadata.js';
+} from '../shared/domain-commands.js';
+import { getDomainCommandHelp } from '../shared/domain-command-help-metadata.js';
 import { PairwiseTestDataGenerator } from '@anywaydata/core/data_generation/all-pairs/pairwiseTestDataGenerator.js';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 import { schemaTextToDataRules, dataRulesToSchemaText } from '@anywaydata/core/data_generation/schema-rules-adapter.js';
-import { TimedErrorDisplay } from './timed-error-display.js';
+import { TimedErrorDisplay } from '../shared/timed-error-display.js';
 import {
   SOURCE_TYPE_FAKER,
   SOURCE_TYPE_DOMAIN,
@@ -47,7 +47,7 @@ import {
   extractLiteralValueFromRuleSpec,
   extractRegexValueFromRuleSpec,
   normaliseFakerCommand,
-} from './schema-row-rule-mapper.js';
+} from '../shared/schema-row-rule-mapper.js';
 
 import { faker } from 'https://cdn.skypack.dev/@faker-js/faker@v9.7.0';
 

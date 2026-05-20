@@ -1,8 +1,8 @@
-import { KNOWN_FAKER_COMMANDS } from '../../../js/gui_components/faker-commands.js';
+import { KNOWN_FAKER_COMMANDS } from '../../../js/gui_components/shared/faker-commands.js';
 import {
   FAKER_COMMAND_HELP_METADATA,
   getFakerCommandHelp,
-} from '../../../js/gui_components/faker-command-help-metadata.js';
+} from '../../../js/gui_components/shared/faker-command-help-metadata.js';
 
 describe('faker command help metadata', () => {
   test('contains help entries for all curated faker commands', () => {

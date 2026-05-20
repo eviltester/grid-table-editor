@@ -1,4 +1,4 @@
-import { Download } from './download.js';
+import { Download } from '../shared/download.js';
 
 class ExportsPageMap {
   constructor() {

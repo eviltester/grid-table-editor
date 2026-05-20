@@ -10,9 +10,9 @@ import {
   schemaRowsToSpec,
   schemaRowsToSpecWithTokens,
   validateSchemaRows,
-} from '../../../js/gui_components/data-generator-page.js';
+} from '../../../js/gui_components/generator/data-generator-page.js';
 import { TestDataGenerator } from '../../../../core/js/data_generation/testDataGenerator.js';
-import { getOutputFormatGroups } from '../../../js/gui_components/options-ui-schema.js';
+import { getOutputFormatGroups } from '../../../js/gui_components/generator/options-ui-schema.js';
 
 class FakeTabulator {
   constructor(element, options) {

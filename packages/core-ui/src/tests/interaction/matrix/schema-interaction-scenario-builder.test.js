@@ -1,10 +1,10 @@
-import { getFakerCommandHelp } from '../../../js/gui_components/shared/faker-command-help-metadata.js';
+import { getFakerCommandHelp } from '../../../../js/gui_components/shared/faker-command-help-metadata.js';
 import {
   getKnownDomainCommandsAlphabetical,
   getDomainKeywordByCommand,
-} from '../../../js/gui_components/shared/domain-commands.js';
-import { getVisibleDomainCommands } from '../../../js/gui_components/shared/test-data/help/index.js';
-import { getDomainCommandHelp } from '../../../js/gui_components/shared/domain-command-help-metadata.js';
+} from '../../../../js/gui_components/shared/domain-commands.js';
+import { getVisibleDomainCommands } from '../../../../js/gui_components/shared/test-data/help/index.js';
+import { getDomainCommandHelp } from '../../../../js/gui_components/shared/domain-command-help-metadata.js';
 import {
   buildSchemaInteractionScenarios,
   buildScenarioCoverageSummary,

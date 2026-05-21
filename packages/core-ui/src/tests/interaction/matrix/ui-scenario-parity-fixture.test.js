@@ -5,11 +5,11 @@ import { probeUiScenarioParity } from './support/ui-scenario-parity.js';
 
 const matrixFixturePath = join(
   process.cwd(),
-  'packages/core-ui/src/tests/interaction/fixtures/schema-interaction-matrix.json'
+  'packages/core-ui/src/tests/interaction/matrix/fixtures/schema-interaction-matrix.json'
 );
 const parityFixturePath = join(
   process.cwd(),
-  'packages/core-ui/src/tests/interaction/fixtures/ui-scenario-parity.json'
+  'packages/core-ui/src/tests/interaction/matrix/fixtures/ui-scenario-parity.json'
 );
 
 const parityFixtureTest = process.env.WRITE_UI_SCENARIO_PARITY === '1' ? test : test.skip;

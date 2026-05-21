@@ -18,7 +18,7 @@ import { normaliseMultilineText } from './support/ui-scenario-parity.js';
 
 const fixturePath = join(
   process.cwd(),
-  'packages/core-ui/src/tests/interaction/fixtures/schema-interaction-matrix.json'
+  'packages/core-ui/src/tests/interaction/matrix/fixtures/schema-interaction-matrix.json'
 );
 const scenarios = JSON.parse(readFileSync(fixturePath, 'utf8')).uiScenarios;
 const CHUNK_SIZE = 20;

@@ -53,6 +53,7 @@ function populateGridFromSchemaText({
     return;
   }
 
+  state.schemaErrorDisplay?.clear?.();
   schemaGridBridge.clearRows();
   state.schemaTextTokens = Array.isArray(parseResult.tokens) ? parseResult.tokens : [];
   schemaGridBridge.addRows(parseResult.rows);

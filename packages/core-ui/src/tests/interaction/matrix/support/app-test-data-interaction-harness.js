@@ -1,10 +1,10 @@
 import { fireEvent, within, waitFor } from '@testing-library/dom';
 import RandExp from 'randexp';
 import { Exporter } from '@anywaydata/core/grid/exporter.js';
-import { createTestDataGridControl } from '../../../../js/gui_components/app/test-data-grid/index.js';
-import { installDomGlobals, cleanupDomGlobals } from './testing-library-dom-setup.js';
+import { createTestDataGridControl } from '../../../../../js/gui_components/app/test-data-grid/index.js';
+import { installDomGlobals, cleanupDomGlobals } from '../../support/testing-library-dom-setup.js';
 import { applyDeterministicScenarioSeed, withDeterministicScenarioSeed } from './deterministic-scenario-seed.js';
-import { assertDataTableHasNoErrorIndicators, assertNoErrorIndicators } from './generated-value-quality.js';
+import { assertDataTableHasNoErrorIndicators, assertNoErrorIndicators } from '../../support/generated-value-quality.js';
 
 class ImmediateDebouncer {
   debounce(_name, callback) {

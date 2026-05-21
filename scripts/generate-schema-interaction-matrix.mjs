@@ -8,8 +8,8 @@ import {
   schemaRowsToDataRules,
   dataRulesToSchemaText,
 } from '../packages/core/js/data_generation/schema-rules-adapter.js';
-import { buildSchemaInteractionScenarios } from '../packages/core-ui/src/tests/interaction/support/schema-interaction-scenario-builder.js';
-import { renderMatrixSummaryMarkdown } from '../packages/core-ui/src/tests/interaction/support/schema-interaction-matrix-report.js';
+import { buildSchemaInteractionScenarios } from '../packages/core-ui/src/tests/interaction/matrix/support/schema-interaction-scenario-builder.js';
+import { renderMatrixSummaryMarkdown } from '../packages/core-ui/src/tests/interaction/matrix/support/schema-interaction-matrix-report.js';
 import { getFakerCommandHelp } from '../packages/core-ui/js/gui_components/shared/faker-command-help-metadata.js';
 import { getDomainCommandHelp } from '../packages/core-ui/js/gui_components/shared/domain-command-help-metadata.js';
 import {
@@ -57,12 +57,12 @@ const payload = {
 };
 
 writeFileSync(
-  './packages/core-ui/src/tests/interaction/fixtures/schema-interaction-matrix.json',
+  './packages/core-ui/src/tests/interaction/matrix/fixtures/schema-interaction-matrix.json',
   JSON.stringify(payload, null, 2)
 );
 
 writeFileSync(
-  './packages/core-ui/src/tests/interaction/fixtures/schema-interaction-matrix-summary.md',
+  './packages/core-ui/src/tests/interaction/matrix/fixtures/schema-interaction-matrix-summary.md',
   renderMatrixSummaryMarkdown({
     generatedAt,
     coverageScenarios,
@@ -74,7 +74,7 @@ writeFileSync(
 );
 
 function loadUiParityByScenarioId() {
-  const parityFixturePath = './packages/core-ui/src/tests/interaction/fixtures/ui-scenario-parity.json';
+  const parityFixturePath = './packages/core-ui/src/tests/interaction/matrix/fixtures/ui-scenario-parity.json';
   if (!existsSync(parityFixturePath)) {
     return {};
   }

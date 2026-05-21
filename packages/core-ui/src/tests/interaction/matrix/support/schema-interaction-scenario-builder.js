@@ -1,5 +1,5 @@
-import { getKnownFakerCommandsAlphabetical } from '../../../../js/gui_components/shared/faker-commands.js';
-import { getFakerCommandHelp } from '../../../../js/gui_components/shared/faker-command-help-metadata.js';
+import { getKnownFakerCommandsAlphabetical } from '../../../../../js/gui_components/shared/faker-commands.js';
+import { getFakerCommandHelp } from '../../../../../js/gui_components/shared/faker-command-help-metadata.js';
 import { faker } from '@faker-js/faker';
 import RandExp from 'randexp';
 import { TestDataGenerator } from '@anywaydata/core/data_generation/testDataGenerator.js';
@@ -8,14 +8,17 @@ import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-tab
 import {
   getKnownDomainCommandsAlphabetical,
   getDomainKeywordByCommand,
-} from '../../../../js/gui_components/shared/domain-commands.js';
-import { getVisibleDomainCommands } from '../../../../js/gui_components/shared/test-data/help/index.js';
-import { getDomainCommandHelp } from '../../../../js/gui_components/shared/domain-command-help-metadata.js';
+} from '../../../../../js/gui_components/shared/domain-commands.js';
+import { getVisibleDomainCommands } from '../../../../../js/gui_components/shared/test-data/help/index.js';
+import { getDomainCommandHelp } from '../../../../../js/gui_components/shared/domain-command-help-metadata.js';
 import {
   createConfiguredGeneratorFromSchemaRows,
   createPreviewDataTable,
-} from '../../../../js/gui_components/shared/test-data/generation/index.js';
-import { validateSchemaRows, schemaRowsToSpec } from '../../../../js/gui_components/shared/test-data/schema/index.js';
+} from '../../../../../js/gui_components/shared/test-data/generation/index.js';
+import {
+  validateSchemaRows,
+  schemaRowsToSpec,
+} from '../../../../../js/gui_components/shared/test-data/schema/index.js';
 import {
   SOURCE_TYPE_ENUM,
   SOURCE_TYPE_LITERAL,
@@ -24,7 +27,7 @@ import {
   SOURCE_TYPE_DOMAIN,
   buildRuleSpecFromSchemaRow,
   buildDataRuleFromSchemaRow,
-} from '../../../../js/gui_components/shared/schema-row-rule-mapper.js';
+} from '../../../../../js/gui_components/shared/schema-row-rule-mapper.js';
 import { schemaRowsToDataRules, dataRulesToSchemaText } from '@anywaydata/core/data_generation/schema-rules-adapter.js';
 
 const CUSTOM_SOURCE_TYPES = [

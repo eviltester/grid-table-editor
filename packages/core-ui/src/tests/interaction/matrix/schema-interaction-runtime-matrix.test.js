@@ -28,17 +28,17 @@ import {
 } from '@anywaydata/core/data_generation/schema-rules-adapter.js';
 import { buildExpectedSchemaText } from './support/schema-interaction-scenario-builder.js';
 import { buildChunkDescriptors, formatCommandsForConsole } from './support/schema-interaction-matrix-report.js';
-import { assertScenarioDataQuality } from './support/generated-value-quality.js';
+import { assertScenarioDataQuality } from '../support/generated-value-quality.js';
 import {
   createConfiguredGeneratorFromSchemaRows,
   createPreviewDataTable,
   createPairwiseDataTable,
-} from '../../../js/gui_components/shared/test-data/generation/index.js';
+} from '../../../../js/gui_components/shared/test-data/generation/index.js';
 import {
   parseSchemaTextToRows,
   validateSchemaRows,
   schemaRowsToSpec,
-} from '../../../js/gui_components/shared/test-data/schema/index.js';
+} from '../../../../js/gui_components/shared/test-data/schema/index.js';
 import {
   buildRuleSpecFromSchemaRow,
   extractLiteralValueFromRuleSpec,
@@ -48,12 +48,12 @@ import {
   SOURCE_TYPE_LITERAL,
   SOURCE_TYPE_ENUM,
   SOURCE_TYPE_REGEX,
-} from '../../../js/gui_components/shared/schema-row-rule-mapper.js';
-import { mapDataRuleToSchemaRow } from '../../../js/gui_components/shared/test-data/schema/index.js';
+} from '../../../../js/gui_components/shared/schema-row-rule-mapper.js';
+import { mapDataRuleToSchemaRow } from '../../../../js/gui_components/shared/test-data/schema/index.js';
 
 const fixturePath = join(
   process.cwd(),
-  'packages/core-ui/src/tests/interaction/fixtures/schema-interaction-matrix.json'
+  'packages/core-ui/src/tests/interaction/matrix/fixtures/schema-interaction-matrix.json'
 );
 const scenarios = JSON.parse(readFileSync(fixturePath, 'utf8')).runtimeScenarios;
 const CHUNK_SIZE = 100;

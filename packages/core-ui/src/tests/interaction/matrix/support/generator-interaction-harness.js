@@ -3,12 +3,15 @@ import { faker } from '@faker-js/faker';
 import RandExp from 'randexp';
 import { TestDataGenerator } from '@anywaydata/core/data_generation/testDataGenerator.js';
 import { Exporter } from '@anywaydata/core/grid/exporter.js';
-import { DataGeneratorPage } from '../../../../js/gui_components/generator/index.js';
-import { getFakerCommandHelp } from '../../../../js/gui_components/shared/faker-command-help-metadata.js';
-import { getDomainCommandHelp } from '../../../../js/gui_components/shared/domain-command-help-metadata.js';
-import { SOURCE_TYPE_FAKER, SOURCE_TYPE_DOMAIN } from '../../../../js/gui_components/shared/schema-row-rule-mapper.js';
-import { assertScenarioDataQuality } from './generated-value-quality.js';
-import { installDomGlobals, cleanupDomGlobals } from './testing-library-dom-setup.js';
+import { DataGeneratorPage } from '../../../../../js/gui_components/generator/index.js';
+import { getFakerCommandHelp } from '../../../../../js/gui_components/shared/faker-command-help-metadata.js';
+import { getDomainCommandHelp } from '../../../../../js/gui_components/shared/domain-command-help-metadata.js';
+import {
+  SOURCE_TYPE_FAKER,
+  SOURCE_TYPE_DOMAIN,
+} from '../../../../../js/gui_components/shared/schema-row-rule-mapper.js';
+import { assertScenarioDataQuality } from '../../support/generated-value-quality.js';
+import { installDomGlobals, cleanupDomGlobals } from '../../support/testing-library-dom-setup.js';
 import { applyDeterministicScenarioSeed, withDeterministicScenarioSeed } from './deterministic-scenario-seed.js';
 
 class TestTabulator {

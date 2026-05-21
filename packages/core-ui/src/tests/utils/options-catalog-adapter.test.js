@@ -6,7 +6,7 @@ import {
   getTestFrameworkLabel,
   getUnitTestLanguageSubtasks,
   sanitizeUiOptionsForFormat,
-} from '../../../js/gui_components/generator/options-catalog-adapter.js';
+} from '../../../js/gui_components/generator/options/index.js';
 
 describe('options catalog adapter', () => {
   test('discovers test framework formats from core option catalog', () => {

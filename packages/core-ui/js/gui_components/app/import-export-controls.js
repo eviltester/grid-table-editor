@@ -1,8 +1,7 @@
 import { ExportControls } from './exportControls.js';
 import { DragDropControl } from './drag-drop-control.js';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
-import { sanitizeUiOptionsForFormat } from '../generator/options-catalog-adapter.js';
-import { createOptionsPanelsForParent } from '../generator/options-ui-schema.js';
+import { sanitizeUiOptionsForFormat, createOptionsPanelsForParent } from '../generator/options/index.js';
 import { TimedErrorDisplay } from '../shared/timed-error-display.js';
 import { showConfirmModal } from '../shared/modal-confirm.js';
 import { scheduleTimeout } from '../shared/unref-timeout.js';

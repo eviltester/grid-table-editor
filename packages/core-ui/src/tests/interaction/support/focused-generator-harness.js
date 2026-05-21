@@ -64,7 +64,7 @@ function createFocusedGeneratorHarness() {
     await user.click(element);
     await user.clear(element);
     if (value) {
-      if (/[\n\\[\]{}]/.test(value)) {
+      if (element.type === 'number' || /[\n\\[\]{}]/.test(value)) {
         element.value = value;
         fireEvent.input(element, { target: { value } });
         fireEvent.change(element, { target: { value } });
@@ -94,6 +94,16 @@ function createFocusedGeneratorHarness() {
 
   async function addField() {
     await user.click(within(document.body).getByRole('button', { name: /add field/i }));
+  }
+
+  async function clickRowAction(index, action) {
+    const titleByAction = {
+      add: 'Add field',
+      remove: 'Remove field',
+      up: 'Move up',
+      down: 'Move down',
+    };
+    await user.click(within(getRow(index)).getByTitle(titleByAction[action]));
   }
 
   async function fillRow(index, row) {
@@ -212,6 +222,7 @@ function createFocusedGeneratorHarness() {
     cleanup: () => cleanupDomGlobals(dom),
     page: () => page,
     addField,
+    clickRowAction,
     fillRow,
     toggleToTextMode,
     toggleToSchemaMode,

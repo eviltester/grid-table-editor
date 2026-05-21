@@ -131,7 +131,7 @@ function createFocusedAppTestDataHarness() {
     await user.click(element);
     await user.clear(element);
     if (value) {
-      if (/[\n\\[\]{}]/.test(value)) {
+      if (element.type === 'number' || /[\n\\[\]{}]/.test(value)) {
         element.value = value;
         fireEvent.input(element, { target: { value } });
         fireEvent.change(element, { target: { value } });
@@ -195,6 +195,17 @@ function createFocusedAppTestDataHarness() {
     await user.click(document.querySelectorAll('#testDataSchemaGrid button')[0]);
   }
 
+  async function selectGridRow(index, selected = true) {
+    const checkbox = getGridRow(index).querySelector('[data-field="selected"]');
+    if (checkbox.checked !== selected) {
+      await user.click(checkbox);
+    }
+  }
+
+  async function deleteSelectedColumns() {
+    await user.click(document.querySelectorAll('#testDataSchemaGrid button')[1]);
+  }
+
   async function fillGridRow(index, row) {
     const rowElem = getGridRow(index);
     await setInputValue(rowElem.querySelector('[data-field="columnName"]'), row.name || '');
@@ -210,9 +221,11 @@ function createFocusedAppTestDataHarness() {
     await setInputValue(document.getElementById('testDataSchemaText'), value);
   }
 
-  async function clickGenerate() {
+  async function clickGenerate({ waitForData = true } = {}) {
     await user.click(within(document.body).getByRole('button', { name: /^generate$/i }));
-    await waitFor(() => expect(latestDataTable).toBeTruthy());
+    if (waitForData) {
+      await waitFor(() => expect(latestDataTable).toBeTruthy());
+    }
   }
 
   async function clickRefreshPreview() {
@@ -294,6 +307,8 @@ function createFocusedAppTestDataHarness() {
     cleanup: () => cleanupDomGlobals(dom),
     control: () => control,
     addColumn,
+    selectGridRow,
+    deleteSelectedColumns,
     fillGridRow,
     setSchemaText,
     clickGenerate,

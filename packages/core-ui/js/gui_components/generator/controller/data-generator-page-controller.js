@@ -519,6 +519,7 @@ class DataGeneratorPage {
       },
       renderOutputPreviewForCurrentSelection: () => this.renderOutputPreviewForCurrentSelection(),
       surfacePageError: (message, options) => this.surfacePageError(message, options),
+      clearPageError: () => this.clearSchemaErrorStatus(),
     });
   }
 
@@ -534,6 +535,7 @@ class DataGeneratorPage {
       buildDataTable: (generator, rowCount) => this.buildDataTable(generator, rowCount),
       DownloadClass: this.DownloadClass,
       surfacePageError: (message, options) => this.surfacePageError(message, options),
+      clearPageError: () => this.clearSchemaErrorStatus(),
       scheduleClearGenerationStatus: (delay) => this.scheduleClearGenerationStatus(delay),
     });
   }
@@ -550,6 +552,7 @@ class DataGeneratorPage {
       buildAllPairsDataTable: (generator) => this.buildAllPairsDataTable(generator),
       DownloadClass: this.DownloadClass,
       surfacePageError: (message, options) => this.surfacePageError(message, options),
+      clearPageError: () => this.clearSchemaErrorStatus(),
       scheduleClearGenerationStatus: (delay) => this.scheduleClearGenerationStatus(delay),
     });
   }

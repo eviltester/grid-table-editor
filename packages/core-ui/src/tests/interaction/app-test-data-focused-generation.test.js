@@ -6,6 +6,7 @@
  * - generation-mode radio changes update visible row-count defaults
  * - generate and refresh preview use real generated/exported data
  * - pairwise visibility follows enum eligibility and pairwise generation succeeds
+ * - amend modes respect grid row counts and selected-row requirements
  */
 
 import { waitFor } from '@testing-library/dom';
@@ -73,5 +74,46 @@ describe('app test-data focused generation flows', () => {
 
     harness.assertSuccessfulGeneration('app focused pairwise');
     expect(harness.getLatestDataTable().getRowCount()).toBeGreaterThan(4);
+  });
+
+  test('amend-table generation uses the current grid row count', async () => {
+    await harness.addColumn();
+    await harness.fillGridRow(0, {
+      name: 'Counter',
+      sourceType: 'domain',
+      command: 'string.counterString',
+      params: '()',
+    });
+
+    await harness.setGenerateCount(7);
+    await harness.clickGenerate();
+    harness.assertSuccessfulGeneration('app seed table generation');
+    expect(harness.getLatestDataTable().getRowCount()).toBe(7);
+
+    await harness.selectMode('amend-table');
+    expect(harness.getGenerateCount()).toBe('7');
+
+    await harness.clickGenerate();
+    harness.assertSuccessfulGeneration('app amend-table generation');
+    expect(harness.getLatestDataTable().getRowCount()).toBe(7);
+  });
+
+  test('amend-selected requires a selection before generating', async () => {
+    await harness.setMainGridState({ rowCount: 7, selectedRowIndexes: [] });
+    harness.reset();
+
+    await harness.addColumn();
+    await harness.fillGridRow(0, {
+      name: 'Counter',
+      sourceType: 'domain',
+      command: 'string.counterString',
+      params: '()',
+    });
+
+    await harness.selectMode('amend-selected');
+    expect(harness.getGenerateCount()).toBe('0');
+
+    await harness.clickGenerate({ waitForData: false });
+    await waitFor(() => expect(harness.getSchemaErrorText()).toContain('No rows selected'));
   });
 });

@@ -166,6 +166,7 @@ function previewGeneratorData({
   setLastPreviewDataTable,
   renderOutputPreviewForCurrentSelection,
   surfacePageError,
+  clearPageError,
 }) {
   const rowCount = parseRowCount('previewRowsCount');
   if (rowCount.errors.length > 0) {
@@ -180,6 +181,7 @@ function previewGeneratorData({
   }
 
   const dataTable = buildDataTable(configured.generator, rowCount.value);
+  clearPageError?.();
   setLastPreviewDataTable(dataTable);
   previewGrid.setGridFromGenericDataTable(dataTable);
   renderOutputPreviewForCurrentSelection();
@@ -196,6 +198,7 @@ async function generateGeneratorDataFile({
   buildDataTable,
   DownloadClass,
   surfacePageError,
+  clearPageError,
   scheduleClearGenerationStatus,
 }) {
   const rowCount = parseRowCount('generateRowsCount');
@@ -222,6 +225,7 @@ async function generateGeneratorDataFile({
 
   try {
     const dataTable = buildDataTable(configured.generator, rowCount.value);
+    clearPageError?.();
     dataTable.__generatorFilename = `generated-data${exporter.getFileExtensionFor(type)}`;
     const { filename } = await exportDataTableToDownload({
       type,
@@ -252,6 +256,7 @@ async function generateGeneratorAllPairsDataFile({
   buildAllPairsDataTable,
   DownloadClass,
   surfacePageError,
+  clearPageError,
   scheduleClearGenerationStatus,
 }) {
   const configured = createConfiguredGenerator();
@@ -283,6 +288,7 @@ async function generateGeneratorAllPairsDataFile({
       return;
     }
 
+    clearPageError?.();
     dataTable.__generatorFilename = `all-pairs-data${exporter.getFileExtensionFor(type)}`;
     const { filename } = await exportDataTableToDownload({
       type,

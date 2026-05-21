@@ -6,6 +6,7 @@
  * - source-type changes swap the visible controls and help link state
  * - text-mode round-trip preserves valid schema and blocks invalid schema
  * - sample schema insertion populates text mode and can be returned to schema mode
+ * - row reordering and removal update the rendered schema text order
  */
 
 import { waitFor, within } from '@testing-library/dom';
@@ -92,5 +93,31 @@ describe('generator focused schema editing', () => {
 
     await harness.toggleToSchemaMode();
     await waitFor(() => expect(document.querySelectorAll('.generator-schema-row').length).toBeGreaterThan(1));
+  });
+
+  test('schema row reorder and removal are reflected in text mode', async () => {
+    await harness.fillRow(0, {
+      name: 'First',
+      sourceType: 'literal',
+      value: 'alpha',
+    });
+    await harness.addField();
+    await harness.fillRow(1, {
+      name: 'Second',
+      sourceType: 'literal',
+      value: 'beta',
+    });
+
+    await harness.clickRowAction(1, 'up');
+    await harness.toggleToTextMode();
+
+    expect(harness.getSchemaText().indexOf('Second')).toBeLessThan(harness.getSchemaText().indexOf('First'));
+
+    await harness.toggleToSchemaMode();
+    await harness.clickRowAction(0, 'remove');
+    await harness.toggleToTextMode();
+
+    expect(harness.getSchemaText()).not.toContain('Second');
+    expect(harness.getSchemaText()).toContain('First');
   });
 });

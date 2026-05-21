@@ -6,6 +6,7 @@
  * - preview populates both data-table and output-preview surfaces
  * - generate-to-file exports the selected format with real content
  * - pairwise visibility follows schema eligibility and pairwise export succeeds
+ * - invalid schema blocks preview until the schema is corrected
  */
 
 import { waitFor } from '@testing-library/dom';
@@ -76,5 +77,28 @@ describe('generator focused generation flows', () => {
     expect(harness.getLastDownload().filename).toBe('all-pairs-data.csv');
     expect(harness.getLastDownload().text).toContain('Status');
     expect(harness.getLastDownload().text.split(/\r?\n/).filter(Boolean).length).toBeGreaterThan(4);
+  });
+
+  test('invalid schema blocks preview and clears after recovery', async () => {
+    await harness.fillRow(0, {
+      name: '',
+      sourceType: 'literal',
+      value: 'active',
+    });
+
+    await harness.clickPreview();
+    expect(harness.getSchemaErrorText().length).toBeGreaterThan(0);
+    expect(harness.getPreviewDataTable()).toBeNull();
+
+    await harness.fillRow(0, {
+      name: 'Status',
+      sourceType: 'literal',
+      value: 'active',
+    });
+
+    await harness.clickPreview();
+    await waitFor(() => expect(harness.getPreviewDataTable()?.getRowCount()).toBe(10));
+    expect(harness.getSchemaErrorText()).toBe('');
+    harness.assertSuccessfulPreview('generator recovery preview');
   });
 });

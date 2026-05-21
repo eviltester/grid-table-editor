@@ -7,6 +7,7 @@
  * - text schema edits repopulate the grid model
  * - invalid schema surfaces an error and clears on recovery
  * - sample schema shortcut populates the textarea and becomes generatable
+ * - deleting selected schema rows updates the text schema
  */
 
 import { waitFor, within } from '@testing-library/dom';
@@ -60,5 +61,28 @@ describe('app test-data focused schema sync', () => {
     await harness.clickGenerate();
 
     harness.assertSuccessfulGeneration('app sample schema generation');
+  });
+
+  test('deleting selected schema rows removes them from the text schema', async () => {
+    await harness.addColumn();
+    await harness.fillGridRow(0, {
+      name: 'Status',
+      sourceType: 'enum',
+      value: 'enum(active,inactive)',
+    });
+    await harness.addColumn();
+    await harness.fillGridRow(1, {
+      name: 'Code',
+      sourceType: 'regex',
+      value: '[A-Z]{2}',
+    });
+
+    await waitFor(() => expect(harness.getSchemaText()).toContain('Code'));
+    await harness.selectGridRow(0);
+    await harness.deleteSelectedColumns();
+
+    await waitFor(() => expect(document.querySelectorAll('.test-schema-grid-row').length).toBe(1));
+    expect(harness.getSchemaText()).not.toContain('Status');
+    expect(harness.getSchemaText()).toContain('Code');
   });
 });

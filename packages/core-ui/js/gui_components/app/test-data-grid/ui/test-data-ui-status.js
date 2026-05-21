@@ -4,7 +4,7 @@
  * - Handles delayed status reset timing and lightweight UI-yield helper.
  */
 
-import { createStatusPresenter } from '../../../shared/test-data/ui/status-presenter.js';
+import { createStatusPresenter } from '../../../shared/test-data/ui/index.js';
 
 let testDataStatusPresenter = null;
 let testDataStatusPresenterDocument = null;

@@ -5,7 +5,7 @@ import {
   showSchemaError,
   populateGridFromSchemaText,
   bindSchemaTextareaSync,
-} from '../../../js/gui_components/app/test-data-grid/schema/test-data-grid-schema-text-sync.js';
+} from '../../../../js/gui_components/app/test-data-grid/schema/test-data-grid-schema-text-sync.js';
 
 describe('test-data-grid schema text sync', () => {
   let dom;
@@ -35,16 +35,16 @@ describe('test-data-grid schema text sync', () => {
   });
 
   test('populateGridFromSchemaText maps rules and updates tokens', () => {
-    document.body.innerHTML = '<textarea id="testdatadefntext">x</textarea>';
+    document.body.innerHTML = '<textarea id="testDataSchemaText">x</textarea>';
     const state = createSchemaTextSyncState();
-    const defnGridBridge = {
+    const schemaGridBridge = {
       clearRows: jest.fn(),
       addRows: jest.fn(),
     };
 
     populateGridFromSchemaText({
       state,
-      defnGridBridge,
+      schemaGridBridge,
       schemaTextToDataRules: () => ({
         errors: [],
         dataRules: [{ name: 'c1', type: 'regex', ruleSpec: '[A-Z]+' }],
@@ -58,18 +58,18 @@ describe('test-data-grid schema text sync', () => {
       RandExp: function RandExp() {},
     });
 
-    expect(defnGridBridge.clearRows).toHaveBeenCalled();
-    expect(defnGridBridge.addRows).toHaveBeenCalledWith([{ columnName: 'c1', type: 'regex', value: '[A-Z]+' }]);
+    expect(schemaGridBridge.clearRows).toHaveBeenCalled();
+    expect(schemaGridBridge.addRows).toHaveBeenCalledWith([{ columnName: 'c1', type: 'regex', value: '[A-Z]+' }]);
     expect(state.schemaTextTokens).toEqual(['# t']);
   });
 
   test('bindSchemaTextareaSync debounces populate on input', () => {
-    document.body.innerHTML = '<textarea id="testdatadefntext"></textarea>';
+    document.body.innerHTML = '<textarea id="testDataSchemaText"></textarea>';
     const debouncer = { debounce: jest.fn() };
     const onPopulateRequested = jest.fn();
 
     bindSchemaTextareaSync({ debouncer, onPopulateRequested });
-    document.getElementById('testdatadefntext').dispatchEvent(new Event('input', { bubbles: true }));
+    document.getElementById('testDataSchemaText').dispatchEvent(new Event('input', { bubbles: true }));
 
     expect(debouncer.debounce).toHaveBeenCalledWith('populateTestDataGrid', onPopulateRequested, 1000);
   });

@@ -1,3 +1,5 @@
+import { scheduleTimeout } from './unref-timeout.js';
+
 export class TimedErrorDisplay {
   constructor({ documentObj = document, elementId, timeoutMs = 5000 } = {}) {
     this.documentObj = documentObj;
@@ -44,7 +46,7 @@ export class TimedErrorDisplay {
     }
 
     const delayMs = Number.isFinite(timeoutMs) ? timeoutMs : this.timeoutMs;
-    this.timeoutId = setTimeout(() => {
+    this.timeoutId = scheduleTimeout(() => {
       this.timeoutId = null;
       element.textContent = '';
       element.removeAttribute('data-severity');

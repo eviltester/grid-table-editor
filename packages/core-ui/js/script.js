@@ -1,6 +1,6 @@
 import { Importer } from '@anywaydata/core/grid/importer.js';
 import { Exporter } from '@anywaydata/core/grid/exporter.js';
-import { enableTestDataGenerationInterface } from './gui_components/app/test-data-grid/controller/test-data-grid-controller.js';
+import { enableTestDataGenerationInterface } from './gui_components/app/test-data-grid/index.js';
 import { ExtendedDataGrid, activeGridEngine } from './gui_components/data-grid-editor/main-display-grid.js';
 import { ensureGridLibraryLoaded } from './gui_components/data-grid-editor/grid-library-loader.js';
 import { TabbedTextControl } from './gui_components/app/tabbed-text-control.js';

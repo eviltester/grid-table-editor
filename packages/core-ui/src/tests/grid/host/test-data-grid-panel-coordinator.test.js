@@ -1,5 +1,5 @@
 import { jest } from '@jest/globals';
-import { setupTestDataGenerationPanel } from '../../../js/gui_components/app/test-data-grid/host/test-data-grid-panel-coordinator.js';
+import { setupTestDataGenerationPanel } from '../../../../js/gui_components/app/test-data-grid/host/test-data-grid-panel-coordinator.js';
 
 describe('test data grid panel coordinator', () => {
   test('renders panel and wires all panel-side bindings in the expected order', () => {

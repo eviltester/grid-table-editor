@@ -1,40 +1,40 @@
 /*
  * Responsibilities:
- * - Encapsulates Ag Grid-specific setup for the test-data definition editor.
+ * - Encapsulates Ag Grid-specific setup for the test-data schema editor.
  * - Defines Ag Grid columns/editors and row-drag behavior.
  * - Exposes a normalized bridge API for row CRUD and ordered row reads.
  */
 
 import { GridExtension as AgGridExtension } from '../../../data-grid-editor/ag-grid/gridExtension-ag-grid.js';
 import { SelectFilterEditor } from '../../../data-grid-editor/ag-grid/select-filter-editor.js';
-import { createAgGridDraftSync } from '../../../shared/test-data/grid-sync/ag-grid-draft-sync.js';
+import { createAgGridDraftSync } from '../../../shared/test-data/grid-sync/index.js';
 
-function setupAgGridDefnEditor({
+function setupAgGridSchemaGridEditor({
   tableDiv,
   agGridLib,
-  getAgGridTypeEditorValues,
+  getAgGridCommandEditorValues,
   onSchemaChanged,
   onDraftCellEditChange,
 }) {
-  const defnRowData = [];
+  const schemaGridRowData = [];
   const { onCellEditingStarted, onCellEditingStopped } = createAgGridDraftSync({
     onDraftCellEditChange,
     onSchemaChanged,
   });
 
-  const defnColumnDefs = [
+  const schemaGridColumnDefs = [
     { field: 'columnName' },
     {
       field: 'type',
       cellEditor: SelectFilterEditor,
-      cellEditorParams: (params) => ({ values: getAgGridTypeEditorValues(params?.value) }),
+      cellEditorParams: (params) => ({ values: getAgGridCommandEditorValues(params?.value) }),
     },
     { field: 'value' },
   ];
 
-  const defnGridOptions = {
-    columnDefs: defnColumnDefs,
-    rowData: defnRowData,
+  const schemaGridOptions = {
+    columnDefs: schemaGridColumnDefs,
+    rowData: schemaGridRowData,
     defaultColDef: {
       wrapText: true,
       autoHeight: true,
@@ -60,24 +60,24 @@ function setupAgGridDefnEditor({
   };
 
   tableDiv.classList.add('ag-theme-alpine');
-  const defnGridApi = agGridLib.createGrid(tableDiv, defnGridOptions);
-  const defnGridExtras = new AgGridExtension(defnGridApi);
-  const defnGridBridge = {
-    clearRows: () => defnGridApi.setGridOption('rowData', []),
+  const schemaGridApi = agGridLib.createGrid(tableDiv, schemaGridOptions);
+  const schemaGridExtras = new AgGridExtension(schemaGridApi);
+  const schemaGridBridge = {
+    clearRows: () => schemaGridApi.setGridOption('rowData', []),
     addRows: (rows) => {
       if (rows && rows.length > 0) {
-        defnGridApi.applyTransaction({ add: rows });
+        schemaGridApi.applyTransaction({ add: rows });
       }
     },
     getRows: () => {
       const rows = [];
       // Respect visual order (including drag reorder) when syncing to text schema.
-      defnGridApi.forEachNodeAfterFilterAndSort((rowNode) => rows.push(rowNode.data));
+      schemaGridApi.forEachNodeAfterFilterAndSort((rowNode) => rows.push(rowNode.data));
       return rows;
     },
   };
 
-  return { defnGridApi, defnGridExtras, defnGridBridge, defnGridOptions };
+  return { schemaGridApi, schemaGridExtras, schemaGridBridge, schemaGridOptions };
 }
 
-export { setupAgGridDefnEditor };
+export { setupAgGridSchemaGridEditor };

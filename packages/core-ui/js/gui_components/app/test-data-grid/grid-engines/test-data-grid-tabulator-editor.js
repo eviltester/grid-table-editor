@@ -1,21 +1,25 @@
 /*
  * Responsibilities:
- * - Encapsulates Tabulator-specific setup for the test-data definition editor.
+ * - Encapsulates Tabulator-specific setup for the test-data schema editor.
  * - Manages in-flight cell draft tracking so schema text reflects uncommitted edits.
  * - Exposes a normalized bridge API for row CRUD and current row reads.
  */
 
 import { GridExtension as TabulatorGridExtension } from '../../../data-grid-editor/tabulator/gridExtension-tabulator.js';
-import { createTabulatorDraftSync } from '../../../shared/test-data/grid-sync/tabulator-draft-sync.js';
+import { createTabulatorDraftSync } from '../../../shared/test-data/grid-sync/index.js';
 
-function createTabulatorTypeSelectEditor({ getTabulatorTypeEditorValues, FAKER_SECTION_VALUE, DOMAIN_SECTION_VALUE }) {
-  return function tabulatorTypeSelectEditor(cell, onRendered, success, cancel) {
+function createTabulatorCommandSelectEditor({
+  getTabulatorCommandEditorValues,
+  FAKER_SECTION_VALUE,
+  DOMAIN_SECTION_VALUE,
+}) {
+  return function tabulatorCommandSelectEditor(cell, onRendered, success, cancel) {
     const editor = document.createElement('select');
     editor.style.width = '100%';
     editor.style.boxSizing = 'border-box';
     let completed = false;
 
-    const values = getTabulatorTypeEditorValues(cell.getValue());
+    const values = getTabulatorCommandEditorValues(cell.getValue());
     values.forEach((entry) => {
       const option = document.createElement('option');
       option.value = entry.value;
@@ -54,17 +58,17 @@ function createTabulatorTypeSelectEditor({ getTabulatorTypeEditorValues, FAKER_S
   };
 }
 
-function setupTabulatorDefnEditor({
+function setupTabulatorSchemaGridEditor({
   tableDiv,
   TabulatorCtor,
-  getTabulatorTypeEditorValues,
+  getTabulatorCommandEditorValues,
   FAKER_SECTION_VALUE,
   DOMAIN_SECTION_VALUE,
   onSchemaChanged,
   onDraftCellEditChange,
 }) {
-  const tabulatorTypeSelectEditor = createTabulatorTypeSelectEditor({
-    getTabulatorTypeEditorValues,
+  const tabulatorCommandSelectEditor = createTabulatorCommandSelectEditor({
+    getTabulatorCommandEditorValues,
     FAKER_SECTION_VALUE,
     DOMAIN_SECTION_VALUE,
   });
@@ -74,7 +78,7 @@ function setupTabulatorDefnEditor({
     onSchemaChanged,
   });
 
-  const defnGridApi = new TabulatorCtor(tableDiv, {
+  const schemaGridApi = new TabulatorCtor(tableDiv, {
     data: [],
     layout: 'fitColumns',
     columns: [
@@ -82,7 +86,7 @@ function setupTabulatorDefnEditor({
       {
         title: 'type',
         field: 'type',
-        editor: tabulatorTypeSelectEditor,
+        editor: tabulatorCommandSelectEditor,
         headerSort: false,
         widthGrow: 1,
       },
@@ -125,18 +129,18 @@ function setupTabulatorDefnEditor({
     }, 0);
   });
 
-  const defnGridExtras = new TabulatorGridExtension(defnGridApi);
-  const defnGridBridge = {
-    clearRows: () => defnGridApi.setData([]),
+  const schemaGridExtras = new TabulatorGridExtension(schemaGridApi);
+  const schemaGridBridge = {
+    clearRows: () => schemaGridApi.setData([]),
     addRows: (rows) => {
       if (rows && rows.length > 0) {
-        defnGridApi.addData(rows);
+        schemaGridApi.addData(rows);
       }
     },
-    getRows: () => defnGridApi.getData(),
+    getRows: () => schemaGridApi.getData(),
   };
 
-  return { defnGridApi, defnGridExtras, defnGridBridge };
+  return { schemaGridApi, schemaGridExtras, schemaGridBridge };
 }
 
-export { setupTabulatorDefnEditor };
+export { setupTabulatorSchemaGridEditor };

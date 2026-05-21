@@ -1,6 +1,12 @@
-import { GuardedColumnEditWorkflow } from '../shared/guarded-column-edit-workflow.js';
+/*
+ * Responsibilities:
+ * - Adapts Tabulator column objects onto the shared guarded column-edit workflow.
+ * - Keeps Tabulator-specific read/write hooks separate from the workflow prompts and validation.
+ */
 
-class GuardedTabulatorColumnEdits {
+import { GuardedColumnEditWorkflow } from './guarded-column-edit-workflow.js';
+
+class GuardedTabulatorColumnEditAdapter {
   constructor(gridExtension, options = {}) {
     this.gridExtras = gridExtension;
     this.workflow = new GuardedColumnEditWorkflow(gridExtension, options);
@@ -36,4 +42,4 @@ class GuardedTabulatorColumnEdits {
   }
 }
 
-export { GuardedTabulatorColumnEdits };
+export { GuardedTabulatorColumnEditAdapter };

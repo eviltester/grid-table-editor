@@ -12,7 +12,8 @@ import {
   createAmendedTable,
   createTableFromGenerator,
   normaliseCount,
-} from '../generation/test-data-amend.js';
+  createTestDataGenerationService,
+} from '../generation/index.js';
 import { schemaTextToDataRules, dataRulesToSchemaText } from '@anywaydata/core/data_generation/schema-rules-adapter.js';
 import { PairwiseTestDataGenerator } from '@anywaydata/core/data_generation/all-pairs/pairwiseTestDataGenerator.js';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
@@ -23,33 +24,25 @@ import {
   FAKER_SECTION_VALUE,
   DOMAIN_SECTION_VALUE,
   identifyFakerCommands,
-  getTabulatorTypeEditorValues,
-  getAgGridTypeEditorValues,
-  getFakerCommands,
-  getDomainCommands,
-} from '../schema/test-data-type-catalog.js';
+  getTabulatorCommandEditorValues,
+  getAgGridCommandEditorValues,
+} from '../schema/index.js';
 import {
   setTestDataStatus,
   clearPendingTestDataStatusReset,
   scheduleTestDataStatusReset,
   yieldToUi,
 } from '../ui/test-data-ui-status.js';
-import { createTestDataGenerationService } from '../generation/test-data-generation-service.js';
-import { setupDefnGridEditor } from '../grid-engines/test-data-grid-engine-setup.js';
-import {
-  bindPrimaryActions,
-  bindGenerateCountInput,
-  bindModeRadios,
-  bindSchemaSampleShortcut,
-} from '../host/test-data-grid-ui-bindings.js';
+import { setupSchemaGridEditor } from '../grid-engines/index.js';
+import { bindPrimaryActions, bindGenerateCountInput, bindModeRadios, bindSchemaSampleShortcut } from '../host/index.js';
 import {
   createSchemaTextSyncState,
   showSchemaError,
   bindSchemaTextareaSync,
   initializeSchemaErrorDisplay,
-} from '../schema/test-data-grid-schema-text-sync.js';
-import { TEST_DATA_GRID_SAMPLE_SCHEMA_TEXT } from '../../../shared/test-data/schema/schema-examples.js';
-import { mapDataRuleToGridRow, mapGridRowToSchemaRow } from '../schema/test-data-grid-schema-row-mappers.js';
+} from '../schema/index.js';
+import { TEST_DATA_GRID_SAMPLE_SCHEMA_TEXT } from '../../../shared/test-data/schema/index.js';
+import { mapDataRuleToGridRow, mapGridRowToSchemaRow } from '../schema/index.js';
 import {
   getGenerationMode as getGenerationModeFromUi,
   applyModeDefaultRowCount as applyModeDefaultRowCountShared,
@@ -57,9 +50,9 @@ import {
 import {
   renderTestDataGenerationPanel,
   loadSampleSchemaIntoTextArea as loadSampleSchemaIntoTextAreaShared,
-} from '../host/test-data-grid-panel-html.js';
-import { createSchemaGridController } from '../schema/test-data-grid-schema-grid-controller.js';
-import { setupTestDataGenerationPanel } from '../host/test-data-grid-panel-coordinator.js';
+} from '../host/index.js';
+import { createSchemaGridController } from '../schema/index.js';
+import { setupTestDataGenerationPanel } from '../host/index.js';
 import { createTestDataGridActionAdapter } from '../controller/test-data-grid-action-adapter.js';
 
 import { faker } from 'https://cdn.skypack.dev/@faker-js/faker@v9.7.0';
@@ -86,7 +79,7 @@ function createTestDataGridControl({
   clearPendingStatusResetFn = clearPendingTestDataStatusReset,
   scheduleStatusResetFn = scheduleTestDataStatusReset,
   yieldToUiFn = yieldToUi,
-  setupDefnGridEditorFn = setupDefnGridEditor,
+  setupSchemaGridEditorFn = setupSchemaGridEditor,
   identifyFakerCommandsFn = identifyFakerCommands,
   createTestDataGridActionAdapterFn = createTestDataGridActionAdapter,
 } = {}) {
@@ -115,7 +108,7 @@ function createTestDataGridControl({
   }
 
   function getSchemaTextFromEditor() {
-    const schemaTextArea = getResolvedDocument()?.getElementById('testdatadefntext');
+    const schemaTextArea = getResolvedDocument()?.getElementById('testDataSchemaText');
     if (!schemaTextArea) {
       return '';
     }
@@ -187,7 +180,7 @@ function createTestDataGridControl({
   function createGridController() {
     return createSchemaGridControllerFn({
       documentObj: getResolvedDocument(),
-      setupDefnGridEditor: setupDefnGridEditorFn,
+      setupSchemaGridEditor: setupSchemaGridEditorFn,
       createGridRowToSchemaRowMapper: () => (rowData) =>
         mapGridRowToSchemaRow(rowData, {
           FAKER_SECTION_VALUE,
@@ -205,8 +198,8 @@ function createTestDataGridControl({
       mapRuleToRow: mapDataRuleToGridRow,
       faker,
       RandExp,
-      getAgGridTypeEditorValues,
-      getTabulatorTypeEditorValues,
+      getAgGridCommandEditorValues,
+      getTabulatorCommandEditorValues,
       FAKER_SECTION_VALUE,
       DOMAIN_SECTION_VALUE,
     });
@@ -273,12 +266,4 @@ function enableTestDataGenerationInterface(parentId, importer, textPreviewRender
   );
 }
 
-export {
-  createTestDataGridControl,
-  enableTestDataGenerationInterface,
-  identifyFakerCommands,
-  getFakerCommands,
-  getDomainCommands,
-  getTabulatorTypeEditorValues,
-  getAgGridTypeEditorValues,
-};
+export { createTestDataGridControl, enableTestDataGenerationInterface };

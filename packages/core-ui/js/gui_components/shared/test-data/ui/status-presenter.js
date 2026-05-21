@@ -1,3 +1,5 @@
+import { scheduleTimeout } from '../../unref-timeout.js';
+
 /*
  * Responsibilities:
  * - Presents transient status messages on a target UI element.
@@ -42,7 +44,7 @@ function createStatusPresenter({
 
   const scheduleClear = (delayMs = 1800) => {
     clearPendingReset();
-    resetTimeoutId = setTimeout(() => {
+    resetTimeoutId = scheduleTimeout(() => {
       setStatus('', false);
       resetTimeoutId = null;
     }, delayMs);

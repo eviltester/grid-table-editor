@@ -4,7 +4,7 @@ const { GridRendererComponent } = require('./grid-renderer.component');
 class TestDataPanelComponent {
   constructor(page) {
     this.page = page;
-    this.container = page.locator('.testDataDefnGui');
+    this.container = page.locator('.testDataSchemaGui');
     this.details = this.container.locator('details');
     this.heading = this.container.getByText('Test Data', { exact: true });
     this.generateButton = page.getByRole('button', { name: 'Generate' });
@@ -14,9 +14,9 @@ class TestDataPanelComponent {
     this.newTableMode = page.locator('input[name="testDataGenerationMode"][value="new-table"]');
     this.amendTableMode = page.locator('input[name="testDataGenerationMode"][value="amend-table"]');
     this.amendSelectedMode = page.locator('input[name="testDataGenerationMode"][value="amend-selected"]');
-    this.schemaTextArea = page.locator('#testdatadefntext');
+    this.schemaTextArea = page.locator('#testDataSchemaText');
     this.status = page.locator('#testdata-status');
-    this.schemaGrid = page.locator('#defngrid');
+    this.schemaGrid = page.locator('#testDataSchemaGrid');
     this.schemaRenderer = new GridRendererComponent(page, this.schemaGrid);
     this.addSchemaColumnButton = page.getByRole('button', { name: /\+ Add Column/ });
     this.deleteSelectedSchemaRowsButton = this.container.getByRole('button', { name: '- Delete Selected' });

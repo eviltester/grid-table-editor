@@ -3,9 +3,9 @@ import { JSDOM } from 'jsdom';
 import {
   createGridChromeElements,
   bindGridChromeControls,
-} from '../../../js/gui_components/app/test-data-grid/host/test-data-grid-host.js';
+} from '../../../../js/gui_components/app/test-data-grid/host/test-data-grid-host.js';
 
-describe('test-data-grid controls', () => {
+describe('test-data-grid host', () => {
   let dom;
 
   beforeEach(() => {

@@ -5,7 +5,7 @@ import {
   bindGenerateCountInput,
   bindModeRadios,
   bindSchemaSampleShortcut,
-} from '../../../js/gui_components/app/test-data-grid/host/test-data-grid-ui-bindings.js';
+} from '../../../../js/gui_components/app/test-data-grid/host/test-data-grid-ui-bindings.js';
 
 describe('test-data-grid ui bindings', () => {
   let dom;

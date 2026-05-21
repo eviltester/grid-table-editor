@@ -5,6 +5,7 @@ import { sanitizeUiOptionsForFormat } from '../generator/options-catalog-adapter
 import { createOptionsPanelsForParent } from '../generator/options-ui-schema.js';
 import { TimedErrorDisplay } from '../shared/timed-error-display.js';
 import { showConfirmModal } from '../shared/modal-confirm.js';
+import { scheduleTimeout } from '../shared/unref-timeout.js';
 
 class ImportExportControls {
   constructor({ requestConfirm } = {}) {
@@ -200,7 +201,7 @@ class ImportExportControls {
           this._setExportActionsBusyState(false);
         }
 
-        setTimeout(() => this._clearImportProgressStatus(), 1200);
+        scheduleTimeout(() => this._clearImportProgressStatus(), 1200);
       });
     });
 

@@ -1,8 +1,8 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
-import { createTestDataGridControl } from '../../../js/gui_components/app/test-data-grid/controller/test-data-grid-controller.js';
+import { createTestDataGridControl } from '../../../../js/gui_components/app/test-data-grid/controller/test-data-grid-controller.js';
 
-describe('test data grid control', () => {
+describe('test data grid controller', () => {
   let dom;
 
   beforeEach(() => {
@@ -20,7 +20,7 @@ describe('test data grid control', () => {
   test('creates isolated controller state and wires shared helpers', () => {
     const renderTestDataGenerationPanelFn = jest.fn(({ parentElem }) => {
       parentElem.innerHTML =
-        '<textarea id="testdatadefntext"></textarea><input id="generateCount" /><button id="generatedata"></button><button id="generateallpairs"></button><button id="refreshtestdatapreview"></button>';
+        '<textarea id="testDataSchemaText"></textarea><input id="generateCount" /><button id="generatedata"></button><button id="generateallpairs"></button><button id="refreshtestdatapreview"></button>';
     });
     const bindPrimaryActionsFn = jest.fn();
     const bindGenerateCountInputFn = jest.fn();
@@ -88,7 +88,7 @@ describe('test data grid control', () => {
   test('sample schema callback uses previous handler from same controller instance on re-enable', () => {
     const renderTestDataGenerationPanelFn = jest.fn(({ parentElem }) => {
       parentElem.innerHTML =
-        '<textarea id="testdatadefntext"></textarea><input id="generateCount" /><button id="generatedata"></button><button id="generateallpairs"></button><button id="refreshtestdatapreview"></button>';
+        '<textarea id="testDataSchemaText"></textarea><input id="generateCount" /><button id="generatedata"></button><button id="generateallpairs"></button><button id="refreshtestdatapreview"></button>';
     });
     const bindSchemaSampleShortcutFn = jest
       .fn()

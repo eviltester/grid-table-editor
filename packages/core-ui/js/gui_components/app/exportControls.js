@@ -1,4 +1,5 @@
 import { Download } from '../shared/download.js';
+import { scheduleTimeout } from '../shared/unref-timeout.js';
 
 class ExportsPageMap {
   constructor() {
@@ -71,7 +72,7 @@ class ExportControls {
       this._setExportProgressStatus('Download failed. Please try again.', false);
     } finally {
       this._setDownloadBusyState(false);
-      setTimeout(() => this._clearExportProgressStatus(), 1200);
+      scheduleTimeout(() => this._clearExportProgressStatus(), 1200);
     }
   }
 
@@ -86,7 +87,7 @@ class ExportControls {
 
     let copyButton = document.querySelector(this.pageMap.copyTextButton);
     copyButton.innerText = 'Copied';
-    setTimeout(
+    scheduleTimeout(
       function (aButton) {
         aButton.innerText = 'Copy';
       },

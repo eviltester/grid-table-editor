@@ -6,11 +6,11 @@ import {
   identifyFakerCommands,
   getFakerCommands,
   getDomainCommands,
-  getTabulatorTypeEditorValues,
-  getAgGridTypeEditorValues,
-} from '../../../js/gui_components/app/test-data-grid/controller/test-data-grid-controller.js';
+  getTabulatorCommandEditorValues,
+  getAgGridCommandEditorValues,
+} from '../../../../js/gui_components/app/test-data-grid/schema/index.js';
 
-describe('Faker Dropdown Literal Commands', () => {
+describe('Test Data Command Catalog', () => {
   beforeEach(() => {
     // Reset and reinitialize faker commands before each test
     identifyFakerCommands();
@@ -77,7 +77,7 @@ describe('Faker Dropdown Literal Commands', () => {
     });
 
     it('should hide non-scalar domain commands in type dropdown for new rows', () => {
-      const values = getTabulatorTypeEditorValues('');
+      const values = getTabulatorCommandEditorValues('');
       const domainOptions = values
         .slice(values.findIndex((entry) => entry.value === '__domain_section__') + 1)
         .map((entry) => entry.value);
@@ -87,7 +87,7 @@ describe('Faker Dropdown Literal Commands', () => {
     });
 
     it('should include selected non-scalar domain command when editing existing row', () => {
-      const values = getTabulatorTypeEditorValues('science.chemicalElement');
+      const values = getTabulatorCommandEditorValues('science.chemicalElement');
       const domainOptions = values
         .slice(values.findIndex((entry) => entry.value === '__domain_section__') + 1)
         .map((entry) => entry.value);
@@ -96,15 +96,15 @@ describe('Faker Dropdown Literal Commands', () => {
     });
 
     it('should label faker/domain sections to reflect helpers split', () => {
-      const values = getTabulatorTypeEditorValues('');
+      const values = getTabulatorCommandEditorValues('');
       const fakerSection = values.find((entry) => entry.value === '__faker_section__');
       const domainSection = values.find((entry) => entry.value === '__domain_section__');
       expect(fakerSection?.label).toBe('-- faker (incl helpers) --');
       expect(domainSection?.label).toBe('-- domain (no helpers) --');
     });
 
-    it('should include domain commands in AG Grid type editor values', () => {
-      const values = getAgGridTypeEditorValues('');
+    it('should include domain commands in AG Grid command editor values', () => {
+      const values = getAgGridCommandEditorValues('');
       expect(values).toContain('person.firstName');
       expect(values).toContain('number.int');
       expect(values).not.toContain('science.chemicalElement');

@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals';
 import { GuardedColumnEdits } from '../../../js/gui_components/data-grid-editor/shared/guarded-column-edits.js';
-import { GuardedTabulatorColumnEdits } from '../../../js/gui_components/data-grid-editor/tabulator/guarded-tabulator-column-edits.js';
+import { GuardedTabulatorColumnEditAdapter } from '../../../js/gui_components/data-grid-editor/shared/guarded-tabulator-column-edit-adapter.js';
 
 function createColumn(title = 'Old Name') {
   const definition = { title };
@@ -106,7 +106,7 @@ describe('GuardedColumnEdits (AG abstraction)', () => {
   });
 });
 
-describe('GuardedTabulatorColumnEdits', () => {
+describe('GuardedTabulatorColumnEditAdapter', () => {
   let gridExtras;
   let guarded;
   let column;
@@ -126,7 +126,7 @@ describe('GuardedTabulatorColumnEdits', () => {
     surfaceError = jest.fn();
     requestTextInput = jest.fn();
     requestConfirm = jest.fn(async () => true);
-    guarded = new GuardedTabulatorColumnEdits(gridExtras, { surfaceError, requestTextInput, requestConfirm });
+    guarded = new GuardedTabulatorColumnEditAdapter(gridExtras, { surfaceError, requestTextInput, requestConfirm });
     column = createColumn('Old Name');
   });
 
@@ -185,7 +185,7 @@ describe('GuardedTabulatorColumnEdits', () => {
 
   test('tabulator duplicate name checks can be disabled', async () => {
     gridExtras.nameAlreadyExists.mockReturnValue(true);
-    const unguarded = new GuardedTabulatorColumnEdits(gridExtras, {
+    const unguarded = new GuardedTabulatorColumnEditAdapter(gridExtras, {
       surfaceError,
       requestTextInput: jest.fn(async () => 'Existing'),
       requestConfirm,

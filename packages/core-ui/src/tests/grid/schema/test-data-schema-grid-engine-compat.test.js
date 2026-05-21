@@ -1,8 +1,8 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
-import { enableTestDataGenerationInterface } from '../../../js/gui_components/app/test-data-grid/controller/test-data-grid-controller.js';
+import { enableTestDataGenerationInterface } from '../../../../js/gui_components/app/test-data-grid/index.js';
 
-describe('test data definition editor engine compatibility', () => {
+describe('test data schema editor engine compatibility', () => {
   let dom;
 
   function installTabulatorMock() {
@@ -126,7 +126,7 @@ describe('test data definition editor engine compatibility', () => {
     }).not.toThrow();
 
     expect(document.querySelector('#generatedata')).toBeTruthy();
-    expect(document.querySelector('#testdatadefntext')).toBeTruthy();
+    expect(document.querySelector('#testDataSchemaText')).toBeTruthy();
   });
 
   test('uses tabulator path when ag-grid is unavailable', () => {
@@ -151,7 +151,7 @@ describe('test data definition editor engine compatibility', () => {
       );
     }).not.toThrow();
 
-    expect(document.querySelector('#defngrid button')).toBeTruthy();
+    expect(document.querySelector('#testDataSchemaGrid button')).toBeTruthy();
     delete global.Tabulator;
   });
 
@@ -291,7 +291,7 @@ describe('test data definition editor engine compatibility', () => {
     );
 
     TabulatorMock.latestInstance.rows = [];
-    document.getElementById('testdatadefntext').value = 'OnlyAHeader';
+    document.getElementById('testDataSchemaText').value = 'OnlyAHeader';
     document.getElementById('generatedata').click();
     await flushUi();
 
@@ -451,12 +451,12 @@ describe('test data definition editor engine compatibility', () => {
     });
 
     await flushUi();
-    expect(document.getElementById('testdatadefntext').value).toContain('person_name');
+    expect(document.getElementById('testDataSchemaText').value).toContain('person_name');
 
     input.value = 'customer_name';
     input.dispatchEvent(new Event('input', { bubbles: true }));
     await flushUi();
-    expect(document.getElementById('testdatadefntext').value).toContain('customer_name');
+    expect(document.getElementById('testDataSchemaText').value).toContain('customer_name');
 
     delete global.Tabulator;
   });
@@ -492,12 +492,12 @@ describe('test data definition editor engine compatibility', () => {
     });
 
     await flushUi();
-    expect(document.getElementById('testdatadefntext').value).toContain('person_name');
+    expect(document.getElementById('testDataSchemaText').value).toContain('person_name');
 
     input.value = 'customer_name';
     input.dispatchEvent(new Event('input', { bubbles: true }));
     await flushUi();
-    expect(document.getElementById('testdatadefntext').value).toContain('customer_name');
+    expect(document.getElementById('testDataSchemaText').value).toContain('customer_name');
   });
 
   test('schema text comments survive text-to-grid parse and add-column grid sync', async () => {
@@ -517,7 +517,7 @@ describe('test data definition editor engine compatibility', () => {
       }
     );
 
-    const schemaTextArea = document.getElementById('testdatadefntext');
+    const schemaTextArea = document.getElementById('testDataSchemaText');
     schemaTextArea.value =
       '# first comment\n\nPriority\nenum(high,medium,low)\n\n# second comment\nStatus\nenum(active,inactive)';
     schemaTextArea.dispatchEvent(new Event('input', { bubbles: true }));
@@ -525,10 +525,10 @@ describe('test data definition editor engine compatibility', () => {
     await flushUi();
 
     expect(TabulatorMock.latestInstance.rows).toHaveLength(2);
-    document.querySelector('#defngrid button').click();
+    document.querySelector('#testDataSchemaGrid button').click();
     await flushUi();
 
-    const rebuilt = document.getElementById('testdatadefntext').value;
+    const rebuilt = document.getElementById('testDataSchemaText').value;
     expect(rebuilt).toContain('# first comment');
     expect(rebuilt).toContain('# second comment');
   });
@@ -550,7 +550,7 @@ describe('test data definition editor engine compatibility', () => {
       }
     );
 
-    const schemaTextArea = document.getElementById('testdatadefntext');
+    const schemaTextArea = document.getElementById('testDataSchemaText');
     schemaTextArea.value = '\nc2\nvalue';
     schemaTextArea.dispatchEvent(new Event('input', { bubbles: true }));
     await new Promise((resolve) => setTimeout(resolve, 1100));
@@ -563,9 +563,9 @@ describe('test data definition editor engine compatibility', () => {
       value: 'value',
     });
 
-    document.querySelector('#defngrid button').click();
+    document.querySelector('#testDataSchemaGrid button').click();
     await flushUi();
-    expect(document.getElementById('testdatadefntext').value).toContain('\nc2\n');
+    expect(document.getElementById('testDataSchemaText').value).toContain('\nc2\n');
   });
 
   test('enum type rows are emitted as enum(...) definitions in schema text', async () => {
@@ -589,7 +589,7 @@ describe('test data definition editor engine compatibility', () => {
     TabulatorMock.latestInstance.options.cellEdited();
     await flushUi();
 
-    expect(document.getElementById('testdatadefntext').value).toContain('Priority\nenum(1,2,3,4)');
+    expect(document.getElementById('testDataSchemaText').value).toContain('Priority\nenum(1,2,3,4)');
 
     delete global.Tabulator;
   });
@@ -615,7 +615,7 @@ describe('test data definition editor engine compatibility', () => {
     TabulatorMock.latestInstance.options.cellEdited();
     await flushUi();
 
-    expect(document.getElementById('testdatadefntext').value).toContain('Separator\nliteral(.)');
+    expect(document.getElementById('testDataSchemaText').value).toContain('Separator\nliteral(.)');
 
     delete global.Tabulator;
   });
@@ -644,7 +644,7 @@ describe('test data definition editor engine compatibility', () => {
     TabulatorMock.latestInstance.options.cellEdited();
     await flushUi();
 
-    const schemaText = document.getElementById('testdatadefntext').value;
+    const schemaText = document.getElementById('testDataSchemaText').value;
     expect(schemaText).toContain('EmptyLiteral\nliteral("")');
     expect(schemaText).toContain('SpaceLiteral\nliteral("")');
 
@@ -668,7 +668,7 @@ describe('test data definition editor engine compatibility', () => {
       }
     );
 
-    const schemaTextArea = document.getElementById('testdatadefntext');
+    const schemaTextArea = document.getElementById('testDataSchemaText');
     schemaTextArea.value = 't\nliteral("")';
     schemaTextArea.dispatchEvent(new Event('input', { bubbles: true }));
     await new Promise((resolve) => setTimeout(resolve, 1100));
@@ -701,7 +701,7 @@ describe('test data definition editor engine compatibility', () => {
       }
     );
 
-    const schemaTextArea = document.getElementById('testdatadefntext');
+    const schemaTextArea = document.getElementById('testDataSchemaText');
     schemaTextArea.value = 'r1\nawd.domain.person.firstName';
     schemaTextArea.dispatchEvent(new Event('input', { bubbles: true }));
     await new Promise((resolve) => setTimeout(resolve, 1100));
@@ -734,7 +734,7 @@ describe('test data definition editor engine compatibility', () => {
       }
     );
 
-    const schemaTextArea = document.getElementById('testdatadefntext');
+    const schemaTextArea = document.getElementById('testDataSchemaText');
     schemaTextArea.value = 'r2\ndomain.hacker.noun';
     schemaTextArea.dispatchEvent(new Event('input', { bubbles: true }));
     await new Promise((resolve) => setTimeout(resolve, 1100));
@@ -771,7 +771,7 @@ describe('test data definition editor engine compatibility', () => {
     TabulatorMock.latestInstance.options.cellEdited();
     await flushUi();
 
-    const schemaText = document.getElementById('testdatadefntext').value;
+    const schemaText = document.getElementById('testDataSchemaText').value;
     expect(schemaText).toContain('LeadingSpaceLiteral\nliteral(   123)');
 
     delete global.Tabulator;
@@ -798,7 +798,7 @@ describe('test data definition editor engine compatibility', () => {
     tooltipButton.className = 'testdata-schema-sample-button';
     document.body.appendChild(tooltipButton);
     tooltipButton.click();
-    const value = document.getElementById('testdatadefntext').value;
+    const value = document.getElementById('testDataSchemaText').value;
 
     expect(value).toContain('Literal Example');
     expect(value).toContain('literal(Pending Review)');

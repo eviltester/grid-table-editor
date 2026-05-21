@@ -17,10 +17,10 @@ function renderTestDataGenerationPanel({ parentElem, TEST_DATA_MODES }) {
             <span id="testdata-status" class="import-progress-status" style="display:none;" aria-live="polite"></span>
             <span id="testdata-schema-error" class="generator-schema-error-text" aria-live="polite" role="status"></span>
         </div>
-        <div class="defn-edit-zone">
-            <div class="defn-grid-container" id="defngrid" class="ag-theme-alpine">
+        <div class="test-data-schema-edit-zone">
+            <div class="test-data-schema-grid-container" id="testDataSchemaGrid" class="ag-theme-alpine">
             </div>
-            <div class="defn-text-container">
+            <div class="test-data-schema-text-container">
                 <p>
                   Test Data Text Schema
                   <span
@@ -28,14 +28,14 @@ function renderTestDataGenerationPanel({ parentElem, TEST_DATA_MODES }) {
                     class="helpicon option-help-icon"
                   ></span>
                 </p>
-                <textarea class="testDataDefn" name="testdatadefntext" id="testdatadefntext"></textarea>
+                <textarea class="testDataSchemaTextArea" name="testDataSchemaText" id="testDataSchemaText"></textarea>
             </div>
         </div>
     `;
 }
 
 function loadSampleSchemaIntoTextArea({ documentObj, sampleSchemaText, onSchemaUpdated }) {
-  const schemaTextArea = documentObj?.getElementById('testdatadefntext');
+  const schemaTextArea = documentObj?.getElementById('testDataSchemaText');
   if (!schemaTextArea) {
     return;
   }

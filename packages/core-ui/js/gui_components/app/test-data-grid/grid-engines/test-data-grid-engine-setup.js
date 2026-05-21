@@ -5,33 +5,33 @@
  * - Returns normalized editor handles back to the controller.
  */
 
-import { setupAgGridDefnEditor } from './test-data-grid-ag-grid-editor.js';
-import { setupTabulatorDefnEditor } from './test-data-grid-tabulator-editor.js';
+import { setupAgGridSchemaGridEditor } from './test-data-grid-ag-grid-editor.js';
+import { setupTabulatorSchemaGridEditor } from './test-data-grid-tabulator-editor.js';
 
-function setupDefnGridEditor({
+function setupSchemaGridEditor({
   tableDiv,
   convertGridToText,
   onDraftCellEditChange,
-  getAgGridTypeEditorValues,
-  getTabulatorTypeEditorValues,
+  getAgGridCommandEditorValues,
+  getTabulatorCommandEditorValues,
   FAKER_SECTION_VALUE,
   DOMAIN_SECTION_VALUE,
 }) {
   if (typeof agGrid !== 'undefined' && typeof agGrid.createGrid === 'function') {
-    return setupAgGridDefnEditor({
+    return setupAgGridSchemaGridEditor({
       tableDiv,
       agGridLib: agGrid,
-      getAgGridTypeEditorValues,
+      getAgGridCommandEditorValues,
       onSchemaChanged: convertGridToText,
       onDraftCellEditChange,
     });
   }
 
   if (typeof Tabulator !== 'undefined') {
-    return setupTabulatorDefnEditor({
+    return setupTabulatorSchemaGridEditor({
       tableDiv,
       TabulatorCtor: Tabulator,
-      getTabulatorTypeEditorValues,
+      getTabulatorCommandEditorValues,
       FAKER_SECTION_VALUE,
       DOMAIN_SECTION_VALUE,
       onSchemaChanged: convertGridToText,
@@ -42,4 +42,4 @@ function setupDefnGridEditor({
   return null;
 }
 
-export { setupDefnGridEditor };
+export { setupSchemaGridEditor };

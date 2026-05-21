@@ -15,24 +15,28 @@ import { getKnownFakerCommandsAlphabetical } from '../shared/faker-commands.js';
 import { getKnownDomainCommandsAlphabetical } from '../shared/domain-commands.js';
 import { escapeHtml } from '../shared/html-escape.js';
 import { TimedErrorDisplay } from '../shared/timed-error-display.js';
-import { schemaErrorsToText } from '../shared/test-data/schema/schema-error-text.js';
-import { getVisibleDomainCommands } from '../shared/test-data/help/domain-command-provider.js';
-import { createStatusPresenter } from '../shared/test-data/ui/status-presenter.js';
-import { parseNonNegativeCount } from '../shared/test-data/generation/generation-runtime.js';
-import { isPairwiseEligibleForSchemaRows } from '../shared/test-data/generation/ui-derived-state.js';
 import {
+  createSchemaEditingSession,
   schemaRowsToSpec as schemaRowsToSpecCore,
   schemaRowsToSpecWithTokens as schemaRowsToSpecWithTokensCore,
   validateSchemaRows as validateSchemaRowsCore,
-} from '../shared/test-data/schema/schema-editor-core.js';
-import { mapDataRuleToSchemaRow } from '../shared/test-data/schema/schema-row-mapper.js';
-import { buildSchemaHelpModel, renderSchemaHelpHtml } from '../shared/test-data/help/help-model-builder.js';
-import { createSchemaEditingSession } from '../shared/test-data/schema/schema-controller.js';
+  mapDataRuleToSchemaRow,
+  schemaErrorsToText,
+  TEST_DATA_GRID_SAMPLE_SCHEMA_TEXT as GENERATOR_DEFAULT_EXAMPLE_SCHEMA_TEXT,
+} from '../shared/test-data/schema/index.js';
+import {
+  buildSchemaHelpModel,
+  renderSchemaHelpHtml,
+  getVisibleDomainCommands,
+} from '../shared/test-data/help/index.js';
+import { createStatusPresenter } from '../shared/test-data/ui/index.js';
 import {
   createConfiguredGeneratorFromSchemaRows,
   createPreviewDataTable,
   createPairwiseDataTable,
-} from '../shared/test-data/generation/generation-controller.js';
+  parseNonNegativeCount,
+  isPairwiseEligibleForSchemaRows,
+} from '../shared/test-data/generation/index.js';
 import {
   SOURCE_TYPE_FAKER,
   SOURCE_TYPE_DOMAIN,
@@ -47,7 +51,6 @@ import {
   extractRegexValueFromRuleSpec,
   buildDataRuleFromSchemaRow,
 } from '../shared/schema-row-rule-mapper.js';
-import { GENERATOR_DEFAULT_EXAMPLE_SCHEMA_TEXT } from '../shared/test-data/schema/schema-examples.js';
 
 const GENERATE_TO_FILE_HELP_URL = 'https://anywaydata.com/docs/test-data/generate-to-file';
 function schemaRowsToSpec(schemaRows) {
@@ -221,7 +224,7 @@ class DataGeneratorPage {
                     </div>
                     <div id="generatorSchemaRows" class="generator-schema-rows"></div>
                     <div id="generatorSchemaTextContainer" class="generator-schema-text">
-                        <textarea id="generatorSchemaText" class="testDataDefn" placeholder="Column Name&#10;rule&#10;Column Name&#10;rule"></textarea>
+                        <textarea id="generatorSchemaText" class="testDataSchemaTextArea" placeholder="Column Name&#10;rule&#10;Column Name&#10;rule"></textarea>
                     </div>
                     <div class="generator-schema-footer">
                         <button id="addSchemaRowButton" title="Add field">+ Add Field</button>

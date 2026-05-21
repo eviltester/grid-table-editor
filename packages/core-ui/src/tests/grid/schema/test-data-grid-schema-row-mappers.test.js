@@ -1,7 +1,7 @@
 import {
   mapDataRuleToGridRow,
   mapGridRowToSchemaRow,
-} from '../../../js/gui_components/app/test-data-grid/schema/test-data-grid-schema-row-mappers.js';
+} from '../../../../js/gui_components/app/test-data-grid/schema/test-data-grid-schema-row-mappers.js';
 
 describe('test-data-grid schema row mappers', () => {
   const mapperContext = {

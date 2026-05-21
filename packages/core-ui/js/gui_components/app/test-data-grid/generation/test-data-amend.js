@@ -11,7 +11,7 @@ import {
   normaliseGeneratedRow as normaliseGeneratedRowValues,
   createTableFromGenerator as createTableFromGeneratorShared,
   parseNonNegativeCount,
-} from '../../../shared/test-data/generation/generation-runtime.js';
+} from '../../../shared/test-data/generation/index.js';
 
 const TEST_DATA_MODES = Object.freeze({
   NEW_TABLE: 'new-table',

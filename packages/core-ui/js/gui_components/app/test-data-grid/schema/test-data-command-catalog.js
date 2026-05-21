@@ -1,6 +1,6 @@
 /*
  * Responsibilities:
- * - Owns test-data type catalogs and dropdown option composition.
+ * - Owns test-data command catalogs and command-editor option composition.
  * - Centralizes faker/domain command discovery and visibility filtering.
  * - Provides pure helpers for command extraction from parsed rule specs.
  */
@@ -13,7 +13,7 @@ import {
   getKnownDomainCommandsAlphabetical,
   getKnownDomainCommandsLongestFirst,
 } from '../../../shared/domain-commands.js';
-import { getVisibleDomainCommands } from '../../../shared/test-data/help/domain-command-provider.js';
+import { getVisibleDomainCommands } from '../../../shared/test-data/help/index.js';
 
 const FAKER_COMMANDS = [];
 const FAKER_COMMANDS_LONGEST_FIRST = [];
@@ -49,7 +49,7 @@ function identifyFakerCommands() {
   getKnownDomainCommandsLongestFirst().forEach((command) => DOMAIN_COMMANDS_LONGEST_FIRST.push(command));
 }
 
-function getVisibleDomainTypeOptions(currentValue = '') {
+function getVisibleDomainCommandOptions(currentValue = '') {
   const visible = getVisibleDomainCommands({
     commands: getKnownDomainCommandsAlphabetical(),
     currentCommand: String(currentValue || '').trim(),
@@ -57,7 +57,7 @@ function getVisibleDomainTypeOptions(currentValue = '') {
   return visible.map((command) => ({ value: command, label: command }));
 }
 
-function getTabulatorTypeEditorValues(currentValue = '') {
+function getTabulatorCommandEditorValues(currentValue = '') {
   const typeValues = TOP_LEVEL_TYPE_OPTIONS.map((typeOption) => ({ value: typeOption, label: typeOption }));
   const fakerHeader = {
     value: FAKER_SECTION_VALUE,
@@ -72,13 +72,13 @@ function getTabulatorTypeEditorValues(currentValue = '') {
     label: DOMAIN_SECTION_LABEL,
     elementAttributes: { disabled: true },
   };
-  const domainCommandValues = getVisibleDomainTypeOptions(currentValue);
+  const domainCommandValues = getVisibleDomainCommandOptions(currentValue);
   return [...typeValues, fakerHeader, ...fakerCommandValues, domainHeader, ...domainCommandValues];
 }
 
-function getAgGridTypeEditorValues(currentValue = '') {
+function getAgGridCommandEditorValues(currentValue = '') {
   const values = [...FAKER_COMMANDS];
-  const domainValues = getVisibleDomainTypeOptions(currentValue).map((entry) => entry.value);
+  const domainValues = getVisibleDomainCommandOptions(currentValue).map((entry) => entry.value);
   const seen = new Set(values);
   domainValues.forEach((value) => {
     if (!seen.has(value)) {
@@ -104,9 +104,9 @@ export {
   DOMAIN_SECTION_VALUE,
   findFakerCommand,
   identifyFakerCommands,
-  getVisibleDomainTypeOptions,
-  getTabulatorTypeEditorValues,
-  getAgGridTypeEditorValues,
+  getVisibleDomainCommandOptions,
+  getTabulatorCommandEditorValues,
+  getAgGridCommandEditorValues,
   getFakerCommands,
   getDomainCommands,
 };

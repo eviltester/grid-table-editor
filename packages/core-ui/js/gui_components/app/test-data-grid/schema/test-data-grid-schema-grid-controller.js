@@ -4,14 +4,13 @@
  * - Keeps grid-library wiring and row/text conversion out of the main app-page controller.
  */
 
-import { renderSchemaTextFromGridRows } from '../../../shared/test-data/schema/schema-editor-core.js';
-import { populateGridFromSchemaText } from '../schema/test-data-grid-schema-text-sync.js';
-import { applyTestDataGridLayout } from '../host/test-data-grid-layout.js';
-import { createGridChromeElements, bindGridChromeControls } from '../host/test-data-grid-host.js';
+import { renderSchemaTextFromGridRows } from '../../../shared/test-data/schema/index.js';
+import { populateGridFromSchemaText } from '../schema/index.js';
+import { applyTestDataGridLayout, createGridChromeElements, bindGridChromeControls } from '../host/index.js';
 
 function createSchemaGridController({
   documentObj = document,
-  setupDefnGridEditor,
+  setupSchemaGridEditor,
   createGridChromeElementsFn = createGridChromeElements,
   bindGridChromeControlsFn = bindGridChromeControls,
   applyTestDataGridLayoutFn = applyTestDataGridLayout,
@@ -28,25 +27,25 @@ function createSchemaGridController({
   mapRuleToRow,
   faker,
   RandExp,
-  getAgGridTypeEditorValues,
-  getTabulatorTypeEditorValues,
+  getAgGridCommandEditorValues,
+  getTabulatorCommandEditorValues,
   FAKER_SECTION_VALUE,
   DOMAIN_SECTION_VALUE,
 }) {
   const state = {
-    defnGridApi: undefined,
-    defnGridExtras: undefined,
-    defnGridBridge: undefined,
+    schemaGridApi: undefined,
+    schemaGridExtras: undefined,
+    schemaGridBridge: undefined,
     activeDraftCellEdit: null,
   };
 
   function convertGridToText() {
-    if (!state.defnGridBridge) {
+    if (!state.schemaGridBridge) {
       return;
     }
 
     const schemaText = renderSchemaTextFromGridRowsFn({
-      rows: state.defnGridBridge.getRows(),
+      rows: state.schemaGridBridge.getRows(),
       activeDraftCellEdit: state.activeDraftCellEdit,
       mapGridRowToSchemaRow: createGridRowToSchemaRowMapper(),
       buildRuleSpecFromSchemaRow,
@@ -54,7 +53,7 @@ function createSchemaGridController({
       schemaTokens: schemaTextSyncState.schemaTextTokens,
     });
 
-    const textArea = documentObj.getElementById('testdatadefntext');
+    const textArea = documentObj.getElementById('testDataSchemaText');
     if (textArea) {
       textArea.value = schemaText;
     }
@@ -64,7 +63,7 @@ function createSchemaGridController({
   function populateGridFromTextSchema() {
     populateGridFromSchemaTextFn({
       state: schemaTextSyncState,
-      defnGridBridge: state.defnGridBridge,
+      schemaGridBridge: state.schemaGridBridge,
       schemaTextToDataRules,
       schemaErrorsToText,
       setTestDataStatus,
@@ -80,7 +79,7 @@ function createSchemaGridController({
       documentObj.activeElement.blur();
     }
 
-    if (state.defnGridBridge) {
+    if (state.schemaGridBridge) {
       convertGridToText();
     }
   }
@@ -88,47 +87,47 @@ function createSchemaGridController({
   function setupTestDataEditGrid(gridDiv) {
     const { tableDiv, addNewRowButton, deleteRowsButton } = createGridChromeElementsFn(gridDiv);
 
-    const setupResult = setupDefnGridEditor({
+    const setupResult = setupSchemaGridEditor({
       tableDiv,
       convertGridToText,
       onDraftCellEditChange: (draftCellEdit) => {
         state.activeDraftCellEdit = draftCellEdit;
       },
-      getAgGridTypeEditorValues,
-      getTabulatorTypeEditorValues,
+      getAgGridCommandEditorValues,
+      getTabulatorCommandEditorValues,
       FAKER_SECTION_VALUE,
       DOMAIN_SECTION_VALUE,
     });
 
     if (!setupResult) {
-      console.warn('No supported grid library loaded; test data definition grid editor disabled.');
+      console.warn('No supported grid library loaded; test data schema grid editor disabled.');
       return;
     }
 
-    state.defnGridApi = setupResult.defnGridApi;
-    state.defnGridExtras = setupResult.defnGridExtras;
-    state.defnGridBridge = setupResult.defnGridBridge;
+    state.schemaGridApi = setupResult.schemaGridApi;
+    state.schemaGridExtras = setupResult.schemaGridExtras;
+    state.schemaGridBridge = setupResult.schemaGridBridge;
 
     bindGridChromeControlsFn({
       addNewRowButton,
       deleteRowsButton,
-      getBridge: () => state.defnGridBridge,
-      getExtras: () => state.defnGridExtras,
+      getBridge: () => state.schemaGridBridge,
+      getExtras: () => state.schemaGridExtras,
       onSchemaChanged: convertGridToText,
     });
   }
 
   function createTestDataGrid() {
-    const gridDiv = documentObj.querySelector('#defngrid');
+    const gridDiv = documentObj.querySelector('#testDataSchemaGrid');
     setupTestDataEditGrid(gridDiv);
 
-    const textEdit = documentObj.querySelector('.defn-text-container');
-    const zone = documentObj.querySelector('.defn-edit-zone');
+    const textEdit = documentObj.querySelector('.test-data-schema-text-container');
+    const zone = documentObj.querySelector('.test-data-schema-edit-zone');
     applyTestDataGridLayoutFn({
       gridDiv,
       textEdit,
       zone,
-      hasGridApi: Boolean(state.defnGridApi),
+      hasGridApi: Boolean(state.schemaGridApi),
     });
   }
 
@@ -136,9 +135,9 @@ function createSchemaGridController({
     createTestDataGrid,
     populateGridFromTextSchema,
     syncSchemaTextFromGridBeforeGenerate,
-    getDefnGridApi: () => state.defnGridApi,
-    getDefnGridExtras: () => state.defnGridExtras,
-    getDefnGridBridge: () => state.defnGridBridge,
+    getSchemaGridApi: () => state.schemaGridApi,
+    getSchemaGridExtras: () => state.schemaGridExtras,
+    getSchemaGridBridge: () => state.schemaGridBridge,
   };
 }
 

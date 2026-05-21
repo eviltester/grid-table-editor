@@ -4,10 +4,10 @@
  * - Keeps grid-library wiring and row/text conversion out of the main app-page controller.
  */
 
-import { renderSchemaTextFromGridRows } from '../../shared/test-data/schema-editor-core.js';
-import { populateGridFromSchemaText } from './test-data-grid-schema-text-sync.js';
-import { applyTestDataGridLayout } from './test-data-grid-layout.js';
-import { createGridChromeElements, bindGridChromeControls } from './test-data-grid-controls.js';
+import { renderSchemaTextFromGridRows } from '../../../shared/test-data/schema/schema-editor-core.js';
+import { populateGridFromSchemaText } from '../schema/test-data-grid-schema-text-sync.js';
+import { applyTestDataGridLayout } from '../host/test-data-grid-layout.js';
+import { createGridChromeElements, bindGridChromeControls } from '../host/test-data-grid-host.js';
 
 function createSchemaGridController({
   documentObj = document,

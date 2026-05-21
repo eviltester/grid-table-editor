@@ -1,4 +1,4 @@
-import { parseSchemaText, countEnumRules } from '../../../js/gui_components/shared/test-data/schema-runtime.js';
+import { parseSchemaText, countEnumRules } from '../../../js/gui_components/shared/test-data/schema/schema-runtime.js';
 import { jest } from '@jest/globals';
 
 describe('schema-runtime', () => {

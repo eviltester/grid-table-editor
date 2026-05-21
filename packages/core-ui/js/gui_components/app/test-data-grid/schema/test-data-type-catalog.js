@@ -5,12 +5,15 @@
  * - Provides pure helpers for command extraction from parsed rule specs.
  */
 
-import { getKnownFakerCommandsAlphabetical, getKnownFakerCommandsLongestFirst } from '../../shared/faker-commands.js';
+import {
+  getKnownFakerCommandsAlphabetical,
+  getKnownFakerCommandsLongestFirst,
+} from '../../../shared/faker-commands.js';
 import {
   getKnownDomainCommandsAlphabetical,
   getKnownDomainCommandsLongestFirst,
-} from '../../shared/domain-commands.js';
-import { getVisibleDomainCommands } from '../../shared/test-data/type-option-provider.js';
+} from '../../../shared/domain-commands.js';
+import { getVisibleDomainCommands } from '../../../shared/test-data/help/domain-command-provider.js';
 
 const FAKER_COMMANDS = [];
 const FAKER_COMMANDS_LONGEST_FIRST = [];

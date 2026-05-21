@@ -2,7 +2,7 @@ import {
   mapDataRuleToSchemaRow,
   mapDataRuleToGridRow,
   mapGridRowToSchemaRow,
-} from '../../../js/gui_components/shared/test-data/schema-row-mapper.js';
+} from '../../../js/gui_components/shared/test-data/schema/schema-row-mapper.js';
 
 describe('schema-row-mapper', () => {
   test('maps parsed faker and literal rules into shared schema rows', () => {

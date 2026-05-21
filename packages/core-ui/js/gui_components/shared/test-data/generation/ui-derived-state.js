@@ -4,8 +4,8 @@
  * - Keeps UI enable/show logic deterministic and unit-testable outside page controllers.
  */
 
-import { SOURCE_TYPE_ENUM } from '../schema-row-rule-mapper.js';
-import { countEnumRules } from './schema-runtime.js';
+import { SOURCE_TYPE_ENUM } from '../../schema-row-rule-mapper.js';
+import { countEnumRules } from '../schema/schema-runtime.js';
 
 function hasMinimumEnumColumns(enumCount, { minimum = 2 } = {}) {
   return Number.isFinite(enumCount) && enumCount >= minimum;

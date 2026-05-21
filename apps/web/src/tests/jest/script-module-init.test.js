@@ -66,7 +66,7 @@ describe('script module initialization', () => {
       },
     }));
     jest.unstable_mockModule(
-      '../../../../../packages/core-ui/js/gui_components/app/test-data-grid/test-data-grid-control.js',
+      '../../../../../packages/core-ui/js/gui_components/app/test-data-grid/controller/test-data-grid-controller.js',
       () => ({
         enableTestDataGenerationInterface,
       })

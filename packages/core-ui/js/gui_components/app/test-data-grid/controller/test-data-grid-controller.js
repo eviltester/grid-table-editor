@@ -7,11 +7,16 @@
 
 import { TestDataGenerator } from '@anywaydata/core/data_generation/testDataGenerator.js';
 import { Debouncer } from '@anywaydata/core/utils/debouncer.js';
-import { TEST_DATA_MODES, createAmendedTable, createTableFromGenerator, normaliseCount } from './test-data-amend.js';
+import {
+  TEST_DATA_MODES,
+  createAmendedTable,
+  createTableFromGenerator,
+  normaliseCount,
+} from '../generation/test-data-amend.js';
 import { schemaTextToDataRules, dataRulesToSchemaText } from '@anywaydata/core/data_generation/schema-rules-adapter.js';
 import { PairwiseTestDataGenerator } from '@anywaydata/core/data_generation/all-pairs/pairwiseTestDataGenerator.js';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
-import { buildRuleSpecFromSchemaRow } from '../../shared/schema-row-rule-mapper.js';
+import { buildRuleSpecFromSchemaRow } from '../../../shared/schema-row-rule-mapper.js';
 import {
   FAKER_COMMANDS,
   DOMAIN_COMMANDS,
@@ -22,40 +27,40 @@ import {
   getAgGridTypeEditorValues,
   getFakerCommands,
   getDomainCommands,
-} from './test-data-type-catalog.js';
+} from '../schema/test-data-type-catalog.js';
 import {
   setTestDataStatus,
   clearPendingTestDataStatusReset,
   scheduleTestDataStatusReset,
   yieldToUi,
-} from './test-data-ui-status.js';
-import { createTestDataGenerationService } from './test-data-generation-service.js';
-import { setupDefnGridEditor } from './test-data-grid-engine-setup.js';
+} from '../ui/test-data-ui-status.js';
+import { createTestDataGenerationService } from '../generation/test-data-generation-service.js';
+import { setupDefnGridEditor } from '../grid-engines/test-data-grid-engine-setup.js';
 import {
   bindPrimaryActions,
   bindGenerateCountInput,
   bindModeRadios,
   bindSchemaSampleShortcut,
-} from './test-data-grid-ui-bindings.js';
+} from '../host/test-data-grid-ui-bindings.js';
 import {
   createSchemaTextSyncState,
   showSchemaError,
   bindSchemaTextareaSync,
   initializeSchemaErrorDisplay,
-} from './test-data-grid-schema-text-sync.js';
-import { TEST_DATA_GRID_SAMPLE_SCHEMA_TEXT } from '../../shared/test-data/schema-examples.js';
-import { mapDataRuleToGridRow, mapGridRowToSchemaRow } from './test-data-grid-schema-row-mappers.js';
+} from '../schema/test-data-grid-schema-text-sync.js';
+import { TEST_DATA_GRID_SAMPLE_SCHEMA_TEXT } from '../../../shared/test-data/schema/schema-examples.js';
+import { mapDataRuleToGridRow, mapGridRowToSchemaRow } from '../schema/test-data-grid-schema-row-mappers.js';
 import {
   getGenerationMode as getGenerationModeFromUi,
   applyModeDefaultRowCount as applyModeDefaultRowCountShared,
-} from './test-data-grid-generation-mode.js';
+} from '../controller/test-data-grid-generation-mode.js';
 import {
   renderTestDataGenerationPanel,
   loadSampleSchemaIntoTextArea as loadSampleSchemaIntoTextAreaShared,
-} from './test-data-grid-panel-html.js';
-import { createSchemaGridController } from './test-data-grid-schema-grid-controller.js';
-import { setupTestDataGenerationPanel } from './test-data-grid-panel-coordinator.js';
-import { createTestDataGridActionAdapter } from './test-data-grid-action-adapter.js';
+} from '../host/test-data-grid-panel-html.js';
+import { createSchemaGridController } from '../schema/test-data-grid-schema-grid-controller.js';
+import { setupTestDataGenerationPanel } from '../host/test-data-grid-panel-coordinator.js';
+import { createTestDataGridActionAdapter } from '../controller/test-data-grid-action-adapter.js';
 
 import { faker } from 'https://cdn.skypack.dev/@faker-js/faker@v9.7.0';
 

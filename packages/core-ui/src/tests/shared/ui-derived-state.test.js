@@ -3,7 +3,7 @@ import {
   hasMinimumEnumColumns,
   isPairwiseEligibleForSchemaRows,
   isPairwiseEligibleForDataRules,
-} from '../../../js/gui_components/shared/test-data/ui-derived-state.js';
+} from '../../../js/gui_components/shared/test-data/generation/ui-derived-state.js';
 
 describe('ui-derived-state', () => {
   test('counts enum schema rows and applies minimum threshold', () => {

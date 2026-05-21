@@ -2,7 +2,7 @@ import {
   normaliseGeneratedCellValue,
   normaliseGeneratedRow,
   parseNonNegativeCount,
-} from '../../../js/gui_components/shared/test-data/generation-runtime.js';
+} from '../../../js/gui_components/shared/test-data/generation/generation-runtime.js';
 
 describe('generation-runtime', () => {
   test('normaliseGeneratedCellValue serializes object values', () => {

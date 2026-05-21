@@ -4,7 +4,7 @@ import { GridExtension as TabulatorGridExtension } from '../../../js/gui_compone
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 import { Importer } from '@anywaydata/core/grid/importer.js';
 import { Exporter } from '@anywaydata/core/grid/exporter.js';
-import { GuardedColumnEdits } from '../../../js/grid/guarded-column-edits.js';
+import { GuardedColumnEdits } from '../../../js/gui_components/data-grid-editor/shared/guarded-column-edits.js';
 import Papa from 'papaparse';
 
 function flushAsync() {

@@ -2,7 +2,7 @@ import { JSDOM } from 'jsdom';
 import {
   getGenerationMode,
   applyModeDefaultRowCount,
-} from '../../../js/gui_components/app/test-data-grid/test-data-grid-generation-mode.js';
+} from '../../../js/gui_components/app/test-data-grid/controller/test-data-grid-generation-mode.js';
 
 describe('test-data-grid-generation-mode', () => {
   let dom;

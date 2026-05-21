@@ -5,8 +5,8 @@
  * - Exposes a normalized bridge API for row CRUD and current row reads.
  */
 
-import { GridExtension as TabulatorGridExtension } from '../../data-grid-editor/tabulator/gridExtension-tabulator.js';
-import { createTabulatorDraftSync } from '../../shared/test-data/tabulator-draft-sync.js';
+import { GridExtension as TabulatorGridExtension } from '../../../data-grid-editor/tabulator/gridExtension-tabulator.js';
+import { createTabulatorDraftSync } from '../../../shared/test-data/grid-sync/tabulator-draft-sync.js';
 
 function createTabulatorTypeSelectEditor({ getTabulatorTypeEditorValues, FAKER_SECTION_VALUE, DOMAIN_SECTION_VALUE }) {
   return function tabulatorTypeSelectEditor(cell, onRendered, success, cancel) {

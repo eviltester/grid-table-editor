@@ -3,7 +3,7 @@ import { JSDOM } from 'jsdom';
 import {
   createGridChromeElements,
   bindGridChromeControls,
-} from '../../../js/gui_components/app/test-data-grid/test-data-grid-controls.js';
+} from '../../../js/gui_components/app/test-data-grid/host/test-data-grid-host.js';
 
 describe('test-data-grid controls', () => {
   let dom;

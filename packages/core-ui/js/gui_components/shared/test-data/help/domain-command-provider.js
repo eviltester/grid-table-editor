@@ -1,10 +1,10 @@
 /*
  * Responsibilities:
  * - Provides shared metadata-driven filtering for domain command visibility.
- * - Centralizes return-type normalization for UI type-option filtering.
+ * - Centralizes return-type normalization for domain command dropdown filtering.
  */
 
-import { getDomainCommandHelp } from '../domain-command-help-metadata.js';
+import { getDomainCommandHelp } from '../../domain-command-help-metadata.js';
 
 const DOMAIN_NON_SCALAR_RETURN_TYPES = new Set(['array', 'object']);
 

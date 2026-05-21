@@ -4,7 +4,7 @@
  * - Centralizes generator creation, compile/validate steps, and preview/pairwise table building.
  */
 
-import { parseSchemaText } from './schema-runtime.js';
+import { parseSchemaText } from '../schema/schema-runtime.js';
 import { createTableFromGenerator, createPairwiseTableFromGenerator } from './generation-runtime.js';
 
 function createGeneratorFromDataRules({ dataRules = [], TestDataGeneratorClass, faker, RandExp }) {

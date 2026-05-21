@@ -5,7 +5,7 @@ import {
   showSchemaError,
   populateGridFromSchemaText,
   bindSchemaTextareaSync,
-} from '../../../js/gui_components/app/test-data-grid/test-data-grid-schema-text-sync.js';
+} from '../../../js/gui_components/app/test-data-grid/schema/test-data-grid-schema-text-sync.js';
 
 describe('test-data-grid schema text sync', () => {
   let dom;

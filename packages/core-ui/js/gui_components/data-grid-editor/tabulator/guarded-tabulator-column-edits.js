@@ -1,126 +1,38 @@
-import { showTextInputModal } from '../../shared/modal-text-input.js';
-import { showConfirmModal } from '../../shared/modal-confirm.js';
+import { GuardedColumnEditWorkflow } from '../shared/guarded-column-edit-workflow.js';
 
 class GuardedTabulatorColumnEdits {
-  constructor(gridExtension, { surfaceError, requestTextInput, requestConfirm, shouldEnforceUniqueNames } = {}) {
+  constructor(gridExtension, options = {}) {
     this.gridExtras = gridExtension;
-    this.surfaceError = typeof surfaceError === 'function' ? surfaceError : null;
-    this.requestTextInput =
-      typeof requestTextInput === 'function' ? requestTextInput : (options) => showTextInputModal(options);
-    this.requestConfirm =
-      typeof requestConfirm === 'function' ? requestConfirm : (options) => showConfirmModal(options);
-    this.shouldEnforceUniqueNames =
-      typeof shouldEnforceUniqueNames === 'function' ? shouldEnforceUniqueNames : () => true;
-  }
-
-  // todo: ids here look suspiciously ag-grid specific
-
-  showError(message) {
-    if (this.surfaceError) {
-      this.surfaceError(message);
-      return;
-    }
-    console.error(message);
+    this.workflow = new GuardedColumnEditWorkflow(gridExtension, options);
   }
 
   async renameColumn(column) {
-    if (column == null || column == undefined) {
-      this.showError('Column not found');
-      return;
-    }
-
-    const currentName = String(column.getDefinition()?.title ?? '');
-    const colTitle = await this.requestTextInput({
-      title: 'Column Name',
-      initialValue: column.getDefinition().title,
+    return this.workflow.rename(column, {
+      getCurrentName: (targetColumn) => targetColumn?.getDefinition?.()?.title,
+      applyRename: (targetColumn, nextName) => this.gridExtras.renameColumn(targetColumn, nextName),
+      logLabel: (targetColumn) => targetColumn?.getDefinition?.()?.title,
     });
-
-    if (colTitle != null && colTitle != '') {
-      console.log('rename column ' + column.getDefinition().title + ' with this name: ' + colTitle);
-    } else {
-      return false;
-    }
-
-    if (colTitle === currentName) {
-      return true;
-    }
-
-    if (this.shouldEnforceUniqueNames() && this.gridExtras.nameAlreadyExists(colTitle)) {
-      this.showError(`A column with name ${colTitle} already exists`);
-      return false;
-    }
-
-    this.gridExtras.renameColumn(column, colTitle);
   }
 
   async deleteColumn(column) {
-    if (column == null || column == undefined) {
-      this.showError('Column not found');
-      return;
-    }
-
-    if (this.gridExtras.getNumberOfColumns() == 1) {
-      this.showError('Cannot Delete The Only Column');
-      return;
-    }
-
-    const confirmed = await this.requestConfirm({
-      title: 'Delete Column',
-      message: `Are you Sure You Want to Delete Column Named ${column.getDefinition().title}?`,
+    return this.workflow.delete(column, {
+      getCurrentName: (targetColumn) => targetColumn?.getDefinition?.()?.title,
+      applyDelete: (targetColumn) => this.gridExtras.deleteColumn(targetColumn),
     });
-    if (!confirmed) return;
-
-    this.gridExtras.deleteColumn(column);
   }
 
   async duplicateColumn(position, column) {
-    if (column == null || column == undefined) {
-      this.showError('Column not found');
-      return;
-    }
-
-    const colTitle = await this.requestTextInput({
-      title: 'Copy Column As',
-      initialValue: '',
+    return this.workflow.duplicate(position, column, {
+      applyDuplicate: (nextPosition, targetColumn, nextName) =>
+        this.gridExtras.duplicateColumn(nextPosition, targetColumn, nextName),
     });
-
-    if (colTitle != null && colTitle != '') {
-      console.log('duplicate a column with this name: ' + colTitle);
-    } else {
-      return;
-    }
-
-    if (this.shouldEnforceUniqueNames() && this.gridExtras.nameAlreadyExists(colTitle)) {
-      this.showError(`A column with name ${colTitle} already exists`);
-      return false;
-    }
-
-    this.gridExtras.duplicateColumn(position, column, colTitle);
   }
 
   async addNeighbourColumn(position, existingColumn) {
-    if (existingColumn == null || existingColumn == undefined) {
-      this.showError('Column not found');
-      return;
-    }
-
-    const colTitle = await this.requestTextInput({
-      title: 'New Column Name',
-      initialValue: '',
+    return this.workflow.addNeighbour(position, existingColumn, {
+      applyAddNeighbour: (nextPosition, targetColumn, nextName) =>
+        this.gridExtras.addNeighbourColumn(nextPosition, targetColumn, nextName),
     });
-
-    if (colTitle != null && colTitle != '') {
-      console.log('create a new neighbour column with this name: ' + colTitle);
-    } else {
-      return;
-    }
-
-    if (this.shouldEnforceUniqueNames() && this.gridExtras.nameAlreadyExists(colTitle)) {
-      this.showError(`A column with name ${colTitle} already exists`);
-      return false;
-    }
-
-    this.gridExtras.addNeighbourColumn(position, existingColumn, colTitle);
   }
 }
 

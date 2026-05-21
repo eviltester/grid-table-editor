@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
-import { createTestDataGridControl } from '../../../js/gui_components/app/test-data-grid/test-data-grid-control.js';
+import { createTestDataGridControl } from '../../../js/gui_components/app/test-data-grid/controller/test-data-grid-controller.js';
 
 describe('test data grid control', () => {
   let dom;

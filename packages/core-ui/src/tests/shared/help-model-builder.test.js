@@ -1,7 +1,7 @@
 import {
   buildSchemaHelpModel,
   renderSchemaHelpHtml,
-} from '../../../js/gui_components/shared/test-data/help-model-builder.js';
+} from '../../../js/gui_components/shared/test-data/help/help-model-builder.js';
 
 describe('help-model-builder', () => {
   test('builds faker command help from metadata', () => {

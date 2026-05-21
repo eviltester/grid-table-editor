@@ -15,29 +15,24 @@ import { getKnownFakerCommandsAlphabetical } from '../shared/faker-commands.js';
 import { getKnownDomainCommandsAlphabetical } from '../shared/domain-commands.js';
 import { escapeHtml } from '../shared/html-escape.js';
 import { TimedErrorDisplay } from '../shared/timed-error-display.js';
-import { schemaErrorsToText } from '../shared/test-data/schema-error-text.js';
-import { getVisibleDomainCommands } from '../shared/test-data/type-option-provider.js';
-import { createStatusPresenter } from '../shared/test-data/status-presenter.js';
-import { parseNonNegativeCount } from '../shared/test-data/generation-runtime.js';
-import { isPairwiseEligibleForSchemaRows } from '../shared/test-data/ui-derived-state.js';
+import { schemaErrorsToText } from '../shared/test-data/schema/schema-error-text.js';
+import { getVisibleDomainCommands } from '../shared/test-data/help/domain-command-provider.js';
+import { createStatusPresenter } from '../shared/test-data/ui/status-presenter.js';
+import { parseNonNegativeCount } from '../shared/test-data/generation/generation-runtime.js';
+import { isPairwiseEligibleForSchemaRows } from '../shared/test-data/generation/ui-derived-state.js';
 import {
   schemaRowsToSpec as schemaRowsToSpecCore,
   schemaRowsToSpecWithTokens as schemaRowsToSpecWithTokensCore,
   validateSchemaRows as validateSchemaRowsCore,
-} from '../shared/test-data/schema-editor-core.js';
-import { mapDataRuleToSchemaRow } from '../shared/test-data/schema-row-mapper.js';
-import { buildSchemaHelpModel, renderSchemaHelpHtml } from '../shared/test-data/help-model-builder.js';
-import {
-  parseSchemaTextToRows as parseSchemaTextToRowsShared,
-  addSchemaRowAfter as addSchemaRowAfterShared,
-  removeSchemaRowAt as removeSchemaRowAtShared,
-  moveSchemaRow as moveSchemaRowShared,
-} from '../shared/test-data/schema-controller.js';
+} from '../shared/test-data/schema/schema-editor-core.js';
+import { mapDataRuleToSchemaRow } from '../shared/test-data/schema/schema-row-mapper.js';
+import { buildSchemaHelpModel, renderSchemaHelpHtml } from '../shared/test-data/help/help-model-builder.js';
+import { createSchemaEditingSession } from '../shared/test-data/schema/schema-controller.js';
 import {
   createConfiguredGeneratorFromSchemaRows,
   createPreviewDataTable,
   createPairwiseDataTable,
-} from '../shared/test-data/generation-controller.js';
+} from '../shared/test-data/generation/generation-controller.js';
 import {
   SOURCE_TYPE_FAKER,
   SOURCE_TYPE_DOMAIN,
@@ -52,7 +47,7 @@ import {
   extractRegexValueFromRuleSpec,
   buildDataRuleFromSchemaRow,
 } from '../shared/schema-row-rule-mapper.js';
-import { GENERATOR_DEFAULT_EXAMPLE_SCHEMA_TEXT } from '../shared/test-data/schema-examples.js';
+import { GENERATOR_DEFAULT_EXAMPLE_SCHEMA_TEXT } from '../shared/test-data/schema/schema-examples.js';
 
 const GENERATE_TO_FILE_HELP_URL = 'https://anywaydata.com/docs/test-data/generate-to-file';
 function schemaRowsToSpec(schemaRows) {
@@ -102,15 +97,48 @@ class DataGeneratorPage {
     this.TestDataGeneratorClass = TestDataGeneratorClass;
 
     this.rowIdCounter = 1;
-    this.schemaRows = [];
-    this.schemaTextTokens = [];
+    this.schemaSession = createSchemaEditingSession({
+      createBlankSchemaRow: () => this.createBlankSchemaRow(),
+      schemaTextToDataRules,
+      faker: this.faker,
+      RandExp: this.RandExp,
+      mapRuleToRow: (rule, leadingTextLines = []) => {
+        const row = this.ruleToSchemaRow(rule);
+        row.leadingTextLines = Array.isArray(leadingTextLines) ? leadingTextLines.slice() : [];
+        return row;
+      },
+      schemaRowsToSpecWithTokens,
+    });
     this.fakerCommands = getKnownFakerCommandsAlphabetical().filter((command) => command !== 'RegEx');
     this.domainCommands = getKnownDomainCommandsAlphabetical();
-    this.isTextMode = false;
     this.optionsPanels = {};
     this.statusPresenter = undefined;
     this.schemaErrorDisplay = undefined;
     this.lastPreviewDataTable = undefined;
+  }
+
+  get schemaRows() {
+    return this.schemaSession.getRows();
+  }
+
+  set schemaRows(rows) {
+    this.schemaSession.setRows(rows);
+  }
+
+  get schemaTextTokens() {
+    return this.schemaSession.getTokens();
+  }
+
+  set schemaTextTokens(tokens) {
+    this.schemaSession.setTokens(tokens);
+  }
+
+  get isTextMode() {
+    return this.schemaSession.getTextMode();
+  }
+
+  set isTextMode(isTextMode) {
+    this.schemaSession.setTextMode(isTextMode);
   }
 
   init() {
@@ -132,7 +160,6 @@ class DataGeneratorPage {
       elementId: 'generatorStatusText',
       hideWhenEmpty: false,
     });
-    this.schemaRows = [this.createBlankSchemaRow()];
     this.renderSchemaRows();
     this.updateSchemaEditModeView();
 
@@ -504,23 +531,23 @@ class DataGeneratorPage {
     this.hideVisibleHelpTooltips();
     if (this.isTextMode) {
       const textArea = this.documentObj.getElementById('generatorSchemaText');
-      const parsed = this.parseSchemaTextToRows(textArea?.value || '');
-      if (parsed.errors.length > 0) {
-        this.showSchemaErrorStatus(schemaErrorsToText(parsed.errors));
+      const toggleResult = this.schemaSession.toggleMode({
+        schemaText: textArea?.value || '',
+        preserveEmptyRows: true,
+      });
+      if (!toggleResult.ok) {
+        this.showSchemaErrorStatus(schemaErrorsToText(toggleResult.errors));
         return;
       }
       this.clearSchemaErrorStatus();
-      this.schemaRows = parsed.rows.length > 0 ? parsed.rows : [this.createBlankSchemaRow()];
-      this.schemaTextTokens = parsed.tokens || [];
-      this.isTextMode = false;
       this.updateSchemaEditModeView();
       this.renderSchemaRows();
       return;
     }
 
     const textArea = this.documentObj.getElementById('generatorSchemaText');
-    textArea.value = schemaRowsToSpecWithTokens(this.schemaRows, this.schemaTextTokens);
-    this.isTextMode = true;
+    const toggleResult = this.schemaSession.toggleMode();
+    textArea.value = toggleResult.schemaText || '';
     this.updateSchemaEditModeView();
   }
 
@@ -566,33 +593,8 @@ class DataGeneratorPage {
     }
   }
 
-  getTrailingTextLinesFromSchemaTokens() {
-    if (!Array.isArray(this.schemaTextTokens) || this.schemaTextTokens.length === 0) {
-      return [];
-    }
-
-    const trailing = [];
-    for (let index = this.schemaTextTokens.length - 1; index >= 0; index -= 1) {
-      const token = this.schemaTextTokens[index];
-      if (token?.kind === 'rule') {
-        break;
-      }
-      if (token?.kind === 'blank' || token?.kind === 'comment') {
-        trailing.unshift(String(token.text ?? ''));
-      }
-    }
-    return trailing;
-  }
-
   invalidateSchemaTokensFromRows() {
-    const trailingLines = this.getTrailingTextLinesFromSchemaTokens();
-    if (trailingLines.length > 0 && this.schemaRows.length > 0) {
-      const lastRow = this.schemaRows[this.schemaRows.length - 1];
-      const existingComments = String(lastRow?.comments ?? '');
-      const trailingText = trailingLines.join('\n');
-      lastRow.comments = existingComments.length > 0 ? `${existingComments}\n${trailingText}` : trailingText;
-    }
-    this.schemaTextTokens = [];
+    this.schemaSession.invalidateTokensFromRows();
   }
 
   handleGlobalButtonClick(event) {
@@ -640,42 +642,21 @@ enum(active,inactive,pending)</pre>
   }
 
   parseSchemaTextToRows(schemaText) {
-    const text = String(schemaText ?? '');
-    if (text.trim().length === 0) {
-      return { rows: [], errors: [], tokens: [] };
-    }
-
-    return parseSchemaTextToRowsShared({
-      schemaTextToDataRules,
-      schemaText: text,
-      faker: this.faker,
-      RandExp: this.RandExp,
-      mapRuleToRow: (rule, leadingTextLines = []) => {
-        const row = this.ruleToSchemaRow(rule);
-        row.leadingTextLines = Array.isArray(leadingTextLines) ? leadingTextLines.slice() : [];
-        return row;
-      },
-    });
+    return this.schemaSession.parseTextToRows(schemaText);
   }
 
   syncSchemaRowsFromTextMode({ showErrors = false } = {}) {
-    if (!this.isTextMode) {
-      return { rows: this.schemaRows, errors: [], tokens: this.schemaTextTokens };
-    }
-
     const textArea = this.documentObj.getElementById('generatorSchemaText');
-    const parsed = this.parseSchemaTextToRows(textArea?.value || '');
+    const parsed = this.schemaSession.syncRowsFromText({
+      schemaText: textArea?.value || '',
+      preserveEmptyRows: false,
+    });
     if (parsed.errors.length > 0) {
       if (showErrors) {
         this.surfacePageError(schemaErrorsToText(parsed.errors), { useSchemaStatus: true });
       }
       return parsed;
     }
-
-    // Keep empty text schemas as zero rows while in text mode so validation can
-    // report "Add at least one schema row." instead of introducing a synthetic blank row.
-    this.schemaRows = parsed.rows;
-    this.schemaTextTokens = parsed.tokens || [];
     return { rows: this.schemaRows, errors: [], tokens: this.schemaTextTokens };
   }
 
@@ -707,8 +688,8 @@ enum(active,inactive,pending)</pre>
                 <div class="generator-row-actions">
                     <button class="icon-button" data-action="add" data-row-id="${row.id}" title="Add field">+</button>
                     <button class="icon-button" data-action="remove" data-row-id="${row.id}" title="Remove field">-</button>
-                    <button class="icon-button" data-action="up" data-row-id="${row.id}" title="Move up" ${index === 0 ? 'disabled' : ''}>↑</button>
-                    <button class="icon-button" data-action="down" data-row-id="${row.id}" title="Move down" ${index === this.schemaRows.length - 1 ? 'disabled' : ''}>↓</button>
+                    <button class="icon-button" data-action="up" data-row-id="${row.id}" title="Move up" ${index === 0 ? 'disabled' : ''}>â†‘</button>
+                    <button class="icon-button" data-action="down" data-row-id="${row.id}" title="Move down" ${index === this.schemaRows.length - 1 ? 'disabled' : ''}>â†“</button>
                 </div>
                 <input type="text" data-field="name" placeholder="Column Name" value="${escapeHtml(row.name)}">
                 <select data-field="sourceType">
@@ -770,8 +751,8 @@ enum(active,inactive,pending)</pre>
     }
 
     const rowId = rowElem.getAttribute('data-row-id');
-    const row = this.schemaRows.find((entry) => entry.id === rowId);
-    if (!row) {
+    const index = this.schemaRows.findIndex((entry) => entry.id === rowId);
+    if (index < 0) {
       return;
     }
 
@@ -780,19 +761,25 @@ enum(active,inactive,pending)</pre>
       return;
     }
 
-    this.invalidateSchemaTokensFromRows();
-    row[fieldName] = event.target.value;
+    const updatedRow = this.schemaSession.updateRowAtIndex(index, (currentRow) => ({
+      ...currentRow,
+      [fieldName]: event.target.value,
+    }));
+    if (!updatedRow) {
+      return;
+    }
+
     if (fieldName === 'sourceType') {
-      row.sourceType = normaliseSourceType(row.sourceType);
+      updatedRow.sourceType = normaliseSourceType(updatedRow.sourceType);
       this.renderSchemaRows();
       return;
     }
 
     if (fieldName === 'command') {
-      if (row.sourceType === SOURCE_TYPE_DOMAIN) {
-        row.command = normaliseDomainCommand(row.command);
+      if (updatedRow.sourceType === SOURCE_TYPE_DOMAIN) {
+        updatedRow.command = normaliseDomainCommand(updatedRow.command);
       } else {
-        row.command = normaliseFakerCommand(row.command);
+        updatedRow.command = normaliseFakerCommand(updatedRow.command);
       }
       this.renderSchemaRows();
     }
@@ -831,20 +818,17 @@ enum(active,inactive,pending)</pre>
   }
 
   addRowAfter(index) {
-    this.schemaRows = addSchemaRowAfterShared(this.schemaRows, index, () => this.createBlankSchemaRow());
-    this.invalidateSchemaTokensFromRows();
+    this.schemaSession.addRowAfterIndex(index);
     this.renderSchemaRows();
   }
 
   removeRow(index) {
-    this.schemaRows = removeSchemaRowAtShared(this.schemaRows, index, () => this.createBlankSchemaRow());
-    this.invalidateSchemaTokensFromRows();
+    this.schemaSession.removeRowAtIndex(index);
     this.renderSchemaRows();
   }
 
   moveRow(index, direction) {
-    this.schemaRows = moveSchemaRowShared(this.schemaRows, index, direction);
-    this.invalidateSchemaTokensFromRows();
+    this.schemaSession.moveRowAtIndex(index, direction);
     this.renderSchemaRows();
   }
 

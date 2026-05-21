@@ -5,12 +5,12 @@
  * - Owns generation progress/status transitions and preview refresh behavior.
  */
 
-import { schemaErrorsToText } from '../../shared/test-data/schema-error-text.js';
+import { schemaErrorsToText } from '../../../shared/test-data/schema/schema-error-text.js';
 import {
   createConfiguredGeneratorFromSchemaText,
   createPairwiseDataTable,
-} from '../../shared/test-data/generation-controller.js';
-import { isPairwiseEligibleForDataRules } from '../../shared/test-data/ui-derived-state.js';
+} from '../../../shared/test-data/generation/generation-controller.js';
+import { isPairwiseEligibleForDataRules } from '../../../shared/test-data/generation/ui-derived-state.js';
 
 function createTestDataGenerationService({
   schemaTextToDataRules,

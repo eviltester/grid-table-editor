@@ -5,9 +5,9 @@
  * - Keeps command help behavior unit-testable without booting full pages.
  */
 
-import { getFakerCommandHelp } from '../faker-command-help-metadata.js';
-import { getDomainCommandHelp } from '../domain-command-help-metadata.js';
-import { escapeHtml } from '../html-escape.js';
+import { getFakerCommandHelp } from '../../faker-command-help-metadata.js';
+import { getDomainCommandHelp } from '../../domain-command-help-metadata.js';
+import { escapeHtml } from '../../html-escape.js';
 import {
   SOURCE_TYPE_FAKER,
   SOURCE_TYPE_DOMAIN,
@@ -17,7 +17,7 @@ import {
   normaliseFakerCommand,
   normaliseDomainCommand,
   normaliseSourceType,
-} from '../schema-row-rule-mapper.js';
+} from '../../schema-row-rule-mapper.js';
 
 const HELP_URLS = Object.freeze({
   regex: 'https://anywaydata.com/docs/test-data/regex-test-data',

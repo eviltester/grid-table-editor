@@ -15,9 +15,9 @@ import {
   extractRegexValueFromRuleSpec,
   normaliseDomainCommand,
   normaliseFakerCommand,
-} from '../schema-row-rule-mapper.js';
-import { getKnownFakerCommandsLongestFirst } from '../faker-commands.js';
-import { getKnownDomainCommandsLongestFirst, getDomainKeywordByCommand } from '../domain-commands.js';
+} from '../../schema-row-rule-mapper.js';
+import { getKnownFakerCommandsLongestFirst } from '../../faker-commands.js';
+import { getKnownDomainCommandsLongestFirst, getDomainKeywordByCommand } from '../../domain-commands.js';
 import { extractFakerCommandAndParams, extractDomainCommandAndParams } from './command-spec-parser.js';
 
 const FAKER_COMMANDS_LONGEST_FIRST = getKnownFakerCommandsLongestFirst();

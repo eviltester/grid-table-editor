@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
-import { createAgGridDraftSync } from '../../../js/gui_components/shared/test-data/ag-grid-draft-sync.js';
+import { createAgGridDraftSync } from '../../../js/gui_components/shared/test-data/grid-sync/ag-grid-draft-sync.js';
 
 describe('ag-grid draft sync', () => {
   let dom;

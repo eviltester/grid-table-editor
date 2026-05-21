@@ -5,9 +5,9 @@
  * - Exposes a normalized bridge API for row CRUD and ordered row reads.
  */
 
-import { GridExtension as AgGridExtension } from '../../data-grid-editor/ag-grid/gridExtension-ag-grid.js';
-import { SelectFilterEditor } from '../../data-grid-editor/ag-grid/select-filter-editor.js';
-import { createAgGridDraftSync } from '../../shared/test-data/ag-grid-draft-sync.js';
+import { GridExtension as AgGridExtension } from '../../../data-grid-editor/ag-grid/gridExtension-ag-grid.js';
+import { SelectFilterEditor } from '../../../data-grid-editor/ag-grid/select-filter-editor.js';
+import { createAgGridDraftSync } from '../../../shared/test-data/grid-sync/ag-grid-draft-sync.js';
 
 function setupAgGridDefnEditor({
   tableDiv,

@@ -5,8 +5,8 @@
  * - Binds debounced schema textarea input parsing.
  */
 
-import { TimedErrorDisplay } from '../../shared/timed-error-display.js';
-import { parseSchemaTextToRows } from '../../shared/test-data/schema-controller.js';
+import { TimedErrorDisplay } from '../../../shared/timed-error-display.js';
+import { parseSchemaTextToRows } from '../../../shared/test-data/schema/schema-controller.js';
 
 function createSchemaTextSyncState() {
   return {

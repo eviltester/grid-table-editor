@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
-import { createTabulatorDraftSync } from '../../../js/gui_components/shared/test-data/tabulator-draft-sync.js';
+import { createTabulatorDraftSync } from '../../../js/gui_components/shared/test-data/grid-sync/tabulator-draft-sync.js';
 
 describe('tabulator draft sync', () => {
   let dom;

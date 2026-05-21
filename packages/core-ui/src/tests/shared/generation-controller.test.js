@@ -3,7 +3,7 @@ import {
   createConfiguredGeneratorFromSchemaRows,
   createPreviewDataTable,
   createPairwiseDataTable,
-} from '../../../js/gui_components/shared/test-data/generation-controller.js';
+} from '../../../js/gui_components/shared/test-data/generation/generation-controller.js';
 import { jest } from '@jest/globals';
 
 class FakeGenericDataTable {

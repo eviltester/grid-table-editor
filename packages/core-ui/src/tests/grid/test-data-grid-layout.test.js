@@ -1,5 +1,5 @@
 import { JSDOM } from 'jsdom';
-import { applyTestDataGridLayout } from '../../../js/gui_components/app/test-data-grid/test-data-grid-layout.js';
+import { applyTestDataGridLayout } from '../../../js/gui_components/app/test-data-grid/host/test-data-grid-layout.js';
 
 describe('test-data-grid layout', () => {
   let dom;

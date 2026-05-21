@@ -1,7 +1,7 @@
 import {
   extractFakerCommandAndParams,
   extractDomainCommandAndParams,
-} from '../../../js/gui_components/shared/test-data/command-spec-parser.js';
+} from '../../../js/gui_components/shared/test-data/schema/command-spec-parser.js';
 
 describe('command-spec-parser', () => {
   test('extractFakerCommandAndParams splits command and params by longest match', () => {

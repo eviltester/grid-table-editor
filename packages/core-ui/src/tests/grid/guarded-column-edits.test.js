@@ -1,5 +1,5 @@
 import { jest } from '@jest/globals';
-import { GuardedColumnEdits } from '../../../js/grid/guarded-column-edits.js';
+import { GuardedColumnEdits } from '../../../js/gui_components/data-grid-editor/shared/guarded-column-edits.js';
 import { GuardedTabulatorColumnEdits } from '../../../js/gui_components/data-grid-editor/tabulator/guarded-tabulator-column-edits.js';
 
 function createColumn(title = 'Old Name') {

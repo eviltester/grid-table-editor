@@ -38,4 +38,13 @@ describe('Can validate Faker TestDataRules using FakerTestDataRuleValidator', ()
     validator.validate(rule);
     expect(validator.isValid()).toBe(false);
   });
+
+  test('accepts helpers.mustache with js-style object literal arguments', () => {
+    const rule = new TestDataRule('Test', 'helpers.mustache("{{name}}", { name: "Ada" })');
+    rule.type = 'faker';
+
+    const validator = new FakerTestDataRuleValidator(faker);
+    validator.validate(rule);
+    expect(validator.isValid()).toBe(true);
+  });
 });

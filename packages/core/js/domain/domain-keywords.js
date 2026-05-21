@@ -70,6 +70,7 @@ function buildDomainKeywordCatalog(definitions = DOMAIN_KEYWORD_DEFINITIONS) {
               type: String(arg?.type || '').trim(),
               required: arg?.required === true,
               description: String(arg?.description || '').trim(),
+              examples: Array.isArray(arg?.examples) ? arg.examples.filter((value) => value !== undefined) : [],
             }))
           : [],
       },
@@ -171,12 +172,27 @@ function isTypeMatch(value, typeName) {
   const allowed = raw.split('|').map((entry) => entry.trim());
   for (const item of allowed) {
     if (item === 'string' && typeof value === 'string') return true;
+    if (item === 'integer' && typeof value === 'number' && Number.isInteger(value)) return true;
     if (item === 'number' && typeof value === 'number' && Number.isFinite(value)) return true;
+    if (item === 'regexp' && (value instanceof RegExp || typeof value === 'string')) return true;
     if (item === 'boolean' && typeof value === 'boolean') return true;
     if (item === 'array' && Array.isArray(value)) return true;
     if (item === 'object' && value !== null && typeof value === 'object' && !Array.isArray(value)) return true;
   }
   return false;
+}
+
+function coerceHelpArgValue(spec, value) {
+  const allowedTypes = String(spec?.type || '')
+    .split('|')
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+
+  if (allowedTypes.includes('regexp') && typeof value === 'string') {
+    return new RegExp(value);
+  }
+
+  return value;
 }
 
 function applyFakerArgTransform(keyword, args = []) {
@@ -199,7 +215,7 @@ function applyFakerArgTransform(keyword, args = []) {
       if (!key) {
         continue;
       }
-      options[key] = argValue;
+      options[key] = coerceHelpArgValue(argSchema[index], argValue);
     }
     return Object.keys(options).length > 0 ? [options] : [];
   }
@@ -225,6 +241,9 @@ function validateDomainKeywordArgs(keyword, args = []) {
       return { ok: false, error: `Missing required argument at position ${index}: ${spec.name}` };
     }
     if (typeof value !== 'undefined' && !isTypeMatch(value, spec.type)) {
+      if (String(spec.type || '').trim() === 'integer') {
+        return { ok: false, error: `Invalid argument for ${spec.name}: expected an integer.` };
+      }
       return {
         ok: false,
         error: `Invalid argument type at position ${index}: ${spec.name} expected ${spec.type}`,

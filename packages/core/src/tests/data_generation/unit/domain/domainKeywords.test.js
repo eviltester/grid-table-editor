@@ -331,7 +331,9 @@ function sampleValueForType(type) {
     .split('|')
     .map((entry) => entry.trim());
 
+  if (allowed.includes('integer')) return 7;
   if (allowed.includes('number')) return 7;
+  if (allowed.includes('regexp')) return '[A-Z]';
   if (allowed.includes('boolean')) return true;
   if (allowed.includes('array')) return ['x', 'y'];
   if (allowed.includes('object')) return { key: 'value' };

@@ -53,4 +53,34 @@ describe('faker command help metadata', () => {
     expect(nestedPropertyAccess.summary.length).toBeGreaterThan(0);
     expect(Array.isArray(nestedPropertyAccess.params)).toBe(true);
   });
+
+  test('includes curated helper descriptions and examples', () => {
+    const mustache = getFakerCommandHelp('helpers.mustache');
+    const arrayElement = getFakerCommandHelp('helpers.arrayElement');
+    const rangeToNumber = getFakerCommandHelp('helpers.rangeToNumber');
+
+    expect(mustache.summary).toContain('Replaces {{placeholder}} tokens');
+    expect(mustache.params).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          name: 'data',
+          description: expect.stringContaining('replacement values'),
+        }),
+      ])
+    );
+    expect(mustache.examples).toContain('helpers.mustache("Hello {{name}}", { name: "Ada" })');
+
+    expect(arrayElement.summary).toContain('one random element');
+    expect(arrayElement.examples).toContain('helpers.arrayElement(["A", "B", "C"])');
+
+    expect(rangeToNumber.params).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          name: 'numberOrRange',
+          description: expect.stringContaining('range object'),
+        }),
+      ])
+    );
+    expect(rangeToNumber.examples).toContain('helpers.rangeToNumber({ min: 1, max: 2 })');
+  });
 });

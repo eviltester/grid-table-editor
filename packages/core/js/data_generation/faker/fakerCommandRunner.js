@@ -3,29 +3,18 @@
  */
 
 import { errorResponse } from '../ruleResponse.js';
+import { parseFakerLiteralArguments } from './safeLiteralArgumentParser.js';
 
 function parseArgumentsSafely(argString) {
   if (!argString || argString === '()') {
     return [];
   }
-
-  // Remove outer parentheses
-  const trimmed = argString.trim();
-  if (!trimmed.startsWith('(') || !trimmed.endsWith(')')) {
-    throw new Error('Invalid argument format: must be enclosed in parentheses');
-  }
-
-  const argsBody = trimmed.slice(1, -1).trim();
-  if (argsBody.length === 0) {
-    return [];
-  }
-
   try {
-    // For simple cases, try to parse as JSON array
-    const jsonArray = `[${argsBody}]`;
-    return JSON.parse(jsonArray);
-  } catch {
-    // If JSON parsing fails, indicate we need fallback
+    return parseFakerLiteralArguments(argString);
+  } catch (error) {
+    if (error?.message === 'Invalid argument format: must be enclosed in parentheses') {
+      throw error;
+    }
     throw new Error('NEEDS_FALLBACK');
   }
 }

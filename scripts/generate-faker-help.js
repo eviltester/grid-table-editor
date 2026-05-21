@@ -16,7 +16,9 @@ function sanitizeDocLine(line) {
 }
 
 function extractSummary(jsDocBlock) {
-  const lines = String(jsDocBlock || '').split('\n').map(sanitizeDocLine);
+  const lines = String(jsDocBlock || '')
+    .split('\n')
+    .map(sanitizeDocLine);
   for (const line of lines) {
     if (!line || line.startsWith('@')) {
       continue;
@@ -149,13 +151,7 @@ function splitTopLevel(text, separatorChar) {
       if (char === '<') depthAngle++;
       if (char === '>') depthAngle = Math.max(0, depthAngle - 1);
 
-      if (
-        char === separatorChar &&
-        depthParen === 0 &&
-        depthBrace === 0 &&
-        depthBracket === 0 &&
-        depthAngle === 0
-      ) {
+      if (char === separatorChar && depthParen === 0 && depthBrace === 0 && depthBracket === 0 && depthAngle === 0) {
         const trimmed = current.trim();
         if (trimmed) {
           segments.push(trimmed);
@@ -182,7 +178,10 @@ function extractParams(parameterText, aliases, enumValues) {
 
   const params = [];
   for (const segment of splitTopLevel(parameterText, ',')) {
-    const cleaned = segment.replace(/\s*=\s*.+$/, '').replace(/^\.{3}/, '').trim();
+    const cleaned = segment
+      .replace(/\s*=\s*.+$/, '')
+      .replace(/^\.{3}/, '')
+      .trim();
     const match = cleaned.match(/^([A-Za-z_$][\w$]*)(\?)?\s*:\s*([\s\S]+)$/);
     if (!match) {
       continue;
@@ -200,7 +199,9 @@ function extractParams(parameterText, aliases, enumValues) {
 
 function extractParamDocs(jsDocBlock) {
   const descriptionsByName = new Map();
-  const lines = String(jsDocBlock || '').split('\n').map(sanitizeDocLine);
+  const lines = String(jsDocBlock || '')
+    .split('\n')
+    .map(sanitizeDocLine);
 
   for (const line of lines) {
     const paramMatch = line.match(/^@param\s+\{[^}]+\}\s+(\[[^\]]+\]|[A-Za-z_$][\w$\.\-]*)(?:\s+-?\s*)?(.*)$/);
@@ -430,6 +431,21 @@ function formatExampleValue(value) {
   return squashed;
 }
 
+function applyMetadataOverrides(command, metadata, helperOverrides = {}) {
+  const override = helperOverrides[command];
+  if (!override) {
+    return metadata;
+  }
+
+  return {
+    ...metadata,
+    summary: override.summary || metadata.summary,
+    params: Array.isArray(override.params) ? override.params : metadata.params,
+    example: override.example || metadata.example,
+    examples: Array.isArray(override.examples) ? override.examples : metadata.examples,
+  };
+}
+
 function loadKnownCommandsFromSource() {
   const sourcePath = path.join(repoRoot, 'packages', 'core', 'js', 'faker', 'faker-commands.js');
   const sourceText = fs.readFileSync(sourcePath, 'utf8');
@@ -467,8 +483,17 @@ export { FAKER_COMMAND_HELP_METADATA, getFakerCommandHelp };
 async function loadRuntimeDependencies() {
   const fakerModule = await import('@faker-js/faker');
   const faker = fakerModule.faker;
-  const fakerCommandModule = await import(pathToFileURL(path.join(repoRoot, 'js', 'data_generation', 'faker', 'fakerCommand.js')));
+  const fakerCommandModule = await import(
+    pathToFileURL(path.join(repoRoot, 'packages', 'core', 'js', 'data_generation', 'faker', 'fakerCommand.js'))
+  );
   return { faker, FakerCommand: fakerCommandModule.FakerCommand };
+}
+
+async function loadHelperOverrides() {
+  const helperDefinitionsModule = await import(
+    pathToFileURL(path.join(repoRoot, 'packages', 'core', 'js', 'faker', 'faker-helper-keyword-definitions.js'))
+  );
+  return helperDefinitionsModule.FAKER_HELPER_KEYWORD_DEFINITIONS || {};
 }
 
 function tryGenerateExample(command, faker, FakerCommand) {
@@ -498,6 +523,7 @@ async function run() {
   const aliases = parseTypeAliases(declarationText);
   const enumValues = parseEnumLiteralValues(declarationText);
   const { faker, FakerCommand } = await loadRuntimeDependencies();
+  const helperOverrides = await loadHelperOverrides();
 
   const metadataByCommand = {};
 
@@ -509,16 +535,22 @@ async function run() {
       !extractedSummary.toLowerCase().includes('proxy for localedefinition') &&
       !extractedSummary.toLowerCase().includes('type that provides auto-suggestions');
     metadataByCommand[command] = {
-      summary: shouldUseExtractedSummary ? extractedSummary : buildFallbackSummary(command),
-      params: (methodHelp?.params || []).map((param) => {
-        const description = methodHelp?.paramDocs?.get(param.name) || '';
-        return {
-          ...param,
-          description,
-        };
-      }),
-      docsUrl: getDocsUrl(command),
-      example: tryGenerateExample(command, faker, FakerCommand),
+      ...applyMetadataOverrides(
+        command,
+        {
+          summary: shouldUseExtractedSummary ? extractedSummary : buildFallbackSummary(command),
+          params: (methodHelp?.params || []).map((param) => {
+            const description = methodHelp?.paramDocs?.get(param.name) || '';
+            return {
+              ...param,
+              description,
+            };
+          }),
+          docsUrl: getDocsUrl(command),
+          example: tryGenerateExample(command, faker, FakerCommand),
+        },
+        helperOverrides
+      ),
     };
   }
 

@@ -23,16 +23,12 @@ Generates a random date that can be either in the past or in the future.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `refDate` | `number` | no | Reference date as a Unix timestamp in milliseconds since epoch used as the generation anchor. |
+| `refDate` | `integer` | no | Reference date as a Unix timestamp in milliseconds since epoch used as the generation anchor. |
 
 Examples:
 
 ```txt
 date.anytime()
-```
-
-```txt
-date.anytime(refDate=1)
 ```
 
 Example return values:
@@ -47,17 +43,13 @@ Generates a random date between the given boundaries.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `from` | `number` | no | Start boundary as a Unix timestamp in milliseconds since epoch. |
-| `to` | `number` | no | End boundary as a Unix timestamp in milliseconds since epoch. |
+| `from` | `integer` | no | Start boundary as a Unix timestamp in milliseconds since epoch. |
+| `to` | `integer` | no | End boundary as a Unix timestamp in milliseconds since epoch. |
 
 Examples:
 
 ```txt
 date.between(0, 2000000000000)
-```
-
-```txt
-date.between(from=1, to=1)
 ```
 
 Example return values:
@@ -72,18 +64,14 @@ Generates random dates between the given boundaries. The dates will be returned 
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `count` | `number` | no | The number of dates to generate. |
-| `from` | `number` | no | Start boundary as a Unix timestamp in milliseconds since epoch. |
-| `to` | `number` | no | End boundary as a Unix timestamp in milliseconds since epoch. |
+| `count` | `integer` | no | The number of dates to generate. |
+| `from` | `integer` | no | Start boundary as a Unix timestamp in milliseconds since epoch. |
+| `to` | `integer` | no | End boundary as a Unix timestamp in milliseconds since epoch. |
 
 Examples:
 
 ```txt
 date.betweens(2, 0, 2000000000000)
-```
-
-```txt
-date.betweens(count=1, from=1, to=1)
 ```
 
 Example return values:
@@ -98,19 +86,15 @@ Returns a random birthdate. By default, the birthdate is generated for an adult 
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `refDate` | `number` | no | Reference date as a Unix timestamp in milliseconds since epoch used as the generation anchor. |
-| `max` | `number` | no | The maximum age/year to generate a birthdate for/in. |
-| `min` | `number` | no | The minimum age/year to generate a birthdate for/in. |
+| `refDate` | `integer` | no | Reference date as a Unix timestamp in milliseconds since epoch used as the generation anchor. |
+| `max` | `integer` | no | The maximum age/year to generate a birthdate for/in. |
+| `min` | `integer` | no | The minimum age/year to generate a birthdate for/in. |
 | `mode` | `string` | no | Either 'age' or 'year' to generate a birthdate based on the age or year range. |
 
 Examples:
 
 ```txt
-date.birthdate()
-```
-
-```txt
-date.birthdate(refDate=1, max=1, min=1, mode="age")
+date.birthdate(refDate=20000, max=69, min=16, mode="age")
 ```
 
 Example return values:
@@ -125,17 +109,13 @@ Generates a random date in the future.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `refDate` | `number` | no | Reference date as a Unix timestamp in milliseconds since epoch used as the generation anchor. |
-| `years` | `number` | no | The range of years the date may be in the future. |
+| `refDate` | `integer` | no | Reference date as a Unix timestamp in milliseconds since epoch used as the generation anchor. |
+| `years` | `integer` | no | The range of years the date may be in the future. |
 
 Examples:
 
 ```txt
 date.future()
-```
-
-```txt
-date.future(refDate=1, years=1)
 ```
 
 Example return values:
@@ -175,17 +155,13 @@ Generates a random date in the past.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `refDate` | `number` | no | Reference date as a Unix timestamp in milliseconds since epoch used as the generation anchor. |
-| `years` | `number` | no | The range of years the date may be in the past. |
+| `refDate` | `integer` | no | Reference date as a Unix timestamp in milliseconds since epoch used as the generation anchor. |
+| `years` | `integer` | no | The range of years the date may be in the past. |
 
 Examples:
 
 ```txt
 date.past()
-```
-
-```txt
-date.past(refDate=1, years=1)
 ```
 
 Example return values:
@@ -200,17 +176,13 @@ Generates a random date in the recent past.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `days` | `number` | no | The range of days the date may be in the past. |
-| `refDate` | `number` | no | Reference date as a Unix timestamp in milliseconds since epoch used as the generation anchor. |
+| `days` | `integer` | no | The range of days the date may be in the past. |
+| `refDate` | `integer` | no | Reference date as a Unix timestamp in milliseconds since epoch used as the generation anchor. |
 
 Examples:
 
 ```txt
 date.recent()
-```
-
-```txt
-date.recent(days=1, refDate=1)
 ```
 
 Example return values:
@@ -225,17 +197,13 @@ Generates a random date in the near future.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `days` | `number` | no | The range of days the date may be in the future. |
-| `refDate` | `number` | no | Reference date as a Unix timestamp in milliseconds since epoch used as the generation anchor. |
+| `days` | `integer` | no | The range of days the date may be in the future. |
+| `refDate` | `integer` | no | Reference date as a Unix timestamp in milliseconds since epoch used as the generation anchor. |
 
 Examples:
 
 ```txt
 date.soon()
-```
-
-```txt
-date.soon(days=1, refDate=1)
 ```
 
 Example return values:

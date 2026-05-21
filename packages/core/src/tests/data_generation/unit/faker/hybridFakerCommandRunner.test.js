@@ -11,6 +11,13 @@ describe('Hybrid Faker Command Runner', () => {
     expect(result.data).toBeLessThanOrEqual(65);
   });
 
+  test('should use safe method for js-style object literal arguments', () => {
+    const result = runFakerCommand('helpers.mustache', '("{{name}}", { name: "Ada" })', faker);
+
+    expect(result.isError).toBe(false);
+    expect(result.data).toBe('Ada');
+  });
+
   test('should use safe method for array arguments', () => {
     const result = runFakerCommand('helpers.arrayElement', '(["red", "green", "blue"])', faker);
 

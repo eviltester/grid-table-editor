@@ -7,6 +7,7 @@ import { Importer } from '../js/grid/importer.js';
 import { KNOWN_FAKER_COMMANDS } from '../js/faker/faker-commands.js';
 import { PairwiseTestDataGenerator } from '../js/data_generation/all-pairs/pairwiseTestDataGenerator.js';
 import { parseSchemaText } from '../js/data_generation/schema-conversion.js';
+import { hasSafeFakerLiteralArguments } from '../js/data_generation/faker/safeLiteralArgumentParser.js';
 import {
   OPTION_KEYS_BY_FORMAT,
   OPTION_TIPS_BY_FORMAT,
@@ -95,23 +96,7 @@ function hasDisallowedFakerSyntax(ruleLine) {
 }
 
 function hasSafeFakerArguments(ruleLine) {
-  const openParen = ruleLine.indexOf('(');
-  if (openParen === -1) {
-    return true;
-  }
-
-  if (!ruleLine.endsWith(')')) {
-    return false;
-  }
-
-  const argsBody = ruleLine.slice(openParen + 1, -1).trim();
-  if (argsBody.length === 0) {
-    return true;
-  }
-
-  const literalTokenPattern = String.raw`(?:'(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"|-?\d+(?:\.\d+)?|true|false|null)`;
-  const argsListPattern = new RegExp(`^\\s*${literalTokenPattern}(\\s*,\\s*${literalTokenPattern})*\\s*$`);
-  return argsListPattern.test(argsBody);
+  return hasSafeFakerLiteralArguments(ruleLine);
 }
 
 export function validateSafeFakerRules(textSpec) {
@@ -135,7 +120,7 @@ export function validateSafeFakerRules(textSpec) {
       return {
         ok: false,
         error:
-          'Unsafe faker rule syntax detected. Accepted syntax is faker commands with no args or literal args (string/number/boolean/null). Use --unsafe-faker-expressions to opt in.',
+          'Unsafe faker rule syntax detected. Accepted syntax is faker commands with literal args (string/number/boolean/null/array/object). Use --unsafe-faker-expressions to opt in.',
       };
     }
   }

@@ -347,19 +347,15 @@ Generates a random password-like string. Do not use this method for generating a
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `length` | `number` | no | The length of the password to generate. |
+| `length` | `integer` | no | The length of the password to generate. |
 | `memorable` | `boolean` | no | Whether the generated password should be memorable. |
-| `pattern` | `string` | no | The pattern that all chars should match. This option will be ignored, if memorable is true. |
+| `pattern` | `regexp` | no | The pattern that all chars should match. This option will be ignored, if memorable is true. |
 | `prefix` | `string` | no | The prefix to use. |
 
 Examples:
 
 ```txt
-internet.password()
-```
-
-```txt
-internet.password(length=1, memorable=false, pattern="[A-Za-z0-9]", prefix="#")
+internet.password(length=10, memorable=false, pattern="[A-Za-z0-9]", prefix="#")
 ```
 
 Example return values:

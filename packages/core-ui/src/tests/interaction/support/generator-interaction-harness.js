@@ -1,0 +1,214 @@
+import { fireEvent, within, waitFor } from '@testing-library/dom';
+import { faker } from '@faker-js/faker';
+import RandExp from 'randexp';
+import { TestDataGenerator } from '@anywaydata/core/data_generation/testDataGenerator.js';
+import { Exporter } from '@anywaydata/core/grid/exporter.js';
+import { DataGeneratorPage } from '../../../../js/gui_components/generator/index.js';
+import { getFakerCommandHelp } from '../../../../js/gui_components/shared/faker-command-help-metadata.js';
+import { getDomainCommandHelp } from '../../../../js/gui_components/shared/domain-command-help-metadata.js';
+import { SOURCE_TYPE_FAKER, SOURCE_TYPE_DOMAIN } from '../../../../js/gui_components/shared/schema-row-rule-mapper.js';
+import { assertScenarioDataQuality } from './generated-value-quality.js';
+import { installDomGlobals, cleanupDomGlobals } from './testing-library-dom-setup.js';
+import { applyDeterministicScenarioSeed, withDeterministicScenarioSeed } from './deterministic-scenario-seed.js';
+
+class TestTabulator {
+  constructor(element, options) {
+    this.element = element;
+    this.options = options;
+  }
+}
+
+class TestPreviewGrid {
+  constructor() {
+    this.lastDataTable = null;
+  }
+
+  setGridFromGenericDataTable(dataTable) {
+    this.lastDataTable = dataTable;
+  }
+
+  getHeadersFromGrid() {
+    return this.lastDataTable?.getHeaders?.() || [];
+  }
+
+  getGridAsGenericDataTable() {
+    return this.lastDataTable;
+  }
+}
+
+class CapturingDownload {
+  static reset() {
+    CapturingDownload.lastDownload = null;
+  }
+
+  constructor(filename) {
+    this.filename = filename;
+  }
+
+  downloadFile(text) {
+    CapturingDownload.lastDownload = { filename: this.filename, text };
+  }
+}
+
+function setInputValue(element, value) {
+  element.focus();
+  element.value = value;
+  fireEvent.input(element, { target: { value } });
+  fireEvent.change(element, { target: { value } });
+  element.blur();
+}
+
+function clickElement(element) {
+  fireEvent.click(element);
+}
+
+function getGeneratorRow(index = 0) {
+  return document.querySelectorAll('.generator-schema-row')[index];
+}
+
+function fillGeneratorRow(rowIndex, row) {
+  let rowElement = getGeneratorRow(rowIndex);
+  let rowScope = within(rowElement);
+
+  setInputValue(rowScope.getByPlaceholderText('Column Name'), row.name);
+
+  const sourceSelect = rowElement.querySelector('[data-field="sourceType"]');
+  setInputValue(sourceSelect, row.sourceType);
+
+  rowElement = getGeneratorRow(rowIndex);
+  rowScope = within(rowElement);
+
+  if (row.sourceType === 'faker' || row.sourceType === 'domain') {
+    const commandSelect = rowElement.querySelectorAll('select')[1];
+    setInputValue(commandSelect, row.command);
+
+    rowElement = getGeneratorRow(rowIndex);
+    rowScope = within(rowElement);
+    setInputValue(rowScope.getByPlaceholderText('Params e.g. (10)'), row.params);
+    return;
+  }
+
+  setInputValue(rowScope.getByPlaceholderText('Value / Regex'), row.value || '');
+}
+
+function resolveExpectedDocsUrl(row) {
+  if (row?.sourceType === SOURCE_TYPE_FAKER) {
+    return String(getFakerCommandHelp(row.command)?.docsUrl || '').trim();
+  }
+  if (row?.sourceType === SOURCE_TYPE_DOMAIN) {
+    return String(getDomainCommandHelp(row.command)?.docsUrl || '').trim();
+  }
+  return '';
+}
+
+function createGeneratorInteractionHarness() {
+  const dom = installDomGlobals('<!doctype html><html><body><div id="app"></div></body></html>');
+  let page = null;
+
+  function reset() {
+    document.getElementById('app').innerHTML = '';
+    CapturingDownload.reset();
+    page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      faker,
+      RandExp,
+      TabulatorCtor: TestTabulator,
+      GridExtensionClass: TestPreviewGrid,
+      ExporterClass: Exporter,
+      DownloadClass: CapturingDownload,
+      TestDataGeneratorClass: TestDataGenerator,
+    });
+    page.init();
+  }
+
+  async function runScenario(scenario) {
+    return withDeterministicScenarioSeed(scenario.id, async () => {
+      reset();
+
+      for (let index = 1; index < scenario.rows.length; index += 1) {
+        clickElement(within(document.body).getByRole('button', { name: /add field/i }));
+      }
+      scenario.rows.forEach((row, index) => fillGeneratorRow(index, row));
+
+      const helpLink =
+        scenario.sourceType === 'faker' || scenario.sourceType === 'domain'
+          ? getGeneratorRow(0)?.querySelector('[data-field="faker-doc-link"]')
+          : null;
+      const expectedDocsUrl = resolveExpectedDocsUrl(scenario.rows[0]);
+      if (helpLink && expectedDocsUrl) {
+        expect(helpLink.hidden).toBe(false);
+        expect(helpLink.getAttribute('href')).toBe(expectedDocsUrl);
+      }
+
+      clickElement(within(document.body).getByRole('button', { name: /edit as text/i }));
+      const schemaTextArea = document.getElementById('generatorSchemaText');
+      expect(schemaTextArea.value).toBe(scenario.expectedUiSchemaText || scenario.expectedSchemaText);
+
+      clickElement(within(document.body).getByRole('button', { name: /edit as schema/i }));
+      expect(document.querySelectorAll('.generator-schema-row').length).toBe(scenario.rows.length);
+
+      setInputValue(document.getElementById('previewRowsCount'), scenario.pairwiseEligible ? '2' : '1');
+      applyDeterministicScenarioSeed(scenario.id);
+      clickElement(within(document.body).getByRole('button', { name: /^preview$/i }));
+
+      const previewTable = page.previewGrid.lastDataTable;
+      expect(previewTable).toBeTruthy();
+      expect(previewTable.getRowCount()).toBeGreaterThan(0);
+      const outputPreviewText = document.getElementById('generatorOutputPreview').value;
+      expect(outputPreviewText.length).toBeGreaterThan(0);
+
+      if (scenario.expectStructuredSerialization) {
+        expect(String(previewTable.getCell(0, 0))).toMatch(/^[[{]/);
+      }
+      assertScenarioDataQuality({
+        scenario,
+        dataTable: previewTable,
+        outputPreviewText,
+      });
+
+      const previewExporter = new Exporter({
+        getGridAsGenericDataTable: () => previewTable,
+        getHeadersFromGrid: () => previewTable.getHeaders(),
+      });
+      const previewCsv = previewExporter.getDataTableAs('csv', previewTable) || '';
+
+      setInputValue(document.getElementById('generateRowsCount'), scenario.pairwiseEligible ? '2' : '1');
+      applyDeterministicScenarioSeed(scenario.id);
+      clickElement(within(document.body).getByRole('button', { name: /generate data/i }));
+      await waitFor(() => expect(CapturingDownload.lastDownload).toBeTruthy());
+      expect(CapturingDownload.lastDownload.filename.endsWith(scenario.expectedFileExtension)).toBe(true);
+      expect(CapturingDownload.lastDownload.text.length).toBeGreaterThan(0);
+      expect(CapturingDownload.lastDownload.text).not.toContain('**ERROR**');
+
+      let pairwiseCsv = '';
+      if (scenario.pairwiseEligible) {
+        expect(document.getElementById('generateAllPairsButtonWrapper').style.display).toBe('inline-flex');
+        CapturingDownload.reset();
+        applyDeterministicScenarioSeed(scenario.id);
+        clickElement(document.getElementById('generateAllPairsButton'));
+        await waitFor(() => expect(CapturingDownload.lastDownload?.filename).toMatch(/all-pairs-data/));
+        pairwiseCsv = CapturingDownload.lastDownload?.text || '';
+      }
+
+      return {
+        scenarioId: scenario.id,
+        headers: previewTable.getHeaders(),
+        rowCount: previewTable.getRowCount(),
+        previewCsv,
+        outputPreviewText,
+        downloadText: CapturingDownload.lastDownload?.text || '',
+        downloadFilename: CapturingDownload.lastDownload?.filename || '',
+        pairwiseCsv,
+        schemaText: schemaTextArea.value,
+      };
+    });
+  }
+
+  return {
+    runScenario,
+    cleanup: () => cleanupDomGlobals(dom),
+  };
+}
+
+export { createGeneratorInteractionHarness };

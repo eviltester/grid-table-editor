@@ -193,6 +193,7 @@ const DOMAIN_FAKER_AIRLINE_KEYWORD_DEFINITIONS = [
           type: 'string',
           required: false,
           description: 'The aircraft type. Can be one of narrowbody, regional, widebody.',
+          examples: ['widebody'],
         },
       ],
     },

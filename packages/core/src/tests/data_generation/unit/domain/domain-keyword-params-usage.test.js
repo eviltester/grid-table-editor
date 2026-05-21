@@ -17,6 +17,18 @@ function setDeepMethod(root, target, fn) {
   node[parts[parts.length - 1]] = fn;
 }
 
+function expectedDelegatedArgValue(argSpec, sample) {
+  if (
+    String(argSpec?.type || '')
+      .split('|')
+      .map((entry) => entry.trim())
+      .includes('regexp')
+  ) {
+    return new RegExp(sample);
+  }
+  return sample;
+}
+
 function createResultForPath(resultPath) {
   const path = String(resultPath || '')
     .split('.')
@@ -40,8 +52,14 @@ function sampleValueForType(type) {
     .split('|')
     .map((entry) => entry.trim());
 
+  if (allowed.includes('integer')) {
+    return 7;
+  }
   if (allowed.includes('number')) {
     return 7;
+  }
+  if (allowed.includes('regexp')) {
+    return '[A-Z]';
   }
   if (allowed.includes('boolean')) {
     return true;
@@ -112,7 +130,9 @@ function sampleValueForKeywordArg(keywordName, argName, typeName) {
   if (argName === 'to') return Date.now() + 86400000;
   if (argName === 'exclude') return ['x', 'y'];
 
+  if (type.includes('integer')) return 7;
   if (type.includes('number')) return 7;
+  if (type.includes('regexp')) return '[A-Z]';
   if (type.includes('boolean')) return true;
   if (type.includes('array')) return ['a', 'b'];
   return 'sample';
@@ -154,8 +174,8 @@ function applyKeywordExecutionDefaults(keyword, args) {
 }
 
 function expectsRuntimeRejection(keywordName, argName) {
-  // TODO(domain-args): faker internet.password expects a RegExp for pattern, while current domain arg schema is string-only.
-  if (keywordName === 'internet.password' && argName === 'pattern') return true;
+  void keywordName;
+  void argName;
   return false;
 }
 
@@ -194,7 +214,9 @@ describe('domain keyword parameter usage', () => {
 
         if (keyword.delegate.argTransform === 'optionsFromHelpArgs') {
           expect(receivedArgs.length).toBe(1);
-          expect(receivedArgs[0]).toEqual(expect.objectContaining({ [argSpec.name]: sample }));
+          expect(receivedArgs[0]).toEqual(
+            expect.objectContaining({ [argSpec.name]: expectedDelegatedArgValue(argSpec, sample) })
+          );
         } else {
           expect(receivedArgs[argIndex]).toEqual(sample);
         }

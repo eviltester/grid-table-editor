@@ -149,6 +149,11 @@ test('validateSafeFakerRules accepts known faker commands with literal args', ()
   expect(result.ok).toBe(true);
 });
 
+test('validateSafeFakerRules accepts js-style object literal faker args', () => {
+  const result = validateSafeFakerRules('Template\nhelpers.mustache("{{name}}", { name: "Ada" })');
+  expect(result.ok).toBe(true);
+});
+
 test('generateFromTextSpec supports complex safe expressions with hybrid approach', () => {
   // Test that safe JSON object expressions work with hybrid approach
   const safeResult = generateFromTextSpec({
@@ -164,6 +169,15 @@ test('generateFromTextSpec supports complex safe expressions with hybrid approac
   expect(age).toBeGreaterThanOrEqual(18);
   expect(age).toBeLessThanOrEqual(65);
   assertNoCommonErrorPatternsInRows(safeResult.rows);
+
+  const mustacheResult = generateFromTextSpec({
+    textSpec: 'Template\nhelpers.mustache("{{name}}", { name: "Ada" })',
+    rowCount: 1,
+    outputFormat: 'json',
+  });
+  expect(mustacheResult.ok).toBe(true);
+  expect(mustacheResult.rows).toEqual([['Ada']]);
+  assertNoCommonErrorPatternsInRows(mustacheResult.rows);
 
   // Test that unsafeFakerExpressions flag is accepted and processed
   const testSpec = 'Test\nBob';

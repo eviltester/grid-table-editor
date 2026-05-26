@@ -133,7 +133,7 @@ describe('DataGeneratorPage', () => {
     expect(spec).toBe('');
   });
 
-  test('schema source type dropdown uses enum, literal, regex, faker, domain order', () => {
+  test('schema source type dropdown uses enum, literal, regex, domain, faker order', () => {
     const page = new DataGeneratorPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
@@ -151,7 +151,7 @@ describe('DataGeneratorPage', () => {
     const sourceTypeSelect = document.querySelector('[data-field="sourceType"]');
     const optionValues = Array.from(sourceTypeSelect.querySelectorAll('option')).map((option) => option.value);
 
-    expect(optionValues).toEqual(['enum', 'literal', 'regex', 'faker', 'domain']);
+    expect(optionValues).toEqual(['enum', 'literal', 'regex', 'domain', 'faker']);
   });
 
   test('schemaRowsToSpecWithTokens preserves comments and blank lines', () => {
@@ -165,7 +165,7 @@ describe('DataGeneratorPage', () => {
     expect(spec).toBe('# top\nPriority\nenum(high,medium,low)\n\nStatus\nenum(active,inactive,pending)');
   });
 
-  test('uses curated alphabetical faker command list in schema editor', () => {
+  test('uses helper-only alphabetical faker command list in schema editor', () => {
     const page = new DataGeneratorPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
@@ -186,14 +186,14 @@ describe('DataGeneratorPage', () => {
     const optionValues = Array.from(commandSelect.querySelectorAll('option'))
       .map((option) => option.value)
       .filter(Boolean);
-    const airplaneEntries = optionValues.filter((value) => value.startsWith('airline.airplane.'));
     const sortedOptionValues = [...optionValues].sort((left, right) => left.localeCompare(right));
 
-    expect(optionValues).toContain('airline.airplane.name');
-    expect(optionValues).toContain('airline.airplane.iataTypeCode');
-    expect(optionValues).not.toContain('airline.airplane');
+    expect(optionValues).toContain('helpers.fake');
+    expect(optionValues).toContain('helpers.arrayElement');
+    expect(optionValues).not.toContain('person.firstName');
+    expect(optionValues).not.toContain('airline.airplane.name');
     expect(optionValues).toEqual(sortedOptionValues);
-    expect(airplaneEntries).toEqual(['airline.airplane.iataTypeCode', 'airline.airplane.name']);
+    expect(optionValues.every((value) => value.startsWith('helpers.'))).toBe(true);
   });
 
   test('schema validation reports missing column names and faker command', () => {

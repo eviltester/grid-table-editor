@@ -20,9 +20,9 @@ const FAKER_COMMANDS_LONGEST_FIRST = [];
 const DOMAIN_COMMANDS = [];
 const DOMAIN_COMMANDS_LONGEST_FIRST = [];
 const TOP_LEVEL_TYPE_OPTIONS = ['enum', 'literal', 'regex'];
-const FAKER_SECTION_LABEL = '-- faker (incl helpers) --';
+const FAKER_SECTION_LABEL = '-- faker (helpers) --';
 const FAKER_SECTION_VALUE = '__faker_section__';
-const DOMAIN_SECTION_LABEL = '-- domain (no helpers) --';
+const DOMAIN_SECTION_LABEL = '-- domain --';
 const DOMAIN_SECTION_VALUE = '__domain_section__';
 
 function findFakerCommand(aString) {
@@ -42,9 +42,11 @@ function identifyFakerCommands() {
 
   TOP_LEVEL_TYPE_OPTIONS.forEach((typeOption) => FAKER_COMMANDS.push(typeOption));
   getKnownFakerCommandsAlphabetical()
-    .filter((command) => command !== 'RegEx')
+    .filter((command) => command !== 'RegEx' && command.startsWith('helpers.'))
     .forEach((command) => FAKER_COMMANDS.push(command));
-  getKnownFakerCommandsLongestFirst().forEach((command) => FAKER_COMMANDS_LONGEST_FIRST.push(command));
+  getKnownFakerCommandsLongestFirst()
+    .filter((command) => command.startsWith('helpers.'))
+    .forEach((command) => FAKER_COMMANDS_LONGEST_FIRST.push(command));
   getKnownDomainCommandsAlphabetical().forEach((command) => DOMAIN_COMMANDS.push(command));
   getKnownDomainCommandsLongestFirst().forEach((command) => DOMAIN_COMMANDS_LONGEST_FIRST.push(command));
 }
@@ -65,7 +67,7 @@ function getTabulatorCommandEditorValues(currentValue = '') {
     elementAttributes: { disabled: true },
   };
   const fakerCommandValues = getKnownFakerCommandsAlphabetical()
-    .filter((command) => command !== 'RegEx')
+    .filter((command) => command !== 'RegEx' && command.startsWith('helpers.'))
     .map((command) => ({ value: command, label: command }));
   const domainHeader = {
     value: DOMAIN_SECTION_VALUE,
@@ -73,7 +75,7 @@ function getTabulatorCommandEditorValues(currentValue = '') {
     elementAttributes: { disabled: true },
   };
   const domainCommandValues = getVisibleDomainCommandOptions(currentValue);
-  return [...typeValues, fakerHeader, ...fakerCommandValues, domainHeader, ...domainCommandValues];
+  return [...typeValues, domainHeader, ...domainCommandValues, fakerHeader, ...fakerCommandValues];
 }
 
 function getAgGridCommandEditorValues(currentValue = '') {

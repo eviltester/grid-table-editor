@@ -28,8 +28,8 @@ describe('generator focused schema editing', () => {
     await harness.fillRow(0, {
       name: 'Generated Name',
       sourceType: 'faker',
-      command: 'person.firstName',
-      params: '()',
+      command: 'helpers.arrayElement',
+      params: '(["Ada","Bob"])',
     });
 
     await waitFor(() => {

@@ -25,17 +25,11 @@ describe('Test Data Command Catalog', () => {
       expect(commands).not.toContain('-------');
     });
 
-    it('should include primitive-returning commands', () => {
+    it('should include helper commands', () => {
       const commands = getFakerCommands();
-      expect(commands).toContain('person.firstName');
-      expect(commands).toContain('person.lastName');
-    });
-
-    it('should expand airline.airplane to explicit leaf commands', () => {
-      const commands = getFakerCommands();
-      expect(commands).toContain('airline.airplane.name');
-      expect(commands).toContain('airline.airplane.iataTypeCode');
-      expect(commands).not.toContain('airline.airplane');
+      expect(commands).toContain('helpers.fake');
+      expect(commands).toContain('helpers.arrayElement');
+      expect(commands.every((command, index) => index < 3 || command.startsWith('helpers.'))).toBe(true);
     });
 
     it('should include approved helpers commands that return primitives', () => {
@@ -95,18 +89,23 @@ describe('Test Data Command Catalog', () => {
       expect(domainOptions).not.toContain('finance.currency');
     });
 
-    it('should label faker/domain sections to reflect helpers split', () => {
+    it('should label faker/domain sections to reflect helpers split and ordering', () => {
       const values = getTabulatorCommandEditorValues('');
       const fakerSection = values.find((entry) => entry.value === '__faker_section__');
       const domainSection = values.find((entry) => entry.value === '__domain_section__');
-      expect(fakerSection?.label).toBe('-- faker (incl helpers) --');
-      expect(domainSection?.label).toBe('-- domain (no helpers) --');
+      const fakerSectionIndex = values.findIndex((entry) => entry.value === '__faker_section__');
+      const domainSectionIndex = values.findIndex((entry) => entry.value === '__domain_section__');
+      expect(fakerSection?.label).toBe('-- faker (helpers) --');
+      expect(domainSection?.label).toBe('-- domain --');
+      expect(domainSectionIndex).toBeGreaterThanOrEqual(0);
+      expect(fakerSectionIndex).toBeGreaterThan(domainSectionIndex);
     });
 
     it('should include domain commands in AG Grid command editor values', () => {
       const values = getAgGridCommandEditorValues('');
-      expect(values).toContain('person.firstName');
+      expect(values).toContain('helpers.fake');
       expect(values).toContain('number.int');
+      expect(values).toContain('person.firstName');
       expect(values).not.toContain('science.chemicalElement');
     });
   });

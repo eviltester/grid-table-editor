@@ -125,7 +125,9 @@ class DataGeneratorPage {
       },
       schemaRowsToSpecWithTokens,
     });
-    this.fakerCommands = getKnownFakerCommandsAlphabetical().filter((command) => command !== 'RegEx');
+    this.fakerCommands = getKnownFakerCommandsAlphabetical().filter(
+      (command) => command !== 'RegEx' && command.startsWith('helpers.')
+    );
     this.domainCommands = getKnownDomainCommandsAlphabetical();
     this.optionsPanels = {};
     this.statusPresenter = undefined;

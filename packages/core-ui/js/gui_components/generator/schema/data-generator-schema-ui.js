@@ -132,8 +132,8 @@ function renderGeneratorSchemaRows({
                     <option value="${SOURCE_TYPE_ENUM}" ${normalisedSourceType === SOURCE_TYPE_ENUM ? 'selected' : ''}>enum</option>
                     <option value="${SOURCE_TYPE_LITERAL}" ${normalisedSourceType === SOURCE_TYPE_LITERAL ? 'selected' : ''}>literal</option>
                     <option value="${SOURCE_TYPE_REGEX}" ${normalisedSourceType === SOURCE_TYPE_REGEX ? 'selected' : ''}>regex</option>
-                    <option value="${SOURCE_TYPE_FAKER}" ${normalisedSourceType === SOURCE_TYPE_FAKER ? 'selected' : ''}>faker</option>
                     <option value="${SOURCE_TYPE_DOMAIN}" ${normalisedSourceType === SOURCE_TYPE_DOMAIN ? 'selected' : ''}>domain</option>
+                    <option value="${SOURCE_TYPE_FAKER}" ${normalisedSourceType === SOURCE_TYPE_FAKER ? 'selected' : ''}>faker</option>
                 </select>
                 ${
                   isCommandSource

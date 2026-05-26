@@ -12,7 +12,7 @@ Enum Example 2
 enum("High","Medium","Low")
 Regex Example
 [A-Z]{3}-\\d{4}
-Faker Example
+Domain Example
 person.fullName`;
 
 const GENERATOR_DEFAULT_EXAMPLE_SCHEMA_TEXT = `# Example schema

@@ -777,7 +777,7 @@ describe('test data schema editor engine compatibility', () => {
     delete global.Tabulator;
   });
 
-  test('load sample schema button populates text schema with literal, enum, regex, and faker examples', () => {
+  test('load sample schema button populates text schema with literal, enum, regex, and domain examples', () => {
     installTabulatorMock();
 
     enableTestDataGenerationInterface(
@@ -808,7 +808,7 @@ describe('test data schema editor engine compatibility', () => {
     expect(value).toContain('enum("High","Medium","Low")');
     expect(value).toContain('Regex Example');
     expect(value).toContain('[A-Z]{3}-\\d{4}');
-    expect(value).toContain('Faker Example');
+    expect(value).toContain('Domain Example');
     expect(value).toContain('person.fullName');
 
     delete global.Tabulator;

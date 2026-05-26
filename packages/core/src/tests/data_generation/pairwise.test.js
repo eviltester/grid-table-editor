@@ -234,7 +234,7 @@ describe('Pairwise Combinatorial Matching Data Generation', () => {
         { name: 'Enum Example', type: 'enum', ruleSpec: 'enum("Open","In Progress","Closed")' },
         { name: 'Enum Example 2', type: 'enum', ruleSpec: 'enum("High","Medium","Low")' },
         { name: 'Regex Example', type: 'regex', ruleSpec: '[A-Z]{3}-\\d{4}' },
-        { name: 'Faker Example', type: 'faker', ruleSpec: 'person.fullName' },
+        { name: 'Domain Example', type: 'faker', ruleSpec: 'person.fullName' },
       ];
 
       const generator = new PairwiseTestDataGenerator();
@@ -248,7 +248,7 @@ describe('Pairwise Combinatorial Matching Data Generation', () => {
         'Enum Example',
         'Enum Example 2',
         'Regex Example',
-        'Faker Example',
+        'Domain Example',
       ]);
       expect(result.data.data.length).toBeGreaterThan(1);
       assertNoCommonErrorPatternsInRows(result.data.data.slice(1));

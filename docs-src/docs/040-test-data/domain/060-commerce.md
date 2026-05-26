@@ -66,7 +66,7 @@ Generates a price between min and max (inclusive).
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `dec` | `number` | no | The number of decimal places. |
+| `dec` | `integer` | no | The number of decimal places. |
 | `max` | `number` | no | The maximum price. |
 | `min` | `number` | no | The minimum price. |
 | `symbol` | `string` | no | The currency value to use. |
@@ -74,11 +74,7 @@ Generates a price between min and max (inclusive).
 Examples:
 
 ```txt
-commerce.price()
-```
-
-```txt
-commerce.price(dec=1, max=1, min=1, symbol="$")
+commerce.price(dec=2, max=10, min=1, symbol="$")
 ```
 
 Example return values:

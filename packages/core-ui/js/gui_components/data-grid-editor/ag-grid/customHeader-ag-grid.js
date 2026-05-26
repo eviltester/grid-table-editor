@@ -7,7 +7,7 @@
  */
 
 import { GridExtension } from './gridExtension-ag-grid.js';
-import { GuardedColumnEdits } from '../../../grid/guarded-column-edits.js';
+import { GuardedColumnEdits } from '../shared/guarded-column-edits.js';
 import { showGridError } from '../grid-error-surface.js';
 import { shouldEnforceUniqueColumnNames } from '../gridControl.js';
 

@@ -66,7 +66,7 @@ Generates a random amount between the given bounds (inclusive).
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
 | `autoFormat` | `boolean` | no | If true this method will use Number.toLocaleString(). Otherwise it will use Number.toFixed(). |
-| `dec` | `number` | no | The number of decimal places for the amount. |
+| `dec` | `integer` | no | The number of decimal places for the amount. |
 | `max` | `number` | no | The upper bound for the amount. |
 | `min` | `number` | no | The lower bound for the amount. |
 | `symbol` | `string` | no | The symbol used to prefix the amount. |
@@ -77,8 +77,10 @@ Examples:
 finance.amount()
 ```
 
+Type-in examples (named params):
+
 ```txt
-finance.amount(autoFormat=true, dec=1, max=1, min=1, symbol="$")
+finance.amount(autoFormat=true)
 ```
 
 Example return values:

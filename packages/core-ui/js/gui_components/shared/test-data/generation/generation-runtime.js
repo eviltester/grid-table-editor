@@ -1,0 +1,95 @@
+/*
+ * Responsibilities:
+ * - Shared runtime helpers for generated value normalization and table construction.
+ * - Shared pairwise generation adapter used by app and generator page flows.
+ * - Shared parsing for non-negative count inputs.
+ */
+
+function normaliseGeneratedCellValue(value) {
+  if (value === undefined || value === null) {
+    return '';
+  }
+  if (value instanceof Date) {
+    return value.toISOString();
+  }
+  if (Array.isArray(value) || (typeof value === 'object' && value !== null)) {
+    try {
+      return JSON.stringify(value);
+    } catch {
+      return String(value);
+    }
+  }
+  return value;
+}
+
+function normaliseGeneratedRow(row = []) {
+  if (!Array.isArray(row)) {
+    return [];
+  }
+  return row.map((value) => normaliseGeneratedCellValue(value));
+}
+
+function createTableFromGenerator({ rowCount = 0, generator, GenericDataTableClass }) {
+  const outputTable = new GenericDataTableClass();
+  outputTable.setHeaders(generator.generateHeadersArray());
+  for (let rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+    outputTable.appendDataRow(normaliseGeneratedRow(generator.generateRow()));
+  }
+  return outputTable;
+}
+
+function createPairwiseTableFromGenerator({
+  generator,
+  PairwiseTestDataGeneratorClass,
+  GenericDataTableClass,
+  faker,
+  RandExp,
+}) {
+  try {
+    const pairwiseGenerator = new PairwiseTestDataGeneratorClass(faker, RandExp);
+    const initResult = pairwiseGenerator.initializeFromRules(generator.testDataRules());
+
+    if (initResult.isError) {
+      console.error('Pairwise initialization error:', initResult.errorMessage);
+      return null;
+    }
+
+    const dataResult = pairwiseGenerator.generateAllDataRecordsAsRows();
+    if (dataResult.isError) {
+      console.error('Pairwise generation error:', dataResult.errorMessage);
+      return null;
+    }
+
+    const dataTable = new GenericDataTableClass();
+    const [headers, ...rows] = dataResult.data.data;
+    dataTable.setHeaders(headers);
+    rows.forEach((row) => {
+      dataTable.appendDataRow(row);
+    });
+
+    return dataTable;
+  } catch (error) {
+    console.error('Pairwise table creation error:', error);
+    return null;
+  }
+}
+
+function parseNonNegativeCount(value, { min = 0, max = null } = {}) {
+  const parsed = Number.parseInt(value, 10);
+  if (!Number.isFinite(parsed)) {
+    return { value: min, valid: false };
+  }
+  let normalized = Math.max(min, parsed);
+  if (Number.isFinite(max)) {
+    normalized = Math.min(normalized, max);
+  }
+  return { value: normalized, valid: true };
+}
+
+export {
+  normaliseGeneratedCellValue,
+  normaliseGeneratedRow,
+  createTableFromGenerator,
+  createPairwiseTableFromGenerator,
+  parseNonNegativeCount,
+};

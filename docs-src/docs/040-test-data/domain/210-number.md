@@ -72,7 +72,7 @@ Returns a single random floating-point number, by default between `0.0` and `1.0
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `fractionDigits` | `number` | no | The maximum number of digits to appear after the decimal point, for example 2 will round to 2 decimal points. Only one of multipleOf or fractionDigits should be passed. |
+| `fractionDigits` | `integer` | no | The maximum number of digits to appear after the decimal point, for example 2 will round to 2 decimal points. Only one of multipleOf or fractionDigits should be passed. |
 | `max` | `number` | no | Upper bound for generated number, exclusive, unless multipleOf or fractionDigits are passed. |
 | `min` | `number` | no | Lower bound for generated number, inclusive. |
 | `multipleOf` | `number` | no | The generated number will be a multiple of this parameter. Only one of multipleOf or fractionDigits should be passed. |
@@ -84,10 +84,6 @@ number.float()
 ```
 
 Type-in examples (named params):
-
-```txt
-number.float(fractionDigits=1)
-```
 
 ```txt
 number.float(max=1)

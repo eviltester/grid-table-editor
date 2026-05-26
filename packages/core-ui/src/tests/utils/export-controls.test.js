@@ -1,7 +1,7 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
-import { ExportControls } from '../../../js/gui_components/exportControls.js';
-import { Download } from '../../../js/gui_components/download.js';
+import { ExportControls } from '../../../js/gui_components/app/exportControls.js';
+import { Download } from '../../../js/gui_components/shared/download.js';
 
 async function flushAsyncWork() {
   await Promise.resolve();

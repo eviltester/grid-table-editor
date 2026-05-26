@@ -1,5 +1,5 @@
 import { JSDOM } from 'jsdom';
-import { showConfirmModal } from '../../../js/gui_components/modal-confirm.js';
+import { showConfirmModal } from '../../../js/gui_components/shared/modal-confirm.js';
 
 describe('showConfirmModal', () => {
   let dom;

@@ -2,7 +2,7 @@ import { TestFrameworkConvertorOptions } from '@anywaydata/core/data_formats/tes
 import { getTipsForFormat } from '@anywaydata/core';
 import { HtmlDataValues } from './html-options-data-utils.js';
 import { applyUiPanelOnlyTips } from './options-help-tips-ui.js';
-import { TEST_FRAMEWORK_GROUPS, getTestFrameworkLabel } from '../options-catalog-adapter.js';
+import { TEST_FRAMEWORK_GROUPS, getTestFrameworkLabel } from '../generator/options/index.js';
 
 class TestFrameworkOptionsPanel {
   constructor(parentElement, frameworkId = 'junit4') {

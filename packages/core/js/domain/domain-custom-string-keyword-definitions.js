@@ -21,23 +21,26 @@ const DOMAIN_CUSTOM_STRING_KEYWORD_DEFINITIONS = [
       args: [
         {
           name: 'min',
-          type: 'number',
+          type: 'integer',
           required: false,
           description:
             'Minimum counterstring length (integer). If max is omitted and min is provided, min is also used as max. Defaults to 1 when omitted. Non-integer values throw an exception.',
+          examples: [5],
         },
         {
           name: 'max',
-          type: 'number',
+          type: 'integer',
           required: false,
           description:
             'Maximum counterstring length (integer). If less than min, values are swapped. Defaults to 25 when omitted. Non-integer values throw an exception.',
+          examples: [12],
         },
         {
           name: 'delimiter',
           type: 'string',
           required: false,
           description: 'Delimiter character used between position markers. Defaults to "*".',
+          examples: ['#'],
         },
       ],
     },

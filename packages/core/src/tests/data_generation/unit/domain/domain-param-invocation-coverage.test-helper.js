@@ -24,6 +24,9 @@ function sampleValueForType(typeName) {
   if (types.includes('number') || types.includes('integer')) {
     return 7;
   }
+  if (types.includes('regexp')) {
+    return '[A-Z]';
+  }
   if (types.includes('boolean')) {
     return true;
   }
@@ -56,7 +59,7 @@ function sampleValueForKeywordArg(keywordName, argName, typeName) {
   if (argName === 'types') return ['smiley'];
   if (argName === 'header') return { alg: 'HS256', typ: 'JWT' };
   if (argName === 'payload') return { iss: 'Acme' };
-  if (argName === 'pattern') return 'a';
+  if (argName === 'pattern') return '[A-Z]';
   if (argName === 'mode') return 'age';
   if (argName === 'strategy') return 'any-length';
   if (argName === 'sex') return 'female';

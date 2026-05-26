@@ -1,4 +1,4 @@
-import { initThemeToggle } from '../../../js/gui_components/theme-toggle.js';
+import { initThemeToggle } from '../../../js/gui_components/shared/theme-toggle.js';
 import { JSDOM } from 'jsdom';
 
 function createPage() {

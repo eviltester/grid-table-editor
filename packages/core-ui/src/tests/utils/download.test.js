@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
-import { Download } from '../../../js/gui_components/download.js';
+import { Download } from '../../../js/gui_components/shared/download.js';
 
 describe('Download', () => {
   let dom;

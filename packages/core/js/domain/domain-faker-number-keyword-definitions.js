@@ -18,6 +18,7 @@ const DOMAIN_FAKER_NUMBER_KEYWORD_DEFINITIONS = [
           required: false,
           description:
             'Base value used for generation. Supports bigint, number, string, or boolean inputs. For range constraints use min, max, and multipleOf.',
+          examples: [true],
         },
       ],
     },
@@ -66,10 +67,11 @@ const DOMAIN_FAKER_NUMBER_KEYWORD_DEFINITIONS = [
       args: [
         {
           name: 'fractionDigits',
-          type: 'number',
+          type: 'integer',
           required: false,
           description:
             'The maximum number of digits to appear after the decimal point, for example 2 will round to 2 decimal points. Only one of multipleOf or fractionDigits should be passed.',
+          examples: [2],
         },
         {
           name: 'max',
@@ -82,6 +84,7 @@ const DOMAIN_FAKER_NUMBER_KEYWORD_DEFINITIONS = [
           type: 'number',
           required: false,
           description: 'Lower bound for generated number, inclusive.',
+          examples: [1],
         },
         {
           name: 'multipleOf',
@@ -89,6 +92,7 @@ const DOMAIN_FAKER_NUMBER_KEYWORD_DEFINITIONS = [
           required: false,
           description:
             'The generated number will be a multiple of this parameter. Only one of multipleOf or fractionDigits should be passed.',
+          examples: [0.5],
         },
       ],
     },

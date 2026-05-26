@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
-import { TabbedTextControl } from '../../../js/gui_components/tabbed-text-control.js';
+import { TabbedTextControl } from '../../../js/gui_components/app/tabbed-text-control.js';
 
 describe('TabbedTextControl preview/edit button', () => {
   let dom;

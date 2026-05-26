@@ -244,11 +244,11 @@ Generates a random seat.
 Examples:
 
 ```txt
-airline.seat()
+airline.seat
 ```
 
 ```txt
-airline.seat(aircraftType="narrowbody")
+airline.seat(aircraftType="widebody")
 ```
 
 Example return values:

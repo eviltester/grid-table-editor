@@ -57,9 +57,9 @@ describe('schema-row-rule-mapper', () => {
       buildRuleSpecFromSchemaRow({
         sourceType: 'domain',
         command: 'datatype.enum',
-        params: '("a","quoteded","bracketed","list")',
+        params: '("a","quoted","bracketed","list")',
       })
-    ).toBe('enum("a","quoteded","bracketed","list")');
+    ).toBe('enum("a","quoted","bracketed","list")');
   });
 
   test('buildRuleSpecFromSchemaRow handles literal rows including blank default', () => {

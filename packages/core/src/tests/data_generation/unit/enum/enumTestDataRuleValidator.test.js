@@ -118,8 +118,8 @@ describe('EnumTestDataRuleValidator', () => {
     });
 
     test('extracts quoted bracketed list values', () => {
-      const values = EnumParser.extractEnumValues('("a","quoteded","bracketed","list")');
-      expect(values).toEqual(['a', 'quoteded', 'bracketed', 'list']);
+      const values = EnumParser.extractEnumValues('("a","quoted","bracketed","list")');
+      expect(values).toEqual(['a', 'quoted', 'bracketed', 'list']);
     });
   });
 });

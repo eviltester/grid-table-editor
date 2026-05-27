@@ -5,13 +5,13 @@ description: About AnyWayData.com - Synthetic Test Data Generation Tool
 
 ## AnyWayData.com
 
-A Synthentic Test Data Generation Tool.
+A Synthetic Test Data Generation Tool.
 
 - Use for free in the browser.
 - No data stored on server or login required.
 - Download as free MCP, REST API, CLI, Docker images (see github)
 
-## Created By Alan richardson
+## Created By Alan Richardson
 
 Alan Richardson has worked at every level of the Software Development hierarchy. From hands-on Programmer, Tester and Automator; through to management level as Test Manager, Head of Testing, Staff Engineer. Alan has also worked as consultant, helping teams improve their test and development processes in Agile and non-Agile environments.
 

@@ -1,9 +1,6 @@
 const { expect } = require('@playwright/test');
 const { GridRendererComponent } = require('./grid-renderer.component');
 const { SchemaEditorComponent } = require('../../../shared/abstractions/components/schema-editor.component');
-const {
-  MethodPickerDialogComponent,
-} = require('../../../shared/abstractions/components/method-picker-dialog.component');
 
 class TestDataPanelComponent {
   constructor(page) {
@@ -43,12 +40,11 @@ class TestDataPanelComponent {
           .split(/\r?\n/)
           .map((line) => line.trim())
           .filter((line) => line.length > 0 && !line.startsWith('#'));
-        const domCount = await editor.rows.count();
+        const domCount = Math.max(0, (await editor.rows.count()) - 1);
         const textCount = schemaLines.length > 0 ? Math.ceil(schemaLines.length / 2) : 0;
         return Math.max(domCount, textCount);
       },
     });
-    this.methodPicker = new MethodPickerDialogComponent(page);
   }
 
   async isRowEditorMode() {
@@ -146,10 +142,7 @@ class TestDataPanelComponent {
   }
 
   async getSchemaRowCount() {
-    if (await this.isRowEditorMode()) {
-      return this.schemaEditor.getRowCount();
-    }
-    return this.schemaRenderer.countRows();
+    return this.schemaEditor.getRowCount();
   }
 
   async selectSchemaRow(rowIndex) {
@@ -171,40 +164,14 @@ class TestDataPanelComponent {
   }
 
   async setSchemaCell(rowIndex, field, value) {
-    if (await this.isRowEditorMode()) {
-      await this.schemaEditor.setRowField(rowIndex, field, value);
-      return;
-    }
-    await this.schemaRenderer.setCellTextByField(field, rowIndex, value);
+    await this.schemaEditor.setRowField(rowIndex, field, value);
   }
 
   async setSchemaTypeValue(rowIndex, value, { pickerTab = null, assertSchemaTextIncludesType = true } = {}) {
-    if (await this.isRowEditorMode()) {
-      await this.schemaEditor.setRowTypeValue(rowIndex, value, {
-        pickerTab,
-        assertSchemaTextIncludesType,
-      });
-      return;
-    }
-    await this.schemaRenderer.clickCellByField('type', rowIndex);
-    const pickerTrigger = this.schemaGrid.locator('.tabulator-editing .test-data-grid-command-picker-trigger').first();
-    if ((await pickerTrigger.count()) > 0) {
-      await pickerTrigger.click();
-      await this.methodPicker.chooseCommand(String(value), { tab: pickerTab });
-      const valueLower = String(value).toLowerCase();
-      await this.schemaRenderer.clickCellByField('columnName', rowIndex);
-      await expect
-        .poll(async () => (await this.getSchemaCell(rowIndex, 'type')).trim().toLowerCase(), { timeout: 3000 })
-        .toBe(valueLower);
-      if (assertSchemaTextIncludesType) {
-        await expect
-          .poll(async () => (await this.getSchemaText()).toLowerCase(), { timeout: 3000 })
-          .toContain(valueLower);
-      }
-      return;
-    }
-
-    await this.schemaRenderer.setCellTextByField('type', rowIndex, value);
+    await this.schemaEditor.setRowTypeValue(rowIndex, value, {
+      pickerTab,
+      assertSchemaTextIncludesType,
+    });
   }
 
   async getSchemaText() {
@@ -212,12 +179,9 @@ class TestDataPanelComponent {
   }
 
   async getSchemaCell(rowIndex, field) {
-    if (await this.isRowEditorMode()) {
-      const mapped = this.schemaEditor.resolveField(field);
-      const input = this.schemaEditor.row(rowIndex).locator(`[data-field="${mapped}"]`);
-      if ((await input.count()) === 0) {
-        return '';
-      }
+    const mapped = this.schemaEditor.resolveField(field);
+    const input = this.schemaEditor.row(rowIndex).locator(`[data-field="${mapped}"]`);
+    if ((await input.count()) > 0) {
       const tag = await input.first().evaluate((el) => el.tagName.toLowerCase());
       if (tag === 'select') {
         const sourceType = await input.inputValue();
@@ -230,6 +194,13 @@ class TestDataPanelComponent {
         return sourceType;
       }
       return input.inputValue();
+    }
+    if (mapped === 'value') {
+      const paramsInput = this.schemaEditor.row(rowIndex).locator('[data-field="params"]');
+      if ((await paramsInput.count()) > 0) {
+        return paramsInput.inputValue();
+      }
+      return '';
     }
     return this.schemaRenderer.getCellTextByField(field, rowIndex);
   }

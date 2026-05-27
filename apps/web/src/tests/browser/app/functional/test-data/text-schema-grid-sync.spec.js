@@ -89,9 +89,8 @@ test.describe('7. Test Data Generation', () => {
 
     await expect.poll(async () => appPage.testDataPanel.isRowEditorMode()).toBe(true);
     await expect
-      .poll(
-        async () =>
-          (await appPage.testDataPanel.getSchemaErrorText()).includes('No rules defined. Provide column/rule pairs.')
+      .poll(async () =>
+        (await appPage.testDataPanel.getSchemaErrorText()).includes('No rules defined. Provide column/rule pairs.')
       )
       .toBe(false);
     expectNoPageErrors(pageErrors);

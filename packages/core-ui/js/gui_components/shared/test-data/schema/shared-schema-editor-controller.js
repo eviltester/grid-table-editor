@@ -184,9 +184,19 @@ function createSharedSchemaEditorController({
       return { rows: session.getRows(), errors: [], tokens: session.getTokens() };
     }
     const textArea = getTextElement();
+    const schemaText = String(textArea?.value || '');
+    if (schemaText.trim().length === 0) {
+      clearSchemaError();
+      session.setRows([]);
+      session.setTokens([]);
+      renderRows();
+      updatePairwiseButtonVisibility();
+      onRowsChanged?.(session.getRows());
+      return { rows: session.getRows(), errors: [], tokens: session.getTokens() };
+    }
     const parsed = parseSchemaTextToRows({
       schemaTextToDataRules,
-      schemaText: textArea?.value || '',
+      schemaText,
       faker,
       RandExp,
       mapRuleToRow: (rule, leadingTextLines = []) => {

@@ -16,6 +16,7 @@ class TestDataPanelComponent {
     this.amendTableMode = page.locator('input[name="testDataGenerationMode"][value="amend-table"]');
     this.amendSelectedMode = page.locator('input[name="testDataGenerationMode"][value="amend-selected"]');
     this.schemaTextArea = page.locator('#testDataSchemaText');
+    this.schemaError = page.locator('#testdata-schema-error');
     this.status = page.locator('#testdata-status');
     this.schemaGrid = page.locator('#testDataSchemaGrid, #testDataSchemaRows');
     this.schemaRenderer = new GridRendererComponent(page, this.schemaGrid);
@@ -107,6 +108,10 @@ class TestDataPanelComponent {
     await this.schemaEditor.setSchemaText(specText, { ensureTextMode: true, pressTab: true, waitMs: 1200 });
   }
 
+  async setSchemaTextMode(enabled) {
+    await this.schemaEditor.setTextMode(Boolean(enabled));
+  }
+
   async clickGenerate() {
     await this.generateButton.click();
   }
@@ -176,6 +181,10 @@ class TestDataPanelComponent {
 
   async getSchemaText() {
     return this.schemaTextArea.inputValue();
+  }
+
+  async getSchemaErrorText() {
+    return (await this.schemaError.textContent())?.trim() || '';
   }
 
   async getSchemaCell(rowIndex, field) {

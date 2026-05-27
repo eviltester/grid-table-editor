@@ -155,4 +155,18 @@ test.describe('Generator Schema Editing', () => {
 
     expectNoPageErrors(pageErrors);
   });
+
+  test('empty schema text can switch back to schema mode without validation lock', async ({ page }) => {
+    const { generatorPage, pageErrors } = await openGenerator(page);
+
+    await generatorPage.schema.setSchemaText('');
+    await generatorPage.schema.setTextMode(false);
+
+    await expect.poll(async () => generatorPage.schema.editor.isRowEditorMode()).toBe(true);
+    await expect(page.locator('#generatorSchemaErrorText')).not.toContainText(
+      'No rules defined. Provide column/rule pairs.'
+    );
+
+    expectNoPageErrors(pageErrors);
+  });
 });

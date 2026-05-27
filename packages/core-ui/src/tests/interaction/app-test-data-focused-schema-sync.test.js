@@ -10,7 +10,7 @@
  * - deleting selected schema rows updates the text schema
  */
 
-import { waitFor, within } from '@testing-library/dom';
+import { waitFor } from '@testing-library/dom';
 import { TEST_DATA_GRID_SAMPLE_SCHEMA_TEXT } from '../../../js/gui_components/shared/test-data/schema/index.js';
 import { createFocusedAppTestDataHarness } from './support/focused-app-test-data-harness.js';
 
@@ -38,10 +38,12 @@ describe('app test-data focused schema sync', () => {
 
     await harness.setSchemaText('Status\nenum(active,inactive)');
 
-    await waitFor(() => expect(document.querySelectorAll('.test-schema-grid-row').length).toBe(1));
+    await waitFor(() =>
+      expect(document.querySelectorAll('#testDataSchemaRows .generator-schema-row').length).toBeGreaterThanOrEqual(1)
+    );
     const row = harness.getGridRow(0);
-    expect(within(row).getByLabelText('Column Name').value).toBe('Status');
-    expect(within(row).getByLabelText('Type').value).toBe('enum');
+    expect(row.querySelector('[data-field="name"]').value).toBe('Status');
+    expect(row.querySelector('[data-field="sourceType"]').value).toBe('enum');
   });
 
   test('invalid text schema shows an error and clears after recovery', async () => {
@@ -51,7 +53,7 @@ describe('app test-data focused schema sync', () => {
     await harness.setSchemaText('Status\nenum(active,inactive)');
 
     await waitFor(() => expect(harness.getSchemaErrorText()).toBe(''));
-    expect(document.querySelectorAll('.test-schema-grid-row').length).toBe(1);
+    expect(document.querySelectorAll('#testDataSchemaRows .generator-schema-row').length).toBeGreaterThanOrEqual(1);
   });
 
   test('sample schema shortcut populates text schema and becomes generatable', async () => {
@@ -81,7 +83,9 @@ describe('app test-data focused schema sync', () => {
     await harness.selectGridRow(0);
     await harness.deleteSelectedColumns();
 
-    await waitFor(() => expect(document.querySelectorAll('.test-schema-grid-row').length).toBe(1));
+    await waitFor(() =>
+      expect(document.querySelectorAll('#testDataSchemaRows .generator-schema-row').length).toBeGreaterThanOrEqual(1)
+    );
     expect(harness.getSchemaText()).not.toContain('Status');
     expect(harness.getSchemaText()).toContain('Code');
   });

@@ -17,23 +17,13 @@ import {
 import { schemaTextToDataRules, dataRulesToSchemaText } from '@anywaydata/core/data_generation/schema-rules-adapter.js';
 import { PairwiseTestDataGenerator } from '@anywaydata/core/data_generation/all-pairs/pairwiseTestDataGenerator.js';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
-import { buildRuleSpecFromSchemaRow } from '../../../shared/schema-row-rule-mapper.js';
-import {
-  FAKER_COMMANDS,
-  DOMAIN_COMMANDS,
-  FAKER_SECTION_VALUE,
-  DOMAIN_SECTION_VALUE,
-  identifyFakerCommands,
-  getAgGridCommandEditorValues,
-  getMethodPickerOptions,
-} from '../schema/index.js';
+import { FAKER_COMMANDS, identifyFakerCommands, getMethodPickerOptions } from '../schema/index.js';
 import {
   setTestDataStatus,
   clearPendingTestDataStatusReset,
   scheduleTestDataStatusReset,
   yieldToUi,
 } from '../ui/test-data-ui-status.js';
-import { setupSchemaGridEditor } from '../grid-engines/index.js';
 import { bindPrimaryActions, bindGenerateCountInput, bindModeRadios, bindSchemaSampleShortcut } from '../host/index.js';
 import {
   createSchemaTextSyncState,
@@ -42,7 +32,7 @@ import {
   initializeSchemaErrorDisplay,
 } from '../schema/index.js';
 import { TEST_DATA_GRID_SAMPLE_SCHEMA_TEXT } from '../../../shared/test-data/schema/index.js';
-import { mapDataRuleToGridRow, mapGridRowToSchemaRow } from '../schema/index.js';
+import { mapDataRuleToSchemaRow } from '../../../shared/test-data/schema/index.js';
 import {
   getGenerationMode as getGenerationModeFromUi,
   applyModeDefaultRowCount as applyModeDefaultRowCountShared,
@@ -79,7 +69,6 @@ function createTestDataGridControl({
   clearPendingStatusResetFn = clearPendingTestDataStatusReset,
   scheduleStatusResetFn = scheduleTestDataStatusReset,
   yieldToUiFn = yieldToUi,
-  setupSchemaGridEditorFn = setupSchemaGridEditor,
   identifyFakerCommandsFn = identifyFakerCommands,
   createTestDataGridActionAdapterFn = createTestDataGridActionAdapter,
 } = {}) {
@@ -145,6 +134,10 @@ function createTestDataGridControl({
   }
 
   function loadSampleSchemaIntoTextArea() {
+    if (typeof state.schemaGridController?.insertSampleSchema === 'function') {
+      state.schemaGridController.insertSampleSchema();
+      return;
+    }
     loadSampleSchemaIntoTextAreaFn({
       documentObj: getResolvedDocument(),
       sampleSchemaText: TEST_DATA_GRID_SAMPLE_SCHEMA_TEXT,
@@ -180,28 +173,20 @@ function createTestDataGridControl({
   function createGridController() {
     return createSchemaGridControllerFn({
       documentObj: getResolvedDocument(),
-      setupSchemaGridEditor: setupSchemaGridEditorFn,
-      createGridRowToSchemaRowMapper: () => (rowData) =>
-        mapGridRowToSchemaRow(rowData, {
-          FAKER_SECTION_VALUE,
-          DOMAIN_SECTION_VALUE,
-          FAKER_COMMANDS,
-          DOMAIN_COMMANDS,
-        }),
-      buildRuleSpecFromSchemaRow,
       dataRulesToSchemaText: dataRulesToSchemaTextFn,
       schemaTextSyncState: state.schemaTextSyncState,
       updatePairwiseButtonVisibility,
       schemaTextToDataRules: schemaTextToDataRulesFn,
-      schemaErrorsToText: state.generationService?.schemaErrorsToText,
       setTestDataStatus: setTestDataStatusFn,
-      mapRuleToRow: mapDataRuleToGridRow,
+      mapRuleToRow: mapDataRuleToSchemaRow,
       faker,
       RandExp,
-      getAgGridCommandEditorValues,
       getMethodPickerOptions,
-      FAKER_SECTION_VALUE,
-      DOMAIN_SECTION_VALUE,
+      fakerCommands: FAKER_COMMANDS.filter((command) => command !== 'RegEx' && command.startsWith('helpers.')),
+      getVisibleDomainCommandOptions: (currentValue) => {
+        const options = getMethodPickerOptions(currentValue).filter((option) => option.sourceType === 'domain');
+        return options.map((option) => ({ value: option.command, label: option.command }));
+      },
     });
   }
 

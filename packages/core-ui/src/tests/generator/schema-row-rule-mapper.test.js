@@ -47,6 +47,19 @@ describe('schema-row-rule-mapper', () => {
     expect(buildRuleSpecFromSchemaRow({ sourceType: 'domain', command: 'number.int', params: '(1,10)' })).toBe(
       'number.int(1,10)'
     );
+    expect(buildRuleSpecFromSchemaRow({ sourceType: 'domain', command: 'datatype.enum', params: 'a,raw,list' })).toBe(
+      'enum(a,raw,list)'
+    );
+    expect(
+      buildRuleSpecFromSchemaRow({ sourceType: 'domain', command: 'datatype.enum', params: '(a,bracketed,list)' })
+    ).toBe('enum(a,bracketed,list)');
+    expect(
+      buildRuleSpecFromSchemaRow({
+        sourceType: 'domain',
+        command: 'datatype.enum',
+        params: '("a","quoteded","bracketed","list")',
+      })
+    ).toBe('enum("a","quoteded","bracketed","list")');
   });
 
   test('buildRuleSpecFromSchemaRow handles literal rows including blank default', () => {

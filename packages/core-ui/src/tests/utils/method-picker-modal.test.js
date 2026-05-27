@@ -89,7 +89,7 @@ describe('method picker modal', () => {
     const headings = Array.from(document.querySelectorAll('.method-picker-detail h5')).map((el) =>
       el.textContent.trim()
     );
-    expect(headings).toEqual(['Parameter Details', 'Parameter Types', 'Example']);
+    expect(headings).toEqual(['Parameter Details', 'Parameter Types', 'Return Examples']);
 
     const detailsTable = document.querySelector('.method-picker-param-details');
     expect(detailsTable.textContent).toContain('Name');
@@ -102,6 +102,50 @@ describe('method picker modal', () => {
     expect(typesTable.textContent).toContain('Type');
     expect(typesTable.textContent).toContain('Req');
     expect(typesTable.textContent).toContain('optional');
+
+    document.querySelector('[data-action="cancel"]').click();
+    await promise;
+  });
+
+  test('renders usage from examples and deduped return examples from example + exampleReturnValues', async () => {
+    const promise = openMethodPickerModal({
+      documentObj: document,
+      windowObj: window,
+      options: [
+        {
+          sourceType: 'domain',
+          command: 'datatype.enum',
+          helpModel: {
+            summary: 'Enum helper',
+            heading: 'datatype.enum',
+            docsUrl: 'https://anywaydata.com/docs/category/generating-data',
+            example: 'active',
+            examples: ['enum active,inactive,pending', 'datatype.enum(active,inactive,pending)'],
+            exampleReturnValues: ['inactive', 'pending', 'active'],
+            params: [],
+          },
+        },
+      ],
+      currentCommand: 'datatype.enum',
+    });
+
+    const usageSection = document.querySelector('.method-picker-detail');
+    expect(usageSection.textContent).toContain('enum active,inactive,pending');
+    expect(usageSection.textContent).toContain('datatype.enum(active,inactive,pending)');
+    expect(usageSection.textContent).toContain('active');
+    expect(usageSection.textContent).toContain('inactive');
+    expect(usageSection.textContent).toContain('pending');
+    const usageBlock = usageSection.innerHTML.split('<h5>Usage Examples</h5>')[1].split('<h5>Return Examples</h5>')[0];
+    expect(usageBlock).not.toContain('<code>active</code>');
+    const returnBlock = usageSection.innerHTML.split('<h5>Return Examples</h5>')[1];
+    expect((returnBlock.match(/<code>active<\/code>/g) || []).length).toBe(1);
+
+    const docsLink = document.querySelector('.method-picker-docs-link a');
+    expect(docsLink).not.toBeNull();
+    expect(docsLink.getAttribute('href')).toBe('https://anywaydata.com/docs/category/generating-data');
+    expect(docsLink.getAttribute('target')).toBe('_blank');
+    expect(docsLink.getAttribute('rel')).toContain('noopener');
+    expect(docsLink.getAttribute('rel')).toContain('noreferrer');
 
     document.querySelector('[data-action="cancel"]').click();
     await promise;
@@ -121,10 +165,14 @@ describe('method picker modal', () => {
       currentCommand: 'helpers.arrayElement',
     });
 
+    const headings = Array.from(document.querySelectorAll('.method-picker-detail h5')).map((el) =>
+      el.textContent.trim()
+    );
+    expect(headings).toEqual(['Parameter Details', 'Return Examples']);
     const emptyStates = Array.from(document.querySelectorAll('.method-picker-table-wrap .method-picker-empty')).map(
       (el) => el.textContent.trim()
     );
-    expect(emptyStates).toEqual(['No params', 'No params']);
+    expect(emptyStates).toEqual(['No params']);
 
     document.querySelector('[data-action="cancel"]').click();
     await promise;

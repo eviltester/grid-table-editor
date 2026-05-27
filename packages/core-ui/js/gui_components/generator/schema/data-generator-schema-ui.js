@@ -82,7 +82,6 @@ function insertExampleSchema({
   documentObj,
   sampleSchemaText,
   setIsTextMode,
-  updateSchemaEditModeViewFn,
   syncSchemaRowsFromTextMode,
   renderSchemaRows,
 }) {
@@ -90,10 +89,17 @@ function insertExampleSchema({
   if (textArea) {
     textArea.value = sampleSchemaText;
   }
-  setIsTextMode(true);
-  updateSchemaEditModeViewFn();
   syncSchemaRowsFromTextMode({ showErrors: true });
-  renderSchemaRows();
+  const rowsContainer = documentObj.getElementById('generatorSchemaRows');
+  const isSchemaModeVisible = rowsContainer && rowsContainer.style.display !== 'none';
+  if (isSchemaModeVisible) {
+    setIsTextMode(true);
+    syncSchemaRowsFromTextMode({ showErrors: true });
+    setIsTextMode(false);
+    renderSchemaRows();
+    return;
+  }
+  syncSchemaRowsFromTextMode({ showErrors: true });
 }
 
 function renderGeneratorSchemaRows({

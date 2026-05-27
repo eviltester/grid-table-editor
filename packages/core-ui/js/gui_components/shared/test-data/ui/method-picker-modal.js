@@ -1,6 +1,6 @@
 const RECENT_STORAGE_KEY = 'anywaydata.method-picker.recent';
 const MAX_RECENT = 8;
-const STYLE_ID = 'method-picker-modal-styles';
+const STYLE_ID = 'method-picker-modal-styles-link';
 const CORE_COMMANDS = new Set(['enum', 'literal', 'regex']);
 
 function escapeHtml(text) {
@@ -35,259 +35,35 @@ function writeRecent(windowObj, entries) {
 
 function buildSearchText(option) {
   const params = Array.isArray(option?.helpModel?.params) ? option.helpModel.params.map((p) => p?.name || '') : [];
-  return [option.command, option.helpModel?.summary || '', option.helpModel?.example || '', params.join(' ')].join(' ');
+  const usageExamples = toExampleList(option?.helpModel?.examples);
+  const returnExamples = getReturnExamples(option?.helpModel);
+  return [
+    option.command,
+    option.helpModel?.summary || '',
+    option.helpModel?.example || '',
+    usageExamples.join(' '),
+    returnExamples.join(' '),
+    params.join(' '),
+  ].join(' ');
+}
+
+function toExampleList(value) {
+  if (Array.isArray(value)) {
+    return value.map((entry) => String(entry || '').trim()).filter(Boolean);
+  }
+  const single = String(value || '').trim();
+  return single ? [single] : [];
 }
 
 function ensureStyles(documentObj) {
   if (!documentObj?.head || documentObj.getElementById(STYLE_ID)) {
     return;
   }
-  const style = documentObj.createElement('style');
-  style.id = STYLE_ID;
-  style.textContent = `
-    body.theme-light {
-      --mp-bg: #ffffff;
-      --mp-elevated: #f7f8fb;
-      --mp-border: #d6dce8;
-      --mp-text: #121620;
-      --mp-muted: #495066;
-      --mp-subtle: #495066;
-      --mp-accent: #1f6feb;
-      --mp-accent-soft: #e9f1ff;
-      --mp-focus: #1f6feb;
-      --mp-overlay: rgba(15, 23, 42, 0.45);
-      --mp-code-bg: #eef2f8;
-    }
-    body.theme-dark {
-      --mp-bg: #121722;
-      --mp-elevated: #1b2231;
-      --mp-border: #2e3a51;
-      --mp-text: #ebf0ff;
-      --mp-muted: #cfd8ef;
-      --mp-subtle: #d2deea;
-      --mp-accent: #73a7ff;
-      --mp-accent-soft: #22314c;
-      --mp-focus: #8bb6ff;
-      --mp-overlay: rgba(0, 0, 0, 0.62);
-      --mp-code-bg: #1f2738;
-    }
-    .method-picker-overlay {
-      position: fixed;
-      inset: 0;
-      background: var(--mp-overlay, rgba(0, 0, 0, 0.55));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 6000;
-      padding: 20px;
-    }
-    .method-picker-modal {
-      width: min(1200px, 100%);
-      max-height: calc(100vh - 40px);
-      display: flex;
-      flex-direction: column;
-      background: var(--mp-bg, #fff);
-      color: var(--mp-text, #111);
-      border: 1px solid var(--mp-border, #ddd);
-      border-radius: 12px;
-      overflow: hidden;
-    }
-    .method-picker-header,
-    .method-picker-toolbar,
-    .method-picker-footer {
-      padding: 12px 16px;
-      border-bottom: 1px solid var(--mp-border, #ddd);
-    }
-    .method-picker-header,
-    .method-picker-footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-    .method-picker-header h3 {
-      margin: 0;
-      font-size: 18px;
-    }
-    .method-picker-close {
-      border: 1px solid var(--mp-border, #ddd);
-      background: var(--mp-elevated, #f5f5f5);
-      color: var(--mp-text, #111);
-      border-radius: 8px;
-      width: 32px;
-      height: 32px;
-      font-size: 20px;
-      line-height: 1;
-      cursor: pointer;
-    }
-    .method-picker-toolbar {
-      display: grid;
-      grid-template-columns: minmax(220px, 1fr);
-      gap: 10px;
-      background: var(--mp-elevated, #f7f7f7);
-    }
-    .method-picker-search {
-      width: 100%;
-      border: 1px solid var(--mp-border, #ddd);
-      border-radius: 10px;
-      background: var(--mp-bg, #fff);
-      color: var(--mp-text, #111);
-      padding: 10px 12px;
-      min-width: 0;
-    }
-    .method-picker-tabs {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-    .method-picker-tabs button {
-      border: 1px solid var(--mp-border, #ddd);
-      border-radius: 999px;
-      background: var(--mp-bg, #fff);
-      color: var(--mp-text, #111);
-      padding: 6px 12px;
-      cursor: pointer;
-    }
-    .method-picker-tabs button.is-active {
-      border-color: var(--mp-accent, #3366ff);
-      background: var(--mp-accent-soft, #e8efff);
-      color: var(--mp-accent, #3366ff);
-    }
-    .method-picker-content {
-      display: grid;
-      grid-template-columns: minmax(260px, 1.1fr) minmax(280px, 1fr);
-      gap: 0;
-      min-height: 0;
-      flex: 1;
-    }
-    .method-picker-list,
-    .method-picker-detail {
-      overflow: auto;
-      min-height: 0;
-      padding: 12px;
-    }
-    .method-picker-list {
-      border-right: 1px solid var(--mp-border, #ddd);
-      background: var(--mp-elevated, #f7f7f7);
-    }
-    .method-picker-tile {
-      width: 100%;
-      text-align: left;
-      border: 1px solid var(--mp-border, #ddd);
-      background: var(--mp-bg, #fff);
-      color: var(--mp-text, #111);
-      border-radius: 10px;
-      padding: 10px;
-      margin-bottom: 8px;
-      display: grid;
-      gap: 6px;
-      cursor: pointer;
-    }
-    .method-picker-tile.is-selected {
-      border-color: var(--mp-accent, #3366ff);
-      background: var(--mp-accent-soft, #e8efff);
-    }
-    .method-picker-tile-command {
-      font-weight: 600;
-      word-break: break-word;
-    }
-    .method-picker-tile-summary,
-    .method-picker-tile-tag {
-      color: var(--mp-subtle, #555);
-      font-size: 12px;
-      word-break: break-word;
-    }
-    .method-picker-detail h4,
-    .method-picker-detail h5 {
-      margin: 0 0 8px 0;
-    }
-    .method-picker-detail p {
-      margin: 0 0 10px 0;
-      color: var(--mp-subtle, #555);
-      line-height: 1.4;
-      word-break: break-word;
-    }
-    .method-picker-detail pre {
-      margin: 0;
-      overflow-x: auto;
-      white-space: pre-wrap;
-      word-break: break-word;
-      border: 1px solid var(--mp-border, #ddd);
-      background: var(--mp-code-bg, #f2f2f2);
-      border-radius: 8px;
-      padding: 10px;
-      color: var(--mp-text, #111);
-    }
-    .method-picker-detail code {
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-    .method-picker-table-wrap {
-      margin: 0 0 12px 0;
-    }
-    .method-picker-table {
-      width: 100%;
-      border-collapse: collapse;
-      table-layout: fixed;
-      border: 1px solid var(--mp-border, #ddd);
-      border-radius: 8px;
-      overflow: hidden;
-    }
-    .method-picker-table th,
-    .method-picker-table td {
-      border-bottom: 1px solid var(--mp-border, #ddd);
-      text-align: left;
-      vertical-align: top;
-      padding: 8px;
-      color: var(--mp-text, #111);
-      overflow-wrap: anywhere;
-    }
-    .method-picker-table th {
-      background: var(--mp-elevated, #f7f7f7);
-      font-size: 12px;
-      letter-spacing: 0.02em;
-    }
-    .method-picker-table tr:last-child td {
-      border-bottom: 0;
-    }
-    .method-picker-footer {
-      border-top: 1px solid var(--mp-border, #ddd);
-      border-bottom: 0;
-      justify-content: flex-end;
-    }
-    .method-picker-footer button {
-      border: 1px solid var(--mp-border, #ddd);
-      border-radius: 8px;
-      background: var(--mp-bg, #fff);
-      color: var(--mp-text, #111);
-      padding: 8px 14px;
-      cursor: pointer;
-    }
-    .method-picker-apply {
-      border-color: var(--mp-accent, #3366ff) !important;
-      background: var(--mp-accent, #3366ff) !important;
-      color: #fff !important;
-    }
-    .method-picker-modal button:focus-visible,
-    .method-picker-modal input:focus-visible {
-      outline: 2px solid var(--mp-focus, #4a80ff);
-      outline-offset: 2px;
-    }
-    .method-picker-empty {
-      color: var(--mp-subtle, #555);
-    }
-    @media (max-width: 980px) {
-      .method-picker-content {
-        grid-template-columns: 1fr;
-      }
-      .method-picker-list {
-        border-right: 0;
-        border-bottom: 1px solid var(--mp-border, #ddd);
-        max-height: 40vh;
-      }
-    }
-  `;
-  documentObj.head.appendChild(style);
+  const link = documentObj.createElement('link');
+  link.id = STYLE_ID;
+  link.rel = 'stylesheet';
+  link.href = new URL('./method-picker-modal.css', import.meta.url).href;
+  documentObj.head.appendChild(link);
 }
 
 function renderParameterDetailsTable(model) {
@@ -318,6 +94,25 @@ function renderParameterTypesTable(model) {
     })
     .join('');
   return `<table class="method-picker-table method-picker-param-types"><thead><tr><th>Name</th><th>Type</th><th>Req</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+function renderExampleList(examples, emptyText) {
+  if (!examples.length) {
+    return `<p class="method-picker-empty">${escapeHtml(emptyText)}</p>`;
+  }
+  const rows = examples.map((example) => `<li><code>${escapeHtml(example)}</code></li>`).join('');
+  return `<ul class="method-picker-example-list">${rows}</ul>`;
+}
+
+function getReturnExamples(model) {
+  const unique = new Set();
+  const add = (value) => {
+    toExampleList(value).forEach((entry) => unique.add(entry));
+  };
+  add(model?.example);
+  add(model?.exampleReturnValues);
+  add(model?.returnExamples);
+  return [...unique];
 }
 
 function openMethodPickerModal({
@@ -410,16 +205,25 @@ function openMethodPickerModal({
       return;
     }
     const model = selected.helpModel || {};
+    const usageExamples = toExampleList(model.examples);
+    const returnExamples = getReturnExamples(model);
+    const docsUrl = String(model.docsUrl || '').trim();
+    const hasParams = Array.isArray(model.params) && model.params.length > 0;
     detailElem.innerHTML = `
       <h4>${escapeHtml(selected.command)}</h4>
       <p>${escapeHtml(model.summary || 'No summary available.')}</p>
       <p><strong>Schema:</strong> <code>${escapeHtml(model.heading || selected.command)}()</code></p>
       <h5>Parameter Details</h5>
       <div class="method-picker-table-wrap">${renderParameterDetailsTable(model)}</div>
-      <h5>Parameter Types</h5>
-      <div class="method-picker-table-wrap">${renderParameterTypesTable(model)}</div>
-      <h5>Example</h5>
-      <pre><code>${escapeHtml(model.example || 'Example varies by parameters')}</code></pre>
+      ${hasParams ? `<h5>Parameter Types</h5><div class="method-picker-table-wrap">${renderParameterTypesTable(model)}</div>` : ''}
+      ${usageExamples.length ? `<h5>Usage Examples</h5>${renderExampleList(usageExamples, '')}` : ''}
+      <h5>Return Examples</h5>
+      ${renderExampleList(returnExamples, 'No return examples available')}
+      ${
+        docsUrl
+          ? `<p class="method-picker-docs-link"><a href="${escapeHtml(docsUrl)}" target="_blank" rel="noopener noreferrer">Open documentation</a></p>`
+          : ''
+      }
     `;
   }
 

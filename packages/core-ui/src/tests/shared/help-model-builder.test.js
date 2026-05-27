@@ -60,4 +60,9 @@ describe('help-model-builder', () => {
     expect(model.heading).toContain('counterString');
     expect(renderSchemaHelpHtml(model)).toContain('delimiter');
   });
+
+  test('maps faker helpers docs link to anywaydata faker helpers docs', () => {
+    const model = buildSchemaHelpModel('faker', 'helpers.fake');
+    expect(model.docsUrl).toBe('https://anywaydata.com/docs/test-data/faker/helpers');
+  });
 });

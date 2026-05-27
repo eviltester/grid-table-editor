@@ -116,4 +116,19 @@ describe('app test-data focused generation flows', () => {
     await harness.clickGenerate({ waitForData: false });
     await waitFor(() => expect(harness.getSchemaErrorText()).toContain('No rows selected'));
   });
+
+  test('domain datatype.enum generates as enum values', async () => {
+    await harness.addColumn();
+    await harness.fillGridRow(0, {
+      name: 'Status',
+      sourceType: 'domain',
+      command: 'datatype.enum',
+      params: 'active,inactive,pending',
+    });
+
+    await harness.setGenerateCount(3);
+    await harness.clickGenerate();
+    harness.assertSuccessfulGeneration('app datatype.enum generation');
+    expect(harness.getSchemaErrorText()).toBe('');
+  });
 });

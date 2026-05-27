@@ -6,6 +6,7 @@ import { Exporter } from '@anywaydata/core/grid/exporter.js';
 import { DataGeneratorPage } from '../../../../../js/gui_components/generator/index.js';
 import { getFakerCommandHelp } from '../../../../../js/gui_components/shared/faker-command-help-metadata.js';
 import { getDomainCommandHelp } from '../../../../../js/gui_components/shared/domain-command-help-metadata.js';
+import { resolveFakerDocsUrl } from '../../../../../js/gui_components/shared/test-data/help/help-model-builder.js';
 import {
   SOURCE_TYPE_FAKER,
   SOURCE_TYPE_DOMAIN,
@@ -96,7 +97,7 @@ function fillGeneratorRow(rowIndex, row) {
 
 function resolveExpectedDocsUrl(row) {
   if (row?.sourceType === SOURCE_TYPE_FAKER) {
-    return String(getFakerCommandHelp(row.command)?.docsUrl || '').trim();
+    return resolveFakerDocsUrl(row.command, getFakerCommandHelp(row.command)?.docsUrl || '');
   }
   if (row?.sourceType === SOURCE_TYPE_DOMAIN) {
     return String(getDomainCommandHelp(row.command)?.docsUrl || '').trim();

@@ -1,5 +1,9 @@
 const { expect } = require('@playwright/test');
 const { GridRendererComponent } = require('./grid-renderer.component');
+const { SchemaEditorComponent } = require('../../../shared/abstractions/components/schema-editor.component');
+const {
+  MethodPickerDialogComponent,
+} = require('../../../shared/abstractions/components/method-picker-dialog.component');
 
 class TestDataPanelComponent {
   constructor(page) {
@@ -16,10 +20,39 @@ class TestDataPanelComponent {
     this.amendSelectedMode = page.locator('input[name="testDataGenerationMode"][value="amend-selected"]');
     this.schemaTextArea = page.locator('#testDataSchemaText');
     this.status = page.locator('#testdata-status');
-    this.schemaGrid = page.locator('#testDataSchemaGrid');
+    this.schemaGrid = page.locator('#testDataSchemaGrid, #testDataSchemaRows');
     this.schemaRenderer = new GridRendererComponent(page, this.schemaGrid);
-    this.addSchemaColumnButton = page.getByRole('button', { name: /\+ Add Column/ });
+    this.addSchemaColumnButton = page.getByRole('button', { name: /\+ Add (Column|Field)/ });
     this.deleteSelectedSchemaRowsButton = this.container.getByRole('button', { name: '- Delete Selected' });
+    this.selectedSchemaRowIndex = 0;
+    this.schemaEditor = new SchemaEditorComponent(page, {
+      rowsSelector: '#testDataSchemaRows',
+      textAreaSelector: '#testDataSchemaText',
+      modeToggleSelector: '#testDataSchemaModeToggleButton',
+      addFieldSelector: '#testDataAddSchemaRowButton',
+      fieldMap: {
+        columnName: 'name',
+        value: 'value',
+        comments: 'comments',
+        params: 'params',
+        type: 'sourceType',
+      },
+      rowCountResolver: async (editor) => {
+        const specText = await editor.getSchemaText();
+        const schemaLines = specText
+          .split(/\r?\n/)
+          .map((line) => line.trim())
+          .filter((line) => line.length > 0 && !line.startsWith('#'));
+        const domCount = Math.max(0, (await editor.rows.count()) - 1);
+        const textCount = schemaLines.length > 0 ? Math.ceil(schemaLines.length / 2) : 0;
+        return Math.max(domCount, textCount);
+      },
+    });
+    this.methodPicker = new MethodPickerDialogComponent(page);
+  }
+
+  async isRowEditorMode() {
+    return this.schemaEditor.isRowEditorMode();
   }
 
   async expectVisible() {
@@ -47,7 +80,6 @@ class TestDataPanelComponent {
     await expect(this.generateButton).toBeVisible();
     await expect(this.refreshTextPreviewButton).toBeVisible();
     await expect(this.generateCountInput).toBeVisible();
-    await expect(this.schemaTextArea).toBeVisible();
     await expect(this.schemaGrid).toBeVisible();
   }
 
@@ -76,8 +108,7 @@ class TestDataPanelComponent {
   }
 
   async setSchemaText(specText) {
-    await this.schemaTextArea.fill(specText);
-    await this.schemaTextArea.press('Tab');
+    await this.schemaEditor.setSchemaText(specText, { ensureTextMode: true, pressTab: true, waitMs: 1200 });
   }
 
   async clickGenerate() {
@@ -101,49 +132,66 @@ class TestDataPanelComponent {
   }
 
   async deleteSelectedSchemaRows() {
+    if (await this.isRowEditorMode()) {
+      const row = this.schemaEditor.row(this.selectedSchemaRowIndex || 0);
+      const removeButton = row.locator('[data-action="remove"]');
+      if ((await removeButton.count()) > 0) {
+        await removeButton.click();
+      } else {
+        await this.page.locator('#testDataSchemaRows .generator-schema-row [data-action="remove"]').first().click();
+      }
+      return;
+    }
     await this.deleteSelectedSchemaRowsButton.click();
   }
 
   async getSchemaRowCount() {
+    if (await this.isRowEditorMode()) {
+      return this.schemaEditor.getRowCount();
+    }
     return this.schemaRenderer.countRows();
   }
 
   async selectSchemaRow(rowIndex) {
+    if (await this.isRowEditorMode()) {
+      this.selectedSchemaRowIndex = rowIndex;
+      await this.schemaEditor.row(rowIndex).click();
+      return;
+    }
     const row = this.schemaGrid.locator('.tabulator-row').nth(rowIndex);
     await row.click();
     await this.page.keyboard.press('Space');
   }
 
   async getSelectedSchemaRowCount() {
+    if (await this.isRowEditorMode()) {
+      return 1;
+    }
     return this.schemaRenderer.countSelectedRows();
   }
 
   async setSchemaCell(rowIndex, field, value) {
+    if (await this.isRowEditorMode()) {
+      await this.schemaEditor.setRowField(rowIndex, field, value);
+      return;
+    }
     await this.schemaRenderer.setCellTextByField(field, rowIndex, value);
   }
 
   async setSchemaTypeValue(rowIndex, value, { pickerTab = null, assertSchemaTextIncludesType = true } = {}) {
+    if (await this.isRowEditorMode()) {
+      await this.schemaEditor.setRowTypeValue(rowIndex, value, {
+        pickerTab,
+        assertSchemaTextIncludesType,
+      });
+      return;
+    }
     await this.schemaRenderer.clickCellByField('type', rowIndex);
     const pickerTrigger = this.schemaGrid.locator('.tabulator-editing .test-data-grid-command-picker-trigger').first();
     if ((await pickerTrigger.count()) > 0) {
       await pickerTrigger.click();
-      const search = this.page.locator('.method-picker-search');
-      await expect(search).toBeVisible();
-      if (pickerTab) {
-        await this.page.locator('.method-picker-tabs button', { hasText: new RegExp(`^${pickerTab}$`, 'i') }).click();
-      }
-      await search.fill(String(value));
+      await this.methodPicker.chooseCommand(String(value), { tab: pickerTab });
       const valueLower = String(value).toLowerCase();
-      let targetTile = this.page
-        .locator('.method-picker-tile .method-picker-tile-command')
-        .filter({ hasText: new RegExp(`^${valueLower.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') })
-        .first();
-      if ((await targetTile.count()) === 0) {
-        targetTile = this.page.locator('.method-picker-tile .method-picker-tile-command').first();
-      }
-      await targetTile.click();
-      await this.page.locator('[data-action="apply"]').click();
-      await expect(this.page.locator('.method-picker-overlay')).toHaveCount(0);
       await this.schemaRenderer.clickCellByField('columnName', rowIndex);
       await expect
         .poll(async () => (await this.getSchemaCell(rowIndex, 'type')).trim().toLowerCase(), { timeout: 3000 })
@@ -164,6 +212,25 @@ class TestDataPanelComponent {
   }
 
   async getSchemaCell(rowIndex, field) {
+    if (await this.isRowEditorMode()) {
+      const mapped = this.schemaEditor.resolveField(field);
+      const input = this.schemaEditor.row(rowIndex).locator(`[data-field="${mapped}"]`);
+      if ((await input.count()) === 0) {
+        return '';
+      }
+      const tag = await input.first().evaluate((el) => el.tagName.toLowerCase());
+      if (tag === 'select') {
+        const sourceType = await input.inputValue();
+        if (mapped === 'sourceType' && (sourceType === 'domain' || sourceType === 'faker')) {
+          const commandButton = this.schemaEditor.row(rowIndex).locator('[data-action="pick-command"]');
+          if ((await commandButton.count()) > 0) {
+            return (await commandButton.first().innerText()).trim();
+          }
+        }
+        return sourceType;
+      }
+      return input.inputValue();
+    }
     return this.schemaRenderer.getCellTextByField(field, rowIndex);
   }
 }

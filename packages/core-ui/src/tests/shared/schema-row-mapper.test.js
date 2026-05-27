@@ -83,5 +83,22 @@ describe('schema-row-mapper', () => {
       sourceType: 'enum',
       value: 'enum(active,inactive)',
     });
+
+    expect(
+      mapGridRowToSchemaRow(
+        { columnName: 'Status', type: 'datatype.enum', value: 'active,inactive,pending' },
+        {
+          FAKER_SECTION_VALUE: 'faker',
+          DOMAIN_SECTION_VALUE: 'domain',
+          FAKER_COMMANDS: ['person.firstName'],
+          DOMAIN_COMMANDS: ['chemicalElement.name', 'datatype.enum'],
+        }
+      )
+    ).toEqual({
+      name: 'Status',
+      sourceType: 'domain',
+      command: 'datatype.enum',
+      params: 'active,inactive,pending',
+    });
   });
 });

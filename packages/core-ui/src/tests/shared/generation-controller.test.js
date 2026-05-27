@@ -98,6 +98,49 @@ describe('generation-controller', () => {
     expect(result.generator.testDataRules()[1]).toEqual({ type: 'literal', ruleSpec: '' });
   });
 
+  test('treats domain datatype.enum row as enum rule type', () => {
+    class FakeGenerator {
+      constructor() {
+        this.importSpec = jest.fn();
+        this.compile = jest.fn();
+        this.compiler = { validate: jest.fn() };
+        this._rules = [{}];
+      }
+      testDataRules() {
+        return this._rules;
+      }
+      isValid() {
+        return true;
+      }
+      errors() {
+        return [];
+      }
+    }
+
+    const result = createConfiguredGeneratorFromSchemaRows({
+      schemaRows: [{ name: 'Status', sourceType: 'domain', command: 'datatype.enum', params: 'active,inactive' }],
+      validateSchemaRows: () => ({
+        errors: [],
+        rows: [{ name: 'Status', sourceType: 'domain', command: 'datatype.enum', params: 'active,inactive' }],
+      }),
+      schemaRowsToSpec: () => 'Status\nenum(active,inactive)',
+      TestDataGeneratorClass: FakeGenerator,
+      faker: {},
+      RandExp: function RandExp() {},
+      buildRuleSpecFromSchemaRow: () => 'enum(active,inactive)',
+      extractLiteralValueFromRuleSpec: (value) => value,
+      extractRegexValueFromRuleSpec: (value) => value,
+      SOURCE_TYPE_FAKER: 'faker',
+      SOURCE_TYPE_DOMAIN: 'domain',
+      SOURCE_TYPE_LITERAL: 'literal',
+      SOURCE_TYPE_ENUM: 'enum',
+      SOURCE_TYPE_REGEX: 'regex',
+    });
+
+    expect(result.errors).toEqual([]);
+    expect(result.generator.testDataRules()[0]).toEqual({ type: 'enum', ruleSpec: 'enum(active,inactive)' });
+  });
+
   test('creates preview and pairwise tables through shared adapters', () => {
     const previewTable = createPreviewDataTable({
       rowCount: 2,

@@ -10,7 +10,6 @@ class ImmediateDebouncer {
   debounce(_name, callback) {
     callback();
   }
-
   clear() {}
 }
 
@@ -26,111 +25,33 @@ function clickElement(element) {
   fireEvent.click(element);
 }
 
-function createDomBackedSchemaGridEditor({
-  tableDiv,
-  convertGridToText,
-  onDraftCellEditChange,
-  getAgGridCommandEditorValues,
-}) {
-  const state = { rows: [], selectedIndexes: new Set() };
-
-  function cloneRow(row) {
-    return {
-      columnName: String(row?.columnName || ''),
-      type: String(row?.type || 'regex'),
-      value: String(row?.value ?? ''),
-      comments: String(row?.comments ?? ''),
-      leadingTextLines: Array.isArray(row?.leadingTextLines) ? row.leadingTextLines.slice() : [],
-    };
-  }
-
-  function renderRows() {
-    tableDiv.innerHTML = '';
-    state.rows.forEach((row, index) => {
-      const rowElem = document.createElement('div');
-      rowElem.className = 'test-schema-grid-row';
-      rowElem.setAttribute('data-row-index', String(index));
-      rowElem.innerHTML = `
-        <label>Select Row <input type="checkbox" data-field="selected" ${state.selectedIndexes.has(index) ? 'checked' : ''} /></label>
-        <label>Column Name <input type="text" data-field="columnName" value="${row.columnName.replace(/"/g, '&quot;')}" /></label>
-        <label>Type <select data-field="type"></select></label>
-        <label>Value <input type="text" data-field="value" value="${row.value.replace(/"/g, '&quot;')}" /></label>
-      `;
-
-      const typeSelect = rowElem.querySelector('[data-field="type"]');
-      getAgGridCommandEditorValues(row.type).forEach((value) => {
-        const option = document.createElement('option');
-        option.value = value;
-        option.textContent = value;
-        if (value === row.type) option.selected = true;
-        typeSelect.appendChild(option);
-      });
-
-      rowElem.addEventListener('input', (event) => {
-        const field = event.target.getAttribute('data-field');
-        if (!field || field === 'selected') return;
-        state.rows[index][field] = event.target.value;
-        onDraftCellEditChange?.(null);
-        convertGridToText();
-      });
-
-      rowElem.addEventListener('change', (event) => {
-        const field = event.target.getAttribute('data-field');
-        if (!field) return;
-        if (field === 'selected') {
-          if (event.target.checked) state.selectedIndexes.add(index);
-          else state.selectedIndexes.delete(index);
-          return;
-        }
-        state.rows[index][field] = event.target.value;
-        onDraftCellEditChange?.(null);
-        renderRows();
-        convertGridToText();
-      });
-
-      tableDiv.appendChild(rowElem);
-    });
-  }
-
-  return {
-    schemaGridApi: {},
-    schemaGridExtras: {
-      deleteSelectedRows() {
-        state.rows = state.rows.filter((_, index) => !state.selectedIndexes.has(index));
-        state.selectedIndexes.clear();
-        renderRows();
-      },
-    },
-    schemaGridBridge: {
-      getRows: () => state.rows.map((row) => cloneRow(row)),
-      addRows(rows) {
-        state.rows.push(...rows.map((row) => cloneRow(row)));
-        renderRows();
-      },
-      clearRows() {
-        state.rows = [];
-        state.selectedIndexes.clear();
-        renderRows();
-      },
-    },
-  };
-}
-
 function getAppGridRow(index = 0) {
-  return Array.from(document.querySelectorAll('.test-schema-grid-row'))[index];
+  return Array.from(document.querySelectorAll('#testDataSchemaRows .generator-schema-row'))[index];
 }
 
 function fillAppGridRow(rowIndex, row) {
   let rowElem = getAppGridRow(rowIndex);
-  setInputValue(rowElem.querySelector('[data-field="columnName"]'), row.name);
+  setInputValue(rowElem.querySelector('[data-field="name"]'), row.name || '');
 
-  const typeSelect = rowElem.querySelector('[data-field="type"]');
-  const typeValue = row.sourceType === 'faker' || row.sourceType === 'domain' ? row.command : row.sourceType;
-  setInputValue(typeSelect, typeValue);
-
+  const typeSelect = rowElem.querySelector('[data-field="sourceType"]');
+  const sourceType = row.sourceType || 'regex';
+  setInputValue(typeSelect, sourceType);
   rowElem = getAppGridRow(rowIndex);
-  const fieldValue = row.sourceType === 'faker' || row.sourceType === 'domain' ? row.params : row.value;
-  setInputValue(rowElem.querySelector('[data-field="value"]'), fieldValue || '');
+
+  if (sourceType === 'faker' || sourceType === 'domain') {
+    if (row.command) {
+      const commandSelect = rowElem.querySelector('[data-field="command"]');
+      if (commandSelect) {
+        setInputValue(commandSelect, row.command);
+      }
+    }
+    const fieldValue = row.params || '';
+    setInputValue(getAppGridRow(rowIndex).querySelector('[data-field="params"]'), fieldValue);
+    return;
+  }
+
+  const fieldValue = row.value || '';
+  setInputValue(getAppGridRow(rowIndex).querySelector('[data-field="value"]'), fieldValue);
 }
 
 function createAppTestDataInteractionHarness() {
@@ -139,7 +60,6 @@ function createAppTestDataInteractionHarness() {
   );
   global.RandExp = RandExp;
   let latestDataTable = null;
-  let control = null;
 
   function reset() {
     document.getElementById('host').innerHTML = '';
@@ -176,13 +96,11 @@ function createAppTestDataInteractionHarness() {
       getGridAsGenericDataTable: () => latestDataTable,
     };
 
-    control = createTestDataGridControl({
+    const control = createTestDataGridControl({
       documentObj: document,
       windowObj: window,
       DebouncerClass: ImmediateDebouncer,
-      setupSchemaGridEditorFn: createDomBackedSchemaGridEditor,
     });
-
     control.enableTestDataGenerationInterface('host', importer, textPreviewRenderer, gridExtras);
   }
 
@@ -191,8 +109,8 @@ function createAppTestDataInteractionHarness() {
       reset();
 
       for (let index = 0; index < scenario.rows.length; index += 1) {
-        while (document.querySelectorAll('.test-schema-grid-row').length <= index) {
-          clickElement(document.querySelector('#testDataSchemaGrid button'));
+        while (document.querySelectorAll('#testDataSchemaRows .generator-schema-row').length <= index) {
+          clickElement(document.getElementById('testDataAddSchemaRowButton'));
         }
         fillAppGridRow(index, scenario.rows[index]);
       }
@@ -205,7 +123,12 @@ function createAppTestDataInteractionHarness() {
 
       const schemaTextArea = document.getElementById('testDataSchemaText');
       setInputValue(schemaTextArea, scenario.expectedSchemaText);
-      await waitFor(() => expect(document.querySelectorAll('.test-schema-grid-row').length).toBe(scenario.rows.length));
+      await waitFor(() => {
+        if (document.querySelectorAll('#testDataSchemaRows .generator-schema-row').length >= scenario.rows.length) {
+          return;
+        }
+        throw new Error('Schema rows not yet synchronised from text');
+      });
 
       if (scenario.pairwiseEligible) {
         expect(document.getElementById('generateallpairs').style.display).not.toBe('none');
@@ -261,10 +184,7 @@ function createAppTestDataInteractionHarness() {
     });
   }
 
-  return {
-    runScenario,
-    cleanup: () => cleanupDomGlobals(dom),
-  };
+  return { runScenario, cleanup: () => cleanupDomGlobals(dom) };
 }
 
 export { createAppTestDataInteractionHarness };

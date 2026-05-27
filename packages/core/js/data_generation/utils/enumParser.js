@@ -3,6 +3,18 @@
  * Handles both simple comma-separated and function-based enum formats
  */
 export class EnumParser {
+  static isShorthandEnumFormat(ruleSpec) {
+    return /^enum\s+/.test(String(ruleSpec || '').trim());
+  }
+
+  static unwrapOptionalListParens(value) {
+    const text = String(value || '').trim();
+    if (text.startsWith('(') && text.endsWith(')') && text.length >= 2) {
+      return text.slice(1, -1).trim();
+    }
+    return text;
+  }
+
   /**
    * Check if rule spec uses AWD enum function format
    * @param {string} ruleSpec - The rule specification to check
@@ -28,8 +40,21 @@ export class EnumParser {
       return this.extractAwdEnumValues(spec);
     }
 
+    if (this.isShorthandEnumFormat(spec)) {
+      const shorthand = spec.replace(/^enum\s+/i, '');
+      return this.extractEnumValues(this.unwrapOptionalListParens(shorthand));
+    }
+
     // Simple comma-separated format
-    return spec.split(',').map((v) => v.trim());
+    return this.unwrapOptionalListParens(spec)
+      .split(',')
+      .map((v) => {
+        const trimmed = v.trim();
+        if (trimmed.startsWith('"') && trimmed.endsWith('"') && trimmed.length >= 2) {
+          return trimmed.slice(1, -1);
+        }
+        return trimmed;
+      });
   }
 
   /**

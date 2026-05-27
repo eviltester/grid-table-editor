@@ -112,6 +112,9 @@ const FAKER_PARAM_OVERRIDES = {
 };
 
 const DOMAIN_PARAM_OVERRIDES = {
+  'datatype.enum': {
+    defaults: ['"active"', '"inactive"', '"pending"'],
+  },
   'date.between': {
     defaults: ['1577836800000', '1609372800000'],
     named: { from: '1577836800000', to: '1609372800000' },

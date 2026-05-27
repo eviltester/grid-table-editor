@@ -13,6 +13,15 @@ import {
 } from './support/schema-interaction-scenario-builder.js';
 
 describe('schema interaction scenario builder', () => {
+  test('exposes datatype.enum in domain command list with help metadata', () => {
+    const visibleCommands = getVisibleDomainCommands({
+      commands: getKnownDomainCommandsAlphabetical(),
+      currentCommand: '',
+    });
+    expect(visibleCommands).toContain('datatype.enum');
+    expect(getDomainCommandHelp('datatype.enum')).toBeTruthy();
+  });
+
   test('builds at least one scenario for every dropdown selectable item', () => {
     const { byCommand } = buildScenarioCoverageSummary();
     const scenarios = buildSchemaInteractionScenarios();

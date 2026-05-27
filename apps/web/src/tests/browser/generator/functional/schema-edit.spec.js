@@ -32,7 +32,7 @@ test.describe('Generator Schema Editing', () => {
     await expect(generatorPage.schema.row(0).locator('input[data-field="value"]')).toHaveValue('Alice');
     await expect(generatorPage.schema.row(1).locator('input[data-field="name"]')).toHaveValue('Status');
     await expect(generatorPage.schema.row(1).locator('select[data-field="sourceType"]')).toHaveValue('enum');
-    await expect(generatorPage.schema.row(1).locator('input[data-field="value"]')).toHaveValue('enum(active,inactive)');
+    await expect(generatorPage.schema.row(1).locator('input[data-field="value"]')).toHaveValue('active,inactive');
 
     expectNoPageErrors(pageErrors);
   });

@@ -75,9 +75,34 @@ function buildRuleSpecFromSchemaRow(row) {
     if (/^(enum|datatype\.enum|awd\.datatype\.enum)\s*\(/i.test(enumValue)) {
       return enumValue;
     }
+    if (/^enum\s+/i.test(enumValue)) {
+      return `enum(${enumValue.replace(/^enum\s+/i, '').trim()})`;
+    }
+    if (enumValue.startsWith('(') && enumValue.endsWith(')')) {
+      return `enum${enumValue}`;
+    }
     return `enum(${enumValue})`;
   }
   return String(row?.value ?? '').trim();
+}
+
+function extractEnumValueFromRuleSpec(ruleSpec) {
+  const value = String(ruleSpec ?? '').trim();
+  const wrappedMatch = value.match(/^(?:enum|datatype\.enum|awd\.datatype\.enum)\s*\(([\s\S]*)\)$/i);
+  if (wrappedMatch) {
+    return wrappedMatch[1].trim();
+  }
+  if (/^enum\s+/i.test(value)) {
+    const shorthand = value.replace(/^enum\s+/i, '').trim();
+    if (shorthand.startsWith('(') && shorthand.endsWith(')') && shorthand.length >= 2) {
+      return shorthand.slice(1, -1).trim();
+    }
+    return shorthand;
+  }
+  if (value.startsWith('(') && value.endsWith(')') && value.length >= 2) {
+    return value.slice(1, -1).trim();
+  }
+  return value;
 }
 
 function extractLiteralValueFromRuleSpec(ruleSpec) {
@@ -136,5 +161,6 @@ export {
   buildRuleSpecFromSchemaRow,
   extractLiteralValueFromRuleSpec,
   extractRegexValueFromRuleSpec,
+  extractEnumValueFromRuleSpec,
   buildDataRuleFromSchemaRow,
 };

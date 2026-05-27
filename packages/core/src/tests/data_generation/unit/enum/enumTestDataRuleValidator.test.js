@@ -106,5 +106,20 @@ describe('EnumTestDataRuleValidator', () => {
 
       expect(values).toEqual(['basic', 'with space', 'advanced']);
     });
+
+    test('extracts shorthand enum values without parentheses', () => {
+      const values = EnumParser.extractEnumValues('enum active,inactive,pending');
+      expect(values).toEqual(['active', 'inactive', 'pending']);
+    });
+
+    test('extracts bracketed csv list values', () => {
+      const values = EnumParser.extractEnumValues('(a,bracketed,list)');
+      expect(values).toEqual(['a', 'bracketed', 'list']);
+    });
+
+    test('extracts quoted bracketed list values', () => {
+      const values = EnumParser.extractEnumValues('("a","quoteded","bracketed","list")');
+      expect(values).toEqual(['a', 'quoteded', 'bracketed', 'list']);
+    });
   });
 });

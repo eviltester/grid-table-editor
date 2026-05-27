@@ -13,6 +13,7 @@ import {
   SOURCE_TYPE_ENUM,
   extractLiteralValueFromRuleSpec,
   extractRegexValueFromRuleSpec,
+  extractEnumValueFromRuleSpec,
   normaliseDomainCommand,
   normaliseFakerCommand,
 } from '../../schema-row-rule-mapper.js';
@@ -78,6 +79,10 @@ function mapDataRuleToSchemaRow(rule, { createBlankSchemaRow = createDefaultSche
   }
   if (row.sourceType === SOURCE_TYPE_REGEX) {
     row.value = extractRegexValueFromRuleSpec(rule?.ruleSpec);
+    return row;
+  }
+  if (row.sourceType === SOURCE_TYPE_ENUM) {
+    row.value = extractEnumValueFromRuleSpec(rule?.ruleSpec);
     return row;
   }
   row.value = String(rule?.ruleSpec ?? '');

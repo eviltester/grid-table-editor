@@ -200,7 +200,6 @@ class TestDataPanelComponent {
       if ((await paramsInput.count()) > 0) {
         return paramsInput.inputValue();
       }
-      return '';
     }
     return this.schemaRenderer.getCellTextByField(field, rowIndex);
   }

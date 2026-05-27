@@ -275,25 +275,29 @@ function createSharedSchemaEditorController({
       const index = session.getRows().findIndex((entry) => entry.id === rowId);
       if (index >= 0) {
         const row = session.getRows()[index];
-        const selected = await openMethodPickerModal({
-          documentObj,
-          windowObj: documentObj?.defaultView || globalThis.window,
-          options: getMethodPickerOptions(row.command),
-          currentCommand: row.command,
-          initialTab: getPickerInitialTab(row.sourceType),
-          title: 'Select schema method',
-        });
-        if (selected?.command) {
-          session.updateRowAtIndex(index, (currentRow) => ({
-            ...currentRow,
-            sourceType: selected.sourceType || currentRow.sourceType,
-            command:
-              selected.sourceType === SOURCE_TYPE_DOMAIN
-                ? normaliseDomainCommand(selected.command)
-                : normaliseFakerCommand(selected.command),
-          }));
-          renderRows();
-          syncTextFromRows();
+        try {
+          const selected = await openMethodPickerModal({
+            documentObj,
+            windowObj: documentObj?.defaultView || globalThis.window,
+            options: getMethodPickerOptions(row.command),
+            currentCommand: row.command,
+            initialTab: getPickerInitialTab(row.sourceType),
+            title: 'Select schema method',
+          });
+          if (selected?.command) {
+            session.updateRowAtIndex(index, (currentRow) => ({
+              ...currentRow,
+              sourceType: selected.sourceType || currentRow.sourceType,
+              command:
+                selected.sourceType === SOURCE_TYPE_DOMAIN
+                  ? normaliseDomainCommand(selected.command)
+                  : normaliseFakerCommand(selected.command),
+            }));
+            renderRows();
+            syncTextFromRows();
+          }
+        } catch {
+          return;
         }
       }
       return;

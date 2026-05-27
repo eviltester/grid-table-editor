@@ -109,7 +109,13 @@ function createAppTestDataInteractionHarness() {
       reset();
 
       for (let index = 0; index < scenario.rows.length; index += 1) {
+        let attempts = 0;
+        const maxAttempts = Math.max(10, index + 10);
         while (document.querySelectorAll('#testDataSchemaRows .generator-schema-row').length <= index) {
+          if (attempts >= maxAttempts) {
+            throw new Error(`Unable to add schema row at index ${index} after ${attempts} attempts`);
+          }
+          attempts += 1;
           clickElement(document.getElementById('testDataAddSchemaRowButton'));
         }
         fillAppGridRow(index, scenario.rows[index]);

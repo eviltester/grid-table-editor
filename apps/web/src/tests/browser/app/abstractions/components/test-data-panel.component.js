@@ -43,7 +43,7 @@ class TestDataPanelComponent {
           .split(/\r?\n/)
           .map((line) => line.trim())
           .filter((line) => line.length > 0 && !line.startsWith('#'));
-        const domCount = Math.max(0, (await editor.rows.count()) - 1);
+        const domCount = await editor.rows.count();
         const textCount = schemaLines.length > 0 ? Math.ceil(schemaLines.length / 2) : 0;
         return Math.max(domCount, textCount);
       },

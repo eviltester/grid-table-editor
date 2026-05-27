@@ -496,21 +496,29 @@ class DataGeneratorPage {
             helpModel: buildSchemaHelpModel('faker', command),
           })),
         ];
-        const selected = await openMethodPickerModal({
-          documentObj: this.documentObj,
-          windowObj: this.documentObj?.defaultView || globalThis.window,
-          options,
-          currentCommand: row.command,
-          initialTab: this.getPickerInitialTab(row.sourceType),
-          title: 'Select schema method',
-        });
-        if (selected?.command) {
-          this.schemaSession.updateRowAtIndex(index, (currentRow) => ({
-            ...currentRow,
-            sourceType: selected.sourceType || currentRow.sourceType,
-            command: selected.command,
-          }));
-          this.renderSchemaRows();
+        try {
+          const selected = await openMethodPickerModal({
+            documentObj: this.documentObj,
+            windowObj: this.documentObj?.defaultView || globalThis.window,
+            options,
+            currentCommand: row.command,
+            initialTab: this.getPickerInitialTab(row.sourceType),
+            title: 'Select schema method',
+          });
+          if (selected?.command) {
+            const nextIndex = this.schemaRows.findIndex((entry) => entry.id === rowId);
+            if (nextIndex < 0) {
+              return;
+            }
+            this.schemaSession.updateRowAtIndex(nextIndex, (currentRow) => ({
+              ...currentRow,
+              sourceType: selected.sourceType || currentRow.sourceType,
+              command: selected.command,
+            }));
+            this.renderSchemaRows();
+          }
+        } catch {
+          return;
         }
       }
       return;

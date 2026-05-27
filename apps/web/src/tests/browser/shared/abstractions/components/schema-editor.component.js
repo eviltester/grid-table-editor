@@ -13,6 +13,7 @@ class SchemaEditorComponent {
       fieldMap: config.fieldMap || {},
     };
 
+    this.rowsContainer = page.locator(this.config.rowsSelector);
     this.rows = page.locator(`${this.config.rowsSelector} .generator-schema-row`);
     this.textArea = page.locator(this.config.textAreaSelector);
     this.modeToggleButton = this.config.modeToggleSelector ? page.locator(this.config.modeToggleSelector) : null;
@@ -38,7 +39,13 @@ class SchemaEditorComponent {
   }
 
   async isRowEditorMode() {
-    return (await this.rows.count()) > 0;
+    if (!(await this.rowsContainer.isVisible())) {
+      return false;
+    }
+    if ((await this.rows.count()) === 0) {
+      return false;
+    }
+    return this.row(0).isVisible();
   }
 
   async setTextMode(enabled) {

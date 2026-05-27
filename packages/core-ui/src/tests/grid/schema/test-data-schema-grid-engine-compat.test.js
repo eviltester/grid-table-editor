@@ -10,6 +10,17 @@ describe('test data schema editor compatibility', () => {
     await new Promise((resolve) => setTimeout(resolve, 0));
   }
 
+  async function waitForCondition(predicate, { timeoutMs = 2000, intervalMs = 25 } = {}) {
+    const startedAt = Date.now();
+    while (Date.now() - startedAt < timeoutMs) {
+      if (predicate()) {
+        return;
+      }
+      await new Promise((resolve) => setTimeout(resolve, intervalMs));
+    }
+    throw new Error('Timed out waiting for condition');
+  }
+
   beforeEach(() => {
     dom = new JSDOM('<!doctype html><html><body><div id="host"></div></body></html>');
     global.window = dom.window;
@@ -80,7 +91,13 @@ describe('test data schema editor compatibility', () => {
     const schemaTextArea = document.getElementById('testDataSchemaText');
     schemaTextArea.value = 'OnlyEnum\nenum(a,b)';
     schemaTextArea.dispatchEvent(new Event('input', { bubbles: true }));
-    await new Promise((resolve) => setTimeout(resolve, 1100));
+    await waitForCondition(() => {
+      const nameInput = document.querySelector('#testDataSchemaRows .generator-schema-row input[data-field="name"]');
+      const sourceTypeSelect = document.querySelector(
+        '#testDataSchemaRows .generator-schema-row select[data-field="sourceType"]'
+      );
+      return String(nameInput?.value || '').trim() === 'OnlyEnum' && String(sourceTypeSelect?.value || '') === 'enum';
+    });
     document.getElementById('generateallpairs').click();
     await flushUi();
     expect(document.getElementById('testdata-schema-error').textContent).toContain(

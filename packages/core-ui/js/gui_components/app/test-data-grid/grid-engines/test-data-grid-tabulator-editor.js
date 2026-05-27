@@ -36,19 +36,26 @@ function createTabulatorCommandSelectEditor({ getMethodPickerOptions, FAKER_SECT
     };
 
     editor.addEventListener('click', async () => {
-      const selected = await openMethodPickerModal({
-        documentObj: document,
-        windowObj: globalThis.window,
-        options: getMethodPickerOptions(cell.getValue()),
-        currentCommand: String(cell.getValue() ?? '').trim(),
-        title: 'Select schema method',
-      });
-      if (!selected?.command) {
-        completed = true;
-        cancel();
-        return;
+      try {
+        const selected = await openMethodPickerModal({
+          documentObj: document,
+          windowObj: globalThis.window,
+          options: getMethodPickerOptions(cell.getValue()),
+          currentCommand: String(cell.getValue() ?? '').trim(),
+          title: 'Select schema method',
+        });
+        if (!selected?.command) {
+          completed = true;
+          cancel();
+          return;
+        }
+        finishWithValue(selected.command);
+      } catch {
+        if (!completed) {
+          completed = true;
+          cancel();
+        }
       }
-      finishWithValue(selected.command);
     });
 
     return editor;

@@ -22,13 +22,13 @@ class MethodPickerDialogComponent {
 
     const requested = String(command);
     await this.searchInput.fill(requested);
-    let target = this.commandLabels
-      .filter({ hasText: new RegExp(`^${requested.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') })
-      .first();
-
-    if ((await target.count()) === 0) {
-      target = this.commandLabels.first();
+    const matches = this.commandLabels.filter({
+      hasText: new RegExp(`^${requested.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i'),
+    });
+    if ((await matches.count()) === 0) {
+      throw new Error(`Method picker command not found: ${requested}`);
     }
+    const target = matches.first();
 
     await target.click();
     await this.applyButton.click();

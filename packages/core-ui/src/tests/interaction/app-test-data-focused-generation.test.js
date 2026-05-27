@@ -130,5 +130,14 @@ describe('app test-data focused generation flows', () => {
     await harness.clickGenerate();
     harness.assertSuccessfulGeneration('app datatype.enum generation');
     expect(harness.getSchemaErrorText()).toBe('');
+
+    const dataTable = harness.getLatestDataTable();
+    const statusColumnIndex = dataTable.getHeaders().indexOf('Status');
+    expect(statusColumnIndex).toBeGreaterThanOrEqual(0);
+    const allowedValues = new Set(['active', 'inactive', 'pending']);
+    for (let rowIndex = 0; rowIndex < dataTable.getRowCount(); rowIndex += 1) {
+      const value = String(dataTable.getCell(rowIndex, statusColumnIndex));
+      expect(allowedValues.has(value)).toBe(true);
+    }
   });
 });

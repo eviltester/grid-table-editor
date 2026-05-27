@@ -9,7 +9,7 @@ A Synthetic Test Data Generation Tool.
 
 - Use for free in the browser.
 - No data stored on server or login required.
-- Download as free MCP, REST API, CLI, Docker images (see github)
+- Download as free MCP, REST API, CLI, Docker images (see GitHub)
 
 ## Created By Alan Richardson
 

@@ -24,29 +24,36 @@ class SelectFilterEditor {
     this.validValues = params.values;
 
     this.input.addEventListener('click', async () => {
-      const options =
-        typeof this.params?.getMethodPickerOptions === 'function'
-          ? this.params.getMethodPickerOptions(this.value)
-          : (this.validValues || []).map((command) => ({
-              sourceType: String(command || '').startsWith('helpers.') ? 'faker' : 'domain',
-              command,
-              helpModel: { summary: '', params: [], example: '' },
-            }));
-      const selected = await openMethodPickerModal({
-        documentObj: document,
-        windowObj: globalThis.window,
-        options,
-        currentCommand: this.value,
-        title: 'Select schema method',
-      });
-      if (!selected?.command) {
+      try {
+        const options =
+          typeof this.params?.getMethodPickerOptions === 'function'
+            ? this.params.getMethodPickerOptions(this.value)
+            : (this.validValues || []).map((command) => ({
+                sourceType: String(command || '').startsWith('helpers.') ? 'faker' : 'domain',
+                command,
+                helpModel: { summary: '', params: [], example: '' },
+              }));
+        const selected = await openMethodPickerModal({
+          documentObj: document,
+          windowObj: globalThis.window,
+          options,
+          currentCommand: this.value,
+          title: 'Select schema method',
+        });
+        if (!selected?.command) {
+          this.completed = true;
+          this.params?.stopEditing?.(true);
+          return;
+        }
+        this.value = selected.command;
         this.completed = true;
-        this.params?.stopEditing?.(true);
-        return;
+        this.params?.stopEditing?.();
+      } catch {
+        if (!this.completed) {
+          this.completed = true;
+          this.params?.stopEditing?.(true);
+        }
       }
-      this.value = selected.command;
-      this.completed = true;
-      this.params?.stopEditing?.();
     });
   }
 

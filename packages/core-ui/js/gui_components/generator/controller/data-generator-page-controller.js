@@ -31,6 +31,10 @@ import {
 } from '../../shared/test-data/help/index.js';
 import {
   SOURCE_TYPE_REGEX,
+  SOURCE_TYPE_LITERAL,
+  SOURCE_TYPE_ENUM,
+  SOURCE_TYPE_FAKER,
+  SOURCE_TYPE_DOMAIN,
   normaliseFakerCommand,
   normaliseDomainCommand,
   buildRuleSpecFromSchemaRow,
@@ -52,6 +56,7 @@ import {
   handleGeneratorRowInputChange,
   handleGeneratorRowButtonClick,
 } from '../schema/index.js';
+import { openMethodPickerModal } from '../../shared/test-data/ui/index.js';
 import {
   createConfiguredGeneratorForPage,
   buildPreviewDataTable,
@@ -457,7 +462,60 @@ class DataGeneratorPage {
     });
   }
 
-  handleRowButtonClick(event) {
+  async handleRowButtonClick(event) {
+    const pickerButton = event?.target?.closest?.('[data-action="pick-command"]');
+    if (pickerButton) {
+      const rowId = pickerButton.getAttribute('data-row-id');
+      const index = this.schemaRows.findIndex((entry) => entry.id === rowId);
+      if (index >= 0) {
+        const row = this.schemaRows[index];
+        const options = [
+          {
+            sourceType: SOURCE_TYPE_ENUM,
+            command: 'enum',
+            helpModel: buildSchemaHelpModel(SOURCE_TYPE_ENUM, 'enum'),
+          },
+          {
+            sourceType: SOURCE_TYPE_LITERAL,
+            command: 'literal',
+            helpModel: buildSchemaHelpModel(SOURCE_TYPE_LITERAL, 'literal'),
+          },
+          {
+            sourceType: SOURCE_TYPE_REGEX,
+            command: 'regex',
+            helpModel: buildSchemaHelpModel(SOURCE_TYPE_REGEX, 'regex'),
+          },
+          ...this.getVisibleDomainCommands(row.command).map((command) => ({
+            sourceType: 'domain',
+            command,
+            helpModel: buildSchemaHelpModel('domain', command),
+          })),
+          ...this.fakerCommands.map((command) => ({
+            sourceType: 'faker',
+            command,
+            helpModel: buildSchemaHelpModel('faker', command),
+          })),
+        ];
+        const selected = await openMethodPickerModal({
+          documentObj: this.documentObj,
+          windowObj: this.documentObj?.defaultView || globalThis.window,
+          options,
+          currentCommand: row.command,
+          initialTab: this.getPickerInitialTab(row.sourceType),
+          title: 'Select schema method',
+        });
+        if (selected?.command) {
+          this.schemaSession.updateRowAtIndex(index, (currentRow) => ({
+            ...currentRow,
+            sourceType: selected.sourceType || currentRow.sourceType,
+            command: selected.command,
+          }));
+          this.renderSchemaRows();
+        }
+      }
+      return;
+    }
+
     handleGeneratorRowButtonClick({
       event,
       schemaRows: this.schemaRows,
@@ -465,6 +523,20 @@ class DataGeneratorPage {
       removeRow: (index) => this.removeRow(index),
       moveRow: (index, direction) => this.moveRow(index, direction),
     });
+  }
+
+  getPickerInitialTab(sourceType) {
+    const type = String(sourceType || '').toLowerCase();
+    if (type === SOURCE_TYPE_FAKER) {
+      return 'faker';
+    }
+    if (type === SOURCE_TYPE_ENUM || type === SOURCE_TYPE_LITERAL || type === SOURCE_TYPE_REGEX) {
+      return 'core';
+    }
+    if (type === SOURCE_TYPE_DOMAIN) {
+      return 'all';
+    }
+    return 'all';
   }
 
   addRowAfter(index) {

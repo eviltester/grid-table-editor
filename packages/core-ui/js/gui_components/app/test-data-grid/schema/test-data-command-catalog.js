@@ -14,6 +14,7 @@ import {
   getKnownDomainCommandsLongestFirst,
 } from '../../../shared/domain-commands.js';
 import { getVisibleDomainCommands } from '../../../shared/test-data/help/index.js';
+import { buildSchemaHelpModel } from '../../../shared/test-data/help/help-model-builder.js';
 
 const FAKER_COMMANDS = [];
 const FAKER_COMMANDS_LONGEST_FIRST = [];
@@ -91,6 +92,43 @@ function getAgGridCommandEditorValues(currentValue = '') {
   return values;
 }
 
+function getMethodPickerOptions(currentValue = '') {
+  const typeOptions = TOP_LEVEL_TYPE_OPTIONS.map((typeOption) => ({
+    sourceType: typeOption,
+    command: typeOption,
+    label: typeOption,
+    helpModel: buildSchemaHelpModel(typeOption, ''),
+  }));
+  const domainCommands = getVisibleDomainCommands({
+    commands: getKnownDomainCommandsAlphabetical(),
+    currentCommand: String(currentValue || '').trim(),
+  });
+  const fakerCommands = getKnownFakerCommandsAlphabetical().filter(
+    (command) => command !== 'RegEx' && command.startsWith('helpers.')
+  );
+  const options = [...typeOptions];
+
+  domainCommands.forEach((command) => {
+    options.push({
+      sourceType: 'domain',
+      command,
+      label: command,
+      helpModel: buildSchemaHelpModel('domain', command),
+    });
+  });
+
+  fakerCommands.forEach((command) => {
+    options.push({
+      sourceType: 'faker',
+      command,
+      label: command,
+      helpModel: buildSchemaHelpModel('faker', command),
+    });
+  });
+
+  return options;
+}
+
 function getFakerCommands() {
   return [...FAKER_COMMANDS];
 }
@@ -109,6 +147,7 @@ export {
   getVisibleDomainCommandOptions,
   getTabulatorCommandEditorValues,
   getAgGridCommandEditorValues,
+  getMethodPickerOptions,
   getFakerCommands,
   getDomainCommands,
 };

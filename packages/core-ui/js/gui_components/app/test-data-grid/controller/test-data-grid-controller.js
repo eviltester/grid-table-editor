@@ -24,8 +24,8 @@ import {
   FAKER_SECTION_VALUE,
   DOMAIN_SECTION_VALUE,
   identifyFakerCommands,
-  getTabulatorCommandEditorValues,
   getAgGridCommandEditorValues,
+  getMethodPickerOptions,
 } from '../schema/index.js';
 import {
   setTestDataStatus,
@@ -199,7 +199,7 @@ function createTestDataGridControl({
       faker,
       RandExp,
       getAgGridCommandEditorValues,
-      getTabulatorCommandEditorValues,
+      getMethodPickerOptions,
       FAKER_SECTION_VALUE,
       DOMAIN_SECTION_VALUE,
     });

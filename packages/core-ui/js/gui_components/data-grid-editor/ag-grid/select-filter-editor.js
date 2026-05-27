@@ -7,27 +7,46 @@
   <option value="Value 3">
 </datalist>   */
 
+import { openMethodPickerModal } from '../../shared/test-data/ui/index.js';
+
 class SelectFilterEditor {
   init(params) {
     this.value = params.value;
+    this.params = params;
+    this.completed = false;
 
     this.gui = document.createElement('div');
-    this.input = document.createElement('input');
+    this.input = document.createElement('button');
+    this.input.type = 'button';
+    this.input.className = 'test-data-grid-command-picker-trigger';
+    this.input.textContent = String(this.value || 'Pick method');
     this.gui.appendChild(this.input);
-    this.input.setAttribute('list', 'selectionValuesDataList');
-    let datalist = document.createElement('datalist');
-    datalist.id = 'selectionValuesDataList';
-    this.gui.appendChild(datalist);
-    //console.log(params.values);
-    params.values.forEach((value) => {
-      var option = document.createElement('option');
-      option.setAttribute('value', value);
-      datalist.appendChild(option);
-    });
     this.validValues = params.values;
 
-    this.input.addEventListener('input', (event) => {
-      this.value = event.target.value;
+    this.input.addEventListener('click', async () => {
+      const options =
+        typeof this.params?.getMethodPickerOptions === 'function'
+          ? this.params.getMethodPickerOptions(this.value)
+          : (this.validValues || []).map((command) => ({
+              sourceType: String(command || '').startsWith('helpers.') ? 'faker' : 'domain',
+              command,
+              helpModel: { summary: '', params: [], example: '' },
+            }));
+      const selected = await openMethodPickerModal({
+        documentObj: document,
+        windowObj: globalThis.window,
+        options,
+        currentCommand: this.value,
+        title: 'Select schema method',
+      });
+      if (!selected?.command) {
+        this.completed = true;
+        this.params?.stopEditing?.(true);
+        return;
+      }
+      this.value = selected.command;
+      this.completed = true;
+      this.params?.stopEditing?.();
     });
   }
 
@@ -51,6 +70,9 @@ class SelectFilterEditor {
   // Gets called once when editing is finished (eg if Enter is pressed).
   // If you return true, then the result of the edit will be ignored.
   isCancelAfterEnd() {
+    if (this.completed && !this.value) {
+      return true;
+    }
     // value must be from the list
     return !this.validValues.includes(this.value);
   }

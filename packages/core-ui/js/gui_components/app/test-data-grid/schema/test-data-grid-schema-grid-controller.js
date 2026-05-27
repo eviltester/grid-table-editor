@@ -28,7 +28,7 @@ function createSchemaGridController({
   faker,
   RandExp,
   getAgGridCommandEditorValues,
-  getTabulatorCommandEditorValues,
+  getMethodPickerOptions,
   FAKER_SECTION_VALUE,
   DOMAIN_SECTION_VALUE,
 }) {
@@ -94,7 +94,7 @@ function createSchemaGridController({
         state.activeDraftCellEdit = draftCellEdit;
       },
       getAgGridCommandEditorValues,
-      getTabulatorCommandEditorValues,
+      getMethodPickerOptions,
       FAKER_SECTION_VALUE,
       DOMAIN_SECTION_VALUE,
     });

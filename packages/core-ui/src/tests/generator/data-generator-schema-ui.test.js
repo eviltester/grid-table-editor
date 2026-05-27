@@ -18,24 +18,22 @@ describe('generator schema ui', () => {
     dom.window.close();
   });
 
-  test('renders command select for faker rows and value input for literal rows', () => {
+  test('renders command picker button for command rows and value input for literal rows', () => {
     renderGeneratorSchemaRows({
       documentObj: document,
       schemaRows: [
         { id: '1', name: 'First', sourceType: 'faker', command: 'person.firstName', params: '()' },
         { id: '2', name: 'Fixed', sourceType: 'literal', value: 'x' },
       ],
-      fakerCommands: ['person.firstName'],
-      getVisibleDomainCommands: () => ['string.uuid'],
       getSchemaHelpData: () => ({ show: true, docsUrl: 'https://example.com', title: 'help', html: '<p>help</p>' }),
       updateAllPairsButtonVisibility: () => {},
     });
 
     const rows = Array.from(document.querySelectorAll('.generator-schema-row'));
     expect(rows).toHaveLength(2);
-    expect(rows[0].querySelector('[data-field="command"]')).not.toBeNull();
+    expect(rows[0].querySelector('[data-action="pick-command"]')).not.toBeNull();
     expect(rows[1].querySelector('[data-field="value"]')).not.toBeNull();
-    expect(rows[1].querySelector('[data-field="command"]')).toBeNull();
+    expect(rows[1].querySelector('[data-action="pick-command"]')).toBeNull();
   });
 
   test('row input handler normalises faker commands after edit', () => {

@@ -13,7 +13,7 @@ function setupSchemaGridEditor({
   convertGridToText,
   onDraftCellEditChange,
   getAgGridCommandEditorValues,
-  getTabulatorCommandEditorValues,
+  getMethodPickerOptions,
   FAKER_SECTION_VALUE,
   DOMAIN_SECTION_VALUE,
 }) {
@@ -22,6 +22,7 @@ function setupSchemaGridEditor({
       tableDiv,
       agGridLib: agGrid,
       getAgGridCommandEditorValues,
+      getMethodPickerOptions,
       onSchemaChanged: convertGridToText,
       onDraftCellEditChange,
     });
@@ -31,7 +32,7 @@ function setupSchemaGridEditor({
     return setupTabulatorSchemaGridEditor({
       tableDiv,
       TabulatorCtor: Tabulator,
-      getTabulatorCommandEditorValues,
+      getMethodPickerOptions,
       FAKER_SECTION_VALUE,
       DOMAIN_SECTION_VALUE,
       onSchemaChanged: convertGridToText,

@@ -122,29 +122,41 @@ class TestDataPanelComponent {
     await this.schemaRenderer.setCellTextByField(field, rowIndex, value);
   }
 
-  async setSchemaTypeValue(rowIndex, value) {
-    // Type column may use Tabulator list editor. Try generic set first.
+  async setSchemaTypeValue(rowIndex, value, { pickerTab = null, assertSchemaTextIncludesType = true } = {}) {
     await this.schemaRenderer.clickCellByField('type', rowIndex);
-    await this.schemaRenderer.clickCellByField('type', rowIndex);
-
-    let editor = this.schemaGrid
-      .locator('.tabulator-editing input, .tabulator-editing textarea, .tabulator-editing select')
-      .first();
-    try {
-      await expect.poll(async () => editor.count(), { timeout: 1000 }).toBeGreaterThan(0);
-    } catch {
-      await this.schemaRenderer.setCellTextByField('type', rowIndex, value);
+    const pickerTrigger = this.schemaGrid.locator('.tabulator-editing .test-data-grid-command-picker-trigger').first();
+    if ((await pickerTrigger.count()) > 0) {
+      await pickerTrigger.click();
+      const search = this.page.locator('.method-picker-search');
+      await expect(search).toBeVisible();
+      if (pickerTab) {
+        await this.page.locator('.method-picker-tabs button', { hasText: new RegExp(`^${pickerTab}$`, 'i') }).click();
+      }
+      await search.fill(String(value));
+      const valueLower = String(value).toLowerCase();
+      let targetTile = this.page
+        .locator('.method-picker-tile .method-picker-tile-command')
+        .filter({ hasText: new RegExp(`^${valueLower.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') })
+        .first();
+      if ((await targetTile.count()) === 0) {
+        targetTile = this.page.locator('.method-picker-tile .method-picker-tile-command').first();
+      }
+      await targetTile.click();
+      await this.page.locator('[data-action="apply"]').click();
+      await expect(this.page.locator('.method-picker-overlay')).toHaveCount(0);
+      await this.schemaRenderer.clickCellByField('columnName', rowIndex);
+      await expect
+        .poll(async () => (await this.getSchemaCell(rowIndex, 'type')).trim().toLowerCase(), { timeout: 3000 })
+        .toBe(valueLower);
+      if (assertSchemaTextIncludesType) {
+        await expect
+          .poll(async () => (await this.getSchemaText()).toLowerCase(), { timeout: 3000 })
+          .toContain(valueLower);
+      }
       return;
     }
 
-    if (await editor.locator('xpath=self::select').count()) {
-      await editor.selectOption(String(value));
-    } else {
-      await editor.fill(String(value));
-      await editor.press('Enter');
-    }
-    await expect.poll(async () => editor.count()).toBe(0);
-    return;
+    await this.schemaRenderer.setCellTextByField('type', rowIndex, value);
   }
 
   async getSchemaText() {

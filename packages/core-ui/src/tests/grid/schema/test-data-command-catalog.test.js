@@ -8,6 +8,7 @@ import {
   getDomainCommands,
   getTabulatorCommandEditorValues,
   getAgGridCommandEditorValues,
+  getMethodPickerOptions,
 } from '../../../../js/gui_components/app/test-data-grid/schema/index.js';
 
 describe('Test Data Command Catalog', () => {
@@ -107,6 +108,15 @@ describe('Test Data Command Catalog', () => {
       expect(values).toContain('number.int');
       expect(values).toContain('person.firstName');
       expect(values).not.toContain('science.chemicalElement');
+    });
+
+    it('should provide picker options with schema help metadata', () => {
+      const values = getMethodPickerOptions('');
+      const domainEntry = values.find((entry) => entry.command === 'number.int');
+      const fakerEntry = values.find((entry) => entry.command === 'helpers.arrayElement');
+      expect(domainEntry?.sourceType).toBe('domain');
+      expect(fakerEntry?.sourceType).toBe('faker');
+      expect(Array.isArray(domainEntry?.helpModel?.params)).toBe(true);
     });
   });
 

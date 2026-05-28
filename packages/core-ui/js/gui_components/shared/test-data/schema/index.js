@@ -15,6 +15,7 @@ export {
   schemaRowsToSpecWithTokens,
 } from './schema-editor-core.js';
 export { schemaErrorsToText } from './schema-error-text.js';
+export { captureActiveFieldState, restoreActiveFieldState } from './schema-focus-state.js';
 export {
   createSchemaRowValidation,
   getSchemaRowValidationIssues,

@@ -67,8 +67,7 @@ function createTestDataGenerationService({
     });
   }
 
-  function getRulesParserFromTextArea() {
-    const rowValidation = getCurrentSchemaRowValidation({ syncFromText: false });
+  function getRulesParserFromTextArea(rowValidation = getCurrentSchemaRowValidation({ syncFromText: false })) {
     if (rowValidation.errors.length > 0) {
       return { generator: null, errors: rowValidation.errors };
     }
@@ -121,7 +120,7 @@ function createTestDataGenerationService({
         return;
       }
 
-      const { generator, errors } = getRulesParserFromTextArea();
+      const { generator, errors } = getRulesParserFromTextArea(rowValidation);
 
       if (errors.length > 0 || !generator) {
         const errorMessages = schemaErrorsToText(errors);
@@ -196,7 +195,7 @@ function createTestDataGenerationService({
         return;
       }
 
-      const { generator, errors } = getRulesParserFromTextArea();
+      const { generator, errors } = getRulesParserFromTextArea(rowValidation);
 
       if (errors.length > 0 || !generator) {
         const errorMessages = schemaErrorsToText(errors);

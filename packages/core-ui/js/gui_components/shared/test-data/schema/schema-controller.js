@@ -8,6 +8,10 @@ import { mapParsedRulesToRows } from './schema-editor-core.js';
 import { parseSchemaText } from './schema-runtime.js';
 import { preservePreviousMethodLikeSourceType } from './schema-row-mapper.js';
 
+function isRecoverableSchemaParseError(error) {
+  return error?.code === 'compiler_validation_error';
+}
+
 function parseSchemaTextToRows({ schemaTextToDataRules, schemaText, faker, RandExp, mapRuleToRow, previousRows = [] }) {
   const parseResult = parseSchemaText({
     schemaTextToDataRules,
@@ -17,8 +21,10 @@ function parseSchemaTextToRows({ schemaTextToDataRules, schemaText, faker, RandE
   });
 
   const tokens = Array.isArray(parseResult.schemaTokens) ? parseResult.schemaTokens : [];
-  if (parseResult.errors.length > 0 && (!Array.isArray(parseResult.dataRules) || parseResult.dataRules.length === 0)) {
-    return { rows: [], errors: parseResult.errors, tokens };
+  const parseErrors = Array.isArray(parseResult.errors) ? parseResult.errors : [];
+  const blockingErrors = parseErrors.filter((error) => !isRecoverableSchemaParseError(error));
+  if (blockingErrors.length > 0) {
+    return { rows: [], errors: blockingErrors, tokens };
   }
 
   const parsedRows = mapParsedRulesToRows({

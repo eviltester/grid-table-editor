@@ -15,6 +15,7 @@ import { applySchemaCommandSelection } from './schema-row-mapper.js';
 import { schemaRowsToSpecWithTokens } from './schema-editor-core.js';
 import { schemaErrorsToText } from './schema-error-text.js';
 import { getSchemaRowSemanticValidationIssues } from './schema-row-validation.js';
+import { captureActiveFieldState, restoreActiveFieldState } from './schema-focus-state.js';
 import {
   renderGeneratorSchemaRows,
   clearSchemaRowDragClasses,
@@ -32,47 +33,6 @@ function createSchemaDomAdapter(documentObj, idMap = {}) {
     defaultView: documentObj.defaultView,
     getElementById: (id) => documentObj.getElementById(idMap[id] || id),
   };
-}
-
-function captureActiveFieldState(documentObj) {
-  const activeElement = documentObj?.activeElement;
-  const fieldName = activeElement?.getAttribute?.('data-field');
-  const rowId = activeElement?.closest?.('.generator-schema-row')?.getAttribute?.('data-row-id');
-  if (!rowId || !fieldName) {
-    return null;
-  }
-  return {
-    rowId,
-    fieldName,
-    selectionStart: typeof activeElement.selectionStart === 'number' ? activeElement.selectionStart : null,
-    selectionEnd: typeof activeElement.selectionEnd === 'number' ? activeElement.selectionEnd : null,
-    selectionDirection:
-      typeof activeElement.selectionDirection === 'string' ? activeElement.selectionDirection : 'none',
-  };
-}
-
-function restoreActiveFieldState(documentObj, state) {
-  if (!state?.rowId || !state?.fieldName) {
-    return;
-  }
-  const nextField = documentObj?.querySelector?.(
-    `.generator-schema-row[data-row-id="${state.rowId}"] [data-field="${state.fieldName}"]`
-  );
-  if (!nextField) {
-    return;
-  }
-  try {
-    nextField.focus({ preventScroll: true });
-  } catch {
-    nextField.focus?.();
-  }
-  if (
-    typeof nextField.setSelectionRange === 'function' &&
-    state.selectionStart !== null &&
-    state.selectionEnd !== null
-  ) {
-    nextField.setSelectionRange(state.selectionStart, state.selectionEnd, state.selectionDirection || 'none');
-  }
 }
 
 function createSharedSchemaEditorController({

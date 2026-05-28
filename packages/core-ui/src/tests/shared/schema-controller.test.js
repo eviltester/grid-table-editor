@@ -41,6 +41,31 @@ describe('schema-controller', () => {
     ]);
   });
 
+  test('parseSchemaTextToRows blocks structural parse errors even when partial rows were parsed', () => {
+    const parser = jest.fn().mockReturnValue({
+      dataRules: [{ name: 'A', ruleSpec: 'literal(a)', type: 'literal' }],
+      errors: [{ code: 'missing_rule_definition', message: 'column B requires a data definition' }],
+      schemaTokens: [{ kind: 'rule' }],
+    });
+
+    const result = parseSchemaTextToRows({
+      schemaTextToDataRules: parser,
+      schemaText: 'A\nliteral(a)\n\nB',
+      faker: {},
+      RandExp: function RandExp() {},
+      mapRuleToRow: (rule) => ({
+        name: rule.name,
+        sourceType: rule.type,
+        value: rule.ruleSpec,
+      }),
+    });
+
+    expect(result.rows).toEqual([]);
+    expect(result.errors).toEqual([
+      { code: 'missing_rule_definition', message: 'column B requires a data definition' },
+    ]);
+  });
+
   test('row mutation helpers add remove and move rows immutably', () => {
     const blank = () => ({ name: '', sourceType: 'regex', value: '' });
     const baseRows = [{ name: 'A' }, { name: 'B' }];
@@ -113,5 +138,44 @@ describe('schema-controller', () => {
     session.setRows([{ name: 'A' }, { name: 'B' }, { name: 'C' }]);
     session.moveRowToIndex(2, 0);
     expect(session.getRows().map((row) => row.name)).toEqual(['C', 'A', 'B']);
+  });
+
+  test('schema editing session does not leave text mode when partial text has structural parse errors', () => {
+    const blank = () => ({
+      name: '',
+      sourceType: 'regex',
+      command: '',
+      params: '',
+      value: '',
+      comments: '',
+    });
+    const schemaTextToDataRules = jest.fn().mockReturnValue({
+      dataRules: [{ name: 'A', ruleSpec: 'literal(a)', type: 'literal' }],
+      errors: [{ code: 'missing_rule_definition', message: 'column B requires a data definition' }],
+      schemaTokens: [{ kind: 'rule' }],
+    });
+    const session = createSchemaEditingSession({
+      createBlankSchemaRow: blank,
+      schemaTextToDataRules,
+      faker: {},
+      RandExp: function RandExp() {},
+      mapRuleToRow: (rule) => ({
+        name: rule.name,
+        sourceType: rule.type,
+        value: rule.ruleSpec,
+      }),
+      schemaRowsToSpecWithTokens: jest.fn(() => 'A\nliteral(a)\n\nB'),
+      initialRows: [{ name: 'A', sourceType: 'literal', value: 'a' }],
+      initialTextMode: true,
+    });
+
+    const result = session.toggleMode({ schemaText: 'A\nliteral(a)\n\nB' });
+
+    expect(result).toMatchObject({
+      ok: false,
+      errors: [{ code: 'missing_rule_definition', message: 'column B requires a data definition' }],
+    });
+    expect(session.getTextMode()).toBe(true);
+    expect(session.getRows()).toEqual([{ name: 'A', sourceType: 'literal', value: 'a' }]);
   });
 });

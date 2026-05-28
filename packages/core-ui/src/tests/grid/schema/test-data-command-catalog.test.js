@@ -6,8 +6,6 @@ import {
   identifyFakerCommands,
   getFakerCommands,
   getDomainCommands,
-  getTabulatorCommandEditorValues,
-  getAgGridCommandEditorValues,
   getMethodPickerOptions,
 } from '../../../../js/gui_components/app/test-data-grid/schema/index.js';
 
@@ -71,45 +69,6 @@ describe('Test Data Command Catalog', () => {
       expect(domainCommands.some((command) => command.startsWith('helpers.'))).toBe(false);
     });
 
-    it('should hide non-scalar domain commands in type dropdown for new rows', () => {
-      const values = getTabulatorCommandEditorValues('');
-      const domainOptions = values
-        .slice(values.findIndex((entry) => entry.value === '__domain_section__') + 1)
-        .map((entry) => entry.value);
-      expect(domainOptions).toContain('number.int');
-      expect(domainOptions).not.toContain('science.chemicalElement');
-      expect(domainOptions).not.toContain('finance.currency');
-    });
-
-    it('should include selected non-scalar domain command when editing existing row', () => {
-      const values = getTabulatorCommandEditorValues('science.chemicalElement');
-      const domainOptions = values
-        .slice(values.findIndex((entry) => entry.value === '__domain_section__') + 1)
-        .map((entry) => entry.value);
-      expect(domainOptions).toContain('science.chemicalElement');
-      expect(domainOptions).not.toContain('finance.currency');
-    });
-
-    it('should label faker/domain sections to reflect helpers split and ordering', () => {
-      const values = getTabulatorCommandEditorValues('');
-      const fakerSection = values.find((entry) => entry.value === '__faker_section__');
-      const domainSection = values.find((entry) => entry.value === '__domain_section__');
-      const fakerSectionIndex = values.findIndex((entry) => entry.value === '__faker_section__');
-      const domainSectionIndex = values.findIndex((entry) => entry.value === '__domain_section__');
-      expect(fakerSection?.label).toBe('-- faker (helpers) --');
-      expect(domainSection?.label).toBe('-- domain --');
-      expect(domainSectionIndex).toBeGreaterThanOrEqual(0);
-      expect(fakerSectionIndex).toBeGreaterThan(domainSectionIndex);
-    });
-
-    it('should include domain commands in AG Grid command editor values', () => {
-      const values = getAgGridCommandEditorValues('');
-      expect(values).toContain('helpers.fake');
-      expect(values).toContain('number.int');
-      expect(values).toContain('person.firstName');
-      expect(values).not.toContain('science.chemicalElement');
-    });
-
     it('should provide picker options with schema help metadata', () => {
       const values = getMethodPickerOptions('');
       const domainEntry = values.find((entry) => entry.command === 'number.int');
@@ -117,6 +76,21 @@ describe('Test Data Command Catalog', () => {
       expect(domainEntry?.sourceType).toBe('domain');
       expect(fakerEntry?.sourceType).toBe('faker');
       expect(Array.isArray(domainEntry?.helpModel?.params)).toBe(true);
+    });
+
+    it('should keep non-scalar domain commands out of default picker options', () => {
+      const values = getMethodPickerOptions('');
+      const commands = values.map((entry) => entry.command);
+      expect(commands).toContain('number.int');
+      expect(commands).not.toContain('science.chemicalElement');
+      expect(commands).not.toContain('finance.currency');
+    });
+
+    it('should include the current non-scalar domain command when editing an existing row', () => {
+      const values = getMethodPickerOptions('science.chemicalElement');
+      const commands = values.map((entry) => entry.command);
+      expect(commands).toContain('science.chemicalElement');
+      expect(commands).not.toContain('finance.currency');
     });
   });
 

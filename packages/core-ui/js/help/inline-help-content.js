@@ -120,6 +120,11 @@ const sharedInlineHelpEntries = {
       <p><strong>Preview:</strong> Generate a small sample to validate output before downloading larger files.</p>
       <p><a class="helplink" href="https://anywaydata.com/docs/test-data/generate-to-file" target="_blank" rel="noopener noreferrer">Generate To File docs</a></p>
     `,
+  'generator-schema-mode-help': `
+      <p><strong>Schema Edit Mode</strong></p>
+      <p>Switch between row-based schema editing and text schema editing.</p>
+      <p>Row mode is useful for guided field editing, while text mode is useful for quick bulk updates.</p>
+    `,
 };
 
 const appOnlyInlineHelpEntries = {

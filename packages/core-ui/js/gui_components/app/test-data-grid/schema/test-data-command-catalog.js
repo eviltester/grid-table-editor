@@ -21,20 +21,6 @@ const FAKER_COMMANDS_LONGEST_FIRST = [];
 const DOMAIN_COMMANDS = [];
 const DOMAIN_COMMANDS_LONGEST_FIRST = [];
 const TOP_LEVEL_TYPE_OPTIONS = ['enum', 'literal', 'regex'];
-const FAKER_SECTION_LABEL = '-- faker (helpers) --';
-const FAKER_SECTION_VALUE = '__faker_section__';
-const DOMAIN_SECTION_LABEL = '-- domain --';
-const DOMAIN_SECTION_VALUE = '__domain_section__';
-
-function findFakerCommand(aString) {
-  for (let command of FAKER_COMMANDS_LONGEST_FIRST) {
-    if (aString.startsWith(command)) {
-      return command;
-    }
-  }
-  return null;
-}
-
 function identifyFakerCommands() {
   FAKER_COMMANDS.length = 0;
   FAKER_COMMANDS_LONGEST_FIRST.length = 0;
@@ -58,38 +44,6 @@ function getVisibleDomainCommandOptions(currentValue = '') {
     currentCommand: String(currentValue || '').trim(),
   });
   return visible.map((command) => ({ value: command, label: command }));
-}
-
-function getTabulatorCommandEditorValues(currentValue = '') {
-  const typeValues = TOP_LEVEL_TYPE_OPTIONS.map((typeOption) => ({ value: typeOption, label: typeOption }));
-  const fakerHeader = {
-    value: FAKER_SECTION_VALUE,
-    label: FAKER_SECTION_LABEL,
-    elementAttributes: { disabled: true },
-  };
-  const fakerCommandValues = getKnownFakerCommandsAlphabetical()
-    .filter((command) => command !== 'RegEx' && command.startsWith('helpers.'))
-    .map((command) => ({ value: command, label: command }));
-  const domainHeader = {
-    value: DOMAIN_SECTION_VALUE,
-    label: DOMAIN_SECTION_LABEL,
-    elementAttributes: { disabled: true },
-  };
-  const domainCommandValues = getVisibleDomainCommandOptions(currentValue);
-  return [...typeValues, domainHeader, ...domainCommandValues, fakerHeader, ...fakerCommandValues];
-}
-
-function getAgGridCommandEditorValues(currentValue = '') {
-  const values = [...FAKER_COMMANDS];
-  const domainValues = getVisibleDomainCommandOptions(currentValue).map((entry) => entry.value);
-  const seen = new Set(values);
-  domainValues.forEach((value) => {
-    if (!seen.has(value)) {
-      values.push(value);
-      seen.add(value);
-    }
-  });
-  return values;
 }
 
 function getMethodPickerOptions(currentValue = '') {
@@ -140,13 +94,8 @@ function getDomainCommands() {
 export {
   FAKER_COMMANDS,
   DOMAIN_COMMANDS,
-  FAKER_SECTION_VALUE,
-  DOMAIN_SECTION_VALUE,
-  findFakerCommand,
   identifyFakerCommands,
   getVisibleDomainCommandOptions,
-  getTabulatorCommandEditorValues,
-  getAgGridCommandEditorValues,
   getMethodPickerOptions,
   getFakerCommands,
   getDomainCommands,

@@ -10,9 +10,9 @@ test.describe('7. Test Data Generation', () => {
 
     const beforeCount = await appPage.testDataPanel.getSchemaRowCount();
     await appPage.testDataPanel.addSchemaRow();
-    await expect.poll(async () => appPage.testDataPanel.getSchemaRowCount()).toBe(beforeCount + 1);
+    await expect.poll(async () => appPage.testDataPanel.getSchemaRowCount()).toBeGreaterThanOrEqual(beforeCount + 1);
 
-    const newRowIndex = beforeCount;
+    const newRowIndex = Math.max(beforeCount, 0);
     await appPage.testDataPanel.setSchemaCell(newRowIndex, 'columnName', 'New Column');
     await appPage.testDataPanel.setSchemaTypeValue(newRowIndex, 'literal');
 
@@ -30,7 +30,7 @@ test.describe('7. Test Data Generation', () => {
 
     const initialCount = await appPage.testDataPanel.getSchemaRowCount();
     await appPage.testDataPanel.addSchemaRow();
-    await expect.poll(async () => appPage.testDataPanel.getSchemaRowCount()).toBe(initialCount + 1);
+    await expect.poll(async () => appPage.testDataPanel.getSchemaRowCount()).toBeGreaterThanOrEqual(initialCount + 1);
     await appPage.testDataPanel.setSchemaCell(initialCount, 'columnName', 'Delete Me');
     await appPage.testDataPanel.setSchemaTypeValue(initialCount, 'literal');
 

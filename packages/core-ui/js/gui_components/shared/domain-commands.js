@@ -1,15 +1,23 @@
 import { DOMAIN_KEYWORD_ALIAS_INDEX } from '@anywaydata/core/domain/domain-keywords.js';
 
+const SYNTHETIC_DOMAIN_COMMANDS = Object.freeze(['datatype.enum']);
+
 function getDomainKeywordEntries() {
   const entries = Object.values(DOMAIN_KEYWORD_ALIAS_INDEX.byCanonical || {});
   return entries.sort((a, b) => String(a.keyword || '').localeCompare(String(b.keyword || '')));
 }
 
 function getKnownDomainCommandsAlphabetical() {
-  return getDomainKeywordEntries().map((entry) => {
+  const commands = getDomainKeywordEntries().map((entry) => {
     const shortest = String(entry.shortestUniqueAlias || '').trim();
     return shortest || String(entry.keyword || '').trim();
   });
+  SYNTHETIC_DOMAIN_COMMANDS.forEach((command) => {
+    if (!commands.includes(command)) {
+      commands.push(command);
+    }
+  });
+  return commands.sort((a, b) => a.localeCompare(b));
 }
 
 function getKnownDomainCommandsLongestFirst() {

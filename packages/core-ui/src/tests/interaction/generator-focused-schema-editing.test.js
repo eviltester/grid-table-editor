@@ -5,7 +5,7 @@
  * Asserts:
  * - source-type changes swap the visible controls and help link state
  * - text-mode round-trip preserves valid schema and blocks invalid schema
- * - sample schema insertion populates text mode and can be returned to schema mode
+ * - sample schema insertion respects the currently visible schema/text mode
  * - row reordering and removal update the rendered schema text order
  */
 
@@ -37,7 +37,7 @@ describe('generator focused schema editing', () => {
       expect(within(harness.getRow(0)).getByPlaceholderText('Params e.g. (10)')).toBeTruthy();
     });
     expect(harness.getHelpLink(0).hidden).toBe(false);
-    expect(harness.getHelpLink(0).getAttribute('href')).toContain('fakerjs.dev');
+    expect(harness.getHelpLink(0).getAttribute('href')).toBe('https://anywaydata.com/docs/test-data/faker/helpers');
 
     await harness.fillRow(0, {
       name: 'Counter',
@@ -93,6 +93,17 @@ describe('generator focused schema editing', () => {
 
     await harness.toggleToSchemaMode();
     await waitFor(() => expect(document.querySelectorAll('.generator-schema-row').length).toBeGreaterThan(1));
+  });
+
+  test('sample schema insertion in schema mode keeps schema mode visible and updates rows', async () => {
+    expect(document.getElementById('generatorSchemaRows').style.display).toBe('flex');
+    expect(document.getElementById('generatorSchemaTextContainer').style.display).toBe('none');
+
+    await harness.clickInjectedSampleButton();
+
+    await waitFor(() => expect(document.querySelectorAll('.generator-schema-row').length).toBeGreaterThan(1));
+    expect(document.getElementById('generatorSchemaRows').style.display).toBe('flex');
+    expect(document.getElementById('generatorSchemaTextContainer').style.display).toBe('none');
   });
 
   test('schema row reorder and removal are reflected in text mode', async () => {

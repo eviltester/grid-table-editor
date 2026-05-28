@@ -32,7 +32,7 @@ test.describe('Generator Schema Editing', () => {
     await expect(generatorPage.schema.row(0).locator('input[data-field="value"]')).toHaveValue('Alice');
     await expect(generatorPage.schema.row(1).locator('input[data-field="name"]')).toHaveValue('Status');
     await expect(generatorPage.schema.row(1).locator('select[data-field="sourceType"]')).toHaveValue('enum');
-    await expect(generatorPage.schema.row(1).locator('input[data-field="value"]')).toHaveValue('enum(active,inactive)');
+    await expect(generatorPage.schema.row(1).locator('input[data-field="value"]')).toHaveValue('active,inactive');
 
     expectNoPageErrors(pageErrors);
   });
@@ -152,6 +152,20 @@ test.describe('Generator Schema Editing', () => {
 
     const schemaText = await generatorPage.schema.getSchemaText();
     expectOrderedSubstrings(schemaText, ['First\nliteral(one)', 'Second\nliteral(two)', 'Third\nliteral(three)']);
+
+    expectNoPageErrors(pageErrors);
+  });
+
+  test('empty schema text can switch back to schema mode without validation lock', async ({ page }) => {
+    const { generatorPage, pageErrors } = await openGenerator(page);
+
+    await generatorPage.schema.setSchemaText('');
+    await generatorPage.schema.setTextMode(false);
+
+    await expect.poll(async () => generatorPage.schema.editor.isRowEditorMode()).toBe(true);
+    await expect(page.locator('#generatorSchemaErrorText')).not.toContainText(
+      'No rules defined. Provide column/rule pairs.'
+    );
 
     expectNoPageErrors(pageErrors);
   });

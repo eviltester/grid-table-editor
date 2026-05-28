@@ -1,143 +1,115 @@
 /*
  * Responsibilities:
- * - Owns the embedded schema-grid setup and schema text/grid synchronization orchestration.
- * - Keeps grid-library wiring and row/text conversion out of the main app-page controller.
+ * - App-page host adapter for the shared schema-editor controller.
  */
 
-import { renderSchemaTextFromGridRows } from '../../../shared/test-data/schema/index.js';
-import { populateGridFromSchemaText } from '../schema/index.js';
-import { applyTestDataGridLayout, createGridChromeElements, bindGridChromeControls } from '../host/index.js';
+import {
+  createSharedSchemaEditorController,
+  TEST_DATA_GRID_SAMPLE_SCHEMA_TEXT,
+} from '../../../shared/test-data/schema/index.js';
+
+function buildAppSchemaModeHelpHtml({ inTextMode }) {
+  if (inTextMode) {
+    return `
+      <p><strong>Edit as Schema</strong></p>
+      <p>You are currently editing as text. Click <strong>Edit as Schema</strong> to return to row-based editing.</p>
+      <p>Text schema uses name/rule pairs, for example:</p>
+      <pre>First Name
+person.firstName
+
+Status
+enum(active,inactive,pending)</pre>
+      <button type="button" class="testdata-schema-sample-button">Insert Example Schema</button>
+    `;
+  }
+
+  return `
+    <p><strong>Edit as Text</strong></p>
+    <p>You are currently using row-based schema editing. Click <strong>Edit as Text</strong> to switch to text schema mode.</p>
+    <button type="button" class="testdata-schema-sample-button">Insert Example Schema</button>
+  `;
+}
 
 function createSchemaGridController({
   documentObj = document,
-  setupSchemaGridEditor,
-  createGridChromeElementsFn = createGridChromeElements,
-  bindGridChromeControlsFn = bindGridChromeControls,
-  applyTestDataGridLayoutFn = applyTestDataGridLayout,
-  renderSchemaTextFromGridRowsFn = renderSchemaTextFromGridRows,
-  populateGridFromSchemaTextFn = populateGridFromSchemaText,
-  createGridRowToSchemaRowMapper,
-  buildRuleSpecFromSchemaRow,
+  schemaTextToDataRules,
   dataRulesToSchemaText,
   schemaTextSyncState,
   updatePairwiseButtonVisibility,
-  schemaTextToDataRules,
-  schemaErrorsToText,
   setTestDataStatus,
-  mapRuleToRow,
   faker,
   RandExp,
-  getAgGridCommandEditorValues,
-  getTabulatorCommandEditorValues,
-  FAKER_SECTION_VALUE,
-  DOMAIN_SECTION_VALUE,
+  getMethodPickerOptions = () => [],
+  fakerCommands = [],
+  getVisibleDomainCommandOptions = () => [],
+  mapRuleToRow,
 }) {
-  const state = {
-    schemaGridApi: undefined,
-    schemaGridExtras: undefined,
-    schemaGridBridge: undefined,
-    activeDraftCellEdit: null,
-  };
-
-  function convertGridToText() {
-    if (!state.schemaGridBridge) {
-      return;
-    }
-
-    const schemaText = renderSchemaTextFromGridRowsFn({
-      rows: state.schemaGridBridge.getRows(),
-      activeDraftCellEdit: state.activeDraftCellEdit,
-      mapGridRowToSchemaRow: createGridRowToSchemaRowMapper(),
-      buildRuleSpecFromSchemaRow,
-      dataRulesToSchemaText,
-      schemaTokens: schemaTextSyncState.schemaTextTokens,
-    });
-
-    const textArea = documentObj.getElementById('testDataSchemaText');
-    if (textArea) {
-      textArea.value = schemaText;
-    }
-    updatePairwiseButtonVisibility();
-  }
-
-  function populateGridFromTextSchema() {
-    populateGridFromSchemaTextFn({
-      state: schemaTextSyncState,
-      schemaGridBridge: state.schemaGridBridge,
-      schemaTextToDataRules,
-      schemaErrorsToText,
-      setTestDataStatus,
-      updatePairwiseButtonVisibility,
-      mapRuleToRow,
-      faker,
-      RandExp,
-    });
-  }
-
-  function syncSchemaTextFromGridBeforeGenerate() {
-    if (typeof documentObj?.activeElement?.blur === 'function') {
-      documentObj.activeElement.blur();
-    }
-
-    if (state.schemaGridBridge) {
-      convertGridToText();
-    }
-  }
-
-  function setupTestDataEditGrid(gridDiv) {
-    const { tableDiv, addNewRowButton, deleteRowsButton } = createGridChromeElementsFn(gridDiv);
-
-    const setupResult = setupSchemaGridEditor({
-      tableDiv,
-      convertGridToText,
-      onDraftCellEditChange: (draftCellEdit) => {
-        state.activeDraftCellEdit = draftCellEdit;
-      },
-      getAgGridCommandEditorValues,
-      getTabulatorCommandEditorValues,
-      FAKER_SECTION_VALUE,
-      DOMAIN_SECTION_VALUE,
-    });
-
-    if (!setupResult) {
-      console.warn('No supported grid library loaded; test data schema grid editor disabled.');
-      return;
-    }
-
-    state.schemaGridApi = setupResult.schemaGridApi;
-    state.schemaGridExtras = setupResult.schemaGridExtras;
-    state.schemaGridBridge = setupResult.schemaGridBridge;
-
-    bindGridChromeControlsFn({
-      addNewRowButton,
-      deleteRowsButton,
-      getBridge: () => state.schemaGridBridge,
-      getExtras: () => state.schemaGridExtras,
-      onSchemaChanged: convertGridToText,
-    });
-  }
+  let rowIdCounter = 1;
+  const schemaEditor = createSharedSchemaEditorController({
+    documentObj,
+    schemaTextToDataRules,
+    dataRulesToSchemaText,
+    faker,
+    RandExp,
+    createBlankRow: () => ({
+      id: `test-data-schema-row-${rowIdCounter++}`,
+      name: '',
+      sourceType: 'regex',
+      command: '',
+      params: '',
+      value: '',
+      comments: '',
+      leadingTextLines: [],
+    }),
+    mapRuleToRow,
+    getMethodPickerOptions,
+    getVisibleDomainCommands: (currentCommand) =>
+      getVisibleDomainCommandOptions(currentCommand).map((entry) => entry.value),
+    fakerCommands,
+    sampleSchemaText: TEST_DATA_GRID_SAMPLE_SCHEMA_TEXT,
+    buildModeHelpHtml: buildAppSchemaModeHelpHtml,
+    onSchemaError: (message) => schemaTextSyncState?.schemaErrorDisplay?.show?.(message),
+    onSchemaClear: () => schemaTextSyncState?.schemaErrorDisplay?.clear?.(),
+    onSchemaParseError: () => setTestDataStatus?.('', false),
+    updatePairwiseButtonVisibility,
+    idMap: {
+      generatorSchemaRows: 'testDataSchemaRows',
+      generatorSchemaTextContainer: 'testDataSchemaTextContainer',
+      generatorSchemaText: 'testDataSchemaText',
+      addSchemaRowButton: 'testDataAddSchemaRowButton',
+      schemaModeToggleButton: 'testDataSchemaModeToggleButton',
+      schemaModeHelpIcon: 'testDataSchemaModeHelpIcon',
+    },
+  });
 
   function createTestDataGrid() {
-    const gridDiv = documentObj.querySelector('#testDataSchemaGrid');
-    setupTestDataEditGrid(gridDiv);
-
-    const textEdit = documentObj.querySelector('.test-data-schema-text-container');
-    const zone = documentObj.querySelector('.test-data-schema-edit-zone');
-    applyTestDataGridLayoutFn({
-      gridDiv,
-      textEdit,
-      zone,
-      hasGridApi: Boolean(state.schemaGridApi),
+    const container = documentObj.getElementById('testDataSchemaRows');
+    container?.addEventListener('input', schemaEditor.handleInput);
+    container?.addEventListener('change', schemaEditor.handleInput);
+    container?.addEventListener('click', (event) => {
+      void schemaEditor.handleClick(event);
     });
+
+    const addButton = documentObj.getElementById('testDataAddSchemaRowButton');
+    addButton?.addEventListener('click', (event) => {
+      event.preventDefault();
+      schemaEditor.addRow();
+    });
+
+    const modeToggleButton = documentObj.getElementById('testDataSchemaModeToggleButton');
+    modeToggleButton?.addEventListener('click', (event) => {
+      event.preventDefault();
+      schemaEditor.toggleMode();
+    });
+
+    schemaEditor.init();
   }
 
   return {
     createTestDataGrid,
-    populateGridFromTextSchema,
-    syncSchemaTextFromGridBeforeGenerate,
-    getSchemaGridApi: () => state.schemaGridApi,
-    getSchemaGridExtras: () => state.schemaGridExtras,
-    getSchemaGridBridge: () => state.schemaGridBridge,
+    populateGridFromTextSchema: () => schemaEditor.syncFromText({ showErrors: true, force: true }),
+    syncSchemaTextFromGridBeforeGenerate: () => schemaEditor.syncTextFromRows(),
+    insertSampleSchema: () => schemaEditor.insertSampleSchema(),
   };
 }
 

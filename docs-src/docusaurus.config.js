@@ -99,6 +99,14 @@ const config = {
                 label: 'Privacy Policy',
                 to: '/privacy',
               },
+              {
+                label: 'About',
+                to: '/about',
+              },
+              {
+                label: 'Contact',
+                to: '/contact',
+              },
             ],
           },
           {

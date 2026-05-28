@@ -16,3 +16,4 @@ export {
 export { schemaErrorsToText } from './schema-error-text.js';
 export { TEST_DATA_GRID_SAMPLE_SCHEMA_TEXT } from './schema-examples.js';
 export { mapDataRuleToSchemaRow, mapDataRuleToGridRow, mapGridRowToSchemaRow } from './schema-row-mapper.js';
+export { createSharedSchemaEditorController } from './shared-schema-editor-controller.js';

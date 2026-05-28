@@ -82,7 +82,6 @@ function insertExampleSchema({
   documentObj,
   sampleSchemaText,
   setIsTextMode,
-  updateSchemaEditModeViewFn,
   syncSchemaRowsFromTextMode,
   renderSchemaRows,
 }) {
@@ -90,17 +89,24 @@ function insertExampleSchema({
   if (textArea) {
     textArea.value = sampleSchemaText;
   }
-  setIsTextMode(true);
-  updateSchemaEditModeViewFn();
   syncSchemaRowsFromTextMode({ showErrors: true });
-  renderSchemaRows();
+  const rowsContainer = documentObj.getElementById('generatorSchemaRows');
+  const isSchemaModeVisible = rowsContainer && rowsContainer.style.display !== 'none';
+  if (isSchemaModeVisible) {
+    setIsTextMode(true);
+    syncSchemaRowsFromTextMode({ showErrors: true });
+    setIsTextMode(false);
+    renderSchemaRows();
+    return;
+  }
+  syncSchemaRowsFromTextMode({ showErrors: true });
 }
 
 function renderGeneratorSchemaRows({
   documentObj,
   schemaRows,
-  fakerCommands,
-  getVisibleDomainCommands,
+  fakerCommands = [],
+  getVisibleDomainCommands = () => [],
   getSchemaHelpData,
   updateAllPairsButtonVisibility,
 }) {
@@ -137,15 +143,20 @@ function renderGeneratorSchemaRows({
                 </select>
                 ${
                   isCommandSource
-                    ? `<select data-field="command">
-                    <option value="">${isDomainSource ? 'Select domain command' : 'Select faker command'}</option>
-                    ${(isDomainSource ? getVisibleDomainCommands(row.command) : fakerCommands)
-                      .map((command) => {
-                        const selected = command === row.command ? 'selected' : '';
-                        return `<option value="${escapeHtml(command)}" ${selected}>${escapeHtml(command)}</option>`;
-                      })
-                      .join('')}
-                </select>`
+                    ? `<div class="generator-command-picker-control">
+                        <button type="button" data-action="pick-command" data-row-id="${row.id}" class="generator-command-picker-button">${escapeHtml(
+                          row.command || (isDomainSource ? 'Select domain command' : 'Select faker command')
+                        )}</button>
+                        <select data-field="command" class="generator-command-picker-shadow-select">
+                          <option value="">${isDomainSource ? 'Select domain command' : 'Select faker command'}</option>
+                          ${(isDomainSource ? getVisibleDomainCommands(row.command) : fakerCommands)
+                            .map((command) => {
+                              const selected = command === row.command ? 'selected' : '';
+                              return `<option value="${escapeHtml(command)}" ${selected}>${escapeHtml(command)}</option>`;
+                            })
+                            .join('')}
+                        </select>
+                    </div>`
                     : ''
                 }
                 <a

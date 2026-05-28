@@ -32,6 +32,23 @@ function normaliseDomainCommand(commandValue) {
   return String(commandValue || '').trim();
 }
 
+function buildEnumRuleSpec(enumInput) {
+  const enumValue = String(enumInput ?? '').trim();
+  if (enumValue.length === 0) {
+    return '';
+  }
+  if (/^(enum|datatype\.enum|awd\.datatype\.enum)\s*\(/i.test(enumValue)) {
+    return `enum(${extractEnumValueFromRuleSpec(enumValue)})`;
+  }
+  if (/^enum\s+/i.test(enumValue)) {
+    return `enum(${enumValue.replace(/^enum\s+/i, '').trim()})`;
+  }
+  if (enumValue.startsWith('(') && enumValue.endsWith(')')) {
+    return `enum${enumValue}`;
+  }
+  return `enum(${enumValue})`;
+}
+
 function buildRuleSpecFromSchemaRow(row) {
   const sourceType = normaliseSourceType(row?.sourceType);
   if (sourceType === SOURCE_TYPE_FAKER) {
@@ -42,6 +59,9 @@ function buildRuleSpecFromSchemaRow(row) {
   if (sourceType === SOURCE_TYPE_DOMAIN) {
     const command = normaliseDomainCommand(row?.command);
     const params = String(row?.params ?? '').trim();
+    if (command.toLowerCase() === 'datatype.enum') {
+      return buildEnumRuleSpec(params);
+    }
     return `${command}${params}`;
   }
   if (sourceType === SOURCE_TYPE_LITERAL) {
@@ -68,16 +88,28 @@ function buildRuleSpecFromSchemaRow(row) {
     return regexValue;
   }
   if (sourceType === SOURCE_TYPE_ENUM) {
-    const enumValue = String(row?.value ?? '').trim();
-    if (enumValue.length === 0) {
-      return '';
-    }
-    if (/^(enum|datatype\.enum|awd\.datatype\.enum)\s*\(/i.test(enumValue)) {
-      return enumValue;
-    }
-    return `enum(${enumValue})`;
+    return buildEnumRuleSpec(row?.value);
   }
   return String(row?.value ?? '').trim();
+}
+
+function extractEnumValueFromRuleSpec(ruleSpec) {
+  const value = String(ruleSpec ?? '').trim();
+  const wrappedMatch = value.match(/^(?:enum|datatype\.enum|awd\.datatype\.enum)\s*\(([\s\S]*)\)$/i);
+  if (wrappedMatch) {
+    return wrappedMatch[1].trim();
+  }
+  if (/^enum\s+/i.test(value)) {
+    const shorthand = value.replace(/^enum\s+/i, '').trim();
+    if (shorthand.startsWith('(') && shorthand.endsWith(')') && shorthand.length >= 2) {
+      return shorthand.slice(1, -1).trim();
+    }
+    return shorthand;
+  }
+  if (value.startsWith('(') && value.endsWith(')') && value.length >= 2) {
+    return value.slice(1, -1).trim();
+  }
+  return value;
 }
 
 function extractLiteralValueFromRuleSpec(ruleSpec) {
@@ -136,5 +168,6 @@ export {
   buildRuleSpecFromSchemaRow,
   extractLiteralValueFromRuleSpec,
   extractRegexValueFromRuleSpec,
+  extractEnumValueFromRuleSpec,
   buildDataRuleFromSchemaRow,
 };

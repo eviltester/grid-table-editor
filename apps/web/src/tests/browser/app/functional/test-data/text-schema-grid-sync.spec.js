@@ -77,4 +77,22 @@ test.describe('7. Test Data Generation', () => {
     await expect.poll(async () => appPage.testDataPanel.getSchemaText()).toContain('literal(X-001)');
     expectNoPageErrors(pageErrors);
   });
+
+  test('empty schema text can switch back to schema mode without locking', async ({ page }) => {
+    const { appPage, pageErrors } = await openApp(page);
+
+    await appPage.testDataPanel.expand();
+    await appPage.testDataPanel.expectExpanded();
+
+    await appPage.testDataPanel.setSchemaText('');
+    await appPage.testDataPanel.setSchemaTextMode(false);
+
+    await expect.poll(async () => appPage.testDataPanel.isRowEditorMode()).toBe(true);
+    await expect
+      .poll(async () =>
+        (await appPage.testDataPanel.getSchemaErrorText()).includes('No rules defined. Provide column/rule pairs.')
+      )
+      .toBe(false);
+    expectNoPageErrors(pageErrors);
+  });
 });

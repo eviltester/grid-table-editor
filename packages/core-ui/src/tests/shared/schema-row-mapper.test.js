@@ -8,6 +8,11 @@ describe('schema-row-mapper', () => {
   test('maps parsed faker and literal rules into shared schema rows', () => {
     const fakerRow = mapDataRuleToSchemaRow({ type: 'faker', name: 'First', ruleSpec: 'person.firstName(sex="male")' });
     const literalRow = mapDataRuleToSchemaRow({ type: 'literal', name: 'Fixed', ruleSpec: 'literal("")' });
+    const enumRow = mapDataRuleToSchemaRow({
+      type: 'enum',
+      name: 'Status',
+      ruleSpec: 'datatype.enum(active,inactive)',
+    });
 
     expect(fakerRow).toMatchObject({
       name: 'First',
@@ -20,6 +25,11 @@ describe('schema-row-mapper', () => {
       name: 'Fixed',
       sourceType: 'literal',
       value: '',
+    });
+    expect(enumRow).toMatchObject({
+      name: 'Status',
+      sourceType: 'enum',
+      value: 'active,inactive',
     });
   });
 
@@ -72,6 +82,23 @@ describe('schema-row-mapper', () => {
       name: 'Status',
       sourceType: 'enum',
       value: 'enum(active,inactive)',
+    });
+
+    expect(
+      mapGridRowToSchemaRow(
+        { columnName: 'Status', type: 'datatype.enum', value: 'active,inactive,pending' },
+        {
+          FAKER_SECTION_VALUE: 'faker',
+          DOMAIN_SECTION_VALUE: 'domain',
+          FAKER_COMMANDS: ['person.firstName'],
+          DOMAIN_COMMANDS: ['chemicalElement.name', 'datatype.enum'],
+        }
+      )
+    ).toEqual({
+      name: 'Status',
+      sourceType: 'domain',
+      command: 'datatype.enum',
+      params: 'active,inactive,pending',
     });
   });
 });

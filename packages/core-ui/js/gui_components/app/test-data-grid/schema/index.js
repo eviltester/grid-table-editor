@@ -9,6 +9,7 @@ export {
   getVisibleDomainCommandOptions,
   getTabulatorCommandEditorValues,
   getAgGridCommandEditorValues,
+  getMethodPickerOptions,
 } from './test-data-command-catalog.js';
 export { createSchemaGridController } from './test-data-grid-schema-grid-controller.js';
 export { mapDataRuleToGridRow, mapGridRowToSchemaRow } from './test-data-grid-schema-row-mappers.js';

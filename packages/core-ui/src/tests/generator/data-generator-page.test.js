@@ -653,7 +653,7 @@ describe('DataGeneratorPage', () => {
 
     helpLink = document.querySelector('[data-field="faker-doc-link"]');
     expect(helpLink.hidden).toBe(false);
-    expect(helpLink.getAttribute('href')).toBe('https://fakerjs.dev/api/helpers');
+    expect(helpLink.getAttribute('href')).toBe('https://anywaydata.com/docs/test-data/faker/helpers');
     expect(helpLink.getAttribute('aria-label')).toBe('Faker command help: helpers.fake');
     expect(helpLink.getAttribute('data-help-text')).toContain('<strong>faker.helpers.fake</strong>');
     expect(helpLink.getAttribute('data-help-text')).toContain('helpers');

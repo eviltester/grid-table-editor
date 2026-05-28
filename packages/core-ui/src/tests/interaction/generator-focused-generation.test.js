@@ -101,4 +101,19 @@ describe('generator focused generation flows', () => {
     expect(harness.getSchemaErrorText()).toBe('');
     harness.assertSuccessfulPreview('generator recovery preview');
   });
+
+  test('domain datatype.enum preview works without text-mode round trip', async () => {
+    await harness.fillRow(0, {
+      name: 'Status',
+      sourceType: 'domain',
+      command: 'datatype.enum',
+      params: 'active,inactive,pending',
+    });
+    await harness.setPreviewCount(3);
+    await harness.clickPreview();
+
+    await waitFor(() => expect(harness.getPreviewDataTable()?.getRowCount()).toBe(3));
+    expect(harness.getSchemaErrorText()).toBe('');
+    harness.assertSuccessfulPreview('generator datatype.enum preview');
+  });
 });

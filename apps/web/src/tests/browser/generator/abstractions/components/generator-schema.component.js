@@ -1,14 +1,19 @@
 const { expect } = require('@playwright/test');
+const { SchemaEditorComponent } = require('../../../shared/abstractions/components/schema-editor.component');
 
 class GeneratorSchemaComponent {
   constructor(page) {
     this.page = page;
     this.container = page.locator('#generatorSchemaSection');
-    this.modeToggleButton = page.locator('#schemaModeToggleButton');
-    this.textArea = page.locator('#generatorSchemaText');
-    this.rowsContainer = page.locator('#generatorSchemaRows');
-    this.rows = this.rowsContainer.locator('.generator-schema-row');
-    this.addFieldButton = page.locator('#addSchemaRowButton');
+    this.editor = new SchemaEditorComponent(page, {
+      rowsSelector: '#generatorSchemaRows',
+      textAreaSelector: '#generatorSchemaText',
+      modeToggleSelector: '#schemaModeToggleButton',
+      addFieldSelector: '#addSchemaRowButton',
+    });
+    this.modeToggleButton = this.editor.modeToggleButton;
+    this.textArea = this.editor.textArea;
+    this.rows = this.editor.rows;
   }
 
   async expectReady() {
@@ -17,20 +22,15 @@ class GeneratorSchemaComponent {
   }
 
   async setTextMode(enabled) {
-    const shouldShowSchemaButton = enabled ? 'Edit as Schema' : 'Edit as Text';
-    if ((await this.modeToggleButton.innerText()).trim() !== shouldShowSchemaButton) {
-      await this.modeToggleButton.click();
-    }
-    await expect(this.modeToggleButton).toHaveText(shouldShowSchemaButton);
+    await this.editor.setTextMode(enabled);
   }
 
   async setSchemaText(schemaText) {
-    await this.setTextMode(true);
-    await this.textArea.fill(schemaText);
+    await this.editor.setSchemaText(schemaText, { ensureTextMode: true });
   }
 
   async addField() {
-    await this.addFieldButton.click();
+    await this.editor.addField();
   }
 
   async getRowCount() {
@@ -42,15 +42,15 @@ class GeneratorSchemaComponent {
   }
 
   async setRowName(index, value) {
-    await this.row(index).locator('input[data-field="name"]').fill(value);
+    await this.editor.setRowField(index, 'name', value);
   }
 
   async setRowSourceType(index, value) {
-    await this.row(index).locator('select[data-field="sourceType"]').selectOption(value);
+    await this.editor.setRowSourceType(index, value);
   }
 
   async setRowValue(index, value) {
-    await this.row(index).locator('input[data-field="value"]').fill(value);
+    await this.editor.setRowField(index, 'value', value);
   }
 
   async getRowName(index) {
@@ -58,8 +58,7 @@ class GeneratorSchemaComponent {
   }
 
   async getSchemaText() {
-    await this.setTextMode(true);
-    return this.textArea.inputValue();
+    return this.editor.getSchemaText({ ensureTextMode: true });
   }
 
   async clickRowAction(index, action) {

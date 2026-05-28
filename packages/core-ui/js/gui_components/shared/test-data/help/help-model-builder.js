@@ -27,6 +27,14 @@ const HELP_URLS = Object.freeze({
   enum: 'https://anywaydata.com/docs/category/generating-data',
 });
 
+function resolveFakerDocsUrl(command, docsUrl) {
+  const normalizedCommand = String(command || '').trim();
+  if (normalizedCommand.startsWith('helpers.')) {
+    return 'https://anywaydata.com/docs/test-data/faker/helpers';
+  }
+  return String(docsUrl || '').trim() || HELP_URLS.faker;
+}
+
 function cleanParamText(text) {
   return String(text || '')
     .replace(/\/\*[\s\S]*?\*\//g, ' ')
@@ -97,7 +105,7 @@ function renderSchemaHelpHtml(model) {
   return sections.join('');
 }
 
-function buildTypeHelpModel(typeName, summary, docsUrl) {
+function buildTypeHelpModel(typeName, summary, docsUrl, { params = [], example = '' } = {}) {
   return {
     show: true,
     kind: 'type',
@@ -105,8 +113,8 @@ function buildTypeHelpModel(typeName, summary, docsUrl) {
     heading: typeName,
     summary,
     docsUrl,
-    params: [],
-    example: '',
+    params,
+    example,
   };
 }
 
@@ -117,7 +125,19 @@ function buildSchemaHelpModel(sourceType, commandValue) {
     return buildTypeHelpModel(
       'Regex',
       'Regex patterns generate random values that match the specified expression.',
-      HELP_URLS.regex
+      HELP_URLS.regex,
+      {
+        params: [
+          {
+            name: 'pattern',
+            type: 'regex string',
+            optional: false,
+            description: 'The regular expression used to generate each value.',
+            example: '[A-Z]{3}',
+          },
+        ],
+        example: 'regex([A-Z]{3})',
+      }
     );
   }
 
@@ -125,15 +145,39 @@ function buildSchemaHelpModel(sourceType, commandValue) {
     return buildTypeHelpModel(
       'Literal',
       'Literal data repeats the exact text you enter for every generated row.',
-      HELP_URLS.literal
+      HELP_URLS.literal,
+      {
+        params: [
+          {
+            name: 'value',
+            type: 'string',
+            optional: false,
+            description: 'The exact value emitted for every generated row.',
+            example: 'Pending Review',
+          },
+        ],
+        example: 'literal(Pending Review)',
+      }
     );
   }
 
   if (normalisedSourceType === SOURCE_TYPE_ENUM) {
     return buildTypeHelpModel(
       'Enum',
-      'Enum values allow you to specify a list of discrete options. Use formats like "Red,Blue,Green" or "enum("Option1", "Option2")".',
-      HELP_URLS.enum
+      'Enum values allow you to specify a list of discrete options. Use comma-separated values with no quotes, for example "active,inactive,pending" or "enum active,inactive,pending".',
+      HELP_URLS.enum,
+      {
+        params: [
+          {
+            name: 'values',
+            type: 'comma-separated list',
+            optional: false,
+            description: 'List of allowed values randomly selected during generation.',
+            example: 'active,inactive,pending',
+          },
+        ],
+        example: 'enum active,inactive,pending',
+      }
     );
   }
 
@@ -153,9 +197,15 @@ function buildSchemaHelpModel(sourceType, commandValue) {
       title: `Faker command help: ${command}`,
       heading: `faker.${command}`,
       summary: commandHelp?.summary || `Generates data using faker.${command}.`,
-      docsUrl: commandHelp?.docsUrl || HELP_URLS.faker,
+      docsUrl: resolveFakerDocsUrl(command, commandHelp?.docsUrl),
       params: commandHelp?.params || [],
       example: commandHelp?.example || '',
+      examples: Array.isArray(commandHelp?.examples) ? commandHelp.examples : [],
+      exampleReturnValues: Array.isArray(commandHelp?.exampleReturnValues)
+        ? commandHelp.exampleReturnValues
+        : Array.isArray(commandHelp?.returnExamples)
+          ? commandHelp.returnExamples
+          : [],
     };
   }
 
@@ -178,10 +228,23 @@ function buildSchemaHelpModel(sourceType, commandValue) {
       docsUrl: commandHelp?.docsUrl || HELP_URLS.domain,
       params: commandHelp?.args || [],
       example: commandHelp?.example || '',
+      examples: Array.isArray(commandHelp?.examples) ? commandHelp.examples : [],
+      exampleReturnValues: Array.isArray(commandHelp?.exampleReturnValues)
+        ? commandHelp.exampleReturnValues
+        : Array.isArray(commandHelp?.returnExamples)
+          ? commandHelp.returnExamples
+          : [],
     };
   }
 
   return { show: false, kind: 'type', title: '', heading: '', summary: '', docsUrl: '', params: [], example: '' };
 }
 
-export { HELP_URLS, buildSchemaHelpModel, renderSchemaHelpHtml, buildCallSignature, buildSchemaParamsHint };
+export {
+  HELP_URLS,
+  resolveFakerDocsUrl,
+  buildSchemaHelpModel,
+  renderSchemaHelpHtml,
+  buildCallSignature,
+  buildSchemaParamsHint,
+};

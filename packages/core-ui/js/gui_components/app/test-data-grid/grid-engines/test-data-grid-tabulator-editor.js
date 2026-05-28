@@ -7,41 +7,25 @@
 
 import { GridExtension as TabulatorGridExtension } from '../../../data-grid-editor/tabulator/gridExtension-tabulator.js';
 import { createTabulatorDraftSync } from '../../../shared/test-data/grid-sync/index.js';
+import { openMethodPickerModal } from '../../../shared/test-data/ui/index.js';
 
-function createTabulatorCommandSelectEditor({
-  getTabulatorCommandEditorValues,
-  FAKER_SECTION_VALUE,
-  DOMAIN_SECTION_VALUE,
-}) {
+function createTabulatorCommandSelectEditor({ getMethodPickerOptions, FAKER_SECTION_VALUE, DOMAIN_SECTION_VALUE }) {
   return function tabulatorCommandSelectEditor(cell, onRendered, success, cancel) {
-    const editor = document.createElement('select');
-    editor.style.width = '100%';
-    editor.style.boxSizing = 'border-box';
+    const editor = document.createElement('button');
+    editor.type = 'button';
+    editor.className = 'test-data-grid-command-picker-trigger';
+    editor.textContent = String(cell.getValue() || 'Pick method');
     let completed = false;
-
-    const values = getTabulatorCommandEditorValues(cell.getValue());
-    values.forEach((entry) => {
-      const option = document.createElement('option');
-      option.value = entry.value;
-      option.textContent = entry.label;
-      if (entry.value === FAKER_SECTION_VALUE || entry.value === DOMAIN_SECTION_VALUE) {
-        option.disabled = true;
-      }
-      editor.appendChild(option);
-    });
-
-    const currentValue = String(cell.getValue() ?? '').trim();
-    editor.value = currentValue;
 
     onRendered(() => {
       editor.focus();
     });
 
-    const finishEdit = () => {
+    const finishWithValue = (nextValue) => {
       if (completed) {
         return;
       }
-      const selectedValue = String(editor.value ?? '').trim();
+      const selectedValue = String(nextValue ?? '').trim();
       if (selectedValue === FAKER_SECTION_VALUE || selectedValue === DOMAIN_SECTION_VALUE) {
         completed = true;
         cancel();
@@ -51,8 +35,28 @@ function createTabulatorCommandSelectEditor({
       success(selectedValue);
     };
 
-    editor.addEventListener('change', finishEdit);
-    editor.addEventListener('blur', finishEdit);
+    editor.addEventListener('click', async () => {
+      try {
+        const selected = await openMethodPickerModal({
+          documentObj: document,
+          windowObj: globalThis.window,
+          options: getMethodPickerOptions(cell.getValue()),
+          currentCommand: String(cell.getValue() ?? '').trim(),
+          title: 'Select schema method',
+        });
+        if (!selected?.command) {
+          completed = true;
+          cancel();
+          return;
+        }
+        finishWithValue(selected.command);
+      } catch {
+        if (!completed) {
+          completed = true;
+          cancel();
+        }
+      }
+    });
 
     return editor;
   };
@@ -61,14 +65,14 @@ function createTabulatorCommandSelectEditor({
 function setupTabulatorSchemaGridEditor({
   tableDiv,
   TabulatorCtor,
-  getTabulatorCommandEditorValues,
+  getMethodPickerOptions,
   FAKER_SECTION_VALUE,
   DOMAIN_SECTION_VALUE,
   onSchemaChanged,
   onDraftCellEditChange,
 }) {
   const tabulatorCommandSelectEditor = createTabulatorCommandSelectEditor({
-    getTabulatorCommandEditorValues,
+    getMethodPickerOptions,
     FAKER_SECTION_VALUE,
     DOMAIN_SECTION_VALUE,
   });

@@ -10,6 +10,7 @@ import {
   buildRuleSpecFromSchemaRow,
   extractLiteralValueFromRuleSpec,
   extractRegexValueFromRuleSpec,
+  extractEnumValueFromRuleSpec,
   buildDataRuleFromSchemaRow,
 } from '../../../js/gui_components/shared/schema-row-rule-mapper.js';
 
@@ -46,6 +47,19 @@ describe('schema-row-rule-mapper', () => {
     expect(buildRuleSpecFromSchemaRow({ sourceType: 'domain', command: 'number.int', params: '(1,10)' })).toBe(
       'number.int(1,10)'
     );
+    expect(buildRuleSpecFromSchemaRow({ sourceType: 'domain', command: 'datatype.enum', params: 'a,raw,list' })).toBe(
+      'enum(a,raw,list)'
+    );
+    expect(
+      buildRuleSpecFromSchemaRow({ sourceType: 'domain', command: 'datatype.enum', params: '(a,bracketed,list)' })
+    ).toBe('enum(a,bracketed,list)');
+    expect(
+      buildRuleSpecFromSchemaRow({
+        sourceType: 'domain',
+        command: 'datatype.enum',
+        params: '("a","quoted","bracketed","list")',
+      })
+    ).toBe('enum("a","quoted","bracketed","list")');
   });
 
   test('buildRuleSpecFromSchemaRow handles literal rows including blank default', () => {
@@ -63,7 +77,17 @@ describe('schema-row-rule-mapper', () => {
   test('buildRuleSpecFromSchemaRow handles enum rows including wrapper', () => {
     expect(buildRuleSpecFromSchemaRow({ sourceType: 'enum', value: '1,2,3' })).toBe('enum(1,2,3)');
     expect(buildRuleSpecFromSchemaRow({ sourceType: 'enum', value: 'enum(a,b)' })).toBe('enum(a,b)');
+    expect(buildRuleSpecFromSchemaRow({ sourceType: 'enum', value: 'enum a,b,c' })).toBe('enum(a,b,c)');
+    expect(buildRuleSpecFromSchemaRow({ sourceType: 'enum', value: '(a,b,c)' })).toBe('enum(a,b,c)');
+    expect(buildRuleSpecFromSchemaRow({ sourceType: 'enum', value: '"a","b","c"' })).toBe('enum("a","b","c")');
     expect(buildRuleSpecFromSchemaRow({ sourceType: 'enum', value: '   ' })).toBe('');
+  });
+
+  test('extractEnumValueFromRuleSpec unwraps enum aliases and shorthand', () => {
+    expect(extractEnumValueFromRuleSpec('enum(a,b,c)')).toBe('a,b,c');
+    expect(extractEnumValueFromRuleSpec('datatype.enum(active,inactive,pending)')).toBe('active,inactive,pending');
+    expect(extractEnumValueFromRuleSpec('enum active,inactive,pending')).toBe('active,inactive,pending');
+    expect(extractEnumValueFromRuleSpec('(a,b,c)')).toBe('a,b,c');
   });
 
   test('extractLiteralValueFromRuleSpec unwraps literal aliases and keeps plain text', () => {

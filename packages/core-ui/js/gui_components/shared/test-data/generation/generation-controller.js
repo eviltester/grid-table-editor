@@ -54,6 +54,12 @@ function createConfiguredGeneratorFromSchemaRows({
   SOURCE_TYPE_ENUM,
   SOURCE_TYPE_REGEX,
 }) {
+  const isDatatypeEnumDomainRow = (row) =>
+    String(row?.sourceType || '').toLowerCase() === SOURCE_TYPE_DOMAIN &&
+    String(row?.command || '')
+      .trim()
+      .toLowerCase() === 'datatype.enum';
+
   const { errors, rows } = validateSchemaRows(schemaRows);
   if (errors.length > 0) {
     return { generator: null, errors, rows: [] };
@@ -70,7 +76,7 @@ function createConfiguredGeneratorFromSchemaRows({
       return;
     }
     if (row.sourceType === SOURCE_TYPE_FAKER || row.sourceType === SOURCE_TYPE_DOMAIN) {
-      rule.type = row.sourceType;
+      rule.type = isDatatypeEnumDomainRow(row) ? SOURCE_TYPE_ENUM : row.sourceType;
       rule.ruleSpec = buildRuleSpecFromSchemaRow(row);
       return;
     }

@@ -14,105 +14,6 @@ class ImmediateDebouncer {
   clear() {}
 }
 
-function createDomBackedSchemaGridEditor({
-  tableDiv,
-  convertGridToText,
-  onDraftCellEditChange,
-  getAgGridCommandEditorValues,
-}) {
-  const state = { rows: [], selectedIndexes: new Set() };
-
-  function cloneRow(row) {
-    return {
-      columnName: String(row?.columnName || ''),
-      type: String(row?.type || 'regex'),
-      value: String(row?.value ?? ''),
-      comments: String(row?.comments ?? ''),
-      leadingTextLines: Array.isArray(row?.leadingTextLines) ? row.leadingTextLines.slice() : [],
-    };
-  }
-
-  function renderRows() {
-    tableDiv.innerHTML = '';
-    state.rows.forEach((row, index) => {
-      const rowElem = document.createElement('div');
-      rowElem.className = 'test-schema-grid-row';
-      rowElem.setAttribute('data-row-index', String(index));
-      rowElem.innerHTML = `
-        <label>Select Row <input type="checkbox" data-field="selected" ${state.selectedIndexes.has(index) ? 'checked' : ''} /></label>
-        <label>Column Name <input type="text" data-field="columnName" value="${row.columnName.replace(/"/g, '&quot;')}" /></label>
-        <label>Type <select data-field="type"></select></label>
-        <label>Value <input type="text" data-field="value" value="${row.value.replace(/"/g, '&quot;')}" /></label>
-      `;
-
-      const typeSelect = rowElem.querySelector('[data-field="type"]');
-      getAgGridCommandEditorValues(row.type).forEach((value) => {
-        const option = document.createElement('option');
-        option.value = value;
-        option.textContent = value;
-        if (value === row.type) {
-          option.selected = true;
-        }
-        typeSelect.appendChild(option);
-      });
-
-      rowElem.addEventListener('input', (event) => {
-        const field = event.target.getAttribute('data-field');
-        if (!field || field === 'selected') {
-          return;
-        }
-        state.rows[index][field] = event.target.value;
-        onDraftCellEditChange?.(null);
-        convertGridToText();
-      });
-
-      rowElem.addEventListener('change', (event) => {
-        const field = event.target.getAttribute('data-field');
-        if (!field) {
-          return;
-        }
-        if (field === 'selected') {
-          if (event.target.checked) {
-            state.selectedIndexes.add(index);
-          } else {
-            state.selectedIndexes.delete(index);
-          }
-          return;
-        }
-        state.rows[index][field] = event.target.value;
-        onDraftCellEditChange?.(null);
-        renderRows();
-        convertGridToText();
-      });
-
-      tableDiv.appendChild(rowElem);
-    });
-  }
-
-  return {
-    schemaGridApi: {},
-    schemaGridExtras: {
-      deleteSelectedRows() {
-        state.rows = state.rows.filter((_, index) => !state.selectedIndexes.has(index));
-        state.selectedIndexes.clear();
-        renderRows();
-      },
-    },
-    schemaGridBridge: {
-      getRows: () => state.rows.map((row) => cloneRow(row)),
-      addRows(rows) {
-        state.rows.push(...rows.map((row) => cloneRow(row)));
-        renderRows();
-      },
-      clearRows() {
-        state.rows = [];
-        state.selectedIndexes.clear();
-        renderRows();
-      },
-    },
-  };
-}
-
 function createFocusedAppTestDataHarness() {
   const dom = installDomGlobals(
     '<!doctype html><html><body><div id="host"></div><pre id="testDataPreviewCapture"></pre></body></html>'
@@ -122,12 +23,16 @@ function createFocusedAppTestDataHarness() {
 
   let latestDataTable = null;
   let control = null;
+  let selectedSchemaRowIndex = 0;
   const mainGridState = {
     rowCount: 0,
     selectedRowIndexes: [],
   };
 
   async function setInputValue(element, value) {
+    if (!element) {
+      throw new Error('Target input element was not found in focused app test-data harness');
+    }
     await user.click(element);
     await user.clear(element);
     if (value) {
@@ -146,6 +51,7 @@ function createFocusedAppTestDataHarness() {
     document.getElementById('host').innerHTML = '';
     document.getElementById('testDataPreviewCapture').textContent = '';
     latestDataTable = null;
+    selectedSchemaRowIndex = 0;
 
     const exporter = new Exporter({
       getGridAsGenericDataTable: () => latestDataTable,
@@ -181,40 +87,53 @@ function createFocusedAppTestDataHarness() {
       documentObj: document,
       windowObj: window,
       DebouncerClass: ImmediateDebouncer,
-      setupSchemaGridEditorFn: createDomBackedSchemaGridEditor,
     });
 
     control.enableTestDataGenerationInterface('host', importer, textPreviewRenderer, gridExtras);
   }
 
   function getGridRow(index = 0) {
-    return document.querySelectorAll('.test-schema-grid-row')[index];
+    return document.querySelectorAll('#testDataSchemaRows .generator-schema-row')[index];
   }
 
   async function addColumn() {
-    await user.click(document.querySelectorAll('#testDataSchemaGrid button')[0]);
+    await user.click(document.getElementById('testDataAddSchemaRowButton'));
+    await waitFor(() => {
+      if (document.querySelectorAll('#testDataSchemaRows .generator-schema-row').length > 0) {
+        return;
+      }
+      throw new Error('Schema row was not rendered');
+    });
   }
 
-  async function selectGridRow(index, selected = true) {
-    const checkbox = getGridRow(index).querySelector('[data-field="selected"]');
-    if (checkbox.checked !== selected) {
-      await user.click(checkbox);
-    }
+  async function selectGridRow(index) {
+    selectedSchemaRowIndex = index;
+    await user.click(getGridRow(index));
   }
 
   async function deleteSelectedColumns() {
-    await user.click(document.querySelectorAll('#testDataSchemaGrid button')[1]);
+    const row = getGridRow(selectedSchemaRowIndex);
+    await user.click(row.querySelector('[data-action="remove"]'));
   }
 
   async function fillGridRow(index, row) {
-    const rowElem = getGridRow(index);
-    await setInputValue(rowElem.querySelector('[data-field="columnName"]'), row.name || '');
+    let rowElem = getGridRow(index);
+    await setInputValue(rowElem.querySelector('[data-field="name"]'), row.name || '');
+    await user.selectOptions(rowElem.querySelector('[data-field="sourceType"]'), row.sourceType || 'regex');
+    rowElem = getGridRow(index);
 
-    const typeValue = row.sourceType === 'faker' || row.sourceType === 'domain' ? row.command : row.sourceType;
-    await user.selectOptions(rowElem.querySelector('[data-field="type"]'), typeValue);
+    if (row.sourceType === 'faker' || row.sourceType === 'domain') {
+      if (row.command) {
+        const commandSelect = rowElem.querySelector('[data-field="command"]');
+        if (commandSelect) {
+          await user.selectOptions(commandSelect, row.command);
+        }
+      }
+      await setInputValue(getGridRow(index).querySelector('[data-field="params"]'), row.params || '');
+      return;
+    }
 
-    const fieldValue = row.sourceType === 'faker' || row.sourceType === 'domain' ? row.params : row.value;
-    await setInputValue(getGridRow(index).querySelector('[data-field="value"]'), fieldValue || '');
+    await setInputValue(getGridRow(index).querySelector('[data-field="value"]'), row.value || '');
   }
 
   async function setSchemaText(value) {

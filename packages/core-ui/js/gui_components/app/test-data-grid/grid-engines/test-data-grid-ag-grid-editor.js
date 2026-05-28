@@ -13,6 +13,7 @@ function setupAgGridSchemaGridEditor({
   tableDiv,
   agGridLib,
   getAgGridCommandEditorValues,
+  getMethodPickerOptions,
   onSchemaChanged,
   onDraftCellEditChange,
 }) {
@@ -27,7 +28,10 @@ function setupAgGridSchemaGridEditor({
     {
       field: 'type',
       cellEditor: SelectFilterEditor,
-      cellEditorParams: (params) => ({ values: getAgGridCommandEditorValues(params?.value) }),
+      cellEditorParams: (params) => ({
+        values: getAgGridCommandEditorValues(params?.value),
+        getMethodPickerOptions,
+      }),
     },
     { field: 'value' },
   ];

@@ -81,9 +81,7 @@ describe('test data schema editor compatibility', () => {
     document.getElementById('testDataSchemaText').value = 'OnlyAHeader';
     document.getElementById('generatedata').click();
     await flushUi();
-    expect(document.getElementById('testdata-schema-error').textContent).toContain(
-      'No rules defined. Provide column/rule pairs.'
-    );
+    expect(document.getElementById('testdata-schema-error').textContent).toContain('Row 1: column name is required.');
   });
 
   test('pairwise generation reports error when fewer than two enum columns exist', async () => {

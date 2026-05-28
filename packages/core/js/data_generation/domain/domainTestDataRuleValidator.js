@@ -1,4 +1,5 @@
 import { parseKeywordInvocation } from '../../domain/domain-keyword-parser.js';
+import { DOMAIN_KEYWORD_ALIAS_INDEX } from '../../domain/domain-keywords.js';
 
 class DomainTestDataRuleValidator {
   constructor() {
@@ -21,6 +22,13 @@ class DomainTestDataRuleValidator {
     }
 
     const parsed = parseKeywordInvocation(ruleSpec);
+    const recognizedKeyword = String(parsed?.keyword || '').trim();
+    this.lastParsed = {
+      keyword: recognizedKeyword,
+      recognized: Boolean(recognizedKeyword && DOMAIN_KEYWORD_ALIAS_INDEX.byAlias?.[recognizedKeyword]),
+      args: Array.isArray(parsed?.args) ? parsed.args : [],
+      errors: Array.isArray(parsed?.errors) ? parsed.errors : [],
+    };
     if (!Array.isArray(parsed?.errors) || parsed.errors.length > 0) {
       this.validationError = Array.isArray(parsed?.errors)
         ? parsed.errors[0] || 'Invalid domain rule'
@@ -28,10 +36,6 @@ class DomainTestDataRuleValidator {
       return false;
     }
 
-    this.lastParsed = {
-      keyword: parsed.keyword,
-      args: Array.isArray(parsed.args) ? parsed.args : [],
-    };
     return true;
   }
 

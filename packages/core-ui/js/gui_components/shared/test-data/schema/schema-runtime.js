@@ -9,6 +9,7 @@ function parseSchemaText({ schemaTextToDataRules, schemaText, faker, RandExp }) 
     schemaText: String(schemaText ?? ''),
     faker,
     RandExp,
+    includeInvalidRules: true,
   });
 }
 

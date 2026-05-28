@@ -14,7 +14,11 @@ import {
   normaliseCount,
   createTestDataGenerationService,
 } from '../generation/index.js';
-import { schemaTextToDataRules, dataRulesToSchemaText } from '@anywaydata/core/data_generation/schema-rules-adapter.js';
+import {
+  schemaTextToDataRules,
+  dataRulesToSchemaText,
+  schemaRowsToDataRules,
+} from '@anywaydata/core/data_generation/schema-rules-adapter.js';
 import { PairwiseTestDataGenerator } from '@anywaydata/core/data_generation/all-pairs/pairwiseTestDataGenerator.js';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 import { FAKER_COMMANDS, identifyFakerCommands, getMethodPickerOptions } from '../schema/index.js';
@@ -32,7 +36,12 @@ import {
   initializeSchemaErrorDisplay,
 } from '../schema/index.js';
 import { TEST_DATA_GRID_SAMPLE_SCHEMA_TEXT } from '../../../shared/test-data/schema/index.js';
-import { mapDataRuleToSchemaRow } from '../../../shared/test-data/schema/index.js';
+import {
+  mapDataRuleToSchemaRow,
+  validateSchemaRows as validateSharedSchemaRows,
+  schemaRowsToSpecWithTokens as schemaRowsToSpecWithTokensShared,
+} from '../../../shared/test-data/schema/index.js';
+import { buildDataRuleFromSchemaRow } from '../../../shared/schema-row-rule-mapper.js';
 import {
   getGenerationMode as getGenerationModeFromUi,
   applyModeDefaultRowCount as applyModeDefaultRowCountShared,
@@ -148,6 +157,13 @@ function createTestDataGridControl({
   function createGenerationService() {
     return createTestDataGenerationServiceFn({
       schemaTextToDataRules: schemaTextToDataRulesFn,
+      schemaRowsToSpec: (schemaRows) =>
+        schemaRowsToSpecWithTokensShared({
+          schemaRows,
+          schemaTokens: [],
+          buildDataRuleFromSchemaRow,
+          dataRulesToSchemaText: dataRulesToSchemaTextFn,
+        }),
       TestDataGeneratorClass: TestDataGenerator,
       PairwiseTestDataGeneratorClass: PairwiseTestDataGenerator,
       GenericDataTableClass: GenericDataTable,
@@ -163,6 +179,7 @@ function createTestDataGridControl({
       showSchemaError: showTestDataSchemaError,
       yieldToUi: yieldToUiFn,
       getSchemaText: getSchemaTextFromEditor,
+      validateCurrentSchemaRows: (options) => state.schemaGridController?.validateSchemaRows?.(options),
       getImporter: () => state.importer,
       getTextPreviewRenderer: () => state.textPreviewRenderer,
       getMainGridExtras,
@@ -183,6 +200,11 @@ function createTestDataGridControl({
       RandExp,
       getMethodPickerOptions,
       fakerCommands: FAKER_COMMANDS.filter((command) => command !== 'RegEx' && command.startsWith('helpers.')),
+      validateSchemaRows: (schemaRows) =>
+        validateSharedSchemaRows({
+          schemaRows,
+          schemaRowsToDataRules,
+        }),
       getVisibleDomainCommandOptions: (currentValue) => {
         const options = getMethodPickerOptions(currentValue).filter((option) => option.sourceType === 'domain');
         return options.map((option) => ({ value: option.command, label: option.command }));
@@ -191,6 +213,8 @@ function createTestDataGridControl({
   }
 
   function enableTestDataGenerationInterface(parentId, importer, textPreviewRenderer, gridExtras) {
+    state.schemaGridController?.destroy?.();
+    state.debouncer?.clear?.();
     identifyFakerCommandsFn(faker);
 
     state.importer = importer;
@@ -237,6 +261,10 @@ function createTestDataGridControl({
   return {
     enableTestDataGenerationInterface,
     getState: () => state,
+    destroy: () => {
+      state.schemaGridController?.destroy?.();
+      state.debouncer?.clear?.();
+    },
   };
 }
 

@@ -21,6 +21,14 @@ function setInputValue(element, value) {
   element.blur();
 }
 
+function setSelectValue(element, value) {
+  element.focus();
+  element.value = value;
+  fireEvent.input(element, { target: { value } });
+  fireEvent.change(element, { target: { value } });
+  element.blur();
+}
+
 function clickElement(element) {
   fireEvent.click(element);
 }
@@ -32,17 +40,18 @@ function getAppGridRow(index = 0) {
 function fillAppGridRow(rowIndex, row) {
   let rowElem = getAppGridRow(rowIndex);
   setInputValue(rowElem.querySelector('[data-field="name"]'), row.name || '');
+  rowElem = getAppGridRow(rowIndex);
 
   const typeSelect = rowElem.querySelector('[data-field="sourceType"]');
   const sourceType = row.sourceType || 'regex';
-  setInputValue(typeSelect, sourceType);
+  setSelectValue(typeSelect, sourceType);
   rowElem = getAppGridRow(rowIndex);
 
   if (sourceType === 'faker' || sourceType === 'domain') {
     if (row.command) {
       const commandSelect = rowElem.querySelector('[data-field="command"]');
       if (commandSelect) {
-        setInputValue(commandSelect, row.command);
+        setSelectValue(commandSelect, row.command);
       }
     }
     const fieldValue = row.params || '';
@@ -60,8 +69,14 @@ function createAppTestDataInteractionHarness() {
   );
   global.RandExp = RandExp;
   let latestDataTable = null;
+  const control = createTestDataGridControl({
+    documentObj: document,
+    windowObj: window,
+    DebouncerClass: ImmediateDebouncer,
+  });
 
   function reset() {
+    control.destroy?.();
     document.getElementById('host').innerHTML = '';
     document.getElementById('testDataPreviewCapture').textContent = '';
     latestDataTable = null;
@@ -96,11 +111,6 @@ function createAppTestDataInteractionHarness() {
       getGridAsGenericDataTable: () => latestDataTable,
     };
 
-    const control = createTestDataGridControl({
-      documentObj: document,
-      windowObj: window,
-      DebouncerClass: ImmediateDebouncer,
-    });
     control.enableTestDataGenerationInterface('host', importer, textPreviewRenderer, gridExtras);
   }
 
@@ -190,7 +200,13 @@ function createAppTestDataInteractionHarness() {
     });
   }
 
-  return { runScenario, cleanup: () => cleanupDomGlobals(dom) };
+  return {
+    runScenario,
+    cleanup: () => {
+      control.destroy?.();
+      cleanupDomGlobals(dom);
+    },
+  };
 }
 
 export { createAppTestDataInteractionHarness };

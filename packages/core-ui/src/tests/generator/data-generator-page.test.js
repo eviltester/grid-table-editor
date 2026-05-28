@@ -229,6 +229,31 @@ describe('DataGeneratorPage', () => {
     expect(result.errors).toEqual([]);
   });
 
+  test('schema validation reports unknown domain command and annotates the row', () => {
+    const result = validateSchemaRows([{ name: 'First', sourceType: 'domain', command: 'person.fullNam' }]);
+    expect(result.errors.map((error) => error.code)).toEqual(['unknown_domain_command']);
+    expect(result.errors.map((error) => error.message)).toEqual(['Row 1: unknown domain command "person.fullNam".']);
+    expect(result.rows[0].validation).toEqual({
+      valid: false,
+      issues: [
+        {
+          code: 'unknown_domain_command',
+          field: 'command',
+          line: 1,
+          message: 'Row 1: unknown domain command "person.fullNam".',
+        },
+      ],
+      message: 'Row 1: unknown domain command "person.fullNam".',
+    });
+  });
+
+  test('schema validation reports unknown faker command and annotates the row', () => {
+    const result = validateSchemaRows([{ name: 'First', sourceType: 'faker', command: 'helpers.fak' }]);
+    expect(result.errors.map((error) => error.code)).toEqual(['unknown_faker_command']);
+    expect(result.errors.map((error) => error.message)).toEqual(['Row 1: unknown faker command "helpers.fak".']);
+    expect(result.rows[0].validation.message).toBe('Row 1: unknown faker command "helpers.fak".');
+  });
+
   test('preview generates data into tabulator grid extension', () => {
     const page = new DataGeneratorPage({
       parentElement: document.getElementById('app'),
@@ -1039,6 +1064,39 @@ describe('DataGeneratorPage', () => {
     expect(page.schemaRows).toHaveLength(1);
   });
 
+  test('semantic validation rerender preserves params caret position while editing', () => {
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker,
+      RandExp,
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: TestDataGenerator,
+    });
+    page.init();
+
+    page.schemaRows = [
+      { id: '1', name: 'Name', sourceType: 'domain', command: 'person.fullName', params: '(10)', value: '' },
+    ];
+    page.renderSchemaRows();
+
+    const paramsInput = document.querySelector('input[data-field="params"]');
+    paramsInput.focus();
+    paramsInput.setSelectionRange(2, 2);
+
+    page.applySemanticValidationForRow('1');
+
+    const refreshedParamsInput = document.querySelector('input[data-field="params"]');
+    expect(document.activeElement).toBe(refreshedParamsInput);
+    expect(refreshedParamsInput.selectionStart).toBe(2);
+    expect(refreshedParamsInput.selectionEnd).toBe(2);
+    expect(refreshedParamsInput.value).toBe('(10)');
+  });
+
   test('toggle clears visible help tooltips before switching schema mode', () => {
     const hideAll = jest.fn();
     window.tippy = { hideAll };
@@ -1146,6 +1204,45 @@ describe('DataGeneratorPage', () => {
     toggle.click();
 
     expect(document.getElementById('generatorSchemaText').value).toBe(originalText);
+  });
+
+  test('text mode preserves previous typed method rows when command text becomes invalid', () => {
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker,
+      RandExp,
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: TestDataGenerator,
+    });
+    page.init();
+
+    page.schemaRows = [
+      { id: '1', name: 'Name', sourceType: 'domain', command: 'person.fullName', params: '', value: '' },
+    ];
+    page.renderSchemaRows();
+
+    const toggle = document.getElementById('schemaModeToggleButton');
+    toggle.click();
+    const textArea = document.getElementById('generatorSchemaText');
+    textArea.value = 'Name\nperson.fullNam';
+    toggle.click();
+
+    expect(page.schemaRows).toHaveLength(1);
+    expect(page.schemaRows[0].sourceType).toBe('domain');
+    expect(page.schemaRows[0].command).toBe('person.fullNam');
+    expect(page.schemaRows[0].params).toBe('');
+    expect(page.schemaRows[0].value).toBe('');
+
+    document.getElementById('previewRowsCount').value = '1';
+    page.previewData();
+    expect(document.getElementById('generatorSchemaErrorText').textContent).toContain(
+      'Row 1: unknown domain command "person.fullNam".'
+    );
   });
 
   test('text mode accepts hash-prefixed rule text after a column name', () => {

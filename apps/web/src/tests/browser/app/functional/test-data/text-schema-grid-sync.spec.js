@@ -56,6 +56,172 @@ test.describe('7. Test Data Generation', () => {
     expectNoPageErrors(pageErrors);
   });
 
+  test('invalid domain command text preserves the domain row type in the app editor', async ({ page }) => {
+    const { appPage, pageErrors } = await openApp(page);
+
+    await appPage.testDataPanel.expand();
+    await appPage.testDataPanel.expectExpanded();
+
+    await appPage.testDataPanel.setSchemaText('Name\nperson.fullName');
+    await expect.poll(async () => appPage.testDataPanel.getSchemaRowCount()).toBe(1);
+    await expect.poll(async () => appPage.testDataPanel.getSchemaCell(0, 'type')).toBe('person.fullName');
+    await expect
+      .poll(async () =>
+        appPage.testDataPanel.page
+          .locator('#testDataSchemaRows .generator-schema-row')
+          .first()
+          .locator('select[data-field="sourceType"]')
+          .inputValue()
+      )
+      .toBe('domain');
+
+    await appPage.testDataPanel.setSchemaText('Name\nperson.fullNam');
+
+    await expect.poll(async () => appPage.testDataPanel.getSchemaCell(0, 'type')).toBe('person.fullNam');
+    await expect
+      .poll(async () =>
+        appPage.testDataPanel.page
+          .locator('#testDataSchemaRows .generator-schema-row')
+          .first()
+          .locator('select[data-field="sourceType"]')
+          .inputValue()
+      )
+      .toBe('domain');
+
+    await expect(appPage.testDataPanel.page.locator('#testDataSchemaRows .generator-schema-row').first()).toHaveClass(
+      /generator-schema-row-invalid/
+    );
+
+    await appPage.testDataPanel.clickGenerate();
+    await expect
+      .poll(async () => appPage.testDataPanel.getSchemaErrorText())
+      .toContain('Row 1: unknown domain command "person.fullNam".');
+
+    expectNoPageErrors(pageErrors);
+  });
+
+  test('domain rows with invalid params stay domain after text mode round-trip in the app editor', async ({ page }) => {
+    const { appPage, pageErrors } = await openApp(page);
+
+    await appPage.testDataPanel.expand();
+    await appPage.testDataPanel.expectExpanded();
+
+    await appPage.testDataPanel.addSchemaRow();
+    await expect.poll(async () => appPage.testDataPanel.getSchemaRowCount()).toBe(1);
+    await appPage.testDataPanel.setSchemaCell(0, 'columnName', 'Name');
+    await appPage.testDataPanel.setSchemaTypeValue(0, 'person.fullName');
+    await appPage.testDataPanel.setSchemaCell(0, 'params', '(10)');
+
+    await appPage.testDataPanel.setSchemaTextMode(true);
+    await appPage.testDataPanel.setSchemaTextMode(false);
+
+    await expect.poll(async () => appPage.testDataPanel.getSchemaCell(0, 'type')).toBe('person.fullName');
+    await expect
+      .poll(async () =>
+        appPage.testDataPanel.page
+          .locator('#testDataSchemaRows .generator-schema-row')
+          .first()
+          .locator('select[data-field="sourceType"]')
+          .inputValue()
+      )
+      .toBe('domain');
+    await expect.poll(async () => appPage.testDataPanel.getSchemaCell(0, 'params')).toBe('(10)');
+    await expect(
+      appPage.testDataPanel.page
+        .locator('#testDataSchemaRows .generator-schema-row')
+        .first()
+        .locator('.generator-schema-row-validation')
+    ).toContainText('invalid domain params');
+
+    expectNoPageErrors(pageErrors);
+  });
+
+  test('debounced semantic validation appears after typing stops in the app editor', async ({ page }) => {
+    const { appPage, pageErrors } = await openApp(page);
+
+    await appPage.testDataPanel.expand();
+    await appPage.testDataPanel.expectExpanded();
+
+    await appPage.testDataPanel.addSchemaRow();
+    await expect.poll(async () => appPage.testDataPanel.getSchemaRowCount()).toBe(1);
+    await appPage.testDataPanel.setSchemaCell(0, 'columnName', 'Name');
+    await appPage.testDataPanel.setSchemaTypeValue(0, 'person.fullName');
+
+    const paramsInput = appPage.testDataPanel.page
+      .locator('#testDataSchemaRows .generator-schema-row')
+      .first()
+      .locator('input[data-field="params"]');
+    await paramsInput.fill('(10)');
+
+    await expect
+      .poll(
+        async () =>
+          await appPage.testDataPanel.page
+            .locator('#testDataSchemaRows .generator-schema-row')
+            .first()
+            .locator('.generator-schema-row-validation')
+            .textContent(),
+        { timeout: 2500 }
+      )
+      .toContain('invalid domain params');
+
+    expectNoPageErrors(pageErrors);
+  });
+
+  test('row validation clears when name editing blurs into the next field in the app editor', async ({ page }) => {
+    const { appPage, pageErrors } = await openApp(page);
+
+    await appPage.testDataPanel.expand();
+    await appPage.testDataPanel.expectExpanded();
+
+    await appPage.testDataPanel.addSchemaRow();
+    await expect.poll(async () => appPage.testDataPanel.getSchemaRowCount()).toBe(1);
+    const row = appPage.testDataPanel.page.locator('#testDataSchemaRows .generator-schema-row').first();
+    await appPage.testDataPanel.setSchemaTypeValue(0, 'literal');
+    await appPage.testDataPanel.setSchemaCell(0, 'value', 'Active');
+    await appPage.testDataPanel.clickGenerate();
+    await expect(row.locator('.generator-schema-row-validation')).toContainText('column name is required');
+
+    const nameInput = row.locator('input[data-field="name"]');
+    const valueInput = row.locator('input[data-field="value"]');
+    await nameInput.fill('Status');
+    await valueInput.click();
+
+    await expect(row.locator('.generator-schema-row-validation')).toHaveCount(0);
+    expectNoPageErrors(pageErrors);
+  });
+
+  test('domain params without brackets are normalized and preserved in the app editor', async ({ page }) => {
+    const { appPage, pageErrors } = await openApp(page);
+
+    await appPage.testDataPanel.expand();
+    await appPage.testDataPanel.expectExpanded();
+
+    await appPage.testDataPanel.addSchemaRow();
+    await expect.poll(async () => appPage.testDataPanel.getSchemaRowCount()).toBe(1);
+    await appPage.testDataPanel.setSchemaCell(0, 'columnName', 'Phone');
+    await appPage.testDataPanel.setSchemaTypeValue(0, 'phone.number');
+    await appPage.testDataPanel.setSchemaCell(0, 'params', 'style=13');
+
+    await appPage.testDataPanel.setSchemaTextMode(true);
+    await expect.poll(async () => appPage.testDataPanel.getSchemaText()).toContain('phone.number(style=13)');
+    await appPage.testDataPanel.setSchemaTextMode(false);
+
+    await expect.poll(async () => appPage.testDataPanel.getSchemaCell(0, 'type')).toBe('phone.number');
+    await expect
+      .poll(async () =>
+        appPage.testDataPanel.page
+          .locator('#testDataSchemaRows .generator-schema-row')
+          .first()
+          .locator('select[data-field="sourceType"]')
+          .inputValue()
+      )
+      .toBe('domain');
+    await expect.poll(async () => appPage.testDataPanel.getSchemaCell(0, 'params')).toBe('(style=13)');
+
+    expectNoPageErrors(pageErrors);
+  });
+
   test('Schema grid edits after initial sync are reflected in the text schema', async ({ page }) => {
     const { appPage, pageErrors } = await openApp(page);
 
@@ -75,6 +241,27 @@ test.describe('7. Test Data Generation', () => {
 
     await expect.poll(async () => appPage.testDataPanel.getSchemaText()).toContain('External Code');
     await expect.poll(async () => appPage.testDataPanel.getSchemaText()).toContain('literal(X-001)');
+    expectNoPageErrors(pageErrors);
+  });
+
+  test('switching enum rows to domain datatype.enum preserves the enum params in the app editor', async ({ page }) => {
+    const { appPage, pageErrors } = await openApp(page);
+
+    await appPage.testDataPanel.expand();
+    await appPage.testDataPanel.expectExpanded();
+
+    await appPage.testDataPanel.addSchemaRow();
+    await expect.poll(async () => appPage.testDataPanel.getSchemaRowCount()).toBe(1);
+    await appPage.testDataPanel.setSchemaCell(0, 'columnName', 'Status');
+    await appPage.testDataPanel.setSchemaTypeValue(0, 'enum', { assertSchemaTextIncludesType: false });
+    await appPage.testDataPanel.setSchemaCell(0, 'value', 'active,inactive,pending');
+
+    await appPage.testDataPanel.setSchemaTypeValue(0, 'datatype.enum', { assertSchemaTextIncludesType: false });
+
+    await expect.poll(async () => appPage.testDataPanel.getSchemaCell(0, 'type')).toBe('datatype.enum');
+    await expect.poll(async () => appPage.testDataPanel.getSchemaCell(0, 'value')).toBe('active,inactive,pending');
+    await expect.poll(async () => appPage.testDataPanel.getSchemaText()).toContain('enum(active,inactive,pending)');
+
     expectNoPageErrors(pageErrors);
   });
 

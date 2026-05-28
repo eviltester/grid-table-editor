@@ -54,20 +54,10 @@ describe('app test-data focused generation flows', () => {
   test('pairwise generation is only visible for eligible schema and succeeds when shown', async () => {
     expect(harness.getPairwiseButton().style.display).toBe('none');
 
-    await harness.addColumn();
-    await harness.fillGridRow(0, {
-      name: 'Status',
-      sourceType: 'enum',
-      value: 'enum(active,inactive,pending)',
-    });
+    await harness.setSchemaText('Status\nenum(active,inactive,pending)');
     expect(harness.getPairwiseButton().style.display).toBe('none');
 
-    await harness.addColumn();
-    await harness.fillGridRow(1, {
-      name: 'Priority',
-      sourceType: 'enum',
-      value: 'enum(high,medium,low)',
-    });
+    await harness.setSchemaText('Status\nenum(active,inactive,pending)\nPriority\nenum(high,medium,low)');
 
     await waitFor(() => expect(harness.getPairwiseButton().style.display).not.toBe('none'));
     await harness.clickGeneratePairwise();

@@ -40,6 +40,7 @@ function bindDataGeneratorPageEvents({ page }) {
   const schemaRowsContainer = page.documentObj.getElementById('generatorSchemaRows');
   schemaRowsContainer?.addEventListener('input', (event) => page.handleRowInputChange(event));
   schemaRowsContainer?.addEventListener('change', (event) => page.handleRowInputChange(event));
+  schemaRowsContainer?.addEventListener('focusout', (event) => page.handleRowFocusOut(event));
   schemaRowsContainer?.addEventListener('click', (event) => page.handleRowButtonClick(event));
 }
 

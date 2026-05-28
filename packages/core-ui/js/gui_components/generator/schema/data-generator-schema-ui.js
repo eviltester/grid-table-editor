@@ -15,6 +15,7 @@ import {
   normaliseDomainCommand,
   normaliseSourceType,
 } from '../../shared/schema-row-rule-mapper.js';
+import { applySchemaSourceTypeChange } from '../../shared/test-data/schema/schema-row-mapper.js';
 
 function refreshHelpHints(documentObj) {
   const windowObj = documentObj?.defaultView || globalThis.window;
@@ -122,9 +123,16 @@ function renderGeneratorSchemaRows({
     const isFakerSource = normalisedSourceType === SOURCE_TYPE_FAKER;
     const isDomainSource = normalisedSourceType === SOURCE_TYPE_DOMAIN;
     const isCommandSource = isFakerSource || isDomainSource;
+    const validationIssues = Array.isArray(row?.validation?.issues) ? row.validation.issues : [];
+    const validationMessage = String(row?.validation?.message || '').trim();
+    const hasNameValidationError = validationIssues.some((issue) => issue?.field === 'name');
+    const hasCommandValidationError = validationIssues.some((issue) => issue?.field === 'command');
+    const hasParamsValidationError = validationIssues.some((issue) => issue?.field === 'params');
     const schemaHelp = getSchemaHelpData(normalisedSourceType, row.command);
     const rowElem = documentObj.createElement('div');
-    rowElem.className = `generator-schema-row ${isCommandSource ? 'generator-schema-row-faker' : 'generator-schema-row-non-faker'}`;
+    rowElem.className = `generator-schema-row ${isCommandSource ? 'generator-schema-row-faker' : 'generator-schema-row-non-faker'} ${
+      row?.validation?.valid === false ? 'generator-schema-row-invalid' : ''
+    }`;
     rowElem.setAttribute('data-row-id', row.id);
     rowElem.innerHTML = `
                 <div class="generator-row-actions">
@@ -133,8 +141,8 @@ function renderGeneratorSchemaRows({
                     <button class="icon-button" data-action="up" data-row-id="${row.id}" title="Move up" ${index === 0 ? 'disabled' : ''}>&uarr;</button>
                     <button class="icon-button" data-action="down" data-row-id="${row.id}" title="Move down" ${index === schemaRows.length - 1 ? 'disabled' : ''}>&darr;</button>
                 </div>
-                <input type="text" data-field="name" placeholder="Column Name" value="${escapeHtml(row.name)}">
-                <select data-field="sourceType">
+                <input type="text" data-field="name" class="${hasNameValidationError ? 'generator-schema-field-invalid' : ''}" placeholder="Column Name" value="${escapeHtml(row.name)}">
+                <select data-field="sourceType" class="${hasCommandValidationError ? 'generator-schema-field-invalid' : ''}">
                     <option value="${SOURCE_TYPE_ENUM}" ${normalisedSourceType === SOURCE_TYPE_ENUM ? 'selected' : ''}>enum</option>
                     <option value="${SOURCE_TYPE_LITERAL}" ${normalisedSourceType === SOURCE_TYPE_LITERAL ? 'selected' : ''}>literal</option>
                     <option value="${SOURCE_TYPE_REGEX}" ${normalisedSourceType === SOURCE_TYPE_REGEX ? 'selected' : ''}>regex</option>
@@ -144,7 +152,7 @@ function renderGeneratorSchemaRows({
                 ${
                   isCommandSource
                     ? `<div class="generator-command-picker-control">
-                        <button type="button" data-action="pick-command" data-row-id="${row.id}" class="generator-command-picker-button">${escapeHtml(
+                        <button type="button" data-action="pick-command" data-row-id="${row.id}" class="generator-command-picker-button ${hasCommandValidationError ? 'generator-schema-field-invalid' : ''}">${escapeHtml(
                           row.command || (isDomainSource ? 'Select domain command' : 'Select faker command')
                         )}</button>
                         <select data-field="command" class="generator-command-picker-shadow-select">
@@ -171,8 +179,13 @@ function renderGeneratorSchemaRows({
                 ></a>
                 ${
                   isCommandSource
-                    ? `<input type="text" data-field="params" placeholder="Params e.g. (10)" value="${escapeHtml(row.params)}">`
+                    ? `<input type="text" data-field="params" class="${hasParamsValidationError ? 'generator-schema-field-invalid' : ''}" placeholder="Params e.g. (10)" value="${escapeHtml(row.params)}">`
                     : `<input type="text" data-field="value" placeholder="Value / Regex" value="${escapeHtml(row.value)}">`
+                }
+                ${
+                  validationMessage
+                    ? `<div class="generator-schema-row-validation" role="status">${escapeHtml(validationMessage)}</div>`
+                    : ''
                 }
             `;
 
@@ -210,16 +223,20 @@ function handleGeneratorRowInputChange({
     return;
   }
 
-  const updatedRow = schemaSession.updateRowAtIndex(index, (currentRow) => ({
-    ...currentRow,
-    [fieldName]: event.target.value,
-  }));
+  const updatedRow = schemaSession.updateRowAtIndex(index, (currentRow) => {
+    if (fieldName === 'sourceType') {
+      return applySchemaSourceTypeChange(currentRow, event.target.value);
+    }
+    return {
+      ...currentRow,
+      [fieldName]: event.target.value,
+    };
+  });
   if (!updatedRow) {
     return;
   }
 
   if (fieldName === 'sourceType') {
-    updatedRow.sourceType = normaliseSourceType(updatedRow.sourceType);
     renderSchemaRows();
     return;
   }

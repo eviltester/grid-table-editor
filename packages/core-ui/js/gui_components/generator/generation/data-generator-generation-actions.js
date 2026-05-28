@@ -47,7 +47,7 @@ function createConfiguredGeneratorForPage({
   faker,
   RandExp,
 }) {
-  const parsed = syncSchemaRowsFromTextMode({ showErrors: false });
+  const parsed = syncSchemaRowsFromTextMode({ showErrors: false, applySemanticValidation: false });
   if (parsed.errors?.length > 0) {
     return { errors: parsed.errors };
   }
@@ -133,14 +133,14 @@ function updateGeneratorPairwiseButtonVisibility({ documentObj, syncSchemaRowsFr
     return;
   }
 
-  const parsed = syncSchemaRowsFromTextMode({ showErrors: false });
+  const parsed = syncSchemaRowsFromTextMode({ showErrors: false, applySemanticValidation: false });
   const { errors, rows } = validateSchemaRows(parsed.rows || []);
   buttonWrapper.style.display =
     !parsed.errors?.length && !errors.length && isPairwiseEligibleForSchemaRows(rows) ? 'inline-flex' : 'none';
 }
 
 function countGeneratorEnumColumns({ syncSchemaRowsFromTextMode, validateSchemaRows }) {
-  const parsed = syncSchemaRowsFromTextMode({ showErrors: false });
+  const parsed = syncSchemaRowsFromTextMode({ showErrors: false, applySemanticValidation: false });
   if (parsed.errors?.length > 0) {
     return 0;
   }

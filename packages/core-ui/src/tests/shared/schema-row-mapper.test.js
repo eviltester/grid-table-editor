@@ -2,6 +2,9 @@ import {
   mapDataRuleToSchemaRow,
   mapDataRuleToGridRow,
   mapGridRowToSchemaRow,
+  preservePreviousMethodLikeSourceType,
+  applySchemaSourceTypeChange,
+  applySchemaCommandSelection,
 } from '../../../js/gui_components/shared/test-data/schema/schema-row-mapper.js';
 
 describe('schema-row-mapper', () => {
@@ -99,6 +102,103 @@ describe('schema-row-mapper', () => {
       sourceType: 'domain',
       command: 'datatype.enum',
       params: 'active,inactive,pending',
+    });
+  });
+
+  test('preserves previous domain type for invalid method-like text rules', () => {
+    const preservedRow = preservePreviousMethodLikeSourceType({
+      row: {
+        name: 'Name',
+        sourceType: 'regex',
+        command: '',
+        params: '',
+        value: 'person.fullNam',
+      },
+      previousRow: {
+        name: 'Name',
+        sourceType: 'domain',
+        command: 'person.fullName',
+        params: '',
+      },
+      rawRuleSpec: 'person.fullNam',
+    });
+
+    expect(preservedRow).toMatchObject({
+      name: 'Name',
+      sourceType: 'domain',
+      command: 'person.fullNam',
+      params: '',
+      value: '',
+    });
+  });
+
+  test('preserves previous faker type and params for invalid method-like text rules', () => {
+    const preservedRow = preservePreviousMethodLikeSourceType({
+      row: {
+        name: 'Value',
+        sourceType: 'regex',
+        command: '',
+        params: '',
+        value: 'helpers.arrayElemnt(["A","B"])',
+      },
+      previousRow: {
+        name: 'Value',
+        sourceType: 'faker',
+        command: 'helpers.arrayElement',
+        params: '(["A","B"])',
+      },
+      rawRuleSpec: 'helpers.arrayElemnt(["A","B"])',
+    });
+
+    expect(preservedRow).toMatchObject({
+      name: 'Value',
+      sourceType: 'faker',
+      command: 'helpers.arrayElemnt',
+      params: '(["A","B"])',
+      value: '',
+    });
+  });
+
+  test('migrates datatype.enum params back into value when switching to enum source type', () => {
+    const nextRow = applySchemaSourceTypeChange(
+      {
+        name: 'Status',
+        sourceType: 'domain',
+        command: 'datatype.enum',
+        params: 'active,inactive,pending',
+        value: '',
+      },
+      'enum'
+    );
+
+    expect(nextRow).toMatchObject({
+      sourceType: 'enum',
+      command: 'datatype.enum',
+      params: 'active,inactive,pending',
+      value: 'active,inactive,pending',
+    });
+  });
+
+  test('migrates enum value into datatype.enum params when command is selected', () => {
+    const nextRow = applySchemaCommandSelection(
+      {
+        name: 'Status',
+        sourceType: 'domain',
+        command: '',
+        params: '',
+        value: 'active,inactive,pending',
+      },
+      {
+        sourceType: 'domain',
+        command: 'datatype.enum',
+      }
+    );
+
+    expect(nextRow).toMatchObject({
+      sourceType: 'domain',
+      command: 'datatype.enum',
+      params: 'active,inactive,pending',
+      value: 'active,inactive,pending',
     });
   });
 });

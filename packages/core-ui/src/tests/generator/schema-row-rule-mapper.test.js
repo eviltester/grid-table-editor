@@ -7,6 +7,7 @@ import {
   normaliseSourceType,
   normaliseFakerCommand,
   normaliseDomainCommand,
+  normaliseCommandParams,
   buildRuleSpecFromSchemaRow,
   extractLiteralValueFromRuleSpec,
   extractRegexValueFromRuleSpec,
@@ -40,9 +41,18 @@ describe('schema-row-rule-mapper', () => {
     expect(normaliseDomainCommand(' number.int ')).toBe('number.int');
   });
 
+  test('normaliseCommandParams wraps unbracketed params and preserves bracketed params', () => {
+    expect(normaliseCommandParams('style=13')).toBe('(style=13)');
+    expect(normaliseCommandParams('(style=13)')).toBe('(style=13)');
+    expect(normaliseCommandParams('')).toBe('');
+  });
+
   test('buildRuleSpecFromSchemaRow handles faker and domain rows', () => {
     expect(buildRuleSpecFromSchemaRow({ sourceType: 'faker', command: 'faker.person.firstName', params: '()' })).toBe(
       'person.firstName()'
+    );
+    expect(buildRuleSpecFromSchemaRow({ sourceType: 'domain', command: 'phone.number', params: 'style=13' })).toBe(
+      'phone.number(style=13)'
     );
     expect(buildRuleSpecFromSchemaRow({ sourceType: 'domain', command: 'number.int', params: '(1,10)' })).toBe(
       'number.int(1,10)'

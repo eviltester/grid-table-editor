@@ -9,6 +9,10 @@ function extractFakerCommandAndParams(ruleSpec, { normaliseFakerCommand, fakerCo
     ? normaliseFakerCommand(String(ruleSpec ?? '').trim())
     : String(ruleSpec ?? '').trim();
 
+  if (!normalisedSpec) {
+    return { command: '', params: '' };
+  }
+
   const commands = Array.isArray(fakerCommandsLongestFirst) ? fakerCommandsLongestFirst : [];
   for (const command of commands) {
     if (normalisedSpec === command) {
@@ -22,7 +26,15 @@ function extractFakerCommandAndParams(ruleSpec, { normaliseFakerCommand, fakerCo
     }
   }
 
-  return { command: '', params: normalisedSpec };
+  const openParenIndex = normalisedSpec.indexOf('(');
+  if (openParenIndex > 0) {
+    return {
+      command: normalisedSpec.slice(0, openParenIndex).trim(),
+      params: normalisedSpec.slice(openParenIndex),
+    };
+  }
+
+  return { command: normalisedSpec, params: '' };
 }
 
 function extractDomainCommandAndParams(
@@ -67,7 +79,14 @@ function extractDomainCommandAndParams(
     }
   }
 
-  return { command: '', params: fullRule };
+  if (openParenIndex > 0) {
+    return {
+      command: fullRule.slice(0, openParenIndex).trim(),
+      params: fullRule.slice(openParenIndex),
+    };
+  }
+
+  return { command: fullRule, params: '' };
 }
 
 export { extractFakerCommandAndParams, extractDomainCommandAndParams };

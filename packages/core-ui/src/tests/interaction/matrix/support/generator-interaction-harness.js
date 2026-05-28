@@ -62,6 +62,14 @@ function setInputValue(element, value) {
   element.blur();
 }
 
+function setSelectValue(element, value) {
+  element.focus();
+  element.value = value;
+  fireEvent.input(element, { target: { value } });
+  fireEvent.change(element, { target: { value } });
+  element.blur();
+}
+
 function clickElement(element) {
   fireEvent.click(element);
 }
@@ -75,16 +83,18 @@ function fillGeneratorRow(rowIndex, row) {
   let rowScope = within(rowElement);
 
   setInputValue(rowScope.getByPlaceholderText('Column Name'), row.name);
+  rowElement = getGeneratorRow(rowIndex);
+  rowScope = within(rowElement);
 
   const sourceSelect = rowElement.querySelector('[data-field="sourceType"]');
-  setInputValue(sourceSelect, row.sourceType);
+  setSelectValue(sourceSelect, row.sourceType);
 
   rowElement = getGeneratorRow(rowIndex);
   rowScope = within(rowElement);
 
   if (row.sourceType === 'faker' || row.sourceType === 'domain') {
-    const commandSelect = rowElement.querySelectorAll('select')[1];
-    setInputValue(commandSelect, row.command);
+    const commandSelect = rowElement.querySelector('[data-field="command"]');
+    setSelectValue(commandSelect, row.command);
 
     rowElement = getGeneratorRow(rowIndex);
     rowScope = within(rowElement);
@@ -110,6 +120,7 @@ function createGeneratorInteractionHarness() {
   let page = null;
 
   function reset() {
+    page?.destroy?.();
     document.getElementById('app').innerHTML = '';
     CapturingDownload.reset();
     page = new DataGeneratorPage({
@@ -211,7 +222,10 @@ function createGeneratorInteractionHarness() {
 
   return {
     runScenario,
-    cleanup: () => cleanupDomGlobals(dom),
+    cleanup: () => {
+      page?.destroy?.();
+      cleanupDomGlobals(dom);
+    },
   };
 }
 

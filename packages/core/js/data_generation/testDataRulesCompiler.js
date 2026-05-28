@@ -91,6 +91,13 @@ export class TestDataRulesCompiler {
             rule.type = 'domain';
             return;
           }
+          if (domainValidator.lastParsed?.recognized === true) {
+            this.compilationReportLines.push(
+              `${rule.name} resolves to domain keyword '${domainValidator.lastParsed.keyword}' but has invalid arguments: ${domainValidator.getValidationError()}`
+            );
+            rule.type = 'domain';
+            return;
+          }
           this.compilationReportLines.push(`${rule.name} is not a 'domain': ${domainValidator.getValidationError()}`);
 
           // is it a faker function?

@@ -7,13 +7,22 @@
 
 import { schemaErrorsToText } from '../../../shared/test-data/schema/index.js';
 import {
-  createConfiguredGeneratorFromSchemaText,
+  createConfiguredGeneratorFromSchemaRows,
   createPairwiseDataTable,
-  isPairwiseEligibleForDataRules,
+  isPairwiseEligibleForSchemaRows,
 } from '../../../shared/test-data/generation/index.js';
+import {
+  SOURCE_TYPE_FAKER,
+  SOURCE_TYPE_DOMAIN,
+  SOURCE_TYPE_LITERAL,
+  SOURCE_TYPE_ENUM,
+  SOURCE_TYPE_REGEX,
+  buildRuleSpecFromSchemaRow,
+  extractLiteralValueFromRuleSpec,
+  extractRegexValueFromRuleSpec,
+} from '../../../shared/schema-row-rule-mapper.js';
 
 function createTestDataGenerationService({
-  schemaTextToDataRules,
   TestDataGeneratorClass,
   PairwiseTestDataGeneratorClass,
   GenericDataTableClass,
@@ -21,6 +30,7 @@ function createTestDataGenerationService({
   normaliseCount,
   createTableFromGenerator,
   createAmendedTable,
+  schemaRowsToSpec,
   faker,
   RandExp,
   debouncer,
@@ -28,24 +38,40 @@ function createTestDataGenerationService({
   setTestDataStatus,
   showSchemaError,
   yieldToUi,
-  getSchemaText,
+  validateCurrentSchemaRows,
   getImporter,
   getTextPreviewRenderer,
   getMainGridExtras,
   getGenerationMode,
 }) {
-  function createGeneratorFromDataRules() {
-    return createConfiguredGeneratorFromSchemaText({
-      schemaTextToDataRules,
-      schemaText: getSchemaText(),
+  function getCurrentSchemaRowValidation(options) {
+    return validateCurrentSchemaRows?.(options) || { errors: [], rows: [] };
+  }
+
+  function createGeneratorFromSchemaRows(schemaRows) {
+    return createConfiguredGeneratorFromSchemaRows({
+      schemaRows,
+      validateSchemaRows: () => ({ errors: [], rows: schemaRows }),
+      schemaRowsToSpec,
       TestDataGeneratorClass,
       faker,
       RandExp,
+      buildRuleSpecFromSchemaRow,
+      extractLiteralValueFromRuleSpec,
+      extractRegexValueFromRuleSpec,
+      SOURCE_TYPE_FAKER,
+      SOURCE_TYPE_DOMAIN,
+      SOURCE_TYPE_LITERAL,
+      SOURCE_TYPE_ENUM,
+      SOURCE_TYPE_REGEX,
     });
   }
 
-  function getRulesParserFromTextArea() {
-    const parseResult = createGeneratorFromDataRules();
+  function getRulesParserFromTextArea(rowValidation = getCurrentSchemaRowValidation({ syncFromText: false })) {
+    if (rowValidation.errors.length > 0) {
+      return { generator: null, errors: rowValidation.errors };
+    }
+    const parseResult = createGeneratorFromSchemaRows(rowValidation.rows || []);
     return { generator: parseResult.generator, errors: parseResult.errors };
   }
 
@@ -64,13 +90,12 @@ function createTestDataGenerationService({
   }
 
   function updatePairwiseButtonVisibility() {
-    const { generator, errors } = getRulesParserFromTextArea();
-    if (errors.length > 0 || !generator) {
+    const rowValidation = getCurrentSchemaRowValidation({ syncFromText: false });
+    if (rowValidation.errors.length > 0) {
       hidePairwiseButton();
       return;
     }
-
-    if (isPairwiseEligibleForDataRules(generator.testDataRules())) {
+    if (isPairwiseEligibleForSchemaRows(rowValidation.rows || [])) {
       showPairwiseButton();
     } else {
       hidePairwiseButton();
@@ -87,7 +112,15 @@ function createTestDataGenerationService({
     }
 
     try {
-      const { generator, errors } = getRulesParserFromTextArea();
+      const rowValidation = getCurrentSchemaRowValidation();
+      if (rowValidation.errors.length > 0) {
+        const errorMessages = schemaErrorsToText(rowValidation.errors);
+        showSchemaError(errorMessages);
+        setTestDataStatus('Schema validation failed.', false);
+        return;
+      }
+
+      const { generator, errors } = getRulesParserFromTextArea(rowValidation);
 
       if (errors.length > 0 || !generator) {
         const errorMessages = schemaErrorsToText(errors);
@@ -97,7 +130,7 @@ function createTestDataGenerationService({
         return;
       }
 
-      if (!isPairwiseEligibleForDataRules(generator.testDataRules())) {
+      if (!isPairwiseEligibleForSchemaRows(rowValidation.rows || [])) {
         showSchemaError('Pairwise generation requires at least 2 enum columns.');
         setTestDataStatus('Insufficient enum columns.', false);
         return;
@@ -153,8 +186,16 @@ function createTestDataGenerationService({
       const desiredRowCountParsed = Number.parseInt(desiredRowCountRaw, 10);
       const desiredRowCount = normaliseCount(desiredRowCountRaw);
       const generationMode = getGenerationMode();
+      const rowValidation = getCurrentSchemaRowValidation();
 
-      const { generator, errors } = getRulesParserFromTextArea();
+      if (rowValidation.errors.length > 0) {
+        const errorMessages = schemaErrorsToText(rowValidation.errors);
+        showSchemaError(errorMessages);
+        setTestDataStatus('Schema validation failed.', false);
+        return;
+      }
+
+      const { generator, errors } = getRulesParserFromTextArea(rowValidation);
 
       if (errors.length > 0 || !generator) {
         const errorMessages = schemaErrorsToText(errors);

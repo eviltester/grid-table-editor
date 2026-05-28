@@ -32,6 +32,20 @@ function normaliseDomainCommand(commandValue) {
   return String(commandValue || '').trim();
 }
 
+function normaliseCommandParams(paramsValue, { allowUnwrapped = false } = {}) {
+  const params = String(paramsValue ?? '').trim();
+  if (params.length === 0) {
+    return '';
+  }
+  if (allowUnwrapped) {
+    return params;
+  }
+  if (params.startsWith('(') && params.endsWith(')')) {
+    return params;
+  }
+  return `(${params})`;
+}
+
 function buildEnumRuleSpec(enumInput) {
   const enumValue = String(enumInput ?? '').trim();
   if (enumValue.length === 0) {
@@ -53,12 +67,14 @@ function buildRuleSpecFromSchemaRow(row) {
   const sourceType = normaliseSourceType(row?.sourceType);
   if (sourceType === SOURCE_TYPE_FAKER) {
     const command = normaliseFakerCommand(row?.command);
-    const params = String(row?.params ?? '').trim();
+    const params = normaliseCommandParams(row?.params);
     return `${command}${params}`;
   }
   if (sourceType === SOURCE_TYPE_DOMAIN) {
     const command = normaliseDomainCommand(row?.command);
-    const params = String(row?.params ?? '').trim();
+    const params = normaliseCommandParams(row?.params, {
+      allowUnwrapped: command.toLowerCase() === 'datatype.enum',
+    });
     if (command.toLowerCase() === 'datatype.enum') {
       return buildEnumRuleSpec(params);
     }
@@ -165,6 +181,7 @@ export {
   normaliseSourceType,
   normaliseFakerCommand,
   normaliseDomainCommand,
+  normaliseCommandParams,
   buildRuleSpecFromSchemaRow,
   extractLiteralValueFromRuleSpec,
   extractRegexValueFromRuleSpec,

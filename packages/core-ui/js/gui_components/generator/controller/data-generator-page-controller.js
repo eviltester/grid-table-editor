@@ -20,10 +20,14 @@ import {
   schemaRowsToSpec as schemaRowsToSpecCore,
   schemaRowsToSpecWithTokens as schemaRowsToSpecWithTokensCore,
   validateSchemaRows as validateSchemaRowsCore,
+  createSchemaRowValidation,
   mapDataRuleToSchemaRow,
+  applySchemaCommandSelection,
+  getSchemaRowSemanticValidationIssues,
   schemaErrorsToText,
   TEST_DATA_GRID_SAMPLE_SCHEMA_TEXT as GENERATOR_DEFAULT_EXAMPLE_SCHEMA_TEXT,
 } from '../../shared/test-data/schema/index.js';
+import { captureActiveFieldState, restoreActiveFieldState } from '../../shared/test-data/schema/schema-focus-state.js';
 import {
   buildSchemaHelpModel,
   renderSchemaHelpHtml,
@@ -53,6 +57,9 @@ import {
   updateSchemaEditModeView,
   insertExampleSchema,
   renderGeneratorSchemaRows,
+  clearSchemaRowDragClasses,
+  getSchemaRowDropInstruction,
+  applySchemaRowDropInstructionIndicator,
   handleGeneratorRowInputChange,
   handleGeneratorRowButtonClick,
 } from '../schema/index.js';
@@ -138,6 +145,8 @@ class DataGeneratorPage {
     this.statusPresenter = undefined;
     this.schemaErrorDisplay = undefined;
     this.lastPreviewDataTable = undefined;
+    this.semanticValidationTimers = new Map();
+    this.dragState = null;
   }
 
   get schemaRows() {
@@ -188,6 +197,7 @@ class DataGeneratorPage {
       params: '',
       value: '',
       comments: '',
+      validation: createSchemaRowValidation(),
     };
   }
 
@@ -341,6 +351,7 @@ class DataGeneratorPage {
 
   toggleSchemaEditMode() {
     hideVisibleHelpTooltips({ documentObj: this.documentObj });
+    this.clearAllSemanticValidationTimers();
     if (this.isTextMode) {
       const textArea = this.documentObj.getElementById('generatorSchemaText');
       const toggleResult = this.schemaSession.toggleMode({
@@ -353,7 +364,7 @@ class DataGeneratorPage {
       }
       this.clearSchemaErrorStatus();
       this.updateSchemaEditModeView();
-      this.renderSchemaRows();
+      this.applySemanticValidationForAllRows();
       return;
     }
 
@@ -369,6 +380,84 @@ class DataGeneratorPage {
 
   clearSchemaErrorStatus() {
     this.schemaErrorDisplay?.clear();
+  }
+
+  revalidateSchemaRows() {
+    if (this.schemaRows.length === 0) {
+      return { rows: [], errors: [] };
+    }
+    const validation = validateSchemaRows(this.schemaRows);
+    this.schemaRows = validation.rows;
+    return validation;
+  }
+
+  clearSemanticValidationTimer(rowId) {
+    const timerId = this.semanticValidationTimers.get(rowId);
+    if (timerId) {
+      globalThis.clearTimeout(timerId);
+      this.semanticValidationTimers.delete(rowId);
+    }
+  }
+
+  clearAllSemanticValidationTimers() {
+    [...this.semanticValidationTimers.keys()].forEach((rowId) => this.clearSemanticValidationTimer(rowId));
+  }
+
+  destroy() {
+    this.clearAllSemanticValidationTimers();
+    this.clearDragState();
+  }
+
+  clearDragState() {
+    this.dragState = null;
+    clearSchemaRowDragClasses(this.documentObj);
+  }
+
+  applySemanticValidationForRow(rowId) {
+    this.clearSemanticValidationTimer(rowId);
+    const activeFieldState = captureActiveFieldState(this.documentObj);
+    const rowIndex = this.schemaRows.findIndex((row) => row.id === rowId);
+    if (rowIndex < 0) {
+      return;
+    }
+    const semanticValidationIssues = getSchemaRowSemanticValidationIssues(this.schemaRows[rowIndex], rowIndex, {
+      schemaTextToDataRules,
+      faker: this.faker,
+      RandExp: this.RandExp,
+    });
+    this.schemaSession.updateRowAtIndex(rowIndex, (row) => ({
+      ...row,
+      semanticValidationIssues,
+    }));
+    this.revalidateSchemaRows();
+    this.renderSchemaRowsWithoutPairwiseUpdate();
+    restoreActiveFieldState(this.documentObj, activeFieldState);
+    this.updateAllPairsButtonVisibility();
+  }
+
+  applySemanticValidationForAllRows() {
+    this.clearAllSemanticValidationTimers();
+    this.schemaRows = this.schemaRows.map((row, rowIndex) => ({
+      ...row,
+      semanticValidationIssues: getSchemaRowSemanticValidationIssues(row, rowIndex, {
+        schemaTextToDataRules,
+        faker: this.faker,
+        RandExp: this.RandExp,
+      }),
+    }));
+    this.revalidateSchemaRows();
+    this.renderSchemaRowsWithoutPairwiseUpdate();
+    this.updateAllPairsButtonVisibility();
+  }
+
+  scheduleSemanticValidationForRow(rowId, { immediate = false } = {}) {
+    this.clearSemanticValidationTimer(rowId);
+    if (immediate) {
+      this.applySemanticValidationForRow(rowId);
+      return;
+    }
+    const timerId = globalThis.setTimeout(() => this.applySemanticValidationForRow(rowId), 1000);
+    this.semanticValidationTimers.set(rowId, timerId);
   }
 
   updateSchemaEditModeView() {
@@ -396,6 +485,7 @@ class DataGeneratorPage {
   }
 
   insertExampleSchema() {
+    this.clearAllSemanticValidationTimers();
     insertExampleSchema({
       documentObj: this.documentObj,
       sampleSchemaText: GENERATOR_DEFAULT_EXAMPLE_SCHEMA_TEXT,
@@ -420,7 +510,7 @@ class DataGeneratorPage {
     return this.schemaSession.parseTextToRows(schemaText);
   }
 
-  syncSchemaRowsFromTextMode({ showErrors = false } = {}) {
+  syncSchemaRowsFromTextMode({ showErrors = false, applySemanticValidation = true } = {}) {
     const textArea = this.documentObj.getElementById('generatorSchemaText');
     const parsed = this.schemaSession.syncRowsFromText({
       schemaText: textArea?.value || '',
@@ -432,7 +522,12 @@ class DataGeneratorPage {
       }
       return parsed;
     }
-    return { rows: this.schemaRows, errors: [], tokens: this.schemaTextTokens };
+    this.clearAllSemanticValidationTimers();
+    const validation = this.revalidateSchemaRows();
+    if (applySemanticValidation) {
+      this.applySemanticValidationForAllRows();
+    }
+    return { rows: this.schemaRows, errors: validation.errors || [], tokens: this.schemaTextTokens };
   }
 
   ruleToSchemaRow(rule) {
@@ -442,6 +537,7 @@ class DataGeneratorPage {
   }
 
   renderSchemaRows() {
+    this.revalidateSchemaRows();
     renderGeneratorSchemaRows({
       documentObj: this.documentObj,
       schemaRows: this.schemaRows,
@@ -452,7 +548,22 @@ class DataGeneratorPage {
     });
   }
 
+  renderSchemaRowsWithoutPairwiseUpdate() {
+    this.revalidateSchemaRows();
+    renderGeneratorSchemaRows({
+      documentObj: this.documentObj,
+      schemaRows: this.schemaRows,
+      fakerCommands: this.fakerCommands,
+      getVisibleDomainCommands: (currentCommand) => this.getVisibleDomainCommands(currentCommand),
+      getSchemaHelpData: (sourceType, commandValue) => this.getSchemaHelpData(sourceType, commandValue),
+      updateAllPairsButtonVisibility: () => {},
+    });
+  }
+
   handleRowInputChange(event) {
+    const rowElem = event?.target?.closest?.('.generator-schema-row');
+    const rowId = rowElem?.getAttribute?.('data-row-id');
+    const fieldName = event?.target?.getAttribute?.('data-field');
     handleGeneratorRowInputChange({
       event,
       schemaRows: this.schemaRows,
@@ -460,6 +571,28 @@ class DataGeneratorPage {
       renderSchemaRows: () => this.renderSchemaRows(),
       updateAllPairsButtonVisibility: () => this.updateAllPairsButtonVisibility(),
     });
+    if (rowId && (fieldName === 'name' || fieldName === 'command' || fieldName === 'params' || fieldName === 'value')) {
+      const rowIndex = this.schemaRows.findIndex((row) => row.id === rowId);
+      if (rowIndex >= 0) {
+        this.schemaSession.updateRowAtIndex(rowIndex, (row) => ({
+          ...row,
+          semanticValidationIssues: [],
+        }));
+      }
+      this.scheduleSemanticValidationForRow(rowId);
+    }
+  }
+
+  handleRowFocusOut(event) {
+    const fieldName = event?.target?.getAttribute?.('data-field');
+    if (fieldName !== 'name' && fieldName !== 'command' && fieldName !== 'params' && fieldName !== 'value') {
+      return;
+    }
+    const rowElem = event?.target?.closest?.('.generator-schema-row');
+    const rowId = rowElem?.getAttribute?.('data-row-id');
+    if (rowId) {
+      this.scheduleSemanticValidationForRow(rowId, { immediate: true });
+    }
   }
 
   async handleRowButtonClick(event) {
@@ -511,11 +644,14 @@ class DataGeneratorPage {
               return;
             }
             this.schemaSession.updateRowAtIndex(nextIndex, (currentRow) => ({
-              ...currentRow,
-              sourceType: selected.sourceType || currentRow.sourceType,
-              command: selected.command,
+              ...applySchemaCommandSelection(currentRow, {
+                sourceType: selected.sourceType || currentRow.sourceType,
+                command: selected.command,
+              }),
             }));
+            this.revalidateSchemaRows();
             this.renderSchemaRows();
+            this.scheduleSemanticValidationForRow(rowId, { immediate: true });
           }
         } catch {
           return;
@@ -549,17 +685,94 @@ class DataGeneratorPage {
 
   addRowAfter(index) {
     this.schemaSession.addRowAfterIndex(index);
+    this.revalidateSchemaRows();
     this.renderSchemaRows();
   }
 
   removeRow(index) {
+    const rowId = this.schemaRows[index]?.id;
     this.schemaSession.removeRowAtIndex(index);
+    this.clearSemanticValidationTimer(rowId);
+    this.revalidateSchemaRows();
     this.renderSchemaRows();
   }
 
   moveRow(index, direction) {
     this.schemaSession.moveRowAtIndex(index, direction);
+    this.revalidateSchemaRows();
     this.renderSchemaRows();
+  }
+
+  moveRowToIndex(fromIndex, toIndex) {
+    this.schemaSession.moveRowToIndex(fromIndex, toIndex);
+    this.revalidateSchemaRows();
+    this.renderSchemaRows();
+  }
+
+  handleRowDragStart(event) {
+    const dragHandle = event?.target?.closest?.('[data-action="drag"]');
+    if (!dragHandle) {
+      return;
+    }
+    const rowId = dragHandle.getAttribute('data-row-id');
+    const rowIndex = this.schemaRows.findIndex((row) => row.id === rowId);
+    if (rowIndex < 0) {
+      return;
+    }
+    this.dragState = { rowId, rowIndex };
+    event.dataTransfer?.setData?.('text/plain', rowId);
+    if (event.dataTransfer) {
+      event.dataTransfer.effectAllowed = 'move';
+    }
+    applySchemaRowDropInstructionIndicator({
+      documentObj: this.documentObj,
+      draggedRowId: rowId,
+      dropInstruction: null,
+    });
+  }
+
+  handleRowDragOver(event) {
+    if (!this.dragState?.rowId) {
+      return;
+    }
+    const dropInstruction = getSchemaRowDropInstruction({
+      event,
+      schemaRows: this.schemaRows,
+      draggedRowId: this.dragState.rowId,
+    });
+    if (!dropInstruction) {
+      clearSchemaRowDragClasses(this.documentObj);
+      return;
+    }
+    event.preventDefault();
+    if (event.dataTransfer) {
+      event.dataTransfer.dropEffect = 'move';
+    }
+    applySchemaRowDropInstructionIndicator({
+      documentObj: this.documentObj,
+      draggedRowId: this.dragState.rowId,
+      dropInstruction,
+    });
+  }
+
+  handleRowDrop(event) {
+    if (!this.dragState?.rowId) {
+      return;
+    }
+    const dropInstruction = getSchemaRowDropInstruction({
+      event,
+      schemaRows: this.schemaRows,
+      draggedRowId: this.dragState.rowId,
+    });
+    event.preventDefault();
+    if (dropInstruction && dropInstruction.finalIndex !== dropInstruction.draggedIndex) {
+      this.moveRowToIndex(dropInstruction.draggedIndex, dropInstruction.finalIndex);
+    }
+    this.clearDragState();
+  }
+
+  handleRowDragEnd() {
+    this.clearDragState();
   }
 
   parseRowCount(inputId) {

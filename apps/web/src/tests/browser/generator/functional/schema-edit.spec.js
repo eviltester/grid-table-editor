@@ -61,6 +61,136 @@ test.describe('Generator Schema Editing', () => {
     expectNoPageErrors(pageErrors);
   });
 
+  test('switching enum rows to domain datatype.enum preserves the enum params in the generator editor', async ({
+    page,
+  }) => {
+    const { generatorPage, pageErrors } = await openGenerator(page);
+
+    await generatorPage.schema.setTextMode(false);
+    await generatorPage.schema.setRowName(0, 'Status');
+    await generatorPage.schema.setRowSourceType(0, 'enum');
+    await generatorPage.schema.setRowValue(0, 'active,inactive,pending');
+
+    await generatorPage.schema.editor.setRowTypeValue(0, 'datatype.enum');
+
+    await expect(generatorPage.schema.row(0).locator('[data-action="pick-command"]')).toHaveText('datatype.enum');
+    await expect(generatorPage.schema.row(0).locator('input[data-field="params"]')).toHaveValue(
+      'active,inactive,pending'
+    );
+    await expect.poll(async () => generatorPage.schema.getSchemaText()).toContain('enum(active,inactive,pending)');
+
+    expectNoPageErrors(pageErrors);
+  });
+
+  test('invalid domain command text preserves the domain row type in the generator editor', async ({ page }) => {
+    const { generatorPage, pageErrors } = await openGenerator(page);
+
+    await generatorPage.schema.setSchemaText('Name\nperson.fullName');
+    await generatorPage.schema.setTextMode(false);
+
+    await expect(generatorPage.schema.rows).toHaveCount(1);
+    await expect(generatorPage.schema.row(0).locator('select[data-field="sourceType"]')).toHaveValue('domain');
+    await expect(generatorPage.schema.row(0).locator('[data-action="pick-command"]')).toHaveText('person.fullName');
+
+    await generatorPage.schema.setSchemaText('Name\nperson.fullNam');
+    await generatorPage.schema.setTextMode(false);
+
+    await expect(generatorPage.schema.row(0).locator('select[data-field="sourceType"]')).toHaveValue('domain');
+    await expect(generatorPage.schema.row(0).locator('[data-action="pick-command"]')).toHaveText('person.fullNam');
+    await expect(generatorPage.schema.row(0)).toHaveClass(/generator-schema-row-invalid/);
+    await expect(generatorPage.schema.row(0).locator('.generator-schema-row-validation')).toContainText(
+      'Row 1: unknown domain command "person.fullNam".'
+    );
+
+    await generatorPage.preview.clickPreview();
+    await expect(page.locator('#generatorSchemaErrorText')).toContainText(
+      'Row 1: unknown domain command "person.fullNam".'
+    );
+
+    expectNoPageErrors(pageErrors);
+  });
+
+  test('domain rows with invalid params stay domain after text mode round-trip in the generator editor', async ({
+    page,
+  }) => {
+    const { generatorPage, pageErrors } = await openGenerator(page);
+
+    await generatorPage.schema.setTextMode(false);
+    await generatorPage.schema.setRowName(0, 'Name');
+    await generatorPage.schema.editor.setRowTypeValue(0, 'person.fullName');
+    await generatorPage.schema.editor.setRowField(0, 'params', '(10)');
+
+    await generatorPage.schema.setTextMode(true);
+    await generatorPage.schema.setTextMode(false);
+
+    await expect(generatorPage.schema.row(0).locator('select[data-field="sourceType"]')).toHaveValue('domain');
+    await expect(generatorPage.schema.row(0).locator('[data-action="pick-command"]')).toHaveText('person.fullName');
+    await expect(generatorPage.schema.row(0).locator('input[data-field="params"]')).toHaveValue('(10)');
+    await expect(generatorPage.schema.row(0).locator('.generator-schema-row-validation')).toContainText(
+      'invalid domain params'
+    );
+
+    expectNoPageErrors(pageErrors);
+  });
+
+  test('focus change triggers semantic validation in the generator editor', async ({ page }) => {
+    const { generatorPage, pageErrors } = await openGenerator(page);
+
+    await generatorPage.schema.setTextMode(false);
+    await generatorPage.schema.setRowName(0, 'Name');
+    await generatorPage.schema.editor.setRowTypeValue(0, 'person.fullName');
+
+    const paramsInput = generatorPage.schema.row(0).locator('input[data-field="params"]');
+    await paramsInput.fill('(10)');
+    await generatorPage.schema.row(0).locator('input[data-field="name"]').click();
+
+    await expect(generatorPage.schema.row(0).locator('.generator-schema-row-validation')).toContainText(
+      'invalid domain params',
+      { timeout: 2000 }
+    );
+
+    expectNoPageErrors(pageErrors);
+  });
+
+  test('row validation clears when name editing blurs into the next field in the generator editor', async ({
+    page,
+  }) => {
+    const { generatorPage, pageErrors } = await openGenerator(page);
+
+    const row = generatorPage.page.locator('.generator-schema-row').first();
+    await generatorPage.schema.setRowSourceType(0, 'literal');
+    await generatorPage.schema.setRowValue(0, 'Active');
+    await generatorPage.preview.clickPreview();
+    await expect(row.locator('.generator-schema-row-validation')).toContainText('column name is required');
+
+    const nameInput = row.locator('input[data-field="name"]');
+    const valueInput = row.locator('input[data-field="value"]');
+    await nameInput.fill('Status');
+    await valueInput.click();
+
+    await expect(row.locator('.generator-schema-row-validation')).toHaveCount(0);
+    expectNoPageErrors(pageErrors);
+  });
+
+  test('domain params without brackets are normalized and preserved in the generator editor', async ({ page }) => {
+    const { generatorPage, pageErrors } = await openGenerator(page);
+
+    await generatorPage.schema.setTextMode(false);
+    await generatorPage.schema.setRowName(0, 'Phone');
+    await generatorPage.schema.editor.setRowTypeValue(0, 'phone.number');
+    await generatorPage.schema.editor.setRowField(0, 'params', 'style=13');
+
+    await generatorPage.schema.setTextMode(true);
+    await expect.poll(async () => generatorPage.schema.getSchemaText()).toContain('phone.number(style=13)');
+    await generatorPage.schema.setTextMode(false);
+
+    await expect(generatorPage.schema.row(0).locator('select[data-field="sourceType"]')).toHaveValue('domain');
+    await expect(generatorPage.schema.row(0).locator('[data-action="pick-command"]')).toHaveText('phone.number');
+    await expect(generatorPage.schema.row(0).locator('input[data-field="params"]')).toHaveValue('(style=13)');
+
+    expectNoPageErrors(pageErrors);
+  });
+
   test('schema edit buttons states are correct across top middle and bottom rows', async ({ page }) => {
     const { generatorPage, pageErrors } = await openGenerator(page);
 
@@ -113,6 +243,24 @@ test.describe('Generator Schema Editing', () => {
       'C\nliteral(c)',
       'D\nliteral(d)',
     ]);
+
+    expectNoPageErrors(pageErrors);
+  });
+
+  test('can drag schema rows directly to the top and bottom in the generator editor', async ({ page }) => {
+    const { generatorPage, pageErrors } = await openGenerator(page);
+
+    await generatorPage.schema.setSchemaText('A\nliteral(a)\n\nB\nliteral(b)\n\nC\nliteral(c)\n\nD\nliteral(d)');
+    await generatorPage.schema.setTextMode(false);
+
+    await generatorPage.schema.editor.dragRowToIndex(3, 0, { placement: 'before' });
+    await expect.poll(async () => getSchemaRowNames(generatorPage)).toEqual(['D', 'A', 'B', 'C']);
+
+    await generatorPage.schema.editor.dragRowToIndex(0, 3, { placement: 'after' });
+    await expect.poll(async () => getSchemaRowNames(generatorPage)).toEqual(['A', 'B', 'C', 'D']);
+
+    const schemaText = await generatorPage.schema.getSchemaText();
+    expectOrderedSubstrings(schemaText, ['A\nliteral(a)', 'B\nliteral(b)', 'C\nliteral(c)', 'D\nliteral(d)']);
 
     expectNoPageErrors(pageErrors);
   });

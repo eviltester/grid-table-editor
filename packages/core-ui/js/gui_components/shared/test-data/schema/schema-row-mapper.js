@@ -20,6 +20,7 @@ import {
 import { getKnownFakerCommandsLongestFirst } from '../../faker-commands.js';
 import { getKnownDomainCommandsLongestFirst, getDomainKeywordByCommand } from '../../domain-commands.js';
 import { extractFakerCommandAndParams, extractDomainCommandAndParams } from './command-spec-parser.js';
+import { createSchemaRowValidation } from './schema-row-validation.js';
 
 const FAKER_COMMANDS_LONGEST_FIRST = getKnownFakerCommandsLongestFirst();
 const DOMAIN_COMMANDS_LONGEST_FIRST = getKnownDomainCommandsLongestFirst();
@@ -33,7 +34,126 @@ function createDefaultSchemaRow() {
     command: '',
     params: '',
     value: '',
+    validation: createSchemaRowValidation(),
   };
+}
+
+function looksLikeMethodRuleSpec(ruleSpec) {
+  const spec = String(ruleSpec ?? '').trim();
+  if (!spec) {
+    return false;
+  }
+  if (
+    /^(?:enum|literal|regex|datatype\.enum|datatype\.literal|datatype\.regex|awd\.datatype\.enum|awd\.datatype\.literal|awd\.datatype\.regex)\s*\(/i.test(
+      spec
+    )
+  ) {
+    return false;
+  }
+  return /^[A-Za-z_][\w]*(?:\.[A-Za-z_][\w]*)+(?:\s*\([\s\S]*\))?$/.test(spec);
+}
+
+function preservePreviousMethodLikeSourceType({ row, previousRow, rawRuleSpec }) {
+  const previousSourceType = String(previousRow?.sourceType || '')
+    .trim()
+    .toLowerCase();
+  if (previousSourceType !== SOURCE_TYPE_FAKER && previousSourceType !== SOURCE_TYPE_DOMAIN) {
+    return row;
+  }
+
+  const currentSourceType = String(row?.sourceType || '')
+    .trim()
+    .toLowerCase();
+  if (currentSourceType === previousSourceType) {
+    return row;
+  }
+  if (currentSourceType !== SOURCE_TYPE_REGEX && currentSourceType !== SOURCE_TYPE_LITERAL) {
+    return row;
+  }
+
+  const currentName = String(row?.name ?? '').trim();
+  const previousName = String(previousRow?.name ?? '').trim();
+  if (currentName && previousName && currentName !== previousName) {
+    return row;
+  }
+
+  if (!looksLikeMethodRuleSpec(rawRuleSpec)) {
+    return row;
+  }
+
+  const parts =
+    previousSourceType === SOURCE_TYPE_DOMAIN
+      ? extractDomainCommandAndParams(rawRuleSpec, {
+          normaliseDomainCommand,
+          getDomainKeywordByCommand,
+          domainCommandsLongestFirst: DOMAIN_COMMANDS_LONGEST_FIRST,
+        })
+      : extractFakerCommandAndParams(rawRuleSpec, {
+          normaliseFakerCommand,
+          fakerCommandsLongestFirst: FAKER_COMMANDS_LONGEST_FIRST,
+        });
+
+  return {
+    ...row,
+    sourceType: previousSourceType,
+    command: parts.command,
+    params: parts.params,
+    value: '',
+  };
+}
+
+function applySchemaSourceTypeChange(currentRow, nextSourceType) {
+  const current = currentRow || {};
+  const resolvedNextSourceType = String(nextSourceType || '')
+    .trim()
+    .toLowerCase();
+
+  if (
+    resolvedNextSourceType === SOURCE_TYPE_ENUM &&
+    String(current?.sourceType || '')
+      .trim()
+      .toLowerCase() === SOURCE_TYPE_DOMAIN &&
+    normaliseDomainCommand(current?.command).toLowerCase() === 'datatype.enum' &&
+    String(current?.value ?? '').trim().length === 0 &&
+    String(current?.params ?? '').trim().length > 0
+  ) {
+    return {
+      ...current,
+      sourceType: resolvedNextSourceType,
+      value: String(current.params ?? ''),
+    };
+  }
+
+  return {
+    ...current,
+    sourceType: resolvedNextSourceType,
+  };
+}
+
+function applySchemaCommandSelection(currentRow, { sourceType, command } = {}) {
+  const current = currentRow || {};
+  const resolvedSourceType = String(sourceType || current?.sourceType || '')
+    .trim()
+    .toLowerCase();
+  const resolvedCommand =
+    resolvedSourceType === SOURCE_TYPE_DOMAIN ? normaliseDomainCommand(command) : normaliseFakerCommand(command);
+
+  const nextRow = {
+    ...current,
+    sourceType: resolvedSourceType,
+    command: resolvedCommand,
+  };
+
+  if (
+    resolvedSourceType === SOURCE_TYPE_DOMAIN &&
+    resolvedCommand.toLowerCase() === 'datatype.enum' &&
+    String(nextRow?.params ?? '').trim().length === 0 &&
+    String(nextRow?.value ?? '').trim().length > 0
+  ) {
+    nextRow.params = String(nextRow.value ?? '');
+  }
+
+  return nextRow;
 }
 
 function mapDataRuleToSchemaRow(rule, { createBlankSchemaRow = createDefaultSchemaRow } = {}) {
@@ -152,4 +272,11 @@ function mapGridRowToSchemaRow(
   return { name, sourceType: SOURCE_TYPE_REGEX, value: '' };
 }
 
-export { mapDataRuleToSchemaRow, mapDataRuleToGridRow, mapGridRowToSchemaRow };
+export {
+  mapDataRuleToSchemaRow,
+  mapDataRuleToGridRow,
+  mapGridRowToSchemaRow,
+  preservePreviousMethodLikeSourceType,
+  applySchemaSourceTypeChange,
+  applySchemaCommandSelection,
+};

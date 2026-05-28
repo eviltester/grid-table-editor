@@ -6,8 +6,13 @@
 
 import { mapParsedRulesToRows } from './schema-editor-core.js';
 import { parseSchemaText } from './schema-runtime.js';
+import { preservePreviousMethodLikeSourceType } from './schema-row-mapper.js';
 
-function parseSchemaTextToRows({ schemaTextToDataRules, schemaText, faker, RandExp, mapRuleToRow }) {
+function isRecoverableSchemaParseError(error) {
+  return error?.code === 'compiler_validation_error';
+}
+
+function parseSchemaTextToRows({ schemaTextToDataRules, schemaText, faker, RandExp, mapRuleToRow, previousRows = [] }) {
   const parseResult = parseSchemaText({
     schemaTextToDataRules,
     schemaText,
@@ -16,16 +21,27 @@ function parseSchemaTextToRows({ schemaTextToDataRules, schemaText, faker, RandE
   });
 
   const tokens = Array.isArray(parseResult.schemaTokens) ? parseResult.schemaTokens : [];
-  if (parseResult.errors.length > 0) {
-    return { rows: [], errors: parseResult.errors, tokens };
+  const parseErrors = Array.isArray(parseResult.errors) ? parseResult.errors : [];
+  const blockingErrors = parseErrors.filter((error) => !isRecoverableSchemaParseError(error));
+  if (blockingErrors.length > 0) {
+    return { rows: [], errors: blockingErrors, tokens };
   }
 
+  const parsedRows = mapParsedRulesToRows({
+    dataRules: parseResult.dataRules,
+    schemaTokens: tokens,
+    mapRuleToRow,
+  });
+  const ruleTokens = tokens.filter((token) => token?.kind === 'rule');
+
   return {
-    rows: mapParsedRulesToRows({
-      dataRules: parseResult.dataRules,
-      schemaTokens: tokens,
-      mapRuleToRow,
-    }),
+    rows: parsedRows.map((row, index) =>
+      preservePreviousMethodLikeSourceType({
+        row,
+        previousRow: previousRows[index],
+        rawRuleSpec: ruleTokens[index]?.rule ?? parseResult.dataRules?.[index]?.ruleSpec ?? '',
+      })
+    ),
     errors: [],
     tokens,
   };
@@ -55,6 +71,22 @@ function moveSchemaRow(rows = [], index, direction) {
   }
   const [row] = nextRows.splice(index, 1);
   nextRows.splice(targetIndex, 0, row);
+  return nextRows;
+}
+
+function moveSchemaRowToIndex(rows = [], fromIndex, toIndex) {
+  const nextRows = Array.isArray(rows) ? rows.slice() : [];
+  if (
+    fromIndex < 0 ||
+    toIndex < 0 ||
+    fromIndex >= nextRows.length ||
+    toIndex >= nextRows.length ||
+    fromIndex === toIndex
+  ) {
+    return nextRows;
+  }
+  const [row] = nextRows.splice(fromIndex, 1);
+  nextRows.splice(toIndex, 0, row);
   return nextRows;
 }
 
@@ -144,6 +176,7 @@ function createSchemaEditingSession({
       faker,
       RandExp,
       mapRuleToRow,
+      previousRows: state.rows,
     });
   }
 
@@ -153,7 +186,7 @@ function createSchemaEditingSession({
     }
 
     const parsed = parseTextToRows(schemaText);
-    if (parsed.errors.length > 0) {
+    if (parsed.errors.length > 0 && parsed.rows.length === 0) {
       return parsed;
     }
 
@@ -169,7 +202,7 @@ function createSchemaEditingSession({
   function toggleMode({ schemaText, preserveEmptyRows = true } = {}) {
     if (state.isTextMode) {
       const parsed = parseTextToRows(schemaText);
-      if (parsed.errors.length > 0) {
+      if (parsed.errors.length > 0 && parsed.rows.length === 0) {
         return { ok: false, errors: parsed.errors, rows: parsed.rows, tokens: parsed.tokens || [] };
       }
       state.rows = parsed.rows.length > 0 || !preserveEmptyRows ? parsed.rows : [createBlankSchemaRow()];
@@ -212,6 +245,12 @@ function createSchemaEditingSession({
     return state.rows;
   }
 
+  function moveRowToIndex(fromIndex, toIndex) {
+    state.rows = moveSchemaRowToIndex(state.rows, fromIndex, toIndex);
+    invalidateTokensFromRows();
+    return state.rows;
+  }
+
   function updateRowAtIndex(index, updater) {
     if (index < 0 || index >= state.rows.length) {
       return undefined;
@@ -237,8 +276,16 @@ function createSchemaEditingSession({
     addRowAfterIndex,
     removeRowAtIndex,
     moveRowAtIndex,
+    moveRowToIndex,
     updateRowAtIndex,
   };
 }
 
-export { parseSchemaTextToRows, addSchemaRowAfter, removeSchemaRowAt, moveSchemaRow, createSchemaEditingSession };
+export {
+  parseSchemaTextToRows,
+  addSchemaRowAfter,
+  removeSchemaRowAt,
+  moveSchemaRow,
+  moveSchemaRowToIndex,
+  createSchemaEditingSession,
+};

@@ -43,6 +43,7 @@ function createSchemaGridController({
   fakerCommands = [],
   getVisibleDomainCommandOptions = () => [],
   mapRuleToRow,
+  validateSchemaRows,
 }) {
   let rowIdCounter = 1;
   const schemaEditor = createSharedSchemaEditorController({
@@ -71,6 +72,7 @@ function createSchemaGridController({
     onSchemaError: (message) => schemaTextSyncState?.schemaErrorDisplay?.show?.(message),
     onSchemaClear: () => schemaTextSyncState?.schemaErrorDisplay?.clear?.(),
     onSchemaParseError: () => setTestDataStatus?.('', false),
+    validateSchemaRows,
     updatePairwiseButtonVisibility,
     idMap: {
       generatorSchemaRows: 'testDataSchemaRows',
@@ -86,6 +88,11 @@ function createSchemaGridController({
     const container = documentObj.getElementById('testDataSchemaRows');
     container?.addEventListener('input', schemaEditor.handleInput);
     container?.addEventListener('change', schemaEditor.handleInput);
+    container?.addEventListener('focusout', schemaEditor.handleFocusOut);
+    container?.addEventListener('dragstart', schemaEditor.handleDragStart);
+    container?.addEventListener('dragover', schemaEditor.handleDragOver);
+    container?.addEventListener('drop', schemaEditor.handleDrop);
+    container?.addEventListener('dragend', schemaEditor.handleDragEnd);
     container?.addEventListener('click', (event) => {
       void schemaEditor.handleClick(event);
     });
@@ -106,8 +113,19 @@ function createSchemaGridController({
   }
 
   return {
+    destroy: () => schemaEditor.destroy?.(),
     createTestDataGrid,
     populateGridFromTextSchema: () => schemaEditor.syncFromText({ showErrors: true, force: true }),
+    validateSchemaRows: ({ syncFromText = true } = {}) => {
+      if (!syncFromText) {
+        return schemaEditor.validateRows();
+      }
+      const parsed = schemaEditor.syncFromText({ showErrors: true, force: true });
+      if (parsed?.errors?.length > 0) {
+        return parsed;
+      }
+      return schemaEditor.validateRows();
+    },
     syncSchemaTextFromGridBeforeGenerate: () => schemaEditor.syncTextFromRows(),
     insertSampleSchema: () => schemaEditor.insertSampleSchema(),
   };

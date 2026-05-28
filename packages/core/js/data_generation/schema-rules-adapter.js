@@ -74,7 +74,14 @@ function buildRuleSpecFromRow(row) {
   return String(row?.value ?? '').trim();
 }
 
-export function schemaTextToDataRules({ schemaText, faker, RandExp, options = {}, TestDataGeneratorClass } = {}) {
+export function schemaTextToDataRules({
+  schemaText,
+  faker,
+  RandExp,
+  options = {},
+  TestDataGeneratorClass,
+  includeInvalidRules = false,
+} = {}) {
   const parseResult = parseSchemaText({
     schemaText,
     faker,
@@ -84,7 +91,7 @@ export function schemaTextToDataRules({ schemaText, faker, RandExp, options = {}
   });
 
   return {
-    dataRules: parseResult.rules,
+    dataRules: parseResult.ok || includeInvalidRules ? parseResult.rules : [],
     errors: parseResult.errors,
     schemaTokens: parseResult.tokens,
     compilationReport: parseResult.report,

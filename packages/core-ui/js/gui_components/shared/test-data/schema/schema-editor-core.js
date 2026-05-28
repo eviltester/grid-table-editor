@@ -1,3 +1,5 @@
+import { annotateSchemaRowsWithValidation, collectSchemaRowValidationErrors } from './schema-row-validation.js';
+
 /*
  * Responsibilities:
  * - Provides shared schema text/row transform helpers for test-data UIs.
@@ -103,8 +105,17 @@ function schemaRowsToSpecWithTokens({
 }
 
 function validateSchemaRows({ schemaRows = [], schemaRowsToDataRules }) {
-  const result = schemaRowsToDataRules({ schemaRows });
-  return { errors: result.errors, rows: result.rows };
+  const annotatedRows = annotateSchemaRowsWithValidation(schemaRows);
+  const result = schemaRowsToDataRules({ schemaRows: annotatedRows });
+  const rowErrors = collectSchemaRowValidationErrors(annotatedRows);
+  const dedupedErrors = [...(Array.isArray(result.errors) ? result.errors : []), ...rowErrors].filter(
+    (error, index, errors) =>
+      errors.findIndex(
+        (candidate) =>
+          candidate?.code === error?.code && candidate?.line === error?.line && candidate?.message === error?.message
+      ) === index
+  );
+  return { errors: dedupedErrors, rows: annotatedRows };
 }
 
 export {

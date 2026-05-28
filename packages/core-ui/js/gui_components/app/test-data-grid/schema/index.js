@@ -1,14 +1,10 @@
 export {
   FAKER_COMMANDS,
   DOMAIN_COMMANDS,
-  FAKER_SECTION_VALUE,
-  DOMAIN_SECTION_VALUE,
   identifyFakerCommands,
   getFakerCommands,
   getDomainCommands,
   getVisibleDomainCommandOptions,
-  getTabulatorCommandEditorValues,
-  getAgGridCommandEditorValues,
   getMethodPickerOptions,
 } from './test-data-command-catalog.js';
 export { createSchemaGridController } from './test-data-grid-schema-grid-controller.js';

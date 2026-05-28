@@ -88,7 +88,7 @@ export function parseSchemaText({
 
   const ok = generator.isValid();
   const errors = ok ? [] : generator.errors();
-  const rules = ok ? generator.testDataRules().map((rule) => cloneRule(rule)) : [];
+  const rules = generator.testDataRules().map((rule) => cloneRule(rule));
   const tokens =
     typeof generator.rulesParser?.getSchemaTokens === 'function' ? generator.rulesParser.getSchemaTokens() : [];
 

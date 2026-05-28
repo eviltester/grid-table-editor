@@ -15,6 +15,11 @@ import {
   normaliseDomainCommand,
   normaliseSourceType,
 } from '../../shared/schema-row-rule-mapper.js';
+import { applySchemaSourceTypeChange } from '../../shared/test-data/schema/schema-row-mapper.js';
+
+const SCHEMA_ROW_DRAGGING_CLASS = 'generator-schema-row-dragging';
+const SCHEMA_ROW_DROP_BEFORE_CLASS = 'generator-schema-row-drop-before';
+const SCHEMA_ROW_DROP_AFTER_CLASS = 'generator-schema-row-drop-after';
 
 function refreshHelpHints(documentObj) {
   const windowObj = documentObj?.defaultView || globalThis.window;
@@ -122,19 +127,28 @@ function renderGeneratorSchemaRows({
     const isFakerSource = normalisedSourceType === SOURCE_TYPE_FAKER;
     const isDomainSource = normalisedSourceType === SOURCE_TYPE_DOMAIN;
     const isCommandSource = isFakerSource || isDomainSource;
+    const validationIssues = Array.isArray(row?.validation?.issues) ? row.validation.issues : [];
+    const validationMessage = String(row?.validation?.message || '').trim();
+    const hasNameValidationError = validationIssues.some((issue) => issue?.field === 'name');
+    const hasCommandValidationError = validationIssues.some((issue) => issue?.field === 'command');
+    const hasParamsValidationError = validationIssues.some((issue) => issue?.field === 'params');
     const schemaHelp = getSchemaHelpData(normalisedSourceType, row.command);
     const rowElem = documentObj.createElement('div');
-    rowElem.className = `generator-schema-row ${isCommandSource ? 'generator-schema-row-faker' : 'generator-schema-row-non-faker'}`;
+    rowElem.className = `generator-schema-row ${isCommandSource ? 'generator-schema-row-faker' : 'generator-schema-row-non-faker'} ${
+      row?.validation?.valid === false ? 'generator-schema-row-invalid' : ''
+    }`;
     rowElem.setAttribute('data-row-id', row.id);
+    rowElem.setAttribute('data-row-index', String(index));
     rowElem.innerHTML = `
                 <div class="generator-row-actions">
+                    <button class="icon-button generator-schema-drag-handle" type="button" data-action="drag" data-row-id="${row.id}" title="Drag to reorder" draggable="true" aria-label="Drag field to reorder">&#x2630;</button>
                     <button class="icon-button" data-action="add" data-row-id="${row.id}" title="Add field">+</button>
                     <button class="icon-button" data-action="remove" data-row-id="${row.id}" title="Remove field">-</button>
                     <button class="icon-button" data-action="up" data-row-id="${row.id}" title="Move up" ${index === 0 ? 'disabled' : ''}>&uarr;</button>
                     <button class="icon-button" data-action="down" data-row-id="${row.id}" title="Move down" ${index === schemaRows.length - 1 ? 'disabled' : ''}>&darr;</button>
                 </div>
-                <input type="text" data-field="name" placeholder="Column Name" value="${escapeHtml(row.name)}">
-                <select data-field="sourceType">
+                <input type="text" data-field="name" class="${hasNameValidationError ? 'generator-schema-field-invalid' : ''}" placeholder="Column Name" value="${escapeHtml(row.name)}">
+                <select data-field="sourceType" class="${hasCommandValidationError ? 'generator-schema-field-invalid' : ''}">
                     <option value="${SOURCE_TYPE_ENUM}" ${normalisedSourceType === SOURCE_TYPE_ENUM ? 'selected' : ''}>enum</option>
                     <option value="${SOURCE_TYPE_LITERAL}" ${normalisedSourceType === SOURCE_TYPE_LITERAL ? 'selected' : ''}>literal</option>
                     <option value="${SOURCE_TYPE_REGEX}" ${normalisedSourceType === SOURCE_TYPE_REGEX ? 'selected' : ''}>regex</option>
@@ -144,7 +158,7 @@ function renderGeneratorSchemaRows({
                 ${
                   isCommandSource
                     ? `<div class="generator-command-picker-control">
-                        <button type="button" data-action="pick-command" data-row-id="${row.id}" class="generator-command-picker-button">${escapeHtml(
+                        <button type="button" data-action="pick-command" data-row-id="${row.id}" class="generator-command-picker-button ${hasCommandValidationError ? 'generator-schema-field-invalid' : ''}">${escapeHtml(
                           row.command || (isDomainSource ? 'Select domain command' : 'Select faker command')
                         )}</button>
                         <select data-field="command" class="generator-command-picker-shadow-select">
@@ -171,8 +185,13 @@ function renderGeneratorSchemaRows({
                 ></a>
                 ${
                   isCommandSource
-                    ? `<input type="text" data-field="params" placeholder="Params e.g. (10)" value="${escapeHtml(row.params)}">`
+                    ? `<input type="text" data-field="params" class="${hasParamsValidationError ? 'generator-schema-field-invalid' : ''}" placeholder="Params e.g. (10)" value="${escapeHtml(row.params)}">`
                     : `<input type="text" data-field="value" placeholder="Value / Regex" value="${escapeHtml(row.value)}">`
+                }
+                ${
+                  validationMessage
+                    ? `<div class="generator-schema-row-validation" role="status">${escapeHtml(validationMessage)}</div>`
+                    : ''
                 }
             `;
 
@@ -185,6 +204,82 @@ function renderGeneratorSchemaRows({
 
   refreshHelpHints(documentObj);
   updateAllPairsButtonVisibility();
+}
+
+function clearSchemaRowDragClasses(documentObj) {
+  const rows = documentObj?.querySelectorAll?.('.generator-schema-row');
+  rows?.forEach?.((rowElem) => {
+    rowElem.classList.remove(SCHEMA_ROW_DRAGGING_CLASS, SCHEMA_ROW_DROP_BEFORE_CLASS, SCHEMA_ROW_DROP_AFTER_CLASS);
+  });
+}
+
+function getSchemaRowDropInstruction({ event, schemaRows, draggedRowId }) {
+  if (!draggedRowId || !Array.isArray(schemaRows) || schemaRows.length === 0) {
+    return null;
+  }
+  const draggedIndex = schemaRows.findIndex((row) => row.id === draggedRowId);
+  if (draggedIndex < 0) {
+    return null;
+  }
+
+  const targetRowElem = event?.target?.closest?.('.generator-schema-row');
+  if (!targetRowElem) {
+    const container = event?.currentTarget;
+    if (!container?.classList?.contains?.('generator-schema-rows')) {
+      return null;
+    }
+    const lastIndex = schemaRows.length - 1;
+    if (lastIndex < 0) {
+      return null;
+    }
+    const finalIndex = draggedIndex < lastIndex ? lastIndex : draggedIndex;
+    return {
+      draggedRowId,
+      draggedIndex,
+      targetRowId: schemaRows[lastIndex].id,
+      targetIndex: lastIndex,
+      placement: 'after',
+      finalIndex,
+      targetRowElem: container.querySelector(`.generator-schema-row[data-row-id="${schemaRows[lastIndex].id}"]`),
+    };
+  }
+
+  const targetRowId = targetRowElem.getAttribute('data-row-id');
+  const targetIndex = schemaRows.findIndex((row) => row.id === targetRowId);
+  if (targetIndex < 0) {
+    return null;
+  }
+
+  const rect = typeof targetRowElem.getBoundingClientRect === 'function' ? targetRowElem.getBoundingClientRect() : null;
+  const placement =
+    rect && typeof event?.clientY === 'number' && event.clientY > rect.top + rect.height / 2 ? 'after' : 'before';
+  let finalIndex = placement === 'after' ? targetIndex + 1 : targetIndex;
+  if (draggedIndex < finalIndex) {
+    finalIndex -= 1;
+  }
+  finalIndex = Math.max(0, Math.min(schemaRows.length - 1, finalIndex));
+
+  return {
+    draggedRowId,
+    draggedIndex,
+    targetRowId,
+    targetIndex,
+    placement,
+    finalIndex,
+    targetRowElem,
+  };
+}
+
+function applySchemaRowDropInstructionIndicator({ documentObj, draggedRowId, dropInstruction }) {
+  clearSchemaRowDragClasses(documentObj);
+  const draggedRowElem = documentObj?.querySelector?.(`.generator-schema-row[data-row-id="${draggedRowId}"]`);
+  draggedRowElem?.classList?.add?.(SCHEMA_ROW_DRAGGING_CLASS);
+  if (!dropInstruction?.targetRowElem || dropInstruction.finalIndex === dropInstruction.draggedIndex) {
+    return;
+  }
+  dropInstruction.targetRowElem.classList.add(
+    dropInstruction.placement === 'after' ? SCHEMA_ROW_DROP_AFTER_CLASS : SCHEMA_ROW_DROP_BEFORE_CLASS
+  );
 }
 
 function handleGeneratorRowInputChange({
@@ -210,16 +305,20 @@ function handleGeneratorRowInputChange({
     return;
   }
 
-  const updatedRow = schemaSession.updateRowAtIndex(index, (currentRow) => ({
-    ...currentRow,
-    [fieldName]: event.target.value,
-  }));
+  const updatedRow = schemaSession.updateRowAtIndex(index, (currentRow) => {
+    if (fieldName === 'sourceType') {
+      return applySchemaSourceTypeChange(currentRow, event.target.value);
+    }
+    return {
+      ...currentRow,
+      [fieldName]: event.target.value,
+    };
+  });
   if (!updatedRow) {
     return;
   }
 
   if (fieldName === 'sourceType') {
-    updatedRow.sourceType = normaliseSourceType(updatedRow.sourceType);
     renderSchemaRows();
     return;
   }
@@ -237,7 +336,7 @@ function handleGeneratorRowInputChange({
 
 function handleGeneratorRowButtonClick({ event, schemaRows, addRowAfter, removeRow, moveRow }) {
   const action = event.target.getAttribute('data-action');
-  if (!action) {
+  if (!action || action === 'drag') {
     return;
   }
 
@@ -265,11 +364,17 @@ function handleGeneratorRowButtonClick({ event, schemaRows, addRowAfter, removeR
 }
 
 export {
+  SCHEMA_ROW_DRAGGING_CLASS,
+  SCHEMA_ROW_DROP_BEFORE_CLASS,
+  SCHEMA_ROW_DROP_AFTER_CLASS,
   buildSchemaModeHelpHtml,
   hideVisibleHelpTooltips,
   updateSchemaEditModeView,
   insertExampleSchema,
   renderGeneratorSchemaRows,
+  clearSchemaRowDragClasses,
+  getSchemaRowDropInstruction,
+  applySchemaRowDropInstructionIndicator,
   handleGeneratorRowInputChange,
   handleGeneratorRowButtonClick,
 };

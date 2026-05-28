@@ -26990,8 +26990,8 @@
       "expectStructuredSerialization": false,
       "coveredArgs": [],
       "origins": ["custom"],
-      "parityMode": "exact",
-      "exactPreviewParity": true,
+      "parityMode": "structural",
+      "exactPreviewParity": false,
       "structuralParity": true
     },
     {
@@ -27022,8 +27022,8 @@
       "expectStructuredSerialization": false,
       "coveredArgs": [],
       "origins": ["custom", "pairwise"],
-      "parityMode": "exact",
-      "exactPreviewParity": true,
+      "parityMode": "structural",
+      "exactPreviewParity": false,
       "structuralParity": true
     },
     {
@@ -27047,8 +27047,8 @@
       "expectStructuredSerialization": false,
       "coveredArgs": [],
       "origins": ["custom"],
-      "parityMode": "exact",
-      "exactPreviewParity": true,
+      "parityMode": "structural",
+      "exactPreviewParity": false,
       "structuralParity": true
     },
     {
@@ -27072,8 +27072,8 @@
       "expectStructuredSerialization": false,
       "coveredArgs": [],
       "origins": ["custom", "empty"],
-      "parityMode": "exact",
-      "exactPreviewParity": true,
+      "parityMode": "structural",
+      "exactPreviewParity": false,
       "structuralParity": true
     },
     {
@@ -27122,8 +27122,8 @@
       "expectStructuredSerialization": false,
       "coveredArgs": [],
       "origins": ["custom", "empty"],
-      "parityMode": "exact",
-      "exactPreviewParity": true,
+      "parityMode": "structural",
+      "exactPreviewParity": false,
       "structuralParity": true
     },
     {
@@ -27147,8 +27147,8 @@
       "expectStructuredSerialization": false,
       "coveredArgs": [],
       "origins": ["base"],
-      "parityMode": "exact",
-      "exactPreviewParity": true,
+      "parityMode": "structural",
+      "exactPreviewParity": false,
       "structuralParity": true
     },
     {
@@ -27347,8 +27347,8 @@
       "expectStructuredSerialization": false,
       "coveredArgs": [],
       "origins": ["base"],
-      "parityMode": "exact",
-      "exactPreviewParity": true,
+      "parityMode": "structural",
+      "exactPreviewParity": false,
       "structuralParity": true
     },
     {
@@ -27372,8 +27372,8 @@
       "expectStructuredSerialization": false,
       "coveredArgs": ["text", "data"],
       "origins": ["example"],
-      "parityMode": "exact",
-      "exactPreviewParity": true,
+      "parityMode": "structural",
+      "exactPreviewParity": false,
       "structuralParity": true
     },
     {
@@ -27397,8 +27397,8 @@
       "expectStructuredSerialization": false,
       "coveredArgs": [],
       "origins": ["base"],
-      "parityMode": "exact",
-      "exactPreviewParity": true,
+      "parityMode": "structural",
+      "exactPreviewParity": false,
       "structuralParity": true
     },
     {
@@ -27547,8 +27547,8 @@
       "expectStructuredSerialization": false,
       "coveredArgs": ["string"],
       "origins": ["example"],
-      "parityMode": "exact",
-      "exactPreviewParity": true,
+      "parityMode": "structural",
+      "exactPreviewParity": false,
       "structuralParity": true
     },
     {
@@ -27847,8 +27847,8 @@
       "expectStructuredSerialization": false,
       "coveredArgs": ["min", "max", "delimiter"],
       "origins": ["example"],
-      "parityMode": "exact",
-      "exactPreviewParity": true,
+      "parityMode": "structural",
+      "exactPreviewParity": false,
       "structuralParity": true
     },
     {
@@ -27897,8 +27897,8 @@
       "expectStructuredSerialization": false,
       "coveredArgs": ["min", "max", "delimiter"],
       "origins": ["example"],
-      "parityMode": "exact",
-      "exactPreviewParity": true,
+      "parityMode": "structural",
+      "exactPreviewParity": false,
       "structuralParity": true
     },
     {
@@ -28004,13 +28004,13 @@
   ],
   "uiParityByScenarioId": {
     "custom-enum-base": {
-      "mode": "exact",
-      "exactPreviewParity": true,
+      "mode": "structural",
+      "exactPreviewParity": false,
       "structuralParity": true
     },
     "custom-enum-pairwise": {
-      "mode": "exact",
-      "exactPreviewParity": true,
+      "mode": "structural",
+      "exactPreviewParity": false,
       "structuralParity": true
     },
     "custom-literal-base": {
@@ -28174,8 +28174,8 @@
       "structuralParity": true
     },
     "domain-string-counterString-example-1": {
-      "mode": "exact",
-      "exactPreviewParity": true,
+      "mode": "structural",
+      "exactPreviewParity": false,
       "structuralParity": true
     },
     "domain-string-counterString-example-2": {
@@ -28184,8 +28184,8 @@
       "structuralParity": true
     },
     "domain-string-counterString-example-3": {
-      "mode": "exact",
-      "exactPreviewParity": true,
+      "mode": "structural",
+      "exactPreviewParity": false,
       "structuralParity": true
     },
     "domain-string-counterString-example-4": {

@@ -47,6 +47,17 @@ function createFocusedAppTestDataHarness() {
     element.blur();
   }
 
+  async function setSelectValue(element, value) {
+    if (!element) {
+      throw new Error('Target select element was not found in focused app test-data harness');
+    }
+    element.focus();
+    element.value = value;
+    fireEvent.input(element, { target: { value } });
+    fireEvent.change(element, { target: { value } });
+    element.blur();
+  }
+
   function reset() {
     document.getElementById('host').innerHTML = '';
     document.getElementById('testDataPreviewCapture').textContent = '';
@@ -97,9 +108,10 @@ function createFocusedAppTestDataHarness() {
   }
 
   async function addColumn() {
+    const previousCount = document.querySelectorAll('#testDataSchemaRows .generator-schema-row').length;
     await user.click(document.getElementById('testDataAddSchemaRowButton'));
     await waitFor(() => {
-      if (document.querySelectorAll('#testDataSchemaRows .generator-schema-row').length > 0) {
+      if (document.querySelectorAll('#testDataSchemaRows .generator-schema-row').length > previousCount) {
         return;
       }
       throw new Error('Schema row was not rendered');
@@ -119,14 +131,23 @@ function createFocusedAppTestDataHarness() {
   async function fillGridRow(index, row) {
     let rowElem = getGridRow(index);
     await setInputValue(rowElem.querySelector('[data-field="name"]'), row.name || '');
-    await user.selectOptions(rowElem.querySelector('[data-field="sourceType"]'), row.sourceType || 'regex');
     rowElem = getGridRow(index);
+    await setSelectValue(rowElem.querySelector('[data-field="sourceType"]'), row.sourceType || 'regex');
+    await waitFor(() => {
+      rowElem = getGridRow(index);
+      const expectsCommandFields = row.sourceType === 'faker' || row.sourceType === 'domain';
+      const targetField = expectsCommandFields ? '[data-field="params"]' : '[data-field="value"]';
+      if (rowElem?.querySelector(targetField)) {
+        return;
+      }
+      throw new Error('Schema row did not render the expected editor field');
+    });
 
     if (row.sourceType === 'faker' || row.sourceType === 'domain') {
       if (row.command) {
         const commandSelect = rowElem.querySelector('[data-field="command"]');
         if (commandSelect) {
-          await user.selectOptions(commandSelect, row.command);
+          await setSelectValue(commandSelect, row.command);
         }
       }
       await setInputValue(getGridRow(index).querySelector('[data-field="params"]'), row.params || '');

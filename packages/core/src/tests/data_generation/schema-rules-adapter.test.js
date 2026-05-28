@@ -20,6 +20,28 @@ describe('schema rules adapter', () => {
     expect(result.dataRules[1].name).toBe('Status');
   });
 
+  test('can return invalid compiled rules for known domain keywords when requested', () => {
+    const result = schemaTextToDataRules({
+      schemaText: 'Name\nperson.fullName(10)',
+      faker,
+      RandExp,
+      includeInvalidRules: true,
+    });
+
+    expect(result.errors).toEqual([
+      expect.objectContaining({
+        code: 'compiler_validation_error',
+      }),
+    ]);
+    expect(result.dataRules).toEqual([
+      expect.objectContaining({
+        name: 'Name',
+        ruleSpec: 'person.fullName(10)',
+        type: 'domain',
+      }),
+    ]);
+  });
+
   test('returns errors for invalid schema text', () => {
     const result = schemaTextToDataRules({
       schemaText: 't1\n',

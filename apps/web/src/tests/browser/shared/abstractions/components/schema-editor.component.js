@@ -151,6 +151,21 @@ class SchemaEditorComponent {
     await this.ensureSchemaMode();
     await this.row(index).locator(`button[data-action="${action}"]`).click();
   }
+
+  async dragRowToIndex(fromIndex, toIndex, { placement = 'before' } = {}) {
+    await this.ensureSchemaMode();
+    const source = this.row(fromIndex).locator('[data-action="drag"]');
+    const target = this.row(toIndex);
+    const targetBox = await target.boundingBox();
+    if (!targetBox) {
+      throw new Error(`Unable to drag schema row ${fromIndex} to ${toIndex}: target row is not visible`);
+    }
+    const targetPosition = {
+      x: Math.max(8, Math.min(targetBox.width - 8, 20)),
+      y: placement === 'after' ? Math.max(8, targetBox.height - 8) : 8,
+    };
+    await source.dragTo(target, { targetPosition });
+  }
 }
 
 module.exports = { SchemaEditorComponent };

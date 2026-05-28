@@ -247,6 +247,24 @@ test.describe('Generator Schema Editing', () => {
     expectNoPageErrors(pageErrors);
   });
 
+  test('can drag schema rows directly to the top and bottom in the generator editor', async ({ page }) => {
+    const { generatorPage, pageErrors } = await openGenerator(page);
+
+    await generatorPage.schema.setSchemaText('A\nliteral(a)\n\nB\nliteral(b)\n\nC\nliteral(c)\n\nD\nliteral(d)');
+    await generatorPage.schema.setTextMode(false);
+
+    await generatorPage.schema.editor.dragRowToIndex(3, 0, { placement: 'before' });
+    await expect.poll(async () => getSchemaRowNames(generatorPage)).toEqual(['D', 'A', 'B', 'C']);
+
+    await generatorPage.schema.editor.dragRowToIndex(0, 3, { placement: 'after' });
+    await expect.poll(async () => getSchemaRowNames(generatorPage)).toEqual(['A', 'B', 'C', 'D']);
+
+    const schemaText = await generatorPage.schema.getSchemaText();
+    expectOrderedSubstrings(schemaText, ['A\nliteral(a)', 'B\nliteral(b)', 'C\nliteral(c)', 'D\nliteral(d)']);
+
+    expectNoPageErrors(pageErrors);
+  });
+
   test('can remove a schema row in schema mode and text no longer contains it', async ({ page }) => {
     const { generatorPage, pageErrors } = await openGenerator(page);
 

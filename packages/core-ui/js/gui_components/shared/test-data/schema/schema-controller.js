@@ -68,6 +68,22 @@ function moveSchemaRow(rows = [], index, direction) {
   return nextRows;
 }
 
+function moveSchemaRowToIndex(rows = [], fromIndex, toIndex) {
+  const nextRows = Array.isArray(rows) ? rows.slice() : [];
+  if (
+    fromIndex < 0 ||
+    toIndex < 0 ||
+    fromIndex >= nextRows.length ||
+    toIndex >= nextRows.length ||
+    fromIndex === toIndex
+  ) {
+    return nextRows;
+  }
+  const [row] = nextRows.splice(fromIndex, 1);
+  nextRows.splice(toIndex, 0, row);
+  return nextRows;
+}
+
 function createSchemaEditingSession({
   createBlankSchemaRow,
   schemaTextToDataRules,
@@ -223,6 +239,12 @@ function createSchemaEditingSession({
     return state.rows;
   }
 
+  function moveRowToIndex(fromIndex, toIndex) {
+    state.rows = moveSchemaRowToIndex(state.rows, fromIndex, toIndex);
+    invalidateTokensFromRows();
+    return state.rows;
+  }
+
   function updateRowAtIndex(index, updater) {
     if (index < 0 || index >= state.rows.length) {
       return undefined;
@@ -248,8 +270,16 @@ function createSchemaEditingSession({
     addRowAfterIndex,
     removeRowAtIndex,
     moveRowAtIndex,
+    moveRowToIndex,
     updateRowAtIndex,
   };
 }
 
-export { parseSchemaTextToRows, addSchemaRowAfter, removeSchemaRowAt, moveSchemaRow, createSchemaEditingSession };
+export {
+  parseSchemaTextToRows,
+  addSchemaRowAfter,
+  removeSchemaRowAt,
+  moveSchemaRow,
+  moveSchemaRowToIndex,
+  createSchemaEditingSession,
+};

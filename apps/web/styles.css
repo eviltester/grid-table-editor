@@ -718,6 +718,7 @@ body.theme-dark .generator-status-text {
   display: grid;
   gap: 0.4rem;
   align-items: center;
+  position: relative;
 }
 
 .generator-schema-row-invalid {
@@ -759,6 +760,37 @@ body.theme-dark .generator-status-text {
 .generator-row-actions {
   display: flex;
   gap: 0.2rem;
+}
+
+.generator-schema-drag-handle {
+  cursor: grab;
+}
+
+.generator-schema-drag-handle:active {
+  cursor: grabbing;
+}
+
+.generator-schema-row-dragging {
+  opacity: 0.65;
+}
+
+.generator-schema-row-drop-before::before,
+.generator-schema-row-drop-after::after {
+  content: '';
+  position: absolute;
+  left: 0.25rem;
+  right: 0.25rem;
+  height: 3px;
+  border-radius: 999px;
+  background: #0b6aa2;
+}
+
+.generator-schema-row-drop-before::before {
+  top: -0.35rem;
+}
+
+.generator-schema-row-drop-after::after {
+  bottom: -0.35rem;
 }
 
 .icon-button {

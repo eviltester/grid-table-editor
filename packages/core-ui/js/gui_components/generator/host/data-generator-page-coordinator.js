@@ -41,6 +41,10 @@ function bindDataGeneratorPageEvents({ page }) {
   schemaRowsContainer?.addEventListener('input', (event) => page.handleRowInputChange(event));
   schemaRowsContainer?.addEventListener('change', (event) => page.handleRowInputChange(event));
   schemaRowsContainer?.addEventListener('focusout', (event) => page.handleRowFocusOut(event));
+  schemaRowsContainer?.addEventListener('dragstart', (event) => page.handleRowDragStart(event));
+  schemaRowsContainer?.addEventListener('dragover', (event) => page.handleRowDragOver(event));
+  schemaRowsContainer?.addEventListener('drop', (event) => page.handleRowDrop(event));
+  schemaRowsContainer?.addEventListener('dragend', () => page.handleRowDragEnd());
   schemaRowsContainer?.addEventListener('click', (event) => page.handleRowButtonClick(event));
 }
 

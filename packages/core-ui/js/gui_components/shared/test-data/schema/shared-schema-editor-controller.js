@@ -17,6 +17,9 @@ import { schemaErrorsToText } from './schema-error-text.js';
 import { getSchemaRowSemanticValidationIssues } from './schema-row-validation.js';
 import {
   renderGeneratorSchemaRows,
+  clearSchemaRowDragClasses,
+  getSchemaRowDropInstruction,
+  applySchemaRowDropInstructionIndicator,
   handleGeneratorRowInputChange,
   handleGeneratorRowButtonClick,
   hideVisibleHelpTooltips,
@@ -96,6 +99,7 @@ function createSharedSchemaEditorController({
   modeHelpIconId,
 }) {
   const semanticValidationTimers = new Map();
+  let dragState = null;
   const SEMANTIC_VALIDATION_DEBOUNCE_MS = 1000;
   const session = createSchemaEditingSession({
     createBlankSchemaRow: createBlankRow,
@@ -189,6 +193,11 @@ function createSharedSchemaEditorController({
 
   const clearAllSemanticValidationTimers = () => {
     [...semanticValidationTimers.keys()].forEach((rowId) => clearSemanticValidationTimer(rowId));
+  };
+
+  const clearDragState = () => {
+    dragState = null;
+    clearSchemaRowDragClasses(documentObj);
   };
 
   const applySemanticValidationForRow = (rowId) => {
@@ -494,6 +503,75 @@ function createSharedSchemaEditorController({
     });
   };
 
+  const moveRowToIndex = (fromIndex, toIndex) => {
+    session.moveRowToIndex(fromIndex, toIndex);
+    revalidateRows();
+    renderRows();
+    syncTextFromRows();
+  };
+
+  const handleDragStart = (event) => {
+    const dragHandle = event?.target?.closest?.('[data-action="drag"]');
+    if (!dragHandle) {
+      return;
+    }
+    const rowId = dragHandle.getAttribute('data-row-id');
+    const rowIndex = session.getRows().findIndex((row) => row.id === rowId);
+    if (rowIndex < 0) {
+      return;
+    }
+    dragState = { rowId, rowIndex };
+    event.dataTransfer?.setData?.('text/plain', rowId);
+    if (event.dataTransfer) {
+      event.dataTransfer.effectAllowed = 'move';
+    }
+    applySchemaRowDropInstructionIndicator({ documentObj, draggedRowId: rowId, dropInstruction: null });
+  };
+
+  const handleDragOver = (event) => {
+    if (!dragState?.rowId) {
+      return;
+    }
+    const dropInstruction = getSchemaRowDropInstruction({
+      event,
+      schemaRows: session.getRows(),
+      draggedRowId: dragState.rowId,
+    });
+    if (!dropInstruction) {
+      clearSchemaRowDragClasses(documentObj);
+      return;
+    }
+    event.preventDefault();
+    if (event.dataTransfer) {
+      event.dataTransfer.dropEffect = 'move';
+    }
+    applySchemaRowDropInstructionIndicator({
+      documentObj,
+      draggedRowId: dragState.rowId,
+      dropInstruction,
+    });
+  };
+
+  const handleDrop = (event) => {
+    if (!dragState?.rowId) {
+      return;
+    }
+    const dropInstruction = getSchemaRowDropInstruction({
+      event,
+      schemaRows: session.getRows(),
+      draggedRowId: dragState.rowId,
+    });
+    event.preventDefault();
+    if (dropInstruction && dropInstruction.finalIndex !== dropInstruction.draggedIndex) {
+      moveRowToIndex(dropInstruction.draggedIndex, dropInstruction.finalIndex);
+    }
+    clearDragState();
+  };
+
+  const handleDragEnd = () => {
+    clearDragState();
+  };
+
   const addRow = () => {
     session.addRowAfterIndex(session.getRows().length - 1);
     revalidateRows();
@@ -535,9 +613,16 @@ function createSharedSchemaEditorController({
 
   return {
     init,
-    destroy: () => clearAllSemanticValidationTimers(),
+    destroy: () => {
+      clearAllSemanticValidationTimers();
+      clearDragState();
+    },
     handleInput,
     handleClick,
+    handleDragStart,
+    handleDragOver,
+    handleDrop,
+    handleDragEnd,
     toggleMode,
     insertSampleSchema,
     syncFromText,

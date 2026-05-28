@@ -31,6 +31,8 @@ describe('generator schema ui', () => {
 
     const rows = Array.from(document.querySelectorAll('.generator-schema-row'));
     expect(rows).toHaveLength(2);
+    expect(rows[0].querySelector('[data-action="drag"]')).not.toBeNull();
+    expect(rows[0].querySelector('[data-action="drag"]').getAttribute('draggable')).toBe('true');
     expect(rows[0].querySelector('[data-action="pick-command"]')).not.toBeNull();
     expect(rows[1].querySelector('[data-field="value"]')).not.toBeNull();
     expect(rows[1].querySelector('[data-action="pick-command"]')).toBeNull();

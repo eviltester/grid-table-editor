@@ -3,6 +3,7 @@ import {
   addSchemaRowAfter,
   removeSchemaRowAt,
   moveSchemaRow,
+  moveSchemaRowToIndex,
   createSchemaEditingSession,
 } from '../../../js/gui_components/shared/test-data/schema/schema-controller.js';
 import { jest } from '@jest/globals';
@@ -47,6 +48,11 @@ describe('schema-controller', () => {
     expect(addSchemaRowAfter(baseRows, 0, blank).map((row) => row.name)).toEqual(['A', '', 'B']);
     expect(removeSchemaRowAt([{ name: 'Only' }], 0, blank)).toEqual([blank()]);
     expect(moveSchemaRow(baseRows, 1, -1).map((row) => row.name)).toEqual(['B', 'A']);
+    expect(moveSchemaRowToIndex([{ name: 'A' }, { name: 'B' }, { name: 'C' }], 2, 0).map((row) => row.name)).toEqual([
+      'C',
+      'A',
+      'B',
+    ]);
   });
 
   test('schema editing session toggles text mode, syncs rows, and preserves trailing tokens', () => {
@@ -103,5 +109,9 @@ describe('schema-controller', () => {
       comments: '\n# trailing note',
     });
     expect(session.getTokens()).toEqual([]);
+
+    session.setRows([{ name: 'A' }, { name: 'B' }, { name: 'C' }]);
+    session.moveRowToIndex(2, 0);
+    expect(session.getRows().map((row) => row.name)).toEqual(['C', 'A', 'B']);
   });
 });

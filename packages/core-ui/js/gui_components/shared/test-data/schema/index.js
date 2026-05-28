@@ -5,6 +5,7 @@ export {
   addSchemaRowAfter,
   removeSchemaRowAt,
   moveSchemaRow,
+  moveSchemaRowToIndex,
 } from './schema-controller.js';
 export { parseSchemaText, countEnumRules } from './schema-runtime.js';
 export {

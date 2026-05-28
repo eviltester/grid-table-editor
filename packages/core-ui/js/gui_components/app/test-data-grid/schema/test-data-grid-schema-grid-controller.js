@@ -89,6 +89,10 @@ function createSchemaGridController({
     container?.addEventListener('input', schemaEditor.handleInput);
     container?.addEventListener('change', schemaEditor.handleInput);
     container?.addEventListener('focusout', schemaEditor.handleFocusOut);
+    container?.addEventListener('dragstart', schemaEditor.handleDragStart);
+    container?.addEventListener('dragover', schemaEditor.handleDragOver);
+    container?.addEventListener('drop', schemaEditor.handleDrop);
+    container?.addEventListener('dragend', schemaEditor.handleDragEnd);
     container?.addEventListener('click', (event) => {
       void schemaEditor.handleClick(event);
     });

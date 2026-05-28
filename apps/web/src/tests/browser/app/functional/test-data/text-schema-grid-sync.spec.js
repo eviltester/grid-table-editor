@@ -244,6 +244,29 @@ test.describe('7. Test Data Generation', () => {
     expectNoPageErrors(pageErrors);
   });
 
+  test('schema rows can be dragged to the top and bottom in the app editor', async ({ page }) => {
+    const { appPage, pageErrors } = await openApp(page);
+
+    await appPage.testDataPanel.expand();
+    await appPage.testDataPanel.expectExpanded();
+
+    await appPage.testDataPanel.setSchemaText('A\nliteral(a)\n\nB\nliteral(b)\n\nC\nliteral(c)\n\nD\nliteral(d)');
+    await expect.poll(async () => appPage.testDataPanel.getSchemaRowCount()).toBe(4);
+
+    await appPage.testDataPanel.schemaEditor.dragRowToIndex(3, 0, { placement: 'before' });
+    await expect.poll(async () => appPage.testDataPanel.getSchemaCell(0, 'columnName')).toBe('D');
+    await expect.poll(async () => appPage.testDataPanel.getSchemaCell(1, 'columnName')).toBe('A');
+
+    await appPage.testDataPanel.schemaEditor.dragRowToIndex(0, 3, { placement: 'after' });
+    await expect.poll(async () => appPage.testDataPanel.getSchemaCell(0, 'columnName')).toBe('A');
+    await expect.poll(async () => appPage.testDataPanel.getSchemaCell(3, 'columnName')).toBe('D');
+
+    await expect
+      .poll(async () => appPage.testDataPanel.getSchemaText())
+      .toContain('A\nliteral(a)\nB\nliteral(b)\nC\nliteral(c)\nD\nliteral(d)');
+    expectNoPageErrors(pageErrors);
+  });
+
   test('switching enum rows to domain datatype.enum preserves the enum params in the app editor', async ({ page }) => {
     const { appPage, pageErrors } = await openApp(page);
 

@@ -56,6 +56,9 @@ import {
   updateSchemaEditModeView,
   insertExampleSchema,
   renderGeneratorSchemaRows,
+  clearSchemaRowDragClasses,
+  getSchemaRowDropInstruction,
+  applySchemaRowDropInstructionIndicator,
   handleGeneratorRowInputChange,
   handleGeneratorRowButtonClick,
 } from '../schema/index.js';
@@ -183,6 +186,7 @@ class DataGeneratorPage {
     this.schemaErrorDisplay = undefined;
     this.lastPreviewDataTable = undefined;
     this.semanticValidationTimers = new Map();
+    this.dragState = null;
   }
 
   get schemaRows() {
@@ -441,6 +445,12 @@ class DataGeneratorPage {
 
   destroy() {
     this.clearAllSemanticValidationTimers();
+    this.clearDragState();
+  }
+
+  clearDragState() {
+    this.dragState = null;
+    clearSchemaRowDragClasses(this.documentObj);
   }
 
   applySemanticValidationForRow(rowId) {
@@ -731,6 +741,78 @@ class DataGeneratorPage {
     this.schemaSession.moveRowAtIndex(index, direction);
     this.revalidateSchemaRows();
     this.renderSchemaRows();
+  }
+
+  moveRowToIndex(fromIndex, toIndex) {
+    this.schemaSession.moveRowToIndex(fromIndex, toIndex);
+    this.revalidateSchemaRows();
+    this.renderSchemaRows();
+  }
+
+  handleRowDragStart(event) {
+    const dragHandle = event?.target?.closest?.('[data-action="drag"]');
+    if (!dragHandle) {
+      return;
+    }
+    const rowId = dragHandle.getAttribute('data-row-id');
+    const rowIndex = this.schemaRows.findIndex((row) => row.id === rowId);
+    if (rowIndex < 0) {
+      return;
+    }
+    this.dragState = { rowId, rowIndex };
+    event.dataTransfer?.setData?.('text/plain', rowId);
+    if (event.dataTransfer) {
+      event.dataTransfer.effectAllowed = 'move';
+    }
+    applySchemaRowDropInstructionIndicator({
+      documentObj: this.documentObj,
+      draggedRowId: rowId,
+      dropInstruction: null,
+    });
+  }
+
+  handleRowDragOver(event) {
+    if (!this.dragState?.rowId) {
+      return;
+    }
+    const dropInstruction = getSchemaRowDropInstruction({
+      event,
+      schemaRows: this.schemaRows,
+      draggedRowId: this.dragState.rowId,
+    });
+    if (!dropInstruction) {
+      clearSchemaRowDragClasses(this.documentObj);
+      return;
+    }
+    event.preventDefault();
+    if (event.dataTransfer) {
+      event.dataTransfer.dropEffect = 'move';
+    }
+    applySchemaRowDropInstructionIndicator({
+      documentObj: this.documentObj,
+      draggedRowId: this.dragState.rowId,
+      dropInstruction,
+    });
+  }
+
+  handleRowDrop(event) {
+    if (!this.dragState?.rowId) {
+      return;
+    }
+    const dropInstruction = getSchemaRowDropInstruction({
+      event,
+      schemaRows: this.schemaRows,
+      draggedRowId: this.dragState.rowId,
+    });
+    event.preventDefault();
+    if (dropInstruction && dropInstruction.finalIndex !== dropInstruction.draggedIndex) {
+      this.moveRowToIndex(dropInstruction.draggedIndex, dropInstruction.finalIndex);
+    }
+    this.clearDragState();
+  }
+
+  handleRowDragEnd() {
+    this.clearDragState();
   }
 
   parseRowCount(inputId) {

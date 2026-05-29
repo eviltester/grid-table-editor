@@ -12,4 +12,5 @@ minimumReleaseAgeExclude:
 allowBuilds:
   '@scarf/scarf': true
   core-js: true
+  esbuild: true
   unrs-resolver: true

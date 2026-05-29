@@ -14,6 +14,10 @@ test-results
 .tmp-pack
 apps/web/dist
 apps/web/dist/
+storybook-static
+storybook-static/
+testenv
+testenv/
 .agentic-qe
 .tmp
 .claude

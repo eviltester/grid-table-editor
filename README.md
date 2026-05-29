@@ -32,6 +32,25 @@ The application is live at [AnyWayData.com](https://anywaydata.com)
 Use `pnpm run build:web` to create a production build and `pnpm run preview:web` to preview the built output.
 The old static-server flow (e.g. `python3 -m http.server`) is no longer the recommended local runtime path.
 
+### Use Storybook
+
+Storybook is available for isolated frontend development and UI review:
+
+- `pnpm run storybook`
+- open `http://127.0.0.1:6006`
+
+Current story groups:
+
+- `Test Data / Embedded Panel` for the in-app schema editor inside the main table editor
+- `Test Data / Generator` for the standalone generator schema editor states
+- `Export Formats / Previews` for export-preview flows such as Markdown, CSV, DSV, JSON, JSONL, XML, SQL, HTML, Gherkin, ASCII table, and code-oriented outputs
+
+Useful workflows:
+
+- use Storybook when iterating on schema-editor rendering, validation states, and text/schema mode transitions
+- use Storybook when adjusting export-preview UI without needing the full app boot flow
+- use `pnpm run build-storybook` to create a static Storybook build in `storybook-static`
+
 ### Select Grid Engine
 
 The editor can run with AG Grid or Tabulator using the same import/export and toolbar processing layer.

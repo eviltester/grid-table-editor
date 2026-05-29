@@ -81,12 +81,33 @@ const EXPORT_FORMAT_STORY_LABELS = {
   asciitable: 'ASCII',
 };
 
+const FORMAT_GROUP_LABELS = {
+  code: 'Code',
+  'code-unit-test': 'Code (Unit Test)',
+};
+
 function createStorySurface(sectionName) {
   storySurfaceCounter += 1;
   const section = document.createElement('section');
   section.className = 'main-app';
   section.dataset.storySurface = `${sectionName}-${storySurfaceCounter}`;
   return section;
+}
+
+function replaceElementWithClone(element) {
+  if (!element?.parentNode) {
+    return element;
+  }
+  const replacement = element.cloneNode(true);
+  element.parentNode.replaceChild(replacement, element);
+  return replacement;
+}
+
+function emitStoryAction(actionHandler, payload, { suppressActions = false } = {}) {
+  if (suppressActions || typeof actionHandler !== 'function') {
+    return;
+  }
+  actionHandler(payload);
 }
 
 function withScopedDocument(surface, callback) {
@@ -127,6 +148,24 @@ function cloneGenericDataTable(sourceTable, maxRows) {
     cloned.appendDataRow([...(sourceTable.getRow?.(rowIndex) || [])]);
   }
   return cloned;
+}
+
+function serializeDataTable(dataTable) {
+  const clonedTable = cloneGenericDataTable(dataTable);
+  const headers = clonedTable.getHeaders?.() || [];
+  const rows = [];
+  const rowCount = clonedTable.getRowCount?.() || 0;
+
+  for (let rowIndex = 0; rowIndex < rowCount; rowIndex += 1) {
+    rows.push([...(clonedTable.getRow?.(rowIndex) || [])]);
+  }
+
+  return {
+    headers: [...headers],
+    rows,
+    rowCount: rows.length,
+    headerCount: headers.length,
+  };
 }
 
 function createSampleGridData() {
@@ -247,6 +286,43 @@ function setPreviewRowLimit(surface, value) {
     return;
   }
   previewButton.textContent = `Preview (${value})`;
+}
+
+function getActiveExportSelection(surface) {
+  const activeSubtask = surface.querySelector('.subtask-select.active-type');
+  const activeMainType = surface.querySelector('.type-select.active-main-type .type-select-action');
+  const activeDirectType = surface.querySelector('.type-select.active-type .type-select-action');
+
+  if (activeSubtask) {
+    const action = activeSubtask.querySelector('.subtask-select-action');
+    return {
+      group: FORMAT_GROUP_LABELS[activeMainType?.dataset?.group] || activeMainType?.textContent?.trim() || 'Code',
+      type: action?.getAttribute('data-type') || activeSubtask.getAttribute('data-type') || '',
+      label: action?.textContent?.trim() || '',
+    };
+  }
+
+  return {
+    group: 'Direct',
+    type: activeDirectType?.getAttribute('data-type') || '',
+    label: activeDirectType?.textContent?.trim() || '',
+  };
+}
+
+function getPreviewActionPayload(surface, exporter, previewRowLimit, mode) {
+  const { type } = getActiveExportSelection(surface);
+  const previewTextArea = surface.querySelector('#markdownarea');
+  const dataTable = exporter.getGridAsGenericDataTable(previewRowLimit);
+  const serialized = serializeDataTable(dataTable);
+
+  return {
+    type,
+    mode,
+    previewRowLimit,
+    textLength: previewTextArea?.value?.length || 0,
+    rowCount: serialized.rowCount,
+    headerCount: serialized.headerCount,
+  };
 }
 
 function getSurfaceActiveExportType(surface) {
@@ -434,6 +510,7 @@ function renderGridPreviewStory({
   quotes = false,
   header = false,
   delimiter = '\t',
+  actions = {},
 } = {}) {
   installStoryGlobals();
 
@@ -461,6 +538,51 @@ function renderGridPreviewStory({
   importExportController.setExporter(exporter);
   importExportController.setGridChangeSource(memoryGrid);
   scopeImportExportControllerToSurface(surface, importExportController);
+  let suppressActions = true;
+
+  const emitAction = (actionName, payload) => {
+    emitStoryAction(actions?.[actionName], payload, { suppressActions });
+  };
+
+  const originalRenderTextFromGrid = importExportController.renderTextFromGrid.bind(importExportController);
+  importExportController.renderTextFromGrid = (...args) => {
+    const result = withScopedDocument(surface, () => originalRenderTextFromGrid(...args));
+    emitAction(
+      'onPreviewRendered',
+      getPreviewActionPayload(
+        surface,
+        exporter,
+        importExportController.getPreviewRowLimit(),
+        importExportController.isPreviewTextMode() ? 'preview' : 'edit'
+      )
+    );
+    return result;
+  };
+
+  const originalApplyCurrentTypeOptions = importExportController.applyCurrentTypeOptions.bind(importExportController);
+  importExportController.applyCurrentTypeOptions = (optionsToApply) => {
+    const result = withScopedDocument(surface, () => originalApplyCurrentTypeOptions(optionsToApply));
+    emitAction('onOptionsApplied', {
+      type: optionsToApply?.outputFormat || getActiveExportSelection(surface).type,
+      options:
+        typeof structuredClone === 'function'
+          ? structuredClone(optionsToApply?.options || optionsToApply || {})
+          : JSON.parse(JSON.stringify(optionsToApply?.options || optionsToApply || {})),
+    });
+    return result;
+  };
+
+  const originalSetGridFromGenericDataTable = importer.setGridFromGenericDataTable.bind(importer);
+  importer.setGridFromGenericDataTable = async (dataTable) => {
+    const result = await originalSetGridFromGenericDataTable(dataTable);
+    const serialized = serializeDataTable(dataTable);
+    emitAction('onSetGridFromText', {
+      type: getActiveExportSelection(surface).type,
+      ...serialized,
+      sourceTextLength: surface.querySelector('#markdownarea')?.value?.length || 0,
+    });
+    return result;
+  };
 
   importExportController.previewRowLimit = previewRowLimit;
   setPreviewRowLimit(surface, previewRowLimit);
@@ -494,6 +616,94 @@ function renderGridPreviewStory({
       previewTextArea.value = '';
     }
   }
+
+  surface.querySelectorAll('.type-select-action, .subtask-select-action').forEach((actionElement) => {
+    actionElement.addEventListener('click', () => {
+      emitAction('onFormatSelected', getActiveExportSelection(surface));
+    });
+  });
+
+  const setTextFromGridButton = replaceElementWithClone(surface.querySelector('#settextfromgridbutton'));
+  setTextFromGridButton?.addEventListener('click', () => {
+    withScopedDocument(surface, () => originalRenderTextFromGrid());
+    emitAction('onSetTextFromGrid', {
+      ...getPreviewActionPayload(
+        surface,
+        exporter,
+        importExportController.getPreviewRowLimit(),
+        importExportController.isPreviewTextMode() ? 'preview' : 'edit'
+      ),
+      trigger: 'button',
+    });
+    emitAction(
+      'onPreviewRendered',
+      getPreviewActionPayload(
+        surface,
+        exporter,
+        importExportController.getPreviewRowLimit(),
+        importExportController.isPreviewTextMode() ? 'preview' : 'edit'
+      )
+    );
+  });
+
+  const setGridFromTextButton = replaceElementWithClone(surface.querySelector('#setgridfromtextbutton'));
+  setGridFromTextButton?.addEventListener('click', async () => {
+    const type = getActiveExportSelection(surface).type;
+    const textToImport = surface.querySelector('#markdownarea')?.value || '';
+    try {
+      const result = await withScopedDocument(surface, () => importExportController.importTextArea());
+      if (result === undefined) {
+        emitAction('onSetGridFromTextFailed', {
+          type,
+          message: 'Unable to parse input into data table.',
+          sourceTextLength: textToImport.length,
+        });
+      }
+    } catch (error) {
+      emitAction('onSetGridFromTextFailed', {
+        type,
+        message: error?.message || 'Unable to parse input into data table.',
+        sourceTextLength: textToImport.length,
+      });
+    }
+  });
+
+  surface.querySelector('#previewEditModeButton')?.addEventListener('click', async () => {
+    await Promise.resolve();
+    emitAction('onPreviewModeChanged', {
+      mode: importExportController.isPreviewTextMode() ? 'preview' : 'edit',
+      previewRowLimit: importExportController.getPreviewRowLimit(),
+    });
+  });
+
+  surface.querySelector('#autoPreviewCheckbox')?.addEventListener('change', (event) => {
+    emitAction('onAutoPreviewChanged', {
+      enabled: event?.currentTarget?.checked === true,
+      mode: importExportController.isPreviewTextMode() ? 'preview' : 'edit',
+    });
+  });
+
+  const copyTextButton = replaceElementWithClone(surface.querySelector('#copyTextButton'));
+  copyTextButton?.addEventListener('click', () => {
+    withScopedDocument(surface, () => importExportController.exportControls.copyText());
+    emitAction('onCopyText', {
+      type: getActiveExportSelection(surface).type,
+      textLength: surface.querySelector('#markdownarea')?.value?.length || 0,
+    });
+  });
+
+  const fileDownloadButton = replaceElementWithClone(surface.querySelector('#filedownload'));
+  fileDownloadButton?.addEventListener('click', () => {
+    const type = getActiveExportSelection(surface).type;
+    emitAction('onDownloadRequested', {
+      type,
+      fileExtension: exporter.getFileExtensionFor(type),
+      textLength: surface.querySelector('#markdownarea')?.value?.length || 0,
+    });
+    withScopedDocument(surface, () => importExportController.exportControls.fileDownload());
+  });
+
+  suppressActions = false;
 
   return surface;
 }

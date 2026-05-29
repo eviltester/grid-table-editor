@@ -1,4 +1,5 @@
 import { createExportPreviewStory, sharedArgTypes } from './export-format-story-factory.js';
+import { playDelimitedOptionsPreview } from './export-format-interactions.js';
 
 const meta = {
   title: 'Export Formats/Previews/Delimited',
@@ -8,5 +9,8 @@ const meta = {
 
 export default meta;
 
-export const StartBlank = createExportPreviewStory('dsv', 'start-blank');
+export const StartBlank = {
+  ...createExportPreviewStory('dsv', 'start-blank'),
+  play: playDelimitedOptionsPreview,
+};
 export const Previewed = createExportPreviewStory('dsv', 'auto-previewed');

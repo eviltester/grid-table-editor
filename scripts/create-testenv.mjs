@@ -133,6 +133,15 @@ function renderIndexPage({ branchName, commitSha, buildTimestamp }) {
         line-height: 1.5;
       }
 
+      .live-link {
+        margin: -8px 0 24px;
+      }
+
+      .live-link a {
+        color: #0f5f8c;
+        font-weight: 700;
+      }
+
       .meta {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -207,6 +216,7 @@ function renderIndexPage({ branchName, commitSha, buildTimestamp }) {
     <main>
       <h1>Test Environment</h1>
       <p>Static build for GitHub Pages-style review, including the main app, generator, and Storybook.</p>
+      <p class="live-link">Access the live version with docs at <a href="https://anywaydata.com">AnyWayData.com</a>.</p>
       <section class="meta" aria-label="Build metadata">
         <article class="meta-card">
           <span class="meta-label">Branch</span>

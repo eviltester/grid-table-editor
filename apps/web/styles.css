@@ -472,7 +472,7 @@ Custom header styles for default items
 /* Styling for inline application help */
 /* use in a div or span to avoid having a border, which would happen on img if no src attribute present */
 .helpicon {
-  background: url('/images/circle-question-solid.svg');
+  background: url('./images/circle-question-solid.svg');
   width: 1em;
   height: 1em;
   display: inline-block;

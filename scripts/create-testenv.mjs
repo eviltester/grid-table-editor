@@ -72,7 +72,20 @@ function resolveBuildMetadata() {
   };
 }
 
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+}
+
 function renderIndexPage({ branchName, commitSha, buildTimestamp }) {
+  const safeBranchName = escapeHtml(branchName);
+  const safeCommitSha = escapeHtml(commitSha);
+  const safeBuildTimestamp = escapeHtml(buildTimestamp);
+
   return `<!doctype html>
 <html lang="en">
   <head>
@@ -197,15 +210,15 @@ function renderIndexPage({ branchName, commitSha, buildTimestamp }) {
       <section class="meta" aria-label="Build metadata">
         <article class="meta-card">
           <span class="meta-label">Branch</span>
-          <p class="meta-value">${branchName}</p>
+          <p class="meta-value">${safeBranchName}</p>
         </article>
         <article class="meta-card">
           <span class="meta-label">Commit</span>
-          <p class="meta-value">${commitSha}</p>
+          <p class="meta-value">${safeCommitSha}</p>
         </article>
         <article class="meta-card">
           <span class="meta-label">Built</span>
-          <p class="meta-value">${buildTimestamp}</p>
+          <p class="meta-value">${safeBuildTimestamp}</p>
         </article>
       </section>
       <section class="grid" aria-label="Test environment links">

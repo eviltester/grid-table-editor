@@ -187,6 +187,27 @@ describe('storybook harnesses', () => {
     });
   });
 
+  test('restores document query helpers after async scoped import flow', async () => {
+    const originalQuerySelector = document.querySelector;
+    const originalQuerySelectorAll = document.querySelectorAll;
+    const originalGetElementById = document.getElementById;
+    const story = renderGridPreviewStory({
+      format: 'csv',
+      state: 'start-blank',
+    });
+
+    story.querySelector('#previewEditModeButton')?.click();
+    await flushUi();
+    const textArea = story.querySelector('#markdownarea');
+    textArea.value = 'Name,Role\nAda,Engineer\nBob,Tester';
+    story.querySelector('#setgridfromtextbutton')?.click();
+    await flushUi();
+
+    expect(document.querySelector).toBe(originalQuerySelector);
+    expect(document.querySelectorAll).toBe(originalQuerySelectorAll);
+    expect(document.getElementById).toBe(originalGetElementById);
+  });
+
   test('emits parse failure when set grid from text cannot parse input', async () => {
     const onSetGridFromTextFailed = jest.fn();
     const story = renderGridPreviewStory({

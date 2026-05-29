@@ -8,10 +8,10 @@ async function clickByText(canvas, text) {
 
 async function setTextareaValue(canvasElement, value) {
   const textArea = canvasElement.querySelector('#markdownarea');
-  textArea.focus();
-  textArea.value = value;
-  textArea.dispatchEvent(new Event('input', { bubbles: true }));
-  textArea.dispatchEvent(new Event('change', { bubbles: true }));
+  await userEvent.click(textArea);
+  await userEvent.clear(textArea);
+  await userEvent.type(textArea, value);
+  await userEvent.tab();
   return textArea;
 }
 
@@ -23,10 +23,10 @@ async function applyJsonObjectWrapper(canvasElement) {
 
   const propertyInput = canvasElement.querySelector('.json-options .propertynamed label input');
   if (propertyInput) {
-    propertyInput.focus();
-    propertyInput.value = '';
-    propertyInput.dispatchEvent(new Event('input', { bubbles: true }));
+    await userEvent.click(propertyInput);
+    await userEvent.clear(propertyInput);
     await userEvent.type(propertyInput, 'records');
+    await userEvent.tab();
   }
 
   await userEvent.click(canvasElement.querySelector('.json-options .apply-options'));

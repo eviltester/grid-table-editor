@@ -86,6 +86,8 @@ const FORMAT_GROUP_LABELS = {
   'code-unit-test': 'Code (Unit Test)',
 };
 
+const scopedDocumentState = new WeakMap();
+
 function createStorySurface(sectionName) {
   storySurfaceCounter += 1;
   const section = document.createElement('section');
@@ -110,28 +112,72 @@ function emitStoryAction(actionHandler, payload, { suppressActions = false } = {
   actionHandler(payload);
 }
 
+function getScopedDocumentState(doc) {
+  let state = scopedDocumentState.get(doc);
+  if (!state) {
+    state = {
+      originals: {
+        querySelector: doc.querySelector,
+        querySelectorAll: doc.querySelectorAll,
+        getElementById: doc.getElementById,
+      },
+      stack: [],
+    };
+    scopedDocumentState.set(doc, state);
+  }
+  return state;
+}
+
+function applyScopedDocumentState(doc, state) {
+  const activeScope = state.stack.at(-1);
+  if (!activeScope) {
+    doc.querySelector = state.originals.querySelector;
+    doc.querySelectorAll = state.originals.querySelectorAll;
+    doc.getElementById = state.originals.getElementById;
+    return;
+  }
+
+  doc.querySelector = function querySelector(selector) {
+    return activeScope.surface.querySelector(selector) || state.originals.querySelector.call(doc, selector);
+  };
+  doc.querySelectorAll = function querySelectorAll(selector) {
+    const scopedMatches = activeScope.surface.querySelectorAll(selector);
+    return scopedMatches.length > 0 ? scopedMatches : state.originals.querySelectorAll.call(doc, selector);
+  };
+  doc.getElementById = function getElementById(id) {
+    return activeScope.surface.querySelector(`#${id}`) || state.originals.getElementById.call(doc, id);
+  };
+}
+
 function withScopedDocument(surface, callback) {
   if (!surface || typeof callback !== 'function') {
     return callback?.();
   }
 
-  const originalQuerySelector = document.querySelector.bind(document);
-  const originalQuerySelectorAll = document.querySelectorAll.bind(document);
-  const originalGetElementById = document.getElementById.bind(document);
+  const doc = document;
+  const state = getScopedDocumentState(doc);
+  const scope = { surface };
+  state.stack.push(scope);
+  applyScopedDocumentState(doc, state);
 
-  document.querySelector = (selector) => surface.querySelector(selector) || originalQuerySelector(selector);
-  document.querySelectorAll = (selector) => {
-    const scopedMatches = surface.querySelectorAll(selector);
-    return scopedMatches.length > 0 ? scopedMatches : originalQuerySelectorAll(selector);
+  const restoreScope = () => {
+    const scopeIndex = state.stack.lastIndexOf(scope);
+    if (scopeIndex >= 0) {
+      state.stack.splice(scopeIndex, 1);
+    }
+    applyScopedDocumentState(doc, state);
   };
-  document.getElementById = (id) => surface.querySelector(`#${id}`) || originalGetElementById(id);
 
   try {
-    return callback();
-  } finally {
-    document.querySelector = originalQuerySelector;
-    document.querySelectorAll = originalQuerySelectorAll;
-    document.getElementById = originalGetElementById;
+    const result = callback();
+    if (typeof result?.then === 'function') {
+      return Promise.resolve(result).finally(restoreScope);
+    }
+    restoreScope();
+    return result;
+  } catch (error) {
+    restoreScope();
+    throw error;
   }
 }
 

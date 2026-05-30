@@ -53,6 +53,8 @@ When changing frontend UI code, Storybook stories, UI test abstractions, or brow
 - use unit tests and DOM/component tests as the main automated coverage for component behavior
 - use Playwright for page-level integration and full browser workflows
 - isolate Tabulator, file APIs, clipboard, downloads, timers, and dialogs behind adapters or injected services
+- put low-level UI building blocks under `packages/core-ui/js/gui_components/shared/primitives/` when they are intended as foundations rather than page-facing shared components
+- prefer page/features consuming higher-level presenter, service, or feature-component APIs instead of wiring directly to primitives when such an API exists
 - treat `docs/frontend-component-migration-plan.md` updates as part of the definition of done for migration work
 - update `docs/frontend-component-migration-plan.md` when completing, changing, or discovering migration tasks
 - when a migration step reveals follow-up work, add an explicit unchecked todo item in the relevant phase instead of leaving it only in narrative notes

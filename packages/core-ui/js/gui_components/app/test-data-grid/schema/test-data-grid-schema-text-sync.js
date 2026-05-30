@@ -5,7 +5,7 @@
  * - Binds debounced schema textarea input parsing.
  */
 
-import { TimedErrorDisplay } from '../../../shared/timed-error-display.js';
+import { createTimedErrorPresenter } from '../../../shared/timed-error-display.js';
 import { parseSchemaTextToRows } from '../../../shared/test-data/schema/index.js';
 
 function createSchemaTextSyncState() {
@@ -75,7 +75,7 @@ function bindSchemaTextareaSync({ debouncer, onPopulateRequested }) {
 }
 
 function initializeSchemaErrorDisplay(state) {
-  state.schemaErrorDisplay = new TimedErrorDisplay({
+  state.schemaErrorDisplay = createTimedErrorPresenter({
     documentObj: document,
     elementId: 'testdata-schema-error',
     timeoutMs: 5000,

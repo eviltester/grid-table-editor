@@ -184,11 +184,13 @@ shared
 Use these conventions for shared component work unless a stronger local pattern already exists:
 
 - Put shared reusable components under `packages/core-ui/js/gui_components/shared/<component-name>/`.
+- Put lower-level UI foundations that are not intended as page-facing integration points under `packages/core-ui/js/gui_components/shared/primitives/<primitive-name>/`.
 - Export the public component API from `index.js`.
 - Name implementation files `<component-name>-controller.js` and `<component-name>-view.js`.
 - Keep component tests under `packages/core-ui/src/tests/` with separate controller and view tests when both layers have meaningful behavior.
 - Keep Storybook stories under `apps/web/src/stories/` until a different story colocation approach is intentionally adopted.
 - Prefer kebab-case folder and file names, with PascalCase class names inside files.
+- When a higher-level presenter or service boundary exists, prefer page/features consuming that API rather than importing the primitive directly.
 
 ## Current Code Anchors
 
@@ -236,11 +238,22 @@ Why this phase comes next:
 - These are good next candidates because they are small, visible, cross-cutting UI surfaces with real reuse, but they do not force us into a large feature extraction yet.
 - Migrating them next helps establish a consistent pattern for injected status/error services before we tackle broader features such as `GeneratorControls`, `SharedSchemaDefinition`, or `FormatOptionsPanel`.
 
-- [ ] Convert `StatusPresenter` into a component-shaped API or adapter-compatible service.
-- [ ] Convert `TimedErrorDisplay` usage into an injectable status/error service where practical.
-- [ ] Wrap confirm and text-input modal usage behind services.
-- [ ] Create Storybook stories for status, timed error, confirm dialog, and text input dialog.
-- [ ] Ensure each story can mount without page bootstrap.
+- [x] Convert `StatusPresenter` into a component-shaped API or adapter-compatible service.
+- [x] Convert `TimedErrorDisplay` usage into an injectable status/error service where practical.
+- [x] Replace direct `new TimedErrorDisplay(...)` construction in import/export controls and grid error surfaces with the shared timed-error presenter/service boundary.
+- [x] Wrap confirm and text-input modal usage behind services.
+- [x] Create Storybook stories for status, timed error, confirm dialog, and text input dialog.
+- [x] Ensure each story can mount without page bootstrap.
+
+Current status:
+
+- `createStatusPresenter` now delegates to the shared `InlineMessage` component while preserving the existing app and generator presenter API.
+- `TimedErrorDisplay` now exposes a service-style `createTimedErrorPresenter(...)` boundary while keeping the legacy class adapter available, so timed error surfaces and status surfaces share one tested rendering/timing model.
+- Import/export errors and grid column/header errors now use the shared timed-error presenter boundary rather than constructing their own message helpers or talking to the lower-level inline-message primitive directly.
+- The lower-level `InlineMessage` implementation now lives under `shared/primitives/inline-message/` to signal that page/features should usually prefer the presenter/service APIs above it.
+- `InlineMessage` has Storybook coverage for status-loading, timed auto-clear, and sticky warning modes, plus focused controller/view adapter tests.
+- Confirm and text-input modal usage now flows through shared dialog services rather than direct modal helper imports at call sites.
+- Storybook now documents the service-level APIs for status presenter, timed error presenter, confirm dialog, and text-input dialog with small reviewer-facing harnesses.
 
 ### Phase 2: Format Options Components
 

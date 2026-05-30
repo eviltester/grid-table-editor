@@ -1,4 +1,8 @@
-import { showConfirmModal } from '../shared/modal-confirm.js';
+import { createConfirmDialogService } from '../shared/dialog-services/index.js';
+
+function getDefaultDocumentObj() {
+  return typeof document !== 'undefined' ? document : null;
+}
 
 class GridControlsPageMap {
   constructor() {
@@ -20,10 +24,11 @@ function shouldEnforceUniqueColumnNames(documentObj = document) {
 // TODO : don't hook into existing controls in HTML create them here and then hook into them
 // The buttons above a grid
 class GridControl {
-  constructor(pageMap, { requestConfirm } = {}) {
+  constructor(pageMap, { requestConfirm, documentObj = getDefaultDocumentObj() } = {}) {
     this.pageMap = pageMap;
-    this.requestConfirm =
-      typeof requestConfirm === 'function' ? requestConfirm : (options) => showConfirmModal(options);
+    this.documentObj = documentObj;
+    const confirmDialogService = createConfirmDialogService({ documentObj: this.documentObj });
+    this.requestConfirm = typeof requestConfirm === 'function' ? requestConfirm : confirmDialogService.requestConfirm;
   }
 
   // TODO : avoid hard coded IDs use relative to the parent, so store the parent e.g. like option panels
@@ -122,7 +127,7 @@ class GridControl {
   }
 
   clearFilters() {
-    document.getElementById('filter-text-box').value = '';
+    this.documentObj.getElementById('filter-text-box').value = '';
     this.gridExtras.clearFilters();
   }
 
@@ -133,7 +138,7 @@ class GridControl {
   }
 
   filterTextBoxChanged() {
-    this.gridExtras.filterText(document.getElementById('filter-text-box').value);
+    this.gridExtras.filterText(this.documentObj.getElementById('filter-text-box').value);
   }
 
   async clearTable() {

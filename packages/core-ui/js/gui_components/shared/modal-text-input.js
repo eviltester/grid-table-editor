@@ -1,6 +1,9 @@
 let activeModalCleanup = null;
 
-function ensureModalElements(documentObj = document) {
+function ensureModalElements(documentObj = typeof document !== 'undefined' ? document : null) {
+  if (!documentObj) {
+    return null;
+  }
   let backdrop = documentObj.getElementById('text-input-modal-backdrop');
   if (backdrop) {
     return backdrop;
@@ -33,7 +36,7 @@ function closeActiveModal(result) {
 }
 
 function showTextInputModal({
-  documentObj = document,
+  documentObj = typeof document !== 'undefined' ? document : null,
   title = 'Enter Value',
   initialValue = '',
   okLabel = 'OK',
@@ -41,6 +44,9 @@ function showTextInputModal({
 } = {}) {
   closeActiveModal(null);
   const backdrop = ensureModalElements(documentObj);
+  if (!backdrop) {
+    return Promise.resolve(null);
+  }
   const modal = backdrop.querySelector('.text-input-modal');
   const titleElem = backdrop.querySelector('#text-input-modal-title');
   const inputElem = backdrop.querySelector('#text-input-modal-field');

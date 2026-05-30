@@ -1,20 +1,33 @@
-import { TimedErrorDisplay } from '../shared/timed-error-display.js';
+import { createTimedErrorPresenter } from '../shared/timed-error-display.js';
 
 const GRID_ERROR_ELEMENT_ID = 'grid-column-error';
-const sharedGridErrorDisplaysByDocument = new WeakMap();
+const sharedGridErrorSurfacesByDocument = new WeakMap();
+const missingGridErrorSurface = {
+  show() {},
+  clear() {},
+  destroy() {},
+  getState() {
+    return {};
+  },
+};
 
 function getGridErrorDisplay(documentObj = document) {
-  const existingDisplay = sharedGridErrorDisplaysByDocument.get(documentObj);
+  const existingDisplay = sharedGridErrorSurfacesByDocument.get(documentObj);
   if (existingDisplay) {
     return existingDisplay;
   }
 
-  const display = new TimedErrorDisplay({
+  const root = documentObj.getElementById(GRID_ERROR_ELEMENT_ID);
+  if (!root) {
+    return missingGridErrorSurface;
+  }
+
+  const display = createTimedErrorPresenter({
     documentObj,
     elementId: GRID_ERROR_ELEMENT_ID,
     timeoutMs: 5000,
   });
-  sharedGridErrorDisplaysByDocument.set(documentObj, display);
+  sharedGridErrorSurfacesByDocument.set(documentObj, display);
   return display;
 }
 

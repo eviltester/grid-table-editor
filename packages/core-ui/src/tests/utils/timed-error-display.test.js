@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
-import { TimedErrorDisplay } from '../../../js/gui_components/shared/timed-error-display.js';
+import { createTimedErrorPresenter, TimedErrorDisplay } from '../../../js/gui_components/shared/timed-error-display.js';
 
 describe('TimedErrorDisplay', () => {
   let dom;
@@ -13,6 +13,23 @@ describe('TimedErrorDisplay', () => {
   afterEach(() => {
     jest.useRealTimers();
     dom.window.close();
+  });
+
+  test('show auto clears after timeout using the shared inline message behavior', () => {
+    const display = new TimedErrorDisplay({
+      documentObj: dom.window.document,
+      elementId: 'error',
+      timeoutMs: 5000,
+    });
+    const element = dom.window.document.getElementById('error');
+
+    display.show('Something failed', { severity: 'error' });
+    expect(element.textContent).toBe('Something failed');
+    expect(element.getAttribute('data-severity')).toBe('error');
+
+    jest.advanceTimersByTime(5000);
+    expect(element.textContent).toBe('');
+    expect(element.hasAttribute('data-severity')).toBe(false);
   });
 
   test('destroy clears active timeout and removes visible error state', () => {
@@ -32,6 +49,43 @@ describe('TimedErrorDisplay', () => {
     expect(element.hasAttribute('data-severity')).toBe(false);
 
     jest.advanceTimersByTime(5000);
+    expect(element.textContent).toBe('');
+    expect(element.hasAttribute('data-severity')).toBe(false);
+  });
+
+  test('rebinds to a replacement element with the same id', () => {
+    const display = new TimedErrorDisplay({
+      documentObj: dom.window.document,
+      elementId: 'error',
+      timeoutMs: 5000,
+    });
+    const original = dom.window.document.getElementById('error');
+    const replacement = dom.window.document.createElement('div');
+    replacement.id = 'error';
+
+    display.show('Original error', { severity: 'error', sticky: true });
+    expect(original.textContent).toBe('Original error');
+
+    original.replaceWith(replacement);
+    display.show('Replacement error', { severity: 'warning', sticky: true });
+
+    expect(replacement.textContent).toBe('Replacement error');
+    expect(replacement.getAttribute('data-severity')).toBe('warning');
+  });
+
+  test('createTimedErrorPresenter returns the same timed behavior through the service-style API', () => {
+    const presenter = createTimedErrorPresenter({
+      documentObj: dom.window.document,
+      elementId: 'error',
+      timeoutMs: 5000,
+    });
+    const element = dom.window.document.getElementById('error');
+
+    presenter.show('Schema invalid', { severity: 'warning' });
+    expect(element.textContent).toBe('Schema invalid');
+    expect(element.getAttribute('data-severity')).toBe('warning');
+
+    presenter.clear();
     expect(element.textContent).toBe('');
     expect(element.hasAttribute('data-severity')).toBe(false);
   });

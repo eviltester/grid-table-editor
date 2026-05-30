@@ -4,7 +4,7 @@
  * - Keeps shell rendering, preview-grid setup, and button wiring out of the main page class.
  */
 
-import { TimedErrorDisplay } from '../../shared/timed-error-display.js';
+import { createTimedErrorPresenter } from '../../shared/timed-error-display.js';
 import { createStatusPresenter } from '../../shared/test-data/ui/index.js';
 import { createRowCountControl } from '../../shared/row-count-control/index.js';
 import { renderDataGeneratorPageShell } from './data-generator-page-layout.js';
@@ -95,7 +95,7 @@ function initializeDataGeneratorPageHost({ page, createOptionsPanelsForParentFn,
   renderDataGeneratorPageShell({ parentElement: page.parentElement });
   page.rowCountControls = bindGeneratorRowCountControls({ page });
 
-  page.schemaErrorDisplay = new TimedErrorDisplay({
+  page.schemaErrorDisplay = createTimedErrorPresenter({
     documentObj: page.documentObj,
     elementId: 'generatorSchemaErrorText',
     timeoutMs: 5000,

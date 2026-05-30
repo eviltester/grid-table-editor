@@ -2,7 +2,7 @@ import { GridExtension } from './gridExtension-tabulator.js';
 import { GridControl, GridControlsPageMap, shouldEnforceUniqueColumnNames } from '../gridControl.js';
 import { GuardedColumnEdits } from '../shared/guarded-column-edits.js';
 import { showGridError } from '../grid-error-surface.js';
-import { showTextInputModal } from '../../shared/modal-text-input.js';
+import { createTextInputDialogService } from '../../shared/dialog-services/index.js';
 import { escapeHtml } from '../../shared/html-escape.js';
 
 /*
@@ -18,6 +18,7 @@ import { escapeHtml } from '../../shared/html-escape.js';
 
 class ExtendedDataGrid {
   constructor() {
+    const textInputDialogService = createTextInputDialogService({ documentObj: document });
     var rowData = [];
 
     var columnDefs = [
@@ -81,7 +82,7 @@ class ExtendedDataGrid {
 
       if (action === 'filter') {
         const existingFilter = column.getHeaderFilterValue?.() || '';
-        const newFilter = await showTextInputModal({
+        const newFilter = await textInputDialogService.requestTextInput({
           title: 'Filter Column',
           initialValue: existingFilter,
         });
@@ -174,7 +175,7 @@ class ExtendedDataGrid {
   }
 
   createChildGrid(parentGridDiv) {
-    let gridControls = new GridControl(new GridControlsPageMap());
+    let gridControls = new GridControl(new GridControlsPageMap(), { documentObj: document });
     gridControls.addGuiIn(parentGridDiv);
 
     //let gridDiv = document.querySelector('#myGrid');

@@ -1,4 +1,4 @@
-import { scheduleTimeout } from '../../unref-timeout.js';
+import { createInlineMessageComponent } from '../../primitives/inline-message/index.js';
 
 /*
  * Responsibilities:
@@ -13,7 +13,8 @@ function createStatusPresenter({
   visibleDisplay = 'inline-block',
   hideWhenEmpty = false,
 } = {}) {
-  let resetTimeoutId = null;
+  let component = null;
+  let rootElement = null;
 
   const getElement = () => {
     if (!documentObj || !elementId) {
@@ -22,37 +23,43 @@ function createStatusPresenter({
     return documentObj.getElementById(elementId);
   };
 
+  const ensureComponent = () => {
+    const nextRoot = getElement();
+    if (!nextRoot) {
+      return null;
+    }
+
+    if (component && rootElement === nextRoot && nextRoot.isConnected !== false) {
+      return component;
+    }
+
+    component?.destroy?.();
+    rootElement = nextRoot;
+    component = createInlineMessageComponent({
+      root: nextRoot,
+      props: {
+        hideWhenEmpty,
+        visibleDisplay,
+        loadingClassName,
+      },
+    });
+    return component;
+  };
+
   const setStatus = (message, isLoading = false) => {
-    const statusElement = getElement();
-    if (!statusElement) {
-      return;
-    }
-    statusElement.textContent = message || '';
-    statusElement.classList.toggle(loadingClassName, isLoading === true && Boolean(message));
-    if (hideWhenEmpty) {
-      statusElement.style.display = message ? visibleDisplay : 'none';
-    }
+    ensureComponent()?.setStatus(message, isLoading);
   };
 
   const clearPendingReset = () => {
-    if (resetTimeoutId === null) {
-      return;
-    }
-    clearTimeout(resetTimeoutId);
-    resetTimeoutId = null;
+    ensureComponent()?.clearPendingReset();
   };
 
   const scheduleClear = (delayMs = 1800) => {
-    clearPendingReset();
-    resetTimeoutId = scheduleTimeout(() => {
-      setStatus('', false);
-      resetTimeoutId = null;
-    }, delayMs);
+    ensureComponent()?.scheduleClear(delayMs);
   };
 
   const clear = () => {
-    clearPendingReset();
-    setStatus('', false);
+    ensureComponent()?.clear();
   };
 
   return {

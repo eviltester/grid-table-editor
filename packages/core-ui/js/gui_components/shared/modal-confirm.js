@@ -1,6 +1,9 @@
 let activeConfirmCleanup = null;
 
-function ensureConfirmElements(documentObj = document) {
+function ensureConfirmElements(documentObj = typeof document !== 'undefined' ? document : null) {
+  if (!documentObj) {
+    return null;
+  }
   let backdrop = documentObj.getElementById('confirm-modal-backdrop');
   if (backdrop) {
     return backdrop;
@@ -33,7 +36,7 @@ function closeActiveConfirm(result) {
 }
 
 function showConfirmModal({
-  documentObj = document,
+  documentObj = typeof document !== 'undefined' ? document : null,
   title = 'Are you sure?',
   message = '',
   okLabel = 'OK',
@@ -41,6 +44,9 @@ function showConfirmModal({
 } = {}) {
   closeActiveConfirm(false);
   const backdrop = ensureConfirmElements(documentObj);
+  if (!backdrop) {
+    return Promise.resolve(false);
+  }
   const titleElem = backdrop.querySelector('#confirm-modal-title');
   const messageElem = backdrop.querySelector('#confirm-modal-message');
   const okButton = backdrop.querySelector('#confirm-modal-ok');

@@ -2,12 +2,17 @@ import { ExportControls } from './exportControls.js';
 import { DragDropControl } from './drag-drop-control.js';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 import { sanitizeUiOptionsForFormat, createOptionsPanelsForParent } from '../generator/options/index.js';
-import { TimedErrorDisplay } from '../shared/timed-error-display.js';
-import { showConfirmModal } from '../shared/modal-confirm.js';
+import { createConfirmDialogService } from '../shared/dialog-services/index.js';
+import { createTimedErrorPresenter } from '../shared/timed-error-display.js';
 import { scheduleTimeout } from '../shared/unref-timeout.js';
 
+function getDefaultDocumentObj() {
+  return typeof document !== 'undefined' ? document : null;
+}
+
 class ImportExportControls {
-  constructor({ requestConfirm } = {}) {
+  constructor({ requestConfirm, documentObj = getDefaultDocumentObj() } = {}) {
+    this.documentObj = documentObj;
     this.previewRowLimit = 10;
     this.textEditMode = 'preview';
     this.previewTextDirty = false;
@@ -22,10 +27,8 @@ class ImportExportControls {
     this._hasBoundAutoPreviewInput = false;
     this._gridChangeUnsubscribe = null;
     this.errorDisplay = null;
-    this.requestConfirm =
-      typeof requestConfirm === 'function'
-        ? requestConfirm
-        : (options) => showConfirmModal({ documentObj: document, ...options });
+    const confirmDialogService = createConfirmDialogService({ documentObj: this.documentObj });
+    this.requestConfirm = typeof requestConfirm === 'function' ? requestConfirm : confirmDialogService.requestConfirm;
   }
 
   addHTMLtoGui(parentelement) {
@@ -42,8 +45,8 @@ class ImportExportControls {
             <div id="import-progress-status" class="import-progress-status" style="display:none;" aria-live="polite"></div>
             <div id="import-export-error" class="generator-schema-error-text" aria-live="polite" role="status"></div>
         `;
-    this.errorDisplay = new TimedErrorDisplay({
-      documentObj: document,
+    this.errorDisplay = createTimedErrorPresenter({
+      documentObj: this.documentObj,
       elementId: 'import-export-error',
       timeoutMs: 5000,
     });

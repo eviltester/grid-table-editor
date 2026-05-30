@@ -229,6 +229,13 @@ Current status:
 
 ### Phase 1: Small Shared Building Blocks
 
+Why this phase comes next:
+
+- `createStatusPresenter` is already shared between the app test-data panel and the generator page, but it still exists as a lightweight helper rather than a standardized component/service boundary.
+- `TimedErrorDisplay` is already shared across generator schema errors, app schema text-sync errors, import/export errors, and grid column/header errors.
+- These are good next candidates because they are small, visible, cross-cutting UI surfaces with real reuse, but they do not force us into a large feature extraction yet.
+- Migrating them next helps establish a consistent pattern for injected status/error services before we tackle broader features such as `GeneratorControls`, `SharedSchemaDefinition`, or `FormatOptionsPanel`.
+
 - [ ] Convert `StatusPresenter` into a component-shaped API or adapter-compatible service.
 - [ ] Convert `TimedErrorDisplay` usage into an injectable status/error service where practical.
 - [ ] Wrap confirm and text-input modal usage behind services.

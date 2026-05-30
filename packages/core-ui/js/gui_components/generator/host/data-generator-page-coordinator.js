@@ -6,7 +6,50 @@
 
 import { TimedErrorDisplay } from '../../shared/timed-error-display.js';
 import { createStatusPresenter } from '../../shared/test-data/ui/index.js';
+import { createRowCountControl } from '../../shared/row-count-control/index.js';
 import { renderDataGeneratorPageShell } from './data-generator-page-layout.js';
+
+function bindGeneratorRowCountControls({ page }) {
+  const rowCountControls = [];
+
+  const generateRowsRoot = page.documentObj.getElementById('generateRowsCountControl');
+  if (generateRowsRoot) {
+    rowCountControls.push(
+      createRowCountControl({
+        root: generateRowsRoot,
+        documentObj: page.documentObj,
+        props: {
+          inputId: 'generateRowsCount',
+          label: 'Generate Rows',
+          min: 0,
+          step: 1,
+          value: 1000,
+        },
+      })
+    );
+  }
+
+  const previewRowsRoot = page.documentObj.getElementById('previewRowsCountControl');
+  if (previewRowsRoot) {
+    rowCountControls.push(
+      createRowCountControl({
+        root: previewRowsRoot,
+        documentObj: page.documentObj,
+        props: {
+          inputId: 'previewRowsCount',
+          label: 'Preview Items Count',
+          min: 0,
+          max: 50,
+          step: 1,
+          value: 10,
+          labelClassName: 'generator-preview-count-label',
+        },
+      })
+    );
+  }
+
+  return rowCountControls;
+}
 
 function bindDataGeneratorPageEvents({ page }) {
   const addSchemaRowButton = page.documentObj.getElementById('addSchemaRowButton');
@@ -50,6 +93,7 @@ function bindDataGeneratorPageEvents({ page }) {
 
 function initializeDataGeneratorPageHost({ page, createOptionsPanelsForParentFn, populateFormatOptionsFn }) {
   renderDataGeneratorPageShell({ parentElement: page.parentElement });
+  page.rowCountControls = bindGeneratorRowCountControls({ page });
 
   page.schemaErrorDisplay = new TimedErrorDisplay({
     documentObj: page.documentObj,

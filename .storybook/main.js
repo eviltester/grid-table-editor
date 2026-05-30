@@ -12,7 +12,7 @@ export default {
   },
   stories: ['../apps/web/src/stories/**/*.stories.js'],
   staticDirs: [{ from: '../apps/web/images', to: '/images' }],
-  addons: ['@storybook/addon-docs', '@storybook/addon-a11y'],
+  addons: ['@storybook/addon-docs', '@storybook/addon-a11y', '@storybook/addon-vitest'],
   docs: {
     autodocs: true,
   },

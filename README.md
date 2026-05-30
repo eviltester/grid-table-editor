@@ -49,6 +49,7 @@ Useful workflows:
 
 - use Storybook when iterating on schema-editor rendering, validation states, and text/schema mode transitions
 - use Storybook when adjusting export-preview UI without needing the full app boot flow
+- use `pnpm run test:storybook` to run Storybook smoke and interaction tests in CI-style mode
 - use `pnpm run build-storybook` to create a static Storybook build in `storybook-static`
 
 ### Select Grid Engine

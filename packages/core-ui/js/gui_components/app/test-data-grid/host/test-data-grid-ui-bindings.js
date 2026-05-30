@@ -5,6 +5,8 @@
  * - Keeps DOM event wiring out of the main grid controller.
  */
 
+import { createRowCountControl } from '../../../shared/row-count-control/index.js';
+
 function bindPrimaryActions({ onGenerate, onGeneratePairwise, onRefreshPreview }) {
   const generateButton = document.querySelector('#generatedata');
   generateButton?.addEventListener('click', onGenerate, false);
@@ -12,19 +14,23 @@ function bindPrimaryActions({ onGenerate, onGeneratePairwise, onRefreshPreview }
   document.querySelector('#refreshtestdatapreview')?.addEventListener('click', onRefreshPreview, false);
 }
 
-function bindGenerateCountInput() {
-  const generateCountInput = document.getElementById('generateCount');
-  if (!generateCountInput) {
-    return;
+function bindGenerateCountInput({ documentObj = document } = {}) {
+  const generateCountRoot = documentObj.getElementById('generateCountControl');
+  if (!generateCountRoot) {
+    return null;
   }
-  generateCountInput.value = '1';
-  generateCountInput.setAttribute('min', '1');
-  generateCountInput.setAttribute('step', '1');
-  generateCountInput.addEventListener('input', () => {
-    const parsedCount = Number.parseInt(generateCountInput.value, 10);
-    if (!Number.isFinite(parsedCount) || parsedCount < 1) {
-      generateCountInput.value = '1';
-    }
+
+  return createRowCountControl({
+    root: generateCountRoot,
+    documentObj,
+    props: {
+      inputId: 'generateCount',
+      label: 'How Many?',
+      min: 1,
+      step: 1,
+      value: 1,
+      normalizeOnInput: true,
+    },
   });
 }
 

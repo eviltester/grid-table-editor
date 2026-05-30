@@ -31,9 +31,7 @@ function renderDataGeneratorPageShell({ parentElement }) {
                       <div class="generator-controls-head">
               <strong id="generatorGenerateOptionsHeading">Generate Data and Options</strong>
                       </div>
-                      <label>Generate Rows
-                        <input type="number" id="generateRowsCount" min="0" value="1000">
-                      </label>
+                      <div id="generateRowsCountControl"></div>
                       <label>Output Format
                         <select id="generatorOutputFormat"></select>
                       </label>
@@ -70,8 +68,7 @@ function renderDataGeneratorPageShell({ parentElement }) {
                         <strong id="generatorPreviewHeading">Preview</strong>
                     </div>
                       <div class="generator-preview-controls" id="generatorPreviewControlsSection" data-subsection-order="1" aria-label="Preview Controls">
-                        <label for="previewRowsCount" class="generator-preview-count-label">Preview Items Count</label>
-                        <input type="number" id="previewRowsCount" min="0" max="50" value="10">
+                        <div id="previewRowsCountControl"></div>
                         <span class="generator-button-with-help">
                           <span
                             class="helpicon"

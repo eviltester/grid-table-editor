@@ -22,9 +22,9 @@ describe('test-data-grid ui bindings', () => {
   });
 
   test('bindGenerateCountInput normalizes invalid values to 1', () => {
-    document.body.innerHTML = '<input type="number" id="generateCount" />';
+    document.body.innerHTML = '<div id="generateCountControl"></div>';
 
-    bindGenerateCountInput();
+    bindGenerateCountInput({ documentObj: document });
     const input = document.getElementById('generateCount');
     expect(input.value).toBe('1');
 

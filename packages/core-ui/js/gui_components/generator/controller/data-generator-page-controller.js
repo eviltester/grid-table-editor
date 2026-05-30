@@ -147,6 +147,7 @@ class DataGeneratorPage {
     this.lastPreviewDataTable = undefined;
     this.semanticValidationTimers = new Map();
     this.dragState = null;
+    this.rowCountControls = [];
   }
 
   get schemaRows() {
@@ -406,6 +407,8 @@ class DataGeneratorPage {
   destroy() {
     this.clearAllSemanticValidationTimers();
     this.clearDragState();
+    this.rowCountControls.forEach((control) => control?.destroy?.());
+    this.rowCountControls = [];
   }
 
   clearDragState() {

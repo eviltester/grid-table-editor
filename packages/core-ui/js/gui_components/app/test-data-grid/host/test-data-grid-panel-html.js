@@ -10,7 +10,7 @@ function renderTestDataGenerationPanel({ parentElem, TEST_DATA_MODES }) {
             <button id="generatedata">Generate</button>
             <button id="generateallpairs" style="display:none;">Generate Pairwise</button>
             <button id="refreshtestdatapreview">Refresh Text Preview</button>
-            <label> How Many?<input type="number" id="generateCount" min="1" step="1"/></label>
+            <span id="generateCountControl"></span>
             <label><input type="radio" name="testDataGenerationMode" value="${TEST_DATA_MODES.NEW_TABLE}" checked>New Table</label>
             <label><input type="radio" name="testDataGenerationMode" value="${TEST_DATA_MODES.AMEND_TABLE}">Amend Table</label>
             <label><input type="radio" name="testDataGenerationMode" value="${TEST_DATA_MODES.AMEND_SELECTED}">Amend Selected</label>

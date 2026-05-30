@@ -53,7 +53,9 @@ class GeneratorPreviewComponent {
 
   async expectReadOnly() {
     const firstCell = this.rows.first().locator('.tabulator-cell').first();
-    const editingInputs = this.previewGrid.locator('.tabulator-editing input, .tabulator-editing textarea, .tabulator-editing select');
+    const editingInputs = this.previewGrid.locator(
+      '.tabulator-editing input, .tabulator-editing textarea, .tabulator-editing select'
+    );
 
     await expect(firstCell).toBeVisible();
     await firstCell.dblclick();

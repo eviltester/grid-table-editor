@@ -3,7 +3,7 @@ import { DragDropControl } from './drag-drop-control.js';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 import { sanitizeUiOptionsForFormat, createOptionsPanelsForParent } from '../generator/options/index.js';
 import { createConfirmDialogService } from '../shared/dialog-services/index.js';
-import { createTimedErrorPresenter } from '../shared/timed-error-display.js';
+import { createTimedStatusPresenter } from '../shared/timed-error-display.js';
 import { scheduleTimeout } from '../shared/unref-timeout.js';
 
 function getDefaultDocumentObj() {
@@ -45,7 +45,7 @@ class ImportExportControls {
             <div id="import-progress-status" class="import-progress-status" style="display:none;" aria-live="polite"></div>
             <div id="import-export-error" class="generator-schema-error-text" aria-live="polite" role="status"></div>
         `;
-    this.errorDisplay = createTimedErrorPresenter({
+    this.errorDisplay = createTimedStatusPresenter({
       documentObj: this.documentObj,
       elementId: 'import-export-error',
       timeoutMs: 5000,

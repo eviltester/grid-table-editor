@@ -4,9 +4,10 @@
  * - Handles delayed status reset timing and lightweight UI-yield helper.
  */
 
-import { createStatusPresenter } from '../../../shared/test-data/ui/index.js';
+import { createLoadingStatusPresenter, createStatusPresenter } from '../../../shared/test-data/ui/index.js';
 
 let testDataStatusPresenter = null;
+let testDataLoadingStatusPresenter = null;
 let testDataStatusPresenterDocument = null;
 
 function getStatusPresenter() {
@@ -27,12 +28,35 @@ function getStatusPresenter() {
   return testDataStatusPresenter;
 }
 
-function setTestDataStatus(message, isLoading) {
-  getStatusPresenter().setStatus(message, isLoading);
+function getLoadingStatusPresenter() {
+  const documentObj = typeof document !== 'undefined' ? document : null;
+  if (testDataLoadingStatusPresenter && testDataStatusPresenterDocument === documentObj) {
+    return testDataLoadingStatusPresenter;
+  }
+  if (testDataLoadingStatusPresenter && testDataStatusPresenterDocument !== documentObj) {
+    testDataLoadingStatusPresenter.clearPendingReset();
+  }
+  testDataLoadingStatusPresenter = createLoadingStatusPresenter({
+    documentObj,
+    elementId: 'testdata-status',
+    hideWhenEmpty: true,
+    visibleDisplay: 'inline-block',
+  });
+  testDataStatusPresenterDocument = documentObj;
+  return testDataLoadingStatusPresenter;
+}
+
+function setTestDataStatus(message, options = {}) {
+  getStatusPresenter().setStatus(message, options);
+}
+
+function setTestDataLoadingStatus(message) {
+  getLoadingStatusPresenter().setStatus(message);
 }
 
 function clearPendingTestDataStatusReset() {
   getStatusPresenter().clearPendingReset();
+  getLoadingStatusPresenter().clearPendingReset();
 }
 
 function scheduleTestDataStatusReset(delayMs = 1800) {
@@ -49,4 +73,10 @@ function yieldToUi() {
   });
 }
 
-export { setTestDataStatus, clearPendingTestDataStatusReset, scheduleTestDataStatusReset, yieldToUi };
+export {
+  setTestDataStatus,
+  setTestDataLoadingStatus,
+  clearPendingTestDataStatusReset,
+  scheduleTestDataStatusReset,
+  yieldToUi,
+};

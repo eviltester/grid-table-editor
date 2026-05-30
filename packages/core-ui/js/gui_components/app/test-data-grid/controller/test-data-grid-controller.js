@@ -24,6 +24,7 @@ import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-tab
 import { FAKER_COMMANDS, identifyFakerCommands, getMethodPickerOptions } from '../schema/index.js';
 import {
   setTestDataStatus,
+  setTestDataLoadingStatus,
   clearPendingTestDataStatusReset,
   scheduleTestDataStatusReset,
   yieldToUi,
@@ -75,6 +76,7 @@ function createTestDataGridControl({
   setupTestDataGenerationPanelFn = setupTestDataGenerationPanel,
   showSchemaErrorFn = showSchemaError,
   setTestDataStatusFn = setTestDataStatus,
+  setTestDataLoadingStatusFn = setTestDataLoadingStatus,
   clearPendingStatusResetFn = clearPendingTestDataStatusReset,
   scheduleStatusResetFn = scheduleTestDataStatusReset,
   yieldToUiFn = yieldToUi,
@@ -176,6 +178,7 @@ function createTestDataGridControl({
       debouncer: state.debouncer,
       syncSchemaTextFromGridBeforeGenerate: () => state.schemaGridController?.syncSchemaTextFromGridBeforeGenerate?.(),
       setTestDataStatus: setTestDataStatusFn,
+      setTestDataLoadingStatus: setTestDataLoadingStatusFn,
       showSchemaError: showTestDataSchemaError,
       yieldToUi: yieldToUiFn,
       getSchemaText: getSchemaTextFromEditor,

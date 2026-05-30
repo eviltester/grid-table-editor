@@ -51,6 +51,15 @@ class GeneratorPreviewComponent {
     return values;
   }
 
+  async expectReadOnly() {
+    const firstCell = this.rows.first().locator('.tabulator-cell').first();
+    const editingInputs = this.previewGrid.locator('.tabulator-editing input, .tabulator-editing textarea, .tabulator-editing select');
+
+    await expect(firstCell).toBeVisible();
+    await firstCell.dblclick();
+    await expect(editingInputs).toHaveCount(0);
+  }
+
   async _columnIndexByName(columnName) {
     const expected = String(columnName || '')
       .split('\n')[0]

@@ -50,6 +50,7 @@ describe('test data schema editor compatibility', () => {
     expect(document.querySelector('#testDataSchemaRows')).toBeTruthy();
     expect(document.querySelector('#testDataAddSchemaRowButton')).toBeTruthy();
     expect(document.querySelector('#testDataSchemaText')).toBeTruthy();
+    expect(document.getElementById('testdata-schema-error').style.display).toBe('none');
   });
 
   test('mode radios update How Many from grid context', () => {

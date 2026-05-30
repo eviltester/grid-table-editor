@@ -4,8 +4,8 @@
  * - Keeps shell rendering, preview-grid setup, and button wiring out of the main page class.
  */
 
-import { createTimedErrorPresenter } from '../../shared/timed-error-display.js';
-import { createStatusPresenter } from '../../shared/test-data/ui/index.js';
+import { createTimedStatusPresenter } from '../../shared/timed-error-display.js';
+import { createLoadingStatusPresenter, createStatusPresenter } from '../../shared/test-data/ui/index.js';
 import { createRowCountControl } from '../../shared/row-count-control/index.js';
 import { renderDataGeneratorPageShell } from './data-generator-page-layout.js';
 
@@ -95,12 +95,17 @@ function initializeDataGeneratorPageHost({ page, createOptionsPanelsForParentFn,
   renderDataGeneratorPageShell({ parentElement: page.parentElement });
   page.rowCountControls = bindGeneratorRowCountControls({ page });
 
-  page.schemaErrorDisplay = createTimedErrorPresenter({
+  page.schemaErrorDisplay = createTimedStatusPresenter({
     documentObj: page.documentObj,
     elementId: 'generatorSchemaErrorText',
     timeoutMs: 5000,
   });
   page.statusPresenter = createStatusPresenter({
+    documentObj: page.documentObj,
+    elementId: 'generatorStatusText',
+    hideWhenEmpty: false,
+  });
+  page.loadingStatusPresenter = createLoadingStatusPresenter({
     documentObj: page.documentObj,
     elementId: 'generatorStatusText',
     hideWhenEmpty: false,
@@ -116,8 +121,6 @@ function initializeDataGeneratorPageHost({ page, createOptionsPanelsForParentFn,
     layout: 'fitDataStretch',
     columnDefaults: {
       resizable: true,
-      editor: 'input',
-      editorParams: { selectContents: true },
       headerFilter: 'input',
       headerFilterFunc: 'like',
       sorter: 'string',

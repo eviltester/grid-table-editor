@@ -3,6 +3,7 @@ import { DataGeneratorPage } from './gui_components/generator/index.js';
 import { faker } from '@faker-js/faker';
 import { initHelpTooltips } from './help/help-tooltips.js';
 import { initThemeToggle } from './gui_components/shared/theme-toggle.js';
+import { createPageStartupLoadingStatus } from './gui_components/shared/page-startup-loading-status.js';
 
 async function bootstrapGeneratorPage({
   documentObj = document,
@@ -11,11 +12,17 @@ async function bootstrapGeneratorPage({
   fakerInstance = faker,
 } = {}) {
   initThemeToggle({ documentObj, windowObj: documentObj?.defaultView || window });
+  const startupLoadingStatus = createPageStartupLoadingStatus({
+    documentObj,
+    elementId: 'generator-initial-load',
+  });
+  startupLoadingStatus.show();
 
   try {
     await ensureGridLibraryLoadedFn({ engine: 'tabulator', document: documentObj });
   } catch (error) {
     console.error('Failed to load tabulator library', error);
+    startupLoadingStatus.fail();
     return;
   }
 
@@ -29,10 +36,7 @@ async function bootstrapGeneratorPage({
   page.init();
   initHelpTooltips({ documentObj });
 
-  const loadingMessage = documentObj.getElementById('generator-initial-load');
-  if (loadingMessage) {
-    loadingMessage.remove();
-  }
+  startupLoadingStatus.clear();
 }
 
 if (typeof document !== 'undefined') {

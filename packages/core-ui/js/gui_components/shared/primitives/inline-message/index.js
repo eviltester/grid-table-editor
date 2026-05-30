@@ -16,8 +16,8 @@ function createInlineMessageComponent({ root, props = {} } = {}) {
     update(nextProps) {
       controller.updateProps(nextProps);
     },
-    setStatus(message, isLoading = false) {
-      controller.setStatus(message, isLoading);
+    setStatus(message, options = {}) {
+      controller.setStatus(message, options);
     },
     show(message, options = {}) {
       controller.show(message, options);

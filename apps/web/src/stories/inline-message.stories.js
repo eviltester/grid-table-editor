@@ -15,6 +15,7 @@ function renderInlineMessageStory(args) {
   `;
 
   const messageRoot = document.createElement('div');
+  messageRoot.className = 'import-progress-status';
   messageRoot.setAttribute('role', 'status');
   messageRoot.setAttribute('aria-live', 'polite');
   messageRoot.style.minHeight = '1.5rem';
@@ -61,7 +62,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'InlineMessage is a low-level UI primitive used underneath `createStatusPresenter` and `createTimedErrorPresenter`. These stories document the primitive itself, while most page-facing code should prefer the presenter/service APIs layered on top of it. Loading status mode now renders a visible spinner indicator so reviewers can distinguish active work from sticky warnings or static errors.',
+          'InlineMessage is a low-level UI primitive used underneath `createStatusPresenter`, `createLoadingStatusPresenter`, and `createTimedStatusPresenter`. These stories document the primitive itself, while most page-facing code should prefer the presenter/service APIs layered on top of it. Loading status mode now renders a visible spinner indicator so reviewers can distinguish active work from sticky warnings or static errors.',
       },
     },
   },
@@ -77,12 +78,13 @@ const meta = {
     },
     severity: {
       control: 'radio',
-      options: ['error', 'warning', 'info'],
-      description: 'Severity applied through `data-severity` in timed-message mode.',
+      options: ['normal', 'error', 'warning', 'info'],
+      description: 'Severity applied through `data-severity` in timed-message mode. `normal` clears severity styling.',
     },
     isLoading: {
       control: 'boolean',
-      description: 'Whether the loading class should be visible when the message is shown.',
+      description:
+        'Whether the message should render in loading mode, which applies the loading class and shows the spinner while a message is present.',
     },
     hideWhenEmpty: {
       control: 'boolean',
@@ -102,7 +104,8 @@ const meta = {
     },
     loadingClassName: {
       control: 'text',
-      description: 'Class name toggled while the message is in loading mode.',
+      description:
+        'Class name applied to the root element while the message is in loading mode, and removed otherwise.',
     },
   },
   args: {
@@ -145,7 +148,7 @@ export const StatusLoading = {
   },
 };
 
-export const TimedErrorAutoClear = {
+export const TimedStatusAutoClear = {
   args: {
     mode: 'timed',
     message: 'Schema invalid',
@@ -158,7 +161,7 @@ export const TimedErrorAutoClear = {
     docs: {
       description: {
         story:
-          'Timed error mode. Click **Show** to simulate a transient schema or import/export error. The surface applies `data-severity="error"` and then clears itself after the configured timeout.',
+          'Timed status mode. Click **Show** to simulate a transient schema or import/export error. The surface applies `data-severity="error"` and then clears itself after the configured timeout.',
       },
     },
   },
@@ -166,13 +169,52 @@ export const TimedErrorAutoClear = {
     const canvas = within(canvasElement);
     const status = canvas.getByRole('status');
 
-    await step('Show timed inline error', async () => {
+    await step('Show timed inline status', async () => {
       await userEvent.click(canvas.getByRole('button', { name: 'Show' }));
       await expect(status).toHaveTextContent('Schema invalid');
       await expect(status).toHaveAttribute('data-severity', 'error');
     });
 
-    await step('Auto clear removes the inline error', async () => {
+    await step('Auto clear removes the inline status', async () => {
+      await waitFor(
+        () => {
+          expect(status.textContent).toBe('');
+          expect(status).not.toHaveAttribute('data-severity');
+        },
+        { timeout: 2000 }
+      );
+    });
+  },
+};
+
+export const TimedNormalStatusAutoClear = {
+  args: {
+    mode: 'timed',
+    message: 'Text preview refreshed.',
+    severity: 'normal',
+    sticky: false,
+    timeoutMs: 700,
+  },
+  render: renderInlineMessageStory,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Timed normal-status mode. Click **Show** to simulate a short-lived success or informational status such as `Text preview refreshed.` The message auto-clears without applying a `data-severity` attribute.',
+      },
+    },
+  },
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+    const status = canvas.getByRole('status');
+
+    await step('Show timed normal status', async () => {
+      await userEvent.click(canvas.getByRole('button', { name: 'Show' }));
+      await expect(status).toHaveTextContent('Text preview refreshed.');
+      await expect(status).not.toHaveAttribute('data-severity');
+    });
+
+    await step('Auto clear removes the normal status', async () => {
       await waitFor(
         () => {
           expect(status.textContent).toBe('');

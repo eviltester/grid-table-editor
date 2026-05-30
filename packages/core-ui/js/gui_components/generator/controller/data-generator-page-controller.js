@@ -325,8 +325,12 @@ class DataGeneratorPage {
     }
   }
 
-  setGenerationStatus(message, isLoading = false) {
-    this.statusPresenter?.setStatus(message, isLoading);
+  setGenerationStatus(message, options = {}) {
+    this.statusPresenter?.setStatus(message, options);
+  }
+
+  showGenerationLoadingStatus(message) {
+    this.loadingStatusPresenter?.setStatus(message);
   }
 
   clearGenerationStatus() {
@@ -345,7 +349,7 @@ class DataGeneratorPage {
     if (useSchemaStatus) {
       this.showSchemaErrorStatus(text);
     } else {
-      this.setGenerationStatus(text, false);
+      this.setGenerationStatus(text, { severity: 'error', dismissable: true });
       this.scheduleClearGenerationStatus(5000);
     }
   }
@@ -829,7 +833,8 @@ class DataGeneratorPage {
       exporter: this.exporter,
       clearGenerationStatus: () => this.clearGenerationStatus(),
       setGenerationButtonBusy: (isBusy) => this.setGenerationButtonBusy(isBusy),
-      setGenerationStatus: (message, isLoading) => this.setGenerationStatus(message, isLoading),
+      setGenerationStatus: (message) => this.setGenerationStatus(message),
+      showGenerationLoadingStatus: (message) => this.showGenerationLoadingStatus(message),
       buildDataTable: (generator, rowCount) => this.buildDataTable(generator, rowCount),
       DownloadClass: this.DownloadClass,
       surfacePageError: (message, options) => this.surfacePageError(message, options),
@@ -846,7 +851,8 @@ class DataGeneratorPage {
       exporter: this.exporter,
       clearGenerationStatus: () => this.clearGenerationStatus(),
       setGenerationButtonBusy: (isBusy) => this.setGenerationButtonBusy(isBusy),
-      setGenerationStatus: (message, isLoading) => this.setGenerationStatus(message, isLoading),
+      setGenerationStatus: (message) => this.setGenerationStatus(message),
+      showGenerationLoadingStatus: (message) => this.showGenerationLoadingStatus(message),
       buildAllPairsDataTable: (generator) => this.buildAllPairsDataTable(generator),
       DownloadClass: this.DownloadClass,
       surfacePageError: (message, options) => this.surfacePageError(message, options),

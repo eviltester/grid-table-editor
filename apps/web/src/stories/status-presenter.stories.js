@@ -1,8 +1,11 @@
 import { expect, userEvent, within } from 'storybook/test';
 import { createStatusPresenter } from '../../../../packages/core-ui/js/gui_components/shared/test-data/ui/index.js';
 
+let statusPresenterStoryInstanceCounter = 0;
+
 function renderStatusPresenterStory(args) {
   const root = document.createElement('section');
+  const statusElementId = `storybook-status-presenter-${++statusPresenterStoryInstanceCounter}`;
   root.style.display = 'grid';
   root.style.gap = '0.75rem';
 
@@ -11,19 +14,22 @@ function renderStatusPresenterStory(args) {
       <button type="button" data-action="show">Show status</button>
       <button type="button" data-action="clear">Clear status</button>
     </div>
-    <div id="storybook-status-presenter" role="status" aria-live="polite" style="min-height:1.5rem;"></div>
+    <div id="${statusElementId}" class="import-progress-status" role="status" aria-live="polite" style="min-height:1.5rem;"></div>
   `;
 
   const presenter = createStatusPresenter({
     documentObj: document,
-    elementId: 'storybook-status-presenter',
+    elementId: statusElementId,
     hideWhenEmpty: args.hideWhenEmpty,
-    loadingClassName: args.loadingClassName,
+    statusClassName: args.statusClassName,
     visibleDisplay: args.visibleDisplay,
   });
 
   root.querySelector('[data-action="show"]')?.addEventListener('click', () => {
-    presenter.setStatus(args.message, args.isLoading);
+    presenter.setStatus(args.message, {
+      severity: args.severity,
+      dismissable: args.dismissable,
+    });
   });
   root.querySelector('[data-action="clear"]')?.addEventListener('click', () => {
     presenter.clear();
@@ -39,7 +45,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Service-level Storybook coverage for `createStatusPresenter`, the app/generator status API layered over the inline-message primitive. This story demonstrates the presenter API directly, without page bootstrap.',
+          'Service-level Storybook coverage for `createStatusPresenter`, the non-loading app/generator status API layered over the inline-message primitive. Use this for completion, informational, warning, and error status messages that should not show the loading spinner. Dismissable statuses render a small close button that clears the message using the same shared clear path.',
       },
     },
   },
@@ -48,17 +54,22 @@ const meta = {
       control: 'text',
       description: 'Status message rendered when the presenter is asked to show status.',
     },
-    isLoading: {
-      control: 'boolean',
-      description: 'Whether the status presenter should apply its loading class while the status is visible.',
-    },
     hideWhenEmpty: {
       control: 'boolean',
       description: 'Whether the status root is hidden when there is no message.',
     },
-    loadingClassName: {
+    severity: {
+      control: 'radio',
+      options: ['normal', 'info', 'warning', 'error'],
+      description: 'Visual/status severity for the non-loading status surface.',
+    },
+    dismissable: {
+      control: 'boolean',
+      description: 'Whether the status shows a close button that clears the current message.',
+    },
+    statusClassName: {
       control: 'text',
-      description: 'Class applied while the presenter is showing a loading state.',
+      description: 'Reserved class name for status-surface styling when the loading presenter targets the same root.',
     },
     visibleDisplay: {
       control: 'text',
@@ -66,23 +77,24 @@ const meta = {
     },
   },
   args: {
-    message: 'Preparing export...',
-    isLoading: true,
+    message: 'Generate complete. Refresh text preview if needed.',
     hideWhenEmpty: true,
-    loadingClassName: 'is-loading',
+    severity: 'normal',
+    dismissable: false,
+    statusClassName: 'is-loading',
     visibleDisplay: 'inline-block',
   },
 };
 
 export default meta;
 
-export const LoadingStatus = {
+export const CompletionStatus = {
   render: renderStatusPresenterStory,
   parameters: {
     docs: {
       description: {
         story:
-          'Click **Show status** to demonstrate the presenter-driven loading state used in app and generator flows. The status should show both text and a spinner indicator. Then click **Clear status** to confirm the message disappears, and click **Show status** again to verify the presenter can re-show the same status cleanly.',
+          'Click **Show status** to demonstrate the non-loading completion state used by the app after generation steps such as `Generated 9 pairwise combinations.` and `Generate complete. Refresh text preview if needed.` This mode keeps the status visible without the loading spinner until a later action replaces it or the host clears it.',
       },
     },
   },
@@ -93,17 +105,43 @@ export const LoadingStatus = {
     const status = canvas.getByRole('status');
 
     await userEvent.click(showButton);
-    await expect(status).toHaveTextContent('Preparing export...');
-    await expect(status).toHaveClass('is-loading');
-    expect(status.querySelector('[data-role="loading-indicator"]')?.style.display).toBe('inline-block');
+    await expect(status).toHaveTextContent('Generate complete. Refresh text preview if needed.');
+    await expect(status).not.toHaveClass('is-loading');
+    expect(status.querySelector('[data-role="loading-indicator"]')?.style.display).toBe('none');
 
     await userEvent.click(clearButton);
     await expect(status).toHaveTextContent('');
     await expect(status).not.toHaveClass('is-loading');
+  },
+};
+
+export const DismissableStatus = {
+  args: {
+    message: 'Schema validation failed.',
+    severity: 'error',
+    dismissable: true,
+  },
+  render: renderStatusPresenterStory,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Click **Show status** to demonstrate a dismissable non-loading status message. This example uses `severity: "error"` to mirror current page-level failure statuses, but the same dismissable pattern can also be used with other non-loading status severities.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const showButton = canvas.getByRole('button', { name: 'Show status' });
+    const status = canvas.getByRole('status');
 
     await userEvent.click(showButton);
-    await expect(status).toHaveTextContent('Preparing export...');
-    await expect(status).toHaveClass('is-loading');
-    expect(status.querySelector('[data-role="loading-indicator"]')?.style.display).toBe('inline-block');
+    await expect(status).toHaveTextContent('Schema validation failed.');
+    await expect(status).toHaveAttribute('data-severity', 'error');
+    await expect(status).not.toHaveClass('is-loading');
+
+    const dismissButton = within(status).getByRole('button', { name: 'Dismiss message' });
+    await userEvent.click(dismissButton);
+    await expect(status).toHaveTextContent('');
   },
 };

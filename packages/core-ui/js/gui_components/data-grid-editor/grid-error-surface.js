@@ -1,4 +1,4 @@
-import { createTimedErrorPresenter } from '../shared/timed-error-display.js';
+import { createTimedStatusPresenter } from '../shared/timed-error-display.js';
 
 const GRID_ERROR_ELEMENT_ID = 'grid-column-error';
 const sharedGridErrorSurfacesByDocument = new WeakMap();
@@ -22,7 +22,7 @@ function getGridErrorDisplay(documentObj = document) {
     return missingGridErrorSurface;
   }
 
-  const display = createTimedErrorPresenter({
+  const display = createTimedStatusPresenter({
     documentObj,
     elementId: GRID_ERROR_ELEMENT_ID,
     timeoutMs: 5000,

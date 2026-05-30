@@ -1,8 +1,13 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
-import { createTimedErrorPresenter, TimedErrorDisplay } from '../../../js/gui_components/shared/timed-error-display.js';
+import {
+  createTimedErrorPresenter,
+  createTimedStatusPresenter,
+  TimedErrorDisplay,
+  TimedStatusDisplay,
+} from '../../../js/gui_components/shared/timed-error-display.js';
 
-describe('TimedErrorDisplay', () => {
+describe('TimedStatusDisplay', () => {
   let dom;
 
   beforeEach(() => {
@@ -73,8 +78,8 @@ describe('TimedErrorDisplay', () => {
     expect(replacement.getAttribute('data-severity')).toBe('warning');
   });
 
-  test('createTimedErrorPresenter returns the same timed behavior through the service-style API', () => {
-    const presenter = createTimedErrorPresenter({
+  test('createTimedStatusPresenter returns the same timed behavior through the service-style API', () => {
+    const presenter = createTimedStatusPresenter({
       documentObj: dom.window.document,
       elementId: 'error',
       timeoutMs: 5000,
@@ -88,5 +93,29 @@ describe('TimedErrorDisplay', () => {
     presenter.clear();
     expect(element.textContent).toBe('');
     expect(element.hasAttribute('data-severity')).toBe(false);
+  });
+
+  test('createTimedStatusPresenter supports normal severity without setting data-severity', () => {
+    const presenter = createTimedStatusPresenter({
+      documentObj: dom.window.document,
+      elementId: 'error',
+      timeoutMs: 5000,
+    });
+    const element = dom.window.document.getElementById('error');
+
+    presenter.show('Text preview refreshed.', { severity: 'normal' });
+    expect(element.textContent).toBe('Text preview refreshed.');
+    expect(element.hasAttribute('data-severity')).toBe(false);
+  });
+
+  test('legacy timed-error exports still point at the timed-status implementation', () => {
+    expect(createTimedErrorPresenter).toBe(createTimedStatusPresenter);
+    const display = new TimedErrorDisplay({
+      documentObj: dom.window.document,
+      elementId: 'error',
+      timeoutMs: 5000,
+    });
+
+    expect(display).toBeInstanceOf(TimedStatusDisplay);
   });
 });

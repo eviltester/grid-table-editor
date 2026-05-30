@@ -22,6 +22,11 @@ describe('generator bootstrap', () => {
     const calls = [];
     const ensureGridLibraryLoadedFn = jest.fn(() => {
       calls.push('load');
+      const loadingMessage = dom.window.document.getElementById('generator-initial-load');
+      expect(loadingMessage).not.toBeNull();
+      expect(loadingMessage.textContent).toContain('Please Wait, Loading Libraries...');
+      expect(loadingMessage.classList.contains('is-loading')).toBe(true);
+      expect(loadingMessage.querySelector('[data-role="loading-indicator"]')).not.toBeNull();
       return Promise.resolve();
     });
     class DataGeneratorPageClass {
@@ -66,5 +71,9 @@ describe('generator bootstrap', () => {
 
     expect(initSpy).not.toHaveBeenCalled();
     expect(consoleSpy).toHaveBeenCalled();
+    const loadingMessage = dom.window.document.getElementById('generator-initial-load');
+    expect(loadingMessage).not.toBeNull();
+    expect(loadingMessage.textContent).toContain('Failed to load libraries. Check console for details.');
+    expect(loadingMessage.classList.contains('is-loading')).toBe(false);
   });
 });

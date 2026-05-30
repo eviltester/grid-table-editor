@@ -234,26 +234,29 @@ Current status:
 Why this phase comes next:
 
 - `createStatusPresenter` is already shared between the app test-data panel and the generator page, but it still exists as a lightweight helper rather than a standardized component/service boundary.
-- `TimedErrorDisplay` is already shared across generator schema errors, app schema text-sync errors, import/export errors, and grid column/header errors.
+- `TimedStatusDisplay` is already shared across generator schema errors, app schema text-sync errors, import/export errors, and grid column/header errors.
 - These are good next candidates because they are small, visible, cross-cutting UI surfaces with real reuse, but they do not force us into a large feature extraction yet.
 - Migrating them next helps establish a consistent pattern for injected status/error services before we tackle broader features such as `GeneratorControls`, `SharedSchemaDefinition`, or `FormatOptionsPanel`.
 
 - [x] Convert `StatusPresenter` into a component-shaped API or adapter-compatible service.
-- [x] Convert `TimedErrorDisplay` usage into an injectable status/error service where practical.
-- [x] Replace direct `new TimedErrorDisplay(...)` construction in import/export controls and grid error surfaces with the shared timed-error presenter/service boundary.
+- [x] Convert `TimedStatusDisplay` usage into an injectable timed-status service where practical.
+- [x] Replace direct `new TimedStatusDisplay(...)` construction in import/export controls and grid error surfaces with the shared timed-status presenter/service boundary.
 - [x] Wrap confirm and text-input modal usage behind services.
-- [x] Create Storybook stories for status, timed error, confirm dialog, and text input dialog.
+- [x] Create Storybook stories for status, timed status, confirm dialog, and text input dialog.
 - [x] Ensure each story can mount without page bootstrap.
 
 Current status:
 
 - `createStatusPresenter` now delegates to the shared `InlineMessage` component while preserving the existing app and generator presenter API.
-- `TimedErrorDisplay` now exposes a service-style `createTimedErrorPresenter(...)` boundary while keeping the legacy class adapter available, so timed error surfaces and status surfaces share one tested rendering/timing model.
-- Import/export errors and grid column/header errors now use the shared timed-error presenter boundary rather than constructing their own message helpers or talking to the lower-level inline-message primitive directly.
+- The app and generator startup "Please Wait, Loading Libraries..." surfaces now adopt the shared status-presenter loading path during bootstrap, while keeping static HTML fallback text for pre-JS first paint.
+- The shared status layer now distinguishes non-loading `createStatusPresenter(...)` flows from `createLoadingStatusPresenter(...)` flows so completion/status stories cannot be configured with loading-mode behavior by mistake.
+- The non-loading `createStatusPresenter(...)` path now supports explicit `severity` (`normal`, `info`, `warning`, `error`) and optional dismissable statuses, so page-level completion and failure/status messages can share one honest API without reintroducing loading-mode configuration.
+- `TimedStatusDisplay` now exposes a service-style `createTimedStatusPresenter(...)` boundary while keeping the legacy timed-error adapter available, so transient error/status surfaces and persistent status surfaces share one tested rendering/timing model.
+- Import/export errors and grid column/header errors now use the shared timed-status presenter boundary rather than constructing their own message helpers or talking to the lower-level inline-message primitive directly.
 - The lower-level `InlineMessage` implementation now lives under `shared/primitives/inline-message/` to signal that page/features should usually prefer the presenter/service APIs above it.
 - `InlineMessage` has Storybook coverage for status-loading, timed auto-clear, and sticky warning modes, plus focused controller/view adapter tests.
 - Confirm and text-input modal usage now flows through shared dialog services rather than direct modal helper imports at call sites.
-- Storybook now documents the service-level APIs for status presenter, timed error presenter, confirm dialog, and text-input dialog with small reviewer-facing harnesses.
+- Storybook now documents the service-level APIs for status presenter, timed status presenter, confirm dialog, and text-input dialog with small reviewer-facing harnesses.
 
 ### Phase 2: Format Options Components
 

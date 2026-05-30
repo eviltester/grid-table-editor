@@ -7,6 +7,7 @@ describe('script bootstrap', () => {
 
   beforeEach(() => {
     dom = new JSDOM(`<!doctype html><html><body>
+            <p id="initial-load" class="import-progress-status startup-loading-status">Please Wait, Loading Libraries...</p>
             <div id="main-grid-view"></div>
             <div id="import-export-controls"></div>
             <div id="tabbedTextArea"></div>
@@ -27,6 +28,11 @@ describe('script bootstrap', () => {
 
     const ensureGridLibraryLoadedFn = jest.fn(() => {
       calls.push('ensureGridLibraryLoaded');
+      const loadingMessage = dom.window.document.getElementById('initial-load');
+      expect(loadingMessage).not.toBeNull();
+      expect(loadingMessage.textContent).toContain('Please Wait, Loading Libraries...');
+      expect(loadingMessage.classList.contains('is-loading')).toBe(true);
+      expect(loadingMessage.querySelector('[data-role="loading-indicator"]')).not.toBeNull();
       return Promise.resolve();
     });
 
@@ -76,6 +82,7 @@ describe('script bootstrap', () => {
 
     expect(calls[0]).toBe('ensureGridLibraryLoaded');
     expect(calls[1]).toBe('createChildGrid');
+    expect(dom.window.document.getElementById('initial-load')).toBeNull();
   });
 
   test('returns early when grid library fails to load', async () => {
@@ -106,6 +113,10 @@ describe('script bootstrap', () => {
 
     expect(calls).toEqual([]);
     expect(consoleSpy).toHaveBeenCalled();
+    const loadingMessage = dom.window.document.getElementById('initial-load');
+    expect(loadingMessage).not.toBeNull();
+    expect(loadingMessage.textContent).toContain('Failed to load libraries. Check console for details.');
+    expect(loadingMessage.classList.contains('is-loading')).toBe(false);
   });
 
   test('wires controller and test data integration without scheduling instructions import', async () => {

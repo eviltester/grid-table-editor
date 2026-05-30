@@ -509,26 +509,26 @@ body.theme-dark .helpicon {
   color: #6b3d00;
 }
 
-.import-progress-status.is-loading::before {
-  content: '';
-  display: inline-block;
-  width: 0.75rem;
-  height: 0.75rem;
-  margin-right: 0.45rem;
-  border: 2px solid #d5a56b;
-  border-top-color: #6b3d00;
-  border-radius: 50%;
-  animation: status-spinner 0.8s linear infinite;
-  vertical-align: -0.1rem;
+.import-progress-status[data-severity='error']:not(.is-loading) {
+  background: #fff1f1;
+  color: #8d1b1b;
+  border-color: #d64545;
 }
 
-@keyframes status-spinner {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.import-progress-status[data-severity='warning']:not(.is-loading) {
+  background: #fff7e8;
+  color: #7a4b00;
+  border-color: #e1aa4b;
+}
+
+.import-progress-status[data-severity='info']:not(.is-loading) {
+  background: #edf7f0;
+  color: #1b4332;
+  border-color: #74a892;
+}
+
+.startup-loading-status {
+  display: inline-block;
 }
 
 /* Data generator page */
@@ -610,8 +610,58 @@ body.theme-dark .helpicon {
   color: #1b4965;
 }
 
+.generator-status-text[data-severity='error'] {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  border: 1px solid #d64545;
+  border-radius: 4px;
+  background: #fff1f1;
+  color: #8d1b1b;
+  font-weight: 600;
+}
+
+.generator-status-text[data-severity='warning'] {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  border: 1px solid #e1aa4b;
+  border-radius: 4px;
+  background: #fff7e8;
+  color: #7a4b00;
+  font-weight: 600;
+}
+
+.generator-status-text[data-severity='info'] {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  border: 1px solid #74a892;
+  border-radius: 4px;
+  background: #edf7f0;
+  color: #1b4332;
+}
+
 body.theme-dark .generator-status-text {
   color: #b9d7ff;
+}
+
+body.theme-dark .import-progress-status[data-severity='error']:not(.is-loading),
+body.theme-dark .generator-status-text[data-severity='error'] {
+  background: #3a1d21;
+  color: #ffb8bf;
+  border-color: #d76a76;
+}
+
+body.theme-dark .import-progress-status[data-severity='warning']:not(.is-loading),
+body.theme-dark .generator-status-text[data-severity='warning'] {
+  background: #3a2d18;
+  color: #ffd28a;
+  border-color: #d3a65b;
+}
+
+body.theme-dark .import-progress-status[data-severity='info']:not(.is-loading),
+body.theme-dark .generator-status-text[data-severity='info'] {
+  background: #163126;
+  color: #b7e4c7;
+  border-color: #4f8a73;
 }
 
 .generator-schema {

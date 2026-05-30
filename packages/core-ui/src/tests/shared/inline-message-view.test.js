@@ -45,6 +45,25 @@ describe('InlineMessageView', () => {
     expect(root.hasAttribute('data-severity')).toBe(false);
   });
 
+  test('dismissable status renders a dismiss button that clears the message', () => {
+    const component = createInlineMessageComponent({ root });
+
+    component.setStatus('Schema validation failed.', {
+      severity: 'error',
+      dismissable: true,
+    });
+
+    const dismissButton = root.querySelector('[data-role="dismiss-button"]');
+    expect(root.textContent).toContain('Schema validation failed.');
+    expect(root.getAttribute('data-severity')).toBe('error');
+    expect(dismissButton?.style.display).toBe('inline-block');
+
+    dismissButton?.click();
+    expect(root.textContent).toBe('');
+    expect(root.hasAttribute('data-severity')).toBe(false);
+    expect(dismissButton?.style.display).toBe('none');
+  });
+
   test('destroy clears visible state from the root element', () => {
     const component = createInlineMessageComponent({
       root,

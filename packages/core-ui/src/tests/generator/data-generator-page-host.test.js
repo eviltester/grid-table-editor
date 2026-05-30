@@ -66,6 +66,8 @@ describe('generator host coordinator', () => {
 
     expect(document.getElementById('generatorSchemaRows')).not.toBeNull();
     expect(page.previewTableApi).toBeInstanceOf(FakeTabulator);
+    expect(page.previewTableApi.options.columnDefaults.editor).toBeUndefined();
+    expect(page.previewTableApi.options.columnDefaults.headerFilter).toBe('input');
     expect(page.previewGrid).toBeInstanceOf(FakeGridExtension);
     expect(page.exporter).toBeInstanceOf(FakeExporter);
     expect(page.renderSchemaRows).toHaveBeenCalled();

@@ -1,6 +1,6 @@
 import { createInlineMessageComponent } from './primitives/inline-message/index.js';
 
-function createTimedErrorPresenter({ documentObj = document, elementId, timeoutMs = 5000 } = {}) {
+function createTimedStatusPresenter({ documentObj = document, elementId, timeoutMs = 5000 } = {}) {
   let component = null;
   let rootElement = null;
 
@@ -20,10 +20,13 @@ function createTimedErrorPresenter({ documentObj = document, elementId, timeoutM
       root: nextRoot,
       props: {
         timeoutMs,
+        hideWhenEmpty: true,
       },
     });
     return component;
   };
+
+  getComponent();
 
   return {
     clear() {
@@ -40,9 +43,9 @@ function createTimedErrorPresenter({ documentObj = document, elementId, timeoutM
   };
 }
 
-export class TimedErrorDisplay {
+class TimedStatusDisplay {
   constructor(options = {}) {
-    this.presenter = createTimedErrorPresenter(options);
+    this.presenter = createTimedStatusPresenter(options);
   }
 
   clear() {
@@ -58,4 +61,8 @@ export class TimedErrorDisplay {
   }
 }
 
-export { createTimedErrorPresenter };
+class TimedErrorDisplay extends TimedStatusDisplay {}
+
+const createTimedErrorPresenter = createTimedStatusPresenter;
+
+export { createTimedStatusPresenter, createTimedErrorPresenter, TimedStatusDisplay, TimedErrorDisplay };

@@ -8,6 +8,7 @@ import { ImportExportControls } from './gui_components/app/import-export-control
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 import { initHelpTooltips } from './help/help-tooltips.js';
 import { initThemeToggle } from './gui_components/shared/theme-toggle.js';
+import { createPageStartupLoadingStatus } from './gui_components/shared/page-startup-loading-status.js';
 
 var importer, exporter;
 var mainDataGrid;
@@ -26,12 +27,18 @@ async function bootstrapApp({
   enableTestDataGenerationInterfaceFn = enableTestDataGenerationInterface,
 } = {}) {
   initThemeToggle({ documentObj, windowObj: documentObj?.defaultView || window });
+  const startupLoadingStatus = createPageStartupLoadingStatus({
+    documentObj,
+    elementId: 'initial-load',
+  });
+  startupLoadingStatus.show();
 
   console.log(`Using grid engine: ${activeGridEngineName}`);
   try {
     await ensureGridLibraryLoadedFn({ engine: activeGridEngineName });
   } catch (error) {
     console.error(`Failed to load ${activeGridEngineName} library`, error);
+    startupLoadingStatus.fail();
     return;
   }
 
@@ -56,10 +63,7 @@ async function bootstrapApp({
   initHelpTooltips({ documentObj, includeAppOnlyEntries: true });
   wireInstructionsSampleButton(documentObj);
 
-  const loadingMessage = documentObj.getElementById('initial-load');
-  if (loadingMessage) {
-    loadingMessage.remove();
-  }
+  startupLoadingStatus.clear();
 
   enableTestDataGenerationInterfaceFn(
     'testDataGeneratorContainer',

@@ -6,10 +6,13 @@ import { createInlineMessageComponent } from '../../primitives/inline-message/in
  * - Manages loading class toggling and timed clear lifecycle.
  */
 
-function createStatusPresenter({
+const inlineMessageRegistry = new WeakMap();
+
+function createBaseStatusPresenter({
   documentObj = document,
   elementId,
-  loadingClassName = 'is-loading',
+  statusClassName = 'is-loading',
+  loadingClassName,
   visibleDisplay = 'inline-block',
   hideWhenEmpty = false,
 } = {}) {
@@ -33,21 +36,30 @@ function createStatusPresenter({
       return component;
     }
 
-    component?.destroy?.();
     rootElement = nextRoot;
-    component = createInlineMessageComponent({
-      root: nextRoot,
-      props: {
+    component = inlineMessageRegistry.get(nextRoot);
+    if (!component) {
+      component = createInlineMessageComponent({
+        root: nextRoot,
+        props: {
+          hideWhenEmpty,
+          visibleDisplay,
+          loadingClassName: loadingClassName || statusClassName,
+        },
+      });
+      inlineMessageRegistry.set(nextRoot, component);
+    } else {
+      component.update({
         hideWhenEmpty,
         visibleDisplay,
-        loadingClassName,
-      },
-    });
+        loadingClassName: loadingClassName || statusClassName,
+      });
+    }
     return component;
   };
 
-  const setStatus = (message, isLoading = false) => {
-    ensureComponent()?.setStatus(message, isLoading);
+  const setStatus = (message, options = {}) => {
+    ensureComponent()?.setStatus(message, options);
   };
 
   const clearPendingReset = () => {
@@ -70,4 +82,34 @@ function createStatusPresenter({
   };
 }
 
-export { createStatusPresenter };
+function createStatusPresenter(options = {}) {
+  const presenter = createBaseStatusPresenter(options);
+
+  return {
+    clear: presenter.clear,
+    clearPendingReset: presenter.clearPendingReset,
+    scheduleClear: presenter.scheduleClear,
+    setStatus(message, options = {}) {
+      presenter.setStatus(message, {
+        severity: options?.severity || '',
+        dismissable: options?.dismissable === true,
+        isLoading: false,
+      });
+    },
+  };
+}
+
+function createLoadingStatusPresenter(options = {}) {
+  const presenter = createBaseStatusPresenter(options);
+
+  return {
+    clear: presenter.clear,
+    clearPendingReset: presenter.clearPendingReset,
+    scheduleClear: presenter.scheduleClear,
+    setStatus(message) {
+      presenter.setStatus(message, { isLoading: true });
+    },
+  };
+}
+
+export { createStatusPresenter, createLoadingStatusPresenter };

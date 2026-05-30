@@ -109,12 +109,12 @@ function renderGeneratorOutputPreview({ documentObj, getSelectedOutputType, last
   }
 }
 
-async function exportDataTableToDownload({ type, dataTable, exporter, DownloadClass, setGenerationStatus }) {
+async function exportDataTableToDownload({ type, dataTable, exporter, DownloadClass, showGenerationLoadingStatus }) {
   let text = '';
   if (typeof exporter.getDataTableAsAsync === 'function') {
     text = await exporter.getDataTableAsAsync(type, dataTable, (message) => {
       if (message) {
-        setGenerationStatus(message, true);
+        showGenerationLoadingStatus(message);
       }
     });
   } else {
@@ -195,6 +195,7 @@ async function generateGeneratorDataFile({
   clearGenerationStatus,
   setGenerationButtonBusy,
   setGenerationStatus,
+  showGenerationLoadingStatus,
   buildDataTable,
   DownloadClass,
   surfacePageError,
@@ -221,7 +222,7 @@ async function generateGeneratorDataFile({
 
   clearGenerationStatus();
   setGenerationButtonBusy(true);
-  setGenerationStatus(`Preparing ${type.toUpperCase()} export...`, true);
+  showGenerationLoadingStatus(`Preparing ${type.toUpperCase()} export...`);
 
   try {
     const dataTable = buildDataTable(configured.generator, rowCount.value);
@@ -232,14 +233,14 @@ async function generateGeneratorDataFile({
       dataTable,
       exporter,
       DownloadClass,
-      setGenerationStatus,
+      showGenerationLoadingStatus,
     });
     setGenerationStatus(`Download ready: ${filename}`);
     scheduleClearGenerationStatus();
   } catch (error) {
     console.error(error);
     surfacePageError('Unable to generate data file.');
-    setGenerationStatus('Failed to generate data file.');
+    setGenerationStatus('Failed to generate data file.', { severity: 'error', dismissable: true });
   } finally {
     setGenerationButtonBusy(false);
   }
@@ -253,6 +254,7 @@ async function generateGeneratorAllPairsDataFile({
   clearGenerationStatus,
   setGenerationButtonBusy,
   setGenerationStatus,
+  showGenerationLoadingStatus,
   buildAllPairsDataTable,
   DownloadClass,
   surfacePageError,
@@ -278,13 +280,13 @@ async function generateGeneratorAllPairsDataFile({
 
   clearGenerationStatus();
   setGenerationButtonBusy(true);
-  setGenerationStatus('Generating pairwise combinations...', true);
+  showGenerationLoadingStatus('Generating pairwise combinations...');
 
   try {
     const dataTable = buildAllPairsDataTable(configured.generator);
     if (!dataTable) {
       surfacePageError('Failed to generate pairwise data.');
-      setGenerationStatus('Pairwise generation failed.');
+      setGenerationStatus('Pairwise generation failed.', { severity: 'error', dismissable: true });
       return;
     }
 
@@ -295,14 +297,14 @@ async function generateGeneratorAllPairsDataFile({
       dataTable,
       exporter,
       DownloadClass,
-      setGenerationStatus,
+      showGenerationLoadingStatus,
     });
     setGenerationStatus(`Download ready: ${filename} (${dataTable.getRowCount()} combinations)`);
     scheduleClearGenerationStatus();
   } catch (error) {
     console.error(error);
     surfacePageError('Unable to generate pairwise data file.');
-    setGenerationStatus('Failed to generate pairwise data file.');
+    setGenerationStatus('Failed to generate pairwise data file.', { severity: 'error', dismissable: true });
   } finally {
     setGenerationButtonBusy(false);
   }

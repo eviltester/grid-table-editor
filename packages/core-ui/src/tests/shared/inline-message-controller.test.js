@@ -30,6 +30,22 @@ describe('InlineMessageController', () => {
     });
   });
 
+  test('setStatus supports severity and dismissable in non-loading mode', () => {
+    const controller = new InlineMessageController();
+
+    controller.setStatus('Schema validation failed.', {
+      severity: 'error',
+      dismissable: true,
+    });
+
+    expect(controller.getState()).toMatchObject({
+      message: 'Schema validation failed.',
+      severity: 'error',
+      dismissable: true,
+      isLoading: false,
+    });
+  });
+
   test('show auto clears after timeout and preserves severity before clearing', () => {
     const controller = new InlineMessageController({
       props: { timeoutMs: 2500 },

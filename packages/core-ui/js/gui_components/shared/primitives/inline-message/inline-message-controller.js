@@ -5,6 +5,7 @@ function normalizeProps(props = {}) {
     message: `${props.message ?? ''}`,
     severity: props.severity || '',
     isLoading: props.isLoading === true,
+    dismissable: props.dismissable === true,
     hideWhenEmpty: props.hideWhenEmpty === true,
     visibleDisplay: props.visibleDisplay || 'inline-block',
     loadingClassName: props.loadingClassName || 'is-loading',
@@ -41,6 +42,9 @@ class InlineMessageController {
       isLoading: Object.prototype.hasOwnProperty.call(nextProps, 'isLoading')
         ? nextProps.isLoading === true
         : this.state.isLoading,
+      dismissable: Object.prototype.hasOwnProperty.call(nextProps, 'dismissable')
+        ? nextProps.dismissable === true
+        : this.state.dismissable,
     };
     this.emitChange();
   }
@@ -53,13 +57,22 @@ class InlineMessageController {
     this.timeoutId = null;
   }
 
-  setStatus(message, isLoading = false) {
+  setStatus(message, options = {}) {
+    const normalizedOptions =
+      typeof options === 'boolean'
+        ? { isLoading: options }
+        : {
+            severity: options?.severity || '',
+            dismissable: options?.dismissable === true,
+            isLoading: options?.isLoading === true,
+          };
     this.clearPendingReset();
     this.state = {
       ...this.state,
       message: `${message ?? ''}`,
-      severity: '',
-      isLoading: isLoading === true && Boolean(message),
+      severity: (normalizedOptions.severity || '') === 'normal' ? '' : normalizedOptions.severity || '',
+      dismissable: normalizedOptions.dismissable === true && Boolean(message),
+      isLoading: normalizedOptions.isLoading === true && Boolean(message),
     };
     this.emitChange();
   }
@@ -71,11 +84,14 @@ class InlineMessageController {
       return;
     }
 
+    const normalizedSeverity = severity === 'normal' ? '' : severity || '';
+
     this.clearPendingReset();
     this.state = {
       ...this.state,
       message: text,
-      severity,
+      severity: normalizedSeverity,
+      dismissable: false,
       isLoading: isLoading === true,
     };
     this.emitChange();
@@ -91,6 +107,7 @@ class InlineMessageController {
         ...this.state,
         message: '',
         severity: '',
+        dismissable: false,
         isLoading: false,
       };
       this.emitChange();
@@ -105,6 +122,7 @@ class InlineMessageController {
         ...this.state,
         message: '',
         severity: '',
+        dismissable: false,
         isLoading: false,
       };
       this.emitChange();
@@ -117,6 +135,7 @@ class InlineMessageController {
       ...this.state,
       message: '',
       severity: '',
+      dismissable: false,
       isLoading: false,
     };
     this.emitChange();

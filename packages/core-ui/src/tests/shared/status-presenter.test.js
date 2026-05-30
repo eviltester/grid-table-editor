@@ -1,6 +1,9 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
-import { createStatusPresenter } from '../../../js/gui_components/shared/test-data/ui/status-presenter.js';
+import {
+  createLoadingStatusPresenter,
+  createStatusPresenter,
+} from '../../../js/gui_components/shared/test-data/ui/status-presenter.js';
 
 describe('createStatusPresenter', () => {
   let dom;
@@ -15,7 +18,7 @@ describe('createStatusPresenter', () => {
     dom.window.close();
   });
 
-  test('setStatus and scheduleClear update the rendered status element', () => {
+  test('setStatus and scheduleClear update the rendered status element without loading state', () => {
     const presenter = createStatusPresenter({
       documentObj: dom.window.document,
       elementId: 'status',
@@ -23,16 +26,66 @@ describe('createStatusPresenter', () => {
     });
     const element = dom.window.document.getElementById('status');
 
-    presenter.setStatus('Preparing export...', true);
-    expect(element.textContent).toBe('Preparing export...');
-    expect(element.classList.contains('is-loading')).toBe(true);
+    presenter.setStatus('Export ready.');
+    expect(element.textContent).toBe('Export ready.');
+    expect(element.classList.contains('is-loading')).toBe(false);
     expect(element.style.display).toBe('inline-block');
-    expect(element.querySelector('[data-role="loading-indicator"]')?.style.display).toBe('inline-block');
+    expect(element.querySelector('[data-role="loading-indicator"]')?.style.display).toBe('none');
 
     presenter.scheduleClear(1800);
     jest.advanceTimersByTime(1800);
     expect(element.textContent).toBe('');
     expect(element.style.display).toBe('none');
+  });
+
+  test('status presenter supports severity and dismissable status messages', () => {
+    const presenter = createStatusPresenter({
+      documentObj: dom.window.document,
+      elementId: 'status',
+      hideWhenEmpty: true,
+    });
+    const element = dom.window.document.getElementById('status');
+
+    presenter.setStatus('Schema validation failed.', {
+      severity: 'error',
+      dismissable: true,
+    });
+
+    const dismissButton = element.querySelector('[data-role="dismiss-button"]');
+    expect(element.getAttribute('data-severity')).toBe('error');
+    expect(dismissButton?.style.display).toBe('inline-block');
+
+    dismissButton?.click();
+    expect(element.textContent).toBe('');
+    expect(element.style.display).toBe('none');
+  });
+
+  test('loading presenter always renders loading state for loading messages', () => {
+    const presenter = createLoadingStatusPresenter({
+      documentObj: dom.window.document,
+      elementId: 'status',
+      hideWhenEmpty: true,
+    });
+    const element = dom.window.document.getElementById('status');
+
+    presenter.setStatus('Preparing export...');
+    expect(element.textContent).toBe('Preparing export...');
+    expect(element.classList.contains('is-loading')).toBe(true);
+    expect(element.style.display).toBe('inline-block');
+    expect(element.querySelector('[data-role="loading-indicator"]')?.style.display).toBe('inline-block');
+  });
+
+  test('statusClassName controls the loading-state class for loading presenter consumers', () => {
+    const presenter = createLoadingStatusPresenter({
+      documentObj: dom.window.document,
+      elementId: 'status',
+      statusClassName: 'status-loading',
+    });
+    const element = dom.window.document.getElementById('status');
+
+    presenter.setStatus('Loading data...');
+    expect(element.classList.contains('status-loading')).toBe(true);
+    expect(element.classList.contains('is-loading')).toBe(false);
   });
 
   test('rebinds to a replacement element with the same id', () => {

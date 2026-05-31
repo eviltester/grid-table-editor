@@ -78,6 +78,27 @@ function sanitizeUiOptionsForFormat(format, options) {
   return { outputFormat: normalized, options: sanitized };
 }
 
+function applySanitizedUiOptionsToTargets({ requestedFormat, rawOptions, targets = [], onResolvedFormat } = {}) {
+  if (!requestedFormat) {
+    return null;
+  }
+
+  const sanitized = sanitizeUiOptionsForFormat(requestedFormat, rawOptions);
+  const resolvedFormat = sanitized.outputFormat || requestedFormat;
+
+  if (typeof onResolvedFormat === 'function') {
+    onResolvedFormat(resolvedFormat, sanitized);
+  }
+
+  targets.forEach((target) => {
+    if (typeof target?.setOptionsForType === 'function') {
+      target.setOptionsForType(resolvedFormat, sanitized);
+    }
+  });
+
+  return sanitized;
+}
+
 function getCodeLanguageSubtasks() {
   return CODE_LANGUAGE_SUBTASKS.map((subtask) => ({ ...subtask }));
 }
@@ -95,6 +116,7 @@ function getUnitTestLanguageSubtasks() {
 }
 
 export {
+  applySanitizedUiOptionsToTargets,
   TEST_FRAMEWORK_GROUPS,
   getCodeLanguageSubtasks,
   getTestFrameworkFormats,

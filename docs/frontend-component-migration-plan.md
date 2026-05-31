@@ -260,19 +260,46 @@ Current status:
 
 ### Phase 2: Format Options Components
 
-- [ ] Create a shared `FormatOptionsPanel` feature with controller/view/component factory.
-- [ ] Move option-panel selection and dirty/apply state out of page-level controllers.
-- [ ] Wrap existing individual option panels so they can be mounted in Storybook independently.
-- [ ] Add stories for CSV, delimited, JSON, JSONL, SQL, XML, HTML, Markdown, ASCII, code, and unit-test code options.
-- [ ] Keep exporter/importer option sanitization in service functions, not view code.
+- [x] Create a shared `FormatOptionsPanel` feature with controller/view/component factory.
+- [x] Move option-panel selection and dirty/apply state out of page-level controllers.
+- [x] Wrap existing individual option panels so they can be mounted in Storybook independently.
+- [x] Add stories for CSV, delimited, JSON, JSONL, SQL, XML, HTML, Markdown, ASCII, code, and unit-test code options.
+- [x] Keep exporter/importer option sanitization in service functions, not view code.
+- [x] Expand the new shared `FormatOptionsPanel` Storybook coverage from the initial CSV/DSV/JSON slice to the remaining formats.
+- [x] Add remaining `FormatOptionsPanel` stories for ASCII and representative code-language panels so the story set covers all major format families, not only core and unit-test examples.
+- [x] Add at least one additional representative code-language story beyond Python when a second code-family panel reveals materially different option behavior.
+
+Current status:
+
+- The shared `FormatOptionsPanel` now lives under `shared/format-options-panel/` with a controller, view, and create-component factory.
+- Generator `renderOptionsPanelForSelectedFormat()` now delegates to the shared component instead of owning the dirty/apply wiring directly.
+- App import/export options now delegate panel rendering and dirty/apply state to the shared component while keeping existing splitter/layout behavior outside the component boundary.
+- Storybook coverage now exists for CSV, DSV, JSON, JSONL, SQL, XML, Markdown, HTML, ASCII, Python, and a representative unit-test framework panel (`Jest`) using the shared component with a small harness.
+- Storybook now presents one `Format Option Panel` family, split into `Basic`, `Code`, and `Code Unit Test`, so each format appears once through the shared component boundary rather than being duplicated as separate shell and direct variants.
+- Exporter/importer option sanitization now flows through shared options services, so page/controller code no longer owns the sanitization logic directly and the view layer remains free of catalog-normalization behavior.
+
+Phase 2 exit note:
+
+- The format-options migration slice is now complete enough to stop treating options as a special case and move on to broader feature extraction.
 
 ### Phase 3: Shared Schema Definition
 
-- [ ] Create `SharedSchemaDefinitionController`.
-- [ ] Create `SharedSchemaDefinitionView`.
-- [ ] Create `createSharedSchemaDefinitionComponent`.
-- [ ] Use existing shared schema logic from `shared/test-data/schema/` rather than duplicating it.
-- [ ] Add stories for empty schema, sample schema, validation errors, text mode, grid mode, command picker, and pairwise-capable enum schema.
+- [x] Create `SharedSchemaDefinitionController`.
+- [x] Create `SharedSchemaDefinitionView`.
+- [x] Create `createSharedSchemaDefinitionComponent`.
+- [x] Use existing shared schema logic from `shared/test-data/schema/` rather than duplicating it.
+- [x] Add stories for empty schema, sample schema, validation errors, text mode, grid mode, command picker, and pairwise-capable enum schema.
+- [x] Migrate the app-page schema editor host adapter onto the shared component while preserving the existing schema field IDs and generation contract.
+- [ ] Migrate the generator runtime schema editor from duplicated page/controller methods onto the shared component boundary.
+- [ ] Remove the now-redundant generator-specific schema rendering/event helpers after the generator runtime adopts the shared component.
+
+Current status:
+
+- `SharedSchemaDefinition` now lives under `shared/schema-definition/` with a controller, view, and create-component factory.
+- The new component reuses the existing shared schema parsing, validation, row-editing, command-picker, drag/drop, and text-mode logic from `shared/test-data/schema/` instead of duplicating those rules.
+- The app test-data panel now mounts its schema editor through `SharedSchemaDefinition`, keeping the same DOM IDs so the rest of the app flow and browser tests continue to treat the schema surface as a black box.
+- Storybook now documents the shared component directly with empty, sample, validation, text-mode, command-picker, and pairwise-capable enum stories.
+- The next explicit Phase 3 step is generator runtime adoption, which will let us delete the remaining generator-specific schema UI/controller duplication rather than carrying two live paths.
 
 ### Phase 4: Generator Page Composition
 

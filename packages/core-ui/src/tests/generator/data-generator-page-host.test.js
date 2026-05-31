@@ -41,6 +41,7 @@ describe('generator host coordinator', () => {
       TabulatorCtor: FakeTabulator,
       GridExtensionClass: FakeGridExtension,
       ExporterClass: FakeExporter,
+      getSelectedOutputType: jest.fn(() => 'csv'),
       renderSchemaRows: jest.fn(),
       updateSchemaEditModeView: jest.fn(),
       renderOptionsPanelForSelectedFormat: jest.fn(),

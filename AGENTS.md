@@ -46,6 +46,8 @@ When changing frontend UI code, Storybook stories, UI test abstractions, or brow
 - prefer the `Controller + View + createComponent` pattern for new or migrated UI components
 - keep components mounted into one explicit root element
 - avoid global `document.querySelector`/`getElementById` inside reusable components; query within the component root instead
+- treat document-global lookup from inside a reusable component as a bug unless it is an explicitly injected browser service concern such as document head/style injection, top-level modal host management, or page bootstrap
+- if a migrated component still depends on legacy helpers that use global DOM lookup internally, treat that migration as incomplete and add a follow-up todo to remove the remaining global coupling
 - inject services, callbacks, `documentObj`, and `windowObj` explicitly
 - add or update Storybook coverage for every new or migrated component
 - keep Storybook harnesses small; large harnesses are a signal that the component boundary may need more work

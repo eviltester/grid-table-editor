@@ -1,5 +1,6 @@
 import { OPTION_KEYS_BY_FORMAT } from '@anywaydata/core';
 import {
+  applySanitizedUiOptionsToTargets,
   TEST_FRAMEWORK_GROUPS,
   getCodeLanguageSubtasks,
   getTestFrameworkFormats,
@@ -27,6 +28,30 @@ describe('options catalog adapter', () => {
       outputFormat: 'csv',
       options: { header: false },
     });
+  });
+
+  test('applies sanitized UI options to every target using the resolved format', () => {
+    const importerCalls = [];
+    const exporterCalls = [];
+    const resolvedCalls = [];
+    const importer = { setOptionsForType: (...args) => importerCalls.push(args) };
+    const exporter = { setOptionsForType: (...args) => exporterCalls.push(args) };
+    const onResolvedFormat = (...args) => resolvedCalls.push(args);
+
+    const sanitized = applySanitizedUiOptionsToTargets({
+      requestedFormat: 'csv',
+      rawOptions: { header: false, unknown: true },
+      targets: [importer, exporter],
+      onResolvedFormat,
+    });
+
+    expect(sanitized).toEqual({
+      outputFormat: 'csv',
+      options: { header: false },
+    });
+    expect(importerCalls).toEqual([['csv', sanitized]]);
+    expect(exporterCalls).toEqual([['csv', sanitized]]);
+    expect(resolvedCalls).toEqual([['csv', sanitized]]);
   });
 
   test('framework groups only reference discovered test framework formats', () => {

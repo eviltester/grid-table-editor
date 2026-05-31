@@ -1,4 +1,9 @@
+import tippy from 'tippy.js';
+import '@popperjs/core';
+import 'tippy.js/dist/tippy.css';
 import '../apps/web/styles.css';
+
+globalThis.tippy = tippy;
 
 const preview = {
   parameters: {

@@ -22,18 +22,41 @@ function renderInlineHelpItems(documentObj, entries) {
   });
 }
 
-function createUpdateHelpHints(documentObj) {
+function upsertInlineHelpItems(documentObj, entries) {
+  const container = ensureInlineHelpContainer(documentObj);
+  Object.entries(entries).forEach(([key, html]) => {
+    let item = container.querySelector(`div[data-name='${key}']`);
+    if (!item) {
+      item = documentObj.createElement('div');
+      item.setAttribute('data-name', key);
+      container.appendChild(item);
+    }
+    item.innerHTML = html;
+  });
+}
+
+function createUpdateHelpHints(documentObj, rootElement = documentObj) {
   return function updateHelpHints() {
     const tippyFn = globalThis?.tippy;
     if (typeof tippyFn !== 'function') {
       return;
     }
 
-    documentObj.querySelectorAll('.helpicon[data-help]').forEach((element) => {
+    upsertInlineHelpItems(documentObj, sharedInlineHelpEntries);
+
+    const helpIcons = rootElement?.querySelectorAll?.('.helpicon[data-help]') || [];
+    helpIcons.forEach((element) => {
       element?._tippy?.destroy?.();
+      if (!element.hasAttribute('tabindex')) {
+        element.setAttribute('tabindex', '0');
+      }
+      if (!element.hasAttribute('aria-label')) {
+        const isOptionHelp = element.classList.contains('option-help-icon');
+        element.setAttribute('aria-label', isOptionHelp ? 'Show help for this option' : 'Show help');
+      }
     });
 
-    tippyFn('.helpicon[data-help]', {
+    tippyFn(helpIcons, {
       content(reference) {
         const id = reference.getAttribute('data-help');
         const inlineHelpText = reference.getAttribute('data-help-text');
@@ -55,7 +78,7 @@ function createUpdateHelpHints(documentObj) {
       },
       placement: 'top-start',
       allowHTML: true,
-      interactive: true,
+      interactive: false,
     });
   };
 }
@@ -74,4 +97,4 @@ function initHelpTooltips({ documentObj = document, includeAppOnlyEntries = fals
   updateHelpHints();
 }
 
-export { initHelpTooltips };
+export { createUpdateHelpHints, initHelpTooltips };

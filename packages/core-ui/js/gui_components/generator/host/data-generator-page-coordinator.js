@@ -5,6 +5,7 @@
  */
 
 import { createTimedStatusPresenter } from '../../shared/timed-error-display.js';
+import { createFormatOptionsPanel } from '../../shared/format-options-panel/index.js';
 import { createLoadingStatusPresenter, createStatusPresenter } from '../../shared/test-data/ui/index.js';
 import { createRowCountControl } from '../../shared/row-count-control/index.js';
 import { renderDataGeneratorPageShell } from './data-generator-page-layout.js';
@@ -91,7 +92,7 @@ function bindDataGeneratorPageEvents({ page }) {
   schemaRowsContainer?.addEventListener('click', (event) => page.handleRowButtonClick(event));
 }
 
-function initializeDataGeneratorPageHost({ page, createOptionsPanelsForParentFn, populateFormatOptionsFn }) {
+function initializeDataGeneratorPageHost({ page, populateFormatOptionsFn }) {
   renderDataGeneratorPageShell({ parentElement: page.parentElement });
   page.rowCountControls = bindGeneratorRowCountControls({ page });
 
@@ -132,7 +133,23 @@ function initializeDataGeneratorPageHost({ page, createOptionsPanelsForParentFn,
   populateFormatOptionsFn();
 
   const optionsParent = page.documentObj.getElementById('generatorOptionsPanel');
-  page.optionsPanels = optionsParent ? createOptionsPanelsForParentFn(optionsParent) : {};
+  page.formatOptionsPanel = optionsParent
+    ? createFormatOptionsPanel({
+        root: optionsParent,
+        documentObj: page.documentObj,
+        windowObj: page.documentObj?.defaultView || globalThis.window,
+        props: {
+          selectedFormat: page.getSelectedOutputType(),
+          currentOptions: page.exporter?.getOptionsForType?.(page.getSelectedOutputType()),
+        },
+        callbacks: {
+          onApplyOptions: ({ sanitized }) => {
+            page.applyCurrentTypeOptions(sanitized);
+          },
+        },
+      })
+    : null;
+  page.optionsPanels = page.formatOptionsPanel?.getPanels?.() || {};
 
   page.renderSchemaRows();
   page.updateSchemaEditModeView();

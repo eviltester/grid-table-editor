@@ -76,7 +76,7 @@ import {
   generateGeneratorDataFile,
   generateGeneratorAllPairsDataFile,
 } from '../generation/index.js';
-import { createOptionsPanelsForParent, getOutputFormatGroups, sanitizeUiOptionsForFormat } from '../options/index.js';
+import { applySanitizedUiOptionsToTargets, getOutputFormatGroups } from '../options/index.js';
 
 function schemaRowsToSpec(schemaRows) {
   return schemaRowsToSpecCore({
@@ -184,7 +184,6 @@ class DataGeneratorPage {
 
     initializeDataGeneratorPageHost({
       page: this,
-      createOptionsPanelsForParentFn: createOptionsPanelsForParent,
       populateFormatOptionsFn: () => this.populateFormatOptions(),
     });
   }
@@ -223,35 +222,13 @@ class DataGeneratorPage {
 
   renderOptionsPanelForSelectedFormat() {
     const type = this.getSelectedOutputType();
-    const optionsParent = this.documentObj.getElementById('generatorOptionsPanel');
-    if (!optionsParent) {
+    if (!this.formatOptionsPanel) {
       return;
     }
-
-    optionsParent.innerHTML = '';
-    const panel = this.optionsPanels[type];
-    if (!panel) {
-      return;
-    }
-
-    panel.addToGui();
-    const currentOptions = this.exporter?.getOptionsForType?.(type);
-    if (currentOptions && typeof panel.setFromOptions === 'function') {
-      panel.setFromOptions(currentOptions);
-    }
-
-    if (typeof panel.setApplyCallback === 'function') {
-      this.configureOptionsApplyDirtyState(optionsParent);
-      panel.setApplyCallback((options) => {
-        this.applyCurrentTypeOptions(options);
-        this.setOptionsApplyDirtyState(optionsParent, false);
-      });
-    }
-
-    const windowObj = this.documentObj?.defaultView || globalThis.window;
-    if (typeof windowObj?.updateHelpHints === 'function') {
-      windowObj.updateHelpHints();
-    }
+    this.formatOptionsPanel.update({
+      selectedFormat: type,
+      currentOptions: this.exporter?.getOptionsForType?.(type),
+    });
   }
 
   setOptionsApplyDirtyState(optionsParent, isDirty) {
@@ -296,16 +273,20 @@ class DataGeneratorPage {
       return;
     }
 
-    const sanitized = sanitizeUiOptionsForFormat(requestedType, options?.options || options);
-    this.exporter?.setOptionsForType?.(requestedType, sanitized);
+    const sanitized = applySanitizedUiOptionsToTargets({
+      requestedFormat: requestedType,
+      rawOptions: options?.options || options,
+      targets: [this.exporter],
+    });
 
     const outputSelect = this.documentObj.getElementById('generatorOutputFormat');
-    if (outputSelect && outputSelect.value !== requestedType) {
-      outputSelect.value = requestedType;
+    const resolvedType = sanitized?.outputFormat || requestedType;
+    if (outputSelect && outputSelect.value !== resolvedType) {
+      outputSelect.value = resolvedType;
       this.renderOptionsPanelForSelectedFormat();
     }
 
-    const type = this.getSelectedOutputType() || requestedType;
+    const type = this.getSelectedOutputType() || resolvedType;
     this.renderOutputPreviewForCurrentSelection();
     this.setGenerationStatus(`${type.toUpperCase()} options applied.`);
     this.scheduleClearGenerationStatus();
@@ -411,6 +392,7 @@ class DataGeneratorPage {
   destroy() {
     this.clearAllSemanticValidationTimers();
     this.clearDragState();
+    this.formatOptionsPanel?.destroy?.();
     this.rowCountControls.forEach((control) => control?.destroy?.());
     this.rowCountControls = [];
   }

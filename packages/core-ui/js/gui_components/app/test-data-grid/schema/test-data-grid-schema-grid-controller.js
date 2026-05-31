@@ -3,10 +3,8 @@
  * - App-page host adapter for the shared schema-editor controller.
  */
 
-import {
-  createSharedSchemaEditorController,
-  TEST_DATA_GRID_SAMPLE_SCHEMA_TEXT,
-} from '../../../shared/test-data/schema/index.js';
+import { TEST_DATA_GRID_SAMPLE_SCHEMA_TEXT } from '../../../shared/test-data/schema/index.js';
+import { createSharedSchemaDefinitionComponent } from '../../../shared/schema-definition/index.js';
 
 function buildAppSchemaModeHelpHtml({ inTextMode }) {
   if (inTextMode) {
@@ -19,14 +17,14 @@ person.firstName
 
 Status
 enum(active,inactive,pending)</pre>
-      <button type="button" class="testdata-schema-sample-button">Insert Example Schema</button>
+      <button type="button" class="shared-schema-sample-button">Insert Example Schema</button>
     `;
   }
 
   return `
     <p><strong>Edit as Text</strong></p>
     <p>You are currently using row-based schema editing. Click <strong>Edit as Text</strong> to switch to text schema mode.</p>
-    <button type="button" class="testdata-schema-sample-button">Insert Example Schema</button>
+    <button type="button" class="shared-schema-sample-button">Insert Example Schema</button>
   `;
 }
 
@@ -46,88 +44,75 @@ function createSchemaGridController({
   validateSchemaRows,
 }) {
   let rowIdCounter = 1;
-  const schemaEditor = createSharedSchemaEditorController({
-    documentObj,
-    schemaTextToDataRules,
-    dataRulesToSchemaText,
-    faker,
-    RandExp,
-    createBlankRow: () => ({
-      id: `test-data-schema-row-${rowIdCounter++}`,
-      name: '',
-      sourceType: 'regex',
-      command: '',
-      params: '',
-      value: '',
-      comments: '',
-      leadingTextLines: [],
-    }),
-    mapRuleToRow,
-    getMethodPickerOptions,
-    getVisibleDomainCommands: (currentCommand) =>
-      getVisibleDomainCommandOptions(currentCommand).map((entry) => entry.value),
-    fakerCommands,
-    sampleSchemaText: TEST_DATA_GRID_SAMPLE_SCHEMA_TEXT,
-    buildModeHelpHtml: buildAppSchemaModeHelpHtml,
-    onSchemaError: (message) => schemaTextSyncState?.schemaErrorDisplay?.show?.(message),
-    onSchemaClear: () => schemaTextSyncState?.schemaErrorDisplay?.clear?.(),
-    onSchemaParseError: () => setTestDataStatus?.('', false),
-    validateSchemaRows,
-    updatePairwiseButtonVisibility,
-    idMap: {
-      generatorSchemaRows: 'testDataSchemaRows',
-      generatorSchemaTextContainer: 'testDataSchemaTextContainer',
-      generatorSchemaText: 'testDataSchemaText',
-      addSchemaRowButton: 'testDataAddSchemaRowButton',
-      schemaModeToggleButton: 'testDataSchemaModeToggleButton',
-      schemaModeHelpIcon: 'testDataSchemaModeHelpIcon',
-    },
-  });
+  let schemaDefinition = null;
 
   function createTestDataGrid() {
-    const container = documentObj.getElementById('testDataSchemaRows');
-    container?.addEventListener('input', schemaEditor.handleInput);
-    container?.addEventListener('change', schemaEditor.handleInput);
-    container?.addEventListener('focusout', schemaEditor.handleFocusOut);
-    container?.addEventListener('dragstart', schemaEditor.handleDragStart);
-    container?.addEventListener('dragover', schemaEditor.handleDragOver);
-    container?.addEventListener('drop', schemaEditor.handleDrop);
-    container?.addEventListener('dragend', schemaEditor.handleDragEnd);
-    container?.addEventListener('click', (event) => {
-      void schemaEditor.handleClick(event);
+    const root = documentObj.getElementById('testDataSchemaDefinition');
+    schemaDefinition?.destroy?.();
+    schemaDefinition = createSharedSchemaDefinitionComponent({
+      root,
+      documentObj,
+      props: {
+        headingClassName: 'generator-schema-heading-row',
+        addButtonClassName: 'add-schema-row-button',
+        ids: {
+          rows: 'testDataSchemaRows',
+          textContainer: 'testDataSchemaTextContainer',
+          text: 'testDataSchemaText',
+          addButton: 'testDataAddSchemaRowButton',
+          toggleButton: 'testDataSchemaModeToggleButton',
+          helpIcon: 'testDataSchemaModeHelpIcon',
+          error: 'testdata-schema-error',
+        },
+        schemaTextToDataRules,
+        dataRulesToSchemaText,
+        faker,
+        RandExp,
+        createBlankRow: () => ({
+          id: `test-data-schema-row-${rowIdCounter++}`,
+          name: '',
+          sourceType: 'regex',
+          command: '',
+          params: '',
+          value: '',
+          comments: '',
+          leadingTextLines: [],
+        }),
+        mapRuleToRow,
+        getMethodPickerOptions,
+        getVisibleDomainCommands: (currentCommand) =>
+          getVisibleDomainCommandOptions(currentCommand).map((entry) => entry.value),
+        fakerCommands,
+        sampleSchemaText: TEST_DATA_GRID_SAMPLE_SCHEMA_TEXT,
+        buildModeHelpHtml: buildAppSchemaModeHelpHtml,
+        schemaErrorDisplay: schemaTextSyncState?.schemaErrorDisplay,
+        validateSchemaRows,
+        updatePairwiseButtonVisibility,
+      },
+      callbacks: {
+        onSchemaError: (message) => schemaTextSyncState?.schemaErrorDisplay?.show?.(message),
+        onSchemaClear: () => schemaTextSyncState?.schemaErrorDisplay?.clear?.(),
+        onSchemaParseError: () => setTestDataStatus?.('', false),
+      },
     });
-
-    const addButton = documentObj.getElementById('testDataAddSchemaRowButton');
-    addButton?.addEventListener('click', (event) => {
-      event.preventDefault();
-      schemaEditor.addRow();
-    });
-
-    const modeToggleButton = documentObj.getElementById('testDataSchemaModeToggleButton');
-    modeToggleButton?.addEventListener('click', (event) => {
-      event.preventDefault();
-      schemaEditor.toggleMode();
-    });
-
-    schemaEditor.init();
   }
 
   return {
-    destroy: () => schemaEditor.destroy?.(),
+    destroy: () => schemaDefinition?.destroy?.(),
     createTestDataGrid,
-    populateGridFromTextSchema: () => schemaEditor.syncFromText({ showErrors: true, force: true }),
+    populateGridFromTextSchema: () => schemaDefinition?.syncFromText({ showErrors: true, force: true }),
     validateSchemaRows: ({ syncFromText = true } = {}) => {
       if (!syncFromText) {
-        return schemaEditor.validateRows();
+        return schemaDefinition?.validateRows?.() || { rows: [], errors: [] };
       }
-      const parsed = schemaEditor.syncFromText({ showErrors: true, force: true });
+      const parsed = schemaDefinition?.syncFromText?.({ showErrors: true, force: true }) || { rows: [], errors: [] };
       if (parsed?.errors?.length > 0) {
         return parsed;
       }
-      return schemaEditor.validateRows();
+      return schemaDefinition?.validateRows?.() || { rows: [], errors: [] };
     },
-    syncSchemaTextFromGridBeforeGenerate: () => schemaEditor.syncTextFromRows(),
-    insertSampleSchema: () => schemaEditor.insertSampleSchema(),
+    syncSchemaTextFromGridBeforeGenerate: () => schemaDefinition?.syncTextFromRows?.(),
+    insertSampleSchema: () => schemaDefinition?.insertSampleSchema?.(),
   };
 }
 

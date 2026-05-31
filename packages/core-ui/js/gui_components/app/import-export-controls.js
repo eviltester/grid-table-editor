@@ -1,7 +1,8 @@
 import { ExportControls } from './exportControls.js';
 import { DragDropControl } from './drag-drop-control.js';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
-import { sanitizeUiOptionsForFormat, createOptionsPanelsForParent } from '../generator/options/index.js';
+import { createFormatOptionsPanel } from '../shared/format-options-panel/index.js';
+import { applySanitizedUiOptionsToTargets, createOptionsPanelsForParent } from '../generator/options/index.js';
 import { createConfirmDialogService } from '../shared/dialog-services/index.js';
 import { createTimedStatusPresenter } from '../shared/timed-error-display.js';
 import { scheduleTimeout } from '../shared/unref-timeout.js';
@@ -316,11 +317,33 @@ class ImportExportControls {
   }
 
   setupOptionsPanelsWithin(optionsparent) {
-    if (this.optionsPanels === undefined) {
-      if (optionsparent) {
-        this.optionsPanels = createOptionsPanelsForParent(optionsparent);
-      }
+    if (this.formatOptionsPanel || !optionsparent) {
+      return;
     }
+    this.formatOptionsPanel = createFormatOptionsPanel({
+      root: optionsparent,
+      documentObj: this.documentObj,
+      windowObj: this.documentObj?.defaultView || globalThis.window,
+      props: {
+        selectedFormat: this._getActiveType(),
+        currentOptions: this.exporter?.getOptionsForType?.(this._getActiveType()),
+      },
+      services: {
+        createPanelsForParent: () => {
+          if (this.optionsPanels) {
+            return this.optionsPanels;
+          }
+          this.optionsPanels = createOptionsPanelsForParent(optionsparent);
+          return this.optionsPanels;
+        },
+      },
+      callbacks: {
+        onApplyOptions: ({ sanitized }) => {
+          this.applyCurrentTypeOptions(sanitized);
+        },
+      },
+    });
+    this.optionsPanels = this.formatOptionsPanel.getPanels();
   }
   setOptionsViewForFormatType() {
     const type = document.querySelector('li.active-type a').getAttribute('data-type');
@@ -333,13 +356,16 @@ class ImportExportControls {
     edit_area.style.width = '100%';
     edit_area.style.height = '30%';
 
-    if (this.optionsPanels === undefined) {
+    if (!this.formatOptionsPanel) {
       this.setupOptionsPanelsWithin(optionsparent);
     }
 
-    let optionsPanel = this.optionsPanels[type];
+    this.formatOptionsPanel.update({
+      selectedFormat: type,
+      currentOptions: this.exporter.getOptionsForType(type),
+    });
 
-    if (optionsPanel === undefined) {
+    if (!this.formatOptionsPanel.isSupported()) {
       console.log('undefined panel type for ' + type);
       edit_area.style.display = 'block';
       optionsparent.style.display = 'none';
@@ -359,21 +385,6 @@ class ImportExportControls {
     const initialWidth = this._clampOptionsPanelWidth(this._getInitialOptionsPanelWidthPx(), edit_area);
     this._setOptionsPanelWidth(optionsparent, initialWidth);
     optionsparent.style.height = '100%';
-
-    optionsparent.innerHTML = '';
-
-    if (optionsPanel) {
-      optionsPanel.addToGui();
-      optionsPanel.setFromOptions(this.exporter.getOptionsForType(type));
-      this.configureOptionsApplyDirtyState(optionsparent);
-      optionsPanel.setApplyCallback((options) => {
-        this.applyCurrentTypeOptions(options);
-        this.setOptionsApplyDirtyState(optionsparent, false);
-      });
-      if (typeof window !== 'undefined' && typeof window.updateHelpHints === 'function') {
-        window.updateHelpHints();
-      }
-    }
 
     optionsparent.style.display = 'block';
     this._configureOptionsPreviewSplitter(edit_area, optionsparent, splitter, text_area);
@@ -420,25 +431,30 @@ class ImportExportControls {
     }
 
     const optionsPanel = this.optionsPanels?.[activeType];
-    if (!optionsPanel || typeof optionsPanel.getOptionsFromGui !== 'function') {
+    const guiOptions = this.formatOptionsPanel?.getOptionsFromGui?.() || optionsPanel?.getOptionsFromGui?.();
+    if (!guiOptions) {
       return;
     }
-
-    const guiOptions = optionsPanel.getOptionsFromGui();
-    const type = guiOptions?.outputFormat || activeType;
-    const sanitized = sanitizeUiOptionsForFormat(type, guiOptions?.options || guiOptions);
-    this._setActiveTypeIfPresent(type);
-    this.importer.setOptionsForType(type, sanitized);
-    this.exporter.setOptionsForType(type, sanitized);
+    applySanitizedUiOptionsToTargets({
+      requestedFormat: guiOptions?.outputFormat || activeType,
+      rawOptions: guiOptions?.options || guiOptions,
+      targets: [this.importer, this.exporter],
+      onResolvedFormat: (resolvedFormat) => {
+        this._setActiveTypeIfPresent(resolvedFormat);
+      },
+    });
   }
 
   applyCurrentTypeOptions(options) {
     const activeType = document.querySelector('li.active-type a').getAttribute('data-type');
-    const type = options?.outputFormat || activeType;
-    const sanitized = sanitizeUiOptionsForFormat(type, options?.options || options);
-    this._setActiveTypeIfPresent(type);
-    this.importer.setOptionsForType(type, sanitized);
-    this.exporter.setOptionsForType(type, sanitized);
+    applySanitizedUiOptionsToTargets({
+      requestedFormat: options?.outputFormat || activeType,
+      rawOptions: options?.options || options,
+      targets: [this.importer, this.exporter],
+      onResolvedFormat: (resolvedFormat) => {
+        this._setActiveTypeIfPresent(resolvedFormat);
+      },
+    });
     this.renderTextFromGrid();
   }
 

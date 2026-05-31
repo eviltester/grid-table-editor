@@ -1,0 +1,87 @@
+import { createRowCountControl } from '../../shared/row-count-control/index.js';
+import { createUpdateHelpHints } from '../../../help/help-tooltips.js';
+import { createTabulatorGridAdapter } from './tabulator-grid-adapter.js';
+import { GeneratorPreviewController } from './generator-preview-controller.js';
+import { GeneratorPreviewView } from './generator-preview-view.js';
+
+function createDefaultPreviewGridFactory({ TabulatorCtor, GridExtensionClass } = {}) {
+  return function createPreviewGrid({ rootElement }) {
+    if (typeof TabulatorCtor !== 'function') {
+      return { tableApi: null, gridApi: null };
+    }
+
+    const adapter = createTabulatorGridAdapter({
+      rootElement,
+      TabulatorCtor,
+      GridExtensionClass,
+    });
+    return {
+      adapter,
+      tableApi: adapter.getTableApi(),
+      gridApi: adapter.getGridApi(),
+    };
+  };
+}
+
+function createGeneratorPreviewComponent({
+  root,
+  props = {},
+  services = {},
+  callbacks = {},
+  documentObj = document,
+} = {}) {
+  const controller = new GeneratorPreviewController({ props, callbacks });
+  const view = new GeneratorPreviewView({
+    root,
+    controller,
+    documentObj,
+    services: {
+      createRowCountControl: services.createRowCountControl || createRowCountControl,
+      createPreviewGrid:
+        services.createPreviewGrid ||
+        createDefaultPreviewGridFactory({
+          TabulatorCtor: services.TabulatorCtor,
+          GridExtensionClass: services.GridExtensionClass,
+        }),
+      updateHelpHints: services.updateHelpHints || createUpdateHelpHints(documentObj, root),
+    },
+  });
+
+  view.mount();
+
+  return {
+    update(nextProps) {
+      controller.updateProps(nextProps);
+      view.render();
+    },
+    destroy() {
+      view.destroy();
+    },
+    setOutputPreviewText(outputPreviewText) {
+      view.setOutputPreviewText(outputPreviewText);
+    },
+    clearOutputPreview() {
+      view.clearOutputPreview();
+    },
+    setPreviewDataTable(dataTable) {
+      view.setPreviewDataTable(dataTable);
+    },
+    getPreviewGrid() {
+      return view.getPreviewGrid();
+    },
+    getPreviewTableApi() {
+      return view.getPreviewTableApi();
+    },
+    getState() {
+      return controller.getState();
+    },
+  };
+}
+
+export {
+  createDefaultPreviewGridFactory,
+  createGeneratorPreviewComponent,
+  GeneratorPreviewController,
+  GeneratorPreviewView,
+  createTabulatorGridAdapter,
+};

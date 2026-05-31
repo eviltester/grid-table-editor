@@ -476,6 +476,22 @@ Custom header styles for default items
   width: 1em;
   height: 1em;
   display: inline-block;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
+
+button.helpicon {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  background-color: transparent;
+  vertical-align: middle;
+  line-height: 1;
+  cursor: pointer;
+  flex: 0 0 auto;
 }
 
 body.theme-dark .helpicon {

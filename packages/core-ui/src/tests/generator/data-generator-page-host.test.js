@@ -68,6 +68,7 @@ describe('generator host coordinator', () => {
     expect(page.previewGrid).toBeInstanceOf(FakeGridExtension);
     expect(page.exporter).toBeInstanceOf(FakeExporter);
     expect(page.generatorControls).toBeTruthy();
+    expect(page.generatorPreview).toBeTruthy();
     expect(page.renderSchemaRows).toHaveBeenCalled();
     expect(page.updateSchemaEditModeView).toHaveBeenCalled();
     expect(page.renderOptionsPanelForSelectedFormat).toHaveBeenCalled();

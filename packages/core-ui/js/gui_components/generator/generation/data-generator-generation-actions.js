@@ -88,24 +88,38 @@ function buildPairwiseDataTable({ generator, faker, RandExp }) {
   });
 }
 
-function renderGeneratorOutputPreview({ documentObj, getSelectedOutputType, lastPreviewDataTable, exporter }) {
-  const outputPreviewElem = documentObj.getElementById('generatorOutputPreview');
-  if (!outputPreviewElem) {
-    return;
-  }
-
+function renderGeneratorOutputPreview({
+  documentObj,
+  getSelectedOutputType,
+  lastPreviewDataTable,
+  exporter,
+  setOutputPreviewText,
+}) {
   const type = getSelectedOutputType();
   const dataTable = lastPreviewDataTable;
   if (!type || !dataTable || !exporter?.canExport(type)) {
-    outputPreviewElem.value = '';
+    setOutputPreviewText?.('');
+    const outputPreviewElem = documentObj?.getElementById?.('generatorOutputPreview');
+    if (outputPreviewElem) {
+      outputPreviewElem.value = '';
+    }
     return;
   }
 
   try {
-    outputPreviewElem.value = exporter.getDataTableAs(type, dataTable);
+    const text = exporter.getDataTableAs(type, dataTable);
+    setOutputPreviewText?.(text);
+    const outputPreviewElem = documentObj?.getElementById?.('generatorOutputPreview');
+    if (outputPreviewElem) {
+      outputPreviewElem.value = text;
+    }
   } catch (error) {
     console.error(error);
-    outputPreviewElem.value = '';
+    setOutputPreviewText?.('');
+    const outputPreviewElem = documentObj?.getElementById?.('generatorOutputPreview');
+    if (outputPreviewElem) {
+      outputPreviewElem.value = '';
+    }
   }
 }
 
@@ -190,7 +204,7 @@ function previewGeneratorData({
   const dataTable = buildDataTable(configured.generator, rowCount.value);
   clearPageError?.();
   setLastPreviewDataTable(dataTable);
-  previewGrid.setGridFromGenericDataTable(dataTable);
+  previewGrid?.setGridFromGenericDataTable?.(dataTable);
   renderOutputPreviewForCurrentSelection();
 }
 

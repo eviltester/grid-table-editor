@@ -39,8 +39,9 @@ import {
   normaliseDomainCommand,
   normaliseFakerCommand,
 } from '../../shared/schema-row-rule-mapper.js';
-import { initializeDataGeneratorPageHost, GENERATE_TO_FILE_HELP_URL } from '../host/index.js';
+import { GENERATE_TO_FILE_HELP_URL } from '../host/index.js';
 import { buildSchemaModeHelpHtml } from '../schema/index.js';
+import { createGeneratorPageComponent } from '../page/index.js';
 import {
   createConfiguredGeneratorForPage,
   buildPreviewDataTable,
@@ -122,6 +123,8 @@ class DataGeneratorPage {
     this.schemaErrorDisplay = undefined;
     this.schemaDefinition = undefined;
     this.generatorControls = undefined;
+    this.generatorPreview = undefined;
+    this.generatorPage = undefined;
     this.lastPreviewDataTable = undefined;
     this.rowCountControls = [];
     this.schemaTextToDataRules = schemaTextToDataRules;
@@ -173,10 +176,127 @@ class DataGeneratorPage {
       throw new Error('Tabulator library is not available');
     }
 
-    initializeDataGeneratorPageHost({
-      page: this,
-      populateFormatOptionsFn: () => this.populateFormatOptions(),
+    this.generatorPage = createGeneratorPageComponent({
+      root: this.parentElement,
+      documentObj: this.documentObj,
+      props: {
+        controlsProps: {
+          selectedFormat: this.getSelectedOutputType?.() || 'csv',
+          currentOptions: undefined,
+          pairwiseVisible: false,
+        },
+        previewProps: {
+          outputPreviewText: '',
+        },
+        schemaDefinitionProps: {
+          headingText: 'Schema',
+          ids: {
+            rows: 'generatorSchemaRows',
+            textContainer: 'generatorSchemaTextContainer',
+            text: 'generatorSchemaText',
+            addButton: 'addSchemaRowButton',
+            toggleButton: 'schemaModeToggleButton',
+            helpIcon: 'schemaModeHelpIcon',
+            error: 'generatorSchemaErrorText',
+          },
+          schemaTextToDataRules:
+            this.schemaTextToDataRules || (() => ({ dataRules: [], errors: [], schemaTokens: [] })),
+          dataRulesToSchemaText: this.dataRulesToSchemaText || (() => ''),
+          faker: this.faker,
+          RandExp: this.RandExp,
+          createBlankRow: () =>
+            typeof this.createBlankSchemaRow === 'function'
+              ? this.createBlankSchemaRow()
+              : {
+                  id: 'generator-schema-row-fallback',
+                  name: '',
+                  sourceType: 'regex',
+                  command: '',
+                  params: '',
+                  value: '',
+                  comments: '',
+                  leadingTextLines: [],
+                },
+          mapRuleToRow: (rule, leadingTextLines = []) => {
+            const row =
+              typeof this.ruleToSchemaRow === 'function'
+                ? this.ruleToSchemaRow(rule)
+                : {
+                    id: 'generator-schema-row-fallback',
+                    name: '',
+                    sourceType: 'regex',
+                    command: '',
+                    params: '',
+                    value: '',
+                    comments: '',
+                    leadingTextLines: [],
+                  };
+            row.leadingTextLines = Array.isArray(leadingTextLines) ? leadingTextLines.slice() : [];
+            return row;
+          },
+          getMethodPickerOptions: (currentValue) =>
+            (typeof this.getMethodPickerOptions === 'function' ? this.getMethodPickerOptions(currentValue) : []) || [],
+          getVisibleDomainCommands: (currentValue) =>
+            (typeof this.getVisibleDomainCommands === 'function' ? this.getVisibleDomainCommands(currentValue) : []) ||
+            [],
+          fakerCommands: this.fakerCommands || [],
+          sampleSchemaText: this.sampleSchemaText || '',
+          buildModeHelpHtml: ({ inTextMode }) =>
+            typeof this.buildSchemaModeHelpHtml === 'function' ? this.buildSchemaModeHelpHtml(inTextMode) : '',
+          validateSchemaRows: (rows) =>
+            typeof this.validateSchemaRows === 'function' ? this.validateSchemaRows(rows) : { rows, errors: [] },
+          updatePairwiseButtonVisibility: () => this.updateAllPairsButtonVisibility?.(),
+        },
+      },
+      services: {
+        generatorControlsServices: {
+          canExportFormat: (type) => this.exporter?.canExport?.(type) !== false,
+        },
+        generatorPreviewServices: {
+          TabulatorCtor: this.TabulatorCtor,
+          GridExtensionClass: this.GridExtensionClass,
+        },
+      },
+      callbacks: {
+        generatorControls: {
+          onFormatChanged: () => {
+            this.renderOptionsPanelForSelectedFormat();
+            this.renderOutputPreviewForCurrentSelection();
+          },
+          onApplyOptions: ({ sanitized }) => {
+            this.applyCurrentTypeOptions(sanitized);
+          },
+          onGenerateData: () => {
+            void this.generateDataFile();
+          },
+          onGeneratePairwise: () => {
+            void this.generateAllPairsDataFile();
+          },
+        },
+        generatorPreview: {
+          onPreview: () => this.previewData(),
+        },
+        schemaDefinition: {
+          onSchemaError: (message) => this.showSchemaErrorStatus?.(message),
+          onSchemaClear: () => this.clearSchemaErrorStatus?.(),
+          onRowsChanged: () => this.updateAllPairsButtonVisibility?.(),
+        },
+      },
     });
+
+    this.schemaErrorDisplay = this.generatorPage.getSchemaErrorDisplay();
+    this.generatorControls = this.generatorPage.getGeneratorControls();
+    this.generatorPreview = this.generatorPage.getGeneratorPreview();
+    this.schemaDefinition = this.generatorPage.getSchemaDefinition();
+    this.previewTableApi = this.generatorPreview?.getPreviewTableApi?.() || null;
+    this.previewGrid = this.generatorPreview?.getPreviewGrid?.() || null;
+    this.exporter = new this.ExporterClass(this.previewGrid);
+    this.formatOptionsPanel = this.generatorControls?.getFormatOptionsPanel?.() || null;
+    this.optionsPanels = this.formatOptionsPanel?.getPanels?.() || {};
+
+    this.renderSchemaRows();
+    this.updateSchemaEditModeView?.();
+    this.renderOptionsPanelForSelectedFormat();
   }
 
   createBlankSchemaRow() {
@@ -378,8 +498,7 @@ class DataGeneratorPage {
   }
 
   destroy() {
-    this.schemaDefinition?.destroy?.();
-    this.generatorControls?.destroy?.();
+    this.generatorPage?.destroy?.();
     this.rowCountControls.forEach((control) => control?.destroy?.());
     this.rowCountControls = [];
   }
@@ -525,6 +644,7 @@ class DataGeneratorPage {
       getSelectedOutputType: () => this.getSelectedOutputType(),
       lastPreviewDataTable: this.lastPreviewDataTable,
       exporter: this.exporter,
+      setOutputPreviewText: (text) => this.generatorPreview?.setOutputPreviewText?.(text),
     });
   }
 

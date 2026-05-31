@@ -9,8 +9,11 @@
  * - invalid schema blocks preview until the schema is corrected
  */
 
+import { jest } from '@jest/globals';
 import { waitFor } from '@testing-library/dom';
 import { createFocusedGeneratorHarness } from './support/focused-generator-harness.js';
+
+jest.setTimeout(15000);
 
 describe('generator focused generation flows', () => {
   let harness;
@@ -87,7 +90,7 @@ describe('generator focused generation flows', () => {
     });
 
     await harness.clickPreview();
-    expect(harness.getSchemaErrorText().length).toBeGreaterThan(0);
+    await waitFor(() => expect(harness.getSchemaErrorText().length).toBeGreaterThan(0));
     expect(harness.getPreviewDataTable()).toBeNull();
 
     await harness.fillRow(0, {

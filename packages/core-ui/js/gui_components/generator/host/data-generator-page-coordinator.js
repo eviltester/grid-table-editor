@@ -5,66 +5,21 @@
  */
 
 import { createGeneratorControlsComponent } from '../controls/index.js';
+import { createGeneratorPreviewComponent } from '../preview/index.js';
 import { createTimedStatusPresenter } from '../../shared/timed-error-display.js';
-import { createRowCountControl } from '../../shared/row-count-control/index.js';
 import { createSharedSchemaDefinitionComponent } from '../../shared/schema-definition/index.js';
 import { renderDataGeneratorPageShell } from './data-generator-page-layout.js';
 import { getOutputFormatGroups } from '../options/index.js';
 
-function bindGeneratorPreviewRowCountControl({ page }) {
-  const previewRowsRoot = page.documentObj.getElementById('previewRowsCountControl');
-  if (!previewRowsRoot) {
-    return [];
-  }
-
-  return [
-    createRowCountControl({
-      root: previewRowsRoot,
-      documentObj: page.documentObj,
-      props: {
-        inputId: 'previewRowsCount',
-        label: 'Preview Items Count',
-        min: 0,
-        max: 50,
-        step: 1,
-        value: 10,
-        labelClassName: 'generator-preview-count-label',
-      },
-    }),
-  ];
-}
-
-function bindGeneratorPreviewEvents({ page }) {
-  page.documentObj.getElementById('previewDataButton')?.addEventListener('click', () => page.previewData());
-}
-
 function initializeDataGeneratorPageHost({ page }) {
   renderDataGeneratorPageShell({ parentElement: page.parentElement });
-  page.rowCountControls = bindGeneratorPreviewRowCountControl({ page });
+  page.rowCountControls = [];
 
   page.schemaErrorDisplay = createTimedStatusPresenter({
     documentObj: page.documentObj,
     elementId: 'generatorSchemaErrorText',
     timeoutMs: 5000,
   });
-
-  page.previewTableApi = new page.TabulatorCtor(page.documentObj.getElementById('generator-preview-grid'), {
-    data: [],
-    columns: [{ title: '~preview', field: 'column1', sorter: 'string' }],
-    autoColumns: false,
-    headerSort: true,
-    selectableRows: true,
-    selectableRowsRangeMode: 'click',
-    layout: 'fitDataStretch',
-    columnDefaults: {
-      resizable: true,
-      headerFilter: 'input',
-      headerFilterFunc: 'like',
-      sorter: 'string',
-    },
-  });
-  page.previewGrid = new page.GridExtensionClass(page.previewTableApi);
-  page.exporter = new page.ExporterClass(page.previewGrid);
 
   page.generatorControls = createGeneratorControlsComponent({
     root: page.documentObj.getElementById('generatorControlsRoot'),
@@ -94,6 +49,21 @@ function initializeDataGeneratorPageHost({ page }) {
       },
     },
   });
+
+  page.generatorPreview = createGeneratorPreviewComponent({
+    root: page.documentObj.getElementById('generatorPreviewRoot'),
+    documentObj: page.documentObj,
+    services: {
+      TabulatorCtor: page.TabulatorCtor,
+      GridExtensionClass: page.GridExtensionClass,
+    },
+    callbacks: {
+      onPreview: () => page.previewData(),
+    },
+  });
+  page.previewTableApi = page.generatorPreview?.getPreviewTableApi?.() || null;
+  page.previewGrid = page.generatorPreview?.getPreviewGrid?.() || null;
+  page.exporter = new page.ExporterClass(page.previewGrid);
 
   page.schemaDefinition = createSharedSchemaDefinitionComponent({
     root: page.documentObj.getElementById('generatorSchemaDefinition'),
@@ -169,7 +139,6 @@ function initializeDataGeneratorPageHost({ page }) {
   page.renderSchemaRows();
   page.updateSchemaEditModeView?.();
   page.renderOptionsPanelForSelectedFormat();
-  bindGeneratorPreviewEvents({ page });
 }
 
-export { bindGeneratorPreviewEvents as bindDataGeneratorPageEvents, initializeDataGeneratorPageHost };
+export { initializeDataGeneratorPageHost };

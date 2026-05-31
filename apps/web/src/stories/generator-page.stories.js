@@ -304,8 +304,11 @@ export const Default = {
     await expect(canvas.getByRole('textbox', { name: 'Output Preview' })).toHaveValue(
       'First Name,Status\nAlice,active'
     );
-    await expect(canvas.getByText('First Name | Status')).toBeVisible();
-    await expect(canvas.getByText('Alice | active')).toBeVisible();
+    await expect(canvas.getByRole('table', { name: 'Preview grid' })).toBeVisible();
+    await expect(canvas.getByRole('columnheader', { name: 'First Name' })).toBeVisible();
+    await expect(canvas.getByRole('columnheader', { name: 'Status' })).toBeVisible();
+    await expect(canvas.getByRole('cell', { name: 'Alice' })).toBeVisible();
+    await expect(canvas.getByRole('cell', { name: 'active' })).toBeVisible();
     expect(schemaHelpIcon?.getAttribute('data-help-text')).toContain('Insert Example Schema');
   },
 };
@@ -332,8 +335,11 @@ export const PairwiseReady = {
     const schemaHelpIcon = canvasElement.querySelector('[data-help="generator-schema-mode-help"]');
     await expect(canvas.getByRole('button', { name: 'Generate Pairwise' })).toBeVisible();
     await expect(canvas.getByRole('textbox', { name: 'Output Preview' })).toHaveValue('Status,Priority\nactive,high');
-    await expect(canvas.getByText('Status | Priority')).toBeVisible();
-    await expect(canvas.getByText('active | high')).toBeVisible();
+    await expect(canvas.getByRole('table', { name: 'Preview grid' })).toBeVisible();
+    await expect(canvas.getByRole('columnheader', { name: 'Status' })).toBeVisible();
+    await expect(canvas.getByRole('columnheader', { name: 'Priority' })).toBeVisible();
+    await expect(canvas.getByRole('cell', { name: 'active' })).toBeVisible();
+    await expect(canvas.getByRole('cell', { name: 'high' })).toBeVisible();
     expect(schemaHelpIcon?.getAttribute('data-help-text')).toContain('Insert Example Schema');
   },
 };
@@ -363,8 +369,11 @@ export const WithPreviewGridAdapter = {
     await expect(canvas.getByRole('textbox', { name: 'Output Preview' })).toHaveValue(
       'Email,Status\nava@example.com,active'
     );
-    await expect(canvas.getByText('Email | Status')).toBeVisible();
-    await expect(canvas.getByText('ava@example.com | active')).toBeVisible();
+    await expect(canvas.getByRole('table', { name: 'Preview grid' })).toBeVisible();
+    await expect(canvas.getByRole('columnheader', { name: 'Email' })).toBeVisible();
+    await expect(canvas.getByRole('columnheader', { name: 'Status' })).toBeVisible();
+    await expect(canvas.getByRole('cell', { name: 'ava@example.com' })).toBeVisible();
+    await expect(canvas.getByRole('cell', { name: 'active' })).toBeVisible();
     expect(schemaHelpIcon?.getAttribute('data-help-text')).toContain('Insert Example Schema');
   },
 };

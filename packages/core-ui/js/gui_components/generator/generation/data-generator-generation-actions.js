@@ -134,17 +134,16 @@ function updateGeneratorPairwiseButtonVisibility({
   validateSchemaRows,
 }) {
   const buttonWrapper = documentObj.getElementById('generateAllPairsButtonWrapper');
-  if (!buttonWrapper) {
-    return;
-  }
-
   const parsed =
     typeof getCurrentSchemaState === 'function'
       ? getCurrentSchemaState()
       : syncSchemaRowsFromTextMode({ showErrors: false, applySemanticValidation: false });
   const { errors, rows } = validateSchemaRows(parsed.rows || []);
-  buttonWrapper.style.display =
-    !parsed.errors?.length && !errors.length && isPairwiseEligibleForSchemaRows(rows) ? 'inline-flex' : 'none';
+  const isVisible = !parsed.errors?.length && !errors.length && isPairwiseEligibleForSchemaRows(rows);
+  if (buttonWrapper) {
+    buttonWrapper.style.display = isVisible ? 'inline-flex' : 'none';
+  }
+  return isVisible;
 }
 
 function countGeneratorEnumColumns({ syncSchemaRowsFromTextMode, validateSchemaRows }) {

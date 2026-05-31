@@ -58,6 +58,7 @@ describe('help tooltips module', () => {
     expect(global.tippy).toHaveBeenCalledTimes(1);
     const helpIcon = root.querySelector('.helpicon');
     expect(helpIcon.getAttribute('tabindex')).toBe('0');
+    expect(helpIcon.getAttribute('role')).toBe('button');
     expect(helpIcon.getAttribute('aria-label')).toBe('Show help');
     expect(global.tippy).toHaveBeenCalledWith(
       expect.anything(),
@@ -82,6 +83,7 @@ describe('help tooltips module', () => {
 
     const helpIcon = root.querySelector('.helpicon');
     expect(helpIcon.getAttribute('tabindex')).toBe('0');
+    expect(helpIcon.getAttribute('role')).toBe('button');
     expect(helpIcon.getAttribute('aria-label')).toBe('Show help for this option');
   });
 });

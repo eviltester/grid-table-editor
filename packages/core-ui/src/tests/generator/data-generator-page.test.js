@@ -471,6 +471,37 @@ describe('DataGeneratorPage', () => {
     });
   });
 
+  test('pairwise button visibility updates through GeneratorControls state', () => {
+    const page = new DataGeneratorPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker,
+      RandExp,
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: TestDataGenerator,
+    });
+    page.init();
+
+    page.schemaRows = [
+      { id: '1', name: 'Browser', sourceType: 'enum', command: '', params: '', value: 'enum(chrome,firefox,safari)' },
+      { id: '2', name: 'Plan', sourceType: 'enum', command: '', params: '', value: 'enum(free,pro,enterprise)' },
+    ];
+    page.renderSchemaRows();
+
+    expect(document.getElementById('generateAllPairsButtonWrapper').style.display).toBe('inline-flex');
+    expect(page.generatorControls.getState().pairwiseVisible).toBe(true);
+
+    page.schemaRows = [{ id: '3', name: 'Only', sourceType: 'enum', command: '', params: '', value: 'enum(one,two)' }];
+    page.renderSchemaRows();
+
+    expect(document.getElementById('generateAllPairsButtonWrapper').style.display).toBe('none');
+    expect(page.generatorControls.getState().pairwiseVisible).toBe(false);
+  });
+
   test('renders options panel and applies options for selected type', () => {
     const page = new DataGeneratorPage({
       parentElement: document.getElementById('app'),

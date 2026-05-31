@@ -39,11 +39,7 @@ import {
   normaliseDomainCommand,
   normaliseFakerCommand,
 } from '../../shared/schema-row-rule-mapper.js';
-import {
-  initializeDataGeneratorPageHost,
-  populateGeneratorFormatOptions,
-  GENERATE_TO_FILE_HELP_URL,
-} from '../host/index.js';
+import { initializeDataGeneratorPageHost, GENERATE_TO_FILE_HELP_URL } from '../host/index.js';
 import { buildSchemaModeHelpHtml } from '../schema/index.js';
 import {
   createConfiguredGeneratorForPage,
@@ -57,7 +53,7 @@ import {
   generateGeneratorDataFile,
   generateGeneratorAllPairsDataFile,
 } from '../generation/index.js';
-import { applySanitizedUiOptionsToTargets, getOutputFormatGroups } from '../options/index.js';
+import { applySanitizedUiOptionsToTargets } from '../options/index.js';
 
 function schemaRowsToSpec(schemaRows) {
   return schemaRowsToSpecCore({
@@ -123,9 +119,9 @@ class DataGeneratorPage {
     );
     this.domainCommands = getKnownDomainCommandsAlphabetical();
     this.optionsPanels = {};
-    this.statusPresenter = undefined;
     this.schemaErrorDisplay = undefined;
     this.schemaDefinition = undefined;
+    this.generatorControls = undefined;
     this.lastPreviewDataTable = undefined;
     this.rowCountControls = [];
     this.schemaTextToDataRules = schemaTextToDataRules;
@@ -234,10 +230,9 @@ class DataGeneratorPage {
   }
 
   populateFormatOptions() {
-    populateGeneratorFormatOptions({
-      documentObj: this.documentObj,
-      exporter: this.exporter,
-      getOutputFormatGroupsFn: getOutputFormatGroups,
+    this.generatorControls?.update({
+      selectedFormat: this.getSelectedOutputType() || 'csv',
+      currentOptions: this.exporter?.getOptionsForType?.(this.getSelectedOutputType() || 'csv'),
     });
   }
 
@@ -246,15 +241,18 @@ class DataGeneratorPage {
   }
 
   getSelectedOutputType() {
+    if (this.generatorControls?.getSelectedOutputType) {
+      return this.generatorControls.getSelectedOutputType();
+    }
     return this.documentObj.getElementById('generatorOutputFormat')?.value;
   }
 
   renderOptionsPanelForSelectedFormat() {
     const type = this.getSelectedOutputType();
-    if (!this.formatOptionsPanel) {
+    if (!this.generatorControls) {
       return;
     }
-    this.formatOptionsPanel.update({
+    this.generatorControls.update({
       selectedFormat: type,
       currentOptions: this.exporter?.getOptionsForType?.(type),
     });
@@ -322,33 +320,23 @@ class DataGeneratorPage {
   }
 
   setGenerationButtonBusy(isBusy) {
-    const generateDataButton = this.documentObj.getElementById('generateDataButton');
-    if (generateDataButton) {
-      generateDataButton.disabled = isBusy;
-      generateDataButton.setAttribute('aria-busy', isBusy ? 'true' : 'false');
-    }
-
-    const generateAllPairsButton = this.documentObj.getElementById('generateAllPairsButton');
-    if (generateAllPairsButton) {
-      generateAllPairsButton.disabled = isBusy;
-      generateAllPairsButton.setAttribute('aria-busy', isBusy ? 'true' : 'false');
-    }
+    this.generatorControls?.setGenerationButtonsBusy?.(isBusy);
   }
 
   setGenerationStatus(message, options = {}) {
-    this.statusPresenter?.setStatus(message, options);
+    this.generatorControls?.setStatus?.(message, options);
   }
 
   showGenerationLoadingStatus(message) {
-    this.loadingStatusPresenter?.setStatus(message);
+    this.generatorControls?.showLoadingStatus?.(message);
   }
 
   clearGenerationStatus() {
-    this.statusPresenter?.clear();
+    this.generatorControls?.clearStatus?.();
   }
 
   scheduleClearGenerationStatus(delay = 1200) {
-    this.statusPresenter?.scheduleClear(delay);
+    this.generatorControls?.scheduleClearStatus?.(delay);
   }
 
   surfacePageError(message, { useSchemaStatus = false } = {}) {
@@ -391,7 +379,7 @@ class DataGeneratorPage {
 
   destroy() {
     this.schemaDefinition?.destroy?.();
-    this.formatOptionsPanel?.destroy?.();
+    this.generatorControls?.destroy?.();
     this.rowCountControls.forEach((control) => control?.destroy?.());
     this.rowCountControls = [];
   }
@@ -450,6 +438,7 @@ class DataGeneratorPage {
 
   renderSchemaRows() {
     this.schemaDefinition?.render?.();
+    this.updateAllPairsButtonVisibility();
   }
 
   renderSchemaRowsWithoutPairwiseUpdate() {
@@ -621,7 +610,7 @@ class DataGeneratorPage {
   }
 
   updateAllPairsButtonVisibility() {
-    updateGeneratorPairwiseButtonVisibility({
+    const isVisible = updateGeneratorPairwiseButtonVisibility({
       documentObj: this.documentObj,
       getCurrentSchemaState: () => ({
         rows: this.schemaRows,
@@ -629,6 +618,7 @@ class DataGeneratorPage {
       }),
       validateSchemaRows,
     });
+    this.generatorControls?.update?.({ pairwiseVisible: isVisible === true });
   }
 
   getSchemaHelpData(sourceType, commandValue) {

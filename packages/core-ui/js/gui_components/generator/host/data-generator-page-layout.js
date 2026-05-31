@@ -13,41 +13,7 @@ function renderDataGeneratorPageShell({ parentElement }) {
             <div id="generatorSchemaDefinition"></div>
           </section>
 
-            <section class="generator-controls" id="generatorGenerateOptionsSection" data-section-order="3" aria-labelledby="generatorGenerateOptionsHeading">
-                      <div class="generator-controls-head">
-              <strong id="generatorGenerateOptionsHeading">Generate Data and Options</strong>
-                      </div>
-                      <div id="generateRowsCountControl"></div>
-                      <label>Output Format
-                        <select id="generatorOutputFormat"></select>
-                      </label>
-                      <span class="generator-button-with-help">
-                        <span
-                          class="helpicon"
-                          data-help="generator-generate-data-help"
-                          data-help-text='
-                            <p>Generate Data for currently defined rows and output format to file.</p>
-                            <p><a class="helplink" href="https://anywaydata.com/docs/test-data/generate-to-file" target="_blank" rel="noopener noreferrer">Generate To File docs</a></p>
-                          '
-                        ></span>
-                        <button id="generateDataButton"><span class="generator-file-icon" aria-hidden="true"></span>Generate Data</button>
-                      </span>
-                      <span class="generator-button-with-help" id="generateAllPairsButtonWrapper" style="display:none;">
-                        <span
-                          class="helpicon"
-                          data-help="generator-pairwise-help"
-                          data-help-text='
-                            <p>Generate Pairwise Data from schema to a file.</p>
-                            <p><a class="helplink" href="https://anywaydata.com/docs/test-data/pairwise-testing" target="_blank" rel="noopener noreferrer">Pairwise testing docs</a></p>
-                          '
-                        ></span>
-                        <button id="generateAllPairsButton"><span class="generator-file-icon" aria-hidden="true"></span>Generate Pairwise</button>
-                      </span>
-                      <div class="generator-options-wrapper">
-                        <div id="generatorOptionsPanel" class="generator-options-panel"></div>
-                        <div id="generatorStatusText" class="generator-status-text" aria-live="polite" role="status"></div>
-                      </div>
-                    </section>
+            <div id="generatorControlsRoot"></div>
 
                 <section class="generator-preview" id="generatorPreviewSection" data-section-order="4" aria-labelledby="generatorPreviewHeading">
                     <div class="generator-preview-head">
@@ -79,54 +45,4 @@ function renderDataGeneratorPageShell({ parentElement }) {
         `;
 }
 
-function populateGeneratorFormatOptions({ documentObj, exporter, getOutputFormatGroupsFn }) {
-  const outputSelect = documentObj.getElementById('generatorOutputFormat');
-  if (!outputSelect) {
-    return;
-  }
-
-  const formatGroups = getOutputFormatGroupsFn();
-  formatGroups.core.forEach(({ type, label }) => {
-    if (!exporter?.canExport?.(type) && exporter) {
-      return;
-    }
-    const option = documentObj.createElement('option');
-    option.value = type;
-    option.textContent = label;
-    outputSelect.appendChild(option);
-  });
-
-  const codeGroup = documentObj.createElement('optgroup');
-  codeGroup.label = '-- Code --';
-  formatGroups.code.forEach(({ type, label }) => {
-    if (!exporter?.canExport?.(type) && exporter) {
-      return;
-    }
-    const option = documentObj.createElement('option');
-    option.value = type;
-    option.textContent = label;
-    codeGroup.appendChild(option);
-  });
-  if (codeGroup.children.length > 0) {
-    outputSelect.appendChild(codeGroup);
-  }
-
-  const unitTestCodeGroup = documentObj.createElement('optgroup');
-  unitTestCodeGroup.label = '-- Code (Unit Test) --';
-  formatGroups.unitTest.forEach(({ type, label }) => {
-    if (!exporter?.canExport?.(type) && exporter) {
-      return;
-    }
-    const option = documentObj.createElement('option');
-    option.value = type;
-    option.textContent = label;
-    unitTestCodeGroup.appendChild(option);
-  });
-  if (unitTestCodeGroup.children.length > 0) {
-    outputSelect.appendChild(unitTestCodeGroup);
-  }
-
-  outputSelect.value = 'csv';
-}
-
-export { GENERATE_TO_FILE_HELP_URL, renderDataGeneratorPageShell, populateGeneratorFormatOptions };
+export { GENERATE_TO_FILE_HELP_URL, renderDataGeneratorPageShell };

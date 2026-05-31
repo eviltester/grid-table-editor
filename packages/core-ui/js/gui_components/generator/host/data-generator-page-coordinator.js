@@ -1,92 +1,100 @@
 /*
  * Responsibilities:
- * - Generator-page host composition and event binding.
- * - Keeps shell rendering, preview-grid setup, and button wiring out of the main page class.
+ * - Generator-page host composition and preview-grid setup.
+ * - Keeps shell rendering and feature mounting out of the main page class.
  */
 
+import { createGeneratorControlsComponent } from '../controls/index.js';
 import { createTimedStatusPresenter } from '../../shared/timed-error-display.js';
-import { createFormatOptionsPanel } from '../../shared/format-options-panel/index.js';
-import { createLoadingStatusPresenter, createStatusPresenter } from '../../shared/test-data/ui/index.js';
 import { createRowCountControl } from '../../shared/row-count-control/index.js';
 import { createSharedSchemaDefinitionComponent } from '../../shared/schema-definition/index.js';
 import { renderDataGeneratorPageShell } from './data-generator-page-layout.js';
+import { getOutputFormatGroups } from '../options/index.js';
 
-function bindGeneratorRowCountControls({ page }) {
-  const rowCountControls = [];
-
-  const generateRowsRoot = page.documentObj.getElementById('generateRowsCountControl');
-  if (generateRowsRoot) {
-    rowCountControls.push(
-      createRowCountControl({
-        root: generateRowsRoot,
-        documentObj: page.documentObj,
-        props: {
-          inputId: 'generateRowsCount',
-          label: 'Generate Rows',
-          min: 0,
-          step: 1,
-          value: 1000,
-        },
-      })
-    );
-  }
-
+function bindGeneratorPreviewRowCountControl({ page }) {
   const previewRowsRoot = page.documentObj.getElementById('previewRowsCountControl');
-  if (previewRowsRoot) {
-    rowCountControls.push(
-      createRowCountControl({
-        root: previewRowsRoot,
-        documentObj: page.documentObj,
-        props: {
-          inputId: 'previewRowsCount',
-          label: 'Preview Items Count',
-          min: 0,
-          max: 50,
-          step: 1,
-          value: 10,
-          labelClassName: 'generator-preview-count-label',
-        },
-      })
-    );
+  if (!previewRowsRoot) {
+    return [];
   }
 
-  return rowCountControls;
+  return [
+    createRowCountControl({
+      root: previewRowsRoot,
+      documentObj: page.documentObj,
+      props: {
+        inputId: 'previewRowsCount',
+        label: 'Preview Items Count',
+        min: 0,
+        max: 50,
+        step: 1,
+        value: 10,
+        labelClassName: 'generator-preview-count-label',
+      },
+    }),
+  ];
 }
 
-function bindDataGeneratorPageEvents({ page }) {
+function bindGeneratorPreviewEvents({ page }) {
   page.documentObj.getElementById('previewDataButton')?.addEventListener('click', () => page.previewData());
-  page.documentObj.getElementById('generateDataButton')?.addEventListener('click', () => {
-    void page.generateDataFile();
-  });
-  page.documentObj.getElementById('generateAllPairsButton')?.addEventListener('click', () => {
-    void page.generateAllPairsDataFile();
-  });
-
-  page.documentObj.getElementById('generatorOutputFormat')?.addEventListener('change', () => {
-    page.renderOptionsPanelForSelectedFormat();
-    page.renderOutputPreviewForCurrentSelection();
-  });
 }
 
-function initializeDataGeneratorPageHost({ page, populateFormatOptionsFn }) {
+function initializeDataGeneratorPageHost({ page }) {
   renderDataGeneratorPageShell({ parentElement: page.parentElement });
-  page.rowCountControls = bindGeneratorRowCountControls({ page });
+  page.rowCountControls = bindGeneratorPreviewRowCountControl({ page });
 
   page.schemaErrorDisplay = createTimedStatusPresenter({
     documentObj: page.documentObj,
     elementId: 'generatorSchemaErrorText',
     timeoutMs: 5000,
   });
-  page.statusPresenter = createStatusPresenter({
-    documentObj: page.documentObj,
-    elementId: 'generatorStatusText',
-    hideWhenEmpty: false,
+
+  page.previewTableApi = new page.TabulatorCtor(page.documentObj.getElementById('generator-preview-grid'), {
+    data: [],
+    columns: [{ title: '~preview', field: 'column1', sorter: 'string' }],
+    autoColumns: false,
+    headerSort: true,
+    selectableRows: true,
+    selectableRowsRangeMode: 'click',
+    layout: 'fitDataStretch',
+    columnDefaults: {
+      resizable: true,
+      headerFilter: 'input',
+      headerFilterFunc: 'like',
+      sorter: 'string',
+    },
   });
-  page.loadingStatusPresenter = createLoadingStatusPresenter({
+  page.previewGrid = new page.GridExtensionClass(page.previewTableApi);
+  page.exporter = new page.ExporterClass(page.previewGrid);
+
+  page.generatorControls = createGeneratorControlsComponent({
+    root: page.documentObj.getElementById('generatorControlsRoot'),
     documentObj: page.documentObj,
-    elementId: 'generatorStatusText',
-    hideWhenEmpty: false,
+    props: {
+      selectedFormat: page.getSelectedOutputType?.() || 'csv',
+      currentOptions: page.exporter?.getOptionsForType?.('csv'),
+      pairwiseVisible: false,
+    },
+    services: {
+      canExportFormat: (type) => page.exporter?.canExport?.(type) !== false,
+      getOutputFormatGroups,
+    },
+    callbacks: {
+      onFormatChanged: () => {
+        page.renderOptionsPanelForSelectedFormat();
+        page.renderOutputPreviewForCurrentSelection();
+      },
+      onApplyOptions: ({ sanitized }) => {
+        page.applyCurrentTypeOptions(sanitized);
+      },
+      onGenerateData: () => {
+        void page.generateDataFile();
+      },
+      onGeneratePairwise: () => {
+        void page.generateAllPairsDataFile();
+      },
+    },
   });
+
   page.schemaDefinition = createSharedSchemaDefinitionComponent({
     root: page.documentObj.getElementById('generatorSchemaDefinition'),
     documentObj: page.documentObj,
@@ -155,49 +163,13 @@ function initializeDataGeneratorPageHost({ page, populateFormatOptionsFn }) {
     },
   });
 
-  page.previewTableApi = new page.TabulatorCtor(page.documentObj.getElementById('generator-preview-grid'), {
-    data: [],
-    columns: [{ title: '~preview', field: 'column1', sorter: 'string' }],
-    autoColumns: false,
-    headerSort: true,
-    selectableRows: true,
-    selectableRowsRangeMode: 'click',
-    layout: 'fitDataStretch',
-    columnDefaults: {
-      resizable: true,
-      headerFilter: 'input',
-      headerFilterFunc: 'like',
-      sorter: 'string',
-    },
-  });
-  page.previewGrid = new page.GridExtensionClass(page.previewTableApi);
-  page.exporter = new page.ExporterClass(page.previewGrid);
-
-  populateFormatOptionsFn();
-
-  const optionsParent = page.documentObj.getElementById('generatorOptionsPanel');
-  page.formatOptionsPanel = optionsParent
-    ? createFormatOptionsPanel({
-        root: optionsParent,
-        documentObj: page.documentObj,
-        windowObj: page.documentObj?.defaultView || globalThis.window,
-        props: {
-          selectedFormat: page.getSelectedOutputType(),
-          currentOptions: page.exporter?.getOptionsForType?.(page.getSelectedOutputType()),
-        },
-        callbacks: {
-          onApplyOptions: ({ sanitized }) => {
-            page.applyCurrentTypeOptions(sanitized);
-          },
-        },
-      })
-    : null;
+  page.formatOptionsPanel = page.generatorControls?.getFormatOptionsPanel?.() || null;
   page.optionsPanels = page.formatOptionsPanel?.getPanels?.() || {};
 
   page.renderSchemaRows();
   page.updateSchemaEditModeView?.();
   page.renderOptionsPanelForSelectedFormat();
-  bindDataGeneratorPageEvents({ page });
+  bindGeneratorPreviewEvents({ page });
 }
 
-export { bindDataGeneratorPageEvents, initializeDataGeneratorPageHost };
+export { bindGeneratorPreviewEvents as bindDataGeneratorPageEvents, initializeDataGeneratorPageHost };

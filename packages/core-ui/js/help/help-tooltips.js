@@ -47,8 +47,14 @@ function createUpdateHelpHints(documentObj, rootElement = documentObj) {
     const helpIcons = rootElement?.querySelectorAll?.('.helpicon[data-help]') || [];
     helpIcons.forEach((element) => {
       element?._tippy?.destroy?.();
+      const tagName = String(element?.tagName || '').toLowerCase();
+      const isNativeButton = tagName === 'button';
+      const isNativeLink = tagName === 'a';
       if (!element.hasAttribute('tabindex')) {
         element.setAttribute('tabindex', '0');
+      }
+      if (!isNativeButton && !isNativeLink && !element.hasAttribute('role')) {
+        element.setAttribute('role', 'button');
       }
       if (!element.hasAttribute('aria-label')) {
         const isOptionHelp = element.classList.contains('option-help-icon');
@@ -82,6 +88,7 @@ function createUpdateHelpHints(documentObj, rootElement = documentObj) {
       interactiveBorder: 16,
       delay: [100, 300],
       hideOnClick: false,
+      appendTo: () => documentObj.body,
     });
   };
 }

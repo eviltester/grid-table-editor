@@ -306,13 +306,20 @@ Current status:
 ### Phase 4: Generator Page Composition
 
 - [ ] Replace generator page shell/event binding with `GeneratorPage` component composition.
-- [ ] Extract `GeneratorControls`.
-- [ ] Move the current generator row-count host binding into `GeneratorControls` so output format, action buttons, and shared `RowCountControl` instances live behind one feature boundary.
+- [x] Extract `GeneratorControls`.
+- [x] Move the current generator row-count host binding into `GeneratorControls` so output format, action buttons, and shared `RowCountControl` instances live behind one feature boundary.
 - [ ] Extract `GeneratorPreview`.
 - [ ] Use shared `SharedSchemaDefinition`.
 - [ ] Use shared `FormatOptionsPanel`.
 - [ ] Wrap the preview grid with `TabulatorGridAdapter`.
 - [ ] Add stories for the generator page feature states.
+- [ ] Move generator preview controls and preview status wiring behind `GeneratorPreview` so the remaining page host only composes schema, controls, and preview feature roots.
+
+Current status:
+
+- `GeneratorControls` now lives under `generator/controls/` with a controller, view, and create-component factory.
+- The generator host now mounts `GeneratorControls` as its own feature root, and that component owns the generate row-count control, output-format select, generate/pairwise buttons, status surface, and shared `FormatOptionsPanel`.
+- The standalone generator page still needs a dedicated `GeneratorPreview` extraction before Phase 4 is complete, but the main non-preview control surface is no longer wired directly out of the host shell.
 
 ### Phase 5: App Data Population Panel
 

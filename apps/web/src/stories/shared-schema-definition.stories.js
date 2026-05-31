@@ -1,16 +1,24 @@
 import { expect, userEvent, within } from 'storybook/test';
+import RandExp from 'randexp';
+import { faker } from '@faker-js/faker';
 import {
   schemaTextToDataRules,
   dataRulesToSchemaText,
   schemaRowsToDataRules,
 } from '@anywaydata/core/data_generation/schema-rules-adapter.js';
 import { createSharedSchemaDefinitionComponent } from '../../../../packages/core-ui/js/gui_components/shared/schema-definition/index.js';
-import { getMethodPickerOptions } from '../../../../packages/core-ui/js/gui_components/app/test-data-grid/schema/index.js';
+import {
+  identifyFakerCommands,
+  getMethodPickerOptions,
+  getFakerCommands,
+  getDomainCommands,
+} from '../../../../packages/core-ui/js/gui_components/app/test-data-grid/schema/index.js';
 import {
   TEST_DATA_GRID_SAMPLE_SCHEMA_TEXT,
   mapDataRuleToSchemaRow,
   validateSchemaRows as validateSharedSchemaRows,
 } from '../../../../packages/core-ui/js/gui_components/shared/test-data/schema/index.js';
+import { getVisibleDomainCommands as getVisibleDomainCommandsForStory } from '../../../../packages/core-ui/js/gui_components/shared/test-data/help/index.js';
 
 let storyInstanceCounter = 0;
 
@@ -65,6 +73,9 @@ function validateSchemaRows(schemaRows) {
 }
 
 function renderSharedSchemaDefinitionStory(args) {
+  identifyFakerCommands();
+  const fakerCommands = getFakerCommands().filter((command) => command !== 'RegEx' && command.startsWith('helpers.'));
+  const domainCommands = getDomainCommands();
   const root = document.createElement('section');
   document.body.appendChild(root);
   const ids = createIds(args.idPrefix || 'shared-schema');
@@ -76,8 +87,8 @@ function renderSharedSchemaDefinitionStory(args) {
       ids,
       schemaTextToDataRules,
       dataRulesToSchemaText,
-      faker: {},
-      RandExp: function StoryRandExp() {},
+      faker,
+      RandExp,
       createBlankRow,
       mapRuleToRow: (rule, leadingTextLines = []) => {
         const row = mapDataRuleToSchemaRow(rule, {
@@ -87,8 +98,12 @@ function renderSharedSchemaDefinitionStory(args) {
         return row;
       },
       getMethodPickerOptions,
-      getVisibleDomainCommands: () => ['string.counterString', 'internet.password'],
-      fakerCommands: ['helpers.arrayElement', 'helpers.fake'],
+      getVisibleDomainCommands: (currentValue = '') =>
+        getVisibleDomainCommandsForStory({
+          commands: domainCommands,
+          currentCommand: String(currentValue || '').trim(),
+        }),
+      fakerCommands,
       sampleSchemaText: TEST_DATA_GRID_SAMPLE_SCHEMA_TEXT,
       buildModeHelpHtml: ({ inTextMode }) => buildStoryHelpHtml({ inTextMode }),
       validateSchemaRows,

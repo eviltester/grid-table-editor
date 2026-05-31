@@ -15,48 +15,45 @@ describe('test data grid controller', () => {
 
   afterEach(() => {
     dom.window.close();
+    delete global.window;
+    delete global.document;
+    delete global.Event;
+    delete global.RandExp;
   });
 
-  test('creates isolated controller state and wires shared helpers', () => {
-    const renderTestDataGenerationPanelFn = jest.fn(({ parentElem }) => {
-      parentElem.innerHTML =
-        '<textarea id="testDataSchemaText"></textarea><input id="generateCount" /><button id="generatedata"></button><button id="generateallpairs"></button><button id="refreshtestdatapreview"></button>';
-    });
-    const bindPrimaryActionsFn = jest.fn();
-    const bindGenerateCountInputFn = jest.fn();
-    const bindModeRadiosFn = jest.fn();
-    const bindSchemaTextareaSyncFn = jest.fn();
+  test('mounts the data population panel and wires generation actions through the shared adapter', () => {
+    const updatePairwiseButtonVisibility = jest.fn();
+    const generateTestData = jest.fn();
+    const generatePairwiseTestData = jest.fn();
+    const refreshTestDataPreview = jest.fn();
     const initializeSchemaErrorDisplayFn = jest.fn();
-    const bindSchemaSampleShortcutFn = jest.fn(() => 'next-handler');
     const identifyFakerCommandsFn = jest.fn();
-    const updateHelpHints = jest.fn();
-    const createTestDataGrid = jest.fn();
     const createTestDataGenerationServiceFn = jest.fn(() => ({
-      schemaErrorsToText: jest.fn(),
-      updatePairwiseButtonVisibility: jest.fn(),
-      generatePairwiseTestData: jest.fn(),
-      generateTestData: jest.fn(),
-      refreshTestDataPreview: jest.fn(),
+      updatePairwiseButtonVisibility,
+      generateTestData,
+      generatePairwiseTestData,
+      refreshTestDataPreview,
     }));
-    const createSchemaGridControllerFn = jest.fn(() => ({
-      createTestDataGrid,
-      populateGridFromTextSchema: jest.fn(),
-      syncSchemaTextFromGridBeforeGenerate: jest.fn(),
-    }));
+    const panel = {
+      destroy: jest.fn(),
+      getMode: jest.fn(() => 'new-table'),
+      setPairwiseVisible: jest.fn(),
+      setRowCountValue: jest.fn(),
+      validateSchemaRows: jest.fn(() => ({ rows: [], errors: [] })),
+      syncSchemaTextFromRows: jest.fn(),
+      insertSampleSchema: jest.fn(),
+    };
+    const createDataPopulationPanelComponentFn = jest.fn(({ callbacks }) => {
+      panel.callbacks = callbacks;
+      return panel;
+    });
 
     const control = createTestDataGridControl({
       documentObj: document,
-      windowObj: { updateHelpHints },
-      renderTestDataGenerationPanelFn,
-      bindPrimaryActionsFn,
-      bindGenerateCountInputFn,
-      bindModeRadiosFn,
-      bindSchemaTextareaSyncFn,
       initializeSchemaErrorDisplayFn,
-      bindSchemaSampleShortcutFn,
-      createTestDataGenerationServiceFn,
-      createSchemaGridControllerFn,
       identifyFakerCommandsFn,
+      createTestDataGenerationServiceFn,
+      createDataPopulationPanelComponentFn,
     });
 
     const importer = { setGridFromGenericDataTable: jest.fn() };
@@ -66,69 +63,81 @@ describe('test data grid controller', () => {
     const state = control.enableTestDataGenerationInterface('host', importer, textPreviewRenderer, mainGridExtras);
 
     expect(identifyFakerCommandsFn).toHaveBeenCalledTimes(1);
-    expect(renderTestDataGenerationPanelFn).toHaveBeenCalledTimes(1);
-    expect(createTestDataGenerationServiceFn).toHaveBeenCalledTimes(1);
-    expect(createSchemaGridControllerFn).toHaveBeenCalledTimes(1);
-    expect(bindPrimaryActionsFn).toHaveBeenCalledTimes(1);
-    expect(bindGenerateCountInputFn).toHaveBeenCalledTimes(1);
-    expect(bindModeRadiosFn).toHaveBeenCalledTimes(1);
-    expect(bindSchemaTextareaSyncFn).toHaveBeenCalledTimes(1);
     expect(initializeSchemaErrorDisplayFn).toHaveBeenCalledTimes(1);
-    expect(bindSchemaSampleShortcutFn).toHaveBeenCalledTimes(1);
-    expect(createTestDataGrid).toHaveBeenCalledTimes(1);
-    expect(updateHelpHints).toHaveBeenCalledTimes(1);
+    expect(createTestDataGenerationServiceFn).toHaveBeenCalledTimes(1);
+    expect(createDataPopulationPanelComponentFn).toHaveBeenCalledTimes(1);
+    expect(createDataPopulationPanelComponentFn).toHaveBeenCalledWith(
+      expect.objectContaining({
+        root: document.getElementById('host'),
+        props: expect.objectContaining({
+          selectedMode: 'new-table',
+          pairwiseVisible: false,
+          rowCountProps: expect.objectContaining({
+            inputId: 'generateCount',
+            value: 1,
+          }),
+        }),
+      })
+    );
+
+    panel.callbacks.onGenerate();
+    panel.callbacks.onGeneratePairwise();
+    panel.callbacks.onRefreshPreview();
+
+    expect(generateTestData).toHaveBeenCalledTimes(1);
+    expect(generatePairwiseTestData).toHaveBeenCalledTimes(1);
+    expect(refreshTestDataPreview).toHaveBeenCalledTimes(1);
 
     expect(state.importer).toBe(importer);
     expect(state.textPreviewRenderer).toBe(textPreviewRenderer);
     expect(state.mainGridExtras).toBe(mainGridExtras);
-    expect(state.schemaSampleButtonClickHandler).toBe('next-handler');
+    expect(state.dataPopulationPanel).toBe(panel);
     expect(control.getState()).toBe(state);
   });
 
-  test('sample schema callback uses previous handler from same controller instance on re-enable', () => {
-    const renderTestDataGenerationPanelFn = jest.fn(({ parentElem }) => {
-      parentElem.innerHTML =
-        '<textarea id="testDataSchemaText"></textarea><input id="generateCount" /><button id="generatedata"></button><button id="generateallpairs"></button><button id="refreshtestdatapreview"></button>';
+  test('updates row count defaults when the mounted panel changes mode', () => {
+    const setRowCountValue = jest.fn();
+    const panel = {
+      destroy: jest.fn(),
+      getMode: jest.fn(() => 'new-table'),
+      setPairwiseVisible: jest.fn(),
+      setRowCountValue,
+      validateSchemaRows: jest.fn(() => ({ rows: [], errors: [] })),
+      syncSchemaTextFromRows: jest.fn(),
+      insertSampleSchema: jest.fn(),
+    };
+    const createDataPopulationPanelComponentFn = jest.fn(({ callbacks }) => {
+      panel.callbacks = callbacks;
+      return panel;
     });
-    const bindSchemaSampleShortcutFn = jest
-      .fn()
-      .mockReturnValueOnce('first-handler')
-      .mockReturnValueOnce('second-handler');
-    const createTestDataGenerationServiceFn = jest.fn(() => ({
-      schemaErrorsToText: jest.fn(),
-      updatePairwiseButtonVisibility: jest.fn(),
-      generatePairwiseTestData: jest.fn(),
-      generateTestData: jest.fn(),
-      refreshTestDataPreview: jest.fn(),
-    }));
-    const createSchemaGridControllerFn = jest.fn(() => ({
-      createTestDataGrid: jest.fn(),
-      populateGridFromTextSchema: jest.fn(),
-      syncSchemaTextFromGridBeforeGenerate: jest.fn(),
-    }));
 
     const control = createTestDataGridControl({
       documentObj: document,
-      renderTestDataGenerationPanelFn,
-      bindSchemaSampleShortcutFn,
-      createTestDataGenerationServiceFn,
-      createSchemaGridControllerFn,
-      bindPrimaryActionsFn: jest.fn(),
-      bindGenerateCountInputFn: jest.fn(),
-      bindModeRadiosFn: jest.fn(),
-      bindSchemaTextareaSyncFn: jest.fn(),
       initializeSchemaErrorDisplayFn: jest.fn(),
       identifyFakerCommandsFn: jest.fn(),
+      createTestDataGenerationServiceFn: jest.fn(() => ({
+        updatePairwiseButtonVisibility: jest.fn(),
+        generateTestData: jest.fn(),
+        generatePairwiseTestData: jest.fn(),
+        refreshTestDataPreview: jest.fn(),
+      })),
+      createDataPopulationPanelComponentFn,
     });
 
-    control.enableTestDataGenerationInterface('host', {}, {}, {});
-    control.enableTestDataGenerationInterface('host', {}, {}, {});
-
-    expect(bindSchemaSampleShortcutFn).toHaveBeenNthCalledWith(1, expect.objectContaining({ currentHandler: null }));
-    expect(bindSchemaSampleShortcutFn).toHaveBeenNthCalledWith(
-      2,
-      expect.objectContaining({ currentHandler: 'first-handler' })
+    control.enableTestDataGenerationInterface(
+      'host',
+      {},
+      {},
+      {
+        getRowCount: jest.fn(() => 7),
+        getSelectedRowIndexes: jest.fn(() => [3, 5, 8]),
+      }
     );
-    expect(control.getState().schemaSampleButtonClickHandler).toBe('second-handler');
+
+    panel.callbacks.onModeChange('amend-table');
+    panel.callbacks.onModeChange('amend-selected');
+
+    expect(setRowCountValue).toHaveBeenNthCalledWith(1, 7);
+    expect(setRowCountValue).toHaveBeenNthCalledWith(2, 3);
   });
 });

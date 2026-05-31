@@ -1,64 +1,31 @@
 import { expect, userEvent, within } from 'storybook/test';
+import { TabulatorFull as Tabulator } from 'tabulator-tables';
 import { createGeneratorPreviewComponent } from '../../../../packages/core-ui/js/gui_components/generator/preview/index.js';
+import { GridExtension as TabulatorGridExtension } from '../../../../packages/core-ui/js/gui_components/data-grid-editor/tabulator/gridExtension-tabulator.js';
 
 function createStoryDataTable(headers, rows) {
   return {
     getHeaders() {
       return headers.slice();
     },
+    getColumnCount() {
+      return headers.length;
+    },
     getRows() {
       return rows.map((row) => row.slice());
     },
+    getRowCount() {
+      return rows.length;
+    },
+    getRowAsObjectUsingHeadings(rowIndex, fieldNames) {
+      const row = rows[rowIndex] || [];
+      const output = {};
+      fieldNames.forEach((fieldName, columnIndex) => {
+        output[fieldName] = row[columnIndex] ?? '';
+      });
+      return output;
+    },
   };
-}
-
-function renderStoryPreviewGridMarkup(headers, rows) {
-  const headerMarkup = headers
-    .map(
-      (header) => `
-        <th
-          style="border:1px solid #c9d7e1;padding:0.45rem 0.6rem;background:#edf4f8;font-weight:600;text-align:left;"
-        >
-          ${header}
-        </th>
-      `
-    )
-    .join('');
-
-  const rowMarkup = rows
-    .map(
-      (row) => `
-        <tr>
-          ${row
-            .map(
-              (cell) => `
-                <td style="border:1px solid #d7e2e8;padding:0.45rem 0.6rem;background:#ffffff;">
-                  ${cell}
-                </td>
-              `
-            )
-            .join('')}
-        </tr>
-      `
-    )
-    .join('');
-
-  return `
-    <div
-      class="story-preview-grid"
-      style="padding:0.35rem;border:1px solid #d7e2e8;border-radius:6px;background:#f8fbfd;overflow:auto;"
-    >
-      <table
-        style="width:100%;border-collapse:collapse;font-size:0.92rem;color:#163247;background:#ffffff;"
-        aria-label="Preview grid"
-      >
-        <thead>
-          <tr>${headerMarkup}</tr>
-        </thead>
-        <tbody>${rowMarkup}</tbody>
-      </table>
-    </div>
-  `;
 }
 
 function renderGeneratorPreviewStory(args) {
@@ -91,40 +58,63 @@ function renderGeneratorPreviewStory(args) {
   root.appendChild(componentRoot);
   root.appendChild(eventLog);
 
-  const component = createGeneratorPreviewComponent({
-    root: componentRoot,
-    documentObj: document,
-    props: {
-      outputPreviewText: args.outputPreviewText || '',
-    },
-    services: {
-      createPreviewGrid: ({ rootElement }) => {
-        const renderTable = (dataTable) => {
-          const headers = dataTable?.getHeaders?.() || [];
-          const rows = dataTable?.getRows?.() || [];
-          rootElement.innerHTML = renderStoryPreviewGridMarkup(headers, rows);
-        };
+  let component = null;
+  let disposed = false;
 
-        return {
-          tableApi: { story: true },
-          gridApi: {
-            setGridFromGenericDataTable: renderTable,
-          },
-        };
+  const queuePreviewData = (previewComponent) => {
+    if (!args.sampleData) {
+      return;
+    }
+
+    const dataTable = createStoryDataTable(args.sampleData.headers, args.sampleData.rows);
+    const applyPreviewData = () => {
+      if (disposed) {
+        return;
+      }
+      previewComponent.setPreviewDataTable(dataTable);
+    };
+
+    const previewTableApi = previewComponent.getPreviewTableApi?.();
+    if (typeof previewTableApi?.on === 'function') {
+      previewTableApi.on('tableBuilt', applyPreviewData);
+    }
+
+    globalThis.setTimeout(applyPreviewData, 0);
+  };
+
+  const mountComponent = () => {
+    if (disposed || component || !root.isConnected) {
+      return;
+    }
+
+    component = createGeneratorPreviewComponent({
+      root: componentRoot,
+      documentObj: document,
+      props: {
+        outputPreviewText: args.outputPreviewText || '',
       },
-    },
-    callbacks: {
-      onPreview: () => {
-        eventLog.textContent = 'preview:clicked';
+      services: {
+        TabulatorCtor: Tabulator,
+        GridExtensionClass: TabulatorGridExtension,
       },
-    },
+      callbacks: {
+        onPreview: () => {
+          eventLog.textContent = 'preview:clicked';
+        },
+      },
+    });
+
+    queuePreviewData(component);
+  };
+
+  globalThis.requestAnimationFrame(() => {
+    mountComponent();
   });
 
-  if (args.sampleData) {
-    component.setPreviewDataTable(createStoryDataTable(args.sampleData.headers, args.sampleData.rows));
-  }
-
-  root.__storybookCleanup = () => component.destroy();
+  root.__storybookCleanup = () => {
+    disposed = true;
+    component?.destroy();
+  };
   return root;
 }
 
@@ -150,7 +140,8 @@ const meta = {
     },
     sampleData: {
       control: false,
-      description: 'Optional sample grid data rendered by the story-local fake preview grid.',
+      description:
+        'Optional sample grid data rendered through the real preview-grid adapter path using the same Tabulator library the generator page loads.',
     },
   },
   render: renderGeneratorPreviewStory,
@@ -169,7 +160,7 @@ export const EmptyPreview = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await userEvent.click(canvas.getByRole('button', { name: 'Preview' }));
+    await userEvent.click(await canvas.findByRole('button', { name: 'Preview' }));
     await expect(canvas.getByText('preview:clicked')).toBeTruthy();
     await expect(canvas.getByRole('textbox', { name: 'Output Preview' })).toHaveValue('');
   },
@@ -187,14 +178,16 @@ export const WithPreviewData = {
     docs: {
       description: {
         story:
-          'Shows the preview surface after preview data has been rendered. The output textarea is populated and the data table preview displays a small sample grid through the component API.',
+          'Shows the preview surface after preview data has been rendered. The output textarea is populated and the data table preview uses the real preview-grid adapter path with the real Tabulator library, so the visible child grid behaves the same way as the generator page preview.',
       },
     },
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
+    const previewGridRegion = await canvas.findByLabelText('Data Table Preview Grid');
     await expect(canvas.getByRole('textbox', { name: 'Output Preview' })).toHaveValue('Status\nactive');
-    await expect(canvas.getByText('Status')).toBeTruthy();
-    await expect(canvas.getByText('active')).toBeTruthy();
+    await expect(previewGridRegion).toBeVisible();
+    await expect(await within(previewGridRegion).findByText('Status', { exact: true })).toBeVisible();
+    await expect(await within(previewGridRegion).findByText('active', { exact: true })).toBeVisible();
   },
 };

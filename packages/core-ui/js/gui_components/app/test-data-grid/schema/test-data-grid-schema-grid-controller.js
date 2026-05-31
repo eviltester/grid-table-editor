@@ -28,6 +28,60 @@ enum(active,inactive,pending)</pre>
   `;
 }
 
+function createAppSchemaDefinitionProps({
+  schemaTextToDataRules,
+  dataRulesToSchemaText,
+  schemaTextSyncState,
+  updatePairwiseButtonVisibility,
+  faker,
+  RandExp,
+  getMethodPickerOptions = () => [],
+  fakerCommands = [],
+  getVisibleDomainCommandOptions = () => [],
+  mapRuleToRow,
+  validateSchemaRows,
+} = {}) {
+  let rowIdCounter = 1;
+
+  return {
+    headingClassName: 'generator-schema-heading-row',
+    addButtonClassName: 'add-schema-row-button',
+    ids: {
+      rows: 'testDataSchemaRows',
+      textContainer: 'testDataSchemaTextContainer',
+      text: 'testDataSchemaText',
+      addButton: 'testDataAddSchemaRowButton',
+      toggleButton: 'testDataSchemaModeToggleButton',
+      helpIcon: 'testDataSchemaModeHelpIcon',
+      error: 'testdata-schema-error',
+    },
+    schemaTextToDataRules,
+    dataRulesToSchemaText,
+    faker,
+    RandExp,
+    createBlankRow: () => ({
+      id: `test-data-schema-row-${rowIdCounter++}`,
+      name: '',
+      sourceType: 'regex',
+      command: '',
+      params: '',
+      value: '',
+      comments: '',
+      leadingTextLines: [],
+    }),
+    mapRuleToRow,
+    getMethodPickerOptions,
+    getVisibleDomainCommands: (currentCommand) =>
+      getVisibleDomainCommandOptions(currentCommand).map((entry) => entry.value),
+    fakerCommands,
+    sampleSchemaText: TEST_DATA_GRID_SAMPLE_SCHEMA_TEXT,
+    buildModeHelpHtml: buildAppSchemaModeHelpHtml,
+    schemaErrorDisplay: schemaTextSyncState?.schemaErrorDisplay,
+    validateSchemaRows,
+    updatePairwiseButtonVisibility,
+  };
+}
+
 function createSchemaGridController({
   documentObj = document,
   schemaTextToDataRules,
@@ -43,7 +97,6 @@ function createSchemaGridController({
   mapRuleToRow,
   validateSchemaRows,
 }) {
-  let rowIdCounter = 1;
   let schemaDefinition = null;
 
   function createTestDataGrid() {
@@ -52,43 +105,19 @@ function createSchemaGridController({
     schemaDefinition = createSharedSchemaDefinitionComponent({
       root,
       documentObj,
-      props: {
-        headingClassName: 'generator-schema-heading-row',
-        addButtonClassName: 'add-schema-row-button',
-        ids: {
-          rows: 'testDataSchemaRows',
-          textContainer: 'testDataSchemaTextContainer',
-          text: 'testDataSchemaText',
-          addButton: 'testDataAddSchemaRowButton',
-          toggleButton: 'testDataSchemaModeToggleButton',
-          helpIcon: 'testDataSchemaModeHelpIcon',
-          error: 'testdata-schema-error',
-        },
+      props: createAppSchemaDefinitionProps({
         schemaTextToDataRules,
         dataRulesToSchemaText,
+        schemaTextSyncState,
+        updatePairwiseButtonVisibility,
         faker,
         RandExp,
-        createBlankRow: () => ({
-          id: `test-data-schema-row-${rowIdCounter++}`,
-          name: '',
-          sourceType: 'regex',
-          command: '',
-          params: '',
-          value: '',
-          comments: '',
-          leadingTextLines: [],
-        }),
-        mapRuleToRow,
         getMethodPickerOptions,
-        getVisibleDomainCommands: (currentCommand) =>
-          getVisibleDomainCommandOptions(currentCommand).map((entry) => entry.value),
         fakerCommands,
-        sampleSchemaText: TEST_DATA_GRID_SAMPLE_SCHEMA_TEXT,
-        buildModeHelpHtml: buildAppSchemaModeHelpHtml,
-        schemaErrorDisplay: schemaTextSyncState?.schemaErrorDisplay,
+        getVisibleDomainCommandOptions,
+        mapRuleToRow,
         validateSchemaRows,
-        updatePairwiseButtonVisibility,
-      },
+      }),
       callbacks: {
         onSchemaError: (message) => schemaTextSyncState?.schemaErrorDisplay?.show?.(message),
         onSchemaClear: () => schemaTextSyncState?.schemaErrorDisplay?.clear?.(),
@@ -119,4 +148,4 @@ function createSchemaGridController({
   };
 }
 
-export { createSchemaGridController };
+export { buildAppSchemaModeHelpHtml, createAppSchemaDefinitionProps, createSchemaGridController };

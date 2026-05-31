@@ -50,7 +50,7 @@ describe('test data schema editor compatibility', () => {
     expect(document.querySelector('#testDataSchemaRows')).toBeTruthy();
     expect(document.querySelector('#testDataAddSchemaRowButton')).toBeTruthy();
     expect(document.querySelector('#testDataSchemaText')).toBeTruthy();
-    expect(document.getElementById('testdata-schema-error').style.display).toBe('none');
+    expect(document.getElementById('testdata-schema-error').textContent).toBe('');
   });
 
   test('mode radios update How Many from grid context', () => {
@@ -60,12 +60,12 @@ describe('test data schema editor compatibility', () => {
 
     const amendTableRadio = document.querySelector('input[value="amend-table"]');
     amendTableRadio.checked = true;
-    amendTableRadio.dispatchEvent(new Event('change'));
+    amendTableRadio.dispatchEvent(new Event('change', { bubbles: true }));
     expect(countInput.value).toBe('12');
 
     const amendSelectedRadio = document.querySelector('input[value="amend-selected"]');
     amendSelectedRadio.checked = true;
-    amendSelectedRadio.dispatchEvent(new Event('change'));
+    amendSelectedRadio.dispatchEvent(new Event('change', { bubbles: true }));
     expect(countInput.value).toBe('3');
   });
 

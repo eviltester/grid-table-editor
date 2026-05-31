@@ -1,70 +1,149 @@
-import { expect, within } from 'storybook/test';
+import { expect, waitFor, within } from 'storybook/test';
+import RandExp from 'randexp';
+import { faker } from '@faker-js/faker';
+import { TabulatorFull as Tabulator } from 'tabulator-tables';
+import {
+  schemaTextToDataRules,
+  dataRulesToSchemaText,
+  schemaRowsToDataRules,
+} from '@anywaydata/core/data_generation/schema-rules-adapter.js';
 import { createGeneratorPageComponent } from '../../../../packages/core-ui/js/gui_components/generator/page/index.js';
 import { buildSchemaModeHelpHtml } from '../../../../packages/core-ui/js/gui_components/generator/schema/index.js';
 import { GENERATOR_DEFAULT_EXAMPLE_SCHEMA_TEXT } from '../../../../packages/core-ui/js/gui_components/shared/test-data/schema/schema-examples.js';
+import {
+  mapDataRuleToSchemaRow,
+  validateSchemaRows as validateSharedSchemaRows,
+  createSchemaRowValidation,
+} from '../../../../packages/core-ui/js/gui_components/shared/test-data/schema/index.js';
+import { getKnownFakerCommandsAlphabetical } from '../../../../packages/core-ui/js/gui_components/shared/faker-commands.js';
+import { getKnownDomainCommandsAlphabetical } from '../../../../packages/core-ui/js/gui_components/shared/domain-commands.js';
+import {
+  getVisibleDomainCommands,
+  buildSchemaHelpModel,
+} from '../../../../packages/core-ui/js/gui_components/shared/test-data/help/index.js';
+import { GridExtension as TabulatorGridExtension } from '../../../../packages/core-ui/js/gui_components/data-grid-editor/tabulator/gridExtension-tabulator.js';
 
 function createStoryDataTable(headers, rows) {
   return {
     getHeaders() {
       return headers.slice();
     },
+    getColumnCount() {
+      return headers.length;
+    },
     getRows() {
       return rows.map((row) => row.slice());
+    },
+    getRowCount() {
+      return rows.length;
+    },
+    getRowAsObjectUsingHeadings(rowIndex, fieldNames) {
+      const row = rows[rowIndex] || [];
+      const output = {};
+      fieldNames.forEach((fieldName, columnIndex) => {
+        output[fieldName] = row[columnIndex] ?? '';
+      });
+      return output;
     },
   };
 }
 
-function renderStoryPreviewGridMarkup(headers, rows, dataRole) {
-  const headerMarkup = headers
-    .map(
-      (header) => `
-        <th
-          style="border:1px solid #c9d7e1;padding:0.45rem 0.6rem;background:#edf4f8;font-weight:600;text-align:left;"
-        >
-          ${header}
-        </th>
-      `
-    )
-    .join('');
+let generatorPageStoryInstanceCount = 0;
 
-  const rowMarkup = rows
-    .map(
-      (row) => `
-        <tr>
-          ${row
-            .map(
-              (cell) => `
-                <td style="border:1px solid #d7e2e8;padding:0.45rem 0.6rem;background:#ffffff;">
-                  ${cell}
-                </td>
-              `
-            )
-            .join('')}
-        </tr>
-      `
-    )
-    .join('');
-
-  return `
-    <div
-      class="story-preview-grid"
-      data-role="${dataRole}"
-      style="padding:0.35rem;border:1px solid #d7e2e8;border-radius:6px;background:#f8fbfd;overflow:auto;"
-    >
-      <table
-        style="width:100%;border-collapse:collapse;font-size:0.92rem;color:#163247;background:#ffffff;"
-        aria-label="Preview grid"
-      >
-        <thead>
-          <tr>${headerMarkup}</tr>
-        </thead>
-        <tbody>${rowMarkup}</tbody>
-      </table>
-    </div>
-  `;
+function getSchemaHelpText(rootElement) {
+  return rootElement.querySelector('[id$="schemaModeHelpIcon"]')?.getAttribute('data-help-text') || '';
 }
 
-let generatorPageStoryInstanceCount = 0;
+function createGeneratorSchemaStoryProps() {
+  let rowCounter = 1;
+  const fakerCommands = getKnownFakerCommandsAlphabetical().filter(
+    (command) => command !== 'RegEx' && command.startsWith('helpers.')
+  );
+  const domainCommands = getKnownDomainCommandsAlphabetical();
+  const createBlankRow = () => ({
+    id: `generator-story-schema-row-${rowCounter++}`,
+    name: '',
+    sourceType: 'regex',
+    command: '',
+    params: '',
+    value: '',
+    comments: '',
+    leadingTextLines: [],
+    validation: createSchemaRowValidation(),
+  });
+
+  return {
+    headingText: 'Schema',
+    ids: {
+      rows: 'generatorSchemaRows',
+      textContainer: 'generatorSchemaTextContainer',
+      text: 'generatorSchemaText',
+      addButton: 'addSchemaRowButton',
+      toggleButton: 'schemaModeToggleButton',
+      helpIcon: 'schemaModeHelpIcon',
+      error: 'generatorSchemaErrorText',
+    },
+    schemaTextToDataRules,
+    dataRulesToSchemaText,
+    faker,
+    RandExp,
+    createBlankRow,
+    mapRuleToRow: (rule, leadingTextLines = []) => {
+      const row = mapDataRuleToSchemaRow(rule, {
+        createBlankSchemaRow: createBlankRow,
+      });
+      row.leadingTextLines = Array.isArray(leadingTextLines) ? leadingTextLines.slice() : [];
+      return row;
+    },
+    getMethodPickerOptions: (currentValue = '') => [
+      {
+        sourceType: 'enum',
+        command: 'enum',
+        helpModel: buildSchemaHelpModel('enum', 'enum'),
+      },
+      {
+        sourceType: 'literal',
+        command: 'literal',
+        helpModel: buildSchemaHelpModel('literal', 'literal'),
+      },
+      {
+        sourceType: 'regex',
+        command: 'regex',
+        helpModel: buildSchemaHelpModel('regex', 'regex'),
+      },
+      ...getVisibleDomainCommands({
+        commands: domainCommands,
+        currentCommand: String(currentValue || '').trim(),
+      }).map((command) => ({
+        sourceType: 'domain',
+        command,
+        helpModel: buildSchemaHelpModel('domain', command),
+      })),
+      ...fakerCommands.map((command) => ({
+        sourceType: 'faker',
+        command,
+        helpModel: buildSchemaHelpModel('faker', command),
+      })),
+    ],
+    getVisibleDomainCommands: (currentValue = '') =>
+      getVisibleDomainCommands({
+        commands: domainCommands,
+        currentCommand: String(currentValue || '').trim(),
+      }),
+    fakerCommands,
+    sampleSchemaText: GENERATOR_DEFAULT_EXAMPLE_SCHEMA_TEXT,
+    buildModeHelpHtml: ({ inTextMode }) =>
+      buildSchemaModeHelpHtml({
+        inTextMode,
+        generateToFileHelpUrl: 'https://anywaydata.com/docs/test-data/generate-to-file',
+      }),
+    validateSchemaRows: (rows) =>
+      validateSharedSchemaRows({
+        schemaRows: rows,
+        schemaRowsToDataRules,
+      }),
+  };
+}
 
 function prefixElementIds(root, prefix) {
   const elementsWithIds = Array.from(root.querySelectorAll('[id]'));
@@ -98,30 +177,6 @@ function prefixElementIds(root, prefix) {
   return idMap;
 }
 
-class StoryPageTabulator {
-  constructor(element, options = {}) {
-    this.element = element;
-    this.options = options;
-    this.element.innerHTML = '<div class="story-page-tabulator-grid" data-role="generator-page-adapter-grid"></div>';
-  }
-
-  destroy() {
-    this.element.innerHTML = '';
-  }
-}
-
-class StoryPagePreviewGridExtension {
-  constructor(tabulator) {
-    this.tabulator = tabulator;
-  }
-
-  setGridFromGenericDataTable(dataTable) {
-    const headers = dataTable?.getHeaders?.() || [];
-    const rows = dataTable?.getRows?.() || [];
-    this.tabulator.element.innerHTML = renderStoryPreviewGridMarkup(headers, rows, 'generator-page-adapter-grid');
-  }
-}
-
 function renderGeneratorPageStory(args) {
   generatorPageStoryInstanceCount += 1;
   const storyPrefix = `generator-page-story-${generatorPageStoryInstanceCount}`;
@@ -141,99 +196,73 @@ function renderGeneratorPageStory(args) {
   heading.style.border = '0';
   root.appendChild(heading);
 
-  const component = createGeneratorPageComponent({
-    root,
-    documentObj: document,
-    props: {
-      controlsProps: {
-        selectedFormat: args.selectedFormat,
-        currentOptions: { options: { header: true, quoteChar: '"' } },
-        pairwiseVisible: args.pairwiseVisible,
-      },
-      previewProps: {
-        outputPreviewText: args.outputPreviewText,
-      },
-      schemaDefinitionProps: {
-        headingText: 'Schema',
-        ids: {
-          rows: 'generatorSchemaRows',
-          textContainer: 'generatorSchemaTextContainer',
-          text: 'generatorSchemaText',
-          addButton: 'addSchemaRowButton',
-          toggleButton: 'schemaModeToggleButton',
-          helpIcon: 'schemaModeHelpIcon',
-          error: 'generatorSchemaErrorText',
-        },
-        schemaTextToDataRules: () => ({ dataRules: [], errors: [], schemaTokens: [] }),
-        dataRulesToSchemaText: () => '',
-        fakerCommands: [],
-        sampleSchemaText: GENERATOR_DEFAULT_EXAMPLE_SCHEMA_TEXT,
-        createBlankRow: () => ({
-          id: 'schema-row-1',
-          name: '',
-          sourceType: 'regex',
-          command: '',
-          params: '',
-          value: '',
-          comments: '',
-          leadingTextLines: [],
-        }),
-        mapRuleToRow: () => ({
-          id: 'schema-row-1',
-          name: '',
-          sourceType: 'regex',
-          command: '',
-          params: '',
-          value: '',
-          comments: '',
-          leadingTextLines: [],
-        }),
-        getMethodPickerOptions: () => [],
-        getVisibleDomainCommands: () => [],
-        buildModeHelpHtml: ({ inTextMode }) =>
-          buildSchemaModeHelpHtml({
-            inTextMode,
-            generateToFileHelpUrl: 'https://anywaydata.com/docs/test-data/generate-to-file',
-          }),
-        validateSchemaRows: (rows) => ({ rows, errors: [] }),
-      },
-    },
-    services: {
-      createTimedStatusPresenter: () => ({
-        show() {},
-        clear() {},
-      }),
-      generatorPreviewServices: args.usePreviewAdapter
-        ? {
-            TabulatorCtor: StoryPageTabulator,
-            GridExtensionClass: StoryPagePreviewGridExtension,
-          }
-        : {
-            createPreviewGrid: ({ rootElement }) => {
-              const renderTable = (dataTable) => {
-                const headers = dataTable?.getHeaders?.() || [];
-                const rows = dataTable?.getRows?.() || [];
-                rootElement.innerHTML = renderStoryPreviewGridMarkup(headers, rows, 'generator-page-preview-grid');
-              };
+  let component = null;
+  let disposed = false;
 
-              return {
-                tableApi: { story: true },
-                gridApi: { setGridFromGenericDataTable: renderTable },
-              };
-            },
-          },
-    },
+  const queuePreviewData = (pageComponent) => {
+    if (!args.sampleData) {
+      return;
+    }
+
+    const dataTable = createStoryDataTable(args.sampleData.headers, args.sampleData.rows);
+    const applyPreviewData = () => {
+      if (disposed) {
+        return;
+      }
+      pageComponent.getGeneratorPreview()?.setPreviewDataTable?.(dataTable);
+    };
+
+    const previewTableApi = pageComponent.getGeneratorPreview?.()?.getPreviewTableApi?.();
+    if (typeof previewTableApi?.on === 'function') {
+      previewTableApi.on('tableBuilt', applyPreviewData);
+    }
+
+    globalThis.setTimeout(applyPreviewData, 0);
+  };
+
+  const mountComponent = () => {
+    if (disposed || component || !root.isConnected) {
+      return;
+    }
+
+    component = createGeneratorPageComponent({
+      root,
+      documentObj: document,
+      props: {
+        controlsProps: {
+          selectedFormat: args.selectedFormat,
+          currentOptions: { options: { header: true, quoteChar: '"' } },
+          pairwiseVisible: args.pairwiseVisible,
+        },
+        previewProps: {
+          outputPreviewText: args.outputPreviewText,
+        },
+        schemaDefinitionProps: createGeneratorSchemaStoryProps(),
+      },
+      services: {
+        createTimedStatusPresenter: () => ({
+          show() {},
+          clear() {},
+        }),
+        generatorPreviewServices: {
+          TabulatorCtor: Tabulator,
+          GridExtensionClass: TabulatorGridExtension,
+        },
+      },
+    });
+
+    prefixElementIds(root, storyPrefix);
+    queuePreviewData(component);
+  };
+
+  globalThis.requestAnimationFrame(() => {
+    mountComponent();
   });
 
-  if (args.sampleData) {
-    component
-      .getGeneratorPreview()
-      ?.setPreviewDataTable?.(createStoryDataTable(args.sampleData.headers, args.sampleData.rows));
-  }
-
-  prefixElementIds(root, storyPrefix);
-
-  root.__storybookCleanup = () => component.destroy();
+  root.__storybookCleanup = () => {
+    disposed = true;
+    component?.destroy();
+  };
   return root;
 }
 
@@ -256,7 +285,6 @@ const meta = {
       headers: ['First Name', 'Status'],
       rows: [['Alice', 'active']],
     },
-    usePreviewAdapter: false,
   },
   argTypes: {
     selectedFormat: {
@@ -276,10 +304,6 @@ const meta = {
       control: false,
       description: 'Sample data rendered into the preview table through the page component API.',
     },
-    usePreviewAdapter: {
-      control: false,
-      description: 'When true, the story uses the preview adapter path with Storybook Tabulator stand-ins.',
-    },
   },
   render: renderGeneratorPageStory,
 };
@@ -297,19 +321,21 @@ export const Default = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const schemaHelpIcon = canvasElement.querySelector('[data-help="generator-schema-mode-help"]');
-    await expect(canvas.getByRole('button', { name: 'Generate Data' })).toBeVisible();
-    await expect(canvas.getByRole('button', { name: 'Preview' })).toBeVisible();
-    await expect(canvas.getByRole('button', { name: 'Edit as Text' })).toBeVisible();
+    const previewGridRegion = await canvas.findByLabelText('Data Table Preview Grid');
+    await expect(await canvas.findByRole('button', { name: 'Generate Data' })).toBeVisible();
+    await expect(await canvas.findByRole('button', { name: 'Preview' })).toBeVisible();
+    await expect(await canvas.findByRole('button', { name: 'Edit as Text' })).toBeVisible();
     await expect(canvas.getByRole('textbox', { name: 'Output Preview' })).toHaveValue(
       'First Name,Status\nAlice,active'
     );
-    await expect(canvas.getByRole('table', { name: 'Preview grid' })).toBeVisible();
-    await expect(canvas.getByRole('columnheader', { name: 'First Name' })).toBeVisible();
-    await expect(canvas.getByRole('columnheader', { name: 'Status' })).toBeVisible();
-    await expect(canvas.getByRole('cell', { name: 'Alice' })).toBeVisible();
-    await expect(canvas.getByRole('cell', { name: 'active' })).toBeVisible();
-    expect(schemaHelpIcon?.getAttribute('data-help-text')).toContain('Insert Example Schema');
+    await expect(previewGridRegion).toBeVisible();
+    await expect(await within(previewGridRegion).findByText('First Name', { exact: true })).toBeVisible();
+    await expect(await within(previewGridRegion).findByText('Status', { exact: true })).toBeVisible();
+    await expect(await within(previewGridRegion).findByText('Alice', { exact: true })).toBeVisible();
+    await expect(await within(previewGridRegion).findByText('active', { exact: true })).toBeVisible();
+    await waitFor(() => {
+      expect(getSchemaHelpText(canvasElement)).toContain('Insert Example Schema');
+    });
   },
 };
 
@@ -332,15 +358,17 @@ export const PairwiseReady = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const schemaHelpIcon = canvasElement.querySelector('[data-help="generator-schema-mode-help"]');
-    await expect(canvas.getByRole('button', { name: 'Generate Pairwise' })).toBeVisible();
+    const previewGridRegion = await canvas.findByLabelText('Data Table Preview Grid');
+    await expect(await canvas.findByRole('button', { name: 'Generate Pairwise' })).toBeVisible();
     await expect(canvas.getByRole('textbox', { name: 'Output Preview' })).toHaveValue('Status,Priority\nactive,high');
-    await expect(canvas.getByRole('table', { name: 'Preview grid' })).toBeVisible();
-    await expect(canvas.getByRole('columnheader', { name: 'Status' })).toBeVisible();
-    await expect(canvas.getByRole('columnheader', { name: 'Priority' })).toBeVisible();
-    await expect(canvas.getByRole('cell', { name: 'active' })).toBeVisible();
-    await expect(canvas.getByRole('cell', { name: 'high' })).toBeVisible();
-    expect(schemaHelpIcon?.getAttribute('data-help-text')).toContain('Insert Example Schema');
+    await expect(previewGridRegion).toBeVisible();
+    await expect(await within(previewGridRegion).findByText('Status', { exact: true })).toBeVisible();
+    await expect(await within(previewGridRegion).findByText('Priority', { exact: true })).toBeVisible();
+    await expect(await within(previewGridRegion).findByText('active', { exact: true })).toBeVisible();
+    await expect(await within(previewGridRegion).findByText('high', { exact: true })).toBeVisible();
+    await waitFor(() => {
+      expect(getSchemaHelpText(canvasElement)).toContain('Insert Example Schema');
+    });
   },
 };
 
@@ -352,28 +380,29 @@ export const WithPreviewGridAdapter = {
       headers: ['Email', 'Status'],
       rows: [['ava@example.com', 'active']],
     },
-    usePreviewAdapter: true,
   },
   parameters: {
     docs: {
       description: {
         story:
-          'Uses the real `GeneratorPage -> GeneratorPreview -> TabulatorGridAdapter` service path, but with Storybook Tabulator stand-ins so the Data Table Preview is still visible and inspectable in Docs/Canvas. This is the higher-fidelity page story for the preview-grid boundary.',
+          'Uses the real `GeneratorPage -> GeneratorPreview -> TabulatorGridAdapter` service path with the same Tabulator library the generator page loads. This is the highest-fidelity page story for reviewing the preview-grid adapter boundary.',
       },
     },
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const schemaHelpIcon = canvasElement.querySelector('[data-help="generator-schema-mode-help"]');
-    await expect(canvas.getByRole('button', { name: 'Generate Pairwise' })).toBeVisible();
+    const previewGridRegion = await canvas.findByLabelText('Data Table Preview Grid');
+    await expect(await canvas.findByRole('button', { name: 'Generate Pairwise' })).toBeVisible();
     await expect(canvas.getByRole('textbox', { name: 'Output Preview' })).toHaveValue(
       'Email,Status\nava@example.com,active'
     );
-    await expect(canvas.getByRole('table', { name: 'Preview grid' })).toBeVisible();
-    await expect(canvas.getByRole('columnheader', { name: 'Email' })).toBeVisible();
-    await expect(canvas.getByRole('columnheader', { name: 'Status' })).toBeVisible();
-    await expect(canvas.getByRole('cell', { name: 'ava@example.com' })).toBeVisible();
-    await expect(canvas.getByRole('cell', { name: 'active' })).toBeVisible();
-    expect(schemaHelpIcon?.getAttribute('data-help-text')).toContain('Insert Example Schema');
+    await expect(previewGridRegion).toBeVisible();
+    await expect(await within(previewGridRegion).findByText('Email', { exact: true })).toBeVisible();
+    await expect(await within(previewGridRegion).findByText('Status', { exact: true })).toBeVisible();
+    await expect(await within(previewGridRegion).findByText('ava@example.com', { exact: true })).toBeVisible();
+    await expect(await within(previewGridRegion).findByText('active', { exact: true })).toBeVisible();
+    await waitFor(() => {
+      expect(getSchemaHelpText(canvasElement)).toContain('Insert Example Schema');
+    });
   },
 };

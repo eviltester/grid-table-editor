@@ -93,6 +93,8 @@ Storybook stories are part of the component documentation, so their defaults and
 When creating or updating Storybook stories:
 
 - treat each story as a reviewer-facing example, not just a mount test
+- if a story visibly renders a child component’s real UI, that child must use real behavior rather than a stubbed or fake implementation
+- only mock or replace a child component when the story also replaces its visible UI with an explicit placeholder or abstraction
 - choose default args that make the intended behavior easy to observe immediately
 - prefer values that clearly illustrate boundaries and mode differences over production-minimal defaults
 - when a story demonstrates validation, normalization, or clamping, use defaults that make the effect obvious with simple interaction

@@ -158,7 +158,14 @@ function createFocusedAppTestDataHarness() {
   }
 
   async function setSchemaText(value) {
+    const toggleButton = document.getElementById('testDataSchemaModeToggleButton');
+    if (toggleButton?.textContent?.trim() === 'Edit as Text') {
+      await user.click(toggleButton);
+    }
     await setInputValue(document.getElementById('testDataSchemaText'), value);
+    if (toggleButton?.textContent?.trim() === 'Edit as Schema') {
+      await user.click(toggleButton);
+    }
   }
 
   async function clickGenerate({ waitForData = true } = {}) {

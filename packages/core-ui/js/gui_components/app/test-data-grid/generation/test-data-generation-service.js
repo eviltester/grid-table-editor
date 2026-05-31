@@ -44,6 +44,7 @@ function createTestDataGenerationService({
   getTextPreviewRenderer,
   getMainGridExtras,
   getGenerationMode,
+  setPairwiseVisible = () => {},
 }) {
   function getCurrentSchemaRowValidation(options) {
     return validateCurrentSchemaRows?.(options) || { errors: [], rows: [] };
@@ -77,6 +78,7 @@ function createTestDataGenerationService({
   }
 
   function showPairwiseButton() {
+    setPairwiseVisible(true);
     const button = document.getElementById('generateallpairs');
     if (button) {
       button.style.display = '';
@@ -84,6 +86,7 @@ function createTestDataGenerationService({
   }
 
   function hidePairwiseButton() {
+    setPairwiseVisible(false);
     const button = document.getElementById('generateallpairs');
     if (button) {
       button.style.display = 'none';

@@ -1,6 +1,7 @@
 import tippy from 'tippy.js';
 import '@popperjs/core';
 import 'tippy.js/dist/tippy.css';
+import 'tabulator-tables/dist/css/tabulator.min.css';
 import '../apps/web/styles.css';
 
 globalThis.tippy = tippy;

@@ -496,16 +496,16 @@ function renderEmbeddedTestDataStory({ scenario = 'empty' } = {}) {
   };
 
   control.enableTestDataGenerationInterface(controlsId, importer, textPreviewRenderer, memoryGrid);
-  const controller = control.getState().schemaGridController;
+  const dataPopulationPanel = control.getState().dataPopulationPanel;
 
   if (scenario === 'sample' || scenario === 'text-mode') {
-    controller.insertSampleSchema();
+    dataPopulationPanel?.insertSampleSchema?.();
   }
   if (scenario === 'text-mode') {
     surface.querySelector('#testDataSchemaModeToggleButton')?.click();
   }
   if (scenario === 'validation') {
-    controller.insertSampleSchema();
+    dataPopulationPanel?.insertSampleSchema?.();
     dispatchTextInput(surface.querySelector('#testDataSchemaRows [data-field="name"]'), '');
   }
 

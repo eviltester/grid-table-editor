@@ -80,6 +80,8 @@ Storybook is not the primary automated test layer. It is the component review, d
 Storybook stories should:
 
 - Mount the component with explicit props and fake services.
+- If a story visibly renders a child component's real UI, that child should also use real behavior rather than stubbed internals.
+- Only mock a child component when the story also replaces that child's visible UI with an explicit placeholder or abstraction.
 - Include component-level docs that explain purpose, important states, and behavior modes.
 - Exercise real user interactions where useful.
 - Show important states, including empty, populated, validation/error, busy, and disabled states.
@@ -330,12 +332,21 @@ Current status:
 
 ### Phase 5: App Data Population Panel
 
-- [ ] Extract `DataPopulationPanel` from `app/test-data-grid`.
-- [ ] Extract `PopulationModeSelector`.
-- [ ] Extract `PopulationActions`.
-- [ ] Reuse the shared `RowCountControl`.
-- [ ] Use shared `SharedSchemaDefinition`.
-- [ ] Represent new-table, amend-table, and amend-selected modes in Storybook.
+- [x] Extract `DataPopulationPanel` from `app/test-data-grid`.
+- [x] Extract `PopulationModeSelector`.
+- [x] Extract `PopulationActions`.
+- [x] Reuse the shared `RowCountControl`.
+- [x] Use shared `SharedSchemaDefinition`.
+- [x] Represent new-table, amend-table, and amend-selected modes in Storybook.
+
+Current status:
+
+- `DataPopulationPanel` now lives under `app/data-population-panel/` with a controller, view, and create-component factory.
+- `PopulationModeSelector` and `PopulationActions` now live under their own app feature folders and are mounted through `DataPopulationPanel` rather than through the older test-data host binder path.
+- The app test-data controller now mounts `DataPopulationPanel`, reuses the shared `RowCountControl`, and passes app-specific schema behavior through the shared `SharedSchemaDefinition` contract.
+- The app test-data generation flow now updates pairwise visibility through the component boundary rather than mutating the pairwise button directly as the primary path.
+- Storybook now documents the app-side panel directly through `App / Data Population Panel` with `New Table`, `Amend Table`, and `Amend Selected` mode coverage.
+- Existing app browser flows for new-table, amend-table, amend-selected, schema sync, and pairwise generation remain covered by the current Playwright suite after the migration.
 
 ### Phase 6: Import/Export Workspace
 
@@ -351,6 +362,7 @@ Current status:
 
 - [ ] Define `DataGridComponent` with a Tabulator adapter boundary.
 - [ ] Keep Tabulator-specific APIs inside `TabulatorGridAdapter`.
+- [ ] Make `TabulatorGridAdapter` and Tabulator-backed child components resilient to disconnected or late-connected roots so they mount naturally in Storybook, tests, and page runtime without story-specific connection timing work.
 - [ ] Extract grid toolbar/header/row/filter controls where useful.
 - [ ] Add stories with fake grid service for controls that do not need real Tabulator.
 - [ ] Add stories with real Tabulator only where rendering behavior is the subject.
@@ -360,6 +372,7 @@ Current status:
 - [ ] Reduce `packages/core-ui/js/script.js` to app composition/bootstrap.
 - [ ] Reduce generator controller entrypoint to composition/bootstrap.
 - [ ] Remove or trim the legacy generator host layout/coordinator helpers now that `GeneratorPage` owns generator feature composition.
+- [ ] Remove or trim the legacy app test-data host binder/coordinator helpers now that `DataPopulationPanel` owns the app-side composition of actions, mode selection, row count, and schema definition.
 - [ ] Remove obsolete Storybook harness patches.
 - [ ] Remove obsolete global DOM lookups.
 - [ ] Confirm all component stories are discoverable and documented.
@@ -407,3 +420,4 @@ Before considering a component migrated:
 - [ ] It has focused Jest coverage for controller behavior.
 - [ ] It has DOM interaction coverage when behavior depends on rendered UI.
 - [ ] Existing app or generator behavior remains covered by current browser tests.
+- [ ] If it wraps a third-party widget such as Tabulator, it mounts correctly without story-specific connection timing hacks.

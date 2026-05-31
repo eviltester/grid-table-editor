@@ -8,6 +8,7 @@ import { createTimedStatusPresenter } from '../../shared/timed-error-display.js'
 import { createFormatOptionsPanel } from '../../shared/format-options-panel/index.js';
 import { createLoadingStatusPresenter, createStatusPresenter } from '../../shared/test-data/ui/index.js';
 import { createRowCountControl } from '../../shared/row-count-control/index.js';
+import { createSharedSchemaDefinitionComponent } from '../../shared/schema-definition/index.js';
 import { renderDataGeneratorPageShell } from './data-generator-page-layout.js';
 
 function bindGeneratorRowCountControls({ page }) {
@@ -53,21 +54,6 @@ function bindGeneratorRowCountControls({ page }) {
 }
 
 function bindDataGeneratorPageEvents({ page }) {
-  const addSchemaRowButton = page.documentObj.getElementById('addSchemaRowButton');
-  addSchemaRowButton?.addEventListener('click', () => {
-    page.addRowAfter(page.schemaRows.length - 1);
-  });
-
-  const schemaModeToggleButton = page.documentObj.getElementById('schemaModeToggleButton');
-  schemaModeToggleButton?.addEventListener('click', () => page.toggleSchemaEditMode());
-
-  const schemaTextArea = page.documentObj.getElementById('generatorSchemaText');
-  schemaTextArea?.addEventListener('input', () => {
-    page.updateAllPairsButtonVisibility();
-  });
-
-  page.documentObj.addEventListener('click', (event) => page.handleGlobalButtonClick(event));
-
   page.documentObj.getElementById('previewDataButton')?.addEventListener('click', () => page.previewData());
   page.documentObj.getElementById('generateDataButton')?.addEventListener('click', () => {
     void page.generateDataFile();
@@ -80,16 +66,6 @@ function bindDataGeneratorPageEvents({ page }) {
     page.renderOptionsPanelForSelectedFormat();
     page.renderOutputPreviewForCurrentSelection();
   });
-
-  const schemaRowsContainer = page.documentObj.getElementById('generatorSchemaRows');
-  schemaRowsContainer?.addEventListener('input', (event) => page.handleRowInputChange(event));
-  schemaRowsContainer?.addEventListener('change', (event) => page.handleRowInputChange(event));
-  schemaRowsContainer?.addEventListener('focusout', (event) => page.handleRowFocusOut(event));
-  schemaRowsContainer?.addEventListener('dragstart', (event) => page.handleRowDragStart(event));
-  schemaRowsContainer?.addEventListener('dragover', (event) => page.handleRowDragOver(event));
-  schemaRowsContainer?.addEventListener('drop', (event) => page.handleRowDrop(event));
-  schemaRowsContainer?.addEventListener('dragend', () => page.handleRowDragEnd());
-  schemaRowsContainer?.addEventListener('click', (event) => page.handleRowButtonClick(event));
 }
 
 function initializeDataGeneratorPageHost({ page, populateFormatOptionsFn }) {
@@ -110,6 +86,73 @@ function initializeDataGeneratorPageHost({ page, populateFormatOptionsFn }) {
     documentObj: page.documentObj,
     elementId: 'generatorStatusText',
     hideWhenEmpty: false,
+  });
+  page.schemaDefinition = createSharedSchemaDefinitionComponent({
+    root: page.documentObj.getElementById('generatorSchemaDefinition'),
+    documentObj: page.documentObj,
+    props: {
+      headingText: 'Schema',
+      ids: {
+        rows: 'generatorSchemaRows',
+        textContainer: 'generatorSchemaTextContainer',
+        text: 'generatorSchemaText',
+        addButton: 'addSchemaRowButton',
+        toggleButton: 'schemaModeToggleButton',
+        helpIcon: 'schemaModeHelpIcon',
+        error: 'generatorSchemaErrorText',
+      },
+      schemaTextToDataRules: page.schemaTextToDataRules || (() => ({ dataRules: [], errors: [], schemaTokens: [] })),
+      dataRulesToSchemaText: page.dataRulesToSchemaText || (() => ''),
+      faker: page.faker,
+      RandExp: page.RandExp,
+      createBlankRow: () =>
+        typeof page.createBlankSchemaRow === 'function'
+          ? page.createBlankSchemaRow()
+          : {
+              id: 'generator-schema-row-fallback',
+              name: '',
+              sourceType: 'regex',
+              command: '',
+              params: '',
+              value: '',
+              comments: '',
+              leadingTextLines: [],
+            },
+      mapRuleToRow: (rule, leadingTextLines = []) => {
+        const row =
+          typeof page.ruleToSchemaRow === 'function'
+            ? page.ruleToSchemaRow(rule)
+            : {
+                id: 'generator-schema-row-fallback',
+                name: '',
+                sourceType: 'regex',
+                command: '',
+                params: '',
+                value: '',
+                comments: '',
+                leadingTextLines: [],
+              };
+        row.leadingTextLines = Array.isArray(leadingTextLines) ? leadingTextLines.slice() : [];
+        return row;
+      },
+      getMethodPickerOptions: (currentValue) =>
+        (typeof page.getMethodPickerOptions === 'function' ? page.getMethodPickerOptions(currentValue) : []) || [],
+      getVisibleDomainCommands: (currentValue) =>
+        (typeof page.getVisibleDomainCommands === 'function' ? page.getVisibleDomainCommands(currentValue) : []) || [],
+      fakerCommands: page.fakerCommands || [],
+      sampleSchemaText: page.sampleSchemaText || '',
+      buildModeHelpHtml: ({ inTextMode }) =>
+        typeof page.buildSchemaModeHelpHtml === 'function' ? page.buildSchemaModeHelpHtml(inTextMode) : '',
+      schemaErrorDisplay: page.schemaErrorDisplay,
+      validateSchemaRows: (rows) =>
+        typeof page.validateSchemaRows === 'function' ? page.validateSchemaRows(rows) : { rows, errors: [] },
+      updatePairwiseButtonVisibility: () => page.updateAllPairsButtonVisibility?.(),
+    },
+    callbacks: {
+      onSchemaError: (message) => page.showSchemaErrorStatus?.(message),
+      onSchemaClear: () => page.clearSchemaErrorStatus?.(),
+      onRowsChanged: () => page.updateAllPairsButtonVisibility?.(),
+    },
   });
 
   page.previewTableApi = new page.TabulatorCtor(page.documentObj.getElementById('generator-preview-grid'), {
@@ -152,7 +195,7 @@ function initializeDataGeneratorPageHost({ page, populateFormatOptionsFn }) {
   page.optionsPanels = page.formatOptionsPanel?.getPanels?.() || {};
 
   page.renderSchemaRows();
-  page.updateSchemaEditModeView();
+  page.updateSchemaEditModeView?.();
   page.renderOptionsPanelForSelectedFormat();
   bindDataGeneratorPageEvents({ page });
 }

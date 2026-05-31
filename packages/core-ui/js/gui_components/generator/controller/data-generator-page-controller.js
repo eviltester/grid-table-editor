@@ -22,48 +22,29 @@ import {
   validateSchemaRows as validateSchemaRowsCore,
   createSchemaRowValidation,
   mapDataRuleToSchemaRow,
-  applySchemaCommandSelection,
-  getSchemaRowSemanticValidationIssues,
   schemaErrorsToText,
   TEST_DATA_GRID_SAMPLE_SCHEMA_TEXT as GENERATOR_DEFAULT_EXAMPLE_SCHEMA_TEXT,
 } from '../../shared/test-data/schema/index.js';
-import { captureActiveFieldState, restoreActiveFieldState } from '../../shared/test-data/schema/schema-focus-state.js';
+import { getVisibleDomainCommands, buildSchemaHelpModel } from '../../shared/test-data/help/index.js';
 import {
-  buildSchemaHelpModel,
-  renderSchemaHelpHtml,
-  getVisibleDomainCommands,
-} from '../../shared/test-data/help/index.js';
-import {
-  SOURCE_TYPE_REGEX,
-  SOURCE_TYPE_LITERAL,
+  SOURCE_TYPE_DOMAIN,
   SOURCE_TYPE_ENUM,
   SOURCE_TYPE_FAKER,
-  SOURCE_TYPE_DOMAIN,
-  normaliseFakerCommand,
-  normaliseDomainCommand,
+  SOURCE_TYPE_LITERAL,
+  SOURCE_TYPE_REGEX,
   buildRuleSpecFromSchemaRow,
   extractLiteralValueFromRuleSpec,
   extractRegexValueFromRuleSpec,
   buildDataRuleFromSchemaRow,
+  normaliseDomainCommand,
+  normaliseFakerCommand,
 } from '../../shared/schema-row-rule-mapper.js';
 import {
   initializeDataGeneratorPageHost,
   populateGeneratorFormatOptions,
   GENERATE_TO_FILE_HELP_URL,
 } from '../host/index.js';
-import {
-  buildSchemaModeHelpHtml,
-  hideVisibleHelpTooltips,
-  updateSchemaEditModeView,
-  insertExampleSchema,
-  renderGeneratorSchemaRows,
-  clearSchemaRowDragClasses,
-  getSchemaRowDropInstruction,
-  applySchemaRowDropInstructionIndicator,
-  handleGeneratorRowInputChange,
-  handleGeneratorRowButtonClick,
-} from '../schema/index.js';
-import { openMethodPickerModal } from '../../shared/test-data/ui/index.js';
+import { buildSchemaModeHelpHtml } from '../schema/index.js';
 import {
   createConfiguredGeneratorForPage,
   buildPreviewDataTable,
@@ -144,33 +125,47 @@ class DataGeneratorPage {
     this.optionsPanels = {};
     this.statusPresenter = undefined;
     this.schemaErrorDisplay = undefined;
+    this.schemaDefinition = undefined;
     this.lastPreviewDataTable = undefined;
-    this.semanticValidationTimers = new Map();
-    this.dragState = null;
     this.rowCountControls = [];
+    this.schemaTextToDataRules = schemaTextToDataRules;
+    this.dataRulesToSchemaText = dataRulesToSchemaText;
+    this.sampleSchemaText = GENERATOR_DEFAULT_EXAMPLE_SCHEMA_TEXT;
   }
 
   get schemaRows() {
+    if (this.schemaDefinition?.getState) {
+      return this.schemaDefinition.getState().rows || [];
+    }
     return this.schemaSession.getRows();
   }
 
   set schemaRows(rows) {
+    this.schemaDefinition?.setRows?.(rows);
     this.schemaSession.setRows(rows);
   }
 
   get schemaTextTokens() {
+    if (this.schemaDefinition?.getTokens) {
+      return this.schemaDefinition.getTokens() || [];
+    }
     return this.schemaSession.getTokens();
   }
 
   set schemaTextTokens(tokens) {
+    this.schemaDefinition?.setTokens?.(tokens);
     this.schemaSession.setTokens(tokens);
   }
 
   get isTextMode() {
+    if (this.schemaDefinition?.getState) {
+      return this.schemaDefinition.getState().isTextMode === true;
+    }
     return this.schemaSession.getTextMode();
   }
 
   set isTextMode(isTextMode) {
+    this.schemaDefinition?.setTextMode?.(isTextMode);
     this.schemaSession.setTextMode(isTextMode);
   }
 
@@ -208,12 +203,46 @@ class DataGeneratorPage {
     });
   }
 
+  getMethodPickerOptions(currentValue = '') {
+    return [
+      {
+        sourceType: 'enum',
+        command: 'enum',
+        helpModel: this.getSchemaHelpData('enum', 'enum'),
+      },
+      {
+        sourceType: 'literal',
+        command: 'literal',
+        helpModel: this.getSchemaHelpData('literal', 'literal'),
+      },
+      {
+        sourceType: 'regex',
+        command: 'regex',
+        helpModel: this.getSchemaHelpData('regex', 'regex'),
+      },
+      ...this.getVisibleDomainCommands(currentValue).map((command) => ({
+        sourceType: 'domain',
+        command,
+        helpModel: this.getSchemaHelpData('domain', command),
+      })),
+      ...this.fakerCommands.map((command) => ({
+        sourceType: 'faker',
+        command,
+        helpModel: this.getSchemaHelpData('faker', command),
+      })),
+    ];
+  }
+
   populateFormatOptions() {
     populateGeneratorFormatOptions({
       documentObj: this.documentObj,
       exporter: this.exporter,
       getOutputFormatGroupsFn: getOutputFormatGroups,
     });
+  }
+
+  validateSchemaRows(schemaRows = this.schemaRows) {
+    return validateSchemaRows(schemaRows);
   }
 
   getSelectedOutputType() {
@@ -336,28 +365,10 @@ class DataGeneratorPage {
   }
 
   toggleSchemaEditMode() {
-    hideVisibleHelpTooltips({ documentObj: this.documentObj });
-    this.clearAllSemanticValidationTimers();
-    if (this.isTextMode) {
-      const textArea = this.documentObj.getElementById('generatorSchemaText');
-      const toggleResult = this.schemaSession.toggleMode({
-        schemaText: textArea?.value || '',
-        preserveEmptyRows: true,
-      });
-      if (!toggleResult.ok) {
-        this.showSchemaErrorStatus(schemaErrorsToText(toggleResult.errors));
-        return;
-      }
-      this.clearSchemaErrorStatus();
-      this.updateSchemaEditModeView();
-      this.applySemanticValidationForAllRows();
-      return;
+    const toggleResult = this.schemaDefinition?.toggleMode?.();
+    if (toggleResult?.errors?.length > 0) {
+      this.showSchemaErrorStatus(schemaErrorsToText(toggleResult.errors));
     }
-
-    const textArea = this.documentObj.getElementById('generatorSchemaText');
-    const toggleResult = this.schemaSession.toggleMode();
-    textArea.value = toggleResult.schemaText || '';
-    this.updateSchemaEditModeView();
   }
 
   showSchemaErrorStatus(message) {
@@ -369,122 +380,36 @@ class DataGeneratorPage {
   }
 
   revalidateSchemaRows() {
+    if (this.schemaDefinition?.validateRows) {
+      return this.schemaDefinition.validateRows() || { rows: this.schemaRows, errors: [] };
+    }
     if (this.schemaRows.length === 0) {
       return { rows: [], errors: [] };
     }
-    const validation = validateSchemaRows(this.schemaRows);
-    this.schemaRows = validation.rows;
-    return validation;
-  }
-
-  clearSemanticValidationTimer(rowId) {
-    const timerId = this.semanticValidationTimers.get(rowId);
-    if (timerId) {
-      globalThis.clearTimeout(timerId);
-      this.semanticValidationTimers.delete(rowId);
-    }
-  }
-
-  clearAllSemanticValidationTimers() {
-    [...this.semanticValidationTimers.keys()].forEach((rowId) => this.clearSemanticValidationTimer(rowId));
+    return validateSchemaRows(this.schemaRows);
   }
 
   destroy() {
-    this.clearAllSemanticValidationTimers();
-    this.clearDragState();
+    this.schemaDefinition?.destroy?.();
     this.formatOptionsPanel?.destroy?.();
     this.rowCountControls.forEach((control) => control?.destroy?.());
     this.rowCountControls = [];
   }
 
-  clearDragState() {
-    this.dragState = null;
-    clearSchemaRowDragClasses(this.documentObj);
-  }
-
-  applySemanticValidationForRow(rowId) {
-    this.clearSemanticValidationTimer(rowId);
-    const activeFieldState = captureActiveFieldState(this.documentObj);
-    const rowIndex = this.schemaRows.findIndex((row) => row.id === rowId);
-    if (rowIndex < 0) {
-      return;
-    }
-    const semanticValidationIssues = getSchemaRowSemanticValidationIssues(this.schemaRows[rowIndex], rowIndex, {
-      schemaTextToDataRules,
-      faker: this.faker,
-      RandExp: this.RandExp,
-    });
-    this.schemaSession.updateRowAtIndex(rowIndex, (row) => ({
-      ...row,
-      semanticValidationIssues,
-    }));
-    this.revalidateSchemaRows();
-    this.renderSchemaRowsWithoutPairwiseUpdate();
-    restoreActiveFieldState(this.documentObj, activeFieldState);
-    this.updateAllPairsButtonVisibility();
-  }
-
-  applySemanticValidationForAllRows() {
-    this.clearAllSemanticValidationTimers();
-    this.schemaRows = this.schemaRows.map((row, rowIndex) => ({
-      ...row,
-      semanticValidationIssues: getSchemaRowSemanticValidationIssues(row, rowIndex, {
-        schemaTextToDataRules,
-        faker: this.faker,
-        RandExp: this.RandExp,
-      }),
-    }));
-    this.revalidateSchemaRows();
-    this.renderSchemaRowsWithoutPairwiseUpdate();
-    this.updateAllPairsButtonVisibility();
-  }
-
-  scheduleSemanticValidationForRow(rowId, { immediate = false } = {}) {
-    this.clearSemanticValidationTimer(rowId);
-    if (immediate) {
-      this.applySemanticValidationForRow(rowId);
-      return;
-    }
-    const timerId = globalThis.setTimeout(() => this.applySemanticValidationForRow(rowId), 1000);
-    this.semanticValidationTimers.set(rowId, timerId);
-  }
-
   updateSchemaEditModeView() {
-    updateSchemaEditModeView({
-      documentObj: this.documentObj,
-      isTextMode: this.isTextMode === true,
-      generateToFileHelpUrl: GENERATE_TO_FILE_HELP_URL,
-      sampleSchemaText: GENERATOR_DEFAULT_EXAMPLE_SCHEMA_TEXT,
-    });
+    this.schemaDefinition?.render?.();
   }
 
   invalidateSchemaTokensFromRows() {
     this.schemaSession.invalidateTokensFromRows();
   }
 
-  handleGlobalButtonClick(event) {
-    if (!event?.target?.closest) {
-      return;
-    }
-    if (event.target.closest('.generator-schema-sample-button')) {
-      event.preventDefault();
-      event.stopPropagation();
-      this.insertExampleSchema();
-    }
+  handleGlobalButtonClick(_event) {
+    return undefined;
   }
 
   insertExampleSchema() {
-    this.clearAllSemanticValidationTimers();
-    insertExampleSchema({
-      documentObj: this.documentObj,
-      sampleSchemaText: GENERATOR_DEFAULT_EXAMPLE_SCHEMA_TEXT,
-      setIsTextMode: (isTextMode) => {
-        this.isTextMode = isTextMode;
-      },
-      updateSchemaEditModeViewFn: () => this.updateSchemaEditModeView(),
-      syncSchemaRowsFromTextMode: (options) => this.syncSchemaRowsFromTextMode(options),
-      renderSchemaRows: () => this.renderSchemaRows(),
-    });
+    this.schemaDefinition?.insertSampleSchema?.();
   }
 
   buildSchemaModeHelpHtml(inTextMode) {
@@ -500,22 +425,20 @@ class DataGeneratorPage {
   }
 
   syncSchemaRowsFromTextMode({ showErrors = false, applySemanticValidation = true } = {}) {
-    const textArea = this.documentObj.getElementById('generatorSchemaText');
-    const parsed = this.schemaSession.syncRowsFromText({
-      schemaText: textArea?.value || '',
-      preserveEmptyRows: false,
-    });
-    if (parsed.errors.length > 0) {
-      if (showErrors) {
-        this.surfacePageError(schemaErrorsToText(parsed.errors), { useSchemaStatus: true });
+    const state = this.schemaDefinition?.getState?.();
+    const isTextMode = state?.isTextMode === true;
+
+    if (isTextMode) {
+      const parsed = this.schemaDefinition?.syncFromText?.({ showErrors, force: true }) || { rows: [], errors: [] };
+      if (parsed.errors.length > 0) {
+        if (showErrors) {
+          this.surfacePageError(schemaErrorsToText(parsed.errors), { useSchemaStatus: true });
+        }
+        return parsed;
       }
-      return parsed;
     }
-    this.clearAllSemanticValidationTimers();
-    const validation = this.revalidateSchemaRows();
-    if (applySemanticValidation) {
-      this.applySemanticValidationForAllRows();
-    }
+
+    const validation = applySemanticValidation ? this.revalidateSchemaRows() : { rows: this.schemaRows, errors: [] };
     return { rows: this.schemaRows, errors: validation.errors || [], tokens: this.schemaTextTokens };
   }
 
@@ -526,136 +449,27 @@ class DataGeneratorPage {
   }
 
   renderSchemaRows() {
-    this.revalidateSchemaRows();
-    renderGeneratorSchemaRows({
-      documentObj: this.documentObj,
-      schemaRows: this.schemaRows,
-      fakerCommands: this.fakerCommands,
-      getVisibleDomainCommands: (currentCommand) => this.getVisibleDomainCommands(currentCommand),
-      getSchemaHelpData: (sourceType, commandValue) => this.getSchemaHelpData(sourceType, commandValue),
-      updateAllPairsButtonVisibility: () => this.updateAllPairsButtonVisibility(),
-    });
+    this.schemaDefinition?.render?.();
   }
 
   renderSchemaRowsWithoutPairwiseUpdate() {
-    this.revalidateSchemaRows();
-    renderGeneratorSchemaRows({
-      documentObj: this.documentObj,
-      schemaRows: this.schemaRows,
-      fakerCommands: this.fakerCommands,
-      getVisibleDomainCommands: (currentCommand) => this.getVisibleDomainCommands(currentCommand),
-      getSchemaHelpData: (sourceType, commandValue) => this.getSchemaHelpData(sourceType, commandValue),
-      updateAllPairsButtonVisibility: () => {},
-    });
+    this.schemaDefinition?.render?.();
   }
 
   handleRowInputChange(event) {
-    const rowElem = event?.target?.closest?.('.generator-schema-row');
-    const rowId = rowElem?.getAttribute?.('data-row-id');
-    const fieldName = event?.target?.getAttribute?.('data-field');
-    handleGeneratorRowInputChange({
-      event,
-      schemaRows: this.schemaRows,
-      schemaSession: this.schemaSession,
-      renderSchemaRows: () => this.renderSchemaRows(),
-      updateAllPairsButtonVisibility: () => this.updateAllPairsButtonVisibility(),
-    });
-    if (rowId && (fieldName === 'name' || fieldName === 'command' || fieldName === 'params' || fieldName === 'value')) {
-      const rowIndex = this.schemaRows.findIndex((row) => row.id === rowId);
-      if (rowIndex >= 0) {
-        this.schemaSession.updateRowAtIndex(rowIndex, (row) => ({
-          ...row,
-          semanticValidationIssues: [],
-        }));
-      }
-      this.scheduleSemanticValidationForRow(rowId);
-    }
+    return this.schemaDefinition?.handleInput?.(event);
   }
 
   handleRowFocusOut(event) {
-    const fieldName = event?.target?.getAttribute?.('data-field');
-    if (fieldName !== 'name' && fieldName !== 'command' && fieldName !== 'params' && fieldName !== 'value') {
-      return;
-    }
-    const rowElem = event?.target?.closest?.('.generator-schema-row');
-    const rowId = rowElem?.getAttribute?.('data-row-id');
-    if (rowId) {
-      this.scheduleSemanticValidationForRow(rowId, { immediate: true });
-    }
+    return this.schemaDefinition?.handleFocusOut?.(event);
+  }
+
+  applySemanticValidationForRow(rowId) {
+    return this.schemaDefinition?.applySemanticValidationForRow?.(rowId);
   }
 
   async handleRowButtonClick(event) {
-    const pickerButton = event?.target?.closest?.('[data-action="pick-command"]');
-    if (pickerButton) {
-      const rowId = pickerButton.getAttribute('data-row-id');
-      const index = this.schemaRows.findIndex((entry) => entry.id === rowId);
-      if (index >= 0) {
-        const row = this.schemaRows[index];
-        const options = [
-          {
-            sourceType: SOURCE_TYPE_ENUM,
-            command: 'enum',
-            helpModel: buildSchemaHelpModel(SOURCE_TYPE_ENUM, 'enum'),
-          },
-          {
-            sourceType: SOURCE_TYPE_LITERAL,
-            command: 'literal',
-            helpModel: buildSchemaHelpModel(SOURCE_TYPE_LITERAL, 'literal'),
-          },
-          {
-            sourceType: SOURCE_TYPE_REGEX,
-            command: 'regex',
-            helpModel: buildSchemaHelpModel(SOURCE_TYPE_REGEX, 'regex'),
-          },
-          ...this.getVisibleDomainCommands(row.command).map((command) => ({
-            sourceType: 'domain',
-            command,
-            helpModel: buildSchemaHelpModel('domain', command),
-          })),
-          ...this.fakerCommands.map((command) => ({
-            sourceType: 'faker',
-            command,
-            helpModel: buildSchemaHelpModel('faker', command),
-          })),
-        ];
-        try {
-          const selected = await openMethodPickerModal({
-            documentObj: this.documentObj,
-            windowObj: this.documentObj?.defaultView || globalThis.window,
-            options,
-            currentCommand: row.command,
-            initialTab: this.getPickerInitialTab(row.sourceType),
-            title: 'Select schema method',
-          });
-          if (selected?.command) {
-            const nextIndex = this.schemaRows.findIndex((entry) => entry.id === rowId);
-            if (nextIndex < 0) {
-              return;
-            }
-            this.schemaSession.updateRowAtIndex(nextIndex, (currentRow) => ({
-              ...applySchemaCommandSelection(currentRow, {
-                sourceType: selected.sourceType || currentRow.sourceType,
-                command: selected.command,
-              }),
-            }));
-            this.revalidateSchemaRows();
-            this.renderSchemaRows();
-            this.scheduleSemanticValidationForRow(rowId, { immediate: true });
-          }
-        } catch {
-          return;
-        }
-      }
-      return;
-    }
-
-    handleGeneratorRowButtonClick({
-      event,
-      schemaRows: this.schemaRows,
-      addRowAfter: (index) => this.addRowAfter(index),
-      removeRow: (index) => this.removeRow(index),
-      moveRow: (index, direction) => this.moveRow(index, direction),
-    });
+    return this.schemaDefinition?.handleClick?.(event);
   }
 
   getPickerInitialTab(sourceType) {
@@ -673,95 +487,43 @@ class DataGeneratorPage {
   }
 
   addRowAfter(index) {
-    this.schemaSession.addRowAfterIndex(index);
-    this.revalidateSchemaRows();
-    this.renderSchemaRows();
+    this.schemaDefinition?.addRowAfter?.(index);
   }
 
   removeRow(index) {
-    const rowId = this.schemaRows[index]?.id;
-    this.schemaSession.removeRowAtIndex(index);
-    this.clearSemanticValidationTimer(rowId);
-    this.revalidateSchemaRows();
-    this.renderSchemaRows();
+    this.schemaDefinition?.removeRowAt?.(index);
   }
 
   moveRow(index, direction) {
-    this.schemaSession.moveRowAtIndex(index, direction);
-    this.revalidateSchemaRows();
-    this.renderSchemaRows();
+    this.schemaDefinition?.moveRowAt?.(index, direction);
   }
 
   moveRowToIndex(fromIndex, toIndex) {
-    this.schemaSession.moveRowToIndex(fromIndex, toIndex);
-    this.revalidateSchemaRows();
-    this.renderSchemaRows();
+    const rows = this.schemaRows.slice();
+    if (fromIndex < 0 || toIndex < 0 || fromIndex >= rows.length || toIndex >= rows.length) {
+      return;
+    }
+    const [moved] = rows.splice(fromIndex, 1);
+    rows.splice(toIndex, 0, moved);
+    this.schemaDefinition?.setRows?.(rows);
+    this.schemaDefinition?.render?.();
+    this.schemaDefinition?.syncTextFromRows?.();
   }
 
   handleRowDragStart(event) {
-    const dragHandle = event?.target?.closest?.('[data-action="drag"]');
-    if (!dragHandle) {
-      return;
-    }
-    const rowId = dragHandle.getAttribute('data-row-id');
-    const rowIndex = this.schemaRows.findIndex((row) => row.id === rowId);
-    if (rowIndex < 0) {
-      return;
-    }
-    this.dragState = { rowId, rowIndex };
-    event.dataTransfer?.setData?.('text/plain', rowId);
-    if (event.dataTransfer) {
-      event.dataTransfer.effectAllowed = 'move';
-    }
-    applySchemaRowDropInstructionIndicator({
-      documentObj: this.documentObj,
-      draggedRowId: rowId,
-      dropInstruction: null,
-    });
+    return this.schemaDefinition?.handleDragStart?.(event);
   }
 
   handleRowDragOver(event) {
-    if (!this.dragState?.rowId) {
-      return;
-    }
-    const dropInstruction = getSchemaRowDropInstruction({
-      event,
-      schemaRows: this.schemaRows,
-      draggedRowId: this.dragState.rowId,
-    });
-    if (!dropInstruction) {
-      clearSchemaRowDragClasses(this.documentObj);
-      return;
-    }
-    event.preventDefault();
-    if (event.dataTransfer) {
-      event.dataTransfer.dropEffect = 'move';
-    }
-    applySchemaRowDropInstructionIndicator({
-      documentObj: this.documentObj,
-      draggedRowId: this.dragState.rowId,
-      dropInstruction,
-    });
+    return this.schemaDefinition?.handleDragOver?.(event);
   }
 
   handleRowDrop(event) {
-    if (!this.dragState?.rowId) {
-      return;
-    }
-    const dropInstruction = getSchemaRowDropInstruction({
-      event,
-      schemaRows: this.schemaRows,
-      draggedRowId: this.dragState.rowId,
-    });
-    event.preventDefault();
-    if (dropInstruction && dropInstruction.finalIndex !== dropInstruction.draggedIndex) {
-      this.moveRowToIndex(dropInstruction.draggedIndex, dropInstruction.finalIndex);
-    }
-    this.clearDragState();
+    return this.schemaDefinition?.handleDrop?.(event);
   }
 
   handleRowDragEnd() {
-    this.clearDragState();
+    return this.schemaDefinition?.handleDragEnd?.();
   }
 
   parseRowCount(inputId) {
@@ -861,17 +623,16 @@ class DataGeneratorPage {
   updateAllPairsButtonVisibility() {
     updateGeneratorPairwiseButtonVisibility({
       documentObj: this.documentObj,
-      syncSchemaRowsFromTextMode: (options) => this.syncSchemaRowsFromTextMode(options),
+      getCurrentSchemaState: () => ({
+        rows: this.schemaRows,
+        errors: [],
+      }),
       validateSchemaRows,
     });
   }
 
   getSchemaHelpData(sourceType, commandValue) {
-    const model = buildSchemaHelpModel(sourceType, commandValue);
-    return {
-      ...model,
-      html: renderSchemaHelpHtml(model),
-    };
+    return buildSchemaHelpModel(sourceType, commandValue);
   }
 }
 

@@ -111,8 +111,12 @@ function createSchemaEditingSession({
     return state.rows;
   }
 
-  function setRows(rows) {
-    state.rows = Array.isArray(rows) && rows.length > 0 ? rows : [createBlankSchemaRow()];
+  function setRows(rows, { allowEmpty = false } = {}) {
+    if (Array.isArray(rows) && rows.length > 0) {
+      state.rows = rows;
+      return state.rows;
+    }
+    state.rows = allowEmpty ? [] : [createBlankSchemaRow()];
     return state.rows;
   }
 

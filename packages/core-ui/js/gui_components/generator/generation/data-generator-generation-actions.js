@@ -127,13 +127,21 @@ async function exportDataTableToDownload({ type, dataTable, exporter, DownloadCl
   return { filename };
 }
 
-function updateGeneratorPairwiseButtonVisibility({ documentObj, syncSchemaRowsFromTextMode, validateSchemaRows }) {
+function updateGeneratorPairwiseButtonVisibility({
+  documentObj,
+  syncSchemaRowsFromTextMode,
+  getCurrentSchemaState,
+  validateSchemaRows,
+}) {
   const buttonWrapper = documentObj.getElementById('generateAllPairsButtonWrapper');
   if (!buttonWrapper) {
     return;
   }
 
-  const parsed = syncSchemaRowsFromTextMode({ showErrors: false, applySemanticValidation: false });
+  const parsed =
+    typeof getCurrentSchemaState === 'function'
+      ? getCurrentSchemaState()
+      : syncSchemaRowsFromTextMode({ showErrors: false, applySemanticValidation: false });
   const { errors, rows } = validateSchemaRows(parsed.rows || []);
   buttonWrapper.style.display =
     !parsed.errors?.length && !errors.length && isPairwiseEligibleForSchemaRows(rows) ? 'inline-flex' : 'none';

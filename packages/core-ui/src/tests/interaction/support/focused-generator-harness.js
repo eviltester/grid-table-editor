@@ -168,9 +168,9 @@ function createFocusedGeneratorHarness() {
   async function clickInjectedSampleButton() {
     const button = document.createElement('button');
     button.type = 'button';
-    button.className = 'generator-schema-sample-button';
+    button.className = 'shared-schema-sample-button';
     button.textContent = 'Insert Example Schema';
-    document.body.appendChild(button);
+    document.getElementById('generatorSchemaDefinition').appendChild(button);
     await user.click(button);
     button.remove();
   }

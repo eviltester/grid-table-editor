@@ -73,6 +73,9 @@ function createSharedSchemaDefinitionComponent({ root, props = {}, callbacks = {
     getState() {
       return controller.getState();
     },
+    applySemanticValidationForRow(rowId) {
+      return controller.applySemanticValidationForRow(rowId);
+    },
   };
 }
 

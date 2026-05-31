@@ -78,7 +78,10 @@ function createUpdateHelpHints(documentObj, rootElement = documentObj) {
       },
       placement: 'top-start',
       allowHTML: true,
-      interactive: false,
+      interactive: true,
+      interactiveBorder: 16,
+      delay: [100, 300],
+      hideOnClick: false,
     });
   };
 }

@@ -105,9 +105,12 @@ function createSchemaGridController({
       if (!syncFromText) {
         return schemaDefinition?.validateRows?.() || { rows: [], errors: [] };
       }
-      const parsed = schemaDefinition?.syncFromText?.({ showErrors: true, force: true }) || { rows: [], errors: [] };
-      if (parsed?.errors?.length > 0) {
-        return parsed;
+      const isTextMode = schemaDefinition?.getState?.()?.isTextMode === true;
+      if (isTextMode) {
+        const parsed = schemaDefinition?.syncFromText?.({ showErrors: true, force: true }) || { rows: [], errors: [] };
+        if (parsed?.errors?.length > 0) {
+          return parsed;
+        }
       }
       return schemaDefinition?.validateRows?.() || { rows: [], errors: [] };
     },

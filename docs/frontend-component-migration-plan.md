@@ -290,7 +290,7 @@ Phase 2 exit note:
 - [x] Use existing shared schema logic from `shared/test-data/schema/` rather than duplicating it.
 - [x] Add stories for empty schema, sample schema, validation errors, text mode, grid mode, command picker, and pairwise-capable enum schema.
 - [x] Migrate the app-page schema editor host adapter onto the shared component while preserving the existing schema field IDs and generation contract.
-- [ ] Migrate the generator runtime schema editor from duplicated page/controller methods onto the shared component boundary.
+- [x] Migrate the generator runtime schema editor from duplicated page/controller methods onto the shared component boundary.
 - [ ] Remove the now-redundant generator-specific schema rendering/event helpers after the generator runtime adopts the shared component.
 
 Current status:
@@ -298,8 +298,10 @@ Current status:
 - `SharedSchemaDefinition` now lives under `shared/schema-definition/` with a controller, view, and create-component factory.
 - The new component reuses the existing shared schema parsing, validation, row-editing, command-picker, drag/drop, and text-mode logic from `shared/test-data/schema/` instead of duplicating those rules.
 - The app test-data panel now mounts its schema editor through `SharedSchemaDefinition`, keeping the same DOM IDs so the rest of the app flow and browser tests continue to treat the schema surface as a black box.
+- The generator page now also mounts its live schema editor through `SharedSchemaDefinition`, while preserving the existing DOM IDs, row-level browser interactions, and text-mode generate/pairwise flows.
+- Generator runtime adoption also moved the shared text-mode syncing, method-picker command selection, semantic-validation caret preservation, and pairwise-button visibility behavior onto the shared component path.
 - Storybook now documents the shared component directly with empty, sample, validation, text-mode, command-picker, and pairwise-capable enum stories.
-- The next explicit Phase 3 step is generator runtime adoption, which will let us delete the remaining generator-specific schema UI/controller duplication rather than carrying two live paths.
+- The next explicit Phase 3 step is deleting or renaming the remaining generator-specific schema rendering helpers that still sit underneath the shared component so the shared layer no longer looks generator-owned.
 
 ### Phase 4: Generator Page Composition
 

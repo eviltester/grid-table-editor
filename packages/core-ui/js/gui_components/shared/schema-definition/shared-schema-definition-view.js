@@ -13,11 +13,18 @@ class SharedSchemaDefinitionView {
       void this.controller.handleClick(event);
     };
     this.handleRootClick = (event) => {
-      if (!event?.target?.closest?.('.shared-schema-sample-button')) {
+      if (!event?.target?.closest?.('.shared-schema-sample-button, .generator-schema-sample-button')) {
         return;
       }
       event.preventDefault();
       event.stopPropagation();
+      this.controller.insertSampleSchema();
+    };
+    this.handleDocumentClick = (event) => {
+      if (!event?.target?.closest?.('.shared-schema-sample-button, .generator-schema-sample-button')) {
+        return;
+      }
+      event.preventDefault();
       this.controller.insertSampleSchema();
     };
     this.handleContainerDragStart = (event) => {
@@ -39,6 +46,12 @@ class SharedSchemaDefinitionView {
     this.handleToggleButtonClick = (event) => {
       event.preventDefault();
       this.controller.toggleMode();
+    };
+    this.handleTextInput = () => {
+      this.controller.syncFromText({ showErrors: false, force: true });
+    };
+    this.handleTextFocusOut = () => {
+      this.controller.syncFromText({ showErrors: false, force: true });
     };
   }
 
@@ -77,6 +90,7 @@ class SharedSchemaDefinitionView {
     this.rowsElement = this.root.querySelector(`#${viewModel.ids.rows}`);
     this.addButtonElement = this.root.querySelector(`#${viewModel.ids.addButton}`);
     this.toggleButtonElement = this.root.querySelector(`#${viewModel.ids.toggleButton}`);
+    this.textAreaElement = this.root.querySelector(`#${viewModel.ids.text}`);
 
     this.rowsElement?.addEventListener('input', this.handleContainerInput);
     this.rowsElement?.addEventListener('change', this.handleContainerInput);
@@ -87,8 +101,12 @@ class SharedSchemaDefinitionView {
     this.rowsElement?.addEventListener('dragend', this.handleContainerDragEnd);
     this.rowsElement?.addEventListener('click', this.handleContainerClick);
     this.root.addEventListener('click', this.handleRootClick);
+    this.documentObj.addEventListener('click', this.handleDocumentClick);
     this.addButtonElement?.addEventListener('click', this.handleAddButtonClick);
     this.toggleButtonElement?.addEventListener('click', this.handleToggleButtonClick);
+    this.textAreaElement?.addEventListener('input', this.handleTextInput);
+    this.textAreaElement?.addEventListener('change', this.handleTextInput);
+    this.textAreaElement?.addEventListener('focusout', this.handleTextFocusOut);
 
     this.controller.init();
   }
@@ -107,8 +125,12 @@ class SharedSchemaDefinitionView {
     this.rowsElement?.removeEventListener('dragend', this.handleContainerDragEnd);
     this.rowsElement?.removeEventListener('click', this.handleContainerClick);
     this.root.removeEventListener('click', this.handleRootClick);
+    this.documentObj.removeEventListener('click', this.handleDocumentClick);
     this.addButtonElement?.removeEventListener('click', this.handleAddButtonClick);
     this.toggleButtonElement?.removeEventListener('click', this.handleToggleButtonClick);
+    this.textAreaElement?.removeEventListener('input', this.handleTextInput);
+    this.textAreaElement?.removeEventListener('change', this.handleTextInput);
+    this.textAreaElement?.removeEventListener('focusout', this.handleTextFocusOut);
     this.root.replaceChildren();
   }
 }

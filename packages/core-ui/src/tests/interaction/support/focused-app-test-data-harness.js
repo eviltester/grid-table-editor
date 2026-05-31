@@ -191,9 +191,9 @@ function createFocusedAppTestDataHarness() {
   async function clickInjectedSampleButton() {
     const button = document.createElement('button');
     button.type = 'button';
-    button.className = 'testdata-schema-sample-button';
+    button.className = 'shared-schema-sample-button';
     button.textContent = 'Load Sample Schema';
-    document.body.appendChild(button);
+    document.getElementById('testDataSchemaDefinition').appendChild(button);
     await user.click(button);
     button.remove();
   }

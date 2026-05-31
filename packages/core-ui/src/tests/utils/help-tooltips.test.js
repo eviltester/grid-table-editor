@@ -62,7 +62,10 @@ describe('help tooltips module', () => {
     expect(global.tippy).toHaveBeenCalledWith(
       expect.anything(),
       expect.objectContaining({
-        interactive: false,
+        interactive: true,
+        interactiveBorder: 16,
+        delay: [100, 300],
+        hideOnClick: false,
       })
     );
   });

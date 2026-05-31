@@ -128,7 +128,7 @@ class SharedSchemaDefinitionController {
   }
 
   setRows(rows) {
-    return this.schemaEditor?.setRows?.(rows);
+    return this.schemaEditor?.setRows?.(rows, { allowEmpty: Array.isArray(rows) && rows.length === 0 });
   }
 
   setTokens(tokens) {
@@ -173,6 +173,10 @@ class SharedSchemaDefinitionController {
 
   handleDragEnd() {
     return this.schemaEditor?.handleDragEnd?.();
+  }
+
+  applySemanticValidationForRow(rowId) {
+    return this.schemaEditor?.applySemanticValidationForRow?.(rowId);
   }
 }
 

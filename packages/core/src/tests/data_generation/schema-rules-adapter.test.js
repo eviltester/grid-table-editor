@@ -170,6 +170,18 @@ describe('schema rules adapter', () => {
     expect(result.dataRules).toEqual([{ name: 'A', ruleSpec: 'number.int(1,10)', comments: '', type: 'domain' }]);
   });
 
+  test('ignores fully blank rows when at least one real schema row exists', () => {
+    const result = schemaRowsToDataRules({
+      schemaRows: [
+        { name: 'Status', sourceType: 'literal', value: 'active' },
+        { name: '', sourceType: 'regex', command: '', params: '', value: '', comments: '' },
+      ],
+    });
+
+    expect(result.errors).toEqual([]);
+    expect(result.dataRules).toEqual([{ name: 'Status', ruleSpec: 'literal(active)', comments: '', type: 'literal' }]);
+  });
+
   test('converts empty literal schema row value to literal("")', () => {
     const result = schemaRowsToDataRules({
       schemaRows: [{ name: 'A', sourceType: 'literal', value: '   ' }],

@@ -10,21 +10,7 @@ function renderDataGeneratorPageShell({ parentElement }) {
   parentElement.innerHTML = `
         <section class="generator-page" aria-label="Data Generator">
           <section class="generator-schema" id="generatorSchemaSection" data-section-order="2" aria-labelledby="generatorSchemaHeading">
-                    <div class="generator-schema-head">
-              <strong id="generatorSchemaHeading">Schema</strong>
-                        <span id="generatorSchemaErrorText" class="generator-schema-error-text" aria-live="polite" role="status"></span>
-                        <span class="generator-button-with-help">
-                          <span id="schemaModeHelpIcon" class="helpicon" data-help="generator-schema-mode-help"></span>
-                          <button id="schemaModeToggleButton" class="icon-button" title="Toggle schema text mode">Edit as Text</button>
-                        </span>
-                    </div>
-                    <div id="generatorSchemaRows" class="generator-schema-rows"></div>
-                    <div id="generatorSchemaTextContainer" class="generator-schema-text">
-                        <textarea id="generatorSchemaText" class="testDataSchemaTextArea" placeholder="Column Name&#10;rule&#10;Column Name&#10;rule"></textarea>
-                    </div>
-                    <div class="generator-schema-footer">
-                        <button id="addSchemaRowButton" title="Add field">+ Add Field</button>
-                    </div>
+            <div id="generatorSchemaDefinition"></div>
           </section>
 
             <section class="generator-controls" id="generatorGenerateOptionsSection" data-section-order="3" aria-labelledby="generatorGenerateOptionsHeading">

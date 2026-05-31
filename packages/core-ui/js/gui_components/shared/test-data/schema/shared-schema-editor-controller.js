@@ -291,7 +291,7 @@ function createSharedSchemaEditorController({
     if (schemaText.trim().length === 0) {
       clearAllSemanticValidationTimers();
       clearSchemaError();
-      session.setRows([]);
+      session.setRows([], { allowEmpty: true });
       session.setTokens([]);
       revalidateRows();
       renderRows();
@@ -612,10 +612,11 @@ function createSharedSchemaEditorController({
     removeRowAt,
     moveRowAt,
     render: () => renderRows(),
-    setRows: (rows) => session.setRows(rows),
+    setRows: (rows, options) => session.setRows(rows, options),
     setTokens: (tokens) => session.setTokens(tokens),
     getTokens: () => session.getTokens(),
     setTextMode: (isTextMode) => session.setTextMode(isTextMode),
+    applySemanticValidationForRow,
     getState: () => ({ ...session.getState() }),
   };
 }

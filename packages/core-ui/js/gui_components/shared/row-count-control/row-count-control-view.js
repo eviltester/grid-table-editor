@@ -1,5 +1,9 @@
+function getDefaultDocumentObj() {
+  return typeof document !== 'undefined' ? document : null;
+}
+
 class RowCountControlView {
-  constructor({ root, controller, documentObj = document } = {}) {
+  constructor({ root, controller, documentObj = getDefaultDocumentObj() } = {}) {
     this.root = root;
     this.controller = controller;
     this.documentObj = documentObj;

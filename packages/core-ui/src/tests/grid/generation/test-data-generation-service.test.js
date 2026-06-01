@@ -25,6 +25,7 @@ describe('test-data-generation-service', () => {
       errors: [],
       rows: [{ name: 'Status', sourceType: 'literal', value: 'Active' }],
     }));
+    const setTestDataLoadingStatus = jest.fn();
 
     const generator = {
       importSpec: jest.fn(),
@@ -59,7 +60,7 @@ describe('test-data-generation-service', () => {
       debouncer: { clear: jest.fn() },
       syncSchemaTextFromGridBeforeGenerate: jest.fn(),
       setTestDataStatus: jest.fn(),
-      setTestDataLoadingStatus: jest.fn(),
+      setTestDataLoadingStatus,
       showSchemaError: jest.fn(),
       yieldToUi: jest.fn(() => Promise.resolve()),
       validateCurrentSchemaRows,
@@ -73,6 +74,11 @@ describe('test-data-generation-service', () => {
 
     expect(validateCurrentSchemaRows).toHaveBeenCalledTimes(1);
     expect(validateCurrentSchemaRows).toHaveBeenCalledWith(undefined);
+    expect(setTestDataLoadingStatus.mock.calls).toEqual([
+      ['Validating schema...'],
+      ['Generating rows...'],
+      ['Applying data to grid...'],
+    ]);
   });
 
   test('generatePairwiseTestData validates schema rows once before creating the generator', async () => {
@@ -83,6 +89,7 @@ describe('test-data-generation-service', () => {
         { name: 'Type', sourceType: 'enum', value: 'x,y' },
       ],
     }));
+    const setTestDataLoadingStatus = jest.fn();
 
     const generator = {
       importSpec: jest.fn(),
@@ -142,7 +149,7 @@ describe('test-data-generation-service', () => {
       debouncer: { clear: jest.fn() },
       syncSchemaTextFromGridBeforeGenerate: jest.fn(),
       setTestDataStatus: jest.fn(),
-      setTestDataLoadingStatus: jest.fn(),
+      setTestDataLoadingStatus,
       showSchemaError: jest.fn(),
       yieldToUi: jest.fn(() => Promise.resolve()),
       validateCurrentSchemaRows,
@@ -156,5 +163,10 @@ describe('test-data-generation-service', () => {
 
     expect(validateCurrentSchemaRows).toHaveBeenCalledTimes(1);
     expect(validateCurrentSchemaRows).toHaveBeenCalledWith(undefined);
+    expect(setTestDataLoadingStatus.mock.calls).toEqual([
+      ['Generating pairwise...'],
+      ['Generating pairwise combinations...'],
+      ['Applying data to grid...'],
+    ]);
   });
 });

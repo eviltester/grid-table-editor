@@ -77,4 +77,60 @@ describe('generator bootstrap', () => {
     expect(loadingMessage.textContent).toContain('Failed to load libraries. Check console for details.');
     expect(loadingMessage.classList.contains('is-loading')).toBe(false);
   });
+
+  test('fails startup status and rethrows when page init throws after libraries load', async () => {
+    const initError = new Error('init failed');
+    const initHelpTooltipsFn = jest.fn();
+
+    class DataGeneratorPageClass {
+      init() {
+        throw initError;
+      }
+    }
+
+    await expect(
+      bootstrapGeneratorPage({
+        documentObj: dom.window.document,
+        ensureGridLibraryLoadedFn: jest.fn(() => Promise.resolve()),
+        DataGeneratorPageClass,
+        fakerInstance: {},
+        initHelpTooltipsFn,
+      })
+    ).rejects.toThrow(initError);
+
+    expect(initHelpTooltipsFn).not.toHaveBeenCalled();
+    const loadingMessage = dom.window.document.getElementById('generator-initial-load');
+    expect(loadingMessage).not.toBeNull();
+    expect(loadingMessage.textContent).toContain('Failed to load libraries. Check console for details.');
+    expect(loadingMessage.classList.contains('is-loading')).toBe(false);
+  });
+
+  test('fails startup status and rethrows when tooltip init throws after page init', async () => {
+    const tooltipError = new Error('tooltip init failed');
+    const initSpy = jest.fn();
+
+    class DataGeneratorPageClass {
+      init() {
+        initSpy();
+      }
+    }
+
+    await expect(
+      bootstrapGeneratorPage({
+        documentObj: dom.window.document,
+        ensureGridLibraryLoadedFn: jest.fn(() => Promise.resolve()),
+        DataGeneratorPageClass,
+        fakerInstance: {},
+        initHelpTooltipsFn: () => {
+          throw tooltipError;
+        },
+      })
+    ).rejects.toThrow(tooltipError);
+
+    expect(initSpy).toHaveBeenCalledTimes(1);
+    const loadingMessage = dom.window.document.getElementById('generator-initial-load');
+    expect(loadingMessage).not.toBeNull();
+    expect(loadingMessage.textContent).toContain('Failed to load libraries. Check console for details.');
+    expect(loadingMessage.classList.contains('is-loading')).toBe(false);
+  });
 });

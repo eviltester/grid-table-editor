@@ -146,4 +146,38 @@ describe('row-count-control view', () => {
     expect(onChange).not.toHaveBeenCalled();
     expect(root.children.length).toBe(0);
   });
+
+  test('can be created without a global document when a root element is provided', () => {
+    const root = document.getElementById('root');
+    const originalDocument = global.document;
+    const originalWindow = global.window;
+    const originalEvent = global.Event;
+
+    try {
+      delete global.document;
+      delete global.window;
+      delete global.Event;
+
+      const component = createRowCountControl({
+        root,
+        props: {
+          inputId: 'generateCount',
+          label: 'How Many?',
+          min: 1,
+          step: 1,
+          value: 3,
+        },
+      });
+
+      const input = root.querySelector('#generateCount');
+      expect(input?.value).toBe('3');
+      expect(root.textContent).toContain('How Many?');
+
+      component.destroy();
+    } finally {
+      global.document = originalDocument;
+      global.window = originalWindow;
+      global.Event = originalEvent;
+    }
+  });
 });

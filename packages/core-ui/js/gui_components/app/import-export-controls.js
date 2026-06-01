@@ -124,16 +124,16 @@ class ImportExportControls {
         this._showError('Grid to Text only available in Edit mode');
         return;
       }
-      const typeToImport = document.querySelector('li.active-type a').getAttribute('data-type');
-      const textToImport = document.getElementById('markdownarea').value;
+      const typeToImport = this._getActiveType();
+      const textToImport = this._query('#markdownarea')?.value || '';
       this.setCurrentTypeOptions();
       return Promise.resolve(this._previewThenImportToGrid(typeToImport, textToImport)).then(() => {
         this._setPreviewTextDirty(false);
       });
     }
 
-    const typeToImport = document.querySelector('li.active-type a').getAttribute('data-type');
-    const textToImport = document.getElementById('markdownarea').value;
+    const typeToImport = this._getActiveType();
+    const textToImport = this._query('#markdownarea')?.value || '';
 
     this.setCurrentTypeOptions();
     return this.importer.importText(typeToImport, textToImport);
@@ -245,7 +245,7 @@ class ImportExportControls {
   }
 
   _setImportProgressStatus(message, isLoading) {
-    const statusElem = document.querySelector('#import-progress-status');
+    const statusElem = this._query('#import-progress-status');
     if (!statusElem) {
       return;
     }
@@ -255,7 +255,7 @@ class ImportExportControls {
   }
 
   _clearImportProgressStatus() {
-    const statusElem = document.querySelector('#import-progress-status');
+    const statusElem = this._query('#import-progress-status');
     if (!statusElem) {
       return;
     }
@@ -277,7 +277,7 @@ class ImportExportControls {
   }
 
   _setExportActionsBusyState(isBusy) {
-    const setTextFromGridButton = document.querySelector('#settextfromgridbutton');
+    const setTextFromGridButton = this._query('#settextfromgridbutton');
     if (setTextFromGridButton) {
       const busy = isBusy === true;
       setTextFromGridButton.disabled = busy;
@@ -288,16 +288,13 @@ class ImportExportControls {
   }
 
   setFileFormatType() {
-    // TODO : these should not be document based locators, they should work from the parent
-
-    // get data format type
-    const type = document.querySelector('li.active-type a').getAttribute('data-type');
+    const type = this._getActiveType();
 
     // set import control visibility
     const importControlLocators = ['#setgridfromtextbutton', '#dropzone', '#csvinputlabel', '#csvinput'];
     let importControls = [];
     importControlLocators.forEach((locator) => {
-      let elem = document.querySelector(locator);
+      let elem = this._query(locator);
       if (elem) {
         importControls.push(elem);
       }
@@ -317,7 +314,7 @@ class ImportExportControls {
     const exportControlLocators = ['#filedownload'];
     let exportControls = [];
     exportControlLocators.forEach((locator) => {
-      let elem = document.querySelector(locator);
+      let elem = this._query(locator);
       if (elem) {
         exportControls.push(elem);
       }
@@ -336,7 +333,7 @@ class ImportExportControls {
     // configure file type display
     const fileType = this.importer.getFileExtensionFor(type);
 
-    document.querySelectorAll('.fileFormat').forEach((elem) => (elem.innerText = fileType));
+    this._queryAll('.fileFormat').forEach((elem) => (elem.innerText = fileType));
   }
 
   setupOptionsPanelsWithin(optionsparent) {
@@ -369,12 +366,16 @@ class ImportExportControls {
     this.optionsPanels = this.formatOptionsPanel.getPanels();
   }
   setOptionsViewForFormatType() {
-    const type = document.querySelector('li.active-type a').getAttribute('data-type');
+    const type = this._getActiveType();
 
-    const edit_area = document.querySelector('div.edit-area');
-    const optionsparent = document.querySelector('div.options-parent');
-    const splitter = document.querySelector('div.options-preview-splitter');
-    const text_area = document.getElementById('markdown');
+    const edit_area = this._query('div.edit-area');
+    const optionsparent = this._query('div.options-parent');
+    const splitter = this._query('div.options-preview-splitter');
+    const text_area = this._query('#markdown');
+
+    if (!edit_area || !optionsparent || !text_area) {
+      return;
+    }
 
     edit_area.style.width = '100%';
     edit_area.style.height = '30%';
@@ -447,7 +448,7 @@ class ImportExportControls {
   }
 
   setCurrentTypeOptions() {
-    const activeTypeElem = document.querySelector('li.active-type a');
+    const activeTypeElem = this._query('li.active-type a');
     const activeType = activeTypeElem?.getAttribute('data-type');
     if (!activeType) {
       return;
@@ -469,7 +470,7 @@ class ImportExportControls {
   }
 
   applyCurrentTypeOptions(options) {
-    const activeType = document.querySelector('li.active-type a').getAttribute('data-type');
+    const activeType = this._getActiveType();
     applySanitizedUiOptionsToTargets({
       requestedFormat: options?.outputFormat || activeType,
       rawOptions: options?.options || options,
@@ -494,11 +495,11 @@ class ImportExportControls {
         .includes(type);
     };
 
-    const activeSubtaskElem = document.querySelector('.subtask-select.active-type');
+    const activeSubtaskElem = this._query('.subtask-select.active-type');
     const subtaskElem =
       activeSubtaskElem && supportsType(activeSubtaskElem)
         ? activeSubtaskElem
-        : document.querySelector(`.subtask-select[data-types*="${type}"]`);
+        : this._query(`.subtask-select[data-types*="${type}"]`);
 
     if (subtaskElem) {
       subtaskElem.setAttribute('data-type', type);
@@ -603,13 +604,13 @@ class ImportExportControls {
   }
 
   _getActiveType() {
-    return document.querySelector('li.active-type a').getAttribute('data-type');
+    return this._query('li.active-type a')?.getAttribute('data-type');
   }
 
   _syncGridFromTextButtonState() {
     this._bindPreviewTextInputIfAvailable();
     this._bindAutoPreviewCheckboxIfAvailable();
-    const importButton = document.querySelector('#setgridfromtextbutton');
+    const importButton = this._query('#setgridfromtextbutton');
     if (!importButton) {
       return;
     }
@@ -621,7 +622,7 @@ class ImportExportControls {
     if (this._hasBoundPreviewTextInput) {
       return;
     }
-    const textArea = document.getElementById('markdownarea');
+    const textArea = this._query('#markdownarea');
     if (!textArea) {
       return;
     }
@@ -638,7 +639,7 @@ class ImportExportControls {
     if (this._hasBoundAutoPreviewInput) {
       return;
     }
-    const autoPreviewCheckbox = document.getElementById('autoPreviewCheckbox');
+    const autoPreviewCheckbox = this._query('#autoPreviewCheckbox');
     if (!autoPreviewCheckbox) {
       return;
     }
@@ -654,7 +655,7 @@ class ImportExportControls {
   }
 
   _syncAutoPreviewControlState() {
-    const autoPreviewCheckbox = document.getElementById('autoPreviewCheckbox');
+    const autoPreviewCheckbox = this._query('#autoPreviewCheckbox');
     if (!autoPreviewCheckbox) {
       return;
     }
@@ -710,13 +711,13 @@ class ImportExportControls {
     };
 
     event.preventDefault();
-    document.body.classList.add('is-resizing-split');
+    this.documentObj?.body?.classList?.add('is-resizing-split');
 
     const onMove = (moveEvent) => this._handleSplitterDragMove(moveEvent);
     const onEnd = (endEvent) => this._endSplitterDrag(endEvent, onMove, onEnd);
-    document.addEventListener('pointermove', onMove);
-    document.addEventListener('pointerup', onEnd);
-    document.addEventListener('pointercancel', onEnd);
+    this.documentObj?.addEventListener?.('pointermove', onMove);
+    this.documentObj?.addEventListener?.('pointerup', onEnd);
+    this.documentObj?.addEventListener?.('pointercancel', onEnd);
   }
 
   _handleSplitterDragMove(event) {
@@ -730,7 +731,7 @@ class ImportExportControls {
     const requestedWidth = dragState.startWidth + deltaX;
     const boundedWidth = this._clampOptionsPanelWidth(requestedWidth, dragState.editArea);
     this._setOptionsPanelWidth(dragState.optionsParent, boundedWidth);
-    const splitter = document.querySelector('div.options-preview-splitter');
+    const splitter = this._query('div.options-preview-splitter');
     if (splitter) {
       this._updateSplitterAriaValues(splitter, dragState.optionsParent, dragState.editArea);
     }
@@ -744,10 +745,10 @@ class ImportExportControls {
       return;
     }
 
-    document.removeEventListener('pointermove', onMove);
-    document.removeEventListener('pointerup', onEnd);
-    document.removeEventListener('pointercancel', onEnd);
-    document.body.classList.remove('is-resizing-split');
+    this.documentObj?.removeEventListener?.('pointermove', onMove);
+    this.documentObj?.removeEventListener?.('pointerup', onEnd);
+    this.documentObj?.removeEventListener?.('pointercancel', onEnd);
+    this.documentObj?.body?.classList?.remove('is-resizing-split');
     this._activeSplitDrag = null;
   }
 
@@ -826,6 +827,18 @@ class ImportExportControls {
     splitter.setAttribute('aria-valuemin', `${min}`);
     splitter.setAttribute('aria-valuemax', `${max}`);
     splitter.setAttribute('aria-valuenow', `${now}`);
+  }
+
+  _query(selector) {
+    return this.rootElement?.querySelector?.(selector) || this.documentObj?.querySelector?.(selector) || null;
+  }
+
+  _queryAll(selector) {
+    const rootMatches = Array.from(this.rootElement?.querySelectorAll?.(selector) || []);
+    if (rootMatches.length > 0) {
+      return rootMatches;
+    }
+    return Array.from(this.documentObj?.querySelectorAll?.(selector) || []);
   }
 }
 

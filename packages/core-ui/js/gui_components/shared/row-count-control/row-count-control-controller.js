@@ -53,7 +53,7 @@ class RowCountControlController {
   updateProps(nextProps = {}) {
     this.props = normalizeProps({ ...this.props, ...nextProps });
     const nextValue = Object.prototype.hasOwnProperty.call(nextProps, 'value')
-      ? nextProps.value
+      ? this.props.value
       : this.state.inputValue;
     this.state = {
       ...this.props,

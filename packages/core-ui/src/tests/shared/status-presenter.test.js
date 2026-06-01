@@ -104,4 +104,23 @@ describe('createStatusPresenter', () => {
     presenter.setStatus('Second message');
     expect(replacement.textContent).toBe('Second message');
   });
+
+  test('can be created without a global document when no documentObj is injected', () => {
+    const originalDocument = global.document;
+
+    delete global.document;
+
+    try {
+      const presenter = createStatusPresenter({ elementId: 'status' });
+      const loadingPresenter = createLoadingStatusPresenter({ elementId: 'status' });
+
+      expect(() => presenter.setStatus('Export ready.')).not.toThrow();
+      expect(() => presenter.clear()).not.toThrow();
+      expect(() => presenter.scheduleClear(10)).not.toThrow();
+      expect(() => loadingPresenter.setStatus('Loading data...')).not.toThrow();
+      expect(() => loadingPresenter.clear()).not.toThrow();
+    } finally {
+      global.document = originalDocument;
+    }
+  });
 });

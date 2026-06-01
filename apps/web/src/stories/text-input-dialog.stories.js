@@ -89,9 +89,10 @@ export const SubmitFilterValue = {
     const dialog = within(document.body);
     const input = dialog.getByRole('textbox');
     await userEvent.click(input);
+    await userEvent.keyboard('{Control>}a{/Control}{Backspace}');
     await userEvent.type(input, 'Status: Active');
     await userEvent.click(dialog.getByRole('button', { name: 'Apply' }));
-    await expect(canvas.getByText(/Status: Active/)).toBeVisible();
+    await expect(canvas.getByText('Status: Active')).toBeVisible();
   },
 };
 

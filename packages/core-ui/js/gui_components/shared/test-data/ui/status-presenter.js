@@ -8,8 +8,12 @@ import { createInlineMessageComponent } from '../../primitives/inline-message/in
 
 const inlineMessageRegistry = new WeakMap();
 
+function getDefaultDocumentObj() {
+  return typeof document !== 'undefined' ? document : null;
+}
+
 function createBaseStatusPresenter({
-  documentObj = document,
+  documentObj = getDefaultDocumentObj(),
   elementId,
   statusClassName = 'is-loading',
   loadingClassName,

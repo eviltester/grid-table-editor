@@ -1,7 +1,11 @@
 import { createLoadingStatusPresenter, createStatusPresenter } from './test-data/ui/index.js';
 
+function getDefaultDocumentObj() {
+  return typeof document !== 'undefined' ? document : null;
+}
+
 function createPageStartupLoadingStatus({
-  documentObj = document,
+  documentObj = getDefaultDocumentObj(),
   elementId,
   message = 'Please Wait, Loading Libraries...',
   statusClassName = 'is-loading',
@@ -29,10 +33,10 @@ function createPageStartupLoadingStatus({
     clear() {
       statusPresenter.clear();
       loadingPresenter.clear();
-      documentObj.getElementById(elementId)?.remove();
+      documentObj?.getElementById?.(elementId)?.remove();
     },
     fail(nextMessage = 'Failed to load libraries. Check console for details.') {
-      statusPresenter.setStatus(nextMessage);
+      statusPresenter.setStatus(nextMessage, { severity: 'error' });
     },
   };
 }

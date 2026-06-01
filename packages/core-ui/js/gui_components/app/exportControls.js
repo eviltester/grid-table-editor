@@ -1,6 +1,10 @@
 import { Download } from '../shared/download.js';
 import { scheduleTimeout } from '../shared/unref-timeout.js';
 
+function getDefaultDocumentObj() {
+  return typeof document !== 'undefined' ? document : null;
+}
+
 class ExportsPageMap {
   constructor() {
     this.fileDownloadButtonQuery = '#filedownload';
@@ -11,13 +15,16 @@ class ExportsPageMap {
 }
 
 class ExportControls {
-  constructor(exporter) {
+  constructor(exporter, { documentObj = getDefaultDocumentObj() } = {}) {
     this.pageMap = new ExportsPageMap();
     this.exporter = exporter;
+    this.documentObj = documentObj;
+    this.root = null;
   }
 
   addHooksToPage(container) {
-    var element = container.querySelector(this.pageMap.fileDownloadButtonQuery);
+    this.root = container;
+    var element = this._query(this.pageMap.fileDownloadButtonQuery);
     if (!element) {
       return;
     }
@@ -33,7 +40,7 @@ class ExportControls {
       this._syncDownloadButtonState();
     }
 
-    var copyButton = container.querySelector(this.pageMap.copyTextButton);
+    var copyButton = this._query(this.pageMap.copyTextButton);
     if (!copyButton) {
       return;
     }
@@ -47,7 +54,7 @@ class ExportControls {
 
     try {
       await this._yieldToUi();
-      var type = document.querySelector('li.active-type a').getAttribute('data-type');
+      var type = this._query('li.active-type a')?.getAttribute('data-type');
 
       if (!this.exporter.canExport(type)) {
         console.log(`Data Type ${type} not supported`);
@@ -83,15 +90,15 @@ class ExportControls {
   }
 
   copyText() {
-    var copyText = document.querySelector(this.pageMap.markdownTextArea);
+    var copyText = this._query(this.pageMap.markdownTextArea);
 
     // select text
     copyText.select();
     copyText.setSelectionRange(0, 99999);
 
-    document.execCommand('copy');
+    this.documentObj?.execCommand?.('copy');
 
-    let copyButton = document.querySelector(this.pageMap.copyTextButton);
+    let copyButton = this._query(this.pageMap.copyTextButton);
     copyButton.innerText = 'Copied';
     scheduleTimeout(
       function (aButton) {
@@ -103,7 +110,7 @@ class ExportControls {
   }
 
   renderTextFromGrid() {
-    let type = document.querySelector('li.active-type a').getAttribute('data-type');
+    let type = this._query('li.active-type a')?.getAttribute('data-type');
 
     if (!this.exporter.canExport(type)) {
       console.log(`Data Type ${type} not supported for exporting`);
@@ -115,11 +122,14 @@ class ExportControls {
   }
 
   setTextFromString(someText) {
-    document.getElementById('markdownarea').value = someText;
+    const textArea = this._query(this.pageMap.markdownTextArea);
+    if (textArea) {
+      textArea.value = someText;
+    }
   }
 
   setImportBusyState(isBusy) {
-    const button = document.querySelector(this.pageMap.fileDownloadButtonQuery);
+    const button = this._query(this.pageMap.fileDownloadButtonQuery);
     if (!button) {
       return;
     }
@@ -128,7 +138,7 @@ class ExportControls {
   }
 
   _setDownloadBusyState(isBusy) {
-    const button = document.querySelector(this.pageMap.fileDownloadButtonQuery);
+    const button = this._query(this.pageMap.fileDownloadButtonQuery);
     if (!button) {
       return;
     }
@@ -137,7 +147,7 @@ class ExportControls {
   }
 
   _syncDownloadButtonState() {
-    const button = document.querySelector(this.pageMap.fileDownloadButtonQuery);
+    const button = this._query(this.pageMap.fileDownloadButtonQuery);
     if (!button) {
       return;
     }
@@ -151,7 +161,7 @@ class ExportControls {
   }
 
   _setExportProgressStatus(message, isLoading) {
-    const statusElem = document.querySelector(this.pageMap.exportProgressStatus);
+    const statusElem = this._query(this.pageMap.exportProgressStatus);
     if (!statusElem) {
       return;
     }
@@ -161,7 +171,7 @@ class ExportControls {
   }
 
   _clearExportProgressStatus() {
-    const statusElem = document.querySelector(this.pageMap.exportProgressStatus);
+    const statusElem = this._query(this.pageMap.exportProgressStatus);
     if (!statusElem) {
       return;
     }
@@ -180,6 +190,10 @@ class ExportControls {
         setTimeout(resolve, 0);
       });
     });
+  }
+
+  _query(selector) {
+    return this.root?.querySelector?.(selector) || this.documentObj?.querySelector?.(selector) || null;
   }
 }
 

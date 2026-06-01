@@ -309,4 +309,47 @@ describe('script bootstrap', () => {
     ]);
     expect(sizeColumnsToFit).toHaveBeenCalledTimes(1);
   });
+
+  test('fails startup status and rethrows when final test-data bootstrap step throws', async () => {
+    const mountError = new Error('mount failed');
+
+    class ExtendedDataGridClass {
+      createChildGrid() {}
+      getGridExtras() {
+        return {
+          clearGrid: jest.fn(),
+          setGridFromGenericDataTable: jest.fn(),
+          getGridAsGenericDataTable: jest.fn(() => ({ getHeaders: () => [] })),
+          getHeadersFromGrid: jest.fn(() => []),
+        };
+      }
+    }
+
+    await expect(
+      bootstrapApp({
+        documentObj: dom.window.document,
+        ensureGridLibraryLoadedFn: jest.fn(() => Promise.resolve()),
+        activeGridEngineName: 'tabulator',
+        ExtendedDataGridClass,
+        createImportExportWorkspaceComponentFn: () => ({
+          setExporter() {},
+          setImporter() {},
+          setGridChangeSource() {},
+          renderTextFromGrid() {},
+          setFileFormatType() {},
+          setOptionsViewForFormatType() {},
+        }),
+        ExporterClass: class {},
+        ImporterClass: class {},
+        mountTestDataGenerationPanelFn: () => {
+          throw mountError;
+        },
+      })
+    ).rejects.toThrow(mountError);
+
+    const loadingMessage = dom.window.document.getElementById('initial-load');
+    expect(loadingMessage).not.toBeNull();
+    expect(loadingMessage.textContent).toContain('Failed to load libraries. Check console for details.');
+    expect(loadingMessage.classList.contains('is-loading')).toBe(false);
+  });
 });

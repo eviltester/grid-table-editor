@@ -80,4 +80,24 @@ describe('InlineMessageView', () => {
     expect(root.querySelector('[data-role="loading-indicator"]')?.style.display).toBe('none');
     expect(root.style.display).toBe('none');
   });
+
+  test('turning hideWhenEmpty off restores the root display after it was hidden', () => {
+    const component = createInlineMessageComponent({
+      root,
+      props: {
+        hideWhenEmpty: true,
+        visibleDisplay: 'inline-block',
+      },
+    });
+
+    expect(root.style.display).toBe('none');
+
+    component.update({ hideWhenEmpty: false });
+
+    expect(root.style.display).toBe('');
+
+    component.setStatus('Ready');
+    expect(root.textContent).toBe('Ready');
+    expect(root.style.display).toBe('');
+  });
 });

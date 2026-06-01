@@ -134,45 +134,59 @@ async function bootstrapApp({
     return null;
   }
 
-  const mainDataGrid = new ExtendedDataGridClass();
-  mainDataGrid.createChildGrid(documentObj.getElementById('main-grid-view'));
+  let mainDataGrid = null;
+  let instructionsComponent = null;
+  let importExportController = null;
+  let exporter = null;
+  let importer = null;
+  let instructionsGridActions = null;
+  try {
+    mainDataGrid = new ExtendedDataGridClass();
+    mainDataGrid.createChildGrid(documentObj.getElementById('main-grid-view'));
 
-  const instructionsRoot = documentObj.getElementById('page-instructions');
-  const instructionsComponent = instructionsRoot
-    ? createInstructionsComponentFn({
-        root: instructionsRoot,
-        props: APP_PAGE_INSTRUCTIONS_PROPS,
-      })
-    : null;
+    const instructionsRoot = documentObj.getElementById('page-instructions');
+    instructionsComponent = instructionsRoot
+      ? createInstructionsComponentFn({
+          root: instructionsRoot,
+          props: APP_PAGE_INSTRUCTIONS_PROPS,
+        })
+      : null;
 
-  const importExportController = createImportExportWorkspaceComponentFn({
-    root: documentObj.getElementById('import-export-controls'),
-    documentObj,
-  });
+    importExportController = createImportExportWorkspaceComponentFn({
+      root: documentObj.getElementById('import-export-controls'),
+      documentObj,
+    });
 
-  const exporter = new ExporterClass(mainDataGrid.getGridExtras());
-  const importer = new ImporterClass(mainDataGrid.getGridExtras());
-  importExportController.setExporter(exporter);
-  importExportController.setImporter(importer);
-  importExportController.setGridChangeSource?.(mainDataGrid.getGridExtras());
+    exporter = new ExporterClass(mainDataGrid.getGridExtras());
+    importer = new ImporterClass(mainDataGrid.getGridExtras());
+    importExportController.setExporter(exporter);
+    importExportController.setImporter(importer);
+    importExportController.setGridChangeSource?.(mainDataGrid.getGridExtras());
 
-  importExportController.renderTextFromGrid();
-  importExportController.setFileFormatType();
-  importExportController.setOptionsViewForFormatType();
-  initHelpTooltips({ documentObj, includeAppOnlyEntries: true });
+    importExportController.renderTextFromGrid();
+    importExportController.setFileFormatType();
+    importExportController.setOptionsViewForFormatType();
+    initHelpTooltips({ documentObj, includeAppOnlyEntries: true });
 
-  const instructionsGridActions = createInstructionsGridActions({
-    documentObj,
-    getMainDataGrid: () => mainDataGrid,
-    getImporter: () => importer,
-  });
-  instructionsGridActions.bind();
+    instructionsGridActions = createInstructionsGridActions({
+      documentObj,
+      getMainDataGrid: () => mainDataGrid,
+      getImporter: () => importer,
+    });
+    instructionsGridActions.bind();
 
-  startupLoadingStatus.clear();
-
-  const mountTestDataGeneration = enableTestDataGenerationInterfaceFn || mountTestDataGenerationPanelFn;
-
-  mountTestDataGeneration('testDataGeneratorContainer', importer, importExportController, mainDataGrid.getGridExtras());
+    const mountTestDataGeneration = enableTestDataGenerationInterfaceFn || mountTestDataGenerationPanelFn;
+    mountTestDataGeneration(
+      'testDataGeneratorContainer',
+      importer,
+      importExportController,
+      mainDataGrid.getGridExtras()
+    );
+    startupLoadingStatus.clear();
+  } catch (error) {
+    startupLoadingStatus.fail();
+    throw error;
+  }
 
   return {
     mainDataGrid,

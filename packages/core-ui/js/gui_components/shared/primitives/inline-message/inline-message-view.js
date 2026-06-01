@@ -125,6 +125,8 @@ class InlineMessageView {
 
     if (state.hideWhenEmpty) {
       this.root.style.display = state.message ? state.visibleDisplay : 'none';
+    } else if (this.root.style.display === 'none') {
+      this.root.style.display = '';
     }
   }
 

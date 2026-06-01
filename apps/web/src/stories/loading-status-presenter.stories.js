@@ -1,7 +1,11 @@
 import { expect, userEvent, within } from 'storybook/test';
 import { createLoadingStatusPresenter } from '../../../../packages/core-ui/js/gui_components/shared/test-data/ui/index.js';
 
+let loadingStatusPresenterStoryInstanceId = 0;
+
 function renderLoadingStatusPresenterStory(args) {
+  loadingStatusPresenterStoryInstanceId += 1;
+  const elementId = `storybook-loading-status-presenter-${loadingStatusPresenterStoryInstanceId}`;
   const root = document.createElement('section');
   root.style.display = 'grid';
   root.style.gap = '0.75rem';
@@ -11,12 +15,12 @@ function renderLoadingStatusPresenterStory(args) {
       <button type="button" data-action="show">Show loading status</button>
       <button type="button" data-action="clear">Clear status</button>
     </div>
-    <div id="storybook-loading-status-presenter" class="import-progress-status" role="status" aria-live="polite" style="min-height:1.5rem;"></div>
+    <div id="${elementId}" class="import-progress-status" role="status" aria-live="polite" style="min-height:1.5rem;"></div>
   `;
 
   const presenter = createLoadingStatusPresenter({
     documentObj: document,
-    elementId: 'storybook-loading-status-presenter',
+    elementId,
     hideWhenEmpty: args.hideWhenEmpty,
     statusClassName: args.statusClassName,
     visibleDisplay: args.visibleDisplay,

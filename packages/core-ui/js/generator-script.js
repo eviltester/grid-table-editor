@@ -15,6 +15,7 @@ async function bootstrapGeneratorPage({
   ensureGridLibraryLoadedFn = ensureGridLibraryLoaded,
   DataGeneratorPageClass = DataGeneratorPage,
   fakerInstance = faker,
+  initHelpTooltipsFn = initHelpTooltips,
 } = {}) {
   initThemeToggle({ documentObj, windowObj: documentObj?.defaultView || window });
   const pageRoot = documentObj.getElementById('generator-page-root');
@@ -37,25 +38,30 @@ async function bootstrapGeneratorPage({
     return;
   }
 
-  const instructionsRoot = documentObj.getElementById('generator-instructions');
-  if (instructionsRoot) {
-    createInstructionsComponent({
-      root: instructionsRoot,
-      props: GENERATOR_PAGE_INSTRUCTIONS_PROPS,
+  let page = null;
+  try {
+    const instructionsRoot = documentObj.getElementById('generator-instructions');
+    if (instructionsRoot) {
+      createInstructionsComponent({
+        root: instructionsRoot,
+        props: GENERATOR_PAGE_INSTRUCTIONS_PROPS,
+      });
+    }
+
+    const appRoot = documentObj.getElementById('generator-app');
+    page = new DataGeneratorPageClass({
+      parentElement: appRoot,
+      documentObj,
+      faker: fakerInstance,
+      RandExp: globalThis?.RandExp,
     });
+    page.init();
+    initHelpTooltipsFn({ documentObj });
+    startupLoadingStatus.clear();
+  } catch (error) {
+    startupLoadingStatus.fail();
+    throw error;
   }
-
-  const appRoot = documentObj.getElementById('generator-app');
-  const page = new DataGeneratorPageClass({
-    parentElement: appRoot,
-    documentObj,
-    faker: fakerInstance,
-    RandExp: globalThis?.RandExp,
-  });
-  page.init();
-  initHelpTooltips({ documentObj });
-
-  startupLoadingStatus.clear();
 
   return {
     generatorPageShell,

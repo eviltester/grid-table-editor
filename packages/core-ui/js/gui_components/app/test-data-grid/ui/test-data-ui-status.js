@@ -9,6 +9,7 @@ import { createLoadingStatusPresenter, createStatusPresenter } from '../../../sh
 let testDataStatusPresenter = null;
 let testDataLoadingStatusPresenter = null;
 let testDataStatusPresenterDocument = null;
+let testDataLoadingStatusPresenterDocument = null;
 
 function getStatusPresenter() {
   const documentObj = typeof document !== 'undefined' ? document : null;
@@ -30,10 +31,10 @@ function getStatusPresenter() {
 
 function getLoadingStatusPresenter() {
   const documentObj = typeof document !== 'undefined' ? document : null;
-  if (testDataLoadingStatusPresenter && testDataStatusPresenterDocument === documentObj) {
+  if (testDataLoadingStatusPresenter && testDataLoadingStatusPresenterDocument === documentObj) {
     return testDataLoadingStatusPresenter;
   }
-  if (testDataLoadingStatusPresenter && testDataStatusPresenterDocument !== documentObj) {
+  if (testDataLoadingStatusPresenter && testDataLoadingStatusPresenterDocument !== documentObj) {
     testDataLoadingStatusPresenter.clearPendingReset();
   }
   testDataLoadingStatusPresenter = createLoadingStatusPresenter({
@@ -42,7 +43,7 @@ function getLoadingStatusPresenter() {
     hideWhenEmpty: true,
     visibleDisplay: 'inline-block',
   });
-  testDataStatusPresenterDocument = documentObj;
+  testDataLoadingStatusPresenterDocument = documentObj;
   return testDataLoadingStatusPresenter;
 }
 

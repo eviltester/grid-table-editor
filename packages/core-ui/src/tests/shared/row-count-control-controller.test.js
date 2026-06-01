@@ -133,4 +133,24 @@ describe('row-count-control controller', () => {
       }),
     });
   });
+
+  test('uses the normalized fallback when value is explicitly updated to undefined', () => {
+    const controller = new RowCountControlController({
+      props: {
+        inputId: 'generateCount',
+        min: 10,
+        value: 25,
+      },
+    });
+
+    controller.updateProps({ value: undefined });
+
+    expect(controller.getState()).toEqual(
+      expect.objectContaining({
+        value: 10,
+        inputValue: '10',
+        min: 10,
+      })
+    );
+  });
 });

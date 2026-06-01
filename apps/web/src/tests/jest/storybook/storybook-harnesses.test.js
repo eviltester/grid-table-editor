@@ -1,10 +1,7 @@
 import { JSDOM } from 'jsdom';
 import { jest } from '@jest/globals';
-import {
-  renderEmbeddedTestDataStory,
-  renderGeneratorStory,
-  renderGridPreviewStory,
-} from '../../../stories/storybook-harnesses.js';
+import { renderEmbeddedTestDataStory, renderGeneratorStory } from '../../../stories/storybook-harnesses.js';
+import { renderGridPreviewStory } from '../../../stories/export-preview-story-harness.js';
 
 describe('storybook harnesses', () => {
   let dom;

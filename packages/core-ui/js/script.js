@@ -3,8 +3,7 @@ import { Exporter } from '@anywaydata/core/grid/exporter.js';
 import { enableTestDataGenerationInterface } from './gui_components/app/test-data-grid/index.js';
 import { ExtendedDataGrid, activeGridEngine } from './gui_components/data-grid-editor/main-display-grid.js';
 import { ensureGridLibraryLoaded } from './gui_components/data-grid-editor/grid-library-loader.js';
-import { TabbedTextControl } from './gui_components/app/tabbed-text-control.js';
-import { ImportExportControls } from './gui_components/app/import-export-controls.js';
+import { createImportExportWorkspaceComponent } from './gui_components/app/import-export-workspace/index.js';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 import { initHelpTooltips } from './help/help-tooltips.js';
 import { initThemeToggle } from './gui_components/shared/theme-toggle.js';
@@ -20,8 +19,7 @@ async function bootstrapApp({
   ensureGridLibraryLoadedFn = ensureGridLibraryLoaded,
   activeGridEngineName = activeGridEngine,
   ExtendedDataGridClass = ExtendedDataGrid,
-  ImportExportControlsClass = ImportExportControls,
-  TabbedTextControlClass = TabbedTextControl,
+  createImportExportWorkspaceComponentFn = createImportExportWorkspaceComponent,
   ExporterClass = Exporter,
   ImporterClass = Importer,
   enableTestDataGenerationInterfaceFn = enableTestDataGenerationInterface,
@@ -46,10 +44,10 @@ async function bootstrapApp({
   mainDataGrid = new ExtendedDataGridClass();
   mainDataGrid.createChildGrid(mainGridArea);
 
-  importExportController = new ImportExportControlsClass();
-  importExportController.addHTMLtoGui(documentObj.getElementById('import-export-controls'));
-
-  new TabbedTextControlClass(documentObj.getElementById('tabbedTextArea'), importExportController).addToGui();
+  importExportController = createImportExportWorkspaceComponentFn({
+    root: documentObj.getElementById('import-export-controls'),
+    documentObj,
+  });
 
   exporter = new ExporterClass(mainDataGrid.getGridExtras());
   importer = new ImporterClass(mainDataGrid.getGridExtras());

@@ -1,4 +1,4 @@
-import { renderGridPreviewStory } from './storybook-harnesses.js';
+import { renderGridPreviewStory } from './export-preview-story-harness.js';
 
 const sharedArgTypes = {
   previewRowLimit: {

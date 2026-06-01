@@ -3,50 +3,14 @@ import { faker } from '@faker-js/faker';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 import { Importer } from '@anywaydata/core/grid/importer.js';
 import { Exporter } from '@anywaydata/core/grid/exporter.js';
-import { createTestDataGridControl } from '../../../../packages/core-ui/js/gui_components/app/test-data-grid/index.js';
 import { ImportExportControls } from '../../../../packages/core-ui/js/gui_components/app/import-export-controls.js';
 import { createImportExportWorkspaceComponent } from '../../../../packages/core-ui/js/gui_components/app/import-export-workspace/index.js';
-import { DataGeneratorPage } from '../../../../packages/core-ui/js/gui_components/generator/index.js';
 import {
   getCodeLanguageSubtasks,
   getUnitTestLanguageSubtasks,
 } from '../../../../packages/core-ui/js/gui_components/generator/options/index.js';
-import { TEST_DATA_GRID_SAMPLE_SCHEMA_TEXT } from '../../../../packages/core-ui/js/gui_components/shared/test-data/schema/index.js';
 
 let storySurfaceCounter = 0;
-
-class ImmediateDebouncer {
-  debounce(_name, callback) {
-    callback();
-  }
-
-  clear() {}
-}
-
-class StoryTabulator {
-  constructor(element, options) {
-    this.element = element;
-    this.options = options;
-  }
-}
-
-class StoryPreviewGrid {
-  constructor() {
-    this.lastDataTable = null;
-  }
-
-  setGridFromGenericDataTable(dataTable) {
-    this.lastDataTable = cloneGenericDataTable(dataTable);
-  }
-
-  getGridAsGenericDataTable() {
-    return cloneGenericDataTable(this.lastDataTable);
-  }
-
-  getHeadersFromGrid() {
-    return this.lastDataTable?.getHeaders?.() || [];
-  }
-}
 
 const DIRECT_EXPORT_FORMATS = new Set([
   'markdown',
@@ -65,21 +29,6 @@ const CODE_EXPORT_FORMATS = new Set(getCodeLanguageSubtasks().map((subtask) => s
 const UNIT_TEST_EXPORT_FORMATS = new Set(
   getUnitTestLanguageSubtasks().flatMap((subtask) => subtask.types || [subtask.type])
 );
-
-const EXPORT_FORMAT_STORY_LABELS = {
-  markdown: 'Markdown',
-  csv: 'CSV',
-  dsv: 'Delimited',
-  json: 'JSON',
-  jsonl: 'JSONL',
-  xml: 'XML',
-  sql: 'SQL',
-  javascript: 'Code JavaScript',
-  jest: 'Code Unit Test Jest',
-  gherkin: 'Gherkin',
-  html: 'HTML',
-  asciitable: 'ASCII',
-};
 
 const FORMAT_GROUP_LABELS = {
   code: 'Code',
@@ -285,17 +234,6 @@ function installStoryGlobals() {
   }
 }
 
-function dispatchTextInput(input, value) {
-  if (!input) {
-    return;
-  }
-  input.focus();
-  input.value = value;
-  input.dispatchEvent(new Event('input', { bubbles: true }));
-  input.dispatchEvent(new Event('change', { bubbles: true }));
-  input.dispatchEvent(new FocusEvent('focusout', { bubbles: true }));
-}
-
 function dispatchStoryClick(element) {
   element?.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
 }
@@ -353,6 +291,39 @@ function getActiveExportSelection(surface) {
     type: activeDirectType?.getAttribute('data-type') || '',
     label: activeDirectType?.textContent?.trim() || '',
   };
+}
+
+function getSelectionFromAction(surface, actionElement) {
+  if (!actionElement) {
+    return getActiveExportSelection(surface);
+  }
+
+  const directType = actionElement.getAttribute('data-type');
+  const isSubtask = actionElement.classList.contains('subtask-select-action');
+  const group = actionElement.getAttribute('data-group');
+
+  if (isSubtask && directType) {
+    const activeMainType = surface.querySelector('.type-select.active-main-type .type-select-action');
+    return {
+      group: FORMAT_GROUP_LABELS[activeMainType?.dataset?.group] || activeMainType?.textContent?.trim() || 'Code',
+      type: directType,
+      label: actionElement.textContent?.trim() || '',
+    };
+  }
+
+  if (directType) {
+    return {
+      group: 'Direct',
+      type: directType,
+      label: actionElement.textContent?.trim() || '',
+    };
+  }
+
+  if (group) {
+    return getActiveExportSelection(surface);
+  }
+
+  return getActiveExportSelection(surface);
 }
 
 function getPreviewActionPayload(surface, exporter, previewRowLimit, mode) {
@@ -450,100 +421,6 @@ function applyExportFormatOptions(importExportController, format, options = {}) 
       },
     });
   }
-}
-
-function renderEmbeddedTestDataStory({ scenario = 'empty' } = {}) {
-  installStoryGlobals();
-
-  const surface = createStorySurface('embedded-panel');
-  document.body.appendChild(surface);
-  const controlsId = `story-testdata-panel-${storySurfaceCounter}`;
-  const previewId = `story-testdata-preview-${storySurfaceCounter}`;
-  surface.innerHTML = `
-    <section class="testDataSchemaGui">
-      <details open>
-        <summary>Test Data</summary>
-        <div id="${controlsId}"></div>
-      </details>
-    </section>
-    <section class="importexport">
-      <label for="${previewId}">Preview Capture</label>
-      <textarea id="${previewId}" class="textrepresentation" readonly rows="12"></textarea>
-    </section>
-  `;
-
-  const latestData = { table: null };
-  const memoryGrid = new StoryMemoryGrid();
-  const exporter = new Exporter(memoryGrid);
-  const importer = new Importer(memoryGrid);
-  const textPreviewRenderer = {
-    async renderTextFromGrid() {
-      const previewText = latestData.table ? exporter.getDataTableAs('csv', latestData.table) : '';
-      surface.querySelector(`#${previewId}`).value = previewText;
-      return previewText;
-    },
-  };
-  const control = createTestDataGridControl({
-    documentObj: document,
-    windowObj: window,
-    DebouncerClass: ImmediateDebouncer,
-  });
-
-  const originalSetGridFromGenericDataTable = importer.setGridFromGenericDataTable.bind(importer);
-  importer.setGridFromGenericDataTable = (dataTable) => {
-    latestData.table = cloneGenericDataTable(dataTable);
-    return originalSetGridFromGenericDataTable(dataTable);
-  };
-
-  control.enableTestDataGenerationInterface(controlsId, importer, textPreviewRenderer, memoryGrid);
-  const dataPopulationPanel = control.getState().dataPopulationPanel;
-
-  if (scenario === 'sample' || scenario === 'text-mode') {
-    dataPopulationPanel?.insertSampleSchema?.();
-  }
-  if (scenario === 'text-mode') {
-    surface.querySelector('#testDataSchemaModeToggleButton')?.click();
-  }
-  if (scenario === 'validation') {
-    dataPopulationPanel?.insertSampleSchema?.();
-    dispatchTextInput(surface.querySelector('#testDataSchemaRows [data-field="name"]'), '');
-  }
-
-  surface.__storybookCleanup = () => control.destroy();
-  return surface;
-}
-
-function renderGeneratorStory({ scenario = 'empty' } = {}) {
-  installStoryGlobals();
-
-  const surface = createStorySurface('generator');
-  document.body.appendChild(surface);
-  const host = document.createElement('div');
-  surface.appendChild(host);
-
-  const page = new DataGeneratorPage({
-    parentElement: host,
-    documentObj: document,
-    faker,
-    RandExp,
-    TabulatorCtor: StoryTabulator,
-    GridExtensionClass: StoryPreviewGrid,
-  });
-  page.init();
-
-  if (scenario === 'sample' || scenario === 'text-mode') {
-    page.insertExampleSchema();
-  }
-  if (scenario === 'text-mode') {
-    surface.querySelector('#schemaModeToggleButton')?.click();
-  }
-  if (scenario === 'validation') {
-    page.insertExampleSchema();
-    dispatchTextInput(surface.querySelector('#generatorSchemaRows [data-field="name"]'), '');
-  }
-
-  surface.__storybookCleanup = () => page.destroy?.();
-  return surface;
 }
 
 function renderGridPreviewStory({
@@ -666,7 +543,7 @@ function renderGridPreviewStory({
 
   surface.querySelectorAll('.type-select-action, .subtask-select-action').forEach((actionElement) => {
     actionElement.addEventListener('click', () => {
-      emitAction('onFormatSelected', getActiveExportSelection(surface));
+      emitAction('onFormatSelected', getSelectionFromAction(surface, actionElement));
     });
   });
 
@@ -756,11 +633,4 @@ function renderGridPreviewStory({
   return surface;
 }
 
-export {
-  EXPORT_FORMAT_STORY_LABELS,
-  TEST_DATA_GRID_SAMPLE_SCHEMA_TEXT,
-  createSampleGridData,
-  renderEmbeddedTestDataStory,
-  renderGeneratorStory,
-  renderGridPreviewStory,
-};
+export { renderGridPreviewStory };

@@ -18,6 +18,9 @@ class ExportControls {
 
   addHooksToPage(container) {
     var element = container.querySelector(this.pageMap.fileDownloadButtonQuery);
+    if (!element) {
+      return;
+    }
     var addDownloadButtonListener = this.fileDownload.bind(this);
     element.addEventListener('click', addDownloadButtonListener, false);
     if (element) {
@@ -31,6 +34,9 @@ class ExportControls {
     }
 
     var copyButton = container.querySelector(this.pageMap.copyTextButton);
+    if (!copyButton) {
+      return;
+    }
     var copyTextButtonListener = this.copyText.bind(this);
     copyButton.addEventListener('click', copyTextButtonListener, false);
   }

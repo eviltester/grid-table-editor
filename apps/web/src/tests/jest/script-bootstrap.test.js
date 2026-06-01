@@ -10,7 +10,6 @@ describe('script bootstrap', () => {
             <p id="initial-load" class="import-progress-status startup-loading-status">Please Wait, Loading Libraries...</p>
             <div id="main-grid-view"></div>
             <div id="import-export-controls"></div>
-            <div id="tabbedTextArea"></div>
             <div id="testDataGeneratorContainer"></div>
             <div class="instructions"><details><ul><li>One</li></ul></details></div>
         </body></html>`);
@@ -36,20 +35,14 @@ describe('script bootstrap', () => {
       return Promise.resolve();
     });
 
-    class ImportExportControlsClass {
-      addHTMLtoGui() {}
-      setExporter() {}
-      setImporter() {}
-      renderTextFromGrid() {}
-      setFileFormatType() {}
-      setOptionsViewForFormatType() {}
-      getExportControls() {
-        return {};
-      }
-    }
-    class TabbedTextControlClass {
-      addToGui() {}
-    }
+    const workspaceApi = {
+      setExporter() {},
+      setImporter() {},
+      renderTextFromGrid() {},
+      setFileFormatType() {},
+      setOptionsViewForFormatType() {},
+    };
+    const createImportExportWorkspaceComponentFn = jest.fn(() => workspaceApi);
     class ExporterClass {}
     class ImporterClass {}
 
@@ -73,8 +66,7 @@ describe('script bootstrap', () => {
       ensureGridLibraryLoadedFn,
       activeGridEngineName: 'tabulator',
       ExtendedDataGridClass,
-      ImportExportControlsClass,
-      TabbedTextControlClass,
+      createImportExportWorkspaceComponentFn,
       ExporterClass,
       ImporterClass,
       enableTestDataGenerationInterfaceFn: () => {},
@@ -104,8 +96,13 @@ describe('script bootstrap', () => {
       ensureGridLibraryLoadedFn,
       activeGridEngineName: 'tabulator',
       ExtendedDataGridClass,
-      ImportExportControlsClass: class {},
-      TabbedTextControlClass: class {},
+      createImportExportWorkspaceComponentFn: () => ({
+        setExporter() {},
+        setImporter() {},
+        renderTextFromGrid() {},
+        setFileFormatType() {},
+        setOptionsViewForFormatType() {},
+      }),
       ExporterClass: class {},
       ImporterClass: class {},
       enableTestDataGenerationInterfaceFn: () => {},
@@ -130,30 +127,16 @@ describe('script bootstrap', () => {
     const renderTextFromGrid = jest.fn();
     const setFileFormatType = jest.fn();
     const setOptionsViewForFormatType = jest.fn();
-    const addHTMLtoGui = jest.fn();
     const setExporter = jest.fn();
     const setImporter = jest.fn();
-    const tabbedAddToGui = jest.fn();
     let importerInstance;
-
-    class ImportExportControlsClass {
-      addHTMLtoGui = addHTMLtoGui;
-      setExporter = setExporter;
-      setImporter = setImporter;
-      renderTextFromGrid = renderTextFromGrid;
-      setFileFormatType = setFileFormatType;
-      setOptionsViewForFormatType = setOptionsViewForFormatType;
-    }
-
-    class TabbedTextControlClass {
-      constructor(host, controller) {
-        this.host = host;
-        this.controller = controller;
-      }
-      addToGui() {
-        tabbedAddToGui(this.host, this.controller);
-      }
-    }
+    const createImportExportWorkspaceComponentFn = jest.fn(() => ({
+      setExporter,
+      setImporter,
+      renderTextFromGrid,
+      setFileFormatType,
+      setOptionsViewForFormatType,
+    }));
 
     class ExporterClass {
       constructor(extras) {
@@ -180,18 +163,16 @@ describe('script bootstrap', () => {
       ensureGridLibraryLoadedFn: jest.fn(() => Promise.resolve()),
       activeGridEngineName: 'tabulator',
       ExtendedDataGridClass,
-      ImportExportControlsClass,
-      TabbedTextControlClass,
+      createImportExportWorkspaceComponentFn,
       ExporterClass,
       ImporterClass,
       enableTestDataGenerationInterfaceFn,
     });
 
-    expect(addHTMLtoGui).toHaveBeenCalledWith(dom.window.document.getElementById('import-export-controls'));
-    expect(tabbedAddToGui).toHaveBeenCalledWith(
-      dom.window.document.getElementById('tabbedTextArea'),
-      expect.any(ImportExportControlsClass)
-    );
+    expect(createImportExportWorkspaceComponentFn).toHaveBeenCalledWith({
+      root: dom.window.document.getElementById('import-export-controls'),
+      documentObj: dom.window.document,
+    });
     expect(setExporter.mock.calls[0][0]).toBeInstanceOf(ExporterClass);
     expect(setExporter.mock.calls[0][0].extras).toBe(gridExtras);
     expect(setImporter.mock.calls[0][0]).toBe(importerInstance);
@@ -202,7 +183,11 @@ describe('script bootstrap', () => {
     expect(enableTestDataGenerationInterfaceFn).toHaveBeenCalledWith(
       'testDataGeneratorContainer',
       importerInstance,
-      expect.any(ImportExportControlsClass),
+      expect.objectContaining({
+        setExporter: expect.any(Function),
+        setImporter: expect.any(Function),
+        renderTextFromGrid: expect.any(Function),
+      }),
       gridExtras
     );
   });
@@ -225,15 +210,6 @@ describe('script bootstrap', () => {
       }
     }
 
-    class ImportExportControlsClass {
-      addHTMLtoGui() {}
-      setExporter() {}
-      setImporter() {}
-      renderTextFromGrid() {}
-      setFileFormatType() {}
-      setOptionsViewForFormatType() {}
-    }
-
     let importerInstance;
     class ImporterClass {
       constructor() {
@@ -247,10 +223,13 @@ describe('script bootstrap', () => {
       ensureGridLibraryLoadedFn: jest.fn(() => Promise.resolve()),
       activeGridEngineName: 'tabulator',
       ExtendedDataGridClass,
-      ImportExportControlsClass,
-      TabbedTextControlClass: class {
-        addToGui() {}
-      },
+      createImportExportWorkspaceComponentFn: () => ({
+        setExporter() {},
+        setImporter() {},
+        renderTextFromGrid() {},
+        setFileFormatType() {},
+        setOptionsViewForFormatType() {},
+      }),
       ExporterClass: class {},
       ImporterClass,
       enableTestDataGenerationInterfaceFn: () => {},
@@ -287,15 +266,6 @@ describe('script bootstrap', () => {
       }
     }
 
-    class ImportExportControlsClass {
-      addHTMLtoGui() {}
-      setExporter() {}
-      setImporter() {}
-      renderTextFromGrid() {}
-      setFileFormatType() {}
-      setOptionsViewForFormatType() {}
-    }
-
     let importerInstance;
     class ImporterClass {
       constructor() {
@@ -309,10 +279,13 @@ describe('script bootstrap', () => {
       ensureGridLibraryLoadedFn: jest.fn(() => Promise.resolve()),
       activeGridEngineName: 'tabulator',
       ExtendedDataGridClass,
-      ImportExportControlsClass,
-      TabbedTextControlClass: class {
-        addToGui() {}
-      },
+      createImportExportWorkspaceComponentFn: () => ({
+        setExporter() {},
+        setImporter() {},
+        renderTextFromGrid() {},
+        setFileFormatType() {},
+        setOptionsViewForFormatType() {},
+      }),
       ExporterClass: class {},
       ImporterClass,
       enableTestDataGenerationInterfaceFn: () => {},

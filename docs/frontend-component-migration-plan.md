@@ -350,13 +350,25 @@ Current status:
 
 ### Phase 6: Import/Export Workspace
 
-- [ ] Extract `ImportExportWorkspace`.
-- [ ] Extract `ImportExportToolbar`.
-- [ ] Extract `FormatSelector`.
-- [ ] Reuse `FormatOptionsPanel`.
-- [ ] Extract `TextPreviewEditor`.
-- [ ] Wrap file input, drag/drop, download, and clipboard as services/adapters.
-- [ ] Replace large export Storybook harnesses with smaller component stories over time.
+- [x] Extract `ImportExportWorkspace`.
+- [x] Extract `ImportExportToolbar`.
+- [x] Extract `FormatSelector`.
+- [x] Reuse `FormatOptionsPanel`.
+- [x] Extract `TextPreviewEditor`.
+- [x] Finish moving file input, drag/drop, download, and clipboard behavior behind explicit services/adapters instead of the remaining legacy import/export control path.
+- [x] Continue shrinking the remaining export-format Storybook harness so the old broad `storybook-harnesses.js` surface is no longer the default path for export preview stories.
+
+Current status:
+
+- `ImportExportWorkspace` now lives under `app/import-export-workspace/` with a controller, view, and create-component factory.
+- `ImportExportToolbar`, `FormatSelector`, and `TextPreviewEditor` now live under their own app feature folders and are mounted through `ImportExportWorkspace` rather than through direct page bootstrap wiring.
+- The app bootstrap now mounts the import/export area through `createImportExportWorkspaceComponent(...)`, and the `tabbedTextArea` preview region now lives inside that feature boundary instead of as a separate sibling shell.
+- The extracted workspace reuses the shared `FormatOptionsPanel` while preserving the current import/export behavior through the existing import/export controls path underneath.
+- File input, drag/drop, file reading, download, and clipboard behavior now flow through explicit Phase 6 app-side adapters/services under `app/import-export-adapters/`, so the legacy import/export control layer no longer talks directly to `FileReader`, `DragDropControl`, or download/copy browser APIs.
+- Storybook now documents `ImportExportWorkspace`, `ImportExportToolbar`, `FormatSelector`, and `TextPreviewEditor` directly with small component stories instead of relying only on the older broader app/export harnesses.
+- The export-format preview stories now mount through `ImportExportWorkspace` via a dedicated `export-preview-story-harness.js` helper rather than the older split `ImportExportControls + TabbedTextControl` story path or the broader omnibus `storybook-harnesses.js` module.
+- Existing app browser flows for format switching, extension-label updates, preview/edit mode, and export-format rendering remain covered after the Phase 6 extraction.
+- Phase 6 is now functionally complete; remaining Storybook-harness cleanup lives under the broader Phase 8 cleanup bucket if further legacy helper trimming is still worthwhile.
 
 ### Phase 7: Data Grid Editor and Tabulator Adapter
 

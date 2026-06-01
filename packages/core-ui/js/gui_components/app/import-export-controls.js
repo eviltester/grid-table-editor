@@ -1,18 +1,27 @@
-import { ExportControls } from './exportControls.js';
-import { DragDropControl } from './drag-drop-control.js';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 import { createFormatOptionsPanel } from '../shared/format-options-panel/index.js';
 import { applySanitizedUiOptionsToTargets, createOptionsPanelsForParent } from '../generator/options/index.js';
 import { createConfirmDialogService } from '../shared/dialog-services/index.js';
 import { createTimedStatusPresenter } from '../shared/timed-error-display.js';
 import { scheduleTimeout } from '../shared/unref-timeout.js';
+import {
+  createExportActionsAdapter,
+  createFileImportBindingsAdapter,
+  createFileReadService,
+} from './import-export-adapters/index.js';
 
 function getDefaultDocumentObj() {
   return typeof document !== 'undefined' ? document : null;
 }
 
 class ImportExportControls {
-  constructor({ requestConfirm, documentObj = getDefaultDocumentObj() } = {}) {
+  constructor({
+    requestConfirm,
+    documentObj = getDefaultDocumentObj(),
+    createExportActionsAdapterFn = createExportActionsAdapter,
+    createFileImportBindingsAdapterFn = createFileImportBindingsAdapter,
+    fileReadService = null,
+  } = {}) {
     this.documentObj = documentObj;
     this.previewRowLimit = 10;
     this.textEditMode = 'preview';
@@ -28,8 +37,12 @@ class ImportExportControls {
     this._hasBoundAutoPreviewInput = false;
     this._gridChangeUnsubscribe = null;
     this.errorDisplay = null;
+    this.fileImportBindings = null;
     const confirmDialogService = createConfirmDialogService({ documentObj: this.documentObj });
     this.requestConfirm = typeof requestConfirm === 'function' ? requestConfirm : confirmDialogService.requestConfirm;
+    this.fileReadService = fileReadService || createFileReadService();
+    this.exportControls = createExportActionsAdapterFn({ documentObj: this.documentObj });
+    this.createFileImportBindingsAdapter = createFileImportBindingsAdapterFn;
   }
 
   addHTMLtoGui(parentelement) {
@@ -46,6 +59,11 @@ class ImportExportControls {
             <div id="import-progress-status" class="import-progress-status" style="display:none;" aria-live="polite"></div>
             <div id="import-export-error" class="generator-schema-error-text" aria-live="polite" role="status"></div>
         `;
+    this.bindExistingGui(parentelement);
+  }
+
+  bindExistingGui(parentelement) {
+    this.rootElement = parentelement;
     this.errorDisplay = createTimedStatusPresenter({
       documentObj: this.documentObj,
       elementId: 'import-export-error',
@@ -62,22 +80,16 @@ class ImportExportControls {
     this._syncGridFromTextButtonState();
 
     this._bindPreviewTextInputIfAvailable();
-
     this.fileInputElement = parentelement.querySelector('#csvinput');
-    let csvinputchangelistener = this.loadFile.bind(this);
-    // clear file upload on click to allow re-uploading same file after option changes e.g for delimiters
-    this.fileInputElement.addEventListener(
-      'click',
-      (e) => {
-        e.currentTarget.value = '';
-      },
-      false
-    );
-    this.fileInputElement.addEventListener('change', csvinputchangelistener, false);
 
-    // setup the drop zone
-    const dragDropZone = new DragDropControl(this.readFile.bind(this));
-    dragDropZone.configureAsDropZone(parentelement.querySelector('#dropzone'));
+    this.fileImportBindings?.destroy?.();
+    this.fileImportBindings = this.createFileImportBindingsAdapter({
+      root: parentelement,
+      onFileSelected: (file) => this.loadFile(file),
+    });
+
+    this.exportControls?.destroy?.();
+    this.exportControls?.bind?.(this.rootElement);
   }
 
   setImporter(anImporter) {
@@ -86,9 +98,7 @@ class ImportExportControls {
 
   setExporter(anExporter) {
     this.exporter = anExporter;
-
-    this.exportControls = new ExportControls(this.exporter);
-    this.exportControls.addHooksToPage(document);
+    this.exportControls?.setExporter?.(this.exporter);
   }
 
   setGridChangeSource(gridChangeSource) {
@@ -155,10 +165,10 @@ class ImportExportControls {
     this.renderTextFromGrid();
   }
 
-  loadFile() {
+  loadFile(file = this.fileInputElement?.files?.[0] || null) {
     this.setCurrentTypeOptions();
     this._setImportProgressStatus('Preparing file import...', true);
-    this.readFile(this.fileInputElement.files[0]);
+    this.readFile(file);
   }
 
   readFile(aFile) {
@@ -169,24 +179,35 @@ class ImportExportControls {
     }
 
     this._setExportActionsBusyState(true);
-    const reader = new FileReader();
     this._setImportProgressStatus(`Loading ${aFile.name}... 0%`, true);
 
-    reader.addEventListener('progress', (event) => {
-      if (event.lengthComputable) {
-        const pct = Math.min(100, Math.round((event.loaded / event.total) * 100));
-        this._setImportProgressStatus(`Loading ${aFile.name}... ${pct}%`, true);
-        return;
-      }
-      this._setImportProgressStatus(`Loading ${aFile.name}...`, true);
-    });
-
-    reader.addEventListener('load', (event) => {
-      this._setImportProgressStatus(this.isPreviewTextMode() ? 'Preparing preview...' : 'Importing into grid...', true);
-      this._yieldToUi().then(async () => {
+    this.fileReadService
+      .readText(aFile, {
+        onProgress: (event) => {
+          if (event.lengthComputable) {
+            const pct = Math.min(100, Math.round((event.loaded / event.total) * 100));
+            this._setImportProgressStatus(`Loading ${aFile.name}... ${pct}%`, true);
+            return;
+          }
+          this._setImportProgressStatus(`Loading ${aFile.name}...`, true);
+        },
+        onError: () => {
+          this._setImportProgressStatus('File read failed.', false);
+          this._setExportActionsBusyState(false);
+        },
+        onAbort: () => {
+          this._setImportProgressStatus('File read cancelled.', false);
+          this._setExportActionsBusyState(false);
+        },
+      })
+      .then(async (importedText) => {
+        this._setImportProgressStatus(
+          this.isPreviewTextMode() ? 'Preparing preview...' : 'Importing into grid...',
+          true
+        );
         try {
+          await this._yieldToUi();
           const type = this._getActiveType();
-          const importedText = event.target.result;
           if (this.isPreviewTextMode()) {
             await this._previewThenImportToGrid(type, importedText);
           } else {
@@ -205,20 +226,22 @@ class ImportExportControls {
         }
 
         scheduleTimeout(() => this._clearImportProgressStatus(), 1200);
+      })
+      .catch((error) => {
+        if (error?.type !== 'abort' && error?.type !== 'error') {
+          this._setImportProgressStatus('File read failed.', false);
+          this._setExportActionsBusyState(false);
+        }
       });
-    });
+  }
 
-    reader.addEventListener('error', () => {
-      this._setImportProgressStatus('File read failed.', false);
-      this._setExportActionsBusyState(false);
-    });
-
-    reader.addEventListener('abort', () => {
-      this._setImportProgressStatus('File read cancelled.', false);
-      this._setExportActionsBusyState(false);
-    });
-
-    reader.readAsText(aFile);
+  destroy() {
+    this.fileImportBindings?.destroy?.();
+    this.exportControls?.destroy?.();
+    if (typeof this._gridChangeUnsubscribe === 'function') {
+      this._gridChangeUnsubscribe();
+      this._gridChangeUnsubscribe = null;
+    }
   }
 
   _setImportProgressStatus(message, isLoading) {
@@ -520,6 +543,11 @@ class ImportExportControls {
 
   _renderPreviewTextFromGrid() {
     const type = this._getActiveType();
+    if (typeof this.exporter?.getGridAsGenericDataTable !== 'function') {
+      this.exportControls?.renderTextFromGrid?.();
+      this._setPreviewTextDirty(false);
+      return;
+    }
     const previewDataTable = this.exporter.getGridAsGenericDataTable(this.previewRowLimit);
     const textToRender = this.exporter.getDataTableAs(type, previewDataTable);
     this.exportControls.setTextFromString(textToRender);

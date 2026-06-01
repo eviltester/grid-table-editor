@@ -197,70 +197,50 @@ function renderGeneratorPageStory(args) {
   root.appendChild(heading);
 
   let component = null;
-  let disposed = false;
-
   const queuePreviewData = (pageComponent) => {
     if (!args.sampleData) {
       return;
     }
 
     const dataTable = createStoryDataTable(args.sampleData.headers, args.sampleData.rows);
-    const applyPreviewData = () => {
-      if (disposed) {
-        return;
-      }
-      pageComponent.getGeneratorPreview()?.setPreviewDataTable?.(dataTable);
-    };
-
-    const previewTableApi = pageComponent.getGeneratorPreview?.()?.getPreviewTableApi?.();
-    if (typeof previewTableApi?.on === 'function') {
-      previewTableApi.on('tableBuilt', applyPreviewData);
-    }
-
-    globalThis.setTimeout(applyPreviewData, 0);
+    pageComponent
+      .getGeneratorPreview?.()
+      ?.whenReady?.()
+      .then(() => {
+        pageComponent.getGeneratorPreview()?.setPreviewDataTable?.(dataTable);
+      });
   };
 
-  const mountComponent = () => {
-    if (disposed || component || !root.isConnected) {
-      return;
-    }
-
-    component = createGeneratorPageComponent({
-      root,
-      documentObj: document,
-      props: {
-        controlsProps: {
-          selectedFormat: args.selectedFormat,
-          currentOptions: { options: { header: true, quoteChar: '"' } },
-          pairwiseVisible: args.pairwiseVisible,
-        },
-        previewProps: {
-          outputPreviewText: args.outputPreviewText,
-        },
-        schemaDefinitionProps: createGeneratorSchemaStoryProps(),
+  component = createGeneratorPageComponent({
+    root,
+    documentObj: document,
+    props: {
+      controlsProps: {
+        selectedFormat: args.selectedFormat,
+        currentOptions: { options: { header: true, quoteChar: '"' } },
+        pairwiseVisible: args.pairwiseVisible,
       },
-      services: {
-        createTimedStatusPresenter: () => ({
-          show() {},
-          clear() {},
-        }),
-        generatorPreviewServices: {
-          TabulatorCtor: Tabulator,
-          GridExtensionClass: TabulatorGridExtension,
-        },
+      previewProps: {
+        outputPreviewText: args.outputPreviewText,
       },
-    });
-
-    prefixElementIds(root, storyPrefix);
-    queuePreviewData(component);
-  };
-
-  globalThis.requestAnimationFrame(() => {
-    mountComponent();
+      schemaDefinitionProps: createGeneratorSchemaStoryProps(),
+    },
+    services: {
+      createTimedStatusPresenter: () => ({
+        show() {},
+        clear() {},
+      }),
+      generatorPreviewServices: {
+        TabulatorCtor: Tabulator,
+        GridExtensionClass: TabulatorGridExtension,
+      },
+    },
   });
 
+  prefixElementIds(root, storyPrefix);
+  queuePreviewData(component);
+
   root.__storybookCleanup = () => {
-    disposed = true;
     component?.destroy();
   };
   return root;

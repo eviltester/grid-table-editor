@@ -8292,3 +8292,2771 @@ $ storybook dev -p 6006
 [90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31748:25)http://localhost:6006/node_modules/.ca...]8;;
 [90m|[39m  at StoryRender.render
 [90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:20)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mstorybook-static/index.html[22m
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mstorybook-static/iframe.html[22m
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mstorybook-static/index.html[22m
+[90m|[39m
+[31mx[39m  [43mVite[49m [2m[console.error] [22mError: Unable to find a label with the text of:
+[90m|[39m  Data Table Preview Grid
+
+[90m|[39m  Ignored nodes: comments, script, style
+[90m|[39m  <div
+[90m|[39m  id="storybook-root"
+[90m|[39m  >
+[90m|[39m  <main
+[90m|[39m  aria-label="Generator preview story"
+[90m|[39m  >
+[90m|[39m  <h1
+[90m|[39m  style="position: absolute; width: 1px; height: 1px; padding: 0px;
+[90m|[39m  margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px);
+[90m|[39m  white-space: nowrap; border: 0px;"
+[90m|[39m  >
+[90m|[39m  Generator preview
+[90m|[39m  </h1>
+[90m|[39m  <section
+[90m|[39m  aria-label="Generator preview example"
+[90m|[39m  />
+[90m|[39m  <pre
+[90m|[39m  aria-label="Preview interaction log"
+[90m|[39m  style="margin-top: 0.75rem; padding: 0.5rem; background: rgb(243, 244,
+[90m|[39m  246); white-space: pre-wrap;"
+[90m|[39m  >
+[90m|[39m  No preview interactions yet.
+[90m|[39m  </pre>
+[90m|[39m  </main>
+[90m|[39m  </div>
+[90m|[39m  at waitForWrapper
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25058:40)http://localhost:6006/node_modules/.cache/st...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25114:55http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at Instrumenter.invoke
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17709:21)http://localhost:6006/node_modules/.cac...]8;;
+[90m|[39m  at Instrumenter.intercept
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17612:140)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at Instrumenter.track
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17603:83)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  at Object.findByLabelText
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17581:151)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at play
+[90m|[39m  (]8;;http://localhost:6006/apps/web/src/stories/generator-preview.stories.js?t=1780262114128:172:44)http://localhost:6006/apps/web/src/stories/generator-p...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:65http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at StoryRender.runPhase
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31748:25)http://localhost:6006/node_modules/.ca...]8;;
+[90m|[39m  at StoryRender.render
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:20)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mstorybook-static/iframe.html[22m
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mstorybook-static/iframe.html[22m
+[90m|[39m
+[31mx[39m  [43mVite[49m [2m[console.error] [22mError: Unable to find a label with the text of:
+[90m|[39m  Data Table Preview Grid
+
+[90m|[39m  Ignored nodes: comments, script, style
+[90m|[39m  <div
+[90m|[39m  id="storybook-root"
+[90m|[39m  >
+[90m|[39m  <main
+[90m|[39m  aria-label="Generator preview story"
+[90m|[39m  >
+[90m|[39m  <h1
+[90m|[39m  style="position: absolute; width: 1px; height: 1px; padding: 0px;
+[90m|[39m  margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px);
+[90m|[39m  white-space: nowrap; border: 0px;"
+[90m|[39m  >
+[90m|[39m  Generator preview
+[90m|[39m  </h1>
+[90m|[39m  <section
+[90m|[39m  aria-label="Generator preview example"
+[90m|[39m  />
+[90m|[39m  <pre
+[90m|[39m  aria-label="Preview interaction log"
+[90m|[39m  style="margin-top: 0.75rem; padding: 0.5rem; background: rgb(243, 244,
+[90m|[39m  246); white-space: pre-wrap;"
+[90m|[39m  >
+[90m|[39m  No preview interactions yet.
+[90m|[39m  </pre>
+[90m|[39m  </main>
+[90m|[39m  </div>
+[90m|[39m  at waitForWrapper
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25058:40)http://localhost:6006/node_modules/.cache/st...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25114:55http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at Instrumenter.invoke
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17709:21)http://localhost:6006/node_modules/.cac...]8;;
+[90m|[39m  at Instrumenter.intercept
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17612:140)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at Instrumenter.track
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17603:83)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  at Object.findByLabelText
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17581:151)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at play
+[90m|[39m  (]8;;http://localhost:6006/apps/web/src/stories/generator-preview.stories.js?t=1780262114128:172:44)http://localhost:6006/apps/web/src/stories/generator-p...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:65http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at StoryRender.runPhase
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31748:25)http://localhost:6006/node_modules/.ca...]8;;
+[90m|[39m  at StoryRender.render
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:20)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  [43mVite[49m [32mhmr update[39m
+[90m|[39m  [32m[39m[2m/@id/__x00__virtual:/@storybook/builder-vite/vite-app.js[22m
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mapps/web/app.html[22m
+[90m|[39m
+[31mx[39m  [43mVite[49m [2m[console.error] [22mError: Unable to find a label with the text of:
+[90m|[39m  Data Table Preview Grid
+
+[90m|[39m  Ignored nodes: comments, script, style
+[90m|[39m  <div
+[90m|[39m  id="storybook-root"
+[90m|[39m  >
+[90m|[39m  <main
+[90m|[39m  aria-label="Generator preview story"
+[90m|[39m  >
+[90m|[39m  <h1
+[90m|[39m  style="position: absolute; width: 1px; height: 1px; padding: 0px;
+[90m|[39m  margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px);
+[90m|[39m  white-space: nowrap; border: 0px;"
+[90m|[39m  >
+[90m|[39m  Generator preview
+[90m|[39m  </h1>
+[90m|[39m  <section
+[90m|[39m  aria-label="Generator preview example"
+[90m|[39m  />
+[90m|[39m  <pre
+[90m|[39m  aria-label="Preview interaction log"
+[90m|[39m  style="margin-top: 0.75rem; padding: 0.5rem; background: rgb(243, 244,
+[90m|[39m  246); white-space: pre-wrap;"
+[90m|[39m  >
+[90m|[39m  No preview interactions yet.
+[90m|[39m  </pre>
+[90m|[39m  </main>
+[90m|[39m  </div>
+[90m|[39m  at waitForWrapper
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25058:40)http://localhost:6006/node_modules/.cache/st...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25114:55http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at Instrumenter.invoke
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17709:21)http://localhost:6006/node_modules/.cac...]8;;
+[90m|[39m  at Instrumenter.intercept
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17612:140)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at Instrumenter.track
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17603:83)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  at Object.findByLabelText
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17581:151)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at play
+[90m|[39m  (]8;;http://localhost:6006/apps/web/src/stories/generator-preview.stories.js?t=1780262114128:172:44)http://localhost:6006/apps/web/src/stories/generator-p...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:65http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at StoryRender.runPhase
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31748:25)http://localhost:6006/node_modules/.ca...]8;;
+[90m|[39m  at StoryRender.render
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:20)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  [43mVite[49m [32mhmr update[39m
+[90m|[39m  [32m[39m[2m/@id/__x00__virtual:/@storybook/builder-vite/vite-app.js[22m
+[90m|[39m  [43mVite[49m [32mhmr update[39m
+[90m|[39m  [32m[39m[2m/@id/__x00__virtual:/@storybook/builder-vite/vite-app.js[22m
+[90m|[39m
+[31mx[39m  [43mVite[49m [2m[console.error] [22mError: Unable to find a label with the text of:
+[90m|[39m  Data Table Preview Grid
+
+[90m|[39m  Ignored nodes: comments, script, style
+[90m|[39m  <div
+[90m|[39m  id="storybook-root"
+[90m|[39m  >
+[90m|[39m  <main
+[90m|[39m  aria-label="Generator preview story"
+[90m|[39m  >
+[90m|[39m  <h1
+[90m|[39m  style="position: absolute; width: 1px; height: 1px; padding: 0px;
+[90m|[39m  margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px);
+[90m|[39m  white-space: nowrap; border: 0px;"
+[90m|[39m  >
+[90m|[39m  Generator preview
+[90m|[39m  </h1>
+[90m|[39m  <section
+[90m|[39m  aria-label="Generator preview example"
+[90m|[39m  />
+[90m|[39m  <pre
+[90m|[39m  aria-label="Preview interaction log"
+[90m|[39m  style="margin-top: 0.75rem; padding: 0.5rem; background: rgb(243, 244,
+[90m|[39m  246); white-space: pre-wrap;"
+[90m|[39m  >
+[90m|[39m  No preview interactions yet.
+[90m|[39m  </pre>
+[90m|[39m  </main>
+[90m|[39m  </div>
+[90m|[39m  at waitForWrapper
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25058:40)http://localhost:6006/node_modules/.cache/st...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25114:55http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at Instrumenter.invoke
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17709:21)http://localhost:6006/node_modules/.cac...]8;;
+[90m|[39m  at Instrumenter.intercept
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17612:140)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at Instrumenter.track
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17603:83)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  at Object.findByLabelText
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17581:151)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at play
+[90m|[39m  (]8;;http://localhost:6006/apps/web/src/stories/generator-preview.stories.js?t=1780262114128:172:44)http://localhost:6006/apps/web/src/stories/generator-p...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:65http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at StoryRender.runPhase
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31748:25)http://localhost:6006/node_modules/.ca...]8;;
+[90m|[39m  at StoryRender.render
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:20)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  [43mVite[49m [32mhmr update[39m
+[90m|[39m  [32m[39m[2m/@id/__x00__virtual:/@storybook/builder-vite/vite-app.js[22m
+[90m|[39m
+[31mx[39m  [43mVite[49m [2m[console.error] [22mError: Unable to find a label with the text of:
+[90m|[39m  Data Table Preview Grid
+
+[90m|[39m  Ignored nodes: comments, script, style
+[90m|[39m  <div
+[90m|[39m  id="storybook-root"
+[90m|[39m  >
+[90m|[39m  <main
+[90m|[39m  aria-label="Generator preview story"
+[90m|[39m  >
+[90m|[39m  <h1
+[90m|[39m  style="position: absolute; width: 1px; height: 1px; padding: 0px;
+[90m|[39m  margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px);
+[90m|[39m  white-space: nowrap; border: 0px;"
+[90m|[39m  >
+[90m|[39m  Generator preview
+[90m|[39m  </h1>
+[90m|[39m  <section
+[90m|[39m  aria-label="Generator preview example"
+[90m|[39m  />
+[90m|[39m  <pre
+[90m|[39m  aria-label="Preview interaction log"
+[90m|[39m  style="margin-top: 0.75rem; padding: 0.5rem; background: rgb(243, 244,
+[90m|[39m  246); white-space: pre-wrap;"
+[90m|[39m  >
+[90m|[39m  No preview interactions yet.
+[90m|[39m  </pre>
+[90m|[39m  </main>
+[90m|[39m  </div>
+[90m|[39m  at waitForWrapper
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25058:40)http://localhost:6006/node_modules/.cache/st...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25114:55http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at Instrumenter.invoke
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17709:21)http://localhost:6006/node_modules/.cac...]8;;
+[90m|[39m  at Instrumenter.intercept
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17612:140)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at Instrumenter.track
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17603:83)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  at Object.findByLabelText
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17581:151)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at play
+[90m|[39m  (]8;;http://localhost:6006/apps/web/src/stories/generator-preview.stories.js?t=1780262114128:172:44)http://localhost:6006/apps/web/src/stories/generator-p...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:65http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at StoryRender.runPhase
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31748:25)http://localhost:6006/node_modules/.ca...]8;;
+[90m|[39m  at StoryRender.render
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:20)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  [43mVite[49m [32mhmr update[39m
+[90m|[39m  [32m[39m[2m/@id/__x00__virtual:/@storybook/builder-vite/vite-app.js[22m
+[90m|[39m  [43mVite[49m [32mhmr update[39m
+[90m|[39m  [32m[39m[2m/@id/__x00__virtual:/@storybook/builder-vite/vite-app.js[22m
+[90m|[39m  [43mVite[49m [32mhmr update[39m
+[90m|[39m  [32m[39m[2m/@id/__x00__virtual:/@storybook/builder-vite/vite-app.js[22m
+[90m|[39m
+[31mx[39m  [43mVite[49m [2m[console.error] [22mError: Unable to find a label with the text of:
+[90m|[39m  Data Table Preview Grid
+
+[90m|[39m  Ignored nodes: comments, script, style
+[90m|[39m  <div
+[90m|[39m  id="storybook-root"
+[90m|[39m  >
+[90m|[39m  <main
+[90m|[39m  aria-label="Generator preview story"
+[90m|[39m  >
+[90m|[39m  <h1
+[90m|[39m  style="position: absolute; width: 1px; height: 1px; padding: 0px;
+[90m|[39m  margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px);
+[90m|[39m  white-space: nowrap; border: 0px;"
+[90m|[39m  >
+[90m|[39m  Generator preview
+[90m|[39m  </h1>
+[90m|[39m  <section
+[90m|[39m  aria-label="Generator preview example"
+[90m|[39m  />
+[90m|[39m  <pre
+[90m|[39m  aria-label="Preview interaction log"
+[90m|[39m  style="margin-top: 0.75rem; padding: 0.5rem; background: rgb(243, 244,
+[90m|[39m  246); white-space: pre-wrap;"
+[90m|[39m  >
+[90m|[39m  No preview interactions yet.
+[90m|[39m  </pre>
+[90m|[39m  </main>
+[90m|[39m  </div>
+[90m|[39m  at waitForWrapper
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25058:40)http://localhost:6006/node_modules/.cache/st...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25114:55http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at Instrumenter.invoke
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17709:21)http://localhost:6006/node_modules/.cac...]8;;
+[90m|[39m  at Instrumenter.intercept
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17612:140)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at Instrumenter.track
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17603:83)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  at Object.findByLabelText
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17581:151)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at play
+[90m|[39m  (]8;;http://localhost:6006/apps/web/src/stories/generator-preview.stories.js?t=1780262114128:172:44)http://localhost:6006/apps/web/src/stories/generator-p...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:65http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at StoryRender.runPhase
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31748:25)http://localhost:6006/node_modules/.ca...]8;;
+[90m|[39m  at StoryRender.render
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:20)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  [43mVite[49m [32mhmr update[39m
+[90m|[39m  [32m[39m[2m/@id/__x00__virtual:/@storybook/builder-vite/vite-app.js[22m
+[90m|[39m  [43mVite[49m [32mhmr update[39m
+[90m|[39m  [32m[39m[2m/@id/__x00__virtual:/@storybook/builder-vite/vite-app.js[22m
+[90m|[39m  [43mVite[49m [32mhmr update[39m
+[90m|[39m  [32m[39m[2m/@id/__x00__virtual:/@storybook/builder-vite/vite-app.js[22m
+[90m|[39m
+[31mx[39m  [43mVite[49m [2m[console.error] [22mTestingLibraryElementError: Unable to find an
+[90m|[39m  element with the text: generate:data. This could be because the text
+[90m|[39m  is broken up by multiple elements. In this case, you can provide a
+[90m|[39m  function for your text matcher to make your matcher more flexible.
+
+[90m|[39m  Ignored nodes: comments, script, style
+[90m|[39m  <div
+[90m|[39m  id="storybook-root"
+[90m|[39m  >
+[90m|[39m  <main
+[90m|[39m  aria-label="Generator controls story"
+[90m|[39m  >
+[90m|[39m  <h1
+[90m|[39m  style="position: absolute; width: 1px; height: 1px; padding: 0px;
+[90m|[39m  margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px);
+[90m|[39m  white-space: nowrap; border: 0px;"
+[90m|[39m  >
+[90m|[39m  Generator controls
+[90m|[39m  </h1>
+[90m|[39m  <section
+[90m|[39m  aria-label="Generator controls example"
+[90m|[39m  >
+
+
+[90m|[39m  <section
+[90m|[39m  aria-labelledby="generatorGenerateOptionsHeading"
+[90m|[39m  class="generator-controls"
+[90m|[39m  data-section-order="3"
+[90m|[39m  id="generatorGenerateOptionsSection"
+[90m|[39m  >
+
+
+[90m|[39m  <div
+[90m|[39m  class="generator-controls-head"
+[90m|[39m  >
+
+
+[90m|[39m  <strong
+[90m|[39m  id="generatorGenerateOptionsHeading"
+[90m|[39m  >
+[90m|[39m  Generate Data and Options
+[90m|[39m  </strong>
+
+
+[90m|[39m  </div>
+
+
+[90m|[39m  <div
+[90m|[39m  class="row-count-control"
+[90m|[39m  id="generateRowsCountControl"
+[90m|[39m  >
+
+
+[90m|[39m  <label
+[90m|[39m  class="row-count-control-label"
+[90m|[39m  >
+
+
+[90m|[39m  <span
+[90m|[39m  class=""
+[90m|[39m  data-role="label"
+[90m|[39m  >
+[90m|[39m  Generate Rows
+[90m|[39m  </span>
+
+
+[90m|[39m  <input
+[90m|[39m  class=""
+[90m|[39m  data-role="input"
+[90m|[39m  id="generateRowsCount"
+[90m|[39m  min="0"
+[90m|[39m  name="generateRowsCount"
+[90m|[39m  step="1"
+[90m|[39m  type="number"
+[90m|[39m  />
+
+
+[90m|[39m  </label>
+
+
+[90m|[39m  </div>
+
+
+[90m|[39m  <label>
+[90m|[39m  Output Format
+
+[90m|[39m  <select
+[90m|[39m  id="generatorOutputFormat"
+[90m|[39m  >
+[90m|[39m  <option
+[90m|[39m  value="csv"
+[90m|[39m  >
+[90m|[39m  CSV
+[90m|[39m  </option>
+[90m|[39m  <option
+[90m|[39m  value="json"
+[90m|[39m  >
+[90m|[39m  JSON
+[90m|[39m  </option>
+[90m|[39m  <option
+[90m|[39m  value="markdown"
+[90m|[39m  >
+[90m|[39m  Markdown
+[90m|[39m  </option>
+[90m|[39m  <optgroup
+[90m|[39m  label="-- Code --"
+[90m|[39m  >
+[90m|[39m  <option
+[90m|[39m  value="python"
+[90m|[39m  >
+[90m|[39m  Python
+[90m|[39m  </option>
+[90m|[39m  </optgroup>
+[90m|[39m  <optgroup
+[90m|[39m  label="-- Code (Unit Test) --"
+[90m|[39m  >
+[90m|[39m  <option
+[90m|[39m  value="jest"
+[90m|[39m  >
+[90m|[39m  Jest
+[90m|[39m  </option>
+[90m|[39m  </optgroup>
+[90m|[39m  </select>
+
+
+[90m|[39m  </label>
+
+
+[90m|[39m  <span
+[90m|[39m  class="generator-button-with-help"
+[90m|[39m  >
+
+
+[90m|[39m  <button
+[90m|[39m  aria-expanded="false"
+[90m|[39m  aria-label="Show file generation help"
+[90m|[39m  class="helpicon"
+[90m|[39m  data-help="generator-generate-data-help"
+[90m|[39m  data-help-text="
+[90m|[39m  <p>Generate Data for currently defined rows and output format to
+[90m|[39m  file.</p>
+[90m|[39m  <p><a class=\"helplink\"
+[90m|[39m  href=\"]8;;https://anywaydata.com/docs/test-data/generate-to-file\"https://anywaydata.co...]8;;
+[90m|[39m  target=\"_blank\" rel=\"noopener noreferrer\">Generate To File
+[90m|[39m  docs</a></p>
+[90m|[39m  "
+[90m|[39m  tabindex="0"
+[90m|[39m  type="button"
+[90m|[39m  />
+
+
+[90m|[39m  <button
+[90m|[39m  id="generateDataButton"
+[90m|[39m  >
+[90m|[39m  <span
+[90m|[39m  aria-hidden="true"
+[90m|[39m  class="generator-file-icon"
+[90m|[39m  />
+[90m|[39m  Generate Data
+[90m|[39m  </button>
+
+
+[90m|[39m  </span>
+
+
+[90m|[39m  <span
+[90m|[39m  class="generator-button-with-help"
+[90m|[39m  id="generateAllPairsButtonWrapper"
+[90m|[39m  style="display:none;"
+[90m|[39m  >
+
+
+[90m|[39m  <button
+[90m|[39m  aria-expanded="false"
+[90m|[39m  aria-label="Show pairwise generation help"
+[90m|[39m  class="helpicon"
+[90m|[39m  data-help="generator-pairwise-help"
+[90m|[39m  data-help-text="
+[90m|[39m  <p>Generate Pairwise Data from schema to a file.</p>
+[90m|[39m  <p><a class=\"helplink\"
+[90m|[39m  href=\"]8;;https://anywaydata.com/docs/test-data/pairwise-testing\"https://anywaydata.co...]8;;
+[90m|[39m  target=\"_blank\" rel=\"noopener noreferrer\">Pairwise testing
+[90m|[39m  docs</a></p>
+[90m|[39m  "
+[90m|[39m  tabindex="0"
+[90m|[39m  type="button"
+[90m|[39m  />
+
+
+[90m|[39m  <button
+[90m|[39m  id="generateAllPairsButton"
+[90m|[39m  >
+[90m|[39m  <span
+[90m|[39m  aria-hidden="true"
+[90m|[39m  class="generator-file-icon"
+[90m|[39m  />
+[90m|[39m  Generate Pairwise
+[90m|[39m  </button>
+
+
+[90m|[39m  </span>
+
+
+[90m|[39m  <div
+[90m|[39m  class="generator-options-wrapper"
+[90m|[39m  >
+
+
+[90m|[39m  <div
+[90m|[39m  class="generator-options-panel"
+[90m|[39m  id="generatorOptionsPanel"
+[90m|[39m  style="display: block;"
+[90m|[39m  >
+
+
+[90m|[39m  <div
+[90m|[39m  class="delimited-options"
+[90m|[39m  style="width:100%"
+[90m|[39m  >
+
+
+[90m|[39m  <div>
+[90m|[39m  <p>
+[90m|[39m  <strong>
+[90m|[39m  Options
+[90m|[39m  </strong>
+
+[90m|[39m  <span
+[90m|[39m  aria-expanded="false"
+[90m|[39m  aria-label="Show help"
+[90m|[39m  class="helpicon"
+[90m|[39m  data-help="csv-options"
+[90m|[39m  role="button"
+[90m|[39m  tabindex="0"
+[90m|[39m  />
+[90m|[39m  </p>
+[90m|[39m  </div>
+
+
+[90m|[39m  <div
+[90m|[39m  class="quotes"
+[90m|[39m  >
+
+
+[90m|[39m  <label>
+
+
+[90m|[39m  <span
+[90m|[39m  aria-expanded="false"
+[90m|[39m  aria-label="Show help for this option"
+[90m|[39m  class="helpicon option-help-icon"
+[90m|[39m  data-help="csv-option-quotes"
+[90m|[39m  data-help-text="Wrap fields in quote characters when exporting CSV."
+[90m|[39m  data-option-format="csv"
+[90m|[39m  data-option-key="quotes"
+[90m|[39m  role="button"
+[90m|[39m  tabindex="0"
+[90m|[39m  />
+
+
+[90m|[39m  <input
+[90m|[39m  name="quotes"
+[90m|[39m  type="checkbox"
+[90m|[39m  value="quotes"
+[90m|[39m  />
+
+[90m|[39m  Use Quotes
+
+[90m|[39m  </label>
+
+
+[90m|[39m  <br />
+
+
+[90m|[39m  </div>
+
+
+
+[90m|[39m  <div
+[90m|[39m  class="headerval"
+[90m|[39m  >
+
+
+[90m|[39m  <label>
+
+
+[90m|[39m  <span
+[90m|[39m  aria-expanded="false"
+[90m|[39m  aria-label="Show help for this option"
+[90m|[39m  class="helpicon option-help-icon"
+[90m|[39m  data-help="csv-option-header"
+[90m|[39m  data-help-text="Include the column header row as the first line of
+[90m|[39m  output."
+[90m|[39m  data-option-format="csv"
+[90m|[39m  data-option-key="header"
+[90m|[39m  role="button"
+[90m|[39m  tabindex="0"
+[90m|[39m  />
+
+
+[90m|[39m  <input
+[90m|[39m  name="header"
+[90m|[39m  type="checkbox"
+[90m|[39m  value="header"
+[90m|[39m  />
+
+[90m|[39m  Use Header
+
+[90m|[39m  </label>
+
+
+[90m|[39m  <br />
+
+
+[90m|[39m  </div>
+
+
+
+
+[90m|[39m  <div
+[90m|[39m  class="quoteChar option-child"
+[90m|[39m  >
+
+
+[90m|[39m  <label>
+[90m|[39m  <span
+[90m|[39m  aria-expanded="false"
+[90m|[39m  aria-label="Show help for this option"
+[90m|[39m  class="helpicon option-help-icon"
+[90m|[39m  data-help="csv-option-quote-char"
+[90m|[39m  data-help-text="Character used to quote string values, for example
+[90m|[39m  double quote."
+[90m|[39m  data-option-format="csv"
+[90m|[39m  data-option-key="quoteChar"
+[90m|[39m  role="button"
+[90m|[39m  tabindex="0"
+[90m|[39m  />
+[90m|[39m  Quote Char
+
+[90m|[39m  <input
+[90m|[39m  name="quoteChar"
+[90m|[39m  style="width:5em"
+[90m|[39m  type="text"
+[90m|[39m  value="\""
+[90m|[39m  />
+
+
+[90m|[39m  </label>
+
+
+[90m|[39m  <br />
+
+
+[90m|[39m  </div>
+
+
+
+[90m|[39m  <div
+[90m|[39m  class="escapeChar option-child"
+[90m|[39m  >
+
+
+[90m|[39m  <label>
+[90m|[39m  <span
+[90m|[39m  aria-expanded="false"
+[90m|[39m  aria-label="Show help for this option"
+[90m|[39m  class="helpicon option-help-icon"
+[90m|[39m  data-help="csv-option-escape-char"
+[90m|[39m  data-help-text="Character used to escape quote characters inside field
+[90m|[39m  values."
+[90m|[39m  data-option-format="csv"
+[90m|[39m  data-option-key="escapeChar"
+[90m|[39m  role="button"
+[90m|[39m  tabindex="0"
+[90m|[39m  />
+[90m|[39m  Escape Char
+
+[90m|[39m  <input
+[90m|[39m  name="escapeChar"
+[90m|[39m  style="width:5em"
+[90m|[39m  type="text"
+[90m|[39m  value="\""
+[90m|[39m  />
+
+
+[90m|[39m  </label>
+
+
+[90m|[39m  <br />
+
+
+[90m|[39m  </div>
+
+
+
+
+
+
+
+[90m|[39m  <div
+[90m|[39m  class="apply"
+[90m|[39m  >
+
+
+[90m|[39m  <button
+[90m|[39m  aria-disabled="true"
+[90m|[39m  class="apply-options"
+[90m|[39m  disabled=""
+[90m|[39m  >
+[90m|[39m  Apply
+[90m|[39m  </button>
+
+
+[90m|[39m  </div>
+
+
+
+[90m|[39m  </div>
+
+
+[90m|[39m  </div>
+
+
+[90m|[39m  <div
+[90m|[39m  aria-live="polite"
+[90m|[39m  class="generator-status-text"
+[90m|[39m  id="generatorStatusText"
+[90m|[39m  role="status"
+[90m|[39m  />
+
+
+[90m|[39m  </div>
+
+
+[90m|[39m  </section>
+
+
+[90m|[39m  </section>
+[90m|[39m  <pre
+[90m|[39m  aria-label="Interaction log"
+[90m|[39m  data-role="event-log"
+[90m|[39m  style="margin-top: 0.75rem; padding: 0.5rem; background: rgb(243, 244,
+[90m|[39m  246); white-space: pre-wrap;"
+[90m|[39m  >
+[90m|[39m  No interactions yet.
+[90m|[39m  </pre>
+[90m|[39m  </main>
+[90m|[39m  </div>
+[90m|[39m  at Object.getElementError
+[90m|[39m  (]8;;http://127.0.0.1:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:24682:53)http://127.0.0.1:6006/node_modules/....]8;;
+[90m|[39m  at ]8;;http://127.0.0.1:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25109:39http://127.0.0.1:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at ]8;;http://127.0.0.1:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25086:13http://127.0.0.1:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at ]8;;http://127.0.0.1:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25121:16http://127.0.0.1:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at play
+[90m|[39m  (]8;;http://127.0.0.1:6006/apps/web/src/stories/generator-controls.stories.js?t=1780245084843:134:25)http://127.0.0.1:6006/apps/web/src/stories/generator-c...]8;;
+[90m|[39m  at async StoryRender.runPhase
+[90m|[39m  (]8;;http://127.0.0.1:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31748:19)http://127.0.0.1:6006/node_modul...]8;;
+[90m|[39m  at async StoryRender.render
+[90m|[39m  (]8;;http://127.0.0.1:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:9)http://127.0.0.1:6006/node_modules...]8;;
+[90m|[39m
+[31mx[39m  [43mVite[49m [2m[console.error] [22mTestingLibraryElementError: Unable to find an
+[90m|[39m  element with the text: generate:data. This could be because the text
+[90m|[39m  is broken up by multiple elements. In this case, you can provide a
+[90m|[39m  function for your text matcher to make your matcher more flexible.
+
+[90m|[39m  Ignored nodes: comments, script, style
+[90m|[39m  <div
+[90m|[39m  id="storybook-root"
+[90m|[39m  >
+[90m|[39m  <main
+[90m|[39m  aria-label="Generator controls story"
+[90m|[39m  >
+[90m|[39m  <h1
+[90m|[39m  style="position: absolute; width: 1px; height: 1px; padding: 0px;
+[90m|[39m  margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px);
+[90m|[39m  white-space: nowrap; border: 0px;"
+[90m|[39m  >
+[90m|[39m  Generator controls
+[90m|[39m  </h1>
+[90m|[39m  <section
+[90m|[39m  aria-label="Generator controls example"
+[90m|[39m  >
+
+
+[90m|[39m  <section
+[90m|[39m  aria-labelledby="generatorGenerateOptionsHeading"
+[90m|[39m  class="generator-controls"
+[90m|[39m  data-section-order="3"
+[90m|[39m  id="generatorGenerateOptionsSection"
+[90m|[39m  >
+
+
+[90m|[39m  <div
+[90m|[39m  class="generator-controls-head"
+[90m|[39m  >
+
+
+[90m|[39m  <strong
+[90m|[39m  id="generatorGenerateOptionsHeading"
+[90m|[39m  >
+[90m|[39m  Generate Data and Options
+[90m|[39m  </strong>
+
+
+[90m|[39m  </div>
+
+
+[90m|[39m  <div
+[90m|[39m  class="row-count-control"
+[90m|[39m  id="generateRowsCountControl"
+[90m|[39m  >
+
+
+[90m|[39m  <label
+[90m|[39m  class="row-count-control-label"
+[90m|[39m  >
+
+
+[90m|[39m  <span
+[90m|[39m  class=""
+[90m|[39m  data-role="label"
+[90m|[39m  >
+[90m|[39m  Generate Rows
+[90m|[39m  </span>
+
+
+[90m|[39m  <input
+[90m|[39m  class=""
+[90m|[39m  data-role="input"
+[90m|[39m  id="generateRowsCount"
+[90m|[39m  min="0"
+[90m|[39m  name="generateRowsCount"
+[90m|[39m  step="1"
+[90m|[39m  type="number"
+[90m|[39m  />
+
+
+[90m|[39m  </label>
+
+
+[90m|[39m  </div>
+
+
+[90m|[39m  <label>
+[90m|[39m  Output Format
+
+[90m|[39m  <select
+[90m|[39m  id="generatorOutputFormat"
+[90m|[39m  >
+[90m|[39m  <option
+[90m|[39m  value="csv"
+[90m|[39m  >
+[90m|[39m  CSV
+[90m|[39m  </option>
+[90m|[39m  <option
+[90m|[39m  value="json"
+[90m|[39m  >
+[90m|[39m  JSON
+[90m|[39m  </option>
+[90m|[39m  <option
+[90m|[39m  value="markdown"
+[90m|[39m  >
+[90m|[39m  Markdown
+[90m|[39m  </option>
+[90m|[39m  <optgroup
+[90m|[39m  label="-- Code --"
+[90m|[39m  >
+[90m|[39m  <option
+[90m|[39m  value="python"
+[90m|[39m  >
+[90m|[39m  Python
+[90m|[39m  </option>
+[90m|[39m  </optgroup>
+[90m|[39m  <optgroup
+[90m|[39m  label="-- Code (Unit Test) --"
+[90m|[39m  >
+[90m|[39m  <option
+[90m|[39m  value="jest"
+[90m|[39m  >
+[90m|[39m  Jest
+[90m|[39m  </option>
+[90m|[39m  </optgroup>
+[90m|[39m  </select>
+
+
+[90m|[39m  </label>
+
+
+[90m|[39m  <span
+[90m|[39m  class="generator-button-with-help"
+[90m|[39m  >
+
+
+[90m|[39m  <button
+[90m|[39m  aria-expanded="false"
+[90m|[39m  aria-label="Show file generation help"
+[90m|[39m  class="helpicon"
+[90m|[39m  data-help="generator-generate-data-help"
+[90m|[39m  data-help-text="
+[90m|[39m  <p>Generate Data for currently defined rows and output format to
+[90m|[39m  file.</p>
+[90m|[39m  <p><a class=\"helplink\"
+[90m|[39m  href=\"]8;;https://anywaydata.com/docs/test-data/generate-to-file\"https://anywaydata.co...]8;;
+[90m|[39m  target=\"_blank\" rel=\"noopener noreferrer\">Generate To File
+[90m|[39m  docs</a></p>
+[90m|[39m  "
+[90m|[39m  tabindex="0"
+[90m|[39m  type="button"
+[90m|[39m  />
+
+
+[90m|[39m  <button
+[90m|[39m  id="generateDataButton"
+[90m|[39m  >
+[90m|[39m  <span
+[90m|[39m  aria-hidden="true"
+[90m|[39m  class="generator-file-icon"
+[90m|[39m  />
+[90m|[39m  Generate Data
+[90m|[39m  </button>
+
+
+[90m|[39m  </span>
+
+
+[90m|[39m  <span
+[90m|[39m  class="generator-button-with-help"
+[90m|[39m  id="generateAllPairsButtonWrapper"
+[90m|[39m  style="display:none;"
+[90m|[39m  >
+
+
+[90m|[39m  <button
+[90m|[39m  aria-expanded="false"
+[90m|[39m  aria-label="Show pairwise generation help"
+[90m|[39m  class="helpicon"
+[90m|[39m  data-help="generator-pairwise-help"
+[90m|[39m  data-help-text="
+[90m|[39m  <p>Generate Pairwise Data from schema to a file.</p>
+[90m|[39m  <p><a class=\"helplink\"
+[90m|[39m  href=\"]8;;https://anywaydata.com/docs/test-data/pairwise-testing\"https://anywaydata.co...]8;;
+[90m|[39m  target=\"_blank\" rel=\"noopener noreferrer\">Pairwise testing
+[90m|[39m  docs</a></p>
+[90m|[39m  "
+[90m|[39m  tabindex="0"
+[90m|[39m  type="button"
+[90m|[39m  />
+
+
+[90m|[39m  <button
+[90m|[39m  id="generateAllPairsButton"
+[90m|[39m  >
+[90m|[39m  <span
+[90m|[39m  aria-hidden="true"
+[90m|[39m  class="generator-file-icon"
+[90m|[39m  />
+[90m|[39m  Generate Pairwise
+[90m|[39m  </button>
+
+
+[90m|[39m  </span>
+
+
+[90m|[39m  <div
+[90m|[39m  class="generator-options-wrapper"
+[90m|[39m  >
+
+
+[90m|[39m  <div
+[90m|[39m  class="generator-options-panel"
+[90m|[39m  id="generatorOptionsPanel"
+[90m|[39m  style="display: block;"
+[90m|[39m  >
+
+
+[90m|[39m  <div
+[90m|[39m  class="delimited-options"
+[90m|[39m  style="width:100%"
+[90m|[39m  >
+
+
+[90m|[39m  <div>
+[90m|[39m  <p>
+[90m|[39m  <strong>
+[90m|[39m  Options
+[90m|[39m  </strong>
+
+[90m|[39m  <span
+[90m|[39m  aria-expanded="false"
+[90m|[39m  aria-label="Show help"
+[90m|[39m  class="helpicon"
+[90m|[39m  data-help="csv-options"
+[90m|[39m  role="button"
+[90m|[39m  tabindex="0"
+[90m|[39m  />
+[90m|[39m  </p>
+[90m|[39m  </div>
+
+
+[90m|[39m  <div
+[90m|[39m  class="quotes"
+[90m|[39m  >
+
+
+[90m|[39m  <label>
+
+
+[90m|[39m  <span
+[90m|[39m  aria-expanded="false"
+[90m|[39m  aria-label="Show help for this option"
+[90m|[39m  class="helpicon option-help-icon"
+[90m|[39m  data-help="csv-option-quotes"
+[90m|[39m  data-help-text="Wrap fields in quote characters when exporting CSV."
+[90m|[39m  data-option-format="csv"
+[90m|[39m  data-option-key="quotes"
+[90m|[39m  role="button"
+[90m|[39m  tabindex="0"
+[90m|[39m  />
+
+
+[90m|[39m  <input
+[90m|[39m  name="quotes"
+[90m|[39m  type="checkbox"
+[90m|[39m  value="quotes"
+[90m|[39m  />
+
+[90m|[39m  Use Quotes
+
+[90m|[39m  </label>
+
+
+[90m|[39m  <br />
+
+
+[90m|[39m  </div>
+
+
+
+[90m|[39m  <div
+[90m|[39m  class="headerval"
+[90m|[39m  >
+
+
+[90m|[39m  <label>
+
+
+[90m|[39m  <span
+[90m|[39m  aria-expanded="false"
+[90m|[39m  aria-label="Show help for this option"
+[90m|[39m  class="helpicon option-help-icon"
+[90m|[39m  data-help="csv-option-header"
+[90m|[39m  data-help-text="Include the column header row as the first line of
+[90m|[39m  output."
+[90m|[39m  data-option-format="csv"
+[90m|[39m  data-option-key="header"
+[90m|[39m  role="button"
+[90m|[39m  tabindex="0"
+[90m|[39m  />
+
+
+[90m|[39m  <input
+[90m|[39m  name="header"
+[90m|[39m  type="checkbox"
+[90m|[39m  value="header"
+[90m|[39m  />
+
+[90m|[39m  Use Header
+
+[90m|[39m  </label>
+
+
+[90m|[39m  <br />
+
+
+[90m|[39m  </div>
+
+
+
+
+[90m|[39m  <div
+[90m|[39m  class="quoteChar option-child"
+[90m|[39m  >
+
+
+[90m|[39m  <label>
+[90m|[39m  <span
+[90m|[39m  aria-expanded="false"
+[90m|[39m  aria-label="Show help for this option"
+[90m|[39m  class="helpicon option-help-icon"
+[90m|[39m  data-help="csv-option-quote-char"
+[90m|[39m  data-help-text="Character used to quote string values, for example
+[90m|[39m  double quote."
+[90m|[39m  data-option-format="csv"
+[90m|[39m  data-option-key="quoteChar"
+[90m|[39m  role="button"
+[90m|[39m  tabindex="0"
+[90m|[39m  />
+[90m|[39m  Quote Char
+
+[90m|[39m  <input
+[90m|[39m  name="quoteChar"
+[90m|[39m  style="width:5em"
+[90m|[39m  type="text"
+[90m|[39m  value="\""
+[90m|[39m  />
+
+
+[90m|[39m  </label>
+
+
+[90m|[39m  <br />
+
+
+[90m|[39m  </div>
+
+
+
+[90m|[39m  <div
+[90m|[39m  class="escapeChar option-child"
+[90m|[39m  >
+
+
+[90m|[39m  <label>
+[90m|[39m  <span
+[90m|[39m  aria-expanded="false"
+[90m|[39m  aria-label="Show help for this option"
+[90m|[39m  class="helpicon option-help-icon"
+[90m|[39m  data-help="csv-option-escape-char"
+[90m|[39m  data-help-text="Character used to escape quote characters inside field
+[90m|[39m  values."
+[90m|[39m  data-option-format="csv"
+[90m|[39m  data-option-key="escapeChar"
+[90m|[39m  role="button"
+[90m|[39m  tabindex="0"
+[90m|[39m  />
+[90m|[39m  Escape Char
+
+[90m|[39m  <input
+[90m|[39m  name="escapeChar"
+[90m|[39m  style="width:5em"
+[90m|[39m  type="text"
+[90m|[39m  value="\""
+[90m|[39m  />
+
+
+[90m|[39m  </label>
+
+
+[90m|[39m  <br />
+
+
+[90m|[39m  </div>
+
+
+
+
+
+
+
+[90m|[39m  <div
+[90m|[39m  class="apply"
+[90m|[39m  >
+
+
+[90m|[39m  <button
+[90m|[39m  aria-disabled="true"
+[90m|[39m  class="apply-options"
+[90m|[39m  disabled=""
+[90m|[39m  >
+[90m|[39m  Apply
+[90m|[39m  </button>
+
+
+[90m|[39m  </div>
+
+
+
+[90m|[39m  </div>
+
+
+[90m|[39m  </div>
+
+
+[90m|[39m  <div
+[90m|[39m  aria-live="polite"
+[90m|[39m  class="generator-status-text"
+[90m|[39m  id="generatorStatusText"
+[90m|[39m  role="status"
+[90m|[39m  />
+
+
+[90m|[39m  </div>
+
+
+[90m|[39m  </section>
+
+
+[90m|[39m  </section>
+[90m|[39m  <pre
+[90m|[39m  aria-label="Interaction log"
+[90m|[39m  data-role="event-log"
+[90m|[39m  style="margin-top: 0.75rem; padding: 0.5rem; background: rgb(243, 244,
+[90m|[39m  246); white-space: pre-wrap;"
+[90m|[39m  >
+[90m|[39m  No interactions yet.
+[90m|[39m  </pre>
+[90m|[39m  </main>
+[90m|[39m  </div>
+[90m|[39m  at Object.getElementError
+[90m|[39m  (]8;;http://127.0.0.1:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:24682:53)http://127.0.0.1:6006/node_modules/....]8;;
+[90m|[39m  at ]8;;http://127.0.0.1:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25109:39http://127.0.0.1:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at ]8;;http://127.0.0.1:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25086:13http://127.0.0.1:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at ]8;;http://127.0.0.1:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25121:16http://127.0.0.1:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at play
+[90m|[39m  (]8;;http://127.0.0.1:6006/apps/web/src/stories/generator-controls.stories.js?t=1780245084843:134:25)http://127.0.0.1:6006/apps/web/src/stories/generator-c...]8;;
+[90m|[39m  at async StoryRender.runPhase
+[90m|[39m  (]8;;http://127.0.0.1:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31748:19)http://127.0.0.1:6006/node_modul...]8;;
+[90m|[39m  at async StoryRender.render
+[90m|[39m  (]8;;http://127.0.0.1:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:9)http://127.0.0.1:6006/node_modules...]8;;
+[90m|[39m
+[31mx[39m  [43mVite[49m [2m[console.error] [22mError: Unable to find a label with the text of:
+[90m|[39m  Data Table Preview Grid
+
+[90m|[39m  Ignored nodes: comments, script, style
+[90m|[39m  <div
+[90m|[39m  id="storybook-root"
+[90m|[39m  >
+[90m|[39m  <main
+[90m|[39m  aria-label="Generator preview story"
+[90m|[39m  >
+[90m|[39m  <h1
+[90m|[39m  style="position: absolute; width: 1px; height: 1px; padding: 0px;
+[90m|[39m  margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px);
+[90m|[39m  white-space: nowrap; border: 0px;"
+[90m|[39m  >
+[90m|[39m  Generator preview
+[90m|[39m  </h1>
+[90m|[39m  <section
+[90m|[39m  aria-label="Generator preview example"
+[90m|[39m  />
+[90m|[39m  <pre
+[90m|[39m  aria-label="Preview interaction log"
+[90m|[39m  style="margin-top: 0.75rem; padding: 0.5rem; background: rgb(243, 244,
+[90m|[39m  246); white-space: pre-wrap;"
+[90m|[39m  >
+[90m|[39m  No preview interactions yet.
+[90m|[39m  </pre>
+[90m|[39m  </main>
+[90m|[39m  </div>
+[90m|[39m  at waitForWrapper
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25058:40)http://localhost:6006/node_modules/.cache/st...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25114:55http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at Instrumenter.invoke
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17709:21)http://localhost:6006/node_modules/.cac...]8;;
+[90m|[39m  at Instrumenter.intercept
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17612:140)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at Instrumenter.track
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17603:83)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  at Object.findByLabelText
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17581:151)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at play
+[90m|[39m  (]8;;http://localhost:6006/apps/web/src/stories/generator-preview.stories.js?t=1780262114128:172:44)http://localhost:6006/apps/web/src/stories/generator-p...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:65http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at StoryRender.runPhase
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31748:25)http://localhost:6006/node_modules/.ca...]8;;
+[90m|[39m  at StoryRender.render
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:20)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mstorybook-static/index.html[22m
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mstorybook-static/iframe.html[22m
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mstorybook-static/index.html[22m
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mstorybook-static/iframe.html[22m
+[90m|[39m
+[31mx[39m  [43mVite[49m [2m[console.error] [22mError: Unable to find a label with the text of:
+[90m|[39m  Data Table Preview Grid
+
+[90m|[39m  Ignored nodes: comments, script, style
+[90m|[39m  <div
+[90m|[39m  id="storybook-root"
+[90m|[39m  >
+[90m|[39m  <main
+[90m|[39m  aria-label="Generator preview story"
+[90m|[39m  >
+[90m|[39m  <h1
+[90m|[39m  style="position: absolute; width: 1px; height: 1px; padding: 0px;
+[90m|[39m  margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px);
+[90m|[39m  white-space: nowrap; border: 0px;"
+[90m|[39m  >
+[90m|[39m  Generator preview
+[90m|[39m  </h1>
+[90m|[39m  <section
+[90m|[39m  aria-label="Generator preview example"
+[90m|[39m  />
+[90m|[39m  <pre
+[90m|[39m  aria-label="Preview interaction log"
+[90m|[39m  style="margin-top: 0.75rem; padding: 0.5rem; background: rgb(243, 244,
+[90m|[39m  246); white-space: pre-wrap;"
+[90m|[39m  >
+[90m|[39m  No preview interactions yet.
+[90m|[39m  </pre>
+[90m|[39m  </main>
+[90m|[39m  </div>
+[90m|[39m  at waitForWrapper
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25058:40)http://localhost:6006/node_modules/.cache/st...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25114:55http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at Instrumenter.invoke
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17709:21)http://localhost:6006/node_modules/.cac...]8;;
+[90m|[39m  at Instrumenter.intercept
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17612:140)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at Instrumenter.track
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17603:83)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  at Object.findByLabelText
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17581:151)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at play
+[90m|[39m  (]8;;http://localhost:6006/apps/web/src/stories/generator-preview.stories.js?t=1780262114128:172:44)http://localhost:6006/apps/web/src/stories/generator-p...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:65http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at StoryRender.runPhase
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31748:25)http://localhost:6006/node_modules/.ca...]8;;
+[90m|[39m  at StoryRender.render
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:20)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m
+[31mx[39m  [43mVite[49m [2m[console.error] [22mError: Unable to find a label with the text of:
+[90m|[39m  Data Table Preview Grid
+
+[90m|[39m  Ignored nodes: comments, script, style
+[90m|[39m  <div
+[90m|[39m  id="storybook-root"
+[90m|[39m  >
+[90m|[39m  <main
+[90m|[39m  aria-label="Generator preview story"
+[90m|[39m  >
+[90m|[39m  <h1
+[90m|[39m  style="position: absolute; width: 1px; height: 1px; padding: 0px;
+[90m|[39m  margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px);
+[90m|[39m  white-space: nowrap; border: 0px;"
+[90m|[39m  >
+[90m|[39m  Generator preview
+[90m|[39m  </h1>
+[90m|[39m  <section
+[90m|[39m  aria-label="Generator preview example"
+[90m|[39m  />
+[90m|[39m  <pre
+[90m|[39m  aria-label="Preview interaction log"
+[90m|[39m  style="margin-top: 0.75rem; padding: 0.5rem; background: rgb(243, 244,
+[90m|[39m  246); white-space: pre-wrap;"
+[90m|[39m  >
+[90m|[39m  No preview interactions yet.
+[90m|[39m  </pre>
+[90m|[39m  </main>
+[90m|[39m  </div>
+[90m|[39m  at waitForWrapper
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25058:40)http://localhost:6006/node_modules/.cache/st...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25114:55http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at Instrumenter.invoke
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17709:21)http://localhost:6006/node_modules/.cac...]8;;
+[90m|[39m  at Instrumenter.intercept
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17612:140)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at Instrumenter.track
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17603:83)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  at Object.findByLabelText
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17581:151)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at play
+[90m|[39m  (]8;;http://localhost:6006/apps/web/src/stories/generator-preview.stories.js?t=1780262114128:172:44)http://localhost:6006/apps/web/src/stories/generator-p...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:65http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at StoryRender.runPhase
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31748:25)http://localhost:6006/node_modules/.ca...]8;;
+[90m|[39m  at StoryRender.render
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:20)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mstorybook-static/index.html[22m
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mstorybook-static/iframe.html[22m
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mstorybook-static/index.html[22m
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mstorybook-static/iframe.html[22m
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mstorybook-static/iframe.html[22m
+[90m|[39m
+[31mx[39m  [43mVite[49m [2m[console.error] [22mError: Unable to find a label with the text of:
+[90m|[39m  Data Table Preview Grid
+
+[90m|[39m  Ignored nodes: comments, script, style
+[90m|[39m  <div
+[90m|[39m  id="storybook-root"
+[90m|[39m  >
+[90m|[39m  <main
+[90m|[39m  aria-label="Generator preview story"
+[90m|[39m  >
+[90m|[39m  <h1
+[90m|[39m  style="position: absolute; width: 1px; height: 1px; padding: 0px;
+[90m|[39m  margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px);
+[90m|[39m  white-space: nowrap; border: 0px;"
+[90m|[39m  >
+[90m|[39m  Generator preview
+[90m|[39m  </h1>
+[90m|[39m  <section
+[90m|[39m  aria-label="Generator preview example"
+[90m|[39m  />
+[90m|[39m  <pre
+[90m|[39m  aria-label="Preview interaction log"
+[90m|[39m  style="margin-top: 0.75rem; padding: 0.5rem; background: rgb(243, 244,
+[90m|[39m  246); white-space: pre-wrap;"
+[90m|[39m  >
+[90m|[39m  No preview interactions yet.
+[90m|[39m  </pre>
+[90m|[39m  </main>
+[90m|[39m  </div>
+[90m|[39m  at waitForWrapper
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25058:40)http://localhost:6006/node_modules/.cache/st...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25114:55http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at Instrumenter.invoke
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17709:21)http://localhost:6006/node_modules/.cac...]8;;
+[90m|[39m  at Instrumenter.intercept
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17612:140)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at Instrumenter.track
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17603:83)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  at Object.findByLabelText
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17581:151)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at play
+[90m|[39m  (]8;;http://localhost:6006/apps/web/src/stories/generator-preview.stories.js?t=1780262114128:172:44)http://localhost:6006/apps/web/src/stories/generator-p...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:65http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at StoryRender.runPhase
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31748:25)http://localhost:6006/node_modules/.ca...]8;;
+[90m|[39m  at StoryRender.render
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:20)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m
+[31mx[39m  [43mVite[49m [2m[console.error] [22mError: Unable to find a label with the text of:
+[90m|[39m  Data Table Preview Grid
+
+[90m|[39m  Ignored nodes: comments, script, style
+[90m|[39m  <div
+[90m|[39m  id="storybook-root"
+[90m|[39m  >
+[90m|[39m  <main
+[90m|[39m  aria-label="Generator preview story"
+[90m|[39m  >
+[90m|[39m  <h1
+[90m|[39m  style="position: absolute; width: 1px; height: 1px; padding: 0px;
+[90m|[39m  margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px);
+[90m|[39m  white-space: nowrap; border: 0px;"
+[90m|[39m  >
+[90m|[39m  Generator preview
+[90m|[39m  </h1>
+[90m|[39m  <section
+[90m|[39m  aria-label="Generator preview example"
+[90m|[39m  />
+[90m|[39m  <pre
+[90m|[39m  aria-label="Preview interaction log"
+[90m|[39m  style="margin-top: 0.75rem; padding: 0.5rem; background: rgb(243, 244,
+[90m|[39m  246); white-space: pre-wrap;"
+[90m|[39m  >
+[90m|[39m  No preview interactions yet.
+[90m|[39m  </pre>
+[90m|[39m  </main>
+[90m|[39m  </div>
+[90m|[39m  at waitForWrapper
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25058:40)http://localhost:6006/node_modules/.cache/st...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25114:55http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at Instrumenter.invoke
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17709:21)http://localhost:6006/node_modules/.cac...]8;;
+[90m|[39m  at Instrumenter.intercept
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17612:140)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at Instrumenter.track
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17603:83)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  at Object.findByLabelText
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17581:151)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at play
+[90m|[39m  (]8;;http://localhost:6006/apps/web/src/stories/generator-preview.stories.js?t=1780262114128:172:44)http://localhost:6006/apps/web/src/stories/generator-p...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:65http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at StoryRender.runPhase
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31748:25)http://localhost:6006/node_modules/.ca...]8;;
+[90m|[39m  at StoryRender.render
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:20)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  [43mVite[49m [32mhmr update[39m
+[90m|[39m  [32m[39m[2m/@id/__x00__virtual:/@storybook/builder-vite/vite-app.js[22m
+[90m|[39m
+[31mx[39m  [43mVite[49m [2m[console.error] [22mError: Unable to find a label with the text of:
+[90m|[39m  Data Table Preview Grid
+
+[90m|[39m  Ignored nodes: comments, script, style
+[90m|[39m  <div
+[90m|[39m  id="storybook-root"
+[90m|[39m  >
+[90m|[39m  <main
+[90m|[39m  aria-label="Generator preview story"
+[90m|[39m  >
+[90m|[39m  <h1
+[90m|[39m  style="position: absolute; width: 1px; height: 1px; padding: 0px;
+[90m|[39m  margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px);
+[90m|[39m  white-space: nowrap; border: 0px;"
+[90m|[39m  >
+[90m|[39m  Generator preview
+[90m|[39m  </h1>
+[90m|[39m  <section
+[90m|[39m  aria-label="Generator preview example"
+[90m|[39m  />
+[90m|[39m  <pre
+[90m|[39m  aria-label="Preview interaction log"
+[90m|[39m  style="margin-top: 0.75rem; padding: 0.5rem; background: rgb(243, 244,
+[90m|[39m  246); white-space: pre-wrap;"
+[90m|[39m  >
+[90m|[39m  No preview interactions yet.
+[90m|[39m  </pre>
+[90m|[39m  </main>
+[90m|[39m  </div>
+[90m|[39m  at waitForWrapper
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25058:40)http://localhost:6006/node_modules/.cache/st...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25114:55http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at Instrumenter.invoke
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17709:21)http://localhost:6006/node_modules/.cac...]8;;
+[90m|[39m  at Instrumenter.intercept
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17612:140)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at Instrumenter.track
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17603:83)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  at Object.findByLabelText
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17581:151)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at play
+[90m|[39m  (]8;;http://localhost:6006/apps/web/src/stories/generator-preview.stories.js?t=1780262114128:172:44)http://localhost:6006/apps/web/src/stories/generator-p...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:65http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at StoryRender.runPhase
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31748:25)http://localhost:6006/node_modules/.ca...]8;;
+[90m|[39m  at StoryRender.render
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:20)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mstorybook-static/index.html[22m
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mstorybook-static/iframe.html[22m
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mstorybook-static/index.html[22m
+[90m|[39m
+[31mx[39m  [43mVite[49m [2m[console.error] [22mError: Unable to find a label with the text of:
+[90m|[39m  Data Table Preview Grid
+
+[90m|[39m  Ignored nodes: comments, script, style
+[90m|[39m  <div
+[90m|[39m  id="storybook-root"
+[90m|[39m  >
+[90m|[39m  <main
+[90m|[39m  aria-label="Generator preview story"
+[90m|[39m  >
+[90m|[39m  <h1
+[90m|[39m  style="position: absolute; width: 1px; height: 1px; padding: 0px;
+[90m|[39m  margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px);
+[90m|[39m  white-space: nowrap; border: 0px;"
+[90m|[39m  >
+[90m|[39m  Generator preview
+[90m|[39m  </h1>
+[90m|[39m  <section
+[90m|[39m  aria-label="Generator preview example"
+[90m|[39m  />
+[90m|[39m  <pre
+[90m|[39m  aria-label="Preview interaction log"
+[90m|[39m  style="margin-top: 0.75rem; padding: 0.5rem; background: rgb(243, 244,
+[90m|[39m  246); white-space: pre-wrap;"
+[90m|[39m  >
+[90m|[39m  No preview interactions yet.
+[90m|[39m  </pre>
+[90m|[39m  </main>
+[90m|[39m  </div>
+[90m|[39m  at waitForWrapper
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25058:40)http://localhost:6006/node_modules/.cache/st...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25114:55http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at Instrumenter.invoke
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17709:21)http://localhost:6006/node_modules/.cac...]8;;
+[90m|[39m  at Instrumenter.intercept
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17612:140)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at Instrumenter.track
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17603:83)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  at Object.findByLabelText
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17581:151)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at play
+[90m|[39m  (]8;;http://localhost:6006/apps/web/src/stories/generator-preview.stories.js?t=1780262114128:172:44)http://localhost:6006/apps/web/src/stories/generator-p...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:65http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at StoryRender.runPhase
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31748:25)http://localhost:6006/node_modules/.ca...]8;;
+[90m|[39m  at StoryRender.render
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:20)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mstorybook-static/iframe.html[22m
+[90m|[39m
+[31mx[39m  [43mVite[49m [2m[console.error] [22mError: Unable to find a label with the text of:
+[90m|[39m  Data Table Preview Grid
+
+[90m|[39m  Ignored nodes: comments, script, style
+[90m|[39m  <div
+[90m|[39m  id="storybook-root"
+[90m|[39m  >
+[90m|[39m  <main
+[90m|[39m  aria-label="Generator preview story"
+[90m|[39m  >
+[90m|[39m  <h1
+[90m|[39m  style="position: absolute; width: 1px; height: 1px; padding: 0px;
+[90m|[39m  margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px);
+[90m|[39m  white-space: nowrap; border: 0px;"
+[90m|[39m  >
+[90m|[39m  Generator preview
+[90m|[39m  </h1>
+[90m|[39m  <section
+[90m|[39m  aria-label="Generator preview example"
+[90m|[39m  />
+[90m|[39m  <pre
+[90m|[39m  aria-label="Preview interaction log"
+[90m|[39m  style="margin-top: 0.75rem; padding: 0.5rem; background: rgb(243, 244,
+[90m|[39m  246); white-space: pre-wrap;"
+[90m|[39m  >
+[90m|[39m  No preview interactions yet.
+[90m|[39m  </pre>
+[90m|[39m  </main>
+[90m|[39m  </div>
+[90m|[39m  at waitForWrapper
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25058:40)http://localhost:6006/node_modules/.cache/st...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25114:55http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at Instrumenter.invoke
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17709:21)http://localhost:6006/node_modules/.cac...]8;;
+[90m|[39m  at Instrumenter.intercept
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17612:140)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at Instrumenter.track
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17603:83)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  at Object.findByLabelText
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17581:151)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at play
+[90m|[39m  (]8;;http://localhost:6006/apps/web/src/stories/generator-preview.stories.js?t=1780262114128:172:44)http://localhost:6006/apps/web/src/stories/generator-p...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:65http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at StoryRender.runPhase
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31748:25)http://localhost:6006/node_modules/.ca...]8;;
+[90m|[39m  at StoryRender.render
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:20)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  [43mVite[49m [32mhmr update[39m
+[90m|[39m  [32m[39m[2m/@id/__x00__virtual:/@storybook/builder-vite/vite-app.js[22m
+[90m|[39m  [43mVite[49m [32mhmr update[39m
+[90m|[39m  [32m[39m[2m/@id/__x00__virtual:/@storybook/builder-vite/vite-app.js[22m
+[90m|[39m  [43mVite[49m [32mhmr update[39m
+[90m|[39m  [32m[39m[2m/@id/__x00__virtual:/@storybook/builder-vite/vite-app.js[22m
+[90m|[39m  [43mVite[49m [32mhmr update[39m
+[90m|[39m  [32m[39m[2m/@id/__x00__virtual:/@storybook/builder-vite/vite-app.js[22m
+[90m|[39m  [43mVite[49m [32mhmr update[39m
+[90m|[39m  [32m[39m[2m/@id/__x00__virtual:/@storybook/builder-vite/vite-app.js[22m
+[90m|[39m  [43mVite[49m [32mhmr update[39m
+[90m|[39m  [32m[39m[2m/@id/__x00__virtual:/@storybook/builder-vite/vite-app.js[22m
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mstorybook-static/iframe.html[22m
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mstorybook-static/index.html[22m
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mstorybook-static/index.html[22m
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mstorybook-static/iframe.html[22m
+[90m|[39m
+[31mx[39m  [43mVite[49m [2m[console.error] [22mError: Unable to find a label with the text of:
+[90m|[39m  Data Table Preview Grid
+
+[90m|[39m  Ignored nodes: comments, script, style
+[90m|[39m  <div
+[90m|[39m  id="storybook-root"
+[90m|[39m  >
+[90m|[39m  <main
+[90m|[39m  aria-label="Generator preview story"
+[90m|[39m  >
+[90m|[39m  <h1
+[90m|[39m  style="position: absolute; width: 1px; height: 1px; padding: 0px;
+[90m|[39m  margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px);
+[90m|[39m  white-space: nowrap; border: 0px;"
+[90m|[39m  >
+[90m|[39m  Generator preview
+[90m|[39m  </h1>
+[90m|[39m  <section
+[90m|[39m  aria-label="Generator preview example"
+[90m|[39m  />
+[90m|[39m  <pre
+[90m|[39m  aria-label="Preview interaction log"
+[90m|[39m  style="margin-top: 0.75rem; padding: 0.5rem; background: rgb(243, 244,
+[90m|[39m  246); white-space: pre-wrap;"
+[90m|[39m  >
+[90m|[39m  No preview interactions yet.
+[90m|[39m  </pre>
+[90m|[39m  </main>
+[90m|[39m  </div>
+[90m|[39m  at waitForWrapper
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25058:40)http://localhost:6006/node_modules/.cache/st...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25114:55http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at Instrumenter.invoke
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17709:21)http://localhost:6006/node_modules/.cac...]8;;
+[90m|[39m  at Instrumenter.intercept
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17612:140)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at Instrumenter.track
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17603:83)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  at Object.findByLabelText
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17581:151)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at play
+[90m|[39m  (]8;;http://localhost:6006/apps/web/src/stories/generator-preview.stories.js?t=1780262114128:172:44)http://localhost:6006/apps/web/src/stories/generator-p...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:65http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at StoryRender.runPhase
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31748:25)http://localhost:6006/node_modules/.ca...]8;;
+[90m|[39m  at StoryRender.render
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:20)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m
+[31mx[39m  [43mVite[49m [2m[console.error] [22mError: Unable to find a label with the text of:
+[90m|[39m  Data Table Preview Grid
+
+[90m|[39m  Ignored nodes: comments, script, style
+[90m|[39m  <div
+[90m|[39m  id="storybook-root"
+[90m|[39m  >
+[90m|[39m  <main
+[90m|[39m  aria-label="Generator preview story"
+[90m|[39m  >
+[90m|[39m  <h1
+[90m|[39m  style="position: absolute; width: 1px; height: 1px; padding: 0px;
+[90m|[39m  margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px);
+[90m|[39m  white-space: nowrap; border: 0px;"
+[90m|[39m  >
+[90m|[39m  Generator preview
+[90m|[39m  </h1>
+[90m|[39m  <section
+[90m|[39m  aria-label="Generator preview example"
+[90m|[39m  />
+[90m|[39m  <pre
+[90m|[39m  aria-label="Preview interaction log"
+[90m|[39m  style="margin-top: 0.75rem; padding: 0.5rem; background: rgb(243, 244,
+[90m|[39m  246); white-space: pre-wrap;"
+[90m|[39m  >
+[90m|[39m  No preview interactions yet.
+[90m|[39m  </pre>
+[90m|[39m  </main>
+[90m|[39m  </div>
+[90m|[39m  at waitForWrapper
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25058:40)http://localhost:6006/node_modules/.cache/st...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25114:55http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at Instrumenter.invoke
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17709:21)http://localhost:6006/node_modules/.cac...]8;;
+[90m|[39m  at Instrumenter.intercept
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17612:140)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at Instrumenter.track
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17603:83)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  at Object.findByLabelText
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17581:151)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at play
+[90m|[39m  (]8;;http://localhost:6006/apps/web/src/stories/generator-preview.stories.js?t=1780262114128:172:44)http://localhost:6006/apps/web/src/stories/generator-p...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:65http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at StoryRender.runPhase
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31748:25)http://localhost:6006/node_modules/.ca...]8;;
+[90m|[39m  at StoryRender.render
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:20)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  [43mVite[49m [32mhmr update[39m
+[90m|[39m  [32m[39m[2m/@id/__x00__virtual:/@storybook/builder-vite/vite-app.js[22m
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mstorybook-static/index.html[22m
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mstorybook-static/iframe.html[22m
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mstorybook-static/index.html[22m
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mstorybook-static/index.html[22m
+[90m|[39m
+[31mx[39m  [43mVite[49m [2m[console.error] [22mError: Unable to find a label with the text of:
+[90m|[39m  Data Table Preview Grid
+
+[90m|[39m  Ignored nodes: comments, script, style
+[90m|[39m  <div
+[90m|[39m  id="storybook-root"
+[90m|[39m  >
+[90m|[39m  <main
+[90m|[39m  aria-label="Generator preview story"
+[90m|[39m  >
+[90m|[39m  <h1
+[90m|[39m  style="position: absolute; width: 1px; height: 1px; padding: 0px;
+[90m|[39m  margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px);
+[90m|[39m  white-space: nowrap; border: 0px;"
+[90m|[39m  >
+[90m|[39m  Generator preview
+[90m|[39m  </h1>
+[90m|[39m  <section
+[90m|[39m  aria-label="Generator preview example"
+[90m|[39m  />
+[90m|[39m  <pre
+[90m|[39m  aria-label="Preview interaction log"
+[90m|[39m  style="margin-top: 0.75rem; padding: 0.5rem; background: rgb(243, 244,
+[90m|[39m  246); white-space: pre-wrap;"
+[90m|[39m  >
+[90m|[39m  No preview interactions yet.
+[90m|[39m  </pre>
+[90m|[39m  </main>
+[90m|[39m  </div>
+[90m|[39m  at waitForWrapper
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25058:40)http://localhost:6006/node_modules/.cache/st...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25114:55http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at Instrumenter.invoke
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17709:21)http://localhost:6006/node_modules/.cac...]8;;
+[90m|[39m  at Instrumenter.intercept
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17612:140)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at Instrumenter.track
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17603:83)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  at Object.findByLabelText
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17581:151)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at play
+[90m|[39m  (]8;;http://localhost:6006/apps/web/src/stories/generator-preview.stories.js?t=1780262114128:172:44)http://localhost:6006/apps/web/src/stories/generator-p...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:65http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at StoryRender.runPhase
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31748:25)http://localhost:6006/node_modules/.ca...]8;;
+[90m|[39m  at StoryRender.render
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:20)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mstorybook-static/iframe.html[22m
+[90m|[39m
+[31mx[39m  [43mVite[49m [2m[console.error] [22mError: Unable to find a label with the text of:
+[90m|[39m  Data Table Preview Grid
+
+[90m|[39m  Ignored nodes: comments, script, style
+[90m|[39m  <div
+[90m|[39m  id="storybook-root"
+[90m|[39m  >
+[90m|[39m  <main
+[90m|[39m  aria-label="Generator preview story"
+[90m|[39m  >
+[90m|[39m  <h1
+[90m|[39m  style="position: absolute; width: 1px; height: 1px; padding: 0px;
+[90m|[39m  margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px);
+[90m|[39m  white-space: nowrap; border: 0px;"
+[90m|[39m  >
+[90m|[39m  Generator preview
+[90m|[39m  </h1>
+[90m|[39m  <section
+[90m|[39m  aria-label="Generator preview example"
+[90m|[39m  />
+[90m|[39m  <pre
+[90m|[39m  aria-label="Preview interaction log"
+[90m|[39m  style="margin-top: 0.75rem; padding: 0.5rem; background: rgb(243, 244,
+[90m|[39m  246); white-space: pre-wrap;"
+[90m|[39m  >
+[90m|[39m  No preview interactions yet.
+[90m|[39m  </pre>
+[90m|[39m  </main>
+[90m|[39m  </div>
+[90m|[39m  at waitForWrapper
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25058:40)http://localhost:6006/node_modules/.cache/st...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25114:55http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at Instrumenter.invoke
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17709:21)http://localhost:6006/node_modules/.cac...]8;;
+[90m|[39m  at Instrumenter.intercept
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17612:140)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at Instrumenter.track
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17603:83)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  at Object.findByLabelText
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17581:151)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at play
+[90m|[39m  (]8;;http://localhost:6006/apps/web/src/stories/generator-preview.stories.js?t=1780262114128:172:44)http://localhost:6006/apps/web/src/stories/generator-p...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:65http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at StoryRender.runPhase
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31748:25)http://localhost:6006/node_modules/.ca...]8;;
+[90m|[39m  at StoryRender.render
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:20)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mstorybook-static/iframe.html[22m
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mstorybook-static/index.html[22m
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mstorybook-static/index.html[22m
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mstorybook-static/iframe.html[22m
+[90m|[39m
+[31mx[39m  [43mVite[49m [2m[console.error] [22mError: Unable to find a label with the text of:
+[90m|[39m  Data Table Preview Grid
+
+[90m|[39m  Ignored nodes: comments, script, style
+[90m|[39m  <div
+[90m|[39m  id="storybook-root"
+[90m|[39m  >
+[90m|[39m  <main
+[90m|[39m  aria-label="Generator preview story"
+[90m|[39m  >
+[90m|[39m  <h1
+[90m|[39m  style="position: absolute; width: 1px; height: 1px; padding: 0px;
+[90m|[39m  margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px);
+[90m|[39m  white-space: nowrap; border: 0px;"
+[90m|[39m  >
+[90m|[39m  Generator preview
+[90m|[39m  </h1>
+[90m|[39m  <section
+[90m|[39m  aria-label="Generator preview example"
+[90m|[39m  />
+[90m|[39m  <pre
+[90m|[39m  aria-label="Preview interaction log"
+[90m|[39m  style="margin-top: 0.75rem; padding: 0.5rem; background: rgb(243, 244,
+[90m|[39m  246); white-space: pre-wrap;"
+[90m|[39m  >
+[90m|[39m  No preview interactions yet.
+[90m|[39m  </pre>
+[90m|[39m  </main>
+[90m|[39m  </div>
+[90m|[39m  at waitForWrapper
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25058:40)http://localhost:6006/node_modules/.cache/st...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25114:55http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at Instrumenter.invoke
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17709:21)http://localhost:6006/node_modules/.cac...]8;;
+[90m|[39m  at Instrumenter.intercept
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17612:140)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at Instrumenter.track
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17603:83)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  at Object.findByLabelText
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17581:151)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at play
+[90m|[39m  (]8;;http://localhost:6006/apps/web/src/stories/generator-preview.stories.js?t=1780262114128:172:44)http://localhost:6006/apps/web/src/stories/generator-p...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:65http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at StoryRender.runPhase
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31748:25)http://localhost:6006/node_modules/.ca...]8;;
+[90m|[39m  at StoryRender.render
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:20)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m
+[31mx[39m  [43mVite[49m [2m[console.error] [22mError: Unable to find a label with the text of:
+[90m|[39m  Data Table Preview Grid
+
+[90m|[39m  Ignored nodes: comments, script, style
+[90m|[39m  <div
+[90m|[39m  id="storybook-root"
+[90m|[39m  >
+[90m|[39m  <main
+[90m|[39m  aria-label="Generator preview story"
+[90m|[39m  >
+[90m|[39m  <h1
+[90m|[39m  style="position: absolute; width: 1px; height: 1px; padding: 0px;
+[90m|[39m  margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px);
+[90m|[39m  white-space: nowrap; border: 0px;"
+[90m|[39m  >
+[90m|[39m  Generator preview
+[90m|[39m  </h1>
+[90m|[39m  <section
+[90m|[39m  aria-label="Generator preview example"
+[90m|[39m  />
+[90m|[39m  <pre
+[90m|[39m  aria-label="Preview interaction log"
+[90m|[39m  style="margin-top: 0.75rem; padding: 0.5rem; background: rgb(243, 244,
+[90m|[39m  246); white-space: pre-wrap;"
+[90m|[39m  >
+[90m|[39m  No preview interactions yet.
+[90m|[39m  </pre>
+[90m|[39m  </main>
+[90m|[39m  </div>
+[90m|[39m  at waitForWrapper
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25058:40)http://localhost:6006/node_modules/.cache/st...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25114:55http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at Instrumenter.invoke
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17709:21)http://localhost:6006/node_modules/.cac...]8;;
+[90m|[39m  at Instrumenter.intercept
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17612:140)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at Instrumenter.track
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17603:83)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  at Object.findByLabelText
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17581:151)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at play
+[90m|[39m  (]8;;http://localhost:6006/apps/web/src/stories/generator-preview.stories.js?t=1780262114128:172:44)http://localhost:6006/apps/web/src/stories/generator-p...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:65http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at StoryRender.runPhase
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31748:25)http://localhost:6006/node_modules/.ca...]8;;
+[90m|[39m  at StoryRender.render
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:20)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m
+[31mx[39m  [43mVite[49m [2m[console.error] [22mError: Unable to find a label with the text of:
+[90m|[39m  Data Table Preview Grid
+
+[90m|[39m  Ignored nodes: comments, script, style
+[90m|[39m  <div
+[90m|[39m  id="storybook-root"
+[90m|[39m  >
+[90m|[39m  <main
+[90m|[39m  aria-label="Generator preview story"
+[90m|[39m  >
+[90m|[39m  <h1
+[90m|[39m  style="position: absolute; width: 1px; height: 1px; padding: 0px;
+[90m|[39m  margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px);
+[90m|[39m  white-space: nowrap; border: 0px;"
+[90m|[39m  >
+[90m|[39m  Generator preview
+[90m|[39m  </h1>
+[90m|[39m  <section
+[90m|[39m  aria-label="Generator preview example"
+[90m|[39m  />
+[90m|[39m  <pre
+[90m|[39m  aria-label="Preview interaction log"
+[90m|[39m  style="margin-top: 0.75rem; padding: 0.5rem; background: rgb(243, 244,
+[90m|[39m  246); white-space: pre-wrap;"
+[90m|[39m  >
+[90m|[39m  No preview interactions yet.
+[90m|[39m  </pre>
+[90m|[39m  </main>
+[90m|[39m  </div>
+[90m|[39m  at waitForWrapper
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25058:40)http://localhost:6006/node_modules/.cache/st...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25114:55http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at Instrumenter.invoke
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17709:21)http://localhost:6006/node_modules/.cac...]8;;
+[90m|[39m  at Instrumenter.intercept
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17612:140)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at Instrumenter.track
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17603:83)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  at Object.findByLabelText
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17581:151)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at play
+[90m|[39m  (]8;;http://localhost:6006/apps/web/src/stories/generator-preview.stories.js?t=1780262114128:172:44)http://localhost:6006/apps/web/src/stories/generator-p...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:65http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at StoryRender.runPhase
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31748:25)http://localhost:6006/node_modules/.ca...]8;;
+[90m|[39m  at StoryRender.render
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:20)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m
+[31mx[39m  [43mVite[49m [2m[console.error] [22mError: Unable to find a label with the text of:
+[90m|[39m  Data Table Preview Grid
+
+[90m|[39m  Ignored nodes: comments, script, style
+[90m|[39m  <div
+[90m|[39m  id="storybook-root"
+[90m|[39m  >
+[90m|[39m  <main
+[90m|[39m  aria-label="Generator preview story"
+[90m|[39m  >
+[90m|[39m  <h1
+[90m|[39m  style="position: absolute; width: 1px; height: 1px; padding: 0px;
+[90m|[39m  margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px);
+[90m|[39m  white-space: nowrap; border: 0px;"
+[90m|[39m  >
+[90m|[39m  Generator preview
+[90m|[39m  </h1>
+[90m|[39m  <section
+[90m|[39m  aria-label="Generator preview example"
+[90m|[39m  />
+[90m|[39m  <pre
+[90m|[39m  aria-label="Preview interaction log"
+[90m|[39m  style="margin-top: 0.75rem; padding: 0.5rem; background: rgb(243, 244,
+[90m|[39m  246); white-space: pre-wrap;"
+[90m|[39m  >
+[90m|[39m  No preview interactions yet.
+[90m|[39m  </pre>
+[90m|[39m  </main>
+[90m|[39m  </div>
+[90m|[39m  at waitForWrapper
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25058:40)http://localhost:6006/node_modules/.cache/st...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25114:55http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at Instrumenter.invoke
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17709:21)http://localhost:6006/node_modules/.cac...]8;;
+[90m|[39m  at Instrumenter.intercept
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17612:140)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at Instrumenter.track
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17603:83)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  at Object.findByLabelText
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17581:151)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at play
+[90m|[39m  (]8;;http://localhost:6006/apps/web/src/stories/generator-preview.stories.js?t=1780262114128:172:44)http://localhost:6006/apps/web/src/stories/generator-p...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:65http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at StoryRender.runPhase
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31748:25)http://localhost:6006/node_modules/.ca...]8;;
+[90m|[39m  at StoryRender.render
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:20)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mstorybook-static/index.html[22m
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mstorybook-static/iframe.html[22m
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mstorybook-static/index.html[22m
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mstorybook-static/index.html[22m
+[90m|[39m
+[31mx[39m  [43mVite[49m [2m[console.error] [22mError: Unable to find a label with the text of:
+[90m|[39m  Data Table Preview Grid
+
+[90m|[39m  Ignored nodes: comments, script, style
+[90m|[39m  <div
+[90m|[39m  id="storybook-root"
+[90m|[39m  >
+[90m|[39m  <main
+[90m|[39m  aria-label="Generator preview story"
+[90m|[39m  >
+[90m|[39m  <h1
+[90m|[39m  style="position: absolute; width: 1px; height: 1px; padding: 0px;
+[90m|[39m  margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px);
+[90m|[39m  white-space: nowrap; border: 0px;"
+[90m|[39m  >
+[90m|[39m  Generator preview
+[90m|[39m  </h1>
+[90m|[39m  <section
+[90m|[39m  aria-label="Generator preview example"
+[90m|[39m  />
+[90m|[39m  <pre
+[90m|[39m  aria-label="Preview interaction log"
+[90m|[39m  style="margin-top: 0.75rem; padding: 0.5rem; background: rgb(243, 244,
+[90m|[39m  246); white-space: pre-wrap;"
+[90m|[39m  >
+[90m|[39m  No preview interactions yet.
+[90m|[39m  </pre>
+[90m|[39m  </main>
+[90m|[39m  </div>
+[90m|[39m  at waitForWrapper
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25058:40)http://localhost:6006/node_modules/.cache/st...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25114:55http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at Instrumenter.invoke
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17709:21)http://localhost:6006/node_modules/.cac...]8;;
+[90m|[39m  at Instrumenter.intercept
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17612:140)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at Instrumenter.track
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17603:83)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  at Object.findByLabelText
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17581:151)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at play
+[90m|[39m  (]8;;http://localhost:6006/apps/web/src/stories/generator-preview.stories.js?t=1780262114128:172:44)http://localhost:6006/apps/web/src/stories/generator-p...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:65http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at StoryRender.runPhase
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31748:25)http://localhost:6006/node_modules/.ca...]8;;
+[90m|[39m  at StoryRender.render
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:20)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mstorybook-static/iframe.html[22m
+[90m|[39m
+[31mx[39m  [43mVite[49m [2m[console.error] [22mError: Unable to find a label with the text of:
+[90m|[39m  Data Table Preview Grid
+
+[90m|[39m  Ignored nodes: comments, script, style
+[90m|[39m  <div
+[90m|[39m  id="storybook-root"
+[90m|[39m  >
+[90m|[39m  <main
+[90m|[39m  aria-label="Generator preview story"
+[90m|[39m  >
+[90m|[39m  <h1
+[90m|[39m  style="position: absolute; width: 1px; height: 1px; padding: 0px;
+[90m|[39m  margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px);
+[90m|[39m  white-space: nowrap; border: 0px;"
+[90m|[39m  >
+[90m|[39m  Generator preview
+[90m|[39m  </h1>
+[90m|[39m  <section
+[90m|[39m  aria-label="Generator preview example"
+[90m|[39m  />
+[90m|[39m  <pre
+[90m|[39m  aria-label="Preview interaction log"
+[90m|[39m  style="margin-top: 0.75rem; padding: 0.5rem; background: rgb(243, 244,
+[90m|[39m  246); white-space: pre-wrap;"
+[90m|[39m  >
+[90m|[39m  No preview interactions yet.
+[90m|[39m  </pre>
+[90m|[39m  </main>
+[90m|[39m  </div>
+[90m|[39m  at waitForWrapper
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25058:40)http://localhost:6006/node_modules/.cache/st...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25114:55http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at Instrumenter.invoke
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17709:21)http://localhost:6006/node_modules/.cac...]8;;
+[90m|[39m  at Instrumenter.intercept
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17612:140)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at Instrumenter.track
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17603:83)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  at Object.findByLabelText
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17581:151)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at play
+[90m|[39m  (]8;;http://localhost:6006/apps/web/src/stories/generator-preview.stories.js?t=1780262114128:172:44)http://localhost:6006/apps/web/src/stories/generator-p...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:65http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at StoryRender.runPhase
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31748:25)http://localhost:6006/node_modules/.ca...]8;;
+[90m|[39m  at StoryRender.render
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:20)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  [43mVite[49m [32mhmr update[39m
+[90m|[39m  [32m[39m[2m/@id/__x00__virtual:/@storybook/builder-vite/vite-app.js[22m
+[90m|[39m
+[31mx[39m  [43mVite[49m Pre-transform error: Failed to load url
+[90m|[39m  /packages/core-ui/js/gui_components/generator/preview/tabulator-grid-adapter.js
+[90m|[39m  (resolved id:
+[90m|[39m  D:/github/grid-table-editor/packages/core-ui/js/gui_components/generator/preview/tabulator-grid-adapter.js)
+[90m|[39m  in
+[90m|[39m  D:/github/grid-table-editor/packages/core-ui/js/gui_components/generator/preview/index.js.
+[90m|[39m  Does the file exist?
+[90m|[39m
+[31mx[39m  [43mVite[49m [2m[console.error] [22mTypeError: Failed to fetch dynamically imported
+[90m|[39m  module:
+[90m|[39m  ]8;;http://localhost:6006/apps/web/src/stories/generator-preview.stories.js?t=1780298034454http://localhost:6006/apps/web/src/stories/generator-preview.stories.js?t=1780298034454]8;;
+[90m|[39m  [43mVite[49m [32mhmr update[39m
+[90m|[39m  [32m[39m[2m/@id/__x00__virtual:/@storybook/builder-vite/vite-app.js[22m
+[90m|[39m  [43mVite[49m [32mhmr update[39m
+[90m|[39m  [32m[39m[2m/@id/__x00__virtual:/@storybook/builder-vite/vite-app.js[22m
+[90m|[39m
+[31mx[39m  [43mVite[49m [2m[console.error] [22mError: Unable to find a label with the text of:
+[90m|[39m  Data Table Preview Grid
+
+[90m|[39m  Ignored nodes: comments, script, style
+[90m|[39m  <div
+[90m|[39m  id="storybook-root"
+[90m|[39m  >
+[90m|[39m  <main
+[90m|[39m  aria-label="Generator preview story"
+[90m|[39m  >
+[90m|[39m  <h1
+[90m|[39m  style="position: absolute; width: 1px; height: 1px; padding: 0px;
+[90m|[39m  margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px);
+[90m|[39m  white-space: nowrap; border: 0px;"
+[90m|[39m  >
+[90m|[39m  Generator preview
+[90m|[39m  </h1>
+[90m|[39m  <section
+[90m|[39m  aria-label="Generator preview example"
+[90m|[39m  />
+[90m|[39m  <pre
+[90m|[39m  aria-label="Preview interaction log"
+[90m|[39m  style="margin-top: 0.75rem; padding: 0.5rem; background: rgb(243, 244,
+[90m|[39m  246); white-space: pre-wrap;"
+[90m|[39m  >
+[90m|[39m  No preview interactions yet.
+[90m|[39m  </pre>
+[90m|[39m  </main>
+[90m|[39m  </div>
+[90m|[39m  at waitForWrapper
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25058:40)http://localhost:6006/node_modules/.cache/st...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25114:55http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at Instrumenter.invoke
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17709:21)http://localhost:6006/node_modules/.cac...]8;;
+[90m|[39m  at Instrumenter.intercept
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17612:140)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at Instrumenter.track
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17603:83)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  at Object.findByLabelText
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17581:151)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at play
+[90m|[39m  (]8;;http://localhost:6006/apps/web/src/stories/generator-preview.stories.js?t=1780298038119:172:44)http://localhost:6006/apps/web/src/stories/generator-p...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:65http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at StoryRender.runPhase
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31748:25)http://localhost:6006/node_modules/.ca...]8;;
+[90m|[39m  at StoryRender.render
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:20)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  [43mVite[49m [32mhmr update[39m
+[90m|[39m  [32m[39m[2m/@id/__x00__virtual:/@storybook/builder-vite/vite-app.js[22m
+[90m|[39m
+[31mx[39m  [43mVite[49m [2m[console.error] [22mError: Unable to find a label with the text of:
+[90m|[39m  Data Table Preview Grid
+
+[90m|[39m  Ignored nodes: comments, script, style
+[90m|[39m  <div
+[90m|[39m  id="storybook-root"
+[90m|[39m  >
+[90m|[39m  <main
+[90m|[39m  aria-label="Generator preview story"
+[90m|[39m  >
+[90m|[39m  <h1
+[90m|[39m  style="position: absolute; width: 1px; height: 1px; padding: 0px;
+[90m|[39m  margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px);
+[90m|[39m  white-space: nowrap; border: 0px;"
+[90m|[39m  >
+[90m|[39m  Generator preview
+[90m|[39m  </h1>
+[90m|[39m  <section
+[90m|[39m  aria-label="Generator preview example"
+[90m|[39m  />
+[90m|[39m  <pre
+[90m|[39m  aria-label="Preview interaction log"
+[90m|[39m  style="margin-top: 0.75rem; padding: 0.5rem; background: rgb(243, 244,
+[90m|[39m  246); white-space: pre-wrap;"
+[90m|[39m  >
+[90m|[39m  No preview interactions yet.
+[90m|[39m  </pre>
+[90m|[39m  </main>
+[90m|[39m  </div>
+[90m|[39m  at waitForWrapper
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25058:40)http://localhost:6006/node_modules/.cache/st...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25114:55http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at Instrumenter.invoke
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17709:21)http://localhost:6006/node_modules/.cac...]8;;
+[90m|[39m  at Instrumenter.intercept
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17612:140)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at Instrumenter.track
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17603:83)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  at Object.findByLabelText
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17581:151)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at play
+[90m|[39m  (]8;;http://localhost:6006/apps/web/src/stories/generator-preview.stories.js?t=1780298046217:172:44)http://localhost:6006/apps/web/src/stories/generator-p...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:65http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at StoryRender.runPhase
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31748:25)http://localhost:6006/node_modules/.ca...]8;;
+[90m|[39m  at StoryRender.render
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:20)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  [43mVite[49m [32mhmr update[39m
+[90m|[39m  [32m[39m[2m/@id/__x00__virtual:/@storybook/builder-vite/vite-app.js[22m
+[90m|[39m
+[31mx[39m  [43mVite[49m [2m[console.error] [22mError: Unable to find a label with the text of:
+[90m|[39m  Data Table Preview Grid
+
+[90m|[39m  Ignored nodes: comments, script, style
+[90m|[39m  <div
+[90m|[39m  id="storybook-root"
+[90m|[39m  >
+[90m|[39m  <main
+[90m|[39m  aria-label="Generator preview story"
+[90m|[39m  >
+[90m|[39m  <h1
+[90m|[39m  style="position: absolute; width: 1px; height: 1px; padding: 0px;
+[90m|[39m  margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px);
+[90m|[39m  white-space: nowrap; border: 0px;"
+[90m|[39m  >
+[90m|[39m  Generator preview
+[90m|[39m  </h1>
+[90m|[39m  <section
+[90m|[39m  aria-label="Generator preview example"
+[90m|[39m  />
+[90m|[39m  <pre
+[90m|[39m  aria-label="Preview interaction log"
+[90m|[39m  style="margin-top: 0.75rem; padding: 0.5rem; background: rgb(243, 244,
+[90m|[39m  246); white-space: pre-wrap;"
+[90m|[39m  >
+[90m|[39m  No preview interactions yet.
+[90m|[39m  </pre>
+[90m|[39m  </main>
+[90m|[39m  </div>
+[90m|[39m  at waitForWrapper
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25058:40)http://localhost:6006/node_modules/.cache/st...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25114:55http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at Instrumenter.invoke
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17709:21)http://localhost:6006/node_modules/.cac...]8;;
+[90m|[39m  at Instrumenter.intercept
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17612:140)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at Instrumenter.track
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17603:83)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  at Object.findByLabelText
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17581:151)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at play
+[90m|[39m  (]8;;http://localhost:6006/apps/web/src/stories/generator-preview.stories.js?t=1780298051846:172:44)http://localhost:6006/apps/web/src/stories/generator-p...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:65http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at StoryRender.runPhase
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31748:25)http://localhost:6006/node_modules/.ca...]8;;
+[90m|[39m  at StoryRender.render
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:20)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  [43mVite[49m [32mhmr update[39m
+[90m|[39m  [32m[39m[2m/@id/__x00__virtual:/@storybook/builder-vite/vite-app.js[22m
+[90m|[39m
+[31mx[39m  [43mVite[49m [2m[console.error] [22mError: Unable to find a label with the text of:
+[90m|[39m  Data Table Preview Grid
+
+[90m|[39m  Ignored nodes: comments, script, style
+[90m|[39m  <div
+[90m|[39m  id="storybook-root"
+[90m|[39m  >
+[90m|[39m  <main
+[90m|[39m  aria-label="Generator preview story"
+[90m|[39m  >
+[90m|[39m  <h1
+[90m|[39m  style="position: absolute; width: 1px; height: 1px; padding: 0px;
+[90m|[39m  margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px);
+[90m|[39m  white-space: nowrap; border: 0px;"
+[90m|[39m  >
+[90m|[39m  Generator preview
+[90m|[39m  </h1>
+[90m|[39m  <section
+[90m|[39m  aria-label="Generator preview example"
+[90m|[39m  />
+[90m|[39m  <pre
+[90m|[39m  aria-label="Preview interaction log"
+[90m|[39m  style="margin-top: 0.75rem; padding: 0.5rem; background: rgb(243, 244,
+[90m|[39m  246); white-space: pre-wrap;"
+[90m|[39m  >
+[90m|[39m  No preview interactions yet.
+[90m|[39m  </pre>
+[90m|[39m  </main>
+[90m|[39m  </div>
+[90m|[39m  at waitForWrapper
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25058:40)http://localhost:6006/node_modules/.cache/st...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25114:55http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at Instrumenter.invoke
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17709:21)http://localhost:6006/node_modules/.cac...]8;;
+[90m|[39m  at Instrumenter.intercept
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17612:140)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at Instrumenter.track
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17603:83)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  at Object.findByLabelText
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17581:151)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at play
+[90m|[39m  (]8;;http://localhost:6006/apps/web/src/stories/generator-preview.stories.js?t=1780298056484:172:44)http://localhost:6006/apps/web/src/stories/generator-p...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:65http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at StoryRender.runPhase
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31748:25)http://localhost:6006/node_modules/.ca...]8;;
+[90m|[39m  at StoryRender.render
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:20)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  [43mVite[49m [32mhmr update[39m
+[90m|[39m  [32m[39m[2m/@id/__x00__virtual:/@storybook/builder-vite/vite-app.js[22m
+[90m|[39m  [43mVite[49m [32mhmr update[39m
+[90m|[39m  [32m[39m[2m/@id/__x00__virtual:/@storybook/builder-vite/vite-app.js[22m
+[90m|[39m
+[31mx[39m  [43mVite[49m [2m[console.error] [22mError: Unable to find an element with the text:
+[90m|[39m  Status. This could be because the text is broken up by multiple
+[90m|[39m  elements. In this case, you can provide a function for your text
+[90m|[39m  matcher to make your matcher more flexible.
+
+[90m|[39m  Ignored nodes: comments, script, style
+[90m|[39m  <div
+[90m|[39m  aria-label="Data Table Preview Grid"
+[90m|[39m  class="ag-theme-alpine"
+[90m|[39m  id="generator-preview-grid"
+[90m|[39m  />
+[90m|[39m  at waitForWrapper
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25058:40)http://localhost:6006/node_modules/.cache/st...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25114:55http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at Instrumenter.invoke
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17709:21)http://localhost:6006/node_modules/.cac...]8;;
+[90m|[39m  at Instrumenter.intercept
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17612:140)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at Instrumenter.track
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17603:83)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  at Object.findByText
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17581:151)http://localhost:6006/node_modules/.cache...]8;;
+[90m|[39m  at play
+[90m|[39m  (]8;;http://localhost:6006/apps/web/src/stories/generator-preview.stories.js?t=1780298091604:155:50)http://localhost:6006/apps/web/src/stories/generator-p...]8;;
+[90m|[39m  at async StoryRender.runPhase
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31748:19)http://localhost:6006/node_modul...]8;;
+[90m|[39m  at async StoryRender.render
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:9)http://localhost:6006/node_modules...]8;;
+[90m|[39m
+[31mx[39m  [43mVite[49m [2m[console.error] [22mError: Unable to find an element with the text:
+[90m|[39m  Status. This could be because the text is broken up by multiple
+[90m|[39m  elements. In this case, you can provide a function for your text
+[90m|[39m  matcher to make your matcher more flexible.
+
+[90m|[39m  Ignored nodes: comments, script, style
+[90m|[39m  <div
+[90m|[39m  aria-label="Data Table Preview Grid"
+[90m|[39m  class="ag-theme-alpine"
+[90m|[39m  id="generator-preview-grid"
+[90m|[39m  />
+[90m|[39m  at waitForWrapper
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25058:40)http://localhost:6006/node_modules/.cache/st...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25114:55http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at Instrumenter.invoke
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17709:21)http://localhost:6006/node_modules/.cac...]8;;
+[90m|[39m  at Instrumenter.intercept
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17612:140)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at Instrumenter.track
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17603:83)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  at Object.findByText
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17581:151)http://localhost:6006/node_modules/.cache...]8;;
+[90m|[39m  at play
+[90m|[39m  (]8;;http://localhost:6006/apps/web/src/stories/generator-preview.stories.js?t=1780298091604:155:50)http://localhost:6006/apps/web/src/stories/generator-p...]8;;
+[90m|[39m  at async StoryRender.runPhase
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31748:19)http://localhost:6006/node_modul...]8;;
+[90m|[39m  at async StoryRender.render
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:9)http://localhost:6006/node_modules...]8;;
+[90m|[39m  [43mVite[49m [32mhmr update[39m
+[90m|[39m  [32m[39m[2m/@id/__x00__virtual:/@storybook/builder-vite/vite-app.js[22m
+[90m|[39m
+[31mx[39m  [43mVite[49m [2m[console.error] [22mError: Unable to find an element with the text:
+[90m|[39m  Status. This could be because the text is broken up by multiple
+[90m|[39m  elements. In this case, you can provide a function for your text
+[90m|[39m  matcher to make your matcher more flexible.
+
+[90m|[39m  Ignored nodes: comments, script, style
+[90m|[39m  <div
+[90m|[39m  aria-label="Data Table Preview Grid"
+[90m|[39m  class="ag-theme-alpine"
+[90m|[39m  id="generator-preview-grid"
+[90m|[39m  />
+[90m|[39m  at waitForWrapper
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25058:40)http://localhost:6006/node_modules/.cache/st...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25114:55http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at Instrumenter.invoke
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17709:21)http://localhost:6006/node_modules/.cac...]8;;
+[90m|[39m  at Instrumenter.intercept
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17612:140)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at Instrumenter.track
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17603:83)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  at Object.findByText
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17581:151)http://localhost:6006/node_modules/.cache...]8;;
+[90m|[39m  at play
+[90m|[39m  (]8;;http://localhost:6006/apps/web/src/stories/generator-preview.stories.js?t=1780298091604:155:50)http://localhost:6006/apps/web/src/stories/generator-p...]8;;
+[90m|[39m  at async StoryRender.runPhase
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31748:19)http://localhost:6006/node_modul...]8;;
+[90m|[39m  at async StoryRender.render
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:9)http://localhost:6006/node_modules...]8;;
+[90m|[39m  [43mVite[49m [32mhmr update[39m
+[90m|[39m  [32m[39m[2m/@id/__x00__virtual:/@storybook/builder-vite/vite-app.js[22m
+[90m|[39m
+[31mx[39m  [43mVite[49m [2m[console.error] [22mError: Unable to find an element with the text:
+[90m|[39m  Status. This could be because the text is broken up by multiple
+[90m|[39m  elements. In this case, you can provide a function for your text
+[90m|[39m  matcher to make your matcher more flexible.
+
+[90m|[39m  Ignored nodes: comments, script, style
+[90m|[39m  <div
+[90m|[39m  aria-label="Data Table Preview Grid"
+[90m|[39m  class="ag-theme-alpine"
+[90m|[39m  id="generator-preview-grid"
+[90m|[39m  />
+[90m|[39m  at waitForWrapper
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25058:40)http://localhost:6006/node_modules/.cache/st...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25114:55http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at Instrumenter.invoke
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17709:21)http://localhost:6006/node_modules/.cac...]8;;
+[90m|[39m  at Instrumenter.intercept
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17612:140)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at Instrumenter.track
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17603:83)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  at Object.findByText
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17581:151)http://localhost:6006/node_modules/.cache...]8;;
+[90m|[39m  at play
+[90m|[39m  (]8;;http://localhost:6006/apps/web/src/stories/generator-preview.stories.js?t=1780298091604:155:50)http://localhost:6006/apps/web/src/stories/generator-p...]8;;
+[90m|[39m  at async StoryRender.runPhase
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31748:19)http://localhost:6006/node_modul...]8;;
+[90m|[39m  at async StoryRender.render
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:9)http://localhost:6006/node_modules...]8;;
+[90m|[39m  [43mVite[49m [32mhmr update[39m
+[90m|[39m  [32m[39m[2m/@id/__x00__virtual:/@storybook/builder-vite/vite-app.js[22m
+[90m|[39m  [43mVite[49m [32mhmr update[39m
+[90m|[39m  [32m[39m[2m/@id/__x00__virtual:/@storybook/builder-vite/vite-app.js[22m
+[90m|[39m
+[31mx[39m  [43mVite[49m [2m[console.error] [22mError: Unable to find an element with the text:
+[90m|[39m  Status. This could be because the text is broken up by multiple
+[90m|[39m  elements. In this case, you can provide a function for your text
+[90m|[39m  matcher to make your matcher more flexible.
+
+[90m|[39m  Ignored nodes: comments, script, style
+[90m|[39m  <div
+[90m|[39m  aria-label="Data Table Preview Grid"
+[90m|[39m  class="ag-theme-alpine"
+[90m|[39m  id="generator-preview-grid"
+[90m|[39m  />
+[90m|[39m  at waitForWrapper
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25058:40)http://localhost:6006/node_modules/.cache/st...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25114:55http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at Instrumenter.invoke
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17709:21)http://localhost:6006/node_modules/.cac...]8;;
+[90m|[39m  at Instrumenter.intercept
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17612:140)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at Instrumenter.track
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17603:83)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  at Object.findByText
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17581:151)http://localhost:6006/node_modules/.cache...]8;;
+[90m|[39m  at play
+[90m|[39m  (]8;;http://localhost:6006/apps/web/src/stories/generator-preview.stories.js?t=1780298091604:155:50)http://localhost:6006/apps/web/src/stories/generator-p...]8;;
+[90m|[39m  at async StoryRender.runPhase
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31748:19)http://localhost:6006/node_modul...]8;;
+[90m|[39m  at async StoryRender.render
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:9)http://localhost:6006/node_modules...]8;;
+[90m|[39m  [43mVite[49m [32mhmr update[39m
+[90m|[39m  [32m[39m[2m/@id/__x00__virtual:/@storybook/builder-vite/vite-app.js[22m
+[90m|[39m
+[31mx[39m  [43mVite[49m [2m[console.error] [22mError: Unable to find an element with the text:
+[90m|[39m  Status. This could be because the text is broken up by multiple
+[90m|[39m  elements. In this case, you can provide a function for your text
+[90m|[39m  matcher to make your matcher more flexible.
+
+[90m|[39m  Ignored nodes: comments, script, style
+[90m|[39m  <div
+[90m|[39m  aria-label="Data Table Preview Grid"
+[90m|[39m  class="ag-theme-alpine"
+[90m|[39m  id="generator-preview-grid"
+[90m|[39m  />
+[90m|[39m  at waitForWrapper
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25058:40)http://localhost:6006/node_modules/.cache/st...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25114:55http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at Instrumenter.invoke
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17709:21)http://localhost:6006/node_modules/.cac...]8;;
+[90m|[39m  at Instrumenter.intercept
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17612:140)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at Instrumenter.track
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17603:83)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  at Object.findByText
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17581:151)http://localhost:6006/node_modules/.cache...]8;;
+[90m|[39m  at play
+[90m|[39m  (]8;;http://localhost:6006/apps/web/src/stories/generator-preview.stories.js?t=1780298293213:155:50)http://localhost:6006/apps/web/src/stories/generator-p...]8;;
+[90m|[39m  at async StoryRender.runPhase
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31748:19)http://localhost:6006/node_modul...]8;;
+[90m|[39m  at async StoryRender.render
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:9)http://localhost:6006/node_modules...]8;;
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mstorybook-static/index.html[22m
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mstorybook-static/iframe.html[22m
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mstorybook-static/index.html[22m
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mstorybook-static/index.html[22m
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mstorybook-static/iframe.html[22m
+[90m|[39m
+[31mx[39m  [43mVite[49m [2m[console.error] [22mError: Unable to find an element with the text:
+[90m|[39m  Status. This could be because the text is broken up by multiple
+[90m|[39m  elements. In this case, you can provide a function for your text
+[90m|[39m  matcher to make your matcher more flexible.
+
+[90m|[39m  Ignored nodes: comments, script, style
+[90m|[39m  <div
+[90m|[39m  aria-label="Data Table Preview Grid"
+[90m|[39m  class="ag-theme-alpine"
+[90m|[39m  id="generator-preview-grid"
+[90m|[39m  />
+[90m|[39m  at waitForWrapper
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25058:40)http://localhost:6006/node_modules/.cache/st...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25114:55http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at Instrumenter.invoke
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17709:21)http://localhost:6006/node_modules/.cac...]8;;
+[90m|[39m  at Instrumenter.intercept
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17612:140)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at Instrumenter.track
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17603:83)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  at Object.findByText
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17581:151)http://localhost:6006/node_modules/.cache...]8;;
+[90m|[39m  at play
+[90m|[39m  (]8;;http://localhost:6006/apps/web/src/stories/generator-preview.stories.js?t=1780298293213:155:50)http://localhost:6006/apps/web/src/stories/generator-p...]8;;
+[90m|[39m  at async StoryRender.runPhase
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31748:19)http://localhost:6006/node_modul...]8;;
+[90m|[39m  at async StoryRender.render
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:9)http://localhost:6006/node_modules...]8;;
+[90m|[39m
+[31mx[39m  [43mVite[49m [2m[console.error] [22mError: Unable to find an element with the text:
+[90m|[39m  Status. This could be because the text is broken up by multiple
+[90m|[39m  elements. In this case, you can provide a function for your text
+[90m|[39m  matcher to make your matcher more flexible.
+
+[90m|[39m  Ignored nodes: comments, script, style
+[90m|[39m  <div
+[90m|[39m  aria-label="Data Table Preview Grid"
+[90m|[39m  class="ag-theme-alpine"
+[90m|[39m  id="generator-preview-grid"
+[90m|[39m  />
+[90m|[39m  at waitForWrapper
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25058:40)http://localhost:6006/node_modules/.cache/st...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25114:55http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at Instrumenter.invoke
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17709:21)http://localhost:6006/node_modules/.cac...]8;;
+[90m|[39m  at Instrumenter.intercept
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17612:140)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at Instrumenter.track
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17603:83)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  at Object.findByText
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17581:151)http://localhost:6006/node_modules/.cache...]8;;
+[90m|[39m  at play
+[90m|[39m  (]8;;http://localhost:6006/apps/web/src/stories/generator-preview.stories.js?t=1780298293213:155:50)http://localhost:6006/apps/web/src/stories/generator-p...]8;;
+[90m|[39m  at async StoryRender.runPhase
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31748:19)http://localhost:6006/node_modul...]8;;
+[90m|[39m  at async StoryRender.render
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:9)http://localhost:6006/node_modules...]8;;
+[90m|[39m  [43mVite[49m [32mhmr update[39m
+[90m|[39m  [32m[39m[2m/@id/__x00__virtual:/@storybook/builder-vite/vite-app.js[22m
+[90m|[39m
+[31mx[39m  [43mVite[49m [2m[console.error] [22mError: Unable to find an element with the text:
+[90m|[39m  Status. This could be because the text is broken up by multiple
+[90m|[39m  elements. In this case, you can provide a function for your text
+[90m|[39m  matcher to make your matcher more flexible.
+
+[90m|[39m  Ignored nodes: comments, script, style
+[90m|[39m  <div
+[90m|[39m  aria-label="Data Table Preview Grid"
+[90m|[39m  class="ag-theme-alpine"
+[90m|[39m  id="generator-preview-grid"
+[90m|[39m  />
+[90m|[39m  at waitForWrapper
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25058:40)http://localhost:6006/node_modules/.cache/st...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25114:55http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at Instrumenter.invoke
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17709:21)http://localhost:6006/node_modules/.cac...]8;;
+[90m|[39m  at Instrumenter.intercept
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17612:140)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at Instrumenter.track
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17603:83)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  at Object.findByText
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17581:151)http://localhost:6006/node_modules/.cache...]8;;
+[90m|[39m  at play
+[90m|[39m  (]8;;http://localhost:6006/apps/web/src/stories/generator-preview.stories.js?t=1780298415259:155:50)http://localhost:6006/apps/web/src/stories/generator-p...]8;;
+[90m|[39m  at async StoryRender.runPhase
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31748:19)http://localhost:6006/node_modul...]8;;
+[90m|[39m  at async StoryRender.render
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:9)http://localhost:6006/node_modules...]8;;
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mstorybook-static/iframe.html[22m
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mstorybook-static/index.html[22m
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mstorybook-static/index.html[22m
+[90m|[39m
+[31mx[39m  [43mVite[49m [2m[console.error] [22mError: Unable to find an element with the text:
+[90m|[39m  Status. This could be because the text is broken up by multiple
+[90m|[39m  elements. In this case, you can provide a function for your text
+[90m|[39m  matcher to make your matcher more flexible.
+
+[90m|[39m  Ignored nodes: comments, script, style
+[90m|[39m  <div
+[90m|[39m  aria-label="Data Table Preview Grid"
+[90m|[39m  class="ag-theme-alpine"
+[90m|[39m  id="generator-preview-grid"
+[90m|[39m  />
+[90m|[39m  at waitForWrapper
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25058:40)http://localhost:6006/node_modules/.cache/st...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25114:55http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at Instrumenter.invoke
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17709:21)http://localhost:6006/node_modules/.cac...]8;;
+[90m|[39m  at Instrumenter.intercept
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17612:140)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at Instrumenter.track
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17603:83)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  at Object.findByText
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17581:151)http://localhost:6006/node_modules/.cache...]8;;
+[90m|[39m  at play
+[90m|[39m  (]8;;http://localhost:6006/apps/web/src/stories/generator-preview.stories.js?t=1780298415259:155:50)http://localhost:6006/apps/web/src/stories/generator-p...]8;;
+[90m|[39m  at async StoryRender.runPhase
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31748:19)http://localhost:6006/node_modul...]8;;
+[90m|[39m  at async StoryRender.render
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:9)http://localhost:6006/node_modules...]8;;
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mstorybook-static/iframe.html[22m
+[90m|[39m
+[31mx[39m  [43mVite[49m [2m[console.error] [22mError: Unable to find an element with the text:
+[90m|[39m  Status. This could be because the text is broken up by multiple
+[90m|[39m  elements. In this case, you can provide a function for your text
+[90m|[39m  matcher to make your matcher more flexible.
+
+[90m|[39m  Ignored nodes: comments, script, style
+[90m|[39m  <div
+[90m|[39m  aria-label="Data Table Preview Grid"
+[90m|[39m  class="ag-theme-alpine"
+[90m|[39m  id="generator-preview-grid"
+[90m|[39m  />
+[90m|[39m  at waitForWrapper
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25058:40)http://localhost:6006/node_modules/.cache/st...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25114:55http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at Instrumenter.invoke
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17709:21)http://localhost:6006/node_modules/.cac...]8;;
+[90m|[39m  at Instrumenter.intercept
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17612:140)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at Instrumenter.track
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17603:83)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  at Object.findByText
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17581:151)http://localhost:6006/node_modules/.cache...]8;;
+[90m|[39m  at play
+[90m|[39m  (]8;;http://localhost:6006/apps/web/src/stories/generator-preview.stories.js?t=1780298415259:155:50)http://localhost:6006/apps/web/src/stories/generator-p...]8;;
+[90m|[39m  at async StoryRender.runPhase
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31748:19)http://localhost:6006/node_modul...]8;;
+[90m|[39m  at async StoryRender.render
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:9)http://localhost:6006/node_modules...]8;;
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mstorybook-static/iframe.html[22m
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mstorybook-static/index.html[22m
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mstorybook-static/index.html[22m
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mstorybook-static/iframe.html[22m
+[90m|[39m  [43mVite[49m [32mpage reload [39m[2mstorybook-static/iframe.html[22m
+[90m|[39m
+[31mx[39m  [43mVite[49m [2m[console.error] [22mError: Unable to find an element with the text:
+[90m|[39m  Status. This could be because the text is broken up by multiple
+[90m|[39m  elements. In this case, you can provide a function for your text
+[90m|[39m  matcher to make your matcher more flexible.
+
+[90m|[39m  Ignored nodes: comments, script, style
+[90m|[39m  <div
+[90m|[39m  aria-label="Data Table Preview Grid"
+[90m|[39m  class="ag-theme-alpine"
+[90m|[39m  id="generator-preview-grid"
+[90m|[39m  />
+[90m|[39m  at waitForWrapper
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25058:40)http://localhost:6006/node_modules/.cache/st...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25114:55http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at Instrumenter.invoke
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17709:21)http://localhost:6006/node_modules/.cac...]8;;
+[90m|[39m  at Instrumenter.intercept
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17612:140)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at Instrumenter.track
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17603:83)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  at Object.findByText
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17581:151)http://localhost:6006/node_modules/.cache...]8;;
+[90m|[39m  at play
+[90m|[39m  (]8;;http://localhost:6006/apps/web/src/stories/generator-preview.stories.js?t=1780298415259:155:50)http://localhost:6006/apps/web/src/stories/generator-p...]8;;
+[90m|[39m  at async StoryRender.runPhase
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31748:19)http://localhost:6006/node_modul...]8;;
+[90m|[39m  at async StoryRender.render
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:9)http://localhost:6006/node_modules...]8;;
+[90m|[39m
+[31mx[39m  [43mVite[49m [2m[console.error] [22mError: Unable to find an element with the text:
+[90m|[39m  Status. This could be because the text is broken up by multiple
+[90m|[39m  elements. In this case, you can provide a function for your text
+[90m|[39m  matcher to make your matcher more flexible.
+
+[90m|[39m  Ignored nodes: comments, script, style
+[90m|[39m  <div
+[90m|[39m  aria-label="Data Table Preview Grid"
+[90m|[39m  class="ag-theme-alpine"
+[90m|[39m  id="generator-preview-grid"
+[90m|[39m  />
+[90m|[39m  at waitForWrapper
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25058:40)http://localhost:6006/node_modules/.cache/st...]8;;
+[90m|[39m  at ]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:25114:55http://localhost:6006/node_modules/.cache/storybook/10.4.1/1...]8;;
+[90m|[39m  at Instrumenter.invoke
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17709:21)http://localhost:6006/node_modules/.cac...]8;;
+[90m|[39m  at Instrumenter.intercept
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17612:140)http://localhost:6006/node_modules/....]8;;
+[90m|[39m  at Instrumenter.track
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17603:83)http://localhost:6006/node_modules/.cach...]8;;
+[90m|[39m  at Object.findByText
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:17581:151)http://localhost:6006/node_modules/.cache...]8;;
+[90m|[39m  at play
+[90m|[39m  (]8;;http://localhost:6006/apps/web/src/stories/generator-preview.stories.js?t=1780298415259:155:50)http://localhost:6006/apps/web/src/stories/generator-p...]8;;
+[90m|[39m  at async StoryRender.runPhase
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31748:19)http://localhost:6006/node_modul...]8;;
+[90m|[39m  at async StoryRender.render
+[90m|[39m  (]8;;http://localhost:6006/node_modules/.cache/storybook/10.4.1/1c3385a5d25e538d10b518b310c74d3ca2690b6aaffeadccd74da79736171f86/sb-vite/deps/storybook_internal_preview_runtime.js?v=68bb8df6:31855:9)http://localhost:6006/node_modules...]8;;

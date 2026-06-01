@@ -126,6 +126,10 @@ class GeneratorPreviewView {
   }
 
   setPreviewDataTable(dataTable) {
+    if (this.previewGridAdapter?.setGridFromGenericDataTable) {
+      this.previewGridAdapter.setGridFromGenericDataTable(dataTable);
+      return;
+    }
     this.previewGrid?.setGridFromGenericDataTable?.(dataTable);
   }
 
@@ -139,6 +143,10 @@ class GeneratorPreviewView {
 
   getPreviewGridAdapter() {
     return this.previewGridAdapter;
+  }
+
+  whenPreviewGridReady() {
+    return this.previewGridAdapter?.whenReady?.() || Promise.resolve(null);
   }
 }
 

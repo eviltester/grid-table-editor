@@ -59,60 +59,31 @@ function renderGeneratorPreviewStory(args) {
   root.appendChild(eventLog);
 
   let component = null;
-  let disposed = false;
-
-  const queuePreviewData = (previewComponent) => {
-    if (!args.sampleData) {
-      return;
-    }
-
-    const dataTable = createStoryDataTable(args.sampleData.headers, args.sampleData.rows);
-    const applyPreviewData = () => {
-      if (disposed) {
-        return;
-      }
-      previewComponent.setPreviewDataTable(dataTable);
-    };
-
-    const previewTableApi = previewComponent.getPreviewTableApi?.();
-    if (typeof previewTableApi?.on === 'function') {
-      previewTableApi.on('tableBuilt', applyPreviewData);
-    }
-
-    globalThis.setTimeout(applyPreviewData, 0);
-  };
-
-  const mountComponent = () => {
-    if (disposed || component || !root.isConnected) {
-      return;
-    }
-
-    component = createGeneratorPreviewComponent({
-      root: componentRoot,
-      documentObj: document,
-      props: {
-        outputPreviewText: args.outputPreviewText || '',
+  component = createGeneratorPreviewComponent({
+    root: componentRoot,
+    documentObj: document,
+    props: {
+      outputPreviewText: args.outputPreviewText || '',
+    },
+    services: {
+      TabulatorCtor: Tabulator,
+      GridExtensionClass: TabulatorGridExtension,
+    },
+    callbacks: {
+      onPreview: () => {
+        eventLog.textContent = 'preview:clicked';
       },
-      services: {
-        TabulatorCtor: Tabulator,
-        GridExtensionClass: TabulatorGridExtension,
-      },
-      callbacks: {
-        onPreview: () => {
-          eventLog.textContent = 'preview:clicked';
-        },
-      },
-    });
-
-    queuePreviewData(component);
-  };
-
-  globalThis.requestAnimationFrame(() => {
-    mountComponent();
+    },
   });
 
+  if (args.sampleData) {
+    const dataTable = createStoryDataTable(args.sampleData.headers, args.sampleData.rows);
+    component.whenReady?.().then(() => {
+      component.setPreviewDataTable(dataTable);
+    });
+  }
+
   root.__storybookCleanup = () => {
-    disposed = true;
     component?.destroy();
   };
   return root;

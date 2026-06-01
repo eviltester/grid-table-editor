@@ -18,7 +18,13 @@ class GridControlsPageMap {
 }
 
 function shouldEnforceUniqueColumnNames(documentObj = document) {
-  return documentObj.getElementById('uniqueColumnNamesCheckbox')?.checked === true;
+  if (typeof documentObj?.getElementById === 'function') {
+    return documentObj.getElementById('uniqueColumnNamesCheckbox')?.checked === true;
+  }
+  if (typeof documentObj?.querySelector === 'function') {
+    return documentObj.querySelector('#uniqueColumnNamesCheckbox')?.checked === true;
+  }
+  return false;
 }
 
 // TODO : don't hook into existing controls in HTML create them here and then hook into them

@@ -372,12 +372,22 @@ Current status:
 
 ### Phase 7: Data Grid Editor and Tabulator Adapter
 
-- [ ] Define `DataGridComponent` with a Tabulator adapter boundary.
-- [ ] Keep Tabulator-specific APIs inside `TabulatorGridAdapter`.
-- [ ] Make `TabulatorGridAdapter` and Tabulator-backed child components resilient to disconnected or late-connected roots so they mount naturally in Storybook, tests, and page runtime without story-specific connection timing work.
-- [ ] Extract grid toolbar/header/row/filter controls where useful.
-- [ ] Add stories with fake grid service for controls that do not need real Tabulator.
-- [ ] Add stories with real Tabulator only where rendering behavior is the subject.
+- [x] Define `DataGridComponent` with a Tabulator adapter boundary.
+- [x] Keep Tabulator-specific APIs inside `TabulatorGridAdapter`.
+- [x] Make `TabulatorGridAdapter` and Tabulator-backed child components resilient to disconnected or late-connected roots so they mount naturally in Storybook, tests, and page runtime without story-specific connection timing work.
+- [x] Extract grid toolbar/header/row/filter controls where useful.
+- [x] Add stories with fake grid service for controls that do not need real Tabulator.
+- [x] Add stories with real Tabulator only where rendering behavior is the subject.
+
+Current status:
+
+- `DataGridComponent` now lives under `data-grid-editor/` with a controller, view, and create-component factory, and the active app-side Tabulator grid path now flows through that component boundary.
+- The active Tabulator main-display wrapper is now a thin compatibility shell over `createDataGridComponent(...)`, so the app bootstrap keeps its current interface while the real behavior lives in the componentized layer.
+- `TabulatorGridAdapter` now lives in shared `data-grid-editor/tabulator-grid-adapter.js` and is reused by both the app-side grid editor and the generator preview grid.
+- The shared adapter now waits for both a connected root and the real Tabulator `tableBuilt` lifecycle before exposing itself as ready, which removes the old Storybook/story-host timing hacks from real Tabulator-backed stories.
+- `GridToolbar` now exists as an extracted component with its own Storybook coverage and focused tests, so row actions, filtering, clear-sort, reset-table, and unique-column-names toggling can be reviewed without a real Tabulator instance.
+- Storybook now includes a fake-service `Data Grid / Grid Toolbar` story and a real-Tabulator `Data Grid / Data Grid Editor` story, while the existing generator preview/page stories now rely on the shared adapter readiness path instead of custom `requestAnimationFrame` mount choreography.
+- Existing browser coverage for app grid editing, filtering, sorting, column operations, row operations, and generator preview behavior remained green after the Phase 7 migration.
 
 ### Phase 8: Page Bootstraps and Cleanup
 

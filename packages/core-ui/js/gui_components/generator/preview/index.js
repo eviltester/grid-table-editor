@@ -14,6 +14,21 @@ function createDefaultPreviewGridFactory({ TabulatorCtor, GridExtensionClass } =
       rootElement,
       TabulatorCtor,
       GridExtensionClass,
+      tabulatorOptions: {
+        data: [],
+        columns: [{ title: '~preview', field: 'column1', sorter: 'string' }],
+        autoColumns: false,
+        headerSort: true,
+        selectableRows: true,
+        selectableRowsRangeMode: 'click',
+        layout: 'fitDataStretch',
+        columnDefaults: {
+          resizable: true,
+          headerFilter: 'input',
+          headerFilterFunc: 'like',
+          sorter: 'string',
+        },
+      },
     });
     return {
       adapter,
@@ -71,6 +86,9 @@ function createGeneratorPreviewComponent({
     },
     getPreviewTableApi() {
       return view.getPreviewTableApi();
+    },
+    whenReady() {
+      return view.whenPreviewGridReady();
     },
     getState() {
       return controller.getState();

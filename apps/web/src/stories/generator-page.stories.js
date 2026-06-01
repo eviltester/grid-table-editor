@@ -247,7 +247,7 @@ function renderGeneratorPageStory(args) {
 }
 
 const meta = {
-  title: 'Generator/Page',
+  title: 'Pages/Generator/Page',
   tags: ['autodocs'],
   parameters: {
     docs: {

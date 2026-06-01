@@ -73,7 +73,7 @@ function renderGeneratorControlsStory(args) {
 }
 
 const meta = {
-  title: 'Generator/Controls',
+  title: 'Pages/Generator/Controls',
   tags: ['autodocs'],
   parameters: {
     docs: {

@@ -178,7 +178,7 @@ function expectTextModeVisible(canvasElement) {
 }
 
 const meta = {
-  title: 'Shared/Schema Definition',
+  title: 'Test Data Generation/Schema Definition',
   tags: ['autodocs'],
   parameters: {
     docs: {

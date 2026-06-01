@@ -14,7 +14,7 @@ function getCodeLabel(type, fallback) {
 }
 
 const meta = {
-  title: 'Shared/Format Option Panel/Code',
+  title: 'Export Formats/Format Option Panel/Code',
   tags: ['autodocs'],
   parameters: {
     docs: {

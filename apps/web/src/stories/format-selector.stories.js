@@ -20,7 +20,7 @@ function renderFormatSelectorStory(args) {
 }
 
 const meta = {
-  title: 'App/Format Selector',
+  title: 'Export Formats/Format Selector',
   tags: ['autodocs'],
   parameters: {
     docs: {
@@ -49,6 +49,19 @@ export const Default = {
     docs: {
       description: {
         story: 'Direct-format view with the core export tabs visible.',
+      },
+    },
+  },
+};
+
+export const Code = {
+  args: {
+    selectedFormat: 'python',
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Grouped code-format view showing the programming-language subtask list under the Code top tab.',
       },
     },
   },

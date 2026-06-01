@@ -36,7 +36,7 @@ function renderGridToolbarStory() {
 }
 
 const meta = {
-  title: 'Data Grid/Grid Toolbar',
+  title: 'Data Grid Editor/Grid Toolbar',
   tags: ['autodocs'],
   parameters: {
     docs: {

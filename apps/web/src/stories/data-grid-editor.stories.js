@@ -35,7 +35,7 @@ function renderDataGridEditorStory(args) {
 }
 
 const meta = {
-  title: 'Data Grid/Data Grid Editor',
+  title: 'Data Grid Editor/Data Grid Editor',
   tags: ['autodocs'],
   parameters: {
     docs: {

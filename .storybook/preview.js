@@ -14,7 +14,21 @@ const preview = {
     },
     options: {
       storySort: {
-        order: ['Test Data', 'Export Formats'],
+        order: [
+          'Pages',
+          [
+            'App',
+            ['Page', 'TestDataGenerationPanel', 'Import Export Workspace', 'Import Export Toolbar', 'Text Preview Editor'],
+            'Generator',
+            ['Page', 'Controls', 'Preview'],
+          ],
+          'Data Grid Editor',
+          'Test Data Generation',
+          'Export Formats',
+          ['Previews', 'Format Selector', 'Format Option Panel'],
+          'Shared',
+          'Primitives',
+        ],
       },
     },
   },

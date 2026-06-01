@@ -1,0 +1,176 @@
+import { Importer } from '@anywaydata/core/grid/importer.js';
+import { Exporter } from '@anywaydata/core/grid/exporter.js';
+import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
+import { enableTestDataGenerationInterface } from '../test-data-grid/index.js';
+import { ExtendedDataGrid, activeGridEngine } from '../../data-grid-editor/main-display-grid.js';
+import { ensureGridLibraryLoaded } from '../../data-grid-editor/grid-library-loader.js';
+import { createImportExportWorkspaceComponent } from '../import-export-workspace/index.js';
+import { initHelpTooltips } from '../../../help/help-tooltips.js';
+import { initThemeToggle } from '../../shared/theme-toggle.js';
+import { createPageStartupLoadingStatus } from '../../shared/page-startup-loading-status.js';
+
+function createSampleGridData() {
+  const sampleData = new GenericDataTable();
+  sampleData.addHeader('First Name');
+  sampleData.addHeader('Last Name');
+  sampleData.addHeader('Department');
+  sampleData.addHeader('Role');
+  sampleData.addHeader('Status');
+
+  sampleData.appendDataRow(['Ava', 'Nguyen', 'Engineering', 'QA Engineer', 'Active']);
+  sampleData.appendDataRow(['Liam', 'Patel', 'Sales', 'Account Executive', 'Onboarding']);
+  sampleData.appendDataRow(['Noah', 'Carter', 'Finance', 'Analyst', 'Active']);
+  sampleData.appendDataRow(['Mia', 'Roberts', 'Support', 'Team Lead', 'On Leave']);
+
+  return sampleData;
+}
+
+function createInstructionsGridData({ documentObj = document } = {}) {
+  const instructions = documentObj.querySelectorAll('div.instructions details ul li');
+  const instructionsData = new GenericDataTable();
+  instructionsData.addHeader('Instructions');
+
+  instructions.forEach((instruction) => {
+    instructionsData.appendDataRow([instruction.textContent]);
+  });
+
+  return instructionsData;
+}
+
+function createInstructionsGridActions({ documentObj = document, getMainDataGrid, getImporter } = {}) {
+  let clickHandler = null;
+
+  function loadGridData(dataTable) {
+    const mainDataGrid = getMainDataGrid?.();
+    const importer = getImporter?.();
+    if (!mainDataGrid || !importer) {
+      return;
+    }
+
+    mainDataGrid.getGridExtras().clearGrid();
+    importer.setGridFromGenericDataTable(dataTable);
+    mainDataGrid.sizeColumnsToFit();
+  }
+
+  function setSampleGridData() {
+    loadGridData(createSampleGridData());
+  }
+
+  function setInstructionsGridData() {
+    loadGridData(createInstructionsGridData({ documentObj }));
+  }
+
+  function bind() {
+    if (clickHandler) {
+      documentObj.removeEventListener('click', clickHandler);
+    }
+
+    clickHandler = (event) => {
+      if (event.target.closest('.instructions-sample-data-button')) {
+        event.preventDefault();
+        event.stopPropagation();
+        setSampleGridData();
+        return;
+      }
+
+      if (event.target.closest('.instructions-copy-to-grid-button')) {
+        event.preventDefault();
+        event.stopPropagation();
+        setInstructionsGridData();
+      }
+    };
+
+    documentObj.addEventListener('click', clickHandler);
+  }
+
+  function destroy() {
+    if (clickHandler) {
+      documentObj.removeEventListener('click', clickHandler);
+      clickHandler = null;
+    }
+  }
+
+  return {
+    bind,
+    destroy,
+    setSampleGridData,
+    setInstructionsGridData,
+  };
+}
+
+async function bootstrapApp({
+  documentObj = document,
+  ensureGridLibraryLoadedFn = ensureGridLibraryLoaded,
+  activeGridEngineName = activeGridEngine,
+  ExtendedDataGridClass = ExtendedDataGrid,
+  createImportExportWorkspaceComponentFn = createImportExportWorkspaceComponent,
+  ExporterClass = Exporter,
+  ImporterClass = Importer,
+  enableTestDataGenerationInterfaceFn = enableTestDataGenerationInterface,
+} = {}) {
+  initThemeToggle({ documentObj, windowObj: documentObj?.defaultView || window });
+  const startupLoadingStatus = createPageStartupLoadingStatus({
+    documentObj,
+    elementId: 'initial-load',
+  });
+  startupLoadingStatus.show();
+
+  console.log(`Using grid engine: ${activeGridEngineName}`);
+  try {
+    await ensureGridLibraryLoadedFn({ engine: activeGridEngineName });
+  } catch (error) {
+    console.error(`Failed to load ${activeGridEngineName} library`, error);
+    startupLoadingStatus.fail();
+    return null;
+  }
+
+  const mainDataGrid = new ExtendedDataGridClass();
+  mainDataGrid.createChildGrid(documentObj.getElementById('main-grid-view'));
+
+  const importExportController = createImportExportWorkspaceComponentFn({
+    root: documentObj.getElementById('import-export-controls'),
+    documentObj,
+  });
+
+  const exporter = new ExporterClass(mainDataGrid.getGridExtras());
+  const importer = new ImporterClass(mainDataGrid.getGridExtras());
+  importExportController.setExporter(exporter);
+  importExportController.setImporter(importer);
+  importExportController.setGridChangeSource?.(mainDataGrid.getGridExtras());
+
+  importExportController.renderTextFromGrid();
+  importExportController.setFileFormatType();
+  importExportController.setOptionsViewForFormatType();
+  initHelpTooltips({ documentObj, includeAppOnlyEntries: true });
+
+  const instructionsGridActions = createInstructionsGridActions({
+    documentObj,
+    getMainDataGrid: () => mainDataGrid,
+    getImporter: () => importer,
+  });
+  instructionsGridActions.bind();
+
+  startupLoadingStatus.clear();
+
+  enableTestDataGenerationInterfaceFn(
+    'testDataGeneratorContainer',
+    importer,
+    importExportController,
+    mainDataGrid.getGridExtras()
+  );
+
+  return {
+    mainDataGrid,
+    importExportController,
+    importer,
+    exporter,
+    instructionsGridActions,
+    destroy() {
+      instructionsGridActions.destroy();
+      importExportController?.destroy?.();
+      mainDataGrid?.destroy?.();
+    },
+  };
+}
+
+export { bootstrapApp };

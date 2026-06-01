@@ -1,4 +1,4 @@
-const GENERATE_TO_FILE_HELP_URL = 'https://anywaydata.com/docs/test-data/generate-to-file';
+import { GENERATE_TO_FILE_HELP_URL } from '../constants.js';
 
 class GeneratorControlsView {
   constructor({ root, controller, documentObj = document, services = {} } = {}) {

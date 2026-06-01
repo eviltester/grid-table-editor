@@ -11,7 +11,7 @@ function renderImportExportToolbarStory() {
 }
 
 const meta = {
-  title: 'App/Import Export Toolbar',
+  title: 'Pages/App/Import Export Toolbar',
   tags: ['autodocs'],
   parameters: {
     docs: {

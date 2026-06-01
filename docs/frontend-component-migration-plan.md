@@ -391,14 +391,24 @@ Current status:
 
 ### Phase 8: Page Bootstraps and Cleanup
 
-- [ ] Reduce `packages/core-ui/js/script.js` to app composition/bootstrap.
-- [ ] Reduce generator controller entrypoint to composition/bootstrap.
-- [ ] Remove or trim the legacy generator host layout/coordinator helpers now that `GeneratorPage` owns generator feature composition.
-- [ ] Remove or trim the legacy app test-data host binder/coordinator helpers now that `DataPopulationPanel` owns the app-side composition of actions, mode selection, row count, and schema definition.
-- [ ] Remove obsolete Storybook harness patches.
-- [ ] Remove obsolete global DOM lookups.
-- [ ] Confirm all component stories are discoverable and documented.
-- [ ] Run the full local verification gate.
+- [x] Reduce `packages/core-ui/js/script.js` to app composition/bootstrap.
+- [x] Reduce generator controller entrypoint to composition/bootstrap.
+- [x] Remove or trim the legacy generator host layout/coordinator helpers now that `GeneratorPage` owns generator feature composition.
+- [x] Remove or trim the legacy app test-data host binder/coordinator helpers now that `DataPopulationPanel` owns the app-side composition of actions, mode selection, row count, and schema definition.
+- [x] Remove obsolete Storybook harness patches.
+- [x] Remove obsolete global DOM lookups.
+- [x] Confirm all component stories are discoverable and documented.
+- [x] Run the full local verification gate.
+
+Current status:
+
+- `packages/core-ui/js/script.js` now only owns DOM-ready bootstrap wiring and delegates the app-page setup to `app/page/app-page-bootstrap.js`, which in turn owns the remaining startup orchestration and instruction-sample grid actions.
+- The generator public entrypoint in `generator/controller/data-generator-page-controller.js` is now a thin wrapper over `generator/runtime/data-generator-page-runtime.js`, so the public controller file is no longer the large runtime implementation itself.
+- The legacy generator host layout/coordinator files under `gui_components/generator/host/` are removed; `GeneratorPageView` now owns the generator page shell and feature composition directly.
+- The legacy app test-data host binder/coordinator files under `gui_components/app/test-data-grid/host/` are removed; `DataPopulationPanel` and `SharedSchemaDefinition` now own that behavior directly.
+- The old Storybook `storybook-harnesses.js` file and the legacy `Test Data / Generator` story set are removed, along with the document monkey-patching they depended on.
+- The old host-layer tests that only exercised deleted scaffolding are removed, while the current page/component coverage remains under the newer generator/app component stories and tests.
+- Story discoverability/documentation is now centered on the component-oriented Storybook families (`Generator Page`, `Generator Controls`, `Generator Preview`, `App Data Population Panel`, `Import Export Workspace`, `Data Grid Editor`, shared components, and format-option families) rather than the older broad legacy harness stories.
 
 ## Tracking Across Sessions
 

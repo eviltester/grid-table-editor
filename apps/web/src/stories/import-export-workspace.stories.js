@@ -74,7 +74,7 @@ function renderImportExportWorkspaceStory(args) {
 }
 
 const meta = {
-  title: 'App/Import Export Workspace',
+  title: 'Pages/App/Import Export Workspace',
   tags: ['autodocs'],
   parameters: {
     docs: {

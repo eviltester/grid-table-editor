@@ -20,7 +20,7 @@ function getFrameworkStory(type, description, play) {
 }
 
 const meta = {
-  title: 'Shared/Format Option Panel/Code Unit Test',
+  title: 'Export Formats/Format Option Panel/Code Unit Test',
   tags: ['autodocs'],
   parameters: {
     docs: {

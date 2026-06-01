@@ -14,7 +14,7 @@ import {
 } from './format-option-panel.story-helpers.js';
 
 const meta = {
-  title: 'Shared/Format Option Panel/Basic',
+  title: 'Export Formats/Format Option Panel/Basic',
   tags: ['autodocs'],
   parameters: {
     docs: {

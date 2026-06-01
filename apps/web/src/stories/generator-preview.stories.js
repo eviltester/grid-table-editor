@@ -90,7 +90,7 @@ function renderGeneratorPreviewStory(args) {
 }
 
 const meta = {
-  title: 'Generator/Preview',
+  title: 'Pages/Generator/Preview',
   tags: ['autodocs'],
   parameters: {
     docs: {

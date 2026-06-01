@@ -164,7 +164,7 @@ function renderDataPopulationPanelStory(args) {
 }
 
 const meta = {
-  title: 'App/Data Population Panel',
+  title: 'Pages/App/TestDataGenerationPanel',
   tags: ['autodocs'],
   parameters: {
     docs: {

@@ -17,7 +17,7 @@ function renderTextPreviewEditorStory(args) {
 }
 
 const meta = {
-  title: 'App/Text Preview Editor',
+  title: 'Pages/App/Text Preview Editor',
   tags: ['autodocs'],
   parameters: {
     docs: {

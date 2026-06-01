@@ -24,7 +24,7 @@ function renderRowCountControlStory(args) {
 }
 
 const meta = {
-  title: 'Controls/Row Count',
+  title: 'Shared/Row Count',
   tags: ['autodocs'],
   parameters: {
     docs: {

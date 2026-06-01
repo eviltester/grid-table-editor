@@ -7,7 +7,10 @@ import {
   dataRulesToSchemaText,
   schemaRowsToDataRules,
 } from '@anywaydata/core/data_generation/schema-rules-adapter.js';
-import { createGeneratorPageComponent } from '../../../../packages/core-ui/js/gui_components/generator/page/index.js';
+import {
+  createGeneratorPageComponent,
+  createGeneratorPageShellComponent,
+} from '../../../../packages/core-ui/js/gui_components/generator/page/index.js';
 import { buildSchemaModeHelpHtml } from '../../../../packages/core-ui/js/gui_components/generator/schema/index.js';
 import { GENERATOR_DEFAULT_EXAMPLE_SCHEMA_TEXT } from '../../../../packages/core-ui/js/gui_components/shared/test-data/schema/schema-examples.js';
 import {
@@ -195,6 +198,13 @@ function renderGeneratorPageStory(args) {
   heading.style.whiteSpace = 'nowrap';
   heading.style.border = '0';
   root.appendChild(heading);
+  const shellRoot = document.createElement('div');
+  shellRoot.id = `${storyPrefix}-generator-page-root`;
+  root.appendChild(shellRoot);
+
+  const shell = createGeneratorPageShellComponent({
+    root: shellRoot,
+  });
 
   let component = null;
   const queuePreviewData = (pageComponent) => {
@@ -212,7 +222,7 @@ function renderGeneratorPageStory(args) {
   };
 
   component = createGeneratorPageComponent({
-    root,
+    root: root.querySelector('#generator-app'),
     documentObj: document,
     props: {
       controlsProps: {
@@ -242,6 +252,7 @@ function renderGeneratorPageStory(args) {
 
   root.__storybookCleanup = () => {
     component?.destroy();
+    shell?.destroy?.();
   };
   return root;
 }

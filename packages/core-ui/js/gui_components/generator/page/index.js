@@ -55,3 +55,8 @@ function createGeneratorPageComponent({
 }
 
 export { createGeneratorPageComponent, GeneratorPageController, GeneratorPageView };
+export {
+  createGeneratorPageShellComponent,
+  GeneratorPageShellController,
+  GeneratorPageShellView,
+} from './generator-page-shell.js';

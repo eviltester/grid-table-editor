@@ -1,6 +1,7 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
 import { bootstrapApp } from '../../../../../packages/core-ui/js/script.js';
+import { APP_PAGE_INSTRUCTIONS_PROPS } from '../../../../../packages/core-ui/js/gui_components/shared/instructions/index.js';
 
 describe('script bootstrap', () => {
   let dom;
@@ -300,8 +301,11 @@ describe('script bootstrap', () => {
     expect(importerInstance.setGridFromGenericDataTable).toHaveBeenCalledTimes(1);
     const dataTable = importerInstance.setGridFromGenericDataTable.mock.calls[0][0];
     expect(dataTable.getHeaders()).toEqual(['Instructions']);
-    expect(dataTable.getRowCount()).toBe(1);
-    expect(dataTable.getRow(0)).toEqual(['One']);
+    expect(dataTable.getRowCount()).toBe(APP_PAGE_INSTRUCTIONS_PROPS.items.length);
+    expect(dataTable.getRow(0)).toEqual([APP_PAGE_INSTRUCTIONS_PROPS.items[0]]);
+    expect(dataTable.getRow(dataTable.getRowCount() - 1)).toEqual([
+      APP_PAGE_INSTRUCTIONS_PROPS.items[APP_PAGE_INSTRUCTIONS_PROPS.items.length - 1],
+    ]);
     expect(sizeColumnsToFit).toHaveBeenCalledTimes(1);
   });
 });

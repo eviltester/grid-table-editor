@@ -1,7 +1,7 @@
 import { expect, waitFor, within } from 'storybook/test';
 import { TabulatorFull as Tabulator } from 'tabulator-tables';
 import RandExp from 'randexp';
-import { bootstrapApp } from '../../../../packages/core-ui/js/gui_components/app/page/index.js';
+import { bootstrapApp, createAppPageComponent } from '../../../../packages/core-ui/js/gui_components/app/page/index.js';
 import { ExtendedDataGrid as TabulatorExtendedDataGrid } from '../../../../packages/core-ui/js/gui_components/data-grid-editor/tabulator/main-display-grid.js';
 import { GridExtension as TabulatorGridExtension } from '../../../../packages/core-ui/js/gui_components/data-grid-editor/tabulator/gridExtension-tabulator.js';
 
@@ -18,7 +18,7 @@ class StoryExtendedDataGrid extends TabulatorExtendedDataGrid {
 function createScopedStoryDocument(rootElement, documentObj = document) {
   const scopedMethods = {
     getElementById(id) {
-      return rootElement.querySelector(`#${id}`);
+      return rootElement.querySelector(`#${id}`) || documentObj.getElementById(id);
     },
     querySelector(selector) {
       return rootElement.querySelector(selector);
@@ -44,38 +44,7 @@ function createAppPageShell() {
   const root = document.createElement('main');
   root.setAttribute('aria-label', 'App page story');
 
-  root.innerHTML = `
-    <h1 style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">
-      App page
-    </h1>
-    <div class="instructions">
-      <details open>
-        <summary>Instructions <span data-help="instructions-summary-title" class="helpicon"></span></summary>
-        <ul>
-          <li>[Reset Table] To clear all table data</li>
-          <li>[~] Rename Column</li>
-          <li>[x] Delete Column</li>
-          <li>[&lt;+] Add Column Left</li>
-          <li>[+=] Duplicate this column</li>
-          <li>[+&gt;] Add Column Right</li>
-        </ul>
-        <button type="button" class="instructions-copy-to-grid-button">Copy Instructions To Grid</button>
-      </details>
-    </div>
-    <div class="main-app">
-      <div id="main-grid-view"></div>
-      <div class="importexport" id="import-export-controls"></div>
-      <div class="testDataSchemaGui">
-        <details open>
-          <summary>Test Data <span data-help="test-data-summary-title" class="helpicon"></span></summary>
-          <div id="testDataGeneratorContainer"></div>
-        </details>
-      </div>
-    </div>
-    <p id="initial-load" class="import-progress-status startup-loading-status" role="status" aria-live="polite">
-      Please Wait, Loading Libraries...
-    </p>
-  `;
+  root.innerHTML = `<div id="app-page-root"></div>`;
 
   return root;
 }
@@ -92,6 +61,13 @@ function renderAppPageStory() {
     documentObj: scopedDocument,
     ensureGridLibraryLoadedFn: async () => {},
     activeGridEngineName: 'tabulator',
+    createAppPageComponentFn: ({ root: appPageRoot }) =>
+      createAppPageComponent({
+        root: appPageRoot,
+        props: {
+          showTestDataOpen: true,
+        },
+      }),
     ExtendedDataGridClass: class extends StoryExtendedDataGrid {
       constructor() {
         super({ documentObj: scopedDocument });
@@ -138,6 +114,7 @@ export const Default = {
   play: async ({ canvasElement }) => {
     await canvasElement.__appReady;
     const canvas = within(canvasElement);
+    await expect(await canvas.findByText('Instructions')).toBeVisible();
     await expect(await canvas.findByRole('button', { name: /Set Text From Grid/i })).toBeVisible();
     await expect(await canvas.findByRole('button', { name: 'Generate' })).toBeVisible();
     await expect(await canvas.findByRole('button', { name: 'Edit as Text' })).toBeVisible();

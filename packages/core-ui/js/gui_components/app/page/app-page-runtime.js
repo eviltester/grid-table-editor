@@ -5,6 +5,8 @@ import { enableTestDataGenerationInterface } from '../test-data-grid/index.js';
 import { ExtendedDataGrid, activeGridEngine } from '../../data-grid-editor/main-display-grid.js';
 import { ensureGridLibraryLoaded } from '../../data-grid-editor/grid-library-loader.js';
 import { createImportExportWorkspaceComponent } from '../import-export-workspace/index.js';
+import { createInstructionsComponent, APP_PAGE_INSTRUCTIONS_PROPS } from '../../shared/instructions/index.js';
+import { createAppPageComponent } from './app-page-shell.js';
 import { initHelpTooltips } from '../../../help/help-tooltips.js';
 import { initThemeToggle } from '../../shared/theme-toggle.js';
 import { createPageStartupLoadingStatus } from '../../shared/page-startup-loading-status.js';
@@ -25,13 +27,12 @@ function createSampleGridData() {
   return sampleData;
 }
 
-function createInstructionsGridData({ documentObj = document } = {}) {
-  const instructions = documentObj.querySelectorAll('div.instructions details ul li');
+function createInstructionsGridData({ items = APP_PAGE_INSTRUCTIONS_PROPS.items } = {}) {
   const instructionsData = new GenericDataTable();
   instructionsData.addHeader('Instructions');
 
-  instructions.forEach((instruction) => {
-    instructionsData.appendDataRow([instruction.textContent]);
+  items.forEach((instruction) => {
+    instructionsData.appendDataRow([instruction]);
   });
 
   return instructionsData;
@@ -57,7 +58,7 @@ function createInstructionsGridActions({ documentObj = document, getMainDataGrid
   }
 
   function setInstructionsGridData() {
-    loadGridData(createInstructionsGridData({ documentObj }));
+    loadGridData(createInstructionsGridData());
   }
 
   function bind() {
@@ -104,11 +105,19 @@ async function bootstrapApp({
   activeGridEngineName = activeGridEngine,
   ExtendedDataGridClass = ExtendedDataGrid,
   createImportExportWorkspaceComponentFn = createImportExportWorkspaceComponent,
+  createAppPageComponentFn = createAppPageComponent,
+  createInstructionsComponentFn = createInstructionsComponent,
   ExporterClass = Exporter,
   ImporterClass = Importer,
   enableTestDataGenerationInterfaceFn = enableTestDataGenerationInterface,
 } = {}) {
   initThemeToggle({ documentObj, windowObj: documentObj?.defaultView || window });
+  const pageRoot = documentObj.getElementById('app-page-root');
+  const appPageComponent = pageRoot
+    ? createAppPageComponentFn({
+        root: pageRoot,
+      })
+    : null;
   const startupLoadingStatus = createPageStartupLoadingStatus({
     documentObj,
     elementId: 'initial-load',
@@ -126,6 +135,14 @@ async function bootstrapApp({
 
   const mainDataGrid = new ExtendedDataGridClass();
   mainDataGrid.createChildGrid(documentObj.getElementById('main-grid-view'));
+
+  const instructionsRoot = documentObj.getElementById('page-instructions');
+  const instructionsComponent = instructionsRoot
+    ? createInstructionsComponentFn({
+        root: instructionsRoot,
+        props: APP_PAGE_INSTRUCTIONS_PROPS,
+      })
+    : null;
 
   const importExportController = createImportExportWorkspaceComponentFn({
     root: documentObj.getElementById('import-export-controls'),
@@ -165,10 +182,13 @@ async function bootstrapApp({
     importer,
     exporter,
     instructionsGridActions,
+    instructionsComponent,
     destroy() {
       instructionsGridActions.destroy();
+      instructionsComponent?.destroy?.();
       importExportController?.destroy?.();
       mainDataGrid?.destroy?.();
+      appPageComponent?.destroy?.();
     },
   };
 }

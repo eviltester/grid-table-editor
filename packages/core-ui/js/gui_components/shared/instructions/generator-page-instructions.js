@@ -1,0 +1,24 @@
+const GENERATOR_PAGE_INSTRUCTIONS_PROPS = {
+  title: 'Data Generator Instructions',
+  helpKey: 'generator-screen-overview',
+  helpText: `
+    <p><strong>Generator Screen Overview</strong></p>
+    <p><strong>Schema:</strong> Define fields and rules using row-based schema editing or text schema mode.</p>
+    <p><strong>Generate Data and Options:</strong> Choose output format, configure options, then generate files.</p>
+    <p><strong>Preview:</strong> Generate a small sample to validate output before downloading larger files.</p>
+    <p><a class="helplink" href="https://anywaydata.com/docs/test-data/generate-to-file" target="_blank" rel="noopener noreferrer">Generate To File docs</a></p>
+  `,
+  items: [
+    'Define schema rows with column name, source type, and rule details.',
+    'Use + and - to add or remove rows and arrows to reorder.',
+    'Use Preview to generate a sample set into the table.',
+    'Use Generate Data to download file output in the selected format.',
+    'If your schema contains at least two enums then you can Generate Pairwise combinations.',
+    'Click between "Edit as Text" and "Edit as Schema" to use the edit view that works best for you.',
+    'Preview and Generate row counts are independent.',
+  ],
+  actions: [],
+  footerHtml: '',
+};
+
+export { GENERATOR_PAGE_INSTRUCTIONS_PROPS };

@@ -399,16 +399,20 @@ Current status:
 - [x] Remove obsolete global DOM lookups.
 - [x] Confirm all component stories are discoverable and documented.
 - [x] Run the full local verification gate.
+- [x] Replace duplicated static app/generator instructions markup with a shared `Instructions` component reused by both pages.
+- [x] Replace duplicated app/generator page shell markup in HTML and Storybook with shared page-shell components.
 
 Current status:
 
-- `packages/core-ui/js/script.js` now only owns DOM-ready bootstrap wiring and delegates the app-page setup to `app/page/app-page-bootstrap.js`, which in turn owns the remaining startup orchestration and instruction-sample grid actions.
+- `packages/core-ui/js/script.js` now only owns DOM-ready bootstrap wiring and delegates the app-page setup to `app/page/app-page-runtime.js`, which in turn owns the remaining startup orchestration and instruction-sample grid actions.
 - The generator public entrypoint in `generator/controller/data-generator-page-controller.js` is now a thin wrapper over `generator/runtime/data-generator-page-runtime.js`, so the public controller file is no longer the large runtime implementation itself.
 - The legacy generator host layout/coordinator files under `gui_components/generator/host/` are removed; `GeneratorPageView` now owns the generator page shell and feature composition directly.
 - The legacy app test-data host binder/coordinator files under `gui_components/app/test-data-grid/host/` are removed; `DataPopulationPanel` and `SharedSchemaDefinition` now own that behavior directly.
 - The old Storybook `storybook-harnesses.js` file and the legacy `Test Data / Generator` story set are removed, along with the document monkey-patching they depended on.
 - The old host-layer tests that only exercised deleted scaffolding are removed, while the current page/component coverage remains under the newer generator/app component stories and tests.
 - Story discoverability/documentation is now centered on the component-oriented Storybook families (`Generator Page`, `Generator Controls`, `Generator Preview`, `App Data Population Panel`, `Import Export Workspace`, `Data Grid Editor`, shared components, and format-option families) rather than the older broad legacy harness stories.
+- The app page and generator page instructions now render through one shared `Instructions` component, preserving the app’s copy-to-grid action and the generator’s overview help while removing duplicated static page markup.
+- The app page and generator page HTML/story shells now come from shared page-shell components, so the real HTML pages and page-level Storybook stories use the same scaffold for headers, instructions roots, feature roots, and startup loading surfaces.
 
 ## Tracking Across Sessions
 

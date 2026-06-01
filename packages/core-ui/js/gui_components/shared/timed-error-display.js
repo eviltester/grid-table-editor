@@ -61,8 +61,4 @@ class TimedStatusDisplay {
   }
 }
 
-class TimedErrorDisplay extends TimedStatusDisplay {}
-
-const createTimedErrorPresenter = createTimedStatusPresenter;
-
-export { createTimedStatusPresenter, createTimedErrorPresenter, TimedStatusDisplay, TimedErrorDisplay };
+export { createTimedStatusPresenter, TimedStatusDisplay };

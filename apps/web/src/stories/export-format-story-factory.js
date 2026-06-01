@@ -1,3 +1,4 @@
+import { playPreviewAlreadyRendered, playSetTextFromGrid } from './export-format-interactions.js';
 import { renderGridPreviewStory } from './export-preview-story-harness.js';
 
 const sharedArgTypes = {
@@ -98,6 +99,7 @@ function createExportPreviewStory(format, state, args = {}) {
         ...storyArgs,
         actions: extractActionHandlers(storyArgs),
       }),
+    play: state === 'auto-previewed' ? playPreviewAlreadyRendered : playSetTextFromGrid,
   };
 }
 

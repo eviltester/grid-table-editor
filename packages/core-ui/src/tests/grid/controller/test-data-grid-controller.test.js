@@ -60,7 +60,7 @@ describe('test data grid controller', () => {
     const textPreviewRenderer = { renderTextFromGrid: jest.fn() };
     const mainGridExtras = { getRowCount: jest.fn(() => 2) };
 
-    const state = control.enableTestDataGenerationInterface('host', importer, textPreviewRenderer, mainGridExtras);
+    const state = control.mountTestDataGenerationPanel('host', importer, textPreviewRenderer, mainGridExtras);
 
     expect(identifyFakerCommandsFn).toHaveBeenCalledTimes(1);
     expect(initializeSchemaErrorDisplayFn).toHaveBeenCalledTimes(1);
@@ -124,7 +124,7 @@ describe('test data grid controller', () => {
       createDataPopulationPanelComponentFn,
     });
 
-    control.enableTestDataGenerationInterface(
+    control.mountTestDataGenerationPanel(
       'host',
       {},
       {},
@@ -139,5 +139,27 @@ describe('test data grid controller', () => {
 
     expect(setRowCountValue).toHaveBeenNthCalledWith(1, 7);
     expect(setRowCountValue).toHaveBeenNthCalledWith(2, 3);
+  });
+
+  test('keeps the legacy enableTestDataGenerationInterface alias mapped to the component mount API', () => {
+    const control = createTestDataGridControl({
+      documentObj: document,
+      initializeSchemaErrorDisplayFn: jest.fn(),
+      identifyFakerCommandsFn: jest.fn(),
+      createTestDataGenerationServiceFn: jest.fn(() => ({
+        updatePairwiseButtonVisibility: jest.fn(),
+        generateTestData: jest.fn(),
+        generatePairwiseTestData: jest.fn(),
+        refreshTestDataPreview: jest.fn(),
+      })),
+      createDataPopulationPanelComponentFn: jest.fn(() => ({
+        destroy: jest.fn(),
+        getMode: jest.fn(() => 'new-table'),
+        setPairwiseVisible: jest.fn(),
+        setRowCountValue: jest.fn(),
+      })),
+    });
+
+    expect(control.enableTestDataGenerationInterface).toBe(control.mountTestDataGenerationPanel);
   });
 });

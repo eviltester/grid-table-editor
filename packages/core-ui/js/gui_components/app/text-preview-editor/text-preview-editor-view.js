@@ -1,8 +1,9 @@
 class TextPreviewEditorView {
-  constructor({ root, controller, documentObj = document } = {}) {
+  constructor({ root, controller, documentObj = document, services = {} } = {}) {
     this.root = root;
     this.controller = controller;
     this.documentObj = documentObj;
+    this.services = services;
     this.handleModeClick = () => this.controller.toggleMode();
     this.handleAutoPreviewChange = (event) =>
       this.controller.setAutoPreviewEnabled(event?.currentTarget?.checked === true);
@@ -16,6 +17,7 @@ class TextPreviewEditorView {
     this.root.innerHTML = this.template();
     this.bindEvents();
     this.render();
+    this.services.updateHelpHints?.();
   }
 
   template() {
@@ -33,8 +35,8 @@ class TextPreviewEditorView {
             data-help="preview-edit-mode-help"
             class="helpicon option-help-icon"
           ></span>
-          <button title="Toggle Preview/Edit mode" id="previewEditModeButton">Preview</button>
-          <button title="Copy text to clipboard" id="copyTextButton">Copy</button>
+          <button type="button" title="Toggle Preview/Edit mode" id="previewEditModeButton">Preview</button>
+          <button type="button" title="Copy text to clipboard" id="copyTextButton">Copy</button>
         </div>
       </div>
       <div id="conversionSubtasks" class="conversionSubtasks" style="display: none"></div>
@@ -50,7 +52,12 @@ class TextPreviewEditorView {
             aria-label="Resize options panel"
           ></div>
           <div id="markdown" style="height: 30%; width:100%;">
-            <textarea class="textrepresentation" name="Markdown" id="markdownarea"></textarea>
+            <textarea
+              class="textrepresentation"
+              name="Markdown"
+              id="markdownarea"
+              aria-label="Preview text editor"
+            ></textarea>
           </div>
       </div>
     `;
@@ -82,6 +89,7 @@ class TextPreviewEditorView {
       modeHelpIcon.setAttribute('data-help-text', previewHelpText);
       modeHelpIcon._tippy?.setContent?.(previewHelpText);
     }
+    this.services.updateHelpHints?.();
   }
 
   destroy() {

@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
-import { enableTestDataGenerationInterface } from '../../../../js/gui_components/app/test-data-grid/index.js';
+import { mountTestDataGenerationPanel } from '../../../../js/gui_components/app/test-data-grid/index.js';
 
 describe('test data schema editor compatibility', () => {
   let dom;
@@ -36,7 +36,7 @@ describe('test data schema editor compatibility', () => {
   function setup(gridExtras = {}) {
     const importer = { setGridFromGenericDataTable: jest.fn(() => Promise.resolve()) };
     const renderer = { renderTextFromGrid: jest.fn(() => Promise.resolve('')) };
-    enableTestDataGenerationInterface('host', importer, renderer, {
+    mountTestDataGenerationPanel('host', importer, renderer, {
       getRowCount: jest.fn(() => 0),
       getSelectedRowIndexes: jest.fn(() => []),
       ...gridExtras,

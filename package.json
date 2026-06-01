@@ -15,7 +15,7 @@
     "testcoverage": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --coverage",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "test:storybook": "vitest --project=storybook --run",
+    "test:storybook": "node ./scripts/run-storybook-tests.mjs",
     "testenv:create": "node ./scripts/create-testenv.mjs",
     "generate:faker-help": "node ./scripts/generate-faker-help.js",
     "test:browser": "node ./node_modules/@playwright/test/cli.js test",

@@ -3,11 +3,11 @@ const { expect } = require('@playwright/test');
 class GeneratorGenerateOptionsComponent {
   constructor(page) {
     this.page = page;
-    this.container = page.locator('#generatorGenerateOptionsSection');
-    this.rowsCountInput = page.locator('#generateRowsCount');
-    this.outputFormatSelect = page.locator('#generatorOutputFormat');
-    this.generateDataButton = page.locator('#generateDataButton');
-    this.generatePairwiseButton = page.locator('#generateAllPairsButton');
+    this.container = page.getByRole('region', { name: 'Generate Data and Options' });
+    this.rowsCountInput = page.getByRole('spinbutton', { name: 'Generate Rows' });
+    this.outputFormatSelect = page.getByLabel('Output Format');
+    this.generateDataButton = page.getByRole('button', { name: 'Generate Data' });
+    this.generatePairwiseButton = page.getByRole('button', { name: 'Generate Pairwise' });
   }
 
   async expectReady() {

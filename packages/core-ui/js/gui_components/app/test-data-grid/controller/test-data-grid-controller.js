@@ -148,7 +148,7 @@ function createTestDataGridControl({
     });
   }
 
-  function enableTestDataGenerationInterface(parentId, importer, textPreviewRenderer, gridExtras) {
+  function mountTestDataGenerationPanel(parentId, importer, textPreviewRenderer, gridExtras) {
     state.dataPopulationPanel?.destroy?.();
     state.debouncer?.clear?.();
     identifyFakerCommandsFn(faker);
@@ -223,7 +223,9 @@ function createTestDataGridControl({
   }
 
   return {
-    enableTestDataGenerationInterface,
+    mountTestDataGenerationPanel,
+    // Legacy public alias retained for downstream callers that still use the pre-component entrypoint name.
+    enableTestDataGenerationInterface: mountTestDataGenerationPanel,
     getState: () => state,
     destroy: () => {
       state.dataPopulationPanel?.destroy?.();
@@ -234,13 +236,11 @@ function createTestDataGridControl({
 
 const defaultTestDataGridControl = createTestDataGridControl();
 
-function enableTestDataGenerationInterface(parentId, importer, textPreviewRenderer, gridExtras) {
-  return defaultTestDataGridControl.enableTestDataGenerationInterface(
-    parentId,
-    importer,
-    textPreviewRenderer,
-    gridExtras
-  );
+function mountTestDataGenerationPanel(parentId, importer, textPreviewRenderer, gridExtras) {
+  return defaultTestDataGridControl.mountTestDataGenerationPanel(parentId, importer, textPreviewRenderer, gridExtras);
 }
 
-export { createTestDataGridControl, enableTestDataGenerationInterface };
+// Legacy public alias retained for downstream callers that still use the pre-component entrypoint name.
+const enableTestDataGenerationInterface = mountTestDataGenerationPanel;
+
+export { createTestDataGridControl, mountTestDataGenerationPanel, enableTestDataGenerationInterface };

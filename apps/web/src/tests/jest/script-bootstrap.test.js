@@ -7,13 +7,14 @@ describe('script bootstrap', () => {
   let dom;
 
   beforeEach(() => {
-    dom = new JSDOM(`<!doctype html><html><body>
+    dom = new JSDOM(
+      `<!doctype html><html><body>
+            <div class="header"><div class="pageheading">AnyWayData</div></div>
+            <div id="app-page-root"></div>
             <p id="initial-load" class="import-progress-status startup-loading-status">Please Wait, Loading Libraries...</p>
-            <div id="main-grid-view"></div>
-            <div id="import-export-controls"></div>
-            <div id="testDataGeneratorContainer"></div>
-            <div class="instructions"><details><ul><li>One</li></ul></details></div>
-        </body></html>`);
+        </body></html>`,
+      { url: 'https://example.test/app.html' }
+    );
     global.document = dom.window.document;
     global.window = dom.window;
   });
@@ -70,7 +71,7 @@ describe('script bootstrap', () => {
       createImportExportWorkspaceComponentFn,
       ExporterClass,
       ImporterClass,
-      enableTestDataGenerationInterfaceFn: () => {},
+      mountTestDataGenerationPanelFn: () => {},
     });
 
     expect(calls[0]).toBe('ensureGridLibraryLoaded');
@@ -106,7 +107,7 @@ describe('script bootstrap', () => {
       }),
       ExporterClass: class {},
       ImporterClass: class {},
-      enableTestDataGenerationInterfaceFn: () => {},
+      mountTestDataGenerationPanelFn: () => {},
     });
 
     expect(calls).toEqual([]);
@@ -118,7 +119,7 @@ describe('script bootstrap', () => {
   });
 
   test('wires controller and test data integration without scheduling instructions import', async () => {
-    const enableTestDataGenerationInterfaceFn = jest.fn();
+    const mountTestDataGenerationPanelFn = jest.fn();
     const gridExtras = {
       clearGrid: jest.fn(),
       setGridFromGenericDataTable: jest.fn(),
@@ -167,7 +168,7 @@ describe('script bootstrap', () => {
       createImportExportWorkspaceComponentFn,
       ExporterClass,
       ImporterClass,
-      enableTestDataGenerationInterfaceFn,
+      mountTestDataGenerationPanelFn,
     });
 
     expect(createImportExportWorkspaceComponentFn).toHaveBeenCalledWith({
@@ -181,7 +182,7 @@ describe('script bootstrap', () => {
     expect(renderTextFromGrid).toHaveBeenCalledTimes(1);
     expect(setFileFormatType).toHaveBeenCalledTimes(1);
     expect(setOptionsViewForFormatType).toHaveBeenCalledTimes(1);
-    expect(enableTestDataGenerationInterfaceFn).toHaveBeenCalledWith(
+    expect(mountTestDataGenerationPanelFn).toHaveBeenCalledWith(
       'testDataGeneratorContainer',
       importerInstance,
       expect.objectContaining({
@@ -233,7 +234,7 @@ describe('script bootstrap', () => {
       }),
       ExporterClass: class {},
       ImporterClass,
-      enableTestDataGenerationInterfaceFn: () => {},
+      mountTestDataGenerationPanelFn: () => {},
     });
 
     const button = dom.window.document.createElement('button');
@@ -289,7 +290,7 @@ describe('script bootstrap', () => {
       }),
       ExporterClass: class {},
       ImporterClass,
-      enableTestDataGenerationInterfaceFn: () => {},
+      mountTestDataGenerationPanelFn: () => {},
     });
 
     const button = dom.window.document.createElement('button');

@@ -7,7 +7,8 @@ describe('generator bootstrap', () => {
 
   beforeEach(() => {
     dom = new JSDOM(
-      `<!doctype html><html><body><p id="generator-initial-load">Please Wait, Loading Libraries...</p><div id="generator-app"></div></body></html>`
+      `<!doctype html><html><body><div class="header"><div class="pageheading">AnyWayData</div></div><div id="generator-page-root"></div><p id="generator-initial-load">Please Wait, Loading Libraries...</p></body></html>`,
+      { url: 'https://example.test/generator.html' }
     );
     global.document = dom.window.document;
     global.window = dom.window;

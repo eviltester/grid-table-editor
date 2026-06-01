@@ -1,6 +1,13 @@
 import { createDataGridComponent } from '../index.js';
 import { GridExtension as TabulatorGridExtension } from './gridExtension-tabulator.js';
 
+/*
+ * Intentional compatibility facade for the app runtime's grid-engine selector.
+ *
+ * New code should prefer `createDataGridComponent(...)` directly. This class keeps
+ * the older `ExtendedDataGrid#createChildGrid(...)` contract alive while the app
+ * bootstrap still supports interchangeable grid engines.
+ */
 class ExtendedDataGrid {
   constructor({
     documentObj = document,

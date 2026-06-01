@@ -38,11 +38,24 @@ For browser tests and page-object abstractions:
 - assert outcomes by polling rendered UI state
 - do not use synthetic event dispatch or direct DOM hooks to force app sync in browser abstractions (e.g. `dispatchEvent(...)`, `evaluate(...)` used to trigger internal listeners)
 
+## Frontend Selector Contracts
+
+When changing reusable components, stories, component tests, Playwright tests, or Playwright page objects:
+
+- keep fixed IDs for page-level mount roots and intentional legacy DOM contracts only
+- prefer classes for styling hooks
+- prefer root-scoped `data-*` behavior hooks for reusable component internals when role/name queries are not practical
+- prefer role/name queries in Storybook interactions, DOM/component tests, Playwright tests, and Playwright page objects
+- amend Playwright page objects when component markup changes so they keep using user-facing roles/names or intentional page-level contracts rather than reusable-component internals
+- amend component tests when component markup changes so they query rendered behavior, accessible names, or root-scoped `data-*` hooks instead of fixed internal IDs
+- treat new ID-based story/test queries as a design smell unless the ID is part of a documented public page contract
+
 ## Frontend Component Migration
 
 When changing frontend UI code, Storybook stories, UI test abstractions, or browser tests:
 
 - read `docs/frontend-component-migration-plan.md` before making changes
+- read `docs/frontend-component-architecture.md` for the current page/component/service layering model
 - prefer the `Controller + View + createComponent` pattern for new or migrated UI components
 - keep components mounted into one explicit root element
 - avoid global `document.querySelector`/`getElementById` inside reusable components; query within the component root instead

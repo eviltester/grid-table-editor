@@ -1,7 +1,7 @@
 import { Importer } from '@anywaydata/core/grid/importer.js';
 import { Exporter } from '@anywaydata/core/grid/exporter.js';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
-import { enableTestDataGenerationInterface } from '../test-data-grid/index.js';
+import { mountTestDataGenerationPanel } from '../test-data-grid/index.js';
 import { ExtendedDataGrid, activeGridEngine } from '../../data-grid-editor/main-display-grid.js';
 import { ensureGridLibraryLoaded } from '../../data-grid-editor/grid-library-loader.js';
 import { createImportExportWorkspaceComponent } from '../import-export-workspace/index.js';
@@ -109,7 +109,8 @@ async function bootstrapApp({
   createInstructionsComponentFn = createInstructionsComponent,
   ExporterClass = Exporter,
   ImporterClass = Importer,
-  enableTestDataGenerationInterfaceFn = enableTestDataGenerationInterface,
+  mountTestDataGenerationPanelFn = mountTestDataGenerationPanel,
+  enableTestDataGenerationInterfaceFn,
 } = {}) {
   initThemeToggle({ documentObj, windowObj: documentObj?.defaultView || window });
   const pageRoot = documentObj.getElementById('app-page-root');
@@ -169,12 +170,9 @@ async function bootstrapApp({
 
   startupLoadingStatus.clear();
 
-  enableTestDataGenerationInterfaceFn(
-    'testDataGeneratorContainer',
-    importer,
-    importExportController,
-    mainDataGrid.getGridExtras()
-  );
+  const mountTestDataGeneration = enableTestDataGenerationInterfaceFn || mountTestDataGenerationPanelFn;
+
+  mountTestDataGeneration('testDataGeneratorContainer', importer, importExportController, mainDataGrid.getGridExtras());
 
   return {
     mainDataGrid,

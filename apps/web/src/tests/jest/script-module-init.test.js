@@ -47,7 +47,7 @@ describe('script module initialization', () => {
       setFileFormatType,
       setOptionsViewForFormatType,
     }));
-    const enableTestDataGenerationInterface = jest.fn();
+    const mountTestDataGenerationPanel = jest.fn();
     const setTimeoutSpy = jest.spyOn(global, 'setTimeout').mockImplementation(() => 0);
     const gridExtras = {
       clearGrid: jest.fn(),
@@ -71,7 +71,7 @@ describe('script module initialization', () => {
       },
     }));
     jest.unstable_mockModule('../../../../../packages/core-ui/js/gui_components/app/test-data-grid/index.js', () => ({
-      enableTestDataGenerationInterface,
+      mountTestDataGenerationPanel,
     }));
     jest.unstable_mockModule(
       '../../../../../packages/core-ui/js/gui_components/data-grid-editor/main-display-grid.js',
@@ -124,7 +124,7 @@ describe('script module initialization', () => {
     expect(renderTextFromGrid).toHaveBeenCalledTimes(1);
     expect(setFileFormatType).toHaveBeenCalledTimes(1);
     expect(setOptionsViewForFormatType).toHaveBeenCalledTimes(1);
-    expect(enableTestDataGenerationInterface).toHaveBeenCalledWith(
+    expect(mountTestDataGenerationPanel).toHaveBeenCalledWith(
       'testDataGeneratorContainer',
       expect.any(Object),
       expect.any(Object),

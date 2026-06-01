@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
 import { fireEvent } from '@testing-library/dom';
 import {
@@ -35,12 +36,27 @@ function validateSchemaRows(schemaRows) {
 
 describe('shared-schema-definition view', () => {
   let dom;
+  let tippyInstances;
 
   beforeEach(() => {
     dom = new JSDOM('<!doctype html><html><body><div id="root"></div></body></html>');
     global.window = dom.window;
     global.document = dom.window.document;
     global.Event = dom.window.Event;
+    tippyInstances = [];
+    global.tippy = jest.fn((elements, options) => {
+      const normalized = elements instanceof dom.window.NodeList ? Array.from(elements) : [elements];
+      normalized.forEach((element) => {
+        const instance = {
+          destroy: jest.fn(),
+          hide: jest.fn(),
+          setContent: jest.fn(),
+        };
+        element._tippy = instance;
+        tippyInstances.push({ element, instance, options });
+      });
+      return tippyInstances.map(({ instance }) => instance);
+    });
   });
 
   afterEach(() => {
@@ -48,6 +64,7 @@ describe('shared-schema-definition view', () => {
     delete global.window;
     delete global.document;
     delete global.Event;
+    delete global.tippy;
   });
 
   function createComponent() {
@@ -85,8 +102,8 @@ describe('shared-schema-definition view', () => {
         sampleSchemaText: TEST_DATA_GRID_SAMPLE_SCHEMA_TEXT,
         buildModeHelpHtml: ({ inTextMode }) =>
           inTextMode
-            ? '<button type="button" class="shared-schema-sample-button">Insert Example Schema</button>'
-            : '<button type="button" class="shared-schema-sample-button">Insert Example Schema</button>',
+            ? '<p>Edit as Schema</p><button type="button" class="shared-schema-sample-button">Insert Example Schema</button>'
+            : '<p>Edit as Text</p><button type="button" class="shared-schema-sample-button">Insert Example Schema</button>',
         validateSchemaRows,
       },
       callbacks: {
@@ -125,5 +142,25 @@ describe('shared-schema-definition view', () => {
     component.syncFromText({ showErrors: true });
 
     expect(document.getElementById('schemaErrorText').textContent.length).toBeGreaterThan(0);
+  });
+
+  test('binds the mode help icon with tippy content and updates it when the mode changes', () => {
+    createComponent();
+
+    const helpIcon = document.getElementById('schemaModeHelpIcon');
+    expect(global.tippy).toHaveBeenCalled();
+    expect(helpIcon._tippy).toBeTruthy();
+
+    const initialBinding = tippyInstances.find(({ element }) => element === helpIcon);
+    expect(initialBinding).toBeTruthy();
+    expect(initialBinding.options.content(helpIcon)).toContain('Edit as Text');
+    expect(initialBinding.options.content(helpIcon)).toContain('Insert Example Schema');
+
+    fireEvent.click(document.getElementById('schemaModeToggleButton'));
+
+    expect(helpIcon.getAttribute('data-help-text')).toContain('Edit as Schema');
+    const reboundBinding = [...tippyInstances].reverse().find(({ element }) => element === helpIcon);
+    expect(reboundBinding).toBeTruthy();
+    expect(reboundBinding.options.content(helpIcon)).toContain('Edit as Schema');
   });
 });

@@ -46,7 +46,11 @@ class AppPage {
 }
 
 function isTimeoutError(error) {
-  return typeof error?.message === 'string' && error.message.includes('Timed out');
+  if (typeof error?.message !== 'string') {
+    return false;
+  }
+
+  return error.message.includes('Timed out') || error.message.includes('Timeout:');
 }
 
 module.exports = { AppPage };

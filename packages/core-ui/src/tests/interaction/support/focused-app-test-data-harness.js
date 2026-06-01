@@ -100,7 +100,7 @@ function createFocusedAppTestDataHarness() {
       DebouncerClass: ImmediateDebouncer,
     });
 
-    control.enableTestDataGenerationInterface('host', importer, textPreviewRenderer, gridExtras);
+    control.mountTestDataGenerationPanel('host', importer, textPreviewRenderer, gridExtras);
   }
 
   function getGridRow(index = 0) {

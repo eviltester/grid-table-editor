@@ -199,7 +199,7 @@ Use these conventions for shared component work unless a stronger local pattern 
 The existing code already has useful partial boundaries:
 
 - App bootstrap: `packages/core-ui/js/script.js`
-- Generator page entrypoint: `packages/core-ui/js/gui_components/generator/controller/data-generator-page-controller.js`
+- Generator page entrypoint: `packages/core-ui/js/gui_components/generator/runtime/data-generator-page-runtime.js`
 - Generator shell and event binding: `packages/core-ui/js/gui_components/generator/host/`
 - Generator generation actions: `packages/core-ui/js/gui_components/generator/generation/`
 - App test-data panel host: `packages/core-ui/js/gui_components/app/test-data-grid/host/`
@@ -405,14 +405,117 @@ Current status:
 Current status:
 
 - `packages/core-ui/js/script.js` now only owns DOM-ready bootstrap wiring and delegates the app-page setup to `app/page/app-page-runtime.js`, which in turn owns the remaining startup orchestration and instruction-sample grid actions.
-- The generator public entrypoint in `generator/controller/data-generator-page-controller.js` is now a thin wrapper over `generator/runtime/data-generator-page-runtime.js`, so the public controller file is no longer the large runtime implementation itself.
+- The generator public entrypoint now exports directly from `generator/runtime/data-generator-page-runtime.js`, so the old empty controller wrapper has been removed.
 - The legacy generator host layout/coordinator files under `gui_components/generator/host/` are removed; `GeneratorPageView` now owns the generator page shell and feature composition directly.
 - The legacy app test-data host binder/coordinator files under `gui_components/app/test-data-grid/host/` are removed; `DataPopulationPanel` and `SharedSchemaDefinition` now own that behavior directly.
 - The old Storybook `storybook-harnesses.js` file and the legacy `Test Data / Generator` story set are removed, along with the document monkey-patching they depended on.
 - The old host-layer tests that only exercised deleted scaffolding are removed, while the current page/component coverage remains under the newer generator/app component stories and tests.
 - Story discoverability/documentation is now centered on the component-oriented Storybook families (`Generator Page`, `Generator Controls`, `Generator Preview`, `App Data Population Panel`, `Import Export Workspace`, `Data Grid Editor`, shared components, and format-option families) rather than the older broad legacy harness stories.
 - The app page and generator page instructions now render through one shared `Instructions` component, preserving the app’s copy-to-grid action and the generator’s overview help while removing duplicated static page markup.
-- The app page and generator page HTML/story shells now come from shared page-shell components, so the real HTML pages and page-level Storybook stories use the same scaffold for headers, instructions roots, feature roots, and startup loading surfaces.
+- The app page and generator page now share reusable `core-ui` page-shell components for functional roots and layout, while host-specific HTML chrome such as site headers and startup loading placeholders lives in `apps/web/*.html`.
+
+## Post-Migration Hardening Plan
+
+The phased migration is complete. The next work is cleanup, simplification, and hardening on top of the component model now in place.
+
+Use this section as the follow-on backlog rather than adding a Phase 9. The goals are to remove compatibility layers that only exist for old entry APIs, tighten Storybook reliability, document the final architecture, and retire dead helper exports left behind by the migration.
+
+### Hardening 1: Compatibility Wrapper Cleanup
+
+- [x] Audit compatibility wrappers that still preserve old entry APIs, starting with `packages/core-ui/js/gui_components/data-grid-editor/tabulator/main-display-grid.js` and `packages/core-ui/js/gui_components/generator/controller/data-generator-page-controller.js`.
+- [x] Identify which wrapper exports are still consumed by app runtime, tests, Storybook, or package public exports.
+- [x] Remove wrappers that have no external consumers, or turn them into intentionally documented public facades when they still provide useful compatibility.
+- [x] Update imports to point at the component-oriented APIs where the compatibility layer is no longer needed.
+- [x] Add or update focused regression coverage before removing a wrapper that still sits on a user-facing path.
+
+Current status:
+
+- The empty generator controller wrapper has been removed. `packages/core-ui/js/gui_components/generator/index.js` now exports `DataGeneratorPage` and related schema helpers directly from `generator/runtime/data-generator-page-runtime.js`.
+- The unused `DataGeneratorPageRuntime` alias was removed after confirming there were no internal consumers.
+- `packages/core-ui/js/gui_components/data-grid-editor/tabulator/main-display-grid.js` remains intentionally as an app-runtime compatibility facade because `app/page/app-page-runtime.js` still accepts an `ExtendedDataGridClass` and `data-grid-editor/main-display-grid.js` still selects between grid engines.
+- The app page Storybook story now uses `createDataGridComponent(...)` directly instead of importing the Tabulator `ExtendedDataGrid` facade.
+- Focused regression coverage remains in `tabulator-main-display-grid.test.js` and `main-display-grid-selection.test.js` to prove the remaining facade delegates to the componentized grid and the grid-engine selector still chooses the correct implementation.
+
+### Hardening 2: Storybook Interaction Tightening
+
+- [x] Audit newer component stories for brittle text queries, duplicate IDs, ambiguous help-icon selectors, and story-only setup that no longer reflects real component behavior.
+- [x] Tighten generator preview and generator page stories first, because they include real child components, help tippies, and Tabulator-backed preview behavior.
+- [x] Prefer role-based and accessible-name queries in Storybook `play` interactions when the UI exposes suitable semantics.
+- [x] Make interactions assert the meaningful state each story is meant to teach, not only that a component mounted.
+- [x] Keep Storybook examples aligned with the visible-child rule: when a child component is visible, it should use real behavior unless the story visibly replaces it with a placeholder.
+
+Current status:
+
+- Generator preview and generator page stories assert visible controls by role/name, assert output textarea values, and verify Tabulator-backed preview-grid content through the preview grid region.
+- Generator page help assertions now use the schema help behavior hook instead of an ID suffix selector.
+- The generator page stories continue to compose the real schema, controls, preview, and Tabulator preview adapter paths rather than replacing visible children with inert mocks.
+
+### Hardening 3: Final Architecture Documentation
+
+- [x] Add a short architecture document that explains the final frontend component model after the migration.
+- [x] Cover page runtime/bootstrap responsibilities versus page shell/view responsibilities.
+- [x] Document the layers: page components, feature components, shared components, primitives, presenters/services, and adapters.
+- [x] Explain the test layering: unit tests, DOM/component tests, Storybook review and lightweight interactions, and Playwright page workflows.
+- [x] Link the architecture document from this migration plan and from any relevant contributor docs if useful.
+
+Current status:
+
+- See `docs/frontend-component-architecture.md` for the current page runtime, page shell, component layer, selector, Storybook, test-layering, and compatibility policy.
+- `AGENTS.md` now points agents to the architecture document before frontend component work.
+
+### Hardening 4: Dead-Code and Export Cleanup
+
+- [x] Run a dead-code audit for older helper APIs that are still exported but no longer used after the new component boundaries replaced them.
+- [x] Remove unused helpers, tests, and Storybook-only shims that no longer serve current stories or runtime code.
+- [x] Review public exports from `packages/core-ui/src/index.js` and nearby barrel files for APIs that only exist because of the pre-migration structure.
+- [x] Keep compatibility aliases only when there is a clear external or documented reason.
+- [x] Update tests and docs when removing an exported API so the remaining public surface is intentional.
+
+Current status:
+
+- `packages/core-ui/src/index.js` remains intentionally narrow: it exports only `bootstrapApp` and `bootstrapGeneratorPage`.
+- The old timed-error compatibility exports were removed from `shared/timed-error-display.js`; consumers now use `createTimedStatusPresenter` and `TimedStatusDisplay`.
+- The remaining old `enableTestDataGenerationInterface` name is documented as a legacy alias for downstream compatibility rather than an internal API.
+
+### Hardening 5: Public API Naming Pass
+
+- [x] Audit legacy public names that describe old behavior or old ownership boundaries, such as `enableTestDataGenerationInterface`.
+- [x] Propose clearer component/page-oriented names for APIs that should remain public.
+- [x] Add compatibility aliases only where needed for downstream consumers, and mark them as legacy in code comments or docs.
+- [x] Update internal imports to use the newer names first, then remove legacy names once there are no remaining internal consumers.
+
+Current status:
+
+- `mountTestDataGenerationPanel` is the component-oriented app test-data panel mount API.
+- Internal app runtime, focused app harnesses, and compatibility tests now use `mountTestDataGenerationPanel`.
+- `enableTestDataGenerationInterface` remains only as a marked legacy alias in the app test-data-grid barrel/controller and a regression test proves it maps to the newer mount API.
+
+### Hardening 6: Component Selectors and IDs
+
+- [x] Audit reusable components for fixed internal IDs that could collide when multiple instances render in Storybook Docs or page composition.
+- [x] Keep IDs for page-level mount roots and intentional legacy DOM contracts only.
+- [x] Prefer root-scoped `data-*` behavior hooks for component internals.
+- [x] Prefer classes for styling hooks.
+- [x] Prefer role/name queries in Storybook interactions, DOM tests, and Playwright tests.
+- [x] Amend Playwright page objects where necessary so they use user-facing roles/names or intentional page-level contracts rather than reusable-component internals.
+- [x] Amend component tests where necessary so they query through rendered behavior, accessible names, or root-scoped `data-*` hooks instead of fixed internal IDs.
+- [x] Replace brittle ID-based story/test queries where the ID is not part of a public page contract.
+
+Current status:
+
+- `AGENTS.md` now has explicit frontend selector-contract guidance for reusable components, Storybook, component tests, Playwright tests, and Playwright page objects.
+- Generator Playwright component abstractions use role/name and label queries for generator controls and preview controls; Tabulator cell/header selectors remain encapsulated inside the preview page object because the third-party grid does not expose a stable accessible table API for those assertions.
+- Component tests still use root-scoped `data-*`, input names, and intentional page-level IDs where those are the public DOM contracts under test.
+
+### Hardening Exit Criteria
+
+- [x] Remaining compatibility wrappers are either removed or intentionally documented as public facades.
+- [x] Component stories use stable, accessible interactions and avoid story-only behavior for visible child components.
+- [x] The final frontend architecture is documented outside the migration checklist.
+- [x] Dead helper exports left behind by the migration have been removed or explicitly justified.
+- [x] Public API names reflect the current component/page model.
+- [x] Reusable components avoid fixed internal IDs except where there is an intentional page-level or legacy contract.
+- [x] `pnpm run verify:local` passes after each completed hardening item or coherent item group.
 
 ## Tracking Across Sessions
 

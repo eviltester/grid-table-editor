@@ -1,4 +1,4 @@
-import { expect, userEvent, within } from 'storybook/test';
+import { expect, userEvent, waitFor, within } from 'storybook/test';
 import RandExp from 'randexp';
 import { faker } from '@faker-js/faker';
 import {
@@ -177,6 +177,17 @@ function expectTextModeVisible(canvasElement) {
   expect(toggleButton).toBeVisible();
 }
 
+async function expectVisibleSchemaHelpTooltip({ helpHeadingText }) {
+  await waitFor(() => {
+    const tooltipBox = Array.from(document.body.querySelectorAll('.tippy-box')).find((element) =>
+      element.textContent?.includes(helpHeadingText)
+    );
+    expect(tooltipBox).not.toBeNull();
+    expect(tooltipBox.textContent).toContain(helpHeadingText);
+    expect(tooltipBox.textContent).toContain('Insert Example Schema');
+  });
+}
+
 const meta = {
   title: 'Test Data Generation/Schema Definition',
   tags: ['autodocs'],
@@ -213,6 +224,10 @@ export const EmptySchema = {
   play: async ({ canvasElement }) => {
     expectSchemaModeVisible(canvasElement);
     expect(canvasElement.querySelectorAll('.generator-schema-row').length).toBe(1);
+    const helpIcon = canvasElement.querySelector('.helpicon[data-help="generator-schema-mode-help"]');
+    await userEvent.hover(helpIcon);
+    await expectVisibleSchemaHelpTooltip({ helpHeadingText: 'Edit as Text' });
+    await userEvent.unhover(helpIcon);
   },
 };
 
@@ -285,6 +300,10 @@ export const TextMode = {
     const textArea = within(canvasElement).getByRole('textbox');
     await expect(textArea.value).toContain('Status');
     await expect(textArea.value).toContain('enum(active,inactive,pending)');
+    const helpIcon = canvasElement.querySelector('.helpicon[data-help="generator-schema-mode-help"]');
+    await userEvent.hover(helpIcon);
+    await expectVisibleSchemaHelpTooltip({ helpHeadingText: 'Edit as Schema' });
+    await userEvent.unhover(helpIcon);
   },
 };
 

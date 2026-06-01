@@ -1,9 +1,7 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
 import {
-  createTimedErrorPresenter,
   createTimedStatusPresenter,
-  TimedErrorDisplay,
   TimedStatusDisplay,
 } from '../../../js/gui_components/shared/timed-error-display.js';
 
@@ -21,7 +19,7 @@ describe('TimedStatusDisplay', () => {
   });
 
   test('show auto clears after timeout using the shared inline message behavior', () => {
-    const display = new TimedErrorDisplay({
+    const display = new TimedStatusDisplay({
       documentObj: dom.window.document,
       elementId: 'error',
       timeoutMs: 5000,
@@ -38,7 +36,7 @@ describe('TimedStatusDisplay', () => {
   });
 
   test('destroy clears active timeout and removes visible error state', () => {
-    const display = new TimedErrorDisplay({
+    const display = new TimedStatusDisplay({
       documentObj: dom.window.document,
       elementId: 'error',
       timeoutMs: 5000,
@@ -59,7 +57,7 @@ describe('TimedStatusDisplay', () => {
   });
 
   test('rebinds to a replacement element with the same id', () => {
-    const display = new TimedErrorDisplay({
+    const display = new TimedStatusDisplay({
       documentObj: dom.window.document,
       elementId: 'error',
       timeoutMs: 5000,
@@ -108,9 +106,8 @@ describe('TimedStatusDisplay', () => {
     expect(element.hasAttribute('data-severity')).toBe(false);
   });
 
-  test('legacy timed-error exports still point at the timed-status implementation', () => {
-    expect(createTimedErrorPresenter).toBe(createTimedStatusPresenter);
-    const display = new TimedErrorDisplay({
+  test('TimedStatusDisplay wraps the service-style presenter API', () => {
+    const display = new TimedStatusDisplay({
       documentObj: dom.window.document,
       elementId: 'error',
       timeoutMs: 5000,

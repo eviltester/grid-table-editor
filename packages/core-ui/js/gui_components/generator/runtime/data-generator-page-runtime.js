@@ -80,7 +80,7 @@ function validateSchemaRows(schemaRows) {
   });
 }
 
-class DataGeneratorPageRuntime {
+class DataGeneratorPage {
   constructor({
     parentElement,
     documentObj = document,
@@ -747,7 +747,7 @@ class DataGeneratorPageRuntime {
 }
 
 export {
-  DataGeneratorPageRuntime,
+  DataGeneratorPage,
   buildRuleSpecFromSchemaRow,
   extractLiteralValueFromRuleSpec,
   extractRegexValueFromRuleSpec,

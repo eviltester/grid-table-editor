@@ -2,16 +2,37 @@ import { expect, waitFor, within } from 'storybook/test';
 import { TabulatorFull as Tabulator } from 'tabulator-tables';
 import RandExp from 'randexp';
 import { bootstrapApp, createAppPageComponent } from '../../../../packages/core-ui/js/gui_components/app/page/index.js';
-import { ExtendedDataGrid as TabulatorExtendedDataGrid } from '../../../../packages/core-ui/js/gui_components/data-grid-editor/tabulator/main-display-grid.js';
+import { createDataGridComponent } from '../../../../packages/core-ui/js/gui_components/data-grid-editor/index.js';
 import { GridExtension as TabulatorGridExtension } from '../../../../packages/core-ui/js/gui_components/data-grid-editor/tabulator/gridExtension-tabulator.js';
 
-class StoryExtendedDataGrid extends TabulatorExtendedDataGrid {
+class StoryExtendedDataGrid {
   constructor({ documentObj } = {}) {
-    super({
-      documentObj,
-      TabulatorCtor: Tabulator,
-      GridExtensionClass: TabulatorGridExtension,
+    this.documentObj = documentObj;
+    this.component = null;
+  }
+
+  createChildGrid(root) {
+    this.component?.destroy?.();
+    this.component = createDataGridComponent({
+      root,
+      documentObj: this.documentObj,
+      services: {
+        TabulatorCtor: Tabulator,
+        GridExtensionClass: TabulatorGridExtension,
+      },
     });
+    return this.component;
+  }
+
+  sizeColumnsToFit() {}
+
+  getGridExtras() {
+    return this.component?.getGridExtras?.();
+  }
+
+  destroy() {
+    this.component?.destroy?.();
+    this.component = null;
   }
 }
 
@@ -40,7 +61,7 @@ function createScopedStoryDocument(rootElement, documentObj = document) {
   });
 }
 
-function createAppPageShell() {
+function createAppPageStoryShell() {
   const root = document.createElement('main');
   root.setAttribute('aria-label', 'App page story');
 
@@ -49,10 +70,19 @@ function createAppPageShell() {
   return root;
 }
 
+function createOpenAppPageStoryComponent({ root }) {
+  return createAppPageComponent({
+    root,
+    props: {
+      showTestDataOpen: true,
+    },
+  });
+}
+
 function renderAppPageStory() {
   globalThis.RandExp = RandExp;
   globalThis.eval?.('var RandExp = globalThis.RandExp;');
-  const root = createAppPageShell();
+  const root = createAppPageStoryShell();
   document.body.appendChild(root);
   const scopedDocument = createScopedStoryDocument(root, document);
   let app = null;
@@ -61,13 +91,7 @@ function renderAppPageStory() {
     documentObj: scopedDocument,
     ensureGridLibraryLoadedFn: async () => {},
     activeGridEngineName: 'tabulator',
-    createAppPageComponentFn: ({ root: appPageRoot }) =>
-      createAppPageComponent({
-        root: appPageRoot,
-        props: {
-          showTestDataOpen: true,
-        },
-      }),
+    createAppPageComponentFn: createOpenAppPageStoryComponent,
     ExtendedDataGridClass: class extends StoryExtendedDataGrid {
       constructor() {
         super({ documentObj: scopedDocument });
@@ -93,7 +117,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'App page composes the main data-grid editor, import/export workspace, and test-data generation panel through the current app bootstrap path. This story is the app-side page-level equivalent of the generator page story.',
+          'App page composes the main data-grid editor, import/export workspace, instructions, and embedded test-data generation panel through the real app bootstrap path, but without full site navigation chrome.',
       },
     },
   },
@@ -107,7 +131,7 @@ export const Default = {
     docs: {
       description: {
         story:
-          'Shows the real app page composition with the grid editor, import/export workspace, and embedded test-data generation panel mounted together. Review this story when you want to see the app-level wiring rather than a single app feature in isolation.',
+          'Shows the functional app composition with the grid editor, import/export workspace, instructions, and embedded test-data generation panel mounted together. Use this when you want to review app behavior wiring without the real page navigation or startup loading chrome.',
       },
     },
   },
@@ -120,6 +144,7 @@ export const Default = {
     await expect(await canvas.findByRole('button', { name: 'Edit as Text' })).toBeVisible();
     await expect(await canvas.findByRole('button', { name: 'Reset Table' })).toBeVisible();
     await waitFor(() => {
+      expect(canvasElement.querySelector('.header')).toBeNull();
       expect(canvasElement.querySelector('#initial-load')).toBeNull();
     });
   },

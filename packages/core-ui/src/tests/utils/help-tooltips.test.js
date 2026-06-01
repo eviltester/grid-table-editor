@@ -65,7 +65,7 @@ describe('help tooltips module', () => {
       expect.objectContaining({
         interactive: true,
         interactiveBorder: 16,
-        delay: [100, 300],
+        delay: [250, 300],
         hideOnClick: false,
       })
     );

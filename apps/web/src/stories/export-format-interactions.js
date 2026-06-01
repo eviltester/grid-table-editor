@@ -95,11 +95,27 @@ async function playCodePreview({ canvasElement }) {
   });
 }
 
+async function playPreviewAlreadyRendered({ canvasElement }) {
+  const canvas = within(canvasElement);
+  const textArea = canvasElement.querySelector('#markdownarea');
+
+  await waitFor(() => {
+    expect(textArea?.value?.length || 0).toBeGreaterThan(0);
+  });
+
+  await expect(canvas.getByRole('button', { name: 'Preview (10)' })).toBeTruthy();
+  await userEvent.click(canvas.getByRole('button', { name: 'Copy' }));
+  await waitFor(() => {
+    expect(textArea?.value?.length || 0).toBeGreaterThan(0);
+  });
+}
+
 export {
   playCodePreview,
   playCsvRoundTrip,
   playDelimitedOptionsPreview,
   playJsonOptionsPreview,
+  playPreviewAlreadyRendered,
   playPreviewEditMode,
   playSetTextFromGrid,
 };

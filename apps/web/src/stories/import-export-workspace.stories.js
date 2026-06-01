@@ -1,3 +1,4 @@
+import { expect, userEvent, waitFor, within } from 'storybook/test';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 import { Importer } from '@anywaydata/core/grid/importer.js';
 import { Exporter } from '@anywaydata/core/grid/exporter.js';
@@ -107,6 +108,17 @@ export const Default = {
       },
     },
   },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole('button', { name: 'v Set Text From Grid v' }));
+    await waitFor(() => {
+      expect(canvasElement.querySelector('#markdownarea')?.value?.length || 0).toBeGreaterThan(0);
+    });
+    await userEvent.click(canvas.getByRole('link', { name: 'JSON' }));
+    await waitFor(() => {
+      expect(canvas.getByRole('textbox', { name: /property name/i })).toBeTruthy();
+    });
+  },
 };
 
 export const JsonPreview = {
@@ -120,5 +132,15 @@ export const JsonPreview = {
           'Shows the same workspace after switching to JSON so the shared format selector, preview editor, and options panel can be reviewed together in a non-CSV state.',
       },
     },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await waitFor(() => {
+      expect(canvasElement.querySelector('#markdownarea')?.value || '').toContain('{');
+    });
+    const asObjectCheckbox = canvas.getByRole('checkbox', { name: /as object/i });
+    await userEvent.click(asObjectCheckbox);
+    const applyButton = canvas.getByRole('button', { name: 'Apply' });
+    await expect(applyButton).toBeEnabled();
   },
 };

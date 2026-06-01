@@ -1,3 +1,4 @@
+import { expect, userEvent, within } from 'storybook/test';
 import { createFormatSelectorComponent } from '../../../../packages/core-ui/js/gui_components/app/format-selector/index.js';
 
 function renderFormatSelectorStory(args) {
@@ -52,6 +53,11 @@ export const Default = {
       },
     },
   },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole('link', { name: 'JSON' }));
+    await expect(canvas.getByRole('link', { name: 'JSON' }).closest('.type-select')).toHaveClass('active-type');
+  },
 };
 
 export const Code = {
@@ -65,6 +71,13 @@ export const Code = {
       },
     },
   },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole('link', { name: 'JavaScript' }));
+    await expect(canvas.getByRole('link', { name: 'JavaScript' }).closest('.subtask-select')).toHaveClass(
+      'active-type'
+    );
+  },
 };
 
 export const CodeUnitTest = {
@@ -77,5 +90,10 @@ export const CodeUnitTest = {
         story: 'Grouped unit-test format view showing the code-unit-test subtask list.',
       },
     },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole('link', { name: 'Python' }));
+    await expect(canvas.getByRole('link', { name: 'Python' }).closest('.subtask-select')).toHaveClass('active-type');
   },
 };

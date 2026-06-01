@@ -25,6 +25,11 @@ class SchemaEditorComponent {
     return this.rows.nth(index);
   }
 
+  async dismissOpenHelpTooltips() {
+    await this.page.mouse.move(0, 0);
+    await this.page.waitForTimeout(350);
+  }
+
   async ensureSchemaMode() {
     if (!this.modeToggleButton) {
       return;
@@ -54,6 +59,7 @@ class SchemaEditorComponent {
     }
     const expected = enabled ? 'Edit as Schema' : 'Edit as Text';
     if (((await this.modeToggleButton.innerText()).trim() || '') !== expected) {
+      await this.dismissOpenHelpTooltips();
       await this.modeToggleButton.click();
     }
     await expect(this.modeToggleButton).toHaveText(expected);
@@ -138,6 +144,7 @@ class SchemaEditorComponent {
       } else if (lower.includes('.')) {
         await this.setRowSourceType(index, 'domain');
       }
+      await this.dismissOpenHelpTooltips();
       await this.row(index).locator('[data-action="pick-command"]').click();
       await this.methodPicker.chooseCommand(requested, { tab: pickerTab });
     }
@@ -149,6 +156,7 @@ class SchemaEditorComponent {
 
   async clickRowAction(index, action) {
     await this.ensureSchemaMode();
+    await this.dismissOpenHelpTooltips();
     await this.row(index).locator(`button[data-action="${action}"]`).click();
   }
 

@@ -303,7 +303,7 @@ export function createStory(selectedFormat, currentOptions, description, play) {
         },
       },
     },
-    ...(play ? { play } : {}),
+    play: play || playGenericApply,
   };
 }
 
@@ -465,6 +465,52 @@ export async function playJestApply({ canvasElement }) {
   await expect(applyButton).toBeDisabled();
   await userEvent.clear(suiteNameInput);
   await userEvent.type(suiteNameInput, 'CustomerTableTests');
+  await expect(applyButton).toBeEnabled();
+  await userEvent.click(applyButton);
+  await waitFor(() => expect(applyButton).toBeDisabled());
+}
+
+async function mutateFirstSupportedControl(root) {
+  const firstEnabledCheckbox = root.querySelector('input[type="checkbox"]:not(:disabled)');
+  if (firstEnabledCheckbox) {
+    await userEvent.click(firstEnabledCheckbox);
+    return true;
+  }
+
+  const firstEditableTextbox = root.querySelector(
+    'input[type="text"]:not(:disabled):not([readonly]), textarea:not(:disabled):not([readonly])'
+  );
+  if (firstEditableTextbox) {
+    await userEvent.clear(firstEditableTextbox);
+    await userEvent.type(firstEditableTextbox, 'StorybookUpdated');
+    return true;
+  }
+
+  const firstEditableNumber = root.querySelector('input[type="number"]:not(:disabled):not([readonly])');
+  if (firstEditableNumber) {
+    await userEvent.clear(firstEditableNumber);
+    await userEvent.type(firstEditableNumber, '5');
+    return true;
+  }
+
+  const firstSelect = root.querySelector('select:not(:disabled)');
+  if (firstSelect && firstSelect.options.length > 1) {
+    const nextOption =
+      Array.from(firstSelect.options).find((option) => option.value !== firstSelect.value) || firstSelect.options[0];
+    await userEvent.selectOptions(firstSelect, nextOption.value);
+    return true;
+  }
+
+  return false;
+}
+
+export async function playGenericApply({ canvasElement }) {
+  const canvas = within(canvasElement);
+  const applyButton = canvas.getByRole('button', { name: 'Apply' });
+
+  await expect(applyButton).toBeDisabled();
+  const changed = await mutateFirstSupportedControl(canvasElement);
+  expect(changed).toBe(true);
   await expect(applyButton).toBeEnabled();
   await userEvent.click(applyButton);
   await waitFor(() => expect(applyButton).toBeDisabled());

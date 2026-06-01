@@ -86,7 +86,7 @@ function createUpdateHelpHints(documentObj, rootElement = documentObj) {
       allowHTML: true,
       interactive: true,
       interactiveBorder: 16,
-      delay: [100, 300],
+      delay: [250, 300],
       hideOnClick: false,
       appendTo: () => documentObj.body,
     });

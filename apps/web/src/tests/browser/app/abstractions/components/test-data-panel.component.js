@@ -112,11 +112,18 @@ class TestDataPanelComponent {
     await this.schemaEditor.setTextMode(Boolean(enabled));
   }
 
+  async dismissOpenHelpTooltips() {
+    await this.page.mouse.move(0, 0);
+    await this.page.waitForTimeout(350);
+  }
+
   async clickGenerate() {
+    await this.dismissOpenHelpTooltips();
     await this.generateButton.click();
   }
 
   async clickGeneratePairwise() {
+    await this.dismissOpenHelpTooltips();
     await this.generatePairwiseButton.click();
   }
 

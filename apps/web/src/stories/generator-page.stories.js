@@ -54,7 +54,7 @@ function createStoryDataTable(headers, rows) {
 let generatorPageStoryInstanceCount = 0;
 
 function getSchemaHelpText(rootElement) {
-  return rootElement.querySelector('[id$="schemaModeHelpIcon"]')?.getAttribute('data-help-text') || '';
+  return rootElement.querySelector('[data-help="generator-schema-mode-help"]')?.getAttribute('data-help-text') || '';
 }
 
 function createGeneratorSchemaStoryProps() {

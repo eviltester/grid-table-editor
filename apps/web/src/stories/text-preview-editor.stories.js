@@ -59,7 +59,8 @@ export const PreviewMode = {
     });
 
     await expect(autoPreviewCheckbox).toBeEnabled();
-    await expect(canvas.getByRole('button', { name: 'Preview (10)' })).toBeTruthy();
+    await expect(canvas.getByRole('button', { name: 'Preview' })).toBeTruthy();
+    await expect(canvas.getByRole('spinbutton', { name: 'Preview row count' })).toHaveValue(10);
   },
 };
 

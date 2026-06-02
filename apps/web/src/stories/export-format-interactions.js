@@ -48,7 +48,7 @@ async function playSetTextFromGrid({ canvasElement }) {
 
 async function playCsvRoundTrip({ canvasElement }) {
   const canvas = within(canvasElement);
-  await clickByText(canvas, 'Preview (10)');
+  await clickByText(canvas, 'Preview');
   await waitFor(() => expect(canvas.getByText('Edit')).toBeTruthy());
 
   const textArea = await setTextareaValue(canvasElement, 'Name,Role\nAda,Engineer\nBob,Tester');
@@ -70,12 +70,12 @@ async function playJsonOptionsPreview({ canvasElement }) {
 
 async function playPreviewEditMode({ canvasElement }) {
   const canvas = within(canvasElement);
-  const modeButton = canvas.getByText('Preview (10)');
+  const modeButton = canvas.getByText('Preview');
   await userEvent.click(modeButton);
   await waitFor(() => expect(canvas.getByText('Edit')).toBeTruthy());
 
   await userEvent.click(canvas.getByText('Edit'));
-  await waitFor(() => expect(canvas.getByText('Preview (10)')).toBeTruthy());
+  await waitFor(() => expect(canvas.getByText('Preview')).toBeTruthy());
 }
 
 async function playDelimitedOptionsPreview({ canvasElement }) {
@@ -103,7 +103,8 @@ async function playPreviewAlreadyRendered({ canvasElement }) {
     expect(textArea?.value?.length || 0).toBeGreaterThan(0);
   });
 
-  await expect(canvas.getByRole('button', { name: 'Preview (10)' })).toBeTruthy();
+  await expect(canvas.getByRole('button', { name: 'Preview' })).toBeTruthy();
+  await expect(canvas.getByRole('spinbutton', { name: 'Preview row count' })).toHaveValue(10);
   await userEvent.click(canvas.getByRole('button', { name: 'Copy' }));
   await waitFor(() => {
     expect(textArea?.value?.length || 0).toBeGreaterThan(0);

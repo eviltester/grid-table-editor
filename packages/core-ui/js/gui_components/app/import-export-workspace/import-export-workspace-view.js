@@ -47,6 +47,7 @@ class ImportExportWorkspaceView {
       callbacks: {
         onToggleMode: this.services.onToggleMode,
         onAutoPreviewChange: this.services.onAutoPreviewChange,
+        onPreviewRowLimitChange: this.services.onPreviewRowLimitChange,
       },
     });
 

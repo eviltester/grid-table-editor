@@ -18,6 +18,7 @@ function normalizeProps(props = {}) {
     clampToMaxOnInput: props.clampToMaxOnInput === true,
     className: props.className || 'row-count-control',
     inputClassName: props.inputClassName || '',
+    inputAriaLabel: props.inputAriaLabel || '',
     labelClassName: props.labelClassName || '',
   };
 }

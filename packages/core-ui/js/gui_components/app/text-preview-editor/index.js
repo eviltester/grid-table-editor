@@ -1,9 +1,10 @@
 import { createUpdateHelpHints } from '../../../help/help-tooltips.js';
 import { resolveDocumentObj } from '../../shared/dom/default-objects.js';
+import { createRowCountControl } from '../../shared/row-count-control/index.js';
 import { TextPreviewEditorController } from './text-preview-editor-controller.js';
 import { TextPreviewEditorView } from './text-preview-editor-view.js';
 
-function createTextPreviewEditorComponent({ root, props = {}, callbacks = {}, documentObj } = {}) {
+function createTextPreviewEditorComponent({ root, props = {}, callbacks = {}, services = {}, documentObj } = {}) {
   const resolvedDocumentObj = resolveDocumentObj(documentObj, root);
   const controller = new TextPreviewEditorController({ props, callbacks });
   const view = new TextPreviewEditorView({
@@ -11,6 +12,7 @@ function createTextPreviewEditorComponent({ root, props = {}, callbacks = {}, do
     controller,
     documentObj: resolvedDocumentObj,
     services: {
+      createRowCountControl: services.createRowCountControl || createRowCountControl,
       updateHelpHints: createUpdateHelpHints(resolvedDocumentObj, root),
     },
   });

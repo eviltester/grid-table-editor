@@ -34,6 +34,11 @@ class TextPreviewEditorController {
     this.state.autoPreviewEnabled = enabled === true;
     this.callbacks.onAutoPreviewChange?.(this.state.autoPreviewEnabled);
   }
+
+  setPreviewRowLimit(previewRowLimit) {
+    this.state.previewRowLimit = previewRowLimit ?? 10;
+    this.callbacks.onPreviewRowLimitChange?.(this.state.previewRowLimit);
+  }
 }
 
 export { TextPreviewEditorController };

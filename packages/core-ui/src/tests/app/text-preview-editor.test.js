@@ -1,5 +1,6 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
+import { fireEvent } from '@testing-library/dom';
 import { createTextPreviewEditorComponent } from '../../../js/gui_components/app/text-preview-editor/index.js';
 
 describe('TextPreviewEditor', () => {
@@ -22,7 +23,7 @@ describe('TextPreviewEditor', () => {
     jest.restoreAllMocks();
   });
 
-  test('binds tooltip help on mount and updates preview mode help text', () => {
+  test('binds tooltip help on mount, renders preview row control, and updates preview mode help text', () => {
     const component = createTextPreviewEditorComponent({
       root,
       documentObj,
@@ -34,18 +35,33 @@ describe('TextPreviewEditor', () => {
     });
 
     const helpIcon = root.querySelector('#previewEditModeHelpIcon');
+    const previewRowCount = root.querySelector('#previewRowsCount');
+    const previewButton = root.querySelector('#previewEditModeButton');
 
     expect(global.tippy).toHaveBeenCalled();
     expect(helpIcon.getAttribute('role')).toBe('button');
     expect(helpIcon.getAttribute('aria-label')).toBe('Show help for this option');
+    expect(previewRowCount).not.toBeNull();
+    expect(previewRowCount.value).toBe('10');
+    expect(previewRowCount.getAttribute('aria-label')).toBe('Preview row count');
+    expect(previewRowCount.min).toBe('1');
+    expect(root.textContent).not.toContain('Preview Items Count');
+    expect(previewButton.innerText).toBe('Preview');
     expect(helpIcon.getAttribute('data-help-text')).toContain('first 10 rows');
+
+    previewRowCount.value = '7';
+    fireEvent.input(previewRowCount, { target: { value: '7' } });
+
+    expect(helpIcon.getAttribute('data-help-text')).toContain('first 7 rows');
 
     component.update({
       mode: 'edit',
-      previewRowLimit: 10,
+      previewRowLimit: 7,
       autoPreviewEnabled: false,
     });
 
     expect(helpIcon.getAttribute('data-help-text')).toContain('Edit mode');
+    expect(previewButton.innerText).toBe('Edit');
+    expect(previewRowCount.disabled).toBe(true);
   });
 });

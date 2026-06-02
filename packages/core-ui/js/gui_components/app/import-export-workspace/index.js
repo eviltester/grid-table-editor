@@ -35,12 +35,18 @@ function createImportExportWorkspaceComponent({ root, props = {}, services = {},
       onAutoPreviewChange: (enabled) => {
         controller.updateProps({ autoPreviewEnabled: enabled });
       },
+      onPreviewRowLimitChange: (previewRowLimit) => {
+        controller.updateProps({ previewRowLimit });
+        legacyControls.setPreviewRowLimit?.(previewRowLimit);
+        view.render();
+      },
     },
   });
 
   view.mount();
   legacyControls.rootElement = view.root;
   legacyControls.bindExistingGui?.(view.root);
+  legacyControls.setPreviewRowLimit?.(controller.getState().previewRowLimit);
   legacyControls._syncGridFromTextButtonState?.();
 
   return {

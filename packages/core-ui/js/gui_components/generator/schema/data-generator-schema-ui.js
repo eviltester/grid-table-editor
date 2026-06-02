@@ -17,6 +17,7 @@ import {
 } from '../../shared/schema-row-rule-mapper.js';
 import { applySchemaSourceTypeChange } from '../../shared/test-data/schema/schema-row-mapper.js';
 import { resolveWindowObj } from '../../shared/dom/default-objects.js';
+import { renderIconHtml } from '../../shared/primitives/icon/index.js';
 
 const SCHEMA_ROW_DRAGGING_CLASS = 'generator-schema-row-dragging';
 const SCHEMA_ROW_DROP_BEFORE_CLASS = 'generator-schema-row-drop-before';
@@ -142,11 +143,11 @@ function renderGeneratorSchemaRows({
     rowElem.setAttribute('data-row-index', String(index));
     rowElem.innerHTML = `
                 <div class="generator-row-actions">
-                    <button class="icon-button generator-schema-drag-handle" type="button" data-action="drag" data-row-id="${row.id}" title="Drag to reorder" draggable="true" aria-label="Drag field to reorder">&#x2630;</button>
-                    <button class="icon-button" data-action="add" data-row-id="${row.id}" title="Add field">+</button>
-                    <button class="icon-button" data-action="remove" data-row-id="${row.id}" title="Remove field">-</button>
-                    <button class="icon-button" data-action="up" data-row-id="${row.id}" title="Move up" ${index === 0 ? 'disabled' : ''}>&uarr;</button>
-                    <button class="icon-button" data-action="down" data-row-id="${row.id}" title="Move down" ${index === schemaRows.length - 1 ? 'disabled' : ''}>&darr;</button>
+                    <button class="icon-button generator-schema-drag-handle" type="button" data-action="drag" data-row-id="${row.id}" title="Drag field to reorder" draggable="true" aria-label="Drag field to reorder">${renderIconHtml('grip-vertical')}</button>
+                    <button class="icon-button" type="button" data-action="add" data-row-id="${row.id}" title="Add field" aria-label="Insert field after this row">${renderIconHtml('plus')}</button>
+                    <button class="icon-button" type="button" data-action="remove" data-row-id="${row.id}" title="Remove field" aria-label="Remove field">${renderIconHtml('minus')}</button>
+                    <button class="icon-button" type="button" data-action="up" data-row-id="${row.id}" title="Move up" aria-label="Move up" ${index === 0 ? 'disabled' : ''}>${renderIconHtml('arrow-up')}</button>
+                    <button class="icon-button" type="button" data-action="down" data-row-id="${row.id}" title="Move down" aria-label="Move down" ${index === schemaRows.length - 1 ? 'disabled' : ''}>${renderIconHtml('arrow-down')}</button>
                 </div>
                 <input type="text" data-field="name" class="${hasNameValidationError ? 'generator-schema-field-invalid' : ''}" placeholder="Column Name" value="${escapeHtml(row.name)}">
                 <select data-field="sourceType" class="${hasCommandValidationError ? 'generator-schema-field-invalid' : ''}">
@@ -336,12 +337,14 @@ function handleGeneratorRowInputChange({
 }
 
 function handleGeneratorRowButtonClick({ event, schemaRows, addRowAfter, removeRow, moveRow }) {
-  const action = event.target.getAttribute('data-action');
+  const actionElement =
+    event.target && typeof event.target.closest === 'function' ? event.target.closest('[data-action]') : null;
+  const action = actionElement?.getAttribute('data-action');
   if (!action || action === 'drag') {
     return;
   }
 
-  const rowId = event.target.getAttribute('data-row-id');
+  const rowId = actionElement.getAttribute('data-row-id');
   const index = schemaRows.findIndex((row) => row.id === rowId);
   if (index < 0) {
     return;

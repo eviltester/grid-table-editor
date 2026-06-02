@@ -30,18 +30,18 @@ class GridHeaderComponent {
   async clickAction(columnName, action) {
     const headerTitle = this._headerTitleByName(columnName);
     const actionTitleMap = {
-      rename: 'rename',
-      delete: 'delete',
-      duplicate: 'duplicate',
-      'add-left': 'add left',
-      'add-right': 'add right',
-      'sort-asc': 'Sort Asc',
-      'sort-desc': 'Sort Desc',
-      'sort-none': 'Clear Sort',
+      rename: 'Rename column',
+      delete: 'Delete column',
+      duplicate: 'Duplicate column',
+      'add-left': 'Add column left',
+      'add-right': 'Add column right',
+      'sort-asc': 'Sort ascending',
+      'sort-desc': 'Sort descending',
+      'sort-none': 'Clear sort',
     };
     const title = actionTitleMap[action] || action;
     const headerRoot = headerTitle.locator(`xpath=ancestor::*[contains(@class,'tabulator-col')]`);
-    const actionLocator = headerRoot.locator(`[title="${title}"], [title*="${title}"]`).first();
+    const actionLocator = headerRoot.locator(`[aria-label="${title}"], [title="${title}"]`).first();
     await actionLocator.click();
   }
 

@@ -1,4 +1,5 @@
 import { getDefaultDocumentObj, resolveDocumentObj } from '../../shared/dom/default-objects.js';
+import { renderIconHtml } from '../../shared/primitives/icon/index.js';
 
 function resolveHeaderDocument(context, column) {
   const tableElement = column?.getTable?.()?.element || null;
@@ -30,11 +31,11 @@ export const headerPopupFormatter = function (_e, column, _onRendered) {
   var buttons = documentObj.createElement('div');
   buttons.classList.add('headerbuttons');
   buttons.innerHTML = `
-        <span class="customHeaderAddLeftButton" title="add left">[<+]</span>
-        <span class="customHeaderRenameButton" title="rename">[~]</span>
-        <span class="customHeaderDeleteButton" title="delete">[x]</span>
-        <span class="customHeaderDuplicateButton" title="duplicate">[+=]</span>
-        <span class="customHeaderAddRightButton" title="add right">[+>]</span>
+        <button type="button" class="customHeaderAddLeftButton header-icon-button" title="Add column left" aria-label="Add column left">${renderIconHtml('add-column-left', { className: 'app-icon header-action-icon' })}</button>
+        <button type="button" class="customHeaderRenameButton header-icon-button" title="Rename column" aria-label="Rename column">${renderIconHtml('pencil', { className: 'app-icon header-action-icon' })}</button>
+        <button type="button" class="customHeaderDeleteButton header-icon-button" title="Delete column" aria-label="Delete column">${renderIconHtml('trash', { className: 'app-icon header-action-icon' })}</button>
+        <button type="button" class="customHeaderDuplicateButton header-icon-button" title="Duplicate column" aria-label="Duplicate column">${renderIconHtml('copy', { className: 'app-icon header-action-icon' })}</button>
+        <button type="button" class="customHeaderAddRightButton header-icon-button" title="Add column right" aria-label="Add column right">${renderIconHtml('add-column-right', { className: 'app-icon header-action-icon' })}</button>
     `;
 
   container.appendChild(label);

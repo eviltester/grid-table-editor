@@ -1,3 +1,5 @@
+import { renderIconHtml } from '../primitives/icon/index.js';
+
 function escapeHtml(value) {
   return String(value ?? '')
     .replaceAll('&', '&amp;')
@@ -14,6 +16,32 @@ class InstructionsView {
     this.services = services;
   }
 
+  renderInstructionItem(item) {
+    if (typeof item !== 'object' || item === null) {
+      return `<li>${escapeHtml(item)}</li>`;
+    }
+
+    const text = escapeHtml(item.text || '');
+    const title = item.title ? ` title="${escapeHtml(item.title)}"` : '';
+    const iconHtml = this.renderInstructionItemIcon(item.icon, title);
+
+    return `<li>${iconHtml}<span>${text}</span></li>`;
+  }
+
+  renderInstructionItemIcon(iconName, title) {
+    if (!iconName) {
+      return '';
+    }
+
+    try {
+      return `<span class="instruction-item-icon"${title}>${renderIconHtml(iconName, {
+        className: 'app-icon instruction-action-icon',
+      })}</span>`;
+    } catch {
+      return '';
+    }
+  }
+
   mount() {
     if (!this.root) {
       throw new Error('InstructionsView requires a root element');
@@ -25,7 +53,7 @@ class InstructionsView {
 
   template() {
     const state = this.controller.getState();
-    const itemsHtml = (state.items || []).map((item) => `<li>${escapeHtml(item)}</li>`).join('');
+    const itemsHtml = (state.items || []).map((item) => this.renderInstructionItem(item)).join('');
     const actionsHtml = (state.actions || [])
       .map((action) => {
         const className = escapeHtml(action.className || '');

@@ -1,7 +1,9 @@
+import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
 import {
   renderGeneratorSchemaRows,
   handleGeneratorRowInputChange,
+  handleGeneratorRowButtonClick,
   buildSchemaModeHelpHtml,
 } from '../../../js/gui_components/generator/schema/index.js';
 
@@ -33,6 +35,10 @@ describe('generator schema ui', () => {
     expect(rows).toHaveLength(2);
     expect(rows[0].querySelector('[data-action="drag"]')).not.toBeNull();
     expect(rows[0].querySelector('[data-action="drag"]').getAttribute('draggable')).toBe('true');
+    expect(rows[0].querySelector('[data-action="drag"]').getAttribute('aria-label')).toBe('Drag field to reorder');
+    expect(rows[0].querySelector('[data-action="drag"] svg.app-icon')).not.toBeNull();
+    expect(rows[0].querySelector('[data-action="add"]').getAttribute('aria-label')).toBe('Insert field after this row');
+    expect(rows[0].querySelector('[data-action="remove"]').getAttribute('aria-label')).toBe('Remove field');
     expect(rows[0].querySelector('[data-action="pick-command"]')).not.toBeNull();
     expect(rows[1].querySelector('[data-field="value"]')).not.toBeNull();
     expect(rows[1].querySelector('[data-action="pick-command"]')).toBeNull();
@@ -63,6 +69,32 @@ describe('generator schema ui', () => {
     });
 
     expect(schemaRows[0].command).toBe('person.firstName');
+  });
+
+  test('row action handler resolves actions from nested icon targets', () => {
+    renderGeneratorSchemaRows({
+      documentObj: document,
+      schemaRows: [{ id: '1', name: 'First', sourceType: 'faker', command: 'person.firstName', params: '()' }],
+      getSchemaHelpData: () => ({ show: false }),
+      updateAllPairsButtonVisibility: () => {},
+    });
+
+    const addRowAfter = jest.fn();
+    const removeRow = jest.fn();
+    const moveRow = jest.fn();
+    const nestedIcon = document.querySelector('[data-action="add"] svg');
+
+    handleGeneratorRowButtonClick({
+      event: { target: nestedIcon },
+      schemaRows: [{ id: '1' }],
+      addRowAfter,
+      removeRow,
+      moveRow,
+    });
+
+    expect(addRowAfter).toHaveBeenCalledWith(0);
+    expect(removeRow).not.toHaveBeenCalled();
+    expect(moveRow).not.toHaveBeenCalled();
   });
 
   test('schema mode help includes sample button in both modes', () => {

@@ -62,6 +62,28 @@ describe('DataGridComponent view', () => {
     expect(root.querySelector('#myGrid')).toBeTruthy();
     expect(component.getTableApi()).toBeInstanceOf(FakeTabulator);
     expect(component.getGridExtras()).toBeInstanceOf(FakeGridExtension);
+    const headerHtml = component.getTableApi().options.columnDefaults.titleFormatter({
+      getValue: () => 'Column 1',
+    });
+    const headerHost = document.createElement('div');
+    headerHost.innerHTML = headerHtml;
+    const filterButton = headerHost.querySelector('[data-action="filter"]');
+    expect(filterButton.tagName).toBe('BUTTON');
+    expect(filterButton.getAttribute('type')).toBe('button');
+    expect(filterButton.getAttribute('title')).toBe('Filter column');
+    expect(filterButton.getAttribute('aria-label')).toBe('Filter column');
+    expect(filterButton.querySelector('svg.header-action-icon')).not.toBeNull();
+    for (const action of ['sort-desc', 'sort-asc', 'sort-none']) {
+      const sortButton = headerHost.querySelector(`[data-action="${action}"]`);
+      expect(sortButton.tagName).toBe('BUTTON');
+      expect(sortButton.getAttribute('type')).toBe('button');
+    }
+    const addLeftButton = headerHost.querySelector('[data-action="add-left"]');
+    expect(addLeftButton.tagName).toBe('BUTTON');
+    expect(addLeftButton.getAttribute('title')).toBe('Add column left');
+    expect(addLeftButton.getAttribute('aria-label')).toBe('Add column left');
+    expect(addLeftButton.querySelector('svg.header-action-icon')).not.toBeNull();
+    expect(headerHost.querySelector('[data-action="sort-none"]').getAttribute('aria-label')).toBe('Clear sort');
 
     root.querySelector('#addRowButton').click();
     expect(component.getGridExtras().addRow).toHaveBeenCalledTimes(1);

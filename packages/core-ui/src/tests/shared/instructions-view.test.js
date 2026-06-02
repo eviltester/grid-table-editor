@@ -35,6 +35,8 @@ describe('instructions view', () => {
     expect(root.textContent).toContain('Copy Instructions To Grid');
     expect(root.textContent).toContain('Alan Richardson');
     expect(root.querySelector('.instructions-copy-to-grid-button')).not.toBeNull();
+    expect(root.querySelectorAll('.instruction-item-icon svg.instruction-action-icon')).toHaveLength(5);
+    expect(root.querySelector('.instruction-item-icon[title="Rename column"]')).not.toBeNull();
   });
 
   test('renders the generator instructions variant without the app-only action button', () => {
@@ -48,6 +50,21 @@ describe('instructions view', () => {
     expect(root.textContent).toContain('Generate Pairwise combinations');
     expect(root.querySelector('.instructions-copy-to-grid-button')).toBeNull();
     expect(root.querySelector('[data-help="generator-screen-overview"]')).not.toBeNull();
+  });
+
+  test('falls back to text-only instructions when an icon name is unknown', () => {
+    const root = document.getElementById('root');
+    createInstructionsComponent({
+      root,
+      props: {
+        title: 'Safe Instructions',
+        helpKey: 'safe-help',
+        items: [{ icon: 'not-a-real-icon', title: 'Missing icon', text: 'Still render this instruction' }],
+      },
+    });
+
+    expect(root.textContent).toContain('Still render this instruction');
+    expect(root.querySelector('.instruction-item-icon')).toBeNull();
   });
 
   test('updates rendered content when the variant props change', () => {

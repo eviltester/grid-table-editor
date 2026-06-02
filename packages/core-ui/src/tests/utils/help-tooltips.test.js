@@ -60,6 +60,8 @@ describe('help tooltips module', () => {
     expect(helpIcon.getAttribute('tabindex')).toBe('0');
     expect(helpIcon.getAttribute('role')).toBe('button');
     expect(helpIcon.getAttribute('aria-label')).toBe('Show help');
+    expect(helpIcon.querySelector('svg.helpicon-svg')).not.toBeNull();
+    expect(helpIcon.querySelector('svg.helpicon-svg').getAttribute('aria-hidden')).toBe('true');
     expect(global.tippy).toHaveBeenCalledWith(
       expect.anything(),
       expect.objectContaining({
@@ -85,5 +87,19 @@ describe('help tooltips module', () => {
     expect(helpIcon.getAttribute('tabindex')).toBe('0');
     expect(helpIcon.getAttribute('role')).toBe('button');
     expect(helpIcon.getAttribute('aria-label')).toBe('Show help for this option');
+    expect(helpIcon.querySelector('svg.helpicon-svg')).not.toBeNull();
+  });
+
+  test('renders help icons even when tippy is unavailable', () => {
+    const root = dom.window.document.createElement('section');
+    root.innerHTML = `<span class="helpicon" data-help="csv-options"></span>`;
+    dom.window.document.body.appendChild(root);
+
+    const updateHelpHints = createUpdateHelpHints(dom.window.document, root);
+    updateHelpHints();
+
+    const helpIcon = root.querySelector('.helpicon');
+    expect(helpIcon.querySelector('svg.helpicon-svg')).not.toBeNull();
+    expect(helpIcon.getAttribute('aria-label')).toBe('Show help');
   });
 });

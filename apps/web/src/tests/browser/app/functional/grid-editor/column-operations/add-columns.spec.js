@@ -6,11 +6,11 @@ test.describe('2. Column Operations', () => {
     const { appPage, pageErrors } = await openApp(page);
     const [base] = await appPage.gridEditor.header.getColumnNames();
 
-    await expect(page.locator('#myGrid [title="add left"]')).toBeVisible();
-    await expect(page.locator('#myGrid [title="rename"]')).toBeVisible();
-    await expect(page.locator('#myGrid [title="delete"]')).toBeVisible();
-    await expect(page.locator('#myGrid [title="duplicate"]')).toBeVisible();
-    await expect(page.locator('#myGrid [title="add right"]')).toBeVisible();
+    await expect(page.locator('#myGrid [aria-label="Add column left"]')).toBeVisible();
+    await expect(page.locator('#myGrid [aria-label="Rename column"]')).toBeVisible();
+    await expect(page.locator('#myGrid [aria-label="Delete column"]')).toBeVisible();
+    await expect(page.locator('#myGrid [aria-label="Duplicate column"]')).toBeVisible();
+    await expect(page.locator('#myGrid [aria-label="Add column right"]')).toBeVisible();
 
     await appPage.gridEditor.header.addColumnLeft(base, 'Left Col');
     await expect.poll(async () => appPage.gridEditor.header.getColumnNames()).toEqual(['Left Col', base]);

@@ -6,18 +6,19 @@ class GridEditorComponent {
   constructor(page) {
     this.page = page;
     this.container = page.locator('#main-grid-view');
+    this.toolbar = this.container.locator('[data-role="grid-toolbar-root"]');
     this.grid = page.locator('#myGrid');
     this.renderer = new GridRendererComponent(page, this.grid);
     this.header = new GridHeaderComponent(page, this.grid, this.renderer);
-    this.addRowButton = page.getByRole('button', { name: 'Add Row', exact: true });
-    this.addRowsAboveButton = page.getByRole('button', { name: 'Add Rows Above' });
-    this.addRowsBelowButton = page.getByRole('button', { name: 'Add Rows Below' });
-    this.deleteSelectedRowsButton = page.getByRole('button', { name: 'Delete Selected Rows' });
-    this.quickFilterInput = page.getByLabel('Filter:');
-    this.clearFiltersButton = page.getByRole('button', { name: 'Clear Filters' });
-    this.clearSortButton = page.getByRole('button', { name: 'Clear Sort' });
-    this.resetTableButton = page.getByRole('button', { name: 'Reset Table' });
-    this.uniqueColumnNamesCheckbox = page.locator('#uniqueColumnNamesCheckbox');
+    this.addRowButton = this.toolbar.getByRole('button', { name: 'Add Row', exact: true });
+    this.addRowsAboveButton = this.toolbar.getByRole('button', { name: 'Add Rows Above' });
+    this.addRowsBelowButton = this.toolbar.getByRole('button', { name: 'Add Rows Below' });
+    this.deleteSelectedRowsButton = this.toolbar.getByRole('button', { name: 'Delete Selected Rows' });
+    this.quickFilterInput = this.toolbar.getByLabel('Filter:');
+    this.clearFiltersButton = this.toolbar.getByRole('button', { name: 'Clear Filters' });
+    this.clearSortButton = this.toolbar.getByRole('button', { name: 'Clear Sort' });
+    this.resetTableButton = this.toolbar.getByRole('button', { name: 'Reset Table' });
+    this.uniqueColumnNamesCheckbox = this.toolbar.getByRole('checkbox', { name: 'Unique Column Names' });
   }
 
   async expectVisible() {

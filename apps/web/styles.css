@@ -227,6 +227,21 @@ details[open] ul li:last-child {
   padding-bottom: 10px;
 }
 
+.instruction-item-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  margin-right: 0.25rem;
+  color: currentcolor;
+  vertical-align: -0.2rem;
+}
+
+.instruction-action-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
 .appheading {
   text-align: center;
   margin: 0px;
@@ -358,6 +373,15 @@ Custom header styles for default items
 .headerWrapper {
   width: 100%;
 }
+
+.app-icon {
+  display: inline-block;
+  flex: none;
+  color: currentcolor;
+  vertical-align: -0.15em;
+  pointer-events: none;
+}
+
 .customHeaderTop {
   display: flex;
 }
@@ -373,6 +397,10 @@ Custom header styles for default items
   margin: 0 3px 0 3px;
 }
 
+.customFilterMenuButton {
+  flex: 0;
+}
+
 .customHeaderLabel {
   flex: 3;
   text-align: center;
@@ -380,21 +408,15 @@ Custom header styles for default items
 
 .customSortDownLabel {
   margin: 0 0 0 6px;
-  padding: 0 2px;
-  cursor: pointer;
 }
 
 .customSortUpLabel {
   margin: 0;
-  padding: 0 2px;
-  cursor: pointer;
 }
 
 .customSortRemoveLabel {
   margin: 0 0 0 2px;
-  padding: 0 2px;
   font-size: 11px;
-  cursor: pointer;
 }
 
 .active {
@@ -403,8 +425,51 @@ Custom header styles for default items
 
 /* The grid heading control buttons */
 .headerbuttons {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  width: 100%;
   text-align: center;
   color: #1e4a01;
+}
+
+.header-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  padding: 0;
+  color: inherit;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.header-icon-button:hover,
+.header-icon-button:focus-visible {
+  background: color-mix(in srgb, currentcolor 10%, transparent);
+  border-color: color-mix(in srgb, currentcolor 35%, transparent);
+}
+
+.customHeaderDeleteButton:hover,
+.customHeaderDeleteButton:focus-visible,
+.header-icon-button[data-action='delete']:hover,
+.header-icon-button[data-action='delete']:focus-visible {
+  color: #8d1b1b;
+}
+
+.header-action-icon {
+  width: 0.95rem;
+  height: 0.95rem;
+}
+
+.header-sort-icon {
+  width: 0.8rem;
+  height: 0.8rem;
 }
 
 /* Docs */
@@ -472,13 +537,17 @@ Custom header styles for default items
 /* Styling for inline application help */
 /* use in a div or span to avoid having a border, which would happen on img if no src attribute present */
 .helpicon {
-  background: url('./images/circle-question-solid.svg');
   width: 1em;
   height: 1em;
-  display: inline-block;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: currentcolor;
+}
+
+.helpicon-svg {
+  width: 1em;
+  height: 1em;
 }
 
 button.helpicon {
@@ -488,14 +557,13 @@ button.helpicon {
   padding: 0;
   margin: 0;
   background-color: transparent;
-  vertical-align: middle;
-  line-height: 1;
+  line-height: 0;
   cursor: pointer;
   flex: 0 0 auto;
 }
 
 body.theme-dark .helpicon {
-  filter: invert(1) brightness(1.2);
+  color: var(--page-text);
 }
 
 .helplink {
@@ -587,26 +655,10 @@ body.theme-dark .helpicon {
 }
 
 .generator-file-icon {
-  display: inline-block;
-  width: 0.8rem;
-  height: 0.95rem;
+  width: 1rem;
+  height: 1rem;
   margin-right: 0.4rem;
-  vertical-align: -0.1rem;
-  background: var(--panel-bg);
-  border: 1px solid #d8f3dc;
-  border-radius: 1px;
-  position: relative;
-}
-
-.generator-file-icon::after {
-  content: '';
-  position: absolute;
-  top: -1px;
-  right: -1px;
-  width: 0.28rem;
-  height: 0.28rem;
-  background: #74c69d;
-  clip-path: polygon(100% 0, 0 0, 100% 100%);
+  vertical-align: -0.2rem;
 }
 
 .generator-options-wrapper {
@@ -860,8 +912,12 @@ body.theme-dark .generator-status-text[data-severity='info'] {
 }
 
 .icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-width: 2rem;
   height: 2rem;
+  padding: 0;
   line-height: 1;
   color: var(--button-text);
 }

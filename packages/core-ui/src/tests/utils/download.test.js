@@ -42,4 +42,16 @@ describe('Download', () => {
     expect(document.body.querySelector('a')).toBeNull();
     expect(URL.revokeObjectURL).toHaveBeenCalledWith(fakeBlobUrl);
   });
+
+  test('downloadFile is a safe no-op without a document', () => {
+    const originalDocument = global.document;
+    delete global.document;
+
+    try {
+      const download = new Download('report.txt');
+      expect(download.downloadFile('hello world')).toBe(false);
+    } finally {
+      global.document = originalDocument;
+    }
+  });
 });

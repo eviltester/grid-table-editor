@@ -77,7 +77,6 @@ function renderSharedSchemaDefinitionStory(args) {
   const fakerCommands = getFakerCommands().filter((command) => command !== 'RegEx' && command.startsWith('helpers.'));
   const domainCommands = getDomainCommands();
   const root = document.createElement('section');
-  document.body.appendChild(root);
   const ids = createIds(args.idPrefix || 'shared-schema');
   const createBlankRow = createBlankRowFactory(args.idPrefix || 'story-schema-row');
   const component = createSharedSchemaDefinitionComponent({
@@ -154,32 +153,24 @@ function renderSharedSchemaDefinitionStory(args) {
 }
 
 function expectSchemaModeVisible(canvasElement) {
-  const rows = canvasElement.querySelector('.generator-schema-rows');
-  const textContainer = canvasElement.querySelector('.generator-schema-text');
-  const addButton = canvasElement.querySelector('.generator-schema-footer button');
-  const toggleButton = within(canvasElement).getByRole('button', { name: /edit as text/i });
-
-  expect(rows?.style.display).toBe('flex');
-  expect(textContainer?.style.display).toBe('none');
-  expect(addButton).toBeVisible();
-  expect(toggleButton).toBeVisible();
+  const canvas = within(canvasElement);
+  expect(canvasElement.querySelector('[data-role="schema-rows-region"]')).toBeVisible();
+  expect(canvasElement.querySelector('[data-role="schema-text-region"]')).not.toBeVisible();
+  expect(canvas.getByRole('button', { name: /\+ add field/i })).toBeVisible();
+  expect(canvas.getByRole('button', { name: /edit as text/i })).toBeVisible();
 }
 
 function expectTextModeVisible(canvasElement) {
-  const rows = canvasElement.querySelector('.generator-schema-rows');
-  const textContainer = canvasElement.querySelector('.generator-schema-text');
-  const addButton = canvasElement.querySelector('.generator-schema-footer button');
-  const toggleButton = within(canvasElement).getByRole('button', { name: /edit as schema/i });
-
-  expect(rows?.style.display).toBe('none');
-  expect(textContainer?.style.display).toBe('block');
-  expect(addButton).not.toBeVisible();
-  expect(toggleButton).toBeVisible();
+  const canvas = within(canvasElement);
+  expect(canvasElement.querySelector('[data-role="schema-rows-region"]')).not.toBeVisible();
+  expect(canvasElement.querySelector('[data-role="schema-text-region"]')).toBeVisible();
+  expect(canvasElement.querySelector('[data-role="schema-add-field"]')).not.toBeVisible();
+  expect(canvas.getByRole('button', { name: /edit as schema/i })).toBeVisible();
 }
 
 async function expectVisibleSchemaHelpTooltip({ helpHeadingText }) {
   await waitFor(() => {
-    const tooltipBox = Array.from(document.body.querySelectorAll('.tippy-box')).find((element) =>
+    const tooltipBox = Array.from(document.querySelectorAll('.tippy-box')).find((element) =>
       element.textContent?.includes(helpHeadingText)
     );
     expect(tooltipBox).not.toBeNull();
@@ -223,8 +214,8 @@ export const EmptySchema = {
   },
   play: async ({ canvasElement }) => {
     expectSchemaModeVisible(canvasElement);
-    expect(canvasElement.querySelectorAll('.generator-schema-row').length).toBe(1);
-    const helpIcon = canvasElement.querySelector('.helpicon[data-help="generator-schema-mode-help"]');
+    expect(within(canvasElement).getAllByPlaceholderText('Column Name')).toHaveLength(1);
+    const helpIcon = canvasElement.querySelector('[data-role="schema-mode-help"]');
     await userEvent.hover(helpIcon);
     await expectVisibleSchemaHelpTooltip({ helpHeadingText: 'Edit as Text' });
     await userEvent.unhover(helpIcon);
@@ -247,7 +238,7 @@ export const SampleSchema = {
   },
   play: async ({ canvasElement }) => {
     expectSchemaModeVisible(canvasElement);
-    expect(canvasElement.querySelectorAll('.generator-schema-row').length).toBeGreaterThan(1);
+    expect(within(canvasElement).getAllByPlaceholderText('Column Name').length).toBeGreaterThan(1);
   },
 };
 
@@ -300,7 +291,7 @@ export const TextMode = {
     const textArea = within(canvasElement).getByRole('textbox');
     await expect(textArea.value).toContain('Status');
     await expect(textArea.value).toContain('enum(active,inactive,pending)');
-    const helpIcon = canvasElement.querySelector('.helpicon[data-help="generator-schema-mode-help"]');
+    const helpIcon = canvasElement.querySelector('[data-role="schema-mode-help"]');
     await userEvent.hover(helpIcon);
     await expectVisibleSchemaHelpTooltip({ helpHeadingText: 'Edit as Schema' });
     await userEvent.unhover(helpIcon);

@@ -4,6 +4,7 @@ import {
 } from '../../../../packages/core-ui/js/gui_components/generator/options/index.js';
 import {
   createUnitTestStory,
+  playGenericApply,
   playJestApply,
   renderFormatOptionPanelStory,
 } from './format-option-panel.story-helpers.js';
@@ -58,24 +59,24 @@ export const Jest = getFrameworkStory(
   playJestApply
 );
 
-export const Vitest = getFrameworkStory('vitest');
-export const Mocha = getFrameworkStory('mocha');
-export const JUnit4 = getFrameworkStory('junit4');
-export const JUnit5 = getFrameworkStory('junit5');
-export const JUnit6 = getFrameworkStory('junit6');
-export const TestNg = getFrameworkStory('testng');
-export const PyTest = getFrameworkStory('pytest');
-export const Unittest = getFrameworkStory('unittest');
-export const Nose2 = getFrameworkStory('nose2');
-export const XUnit = getFrameworkStory('xunit');
-export const NUnit = getFrameworkStory('nunit');
-export const MSTest = getFrameworkStory('mstest');
-export const RSpec = getFrameworkStory('rspec');
-export const Minitest = getFrameworkStory('minitest');
-export const PHPUnit = getFrameworkStory('phpunit');
-export const Pest = getFrameworkStory('pest');
-export const Kotest = getFrameworkStory('kotest');
-export const JUnit5Kotlin = getFrameworkStory('junit5-kotlin');
-export const Spek = getFrameworkStory('spek');
-export const TestMore = getFrameworkStory('test-more');
-export const Test2Suite = getFrameworkStory('test2-suite');
+export const Vitest = getFrameworkStory('vitest', undefined, playGenericApply);
+export const Mocha = getFrameworkStory('mocha', undefined, playGenericApply);
+export const JUnit4 = getFrameworkStory('junit4', undefined, playGenericApply);
+export const JUnit5 = getFrameworkStory('junit5', undefined, playGenericApply);
+export const JUnit6 = getFrameworkStory('junit6', undefined, playGenericApply);
+export const TestNg = getFrameworkStory('testng', undefined, playGenericApply);
+export const PyTest = getFrameworkStory('pytest', undefined, playGenericApply);
+export const Unittest = getFrameworkStory('unittest', undefined, playGenericApply);
+export const Nose2 = getFrameworkStory('nose2', undefined, playGenericApply);
+export const XUnit = getFrameworkStory('xunit', undefined, playGenericApply);
+export const NUnit = getFrameworkStory('nunit', undefined, playGenericApply);
+export const MSTest = getFrameworkStory('mstest', undefined, playGenericApply);
+export const RSpec = getFrameworkStory('rspec', undefined, playGenericApply);
+export const Minitest = getFrameworkStory('minitest', undefined, playGenericApply);
+export const PHPUnit = getFrameworkStory('phpunit', undefined, playGenericApply);
+export const Pest = getFrameworkStory('pest', undefined, playGenericApply);
+export const Kotest = getFrameworkStory('kotest', undefined, playGenericApply);
+export const JUnit5Kotlin = getFrameworkStory('junit5-kotlin', undefined, playGenericApply);
+export const Spek = getFrameworkStory('spek', undefined, playGenericApply);
+export const TestMore = getFrameworkStory('test-more', undefined, playGenericApply);
+export const Test2Suite = getFrameworkStory('test2-suite', undefined, playGenericApply);

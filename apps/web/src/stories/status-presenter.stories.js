@@ -3,27 +3,40 @@ import { createStatusPresenter } from '../../../../packages/core-ui/js/gui_compo
 
 let statusPresenterStoryInstanceCounter = 0;
 
-function renderStatusPresenterStory(args) {
-  const root = document.createElement('section');
-  const statusElementId = `storybook-status-presenter-${++statusPresenterStoryInstanceCounter}`;
+function createStatusPresenterHarness({ root, args, remountable = false }) {
+  let presenter = null;
+  let presenterRoot = null;
+
+  const mountPresenter = () => {
+    presenter?.destroy?.();
+    statusPresenterStoryInstanceCounter += 1;
+    const statusElementId = `storybook-status-presenter-${statusPresenterStoryInstanceCounter}`;
+    presenterRoot.innerHTML = `
+      <div id="${statusElementId}" class="import-progress-status" role="status" aria-live="polite" style="min-height:1.5rem;"></div>
+    `;
+
+    presenter = createStatusPresenter({
+      documentObj: document,
+      elementId: statusElementId,
+      hideWhenEmpty: args.hideWhenEmpty,
+      statusClassName: args.statusClassName,
+      visibleDisplay: args.visibleDisplay,
+    });
+  };
+
   root.style.display = 'grid';
   root.style.gap = '0.75rem';
-
   root.innerHTML = `
     <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
       <button type="button" data-action="show">Show status</button>
       <button type="button" data-action="clear">Clear status</button>
+      ${remountable ? '<button type="button" data-action="remount">Destroy and remount</button>' : ''}
     </div>
-    <div id="${statusElementId}" class="import-progress-status" role="status" aria-live="polite" style="min-height:1.5rem;"></div>
+    <div data-role="presenter-host"></div>
   `;
 
-  const presenter = createStatusPresenter({
-    documentObj: document,
-    elementId: statusElementId,
-    hideWhenEmpty: args.hideWhenEmpty,
-    statusClassName: args.statusClassName,
-    visibleDisplay: args.visibleDisplay,
-  });
+  presenterRoot = root.querySelector('[data-role="presenter-host"]');
+  mountPresenter();
 
   root.querySelector('[data-action="show"]')?.addEventListener('click', () => {
     presenter.setStatus(args.message, {
@@ -34,8 +47,20 @@ function renderStatusPresenterStory(args) {
   root.querySelector('[data-action="clear"]')?.addEventListener('click', () => {
     presenter.clear();
   });
+  root.querySelector('[data-action="remount"]')?.addEventListener('click', () => {
+    mountPresenter();
+  });
+
+  root.__storybookCleanup = () => {
+    presenter?.destroy?.();
+  };
 
   return root;
+}
+
+function renderStatusPresenterStory(args) {
+  const root = document.createElement('section');
+  return createStatusPresenterHarness({ root, args });
 }
 
 const meta = {
@@ -143,5 +168,32 @@ export const DismissableStatus = {
     const dismissButton = within(status).getByRole('button', { name: 'Dismiss message' });
     await userEvent.click(dismissButton);
     await expect(status).toHaveTextContent('');
+  },
+};
+
+export const RemountableStatus = {
+  args: {
+    message: 'Secondary export complete.',
+    severity: 'info',
+    dismissable: false,
+  },
+  render: (args) => createStatusPresenterHarness({ root: document.createElement('section'), args, remountable: true }),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Shows the non-loading presenter after an explicit destroy-and-remount cycle. Click **Destroy and remount** and then **Show status** again to confirm the rebuilt presenter still renders the message without inheriting stale loading state or dismiss buttons from the previous instance.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole('button', { name: 'Show status' }));
+    await expect(canvas.getByRole('status')).toHaveTextContent('Secondary export complete.');
+    await userEvent.click(canvas.getByRole('button', { name: 'Destroy and remount' }));
+    await expect(canvas.getByRole('status')).toHaveTextContent('');
+    await userEvent.click(canvas.getByRole('button', { name: 'Show status' }));
+    await expect(canvas.getByRole('status')).toHaveTextContent('Secondary export complete.');
+    await expect(canvas.getByRole('status')).toHaveAttribute('data-severity', 'info');
   },
 };

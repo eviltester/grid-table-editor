@@ -1,9 +1,10 @@
 import { createUpdateHelpHints } from '../../../help/help-tooltips.js';
+import { resolveDocumentObj } from '../../shared/dom/default-objects.js';
 import { TextPreviewEditorController } from './text-preview-editor-controller.js';
 import { TextPreviewEditorView } from './text-preview-editor-view.js';
 
 function createTextPreviewEditorComponent({ root, props = {}, callbacks = {}, documentObj } = {}) {
-  const resolvedDocumentObj = documentObj || globalThis.document;
+  const resolvedDocumentObj = resolveDocumentObj(documentObj, root);
   const controller = new TextPreviewEditorController({ props, callbacks });
   const view = new TextPreviewEditorView({
     root,

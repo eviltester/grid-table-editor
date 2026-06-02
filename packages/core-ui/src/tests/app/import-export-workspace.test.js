@@ -47,4 +47,36 @@ describe('ImportExportWorkspace', () => {
     expect(legacyControls.setOptionsViewForFormatType).toHaveBeenCalledTimes(1);
     expect(component.getState().selectedFormat).toBe('json');
   });
+
+  test('can mount from the root ownerDocument without a global document', () => {
+    const isolatedDom = new JSDOM('<!doctype html><html><body><div id="root"></div></body></html>');
+    const originalDocument = global.document;
+    const originalWindow = global.window;
+    delete global.document;
+    delete global.window;
+
+    try {
+      const component = createImportExportWorkspaceComponent({
+        root: isolatedDom.window.document.getElementById('root'),
+        services: {
+          importExportControls: {
+            bindExistingGui: jest.fn(),
+            renderTextFromGrid: jest.fn(),
+            setFileFormatType: jest.fn(),
+            setOptionsViewForFormatType: jest.fn(),
+            toggleTextEditMode: jest.fn(async () => 'edit'),
+            _syncGridFromTextButtonState: jest.fn(),
+            destroy: jest.fn(),
+          },
+        },
+      });
+
+      expect(isolatedDom.window.document.querySelector('#tabbedTextArea')).not.toBeNull();
+      component.destroy();
+    } finally {
+      global.document = originalDocument;
+      global.window = originalWindow;
+      isolatedDom.window.close();
+    }
+  });
 });

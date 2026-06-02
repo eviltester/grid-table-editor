@@ -1,9 +1,11 @@
+import { resolveDocumentObj, resolveWindowObj } from '../dom/default-objects.js';
+
 class FormatOptionsPanelView {
-  constructor({ root, controller, documentObj = document, windowObj, services = {} } = {}) {
+  constructor({ root, controller, documentObj, windowObj, services = {} } = {}) {
     this.root = root;
     this.controller = controller;
-    this.documentObj = documentObj;
-    this.windowObj = windowObj;
+    this.documentObj = resolveDocumentObj(documentObj, root);
+    this.windowObj = resolveWindowObj(windowObj, this.documentObj);
     this.services = services;
     this.panels = {};
     this.activePanel = null;

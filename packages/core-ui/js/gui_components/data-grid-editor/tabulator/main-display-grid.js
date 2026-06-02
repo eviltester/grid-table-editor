@@ -1,5 +1,6 @@
 import { createDataGridComponent } from '../index.js';
 import { GridExtension as TabulatorGridExtension } from './gridExtension-tabulator.js';
+import { getDefaultDocumentObj } from '../../shared/dom/default-objects.js';
 
 /*
  * Intentional compatibility facade for the app runtime's grid-engine selector.
@@ -10,7 +11,7 @@ import { GridExtension as TabulatorGridExtension } from './gridExtension-tabulat
  */
 class ExtendedDataGrid {
   constructor({
-    documentObj = document,
+    documentObj = getDefaultDocumentObj(),
     TabulatorCtor = globalThis.Tabulator,
     GridExtensionClass = TabulatorGridExtension,
     createDataGridComponentFn = createDataGridComponent,

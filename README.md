@@ -243,6 +243,12 @@ Run workspace build/test orchestration from root:
 
 - `pnpm run build:workspaces`
 - `pnpm run test:workspaces`
+- `pnpm run test:workspaces:all`
+
+Notes:
+
+- `pnpm run test:workspaces` runs only the non-duplicating workspace tests that are not already covered by the root Jest suite (`@anywaydata/api`, `@anywaydata/cli`, and `@anywaydata/mcp`).
+- `pnpm run test:workspaces:all` preserves the old “run every workspace test script” behavior.
 
 Run an individual workspace command:
 

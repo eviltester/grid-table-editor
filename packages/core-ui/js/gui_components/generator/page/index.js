@@ -4,19 +4,15 @@ import { createGeneratorControlsComponent } from '../controls/index.js';
 import { createGeneratorPreviewComponent } from '../preview/index.js';
 import { GeneratorPageController } from './generator-page-controller.js';
 import { GeneratorPageView } from './generator-page-view.js';
+import { resolveDocumentObj } from '../../shared/dom/default-objects.js';
 
-function createGeneratorPageComponent({
-  root,
-  props = {},
-  services = {},
-  callbacks = {},
-  documentObj = document,
-} = {}) {
+function createGeneratorPageComponent({ root, props = {}, services = {}, callbacks = {}, documentObj } = {}) {
+  const resolvedDocumentObj = resolveDocumentObj(documentObj, root);
   const controller = new GeneratorPageController({ props });
   const view = new GeneratorPageView({
     root,
     controller,
-    documentObj,
+    documentObj: resolvedDocumentObj,
     services: {
       createTimedStatusPresenter: services.createTimedStatusPresenter || createTimedStatusPresenter,
       createSharedSchemaDefinitionComponent:

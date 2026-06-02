@@ -1,11 +1,13 @@
 import { DataGridComponentController } from './data-grid-component-controller.js';
 import { DataGridComponentView } from './data-grid-component-view.js';
+import { resolveDocumentObj } from '../shared/dom/default-objects.js';
 
-function createDataGridComponent({ root, props = {}, services = {}, documentObj = document } = {}) {
+function createDataGridComponent({ root, props = {}, services = {}, documentObj } = {}) {
   let gridExtras = null;
+  const resolvedDocumentObj = resolveDocumentObj(documentObj, root);
   const controller = new DataGridComponentController({
     props,
-    documentObj,
+    documentObj: resolvedDocumentObj,
     services: {
       ...services,
       getGridExtras: () => gridExtras,
@@ -14,7 +16,7 @@ function createDataGridComponent({ root, props = {}, services = {}, documentObj 
   const view = new DataGridComponentView({
     root,
     controller,
-    documentObj,
+    documentObj: resolvedDocumentObj,
     services,
   });
   view.mount();

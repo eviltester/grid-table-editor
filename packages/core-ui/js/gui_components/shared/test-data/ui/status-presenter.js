@@ -78,11 +78,18 @@ function createBaseStatusPresenter({
     ensureComponent()?.clear();
   };
 
+  const destroy = () => {
+    component?.destroy?.();
+    component = null;
+    rootElement = null;
+  };
+
   return {
     setStatus,
     clearPendingReset,
     scheduleClear,
     clear,
+    destroy,
   };
 }
 
@@ -92,6 +99,7 @@ function createStatusPresenter(options = {}) {
   return {
     clear: presenter.clear,
     clearPendingReset: presenter.clearPendingReset,
+    destroy: presenter.destroy,
     scheduleClear: presenter.scheduleClear,
     setStatus(message, options = {}) {
       presenter.setStatus(message, {
@@ -109,6 +117,7 @@ function createLoadingStatusPresenter(options = {}) {
   return {
     clear: presenter.clear,
     clearPendingReset: presenter.clearPendingReset,
+    destroy: presenter.destroy,
     scheduleClear: presenter.scheduleClear,
     setStatus(message) {
       presenter.setStatus(message, { isLoading: true });

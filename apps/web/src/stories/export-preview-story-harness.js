@@ -438,6 +438,7 @@ function renderGridPreviewStory({
   installStoryGlobals();
 
   const surface = createStorySurface('grid-preview');
+  // The legacy preview controller path still depends on a document-scoped surface for scoped lookup shimming.
   document.body.appendChild(surface);
   const workspaceHost = document.createElement('div');
   workspaceHost.id = `story-import-export-${storySurfaceCounter}`;

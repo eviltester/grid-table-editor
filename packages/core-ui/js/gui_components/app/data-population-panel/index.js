@@ -4,19 +4,16 @@ import { createPopulationActionsComponent } from '../population-actions/index.js
 import { createPopulationModeSelectorComponent } from '../population-mode-selector/index.js';
 import { DataPopulationPanelController } from './data-population-panel-controller.js';
 import { DataPopulationPanelView } from './data-population-panel-view.js';
+import { resolveDocumentObj } from '../../shared/dom/default-objects.js';
 
-function createDataPopulationPanelComponent({
-  root,
-  props = {},
-  services = {},
-  callbacks = {},
-  documentObj = document,
-} = {}) {
+function createDataPopulationPanelComponent({ root, props = {}, services = {}, callbacks = {}, documentObj } = {}) {
+  const resolvedDocumentObj = resolveDocumentObj(documentObj, root);
   const controller = new DataPopulationPanelController({ props, callbacks });
   const view = new DataPopulationPanelView({
     root,
     controller,
-    documentObj,
+    documentObj: resolvedDocumentObj,
+    ids: props.ids || {},
     services: {
       createPopulationActionsComponent: services.createPopulationActionsComponent || createPopulationActionsComponent,
       createPopulationModeSelectorComponent:
@@ -57,8 +54,20 @@ function createDataPopulationPanelComponent({
     getRowCountState() {
       return view.getRowCountState();
     },
+    getRowCountInputValue() {
+      return view.getRowCountInputValue();
+    },
     getSchemaDefinition() {
       return view.getSchemaDefinition();
+    },
+    setGenerateBusy(isBusy) {
+      view.setGenerateBusy(isBusy);
+    },
+    setGeneratePairwiseBusy(isBusy) {
+      view.setGeneratePairwiseBusy(isBusy);
+    },
+    setRefreshPreviewBusy(isBusy) {
+      view.setRefreshPreviewBusy(isBusy);
     },
     validateSchemaRows({ syncFromText = true } = {}) {
       if (syncFromText) {

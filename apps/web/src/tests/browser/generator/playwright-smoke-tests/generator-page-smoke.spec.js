@@ -30,7 +30,7 @@ test('generator page initializes without browser errors', async ({ page }) => {
   await expectPageToInitialize(page, '/generator.html', {
     loadingSelector: '#generator-initial-load',
     readySelectors: ['#generator-app .generator-page', '#generatorOutputFormat', '#generator-preview-grid'],
-    textSelector: '#generatorPreviewHeading',
+    textSelector: '.generator-preview-head',
     textValue: 'Preview',
   });
 });

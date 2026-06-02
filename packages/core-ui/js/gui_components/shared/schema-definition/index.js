@@ -1,21 +1,23 @@
 import { SharedSchemaDefinitionController } from './shared-schema-definition-controller.js';
 import { SharedSchemaDefinitionView } from './shared-schema-definition-view.js';
 import { createUpdateHelpHints } from '../../../help/help-tooltips.js';
+import { resolveDocumentObj } from '../dom/default-objects.js';
 
-function createSharedSchemaDefinitionComponent({ root, props = {}, callbacks = {}, documentObj = document } = {}) {
+function createSharedSchemaDefinitionComponent({ root, props = {}, callbacks = {}, documentObj } = {}) {
+  const resolvedDocumentObj = resolveDocumentObj(documentObj, root);
   const controller = new SharedSchemaDefinitionController({
     props: {
       ...props,
       rootElement: root,
-      updateHelpHints: props.updateHelpHints || createUpdateHelpHints(documentObj, root),
+      updateHelpHints: props.updateHelpHints || createUpdateHelpHints(resolvedDocumentObj, root),
     },
     callbacks,
-    documentObj,
+    documentObj: resolvedDocumentObj,
   });
   const view = new SharedSchemaDefinitionView({
     root,
     controller,
-    documentObj,
+    documentObj: resolvedDocumentObj,
   });
   view.mount();
 

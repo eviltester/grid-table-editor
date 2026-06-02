@@ -1,18 +1,13 @@
+import { resolveDocumentObj, resolveWindowObj } from '../shared/dom/default-objects.js';
+
 class TabulatorGridAdapter {
-  constructor({
-    rootElement,
-    TabulatorCtor,
-    GridExtensionClass,
-    tabulatorOptions = {},
-    documentObj = document,
-    windowObj = documentObj?.defaultView || globalThis.window,
-  } = {}) {
+  constructor({ rootElement, TabulatorCtor, GridExtensionClass, tabulatorOptions = {}, documentObj, windowObj } = {}) {
     this.rootElement = rootElement;
     this.TabulatorCtor = TabulatorCtor;
     this.GridExtensionClass = GridExtensionClass;
     this.tabulatorOptions = tabulatorOptions;
-    this.documentObj = documentObj;
-    this.windowObj = windowObj;
+    this.documentObj = resolveDocumentObj(documentObj, rootElement);
+    this.windowObj = resolveWindowObj(windowObj, this.documentObj);
     this.tableApi = null;
     this.gridApi = null;
     this.isDestroyed = false;

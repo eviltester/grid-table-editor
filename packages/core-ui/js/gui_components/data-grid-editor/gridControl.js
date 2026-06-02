@@ -17,7 +17,7 @@ class GridControlsPageMap {
   }
 }
 
-function shouldEnforceUniqueColumnNames(documentObj = document) {
+function shouldEnforceUniqueColumnNames(documentObj = getDefaultDocumentObj()) {
   if (typeof documentObj?.getElementById === 'function') {
     return documentObj.getElementById('uniqueColumnNamesCheckbox')?.checked === true;
   }
@@ -133,7 +133,10 @@ class GridControl {
   }
 
   clearFilters() {
-    this.documentObj.getElementById('filter-text-box').value = '';
+    const filterTextBox = this.documentObj?.getElementById?.('filter-text-box');
+    if (filterTextBox) {
+      filterTextBox.value = '';
+    }
     this.gridExtras.clearFilters();
   }
 
@@ -144,7 +147,7 @@ class GridControl {
   }
 
   filterTextBoxChanged() {
-    this.gridExtras.filterText(this.documentObj.getElementById('filter-text-box').value);
+    this.gridExtras.filterText(this.documentObj?.getElementById?.('filter-text-box')?.value || '');
   }
 
   async clearTable() {

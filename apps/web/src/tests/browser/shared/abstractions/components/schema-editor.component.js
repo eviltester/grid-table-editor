@@ -5,6 +5,7 @@ class SchemaEditorComponent {
   constructor(page, config) {
     this.page = page;
     this.config = {
+      rootSelector: config.rootSelector || null,
       rowsSelector: config.rowsSelector,
       textAreaSelector: config.textAreaSelector,
       modeToggleSelector: config.modeToggleSelector || null,
@@ -13,11 +14,20 @@ class SchemaEditorComponent {
       fieldMap: config.fieldMap || {},
     };
 
-    this.rowsContainer = page.locator(this.config.rowsSelector);
-    this.rows = page.locator(`${this.config.rowsSelector} .generator-schema-row`);
-    this.textArea = page.locator(this.config.textAreaSelector);
-    this.modeToggleButton = this.config.modeToggleSelector ? page.locator(this.config.modeToggleSelector) : null;
-    this.addFieldButton = this.config.addFieldSelector ? page.locator(this.config.addFieldSelector) : null;
+    this.root = this.config.rootSelector ? page.locator(this.config.rootSelector) : page;
+    this.rowsContainer = this.config.rowsSelector
+      ? page.locator(this.config.rowsSelector)
+      : this.root.locator('[data-role="schema-rows-region"]');
+    this.rows = this.rowsContainer.locator('.generator-schema-row');
+    this.textArea = this.config.textAreaSelector
+      ? page.locator(this.config.textAreaSelector)
+      : this.root.locator('[data-role="schema-textbox"]');
+    this.modeToggleButton = this.config.modeToggleSelector
+      ? page.locator(this.config.modeToggleSelector)
+      : this.root.locator('[data-role="schema-mode-toggle"]');
+    this.addFieldButton = this.config.addFieldSelector
+      ? page.locator(this.config.addFieldSelector)
+      : this.root.locator('[data-role="schema-add-field"]');
     this.methodPicker = new MethodPickerDialogComponent(page);
   }
 

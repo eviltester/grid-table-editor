@@ -164,5 +164,32 @@ describe('import-export adapters', () => {
       expect(downloadService.downloadText).toHaveBeenCalledWith('export.csv', 'A,B\n1,2');
       expect(scheduleTimeoutFn).toHaveBeenCalled();
     });
+
+    test('clipboard and adapter are safe without a global document when a documentObj is injected', async () => {
+      const originalDocument = global.document;
+      delete global.document;
+
+      try {
+        const clipboardService = { copyFromTextArea: jest.fn() };
+        const adapter = createExportActionsAdapter({
+          root: documentObj.getElementById('root'),
+          documentObj,
+          exporter: {
+            canExport: jest.fn(() => true),
+            getFileExtensionFor: jest.fn(() => '.csv'),
+            getGridAs: jest.fn(() => 'A,B\n1,2'),
+          },
+          clipboardService,
+          downloadService: { downloadText: jest.fn() },
+          scheduleTimeoutFn: jest.fn(),
+        });
+
+        adapter.bind();
+        expect(() => adapter.copyText()).not.toThrow();
+        await expect(adapter.fileDownload()).resolves.toBeUndefined();
+      } finally {
+        global.document = originalDocument;
+      }
+    });
   });
 });

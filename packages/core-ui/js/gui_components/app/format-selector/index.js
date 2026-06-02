@@ -1,13 +1,9 @@
 import { FormatSelectorController, createDefaultTabDefinitions } from './format-selector-controller.js';
 import { FormatSelectorView } from './format-selector-view.js';
+import { resolveDocumentObj } from '../../shared/dom/default-objects.js';
 
-function createFormatSelectorComponent({
-  root,
-  subtasksRoot,
-  props = {},
-  callbacks = {},
-  documentObj = document,
-} = {}) {
+function createFormatSelectorComponent({ root, subtasksRoot, props = {}, callbacks = {}, documentObj } = {}) {
+  const resolvedDocumentObj = resolveDocumentObj(documentObj, root || subtasksRoot);
   const controller = new FormatSelectorController({
     props: {
       tabDefinitions: props.tabDefinitions || createDefaultTabDefinitions(),
@@ -20,7 +16,7 @@ function createFormatSelectorComponent({
     root,
     subtasksRoot,
     controller,
-    documentObj,
+    documentObj: resolvedDocumentObj,
   });
 
   view.mount();

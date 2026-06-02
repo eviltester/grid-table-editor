@@ -1,7 +1,8 @@
 import { createSharedSchemaEditorController } from '../test-data/schema/index.js';
+import { getDefaultDocumentObj } from '../dom/default-objects.js';
 
 class SharedSchemaDefinitionController {
-  constructor({ props = {}, callbacks = {}, documentObj = globalThis.document } = {}) {
+  constructor({ props = {}, callbacks = {}, documentObj = getDefaultDocumentObj() } = {}) {
     this.props = { ...props };
     this.callbacks = callbacks;
     this.documentObj = documentObj;

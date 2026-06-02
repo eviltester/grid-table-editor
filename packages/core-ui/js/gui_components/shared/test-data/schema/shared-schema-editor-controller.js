@@ -16,6 +16,7 @@ import { schemaRowsToSpecWithTokens } from './schema-editor-core.js';
 import { schemaErrorsToText } from './schema-error-text.js';
 import { getSchemaRowSemanticValidationIssues } from './schema-row-validation.js';
 import { captureActiveFieldState, restoreActiveFieldState } from './schema-focus-state.js';
+import { getDefaultDocumentObj, resolveWindowObj } from '../../dom/default-objects.js';
 import {
   renderGeneratorSchemaRows,
   clearSchemaRowDragClasses,
@@ -43,7 +44,7 @@ function createSchemaDomAdapter({ documentObj, rootElement, idMap = {} }) {
 }
 
 function createSharedSchemaEditorController({
-  documentObj = document,
+  documentObj = getDefaultDocumentObj(),
   schemaTextToDataRules,
   dataRulesToSchemaText,
   faker,
@@ -98,7 +99,7 @@ function createSharedSchemaEditorController({
       updateHelpHints();
       return;
     }
-    const windowObj = documentObj?.defaultView || globalThis.window;
+    const windowObj = resolveWindowObj(null, documentObj);
     if (typeof windowObj?.updateHelpHints === 'function') {
       windowObj.updateHelpHints();
     }
@@ -423,7 +424,7 @@ function createSharedSchemaEditorController({
         try {
           const selected = await openMethodPickerModal({
             documentObj,
-            windowObj: documentObj?.defaultView || globalThis.window,
+            windowObj: resolveWindowObj(null, documentObj),
             options: getMethodPickerOptions(row.command),
             currentCommand: row.command,
             initialTab: getPickerInitialTab(row.sourceType),

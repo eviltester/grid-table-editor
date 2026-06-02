@@ -1,8 +1,10 @@
+import { resolveDocumentObj } from '../../shared/dom/default-objects.js';
+
 class GeneratorPageView {
-  constructor({ root, controller, documentObj = document, services = {}, callbacks = {} } = {}) {
+  constructor({ root, controller, documentObj, services = {}, callbacks = {} } = {}) {
     this.root = root;
     this.controller = controller;
-    this.documentObj = documentObj;
+    this.documentObj = resolveDocumentObj(documentObj, root);
     this.services = services;
     this.callbacks = callbacks;
     this.schemaDefinition = null;
@@ -79,7 +81,7 @@ class GeneratorPageView {
     this.schemaDefinition?.destroy?.();
     this.generatorControls?.destroy?.();
     this.generatorPreview?.destroy?.();
-    this.schemaErrorDisplay?.clear?.();
+    this.schemaErrorDisplay?.destroy?.();
     this.root.replaceChildren();
   }
 

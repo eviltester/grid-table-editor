@@ -1,10 +1,19 @@
+import { resolveDocumentObj } from '../../shared/dom/default-objects.js';
+
 class DataPopulationPanelView {
-  constructor({ root, controller, documentObj = document, services = {}, callbacks = {} } = {}) {
+  constructor({ root, controller, documentObj, services = {}, callbacks = {}, ids = {} } = {}) {
     this.root = root;
     this.controller = controller;
-    this.documentObj = documentObj;
+    this.documentObj = resolveDocumentObj(documentObj, root);
     this.services = services;
     this.callbacks = callbacks;
+    this.ids = {
+      actionsRoot: 'populationActionsRoot',
+      rowCountRoot: 'generateCountControl',
+      modeSelectorRoot: 'populationModeSelectorRoot',
+      schemaDefinitionRoot: 'testDataSchemaDefinition',
+      ...ids,
+    };
     this.populationActions = null;
     this.populationModeSelector = null;
     this.rowCountControl = null;
@@ -25,12 +34,12 @@ class DataPopulationPanelView {
     return `
       <section class="data-population-panel" aria-label="Test Data Population Panel">
         <div class="data-population-toolbar">
-          <div id="populationActionsRoot"></div>
-          <span id="generateCountControl"></span>
-          <div id="populationModeSelectorRoot"></div>
+          <div data-role="population-actions-root"></div>
+          <span data-role="row-count-root"></span>
+          <div data-role="population-mode-selector-root"></div>
         </div>
         <div class="test-data-schema-edit-zone generator-schema">
-          <div id="testDataSchemaDefinition"></div>
+          <div id="${this.ids.schemaDefinitionRoot}" data-role="schema-definition-root"></div>
         </div>
       </section>
     `;
@@ -39,10 +48,11 @@ class DataPopulationPanelView {
   createFeatures() {
     const state = this.controller.getState();
     this.populationActions = this.services.createPopulationActionsComponent?.({
-      root: this.root.querySelector('#populationActionsRoot'),
+      root: this.root.querySelector('[data-role="population-actions-root"]'),
       documentObj: this.documentObj,
       props: {
         pairwiseVisible: state.pairwiseVisible,
+        ids: state.actionIds,
       },
       callbacks: {
         onGenerate: this.callbacks.onGenerate,
@@ -52,13 +62,13 @@ class DataPopulationPanelView {
     });
 
     this.rowCountControl = this.services.createRowCountControl?.({
-      root: this.root.querySelector('#generateCountControl'),
+      root: this.root.querySelector('[data-role="row-count-root"]'),
       documentObj: this.documentObj,
       props: state.rowCountProps,
     });
 
     this.populationModeSelector = this.services.createPopulationModeSelectorComponent?.({
-      root: this.root.querySelector('#populationModeSelectorRoot'),
+      root: this.root.querySelector('[data-role="population-mode-selector-root"]'),
       documentObj: this.documentObj,
       props: {
         name: 'testDataGenerationMode',
@@ -71,7 +81,7 @@ class DataPopulationPanelView {
     });
 
     this.schemaDefinition = this.services.createSharedSchemaDefinitionComponent?.({
-      root: this.root.querySelector('#testDataSchemaDefinition'),
+      root: this.root.querySelector('[data-role="schema-definition-root"]'),
       documentObj: this.documentObj,
       props: state.schemaDefinitionProps,
       callbacks: this.callbacks.schemaDefinition || {},
@@ -116,6 +126,22 @@ class DataPopulationPanelView {
 
   getRowCountState() {
     return this.rowCountControl?.getState?.() || null;
+  }
+
+  getRowCountInputValue() {
+    return this.rowCountControl?.getState?.()?.inputValue ?? null;
+  }
+
+  setGenerateBusy(isBusy) {
+    this.populationActions?.setGenerateBusy?.(isBusy);
+  }
+
+  setGeneratePairwiseBusy(isBusy) {
+    this.populationActions?.setGeneratePairwiseBusy?.(isBusy);
+  }
+
+  setRefreshPreviewBusy(isBusy) {
+    this.populationActions?.setRefreshPreviewBusy?.(isBusy);
   }
 
   getSchemaDefinition() {

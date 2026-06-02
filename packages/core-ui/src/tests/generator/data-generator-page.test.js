@@ -113,6 +113,28 @@ describe('DataGeneratorPage', () => {
     expect(spec).toBe('A\nword.noun()\nB\nliteral(x)');
   });
 
+  test('constructor does not require a global document before init', () => {
+    const originalDocument = global.document;
+    delete global.document;
+
+    try {
+      const page = new DataGeneratorPage({
+        parentElement: null,
+        faker: { word: { noun: () => 'x' } },
+        RandExp: function RandExp() {},
+        TabulatorCtor: FakeTabulator,
+        GridExtensionClass: FakeGridExtension,
+        ExporterClass: FakeExporter,
+        DownloadClass: FakeDownload,
+        TestDataGeneratorClass: TestDataGenerator,
+      });
+
+      expect(page.documentObj).toBeNull();
+    } finally {
+      global.document = originalDocument;
+    }
+  });
+
   test('literal rule extraction unwraps literal(...) variants for generation', () => {
     expect(extractLiteralValueFromRuleSpec('literal(Fixed)')).toBe('Fixed');
     expect(extractLiteralValueFromRuleSpec('literal("")')).toBe('');
@@ -517,20 +539,20 @@ describe('DataGeneratorPage', () => {
     });
     page.init();
 
-    expect(document.querySelector('#generatorOptionsPanel .delimited-options')).not.toBeNull();
+    expect(document.querySelector('[data-role="generator-options-panel"] .delimited-options')).not.toBeNull();
     expect(FakeExporter.lastInstance.getOptionsForType).toHaveBeenCalledWith('csv');
 
     const outputSelect = document.getElementById('generatorOutputFormat');
     outputSelect.value = 'json';
     outputSelect.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
 
-    expect(document.querySelector('#generatorOptionsPanel .json-options')).not.toBeNull();
+    expect(document.querySelector('[data-role="generator-options-panel"] .json-options')).not.toBeNull();
     expect(FakeExporter.lastInstance.getOptionsForType).toHaveBeenCalledWith('json');
 
-    const applyButton = document.querySelector('#generatorOptionsPanel .apply-options');
+    const applyButton = document.querySelector('[data-role="generator-options-panel"] .apply-options');
     expect(applyButton.disabled).toBe(true);
 
-    const dirtyTrigger = document.querySelector('#generatorOptionsPanel input[type="checkbox"]');
+    const dirtyTrigger = document.querySelector('[data-role="generator-options-panel"] input[type="checkbox"]');
     dirtyTrigger.checked = !dirtyTrigger.checked;
     dirtyTrigger.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
     expect(applyButton.disabled).toBe(false);

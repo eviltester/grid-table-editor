@@ -1,13 +1,25 @@
+import { getDefaultDocumentObj, resolveDocumentObj } from '../../shared/dom/default-objects.js';
+
+function resolveHeaderDocument(context, column) {
+  const tableElement = column?.getTable?.()?.element || null;
+  return resolveDocumentObj(context?.documentObj, tableElement);
+}
+
 //create header popup contents
 export const headerPopupFormatter = function (_e, column, _onRendered) {
-  var container = document.createElement('div');
+  const documentObj = resolveHeaderDocument(this, column);
+  if (!documentObj?.createElement) {
+    return null;
+  }
 
-  var label = document.createElement('label');
+  var container = documentObj.createElement('div');
+
+  var label = documentObj.createElement('label');
   label.innerHTML = 'Filter Column:';
   label.style.display = 'block';
   label.style.fontSize = '.7em';
 
-  var input = document.createElement('input');
+  var input = documentObj.createElement('input');
   input.placeholder = 'Filter Column...';
   input.value = column.getHeaderFilterValue() || '';
 
@@ -15,7 +27,7 @@ export const headerPopupFormatter = function (_e, column, _onRendered) {
     column.setHeaderFilterValue(input.value);
   });
 
-  var buttons = document.createElement('div');
+  var buttons = documentObj.createElement('div');
   buttons.classList.add('headerbuttons');
   buttons.innerHTML = `
         <span class="customHeaderAddLeftButton" title="add left">[<+]</span>
@@ -29,23 +41,23 @@ export const headerPopupFormatter = function (_e, column, _onRendered) {
   container.appendChild(input);
   container.appendChild(buttons);
 
-  headerAddLeftButton = buttons.querySelector('.customHeaderAddLeftButton');
-  onAddLeftButtonListener = onAddLeftButtonClick.bind(this);
-  headerAddLeftButton.addEventListener('click', this.onAddLeftButtonListener);
+  this.headerAddLeftButton = buttons.querySelector('.customHeaderAddLeftButton');
+  this.onAddLeftButtonListener = this.onAddLeftButtonClick.bind(this);
+  this.headerAddLeftButton.addEventListener('click', this.onAddLeftButtonListener);
 
-  this.headerRenameButton = this.eGui.querySelector('.customHeaderRenameButton');
+  this.headerRenameButton = buttons.querySelector('.customHeaderRenameButton');
   this.onRenameButtonListener = this.onRenameButtonClick.bind(this);
   this.headerRenameButton.addEventListener('click', this.onRenameButtonListener);
 
-  this.headerDeleteButton = this.eGui.querySelector('.customHeaderDeleteButton');
+  this.headerDeleteButton = buttons.querySelector('.customHeaderDeleteButton');
   this.onDeleteButtonListener = this.onDeleteButtonClick.bind(this);
   this.headerDeleteButton.addEventListener('click', this.onDeleteButtonListener);
 
-  this.headerDuplicateButton = this.eGui.querySelector('.customHeaderDuplicateButton');
+  this.headerDuplicateButton = buttons.querySelector('.customHeaderDuplicateButton');
   this.onDuplicateButtonListener = this.onDuplicateButtonClick.bind(this);
   this.headerDuplicateButton.addEventListener('click', this.onDuplicateButtonListener);
 
-  this.headerAddRightButton = this.eGui.querySelector('.customHeaderAddRightButton');
+  this.headerAddRightButton = buttons.querySelector('.customHeaderAddRightButton');
   this.onAddRightButtonListener = this.onAddRightButtonClick.bind(this);
   this.headerAddRightButton.addEventListener('click', this.onAddRightButtonListener);
 
@@ -54,5 +66,6 @@ export const headerPopupFormatter = function (_e, column, _onRendered) {
 
 //create dummy header filter to allow popup to filter
 export const emptyHeaderFilter = function () {
-  return document.createElement('div');
+  const documentObj = resolveDocumentObj(this?.documentObj, null) || getDefaultDocumentObj();
+  return documentObj?.createElement?.('div') || null;
 };

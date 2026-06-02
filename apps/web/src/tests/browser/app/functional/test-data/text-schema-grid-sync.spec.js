@@ -65,32 +65,14 @@ test.describe('7. Test Data Generation', () => {
     await appPage.testDataPanel.setSchemaText('Name\nperson.fullName');
     await expect.poll(async () => appPage.testDataPanel.getSchemaRowCount()).toBe(1);
     await expect.poll(async () => appPage.testDataPanel.getSchemaCell(0, 'type')).toBe('person.fullName');
-    await expect
-      .poll(async () =>
-        appPage.testDataPanel.page
-          .locator('#testDataSchemaRows .generator-schema-row')
-          .first()
-          .locator('select[data-field="sourceType"]')
-          .inputValue()
-      )
-      .toBe('domain');
+    await expect.poll(async () => appPage.testDataPanel.getSchemaSourceType(0)).toBe('domain');
 
     await appPage.testDataPanel.setSchemaText('Name\nperson.fullNam');
 
     await expect.poll(async () => appPage.testDataPanel.getSchemaCell(0, 'type')).toBe('person.fullNam');
-    await expect
-      .poll(async () =>
-        appPage.testDataPanel.page
-          .locator('#testDataSchemaRows .generator-schema-row')
-          .first()
-          .locator('select[data-field="sourceType"]')
-          .inputValue()
-      )
-      .toBe('domain');
+    await expect.poll(async () => appPage.testDataPanel.getSchemaSourceType(0)).toBe('domain');
 
-    await expect(appPage.testDataPanel.page.locator('#testDataSchemaRows .generator-schema-row').first()).toHaveClass(
-      /generator-schema-row-invalid/
-    );
+    await expect(appPage.testDataPanel.getSchemaRow(0)).toHaveClass(/generator-schema-row-invalid/);
 
     await appPage.testDataPanel.clickGenerate();
     await expect
@@ -116,22 +98,9 @@ test.describe('7. Test Data Generation', () => {
     await appPage.testDataPanel.setSchemaTextMode(false);
 
     await expect.poll(async () => appPage.testDataPanel.getSchemaCell(0, 'type')).toBe('person.fullName');
-    await expect
-      .poll(async () =>
-        appPage.testDataPanel.page
-          .locator('#testDataSchemaRows .generator-schema-row')
-          .first()
-          .locator('select[data-field="sourceType"]')
-          .inputValue()
-      )
-      .toBe('domain');
+    await expect.poll(async () => appPage.testDataPanel.getSchemaSourceType(0)).toBe('domain');
     await expect.poll(async () => appPage.testDataPanel.getSchemaCell(0, 'params')).toBe('(10)');
-    await expect(
-      appPage.testDataPanel.page
-        .locator('#testDataSchemaRows .generator-schema-row')
-        .first()
-        .locator('.generator-schema-row-validation')
-    ).toContainText('invalid domain params');
+    await expect(appPage.testDataPanel.getSchemaValidationMessage(0)).toContainText('invalid domain params');
 
     expectNoPageErrors(pageErrors);
   });
@@ -147,22 +116,11 @@ test.describe('7. Test Data Generation', () => {
     await appPage.testDataPanel.setSchemaCell(0, 'columnName', 'Name');
     await appPage.testDataPanel.setSchemaTypeValue(0, 'person.fullName');
 
-    const paramsInput = appPage.testDataPanel.page
-      .locator('#testDataSchemaRows .generator-schema-row')
-      .first()
-      .locator('input[data-field="params"]');
+    const paramsInput = appPage.testDataPanel.getSchemaRow(0).locator('input[data-field="params"]');
     await paramsInput.fill('(10)');
 
     await expect
-      .poll(
-        async () =>
-          await appPage.testDataPanel.page
-            .locator('#testDataSchemaRows .generator-schema-row')
-            .first()
-            .locator('.generator-schema-row-validation')
-            .textContent(),
-        { timeout: 2500 }
-      )
+      .poll(async () => await appPage.testDataPanel.getSchemaValidationMessage(0).textContent(), { timeout: 2500 })
       .toContain('invalid domain params');
 
     expectNoPageErrors(pageErrors);
@@ -176,7 +134,7 @@ test.describe('7. Test Data Generation', () => {
 
     await appPage.testDataPanel.addSchemaRow();
     await expect.poll(async () => appPage.testDataPanel.getSchemaRowCount()).toBe(1);
-    const row = appPage.testDataPanel.page.locator('#testDataSchemaRows .generator-schema-row').first();
+    const row = appPage.testDataPanel.getSchemaRow(0);
     await appPage.testDataPanel.setSchemaTypeValue(0, 'literal');
     await appPage.testDataPanel.setSchemaCell(0, 'value', 'Active');
     await appPage.testDataPanel.clickGenerate();
@@ -208,15 +166,7 @@ test.describe('7. Test Data Generation', () => {
     await appPage.testDataPanel.setSchemaTextMode(false);
 
     await expect.poll(async () => appPage.testDataPanel.getSchemaCell(0, 'type')).toBe('phone.number');
-    await expect
-      .poll(async () =>
-        appPage.testDataPanel.page
-          .locator('#testDataSchemaRows .generator-schema-row')
-          .first()
-          .locator('select[data-field="sourceType"]')
-          .inputValue()
-      )
-      .toBe('domain');
+    await expect.poll(async () => appPage.testDataPanel.getSchemaSourceType(0)).toBe('domain');
     await expect.poll(async () => appPage.testDataPanel.getSchemaCell(0, 'params')).toBe('(style=13)');
 
     expectNoPageErrors(pageErrors);

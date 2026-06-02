@@ -6,6 +6,7 @@ import { GuardedColumnEdits } from './shared/guarded-column-edits.js';
 import { createTabulatorGridAdapter } from './tabulator-grid-adapter.js';
 import { GridExtension as TabulatorGridExtension } from './tabulator/gridExtension-tabulator.js';
 import { shouldEnforceUniqueColumnNames } from './gridControl.js';
+import { resolveDocumentObj, resolveWindowObj } from '../shared/dom/default-objects.js';
 
 function createAppGridTabulatorOptions({ rootElement, textInputDialogService } = {}) {
   const customHeaderFormatter = function (cell) {
@@ -129,10 +130,10 @@ function createAppGridTabulatorOptions({ rootElement, textInputDialogService } =
 }
 
 class DataGridComponentView {
-  constructor({ root, controller, documentObj = document, services = {} } = {}) {
+  constructor({ root, controller, documentObj, services = {} } = {}) {
     this.root = root;
     this.controller = controller;
-    this.documentObj = documentObj;
+    this.documentObj = resolveDocumentObj(documentObj, root);
     this.services = services;
     this.toolbar = null;
     this.gridAdapter = null;
@@ -191,7 +192,7 @@ class DataGridComponentView {
     this.gridAdapter = createTabulatorGridAdapter({
       rootElement: gridRoot,
       documentObj: this.documentObj,
-      windowObj: this.documentObj?.defaultView || globalThis.window,
+      windowObj: resolveWindowObj(this.services.windowObj, this.documentObj),
       TabulatorCtor: this.services.TabulatorCtor || globalThis.Tabulator,
       GridExtensionClass: this.services.GridExtensionClass || TabulatorGridExtension,
       tabulatorOptions,

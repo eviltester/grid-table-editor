@@ -1,9 +1,10 @@
 import { GridToolbarController } from './grid-toolbar-controller.js';
 import { GridToolbarView } from './grid-toolbar-view.js';
+import { resolveDocumentObj } from '../../shared/dom/default-objects.js';
 
-function createGridToolbarComponent({ root, props = {}, callbacks = {}, documentObj = document } = {}) {
+function createGridToolbarComponent({ root, props = {}, callbacks = {}, documentObj } = {}) {
   const controller = new GridToolbarController({ props, callbacks });
-  const view = new GridToolbarView({ root, controller, documentObj });
+  const view = new GridToolbarView({ root, controller, documentObj: resolveDocumentObj(documentObj, root) });
   view.mount();
 
   return {

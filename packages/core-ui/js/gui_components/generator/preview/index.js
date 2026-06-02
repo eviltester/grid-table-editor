@@ -3,6 +3,7 @@ import { createUpdateHelpHints } from '../../../help/help-tooltips.js';
 import { createTabulatorGridAdapter } from './tabulator-grid-adapter.js';
 import { GeneratorPreviewController } from './generator-preview-controller.js';
 import { GeneratorPreviewView } from './generator-preview-view.js';
+import { resolveDocumentObj } from '../../shared/dom/default-objects.js';
 
 function createDefaultPreviewGridFactory({ TabulatorCtor, GridExtensionClass } = {}) {
   return function createPreviewGrid({ rootElement }) {
@@ -38,18 +39,14 @@ function createDefaultPreviewGridFactory({ TabulatorCtor, GridExtensionClass } =
   };
 }
 
-function createGeneratorPreviewComponent({
-  root,
-  props = {},
-  services = {},
-  callbacks = {},
-  documentObj = document,
-} = {}) {
+function createGeneratorPreviewComponent({ root, props = {}, services = {}, callbacks = {}, documentObj } = {}) {
+  const resolvedDocumentObj = resolveDocumentObj(documentObj, root);
   const controller = new GeneratorPreviewController({ props, callbacks });
   const view = new GeneratorPreviewView({
     root,
     controller,
-    documentObj,
+    documentObj: resolvedDocumentObj,
+    ids: props.ids || {},
     services: {
       createRowCountControl: services.createRowCountControl || createRowCountControl,
       createPreviewGrid:
@@ -58,7 +55,7 @@ function createGeneratorPreviewComponent({
           TabulatorCtor: services.TabulatorCtor,
           GridExtensionClass: services.GridExtensionClass,
         }),
-      updateHelpHints: services.updateHelpHints || createUpdateHelpHints(documentObj, root),
+      updateHelpHints: services.updateHelpHints || createUpdateHelpHints(resolvedDocumentObj, root),
     },
   });
 

@@ -3,13 +3,19 @@ class PopulationActionsController {
     this.callbacks = callbacks;
     this.state = {
       pairwiseVisible: props.pairwiseVisible === true,
+      generateBusy: props.generateBusy === true,
+      generatePairwiseBusy: props.generatePairwiseBusy === true,
+      refreshPreviewBusy: props.refreshPreviewBusy === true,
     };
   }
 
   updateProps(nextProps = {}) {
     this.state = {
       ...this.state,
-      pairwiseVisible: nextProps.pairwiseVisible === true,
+      pairwiseVisible: nextProps.pairwiseVisible ?? this.state.pairwiseVisible,
+      generateBusy: nextProps.generateBusy ?? this.state.generateBusy,
+      generatePairwiseBusy: nextProps.generatePairwiseBusy ?? this.state.generatePairwiseBusy,
+      refreshPreviewBusy: nextProps.refreshPreviewBusy ?? this.state.refreshPreviewBusy,
     };
   }
 

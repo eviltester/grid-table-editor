@@ -36,31 +36,6 @@ class StoryExtendedDataGrid {
   }
 }
 
-function createScopedStoryDocument(rootElement, documentObj = document) {
-  const scopedMethods = {
-    getElementById(id) {
-      return rootElement.querySelector(`#${id}`) || documentObj.getElementById(id);
-    },
-    querySelector(selector) {
-      return rootElement.querySelector(selector);
-    },
-    querySelectorAll(selector) {
-      return rootElement.querySelectorAll(selector);
-    },
-  };
-
-  return new Proxy(documentObj, {
-    get(target, prop) {
-      if (prop in scopedMethods) {
-        return scopedMethods[prop];
-      }
-
-      const value = Reflect.get(target, prop);
-      return typeof value === 'function' ? value.bind(target) : value;
-    },
-  });
-}
-
 function createAppPageStoryShell() {
   const root = document.createElement('main');
   root.setAttribute('aria-label', 'App page story');
@@ -83,18 +58,18 @@ function renderAppPageStory() {
   globalThis.RandExp = RandExp;
   globalThis.eval?.('var RandExp = globalThis.RandExp;');
   const root = createAppPageStoryShell();
+  // App bootstrap still resolves page feature roots from the live document.
   document.body.appendChild(root);
-  const scopedDocument = createScopedStoryDocument(root, document);
   let app = null;
 
   root.__appReady = bootstrapApp({
-    documentObj: scopedDocument,
+    documentObj: document,
     ensureGridLibraryLoadedFn: async () => {},
     activeGridEngineName: 'tabulator',
     createAppPageComponentFn: createOpenAppPageStoryComponent,
     ExtendedDataGridClass: class extends StoryExtendedDataGrid {
       constructor() {
-        super({ documentObj: scopedDocument });
+        super({ documentObj: document });
       }
     },
   }).then((instance) => {

@@ -40,4 +40,12 @@ describe('grid-error-surface', () => {
       dom.window.close();
     }
   });
+
+  test('returns a no-op surface without a document object', () => {
+    const display = getGridErrorDisplay(null);
+
+    expect(() => display.show('Missing root')).not.toThrow();
+    expect(() => showGridError('No document', null)).not.toThrow();
+    expect(display.getState()).toEqual({});
+  });
 });

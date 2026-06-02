@@ -1,9 +1,18 @@
+import { resolveDocumentObj } from '../../shared/dom/default-objects.js';
+
 class GeneratorPreviewView {
-  constructor({ root, controller, documentObj = document, services = {} } = {}) {
+  constructor({ root, controller, documentObj, services = {}, ids = {} } = {}) {
     this.root = root;
     this.controller = controller;
-    this.documentObj = documentObj;
+    this.documentObj = resolveDocumentObj(documentObj, root);
     this.services = services;
+    this.ids = {
+      previewButton: 'previewDataButton',
+      outputPreview: 'generatorOutputPreview',
+      previewGrid: 'generator-preview-grid',
+      rowCountInput: 'previewRowsCount',
+      ...ids,
+    };
     this.rowCountControls = [];
     this.previewGrid = null;
     this.previewTableApi = null;
@@ -23,13 +32,14 @@ class GeneratorPreviewView {
   }
 
   template() {
+    const ids = this.ids;
     return `
-      <section class="generator-preview" id="generatorPreviewSection" data-section-order="4" aria-labelledby="generatorPreviewHeading">
+      <section class="generator-preview" data-section-order="4" aria-label="Preview">
         <div class="generator-preview-head">
-          <strong id="generatorPreviewHeading">Preview</strong>
+          <strong>Preview</strong>
         </div>
-        <div class="generator-preview-controls" id="generatorPreviewControlsSection" data-subsection-order="1" aria-label="Preview Controls">
-          <div id="previewRowsCountControl"></div>
+        <div class="generator-preview-controls" data-subsection-order="1" aria-label="Preview Controls">
+          <div data-role="preview-rows-count-control"></div>
           <span class="generator-button-with-help">
             <button
               type="button"
@@ -40,21 +50,16 @@ class GeneratorPreviewView {
                 <p>Show a preview of the defined items count in the Output Preview area.</p>
               '
             ></button>
-            <button id="previewDataButton">Preview</button>
+            <button id="${ids.previewButton}">Preview</button>
           </span>
         </div>
-        <div class="generator-output-preview" id="generatorOutputPreviewSection" data-subsection-order="2" aria-label="Output Preview">
-          <label for="generatorOutputPreview">Output Preview</label>
-          <textarea id="generatorOutputPreview" readonly spellcheck="false"></textarea>
+        <div class="generator-output-preview" data-subsection-order="2" aria-label="Output Preview">
+          <label for="${ids.outputPreview}">Output Preview</label>
+          <textarea id="${ids.outputPreview}" readonly spellcheck="false"></textarea>
         </div>
-        <div
-          class="generator-data-table-preview"
-          id="generatorDataTablePreviewSection"
-          data-subsection-order="3"
-          aria-labelledby="generatorDataTablePreviewHeading"
-        >
-          <strong id="generatorDataTablePreviewHeading">Data Table Preview</strong>
-          <div id="generator-preview-grid" class="ag-theme-alpine" aria-label="Data Table Preview Grid"></div>
+        <div class="generator-data-table-preview" data-subsection-order="3" aria-label="Data Table Preview Section">
+          <strong>Data Table Preview</strong>
+          <div id="${ids.previewGrid}" class="ag-theme-alpine" aria-label="Data Table Preview Grid"></div>
         </div>
       </section>
     `;
@@ -62,14 +67,14 @@ class GeneratorPreviewView {
 
   createControls() {
     const createRowCountControl = this.services.createRowCountControl;
-    const previewRowsRoot = this.root.querySelector('#previewRowsCountControl');
+    const previewRowsRoot = this.root.querySelector('[data-role="preview-rows-count-control"]');
     if (previewRowsRoot && typeof createRowCountControl === 'function') {
       this.rowCountControls.push(
         createRowCountControl({
           root: previewRowsRoot,
           documentObj: this.documentObj,
           props: {
-            inputId: 'previewRowsCount',
+            inputId: this.ids.rowCountInput,
             label: 'Preview Items Count',
             min: 0,
             max: 50,
@@ -81,7 +86,7 @@ class GeneratorPreviewView {
       );
     }
 
-    const previewGridRoot = this.root.querySelector('#generator-preview-grid');
+    const previewGridRoot = this.root.querySelector(`#${this.ids.previewGrid}`);
     const previewGridService = this.services.createPreviewGrid;
     if (previewGridRoot && typeof previewGridService === 'function') {
       const result = previewGridService({
@@ -95,12 +100,12 @@ class GeneratorPreviewView {
   }
 
   bindEvents() {
-    this.root.querySelector('#previewDataButton')?.addEventListener('click', this.handlePreviewClick);
+    this.root.querySelector(`#${this.ids.previewButton}`)?.addEventListener('click', this.handlePreviewClick);
   }
 
   render() {
     const state = this.controller.getState();
-    const outputPreview = this.root.querySelector('#generatorOutputPreview');
+    const outputPreview = this.root.querySelector(`#${this.ids.outputPreview}`);
     if (outputPreview && outputPreview.value !== state.outputPreviewText) {
       outputPreview.value = state.outputPreviewText;
     }
@@ -108,7 +113,7 @@ class GeneratorPreviewView {
   }
 
   destroy() {
-    this.root.querySelector('#previewDataButton')?.removeEventListener('click', this.handlePreviewClick);
+    this.root.querySelector(`#${this.ids.previewButton}`)?.removeEventListener('click', this.handlePreviewClick);
     this.rowCountControls.forEach((control) => control?.destroy?.());
     this.rowCountControls = [];
     this.previewGridAdapter?.destroy?.();

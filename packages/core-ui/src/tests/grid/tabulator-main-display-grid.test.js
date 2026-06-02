@@ -47,4 +47,26 @@ describe('Tabulator main display grid', () => {
     expect(grid.getGridExtras()).toEqual({ grid: true });
     expect(grid.getTableApi()).toEqual({ table: true });
   });
+
+  test('constructor does not require a global document when one is injected later via root ownership', () => {
+    const originalDocument = global.document;
+    delete global.document;
+
+    try {
+      const grid = new ExtendedDataGrid({
+        createDataGridComponentFn: jest.fn(() => ({
+          getGridExtras: jest.fn(),
+          getTableApi: jest.fn(),
+          whenReady: jest.fn(() => Promise.resolve()),
+          destroy: jest.fn(),
+        })),
+        TabulatorCtor: class {},
+        GridExtensionClass: class {},
+      });
+
+      expect(grid.documentObj).toBeNull();
+    } finally {
+      global.document = originalDocument;
+    }
+  });
 });

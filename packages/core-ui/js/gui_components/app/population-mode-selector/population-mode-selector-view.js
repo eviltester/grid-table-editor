@@ -1,8 +1,10 @@
+import { resolveDocumentObj } from '../../shared/dom/default-objects.js';
+
 class PopulationModeSelectorView {
-  constructor({ root, controller, documentObj = document } = {}) {
+  constructor({ root, controller, documentObj } = {}) {
     this.root = root;
     this.controller = controller;
-    this.documentObj = documentObj;
+    this.documentObj = resolveDocumentObj(documentObj, root);
     this.handleChange = (event) => {
       const input = event?.target;
       if (!input?.checked) {

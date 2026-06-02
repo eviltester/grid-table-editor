@@ -39,6 +39,17 @@ describe('PopulationActions', () => {
     component.setPairwiseVisible(true);
     expect(document.getElementById('generateallpairs').style.display).toBe('');
 
+    component.setGenerateBusy(true);
+    component.setGeneratePairwiseBusy(true);
+    component.setRefreshPreviewBusy(true);
+    expect(document.getElementById('generatedata').disabled).toBe(true);
+    expect(document.getElementById('generateallpairs').disabled).toBe(true);
+    expect(document.getElementById('refreshtestdatapreview').disabled).toBe(true);
+
+    component.setGenerateBusy(false);
+    component.setGeneratePairwiseBusy(false);
+    component.setRefreshPreviewBusy(false);
+
     document.getElementById('generatedata').click();
     document.getElementById('generateallpairs').click();
     document.getElementById('refreshtestdatapreview').click();
@@ -47,5 +58,51 @@ describe('PopulationActions', () => {
     expect(onGeneratePairwise).toHaveBeenCalled();
     expect(onRefreshPreview).toHaveBeenCalled();
     component.destroy();
+  });
+
+  test('supports two instances in one document with distinct ids', () => {
+    const onGenerateA = jest.fn();
+    const onGenerateB = jest.fn();
+
+    const componentA = createPopulationActionsComponent({
+      root: document.getElementById('root'),
+      props: {
+        pairwiseVisible: true,
+        ids: {
+          generateButton: 'generatedata-a',
+          generatePairwiseButton: 'generateallpairs-a',
+          refreshPreviewButton: 'refreshtestdatapreview-a',
+          status: 'testdata-status-a',
+        },
+      },
+      callbacks: { onGenerate: onGenerateA },
+    });
+
+    const siblingRoot = document.createElement('div');
+    siblingRoot.id = 'root-b';
+    document.body.appendChild(siblingRoot);
+
+    const componentB = createPopulationActionsComponent({
+      root: siblingRoot,
+      props: {
+        pairwiseVisible: false,
+        ids: {
+          generateButton: 'generatedata-b',
+          generatePairwiseButton: 'generateallpairs-b',
+          refreshPreviewButton: 'refreshtestdatapreview-b',
+          status: 'testdata-status-b',
+        },
+      },
+      callbacks: { onGenerate: onGenerateB },
+    });
+
+    document.getElementById('generatedata-a').click();
+    expect(onGenerateA).toHaveBeenCalledTimes(1);
+    expect(onGenerateB).not.toHaveBeenCalled();
+    expect(document.getElementById('generateallpairs-a').style.display).toBe('');
+    expect(document.getElementById('generateallpairs-b').style.display).toBe('none');
+
+    componentA.destroy();
+    componentB.destroy();
   });
 });

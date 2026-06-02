@@ -3,25 +3,37 @@ import { createTimedStatusPresenter } from '../../../../packages/core-ui/js/gui_
 
 let timedStatusPresenterStoryInstanceCounter = 0;
 
-function renderTimedStatusPresenterStory(args) {
-  const root = document.createElement('section');
-  const statusElementId = `storybook-timed-status-${++timedStatusPresenterStoryInstanceCounter}`;
+function createTimedStatusPresenterHarness({ root, args, remountable = false }) {
+  let presenter = null;
+  let presenterRoot = null;
+
+  const mountPresenter = () => {
+    presenter?.destroy?.();
+    timedStatusPresenterStoryInstanceCounter += 1;
+    const statusElementId = `storybook-timed-status-${timedStatusPresenterStoryInstanceCounter}`;
+    presenterRoot.innerHTML = `
+      <div id="${statusElementId}" class="import-progress-status" role="status" aria-live="polite" style="min-height:1.5rem;"></div>
+    `;
+    presenter = createTimedStatusPresenter({
+      documentObj: document,
+      elementId: statusElementId,
+      timeoutMs: args.timeoutMs,
+    });
+  };
+
   root.style.display = 'grid';
   root.style.gap = '0.75rem';
-
   root.innerHTML = `
     <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
       <button type="button" data-action="show">Show timed status</button>
       <button type="button" data-action="clear">Clear timed status</button>
+      ${remountable ? '<button type="button" data-action="remount">Destroy and remount</button>' : ''}
     </div>
-    <div id="${statusElementId}" class="import-progress-status" role="status" aria-live="polite" style="min-height:1.5rem;"></div>
+    <div data-role="presenter-host"></div>
   `;
 
-  const presenter = createTimedStatusPresenter({
-    documentObj: document,
-    elementId: statusElementId,
-    timeoutMs: args.timeoutMs,
-  });
+  presenterRoot = root.querySelector('[data-role="presenter-host"]');
+  mountPresenter();
 
   root.querySelector('[data-action="show"]')?.addEventListener('click', () => {
     presenter.show(args.message, {
@@ -32,8 +44,20 @@ function renderTimedStatusPresenterStory(args) {
   root.querySelector('[data-action="clear"]')?.addEventListener('click', () => {
     presenter.clear();
   });
+  root.querySelector('[data-action="remount"]')?.addEventListener('click', () => {
+    mountPresenter();
+  });
+
+  root.__storybookCleanup = () => {
+    presenter?.destroy?.();
+  };
 
   return root;
+}
+
+function renderTimedStatusPresenterStory(args) {
+  const root = document.createElement('section');
+  return createTimedStatusPresenterHarness({ root, args });
 }
 
 const meta = {
@@ -137,5 +161,42 @@ export const AutoClearingNormalStatus = {
         { timeout: 2000 }
       );
     });
+  },
+};
+
+export const RemountableTimedStatus = {
+  args: {
+    message: 'Schema updated.',
+    severity: 'info',
+    timeoutMs: 700,
+  },
+  render: (args) =>
+    createTimedStatusPresenterHarness({ root: document.createElement('section'), args, remountable: true }),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Demonstrates the transient presenter after an explicit destroy-and-remount cycle. Click **Destroy and remount**, then **Show timed status** again, and confirm the rebuilt presenter still shows the message briefly and auto-clears. This is the presenter to use for short-lived feedback, not for persistent completion or in-progress loading states.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    let status = canvas.getByRole('status');
+
+    await userEvent.click(canvas.getByRole('button', { name: 'Show timed status' }));
+    await expect(status).toHaveTextContent('Schema updated.');
+    await userEvent.click(canvas.getByRole('button', { name: 'Destroy and remount' }));
+    status = canvas.getByRole('status', { hidden: true });
+    await expect(status).toHaveTextContent('');
+    await userEvent.click(canvas.getByRole('button', { name: 'Show timed status' }));
+    status = canvas.getByRole('status');
+    await expect(status).toHaveTextContent('Schema updated.');
+    await waitFor(
+      () => {
+        expect(status.textContent).toBe('');
+      },
+      { timeout: 2000 }
+    );
   },
 };

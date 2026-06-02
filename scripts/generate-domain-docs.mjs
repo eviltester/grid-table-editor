@@ -5,7 +5,10 @@ import { faker } from '@faker-js/faker';
 import { executeDomainKeyword } from '../packages/core/js/domain/domain-keywords.js';
 import { toInlineCode } from '../packages/core/js/domain/domain-doc-markdown.js';
 
-const outDir = path.resolve('docs-src/docs/040-test-data/domain');
+const configuredOutDir = process.env.ANYWAYDATA_DOMAIN_DOCS_OUT_DIR;
+const outDir = configuredOutDir
+  ? path.resolve(configuredOutDir)
+  : path.resolve('docs-src/docs/040-test-data/domain');
 fs.mkdirSync(outDir, { recursive: true });
 for (const fileName of fs.readdirSync(outDir)) {
   if (fileName.endsWith('.md')) {

@@ -5,19 +5,16 @@ import { createUpdateHelpHints } from '../../../help/help-tooltips.js';
 import { getOutputFormatGroups } from '../options/index.js';
 import { GeneratorControlsController } from './generator-controls-controller.js';
 import { GeneratorControlsView } from './generator-controls-view.js';
+import { resolveDocumentObj } from '../../shared/dom/default-objects.js';
 
-function createGeneratorControlsComponent({
-  root,
-  props = {},
-  services = {},
-  callbacks = {},
-  documentObj = document,
-} = {}) {
+function createGeneratorControlsComponent({ root, props = {}, services = {}, callbacks = {}, documentObj } = {}) {
+  const resolvedDocumentObj = resolveDocumentObj(documentObj, root);
   const controller = new GeneratorControlsController({ props, callbacks });
   const view = new GeneratorControlsView({
     root,
     controller,
-    documentObj,
+    documentObj: resolvedDocumentObj,
+    ids: props.ids || {},
     services: {
       createRowCountControl: services.createRowCountControl || createRowCountControl,
       createFormatOptionsPanel: services.createFormatOptionsPanel || createFormatOptionsPanel,
@@ -25,7 +22,7 @@ function createGeneratorControlsComponent({
       createLoadingStatusPresenter: services.createLoadingStatusPresenter || createLoadingStatusPresenter,
       getOutputFormatGroups: services.getOutputFormatGroups || getOutputFormatGroups,
       canExportFormat: services.canExportFormat || (() => true),
-      updateHelpHints: services.updateHelpHints || createUpdateHelpHints(documentObj, root),
+      updateHelpHints: services.updateHelpHints || createUpdateHelpHints(resolvedDocumentObj, root),
     },
   });
 

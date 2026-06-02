@@ -31,4 +31,19 @@ describe('ImportExportToolbar', () => {
     expect(helpIcon.getAttribute('role')).toBe('button');
     expect(helpIcon.getAttribute('aria-label')).toBe('Show help');
   });
+
+  test('can mount from the root ownerDocument without a global document', () => {
+    const originalDocument = global.document;
+    delete global.document;
+
+    try {
+      createImportExportToolbarComponent({ root });
+
+      const helpIcon = root.querySelector('.helpicon[data-help]');
+      expect(helpIcon).not.toBeNull();
+      expect(global.tippy).toHaveBeenCalled();
+    } finally {
+      global.document = originalDocument;
+    }
+  });
 });

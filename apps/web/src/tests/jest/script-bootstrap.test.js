@@ -352,4 +352,19 @@ describe('script bootstrap', () => {
     expect(loadingMessage.textContent).toContain('Failed to load libraries. Check console for details.');
     expect(loadingMessage.classList.contains('is-loading')).toBe(false);
   });
+
+  test('returns null without throwing when bootstrapApp is called without a document', async () => {
+    const originalDocument = global.document;
+    delete global.document;
+
+    try {
+      await expect(
+        bootstrapApp({
+          documentObj: null,
+        })
+      ).resolves.toBeNull();
+    } finally {
+      global.document = originalDocument;
+    }
+  });
 });

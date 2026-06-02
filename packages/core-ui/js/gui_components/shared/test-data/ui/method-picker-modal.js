@@ -1,3 +1,5 @@
+import { getDefaultDocumentObj, getDefaultWindowObj, resolveWindowObj } from '../../dom/default-objects.js';
+
 const RECENT_STORAGE_KEY = 'anywaydata.method-picker.recent';
 const MAX_RECENT = 8;
 const STYLE_ID = 'method-picker-modal-styles-link';
@@ -116,13 +118,17 @@ function getReturnExamples(model) {
 }
 
 function openMethodPickerModal({
-  documentObj = document,
-  windowObj = globalThis.window,
+  documentObj = getDefaultDocumentObj(),
+  windowObj = getDefaultWindowObj(),
   options = [],
   currentCommand = '',
   initialTab = '',
   title = 'Choose Method',
 } = {}) {
+  if (!documentObj?.body || typeof documentObj.createElement !== 'function') {
+    return Promise.resolve(null);
+  }
+  windowObj = resolveWindowObj(windowObj, documentObj);
   ensureStyles(documentObj);
   const overlay = documentObj.createElement('div');
   overlay.className = 'method-picker-overlay';

@@ -20,12 +20,16 @@ If verification fails:
 ## Notes
 
 - `verify:local` is the canonical local gate for this repo.
-- CI uses `verify:ci` and branch protection should require CI to pass before merge.
+- `verify:ui` is the required additional gate for frontend UI work. Use it when changing frontend components, Storybook stories, browser abstractions, or Playwright specs.
+- `verify:ci` is the full aggregate gate, including coverage, used to mirror the main-branch CI path locally.
+- Pull request CI runs parallel independent gates and intentionally skips coverage; coverage runs on `master` push CI.
 
 ## Browser Test Interaction Rules
 
 When changing UI code, UI test abstractions, or browser tests:
 
+- run `pnpm run verify:ui`
+- run `pnpm run test:browser:smoke` first when you want a quick browser-wiring signal before the full Playwright suite
 - run `pnpm run test:browser`
 - run `pnpm run test:storybook`
 - run `pnpm run build-storybook`

@@ -4,17 +4,41 @@ import { createFormatOptionsPanel } from '../../../../packages/core-ui/js/gui_co
 export function renderFormatOptionPanelStory(args) {
   const root = document.createElement('section');
   root.style.maxWidth = '320px';
+  root.style.display = 'grid';
+  root.style.gap = '0.75rem';
+
+  const panelRoot = document.createElement('div');
+  const summaryRoot = document.createElement('div');
+  summaryRoot.innerHTML = `
+    <p style="margin:0; font-size:0.9rem;">
+      Last apply payload:
+    </p>
+    <output data-role="dirty-state" style="display:block; margin-bottom:0.35rem;">Clean</output>
+    <pre data-role="applied-options" style="margin:0; padding:0.5rem; border:1px solid #d0d7de; border-radius:0.375rem; background:#f6f8fa; white-space:pre-wrap;">No options applied yet.</pre>
+  `;
+  root.appendChild(panelRoot);
+  root.appendChild(summaryRoot);
+
+  const dirtyStateOutput = summaryRoot.querySelector('[data-role="dirty-state"]');
+  const appliedOptionsOutput = summaryRoot.querySelector('[data-role="applied-options"]');
 
   const component = createFormatOptionsPanel({
-    root,
+    root: panelRoot,
     documentObj: document,
     props: {
       selectedFormat: args.selectedFormat,
       currentOptions: args.currentOptions,
     },
     callbacks: {
-      onApplyOptions: args.onApplyOptions,
-      onDirtyStateChanged: args.onDirtyStateChanged,
+      onApplyOptions: (payload) => {
+        appliedOptionsOutput.textContent = JSON.stringify(payload, null, 2);
+        dirtyStateOutput.textContent = 'Clean';
+        args.onApplyOptions?.(payload);
+      },
+      onDirtyStateChanged: (isDirty) => {
+        dirtyStateOutput.textContent = isDirty === true ? 'Dirty' : 'Clean';
+        args.onDirtyStateChanged?.(isDirty);
+      },
     },
   });
 
@@ -303,7 +327,7 @@ export function createStory(selectedFormat, currentOptions, description, play) {
         },
       },
     },
-    play: play || playGenericApply,
+    play,
   };
 }
 
@@ -317,21 +341,34 @@ export function createUnitTestStory(formatId, label, description, play) {
       },
     },
     description ||
-      `Shows the ${label} unit-test framework options path through the shared component. Hover the \`Options\` title help icon for the framework-level overview, then inspect the field help icons for suite naming, setup, and data-source strategy.`,
-    play
+      `Shows the ${label} unit-test framework options path through the shared component. Hover the \`Options\` title help icon for the framework-level overview, then inspect the field help icons for suite naming, setup, and data-source strategy. After applying a change, review the \`Last apply payload\` summary to confirm the emitted options contract.`,
+    play || playGenericApply
   );
+}
+
+async function expectAppliedPayload(canvasElement, expectedFragments) {
+  const appliedOptions = within(canvasElement).getByText((_, element) => {
+    return element?.getAttribute('data-role') === 'applied-options';
+  });
+  expectedFragments.forEach((fragment) => {
+    expect(appliedOptions.textContent).toContain(fragment);
+  });
 }
 
 export async function playCsvApply({ canvasElement }) {
   const canvas = within(canvasElement);
   const applyButton = canvas.getByRole('button', { name: 'Apply' });
   const headerCheckbox = canvas.getByRole('checkbox', { name: /use header/i });
+  const dirtyState = canvas.getByText((_, element) => element?.getAttribute('data-role') === 'dirty-state');
 
   await expect(applyButton).toBeDisabled();
   await userEvent.click(headerCheckbox);
+  await expect(dirtyState).toHaveTextContent('Dirty');
   await expect(applyButton).toBeEnabled();
   await userEvent.click(applyButton);
   await waitFor(() => expect(applyButton).toBeDisabled());
+  await expect(dirtyState).toHaveTextContent('Clean');
+  await expectAppliedPayload(canvasElement, ['"outputFormat": "csv"', '"header": false']);
 }
 
 export async function playDsvApply({ canvasElement }) {
@@ -344,6 +381,7 @@ export async function playDsvApply({ canvasElement }) {
   await expect(applyButton).toBeEnabled();
   await userEvent.click(applyButton);
   await waitFor(() => expect(applyButton).toBeDisabled());
+  await expectAppliedPayload(canvasElement, ['"outputFormat": "dsv"', '"delimiter": "|"']);
 }
 
 export async function playJsonApply({ canvasElement }) {
@@ -356,6 +394,7 @@ export async function playJsonApply({ canvasElement }) {
   await expect(applyButton).toBeEnabled();
   await userEvent.click(applyButton);
   await waitFor(() => expect(applyButton).toBeDisabled());
+  await expectAppliedPayload(canvasElement, ['"outputFormat": "json"', '"asObject": true']);
 }
 
 export async function playJsonlApply({ canvasElement }) {
@@ -368,6 +407,7 @@ export async function playJsonlApply({ canvasElement }) {
   await expect(applyButton).toBeEnabled();
   await userEvent.click(applyButton);
   await waitFor(() => expect(applyButton).toBeDisabled());
+  await expectAppliedPayload(canvasElement, ['"outputFormat": "jsonl"', '"makeNumbersNumeric": false']);
 }
 
 export async function playSqlApply({ canvasElement }) {
@@ -381,6 +421,7 @@ export async function playSqlApply({ canvasElement }) {
   await expect(applyButton).toBeEnabled();
   await userEvent.click(applyButton);
   await waitFor(() => expect(applyButton).toBeDisabled());
+  await expectAppliedPayload(canvasElement, ['"outputFormat": "sql"', '"tableName": "audit_log"']);
 }
 
 export async function playXmlApply({ canvasElement }) {
@@ -394,6 +435,7 @@ export async function playXmlApply({ canvasElement }) {
   await expect(applyButton).toBeEnabled();
   await userEvent.click(applyButton);
   await waitFor(() => expect(applyButton).toBeDisabled());
+  await expectAppliedPayload(canvasElement, ['"outputFormat": "xml"', '"rootElementName": "records"']);
 }
 
 export async function playMarkdownApply({ canvasElement }) {
@@ -406,6 +448,7 @@ export async function playMarkdownApply({ canvasElement }) {
   await expect(applyButton).toBeEnabled();
   await userEvent.click(applyButton);
   await waitFor(() => expect(applyButton).toBeDisabled());
+  await expectAppliedPayload(canvasElement, ['"outputFormat": "markdown"', '"prettyPrint": true']);
 }
 
 export async function playHtmlApply({ canvasElement }) {
@@ -418,6 +461,7 @@ export async function playHtmlApply({ canvasElement }) {
   await expect(applyButton).toBeEnabled();
   await userEvent.click(applyButton);
   await waitFor(() => expect(applyButton).toBeDisabled());
+  await expectAppliedPayload(canvasElement, ['"outputFormat": "html"', '"addTheadToTable": true']);
 }
 
 export async function playAsciiApply({ canvasElement }) {
@@ -431,6 +475,7 @@ export async function playAsciiApply({ canvasElement }) {
   await expect(applyButton).toBeEnabled();
   await userEvent.click(applyButton);
   await waitFor(() => expect(applyButton).toBeDisabled());
+  await expectAppliedPayload(canvasElement, ['"outputFormat": "asciitable"', '"style"']);
 }
 
 export async function playPythonApply({ canvasElement }) {
@@ -443,6 +488,7 @@ export async function playPythonApply({ canvasElement }) {
   await expect(applyButton).toBeEnabled();
   await userEvent.click(applyButton);
   await waitFor(() => expect(applyButton).toBeDisabled());
+  await expectAppliedPayload(canvasElement, ['"outputFormat": "python"', '"includeImports": true']);
 }
 
 export async function playJavascriptApply({ canvasElement }) {
@@ -455,6 +501,7 @@ export async function playJavascriptApply({ canvasElement }) {
   await expect(applyButton).toBeEnabled();
   await userEvent.click(applyButton);
   await waitFor(() => expect(applyButton).toBeDisabled());
+  await expectAppliedPayload(canvasElement, ['"outputFormat": "javascript"', '"asObject": true']);
 }
 
 export async function playJestApply({ canvasElement }) {
@@ -468,6 +515,7 @@ export async function playJestApply({ canvasElement }) {
   await expect(applyButton).toBeEnabled();
   await userEvent.click(applyButton);
   await waitFor(() => expect(applyButton).toBeDisabled());
+  await expectAppliedPayload(canvasElement, ['"outputFormat": "jest"', '"suiteName": "CustomerTableTests"']);
 }
 
 async function mutateFirstSupportedControl(root) {
@@ -514,4 +562,7 @@ export async function playGenericApply({ canvasElement }) {
   await expect(applyButton).toBeEnabled();
   await userEvent.click(applyButton);
   await waitFor(() => expect(applyButton).toBeDisabled());
+  await expect(
+    canvas.getByText((_, element) => element?.getAttribute('data-role') === 'applied-options').textContent
+  ).not.toContain('No options applied yet.');
 }

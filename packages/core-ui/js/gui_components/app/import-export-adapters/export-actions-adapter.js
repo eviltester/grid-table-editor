@@ -1,7 +1,8 @@
 import { Download } from '../../shared/download.js';
 import { scheduleTimeout } from '../../shared/unref-timeout.js';
+import { getDefaultDocumentObj, resolveWindowObj } from '../../shared/dom/default-objects.js';
 
-function createClipboardService({ documentObj = document } = {}) {
+function createClipboardService({ documentObj = getDefaultDocumentObj() } = {}) {
   return {
     copyFromTextArea(textArea) {
       if (!textArea) {
@@ -27,7 +28,7 @@ class ExportActionsAdapter {
   constructor({
     exporter = null,
     root = null,
-    documentObj = document,
+    documentObj = getDefaultDocumentObj(),
     clipboardService = createClipboardService({ documentObj }),
     downloadService = createDownloadService(),
     scheduleTimeoutFn = scheduleTimeout,
@@ -210,12 +211,15 @@ class ExportActionsAdapter {
 
   _yieldToUi() {
     return new Promise((resolve) => {
-      if (typeof requestAnimationFrame !== 'function') {
-        setTimeout(resolve, 0);
+      const windowObj = resolveWindowObj(null, this.documentObj);
+      const requestAnimationFrameFn = windowObj?.requestAnimationFrame?.bind(windowObj);
+      const setTimeoutFn = windowObj?.setTimeout?.bind(windowObj) || globalThis.setTimeout;
+      if (typeof requestAnimationFrameFn !== 'function') {
+        setTimeoutFn(resolve, 0);
         return;
       }
-      requestAnimationFrame(() => {
-        setTimeout(resolve, 0);
+      requestAnimationFrameFn(() => {
+        setTimeoutFn(resolve, 0);
       });
     });
   }

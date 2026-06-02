@@ -9,6 +9,7 @@ import {
   createFileImportBindingsAdapter,
   createFileReadService,
 } from './import-export-adapters/index.js';
+import { resolveWindowObj } from '../shared/dom/default-objects.js';
 
 function getDefaultDocumentObj() {
   return typeof document !== 'undefined' ? document : null;
@@ -343,7 +344,7 @@ class ImportExportControls {
     this.formatOptionsPanel = createFormatOptionsPanel({
       root: optionsparent,
       documentObj: this.documentObj,
-      windowObj: this.documentObj?.defaultView || globalThis.window,
+      windowObj: resolveWindowObj(null, this.documentObj),
       props: {
         selectedFormat: this._getActiveType(),
         currentOptions: this.exporter?.getOptionsForType?.(this._getActiveType()),

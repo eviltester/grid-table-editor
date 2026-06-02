@@ -3,6 +3,14 @@ const DOCUSAURUS_THEME_STORAGE_KEY = 'theme';
 const LIGHT_THEME = 'light';
 const DARK_THEME = 'dark';
 
+function getDefaultDocumentObj() {
+  return typeof document !== 'undefined' ? document : null;
+}
+
+function getDefaultWindowObj() {
+  return typeof window !== 'undefined' ? window : null;
+}
+
 function getStoredTheme(storage) {
   try {
     const docusaurusTheme = storage?.getItem?.(DOCUSAURUS_THEME_STORAGE_KEY) || '';
@@ -78,7 +86,10 @@ function updateToggleButtonLabel(button, theme) {
   button.setAttribute('title', nextThemeLabel);
 }
 
-function initThemeToggle({ documentObj = document, windowObj = window } = {}) {
+function initThemeToggle({ documentObj = getDefaultDocumentObj(), windowObj = getDefaultWindowObj() } = {}) {
+  if (!documentObj) {
+    return;
+  }
   const button = ensureThemeToggleButton(documentObj);
   if (!button) {
     return;

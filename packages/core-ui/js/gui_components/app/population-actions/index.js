@@ -1,9 +1,15 @@
 import { PopulationActionsController } from './population-actions-controller.js';
 import { PopulationActionsView } from './population-actions-view.js';
+import { resolveDocumentObj } from '../../shared/dom/default-objects.js';
 
-function createPopulationActionsComponent({ root, props = {}, callbacks = {}, documentObj = document } = {}) {
+function createPopulationActionsComponent({ root, props = {}, callbacks = {}, documentObj } = {}) {
   const controller = new PopulationActionsController({ props, callbacks });
-  const view = new PopulationActionsView({ root, controller, documentObj });
+  const view = new PopulationActionsView({
+    root,
+    controller,
+    documentObj: resolveDocumentObj(documentObj, root),
+    ids: props.ids || {},
+  });
   view.mount();
 
   return {
@@ -14,12 +20,24 @@ function createPopulationActionsComponent({ root, props = {}, callbacks = {}, do
     destroy() {
       view.destroy();
     },
-    getState() {
-      return controller.getState();
-    },
     setPairwiseVisible(isVisible) {
       controller.updateProps({ pairwiseVisible: isVisible });
       view.render();
+    },
+    setGenerateBusy(isBusy) {
+      controller.updateProps({ generateBusy: isBusy === true });
+      view.render();
+    },
+    setGeneratePairwiseBusy(isBusy) {
+      controller.updateProps({ generatePairwiseBusy: isBusy === true });
+      view.render();
+    },
+    setRefreshPreviewBusy(isBusy) {
+      controller.updateProps({ refreshPreviewBusy: isBusy === true });
+      view.render();
+    },
+    getState() {
+      return controller.getState();
     },
   };
 }

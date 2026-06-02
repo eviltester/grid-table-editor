@@ -1,8 +1,10 @@
+import { resolveDocumentObj } from '../../shared/dom/default-objects.js';
+
 class ImportExportWorkspaceView {
-  constructor({ root, controller, documentObj = document, services = {} } = {}) {
+  constructor({ root, controller, documentObj, services = {} } = {}) {
     this.root = root;
     this.controller = controller;
-    this.documentObj = documentObj;
+    this.documentObj = resolveDocumentObj(documentObj, root);
     this.services = services;
     this.toolbar = null;
     this.textPreviewEditor = null;

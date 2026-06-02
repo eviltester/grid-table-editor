@@ -66,11 +66,11 @@ describe('TimedStatusDisplay', () => {
     const replacement = dom.window.document.createElement('div');
     replacement.id = 'error';
 
-    display.show('Original error', { severity: 'error', sticky: true });
+    display.show('Original error', { severity: 'error', timeoutMs: 5000 });
     expect(original.textContent).toBe('Original error');
 
     original.replaceWith(replacement);
-    display.show('Replacement error', { severity: 'warning', sticky: true });
+    display.show('Replacement error', { severity: 'warning', timeoutMs: 5000 });
 
     expect(replacement.textContent).toBe('Replacement error');
     expect(replacement.getAttribute('data-severity')).toBe('warning');

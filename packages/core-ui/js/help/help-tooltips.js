@@ -1,4 +1,5 @@
 import { appOnlyInlineHelpEntries, sharedInlineHelpEntries } from './inline-help-content.js';
+import { getDefaultDocumentObj, resolveWindowObj } from '../gui_components/shared/dom/default-objects.js';
 
 function ensureInlineHelpContainer(documentObj) {
   let container = documentObj.getElementById('inline-help-items');
@@ -38,7 +39,7 @@ function upsertInlineHelpItems(documentObj, entries) {
 function createUpdateHelpHints(documentObj, rootElement = documentObj) {
   return function updateHelpHints() {
     const tippyFn = globalThis?.tippy;
-    if (typeof tippyFn !== 'function') {
+    if (typeof tippyFn !== 'function' || !documentObj) {
       return;
     }
 
@@ -93,7 +94,10 @@ function createUpdateHelpHints(documentObj, rootElement = documentObj) {
   };
 }
 
-function initHelpTooltips({ documentObj = document, includeAppOnlyEntries = false } = {}) {
+function initHelpTooltips({ documentObj = getDefaultDocumentObj(), includeAppOnlyEntries = false } = {}) {
+  if (!documentObj) {
+    return;
+  }
   const entries = includeAppOnlyEntries
     ? { ...sharedInlineHelpEntries, ...appOnlyInlineHelpEntries }
     : sharedInlineHelpEntries;
@@ -101,8 +105,9 @@ function initHelpTooltips({ documentObj = document, includeAppOnlyEntries = fals
   renderInlineHelpItems(documentObj, entries);
 
   const updateHelpHints = createUpdateHelpHints(documentObj);
-  if (typeof window !== 'undefined') {
-    window.updateHelpHints = updateHelpHints;
+  const windowObj = resolveWindowObj(null, documentObj);
+  if (windowObj) {
+    windowObj.updateHelpHints = updateHelpHints;
   }
   updateHelpHints();
 }

@@ -3,28 +3,40 @@ import { createLoadingStatusPresenter } from '../../../../packages/core-ui/js/gu
 
 let loadingStatusPresenterStoryInstanceId = 0;
 
-function renderLoadingStatusPresenterStory(args) {
-  loadingStatusPresenterStoryInstanceId += 1;
-  const elementId = `storybook-loading-status-presenter-${loadingStatusPresenterStoryInstanceId}`;
-  const root = document.createElement('section');
+function createLoadingStatusPresenterHarness({ root, args, remountable = false }) {
+  let presenter = null;
+  let presenterRoot = null;
+
+  const mountPresenter = () => {
+    presenter?.destroy?.();
+    loadingStatusPresenterStoryInstanceId += 1;
+    const elementId = `storybook-loading-status-presenter-${loadingStatusPresenterStoryInstanceId}`;
+    presenterRoot.innerHTML = `
+      <div id="${elementId}" class="import-progress-status" role="status" aria-live="polite" style="min-height:1.5rem;"></div>
+    `;
+
+    presenter = createLoadingStatusPresenter({
+      documentObj: document,
+      elementId,
+      hideWhenEmpty: args.hideWhenEmpty,
+      statusClassName: args.statusClassName,
+      visibleDisplay: args.visibleDisplay,
+    });
+  };
+
   root.style.display = 'grid';
   root.style.gap = '0.75rem';
-
   root.innerHTML = `
     <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
       <button type="button" data-action="show">Show loading status</button>
       <button type="button" data-action="clear">Clear status</button>
+      ${remountable ? '<button type="button" data-action="remount">Destroy and remount</button>' : ''}
     </div>
-    <div id="${elementId}" class="import-progress-status" role="status" aria-live="polite" style="min-height:1.5rem;"></div>
+    <div data-role="presenter-host"></div>
   `;
 
-  const presenter = createLoadingStatusPresenter({
-    documentObj: document,
-    elementId,
-    hideWhenEmpty: args.hideWhenEmpty,
-    statusClassName: args.statusClassName,
-    visibleDisplay: args.visibleDisplay,
-  });
+  presenterRoot = root.querySelector('[data-role="presenter-host"]');
+  mountPresenter();
 
   root.querySelector('[data-action="show"]')?.addEventListener('click', () => {
     presenter.setStatus(args.message);
@@ -32,8 +44,20 @@ function renderLoadingStatusPresenterStory(args) {
   root.querySelector('[data-action="clear"]')?.addEventListener('click', () => {
     presenter.clear();
   });
+  root.querySelector('[data-action="remount"]')?.addEventListener('click', () => {
+    mountPresenter();
+  });
+
+  root.__storybookCleanup = () => {
+    presenter?.destroy?.();
+  };
 
   return root;
+}
+
+function renderLoadingStatusPresenterStory(args) {
+  const root = document.createElement('section');
+  return createLoadingStatusPresenterHarness({ root, args });
 }
 
 const meta = {
@@ -99,5 +123,30 @@ export const LoadingStatus = {
     await userEvent.click(clearButton);
     await expect(status).toHaveTextContent('');
     await expect(status).not.toHaveClass('is-loading');
+  },
+};
+
+export const RemountableLoadingStatus = {
+  render: (args) =>
+    createLoadingStatusPresenterHarness({ root: document.createElement('section'), args, remountable: true }),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Demonstrates the loading-only presenter after an explicit destroy-and-remount cycle. Click **Destroy and remount** and then **Show loading status** again to confirm the rebuilt presenter still shows the spinner and loading class, which is the key difference from the plain Status Presenter.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole('button', { name: 'Show loading status' }));
+    await expect(canvas.getByRole('status')).toHaveTextContent('Preparing export...');
+    await expect(canvas.getByRole('status')).toHaveClass('is-loading');
+    await userEvent.click(canvas.getByRole('button', { name: 'Destroy and remount' }));
+    await expect(canvas.getByRole('status')).toHaveTextContent('');
+    await expect(canvas.getByRole('status')).not.toHaveClass('is-loading');
+    await userEvent.click(canvas.getByRole('button', { name: 'Show loading status' }));
+    await expect(canvas.getByRole('status')).toHaveTextContent('Preparing export...');
+    await expect(canvas.getByRole('status')).toHaveClass('is-loading');
   },
 };

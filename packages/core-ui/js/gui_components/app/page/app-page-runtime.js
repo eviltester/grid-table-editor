@@ -10,6 +10,7 @@ import { createAppPageComponent } from './app-page-shell.js';
 import { initHelpTooltips } from '../../../help/help-tooltips.js';
 import { initThemeToggle } from '../../shared/theme-toggle.js';
 import { createPageStartupLoadingStatus } from '../../shared/page-startup-loading-status.js';
+import { getDefaultDocumentObj, resolveWindowObj } from '../../shared/dom/default-objects.js';
 
 function createSampleGridData() {
   const sampleData = new GenericDataTable();
@@ -38,7 +39,7 @@ function createInstructionsGridData({ items = APP_PAGE_INSTRUCTIONS_PROPS.items 
   return instructionsData;
 }
 
-function createInstructionsGridActions({ documentObj = document, getMainDataGrid, getImporter } = {}) {
+function createInstructionsGridActions({ documentObj = getDefaultDocumentObj(), getMainDataGrid, getImporter } = {}) {
   let clickHandler = null;
 
   function loadGridData(dataTable) {
@@ -63,7 +64,7 @@ function createInstructionsGridActions({ documentObj = document, getMainDataGrid
 
   function bind() {
     if (clickHandler) {
-      documentObj.removeEventListener('click', clickHandler);
+      documentObj?.removeEventListener?.('click', clickHandler);
     }
 
     clickHandler = (event) => {
@@ -81,12 +82,12 @@ function createInstructionsGridActions({ documentObj = document, getMainDataGrid
       }
     };
 
-    documentObj.addEventListener('click', clickHandler);
+    documentObj?.addEventListener?.('click', clickHandler);
   }
 
   function destroy() {
     if (clickHandler) {
-      documentObj.removeEventListener('click', clickHandler);
+      documentObj?.removeEventListener?.('click', clickHandler);
       clickHandler = null;
     }
   }
@@ -100,7 +101,7 @@ function createInstructionsGridActions({ documentObj = document, getMainDataGrid
 }
 
 async function bootstrapApp({
-  documentObj = document,
+  documentObj = getDefaultDocumentObj(),
   ensureGridLibraryLoadedFn = ensureGridLibraryLoaded,
   activeGridEngineName = activeGridEngine,
   ExtendedDataGridClass = ExtendedDataGrid,
@@ -112,7 +113,10 @@ async function bootstrapApp({
   mountTestDataGenerationPanelFn = mountTestDataGenerationPanel,
   enableTestDataGenerationInterfaceFn,
 } = {}) {
-  initThemeToggle({ documentObj, windowObj: documentObj?.defaultView || window });
+  if (!documentObj) {
+    return null;
+  }
+  initThemeToggle({ documentObj, windowObj: resolveWindowObj(null, documentObj) });
   const pageRoot = documentObj.getElementById('app-page-root');
   const appPageComponent = pageRoot
     ? createAppPageComponentFn({

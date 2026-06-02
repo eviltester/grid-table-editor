@@ -57,7 +57,7 @@ function getSchemaHelpText(rootElement) {
   return rootElement.querySelector('[data-help="generator-schema-mode-help"]')?.getAttribute('data-help-text') || '';
 }
 
-function createGeneratorSchemaStoryProps() {
+function createGeneratorSchemaStoryProps(ids = {}) {
   let rowCounter = 1;
   const fakerCommands = getKnownFakerCommandsAlphabetical().filter(
     (command) => command !== 'RegEx' && command.startsWith('helpers.')
@@ -85,6 +85,7 @@ function createGeneratorSchemaStoryProps() {
       toggleButton: 'schemaModeToggleButton',
       helpIcon: 'schemaModeHelpIcon',
       error: 'generatorSchemaErrorText',
+      ...ids,
     },
     schemaTextToDataRules,
     dataRulesToSchemaText,
@@ -148,36 +149,32 @@ function createGeneratorSchemaStoryProps() {
   };
 }
 
-function prefixElementIds(root, prefix) {
-  const elementsWithIds = Array.from(root.querySelectorAll('[id]'));
-  const idMap = new Map();
-
-  elementsWithIds.forEach((element) => {
-    const originalId = element.id;
-    const nextId = `${prefix}-${originalId}`;
-    idMap.set(originalId, nextId);
-    element.id = nextId;
-  });
-
-  const referenceAttributes = ['for', 'aria-labelledby', 'aria-describedby', 'aria-controls', 'aria-owns'];
-  const selector = referenceAttributes.map((attribute) => `[${attribute}]`).join(',');
-
-  root.querySelectorAll(selector).forEach((element) => {
-    referenceAttributes.forEach((attribute) => {
-      const value = element.getAttribute(attribute);
-      if (!value) {
-        return;
-      }
-
-      const mapped = value
-        .split(/\s+/)
-        .map((token) => idMap.get(token) || token)
-        .join(' ');
-      element.setAttribute(attribute, mapped);
-    });
-  });
-
-  return idMap;
+function createGeneratorPageStoryIds(storyPrefix) {
+  return {
+    controls: {
+      outputFormatSelect: `${storyPrefix}-generatorOutputFormat`,
+      generateDataButton: `${storyPrefix}-generateDataButton`,
+      generatePairwiseButtonWrapper: `${storyPrefix}-generateAllPairsButtonWrapper`,
+      generatePairwiseButton: `${storyPrefix}-generateAllPairsButton`,
+      status: `${storyPrefix}-generatorStatusText`,
+      rowCountInput: `${storyPrefix}-generateRowsCount`,
+    },
+    preview: {
+      previewButton: `${storyPrefix}-previewDataButton`,
+      outputPreview: `${storyPrefix}-generatorOutputPreview`,
+      previewGrid: `${storyPrefix}-generator-preview-grid`,
+      rowCountInput: `${storyPrefix}-previewRowsCount`,
+    },
+    schema: {
+      rows: `${storyPrefix}-generatorSchemaRows`,
+      textContainer: `${storyPrefix}-generatorSchemaTextContainer`,
+      text: `${storyPrefix}-generatorSchemaText`,
+      addButton: `${storyPrefix}-addSchemaRowButton`,
+      toggleButton: `${storyPrefix}-schemaModeToggleButton`,
+      helpIcon: `${storyPrefix}-schemaModeHelpIcon`,
+      error: `${storyPrefix}-generatorSchemaErrorText`,
+    },
+  };
 }
 
 function renderGeneratorPageStory(args) {
@@ -205,6 +202,7 @@ function renderGeneratorPageStory(args) {
   const shell = createGeneratorPageShellComponent({
     root: shellRoot,
   });
+  const storyIds = createGeneratorPageStoryIds(storyPrefix);
 
   let component = null;
   const queuePreviewData = (pageComponent) => {
@@ -229,11 +227,13 @@ function renderGeneratorPageStory(args) {
         selectedFormat: args.selectedFormat,
         currentOptions: { options: { header: true, quoteChar: '"' } },
         pairwiseVisible: args.pairwiseVisible,
+        ids: storyIds.controls,
       },
       previewProps: {
         outputPreviewText: args.outputPreviewText,
+        ids: storyIds.preview,
       },
-      schemaDefinitionProps: createGeneratorSchemaStoryProps(),
+      schemaDefinitionProps: createGeneratorSchemaStoryProps(storyIds.schema),
     },
     services: {
       createTimedStatusPresenter: () => ({
@@ -246,8 +246,6 @@ function renderGeneratorPageStory(args) {
       },
     },
   });
-
-  prefixElementIds(root, storyPrefix);
   queuePreviewData(component);
 
   root.__storybookCleanup = () => {

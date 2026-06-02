@@ -214,7 +214,7 @@ export const NewTableMode = {
     docs: {
       description: {
         story:
-          'Shows the embedded panel in its default new-table mode. Review the shared row-count control, schema editor, and primary Generate action without pairwise generation enabled.',
+          'Shows the embedded panel in its default new-table mode. Review the shared row-count control, schema editor, and primary Generate action without pairwise generation enabled. Try Generate and Refresh Text Preview to confirm the composed panel callbacks fire through the interaction log.',
       },
     },
   },
@@ -224,6 +224,10 @@ export const NewTableMode = {
     await expect(canvas.getByLabelText('How Many?')).toHaveValue(1);
     await expect(canvas.getByRole('radio', { name: 'New Table' })).toBeChecked();
     await expect(canvas.queryByRole('button', { name: 'Generate Pairwise' })).toBeNull();
+    await userEvent.click(canvas.getByRole('button', { name: 'Generate' }));
+    await expect(canvas.getByText('action:generate')).toBeVisible();
+    await userEvent.click(canvas.getByRole('button', { name: 'Refresh Text Preview' }));
+    await expect(canvas.getByText('action:refresh-preview')).toBeVisible();
   },
 };
 
@@ -245,8 +249,7 @@ export const AmendTableMode = {
     const canvas = within(canvasElement);
     await expect(canvas.getByRole('radio', { name: 'Amend Table' })).toBeChecked();
     await expect(canvas.getByLabelText('How Many?')).toHaveValue(8);
-    const firstRow = canvasElement.querySelector('#testDataSchemaRows .generator-schema-row');
-    await expect(within(firstRow).getByPlaceholderText('Column Name')).toHaveValue('Status');
+    await expect(canvas.getAllByPlaceholderText('Column Name')[0]).toHaveValue('Status');
   },
 };
 
@@ -264,7 +267,7 @@ export const AmendSelectedMode = {
     docs: {
       description: {
         story:
-          'Shows the amend-selected mode with pairwise generation available. This is the strongest Storybook proxy for the app path that amends selected rows with an enum-driven schema.',
+          'Shows the amend-selected mode with pairwise generation available. This is the strongest Storybook proxy for the app path that amends selected rows with an enum-driven schema. Use Generate Pairwise to confirm the composed panel action flows through the shared interaction log.',
       },
     },
   },

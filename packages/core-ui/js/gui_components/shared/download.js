@@ -1,22 +1,41 @@
+import { getDefaultDocumentObj } from './dom/default-objects.js';
+
 class Download {
-  constructor(filename) {
+  constructor(
+    filename,
+    { documentObj = getDefaultDocumentObj(), URLObj = globalThis.URL, BlobCtor = globalThis.Blob } = {}
+  ) {
     this.filename = filename;
+    this.documentObj = documentObj;
+    this.URLObj = URLObj;
+    this.BlobCtor = BlobCtor;
   }
 
   downloadFile(text) {
-    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const element = document.createElement('a');
+    if (
+      !this.documentObj?.body?.appendChild ||
+      typeof this.documentObj.createElement !== 'function' ||
+      typeof this.BlobCtor !== 'function' ||
+      typeof this.URLObj?.createObjectURL !== 'function' ||
+      typeof this.URLObj?.revokeObjectURL !== 'function'
+    ) {
+      return false;
+    }
+
+    const blob = new this.BlobCtor([text], { type: 'text/plain;charset=utf-8' });
+    const url = this.URLObj.createObjectURL(blob);
+    const element = this.documentObj.createElement('a');
     element.setAttribute('href', url);
     element.setAttribute('download', this.filename);
 
     element.style.display = 'none';
-    document.body.appendChild(element);
+    this.documentObj.body.appendChild(element);
 
     element.click();
 
-    document.body.removeChild(element);
-    URL.revokeObjectURL(url);
+    this.documentObj.body.removeChild(element);
+    this.URLObj.revokeObjectURL(url);
+    return true;
   }
 }
 

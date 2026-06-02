@@ -117,10 +117,29 @@ describe('createStatusPresenter', () => {
       expect(() => presenter.setStatus('Export ready.')).not.toThrow();
       expect(() => presenter.clear()).not.toThrow();
       expect(() => presenter.scheduleClear(10)).not.toThrow();
+      expect(() => presenter.destroy()).not.toThrow();
       expect(() => loadingPresenter.setStatus('Loading data...')).not.toThrow();
       expect(() => loadingPresenter.clear()).not.toThrow();
+      expect(() => loadingPresenter.destroy()).not.toThrow();
     } finally {
       global.document = originalDocument;
     }
+  });
+
+  test('destroy cancels pending clear work and leaves the element unchanged afterwards', () => {
+    const presenter = createStatusPresenter({
+      documentObj: dom.window.document,
+      elementId: 'status',
+      hideWhenEmpty: true,
+    });
+    const element = dom.window.document.getElementById('status');
+
+    presenter.setStatus('Will clear soon.');
+    presenter.scheduleClear(1200);
+    presenter.destroy();
+    jest.advanceTimersByTime(1200);
+
+    expect(element.textContent).toBe('');
+    expect(element.style.display).toBe('none');
   });
 });

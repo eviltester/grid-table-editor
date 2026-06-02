@@ -5,6 +5,7 @@
 
 import { TEST_DATA_GRID_SAMPLE_SCHEMA_TEXT } from '../../../shared/test-data/schema/index.js';
 import { createSharedSchemaDefinitionComponent } from '../../../shared/schema-definition/index.js';
+import { getDefaultDocumentObj } from '../../../shared/dom/default-objects.js';
 
 function buildAppSchemaModeHelpHtml({ inTextMode }) {
   if (inTextMode) {
@@ -46,6 +47,10 @@ function createAppSchemaDefinitionProps({
   return {
     headingClassName: 'generator-schema-heading-row',
     addButtonClassName: 'add-schema-row-button',
+    // These IDs remain intentional app-page selector contracts because the
+    // embedded schema editor still interoperates with focused harnesses,
+    // browser page objects, and compatibility tests that target the app page
+    // as a black-box host rather than the shared schema internals directly.
     ids: {
       rows: 'testDataSchemaRows',
       textContainer: 'testDataSchemaTextContainer',
@@ -83,7 +88,7 @@ function createAppSchemaDefinitionProps({
 }
 
 function createSchemaGridController({
-  documentObj = document,
+  documentObj = getDefaultDocumentObj(),
   schemaTextToDataRules,
   dataRulesToSchemaText,
   schemaTextSyncState,

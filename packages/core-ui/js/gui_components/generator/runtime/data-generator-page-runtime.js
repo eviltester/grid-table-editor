@@ -42,6 +42,7 @@ import {
 import { GENERATE_TO_FILE_HELP_URL } from '../constants.js';
 import { buildSchemaModeHelpHtml } from '../schema/index.js';
 import { createGeneratorPageComponent } from '../page/index.js';
+import { getDefaultDocumentObj } from '../../shared/dom/default-objects.js';
 import {
   createConfiguredGeneratorForPage,
   buildPreviewDataTable,
@@ -83,7 +84,7 @@ function validateSchemaRows(schemaRows) {
 class DataGeneratorPage {
   constructor({
     parentElement,
-    documentObj = document,
+    documentObj = getDefaultDocumentObj(),
     faker,
     RandExp,
     TabulatorCtor = globalThis?.Tabulator,
@@ -190,6 +191,10 @@ class DataGeneratorPage {
         },
         schemaDefinitionProps: {
           headingText: 'Schema',
+          // These IDs are a documented generator-page contract. They anchor the
+          // real page shell, focused interaction harnesses, and Playwright page
+          // objects to one page-level schema section while the shared schema
+          // component uses root-scoped hooks for its reusable internals.
           ids: {
             rows: 'generatorSchemaRows',
             textContainer: 'generatorSchemaTextContainer',

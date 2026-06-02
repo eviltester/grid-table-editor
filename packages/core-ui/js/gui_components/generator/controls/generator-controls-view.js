@@ -1,11 +1,21 @@
 import { GENERATE_TO_FILE_HELP_URL } from '../constants.js';
+import { resolveDocumentObj, resolveWindowObj } from '../../shared/dom/default-objects.js';
 
 class GeneratorControlsView {
-  constructor({ root, controller, documentObj = document, services = {} } = {}) {
+  constructor({ root, controller, documentObj, services = {}, ids = {} } = {}) {
     this.root = root;
     this.controller = controller;
-    this.documentObj = documentObj;
+    this.documentObj = resolveDocumentObj(documentObj, root);
     this.services = services;
+    this.ids = {
+      outputFormatSelect: 'generatorOutputFormat',
+      generateDataButton: 'generateDataButton',
+      generatePairwiseButtonWrapper: 'generateAllPairsButtonWrapper',
+      generatePairwiseButton: 'generateAllPairsButton',
+      status: 'generatorStatusText',
+      rowCountInput: 'generateRowsCount',
+      ...ids,
+    };
     this.rowCountControls = [];
     this.formatOptionsPanel = null;
     this.statusPresenter = null;
@@ -31,14 +41,15 @@ class GeneratorControlsView {
   }
 
   template() {
+    const ids = this.ids;
     return `
-      <section class="generator-controls" id="generatorGenerateOptionsSection" data-section-order="3" aria-labelledby="generatorGenerateOptionsHeading">
+      <section class="generator-controls" data-section-order="3" aria-label="Generate Data and Options">
         <div class="generator-controls-head">
-          <strong id="generatorGenerateOptionsHeading">Generate Data and Options</strong>
+          <strong>Generate Data and Options</strong>
         </div>
-        <div id="generateRowsCountControl"></div>
+        <div data-role="generate-rows-count-control"></div>
         <label>Output Format
-          <select id="generatorOutputFormat"></select>
+          <select id="${ids.outputFormatSelect}"></select>
         </label>
         <span class="generator-button-with-help">
           <button
@@ -51,9 +62,9 @@ class GeneratorControlsView {
               <p><a class="helplink" href="${GENERATE_TO_FILE_HELP_URL}" target="_blank" rel="noopener noreferrer">Generate To File docs</a></p>
             '
           ></button>
-          <button id="generateDataButton"><span class="generator-file-icon" aria-hidden="true"></span>Generate Data</button>
+          <button id="${ids.generateDataButton}"><span class="generator-file-icon" aria-hidden="true"></span>Generate Data</button>
         </span>
-        <span class="generator-button-with-help" id="generateAllPairsButtonWrapper" style="display:none;">
+        <span class="generator-button-with-help" id="${ids.generatePairwiseButtonWrapper}" style="display:none;">
           <button
             type="button"
             class="helpicon"
@@ -64,11 +75,11 @@ class GeneratorControlsView {
               <p><a class="helplink" href="https://anywaydata.com/docs/test-data/pairwise-testing" target="_blank" rel="noopener noreferrer">Pairwise testing docs</a></p>
             '
           ></button>
-          <button id="generateAllPairsButton"><span class="generator-file-icon" aria-hidden="true"></span>Generate Pairwise</button>
+          <button id="${ids.generatePairwiseButton}"><span class="generator-file-icon" aria-hidden="true"></span>Generate Pairwise</button>
         </span>
         <div class="generator-options-wrapper">
-          <div id="generatorOptionsPanel" class="generator-options-panel"></div>
-          <div id="generatorStatusText" class="generator-status-text" aria-live="polite" role="status"></div>
+          <div data-role="generator-options-panel" class="generator-options-panel"></div>
+          <div id="${ids.status}" class="generator-status-text" aria-live="polite" role="status"></div>
         </div>
       </section>
     `;
@@ -77,14 +88,14 @@ class GeneratorControlsView {
   createControls() {
     const createRowCountControl = this.services.createRowCountControl;
     if (typeof createRowCountControl === 'function') {
-      const generateRowsRoot = this.root.querySelector('#generateRowsCountControl');
+      const generateRowsRoot = this.root.querySelector('[data-role="generate-rows-count-control"]');
       if (generateRowsRoot) {
         this.rowCountControls.push(
           createRowCountControl({
             root: generateRowsRoot,
             documentObj: this.documentObj,
             props: {
-              inputId: 'generateRowsCount',
+              inputId: this.ids.rowCountInput,
               label: 'Generate Rows',
               min: 0,
               step: 1,
@@ -102,7 +113,7 @@ class GeneratorControlsView {
     if (typeof createStatusPresenter === 'function') {
       this.statusPresenter = createStatusPresenter({
         documentObj: this.documentObj,
-        elementId: 'generatorStatusText',
+        elementId: this.ids.status,
         hideWhenEmpty: false,
       });
     }
@@ -111,19 +122,19 @@ class GeneratorControlsView {
     if (typeof createLoadingStatusPresenter === 'function') {
       this.loadingStatusPresenter = createLoadingStatusPresenter({
         documentObj: this.documentObj,
-        elementId: 'generatorStatusText',
+        elementId: this.ids.status,
         hideWhenEmpty: false,
       });
     }
 
-    const optionsParent = this.root.querySelector('#generatorOptionsPanel');
+    const optionsParent = this.root.querySelector('[data-role="generator-options-panel"]');
     const createFormatOptionsPanel = this.services.createFormatOptionsPanel;
     if (optionsParent && typeof createFormatOptionsPanel === 'function') {
       const state = this.controller.getState();
       this.formatOptionsPanel = createFormatOptionsPanel({
         root: optionsParent,
         documentObj: this.documentObj,
-        windowObj: this.documentObj?.defaultView || globalThis.window,
+        windowObj: resolveWindowObj(this.services.windowObj, this.documentObj),
         props: {
           selectedFormat: state.selectedFormat,
           currentOptions: state.currentOptions,
@@ -136,9 +147,13 @@ class GeneratorControlsView {
   }
 
   bindEvents() {
-    this.root.querySelector('#generateDataButton')?.addEventListener('click', this.handleGenerateDataClick);
-    this.root.querySelector('#generateAllPairsButton')?.addEventListener('click', this.handleGeneratePairwiseClick);
-    this.root.querySelector('#generatorOutputFormat')?.addEventListener('change', this.handleOutputFormatChange);
+    this.root.querySelector(`#${this.ids.generateDataButton}`)?.addEventListener('click', this.handleGenerateDataClick);
+    this.root
+      .querySelector(`#${this.ids.generatePairwiseButton}`)
+      ?.addEventListener('click', this.handleGeneratePairwiseClick);
+    this.root
+      .querySelector(`#${this.ids.outputFormatSelect}`)
+      ?.addEventListener('change', this.handleOutputFormatChange);
   }
 
   populateOutputFormats(outputSelect) {
@@ -187,7 +202,7 @@ class GeneratorControlsView {
       outputSelect.value = state.selectedFormat || 'csv';
     }
 
-    this.root.querySelector('#generateAllPairsButtonWrapper').style.display = state.pairwiseVisible
+    this.root.querySelector(`#${this.ids.generatePairwiseButtonWrapper}`).style.display = state.pairwiseVisible
       ? 'inline-flex'
       : 'none';
     this.formatOptionsPanel?.update({
@@ -198,17 +213,27 @@ class GeneratorControlsView {
   }
 
   destroy() {
-    this.root.querySelector('#generateDataButton')?.removeEventListener('click', this.handleGenerateDataClick);
-    this.root.querySelector('#generateAllPairsButton')?.removeEventListener('click', this.handleGeneratePairwiseClick);
-    this.root.querySelector('#generatorOutputFormat')?.removeEventListener('change', this.handleOutputFormatChange);
+    this.root
+      .querySelector(`#${this.ids.generateDataButton}`)
+      ?.removeEventListener('click', this.handleGenerateDataClick);
+    this.root
+      .querySelector(`#${this.ids.generatePairwiseButton}`)
+      ?.removeEventListener('click', this.handleGeneratePairwiseClick);
+    this.root
+      .querySelector(`#${this.ids.outputFormatSelect}`)
+      ?.removeEventListener('change', this.handleOutputFormatChange);
     this.formatOptionsPanel?.destroy?.();
+    this.statusPresenter?.destroy?.();
+    this.loadingStatusPresenter?.destroy?.();
+    this.statusPresenter = null;
+    this.loadingStatusPresenter = null;
     this.rowCountControls.forEach((control) => control?.destroy?.());
     this.rowCountControls = [];
     this.root.replaceChildren();
   }
 
   getOutputFormatSelect() {
-    return this.root.querySelector('#generatorOutputFormat');
+    return this.root.querySelector(`#${this.ids.outputFormatSelect}`);
   }
 
   getSelectedOutputType() {
@@ -216,13 +241,13 @@ class GeneratorControlsView {
   }
 
   setGenerationButtonsBusy(isBusy) {
-    const generateDataButton = this.root.querySelector('#generateDataButton');
+    const generateDataButton = this.root.querySelector(`#${this.ids.generateDataButton}`);
     if (generateDataButton) {
       generateDataButton.disabled = isBusy;
       generateDataButton.setAttribute('aria-busy', isBusy ? 'true' : 'false');
     }
 
-    const generateAllPairsButton = this.root.querySelector('#generateAllPairsButton');
+    const generateAllPairsButton = this.root.querySelector(`#${this.ids.generatePairwiseButton}`);
     if (generateAllPairsButton) {
       generateAllPairsButton.disabled = isBusy;
       generateAllPairsButton.setAttribute('aria-busy', isBusy ? 'true' : 'false');

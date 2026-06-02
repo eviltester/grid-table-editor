@@ -122,15 +122,20 @@ describe('shared-schema-definition view', () => {
   test('mounts the shared schema-definition shell and toggles into text mode', () => {
     createComponent();
 
-    expect(document.getElementById('schemaRows')).toBeTruthy();
+    expect(document.querySelector('[data-role="shared-schema-definition"]')).toBeTruthy();
+    expect(document.querySelector('[data-role="schema-rows-region"]')).toBeTruthy();
+    expect(document.querySelector('[data-role="schema-text-region"]')).toBeTruthy();
+    expect(document.querySelector('[data-role="schema-textbox"]')).toBeTruthy();
+    expect(document.querySelector('[data-role="schema-mode-toggle"]')).toBeTruthy();
+    expect(document.querySelector('[data-role="schema-add-field"]')).toBeTruthy();
     expect(document.querySelectorAll('.generator-schema-row').length).toBe(1);
 
     const toggleButton = document.getElementById('schemaModeToggleButton');
     fireEvent.click(toggleButton);
 
     expect(toggleButton.textContent).toBe('Edit as Schema');
-    expect(document.getElementById('schemaTextContainer').style.display).toBe('block');
-    expect(document.getElementById('schemaRows').style.display).toBe('none');
+    expect(document.querySelector('[data-role="schema-text-region"]').style.display).toBe('block');
+    expect(document.querySelector('[data-role="schema-rows-region"]').style.display).toBe('none');
   });
 
   test('surfaces schema parse errors through the mounted component callbacks', () => {

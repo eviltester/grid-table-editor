@@ -44,6 +44,10 @@ function createTestDataGenerationService({
   getTextPreviewRenderer,
   getMainGridExtras,
   getGenerationMode,
+  getRequestedRowCount = () => null,
+  setGenerateBusy = () => {},
+  setGeneratePairwiseBusy = () => {},
+  setRefreshPreviewBusy = () => {},
   setPairwiseVisible = () => {},
 }) {
   function getCurrentSchemaRowValidation(options) {
@@ -79,18 +83,10 @@ function createTestDataGenerationService({
 
   function showPairwiseButton() {
     setPairwiseVisible(true);
-    const button = document.getElementById('generateallpairs');
-    if (button) {
-      button.style.display = '';
-    }
   }
 
   function hidePairwiseButton() {
     setPairwiseVisible(false);
-    const button = document.getElementById('generateallpairs');
-    if (button) {
-      button.style.display = 'none';
-    }
   }
 
   function updatePairwiseButtonVisibility() {
@@ -109,11 +105,8 @@ function createTestDataGenerationService({
   async function generatePairwiseTestData() {
     debouncer.clear('populateTestDataGrid');
     syncSchemaTextFromGridBeforeGenerate();
-    const generateButton = document.getElementById('generateallpairs');
     setTestDataLoadingStatus('Generating pairwise...');
-    if (generateButton) {
-      generateButton.disabled = true;
-    }
+    setGeneratePairwiseBusy(true);
 
     try {
       const rowValidation = getCurrentSchemaRowValidation();
@@ -170,23 +163,19 @@ function createTestDataGenerationService({
       showSchemaError(`Pairwise generation failed: ${error.message}`);
       setTestDataStatus('Pairwise generation failed.', { severity: 'error', dismissable: true });
     } finally {
-      if (generateButton) {
-        generateButton.disabled = false;
-      }
+      setGeneratePairwiseBusy(false);
     }
   }
 
   async function generateTestData() {
     debouncer.clear('populateTestDataGrid');
     syncSchemaTextFromGridBeforeGenerate();
-    const generateButton = document.getElementById('generatedata');
     setTestDataLoadingStatus('Validating schema...');
-    if (generateButton) {
-      generateButton.disabled = true;
-    }
+    setGenerateBusy(true);
 
     try {
-      const desiredRowCountRaw = document.getElementById('generateCount').value;
+      const requestedRowCount = getRequestedRowCount();
+      const desiredRowCountRaw = requestedRowCount == null ? '' : `${requestedRowCount}`;
       const desiredRowCountParsed = Number.parseInt(desiredRowCountRaw, 10);
       const desiredRowCount = normaliseCount(desiredRowCountRaw);
       const generationMode = getGenerationMode();
@@ -291,9 +280,7 @@ function createTestDataGenerationService({
       setTestDataStatus('Generate failed. Check console for details.', { severity: 'error', dismissable: true });
       showSchemaError('Generate failed. Check console for details.');
     } finally {
-      if (generateButton) {
-        generateButton.disabled = false;
-      }
+      setGenerateBusy(false);
     }
   }
 
@@ -302,12 +289,9 @@ function createTestDataGenerationService({
     if (!textPreviewRenderer) {
       return;
     }
-    const refreshButton = document.getElementById('refreshtestdatapreview');
     clearPendingStatusReset();
     setTestDataLoadingStatus('Refreshing text preview...');
-    if (refreshButton) {
-      refreshButton.disabled = true;
-    }
+    setRefreshPreviewBusy(true);
 
     try {
       await yieldToUi();
@@ -321,9 +305,7 @@ function createTestDataGenerationService({
         dismissable: true,
       });
     } finally {
-      if (refreshButton) {
-        refreshButton.disabled = false;
-      }
+      setRefreshPreviewBusy(false);
     }
   }
 

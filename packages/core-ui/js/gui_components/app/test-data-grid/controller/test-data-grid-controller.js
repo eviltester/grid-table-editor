@@ -40,6 +40,7 @@ import { getGenerationMode as getGenerationModeFromUi } from '../controller/test
 import { createAppSchemaDefinitionProps } from '../schema/test-data-grid-schema-grid-controller.js';
 import { createTestDataGridActionAdapter } from '../controller/test-data-grid-action-adapter.js';
 import { createDataPopulationPanelComponent } from '../../data-population-panel/index.js';
+import { resolveDocumentObj } from '../../../shared/dom/default-objects.js';
 
 import { faker } from 'https://cdn.skypack.dev/@faker-js/faker@v9.7.0';
 
@@ -76,12 +77,7 @@ function createTestDataGridControl({
   }
 
   function getResolvedDocument() {
-    return documentObj || globalThis.document;
-  }
-
-  function getSchemaTextFromEditor() {
-    const schemaTextArea = getResolvedDocument()?.getElementById('testDataSchemaText');
-    return schemaTextArea?.value || '';
+    return resolveDocumentObj(documentObj, null);
   }
 
   function getMainGridExtras() {
@@ -138,12 +134,15 @@ function createTestDataGridControl({
       setTestDataLoadingStatus: setTestDataLoadingStatusFn,
       showSchemaError: showTestDataSchemaError,
       yieldToUi: yieldToUiFn,
-      getSchemaText: getSchemaTextFromEditor,
       validateCurrentSchemaRows: (options) => state.dataPopulationPanel?.validateSchemaRows?.(options),
       getImporter: () => state.importer,
       getTextPreviewRenderer: () => state.textPreviewRenderer,
       getMainGridExtras,
       getGenerationMode,
+      getRequestedRowCount: () => state.dataPopulationPanel?.getRowCountInputValue?.(),
+      setGenerateBusy: (isBusy) => state.dataPopulationPanel?.setGenerateBusy?.(isBusy),
+      setGeneratePairwiseBusy: (isBusy) => state.dataPopulationPanel?.setGeneratePairwiseBusy?.(isBusy),
+      setRefreshPreviewBusy: (isBusy) => state.dataPopulationPanel?.setRefreshPreviewBusy?.(isBusy),
       setPairwiseVisible: (isVisible) => state.dataPopulationPanel?.setPairwiseVisible?.(isVisible),
     });
   }
@@ -163,12 +162,18 @@ function createTestDataGridControl({
       scheduleStatusReset: scheduleStatusResetFn,
     });
 
-    const parentElem = getResolvedDocument()?.getElementById(parentId);
+    const resolvedDocument = getResolvedDocument();
+    const parentElem = resolvedDocument?.getElementById?.(parentId) || null;
     initializeSchemaErrorDisplayFn(state.schemaTextSyncState);
+
+    if (!resolvedDocument || !parentElem) {
+      state.dataPopulationPanel = null;
+      return state;
+    }
 
     state.dataPopulationPanel = createDataPopulationPanelComponentFn({
       root: parentElem,
-      documentObj: getResolvedDocument(),
+      documentObj: resolvedDocument,
       props: {
         selectedMode: TEST_DATA_MODES.NEW_TABLE,
         pairwiseVisible: false,

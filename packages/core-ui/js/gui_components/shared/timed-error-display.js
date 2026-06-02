@@ -1,11 +1,12 @@
 import { createInlineMessageComponent } from './primitives/inline-message/index.js';
+import { getDefaultDocumentObj } from './dom/default-objects.js';
 
-function createTimedStatusPresenter({ documentObj = document, elementId, timeoutMs = 5000 } = {}) {
+function createTimedStatusPresenter({ documentObj = getDefaultDocumentObj(), elementId, timeoutMs = 5000 } = {}) {
   let component = null;
   let rootElement = null;
 
   const getComponent = () => {
-    const nextRoot = documentObj.getElementById(elementId);
+    const nextRoot = documentObj?.getElementById?.(elementId);
     if (!nextRoot) {
       return null;
     }
@@ -37,8 +38,8 @@ function createTimedStatusPresenter({ documentObj = document, elementId, timeout
       component = null;
       rootElement = null;
     },
-    show(message, { severity = 'error', timeoutMs: nextTimeoutMs = timeoutMs, sticky = false } = {}) {
-      getComponent()?.show(message, { severity, timeoutMs: nextTimeoutMs, sticky });
+    show(message, { severity = 'error', timeoutMs: nextTimeoutMs = timeoutMs } = {}) {
+      getComponent()?.show(message, { severity, timeoutMs: nextTimeoutMs });
     },
   };
 }

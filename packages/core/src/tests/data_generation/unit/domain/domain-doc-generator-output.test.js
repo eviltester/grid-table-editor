@@ -2,25 +2,34 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { execSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import os from 'node:os';
 
 const testDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(testDir, '../../../../../../..');
 
 describe('domain docs generator output', () => {
   test('renders JSON example return values as literal inline code (no HTML brace entities)', () => {
-    execSync('node scripts/generate-domain-docs.mjs', {
-      cwd: repoRoot,
-      stdio: 'pipe',
-      encoding: 'utf8',
-    });
+    const docsDir = fs.mkdtempSync(path.join(os.tmpdir(), 'anywaydata-domain-docs-'));
+    try {
+      execSync('node scripts/generate-domain-docs.mjs', {
+        cwd: repoRoot,
+        stdio: 'pipe',
+        encoding: 'utf8',
+        env: {
+          ...process.env,
+          ANYWAYDATA_DOMAIN_DOCS_OUT_DIR: docsDir,
+        },
+      });
 
-    const docsDir = path.resolve(repoRoot, 'docs-src/docs/040-test-data/domain');
-    const locationDocName = fs.readdirSync(docsDir).find((name) => /-location\.md$/.test(name));
-    expect(locationDocName).toBeDefined();
+      const locationDocName = fs.readdirSync(docsDir).find((name) => /-location\.md$/.test(name));
+      expect(locationDocName).toBeDefined();
 
-    const locationDoc = fs.readFileSync(path.join(docsDir, locationDocName), 'utf8');
+      const locationDoc = fs.readFileSync(path.join(docsDir, locationDocName), 'utf8');
 
-    expect(locationDoc).toContain('- `{"name":"Icelandic","alpha2":"is","alpha3":"isl"}`');
-    expect(locationDoc).not.toContain('&#123;"name":"Icelandic","alpha2":"is","alpha3":"isl"&#125;');
+      expect(locationDoc).toContain('- `{"name":"Icelandic","alpha2":"is","alpha3":"isl"}`');
+      expect(locationDoc).not.toContain('&#123;"name":"Icelandic","alpha2":"is","alpha3":"isl"&#125;');
+    } finally {
+      fs.rmSync(docsDir, { recursive: true, force: true });
+    }
   });
 });

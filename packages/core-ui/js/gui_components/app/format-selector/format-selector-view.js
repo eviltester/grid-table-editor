@@ -1,9 +1,11 @@
+import { resolveDocumentObj } from '../../shared/dom/default-objects.js';
+
 class FormatSelectorView {
-  constructor({ root, subtasksRoot, controller, documentObj = document } = {}) {
+  constructor({ root, subtasksRoot, controller, documentObj } = {}) {
     this.root = root;
     this.subtasksRoot = subtasksRoot;
     this.controller = controller;
-    this.documentObj = documentObj;
+    this.documentObj = resolveDocumentObj(documentObj, root || subtasksRoot);
     this.handleRootClick = (event) => this.handleClick(event);
     this.handleSubtasksClick = (event) => this.handleClick(event);
   }

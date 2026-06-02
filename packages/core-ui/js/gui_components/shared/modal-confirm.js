@@ -4,6 +4,9 @@ function ensureConfirmElements(documentObj = typeof document !== 'undefined' ? d
   if (!documentObj) {
     return null;
   }
+  // Confirm modals are a document-level singleton overlay by design. These
+  // fixed IDs are an intentional public contract for dialog services, Storybook
+  // cleanup, and page-object abstractions that interact with the top-level host.
   let backdrop = documentObj.getElementById('confirm-modal-backdrop');
   if (backdrop) {
     return backdrop;

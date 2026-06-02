@@ -1,9 +1,14 @@
 import { PopulationModeSelectorController } from './population-mode-selector-controller.js';
 import { PopulationModeSelectorView } from './population-mode-selector-view.js';
+import { resolveDocumentObj } from '../../shared/dom/default-objects.js';
 
-function createPopulationModeSelectorComponent({ root, props = {}, callbacks = {}, documentObj = document } = {}) {
+function createPopulationModeSelectorComponent({ root, props = {}, callbacks = {}, documentObj } = {}) {
   const controller = new PopulationModeSelectorController({ props, callbacks });
-  const view = new PopulationModeSelectorView({ root, controller, documentObj });
+  const view = new PopulationModeSelectorView({
+    root,
+    controller,
+    documentObj: resolveDocumentObj(documentObj, root),
+  });
   view.mount();
 
   return {

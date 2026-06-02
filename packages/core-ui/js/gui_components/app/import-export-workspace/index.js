@@ -4,14 +4,17 @@ import { createImportExportToolbarComponent } from '../import-export-toolbar/ind
 import { createTextPreviewEditorComponent } from '../text-preview-editor/index.js';
 import { ImportExportWorkspaceController } from './import-export-workspace-controller.js';
 import { ImportExportWorkspaceView } from './import-export-workspace-view.js';
+import { resolveDocumentObj } from '../../shared/dom/default-objects.js';
 
-function createImportExportWorkspaceComponent({ root, props = {}, services = {}, documentObj = document } = {}) {
+function createImportExportWorkspaceComponent({ root, props = {}, services = {}, documentObj } = {}) {
+  const resolvedDocumentObj = resolveDocumentObj(documentObj, root);
   const controller = new ImportExportWorkspaceController({ props });
-  const legacyControls = services.importExportControls || new ImportExportControls({ documentObj });
+  const legacyControls =
+    services.importExportControls || new ImportExportControls({ documentObj: resolvedDocumentObj });
   const view = new ImportExportWorkspaceView({
     root,
     controller,
-    documentObj,
+    documentObj: resolvedDocumentObj,
     services: {
       createImportExportToolbarComponent:
         services.createImportExportToolbarComponent || createImportExportToolbarComponent,

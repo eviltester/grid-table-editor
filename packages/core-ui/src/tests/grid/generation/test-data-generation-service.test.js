@@ -9,11 +9,6 @@ describe('test-data-generation-service', () => {
     dom = new JSDOM('<!doctype html><html><body></body></html>');
     global.window = dom.window;
     global.document = dom.window.document;
-    document.body.innerHTML = `
-      <button id="generatedata"></button>
-      <button id="generateallpairs"></button>
-      <input id="generateCount" value="3">
-    `;
   });
 
   afterEach(() => {
@@ -26,6 +21,7 @@ describe('test-data-generation-service', () => {
       rows: [{ name: 'Status', sourceType: 'literal', value: 'Active' }],
     }));
     const setTestDataLoadingStatus = jest.fn();
+    const setGenerateBusy = jest.fn();
 
     const generator = {
       importSpec: jest.fn(),
@@ -68,6 +64,8 @@ describe('test-data-generation-service', () => {
       getTextPreviewRenderer: jest.fn(),
       getMainGridExtras: jest.fn(),
       getGenerationMode: () => 'new-table',
+      getRequestedRowCount: () => 3,
+      setGenerateBusy,
     });
 
     await service.generateTestData();
@@ -79,6 +77,7 @@ describe('test-data-generation-service', () => {
       ['Generating rows...'],
       ['Applying data to grid...'],
     ]);
+    expect(setGenerateBusy.mock.calls).toEqual([[true], [false]]);
   });
 
   test('generatePairwiseTestData validates schema rows once before creating the generator', async () => {
@@ -90,6 +89,7 @@ describe('test-data-generation-service', () => {
       ],
     }));
     const setTestDataLoadingStatus = jest.fn();
+    const setGeneratePairwiseBusy = jest.fn();
 
     const generator = {
       importSpec: jest.fn(),
@@ -157,6 +157,7 @@ describe('test-data-generation-service', () => {
       getTextPreviewRenderer: jest.fn(),
       getMainGridExtras: jest.fn(),
       getGenerationMode: () => 'new-table',
+      setGeneratePairwiseBusy,
     });
 
     await service.generatePairwiseTestData();
@@ -168,5 +169,56 @@ describe('test-data-generation-service', () => {
       ['Generating pairwise combinations...'],
       ['Applying data to grid...'],
     ]);
+    expect(setGeneratePairwiseBusy.mock.calls).toEqual([[true], [false]]);
+  });
+
+  test('refreshTestDataPreview drives injected refresh busy state instead of DOM lookups', async () => {
+    const setRefreshPreviewBusy = jest.fn();
+    const renderTextFromGrid = jest.fn(() => Promise.resolve());
+    const clearPendingStatusReset = jest.fn();
+    const scheduleStatusReset = jest.fn();
+    const setTestDataLoadingStatus = jest.fn();
+    const setTestDataStatus = jest.fn();
+
+    const service = createTestDataGenerationService({
+      TestDataGeneratorClass: class {},
+      PairwiseTestDataGeneratorClass: class {},
+      GenericDataTableClass: class {},
+      TEST_DATA_MODES: {
+        NEW_TABLE: 'new-table',
+        AMEND_TABLE: 'amend-table',
+        AMEND_SELECTED: 'amend-selected',
+      },
+      normaliseCount: () => 3,
+      createTableFromGenerator: jest.fn(),
+      createAmendedTable: jest.fn(),
+      schemaRowsToSpec: jest.fn(),
+      faker: {},
+      RandExp: function RandExp() {},
+      debouncer: { clear: jest.fn() },
+      syncSchemaTextFromGridBeforeGenerate: jest.fn(),
+      setTestDataStatus,
+      setTestDataLoadingStatus,
+      showSchemaError: jest.fn(),
+      yieldToUi: jest.fn(() => Promise.resolve()),
+      validateCurrentSchemaRows: jest.fn(() => ({ rows: [], errors: [] })),
+      getImporter: () => ({ setGridFromGenericDataTable: jest.fn() }),
+      getTextPreviewRenderer: () => ({ renderTextFromGrid }),
+      getMainGridExtras: jest.fn(),
+      getGenerationMode: () => 'new-table',
+      setRefreshPreviewBusy,
+    });
+
+    await service.refreshTestDataPreview({
+      clearPendingStatusReset,
+      scheduleStatusReset,
+    });
+
+    expect(clearPendingStatusReset).toHaveBeenCalledTimes(1);
+    expect(setTestDataLoadingStatus).toHaveBeenCalledWith('Refreshing text preview...');
+    expect(renderTextFromGrid).toHaveBeenCalledTimes(1);
+    expect(setTestDataStatus).toHaveBeenCalledWith('Text preview refreshed.');
+    expect(scheduleStatusReset).toHaveBeenCalledTimes(1);
+    expect(setRefreshPreviewBusy.mock.calls).toEqual([[true], [false]]);
   });
 });

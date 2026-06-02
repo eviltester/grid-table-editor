@@ -133,4 +133,34 @@ describe('generator bootstrap', () => {
     expect(loadingMessage.textContent).toContain('Failed to load libraries. Check console for details.');
     expect(loadingMessage.classList.contains('is-loading')).toBe(false);
   });
+
+  test('does not require a global document when an injected document is provided', async () => {
+    const originalDocument = global.document;
+    const originalWindow = global.window;
+    delete global.document;
+    delete global.window;
+
+    try {
+      class DataGeneratorPageClass {
+        init() {}
+      }
+
+      await expect(
+        bootstrapGeneratorPage({
+          documentObj: dom.window.document,
+          ensureGridLibraryLoadedFn: jest.fn(() => Promise.resolve()),
+          DataGeneratorPageClass,
+          fakerInstance: {},
+          initHelpTooltipsFn: jest.fn(),
+        })
+      ).resolves.toEqual(
+        expect.objectContaining({
+          page: expect.any(DataGeneratorPageClass),
+        })
+      );
+    } finally {
+      global.document = originalDocument;
+      global.window = originalWindow;
+    }
+  });
 });

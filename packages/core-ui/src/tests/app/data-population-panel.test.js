@@ -83,6 +83,18 @@ describe('DataPopulationPanel', () => {
 
     component.setRowCountValue(4);
     expect(document.getElementById('generateCount').value).toBe('4');
+    expect(component.getRowCountInputValue()).toBe('4');
+
+    component.setGenerateBusy(true);
+    component.setGeneratePairwiseBusy(true);
+    component.setRefreshPreviewBusy(true);
+    expect(document.getElementById('generatedata').disabled).toBe(true);
+    expect(document.getElementById('generateallpairs').disabled).toBe(true);
+    expect(document.getElementById('refreshtestdatapreview').disabled).toBe(true);
+
+    component.setGenerateBusy(false);
+    component.setGeneratePairwiseBusy(false);
+    component.setRefreshPreviewBusy(false);
 
     document.getElementById('generatedata').click();
     expect(onGenerate).toHaveBeenCalled();
@@ -101,5 +113,113 @@ describe('DataPopulationPanel', () => {
 
     component.destroy();
     expect(schemaDefinition.destroy).toHaveBeenCalled();
+  });
+
+  test('supports two panel instances with isolated action ids and row counts', () => {
+    const firstSchemaDefinition = {
+      update: jest.fn(),
+      destroy: jest.fn(),
+      getState: jest.fn(() => ({ isTextMode: false })),
+      validateRows: jest.fn(() => ({ rows: [], errors: [] })),
+    };
+    const secondSchemaDefinition = {
+      update: jest.fn(),
+      destroy: jest.fn(),
+      getState: jest.fn(() => ({ isTextMode: false })),
+      validateRows: jest.fn(() => ({ rows: [], errors: [] })),
+    };
+
+    const rootA = document.getElementById('root');
+    const rootB = document.createElement('div');
+    rootB.id = 'root-b';
+    document.body.appendChild(rootB);
+
+    const sharedProps = {
+      selectedMode: 'new-table',
+      pairwiseVisible: true,
+      modeOptions: [{ value: 'new-table', label: 'New Table' }],
+      schemaDefinitionProps: {
+        schemaTextToDataRules: () => ({ dataRules: [], errors: [], schemaTokens: [] }),
+        dataRulesToSchemaText: () => '',
+        createBlankRow: () => ({
+          id: 'row-1',
+          name: '',
+          sourceType: 'regex',
+          command: '',
+          params: '',
+          value: '',
+          comments: '',
+          leadingTextLines: [],
+        }),
+        mapRuleToRow: (value) => value,
+        getMethodPickerOptions: () => [],
+        getVisibleDomainCommands: () => [],
+        fakerCommands: [],
+        sampleSchemaText: '',
+        buildModeHelpHtml: () => '',
+        validateSchemaRows: (rows) => ({ rows, errors: [] }),
+        updatePairwiseButtonVisibility: () => {},
+      },
+    };
+
+    const componentA = createDataPopulationPanelComponent({
+      root: rootA,
+      props: {
+        ...sharedProps,
+        ids: { schemaDefinitionRoot: 'testDataSchemaDefinitionA' },
+        actionIds: {
+          generateButton: 'generatedata-a',
+          generatePairwiseButton: 'generateallpairs-a',
+          refreshPreviewButton: 'refreshtestdatapreview-a',
+          status: 'testdata-status-a',
+        },
+        rowCountProps: {
+          inputId: 'generateCountA',
+          label: 'How Many?',
+          min: 1,
+          step: 1,
+          value: 2,
+        },
+      },
+      services: {
+        createSharedSchemaDefinitionComponent: () => firstSchemaDefinition,
+      },
+    });
+
+    const componentB = createDataPopulationPanelComponent({
+      root: rootB,
+      props: {
+        ...sharedProps,
+        ids: { schemaDefinitionRoot: 'testDataSchemaDefinitionB' },
+        actionIds: {
+          generateButton: 'generatedata-b',
+          generatePairwiseButton: 'generateallpairs-b',
+          refreshPreviewButton: 'refreshtestdatapreview-b',
+          status: 'testdata-status-b',
+        },
+        rowCountProps: {
+          inputId: 'generateCountB',
+          label: 'How Many?',
+          min: 1,
+          step: 1,
+          value: 7,
+        },
+      },
+      services: {
+        createSharedSchemaDefinitionComponent: () => secondSchemaDefinition,
+      },
+    });
+
+    expect(document.getElementById('generateCountA').value).toBe('2');
+    expect(document.getElementById('generateCountB').value).toBe('7');
+    expect(document.getElementById('generateallpairs-a').style.display).toBe('');
+    expect(document.getElementById('generateallpairs-b').style.display).toBe('');
+
+    componentA.setRowCountValue(5);
+    expect(document.getElementById('generateCountA').value).toBe('5');
+    expect(document.getElementById('generateCountB').value).toBe('7');
+
+    componentA.destroy();
+    componentB.destroy();
   });
 });

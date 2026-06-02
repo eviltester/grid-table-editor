@@ -1,4 +1,5 @@
 import { createTimedStatusPresenter } from '../shared/timed-error-display.js';
+import { getDefaultDocumentObj } from '../shared/dom/default-objects.js';
 
 const GRID_ERROR_ELEMENT_ID = 'grid-column-error';
 const sharedGridErrorSurfacesByDocument = new WeakMap();
@@ -11,7 +12,10 @@ const missingGridErrorSurface = {
   },
 };
 
-function getGridErrorDisplay(documentObj = document) {
+function getGridErrorDisplay(documentObj = getDefaultDocumentObj()) {
+  if (!documentObj) {
+    return missingGridErrorSurface;
+  }
   const existingDisplay = sharedGridErrorSurfacesByDocument.get(documentObj);
   if (existingDisplay) {
     return existingDisplay;
@@ -31,7 +35,7 @@ function getGridErrorDisplay(documentObj = document) {
   return display;
 }
 
-function showGridError(message, documentObj = document) {
+function showGridError(message, documentObj = getDefaultDocumentObj()) {
   const text = String(message ?? '').trim();
   if (!text) {
     return;

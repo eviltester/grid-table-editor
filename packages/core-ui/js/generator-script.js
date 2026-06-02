@@ -4,6 +4,7 @@ import { faker } from '@faker-js/faker';
 import { initHelpTooltips } from './help/help-tooltips.js';
 import { initThemeToggle } from './gui_components/shared/theme-toggle.js';
 import { createPageStartupLoadingStatus } from './gui_components/shared/page-startup-loading-status.js';
+import { getDefaultDocumentObj, resolveWindowObj } from './gui_components/shared/dom/default-objects.js';
 import {
   createInstructionsComponent,
   GENERATOR_PAGE_INSTRUCTIONS_PROPS,
@@ -11,13 +12,13 @@ import {
 import { createGeneratorPageShellComponent } from './gui_components/generator/page/index.js';
 
 async function bootstrapGeneratorPage({
-  documentObj = document,
+  documentObj = getDefaultDocumentObj(),
   ensureGridLibraryLoadedFn = ensureGridLibraryLoaded,
   DataGeneratorPageClass = DataGeneratorPage,
   fakerInstance = faker,
   initHelpTooltipsFn = initHelpTooltips,
 } = {}) {
-  initThemeToggle({ documentObj, windowObj: documentObj?.defaultView || window });
+  initThemeToggle({ documentObj, windowObj: resolveWindowObj(null, documentObj) });
   const pageRoot = documentObj.getElementById('generator-page-root');
   const generatorPageShell = pageRoot
     ? createGeneratorPageShellComponent({

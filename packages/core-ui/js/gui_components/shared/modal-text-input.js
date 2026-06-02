@@ -4,6 +4,9 @@ function ensureModalElements(documentObj = typeof document !== 'undefined' ? doc
   if (!documentObj) {
     return null;
   }
+  // Text-input modals are a document-level singleton overlay by design. These
+  // fixed IDs are an intentional public contract for dialog services, Storybook
+  // cleanup, and page-object abstractions that interact with the top-level host.
   let backdrop = documentObj.getElementById('text-input-modal-backdrop');
   if (backdrop) {
     return backdrop;

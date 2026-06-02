@@ -162,4 +162,118 @@ describe('test data grid controller', () => {
 
     expect(control.enableTestDataGenerationInterface).toBe(control.mountTestDataGenerationPanel);
   });
+
+  test('keeps generation status, requested row count, and pairwise visibility isolated across documents', () => {
+    const domA = new JSDOM('<!doctype html><html><body><div id="host"></div></body></html>');
+    const domB = new JSDOM('<!doctype html><html><body><div id="host"></div></body></html>');
+
+    const statusA = jest.fn();
+    const loadingA = jest.fn();
+    const statusB = jest.fn();
+    const loadingB = jest.fn();
+    const panelA = {
+      destroy: jest.fn(),
+      getMode: jest.fn(() => 'new-table'),
+      getRowCountInputValue: jest.fn(() => '2'),
+      setPairwiseVisible: jest.fn(),
+      setRowCountValue: jest.fn(),
+      setGenerateBusy: jest.fn(),
+      setGeneratePairwiseBusy: jest.fn(),
+      setRefreshPreviewBusy: jest.fn(),
+      validateSchemaRows: jest.fn(() => ({ rows: [], errors: [] })),
+      syncSchemaTextFromRows: jest.fn(),
+      insertSampleSchema: jest.fn(),
+    };
+    const panelB = {
+      destroy: jest.fn(),
+      getMode: jest.fn(() => 'new-table'),
+      getRowCountInputValue: jest.fn(() => '9'),
+      setPairwiseVisible: jest.fn(),
+      setRowCountValue: jest.fn(),
+      setGenerateBusy: jest.fn(),
+      setGeneratePairwiseBusy: jest.fn(),
+      setRefreshPreviewBusy: jest.fn(),
+      validateSchemaRows: jest.fn(() => ({ rows: [], errors: [] })),
+      syncSchemaTextFromRows: jest.fn(),
+      insertSampleSchema: jest.fn(),
+    };
+    const generationServiceOptions = [];
+    const createTestDataGenerationServiceFn = jest.fn((options) => {
+      generationServiceOptions.push(options);
+      return {
+        updatePairwiseButtonVisibility: jest.fn(),
+        generateTestData: jest.fn(),
+        generatePairwiseTestData: jest.fn(),
+        refreshTestDataPreview: jest.fn(),
+      };
+    });
+
+    const controlA = createTestDataGridControl({
+      documentObj: domA.window.document,
+      initializeSchemaErrorDisplayFn: jest.fn(),
+      identifyFakerCommandsFn: jest.fn(),
+      createTestDataGenerationServiceFn,
+      setTestDataStatusFn: statusA,
+      setTestDataLoadingStatusFn: loadingA,
+      createDataPopulationPanelComponentFn: jest.fn(() => panelA),
+    });
+    const controlB = createTestDataGridControl({
+      documentObj: domB.window.document,
+      initializeSchemaErrorDisplayFn: jest.fn(),
+      identifyFakerCommandsFn: jest.fn(),
+      createTestDataGenerationServiceFn,
+      setTestDataStatusFn: statusB,
+      setTestDataLoadingStatusFn: loadingB,
+      createDataPopulationPanelComponentFn: jest.fn(() => panelB),
+    });
+
+    controlA.mountTestDataGenerationPanel('host', {}, {}, { getRowCount: jest.fn(() => 2) });
+    controlB.mountTestDataGenerationPanel('host', {}, {}, { getRowCount: jest.fn(() => 9) });
+
+    expect(generationServiceOptions).toHaveLength(2);
+
+    generationServiceOptions[0].setTestDataStatus('done A');
+    generationServiceOptions[1].setTestDataLoadingStatus('loading B');
+    generationServiceOptions[0].setPairwiseVisible(true);
+    generationServiceOptions[1].setPairwiseVisible(false);
+
+    expect(statusA).toHaveBeenCalledWith('done A');
+    expect(statusB).not.toHaveBeenCalled();
+    expect(loadingB).toHaveBeenCalledWith('loading B');
+    expect(loadingA).not.toHaveBeenCalled();
+    expect(generationServiceOptions[0].getRequestedRowCount()).toBe('2');
+    expect(generationServiceOptions[1].getRequestedRowCount()).toBe('9');
+    expect(panelA.setPairwiseVisible).toHaveBeenCalledWith(true);
+    expect(panelB.setPairwiseVisible).toHaveBeenCalledWith(false);
+
+    domA.window.close();
+    domB.window.close();
+  });
+
+  test('mount is a safe no-op when no document is available', () => {
+    const originalDocument = global.document;
+    delete global.document;
+
+    try {
+      const createDataPopulationPanelComponentFn = jest.fn();
+      const control = createTestDataGridControl({
+        initializeSchemaErrorDisplayFn: jest.fn(),
+        identifyFakerCommandsFn: jest.fn(),
+        createTestDataGenerationServiceFn: jest.fn(() => ({
+          updatePairwiseButtonVisibility: jest.fn(),
+          generateTestData: jest.fn(),
+          generatePairwiseTestData: jest.fn(),
+          refreshTestDataPreview: jest.fn(),
+        })),
+        createDataPopulationPanelComponentFn,
+      });
+
+      const state = control.mountTestDataGenerationPanel('host', {}, {}, {});
+
+      expect(createDataPopulationPanelComponentFn).not.toHaveBeenCalled();
+      expect(state.dataPopulationPanel).toBeNull();
+    } finally {
+      global.document = originalDocument;
+    }
+  });
 });

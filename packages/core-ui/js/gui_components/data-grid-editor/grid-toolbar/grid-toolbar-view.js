@@ -1,8 +1,10 @@
+import { resolveDocumentObj } from '../../shared/dom/default-objects.js';
+
 class GridToolbarView {
-  constructor({ root, controller, documentObj = document } = {}) {
+  constructor({ root, controller, documentObj } = {}) {
     this.root = root;
     this.controller = controller;
-    this.documentObj = documentObj;
+    this.documentObj = resolveDocumentObj(documentObj, root);
     this.handleClick = (event) => this.onClick(event);
     this.handleInput = (event) => this.onInput(event);
     this.handleChange = (event) => this.onChange(event);

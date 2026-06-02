@@ -1,5 +1,9 @@
 import { jest } from '@jest/globals';
-import { GridControl, GridControlsPageMap } from '../../../js/gui_components/data-grid-editor/gridControl.js';
+import {
+  GridControl,
+  GridControlsPageMap,
+  shouldEnforceUniqueColumnNames,
+} from '../../../js/gui_components/data-grid-editor/gridControl.js';
 import { JSDOM } from 'jsdom';
 
 describe('GridControl', () => {
@@ -55,6 +59,10 @@ describe('GridControl', () => {
     const checkbox = parent.querySelector('#uniqueColumnNamesCheckbox');
     expect(checkbox).toBeTruthy();
     expect(checkbox.checked).toBe(false);
+    expect(shouldEnforceUniqueColumnNames(document)).toBe(false);
+
+    checkbox.checked = true;
+    expect(shouldEnforceUniqueColumnNames(document)).toBe(true);
   });
 
   test('delete selected rows respects selected count and confirmation', async () => {

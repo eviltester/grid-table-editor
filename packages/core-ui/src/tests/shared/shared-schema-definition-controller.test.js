@@ -34,4 +34,16 @@ describe('SharedSchemaDefinitionController', () => {
       })
     );
   });
+
+  test('constructor does not require a global document', () => {
+    const originalDocument = global.document;
+    delete global.document;
+
+    try {
+      const controller = new SharedSchemaDefinitionController();
+      expect(controller.documentObj).toBeNull();
+    } finally {
+      global.document = originalDocument;
+    }
+  });
 });

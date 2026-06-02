@@ -93,4 +93,31 @@ describe('TabulatorGridAdapter', () => {
 
     expect(adapter.getGridApi().setGridFromGenericDataTable).toHaveBeenCalledWith(dataTable);
   });
+
+  test('can be created without a global document when a root ownerDocument is available', async () => {
+    const isolatedDom = new JSDOM('<!doctype html><html><body><div id="root"></div></body></html>', {
+      pretendToBeVisual: true,
+    });
+    const originalDocument = global.document;
+    const originalWindow = global.window;
+    delete global.document;
+    delete global.window;
+
+    try {
+      const rootElement = isolatedDom.window.document.getElementById('root');
+      const adapter = createTabulatorGridAdapter({
+        rootElement,
+        TabulatorCtor: FakeTabulator,
+        GridExtensionClass: FakeGridExtension,
+      });
+
+      await adapter.whenReady();
+      expect(adapter.getTableApi()).toBeInstanceOf(FakeTabulator);
+      adapter.destroy();
+    } finally {
+      global.document = originalDocument;
+      global.window = originalWindow;
+      isolatedDom.window.close();
+    }
+  });
 });

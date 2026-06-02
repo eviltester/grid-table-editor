@@ -47,7 +47,6 @@ function createSampleGridData() {
 
 function renderImportExportWorkspaceStory(args) {
   const root = document.createElement('section');
-  document.body.appendChild(root);
   const storyGrid = new StoryMemoryGrid(createSampleGridData());
   const exporter = new Exporter(storyGrid);
   const importer = new Importer(storyGrid);

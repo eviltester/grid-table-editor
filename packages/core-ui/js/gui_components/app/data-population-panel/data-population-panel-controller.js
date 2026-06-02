@@ -6,6 +6,7 @@ class DataPopulationPanelController {
       pairwiseVisible: props.pairwiseVisible === true,
       modeOptions: Array.isArray(props.modeOptions) ? props.modeOptions : [],
       rowCountProps: { ...(props.rowCountProps || {}) },
+      actionIds: { ...(props.actionIds || {}) },
       schemaDefinitionProps: { ...(props.schemaDefinitionProps || {}) },
     };
   }
@@ -16,6 +17,7 @@ class DataPopulationPanelController {
       selectedMode: nextProps.selectedMode ?? this.state.selectedMode,
       pairwiseVisible: nextProps.pairwiseVisible ?? this.state.pairwiseVisible,
       modeOptions: Array.isArray(nextProps.modeOptions) ? nextProps.modeOptions : this.state.modeOptions,
+      actionIds: nextProps.actionIds ? { ...this.state.actionIds, ...nextProps.actionIds } : this.state.actionIds,
       rowCountProps: nextProps.rowCountProps
         ? { ...this.state.rowCountProps, ...nextProps.rowCountProps }
         : this.state.rowCountProps,
@@ -29,6 +31,7 @@ class DataPopulationPanelController {
     return {
       ...this.state,
       modeOptions: this.state.modeOptions.map((option) => ({ ...option })),
+      actionIds: { ...this.state.actionIds },
       rowCountProps: { ...this.state.rowCountProps },
       schemaDefinitionProps: { ...this.state.schemaDefinitionProps },
     };

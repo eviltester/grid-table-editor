@@ -1,17 +1,13 @@
 import { createOptionsPanelsForParent } from '../../generator/options/options-ui-schema.js';
 import { sanitizeUiOptionsForFormat } from '../../generator/options/options-catalog-adapter.js';
 import { createUpdateHelpHints } from '../../../help/help-tooltips.js';
+import { resolveDocumentObj, resolveWindowObj } from '../dom/default-objects.js';
 import { FormatOptionsPanelController } from './format-options-panel-controller.js';
 import { FormatOptionsPanelView } from './format-options-panel-view.js';
 
-function createFormatOptionsPanel({
-  root,
-  props = {},
-  services = {},
-  callbacks = {},
-  documentObj = document,
-  windowObj = documentObj?.defaultView || window,
-} = {}) {
+function createFormatOptionsPanel({ root, props = {}, services = {}, callbacks = {}, documentObj, windowObj } = {}) {
+  const resolvedDocumentObj = resolveDocumentObj(documentObj, root);
+  const resolvedWindowObj = resolveWindowObj(windowObj, resolvedDocumentObj);
   const controller = new FormatOptionsPanelController({
     props,
     services: {
@@ -23,11 +19,11 @@ function createFormatOptionsPanel({
   const view = new FormatOptionsPanelView({
     root,
     controller,
-    documentObj,
-    windowObj,
+    documentObj: resolvedDocumentObj,
+    windowObj: resolvedWindowObj,
     services: {
       createPanelsForParent: services.createPanelsForParent || createOptionsPanelsForParent,
-      updateHelpHints: services.updateHelpHints || createUpdateHelpHints(documentObj, root),
+      updateHelpHints: services.updateHelpHints || createUpdateHelpHints(resolvedDocumentObj, root),
     },
   });
 

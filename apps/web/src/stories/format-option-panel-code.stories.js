@@ -2,6 +2,7 @@ import { getCodeLanguageSubtasks } from '../../../../packages/core-ui/js/gui_com
 import {
   CODE_OPTIONS,
   createStory,
+  playGenericApply,
   playJavascriptApply,
   playPythonApply,
   renderFormatOptionPanelStory,
@@ -56,48 +57,55 @@ export const Python = createStory(
 export const Javascript = createStory(
   'javascript',
   CODE_OPTIONS.javascript,
-  'Shows the JavaScript code-generation panel through the shared component. This is useful because JavaScript reuses a JSON-style option surface underneath while still participating in the shared format-option contract.',
+  'Shows the JavaScript code-generation panel through the shared component. This is useful because JavaScript reuses a JSON-style option surface underneath while still participating in the shared format-option contract. Toggle `As Object`, click Apply, and then review the `Last apply payload` summary to confirm the emitted options now include `asObject: true` for the JavaScript format.',
   playJavascriptApply
 );
 
 export const CSharp = createStory(
   'csharp',
   CODE_OPTIONS.csharp,
-  `Shows the ${getCodeLabel('csharp', 'C#')} code-generation panel through the shared component. Review namespace, class, collection, and record-style options in the same shared dirty/apply lifecycle.`
+  `Shows the ${getCodeLabel('csharp', 'C#')} code-generation panel through the shared component. Review namespace, class, collection, and record-style options in the same shared dirty/apply lifecycle, then apply a simple change and inspect the \`Last apply payload\` summary to confirm the emitted contract.`,
+  playGenericApply
 );
 
 export const Java = createStory(
   'java',
   CODE_OPTIONS.java,
-  `Shows the ${getCodeLabel('java', 'Java')} code-generation panel through the shared component. Review package, import, class, and collection options for this language family.`
+  `Shows the ${getCodeLabel('java', 'Java')} code-generation panel through the shared component. Review package, import, class, and collection options for this language family, then apply a simple change and inspect the \`Last apply payload\` summary to confirm the emitted contract.`,
+  playGenericApply
 );
 
 export const Kotlin = createStory(
   'kotlin',
   CODE_OPTIONS.kotlin,
-  `Shows the ${getCodeLabel('kotlin', 'Kotlin')} code-generation panel through the shared component. Review package, import, class, collection, and data-class options for this language family.`
+  `Shows the ${getCodeLabel('kotlin', 'Kotlin')} code-generation panel through the shared component. Review package, import, class, collection, and data-class options for this language family, then apply a simple change and inspect the \`Last apply payload\` summary to confirm the emitted contract.`,
+  playGenericApply
 );
 
 export const Perl = createStory(
   'perl',
   CODE_OPTIONS.perl,
-  `Shows the ${getCodeLabel('perl', 'Perl')} code-generation panel through the shared component. Review package, array, and object-shape settings in the same shared option contract.`
+  `Shows the ${getCodeLabel('perl', 'Perl')} code-generation panel through the shared component. Review package, array, and object-shape settings in the same shared option contract, then apply a simple change and inspect the \`Last apply payload\` summary to confirm the emitted contract.`,
+  playGenericApply
 );
 
 export const Php = createStory(
   'php',
   CODE_OPTIONS.php,
-  `Shows the ${getCodeLabel('php', 'PHP')} code-generation panel through the shared component. Review namespace, class, PHP-tag, and array/object-shape options.`
+  `Shows the ${getCodeLabel('php', 'PHP')} code-generation panel through the shared component. Review namespace, class, PHP-tag, and array/object-shape options, then apply a simple change and inspect the \`Last apply payload\` summary to confirm the emitted contract.`,
+  playGenericApply
 );
 
 export const Ruby = createStory(
   'ruby',
   CODE_OPTIONS.ruby,
-  `Shows the ${getCodeLabel('ruby', 'Ruby')} code-generation panel through the shared component. Review symbol, class, pretty-print, and collection-shape options.`
+  `Shows the ${getCodeLabel('ruby', 'Ruby')} code-generation panel through the shared component. Review symbol, class, pretty-print, and collection-shape options, then apply a simple change and inspect the \`Last apply payload\` summary to confirm the emitted contract.`,
+  playGenericApply
 );
 
 export const TypeScript = createStory(
   'typescript',
   CODE_OPTIONS.typescript,
-  `Shows the ${getCodeLabel('typescript', 'TypeScript')} code-generation panel through the shared component. Review interface, object-shape, and pretty-print options in the same shared option contract.`
+  `Shows the ${getCodeLabel('typescript', 'TypeScript')} code-generation panel through the shared component. Review interface, object-shape, and pretty-print options in the same shared option contract, then apply a simple change and inspect the \`Last apply payload\` summary to confirm the emitted contract.`,
+  playGenericApply
 );

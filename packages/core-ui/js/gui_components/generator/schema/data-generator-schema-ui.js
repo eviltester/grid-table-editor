@@ -16,13 +16,14 @@ import {
   normaliseSourceType,
 } from '../../shared/schema-row-rule-mapper.js';
 import { applySchemaSourceTypeChange } from '../../shared/test-data/schema/schema-row-mapper.js';
+import { resolveWindowObj } from '../../shared/dom/default-objects.js';
 
 const SCHEMA_ROW_DRAGGING_CLASS = 'generator-schema-row-dragging';
 const SCHEMA_ROW_DROP_BEFORE_CLASS = 'generator-schema-row-drop-before';
 const SCHEMA_ROW_DROP_AFTER_CLASS = 'generator-schema-row-drop-after';
 
 function refreshHelpHints(documentObj) {
-  const windowObj = documentObj?.defaultView || globalThis.window;
+  const windowObj = resolveWindowObj(null, documentObj);
   if (typeof windowObj?.updateHelpHints === 'function') {
     windowObj.updateHelpHints();
   }

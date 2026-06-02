@@ -1,4 +1,4 @@
-import { mkdir, readdir, rm, writeFile } from 'node:fs/promises';
+import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
@@ -254,6 +254,23 @@ function renderIndexPage({ branchName, commitSha, buildTimestamp }) {
 `;
 }
 
+const TESTENV_HIDE_HEADER_STYLE = `
+    <style data-testenv-hide-header>
+      .header {
+        display: none !important;
+      }
+    </style>`;
+
+async function hideTopHeaderInBuiltPage(pagePath) {
+  const html = await readFile(pagePath, 'utf8');
+  if (html.includes('data-testenv-hide-header')) {
+    return;
+  }
+
+  const nextHtml = html.replace('</head>', `${TESTENV_HIDE_HEADER_STYLE}\n  </head>`);
+  await writeFile(pagePath, nextHtml, 'utf8');
+}
+
 await clearDirectoryContents(outputDir);
 
 const buildMetadata = resolveBuildMetadata();
@@ -271,6 +288,9 @@ runCommand('pnpm', [
 ]);
 
 runCommand('pnpm', ['exec', 'storybook', 'build', '--output-dir', storybookDir]);
+
+await hideTopHeaderInBuiltPage(path.join(outputDir, 'app.html'));
+await hideTopHeaderInBuiltPage(path.join(outputDir, 'generator.html'));
 
 await writeFile(path.join(outputDir, 'index.html'), renderIndexPage(buildMetadata), 'utf8');
 

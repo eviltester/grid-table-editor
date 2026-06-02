@@ -7,7 +7,8 @@ describe('generator bootstrap', () => {
 
   beforeEach(() => {
     dom = new JSDOM(
-      `<!doctype html><html><body><p id="generator-initial-load">Please Wait, Loading Libraries...</p><div id="generator-app"></div></body></html>`
+      `<!doctype html><html><body><div class="header"><div class="pageheading">AnyWayData</div></div><div id="generator-page-root"></div><p id="generator-initial-load">Please Wait, Loading Libraries...</p></body></html>`,
+      { url: 'https://example.test/generator.html' }
     );
     global.document = dom.window.document;
     global.window = dom.window;
@@ -22,6 +23,11 @@ describe('generator bootstrap', () => {
     const calls = [];
     const ensureGridLibraryLoadedFn = jest.fn(() => {
       calls.push('load');
+      const loadingMessage = dom.window.document.getElementById('generator-initial-load');
+      expect(loadingMessage).not.toBeNull();
+      expect(loadingMessage.textContent).toContain('Please Wait, Loading Libraries...');
+      expect(loadingMessage.classList.contains('is-loading')).toBe(true);
+      expect(loadingMessage.querySelector('[data-role="loading-indicator"]')).not.toBeNull();
       return Promise.resolve();
     });
     class DataGeneratorPageClass {
@@ -66,5 +72,95 @@ describe('generator bootstrap', () => {
 
     expect(initSpy).not.toHaveBeenCalled();
     expect(consoleSpy).toHaveBeenCalled();
+    const loadingMessage = dom.window.document.getElementById('generator-initial-load');
+    expect(loadingMessage).not.toBeNull();
+    expect(loadingMessage.textContent).toContain('Failed to load libraries. Check console for details.');
+    expect(loadingMessage.classList.contains('is-loading')).toBe(false);
+  });
+
+  test('fails startup status and rethrows when page init throws after libraries load', async () => {
+    const initError = new Error('init failed');
+    const initHelpTooltipsFn = jest.fn();
+
+    class DataGeneratorPageClass {
+      init() {
+        throw initError;
+      }
+    }
+
+    await expect(
+      bootstrapGeneratorPage({
+        documentObj: dom.window.document,
+        ensureGridLibraryLoadedFn: jest.fn(() => Promise.resolve()),
+        DataGeneratorPageClass,
+        fakerInstance: {},
+        initHelpTooltipsFn,
+      })
+    ).rejects.toThrow(initError);
+
+    expect(initHelpTooltipsFn).not.toHaveBeenCalled();
+    const loadingMessage = dom.window.document.getElementById('generator-initial-load');
+    expect(loadingMessage).not.toBeNull();
+    expect(loadingMessage.textContent).toContain('Failed to load libraries. Check console for details.');
+    expect(loadingMessage.classList.contains('is-loading')).toBe(false);
+  });
+
+  test('fails startup status and rethrows when tooltip init throws after page init', async () => {
+    const tooltipError = new Error('tooltip init failed');
+    const initSpy = jest.fn();
+
+    class DataGeneratorPageClass {
+      init() {
+        initSpy();
+      }
+    }
+
+    await expect(
+      bootstrapGeneratorPage({
+        documentObj: dom.window.document,
+        ensureGridLibraryLoadedFn: jest.fn(() => Promise.resolve()),
+        DataGeneratorPageClass,
+        fakerInstance: {},
+        initHelpTooltipsFn: () => {
+          throw tooltipError;
+        },
+      })
+    ).rejects.toThrow(tooltipError);
+
+    expect(initSpy).toHaveBeenCalledTimes(1);
+    const loadingMessage = dom.window.document.getElementById('generator-initial-load');
+    expect(loadingMessage).not.toBeNull();
+    expect(loadingMessage.textContent).toContain('Failed to load libraries. Check console for details.');
+    expect(loadingMessage.classList.contains('is-loading')).toBe(false);
+  });
+
+  test('does not require a global document when an injected document is provided', async () => {
+    const originalDocument = global.document;
+    const originalWindow = global.window;
+    delete global.document;
+    delete global.window;
+
+    try {
+      class DataGeneratorPageClass {
+        init() {}
+      }
+
+      await expect(
+        bootstrapGeneratorPage({
+          documentObj: dom.window.document,
+          ensureGridLibraryLoadedFn: jest.fn(() => Promise.resolve()),
+          DataGeneratorPageClass,
+          fakerInstance: {},
+          initHelpTooltipsFn: jest.fn(),
+        })
+      ).resolves.toEqual(
+        expect.objectContaining({
+          page: expect.any(DataGeneratorPageClass),
+        })
+      );
+    } finally {
+      global.document = originalDocument;
+      global.window = originalWindow;
+    }
   });
 });

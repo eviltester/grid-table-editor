@@ -488,6 +488,72 @@ describe('ImportExportControls file reading and visibility', () => {
     expect(document.querySelector('.fileFormat').innerText).toBe('.csv');
   });
 
+  test('uses injected document object for import/export lookups when global document is unavailable', async () => {
+    const isolatedDom = new JSDOM(`<!doctype html><html><body>
+            <ul><li class="active-type"><a data-type="csv" href="#">CSV</a></li></ul>
+            <label id="autoPreviewLabel"><input type="checkbox" id="autoPreviewCheckbox"/>Auto Preview</label>
+            <textarea id="markdownarea">a,b\n1,2</textarea>
+            <div id="markdown"></div>
+            <div class="edit-area"></div>
+            <div class="options-parent"></div>
+            <div class="options-preview-splitter"></div>
+            <div id="importExportRoot"></div>
+            <button id="copyTextButton">Copy</button>
+        </body></html>`);
+    const isolatedDocument = isolatedDom.window.document;
+    const originalDocument = global.document;
+    const originalWindow = global.window;
+
+    try {
+      global.document = undefined;
+      global.window = isolatedDom.window;
+
+      const isolatedControls = new ImportExportControls({ documentObj: isolatedDocument });
+      isolatedControls.addHTMLtoGui(isolatedDocument.getElementById('importExportRoot'));
+      isolatedControls.exportControls = {
+        setTextFromString: jest.fn(),
+        renderTextFromGrid: jest.fn(),
+        setImportBusyState: jest.fn(),
+      };
+      isolatedControls.exporter = {
+        canExport: jest.fn(() => true),
+        getGridAsGenericDataTable: jest.fn((maxRows) => makeDataTable(maxRows || 12)),
+        getDataTableAs: jest.fn((_type, dataTable) => `rows:${dataTable.getRowCount()}`),
+        getOptionsForType: jest.fn(() => ({ delimiter: ',' })),
+        setOptionsForType: jest.fn(),
+        getFileExtensionFor: jest.fn(() => '.csv'),
+      };
+      isolatedControls.importer = {
+        canImport: jest.fn(() => true),
+        importText: jest.fn(),
+        toGenericDataTable: jest.fn(() => makeDataTable(12)),
+        setGridFromGenericDataTable: jest.fn(),
+        setOptionsForType: jest.fn(),
+        getFileExtensionFor: jest.fn(() => '.csv'),
+      };
+      isolatedControls.optionsPanels = {
+        csv: {
+          getOptionsFromGui: jest.fn(() => ({})),
+        },
+      };
+
+      const textArea = isolatedDocument.getElementById('markdownarea');
+      textArea.dispatchEvent(new isolatedDom.window.Event('input', { bubbles: true }));
+
+      isolatedControls.setFileFormatType();
+      await isolatedControls.importTextArea();
+
+      expect(isolatedControls.importer.canImport).toHaveBeenCalledWith('csv');
+      expect(isolatedControls.exporter.canExport).toHaveBeenCalledWith('csv');
+      expect(isolatedControls.importer.setGridFromGenericDataTable).toHaveBeenCalled();
+      expect(isolatedDocument.getElementById('setgridfromtextbutton').disabled).toBe(true);
+    } finally {
+      global.document = originalDocument;
+      global.window = originalWindow;
+      isolatedDom.window.close();
+    }
+  });
+
   test('applyCurrentTypeOptions updates importer/exporter and rerenders text', () => {
     controls.renderTextFromGrid = jest.fn();
 

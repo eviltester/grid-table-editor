@@ -1,55 +1,65 @@
-import { scheduleTimeout } from './unref-timeout.js';
+import { createInlineMessageComponent } from './primitives/inline-message/index.js';
+import { getDefaultDocumentObj } from './dom/default-objects.js';
 
-export class TimedErrorDisplay {
-  constructor({ documentObj = document, elementId, timeoutMs = 5000 } = {}) {
-    this.documentObj = documentObj;
-    this.elementId = elementId;
-    this.timeoutMs = timeoutMs;
-    this.timeoutId = null;
+function createTimedStatusPresenter({ documentObj = getDefaultDocumentObj(), elementId, timeoutMs = 5000 } = {}) {
+  let component = null;
+  let rootElement = null;
+
+  const getComponent = () => {
+    const nextRoot = documentObj?.getElementById?.(elementId);
+    if (!nextRoot) {
+      return null;
+    }
+
+    if (component && rootElement === nextRoot && nextRoot.isConnected !== false) {
+      return component;
+    }
+
+    component?.destroy?.();
+    rootElement = nextRoot;
+    component = createInlineMessageComponent({
+      root: nextRoot,
+      props: {
+        timeoutMs,
+        hideWhenEmpty: true,
+      },
+    });
+    return component;
+  };
+
+  getComponent();
+
+  return {
+    clear() {
+      getComponent()?.clear();
+    },
+    destroy() {
+      component?.destroy?.();
+      component = null;
+      rootElement = null;
+    },
+    show(message, { severity = 'error', timeoutMs: nextTimeoutMs = timeoutMs } = {}) {
+      getComponent()?.show(message, { severity, timeoutMs: nextTimeoutMs });
+    },
+  };
+}
+
+class TimedStatusDisplay {
+  constructor(options = {}) {
+    this.presenter = createTimedStatusPresenter(options);
   }
 
   clear() {
-    if (this.timeoutId) {
-      clearTimeout(this.timeoutId);
-      this.timeoutId = null;
-    }
-    const element = this.documentObj.getElementById(this.elementId);
-    if (element) {
-      element.textContent = '';
-      element.removeAttribute('data-severity');
-    }
+    this.presenter.clear();
   }
 
   destroy() {
-    this.clear();
+    this.presenter.destroy();
   }
 
-  show(message, { severity = 'error', timeoutMs = this.timeoutMs, sticky = false } = {}) {
-    const text = String(message ?? '').trim();
-    if (!text) {
-      this.clear();
-      return;
-    }
-    const element = this.documentObj.getElementById(this.elementId);
-    if (!element) {
-      return;
-    }
-    if (this.timeoutId) {
-      clearTimeout(this.timeoutId);
-      this.timeoutId = null;
-    }
-    element.setAttribute('data-severity', severity);
-    element.textContent = text;
-
-    if (sticky) {
-      return;
-    }
-
-    const delayMs = Number.isFinite(timeoutMs) ? timeoutMs : this.timeoutMs;
-    this.timeoutId = scheduleTimeout(() => {
-      this.timeoutId = null;
-      element.textContent = '';
-      element.removeAttribute('data-severity');
-    }, delayMs);
+  show(message, options = {}) {
+    this.presenter.show(message, options);
   }
 }
+
+export { createTimedStatusPresenter, TimedStatusDisplay };

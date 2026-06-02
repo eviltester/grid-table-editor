@@ -1,6 +1,7 @@
 import { GridExtension } from './gridExtension-ag-grid.js';
 import { GridControl, GridControlsPageMap } from '../gridControl.js';
 import { CustomHeaderAgGrid } from './customHeader-ag-grid.js';
+import { getDefaultDocumentObj } from '../../shared/dom/default-objects.js';
 
 /*
     Grid Features Used:
@@ -14,7 +15,8 @@ import { CustomHeaderAgGrid } from './customHeader-ag-grid.js';
 */
 
 class ExtendedDataGrid {
-  constructor() {
+  constructor({ documentObj = getDefaultDocumentObj() } = {}) {
+    this.documentObj = documentObj;
     var rowData = [];
 
     var columnDefs = [
@@ -69,7 +71,7 @@ class ExtendedDataGrid {
     let gridControls = new GridControl(new GridControlsPageMap());
     gridControls.addGuiIn(parentGridDiv);
 
-    let gridDiv = document.querySelector('#myGrid');
+    let gridDiv = this.documentObj?.querySelector?.('#myGrid');
 
     this.gridApi = agGrid.createGrid(gridDiv, this.gridOptions);
 
@@ -80,7 +82,7 @@ class ExtendedDataGrid {
     this.gridExtras = new GridExtension(this.gridApi);
 
     gridControls.useThisGridFunctionality(this.gridExtras);
-    gridControls.addHooksToPage(document);
+    gridControls.addHooksToPage(this.documentObj);
   }
 
   sizeColumnsToFit() {

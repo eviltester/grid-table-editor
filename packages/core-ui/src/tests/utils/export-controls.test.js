@@ -118,4 +118,35 @@ describe('ExportControls', () => {
     expect(document.execCommand).toHaveBeenCalledWith('copy');
     expect(document.getElementById('copyTextButton').innerText).toBe('Copied');
   });
+
+  test('uses injected document object rather than relying on global document', () => {
+    const isolatedDom = new JSDOM(`<!doctype html><html><body>
+      <ul><li class="active-type"><a data-type="csv" href="#">CSV</a></li></ul>
+      <div id="root">
+        <button id="filedownload">Download</button>
+        <button id="copyTextButton">Copy</button>
+        <textarea id="markdownarea">existing</textarea>
+        <div id="export-progress-status" class="import-progress-status" style="display:none;"></div>
+      </div>
+    </body></html>`);
+    const isolatedDocument = isolatedDom.window.document;
+    const originalDocument = global.document;
+    try {
+      global.document = undefined;
+
+      const isolatedExporter = {
+        canExport: jest.fn(() => true),
+        getGridAs: jest.fn(() => 'isolated,row'),
+      };
+      const isolatedControls = new ExportControls(isolatedExporter, { documentObj: isolatedDocument });
+      isolatedControls.addHooksToPage(isolatedDocument.getElementById('root'));
+
+      isolatedControls.renderTextFromGrid();
+
+      expect(isolatedDocument.getElementById('markdownarea').value).toBe('isolated,row');
+    } finally {
+      global.document = originalDocument;
+      isolatedDom.window.close();
+    }
+  });
 });

@@ -7,4 +7,4 @@ export {
   schemaRowsToSpecWithTokens,
   validateSchemaRows,
   normaliseFakerCommand,
-} from './controller/index.js';
+} from './runtime/data-generator-page-runtime.js';

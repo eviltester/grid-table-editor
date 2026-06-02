@@ -40,4 +40,19 @@ describe('theme toggle', () => {
     expect(window.localStorage.getItem('theme')).toBe('dark');
     expect(window.localStorage.getItem('anywaydata-theme')).toBe('dark');
   });
+
+  test('does not throw when no document or window is available', () => {
+    const originalDocument = global.document;
+    const originalWindow = global.window;
+
+    delete global.document;
+    delete global.window;
+
+    try {
+      expect(() => initThemeToggle()).not.toThrow();
+    } finally {
+      global.document = originalDocument;
+      global.window = originalWindow;
+    }
+  });
 });

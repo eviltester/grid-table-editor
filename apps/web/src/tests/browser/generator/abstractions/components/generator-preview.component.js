@@ -3,11 +3,11 @@ const { expect } = require('@playwright/test');
 class GeneratorPreviewComponent {
   constructor(page) {
     this.page = page;
-    this.container = page.locator('#generatorPreviewSection');
-    this.rowsCountInput = page.locator('#previewRowsCount');
-    this.previewButton = page.locator('#previewDataButton');
-    this.outputPreviewTextArea = page.locator('#generatorOutputPreview');
-    this.previewGrid = page.locator('#generator-preview-grid');
+    this.container = page.getByRole('region', { name: 'Preview' });
+    this.rowsCountInput = page.getByRole('spinbutton', { name: 'Preview Items Count' });
+    this.previewButton = page.getByRole('button', { name: 'Preview', exact: true });
+    this.outputPreviewTextArea = page.getByRole('textbox', { name: 'Output Preview' });
+    this.previewGrid = page.getByLabel('Data Table Preview Grid');
     this.headerTitles = this.previewGrid.locator('.tabulator-col-title');
     this.rows = this.previewGrid.locator('.tabulator-row');
   }
@@ -49,6 +49,17 @@ class GeneratorPreviewComponent {
       values.push((await this.rows.nth(rowIndex).locator('.tabulator-cell').nth(columnIndex).innerText()).trim());
     }
     return values;
+  }
+
+  async expectReadOnly() {
+    const firstCell = this.rows.first().locator('.tabulator-cell').first();
+    const editingInputs = this.previewGrid.locator(
+      '.tabulator-editing input, .tabulator-editing textarea, .tabulator-editing select'
+    );
+
+    await expect(firstCell).toBeVisible();
+    await firstCell.dblclick();
+    await expect(editingInputs).toHaveCount(0);
   }
 
   async _columnIndexByName(columnName) {

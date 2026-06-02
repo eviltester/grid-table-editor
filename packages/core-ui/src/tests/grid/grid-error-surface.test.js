@@ -28,4 +28,24 @@ describe('grid-error-surface', () => {
       domB.window.close();
     }
   });
+
+  test('returns a no-op surface when the grid error element is missing', () => {
+    const dom = new JSDOM('<!doctype html><html><body></body></html>');
+
+    try {
+      const display = getGridErrorDisplay(dom.window.document);
+      expect(() => display.show('Missing root')).not.toThrow();
+      expect(display.getState()).toEqual({});
+    } finally {
+      dom.window.close();
+    }
+  });
+
+  test('returns a no-op surface without a document object', () => {
+    const display = getGridErrorDisplay(null);
+
+    expect(() => display.show('Missing root')).not.toThrow();
+    expect(() => showGridError('No document', null)).not.toThrow();
+    expect(display.getState()).toEqual({});
+  });
 });

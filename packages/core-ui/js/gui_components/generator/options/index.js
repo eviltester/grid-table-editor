@@ -1,4 +1,5 @@
 export {
+  applySanitizedUiOptionsToTargets,
   TEST_FRAMEWORK_GROUPS,
   getCodeLanguageSubtasks,
   getTestFrameworkFormats,

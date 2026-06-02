@@ -5,6 +5,7 @@ class SchemaEditorComponent {
   constructor(page, config) {
     this.page = page;
     this.config = {
+      rootSelector: config.rootSelector || null,
       rowsSelector: config.rowsSelector,
       textAreaSelector: config.textAreaSelector,
       modeToggleSelector: config.modeToggleSelector || null,
@@ -13,16 +14,30 @@ class SchemaEditorComponent {
       fieldMap: config.fieldMap || {},
     };
 
-    this.rowsContainer = page.locator(this.config.rowsSelector);
-    this.rows = page.locator(`${this.config.rowsSelector} .generator-schema-row`);
-    this.textArea = page.locator(this.config.textAreaSelector);
-    this.modeToggleButton = this.config.modeToggleSelector ? page.locator(this.config.modeToggleSelector) : null;
-    this.addFieldButton = this.config.addFieldSelector ? page.locator(this.config.addFieldSelector) : null;
+    this.root = this.config.rootSelector ? page.locator(this.config.rootSelector) : page;
+    this.rowsContainer = this.config.rowsSelector
+      ? page.locator(this.config.rowsSelector)
+      : this.root.locator('[data-role="schema-rows-region"]');
+    this.rows = this.rowsContainer.locator('.generator-schema-row');
+    this.textArea = this.config.textAreaSelector
+      ? page.locator(this.config.textAreaSelector)
+      : this.root.locator('[data-role="schema-textbox"]');
+    this.modeToggleButton = this.config.modeToggleSelector
+      ? page.locator(this.config.modeToggleSelector)
+      : this.root.locator('[data-role="schema-mode-toggle"]');
+    this.addFieldButton = this.config.addFieldSelector
+      ? page.locator(this.config.addFieldSelector)
+      : this.root.locator('[data-role="schema-add-field"]');
     this.methodPicker = new MethodPickerDialogComponent(page);
   }
 
   row(index) {
     return this.rows.nth(index);
+  }
+
+  async dismissOpenHelpTooltips() {
+    await this.page.mouse.move(0, 0);
+    await this.page.waitForTimeout(350);
   }
 
   async ensureSchemaMode() {
@@ -54,6 +69,7 @@ class SchemaEditorComponent {
     }
     const expected = enabled ? 'Edit as Schema' : 'Edit as Text';
     if (((await this.modeToggleButton.innerText()).trim() || '') !== expected) {
+      await this.dismissOpenHelpTooltips();
       await this.modeToggleButton.click();
     }
     await expect(this.modeToggleButton).toHaveText(expected);
@@ -138,6 +154,7 @@ class SchemaEditorComponent {
       } else if (lower.includes('.')) {
         await this.setRowSourceType(index, 'domain');
       }
+      await this.dismissOpenHelpTooltips();
       await this.row(index).locator('[data-action="pick-command"]').click();
       await this.methodPicker.chooseCommand(requested, { tab: pickerTab });
     }
@@ -149,6 +166,7 @@ class SchemaEditorComponent {
 
   async clickRowAction(index, action) {
     await this.ensureSchemaMode();
+    await this.dismissOpenHelpTooltips();
     await this.row(index).locator(`button[data-action="${action}"]`).click();
   }
 

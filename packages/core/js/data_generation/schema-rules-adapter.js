@@ -7,6 +7,16 @@ const SOURCE_TYPE_REGEX = 'regex';
 const SOURCE_TYPE_LITERAL = 'literal';
 const SOURCE_TYPE_ENUM = 'enum';
 
+function isBlankSchemaRow(row) {
+  return (
+    String(row?.name ?? '').trim().length === 0 &&
+    String(row?.command ?? '').trim().length === 0 &&
+    String(row?.params ?? '').trim().length === 0 &&
+    String(row?.value ?? '').trim().length === 0 &&
+    String(row?.comments ?? '').trim().length === 0
+  );
+}
+
 function normaliseSourceType(sourceType) {
   const normalised = String(sourceType || '')
     .trim()
@@ -118,12 +128,14 @@ export function schemaRowsToDataRules({ schemaRows = [] } = {}) {
       order: index,
     };
   });
+  const hasNonBlankRows = normalisedRows.some((row) => !isBlankSchemaRow(row));
+  const effectiveRows = hasNonBlankRows ? normalisedRows.filter((row) => !isBlankSchemaRow(row)) : normalisedRows;
 
-  if (normalisedRows.length === 0) {
-    return { dataRules: [], errors: [SchemaParsingErrors.missingSchemaRows()], rows: normalisedRows };
+  if (effectiveRows.length === 0) {
+    return { dataRules: [], errors: [SchemaParsingErrors.missingSchemaRows()], rows: effectiveRows };
   }
 
-  normalisedRows.forEach((row) => {
+  effectiveRows.forEach((row) => {
     if (row.name.length === 0) {
       errors.push(SchemaParsingErrors.missingColumnName(row.line));
     }
@@ -139,11 +151,11 @@ export function schemaRowsToDataRules({ schemaRows = [] } = {}) {
   });
 
   if (errors.length > 0) {
-    return { dataRules: [], errors, rows: normalisedRows };
+    return { dataRules: [], errors, rows: effectiveRows };
   }
 
   const dataRules = [];
-  normalisedRows.forEach((row) => {
+  effectiveRows.forEach((row) => {
     const ruleSpec = buildRuleSpecFromRow(row);
     if (row.name.length === 0 && ruleSpec.length === 0) {
       return;
@@ -156,5 +168,5 @@ export function schemaRowsToDataRules({ schemaRows = [] } = {}) {
     });
   });
 
-  return { dataRules, errors: [], rows: normalisedRows };
+  return { dataRules, errors: [], rows: effectiveRows };
 }

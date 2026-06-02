@@ -254,4 +254,18 @@ describe('method picker modal', () => {
     document.querySelector('[data-action="cancel"]').click();
     await promise;
   });
+
+  test('returns null without throwing when no document is available', async () => {
+    const originalDocument = global.document;
+    const originalWindow = global.window;
+    delete global.document;
+    delete global.window;
+
+    try {
+      await expect(openMethodPickerModal()).resolves.toBeNull();
+    } finally {
+      global.document = originalDocument;
+      global.window = originalWindow;
+    }
+  });
 });

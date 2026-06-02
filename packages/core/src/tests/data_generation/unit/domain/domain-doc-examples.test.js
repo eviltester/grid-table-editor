@@ -5,6 +5,23 @@ import { faker } from '@faker-js/faker';
 import { executeDomainKeyword } from '../../../../../js/domain/domain-keywords.js';
 import { parseKeywordInvocation } from '../../../../../js/domain/domain-keyword-parser.js';
 
+function readFileSyncWithRetries(fullPath, attempts = 3) {
+  let lastError = null;
+
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    try {
+      return fs.readFileSync(fullPath, 'utf8');
+    } catch (error) {
+      lastError = error;
+      if (error?.code !== 'ENOENT' || attempt === attempts) {
+        throw error;
+      }
+    }
+  }
+
+  throw lastError;
+}
+
 function readDomainDocExamples() {
   const testDir = path.dirname(fileURLToPath(import.meta.url));
   let rootDir = testDir;
@@ -25,7 +42,7 @@ function readDomainDocExamples() {
 
   for (const fileName of files) {
     const fullPath = path.join(docsDir, fileName);
-    const body = fs.readFileSync(fullPath, 'utf8');
+    const body = readFileSyncWithRetries(fullPath);
     const matches = [...body.matchAll(/```txt\s*\n([\s\S]*?)\n```/g)];
     const invocations = matches.map((match) => match[1].trim()).filter((line) => line.length > 0);
     result.push({

@@ -1,13 +1,29 @@
-import { ExportControls } from './exportControls.js';
-import { DragDropControl } from './drag-drop-control.js';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
-import { sanitizeUiOptionsForFormat, createOptionsPanelsForParent } from '../generator/options/index.js';
-import { TimedErrorDisplay } from '../shared/timed-error-display.js';
-import { showConfirmModal } from '../shared/modal-confirm.js';
+import { createFormatOptionsPanel } from '../shared/format-options-panel/index.js';
+import { applySanitizedUiOptionsToTargets, createOptionsPanelsForParent } from '../generator/options/index.js';
+import { createConfirmDialogService } from '../shared/dialog-services/index.js';
+import { createTimedStatusPresenter } from '../shared/timed-error-display.js';
 import { scheduleTimeout } from '../shared/unref-timeout.js';
+import {
+  createExportActionsAdapter,
+  createFileImportBindingsAdapter,
+  createFileReadService,
+} from './import-export-adapters/index.js';
+import { resolveWindowObj } from '../shared/dom/default-objects.js';
+
+function getDefaultDocumentObj() {
+  return typeof document !== 'undefined' ? document : null;
+}
 
 class ImportExportControls {
-  constructor({ requestConfirm } = {}) {
+  constructor({
+    requestConfirm,
+    documentObj = getDefaultDocumentObj(),
+    createExportActionsAdapterFn = createExportActionsAdapter,
+    createFileImportBindingsAdapterFn = createFileImportBindingsAdapter,
+    fileReadService = null,
+  } = {}) {
+    this.documentObj = documentObj;
     this.previewRowLimit = 10;
     this.textEditMode = 'preview';
     this.previewTextDirty = false;
@@ -22,10 +38,12 @@ class ImportExportControls {
     this._hasBoundAutoPreviewInput = false;
     this._gridChangeUnsubscribe = null;
     this.errorDisplay = null;
-    this.requestConfirm =
-      typeof requestConfirm === 'function'
-        ? requestConfirm
-        : (options) => showConfirmModal({ documentObj: document, ...options });
+    this.fileImportBindings = null;
+    const confirmDialogService = createConfirmDialogService({ documentObj: this.documentObj });
+    this.requestConfirm = typeof requestConfirm === 'function' ? requestConfirm : confirmDialogService.requestConfirm;
+    this.fileReadService = fileReadService || createFileReadService();
+    this.exportControls = createExportActionsAdapterFn({ documentObj: this.documentObj });
+    this.createFileImportBindingsAdapter = createFileImportBindingsAdapterFn;
   }
 
   addHTMLtoGui(parentelement) {
@@ -42,8 +60,13 @@ class ImportExportControls {
             <div id="import-progress-status" class="import-progress-status" style="display:none;" aria-live="polite"></div>
             <div id="import-export-error" class="generator-schema-error-text" aria-live="polite" role="status"></div>
         `;
-    this.errorDisplay = new TimedErrorDisplay({
-      documentObj: document,
+    this.bindExistingGui(parentelement);
+  }
+
+  bindExistingGui(parentelement) {
+    this.rootElement = parentelement;
+    this.errorDisplay = createTimedStatusPresenter({
+      documentObj: this.documentObj,
       elementId: 'import-export-error',
       timeoutMs: 5000,
     });
@@ -58,22 +81,16 @@ class ImportExportControls {
     this._syncGridFromTextButtonState();
 
     this._bindPreviewTextInputIfAvailable();
-
     this.fileInputElement = parentelement.querySelector('#csvinput');
-    let csvinputchangelistener = this.loadFile.bind(this);
-    // clear file upload on click to allow re-uploading same file after option changes e.g for delimiters
-    this.fileInputElement.addEventListener(
-      'click',
-      (e) => {
-        e.currentTarget.value = '';
-      },
-      false
-    );
-    this.fileInputElement.addEventListener('change', csvinputchangelistener, false);
 
-    // setup the drop zone
-    const dragDropZone = new DragDropControl(this.readFile.bind(this));
-    dragDropZone.configureAsDropZone(parentelement.querySelector('#dropzone'));
+    this.fileImportBindings?.destroy?.();
+    this.fileImportBindings = this.createFileImportBindingsAdapter({
+      root: parentelement,
+      onFileSelected: (file) => this.loadFile(file),
+    });
+
+    this.exportControls?.destroy?.();
+    this.exportControls?.bind?.(this.rootElement);
   }
 
   setImporter(anImporter) {
@@ -82,9 +99,7 @@ class ImportExportControls {
 
   setExporter(anExporter) {
     this.exporter = anExporter;
-
-    this.exportControls = new ExportControls(this.exporter);
-    this.exportControls.addHooksToPage(document);
+    this.exportControls?.setExporter?.(this.exporter);
   }
 
   setGridChangeSource(gridChangeSource) {
@@ -110,16 +125,16 @@ class ImportExportControls {
         this._showError('Grid to Text only available in Edit mode');
         return;
       }
-      const typeToImport = document.querySelector('li.active-type a').getAttribute('data-type');
-      const textToImport = document.getElementById('markdownarea').value;
+      const typeToImport = this._getActiveType();
+      const textToImport = this._query('#markdownarea')?.value || '';
       this.setCurrentTypeOptions();
       return Promise.resolve(this._previewThenImportToGrid(typeToImport, textToImport)).then(() => {
         this._setPreviewTextDirty(false);
       });
     }
 
-    const typeToImport = document.querySelector('li.active-type a').getAttribute('data-type');
-    const textToImport = document.getElementById('markdownarea').value;
+    const typeToImport = this._getActiveType();
+    const textToImport = this._query('#markdownarea')?.value || '';
 
     this.setCurrentTypeOptions();
     return this.importer.importText(typeToImport, textToImport);
@@ -151,10 +166,10 @@ class ImportExportControls {
     this.renderTextFromGrid();
   }
 
-  loadFile() {
+  loadFile(file = this.fileInputElement?.files?.[0] || null) {
     this.setCurrentTypeOptions();
     this._setImportProgressStatus('Preparing file import...', true);
-    this.readFile(this.fileInputElement.files[0]);
+    this.readFile(file);
   }
 
   readFile(aFile) {
@@ -165,24 +180,35 @@ class ImportExportControls {
     }
 
     this._setExportActionsBusyState(true);
-    const reader = new FileReader();
     this._setImportProgressStatus(`Loading ${aFile.name}... 0%`, true);
 
-    reader.addEventListener('progress', (event) => {
-      if (event.lengthComputable) {
-        const pct = Math.min(100, Math.round((event.loaded / event.total) * 100));
-        this._setImportProgressStatus(`Loading ${aFile.name}... ${pct}%`, true);
-        return;
-      }
-      this._setImportProgressStatus(`Loading ${aFile.name}...`, true);
-    });
-
-    reader.addEventListener('load', (event) => {
-      this._setImportProgressStatus(this.isPreviewTextMode() ? 'Preparing preview...' : 'Importing into grid...', true);
-      this._yieldToUi().then(async () => {
+    this.fileReadService
+      .readText(aFile, {
+        onProgress: (event) => {
+          if (event.lengthComputable) {
+            const pct = Math.min(100, Math.round((event.loaded / event.total) * 100));
+            this._setImportProgressStatus(`Loading ${aFile.name}... ${pct}%`, true);
+            return;
+          }
+          this._setImportProgressStatus(`Loading ${aFile.name}...`, true);
+        },
+        onError: () => {
+          this._setImportProgressStatus('File read failed.', false);
+          this._setExportActionsBusyState(false);
+        },
+        onAbort: () => {
+          this._setImportProgressStatus('File read cancelled.', false);
+          this._setExportActionsBusyState(false);
+        },
+      })
+      .then(async (importedText) => {
+        this._setImportProgressStatus(
+          this.isPreviewTextMode() ? 'Preparing preview...' : 'Importing into grid...',
+          true
+        );
         try {
+          await this._yieldToUi();
           const type = this._getActiveType();
-          const importedText = event.target.result;
           if (this.isPreviewTextMode()) {
             await this._previewThenImportToGrid(type, importedText);
           } else {
@@ -201,24 +227,26 @@ class ImportExportControls {
         }
 
         scheduleTimeout(() => this._clearImportProgressStatus(), 1200);
+      })
+      .catch((error) => {
+        if (error?.type !== 'abort' && error?.type !== 'error') {
+          this._setImportProgressStatus('File read failed.', false);
+          this._setExportActionsBusyState(false);
+        }
       });
-    });
+  }
 
-    reader.addEventListener('error', () => {
-      this._setImportProgressStatus('File read failed.', false);
-      this._setExportActionsBusyState(false);
-    });
-
-    reader.addEventListener('abort', () => {
-      this._setImportProgressStatus('File read cancelled.', false);
-      this._setExportActionsBusyState(false);
-    });
-
-    reader.readAsText(aFile);
+  destroy() {
+    this.fileImportBindings?.destroy?.();
+    this.exportControls?.destroy?.();
+    if (typeof this._gridChangeUnsubscribe === 'function') {
+      this._gridChangeUnsubscribe();
+      this._gridChangeUnsubscribe = null;
+    }
   }
 
   _setImportProgressStatus(message, isLoading) {
-    const statusElem = document.querySelector('#import-progress-status');
+    const statusElem = this._query('#import-progress-status');
     if (!statusElem) {
       return;
     }
@@ -228,7 +256,7 @@ class ImportExportControls {
   }
 
   _clearImportProgressStatus() {
-    const statusElem = document.querySelector('#import-progress-status');
+    const statusElem = this._query('#import-progress-status');
     if (!statusElem) {
       return;
     }
@@ -250,7 +278,7 @@ class ImportExportControls {
   }
 
   _setExportActionsBusyState(isBusy) {
-    const setTextFromGridButton = document.querySelector('#settextfromgridbutton');
+    const setTextFromGridButton = this._query('#settextfromgridbutton');
     if (setTextFromGridButton) {
       const busy = isBusy === true;
       setTextFromGridButton.disabled = busy;
@@ -261,16 +289,13 @@ class ImportExportControls {
   }
 
   setFileFormatType() {
-    // TODO : these should not be document based locators, they should work from the parent
-
-    // get data format type
-    const type = document.querySelector('li.active-type a').getAttribute('data-type');
+    const type = this._getActiveType();
 
     // set import control visibility
     const importControlLocators = ['#setgridfromtextbutton', '#dropzone', '#csvinputlabel', '#csvinput'];
     let importControls = [];
     importControlLocators.forEach((locator) => {
-      let elem = document.querySelector(locator);
+      let elem = this._query(locator);
       if (elem) {
         importControls.push(elem);
       }
@@ -290,7 +315,7 @@ class ImportExportControls {
     const exportControlLocators = ['#filedownload'];
     let exportControls = [];
     exportControlLocators.forEach((locator) => {
-      let elem = document.querySelector(locator);
+      let elem = this._query(locator);
       if (elem) {
         exportControls.push(elem);
       }
@@ -309,34 +334,63 @@ class ImportExportControls {
     // configure file type display
     const fileType = this.importer.getFileExtensionFor(type);
 
-    document.querySelectorAll('.fileFormat').forEach((elem) => (elem.innerText = fileType));
+    this._queryAll('.fileFormat').forEach((elem) => (elem.innerText = fileType));
   }
 
   setupOptionsPanelsWithin(optionsparent) {
-    if (this.optionsPanels === undefined) {
-      if (optionsparent) {
-        this.optionsPanels = createOptionsPanelsForParent(optionsparent);
-      }
+    if (this.formatOptionsPanel || !optionsparent) {
+      return;
     }
+    this.formatOptionsPanel = createFormatOptionsPanel({
+      root: optionsparent,
+      documentObj: this.documentObj,
+      windowObj: resolveWindowObj(null, this.documentObj),
+      props: {
+        selectedFormat: this._getActiveType(),
+        currentOptions: this.exporter?.getOptionsForType?.(this._getActiveType()),
+      },
+      services: {
+        createPanelsForParent: () => {
+          if (this.optionsPanels) {
+            return this.optionsPanels;
+          }
+          this.optionsPanels = createOptionsPanelsForParent(optionsparent);
+          return this.optionsPanels;
+        },
+      },
+      callbacks: {
+        onApplyOptions: ({ sanitized }) => {
+          this.applyCurrentTypeOptions(sanitized);
+        },
+      },
+    });
+    this.optionsPanels = this.formatOptionsPanel.getPanels();
   }
   setOptionsViewForFormatType() {
-    const type = document.querySelector('li.active-type a').getAttribute('data-type');
+    const type = this._getActiveType();
 
-    const edit_area = document.querySelector('div.edit-area');
-    const optionsparent = document.querySelector('div.options-parent');
-    const splitter = document.querySelector('div.options-preview-splitter');
-    const text_area = document.getElementById('markdown');
+    const edit_area = this._query('div.edit-area');
+    const optionsparent = this._query('div.options-parent');
+    const splitter = this._query('div.options-preview-splitter');
+    const text_area = this._query('#markdown');
+
+    if (!edit_area || !optionsparent || !text_area) {
+      return;
+    }
 
     edit_area.style.width = '100%';
     edit_area.style.height = '30%';
 
-    if (this.optionsPanels === undefined) {
+    if (!this.formatOptionsPanel) {
       this.setupOptionsPanelsWithin(optionsparent);
     }
 
-    let optionsPanel = this.optionsPanels[type];
+    this.formatOptionsPanel.update({
+      selectedFormat: type,
+      currentOptions: this.exporter.getOptionsForType(type),
+    });
 
-    if (optionsPanel === undefined) {
+    if (!this.formatOptionsPanel.isSupported()) {
       console.log('undefined panel type for ' + type);
       edit_area.style.display = 'block';
       optionsparent.style.display = 'none';
@@ -356,21 +410,6 @@ class ImportExportControls {
     const initialWidth = this._clampOptionsPanelWidth(this._getInitialOptionsPanelWidthPx(), edit_area);
     this._setOptionsPanelWidth(optionsparent, initialWidth);
     optionsparent.style.height = '100%';
-
-    optionsparent.innerHTML = '';
-
-    if (optionsPanel) {
-      optionsPanel.addToGui();
-      optionsPanel.setFromOptions(this.exporter.getOptionsForType(type));
-      this.configureOptionsApplyDirtyState(optionsparent);
-      optionsPanel.setApplyCallback((options) => {
-        this.applyCurrentTypeOptions(options);
-        this.setOptionsApplyDirtyState(optionsparent, false);
-      });
-      if (typeof window !== 'undefined' && typeof window.updateHelpHints === 'function') {
-        window.updateHelpHints();
-      }
-    }
 
     optionsparent.style.display = 'block';
     this._configureOptionsPreviewSplitter(edit_area, optionsparent, splitter, text_area);
@@ -410,32 +449,37 @@ class ImportExportControls {
   }
 
   setCurrentTypeOptions() {
-    const activeTypeElem = document.querySelector('li.active-type a');
+    const activeTypeElem = this._query('li.active-type a');
     const activeType = activeTypeElem?.getAttribute('data-type');
     if (!activeType) {
       return;
     }
 
     const optionsPanel = this.optionsPanels?.[activeType];
-    if (!optionsPanel || typeof optionsPanel.getOptionsFromGui !== 'function') {
+    const guiOptions = this.formatOptionsPanel?.getOptionsFromGui?.() || optionsPanel?.getOptionsFromGui?.();
+    if (!guiOptions) {
       return;
     }
-
-    const guiOptions = optionsPanel.getOptionsFromGui();
-    const type = guiOptions?.outputFormat || activeType;
-    const sanitized = sanitizeUiOptionsForFormat(type, guiOptions?.options || guiOptions);
-    this._setActiveTypeIfPresent(type);
-    this.importer.setOptionsForType(type, sanitized);
-    this.exporter.setOptionsForType(type, sanitized);
+    applySanitizedUiOptionsToTargets({
+      requestedFormat: guiOptions?.outputFormat || activeType,
+      rawOptions: guiOptions?.options || guiOptions,
+      targets: [this.importer, this.exporter],
+      onResolvedFormat: (resolvedFormat) => {
+        this._setActiveTypeIfPresent(resolvedFormat);
+      },
+    });
   }
 
   applyCurrentTypeOptions(options) {
-    const activeType = document.querySelector('li.active-type a').getAttribute('data-type');
-    const type = options?.outputFormat || activeType;
-    const sanitized = sanitizeUiOptionsForFormat(type, options?.options || options);
-    this._setActiveTypeIfPresent(type);
-    this.importer.setOptionsForType(type, sanitized);
-    this.exporter.setOptionsForType(type, sanitized);
+    const activeType = this._getActiveType();
+    applySanitizedUiOptionsToTargets({
+      requestedFormat: options?.outputFormat || activeType,
+      rawOptions: options?.options || options,
+      targets: [this.importer, this.exporter],
+      onResolvedFormat: (resolvedFormat) => {
+        this._setActiveTypeIfPresent(resolvedFormat);
+      },
+    });
     this.renderTextFromGrid();
   }
 
@@ -452,11 +496,11 @@ class ImportExportControls {
         .includes(type);
     };
 
-    const activeSubtaskElem = document.querySelector('.subtask-select.active-type');
+    const activeSubtaskElem = this._query('.subtask-select.active-type');
     const subtaskElem =
       activeSubtaskElem && supportsType(activeSubtaskElem)
         ? activeSubtaskElem
-        : document.querySelector(`.subtask-select[data-types*="${type}"]`);
+        : this._query(`.subtask-select[data-types*="${type}"]`);
 
     if (subtaskElem) {
       subtaskElem.setAttribute('data-type', type);
@@ -501,6 +545,11 @@ class ImportExportControls {
 
   _renderPreviewTextFromGrid() {
     const type = this._getActiveType();
+    if (typeof this.exporter?.getGridAsGenericDataTable !== 'function') {
+      this.exportControls?.renderTextFromGrid?.();
+      this._setPreviewTextDirty(false);
+      return;
+    }
     const previewDataTable = this.exporter.getGridAsGenericDataTable(this.previewRowLimit);
     const textToRender = this.exporter.getDataTableAs(type, previewDataTable);
     this.exportControls.setTextFromString(textToRender);
@@ -556,13 +605,13 @@ class ImportExportControls {
   }
 
   _getActiveType() {
-    return document.querySelector('li.active-type a').getAttribute('data-type');
+    return this._query('li.active-type a')?.getAttribute('data-type');
   }
 
   _syncGridFromTextButtonState() {
     this._bindPreviewTextInputIfAvailable();
     this._bindAutoPreviewCheckboxIfAvailable();
-    const importButton = document.querySelector('#setgridfromtextbutton');
+    const importButton = this._query('#setgridfromtextbutton');
     if (!importButton) {
       return;
     }
@@ -574,7 +623,7 @@ class ImportExportControls {
     if (this._hasBoundPreviewTextInput) {
       return;
     }
-    const textArea = document.getElementById('markdownarea');
+    const textArea = this._query('#markdownarea');
     if (!textArea) {
       return;
     }
@@ -591,7 +640,7 @@ class ImportExportControls {
     if (this._hasBoundAutoPreviewInput) {
       return;
     }
-    const autoPreviewCheckbox = document.getElementById('autoPreviewCheckbox');
+    const autoPreviewCheckbox = this._query('#autoPreviewCheckbox');
     if (!autoPreviewCheckbox) {
       return;
     }
@@ -607,7 +656,7 @@ class ImportExportControls {
   }
 
   _syncAutoPreviewControlState() {
-    const autoPreviewCheckbox = document.getElementById('autoPreviewCheckbox');
+    const autoPreviewCheckbox = this._query('#autoPreviewCheckbox');
     if (!autoPreviewCheckbox) {
       return;
     }
@@ -663,13 +712,13 @@ class ImportExportControls {
     };
 
     event.preventDefault();
-    document.body.classList.add('is-resizing-split');
+    this.documentObj?.body?.classList?.add('is-resizing-split');
 
     const onMove = (moveEvent) => this._handleSplitterDragMove(moveEvent);
     const onEnd = (endEvent) => this._endSplitterDrag(endEvent, onMove, onEnd);
-    document.addEventListener('pointermove', onMove);
-    document.addEventListener('pointerup', onEnd);
-    document.addEventListener('pointercancel', onEnd);
+    this.documentObj?.addEventListener?.('pointermove', onMove);
+    this.documentObj?.addEventListener?.('pointerup', onEnd);
+    this.documentObj?.addEventListener?.('pointercancel', onEnd);
   }
 
   _handleSplitterDragMove(event) {
@@ -683,7 +732,7 @@ class ImportExportControls {
     const requestedWidth = dragState.startWidth + deltaX;
     const boundedWidth = this._clampOptionsPanelWidth(requestedWidth, dragState.editArea);
     this._setOptionsPanelWidth(dragState.optionsParent, boundedWidth);
-    const splitter = document.querySelector('div.options-preview-splitter');
+    const splitter = this._query('div.options-preview-splitter');
     if (splitter) {
       this._updateSplitterAriaValues(splitter, dragState.optionsParent, dragState.editArea);
     }
@@ -697,10 +746,10 @@ class ImportExportControls {
       return;
     }
 
-    document.removeEventListener('pointermove', onMove);
-    document.removeEventListener('pointerup', onEnd);
-    document.removeEventListener('pointercancel', onEnd);
-    document.body.classList.remove('is-resizing-split');
+    this.documentObj?.removeEventListener?.('pointermove', onMove);
+    this.documentObj?.removeEventListener?.('pointerup', onEnd);
+    this.documentObj?.removeEventListener?.('pointercancel', onEnd);
+    this.documentObj?.body?.classList?.remove('is-resizing-split');
     this._activeSplitDrag = null;
   }
 
@@ -779,6 +828,18 @@ class ImportExportControls {
     splitter.setAttribute('aria-valuemin', `${min}`);
     splitter.setAttribute('aria-valuemax', `${max}`);
     splitter.setAttribute('aria-valuenow', `${now}`);
+  }
+
+  _query(selector) {
+    return this.rootElement?.querySelector?.(selector) || this.documentObj?.querySelector?.(selector) || null;
+  }
+
+  _queryAll(selector) {
+    const rootMatches = Array.from(this.rootElement?.querySelectorAll?.(selector) || []);
+    if (rootMatches.length > 0) {
+      return rootMatches;
+    }
+    return Array.from(this.documentObj?.querySelectorAll?.(selector) || []);
   }
 }
 

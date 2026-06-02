@@ -27,12 +27,30 @@ describe('generator generation actions', () => {
   });
 
   test('updateGeneratorPairwiseButtonVisibility hides wrapper for invalid schema', () => {
-    updateGeneratorPairwiseButtonVisibility({
+    const isVisible = updateGeneratorPairwiseButtonVisibility({
       documentObj: document,
       syncSchemaRowsFromTextMode: () => ({ rows: [{ sourceType: 'enum', value: 'a,b' }], errors: ['bad'] }),
       validateSchemaRows: () => ({ rows: [], errors: [] }),
     });
 
+    expect(isVisible).toBe(false);
     expect(document.getElementById('generateAllPairsButtonWrapper').style.display).toBe('none');
+  });
+
+  test('updateGeneratorPairwiseButtonVisibility returns true for pairwise-eligible schema', () => {
+    const isVisible = updateGeneratorPairwiseButtonVisibility({
+      documentObj: document,
+      syncSchemaRowsFromTextMode: () => ({
+        rows: [
+          { sourceType: 'enum', value: 'enum(chrome,firefox,safari)' },
+          { sourceType: 'enum', value: 'enum(free,pro,enterprise)' },
+        ],
+        errors: [],
+      }),
+      validateSchemaRows: (rows) => ({ rows, errors: [] }),
+    });
+
+    expect(isVisible).toBe(true);
+    expect(document.getElementById('generateAllPairsButtonWrapper').style.display).toBe('inline-flex');
   });
 });

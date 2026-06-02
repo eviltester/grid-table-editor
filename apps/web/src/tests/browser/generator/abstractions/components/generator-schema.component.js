@@ -6,10 +6,7 @@ class GeneratorSchemaComponent {
     this.page = page;
     this.container = page.locator('#generatorSchemaSection');
     this.editor = new SchemaEditorComponent(page, {
-      rowsSelector: '#generatorSchemaRows',
-      textAreaSelector: '#generatorSchemaText',
-      modeToggleSelector: '#schemaModeToggleButton',
-      addFieldSelector: '#addSchemaRowButton',
+      rootSelector: '#generatorSchemaSection',
     });
     this.modeToggleButton = this.editor.modeToggleButton;
     this.textArea = this.editor.textArea;

@@ -88,33 +88,47 @@ function buildPairwiseDataTable({ generator, faker, RandExp }) {
   });
 }
 
-function renderGeneratorOutputPreview({ documentObj, getSelectedOutputType, lastPreviewDataTable, exporter }) {
-  const outputPreviewElem = documentObj.getElementById('generatorOutputPreview');
-  if (!outputPreviewElem) {
-    return;
-  }
-
+function renderGeneratorOutputPreview({
+  documentObj,
+  getSelectedOutputType,
+  lastPreviewDataTable,
+  exporter,
+  setOutputPreviewText,
+}) {
   const type = getSelectedOutputType();
   const dataTable = lastPreviewDataTable;
   if (!type || !dataTable || !exporter?.canExport(type)) {
-    outputPreviewElem.value = '';
+    setOutputPreviewText?.('');
+    const outputPreviewElem = documentObj?.getElementById?.('generatorOutputPreview');
+    if (outputPreviewElem) {
+      outputPreviewElem.value = '';
+    }
     return;
   }
 
   try {
-    outputPreviewElem.value = exporter.getDataTableAs(type, dataTable);
+    const text = exporter.getDataTableAs(type, dataTable);
+    setOutputPreviewText?.(text);
+    const outputPreviewElem = documentObj?.getElementById?.('generatorOutputPreview');
+    if (outputPreviewElem) {
+      outputPreviewElem.value = text;
+    }
   } catch (error) {
     console.error(error);
-    outputPreviewElem.value = '';
+    setOutputPreviewText?.('');
+    const outputPreviewElem = documentObj?.getElementById?.('generatorOutputPreview');
+    if (outputPreviewElem) {
+      outputPreviewElem.value = '';
+    }
   }
 }
 
-async function exportDataTableToDownload({ type, dataTable, exporter, DownloadClass, setGenerationStatus }) {
+async function exportDataTableToDownload({ type, dataTable, exporter, DownloadClass, showGenerationLoadingStatus }) {
   let text = '';
   if (typeof exporter.getDataTableAsAsync === 'function') {
     text = await exporter.getDataTableAsAsync(type, dataTable, (message) => {
       if (message) {
-        setGenerationStatus(message, true);
+        showGenerationLoadingStatus(message);
       }
     });
   } else {
@@ -127,16 +141,23 @@ async function exportDataTableToDownload({ type, dataTable, exporter, DownloadCl
   return { filename };
 }
 
-function updateGeneratorPairwiseButtonVisibility({ documentObj, syncSchemaRowsFromTextMode, validateSchemaRows }) {
+function updateGeneratorPairwiseButtonVisibility({
+  documentObj,
+  syncSchemaRowsFromTextMode,
+  getCurrentSchemaState,
+  validateSchemaRows,
+}) {
   const buttonWrapper = documentObj.getElementById('generateAllPairsButtonWrapper');
-  if (!buttonWrapper) {
-    return;
-  }
-
-  const parsed = syncSchemaRowsFromTextMode({ showErrors: false, applySemanticValidation: false });
+  const parsed =
+    typeof getCurrentSchemaState === 'function'
+      ? getCurrentSchemaState()
+      : syncSchemaRowsFromTextMode({ showErrors: false, applySemanticValidation: false });
   const { errors, rows } = validateSchemaRows(parsed.rows || []);
-  buttonWrapper.style.display =
-    !parsed.errors?.length && !errors.length && isPairwiseEligibleForSchemaRows(rows) ? 'inline-flex' : 'none';
+  const isVisible = !parsed.errors?.length && !errors.length && isPairwiseEligibleForSchemaRows(rows);
+  if (buttonWrapper) {
+    buttonWrapper.style.display = isVisible ? 'inline-flex' : 'none';
+  }
+  return isVisible;
 }
 
 function countGeneratorEnumColumns({ syncSchemaRowsFromTextMode, validateSchemaRows }) {
@@ -183,7 +204,7 @@ function previewGeneratorData({
   const dataTable = buildDataTable(configured.generator, rowCount.value);
   clearPageError?.();
   setLastPreviewDataTable(dataTable);
-  previewGrid.setGridFromGenericDataTable(dataTable);
+  previewGrid?.setGridFromGenericDataTable?.(dataTable);
   renderOutputPreviewForCurrentSelection();
 }
 
@@ -195,6 +216,7 @@ async function generateGeneratorDataFile({
   clearGenerationStatus,
   setGenerationButtonBusy,
   setGenerationStatus,
+  showGenerationLoadingStatus,
   buildDataTable,
   DownloadClass,
   surfacePageError,
@@ -221,7 +243,7 @@ async function generateGeneratorDataFile({
 
   clearGenerationStatus();
   setGenerationButtonBusy(true);
-  setGenerationStatus(`Preparing ${type.toUpperCase()} export...`, true);
+  showGenerationLoadingStatus(`Preparing ${type.toUpperCase()} export...`);
 
   try {
     const dataTable = buildDataTable(configured.generator, rowCount.value);
@@ -232,14 +254,14 @@ async function generateGeneratorDataFile({
       dataTable,
       exporter,
       DownloadClass,
-      setGenerationStatus,
+      showGenerationLoadingStatus,
     });
     setGenerationStatus(`Download ready: ${filename}`);
     scheduleClearGenerationStatus();
   } catch (error) {
     console.error(error);
     surfacePageError('Unable to generate data file.');
-    setGenerationStatus('Failed to generate data file.');
+    setGenerationStatus('Failed to generate data file.', { severity: 'error', dismissable: true });
   } finally {
     setGenerationButtonBusy(false);
   }
@@ -253,6 +275,7 @@ async function generateGeneratorAllPairsDataFile({
   clearGenerationStatus,
   setGenerationButtonBusy,
   setGenerationStatus,
+  showGenerationLoadingStatus,
   buildAllPairsDataTable,
   DownloadClass,
   surfacePageError,
@@ -278,13 +301,13 @@ async function generateGeneratorAllPairsDataFile({
 
   clearGenerationStatus();
   setGenerationButtonBusy(true);
-  setGenerationStatus('Generating pairwise combinations...', true);
+  showGenerationLoadingStatus('Generating pairwise combinations...');
 
   try {
     const dataTable = buildAllPairsDataTable(configured.generator);
     if (!dataTable) {
       surfacePageError('Failed to generate pairwise data.');
-      setGenerationStatus('Pairwise generation failed.');
+      setGenerationStatus('Pairwise generation failed.', { severity: 'error', dismissable: true });
       return;
     }
 
@@ -295,14 +318,14 @@ async function generateGeneratorAllPairsDataFile({
       dataTable,
       exporter,
       DownloadClass,
-      setGenerationStatus,
+      showGenerationLoadingStatus,
     });
     setGenerationStatus(`Download ready: ${filename} (${dataTable.getRowCount()} combinations)`);
     scheduleClearGenerationStatus();
   } catch (error) {
     console.error(error);
     surfacePageError('Unable to generate pairwise data file.');
-    setGenerationStatus('Failed to generate pairwise data file.');
+    setGenerationStatus('Failed to generate pairwise data file.', { severity: 'error', dismissable: true });
   } finally {
     setGenerationButtonBusy(false);
   }

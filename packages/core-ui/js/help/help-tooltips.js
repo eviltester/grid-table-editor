@@ -1,4 +1,5 @@
 import { appOnlyInlineHelpEntries, sharedInlineHelpEntries } from './inline-help-content.js';
+import { getDefaultDocumentObj, resolveWindowObj } from '../gui_components/shared/dom/default-objects.js';
 
 function ensureInlineHelpContainer(documentObj) {
   let container = documentObj.getElementById('inline-help-items');
@@ -22,18 +23,47 @@ function renderInlineHelpItems(documentObj, entries) {
   });
 }
 
-function createUpdateHelpHints(documentObj) {
+function upsertInlineHelpItems(documentObj, entries) {
+  const container = ensureInlineHelpContainer(documentObj);
+  Object.entries(entries).forEach(([key, html]) => {
+    let item = container.querySelector(`div[data-name='${key}']`);
+    if (!item) {
+      item = documentObj.createElement('div');
+      item.setAttribute('data-name', key);
+      container.appendChild(item);
+    }
+    item.innerHTML = html;
+  });
+}
+
+function createUpdateHelpHints(documentObj, rootElement = documentObj) {
   return function updateHelpHints() {
     const tippyFn = globalThis?.tippy;
-    if (typeof tippyFn !== 'function') {
+    if (typeof tippyFn !== 'function' || !documentObj) {
       return;
     }
 
-    documentObj.querySelectorAll('.helpicon[data-help]').forEach((element) => {
+    upsertInlineHelpItems(documentObj, sharedInlineHelpEntries);
+
+    const helpIcons = rootElement?.querySelectorAll?.('.helpicon[data-help]') || [];
+    helpIcons.forEach((element) => {
       element?._tippy?.destroy?.();
+      const tagName = String(element?.tagName || '').toLowerCase();
+      const isNativeButton = tagName === 'button';
+      const isNativeLink = tagName === 'a';
+      if (!element.hasAttribute('tabindex')) {
+        element.setAttribute('tabindex', '0');
+      }
+      if (!isNativeButton && !isNativeLink && !element.hasAttribute('role')) {
+        element.setAttribute('role', 'button');
+      }
+      if (!element.hasAttribute('aria-label')) {
+        const isOptionHelp = element.classList.contains('option-help-icon');
+        element.setAttribute('aria-label', isOptionHelp ? 'Show help for this option' : 'Show help');
+      }
     });
 
-    tippyFn('.helpicon[data-help]', {
+    tippyFn(helpIcons, {
       content(reference) {
         const id = reference.getAttribute('data-help');
         const inlineHelpText = reference.getAttribute('data-help-text');
@@ -56,11 +86,18 @@ function createUpdateHelpHints(documentObj) {
       placement: 'top-start',
       allowHTML: true,
       interactive: true,
+      interactiveBorder: 16,
+      delay: [250, 300],
+      hideOnClick: false,
+      appendTo: () => documentObj.body,
     });
   };
 }
 
-function initHelpTooltips({ documentObj = document, includeAppOnlyEntries = false } = {}) {
+function initHelpTooltips({ documentObj = getDefaultDocumentObj(), includeAppOnlyEntries = false } = {}) {
+  if (!documentObj) {
+    return;
+  }
   const entries = includeAppOnlyEntries
     ? { ...sharedInlineHelpEntries, ...appOnlyInlineHelpEntries }
     : sharedInlineHelpEntries;
@@ -68,10 +105,11 @@ function initHelpTooltips({ documentObj = document, includeAppOnlyEntries = fals
   renderInlineHelpItems(documentObj, entries);
 
   const updateHelpHints = createUpdateHelpHints(documentObj);
-  if (typeof window !== 'undefined') {
-    window.updateHelpHints = updateHelpHints;
+  const windowObj = resolveWindowObj(null, documentObj);
+  if (windowObj) {
+    windowObj.updateHelpHints = updateHelpHints;
   }
   updateHelpHints();
 }
 
-export { initHelpTooltips };
+export { createUpdateHelpHints, initHelpTooltips };

@@ -1,4 +1,4 @@
-import { scheduleTimeout } from '../../unref-timeout.js';
+import { createInlineMessageComponent } from '../../primitives/inline-message/index.js';
 
 /*
  * Responsibilities:
@@ -6,14 +6,22 @@ import { scheduleTimeout } from '../../unref-timeout.js';
  * - Manages loading class toggling and timed clear lifecycle.
  */
 
-function createStatusPresenter({
-  documentObj = document,
+const inlineMessageRegistry = new WeakMap();
+
+function getDefaultDocumentObj() {
+  return typeof document !== 'undefined' ? document : null;
+}
+
+function createBaseStatusPresenter({
+  documentObj = getDefaultDocumentObj(),
   elementId,
-  loadingClassName = 'is-loading',
+  statusClassName = 'is-loading',
+  loadingClassName,
   visibleDisplay = 'inline-block',
   hideWhenEmpty = false,
 } = {}) {
-  let resetTimeoutId = null;
+  let component = null;
+  let rootElement = null;
 
   const getElement = () => {
     if (!documentObj || !elementId) {
@@ -22,37 +30,58 @@ function createStatusPresenter({
     return documentObj.getElementById(elementId);
   };
 
-  const setStatus = (message, isLoading = false) => {
-    const statusElement = getElement();
-    if (!statusElement) {
-      return;
+  const ensureComponent = () => {
+    const nextRoot = getElement();
+    if (!nextRoot) {
+      return null;
     }
-    statusElement.textContent = message || '';
-    statusElement.classList.toggle(loadingClassName, isLoading === true && Boolean(message));
-    if (hideWhenEmpty) {
-      statusElement.style.display = message ? visibleDisplay : 'none';
+
+    if (component && rootElement === nextRoot && nextRoot.isConnected !== false) {
+      return component;
     }
+
+    rootElement = nextRoot;
+    component = inlineMessageRegistry.get(nextRoot);
+    if (!component) {
+      component = createInlineMessageComponent({
+        root: nextRoot,
+        props: {
+          hideWhenEmpty,
+          visibleDisplay,
+          loadingClassName: loadingClassName || statusClassName,
+        },
+      });
+      inlineMessageRegistry.set(nextRoot, component);
+    } else {
+      component.update({
+        hideWhenEmpty,
+        visibleDisplay,
+        loadingClassName: loadingClassName || statusClassName,
+      });
+    }
+    return component;
+  };
+
+  const setStatus = (message, options = {}) => {
+    ensureComponent()?.setStatus(message, options);
   };
 
   const clearPendingReset = () => {
-    if (resetTimeoutId === null) {
-      return;
-    }
-    clearTimeout(resetTimeoutId);
-    resetTimeoutId = null;
+    ensureComponent()?.clearPendingReset();
   };
 
   const scheduleClear = (delayMs = 1800) => {
-    clearPendingReset();
-    resetTimeoutId = scheduleTimeout(() => {
-      setStatus('', false);
-      resetTimeoutId = null;
-    }, delayMs);
+    ensureComponent()?.scheduleClear(delayMs);
   };
 
   const clear = () => {
-    clearPendingReset();
-    setStatus('', false);
+    ensureComponent()?.clear();
+  };
+
+  const destroy = () => {
+    component?.destroy?.();
+    component = null;
+    rootElement = null;
   };
 
   return {
@@ -60,7 +89,40 @@ function createStatusPresenter({
     clearPendingReset,
     scheduleClear,
     clear,
+    destroy,
   };
 }
 
-export { createStatusPresenter };
+function createStatusPresenter(options = {}) {
+  const presenter = createBaseStatusPresenter(options);
+
+  return {
+    clear: presenter.clear,
+    clearPendingReset: presenter.clearPendingReset,
+    destroy: presenter.destroy,
+    scheduleClear: presenter.scheduleClear,
+    setStatus(message, options = {}) {
+      presenter.setStatus(message, {
+        severity: options?.severity || '',
+        dismissable: options?.dismissable === true,
+        isLoading: false,
+      });
+    },
+  };
+}
+
+function createLoadingStatusPresenter(options = {}) {
+  const presenter = createBaseStatusPresenter(options);
+
+  return {
+    clear: presenter.clear,
+    clearPendingReset: presenter.clearPendingReset,
+    destroy: presenter.destroy,
+    scheduleClear: presenter.scheduleClear,
+    setStatus(message) {
+      presenter.setStatus(message, { isLoading: true });
+    },
+  };
+}
+
+export { createStatusPresenter, createLoadingStatusPresenter };

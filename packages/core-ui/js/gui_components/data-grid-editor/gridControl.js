@@ -1,4 +1,8 @@
-import { showConfirmModal } from '../shared/modal-confirm.js';
+import { createConfirmDialogService } from '../shared/dialog-services/index.js';
+
+function getDefaultDocumentObj() {
+  return typeof document !== 'undefined' ? document : null;
+}
 
 class GridControlsPageMap {
   constructor() {
@@ -13,17 +17,24 @@ class GridControlsPageMap {
   }
 }
 
-function shouldEnforceUniqueColumnNames(documentObj = document) {
-  return documentObj.getElementById('uniqueColumnNamesCheckbox')?.checked === true;
+function shouldEnforceUniqueColumnNames(documentObj = getDefaultDocumentObj()) {
+  if (typeof documentObj?.getElementById === 'function') {
+    return documentObj.getElementById('uniqueColumnNamesCheckbox')?.checked === true;
+  }
+  if (typeof documentObj?.querySelector === 'function') {
+    return documentObj.querySelector('#uniqueColumnNamesCheckbox')?.checked === true;
+  }
+  return false;
 }
 
 // TODO : don't hook into existing controls in HTML create them here and then hook into them
 // The buttons above a grid
 class GridControl {
-  constructor(pageMap, { requestConfirm } = {}) {
+  constructor(pageMap, { requestConfirm, documentObj = getDefaultDocumentObj() } = {}) {
     this.pageMap = pageMap;
-    this.requestConfirm =
-      typeof requestConfirm === 'function' ? requestConfirm : (options) => showConfirmModal(options);
+    this.documentObj = documentObj;
+    const confirmDialogService = createConfirmDialogService({ documentObj: this.documentObj });
+    this.requestConfirm = typeof requestConfirm === 'function' ? requestConfirm : confirmDialogService.requestConfirm;
   }
 
   // TODO : avoid hard coded IDs use relative to the parent, so store the parent e.g. like option panels
@@ -122,7 +133,10 @@ class GridControl {
   }
 
   clearFilters() {
-    document.getElementById('filter-text-box').value = '';
+    const filterTextBox = this.documentObj?.getElementById?.('filter-text-box');
+    if (filterTextBox) {
+      filterTextBox.value = '';
+    }
     this.gridExtras.clearFilters();
   }
 
@@ -133,7 +147,7 @@ class GridControl {
   }
 
   filterTextBoxChanged() {
-    this.gridExtras.filterText(document.getElementById('filter-text-box').value);
+    this.gridExtras.filterText(this.documentObj?.getElementById?.('filter-text-box')?.value || '');
   }
 
   async clearTable() {

@@ -9,13 +9,12 @@ class TestDataPanelComponent {
     this.details = this.container.locator('details');
     this.heading = this.container.getByText('Test Data', { exact: true });
     this.generateButton = page.getByRole('button', { name: 'Generate' });
-    this.generatePairwiseButton = page.locator('#generateallpairs');
+    this.generatePairwiseButton = page.getByRole('button', { name: 'Generate Pairwise' });
     this.refreshTextPreviewButton = page.getByRole('button', { name: 'Refresh Text Preview' });
-    this.generateCountInput = page.locator('#generateCount');
+    this.generateCountInput = page.getByRole('spinbutton', { name: 'How Many?' });
     this.newTableMode = page.locator('input[name="testDataGenerationMode"][value="new-table"]');
     this.amendTableMode = page.locator('input[name="testDataGenerationMode"][value="amend-table"]');
     this.amendSelectedMode = page.locator('input[name="testDataGenerationMode"][value="amend-selected"]');
-    this.schemaTextArea = page.locator('#testDataSchemaText');
     this.schemaError = page.locator('#testdata-schema-error');
     this.status = page.locator('#testdata-status');
     this.schemaGrid = page.locator('#testDataSchemaGrid, #testDataSchemaRows');
@@ -24,10 +23,7 @@ class TestDataPanelComponent {
     this.deleteSelectedSchemaRowsButton = this.container.getByRole('button', { name: '- Delete Selected' });
     this.selectedSchemaRowIndex = 0;
     this.schemaEditor = new SchemaEditorComponent(page, {
-      rowsSelector: '#testDataSchemaRows',
-      textAreaSelector: '#testDataSchemaText',
-      modeToggleSelector: '#testDataSchemaModeToggleButton',
-      addFieldSelector: '#testDataAddSchemaRowButton',
+      rootSelector: '.testDataSchemaGui',
       fieldMap: {
         columnName: 'name',
         value: 'value',
@@ -46,6 +42,7 @@ class TestDataPanelComponent {
         return Math.max(domCount, textCount);
       },
     });
+    this.schemaTextArea = this.schemaEditor.textArea;
   }
 
   async isRowEditorMode() {
@@ -112,11 +109,18 @@ class TestDataPanelComponent {
     await this.schemaEditor.setTextMode(Boolean(enabled));
   }
 
+  async dismissOpenHelpTooltips() {
+    await this.page.mouse.move(0, 0);
+    await this.page.waitForTimeout(350);
+  }
+
   async clickGenerate() {
+    await this.dismissOpenHelpTooltips();
     await this.generateButton.click();
   }
 
   async clickGeneratePairwise() {
+    await this.dismissOpenHelpTooltips();
     await this.generatePairwiseButton.click();
   }
 
@@ -139,7 +143,7 @@ class TestDataPanelComponent {
       if ((await removeButton.count()) > 0) {
         await removeButton.click();
       } else {
-        await this.page.locator('#testDataSchemaRows .generator-schema-row [data-action="remove"]').first().click();
+        await this.schemaEditor.rowsContainer.locator('.generator-schema-row [data-action="remove"]').first().click();
       }
       return;
     }
@@ -181,6 +185,18 @@ class TestDataPanelComponent {
 
   async getSchemaText() {
     return this.schemaTextArea.inputValue();
+  }
+
+  getSchemaRow(rowIndex) {
+    return this.schemaEditor.row(rowIndex);
+  }
+
+  async getSchemaSourceType(rowIndex) {
+    return this.getSchemaRow(rowIndex).locator('select[data-field="sourceType"]').inputValue();
+  }
+
+  getSchemaValidationMessage(rowIndex) {
+    return this.getSchemaRow(rowIndex).locator('.generator-schema-row-validation');
   }
 
   async getSchemaErrorText() {

@@ -5,8 +5,9 @@
  * - Binds debounced schema textarea input parsing.
  */
 
-import { TimedErrorDisplay } from '../../../shared/timed-error-display.js';
+import { createTimedStatusPresenter } from '../../../shared/timed-error-display.js';
 import { parseSchemaTextToRows } from '../../../shared/test-data/schema/index.js';
+import { getDefaultDocumentObj } from '../../../shared/dom/default-objects.js';
 
 function createSchemaTextSyncState() {
   return {
@@ -23,6 +24,13 @@ function showSchemaError(state, message) {
   state.schemaErrorDisplay?.show(text);
 }
 
+function resolveSchemaTextElement({ getSchemaTextElement, documentObj }) {
+  if (typeof getSchemaTextElement === 'function') {
+    return getSchemaTextElement() || null;
+  }
+  return documentObj?.getElementById?.('testDataSchemaText') || null;
+}
+
 function populateGridFromSchemaText({
   state,
   schemaGridBridge,
@@ -33,15 +41,20 @@ function populateGridFromSchemaText({
   mapRuleToRow,
   faker,
   RandExp,
+  documentObj = getDefaultDocumentObj(),
+  getSchemaTextValue,
+  getSchemaTextElement,
 }) {
   if (!schemaGridBridge) {
     return;
   }
 
-  const schemaTextArea = document.getElementById('testDataSchemaText');
+  const schemaTextArea = resolveSchemaTextElement({ getSchemaTextElement, documentObj });
+  const schemaText =
+    typeof getSchemaTextValue === 'function' ? String(getSchemaTextValue() || '') : schemaTextArea?.value || '';
   const parseResult = parseSchemaTextToRows({
     schemaTextToDataRules,
-    schemaText: schemaTextArea?.value || '',
+    schemaText,
     faker,
     RandExp,
     mapRuleToRow,
@@ -49,7 +62,7 @@ function populateGridFromSchemaText({
   if (parseResult.errors.length > 0) {
     const errorText = schemaErrorsToText?.(parseResult.errors) || '';
     showSchemaError(state, errorText);
-    setTestDataStatus('', false);
+    setTestDataStatus('');
     return;
   }
 
@@ -60,8 +73,13 @@ function populateGridFromSchemaText({
   updatePairwiseButtonVisibility();
 }
 
-function bindSchemaTextareaSync({ debouncer, onPopulateRequested }) {
-  const inputArea = document.getElementById('testDataSchemaText');
+function bindSchemaTextareaSync({
+  debouncer,
+  onPopulateRequested,
+  documentObj = getDefaultDocumentObj(),
+  getSchemaTextElement,
+}) {
+  const inputArea = resolveSchemaTextElement({ getSchemaTextElement, documentObj });
   if (!inputArea) {
     return;
   }
@@ -74,9 +92,9 @@ function bindSchemaTextareaSync({ debouncer, onPopulateRequested }) {
   );
 }
 
-function initializeSchemaErrorDisplay(state) {
-  state.schemaErrorDisplay = new TimedErrorDisplay({
-    documentObj: document,
+function initializeSchemaErrorDisplay(state, { documentObj = getDefaultDocumentObj() } = {}) {
+  state.schemaErrorDisplay = createTimedStatusPresenter({
+    documentObj,
     elementId: 'testdata-schema-error',
     timeoutMs: 5000,
   });

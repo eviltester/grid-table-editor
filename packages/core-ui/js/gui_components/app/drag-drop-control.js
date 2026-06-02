@@ -1,6 +1,8 @@
 class DragDropControl {
   constructor(readFileFunction) {
     this.readFileFunction = readFileFunction;
+    this.boundElement = null;
+    this.boundListeners = [];
   }
 
   // file drop handling
@@ -11,40 +13,36 @@ class DragDropControl {
     if (typeof element === 'undefined') return;
     if (element === null) return;
 
+    this.boundElement = element;
     element.classList.add('dragdropzone');
 
-    ['drag', 'dragstart', 'dragend', 'dragover', 'dragenter', 'dragleave'].forEach((e) =>
-      element.addEventListener(
-        e,
-        function (e) {
-          e.preventDefault();
-          e.stopPropagation();
-        },
-        false
-      )
-    );
+    ['drag', 'dragstart', 'dragend', 'dragover', 'dragenter', 'dragleave'].forEach((eventName) => {
+      const listener = function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      };
+      this.boundListeners.push({ eventName, listener });
+      element.addEventListener(eventName, listener, false);
+    });
 
-    ['dragover', 'dragenter'].forEach((eventName) =>
-      element.addEventListener(
-        eventName,
-        function () {
-          element.classList.add('is-dragover');
-        },
-        false
-      )
-    );
+    ['dragover', 'dragenter'].forEach((eventName) => {
+      const listener = function () {
+        element.classList.add('is-dragover');
+      };
+      this.boundListeners.push({ eventName, listener });
+      element.addEventListener(eventName, listener, false);
+    });
 
-    ['dragleave', 'dragend', 'drop'].forEach((eventName) =>
-      element.addEventListener(
-        eventName,
-        function () {
-          element.classList.remove('is-dragover');
-        },
-        false
-      )
-    );
+    ['dragleave', 'dragend', 'drop'].forEach((eventName) => {
+      const listener = function () {
+        element.classList.remove('is-dragover');
+      };
+      this.boundListeners.push({ eventName, listener });
+      element.addEventListener(eventName, listener, false);
+    });
 
     this.onDropListener = this.fileDropHandler.bind(this);
+    this.boundListeners.push({ eventName: 'drop', listener: this.onDropListener });
     element.addEventListener('drop', this.onDropListener);
   }
 
@@ -69,6 +67,19 @@ class DragDropControl {
     } else {
       this.readFileFunction(ev.dataTransfer.files[0]);
     }
+  }
+
+  destroy() {
+    if (!this.boundElement) {
+      return;
+    }
+
+    this.boundListeners.forEach(({ eventName, listener }) => {
+      this.boundElement.removeEventListener(eventName, listener, false);
+    });
+    this.boundListeners = [];
+    this.boundElement.classList.remove('dragdropzone', 'is-dragover');
+    this.boundElement = null;
   }
 }
 

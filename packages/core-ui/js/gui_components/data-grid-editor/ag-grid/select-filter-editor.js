@@ -8,15 +8,20 @@
 </datalist>   */
 
 import { openMethodPickerModal } from '../../shared/test-data/ui/index.js';
+import { resolveDocumentObj, resolveWindowObj } from '../../shared/dom/default-objects.js';
 
 class SelectFilterEditor {
   init(params) {
     this.value = params.value;
     this.params = params;
     this.completed = false;
+    this.documentObj = resolveDocumentObj(params?.documentObj, params?.eGridCell || null);
+    if (!this.documentObj?.createElement) {
+      throw new Error('SelectFilterEditor requires a document-backed grid cell');
+    }
 
-    this.gui = document.createElement('div');
-    this.input = document.createElement('button');
+    this.gui = this.documentObj.createElement('div');
+    this.input = this.documentObj.createElement('button');
     this.input.type = 'button';
     this.input.className = 'test-data-grid-command-picker-trigger';
     this.input.textContent = String(this.value || 'Pick method');
@@ -34,8 +39,8 @@ class SelectFilterEditor {
                 helpModel: { summary: '', params: [], example: '' },
               }));
         const selected = await openMethodPickerModal({
-          documentObj: document,
-          windowObj: globalThis.window,
+          documentObj: this.documentObj,
+          windowObj: resolveWindowObj(null, this.documentObj),
           options,
           currentCommand: this.value,
           title: 'Select schema method',

@@ -5,6 +5,7 @@ import {
   showSchemaError,
   populateGridFromSchemaText,
   bindSchemaTextareaSync,
+  initializeSchemaErrorDisplay,
 } from '../../../../js/gui_components/app/test-data-grid/schema/test-data-grid-schema-text-sync.js';
 
 describe('test-data-grid schema text sync', () => {
@@ -35,7 +36,6 @@ describe('test-data-grid schema text sync', () => {
   });
 
   test('populateGridFromSchemaText maps rules and updates tokens', () => {
-    document.body.innerHTML = '<textarea id="testDataSchemaText">x</textarea>';
     const state = createSchemaTextSyncState();
     const schemaGridBridge = {
       clearRows: jest.fn(),
@@ -56,6 +56,7 @@ describe('test-data-grid schema text sync', () => {
       mapRuleToRow: () => ({ columnName: 'c1', type: 'regex', value: '[A-Z]+' }),
       faker: {},
       RandExp: function RandExp() {},
+      getSchemaTextValue: () => 'x',
     });
 
     expect(schemaGridBridge.clearRows).toHaveBeenCalled();
@@ -63,14 +64,55 @@ describe('test-data-grid schema text sync', () => {
     expect(state.schemaTextTokens).toEqual(['# t']);
   });
 
-  test('bindSchemaTextareaSync debounces populate on input', () => {
-    document.body.innerHTML = '<textarea id="testDataSchemaText"></textarea>';
+  test('bindSchemaTextareaSync debounces populate on input using an injected element getter', () => {
+    const input = document.createElement('textarea');
     const debouncer = { debounce: jest.fn() };
     const onPopulateRequested = jest.fn();
 
-    bindSchemaTextareaSync({ debouncer, onPopulateRequested });
-    document.getElementById('testDataSchemaText').dispatchEvent(new Event('input', { bubbles: true }));
+    bindSchemaTextareaSync({
+      debouncer,
+      onPopulateRequested,
+      getSchemaTextElement: () => input,
+    });
+    input.dispatchEvent(new Event('input', { bubbles: true }));
 
     expect(debouncer.debounce).toHaveBeenCalledWith('populateTestDataGrid', onPopulateRequested, 1000);
+  });
+
+  test('populateGridFromSchemaText supports an injected schema text element getter', () => {
+    const textArea = document.createElement('textarea');
+    textArea.value = 'Header\nliteral(Value)';
+    const state = createSchemaTextSyncState();
+    const schemaGridBridge = {
+      clearRows: jest.fn(),
+      addRows: jest.fn(),
+    };
+
+    populateGridFromSchemaText({
+      state,
+      schemaGridBridge,
+      schemaTextToDataRules: () => ({
+        errors: [],
+        dataRules: [{ name: 'Header', type: 'literal', ruleSpec: 'Value' }],
+        schemaTokens: [],
+      }),
+      schemaErrorsToText: jest.fn(),
+      setTestDataStatus: jest.fn(),
+      updatePairwiseButtonVisibility: jest.fn(),
+      mapRuleToRow: () => ({ columnName: 'Header', type: 'literal', value: 'Value' }),
+      faker: {},
+      RandExp: function RandExp() {},
+      getSchemaTextElement: () => textArea,
+    });
+
+    expect(schemaGridBridge.clearRows).toHaveBeenCalledTimes(1);
+    expect(schemaGridBridge.addRows).toHaveBeenCalledWith([{ columnName: 'Header', type: 'literal', value: 'Value' }]);
+  });
+
+  test('initializeSchemaErrorDisplay tolerates a missing document object', () => {
+    const state = createSchemaTextSyncState();
+
+    expect(() => initializeSchemaErrorDisplay(state, { documentObj: null })).not.toThrow();
+    expect(typeof state.schemaErrorDisplay?.show).toBe('function');
   });
 });

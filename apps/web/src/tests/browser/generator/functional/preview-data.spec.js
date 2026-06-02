@@ -30,6 +30,7 @@ test.describe('Generator Preview Data', () => {
     const statusValues = await generatorPage.preview.getColumnTextsByName('Status');
     firstNameValues.forEach((value) => expect(value).toBe('Alice'));
     statusValues.forEach((value) => expect(value).toBe('active'));
+    await generatorPage.preview.expectReadOnly();
 
     expectNoPageErrors(pageErrors);
   });

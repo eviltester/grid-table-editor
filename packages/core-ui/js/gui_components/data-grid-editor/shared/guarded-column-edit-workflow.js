@@ -4,17 +4,30 @@
  * - Lets grid-engine adapters provide only the engine-specific read/write hooks for column operations.
  */
 
-import { showTextInputModal } from '../../shared/modal-text-input.js';
-import { showConfirmModal } from '../../shared/modal-confirm.js';
+import { createConfirmDialogService, createTextInputDialogService } from '../../shared/dialog-services/index.js';
+
+function getDefaultDocumentObj() {
+  return typeof document !== 'undefined' ? document : null;
+}
 
 class GuardedColumnEditWorkflow {
-  constructor(gridExtension, { surfaceError, requestTextInput, requestConfirm, shouldEnforceUniqueNames } = {}) {
+  constructor(
+    gridExtension,
+    {
+      surfaceError,
+      requestTextInput,
+      requestConfirm,
+      shouldEnforceUniqueNames,
+      documentObj = getDefaultDocumentObj(),
+    } = {}
+  ) {
     this.gridExtras = gridExtension;
     this.surfaceError = typeof surfaceError === 'function' ? surfaceError : null;
+    const textInputDialogService = createTextInputDialogService({ documentObj });
+    const confirmDialogService = createConfirmDialogService({ documentObj });
     this.requestTextInput =
-      typeof requestTextInput === 'function' ? requestTextInput : (options) => showTextInputModal(options);
-    this.requestConfirm =
-      typeof requestConfirm === 'function' ? requestConfirm : (options) => showConfirmModal(options);
+      typeof requestTextInput === 'function' ? requestTextInput : textInputDialogService.requestTextInput;
+    this.requestConfirm = typeof requestConfirm === 'function' ? requestConfirm : confirmDialogService.requestConfirm;
     this.shouldEnforceUniqueNames =
       typeof shouldEnforceUniqueNames === 'function' ? shouldEnforceUniqueNames : () => true;
   }

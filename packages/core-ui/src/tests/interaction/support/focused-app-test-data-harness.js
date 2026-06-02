@@ -100,7 +100,7 @@ function createFocusedAppTestDataHarness() {
       DebouncerClass: ImmediateDebouncer,
     });
 
-    control.enableTestDataGenerationInterface('host', importer, textPreviewRenderer, gridExtras);
+    control.mountTestDataGenerationPanel('host', importer, textPreviewRenderer, gridExtras);
   }
 
   function getGridRow(index = 0) {
@@ -158,7 +158,14 @@ function createFocusedAppTestDataHarness() {
   }
 
   async function setSchemaText(value) {
+    const toggleButton = document.getElementById('testDataSchemaModeToggleButton');
+    if (toggleButton?.textContent?.trim() === 'Edit as Text') {
+      await user.click(toggleButton);
+    }
     await setInputValue(document.getElementById('testDataSchemaText'), value);
+    if (toggleButton?.textContent?.trim() === 'Edit as Schema') {
+      await user.click(toggleButton);
+    }
   }
 
   async function clickGenerate({ waitForData = true } = {}) {
@@ -191,9 +198,9 @@ function createFocusedAppTestDataHarness() {
   async function clickInjectedSampleButton() {
     const button = document.createElement('button');
     button.type = 'button';
-    button.className = 'testdata-schema-sample-button';
+    button.className = 'shared-schema-sample-button';
     button.textContent = 'Load Sample Schema';
-    document.body.appendChild(button);
+    document.getElementById('testDataSchemaDefinition').appendChild(button);
     await user.click(button);
     button.remove();
   }

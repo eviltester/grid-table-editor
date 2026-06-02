@@ -24,36 +24,15 @@
       <div class="mainmenu"><a href="/blog">Blog</a></div>
     </div>
 
-    <div class="main-app">
-      <div class="instructions">
-        <details>
-          <summary>
-            Data Generator Instructions
-            <span
-              class="helpicon"
-              data-help="generator-screen-overview"
-              data-help-text='
-                <p><strong>Generator Screen Overview</strong></p>
-                <p><strong>Schema:</strong> Define fields and rules using row-based schema editing or text schema mode.</p>
-                <p><strong>Generate Data and Options:</strong> Choose output format, configure options, then generate files.</p>
-                <p><strong>Preview:</strong> Generate a small sample to validate output before downloading larger files.</p>
-                <p><a class="helplink" href="https://anywaydata.com/docs/test-data/generate-to-file" target="_blank" rel="noopener noreferrer">Generate To File docs</a></p>
-              '
-            ></span>
-          </summary>
-          <ul>
-            <li>Define schema rows with column name, source type, and rule details.</li>
-            <li>Use + and - to add or remove rows and arrows to reorder.</li>
-            <li>Use Preview to generate a sample set into the table.</li>
-            <li>Use Generate Data to download file output in the selected format.</li>
-            <li>If your schema contains at least two enums then you can Generate Pairwise combinations.</li>
-            <li>Click between "Edit as Text" and "Edit as Schema" to use the edit view that works best for you.</li>
-            <li>Preview and Generate row counts are independent.</li>
-          </ul>
-        </details>
-      </div>
-      <p id="generator-initial-load" role="status" aria-live="polite">Please Wait, Loading Libraries...</p>
-      <div id="generator-app"></div>
-    </div>
+    <div id="generator-page-root"></div>
+
+    <p
+      id="generator-initial-load"
+      class="import-progress-status startup-loading-status"
+      role="status"
+      aria-live="polite"
+    >
+      Please Wait, Loading Libraries...
+    </p>
   </body>
 </html>

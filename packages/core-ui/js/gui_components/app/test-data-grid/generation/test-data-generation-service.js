@@ -36,6 +36,7 @@ function createTestDataGenerationService({
   debouncer,
   syncSchemaTextFromGridBeforeGenerate,
   setTestDataStatus,
+  setTestDataLoadingStatus,
   showSchemaError,
   yieldToUi,
   validateCurrentSchemaRows,
@@ -43,6 +44,11 @@ function createTestDataGenerationService({
   getTextPreviewRenderer,
   getMainGridExtras,
   getGenerationMode,
+  getRequestedRowCount = () => null,
+  setGenerateBusy = () => {},
+  setGeneratePairwiseBusy = () => {},
+  setRefreshPreviewBusy = () => {},
+  setPairwiseVisible = () => {},
 }) {
   function getCurrentSchemaRowValidation(options) {
     return validateCurrentSchemaRows?.(options) || { errors: [], rows: [] };
@@ -76,17 +82,11 @@ function createTestDataGenerationService({
   }
 
   function showPairwiseButton() {
-    const button = document.getElementById('generateallpairs');
-    if (button) {
-      button.style.display = '';
-    }
+    setPairwiseVisible(true);
   }
 
   function hidePairwiseButton() {
-    const button = document.getElementById('generateallpairs');
-    if (button) {
-      button.style.display = 'none';
-    }
+    setPairwiseVisible(false);
   }
 
   function updatePairwiseButtonVisibility() {
@@ -105,18 +105,15 @@ function createTestDataGenerationService({
   async function generatePairwiseTestData() {
     debouncer.clear('populateTestDataGrid');
     syncSchemaTextFromGridBeforeGenerate();
-    const generateButton = document.getElementById('generateallpairs');
-    setTestDataStatus('Generating pairwise...', true);
-    if (generateButton) {
-      generateButton.disabled = true;
-    }
+    setTestDataLoadingStatus('Generating pairwise...');
+    setGeneratePairwiseBusy(true);
 
     try {
       const rowValidation = getCurrentSchemaRowValidation();
       if (rowValidation.errors.length > 0) {
         const errorMessages = schemaErrorsToText(rowValidation.errors);
         showSchemaError(errorMessages);
-        setTestDataStatus('Schema validation failed.', false);
+        setTestDataStatus('Schema validation failed.', { severity: 'error', dismissable: true });
         return;
       }
 
@@ -126,18 +123,18 @@ function createTestDataGenerationService({
         const errorMessages = schemaErrorsToText(errors);
         console.log(errorMessages);
         showSchemaError(errorMessages);
-        setTestDataStatus('Schema validation failed.', false);
+        setTestDataStatus('Schema validation failed.', { severity: 'error', dismissable: true });
         return;
       }
 
       if (!isPairwiseEligibleForSchemaRows(rowValidation.rows || [])) {
         showSchemaError('Pairwise generation requires at least 2 enum columns.');
-        setTestDataStatus('Insufficient enum columns.', false);
+        setTestDataStatus('Insufficient enum columns.', { severity: 'warning', dismissable: true });
         return;
       }
 
       await yieldToUi();
-      setTestDataStatus('Generating pairwise combinations...', true);
+      setTestDataLoadingStatus('Generating pairwise combinations...');
       await yieldToUi();
 
       const dataTable = createPairwiseDataTable({
@@ -149,40 +146,36 @@ function createTestDataGenerationService({
       });
       if (!dataTable) {
         showSchemaError('Failed to generate pairwise data.');
-        setTestDataStatus('Pairwise generation failed.', false);
+        setTestDataStatus('Pairwise generation failed.', { severity: 'error', dismissable: true });
         return;
       }
 
       if (dataTable) {
-        setTestDataStatus('Applying data to grid...', true);
+        setTestDataLoadingStatus('Applying data to grid...');
         await yieldToUi();
         await Promise.resolve(getImporter().setGridFromGenericDataTable(dataTable));
       }
 
-      setTestDataStatus(`Generated ${dataTable.getRowCount()} pairwise combinations.`, false);
+      setTestDataStatus(`Generated ${dataTable.getRowCount()} pairwise combinations.`, { dismissable: true });
       await yieldToUi();
     } catch (error) {
       console.error('Pairwise generation error:', error);
       showSchemaError(`Pairwise generation failed: ${error.message}`);
-      setTestDataStatus('Pairwise generation failed.', false);
+      setTestDataStatus('Pairwise generation failed.', { severity: 'error', dismissable: true });
     } finally {
-      if (generateButton) {
-        generateButton.disabled = false;
-      }
+      setGeneratePairwiseBusy(false);
     }
   }
 
   async function generateTestData() {
     debouncer.clear('populateTestDataGrid');
     syncSchemaTextFromGridBeforeGenerate();
-    const generateButton = document.getElementById('generatedata');
-    setTestDataStatus('Validating schema...', true);
-    if (generateButton) {
-      generateButton.disabled = true;
-    }
+    setTestDataLoadingStatus('Validating schema...');
+    setGenerateBusy(true);
 
     try {
-      const desiredRowCountRaw = document.getElementById('generateCount').value;
+      const requestedRowCount = getRequestedRowCount();
+      const desiredRowCountRaw = requestedRowCount == null ? '' : `${requestedRowCount}`;
       const desiredRowCountParsed = Number.parseInt(desiredRowCountRaw, 10);
       const desiredRowCount = normaliseCount(desiredRowCountRaw);
       const generationMode = getGenerationMode();
@@ -191,7 +184,7 @@ function createTestDataGenerationService({
       if (rowValidation.errors.length > 0) {
         const errorMessages = schemaErrorsToText(rowValidation.errors);
         showSchemaError(errorMessages);
-        setTestDataStatus('Schema validation failed.', false);
+        setTestDataStatus('Schema validation failed.', { severity: 'error', dismissable: true });
         return;
       }
 
@@ -201,7 +194,7 @@ function createTestDataGenerationService({
         const errorMessages = schemaErrorsToText(errors);
         console.log(errorMessages);
         showSchemaError(errorMessages);
-        setTestDataStatus('Schema validation failed.', false);
+        setTestDataStatus('Schema validation failed.', { severity: 'error', dismissable: true });
         return;
       }
 
@@ -210,14 +203,13 @@ function createTestDataGenerationService({
         (desiredRowCountParsed < 1 && generationMode !== TEST_DATA_MODES.AMEND_SELECTED)
       ) {
         showSchemaError('Enter how many rows to generate.');
-        setTestDataStatus('Invalid row count.', false);
+        setTestDataStatus('Invalid row count.', { severity: 'warning', dismissable: true });
         return;
       }
 
       await yieldToUi();
-      setTestDataStatus(
-        generationMode === TEST_DATA_MODES.NEW_TABLE ? 'Generating rows...' : 'Preparing table amend...',
-        true
+      setTestDataLoadingStatus(
+        generationMode === TEST_DATA_MODES.NEW_TABLE ? 'Generating rows...' : 'Preparing table amend...'
       );
       await yieldToUi();
 
@@ -228,7 +220,7 @@ function createTestDataGenerationService({
         const gridExtras = getMainGridExtras();
         if (!gridExtras) {
           showSchemaError('Grid interface unavailable for amend mode.');
-          setTestDataStatus('Grid interface unavailable.', false);
+          setTestDataStatus('Grid interface unavailable.', { severity: 'error', dismissable: true });
           return;
         }
 
@@ -236,7 +228,7 @@ function createTestDataGenerationService({
           generationMode === TEST_DATA_MODES.AMEND_SELECTED ? gridExtras.getSelectedRowIndexes() : [];
 
         if (typeof gridExtras.applyGeneratedSchemaAmend === 'function') {
-          setTestDataStatus('Amending rows...', true);
+          setTestDataLoadingStatus('Amending rows...');
           await yieldToUi();
           const directAmendResult = await Promise.resolve(
             gridExtras.applyGeneratedSchemaAmend({
@@ -250,7 +242,7 @@ function createTestDataGenerationService({
 
           if (generationMode === TEST_DATA_MODES.AMEND_SELECTED && directAmendResult?.noSelectedRows) {
             showSchemaError('No rows selected.');
-            setTestDataStatus('No selected rows to amend.', false);
+            setTestDataStatus('No selected rows to amend.', { severity: 'warning', dismissable: true });
             return;
           }
 
@@ -267,7 +259,7 @@ function createTestDataGenerationService({
 
           if (generationMode === TEST_DATA_MODES.AMEND_SELECTED && amendResult.noSelectedRows) {
             showSchemaError('No rows selected.');
-            setTestDataStatus('No selected rows to amend.', false);
+            setTestDataStatus('No selected rows to amend.', { severity: 'warning', dismissable: true });
             return;
           }
 
@@ -276,21 +268,19 @@ function createTestDataGenerationService({
       }
 
       if (dataTable) {
-        setTestDataStatus('Applying data to grid...', true);
+        setTestDataLoadingStatus('Applying data to grid...');
         await yieldToUi();
         await Promise.resolve(getImporter().setGridFromGenericDataTable(dataTable));
       }
 
       const completedModeLabel = generationMode === TEST_DATA_MODES.NEW_TABLE ? 'Generate' : 'Amend';
-      setTestDataStatus(`${completedModeLabel} complete. Refresh text preview if needed.`, false);
+      setTestDataStatus(`${completedModeLabel} complete. Refresh text preview if needed.`, { dismissable: true });
     } catch (error) {
       console.error('Generate/amend failed', error);
-      setTestDataStatus('Generate failed. Check console for details.', false);
+      setTestDataStatus('Generate failed. Check console for details.', { severity: 'error', dismissable: true });
       showSchemaError('Generate failed. Check console for details.');
     } finally {
-      if (generateButton) {
-        generateButton.disabled = false;
-      }
+      setGenerateBusy(false);
     }
   }
 
@@ -299,25 +289,23 @@ function createTestDataGenerationService({
     if (!textPreviewRenderer) {
       return;
     }
-    const refreshButton = document.getElementById('refreshtestdatapreview');
     clearPendingStatusReset();
-    setTestDataStatus('Refreshing text preview...', true);
-    if (refreshButton) {
-      refreshButton.disabled = true;
-    }
+    setTestDataLoadingStatus('Refreshing text preview...');
+    setRefreshPreviewBusy(true);
 
     try {
       await yieldToUi();
       await Promise.resolve(textPreviewRenderer.renderTextFromGrid());
-      setTestDataStatus('Text preview refreshed.', false);
+      setTestDataStatus('Text preview refreshed.');
       scheduleStatusReset();
     } catch (error) {
       console.error('Failed to refresh text preview', error);
-      setTestDataStatus('Text preview refresh failed. Check console for details.', false);
+      setTestDataStatus('Text preview refresh failed. Check console for details.', {
+        severity: 'error',
+        dismissable: true,
+      });
     } finally {
-      if (refreshButton) {
-        refreshButton.disabled = false;
-      }
+      setRefreshPreviewBusy(false);
     }
   }
 

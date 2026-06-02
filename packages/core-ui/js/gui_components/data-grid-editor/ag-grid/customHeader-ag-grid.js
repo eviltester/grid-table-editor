@@ -10,11 +10,24 @@ import { GridExtension } from './gridExtension-ag-grid.js';
 import { GuardedColumnEdits } from '../shared/guarded-column-edits.js';
 import { showGridError } from '../grid-error-surface.js';
 import { shouldEnforceUniqueColumnNames } from '../gridControl.js';
+import { resolveDocumentObj } from '../../shared/dom/default-objects.js';
+
+function resolveAgGridHeaderDocument(agParams) {
+  return (
+    resolveDocumentObj(agParams?.documentObj, agParams?.eGridHeader || null) ||
+    agParams?.api?.gridBodyCtrl?.eBodyViewport?.ownerDocument ||
+    null
+  );
+}
 
 class CustomHeaderAgGrid {
   init(agParams) {
     this.agParams = agParams;
-    this.eGui = document.createElement('div');
+    this.documentObj = resolveAgGridHeaderDocument(agParams);
+    if (!this.documentObj?.createElement) {
+      throw new Error('CustomHeaderAgGrid requires a document-backed grid host');
+    }
+    this.eGui = this.documentObj.createElement('div');
     this.eGui.classList.add('headerWrapper');
     this.eGui.innerHTML = `
                <div class="customHeaderTop">
@@ -45,7 +58,7 @@ class CustomHeaderAgGrid {
 
     this.guardedColumnEdits = new GuardedColumnEdits(new GridExtension(this.agParams.api), {
       surfaceError: showGridError,
-      shouldEnforceUniqueNames: () => shouldEnforceUniqueColumnNames(document),
+      shouldEnforceUniqueNames: () => shouldEnforceUniqueColumnNames(this.documentObj),
     });
 
     this.eMenuButton = this.eGui.querySelector('.customFilterMenuButton');

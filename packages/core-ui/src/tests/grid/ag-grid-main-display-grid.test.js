@@ -69,4 +69,16 @@ describe('AG Grid main display grid', () => {
 
     expect(api.sizeColumnsToFit).toHaveBeenCalledTimes(1);
   });
+
+  test('constructor does not require a global document', () => {
+    const originalDocument = global.document;
+    delete global.document;
+
+    try {
+      const grid = new ExtendedDataGrid();
+      expect(grid.documentObj).toBeNull();
+    } finally {
+      global.document = originalDocument;
+    }
+  });
 });

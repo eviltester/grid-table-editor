@@ -49,6 +49,7 @@ Useful workflows:
 
 - use Storybook when iterating on schema-editor rendering, validation states, and text/schema mode transitions
 - use Storybook when adjusting export-preview UI without needing the full app boot flow
+- use `pnpm run test:storybook` to run Storybook smoke and interaction tests in CI-style mode
 - use `pnpm run build-storybook` to create a static Storybook build in `storybook-static`
 
 ### Select Grid Engine
@@ -242,6 +243,12 @@ Run workspace build/test orchestration from root:
 
 - `pnpm run build:workspaces`
 - `pnpm run test:workspaces`
+- `pnpm run test:workspaces:all`
+
+Notes:
+
+- `pnpm run test:workspaces` runs only the non-duplicating workspace tests that are not already covered by the root Jest suite (`@anywaydata/api`, `@anywaydata/cli`, and `@anywaydata/mcp`).
+- `pnpm run test:workspaces:all` preserves the old “run every workspace test script” behavior.
 
 Run an individual workspace command:
 

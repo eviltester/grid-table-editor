@@ -16,6 +16,7 @@ import { schemaRowsToSpecWithTokens } from './schema-editor-core.js';
 import { schemaErrorsToText } from './schema-error-text.js';
 import { getSchemaRowSemanticValidationIssues } from './schema-row-validation.js';
 import { captureActiveFieldState, restoreActiveFieldState } from './schema-focus-state.js';
+import { getDefaultDocumentObj, resolveWindowObj } from '../../dom/default-objects.js';
 import {
   renderGeneratorSchemaRows,
   clearSchemaRowDragClasses,
@@ -26,17 +27,24 @@ import {
   hideVisibleHelpTooltips,
 } from '../../../generator/schema/data-generator-schema-ui.js';
 
-function createSchemaDomAdapter(documentObj, idMap = {}) {
+function findElementById(rootElement, id) {
+  if (!rootElement || !id) {
+    return null;
+  }
+  return rootElement.querySelector(`[id="${id}"]`);
+}
+
+function createSchemaDomAdapter({ documentObj, rootElement, idMap = {} }) {
   return {
     createElement: (...args) => documentObj.createElement(...args),
-    querySelector: (...args) => documentObj.querySelector(...args),
+    querySelector: (...args) => rootElement?.querySelector?.(...args),
     defaultView: documentObj.defaultView,
-    getElementById: (id) => documentObj.getElementById(idMap[id] || id),
+    getElementById: (id) => findElementById(rootElement, idMap[id] || id),
   };
 }
 
 function createSharedSchemaEditorController({
-  documentObj = document,
+  documentObj = getDefaultDocumentObj(),
   schemaTextToDataRules,
   dataRulesToSchemaText,
   faker,
@@ -55,8 +63,10 @@ function createSharedSchemaEditorController({
   onRowsChanged,
   validateSchemaRows,
   updatePairwiseButtonVisibility = () => {},
+  updateHelpHints,
   idMap = {},
   modeHelpIconId,
+  rootElement = documentObj?.body,
 }) {
   const semanticValidationTimers = new Map();
   let dragState = null;
@@ -74,8 +84,9 @@ function createSharedSchemaEditorController({
         dataRulesToSchemaText,
       }),
   });
+  const scopedDomAdapter = createSchemaDomAdapter({ documentObj, rootElement, idMap });
 
-  const getElement = (id) => documentObj.getElementById(idMap[id] || id);
+  const getElement = (id) => findElementById(rootElement, idMap[id] || id);
   const getRowsElement = () => getElement('generatorSchemaRows');
   const getTextElement = () => getElement('generatorSchemaText');
   const getTextContainerElement = () => getElement('generatorSchemaTextContainer');
@@ -84,7 +95,11 @@ function createSharedSchemaEditorController({
   const getModeHelpIconElement = () => getElement(modeHelpIconId || 'schemaModeHelpIcon');
 
   const refreshHelpHints = () => {
-    const windowObj = documentObj?.defaultView || globalThis.window;
+    if (typeof updateHelpHints === 'function') {
+      updateHelpHints();
+      return;
+    }
+    const windowObj = resolveWindowObj(null, documentObj);
     if (typeof windowObj?.updateHelpHints === 'function') {
       windowObj.updateHelpHints();
     }
@@ -157,7 +172,7 @@ function createSharedSchemaEditorController({
 
   const clearDragState = () => {
     dragState = null;
-    clearSchemaRowDragClasses(documentObj);
+    clearSchemaRowDragClasses(scopedDomAdapter);
   };
 
   const applySemanticValidationForRow = (rowId) => {
@@ -222,7 +237,7 @@ function createSharedSchemaEditorController({
 
   const renderRows = () => {
     renderGeneratorSchemaRows({
-      documentObj: createSchemaDomAdapter(documentObj, idMap),
+      documentObj: scopedDomAdapter,
       schemaRows: session.getRows(),
       fakerCommands,
       getVisibleDomainCommands,
@@ -277,7 +292,7 @@ function createSharedSchemaEditorController({
     if (schemaText.trim().length === 0) {
       clearAllSemanticValidationTimers();
       clearSchemaError();
-      session.setRows([]);
+      session.setRows([], { allowEmpty: true });
       session.setTokens([]);
       revalidateRows();
       renderRows();
@@ -317,7 +332,7 @@ function createSharedSchemaEditorController({
   };
 
   const toggleMode = () => {
-    hideVisibleHelpTooltips({ documentObj: createSchemaDomAdapter(documentObj, idMap) });
+    hideVisibleHelpTooltips({ documentObj: scopedDomAdapter });
     if (session.getTextMode()) {
       const parsed = syncFromText({ showErrors: true });
       if (parsed?.errors?.length > 0) {
@@ -409,7 +424,7 @@ function createSharedSchemaEditorController({
         try {
           const selected = await openMethodPickerModal({
             documentObj,
-            windowObj: documentObj?.defaultView || globalThis.window,
+            windowObj: resolveWindowObj(null, documentObj),
             options: getMethodPickerOptions(row.command),
             currentCommand: row.command,
             initialTab: getPickerInitialTab(row.sourceType),
@@ -485,7 +500,11 @@ function createSharedSchemaEditorController({
     if (event.dataTransfer) {
       event.dataTransfer.effectAllowed = 'move';
     }
-    applySchemaRowDropInstructionIndicator({ documentObj, draggedRowId: rowId, dropInstruction: null });
+    applySchemaRowDropInstructionIndicator({
+      documentObj: scopedDomAdapter,
+      draggedRowId: rowId,
+      dropInstruction: null,
+    });
   };
 
   const handleDragOver = (event) => {
@@ -498,7 +517,7 @@ function createSharedSchemaEditorController({
       draggedRowId: dragState.rowId,
     });
     if (!dropInstruction) {
-      clearSchemaRowDragClasses(documentObj);
+      clearSchemaRowDragClasses(scopedDomAdapter);
       return;
     }
     event.preventDefault();
@@ -506,7 +525,7 @@ function createSharedSchemaEditorController({
       event.dataTransfer.dropEffect = 'move';
     }
     applySchemaRowDropInstructionIndicator({
-      documentObj,
+      documentObj: scopedDomAdapter,
       draggedRowId: dragState.rowId,
       dropInstruction,
     });
@@ -594,10 +613,11 @@ function createSharedSchemaEditorController({
     removeRowAt,
     moveRowAt,
     render: () => renderRows(),
-    setRows: (rows) => session.setRows(rows),
+    setRows: (rows, options) => session.setRows(rows, options),
     setTokens: (tokens) => session.setTokens(tokens),
     getTokens: () => session.getTokens(),
     setTextMode: (isTextMode) => session.setTextMode(isTextMode),
+    applySemanticValidationForRow,
     getState: () => ({ ...session.getState() }),
   };
 }

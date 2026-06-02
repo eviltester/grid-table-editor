@@ -12,6 +12,7 @@ class ImportExportControlsComponent {
     this.dropZone = page.locator('#dropzone');
     this.fileFormatLabel = page.locator('.fileFormat').first();
     this.progressStatus = page.locator('#import-progress-status');
+    this.errorStatus = page.locator('#import-export-error');
   }
 
   async expectVisible() {
@@ -80,6 +81,10 @@ class ImportExportControlsComponent {
 
   async expectProgressStatusContains(value) {
     await expect(this.progressStatus).toContainText(value);
+  }
+
+  async getErrorText() {
+    return ((await this.errorStatus.textContent()) || '').trim();
   }
 }
 

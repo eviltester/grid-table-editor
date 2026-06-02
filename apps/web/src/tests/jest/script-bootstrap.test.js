@@ -1,18 +1,20 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
 import { bootstrapApp } from '../../../../../packages/core-ui/js/script.js';
+import { APP_PAGE_INSTRUCTIONS_PROPS } from '../../../../../packages/core-ui/js/gui_components/shared/instructions/index.js';
 
 describe('script bootstrap', () => {
   let dom;
 
   beforeEach(() => {
-    dom = new JSDOM(`<!doctype html><html><body>
-            <div id="main-grid-view"></div>
-            <div id="import-export-controls"></div>
-            <div id="tabbedTextArea"></div>
-            <div id="testDataGeneratorContainer"></div>
-            <div class="instructions"><details><ul><li>One</li></ul></details></div>
-        </body></html>`);
+    dom = new JSDOM(
+      `<!doctype html><html><body>
+            <div class="header"><div class="pageheading">AnyWayData</div></div>
+            <div id="app-page-root"></div>
+            <p id="initial-load" class="import-progress-status startup-loading-status">Please Wait, Loading Libraries...</p>
+        </body></html>`,
+      { url: 'https://example.test/app.html' }
+    );
     global.document = dom.window.document;
     global.window = dom.window;
   });
@@ -27,23 +29,22 @@ describe('script bootstrap', () => {
 
     const ensureGridLibraryLoadedFn = jest.fn(() => {
       calls.push('ensureGridLibraryLoaded');
+      const loadingMessage = dom.window.document.getElementById('initial-load');
+      expect(loadingMessage).not.toBeNull();
+      expect(loadingMessage.textContent).toContain('Please Wait, Loading Libraries...');
+      expect(loadingMessage.classList.contains('is-loading')).toBe(true);
+      expect(loadingMessage.querySelector('[data-role="loading-indicator"]')).not.toBeNull();
       return Promise.resolve();
     });
 
-    class ImportExportControlsClass {
-      addHTMLtoGui() {}
-      setExporter() {}
-      setImporter() {}
-      renderTextFromGrid() {}
-      setFileFormatType() {}
-      setOptionsViewForFormatType() {}
-      getExportControls() {
-        return {};
-      }
-    }
-    class TabbedTextControlClass {
-      addToGui() {}
-    }
+    const workspaceApi = {
+      setExporter() {},
+      setImporter() {},
+      renderTextFromGrid() {},
+      setFileFormatType() {},
+      setOptionsViewForFormatType() {},
+    };
+    const createImportExportWorkspaceComponentFn = jest.fn(() => workspaceApi);
     class ExporterClass {}
     class ImporterClass {}
 
@@ -67,15 +68,15 @@ describe('script bootstrap', () => {
       ensureGridLibraryLoadedFn,
       activeGridEngineName: 'tabulator',
       ExtendedDataGridClass,
-      ImportExportControlsClass,
-      TabbedTextControlClass,
+      createImportExportWorkspaceComponentFn,
       ExporterClass,
       ImporterClass,
-      enableTestDataGenerationInterfaceFn: () => {},
+      mountTestDataGenerationPanelFn: () => {},
     });
 
     expect(calls[0]).toBe('ensureGridLibraryLoaded');
     expect(calls[1]).toBe('createChildGrid');
+    expect(dom.window.document.getElementById('initial-load')).toBeNull();
   });
 
   test('returns early when grid library fails to load', async () => {
@@ -97,19 +98,28 @@ describe('script bootstrap', () => {
       ensureGridLibraryLoadedFn,
       activeGridEngineName: 'tabulator',
       ExtendedDataGridClass,
-      ImportExportControlsClass: class {},
-      TabbedTextControlClass: class {},
+      createImportExportWorkspaceComponentFn: () => ({
+        setExporter() {},
+        setImporter() {},
+        renderTextFromGrid() {},
+        setFileFormatType() {},
+        setOptionsViewForFormatType() {},
+      }),
       ExporterClass: class {},
       ImporterClass: class {},
-      enableTestDataGenerationInterfaceFn: () => {},
+      mountTestDataGenerationPanelFn: () => {},
     });
 
     expect(calls).toEqual([]);
     expect(consoleSpy).toHaveBeenCalled();
+    const loadingMessage = dom.window.document.getElementById('initial-load');
+    expect(loadingMessage).not.toBeNull();
+    expect(loadingMessage.textContent).toContain('Failed to load libraries. Check console for details.');
+    expect(loadingMessage.classList.contains('is-loading')).toBe(false);
   });
 
   test('wires controller and test data integration without scheduling instructions import', async () => {
-    const enableTestDataGenerationInterfaceFn = jest.fn();
+    const mountTestDataGenerationPanelFn = jest.fn();
     const gridExtras = {
       clearGrid: jest.fn(),
       setGridFromGenericDataTable: jest.fn(),
@@ -119,30 +129,16 @@ describe('script bootstrap', () => {
     const renderTextFromGrid = jest.fn();
     const setFileFormatType = jest.fn();
     const setOptionsViewForFormatType = jest.fn();
-    const addHTMLtoGui = jest.fn();
     const setExporter = jest.fn();
     const setImporter = jest.fn();
-    const tabbedAddToGui = jest.fn();
     let importerInstance;
-
-    class ImportExportControlsClass {
-      addHTMLtoGui = addHTMLtoGui;
-      setExporter = setExporter;
-      setImporter = setImporter;
-      renderTextFromGrid = renderTextFromGrid;
-      setFileFormatType = setFileFormatType;
-      setOptionsViewForFormatType = setOptionsViewForFormatType;
-    }
-
-    class TabbedTextControlClass {
-      constructor(host, controller) {
-        this.host = host;
-        this.controller = controller;
-      }
-      addToGui() {
-        tabbedAddToGui(this.host, this.controller);
-      }
-    }
+    const createImportExportWorkspaceComponentFn = jest.fn(() => ({
+      setExporter,
+      setImporter,
+      renderTextFromGrid,
+      setFileFormatType,
+      setOptionsViewForFormatType,
+    }));
 
     class ExporterClass {
       constructor(extras) {
@@ -169,18 +165,16 @@ describe('script bootstrap', () => {
       ensureGridLibraryLoadedFn: jest.fn(() => Promise.resolve()),
       activeGridEngineName: 'tabulator',
       ExtendedDataGridClass,
-      ImportExportControlsClass,
-      TabbedTextControlClass,
+      createImportExportWorkspaceComponentFn,
       ExporterClass,
       ImporterClass,
-      enableTestDataGenerationInterfaceFn,
+      mountTestDataGenerationPanelFn,
     });
 
-    expect(addHTMLtoGui).toHaveBeenCalledWith(dom.window.document.getElementById('import-export-controls'));
-    expect(tabbedAddToGui).toHaveBeenCalledWith(
-      dom.window.document.getElementById('tabbedTextArea'),
-      expect.any(ImportExportControlsClass)
-    );
+    expect(createImportExportWorkspaceComponentFn).toHaveBeenCalledWith({
+      root: dom.window.document.getElementById('import-export-controls'),
+      documentObj: dom.window.document,
+    });
     expect(setExporter.mock.calls[0][0]).toBeInstanceOf(ExporterClass);
     expect(setExporter.mock.calls[0][0].extras).toBe(gridExtras);
     expect(setImporter.mock.calls[0][0]).toBe(importerInstance);
@@ -188,10 +182,14 @@ describe('script bootstrap', () => {
     expect(renderTextFromGrid).toHaveBeenCalledTimes(1);
     expect(setFileFormatType).toHaveBeenCalledTimes(1);
     expect(setOptionsViewForFormatType).toHaveBeenCalledTimes(1);
-    expect(enableTestDataGenerationInterfaceFn).toHaveBeenCalledWith(
+    expect(mountTestDataGenerationPanelFn).toHaveBeenCalledWith(
       'testDataGeneratorContainer',
       importerInstance,
-      expect.any(ImportExportControlsClass),
+      expect.objectContaining({
+        setExporter: expect.any(Function),
+        setImporter: expect.any(Function),
+        renderTextFromGrid: expect.any(Function),
+      }),
       gridExtras
     );
   });
@@ -214,15 +212,6 @@ describe('script bootstrap', () => {
       }
     }
 
-    class ImportExportControlsClass {
-      addHTMLtoGui() {}
-      setExporter() {}
-      setImporter() {}
-      renderTextFromGrid() {}
-      setFileFormatType() {}
-      setOptionsViewForFormatType() {}
-    }
-
     let importerInstance;
     class ImporterClass {
       constructor() {
@@ -236,13 +225,16 @@ describe('script bootstrap', () => {
       ensureGridLibraryLoadedFn: jest.fn(() => Promise.resolve()),
       activeGridEngineName: 'tabulator',
       ExtendedDataGridClass,
-      ImportExportControlsClass,
-      TabbedTextControlClass: class {
-        addToGui() {}
-      },
+      createImportExportWorkspaceComponentFn: () => ({
+        setExporter() {},
+        setImporter() {},
+        renderTextFromGrid() {},
+        setFileFormatType() {},
+        setOptionsViewForFormatType() {},
+      }),
       ExporterClass: class {},
       ImporterClass,
-      enableTestDataGenerationInterfaceFn: () => {},
+      mountTestDataGenerationPanelFn: () => {},
     });
 
     const button = dom.window.document.createElement('button');
@@ -276,15 +268,6 @@ describe('script bootstrap', () => {
       }
     }
 
-    class ImportExportControlsClass {
-      addHTMLtoGui() {}
-      setExporter() {}
-      setImporter() {}
-      renderTextFromGrid() {}
-      setFileFormatType() {}
-      setOptionsViewForFormatType() {}
-    }
-
     let importerInstance;
     class ImporterClass {
       constructor() {
@@ -298,13 +281,16 @@ describe('script bootstrap', () => {
       ensureGridLibraryLoadedFn: jest.fn(() => Promise.resolve()),
       activeGridEngineName: 'tabulator',
       ExtendedDataGridClass,
-      ImportExportControlsClass,
-      TabbedTextControlClass: class {
-        addToGui() {}
-      },
+      createImportExportWorkspaceComponentFn: () => ({
+        setExporter() {},
+        setImporter() {},
+        renderTextFromGrid() {},
+        setFileFormatType() {},
+        setOptionsViewForFormatType() {},
+      }),
       ExporterClass: class {},
       ImporterClass,
-      enableTestDataGenerationInterfaceFn: () => {},
+      mountTestDataGenerationPanelFn: () => {},
     });
 
     const button = dom.window.document.createElement('button');
@@ -316,8 +302,69 @@ describe('script bootstrap', () => {
     expect(importerInstance.setGridFromGenericDataTable).toHaveBeenCalledTimes(1);
     const dataTable = importerInstance.setGridFromGenericDataTable.mock.calls[0][0];
     expect(dataTable.getHeaders()).toEqual(['Instructions']);
-    expect(dataTable.getRowCount()).toBe(1);
-    expect(dataTable.getRow(0)).toEqual(['One']);
+    expect(dataTable.getRowCount()).toBe(APP_PAGE_INSTRUCTIONS_PROPS.items.length);
+    expect(dataTable.getRow(0)).toEqual([APP_PAGE_INSTRUCTIONS_PROPS.items[0]]);
+    expect(dataTable.getRow(dataTable.getRowCount() - 1)).toEqual([
+      APP_PAGE_INSTRUCTIONS_PROPS.items[APP_PAGE_INSTRUCTIONS_PROPS.items.length - 1],
+    ]);
     expect(sizeColumnsToFit).toHaveBeenCalledTimes(1);
+  });
+
+  test('fails startup status and rethrows when final test-data bootstrap step throws', async () => {
+    const mountError = new Error('mount failed');
+
+    class ExtendedDataGridClass {
+      createChildGrid() {}
+      getGridExtras() {
+        return {
+          clearGrid: jest.fn(),
+          setGridFromGenericDataTable: jest.fn(),
+          getGridAsGenericDataTable: jest.fn(() => ({ getHeaders: () => [] })),
+          getHeadersFromGrid: jest.fn(() => []),
+        };
+      }
+    }
+
+    await expect(
+      bootstrapApp({
+        documentObj: dom.window.document,
+        ensureGridLibraryLoadedFn: jest.fn(() => Promise.resolve()),
+        activeGridEngineName: 'tabulator',
+        ExtendedDataGridClass,
+        createImportExportWorkspaceComponentFn: () => ({
+          setExporter() {},
+          setImporter() {},
+          setGridChangeSource() {},
+          renderTextFromGrid() {},
+          setFileFormatType() {},
+          setOptionsViewForFormatType() {},
+        }),
+        ExporterClass: class {},
+        ImporterClass: class {},
+        mountTestDataGenerationPanelFn: () => {
+          throw mountError;
+        },
+      })
+    ).rejects.toThrow(mountError);
+
+    const loadingMessage = dom.window.document.getElementById('initial-load');
+    expect(loadingMessage).not.toBeNull();
+    expect(loadingMessage.textContent).toContain('Failed to load libraries. Check console for details.');
+    expect(loadingMessage.classList.contains('is-loading')).toBe(false);
+  });
+
+  test('returns null without throwing when bootstrapApp is called without a document', async () => {
+    const originalDocument = global.document;
+    delete global.document;
+
+    try {
+      await expect(
+        bootstrapApp({
+          documentObj: null,
+        })
+      ).resolves.toBeNull();
+    } finally {
+      global.document = originalDocument;
+    }
   });
 });

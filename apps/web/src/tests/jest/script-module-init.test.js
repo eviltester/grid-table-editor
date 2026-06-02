@@ -28,7 +28,6 @@ describe('script module initialization', () => {
     const dom = new JSDOM(`<!doctype html><html><body>
       <div id="main-grid-view"></div>
       <div id="import-export-controls"></div>
-      <div id="tabbedTextArea"></div>
       <div id="testDataGeneratorContainer"></div>
     </body></html>`);
     global.window = dom.window;
@@ -41,8 +40,14 @@ describe('script module initialization', () => {
     const setOptionsViewForFormatType = jest.fn();
     const setExporter = jest.fn();
     const setImporter = jest.fn();
-    const addHTMLtoGui = jest.fn();
-    const enableTestDataGenerationInterface = jest.fn();
+    const createImportExportWorkspaceComponent = jest.fn(() => ({
+      setExporter,
+      setImporter,
+      renderTextFromGrid,
+      setFileFormatType,
+      setOptionsViewForFormatType,
+    }));
+    const mountTestDataGenerationPanel = jest.fn();
     const setTimeoutSpy = jest.spyOn(global, 'setTimeout').mockImplementation(() => 0);
     const gridExtras = {
       clearGrid: jest.fn(),
@@ -66,7 +71,7 @@ describe('script module initialization', () => {
       },
     }));
     jest.unstable_mockModule('../../../../../packages/core-ui/js/gui_components/app/test-data-grid/index.js', () => ({
-      enableTestDataGenerationInterface,
+      mountTestDataGenerationPanel,
     }));
     jest.unstable_mockModule(
       '../../../../../packages/core-ui/js/gui_components/data-grid-editor/main-display-grid.js',
@@ -87,21 +92,12 @@ describe('script module initialization', () => {
         ensureGridLibraryLoaded,
       })
     );
-    jest.unstable_mockModule('../../../../../packages/core-ui/js/gui_components/app/tabbed-text-control.js', () => ({
-      TabbedTextControl: class TabbedTextControl {
-        addToGui() {}
-      },
-    }));
-    jest.unstable_mockModule('../../../../../packages/core-ui/js/gui_components/app/import-export-controls.js', () => ({
-      ImportExportControls: class ImportExportControls {
-        addHTMLtoGui = addHTMLtoGui;
-        setExporter = setExporter;
-        setImporter = setImporter;
-        renderTextFromGrid = renderTextFromGrid;
-        setFileFormatType = setFileFormatType;
-        setOptionsViewForFormatType = setOptionsViewForFormatType;
-      },
-    }));
+    jest.unstable_mockModule(
+      '../../../../../packages/core-ui/js/gui_components/app/import-export-workspace/index.js',
+      () => ({
+        createImportExportWorkspaceComponent,
+      })
+    );
 
     let domContentLoadedHandler;
     addEventListenerSpy.mockImplementation((eventName, handler) => {
@@ -119,13 +115,16 @@ describe('script module initialization', () => {
     }
 
     expect(ensureGridLibraryLoaded).toHaveBeenCalledWith({ engine: 'tabulator' });
-    expect(addHTMLtoGui).toHaveBeenCalledWith(global.document.getElementById('import-export-controls'));
+    expect(createImportExportWorkspaceComponent).toHaveBeenCalledWith({
+      root: global.document.getElementById('import-export-controls'),
+      documentObj: global.document,
+    });
     expect(setExporter).toHaveBeenCalledTimes(1);
     expect(setImporter).toHaveBeenCalledTimes(1);
     expect(renderTextFromGrid).toHaveBeenCalledTimes(1);
     expect(setFileFormatType).toHaveBeenCalledTimes(1);
     expect(setOptionsViewForFormatType).toHaveBeenCalledTimes(1);
-    expect(enableTestDataGenerationInterface).toHaveBeenCalledWith(
+    expect(mountTestDataGenerationPanel).toHaveBeenCalledWith(
       'testDataGeneratorContainer',
       expect.any(Object),
       expect.any(Object),

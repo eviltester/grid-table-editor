@@ -4,159 +4,69 @@ import { JSDOM } from 'jsdom';
 
 describe('Tabulator main display grid', () => {
   let dom;
-  const makeHeaderClickEvent = (action) => {
-    const actionElement = { dataset: { action } };
-    const closest = jest.fn((selector) => (selector === '[data-action]' ? actionElement : null));
-    return {
-      target: { closest },
-      preventDefault: jest.fn(),
-      stopPropagation: jest.fn(),
-      closest,
-    };
-  };
 
   beforeEach(() => {
-    dom = new JSDOM(`<!doctype html><html><body></body></html>`);
+    dom = new JSDOM(`<!doctype html><html><body><div id="host"></div></body></html>`, {
+      pretendToBeVisual: true,
+    });
     global.window = dom.window;
     global.document = dom.window.document;
-
-    document.body.innerHTML = `<div id="host"></div>`;
-    global.Tabulator = jest.fn(() => {
-      return {
-        getColumnDefinitions: jest.fn(() => [{ title: 'Existing', field: 'column1' }]),
-        addColumn: jest.fn(),
-        getRows: jest.fn(() => []),
-        getSelectedRows: jest.fn(() => []),
-        deleteRow: jest.fn(),
-        getDataCount: jest.fn(() => 0),
-        addData: jest.fn(),
-        clearData: jest.fn(),
-        setColumns: jest.fn(() => Promise.resolve()),
-        setData: jest.fn(() => Promise.resolve()),
-        getData: jest.fn(() => []),
-        getColumns: jest.fn(() => []),
-        clearFilter: jest.fn(),
-        setFilter: jest.fn(),
-        setSort: jest.fn(),
-        clearSort: jest.fn(),
-      };
-    });
-    global.prompt = jest.fn();
-    global.alert = jest.fn();
-    global.confirm = jest.fn(() => true);
   });
 
   afterEach(() => {
     dom.window.close();
   });
 
-  test('uses non-auto columns and builds custom header formatter', () => {
-    const grid = new ExtendedDataGrid();
-    expect(grid.gridOptions.autoColumns).toBe(false);
-
-    const formatter = grid.gridOptions.columnDefaults.titleFormatter;
-    const html = formatter({ getValue: () => 'Instructions <unsafe>' });
-    expect(html).toContain('headerbuttons');
-    expect(html).toContain('Instructions &lt;unsafe&gt;');
-  });
-
-  test('createChildGrid instantiates Tabulator with #myGrid', () => {
-    const grid = new ExtendedDataGrid();
-    const host = document.getElementById('host');
-    grid.createChildGrid(host);
-
-    expect(global.Tabulator).toHaveBeenCalledTimes(1);
-    expect(global.Tabulator).toHaveBeenCalledWith('#myGrid', expect.any(Object));
-    expect(grid.getGridExtras()).toBeDefined();
-  });
-
-  test('header click action rename updates the column definition', async () => {
-    const grid = new ExtendedDataGrid();
-
-    const columnDefinition = { title: 'Old Name', field: 'column1' };
-    const column = {
-      getTable: () => ({
-        getColumnDefinitions: () => [columnDefinition],
-        getColumns: () => [column],
-        setSort: jest.fn(),
-        clearSort: jest.fn(),
-      }),
-      getDefinition: () => columnDefinition,
-      getField: () => 'column1',
-      updateDefinition: jest.fn(),
+  test('createChildGrid delegates to the componentized data-grid factory', () => {
+    const fakeComponent = {
+      getGridExtras: jest.fn(() => ({ grid: true })),
+      getTableApi: jest.fn(() => ({ table: true })),
+      whenReady: jest.fn(() => Promise.resolve()),
+      destroy: jest.fn(),
     };
-    const event = makeHeaderClickEvent('rename');
-
-    const clickPromise = grid.gridOptions.columnDefaults.headerClick(event, column);
-    const modalInput = document.getElementById('text-input-modal-field');
-    modalInput.value = 'Instructions';
-    document.getElementById('text-input-modal-ok').click();
-    await clickPromise;
-
-    expect(event.closest).toHaveBeenCalledWith('[data-action]');
-    expect(event.preventDefault).toHaveBeenCalled();
-    expect(event.stopPropagation).toHaveBeenCalled();
-    expect(column.updateDefinition).toHaveBeenCalledWith({
-      title: 'Instructions',
+    const createDataGridComponentFn = jest.fn(() => fakeComponent);
+    const grid = new ExtendedDataGrid({
+      documentObj: document,
+      createDataGridComponentFn,
+      TabulatorCtor: class {},
+      GridExtensionClass: class {},
     });
+
+    const host = document.getElementById('host');
+    const component = grid.createChildGrid(host);
+
+    expect(component).toBe(fakeComponent);
+    expect(createDataGridComponentFn).toHaveBeenCalledWith({
+      root: host,
+      documentObj: document,
+      services: {
+        TabulatorCtor: expect.any(Function),
+        GridExtensionClass: expect.any(Function),
+      },
+    });
+    expect(grid.getGridExtras()).toEqual({ grid: true });
+    expect(grid.getTableApi()).toEqual({ table: true });
   });
 
-  test('header click add-right delegates to table addColumn', async () => {
-    const grid = new ExtendedDataGrid();
+  test('constructor does not require a global document when one is injected later via root ownership', () => {
+    const originalDocument = global.document;
+    delete global.document;
 
-    const columnDefinition = { title: 'Old Name', field: 'column1', colId: 'column1' };
-    const column = {
-      getTable: () => table,
-      getDefinition: () => columnDefinition,
-      getField: () => 'column1',
-    };
-    const table = {
-      getColumnDefinitions: () => [columnDefinition],
-      getColumns: () => [column],
-      addColumn: jest.fn(),
-      setSort: jest.fn(),
-      clearSort: jest.fn(),
-    };
+    try {
+      const grid = new ExtendedDataGrid({
+        createDataGridComponentFn: jest.fn(() => ({
+          getGridExtras: jest.fn(),
+          getTableApi: jest.fn(),
+          whenReady: jest.fn(() => Promise.resolve()),
+          destroy: jest.fn(),
+        })),
+        TabulatorCtor: class {},
+        GridExtensionClass: class {},
+      });
 
-    const event = makeHeaderClickEvent('add-right');
-    const clickPromise = grid.gridOptions.columnDefaults.headerClick(event, column);
-    const modalInput = document.getElementById('text-input-modal-field');
-    modalInput.value = 'Added';
-    document.getElementById('text-input-modal-ok').click();
-    await clickPromise;
-
-    expect(event.closest).toHaveBeenCalledWith('[data-action]');
-    expect(table.addColumn).toHaveBeenCalledWith(expect.objectContaining({ title: 'Added' }), false, column);
-  });
-
-  test('header click sort actions delegate to table sorting', () => {
-    const grid = new ExtendedDataGrid();
-    const table = {
-      getColumnDefinitions: () => [],
-      getColumns: () => [],
-      addColumn: jest.fn(),
-      setSort: jest.fn(),
-      clearSort: jest.fn(),
-    };
-    const column = {
-      getTable: () => table,
-      getDefinition: () => ({ field: 'column1', colId: 'column1', title: 'Col' }),
-      getField: () => 'column1',
-    };
-
-    const sortAscEvent = makeHeaderClickEvent('sort-asc');
-    const sortDescEvent = makeHeaderClickEvent('sort-desc');
-    const sortNoneEvent = makeHeaderClickEvent('sort-none');
-
-    grid.gridOptions.columnDefaults.headerClick(sortAscEvent, column);
-    grid.gridOptions.columnDefaults.headerClick(sortDescEvent, column);
-    grid.gridOptions.columnDefaults.headerClick(sortNoneEvent, column);
-
-    expect(sortAscEvent.closest).toHaveBeenCalledWith('[data-action]');
-    expect(sortDescEvent.closest).toHaveBeenCalledWith('[data-action]');
-    expect(sortNoneEvent.closest).toHaveBeenCalledWith('[data-action]');
-    expect(table.setSort).toHaveBeenNthCalledWith(1, 'column1', 'asc');
-    expect(table.setSort).toHaveBeenNthCalledWith(2, 'column1', 'desc');
-    expect(table.clearSort).toHaveBeenCalledTimes(1);
+      expect(grid.documentObj).toBeNull();
+    } finally {
+      global.document = originalDocument;
+    }
   });
 });

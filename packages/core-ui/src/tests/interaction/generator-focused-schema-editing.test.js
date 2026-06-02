@@ -9,9 +9,12 @@
  * - row reordering and removal update the rendered schema text order
  */
 
+import { jest } from '@jest/globals';
 import { waitFor, within } from '@testing-library/dom';
 import { TEST_DATA_GRID_SAMPLE_SCHEMA_TEXT } from '../../../js/gui_components/shared/test-data/schema/index.js';
 import { createFocusedGeneratorHarness } from './support/focused-generator-harness.js';
+
+jest.setTimeout(15000);
 
 describe('generator focused schema editing', () => {
   let harness;

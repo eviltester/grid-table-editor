@@ -18,7 +18,7 @@ class GridEditorComponent {
     this.clearFiltersButton = this.toolbar.getByRole('button', { name: 'Clear Filters' });
     this.clearSortButton = this.toolbar.getByRole('button', { name: 'Clear Sort' });
     this.resetTableButton = this.toolbar.getByRole('button', { name: 'Reset Table' });
-    this.uniqueColumnNamesCheckbox = this.toolbar.locator('#uniqueColumnNamesCheckbox');
+    this.uniqueColumnNamesCheckbox = this.toolbar.getByRole('checkbox', { name: 'Unique Column Names' });
   }
 
   async expectVisible() {

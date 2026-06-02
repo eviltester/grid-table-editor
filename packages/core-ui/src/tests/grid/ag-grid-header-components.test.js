@@ -42,6 +42,11 @@ describe('AG Grid header compatibility components', () => {
 
       expect(header.getGui()).toBeTruthy();
       expect(header.getGui().ownerDocument).toBe(dom.window.document);
+      const addLeftButton = header.getGui().querySelector('.customHeaderAddLeftButton');
+      expect(addLeftButton.tagName).toBe('BUTTON');
+      expect(addLeftButton.getAttribute('title')).toBe('Add column left');
+      expect(addLeftButton.getAttribute('aria-label')).toBe('Add column left');
+      expect(addLeftButton.querySelector('svg.header-action-icon')).not.toBeNull();
     } finally {
       global.document = originalDocument;
     }

@@ -1,5 +1,6 @@
 import { GENERATE_TO_FILE_HELP_URL } from '../constants.js';
 import { resolveDocumentObj, resolveWindowObj } from '../../shared/dom/default-objects.js';
+import { renderIconHtml } from '../../shared/primitives/icon/index.js';
 
 class GeneratorControlsView {
   constructor({ root, controller, documentObj, services = {}, ids = {} } = {}) {
@@ -62,7 +63,7 @@ class GeneratorControlsView {
               <p><a class="helplink" href="${GENERATE_TO_FILE_HELP_URL}" target="_blank" rel="noopener noreferrer">Generate To File docs</a></p>
             '
           ></button>
-          <button id="${ids.generateDataButton}"><span class="generator-file-icon" aria-hidden="true"></span>Generate Data</button>
+          <button id="${ids.generateDataButton}">${renderIconHtml('file-plus', { className: 'app-icon generator-file-icon' })}Generate Data</button>
         </span>
         <span class="generator-button-with-help" id="${ids.generatePairwiseButtonWrapper}" style="display:none;">
           <button
@@ -75,7 +76,7 @@ class GeneratorControlsView {
               <p><a class="helplink" href="https://anywaydata.com/docs/test-data/pairwise-testing" target="_blank" rel="noopener noreferrer">Pairwise testing docs</a></p>
             '
           ></button>
-          <button id="${ids.generatePairwiseButton}"><span class="generator-file-icon" aria-hidden="true"></span>Generate Pairwise</button>
+          <button id="${ids.generatePairwiseButton}">${renderIconHtml('file-plus', { className: 'app-icon generator-file-icon' })}Generate Pairwise</button>
         </span>
         <div class="generator-options-wrapper">
           <div data-role="generator-options-panel" class="generator-options-panel"></div>

@@ -37,8 +37,13 @@ describe('Tabulator custom header helpers', () => {
       const popup = headerPopupFormatter.call(context, null, column, null);
       expect(popup).not.toBeNull();
       expect(popup.querySelector('input').value).toBe('status');
+      const addLeftButton = popup.querySelector('.customHeaderAddLeftButton');
+      expect(addLeftButton.tagName).toBe('BUTTON');
+      expect(addLeftButton.getAttribute('title')).toBe('Add column left');
+      expect(addLeftButton.getAttribute('aria-label')).toBe('Add column left');
+      expect(addLeftButton.querySelector('svg.header-action-icon')).not.toBeNull();
 
-      popup.querySelector('.customHeaderAddLeftButton').click();
+      addLeftButton.click();
       expect(onAddLeftButtonClick).toHaveBeenCalledTimes(1);
     } finally {
       global.document = originalDocument;

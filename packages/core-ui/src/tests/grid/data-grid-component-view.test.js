@@ -62,6 +62,17 @@ describe('DataGridComponent view', () => {
     expect(root.querySelector('#myGrid')).toBeTruthy();
     expect(component.getTableApi()).toBeInstanceOf(FakeTabulator);
     expect(component.getGridExtras()).toBeInstanceOf(FakeGridExtension);
+    const headerHtml = component.getTableApi().options.columnDefaults.titleFormatter({
+      getValue: () => 'Column 1',
+    });
+    const headerHost = document.createElement('div');
+    headerHost.innerHTML = headerHtml;
+    const addLeftButton = headerHost.querySelector('[data-action="add-left"]');
+    expect(addLeftButton.tagName).toBe('BUTTON');
+    expect(addLeftButton.getAttribute('title')).toBe('Add column left');
+    expect(addLeftButton.getAttribute('aria-label')).toBe('Add column left');
+    expect(addLeftButton.querySelector('svg.header-action-icon')).not.toBeNull();
+    expect(headerHost.querySelector('[data-action="sort-none"]').getAttribute('aria-label')).toBe('Clear sort');
 
     root.querySelector('#addRowButton').click();
     expect(component.getGridExtras().addRow).toHaveBeenCalledTimes(1);

@@ -1,5 +1,6 @@
 import { appOnlyInlineHelpEntries, sharedInlineHelpEntries } from './inline-help-content.js';
 import { getDefaultDocumentObj, resolveWindowObj } from '../gui_components/shared/dom/default-objects.js';
+import { decorateIconContainer } from '../gui_components/shared/primitives/icon/index.js';
 
 function ensureInlineHelpContainer(documentObj) {
   let container = documentObj.getElementById('inline-help-items');
@@ -38,8 +39,7 @@ function upsertInlineHelpItems(documentObj, entries) {
 
 function createUpdateHelpHints(documentObj, rootElement = documentObj) {
   return function updateHelpHints() {
-    const tippyFn = globalThis?.tippy;
-    if (typeof tippyFn !== 'function' || !documentObj) {
+    if (!documentObj) {
       return;
     }
 
@@ -48,6 +48,10 @@ function createUpdateHelpHints(documentObj, rootElement = documentObj) {
     const helpIcons = rootElement?.querySelectorAll?.('.helpicon[data-help]') || [];
     helpIcons.forEach((element) => {
       element?._tippy?.destroy?.();
+      decorateIconContainer(element, 'circle-help', {
+        className: 'app-icon helpicon-svg',
+        size: 16,
+      });
       const tagName = String(element?.tagName || '').toLowerCase();
       const isNativeButton = tagName === 'button';
       const isNativeLink = tagName === 'a';
@@ -62,6 +66,11 @@ function createUpdateHelpHints(documentObj, rootElement = documentObj) {
         element.setAttribute('aria-label', isOptionHelp ? 'Show help for this option' : 'Show help');
       }
     });
+
+    const tippyFn = globalThis?.tippy;
+    if (typeof tippyFn !== 'function') {
+      return;
+    }
 
     tippyFn(helpIcons, {
       content(reference) {

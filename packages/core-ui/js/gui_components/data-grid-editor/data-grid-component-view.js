@@ -7,6 +7,7 @@ import { createTabulatorGridAdapter } from './tabulator-grid-adapter.js';
 import { GridExtension as TabulatorGridExtension } from './tabulator/gridExtension-tabulator.js';
 import { shouldEnforceUniqueColumnNames } from './gridControl.js';
 import { resolveDocumentObj, resolveWindowObj } from '../shared/dom/default-objects.js';
+import { renderIconHtml } from '../shared/primitives/icon/index.js';
 
 function createAppGridTabulatorOptions({ rootElement, textInputDialogService } = {}) {
   const customHeaderFormatter = function (cell) {
@@ -14,22 +15,22 @@ function createAppGridTabulatorOptions({ rootElement, textInputDialogService } =
     return `
       <div class="headerWrapper">
         <div class="customHeaderTop">
-          <div class="customFilterMenuButton" data-action="filter" title="Filter Column">
-            <i class="ag-icon ag-icon-filter"></i>
+          <div class="customFilterMenuButton" data-action="filter" title="Filter column" aria-label="Filter column">
+            ${renderIconHtml('filter', { className: 'app-icon header-action-icon' })}
           </div>
           <div class="customHeaderLabel">${escapeHtml(columnName)}</div>
           <div class="customSort">
-            <span class="customSortDownLabel" data-action="sort-desc" title="Sort Desc">↓</span>
-            <span class="customSortUpLabel" data-action="sort-asc" title="Sort Asc">↑</span>
-            <span class="customSortRemoveLabel" data-action="sort-none" title="Clear Sort">×</span>
+            <span class="customSortDownLabel" data-action="sort-desc" title="Sort descending" aria-label="Sort descending">${renderIconHtml('arrow-down', { className: 'app-icon header-sort-icon' })}</span>
+            <span class="customSortUpLabel" data-action="sort-asc" title="Sort ascending" aria-label="Sort ascending">${renderIconHtml('arrow-up', { className: 'app-icon header-sort-icon' })}</span>
+            <span class="customSortRemoveLabel" data-action="sort-none" title="Clear sort" aria-label="Clear sort">${renderIconHtml('x', { className: 'app-icon header-sort-icon', size: 14 })}</span>
           </div>
         </div>
         <div class="headerbuttons">
-          <span data-action="add-left" title="add left">[<+]</span>
-          <span data-action="rename" title="rename">[~]</span>
-          <span data-action="delete" title="delete">[x]</span>
-          <span data-action="duplicate" title="duplicate">[+=]</span>
-          <span data-action="add-right" title="add right">[+>]</span>
+          <button type="button" class="header-icon-button" data-action="add-left" title="Add column left" aria-label="Add column left">${renderIconHtml('add-column-left', { className: 'app-icon header-action-icon' })}</button>
+          <button type="button" class="header-icon-button" data-action="rename" title="Rename column" aria-label="Rename column">${renderIconHtml('pencil', { className: 'app-icon header-action-icon' })}</button>
+          <button type="button" class="header-icon-button" data-action="delete" title="Delete column" aria-label="Delete column">${renderIconHtml('trash', { className: 'app-icon header-action-icon' })}</button>
+          <button type="button" class="header-icon-button" data-action="duplicate" title="Duplicate column" aria-label="Duplicate column">${renderIconHtml('copy', { className: 'app-icon header-action-icon' })}</button>
+          <button type="button" class="header-icon-button" data-action="add-right" title="Add column right" aria-label="Add column right">${renderIconHtml('add-column-right', { className: 'app-icon header-action-icon' })}</button>
         </div>
       </div>
     `;

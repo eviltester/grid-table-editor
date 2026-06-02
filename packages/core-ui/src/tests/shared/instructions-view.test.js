@@ -35,6 +35,8 @@ describe('instructions view', () => {
     expect(root.textContent).toContain('Copy Instructions To Grid');
     expect(root.textContent).toContain('Alan Richardson');
     expect(root.querySelector('.instructions-copy-to-grid-button')).not.toBeNull();
+    expect(root.querySelectorAll('.instruction-item-icon svg.instruction-action-icon')).toHaveLength(5);
+    expect(root.querySelector('.instruction-item-icon[title="Rename column"]')).not.toBeNull();
   });
 
   test('renders the generator instructions variant without the app-only action button', () => {

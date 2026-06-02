@@ -33,6 +33,10 @@ describe('generator schema ui', () => {
     expect(rows).toHaveLength(2);
     expect(rows[0].querySelector('[data-action="drag"]')).not.toBeNull();
     expect(rows[0].querySelector('[data-action="drag"]').getAttribute('draggable')).toBe('true');
+    expect(rows[0].querySelector('[data-action="drag"]').getAttribute('aria-label')).toBe('Drag field to reorder');
+    expect(rows[0].querySelector('[data-action="drag"] svg.app-icon')).not.toBeNull();
+    expect(rows[0].querySelector('[data-action="add"]').getAttribute('aria-label')).toBe('Insert field after this row');
+    expect(rows[0].querySelector('[data-action="remove"]').getAttribute('aria-label')).toBe('Remove field');
     expect(rows[0].querySelector('[data-action="pick-command"]')).not.toBeNull();
     expect(rows[1].querySelector('[data-field="value"]')).not.toBeNull();
     expect(rows[1].querySelector('[data-action="pick-command"]')).toBeNull();

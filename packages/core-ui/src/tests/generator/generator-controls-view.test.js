@@ -67,6 +67,8 @@ describe('GeneratorControlsView', () => {
     expect(helpButtons).toHaveLength(2);
     expect(helpButtons.every((element) => element.tagName === 'BUTTON')).toBe(true);
     expect(helpButtons.every((element) => element.getAttribute('type') === 'button')).toBe(true);
+    expect(dom.window.document.querySelector('#generateDataButton svg.generator-file-icon')).not.toBeNull();
+    expect(dom.window.document.querySelector('#generateAllPairsButton svg.generator-file-icon')).not.toBeNull();
     expect(formatOptionsPanel.update).toHaveBeenCalledWith({
       selectedFormat: 'csv',
       currentOptions: { options: { header: true } },

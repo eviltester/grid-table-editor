@@ -34,6 +34,15 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Install hadolint
+        shell: bash
+        run: |
+          set -euo pipefail
+          HADOLINT_VERSION=v2.14.0
+          sudo wget -q -O /usr/local/bin/hadolint "https://github.com/hadolint/hadolint/releases/download/${HADOLINT_VERSION}/hadolint-Linux-x86_64"
+          sudo chmod +x /usr/local/bin/hadolint
+          hadolint --version
+
       - name: Run checks
         run: |
           pnpm run lint

@@ -61,17 +61,10 @@ function createFocusedGeneratorHarness() {
   }
 
   async function setInputValue(element, value) {
-    await user.click(element);
-    await user.clear(element);
-    if (value) {
-      if (element.type === 'number' || /[\n\\[\]{}]/.test(value)) {
-        element.value = value;
-        fireEvent.input(element, { target: { value } });
-        fireEvent.change(element, { target: { value } });
-      } else {
-        await user.type(element, value);
-      }
-    }
+    element.focus();
+    element.value = value || '';
+    fireEvent.input(element, { target: { value: element.value } });
+    fireEvent.change(element, { target: { value: element.value } });
     element.blur();
   }
 

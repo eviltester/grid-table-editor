@@ -15,14 +15,14 @@ function createAppGridTabulatorOptions({ rootElement, textInputDialogService } =
     return `
       <div class="headerWrapper">
         <div class="customHeaderTop">
-          <div class="customFilterMenuButton" data-action="filter" title="Filter column" aria-label="Filter column">
+          <button type="button" class="customFilterMenuButton header-icon-button" data-action="filter" title="Filter column" aria-label="Filter column">
             ${renderIconHtml('filter', { className: 'app-icon header-action-icon' })}
-          </div>
+          </button>
           <div class="customHeaderLabel">${escapeHtml(columnName)}</div>
           <div class="customSort">
-            <span class="customSortDownLabel" data-action="sort-desc" title="Sort descending" aria-label="Sort descending">${renderIconHtml('arrow-down', { className: 'app-icon header-sort-icon' })}</span>
-            <span class="customSortUpLabel" data-action="sort-asc" title="Sort ascending" aria-label="Sort ascending">${renderIconHtml('arrow-up', { className: 'app-icon header-sort-icon' })}</span>
-            <span class="customSortRemoveLabel" data-action="sort-none" title="Clear sort" aria-label="Clear sort">${renderIconHtml('x', { className: 'app-icon header-sort-icon', size: 14 })}</span>
+            <button type="button" class="customSortDownLabel header-icon-button" data-action="sort-desc" title="Sort descending" aria-label="Sort descending">${renderIconHtml('arrow-down', { className: 'app-icon header-sort-icon' })}</button>
+            <button type="button" class="customSortUpLabel header-icon-button" data-action="sort-asc" title="Sort ascending" aria-label="Sort ascending">${renderIconHtml('arrow-up', { className: 'app-icon header-sort-icon' })}</button>
+            <button type="button" class="customSortRemoveLabel header-icon-button" data-action="sort-none" title="Clear sort" aria-label="Clear sort">${renderIconHtml('x', { className: 'app-icon header-sort-icon', size: 14 })}</button>
           </div>
         </div>
         <div class="headerbuttons">

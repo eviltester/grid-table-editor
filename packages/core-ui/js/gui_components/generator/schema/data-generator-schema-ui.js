@@ -337,12 +337,14 @@ function handleGeneratorRowInputChange({
 }
 
 function handleGeneratorRowButtonClick({ event, schemaRows, addRowAfter, removeRow, moveRow }) {
-  const action = event.target.getAttribute('data-action');
+  const actionElement =
+    event.target && typeof event.target.closest === 'function' ? event.target.closest('[data-action]') : null;
+  const action = actionElement?.getAttribute('data-action');
   if (!action || action === 'drag') {
     return;
   }
 
-  const rowId = event.target.getAttribute('data-row-id');
+  const rowId = actionElement.getAttribute('data-row-id');
   const index = schemaRows.findIndex((row) => row.id === rowId);
   if (index < 0) {
     return;

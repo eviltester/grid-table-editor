@@ -233,7 +233,7 @@ details[open] ul li:last-child {
   justify-content: center;
   width: 1.25rem;
   margin-right: 0.25rem;
-  color: currentColor;
+  color: currentcolor;
   vertical-align: -0.2rem;
 }
 
@@ -377,7 +377,7 @@ Custom header styles for default items
 .app-icon {
   display: inline-block;
   flex: none;
-  color: currentColor;
+  color: currentcolor;
   vertical-align: -0.15em;
   pointer-events: none;
 }
@@ -398,10 +398,7 @@ Custom header styles for default items
 }
 
 .customFilterMenuButton {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
+  flex: 0;
 }
 
 .customHeaderLabel {
@@ -411,21 +408,15 @@ Custom header styles for default items
 
 .customSortDownLabel {
   margin: 0 0 0 6px;
-  padding: 0 2px;
-  cursor: pointer;
 }
 
 .customSortUpLabel {
   margin: 0;
-  padding: 0 2px;
-  cursor: pointer;
 }
 
 .customSortRemoveLabel {
   margin: 0 0 0 2px;
-  padding: 0 2px;
   font-size: 11px;
-  cursor: pointer;
 }
 
 .active {
@@ -460,8 +451,8 @@ Custom header styles for default items
 
 .header-icon-button:hover,
 .header-icon-button:focus-visible {
-  background: color-mix(in srgb, currentColor 10%, transparent);
-  border-color: color-mix(in srgb, currentColor 35%, transparent);
+  background: color-mix(in srgb, currentcolor 10%, transparent);
+  border-color: color-mix(in srgb, currentcolor 35%, transparent);
 }
 
 .customHeaderDeleteButton:hover,
@@ -551,7 +542,7 @@ Custom header styles for default items
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: currentColor;
+  color: currentcolor;
 }
 
 .helpicon-svg {

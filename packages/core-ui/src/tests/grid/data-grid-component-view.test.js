@@ -67,6 +67,17 @@ describe('DataGridComponent view', () => {
     });
     const headerHost = document.createElement('div');
     headerHost.innerHTML = headerHtml;
+    const filterButton = headerHost.querySelector('[data-action="filter"]');
+    expect(filterButton.tagName).toBe('BUTTON');
+    expect(filterButton.getAttribute('type')).toBe('button');
+    expect(filterButton.getAttribute('title')).toBe('Filter column');
+    expect(filterButton.getAttribute('aria-label')).toBe('Filter column');
+    expect(filterButton.querySelector('svg.header-action-icon')).not.toBeNull();
+    for (const action of ['sort-desc', 'sort-asc', 'sort-none']) {
+      const sortButton = headerHost.querySelector(`[data-action="${action}"]`);
+      expect(sortButton.tagName).toBe('BUTTON');
+      expect(sortButton.getAttribute('type')).toBe('button');
+    }
     const addLeftButton = headerHost.querySelector('[data-action="add-left"]');
     expect(addLeftButton.tagName).toBe('BUTTON');
     expect(addLeftButton.getAttribute('title')).toBe('Add column left');

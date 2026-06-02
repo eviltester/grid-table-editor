@@ -23,14 +23,23 @@ class InstructionsView {
 
     const text = escapeHtml(item.text || '');
     const title = item.title ? ` title="${escapeHtml(item.title)}"` : '';
-    const iconName = item.icon;
-    const iconHtml = iconName
-      ? `<span class="instruction-item-icon"${title}>${renderIconHtml(iconName, {
-          className: 'app-icon instruction-action-icon',
-        })}</span>`
-      : '';
+    const iconHtml = this.renderInstructionItemIcon(item.icon, title);
 
     return `<li>${iconHtml}<span>${text}</span></li>`;
+  }
+
+  renderInstructionItemIcon(iconName, title) {
+    if (!iconName) {
+      return '';
+    }
+
+    try {
+      return `<span class="instruction-item-icon"${title}>${renderIconHtml(iconName, {
+        className: 'app-icon instruction-action-icon',
+      })}</span>`;
+    } catch {
+      return '';
+    }
   }
 
   mount() {

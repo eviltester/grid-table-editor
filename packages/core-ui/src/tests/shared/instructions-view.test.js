@@ -52,6 +52,21 @@ describe('instructions view', () => {
     expect(root.querySelector('[data-help="generator-screen-overview"]')).not.toBeNull();
   });
 
+  test('falls back to text-only instructions when an icon name is unknown', () => {
+    const root = document.getElementById('root');
+    createInstructionsComponent({
+      root,
+      props: {
+        title: 'Safe Instructions',
+        helpKey: 'safe-help',
+        items: [{ icon: 'not-a-real-icon', title: 'Missing icon', text: 'Still render this instruction' }],
+      },
+    });
+
+    expect(root.textContent).toContain('Still render this instruction');
+    expect(root.querySelector('.instruction-item-icon')).toBeNull();
+  });
+
   test('updates rendered content when the variant props change', () => {
     const root = document.getElementById('root');
     const component = createInstructionsComponent({

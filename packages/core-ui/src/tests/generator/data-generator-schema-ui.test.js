@@ -1,7 +1,9 @@
+import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
 import {
   renderGeneratorSchemaRows,
   handleGeneratorRowInputChange,
+  handleGeneratorRowButtonClick,
   buildSchemaModeHelpHtml,
 } from '../../../js/gui_components/generator/schema/index.js';
 
@@ -67,6 +69,32 @@ describe('generator schema ui', () => {
     });
 
     expect(schemaRows[0].command).toBe('person.firstName');
+  });
+
+  test('row action handler resolves actions from nested icon targets', () => {
+    renderGeneratorSchemaRows({
+      documentObj: document,
+      schemaRows: [{ id: '1', name: 'First', sourceType: 'faker', command: 'person.firstName', params: '()' }],
+      getSchemaHelpData: () => ({ show: false }),
+      updateAllPairsButtonVisibility: () => {},
+    });
+
+    const addRowAfter = jest.fn();
+    const removeRow = jest.fn();
+    const moveRow = jest.fn();
+    const nestedIcon = document.querySelector('[data-action="add"] svg');
+
+    handleGeneratorRowButtonClick({
+      event: { target: nestedIcon },
+      schemaRows: [{ id: '1' }],
+      addRowAfter,
+      removeRow,
+      moveRow,
+    });
+
+    expect(addRowAfter).toHaveBeenCalledWith(0);
+    expect(removeRow).not.toHaveBeenCalled();
+    expect(moveRow).not.toHaveBeenCalled();
   });
 
   test('schema mode help includes sample button in both modes', () => {

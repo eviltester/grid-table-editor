@@ -1,7 +1,7 @@
 import { expect, userEvent, waitFor, within } from 'storybook/test';
 
 async function clickByText(canvas, text) {
-  const button = canvas.getByText(text);
+  const button = canvas.getByRole('button', { name: text });
   await userEvent.click(button);
   return button;
 }
@@ -70,12 +70,12 @@ async function playJsonOptionsPreview({ canvasElement }) {
 
 async function playPreviewEditMode({ canvasElement }) {
   const canvas = within(canvasElement);
-  const modeButton = canvas.getByText('Preview');
+  const modeButton = canvas.getByRole('button', { name: 'Preview' });
   await userEvent.click(modeButton);
-  await waitFor(() => expect(canvas.getByText('Edit')).toBeTruthy());
+  await waitFor(() => expect(canvas.getByRole('button', { name: 'Edit' })).toBeTruthy());
 
-  await userEvent.click(canvas.getByText('Edit'));
-  await waitFor(() => expect(canvas.getByText('Preview')).toBeTruthy());
+  await userEvent.click(canvas.getByRole('button', { name: 'Edit' }));
+  await waitFor(() => expect(canvas.getByRole('button', { name: 'Preview' })).toBeTruthy());
 }
 
 async function playDelimitedOptionsPreview({ canvasElement }) {

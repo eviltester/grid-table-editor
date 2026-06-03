@@ -60,6 +60,7 @@ When changing frontend UI code, Storybook stories, UI test abstractions, or brow
 
 - read `docs/frontend-component-migration-plan.md` before making changes
 - read `docs/frontend-component-architecture.md` for the current page/component/service layering model
+- read `docs/frontend-legacy-ui-elimination-plan.md` when changing or discovering UI code that still uses legacy controls, broad imperative helpers, document-scoped lookup, or compatibility facades
 - prefer the `Controller + View + createComponent` pattern for new or migrated UI components
 - keep components mounted into one explicit root element
 - avoid global `document.querySelector`/`getElementById` inside reusable components; query within the component root instead

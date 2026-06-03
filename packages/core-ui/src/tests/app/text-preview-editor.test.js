@@ -3,6 +3,10 @@ import { JSDOM } from 'jsdom';
 import { fireEvent } from '@testing-library/dom';
 import { createTextPreviewEditorComponent } from '../../../js/gui_components/app/text-preview-editor/index.js';
 
+function getRenderedButtonText(button) {
+  return button?.innerText ?? button?.textContent?.trim() ?? '';
+}
+
 describe('TextPreviewEditor', () => {
   let dom;
   let documentObj;
@@ -46,7 +50,7 @@ describe('TextPreviewEditor', () => {
     expect(previewRowCount.getAttribute('aria-label')).toBe('Preview row count');
     expect(previewRowCount.min).toBe('1');
     expect(root.textContent).not.toContain('Preview Items Count');
-    expect(previewButton.innerText).toBe('Preview');
+    expect(getRenderedButtonText(previewButton)).toBe('Preview');
     expect(helpIcon.getAttribute('data-help-text')).toContain('first 10 rows');
 
     previewRowCount.value = '7';
@@ -61,7 +65,7 @@ describe('TextPreviewEditor', () => {
     });
 
     expect(helpIcon.getAttribute('data-help-text')).toContain('Edit mode');
-    expect(previewButton.innerText).toBe('Edit');
+    expect(getRenderedButtonText(previewButton)).toBe('Edit');
     expect(previewRowCount.disabled).toBe(true);
   });
 });

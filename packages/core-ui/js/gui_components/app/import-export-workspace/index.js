@@ -11,6 +11,13 @@ function createImportExportWorkspaceComponent({ root, props = {}, services = {},
   const controller = new ImportExportWorkspaceController({ props });
   const legacyControls =
     services.importExportControls || new ImportExportControls({ documentObj: resolvedDocumentObj });
+
+  const syncPreviewRowLimit = (previewRowLimit) => {
+    const normalizedPreviewRowLimit = legacyControls.setPreviewRowLimit?.(previewRowLimit) ?? previewRowLimit;
+    controller.updateProps({ previewRowLimit: normalizedPreviewRowLimit });
+    return normalizedPreviewRowLimit;
+  };
+
   const view = new ImportExportWorkspaceView({
     root,
     controller,
@@ -36,8 +43,7 @@ function createImportExportWorkspaceComponent({ root, props = {}, services = {},
         controller.updateProps({ autoPreviewEnabled: enabled });
       },
       onPreviewRowLimitChange: (previewRowLimit) => {
-        controller.updateProps({ previewRowLimit });
-        legacyControls.setPreviewRowLimit?.(previewRowLimit);
+        syncPreviewRowLimit(previewRowLimit);
         view.render();
       },
     },
@@ -46,12 +52,15 @@ function createImportExportWorkspaceComponent({ root, props = {}, services = {},
   view.mount();
   legacyControls.rootElement = view.root;
   legacyControls.bindExistingGui?.(view.root);
-  legacyControls.setPreviewRowLimit?.(controller.getState().previewRowLimit);
+  syncPreviewRowLimit(controller.getState().previewRowLimit);
   legacyControls._syncGridFromTextButtonState?.();
 
   return {
     update(nextProps) {
       controller.updateProps(nextProps);
+      if (Object.prototype.hasOwnProperty.call(nextProps, 'previewRowLimit')) {
+        syncPreviewRowLimit(controller.getState().previewRowLimit);
+      }
       view.render();
     },
     destroy() {

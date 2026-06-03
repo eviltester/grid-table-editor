@@ -97,7 +97,7 @@ const meta = {
       options: ['csv', 'json', 'markdown'],
     },
     previewRowLimit: {
-      control: { type: 'number', min: 0, max: 50, step: 1 },
+      control: { type: 'number', min: 1, max: 50, step: 1 },
     },
   },
   render: renderImportExportWorkspaceStory,

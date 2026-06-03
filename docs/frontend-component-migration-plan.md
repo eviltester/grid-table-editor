@@ -9,6 +9,10 @@ This is an internal engineering plan for moving the current plain JavaScript UI 
 
 This plan intentionally does not require React, Vue, Svelte, or Lit. The structure should make a future Lit migration possible by replacing `ThingView` with a Lit element while keeping controllers, services, and adapters stable.
 
+## Status Note
+
+The first component migration established the main page and feature component boundaries, but later review found that several componentized shells still delegate core behavior to older controls, DOM helpers, or compatibility facades. For the stricter goal of eliminating legacy UI approaches before a future React, Web Components, or Lit migration, use `docs/frontend-legacy-ui-elimination-plan.md` as the active follow-on plan. That document supersedes any "complete" status in this migration checklist where old UI orchestration still remains underneath a component boundary.
+
 ## Goals
 
 - Split the app and generator UIs into feature components that can be mounted independently.

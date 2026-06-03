@@ -82,15 +82,83 @@ This inventory is the starting point. Update it as each phase discovers more wor
 Goal: make the remaining legacy surface explicit and measurable before refactoring.
 
 - [x] Add this plan to the standard frontend reading list in `AGENTS.md` or the relevant contributor docs.
-- [ ] Add a short note to `docs/frontend-component-migration-plan.md` explaining that this plan supersedes the previous "complete" status for stricter legacy elimination.
-- [ ] Build a search checklist for legacy markers: `addToGui`, `addHTMLtoGui`, `addHooksToPage`, `bindExistingGui`, `document.querySelector`, `document.getElementById`, `parent.innerHTML`, `rootElement`, `legacy`, and old `*Controls` classes.
-- [ ] Classify each match as active production, active adapter, compatibility facade, Storybook-only, test-only, or dead code.
-- [ ] Add regression coverage before deleting or replacing any legacy path that still has production behavior.
+- [x] Add a short note to `docs/frontend-component-migration-plan.md` explaining that this plan supersedes the previous "complete" status for stricter legacy elimination.
+- [x] Build a search checklist for legacy markers: `addToGui`, `addHTMLtoGui`, `addHooksToPage`, `bindExistingGui`, `document.querySelector`, `document.getElementById`, `parent.innerHTML`, `rootElement`, `legacy`, and old `*Controls` classes.
+- [x] Classify each match as active production, active adapter, compatibility facade, Storybook-only, test-only, or dead code.
+- [x] Add regression coverage before deleting or replacing any legacy path that still has production behavior.
 
 Exit criteria:
 
 - Every known legacy item is assigned to a phase below or explicitly documented as an accepted adapter.
 - There is no "probably migrated" area without an owner or follow-up.
+
+### Phase 0 Audit Checklist
+
+Use these commands when refreshing the baseline. They intentionally include stories and tests in the first pass, then narrow to production/runtime files for classification.
+
+```bash
+rg -n "\b(addToGui|addHTMLtoGui|addHooksToPage|bindExistingGui|useThisGridFunctionality)\b" packages/core-ui/js apps/web/src packages/core-ui/src apps/web/src/tests
+rg -n "\b(document|documentObj)\.(querySelector|getElementById)\b|parent\.innerHTML|rootElement|\blegacy\b" packages/core-ui/js apps/web/src packages/core-ui/src apps/web/src/tests
+rg -n "class\s+\w*Controls?\b|new\s+\w*Controls?\b|\b\w*Controls?\s*=\s*new\b" packages/core-ui/js apps/web/src packages/core-ui/src apps/web/src/tests
+rg -l "\b(addToGui|addHTMLtoGui|addHooksToPage|bindExistingGui|useThisGridFunctionality)\b|\b(document|documentObj)\.(querySelector|getElementById)\b|parent\.innerHTML|\blegacy\b|class\s+\w*Controls?\b|new\s+\w*Controls?\b" packages/core-ui/js apps/web/src/stories -g "*.js"
+```
+
+Last refreshed: 2026-06-03.
+
+### Phase 0 Classification
+
+Active production blockers assigned to Phase 1:
+
+- `packages/core-ui/js/gui_components/app/import-export-controls.js`: active production legacy coordinator reached through `ImportExportWorkspace`.
+- `packages/core-ui/js/gui_components/app/exportControls.js`: active export/copy/download control reached through the import/export adapter path.
+- `packages/core-ui/js/gui_components/app/import-export-workspace/index.js`: component factory still creates and exposes `ImportExportControls` as `legacyControls`.
+- `apps/web/src/stories/export-preview-story-harness.js`: Storybook harness still instantiates `ImportExportControls`, accesses `getImportExportControls()`, and patches scoped document lookup for export preview stories.
+
+Active production blockers assigned to Phase 2:
+
+- `packages/core-ui/js/gui_components/options_panels/*`: individual option panels still use `addToGui()`, `parent.innerHTML`, and panel-local DOM selectors.
+- `packages/core-ui/js/gui_components/shared/format-options-panel/format-options-panel-view.js`: componentized wrapper still calls `panel.addToGui()` and adapts old panel instances.
+
+Active production blockers assigned to Phase 3:
+
+- `packages/core-ui/js/gui_components/shared/test-data/schema/shared-schema-editor-controller.js`: shared schema logic imports generator-specific row rendering and event helpers.
+- `packages/core-ui/js/gui_components/generator/schema/data-generator-schema-ui.js`: generator-named DOM helper still renders shared schema rows and handles row interaction logic.
+
+Active production blockers assigned to Phase 4:
+
+- `packages/core-ui/js/gui_components/generator/runtime/data-generator-page-runtime.js`: large page coordinator still owns many feature behavior methods and fallback DOM reads.
+- `packages/core-ui/js/gui_components/generator/generation/data-generator-generation-actions.js`: generation helpers still parse row counts and pairwise visibility through page-level DOM IDs.
+
+Compatibility and grid work assigned to Phase 5:
+
+- `packages/core-ui/js/gui_components/data-grid-editor/main-display-grid.js`: grid-engine selector facade.
+- `packages/core-ui/js/gui_components/data-grid-editor/tabulator/main-display-grid.js`: compatibility facade around `createDataGridComponent(...)`.
+- `packages/core-ui/js/gui_components/data-grid-editor/ag-grid/*`: legacy AG Grid path still uses old grid control wiring.
+- `packages/core-ui/js/gui_components/data-grid-editor/gridControl.js`: old grid toolbar/shell control remains active through AG Grid, while `shouldEnforceUniqueColumnNames(...)` is still imported by the Tabulator component path.
+
+Active adapters and shared helpers assigned to Phase 6:
+
+- `packages/core-ui/js/gui_components/app/drag-drop-control.js` and `packages/core-ui/js/gui_components/app/import-export-adapters/file-import-bindings-adapter.js`: active drag/drop adapter path.
+- `packages/core-ui/js/gui_components/shared/modal-confirm.js` and `packages/core-ui/js/gui_components/shared/modal-text-input.js`: imperative modal helpers wrapped by dialog services.
+- `packages/core-ui/js/help/help-tooltips.js`: scoped update helper exists, but the service still scans `.helpicon[data-help]` and uses document-level help content.
+- `packages/core-ui/js/gui_components/shared/theme-toggle.js`: imperative page helper imported by app and generator startup.
+- `packages/core-ui/js/gui_components/shared/test-data/ui/method-picker-modal.js`: document-level modal-style UI helper that should remain service-like or become component-backed.
+- `packages/core-ui/js/gui_components/shared/test-data/ui/status-presenter.js`, `packages/core-ui/js/gui_components/shared/timed-error-display.js`, `packages/core-ui/js/gui_components/data-grid-editor/grid-error-surface.js`, and `packages/core-ui/js/gui_components/shared/primitives/inline-message/inline-message-view.js`: mostly accepted presenter/service or style-injection patterns, but they should stay documented as adapters rather than feature components.
+
+Cleanup candidates assigned to Phase 7:
+
+- `packages/core-ui/js/gui_components/app/tabbed-text-control.js`: no runtime/story imports were found; only `packages/core-ui/src/tests/utils/tabbed-text-control-mode.test.js` imports it.
+- `packages/core-ui/js/gui_components/app/test-data-grid/schema/test-data-grid-schema-grid-controller.js`: `createSchemaGridController(...)` appears unused internally, while `createAppSchemaDefinitionProps(...)` remains active. Re-audit before deleting because it is still exported.
+- Story/test-only marker matches under `packages/core-ui/src/tests/**` and `apps/web/src/tests/**`: these are not production blockers, but should be updated when their corresponding production legacy path is replaced.
+
+Accepted page bootstrap or host-contract matches:
+
+- `packages/core-ui/js/generator-script.js` and `packages/core-ui/js/gui_components/app/page/app-page-runtime.js`: page-level bootstraps may use documented mount-root IDs.
+- Browser and interaction harnesses may use documented page-level IDs while treating the app as a black box.
+
+Regression coverage note:
+
+- Phase 0 did not delete or replace production behavior. The requirement is satisfied for this baseline by assigning every active production legacy path to a later phase with explicit required coverage. Before any later phase removes or replaces active production behavior, that phase must add or update regression coverage first, then keep the relevant browser, Storybook, and local verification gates green.
 
 ## Phase 1: Import/Export Workspace Behavior
 

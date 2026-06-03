@@ -53,6 +53,9 @@ function renderImportExportWorkspaceStory(args) {
   const component = createImportExportWorkspaceComponent({
     root,
     documentObj: document,
+    props: {
+      previewRowLimit: args.previewRowLimit,
+    },
   });
 
   component.setExporter(exporter);
@@ -86,11 +89,15 @@ const meta = {
   },
   args: {
     format: 'csv',
+    previewRowLimit: 10,
   },
   argTypes: {
     format: {
       control: 'select',
       options: ['csv', 'json', 'markdown'],
+    },
+    previewRowLimit: {
+      control: { type: 'number', min: 1, max: 50, step: 1 },
     },
   },
   render: renderImportExportWorkspaceStory,
@@ -103,12 +110,13 @@ export const Default = {
     docs: {
       description: {
         story:
-          'Shows the composed app-side import/export workspace mounted through the new Phase 6 feature boundary. Click Set Text From Grid to refresh preview text, switch formats, and use the options panel inside the same mounted component tree.',
+          'Shows the composed app-side import/export workspace mounted through the new Phase 6 feature boundary. Use the compact preview row-count input next to Preview to change the sample size, click Set Text From Grid to refresh preview text, and switch formats inside the same mounted component tree.',
       },
     },
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
+    await expect(canvas.getByRole('spinbutton', { name: 'Preview row count' })).toHaveValue(10);
     await userEvent.click(canvas.getByRole('button', { name: 'v Set Text From Grid v' }));
     await waitFor(() => {
       expect(canvasElement.querySelector('#markdownarea')?.value?.length || 0).toBeGreaterThan(0);
@@ -128,7 +136,7 @@ export const JsonPreview = {
     docs: {
       description: {
         story:
-          'Shows the same workspace after switching to JSON so the shared format selector, preview editor, and options panel can be reviewed together in a non-CSV state.',
+          'Shows the same workspace after switching to JSON so the shared format selector, preview editor, row-count control, and options panel can be reviewed together in a non-CSV state.',
       },
     },
   },

@@ -519,6 +519,13 @@ class ImportExportControls {
     return this.previewRowLimit;
   }
 
+  setPreviewRowLimit(previewRowLimit) {
+    const parsed = Number.parseInt(previewRowLimit, 10);
+    const normalized = Number.isFinite(parsed) ? Math.min(Math.max(parsed, 1), 50) : 10;
+    this.previewRowLimit = normalized;
+    return this.previewRowLimit;
+  }
+
   async toggleTextEditMode() {
     if (this.isPreviewTextMode()) {
       this.textEditMode = 'edit';

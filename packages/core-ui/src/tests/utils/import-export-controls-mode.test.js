@@ -94,6 +94,21 @@ describe('ImportExportControls preview/edit mode', () => {
     expect(controls.exportControls.setTextFromString).toHaveBeenCalledWith('rows:10');
   });
 
+  test('updates preview row limit at runtime for preview-limited rendering paths', async () => {
+    controls.setPreviewRowLimit(4);
+
+    controls.renderTextFromGrid();
+    let previewTable = controls.exporter.getDataTableAs.mock.calls.at(-1)[1];
+    expect(previewTable.getRowCount()).toBe(4);
+
+    controls.importer.toGenericDataTable.mockReturnValue(makeDataTable(12));
+    await controls._previewThenImportToGrid('csv', 'sample-text');
+
+    previewTable = controls.exporter.getDataTableAs.mock.calls.at(-1)[1];
+    expect(previewTable.getRowCount()).toBe(4);
+    expect(document.getElementById('import-progress-status').textContent).toBe('Import complete.');
+  });
+
   test('toggle to edit with confirm false clears textarea for manual editing', async () => {
     requestConfirm.mockResolvedValue(false);
     await controls.toggleTextEditMode();

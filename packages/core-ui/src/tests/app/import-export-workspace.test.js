@@ -1,5 +1,6 @@
 import { JSDOM } from 'jsdom';
 import { jest } from '@jest/globals';
+import { fireEvent } from '@testing-library/dom';
 import { createImportExportWorkspaceComponent } from '../../../js/gui_components/app/import-export-workspace/index.js';
 
 describe('ImportExportWorkspace', () => {
@@ -23,6 +24,10 @@ describe('ImportExportWorkspace', () => {
       setOptionsViewForFormatType: jest.fn(),
       toggleTextEditMode: jest.fn(async () => 'edit'),
       _syncGridFromTextButtonState: jest.fn(),
+      setPreviewRowLimit: jest.fn((value) => {
+        const parsed = Number.parseInt(value, 10);
+        return Number.isFinite(parsed) ? Math.min(Math.max(parsed, 1), 50) : 10;
+      }),
       setExporter: jest.fn(),
       setImporter: jest.fn(),
       setGridChangeSource: jest.fn(),
@@ -38,7 +43,10 @@ describe('ImportExportWorkspace', () => {
 
     expect(documentObj.querySelector('#tabbedTextArea')).not.toBeNull();
     expect(documentObj.querySelector('#settextfromgridbutton')).not.toBeNull();
+    expect(documentObj.querySelector('#previewRowsCount')).not.toBeNull();
+    expect(documentObj.querySelector('#previewRowsCount').getAttribute('aria-label')).toBe('Preview row count');
     expect(legacyControls.bindExistingGui).toHaveBeenCalledTimes(1);
+    expect(legacyControls.setPreviewRowLimit).toHaveBeenCalledWith(10);
 
     documentObj.querySelector('.type-select-action[data-type="json"]')?.click();
 
@@ -46,6 +54,25 @@ describe('ImportExportWorkspace', () => {
     expect(legacyControls.setFileFormatType).toHaveBeenCalledTimes(1);
     expect(legacyControls.setOptionsViewForFormatType).toHaveBeenCalledTimes(1);
     expect(component.getState().selectedFormat).toBe('json');
+
+    const previewRowCount = documentObj.querySelector('#previewRowsCount');
+    previewRowCount.value = '7';
+    fireEvent.input(previewRowCount, { target: { value: '7' } });
+
+    expect(component.getState().previewRowLimit).toBe(7);
+    expect(legacyControls.setPreviewRowLimit).toHaveBeenLastCalledWith(7);
+
+    component.update({ previewRowLimit: 12 });
+
+    expect(component.getState().previewRowLimit).toBe(12);
+    expect(documentObj.querySelector('#previewRowsCount').value).toBe('12');
+    expect(legacyControls.setPreviewRowLimit).toHaveBeenLastCalledWith(12);
+
+    component.update({ previewRowLimit: 0 });
+
+    expect(component.getState().previewRowLimit).toBe(1);
+    expect(documentObj.querySelector('#previewRowsCount').value).toBe('1');
+    expect(legacyControls.setPreviewRowLimit).toHaveBeenLastCalledWith(0);
   });
 
   test('can mount from the root ownerDocument without a global document', () => {
@@ -66,6 +93,7 @@ describe('ImportExportWorkspace', () => {
             setOptionsViewForFormatType: jest.fn(),
             toggleTextEditMode: jest.fn(async () => 'edit'),
             _syncGridFromTextButtonState: jest.fn(),
+            setPreviewRowLimit: jest.fn((value) => value),
             destroy: jest.fn(),
           },
         },

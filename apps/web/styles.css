@@ -950,6 +950,10 @@ body.theme-dark .generator-status-text[data-severity='info'] {
   width: 6rem;
 }
 
+.app-preview-row-count-control #previewRowsCount {
+  width: 3.25rem;
+}
+
 #generator-preview-grid {
   width: 100%;
   height: 420px;

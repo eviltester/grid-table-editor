@@ -49,6 +49,11 @@ class RowCountControlView {
     this.inputElement.step = `${state.step}`;
     this.inputElement.disabled = state.disabled === true;
     this.inputElement.className = state.inputClassName;
+    if (state.inputAriaLabel) {
+      this.inputElement.setAttribute('aria-label', state.inputAriaLabel);
+    } else {
+      this.inputElement.removeAttribute('aria-label');
+    }
     if (Number.isFinite(state.max)) {
       this.inputElement.max = `${state.max}`;
     } else {

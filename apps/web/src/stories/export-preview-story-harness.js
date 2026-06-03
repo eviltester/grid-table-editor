@@ -265,11 +265,12 @@ function setCheckboxValue(input, checked) {
 }
 
 function setPreviewRowLimit(surface, value) {
-  const previewButton = surface.querySelector('#previewEditModeButton');
-  if (!previewButton) {
+  const previewRowsInput = surface.querySelector('#previewRowsCount');
+  if (!previewRowsInput) {
     return;
   }
-  previewButton.textContent = `Preview (${value})`;
+  previewRowsInput.value = String(value);
+  previewRowsInput.dispatchEvent(new Event('input', { bubbles: true }));
 }
 
 function getActiveExportSelection(surface) {
@@ -454,6 +455,9 @@ function renderGridPreviewStory({
   const workspace = createImportExportWorkspaceComponent({
     root: workspaceHost,
     documentObj: document,
+    props: {
+      previewRowLimit,
+    },
     services: {
       importExportControls: legacyControls,
     },
@@ -509,7 +513,6 @@ function renderGridPreviewStory({
     return result;
   };
 
-  importExportController.previewRowLimit = previewRowLimit;
   setPreviewRowLimit(surface, previewRowLimit);
   withScopedDocument(surface, () => {
     selectExportFormat(surface, format);

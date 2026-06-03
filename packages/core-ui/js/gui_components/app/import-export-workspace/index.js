@@ -11,6 +11,13 @@ function createImportExportWorkspaceComponent({ root, props = {}, services = {},
   const controller = new ImportExportWorkspaceController({ props });
   const legacyControls =
     services.importExportControls || new ImportExportControls({ documentObj: resolvedDocumentObj });
+
+  const syncPreviewRowLimit = (previewRowLimit) => {
+    const normalizedPreviewRowLimit = legacyControls.setPreviewRowLimit?.(previewRowLimit) ?? previewRowLimit;
+    controller.updateProps({ previewRowLimit: normalizedPreviewRowLimit });
+    return normalizedPreviewRowLimit;
+  };
+
   const view = new ImportExportWorkspaceView({
     root,
     controller,
@@ -35,17 +42,25 @@ function createImportExportWorkspaceComponent({ root, props = {}, services = {},
       onAutoPreviewChange: (enabled) => {
         controller.updateProps({ autoPreviewEnabled: enabled });
       },
+      onPreviewRowLimitChange: (previewRowLimit) => {
+        syncPreviewRowLimit(previewRowLimit);
+        view.render();
+      },
     },
   });
 
   view.mount();
   legacyControls.rootElement = view.root;
   legacyControls.bindExistingGui?.(view.root);
+  syncPreviewRowLimit(controller.getState().previewRowLimit);
   legacyControls._syncGridFromTextButtonState?.();
 
   return {
     update(nextProps) {
       controller.updateProps(nextProps);
+      if (Object.prototype.hasOwnProperty.call(nextProps, 'previewRowLimit')) {
+        syncPreviewRowLimit(controller.getState().previewRowLimit);
+      }
       view.render();
     },
     destroy() {

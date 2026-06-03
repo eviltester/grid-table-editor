@@ -43,7 +43,7 @@ export const PreviewMode = {
     docs: {
       description: {
         story:
-          'Preview-mode state with Auto Preview enabled and the preview-row count reflected in the toggle button label.',
+          'Shows Preview mode with Auto Preview enabled and the dedicated preview row-count spinbutton set to 10. Reviewers should hover the help button, confirm the tooltip mentions the first 10 rows, and try changing the Preview row count to see how the preview-specific guidance follows that value while the toggle button remains labeled Preview.',
       },
     },
   },
@@ -59,7 +59,8 @@ export const PreviewMode = {
     });
 
     await expect(autoPreviewCheckbox).toBeEnabled();
-    await expect(canvas.getByRole('button', { name: 'Preview (10)' })).toBeTruthy();
+    await expect(canvas.getByRole('button', { name: 'Preview' })).toBeTruthy();
+    await expect(canvas.getByRole('spinbutton', { name: 'Preview row count' })).toHaveValue(10);
   },
 };
 

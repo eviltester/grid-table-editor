@@ -68,7 +68,7 @@ Storybook is a review, documentation, and lightweight interaction-example layer.
 - When practical, presenter stories should include a destroy-and-remount example so reviewers can confirm lifecycle safety without reading Jest tests first.
 - Storybook cleanup is centralized in `.storybook/preview.js`; stories may expose `root.__storybookCleanup`, and the global decorator will run that teardown before the next story and remove common body-level artifacts such as modals, method-picker overlays, tooltip poppers, and inline help containers.
 - Prefer returning the story root directly instead of manually appending it to `document.body` unless the component behavior genuinely depends on top-level overlays or body-scoped positioning.
-- Current intentional body-aware Storybook exceptions are the app page bootstrap story and the export-preview harness, because both still exercise document-scoped page/bootstrap behavior rather than a purely root-scoped component contract.
+- Current intentional body-aware Storybook exception is the app page bootstrap story, because it still exercises document-scoped page/bootstrap behavior rather than a purely root-scoped component contract.
 
 ## Test Layering
 

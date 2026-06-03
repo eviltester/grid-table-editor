@@ -36,6 +36,18 @@ function createTextPreviewEditorComponent({ root, props = {}, callbacks = {}, se
     getFormatSubtasksRoot() {
       return view.getFormatSubtasksRoot();
     },
+    getTextArea() {
+      return view.getTextArea();
+    },
+    getTextValue() {
+      return view.getTextValue();
+    },
+    setTextValue(value) {
+      view.setTextValue(value);
+    },
+    setCopyButtonText(value) {
+      view.setCopyButtonText(value);
+    },
   };
 }
 

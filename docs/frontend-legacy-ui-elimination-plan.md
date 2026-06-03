@@ -164,16 +164,16 @@ Regression coverage note:
 
 Goal: remove `ImportExportControls` and `ExportControls` as behavior coordinators underneath the componentized workspace.
 
-- [ ] Define the final `ImportExportWorkspace` state model: selected format, preview/edit mode, preview row limit, auto-preview state, import busy state, export busy state, progress/status messages, text dirty state, active options, and supported import/export affordances.
-- [ ] Move preview/edit mode state and text dirty tracking into `ImportExportWorkspaceController` or a focused `TextPreviewEditorController` API.
-- [ ] Move preview rendering from grid/data table into an import/export preview service that receives exporter/importer dependencies explicitly.
-- [ ] Move text import and file import orchestration into services that return state transitions instead of mutating DOM.
-- [ ] Replace `ExportControls` with download/copy services plus component-owned busy/status rendering.
-- [ ] Replace `legacyControls.bindExistingGui(...)` with child components and injected services.
-- [ ] Remove `getImportExportControls()` from the public component API or replace it with intentional service-level accessors.
-- [ ] Update `ImportExportWorkspace` Storybook stories to use the real new behavior without injecting `ImportExportControls`.
-- [ ] Update export-format Storybook harnesses so they no longer instantiate `ImportExportControls` or patch document lookup.
-- [ ] Delete `import-export-controls.js` and `exportControls.js` after runtime, tests, and stories no longer import them.
+- [x] Define the final `ImportExportWorkspace` state model: selected format, preview/edit mode, preview row limit, auto-preview state, import busy state, export busy state, progress/status messages, text dirty state, active options, and supported import/export affordances.
+- [x] Move preview/edit mode state and text dirty tracking into `ImportExportWorkspaceController` or a focused `TextPreviewEditorController` API.
+- [x] Move preview rendering from grid/data table into an import/export preview service that receives exporter/importer dependencies explicitly.
+- [x] Move text import and file import orchestration into services that return state transitions instead of mutating DOM.
+- [x] Replace `ExportControls` with download/copy services plus component-owned busy/status rendering.
+- [x] Replace `legacyControls.bindExistingGui(...)` with child components and injected services.
+- [x] Remove `getImportExportControls()` from the public component API or replace it with intentional service-level accessors.
+- [x] Update `ImportExportWorkspace` Storybook stories to use the real new behavior without injecting `ImportExportControls`.
+- [x] Update export-format Storybook harnesses so they no longer instantiate `ImportExportControls` or patch document lookup.
+- [x] Delete `import-export-controls.js` and `exportControls.js` after runtime, tests, and stories no longer import them.
 
 Required coverage:
 
@@ -181,6 +181,15 @@ Required coverage:
 - DOM/component tests for preview/edit mode, row count changes, import button state, copy/download controls, status rendering, and format changes.
 - Browser tests for app import/export workflows, file import preview, full import, download, copy, and format-specific rendering.
 - Storybook coverage for preview, edit, busy import, busy export, unsupported format, and error states.
+
+Current status:
+
+- `ImportExportWorkspace` now owns import/export state and behavior directly through its controller, view, and factory API.
+- Preview rendering, row limiting, preview-then-import, clipboard, download, and yield-to-UI behavior live in `import-export-workspace-services.js`.
+- `ImportExportToolbar` renders and binds root-scoped import/export actions using state/callback props instead of waiting for a broad legacy control to bind the DOM afterward.
+- `TextPreviewEditor` exposes narrow text/copy callbacks and text helpers so the workspace can own dirty state and copy behavior without querying global document state.
+- `import-export-controls.js`, `exportControls.js`, and the old export-actions adapter were deleted after runtime, tests, and stories moved to the component-owned path.
+- The export-format Storybook harness now mounts `ImportExportWorkspace` directly, uses injected services for Storybook actions, and no longer monkey-patches `document.querySelector`/`getElementById`.
 
 ## Phase 2: Format Option Panels
 

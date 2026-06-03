@@ -47,6 +47,17 @@ class TextPreviewEditorController {
     this.state.previewRowLimit = normalizePreviewRowLimit(previewRowLimit);
     this.callbacks.onPreviewRowLimitChange?.(this.state.previewRowLimit);
   }
+
+  handleTextInput(value) {
+    this.callbacks.onTextInput?.({
+      value,
+      mode: this.state.mode,
+    });
+  }
+
+  copyText(payload) {
+    this.callbacks.onCopyText?.(payload);
+  }
 }
 
 export { normalizePreviewRowLimit, TextPreviewEditorController };

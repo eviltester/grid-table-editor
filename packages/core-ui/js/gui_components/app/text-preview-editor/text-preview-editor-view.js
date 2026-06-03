@@ -10,6 +10,12 @@ class TextPreviewEditorView {
     this.handleModeClick = () => this.controller.toggleMode();
     this.handleAutoPreviewChange = (event) =>
       this.controller.setAutoPreviewEnabled(event?.currentTarget?.checked === true);
+    this.handleTextInput = (event) => this.controller.handleTextInput(event?.currentTarget?.value || '');
+    this.handleCopyClick = () =>
+      this.controller.copyText({
+        textArea: this.getTextArea(),
+        button: this.getCopyButton(),
+      });
   }
 
   mount() {
@@ -104,6 +110,8 @@ class TextPreviewEditorView {
   bindEvents() {
     this.root.querySelector('#previewEditModeButton')?.addEventListener('click', this.handleModeClick);
     this.root.querySelector('#autoPreviewCheckbox')?.addEventListener('change', this.handleAutoPreviewChange);
+    this.getTextArea()?.addEventListener('input', this.handleTextInput);
+    this.getCopyButton()?.addEventListener('click', this.handleCopyClick);
   }
 
   render() {
@@ -147,6 +155,8 @@ class TextPreviewEditorView {
   destroy() {
     this.root.querySelector('#previewEditModeButton')?.removeEventListener('click', this.handleModeClick);
     this.root.querySelector('#autoPreviewCheckbox')?.removeEventListener('change', this.handleAutoPreviewChange);
+    this.getTextArea()?.removeEventListener('input', this.handleTextInput);
+    this.getCopyButton()?.removeEventListener('click', this.handleCopyClick);
     this.previewRowCountControl?.destroy?.();
     this.previewRowCountControl = null;
     this.root.replaceChildren();
@@ -158,6 +168,32 @@ class TextPreviewEditorView {
 
   getFormatSubtasksRoot() {
     return this.root.querySelector('#conversionSubtasks');
+  }
+
+  getTextArea() {
+    return this.root.querySelector('#markdownarea');
+  }
+
+  getCopyButton() {
+    return this.root.querySelector('#copyTextButton');
+  }
+
+  getTextValue() {
+    return this.getTextArea()?.value || '';
+  }
+
+  setTextValue(value) {
+    const textArea = this.getTextArea();
+    if (textArea) {
+      textArea.value = value || '';
+    }
+  }
+
+  setCopyButtonText(value) {
+    const button = this.getCopyButton();
+    if (button) {
+      button.textContent = value || 'Copy';
+    }
   }
 }
 

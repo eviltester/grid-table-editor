@@ -438,21 +438,6 @@ function renderGridPreviewStory({
     );
   });
 
-  const setGridFromTextButton = surface.querySelector('#setgridfromtextbutton');
-  setGridFromTextButton?.addEventListener('click', async () => {
-    const type = getActiveExportSelection(surface).type;
-    const textToImport = surface.querySelector('#markdownarea')?.value || '';
-    try {
-      await Promise.resolve();
-    } catch (error) {
-      emitAction('onSetGridFromTextFailed', {
-        type,
-        message: error?.message || 'Unable to parse input into data table.',
-        sourceTextLength: textToImport.length,
-      });
-    }
-  });
-
   surface.querySelector('#previewEditModeButton')?.addEventListener('click', async () => {
     await Promise.resolve();
     emitAction('onPreviewModeChanged', {

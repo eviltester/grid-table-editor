@@ -1,4 +1,5 @@
-import { createOptionsPanelsForParent } from '../../generator/options/options-ui-schema.js';
+import { createFormatOptionPanel } from './format-option-panel-definition.js';
+import { getOptionPanelDefinitions } from '../../generator/options/options-ui-schema.js';
 import { sanitizeUiOptionsForFormat } from '../../generator/options/options-catalog-adapter.js';
 import { createUpdateHelpHints } from '../../../help/help-tooltips.js';
 import { resolveDocumentObj, resolveWindowObj } from '../dom/default-objects.js';
@@ -22,7 +23,8 @@ function createFormatOptionsPanel({ root, props = {}, services = {}, callbacks =
     documentObj: resolvedDocumentObj,
     windowObj: resolvedWindowObj,
     services: {
-      createPanelsForParent: services.createPanelsForParent || createOptionsPanelsForParent,
+      getPanelDefinitions: services.getPanelDefinitions || getOptionPanelDefinitions,
+      createPanelFromDefinition: services.createPanelFromDefinition || createFormatOptionPanel,
       updateHelpHints: services.updateHelpHints || createUpdateHelpHints(resolvedDocumentObj, root),
     },
   });
@@ -44,7 +46,7 @@ function createFormatOptionsPanel({ root, props = {}, services = {}, callbacks =
       return view.getPanels();
     },
     getOptionsFromGui() {
-      return view.getActivePanel()?.getOptionsFromGui?.();
+      return view.getActivePanel()?.read?.();
     },
     isSupported() {
       return controller.getState().supported === true;

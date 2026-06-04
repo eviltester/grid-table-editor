@@ -2,30 +2,6 @@ import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
 import { createFormatOptionsPanel } from '../../../js/gui_components/shared/format-options-panel/index.js';
 
-function createStubPanel(parentElement, fieldName = 'prettyPrint') {
-  return {
-    addToGui() {
-      parentElement.innerHTML = `
-        <div class="stub-options">
-          <label>${fieldName}<input type="checkbox" name="${fieldName}"></label>
-          <div class="apply"><button class="apply-options">Apply</button></div>
-        </div>
-      `;
-    },
-    setFromOptions: jest.fn((options) => {
-      const input = parentElement.querySelector(`input[name="${fieldName}"]`);
-      if (input) {
-        input.checked = options?.options?.[fieldName] === true;
-      }
-    }),
-    setApplyCallback(callback) {
-      const button = parentElement.querySelector('.apply-options');
-      button.onclick = () => callback({ [fieldName]: true });
-    },
-    getOptionsFromGui: jest.fn(() => ({ [fieldName]: true })),
-  };
-}
-
 describe('createFormatOptionsPanel', () => {
   let dom;
   let root;
@@ -45,14 +21,11 @@ describe('createFormatOptionsPanel', () => {
     const onApplyOptions = jest.fn();
     const onDirtyStateChanged = jest.fn();
     const updateHelpHints = jest.fn();
-    const csvPanel = createStubPanel(root, 'header');
     const component = createFormatOptionsPanel({
       root,
       documentObj: document,
       services: {
-        createPanelsForParent: () => ({
-          csv: csvPanel,
-        }),
+        getPanelDefinitions: undefined,
         sanitizeOptionsForFormat: jest.fn((format, options) => ({
           outputFormat: format,
           options,
@@ -84,9 +57,12 @@ describe('createFormatOptionsPanel', () => {
       type: 'csv',
       sanitized: {
         outputFormat: 'csv',
-        options: { header: true },
+        options: { escapeChar: '"', header: true, quoteChar: '"', quotes: false },
       },
-      rawOptions: { header: true },
+      rawOptions: {
+        outputFormat: 'csv',
+        options: { escapeChar: '"', header: true, quoteChar: '"', quotes: false },
+      },
     });
     expect(button.disabled).toBe(true);
     expect(component.getState().dirty).toBe(false);
@@ -98,7 +74,7 @@ describe('createFormatOptionsPanel', () => {
       root,
       documentObj: document,
       services: {
-        createPanelsForParent: () => ({}),
+        getPanelDefinitions: () => ({}),
       },
       props: {
         selectedFormat: 'unknown',

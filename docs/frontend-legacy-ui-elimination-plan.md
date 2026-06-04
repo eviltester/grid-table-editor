@@ -47,8 +47,6 @@ This inventory is the starting point. Update it as each phase discovers more wor
   - `ImportExportControls` still coordinates preview/edit mode, import/export behavior, progress messages, format visibility, options layout, and preview row limiting underneath `ImportExportWorkspace`.
 - `packages/core-ui/js/gui_components/app/exportControls.js`
   - `ExportControls` still binds download/copy behavior to fixed DOM selectors and updates status elements directly.
-- `packages/core-ui/js/gui_components/options_panels/*`
-  - Individual format option panels still use old `addToGui()` classes, direct root mutation, and ad hoc callback APIs, even though `FormatOptionsPanel` is component-shaped around them.
 - `packages/core-ui/js/gui_components/shared/test-data/schema/shared-schema-editor-controller.js`
   - The shared schema component still imports generator-specific row render and event helpers.
 - `packages/core-ui/js/gui_components/generator/schema/data-generator-schema-ui.js`
@@ -116,8 +114,7 @@ Active production blockers assigned to Phase 1:
 
 Active production blockers assigned to Phase 2:
 
-- `packages/core-ui/js/gui_components/options_panels/*`: individual option panels still use `addToGui()`, `parent.innerHTML`, and panel-local DOM selectors.
-- `packages/core-ui/js/gui_components/shared/format-options-panel/format-options-panel-view.js`: componentized wrapper still calls `panel.addToGui()` and adapts old panel instances.
+- Phase 2 blockers have been cleared. The old `packages/core-ui/js/gui_components/options_panels/*` panel classes were replaced by declarative format option panel definitions under `shared/format-options-panel/`, and `FormatOptionsPanelView` now mounts definition-backed panels instead of adapting `panel.addToGui()`.
 
 Active production blockers assigned to Phase 3:
 
@@ -195,16 +192,23 @@ Current status:
 
 Goal: replace the old individual option panel classes with component-compatible format option definitions.
 
-- [ ] Define a standard format option panel contract with `render`, `read`, `write`, `validate`, `setDirty`, `destroy`, and `onApply` behavior.
-- [ ] Convert CSV and DSV first as proving slices because they exercise delimiter presets and custom values.
-- [ ] Convert JSON and JSONL next because they share structure but have mode differences.
-- [ ] Convert XML, SQL, Markdown, HTML, Gherkin, and ASCII panels.
-- [ ] Convert code-language panels: C#, Java, JavaScript, Kotlin, Perl, PHP, Python, Ruby, and TypeScript.
-- [ ] Convert unit-test framework panels.
-- [ ] Remove `HtmlDataValues` selector helper once panels read/write through controllers or scoped view helpers.
-- [ ] Replace `panel.addToGui()` usage in `FormatOptionsPanelView` with component or panel-definition mounting.
-- [ ] Keep option sanitization in services, not in view code.
-- [ ] Delete or retire old files under `packages/core-ui/js/gui_components/options_panels/` once converted.
+- [x] Define a standard format option panel contract with `render`, `read`, `write`, `validate`, `setDirty`, `destroy`, and `onApply` behavior.
+- [x] Convert CSV and DSV first as proving slices because they exercise delimiter presets and custom values.
+- [x] Convert JSON and JSONL next because they share structure but have mode differences.
+- [x] Convert XML, SQL, Markdown, HTML, Gherkin, and ASCII panels.
+- [x] Convert code-language panels: C#, Java, JavaScript, Kotlin, Perl, PHP, Python, Ruby, and TypeScript.
+- [x] Convert unit-test framework panels.
+- [x] Remove `HtmlDataValues` selector helper once panels read/write through controllers or scoped view helpers.
+- [x] Replace `panel.addToGui()` usage in `FormatOptionsPanelView` with component or panel-definition mounting.
+- [x] Keep option sanitization in services, not in view code.
+- [x] Delete or retire old files under `packages/core-ui/js/gui_components/options_panels/` once converted.
+
+Current status:
+
+- Format options now render from declarative definitions in `packages/core-ui/js/gui_components/shared/format-options-panel/format-option-panel-definition.js`.
+- `FormatOptionsPanelView` mounts definition-backed panels through `render`, `read`, `write`, `validate`, `setDirty`, `destroy`, and `onApply` behavior instead of adapting old `addToGui()` classes.
+- CSV, DSV, JSON, JSONL, XML, SQL, Markdown, HTML, Gherkin, ASCII, all code-language panels, and all unit-test framework panels use the same shared contract.
+- The old `HtmlDataValues` selector helper and old `options_panels/*` implementation files were removed after production code and tests moved to the definition-backed shared component.
 
 Required coverage:
 

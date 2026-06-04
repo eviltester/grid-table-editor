@@ -7,21 +7,23 @@ class FormatOptionsPanelView {
     this.documentObj = resolveDocumentObj(documentObj, root);
     this.windowObj = resolveWindowObj(windowObj, this.documentObj);
     this.services = services;
-    this.panels = {};
+    this.panelDefinitions = {};
     this.activePanel = null;
   }
 
   mount() {
-    this.panels = this.services.createPanelsForParent?.(this.root) || {};
+    this.panelDefinitions = this.services.getPanelDefinitions?.() || {};
     this.render();
   }
 
   render() {
     const selectedFormat = this.controller.getSelectedFormat();
-    const panel = selectedFormat ? this.panels[selectedFormat] : null;
-    this.activePanel = panel || null;
+    const definition = selectedFormat ? this.panelDefinitions[selectedFormat] : null;
 
-    if (!panel) {
+    this.activePanel?.destroy?.();
+    this.activePanel = null;
+
+    if (!definition) {
       this.controller.setSupported(false);
       this.root.innerHTML = '';
       this.root.style.display = 'none';
@@ -30,13 +32,19 @@ class FormatOptionsPanelView {
 
     this.controller.setSupported(true);
     this.root.style.display = 'block';
-    panel.addToGui();
+    const panel = this.services.createPanelFromDefinition?.(definition, { root: this.root });
+    this.activePanel = panel || null;
+    panel?.render?.();
     const currentOptions = this.controller.getCurrentOptions();
     if (typeof currentOptions !== 'undefined') {
-      panel.setFromOptions?.(currentOptions);
+      panel?.write?.(currentOptions);
     }
-    this.bindDirtyState();
-    panel.setApplyCallback?.((options) => {
+    this.setApplyButtonDirty(false);
+    panel?.onDirty?.((isDirty) => {
+      this.controller.setDirty(isDirty);
+      this.setApplyButtonDirty(isDirty);
+    });
+    panel?.onApply?.((options) => {
       this.controller.apply(options);
       this.setApplyButtonDirty(false);
     });
@@ -48,7 +56,7 @@ class FormatOptionsPanelView {
   }
 
   getPanels() {
-    return this.panels;
+    return this.panelDefinitions;
   }
 
   setApplyButtonDirty(isDirty) {
@@ -61,31 +69,8 @@ class FormatOptionsPanelView {
     applyButton.setAttribute('aria-disabled', applyButton.disabled ? 'true' : 'false');
   }
 
-  bindDirtyState() {
-    const panelRoot = this.root.firstElementChild;
-    if (!panelRoot) {
-      return;
-    }
-
-    this.setApplyButtonDirty(false);
-
-    const markDirty = (event) => {
-      const target = event?.target;
-      if (!target || typeof target.closest !== 'function') {
-        return;
-      }
-      if (target.closest('.apply-options')) {
-        return;
-      }
-      this.controller.setDirty(true);
-      this.setApplyButtonDirty(true);
-    };
-
-    panelRoot.addEventListener('input', markDirty);
-    panelRoot.addEventListener('change', markDirty);
-  }
-
   destroy() {
+    this.activePanel?.destroy?.();
     this.root.innerHTML = '';
     this.root.style.display = '';
     this.activePanel = null;

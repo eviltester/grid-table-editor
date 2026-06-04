@@ -427,15 +427,6 @@ function renderGridPreviewStory({
       ),
       trigger: 'button',
     });
-    emitAction(
-      'onPreviewRendered',
-      getPreviewActionPayload(
-        surface,
-        exporter,
-        workspace.getPreviewRowLimit(),
-        workspace.isPreviewTextMode() ? 'preview' : 'edit'
-      )
-    );
   });
 
   surface.querySelector('#previewEditModeButton')?.addEventListener('click', async () => {

@@ -104,6 +104,6 @@ describe('import-export workspace services', () => {
     ).rejects.toThrow('Unable to apply imported data to grid.');
 
     expect(setPreviewText).toHaveBeenCalledWith('csv:1');
-    expect(setImportStatus).not.toHaveBeenLastCalledWith('Import complete.', false);
+    expect(setImportStatus).not.toHaveBeenCalledWith('Import complete.', false);
   });
 });

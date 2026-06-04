@@ -2,7 +2,6 @@ import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
 import { createFileReadService } from '../../../js/gui_components/app/import-export-adapters/file-read-service.js';
 import { createFileImportBindingsAdapter } from '../../../js/gui_components/app/import-export-adapters/file-import-bindings-adapter.js';
-import { createExportActionsAdapter } from '../../../js/gui_components/app/import-export-adapters/export-actions-adapter.js';
 
 describe('import-export adapters', () => {
   describe('createFileReadService', () => {
@@ -109,87 +108,6 @@ describe('import-export adapters', () => {
 
       adapter.destroy();
       expect(destroy).toHaveBeenCalledTimes(1);
-    });
-  });
-
-  describe('createExportActionsAdapter', () => {
-    let dom;
-    let documentObj;
-
-    beforeEach(() => {
-      dom = new JSDOM(`<!doctype html><html><body>
-        <ul><li class="active-type"><a data-type="csv" href="#">CSV</a></li></ul>
-        <div id="root">
-          <button id="filedownload"></button>
-          <div id="export-progress-status"></div>
-          <textarea id="markdownarea"></textarea>
-          <button id="copyTextButton">Copy</button>
-        </div>
-      </body></html>`);
-      documentObj = dom.window.document;
-    });
-
-    afterEach(() => {
-      dom.window.close();
-    });
-
-    test('copies, renders text, and downloads through injected services', async () => {
-      const clipboardService = { copyFromTextArea: jest.fn() };
-      const downloadService = { downloadText: jest.fn() };
-      const scheduleTimeoutFn = jest.fn();
-      const exporter = {
-        canExport: jest.fn(() => true),
-        getFileExtensionFor: jest.fn(() => '.csv'),
-        getGridAs: jest.fn(() => 'A,B\n1,2'),
-      };
-
-      const adapter = createExportActionsAdapter({
-        root: documentObj.getElementById('root'),
-        documentObj,
-        exporter,
-        clipboardService,
-        downloadService,
-        scheduleTimeoutFn,
-      });
-      adapter.bind();
-
-      adapter.renderTextFromGrid();
-      expect(documentObj.getElementById('markdownarea').value).toBe('A,B\n1,2');
-
-      adapter.copyText();
-      expect(clipboardService.copyFromTextArea).toHaveBeenCalledWith(documentObj.getElementById('markdownarea'));
-      expect(documentObj.getElementById('copyTextButton').innerText).toBe('Copied');
-
-      await adapter.fileDownload();
-      expect(downloadService.downloadText).toHaveBeenCalledWith('export.csv', 'A,B\n1,2');
-      expect(scheduleTimeoutFn).toHaveBeenCalled();
-    });
-
-    test('clipboard and adapter are safe without a global document when a documentObj is injected', async () => {
-      const originalDocument = global.document;
-      delete global.document;
-
-      try {
-        const clipboardService = { copyFromTextArea: jest.fn() };
-        const adapter = createExportActionsAdapter({
-          root: documentObj.getElementById('root'),
-          documentObj,
-          exporter: {
-            canExport: jest.fn(() => true),
-            getFileExtensionFor: jest.fn(() => '.csv'),
-            getGridAs: jest.fn(() => 'A,B\n1,2'),
-          },
-          clipboardService,
-          downloadService: { downloadText: jest.fn() },
-          scheduleTimeoutFn: jest.fn(),
-        });
-
-        adapter.bind();
-        expect(() => adapter.copyText()).not.toThrow();
-        await expect(adapter.fileDownload()).resolves.toBeUndefined();
-      } finally {
-        global.document = originalDocument;
-      }
     });
   });
 });

@@ -44,8 +44,16 @@ describe('help content coverage', () => {
   });
 
   test('options panel help icons resolve to inline text or help entries', () => {
-    const optionsDir = path.join(repoRoot, 'packages', 'core-ui', 'js', 'gui_components', 'options_panels');
-    const panelFiles = fs.readdirSync(optionsDir).filter((filename) => filename.endsWith('.js'));
+    const optionsDir = path.join(
+      repoRoot,
+      'packages',
+      'core-ui',
+      'js',
+      'gui_components',
+      'shared',
+      'format-options-panel'
+    );
+    const panelFiles = ['format-option-panel-definition.js', 'format-option-help.js'];
 
     const missing = [];
     panelFiles.forEach((filename) => {

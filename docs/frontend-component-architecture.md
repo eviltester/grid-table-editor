@@ -68,7 +68,13 @@ Storybook is a review, documentation, and lightweight interaction-example layer.
 - When practical, presenter stories should include a destroy-and-remount example so reviewers can confirm lifecycle safety without reading Jest tests first.
 - Storybook cleanup is centralized in `.storybook/preview.js`; stories may expose `root.__storybookCleanup`, and the global decorator will run that teardown before the next story and remove common body-level artifacts such as modals, method-picker overlays, tooltip poppers, and inline help containers.
 - Prefer returning the story root directly instead of manually appending it to `document.body` unless the component behavior genuinely depends on top-level overlays or body-scoped positioning.
-- Current intentional body-aware Storybook exceptions are the app page bootstrap story and the export-preview harness, because both still exercise document-scoped page/bootstrap behavior rather than a purely root-scoped component contract.
+- Current intentional body-aware Storybook exception is the app page bootstrap story, because it still exercises document-scoped page/bootstrap behavior rather than a purely root-scoped component contract.
+
+## Format Options
+
+`FormatOptionsPanel` renders format-specific option panels from declarative definitions under `shared/format-options-panel/`. A format option panel definition owns the field schema and returns a panel object with `render`, `read`, `write`, `validate`, `setDirty`, `destroy`, and `onApply` behavior. The shared view mounts those panels directly; there is no separate legacy `options_panels/*` class layer or `addToGui()` adapter path.
+
+Option sanitization remains in the generator/app options services, not in the view. The view reads user input into an explicit `{ outputFormat, options }` payload and the controller sends that payload through the injected sanitization service before emitting applied options.
 
 ## Test Layering
 

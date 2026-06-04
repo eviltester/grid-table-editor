@@ -20,7 +20,7 @@ const meta = {
     docs: {
       description: {
         component: `
-Shared \`FormatOptionsPanel\` is the component boundary around the existing export/import option-panel classes.
+Shared \`FormatOptionsPanel\` renders declarative export/import option definitions through the component contract.
 
 This Basic section maps to the non-code tabs in the current product:
 - \`CSV\` and \`DSV\` for delimiter, header, and quoting controls

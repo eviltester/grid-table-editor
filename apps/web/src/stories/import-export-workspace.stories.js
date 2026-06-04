@@ -50,11 +50,25 @@ function renderImportExportWorkspaceStory(args) {
   const storyGrid = new StoryMemoryGrid(createSampleGridData());
   const exporter = new Exporter(storyGrid);
   const importer = new Importer(storyGrid);
+  if (args.unsupported === true) {
+    exporter.canExport = () => false;
+    importer.canImport = () => false;
+  }
   const component = createImportExportWorkspaceComponent({
     root,
     documentObj: document,
     props: {
       previewRowLimit: args.previewRowLimit,
+      importBusy: args.importBusy,
+      exportBusy: args.exportBusy,
+      importStatusMessage: args.importStatusMessage,
+      importStatusLoading: args.importStatusLoading,
+      exportStatusMessage: args.exportStatusMessage,
+      exportStatusLoading: args.exportStatusLoading,
+      errorStatusMessage: args.errorStatusMessage,
+    },
+    services: {
+      requestConfirm: async () => true,
     },
   });
 
@@ -83,13 +97,21 @@ const meta = {
     docs: {
       description: {
         component:
-          'ImportExportWorkspace is the Phase 6 app-side feature boundary for import/export controls, format selection, text preview/editing, and options-panel composition.',
+          'ImportExportWorkspace is the app-side component-owned import/export feature. It composes the toolbar, format selector, options panel, preview/edit text editor, row-count control, file import, copy, and download behavior without delegating to the old legacy controls.',
       },
     },
   },
   args: {
     format: 'csv',
     previewRowLimit: 10,
+    importBusy: false,
+    exportBusy: false,
+    importStatusMessage: '',
+    importStatusLoading: false,
+    exportStatusMessage: '',
+    exportStatusLoading: false,
+    errorStatusMessage: '',
+    unsupported: false,
   },
   argTypes: {
     format: {
@@ -149,5 +171,66 @@ export const JsonPreview = {
     await userEvent.click(asObjectCheckbox);
     const applyButton = canvas.getByRole('button', { name: 'Apply' });
     await expect(applyButton).toBeEnabled();
+  },
+};
+
+export const ImportBusy = {
+  args: {
+    importBusy: true,
+    importStatusMessage: 'Importing full data into grid...',
+    importStatusLoading: true,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Shows the workspace while an import is active. The Set Text From Grid and Download affordances become busy/disabled, and the import status remains visible with loading styling.',
+      },
+    },
+  },
+};
+
+export const ExportBusy = {
+  args: {
+    exportBusy: true,
+    exportStatusMessage: 'Generating export text...',
+    exportStatusLoading: true,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Shows the workspace while a download/export is active. The download button is disabled and the export status explains the current operation.',
+      },
+    },
+  },
+};
+
+export const UnsupportedFormat = {
+  args: {
+    format: 'json',
+    unsupported: true,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Shows how the toolbar renders when the selected format is not importable or exportable. Import controls and download are hidden while the selector/editor remain mounted.',
+      },
+    },
+  },
+};
+
+export const ErrorState = {
+  args: {
+    errorStatusMessage: 'Import failed. Check file format/options.',
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Shows the persistent error/status surface used when import/export validation or parsing fails. Retry Set Grid From Text after editing the preview text.',
+      },
+    },
   },
 };

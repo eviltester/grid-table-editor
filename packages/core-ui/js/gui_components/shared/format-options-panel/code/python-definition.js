@@ -1,0 +1,106 @@
+import { commonCodeFields, createPlainOptions, FIELDS } from '../format-option-panel-definition-shared.js';
+
+const pythonDefinition = {
+  format: 'python',
+  group: 'code',
+  label: 'Python',
+  panelClassName: 'python-options',
+  titleHelp: 'python-options',
+  createDefaultOptions: createPlainOptions,
+  fields: commonCodeFields(
+    'python',
+    [
+      { value: 'list', label: 'List [ ]' },
+      { value: 'tuple', label: 'Tuple ( )' },
+    ],
+    [
+      {
+        key: 'useDecimalType',
+        name: 'usedecimaltype',
+        label: 'Use Decimal Type',
+        type: 'checkbox',
+        help: 'python-option-use-decimal',
+        className: 'usedecimaltype',
+        defaultValue: false,
+      },
+      {
+        key: 'decimalColumnsCsv',
+        name: 'decimalcolumnscsv',
+        label: 'Decimal Columns (CSV)',
+        type: 'text',
+        help: 'python-option-decimal-columns',
+        className: 'decimalcolumnscsv',
+        defaultValue: '',
+        child: true,
+        width: '100%',
+      },
+      {
+        key: 'decimalTreatIntegersAsDecimal',
+        name: 'decimaltreatintegers',
+        label: 'Treat Integers As Decimal',
+        type: 'checkbox',
+        help: 'python-option-decimal-integers',
+        className: 'decimaltreatintegers',
+        defaultValue: false,
+        child: true,
+      },
+      {
+        key: 'blankValueBehavior',
+        name: 'blankvaluebehavior',
+        label: 'Blank Values',
+        type: 'select',
+        help: 'python-option-blank-value',
+        className: 'blankvaluebehavior',
+        defaultValue: 'empty-string',
+        options: [
+          { value: 'empty-string', label: 'Empty String' },
+          { value: 'none', label: 'None' },
+        ],
+      },
+      {
+        key: 'quoteStyle',
+        name: 'quotestyle',
+        label: 'Quote Style',
+        type: 'select',
+        help: 'python-option-quote-style',
+        className: 'quotestyle',
+        defaultValue: 'double',
+        options: [
+          { value: 'double', label: 'Double Quotes' },
+          { value: 'single', label: 'Single Quotes' },
+        ],
+      },
+      {
+        key: 'includeImports',
+        name: 'includeimports',
+        label: 'Include Imports',
+        type: 'checkbox',
+        help: 'python-option-imports',
+        className: 'includeimports',
+        defaultValue: false,
+      },
+      {
+        key: 'importStatements',
+        name: 'importstatements',
+        label: 'Import Statements',
+        type: 'textarea',
+        help: 'python-option-import-statements',
+        className: 'importstatements',
+        defaultValue: '',
+        child: true,
+      },
+      {
+        key: 'useAnonymousDicts',
+        name: 'useanonymousdicts',
+        label: 'Anonymous Dicts',
+        type: 'checkbox',
+        help: 'python-option-anonymous-dicts',
+        className: 'useanonymousdicts',
+        defaultValue: true,
+      },
+      FIELDS.objectClassName('python'),
+    ]
+  ),
+};
+
+export { pythonDefinition };

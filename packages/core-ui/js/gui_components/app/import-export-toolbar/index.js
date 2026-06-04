@@ -3,14 +3,16 @@ import { ImportExportToolbarController } from './import-export-toolbar-controlle
 import { ImportExportToolbarView } from './import-export-toolbar-view.js';
 import { resolveDocumentObj } from '../../shared/dom/default-objects.js';
 
-function createImportExportToolbarComponent({ root, props = {}, documentObj } = {}) {
+function createImportExportToolbarComponent({ root, props = {}, callbacks = {}, services = {}, documentObj } = {}) {
   const resolvedDocumentObj = resolveDocumentObj(documentObj, root);
   const controller = new ImportExportToolbarController({ props });
   const view = new ImportExportToolbarView({
     root,
     controller,
+    callbacks,
     services: {
-      updateHelpHints: createUpdateHelpHints(resolvedDocumentObj, root),
+      updateHelpHints: services.updateHelpHints || createUpdateHelpHints(resolvedDocumentObj, root),
+      createFileImportBindingsAdapter: services.createFileImportBindingsAdapter,
     },
   });
 

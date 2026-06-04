@@ -9,6 +9,12 @@ This is an internal engineering plan for moving the current plain JavaScript UI 
 
 This plan intentionally does not require React, Vue, Svelte, or Lit. The structure should make a future Lit migration possible by replacing `ThingView` with a Lit element while keeping controllers, services, and adapters stable.
 
+## Status Note
+
+The first component migration established the main page and feature component boundaries, but later review found that several componentized shells still delegate core behavior to older controls, DOM helpers, or compatibility facades. For the stricter goal of eliminating legacy UI approaches before a future React, Web Components, or Lit migration, use `docs/frontend-legacy-ui-elimination-plan.md` as the active follow-on plan. That document supersedes any "complete" status in this migration checklist where old UI orchestration still remains underneath a component boundary.
+
+For the related test-layer cleanup needed after app/generator component sharing increased, use `docs/frontend-ui-matrix-rationalization-plan.md` to track reduction of redundant app-vs-generator UI matrix coverage.
+
 ## Goals
 
 - Split the app and generator UIs into feature components that can be mounted independently.
@@ -363,7 +369,7 @@ Current status:
 - `ImportExportWorkspace` now lives under `app/import-export-workspace/` with a controller, view, and create-component factory.
 - `ImportExportToolbar`, `FormatSelector`, and `TextPreviewEditor` now live under their own app feature folders and are mounted through `ImportExportWorkspace` rather than through direct page bootstrap wiring.
 - The app bootstrap now mounts the import/export area through `createImportExportWorkspaceComponent(...)`, and the `tabbedTextArea` preview region now lives inside that feature boundary instead of as a separate sibling shell.
-- The extracted workspace reuses the shared `FormatOptionsPanel` while preserving the current import/export behavior through the existing import/export controls path underneath.
+- The extracted workspace reuses the shared `FormatOptionsPanel`, and the current import/export behavior now runs through the workspace controller/services path instead of the old import/export controls path underneath.
 - File input, drag/drop, file reading, download, and clipboard behavior now flow through explicit Phase 6 app-side adapters/services under `app/import-export-adapters/`, so the legacy import/export control layer no longer talks directly to `FileReader`, `DragDropControl`, or download/copy browser APIs.
 - Storybook now documents `ImportExportWorkspace`, `ImportExportToolbar`, `FormatSelector`, and `TextPreviewEditor` directly with small component stories instead of relying only on the older broader app/export harnesses.
 - The export-format preview stories now mount through `ImportExportWorkspace` via a dedicated `export-preview-story-harness.js` helper rather than the older split `ImportExportControls + TabbedTextControl` story path or the broader omnibus `storybook-harnesses.js` module.

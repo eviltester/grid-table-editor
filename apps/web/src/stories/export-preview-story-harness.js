@@ -3,7 +3,6 @@ import { faker } from '@faker-js/faker';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 import { Importer } from '@anywaydata/core/grid/importer.js';
 import { Exporter } from '@anywaydata/core/grid/exporter.js';
-import { ImportExportControls } from '../../../../packages/core-ui/js/gui_components/app/import-export-controls.js';
 import { createImportExportWorkspaceComponent } from '../../../../packages/core-ui/js/gui_components/app/import-export-workspace/index.js';
 import {
   getCodeLanguageSubtasks,
@@ -35,8 +34,6 @@ const FORMAT_GROUP_LABELS = {
   'code-unit-test': 'Code (Unit Test)',
 };
 
-const scopedDocumentState = new WeakMap();
-
 function createStorySurface(sectionName) {
   storySurfaceCounter += 1;
   const section = document.createElement('section');
@@ -45,89 +42,11 @@ function createStorySurface(sectionName) {
   return section;
 }
 
-function replaceElementWithClone(element) {
-  if (!element?.parentNode) {
-    return element;
-  }
-  const replacement = element.cloneNode(true);
-  element.parentNode.replaceChild(replacement, element);
-  return replacement;
-}
-
 function emitStoryAction(actionHandler, payload, { suppressActions = false } = {}) {
   if (suppressActions || typeof actionHandler !== 'function') {
     return;
   }
   actionHandler(payload);
-}
-
-function getScopedDocumentState(doc) {
-  let state = scopedDocumentState.get(doc);
-  if (!state) {
-    state = {
-      originals: {
-        querySelector: doc.querySelector,
-        querySelectorAll: doc.querySelectorAll,
-        getElementById: doc.getElementById,
-      },
-      stack: [],
-    };
-    scopedDocumentState.set(doc, state);
-  }
-  return state;
-}
-
-function applyScopedDocumentState(doc, state) {
-  const activeScope = state.stack.at(-1);
-  if (!activeScope) {
-    doc.querySelector = state.originals.querySelector;
-    doc.querySelectorAll = state.originals.querySelectorAll;
-    doc.getElementById = state.originals.getElementById;
-    return;
-  }
-
-  doc.querySelector = function querySelector(selector) {
-    return activeScope.surface.querySelector(selector) || state.originals.querySelector.call(doc, selector);
-  };
-  doc.querySelectorAll = function querySelectorAll(selector) {
-    const scopedMatches = activeScope.surface.querySelectorAll(selector);
-    return scopedMatches.length > 0 ? scopedMatches : state.originals.querySelectorAll.call(doc, selector);
-  };
-  doc.getElementById = function getElementById(id) {
-    return activeScope.surface.querySelector(`#${id}`) || state.originals.getElementById.call(doc, id);
-  };
-}
-
-function withScopedDocument(surface, callback) {
-  if (!surface || typeof callback !== 'function') {
-    return callback?.();
-  }
-
-  const doc = document;
-  const state = getScopedDocumentState(doc);
-  const scope = { surface };
-  state.stack.push(scope);
-  applyScopedDocumentState(doc, state);
-
-  const restoreScope = () => {
-    const scopeIndex = state.stack.lastIndexOf(scope);
-    if (scopeIndex >= 0) {
-      state.stack.splice(scopeIndex, 1);
-    }
-    applyScopedDocumentState(doc, state);
-  };
-
-  try {
-    const result = callback();
-    if (typeof result?.then === 'function') {
-      return Promise.resolve(result).finally(restoreScope);
-    }
-    restoreScope();
-    return result;
-  } catch (error) {
-    restoreScope();
-    throw error;
-  }
 }
 
 function cloneGenericDataTable(sourceTable, maxRows) {
@@ -343,62 +262,9 @@ function getPreviewActionPayload(surface, exporter, previewRowLimit, mode) {
   };
 }
 
-function getSurfaceActiveExportType(surface) {
-  const activeAction =
-    surface.querySelector('.subtask-select.active-type .subtask-select-action') ||
-    surface.querySelector('.type-select.active-type .type-select-action');
-  return activeAction?.getAttribute('data-type') || 'csv';
-}
-
-function setSurfacePreviewText(surface, exporter, previewRowLimit) {
-  const previewTextArea = surface.querySelector('#markdownarea');
-  if (!previewTextArea) {
-    return;
-  }
-  const type = getSurfaceActiveExportType(surface);
-  const previewDataTable = exporter.getGridAsGenericDataTable(previewRowLimit);
-  previewTextArea.value = exporter.getDataTableAs(type, previewDataTable) || '';
-}
-
-function scopeImportExportControllerToSurface(surface, importExportController) {
-  const methodNames = [
-    'renderTextFromGrid',
-    'setFileFormatType',
-    'setOptionsViewForFormatType',
-    'applyCurrentTypeOptions',
-    'setCurrentTypeOptions',
-    'toggleTextEditMode',
-    'importTextArea',
-    '_syncGridFromTextButtonState',
-    '_bindPreviewTextInputIfAvailable',
-    '_bindAutoPreviewCheckboxIfAvailable',
-    '_syncAutoPreviewControlState',
-    '_getActiveType',
-  ];
-
-  methodNames.forEach((methodName) => {
-    const originalMethod = importExportController[methodName];
-    if (typeof originalMethod !== 'function') {
-      return;
-    }
-    importExportController[methodName] = (...args) =>
-      withScopedDocument(surface, () => originalMethod.apply(importExportController, args));
-  });
-
-  const exportControlMethodNames = ['renderTextFromGrid', 'setTextFromString', 'copyText', 'fileDownload'];
-  exportControlMethodNames.forEach((methodName) => {
-    const originalMethod = importExportController.exportControls?.[methodName];
-    if (typeof originalMethod !== 'function') {
-      return;
-    }
-    importExportController.exportControls[methodName] = (...args) =>
-      withScopedDocument(surface, () => originalMethod.apply(importExportController.exportControls, args));
-  });
-}
-
-function applyExportFormatOptions(importExportController, format, options = {}) {
+function applyExportFormatOptions(workspace, format, options = {}) {
   if (format === 'json' || format === 'jsonl') {
-    importExportController.applyCurrentTypeOptions({
+    workspace.applyCurrentTypeOptions({
       outputFormat: format,
       options: {
         prettyPrint: options.prettyPrint !== false,
@@ -411,7 +277,7 @@ function applyExportFormatOptions(importExportController, format, options = {}) 
   }
 
   if (format === 'csv' || format === 'dsv') {
-    importExportController.applyCurrentTypeOptions({
+    workspace.applyCurrentTypeOptions({
       outputFormat: format,
       options: {
         delimiter: format === 'dsv' ? options.delimiter || '\t' : ',',
@@ -439,8 +305,6 @@ function renderGridPreviewStory({
   installStoryGlobals();
 
   const surface = createStorySurface('grid-preview');
-  // The legacy preview controller path still depends on a document-scoped surface for scoped lookup shimming.
-  document.body.appendChild(surface);
   const workspaceHost = document.createElement('div');
   workspaceHost.id = `story-import-export-${storySurfaceCounter}`;
   surface.appendChild(workspaceHost);
@@ -448,10 +312,12 @@ function renderGridPreviewStory({
   const memoryGrid = new StoryMemoryGrid(createSampleGridData());
   const importer = new Importer(memoryGrid);
   const exporter = new Exporter(memoryGrid);
-  const legacyControls = new ImportExportControls({
-    requestConfirm: async () => true,
-    documentObj: document,
-  });
+  let suppressActions = true;
+
+  const emitAction = (actionName, payload) => {
+    emitStoryAction(actions?.[actionName], payload, { suppressActions });
+  };
+
   const workspace = createImportExportWorkspaceComponent({
     root: workspaceHost,
     documentObj: document,
@@ -459,38 +325,44 @@ function renderGridPreviewStory({
       previewRowLimit,
     },
     services: {
-      importExportControls: legacyControls,
+      requestConfirm: async () => true,
+      clipboardService: {
+        copyFromTextArea: () => {},
+      },
+      downloadService: {
+        downloadText: (filename, text) => {
+          const type = getActiveExportSelection(surface).type;
+          emitAction('onDownloadRequested', {
+            type,
+            fileExtension: filename.replace(/^export/, ''),
+            textLength: text?.length || 0,
+          });
+        },
+      },
     },
   });
   workspace.setImporter(importer);
   workspace.setExporter(exporter);
   workspace.setGridChangeSource(memoryGrid);
-  const importExportController = workspace.getImportExportControls();
-  scopeImportExportControllerToSurface(surface, importExportController);
-  let suppressActions = true;
 
-  const emitAction = (actionName, payload) => {
-    emitStoryAction(actions?.[actionName], payload, { suppressActions });
-  };
-
-  const originalRenderTextFromGrid = importExportController.renderTextFromGrid.bind(importExportController);
-  importExportController.renderTextFromGrid = (...args) => {
-    const result = withScopedDocument(surface, () => originalRenderTextFromGrid(...args));
+  const originalRenderTextFromGrid = workspace.renderTextFromGrid.bind(workspace);
+  workspace.renderTextFromGrid = (...args) => {
+    const result = originalRenderTextFromGrid(...args);
     emitAction(
       'onPreviewRendered',
       getPreviewActionPayload(
         surface,
         exporter,
-        importExportController.getPreviewRowLimit(),
-        importExportController.isPreviewTextMode() ? 'preview' : 'edit'
+        workspace.getPreviewRowLimit(),
+        workspace.isPreviewTextMode() ? 'preview' : 'edit'
       )
     );
     return result;
   };
 
-  const originalApplyCurrentTypeOptions = importExportController.applyCurrentTypeOptions.bind(importExportController);
-  importExportController.applyCurrentTypeOptions = (optionsToApply) => {
-    const result = withScopedDocument(surface, () => originalApplyCurrentTypeOptions(optionsToApply));
+  const originalApplyCurrentTypeOptions = workspace.applyCurrentTypeOptions.bind(workspace);
+  workspace.applyCurrentTypeOptions = (optionsToApply) => {
+    const result = originalApplyCurrentTypeOptions(optionsToApply);
     emitAction('onOptionsApplied', {
       type: optionsToApply?.outputFormat || getActiveExportSelection(surface).type,
       options:
@@ -514,31 +386,24 @@ function renderGridPreviewStory({
   };
 
   setPreviewRowLimit(surface, previewRowLimit);
-  withScopedDocument(surface, () => {
-    selectExportFormat(surface, format);
-    applyExportFormatOptions(importExportController, format, {
-      prettyPrint,
-      asObject,
-      asPropertyNamed,
-      quotes,
-      header,
-      delimiter,
-    });
-    importExportController.setFileFormatType();
-    importExportController.setOptionsViewForFormatType();
+  selectExportFormat(surface, format);
+  applyExportFormatOptions(workspace, format, {
+    prettyPrint,
+    asObject,
+    asPropertyNamed,
+    quotes,
+    header,
+    delimiter,
   });
+  workspace.setFileFormatType();
+  workspace.setOptionsViewForFormatType();
 
   const autoPreviewCheckbox = surface.querySelector('#autoPreviewCheckbox');
   if (state === 'auto-previewed') {
-    withScopedDocument(surface, () => {
-      setCheckboxValue(autoPreviewCheckbox, true);
-      importExportController.renderTextFromGrid();
-    });
-    setSurfacePreviewText(surface, exporter, previewRowLimit);
+    setCheckboxValue(autoPreviewCheckbox, true);
+    workspace.renderTextFromGrid();
   } else {
-    withScopedDocument(surface, () => {
-      setCheckboxValue(autoPreviewCheckbox, false);
-    });
+    setCheckboxValue(autoPreviewCheckbox, false);
     const previewTextArea = surface.querySelector('#markdownarea');
     if (previewTextArea) {
       previewTextArea.value = '';
@@ -551,84 +416,40 @@ function renderGridPreviewStory({
     });
   });
 
-  const setTextFromGridButton = replaceElementWithClone(surface.querySelector('#settextfromgridbutton'));
+  const setTextFromGridButton = surface.querySelector('#settextfromgridbutton');
   setTextFromGridButton?.addEventListener('click', () => {
-    withScopedDocument(surface, () => originalRenderTextFromGrid());
     emitAction('onSetTextFromGrid', {
       ...getPreviewActionPayload(
         surface,
         exporter,
-        importExportController.getPreviewRowLimit(),
-        importExportController.isPreviewTextMode() ? 'preview' : 'edit'
+        workspace.getPreviewRowLimit(),
+        workspace.isPreviewTextMode() ? 'preview' : 'edit'
       ),
       trigger: 'button',
     });
-    emitAction(
-      'onPreviewRendered',
-      getPreviewActionPayload(
-        surface,
-        exporter,
-        importExportController.getPreviewRowLimit(),
-        importExportController.isPreviewTextMode() ? 'preview' : 'edit'
-      )
-    );
-  });
-
-  const setGridFromTextButton = replaceElementWithClone(surface.querySelector('#setgridfromtextbutton'));
-  setGridFromTextButton?.addEventListener('click', async () => {
-    const type = getActiveExportSelection(surface).type;
-    const textToImport = surface.querySelector('#markdownarea')?.value || '';
-    try {
-      const result = await withScopedDocument(surface, () => importExportController.importTextArea());
-      if (result === undefined) {
-        emitAction('onSetGridFromTextFailed', {
-          type,
-          message: 'Unable to parse input into data table.',
-          sourceTextLength: textToImport.length,
-        });
-      }
-    } catch (error) {
-      emitAction('onSetGridFromTextFailed', {
-        type,
-        message: error?.message || 'Unable to parse input into data table.',
-        sourceTextLength: textToImport.length,
-      });
-    }
   });
 
   surface.querySelector('#previewEditModeButton')?.addEventListener('click', async () => {
     await Promise.resolve();
     emitAction('onPreviewModeChanged', {
-      mode: importExportController.isPreviewTextMode() ? 'preview' : 'edit',
-      previewRowLimit: importExportController.getPreviewRowLimit(),
+      mode: workspace.isPreviewTextMode() ? 'preview' : 'edit',
+      previewRowLimit: workspace.getPreviewRowLimit(),
     });
   });
 
   surface.querySelector('#autoPreviewCheckbox')?.addEventListener('change', (event) => {
     emitAction('onAutoPreviewChanged', {
       enabled: event?.currentTarget?.checked === true,
-      mode: importExportController.isPreviewTextMode() ? 'preview' : 'edit',
+      mode: workspace.isPreviewTextMode() ? 'preview' : 'edit',
     });
   });
 
-  const copyTextButton = replaceElementWithClone(surface.querySelector('#copyTextButton'));
+  const copyTextButton = surface.querySelector('#copyTextButton');
   copyTextButton?.addEventListener('click', () => {
-    withScopedDocument(surface, () => importExportController.exportControls.copyText());
     emitAction('onCopyText', {
       type: getActiveExportSelection(surface).type,
       textLength: surface.querySelector('#markdownarea')?.value?.length || 0,
     });
-  });
-
-  const fileDownloadButton = replaceElementWithClone(surface.querySelector('#filedownload'));
-  fileDownloadButton?.addEventListener('click', () => {
-    const type = getActiveExportSelection(surface).type;
-    emitAction('onDownloadRequested', {
-      type,
-      fileExtension: exporter.getFileExtensionFor(type),
-      textLength: surface.querySelector('#markdownarea')?.value?.length || 0,
-    });
-    withScopedDocument(surface, () => importExportController.exportControls.fileDownload());
   });
 
   suppressActions = false;

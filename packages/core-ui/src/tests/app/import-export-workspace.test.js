@@ -110,6 +110,37 @@ describe('ImportExportWorkspace', () => {
     dom.window.close();
   });
 
+  test('setFileFormatType updates selected format through the same path as the selector UI', () => {
+    const { component, documentObj, dom } = createHarness({
+      props: { previewRowLimit: 1 },
+    });
+
+    component.setFileFormatType('json');
+
+    expect(component.getState().selectedFormat).toBe('json');
+    expect(documentObj.querySelector('#filedownload').textContent).toContain('.json');
+    expect(documentObj.querySelector('#markdownarea').value).toBe('json:rows:1');
+
+    component.destroy();
+    dom.window.close();
+  });
+
+  test('setFileFormatType without an argument re-syncs the current format instead of resetting to csv', () => {
+    const { component, documentObj, dom } = createHarness({
+      props: { previewRowLimit: 1, selectedFormat: 'json' },
+    });
+
+    component.renderTextFromGrid();
+    component.setFileFormatType();
+
+    expect(component.getState().selectedFormat).toBe('json');
+    expect(documentObj.querySelector('#filedownload').textContent).toContain('.json');
+    expect(documentObj.querySelector('#markdownarea').value).toBe('json:rows:1');
+
+    component.destroy();
+    dom.window.close();
+  });
+
   test('tracks preview text dirty state and imports preview-limited text through injected services', async () => {
     const { component, documentObj, dom, importer } = createHarness({
       props: { previewRowLimit: 2 },
@@ -191,6 +222,44 @@ describe('ImportExportWorkspace', () => {
     dom.window.close();
   });
 
+  test('imports edit-mode text with busy and error handling through the importer adapter', async () => {
+    const importer = {
+      canImport: jest.fn(() => true),
+      getFileExtensionFor: jest.fn((type) => `.${type}`),
+      toGenericDataTable: jest.fn(() => createTable(4)),
+      setGridFromGenericDataTable: jest.fn(() => Promise.resolve()),
+      importText: jest.fn(() => Promise.resolve()),
+    };
+    const { component, documentObj, dom } = createHarness({
+      props: { mode: 'edit' },
+      services: { importer },
+    });
+
+    const textArea = documentObj.querySelector('#markdownarea');
+    const importButton = documentObj.querySelector('#setgridfromtextbutton');
+    textArea.value = 'Name,Role\nAda,Engineer';
+    fireEvent.input(textArea, { target: { value: textArea.value } });
+
+    fireEvent.click(importButton);
+
+    await waitFor(() => expect(importer.importText).toHaveBeenCalledWith('csv', textArea.value));
+    expect(component.getState().importBusy).toBe(false);
+    expect(documentObj.querySelector('#import-progress-status').textContent).toBe('Import complete.');
+
+    importer.importText.mockRejectedValueOnce(new Error('boom'));
+    fireEvent.click(importButton);
+
+    await waitFor(() =>
+      expect(documentObj.querySelector('#import-progress-status').textContent).toBe(
+        'Import failed. Check file format/options.'
+      )
+    );
+    expect(component.getState().importBusy).toBe(false);
+
+    component.destroy();
+    dom.window.close();
+  });
+
   test('can mount from the root ownerDocument without a global document', () => {
     const isolatedDom = new JSDOM('<!doctype html><html><body><div id="root"></div></body></html>');
     const originalDocument = global.document;
@@ -216,5 +285,32 @@ describe('ImportExportWorkspace', () => {
       global.window = originalWindow;
       isolatedDom.window.close();
     }
+  });
+
+  test('treats missing importer and exporter adapters as unsupported at mount time', () => {
+    const dom = new JSDOM('<!doctype html><html><body><div id="root"></div></body></html>');
+    const documentObj = dom.window.document;
+    global.document = documentObj;
+    global.window = dom.window;
+
+    const component = createImportExportWorkspaceComponent({
+      root: documentObj.getElementById('root'),
+      documentObj,
+      services: {
+        createFormatOptionsPanel: createFakeFormatOptionsPanel,
+        yieldToUi: async () => {},
+        scheduleTimeoutFn: jest.fn(),
+        requestConfirm: jest.fn(async () => true),
+      },
+    });
+
+    expect(component.getState().supportsImport).toBe(false);
+    expect(component.getState().supportsExport).toBe(false);
+    expect(documentObj.querySelector('#setgridfromtextbutton').disabled).toBe(true);
+    expect(documentObj.querySelector('#settextfromgridbutton').disabled).toBe(true);
+    expect(documentObj.querySelector('#filedownload').disabled).toBe(true);
+
+    component.destroy();
+    dom.window.close();
   });
 });

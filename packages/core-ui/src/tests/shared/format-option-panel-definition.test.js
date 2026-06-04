@@ -62,6 +62,43 @@ describe('format option panel definitions', () => {
     dom.window.close();
   });
 
+  test('select-custom fields keep a stable selected/custom shape when written with no explicit value', () => {
+    const { dom, root } = createRoot();
+    const panel = createFormatOptionPanel(
+      {
+        format: 'custom',
+        panelClassName: 'custom-options',
+        titleHelp: 'custom-options',
+        createDefaultOptions: () => ({ options: {} }),
+        fields: [
+          {
+            key: 'delimiter',
+            name: 'delimiter',
+            label: 'Delimiter',
+            type: 'selectCustom',
+            help: 'custom-option-delimiter',
+            customHelp: 'custom-option-custom-delimiter',
+            customName: 'custom-delimiter',
+            customLabel: 'Custom',
+            className: 'delimiter',
+            customClassName: 'custom-delimiter',
+            mappings: { tab: '\t' },
+            options: [{ value: 'tab', label: 'Tab [\\t]' }],
+          },
+        ],
+      },
+      { root }
+    );
+
+    panel.render();
+    panel.write({ options: { delimiter: null } });
+
+    expect(root.querySelector("select[name='delimiter']").value).toBe('custom');
+    expect(root.querySelector("input[name='custom-delimiter']").value).toBe('');
+
+    dom.window.close();
+  });
+
   test('JSONL definition emits JSON-lines options without JSON object-only controls', () => {
     const { dom, root } = createRoot();
     const panel = createFormatOptionPanel(getFormatOptionDefinition('jsonl'), { root });

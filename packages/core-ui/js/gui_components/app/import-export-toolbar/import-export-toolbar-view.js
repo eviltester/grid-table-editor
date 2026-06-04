@@ -85,8 +85,10 @@ class ImportExportToolbarView {
     }
 
     if (setTextFromGridButton) {
-      setTextFromGridButton.disabled = state.importBusy === true;
-      setTextFromGridButton.setAttribute('aria-busy', state.importBusy ? 'true' : 'false');
+      const isBusy = state.importBusy === true;
+      setTextFromGridButton.disabled = isBusy || !state.supportsExport;
+      setTextFromGridButton.setAttribute('aria-busy', isBusy ? 'true' : 'false');
+      setTextFromGridButton.setAttribute('aria-disabled', setTextFromGridButton.disabled ? 'true' : 'false');
     }
 
     if (setGridFromTextButton) {

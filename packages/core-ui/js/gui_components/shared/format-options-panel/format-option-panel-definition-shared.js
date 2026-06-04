@@ -166,7 +166,7 @@ function createJsonFields(jsonlMode = false) {
         type: 'text',
         help: 'json-option-property-name',
         className: 'propertynamed',
-        defaultValue: '',
+        defaultValue: 'data',
         child: true,
         width: '10em',
       }

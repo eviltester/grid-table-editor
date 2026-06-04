@@ -79,4 +79,31 @@ describe('import-export workspace services', () => {
     expect(setImportStatus).toHaveBeenLastCalledWith('Import complete.', false);
     expect(yieldToUi).toHaveBeenCalledTimes(2);
   });
+
+  test('throws when preview import cannot apply the full data table to the grid', async () => {
+    const dataTable = createTable(2);
+    const importer = {
+      toGenericDataTable: jest.fn(() => dataTable),
+    };
+    const exporter = {
+      getDataTableAs: jest.fn((type, table) => `${type}:${table.getRowCount()}`),
+    };
+    const setPreviewText = jest.fn();
+    const setImportStatus = jest.fn();
+
+    await expect(
+      previewThenImportToGrid({
+        importer,
+        exporter,
+        type: 'csv',
+        text: 'Name\nAda',
+        previewRowLimit: 1,
+        setPreviewText,
+        setImportStatus,
+      })
+    ).rejects.toThrow('Unable to apply imported data to grid.');
+
+    expect(setPreviewText).toHaveBeenCalledWith('csv:1');
+    expect(setImportStatus).not.toHaveBeenLastCalledWith('Import complete.', false);
+  });
 });

@@ -112,7 +112,11 @@ async function previewThenImportToGrid({
   setImportStatus?.('Importing full data into grid...', true);
   await yieldToUi();
 
-  await Promise.resolve(importer?.setGridFromGenericDataTable?.(dataTable));
+  if (typeof importer?.setGridFromGenericDataTable !== 'function') {
+    throw new Error('Unable to apply imported data to grid.');
+  }
+
+  await Promise.resolve(importer.setGridFromGenericDataTable(dataTable));
   setImportStatus?.('Import complete.', false);
   return dataTable;
 }

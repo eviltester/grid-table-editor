@@ -330,12 +330,12 @@ function renderGridPreviewStory({
         copyFromTextArea: () => {},
       },
       downloadService: {
-        downloadText: (filename) => {
+        downloadText: (filename, text) => {
           const type = getActiveExportSelection(surface).type;
           emitAction('onDownloadRequested', {
             type,
             fileExtension: filename.replace(/^export/, ''),
-            textLength: surface.querySelector('#markdownarea')?.value?.length || 0,
+            textLength: text?.length || 0,
           });
         },
       },

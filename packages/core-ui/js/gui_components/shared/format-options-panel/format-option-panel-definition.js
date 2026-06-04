@@ -8,7 +8,13 @@ import { createTestFrameworkDefinition } from './code-unit-test/test-framework-d
 
 function resolveMappedValue(value, mappings, fallback) {
   if (value === undefined) {
-    return fallback;
+    if (fallback && typeof fallback === 'object') {
+      return {
+        selected: fallback.selected || 'custom',
+        custom: fallback.custom || '',
+      };
+    }
+    return { selected: 'custom', custom: '' };
   }
   const foundKey = Object.keys(mappings).find((key) => mappings[key] === value);
   return foundKey ? { selected: foundKey, custom: '' } : { selected: 'custom', custom: value };

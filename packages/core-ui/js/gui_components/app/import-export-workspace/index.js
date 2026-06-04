@@ -74,8 +74,8 @@ function createImportExportWorkspaceComponent({ root, props = {}, services = {},
 
   const syncSupportState = () => {
     const type = getType();
-    const supportsImport = typeof importer?.canImport === 'function' ? importer.canImport(type) : true;
-    const supportsExport = typeof exporter?.canExport === 'function' ? exporter.canExport(type) : true;
+    const supportsImport = typeof importer?.canImport === 'function' ? importer.canImport(type) : false;
+    const supportsExport = typeof exporter?.canExport === 'function' ? exporter.canExport(type) : false;
     const fileExtension =
       importer?.getFileExtensionFor?.(type) || exporter?.getFileExtensionFor?.(type) || `.${type || 'csv'}`;
     controller.setSupportState({ supportsImport, supportsExport, fileExtension });
@@ -172,8 +172,24 @@ function createImportExportWorkspaceComponent({ root, props = {}, services = {},
       }
     }
 
-    await Promise.resolve(importer.importText(type, text));
-    return true;
+    controller.setBusyState({ importBusy: true });
+    setImportStatus('Importing full data into grid...', true);
+    render();
+    await yieldToUi();
+
+    try {
+      await Promise.resolve(importer.importText(type, text));
+      setImportStatus('Import complete.', false);
+      render();
+      return true;
+    } catch (error) {
+      console.error('Failed importing text', error);
+      setImportStatus('Import failed. Check file format/options.', false);
+      return undefined;
+    } finally {
+      controller.setBusyState({ importBusy: false });
+      render();
+    }
   };
 
   const readFile = async (file) => {
@@ -405,7 +421,9 @@ function createImportExportWorkspaceComponent({ root, props = {}, services = {},
       }
     },
     renderTextFromGrid,
-    setFileFormatType: syncSupportState,
+    setFileFormatType(format) {
+      handleFormatChange(format ?? getType());
+    },
     setOptionsViewForFormatType,
     setCurrentTypeOptions,
     applyCurrentTypeOptions(options) {

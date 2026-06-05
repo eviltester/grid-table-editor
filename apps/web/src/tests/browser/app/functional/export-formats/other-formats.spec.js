@@ -7,9 +7,9 @@ test.describe('5. Export Formats', () => {
     await seedRows(appPage, ['Alpha', 'Beta']);
 
     for (const format of ['Delimited', 'JSONL', 'JavaScript', 'Gherkin', 'ASCII']) {
-      await appPage.tabbedText.selectFormat(format);
-      await appPage.importExportControls.setTextFromGrid();
-      const text = await appPage.tabbedText.getOutputText();
+      await appPage.textPreviewEditor.selectFormat(format);
+      await appPage.importExportWorkspace.setTextFromGrid();
+      const text = await appPage.textPreviewEditor.getOutputText();
       expect(text.length).toBeGreaterThan(0);
       expect(text).toContain('Alpha');
     }

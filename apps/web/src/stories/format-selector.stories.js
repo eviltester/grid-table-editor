@@ -3,13 +3,18 @@ import { createFormatSelectorComponent } from '../../../../packages/core-ui/js/g
 
 function renderFormatSelectorStory(args) {
   const root = document.createElement('section');
-  root.innerHTML = `
-    <div id="selectorRoot" class="conversionTypes"></div>
-    <div id="subtasksRoot" class="conversionSubtasks" style="display:none;"></div>
-  `;
+  const selectorRoot = document.createElement('div');
+  selectorRoot.className = 'conversionTypes';
+
+  const subtasksRoot = document.createElement('div');
+  subtasksRoot.className = 'conversionSubtasks';
+  subtasksRoot.style.display = 'none';
+
+  root.append(selectorRoot, subtasksRoot);
+
   const component = createFormatSelectorComponent({
-    root: root.querySelector('#selectorRoot'),
-    subtasksRoot: root.querySelector('#subtasksRoot'),
+    root: selectorRoot,
+    subtasksRoot,
     documentObj: document,
     props: {
       selectedFormat: args.selectedFormat,
@@ -56,7 +61,9 @@ export const Default = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await userEvent.click(canvas.getByRole('link', { name: 'JSON' }));
-    await expect(canvas.getByRole('link', { name: 'JSON' }).closest('.type-select')).toHaveClass('active-type');
+    await expect(
+      canvasElement.querySelector('[data-role="format-main-tab-item"][data-active-format="true"]')
+    ).toHaveAttribute('data-tab-id', 'json');
   },
 };
 
@@ -74,9 +81,12 @@ export const Code = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await userEvent.click(canvas.getByRole('link', { name: 'JavaScript' }));
-    await expect(canvas.getByRole('link', { name: 'JavaScript' }).closest('.subtask-select')).toHaveClass(
-      'active-type'
-    );
+    await expect(
+      canvasElement.querySelector('[data-role="format-subtask-item"][data-active-format="true"]')
+    ).toHaveAttribute('data-type', 'javascript');
+    await expect(
+      canvasElement.querySelector('[data-role="format-main-tab-item"][data-active-main-tab="true"]')
+    ).toHaveAttribute('data-tab-id', 'code');
   },
 };
 
@@ -94,6 +104,11 @@ export const CodeUnitTest = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await userEvent.click(canvas.getByRole('link', { name: 'Python' }));
-    await expect(canvas.getByRole('link', { name: 'Python' }).closest('.subtask-select')).toHaveClass('active-type');
+    await expect(
+      canvasElement.querySelector('[data-role="format-subtask-item"][data-active-format="true"]')
+    ).toHaveAttribute('data-type', 'pytest');
+    await expect(
+      canvasElement.querySelector('[data-role="format-main-tab-item"][data-active-main-tab="true"]')
+    ).toHaveAttribute('data-tab-id', 'code-unit-test');
   },
 };

@@ -16,13 +16,13 @@ class FileImportBindingsAdapter {
   }
 
   bind() {
-    this.fileInputElement = this.root?.querySelector?.('#csvinput') || null;
+    this.fileInputElement = this.root?.querySelector?.('[data-role="file-input"]') || null;
     if (this.fileInputElement) {
       this.fileInputElement.addEventListener('click', this.handleFileInputClick, false);
       this.fileInputElement.addEventListener('change', this.handleFileInputChange, false);
     }
 
-    const dropZone = this.root?.querySelector?.('#dropzone') || null;
+    const dropZone = this.root?.querySelector?.('[data-role="drop-zone"]') || null;
     if (dropZone) {
       this.dragDropControl = this.createDragDropControl((file) => this.onFileSelected?.(file));
       this.dragDropControl.configureAsDropZone(dropZone);

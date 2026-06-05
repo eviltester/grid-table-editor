@@ -22,6 +22,7 @@ function renderInlineHelpItems(documentObj, entries) {
     item.innerHTML = html;
     container.appendChild(item);
   });
+  return container;
 }
 
 function upsertInlineHelpItems(documentObj, entries) {
@@ -35,62 +36,79 @@ function upsertInlineHelpItems(documentObj, entries) {
     }
     item.innerHTML = html;
   });
+  return container;
 }
 
-function createUpdateHelpHints(documentObj, rootElement = documentObj) {
-  return function updateHelpHints() {
+function buildHelpTooltipContent(reference, inlineHelpContainer) {
+  const id = reference.getAttribute('data-help');
+  const inlineHelpText = reference.getAttribute('data-help-text');
+  if (inlineHelpText) {
+    return inlineHelpText;
+  }
+
+  if (!inlineHelpContainer || !id) {
+    return '';
+  }
+  const helpText = inlineHelpContainer.querySelector(`div[data-name='${id}']`);
+  if (helpText) {
+    return helpText.innerHTML;
+  }
+
+  console.log('TODO: Create help for ' + id);
+  return '';
+}
+
+function decorateHelpIcon(element) {
+  element?._tippy?.destroy?.();
+  decorateIconContainer(element, 'circle-help', {
+    className: 'app-icon helpicon-svg',
+    size: 16,
+  });
+  const tagName = String(element?.tagName || '').toLowerCase();
+  const isNativeButton = tagName === 'button';
+  const isNativeLink = tagName === 'a';
+  if (!element.hasAttribute('tabindex')) {
+    element.setAttribute('tabindex', '0');
+  }
+  if (!isNativeButton && !isNativeLink && !element.hasAttribute('role')) {
+    element.setAttribute('role', 'button');
+  }
+  if (!element.hasAttribute('aria-label')) {
+    const isOptionHelp = element.classList.contains('option-help-icon');
+    element.setAttribute('aria-label', isOptionHelp ? 'Show help for this option' : 'Show help');
+  }
+}
+
+function createHelpTooltipService({
+  documentObj = getDefaultDocumentObj(),
+  windowObj,
+  rootElement = documentObj,
+  entries = sharedInlineHelpEntries,
+  registerWindowHook = false,
+  tippyFn,
+} = {}) {
+  const resolvedWindowObj = resolveWindowObj(windowObj, documentObj);
+
+  const update = () => {
     if (!documentObj) {
       return;
     }
 
-    upsertInlineHelpItems(documentObj, sharedInlineHelpEntries);
+    const inlineHelpContainer = upsertInlineHelpItems(documentObj, entries);
 
     const helpIcons = rootElement?.querySelectorAll?.('.helpicon[data-help]') || [];
     helpIcons.forEach((element) => {
-      element?._tippy?.destroy?.();
-      decorateIconContainer(element, 'circle-help', {
-        className: 'app-icon helpicon-svg',
-        size: 16,
-      });
-      const tagName = String(element?.tagName || '').toLowerCase();
-      const isNativeButton = tagName === 'button';
-      const isNativeLink = tagName === 'a';
-      if (!element.hasAttribute('tabindex')) {
-        element.setAttribute('tabindex', '0');
-      }
-      if (!isNativeButton && !isNativeLink && !element.hasAttribute('role')) {
-        element.setAttribute('role', 'button');
-      }
-      if (!element.hasAttribute('aria-label')) {
-        const isOptionHelp = element.classList.contains('option-help-icon');
-        element.setAttribute('aria-label', isOptionHelp ? 'Show help for this option' : 'Show help');
-      }
+      decorateHelpIcon(element);
     });
 
-    const tippyFn = globalThis?.tippy;
-    if (typeof tippyFn !== 'function') {
+    const resolvedTippyFn = tippyFn || resolvedWindowObj?.tippy;
+    if (typeof resolvedTippyFn !== 'function') {
       return;
     }
 
-    tippyFn(helpIcons, {
+    resolvedTippyFn(helpIcons, {
       content(reference) {
-        const id = reference.getAttribute('data-help');
-        const inlineHelpText = reference.getAttribute('data-help-text');
-        if (inlineHelpText) {
-          return inlineHelpText;
-        }
-
-        const helpItems = documentObj.getElementById('inline-help-items');
-        if (!helpItems || !id) {
-          return '';
-        }
-        const helpText = helpItems.querySelector(`div[data-name='${id}']`);
-        if (helpText) {
-          return helpText.innerHTML;
-        }
-
-        console.log('TODO: Create help for ' + id);
-        return '';
+        return buildHelpTooltipContent(reference, inlineHelpContainer);
       },
       placement: 'top-start',
       allowHTML: true,
@@ -101,11 +119,47 @@ function createUpdateHelpHints(documentObj, rootElement = documentObj) {
       appendTo: () => documentObj.body,
     });
   };
+
+  const destroy = () => {
+    const helpIcons = rootElement?.querySelectorAll?.('.helpicon[data-help]') || [];
+    helpIcons.forEach((element) => {
+      element?._tippy?.destroy?.();
+    });
+    if (registerWindowHook) {
+      if (resolvedWindowObj?.updateHelpHints === update) {
+        delete resolvedWindowObj.updateHelpHints;
+      }
+    }
+  };
+
+  if (registerWindowHook && resolvedWindowObj) {
+    resolvedWindowObj.updateHelpHints = update;
+  }
+
+  return {
+    update,
+    destroy,
+  };
 }
 
-function initHelpTooltips({ documentObj = getDefaultDocumentObj(), includeAppOnlyEntries = false } = {}) {
+function createUpdateHelpHints(documentObj, rootElement = documentObj, { windowObj, tippyFn } = {}) {
+  return createHelpTooltipService({
+    documentObj,
+    windowObj,
+    rootElement,
+    entries: sharedInlineHelpEntries,
+    tippyFn,
+  }).update;
+}
+
+function initHelpTooltips({
+  documentObj = getDefaultDocumentObj(),
+  windowObj,
+  includeAppOnlyEntries = false,
+  tippyFn,
+} = {}) {
   if (!documentObj) {
-    return;
+    return null;
   }
   const entries = includeAppOnlyEntries
     ? { ...sharedInlineHelpEntries, ...appOnlyInlineHelpEntries }
@@ -113,12 +167,15 @@ function initHelpTooltips({ documentObj = getDefaultDocumentObj(), includeAppOnl
 
   renderInlineHelpItems(documentObj, entries);
 
-  const updateHelpHints = createUpdateHelpHints(documentObj);
-  const windowObj = resolveWindowObj(null, documentObj);
-  if (windowObj) {
-    windowObj.updateHelpHints = updateHelpHints;
-  }
-  updateHelpHints();
+  const service = createHelpTooltipService({
+    documentObj,
+    windowObj,
+    entries,
+    registerWindowHook: true,
+    tippyFn,
+  });
+  service.update();
+  return service;
 }
 
-export { createUpdateHelpHints, initHelpTooltips };
+export { createHelpTooltipService, createUpdateHelpHints, initHelpTooltips };

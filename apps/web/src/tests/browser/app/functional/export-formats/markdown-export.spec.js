@@ -5,10 +5,10 @@ test.describe('5. Export Formats', () => {
   test('Markdown Export', async ({ page }) => {
     const { appPage, pageErrors } = await openApp(page);
     await seedRows(appPage, ['Alpha', 'Beta']);
-    await appPage.tabbedText.selectFormat('Markdown');
-    await appPage.importExportControls.setTextFromGrid();
+    await appPage.textPreviewEditor.selectFormat('Markdown');
+    await appPage.importExportWorkspace.setTextFromGrid();
 
-    const text = await appPage.tabbedText.getOutputText();
+    const text = await appPage.textPreviewEditor.getOutputText();
     expect(text).toContain('|');
     expect(text).toContain('Alpha');
     expect(text).toContain('Beta');

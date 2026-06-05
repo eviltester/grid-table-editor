@@ -17,7 +17,7 @@ test.describe('8. Advanced Grid Features', () => {
     await appPage.gridEditor.renderer.setCellTextByColumnName(base, 2, 'R3');
 
     const beforeTop = await appPage.gridEditor.renderer.getCellTextByColumnName(base, 0);
-    await page.locator('#myGrid .tabulator-row').nth(0).dragTo(page.locator('#myGrid .tabulator-row').nth(2));
+    await appPage.gridEditor.renderer.dragRowTo(0, 2);
     await expect.poll(async () => appPage.gridEditor.renderer.getCellTextByColumnName(base, 0)).not.toBe(beforeTop);
 
     expectNoPageErrors(pageErrors);

@@ -1,13 +1,7 @@
 import { expect, userEvent, within } from 'storybook/test';
 import { createConfirmDialogService } from '../../../../packages/core-ui/js/gui_components/shared/dialog-services/index.js';
 
-function removeConfirmModal() {
-  document.getElementById('confirm-modal-backdrop')?.remove();
-}
-
 function renderConfirmDialogStory(args) {
-  removeConfirmModal();
-
   const root = document.createElement('section');
   root.style.display = 'grid';
   root.style.gap = '0.75rem';
@@ -30,7 +24,9 @@ function renderConfirmDialogStory(args) {
     result.textContent = confirmed ? 'Confirmed' : 'Cancelled';
   });
 
-  root.__storybookCleanup = removeConfirmModal;
+  root.__storybookCleanup = () => {
+    dialogService.destroy?.();
+  };
   return root;
 }
 

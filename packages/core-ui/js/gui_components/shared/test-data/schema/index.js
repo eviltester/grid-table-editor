@@ -32,4 +32,20 @@ export {
   applySchemaSourceTypeChange,
   applySchemaCommandSelection,
 } from './schema-row-mapper.js';
+export {
+  SCHEMA_ROW_DRAGGING_CLASS,
+  SCHEMA_ROW_DROP_BEFORE_CLASS,
+  SCHEMA_ROW_DROP_AFTER_CLASS,
+  SHARED_SCHEMA_ROW_CLASS,
+  SHARED_SCHEMA_ROWS_CLASS,
+  SHARED_SCHEMA_ROW_SELECTOR,
+  SHARED_SCHEMA_ROWS_SELECTOR,
+  hideVisibleHelpTooltips,
+  renderSharedSchemaRows,
+  clearSchemaRowDragClasses,
+  getSchemaRowDropInstruction,
+  applySchemaRowDropInstructionIndicator,
+  handleSharedSchemaRowInputChange,
+  handleSharedSchemaRowButtonClick,
+} from './shared-schema-editor-ui.js';
 export { createSharedSchemaEditorController } from './shared-schema-editor-controller.js';

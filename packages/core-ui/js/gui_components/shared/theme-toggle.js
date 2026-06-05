@@ -2,6 +2,10 @@ const LEGACY_THEME_STORAGE_KEY = 'anywaydata-theme';
 const DOCUSAURUS_THEME_STORAGE_KEY = 'theme';
 const LIGHT_THEME = 'light';
 const DARK_THEME = 'dark';
+const THEME_TOGGLE_COMPONENT_OWNER = 'theme-toggle-component';
+const THEME_TOGGLE_CONTAINER_ROLE = 'theme-toggle-container';
+const THEME_TOGGLE_BUTTON_ROLE = 'theme-toggle-button';
+const themeToggleInstances = new WeakMap();
 
 function getDefaultDocumentObj() {
   return typeof document !== 'undefined' ? document : null;
@@ -50,29 +54,45 @@ function applyTheme(documentObj, theme) {
   body.classList.add(theme === DARK_THEME ? 'theme-dark' : 'theme-light');
 }
 
-function ensureThemeToggleButton(documentObj) {
-  const header = documentObj?.querySelector?.('.header');
-  if (!header) {
+function resolveThemeToggleHost({ rootElement, hostElement } = {}) {
+  if (hostElement) {
+    return hostElement;
+  }
+
+  if (rootElement?.matches?.('.header, [data-role="theme-toggle-host"]')) {
+    return rootElement;
+  }
+
+  return rootElement?.querySelector?.('.header, [data-role="theme-toggle-host"]') || null;
+}
+
+function ensureThemeToggleElements({ documentObj, hostElement } = {}) {
+  if (!hostElement) {
     return null;
   }
 
-  let container = header.querySelector('.theme-toggle-container');
+  let container = hostElement.querySelector(`.theme-toggle-container[data-role="${THEME_TOGGLE_CONTAINER_ROLE}"]`);
   if (!container) {
     container = documentObj.createElement('div');
     container.className = 'theme-toggle-container';
-    header.appendChild(container);
+    container.setAttribute('data-role', THEME_TOGGLE_CONTAINER_ROLE);
+    container.setAttribute('data-owner', THEME_TOGGLE_COMPONENT_OWNER);
+    hostElement.appendChild(container);
   }
 
-  let button = container.querySelector('#theme-toggle-button');
+  let button = container.querySelector(`[data-role="${THEME_TOGGLE_BUTTON_ROLE}"]`);
   if (!button) {
     button = documentObj.createElement('button');
-    button.id = 'theme-toggle-button';
     button.type = 'button';
     button.className = 'theme-toggle-button';
+    button.setAttribute('data-role', THEME_TOGGLE_BUTTON_ROLE);
     container.appendChild(button);
   }
 
-  return button;
+  return {
+    container,
+    button,
+  };
 }
 
 function updateToggleButtonLabel(button, theme) {
@@ -86,25 +106,110 @@ function updateToggleButtonLabel(button, theme) {
   button.setAttribute('title', nextThemeLabel);
 }
 
-function initThemeToggle({ documentObj = getDefaultDocumentObj(), windowObj = getDefaultWindowObj() } = {}) {
+function createThemeToggleComponent({
+  documentObj = getDefaultDocumentObj(),
+  windowObj = getDefaultWindowObj(),
+  rootElement = documentObj,
+  hostElement,
+  props = {},
+} = {}) {
   if (!documentObj) {
-    return;
-  }
-  const button = ensureThemeToggleButton(documentObj);
-  if (!button) {
-    return;
+    return null;
   }
 
-  let currentTheme = resolveInitialTheme(windowObj);
-  applyTheme(documentObj, currentTheme);
-  updateToggleButtonLabel(button, currentTheme);
-
-  button.addEventListener('click', () => {
-    currentTheme = currentTheme === DARK_THEME ? LIGHT_THEME : DARK_THEME;
-    applyTheme(documentObj, currentTheme);
-    setStoredTheme(windowObj?.localStorage, currentTheme);
-    updateToggleButtonLabel(button, currentTheme);
+  const resolvedHostElement = resolveThemeToggleHost({ rootElement, hostElement });
+  const elements = ensureThemeToggleElements({
+    documentObj,
+    hostElement: resolvedHostElement,
   });
+  if (!elements) {
+    return null;
+  }
+
+  const { container, button } = elements;
+  let currentProps = { ...props };
+  let currentTheme = resolveInitialTheme(windowObj);
+
+  function notifyThemeChanged() {
+    currentProps.onThemeChanged?.(currentTheme);
+  }
+
+  function renderTheme(theme, { persist = false } = {}) {
+    currentTheme = theme === DARK_THEME ? DARK_THEME : LIGHT_THEME;
+    applyTheme(documentObj, currentTheme);
+    updateToggleButtonLabel(button, currentTheme);
+    if (persist) {
+      setStoredTheme(windowObj?.localStorage, currentTheme);
+    }
+    notifyThemeChanged();
+  }
+
+  function handleClick() {
+    renderTheme(currentTheme === DARK_THEME ? LIGHT_THEME : DARK_THEME, { persist: true });
+  }
+
+  button.addEventListener('click', handleClick);
+  renderTheme(currentTheme);
+
+  return {
+    update(nextProps = {}) {
+      currentProps = { ...currentProps, ...nextProps };
+      notifyThemeChanged();
+    },
+    destroy() {
+      button.removeEventListener('click', handleClick);
+      if (container.getAttribute('data-owner') === THEME_TOGGLE_COMPONENT_OWNER) {
+        container.remove();
+      }
+    },
+    getState() {
+      return {
+        theme: currentTheme,
+      };
+    },
+    setTheme(nextTheme, options = {}) {
+      renderTheme(nextTheme, options);
+    },
+    toggleTheme() {
+      handleClick();
+    },
+  };
 }
 
-export { initThemeToggle };
+function initThemeToggle({
+  documentObj = getDefaultDocumentObj(),
+  windowObj = getDefaultWindowObj(),
+  rootElement = documentObj,
+  hostElement,
+  props = {},
+} = {}) {
+  if (!documentObj) {
+    return null;
+  }
+
+  themeToggleInstances.get(documentObj)?.destroy?.();
+
+  const component = createThemeToggleComponent({
+    documentObj,
+    windowObj,
+    rootElement,
+    hostElement,
+    props,
+  });
+  if (!component) {
+    return null;
+  }
+
+  themeToggleInstances.set(documentObj, component);
+  return {
+    ...component,
+    destroy() {
+      component.destroy();
+      if (themeToggleInstances.get(documentObj) === component) {
+        themeToggleInstances.delete(documentObj);
+      }
+    },
+  };
+}
+
+export { createThemeToggleComponent, initThemeToggle };

@@ -2,7 +2,7 @@ import { fireEvent, waitFor, within } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 import RandExp from 'randexp';
 import { Exporter } from '@anywaydata/core/grid/exporter.js';
-import { createTestDataGridControl } from '../../../../js/gui_components/app/test-data-grid/index.js';
+import { createTestDataGenerationPanelManager } from '../../../../js/gui_components/app/test-data-grid/index.js';
 import { assertDataTableHasNoErrorIndicators, assertNoErrorIndicators } from './generated-value-quality.js';
 import { installDomGlobals, cleanupDomGlobals } from './testing-library-dom-setup.js';
 
@@ -28,6 +28,18 @@ function createFocusedAppTestDataHarness() {
     rowCount: 0,
     selectedRowIndexes: [],
   };
+
+  function getPanelRoot() {
+    return document.querySelector('[data-role="data-population-panel-root"]');
+  }
+
+  function getPanelQueries() {
+    return within(getPanelRoot());
+  }
+
+  function getSchemaDefinitionRoot() {
+    return getPanelRoot()?.querySelector('[data-role="schema-definition-root"]') || null;
+  }
 
   async function setInputValue(element, value) {
     if (!element) {
@@ -94,7 +106,7 @@ function createFocusedAppTestDataHarness() {
       getGridAsGenericDataTable: () => latestDataTable,
     };
 
-    control = createTestDataGridControl({
+    control = createTestDataGenerationPanelManager({
       documentObj: document,
       windowObj: window,
       DebouncerClass: ImmediateDebouncer,
@@ -104,14 +116,14 @@ function createFocusedAppTestDataHarness() {
   }
 
   function getGridRow(index = 0) {
-    return document.querySelectorAll('#testDataSchemaRows .generator-schema-row')[index];
+    return document.querySelectorAll('[data-role="schema-rows-region"] .shared-schema-row')[index];
   }
 
   async function addColumn() {
-    const previousCount = document.querySelectorAll('#testDataSchemaRows .generator-schema-row').length;
-    await user.click(document.getElementById('testDataAddSchemaRowButton'));
+    const previousCount = document.querySelectorAll('[data-role="schema-rows-region"] .shared-schema-row').length;
+    await user.click(document.querySelector('[data-role="schema-add-field"]'));
     await waitFor(() => {
-      if (document.querySelectorAll('#testDataSchemaRows .generator-schema-row').length > previousCount) {
+      if (document.querySelectorAll('[data-role="schema-rows-region"] .shared-schema-row').length > previousCount) {
         return;
       }
       throw new Error('Schema row was not rendered');
@@ -158,11 +170,11 @@ function createFocusedAppTestDataHarness() {
   }
 
   async function setSchemaText(value) {
-    const toggleButton = document.getElementById('testDataSchemaModeToggleButton');
+    const toggleButton = document.querySelector('[data-role="schema-mode-toggle"]');
     if (toggleButton?.textContent?.trim() === 'Edit as Text') {
       await user.click(toggleButton);
     }
-    await setInputValue(document.getElementById('testDataSchemaText'), value);
+    await setInputValue(document.querySelector('[data-role="schema-textbox"]'), value);
     if (toggleButton?.textContent?.trim() === 'Edit as Schema') {
       await user.click(toggleButton);
     }
@@ -188,7 +200,7 @@ function createFocusedAppTestDataHarness() {
   }
 
   async function setGenerateCount(value) {
-    await setInputValue(document.getElementById('generateCount'), String(value));
+    await setInputValue(getPanelQueries().getByRole('spinbutton', { name: 'How Many?' }), String(value));
   }
 
   async function selectMode(value) {
@@ -196,11 +208,15 @@ function createFocusedAppTestDataHarness() {
   }
 
   async function clickInjectedSampleButton() {
+    const schemaDefinitionRoot = getSchemaDefinitionRoot();
+    if (!schemaDefinitionRoot) {
+      throw new Error('Schema definition root was not found in focused app test-data harness');
+    }
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'shared-schema-sample-button';
     button.textContent = 'Load Sample Schema';
-    document.getElementById('testDataSchemaDefinition').appendChild(button);
+    schemaDefinitionRoot.appendChild(button);
     await user.click(button);
     button.remove();
   }
@@ -215,19 +231,19 @@ function createFocusedAppTestDataHarness() {
   }
 
   function getSchemaText() {
-    return document.getElementById('testDataSchemaText').value;
+    return document.querySelector('[data-role="schema-textbox"]').value;
   }
 
   function getSchemaErrorText() {
-    return document.getElementById('testdata-schema-error').textContent.trim();
+    return document.querySelector('[data-role="schema-error"]').textContent.trim();
   }
 
   function getGenerateCount() {
-    return document.getElementById('generateCount').value;
+    return getPanelQueries().getByRole('spinbutton', { name: 'How Many?' }).value;
   }
 
   function getPairwiseButton() {
-    return document.getElementById('generateallpairs');
+    return getPanelRoot().querySelector('[data-role="generate-pairwise-button"]');
   }
 
   function getPreviewText() {

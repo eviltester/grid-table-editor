@@ -75,7 +75,31 @@ function clickElement(element) {
 }
 
 function getGeneratorRow(index = 0) {
-  return document.querySelectorAll('.generator-schema-row')[index];
+  return document.querySelectorAll('.shared-schema-row')[index];
+}
+
+function getSchemaTextArea() {
+  return document.querySelector('[data-role="generator-schema-definition-root"] [data-role="schema-textbox"]');
+}
+
+function getOutputPreviewTextArea() {
+  return document.querySelector('[data-role="generator-output-preview"]');
+}
+
+function getGeneratePairwiseButton() {
+  return document.querySelector('[data-role="generator-generate-pairwise-button"]');
+}
+
+function getGeneratePairwiseButtonWrapper() {
+  return document.querySelector('[data-role="generator-pairwise-button-wrapper"]');
+}
+
+function getPreviewRowsInput() {
+  return document.querySelector('[data-role="preview-rows-count-control"] input');
+}
+
+function getGenerateRowsInput() {
+  return document.querySelector('[data-role="generate-rows-count-control"] input');
 }
 
 function fillGeneratorRow(rowIndex, row) {
@@ -157,20 +181,20 @@ function createGeneratorInteractionHarness() {
       }
 
       clickElement(within(document.body).getByRole('button', { name: /edit as text/i }));
-      const schemaTextArea = document.getElementById('generatorSchemaText');
+      const schemaTextArea = getSchemaTextArea();
       expect(schemaTextArea.value).toBe(scenario.expectedUiSchemaText || scenario.expectedSchemaText);
 
       clickElement(within(document.body).getByRole('button', { name: /edit as schema/i }));
-      expect(document.querySelectorAll('.generator-schema-row').length).toBe(scenario.rows.length);
+      expect(document.querySelectorAll('.shared-schema-row').length).toBe(scenario.rows.length);
 
-      setInputValue(document.getElementById('previewRowsCount'), scenario.pairwiseEligible ? '2' : '1');
+      setInputValue(getPreviewRowsInput(), scenario.pairwiseEligible ? '2' : '1');
       applyDeterministicScenarioSeed(scenario.id);
       clickElement(within(document.body).getByRole('button', { name: /^preview$/i }));
 
-      const previewTable = page.previewGrid.lastDataTable;
+      const previewTable = page.generatorPreview?.getPreviewDataTable?.() || null;
       expect(previewTable).toBeTruthy();
       expect(previewTable.getRowCount()).toBeGreaterThan(0);
-      const outputPreviewText = document.getElementById('generatorOutputPreview').value;
+      const outputPreviewText = getOutputPreviewTextArea().value;
       expect(outputPreviewText.length).toBeGreaterThan(0);
 
       if (scenario.expectStructuredSerialization) {
@@ -188,7 +212,7 @@ function createGeneratorInteractionHarness() {
       });
       const previewCsv = previewExporter.getDataTableAs('csv', previewTable) || '';
 
-      setInputValue(document.getElementById('generateRowsCount'), scenario.pairwiseEligible ? '2' : '1');
+      setInputValue(getGenerateRowsInput(), scenario.pairwiseEligible ? '2' : '1');
       applyDeterministicScenarioSeed(scenario.id);
       clickElement(within(document.body).getByRole('button', { name: /generate data/i }));
       await waitFor(() => expect(CapturingDownload.lastDownload).toBeTruthy());
@@ -198,10 +222,10 @@ function createGeneratorInteractionHarness() {
 
       let pairwiseCsv = '';
       if (scenario.pairwiseEligible) {
-        expect(document.getElementById('generateAllPairsButtonWrapper').style.display).toBe('inline-flex');
+        expect(getGeneratePairwiseButtonWrapper().style.display).toBe('inline-flex');
         CapturingDownload.reset();
         applyDeterministicScenarioSeed(scenario.id);
-        clickElement(document.getElementById('generateAllPairsButton'));
+        clickElement(getGeneratePairwiseButton());
         await waitFor(() => expect(CapturingDownload.lastDownload?.filename).toMatch(/all-pairs-data/));
         pairwiseCsv = CapturingDownload.lastDownload?.text || '';
       }

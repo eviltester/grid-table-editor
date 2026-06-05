@@ -1,5 +1,5 @@
 import { JSDOM } from 'jsdom';
-import { showConfirmModal } from '../../../js/gui_components/shared/modal-confirm.js';
+import { createConfirmDialogComponent, showConfirmModal } from '../../../js/gui_components/shared/modal-confirm.js';
 
 describe('showConfirmModal', () => {
   let dom;
@@ -21,7 +21,7 @@ describe('showConfirmModal', () => {
       title: 'Delete Column',
       message: 'Are you sure?',
     });
-    document.getElementById('confirm-modal-ok').click();
+    document.querySelector('[data-role="confirm-dialog-ok"]').click();
     await expect(promise).resolves.toBe(true);
   });
 
@@ -31,7 +31,7 @@ describe('showConfirmModal', () => {
       title: 'Delete Column',
       message: 'Are you sure?',
     });
-    document.getElementById('confirm-modal-cancel').click();
+    document.querySelector('[data-role="confirm-dialog-cancel"]').click();
     await expect(promise).resolves.toBe(false);
   });
 
@@ -52,6 +52,32 @@ describe('showConfirmModal', () => {
       message: 'Are you sure?',
     });
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    await expect(promise).resolves.toBe(false);
+  });
+
+  test('uses the injected window object for focus scheduling', async () => {
+    const scheduledCallbacks = [];
+    const windowObj = {
+      setTimeout(callback) {
+        scheduledCallbacks.push(callback);
+        return 1;
+      },
+    };
+    const component = createConfirmDialogComponent({
+      documentObj: document,
+      windowObj,
+    });
+
+    const promise = component.requestConfirm({
+      title: 'Delete Column',
+      message: 'Are you sure?',
+    });
+
+    expect(scheduledCallbacks).toHaveLength(1);
+    scheduledCallbacks[0]();
+    expect(document.activeElement).toBe(document.querySelector('[data-role="confirm-dialog-ok"]'));
+
+    document.querySelector('[data-role="confirm-dialog-cancel"]').click();
     await expect(promise).resolves.toBe(false);
   });
 });

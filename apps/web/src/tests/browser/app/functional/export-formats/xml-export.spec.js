@@ -5,10 +5,10 @@ test.describe('5. Export Formats', () => {
   test('XML Export', async ({ page }) => {
     const { appPage, pageErrors } = await openApp(page);
     await seedRows(appPage, ['Alpha', 'Beta']);
-    await appPage.tabbedText.selectFormat('XML');
-    await appPage.importExportControls.setTextFromGrid();
+    await appPage.textPreviewEditor.selectFormat('XML');
+    await appPage.importExportWorkspace.setTextFromGrid();
 
-    const text = await appPage.tabbedText.getOutputText();
+    const text = await appPage.textPreviewEditor.getOutputText();
     expect(text).toContain('Alpha');
     const isValidXml = await page.evaluate((xml) => {
       const doc = new DOMParser().parseFromString(xml, 'application/xml');

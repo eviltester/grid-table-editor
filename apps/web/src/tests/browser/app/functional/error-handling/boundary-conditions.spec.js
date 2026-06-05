@@ -26,12 +26,12 @@ test.describe('9. Error Handling and Edge Cases', () => {
     await appPage.testDataPanel.setGenerateCount(50);
     await appPage.testDataPanel.clickGenerate();
     await expect.poll(async () => appPage.testDataPanel.getStatusText()).toContain('complete');
-    await appPage.tabbedText.selectFormat('CSV');
+    await appPage.textPreviewEditor.selectFormat('CSV');
     await ensureTextEditMode(appPage);
-    await appPage.importExportControls.setTextFromGrid();
+    await appPage.importExportWorkspace.setTextFromGrid();
     await expect
       .poll(async () => {
-        const csvText = await appPage.tabbedText.getOutputText();
+        const csvText = await appPage.textPreviewEditor.getOutputText();
         return csvText
           .split(/\r?\n/)
           .map((line) => line.trim())

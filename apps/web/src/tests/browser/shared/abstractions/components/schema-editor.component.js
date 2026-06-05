@@ -1,5 +1,6 @@
 const { expect } = require('@playwright/test');
 const { MethodPickerDialogComponent } = require('./method-picker-dialog.component');
+const { OverlaySafeActivationComponent } = require('./overlay-safe-activation.component');
 
 class SchemaEditorComponent {
   constructor(page, config) {
@@ -15,10 +16,11 @@ class SchemaEditorComponent {
     };
 
     this.root = this.config.rootSelector ? page.locator(this.config.rootSelector) : page;
+    this.overlaySafeActivation = new OverlaySafeActivationComponent(page);
     this.rowsContainer = this.config.rowsSelector
       ? page.locator(this.config.rowsSelector)
       : this.root.locator('[data-role="schema-rows-region"]');
-    this.rows = this.rowsContainer.locator('.generator-schema-row');
+    this.rows = this.rowsContainer.locator('.shared-schema-row');
     this.textArea = this.config.textAreaSelector
       ? page.locator(this.config.textAreaSelector)
       : this.root.locator('[data-role="schema-textbox"]');
@@ -36,8 +38,7 @@ class SchemaEditorComponent {
   }
 
   async dismissOpenHelpTooltips() {
-    await this.page.mouse.move(0, 0);
-    await this.page.waitForTimeout(350);
+    await this.overlaySafeActivation.dismissOpenHelpTooltips();
   }
 
   async ensureSchemaMode() {

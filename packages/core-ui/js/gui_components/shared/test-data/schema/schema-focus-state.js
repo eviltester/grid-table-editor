@@ -1,7 +1,9 @@
+import { SHARED_SCHEMA_ROW_SELECTOR } from './shared-schema-editor-ui.js';
+
 function captureActiveFieldState(documentObj) {
   const activeElement = documentObj?.activeElement;
   const fieldName = activeElement?.getAttribute?.('data-field');
-  const rowId = activeElement?.closest?.('.generator-schema-row')?.getAttribute?.('data-row-id');
+  const rowId = activeElement?.closest?.(SHARED_SCHEMA_ROW_SELECTOR)?.getAttribute?.('data-row-id');
   if (!rowId || !fieldName) {
     return null;
   }
@@ -20,7 +22,7 @@ function restoreActiveFieldState(documentObj, state) {
     return;
   }
   const nextField = documentObj?.querySelector?.(
-    `.generator-schema-row[data-row-id="${state.rowId}"] [data-field="${state.fieldName}"]`
+    `.shared-schema-row[data-row-id="${state.rowId}"] [data-field="${state.fieldName}"]`
   );
   if (!nextField) {
     return;

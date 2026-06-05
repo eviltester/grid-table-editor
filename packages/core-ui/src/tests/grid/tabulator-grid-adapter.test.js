@@ -78,6 +78,38 @@ describe('TabulatorGridAdapter', () => {
     expect(adapter.getGridApi()).toBeInstanceOf(FakeGridExtension);
   });
 
+  test('uses injected scheduling callbacks instead of ambient globals for deferred mount and cancel', async () => {
+    const rootElement = document.createElement('div');
+    const scheduledCallbacks = [];
+    const requestAnimationFrameFn = jest.fn((callback) => {
+      scheduledCallbacks.push(callback);
+      return 'frame-1';
+    });
+    const cancelAnimationFrameFn = jest.fn();
+    const ambientRequestAnimationFrame = jest.fn();
+    const ambientCancelAnimationFrame = jest.fn();
+    global.requestAnimationFrame = ambientRequestAnimationFrame;
+    global.cancelAnimationFrame = ambientCancelAnimationFrame;
+
+    const adapter = createTabulatorGridAdapter({
+      rootElement,
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      requestAnimationFrameFn,
+      cancelAnimationFrameFn,
+    });
+
+    expect(requestAnimationFrameFn).toHaveBeenCalledTimes(1);
+    expect(ambientRequestAnimationFrame).not.toHaveBeenCalled();
+    expect(adapter.getTableApi()).toBeNull();
+
+    adapter.destroy();
+
+    expect(cancelAnimationFrameFn).toHaveBeenCalledWith('frame-1');
+    expect(ambientCancelAnimationFrame).not.toHaveBeenCalled();
+    expect(scheduledCallbacks).toHaveLength(1);
+  });
+
   test('queues setGridFromGenericDataTable until the grid is mounted', async () => {
     const rootElement = document.createElement('div');
     const adapter = createTabulatorGridAdapter({

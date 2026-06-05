@@ -142,4 +142,33 @@ describe('createStatusPresenter', () => {
     expect(element.textContent).toBe('');
     expect(element.style.display).toBe('none');
   });
+
+  test('status presenter can resolve the target element through an injected callback', () => {
+    const presenter = createStatusPresenter({
+      documentObj: dom.window.document,
+      resolveElement: () => dom.window.document.querySelector('[data-role="status-root"]'),
+      hideWhenEmpty: true,
+    });
+    const element = dom.window.document.getElementById('status');
+    element.setAttribute('data-role', 'status-root');
+
+    presenter.setStatus('Scoped status');
+    expect(element.textContent).toBe('Scoped status');
+    expect(element.classList.contains('is-loading')).toBe(false);
+  });
+
+  test('loading presenter can resolve the target element through an injected callback', () => {
+    const presenter = createLoadingStatusPresenter({
+      documentObj: dom.window.document,
+      resolveElement: () => dom.window.document.querySelector('[data-role="loading-status-root"]'),
+      hideWhenEmpty: true,
+    });
+    const element = dom.window.document.getElementById('status');
+    element.setAttribute('data-role', 'loading-status-root');
+
+    presenter.setStatus('Scoped loading');
+    expect(element.textContent).toBe('Scoped loading');
+    expect(element.classList.contains('is-loading')).toBe(true);
+    expect(element.querySelector('[data-role="loading-indicator"]')?.style.display).toBe('inline-block');
+  });
 });

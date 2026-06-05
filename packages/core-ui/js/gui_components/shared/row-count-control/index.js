@@ -1,5 +1,6 @@
 import { RowCountControlController } from './row-count-control-controller.js';
 import { RowCountControlView } from './row-count-control-view.js';
+import { parseRowCountInputElement } from './row-count-control-parsing.js';
 
 function getDefaultDocumentObj() {
   return typeof document !== 'undefined' ? document : null;
@@ -25,9 +26,10 @@ function createRowCountControl({ root, props = {}, callbacks = {}, documentObj =
       return controller.getState();
     },
     getParsedValue() {
-      return controller.getParsedValue();
+      return controller.parseValue(view.getInputValue());
     },
   };
 }
 
 export { createRowCountControl, RowCountControlController, RowCountControlView };
+export { parseRowCountInputElement };

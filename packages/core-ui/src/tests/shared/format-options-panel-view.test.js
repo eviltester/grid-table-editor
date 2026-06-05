@@ -43,7 +43,7 @@ describe('createFormatOptionsPanel', () => {
     });
 
     const input = root.querySelector('input[name="header"]');
-    const button = root.querySelector('.apply-options');
+    const button = root.querySelector('[data-role="apply-options-button"]');
 
     expect(button.disabled).toBe(true);
     input.checked = true;

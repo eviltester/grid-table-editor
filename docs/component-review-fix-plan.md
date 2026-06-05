@@ -32,7 +32,7 @@ Current progress:
 - Added a shared DOM default helper at `packages/core-ui/js/gui_components/shared/dom/default-objects.js`.
 - Migrated the first component batch to root/ownerDocument-safe resolution: format options panel, shared schema definition, instructions, data population panel, import/export workspace, population actions, population mode selector, text preview editor, format selector, data-grid editor shell/grid toolbar, generator controls, generator preview, generator page, timed status presenter, and help tooltip bootstrap.
 - Added focused non-browser construction coverage for generator controls, generator preview, import/export workspace, and status presenters.
-- Finished the remaining named holdouts in this audit slice: generator bootstrap/runtime, shared schema editor, method picker modal, grid compatibility facades, import-export toolbar, and the shared schema-definition controller.
+- Finished the remaining named holdouts in this audit slice: generator bootstrap/runtime, shared schema editor, method picker modal, import-export toolbar, and the shared schema-definition controller.
 
 - [x] Replace `documentObj = document` defaults with browser-safe helpers in shared components.
 - [x] Replace `windowObj = documentObj?.defaultView || window` defaults with browser-safe helpers.
@@ -66,7 +66,6 @@ Current progress:
   - `packages/core-ui/js/gui_components/generator/page/generator-page-view.js`
 - [x] Audit and fix additional browser-global files discovered during the shared-helper pass:
   - `packages/core-ui/js/gui_components/data-grid-editor/tabulator-grid-adapter.js`
-  - `packages/core-ui/js/gui_components/data-grid-editor/tabulator/main-display-grid.js`
   - `packages/core-ui/js/gui_components/data-grid-editor/grid-error-surface.js`
   - `packages/core-ui/js/gui_components/data-grid-editor/gridControl.js`
   - `packages/core-ui/js/gui_components/shared/theme-toggle.js`
@@ -198,15 +197,15 @@ Make local verification match the migration rules more closely without making ev
 Reduce older compatibility surfaces now that component boundaries are clearer.
 
 Current progress:
-- `enableTestDataGenerationInterface` remains intentionally as a documented legacy alias for downstream compatibility, while internal runtime code uses `mountTestDataGenerationPanel`.
-- `main-display-grid.js` remains intentionally as the grid-engine selector facade, and `ag-grid/main-display-grid.js` remains as the legacy AG Grid implementation while engine selection is still supported.
+- The old `enableTestDataGenerationInterface` alias has been removed after confirming there were no live runtime consumers left in the repo; internal/runtime/public code now uses `mountTestDataGenerationPanel`.
+- The hidden grid-engine selector and AG Grid compatibility runtime have been removed after confirming there was no product-facing AG Grid path beyond the old override-based selector.
 - The only current page-facing primitive import in app-facing code is the dedicated primitive Storybook example, which is intentional documentation for the primitive itself rather than production page wiring.
 - The remaining grid-header compatibility helpers now create DOM from injected or owner-document sources instead of global `document`.
 - `Download` is now an injectable browser adapter with safe no-op behavior when DOM globals are unavailable.
 - The app test-data entrypoint now resolves its document through the shared helper and safely no-ops when no browser-owned mount root exists.
 
 - [x] Revisit `enableTestDataGenerationInterface` and decide whether it can be removed or formally documented as a public legacy alias.
-- [x] Revisit data-grid compatibility wrappers around `main-display-grid.js` and document or remove remaining aliases.
+- [x] Revisit data-grid compatibility wrappers around the main-grid bootstrap facade and document or remove remaining aliases.
 - [x] Audit ag-grid legacy files for active references and either document why they remain or remove dead code.
 - [x] Move any remaining page-facing imports away from low-level primitives when a shared presenter or feature component exists.
 - [x] Add explicit follow-up todos for any legacy helper that still performs global DOM lookup internally.

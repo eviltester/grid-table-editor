@@ -54,6 +54,24 @@ describe('row-count-control view', () => {
     expect(root.children.length).toBe(0);
   });
 
+  test('does not emit a fixed input id by default', () => {
+    const root = document.getElementById('root');
+    createRowCountControl({
+      root,
+      props: {
+        label: 'How Many?',
+        min: 1,
+        step: 1,
+        value: 1,
+      },
+    });
+
+    const input = root.querySelector('[data-role="input"]');
+    expect(input?.id).toBe('');
+    expect(input?.getAttribute('name')).toBeNull();
+    expect(root.querySelector('#rowCount')).toBeNull();
+  });
+
   test('normalizes browser-sanitized invalid text input through the mounted component when configured to normalize on input', () => {
     const root = document.getElementById('root');
     const onChange = jest.fn();
@@ -145,6 +163,30 @@ describe('row-count-control view', () => {
 
     expect(onChange).not.toHaveBeenCalled();
     expect(root.children.length).toBe(0);
+  });
+
+  test('getParsedValue reads the live mounted input value even before an input event fires', () => {
+    const root = document.getElementById('root');
+    const component = createRowCountControl({
+      root,
+      props: {
+        inputId: 'previewRowsCount',
+        label: 'Preview Items Count',
+        min: 0,
+        max: 50,
+        step: 1,
+        value: 10,
+      },
+    });
+
+    const input = root.querySelector('#previewRowsCount');
+    input.value = '23';
+
+    expect(component.getParsedValue()).toEqual({
+      value: 23,
+      valid: true,
+      errors: [],
+    });
   });
 
   test('can be created without a global document when a root element is provided', () => {

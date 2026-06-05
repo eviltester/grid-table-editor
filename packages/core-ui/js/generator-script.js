@@ -18,7 +18,10 @@ async function bootstrapGeneratorPage({
   fakerInstance = faker,
   initHelpTooltipsFn = initHelpTooltips,
 } = {}) {
-  initThemeToggle({ documentObj, windowObj: resolveWindowObj(null, documentObj) });
+  const themeToggle = initThemeToggle({
+    documentObj,
+    windowObj: resolveWindowObj(null, documentObj),
+  });
   const pageRoot = documentObj.getElementById('generator-page-root');
   const generatorPageShell = pageRoot
     ? createGeneratorPageShellComponent({
@@ -70,6 +73,7 @@ async function bootstrapGeneratorPage({
     destroy() {
       page?.destroy?.();
       generatorPageShell?.destroy?.();
+      themeToggle?.destroy?.();
     },
   };
 }

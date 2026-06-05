@@ -1,6 +1,7 @@
+import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
 import {
-  parseGeneratorRowCount,
+  renderGeneratorOutputPreview,
   updateGeneratorPairwiseButtonVisibility,
 } from '../../../js/gui_components/generator/generation/index.js';
 
@@ -8,9 +9,7 @@ describe('generator generation actions', () => {
   let dom;
 
   beforeEach(() => {
-    dom = new JSDOM(
-      '<!doctype html><html><body><input id="previewRowsCount" max="50" value="999" /><div id="generateAllPairsButtonWrapper"></div></body></html>'
-    );
+    dom = new JSDOM('<!doctype html><html><body><div id="generateAllPairsButtonWrapper"></div></body></html>');
     global.document = dom.window.document;
     global.window = dom.window;
   });
@@ -19,27 +18,17 @@ describe('generator generation actions', () => {
     dom.window.close();
   });
 
-  test('parseGeneratorRowCount enforces max values', () => {
-    const parsed = parseGeneratorRowCount({ documentObj: document, inputId: 'previewRowsCount' });
-
-    expect(parsed.value).toBe(50);
-    expect(parsed.errors).toEqual(['previewRowsCount must be less than or equal to 50.']);
-  });
-
   test('updateGeneratorPairwiseButtonVisibility hides wrapper for invalid schema', () => {
     const isVisible = updateGeneratorPairwiseButtonVisibility({
-      documentObj: document,
       syncSchemaRowsFromTextMode: () => ({ rows: [{ sourceType: 'enum', value: 'a,b' }], errors: ['bad'] }),
       validateSchemaRows: () => ({ rows: [], errors: [] }),
     });
 
     expect(isVisible).toBe(false);
-    expect(document.getElementById('generateAllPairsButtonWrapper').style.display).toBe('none');
   });
 
   test('updateGeneratorPairwiseButtonVisibility returns true for pairwise-eligible schema', () => {
     const isVisible = updateGeneratorPairwiseButtonVisibility({
-      documentObj: document,
       syncSchemaRowsFromTextMode: () => ({
         rows: [
           { sourceType: 'enum', value: 'enum(chrome,firefox,safari)' },
@@ -51,6 +40,38 @@ describe('generator generation actions', () => {
     });
 
     expect(isVisible).toBe(true);
-    expect(document.getElementById('generateAllPairsButtonWrapper').style.display).toBe('inline-flex');
+  });
+
+  test('renderGeneratorOutputPreview writes through the injected preview setter only', () => {
+    const setOutputPreviewText = jest.fn();
+    const exporter = {
+      canExport: jest.fn(() => true),
+      getDataTableAs: jest.fn(() => 'json:sync:2'),
+    };
+    const fakeDataTable = { getRowCount: () => 2 };
+
+    renderGeneratorOutputPreview({
+      getSelectedOutputType: () => 'json',
+      getPreviewDataTable: () => fakeDataTable,
+      exporter,
+      setOutputPreviewText,
+    });
+
+    expect(setOutputPreviewText).toHaveBeenCalledWith('json:sync:2');
+  });
+
+  test('updateGeneratorPairwiseButtonVisibility does not require a document object', () => {
+    const isVisible = updateGeneratorPairwiseButtonVisibility({
+      getCurrentSchemaState: () => ({
+        rows: [
+          { sourceType: 'enum', value: 'enum(chrome,firefox,safari)' },
+          { sourceType: 'enum', value: 'enum(free,pro,enterprise)' },
+        ],
+        errors: [],
+      }),
+      validateSchemaRows: (rows) => ({ rows, errors: [] }),
+    });
+
+    expect(isVisible).toBe(true);
   });
 });

@@ -15,7 +15,7 @@ class FormatSelectorView {
       throw new Error('FormatSelectorView requires root and subtasksRoot');
     }
 
-    this.root.innerHTML = '<ul class="conversionTypesList"></ul>';
+    this.root.innerHTML = '<ul class="conversionTypesList" data-role="format-tabs-list"></ul>';
     this.bindEvents();
     this.render();
   }
@@ -26,7 +26,7 @@ class FormatSelectorView {
   }
 
   handleClick(event) {
-    const action = event.target.closest('.type-select-action, .subtask-select-action');
+    const action = event.target.closest('[data-role="format-main-tab-action"], [data-role="format-subtask-action"]');
     if (!action) {
       return;
     }
@@ -47,7 +47,7 @@ class FormatSelectorView {
   }
 
   render() {
-    const listRoot = this.root.querySelector('.conversionTypesList');
+    const listRoot = this.getTabsListRoot();
     if (!listRoot) {
       return;
     }
@@ -59,9 +59,11 @@ class FormatSelectorView {
         const activeClass = definition.id === state.activeMainTabId ? ' active-main-type' : '';
         const directActiveClass =
           definition.type && definition.type === state.activeType ? ' active-type active-main-type' : activeClass;
+        const activeMainTab = definition.id === state.activeMainTabId;
+        const activeFormat = definition.type ? definition.type === state.activeType : false;
 
-        return `<li id="type-${definition.id}" class="type-select${directActiveClass}" data-tab-id="${definition.id}">
-                <a class="type-select-action" data-tab-id="${definition.id}" ${typeAttributes} href="#">${definition.label}</a>
+        return `<li class="type-select${directActiveClass}" data-role="format-main-tab-item" data-tab-id="${definition.id}" data-active-main-tab="${activeMainTab}" data-active-format="${activeFormat}">
+                <a class="type-select-action" data-role="format-main-tab-action" data-tab-id="${definition.id}" ${typeAttributes} href="#">${definition.label}</a>
               </li>`;
       })
       .join('');
@@ -73,14 +75,15 @@ class FormatSelectorView {
       return;
     }
 
-    this.subtasksRoot.innerHTML = `<ul class="conversionSubtasksList">
+    this.subtasksRoot.innerHTML = `<ul class="conversionSubtasksList" data-role="format-subtasks-list">
       ${activeDefinition.subtasks
         .map((subtask) => {
           const supportedTypes = subtask.types || [subtask.type];
           const selectedType = subtask.selectedType || subtask.type;
-          const activeClass = supportedTypes.includes(state.activeType) ? ' active-type' : '';
-          return `<li class="subtask-select${activeClass}" data-subtask-id="${subtask.id}" data-types="${supportedTypes.join(',')}" data-type="${selectedType}">
-            <a class="subtask-select-action" data-subtask-id="${subtask.id}" data-type="${selectedType}" href="#">${subtask.label}</a>
+          const isActive = supportedTypes.includes(state.activeType);
+          const activeClass = isActive ? ' active-type' : '';
+          return `<li class="subtask-select${activeClass}" data-role="format-subtask-item" data-type="${selectedType}" data-active-format="${isActive}">
+            <a class="subtask-select-action" data-role="format-subtask-action" data-type="${selectedType}" href="#">${subtask.label}</a>
           </li>`;
         })
         .join('')}
@@ -93,6 +96,10 @@ class FormatSelectorView {
     this.subtasksRoot.removeEventListener('click', this.handleSubtasksClick);
     this.root.replaceChildren();
     this.subtasksRoot.replaceChildren();
+  }
+
+  getTabsListRoot() {
+    return this.root.querySelector('[data-role="format-tabs-list"]');
   }
 }
 

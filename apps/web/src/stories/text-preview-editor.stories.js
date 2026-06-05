@@ -1,4 +1,4 @@
-import { expect, userEvent, waitFor, within } from 'storybook/test';
+import { expect, userEvent, within } from 'storybook/test';
 import { createTextPreviewEditorComponent } from '../../../../packages/core-ui/js/gui_components/app/text-preview-editor/index.js';
 
 function renderTextPreviewEditorStory(args) {
@@ -53,10 +53,7 @@ export const PreviewMode = {
     const autoPreviewCheckbox = canvas.getByRole('checkbox', { name: 'Auto Preview' });
 
     await userEvent.hover(helpButton);
-    await waitFor(() => {
-      const tooltip = document.body.querySelector('.tippy-box');
-      expect(tooltip?.textContent || '').toContain('Preview mode shows a sample of the first 10 rows');
-    });
+    await expect(helpButton).toHaveAttribute('data-help-text', expect.stringContaining('first 10 rows'));
 
     await expect(autoPreviewCheckbox).toBeEnabled();
     await expect(canvas.getByRole('button', { name: 'Preview' })).toBeTruthy();
@@ -82,12 +79,10 @@ export const EditMode = {
     const autoPreviewCheckbox = canvas.getByRole('checkbox', { name: 'Auto Preview' });
 
     await userEvent.hover(helpButton);
-    await waitFor(() => {
-      const tooltips = Array.from(document.body.querySelectorAll('.tippy-box'));
-      expect(
-        tooltips.some((tooltip) => (tooltip.textContent || '').includes('Edit mode shows the full grid text'))
-      ).toBe(true);
-    });
+    await expect(helpButton).toHaveAttribute(
+      'data-help-text',
+      expect.stringContaining('Edit mode shows the full grid text')
+    );
 
     await expect(autoPreviewCheckbox).toBeDisabled();
     await expect(canvas.getByRole('button', { name: 'Edit' })).toBeTruthy();

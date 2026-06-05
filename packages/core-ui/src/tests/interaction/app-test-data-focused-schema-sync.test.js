@@ -42,7 +42,9 @@ describe('app test-data focused schema sync', () => {
     await harness.setSchemaText('Status\nenum(active,inactive)');
 
     await waitFor(() =>
-      expect(document.querySelectorAll('#testDataSchemaRows .generator-schema-row').length).toBeGreaterThanOrEqual(1)
+      expect(
+        document.querySelectorAll('[data-role="schema-rows-region"] .shared-schema-row').length
+      ).toBeGreaterThanOrEqual(1)
     );
     const row = harness.getGridRow(0);
     expect(row.querySelector('[data-field="name"]').value).toBe('Status');
@@ -56,7 +58,9 @@ describe('app test-data focused schema sync', () => {
     await harness.setSchemaText('Status\nenum(active,inactive)');
 
     await waitFor(() => expect(harness.getSchemaErrorText()).toBe(''));
-    expect(document.querySelectorAll('#testDataSchemaRows .generator-schema-row').length).toBeGreaterThanOrEqual(1);
+    expect(
+      document.querySelectorAll('[data-role="schema-rows-region"] .shared-schema-row').length
+    ).toBeGreaterThanOrEqual(1);
   });
 
   test('sample schema shortcut populates text schema and becomes generatable', async () => {
@@ -87,7 +91,9 @@ describe('app test-data focused schema sync', () => {
     await harness.deleteSelectedColumns();
 
     await waitFor(() =>
-      expect(document.querySelectorAll('#testDataSchemaRows .generator-schema-row').length).toBeGreaterThanOrEqual(1)
+      expect(
+        document.querySelectorAll('[data-role="schema-rows-region"] .shared-schema-row').length
+      ).toBeGreaterThanOrEqual(1)
     );
     expect(harness.getSchemaText()).not.toContain('Status');
     expect(harness.getSchemaText()).toContain('Code');

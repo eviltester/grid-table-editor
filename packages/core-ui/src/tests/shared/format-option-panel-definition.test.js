@@ -35,7 +35,7 @@ describe('format option panel definitions', () => {
 
       expect(payload.outputFormat).toBeTruthy();
       expect(payload.options).toEqual(expect.any(Object));
-      expect(root.querySelector('.apply-options')).not.toBeNull();
+      expect(root.querySelector('[data-role="apply-options-button"]')).not.toBeNull();
       panel.destroy();
     });
 
@@ -116,6 +116,28 @@ describe('format option panel definitions', () => {
       outputAsJsonLines: true,
       prettyPrint: false,
     });
+
+    dom.window.close();
+  });
+
+  test('Python definition renders long text and textarea controls with the shared block-width contract', () => {
+    const { dom, root } = createRoot();
+    const panel = createFormatOptionPanel(getFormatOptionDefinition('python'), { root });
+
+    panel.render();
+
+    const decimalColumnsInput = root.querySelector("input[name='decimalcolumnscsv']");
+    const importStatementsTextarea = root.querySelector("textarea[name='importstatements']");
+
+    expect(decimalColumnsInput).not.toBeNull();
+    expect(importStatementsTextarea).not.toBeNull();
+    expect(decimalColumnsInput.classList.contains('format-option-control')).toBe(true);
+    expect(importStatementsTextarea.classList.contains('format-option-control')).toBe(true);
+    expect(importStatementsTextarea.classList.contains('format-option-textarea')).toBe(true);
+    expect(decimalColumnsInput.closest('.format-option-field')).not.toBeNull();
+    expect(importStatementsTextarea.closest('.format-option-field')).not.toBeNull();
+    expect(decimalColumnsInput.closest('label')?.classList.contains('format-option-block-label')).toBe(true);
+    expect(importStatementsTextarea.closest('label')?.classList.contains('format-option-block-label')).toBe(true);
 
     dom.window.close();
   });

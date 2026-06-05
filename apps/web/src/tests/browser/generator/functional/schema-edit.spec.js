@@ -97,15 +97,13 @@ test.describe('Generator Schema Editing', () => {
 
     await expect(generatorPage.schema.row(0).locator('select[data-field="sourceType"]')).toHaveValue('domain');
     await expect(generatorPage.schema.row(0).locator('[data-action="pick-command"]')).toHaveText('person.fullNam');
-    await expect(generatorPage.schema.row(0)).toHaveClass(/generator-schema-row-invalid/);
-    await expect(generatorPage.schema.row(0).locator('.generator-schema-row-validation')).toContainText(
+    await expect(generatorPage.schema.row(0)).toHaveClass(/shared-schema-row-invalid/);
+    await expect(generatorPage.schema.row(0).locator('.shared-schema-row-validation')).toContainText(
       'Row 1: unknown domain command "person.fullNam".'
     );
 
     await generatorPage.preview.clickPreview();
-    await expect(page.locator('#generatorSchemaErrorText')).toContainText(
-      'Row 1: unknown domain command "person.fullNam".'
-    );
+    await expect(generatorPage.schema.errorStatus).toContainText('Row 1: unknown domain command "person.fullNam".');
 
     expectNoPageErrors(pageErrors);
   });
@@ -126,7 +124,7 @@ test.describe('Generator Schema Editing', () => {
     await expect(generatorPage.schema.row(0).locator('select[data-field="sourceType"]')).toHaveValue('domain');
     await expect(generatorPage.schema.row(0).locator('[data-action="pick-command"]')).toHaveText('person.fullName');
     await expect(generatorPage.schema.row(0).locator('input[data-field="params"]')).toHaveValue('(10)');
-    await expect(generatorPage.schema.row(0).locator('.generator-schema-row-validation')).toContainText(
+    await expect(generatorPage.schema.row(0).locator('.shared-schema-row-validation')).toContainText(
       'invalid domain params'
     );
 
@@ -144,7 +142,7 @@ test.describe('Generator Schema Editing', () => {
     await paramsInput.fill('(10)');
     await generatorPage.schema.row(0).locator('input[data-field="name"]').click();
 
-    await expect(generatorPage.schema.row(0).locator('.generator-schema-row-validation')).toContainText(
+    await expect(generatorPage.schema.row(0).locator('.shared-schema-row-validation')).toContainText(
       'invalid domain params',
       { timeout: 2000 }
     );
@@ -157,18 +155,18 @@ test.describe('Generator Schema Editing', () => {
   }) => {
     const { generatorPage, pageErrors } = await openGenerator(page);
 
-    const row = generatorPage.page.locator('.generator-schema-row').first();
+    const row = generatorPage.page.locator('.shared-schema-row').first();
     await generatorPage.schema.setRowSourceType(0, 'literal');
     await generatorPage.schema.setRowValue(0, 'Active');
     await generatorPage.preview.clickPreview();
-    await expect(row.locator('.generator-schema-row-validation')).toContainText('column name is required');
+    await expect(row.locator('.shared-schema-row-validation')).toContainText('column name is required');
 
     const nameInput = row.locator('input[data-field="name"]');
     const valueInput = row.locator('input[data-field="value"]');
     await nameInput.fill('Status');
     await valueInput.click();
 
-    await expect(row.locator('.generator-schema-row-validation')).toHaveCount(0);
+    await expect(row.locator('.shared-schema-row-validation')).toHaveCount(0);
     expectNoPageErrors(pageErrors);
   });
 
@@ -311,9 +309,7 @@ test.describe('Generator Schema Editing', () => {
     await generatorPage.schema.setTextMode(false);
 
     await expect.poll(async () => generatorPage.schema.editor.isRowEditorMode()).toBe(true);
-    await expect(page.locator('#generatorSchemaErrorText')).not.toContainText(
-      'No rules defined. Provide column/rule pairs.'
-    );
+    await expect(generatorPage.schema.errorStatus).not.toContainText('No rules defined. Provide column/rule pairs.');
 
     expectNoPageErrors(pageErrors);
   });

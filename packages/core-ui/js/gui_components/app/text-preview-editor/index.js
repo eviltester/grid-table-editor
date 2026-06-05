@@ -39,6 +39,18 @@ function createTextPreviewEditorComponent({ root, props = {}, callbacks = {}, se
     getTextArea() {
       return view.getTextArea();
     },
+    getEditArea() {
+      return view.getEditArea();
+    },
+    getOptionsPanelRoot() {
+      return view.getOptionsPanelRoot();
+    },
+    getOptionsPreviewSplitter() {
+      return view.getOptionsPreviewSplitter();
+    },
+    getTextAreaWrapper() {
+      return view.getTextAreaWrapper();
+    },
     getTextValue() {
       return view.getTextValue();
     },

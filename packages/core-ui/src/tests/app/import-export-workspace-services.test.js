@@ -1,8 +1,10 @@
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 import { jest } from '@jest/globals';
 import {
+  createDownloadService,
   createPreviewTextFromDataTable,
   createPreviewTextFromGrid,
+  createYieldToUi,
   limitDataTableRows,
   normalizePreviewRowLimit,
   previewThenImportToGrid,
@@ -44,6 +46,73 @@ describe('import-export workspace services', () => {
         previewRowLimit: 2,
       })
     ).toBe('json:2');
+  });
+
+  test('passes injected browser dependencies through the download service to the Download adapter', () => {
+    const documentObj = { body: {} };
+    const URLObj = { createObjectURL: jest.fn(), revokeObjectURL: jest.fn() };
+    const BlobCtor = jest.fn();
+    const downloadFile = jest.fn();
+    const DownloadCtor = jest.fn(function MockDownload(filename, options) {
+      this.filename = filename;
+      this.options = options;
+      this.downloadFile = downloadFile;
+    });
+
+    const downloadService = createDownloadService({
+      DownloadCtor,
+      documentObj,
+      URLObj,
+      BlobCtor,
+    });
+
+    downloadService.downloadText('export.csv', 'id,name');
+
+    expect(DownloadCtor).toHaveBeenCalledWith('export.csv', {
+      documentObj,
+      URLObj,
+      BlobCtor,
+    });
+    expect(downloadFile).toHaveBeenCalledWith('id,name');
+  });
+
+  test('prefers injected scheduling callbacks over ambient globals in yield-to-ui', async () => {
+    const scheduledAnimationFrames = [];
+    const scheduledTimeouts = [];
+    const requestAnimationFrameFn = jest.fn((callback) => {
+      scheduledAnimationFrames.push(callback);
+      return 'frame-1';
+    });
+    const setTimeoutFn = jest.fn((callback, delayMs) => {
+      scheduledTimeouts.push({ callback, delayMs });
+      callback();
+      return 'timer-1';
+    });
+    const ambientRequestAnimationFrame = jest.fn();
+    const ambientSetTimeout = global.setTimeout;
+    global.requestAnimationFrame = ambientRequestAnimationFrame;
+    global.setTimeout = jest.fn();
+
+    try {
+      const yieldToUi = createYieldToUi({
+        requestAnimationFrameFn,
+        setTimeoutFn,
+      });
+
+      const promise = yieldToUi();
+      expect(scheduledAnimationFrames).toHaveLength(1);
+      scheduledAnimationFrames[0]();
+      await promise;
+
+      expect(requestAnimationFrameFn).toHaveBeenCalledTimes(1);
+      expect(setTimeoutFn).toHaveBeenCalledWith(expect.any(Function), 0);
+      expect(ambientRequestAnimationFrame).not.toHaveBeenCalled();
+      expect(global.setTimeout).not.toHaveBeenCalled();
+      expect(scheduledTimeouts).toHaveLength(1);
+    } finally {
+      delete global.requestAnimationFrame;
+      global.setTimeout = ambientSetTimeout;
+    }
   });
 
   test('previews imported text before applying the full data table to the grid', async () => {

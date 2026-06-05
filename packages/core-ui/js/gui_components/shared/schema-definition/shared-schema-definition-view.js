@@ -1,5 +1,17 @@
 import { resolveDocumentObj } from '../dom/default-objects.js';
 
+const SCHEMA_ROWS_ROLE = 'schema-rows-region';
+const SCHEMA_TEXT_REGION_ROLE = 'schema-text-region';
+const SCHEMA_TEXTBOX_ROLE = 'schema-textbox';
+const SCHEMA_ADD_FIELD_ROLE = 'schema-add-field';
+const SCHEMA_MODE_TOGGLE_ROLE = 'schema-mode-toggle';
+const SCHEMA_MODE_HELP_ROLE = 'schema-mode-help';
+const SCHEMA_ERROR_ROLE = 'schema-error';
+
+function renderOptionalIdAttr(idValue) {
+  return idValue ? ` id="${idValue}"` : '';
+}
+
 class SharedSchemaDefinitionView {
   constructor({ root, controller, documentObj } = {}) {
     this.root = root;
@@ -15,7 +27,7 @@ class SharedSchemaDefinitionView {
       void this.controller.handleClick(event);
     };
     this.handleRootClick = (event) => {
-      if (!event?.target?.closest?.('.shared-schema-sample-button, .generator-schema-sample-button')) {
+      if (!event?.target?.closest?.('.shared-schema-sample-button')) {
         return;
       }
       event.preventDefault();
@@ -23,7 +35,7 @@ class SharedSchemaDefinitionView {
       this.controller.insertSampleSchema();
     };
     this.handleDocumentClick = (event) => {
-      if (!event?.target?.closest?.('.shared-schema-sample-button, .generator-schema-sample-button')) {
+      if (!event?.target?.closest?.('.shared-schema-sample-button')) {
         return;
       }
       event.preventDefault();
@@ -57,6 +69,10 @@ class SharedSchemaDefinitionView {
     };
   }
 
+  getElementByRole(role) {
+    return this.root?.querySelector?.(`[data-role="${role}"]`) || null;
+  }
+
   mount() {
     if (!this.root) {
       throw new Error('SharedSchemaDefinitionView requires a root element');
@@ -73,41 +89,53 @@ class SharedSchemaDefinitionView {
       <section class="${viewModel.sectionClassName}" data-role="shared-schema-definition">
         <div class="${viewModel.headingClassName}${headingRowClassName}">
           ${headingMarkup}
-          <span id="${viewModel.ids.error}" class="${viewModel.errorClassName}" data-role="schema-error" aria-live="polite" role="status"></span>
-          <span class="generator-button-with-help">
+          <span${renderOptionalIdAttr(viewModel.ids.error)} class="${viewModel.errorClassName}" data-role="schema-error" aria-live="polite" role="status"></span>
+          <span class="${viewModel.helpGroupClassName}" data-role="schema-mode-toggle-group">
             <span
-              id="${viewModel.ids.helpIcon}"
+              ${renderOptionalIdAttr(viewModel.ids.helpIcon)}
               class="helpicon"
               data-role="schema-mode-help"
               data-help="${viewModel.helpIconDataHelp}"></span>
             <button
-              id="${viewModel.ids.toggleButton}"
+              ${renderOptionalIdAttr(viewModel.ids.toggleButton)}
               class="icon-button"
               data-role="schema-mode-toggle"
               title="${viewModel.toggleButtonTitle}">Edit as Text</button>
           </span>
         </div>
-        <div id="${viewModel.ids.rows}" class="generator-schema-rows" data-role="schema-rows-region"></div>
-        <div id="${viewModel.ids.textContainer}" class="generator-schema-text" data-role="schema-text-region">
+        <div${renderOptionalIdAttr(viewModel.ids.rows)} class="${viewModel.rowsClassName}" data-role="schema-rows-region"></div>
+        <div${renderOptionalIdAttr(viewModel.ids.textContainer)} class="${viewModel.textContainerClassName}" data-role="schema-text-region">
           <textarea
-            id="${viewModel.ids.text}"
+            ${renderOptionalIdAttr(viewModel.ids.text)}
             class="${viewModel.textAreaClassName}"
             data-role="schema-textbox"
             placeholder="${viewModel.textAreaPlaceholder}"></textarea>
         </div>
-        <div class="generator-schema-footer" data-role="schema-footer">
+        <div class="${viewModel.footerClassName}" data-role="schema-footer">
           <button
-            id="${viewModel.ids.addButton}"
+            ${renderOptionalIdAttr(viewModel.ids.addButton)}
             class="${addButtonClassName.trim()}"
             data-role="schema-add-field">${viewModel.addButtonLabel}</button>
         </div>
       </section>
     `;
 
-    this.rowsElement = this.root.querySelector(`#${viewModel.ids.rows}`);
-    this.addButtonElement = this.root.querySelector(`#${viewModel.ids.addButton}`);
-    this.toggleButtonElement = this.root.querySelector(`#${viewModel.ids.toggleButton}`);
-    this.textAreaElement = this.root.querySelector(`#${viewModel.ids.text}`);
+    this.rowsElement = this.getElementByRole(SCHEMA_ROWS_ROLE);
+    this.textContainerElement = this.getElementByRole(SCHEMA_TEXT_REGION_ROLE);
+    this.addButtonElement = this.getElementByRole(SCHEMA_ADD_FIELD_ROLE);
+    this.toggleButtonElement = this.getElementByRole(SCHEMA_MODE_TOGGLE_ROLE);
+    this.helpIconElement = this.getElementByRole(SCHEMA_MODE_HELP_ROLE);
+    this.errorElement = this.getElementByRole(SCHEMA_ERROR_ROLE);
+    this.textAreaElement = this.getElementByRole(SCHEMA_TEXTBOX_ROLE);
+    this.controller.attachElements?.({
+      rowsElement: this.rowsElement,
+      textContainerElement: this.textContainerElement,
+      addButtonElement: this.addButtonElement,
+      toggleButtonElement: this.toggleButtonElement,
+      helpIconElement: this.helpIconElement,
+      errorElement: this.errorElement,
+      textElement: this.textAreaElement,
+    });
 
     this.rowsElement?.addEventListener('input', this.handleContainerInput);
     this.rowsElement?.addEventListener('change', this.handleContainerInput);

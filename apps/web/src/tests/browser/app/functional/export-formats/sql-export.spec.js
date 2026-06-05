@@ -5,10 +5,10 @@ test.describe('5. Export Formats', () => {
   test('SQL Export', async ({ page }) => {
     const { appPage, pageErrors } = await openApp(page);
     await seedRows(appPage, ['Alpha', "O'Reilly"]);
-    await appPage.tabbedText.selectFormat('SQL');
-    await appPage.importExportControls.setTextFromGrid();
+    await appPage.textPreviewEditor.selectFormat('SQL');
+    await appPage.importExportWorkspace.setTextFromGrid();
 
-    const text = await appPage.tabbedText.getOutputText();
+    const text = await appPage.textPreviewEditor.getOutputText();
     expect(text.toLowerCase()).toContain('insert');
     expect(text).toContain("O''Reilly");
 

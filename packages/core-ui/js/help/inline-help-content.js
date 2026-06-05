@@ -113,6 +113,13 @@ const sharedInlineHelpEntries = {
       <p>Configure suite name, test name prefix, data source strategy, setup inclusion, and formatting options before pressing [Apply].</p>
       <p><a class="helplink" href="docs/data-formats/unit-test-code/options" target="anywaydatadocs">See full unit-test option mapping</a></p>
     `,
+  'shared-generator-screen-overview': `
+      <p><strong>Generator Screen Overview</strong></p>
+      <p><strong>Schema:</strong> Define fields and rules using row-based schema editing or text schema mode.</p>
+      <p><strong>Generate Data and Options:</strong> Choose output format, configure options, then generate files.</p>
+      <p><strong>Preview:</strong> Generate a small sample to validate output before downloading larger files.</p>
+      <p><a class="helplink" href="https://anywaydata.com/docs/test-data/generate-to-file" target="_blank" rel="noopener noreferrer">Generate To File docs</a></p>
+    `,
   'generator-screen-overview': `
       <p><strong>Generator Screen Overview</strong></p>
       <p><strong>Schema:</strong> Define fields and rules using row-based schema editing or text schema mode.</p>
@@ -124,6 +131,37 @@ const sharedInlineHelpEntries = {
       <p><strong>Schema Edit Mode</strong></p>
       <p>Switch between row-based schema editing and text schema editing.</p>
       <p>Row mode is useful for guided field editing, while text mode is useful for quick bulk updates.</p>
+    `,
+  'shared-schema-mode-help': `
+      <p><strong>Schema Edit Mode</strong></p>
+      <p>Switch between row-based schema editing and text schema editing.</p>
+      <p>Row mode is useful for guided field editing, while text mode is useful for quick bulk updates.</p>
+    `,
+  'shared-schema-help': `
+      <p><strong>Schema Field Help</strong></p>
+      <p>Open help for the current schema command or field type.</p>
+    `,
+  'shared-generator-preview-help': `
+      <p>Show a preview of the defined items count in the Output Preview area.</p>
+    `,
+  'shared-generator-generate-data-help': `
+      <p>Generate Data for currently defined rows and output format to file.</p>
+      <p><a class="helplink" href="https://anywaydata.com/docs/test-data/generate-to-file" target="_blank" rel="noopener noreferrer">Generate To File docs</a></p>
+    `,
+  'shared-generator-pairwise-help': `
+      <p>Generate Pairwise Data from schema to a file.</p>
+      <p><a class="helplink" href="https://anywaydata.com/docs/test-data/pairwise-testing" target="_blank" rel="noopener noreferrer">Pairwise testing docs</a></p>
+    `,
+  'generator-preview-help': `
+      <p>Show a preview of the defined items count in the Output Preview area.</p>
+    `,
+  'generator-generate-data-help': `
+      <p>Generate Data for currently defined rows and output format to file.</p>
+      <p><a class="helplink" href="https://anywaydata.com/docs/test-data/generate-to-file" target="_blank" rel="noopener noreferrer">Generate To File docs</a></p>
+    `,
+  'generator-pairwise-help': `
+      <p>Generate Pairwise Data from schema to a file.</p>
+      <p><a class="helplink" href="https://anywaydata.com/docs/test-data/pairwise-testing" target="_blank" rel="noopener noreferrer">Pairwise testing docs</a></p>
     `,
 };
 

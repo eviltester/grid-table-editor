@@ -88,7 +88,7 @@ export const Generator = {
     docs: {
       description: {
         story:
-          'Shows the generator-page instructions variant. This version keeps the generator-specific overview help and list guidance, but does not render the app-only copy-to-grid action or footer.',
+          'Shows the generator-page instructions variant. This version uses the shared generator overview help entry and list guidance, but does not render the app-only copy-to-grid action or footer.',
       },
     },
   },

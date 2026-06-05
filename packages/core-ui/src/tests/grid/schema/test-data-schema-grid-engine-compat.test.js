@@ -1,5 +1,6 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
+import { within } from '@testing-library/dom';
 import { mountTestDataGenerationPanel } from '../../../../js/gui_components/app/test-data-grid/index.js';
 
 describe('test data schema editor compatibility', () => {
@@ -46,16 +47,22 @@ describe('test data schema editor compatibility', () => {
 
   test('renders row-based schema controls when initialized', () => {
     setup();
-    expect(document.querySelector('#generatedata')).toBeTruthy();
-    expect(document.querySelector('#testDataSchemaRows')).toBeTruthy();
-    expect(document.querySelector('#testDataAddSchemaRowButton')).toBeTruthy();
-    expect(document.querySelector('#testDataSchemaText')).toBeTruthy();
-    expect(document.getElementById('testdata-schema-error').textContent).toBe('');
+    const panelRoot = document.querySelector('[data-role="data-population-panel-root"]');
+    expect(within(panelRoot).getByRole('button', { name: /^generate$/i })).toBeTruthy();
+    expect(document.querySelector('[data-role="schema-rows-region"]')).toBeTruthy();
+    expect(document.querySelector('[data-role="schema-textbox"]')).toBeTruthy();
+    expect(document.querySelector('[data-role="schema-add-field"]')).toBeTruthy();
+    expect(document.querySelector('[data-role="schema-mode-toggle"]')).toBeTruthy();
+    expect(document.querySelector('[data-role="schema-mode-help"]')).toBeTruthy();
+    expect(document.querySelector('[data-role="schema-error"]').textContent).toBe('');
   });
 
   test('mode radios update How Many from grid context', () => {
     setup({ getRowCount: jest.fn(() => 12), getSelectedRowIndexes: jest.fn(() => [1, 4, 5]) });
-    const countInput = document.getElementById('generateCount');
+    const countInput = within(document.querySelector('[data-role="data-population-panel-root"]')).getByRole(
+      'spinbutton',
+      { name: 'How Many?' }
+    );
     expect(countInput.value).toBe('1');
 
     const amendTableRadio = document.querySelector('input[value="amend-table"]');
@@ -71,35 +78,45 @@ describe('test data schema editor compatibility', () => {
 
   test('refresh text preview button renders text on demand', async () => {
     const { renderer } = setup();
-    document.getElementById('refreshtestdatapreview').click();
+    within(document.querySelector('[data-role="data-population-panel-root"]'))
+      .getByRole('button', { name: /refresh text preview/i })
+      .click();
     await flushUi();
     expect(renderer.renderTextFromGrid).toHaveBeenCalledTimes(1);
-    expect(document.getElementById('testdata-status').textContent).toContain('Text preview refreshed');
+    expect(document.querySelector('[data-role="population-status"]').textContent).toContain('Text preview refreshed');
   });
 
   test('invalid schema reports validation error', async () => {
     setup();
-    document.getElementById('testDataSchemaText').value = 'OnlyAHeader';
-    document.getElementById('generatedata').click();
+    document.querySelector('[data-role="schema-textbox"]').value = 'OnlyAHeader';
+    within(document.querySelector('[data-role="data-population-panel-root"]'))
+      .getByRole('button', {
+        name: /^generate$/i,
+      })
+      .click();
     await flushUi();
-    expect(document.getElementById('testdata-schema-error').textContent).toContain('Row 1: column name is required.');
+    expect(document.querySelector('[data-role="schema-error"]').textContent).toContain(
+      'Row 1: column name is required.'
+    );
   });
 
   test('pairwise generation reports error when fewer than two enum columns exist', async () => {
     setup();
-    const schemaTextArea = document.getElementById('testDataSchemaText');
+    const schemaTextArea = document.querySelector('[data-role="schema-textbox"]');
     schemaTextArea.value = 'OnlyEnum\nenum(a,b)';
     schemaTextArea.dispatchEvent(new Event('input', { bubbles: true }));
     await waitForCondition(() => {
-      const nameInput = document.querySelector('#testDataSchemaRows .generator-schema-row input[data-field="name"]');
+      const nameInput = document.querySelector(
+        '[data-role="schema-rows-region"] .shared-schema-row input[data-field="name"]'
+      );
       const sourceTypeSelect = document.querySelector(
-        '#testDataSchemaRows .generator-schema-row select[data-field="sourceType"]'
+        '[data-role="schema-rows-region"] .shared-schema-row select[data-field="sourceType"]'
       );
       return String(nameInput?.value || '').trim() === 'OnlyEnum' && String(sourceTypeSelect?.value || '') === 'enum';
     });
-    document.getElementById('generateallpairs').click();
+    document.querySelector('[data-role="data-population-panel-root"] [data-role="generate-pairwise-button"]').click();
     await flushUi();
-    expect(document.getElementById('testdata-schema-error').textContent).toContain(
+    expect(document.querySelector('[data-role="schema-error"]').textContent).toContain(
       'Pairwise generation requires at least 2 enum columns.'
     );
   });

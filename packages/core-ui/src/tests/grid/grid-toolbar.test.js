@@ -38,19 +38,19 @@ describe('GridToolbar', () => {
       callbacks,
     });
 
-    root.querySelector('#addRowButton').click();
-    root.querySelector('#addRowsAboveButton').click();
-    root.querySelector('#addRowsBelowButton').click();
-    root.querySelector('#deleteSelectedRowsButton').click();
-    root.querySelector('#clearSortButton').click();
-    root.querySelector('#clearTableButton').click();
+    root.querySelector('[data-role="add-row-button"]').click();
+    root.querySelector('[data-role="add-rows-above-button"]').click();
+    root.querySelector('[data-role="add-rows-below-button"]').click();
+    root.querySelector('[data-role="delete-selected-rows-button"]').click();
+    root.querySelector('[data-role="clear-sort-button"]').click();
+    root.querySelector('[data-role="clear-table-button"]').click();
 
-    const filterInput = root.querySelector('#filter-text-box');
+    const filterInput = root.querySelector('[data-role="filter-text-input"]');
     filterInput.value = 'alpha';
     filterInput.dispatchEvent(new Event('input', { bubbles: true }));
-    root.querySelector('#clearFiltersButton').click();
+    root.querySelector('[data-role="clear-filters-button"]').click();
 
-    const uniqueNamesCheckbox = root.querySelector('#uniqueColumnNamesCheckbox');
+    const uniqueNamesCheckbox = root.querySelector('[data-role="unique-column-names-checkbox"]');
     uniqueNamesCheckbox.checked = true;
     uniqueNamesCheckbox.dispatchEvent(new Event('change', { bubbles: true }));
 
@@ -62,9 +62,20 @@ describe('GridToolbar', () => {
     expect(callbacks.onClearTable).toHaveBeenCalledTimes(1);
     expect(callbacks.onFilterTextChange).toHaveBeenCalledWith('alpha');
     expect(callbacks.onClearFilters).toHaveBeenCalledTimes(1);
-    expect(root.querySelector('#filter-text-box').value).toBe('');
+    expect(root.querySelector('[data-role="filter-text-input"]').value).toBe('');
     expect(callbacks.onUniqueColumnNamesChange).toHaveBeenCalledWith(true);
 
     component.destroy();
+  });
+
+  test('renders rooted toolbar hooks while preserving legacy ids as compatibility contracts', () => {
+    createGridToolbarComponent({
+      root,
+      documentObj: document,
+    });
+
+    expect(root.querySelector('[data-role="add-row-button"]')?.id).toBe('addRowButton');
+    expect(root.querySelector('[data-role="filter-text-input"]')?.id).toBe('filter-text-box');
+    expect(root.querySelector('[data-role="unique-column-names-checkbox"]')?.id).toBe('uniqueColumnNamesCheckbox');
   });
 });

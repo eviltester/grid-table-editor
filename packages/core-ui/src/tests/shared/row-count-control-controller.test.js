@@ -2,6 +2,20 @@ import { jest } from '@jest/globals';
 import { RowCountControlController } from '../../../js/gui_components/shared/row-count-control/index.js';
 
 describe('row-count-control controller', () => {
+  test('defaults to no fixed input id when one is not provided', () => {
+    const controller = new RowCountControlController();
+
+    expect(controller.getState()).toEqual(
+      expect.objectContaining({
+        inputId: '',
+        label: 'Rows',
+        min: 0,
+        step: 1,
+        inputValue: '0',
+      })
+    );
+  });
+
   test('normalizes invalid input to the minimum when configured to normalize on input', () => {
     const controller = new RowCountControlController({
       props: {

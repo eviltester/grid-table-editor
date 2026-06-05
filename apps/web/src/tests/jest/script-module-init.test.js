@@ -49,6 +49,12 @@ describe('script module initialization', () => {
     }));
     const mountTestDataGenerationPanel = jest.fn();
     const setTimeoutSpy = jest.spyOn(global, 'setTimeout').mockImplementation(() => 0);
+    const createDataGridComponent = jest.fn(() => ({
+      getGridExtras() {
+        return gridExtras;
+      },
+      sizeColumnsToFit() {},
+    }));
     const gridExtras = {
       clearGrid: jest.fn(),
       setGridFromGenericDataTable: jest.fn(),
@@ -73,19 +79,9 @@ describe('script module initialization', () => {
     jest.unstable_mockModule('../../../../../packages/core-ui/js/gui_components/app/test-data-grid/index.js', () => ({
       mountTestDataGenerationPanel,
     }));
-    jest.unstable_mockModule(
-      '../../../../../packages/core-ui/js/gui_components/data-grid-editor/main-display-grid.js',
-      () => ({
-        activeGridEngine: 'tabulator',
-        ExtendedDataGrid: class ExtendedDataGrid {
-          createChildGrid() {}
-          getGridExtras() {
-            return gridExtras;
-          }
-          sizeColumnsToFit() {}
-        },
-      })
-    );
+    jest.unstable_mockModule('../../../../../packages/core-ui/js/gui_components/data-grid-editor/index.js', () => ({
+      createDataGridComponent,
+    }));
     jest.unstable_mockModule(
       '../../../../../packages/core-ui/js/gui_components/data-grid-editor/grid-library-loader.js',
       () => ({
@@ -114,7 +110,15 @@ describe('script module initialization', () => {
       await domContentLoadedHandler();
     }
 
-    expect(ensureGridLibraryLoaded).toHaveBeenCalledWith({ engine: 'tabulator' });
+    expect(ensureGridLibraryLoaded).toHaveBeenCalledWith({ document: global.document });
+    expect(createDataGridComponent).toHaveBeenCalledWith({
+      root: global.document.getElementById('main-grid-view'),
+      documentObj: global.document,
+      services: {
+        TabulatorCtor: globalThis.Tabulator,
+        GridExtensionClass: expect.any(Function),
+      },
+    });
     expect(createImportExportWorkspaceComponent).toHaveBeenCalledWith({
       root: global.document.getElementById('import-export-controls'),
       documentObj: global.document,

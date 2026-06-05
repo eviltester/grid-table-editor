@@ -25,12 +25,12 @@ class GeneratorPageView {
 
   template() {
     return `
-      <section class="generator-page" aria-label="Data Generator">
+      <section class="shared-generator-page generator-page" aria-label="Data Generator">
         <section class="generator-schema" id="generatorSchemaSection" data-section-order="2" aria-labelledby="generatorSchemaHeading">
-          <div id="generatorSchemaDefinition"></div>
+          <div data-role="generator-schema-definition-root"></div>
         </section>
-        <div id="generatorControlsRoot"></div>
-        <div id="generatorPreviewRoot"></div>
+        <div data-role="generator-controls-root"></div>
+        <div data-role="generator-preview-root"></div>
       </section>
     `;
   }
@@ -38,14 +38,8 @@ class GeneratorPageView {
   createFeatures() {
     const state = this.controller.getState();
 
-    this.schemaErrorDisplay = this.services.createTimedStatusPresenter?.({
-      documentObj: this.documentObj,
-      elementId: 'generatorSchemaErrorText',
-      timeoutMs: 5000,
-    });
-
     this.generatorControls = this.services.createGeneratorControlsComponent?.({
-      root: this.root.querySelector('#generatorControlsRoot'),
+      root: this.root.querySelector('[data-role="generator-controls-root"]'),
       documentObj: this.documentObj,
       props: state.controlsProps,
       services: this.services.generatorControlsServices || {},
@@ -53,7 +47,7 @@ class GeneratorPageView {
     });
 
     this.generatorPreview = this.services.createGeneratorPreviewComponent?.({
-      root: this.root.querySelector('#generatorPreviewRoot'),
+      root: this.root.querySelector('[data-role="generator-preview-root"]'),
       documentObj: this.documentObj,
       props: state.previewProps,
       services: this.services.generatorPreviewServices || {},
@@ -61,13 +55,23 @@ class GeneratorPageView {
     });
 
     this.schemaDefinition = this.services.createSharedSchemaDefinitionComponent?.({
-      root: this.root.querySelector('#generatorSchemaDefinition'),
+      root: this.root.querySelector('[data-role="generator-schema-definition-root"]'),
       documentObj: this.documentObj,
       props: {
         ...state.schemaDefinitionProps,
-        schemaErrorDisplay: this.schemaErrorDisplay,
       },
       callbacks: this.callbacks.schemaDefinition || {},
+    });
+
+    this.schemaErrorDisplay = this.services.createTimedStatusPresenter?.({
+      documentObj: this.documentObj,
+      resolveElement: () =>
+        this.root?.querySelector?.('[data-role="generator-schema-definition-root"] [data-role="schema-error"]') || null,
+      timeoutMs: 5000,
+    });
+    this.schemaDefinition?.update?.({
+      ...state.schemaDefinitionProps,
+      schemaErrorDisplay: this.schemaErrorDisplay,
     });
   }
 

@@ -12,12 +12,12 @@ test.describe('4. Import Export Basic', () => {
     fs.writeFileSync(valid, 'C1,C2\nAlpha,1\nBeta,2\n');
 
     try {
-      await appPage.importExportControls.uploadFile(valid);
+      await appPage.importExportWorkspace.uploadFile(valid);
       await expect.poll(async () => appPage.gridEditor.renderer.countRows()).toBeGreaterThanOrEqual(2);
-      await appPage.importExportControls.expectProgressStatusContains('complete');
+      await appPage.importExportWorkspace.expectProgressStatusContains('complete');
 
       const rowsBefore = await appPage.gridEditor.renderer.countRows();
-      await appPage.importExportControls.uploadFile(path.resolve('README.md'));
+      await appPage.importExportWorkspace.uploadFile(path.resolve('README.md'));
       await expect.poll(async () => appPage.gridEditor.renderer.countRows()).toBe(rowsBefore);
     } finally {
       fs.rmSync(tempDir, { recursive: true, force: true });

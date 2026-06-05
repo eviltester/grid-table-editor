@@ -1,5 +1,6 @@
-import { initThemeToggle } from '../../../js/gui_components/shared/theme-toggle.js';
+import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
+import { createThemeToggleComponent, initThemeToggle } from '../../../js/gui_components/shared/theme-toggle.js';
 
 function createPage() {
   document.body.innerHTML = '<div class="header"></div>';
@@ -18,27 +19,79 @@ describe('theme toggle', () => {
 
   afterEach(() => {
     dom.window.close();
+    delete global.window;
+    delete global.document;
+    jest.restoreAllMocks();
   });
 
   test('reads docusaurus theme preference from localStorage key "theme"', () => {
     window.localStorage.setItem('theme', 'dark');
 
-    initThemeToggle();
+    const component = initThemeToggle();
+    const toggleButton = document.querySelector('[data-role="theme-toggle-button"]');
 
     expect(document.body.classList.contains('theme-dark')).toBe(true);
-    expect(document.querySelector('#theme-toggle-button')?.textContent).toBe('☀');
-    expect(document.querySelector('#theme-toggle-button')?.getAttribute('aria-label')).toBe('Switch to light theme');
+    expect(component?.getState()).toEqual({ theme: 'dark' });
+    expect(toggleButton?.textContent).toBe('☀');
+    expect(toggleButton?.getAttribute('aria-label')).toBe('Switch to light theme');
   });
 
   test('falls back to legacy key and migrates on toggle', () => {
     window.localStorage.setItem('anywaydata-theme', 'light');
 
-    initThemeToggle();
-    const button = document.querySelector('#theme-toggle-button');
-    button.click();
+    const component = initThemeToggle();
+    component.toggleTheme();
 
+    expect(component.getState()).toEqual({ theme: 'dark' });
     expect(window.localStorage.getItem('theme')).toBe('dark');
     expect(window.localStorage.getItem('anywaydata-theme')).toBe('dark');
+  });
+
+  test('createThemeToggleComponent scopes ownership, emits theme changes, and cleans up on destroy', () => {
+    const root = document.createElement('section');
+    root.innerHTML = '<div class="header" data-role="theme-toggle-host"></div>';
+    document.body.appendChild(root);
+    const onThemeChanged = jest.fn();
+
+    const component = createThemeToggleComponent({
+      documentObj: document,
+      windowObj: window,
+      rootElement: root,
+      props: { onThemeChanged },
+    });
+
+    expect(component.getState()).toEqual({ theme: 'light' });
+    expect(onThemeChanged).toHaveBeenCalledWith('light');
+
+    const button = root.querySelector('[data-role="theme-toggle-button"]');
+    expect(button).not.toBeNull();
+    expect(button.getAttribute('data-role')).toBe('theme-toggle-button');
+
+    button.click();
+
+    expect(component.getState()).toEqual({ theme: 'dark' });
+    expect(onThemeChanged).toHaveBeenLastCalledWith('dark');
+    expect(document.body.classList.contains('theme-dark')).toBe(true);
+    expect(window.localStorage.getItem('theme')).toBe('dark');
+
+    component.destroy();
+
+    expect(root.querySelector('.theme-toggle-container')).toBeNull();
+  });
+
+  test('initThemeToggle replaces an earlier instance and tears down the old owned container', () => {
+    const firstComponent = initThemeToggle();
+    const firstButton = document.querySelector('[data-role="theme-toggle-button"]');
+
+    const secondComponent = initThemeToggle();
+    const secondButton = document.querySelector('[data-role="theme-toggle-button"]');
+
+    expect(firstComponent).not.toBe(secondComponent);
+    expect(firstButton?.isConnected).toBe(false);
+    expect(secondButton?.isConnected).toBe(true);
+
+    secondComponent.destroy();
+    expect(document.querySelector('[data-role="theme-toggle-button"]')).toBeNull();
   });
 
   test('does not throw when no document or window is available', () => {

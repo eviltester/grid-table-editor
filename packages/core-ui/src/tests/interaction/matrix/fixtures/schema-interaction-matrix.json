@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-21T14:46:53.340Z",
+  "generatedAt": "2026-06-05T08:29:21.640Z",
   "coverageScenarios": [
     {
       "id": "custom-enum-base",
@@ -1351,6 +1351,28 @@
       "origins": ["base"]
     },
     {
+      "id": "domain-airline-flightNumber-base",
+      "sourceType": "domain",
+      "command": "airline.flightNumber",
+      "label": "airline.flightNumber",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "airline.flightNumber",
+          "params": "()",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nairline.flightNumber()",
+      "expectedUiSchemaText": "Value\nairline.flightNumber()",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": [],
+      "origins": ["base"]
+    },
+    {
       "id": "domain-airline-iataCode-base",
       "sourceType": "domain",
       "command": "airline.iataCode",
@@ -1388,116 +1410,6 @@
       ],
       "expectedSchemaText": "Value\nairline.name()",
       "expectedUiSchemaText": "Value\nairline.name()",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": [],
-      "origins": ["base"]
-    },
-    {
-      "id": "domain-airplane-iataTypeCode-base",
-      "sourceType": "domain",
-      "command": "airplane.iataTypeCode",
-      "label": "airplane.iataTypeCode",
-      "rows": [
-        {
-          "name": "Value",
-          "sourceType": "domain",
-          "command": "airplane.iataTypeCode",
-          "params": "()",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Value\nairplane.iataTypeCode()",
-      "expectedUiSchemaText": "Value\nairplane.iataTypeCode()",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": [],
-      "origins": ["base"]
-    },
-    {
-      "id": "domain-airplane-name-base",
-      "sourceType": "domain",
-      "command": "airplane.name",
-      "label": "airplane.name",
-      "rows": [
-        {
-          "name": "Value",
-          "sourceType": "domain",
-          "command": "airplane.name",
-          "params": "()",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Value\nairplane.name()",
-      "expectedUiSchemaText": "Value\nairplane.name()",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": [],
-      "origins": ["base"]
-    },
-    {
-      "id": "domain-airport-iataCode-base",
-      "sourceType": "domain",
-      "command": "airport.iataCode",
-      "label": "airport.iataCode",
-      "rows": [
-        {
-          "name": "Value",
-          "sourceType": "domain",
-          "command": "airport.iataCode",
-          "params": "()",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Value\nairport.iataCode()",
-      "expectedUiSchemaText": "Value\nairport.iataCode()",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": [],
-      "origins": ["base"]
-    },
-    {
-      "id": "domain-airport-name-base",
-      "sourceType": "domain",
-      "command": "airport.name",
-      "label": "airport.name",
-      "rows": [
-        {
-          "name": "Value",
-          "sourceType": "domain",
-          "command": "airport.name",
-          "params": "()",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Value\nairport.name()",
-      "expectedUiSchemaText": "Value\nairport.name()",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": [],
-      "origins": ["base"]
-    },
-    {
-      "id": "domain-airline-flightNumber-base",
-      "sourceType": "domain",
-      "command": "airline.flightNumber",
-      "label": "airline.flightNumber",
-      "rows": [
-        {
-          "name": "Value",
-          "sourceType": "domain",
-          "command": "airline.flightNumber",
-          "params": "()",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Value\nairline.flightNumber()",
-      "expectedUiSchemaText": "Value\nairline.flightNumber()",
       "expectedFileExtension": ".csv",
       "pairwiseEligible": false,
       "expectStructuredSerialization": false,
@@ -1613,6 +1525,94 @@
       "expectStructuredSerialization": false,
       "coveredArgs": ["aircraftType"],
       "origins": ["arg"]
+    },
+    {
+      "id": "domain-airplane-iataTypeCode-base",
+      "sourceType": "domain",
+      "command": "airplane.iataTypeCode",
+      "label": "airplane.iataTypeCode",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "airplane.iataTypeCode",
+          "params": "()",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nairplane.iataTypeCode()",
+      "expectedUiSchemaText": "Value\nairplane.iataTypeCode()",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": [],
+      "origins": ["base"]
+    },
+    {
+      "id": "domain-airplane-name-base",
+      "sourceType": "domain",
+      "command": "airplane.name",
+      "label": "airplane.name",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "airplane.name",
+          "params": "()",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nairplane.name()",
+      "expectedUiSchemaText": "Value\nairplane.name()",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": [],
+      "origins": ["base"]
+    },
+    {
+      "id": "domain-airport-iataCode-base",
+      "sourceType": "domain",
+      "command": "airport.iataCode",
+      "label": "airport.iataCode",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "airport.iataCode",
+          "params": "()",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nairport.iataCode()",
+      "expectedUiSchemaText": "Value\nairport.iataCode()",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": [],
+      "origins": ["base"]
+    },
+    {
+      "id": "domain-airport-name-base",
+      "sourceType": "domain",
+      "command": "airport.name",
+      "label": "airport.name",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "airport.name",
+          "params": "()",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nairport.name()",
+      "expectedUiSchemaText": "Value\nairport.name()",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": [],
+      "origins": ["base"]
     },
     {
       "id": "domain-animal-bear-base",
@@ -2092,6 +2092,72 @@
       ],
       "expectedSchemaText": "Value\nbook.title()",
       "expectedUiSchemaText": "Value\nbook.title()",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": [],
+      "origins": ["base"]
+    },
+    {
+      "id": "domain-chemicalElement-atomicNumber-base",
+      "sourceType": "domain",
+      "command": "chemicalElement.atomicNumber",
+      "label": "chemicalElement.atomicNumber",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "chemicalElement.atomicNumber",
+          "params": "()",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nchemicalElement.atomicNumber()",
+      "expectedUiSchemaText": "Value\nchemicalElement.atomicNumber()",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": [],
+      "origins": ["base"]
+    },
+    {
+      "id": "domain-chemicalElement-name-base",
+      "sourceType": "domain",
+      "command": "chemicalElement.name",
+      "label": "chemicalElement.name",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "chemicalElement.name",
+          "params": "()",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nchemicalElement.name()",
+      "expectedUiSchemaText": "Value\nchemicalElement.name()",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": [],
+      "origins": ["base"]
+    },
+    {
+      "id": "domain-chemicalElement-symbol-base",
+      "sourceType": "domain",
+      "command": "chemicalElement.symbol",
+      "label": "chemicalElement.symbol",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "chemicalElement.symbol",
+          "params": "()",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nchemicalElement.symbol()",
+      "expectedUiSchemaText": "Value\nchemicalElement.symbol()",
       "expectedFileExtension": ".csv",
       "pairwiseEligible": false,
       "expectStructuredSerialization": false,
@@ -3131,6 +3197,28 @@
       "expectStructuredSerialization": false,
       "coveredArgs": ["probability"],
       "origins": ["arg"]
+    },
+    {
+      "id": "domain-datatype-enum-base",
+      "sourceType": "domain",
+      "command": "datatype.enum",
+      "label": "datatype.enum",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "datatype.enum",
+          "params": "(\"active\", \"inactive\", \"pending\")",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\ndatatype.enum(\"active\", \"inactive\", \"pending\")",
+      "expectedUiSchemaText": "Value\nenum(\"active\", \"inactive\", \"pending\")",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": [],
+      "origins": ["base"]
     },
     {
       "id": "domain-date-anytime-base",
@@ -10567,72 +10655,6 @@
       "expectStructuredSerialization": false,
       "coveredArgs": ["style"],
       "origins": ["arg"]
-    },
-    {
-      "id": "domain-chemicalElement-atomicNumber-base",
-      "sourceType": "domain",
-      "command": "chemicalElement.atomicNumber",
-      "label": "chemicalElement.atomicNumber",
-      "rows": [
-        {
-          "name": "Value",
-          "sourceType": "domain",
-          "command": "chemicalElement.atomicNumber",
-          "params": "()",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Value\nchemicalElement.atomicNumber()",
-      "expectedUiSchemaText": "Value\nchemicalElement.atomicNumber()",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": [],
-      "origins": ["base"]
-    },
-    {
-      "id": "domain-chemicalElement-name-base",
-      "sourceType": "domain",
-      "command": "chemicalElement.name",
-      "label": "chemicalElement.name",
-      "rows": [
-        {
-          "name": "Value",
-          "sourceType": "domain",
-          "command": "chemicalElement.name",
-          "params": "()",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Value\nchemicalElement.name()",
-      "expectedUiSchemaText": "Value\nchemicalElement.name()",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": [],
-      "origins": ["base"]
-    },
-    {
-      "id": "domain-chemicalElement-symbol-base",
-      "sourceType": "domain",
-      "command": "chemicalElement.symbol",
-      "label": "chemicalElement.symbol",
-      "rows": [
-        {
-          "name": "Value",
-          "sourceType": "domain",
-          "command": "chemicalElement.symbol",
-          "params": "()",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Value\nchemicalElement.symbol()",
-      "expectedUiSchemaText": "Value\nchemicalElement.symbol()",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": [],
-      "origins": ["base"]
     },
     {
       "id": "domain-string-alpha-base",
@@ -14714,6 +14736,28 @@
       "origins": ["base"]
     },
     {
+      "id": "domain-airline-flightNumber-base",
+      "sourceType": "domain",
+      "command": "airline.flightNumber",
+      "label": "airline.flightNumber",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "airline.flightNumber",
+          "params": "()",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nairline.flightNumber()",
+      "expectedUiSchemaText": "Value\nairline.flightNumber()",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": [],
+      "origins": ["base"]
+    },
+    {
       "id": "domain-airline-iataCode-base",
       "sourceType": "domain",
       "command": "airline.iataCode",
@@ -14751,116 +14795,6 @@
       ],
       "expectedSchemaText": "Value\nairline.name()",
       "expectedUiSchemaText": "Value\nairline.name()",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": [],
-      "origins": ["base"]
-    },
-    {
-      "id": "domain-airplane-iataTypeCode-base",
-      "sourceType": "domain",
-      "command": "airplane.iataTypeCode",
-      "label": "airplane.iataTypeCode",
-      "rows": [
-        {
-          "name": "Value",
-          "sourceType": "domain",
-          "command": "airplane.iataTypeCode",
-          "params": "()",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Value\nairplane.iataTypeCode()",
-      "expectedUiSchemaText": "Value\nairplane.iataTypeCode()",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": [],
-      "origins": ["base"]
-    },
-    {
-      "id": "domain-airplane-name-base",
-      "sourceType": "domain",
-      "command": "airplane.name",
-      "label": "airplane.name",
-      "rows": [
-        {
-          "name": "Value",
-          "sourceType": "domain",
-          "command": "airplane.name",
-          "params": "()",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Value\nairplane.name()",
-      "expectedUiSchemaText": "Value\nairplane.name()",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": [],
-      "origins": ["base"]
-    },
-    {
-      "id": "domain-airport-iataCode-base",
-      "sourceType": "domain",
-      "command": "airport.iataCode",
-      "label": "airport.iataCode",
-      "rows": [
-        {
-          "name": "Value",
-          "sourceType": "domain",
-          "command": "airport.iataCode",
-          "params": "()",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Value\nairport.iataCode()",
-      "expectedUiSchemaText": "Value\nairport.iataCode()",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": [],
-      "origins": ["base"]
-    },
-    {
-      "id": "domain-airport-name-base",
-      "sourceType": "domain",
-      "command": "airport.name",
-      "label": "airport.name",
-      "rows": [
-        {
-          "name": "Value",
-          "sourceType": "domain",
-          "command": "airport.name",
-          "params": "()",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Value\nairport.name()",
-      "expectedUiSchemaText": "Value\nairport.name()",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": [],
-      "origins": ["base"]
-    },
-    {
-      "id": "domain-airline-flightNumber-base",
-      "sourceType": "domain",
-      "command": "airline.flightNumber",
-      "label": "airline.flightNumber",
-      "rows": [
-        {
-          "name": "Value",
-          "sourceType": "domain",
-          "command": "airline.flightNumber",
-          "params": "()",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Value\nairline.flightNumber()",
-      "expectedUiSchemaText": "Value\nairline.flightNumber()",
       "expectedFileExtension": ".csv",
       "pairwiseEligible": false,
       "expectStructuredSerialization": false,
@@ -14976,6 +14910,94 @@
       "expectStructuredSerialization": false,
       "coveredArgs": ["aircraftType"],
       "origins": ["arg"]
+    },
+    {
+      "id": "domain-airplane-iataTypeCode-base",
+      "sourceType": "domain",
+      "command": "airplane.iataTypeCode",
+      "label": "airplane.iataTypeCode",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "airplane.iataTypeCode",
+          "params": "()",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nairplane.iataTypeCode()",
+      "expectedUiSchemaText": "Value\nairplane.iataTypeCode()",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": [],
+      "origins": ["base"]
+    },
+    {
+      "id": "domain-airplane-name-base",
+      "sourceType": "domain",
+      "command": "airplane.name",
+      "label": "airplane.name",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "airplane.name",
+          "params": "()",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nairplane.name()",
+      "expectedUiSchemaText": "Value\nairplane.name()",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": [],
+      "origins": ["base"]
+    },
+    {
+      "id": "domain-airport-iataCode-base",
+      "sourceType": "domain",
+      "command": "airport.iataCode",
+      "label": "airport.iataCode",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "airport.iataCode",
+          "params": "()",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nairport.iataCode()",
+      "expectedUiSchemaText": "Value\nairport.iataCode()",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": [],
+      "origins": ["base"]
+    },
+    {
+      "id": "domain-airport-name-base",
+      "sourceType": "domain",
+      "command": "airport.name",
+      "label": "airport.name",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "airport.name",
+          "params": "()",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nairport.name()",
+      "expectedUiSchemaText": "Value\nairport.name()",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": [],
+      "origins": ["base"]
     },
     {
       "id": "domain-animal-bear-base",
@@ -15455,6 +15477,72 @@
       ],
       "expectedSchemaText": "Value\nbook.title()",
       "expectedUiSchemaText": "Value\nbook.title()",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": [],
+      "origins": ["base"]
+    },
+    {
+      "id": "domain-chemicalElement-atomicNumber-base",
+      "sourceType": "domain",
+      "command": "chemicalElement.atomicNumber",
+      "label": "chemicalElement.atomicNumber",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "chemicalElement.atomicNumber",
+          "params": "()",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nchemicalElement.atomicNumber()",
+      "expectedUiSchemaText": "Value\nchemicalElement.atomicNumber()",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": [],
+      "origins": ["base"]
+    },
+    {
+      "id": "domain-chemicalElement-name-base",
+      "sourceType": "domain",
+      "command": "chemicalElement.name",
+      "label": "chemicalElement.name",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "chemicalElement.name",
+          "params": "()",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nchemicalElement.name()",
+      "expectedUiSchemaText": "Value\nchemicalElement.name()",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": [],
+      "origins": ["base"]
+    },
+    {
+      "id": "domain-chemicalElement-symbol-base",
+      "sourceType": "domain",
+      "command": "chemicalElement.symbol",
+      "label": "chemicalElement.symbol",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "chemicalElement.symbol",
+          "params": "()",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nchemicalElement.symbol()",
+      "expectedUiSchemaText": "Value\nchemicalElement.symbol()",
       "expectedFileExtension": ".csv",
       "pairwiseEligible": false,
       "expectStructuredSerialization": false,
@@ -16494,6 +16582,28 @@
       "expectStructuredSerialization": false,
       "coveredArgs": ["probability"],
       "origins": ["arg"]
+    },
+    {
+      "id": "domain-datatype-enum-base",
+      "sourceType": "domain",
+      "command": "datatype.enum",
+      "label": "datatype.enum",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "datatype.enum",
+          "params": "(\"active\", \"inactive\", \"pending\")",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\ndatatype.enum(\"active\", \"inactive\", \"pending\")",
+      "expectedUiSchemaText": "Value\nenum(\"active\", \"inactive\", \"pending\")",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": [],
+      "origins": ["base"]
     },
     {
       "id": "domain-date-anytime-base",
@@ -23932,72 +24042,6 @@
       "origins": ["arg"]
     },
     {
-      "id": "domain-chemicalElement-atomicNumber-base",
-      "sourceType": "domain",
-      "command": "chemicalElement.atomicNumber",
-      "label": "chemicalElement.atomicNumber",
-      "rows": [
-        {
-          "name": "Value",
-          "sourceType": "domain",
-          "command": "chemicalElement.atomicNumber",
-          "params": "()",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Value\nchemicalElement.atomicNumber()",
-      "expectedUiSchemaText": "Value\nchemicalElement.atomicNumber()",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": [],
-      "origins": ["base"]
-    },
-    {
-      "id": "domain-chemicalElement-name-base",
-      "sourceType": "domain",
-      "command": "chemicalElement.name",
-      "label": "chemicalElement.name",
-      "rows": [
-        {
-          "name": "Value",
-          "sourceType": "domain",
-          "command": "chemicalElement.name",
-          "params": "()",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Value\nchemicalElement.name()",
-      "expectedUiSchemaText": "Value\nchemicalElement.name()",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": [],
-      "origins": ["base"]
-    },
-    {
-      "id": "domain-chemicalElement-symbol-base",
-      "sourceType": "domain",
-      "command": "chemicalElement.symbol",
-      "label": "chemicalElement.symbol",
-      "rows": [
-        {
-          "name": "Value",
-          "sourceType": "domain",
-          "command": "chemicalElement.symbol",
-          "params": "()",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Value\nchemicalElement.symbol()",
-      "expectedUiSchemaText": "Value\nchemicalElement.symbol()",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": [],
-      "origins": ["base"]
-    },
-    {
       "id": "domain-string-alpha-base",
       "sourceType": "domain",
       "command": "string.alpha",
@@ -26990,8 +27034,8 @@
       "expectStructuredSerialization": false,
       "coveredArgs": [],
       "origins": ["custom"],
-      "parityMode": "structural",
-      "exactPreviewParity": false,
+      "parityMode": "exact",
+      "exactPreviewParity": true,
       "structuralParity": true
     },
     {
@@ -27022,8 +27066,8 @@
       "expectStructuredSerialization": false,
       "coveredArgs": [],
       "origins": ["custom", "pairwise"],
-      "parityMode": "structural",
-      "exactPreviewParity": false,
+      "parityMode": "exact",
+      "exactPreviewParity": true,
       "structuralParity": true
     },
     {
@@ -27047,8 +27091,8 @@
       "expectStructuredSerialization": false,
       "coveredArgs": [],
       "origins": ["custom"],
-      "parityMode": "structural",
-      "exactPreviewParity": false,
+      "parityMode": "exact",
+      "exactPreviewParity": true,
       "structuralParity": true
     },
     {
@@ -27072,8 +27116,8 @@
       "expectStructuredSerialization": false,
       "coveredArgs": [],
       "origins": ["custom", "empty"],
-      "parityMode": "structural",
-      "exactPreviewParity": false,
+      "parityMode": "exact",
+      "exactPreviewParity": true,
       "structuralParity": true
     },
     {
@@ -27122,8 +27166,8 @@
       "expectStructuredSerialization": false,
       "coveredArgs": [],
       "origins": ["custom", "empty"],
-      "parityMode": "structural",
-      "exactPreviewParity": false,
+      "parityMode": "exact",
+      "exactPreviewParity": true,
       "structuralParity": true
     },
     {
@@ -27147,83 +27191,8 @@
       "expectStructuredSerialization": false,
       "coveredArgs": [],
       "origins": ["base"],
-      "parityMode": "structural",
-      "exactPreviewParity": false,
-      "structuralParity": true
-    },
-    {
-      "id": "faker-helpers-arrayElement-example-1",
-      "sourceType": "faker",
-      "command": "helpers.arrayElement",
-      "label": "helpers.arrayElement example 1",
-      "rows": [
-        {
-          "name": "Value",
-          "sourceType": "faker",
-          "command": "helpers.arrayElement",
-          "params": "([\"A\", \"B\", \"C\"])",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Value\nhelpers.arrayElement([\"A\", \"B\", \"C\"])",
-      "expectedUiSchemaText": "Value\nhelpers.arrayElement([\"A\", \"B\", \"C\"])",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": ["array"],
-      "origins": ["example"],
-      "parityMode": "structural",
-      "exactPreviewParity": false,
-      "structuralParity": true
-    },
-    {
-      "id": "faker-helpers-arrayElements-base",
-      "sourceType": "faker",
-      "command": "helpers.arrayElements",
-      "label": "helpers.arrayElements",
-      "rows": [
-        {
-          "name": "Value",
-          "sourceType": "faker",
-          "command": "helpers.arrayElements",
-          "params": "([\"A\", \"B\", \"C\"], 2)",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Value\nhelpers.arrayElements([\"A\", \"B\", \"C\"], 2)",
-      "expectedUiSchemaText": "Value\nhelpers.arrayElements([\"A\", \"B\", \"C\"], 2)",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": [],
-      "origins": ["base"],
-      "parityMode": "structural",
-      "exactPreviewParity": false,
-      "structuralParity": true
-    },
-    {
-      "id": "faker-helpers-arrayElements-example-1",
-      "sourceType": "faker",
-      "command": "helpers.arrayElements",
-      "label": "helpers.arrayElements example 1",
-      "rows": [
-        {
-          "name": "Value",
-          "sourceType": "faker",
-          "command": "helpers.arrayElements",
-          "params": "([\"A\", \"B\", \"C\"], 2)",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Value\nhelpers.arrayElements([\"A\", \"B\", \"C\"], 2)",
-      "expectedUiSchemaText": "Value\nhelpers.arrayElements([\"A\", \"B\", \"C\"], 2)",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": ["array", "count"],
-      "origins": ["example"],
-      "parityMode": "structural",
-      "exactPreviewParity": false,
+      "parityMode": "exact",
+      "exactPreviewParity": true,
       "structuralParity": true
     },
     {
@@ -27242,56 +27211,6 @@
       ],
       "expectedSchemaText": "Value\nhelpers.fake(\"{{person.firstName}}\")",
       "expectedUiSchemaText": "Value\nhelpers.fake(\"{{person.firstName}}\")",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": [],
-      "origins": ["base"],
-      "parityMode": "structural",
-      "exactPreviewParity": false,
-      "structuralParity": true
-    },
-    {
-      "id": "faker-helpers-fake-example-1",
-      "sourceType": "faker",
-      "command": "helpers.fake",
-      "label": "helpers.fake example 1",
-      "rows": [
-        {
-          "name": "Value",
-          "sourceType": "faker",
-          "command": "helpers.fake",
-          "params": "(\"Hi, my name is {{person.firstName}} {{person.lastName}}!\")",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Value\nhelpers.fake(\"Hi, my name is {{person.firstName}} {{person.lastName}}!\")",
-      "expectedUiSchemaText": "Value\nhelpers.fake(\"Hi, my name is {{person.firstName}} {{person.lastName}}!\")",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": ["pattern"],
-      "origins": ["example"],
-      "parityMode": "structural",
-      "exactPreviewParity": false,
-      "structuralParity": true
-    },
-    {
-      "id": "faker-helpers-fromRegExp-base",
-      "sourceType": "faker",
-      "command": "helpers.fromRegExp",
-      "label": "helpers.fromRegExp",
-      "rows": [
-        {
-          "name": "Value",
-          "sourceType": "faker",
-          "command": "helpers.fromRegExp",
-          "params": "(\"[A-Z]{2}\")",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Value\nhelpers.fromRegExp(\"[A-Z]{2}\")",
-      "expectedUiSchemaText": "Value\nhelpers.fromRegExp(\"[A-Z]{2}\")",
       "expectedFileExtension": ".csv",
       "pairwiseEligible": false,
       "expectStructuredSerialization": false,
@@ -27347,233 +27266,8 @@
       "expectStructuredSerialization": false,
       "coveredArgs": [],
       "origins": ["base"],
-      "parityMode": "structural",
-      "exactPreviewParity": false,
-      "structuralParity": true
-    },
-    {
-      "id": "faker-helpers-mustache-example-1",
-      "sourceType": "faker",
-      "command": "helpers.mustache",
-      "label": "helpers.mustache example 1",
-      "rows": [
-        {
-          "name": "Value",
-          "sourceType": "faker",
-          "command": "helpers.mustache",
-          "params": "(\"Hello {{name}}\", { name: \"Ada\" })",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Value\nhelpers.mustache(\"Hello {{name}}\", { name: \"Ada\" })",
-      "expectedUiSchemaText": "Value\nhelpers.mustache(\"Hello {{name}}\", { name: \"Ada\" })",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": ["text", "data"],
-      "origins": ["example"],
-      "parityMode": "structural",
-      "exactPreviewParity": false,
-      "structuralParity": true
-    },
-    {
-      "id": "faker-helpers-rangeToNumber-base",
-      "sourceType": "faker",
-      "command": "helpers.rangeToNumber",
-      "label": "helpers.rangeToNumber",
-      "rows": [
-        {
-          "name": "Value",
-          "sourceType": "faker",
-          "command": "helpers.rangeToNumber",
-          "params": "({ min: 1, max: 2 })",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Value\nhelpers.rangeToNumber({ min: 1, max: 2 })",
-      "expectedUiSchemaText": "Value\nhelpers.rangeToNumber({ min: 1, max: 2 })",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": [],
-      "origins": ["base"],
-      "parityMode": "structural",
-      "exactPreviewParity": false,
-      "structuralParity": true
-    },
-    {
-      "id": "faker-helpers-rangeToNumber-example-1",
-      "sourceType": "faker",
-      "command": "helpers.rangeToNumber",
-      "label": "helpers.rangeToNumber example 1",
-      "rows": [
-        {
-          "name": "Value",
-          "sourceType": "faker",
-          "command": "helpers.rangeToNumber",
-          "params": "({ min: 1, max: 2 })",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Value\nhelpers.rangeToNumber({ min: 1, max: 2 })",
-      "expectedUiSchemaText": "Value\nhelpers.rangeToNumber({ min: 1, max: 2 })",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": ["numberOrRange"],
-      "origins": ["example"],
-      "parityMode": "structural",
-      "exactPreviewParity": false,
-      "structuralParity": true
-    },
-    {
-      "id": "faker-helpers-replaceCreditCardSymbols-example-1",
-      "sourceType": "faker",
-      "command": "helpers.replaceCreditCardSymbols",
-      "label": "helpers.replaceCreditCardSymbols example 1",
-      "rows": [
-        {
-          "name": "Value",
-          "sourceType": "faker",
-          "command": "helpers.replaceCreditCardSymbols",
-          "params": "(\"1234-[4-9]-##!!-L\")",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Value\nhelpers.replaceCreditCardSymbols(\"1234-[4-9]-##!!-L\")",
-      "expectedUiSchemaText": "Value\nhelpers.replaceCreditCardSymbols(\"1234-[4-9]-##!!-L\")",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": ["string", "symbol"],
-      "origins": ["example"],
-      "parityMode": "structural",
-      "exactPreviewParity": false,
-      "structuralParity": true
-    },
-    {
-      "id": "faker-helpers-replaceSymbols-example-1",
-      "sourceType": "faker",
-      "command": "helpers.replaceSymbols",
-      "label": "helpers.replaceSymbols example 1",
-      "rows": [
-        {
-          "name": "Value",
-          "sourceType": "faker",
-          "command": "helpers.replaceSymbols",
-          "params": "(\"##??-##\")",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Value\nhelpers.replaceSymbols(\"##??-##\")",
-      "expectedUiSchemaText": "Value\nhelpers.replaceSymbols(\"##??-##\")",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": ["string"],
-      "origins": ["example"],
-      "parityMode": "structural",
-      "exactPreviewParity": false,
-      "structuralParity": true
-    },
-    {
-      "id": "faker-helpers-shuffle-base",
-      "sourceType": "faker",
-      "command": "helpers.shuffle",
-      "label": "helpers.shuffle",
-      "rows": [
-        {
-          "name": "Value",
-          "sourceType": "faker",
-          "command": "helpers.shuffle",
-          "params": "([\"A\", \"B\", \"C\"])",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Value\nhelpers.shuffle([\"A\", \"B\", \"C\"])",
-      "expectedUiSchemaText": "Value\nhelpers.shuffle([\"A\", \"B\", \"C\"])",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": [],
-      "origins": ["base"],
-      "parityMode": "structural",
-      "exactPreviewParity": false,
-      "structuralParity": true
-    },
-    {
-      "id": "faker-helpers-shuffle-example-1",
-      "sourceType": "faker",
-      "command": "helpers.shuffle",
-      "label": "helpers.shuffle example 1",
-      "rows": [
-        {
-          "name": "Value",
-          "sourceType": "faker",
-          "command": "helpers.shuffle",
-          "params": "([\"A\", \"B\", \"C\"])",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Value\nhelpers.shuffle([\"A\", \"B\", \"C\"])",
-      "expectedUiSchemaText": "Value\nhelpers.shuffle([\"A\", \"B\", \"C\"])",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": ["array"],
-      "origins": ["example"],
-      "parityMode": "structural",
-      "exactPreviewParity": false,
-      "structuralParity": true
-    },
-    {
-      "id": "faker-helpers-slugify-example-1",
-      "sourceType": "faker",
-      "command": "helpers.slugify",
-      "label": "helpers.slugify example 1",
-      "rows": [
-        {
-          "name": "Value",
-          "sourceType": "faker",
-          "command": "helpers.slugify",
-          "params": "(\"Hello World 2026\")",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Value\nhelpers.slugify(\"Hello World 2026\")",
-      "expectedUiSchemaText": "Value\nhelpers.slugify(\"Hello World 2026\")",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": ["string"],
-      "origins": ["example"],
-      "parityMode": "structural",
-      "exactPreviewParity": false,
-      "structuralParity": true
-    },
-    {
-      "id": "faker-helpers-uniqueArray-base",
-      "sourceType": "faker",
-      "command": "helpers.uniqueArray",
-      "label": "helpers.uniqueArray",
-      "rows": [
-        {
-          "name": "Value",
-          "sourceType": "faker",
-          "command": "helpers.uniqueArray",
-          "params": "([\"A\", \"B\"], 4)",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Value\nhelpers.uniqueArray([\"A\", \"B\"], 4)",
-      "expectedUiSchemaText": "Value\nhelpers.uniqueArray([\"A\", \"B\"], 4)",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": [],
-      "origins": ["base"],
-      "parityMode": "structural",
-      "exactPreviewParity": false,
+      "parityMode": "exact",
+      "exactPreviewParity": true,
       "structuralParity": true
     },
     {
@@ -27597,31 +27291,6 @@
       "expectStructuredSerialization": false,
       "coveredArgs": ["source", "length"],
       "origins": ["example"],
-      "parityMode": "structural",
-      "exactPreviewParity": false,
-      "structuralParity": true
-    },
-    {
-      "id": "faker-helpers-weightedArrayElement-base",
-      "sourceType": "faker",
-      "command": "helpers.weightedArrayElement",
-      "label": "helpers.weightedArrayElement",
-      "rows": [
-        {
-          "name": "Value",
-          "sourceType": "faker",
-          "command": "helpers.weightedArrayElement",
-          "params": "([{ \"weight\": 1, \"value\": \"A\" }, { \"weight\": 2, \"value\": \"B\" }])",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Value\nhelpers.weightedArrayElement([{ \"weight\": 1, \"value\": \"A\" }, { \"weight\": 2, \"value\": \"B\" }])",
-      "expectedUiSchemaText": "Value\nhelpers.weightedArrayElement([{ \"weight\": 1, \"value\": \"A\" }, { \"weight\": 2, \"value\": \"B\" }])",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": [],
-      "origins": ["base"],
       "parityMode": "structural",
       "exactPreviewParity": false,
       "structuralParity": true
@@ -27667,31 +27336,6 @@
       ],
       "expectedSchemaText": "Value\nairline.seat()",
       "expectedUiSchemaText": "Value\nairline.seat()",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": ["aircraftType"],
-      "origins": ["example"],
-      "parityMode": "exact",
-      "exactPreviewParity": true,
-      "structuralParity": true
-    },
-    {
-      "id": "domain-airline-seat-example-2",
-      "sourceType": "domain",
-      "command": "airline.seat",
-      "label": "airline.seat example 2",
-      "rows": [
-        {
-          "name": "Value",
-          "sourceType": "domain",
-          "command": "airline.seat",
-          "params": "(aircraftType=\"widebody\")",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Value\nairline.seat(aircraftType=\"widebody\")",
-      "expectedUiSchemaText": "Value\nairline.seat(aircraftType=\"widebody\")",
       "expectedFileExtension": ".csv",
       "pairwiseEligible": false,
       "expectStructuredSerialization": false,
@@ -27802,31 +27446,6 @@
       "structuralParity": true
     },
     {
-      "id": "domain-literal-value-example-2",
-      "sourceType": "domain",
-      "command": "literal.value",
-      "label": "literal.value example 2",
-      "rows": [
-        {
-          "name": "Value",
-          "sourceType": "domain",
-          "command": "literal.value",
-          "params": "(\"\")",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Value\nliteral.value(\"\")",
-      "expectedUiSchemaText": "Value\nliteral.value(\"\")",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": ["value"],
-      "origins": ["example"],
-      "parityMode": "exact",
-      "exactPreviewParity": true,
-      "structuralParity": true
-    },
-    {
       "id": "domain-string-counterString-example-1",
       "sourceType": "domain",
       "command": "string.counterString",
@@ -27842,81 +27461,6 @@
       ],
       "expectedSchemaText": "Value\nstring.counterString()",
       "expectedUiSchemaText": "Value\nstring.counterString()",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": ["min", "max", "delimiter"],
-      "origins": ["example"],
-      "parityMode": "structural",
-      "exactPreviewParity": false,
-      "structuralParity": true
-    },
-    {
-      "id": "domain-string-counterString-example-2",
-      "sourceType": "domain",
-      "command": "string.counterString",
-      "label": "string.counterString example 2",
-      "rows": [
-        {
-          "name": "Value",
-          "sourceType": "domain",
-          "command": "string.counterString",
-          "params": "(15)",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Value\nstring.counterString(15)",
-      "expectedUiSchemaText": "Value\nstring.counterString(15)",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": ["min", "max", "delimiter"],
-      "origins": ["example"],
-      "parityMode": "exact",
-      "exactPreviewParity": true,
-      "structuralParity": true
-    },
-    {
-      "id": "domain-string-counterString-example-3",
-      "sourceType": "domain",
-      "command": "string.counterString",
-      "label": "string.counterString example 3",
-      "rows": [
-        {
-          "name": "Value",
-          "sourceType": "domain",
-          "command": "string.counterString",
-          "params": "(min=5, max=12)",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Value\nstring.counterString(min=5, max=12)",
-      "expectedUiSchemaText": "Value\nstring.counterString(min=5, max=12)",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": ["min", "max", "delimiter"],
-      "origins": ["example"],
-      "parityMode": "structural",
-      "exactPreviewParity": false,
-      "structuralParity": true
-    },
-    {
-      "id": "domain-string-counterString-example-4",
-      "sourceType": "domain",
-      "command": "string.counterString",
-      "label": "string.counterString example 4",
-      "rows": [
-        {
-          "name": "Value",
-          "sourceType": "domain",
-          "command": "string.counterString",
-          "params": "(min=12, max=12, delimiter=\"#\")",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Value\nstring.counterString(min=12, max=12, delimiter=\"#\")",
-      "expectedUiSchemaText": "Value\nstring.counterString(min=12, max=12, delimiter=\"#\")",
       "expectedFileExtension": ".csv",
       "pairwiseEligible": false,
       "expectStructuredSerialization": false,
@@ -27950,67 +27494,17 @@
       "parityMode": "exact",
       "exactPreviewParity": true,
       "structuralParity": true
-    },
-    {
-      "id": "domain-string-fromCharacters-example-1",
-      "sourceType": "domain",
-      "command": "string.fromCharacters",
-      "label": "string.fromCharacters example 1",
-      "rows": [
-        {
-          "name": "Value",
-          "sourceType": "domain",
-          "command": "string.fromCharacters",
-          "params": "(\"ABC123\", 6)",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Value\nstring.fromCharacters(\"ABC123\", 6)",
-      "expectedUiSchemaText": "Value\nstring.fromCharacters(\"ABC123\", 6)",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": ["characters", "length"],
-      "origins": ["example"],
-      "parityMode": "exact",
-      "exactPreviewParity": true,
-      "structuralParity": true
-    },
-    {
-      "id": "domain-string-fromCharacters-example-2",
-      "sourceType": "domain",
-      "command": "string.fromCharacters",
-      "label": "string.fromCharacters example 2",
-      "rows": [
-        {
-          "name": "Value",
-          "sourceType": "domain",
-          "command": "string.fromCharacters",
-          "params": "(characters=[\"A\", \"B\", \"C\"], length=4)",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Value\nstring.fromCharacters(characters=[\"A\", \"B\", \"C\"], length=4)",
-      "expectedUiSchemaText": "Value\nstring.fromCharacters(characters=[\"A\", \"B\", \"C\"], length=4)",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": ["characters", "length"],
-      "origins": ["example"],
-      "parityMode": "exact",
-      "exactPreviewParity": true,
-      "structuralParity": true
     }
   ],
   "uiParityByScenarioId": {
     "custom-enum-base": {
-      "mode": "structural",
-      "exactPreviewParity": false,
+      "mode": "exact",
+      "exactPreviewParity": true,
       "structuralParity": true
     },
     "custom-enum-pairwise": {
-      "mode": "structural",
-      "exactPreviewParity": false,
+      "mode": "exact",
+      "exactPreviewParity": true,
       "structuralParity": true
     },
     "custom-literal-base": {
@@ -28174,8 +27668,8 @@
       "structuralParity": true
     },
     "domain-string-counterString-example-1": {
-      "mode": "structural",
-      "exactPreviewParity": false,
+      "mode": "exact",
+      "exactPreviewParity": true,
       "structuralParity": true
     },
     "domain-string-counterString-example-2": {
@@ -28184,8 +27678,8 @@
       "structuralParity": true
     },
     "domain-string-counterString-example-3": {
-      "mode": "structural",
-      "exactPreviewParity": false,
+      "mode": "exact",
+      "exactPreviewParity": true,
       "structuralParity": true
     },
     "domain-string-counterString-example-4": {

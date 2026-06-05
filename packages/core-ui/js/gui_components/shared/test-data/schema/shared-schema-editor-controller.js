@@ -18,30 +18,22 @@ import { getSchemaRowSemanticValidationIssues } from './schema-row-validation.js
 import { captureActiveFieldState, restoreActiveFieldState } from './schema-focus-state.js';
 import { getDefaultDocumentObj, resolveWindowObj } from '../../dom/default-objects.js';
 import {
-  renderGeneratorSchemaRows,
+  renderSharedSchemaRows,
   clearSchemaRowDragClasses,
   getSchemaRowDropInstruction,
   applySchemaRowDropInstructionIndicator,
-  handleGeneratorRowInputChange,
-  handleGeneratorRowButtonClick,
+  handleSharedSchemaRowInputChange,
+  handleSharedSchemaRowButtonClick,
   hideVisibleHelpTooltips,
-} from '../../../generator/schema/data-generator-schema-ui.js';
+  SHARED_SCHEMA_ROW_SELECTOR,
+} from './shared-schema-editor-ui.js';
 
-function findElementById(rootElement, id) {
-  if (!rootElement || !id) {
-    return null;
-  }
-  return rootElement.querySelector(`[id="${id}"]`);
-}
-
-function createSchemaDomAdapter({ documentObj, rootElement, idMap = {} }) {
-  return {
-    createElement: (...args) => documentObj.createElement(...args),
-    querySelector: (...args) => rootElement?.querySelector?.(...args),
-    defaultView: documentObj.defaultView,
-    getElementById: (id) => findElementById(rootElement, idMap[id] || id),
-  };
-}
+const SCHEMA_ROWS_ROLE = 'schema-rows-region';
+const SCHEMA_TEXT_CONTAINER_ROLE = 'schema-text-region';
+const SCHEMA_TEXT_ROLE = 'schema-textbox';
+const SCHEMA_ADD_BUTTON_ROLE = 'schema-add-field';
+const SCHEMA_MODE_TOGGLE_ROLE = 'schema-mode-toggle';
+const SCHEMA_MODE_HELP_ROLE = 'schema-mode-help';
 
 function createSharedSchemaEditorController({
   documentObj = getDefaultDocumentObj(),
@@ -64,9 +56,9 @@ function createSharedSchemaEditorController({
   validateSchemaRows,
   updatePairwiseButtonVisibility = () => {},
   updateHelpHints,
-  idMap = {},
-  modeHelpIconId,
+  elements = {},
   rootElement = documentObj?.body,
+  timerApi = documentObj?.defaultView || globalThis,
 }) {
   const semanticValidationTimers = new Map();
   let dragState = null;
@@ -76,6 +68,7 @@ function createSharedSchemaEditorController({
     schemaTextToDataRules,
     faker,
     RandExp,
+    mapRuleToRow,
     schemaRowsToSpecWithTokens: (rows, tokens) =>
       schemaRowsToSpecWithTokens({
         schemaRows: rows,
@@ -84,25 +77,16 @@ function createSharedSchemaEditorController({
         dataRulesToSchemaText,
       }),
   });
-  const scopedDomAdapter = createSchemaDomAdapter({ documentObj, rootElement, idMap });
-
-  const getElement = (id) => findElementById(rootElement, idMap[id] || id);
-  const getRowsElement = () => getElement('generatorSchemaRows');
-  const getTextElement = () => getElement('generatorSchemaText');
-  const getTextContainerElement = () => getElement('generatorSchemaTextContainer');
-  const getAddButtonElement = () => getElement('addSchemaRowButton');
-  const getToggleButtonElement = () => getElement('schemaModeToggleButton');
-  const getModeHelpIconElement = () => getElement(modeHelpIconId || 'schemaModeHelpIcon');
+  const getElementByRole = (role) => rootElement?.querySelector?.(`[data-role="${role}"]`);
+  const getRowsElement = () => elements.rowsElement || getElementByRole(SCHEMA_ROWS_ROLE);
+  const getTextElement = () => elements.textElement || getElementByRole(SCHEMA_TEXT_ROLE);
+  const getTextContainerElement = () => elements.textContainerElement || getElementByRole(SCHEMA_TEXT_CONTAINER_ROLE);
+  const getAddButtonElement = () => elements.addButtonElement || getElementByRole(SCHEMA_ADD_BUTTON_ROLE);
+  const getToggleButtonElement = () => elements.toggleButtonElement || getElementByRole(SCHEMA_MODE_TOGGLE_ROLE);
+  const getModeHelpIconElement = () => elements.helpIconElement || getElementByRole(SCHEMA_MODE_HELP_ROLE);
 
   const refreshHelpHints = () => {
-    if (typeof updateHelpHints === 'function') {
-      updateHelpHints();
-      return;
-    }
-    const windowObj = resolveWindowObj(null, documentObj);
-    if (typeof windowObj?.updateHelpHints === 'function') {
-      windowObj.updateHelpHints();
-    }
+    updateHelpHints?.();
   };
 
   const setSchemaError = (message) => {
@@ -161,7 +145,7 @@ function createSharedSchemaEditorController({
   const clearSemanticValidationTimer = (rowId) => {
     const timerId = semanticValidationTimers.get(rowId);
     if (timerId) {
-      globalThis.clearTimeout(timerId);
+      timerApi?.clearTimeout?.(timerId);
       semanticValidationTimers.delete(rowId);
     }
   };
@@ -172,7 +156,7 @@ function createSharedSchemaEditorController({
 
   const clearDragState = () => {
     dragState = null;
-    clearSchemaRowDragClasses(scopedDomAdapter);
+    clearSchemaRowDragClasses({ rootElement });
   };
 
   const applySemanticValidationForRow = (rowId) => {
@@ -222,7 +206,7 @@ function createSharedSchemaEditorController({
       applySemanticValidationForRow(rowId);
       return;
     }
-    const timerId = globalThis.setTimeout(() => applySemanticValidationForRow(rowId), SEMANTIC_VALIDATION_DEBOUNCE_MS);
+    const timerId = timerApi?.setTimeout?.(() => applySemanticValidationForRow(rowId), SEMANTIC_VALIDATION_DEBOUNCE_MS);
     semanticValidationTimers.set(rowId, timerId);
   };
 
@@ -236,13 +220,15 @@ function createSharedSchemaEditorController({
   };
 
   const renderRows = () => {
-    renderGeneratorSchemaRows({
-      documentObj: scopedDomAdapter,
+    renderSharedSchemaRows({
+      documentObj,
+      rowsElement: getRowsElement(),
       schemaRows: session.getRows(),
       fakerCommands,
       getVisibleDomainCommands,
       getSchemaHelpData,
       updateAllPairsButtonVisibility: () => {},
+      updateHelpHints: refreshHelpHints,
     });
   };
 
@@ -332,7 +318,11 @@ function createSharedSchemaEditorController({
   };
 
   const toggleMode = () => {
-    hideVisibleHelpTooltips({ documentObj: scopedDomAdapter });
+    hideVisibleHelpTooltips({
+      modeHelpIconElement: getModeHelpIconElement(),
+      windowObj: documentObj?.defaultView,
+      documentObj,
+    });
     if (session.getTextMode()) {
       const parsed = syncFromText({ showErrors: true });
       if (parsed?.errors?.length > 0) {
@@ -372,10 +362,10 @@ function createSharedSchemaEditorController({
   };
 
   const handleInput = (event) => {
-    const rowElem = event?.target?.closest?.('.generator-schema-row');
+    const rowElem = event?.target?.closest?.(SHARED_SCHEMA_ROW_SELECTOR);
     const rowId = rowElem?.getAttribute?.('data-row-id');
     const fieldName = event?.target?.getAttribute?.('data-field');
-    handleGeneratorRowInputChange({
+    handleSharedSchemaRowInputChange({
       event,
       schemaRows: session.getRows(),
       schemaSession: session,
@@ -406,7 +396,7 @@ function createSharedSchemaEditorController({
     if (fieldName !== 'name' && fieldName !== 'command' && fieldName !== 'params' && fieldName !== 'value') {
       return;
     }
-    const rowElem = event?.target?.closest?.('.generator-schema-row');
+    const rowElem = event?.target?.closest?.(SHARED_SCHEMA_ROW_SELECTOR);
     const rowId = rowElem?.getAttribute?.('data-row-id');
     if (!rowId) {
       return;
@@ -452,7 +442,7 @@ function createSharedSchemaEditorController({
       return;
     }
 
-    handleGeneratorRowButtonClick({
+    handleSharedSchemaRowButtonClick({
       event,
       schemaRows: session.getRows(),
       addRowAfter: (index) => {
@@ -501,7 +491,7 @@ function createSharedSchemaEditorController({
       event.dataTransfer.effectAllowed = 'move';
     }
     applySchemaRowDropInstructionIndicator({
-      documentObj: scopedDomAdapter,
+      rootElement,
       draggedRowId: rowId,
       dropInstruction: null,
     });
@@ -517,7 +507,7 @@ function createSharedSchemaEditorController({
       draggedRowId: dragState.rowId,
     });
     if (!dropInstruction) {
-      clearSchemaRowDragClasses(scopedDomAdapter);
+      clearSchemaRowDragClasses({ rootElement });
       return;
     }
     event.preventDefault();
@@ -525,7 +515,7 @@ function createSharedSchemaEditorController({
       event.dataTransfer.dropEffect = 'move';
     }
     applySchemaRowDropInstructionIndicator({
-      documentObj: scopedDomAdapter,
+      rootElement,
       draggedRowId: dragState.rowId,
       dropInstruction,
     });
@@ -604,6 +594,7 @@ function createSharedSchemaEditorController({
     handleDragEnd,
     toggleMode,
     insertSampleSchema,
+    parseTextToRows: (schemaText) => session.parseTextToRows(schemaText),
     syncFromText,
     validateRows: () => revalidateRows(),
     handleFocusOut,

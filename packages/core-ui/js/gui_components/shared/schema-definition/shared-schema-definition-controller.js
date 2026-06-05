@@ -1,6 +1,8 @@
 import { createSharedSchemaEditorController } from '../test-data/schema/index.js';
 import { getDefaultDocumentObj } from '../dom/default-objects.js';
 
+const DEFAULT_SHARED_SCHEMA_IDS = Object.freeze({});
+
 class SharedSchemaDefinitionController {
   constructor({ props = {}, callbacks = {}, documentObj = getDefaultDocumentObj() } = {}) {
     this.props = { ...props };
@@ -13,28 +15,42 @@ class SharedSchemaDefinitionController {
     this.props = { ...this.props, ...nextProps };
   }
 
+  attachElements(elements = {}) {
+    this.props = {
+      ...this.props,
+      elements: {
+        ...(this.props.elements || {}),
+        ...elements,
+      },
+    };
+  }
+
   getViewModel() {
     const ids = this.props.ids || {};
     return {
       headingText: this.props.headingText || '',
-      sectionClassName: this.props.sectionClassName || 'generator-schema',
-      headingClassName: this.props.headingClassName || 'generator-schema-head',
+      sectionClassName: this.props.sectionClassName || 'shared-schema-definition-shell',
+      headingClassName: this.props.headingClassName || 'shared-schema-heading',
       headingRowClassName: this.props.headingRowClassName || '',
-      errorClassName: this.props.errorClassName || 'generator-schema-error-text',
+      errorClassName: this.props.errorClassName || 'shared-schema-error',
+      helpGroupClassName: this.props.helpGroupClassName || 'shared-schema-button-with-help',
+      rowsClassName: this.props.rowsClassName || 'shared-schema-rows',
+      textContainerClassName: this.props.textContainerClassName || 'shared-schema-text',
+      footerClassName: this.props.footerClassName || 'shared-schema-footer',
       textAreaClassName: this.props.textAreaClassName || 'testDataSchemaTextArea',
       addButtonClassName: this.props.addButtonClassName || '',
-      helpIconDataHelp: this.props.helpIconDataHelp || 'generator-schema-mode-help',
+      helpIconDataHelp: this.props.helpIconDataHelp || 'shared-schema-mode-help',
       toggleButtonTitle: this.props.toggleButtonTitle || 'Toggle schema text mode',
       addButtonLabel: this.props.addButtonLabel || '+ Add Field',
       textAreaPlaceholder: this.props.textAreaPlaceholder || 'Column Name\nrule\nColumn Name\nrule',
       ids: {
-        rows: ids.rows || 'generatorSchemaRows',
-        textContainer: ids.textContainer || 'generatorSchemaTextContainer',
-        text: ids.text || 'generatorSchemaText',
-        addButton: ids.addButton || 'addSchemaRowButton',
-        toggleButton: ids.toggleButton || 'schemaModeToggleButton',
-        helpIcon: ids.helpIcon || 'schemaModeHelpIcon',
-        error: ids.error || 'generatorSchemaErrorText',
+        rows: ids.rows || null,
+        textContainer: ids.textContainer || null,
+        text: ids.text || null,
+        addButton: ids.addButton || null,
+        toggleButton: ids.toggleButton || null,
+        helpIcon: ids.helpIcon || null,
+        error: ids.error || null,
       },
     };
   }
@@ -44,7 +60,6 @@ class SharedSchemaDefinitionController {
       return;
     }
 
-    const ids = this.getViewModel().ids;
     this.schemaEditor = createSharedSchemaEditorController({
       documentObj: this.documentObj,
       schemaTextToDataRules: this.props.schemaTextToDataRules,
@@ -66,15 +81,9 @@ class SharedSchemaDefinitionController {
       validateSchemaRows: this.props.validateSchemaRows,
       updatePairwiseButtonVisibility: this.props.updatePairwiseButtonVisibility,
       updateHelpHints: this.props.updateHelpHints,
+      timerApi: this.props.timerApi,
       rootElement: this.props.rootElement,
-      idMap: {
-        generatorSchemaRows: ids.rows,
-        generatorSchemaTextContainer: ids.textContainer,
-        generatorSchemaText: ids.text,
-        addSchemaRowButton: ids.addButton,
-        schemaModeToggleButton: ids.toggleButton,
-        schemaModeHelpIcon: ids.helpIcon,
-      },
+      elements: this.props.elements,
     });
   }
 
@@ -94,6 +103,10 @@ class SharedSchemaDefinitionController {
 
   insertSampleSchema() {
     return this.schemaEditor?.insertSampleSchema?.();
+  }
+
+  parseTextToRows(schemaText) {
+    return this.schemaEditor?.parseTextToRows?.(schemaText) || { rows: [], errors: [], tokens: [] };
   }
 
   syncFromText(options) {
@@ -122,6 +135,10 @@ class SharedSchemaDefinitionController {
 
   moveRowAt(index, direction) {
     return this.schemaEditor?.moveRowAt?.(index, direction);
+  }
+
+  moveRowToIndex(fromIndex, toIndex) {
+    return this.schemaEditor?.moveRowToIndex?.(fromIndex, toIndex);
   }
 
   render() {
@@ -181,4 +198,4 @@ class SharedSchemaDefinitionController {
   }
 }
 
-export { SharedSchemaDefinitionController };
+export { SharedSchemaDefinitionController, DEFAULT_SHARED_SCHEMA_IDS };

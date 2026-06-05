@@ -52,6 +52,36 @@ describe('import-export adapters', () => {
         event: { reason: 'broken' },
       });
     });
+
+    test('prefers injected owner-window FileReader over ambient globals', async () => {
+      const isolatedDom = new JSDOM(`<!doctype html><html><body></body></html>`);
+      const ownerWindowObj = {
+        FileReader: FakeFileReader,
+      };
+      const originalFileReader = global.FileReader;
+      global.FileReader = jest.fn();
+
+      try {
+        const service = createFileReadService({
+          documentObj: isolatedDom.window.document,
+          windowObj: ownerWindowObj,
+        });
+        const promise = service.readText({ name: 'owner-window.csv' });
+
+        expect(readerInstance).toBeInstanceOf(FakeFileReader);
+        expect(global.FileReader).not.toHaveBeenCalled();
+
+        readerInstance.emit('load', { target: { result: 'name\nAda' } });
+        await expect(promise).resolves.toBe('name\nAda');
+      } finally {
+        if (typeof originalFileReader === 'undefined') {
+          delete global.FileReader;
+        } else {
+          global.FileReader = originalFileReader;
+        }
+        isolatedDom.window.close();
+      }
+    });
   });
 
   describe('createFileImportBindingsAdapter', () => {
@@ -61,7 +91,7 @@ describe('import-export adapters', () => {
     beforeEach(() => {
       dom = new JSDOM(`<!doctype html><html><body>
         <div id="root">
-          <label id="dropzone"><input type="file" id="csvinput" /></label>
+          <label id="dropzone" data-role="drop-zone"><input type="file" id="csvinput" data-role="file-input" /></label>
         </div>
       </body></html>`);
       documentObj = dom.window.document;

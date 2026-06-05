@@ -2,8 +2,9 @@ import { Importer } from '@anywaydata/core/grid/importer.js';
 import { Exporter } from '@anywaydata/core/grid/exporter.js';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 import { mountTestDataGenerationPanel } from '../test-data-grid/index.js';
-import { ExtendedDataGrid, activeGridEngine } from '../../data-grid-editor/main-display-grid.js';
+import { createDataGridComponent } from '../../data-grid-editor/index.js';
 import { ensureGridLibraryLoaded } from '../../data-grid-editor/grid-library-loader.js';
+import { GridExtension as TabulatorGridExtension } from '../../data-grid-editor/tabulator/gridExtension-tabulator.js';
 import { createImportExportWorkspaceComponent } from '../import-export-workspace/index.js';
 import { createInstructionsComponent, APP_PAGE_INSTRUCTIONS_PROPS } from '../../shared/instructions/index.js';
 import { createAppPageComponent } from './app-page-shell.js';
@@ -103,20 +104,25 @@ function createInstructionsGridActions({ documentObj = getDefaultDocumentObj(), 
 async function bootstrapApp({
   documentObj = getDefaultDocumentObj(),
   ensureGridLibraryLoadedFn = ensureGridLibraryLoaded,
-  activeGridEngineName = activeGridEngine,
-  ExtendedDataGridClass = ExtendedDataGrid,
+  createDataGridComponentFn = createDataGridComponent,
+  TabulatorCtor,
+  GridExtensionClass = TabulatorGridExtension,
   createImportExportWorkspaceComponentFn = createImportExportWorkspaceComponent,
   createAppPageComponentFn = createAppPageComponent,
   createInstructionsComponentFn = createInstructionsComponent,
   ExporterClass = Exporter,
   ImporterClass = Importer,
   mountTestDataGenerationPanelFn = mountTestDataGenerationPanel,
-  enableTestDataGenerationInterfaceFn,
 } = {}) {
   if (!documentObj) {
     return null;
   }
-  initThemeToggle({ documentObj, windowObj: resolveWindowObj(null, documentObj) });
+  const resolvedWindowObj = resolveWindowObj(null, documentObj);
+  const resolvedTabulatorCtor = TabulatorCtor || resolvedWindowObj?.Tabulator || globalThis.Tabulator;
+  const themeToggle = initThemeToggle({
+    documentObj,
+    windowObj: resolvedWindowObj,
+  });
   const pageRoot = documentObj.getElementById('app-page-root');
   const appPageComponent = pageRoot
     ? createAppPageComponentFn({
@@ -129,11 +135,11 @@ async function bootstrapApp({
   });
   startupLoadingStatus.show();
 
-  console.log(`Using grid engine: ${activeGridEngineName}`);
+  console.log('Using grid engine: tabulator');
   try {
-    await ensureGridLibraryLoadedFn({ engine: activeGridEngineName });
+    await ensureGridLibraryLoadedFn({ document: documentObj });
   } catch (error) {
-    console.error(`Failed to load ${activeGridEngineName} library`, error);
+    console.error('Failed to load tabulator library', error);
     startupLoadingStatus.fail();
     return null;
   }
@@ -145,8 +151,14 @@ async function bootstrapApp({
   let importer = null;
   let instructionsGridActions = null;
   try {
-    mainDataGrid = new ExtendedDataGridClass();
-    mainDataGrid.createChildGrid(documentObj.getElementById('main-grid-view'));
+    mainDataGrid = createDataGridComponentFn({
+      root: documentObj.getElementById('main-grid-view'),
+      documentObj,
+      services: {
+        TabulatorCtor: resolvedTabulatorCtor,
+        GridExtensionClass,
+      },
+    });
 
     const instructionsRoot = documentObj.getElementById('page-instructions');
     instructionsComponent = instructionsRoot
@@ -179,8 +191,7 @@ async function bootstrapApp({
     });
     instructionsGridActions.bind();
 
-    const mountTestDataGeneration = enableTestDataGenerationInterfaceFn || mountTestDataGenerationPanelFn;
-    mountTestDataGeneration(
+    mountTestDataGenerationPanelFn(
       'testDataGeneratorContainer',
       importer,
       importExportController,
@@ -205,6 +216,7 @@ async function bootstrapApp({
       importExportController?.destroy?.();
       mainDataGrid?.destroy?.();
       appPageComponent?.destroy?.();
+      themeToggle?.destroy?.();
     },
   };
 }

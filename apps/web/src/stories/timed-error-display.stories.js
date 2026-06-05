@@ -1,22 +1,24 @@
 import { expect, userEvent, waitFor, within } from 'storybook/test';
 import { createTimedStatusPresenter } from '../../../../packages/core-ui/js/gui_components/shared/timed-error-display.js';
 
-let timedStatusPresenterStoryInstanceCounter = 0;
-
 function createTimedStatusPresenterHarness({ root, args, remountable = false }) {
   let presenter = null;
   let presenterRoot = null;
 
   const mountPresenter = () => {
     presenter?.destroy?.();
-    timedStatusPresenterStoryInstanceCounter += 1;
-    const statusElementId = `storybook-timed-status-${timedStatusPresenterStoryInstanceCounter}`;
     presenterRoot.innerHTML = `
-      <div id="${statusElementId}" class="import-progress-status" role="status" aria-live="polite" style="min-height:1.5rem;"></div>
+      <div
+        class="import-progress-status"
+        data-role="timed-status-presenter-root"
+        role="status"
+        aria-live="polite"
+        style="min-height:1.5rem;"
+      ></div>
     `;
     presenter = createTimedStatusPresenter({
       documentObj: document,
-      elementId: statusElementId,
+      resolveElement: () => presenterRoot?.querySelector?.('[data-role="timed-status-presenter-root"]') || null,
       timeoutMs: args.timeoutMs,
     });
   };
@@ -107,7 +109,7 @@ export const AutoClearingStatus = {
   },
   play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement);
-    const status = canvas.getByRole('status');
+    const status = canvas.getByRole('status', { hidden: true });
 
     await step('Show timed status', async () => {
       await userEvent.click(canvas.getByRole('button', { name: 'Show timed status' }));
@@ -144,7 +146,7 @@ export const AutoClearingNormalStatus = {
   },
   play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement);
-    const status = canvas.getByRole('status');
+    const status = canvas.getByRole('status', { hidden: true });
 
     await step('Show timed normal status', async () => {
       await userEvent.click(canvas.getByRole('button', { name: 'Show timed status' }));
@@ -182,7 +184,7 @@ export const RemountableTimedStatus = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    let status = canvas.getByRole('status');
+    let status = canvas.getByRole('status', { hidden: true });
 
     await userEvent.click(canvas.getByRole('button', { name: 'Show timed status' }));
     await expect(status).toHaveTextContent('Schema updated.');
@@ -190,7 +192,7 @@ export const RemountableTimedStatus = {
     status = canvas.getByRole('status', { hidden: true });
     await expect(status).toHaveTextContent('');
     await userEvent.click(canvas.getByRole('button', { name: 'Show timed status' }));
-    status = canvas.getByRole('status');
+    status = canvas.getByRole('status', { hidden: true });
     await expect(status).toHaveTextContent('Schema updated.');
     await waitFor(
       () => {

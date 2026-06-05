@@ -17,6 +17,10 @@ describe('GeneratorControlsController', () => {
       selectedFormat: 'json',
       currentOptions: { options: { prettyPrint: true } },
       pairwiseVisible: true,
+      generationButtonsBusy: false,
+      statusMessage: '',
+      statusOptions: {},
+      loadingStatusMessage: '',
     });
 
     controller.setSelectedFormat('csv');
@@ -60,6 +64,75 @@ describe('GeneratorControlsController', () => {
       selectedFormat: 'json',
       currentOptions: { options: { prettyPrint: true } },
       pairwiseVisible: true,
+      generationButtonsBusy: false,
+      statusMessage: '',
+      statusOptions: {},
+      loadingStatusMessage: '',
     });
+  });
+
+  test('supports explicit pairwise visibility updates', () => {
+    const controller = new GeneratorControlsController({
+      props: {
+        selectedFormat: 'csv',
+        pairwiseVisible: false,
+      },
+    });
+
+    controller.setPairwiseVisible(true);
+    expect(controller.getState().pairwiseVisible).toBe(true);
+
+    controller.setPairwiseVisible(false);
+    expect(controller.getState().pairwiseVisible).toBe(false);
+  });
+
+  test('supports explicit generation busy updates', () => {
+    const controller = new GeneratorControlsController({
+      props: {
+        selectedFormat: 'csv',
+        generationButtonsBusy: false,
+      },
+    });
+
+    controller.setGenerationButtonsBusy(true);
+    expect(controller.getState().generationButtonsBusy).toBe(true);
+
+    controller.setGenerationButtonsBusy(false);
+    expect(controller.getState().generationButtonsBusy).toBe(false);
+  });
+
+  test('tracks explicit status and loading state', () => {
+    const controller = new GeneratorControlsController({
+      props: {
+        selectedFormat: 'csv',
+      },
+    });
+
+    controller.setStatus('Applied.', { severity: 'info' });
+    expect(controller.getState()).toEqual(
+      expect.objectContaining({
+        statusMessage: 'Applied.',
+        statusOptions: { severity: 'info' },
+        loadingStatusMessage: '',
+      })
+    );
+
+    controller.showLoadingStatus('Generating...');
+    expect(controller.getState()).toEqual(
+      expect.objectContaining({
+        statusMessage: '',
+        statusOptions: {},
+        loadingStatusMessage: 'Generating...',
+      })
+    );
+
+    controller.clearStatus();
+    expect(controller.getState()).toEqual(
+      expect.objectContaining({
+        statusMessage: '',
+        statusOptions: {},
+        loadingStatusMessage: '',
+      })
+    );
   });
 });

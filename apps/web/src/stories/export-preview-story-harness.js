@@ -1,5 +1,3 @@
-import RandExp from 'randexp';
-import { faker } from '@faker-js/faker';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 import { Importer } from '@anywaydata/core/grid/importer.js';
 import { Exporter } from '@anywaydata/core/grid/exporter.js';
@@ -33,6 +31,33 @@ const FORMAT_GROUP_LABELS = {
   code: 'Code',
   'code-unit-test': 'Code (Unit Test)',
 };
+
+const DIRECT_EXPORT_FORMAT_LABELS = {
+  markdown: 'Markdown',
+  csv: 'CSV',
+  dsv: 'Delimited',
+  json: 'JSON',
+  jsonl: 'JSONL',
+  xml: 'XML',
+  sql: 'SQL',
+  gherkin: 'Gherkin',
+  html: 'HTML',
+  asciitable: 'ASCII',
+};
+
+function getButtonByText(rootElement, text) {
+  return (
+    Array.from(rootElement?.querySelectorAll?.('button') || []).find(
+      (button) => button?.textContent?.trim() === text
+    ) || null
+  );
+}
+
+function getCheckboxByLabelText(rootElement, labelText) {
+  const labels = Array.from(rootElement?.querySelectorAll?.('label') || []);
+  const matchingLabel = labels.find((label) => label?.textContent?.replace(/\s+/g, ' ')?.trim() === labelText);
+  return matchingLabel?.querySelector?.('input[type="checkbox"]') || null;
+}
 
 function createStorySurface(sectionName) {
   storySurfaceCounter += 1;
@@ -145,110 +170,87 @@ class StoryMemoryGrid {
   }
 }
 
-function installStoryGlobals() {
-  globalThis.RandExp = RandExp;
-  globalThis.faker = faker;
-  if (typeof document.execCommand !== 'function') {
-    document.execCommand = () => true;
-  }
-}
-
-function dispatchStoryClick(element) {
-  element?.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
-}
-
-function selectExportFormat(surface, format) {
-  if (DIRECT_EXPORT_FORMATS.has(format)) {
-    dispatchStoryClick(surface.querySelector(`.type-select-action[data-type="${format}"]`));
+function selectExportFormat(workspace, format) {
+  if (!format) {
     return;
   }
 
-  if (CODE_EXPORT_FORMATS.has(format)) {
-    dispatchStoryClick(surface.querySelector('.type-select-action[data-group="code"]'));
-    dispatchStoryClick(surface.querySelector(`.subtask-select-action[data-type="${format}"]`));
-    return;
-  }
-
-  if (UNIT_TEST_EXPORT_FORMATS.has(format)) {
-    dispatchStoryClick(surface.querySelector('.type-select-action[data-group="code-unit-test"]'));
-    dispatchStoryClick(surface.querySelector(`.subtask-select-action[data-type="${format}"]`));
+  if (DIRECT_EXPORT_FORMATS.has(format) || CODE_EXPORT_FORMATS.has(format) || UNIT_TEST_EXPORT_FORMATS.has(format)) {
+    workspace.setFileFormatType(format);
   }
 }
 
-function setCheckboxValue(input, checked) {
-  if (!input) {
-    return;
-  }
-  input.checked = checked === true;
-  input.dispatchEvent(new Event('change', { bubbles: true }));
+function setAutoPreviewEnabled(workspace, enabled) {
+  workspace.update({ autoPreviewEnabled: enabled === true });
 }
 
-function setPreviewRowLimit(surface, value) {
-  const previewRowsInput = surface.querySelector('#previewRowsCount');
-  if (!previewRowsInput) {
-    return;
-  }
-  previewRowsInput.value = String(value);
-  previewRowsInput.dispatchEvent(new Event('input', { bubbles: true }));
+function setPreviewRowLimit(workspace, value) {
+  workspace.update({ previewRowLimit: value });
 }
 
-function getActiveExportSelection(surface) {
-  const activeSubtask = surface.querySelector('.subtask-select.active-type');
-  const activeMainType = surface.querySelector('.type-select.active-main-type .type-select-action');
-  const activeDirectType = surface.querySelector('.type-select.active-type .type-select-action');
-
-  if (activeSubtask) {
-    const action = activeSubtask.querySelector('.subtask-select-action');
+function getSelectionForFormatType(type) {
+  if (!type) {
     return {
-      group: FORMAT_GROUP_LABELS[activeMainType?.dataset?.group] || activeMainType?.textContent?.trim() || 'Code',
-      type: action?.getAttribute('data-type') || activeSubtask.getAttribute('data-type') || '',
-      label: action?.textContent?.trim() || '',
+      group: 'Direct',
+      type: '',
+      label: '',
+    };
+  }
+
+  if (DIRECT_EXPORT_FORMATS.has(type)) {
+    return {
+      group: 'Direct',
+      type,
+      label: DIRECT_EXPORT_FORMAT_LABELS[type] || type,
+    };
+  }
+
+  const codeSubtask = getCodeLanguageSubtasks().find((subtask) => (subtask.types || [subtask.type]).includes(type));
+  if (codeSubtask) {
+    return {
+      group: FORMAT_GROUP_LABELS.code,
+      type,
+      label: codeSubtask.label || type,
+    };
+  }
+
+  const unitTestSubtask = getUnitTestLanguageSubtasks().find((subtask) =>
+    (subtask.types || [subtask.type]).includes(type)
+  );
+  if (unitTestSubtask) {
+    return {
+      group: FORMAT_GROUP_LABELS['code-unit-test'],
+      type,
+      label: unitTestSubtask.label || type,
     };
   }
 
   return {
     group: 'Direct',
-    type: activeDirectType?.getAttribute('data-type') || '',
-    label: activeDirectType?.textContent?.trim() || '',
+    type,
+    label: type,
   };
 }
 
-function getSelectionFromAction(surface, actionElement) {
+function getActiveExportSelection(workspace) {
+  return getSelectionForFormatType(workspace?.getState?.()?.selectedFormat || '');
+}
+
+function getSelectionFromAction(workspace, actionElement) {
   if (!actionElement) {
-    return getActiveExportSelection(surface);
+    return getActiveExportSelection(workspace);
   }
 
   const directType = actionElement.getAttribute('data-type');
-  const isSubtask = actionElement.classList.contains('subtask-select-action');
-  const group = actionElement.getAttribute('data-group');
-
-  if (isSubtask && directType) {
-    const activeMainType = surface.querySelector('.type-select.active-main-type .type-select-action');
-    return {
-      group: FORMAT_GROUP_LABELS[activeMainType?.dataset?.group] || activeMainType?.textContent?.trim() || 'Code',
-      type: directType,
-      label: actionElement.textContent?.trim() || '',
-    };
-  }
-
   if (directType) {
-    return {
-      group: 'Direct',
-      type: directType,
-      label: actionElement.textContent?.trim() || '',
-    };
+    return getSelectionForFormatType(directType);
   }
 
-  if (group) {
-    return getActiveExportSelection(surface);
-  }
-
-  return getActiveExportSelection(surface);
+  return getActiveExportSelection(workspace);
 }
 
-function getPreviewActionPayload(surface, exporter, previewRowLimit, mode) {
-  const { type } = getActiveExportSelection(surface);
-  const previewTextArea = surface.querySelector('#markdownarea');
+function getPreviewActionPayload(exporter, workspace, previewRowLimit, mode) {
+  const { type } = getActiveExportSelection(workspace);
   const dataTable = exporter.getGridAsGenericDataTable(previewRowLimit);
   const serialized = serializeDataTable(dataTable);
 
@@ -256,7 +258,7 @@ function getPreviewActionPayload(surface, exporter, previewRowLimit, mode) {
     type,
     mode,
     previewRowLimit,
-    textLength: previewTextArea?.value?.length || 0,
+    textLength: workspace.getTextValue()?.length || 0,
     rowCount: serialized.rowCount,
     headerCount: serialized.headerCount,
   };
@@ -302,8 +304,6 @@ function renderGridPreviewStory({
   delimiter = '\t',
   actions = {},
 } = {}) {
-  installStoryGlobals();
-
   const surface = createStorySurface('grid-preview');
   const workspaceHost = document.createElement('div');
   workspaceHost.id = `story-import-export-${storySurfaceCounter}`;
@@ -331,7 +331,7 @@ function renderGridPreviewStory({
       },
       downloadService: {
         downloadText: (filename, text) => {
-          const type = getActiveExportSelection(surface).type;
+          const type = getActiveExportSelection(workspace).type;
           emitAction('onDownloadRequested', {
             type,
             fileExtension: filename.replace(/^export/, ''),
@@ -351,8 +351,8 @@ function renderGridPreviewStory({
     emitAction(
       'onPreviewRendered',
       getPreviewActionPayload(
-        surface,
         exporter,
+        workspace,
         workspace.getPreviewRowLimit(),
         workspace.isPreviewTextMode() ? 'preview' : 'edit'
       )
@@ -364,7 +364,7 @@ function renderGridPreviewStory({
   workspace.applyCurrentTypeOptions = (optionsToApply) => {
     const result = originalApplyCurrentTypeOptions(optionsToApply);
     emitAction('onOptionsApplied', {
-      type: optionsToApply?.outputFormat || getActiveExportSelection(surface).type,
+      type: optionsToApply?.outputFormat || getActiveExportSelection(workspace).type,
       options:
         typeof structuredClone === 'function'
           ? structuredClone(optionsToApply?.options || optionsToApply || {})
@@ -378,15 +378,15 @@ function renderGridPreviewStory({
     const result = await originalSetGridFromGenericDataTable(dataTable);
     const serialized = serializeDataTable(dataTable);
     emitAction('onSetGridFromText', {
-      type: getActiveExportSelection(surface).type,
+      type: getActiveExportSelection(workspace).type,
       ...serialized,
-      sourceTextLength: surface.querySelector('#markdownarea')?.value?.length || 0,
+      sourceTextLength: workspace.getTextValue()?.length || 0,
     });
     return result;
   };
 
-  setPreviewRowLimit(surface, previewRowLimit);
-  selectExportFormat(surface, format);
+  setPreviewRowLimit(workspace, previewRowLimit);
+  selectExportFormat(workspace, format);
   applyExportFormatOptions(workspace, format, {
     prettyPrint,
     asObject,
@@ -398,30 +398,27 @@ function renderGridPreviewStory({
   workspace.setFileFormatType();
   workspace.setOptionsViewForFormatType();
 
-  const autoPreviewCheckbox = surface.querySelector('#autoPreviewCheckbox');
   if (state === 'auto-previewed') {
-    setCheckboxValue(autoPreviewCheckbox, true);
+    setAutoPreviewEnabled(workspace, true);
     workspace.renderTextFromGrid();
   } else {
-    setCheckboxValue(autoPreviewCheckbox, false);
-    const previewTextArea = surface.querySelector('#markdownarea');
-    if (previewTextArea) {
-      previewTextArea.value = '';
-    }
+    setAutoPreviewEnabled(workspace, false);
+    workspace.setTextFromString('');
   }
 
-  surface.querySelectorAll('.type-select-action, .subtask-select-action').forEach((actionElement) => {
-    actionElement.addEventListener('click', () => {
-      emitAction('onFormatSelected', getSelectionFromAction(surface, actionElement));
+  surface.querySelectorAll('a[data-tab-id], a[data-subtask-id], a[data-type]').forEach((actionElement) => {
+    actionElement.addEventListener('click', async () => {
+      await Promise.resolve();
+      emitAction('onFormatSelected', getSelectionFromAction(workspace, actionElement));
     });
   });
 
-  const setTextFromGridButton = surface.querySelector('#settextfromgridbutton');
+  const setTextFromGridButton = getButtonByText(surface, 'v Set Text From Grid v');
   setTextFromGridButton?.addEventListener('click', () => {
     emitAction('onSetTextFromGrid', {
       ...getPreviewActionPayload(
-        surface,
         exporter,
+        workspace,
         workspace.getPreviewRowLimit(),
         workspace.isPreviewTextMode() ? 'preview' : 'edit'
       ),
@@ -429,7 +426,7 @@ function renderGridPreviewStory({
     });
   });
 
-  surface.querySelector('#previewEditModeButton')?.addEventListener('click', async () => {
+  getButtonByText(surface, state === 'auto-previewed' ? 'Edit' : 'Preview')?.addEventListener('click', async () => {
     await Promise.resolve();
     emitAction('onPreviewModeChanged', {
       mode: workspace.isPreviewTextMode() ? 'preview' : 'edit',
@@ -437,18 +434,18 @@ function renderGridPreviewStory({
     });
   });
 
-  surface.querySelector('#autoPreviewCheckbox')?.addEventListener('change', (event) => {
+  getCheckboxByLabelText(surface, 'Auto Preview')?.addEventListener('change', (event) => {
     emitAction('onAutoPreviewChanged', {
       enabled: event?.currentTarget?.checked === true,
       mode: workspace.isPreviewTextMode() ? 'preview' : 'edit',
     });
   });
 
-  const copyTextButton = surface.querySelector('#copyTextButton');
+  const copyTextButton = getButtonByText(surface, 'Copy');
   copyTextButton?.addEventListener('click', () => {
     emitAction('onCopyText', {
-      type: getActiveExportSelection(surface).type,
-      textLength: surface.querySelector('#markdownarea')?.value?.length || 0,
+      type: getActiveExportSelection(workspace).type,
+      textLength: workspace.getTextValue()?.length || 0,
     });
   });
 

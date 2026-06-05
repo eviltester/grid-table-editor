@@ -67,6 +67,10 @@ function createSchemaDefinitionProps(schemaTextSyncState) {
   });
 }
 
+function getSchemaErrorElement(rootElement) {
+  return rootElement?.querySelector?.('[data-role="schema-error"]') || null;
+}
+
 function renderDataPopulationPanelStory(args) {
   const root = document.createElement('main');
   root.setAttribute('aria-label', 'Data population panel story');
@@ -111,7 +115,6 @@ function renderDataPopulationPanelStory(args) {
         { value: 'amend-selected', label: 'Amend Selected' },
       ],
       rowCountProps: {
-        inputId: 'generateCount',
         label: 'How Many?',
         min: 1,
         step: 1,
@@ -132,13 +135,13 @@ function renderDataPopulationPanelStory(args) {
       },
       schemaDefinition: {
         onSchemaError: (message) => {
-          const errorElement = componentRoot.querySelector('#testdata-schema-error');
+          const errorElement = getSchemaErrorElement(componentRoot);
           if (errorElement) {
             errorElement.textContent = String(message || '');
           }
         },
         onSchemaClear: () => {
-          const errorElement = componentRoot.querySelector('#testdata-schema-error');
+          const errorElement = getSchemaErrorElement(componentRoot);
           if (errorElement) {
             errorElement.textContent = '';
           }

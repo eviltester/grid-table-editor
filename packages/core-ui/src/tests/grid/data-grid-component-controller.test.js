@@ -57,4 +57,46 @@ describe('DataGridComponentController', () => {
     await controller.deleteSelectedRows();
     expect(gridExtras.deleteSelectedRows).not.toHaveBeenCalled();
   });
+
+  test('delete and clear-table honor confirmation results and unique-column-name state stays in controller state', async () => {
+    const gridExtras = {
+      getNumberOfSelectedRows: jest.fn(() => 1),
+      deleteSelectedRows: jest.fn(),
+      clearGrid: jest.fn(),
+    };
+    const requestConfirm = jest
+      .fn()
+      .mockResolvedValueOnce(false)
+      .mockResolvedValueOnce(true)
+      .mockResolvedValueOnce(false)
+      .mockResolvedValueOnce(true);
+
+    const controller = new DataGridComponentController({
+      props: {
+        uniqueColumnNames: false,
+      },
+      services: {
+        getGridExtras: () => gridExtras,
+        requestConfirm,
+      },
+    });
+
+    controller.setUniqueColumnNames(true);
+    await controller.deleteSelectedRows();
+    await controller.deleteSelectedRows();
+    await controller.clearTable();
+    await controller.clearTable();
+
+    expect(controller.getState().uniqueColumnNames).toBe(true);
+    expect(gridExtras.deleteSelectedRows).toHaveBeenCalledTimes(1);
+    expect(gridExtras.clearGrid).toHaveBeenCalledTimes(1);
+    expect(requestConfirm).toHaveBeenNthCalledWith(1, {
+      title: 'Delete Rows',
+      message: 'Are you Sure You Want to Delete Rows?',
+    });
+    expect(requestConfirm).toHaveBeenNthCalledWith(3, {
+      title: 'Reset Table',
+      message: 'Are you sure you want to reset the table and all data?',
+    });
+  });
 });

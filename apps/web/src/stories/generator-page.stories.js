@@ -11,19 +11,12 @@ import {
   createGeneratorPageComponent,
   createGeneratorPageShellComponent,
 } from '../../../../packages/core-ui/js/gui_components/generator/page/index.js';
-import { buildSchemaModeHelpHtml } from '../../../../packages/core-ui/js/gui_components/generator/schema/index.js';
+import { buildGeneratorSchemaModeHelpHtml } from '../../../../packages/core-ui/js/gui_components/generator/help/index.js';
 import { GENERATOR_DEFAULT_EXAMPLE_SCHEMA_TEXT } from '../../../../packages/core-ui/js/gui_components/shared/test-data/schema/schema-examples.js';
-import {
-  mapDataRuleToSchemaRow,
-  validateSchemaRows as validateSharedSchemaRows,
-  createSchemaRowValidation,
-} from '../../../../packages/core-ui/js/gui_components/shared/test-data/schema/index.js';
+import { validateSchemaRows as validateSharedSchemaRows } from '../../../../packages/core-ui/js/gui_components/shared/test-data/schema/index.js';
 import { getKnownFakerCommandsAlphabetical } from '../../../../packages/core-ui/js/gui_components/shared/faker-commands.js';
 import { getKnownDomainCommandsAlphabetical } from '../../../../packages/core-ui/js/gui_components/shared/domain-commands.js';
-import {
-  getVisibleDomainCommands,
-  buildSchemaHelpModel,
-} from '../../../../packages/core-ui/js/gui_components/shared/test-data/help/index.js';
+import { createGeneratorSchemaDefinitionSupport } from '../../../../packages/core-ui/js/gui_components/generator/schema-support/index.js';
 import { GridExtension as TabulatorGridExtension } from '../../../../packages/core-ui/js/gui_components/data-grid-editor/tabulator/gridExtension-tabulator.js';
 
 function createStoryDataTable(headers, rows) {
@@ -54,7 +47,7 @@ function createStoryDataTable(headers, rows) {
 let generatorPageStoryInstanceCount = 0;
 
 function getSchemaHelpText(rootElement) {
-  return rootElement.querySelector('[data-help="generator-schema-mode-help"]')?.getAttribute('data-help-text') || '';
+  return rootElement.querySelector('[data-help="shared-schema-mode-help"]')?.getAttribute('data-help-text') || '';
 }
 
 function createGeneratorSchemaStoryProps(ids = {}) {
@@ -72,72 +65,13 @@ function createGeneratorSchemaStoryProps(ids = {}) {
     value: '',
     comments: '',
     leadingTextLines: [],
-    validation: createSchemaRowValidation(),
   });
-
-  return {
-    headingText: 'Schema',
-    ids: {
-      rows: 'generatorSchemaRows',
-      textContainer: 'generatorSchemaTextContainer',
-      text: 'generatorSchemaText',
-      addButton: 'addSchemaRowButton',
-      toggleButton: 'schemaModeToggleButton',
-      helpIcon: 'schemaModeHelpIcon',
-      error: 'generatorSchemaErrorText',
-      ...ids,
-    },
-    schemaTextToDataRules,
-    dataRulesToSchemaText,
-    faker,
-    RandExp,
+  const schemaSupport = createGeneratorSchemaDefinitionSupport({
     createBlankRow,
-    mapRuleToRow: (rule, leadingTextLines = []) => {
-      const row = mapDataRuleToSchemaRow(rule, {
-        createBlankSchemaRow: createBlankRow,
-      });
-      row.leadingTextLines = Array.isArray(leadingTextLines) ? leadingTextLines.slice() : [];
-      return row;
-    },
-    getMethodPickerOptions: (currentValue = '') => [
-      {
-        sourceType: 'enum',
-        command: 'enum',
-        helpModel: buildSchemaHelpModel('enum', 'enum'),
-      },
-      {
-        sourceType: 'literal',
-        command: 'literal',
-        helpModel: buildSchemaHelpModel('literal', 'literal'),
-      },
-      {
-        sourceType: 'regex',
-        command: 'regex',
-        helpModel: buildSchemaHelpModel('regex', 'regex'),
-      },
-      ...getVisibleDomainCommands({
-        commands: domainCommands,
-        currentCommand: String(currentValue || '').trim(),
-      }).map((command) => ({
-        sourceType: 'domain',
-        command,
-        helpModel: buildSchemaHelpModel('domain', command),
-      })),
-      ...fakerCommands.map((command) => ({
-        sourceType: 'faker',
-        command,
-        helpModel: buildSchemaHelpModel('faker', command),
-      })),
-    ],
-    getVisibleDomainCommands: (currentValue = '') =>
-      getVisibleDomainCommands({
-        commands: domainCommands,
-        currentCommand: String(currentValue || '').trim(),
-      }),
     fakerCommands,
-    sampleSchemaText: GENERATOR_DEFAULT_EXAMPLE_SCHEMA_TEXT,
+    domainCommands,
     buildModeHelpHtml: ({ inTextMode }) =>
-      buildSchemaModeHelpHtml({
+      buildGeneratorSchemaModeHelpHtml({
         inTextMode,
         generateToFileHelpUrl: 'https://anywaydata.com/docs/test-data/generate-to-file',
       }),
@@ -146,6 +80,23 @@ function createGeneratorSchemaStoryProps(ids = {}) {
         schemaRows: rows,
         schemaRowsToDataRules,
       }),
+  });
+
+  return {
+    headingText: 'Schema',
+    ids: { ...ids },
+    schemaTextToDataRules,
+    dataRulesToSchemaText,
+    faker,
+    RandExp,
+    createBlankRow: schemaSupport.createBlankRow,
+    mapRuleToRow: schemaSupport.mapRuleToRow,
+    getMethodPickerOptions: schemaSupport.getMethodPickerOptions,
+    getVisibleDomainCommands: schemaSupport.getVisibleDomainCommands,
+    fakerCommands,
+    sampleSchemaText: GENERATOR_DEFAULT_EXAMPLE_SCHEMA_TEXT,
+    buildModeHelpHtml: schemaSupport.buildModeHelpHtml,
+    validateSchemaRows: schemaSupport.validateSchemaRows,
   };
 }
 
@@ -164,15 +115,6 @@ function createGeneratorPageStoryIds(storyPrefix) {
       outputPreview: `${storyPrefix}-generatorOutputPreview`,
       previewGrid: `${storyPrefix}-generator-preview-grid`,
       rowCountInput: `${storyPrefix}-previewRowsCount`,
-    },
-    schema: {
-      rows: `${storyPrefix}-generatorSchemaRows`,
-      textContainer: `${storyPrefix}-generatorSchemaTextContainer`,
-      text: `${storyPrefix}-generatorSchemaText`,
-      addButton: `${storyPrefix}-addSchemaRowButton`,
-      toggleButton: `${storyPrefix}-schemaModeToggleButton`,
-      helpIcon: `${storyPrefix}-schemaModeHelpIcon`,
-      error: `${storyPrefix}-generatorSchemaErrorText`,
     },
   };
 }
@@ -233,7 +175,7 @@ function renderGeneratorPageStory(args) {
         outputPreviewText: args.outputPreviewText,
         ids: storyIds.preview,
       },
-      schemaDefinitionProps: createGeneratorSchemaStoryProps(storyIds.schema),
+      schemaDefinitionProps: createGeneratorSchemaStoryProps(),
     },
     services: {
       createTimedStatusPresenter: () => ({

@@ -49,7 +49,9 @@ describe('instructions view', () => {
     expect(root.textContent).toContain('Data Generator Instructions');
     expect(root.textContent).toContain('Generate Pairwise combinations');
     expect(root.querySelector('.instructions-copy-to-grid-button')).toBeNull();
-    expect(root.querySelector('[data-help="generator-screen-overview"]')).not.toBeNull();
+    const helpIcon = root.querySelector('[data-help="shared-generator-screen-overview"]');
+    expect(helpIcon).not.toBeNull();
+    expect(helpIcon.hasAttribute('data-help-text')).toBe(false);
   });
 
   test('falls back to text-only instructions when an icon name is unknown', () => {

@@ -50,4 +50,25 @@ describe('createPageStartupLoadingStatus', () => {
     expect(() => status.fail()).not.toThrow();
     expect(() => status.clear()).not.toThrow();
   });
+
+  test('resolves the owner document from a provided root element when no global document exists', () => {
+    const originalDocument = global.document;
+    delete global.document;
+
+    try {
+      const rootElement = dom.window.document.body;
+      const status = createPageStartupLoadingStatus({
+        rootElement,
+        elementId: 'startup-status',
+      });
+
+      status.show('Loading from root...');
+      expect(dom.window.document.getElementById('startup-status')?.textContent).toContain('Loading from root...');
+
+      status.clear();
+      expect(dom.window.document.getElementById('startup-status')).toBeNull();
+    } finally {
+      global.document = originalDocument;
+    }
+  });
 });

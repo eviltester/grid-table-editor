@@ -1,6 +1,6 @@
 # Schema Interaction Matrix Summary
 
-Generated: `2026-05-21T14:46:53.340Z`
+Generated: `2026-06-05T08:29:21.640Z`
 
 This file describes what the interaction matrix covers.
 
@@ -10,8 +10,8 @@ This file describes what the interaction matrix covers.
 
 ## Coverage Scenarios
 
-Scenario count: **618**
-Generated preview data count: **607**
+Scenario count: **619**
+Generated preview data count: **608**
 Review-only scenario count: **0**
 Non-executable scenario count: **11**
 
@@ -19,7 +19,7 @@ Non-executable scenario count: **11**
 
 | Key       | Count |
 | --------- | ----: |
-| `domain`  |   558 |
+| `domain`  |   559 |
 | `enum`    |     2 |
 | `faker`   |    54 |
 | `literal` |     2 |
@@ -30,7 +30,7 @@ Non-executable scenario count: **11**
 | Key        | Count |
 | ---------- | ----: |
 | `arg`      |   211 |
-| `base`     |   257 |
+| `base`     |   258 |
 | `custom`   |     6 |
 | `empty`    |     2 |
 | `example`  |    27 |
@@ -39,7 +39,7 @@ Non-executable scenario count: **11**
 
 ### Commands By Source Type
 
-#### `domain` (243)
+#### `domain` (244)
 
 - `airline.aircraftType`
 - `airline.flightNumber`
@@ -104,6 +104,7 @@ Non-executable scenario count: **11**
 - `database.mongodbObjectId`
 - `database.type`
 - `datatype.boolean`
+- `datatype.enum`
 - `date.anytime`
 - `date.between`
 - `date.birthdate`
@@ -918,6 +919,16 @@ Non-executable scenario count: **11**
 "widebody"
 ```
 
+#### `domain-airline-flightNumber-base`
+
+- Command(s): `airline.flightNumber()`
+- Preview data:
+
+```csv
+"Value"
+"54"
+```
+
 #### `domain-airline-iataCode-base`
 
 - Command(s): `airline.iataCode()`
@@ -936,56 +947,6 @@ Non-executable scenario count: **11**
 ```csv
 "Value"
 "Juneyao Airlines"
-```
-
-#### `domain-airplane-iataTypeCode-base`
-
-- Command(s): `airplane.iataTypeCode()`
-- Preview data:
-
-```csv
-"Value"
-"345"
-```
-
-#### `domain-airplane-name-base`
-
-- Command(s): `airplane.name()`
-- Preview data:
-
-```csv
-"Value"
-"Boeing 747-400"
-```
-
-#### `domain-airport-iataCode-base`
-
-- Command(s): `airport.iataCode()`
-- Preview data:
-
-```csv
-"Value"
-"MEX"
-```
-
-#### `domain-airport-name-base`
-
-- Command(s): `airport.name()`
-- Preview data:
-
-```csv
-"Value"
-"Hobart International Airport"
-```
-
-#### `domain-airline-flightNumber-base`
-
-- Command(s): `airline.flightNumber()`
-- Preview data:
-
-```csv
-"Value"
-"54"
 ```
 
 #### `domain-airline-recordLocator-base`
@@ -1038,6 +999,46 @@ Non-executable scenario count: **11**
 ```csv
 "Value"
 "3A"
+```
+
+#### `domain-airplane-iataTypeCode-base`
+
+- Command(s): `airplane.iataTypeCode()`
+- Preview data:
+
+```csv
+"Value"
+"345"
+```
+
+#### `domain-airplane-name-base`
+
+- Command(s): `airplane.name()`
+- Preview data:
+
+```csv
+"Value"
+"Boeing 747-400"
+```
+
+#### `domain-airport-iataCode-base`
+
+- Command(s): `airport.iataCode()`
+- Preview data:
+
+```csv
+"Value"
+"MEX"
+```
+
+#### `domain-airport-name-base`
+
+- Command(s): `airport.name()`
+- Preview data:
+
+```csv
+"Value"
+"Hobart International Airport"
 ```
 
 #### `domain-animal-bear-base`
@@ -1258,6 +1259,36 @@ Non-executable scenario count: **11**
 ```csv
 "Value"
 "The Sound and the Fury"
+```
+
+#### `domain-chemicalElement-atomicNumber-base`
+
+- Command(s): `chemicalElement.atomicNumber()`
+- Preview data:
+
+```csv
+"Value"
+"9"
+```
+
+#### `domain-chemicalElement-name-base`
+
+- Command(s): `chemicalElement.name()`
+- Preview data:
+
+```csv
+"Value"
+"Meitnerium"
+```
+
+#### `domain-chemicalElement-symbol-base`
+
+- Command(s): `chemicalElement.symbol()`
+- Preview data:
+
+```csv
+"Value"
+"Lv"
 ```
 
 #### `domain-color-cssSupportedFunction-base`
@@ -1731,6 +1762,16 @@ Non-executable scenario count: **11**
 "true"
 ```
 
+#### `domain-datatype-enum-base`
+
+- Command(s): `datatype.enum("active", "inactive", "pending")`
+- Preview data:
+
+```csv
+"Value"
+"active"
+```
+
 #### `domain-date-anytime-base`
 
 - Command(s): `date.anytime()`
@@ -1738,7 +1779,7 @@ Non-executable scenario count: **11**
 
 ```csv
 "Value"
-"2026-05-30T23:45:01.499Z"
+"2026-06-14T17:27:29.813Z"
 ```
 
 #### `domain-date-anytime-arg-refDate`
@@ -1798,7 +1839,7 @@ Non-executable scenario count: **11**
 
 ```csv
 "Value"
-"1957-07-25T23:40:13.502Z"
+"1957-08-09T17:22:41.817Z"
 ```
 
 #### `domain-date-birthdate-example-1`
@@ -1829,7 +1870,7 @@ Non-executable scenario count: **11**
 
 ```csv
 "Value"
-"1979-06-13T03:47:01.946Z"
+"1979-06-27T21:29:30.261Z"
 ```
 
 #### `domain-date-birthdate-arg-min`
@@ -1839,7 +1880,7 @@ Non-executable scenario count: **11**
 
 ```csv
 "Value"
-"1970-08-08T19:10:29.439Z"
+"1970-08-23T12:52:57.755Z"
 ```
 
 #### `domain-date-birthdate-arg-mode`
@@ -1849,7 +1890,7 @@ Non-executable scenario count: **11**
 
 ```csv
 "Value"
-"1989-11-20T06:37:40.860Z"
+"1989-12-05T00:20:09.176Z"
 ```
 
 #### `domain-date-birthdate-pair-refDate-max`
@@ -1869,7 +1910,7 @@ Non-executable scenario count: **11**
 
 ```csv
 "Value"
-"1979-10-01T22:09:31.691Z"
+"1979-10-16T15:52:00.006Z"
 ```
 
 #### `domain-date-birthdate-pair-min-mode`
@@ -1879,7 +1920,7 @@ Non-executable scenario count: **11**
 
 ```csv
 "Value"
-"1970-03-27T00:53:03.442Z"
+"1970-04-10T18:35:31.758Z"
 ```
 
 #### `domain-date-future-base`
@@ -1889,7 +1930,7 @@ Non-executable scenario count: **11**
 
 ```csv
 "Value"
-"2026-09-05T10:09:10.244Z"
+"2026-09-20T03:51:38.560Z"
 ```
 
 #### `domain-date-future-arg-refDate`
@@ -1909,7 +1950,7 @@ Non-executable scenario count: **11**
 
 ```csv
 "Value"
-"2027-11-18T04:52:20.549Z"
+"2027-12-02T22:34:48.865Z"
 ```
 
 #### `domain-date-future-pair-refDate-years`
@@ -1969,7 +2010,7 @@ Non-executable scenario count: **11**
 
 ```csv
 "Value"
-"2025-12-19T07:48:08.417Z"
+"2026-01-03T01:30:36.733Z"
 ```
 
 #### `domain-date-past-arg-refDate`
@@ -1989,7 +2030,7 @@ Non-executable scenario count: **11**
 
 ```csv
 "Value"
-"2025-05-23T20:48:01.811Z"
+"2025-06-07T14:30:30.127Z"
 ```
 
 #### `domain-date-past-pair-refDate-years`
@@ -2009,7 +2050,7 @@ Non-executable scenario count: **11**
 
 ```csv
 "Value"
-"2026-05-21T14:37:23.305Z"
+"2026-06-05T08:19:51.622Z"
 ```
 
 #### `domain-date-recent-arg-days`
@@ -2019,7 +2060,7 @@ Non-executable scenario count: **11**
 
 ```csv
 "Value"
-"2026-05-19T20:25:25.975Z"
+"2026-06-03T14:07:54.292Z"
 ```
 
 #### `domain-date-recent-arg-refDate`
@@ -2049,7 +2090,7 @@ Non-executable scenario count: **11**
 
 ```csv
 "Value"
-"2026-05-21T16:38:06.067Z"
+"2026-06-05T10:20:34.383Z"
 ```
 
 #### `domain-date-soon-arg-days`
@@ -2059,7 +2100,7 @@ Non-executable scenario count: **11**
 
 ```csv
 "Value"
-"2026-05-23T09:05:54.295Z"
+"2026-06-07T02:48:22.611Z"
 ```
 
 #### `domain-date-soon-arg-refDate`
@@ -2609,7 +2650,7 @@ Non-executable scenario count: **11**
 
 ```csv
 "Value"
-"Wed May 20 15:35:11 2026 -0700"
+"Thu Jun 4 09:17:39 2026 -0700"
 ```
 
 #### `domain-git-commitEntry-base`
@@ -2621,7 +2662,7 @@ Non-executable scenario count: **11**
 "Value"
 "commit 7738bbde748c2e27e1520b9bf8bb637a48e2feaa
 Author: Josie Russel <Josie.Russel95@yahoo.com>
-Date: Wed May 20 16:20:27 2026 +0700
+Date: Thu Jun 4 10:02:55 2026 +0700
 
     transmit solid state protocol
 "
@@ -3074,7 +3115,7 @@ Date: Wed May 20 16:20:27 2026 +0700
 
 ```csv
 "Value"
-"eyJhbGciOiJIUzM4NCIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NzkyODk5ODAsImV4cCI6MTc3OTM0NjA2MSwibmJmIjoxNzc2MDgxMDYyLCJpc3MiOiJTYXR0ZXJmaWVsZCBHcm91cCIsInN1YiI6IjYxMzIwNjNhLTE5MjktNDkwZi1iNWNhLTM2MWU2NmM1MmRkNCIsImF1ZCI6IjQwNjEwNWNkLTE2MjgtNDA4Yi1iN2EyLWQ2NmM1M2Y3NGFiNSIsImp0aSI6IjU4YmNiMzdkLTRkOGEtNGYyZS04ZDNmLTQyMGM4MGExNGMwNCJ9.MLGSLGF7hNjp6RghVgC2GZIDrfHAZBBIZ8WaqXFphTbyRPkIFKnEnnSToLoWkvDw"
+"eyJhbGciOiJIUzM4NCIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3ODA1NjMzMjgsImV4cCI6MTc4MDYxOTQwOSwibmJmIjoxNzc3MzU0NDExLCJpc3MiOiJTYXR0ZXJmaWVsZCBHcm91cCIsInN1YiI6IjYxMzIwNjNhLTE5MjktNDkwZi1iNWNhLTM2MWU2NmM1MmRkNCIsImF1ZCI6IjQwNjEwNWNkLTE2MjgtNDA4Yi1iN2EyLWQ2NmM1M2Y3NGFiNSIsImp0aSI6IjU4YmNiMzdkLTRkOGEtNGYyZS04ZDNmLTQyMGM4MGExNGMwNCJ9.MLGSLGF7hNjp6RghVgC2GZIDrfHAZBBIZ8WaqXFphTbyRPkIFKnEnnSToLoWkvDw"
 ```
 
 #### `domain-internet-jwt-arg-header`
@@ -3084,7 +3125,7 @@ Date: Wed May 20 16:20:27 2026 +0700
 
 ```csv
 "Value"
-"e30.eyJpYXQiOjE3NzkyOTk2ODYsImV4cCI6MTc3OTMyMjEzOCwibmJmIjoxNzg1NjQyNDU1LCJpc3MiOiJGYWhleSwgS2lobiBhbmQgUmVpY2hlcnQiLCJzdWIiOiIxYzQyMmU2ZS1lNzcxLTRmMDAtYmU3OS02NzAwNGViZjg1OGYiLCJhdWQiOiI5MmY3OTFiMy0wYTI5LTQ4ZjItOWUxZS00MGU1Yzk2NTkzYWQiLCJqdGkiOiJkNzk2YzA3Yy0zNjRmLTQzNjgtYWJhZS00N2M3NTExODk4MWEifQ.e8QhcTHj4nBTF2jK53PylJjqBpYeMf9N0oMfTsbM6jKYhngnf0HuiaRiyjUW5TWk"
+"e30.eyJpYXQiOjE3ODA1NzMwMzUsImV4cCI6MTc4MDU5NTQ4NywibmJmIjoxNzg2OTE1ODAzLCJpc3MiOiJGYWhleSwgS2lobiBhbmQgUmVpY2hlcnQiLCJzdWIiOiIxYzQyMmU2ZS1lNzcxLTRmMDAtYmU3OS02NzAwNGViZjg1OGYiLCJhdWQiOiI5MmY3OTFiMy0wYTI5LTQ4ZjItOWUxZS00MGU1Yzk2NTkzYWQiLCJqdGkiOiJkNzk2YzA3Yy0zNjRmLTQzNjgtYWJhZS00N2M3NTExODk4MWEifQ.e8QhcTHj4nBTF2jK53PylJjqBpYeMf9N0oMfTsbM6jKYhngnf0HuiaRiyjUW5TWk"
 ```
 
 #### `domain-internet-jwt-arg-payload`
@@ -5155,36 +5196,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 "+18882200058"
 ```
 
-#### `domain-chemicalElement-atomicNumber-base`
-
-- Command(s): `chemicalElement.atomicNumber()`
-- Preview data:
-
-```csv
-"Value"
-"9"
-```
-
-#### `domain-chemicalElement-name-base`
-
-- Command(s): `chemicalElement.name()`
-- Preview data:
-
-```csv
-"Value"
-"Meitnerium"
-```
-
-#### `domain-chemicalElement-symbol-base`
-
-- Command(s): `chemicalElement.symbol()`
-- Preview data:
-
-```csv
-"Value"
-"Lv"
-```
-
 #### `domain-string-alpha-base`
 
 - Command(s): `string.alpha()`
@@ -5739,7 +5750,7 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 ```csv
 "Value"
-"01KS5G1W7Y4MY648F8XPVTRQE9"
+"01KTBEDCFN4MY648F8XPVTRQE9"
 ```
 
 #### `domain-string-ulid-arg-refDate`
@@ -6544,8 +6555,8 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 ## Runtime Scenarios
 
-Scenario count: **607**
-Generated preview data count: **607**
+Scenario count: **608**
+Generated preview data count: **608**
 Review-only scenario count: **0**
 Non-executable scenario count: **0**
 
@@ -6553,7 +6564,7 @@ Non-executable scenario count: **0**
 
 | Key       | Count |
 | --------- | ----: |
-| `domain`  |   558 |
+| `domain`  |   559 |
 | `enum`    |     2 |
 | `faker`   |    43 |
 | `literal` |     2 |
@@ -6564,7 +6575,7 @@ Non-executable scenario count: **0**
 | Key        | Count |
 | ---------- | ----: |
 | `arg`      |   206 |
-| `base`     |   255 |
+| `base`     |   256 |
 | `custom`   |     6 |
 | `empty`    |     2 |
 | `example`  |    25 |
@@ -6573,7 +6584,7 @@ Non-executable scenario count: **0**
 
 ### Commands By Source Type
 
-#### `domain` (243)
+#### `domain` (244)
 
 - `airline.aircraftType`
 - `airline.flightNumber`
@@ -6638,6 +6649,7 @@ Non-executable scenario count: **0**
 - `database.mongodbObjectId`
 - `database.type`
 - `datatype.boolean`
+- `datatype.enum`
 - `date.anytime`
 - `date.between`
 - `date.birthdate`
@@ -7395,6 +7407,16 @@ Non-executable scenario count: **0**
 "widebody"
 ```
 
+#### `domain-airline-flightNumber-base`
+
+- Command(s): `airline.flightNumber()`
+- Preview data:
+
+```csv
+"Value"
+"54"
+```
+
 #### `domain-airline-iataCode-base`
 
 - Command(s): `airline.iataCode()`
@@ -7413,56 +7435,6 @@ Non-executable scenario count: **0**
 ```csv
 "Value"
 "Juneyao Airlines"
-```
-
-#### `domain-airplane-iataTypeCode-base`
-
-- Command(s): `airplane.iataTypeCode()`
-- Preview data:
-
-```csv
-"Value"
-"345"
-```
-
-#### `domain-airplane-name-base`
-
-- Command(s): `airplane.name()`
-- Preview data:
-
-```csv
-"Value"
-"Boeing 747-400"
-```
-
-#### `domain-airport-iataCode-base`
-
-- Command(s): `airport.iataCode()`
-- Preview data:
-
-```csv
-"Value"
-"MEX"
-```
-
-#### `domain-airport-name-base`
-
-- Command(s): `airport.name()`
-- Preview data:
-
-```csv
-"Value"
-"Hobart International Airport"
-```
-
-#### `domain-airline-flightNumber-base`
-
-- Command(s): `airline.flightNumber()`
-- Preview data:
-
-```csv
-"Value"
-"54"
 ```
 
 #### `domain-airline-recordLocator-base`
@@ -7515,6 +7487,46 @@ Non-executable scenario count: **0**
 ```csv
 "Value"
 "3A"
+```
+
+#### `domain-airplane-iataTypeCode-base`
+
+- Command(s): `airplane.iataTypeCode()`
+- Preview data:
+
+```csv
+"Value"
+"345"
+```
+
+#### `domain-airplane-name-base`
+
+- Command(s): `airplane.name()`
+- Preview data:
+
+```csv
+"Value"
+"Boeing 747-400"
+```
+
+#### `domain-airport-iataCode-base`
+
+- Command(s): `airport.iataCode()`
+- Preview data:
+
+```csv
+"Value"
+"MEX"
+```
+
+#### `domain-airport-name-base`
+
+- Command(s): `airport.name()`
+- Preview data:
+
+```csv
+"Value"
+"Hobart International Airport"
 ```
 
 #### `domain-animal-bear-base`
@@ -7735,6 +7747,36 @@ Non-executable scenario count: **0**
 ```csv
 "Value"
 "The Sound and the Fury"
+```
+
+#### `domain-chemicalElement-atomicNumber-base`
+
+- Command(s): `chemicalElement.atomicNumber()`
+- Preview data:
+
+```csv
+"Value"
+"9"
+```
+
+#### `domain-chemicalElement-name-base`
+
+- Command(s): `chemicalElement.name()`
+- Preview data:
+
+```csv
+"Value"
+"Meitnerium"
+```
+
+#### `domain-chemicalElement-symbol-base`
+
+- Command(s): `chemicalElement.symbol()`
+- Preview data:
+
+```csv
+"Value"
+"Lv"
 ```
 
 #### `domain-color-cssSupportedFunction-base`
@@ -8208,6 +8250,16 @@ Non-executable scenario count: **0**
 "true"
 ```
 
+#### `domain-datatype-enum-base`
+
+- Command(s): `datatype.enum("active", "inactive", "pending")`
+- Preview data:
+
+```csv
+"Value"
+"active"
+```
+
 #### `domain-date-anytime-base`
 
 - Command(s): `date.anytime()`
@@ -8215,7 +8267,7 @@ Non-executable scenario count: **0**
 
 ```csv
 "Value"
-"2026-05-30T23:45:01.499Z"
+"2026-06-14T17:27:29.813Z"
 ```
 
 #### `domain-date-anytime-arg-refDate`
@@ -8275,7 +8327,7 @@ Non-executable scenario count: **0**
 
 ```csv
 "Value"
-"1957-07-25T23:40:13.502Z"
+"1957-08-09T17:22:41.817Z"
 ```
 
 #### `domain-date-birthdate-example-1`
@@ -8306,7 +8358,7 @@ Non-executable scenario count: **0**
 
 ```csv
 "Value"
-"1979-06-13T03:47:01.946Z"
+"1979-06-27T21:29:30.261Z"
 ```
 
 #### `domain-date-birthdate-arg-min`
@@ -8316,7 +8368,7 @@ Non-executable scenario count: **0**
 
 ```csv
 "Value"
-"1970-08-08T19:10:29.439Z"
+"1970-08-23T12:52:57.755Z"
 ```
 
 #### `domain-date-birthdate-arg-mode`
@@ -8326,7 +8378,7 @@ Non-executable scenario count: **0**
 
 ```csv
 "Value"
-"1989-11-20T06:37:40.860Z"
+"1989-12-05T00:20:09.176Z"
 ```
 
 #### `domain-date-birthdate-pair-refDate-max`
@@ -8346,7 +8398,7 @@ Non-executable scenario count: **0**
 
 ```csv
 "Value"
-"1979-10-01T22:09:31.691Z"
+"1979-10-16T15:52:00.006Z"
 ```
 
 #### `domain-date-birthdate-pair-min-mode`
@@ -8356,7 +8408,7 @@ Non-executable scenario count: **0**
 
 ```csv
 "Value"
-"1970-03-27T00:53:03.442Z"
+"1970-04-10T18:35:31.758Z"
 ```
 
 #### `domain-date-future-base`
@@ -8366,7 +8418,7 @@ Non-executable scenario count: **0**
 
 ```csv
 "Value"
-"2026-09-05T10:09:10.244Z"
+"2026-09-20T03:51:38.560Z"
 ```
 
 #### `domain-date-future-arg-refDate`
@@ -8386,7 +8438,7 @@ Non-executable scenario count: **0**
 
 ```csv
 "Value"
-"2027-11-18T04:52:20.549Z"
+"2027-12-02T22:34:48.865Z"
 ```
 
 #### `domain-date-future-pair-refDate-years`
@@ -8446,7 +8498,7 @@ Non-executable scenario count: **0**
 
 ```csv
 "Value"
-"2025-12-19T07:48:08.417Z"
+"2026-01-03T01:30:36.733Z"
 ```
 
 #### `domain-date-past-arg-refDate`
@@ -8466,7 +8518,7 @@ Non-executable scenario count: **0**
 
 ```csv
 "Value"
-"2025-05-23T20:48:01.811Z"
+"2025-06-07T14:30:30.127Z"
 ```
 
 #### `domain-date-past-pair-refDate-years`
@@ -8486,7 +8538,7 @@ Non-executable scenario count: **0**
 
 ```csv
 "Value"
-"2026-05-21T14:37:23.305Z"
+"2026-06-05T08:19:51.622Z"
 ```
 
 #### `domain-date-recent-arg-days`
@@ -8496,7 +8548,7 @@ Non-executable scenario count: **0**
 
 ```csv
 "Value"
-"2026-05-19T20:25:25.975Z"
+"2026-06-03T14:07:54.292Z"
 ```
 
 #### `domain-date-recent-arg-refDate`
@@ -8526,7 +8578,7 @@ Non-executable scenario count: **0**
 
 ```csv
 "Value"
-"2026-05-21T16:38:06.067Z"
+"2026-06-05T10:20:34.383Z"
 ```
 
 #### `domain-date-soon-arg-days`
@@ -8536,7 +8588,7 @@ Non-executable scenario count: **0**
 
 ```csv
 "Value"
-"2026-05-23T09:05:54.295Z"
+"2026-06-07T02:48:22.611Z"
 ```
 
 #### `domain-date-soon-arg-refDate`
@@ -9086,7 +9138,7 @@ Non-executable scenario count: **0**
 
 ```csv
 "Value"
-"Wed May 20 15:35:11 2026 -0700"
+"Thu Jun 4 09:17:39 2026 -0700"
 ```
 
 #### `domain-git-commitEntry-base`
@@ -9098,7 +9150,7 @@ Non-executable scenario count: **0**
 "Value"
 "commit 7738bbde748c2e27e1520b9bf8bb637a48e2feaa
 Author: Josie Russel <Josie.Russel95@yahoo.com>
-Date: Wed May 20 16:20:27 2026 +0700
+Date: Thu Jun 4 10:02:55 2026 +0700
 
     transmit solid state protocol
 "
@@ -9551,7 +9603,7 @@ Date: Wed May 20 16:20:27 2026 +0700
 
 ```csv
 "Value"
-"eyJhbGciOiJIUzM4NCIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NzkyODk5ODAsImV4cCI6MTc3OTM0NjA2MSwibmJmIjoxNzc2MDgxMDYyLCJpc3MiOiJTYXR0ZXJmaWVsZCBHcm91cCIsInN1YiI6IjYxMzIwNjNhLTE5MjktNDkwZi1iNWNhLTM2MWU2NmM1MmRkNCIsImF1ZCI6IjQwNjEwNWNkLTE2MjgtNDA4Yi1iN2EyLWQ2NmM1M2Y3NGFiNSIsImp0aSI6IjU4YmNiMzdkLTRkOGEtNGYyZS04ZDNmLTQyMGM4MGExNGMwNCJ9.MLGSLGF7hNjp6RghVgC2GZIDrfHAZBBIZ8WaqXFphTbyRPkIFKnEnnSToLoWkvDw"
+"eyJhbGciOiJIUzM4NCIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3ODA1NjMzMjgsImV4cCI6MTc4MDYxOTQwOSwibmJmIjoxNzc3MzU0NDExLCJpc3MiOiJTYXR0ZXJmaWVsZCBHcm91cCIsInN1YiI6IjYxMzIwNjNhLTE5MjktNDkwZi1iNWNhLTM2MWU2NmM1MmRkNCIsImF1ZCI6IjQwNjEwNWNkLTE2MjgtNDA4Yi1iN2EyLWQ2NmM1M2Y3NGFiNSIsImp0aSI6IjU4YmNiMzdkLTRkOGEtNGYyZS04ZDNmLTQyMGM4MGExNGMwNCJ9.MLGSLGF7hNjp6RghVgC2GZIDrfHAZBBIZ8WaqXFphTbyRPkIFKnEnnSToLoWkvDw"
 ```
 
 #### `domain-internet-jwt-arg-header`
@@ -9561,7 +9613,7 @@ Date: Wed May 20 16:20:27 2026 +0700
 
 ```csv
 "Value"
-"e30.eyJpYXQiOjE3NzkyOTk2ODYsImV4cCI6MTc3OTMyMjEzOCwibmJmIjoxNzg1NjQyNDU1LCJpc3MiOiJGYWhleSwgS2lobiBhbmQgUmVpY2hlcnQiLCJzdWIiOiIxYzQyMmU2ZS1lNzcxLTRmMDAtYmU3OS02NzAwNGViZjg1OGYiLCJhdWQiOiI5MmY3OTFiMy0wYTI5LTQ4ZjItOWUxZS00MGU1Yzk2NTkzYWQiLCJqdGkiOiJkNzk2YzA3Yy0zNjRmLTQzNjgtYWJhZS00N2M3NTExODk4MWEifQ.e8QhcTHj4nBTF2jK53PylJjqBpYeMf9N0oMfTsbM6jKYhngnf0HuiaRiyjUW5TWk"
+"e30.eyJpYXQiOjE3ODA1NzMwMzUsImV4cCI6MTc4MDU5NTQ4NywibmJmIjoxNzg2OTE1ODAzLCJpc3MiOiJGYWhleSwgS2lobiBhbmQgUmVpY2hlcnQiLCJzdWIiOiIxYzQyMmU2ZS1lNzcxLTRmMDAtYmU3OS02NzAwNGViZjg1OGYiLCJhdWQiOiI5MmY3OTFiMy0wYTI5LTQ4ZjItOWUxZS00MGU1Yzk2NTkzYWQiLCJqdGkiOiJkNzk2YzA3Yy0zNjRmLTQzNjgtYWJhZS00N2M3NTExODk4MWEifQ.e8QhcTHj4nBTF2jK53PylJjqBpYeMf9N0oMfTsbM6jKYhngnf0HuiaRiyjUW5TWk"
 ```
 
 #### `domain-internet-jwt-arg-payload`
@@ -11632,36 +11684,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 "+18882200058"
 ```
 
-#### `domain-chemicalElement-atomicNumber-base`
-
-- Command(s): `chemicalElement.atomicNumber()`
-- Preview data:
-
-```csv
-"Value"
-"9"
-```
-
-#### `domain-chemicalElement-name-base`
-
-- Command(s): `chemicalElement.name()`
-- Preview data:
-
-```csv
-"Value"
-"Meitnerium"
-```
-
-#### `domain-chemicalElement-symbol-base`
-
-- Command(s): `chemicalElement.symbol()`
-- Preview data:
-
-```csv
-"Value"
-"Lv"
-```
-
 #### `domain-string-alpha-base`
 
 - Command(s): `string.alpha()`
@@ -12216,7 +12238,7 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 ```csv
 "Value"
-"01KS5G1W7Y4MY648F8XPVTRQE9"
+"01KTBEDCFN4MY648F8XPVTRQE9"
 ```
 
 #### `domain-string-ulid-arg-refDate`
@@ -13021,20 +13043,20 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 ## UI Scenarios
 
-Scenario count: **41**
-Generated preview data count: **41**
+Scenario count: **19**
+Generated preview data count: **19**
 Review-only scenario count: **0**
 Non-executable scenario count: **0**
-Exact preview parity scenario count: **25**
-Structural-only preview parity scenario count: **16**
+Exact preview parity scenario count: **15**
+Structural-only preview parity scenario count: **4**
 
 ### By Source Type
 
 | Key       | Count |
 | --------- | ----: |
-| `domain`  |    14 |
+| `domain`  |     7 |
 | `enum`    |     2 |
-| `faker`   |    21 |
+| `faker`   |     6 |
 | `literal` |     2 |
 | `regex`   |     2 |
 
@@ -13042,37 +13064,25 @@ Structural-only preview parity scenario count: **16**
 
 | Key        | Count |
 | ---------- | ----: |
-| `base`     |    10 |
+| `base`     |     4 |
 | `custom`   |     6 |
 | `empty`    |     2 |
-| `example`  |    25 |
+| `example`  |     9 |
 | `pairwise` |     1 |
 
 ### UI Parity Modes
 
 | Mode         | Count |
 | ------------ | ----: |
-| `exact`      |    25 |
-| `structural` |    16 |
+| `exact`      |    15 |
+| `structural` |     4 |
 
 ### Structural-Only UI Scenarios
 
 - `custom-regex-base` - `regex("[A-Z]{2}[0-9]{2}")`
-- `faker-helpers-arrayElement-example-1` - `helpers.arrayElement(["A", "B", "C"])`
-- `faker-helpers-arrayElements-base` - `helpers.arrayElements(["A", "B", "C"], 2)`
-- `faker-helpers-arrayElements-example-1` - `helpers.arrayElements(["A", "B", "C"], 2)`
 - `faker-helpers-fake-base` - `helpers.fake("{{person.firstName}}")`
-- `faker-helpers-fake-example-1` - `helpers.fake("Hi, my name is {{person.firstName}} {{person.lastName}}!")`
-- `faker-helpers-fromRegExp-base` - `helpers.fromRegExp("[A-Z]{2}")`
 - `faker-helpers-fromRegExp-example-1` - `helpers.fromRegExp("[A-Z]{2}[0-9]{2}")`
-- `faker-helpers-rangeToNumber-example-1` - `helpers.rangeToNumber({ min: 1, max: 2 })`
-- `faker-helpers-replaceCreditCardSymbols-example-1` - `helpers.replaceCreditCardSymbols("1234-[4-9]-##!!-L")`
-- `faker-helpers-replaceSymbols-example-1` - `helpers.replaceSymbols("##??-##")`
-- `faker-helpers-shuffle-base` - `helpers.shuffle(["A", "B", "C"])`
-- `faker-helpers-shuffle-example-1` - `helpers.shuffle(["A", "B", "C"])`
-- `faker-helpers-uniqueArray-base` - `helpers.uniqueArray(["A", "B"], 4)`
 - `faker-helpers-uniqueArray-example-1` - `helpers.uniqueArray(["red", "green", "blue"], 2)`
-- `faker-helpers-weightedArrayElement-base` - `helpers.weightedArrayElement([{ "weight": 1, "value": "A" }, { "weight": 2, "value": "B" }])`
 
 ### Commands By Source Type
 
@@ -13091,18 +13101,12 @@ Structural-only preview parity scenario count: **16**
 - `enum`
 - `enum pairwise`
 
-#### `faker` (12)
+#### `faker` (6)
 
 - `helpers.arrayElement`
-- `helpers.arrayElements`
 - `helpers.fake`
 - `helpers.fromRegExp`
 - `helpers.mustache`
-- `helpers.rangeToNumber`
-- `helpers.replaceCreditCardSymbols`
-- `helpers.replaceSymbols`
-- `helpers.shuffle`
-- `helpers.slugify`
 - `helpers.uniqueArray`
 - `helpers.weightedArrayElement`
 
@@ -13212,39 +13216,6 @@ Structural-only preview parity scenario count: **16**
 "B"
 ```
 
-#### `faker-helpers-arrayElement-example-1`
-
-- Command(s): `helpers.arrayElement(["A", "B", "C"])`
-- UI preview parity: `structural`
-- Preview data:
-
-```csv
-"Value"
-"A"
-```
-
-#### `faker-helpers-arrayElements-base`
-
-- Command(s): `helpers.arrayElements(["A", "B", "C"], 2)`
-- UI preview parity: `structural`
-- Preview data:
-
-```csv
-"Value"
-"[""B"",""A""]"
-```
-
-#### `faker-helpers-arrayElements-example-1`
-
-- Command(s): `helpers.arrayElements(["A", "B", "C"], 2)`
-- UI preview parity: `structural`
-- Preview data:
-
-```csv
-"Value"
-"[""A"",""B""]"
-```
-
 #### `faker-helpers-fake-base`
 
 - Command(s): `helpers.fake("{{person.firstName}}")`
@@ -13254,28 +13225,6 @@ Structural-only preview parity scenario count: **16**
 ```csv
 "Value"
 "Melvin"
-```
-
-#### `faker-helpers-fake-example-1`
-
-- Command(s): `helpers.fake("Hi, my name is {{person.firstName}} {{person.lastName}}!")`
-- UI preview parity: `structural`
-- Preview data:
-
-```csv
-"Value"
-"Hi, my name is Ardith Weber!"
-```
-
-#### `faker-helpers-fromRegExp-base`
-
-- Command(s): `helpers.fromRegExp("[A-Z]{2}")`
-- UI preview parity: `structural`
-- Preview data:
-
-```csv
-"Value"
-"BJ"
 ```
 
 #### `faker-helpers-fromRegExp-example-1`
@@ -13300,105 +13249,6 @@ Structural-only preview parity scenario count: **16**
 "Ada"
 ```
 
-#### `faker-helpers-mustache-example-1`
-
-- Command(s): `helpers.mustache("Hello {{name}}", { name: "Ada" })`
-- UI preview parity: `exact`
-- Preview data:
-
-```csv
-"Value"
-"Hello Ada"
-```
-
-#### `faker-helpers-rangeToNumber-base`
-
-- Command(s): `helpers.rangeToNumber({ min: 1, max: 2 })`
-- UI preview parity: `exact`
-- Preview data:
-
-```csv
-"Value"
-"1"
-```
-
-#### `faker-helpers-rangeToNumber-example-1`
-
-- Command(s): `helpers.rangeToNumber({ min: 1, max: 2 })`
-- UI preview parity: `structural`
-- Preview data:
-
-```csv
-"Value"
-"2"
-```
-
-#### `faker-helpers-replaceCreditCardSymbols-example-1`
-
-- Command(s): `helpers.replaceCreditCardSymbols("1234-[4-9]-##!!-L")`
-- UI preview parity: `structural`
-- Preview data:
-
-```csv
-"Value"
-"1234-5-4775-8"
-```
-
-#### `faker-helpers-replaceSymbols-example-1`
-
-- Command(s): `helpers.replaceSymbols("##??-##")`
-- UI preview parity: `structural`
-- Preview data:
-
-```csv
-"Value"
-"47UI-39"
-```
-
-#### `faker-helpers-shuffle-base`
-
-- Command(s): `helpers.shuffle(["A", "B", "C"])`
-- UI preview parity: `structural`
-- Preview data:
-
-```csv
-"Value"
-"[""B"",""A"",""C""]"
-```
-
-#### `faker-helpers-shuffle-example-1`
-
-- Command(s): `helpers.shuffle(["A", "B", "C"])`
-- UI preview parity: `structural`
-- Preview data:
-
-```csv
-"Value"
-"[""B"",""A"",""C""]"
-```
-
-#### `faker-helpers-slugify-example-1`
-
-- Command(s): `helpers.slugify("Hello World 2026")`
-- UI preview parity: `exact`
-- Preview data:
-
-```csv
-"Value"
-"Hello-World-2026"
-```
-
-#### `faker-helpers-uniqueArray-base`
-
-- Command(s): `helpers.uniqueArray(["A", "B"], 4)`
-- UI preview parity: `structural`
-- Preview data:
-
-```csv
-"Value"
-"[""A"",""B""]"
-```
-
 #### `faker-helpers-uniqueArray-example-1`
 
 - Command(s): `helpers.uniqueArray(["red", "green", "blue"], 2)`
@@ -13408,17 +13258,6 @@ Structural-only preview parity scenario count: **16**
 ```csv
 "Value"
 "[""blue"",""green""]"
-```
-
-#### `faker-helpers-weightedArrayElement-base`
-
-- Command(s): `helpers.weightedArrayElement([{ "weight": 1, "value": "A" }, { "weight": 2, "value": "B" }])`
-- UI preview parity: `structural`
-- Preview data:
-
-```csv
-"Value"
-"A"
 ```
 
 #### `faker-helpers-weightedArrayElement-example-1`
@@ -13441,17 +13280,6 @@ Structural-only preview parity scenario count: **16**
 ```csv
 "Value"
 "32C"
-```
-
-#### `domain-airline-seat-example-2`
-
-- Command(s): `airline.seat(aircraftType="widebody")`
-- UI preview parity: `exact`
-- Preview data:
-
-```csv
-"Value"
-"55J"
 ```
 
 #### `domain-commerce-price-example-1`
@@ -13498,17 +13326,6 @@ Structural-only preview parity scenario count: **16**
 "Pending"
 ```
 
-#### `domain-literal-value-example-2`
-
-- Command(s): `literal.value("")`
-- UI preview parity: `exact`
-- Preview data:
-
-```csv
-"Value"
-""
-```
-
 #### `domain-string-counterString-example-1`
 
 - Command(s): `string.counterString()`
@@ -13520,39 +13337,6 @@ Structural-only preview parity scenario count: **16**
 "2*4*"
 ```
 
-#### `domain-string-counterString-example-2`
-
-- Command(s): `string.counterString(15)`
-- UI preview parity: `exact`
-- Preview data:
-
-```csv
-"Value"
-"*3*5*7*9*12*15*"
-```
-
-#### `domain-string-counterString-example-3`
-
-- Command(s): `string.counterString(min=5, max=12)`
-- UI preview parity: `exact`
-- Preview data:
-
-```csv
-"Value"
-"2*4*6*"
-```
-
-#### `domain-string-counterString-example-4`
-
-- Command(s): `string.counterString(min=12, max=12, delimiter="#")`
-- UI preview parity: `exact`
-- Preview data:
-
-```csv
-"Value"
-"#3#5#7#9#12#"
-```
-
 #### `domain-string-fromCharacters-base`
 
 - Command(s): `string.fromCharacters("ABC123", 4)`
@@ -13562,26 +13346,4 @@ Structural-only preview parity scenario count: **16**
 ```csv
 "Value"
 "A3C3"
-```
-
-#### `domain-string-fromCharacters-example-1`
-
-- Command(s): `string.fromCharacters("ABC123", 6)`
-- UI preview parity: `exact`
-- Preview data:
-
-```csv
-"Value"
-"C1A22B"
-```
-
-#### `domain-string-fromCharacters-example-2`
-
-- Command(s): `string.fromCharacters(characters=["A", "B", "C"], length=4)`
-- UI preview parity: `exact`
-- Preview data:
-
-```csv
-"Value"
-"CBAB"
 ```

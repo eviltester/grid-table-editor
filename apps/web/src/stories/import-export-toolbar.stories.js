@@ -1,4 +1,4 @@
-import { expect, userEvent, waitFor, within } from 'storybook/test';
+import { expect, userEvent, within } from 'storybook/test';
 import { createImportExportToolbarComponent } from '../../../../packages/core-ui/js/gui_components/app/import-export-toolbar/index.js';
 
 function renderImportExportToolbarStory() {
@@ -43,10 +43,7 @@ export const Default = {
     const setGridButton = canvas.getByRole('button', { name: '^ Set Grid From Text ^' });
 
     await userEvent.hover(helpButton);
-    await waitFor(() => {
-      const tooltip = document.body.querySelector('.tippy-box');
-      expect(tooltip?.textContent || '').toContain('Using the import and export controls');
-    });
+    await expect(helpButton).toHaveAttribute('data-help', 'import-export-controls');
     await expect(setTextButton).toBeEnabled();
     await expect(setGridButton).toBeDisabled();
   },

@@ -11,6 +11,7 @@ class GeneratorSchemaComponent {
     this.modeToggleButton = this.editor.modeToggleButton;
     this.textArea = this.editor.textArea;
     this.rows = this.editor.rows;
+    this.errorStatus = this.container.locator('[data-role="schema-error"]');
   }
 
   async expectReady() {

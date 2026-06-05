@@ -1,16 +1,18 @@
-import { showConfirmModal } from '../modal-confirm.js';
+import { createConfirmDialogComponent } from '../modal-confirm.js';
 
 function getDefaultDocumentObj() {
   return typeof document !== 'undefined' ? document : null;
 }
 
-function createConfirmDialogService({ documentObj = getDefaultDocumentObj() } = {}) {
+function createConfirmDialogService({ documentObj = getDefaultDocumentObj(), windowObj } = {}) {
+  const confirmDialog = createConfirmDialogComponent({ documentObj, windowObj });
+
   return {
     requestConfirm(options = {}) {
-      return showConfirmModal({
-        documentObj,
-        ...options,
-      });
+      return confirmDialog.requestConfirm(options);
+    },
+    destroy() {
+      confirmDialog.destroy();
     },
   };
 }

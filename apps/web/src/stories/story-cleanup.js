@@ -1,7 +1,7 @@
 const STORY_ARTIFACT_SELECTORS = [
   '#confirm-modal-backdrop',
   '#text-input-modal-backdrop',
-  '.method-picker-overlay',
+  '[data-role="method-picker-overlay"]',
   '.tippy-box',
   '.tippy-popper',
   '#inline-help-items',

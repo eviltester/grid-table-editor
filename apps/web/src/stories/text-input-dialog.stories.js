@@ -1,13 +1,7 @@
 import { expect, userEvent, within } from 'storybook/test';
 import { createTextInputDialogService } from '../../../../packages/core-ui/js/gui_components/shared/dialog-services/index.js';
 
-function removeTextInputModal() {
-  document.getElementById('text-input-modal-backdrop')?.remove();
-}
-
 function renderTextInputDialogStory(args) {
-  removeTextInputModal();
-
   const root = document.createElement('section');
   root.style.display = 'grid';
   root.style.gap = '0.75rem';
@@ -30,7 +24,9 @@ function renderTextInputDialogStory(args) {
     result.textContent = value == null ? 'Cancelled' : value;
   });
 
-  root.__storybookCleanup = removeTextInputModal;
+  root.__storybookCleanup = () => {
+    dialogService.destroy?.();
+  };
   return root;
 }
 

@@ -24,7 +24,7 @@ test.describe('2. Column Operations', () => {
     const { appPage, pageErrors } = await openApp(page);
     const originalColumn = await seedRows(appPage, ['Alpha', 'Beta']);
     const existingName = 'Existing Column';
-    const gridError = page.locator('#grid-column-error');
+    const gridError = appPage.gridEditor.errorStatus;
 
     await appPage.gridEditor.header.addColumnRight(originalColumn, existingName);
     await expect.poll(async () => appPage.gridEditor.header.getColumnNames()).toEqual([originalColumn, existingName]);

@@ -28,7 +28,7 @@ function resolveSchemaTextElement({ getSchemaTextElement, documentObj }) {
   if (typeof getSchemaTextElement === 'function') {
     return getSchemaTextElement() || null;
   }
-  return documentObj?.getElementById?.('testDataSchemaText') || null;
+  return documentObj?.querySelector?.('[data-role="schema-textbox"]') || null;
 }
 
 function populateGridFromSchemaText({
@@ -92,10 +92,10 @@ function bindSchemaTextareaSync({
   );
 }
 
-function initializeSchemaErrorDisplay(state, { documentObj = getDefaultDocumentObj() } = {}) {
+function initializeSchemaErrorDisplay(state, { documentObj = getDefaultDocumentObj(), getSchemaErrorElement } = {}) {
   state.schemaErrorDisplay = createTimedStatusPresenter({
     documentObj,
-    elementId: 'testdata-schema-error',
+    resolveElement: () => getSchemaErrorElement?.() || null,
     timeoutMs: 5000,
   });
 }

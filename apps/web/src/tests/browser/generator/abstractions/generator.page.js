@@ -7,15 +7,15 @@ class GeneratorPage {
   constructor(page) {
     this.page = page;
     this.initialLoading = page.locator('#generator-initial-load');
-    this.root = page.locator('#generator-app .generator-page');
+    this.root = page.locator('#generator-app .shared-generator-page');
 
     this.schema = new GeneratorSchemaComponent(page);
     this.generateOptions = new GeneratorGenerateOptionsComponent(page);
     this.preview = new GeneratorPreviewComponent(page);
   }
 
-  async goto() {
-    await this.page.goto('/generator.html', { waitUntil: 'domcontentloaded' });
+  async goto(path = '/generator.html') {
+    await this.page.goto(path, { waitUntil: 'domcontentloaded' });
     await this.waitUntilReady();
   }
 

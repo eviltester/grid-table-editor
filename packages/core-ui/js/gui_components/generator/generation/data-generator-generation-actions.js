@@ -1,6 +1,6 @@
 /*
  * Responsibilities:
- * - Generator-page preview/export workflows and row-count parsing.
+ * - Generator-page preview/export workflows and pairwise eligibility checks.
  * - Wraps shared generation helpers so generator UI can stay thin.
  */
 
@@ -11,7 +11,6 @@ import {
   createConfiguredGeneratorFromSchemaRows,
   createPreviewDataTable,
   createPairwiseDataTable,
-  parseNonNegativeCount,
   isPairwiseEligibleForSchemaRows,
 } from '../../shared/test-data/generation/index.js';
 import {
@@ -24,20 +23,6 @@ import {
   extractLiteralValueFromRuleSpec,
   extractRegexValueFromRuleSpec,
 } from '../../shared/schema-row-rule-mapper.js';
-
-function parseGeneratorRowCount({ documentObj, inputId }) {
-  const inputElem = documentObj.getElementById(inputId);
-  const maxValue = inputElem?.max ? Number.parseInt(inputElem.max, 10) : null;
-  const parsed = parseNonNegativeCount(inputElem?.value, { min: 0, max: maxValue });
-  if (!parsed.valid) {
-    return { value: 0, errors: [`${inputId} must be a number greater than or equal to zero.`] };
-  }
-  const rawValue = Number.parseInt(inputElem?.value, 10);
-  if (Number.isFinite(maxValue) && Number.isFinite(rawValue) && rawValue > maxValue) {
-    return { value: parsed.value, errors: [`${inputId} must be less than or equal to ${maxValue}.`] };
-  }
-  return { value: parsed.value, errors: [] };
-}
 
 function createConfiguredGeneratorForPage({
   syncSchemaRowsFromTextMode,
@@ -88,38 +73,20 @@ function buildPairwiseDataTable({ generator, faker, RandExp }) {
   });
 }
 
-function renderGeneratorOutputPreview({
-  documentObj,
-  getSelectedOutputType,
-  lastPreviewDataTable,
-  exporter,
-  setOutputPreviewText,
-}) {
+function renderGeneratorOutputPreview({ getSelectedOutputType, getPreviewDataTable, exporter, setOutputPreviewText }) {
   const type = getSelectedOutputType();
-  const dataTable = lastPreviewDataTable;
+  const dataTable = getPreviewDataTable?.() || null;
   if (!type || !dataTable || !exporter?.canExport(type)) {
     setOutputPreviewText?.('');
-    const outputPreviewElem = documentObj?.getElementById?.('generatorOutputPreview');
-    if (outputPreviewElem) {
-      outputPreviewElem.value = '';
-    }
     return;
   }
 
   try {
     const text = exporter.getDataTableAs(type, dataTable);
     setOutputPreviewText?.(text);
-    const outputPreviewElem = documentObj?.getElementById?.('generatorOutputPreview');
-    if (outputPreviewElem) {
-      outputPreviewElem.value = text;
-    }
   } catch (error) {
     console.error(error);
     setOutputPreviewText?.('');
-    const outputPreviewElem = documentObj?.getElementById?.('generatorOutputPreview');
-    if (outputPreviewElem) {
-      outputPreviewElem.value = '';
-    }
   }
 }
 
@@ -142,21 +109,16 @@ async function exportDataTableToDownload({ type, dataTable, exporter, DownloadCl
 }
 
 function updateGeneratorPairwiseButtonVisibility({
-  documentObj,
   syncSchemaRowsFromTextMode,
   getCurrentSchemaState,
   validateSchemaRows,
 }) {
-  const buttonWrapper = documentObj.getElementById('generateAllPairsButtonWrapper');
   const parsed =
     typeof getCurrentSchemaState === 'function'
       ? getCurrentSchemaState()
       : syncSchemaRowsFromTextMode({ showErrors: false, applySemanticValidation: false });
   const { errors, rows } = validateSchemaRows(parsed.rows || []);
   const isVisible = !parsed.errors?.length && !errors.length && isPairwiseEligibleForSchemaRows(rows);
-  if (buttonWrapper) {
-    buttonWrapper.style.display = isVisible ? 'inline-flex' : 'none';
-  }
   return isVisible;
 }
 
@@ -180,16 +142,15 @@ function countGeneratorEnumColumns({ syncSchemaRowsFromTextMode, validateSchemaR
 }
 
 function previewGeneratorData({
-  parseRowCount,
+  getPreviewRowCount,
   createConfiguredGenerator,
   buildDataTable,
-  previewGrid,
-  setLastPreviewDataTable,
+  setPreviewDataTable,
   renderOutputPreviewForCurrentSelection,
   surfacePageError,
   clearPageError,
 }) {
-  const rowCount = parseRowCount('previewRowsCount');
+  const rowCount = getPreviewRowCount();
   if (rowCount.errors.length > 0) {
     surfacePageError(rowCount.errors.join('\n'));
     return;
@@ -203,13 +164,12 @@ function previewGeneratorData({
 
   const dataTable = buildDataTable(configured.generator, rowCount.value);
   clearPageError?.();
-  setLastPreviewDataTable(dataTable);
-  previewGrid?.setGridFromGenericDataTable?.(dataTable);
+  setPreviewDataTable?.(dataTable);
   renderOutputPreviewForCurrentSelection();
 }
 
 async function generateGeneratorDataFile({
-  parseRowCount,
+  getGenerateRowCount,
   createConfiguredGenerator,
   getSelectedOutputType,
   exporter,
@@ -223,7 +183,7 @@ async function generateGeneratorDataFile({
   clearPageError,
   scheduleClearGenerationStatus,
 }) {
-  const rowCount = parseRowCount('generateRowsCount');
+  const rowCount = getGenerateRowCount();
   if (rowCount.errors.length > 0) {
     surfacePageError(rowCount.errors.join('\n'));
     return;
@@ -332,7 +292,6 @@ async function generateGeneratorAllPairsDataFile({
 }
 
 export {
-  parseGeneratorRowCount,
   createConfiguredGeneratorForPage,
   buildPreviewDataTable,
   buildPairwiseDataTable,

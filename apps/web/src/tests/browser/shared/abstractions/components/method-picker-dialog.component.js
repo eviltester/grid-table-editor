@@ -3,11 +3,11 @@ const { expect } = require('@playwright/test');
 class MethodPickerDialogComponent {
   constructor(page) {
     this.page = page;
-    this.overlay = page.locator('.method-picker-overlay');
-    this.searchInput = page.locator('.method-picker-search');
-    this.tabButtons = page.locator('.method-picker-tabs button');
-    this.commandLabels = page.locator('.method-picker-tile .method-picker-tile-command');
-    this.applyButton = page.locator('[data-action="apply"]');
+    this.overlay = page.locator('[data-role="method-picker-overlay"]');
+    this.searchInput = this.overlay.locator('[data-role="method-picker-search"]');
+    this.tabButtons = this.overlay.locator('[data-role="method-picker-tab"]');
+    this.commandLabels = this.overlay.locator('[data-role="method-picker-command"]');
+    this.applyButton = this.overlay.locator('[data-action="apply"]');
   }
 
   async expectOpen() {
@@ -17,7 +17,7 @@ class MethodPickerDialogComponent {
   async chooseCommand(command, { tab = null } = {}) {
     await this.expectOpen();
     if (tab) {
-      await this.page.locator('.method-picker-tabs button', { hasText: new RegExp(`^${tab}$`, 'i') }).click();
+      await this.overlay.locator('[data-role="method-picker-tab"]', { hasText: new RegExp(`^${tab}$`, 'i') }).click();
     }
 
     const requested = String(command);

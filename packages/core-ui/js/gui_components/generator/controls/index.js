@@ -22,7 +22,11 @@ function createGeneratorControlsComponent({ root, props = {}, services = {}, cal
       createLoadingStatusPresenter: services.createLoadingStatusPresenter || createLoadingStatusPresenter,
       getOutputFormatGroups: services.getOutputFormatGroups || getOutputFormatGroups,
       canExportFormat: services.canExportFormat || (() => true),
+      getCurrentOptionsForFormat: services.getCurrentOptionsForFormat || (() => undefined),
       updateHelpHints: services.updateHelpHints || createUpdateHelpHints(resolvedDocumentObj, root),
+      windowObj: services.windowObj,
+      setTimeoutFn: services.setTimeoutFn,
+      clearTimeoutFn: services.clearTimeoutFn,
     },
   });
 
@@ -33,6 +37,12 @@ function createGeneratorControlsComponent({ root, props = {}, services = {}, cal
       controller.updateProps(nextProps);
       view.render();
     },
+    syncFormatState(selectedFormat) {
+      view.syncFormatState(selectedFormat);
+    },
+    setPairwiseVisible(pairwiseVisible) {
+      view.setPairwiseVisible(pairwiseVisible);
+    },
     destroy() {
       view.destroy();
     },
@@ -41,6 +51,9 @@ function createGeneratorControlsComponent({ root, props = {}, services = {}, cal
     },
     getSelectedOutputType() {
       return view.getSelectedOutputType();
+    },
+    getGenerateRowCount() {
+      return view.getGenerateRowCount();
     },
     setGenerationButtonsBusy(isBusy) {
       view.setGenerationButtonsBusy(isBusy);
@@ -56,9 +69,6 @@ function createGeneratorControlsComponent({ root, props = {}, services = {}, cal
     },
     scheduleClearStatus(delayMs = 1200) {
       view.scheduleClearStatus(delayMs);
-    },
-    getFormatOptionsPanel() {
-      return view.getFormatOptionsPanel();
     },
   };
 }

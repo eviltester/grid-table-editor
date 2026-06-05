@@ -106,6 +106,20 @@ describe('TimedStatusDisplay', () => {
     expect(element.hasAttribute('data-severity')).toBe(false);
   });
 
+  test('createTimedStatusPresenter can resolve the target element through an injected callback', () => {
+    const presenter = createTimedStatusPresenter({
+      documentObj: dom.window.document,
+      resolveElement: () => dom.window.document.querySelector('[data-role="schema-error"]'),
+      timeoutMs: 5000,
+    });
+    const element = dom.window.document.getElementById('error');
+    element.setAttribute('data-role', 'schema-error');
+
+    presenter.show('Schema invalid', { severity: 'warning' });
+    expect(element.textContent).toBe('Schema invalid');
+    expect(element.getAttribute('data-severity')).toBe('warning');
+  });
+
   test('TimedStatusDisplay wraps the service-style presenter API', () => {
     const display = new TimedStatusDisplay({
       documentObj: dom.window.document,

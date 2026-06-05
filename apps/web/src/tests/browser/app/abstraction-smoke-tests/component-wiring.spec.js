@@ -15,13 +15,13 @@ test('all page-object components are wired and interactive at smoke level', asyn
 
   await appPage.goto();
   await appPage.gridEditor.addRow();
-  await appPage.importExportControls.setTextFromGrid();
-  await appPage.tabbedText.selectFormat('JSON');
+  await appPage.importExportWorkspace.setTextFromGrid();
+  await appPage.textPreviewEditor.selectFormat('JSON');
   await appPage.formatOptionsPanel.expectReady();
   await appPage.testDataPanel.expand();
   await appPage.testDataPanel.expectExpanded();
 
-  expect(await appPage.tabbedText.isCopyButtonVisible()).toBe(true);
-  expect(await appPage.importExportControls.getExtensionLabel()).toBe('.json');
+  expect(await appPage.textPreviewEditor.isCopyButtonVisible()).toBe(true);
+  expect(await appPage.importExportWorkspace.getExtensionLabel()).toBe('.json');
   expect(pageErrors).toEqual([]);
 });

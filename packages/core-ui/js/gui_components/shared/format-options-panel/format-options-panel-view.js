@@ -60,7 +60,7 @@ class FormatOptionsPanelView {
   }
 
   setApplyButtonDirty(isDirty) {
-    const applyButton = this.root.querySelector('.apply-options');
+    const applyButton = this.root.querySelector('[data-role="apply-options-button"]');
     if (!applyButton) {
       return;
     }

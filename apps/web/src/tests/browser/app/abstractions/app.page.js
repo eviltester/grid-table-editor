@@ -1,8 +1,8 @@
 const { expect } = require('@playwright/test');
 const { TopNavigationComponent } = require('./components/top-navigation.component');
 const { GridEditorComponent } = require('./components/grid-editor.component');
-const { ImportExportControlsComponent } = require('./components/import-export-controls.component');
-const { TabbedTextComponent } = require('./components/tabbed-text.component');
+const { ImportExportWorkspaceComponent } = require('./components/import-export-workspace.component');
+const { TextPreviewEditorComponent } = require('./components/text-preview-editor.component');
 const { TestDataPanelComponent } = require('./components/test-data-panel.component');
 const { FormatOptionsPanelComponent } = require('./components/format-options-panel.component');
 
@@ -12,16 +12,16 @@ class AppPage {
 
     this.topNavigation = new TopNavigationComponent(page);
     this.gridEditor = new GridEditorComponent(page);
-    this.importExportControls = new ImportExportControlsComponent(page);
-    this.tabbedText = new TabbedTextComponent(page);
+    this.importExportWorkspace = new ImportExportWorkspaceComponent(page);
+    this.textPreviewEditor = new TextPreviewEditorComponent(page);
     this.formatOptionsPanel = new FormatOptionsPanelComponent(page);
     this.testDataPanel = new TestDataPanelComponent(page);
 
     this.initialLoading = page.locator('#initial-load');
   }
 
-  async goto() {
-    await this.page.goto('/app.html', { waitUntil: 'domcontentloaded' });
+  async goto(path = '/app.html') {
+    await this.page.goto(path, { waitUntil: 'domcontentloaded' });
     await this.waitUntilReady();
   }
 
@@ -38,8 +38,8 @@ class AppPage {
     }
     await this.topNavigation.expectReady();
     await this.gridEditor.expectReady();
-    await this.importExportControls.expectReady();
-    await this.tabbedText.expectReady();
+    await this.importExportWorkspace.expectReady();
+    await this.textPreviewEditor.expectReady();
     await this.formatOptionsPanel.expectReady();
     await this.testDataPanel.expectReady();
   }

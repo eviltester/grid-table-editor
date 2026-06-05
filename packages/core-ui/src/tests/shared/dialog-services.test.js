@@ -88,6 +88,20 @@ describe('dialog services', () => {
     expect(dom.window.document.getElementById('confirm-modal-backdrop').style.display).toBe('none');
   });
 
+  test('confirm dialog service destroy closes the active request and removes the owned backdrop', async () => {
+    const service = createConfirmDialogService({ documentObj: dom.window.document });
+
+    const resultPromise = service.requestConfirm({
+      title: 'Delete Rows',
+      message: 'Are you sure?',
+    });
+
+    service.destroy();
+
+    await expect(resultPromise).resolves.toBe(false);
+    expect(dom.window.document.getElementById('confirm-modal-backdrop')).toBeNull();
+  });
+
   test('text input dialog service binds the provided document and resolves the typed value', async () => {
     const service = createTextInputDialogService({ documentObj: dom.window.document });
 
@@ -173,5 +187,19 @@ describe('dialog services', () => {
 
     await expect(secondPromise).resolves.toBe('Updated');
     expect(dom.window.document.getElementById('text-input-modal-backdrop').style.display).toBe('none');
+  });
+
+  test('text input dialog service destroy closes the active request and removes the owned backdrop', async () => {
+    const service = createTextInputDialogService({ documentObj: dom.window.document });
+
+    const resultPromise = service.requestTextInput({
+      title: 'Filter Column',
+      initialValue: 'Old',
+    });
+
+    service.destroy();
+
+    await expect(resultPromise).resolves.toBeNull();
+    expect(dom.window.document.getElementById('text-input-modal-backdrop')).toBeNull();
   });
 });

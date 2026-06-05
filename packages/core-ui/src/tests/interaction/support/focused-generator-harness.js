@@ -53,7 +53,43 @@ function createFocusedGeneratorHarness() {
   let page = null;
 
   function getRow(index = 0) {
-    return document.querySelectorAll('.generator-schema-row')[index];
+    return document.querySelectorAll('.shared-schema-row')[index];
+  }
+
+  function getSchemaDefinitionRoot() {
+    return document.querySelector('[data-role="generator-schema-definition-root"]');
+  }
+
+  function getSchemaRowsContainer() {
+    return getSchemaDefinitionRoot()?.querySelector('[data-role="schema-rows-region"]') || null;
+  }
+
+  function getSchemaTextContainer() {
+    return getSchemaDefinitionRoot()?.querySelector('[data-role="schema-text-region"]') || null;
+  }
+
+  function getSchemaTextArea() {
+    return getSchemaDefinitionRoot()?.querySelector('[data-role="schema-textbox"]') || null;
+  }
+
+  function getOutputPreviewTextArea() {
+    return document.querySelector('[data-role="generator-output-preview"]');
+  }
+
+  function getOutputFormatSelect() {
+    return document.querySelector('[data-role="generator-output-format-select"]');
+  }
+
+  function getPairwiseWrapper() {
+    return document.querySelector('[data-role="generator-pairwise-button-wrapper"]');
+  }
+
+  function getPreviewRowsInput() {
+    return document.querySelector('[data-role="preview-rows-count-control"] input');
+  }
+
+  function getGenerateRowsInput() {
+    return document.querySelector('[data-role="generate-rows-count-control"] input');
   }
 
   function getRowScope(index = 0) {
@@ -128,7 +164,7 @@ function createFocusedGeneratorHarness() {
   }
 
   async function setSchemaText(value) {
-    const textArea = document.getElementById('generatorSchemaText');
+    const textArea = getSchemaTextArea();
     await setInputValue(textArea, value);
   }
 
@@ -147,15 +183,15 @@ function createFocusedGeneratorHarness() {
   }
 
   async function setPreviewCount(value) {
-    await setInputValue(document.getElementById('previewRowsCount'), String(value));
+    await setInputValue(getPreviewRowsInput(), String(value));
   }
 
   async function setGenerateCount(value) {
-    await setInputValue(document.getElementById('generateRowsCount'), String(value));
+    await setInputValue(getGenerateRowsInput(), String(value));
   }
 
   async function selectOutputFormat(value) {
-    await user.selectOptions(document.getElementById('generatorOutputFormat'), value);
+    await user.selectOptions(getOutputFormatSelect(), value);
   }
 
   async function clickInjectedSampleButton() {
@@ -163,7 +199,7 @@ function createFocusedGeneratorHarness() {
     button.type = 'button';
     button.className = 'shared-schema-sample-button';
     button.textContent = 'Insert Example Schema';
-    document.getElementById('generatorSchemaDefinition').appendChild(button);
+    getSchemaDefinitionRoot().appendChild(button);
     await user.click(button);
     button.remove();
   }
@@ -172,24 +208,24 @@ function createFocusedGeneratorHarness() {
     return getRow(index)?.querySelector('[data-field="faker-doc-link"]');
   }
 
-  function getPairwiseWrapper() {
-    return document.getElementById('generateAllPairsButtonWrapper');
-  }
-
   function getOutputPreviewText() {
-    return document.getElementById('generatorOutputPreview').value;
+    return getOutputPreviewTextArea()?.value || '';
   }
 
   function getSchemaText() {
-    return document.getElementById('generatorSchemaText').value;
+    return getSchemaTextArea()?.value || '';
   }
 
   function getSchemaErrorText() {
-    return document.getElementById('generatorSchemaErrorText').textContent.trim();
+    return (
+      document
+        .querySelector('[data-role="generator-schema-definition-root"] [data-role="schema-error"]')
+        ?.textContent?.trim() || ''
+    );
   }
 
   function getPreviewDataTable() {
-    return page.previewGrid.lastDataTable;
+    return page.generatorPreview?.getPreviewDataTable?.() || null;
   }
 
   function getLastDownload() {
@@ -228,6 +264,9 @@ function createFocusedGeneratorHarness() {
     selectOutputFormat,
     clickInjectedSampleButton,
     getRow,
+    getSchemaRowsContainer,
+    getSchemaTextContainer,
+    getSchemaTextArea,
     getHelpLink,
     getPairwiseWrapper,
     getOutputPreviewText,

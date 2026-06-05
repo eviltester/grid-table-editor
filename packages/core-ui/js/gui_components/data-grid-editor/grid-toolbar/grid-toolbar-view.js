@@ -23,15 +23,20 @@ class GridToolbarView {
   template() {
     return `
       <div class="toolbar">
-        <button id="addRowButton">Add Row</button>
-        <button id="addRowsAboveButton">Add Rows Above</button>
-        <button id="addRowsBelowButton">Add Rows Below</button>
-        <button id="deleteSelectedRowsButton">Delete Selected Rows</button>
-        <label>Filter: <input type="text" id="filter-text-box" placeholder="Filter..."></label>
-        <button id="clearFiltersButton" title="Clear Filters">Clear Filters</button>
-        <button id="clearSortButton" title="Clear Sort">Clear Sort</button>
-        <button id="clearTableButton" title="Clear All Data">Reset Table</button>
-        <label><input type="checkbox" id="uniqueColumnNamesCheckbox"> Unique Column Names</label>
+        <button id="addRowButton" data-role="add-row-button">Add Row</button>
+        <button id="addRowsAboveButton" data-role="add-rows-above-button">Add Rows Above</button>
+        <button id="addRowsBelowButton" data-role="add-rows-below-button">Add Rows Below</button>
+        <button id="deleteSelectedRowsButton" data-role="delete-selected-rows-button">Delete Selected Rows</button>
+        <label data-role="filter-label">
+          Filter:
+          <input type="text" id="filter-text-box" data-role="filter-text-input" placeholder="Filter...">
+        </label>
+        <button id="clearFiltersButton" data-role="clear-filters-button" title="Clear Filters">Clear Filters</button>
+        <button id="clearSortButton" data-role="clear-sort-button" title="Clear Sort">Clear Sort</button>
+        <button id="clearTableButton" data-role="clear-table-button" title="Clear All Data">Reset Table</button>
+        <label data-role="unique-column-names-label">
+          <input type="checkbox" id="uniqueColumnNamesCheckbox" data-role="unique-column-names-checkbox"> Unique Column Names
+        </label>
       </div>
     `;
   }
@@ -48,38 +53,38 @@ class GridToolbarView {
       return;
     }
 
-    if (target.closest('#addRowButton')) {
+    if (target.closest('[data-role="add-row-button"], #addRowButton')) {
       this.controller.triggerAddRow();
       return;
     }
-    if (target.closest('#addRowsAboveButton')) {
+    if (target.closest('[data-role="add-rows-above-button"], #addRowsAboveButton')) {
       this.controller.triggerAddRowsAbove();
       return;
     }
-    if (target.closest('#addRowsBelowButton')) {
+    if (target.closest('[data-role="add-rows-below-button"], #addRowsBelowButton')) {
       this.controller.triggerAddRowsBelow();
       return;
     }
-    if (target.closest('#deleteSelectedRowsButton')) {
+    if (target.closest('[data-role="delete-selected-rows-button"], #deleteSelectedRowsButton')) {
       this.controller.triggerDeleteSelectedRows();
       return;
     }
-    if (target.closest('#clearFiltersButton')) {
+    if (target.closest('[data-role="clear-filters-button"], #clearFiltersButton')) {
       this.controller.triggerClearFilters();
       this.render();
       return;
     }
-    if (target.closest('#clearSortButton')) {
+    if (target.closest('[data-role="clear-sort-button"], #clearSortButton')) {
       this.controller.triggerClearSort();
       return;
     }
-    if (target.closest('#clearTableButton')) {
+    if (target.closest('[data-role="clear-table-button"], #clearTableButton')) {
       this.controller.triggerClearTable();
     }
   }
 
   onInput(event) {
-    const input = event.target?.closest?.('#filter-text-box');
+    const input = event.target?.closest?.('[data-role="filter-text-input"], #filter-text-box');
     if (!input) {
       return;
     }
@@ -87,7 +92,7 @@ class GridToolbarView {
   }
 
   onChange(event) {
-    const checkbox = event.target?.closest?.('#uniqueColumnNamesCheckbox');
+    const checkbox = event.target?.closest?.('[data-role="unique-column-names-checkbox"], #uniqueColumnNamesCheckbox');
     if (!checkbox) {
       return;
     }
@@ -96,12 +101,12 @@ class GridToolbarView {
 
   render() {
     const state = this.controller.getState();
-    const filterInput = this.root.querySelector('#filter-text-box');
+    const filterInput = this.getElement('filter-text-input', '#filter-text-box');
     if (filterInput && filterInput.value !== state.filterText) {
       filterInput.value = state.filterText;
     }
 
-    const checkbox = this.root.querySelector('#uniqueColumnNamesCheckbox');
+    const checkbox = this.getElement('unique-column-names-checkbox', '#uniqueColumnNamesCheckbox');
     if (checkbox) {
       checkbox.checked = state.uniqueColumnNames === true;
     }
@@ -112,6 +117,10 @@ class GridToolbarView {
     this.root.removeEventListener('input', this.handleInput);
     this.root.removeEventListener('change', this.handleChange);
     this.root.replaceChildren();
+  }
+
+  getElement(role, fallbackSelector) {
+    return this.root.querySelector(`[data-role="${role}"]`) || this.root.querySelector(fallbackSelector);
   }
 }
 

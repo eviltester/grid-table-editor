@@ -132,19 +132,28 @@ function openMethodPickerModal({
   ensureStyles(documentObj);
   const overlay = documentObj.createElement('div');
   overlay.className = 'method-picker-overlay';
+  overlay.setAttribute('data-role', 'method-picker-overlay');
   overlay.innerHTML = `
-    <div class="method-picker-modal" role="dialog" aria-modal="true" aria-label="${escapeHtml(title)}">
+    <div class="method-picker-modal" data-role="method-picker-dialog" role="dialog" aria-modal="true" aria-label="${escapeHtml(
+      title
+    )}">
       <header class="method-picker-header">
         <h3>${escapeHtml(title)}</h3>
         <button type="button" class="method-picker-close" data-action="close" aria-label="Close">×</button>
       </header>
       <div class="method-picker-toolbar">
-        <input type="search" class="method-picker-search" placeholder="Filter domain or method..." aria-label="Filter methods" />
-        <div class="method-picker-tabs"></div>
+        <input
+          type="search"
+          class="method-picker-search"
+          data-role="method-picker-search"
+          placeholder="Filter domain or method..."
+          aria-label="Filter methods"
+        />
+        <div class="method-picker-tabs" data-role="method-picker-tabs"></div>
       </div>
       <div class="method-picker-content">
-        <section class="method-picker-list" aria-label="Methods"></section>
-        <aside class="method-picker-detail" aria-label="Method details"></aside>
+        <section class="method-picker-list" data-role="method-picker-list" aria-label="Methods"></section>
+        <aside class="method-picker-detail" data-role="method-picker-detail" aria-label="Method details"></aside>
       </div>
       <footer class="method-picker-footer">
         <button type="button" data-action="cancel">Cancel</button>
@@ -153,10 +162,10 @@ function openMethodPickerModal({
     </div>
   `;
 
-  const searchInput = overlay.querySelector('.method-picker-search');
-  const listElem = overlay.querySelector('.method-picker-list');
-  const detailElem = overlay.querySelector('.method-picker-detail');
-  const tabsElem = overlay.querySelector('.method-picker-tabs');
+  const searchInput = overlay.querySelector('[data-role="method-picker-search"]');
+  const listElem = overlay.querySelector('[data-role="method-picker-list"]');
+  const detailElem = overlay.querySelector('[data-role="method-picker-detail"]');
+  const tabsElem = overlay.querySelector('[data-role="method-picker-tabs"]');
   const applyButton = overlay.querySelector('[data-action="apply"]');
 
   const recent = readRecent(windowObj);
@@ -186,9 +195,14 @@ function openMethodPickerModal({
 
   function renderTabs() {
     tabsElem.innerHTML = tabSpecs
-      .map((tab) => `<button type="button" data-tab="${escapeHtml(tab.id)}">${escapeHtml(tab.label)}</button>`)
+      .map(
+        (tab) =>
+          `<button type="button" data-role="method-picker-tab" data-tab="${escapeHtml(tab.id)}">${escapeHtml(
+            tab.label
+          )}</button>`
+      )
       .join('');
-    tabButtons = Array.from(tabsElem.querySelectorAll('button'));
+    tabButtons = Array.from(tabsElem.querySelectorAll('[data-role="method-picker-tab"]'));
     tabButtons.forEach((button) => {
       const tabId = button.getAttribute('data-tab') || '';
       button.classList.toggle('is-active', tabId === activeTab);
@@ -272,10 +286,13 @@ function openMethodPickerModal({
       .map((option) => {
         const isSelected = option.command === selectedCommand;
         return `
-          <button type="button" class="method-picker-tile ${isSelected ? 'is-selected' : ''}" data-command="${escapeHtml(
-            option.command
-          )}">
-            <span class="method-picker-tile-command">${escapeHtml(option.command)}</span>
+          <button
+            type="button"
+            class="method-picker-tile ${isSelected ? 'is-selected' : ''}"
+            data-role="method-picker-tile"
+            data-command="${escapeHtml(option.command)}"
+          >
+            <span class="method-picker-tile-command" data-role="method-picker-command">${escapeHtml(option.command)}</span>
             <span class="method-picker-tile-summary">${escapeHtml(option.helpModel?.summary || '')}</span>
             <span class="method-picker-tile-tag">${escapeHtml(option.sourceType)}</span>
           </button>`;

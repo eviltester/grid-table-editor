@@ -1,4 +1,5 @@
 const { test, expect } = require('@playwright/test');
+const { AppPage } = require('../abstractions/app.page');
 
 function trackPageErrors(page) {
   const pageErrors = [];
@@ -10,31 +11,23 @@ function trackPageErrors(page) {
 
 async function expectPageToInitialize(page, urlPath, config) {
   const pageErrors = trackPageErrors(page);
+  const appPage = new AppPage(page);
 
-  await page.goto(urlPath, { waitUntil: 'domcontentloaded' });
-
-  await expect(page.locator(config.loadingSelector)).toHaveCount(0);
-
-  for (const selector of config.readySelectors) {
-    await expect(page.locator(selector)).toBeVisible();
-  }
+  await appPage.goto(urlPath);
 
   if (config.textSelector && config.textValue) {
     await expect(page.locator(config.textSelector)).toContainText(config.textValue);
   }
 
   expect(pageErrors).toEqual([]);
+  return appPage;
 }
 
 test('app page initializes without browser errors', async ({ page }) => {
-  await expectPageToInitialize(page, '/app.html', {
-    loadingSelector: '#initial-load',
-    readySelectors: [
-      '#main-grid-view',
-      '#import-export-controls #filedownload',
-      '#tabbedTextArea .conversionTypesList',
-    ],
-    textSelector: '#tabbedTextArea .conversionTypesList',
+  const appPage = await expectPageToInitialize(page, '/app.html', {
+    textSelector: '[data-role="text-preview-editor-root"] [data-role="format-tabs-list"]',
     textValue: 'CSV',
   });
+
+  await expect(appPage.textPreviewEditor.tabsList).toContainText('CSV');
 });

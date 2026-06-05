@@ -1,5 +1,8 @@
 import { JSDOM } from 'jsdom';
-import { showTextInputModal } from '../../../js/gui_components/shared/modal-text-input.js';
+import {
+  createTextInputDialogComponent,
+  showTextInputModal,
+} from '../../../js/gui_components/shared/modal-text-input.js';
 
 describe('showTextInputModal', () => {
   let dom;
@@ -21,9 +24,9 @@ describe('showTextInputModal', () => {
       initialValue: 'Old',
     });
 
-    const input = document.getElementById('text-input-modal-field');
+    const input = document.querySelector('[data-role="text-input-dialog-field"]');
     input.value = 'New Name';
-    document.getElementById('text-input-modal-ok').click();
+    document.querySelector('[data-role="text-input-dialog-ok"]').click();
 
     await expect(promise).resolves.toBe('New Name');
   });
@@ -34,7 +37,7 @@ describe('showTextInputModal', () => {
       title: 'Column Name',
       initialValue: 'Old',
     });
-    document.getElementById('text-input-modal-cancel').click();
+    document.querySelector('[data-role="text-input-dialog-cancel"]').click();
     await expect(promise).resolves.toBeNull();
   });
 
@@ -45,6 +48,36 @@ describe('showTextInputModal', () => {
       initialValue: 'Old',
     });
     document.getElementById('text-input-modal-backdrop').click();
+    await expect(promise).resolves.toBeNull();
+  });
+
+  test('uses the injected window object for requestAnimationFrame-based focus scheduling', async () => {
+    const scheduledCallbacks = [];
+    const windowObj = {
+      requestAnimationFrame(callback) {
+        scheduledCallbacks.push(callback);
+        return 1;
+      },
+      setTimeout(callback) {
+        scheduledCallbacks.push(callback);
+        return 2;
+      },
+    };
+    const component = createTextInputDialogComponent({
+      documentObj: document,
+      windowObj,
+    });
+
+    const promise = component.requestTextInput({
+      title: 'Column Name',
+      initialValue: 'Old',
+    });
+
+    expect(scheduledCallbacks).toHaveLength(1);
+    scheduledCallbacks[0]();
+    expect(document.activeElement).toBe(document.querySelector('[data-role="text-input-dialog-field"]'));
+
+    document.querySelector('[data-role="text-input-dialog-cancel"]').click();
     await expect(promise).resolves.toBeNull();
   });
 });

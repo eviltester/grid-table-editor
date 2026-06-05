@@ -6,13 +6,13 @@ test.describe('4. Import Export Basic', () => {
     const { appPage, pageErrors } = await openApp(page);
     await seedRows(appPage, ['A', 'B']);
 
-    await appPage.tabbedText.selectFormat('CSV');
-    await appPage.importExportControls.expectExtensionLabel('.csv');
-    await appPage.importExportControls.setTextFromGrid();
+    await appPage.textPreviewEditor.selectFormat('CSV');
+    await appPage.importExportWorkspace.expectExtensionLabel('.csv');
+    await appPage.importExportWorkspace.setTextFromGrid();
 
-    await appPage.tabbedText.expectOutputContains('A');
-    await appPage.tabbedText.expectOutputContains('B');
-    await appPage.tabbedText.expectOutputContains('\n');
+    await appPage.textPreviewEditor.expectOutputContains('A');
+    await appPage.textPreviewEditor.expectOutputContains('B');
+    await appPage.textPreviewEditor.expectOutputContains('\n');
 
     expectNoPageErrors(pageErrors);
   });
@@ -21,21 +21,21 @@ test.describe('4. Import Export Basic', () => {
     const { appPage, pageErrors } = await openApp(page);
     const primaryColumnName = await seedRows(appPage, ['A', 'B']);
 
-    await appPage.tabbedText.selectFormat('CSV');
-    await appPage.tabbedText.setAutoPreview(true);
-    await appPage.tabbedText.expectAutoPreviewInteractive(true);
-    await appPage.tabbedText.expectAutoPreviewChecked(true);
+    await appPage.textPreviewEditor.selectFormat('CSV');
+    await appPage.textPreviewEditor.setAutoPreview(true);
+    await appPage.textPreviewEditor.expectAutoPreviewInteractive(true);
+    await appPage.textPreviewEditor.expectAutoPreviewChecked(true);
 
     await appPage.gridEditor.renderer.setCellTextByColumnName(primaryColumnName, 0, 'A-updated');
-    await appPage.tabbedText.expectOutputContains('A-updated');
+    await appPage.textPreviewEditor.expectOutputContains('A-updated');
 
-    await appPage.tabbedText.togglePreviewEdit(true);
-    await appPage.tabbedText.expectAutoPreviewInteractive(false);
-    await appPage.tabbedText.expectAutoPreviewChecked(true);
-    await appPage.tabbedText.setOutputText('manual-text');
+    await appPage.textPreviewEditor.togglePreviewEdit(true);
+    await appPage.textPreviewEditor.expectAutoPreviewInteractive(false);
+    await appPage.textPreviewEditor.expectAutoPreviewChecked(true);
+    await appPage.textPreviewEditor.setOutputText('manual-text');
 
     await appPage.gridEditor.renderer.setCellTextByColumnName(primaryColumnName, 1, 'B-updated');
-    await expect(appPage.tabbedText.outputTextArea).toHaveValue('manual-text');
+    await expect(appPage.textPreviewEditor.outputTextArea).toHaveValue('manual-text');
 
     expectNoPageErrors(pageErrors);
   });

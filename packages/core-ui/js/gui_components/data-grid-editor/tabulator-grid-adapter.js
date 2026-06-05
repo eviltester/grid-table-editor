@@ -1,13 +1,26 @@
 import { resolveDocumentObj, resolveWindowObj } from '../shared/dom/default-objects.js';
 
 class TabulatorGridAdapter {
-  constructor({ rootElement, TabulatorCtor, GridExtensionClass, tabulatorOptions = {}, documentObj, windowObj } = {}) {
+  constructor({
+    rootElement,
+    TabulatorCtor,
+    GridExtensionClass,
+    tabulatorOptions = {},
+    documentObj,
+    windowObj,
+    requestAnimationFrameFn,
+    cancelAnimationFrameFn,
+  } = {}) {
     this.rootElement = rootElement;
     this.TabulatorCtor = TabulatorCtor;
     this.GridExtensionClass = GridExtensionClass;
     this.tabulatorOptions = tabulatorOptions;
     this.documentObj = resolveDocumentObj(documentObj, rootElement);
     this.windowObj = resolveWindowObj(windowObj, this.documentObj);
+    this.requestAnimationFrameFn =
+      requestAnimationFrameFn || this.windowObj?.requestAnimationFrame?.bind(this.windowObj) || null;
+    this.cancelAnimationFrameFn =
+      cancelAnimationFrameFn || this.windowObj?.cancelAnimationFrame?.bind(this.windowObj) || null;
     this.tableApi = null;
     this.gridApi = null;
     this.isDestroyed = false;
@@ -68,8 +81,12 @@ class TabulatorGridAdapter {
       return;
     }
 
-    const requestAnimationFrameFn =
-      this.windowObj?.requestAnimationFrame?.bind(this.windowObj) || ((callback) => globalThis.setTimeout(callback, 0));
+    if (typeof this.requestAnimationFrameFn !== 'function') {
+      this._attemptMount();
+      return;
+    }
+
+    const requestAnimationFrameFn = this.requestAnimationFrameFn;
     this.mountFrame = requestAnimationFrameFn(() => {
       this.mountFrame = null;
       this._attemptMount();
@@ -95,10 +112,8 @@ class TabulatorGridAdapter {
 
   destroy() {
     this.isDestroyed = true;
-    const cancelAnimationFrameFn =
-      this.windowObj?.cancelAnimationFrame?.bind(this.windowObj) || ((handle) => globalThis.clearTimeout(handle));
     if (this.mountFrame !== null) {
-      cancelAnimationFrameFn(this.mountFrame);
+      this.cancelAnimationFrameFn?.(this.mountFrame);
       this.mountFrame = null;
     }
     this.gridApi?.destroy?.();
@@ -121,6 +136,8 @@ function createTabulatorGridAdapter({
   tabulatorOptions,
   documentObj,
   windowObj,
+  requestAnimationFrameFn,
+  cancelAnimationFrameFn,
 } = {}) {
   const adapter = new TabulatorGridAdapter({
     rootElement,
@@ -129,6 +146,8 @@ function createTabulatorGridAdapter({
     tabulatorOptions,
     documentObj,
     windowObj,
+    requestAnimationFrameFn,
+    cancelAnimationFrameFn,
   });
   adapter.mount();
   return adapter;

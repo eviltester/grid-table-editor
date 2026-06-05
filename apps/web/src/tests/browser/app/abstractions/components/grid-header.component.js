@@ -1,34 +1,39 @@
 const { expect } = require('@playwright/test');
 const { GridRendererComponent } = require('./grid-renderer.component');
+const { ConfirmDialogComponent } = require('./confirm-dialog.component');
+const { TextInputDialogComponent } = require('./text-input-dialog.component');
 
 class GridHeaderComponent {
   constructor(page, gridRootLocator, renderer = undefined) {
     this.page = page;
     this.gridRoot = gridRootLocator;
-    this.headers = this.gridRoot.locator('.tabulator-col');
     this.renderer = renderer || new GridRendererComponent(page, gridRootLocator);
+    this.confirmDialog = new ConfirmDialogComponent(page);
+    this.textInputDialog = new TextInputDialogComponent(page);
   }
 
   async getColumnNames() {
-    const titles = this.gridRoot.locator('.tabulator-col .tabulator-col-title');
-    const count = await titles.count();
-    const names = [];
-    for (let index = 0; index < count; index += 1) {
-      names.push(this._normalizeTitle(await titles.nth(index).innerText()));
-    }
-    return names;
+    return this.renderer.getColumnNames();
   }
 
   async countColumns() {
-    return this.gridRoot.locator('.tabulator-col .tabulator-col-title').count();
+    return this.renderer.countColumns();
   }
 
   async expectHasAnyColumns() {
-    await expect(this.gridRoot.locator('.tabulator-col .tabulator-col-title').first()).toBeVisible();
+    await this.renderer.expectHasAnyColumns();
+  }
+
+  async expectActionButtonsVisible(columnName) {
+    const headerRoot = this._headerRootByName(columnName);
+    await expect(headerRoot.getByRole('button', { name: 'Add column left', exact: true })).toBeVisible();
+    await expect(headerRoot.getByRole('button', { name: 'Rename column', exact: true })).toBeVisible();
+    await expect(headerRoot.getByRole('button', { name: 'Delete column', exact: true })).toBeVisible();
+    await expect(headerRoot.getByRole('button', { name: 'Duplicate column', exact: true })).toBeVisible();
+    await expect(headerRoot.getByRole('button', { name: 'Add column right', exact: true })).toBeVisible();
   }
 
   async clickAction(columnName, action) {
-    const headerTitle = this._headerTitleByName(columnName);
     const actionTitleMap = {
       rename: 'Rename column',
       delete: 'Delete column',
@@ -40,7 +45,7 @@ class GridHeaderComponent {
       'sort-none': 'Clear sort',
     };
     const title = actionTitleMap[action] || action;
-    const headerRoot = headerTitle.locator(`xpath=ancestor::*[contains(@class,'tabulator-col')]`);
+    const headerRoot = this._headerRootByName(columnName);
     const actionLocator = headerRoot.locator(`[aria-label="${title}"], [title="${title}"]`).first();
     await actionLocator.click();
   }
@@ -67,11 +72,7 @@ class GridHeaderComponent {
 
   async deleteColumn(columnName) {
     await this.clickAction(columnName, 'delete');
-    const confirmBackdrop = this.page.locator('#confirm-modal-backdrop');
-    if ((await confirmBackdrop.count()) > 0 && (await confirmBackdrop.isVisible())) {
-      await confirmBackdrop.locator('#confirm-modal-ok').click();
-      await expect(confirmBackdrop).toBeHidden();
-    }
+    await this.confirmDialog.confirmIfVisible();
   }
 
   async sortAsc(columnName) {
@@ -89,21 +90,28 @@ class GridHeaderComponent {
   }
 
   async setColumnFilter(columnName, value) {
-    const header = this._headerTitleByName(columnName).locator(`xpath=ancestor::*[contains(@class,'tabulator-col')]`);
-    const input = header.locator('.tabulator-header-filter input');
+    const input = this._headerFilterInputByName(columnName);
     await input.fill(value);
     await input.press('Enter');
   }
 
   async getColumnFilterValue(columnName) {
-    const header = this._headerTitleByName(columnName).locator(`xpath=ancestor::*[contains(@class,'tabulator-col')]`);
-    return header.locator('.tabulator-header-filter input').inputValue();
+    return this._headerFilterInputByName(columnName).inputValue();
+  }
+
+  async getAllFilterValues() {
+    return this.renderer
+      .allHeaderFilterInputs()
+      .evaluateAll((inputs) => inputs.map((input) => String(input.value || '').trim()));
+  }
+
+  async hasActiveFilters() {
+    const values = await this.getAllFilterValues();
+    return values.some((value) => value.length > 0);
   }
 
   async getColumnSortState(columnName) {
-    const header = this._headerTitleByName(columnName)
-      .locator(`xpath=ancestor::*[contains(@class,'tabulator-col')]`)
-      .first();
+    const header = this._headerRootByName(columnName);
     return (await header.getAttribute('aria-sort')) || '';
   }
 
@@ -116,23 +124,19 @@ class GridHeaderComponent {
   }
 
   _headerTitleByName(columnName) {
-    const normalized = this._normalizeTitle(columnName);
-    return this.gridRoot.locator('.tabulator-col-title', { hasText: normalized }).first();
+    return this.renderer.columnTitle(columnName);
   }
 
-  _normalizeTitle(rawText) {
-    return String(rawText || '')
-      .split('\n')[0]
-      .trim();
+  _headerRootByName(columnName) {
+    return this.renderer.columnRoot(columnName);
+  }
+
+  _headerFilterInputByName(columnName) {
+    return this.renderer.headerFilterInput(columnName);
   }
 
   async fillTextInputModal(value) {
-    const backdrop = this.page.locator('#text-input-modal-backdrop');
-    await expect(backdrop).toBeVisible();
-    const input = backdrop.locator('#text-input-modal-field');
-    await input.fill(String(value ?? ''));
-    await backdrop.locator('#text-input-modal-ok').click();
-    await expect(backdrop).toBeHidden();
+    await this.textInputDialog.submit(value);
   }
 }
 

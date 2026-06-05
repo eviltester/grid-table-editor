@@ -10,21 +10,21 @@ test.describe('6. Export Options and Controls', () => {
       Array.from({ length: 12 }, (_, i) => 'Row-' + (i + 1))
     );
 
-    await appPage.importExportControls.setTextFromGrid();
-    await appPage.tabbedText.getOutputText();
+    await appPage.importExportWorkspace.setTextFromGrid();
+    await appPage.textPreviewEditor.getOutputText();
 
-    await appPage.tabbedText.togglePreviewEdit(true);
-    await appPage.tabbedText.expectPreviewEditLabelContains('Edit');
-    const previewText = await appPage.tabbedText.getOutputText();
+    await appPage.textPreviewEditor.togglePreviewEdit(true);
+    await appPage.textPreviewEditor.expectPreviewEditLabelContains('Edit');
+    const previewText = await appPage.textPreviewEditor.getOutputText();
     expect(previewText.length).toBeGreaterThan(0);
 
-    await appPage.tabbedText.copyButton.click();
+    await appPage.textPreviewEditor.copyButton.click();
     await expect
       .poll(async () => page.evaluate(() => navigator.clipboard.readText()))
       .toContain(previewText.split('\n')[0]);
 
-    await appPage.tabbedText.togglePreviewEdit(true);
-    await appPage.tabbedText.expectPreviewEditLabelContains('Preview');
+    await appPage.textPreviewEditor.togglePreviewEdit(true);
+    await appPage.textPreviewEditor.expectPreviewEditLabelContains('Preview');
 
     expectNoPageErrors(pageErrors);
   });

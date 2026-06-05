@@ -26,11 +26,11 @@ test.describe('7. Test Data Generation', () => {
     expect(values).toHaveLength(5);
     assertNoCommonErrorPatterns(values);
 
-    await appPage.tabbedText.selectFormat('CSV');
+    await appPage.textPreviewEditor.selectFormat('CSV');
     await appPage.testDataPanel.clickRefreshTextPreview();
 
-    await expect.poll(async () => appPage.tabbedText.getOutputText()).toContain('First Name');
-    await expect.poll(async () => appPage.tabbedText.getOutputText()).toContain(values[0]);
+    await expect.poll(async () => appPage.textPreviewEditor.getOutputText()).toContain('First Name');
+    await expect.poll(async () => appPage.textPreviewEditor.getOutputText()).toContain(values[0]);
 
     expectNoPageErrors(pageErrors);
   });

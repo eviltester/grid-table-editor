@@ -80,7 +80,7 @@ function renderImportExportWorkspaceStory(args) {
   component.setOptionsViewForFormatType();
 
   if (args.format && args.format !== 'csv') {
-    root.querySelector(`.type-select-action[data-type="${args.format}"]`)?.click();
+    component.setFileFormatType(args.format);
   }
 
   root.__storybookCleanup = () => {
@@ -138,10 +138,11 @@ export const Default = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
+    const outputPreview = canvas.getByRole('textbox', { name: 'Preview text editor' });
     await expect(canvas.getByRole('spinbutton', { name: 'Preview row count' })).toHaveValue(10);
     await userEvent.click(canvas.getByRole('button', { name: 'v Set Text From Grid v' }));
     await waitFor(() => {
-      expect(canvasElement.querySelector('#markdownarea')?.value?.length || 0).toBeGreaterThan(0);
+      expect(outputPreview.value).toContain('"First Name","Status"');
     });
     await userEvent.click(canvas.getByRole('link', { name: 'JSON' }));
     await waitFor(() => {
@@ -164,8 +165,9 @@ export const JsonPreview = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
+    const outputPreview = canvas.getByRole('textbox', { name: 'Preview text editor' });
     await waitFor(() => {
-      expect(canvasElement.querySelector('#markdownarea')?.value || '').toContain('{');
+      expect(outputPreview.value).toContain('"Ava"');
     });
     const asObjectCheckbox = canvas.getByRole('checkbox', { name: /as object/i });
     await userEvent.click(asObjectCheckbox);

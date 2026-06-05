@@ -22,3 +22,6 @@ testenv/
 .tmp
 .claude
 .pet-runs
+tmp
+experiments/graphbased/metadata
+experiments/graphbased/output

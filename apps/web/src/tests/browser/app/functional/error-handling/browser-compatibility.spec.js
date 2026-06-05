@@ -7,11 +7,11 @@ test.describe('9. Error Handling and Edge Cases', () => {
     const { appPage, pageErrors } = await openApp(page);
 
     await seedRows(appPage, ['Clip']);
-    await appPage.importExportControls.setTextFromGrid();
-    await appPage.tabbedText.copyButton.click();
+    await appPage.importExportWorkspace.setTextFromGrid();
+    await appPage.textPreviewEditor.copyButton.click();
     await expect.poll(async () => page.evaluate(() => navigator.clipboard.readText())).toContain('Clip');
 
-    const download = await appPage.importExportControls.clickDownloadAndWaitForEvent();
+    const download = await appPage.importExportWorkspace.clickDownloadAndWaitForEvent();
     expect(download.suggestedFilename().length).toBeGreaterThan(3);
 
     expectNoPageErrors(pageErrors);

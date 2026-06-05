@@ -234,8 +234,8 @@ Current status:
 
 - The app test-data panel `generateCount` field now uses `RowCountControl`.
 - `RowCountControl` has Storybook coverage and focused controller/view Jest coverage.
-- The generator `generateRowsCount` and `previewRowsCount` fields now use the shared `RowCountControl`.
-- The generator keeps its existing validation-first behavior by reusing the shared component without changing the row-count input IDs or page-level parsing contract.
+- The generator generate/preview row-count fields now use the shared `RowCountControl`.
+- Live generator behavior now reads those values through the mounted shared component API and visible row-count controls, while explicit `inputId` overrides remain available only for compatibility or multi-instance coverage.
 
 ### Phase 1: Small Shared Building Blocks
 
@@ -299,17 +299,18 @@ Phase 2 exit note:
 - [x] Add stories for empty schema, sample schema, validation errors, text mode, grid mode, command picker, and pairwise-capable enum schema.
 - [x] Migrate the app-page schema editor host adapter onto the shared component while preserving the existing schema field IDs and generation contract.
 - [x] Migrate the generator runtime schema editor from duplicated page/controller methods onto the shared component boundary.
-- [ ] Remove the now-redundant generator-specific schema rendering/event helpers after the generator runtime adopts the shared component.
+- [x] Remove the now-redundant generator-specific schema rendering/event helpers after the generator runtime adopts the shared component.
 
 Current status:
 
 - `SharedSchemaDefinition` now lives under `shared/schema-definition/` with a controller, view, and create-component factory.
 - The new component reuses the existing shared schema parsing, validation, row-editing, command-picker, drag/drop, and text-mode logic from `shared/test-data/schema/` instead of duplicating those rules.
 - The app test-data panel now mounts its schema editor through `SharedSchemaDefinition`, keeping the same DOM IDs so the rest of the app flow and browser tests continue to treat the schema surface as a black box.
-- The generator page now also mounts its live schema editor through `SharedSchemaDefinition`, while preserving the existing DOM IDs, row-level browser interactions, and text-mode generate/pairwise flows.
+- The generator page now also mounts its live schema editor through `SharedSchemaDefinition`, while preserving the page-level `#generatorSchemaSection` host contract, row-level browser interactions, and text-mode generate/pairwise flows.
 - Generator runtime adoption also moved the shared text-mode syncing, method-picker command selection, semantic-validation caret preservation, and pairwise-button visibility behavior onto the shared component path.
+- `SharedSchemaDefinition` no longer emits fixed child IDs by default. Shared consumers now bind through root-scoped schema hooks, while app/generator hosts can still opt into explicit child IDs only where a documented compatibility contract truly requires them.
 - Storybook now documents the shared component directly with empty, sample, validation, text-mode, command-picker, and pairwise-capable enum stories.
-- The next explicit Phase 3 step is deleting or renaming the remaining generator-specific schema rendering helpers that still sit underneath the shared component so the shared layer no longer looks generator-owned.
+- The old generator-specific schema wrapper layer is gone. Generator-specific schema behavior now lives only in explicit generator-owned support modules such as `generator/help/*` and `generator/schema-support/*`, rather than a parallel generator-owned rendering/event surface underneath the shared component.
 
 ### Phase 4: Generator Page Composition
 
@@ -428,7 +429,7 @@ Use this section as the follow-on backlog rather than adding a Phase 9. The goal
 
 ### Hardening 1: Compatibility Wrapper Cleanup
 
-- [x] Audit compatibility wrappers that still preserve old entry APIs, starting with `packages/core-ui/js/gui_components/data-grid-editor/tabulator/main-display-grid.js` and `packages/core-ui/js/gui_components/generator/controller/data-generator-page-controller.js`.
+- [x] Audit compatibility wrappers that still preserve old entry APIs, starting with the app main-grid bootstrap path and `packages/core-ui/js/gui_components/generator/controller/data-generator-page-controller.js`.
 - [x] Identify which wrapper exports are still consumed by app runtime, tests, Storybook, or package public exports.
 - [x] Remove wrappers that have no external consumers, or turn them into intentionally documented public facades when they still provide useful compatibility.
 - [x] Update imports to point at the component-oriented APIs where the compatibility layer is no longer needed.
@@ -438,9 +439,9 @@ Current status:
 
 - The empty generator controller wrapper has been removed. `packages/core-ui/js/gui_components/generator/index.js` now exports `DataGeneratorPage` and related schema helpers directly from `generator/runtime/data-generator-page-runtime.js`.
 - The unused `DataGeneratorPageRuntime` alias was removed after confirming there were no internal consumers.
-- `packages/core-ui/js/gui_components/data-grid-editor/tabulator/main-display-grid.js` remains intentionally as an app-runtime compatibility facade because `app/page/app-page-runtime.js` still accepts an `ExtendedDataGridClass` and `data-grid-editor/main-display-grid.js` still selects between grid engines.
-- The app page Storybook story now uses `createDataGridComponent(...)` directly instead of importing the Tabulator `ExtendedDataGrid` facade.
-- Focused regression coverage remains in `tabulator-main-display-grid.test.js` and `main-display-grid-selection.test.js` to prove the remaining facade delegates to the componentized grid and the grid-engine selector still chooses the correct implementation.
+- The remaining app-side main-grid compatibility facade has been removed. The app runtime and app page Storybook story now both mount `createDataGridComponent(...)` directly while injecting the supported Tabulator services explicitly.
+- The hidden AG Grid runtime selector path has been removed, along with its AG Grid runtime/test files, after confirming there was no real product-facing AG Grid entry point beyond the old compatibility override path.
+- Focused regression coverage remains in the app bootstrap tests, `DataGridComponent` tests, and the simplified grid-library-loader tests to prove the direct runtime bootstrap contract.
 
 ### Hardening 2: Storybook Interaction Tightening
 
@@ -481,7 +482,8 @@ Current status:
 
 - `packages/core-ui/src/index.js` remains intentionally narrow: it exports only `bootstrapApp` and `bootstrapGeneratorPage`.
 - The old timed-error compatibility exports were removed from `shared/timed-error-display.js`; consumers now use `createTimedStatusPresenter` and `TimedStatusDisplay`.
-- The remaining old `enableTestDataGenerationInterface` name is documented as a legacy alias for downstream compatibility rather than an internal API.
+- The old `enableTestDataGenerationInterface` alias has been removed; the app test-data entry surface now exposes only `mountTestDataGenerationPanel`.
+- The old `createTestDataGridControl` helper export has also been removed; Storybook and interaction harnesses now use `createTestDataGenerationPanelManager(...)` for the remaining non-runtime panel host path.
 
 ### Hardening 5: Public API Naming Pass
 
@@ -493,8 +495,8 @@ Current status:
 Current status:
 
 - `mountTestDataGenerationPanel` is the component-oriented app test-data panel mount API.
-- Internal app runtime, focused app harnesses, and compatibility tests now use `mountTestDataGenerationPanel`.
-- `enableTestDataGenerationInterface` remains only as a marked legacy alias in the app test-data-grid barrel/controller and a regression test proves it maps to the newer mount API.
+- Internal app runtime uses `mountTestDataGenerationPanel`, while Storybook, focused app harnesses, and the remaining controller contract tests now use `createTestDataGenerationPanelManager(...)` for the non-runtime mounting helper path.
+- The old `enableTestDataGenerationInterface` alias has been removed from the app test-data-grid barrel/controller after confirming there were no live runtime consumers left in the repo.
 
 ### Hardening 6: Component Selectors and IDs
 

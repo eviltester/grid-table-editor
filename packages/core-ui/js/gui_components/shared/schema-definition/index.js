@@ -36,6 +36,9 @@ function createSharedSchemaDefinitionComponent({ root, props = {}, callbacks = {
     insertSampleSchema() {
       return controller.insertSampleSchema();
     },
+    parseTextToRows(schemaText) {
+      return controller.parseTextToRows(schemaText);
+    },
     syncFromText(options) {
       return controller.syncFromText(options);
     },
@@ -56,6 +59,9 @@ function createSharedSchemaDefinitionComponent({ root, props = {}, callbacks = {
     },
     moveRowAt(index, direction) {
       return controller.moveRowAt(index, direction);
+    },
+    moveRowToIndex(fromIndex, toIndex) {
+      return controller.moveRowToIndex(fromIndex, toIndex);
     },
     render() {
       return controller.render();

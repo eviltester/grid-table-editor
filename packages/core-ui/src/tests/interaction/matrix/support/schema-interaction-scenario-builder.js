@@ -136,6 +136,27 @@ const DOMAIN_PARAM_OVERRIDES = {
 const NON_EXECUTABLE_RUNTIME_COMMANDS = new Set(['internet.ipv4', 'internet.ipv6']);
 const DOMAIN_SCENARIO_EXECUTION_CACHE = new Map();
 const FAKER_SCENARIO_EXECUTION_CACHE = new Map();
+const UI_REPRESENTATIVE_SCENARIO_IDS = new Set([
+  'custom-enum-base',
+  'custom-enum-pairwise',
+  'custom-literal-base',
+  'custom-literal-empty',
+  'custom-regex-base',
+  'custom-regex-empty',
+  'faker-helpers-arrayElement-base',
+  'faker-helpers-fake-base',
+  'faker-helpers-fromRegExp-example-1',
+  'faker-helpers-mustache-base',
+  'faker-helpers-uniqueArray-example-1',
+  'faker-helpers-weightedArrayElement-example-1',
+  'domain-airline-seat-example-1',
+  'domain-commerce-price-example-1',
+  'domain-date-birthdate-example-1',
+  'domain-internet-password-example-1',
+  'domain-literal-value-example-1',
+  'domain-string-counterString-example-1',
+  'domain-string-fromCharacters-base',
+]);
 const DOMAIN_ARG_COMPANION_OVERRIDES = {
   'date.between': {
     from: { to: '1609372800000' },
@@ -854,25 +875,7 @@ function buildRuntimeInteractionScenarios() {
 }
 
 function buildUiInteractionScenarios() {
-  return buildRuntimeInteractionScenarios().filter((scenario) => {
-    if (scenario.origins.includes('custom') || scenario.origins.includes('example')) {
-      return true;
-    }
-    const fakerParams =
-      scenario.sourceType === SOURCE_TYPE_FAKER ? getFakerCommandHelp(scenario.command)?.params || [] : [];
-    const domainArgs =
-      scenario.sourceType === SOURCE_TYPE_DOMAIN ? getDomainCommandHelp(scenario.command)?.args || [] : [];
-    if (scenario.origins.includes('base') && fakerParams.some((param) => param.optional === false)) {
-      return true;
-    }
-    if (scenario.origins.includes('base') && domainArgs.some((arg) => arg.required === true)) {
-      return true;
-    }
-    if (scenario.expectStructuredSerialization && scenario.origins.includes('base')) {
-      return true;
-    }
-    return false;
-  });
+  return buildRuntimeInteractionScenarios().filter((scenario) => UI_REPRESENTATIVE_SCENARIO_IDS.has(scenario.id));
 }
 
 function buildScenarioCoverageSummary() {

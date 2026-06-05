@@ -46,12 +46,12 @@ Current intentional public selector contracts:
 
 - App host startup and feature roots: `#initial-load`, `#main-grid-view`, `#import-export-controls`, and `#testDataGeneratorContainer`.
 - Generator host startup and feature roots: `#generator-initial-load`, `#generator-page-root`, and `#generatorSchemaSection`.
-- App embedded schema host contract: `#testDataSchemaRows`, `#testDataSchemaTextContainer`, `#testDataSchemaText`, `#testDataAddSchemaRowButton`, `#testDataSchemaModeToggleButton`, `#testDataSchemaModeHelpIcon`, and `#testdata-schema-error`.
-- Generator schema host contract: `#generatorSchemaRows`, `#generatorSchemaTextContainer`, `#generatorSchemaText`, `#addSchemaRowButton`, `#schemaModeToggleButton`, `#schemaModeHelpIcon`, and `#generatorSchemaErrorText`.
+- No app-specific embedded schema child-ID contract remains in the live app path.
+  The embedded app schema now uses rooted shared-schema hooks for rows, textbox, schema error surface, add button, mode toggle, mode help, and text-container behavior instead of app-specific child IDs.
 - Third-party grid anchors that remain page-level integration points: `#myGrid` and `#testDataSchemaGrid` when the host is exercising Tabulator-backed grids.
 - Document-level dialog overlays: `#confirm-modal-backdrop`, `#confirm-modal-ok`, `#confirm-modal-cancel`, `#text-input-modal-backdrop`, `#text-input-modal-field`, `#text-input-modal-ok`, and `#text-input-modal-cancel`.
 
-These are not reusable-component internal selectors. When possible, browser tests should still reach them through page objects or service abstractions rather than using the raw ID in every spec.
+These are not reusable-component internal selectors. Generator shared-schema internals now use the root-scoped shared hooks under `#generatorSchemaSection` instead of child IDs for rows/text/error. When possible, browser tests should still reach page contracts through page objects or service abstractions rather than using the raw ID in every spec.
 
 ## Storybook
 
@@ -68,7 +68,7 @@ Storybook is a review, documentation, and lightweight interaction-example layer.
 - When practical, presenter stories should include a destroy-and-remount example so reviewers can confirm lifecycle safety without reading Jest tests first.
 - Storybook cleanup is centralized in `.storybook/preview.js`; stories may expose `root.__storybookCleanup`, and the global decorator will run that teardown before the next story and remove common body-level artifacts such as modals, method-picker overlays, tooltip poppers, and inline help containers.
 - Prefer returning the story root directly instead of manually appending it to `document.body` unless the component behavior genuinely depends on top-level overlays or body-scoped positioning.
-- Current intentional body-aware Storybook exception is the app page bootstrap story, because it still exercises document-scoped page/bootstrap behavior rather than a purely root-scoped component contract.
+- Current intentional body-aware Storybook exception is the app page bootstrap story, because it still exercises document-scoped page/bootstrap behavior rather than a purely root-scoped component contract. Document-level overlay stories and interactions are also allowed to validate modal or method-picker behavior.
 
 ## Format Options
 
@@ -93,12 +93,74 @@ Compatibility wrappers and legacy aliases should be rare. Keep them only when th
 
 Current intentional compatibility examples:
 
-- `packages/core-ui/js/gui_components/data-grid-editor/tabulator/main-display-grid.js` remains as a grid-runtime facade around the componentized Tabulator grid.
-- `packages/core-ui/js/gui_components/data-grid-editor/main-display-grid.js` remains as the grid-engine selector facade, and `packages/core-ui/js/gui_components/data-grid-editor/ag-grid/main-display-grid.js` remains as the legacy AG Grid implementation while engine selection is still supported.
-- `enableTestDataGenerationInterface` remains as a legacy alias for `mountTestDataGenerationPanel`; internal app code uses the newer component-oriented name.
+- No named legacy compatibility aliases currently remain in the app test-data entry surface. Runtime/public code uses `mountTestDataGenerationPanel` directly, and the remaining non-runtime helper factory now uses the panel-oriented name `createTestDataGenerationPanelManager(...)` instead of the older `createTestDataGridControl(...)`.
 
-Current intentional browser-service and legacy helper exceptions:
+## Accepted Adapter Inventory
+
+These modules are intentionally kept as adapters or service-like helpers rather than full `Controller + View + createComponent` features. They are acceptable only because they stay narrow, receive injected browser dependencies where practical, and do not own feature workflow state.
+
+### Browser and file adapters
+
+- `packages/core-ui/js/gui_components/shared/download.js`
+  - Browser download adapter around `Blob`, `URL.createObjectURL`, and a temporary anchor element.
+  - Acceptable because it performs only download transport and accepts injected `documentObj`, `URLObj`, and `BlobCtor`.
+- `packages/core-ui/js/gui_components/app/import-export-adapters/file-read-service.js`
+  - FileReader adapter used by import/export flows.
+  - Acceptable because it only reads a file into text, emits progress/load/error callbacks, and does not mutate UI.
+- `packages/core-ui/js/gui_components/app/import-export-workspace/import-export-workspace-services.js`
+  - `createClipboardService(...)`, `createDownloadService(...)`, and `createYieldToUi(...)` are low-level browser adapters used by the workspace controller/service layer.
+  - Acceptable because they isolate `execCommand('copy')`, downloads, and browser scheduling from the feature controller without owning format/import/export state.
+- `packages/core-ui/js/gui_components/app/drag-drop-control.js`
+  - DOM drag/drop adapter that attaches drop-zone listeners and forwards the first dropped file.
+  - Acceptable because it owns only element event binding and CSS state for a drop zone, not import workflow decisions.
+- `packages/core-ui/js/gui_components/app/import-export-adapters/file-import-bindings-adapter.js`
+  - Small DOM binding adapter for the import file input and drop zone.
+  - Acceptable because it only wires root-scoped DOM events to `onFileSelected(...)` and delegates actual drag/drop behavior to `DragDropControl`.
+
+### Timers, startup, and document-level service helpers
+
+- `packages/core-ui/js/gui_components/shared/unref-timeout.js`
+  - Tiny timer adapter that calls `unref()` when supported.
+  - Acceptable because it only wraps timer creation and does not manage UI state.
+- `packages/core-ui/js/gui_components/shared/page-startup-loading-status.js`
+  - Page bootstrap helper for the initial loading/failure status surface.
+  - Acceptable because it is a page-runtime presenter helper, not a reusable feature component, and it delegates visible rendering to status presenter components.
+- `packages/core-ui/js/gui_components/shared/test-data/ui/method-picker-modal.js`
+  - Document-level modal/overlay helper for the schema method picker.
+  - Acceptable because it is an explicitly document-scoped service-style helper with injected `documentObj`/`windowObj`, not a reusable embedded component.
+
+### Grid and third-party adapters
+
+- `packages/core-ui/js/gui_components/data-grid-editor/grid-library-loader.js`
+  - Page-runtime adapter for injecting the supported Tabulator script/style assets into `document.head`.
+  - Acceptable because grid-library loading is a top-level bootstrap concern rather than feature UI state.
+- `packages/core-ui/js/gui_components/data-grid-editor/tabulator-grid-adapter.js`
+  - Tabulator integration adapter used by the componentized data-grid feature.
+  - Acceptable because it isolates the third-party widget lifecycle and scheduling hooks behind a component-facing API.
+
+### Component-backed shared services
+
+- `packages/core-ui/js/gui_components/shared/dialog-services/confirm-dialog-service.js`
+  - Shared confirm dialog service backed by a dialog component instance.
+  - Acceptable because it exposes a narrow promise API and owns only service lifecycle.
+- `packages/core-ui/js/gui_components/shared/dialog-services/text-input-dialog-service.js`
+  - Shared text-input dialog service backed by a dialog component instance.
+  - Acceptable because it mirrors the confirm-service boundary: narrow API, explicit lifecycle, no feature-owned state.
+- `packages/core-ui/js/help/help-tooltips.js`
+  - Shared help-tooltip bootstrap/service layer.
+  - Acceptable because `createHelpTooltipService(...)` now scopes tooltip decoration and teardown to an explicit root; only `initHelpTooltips(...)` remains page-bootstrap oriented.
+- `packages/core-ui/js/gui_components/shared/theme-toggle.js`
+  - Shared page-shell theme-toggle feature with a component-backed API plus bootstrap compatibility wrapper.
+  - Acceptable because page bootstraps call a narrow component/service boundary instead of mutating theme UI inline.
+
+Modules in this section should stay narrow. If one of them starts coordinating feature rules, mutating sibling UI, or depending on broad document scans when a root/document is already injected, it should be promoted into a real component or feature controller instead of staying an adapter.
+
+Current intentional browser-service and page-entry exceptions:
 
 - `packages/core-ui/js/gui_components/app/test-data-grid/controller/test-data-grid-controller.js` is still a page-entry boundary, but it now resolves its document through the shared helper and safely no-ops when no browser-owned mount root exists.
-- `packages/core-ui/js/gui_components/shared/download.js` remains a browser download adapter, but it now supports injected DOM/browser services and safely no-ops when those services are unavailable.
-- `packages/core-ui/js/gui_components/data-grid-editor/tabulator/customHeader-tabulator.js` and the AG Grid header/editor helpers remain grid-integration adapters rather than reusable component internals, but they now create DOM from injected or owner-document sources instead of global `document`.
+
+## Grid Support Policy
+
+- The supported runtime grid engine is now Tabulator only.
+- `packages/core-ui/js/gui_components/app/page/app-page-runtime.js` mounts `createDataGridComponent(...)` directly and injects the supported Tabulator services explicitly.
+- `packages/core-ui/js/gui_components/data-grid-editor/grid-library-loader.js` now loads only the Tabulator runtime assets.

@@ -27,11 +27,27 @@ function createImportExportWorkspaceComponent({ root, props = {}, services = {},
   const requestConfirm =
     typeof services.requestConfirm === 'function' ? services.requestConfirm : confirmDialogService.requestConfirm;
   const clipboardService = services.clipboardService || createClipboardService({ documentObj: resolvedDocumentObj });
-  const downloadService = services.downloadService || createDownloadService();
-  const fileReadService = services.fileReadService || createFileReadService();
+  const downloadService =
+    services.downloadService ||
+    createDownloadService({
+      documentObj: resolvedDocumentObj,
+      URLObj: resolvedWindowObj?.URL,
+      BlobCtor: resolvedWindowObj?.Blob,
+    });
+  const fileReadService =
+    services.fileReadService ||
+    createFileReadService({
+      FileReaderCtor: resolvedWindowObj?.FileReader,
+    });
   const scheduleTimeoutFn = services.scheduleTimeoutFn || scheduleTimeout;
   const yieldToUi =
-    services.yieldToUi || createYieldToUi({ documentObj: resolvedDocumentObj, windowObj: resolvedWindowObj });
+    services.yieldToUi ||
+    createYieldToUi({
+      documentObj: resolvedDocumentObj,
+      windowObj: resolvedWindowObj,
+      requestAnimationFrameFn: resolvedWindowObj?.requestAnimationFrame?.bind(resolvedWindowObj),
+      setTimeoutFn: resolvedWindowObj?.setTimeout?.bind(resolvedWindowObj),
+    });
   let importer = services.importer || null;
   let exporter = services.exporter || null;
   let gridChangeUnsubscribe = null;

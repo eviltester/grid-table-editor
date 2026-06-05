@@ -1,4 +1,4 @@
-import { describe, expect, jest, test } from '@jest/globals';
+import { afterEach, beforeEach, describe, expect, jest, test } from '@jest/globals';
 import { JSDOM } from 'jsdom';
 import { createGeneratorControlsComponent } from '../../../js/gui_components/generator/controls/index.js';
 
@@ -14,6 +14,38 @@ function createFormatGroups() {
 }
 
 describe('GeneratorControlsView', () => {
+  function getOutputFormatSelect(documentObj) {
+    return documentObj.querySelector('[data-role="generator-output-format-select"]');
+  }
+
+  function getGenerateDataButton(documentObj) {
+    return documentObj.querySelector('[data-role="generator-generate-data-button"]');
+  }
+
+  function getGeneratePairwiseButton(documentObj) {
+    return documentObj.querySelector('[data-role="generator-generate-pairwise-button"]');
+  }
+
+  function getGeneratePairwiseButtonWrapper(documentObj) {
+    return documentObj.querySelector('[data-role="generator-pairwise-button-wrapper"]');
+  }
+
+  function getStatusText(documentObj) {
+    return documentObj.querySelector('[data-role="generator-status-text"]');
+  }
+
+  function getGenerateRowsInput(documentObj) {
+    return documentObj.querySelector('[data-role="generate-rows-count-control"] input');
+  }
+
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   test('renders controls, updates format options, and forwards actions', () => {
     const dom = new JSDOM('<!doctype html><html><body><div id="root"></div></body></html>');
     global.document = dom.window.document;
@@ -23,8 +55,15 @@ describe('GeneratorControlsView', () => {
     const onGenerateData = jest.fn();
     const onGeneratePairwise = jest.fn();
     const statusPresenter = { setStatus: jest.fn(), clear: jest.fn(), scheduleClear: jest.fn(), destroy: jest.fn() };
-    const loadingStatusPresenter = { setStatus: jest.fn(), destroy: jest.fn() };
-    const rowCountControl = { destroy: jest.fn() };
+    const loadingStatusPresenter = { setStatus: jest.fn(), clear: jest.fn(), destroy: jest.fn() };
+    const rowCountControl = {
+      destroy: jest.fn(),
+      getParsedValue: jest.fn(() => ({
+        value: 1000,
+        valid: true,
+        errors: [],
+      })),
+    };
     const formatOptionsPanel = {
       update: jest.fn(),
       destroy: jest.fn(),
@@ -39,14 +78,20 @@ describe('GeneratorControlsView', () => {
         selectedFormat: 'csv',
         currentOptions: { options: { header: true } },
         pairwiseVisible: false,
+        generationButtonsBusy: false,
       },
       services: {
-        createRowCountControl: jest.fn(() => rowCountControl),
+        createRowCountControl: jest.fn(({ root, props }) => {
+          root.innerHTML = `<input${props.inputId ? ` id="${props.inputId}"` : ''} min="${props.min}" value="${props.value}" />`;
+          return rowCountControl;
+        }),
         createFormatOptionsPanel: jest.fn(() => formatOptionsPanel),
         createStatusPresenter: jest.fn(() => statusPresenter),
         createLoadingStatusPresenter: jest.fn(() => loadingStatusPresenter),
         getOutputFormatGroups: createFormatGroups,
         canExportFormat: (type) => type !== 'python',
+        getCurrentOptionsForFormat: (type) =>
+          type === 'json' ? { options: { prettyPrint: true } } : { options: { header: true } },
         updateHelpHints,
       },
       callbacks: {
@@ -56,19 +101,46 @@ describe('GeneratorControlsView', () => {
       },
     });
 
-    const outputSelect = dom.window.document.getElementById('generatorOutputFormat');
+    const outputSelect = getOutputFormatSelect(dom.window.document);
     expect(outputSelect).not.toBeNull();
     expect(Array.from(outputSelect.querySelectorAll('option')).map((option) => option.value)).toEqual([
       'csv',
       'json',
       'jest',
     ]);
-    const helpButtons = Array.from(dom.window.document.querySelectorAll('.generator-button-with-help .helpicon'));
+    expect(dom.window.document.querySelector('.shared-generator-controls')).not.toBeNull();
+    expect(dom.window.document.querySelector('.shared-generator-controls-head')).not.toBeNull();
+    expect(dom.window.document.querySelector('.shared-generator-options-wrapper')).not.toBeNull();
+    expect(dom.window.document.querySelector('.shared-generator-options-panel')).not.toBeNull();
+    expect(dom.window.document.querySelector('.shared-generator-status-text')).not.toBeNull();
+    expect(dom.window.document.querySelector('[data-role="generator-output-format-select"]')).not.toBeNull();
+    expect(dom.window.document.querySelector('[data-role="generator-generate-data-button"]')).not.toBeNull();
+    expect(dom.window.document.querySelector('[data-role="generator-generate-pairwise-button"]')).not.toBeNull();
+    expect(dom.window.document.querySelector('[data-role="generator-pairwise-button-wrapper"]')).not.toBeNull();
+    expect(dom.window.document.querySelector('[data-role="generator-status-text"]')).not.toBeNull();
+    const helpButtons = Array.from(dom.window.document.querySelectorAll('.shared-button-with-help .helpicon'));
     expect(helpButtons).toHaveLength(2);
     expect(helpButtons.every((element) => element.tagName === 'BUTTON')).toBe(true);
     expect(helpButtons.every((element) => element.getAttribute('type') === 'button')).toBe(true);
-    expect(dom.window.document.querySelector('#generateDataButton svg.generator-file-icon')).not.toBeNull();
-    expect(dom.window.document.querySelector('#generateAllPairsButton svg.generator-file-icon')).not.toBeNull();
+    expect(helpButtons.map((element) => element.getAttribute('data-help'))).toEqual([
+      'shared-generator-generate-data-help',
+      'shared-generator-pairwise-help',
+    ]);
+    expect(helpButtons.every((element) => element.hasAttribute('data-help-text') === false)).toBe(true);
+    expect(getGenerateDataButton(dom.window.document).querySelector('svg.shared-file-action-icon')).not.toBeNull();
+    expect(getGeneratePairwiseButton(dom.window.document).querySelector('svg.shared-file-action-icon')).not.toBeNull();
+    expect(getGenerateRowsInput(dom.window.document).id).toBe('');
+    expect(outputSelect.id).toBe('');
+    expect(getGenerateDataButton(dom.window.document).id).toBe('');
+    expect(getGeneratePairwiseButtonWrapper(dom.window.document).id).toBe('');
+    expect(getGeneratePairwiseButton(dom.window.document).id).toBe('');
+    expect(getStatusText(dom.window.document).id).toBe('');
+    expect(component.getGenerateRowCount()).toEqual({
+      value: 1000,
+      valid: true,
+      errors: [],
+    });
+    expect(rowCountControl.getParsedValue).toHaveBeenCalledTimes(1);
     expect(formatOptionsPanel.update).toHaveBeenCalledWith({
       selectedFormat: 'csv',
       currentOptions: { options: { header: true } },
@@ -78,9 +150,13 @@ describe('GeneratorControlsView', () => {
     outputSelect.value = 'json';
     outputSelect.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
     expect(onFormatChanged).toHaveBeenCalledWith('json');
+    expect(formatOptionsPanel.update).toHaveBeenLastCalledWith({
+      selectedFormat: 'json',
+      currentOptions: { options: { prettyPrint: true } },
+    });
 
-    dom.window.document.getElementById('generateDataButton').click();
-    dom.window.document.getElementById('generateAllPairsButton').click();
+    getGenerateDataButton(dom.window.document).click();
+    getGeneratePairwiseButton(dom.window.document).click();
     expect(onGenerateData).toHaveBeenCalled();
     expect(onGeneratePairwise).toHaveBeenCalled();
 
@@ -90,19 +166,49 @@ describe('GeneratorControlsView', () => {
       pairwiseVisible: true,
     });
 
-    expect(dom.window.document.getElementById('generateAllPairsButtonWrapper').style.display).toBe('inline-flex');
+    expect(getGeneratePairwiseButtonWrapper(dom.window.document).style.display).toBe('inline-flex');
+    component.setPairwiseVisible(false);
+    expect(getGeneratePairwiseButtonWrapper(dom.window.document).style.display).toBe('none');
+    component.setPairwiseVisible(true);
+    expect(getGeneratePairwiseButtonWrapper(dom.window.document).style.display).toBe('inline-flex');
     component.setGenerationButtonsBusy(true);
-    expect(dom.window.document.getElementById('generateDataButton').disabled).toBe(true);
+    expect(getGenerateDataButton(dom.window.document).disabled).toBe(true);
+    expect(component.getState().generationButtonsBusy).toBe(true);
+    component.setGenerationButtonsBusy(false);
+    expect(getGenerateDataButton(dom.window.document).disabled).toBe(false);
+    expect(component.getState().generationButtonsBusy).toBe(false);
 
     component.setStatus('Applied.', { severity: 'info' });
+    expect(component.getState()).toEqual(
+      expect.objectContaining({
+        statusMessage: 'Applied.',
+        statusOptions: { severity: 'info' },
+        loadingStatusMessage: '',
+      })
+    );
     component.showLoadingStatus('Generating...');
+    expect(component.getState()).toEqual(
+      expect.objectContaining({
+        statusMessage: '',
+        statusOptions: {},
+        loadingStatusMessage: 'Generating...',
+      })
+    );
     component.scheduleClearStatus(900);
+    jest.advanceTimersByTime(900);
+    expect(component.getState()).toEqual(
+      expect.objectContaining({
+        statusMessage: '',
+        statusOptions: {},
+        loadingStatusMessage: '',
+      })
+    );
     component.clearStatus();
     expect(statusPresenter.setStatus).toHaveBeenCalledWith('Applied.', { severity: 'info' });
     expect(loadingStatusPresenter.setStatus).toHaveBeenCalledWith('Generating...');
     expect(statusPresenter.scheduleClear).toHaveBeenCalledWith(900);
     expect(statusPresenter.clear).toHaveBeenCalled();
-    expect(updateHelpHints).toHaveBeenCalledTimes(3);
+    expect(updateHelpHints).toHaveBeenCalledTimes(7);
 
     component.destroy();
     expect(formatOptionsPanel.destroy).toHaveBeenCalled();
@@ -127,6 +233,7 @@ describe('GeneratorControlsView', () => {
           selectedFormat: 'csv',
           currentOptions: { options: {} },
           pairwiseVisible: false,
+          generationButtonsBusy: false,
         },
         services: {
           createRowCountControl: jest.fn(() => ({ destroy: jest.fn() })),
@@ -137,18 +244,88 @@ describe('GeneratorControlsView', () => {
             scheduleClear: jest.fn(),
             destroy: jest.fn(),
           })),
-          createLoadingStatusPresenter: jest.fn(() => ({ setStatus: jest.fn(), destroy: jest.fn() })),
+          createLoadingStatusPresenter: jest.fn(() => ({
+            setStatus: jest.fn(),
+            clear: jest.fn(),
+            destroy: jest.fn(),
+          })),
           getOutputFormatGroups: createFormatGroups,
           canExportFormat: () => true,
           updateHelpHints: jest.fn(),
         },
       });
 
-      expect(dom.window.document.getElementById('generatorOutputFormat')).not.toBeNull();
+      expect(getOutputFormatSelect(dom.window.document)).not.toBeNull();
       component.destroy();
     } finally {
       global.document = originalDocument;
       global.window = originalWindow;
+      dom.window.close();
+    }
+  });
+
+  test('uses injected timer callbacks for scheduled status clearing instead of ambient globals', () => {
+    const dom = new JSDOM('<!doctype html><html><body><div id="root"></div></body></html>');
+    global.document = dom.window.document;
+    global.window = dom.window;
+
+    const statusPresenter = { setStatus: jest.fn(), clear: jest.fn(), scheduleClear: jest.fn(), destroy: jest.fn() };
+    const loadingStatusPresenter = { setStatus: jest.fn(), clear: jest.fn(), destroy: jest.fn() };
+    const setTimeoutFn = jest.fn((callback) => {
+      callback();
+      return 123;
+    });
+    const clearTimeoutFn = jest.fn();
+
+    const originalSetTimeout = global.setTimeout;
+    const originalClearTimeout = global.clearTimeout;
+    global.setTimeout = jest.fn(() => {
+      throw new Error('ambient setTimeout should not be used');
+    });
+    global.clearTimeout = jest.fn(() => {
+      throw new Error('ambient clearTimeout should not be used');
+    });
+
+    try {
+      const component = createGeneratorControlsComponent({
+        root: dom.window.document.getElementById('root'),
+        documentObj: dom.window.document,
+        props: {
+          selectedFormat: 'csv',
+          currentOptions: { options: {} },
+          pairwiseVisible: false,
+          generationButtonsBusy: false,
+        },
+        services: {
+          createRowCountControl: jest.fn(() => ({ destroy: jest.fn() })),
+          createFormatOptionsPanel: jest.fn(() => ({ update: jest.fn(), destroy: jest.fn() })),
+          createStatusPresenter: jest.fn(() => statusPresenter),
+          createLoadingStatusPresenter: jest.fn(() => loadingStatusPresenter),
+          getOutputFormatGroups: createFormatGroups,
+          canExportFormat: () => true,
+          updateHelpHints: jest.fn(),
+          setTimeoutFn,
+          clearTimeoutFn,
+        },
+      });
+
+      component.setStatus('Applied');
+      component.scheduleClearStatus(900);
+
+      expect(statusPresenter.scheduleClear).toHaveBeenCalledWith(900);
+      expect(setTimeoutFn).toHaveBeenCalledWith(expect.any(Function), 900);
+      expect(clearTimeoutFn).not.toHaveBeenCalled();
+      expect(component.getState()).toEqual(
+        expect.objectContaining({
+          statusMessage: '',
+          loadingStatusMessage: '',
+        })
+      );
+
+      component.destroy();
+    } finally {
+      global.setTimeout = originalSetTimeout;
+      global.clearTimeout = originalClearTimeout;
       dom.window.close();
     }
   });
@@ -172,7 +349,11 @@ describe('GeneratorControlsView', () => {
         scheduleClear: jest.fn(),
         destroy: jest.fn(),
       })),
-      createLoadingStatusPresenter: jest.fn(() => ({ setStatus: jest.fn(), destroy: jest.fn() })),
+      createLoadingStatusPresenter: jest.fn(() => ({
+        setStatus: jest.fn(),
+        clear: jest.fn(),
+        destroy: jest.fn(),
+      })),
       getOutputFormatGroups: createFormatGroups,
       canExportFormat: () => true,
       updateHelpHints: jest.fn(),
@@ -183,6 +364,7 @@ describe('GeneratorControlsView', () => {
       documentObj: dom.window.document,
       props: {
         selectedFormat: 'csv',
+        generationButtonsBusy: false,
         ids: {
           outputFormatSelect: 'generatorOutputFormatA',
           generateDataButton: 'generateDataButtonA',
@@ -204,6 +386,7 @@ describe('GeneratorControlsView', () => {
       documentObj: dom.window.document,
       props: {
         selectedFormat: 'json',
+        generationButtonsBusy: false,
         ids: {
           outputFormatSelect: 'generatorOutputFormatB',
           generateDataButton: 'generateDataButtonB',
@@ -236,6 +419,220 @@ describe('GeneratorControlsView', () => {
 
     componentA.destroy();
     componentB.destroy();
+    dom.window.close();
+  });
+
+  test('exposes parsed generate row count through the component API', () => {
+    const dom = new JSDOM('<!doctype html><html><body><div id="root"></div></body></html>');
+    global.document = dom.window.document;
+    global.window = dom.window;
+
+    const component = createGeneratorControlsComponent({
+      root: dom.window.document.getElementById('root'),
+      documentObj: dom.window.document,
+      props: {
+        selectedFormat: 'csv',
+        currentOptions: { options: {} },
+        pairwiseVisible: false,
+        generationButtonsBusy: false,
+      },
+      services: {
+        createFormatOptionsPanel: jest.fn(() => ({ update: jest.fn(), destroy: jest.fn() })),
+        createStatusPresenter: jest.fn(() => ({
+          setStatus: jest.fn(),
+          clear: jest.fn(),
+          scheduleClear: jest.fn(),
+          destroy: jest.fn(),
+        })),
+        createLoadingStatusPresenter: jest.fn(() => ({
+          setStatus: jest.fn(),
+          clear: jest.fn(),
+          destroy: jest.fn(),
+        })),
+        getOutputFormatGroups: createFormatGroups,
+        canExportFormat: () => true,
+        updateHelpHints: jest.fn(),
+      },
+    });
+
+    const rowCountInput = getGenerateRowsInput(dom.window.document);
+    rowCountInput.value = 'twelve';
+    rowCountInput.dispatchEvent(new dom.window.Event('input', { bubbles: true }));
+
+    expect(component.getGenerateRowCount()).toEqual({
+      value: 0,
+      valid: false,
+      errors: ['Generate Rows must be a number greater than or equal to 0.'],
+    });
+
+    component.destroy();
+    dom.window.close();
+  });
+
+  test('reads generate row count only through the mounted row-count component API', () => {
+    const dom = new JSDOM('<!doctype html><html><body><div id="root"></div></body></html>');
+    global.document = dom.window.document;
+    global.window = dom.window;
+
+    const rowCountControl = {
+      destroy: jest.fn(),
+      getParsedValue: jest.fn(() => ({
+        value: 42,
+        valid: true,
+        errors: [],
+      })),
+    };
+
+    const component = createGeneratorControlsComponent({
+      root: dom.window.document.getElementById('root'),
+      documentObj: dom.window.document,
+      props: {
+        selectedFormat: 'csv',
+        currentOptions: { options: {} },
+        pairwiseVisible: false,
+        generationButtonsBusy: false,
+      },
+      services: {
+        createRowCountControl: jest.fn(() => rowCountControl),
+        createFormatOptionsPanel: jest.fn(() => ({ update: jest.fn(), destroy: jest.fn() })),
+        createStatusPresenter: jest.fn(() => ({
+          setStatus: jest.fn(),
+          clear: jest.fn(),
+          scheduleClear: jest.fn(),
+          destroy: jest.fn(),
+        })),
+        createLoadingStatusPresenter: jest.fn(() => ({
+          setStatus: jest.fn(),
+          clear: jest.fn(),
+          destroy: jest.fn(),
+        })),
+        getOutputFormatGroups: createFormatGroups,
+        canExportFormat: () => true,
+        updateHelpHints: jest.fn(),
+      },
+    });
+
+    expect(component.getGenerateRowCount()).toEqual({
+      value: 42,
+      valid: true,
+      errors: [],
+    });
+    expect(rowCountControl.getParsedValue).toHaveBeenCalledTimes(1);
+    expect(getGenerateRowsInput(dom.window.document)).toBeNull();
+
+    component.destroy();
+    dom.window.close();
+  });
+
+  test('creates status presenters from the rooted generator status surface instead of page-global id lookup', () => {
+    const dom = new JSDOM('<!doctype html><html><body><div id="root"></div></body></html>');
+    global.document = dom.window.document;
+    global.window = dom.window;
+
+    const createStatusPresenter = jest.fn(() => ({
+      setStatus: jest.fn(),
+      clear: jest.fn(),
+      scheduleClear: jest.fn(),
+      destroy: jest.fn(),
+    }));
+    const createLoadingStatusPresenter = jest.fn(() => ({
+      setStatus: jest.fn(),
+      clear: jest.fn(),
+      destroy: jest.fn(),
+    }));
+
+    const component = createGeneratorControlsComponent({
+      root: dom.window.document.getElementById('root'),
+      documentObj: dom.window.document,
+      props: {
+        selectedFormat: 'csv',
+        currentOptions: { options: {} },
+        pairwiseVisible: false,
+        generationButtonsBusy: false,
+      },
+      services: {
+        createRowCountControl: jest.fn(() => ({ destroy: jest.fn() })),
+        createFormatOptionsPanel: jest.fn(() => ({ update: jest.fn(), destroy: jest.fn() })),
+        createStatusPresenter,
+        createLoadingStatusPresenter,
+        getOutputFormatGroups: createFormatGroups,
+        canExportFormat: () => true,
+        updateHelpHints: jest.fn(),
+      },
+    });
+
+    const statusPresenterArgs = createStatusPresenter.mock.calls[0][0];
+    const loadingStatusPresenterArgs = createLoadingStatusPresenter.mock.calls[0][0];
+
+    expect(statusPresenterArgs.elementId).toBeUndefined();
+    expect(loadingStatusPresenterArgs.elementId).toBeUndefined();
+    expect(statusPresenterArgs.resolveElement()).toBe(
+      dom.window.document.querySelector('[data-role="generator-status-text"]')
+    );
+    expect(loadingStatusPresenterArgs.resolveElement()).toBe(
+      dom.window.document.querySelector('[data-role="generator-status-text"]')
+    );
+
+    component.destroy();
+    dom.window.close();
+  });
+
+  test('exposes an explicit format-state sync API for runtime orchestration', () => {
+    const dom = new JSDOM('<!doctype html><html><body><div id="root"></div></body></html>');
+    global.document = dom.window.document;
+    global.window = dom.window;
+
+    const formatOptionsPanel = {
+      update: jest.fn(),
+      destroy: jest.fn(),
+    };
+
+    const component = createGeneratorControlsComponent({
+      root: dom.window.document.getElementById('root'),
+      documentObj: dom.window.document,
+      props: {
+        selectedFormat: 'csv',
+        currentOptions: { options: { header: true } },
+        pairwiseVisible: false,
+        generationButtonsBusy: false,
+      },
+      services: {
+        createRowCountControl: jest.fn(() => ({ destroy: jest.fn() })),
+        createFormatOptionsPanel: jest.fn(() => formatOptionsPanel),
+        createStatusPresenter: jest.fn(() => ({
+          setStatus: jest.fn(),
+          clear: jest.fn(),
+          scheduleClear: jest.fn(),
+          destroy: jest.fn(),
+        })),
+        createLoadingStatusPresenter: jest.fn(() => ({
+          setStatus: jest.fn(),
+          clear: jest.fn(),
+          destroy: jest.fn(),
+        })),
+        getOutputFormatGroups: createFormatGroups,
+        canExportFormat: () => true,
+        getCurrentOptionsForFormat: (type) =>
+          type === 'json' ? { options: { prettyPrint: true } } : { options: { header: true } },
+        updateHelpHints: jest.fn(),
+      },
+    });
+
+    component.syncFormatState('json');
+
+    expect(component.getState()).toEqual(
+      expect.objectContaining({
+        selectedFormat: 'json',
+        currentOptions: { options: { prettyPrint: true } },
+      })
+    );
+    expect(getOutputFormatSelect(dom.window.document).value).toBe('json');
+    expect(formatOptionsPanel.update).toHaveBeenLastCalledWith({
+      selectedFormat: 'json',
+      currentOptions: { options: { prettyPrint: true } },
+    });
+
+    component.destroy();
     dom.window.close();
   });
 });

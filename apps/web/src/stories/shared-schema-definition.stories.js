@@ -1,4 +1,4 @@
-import { expect, userEvent, waitFor, within } from 'storybook/test';
+import { expect, userEvent, within } from 'storybook/test';
 import RandExp from 'randexp';
 import { faker } from '@faker-js/faker';
 import {
@@ -33,6 +33,14 @@ function createIds(prefix) {
     helpIcon: `${prefix}-help-${storyInstanceCounter}`,
     error: `${prefix}-error-${storyInstanceCounter}`,
   };
+}
+
+function getSchemaErrorElement(rootElement) {
+  return rootElement?.querySelector?.('[data-role="schema-error"]') || null;
+}
+
+function getSchemaTextArea(rootElement) {
+  return rootElement?.querySelector?.('[data-role="schema-textbox"]') || null;
 }
 
 function buildStoryHelpHtml({ inTextMode }) {
@@ -109,14 +117,14 @@ function renderSharedSchemaDefinitionStory(args) {
     },
     callbacks: {
       onSchemaError: (message) => {
-        const errorElement = root.querySelector(`#${ids.error}`);
+        const errorElement = getSchemaErrorElement(root);
         if (errorElement) {
           errorElement.textContent = message;
           errorElement.style.display = message ? 'inline-block' : 'none';
         }
       },
       onSchemaClear: () => {
-        const errorElement = root.querySelector(`#${ids.error}`);
+        const errorElement = getSchemaErrorElement(root);
         if (errorElement) {
           errorElement.textContent = '';
           errorElement.style.display = 'none';
@@ -137,7 +145,7 @@ function renderSharedSchemaDefinitionStory(args) {
   }
 
   if (args.initialText) {
-    const textArea = root.querySelector(`#${ids.text}`);
+    const textArea = getSchemaTextArea(root);
     textArea.value = args.initialText;
     component.syncFromText({
       showErrors: args.showErrors === true,
@@ -168,15 +176,9 @@ function expectTextModeVisible(canvasElement) {
   expect(canvas.getByRole('button', { name: /edit as schema/i })).toBeVisible();
 }
 
-async function expectVisibleSchemaHelpTooltip({ helpHeadingText }) {
-  await waitFor(() => {
-    const tooltipBox = Array.from(document.querySelectorAll('.tippy-box')).find((element) =>
-      element.textContent?.includes(helpHeadingText)
-    );
-    expect(tooltipBox).not.toBeNull();
-    expect(tooltipBox.textContent).toContain(helpHeadingText);
-    expect(tooltipBox.textContent).toContain('Insert Example Schema');
-  });
+async function expectSchemaHelpContent(helpIcon, { helpHeadingText }) {
+  await expect(helpIcon.getAttribute('data-help-text')).toContain(helpHeadingText);
+  await expect(helpIcon.getAttribute('data-help-text')).toContain('Insert Example Schema');
 }
 
 const meta = {
@@ -217,7 +219,7 @@ export const EmptySchema = {
     expect(within(canvasElement).getAllByPlaceholderText('Column Name')).toHaveLength(1);
     const helpIcon = canvasElement.querySelector('[data-role="schema-mode-help"]');
     await userEvent.hover(helpIcon);
-    await expectVisibleSchemaHelpTooltip({ helpHeadingText: 'Edit as Text' });
+    await expectSchemaHelpContent(helpIcon, { helpHeadingText: 'Edit as Text' });
     await userEvent.unhover(helpIcon);
   },
 };
@@ -293,7 +295,7 @@ export const TextMode = {
     await expect(textArea.value).toContain('enum(active,inactive,pending)');
     const helpIcon = canvasElement.querySelector('[data-role="schema-mode-help"]');
     await userEvent.hover(helpIcon);
-    await expectVisibleSchemaHelpTooltip({ helpHeadingText: 'Edit as Schema' });
+    await expectSchemaHelpContent(helpIcon, { helpHeadingText: 'Edit as Schema' });
     await userEvent.unhover(helpIcon);
   },
 };

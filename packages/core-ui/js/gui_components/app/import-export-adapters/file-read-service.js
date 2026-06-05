@@ -1,18 +1,27 @@
-function createFileReadService({ FileReaderCtor = typeof FileReader !== 'undefined' ? FileReader : null } = {}) {
+import { getDefaultDocumentObj, getDefaultWindowObj, resolveWindowObj } from '../../shared/dom/default-objects.js';
+
+function createFileReadService({
+  documentObj = getDefaultDocumentObj(),
+  windowObj = getDefaultWindowObj(),
+  FileReaderCtor,
+} = {}) {
+  const resolvedWindowObj = resolveWindowObj(windowObj, documentObj);
+  const ResolvedFileReaderCtor = FileReaderCtor || resolvedWindowObj?.FileReader || globalThis.FileReader || null;
+
   return {
     readText(file, callbacks = {}) {
       if (!file) {
         return Promise.resolve(null);
       }
 
-      if (!FileReaderCtor) {
+      if (!ResolvedFileReaderCtor) {
         const error = new Error('FileReader is not available');
         callbacks.onError?.(error);
         return Promise.reject(error);
       }
 
       return new Promise((resolve, reject) => {
-        const reader = new FileReaderCtor();
+        const reader = new ResolvedFileReaderCtor();
 
         reader.addEventListener('progress', (event) => {
           callbacks.onProgress?.(event);

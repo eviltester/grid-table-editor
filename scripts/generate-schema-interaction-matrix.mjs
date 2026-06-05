@@ -8,7 +8,10 @@ import {
   schemaRowsToDataRules,
   dataRulesToSchemaText,
 } from '../packages/core/js/data_generation/schema-rules-adapter.js';
-import { buildSchemaInteractionScenarios } from '../packages/core-ui/src/tests/interaction/matrix/support/schema-interaction-scenario-builder.js';
+import {
+  buildSchemaInteractionScenarios,
+  buildUiInteractionScenarios,
+} from '../packages/core-ui/src/tests/interaction/matrix/support/schema-interaction-scenario-builder.js';
 import { renderMatrixSummaryMarkdown } from '../packages/core-ui/src/tests/interaction/matrix/support/schema-interaction-matrix-report.js';
 import { getFakerCommandHelp } from '../packages/core-ui/js/gui_components/shared/faker-command-help-metadata.js';
 import { getDomainCommandHelp } from '../packages/core-ui/js/gui_components/shared/domain-command-help-metadata.js';
@@ -39,7 +42,9 @@ const previewDataByScenarioId = buildPreviewDataByScenarioId(coverageScenarios);
 const runtimeScenarios = coverageScenarios.filter(
   (scenario) => previewDataByScenarioId[scenario.id]?.status === 'generated'
 );
-const rawUiScenarios = buildUiInteractionScenarios(runtimeScenarios);
+const rawUiScenarios = buildUiInteractionScenarios().filter((scenario) =>
+  runtimeScenarios.some((runtimeScenario) => runtimeScenario.id === scenario.id)
+);
 const uiParityByScenarioId = loadUiParityByScenarioId();
 const uiScenarios = rawUiScenarios.map((scenario) => ({
   ...scenario,
@@ -340,26 +345,4 @@ function getAllowedTypesForRow(row) {
   }
 
   return ['string'];
-}
-
-function buildUiInteractionScenarios(runtimeScenarioPool) {
-  return runtimeScenarioPool.filter((scenario) => {
-    if (scenario.origins.includes('custom') || scenario.origins.includes('example')) {
-      return true;
-    }
-
-    const fakerParams = scenario.sourceType === 'faker' ? getFakerCommandHelp(scenario.command)?.params || [] : [];
-    const domainArgs = scenario.sourceType === 'domain' ? getDomainCommandHelp(scenario.command)?.args || [] : [];
-
-    if (scenario.origins.includes('base') && fakerParams.some((param) => param.optional === false)) {
-      return true;
-    }
-    if (scenario.origins.includes('base') && domainArgs.some((arg) => arg.required === true)) {
-      return true;
-    }
-    if (scenario.expectStructuredSerialization && scenario.origins.includes('base')) {
-      return true;
-    }
-    return false;
-  });
 }

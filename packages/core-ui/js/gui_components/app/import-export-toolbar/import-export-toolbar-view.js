@@ -25,22 +25,22 @@ class ImportExportToolbarView {
   template() {
     const state = this.controller.getState();
     return `<span data-help="${state.helpDataHelp}" class="helpicon"></span>
-            <button type="button" id="settextfromgridbutton">v Set Text From Grid v</button>
-            <button type="button" id="setgridfromtextbutton" disabled>^ Set Grid From Text ^</button>
-            <label id="csvinputlabel"><span class="fileFormat">.csv</span> import ^:<input type="file" id="csvinput"/></label>
-            <button type="button" id="filedownload"><span class="fileFormat">.csv</span> Download</button>
-            <div id="export-progress-status" class="import-progress-status" style="display:none;" aria-live="polite"></div>
-            <label id="dropzone">
-            <span>[Drag And Drop <span class="fileFormat">.csv</span> File Here]</span>
+            <button type="button" id="settextfromgridbutton" data-role="set-text-from-grid-button">v Set Text From Grid v</button>
+            <button type="button" id="setgridfromtextbutton" data-role="set-grid-from-text-button" disabled>^ Set Grid From Text ^</button>
+            <label id="csvinputlabel" data-role="file-input-label"><span class="fileFormat" data-role="file-format-label">.csv</span> import ^:<input type="file" id="csvinput" data-role="file-input"/></label>
+            <button type="button" id="filedownload" data-role="download-button"><span class="fileFormat" data-role="file-format-label">.csv</span> Download</button>
+            <div id="export-progress-status" data-role="export-progress-status" class="import-progress-status" style="display:none;" aria-live="polite"></div>
+            <label id="dropzone" data-role="drop-zone">
+            <span>[Drag And Drop <span class="fileFormat" data-role="file-format-label">.csv</span> File Here]</span>
             </label>
-            <div id="import-progress-status" class="import-progress-status" style="display:none;" aria-live="polite"></div>
-            <div id="import-export-error" class="generator-schema-error-text" aria-live="polite" role="status"></div>`;
+            <div id="import-progress-status" data-role="import-progress-status" class="import-progress-status" style="display:none;" aria-live="polite"></div>
+            <div id="import-export-error" data-role="error-status" class="shared-inline-error-status" aria-live="polite" role="status"></div>`;
   }
 
   bindEvents() {
-    this.root.querySelector('#settextfromgridbutton')?.addEventListener('click', this.handleSetTextFromGridClick);
-    this.root.querySelector('#setgridfromtextbutton')?.addEventListener('click', this.handleSetGridFromTextClick);
-    this.root.querySelector('#filedownload')?.addEventListener('click', this.handleDownloadClick);
+    this.getElement('set-text-from-grid-button')?.addEventListener('click', this.handleSetTextFromGridClick);
+    this.getElement('set-grid-from-text-button')?.addEventListener('click', this.handleSetGridFromTextClick);
+    this.getElement('download-button')?.addEventListener('click', this.handleDownloadClick);
   }
 
   createFileBindings() {
@@ -53,24 +53,24 @@ class ImportExportToolbarView {
 
   render() {
     const state = this.controller.getState();
-    const setTextFromGridButton = this.root.querySelector('#settextfromgridbutton');
-    const setGridFromTextButton = this.root.querySelector('#setgridfromtextbutton');
-    const downloadButton = this.root.querySelector('#filedownload');
-    const importStatus = this.root.querySelector('#import-progress-status');
-    const exportStatus = this.root.querySelector('#export-progress-status');
-    const errorStatus = this.root.querySelector('#import-export-error');
+    const setTextFromGridButton = this.getElement('set-text-from-grid-button');
+    const setGridFromTextButton = this.getElement('set-grid-from-text-button');
+    const downloadButton = this.getElement('download-button');
+    const importStatus = this.getElement('import-progress-status');
+    const exportStatus = this.getElement('export-progress-status');
+    const errorStatus = this.getElement('error-status');
     const importVisibility = state.supportsImport ? 'visible' : 'hidden';
     const exportVisibility = state.supportsExport ? 'visible' : 'hidden';
 
-    this.root.querySelectorAll('.fileFormat').forEach((element) => {
+    this.root.querySelectorAll('[data-role="file-format-label"]').forEach((element) => {
       element.textContent = state.fileExtension;
     });
 
     [
       setGridFromTextButton,
-      this.root.querySelector('#dropzone'),
-      this.root.querySelector('#csvinputlabel'),
-      this.root.querySelector('#csvinput'),
+      this.getElement('drop-zone'),
+      this.getElement('file-input-label'),
+      this.getElement('file-input'),
     ]
       .filter(Boolean)
       .forEach((element) => {
@@ -115,12 +115,16 @@ class ImportExportToolbarView {
   }
 
   destroy() {
-    this.root.querySelector('#settextfromgridbutton')?.removeEventListener('click', this.handleSetTextFromGridClick);
-    this.root.querySelector('#setgridfromtextbutton')?.removeEventListener('click', this.handleSetGridFromTextClick);
-    this.root.querySelector('#filedownload')?.removeEventListener('click', this.handleDownloadClick);
+    this.getElement('set-text-from-grid-button')?.removeEventListener('click', this.handleSetTextFromGridClick);
+    this.getElement('set-grid-from-text-button')?.removeEventListener('click', this.handleSetGridFromTextClick);
+    this.getElement('download-button')?.removeEventListener('click', this.handleDownloadClick);
     this.fileImportBindings?.destroy?.();
     this.fileImportBindings = null;
     this.root.replaceChildren();
+  }
+
+  getElement(role) {
+    return this.root.querySelector(`[data-role="${role}"]`);
   }
 }
 

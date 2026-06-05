@@ -34,25 +34,40 @@ describe('PopulationActions', () => {
       },
     });
 
-    expect(document.getElementById('generateallpairs').style.display).toBe('none');
+    const root = document.getElementById('root');
+    const generateButton = root.querySelector('[data-role="generate-button"]');
+    const generatePairwiseButton = root.querySelector('[data-role="generate-pairwise-button"]');
+    const refreshPreviewButton = root.querySelector('[data-role="refresh-preview-button"]');
+    const status = root.querySelector('[data-role="population-status"]');
+
+    expect(generateButton?.id).toBe('');
+    expect(generatePairwiseButton?.id).toBe('');
+    expect(refreshPreviewButton?.id).toBe('');
+    expect(status?.id).toBe('');
+    expect(document.getElementById('generatedata')).toBeNull();
+    expect(document.getElementById('generateallpairs')).toBeNull();
+    expect(document.getElementById('refreshtestdatapreview')).toBeNull();
+    expect(document.getElementById('testdata-status')).toBeNull();
+
+    expect(generatePairwiseButton.style.display).toBe('none');
 
     component.setPairwiseVisible(true);
-    expect(document.getElementById('generateallpairs').style.display).toBe('');
+    expect(generatePairwiseButton.style.display).toBe('');
 
     component.setGenerateBusy(true);
     component.setGeneratePairwiseBusy(true);
     component.setRefreshPreviewBusy(true);
-    expect(document.getElementById('generatedata').disabled).toBe(true);
-    expect(document.getElementById('generateallpairs').disabled).toBe(true);
-    expect(document.getElementById('refreshtestdatapreview').disabled).toBe(true);
+    expect(generateButton.disabled).toBe(true);
+    expect(generatePairwiseButton.disabled).toBe(true);
+    expect(refreshPreviewButton.disabled).toBe(true);
 
     component.setGenerateBusy(false);
     component.setGeneratePairwiseBusy(false);
     component.setRefreshPreviewBusy(false);
 
-    document.getElementById('generatedata').click();
-    document.getElementById('generateallpairs').click();
-    document.getElementById('refreshtestdatapreview').click();
+    generateButton.click();
+    generatePairwiseButton.click();
+    refreshPreviewButton.click();
 
     expect(onGenerate).toHaveBeenCalled();
     expect(onGeneratePairwise).toHaveBeenCalled();
@@ -64,8 +79,9 @@ describe('PopulationActions', () => {
     const onGenerateA = jest.fn();
     const onGenerateB = jest.fn();
 
+    const rootA = document.getElementById('root');
     const componentA = createPopulationActionsComponent({
-      root: document.getElementById('root'),
+      root: rootA,
       props: {
         pairwiseVisible: true,
         ids: {
@@ -96,11 +112,24 @@ describe('PopulationActions', () => {
       callbacks: { onGenerate: onGenerateB },
     });
 
-    document.getElementById('generatedata-a').click();
+    const generateButtonA = rootA.querySelector('[data-role="generate-button"]');
+    const generatePairwiseButtonA = rootA.querySelector('[data-role="generate-pairwise-button"]');
+    const generatePairwiseButtonB = siblingRoot.querySelector('[data-role="generate-pairwise-button"]');
+    const statusA = rootA.querySelector('[data-role="population-status"]');
+    const statusB = siblingRoot.querySelector('[data-role="population-status"]');
+
+    expect(generateButtonA?.id).toBe('generatedata-a');
+    expect(rootA.querySelector('[data-role="refresh-preview-button"]')?.id).toBe('refreshtestdatapreview-a');
+    expect(statusA?.id).toBe('testdata-status-a');
+    expect(siblingRoot.querySelector('[data-role="generate-button"]')?.id).toBe('generatedata-b');
+    expect(siblingRoot.querySelector('[data-role="refresh-preview-button"]')?.id).toBe('refreshtestdatapreview-b');
+    expect(statusB?.id).toBe('testdata-status-b');
+
+    generateButtonA.click();
     expect(onGenerateA).toHaveBeenCalledTimes(1);
     expect(onGenerateB).not.toHaveBeenCalled();
-    expect(document.getElementById('generateallpairs-a').style.display).toBe('');
-    expect(document.getElementById('generateallpairs-b').style.display).toBe('none');
+    expect(generatePairwiseButtonA.style.display).toBe('');
+    expect(generatePairwiseButtonB.style.display).toBe('none');
 
     componentA.destroy();
     componentB.destroy();

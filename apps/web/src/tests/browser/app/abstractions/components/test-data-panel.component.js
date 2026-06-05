@@ -1,29 +1,30 @@
 const { expect } = require('@playwright/test');
 const { GridRendererComponent } = require('./grid-renderer.component');
 const { SchemaEditorComponent } = require('../../../shared/abstractions/components/schema-editor.component');
+const {
+  OverlaySafeActivationComponent,
+} = require('../../../shared/abstractions/components/overlay-safe-activation.component');
 
 class TestDataPanelComponent {
   constructor(page) {
     this.page = page;
-    this.container = page.locator('.testDataSchemaGui');
+    this.container = page.locator('[data-role="test-data-panel-shell"]');
+    this.panelRoot = page.locator('[data-role="data-population-panel-root"]');
     this.details = this.container.locator('details');
     this.heading = this.container.getByText('Test Data', { exact: true });
-    this.generateButton = page.getByRole('button', { name: 'Generate' });
-    this.generatePairwiseButton = page.getByRole('button', { name: 'Generate Pairwise' });
-    this.refreshTextPreviewButton = page.getByRole('button', { name: 'Refresh Text Preview' });
-    this.generateCountInput = page.getByRole('spinbutton', { name: 'How Many?' });
-    this.newTableMode = page.locator('input[name="testDataGenerationMode"][value="new-table"]');
-    this.amendTableMode = page.locator('input[name="testDataGenerationMode"][value="amend-table"]');
-    this.amendSelectedMode = page.locator('input[name="testDataGenerationMode"][value="amend-selected"]');
-    this.schemaError = page.locator('#testdata-schema-error');
-    this.status = page.locator('#testdata-status');
-    this.schemaGrid = page.locator('#testDataSchemaGrid, #testDataSchemaRows');
-    this.schemaRenderer = new GridRendererComponent(page, this.schemaGrid);
-    this.addSchemaColumnButton = page.getByRole('button', { name: /\+ Add (Column|Field)/ });
+    this.generateButton = this.container.getByRole('button', { name: 'Generate' });
+    this.generatePairwiseButton = this.container.getByRole('button', { name: 'Generate Pairwise' });
+    this.refreshTextPreviewButton = this.container.getByRole('button', { name: 'Refresh Text Preview' });
+    this.generateCountInput = this.container.getByRole('spinbutton', { name: 'How Many?' });
+    this.newTableMode = this.container.locator('input[name="testDataGenerationMode"][value="new-table"]');
+    this.amendTableMode = this.container.locator('input[name="testDataGenerationMode"][value="amend-table"]');
+    this.amendSelectedMode = this.container.locator('input[name="testDataGenerationMode"][value="amend-selected"]');
+    this.addSchemaColumnButton = this.container.getByRole('button', { name: /\+ Add (Column|Field)/ });
     this.deleteSelectedSchemaRowsButton = this.container.getByRole('button', { name: '- Delete Selected' });
     this.selectedSchemaRowIndex = 0;
+    this.overlaySafeActivation = new OverlaySafeActivationComponent(page);
     this.schemaEditor = new SchemaEditorComponent(page, {
-      rootSelector: '.testDataSchemaGui',
+      rootSelector: '[data-role="data-population-panel-root"]',
       fieldMap: {
         columnName: 'name',
         value: 'value',
@@ -43,6 +44,10 @@ class TestDataPanelComponent {
       },
     });
     this.schemaTextArea = this.schemaEditor.textArea;
+    this.schemaError = this.panelRoot.locator('[data-role="schema-error"]');
+    this.status = this.panelRoot.locator('[data-role="population-status"]').first();
+    this.schemaGrid = this.schemaEditor.rowsContainer;
+    this.schemaRenderer = new GridRendererComponent(page, this.schemaGrid);
   }
 
   async isRowEditorMode() {
@@ -110,18 +115,15 @@ class TestDataPanelComponent {
   }
 
   async dismissOpenHelpTooltips() {
-    await this.page.mouse.move(0, 0);
-    await this.page.waitForTimeout(350);
+    await this.overlaySafeActivation.dismissOpenHelpTooltips();
   }
 
   async clickGenerate() {
-    await this.dismissOpenHelpTooltips();
-    await this.generateButton.click();
+    await this.overlaySafeActivation.activateButton(this.generateButton);
   }
 
   async clickGeneratePairwise() {
-    await this.dismissOpenHelpTooltips();
-    await this.generatePairwiseButton.click();
+    await this.overlaySafeActivation.activateButton(this.generatePairwiseButton);
   }
 
   async clickRefreshTextPreview() {
@@ -143,7 +145,7 @@ class TestDataPanelComponent {
       if ((await removeButton.count()) > 0) {
         await removeButton.click();
       } else {
-        await this.schemaEditor.rowsContainer.locator('.generator-schema-row [data-action="remove"]').first().click();
+        await this.schemaEditor.rowsContainer.locator('.shared-schema-row [data-action="remove"]').first().click();
       }
       return;
     }
@@ -160,8 +162,7 @@ class TestDataPanelComponent {
       await this.schemaEditor.row(rowIndex).click();
       return;
     }
-    const row = this.schemaGrid.locator('.tabulator-row').nth(rowIndex);
-    await row.click();
+    await this.schemaRenderer.selectRow(rowIndex);
     await this.page.keyboard.press('Space');
   }
 
@@ -196,7 +197,7 @@ class TestDataPanelComponent {
   }
 
   getSchemaValidationMessage(rowIndex) {
-    return this.getSchemaRow(rowIndex).locator('.generator-schema-row-validation');
+    return this.getSchemaRow(rowIndex).locator('.shared-schema-row-validation');
   }
 
   async getSchemaErrorText() {

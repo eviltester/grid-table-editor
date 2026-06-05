@@ -84,11 +84,20 @@ function createGeneratorPreviewComponent({ root, props = {}, services = {}, call
     getPreviewTableApi() {
       return view.getPreviewTableApi();
     },
+    getPreviewDataTable() {
+      return view.getPreviewDataTable();
+    },
+    renderOutputPreview(outputType, exporter) {
+      return view.renderOutputPreview(outputType, exporter);
+    },
     whenReady() {
       return view.whenPreviewGridReady();
     },
     getState() {
       return controller.getState();
+    },
+    getPreviewRowCount() {
+      return view.getPreviewRowCount();
     },
   };
 }

@@ -4,37 +4,7 @@ import RandExp from 'randexp';
 import { bootstrapApp, createAppPageComponent } from '../../../../packages/core-ui/js/gui_components/app/page/index.js';
 import { createDataGridComponent } from '../../../../packages/core-ui/js/gui_components/data-grid-editor/index.js';
 import { GridExtension as TabulatorGridExtension } from '../../../../packages/core-ui/js/gui_components/data-grid-editor/tabulator/gridExtension-tabulator.js';
-
-class StoryExtendedDataGrid {
-  constructor({ documentObj } = {}) {
-    this.documentObj = documentObj;
-    this.component = null;
-  }
-
-  createChildGrid(root) {
-    this.component?.destroy?.();
-    this.component = createDataGridComponent({
-      root,
-      documentObj: this.documentObj,
-      services: {
-        TabulatorCtor: Tabulator,
-        GridExtensionClass: TabulatorGridExtension,
-      },
-    });
-    return this.component;
-  }
-
-  sizeColumnsToFit() {}
-
-  getGridExtras() {
-    return this.component?.getGridExtras?.();
-  }
-
-  destroy() {
-    this.component?.destroy?.();
-    this.component = null;
-  }
-}
+import { createTestDataGenerationPanelManager } from '../../../../packages/core-ui/js/gui_components/app/test-data-grid/index.js';
 
 function createAppPageStoryShell() {
   const root = document.createElement('main');
@@ -55,31 +25,35 @@ function createOpenAppPageStoryComponent({ root }) {
 }
 
 function renderAppPageStory() {
-  globalThis.RandExp = RandExp;
-  globalThis.eval?.('var RandExp = globalThis.RandExp;');
   const root = createAppPageStoryShell();
-  // App bootstrap still resolves page feature roots from the live document.
-  document.body.appendChild(root);
   let app = null;
-
-  root.__appReady = bootstrapApp({
+  const testDataPanelHarness = createTestDataGenerationPanelManager({
     documentObj: document,
-    ensureGridLibraryLoadedFn: async () => {},
-    activeGridEngineName: 'tabulator',
-    createAppPageComponentFn: createOpenAppPageStoryComponent,
-    ExtendedDataGridClass: class extends StoryExtendedDataGrid {
-      constructor() {
-        super({ documentObj: document });
-      }
-    },
-  }).then((instance) => {
-    app = instance;
-    return instance;
+    RandExpClass: RandExp,
+  });
+
+  root.__appReady = new Promise((resolve, reject) => {
+    requestAnimationFrame(() => {
+      bootstrapApp({
+        documentObj: document,
+        ensureGridLibraryLoadedFn: async () => {},
+        createAppPageComponentFn: createOpenAppPageStoryComponent,
+        createDataGridComponentFn: createDataGridComponent,
+        TabulatorCtor: Tabulator,
+        GridExtensionClass: TabulatorGridExtension,
+        mountTestDataGenerationPanelFn: testDataPanelHarness.mountTestDataGenerationPanel,
+      })
+        .then((instance) => {
+          app = instance;
+          resolve(instance);
+        })
+        .catch(reject);
+    });
   });
 
   root.__storybookCleanup = () => {
     app?.destroy?.();
-    root.remove();
+    testDataPanelHarness.destroy?.();
   };
 
   return root;
@@ -119,8 +93,8 @@ export const Default = {
     await expect(await canvas.findByRole('button', { name: 'Edit as Text' })).toBeVisible();
     await expect(await canvas.findByRole('button', { name: 'Reset Table' })).toBeVisible();
     await waitFor(() => {
-      expect(canvasElement.querySelector('.header')).toBeNull();
-      expect(canvasElement.querySelector('#initial-load')).toBeNull();
+      expect(canvas.queryByText('AnyWayData')).toBeNull();
+      expect(canvas.queryByText(/Please Wait, Loading Libraries/i)).toBeNull();
     });
   },
 };

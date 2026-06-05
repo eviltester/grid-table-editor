@@ -78,12 +78,12 @@ describe('generator focused schema editing', () => {
     await harness.toggleToSchemaMode();
 
     expect(harness.getSchemaErrorText().length).toBeGreaterThan(0);
-    expect(document.getElementById('generatorSchemaTextContainer').style.display).toBe('block');
+    expect(harness.getSchemaTextContainer().style.display).toBe('block');
 
     await harness.setSchemaText('Status\nenum(active,inactive,pending)');
     await harness.toggleToSchemaMode();
 
-    await waitFor(() => expect(document.querySelectorAll('.generator-schema-row').length).toBe(1));
+    await waitFor(() => expect(document.querySelectorAll('.shared-schema-row').length).toBe(1));
     expect(harness.getSchemaErrorText()).toBe('');
     expect(within(harness.getRow(0)).getByDisplayValue('Status')).toBeTruthy();
   });
@@ -95,18 +95,18 @@ describe('generator focused schema editing', () => {
     await waitFor(() => expect(harness.getSchemaText()).toBe(TEST_DATA_GRID_SAMPLE_SCHEMA_TEXT));
 
     await harness.toggleToSchemaMode();
-    await waitFor(() => expect(document.querySelectorAll('.generator-schema-row').length).toBeGreaterThan(1));
+    await waitFor(() => expect(document.querySelectorAll('.shared-schema-row').length).toBeGreaterThan(1));
   });
 
   test('sample schema insertion in schema mode keeps schema mode visible and updates rows', async () => {
-    expect(document.getElementById('generatorSchemaRows').style.display).toBe('flex');
-    expect(document.getElementById('generatorSchemaTextContainer').style.display).toBe('none');
+    expect(harness.getSchemaRowsContainer().style.display).toBe('flex');
+    expect(harness.getSchemaTextContainer().style.display).toBe('none');
 
     await harness.clickInjectedSampleButton();
 
-    await waitFor(() => expect(document.querySelectorAll('.generator-schema-row').length).toBeGreaterThan(1));
-    expect(document.getElementById('generatorSchemaRows').style.display).toBe('flex');
-    expect(document.getElementById('generatorSchemaTextContainer').style.display).toBe('none');
+    await waitFor(() => expect(document.querySelectorAll('.shared-schema-row').length).toBeGreaterThan(1));
+    expect(harness.getSchemaRowsContainer().style.display).toBe('flex');
+    expect(harness.getSchemaTextContainer().style.display).toBe('none');
   });
 
   test('schema row reorder and removal are reflected in text mode', async () => {

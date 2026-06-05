@@ -1,23 +1,25 @@
 import { expect, userEvent, within } from 'storybook/test';
 import { createLoadingStatusPresenter } from '../../../../packages/core-ui/js/gui_components/shared/test-data/ui/index.js';
 
-let loadingStatusPresenterStoryInstanceId = 0;
-
 function createLoadingStatusPresenterHarness({ root, args, remountable = false }) {
   let presenter = null;
   let presenterRoot = null;
 
   const mountPresenter = () => {
     presenter?.destroy?.();
-    loadingStatusPresenterStoryInstanceId += 1;
-    const elementId = `storybook-loading-status-presenter-${loadingStatusPresenterStoryInstanceId}`;
     presenterRoot.innerHTML = `
-      <div id="${elementId}" class="import-progress-status" role="status" aria-live="polite" style="min-height:1.5rem;"></div>
+      <div
+        class="import-progress-status"
+        data-role="loading-status-presenter-root"
+        role="status"
+        aria-live="polite"
+        style="min-height:1.5rem;"
+      ></div>
     `;
 
     presenter = createLoadingStatusPresenter({
       documentObj: document,
-      elementId,
+      resolveElement: () => presenterRoot?.querySelector?.('[data-role="loading-status-presenter-root"]') || null,
       hideWhenEmpty: args.hideWhenEmpty,
       statusClassName: args.statusClassName,
       visibleDisplay: args.visibleDisplay,

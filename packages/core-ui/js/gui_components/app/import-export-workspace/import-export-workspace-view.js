@@ -1,5 +1,8 @@
 import { resolveDocumentObj } from '../../shared/dom/default-objects.js';
 
+const TOOLBAR_ROOT_ROLE = 'import-export-toolbar-root';
+const TEXT_PREVIEW_EDITOR_ROOT_ROLE = 'text-preview-editor-root';
+
 class ImportExportWorkspaceView {
   constructor({ root, controller, documentObj, services = {} } = {}) {
     this.root = root;
@@ -33,8 +36,8 @@ class ImportExportWorkspaceView {
   template() {
     return `
       <section class="import-export-workspace" aria-label="Import Export Workspace">
-        <div class="importexport" id="importExportToolbarRoot"></div>
-        <div class="tabbedTextArea" id="tabbedTextArea"></div>
+        <div class="importexport" id="importExportToolbarRoot" data-role="${TOOLBAR_ROOT_ROLE}"></div>
+        <div class="tabbedTextArea" id="tabbedTextArea" data-role="${TEXT_PREVIEW_EDITOR_ROOT_ROLE}"></div>
       </section>
     `;
   }
@@ -42,7 +45,7 @@ class ImportExportWorkspaceView {
   createFeatures() {
     const state = this.controller.getState();
     this.toolbar = this.services.createImportExportToolbarComponent?.({
-      root: this.root.querySelector('#importExportToolbarRoot'),
+      root: this.getElementByRole(TOOLBAR_ROOT_ROLE),
       documentObj: this.documentObj,
       props: state,
       callbacks: {
@@ -57,7 +60,7 @@ class ImportExportWorkspaceView {
     });
 
     this.textPreviewEditor = this.services.createTextPreviewEditorComponent?.({
-      root: this.root.querySelector('#tabbedTextArea'),
+      root: this.getElementByRole(TEXT_PREVIEW_EDITOR_ROOT_ROLE),
       documentObj: this.documentObj,
       props: {
         mode: state.mode,
@@ -84,6 +87,10 @@ class ImportExportWorkspaceView {
         onFormatChange: this.services.onFormatChange,
       },
     });
+  }
+
+  getElementByRole(role) {
+    return this.root?.querySelector?.(`[data-role="${role}"]`) || null;
   }
 
   render() {
@@ -136,10 +143,10 @@ class ImportExportWorkspaceView {
   }
 
   renderOptionsPanel({ selectedFormat, currentOptions } = {}) {
-    const editArea = this.root.querySelector('div.edit-area');
-    const optionsParent = this.root.querySelector('div.options-parent');
-    const splitter = this.root.querySelector('div.options-preview-splitter');
-    const textAreaWrapper = this.root.querySelector('#markdown');
+    const editArea = this.textPreviewEditor?.getEditArea?.();
+    const optionsParent = this.textPreviewEditor?.getOptionsPanelRoot?.();
+    const splitter = this.textPreviewEditor?.getOptionsPreviewSplitter?.();
+    const textAreaWrapper = this.textPreviewEditor?.getTextAreaWrapper?.();
 
     if (!editArea || !optionsParent || !textAreaWrapper) {
       return;
@@ -239,7 +246,7 @@ class ImportExportWorkspaceView {
     const requestedWidth = dragState.startWidth + (event.clientX - dragState.startX);
     const boundedWidth = this.clampOptionsPanelWidth(requestedWidth, dragState.editArea);
     this.setOptionsPanelWidth(dragState.optionsParent, boundedWidth);
-    const splitter = this.root.querySelector('div.options-preview-splitter');
+    const splitter = this.textPreviewEditor?.getOptionsPreviewSplitter?.();
     if (splitter) {
       this.updateSplitterAriaValues(splitter, dragState.optionsParent, dragState.editArea);
     }

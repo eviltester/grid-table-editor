@@ -42,8 +42,13 @@ class RowCountControlView {
       return;
     }
 
-    this.inputElement.id = state.inputId;
-    this.inputElement.name = state.inputId;
+    if (state.inputId) {
+      this.inputElement.id = state.inputId;
+      this.inputElement.name = state.inputId;
+    } else {
+      this.inputElement.removeAttribute('id');
+      this.inputElement.removeAttribute('name');
+    }
     this.inputElement.value = state.inputValue;
     this.inputElement.min = `${state.min}`;
     this.inputElement.step = `${state.step}`;
@@ -63,6 +68,10 @@ class RowCountControlView {
 
   focus() {
     this.inputElement?.focus();
+  }
+
+  getInputValue() {
+    return this.inputElement?.value ?? '';
   }
 
   destroy() {

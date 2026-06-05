@@ -23,6 +23,7 @@ import { PairwiseTestDataGenerator } from '@anywaydata/core/data_generation/all-
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 import { FAKER_COMMANDS, identifyFakerCommands, getMethodPickerOptions } from '../schema/index.js';
 import {
+  createTestDataUiStatusService,
   setTestDataStatus,
   setTestDataLoadingStatus,
   clearPendingTestDataStatusReset,
@@ -36,7 +37,6 @@ import {
   schemaRowsToSpecWithTokens as schemaRowsToSpecWithTokensShared,
 } from '../../../shared/test-data/schema/index.js';
 import { buildDataRuleFromSchemaRow } from '../../../shared/schema-row-rule-mapper.js';
-import { getGenerationMode as getGenerationModeFromUi } from '../controller/test-data-grid-generation-mode.js';
 import { createAppSchemaDefinitionProps } from '../schema/test-data-grid-schema-grid-controller.js';
 import { createTestDataGridActionAdapter } from '../controller/test-data-grid-action-adapter.js';
 import { createDataPopulationPanelComponent } from '../../data-population-panel/index.js';
@@ -44,8 +44,9 @@ import { resolveDocumentObj } from '../../../shared/dom/default-objects.js';
 
 import { faker } from 'https://cdn.skypack.dev/@faker-js/faker@v9.7.0';
 
-function createTestDataGridControl({
+function createTestDataGenerationPanelManager({
   documentObj,
+  RandExpClass,
   DebouncerClass = Debouncer,
   schemaTextToDataRulesFn = schemaTextToDataRules,
   dataRulesToSchemaTextFn = dataRulesToSchemaText,
@@ -60,6 +61,7 @@ function createTestDataGridControl({
   identifyFakerCommandsFn = identifyFakerCommands,
   createTestDataGridActionAdapterFn = createTestDataGridActionAdapter,
   createDataPopulationPanelComponentFn = createDataPopulationPanelComponent,
+  createTestDataUiStatusServiceFn = createTestDataUiStatusService,
 } = {}) {
   const state = {
     debouncer: new DebouncerClass(),
@@ -70,6 +72,7 @@ function createTestDataGridControl({
     generationService: null,
     dataPopulationPanel: null,
     actionAdapter: null,
+    uiStatusService: null,
   };
 
   function showTestDataSchemaError(message) {
@@ -85,13 +88,7 @@ function createTestDataGridControl({
   }
 
   function getGenerationMode() {
-    return (
-      state.dataPopulationPanel?.getMode?.() ||
-      getGenerationModeFromUi({
-        documentObj: getResolvedDocument(),
-        defaultMode: TEST_DATA_MODES.NEW_TABLE,
-      })
-    );
+    return state.dataPopulationPanel?.getMode?.() || TEST_DATA_MODES.NEW_TABLE;
   }
 
   function applyModeDefaultRowCount(mode) {
@@ -109,7 +106,40 @@ function createTestDataGridControl({
     state.generationService?.updatePairwiseButtonVisibility?.();
   }
 
+  function getRandExpClass() {
+    return RandExpClass || globalThis.RandExp;
+  }
+
+  function getStatusServiceApi() {
+    if (state.uiStatusService) {
+      return {
+        setTestDataStatus: (...args) => state.uiStatusService?.setTestDataStatus?.(...args),
+        setTestDataLoadingStatus: (...args) => state.uiStatusService?.setTestDataLoadingStatus?.(...args),
+        clearPendingStatusReset: () => state.uiStatusService?.clearPendingTestDataStatusReset?.(),
+        scheduleStatusReset: (delayMs) => state.uiStatusService?.scheduleTestDataStatusReset?.(delayMs),
+      };
+    }
+    return {
+      setTestDataStatus: setTestDataStatusFn,
+      setTestDataLoadingStatus: setTestDataLoadingStatusFn,
+      clearPendingStatusReset: clearPendingStatusResetFn,
+      scheduleStatusReset: scheduleStatusResetFn,
+    };
+  }
+
+  function shouldUseScopedStatusService() {
+    const hasCustomStatusOverrides =
+      setTestDataStatusFn !== setTestDataStatus ||
+      setTestDataLoadingStatusFn !== setTestDataLoadingStatus ||
+      clearPendingStatusResetFn !== clearPendingTestDataStatusReset ||
+      scheduleStatusResetFn !== scheduleTestDataStatusReset;
+    const hasCustomStatusServiceFactory = createTestDataUiStatusServiceFn !== createTestDataUiStatusService;
+    return !hasCustomStatusOverrides || hasCustomStatusServiceFactory;
+  }
+
   function createGenerationService() {
+    const resolvedRandExpClass = getRandExpClass();
+    const statusServiceApi = getStatusServiceApi();
     return createTestDataGenerationServiceFn({
       schemaTextToDataRules: schemaTextToDataRulesFn,
       schemaRowsToSpec: (schemaRows) =>
@@ -127,11 +157,11 @@ function createTestDataGridControl({
       createTableFromGenerator,
       createAmendedTable,
       faker,
-      RandExp,
+      RandExp: resolvedRandExpClass,
       debouncer: state.debouncer,
       syncSchemaTextFromGridBeforeGenerate: () => state.dataPopulationPanel?.syncSchemaTextFromRows?.(),
-      setTestDataStatus: setTestDataStatusFn,
-      setTestDataLoadingStatus: setTestDataLoadingStatusFn,
+      setTestDataStatus: statusServiceApi.setTestDataStatus,
+      setTestDataLoadingStatus: statusServiceApi.setTestDataLoadingStatus,
       showSchemaError: showTestDataSchemaError,
       yieldToUi: yieldToUiFn,
       validateCurrentSchemaRows: (options) => state.dataPopulationPanel?.validateSchemaRows?.(options),
@@ -149,27 +179,45 @@ function createTestDataGridControl({
 
   function mountTestDataGenerationPanel(parentId, importer, textPreviewRenderer, gridExtras) {
     state.dataPopulationPanel?.destroy?.();
+    state.uiStatusService?.destroy?.();
     state.debouncer?.clear?.();
     identifyFakerCommandsFn(faker);
 
     state.importer = importer;
     state.textPreviewRenderer = textPreviewRenderer;
     state.mainGridExtras = gridExtras;
-    state.generationService = createGenerationService();
-    state.actionAdapter = createTestDataGridActionAdapterFn({
-      getGenerationService: () => state.generationService,
-      clearPendingStatusReset: clearPendingStatusResetFn,
-      scheduleStatusReset: scheduleStatusResetFn,
-    });
+    state.uiStatusService = null;
 
     const resolvedDocument = getResolvedDocument();
     const parentElem = resolvedDocument?.getElementById?.(parentId) || null;
-    initializeSchemaErrorDisplayFn(state.schemaTextSyncState);
+
+    if (
+      resolvedDocument &&
+      parentElem &&
+      typeof createTestDataUiStatusServiceFn === 'function' &&
+      shouldUseScopedStatusService()
+    ) {
+      state.uiStatusService = createTestDataUiStatusServiceFn({
+        documentObj: resolvedDocument,
+        windowObj: resolvedDocument.defaultView,
+        getStatusElement: () => parentElem.querySelector('[data-role="population-status"]'),
+      });
+    }
+
+    state.generationService = createGenerationService();
+    const statusServiceApi = getStatusServiceApi();
+    state.actionAdapter = createTestDataGridActionAdapterFn({
+      getGenerationService: () => state.generationService,
+      clearPendingStatusReset: statusServiceApi.clearPendingStatusReset,
+      scheduleStatusReset: statusServiceApi.scheduleStatusReset,
+    });
 
     if (!resolvedDocument || !parentElem) {
       state.dataPopulationPanel = null;
       return state;
     }
+
+    const resolvedRandExpClass = getRandExpClass();
 
     state.dataPopulationPanel = createDataPopulationPanelComponentFn({
       root: parentElem,
@@ -183,7 +231,6 @@ function createTestDataGridControl({
           { value: TEST_DATA_MODES.AMEND_SELECTED, label: 'Amend Selected' },
         ],
         rowCountProps: {
-          inputId: 'generateCount',
           label: 'How Many?',
           min: 1,
           step: 1,
@@ -196,7 +243,7 @@ function createTestDataGridControl({
           schemaTextSyncState: state.schemaTextSyncState,
           updatePairwiseButtonVisibility,
           faker,
-          RandExp,
+          RandExp: resolvedRandExpClass,
           getMethodPickerOptions,
           fakerCommands: FAKER_COMMANDS.filter((command) => command !== 'RegEx' && command.startsWith('helpers.')),
           validateSchemaRows: (schemaRows) =>
@@ -219,9 +266,13 @@ function createTestDataGridControl({
         schemaDefinition: {
           onSchemaError: (message) => state.schemaTextSyncState?.schemaErrorDisplay?.show?.(message),
           onSchemaClear: () => state.schemaTextSyncState?.schemaErrorDisplay?.clear?.(),
-          onSchemaParseError: () => setTestDataStatusFn('', false),
+          onSchemaParseError: () => getStatusServiceApi().setTestDataStatus('', false),
         },
       },
+    });
+    initializeSchemaErrorDisplayFn(state.schemaTextSyncState, {
+      documentObj: resolvedDocument,
+      getSchemaErrorElement: () => parentElem.querySelector('[data-role="schema-error"]'),
     });
 
     return state;
@@ -229,23 +280,24 @@ function createTestDataGridControl({
 
   return {
     mountTestDataGenerationPanel,
-    // Legacy public alias retained for downstream callers that still use the pre-component entrypoint name.
-    enableTestDataGenerationInterface: mountTestDataGenerationPanel,
     getState: () => state,
     destroy: () => {
       state.dataPopulationPanel?.destroy?.();
+      state.uiStatusService?.destroy?.();
       state.debouncer?.clear?.();
     },
   };
 }
 
-const defaultTestDataGridControl = createTestDataGridControl();
+const defaultTestDataGenerationPanelManager = createTestDataGenerationPanelManager();
 
 function mountTestDataGenerationPanel(parentId, importer, textPreviewRenderer, gridExtras) {
-  return defaultTestDataGridControl.mountTestDataGenerationPanel(parentId, importer, textPreviewRenderer, gridExtras);
+  return defaultTestDataGenerationPanelManager.mountTestDataGenerationPanel(
+    parentId,
+    importer,
+    textPreviewRenderer,
+    gridExtras
+  );
 }
 
-// Legacy public alias retained for downstream callers that still use the pre-component entrypoint name.
-const enableTestDataGenerationInterface = mountTestDataGenerationPanel;
-
-export { createTestDataGridControl, mountTestDataGenerationPanel, enableTestDataGenerationInterface };
+export { createTestDataGenerationPanelManager, mountTestDataGenerationPanel };

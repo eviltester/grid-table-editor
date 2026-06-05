@@ -12,3 +12,4 @@ export {
   createOptionsPanelsForParent,
   getOutputFormatGroups,
 } from './options-ui-schema.js';
+export { applyGeneratorFormatOptions } from './apply-generator-format-options.js';

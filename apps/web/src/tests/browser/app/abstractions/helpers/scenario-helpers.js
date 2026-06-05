@@ -17,11 +17,11 @@ async function seedRows(appPage, values) {
 }
 
 async function ensureTextEditMode(appPage) {
-  const enabled = await appPage.importExportControls.isSetGridFromTextEnabled();
+  const enabled = await appPage.importExportWorkspace.isSetGridFromTextEnabled();
   if (!enabled) {
-    await appPage.tabbedText.togglePreviewEdit(true);
+    await appPage.textPreviewEditor.togglePreviewEdit(true);
   }
-  await appPage.importExportControls.expectSetGridFromTextEnabled(true);
+  await appPage.importExportWorkspace.expectSetGridFromTextEnabled(true);
 }
 
 module.exports = {

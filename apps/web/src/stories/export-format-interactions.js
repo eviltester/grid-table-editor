@@ -6,8 +6,12 @@ async function clickByText(canvas, text) {
   return button;
 }
 
-async function setTextareaValue(canvasElement, value) {
-  const textArea = canvasElement.querySelector('#markdownarea');
+function getPreviewTextEditor(canvas) {
+  return canvas.getByRole('textbox', { name: 'Preview text editor' });
+}
+
+async function setTextareaValue(canvas, value) {
+  const textArea = getPreviewTextEditor(canvas);
   await userEvent.click(textArea);
   await userEvent.clear(textArea);
   await userEvent.type(textArea, value);
@@ -15,13 +19,13 @@ async function setTextareaValue(canvasElement, value) {
   return textArea;
 }
 
-async function applyJsonObjectWrapper(canvasElement) {
-  const checkbox = canvasElement.querySelector('.json-options .asobject label input');
+async function applyJsonObjectWrapper(canvas) {
+  const checkbox = canvas.getByRole('checkbox', { name: /as object/i });
   if (checkbox && checkbox.checked !== true) {
     await userEvent.click(checkbox);
   }
 
-  const propertyInput = canvasElement.querySelector('.json-options .propertynamed label input');
+  const propertyInput = canvas.getByRole('textbox', { name: /property name/i });
   if (propertyInput) {
     await userEvent.click(propertyInput);
     await userEvent.clear(propertyInput);
@@ -29,20 +33,21 @@ async function applyJsonObjectWrapper(canvasElement) {
     await userEvent.tab();
   }
 
-  await userEvent.click(canvasElement.querySelector('.json-options .apply-options'));
+  await userEvent.click(canvas.getByRole('button', { name: 'Apply' }));
 }
 
-async function applyDelimitedSemicolon(canvasElement) {
-  const delimiterSelect = canvasElement.querySelector(".delimited-options select[name='delimiter']");
+async function applyDelimitedSemicolon(canvas) {
+  const delimiterSelect = canvas.getByRole('combobox', { name: 'Delimiter' });
   await userEvent.selectOptions(delimiterSelect, 'semicolon');
-  await userEvent.click(canvasElement.querySelector('.delimited-options .apply-options'));
+  await userEvent.click(canvas.getByRole('button', { name: 'Apply' }));
 }
 
 async function playSetTextFromGrid({ canvasElement }) {
   const canvas = within(canvasElement);
   await clickByText(canvas, 'v Set Text From Grid v');
+  const textArea = getPreviewTextEditor(canvas);
   await waitFor(() => {
-    expect(canvasElement.querySelector('#markdownarea')?.value?.length || 0).toBeGreaterThan(0);
+    expect(textArea.value?.length || 0).toBeGreaterThan(0);
   });
 }
 
@@ -51,20 +56,23 @@ async function playCsvRoundTrip({ canvasElement }) {
   await clickByText(canvas, 'Preview');
   await waitFor(() => expect(canvas.getByText('Edit')).toBeTruthy());
 
-  const textArea = await setTextareaValue(canvasElement, 'Name,Role\nAda,Engineer\nBob,Tester');
+  const textArea = await setTextareaValue(canvas, 'Name,Role\nAda,Engineer\nBob,Tester');
   await clickByText(canvas, '^ Set Grid From Text ^');
+  const setGridFromTextButton = canvas.getByRole('button', { name: '^ Set Grid From Text ^' });
 
   await waitFor(() => {
     expect(textArea.value).toContain('Ada');
-    expect(canvasElement.querySelector('#setgridfromtextbutton')?.disabled).toBe(false);
+    expect(setGridFromTextButton).toBeEnabled();
   });
 }
 
 async function playJsonOptionsPreview({ canvasElement }) {
-  await applyJsonObjectWrapper(canvasElement);
+  const canvas = within(canvasElement);
+  const textArea = getPreviewTextEditor(canvas);
+  await applyJsonObjectWrapper(canvas);
   await playSetTextFromGrid({ canvasElement });
   await waitFor(() => {
-    expect(canvasElement.querySelector('#markdownarea')?.value || '').toContain('"records"');
+    expect(textArea.value || '').toContain('"records"');
   });
 }
 
@@ -79,17 +87,21 @@ async function playPreviewEditMode({ canvasElement }) {
 }
 
 async function playDelimitedOptionsPreview({ canvasElement }) {
-  await applyDelimitedSemicolon(canvasElement);
+  const canvas = within(canvasElement);
+  const textArea = getPreviewTextEditor(canvas);
+  await applyDelimitedSemicolon(canvas);
   await playSetTextFromGrid({ canvasElement });
   await waitFor(() => {
-    expect(canvasElement.querySelector('#markdownarea')?.value || '').toContain(';');
+    expect(textArea.value || '').toContain(';');
   });
 }
 
 async function playCodePreview({ canvasElement }) {
+  const canvas = within(canvasElement);
+  const textArea = getPreviewTextEditor(canvas);
   await playSetTextFromGrid({ canvasElement });
   await waitFor(() => {
-    const previewText = canvasElement.querySelector('#markdownarea')?.value || '';
+    const previewText = textArea.value || '';
     expect(previewText.length).toBeGreaterThan(0);
     expect(previewText).toContain('Ava');
   });
@@ -97,7 +109,7 @@ async function playCodePreview({ canvasElement }) {
 
 async function playPreviewAlreadyRendered({ canvasElement }) {
   const canvas = within(canvasElement);
-  const textArea = canvasElement.querySelector('#markdownarea');
+  const textArea = getPreviewTextEditor(canvas);
 
   await waitFor(() => {
     expect(textArea?.value?.length || 0).toBeGreaterThan(0);

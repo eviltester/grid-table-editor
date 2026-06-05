@@ -13,19 +13,19 @@ test.describe('4. Import Export Basic', () => {
     await appPage.gridEditor.resetTable();
     await expect.poll(async () => appPage.gridEditor.renderer.countRows()).toBe(0);
 
-    await appPage.tabbedText.selectFormat('CSV');
+    await appPage.textPreviewEditor.selectFormat('CSV');
     await ensureTextEditMode(appPage);
-    await appPage.tabbedText.setOutputText('Name,Value\nA,1\nB,2');
+    await appPage.textPreviewEditor.setOutputText('Name,Value\nA,1\nB,2');
 
-    await appPage.importExportControls.setGridFromText();
+    await appPage.importExportWorkspace.setGridFromText();
     await expect.poll(async () => appPage.gridEditor.renderer.countRows()).toBe(2);
     await expect.poll(async () => appPage.gridEditor.header.countColumns()).toBe(2);
     await expect.poll(async () => appPage.gridEditor.renderer.getCellTextByColumnName('Name', 0)).toBe('A');
 
     // Product decision: malformed CSV may clear/reset grid state for faster import handling.
     // We assert that behavior explicitly instead of requiring state preservation.
-    await appPage.tabbedText.setOutputText('"bad csv');
-    await appPage.importExportControls.setGridFromText();
+    await appPage.textPreviewEditor.setOutputText('"bad csv');
+    await appPage.importExportWorkspace.setGridFromText();
     await expect.poll(async () => appPage.gridEditor.renderer.countRows()).toBe(0);
 
     expectNoPageErrors(pageErrors);

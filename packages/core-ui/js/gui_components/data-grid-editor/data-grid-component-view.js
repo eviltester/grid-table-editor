@@ -3,13 +3,17 @@ import { escapeHtml } from '../shared/html-escape.js';
 import { createGridToolbarComponent } from './grid-toolbar/index.js';
 import { showGridError } from './grid-error-surface.js';
 import { GuardedColumnEdits } from './shared/guarded-column-edits.js';
+import { renderColumnHeaderActionButtonsHtml } from './shared/column-header-action-buttons.js';
 import { createTabulatorGridAdapter } from './tabulator-grid-adapter.js';
 import { GridExtension as TabulatorGridExtension } from './tabulator/gridExtension-tabulator.js';
-import { shouldEnforceUniqueColumnNames } from './gridControl.js';
 import { resolveDocumentObj, resolveWindowObj } from '../shared/dom/default-objects.js';
 import { renderIconHtml } from '../shared/primitives/icon/index.js';
 
-function createAppGridTabulatorOptions({ rootElement, textInputDialogService } = {}) {
+function createAppGridTabulatorOptions({
+  textInputDialogService,
+  shouldEnforceUniqueNames = () => false,
+  surfaceError = showGridError,
+} = {}) {
   const customHeaderFormatter = function (cell) {
     const columnName = typeof cell.getValue === 'function' ? cell.getValue() : '';
     return `
@@ -26,11 +30,7 @@ function createAppGridTabulatorOptions({ rootElement, textInputDialogService } =
           </div>
         </div>
         <div class="headerbuttons">
-          <button type="button" class="header-icon-button" data-action="add-left" title="Add column left" aria-label="Add column left">${renderIconHtml('add-column-left', { className: 'app-icon header-action-icon' })}</button>
-          <button type="button" class="header-icon-button" data-action="rename" title="Rename column" aria-label="Rename column">${renderIconHtml('pencil', { className: 'app-icon header-action-icon' })}</button>
-          <button type="button" class="header-icon-button" data-action="delete" title="Delete column" aria-label="Delete column">${renderIconHtml('trash', { className: 'app-icon header-action-icon' })}</button>
-          <button type="button" class="header-icon-button" data-action="duplicate" title="Duplicate column" aria-label="Duplicate column">${renderIconHtml('copy', { className: 'app-icon header-action-icon' })}</button>
-          <button type="button" class="header-icon-button" data-action="add-right" title="Add column right" aria-label="Add column right">${renderIconHtml('add-column-right', { className: 'app-icon header-action-icon' })}</button>
+          ${renderColumnHeaderActionButtonsHtml()}
         </div>
       </div>
     `;
@@ -48,8 +48,8 @@ function createAppGridTabulatorOptions({ rootElement, textInputDialogService } =
     e.stopPropagation();
 
     const guardedColumnEdits = new GuardedColumnEdits(new TabulatorGridExtension(column.getTable()), {
-      surfaceError: showGridError,
-      shouldEnforceUniqueNames: () => shouldEnforceUniqueColumnNames(rootElement),
+      surfaceError,
+      shouldEnforceUniqueNames,
     });
     const columnId = column.getDefinition().colId || column.getDefinition().field;
     const fieldName = column.getField();
@@ -155,7 +155,13 @@ class DataGridComponentView {
     return `
       <section class="data-grid-editor">
         <div data-role="grid-toolbar-root"></div>
-        <div id="grid-column-error" class="generator-schema-error-text" aria-live="polite" role="status"></div>
+        <div
+          id="grid-column-error"
+          data-role="grid-error-status"
+          class="shared-inline-error-status"
+          aria-live="polite"
+          role="status"
+        ></div>
         <div id="myGrid" style="height: 500px; width:100%;" class="ag-theme-alpine" data-role="data-grid-root"></div>
       </section>
     `;
@@ -166,11 +172,18 @@ class DataGridComponentView {
     const gridRoot = this.root.querySelector('[data-role="data-grid-root"]');
     const createGridToolbar = this.services.createGridToolbar || createGridToolbarComponent;
     const textInputDialogService = createTextInputDialogService({ documentObj: this.documentObj });
+    const resolvedWindowObj = resolveWindowObj(this.services.windowObj, this.documentObj);
+    const showScopedGridError = (message) =>
+      showGridError(message, {
+        documentObj: this.documentObj,
+        resolveElement: () => this.root?.querySelector?.('[data-role="grid-error-status"]'),
+      });
     const tabulatorOptions =
       this.services.tabulatorOptions ||
       createAppGridTabulatorOptions({
-        rootElement: this.root,
         textInputDialogService,
+        surfaceError: showScopedGridError,
+        shouldEnforceUniqueNames: () => this.controller.getState().uniqueColumnNames === true,
       });
 
     this.toolbar = createGridToolbar({
@@ -193,8 +206,8 @@ class DataGridComponentView {
     this.gridAdapter = createTabulatorGridAdapter({
       rootElement: gridRoot,
       documentObj: this.documentObj,
-      windowObj: resolveWindowObj(this.services.windowObj, this.documentObj),
-      TabulatorCtor: this.services.TabulatorCtor || globalThis.Tabulator,
+      windowObj: resolvedWindowObj,
+      TabulatorCtor: this.services.TabulatorCtor || resolvedWindowObj?.Tabulator || globalThis.Tabulator,
       GridExtensionClass: this.services.GridExtensionClass || TabulatorGridExtension,
       tabulatorOptions,
     });

@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
 import { createGeneratorPageComponent } from '../../../js/gui_components/generator/page/index.js';
 
@@ -15,6 +16,14 @@ describe('GeneratorPageView', () => {
   });
 
   test('renders generator page roots and mounts child feature components', () => {
+    const createTimedStatusPresenter = jest.fn(() => ({
+      show() {},
+      clear() {},
+    }));
+    const schemaComponent = {
+      update() {},
+      destroy() {},
+    };
     const component = createGeneratorPageComponent({
       root: document.getElementById('root'),
       documentObj: document,
@@ -24,18 +33,12 @@ describe('GeneratorPageView', () => {
         schemaDefinitionProps: { headingText: 'Schema' },
       },
       services: {
-        createTimedStatusPresenter: () => ({
-          show() {},
-          clear() {},
-        }),
+        createTimedStatusPresenter,
         createGeneratorControlsComponent: ({ root }) => {
           root.innerHTML = '<div id="generatorControlsMounted">controls</div>';
           return {
             update() {},
             destroy() {},
-            getFormatOptionsPanel() {
-              return null;
-            },
           };
         },
         createGeneratorPreviewComponent: ({ root }) => {
@@ -53,15 +56,26 @@ describe('GeneratorPageView', () => {
         },
         createSharedSchemaDefinitionComponent: ({ root }) => {
           root.innerHTML = '<div id="generatorSchemaMounted">schema</div>';
-          return { update() {}, destroy() {} };
+          return schemaComponent;
         },
       },
     });
 
+    expect(document.querySelector('.shared-generator-page')).not.toBeNull();
     expect(document.querySelector('.generator-page')).not.toBeNull();
+    expect(document.querySelector('[data-role="generator-controls-root"]')).not.toBeNull();
+    expect(document.querySelector('[data-role="generator-preview-root"]')).not.toBeNull();
+    expect(document.querySelector('[data-role="generator-schema-definition-root"]')).not.toBeNull();
     expect(document.getElementById('generatorControlsMounted')).not.toBeNull();
     expect(document.getElementById('generatorPreviewMounted')).not.toBeNull();
     expect(document.getElementById('generatorSchemaMounted')).not.toBeNull();
+    expect(createTimedStatusPresenter).toHaveBeenCalledWith(
+      expect.objectContaining({
+        documentObj: document,
+        timeoutMs: 5000,
+        resolveElement: expect.any(Function),
+      })
+    );
 
     component.destroy();
     expect(document.getElementById('root').childElementCount).toBe(0);

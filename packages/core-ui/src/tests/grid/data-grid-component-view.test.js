@@ -58,8 +58,9 @@ describe('DataGridComponent view', () => {
 
     await component.whenReady();
 
-    expect(root.querySelector('#addRowButton')).toBeTruthy();
+    expect(root.querySelector('[data-role="add-row-button"]')).toBeTruthy();
     expect(root.querySelector('#myGrid')).toBeTruthy();
+    expect(root.querySelector('[data-role="grid-error-status"]')?.id).toBe('grid-column-error');
     expect(component.getTableApi()).toBeInstanceOf(FakeTabulator);
     expect(component.getGridExtras()).toBeInstanceOf(FakeGridExtension);
     const headerHtml = component.getTableApi().options.columnDefaults.titleFormatter({
@@ -85,9 +86,40 @@ describe('DataGridComponent view', () => {
     expect(addLeftButton.querySelector('svg.header-action-icon')).not.toBeNull();
     expect(headerHost.querySelector('[data-action="sort-none"]').getAttribute('aria-label')).toBe('Clear sort');
 
-    root.querySelector('#addRowButton').click();
+    root.querySelector('[data-role="add-row-button"]').click();
     expect(component.getGridExtras().addRow).toHaveBeenCalledTimes(1);
 
     component.destroy();
+  });
+
+  test('prefers the root owner window Tabulator when no service override is supplied', async () => {
+    const originalTabulator = globalThis.Tabulator;
+    const root = document.createElement('section');
+    document.body.appendChild(root);
+    dom.window.Tabulator = FakeTabulator;
+    delete globalThis.Tabulator;
+
+    try {
+      const component = createDataGridComponent({
+        root,
+        documentObj: document,
+        services: {
+          GridExtensionClass: FakeGridExtension,
+          requestConfirm: jest.fn(async () => true),
+        },
+      });
+
+      await component.whenReady();
+
+      expect(component.getTableApi()).toBeInstanceOf(FakeTabulator);
+      component.destroy();
+    } finally {
+      if (typeof originalTabulator === 'undefined') {
+        delete globalThis.Tabulator;
+      } else {
+        globalThis.Tabulator = originalTabulator;
+      }
+      delete dom.window.Tabulator;
+    }
   });
 });

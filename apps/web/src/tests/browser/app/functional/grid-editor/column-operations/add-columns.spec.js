@@ -6,11 +6,7 @@ test.describe('2. Column Operations', () => {
     const { appPage, pageErrors } = await openApp(page);
     const [base] = await appPage.gridEditor.header.getColumnNames();
 
-    await expect(page.locator('#myGrid [aria-label="Add column left"]')).toBeVisible();
-    await expect(page.locator('#myGrid [aria-label="Rename column"]')).toBeVisible();
-    await expect(page.locator('#myGrid [aria-label="Delete column"]')).toBeVisible();
-    await expect(page.locator('#myGrid [aria-label="Duplicate column"]')).toBeVisible();
-    await expect(page.locator('#myGrid [aria-label="Add column right"]')).toBeVisible();
+    await appPage.gridEditor.header.expectActionButtonsVisible(base);
 
     await appPage.gridEditor.header.addColumnLeft(base, 'Left Col');
     await expect.poll(async () => appPage.gridEditor.header.getColumnNames()).toEqual(['Left Col', base]);
@@ -31,7 +27,7 @@ test.describe('2. Column Operations', () => {
   test('Unique Column Names prevents duplicate name when adding column left', async ({ page }) => {
     const { appPage, pageErrors } = await openApp(page);
     const [base] = await appPage.gridEditor.header.getColumnNames();
-    const gridError = page.locator('#grid-column-error');
+    const gridError = appPage.gridEditor.errorStatus;
 
     await appPage.gridEditor.setUniqueColumnNames(true);
     await appPage.gridEditor.header.addColumnLeft(base, base);
@@ -44,7 +40,7 @@ test.describe('2. Column Operations', () => {
   test('Unique Column Names prevents duplicate name when adding column right', async ({ page }) => {
     const { appPage, pageErrors } = await openApp(page);
     const [base] = await appPage.gridEditor.header.getColumnNames();
-    const gridError = page.locator('#grid-column-error');
+    const gridError = appPage.gridEditor.errorStatus;
 
     await appPage.gridEditor.setUniqueColumnNames(true);
     await appPage.gridEditor.header.addColumnRight(base, 'Right Col');

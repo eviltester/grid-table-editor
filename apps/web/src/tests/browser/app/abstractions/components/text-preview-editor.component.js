@@ -1,0 +1,139 @@
+const { expect } = require('@playwright/test');
+const { ConfirmDialogComponent } = require('./confirm-dialog.component');
+
+const TEXT_PREVIEW_EDITOR_ROOT = '[data-role="text-preview-editor-root"]';
+
+class TextPreviewEditorComponent {
+  constructor(page) {
+    this.page = page;
+    this.confirmDialog = new ConfirmDialogComponent(page);
+    this.container = page.locator(TEXT_PREVIEW_EDITOR_ROOT);
+    this.tabsList = this.container.locator('[data-role="format-tabs-list"]');
+    this.outputTextArea = this.container.locator('[data-role="preview-text-editor"]').first();
+    this.previewOrEditButton = this.container.getByRole('button', { name: /^(preview|edit)$/i });
+    this.autoPreviewCheckbox = this.container.getByRole('checkbox', { name: /auto preview/i });
+    this.copyButton = this.container.getByRole('button', { name: /^copy$/i });
+    this.subtasks = this.container.locator('[data-role="format-subtasks-root"]');
+
+    this.formatMap = {
+      Markdown: { main: 'Markdown' },
+      CSV: { main: 'CSV' },
+      Delimited: { main: 'Delimited' },
+      JSON: { main: 'JSON' },
+      JSONL: { main: 'JSONL' },
+      XML: { main: 'XML' },
+      SQL: { main: 'SQL' },
+      'C#': { main: 'Code', sub: 'C#' },
+      Java: { main: 'Code', sub: 'Java' },
+      JavaScript: { main: 'Code', sub: 'JavaScript' },
+      Kotlin: { main: 'Code', sub: 'Kotlin' },
+      Perl: { main: 'Code', sub: 'Perl' },
+      PHP: { main: 'Code', sub: 'PHP' },
+      Python: { main: 'Code', sub: 'Python' },
+      Ruby: { main: 'Code', sub: 'Ruby' },
+      TypeScript: { main: 'Code', sub: 'TypeScript' },
+      Gherkin: { main: 'Gherkin' },
+      HTML: { main: 'HTML' },
+      ASCII: { main: 'ASCII' },
+    };
+  }
+
+  async expectVisible() {
+    await expect(this.container).toBeVisible();
+    await expect(this.tabsList).toBeVisible();
+    await expect(this.copyButton).toBeVisible();
+    await expect(this.autoPreviewCheckbox).toBeVisible();
+  }
+
+  async expectReady() {
+    await this.expectVisible();
+  }
+
+  async selectFormat(name) {
+    const config = this.formatMap[name];
+    if (!config) {
+      throw new Error(`Unknown format "${name}"`);
+    }
+
+    await this.tabsList.getByRole('link', { name: config.main, exact: true }).click();
+    if (config.sub) {
+      await this.subtasks.getByRole('link', { name: config.sub, exact: true }).click();
+    }
+  }
+
+  async preview() {
+    await this.previewOrEditButton.click();
+    await this._resolveConfirmModal(true);
+  }
+
+  async togglePreviewEdit(confirmPrompt = true) {
+    await this.previewOrEditButton.click();
+    await this._resolveConfirmModal(confirmPrompt !== false);
+  }
+
+  async isCopyButtonVisible() {
+    return this.copyButton.isVisible();
+  }
+
+  async getPreviewEditLabel() {
+    return (await this.previewOrEditButton.innerText()).trim();
+  }
+
+  async expectPreviewEditLabel(value) {
+    await expect(this.previewOrEditButton).toHaveText(value);
+  }
+
+  async expectPreviewEditLabelContains(value) {
+    await expect(this.previewOrEditButton).toContainText(value);
+  }
+
+  async setOutputText(value) {
+    await this.outputTextArea.fill(value);
+    await this.outputTextArea.press('Tab');
+  }
+
+  async getOutputText() {
+    return this.outputTextArea.inputValue();
+  }
+
+  async setAutoPreview(enabled = true) {
+    if (enabled) {
+      await this.autoPreviewCheckbox.check();
+      return;
+    }
+    await this.autoPreviewCheckbox.uncheck();
+  }
+
+  async expectAutoPreviewInteractive(interactive = true) {
+    if (interactive) {
+      await expect(this.autoPreviewCheckbox).toBeEnabled();
+      return;
+    }
+    await expect(this.autoPreviewCheckbox).toBeDisabled();
+  }
+
+  async expectAutoPreviewChecked(checked = true) {
+    if (checked) {
+      await expect(this.autoPreviewCheckbox).toBeChecked();
+      return;
+    }
+    await expect(this.autoPreviewCheckbox).not.toBeChecked();
+  }
+
+  async expectOutputContains(value) {
+    await expect(this.outputTextArea).toHaveValue(new RegExp(value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  }
+
+  async _resolveConfirmModal(accept = true) {
+    if (!(await this.confirmDialog.isVisible())) {
+      return;
+    }
+    if (accept) {
+      await this.confirmDialog.confirm();
+      return;
+    }
+    await this.confirmDialog.cancel();
+  }
+}
+
+module.exports = { TextPreviewEditorComponent };

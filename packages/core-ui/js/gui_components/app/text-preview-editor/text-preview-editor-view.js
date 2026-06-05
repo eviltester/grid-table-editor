@@ -33,40 +33,45 @@ class TextPreviewEditorView {
   template() {
     return `
       <div class="conversionTabs">
-        <div id="conversionTypes" class="conversionTypes"></div>
+        <div data-role="format-selector-root" class="conversionTypes"></div>
         <div class="rightbuttons">
-          <label id="autoPreviewLabel" class="auto-preview-control">
-            <input type="checkbox" id="autoPreviewCheckbox" />
+          <label data-role="auto-preview-label" class="auto-preview-control">
+            <input type="checkbox" data-role="auto-preview-checkbox" />
             Auto Preview
           </label>
           <span
             title="Preview/Edit mode help"
-            id="previewEditModeHelpIcon"
+            data-role="preview-edit-mode-help"
             data-help="preview-edit-mode-help"
             class="helpicon option-help-icon"
           ></span>
-          <button type="button" title="Toggle Preview/Edit mode" id="previewEditModeButton">Preview</button>
+          <button
+            type="button"
+            title="Toggle Preview/Edit mode"
+            data-role="preview-edit-mode-button"
+          >Preview</button>
           <span data-role="preview-row-count-root"></span>
-          <button type="button" title="Copy text to clipboard" id="copyTextButton">Copy</button>
+          <button type="button" title="Copy text to clipboard" data-role="copy-text-button">Copy</button>
         </div>
       </div>
-      <div id="conversionSubtasks" class="conversionSubtasks" style="display: none"></div>
+      <div data-role="format-subtasks-root" class="conversionSubtasks" style="display: none"></div>
 
-      <div class="edit-area">
-          <div class="options-parent" style="display: none"></div>
+      <div class="edit-area" data-role="edit-area">
+          <div class="options-parent" data-role="options-panel-root" style="display: none"></div>
           <div
             class="options-preview-splitter"
+            data-role="options-preview-splitter"
             style="display: none"
             role="separator"
             tabindex="0"
             aria-orientation="vertical"
             aria-label="Resize options panel"
           ></div>
-          <div id="markdown" style="height: 30%; width:100%;">
+          <div data-role="preview-text-wrapper" style="height: 30%; width:100%;">
             <textarea
               class="textrepresentation"
               name="Markdown"
-              id="markdownarea"
+              data-role="preview-text-editor"
               aria-label="Preview text editor"
             ></textarea>
           </div>
@@ -83,7 +88,6 @@ class TextPreviewEditorView {
         root: rowCountRoot,
         documentObj: this.documentObj,
         props: {
-          inputId: 'previewRowsCount',
           label: '',
           min: 1,
           max: 50,
@@ -93,7 +97,7 @@ class TextPreviewEditorView {
           clampToMaxOnInput: true,
           inputAriaLabel: 'Preview row count',
           className: 'app-preview-row-count-control',
-          labelClassName: 'generator-preview-count-label',
+          labelClassName: 'shared-row-count-label',
         },
         callbacks: {
           onChange: ({ parsed }) => {
@@ -108,17 +112,17 @@ class TextPreviewEditorView {
   }
 
   bindEvents() {
-    this.root.querySelector('#previewEditModeButton')?.addEventListener('click', this.handleModeClick);
-    this.root.querySelector('#autoPreviewCheckbox')?.addEventListener('change', this.handleAutoPreviewChange);
+    this.getElement('preview-edit-mode-button')?.addEventListener('click', this.handleModeClick);
+    this.getElement('auto-preview-checkbox')?.addEventListener('change', this.handleAutoPreviewChange);
     this.getTextArea()?.addEventListener('input', this.handleTextInput);
     this.getCopyButton()?.addEventListener('click', this.handleCopyClick);
   }
 
   render() {
     const state = this.controller.getState();
-    const modeButton = this.root.querySelector('#previewEditModeButton');
-    const autoPreviewCheckbox = this.root.querySelector('#autoPreviewCheckbox');
-    const modeHelpIcon = this.root.querySelector('#previewEditModeHelpIcon');
+    const modeButton = this.getElement('preview-edit-mode-button');
+    const autoPreviewCheckbox = this.getElement('auto-preview-checkbox');
+    const modeHelpIcon = this.getElement('preview-edit-mode-help');
 
     if (modeButton) {
       modeButton.innerText = state.mode === 'preview' ? 'Preview' : 'Edit';
@@ -128,7 +132,6 @@ class TextPreviewEditorView {
       autoPreviewCheckbox.disabled = state.mode !== 'preview';
     }
     this.previewRowCountControl?.update?.({
-      inputId: 'previewRowsCount',
       label: '',
       min: 1,
       max: 50,
@@ -138,7 +141,7 @@ class TextPreviewEditorView {
       clampToMaxOnInput: true,
       inputAriaLabel: 'Preview row count',
       className: 'app-preview-row-count-control',
-      labelClassName: 'generator-preview-count-label',
+      labelClassName: 'shared-row-count-label',
       disabled: state.mode !== 'preview',
     });
     if (modeHelpIcon) {
@@ -153,8 +156,8 @@ class TextPreviewEditorView {
   }
 
   destroy() {
-    this.root.querySelector('#previewEditModeButton')?.removeEventListener('click', this.handleModeClick);
-    this.root.querySelector('#autoPreviewCheckbox')?.removeEventListener('change', this.handleAutoPreviewChange);
+    this.getElement('preview-edit-mode-button')?.removeEventListener('click', this.handleModeClick);
+    this.getElement('auto-preview-checkbox')?.removeEventListener('change', this.handleAutoPreviewChange);
     this.getTextArea()?.removeEventListener('input', this.handleTextInput);
     this.getCopyButton()?.removeEventListener('click', this.handleCopyClick);
     this.previewRowCountControl?.destroy?.();
@@ -163,19 +166,35 @@ class TextPreviewEditorView {
   }
 
   getFormatSelectorRoot() {
-    return this.root.querySelector('#conversionTypes');
+    return this.getElement('format-selector-root');
   }
 
   getFormatSubtasksRoot() {
-    return this.root.querySelector('#conversionSubtasks');
+    return this.getElement('format-subtasks-root');
   }
 
   getTextArea() {
-    return this.root.querySelector('#markdownarea');
+    return this.getElement('preview-text-editor');
   }
 
   getCopyButton() {
-    return this.root.querySelector('#copyTextButton');
+    return this.getElement('copy-text-button');
+  }
+
+  getEditArea() {
+    return this.getElement('edit-area');
+  }
+
+  getOptionsPanelRoot() {
+    return this.getElement('options-panel-root');
+  }
+
+  getOptionsPreviewSplitter() {
+    return this.getElement('options-preview-splitter');
+  }
+
+  getTextAreaWrapper() {
+    return this.getElement('preview-text-wrapper');
   }
 
   getTextValue() {
@@ -194,6 +213,10 @@ class TextPreviewEditorView {
     if (button) {
       button.textContent = value || 'Copy';
     }
+  }
+
+  getElement(role) {
+    return this.root.querySelector(`[data-role="${role}"]`);
   }
 }
 

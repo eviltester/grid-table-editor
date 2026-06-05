@@ -16,8 +16,8 @@ test('app page object loads and reports ready components', async ({ page }) => {
   await appPage.goto();
 
   await expect(appPage.gridEditor.grid).toBeVisible();
-  await expect(appPage.importExportControls.downloadButton).toBeVisible();
-  await expect(appPage.tabbedText.tabsList).toContainText('CSV');
+  await expect(appPage.importExportWorkspace.downloadButton).toBeVisible();
+  await expect(appPage.textPreviewEditor.tabsList).toContainText('CSV');
   expect(pageErrors).toEqual([]);
 });
 
@@ -29,8 +29,8 @@ test('app component abstractions can interact without errors', async ({ page }) 
   await appPage.gridEditor.addRow();
   await appPage.gridEditor.filterBy('Instructions');
   await appPage.gridEditor.clearFilters();
-  await appPage.tabbedText.selectFormat('JSON');
-  await expect(appPage.importExportControls.downloadButton).toContainText('.json');
+  await appPage.textPreviewEditor.selectFormat('JSON');
+  await expect(appPage.importExportWorkspace.downloadButton).toContainText('.json');
   await appPage.testDataPanel.expand();
   await appPage.testDataPanel.expectExpanded();
 

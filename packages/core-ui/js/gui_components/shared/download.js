@@ -1,14 +1,15 @@
-import { getDefaultDocumentObj } from './dom/default-objects.js';
+import { getDefaultDocumentObj, getDefaultWindowObj, resolveWindowObj } from './dom/default-objects.js';
 
 class Download {
   constructor(
     filename,
-    { documentObj = getDefaultDocumentObj(), URLObj = globalThis.URL, BlobCtor = globalThis.Blob } = {}
+    { documentObj = getDefaultDocumentObj(), windowObj = getDefaultWindowObj(), URLObj, BlobCtor } = {}
   ) {
     this.filename = filename;
     this.documentObj = documentObj;
-    this.URLObj = URLObj;
-    this.BlobCtor = BlobCtor;
+    const resolvedWindowObj = resolveWindowObj(windowObj, documentObj);
+    this.URLObj = URLObj || resolvedWindowObj?.URL || globalThis.URL;
+    this.BlobCtor = BlobCtor || resolvedWindowObj?.Blob || globalThis.Blob;
   }
 
   downloadFile(text) {

@@ -22,6 +22,18 @@ function createFakeFormatOptionsPanel() {
   };
 }
 
+function getPreviewRowCountInput(documentObj) {
+  return documentObj.querySelector('[data-role="text-preview-editor-root"] [data-role="preview-row-count-root"] input');
+}
+
+function getPreviewTextArea(documentObj) {
+  return documentObj.querySelector('[data-role="text-preview-editor-root"] [data-role="preview-text-editor"]');
+}
+
+function getCopyTextButton(documentObj) {
+  return documentObj.querySelector('[data-role="text-preview-editor-root"] [data-role="copy-text-button"]');
+}
+
 function createHarness({ props = {}, services = {} } = {}) {
   const dom = new JSDOM('<!doctype html><html><body><div id="root"></div></body></html>');
   const documentObj = dom.window.document;
@@ -80,22 +92,33 @@ describe('ImportExportWorkspace', () => {
     });
 
     expect(documentObj.querySelector('#tabbedTextArea')).not.toBeNull();
+    expect(documentObj.querySelector('[data-role="text-preview-editor-root"]')).not.toBeNull();
     expect(documentObj.querySelector('#settextfromgridbutton')).not.toBeNull();
-    expect(documentObj.querySelector('#previewRowsCount')).not.toBeNull();
-    expect(documentObj.querySelector('#previewRowsCount').getAttribute('aria-label')).toBe('Preview row count');
+    expect(getPreviewRowCountInput(documentObj)).not.toBeNull();
+    expect(getPreviewRowCountInput(documentObj).getAttribute('aria-label')).toBe('Preview row count');
+    expect(documentObj.querySelector('[data-role="text-preview-editor-root"] [data-role="edit-area"]')).not.toBeNull();
+    expect(
+      documentObj.querySelector('[data-role="text-preview-editor-root"] [data-role="options-panel-root"]')
+    ).not.toBeNull();
+    expect(
+      documentObj.querySelector('[data-role="text-preview-editor-root"] [data-role="options-preview-splitter"]')
+    ).not.toBeNull();
+    expect(
+      documentObj.querySelector('[data-role="text-preview-editor-root"] [data-role="preview-text-wrapper"]')
+    ).not.toBeNull();
     expect(component.getState().previewRowLimit).toBe(1);
     fireEvent.click(documentObj.querySelector('#settextfromgridbutton'));
 
     expect(exporter.getGridAsGenericDataTable).toHaveBeenCalledWith(1);
-    expect(documentObj.querySelector('#markdownarea').value).toBe('csv:rows:1');
+    expect(getPreviewTextArea(documentObj).value).toBe('csv:rows:1');
 
-    fireEvent.click(documentObj.querySelector('.type-select-action[data-type="json"]'));
+    fireEvent.click(documentObj.querySelector('[data-role="format-main-tab-action"][data-type="json"]'));
 
     expect(component.getState().selectedFormat).toBe('json');
-    expect(documentObj.querySelector('#markdownarea').value).toBe('json:rows:1');
+    expect(getPreviewTextArea(documentObj).value).toBe('json:rows:1');
     expect(documentObj.querySelector('#filedownload').textContent).toContain('.json');
 
-    const previewRowCount = documentObj.querySelector('#previewRowsCount');
+    const previewRowCount = getPreviewRowCountInput(documentObj);
     previewRowCount.value = '7';
     fireEvent.input(previewRowCount, { target: { value: '7' } });
 
@@ -104,7 +127,7 @@ describe('ImportExportWorkspace', () => {
     component.update({ previewRowLimit: 100 });
 
     expect(component.getState().previewRowLimit).toBe(50);
-    expect(documentObj.querySelector('#previewRowsCount').value).toBe('50');
+    expect(getPreviewRowCountInput(documentObj).value).toBe('50');
 
     component.destroy();
     dom.window.close();
@@ -119,7 +142,7 @@ describe('ImportExportWorkspace', () => {
 
     expect(component.getState().selectedFormat).toBe('json');
     expect(documentObj.querySelector('#filedownload').textContent).toContain('.json');
-    expect(documentObj.querySelector('#markdownarea').value).toBe('json:rows:1');
+    expect(getPreviewTextArea(documentObj).value).toBe('json:rows:1');
 
     component.destroy();
     dom.window.close();
@@ -135,7 +158,7 @@ describe('ImportExportWorkspace', () => {
 
     expect(component.getState().selectedFormat).toBe('json');
     expect(documentObj.querySelector('#filedownload').textContent).toContain('.json');
-    expect(documentObj.querySelector('#markdownarea').value).toBe('json:rows:1');
+    expect(getPreviewTextArea(documentObj).value).toBe('json:rows:1');
 
     component.destroy();
     dom.window.close();
@@ -146,7 +169,7 @@ describe('ImportExportWorkspace', () => {
       props: { previewRowLimit: 2 },
     });
 
-    const textArea = documentObj.querySelector('#markdownarea');
+    const textArea = getPreviewTextArea(documentObj);
     const importButton = documentObj.querySelector('#setgridfromtextbutton');
 
     expect(importButton.disabled).toBe(true);
@@ -160,7 +183,7 @@ describe('ImportExportWorkspace', () => {
     fireEvent.click(importButton);
 
     await waitFor(() => expect(importer.setGridFromGenericDataTable).toHaveBeenCalledTimes(1));
-    expect(documentObj.querySelector('#markdownarea').value).toBe('csv:rows:2');
+    expect(getPreviewTextArea(documentObj).value).toBe('csv:rows:2');
     expect(documentObj.querySelector('#import-progress-status').textContent).toBe('Import complete.');
     expect(component.getState().previewTextDirty).toBe(false);
     expect(importButton.disabled).toBe(true);
@@ -180,10 +203,10 @@ describe('ImportExportWorkspace', () => {
     });
 
     fireEvent.click(documentObj.querySelector('#settextfromgridbutton'));
-    fireEvent.click(documentObj.querySelector('#copyTextButton'));
+    fireEvent.click(getCopyTextButton(documentObj));
 
-    expect(clipboardService.copyFromTextArea).toHaveBeenCalledWith(documentObj.querySelector('#markdownarea'));
-    expect(documentObj.querySelector('#copyTextButton').textContent).toBe('Copied');
+    expect(clipboardService.copyFromTextArea).toHaveBeenCalledWith(getPreviewTextArea(documentObj));
+    expect(getCopyTextButton(documentObj).textContent).toBe('Copied');
 
     fireEvent.click(documentObj.querySelector('#filedownload'));
 
@@ -215,11 +238,95 @@ describe('ImportExportWorkspace', () => {
 
     await waitFor(() => expect(fileReadService.readText).toHaveBeenCalledTimes(1));
     await waitFor(() => expect(importer.setGridFromGenericDataTable).toHaveBeenCalledTimes(1));
-    expect(documentObj.querySelector('#markdownarea').value).toBe('csv:rows:1');
+    expect(getPreviewTextArea(documentObj).value).toBe('csv:rows:1');
     expect(documentObj.querySelector('#import-progress-status').textContent).toBe('Import complete.');
 
     component.destroy();
     dom.window.close();
+  });
+
+  test('uses the root owner window FileReader for the default file-read path instead of ambient globals', async () => {
+    let readerInstance;
+
+    class FakeFileReader {
+      constructor() {
+        this.listeners = {};
+        readerInstance = this;
+      }
+
+      addEventListener(name, callback) {
+        this.listeners[name] = callback;
+      }
+
+      readAsText() {}
+
+      emit(name, event = {}) {
+        this.listeners[name]?.(event);
+      }
+    }
+
+    const originalFileReader = global.FileReader;
+    const dom = new JSDOM('<!doctype html><html><body><div id="root"></div></body></html>');
+    const documentObj = dom.window.document;
+    global.document = documentObj;
+    global.window = dom.window;
+    delete global.FileReader;
+    dom.window.FileReader = FakeFileReader;
+
+    const exporter = {
+      canExport: jest.fn(() => true),
+      getFileExtensionFor: jest.fn((type) => `.${type}`),
+      getGridAsGenericDataTable: jest.fn((limit) => createTable(limit)),
+      getDataTableAs: jest.fn((type, dataTable) => `${type}:rows:${dataTable.getRowCount()}`),
+      getGridAs: jest.fn((type) => `full:${type}`),
+      getOptionsForType: jest.fn(() => undefined),
+    };
+    const importer = {
+      canImport: jest.fn(() => true),
+      getFileExtensionFor: jest.fn((type) => `.${type}`),
+      toGenericDataTable: jest.fn(() => createTable(4)),
+      setGridFromGenericDataTable: jest.fn(() => Promise.resolve()),
+      importText: jest.fn(() => Promise.resolve()),
+    };
+    const component = createImportExportWorkspaceComponent({
+      root: documentObj.getElementById('root'),
+      documentObj,
+      props: { previewRowLimit: 1 },
+      services: {
+        importer,
+        exporter,
+        createFormatOptionsPanel: createFakeFormatOptionsPanel,
+        yieldToUi: async () => {},
+        scheduleTimeoutFn: jest.fn(),
+        requestConfirm: jest.fn(async () => true),
+      },
+    });
+
+    try {
+      const fileInput = documentObj.querySelector('#csvinput');
+
+      Object.defineProperty(fileInput, 'files', {
+        configurable: true,
+        value: [{ name: 'owner-window.csv' }],
+      });
+      fireEvent.change(fileInput);
+
+      expect(readerInstance).toBeInstanceOf(FakeFileReader);
+      readerInstance.emit('progress', { loaded: 5, total: 10, lengthComputable: true });
+      readerInstance.emit('load', { target: { result: 'Name,Role\nAda,Engineer' } });
+
+      await waitFor(() => expect(importer.setGridFromGenericDataTable).toHaveBeenCalledTimes(1));
+      expect(getPreviewTextArea(documentObj).value).toBe('csv:rows:1');
+      expect(documentObj.querySelector('#import-progress-status').textContent).toBe('Import complete.');
+    } finally {
+      if (typeof originalFileReader === 'undefined') {
+        delete global.FileReader;
+      } else {
+        global.FileReader = originalFileReader;
+      }
+      component.destroy();
+      dom.window.close();
+    }
   });
 
   test('imports edit-mode text with busy and error handling through the importer adapter', async () => {
@@ -235,7 +342,7 @@ describe('ImportExportWorkspace', () => {
       services: { importer },
     });
 
-    const textArea = documentObj.querySelector('#markdownarea');
+    const textArea = getPreviewTextArea(documentObj);
     const importButton = documentObj.querySelector('#setgridfromtextbutton');
     textArea.value = 'Name,Role\nAda,Engineer';
     fireEvent.input(textArea, { target: { value: textArea.value } });
@@ -279,6 +386,7 @@ describe('ImportExportWorkspace', () => {
       });
 
       expect(isolatedDom.window.document.querySelector('#tabbedTextArea')).not.toBeNull();
+      expect(isolatedDom.window.document.querySelector('[data-role="text-preview-editor-root"]')).not.toBeNull();
       component.destroy();
     } finally {
       global.document = originalDocument;

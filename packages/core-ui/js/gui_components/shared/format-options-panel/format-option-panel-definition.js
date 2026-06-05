@@ -92,14 +92,16 @@ function renderField(field) {
     : '';
   const childClass = field.child ? ' option-child' : '';
   const className = `${field.className || field.name}${childClass}`;
+  const wrapperClassName = `format-option-field ${className}`;
+  const labelText = `<span class="format-option-label-text">${escapeHtml(field.label)}</span>`;
 
   if (field.type === 'checkbox') {
     return `
-      <div class="${escapeHtml(className)}">
+      <div class="${escapeHtml(wrapperClassName)}">
         <label>
           ${help}
           <input type="checkbox" name="${escapeHtml(field.name)}" ${field.defaultValue === true ? 'checked' : ''}>
-          ${escapeHtml(field.label)}
+          ${labelText}
         </label>
         <br>
       </div>`;
@@ -113,21 +115,21 @@ function renderField(field) {
     const customHtml =
       field.type === 'selectCustom'
         ? `
-      <div class="${escapeHtml(field.customClassName || `custom-${field.name}`)} option-child">
-        <label>
+      <div class="${escapeHtml(`format-option-field ${field.customClassName || `custom-${field.name}`} option-child`)}">
+        <label class="format-option-block-label">
           <span class="helpicon option-help-icon" data-help="${escapeHtml(field.customHelp)}"></span>
-          ${escapeHtml(field.customLabel || 'Custom')}
-          <input type="text" name="${escapeHtml(field.customName)}" value="" style="width:${escapeHtml(field.customWidth || '8em')}">
+          <span class="format-option-label-text">${escapeHtml(field.customLabel || 'Custom')}</span>
+          <input class="format-option-control" type="text" name="${escapeHtml(field.customName)}" value="" style="width:${escapeHtml(field.customWidth || '100%')}">
         </label>
         <br>
       </div>`
         : '';
     return `
-      <div class="${escapeHtml(className)}">
-        <label>
+      <div class="${escapeHtml(wrapperClassName)}">
+        <label class="format-option-block-label">
           ${help}
-          ${escapeHtml(field.label)}
-          <select name="${escapeHtml(field.name)}" ${field.disabled ? 'disabled' : ''}>
+          ${labelText}
+          <select class="format-option-control" name="${escapeHtml(field.name)}" ${field.disabled ? 'disabled' : ''}>
             ${optionHtml(options)}
           </select>
         </label>
@@ -137,25 +139,25 @@ function renderField(field) {
 
   if (field.type === 'textarea') {
     return `
-      <div class="${escapeHtml(className)}">
-        <label>
+      <div class="${escapeHtml(wrapperClassName)}">
+        <label class="format-option-block-label">
           ${help}
-          ${escapeHtml(field.label)}
-          <textarea name="${escapeHtml(field.name)}" rows="${field.rows || 3}" style="width:${escapeHtml(field.width || '100%')}"></textarea>
+          ${labelText}
+          <textarea class="format-option-control format-option-textarea" name="${escapeHtml(field.name)}" rows="${field.rows || 3}" style="width:${escapeHtml(field.width || '100%')}"></textarea>
         </label>
         <br>
       </div>`;
   }
 
   return `
-    <div class="${escapeHtml(className)}">
-      <label>
+    <div class="${escapeHtml(wrapperClassName)}">
+      <label class="format-option-block-label">
         ${help}
-        ${escapeHtml(field.label)}
-        <input type="${field.type === 'number' ? 'number' : 'text'}" name="${escapeHtml(field.name)}" value="${escapeHtml(
+        ${labelText}
+        <input class="format-option-control" type="${field.type === 'number' ? 'number' : 'text'}" name="${escapeHtml(field.name)}" value="${escapeHtml(
           field.defaultValue ?? ''
         )}" ${field.min !== undefined ? `min="${escapeHtml(field.min)}"` : ''} style="width:${escapeHtml(
-          field.width || '8em'
+          field.width || '100%'
         )}">
       </label>
       <br>
@@ -182,7 +184,7 @@ class DeclarativeFormatOptionPanel {
         <div><p><strong>Options</strong> <span data-help="${escapeHtml(this.definition.titleHelp)}" class="helpicon"></span></p></div>
         ${this.definition.fields.map((field) => renderField(field)).join('')}
         <div class="apply">
-          <button class="apply-options">Apply</button>
+          <button class="apply-options" data-role="apply-options-button">Apply</button>
         </div>
       </div>`;
     this.write(this.definition.createDefaultOptions?.() || {});
@@ -193,9 +195,9 @@ class DeclarativeFormatOptionPanel {
 
   bind() {
     const panelRoot = this.root.firstElementChild;
-    const button = this.root.querySelector('.apply-options');
+    const button = this.getApplyButton();
     this.boundDirty = (event) => {
-      if (event?.target?.closest?.('.apply-options')) {
+      if (event?.target?.closest?.('[data-role="apply-options-button"]')) {
         return;
       }
       this.setDirty(true);
@@ -271,6 +273,10 @@ class DeclarativeFormatOptionPanel {
   destroy() {
     this.destroyBindings();
     this.root.innerHTML = '';
+  }
+
+  getApplyButton() {
+    return this.root.querySelector('[data-role="apply-options-button"]');
   }
 }
 

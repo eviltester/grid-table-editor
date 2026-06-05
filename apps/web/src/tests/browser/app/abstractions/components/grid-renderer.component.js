@@ -16,9 +16,17 @@ class GridRendererComponent {
     const count = await this.headerTitles.count();
     const names = [];
     for (let index = 0; index < count; index += 1) {
-      names.push((await this.headerTitles.nth(index).innerText()).trim());
+      names.push(this._normalizeColumnTitle(await this.headerTitles.nth(index).innerText()));
     }
     return names;
+  }
+
+  async countColumns() {
+    return this.headerTitles.count();
+  }
+
+  async expectHasAnyColumns() {
+    await expect(this.headerTitles.first()).toBeVisible();
   }
 
   async countVisibleRows() {
@@ -30,7 +38,7 @@ class GridRendererComponent {
   }
 
   async waitForColumnName(columnName) {
-    await expect(this.gridRoot.locator('.tabulator-col-title').filter({ hasText: columnName }).first()).toBeVisible();
+    await expect(this.columnTitle(columnName)).toBeVisible();
   }
 
   async clickCell(columnIndex, rowIndex) {
@@ -95,9 +103,15 @@ class GridRendererComponent {
     const normalizedName = this._normalizeColumnTitle(columnName);
     return this.gridRoot.evaluate(
       (root, { normalizedName: targetColumnName, desiredCount: limit }) => {
-        const tableFromRoot = root?.__tabulator;
-        const tableFromGlobal = globalThis?.Tabulator?.findTable?.('#myGrid')?.[0];
-        const table = tableFromRoot || tableFromGlobal;
+        const resolveTable = (element) => {
+          const tableFromRoot = element?.__tabulator;
+          if (tableFromRoot) {
+            return tableFromRoot;
+          }
+          const selector = element?.id ? `#${element.id}` : null;
+          return selector ? globalThis?.Tabulator?.findTable?.(selector)?.[0] : null;
+        };
+        const table = resolveTable(root);
         if (!table) {
           return [];
         }
@@ -126,7 +140,8 @@ class GridRendererComponent {
   async getActiveRowCount() {
     return this.gridRoot.evaluate((root) => {
       const tableFromRoot = root?.__tabulator;
-      const tableFromGlobal = globalThis?.Tabulator?.findTable?.('#myGrid')?.[0];
+      const selector = root?.id ? `#${root.id}` : null;
+      const tableFromGlobal = selector ? globalThis?.Tabulator?.findTable?.(selector)?.[0] : null;
       const table = tableFromRoot || tableFromGlobal;
       if (!table) {
         return 0;
@@ -195,8 +210,12 @@ class GridRendererComponent {
     await this.clickCell(columnIndex, rowIndex);
   }
 
+  row(rowIndex) {
+    return this.rows.nth(rowIndex);
+  }
+
   async selectRow(rowIndex) {
-    await this.rows.nth(rowIndex).click();
+    await this.row(rowIndex).click();
   }
 
   async selectRows(rowIndexes) {
@@ -205,8 +224,36 @@ class GridRendererComponent {
     }
     await this.selectRow(rowIndexes[0]);
     for (let i = 1; i < rowIndexes.length; i += 1) {
-      await this.rows.nth(rowIndexes[i]).click({ modifiers: ['Control'] });
+      await this.row(rowIndexes[i]).click({ modifiers: ['Control'] });
     }
+  }
+
+  async selectRowRange(startIndex, endIndex) {
+    await this.row(startIndex).click();
+    await this.row(endIndex).click({ modifiers: ['Shift'] });
+  }
+
+  async dragRowTo(sourceIndex, targetIndex) {
+    await this.row(sourceIndex).dragTo(this.row(targetIndex));
+  }
+
+  async waitForRowEditor(rowIndex, { state = 'visible' } = {}) {
+    const editor = this.row(rowIndex)
+      .locator('.tabulator-editing input, .tabulator-editing textarea, .tabulator-editing select')
+      .first();
+    await editor.waitFor({ state });
+    return editor;
+  }
+
+  async expectCellReadOnly(rowIndex = 0, columnIndex = 0) {
+    const targetCell = this._cellByIndexes(columnIndex, rowIndex);
+    const editingInputs = this.gridRoot.locator(
+      '.tabulator-editing input, .tabulator-editing textarea, .tabulator-editing select'
+    );
+
+    await expect(targetCell).toBeVisible();
+    await targetCell.dblclick();
+    await expect(editingInputs).toHaveCount(0);
   }
 
   async setCellTextByField(field, rowIndex, value) {
@@ -245,6 +292,23 @@ class GridRendererComponent {
   async doubleClickCellByColumnName(columnName, rowIndex) {
     const columnIndex = await this._columnIndexByName(columnName);
     await this._cellByIndexes(columnIndex, rowIndex).dblclick();
+  }
+
+  columnTitle(columnName) {
+    const normalized = this._normalizeColumnTitle(columnName);
+    return this.gridRoot.locator('.tabulator-col-title', { hasText: normalized }).first();
+  }
+
+  columnRoot(columnName) {
+    return this.columnTitle(columnName).locator(`xpath=ancestor::*[contains(@class,'tabulator-col')]`).first();
+  }
+
+  headerFilterInput(columnName) {
+    return this.columnRoot(columnName).locator('.tabulator-header-filter input');
+  }
+
+  allHeaderFilterInputs() {
+    return this.gridRoot.locator('.tabulator-header-filter input');
   }
 
   _cellByIndexes(columnIndex, rowIndex) {

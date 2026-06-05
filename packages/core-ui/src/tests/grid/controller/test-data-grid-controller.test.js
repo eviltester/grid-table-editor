@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
-import { createTestDataGridControl } from '../../../../js/gui_components/app/test-data-grid/controller/test-data-grid-controller.js';
+import { createTestDataGenerationPanelManager } from '../../../../js/gui_components/app/test-data-grid/controller/test-data-grid-controller.js';
 
 describe('test data grid controller', () => {
   let dom;
@@ -28,6 +28,15 @@ describe('test data grid controller', () => {
     const refreshTestDataPreview = jest.fn();
     const initializeSchemaErrorDisplayFn = jest.fn();
     const identifyFakerCommandsFn = jest.fn();
+    const uiStatusService = {
+      setTestDataStatus: jest.fn(),
+      setTestDataLoadingStatus: jest.fn(),
+      clearPendingTestDataStatusReset: jest.fn(),
+      scheduleTestDataStatusReset: jest.fn(),
+      destroy: jest.fn(),
+    };
+    const createTestDataUiStatusServiceFn = jest.fn(() => uiStatusService);
+    const generationServiceOptions = [];
     const createTestDataGenerationServiceFn = jest.fn(() => ({
       updatePairwiseButtonVisibility,
       generateTestData,
@@ -36,24 +45,34 @@ describe('test data grid controller', () => {
     }));
     const panel = {
       destroy: jest.fn(),
-      getMode: jest.fn(() => 'new-table'),
+      getMode: jest.fn(() => 'amend-selected'),
       setPairwiseVisible: jest.fn(),
       setRowCountValue: jest.fn(),
       validateSchemaRows: jest.fn(() => ({ rows: [], errors: [] })),
       syncSchemaTextFromRows: jest.fn(),
       insertSampleSchema: jest.fn(),
     };
+    createTestDataGenerationServiceFn.mockImplementation((options) => {
+      generationServiceOptions.push(options);
+      return {
+        updatePairwiseButtonVisibility,
+        generateTestData,
+        generatePairwiseTestData,
+        refreshTestDataPreview,
+      };
+    });
     const createDataPopulationPanelComponentFn = jest.fn(({ callbacks }) => {
       panel.callbacks = callbacks;
       return panel;
     });
 
-    const control = createTestDataGridControl({
+    const control = createTestDataGenerationPanelManager({
       documentObj: document,
       initializeSchemaErrorDisplayFn,
       identifyFakerCommandsFn,
       createTestDataGenerationServiceFn,
       createDataPopulationPanelComponentFn,
+      createTestDataUiStatusServiceFn,
     });
 
     const importer = { setGridFromGenericDataTable: jest.fn() };
@@ -64,6 +83,22 @@ describe('test data grid controller', () => {
 
     expect(identifyFakerCommandsFn).toHaveBeenCalledTimes(1);
     expect(initializeSchemaErrorDisplayFn).toHaveBeenCalledTimes(1);
+    expect(initializeSchemaErrorDisplayFn).toHaveBeenCalledWith(
+      expect.objectContaining({
+        schemaTextTokens: [],
+      }),
+      expect.objectContaining({
+        documentObj: document,
+        getSchemaErrorElement: expect.any(Function),
+      })
+    );
+    expect(createTestDataUiStatusServiceFn).toHaveBeenCalledWith(
+      expect.objectContaining({
+        documentObj: document,
+        windowObj: window,
+        getStatusElement: expect.any(Function),
+      })
+    );
     expect(createTestDataGenerationServiceFn).toHaveBeenCalledTimes(1);
     expect(createDataPopulationPanelComponentFn).toHaveBeenCalledTimes(1);
     expect(createDataPopulationPanelComponentFn).toHaveBeenCalledWith(
@@ -73,7 +108,6 @@ describe('test data grid controller', () => {
           selectedMode: 'new-table',
           pairwiseVisible: false,
           rowCountProps: expect.objectContaining({
-            inputId: 'generateCount',
             value: 1,
           }),
         }),
@@ -93,6 +127,11 @@ describe('test data grid controller', () => {
     expect(state.mainGridExtras).toBe(mainGridExtras);
     expect(state.dataPopulationPanel).toBe(panel);
     expect(control.getState()).toBe(state);
+    expect(generationServiceOptions[0].getGenerationMode()).toBe('amend-selected');
+    generationServiceOptions[0].setTestDataStatus('done');
+    generationServiceOptions[0].setTestDataLoadingStatus('loading');
+    expect(uiStatusService.setTestDataStatus).toHaveBeenCalledWith('done');
+    expect(uiStatusService.setTestDataLoadingStatus).toHaveBeenCalledWith('loading');
   });
 
   test('updates row count defaults when the mounted panel changes mode', () => {
@@ -111,7 +150,7 @@ describe('test data grid controller', () => {
       return panel;
     });
 
-    const control = createTestDataGridControl({
+    const control = createTestDataGenerationPanelManager({
       documentObj: document,
       initializeSchemaErrorDisplayFn: jest.fn(),
       identifyFakerCommandsFn: jest.fn(),
@@ -141,8 +180,8 @@ describe('test data grid controller', () => {
     expect(setRowCountValue).toHaveBeenNthCalledWith(2, 3);
   });
 
-  test('keeps the legacy enableTestDataGenerationInterface alias mapped to the component mount API', () => {
-    const control = createTestDataGridControl({
+  test('exposes the component-oriented mount API on the returned control', () => {
+    const control = createTestDataGenerationPanelManager({
       documentObj: document,
       initializeSchemaErrorDisplayFn: jest.fn(),
       identifyFakerCommandsFn: jest.fn(),
@@ -160,7 +199,55 @@ describe('test data grid controller', () => {
       })),
     });
 
-    expect(control.enableTestDataGenerationInterface).toBe(control.mountTestDataGenerationPanel);
+    expect(typeof control.mountTestDataGenerationPanel).toBe('function');
+  });
+
+  test('prefers an injected RandExpClass over the ambient global for generation and schema props', () => {
+    const injectedRandExpClass = function InjectedRandExp() {};
+    const ambientRandExpClass = function AmbientRandExp() {};
+    global.RandExp = ambientRandExpClass;
+
+    const createTestDataGenerationServiceFn = jest.fn(() => ({
+      updatePairwiseButtonVisibility: jest.fn(),
+      generateTestData: jest.fn(),
+      generatePairwiseTestData: jest.fn(),
+      refreshTestDataPreview: jest.fn(),
+    }));
+    const createDataPopulationPanelComponentFn = jest.fn(() => ({
+      destroy: jest.fn(),
+      getMode: jest.fn(() => 'new-table'),
+      setPairwiseVisible: jest.fn(),
+      setRowCountValue: jest.fn(),
+      validateSchemaRows: jest.fn(() => ({ rows: [], errors: [] })),
+      syncSchemaTextFromRows: jest.fn(),
+      insertSampleSchema: jest.fn(),
+    }));
+
+    const control = createTestDataGenerationPanelManager({
+      documentObj: document,
+      RandExpClass: injectedRandExpClass,
+      initializeSchemaErrorDisplayFn: jest.fn(),
+      identifyFakerCommandsFn: jest.fn(),
+      createTestDataGenerationServiceFn,
+      createDataPopulationPanelComponentFn,
+    });
+
+    control.mountTestDataGenerationPanel('host', {}, {}, { getRowCount: jest.fn(() => 1) });
+
+    expect(createTestDataGenerationServiceFn).toHaveBeenCalledWith(
+      expect.objectContaining({
+        RandExp: injectedRandExpClass,
+      })
+    );
+    expect(createDataPopulationPanelComponentFn).toHaveBeenCalledWith(
+      expect.objectContaining({
+        props: expect.objectContaining({
+          schemaDefinitionProps: expect.objectContaining({
+            RandExp: injectedRandExpClass,
+          }),
+        }),
+      })
+    );
   });
 
   test('keeps generation status, requested row count, and pairwise visibility isolated across documents', () => {
@@ -208,7 +295,7 @@ describe('test data grid controller', () => {
       };
     });
 
-    const controlA = createTestDataGridControl({
+    const controlA = createTestDataGenerationPanelManager({
       documentObj: domA.window.document,
       initializeSchemaErrorDisplayFn: jest.fn(),
       identifyFakerCommandsFn: jest.fn(),
@@ -217,7 +304,7 @@ describe('test data grid controller', () => {
       setTestDataLoadingStatusFn: loadingA,
       createDataPopulationPanelComponentFn: jest.fn(() => panelA),
     });
-    const controlB = createTestDataGridControl({
+    const controlB = createTestDataGenerationPanelManager({
       documentObj: domB.window.document,
       initializeSchemaErrorDisplayFn: jest.fn(),
       identifyFakerCommandsFn: jest.fn(),
@@ -255,16 +342,20 @@ describe('test data grid controller', () => {
     delete global.document;
 
     try {
+      const generationServiceOptions = [];
       const createDataPopulationPanelComponentFn = jest.fn();
-      const control = createTestDataGridControl({
+      const control = createTestDataGenerationPanelManager({
         initializeSchemaErrorDisplayFn: jest.fn(),
         identifyFakerCommandsFn: jest.fn(),
-        createTestDataGenerationServiceFn: jest.fn(() => ({
-          updatePairwiseButtonVisibility: jest.fn(),
-          generateTestData: jest.fn(),
-          generatePairwiseTestData: jest.fn(),
-          refreshTestDataPreview: jest.fn(),
-        })),
+        createTestDataGenerationServiceFn: jest.fn((options) => {
+          generationServiceOptions.push(options);
+          return {
+            updatePairwiseButtonVisibility: jest.fn(),
+            generateTestData: jest.fn(),
+            generatePairwiseTestData: jest.fn(),
+            refreshTestDataPreview: jest.fn(),
+          };
+        }),
         createDataPopulationPanelComponentFn,
       });
 
@@ -272,6 +363,7 @@ describe('test data grid controller', () => {
 
       expect(createDataPopulationPanelComponentFn).not.toHaveBeenCalled();
       expect(state.dataPopulationPanel).toBeNull();
+      expect(generationServiceOptions[0].getGenerationMode()).toBe('new-table');
     } finally {
       global.document = originalDocument;
     }

@@ -5,13 +5,7 @@ class PopulationActionsView {
     this.root = root;
     this.controller = controller;
     this.documentObj = resolveDocumentObj(documentObj, root);
-    this.ids = {
-      generateButton: 'generatedata',
-      generatePairwiseButton: 'generateallpairs',
-      refreshPreviewButton: 'refreshtestdatapreview',
-      status: 'testdata-status',
-      ...ids,
-    };
+    this.ids = { ...ids };
     this.handleGenerate = () => this.controller.handleGenerate();
     this.handleGeneratePairwise = () => this.controller.handleGeneratePairwise();
     this.handleRefreshPreview = () => this.controller.handleRefreshPreview();
@@ -23,15 +17,21 @@ class PopulationActionsView {
     }
 
     this.root.innerHTML = `
-      <button id="${this.ids.generateButton}">Generate</button>
-      <button id="${this.ids.generatePairwiseButton}" style="display:none;">Generate Pairwise</button>
-      <button id="${this.ids.refreshPreviewButton}">Refresh Text Preview</button>
-      <span id="${this.ids.status}" class="import-progress-status" style="display:none;" aria-live="polite"></span>
+      <button${this.ids.generateButton ? ` id="${this.ids.generateButton}"` : ''} data-role="generate-button">Generate</button>
+      <button${this.ids.generatePairwiseButton ? ` id="${this.ids.generatePairwiseButton}"` : ''} data-role="generate-pairwise-button" style="display:none;">Generate Pairwise</button>
+      <button${this.ids.refreshPreviewButton ? ` id="${this.ids.refreshPreviewButton}"` : ''} data-role="refresh-preview-button">Refresh Text Preview</button>
+      <span
+        ${this.ids.status ? `id="${this.ids.status}"` : ''}
+        data-role="population-status"
+        class="import-progress-status"
+        style="display:none;"
+        aria-live="polite"
+      ></span>
     `;
 
-    this.generateButton = this.root.querySelector(`#${this.ids.generateButton}`);
-    this.generatePairwiseButton = this.root.querySelector(`#${this.ids.generatePairwiseButton}`);
-    this.refreshPreviewButton = this.root.querySelector(`#${this.ids.refreshPreviewButton}`);
+    this.generateButton = this.root.querySelector('[data-role="generate-button"]');
+    this.generatePairwiseButton = this.root.querySelector('[data-role="generate-pairwise-button"]');
+    this.refreshPreviewButton = this.root.querySelector('[data-role="refresh-preview-button"]');
 
     this.generateButton?.addEventListener('click', this.handleGenerate);
     this.generatePairwiseButton?.addEventListener('click', this.handleGeneratePairwise);

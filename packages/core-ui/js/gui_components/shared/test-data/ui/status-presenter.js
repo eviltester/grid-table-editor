@@ -15,6 +15,7 @@ function getDefaultDocumentObj() {
 function createBaseStatusPresenter({
   documentObj = getDefaultDocumentObj(),
   elementId,
+  resolveElement,
   statusClassName = 'is-loading',
   loadingClassName,
   visibleDisplay = 'inline-block',
@@ -24,6 +25,10 @@ function createBaseStatusPresenter({
   let rootElement = null;
 
   const getElement = () => {
+    const resolvedElement = resolveElement?.();
+    if (resolvedElement) {
+      return resolvedElement;
+    }
     if (!documentObj || !elementId) {
       return null;
     }

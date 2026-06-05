@@ -1,7 +1,7 @@
 import { fireEvent, within, waitFor } from '@testing-library/dom';
 import RandExp from 'randexp';
 import { Exporter } from '@anywaydata/core/grid/exporter.js';
-import { createTestDataGridControl } from '../../../../../js/gui_components/app/test-data-grid/index.js';
+import { createTestDataGenerationPanelManager } from '../../../../../js/gui_components/app/test-data-grid/index.js';
 import { installDomGlobals, cleanupDomGlobals } from '../../support/testing-library-dom-setup.js';
 import { applyDeterministicScenarioSeed, withDeterministicScenarioSeed } from './deterministic-scenario-seed.js';
 import { assertDataTableHasNoErrorIndicators, assertNoErrorIndicators } from '../../support/generated-value-quality.js';
@@ -33,8 +33,12 @@ function clickElement(element) {
   fireEvent.click(element);
 }
 
+function getPanelRoot() {
+  return document.querySelector('[data-role="data-population-panel-root"]');
+}
+
 function getAppGridRow(index = 0) {
-  return Array.from(document.querySelectorAll('#testDataSchemaRows .generator-schema-row'))[index];
+  return Array.from(document.querySelectorAll('[data-role="schema-rows-region"] .shared-schema-row'))[index];
 }
 
 function fillAppGridRow(rowIndex, row) {
@@ -69,7 +73,7 @@ function createAppTestDataInteractionHarness() {
   );
   global.RandExp = RandExp;
   let latestDataTable = null;
-  const control = createTestDataGridControl({
+  const control = createTestDataGenerationPanelManager({
     documentObj: document,
     windowObj: window,
     DebouncerClass: ImmediateDebouncer,
@@ -121,36 +125,42 @@ function createAppTestDataInteractionHarness() {
       for (let index = 0; index < scenario.rows.length; index += 1) {
         let attempts = 0;
         const maxAttempts = Math.max(10, index + 10);
-        while (document.querySelectorAll('#testDataSchemaRows .generator-schema-row').length <= index) {
+        while (document.querySelectorAll('[data-role="schema-rows-region"] .shared-schema-row').length <= index) {
           if (attempts >= maxAttempts) {
             throw new Error(`Unable to add schema row at index ${index} after ${attempts} attempts`);
           }
           attempts += 1;
-          clickElement(document.getElementById('testDataAddSchemaRowButton'));
+          clickElement(document.querySelector('[data-role="schema-add-field"]'));
         }
         fillAppGridRow(index, scenario.rows[index]);
       }
 
       await waitFor(() =>
-        expect(document.getElementById('testDataSchemaText').value).toBe(
+        expect(document.querySelector('[data-role="schema-textbox"]').value).toBe(
           scenario.expectedUiSchemaText || scenario.expectedSchemaText
         )
       );
 
-      const schemaTextArea = document.getElementById('testDataSchemaText');
+      const schemaTextArea = document.querySelector('[data-role="schema-textbox"]');
       setInputValue(schemaTextArea, scenario.expectedSchemaText);
       await waitFor(() => {
-        if (document.querySelectorAll('#testDataSchemaRows .generator-schema-row').length >= scenario.rows.length) {
+        if (
+          document.querySelectorAll('[data-role="schema-rows-region"] .shared-schema-row').length >=
+          scenario.rows.length
+        ) {
           return;
         }
         throw new Error('Schema rows not yet synchronised from text');
       });
 
       if (scenario.pairwiseEligible) {
-        expect(document.getElementById('generateallpairs').style.display).not.toBe('none');
+        expect(getPanelRoot().querySelector('[data-role="generate-pairwise-button"]').style.display).not.toBe('none');
       }
 
-      setInputValue(document.getElementById('generateCount'), scenario.pairwiseEligible ? '2' : '1');
+      setInputValue(
+        within(getPanelRoot()).getByRole('spinbutton', { name: 'How Many?' }),
+        scenario.pairwiseEligible ? '2' : '1'
+      );
       applyDeterministicScenarioSeed(scenario.id);
       clickElement(within(document.body).getByRole('button', { name: /^generate$/i }));
       await waitFor(() => expect(latestDataTable).toBeTruthy());
@@ -195,7 +205,7 @@ function createAppTestDataInteractionHarness() {
         previewCsv,
         outputPreviewText,
         pairwiseCsv,
-        schemaText: document.getElementById('testDataSchemaText').value,
+        schemaText: document.querySelector('[data-role="schema-textbox"]').value,
       };
     });
   }

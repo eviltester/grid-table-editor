@@ -115,4 +115,19 @@ describe('test-data-grid schema text sync', () => {
     expect(() => initializeSchemaErrorDisplay(state, { documentObj: null })).not.toThrow();
     expect(typeof state.schemaErrorDisplay?.show).toBe('function');
   });
+
+  test('initializeSchemaErrorDisplay prefers an injected schema error element getter', () => {
+    const state = createSchemaTextSyncState();
+    const errorElement = document.createElement('span');
+    errorElement.setAttribute('data-role', 'schema-error');
+    document.body.appendChild(errorElement);
+
+    initializeSchemaErrorDisplay(state, {
+      documentObj: document,
+      getSchemaErrorElement: () => errorElement,
+    });
+    state.schemaErrorDisplay.show('Bad schema');
+
+    expect(errorElement.textContent).toContain('Bad schema');
+  });
 });

@@ -57,6 +57,7 @@ describe('shared-schema-definition view', () => {
       });
       return tippyInstances.map(({ instance }) => instance);
     });
+    dom.window.tippy = global.tippy;
   });
 
   afterEach(() => {
@@ -65,6 +66,7 @@ describe('shared-schema-definition view', () => {
     delete global.document;
     delete global.Event;
     delete global.tippy;
+    delete dom.window.tippy;
   });
 
   function createComponent() {
@@ -75,15 +77,6 @@ describe('shared-schema-definition view', () => {
       documentObj: document,
       props: {
         headingText: 'Schema',
-        ids: {
-          rows: 'schemaRows',
-          textContainer: 'schemaTextContainer',
-          text: 'schemaText',
-          addButton: 'addSchemaRowButton',
-          toggleButton: 'schemaModeToggleButton',
-          helpIcon: 'schemaModeHelpIcon',
-          error: 'schemaErrorText',
-        },
         schemaTextToDataRules,
         dataRulesToSchemaText,
         faker: {},
@@ -108,11 +101,55 @@ describe('shared-schema-definition view', () => {
       },
       callbacks: {
         onSchemaError: (message) => {
-          const errorElement = document.getElementById('schemaErrorText');
+          const errorElement = document.querySelector('[data-role="schema-error"]');
           errorElement.textContent = message;
         },
         onSchemaClear: () => {
-          const errorElement = document.getElementById('schemaErrorText');
+          const errorElement = document.querySelector('[data-role="schema-error"]');
+          errorElement.textContent = '';
+        },
+      },
+    });
+  }
+
+  function createComponentWithIds(ids) {
+    const root = document.getElementById('root');
+    const createBlankRow = createBlankRowFactory('generator-compat-row');
+    return createSharedSchemaDefinitionComponent({
+      root,
+      documentObj: document,
+      props: {
+        headingText: 'Schema',
+        ids,
+        schemaTextToDataRules,
+        dataRulesToSchemaText,
+        faker: {},
+        RandExp: function StoryRandExp() {},
+        createBlankRow,
+        mapRuleToRow: (rule, leadingTextLines = []) => {
+          const row = mapDataRuleToSchemaRow(rule, {
+            createBlankSchemaRow: createBlankRow,
+          });
+          row.leadingTextLines = Array.isArray(leadingTextLines) ? leadingTextLines.slice() : [];
+          return row;
+        },
+        getMethodPickerOptions: () => [],
+        getVisibleDomainCommands: () => ['string.counterString'],
+        fakerCommands: ['helpers.arrayElement'],
+        sampleSchemaText: TEST_DATA_GRID_SAMPLE_SCHEMA_TEXT,
+        buildModeHelpHtml: ({ inTextMode }) =>
+          inTextMode
+            ? '<p>Edit as Schema</p><button type="button" class="shared-schema-sample-button">Insert Example Schema</button>'
+            : '<p>Edit as Text</p><button type="button" class="shared-schema-sample-button">Insert Example Schema</button>',
+        validateSchemaRows,
+      },
+      callbacks: {
+        onSchemaError: (message) => {
+          const errorElement = document.getElementById(ids.error);
+          errorElement.textContent = message;
+        },
+        onSchemaClear: () => {
+          const errorElement = document.getElementById(ids.error);
           errorElement.textContent = '';
         },
       },
@@ -128,9 +165,31 @@ describe('shared-schema-definition view', () => {
     expect(document.querySelector('[data-role="schema-textbox"]')).toBeTruthy();
     expect(document.querySelector('[data-role="schema-mode-toggle"]')).toBeTruthy();
     expect(document.querySelector('[data-role="schema-add-field"]')).toBeTruthy();
-    expect(document.querySelectorAll('.generator-schema-row').length).toBe(1);
+    expect(document.querySelector('[data-role="schema-mode-help"]').getAttribute('data-help')).toBe(
+      'shared-schema-mode-help'
+    );
+    expect(document.querySelector('[data-role="schema-mode-toggle-group"]').className).toBe(
+      'shared-schema-button-with-help'
+    );
+    expect(document.querySelector('.shared-schema-definition-shell')).toBeTruthy();
+    expect(document.querySelector('.shared-schema-heading')).toBeTruthy();
+    expect(document.querySelector('.shared-schema-rows')).toBeTruthy();
+    expect(document.querySelector('.shared-schema-text')).toBeTruthy();
+    expect(document.querySelector('.shared-schema-footer')).toBeTruthy();
+    expect(document.querySelector('[data-role="schema-rows-region"]').className).toBe('shared-schema-rows');
+    expect(document.querySelector('[data-role="schema-text-region"]').className).toBe('shared-schema-text');
+    expect(document.querySelector('[data-role="schema-footer"]').className).toBe('shared-schema-footer');
+    expect(document.querySelectorAll('.shared-schema-row').length).toBe(1);
+    expect(document.querySelectorAll('.shared-schema-row').length).toBe(1);
+    expect(document.querySelector('[data-role="schema-rows-region"]').id).toBe('');
+    expect(document.querySelector('[data-role="schema-text-region"]').id).toBe('');
+    expect(document.querySelector('[data-role="schema-textbox"]').id).toBe('');
+    expect(document.querySelector('[data-role="schema-add-field"]').id).toBe('');
+    expect(document.querySelector('[data-role="schema-mode-toggle"]').id).toBe('');
+    expect(document.querySelector('[data-role="schema-mode-help"]').id).toBe('');
+    expect(document.querySelector('[data-role="schema-error"]').id).toBe('');
 
-    const toggleButton = document.getElementById('schemaModeToggleButton');
+    const toggleButton = document.querySelector('[data-role="schema-mode-toggle"]');
     fireEvent.click(toggleButton);
 
     expect(toggleButton.textContent).toBe('Edit as Schema');
@@ -140,19 +199,42 @@ describe('shared-schema-definition view', () => {
 
   test('surfaces schema parse errors through the mounted component callbacks', () => {
     const component = createComponent();
-    const textArea = document.getElementById('schemaText');
+    const textArea = document.querySelector('[data-role="schema-textbox"]');
 
-    fireEvent.click(document.getElementById('schemaModeToggleButton'));
+    fireEvent.click(document.querySelector('[data-role="schema-mode-toggle"]'));
     textArea.value = 'OnlyName';
     component.syncFromText({ showErrors: true });
 
-    expect(document.getElementById('schemaErrorText').textContent.length).toBeGreaterThan(0);
+    expect(document.querySelector('[data-role="schema-error"]').textContent.length).toBeGreaterThan(0);
+  });
+
+  test('works with generator page ids while shared internals keep using neutral schema keys', () => {
+    createComponentWithIds({
+      rows: 'generatorSchemaRows',
+      textContainer: 'generatorSchemaTextContainer',
+      text: 'generatorSchemaText',
+      addButton: 'addSchemaRowButton',
+      toggleButton: 'schemaModeToggleButton',
+      helpIcon: 'schemaModeHelpIcon',
+      error: 'generatorSchemaErrorText',
+    });
+
+    expect(document.getElementById('generatorSchemaRows')).toBeTruthy();
+    expect(document.querySelectorAll('.shared-schema-row')).toHaveLength(1);
+    expect(document.querySelector('[data-role="schema-mode-toggle-group"]').className).toBe(
+      'shared-schema-button-with-help'
+    );
+
+    fireEvent.click(document.getElementById('schemaModeToggleButton'));
+
+    expect(document.getElementById('generatorSchemaTextContainer').style.display).toBe('block');
+    expect(document.getElementById('generatorSchemaRows').style.display).toBe('none');
   });
 
   test('binds the mode help icon with tippy content and updates it when the mode changes', () => {
     createComponent();
 
-    const helpIcon = document.getElementById('schemaModeHelpIcon');
+    const helpIcon = document.querySelector('[data-role="schema-mode-help"]');
     expect(global.tippy).toHaveBeenCalled();
     expect(helpIcon._tippy).toBeTruthy();
 
@@ -161,7 +243,7 @@ describe('shared-schema-definition view', () => {
     expect(initialBinding.options.content(helpIcon)).toContain('Edit as Text');
     expect(initialBinding.options.content(helpIcon)).toContain('Insert Example Schema');
 
-    fireEvent.click(document.getElementById('schemaModeToggleButton'));
+    fireEvent.click(document.querySelector('[data-role="schema-mode-toggle"]'));
 
     expect(helpIcon.getAttribute('data-help-text')).toContain('Edit as Schema');
     const reboundBinding = [...tippyInstances].reverse().find(({ element }) => element === helpIcon);

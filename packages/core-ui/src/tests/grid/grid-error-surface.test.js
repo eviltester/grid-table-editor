@@ -48,4 +48,41 @@ describe('grid-error-surface', () => {
     expect(() => showGridError('No document', null)).not.toThrow();
     expect(display.getState()).toEqual({});
   });
+
+  test('supports a rooted resolver so callers do not need the global grid error id', () => {
+    const dom = new JSDOM(`
+      <!doctype html>
+      <html>
+        <body>
+          <section data-role="grid-root">
+            <div data-role="grid-error-status"></div>
+          </section>
+        </body>
+      </html>
+    `);
+
+    try {
+      const resolveElement = () => dom.window.document.querySelector('[data-role="grid-error-status"]');
+      const displayA = getGridErrorDisplay({
+        documentObj: dom.window.document,
+        resolveElement,
+      });
+      const displayB = getGridErrorDisplay({
+        documentObj: dom.window.document,
+        resolveElement,
+      });
+
+      expect(displayA).toBe(displayB);
+
+      showGridError('Scoped error', {
+        documentObj: dom.window.document,
+        resolveElement,
+      });
+
+      expect(dom.window.document.querySelector('[data-role="grid-error-status"]').textContent).toBe('Scoped error');
+      expect(dom.window.document.getElementById(GRID_ERROR_ELEMENT_ID)).toBeNull();
+    } finally {
+      dom.window.close();
+    }
+  });
 });

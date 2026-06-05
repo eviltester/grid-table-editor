@@ -26,11 +26,19 @@ describe('FormatSelector', () => {
       },
     });
 
-    documentObj.querySelector('.type-select-action[data-tab-id="code"]')?.click();
-    documentObj.querySelector('.subtask-select-action[data-type="python"]')?.click();
+    const tabsList = documentObj.querySelector('[data-role="format-tabs-list"]');
+    expect(tabsList).not.toBeNull();
+
+    documentObj.querySelector('[data-role="format-main-tab-action"][data-tab-id="code"]')?.click();
+    documentObj.querySelector('[data-role="format-subtask-action"][data-type="python"]')?.click();
 
     expect(onFormatChange).toHaveBeenLastCalledWith('python');
     expect(component.getSelectedFormat()).toBe('python');
-    expect(documentObj.querySelector('.subtask-select.active-type')?.getAttribute('data-type')).toBe('python');
+    expect(documentObj.querySelector('[data-role="format-subtasks-list"]')).not.toBeNull();
+    expect(
+      documentObj
+        .querySelector('[data-role="format-subtask-item"][data-active-format="true"]')
+        ?.getAttribute('data-type')
+    ).toBe('python');
   });
 });

@@ -37,6 +37,26 @@ class FakeDownload {
 describe('DataGeneratorPage exporter integration', () => {
   let dom;
 
+  function getPreviewButton() {
+    return document.querySelector('[data-role="generator-preview-button"]');
+  }
+
+  function getOutputPreviewTextArea() {
+    return document.querySelector('[data-role="generator-output-preview"]');
+  }
+
+  function getOutputFormatSelect() {
+    return document.querySelector('[data-role="generator-output-format-select"]');
+  }
+
+  function getPreviewRowsInput() {
+    return document.querySelector('[data-role="preview-rows-count-control"] input');
+  }
+
+  function getGenerateRowsInput() {
+    return document.querySelector('[data-role="generate-rows-count-control"] input');
+  }
+
   beforeEach(() => {
     dom = new JSDOM(`<!doctype html><html><body><div id="app"></div></body></html>`);
     global.document = dom.window.document;
@@ -65,10 +85,10 @@ describe('DataGeneratorPage exporter integration', () => {
 
     page.schemaRows = [{ id: '1', name: 'FixedValue', sourceType: 'literal', command: '', params: '', value: 'A' }];
     page.renderSchemaRows();
-    document.getElementById('previewRowsCount').value = '2';
-    document.getElementById('previewDataButton').click();
+    getPreviewRowsInput().value = '2';
+    getPreviewButton().click();
 
-    const output = document.getElementById('generatorOutputPreview').value;
+    const output = getOutputPreviewTextArea().value;
     expect(output).toContain('FixedValue');
     expect(output).toContain('A');
   });
@@ -89,8 +109,8 @@ describe('DataGeneratorPage exporter integration', () => {
 
     page.schemaRows = [{ id: '1', name: 'FixedValue', sourceType: 'literal', command: '', params: '', value: 'A' }];
     page.renderSchemaRows();
-    document.getElementById('generateRowsCount').value = '2';
-    document.getElementById('generatorOutputFormat').value = 'json';
+    getGenerateRowsInput().value = '2';
+    getOutputFormatSelect().value = 'json';
 
     await page.generateDataFile();
 

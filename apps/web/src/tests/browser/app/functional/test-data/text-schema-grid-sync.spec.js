@@ -72,7 +72,7 @@ test.describe('7. Test Data Generation', () => {
     await expect.poll(async () => appPage.testDataPanel.getSchemaCell(0, 'type')).toBe('person.fullNam');
     await expect.poll(async () => appPage.testDataPanel.getSchemaSourceType(0)).toBe('domain');
 
-    await expect(appPage.testDataPanel.getSchemaRow(0)).toHaveClass(/generator-schema-row-invalid/);
+    await expect(appPage.testDataPanel.getSchemaRow(0)).toHaveClass(/shared-schema-row-invalid/);
 
     await appPage.testDataPanel.clickGenerate();
     await expect
@@ -138,14 +138,14 @@ test.describe('7. Test Data Generation', () => {
     await appPage.testDataPanel.setSchemaTypeValue(0, 'literal');
     await appPage.testDataPanel.setSchemaCell(0, 'value', 'Active');
     await appPage.testDataPanel.clickGenerate();
-    await expect(row.locator('.generator-schema-row-validation')).toContainText('column name is required');
+    await expect(row.locator('.shared-schema-row-validation')).toContainText('column name is required');
 
     const nameInput = row.locator('input[data-field="name"]');
     const valueInput = row.locator('input[data-field="value"]');
     await nameInput.fill('Status');
     await valueInput.click();
 
-    await expect(row.locator('.generator-schema-row-validation')).toHaveCount(0);
+    await expect(row.locator('.shared-schema-row-validation')).toHaveCount(0);
     expectNoPageErrors(pageErrors);
   });
 

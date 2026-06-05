@@ -1,4 +1,5 @@
 const { test, expect } = require('@playwright/test');
+const { GeneratorPage } = require('../abstractions/generator.page');
 
 function trackPageErrors(page) {
   const pageErrors = [];
@@ -10,36 +11,27 @@ function trackPageErrors(page) {
 
 async function expectPageToInitialize(page, urlPath, config) {
   const pageErrors = trackPageErrors(page);
+  const generatorPage = new GeneratorPage(page);
 
-  await page.goto(urlPath, { waitUntil: 'domcontentloaded' });
-
-  await expect(page.locator(config.loadingSelector)).toHaveCount(0);
-
-  for (const selector of config.readySelectors) {
-    await expect(page.locator(selector)).toBeVisible();
-  }
+  await generatorPage.goto(urlPath);
 
   if (config.textSelector && config.textValue) {
     await expect(page.locator(config.textSelector)).toContainText(config.textValue);
   }
 
   expect(pageErrors).toEqual([]);
+  return generatorPage;
 }
 
 test('generator page initializes without browser errors', async ({ page }) => {
   await expectPageToInitialize(page, '/generator.html', {
-    loadingSelector: '#generator-initial-load',
-    readySelectors: ['#generator-app .generator-page', '#generatorOutputFormat', '#generator-preview-grid'],
-    textSelector: '.generator-preview-head',
+    textSelector: '.shared-generator-preview-head',
     textValue: 'Preview',
   });
 });
 
 test('generator schema help shows tippy tooltip content for faker and literal', async ({ page }) => {
-  await expectPageToInitialize(page, '/generator.html', {
-    loadingSelector: '#generator-initial-load',
-    readySelectors: ['#generator-app .generator-page', '#generatorOutputFormat', '#generator-preview-grid'],
-  });
+  await expectPageToInitialize(page, '/generator.html', {});
 
   await page.selectOption('[data-field="sourceType"]', 'faker');
   const helpIcon = page.locator('[data-field="faker-doc-link"]').first();

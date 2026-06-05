@@ -265,3 +265,13 @@ The safest first implementation slice is:
 5. Re-run coverage review before shrinking the app and generator JSDOM matrices.
 
 That path removes the most obvious duplication first while preserving the highest-signal runtime coverage.
+
+### Current Status
+
+- The runtime matrix remains unchanged.
+- The shared `uiScenarios` fixture used by the app and generator JSDOM matrices has been reduced to a representative subset.
+- The current representative UI matrix keeps 19 scenarios instead of the earlier 41, preserving:
+  - custom enum, literal, regex, and pairwise coverage
+  - representative faker helper coverage across exact and structural cases
+  - representative domain coverage across formatting, passwords, literals, counters, and character generation
+- The next shrink decision should be based on observed gate/runtime improvement and any signal gaps, not on restoring broad duplicated app-vs-generator sweeps by default.

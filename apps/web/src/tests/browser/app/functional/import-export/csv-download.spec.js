@@ -6,10 +6,10 @@ test.describe('4. Import Export Basic', () => {
     const { appPage, pageErrors } = await openApp(page);
     await seedRows(appPage, ['Alpha', 'Beta']);
 
-    await appPage.tabbedText.selectFormat('CSV');
-    await appPage.importExportControls.setTextFromGrid();
+    await appPage.textPreviewEditor.selectFormat('CSV');
+    await appPage.importExportWorkspace.setTextFromGrid();
 
-    const download = await appPage.importExportControls.clickDownloadAndWaitForEvent();
+    const download = await appPage.importExportWorkspace.clickDownloadAndWaitForEvent();
     expect(download.suggestedFilename()).toMatch(/\.csv$/i);
 
     expectNoPageErrors(pageErrors);

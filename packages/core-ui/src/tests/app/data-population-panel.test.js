@@ -1,5 +1,6 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
+import { within } from '@testing-library/dom';
 import { createDataPopulationPanelComponent } from '../../../js/gui_components/app/data-population-panel/index.js';
 
 describe('DataPopulationPanel', () => {
@@ -42,7 +43,6 @@ describe('DataPopulationPanel', () => {
           { value: 'amend-selected', label: 'Amend Selected' },
         ],
         rowCountProps: {
-          inputId: 'generateCount',
           label: 'How Many?',
           min: 1,
           step: 1,
@@ -78,25 +78,44 @@ describe('DataPopulationPanel', () => {
       callbacks: { onGenerate, onModeChange },
     });
 
+    const panelRoot = document.querySelector('[data-role="data-population-panel-root"]');
+    const panelQueries = within(panelRoot);
+    const generateButton = panelQueries.getByRole('button', { name: /^generate$/i });
+    const generatePairwiseButton = panelRoot.querySelector('[data-role="generate-pairwise-button"]');
+    const refreshPreviewButton = panelQueries.getByRole('button', { name: /refresh text preview/i });
+    const rowCountInput = panelQueries.getByRole('spinbutton', { name: 'How Many?' });
+
+    expect(panelRoot).not.toBeNull();
+    expect(panelRoot?.classList.contains('testDataSchemaGui')).toBe(true);
+    expect(panelRoot.querySelector('[data-role="population-status"]')?.id).toBe('');
+    expect(document.getElementById('testdata-status')).toBeNull();
+    expect(panelRoot.querySelector('[data-role="schema-definition-root"]')?.id).toBe('');
+    expect(document.getElementById('testDataSchemaDefinition')).toBeNull();
+    expect(rowCountInput.id).toBe('');
+    expect(document.getElementById('generateCount')).toBeNull();
+    expect(document.getElementById('populationActionsRoot')).toBeNull();
+    expect(document.getElementById('generateCountControl')).toBeNull();
+    expect(document.getElementById('populationModeSelectorRoot')).toBeNull();
+
     component.setPairwiseVisible(true);
-    expect(document.getElementById('generateallpairs').style.display).toBe('');
+    expect(generatePairwiseButton.style.display).toBe('');
 
     component.setRowCountValue(4);
-    expect(document.getElementById('generateCount').value).toBe('4');
+    expect(rowCountInput.value).toBe('4');
     expect(component.getRowCountInputValue()).toBe('4');
 
     component.setGenerateBusy(true);
     component.setGeneratePairwiseBusy(true);
     component.setRefreshPreviewBusy(true);
-    expect(document.getElementById('generatedata').disabled).toBe(true);
-    expect(document.getElementById('generateallpairs').disabled).toBe(true);
-    expect(document.getElementById('refreshtestdatapreview').disabled).toBe(true);
+    expect(generateButton.disabled).toBe(true);
+    expect(generatePairwiseButton.disabled).toBe(true);
+    expect(refreshPreviewButton.disabled).toBe(true);
 
     component.setGenerateBusy(false);
     component.setGeneratePairwiseBusy(false);
     component.setRefreshPreviewBusy(false);
 
-    document.getElementById('generatedata').click();
+    generateButton.click();
     expect(onGenerate).toHaveBeenCalled();
 
     const amendSelected = document.querySelector('input[name="testDataGenerationMode"][value="amend-selected"]');
@@ -210,14 +229,23 @@ describe('DataPopulationPanel', () => {
       },
     });
 
-    expect(document.getElementById('generateCountA').value).toBe('2');
-    expect(document.getElementById('generateCountB').value).toBe('7');
-    expect(document.getElementById('generateallpairs-a').style.display).toBe('');
-    expect(document.getElementById('generateallpairs-b').style.display).toBe('');
+    const panelRootA = rootA.querySelector('[data-role="data-population-panel-root"]');
+    const panelRootB = rootB.querySelector('[data-role="data-population-panel-root"]');
+    const rowCountInputA = within(panelRootA).getByRole('spinbutton', { name: 'How Many?' });
+    const rowCountInputB = within(panelRootB).getByRole('spinbutton', { name: 'How Many?' });
+    const generatePairwiseButtonA = panelRootA.querySelector('[data-role="generate-pairwise-button"]');
+    const generatePairwiseButtonB = panelRootB.querySelector('[data-role="generate-pairwise-button"]');
+
+    expect(rowCountInputA.value).toBe('2');
+    expect(rowCountInputB.value).toBe('7');
+    expect(generatePairwiseButtonA.style.display).toBe('');
+    expect(generatePairwiseButtonB.style.display).toBe('');
+    expect(panelRootA.querySelector('[data-role="schema-definition-root"]')?.id).toBe('testDataSchemaDefinitionA');
+    expect(panelRootB.querySelector('[data-role="schema-definition-root"]')?.id).toBe('testDataSchemaDefinitionB');
 
     componentA.setRowCountValue(5);
-    expect(document.getElementById('generateCountA').value).toBe('5');
-    expect(document.getElementById('generateCountB').value).toBe('7');
+    expect(rowCountInputA.value).toBe('5');
+    expect(rowCountInputB.value).toBe('7');
 
     componentA.destroy();
     componentB.destroy();

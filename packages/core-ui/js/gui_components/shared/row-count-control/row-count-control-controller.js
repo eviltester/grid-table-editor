@@ -7,7 +7,7 @@ function normalizeProps(props = {}) {
   const initialValue = props.value ?? min;
 
   return {
-    inputId: props.inputId || 'rowCount',
+    inputId: typeof props.inputId === 'string' ? props.inputId : '',
     label: props.label || 'Rows',
     min,
     max,
@@ -23,16 +23,20 @@ function normalizeProps(props = {}) {
   };
 }
 
-function createErrorMessage({ inputId, min, max, rawValue }) {
+function resolveFieldName({ inputId, inputAriaLabel, label }) {
+  return inputId || inputAriaLabel || label || 'rowCount';
+}
+
+function createErrorMessage({ fieldName, min, max, rawValue }) {
   const rawParsed = Number.parseInt(rawValue, 10);
   if (!Number.isFinite(rawParsed)) {
-    return `${inputId} must be a number greater than or equal to ${min}.`;
+    return `${fieldName} must be a number greater than or equal to ${min}.`;
   }
   if (Number.isFinite(max) && rawParsed > max) {
-    return `${inputId} must be less than or equal to ${max}.`;
+    return `${fieldName} must be less than or equal to ${max}.`;
   }
   if (rawParsed < min) {
-    return `${inputId} must be a number greater than or equal to ${min}.`;
+    return `${fieldName} must be a number greater than or equal to ${min}.`;
   }
   return '';
 }
@@ -96,14 +100,14 @@ class RowCountControlController {
     return this.getState();
   }
 
-  getParsedValue() {
-    const { inputId, inputValue, min, max } = this.state;
-    const parsed = parseNonNegativeCount(inputValue, { min, max });
+  parseValue(rawValue = this.state.inputValue) {
+    const { inputId, inputAriaLabel, label, min, max } = this.state;
+    const parsed = parseNonNegativeCount(rawValue, { min, max });
     const message = createErrorMessage({
-      inputId,
+      fieldName: resolveFieldName({ inputId, inputAriaLabel, label }),
       min,
       max,
-      rawValue: inputValue,
+      rawValue,
     });
 
     return {
@@ -111,6 +115,10 @@ class RowCountControlController {
       valid: message.length === 0,
       errors: message ? [message] : [],
     };
+  }
+
+  getParsedValue() {
+    return this.parseValue(this.state.inputValue);
   }
 }
 

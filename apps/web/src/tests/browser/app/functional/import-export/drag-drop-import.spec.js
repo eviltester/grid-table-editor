@@ -12,10 +12,10 @@ test.describe('4. Import Export Basic', () => {
     fs.writeFileSync(valid, 'Name\nOne\nTwo\n');
 
     try {
-      await expect(appPage.importExportControls.dropZone).toBeVisible();
-      await appPage.importExportControls.uploadFile(valid);
+      await expect(appPage.importExportWorkspace.dropZone).toBeVisible();
+      await appPage.importExportWorkspace.uploadFile(valid);
       await expect.poll(async () => appPage.gridEditor.renderer.countRows()).toBeGreaterThanOrEqual(2);
-      await appPage.importExportControls.expectProgressStatusContains('Import complete');
+      await appPage.importExportWorkspace.expectProgressStatusContains('Import complete');
     } finally {
       fs.rmSync(tempDir, { recursive: true, force: true });
     }

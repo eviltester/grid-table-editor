@@ -9,8 +9,8 @@ test.describe('2. Column Operations', () => {
     await appPage.gridEditor.header.renameColumn(oldName, 'New Column Name');
     await expect.poll(async () => appPage.gridEditor.header.getColumnNames()).toContain('New Column Name');
 
-    await appPage.importExportControls.setTextFromGrid();
-    await expect.poll(async () => appPage.tabbedText.getOutputText()).toContain('New Column Name');
+    await appPage.importExportWorkspace.setTextFromGrid();
+    await expect.poll(async () => appPage.textPreviewEditor.getOutputText()).toContain('New Column Name');
     expectNoPageErrors(pageErrors);
   });
 
@@ -18,7 +18,7 @@ test.describe('2. Column Operations', () => {
     const { appPage, pageErrors } = await openApp(page);
     const originalName = await seedRows(appPage, ['x']);
     const duplicateName = 'Existing Left Column';
-    const gridError = page.locator('#grid-column-error');
+    const gridError = appPage.gridEditor.errorStatus;
 
     await appPage.gridEditor.header.addColumnLeft(originalName, duplicateName);
     await expect.poll(async () => appPage.gridEditor.header.getColumnNames()).toContain(duplicateName);

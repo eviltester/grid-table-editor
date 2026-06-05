@@ -1,15 +1,18 @@
 const { expect } = require('@playwright/test');
 const { GridRendererComponent } = require('./grid-renderer.component');
 const { GridHeaderComponent } = require('./grid-header.component');
+const { ConfirmDialogComponent } = require('./confirm-dialog.component');
 
 class GridEditorComponent {
   constructor(page) {
     this.page = page;
     this.container = page.locator('#main-grid-view');
     this.toolbar = this.container.locator('[data-role="grid-toolbar-root"]');
-    this.grid = page.locator('#myGrid');
+    this.errorStatus = this.container.locator('[data-role="grid-error-status"]').first();
+    this.grid = this.container.locator('[data-role="data-grid-root"]');
     this.renderer = new GridRendererComponent(page, this.grid);
     this.header = new GridHeaderComponent(page, this.grid, this.renderer);
+    this.confirmDialog = new ConfirmDialogComponent(page);
     this.addRowButton = this.toolbar.getByRole('button', { name: 'Add Row', exact: true });
     this.addRowsAboveButton = this.toolbar.getByRole('button', { name: 'Add Rows Above' });
     this.addRowsBelowButton = this.toolbar.getByRole('button', { name: 'Add Rows Below' });
@@ -36,7 +39,7 @@ class GridEditorComponent {
 
   async expectReady() {
     await this.expectVisible();
-    await expect(this.grid.locator('.tabulator-col-title').first()).toBeVisible();
+    await this.header.expectHasAnyColumns();
   }
 
   async addRow() {
@@ -125,14 +128,11 @@ class GridEditorComponent {
     if (String(quickFilterValue || '').trim().length > 0) {
       return true;
     }
-    const headerFilterValues = await this._getHeaderFilterValues();
-    return headerFilterValues.some((value) => value.length > 0);
+    return this.header.hasActiveFilters();
   }
 
   async _getHeaderFilterValues() {
-    return this.grid
-      .locator('.tabulator-header-filter input')
-      .evaluateAll((inputs) => inputs.map((input) => String(input.value || '').trim()));
+    return this.header.getAllFilterValues();
   }
 
   async _expectHeaderFiltersCleared() {
@@ -185,11 +185,7 @@ class GridEditorComponent {
   }
 
   async _acceptConfirmIfVisible() {
-    const confirmBackdrop = this.page.locator('#confirm-modal-backdrop');
-    if ((await confirmBackdrop.count()) > 0 && (await confirmBackdrop.isVisible())) {
-      await confirmBackdrop.locator('#confirm-modal-ok').click();
-      await expect(confirmBackdrop).toBeHidden();
-    }
+    await this.confirmDialog.confirmIfVisible();
   }
 }
 

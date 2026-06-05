@@ -1,5 +1,1 @@
-export {
-  createTestDataGridControl,
-  mountTestDataGenerationPanel,
-  enableTestDataGenerationInterface,
-} from './controller/index.js';
+export { createTestDataGenerationPanelManager, mountTestDataGenerationPanel } from './controller/index.js';

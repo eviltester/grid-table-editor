@@ -48,10 +48,7 @@ describe('script bootstrap', () => {
     class ExporterClass {}
     class ImporterClass {}
 
-    class ExtendedDataGridClass {
-      createChildGrid() {
-        calls.push('createChildGrid');
-      }
+    const mainDataGrid = {
       getGridExtras() {
         return {
           clearGrid: jest.fn(),
@@ -59,15 +56,18 @@ describe('script bootstrap', () => {
           getGridAsGenericDataTable: jest.fn(() => ({ getHeaders: () => [] })),
           getHeadersFromGrid: jest.fn(() => []),
         };
-      }
-      sizeColumnsToFit() {}
-    }
+      },
+      sizeColumnsToFit() {},
+    };
+    const createDataGridComponentFn = jest.fn(() => {
+      calls.push('createDataGridComponent');
+      return mainDataGrid;
+    });
 
     await bootstrapApp({
       documentObj: dom.window.document,
       ensureGridLibraryLoadedFn,
-      activeGridEngineName: 'tabulator',
-      ExtendedDataGridClass,
+      createDataGridComponentFn,
       createImportExportWorkspaceComponentFn,
       ExporterClass,
       ImporterClass,
@@ -75,7 +75,15 @@ describe('script bootstrap', () => {
     });
 
     expect(calls[0]).toBe('ensureGridLibraryLoaded');
-    expect(calls[1]).toBe('createChildGrid');
+    expect(calls[1]).toBe('createDataGridComponent');
+    expect(createDataGridComponentFn).toHaveBeenCalledWith({
+      root: dom.window.document.getElementById('main-grid-view'),
+      documentObj: dom.window.document,
+      services: {
+        TabulatorCtor: globalThis.Tabulator,
+        GridExtensionClass: expect.any(Function),
+      },
+    });
     expect(dom.window.document.getElementById('initial-load')).toBeNull();
   });
 
@@ -84,20 +92,19 @@ describe('script bootstrap', () => {
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     const ensureGridLibraryLoadedFn = jest.fn(() => Promise.reject(new Error('load failed')));
 
-    class ExtendedDataGridClass {
-      createChildGrid() {
-        calls.push('createChildGrid');
-      }
-      getGridExtras() {
-        return {};
-      }
-    }
+    const createDataGridComponentFn = jest.fn(() => {
+      calls.push('createDataGridComponent');
+      return {
+        getGridExtras() {
+          return {};
+        },
+      };
+    });
 
     await bootstrapApp({
       documentObj: dom.window.document,
       ensureGridLibraryLoadedFn,
-      activeGridEngineName: 'tabulator',
-      ExtendedDataGridClass,
+      createDataGridComponentFn,
       createImportExportWorkspaceComponentFn: () => ({
         setExporter() {},
         setImporter() {},
@@ -153,18 +160,16 @@ describe('script bootstrap', () => {
       }
     }
 
-    class ExtendedDataGridClass {
-      createChildGrid() {}
+    const createDataGridComponentFn = jest.fn(() => ({
       getGridExtras() {
         return gridExtras;
-      }
-    }
+      },
+    }));
 
     await bootstrapApp({
       documentObj: dom.window.document,
       ensureGridLibraryLoadedFn: jest.fn(() => Promise.resolve()),
-      activeGridEngineName: 'tabulator',
-      ExtendedDataGridClass,
+      createDataGridComponentFn,
       createImportExportWorkspaceComponentFn,
       ExporterClass,
       ImporterClass,
@@ -198,19 +203,18 @@ describe('script bootstrap', () => {
     const clearGrid = jest.fn();
     const sizeColumnsToFit = jest.fn();
 
-    class ExtendedDataGridClass {
-      createChildGrid() {}
+    const createDataGridComponentFn = jest.fn(() => ({
       getGridExtras() {
         return {
           clearGrid,
           getGridAsGenericDataTable: jest.fn(() => ({ getHeaders: () => [] })),
           getHeadersFromGrid: jest.fn(() => []),
         };
-      }
+      },
       sizeColumnsToFit() {
         sizeColumnsToFit();
-      }
-    }
+      },
+    }));
 
     let importerInstance;
     class ImporterClass {
@@ -223,8 +227,7 @@ describe('script bootstrap', () => {
     await bootstrapApp({
       documentObj: dom.window.document,
       ensureGridLibraryLoadedFn: jest.fn(() => Promise.resolve()),
-      activeGridEngineName: 'tabulator',
-      ExtendedDataGridClass,
+      createDataGridComponentFn,
       createImportExportWorkspaceComponentFn: () => ({
         setExporter() {},
         setImporter() {},
@@ -254,19 +257,18 @@ describe('script bootstrap', () => {
     const clearGrid = jest.fn();
     const sizeColumnsToFit = jest.fn();
 
-    class ExtendedDataGridClass {
-      createChildGrid() {}
+    const createDataGridComponentFn = jest.fn(() => ({
       getGridExtras() {
         return {
           clearGrid,
           getGridAsGenericDataTable: jest.fn(() => ({ getHeaders: () => [] })),
           getHeadersFromGrid: jest.fn(() => []),
         };
-      }
+      },
       sizeColumnsToFit() {
         sizeColumnsToFit();
-      }
-    }
+      },
+    }));
 
     let importerInstance;
     class ImporterClass {
@@ -279,8 +281,7 @@ describe('script bootstrap', () => {
     await bootstrapApp({
       documentObj: dom.window.document,
       ensureGridLibraryLoadedFn: jest.fn(() => Promise.resolve()),
-      activeGridEngineName: 'tabulator',
-      ExtendedDataGridClass,
+      createDataGridComponentFn,
       createImportExportWorkspaceComponentFn: () => ({
         setExporter() {},
         setImporter() {},
@@ -313,8 +314,7 @@ describe('script bootstrap', () => {
   test('fails startup status and rethrows when final test-data bootstrap step throws', async () => {
     const mountError = new Error('mount failed');
 
-    class ExtendedDataGridClass {
-      createChildGrid() {}
+    const createDataGridComponentFn = jest.fn(() => ({
       getGridExtras() {
         return {
           clearGrid: jest.fn(),
@@ -322,15 +322,14 @@ describe('script bootstrap', () => {
           getGridAsGenericDataTable: jest.fn(() => ({ getHeaders: () => [] })),
           getHeadersFromGrid: jest.fn(() => []),
         };
-      }
-    }
+      },
+    }));
 
     await expect(
       bootstrapApp({
         documentObj: dom.window.document,
         ensureGridLibraryLoadedFn: jest.fn(() => Promise.resolve()),
-        activeGridEngineName: 'tabulator',
-        ExtendedDataGridClass,
+        createDataGridComponentFn,
         createImportExportWorkspaceComponentFn: () => ({
           setExporter() {},
           setImporter() {},

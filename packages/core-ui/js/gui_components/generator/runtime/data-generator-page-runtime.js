@@ -20,42 +20,27 @@ import {
   schemaRowsToSpec as schemaRowsToSpecCore,
   schemaRowsToSpecWithTokens as schemaRowsToSpecWithTokensCore,
   validateSchemaRows as validateSchemaRowsCore,
-  createSchemaRowValidation,
-  mapDataRuleToSchemaRow,
-  schemaErrorsToText,
   TEST_DATA_GRID_SAMPLE_SCHEMA_TEXT as GENERATOR_DEFAULT_EXAMPLE_SCHEMA_TEXT,
 } from '../../shared/test-data/schema/index.js';
-import { getVisibleDomainCommands, buildSchemaHelpModel } from '../../shared/test-data/help/index.js';
 import {
-  SOURCE_TYPE_DOMAIN,
-  SOURCE_TYPE_ENUM,
-  SOURCE_TYPE_FAKER,
-  SOURCE_TYPE_LITERAL,
-  SOURCE_TYPE_REGEX,
   buildRuleSpecFromSchemaRow,
   extractLiteralValueFromRuleSpec,
   extractRegexValueFromRuleSpec,
   buildDataRuleFromSchemaRow,
-  normaliseDomainCommand,
   normaliseFakerCommand,
 } from '../../shared/schema-row-rule-mapper.js';
 import { GENERATE_TO_FILE_HELP_URL } from '../constants.js';
-import { buildSchemaModeHelpHtml } from '../schema/index.js';
+import { buildGeneratorSchemaModeHelpHtml } from '../help/index.js';
+import { createGeneratorSchemaDefinitionSupport, createGeneratorSchemaRowFactory } from '../schema-support/index.js';
 import { createGeneratorPageComponent } from '../page/index.js';
 import { getDefaultDocumentObj } from '../../shared/dom/default-objects.js';
-import {
-  createConfiguredGeneratorForPage,
-  buildPreviewDataTable,
-  buildPairwiseDataTable,
-  parseGeneratorRowCount,
-  renderGeneratorOutputPreview,
-  updateGeneratorPairwiseButtonVisibility,
-  countGeneratorEnumColumns,
-  previewGeneratorData,
-  generateGeneratorDataFile,
-  generateGeneratorAllPairsDataFile,
-} from '../generation/index.js';
-import { applySanitizedUiOptionsToTargets } from '../options/index.js';
+import { createGeneratorPageComponentConfig } from './create-generator-page-component-config.js';
+import { createGeneratorMountedPageBridge } from './generator-mounted-page-bridge.js';
+import { createGeneratorSchemaRuntimeBridge } from './generator-schema-runtime-bridge.js';
+import { createGeneratorSchemaStateBridge } from './generator-schema-state-bridge.js';
+import { createGeneratorViewStateBridge } from './generator-view-state-bridge.js';
+import { createGeneratorRuntimeActionsBridge } from './generator-runtime-actions-bridge.js';
+import { createGeneratorSchemaGenerationBridge } from '../generation/index.js';
 
 function schemaRowsToSpec(schemaRows) {
   return schemaRowsToSpecCore({
@@ -81,6 +66,14 @@ function validateSchemaRows(schemaRows) {
   });
 }
 
+function createUnavailableRowCountResult(inputId) {
+  return {
+    value: 0,
+    valid: false,
+    errors: [`${inputId} must be a number greater than or equal to 0.`],
+  };
+}
+
 class DataGeneratorPage {
   constructor({
     parentElement,
@@ -103,70 +96,102 @@ class DataGeneratorPage {
     this.DownloadClass = DownloadClass;
     this.TestDataGeneratorClass = TestDataGeneratorClass;
 
-    this.rowIdCounter = 1;
-    this.schemaSession = createSchemaEditingSession({
-      createBlankSchemaRow: () => this.createBlankSchemaRow(),
-      schemaTextToDataRules,
-      faker: this.faker,
-      RandExp: this.RandExp,
-      mapRuleToRow: (rule, leadingTextLines = []) => {
-        const row = this.ruleToSchemaRow(rule);
-        row.leadingTextLines = Array.isArray(leadingTextLines) ? leadingTextLines.slice() : [];
-        return row;
-      },
-      schemaRowsToSpecWithTokens,
-    });
     this.fakerCommands = getKnownFakerCommandsAlphabetical().filter(
       (command) => command !== 'RegEx' && command.startsWith('helpers.')
     );
     this.domainCommands = getKnownDomainCommandsAlphabetical();
-    this.optionsPanels = {};
+    const createBlankGeneratorSchemaRow = createGeneratorSchemaRowFactory();
+    this.generatorSchemaDefinitionSupport = createGeneratorSchemaDefinitionSupport({
+      createBlankRow: createBlankGeneratorSchemaRow,
+      fakerCommands: this.fakerCommands,
+      domainCommands: this.domainCommands,
+      buildModeHelpHtml: ({ inTextMode }) =>
+        buildGeneratorSchemaModeHelpHtml({
+          inTextMode,
+          generateToFileHelpUrl: GENERATE_TO_FILE_HELP_URL,
+        }),
+      validateSchemaRows,
+    });
+    this.schemaSession = createSchemaEditingSession({
+      createBlankSchemaRow: this.generatorSchemaDefinitionSupport.createBlankRow,
+      schemaTextToDataRules,
+      faker: this.faker,
+      RandExp: this.RandExp,
+      mapRuleToRow: this.generatorSchemaDefinitionSupport.mapRuleToRow,
+      schemaRowsToSpecWithTokens,
+    });
     this.schemaErrorDisplay = undefined;
     this.schemaDefinition = undefined;
     this.generatorControls = undefined;
     this.generatorPreview = undefined;
     this.generatorPage = undefined;
-    this.lastPreviewDataTable = undefined;
-    this.rowCountControls = [];
+    this.generatorViewState = createGeneratorViewStateBridge({
+      getGeneratorControls: () => this.generatorControls,
+      getGeneratorPreview: () => this.generatorPreview,
+      getExporter: () => this.exporter,
+      createUnavailableRowCountResult,
+    });
+    this.generatorSchemaRuntime = createGeneratorSchemaRuntimeBridge({
+      getSchemaDefinition: () => this.schemaDefinition,
+      getSchemaRows: () => this.schemaRows,
+      getSchemaTextTokens: () => this.schemaTextTokens,
+      validateSchemaRows,
+      showSchemaErrorStatus: (message) => this.schemaErrorDisplay?.show(message),
+      clearSchemaErrorStatus: () => this.schemaErrorDisplay?.clear(),
+      setGenerationStatus: (message, options) => this.generatorViewState.setGenerationStatus(message, options),
+      scheduleClearGenerationStatus: (delay) => this.generatorViewState.scheduleClearGenerationStatus(delay),
+    });
+    this.generatorSchemaGeneration = createGeneratorSchemaGenerationBridge({
+      syncSchemaRowsFromTextMode: (options) => this.generatorSchemaRuntime?.syncSchemaRowsFromTextMode(options),
+      validateSchemaRows,
+      schemaRowsToSpec,
+      TestDataGeneratorClass: this.TestDataGeneratorClass,
+      faker: this.faker,
+      RandExp: this.RandExp,
+    });
+    this.generatorSchemaState = createGeneratorSchemaStateBridge({
+      getSchemaDefinition: () => this.schemaDefinition,
+      getSchemaSession: () => this.schemaSession,
+      updatePairwiseButtonVisibility: () => this.updateAllPairsButtonVisibility(),
+    });
+    this.generatorMountedPage = createGeneratorMountedPageBridge();
+    this.generatorRuntimeActions = createGeneratorRuntimeActionsBridge({
+      getCurrentSelectedType: () => this.generatorViewState.getSelectedOutputType(),
+      getExporter: () => this.exporter,
+      getDownloadClass: () => this.DownloadClass,
+      getFaker: () => this.faker,
+      getRandExp: () => this.RandExp,
+      getViewState: () => this.generatorViewState,
+      getSchemaRuntime: () => this.generatorSchemaRuntime,
+      getSchemaGeneration: () => this.generatorSchemaGeneration,
+    });
     this.schemaTextToDataRules = schemaTextToDataRules;
     this.dataRulesToSchemaText = dataRulesToSchemaText;
     this.sampleSchemaText = GENERATOR_DEFAULT_EXAMPLE_SCHEMA_TEXT;
   }
 
   get schemaRows() {
-    if (this.schemaDefinition?.getState) {
-      return this.schemaDefinition.getState().rows || [];
-    }
-    return this.schemaSession.getRows();
+    return this.generatorSchemaState.getRows();
   }
 
   set schemaRows(rows) {
-    this.schemaDefinition?.setRows?.(rows);
-    this.schemaSession.setRows(rows);
+    this.generatorSchemaState.setRows(rows);
   }
 
   get schemaTextTokens() {
-    if (this.schemaDefinition?.getTokens) {
-      return this.schemaDefinition.getTokens() || [];
-    }
-    return this.schemaSession.getTokens();
+    return this.generatorSchemaState.getTokens();
   }
 
   set schemaTextTokens(tokens) {
-    this.schemaDefinition?.setTokens?.(tokens);
-    this.schemaSession.setTokens(tokens);
+    this.generatorSchemaState.setTokens(tokens);
   }
 
   get isTextMode() {
-    if (this.schemaDefinition?.getState) {
-      return this.schemaDefinition.getState().isTextMode === true;
-    }
-    return this.schemaSession.getTextMode();
+    return this.generatorSchemaState.getTextMode();
   }
 
   set isTextMode(isTextMode) {
-    this.schemaDefinition?.setTextMode?.(isTextMode);
-    this.schemaSession.setTextMode(isTextMode);
+    this.generatorSchemaState.setTextMode(isTextMode);
   }
 
   init() {
@@ -177,577 +202,99 @@ class DataGeneratorPage {
       throw new Error('Tabulator library is not available');
     }
 
+    const pageComponentConfig = createGeneratorPageComponentConfig({
+      schemaTextToDataRules: this.schemaTextToDataRules,
+      dataRulesToSchemaText: this.dataRulesToSchemaText,
+      faker: this.faker,
+      RandExp: this.RandExp,
+      generatorSchemaDefinitionSupport: this.generatorSchemaDefinitionSupport,
+      fakerCommands: this.fakerCommands,
+      sampleSchemaText: this.sampleSchemaText,
+      getExporter: () => this.exporter,
+      TabulatorCtor: this.TabulatorCtor,
+      GridExtensionClass: this.GridExtensionClass,
+      onApplyOptions: (sanitized) => this.applyCurrentTypeOptions(sanitized),
+      onGenerateData: () => {
+        void this.generateDataFile();
+      },
+      onGeneratePairwise: () => {
+        void this.generateAllPairsDataFile();
+      },
+      onPreview: () => this.previewData(),
+      onRenderOutputPreview: () => this.generatorViewState.renderOutputPreviewForCurrentSelection(),
+      onSchemaError: (message) => this.generatorSchemaRuntime?.showSchemaErrorStatus(message),
+      onSchemaClear: () => this.generatorSchemaRuntime?.clearSchemaErrorStatus(),
+      onRowsChanged: () => this.updateAllPairsButtonVisibility?.(),
+    });
+
     this.generatorPage = createGeneratorPageComponent({
       root: this.parentElement,
       documentObj: this.documentObj,
-      props: {
-        controlsProps: {
-          selectedFormat: this.getSelectedOutputType?.() || 'csv',
-          currentOptions: undefined,
-          pairwiseVisible: false,
-        },
-        previewProps: {
-          outputPreviewText: '',
-        },
-        schemaDefinitionProps: {
-          headingText: 'Schema',
-          // These IDs are a documented generator-page contract. They anchor the
-          // real page shell, focused interaction harnesses, and Playwright page
-          // objects to one page-level schema section while the shared schema
-          // component uses root-scoped hooks for its reusable internals.
-          ids: {
-            rows: 'generatorSchemaRows',
-            textContainer: 'generatorSchemaTextContainer',
-            text: 'generatorSchemaText',
-            addButton: 'addSchemaRowButton',
-            toggleButton: 'schemaModeToggleButton',
-            helpIcon: 'schemaModeHelpIcon',
-            error: 'generatorSchemaErrorText',
-          },
-          schemaTextToDataRules:
-            this.schemaTextToDataRules || (() => ({ dataRules: [], errors: [], schemaTokens: [] })),
-          dataRulesToSchemaText: this.dataRulesToSchemaText || (() => ''),
-          faker: this.faker,
-          RandExp: this.RandExp,
-          createBlankRow: () =>
-            typeof this.createBlankSchemaRow === 'function'
-              ? this.createBlankSchemaRow()
-              : {
-                  id: 'generator-schema-row-fallback',
-                  name: '',
-                  sourceType: 'regex',
-                  command: '',
-                  params: '',
-                  value: '',
-                  comments: '',
-                  leadingTextLines: [],
-                },
-          mapRuleToRow: (rule, leadingTextLines = []) => {
-            const row =
-              typeof this.ruleToSchemaRow === 'function'
-                ? this.ruleToSchemaRow(rule)
-                : {
-                    id: 'generator-schema-row-fallback',
-                    name: '',
-                    sourceType: 'regex',
-                    command: '',
-                    params: '',
-                    value: '',
-                    comments: '',
-                    leadingTextLines: [],
-                  };
-            row.leadingTextLines = Array.isArray(leadingTextLines) ? leadingTextLines.slice() : [];
-            return row;
-          },
-          getMethodPickerOptions: (currentValue) =>
-            (typeof this.getMethodPickerOptions === 'function' ? this.getMethodPickerOptions(currentValue) : []) || [],
-          getVisibleDomainCommands: (currentValue) =>
-            (typeof this.getVisibleDomainCommands === 'function' ? this.getVisibleDomainCommands(currentValue) : []) ||
-            [],
-          fakerCommands: this.fakerCommands || [],
-          sampleSchemaText: this.sampleSchemaText || '',
-          buildModeHelpHtml: ({ inTextMode }) =>
-            typeof this.buildSchemaModeHelpHtml === 'function' ? this.buildSchemaModeHelpHtml(inTextMode) : '',
-          validateSchemaRows: (rows) =>
-            typeof this.validateSchemaRows === 'function' ? this.validateSchemaRows(rows) : { rows, errors: [] },
-          updatePairwiseButtonVisibility: () => this.updateAllPairsButtonVisibility?.(),
-        },
-      },
-      services: {
-        generatorControlsServices: {
-          canExportFormat: (type) => this.exporter?.canExport?.(type) !== false,
-        },
-        generatorPreviewServices: {
-          TabulatorCtor: this.TabulatorCtor,
-          GridExtensionClass: this.GridExtensionClass,
-        },
-      },
-      callbacks: {
-        generatorControls: {
-          onFormatChanged: () => {
-            this.renderOptionsPanelForSelectedFormat();
-            this.renderOutputPreviewForCurrentSelection();
-          },
-          onApplyOptions: ({ sanitized }) => {
-            this.applyCurrentTypeOptions(sanitized);
-          },
-          onGenerateData: () => {
-            void this.generateDataFile();
-          },
-          onGeneratePairwise: () => {
-            void this.generateAllPairsDataFile();
-          },
-        },
-        generatorPreview: {
-          onPreview: () => this.previewData(),
-        },
-        schemaDefinition: {
-          onSchemaError: (message) => this.showSchemaErrorStatus?.(message),
-          onSchemaClear: () => this.clearSchemaErrorStatus?.(),
-          onRowsChanged: () => this.updateAllPairsButtonVisibility?.(),
-        },
-      },
+      ...pageComponentConfig,
     });
 
-    this.schemaErrorDisplay = this.generatorPage.getSchemaErrorDisplay();
-    this.generatorControls = this.generatorPage.getGeneratorControls();
-    this.generatorPreview = this.generatorPage.getGeneratorPreview();
-    this.schemaDefinition = this.generatorPage.getSchemaDefinition();
-    this.previewTableApi = this.generatorPreview?.getPreviewTableApi?.() || null;
-    this.previewGrid = this.generatorPreview?.getPreviewGrid?.() || null;
-    this.exporter = new this.ExporterClass(this.previewGrid);
-    this.formatOptionsPanel = this.generatorControls?.getFormatOptionsPanel?.() || null;
-    this.optionsPanels = this.formatOptionsPanel?.getPanels?.() || {};
+    Object.assign(
+      this,
+      this.generatorMountedPage.connectMountedPage({
+        generatorPage: this.generatorPage,
+        ExporterClass: this.ExporterClass,
+        getPreviewGrid: () => this.generatorViewState.getPreviewGrid(),
+      })
+    );
 
-    this.renderSchemaRows();
-    this.updateSchemaEditModeView?.();
-    this.renderOptionsPanelForSelectedFormat();
-  }
-
-  createBlankSchemaRow() {
-    return {
-      id: `schema-row-${this.rowIdCounter++}`,
-      name: '',
-      sourceType: SOURCE_TYPE_REGEX,
-      command: '',
-      params: '',
-      value: '',
-      comments: '',
-      validation: createSchemaRowValidation(),
-    };
-  }
-
-  getVisibleDomainCommands(currentCommand = '') {
-    return getVisibleDomainCommands({
-      commands: this.domainCommands,
-      currentCommand: normaliseDomainCommand(currentCommand),
+    this.generatorMountedPage.initializeMountedPage({
+      renderSchemaRows: () => this.renderSchemaRows(),
+      syncInitialFormatState: () => this.generatorViewState.syncGeneratorControlsFormatState('csv'),
     });
-  }
-
-  getMethodPickerOptions(currentValue = '') {
-    return [
-      {
-        sourceType: 'enum',
-        command: 'enum',
-        helpModel: this.getSchemaHelpData('enum', 'enum'),
-      },
-      {
-        sourceType: 'literal',
-        command: 'literal',
-        helpModel: this.getSchemaHelpData('literal', 'literal'),
-      },
-      {
-        sourceType: 'regex',
-        command: 'regex',
-        helpModel: this.getSchemaHelpData('regex', 'regex'),
-      },
-      ...this.getVisibleDomainCommands(currentValue).map((command) => ({
-        sourceType: 'domain',
-        command,
-        helpModel: this.getSchemaHelpData('domain', command),
-      })),
-      ...this.fakerCommands.map((command) => ({
-        sourceType: 'faker',
-        command,
-        helpModel: this.getSchemaHelpData('faker', command),
-      })),
-    ];
-  }
-
-  populateFormatOptions() {
-    this.generatorControls?.update({
-      selectedFormat: this.getSelectedOutputType() || 'csv',
-      currentOptions: this.exporter?.getOptionsForType?.(this.getSelectedOutputType() || 'csv'),
-    });
-  }
-
-  validateSchemaRows(schemaRows = this.schemaRows) {
-    return validateSchemaRows(schemaRows);
   }
 
   getSelectedOutputType() {
-    if (this.generatorControls?.getSelectedOutputType) {
-      return this.generatorControls.getSelectedOutputType();
-    }
-    return this.documentObj.getElementById('generatorOutputFormat')?.value;
+    return this.generatorViewState.getSelectedOutputType();
   }
 
-  renderOptionsPanelForSelectedFormat() {
-    const type = this.getSelectedOutputType();
-    if (!this.generatorControls) {
-      return;
-    }
-    this.generatorControls.update({
-      selectedFormat: type,
-      currentOptions: this.exporter?.getOptionsForType?.(type),
-    });
-  }
-
-  setOptionsApplyDirtyState(optionsParent, isDirty) {
-    const applyButton = optionsParent?.querySelector?.('.apply-options');
-    if (!applyButton) {
-      return;
-    }
-
-    applyButton.disabled = isDirty !== true;
-    applyButton.setAttribute('aria-disabled', applyButton.disabled ? 'true' : 'false');
-  }
-
-  configureOptionsApplyDirtyState(optionsParent) {
-    const panelRoot = optionsParent?.firstElementChild;
-    if (!panelRoot) {
-      return;
-    }
-
-    this.setOptionsApplyDirtyState(optionsParent, false);
-
-    const markDirty = (event) => {
-      const target = event?.target;
-      if (!target || typeof target.closest !== 'function') {
-        return;
-      }
-      if (target.closest('.apply-options')) {
-        return;
-      }
-      this.setOptionsApplyDirtyState(optionsParent, true);
-    };
-
-    panelRoot.addEventListener('input', markDirty);
-    panelRoot.addEventListener('change', markDirty);
+  syncGeneratorControlsFormatStateIfChanged(nextFormat, previousFormat = this.getSelectedOutputType()) {
+    return this.generatorViewState.syncGeneratorControlsFormatStateIfChanged(nextFormat, previousFormat);
   }
 
   applyCurrentTypeOptions(options) {
-    if (!options) {
-      return;
-    }
-    const requestedType = options.outputFormat || this.getSelectedOutputType();
-    if (!requestedType) {
-      return;
-    }
-
-    const sanitized = applySanitizedUiOptionsToTargets({
-      requestedFormat: requestedType,
-      rawOptions: options?.options || options,
-      targets: [this.exporter],
-    });
-
-    const outputSelect = this.documentObj.getElementById('generatorOutputFormat');
-    const resolvedType = sanitized?.outputFormat || requestedType;
-    if (outputSelect && outputSelect.value !== resolvedType) {
-      outputSelect.value = resolvedType;
-      this.renderOptionsPanelForSelectedFormat();
-    }
-
-    const type = this.getSelectedOutputType() || resolvedType;
-    this.renderOutputPreviewForCurrentSelection();
-    this.setGenerationStatus(`${type.toUpperCase()} options applied.`);
-    this.scheduleClearGenerationStatus();
-  }
-
-  setGenerationButtonBusy(isBusy) {
-    this.generatorControls?.setGenerationButtonsBusy?.(isBusy);
-  }
-
-  setGenerationStatus(message, options = {}) {
-    this.generatorControls?.setStatus?.(message, options);
-  }
-
-  showGenerationLoadingStatus(message) {
-    this.generatorControls?.showLoadingStatus?.(message);
-  }
-
-  clearGenerationStatus() {
-    this.generatorControls?.clearStatus?.();
-  }
-
-  scheduleClearGenerationStatus(delay = 1200) {
-    this.generatorControls?.scheduleClearStatus?.(delay);
-  }
-
-  surfacePageError(message, { useSchemaStatus = false } = {}) {
-    const text = String(message || '').trim();
-    if (!text) {
-      return;
-    }
-    if (useSchemaStatus) {
-      this.showSchemaErrorStatus(text);
-    } else {
-      this.setGenerationStatus(text, { severity: 'error', dismissable: true });
-      this.scheduleClearGenerationStatus(5000);
-    }
-  }
-
-  toggleSchemaEditMode() {
-    const toggleResult = this.schemaDefinition?.toggleMode?.();
-    if (toggleResult?.errors?.length > 0) {
-      this.showSchemaErrorStatus(schemaErrorsToText(toggleResult.errors));
-    }
-  }
-
-  showSchemaErrorStatus(message) {
-    this.schemaErrorDisplay?.show(message);
-  }
-
-  clearSchemaErrorStatus() {
-    this.schemaErrorDisplay?.clear();
-  }
-
-  revalidateSchemaRows() {
-    if (this.schemaDefinition?.validateRows) {
-      return this.schemaDefinition.validateRows() || { rows: this.schemaRows, errors: [] };
-    }
-    if (this.schemaRows.length === 0) {
-      return { rows: [], errors: [] };
-    }
-    return validateSchemaRows(this.schemaRows);
+    return this.generatorRuntimeActions.applyCurrentTypeOptions(options);
   }
 
   destroy() {
     this.generatorPage?.destroy?.();
-    this.rowCountControls.forEach((control) => control?.destroy?.());
-    this.rowCountControls = [];
-  }
-
-  updateSchemaEditModeView() {
-    this.schemaDefinition?.render?.();
-  }
-
-  invalidateSchemaTokensFromRows() {
-    this.schemaSession.invalidateTokensFromRows();
-  }
-
-  handleGlobalButtonClick(_event) {
-    return undefined;
-  }
-
-  insertExampleSchema() {
-    this.schemaDefinition?.insertSampleSchema?.();
-  }
-
-  buildSchemaModeHelpHtml(inTextMode) {
-    return buildSchemaModeHelpHtml({
-      inTextMode,
-      generateToFileHelpUrl: GENERATE_TO_FILE_HELP_URL,
-      sampleSchemaText: GENERATOR_DEFAULT_EXAMPLE_SCHEMA_TEXT,
-    });
-  }
-
-  parseSchemaTextToRows(schemaText) {
-    return this.schemaSession.parseTextToRows(schemaText);
-  }
-
-  syncSchemaRowsFromTextMode({ showErrors = false, applySemanticValidation = true } = {}) {
-    const state = this.schemaDefinition?.getState?.();
-    const isTextMode = state?.isTextMode === true;
-
-    if (isTextMode) {
-      const parsed = this.schemaDefinition?.syncFromText?.({ showErrors, force: true }) || { rows: [], errors: [] };
-      if (parsed.errors.length > 0) {
-        if (showErrors) {
-          this.surfacePageError(schemaErrorsToText(parsed.errors), { useSchemaStatus: true });
-        }
-        return parsed;
-      }
-    }
-
-    const validation = applySemanticValidation ? this.revalidateSchemaRows() : { rows: this.schemaRows, errors: [] };
-    return { rows: this.schemaRows, errors: validation.errors || [], tokens: this.schemaTextTokens };
-  }
-
-  ruleToSchemaRow(rule) {
-    return mapDataRuleToSchemaRow(rule, {
-      createBlankSchemaRow: () => this.createBlankSchemaRow(),
-    });
   }
 
   renderSchemaRows() {
-    this.schemaDefinition?.render?.();
-    this.updateAllPairsButtonVisibility();
+    this.generatorSchemaState.renderSchemaRows();
   }
 
-  renderSchemaRowsWithoutPairwiseUpdate() {
-    this.schemaDefinition?.render?.();
+  getPreviewRowCount() {
+    return this.generatorViewState.getPreviewRowCount();
   }
 
-  handleRowInputChange(event) {
-    return this.schemaDefinition?.handleInput?.(event);
-  }
-
-  handleRowFocusOut(event) {
-    return this.schemaDefinition?.handleFocusOut?.(event);
-  }
-
-  applySemanticValidationForRow(rowId) {
-    return this.schemaDefinition?.applySemanticValidationForRow?.(rowId);
-  }
-
-  async handleRowButtonClick(event) {
-    return this.schemaDefinition?.handleClick?.(event);
-  }
-
-  getPickerInitialTab(sourceType) {
-    const type = String(sourceType || '').toLowerCase();
-    if (type === SOURCE_TYPE_FAKER) {
-      return 'faker';
-    }
-    if (type === SOURCE_TYPE_ENUM || type === SOURCE_TYPE_LITERAL || type === SOURCE_TYPE_REGEX) {
-      return 'core';
-    }
-    if (type === SOURCE_TYPE_DOMAIN) {
-      return 'all';
-    }
-    return 'all';
-  }
-
-  addRowAfter(index) {
-    this.schemaDefinition?.addRowAfter?.(index);
-  }
-
-  removeRow(index) {
-    this.schemaDefinition?.removeRowAt?.(index);
-  }
-
-  moveRow(index, direction) {
-    this.schemaDefinition?.moveRowAt?.(index, direction);
-  }
-
-  moveRowToIndex(fromIndex, toIndex) {
-    const rows = this.schemaRows.slice();
-    if (fromIndex < 0 || toIndex < 0 || fromIndex >= rows.length || toIndex >= rows.length) {
-      return;
-    }
-    const [moved] = rows.splice(fromIndex, 1);
-    rows.splice(toIndex, 0, moved);
-    this.schemaDefinition?.setRows?.(rows);
-    this.schemaDefinition?.render?.();
-    this.schemaDefinition?.syncTextFromRows?.();
-  }
-
-  handleRowDragStart(event) {
-    return this.schemaDefinition?.handleDragStart?.(event);
-  }
-
-  handleRowDragOver(event) {
-    return this.schemaDefinition?.handleDragOver?.(event);
-  }
-
-  handleRowDrop(event) {
-    return this.schemaDefinition?.handleDrop?.(event);
-  }
-
-  handleRowDragEnd() {
-    return this.schemaDefinition?.handleDragEnd?.();
-  }
-
-  parseRowCount(inputId) {
-    return parseGeneratorRowCount({ documentObj: this.documentObj, inputId });
-  }
-
-  renderOutputPreviewForCurrentSelection() {
-    renderGeneratorOutputPreview({
-      documentObj: this.documentObj,
-      getSelectedOutputType: () => this.getSelectedOutputType(),
-      lastPreviewDataTable: this.lastPreviewDataTable,
-      exporter: this.exporter,
-      setOutputPreviewText: (text) => this.generatorPreview?.setOutputPreviewText?.(text),
-    });
-  }
-
-  createConfiguredGenerator() {
-    return createConfiguredGeneratorForPage({
-      syncSchemaRowsFromTextMode: (options) => this.syncSchemaRowsFromTextMode(options),
-      validateSchemaRows,
-      schemaRowsToSpec,
-      TestDataGeneratorClass: this.TestDataGeneratorClass,
-      faker: this.faker,
-      RandExp: this.RandExp,
-    });
-  }
-
-  buildDataTable(generator, rowCount) {
-    return buildPreviewDataTable({ generator, rowCount });
+  getGenerateRowCount() {
+    return this.generatorViewState.getGenerateRowCount();
   }
 
   previewData() {
-    previewGeneratorData({
-      parseRowCount: (inputId) => this.parseRowCount(inputId),
-      createConfiguredGenerator: () => this.createConfiguredGenerator(),
-      buildDataTable: (generator, rowCount) => this.buildDataTable(generator, rowCount),
-      previewGrid: this.previewGrid,
-      setLastPreviewDataTable: (dataTable) => {
-        this.lastPreviewDataTable = dataTable;
-      },
-      renderOutputPreviewForCurrentSelection: () => this.renderOutputPreviewForCurrentSelection(),
-      surfacePageError: (message, options) => this.surfacePageError(message, options),
-      clearPageError: () => this.clearSchemaErrorStatus(),
-    });
+    return this.generatorRuntimeActions.previewData();
   }
 
   async generateDataFile() {
-    await generateGeneratorDataFile({
-      parseRowCount: (inputId) => this.parseRowCount(inputId),
-      createConfiguredGenerator: () => this.createConfiguredGenerator(),
-      getSelectedOutputType: () => this.getSelectedOutputType(),
-      exporter: this.exporter,
-      clearGenerationStatus: () => this.clearGenerationStatus(),
-      setGenerationButtonBusy: (isBusy) => this.setGenerationButtonBusy(isBusy),
-      setGenerationStatus: (message) => this.setGenerationStatus(message),
-      showGenerationLoadingStatus: (message) => this.showGenerationLoadingStatus(message),
-      buildDataTable: (generator, rowCount) => this.buildDataTable(generator, rowCount),
-      DownloadClass: this.DownloadClass,
-      surfacePageError: (message, options) => this.surfacePageError(message, options),
-      clearPageError: () => this.clearSchemaErrorStatus(),
-      scheduleClearGenerationStatus: (delay) => this.scheduleClearGenerationStatus(delay),
-    });
+    await this.generatorRuntimeActions.generateDataFile();
   }
 
   async generateAllPairsDataFile() {
-    await generateGeneratorAllPairsDataFile({
-      createConfiguredGenerator: () => this.createConfiguredGenerator(),
-      countEnumColumns: () => this.countEnumColumns(),
-      getSelectedOutputType: () => this.getSelectedOutputType(),
-      exporter: this.exporter,
-      clearGenerationStatus: () => this.clearGenerationStatus(),
-      setGenerationButtonBusy: (isBusy) => this.setGenerationButtonBusy(isBusy),
-      setGenerationStatus: (message) => this.setGenerationStatus(message),
-      showGenerationLoadingStatus: (message) => this.showGenerationLoadingStatus(message),
-      buildAllPairsDataTable: (generator) => this.buildAllPairsDataTable(generator),
-      DownloadClass: this.DownloadClass,
-      surfacePageError: (message, options) => this.surfacePageError(message, options),
-      clearPageError: () => this.clearSchemaErrorStatus(),
-      scheduleClearGenerationStatus: (delay) => this.scheduleClearGenerationStatus(delay),
-    });
-  }
-
-  countEnumColumns() {
-    return countGeneratorEnumColumns({
-      syncSchemaRowsFromTextMode: (options) => this.syncSchemaRowsFromTextMode(options),
-      validateSchemaRows,
-    });
-  }
-
-  buildAllPairsDataTable(generator) {
-    return buildPairwiseDataTable({
-      generator,
-      faker: this.faker,
-      RandExp: this.RandExp,
-    });
+    await this.generatorRuntimeActions.generateAllPairsDataFile();
   }
 
   updateAllPairsButtonVisibility() {
-    const isVisible = updateGeneratorPairwiseButtonVisibility({
-      documentObj: this.documentObj,
+    return this.generatorRuntimeActions.updateAllPairsButtonVisibility({
       getCurrentSchemaState: () => ({
         rows: this.schemaRows,
         errors: [],
       }),
-      validateSchemaRows,
     });
-    this.generatorControls?.update?.({ pairwiseVisible: isVisible === true });
-  }
-
-  getSchemaHelpData(sourceType, commandValue) {
-    return buildSchemaHelpModel(sourceType, commandValue);
   }
 }
 

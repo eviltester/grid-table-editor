@@ -1,9 +1,11 @@
 const { expect } = require('@playwright/test');
 
+const TEXT_PREVIEW_EDITOR_ROOT = '[data-role="text-preview-editor-root"]';
+
 class FormatOptionsPanelComponent {
   constructor(page) {
     this.page = page;
-    this.container = page.locator('#tabbedTextArea .options-parent');
+    this.container = page.locator(`${TEXT_PREVIEW_EDITOR_ROOT} [data-role="options-panel-root"]`);
   }
 
   async expectVisible() {
@@ -12,20 +14,20 @@ class FormatOptionsPanelComponent {
 
   async expectReady() {
     await this.expectVisible();
-    await expect(this.container.locator('.apply-options').first()).toBeVisible();
+    await expect(this.getApplyButton()).toBeVisible();
   }
 
   async hasApplyButton() {
-    return this.container.locator('.apply-options').first().isVisible();
+    return this.getApplyButton().isVisible();
   }
 
   async isApplyEnabled() {
-    const button = this.container.locator('.apply-options').first();
+    const button = this.getApplyButton();
     return button.isEnabled();
   }
 
   async expectApplyEnabled(enabled = true) {
-    const button = this.container.locator('.apply-options').first();
+    const button = this.getApplyButton();
     if (enabled) {
       await expect(button).toBeEnabled();
       return;
@@ -34,7 +36,7 @@ class FormatOptionsPanelComponent {
   }
 
   async apply() {
-    await this.container.locator('.apply-options').first().click();
+    await this.getApplyButton().click();
   }
 
   async getCurrentOptionState() {
@@ -128,6 +130,10 @@ class FormatOptionsPanelComponent {
     }
 
     throw new Error('No editable option controls found in current options panel');
+  }
+
+  getApplyButton() {
+    return this.container.locator('[data-role="apply-options-button"]').first();
   }
 }
 

@@ -67,26 +67,28 @@ function createClipboardService({ documentObj } = {}) {
   };
 }
 
-function createDownloadService({ DownloadCtor = Download } = {}) {
+function createDownloadService({ DownloadCtor = Download, documentObj, URLObj, BlobCtor } = {}) {
   return {
     downloadText(filename, text) {
-      new DownloadCtor(filename).downloadFile(text);
+      new DownloadCtor(filename, { documentObj, URLObj, BlobCtor }).downloadFile(text);
     },
   };
 }
 
-function createYieldToUi({ documentObj, windowObj } = {}) {
+function createYieldToUi({ documentObj, windowObj, requestAnimationFrameFn, setTimeoutFn } = {}) {
   return () =>
     new Promise((resolve) => {
       const resolvedWindowObj = resolveWindowObj(windowObj, documentObj);
-      const requestAnimationFrameFn = resolvedWindowObj?.requestAnimationFrame?.bind(resolvedWindowObj);
-      const setTimeoutFn = resolvedWindowObj?.setTimeout?.bind(resolvedWindowObj) || globalThis.setTimeout;
-      if (typeof requestAnimationFrameFn !== 'function') {
-        setTimeoutFn(resolve, 0);
+      const resolvedRequestAnimationFrameFn =
+        requestAnimationFrameFn || resolvedWindowObj?.requestAnimationFrame?.bind(resolvedWindowObj);
+      const resolvedSetTimeoutFn =
+        setTimeoutFn || resolvedWindowObj?.setTimeout?.bind(resolvedWindowObj) || globalThis.setTimeout;
+      if (typeof resolvedRequestAnimationFrameFn !== 'function') {
+        resolvedSetTimeoutFn(resolve, 0);
         return;
       }
-      requestAnimationFrameFn(() => {
-        setTimeoutFn(resolve, 0);
+      resolvedRequestAnimationFrameFn(() => {
+        resolvedSetTimeoutFn(resolve, 0);
       });
     });
 }

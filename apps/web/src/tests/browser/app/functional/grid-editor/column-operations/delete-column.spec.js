@@ -25,7 +25,7 @@ test.describe('2. Column Operations', () => {
     const { appPage, pageErrors } = await openApp(page);
     await appPage.gridEditor.resetTable();
     const [onlyColumn] = await appPage.gridEditor.header.getColumnNames();
-    const gridError = page.locator('#grid-column-error');
+    const gridError = appPage.gridEditor.errorStatus;
 
     await appPage.gridEditor.header.deleteColumn(onlyColumn);
     await expect(gridError).toContainText('Cannot Delete The Only Column');

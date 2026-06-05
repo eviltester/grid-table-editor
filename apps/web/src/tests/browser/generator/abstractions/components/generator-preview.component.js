@@ -1,4 +1,5 @@
 const { expect } = require('@playwright/test');
+const { GridRendererComponent } = require('../../../app/abstractions/components/grid-renderer.component');
 
 class GeneratorPreviewComponent {
   constructor(page) {
@@ -8,8 +9,7 @@ class GeneratorPreviewComponent {
     this.previewButton = page.getByRole('button', { name: 'Preview', exact: true });
     this.outputPreviewTextArea = page.getByRole('textbox', { name: 'Output Preview' });
     this.previewGrid = page.getByLabel('Data Table Preview Grid');
-    this.headerTitles = this.previewGrid.locator('.tabulator-col-title');
-    this.rows = this.previewGrid.locator('.tabulator-row');
+    this.renderer = new GridRendererComponent(page, this.previewGrid);
   }
 
   async expectReady() {
@@ -33,50 +33,15 @@ class GeneratorPreviewComponent {
   }
 
   async getColumnNames() {
-    const count = await this.headerTitles.count();
-    const names = [];
-    for (let index = 0; index < count; index += 1) {
-      names.push((await this.headerTitles.nth(index).innerText()).trim());
-    }
-    return names;
+    return this.renderer.getColumnNames();
   }
 
   async getColumnTextsByName(columnName) {
-    const columnIndex = await this._columnIndexByName(columnName);
-    const rowCount = await this.rows.count();
-    const values = [];
-    for (let rowIndex = 0; rowIndex < rowCount; rowIndex += 1) {
-      values.push((await this.rows.nth(rowIndex).locator('.tabulator-cell').nth(columnIndex).innerText()).trim());
-    }
-    return values;
+    return this.renderer.getColumnTextsByName(columnName);
   }
 
   async expectReadOnly() {
-    const firstCell = this.rows.first().locator('.tabulator-cell').first();
-    const editingInputs = this.previewGrid.locator(
-      '.tabulator-editing input, .tabulator-editing textarea, .tabulator-editing select'
-    );
-
-    await expect(firstCell).toBeVisible();
-    await firstCell.dblclick();
-    await expect(editingInputs).toHaveCount(0);
-  }
-
-  async _columnIndexByName(columnName) {
-    const expected = String(columnName || '')
-      .split('\n')[0]
-      .trim();
-    const totalColumns = await this.headerTitles.count();
-    for (let index = 0; index < totalColumns; index += 1) {
-      const title = String(await this.headerTitles.nth(index).innerText())
-        .split('\n')[0]
-        .trim();
-      if (title === expected) {
-        return index;
-      }
-    }
-
-    throw new Error(`Column "${columnName}" was not found in preview grid header.`);
+    await this.renderer.expectCellReadOnly(0, 0);
   }
 }
 

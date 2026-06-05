@@ -1,5 +1,4 @@
 export {
-  parseGeneratorRowCount,
   createConfiguredGeneratorForPage,
   buildPreviewDataTable,
   buildPairwiseDataTable,
@@ -10,3 +9,4 @@ export {
   generateGeneratorDataFile,
   generateGeneratorAllPairsDataFile,
 } from './data-generator-generation-actions.js';
+export { createGeneratorSchemaGenerationBridge } from './generator-schema-generation-bridge.js';

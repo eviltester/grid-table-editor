@@ -7,13 +7,7 @@ class DataPopulationPanelView {
     this.documentObj = resolveDocumentObj(documentObj, root);
     this.services = services;
     this.callbacks = callbacks;
-    this.ids = {
-      actionsRoot: 'populationActionsRoot',
-      rowCountRoot: 'generateCountControl',
-      modeSelectorRoot: 'populationModeSelectorRoot',
-      schemaDefinitionRoot: 'testDataSchemaDefinition',
-      ...ids,
-    };
+    this.ids = { ...ids };
     this.populationActions = null;
     this.populationModeSelector = null;
     this.rowCountControl = null;
@@ -32,14 +26,18 @@ class DataPopulationPanelView {
 
   template() {
     return `
-      <section class="data-population-panel" aria-label="Test Data Population Panel">
+      <section
+        class="data-population-panel testDataSchemaGui"
+        data-role="data-population-panel-root"
+        aria-label="Test Data Population Panel"
+      >
         <div class="data-population-toolbar">
           <div data-role="population-actions-root"></div>
           <span data-role="row-count-root"></span>
           <div data-role="population-mode-selector-root"></div>
         </div>
-        <div class="test-data-schema-edit-zone generator-schema">
-          <div id="${this.ids.schemaDefinitionRoot}" data-role="schema-definition-root"></div>
+        <div class="test-data-schema-edit-zone shared-schema-section">
+          <div${this.ids.schemaDefinitionRoot ? ` id="${this.ids.schemaDefinitionRoot}"` : ''} data-role="schema-definition-root"></div>
         </div>
       </section>
     `;

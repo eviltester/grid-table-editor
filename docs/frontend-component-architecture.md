@@ -27,7 +27,7 @@ Page shell components own reusable functional scaffold only: instruction roots, 
 Use these layers when deciding where a change belongs.
 
 - Page components compose feature roots for a complete page view, for example `AppPage` and `GeneratorPage`.
-- Feature components own one meaningful UI area, for example data grid editor, import/export workspace, format selector, schema definition, generator controls, generator preview, and test-data generation panel.
+- Feature components own one meaningful UI area, for example data grid editor, import/export workspace, format selector, schema definition, generator controls, generator preview, test-data population toolbar, and test-data generation panel.
 - Shared components are reusable page-facing pieces, for example instructions, row count control, schema definition, format option panel, status presenters, and dialog services.
 - Primitives are low-level building blocks under `shared/primitives/`; page and feature code should prefer a shared presenter or feature API over wiring primitives directly.
 - Services and presenters wrap behavior without owning a full feature, for example timed status, loading status, dialog services, clipboard/download/file adapters, and grid-library loading.

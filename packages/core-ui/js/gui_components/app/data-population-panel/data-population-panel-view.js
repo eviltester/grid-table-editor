@@ -1,15 +1,5 @@
 import { resolveDocumentObj } from '../../shared/dom/default-objects.js';
 
-const GENERATE_TO_GRID_HELP_HTML = `
-  <p>Generate data from the current schema directly into the grid.</p>
-  <p><a class="helplink" href="/docs/test-data/test-data-generation" target="anywaydatadocs">Test-data generation docs</a></p>
-`;
-
-const GENERATE_PAIRWISE_TO_GRID_HELP_HTML = `
-  <p>Generate pairwise data from the current schema directly into the grid.</p>
-  <p><a class="helplink" href="https://anywaydata.com/docs/test-data/pairwise-testing" target="_blank" rel="noopener noreferrer">Pairwise testing docs</a></p>
-`;
-
 class DataPopulationPanelView {
   constructor({ root, controller, documentObj, services = {}, callbacks = {}, ids = {} } = {}) {
     this.root = root;
@@ -18,9 +8,7 @@ class DataPopulationPanelView {
     this.services = services;
     this.callbacks = callbacks;
     this.ids = { ...ids };
-    this.populationActions = null;
-    this.populationModeSelector = null;
-    this.rowCountControl = null;
+    this.toolbar = null;
     this.schemaDefinition = null;
   }
 
@@ -41,11 +29,7 @@ class DataPopulationPanelView {
         data-role="data-population-panel-root"
         aria-label="Test Data Population Panel"
       >
-        <div class="data-population-toolbar">
-          <div data-role="population-actions-root"></div>
-          <span data-role="row-count-root"></span>
-          <div data-role="population-mode-selector-root"></div>
-        </div>
+        <div data-role="test-data-population-toolbar-root"></div>
         <div class="test-data-schema-edit-zone shared-schema-section">
           <div${this.ids.schemaDefinitionRoot ? ` id="${this.ids.schemaDefinitionRoot}"` : ''} data-role="schema-definition-root"></div>
         </div>
@@ -55,38 +39,20 @@ class DataPopulationPanelView {
 
   createFeatures() {
     const state = this.controller.getState();
-    this.populationActions = this.services.createPopulationActionsComponent?.({
-      root: this.root.querySelector('[data-role="population-actions-root"]'),
+    this.toolbar = this.services.createTestDataPopulationToolbarComponent?.({
+      root: this.root.querySelector('[data-role="test-data-population-toolbar-root"]'),
       documentObj: this.documentObj,
       props: {
+        selectedMode: state.selectedMode,
         pairwiseVisible: state.pairwiseVisible,
-        ids: state.actionIds,
-        generateHelpHtml: GENERATE_TO_GRID_HELP_HTML,
-        generatePairwiseHelpHtml: GENERATE_PAIRWISE_TO_GRID_HELP_HTML,
-        statusVisible: true,
+        modeOptions: state.modeOptions,
+        rowCountProps: state.rowCountProps,
+        actionIds: state.actionIds,
       },
       callbacks: {
         onGenerate: this.callbacks.onGenerate,
         onGeneratePairwise: this.callbacks.onGeneratePairwise,
-      },
-    });
-
-    this.rowCountControl = this.services.createRowCountControl?.({
-      root: this.root.querySelector('[data-role="row-count-root"]'),
-      documentObj: this.documentObj,
-      props: state.rowCountProps,
-    });
-
-    this.populationModeSelector = this.services.createPopulationModeSelectorComponent?.({
-      root: this.root.querySelector('[data-role="population-mode-selector-root"]'),
-      documentObj: this.documentObj,
-      props: {
-        name: 'testDataGenerationMode',
-        options: state.modeOptions,
-        selectedMode: state.selectedMode,
-      },
-      callbacks: {
-        onChange: (mode) => this.controller.handleModeChange(mode),
+        onModeChange: (mode) => this.controller.handleModeChange(mode),
       },
     });
 
@@ -100,54 +66,48 @@ class DataPopulationPanelView {
 
   render() {
     const state = this.controller.getState();
-    this.populationActions?.update?.({ pairwiseVisible: state.pairwiseVisible });
-    this.populationModeSelector?.update?.({
-      name: 'testDataGenerationMode',
-      options: state.modeOptions,
+    this.toolbar?.update?.({
       selectedMode: state.selectedMode,
+      pairwiseVisible: state.pairwiseVisible,
+      modeOptions: state.modeOptions,
+      rowCountProps: state.rowCountProps,
+      actionIds: state.actionIds,
     });
-    this.rowCountControl?.update?.(state.rowCountProps);
     this.schemaDefinition?.update?.(state.schemaDefinitionProps);
   }
 
   destroy() {
-    this.populationActions?.destroy?.();
-    this.populationModeSelector?.destroy?.();
-    this.rowCountControl?.destroy?.();
+    this.toolbar?.destroy?.();
     this.schemaDefinition?.destroy?.();
     this.root.replaceChildren();
   }
 
   setPairwiseVisible(isVisible) {
-    this.populationActions?.setPairwiseVisible?.(isVisible);
+    this.toolbar?.setPairwiseVisible?.(isVisible);
   }
 
   setRowCountValue(value) {
-    const state = this.controller.getState();
-    this.rowCountControl?.update?.({
-      ...state.rowCountProps,
-      value,
-    });
+    this.toolbar?.setRowCountValue?.(value);
   }
 
   getMode() {
-    return this.populationModeSelector?.getMode?.() || this.controller.getState().selectedMode;
+    return this.toolbar?.getMode?.() || this.controller.getState().selectedMode;
   }
 
   getRowCountState() {
-    return this.rowCountControl?.getState?.() || null;
+    return this.toolbar?.getRowCountState?.() || null;
   }
 
   getRowCountInputValue() {
-    return this.rowCountControl?.getState?.()?.inputValue ?? null;
+    return this.toolbar?.getRowCountInputValue?.() ?? null;
   }
 
   setGenerateBusy(isBusy) {
-    this.populationActions?.setGenerateBusy?.(isBusy);
+    this.toolbar?.setGenerateBusy?.(isBusy);
   }
 
   setGeneratePairwiseBusy(isBusy) {
-    this.populationActions?.setGeneratePairwiseBusy?.(isBusy);
+    this.toolbar?.setGeneratePairwiseBusy?.(isBusy);
   }
 
   getSchemaDefinition() {

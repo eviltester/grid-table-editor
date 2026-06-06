@@ -349,10 +349,13 @@ Current status:
 Current status:
 
 - `DataPopulationPanel` now lives under `app/data-population-panel/` with a controller, view, and create-component factory.
+- `TestDataPopulationToolbar` now lives under `app/test-data-population-toolbar/` with a controller, view, and create-component factory, and owns the visible toolbar seam for generation actions, row count, and mode selection.
 - `PopulationModeSelector` and `PopulationActions` now live under their own app feature folders and are mounted through `DataPopulationPanel` rather than through the older test-data host binder path.
+- `DataPopulationPanel` now composes `TestDataPopulationToolbar` plus the shared schema definition instead of owning the toolbar sub-layout directly.
 - The app test-data controller now mounts `DataPopulationPanel`, reuses the shared `RowCountControl`, and passes app-specific schema behavior through the shared `SharedSchemaDefinition` contract.
 - The app test-data generation flow now updates pairwise visibility through the component boundary rather than mutating the pairwise button directly as the primary path.
 - Storybook now documents the app-side panel directly through `App / Data Population Panel` with `New Table`, `Amend Table`, and `Amend Selected` mode coverage.
+- Storybook now also documents `App / Data Population / Test Data Population Toolbar` directly so the horizontal and wrapped toolbar composition can be reviewed independently from the schema editor.
 - Existing app browser flows for new-table, amend-table, amend-selected, schema sync, and pairwise generation remain covered by the current Playwright suite after the migration.
 
 ### Phase 6: Import/Export Workspace
@@ -536,6 +539,7 @@ Use this backlog when the next migration step should be chosen from the reviewer
 - [x] Add dedicated Storybook coverage for `PopulationModeSelector` instead of only showing it inside `DataPopulationPanel`.
 - [x] Add dedicated Storybook coverage for `PopulationActions` instead of only showing it inside `DataPopulationPanel`.
 - [x] Split the app import/export drop-zone surface into a reviewer-facing visual component or explicit Storybook-visible boundary instead of leaving drag/drop behavior visible only through the full workspace story.
+- [x] Add reviewer-facing `Visual Always Open` or `Visual Always Visible` Storybook examples for dialog and presenter surfaces that previously only demonstrated trigger-first flows.
 - [ ] Add standalone Storybook coverage for the app page shell structure so reviewers can inspect shell composition separately from full app bootstrap.
 - [ ] Add standalone Storybook coverage for the generator page shell structure so reviewers can inspect shell composition separately from full generator bootstrap.
 - [ ] Re-audit Storybook after each new visible split and add follow-up unchecked items when a feature still renders meaningful visible child UI only through a broader page story.
@@ -543,6 +547,8 @@ Use this backlog when the next migration step should be chosen from the reviewer
 Current status:
 
 - The command picker dialog now has dedicated reviewer-facing Storybook coverage in `apps/web/src/stories/method-picker-dialog.stories.js`, with confirmed, cancelled, and filtered-selection flows.
+- The command picker dialog stories now also include a non-dismissing visual review example that renders the picker open immediately and logs `Apply`, `Cancel`, close-button, and backdrop actions without closing the overlay, so reviewers can inspect the component visually while the other stories keep covering the real promise-driven service flow.
+- The shared confirm dialog and text-input dialog stories now follow that same review pattern with `Visual Always Open` examples, and the loading/status presenter stories now expose `Visual Always Visible` examples so the rendered presenter state can be reviewed immediately instead of only after pressing a trigger button.
 - `PopulationModeSelector` now has dedicated reviewer-facing Storybook coverage in `apps/web/src/stories/population-mode-selector.stories.js`, with default, emitted-change, and alternate-initial-mode states.
 - `PopulationActions` now has dedicated reviewer-facing Storybook coverage in `apps/web/src/stories/population-actions.stories.js`, and the action cluster is now reused by generator controls as a shared icon+tippy action component with host-specific HTML help content for app-to-grid versus generator-to-file flows.
 - The embedded app test-data panel no longer exposes a separate `Refresh Text Preview` button; successful generate/amend flows now refresh the preview automatically so the shared action cluster stays aligned with the generator surface.

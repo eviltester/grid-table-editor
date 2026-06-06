@@ -1,7 +1,5 @@
-import { createRowCountControl } from '../../shared/row-count-control/index.js';
 import { createSharedSchemaDefinitionComponent } from '../../shared/schema-definition/index.js';
-import { createPopulationActionsComponent } from '../population-actions/index.js';
-import { createPopulationModeSelectorComponent } from '../population-mode-selector/index.js';
+import { createTestDataPopulationToolbarComponent } from '../test-data-population-toolbar/index.js';
 import { DataPopulationPanelController } from './data-population-panel-controller.js';
 import { DataPopulationPanelView } from './data-population-panel-view.js';
 import { resolveDocumentObj } from '../../shared/dom/default-objects.js';
@@ -15,10 +13,8 @@ function createDataPopulationPanelComponent({ root, props = {}, services = {}, c
     documentObj: resolvedDocumentObj,
     ids: props.ids || {},
     services: {
-      createPopulationActionsComponent: services.createPopulationActionsComponent || createPopulationActionsComponent,
-      createPopulationModeSelectorComponent:
-        services.createPopulationModeSelectorComponent || createPopulationModeSelectorComponent,
-      createRowCountControl: services.createRowCountControl || createRowCountControl,
+      createTestDataPopulationToolbarComponent:
+        services.createTestDataPopulationToolbarComponent || createTestDataPopulationToolbarComponent,
       createSharedSchemaDefinitionComponent:
         services.createSharedSchemaDefinitionComponent || createSharedSchemaDefinitionComponent,
     },

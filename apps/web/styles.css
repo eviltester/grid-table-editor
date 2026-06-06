@@ -1000,6 +1000,30 @@ body.theme-dark .generator-status-text[data-severity='info'] {
   margin-bottom: 0.4rem;
 }
 
+.data-population-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.6rem;
+}
+
+.data-population-toolbar > [data-role='population-actions-root'],
+.data-population-toolbar > [data-role='row-count-root'],
+.data-population-toolbar > [data-role='population-mode-selector-root'] {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.data-population-toolbar .row-count-control-label,
+.data-population-toolbar > [data-role='population-mode-selector-root'] label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
 .shared-generator-preview-controls,
 .generator-preview-controls {
   display: flex;

@@ -1,8 +1,7 @@
-import { createTimedStatusPresenter } from '../../shared/timed-error-display.js';
-import { createSharedSchemaDefinitionComponent } from '../../shared/schema-definition/index.js';
 import { resolveDocumentObj } from '../../shared/dom/default-objects.js';
 import { createGeneratorControlsComponent } from '../controls/index.js';
 import { createGeneratorPreviewComponent } from '../preview/index.js';
+import { createGeneratorSchemaPanelComponent } from '../schema-panel/index.js';
 import { GeneratorPageController } from './generator-page-controller.js';
 import { GeneratorPageView } from './generator-page-view.js';
 
@@ -14,11 +13,10 @@ function createGeneratorPageComponent({ root, props = {}, services = {}, callbac
     controller,
     documentObj: resolvedDocumentObj,
     services: {
-      createTimedStatusPresenter: services.createTimedStatusPresenter || createTimedStatusPresenter,
-      createSharedSchemaDefinitionComponent:
-        services.createSharedSchemaDefinitionComponent || createSharedSchemaDefinitionComponent,
       createGeneratorControlsComponent: services.createGeneratorControlsComponent || createGeneratorControlsComponent,
       createGeneratorPreviewComponent: services.createGeneratorPreviewComponent || createGeneratorPreviewComponent,
+      createGeneratorSchemaPanelComponent:
+        services.createGeneratorSchemaPanelComponent || createGeneratorSchemaPanelComponent,
       generatorControlsServices: services.generatorControlsServices || {},
       generatorPreviewServices: services.generatorPreviewServices || {},
     },

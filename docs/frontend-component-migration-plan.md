@@ -542,7 +542,9 @@ Use this backlog when the next migration step should be chosen from the reviewer
 - [x] Add reviewer-facing `Visual Always Open` or `Visual Always Visible` Storybook examples for dialog and presenter surfaces that previously only demonstrated trigger-first flows.
 - [x] Add standalone Storybook coverage for the app page shell structure so reviewers can inspect shell composition separately from full app bootstrap.
 - [x] Add standalone Storybook coverage for the generator page shell structure so reviewers can inspect shell composition separately from full generator bootstrap.
-- [ ] Re-audit Storybook after each new visible split and add follow-up unchecked items when a feature still renders meaningful visible child UI only through a broader page story.
+- [x] Re-audit Storybook after each new visible split and add follow-up unchecked items when a feature still renders meaningful visible child UI only through a broader page story.
+- [x] Split the generator-specific schema section wrapper out of `GeneratorPage` and add standalone Storybook coverage for it as a reviewer-facing feature component.
+- [ ] Re-audit app and generator page stories again after the generator schema-panel extraction to identify the next visible feature wrapper that still only appears through a broader page story.
 
 Current status:
 
@@ -554,6 +556,7 @@ Current status:
 - The embedded app test-data panel no longer exposes a separate `Refresh Text Preview` button; successful generate/amend flows now refresh the preview automatically so the shared action cluster stays aligned with the generator surface.
 - The import/export toolbar Storybook docs now expose the real file-input and drag/drop surface directly, with dedicated reviewer-facing stories for the default toolbar, file-import boundary, and busy/status state instead of leaving drag/drop behavior implicit inside the full workspace story.
 - App and generator page shell composition now also have standalone reviewer-facing Storybook coverage in `app-page-shell.stories.js` and `generator-page-shell.stories.js`, using explicit placeholder mount-root cards so reviewers can inspect shell layout separately from full bootstrap/runtime behavior.
+- The re-audit found one more real generator-side visible seam: `GeneratorPage` still owned the generator-specific schema section wrapper around the shared schema definition. That wrapper is now split into its own `GeneratorSchemaPanel` component with standalone Storybook coverage in `generator-schema-panel.stories.js`, so the next re-audit can focus on any remaining visible wrappers rather than this schema-section shell.
 
 ## Generator Runtime Simplification Follow-On
 

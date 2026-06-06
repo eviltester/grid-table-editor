@@ -60,6 +60,28 @@ describe('story cleanup helpers', () => {
     expect(root.__storybookCleanup).toHaveBeenCalledTimes(1);
   });
 
+  test('registerStoryCleanup supports multiple concurrent roots before cleanup runs', () => {
+    const firstRoot = document.createElement('section');
+    firstRoot.dataset.story = 'first';
+    firstRoot.__storybookCleanup = jest.fn();
+    document.body.appendChild(firstRoot);
+
+    const secondRoot = document.createElement('section');
+    secondRoot.dataset.story = 'second';
+    secondRoot.__storybookCleanup = jest.fn();
+    document.body.appendChild(secondRoot);
+
+    registerStoryCleanup(firstRoot, document);
+    registerStoryCleanup(secondRoot, document);
+
+    cleanupStoryEnvironment(document);
+
+    expect(firstRoot.__storybookCleanup).toHaveBeenCalledTimes(1);
+    expect(secondRoot.__storybookCleanup).toHaveBeenCalledTimes(1);
+    expect(document.body.contains(firstRoot)).toBe(false);
+    expect(document.body.contains(secondRoot)).toBe(false);
+  });
+
   test('cleanupStoryEnvironment clears the previous story before registering the next one', () => {
     const firstRoot = document.createElement('section');
     firstRoot.dataset.story = 'first';
@@ -129,6 +151,42 @@ describe('story cleanup helpers', () => {
     expect(document.getElementById('confirm-modal-backdrop')).toBeNull();
     expect(document.querySelector('.tippy-box')).toBeNull();
     expect(document.body.contains(secondRoot)).toBe(true);
+  });
+
+  test('renderStoryWithCleanup can preserve existing roots for docs-style multi-canvas rendering', async () => {
+    const firstRoot = await renderStoryWithCleanup(
+      () => {
+        const root = document.createElement('section');
+        root.dataset.story = 'first';
+        root.__storybookCleanup = jest.fn();
+        document.body.appendChild(root);
+        return root;
+      },
+      document,
+      { cleanupExisting: false }
+    );
+
+    const secondRoot = await renderStoryWithCleanup(
+      () => {
+        const root = document.createElement('section');
+        root.dataset.story = 'second';
+        root.__storybookCleanup = jest.fn();
+        document.body.appendChild(root);
+        return root;
+      },
+      document,
+      { cleanupExisting: false }
+    );
+
+    expect(document.body.contains(firstRoot)).toBe(true);
+    expect(document.body.contains(secondRoot)).toBe(true);
+
+    cleanupStoryEnvironment(document);
+
+    expect(firstRoot.__storybookCleanup).toHaveBeenCalledTimes(1);
+    expect(secondRoot.__storybookCleanup).toHaveBeenCalledTimes(1);
+    expect(document.body.contains(firstRoot)).toBe(false);
+    expect(document.body.contains(secondRoot)).toBe(false);
   });
 
   test('destroyTippyInstances tears down registered tooltip instances before artifact removal', () => {

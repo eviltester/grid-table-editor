@@ -535,7 +535,7 @@ Use this backlog when the next migration step should be chosen from the reviewer
   - filtered or tab-scoped selection flow
 - [x] Add dedicated Storybook coverage for `PopulationModeSelector` instead of only showing it inside `DataPopulationPanel`.
 - [x] Add dedicated Storybook coverage for `PopulationActions` instead of only showing it inside `DataPopulationPanel`.
-- [ ] Split the app import/export drop-zone surface into a reviewer-facing visual component or explicit Storybook-visible boundary instead of leaving drag/drop behavior visible only through the full workspace story.
+- [x] Split the app import/export drop-zone surface into a reviewer-facing visual component or explicit Storybook-visible boundary instead of leaving drag/drop behavior visible only through the full workspace story.
 - [ ] Add standalone Storybook coverage for the app page shell structure so reviewers can inspect shell composition separately from full app bootstrap.
 - [ ] Add standalone Storybook coverage for the generator page shell structure so reviewers can inspect shell composition separately from full generator bootstrap.
 - [ ] Re-audit Storybook after each new visible split and add follow-up unchecked items when a feature still renders meaningful visible child UI only through a broader page story.
@@ -544,8 +544,9 @@ Current status:
 
 - The command picker dialog now has dedicated reviewer-facing Storybook coverage in `apps/web/src/stories/method-picker-dialog.stories.js`, with confirmed, cancelled, and filtered-selection flows.
 - `PopulationModeSelector` now has dedicated reviewer-facing Storybook coverage in `apps/web/src/stories/population-mode-selector.stories.js`, with default, emitted-change, and alternate-initial-mode states.
-- `PopulationActions` now has dedicated reviewer-facing Storybook coverage in `apps/web/src/stories/population-actions.stories.js`, with default, pairwise-visible, and busy-state examples.
-- The next strongest Storybook-driven gap is now the app import/export drop-zone surface, which is still only visible through the broader workspace story instead of a reviewer-facing visual component boundary.
+- `PopulationActions` now has dedicated reviewer-facing Storybook coverage in `apps/web/src/stories/population-actions.stories.js`, and the action cluster is now reused by generator controls as a shared icon+tippy action component with host-specific HTML help content for app-to-grid versus generator-to-file flows.
+- The embedded app test-data panel no longer exposes a separate `Refresh Text Preview` button; successful generate/amend flows now refresh the preview automatically so the shared action cluster stays aligned with the generator surface.
+- The import/export toolbar Storybook docs now expose the real file-input and drag/drop surface directly, with dedicated reviewer-facing stories for the default toolbar, file-import boundary, and busy/status state instead of leaving drag/drop behavior implicit inside the full workspace story.
 - App and generator page shell composition are already exercised indirectly in page stories and focused tests, but they are not yet documented as standalone reviewer-facing shell stories.
 
 ## Generator Runtime Simplification Follow-On

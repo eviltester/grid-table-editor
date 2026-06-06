@@ -71,4 +71,65 @@ describe('ImportExportToolbar', () => {
       global.document = originalDocument;
     }
   });
+
+  test('mirrors disabled button state to aria-disabled for import/export actions', () => {
+    const component = createImportExportToolbarComponent({
+      root,
+      documentObj,
+      props: {
+        mode: 'preview',
+        previewTextDirty: false,
+        importBusy: false,
+        exportBusy: false,
+        supportsImport: true,
+        supportsExport: true,
+      },
+    });
+
+    const downloadButton = root.querySelector('[data-role="download-button"]');
+    const setTextFromGridButton = root.querySelector('[data-role="set-text-from-grid-button"]');
+    const setGridFromTextButton = root.querySelector('[data-role="set-grid-from-text-button"]');
+
+    expect(downloadButton.disabled).toBe(false);
+    expect(downloadButton.getAttribute('aria-disabled')).toBe('false');
+    expect(setTextFromGridButton.disabled).toBe(false);
+    expect(setTextFromGridButton.getAttribute('aria-disabled')).toBe('false');
+    expect(setGridFromTextButton.disabled).toBe(true);
+    expect(setGridFromTextButton.getAttribute('aria-disabled')).toBe('true');
+
+    component.update({ importBusy: true, exportBusy: true });
+
+    expect(downloadButton.disabled).toBe(true);
+    expect(downloadButton.getAttribute('aria-disabled')).toBe('true');
+    expect(setTextFromGridButton.disabled).toBe(true);
+    expect(setTextFromGridButton.getAttribute('aria-disabled')).toBe('true');
+    expect(setGridFromTextButton.disabled).toBe(true);
+    expect(setGridFromTextButton.getAttribute('aria-disabled')).toBe('true');
+  });
+
+  test('binds file selection through the default file-import adapter in standalone usage', () => {
+    const onFileSelected = jest.fn();
+
+    createImportExportToolbarComponent({
+      root,
+      documentObj,
+      callbacks: {
+        onFileSelected,
+      },
+    });
+
+    const fileInput = root.querySelector('[data-role="file-input"]');
+    const file = new dom.window.File(['name,status\nAva,active'], 'toolbar-import.csv', {
+      type: 'text/csv',
+    });
+
+    Object.defineProperty(fileInput, 'files', {
+      configurable: true,
+      value: [file],
+    });
+
+    fileInput.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+
+    expect(onFileSelected).toHaveBeenCalledWith(file);
+  });
 });

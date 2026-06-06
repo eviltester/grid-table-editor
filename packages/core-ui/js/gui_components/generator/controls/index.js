@@ -1,6 +1,7 @@
 import { createFormatOptionsPanel } from '../../shared/format-options-panel/index.js';
 import { createRowCountControl } from '../../shared/row-count-control/index.js';
 import { createLoadingStatusPresenter, createStatusPresenter } from '../../shared/test-data/ui/status-presenter.js';
+import { createPopulationActionsComponent } from '../../app/population-actions/index.js';
 import { createUpdateHelpHints } from '../../../help/help-tooltips.js';
 import { getOutputFormatGroups } from '../options/options-ui-schema.js';
 import { GeneratorControlsController } from './generator-controls-controller.js';
@@ -20,6 +21,7 @@ function createGeneratorControlsComponent({ root, props = {}, services = {}, cal
       createFormatOptionsPanel: services.createFormatOptionsPanel || createFormatOptionsPanel,
       createStatusPresenter: services.createStatusPresenter || createStatusPresenter,
       createLoadingStatusPresenter: services.createLoadingStatusPresenter || createLoadingStatusPresenter,
+      createPopulationActionsComponent: services.createPopulationActionsComponent || createPopulationActionsComponent,
       getOutputFormatGroups: services.getOutputFormatGroups || getOutputFormatGroups,
       canExportFormat: services.canExportFormat || (() => true),
       getCurrentOptionsForFormat: services.getCurrentOptionsForFormat || (() => undefined),

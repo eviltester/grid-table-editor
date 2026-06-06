@@ -1,5 +1,15 @@
 import { resolveDocumentObj } from '../../shared/dom/default-objects.js';
 
+const GENERATE_TO_GRID_HELP_HTML = `
+  <p>Generate data from the current schema directly into the grid.</p>
+  <p><a class="helplink" href="/docs/test-data/test-data-generation" target="anywaydatadocs">Test-data generation docs</a></p>
+`;
+
+const GENERATE_PAIRWISE_TO_GRID_HELP_HTML = `
+  <p>Generate pairwise data from the current schema directly into the grid.</p>
+  <p><a class="helplink" href="https://anywaydata.com/docs/test-data/pairwise-testing" target="_blank" rel="noopener noreferrer">Pairwise testing docs</a></p>
+`;
+
 class DataPopulationPanelView {
   constructor({ root, controller, documentObj, services = {}, callbacks = {}, ids = {} } = {}) {
     this.root = root;
@@ -51,11 +61,13 @@ class DataPopulationPanelView {
       props: {
         pairwiseVisible: state.pairwiseVisible,
         ids: state.actionIds,
+        generateHelpHtml: GENERATE_TO_GRID_HELP_HTML,
+        generatePairwiseHelpHtml: GENERATE_PAIRWISE_TO_GRID_HELP_HTML,
+        statusVisible: true,
       },
       callbacks: {
         onGenerate: this.callbacks.onGenerate,
         onGeneratePairwise: this.callbacks.onGeneratePairwise,
-        onRefreshPreview: this.callbacks.onRefreshPreview,
       },
     });
 
@@ -136,10 +148,6 @@ class DataPopulationPanelView {
 
   setGeneratePairwiseBusy(isBusy) {
     this.populationActions?.setGeneratePairwiseBusy?.(isBusy);
-  }
-
-  setRefreshPreviewBusy(isBusy) {
-    this.populationActions?.setRefreshPreviewBusy?.(isBusy);
   }
 
   getSchemaDefinition() {

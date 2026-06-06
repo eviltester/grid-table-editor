@@ -172,16 +172,26 @@ describe('test-data-generation-service', () => {
     expect(setGeneratePairwiseBusy.mock.calls).toEqual([[true], [false]]);
   });
 
-  test('refreshTestDataPreview drives injected refresh busy state instead of DOM lookups', async () => {
-    const setRefreshPreviewBusy = jest.fn();
+  test('generateTestData refreshes the text preview automatically after a successful grid update when auto preview is enabled', async () => {
     const renderTextFromGrid = jest.fn(() => Promise.resolve());
-    const clearPendingStatusReset = jest.fn();
-    const scheduleStatusReset = jest.fn();
     const setTestDataLoadingStatus = jest.fn();
     const setTestDataStatus = jest.fn();
+    const importer = { setGridFromGenericDataTable: jest.fn(() => Promise.resolve()) };
+    const generator = {
+      importSpec: jest.fn(),
+      compile: jest.fn(),
+      compiler: { validate: jest.fn() },
+      testDataRules: () => [{}],
+      isValid: () => true,
+      errors: () => [],
+      generateHeadersArray: () => ['Status'],
+      generateRow: () => ['Active'],
+    };
 
     const service = createTestDataGenerationService({
-      TestDataGeneratorClass: class {},
+      TestDataGeneratorClass: function TestDataGeneratorClass() {
+        return generator;
+      },
       PairwiseTestDataGeneratorClass: class {},
       GenericDataTableClass: class {},
       TEST_DATA_MODES: {
@@ -190,9 +200,11 @@ describe('test-data-generation-service', () => {
         AMEND_SELECTED: 'amend-selected',
       },
       normaliseCount: () => 3,
-      createTableFromGenerator: jest.fn(),
+      createTableFromGenerator: jest.fn(() => ({
+        getRowCount: () => 3,
+      })),
       createAmendedTable: jest.fn(),
-      schemaRowsToSpec: jest.fn(),
+      schemaRowsToSpec: jest.fn(() => 'Status\nliteral(Active)'),
       faker: {},
       RandExp: function RandExp() {},
       debouncer: { clear: jest.fn() },
@@ -201,24 +213,152 @@ describe('test-data-generation-service', () => {
       setTestDataLoadingStatus,
       showSchemaError: jest.fn(),
       yieldToUi: jest.fn(() => Promise.resolve()),
-      validateCurrentSchemaRows: jest.fn(() => ({ rows: [], errors: [] })),
-      getImporter: () => ({ setGridFromGenericDataTable: jest.fn() }),
-      getTextPreviewRenderer: () => ({ renderTextFromGrid }),
+      validateCurrentSchemaRows: jest.fn(() => ({
+        rows: [{ name: 'Status', sourceType: 'literal', value: 'Active' }],
+        errors: [],
+      })),
+      getImporter: () => importer,
+      getTextPreviewRenderer: () => ({
+        getState: () => ({ mode: 'preview', autoPreviewEnabled: true }),
+        renderTextFromGrid,
+      }),
       getMainGridExtras: jest.fn(),
       getGenerationMode: () => 'new-table',
-      setRefreshPreviewBusy,
+      getRequestedRowCount: () => 3,
     });
 
-    await service.refreshTestDataPreview({
-      clearPendingStatusReset,
-      scheduleStatusReset,
-    });
+    await service.generateTestData();
 
-    expect(clearPendingStatusReset).toHaveBeenCalledTimes(1);
-    expect(setTestDataLoadingStatus).toHaveBeenCalledWith('Refreshing text preview...');
+    expect(importer.setGridFromGenericDataTable).toHaveBeenCalledTimes(1);
     expect(renderTextFromGrid).toHaveBeenCalledTimes(1);
-    expect(setTestDataStatus).toHaveBeenCalledWith('Text preview refreshed.');
-    expect(scheduleStatusReset).toHaveBeenCalledTimes(1);
-    expect(setRefreshPreviewBusy.mock.calls).toEqual([[true], [false]]);
+    expect(setTestDataStatus).toHaveBeenCalledWith('Generate complete. Grid and preview updated.', {
+      dismissable: true,
+    });
+  });
+
+  test('generateTestData does not refresh the text preview when auto preview is disabled in preview mode', async () => {
+    const renderTextFromGrid = jest.fn(() => Promise.resolve());
+    const setTestDataStatus = jest.fn();
+    const importer = { setGridFromGenericDataTable: jest.fn(() => Promise.resolve()) };
+    const generator = {
+      importSpec: jest.fn(),
+      compile: jest.fn(),
+      compiler: { validate: jest.fn() },
+      testDataRules: () => [{}],
+      isValid: () => true,
+      errors: () => [],
+      generateHeadersArray: () => ['Status'],
+      generateRow: () => ['Active'],
+    };
+
+    const service = createTestDataGenerationService({
+      TestDataGeneratorClass: function TestDataGeneratorClass() {
+        return generator;
+      },
+      PairwiseTestDataGeneratorClass: class {},
+      GenericDataTableClass: class {},
+      TEST_DATA_MODES: {
+        NEW_TABLE: 'new-table',
+        AMEND_TABLE: 'amend-table',
+        AMEND_SELECTED: 'amend-selected',
+      },
+      normaliseCount: () => 3,
+      createTableFromGenerator: jest.fn(() => ({
+        getRowCount: () => 3,
+      })),
+      createAmendedTable: jest.fn(),
+      schemaRowsToSpec: jest.fn(() => 'Status\nliteral(Active)'),
+      faker: {},
+      RandExp: function RandExp() {},
+      debouncer: { clear: jest.fn() },
+      syncSchemaTextFromGridBeforeGenerate: jest.fn(),
+      setTestDataStatus,
+      setTestDataLoadingStatus: jest.fn(),
+      showSchemaError: jest.fn(),
+      yieldToUi: jest.fn(() => Promise.resolve()),
+      validateCurrentSchemaRows: jest.fn(() => ({
+        rows: [{ name: 'Status', sourceType: 'literal', value: 'Active' }],
+        errors: [],
+      })),
+      getImporter: () => importer,
+      getTextPreviewRenderer: () => ({
+        getState: () => ({ mode: 'preview', autoPreviewEnabled: false }),
+        renderTextFromGrid,
+      }),
+      getMainGridExtras: jest.fn(),
+      getGenerationMode: () => 'new-table',
+      getRequestedRowCount: () => 3,
+    });
+
+    await service.generateTestData();
+
+    expect(importer.setGridFromGenericDataTable).toHaveBeenCalledTimes(1);
+    expect(renderTextFromGrid).not.toHaveBeenCalled();
+    expect(setTestDataStatus).toHaveBeenCalledWith('Generate complete. Grid updated.', {
+      dismissable: true,
+    });
+  });
+
+  test('generateTestData refreshes the text preview in edit mode even when auto preview is disabled', async () => {
+    const renderTextFromGrid = jest.fn(() => Promise.resolve());
+    const setTestDataStatus = jest.fn();
+    const importer = { setGridFromGenericDataTable: jest.fn(() => Promise.resolve()) };
+    const generator = {
+      importSpec: jest.fn(),
+      compile: jest.fn(),
+      compiler: { validate: jest.fn() },
+      testDataRules: () => [{}],
+      isValid: () => true,
+      errors: () => [],
+      generateHeadersArray: () => ['Status'],
+      generateRow: () => ['Active'],
+    };
+
+    const service = createTestDataGenerationService({
+      TestDataGeneratorClass: function TestDataGeneratorClass() {
+        return generator;
+      },
+      PairwiseTestDataGeneratorClass: class {},
+      GenericDataTableClass: class {},
+      TEST_DATA_MODES: {
+        NEW_TABLE: 'new-table',
+        AMEND_TABLE: 'amend-table',
+        AMEND_SELECTED: 'amend-selected',
+      },
+      normaliseCount: () => 3,
+      createTableFromGenerator: jest.fn(() => ({
+        getRowCount: () => 3,
+      })),
+      createAmendedTable: jest.fn(),
+      schemaRowsToSpec: jest.fn(() => 'Status\nliteral(Active)'),
+      faker: {},
+      RandExp: function RandExp() {},
+      debouncer: { clear: jest.fn() },
+      syncSchemaTextFromGridBeforeGenerate: jest.fn(),
+      setTestDataStatus,
+      setTestDataLoadingStatus: jest.fn(),
+      showSchemaError: jest.fn(),
+      yieldToUi: jest.fn(() => Promise.resolve()),
+      validateCurrentSchemaRows: jest.fn(() => ({
+        rows: [{ name: 'Status', sourceType: 'literal', value: 'Active' }],
+        errors: [],
+      })),
+      getImporter: () => importer,
+      getTextPreviewRenderer: () => ({
+        getState: () => ({ mode: 'edit', autoPreviewEnabled: false }),
+        renderTextFromGrid,
+      }),
+      getMainGridExtras: jest.fn(),
+      getGenerationMode: () => 'new-table',
+      getRequestedRowCount: () => 3,
+    });
+
+    await service.generateTestData();
+
+    expect(importer.setGridFromGenericDataTable).toHaveBeenCalledTimes(1);
+    expect(renderTextFromGrid).toHaveBeenCalledTimes(1);
+    expect(setTestDataStatus).toHaveBeenCalledWith('Generate complete. Grid and preview updated.', {
+      dismissable: true,
+    });
   });
 });

@@ -90,6 +90,36 @@ describe('method picker modal', () => {
     await promise;
   });
 
+  test('mirrors apply button disabled state to aria-disabled', async () => {
+    const emptyPromise = openMethodPickerModal({
+      documentObj: document,
+      windowObj: window,
+      options: [],
+      currentCommand: '',
+    });
+
+    const emptyApplyButton = getOverlay().querySelector('[data-role="method-picker-apply-button"]');
+    expect(emptyApplyButton.disabled).toBe(true);
+    expect(emptyApplyButton.getAttribute('aria-disabled')).toBe('true');
+
+    getOverlay().querySelector('[data-role="method-picker-cancel-button"]').click();
+    await emptyPromise;
+
+    const populatedPromise = openMethodPickerModal({
+      documentObj: document,
+      windowObj: window,
+      options: [{ sourceType: 'domain', command: 'number.int', helpModel: { summary: '', params: [], example: '' } }],
+      currentCommand: 'number.int',
+    });
+
+    const populatedApplyButton = getOverlay().querySelector('[data-role="method-picker-apply-button"]');
+    expect(populatedApplyButton.disabled).toBe(false);
+    expect(populatedApplyButton.getAttribute('aria-disabled')).toBe('false');
+
+    getOverlay().querySelector('[data-role="method-picker-cancel-button"]').click();
+    await populatedPromise;
+  });
+
   test('renders parameter details before parameter types with expected columns', async () => {
     const promise = openMethodPickerModal({
       documentObj: document,

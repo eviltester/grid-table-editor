@@ -66,9 +66,6 @@ function createDataPopulationPanelComponent({ root, props = {}, services = {}, c
     setGeneratePairwiseBusy(isBusy) {
       view.setGeneratePairwiseBusy(isBusy);
     },
-    setRefreshPreviewBusy(isBusy) {
-      view.setRefreshPreviewBusy(isBusy);
-    },
     validateSchemaRows({ syncFromText = true } = {}) {
       if (syncFromText) {
         const isTextMode = view.getSchemaDefinition()?.getState?.()?.isTextMode === true;

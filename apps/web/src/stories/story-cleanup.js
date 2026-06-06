@@ -7,19 +7,19 @@ const STORY_ARTIFACT_SELECTORS = [
   '#inline-help-items',
 ];
 
-let activeStoryCleanup = null;
+const activeStoryCleanups = new Set();
 
 function getDefaultDocumentObj() {
   return typeof document !== 'undefined' ? document : null;
 }
 
 function runActiveStoryCleanup() {
-  if (typeof activeStoryCleanup !== 'function') {
+  if (activeStoryCleanups.size === 0) {
     return;
   }
-  const cleanup = activeStoryCleanup;
-  activeStoryCleanup = null;
-  cleanup();
+  const cleanups = Array.from(activeStoryCleanups);
+  activeStoryCleanups.clear();
+  cleanups.forEach((cleanup) => cleanup?.());
 }
 
 function destroyTippyInstances(documentObj = getDefaultDocumentObj()) {
@@ -65,7 +65,7 @@ function buildElementCleanup(element) {
 
 function registerStoryCleanup(storyResult, documentObj = getDefaultDocumentObj()) {
   if (!storyResult) {
-    activeStoryCleanup = () => removeStoryArtifacts(documentObj);
+    activeStoryCleanups.add(() => removeStoryArtifacts(documentObj));
     return storyResult;
   }
 
@@ -80,16 +80,18 @@ function registerStoryCleanup(storyResult, documentObj = getDefaultDocumentObj()
         ? () => storyResult.__storybookCleanup()
         : null;
 
-  activeStoryCleanup = () => {
+  activeStoryCleanups.add(() => {
     elementCleanup?.();
     removeStoryArtifacts(documentObj);
-  };
+  });
 
   return storyResult;
 }
 
-function renderStoryWithCleanup(storyFn, documentObj = getDefaultDocumentObj()) {
-  cleanupStoryEnvironment(documentObj);
+function renderStoryWithCleanup(storyFn, documentObj = getDefaultDocumentObj(), { cleanupExisting = true } = {}) {
+  if (cleanupExisting) {
+    cleanupStoryEnvironment(documentObj);
+  }
   return registerStoryCleanup(typeof storyFn === 'function' ? storyFn() : storyFn, documentObj);
 }
 

@@ -193,6 +193,11 @@ function openMethodPickerModal({
     : prepared[0]?.command || '';
   let tabButtons = [];
 
+  function syncApplyButtonState() {
+    applyButton.disabled = !selectedCommand;
+    applyButton.setAttribute('aria-disabled', applyButton.disabled ? 'true' : 'false');
+  }
+
   function renderTabs() {
     tabsElem.innerHTML = tabSpecs
       .map(
@@ -299,7 +304,7 @@ function openMethodPickerModal({
       })
       .join('');
     renderDetail();
-    applyButton.disabled = !selectedCommand;
+    syncApplyButtonState();
   }
 
   return new Promise((resolve) => {

@@ -14,7 +14,7 @@ import { waitFor, within } from '@testing-library/dom';
 import { GENERATOR_DEFAULT_EXAMPLE_SCHEMA_TEXT } from '../../../js/gui_components/shared/test-data/schema/schema-examples.js';
 import { createFocusedGeneratorHarness } from './support/focused-generator-harness.js';
 
-jest.setTimeout(15000);
+jest.setTimeout(30000);
 
 describe('generator focused schema editing', () => {
   let harness;

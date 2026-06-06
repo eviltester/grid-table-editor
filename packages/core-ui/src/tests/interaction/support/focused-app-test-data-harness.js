@@ -24,6 +24,10 @@ function createFocusedAppTestDataHarness() {
   let latestDataTable = null;
   let control = null;
   let selectedSchemaRowIndex = 0;
+  const previewState = {
+    mode: 'preview',
+    autoPreviewEnabled: true,
+  };
   const mainGridState = {
     rowCount: 0,
     selectedRowIndexes: [],
@@ -75,6 +79,8 @@ function createFocusedAppTestDataHarness() {
     document.getElementById('testDataPreviewCapture').textContent = '';
     latestDataTable = null;
     selectedSchemaRowIndex = 0;
+    previewState.mode = 'preview';
+    previewState.autoPreviewEnabled = true;
 
     const exporter = new Exporter({
       getGridAsGenericDataTable: () => latestDataTable,
@@ -93,6 +99,9 @@ function createFocusedAppTestDataHarness() {
     };
 
     const textPreviewRenderer = {
+      getState() {
+        return { ...previewState };
+      },
       async renderTextFromGrid() {
         const text = latestDataTable ? exporter.getDataTableAs('csv', latestDataTable) : '';
         document.getElementById('testDataPreviewCapture').textContent = text;
@@ -184,19 +193,18 @@ function createFocusedAppTestDataHarness() {
     await user.click(within(document.body).getByRole('button', { name: /^generate$/i }));
     if (waitForData) {
       await waitFor(() => expect(latestDataTable).toBeTruthy());
+      await waitFor(() =>
+        expect(document.getElementById('testDataPreviewCapture').textContent.length).toBeGreaterThan(0)
+      );
     }
-  }
-
-  async function clickRefreshPreview() {
-    await user.click(within(document.body).getByRole('button', { name: /refresh text preview/i }));
-    await waitFor(() =>
-      expect(document.getElementById('testDataPreviewCapture').textContent.length).toBeGreaterThan(0)
-    );
   }
 
   async function clickGeneratePairwise() {
     await user.click(within(document.body).getByRole('button', { name: /generate pairwise/i }));
     await waitFor(() => expect(latestDataTable).toBeTruthy());
+    await waitFor(() =>
+      expect(document.getElementById('testDataPreviewCapture').textContent.length).toBeGreaterThan(0)
+    );
   }
 
   async function setGenerateCount(value) {
@@ -243,7 +251,7 @@ function createFocusedAppTestDataHarness() {
   }
 
   function getPairwiseButton() {
-    return getPanelRoot().querySelector('[data-role="generate-pairwise-button"]');
+    return getPanelRoot().querySelector('[data-role="generate-pairwise-button-wrapper"]');
   }
 
   function getPreviewText() {
@@ -252,6 +260,15 @@ function createFocusedAppTestDataHarness() {
 
   function getLatestDataTable() {
     return latestDataTable;
+  }
+
+  function setPreviewState(nextState = {}) {
+    if (Object.prototype.hasOwnProperty.call(nextState, 'mode')) {
+      previewState.mode = nextState.mode;
+    }
+    if (Object.prototype.hasOwnProperty.call(nextState, 'autoPreviewEnabled')) {
+      previewState.autoPreviewEnabled = nextState.autoPreviewEnabled === true;
+    }
   }
 
   function assertSuccessfulGeneration(label = 'app generation') {
@@ -275,7 +292,6 @@ function createFocusedAppTestDataHarness() {
     fillGridRow,
     setSchemaText,
     clickGenerate,
-    clickRefreshPreview,
     clickGeneratePairwise,
     setGenerateCount,
     selectMode,
@@ -288,6 +304,7 @@ function createFocusedAppTestDataHarness() {
     getPairwiseButton,
     getPreviewText,
     getLatestDataTable,
+    setPreviewState,
     assertSuccessfulGeneration,
     assertSuccessfulPreview,
   };

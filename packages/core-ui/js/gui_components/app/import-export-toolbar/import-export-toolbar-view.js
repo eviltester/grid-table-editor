@@ -81,6 +81,7 @@ class ImportExportToolbarView {
       downloadButton.style.visibility = exportVisibility;
       const isBusy = state.importBusy || state.exportBusy;
       downloadButton.disabled = isBusy || !state.supportsExport;
+      downloadButton.setAttribute('aria-disabled', downloadButton.disabled ? 'true' : 'false');
       downloadButton.setAttribute('aria-busy', isBusy ? 'true' : 'false');
     }
 

@@ -1,3 +1,5 @@
+import React from 'react';
+import { Canvas, Controls, Description, Title } from '@storybook/addon-docs/blocks';
 import { expect, userEvent, within } from 'storybook/test';
 import { createPopulationModeSelectorComponent } from '../../../../packages/core-ui/js/gui_components/app/population-mode-selector/index.js';
 
@@ -43,6 +45,17 @@ const meta = {
   tags: ['autodocs'],
   parameters: {
     docs: {
+      page: () =>
+        React.createElement(
+          React.Fragment,
+          null,
+          React.createElement(Title),
+          React.createElement(Description),
+          React.createElement(Controls),
+          React.createElement(Canvas, { of: Default }),
+          React.createElement(Canvas, { of: SwitchToAmendSelected }),
+          React.createElement(Canvas, { of: StartsInAmendTableMode })
+        ),
       description: {
         component:
           'PopulationModeSelector is the app-side component that owns the New Table, Amend Table, and Amend Selected radio choice. This Storybook entry documents that visible subcomponent directly instead of only showing it inside the larger embedded test-data panel.',
@@ -70,6 +83,7 @@ const meta = {
 export default meta;
 
 export const Default = {
+  render: renderPopulationModeSelectorStory,
   parameters: {
     docs: {
       description: {
@@ -87,6 +101,7 @@ export const Default = {
 };
 
 export const SwitchToAmendSelected = {
+  render: renderPopulationModeSelectorStory,
   parameters: {
     docs: {
       description: {
@@ -107,6 +122,7 @@ export const StartsInAmendTableMode = {
   args: {
     selectedMode: 'amend-table',
   },
+  render: renderPopulationModeSelectorStory,
   parameters: {
     docs: {
       description: {

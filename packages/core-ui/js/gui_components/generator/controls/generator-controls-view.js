@@ -1,5 +1,15 @@
 import { resolveDocumentObj, resolveWindowObj } from '../../shared/dom/default-objects.js';
-import { renderIconHtml } from '../../shared/primitives/icon/icon-core.js';
+import { GENERATE_TO_FILE_HELP_URL } from '../constants.js';
+
+const GENERATE_TO_FILE_HELP_HTML = `
+  <p>Generate data for the current schema and output format to a file.</p>
+  <p><a class="helplink" href="${GENERATE_TO_FILE_HELP_URL}" target="_blank" rel="noopener noreferrer">Generate To File docs</a></p>
+`;
+
+const GENERATE_PAIRWISE_TO_FILE_HELP_HTML = `
+  <p>Generate pairwise data from the current schema to a file.</p>
+  <p><a class="helplink" href="https://anywaydata.com/docs/test-data/pairwise-testing" target="_blank" rel="noopener noreferrer">Pairwise testing docs</a></p>
+`;
 
 class GeneratorControlsView {
   constructor({ root, controller, documentObj, services = {}, ids = {} } = {}) {
@@ -19,6 +29,7 @@ class GeneratorControlsView {
     };
     this.rowCountControls = [];
     this.generateRowsCountControl = null;
+    this.generationActions = null;
     this.formatOptionsPanel = null;
     this.statusPresenter = null;
     this.loadingStatusPresenter = null;
@@ -59,26 +70,7 @@ class GeneratorControlsView {
         <label>Output Format
           <select${this.buildOptionalIdAttr(ids.outputFormatSelect)} data-role="generator-output-format-select"></select>
         </label>
-        <span class="shared-button-with-help">
-          <button
-            type="button"
-            class="helpicon"
-            data-help-role="help-icon"
-            data-help="shared-generator-generate-data-help"
-            aria-label="Show file generation help"
-          ></button>
-          <button${this.buildOptionalIdAttr(ids.generateDataButton)} data-role="generator-generate-data-button">${renderIconHtml('file-plus', { className: 'app-icon shared-file-action-icon generator-file-icon' })}Generate Data</button>
-        </span>
-        <span class="shared-button-with-help"${this.buildOptionalIdAttr(ids.generatePairwiseButtonWrapper)} data-role="generator-pairwise-button-wrapper" style="display:none;">
-          <button
-            type="button"
-            class="helpicon"
-            data-help-role="help-icon"
-            data-help="shared-generator-pairwise-help"
-            aria-label="Show pairwise generation help"
-          ></button>
-          <button${this.buildOptionalIdAttr(ids.generatePairwiseButton)} data-role="generator-generate-pairwise-button">${renderIconHtml('file-plus', { className: 'app-icon shared-file-action-icon generator-file-icon' })}Generate Pairwise</button>
-        </span>
+        <div data-role="generator-actions-root"></div>
         <div class="shared-generator-options-wrapper generator-options-wrapper">
           <div data-role="generator-options-panel" class="shared-generator-options-panel generator-options-panel"></div>
           <div${this.buildOptionalIdAttr(ids.status)} data-role="generator-status-text" class="shared-generator-status-text generator-status-text" aria-live="polite" role="status"></div>
@@ -109,6 +101,40 @@ class GeneratorControlsView {
 
     const outputSelect = this.getOutputFormatSelect();
     this.populateOutputFormats(outputSelect);
+    const createPopulationActionsComponent = this.services.createPopulationActionsComponent;
+    if (typeof createPopulationActionsComponent === 'function') {
+      const actionsRoot = this.root.querySelector('[data-role="generator-actions-root"]');
+      this.generationActions = createPopulationActionsComponent({
+        root: actionsRoot,
+        documentObj: this.documentObj,
+        props: {
+          pairwiseVisible: false,
+          generateLabel: 'Generate Data',
+          generatePairwiseLabel: 'Generate Pairwise',
+          generateHelpHtml: GENERATE_TO_FILE_HELP_HTML,
+          generatePairwiseHelpHtml: GENERATE_PAIRWISE_TO_FILE_HELP_HTML,
+          generateHelpLabel: 'Show file generation help',
+          generatePairwiseHelpLabel: 'Show pairwise generation help',
+          roleNames: {
+            generateButton: 'generator-generate-data-button',
+            generatePairwiseButton: 'generator-generate-pairwise-button',
+            generatePairwiseWrapper: 'generator-pairwise-button-wrapper',
+          },
+        },
+        ids: {
+          generateButton: this.ids.generateDataButton,
+          generatePairwiseButtonWrapper: this.ids.generatePairwiseButtonWrapper,
+          generatePairwiseButton: this.ids.generatePairwiseButton,
+        },
+        callbacks: {
+          onGenerate: this.handleGenerateDataClick,
+          onGeneratePairwise: this.handleGeneratePairwiseClick,
+        },
+        services: {
+          updateHelpHints: this.services.updateHelpHints,
+        },
+      });
+    }
     const resolveStatusElement = () => this.root?.querySelector?.('[data-role="generator-status-text"]') || null;
 
     const createStatusPresenter = this.services.createStatusPresenter;
@@ -149,8 +175,6 @@ class GeneratorControlsView {
   }
 
   bindEvents() {
-    this.getGenerateDataButton()?.addEventListener('click', this.handleGenerateDataClick);
-    this.getGeneratePairwiseButton()?.addEventListener('click', this.handleGeneratePairwiseClick);
     this.getOutputFormatSelect()?.addEventListener('change', this.handleOutputFormatChange);
   }
 
@@ -221,7 +245,11 @@ class GeneratorControlsView {
     if (pairwiseWrapper) {
       pairwiseWrapper.style.display = state.pairwiseVisible ? 'inline-flex' : 'none';
     }
-    this.applyGenerationButtonsBusyState(state.generationButtonsBusy === true);
+    this.generationActions?.update?.({
+      pairwiseVisible: state.pairwiseVisible,
+      generateBusy: state.generationButtonsBusy === true,
+      generatePairwiseBusy: state.generationButtonsBusy === true,
+    });
     this.renderStatus();
     this.formatOptionsPanel?.update({
       selectedFormat: state.selectedFormat,
@@ -246,9 +274,9 @@ class GeneratorControlsView {
 
   destroy() {
     this.clearScheduledStatusClear();
-    this.getGenerateDataButton()?.removeEventListener('click', this.handleGenerateDataClick);
-    this.getGeneratePairwiseButton()?.removeEventListener('click', this.handleGeneratePairwiseClick);
     this.getOutputFormatSelect()?.removeEventListener('change', this.handleOutputFormatChange);
+    this.generationActions?.destroy?.();
+    this.generationActions = null;
     this.formatOptionsPanel?.destroy?.();
     this.statusPresenter?.destroy?.();
     this.loadingStatusPresenter?.destroy?.();
@@ -284,17 +312,8 @@ class GeneratorControlsView {
   }
 
   applyGenerationButtonsBusyState(isBusy) {
-    const generateDataButton = this.getGenerateDataButton();
-    if (generateDataButton) {
-      generateDataButton.disabled = isBusy;
-      generateDataButton.setAttribute('aria-busy', isBusy ? 'true' : 'false');
-    }
-
-    const generateAllPairsButton = this.getGeneratePairwiseButton();
-    if (generateAllPairsButton) {
-      generateAllPairsButton.disabled = isBusy;
-      generateAllPairsButton.setAttribute('aria-busy', isBusy ? 'true' : 'false');
-    }
+    this.generationActions?.setGenerateBusy?.(isBusy);
+    this.generationActions?.setGeneratePairwiseBusy?.(isBusy);
   }
 
   setGenerationButtonsBusy(isBusy) {

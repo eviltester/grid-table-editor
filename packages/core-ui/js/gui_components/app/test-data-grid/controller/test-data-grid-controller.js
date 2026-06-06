@@ -176,7 +176,6 @@ function createTestDataGenerationPanelManager({
       getRequestedRowCount: () => state.dataPopulationPanel?.getRowCountInputValue?.(),
       setGenerateBusy: (isBusy) => state.dataPopulationPanel?.setGenerateBusy?.(isBusy),
       setGeneratePairwiseBusy: (isBusy) => state.dataPopulationPanel?.setGeneratePairwiseBusy?.(isBusy),
-      setRefreshPreviewBusy: (isBusy) => state.dataPopulationPanel?.setRefreshPreviewBusy?.(isBusy),
       setPairwiseVisible: (isVisible) => state.dataPopulationPanel?.setPairwiseVisible?.(isVisible),
     });
   }
@@ -209,11 +208,8 @@ function createTestDataGenerationPanelManager({
     }
 
     state.generationService = createGenerationService();
-    const statusServiceApi = getStatusServiceApi();
     state.actionAdapter = createTestDataGridActionAdapterFn({
       getGenerationService: () => state.generationService,
-      clearPendingStatusReset: statusServiceApi.clearPendingStatusReset,
-      scheduleStatusReset: statusServiceApi.scheduleStatusReset,
     });
 
     if (!resolvedDocument || !parentElem) {
@@ -265,7 +261,6 @@ function createTestDataGenerationPanelManager({
       callbacks: {
         onGenerate: () => state.actionAdapter.generateTestData(),
         onGeneratePairwise: () => state.actionAdapter.generatePairwiseTestData(),
-        onRefreshPreview: () => state.actionAdapter.refreshTestDataPreview(),
         onModeChange: applyModeDefaultRowCount,
         schemaDefinition: {
           onSchemaError: (message) => state.schemaTextSyncState?.schemaErrorDisplay?.show?.(message),

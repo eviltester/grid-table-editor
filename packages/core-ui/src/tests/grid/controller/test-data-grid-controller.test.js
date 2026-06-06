@@ -31,7 +31,6 @@ describe('test data grid controller', () => {
     const updatePairwiseButtonVisibility = jest.fn();
     const generateTestData = jest.fn();
     const generatePairwiseTestData = jest.fn();
-    const refreshTestDataPreview = jest.fn();
     const initializeSchemaErrorDisplayFn = jest.fn();
     const identifyFakerCommandsFn = jest.fn();
     const uiStatusService = {
@@ -47,7 +46,6 @@ describe('test data grid controller', () => {
       updatePairwiseButtonVisibility,
       generateTestData,
       generatePairwiseTestData,
-      refreshTestDataPreview,
     }));
     const panel = {
       destroy: jest.fn(),
@@ -64,7 +62,6 @@ describe('test data grid controller', () => {
         updatePairwiseButtonVisibility,
         generateTestData,
         generatePairwiseTestData,
-        refreshTestDataPreview,
       };
     });
     const createDataPopulationPanelComponentFn = jest.fn(({ callbacks }) => {
@@ -122,11 +119,9 @@ describe('test data grid controller', () => {
 
     panel.callbacks.onGenerate();
     panel.callbacks.onGeneratePairwise();
-    panel.callbacks.onRefreshPreview();
 
     expect(generateTestData).toHaveBeenCalledTimes(1);
     expect(generatePairwiseTestData).toHaveBeenCalledTimes(1);
-    expect(refreshTestDataPreview).toHaveBeenCalledTimes(1);
 
     expect(state.importer).toBe(importer);
     expect(state.textPreviewRenderer).toBe(textPreviewRenderer);
@@ -164,7 +159,6 @@ describe('test data grid controller', () => {
         updatePairwiseButtonVisibility: jest.fn(),
         generateTestData: jest.fn(),
         generatePairwiseTestData: jest.fn(),
-        refreshTestDataPreview: jest.fn(),
       })),
       createDataPopulationPanelComponentFn,
     });
@@ -195,7 +189,6 @@ describe('test data grid controller', () => {
         updatePairwiseButtonVisibility: jest.fn(),
         generateTestData: jest.fn(),
         generatePairwiseTestData: jest.fn(),
-        refreshTestDataPreview: jest.fn(),
       })),
       createDataPopulationPanelComponentFn: jest.fn(() => ({
         destroy: jest.fn(),
@@ -217,7 +210,6 @@ describe('test data grid controller', () => {
       updatePairwiseButtonVisibility: jest.fn(),
       generateTestData: jest.fn(),
       generatePairwiseTestData: jest.fn(),
-      refreshTestDataPreview: jest.fn(),
     }));
     const createDataPopulationPanelComponentFn = jest.fn(() => ({
       destroy: jest.fn(),
@@ -272,7 +264,6 @@ describe('test data grid controller', () => {
       setRowCountValue: jest.fn(),
       setGenerateBusy: jest.fn(),
       setGeneratePairwiseBusy: jest.fn(),
-      setRefreshPreviewBusy: jest.fn(),
       validateSchemaRows: jest.fn(() => ({ rows: [], errors: [] })),
       syncSchemaTextFromRows: jest.fn(),
       insertSampleSchema: jest.fn(),
@@ -285,7 +276,6 @@ describe('test data grid controller', () => {
       setRowCountValue: jest.fn(),
       setGenerateBusy: jest.fn(),
       setGeneratePairwiseBusy: jest.fn(),
-      setRefreshPreviewBusy: jest.fn(),
       validateSchemaRows: jest.fn(() => ({ rows: [], errors: [] })),
       syncSchemaTextFromRows: jest.fn(),
       insertSampleSchema: jest.fn(),
@@ -297,7 +287,6 @@ describe('test data grid controller', () => {
         updatePairwiseButtonVisibility: jest.fn(),
         generateTestData: jest.fn(),
         generatePairwiseTestData: jest.fn(),
-        refreshTestDataPreview: jest.fn(),
       };
     });
 
@@ -359,7 +348,6 @@ describe('test data grid controller', () => {
             updatePairwiseButtonVisibility: jest.fn(),
             generateTestData: jest.fn(),
             generatePairwiseTestData: jest.fn(),
-            refreshTestDataPreview: jest.fn(),
           };
         }),
         createDataPopulationPanelComponentFn,

@@ -104,7 +104,7 @@ const meta = {
     },
   },
   args: {
-    message: 'Generate complete. Refresh text preview if needed.',
+    message: 'Generate complete. Grid and preview updated.',
     hideWhenEmpty: true,
     severity: 'normal',
     dismissable: false,
@@ -121,7 +121,7 @@ export const CompletionStatus = {
     docs: {
       description: {
         story:
-          'Click **Show status** to demonstrate the non-loading completion state used by the app after generation steps such as `Generated 9 pairwise combinations.` and `Generate complete. Refresh text preview if needed.` This mode keeps the status visible without the loading spinner until a later action replaces it or the host clears it.',
+          'Click **Show status** to demonstrate the non-loading completion state used by the app after generation steps such as `Generated 9 pairwise combinations.` and `Generate complete. Grid and preview updated.` This mode keeps the status visible without the loading spinner until a later action replaces it or the host clears it.',
       },
     },
   },
@@ -132,7 +132,7 @@ export const CompletionStatus = {
     const status = canvas.getByRole('status');
 
     await userEvent.click(showButton);
-    await expect(status).toHaveTextContent('Generate complete. Refresh text preview if needed.');
+    await expect(status).toHaveTextContent('Generate complete. Grid and preview updated.');
     await expect(status).not.toHaveClass('is-loading');
     expect(status.querySelector('[data-role="loading-indicator"]')?.style.display).toBe('none');
 

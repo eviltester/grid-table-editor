@@ -22,6 +22,8 @@ Page shell components own reusable functional scaffold only: instruction roots, 
 - App shell: `packages/core-ui/js/gui_components/app/page/app-page-shell.js`
 - Generator shell: `packages/core-ui/js/gui_components/generator/page/create-generator-page-shell-component.js`
 
+Storybook now documents those shell boundaries directly through standalone shell stories with explicit placeholder mount-root cards, so reviewers can inspect shell composition separately from the full app and generator runtime stories.
+
 ## Component Layers
 
 Use these layers when deciding where a change belongs.

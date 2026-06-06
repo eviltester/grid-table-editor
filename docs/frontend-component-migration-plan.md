@@ -540,8 +540,8 @@ Use this backlog when the next migration step should be chosen from the reviewer
 - [x] Add dedicated Storybook coverage for `PopulationActions` instead of only showing it inside `DataPopulationPanel`.
 - [x] Split the app import/export drop-zone surface into a reviewer-facing visual component or explicit Storybook-visible boundary instead of leaving drag/drop behavior visible only through the full workspace story.
 - [x] Add reviewer-facing `Visual Always Open` or `Visual Always Visible` Storybook examples for dialog and presenter surfaces that previously only demonstrated trigger-first flows.
-- [ ] Add standalone Storybook coverage for the app page shell structure so reviewers can inspect shell composition separately from full app bootstrap.
-- [ ] Add standalone Storybook coverage for the generator page shell structure so reviewers can inspect shell composition separately from full generator bootstrap.
+- [x] Add standalone Storybook coverage for the app page shell structure so reviewers can inspect shell composition separately from full app bootstrap.
+- [x] Add standalone Storybook coverage for the generator page shell structure so reviewers can inspect shell composition separately from full generator bootstrap.
 - [ ] Re-audit Storybook after each new visible split and add follow-up unchecked items when a feature still renders meaningful visible child UI only through a broader page story.
 
 Current status:
@@ -553,7 +553,7 @@ Current status:
 - `PopulationActions` now has dedicated reviewer-facing Storybook coverage in `apps/web/src/stories/population-actions.stories.js`, and the action cluster is now reused by generator controls as a shared icon+tippy action component with host-specific HTML help content for app-to-grid versus generator-to-file flows.
 - The embedded app test-data panel no longer exposes a separate `Refresh Text Preview` button; successful generate/amend flows now refresh the preview automatically so the shared action cluster stays aligned with the generator surface.
 - The import/export toolbar Storybook docs now expose the real file-input and drag/drop surface directly, with dedicated reviewer-facing stories for the default toolbar, file-import boundary, and busy/status state instead of leaving drag/drop behavior implicit inside the full workspace story.
-- App and generator page shell composition are already exercised indirectly in page stories and focused tests, but they are not yet documented as standalone reviewer-facing shell stories.
+- App and generator page shell composition now also have standalone reviewer-facing Storybook coverage in `app-page-shell.stories.js` and `generator-page-shell.stories.js`, using explicit placeholder mount-root cards so reviewers can inspect shell layout separately from full bootstrap/runtime behavior.
 
 ## Generator Runtime Simplification Follow-On
 

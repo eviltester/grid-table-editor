@@ -1,7 +1,7 @@
-import { createGeneratorRuntimeSchemaDependencies } from './create-generator-runtime-schema-dependencies.js';
-import { createGeneratorRuntimeInteractionDependencies } from './create-generator-runtime-interaction-dependencies.js';
+import { createGeneratorRuntimeSchemaRuntime } from './create-generator-runtime-schema-runtime.js';
+import { createGeneratorRuntimeInteractionServices } from './create-generator-runtime-interaction-services.js';
 
-function createGeneratorRuntimeDependencies({
+function createGeneratorRuntimeCollaborators({
   runtime,
   faker,
   RandExp,
@@ -16,7 +16,7 @@ function createGeneratorRuntimeDependencies({
   sampleSchemaText,
   createUnavailableRowCountResult,
 } = {}) {
-  const schemaDependencies = createGeneratorRuntimeSchemaDependencies({
+  const schemaRuntime = createGeneratorRuntimeSchemaRuntime({
     runtime,
     faker,
     RandExp,
@@ -30,7 +30,7 @@ function createGeneratorRuntimeDependencies({
     sampleSchemaText,
   });
 
-  const interactionDependencies = createGeneratorRuntimeInteractionDependencies({
+  const interactionServices = createGeneratorRuntimeInteractionServices({
     runtime,
     DownloadClass,
     faker,
@@ -39,9 +39,9 @@ function createGeneratorRuntimeDependencies({
   });
 
   return {
-    ...schemaDependencies,
-    ...interactionDependencies,
+    ...schemaRuntime,
+    ...interactionServices,
   };
 }
 
-export { createGeneratorRuntimeDependencies };
+export { createGeneratorRuntimeCollaborators };

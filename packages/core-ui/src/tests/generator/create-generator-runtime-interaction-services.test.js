@@ -1,8 +1,8 @@
 import { describe, expect, jest, test } from '@jest/globals';
-import { createGeneratorRuntimeInteractionDependencies } from '../../../js/gui_components/generator/runtime/create-generator-runtime-interaction-dependencies.js';
+import { createGeneratorRuntimeInteractionServices } from '../../../js/gui_components/generator/runtime/create-generator-runtime-interaction-services.js';
 
-describe('createGeneratorRuntimeInteractionDependencies', () => {
-  test('builds the mounted view-state and runtime-action bridges around the runtime shell', () => {
+describe('createGeneratorRuntimeInteractionServices', () => {
+  test('builds the mounted view-state and runtime-action services around the runtime', () => {
     const runtime = {
       schemaDefinition: {
         getState: jest.fn(() => ({
@@ -32,7 +32,7 @@ describe('createGeneratorRuntimeInteractionDependencies', () => {
       },
     };
 
-    const dependencies = createGeneratorRuntimeInteractionDependencies({
+    const services = createGeneratorRuntimeInteractionServices({
       runtime,
       DownloadClass: class FakeDownload {},
       faker: {},
@@ -40,7 +40,7 @@ describe('createGeneratorRuntimeInteractionDependencies', () => {
       createUnavailableRowCountResult: () => ({ value: 0, valid: false, errors: ['unavailable'] }),
     });
 
-    Object.assign(runtime, dependencies);
+    Object.assign(runtime, services);
 
     expect(runtime.generatorViewState).toBeDefined();
     expect(runtime.generatorRuntimeActions).toBeDefined();

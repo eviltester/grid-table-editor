@@ -36,12 +36,7 @@ class GeneratorControlsView {
     this.statusClearTimer = null;
     this.handleGenerateDataClick = () => this.controller.triggerGenerateData();
     this.handleGeneratePairwiseClick = () => this.controller.triggerGeneratePairwise();
-    this.handleOutputFormatChange = () => {
-      const select = this.getOutputFormatSelect();
-      const selectedFormat = select?.value || 'csv';
-      this.controller.setSelectedFormat(selectedFormat, this.resolveCurrentOptionsForFormat(selectedFormat));
-      this.render();
-    };
+    this.outputFormatSelector = null;
   }
 
   buildOptionalIdAttr(id) {
@@ -67,9 +62,7 @@ class GeneratorControlsView {
           <strong>Generate Data and Options</strong>
         </div>
         <div data-role="generate-rows-count-control"></div>
-        <label>Output Format
-          <select${this.buildOptionalIdAttr(ids.outputFormatSelect)} data-role="generator-output-format-select"></select>
-        </label>
+        <div data-role="generator-output-format-root"></div>
         <div data-role="generator-actions-root"></div>
         <div class="shared-generator-options-wrapper generator-options-wrapper">
           <div data-role="generator-options-panel" class="shared-generator-options-panel generator-options-panel"></div>
@@ -99,8 +92,31 @@ class GeneratorControlsView {
       }
     }
 
-    const outputSelect = this.getOutputFormatSelect();
-    this.populateOutputFormats(outputSelect);
+    const createGeneratorOutputFormatSelectorComponent = this.services.createGeneratorOutputFormatSelectorComponent;
+    const outputFormatRoot = this.root.querySelector('[data-role="generator-output-format-root"]');
+    if (outputFormatRoot && typeof createGeneratorOutputFormatSelectorComponent === 'function') {
+      this.outputFormatSelector = createGeneratorOutputFormatSelectorComponent({
+        root: outputFormatRoot,
+        documentObj: this.documentObj,
+        props: {
+          selectedFormat: this.controller.getState().selectedFormat,
+          ids: {
+            outputFormatSelect: this.ids.outputFormatSelect,
+          },
+        },
+        services: {
+          getOutputFormatGroups: this.services.getOutputFormatGroups,
+          canExportFormat: this.services.canExportFormat,
+        },
+        callbacks: {
+          onFormatChange: (selectedFormat) => {
+            this.controller.setSelectedFormat(selectedFormat, this.resolveCurrentOptionsForFormat(selectedFormat));
+            this.render();
+          },
+        },
+      });
+    }
+
     const createPopulationActionsComponent = this.services.createPopulationActionsComponent;
     if (typeof createPopulationActionsComponent === 'function') {
       const actionsRoot = this.root.querySelector('[data-role="generator-actions-root"]');
@@ -173,48 +189,8 @@ class GeneratorControlsView {
       });
     }
   }
-
   bindEvents() {
-    this.getOutputFormatSelect()?.addEventListener('change', this.handleOutputFormatChange);
-  }
-
-  populateOutputFormats(outputSelect) {
-    if (!outputSelect) {
-      return;
-    }
-
-    outputSelect.replaceChildren();
-    const formatGroups = this.services.getOutputFormatGroups?.();
-    if (!formatGroups) {
-      return;
-    }
-
-    this.appendFormatGroup(outputSelect, formatGroups.core);
-    this.appendFormatGroup(outputSelect, formatGroups.code, '-- Code --');
-    this.appendFormatGroup(outputSelect, formatGroups.unitTest, '-- Code (Unit Test) --');
-  }
-
-  appendFormatGroup(parentElement, entries = [], label = '') {
-    const supportedEntries = entries.filter(({ type }) => this.services.canExportFormat?.(type) !== false);
-    if (supportedEntries.length === 0) {
-      return;
-    }
-
-    const target = label ? this.documentObj.createElement('optgroup') : parentElement;
-    if (label) {
-      target.label = label;
-    }
-
-    supportedEntries.forEach(({ type, label: optionLabel }) => {
-      const option = this.documentObj.createElement('option');
-      option.value = type;
-      option.textContent = optionLabel;
-      target.appendChild(option);
-    });
-
-    if (label) {
-      parentElement.appendChild(target);
-    }
+    return undefined;
   }
 
   resolveCurrentOptionsForFormat(selectedFormat) {
@@ -236,10 +212,9 @@ class GeneratorControlsView {
 
   render() {
     const state = this.controller.getState();
-    const outputSelect = this.getOutputFormatSelect();
-    if (outputSelect && outputSelect.value !== state.selectedFormat) {
-      outputSelect.value = state.selectedFormat || 'csv';
-    }
+    this.outputFormatSelector?.update?.({
+      selectedFormat: state.selectedFormat,
+    });
 
     const pairwiseWrapper = this.getGeneratePairwiseButtonWrapper();
     if (pairwiseWrapper) {
@@ -274,7 +249,8 @@ class GeneratorControlsView {
 
   destroy() {
     this.clearScheduledStatusClear();
-    this.getOutputFormatSelect()?.removeEventListener('change', this.handleOutputFormatChange);
+    this.outputFormatSelector?.destroy?.();
+    this.outputFormatSelector = null;
     this.generationActions?.destroy?.();
     this.generationActions = null;
     this.formatOptionsPanel?.destroy?.();
@@ -304,7 +280,7 @@ class GeneratorControlsView {
   }
 
   getSelectedOutputType() {
-    return this.getOutputFormatSelect()?.value;
+    return this.outputFormatSelector?.getSelectedFormat?.() || this.getOutputFormatSelect()?.value;
   }
 
   getGenerateRowCount() {

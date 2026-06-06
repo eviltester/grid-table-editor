@@ -2,20 +2,17 @@ import { describe, expect, jest, test } from '@jest/globals';
 import { createGeneratorMountedPageState } from '../../../js/gui_components/generator/runtime/create-generator-mounted-page-state.js';
 
 describe('createGeneratorMountedPageState', () => {
-  test('creates exporter state, connects mounted features, and assigns them onto the runtime', () => {
-    const connectMountedPage = jest.fn(() => ({
-      schemaErrorDisplay: { id: 'schema-error' },
-      generatorControls: { id: 'controls' },
-      generatorPreview: { id: 'preview' },
-      schemaDefinition: { id: 'schema-definition' },
-    }));
-    const createMountedPageBridge = jest.fn(() => ({
-      connectMountedPage,
-    }));
+  test('creates exporter state, maps mounted features directly, and assigns them onto the runtime', () => {
     const ExporterClass = jest.fn(function FakeExporter(grid) {
       this.grid = grid;
     });
-    const generatorPage = { id: 'page-component' };
+    const generatorPage = {
+      id: 'page-component',
+      getSchemaErrorDisplay: jest.fn(() => ({ id: 'schema-error' })),
+      getGeneratorControls: jest.fn(() => ({ id: 'controls' })),
+      getGeneratorPreview: jest.fn(() => ({ id: 'preview' })),
+      getSchemaDefinition: jest.fn(() => ({ id: 'schema-definition' })),
+    };
     const runtime = {
       ExporterClass,
       generatorViewState: {
@@ -26,14 +23,13 @@ describe('createGeneratorMountedPageState', () => {
     const mountedState = createGeneratorMountedPageState({
       runtime,
       generatorPage,
-      createMountedPageBridge,
     });
 
-    expect(createMountedPageBridge).toHaveBeenCalledTimes(1);
-    expect(connectMountedPage).toHaveBeenCalledWith({
-      generatorPage,
-    });
     expect(ExporterClass).toHaveBeenCalledWith({ id: 'preview-grid' });
+    expect(generatorPage.getSchemaErrorDisplay).toHaveBeenCalledTimes(1);
+    expect(generatorPage.getGeneratorControls).toHaveBeenCalledTimes(1);
+    expect(generatorPage.getGeneratorPreview).toHaveBeenCalledTimes(1);
+    expect(generatorPage.getSchemaDefinition).toHaveBeenCalledTimes(1);
     expect(runtime).toEqual(
       expect.objectContaining({
         generatorPage,

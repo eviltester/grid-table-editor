@@ -1,4 +1,4 @@
-function createGeneratorSchemaStateBridge({
+function createGeneratorSchemaStateService({
   getSchemaDefinition,
   getSchemaSession,
   updatePairwiseButtonVisibility,
@@ -75,4 +75,4 @@ function createGeneratorSchemaStateBridge({
   };
 }
 
-export { createGeneratorSchemaStateBridge };
+export { createGeneratorSchemaStateService };

@@ -546,7 +546,7 @@ Use this backlog when the next migration step should be chosen from the reviewer
 - [x] Split the schema section wrapper into one shared `SchemaPanel` component and add standalone Storybook coverage for the app and generator host configurations.
 - [x] Re-audit app and generator page stories again after the shared schema-panel extraction to identify the next visible feature wrapper that still only appears through a broader page story.
 - [x] Extract the import/export options-preview split layout from `ImportExportWorkspaceView` into a focused component or view helper with Storybook coverage for supported format, unsupported format, keyboard resize, and narrow-width clamping states.
-- [ ] Split the generator output-format dropdown from `GeneratorControlsView` into a focused `GeneratorOutputFormatSelector` component with Storybook coverage for core formats, code formats, unit-test formats, and unsupported-format filtering.
+- [x] Split the generator output-format dropdown from `GeneratorControlsView` into a focused `GeneratorOutputFormatSelector` component with Storybook coverage for core formats, code formats, unit-test formats, and unsupported-format filtering.
 - [ ] Expand `GeneratorControls` Storybook coverage with busy/loading/status states so reviewers can inspect the composed row count, format selector, actions, options panel, and status integration without using the full generator page story.
 - [ ] Add a small re-audit note for `TextPreviewEditor` after the options-preview split extraction to decide whether its right-side controls need a separate toolbar component or whether the current focused story is enough.
 
@@ -563,6 +563,7 @@ Current status:
 - The re-audit found that both app and generator still owned visible schema wrapper markup around the shared schema definition. That wrapper is now one shared `SchemaPanel` component with standalone Storybook host coverage in `generator-schema-panel.stories.js` and `test-data-schema-panel.stories.js`, so `DataPopulationPanel` and `GeneratorPage` both compose a shared schema wrapper instead of carrying host-local copies.
 - The post-`SchemaPanel` re-audit found no urgent missing primary stories for schema, page shells, instructions, app data population, generator controls, generator preview, data grid editor, import/export toolbar, text preview editor, format selector, or format options. The next useful Storybook-driven splits are smaller visible sub-surfaces: the import/export options-preview split layout and the generator output-format selector.
 - The import/export options-preview shell is now a focused app-side component with its own Storybook docs and direct tests. `ImportExportWorkspaceView` no longer owns the splitter drag/keyboard/clamping behavior itself; it now composes the dedicated split-layout boundary through `TextPreviewEditor`.
+- `GeneratorControls` now composes a dedicated `GeneratorOutputFormatSelector` component, and Storybook documents that selector directly through `generator-output-format-selector.stories.js` instead of only through the larger controls surface.
 
 ## Generator Runtime Simplification Follow-On
 
@@ -570,8 +571,24 @@ The generator runtime has become more indirect than the MVC-style component arch
 
 Current status:
 
-- The generator runtime is functionally decomposed, but still too layered.
-- The strongest simplification targets are the runtime boot stack, the page-config assembly chain, and the remaining bridge/facade/dependencies naming clusters.
+- The runtime boot stack and page-config assembly chain have now been collapsed into direct runtime and runtime-config builders.
+- The strongest remaining simplification target is the surviving action/view-state/schema helper cluster and its older bridge/dependencies naming.
+
+## MVC Cleanliness Follow-On
+
+Use `docs/frontend-mvc-cleanliness-checklist.md` as the repo-specific audit guide for deciding whether an existing component is really clean MVC or only partially componentized.
+
+- [x] Extract an explicit import/export workspace runtime or workflow service so `createImportExportWorkspaceComponent(...)` becomes thin wiring instead of owning the current async import/export orchestration directly.
+- [x] Continue the generator runtime simplification pass by collapsing the remaining schema support/session/runtime helper cluster after the action/view-state/service naming cleanup.
+- [x] Split the generator output-format selector from `GeneratorControls` into a focused reviewer-facing component with its own Storybook coverage.
+- [ ] Re-audit `TextPreviewEditor` after the output-format-selector split to decide whether its right-side controls should become a dedicated toolbar component.
+
+Current status:
+
+- `ImportExportWorkspace` now routes its async import/export orchestration through `create-import-export-workspace-runtime.js`, so the public component entrypoint is mostly a thin wrapper around document/window resolution and runtime delegation instead of owning the feature workflow directly.
+- The generator runtime now uses direct collaborator/service names for the live action and view-state cluster: `create-generator-runtime-collaborators.js`, `create-generator-runtime-interaction-services.js`, `create-generator-runtime-actions-service.js`, `create-generator-runtime-view-state.js`, and `create-generator-runtime-schema-runtime.js`.
+- `GeneratorControls` now composes a dedicated `GeneratorOutputFormatSelector` component, and Storybook documents that selector directly through `generator-output-format-selector.stories.js` instead of only through the larger controls surface.
+- The generator schema runtime is now assembled through one direct responsibility-based builder instead of separate support/session/services wrappers, and the mounted-page state maps page collaborators directly instead of going through a mounted-page bridge. The next generator-side MVC cleanup is now narrower follow-up regrouping only if the remaining schema generation helper still feels too adapter-shaped.
 
 ## Tracking Across Sessions
 

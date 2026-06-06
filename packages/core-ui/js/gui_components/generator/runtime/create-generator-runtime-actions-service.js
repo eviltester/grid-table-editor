@@ -7,28 +7,18 @@ import {
 } from '../generation/data-generator-generation-actions.js';
 import { applyGeneratorFormatOptions } from '../options/apply-generator-format-options.js';
 
-function createGeneratorRuntimeActionsBridge({
-  getCurrentSelectedType,
-  getExporter,
-  getDownloadClass,
-  getFaker,
-  getRandExp,
-  getViewState,
-  getSchemaRuntime,
-  getSchemaGeneration,
-  getSchemaState,
-} = {}) {
-  const getResolvedViewState = () => getViewState?.() || null;
-  const getResolvedSchemaRuntime = () => getSchemaRuntime?.() || null;
-  const getResolvedSchemaGeneration = () => getSchemaGeneration?.() || null;
-  const getResolvedSchemaState = () => getSchemaState?.() || null;
+function createGeneratorRuntimeActionsService({ runtime, DownloadClass, faker, RandExp } = {}) {
+  const getResolvedViewState = () => runtime?.generatorViewState || null;
+  const getResolvedSchemaRuntime = () => runtime?.generatorSchemaRuntime || null;
+  const getResolvedSchemaGeneration = () => runtime?.generatorSchemaGeneration || null;
+  const getResolvedSchemaState = () => runtime?.generatorSchemaState || null;
 
   return {
     applyCurrentTypeOptions(options) {
       return applyGeneratorFormatOptions({
         options,
-        currentSelectedType: getCurrentSelectedType?.(),
-        exporter: getExporter?.(),
+        currentSelectedType: getResolvedViewState()?.getSelectedOutputType?.(),
+        exporter: runtime?.exporter,
         syncFormatStateIfChanged: (nextFormat, previousFormat) =>
           getResolvedViewState()?.syncGeneratorControlsFormatStateIfChanged?.(nextFormat, previousFormat),
         renderOutputPreviewForCurrentSelection: () =>
@@ -55,14 +45,14 @@ function createGeneratorRuntimeActionsBridge({
       await generateGeneratorDataFile({
         getGenerateRowCount: () => getResolvedViewState()?.getGenerateRowCount?.(),
         createConfiguredGenerator: () => getResolvedSchemaGeneration()?.createConfiguredGenerator?.(),
-        getSelectedOutputType: () => getCurrentSelectedType?.(),
-        exporter: getExporter?.(),
+        getSelectedOutputType: () => getResolvedViewState()?.getSelectedOutputType?.(),
+        exporter: runtime?.exporter,
         clearGenerationStatus: () => getResolvedViewState()?.clearGenerationStatus?.(),
         setGenerationButtonBusy: (isBusy) => getResolvedViewState()?.setGenerationButtonsBusy?.(isBusy),
         setGenerationStatus: (message, options) => getResolvedViewState()?.setGenerationStatus?.(message, options),
         showGenerationLoadingStatus: (message) => getResolvedViewState()?.showGenerationLoadingStatus?.(message),
         buildDataTable: (generator, rowCount) => buildPreviewDataTable({ generator, rowCount }),
-        DownloadClass: getDownloadClass?.(),
+        DownloadClass,
         surfacePageError: (message, options) => getResolvedSchemaRuntime()?.surfacePageError?.(message, options),
         clearPageError: () => getResolvedSchemaRuntime()?.clearSchemaErrorStatus?.(),
         scheduleClearGenerationStatus: (delay) => getResolvedViewState()?.scheduleClearGenerationStatus?.(delay),
@@ -73,8 +63,8 @@ function createGeneratorRuntimeActionsBridge({
       await generateGeneratorAllPairsDataFile({
         createConfiguredGenerator: () => getResolvedSchemaGeneration()?.createConfiguredGenerator?.(),
         countEnumColumns: () => getResolvedSchemaGeneration()?.countEnumColumns?.() || 0,
-        getSelectedOutputType: () => getCurrentSelectedType?.(),
-        exporter: getExporter?.(),
+        getSelectedOutputType: () => getResolvedViewState()?.getSelectedOutputType?.(),
+        exporter: runtime?.exporter,
         clearGenerationStatus: () => getResolvedViewState()?.clearGenerationStatus?.(),
         setGenerationButtonBusy: (isBusy) => getResolvedViewState()?.setGenerationButtonsBusy?.(isBusy),
         setGenerationStatus: (message, options) => getResolvedViewState()?.setGenerationStatus?.(message, options),
@@ -82,10 +72,10 @@ function createGeneratorRuntimeActionsBridge({
         buildAllPairsDataTable: (generator) =>
           buildPairwiseDataTable({
             generator,
-            faker: getFaker?.(),
-            RandExp: getRandExp?.(),
+            faker,
+            RandExp,
           }),
-        DownloadClass: getDownloadClass?.(),
+        DownloadClass,
         surfacePageError: (message, options) => getResolvedSchemaRuntime()?.surfacePageError?.(message, options),
         clearPageError: () => getResolvedSchemaRuntime()?.clearSchemaErrorStatus?.(),
         scheduleClearGenerationStatus: (delay) => getResolvedViewState()?.scheduleClearGenerationStatus?.(delay),
@@ -102,4 +92,4 @@ function createGeneratorRuntimeActionsBridge({
   };
 }
 
-export { createGeneratorRuntimeActionsBridge };
+export { createGeneratorRuntimeActionsService };

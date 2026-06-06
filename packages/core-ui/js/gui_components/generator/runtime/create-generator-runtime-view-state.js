@@ -1,12 +1,7 @@
-function createGeneratorViewStateBridge({
-  getGeneratorControls,
-  getGeneratorPreview,
-  getExporter,
-  createUnavailableRowCountResult,
-} = {}) {
-  const getControls = () => getGeneratorControls?.() || null;
-  const getPreview = () => getGeneratorPreview?.() || null;
-  const getCurrentExporter = () => getExporter?.() || null;
+function createGeneratorRuntimeViewState({ runtime, createUnavailableRowCountResult } = {}) {
+  const getControls = () => runtime?.generatorControls || null;
+  const getPreview = () => runtime?.generatorPreview || null;
+  const getCurrentExporter = () => runtime?.exporter || null;
 
   return {
     getSelectedOutputType() {
@@ -78,4 +73,4 @@ function createGeneratorViewStateBridge({
   };
 }
 
-export { createGeneratorViewStateBridge };
+export { createGeneratorRuntimeViewState };

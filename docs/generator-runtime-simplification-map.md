@@ -62,25 +62,26 @@ That chain is too deep for one visible page component. Some of the deeper prop/c
 
 Mounted runtime interaction state currently flows through:
 
-- `create-generator-runtime-interaction-dependencies.js`
-- `create-generator-runtime-view-state-dependencies.js`
-- `generator-view-state-bridge.js`
-- `create-generator-runtime-actions-dependencies.js`
-- `generator-runtime-actions-bridge.js`
+- `create-generator-runtime-interaction-services.js`
+- `create-generator-runtime-view-state.js`
+- `create-generator-runtime-actions-service.js`
 
-The "dependencies" layer here is especially misleading. It returns live runtime action objects, not passive dependencies.
+Status:
+
+- the misleading `*Dependencies` and `*Bridge` names are gone from the live action/view-state path
+- the remaining work here is further collapse or regrouping only if the surviving services still feel too indirect after schema cleanup
 
 ### Schema runtime cluster
 
-Schema-related runtime assembly currently flows through:
+The schema runtime previously flowed through:
 
-- `create-generator-runtime-schema-dependencies.js`
+- `create-generator-runtime-schema-collaborators.js`
 - `create-generator-runtime-schema-support-dependencies.js`
 - `create-generator-runtime-schema-session-dependencies.js`
-- `create-generator-runtime-schema-bridges.js`
+- `create-generator-runtime-schema-services.js`
 - `create-generator-runtime-schema-adapters.js`
-- `generator-schema-runtime-bridge.js`
-- `generator-schema-state-bridge.js`
+- `generator-schema-runtime-service.js`
+- `generator-schema-state-service.js`
 - `generator-schema-sync.js`
 - `generator-schema-rule-helpers.js`
 
@@ -184,14 +185,12 @@ Use simpler names and shapes based on what the code really is:
 
 #### Strong collapse candidates
 
-- `create-generator-runtime-actions-dependencies.js`
-  - rename or inline into the runtime creator
-- `generator-runtime-actions-bridge.js`
-  - keep only if it remains the single real generation-action service
-- `create-generator-runtime-view-state-dependencies.js`
-  - likely inline into runtime/page mount
+- `create-generator-runtime-actions-service.js`
+  - inline only if the direct runtime creator becomes easier to read
+- `create-generator-runtime-view-state.js`
+  - inline only if runtime/page mount readability improves
 - `generator-mounted-page-bridge.js`
-  - rename or inline if it is only a mounted-page convenience wrapper
+  - inline if it is only a mounted-page convenience wrapper
 
 #### Expected result
 
@@ -220,12 +219,16 @@ Regroup schema runtime into a smaller set of meaningful units:
 #### Collapse or merge candidates
 
 - merge `create-generator-runtime-schema-support-dependencies.js` and `create-generator-runtime-schema-session-dependencies.js`
-- merge `create-generator-runtime-schema-dependencies.js` and `create-generator-runtime-schema-bridges.js`
+- merge `create-generator-runtime-schema-collaborators.js` and `create-generator-runtime-schema-services.js` if that produces a clearer final schema responsibility map
 - inline or rename `create-generator-runtime-schema-adapters.js` if it only maps parser helpers into local names
 
 #### Expected result
 
 The schema layer should read like feature responsibilities, not like a stack of dependency buckets.
+
+Status:
+
+- completed by replacing the wrapper chain with direct `create-generator-runtime-schema-runtime.js` assembly
 
 ### Target 5: Stop splitting helpers that are not reviewer-facing or architecturally durable
 
@@ -291,6 +294,11 @@ Success criteria:
 - no misleading `*Dependencies` names for live action objects
 - fewer `bridge` names where there is no external adaptation boundary
 
+Status:
+
+- completed for the live action/view-state path
+- remaining generator cleanup should now focus on deeper schema regrouping rather than old action/view-state naming
+
 ### Pass D: Regroup schema runtime
 
 Do fourth because schema is the densest part of the generator flow and should be simplified after the outer runtime shape is cleaner.
@@ -298,6 +306,12 @@ Do fourth because schema is the densest part of the generator flow and should be
 Success criteria:
 
 - schema runtime units are grouped by responsibility, not by refactor history
+
+Status:
+
+- completed in the current runtime pass
+- schema support, schema session, schema runtime behavior, and schema state wiring now assemble through direct `create-generator-runtime-schema-runtime.js` wiring
+- mounted-page collaborator mapping is now direct inside `create-generator-mounted-page-state.js` instead of going through `generator-mounted-page-bridge.js`
 
 ## What To Keep Intentionally
 

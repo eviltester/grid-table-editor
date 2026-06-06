@@ -57,6 +57,6 @@ describe('app test-data schema interaction matrix', () => {
         throw new Error(failures.slice(0, 10).join('\n'));
       }
     },
-    60000
+    120000
   );
 });

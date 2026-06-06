@@ -1,7 +1,7 @@
 import { schemaErrorsToText } from '../../shared/test-data/schema/schema-error-text.js';
 import { syncGeneratorSchemaRowsFromTextMode } from './generator-schema-sync.js';
 
-function createGeneratorSchemaRuntimeBridge({
+function createGeneratorSchemaRuntimeService({
   getSchemaDefinition,
   getSchemaRows,
   getSchemaTextTokens,
@@ -68,4 +68,4 @@ function createGeneratorSchemaRuntimeBridge({
   };
 }
 
-export { createGeneratorSchemaRuntimeBridge };
+export { createGeneratorSchemaRuntimeService };

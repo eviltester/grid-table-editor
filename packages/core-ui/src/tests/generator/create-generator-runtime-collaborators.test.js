@@ -1,8 +1,8 @@
 import { describe, expect, jest, test } from '@jest/globals';
-import { createGeneratorRuntimeSchemaDependencies } from '../../../js/gui_components/generator/runtime/create-generator-runtime-schema-dependencies.js';
+import { createGeneratorRuntimeCollaborators } from '../../../js/gui_components/generator/runtime/create-generator-runtime-collaborators.js';
 
-describe('createGeneratorRuntimeSchemaDependencies', () => {
-  test('composes schema support plus schema bridges into the runtime bundle', () => {
+describe('createGeneratorRuntimeCollaborators', () => {
+  test('adds view-state and runtime-action services on top of the schema collaborator bundle', () => {
     const runtime = {
       schemaDefinition: {
         getState: jest.fn(() => ({
@@ -16,21 +16,15 @@ describe('createGeneratorRuntimeSchemaDependencies', () => {
       generatorControls: {
         setPairwiseVisible: jest.fn(),
       },
-      schemaErrorDisplay: {
-        show: jest.fn(),
-        clear: jest.fn(),
-      },
-      generatorViewState: {
-        setGenerationStatus: jest.fn(),
-        scheduleClearGenerationStatus: jest.fn(),
-      },
+      exporter: null,
     };
 
-    const dependencies = createGeneratorRuntimeSchemaDependencies({
+    const collaborators = createGeneratorRuntimeCollaborators({
       runtime,
       faker: {},
       RandExp: function RandExp() {},
       TestDataGeneratorClass: class FakeTestDataGenerator {},
+      DownloadClass: class FakeDownload {},
       schemaTextToDataRules: () => ({ dataRules: [], errors: [], schemaTokens: [] }),
       schemaRowsToSpec: () => '',
       schemaRowsToSpecWithTokens: () => '',
@@ -38,23 +32,15 @@ describe('createGeneratorRuntimeSchemaDependencies', () => {
       mapRuleToRow: () => ({ id: 'row-1', name: '', sourceType: 'enum', value: '' }),
       dataRulesToSchemaText: () => '',
       sampleSchemaText: 'Name\nenum(a,b)',
+      createUnavailableRowCountResult: () => ({ value: 0, valid: false, errors: ['unavailable'] }),
     });
 
-    Object.assign(runtime, dependencies);
-    runtime.updateAllPairsButtonVisibility = jest.fn(() => {
-      const isVisible = runtime.generatorSchemaGeneration.getPairwiseVisibility({
-        getCurrentSchemaState: () => runtime.generatorSchemaState.getCurrentSchemaState(),
-      });
-      runtime.generatorControls.setPairwiseVisible(isVisible);
-      return isVisible;
-    });
+    Object.assign(runtime, collaborators);
 
     expect(runtime.fakerCommands.every((command) => command.startsWith('helpers.'))).toBe(true);
     expect(runtime.domainCommands.length).toBeGreaterThan(0);
-    expect(runtime.generatorSchemaDefinitionSupport).toBeDefined();
-    expect(runtime.schemaSession).toBeDefined();
-    expect(runtime.generatorSchemaRuntime).toBeDefined();
-    expect(runtime.generatorSchemaGeneration).toBeDefined();
+    expect(runtime.generatorViewState).toBeDefined();
+    expect(runtime.generatorRuntimeActions).toBeDefined();
     expect(runtime.generatorSchemaState.getCurrentSchemaState()).toEqual({
       rows: [
         { name: 'Browser', sourceType: 'enum', value: 'enum(chrome,firefox,safari)' },
@@ -64,10 +50,7 @@ describe('createGeneratorRuntimeSchemaDependencies', () => {
       isTextMode: false,
     });
 
-    const pairwiseVisible = runtime.generatorSchemaGeneration.getPairwiseVisibility({
-      getCurrentSchemaState: () => runtime.generatorSchemaState.getCurrentSchemaState(),
-    });
-    runtime.generatorSchemaState.renderSchemaRows();
+    const pairwiseVisible = runtime.generatorRuntimeActions.updateAllPairsButtonVisibility();
 
     expect(pairwiseVisible).toBe(true);
     expect(runtime.schemaDefinition.getState).toHaveBeenCalled();

@@ -1,8 +1,8 @@
 import { describe, expect, jest, test } from '@jest/globals';
-import { createGeneratorRuntimeSchemaBridges } from '../../../js/gui_components/generator/runtime/create-generator-runtime-schema-bridges.js';
+import { createGeneratorRuntimeSchemaRuntime } from '../../../js/gui_components/generator/runtime/create-generator-runtime-schema-runtime.js';
 
-describe('createGeneratorRuntimeSchemaBridges', () => {
-  test('builds the runtime, generation, and state bridges for the generator schema layer', () => {
+describe('createGeneratorRuntimeSchemaRuntime', () => {
+  test('builds the generator schema support, session, runtime, generation, and state services together', () => {
     const runtime = {
       schemaDefinition: {
         getState: jest.fn(() => ({
@@ -24,27 +24,23 @@ describe('createGeneratorRuntimeSchemaBridges', () => {
       generatorControls: {
         setPairwiseVisible: jest.fn(),
       },
-      schemaSession: {
-        renderRows: jest.fn(() => []),
-        getRows: jest.fn(() => []),
-        getTokens: jest.fn(() => []),
-        getTextMode: jest.fn(() => false),
-        setRows: jest.fn(),
-        setTokens: jest.fn(),
-        setTextMode: jest.fn(),
-      },
     };
 
-    const bridges = createGeneratorRuntimeSchemaBridges({
+    const schemaRuntime = createGeneratorRuntimeSchemaRuntime({
       runtime,
       faker: {},
       RandExp: function RandExp() {},
       TestDataGeneratorClass: class FakeTestDataGenerator {},
-      validateSchemaRows: (rows) => ({ rows, errors: [] }),
+      schemaTextToDataRules: () => ({ dataRules: [], errors: [], schemaTokens: [] }),
       schemaRowsToSpec: () => '',
+      schemaRowsToSpecWithTokens: () => '',
+      validateSchemaRows: (rows) => ({ rows, errors: [] }),
+      mapRuleToRow: () => ({ id: 'row-1', name: '', sourceType: 'enum', value: '' }),
+      dataRulesToSchemaText: () => '',
+      sampleSchemaText: 'Name\nenum(a,b)',
     });
 
-    Object.assign(runtime, bridges);
+    Object.assign(runtime, schemaRuntime);
     runtime.updateAllPairsButtonVisibility = jest.fn(() => {
       const isVisible = runtime.generatorSchemaGeneration.getPairwiseVisibility({
         getCurrentSchemaState: () => runtime.generatorSchemaState.getCurrentSchemaState(),
@@ -53,6 +49,10 @@ describe('createGeneratorRuntimeSchemaBridges', () => {
       return isVisible;
     });
 
+    expect(runtime.fakerCommands.every((command) => command.startsWith('helpers.'))).toBe(true);
+    expect(runtime.domainCommands.length).toBeGreaterThan(0);
+    expect(runtime.generatorSchemaDefinitionSupport).toBeDefined();
+    expect(runtime.schemaSession).toBeDefined();
     expect(runtime.generatorSchemaRuntime).toBeDefined();
     expect(runtime.generatorSchemaGeneration).toBeDefined();
     expect(runtime.generatorSchemaState).toBeDefined();

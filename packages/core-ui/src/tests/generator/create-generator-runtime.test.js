@@ -27,7 +27,7 @@ describe('createGeneratorRuntime', () => {
         renderSchemaRows: jest.fn(),
       },
     }));
-    const createRuntimeDependenciesFn = jest.fn(() => ({
+    const createRuntimeCollaboratorsFn = jest.fn(() => ({
       generatorSchemaDefinitionSupport: {
         mapRuleToRow: jest.fn((rule, index) => ({ rule, index })),
       },
@@ -84,7 +84,7 @@ describe('createGeneratorRuntime', () => {
       dataRulesToSchemaText: jest.fn(),
       sampleSchemaText: 'Name\nliteral(x)',
       createBaseState,
-      createRuntimeDependenciesFn,
+      createRuntimeCollaboratorsFn,
       createPageRuntimeMount,
       assertRuntimeMountable,
       defineSchemaState,
@@ -94,7 +94,7 @@ describe('createGeneratorRuntime', () => {
     return {
       runtime,
       createBaseState,
-      createRuntimeDependenciesFn,
+      createRuntimeCollaboratorsFn,
       createPageRuntimeMount,
       assertRuntimeMountable,
       defineSchemaState,
@@ -108,7 +108,7 @@ describe('createGeneratorRuntime', () => {
     const validateSchemaRows = jest.fn();
     const dataRulesToSchemaText = jest.fn();
     const createUnavailableRowCountResult = jest.fn(() => ({ value: 0, valid: false, errors: ['missing'] }));
-    const createRuntimeDependenciesFn = jest.fn(() => ({
+    const createRuntimeCollaboratorsFn = jest.fn(() => ({
       generatorSchemaDefinitionSupport: {
         mapRuleToRow: jest.fn((rule, index) => ({ id: `${rule}-${index}` })),
       },
@@ -159,12 +159,12 @@ describe('createGeneratorRuntime', () => {
         TestDataGeneratorClass: class FakeGenerator {},
         DownloadClass: class FakeDownload {},
       }),
-      createRuntimeDependenciesFn,
+      createRuntimeCollaboratorsFn,
       defineSchemaState,
       createUnavailableRowCountResult,
     });
 
-    expect(createRuntimeDependenciesFn).toHaveBeenCalledWith(
+    expect(createRuntimeCollaboratorsFn).toHaveBeenCalledWith(
       expect.objectContaining({
         runtime,
         schemaTextToDataRules,
@@ -177,7 +177,7 @@ describe('createGeneratorRuntime', () => {
       })
     );
 
-    const dependencyArgs = createRuntimeDependenciesFn.mock.calls[0][0];
+    const dependencyArgs = createRuntimeCollaboratorsFn.mock.calls[0][0];
     expect(dependencyArgs.mapRuleToRow('rule', 2)).toEqual({ id: 'rule-2' });
     expect(defineSchemaState).toHaveBeenCalledWith(runtime, {
       getRuntime: expect.any(Function),

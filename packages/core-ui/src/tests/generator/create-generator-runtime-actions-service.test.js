@@ -1,8 +1,8 @@
 import { describe, expect, jest, test } from '@jest/globals';
-import { createGeneratorRuntimeActionsDependencies } from '../../../js/gui_components/generator/runtime/create-generator-runtime-actions-dependencies.js';
+import { createGeneratorRuntimeActionsService } from '../../../js/gui_components/generator/runtime/create-generator-runtime-actions-service.js';
 
-describe('createGeneratorRuntimeActionsDependencies', () => {
-  test('builds the runtime-actions bridge around the mounted runtime shell', () => {
+describe('createGeneratorRuntimeActionsService', () => {
+  test('builds runtime actions around the mounted runtime services', () => {
     const runtime = {
       generatorViewState: {
         getSelectedOutputType: jest.fn(() => 'csv'),
@@ -24,7 +24,7 @@ describe('createGeneratorRuntimeActionsDependencies', () => {
       exporter: null,
     };
 
-    const generatorRuntimeActions = createGeneratorRuntimeActionsDependencies({
+    const generatorRuntimeActions = createGeneratorRuntimeActionsService({
       runtime,
       DownloadClass: class FakeDownload {},
       faker: {},

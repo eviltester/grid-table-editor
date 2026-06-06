@@ -1,7 +1,7 @@
 import { assertGeneratorRuntimeMountable } from './assert-generator-runtime-mountable.js';
 import { createGeneratorPageRuntimeMount } from './create-generator-page-runtime-mount.js';
 import { createGeneratorRuntimeBaseState } from './create-generator-runtime-base-state.js';
-import { createGeneratorRuntimeDependencies } from './create-generator-runtime-dependencies.js';
+import { createGeneratorRuntimeCollaborators } from './create-generator-runtime-collaborators.js';
 import { defineGeneratorRuntimeSchemaState } from './create-generator-runtime-schema-state.js';
 import { createGeneratorUnavailableRowCountResult } from './create-generator-unavailable-row-count-result.js';
 
@@ -14,7 +14,7 @@ function createGeneratorRuntime({
   dataRulesToSchemaText,
   sampleSchemaText,
   createBaseState = createGeneratorRuntimeBaseState,
-  createRuntimeDependenciesFn = createGeneratorRuntimeDependencies,
+  createRuntimeCollaboratorsFn = createGeneratorRuntimeCollaborators,
   createPageRuntimeMount = createGeneratorPageRuntimeMount,
   assertRuntimeMountable = assertGeneratorRuntimeMountable,
   defineSchemaState = defineGeneratorRuntimeSchemaState,
@@ -89,7 +89,7 @@ function createGeneratorRuntime({
 
   Object.assign(
     runtime,
-    createRuntimeDependenciesFn({
+    createRuntimeCollaboratorsFn({
       runtime,
       faker: runtime.faker,
       RandExp: runtime.RandExp,

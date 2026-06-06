@@ -1,8 +1,8 @@
 import { describe, expect, jest, test } from '@jest/globals';
-import { createGeneratorRuntimeViewStateDependencies } from '../../../js/gui_components/generator/runtime/create-generator-runtime-view-state-dependencies.js';
+import { createGeneratorRuntimeViewState } from '../../../js/gui_components/generator/runtime/create-generator-runtime-view-state.js';
 
-describe('createGeneratorRuntimeViewStateDependencies', () => {
-  test('builds the view-state bridge around the mounted runtime shell', () => {
+describe('createGeneratorRuntimeViewState', () => {
+  test('builds view-state behavior around the mounted runtime', () => {
     const runtime = {
       generatorControls: {
         getState: jest.fn(() => ({ selectedFormat: 'json' })),
@@ -14,7 +14,7 @@ describe('createGeneratorRuntimeViewStateDependencies', () => {
       exporter: { type: 'fake-exporter' },
     };
 
-    const generatorViewState = createGeneratorRuntimeViewStateDependencies({
+    const generatorViewState = createGeneratorRuntimeViewState({
       runtime,
       createUnavailableRowCountResult: jest.fn(() => ({
         value: 0,

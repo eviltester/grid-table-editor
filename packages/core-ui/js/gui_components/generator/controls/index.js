@@ -4,6 +4,7 @@ import { createLoadingStatusPresenter, createStatusPresenter } from '../../share
 import { createPopulationActionsComponent } from '../../app/population-actions/index.js';
 import { createUpdateHelpHints } from '../../../help/help-tooltips.js';
 import { getOutputFormatGroups } from '../options/options-ui-schema.js';
+import { createGeneratorOutputFormatSelectorComponent } from '../output-format-selector/index.js';
 import { GeneratorControlsController } from './generator-controls-controller.js';
 import { GeneratorControlsView } from './generator-controls-view.js';
 import { resolveDocumentObj } from '../../shared/dom/default-objects.js';
@@ -22,6 +23,8 @@ function createGeneratorControlsComponent({ root, props = {}, services = {}, cal
       createStatusPresenter: services.createStatusPresenter || createStatusPresenter,
       createLoadingStatusPresenter: services.createLoadingStatusPresenter || createLoadingStatusPresenter,
       createPopulationActionsComponent: services.createPopulationActionsComponent || createPopulationActionsComponent,
+      createGeneratorOutputFormatSelectorComponent:
+        services.createGeneratorOutputFormatSelectorComponent || createGeneratorOutputFormatSelectorComponent,
       getOutputFormatGroups: services.getOutputFormatGroups || getOutputFormatGroups,
       canExportFormat: services.canExportFormat || (() => true),
       getCurrentOptionsForFormat: services.getCurrentOptionsForFormat || (() => undefined),

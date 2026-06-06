@@ -98,6 +98,10 @@ describe('generator page runtime factories', () => {
     return createDataGeneratorPage(options);
   }
 
+  function createUnmountedPage(options = {}) {
+    return createUninitializedDataGeneratorPage(options);
+  }
+
   function getSchemaModeToggleButton() {
     return document.querySelector('[data-role="schema-mode-toggle"]');
   }
@@ -207,6 +211,32 @@ describe('generator page runtime factories', () => {
     } finally {
       global.document = originalDocument;
     }
+  });
+
+  test('uninitialized page exposes the direct runtime api before init', () => {
+    const page = createUnmountedPage({
+      parentElement: null,
+      faker: { word: { noun: () => 'x' } },
+      RandExp: function RandExp() {},
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: TestDataGenerator,
+    });
+
+    expect(typeof page.init).toBe('function');
+    expect(typeof page.destroy).toBe('function');
+    expect(typeof page.applyCurrentTypeOptions).toBe('function');
+    expect(typeof page.previewData).toBe('function');
+    expect(typeof page.generateDataFile).toBe('function');
+    expect(typeof page.generateAllPairsDataFile).toBe('function');
+    expect(typeof page.updateAllPairsButtonVisibility).toBe('function');
+    expect(typeof page.getSelectedOutputType).toBe('function');
+    expect(typeof page.syncGeneratorControlsFormatStateIfChanged).toBe('function');
+    expect(typeof page.renderSchemaRows).toBe('function');
+    expect(typeof page.getPreviewRowCount).toBe('function');
+    expect(typeof page.getGenerateRowCount).toBe('function');
   });
 
   test('literal rule extraction unwraps literal(...) variants for generation', () => {

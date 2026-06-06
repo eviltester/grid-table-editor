@@ -4,11 +4,11 @@
  * - Coordinates mounted and unmounted runtime factories while keeping page behavior testable.
  */
 
-import { createUninitializedGeneratorRuntime } from './create-generator-runtime-instance.js';
 import { createGeneratorRuntimeFactoryInputs } from './create-generator-runtime-factory-inputs.js';
+import { createGeneratorRuntime } from './create-generator-runtime.js';
 
 function createUninitializedDataGeneratorPage(options = {}) {
-  return createUninitializedGeneratorRuntime({
+  return createGeneratorRuntime({
     options,
     ...createGeneratorRuntimeFactoryInputs(),
   });

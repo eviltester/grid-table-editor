@@ -1,16 +1,16 @@
 import { createGeneratorPageComponent } from '../page/create-generator-page-component.js';
 import { createGeneratorMountedPageState } from './create-generator-mounted-page-state.js';
 import { createGeneratorMountedPageStartupSync } from './create-generator-mounted-page-startup-sync.js';
-import { createGeneratorPageComponentRuntimeConfig } from './create-generator-page-component-runtime-config.js';
+import { createGeneratorPageRuntimeConfig } from './create-generator-page-runtime-config.js';
 
 function createGeneratorPageRuntimeMount({
   runtime,
   createPageComponent = createGeneratorPageComponent,
-  createPageComponentRuntimeConfig = createGeneratorPageComponentRuntimeConfig,
+  createPageRuntimeConfig = createGeneratorPageRuntimeConfig,
   createMountedPageState = createGeneratorMountedPageState,
   createMountedPageStartupSync = createGeneratorMountedPageStartupSync,
 } = {}) {
-  const pageComponentConfig = createPageComponentRuntimeConfig({
+  const pageComponentConfig = createPageRuntimeConfig({
     runtime,
   });
 

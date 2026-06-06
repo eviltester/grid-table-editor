@@ -11,7 +11,7 @@ describe('createGeneratorPageRuntimeMount', () => {
       generatorPreview: { id: 'preview' },
       schemaDefinition: { id: 'schema-definition' },
     }));
-    const createPageComponentRuntimeConfig = jest.fn(() => ({
+    const createPageRuntimeConfig = jest.fn(() => ({
       props: { controlsProps: { selectedFormat: 'csv' } },
       services: { generatorControlsServices: {}, generatorPreviewServices: {} },
       callbacks: { generatorControls: {}, generatorPreview: {}, schemaDefinition: {} },
@@ -28,12 +28,12 @@ describe('createGeneratorPageRuntimeMount', () => {
     const mounted = createGeneratorPageRuntimeMount({
       runtime,
       createPageComponent,
-      createPageComponentRuntimeConfig,
+      createPageRuntimeConfig,
       createMountedPageState,
       createMountedPageStartupSync,
     });
 
-    expect(createPageComponentRuntimeConfig).toHaveBeenCalledWith({
+    expect(createPageRuntimeConfig).toHaveBeenCalledWith({
       runtime,
     });
     expect(createPageComponent).toHaveBeenCalledWith(

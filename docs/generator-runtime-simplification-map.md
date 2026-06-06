@@ -263,6 +263,11 @@ Success criteria:
 - `init()` and `destroy()` behavior remain explicit
 - no shell/facade/core/lifecycle-facade stack remains
 
+Status:
+
+- completed in the current runtime pass
+- replaced with direct `create-generator-runtime.js` wiring from `data-generator-page-runtime.js`
+
 ### Pass B: Collapse page-config assembly
 
 Do second because it affects a smaller, contained cluster and will reduce runtime-to-page mental overhead immediately.
@@ -271,6 +276,11 @@ Success criteria:
 
 - one obvious runtime-to-page config builder
 - only meaningful prop/callback helper splits remain
+
+Status:
+
+- completed in the current runtime pass
+- replaced with direct `create-generator-page-runtime-config.js` used by `create-generator-page-runtime-mount.js`
 
 ### Pass C: Rename or inline runtime action/view-state bridges
 

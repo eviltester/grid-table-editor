@@ -4,8 +4,8 @@ import {
   previewGeneratorData,
   generateGeneratorDataFile,
   generateGeneratorAllPairsDataFile,
-} from '../generation/index.js';
-import { applyGeneratorFormatOptions } from '../options/index.js';
+} from '../generation/data-generator-generation-actions.js';
+import { applyGeneratorFormatOptions } from '../options/apply-generator-format-options.js';
 
 function createGeneratorRuntimeActionsBridge({
   getCurrentSelectedType,
@@ -16,10 +16,12 @@ function createGeneratorRuntimeActionsBridge({
   getViewState,
   getSchemaRuntime,
   getSchemaGeneration,
+  getSchemaState,
 } = {}) {
   const getResolvedViewState = () => getViewState?.() || null;
   const getResolvedSchemaRuntime = () => getSchemaRuntime?.() || null;
   const getResolvedSchemaGeneration = () => getSchemaGeneration?.() || null;
+  const getResolvedSchemaState = () => getSchemaState?.() || null;
 
   return {
     applyCurrentTypeOptions(options) {
@@ -90,9 +92,9 @@ function createGeneratorRuntimeActionsBridge({
       });
     },
 
-    updateAllPairsButtonVisibility({ getCurrentSchemaState } = {}) {
+    updateAllPairsButtonVisibility() {
       const isVisible = getResolvedSchemaGeneration()?.getPairwiseVisibility?.({
-        getCurrentSchemaState,
+        getCurrentSchemaState: () => getResolvedSchemaState()?.getCurrentSchemaState?.(),
       });
       getResolvedViewState()?.setPairwiseVisible?.(isVisible);
       return isVisible;

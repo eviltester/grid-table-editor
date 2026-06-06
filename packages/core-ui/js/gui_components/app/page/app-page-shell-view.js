@@ -24,7 +24,7 @@ class AppPageShellView {
 
         <div class="testDataSchemaGui" data-role="test-data-panel-shell">
           <details${openAttribute}>
-            <summary>Test Data <span data-help="test-data-summary-title" class="helpicon"></span></summary>
+            <summary>Test Data <span data-help="test-data-summary-title" data-help-role="help-icon" class="helpicon"></span></summary>
             <div id="testDataGeneratorContainer"></div>
           </details>
         </div>

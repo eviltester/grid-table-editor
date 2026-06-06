@@ -5,12 +5,12 @@
  * - Owns generation progress/status transitions and preview refresh behavior.
  */
 
-import { schemaErrorsToText } from '../../../shared/test-data/schema/index.js';
+import { schemaErrorsToText } from '../../../shared/test-data/schema/schema-error-text.js';
 import {
   createConfiguredGeneratorFromSchemaRows,
   createPairwiseDataTable,
-  isPairwiseEligibleForSchemaRows,
-} from '../../../shared/test-data/generation/index.js';
+} from '../../../shared/test-data/generation/generation-controller.js';
+import { isPairwiseEligibleForSchemaRows } from '../../../shared/test-data/generation/ui-derived-state.js';
 import {
   SOURCE_TYPE_FAKER,
   SOURCE_TYPE_DOMAIN,

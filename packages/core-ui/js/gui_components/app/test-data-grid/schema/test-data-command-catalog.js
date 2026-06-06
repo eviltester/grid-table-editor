@@ -13,7 +13,7 @@ import {
   getKnownDomainCommandsAlphabetical,
   getKnownDomainCommandsLongestFirst,
 } from '../../../shared/domain-commands.js';
-import { getVisibleDomainCommands } from '../../../shared/test-data/help/index.js';
+import { getVisibleDomainCommands } from '../../../shared/test-data/help/domain-command-provider.js';
 import { buildSchemaHelpModel } from '../../../shared/test-data/help/help-model-builder.js';
 
 const FAKER_COMMANDS = [];

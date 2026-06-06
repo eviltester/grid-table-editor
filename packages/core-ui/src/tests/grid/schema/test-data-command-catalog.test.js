@@ -6,13 +6,20 @@ import {
   identifyFakerCommands,
   getFakerCommands,
   getDomainCommands,
+  getVisibleDomainCommandOptions,
   getMethodPickerOptions,
-} from '../../../../js/gui_components/app/test-data-grid/schema/index.js';
+} from '../../../../js/gui_components/app/test-data-grid/schema/test-data-command-catalog.js';
 
 describe('Test Data Command Catalog', () => {
   beforeEach(() => {
     // Reset and reinitialize faker commands before each test
     identifyFakerCommands();
+  });
+
+  it('exposes command-catalog helpers directly from the focused catalog module', () => {
+    expect(typeof identifyFakerCommands).toBe('function');
+    expect(typeof getMethodPickerOptions).toBe('function');
+    expect(typeof getVisibleDomainCommandOptions).toBe('function');
   });
 
   describe('identifyFakerCommands and dropdown discovery', () => {

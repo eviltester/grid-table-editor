@@ -38,4 +38,4 @@ function createFormatSelectorComponent({ root, subtasksRoot, props = {}, callbac
   };
 }
 
-export { createFormatSelectorComponent, FormatSelectorController, FormatSelectorView, createDefaultTabDefinitions };
+export { createFormatSelectorComponent };

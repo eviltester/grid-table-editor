@@ -1,16 +1,20 @@
 import { expect, waitFor, within } from 'storybook/test';
 import { TabulatorFull as Tabulator } from 'tabulator-tables';
 import RandExp from 'randexp';
-import { bootstrapApp, createAppPageComponent } from '../../../../packages/core-ui/js/gui_components/app/page/index.js';
+import { bootstrapApp } from '../../../../packages/core-ui/js/gui_components/app/page/app-page-runtime.js';
+import { createAppPageComponent } from '../../../../packages/core-ui/js/gui_components/app/page/app-page-shell.js';
 import { createDataGridComponent } from '../../../../packages/core-ui/js/gui_components/data-grid-editor/index.js';
 import { GridExtension as TabulatorGridExtension } from '../../../../packages/core-ui/js/gui_components/data-grid-editor/tabulator/gridExtension-tabulator.js';
-import { createTestDataGenerationPanelManager } from '../../../../packages/core-ui/js/gui_components/app/test-data-grid/index.js';
+import { createTestDataGenerationPanelManager } from '../../../../packages/core-ui/js/gui_components/app/test-data-grid/controller/test-data-grid-controller.js';
 
 function createAppPageStoryShell() {
   const root = document.createElement('main');
   root.setAttribute('aria-label', 'App page story');
 
-  root.innerHTML = `<div id="app-page-root"></div>`;
+  root.innerHTML = `
+    <div data-role="theme-toggle-host" style="min-height: 2.5rem;"></div>
+    <div id="app-page-root"></div>
+  `;
 
   return root;
 }

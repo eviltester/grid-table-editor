@@ -1,5 +1,6 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
+import * as populationActionsExports from '../../../js/gui_components/app/population-actions/index.js';
 import { createPopulationActionsComponent } from '../../../js/gui_components/app/population-actions/index.js';
 
 describe('PopulationActions', () => {
@@ -17,6 +18,12 @@ describe('PopulationActions', () => {
     delete global.window;
     delete global.document;
     delete global.Event;
+  });
+
+  test('public barrel is component-factory-only', () => {
+    expect(populationActionsExports.createPopulationActionsComponent).toBe(createPopulationActionsComponent);
+    expect(populationActionsExports.PopulationActionsController).toBeUndefined();
+    expect(populationActionsExports.PopulationActionsView).toBeUndefined();
   });
 
   test('renders actions, toggles pairwise visibility, and emits clicks', () => {

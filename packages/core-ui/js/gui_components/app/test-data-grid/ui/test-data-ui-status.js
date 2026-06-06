@@ -4,7 +4,7 @@
  * - Handles delayed status reset timing and lightweight UI-yield helper.
  */
 
-import { createLoadingStatusPresenter, createStatusPresenter } from '../../../shared/test-data/ui/index.js';
+import { createLoadingStatusPresenter, createStatusPresenter } from '../../../shared/test-data/ui/status-presenter.js';
 import { resolveDocumentObj, resolveWindowObj } from '../../../shared/dom/default-objects.js';
 
 let defaultStatusService = null;

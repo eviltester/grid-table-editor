@@ -44,6 +44,7 @@ class TextPreviewEditorView {
             data-role="preview-edit-mode-help"
             data-help="preview-edit-mode-help"
             class="helpicon option-help-icon"
+            data-help-role="option-help-icon"
           ></span>
           <button
             type="button"

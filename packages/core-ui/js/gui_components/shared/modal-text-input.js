@@ -1,7 +1,5 @@
 import { getDefaultDocumentObj, getDefaultWindowObj, resolveWindowObj } from './dom/default-objects.js';
 
-const LEGACY_TEXT_INPUT_COMPONENTS = new WeakMap();
-
 function ensureModalElements(documentObj = getDefaultDocumentObj()) {
   if (!documentObj) {
     return null;
@@ -18,7 +16,7 @@ function ensureModalElements(documentObj = getDefaultDocumentObj()) {
   backdrop.id = 'text-input-modal-backdrop';
   backdrop.className = 'text-input-modal-backdrop';
   backdrop.innerHTML = `
-    <div class="text-input-modal" role="dialog" aria-modal="true" aria-labelledby="text-input-modal-title">
+    <div class="text-input-modal" data-role="text-input-dialog" role="dialog" aria-modal="true" aria-labelledby="text-input-modal-title">
       <h3 id="text-input-modal-title" data-role="text-input-dialog-title" class="text-input-modal-title"></h3>
       <input id="text-input-modal-field" data-role="text-input-dialog-field" type="text" class="text-input-modal-field" />
       <div class="text-input-modal-actions">
@@ -57,7 +55,7 @@ function createTextInputDialogComponent({
         return Promise.resolve(null);
       }
 
-      const modal = backdrop.querySelector('.text-input-modal');
+      const modal = backdrop.querySelector('[data-role="text-input-dialog"]');
       const titleElem = backdrop.querySelector('[data-role="text-input-dialog-title"]');
       const inputElem = backdrop.querySelector('[data-role="text-input-dialog-field"]');
       const okButton = backdrop.querySelector('[data-role="text-input-dialog-ok"]');
@@ -124,24 +122,4 @@ function createTextInputDialogComponent({
   };
 }
 
-function getLegacyTextInputComponent(documentObj = getDefaultDocumentObj(), windowObj = getDefaultWindowObj()) {
-  if (!documentObj) {
-    return createTextInputDialogComponent({ documentObj: null, windowObj });
-  }
-  if (LEGACY_TEXT_INPUT_COMPONENTS.has(documentObj)) {
-    return LEGACY_TEXT_INPUT_COMPONENTS.get(documentObj);
-  }
-  const component = createTextInputDialogComponent({ documentObj, windowObj });
-  LEGACY_TEXT_INPUT_COMPONENTS.set(documentObj, component);
-  return component;
-}
-
-function showTextInputModal({
-  documentObj = getDefaultDocumentObj(),
-  windowObj = getDefaultWindowObj(),
-  ...options
-} = {}) {
-  return getLegacyTextInputComponent(documentObj, windowObj).requestTextInput(options);
-}
-
-export { createTextInputDialogComponent, showTextInputModal };
+export { createTextInputDialogComponent };

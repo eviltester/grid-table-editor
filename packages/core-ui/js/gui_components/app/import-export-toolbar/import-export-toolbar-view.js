@@ -24,7 +24,7 @@ class ImportExportToolbarView {
 
   template() {
     const state = this.controller.getState();
-    return `<span data-help="${state.helpDataHelp}" class="helpicon"></span>
+    return `<span data-help="${state.helpDataHelp}" data-help-role="help-icon" class="helpicon"></span>
             <button type="button" id="settextfromgridbutton" data-role="set-text-from-grid-button">v Set Text From Grid v</button>
             <button type="button" id="setgridfromtextbutton" data-role="set-grid-from-text-button" disabled>^ Set Grid From Text ^</button>
             <label id="csvinputlabel" data-role="file-input-label"><span class="fileFormat" data-role="file-format-label">.csv</span> import ^:<input type="file" id="csvinput" data-role="file-input"/></label>

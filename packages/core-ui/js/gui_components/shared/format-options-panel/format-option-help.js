@@ -42,7 +42,7 @@ function applyUiPanelOnlyTips(rootElement, ids = undefined) {
   }
   const resolvedIds = Array.isArray(ids)
     ? ids
-    : Array.from(rootElement.querySelectorAll('.option-help-icon[data-help]'))
+    : Array.from(rootElement.querySelectorAll('[data-role="option-help-icon"][data-help]'))
         .map((elem) => elem.getAttribute('data-help'))
         .filter(Boolean);
 

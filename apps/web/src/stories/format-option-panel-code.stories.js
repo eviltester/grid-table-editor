@@ -1,4 +1,4 @@
-import { getCodeLanguageSubtasks } from '../../../../packages/core-ui/js/gui_components/generator/options/index.js';
+import { getCodeLanguageSubtasks } from '../../../../packages/core-ui/js/gui_components/generator/options/options-catalog-adapter.js';
 import {
   CODE_OPTIONS,
   createStory,

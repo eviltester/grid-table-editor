@@ -1,5 +1,6 @@
 import { jest } from '@jest/globals';
 import { GuardedColumnEdits } from '../../../js/gui_components/data-grid-editor/shared/guarded-column-edits.js';
+import { GuardedColumnEditWorkflow } from '../../../js/gui_components/data-grid-editor/shared/guarded-column-edit-workflow.js';
 import { GuardedTabulatorColumnEditAdapter } from '../../../js/gui_components/data-grid-editor/shared/guarded-tabulator-column-edit-adapter.js';
 
 function createColumn(title = 'Old Name') {
@@ -103,6 +104,12 @@ describe('GuardedColumnEdits (AG abstraction)', () => {
     await unguarded.renameColId('column1');
     expect(gridExtras.renameColId).toHaveBeenCalledWith('column1', 'Existing');
     expect(surfaceError).not.toHaveBeenCalled();
+  });
+
+  test('guarded workflow helper stays available through its direct module while the tabulator-specific adapter remains separate', () => {
+    expect(GuardedColumnEditWorkflow).toBeDefined();
+    expect(GuardedColumnEdits).toBeDefined();
+    expect(GuardedTabulatorColumnEditAdapter).toBeDefined();
   });
 });
 

@@ -1,5 +1,5 @@
 import { JSDOM } from 'jsdom';
-import { parseRowCountInputElement } from '../../../js/gui_components/shared/row-count-control/index.js';
+import { parseRowCountInputElement } from '../../../js/gui_components/shared/row-count-control/row-count-control-parsing.js';
 
 describe('row-count-control parsing', () => {
   test('parses valid values from an input element', () => {

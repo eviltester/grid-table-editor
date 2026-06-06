@@ -8,13 +8,7 @@ import { createInlineMessageComponent } from '../../primitives/inline-message/in
 
 const inlineMessageRegistry = new WeakMap();
 
-function getDefaultDocumentObj() {
-  return typeof document !== 'undefined' ? document : null;
-}
-
 function createBaseStatusPresenter({
-  documentObj = getDefaultDocumentObj(),
-  elementId,
   resolveElement,
   statusClassName = 'is-loading',
   loadingClassName,
@@ -29,10 +23,7 @@ function createBaseStatusPresenter({
     if (resolvedElement) {
       return resolvedElement;
     }
-    if (!documentObj || !elementId) {
-      return null;
-    }
-    return documentObj.getElementById(elementId);
+    return null;
   };
 
   const ensureComponent = () => {

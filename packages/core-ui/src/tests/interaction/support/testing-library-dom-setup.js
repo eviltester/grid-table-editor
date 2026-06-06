@@ -12,7 +12,6 @@ function installDomGlobals(html = '<!doctype html><html><body></body></html>') {
   global.KeyboardEvent = dom.window.KeyboardEvent;
   global.MouseEvent = dom.window.MouseEvent;
   global.getComputedStyle = dom.window.getComputedStyle.bind(dom.window);
-  dom.window.updateHelpHints = () => {};
   dom.window.tippy = { hideAll: () => {} };
   return dom;
 }

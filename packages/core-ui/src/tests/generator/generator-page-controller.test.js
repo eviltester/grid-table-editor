@@ -1,6 +1,16 @@
-import { GeneratorPageController } from '../../../js/gui_components/generator/page/index.js';
+import * as generatorPageExports from '../../../js/gui_components/generator/page/index.js';
+import { GeneratorPageController } from '../../../js/gui_components/generator/page/generator-page-controller.js';
 
 describe('GeneratorPageController', () => {
+  test('public barrel is component-factory-only for generator page features', () => {
+    expect(typeof generatorPageExports.createGeneratorPageComponent).toBe('function');
+    expect(generatorPageExports.createGeneratorPageShellComponent).toBeUndefined();
+    expect(generatorPageExports.GeneratorPageController).toBeUndefined();
+    expect(generatorPageExports.GeneratorPageView).toBeUndefined();
+    expect(generatorPageExports.GeneratorPageShellController).toBeUndefined();
+    expect(generatorPageExports.GeneratorPageShellView).toBeUndefined();
+  });
+
   test('stores child feature props and merges updates', () => {
     const controller = new GeneratorPageController({
       props: {

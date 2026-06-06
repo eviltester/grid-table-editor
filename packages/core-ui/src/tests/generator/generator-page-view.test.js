@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
-import { createGeneratorPageComponent } from '../../../js/gui_components/generator/page/index.js';
+import { createGeneratorPageComponent } from '../../../js/gui_components/generator/page/create-generator-page-component.js';
 
 describe('GeneratorPageView', () => {
   let dom;

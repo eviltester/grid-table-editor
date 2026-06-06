@@ -1,9 +1,10 @@
 import { JSDOM } from 'jsdom';
+import * as iconPrimitiveExports from '../../../js/gui_components/shared/primitives/icon/icon-core.js';
 import {
   createIconElement,
   decorateIconContainer,
   renderIconHtml,
-} from '../../../js/gui_components/shared/primitives/icon/index.js';
+} from '../../../js/gui_components/shared/primitives/icon/icon-core.js';
 
 describe('shared icon primitive', () => {
   let dom;
@@ -14,6 +15,12 @@ describe('shared icon primitive', () => {
 
   afterEach(() => {
     dom.window.close();
+  });
+
+  test('shared icon helper module exposes the live runtime helpers directly', () => {
+    expect(typeof iconPrimitiveExports.renderIconHtml).toBe('function');
+    expect(typeof iconPrimitiveExports.decorateIconContainer).toBe('function');
+    expect(typeof iconPrimitiveExports.createIconElement).toBe('function');
   });
 
   test('creates currentColor inline SVG icons hidden from assistive tech', () => {

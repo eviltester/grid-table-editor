@@ -1,26 +1,37 @@
 import { ensureGridLibraryLoaded } from './gui_components/data-grid-editor/grid-library-loader.js';
-import { DataGeneratorPage } from './gui_components/generator/index.js';
+import { createDataGeneratorPage } from './gui_components/generator/runtime/data-generator-page-runtime.js';
 import { faker } from '@faker-js/faker';
 import { initHelpTooltips } from './help/help-tooltips.js';
-import { initThemeToggle } from './gui_components/shared/theme-toggle.js';
+import { createThemeToggleComponent } from './gui_components/shared/theme-toggle.js';
 import { createPageStartupLoadingStatus } from './gui_components/shared/page-startup-loading-status.js';
 import { getDefaultDocumentObj, resolveWindowObj } from './gui_components/shared/dom/default-objects.js';
-import {
-  createInstructionsComponent,
-  GENERATOR_PAGE_INSTRUCTIONS_PROPS,
-} from './gui_components/shared/instructions/index.js';
-import { createGeneratorPageShellComponent } from './gui_components/generator/page/index.js';
+import { createInstructionsComponent } from './gui_components/shared/instructions/index.js';
+import { GENERATOR_PAGE_INSTRUCTIONS_PROPS } from './gui_components/shared/instructions/generator-page-instructions.js';
+import { createGeneratorPageShellComponent } from './gui_components/generator/page/create-generator-page-shell-component.js';
+
+function resolveThemeToggleHostElement(documentObj) {
+  return documentObj?.querySelector?.('[data-role="theme-toggle-host"]') || null;
+}
+
+function resolveGeneratorHelpTooltipRoot(documentObj) {
+  return documentObj?.getElementById?.('generator-page-root') || documentObj;
+}
+
+function resolveGeneratorStartupLoadingElement(documentObj) {
+  return documentObj?.getElementById?.('generator-initial-load') || null;
+}
 
 async function bootstrapGeneratorPage({
   documentObj = getDefaultDocumentObj(),
   ensureGridLibraryLoadedFn = ensureGridLibraryLoaded,
-  DataGeneratorPageClass = DataGeneratorPage,
+  createDataGeneratorPageFn = createDataGeneratorPage,
   fakerInstance = faker,
   initHelpTooltipsFn = initHelpTooltips,
 } = {}) {
-  const themeToggle = initThemeToggle({
+  const themeToggle = createThemeToggleComponent({
     documentObj,
     windowObj: resolveWindowObj(null, documentObj),
+    hostElement: resolveThemeToggleHostElement(documentObj),
   });
   const pageRoot = documentObj.getElementById('generator-page-root');
   const generatorPageShell = pageRoot
@@ -30,7 +41,7 @@ async function bootstrapGeneratorPage({
     : null;
   const startupLoadingStatus = createPageStartupLoadingStatus({
     documentObj,
-    elementId: 'generator-initial-load',
+    resolveElement: () => resolveGeneratorStartupLoadingElement(documentObj),
   });
   startupLoadingStatus.show();
 
@@ -53,14 +64,19 @@ async function bootstrapGeneratorPage({
     }
 
     const appRoot = documentObj.getElementById('generator-app');
-    page = new DataGeneratorPageClass({
+    if (typeof createDataGeneratorPageFn !== 'function') {
+      throw new Error('bootstrapGeneratorPage requires createDataGeneratorPageFn');
+    }
+    page = createDataGeneratorPageFn({
       parentElement: appRoot,
       documentObj,
       faker: fakerInstance,
       RandExp: globalThis?.RandExp,
     });
-    page.init();
-    initHelpTooltipsFn({ documentObj });
+    initHelpTooltipsFn({
+      documentObj,
+      rootElement: resolveGeneratorHelpTooltipRoot(documentObj),
+    });
     startupLoadingStatus.clear();
   } catch (error) {
     startupLoadingStatus.fail();

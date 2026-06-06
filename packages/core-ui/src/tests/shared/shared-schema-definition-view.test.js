@@ -6,12 +6,11 @@ import {
   dataRulesToSchemaText,
   schemaRowsToDataRules,
 } from '@anywaydata/core/data_generation/schema-rules-adapter.js';
+import * as sharedSchemaDefinitionExports from '../../../js/gui_components/shared/schema-definition/index.js';
 import { createSharedSchemaDefinitionComponent } from '../../../js/gui_components/shared/schema-definition/index.js';
-import {
-  TEST_DATA_GRID_SAMPLE_SCHEMA_TEXT,
-  mapDataRuleToSchemaRow,
-  validateSchemaRows as validateSharedSchemaRows,
-} from '../../../js/gui_components/shared/test-data/schema/index.js';
+import { validateSchemaRows as validateSharedSchemaRows } from '../../../js/gui_components/shared/test-data/schema/schema-editor-core.js';
+import { mapDataRuleToSchemaRow } from '../../../js/gui_components/shared/test-data/schema/schema-row-mapper.js';
+import { TEST_DATA_GRID_SAMPLE_SCHEMA_TEXT } from '../../../js/gui_components/shared/test-data/schema/schema-examples.js';
 
 function createBlankRowFactory(prefix = 'test-schema-row') {
   let counter = 0;
@@ -45,7 +44,8 @@ describe('shared-schema-definition view', () => {
     global.Event = dom.window.Event;
     tippyInstances = [];
     global.tippy = jest.fn((elements, options) => {
-      const normalized = elements instanceof dom.window.NodeList ? Array.from(elements) : [elements];
+      const normalized =
+        elements instanceof dom.window.NodeList || Array.isArray(elements) ? Array.from(elements) : [elements];
       normalized.forEach((element) => {
         const instance = {
           destroy: jest.fn(),
@@ -67,6 +67,20 @@ describe('shared-schema-definition view', () => {
     delete global.Event;
     delete global.tippy;
     delete dom.window.tippy;
+  });
+
+  test('public barrel is component-factory-only', () => {
+    expect(sharedSchemaDefinitionExports.createSharedSchemaDefinitionComponent).toBe(
+      createSharedSchemaDefinitionComponent
+    );
+    expect(sharedSchemaDefinitionExports.SharedSchemaDefinitionController).toBeUndefined();
+    expect(sharedSchemaDefinitionExports.SharedSchemaDefinitionView).toBeUndefined();
+  });
+
+  test('shared schema barrel keeps sample schema examples off the broad runtime surface', async () => {
+    const sharedSchemaModule = await import('../../../js/gui_components/shared/test-data/schema/schema-editor-core.js');
+
+    expect(sharedSchemaModule.TEST_DATA_GRID_SAMPLE_SCHEMA_TEXT).toBeUndefined();
   });
 
   function createComponent() {

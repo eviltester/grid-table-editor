@@ -1,5 +1,6 @@
 import { JSDOM } from 'jsdom';
 import { jest } from '@jest/globals';
+import * as formatSelectorExports from '../../../js/gui_components/app/format-selector/index.js';
 import { createFormatSelectorComponent } from '../../../js/gui_components/app/format-selector/index.js';
 
 describe('FormatSelector', () => {
@@ -13,6 +14,13 @@ describe('FormatSelector', () => {
 
   afterEach(() => {
     dom.window.close();
+  });
+
+  test('public barrel is component-factory-only', () => {
+    expect(formatSelectorExports.createFormatSelectorComponent).toBe(createFormatSelectorComponent);
+    expect(formatSelectorExports.FormatSelectorController).toBeUndefined();
+    expect(formatSelectorExports.FormatSelectorView).toBeUndefined();
+    expect(formatSelectorExports.createDefaultTabDefinitions).toBeUndefined();
   });
 
   test('selecting a grouped code format emits the selected subtask type', () => {

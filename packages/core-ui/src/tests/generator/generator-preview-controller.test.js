@@ -1,7 +1,16 @@
 import { jest } from '@jest/globals';
-import { GeneratorPreviewController } from '../../../js/gui_components/generator/preview/index.js';
+import * as generatorPreviewExports from '../../../js/gui_components/generator/preview/index.js';
+import { GeneratorPreviewController } from '../../../js/gui_components/generator/preview/generator-preview-controller.js';
 
 describe('GeneratorPreviewController', () => {
+  test('preview barrel is component-factory-only', () => {
+    expect(typeof generatorPreviewExports.createGeneratorPreviewComponent).toBe('function');
+    expect(generatorPreviewExports.GeneratorPreviewController).toBeUndefined();
+    expect(generatorPreviewExports.GeneratorPreviewView).toBeUndefined();
+    expect(generatorPreviewExports.createDefaultPreviewGridFactory).toBeUndefined();
+    expect(generatorPreviewExports.createTabulatorGridAdapter).toBeUndefined();
+  });
+
   test('stores preview text and triggers preview callback', () => {
     const onPreview = jest.fn();
     const previewDataTable = { getRowCount: () => 2 };

@@ -1,17 +1,11 @@
 import { createInlineMessageComponent } from './primitives/inline-message/index.js';
-import { getDefaultDocumentObj } from './dom/default-objects.js';
 
-function createTimedStatusPresenter({
-  documentObj = getDefaultDocumentObj(),
-  elementId,
-  resolveElement,
-  timeoutMs = 5000,
-} = {}) {
+function createTimedStatusPresenter({ resolveElement, timeoutMs = 5000 } = {}) {
   let component = null;
   let rootElement = null;
 
   const getComponent = () => {
-    const nextRoot = resolveElement?.() || (elementId ? documentObj?.getElementById?.(elementId) : null);
+    const nextRoot = resolveElement?.() || null;
     if (!nextRoot) {
       return null;
     }

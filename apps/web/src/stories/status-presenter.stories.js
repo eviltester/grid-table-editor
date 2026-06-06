@@ -1,5 +1,5 @@
 import { expect, userEvent, within } from 'storybook/test';
-import { createStatusPresenter } from '../../../../packages/core-ui/js/gui_components/shared/test-data/ui/index.js';
+import { createStatusPresenter } from '../../../../packages/core-ui/js/gui_components/shared/test-data/ui/status-presenter.js';
 
 function createStatusPresenterHarness({ root, args, remountable = false }) {
   let presenter = null;

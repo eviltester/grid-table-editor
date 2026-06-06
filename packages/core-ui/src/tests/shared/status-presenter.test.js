@@ -19,12 +19,12 @@ describe('createStatusPresenter', () => {
   });
 
   test('setStatus and scheduleClear update the rendered status element without loading state', () => {
+    const element = dom.window.document.getElementById('status');
     const presenter = createStatusPresenter({
       documentObj: dom.window.document,
-      elementId: 'status',
+      resolveElement: () => element,
       hideWhenEmpty: true,
     });
-    const element = dom.window.document.getElementById('status');
 
     presenter.setStatus('Export ready.');
     expect(element.textContent).toBe('Export ready.');
@@ -39,12 +39,12 @@ describe('createStatusPresenter', () => {
   });
 
   test('status presenter supports severity and dismissable status messages', () => {
+    const element = dom.window.document.getElementById('status');
     const presenter = createStatusPresenter({
       documentObj: dom.window.document,
-      elementId: 'status',
+      resolveElement: () => element,
       hideWhenEmpty: true,
     });
-    const element = dom.window.document.getElementById('status');
 
     presenter.setStatus('Schema validation failed.', {
       severity: 'error',
@@ -61,12 +61,12 @@ describe('createStatusPresenter', () => {
   });
 
   test('loading presenter always renders loading state for loading messages', () => {
+    const element = dom.window.document.getElementById('status');
     const presenter = createLoadingStatusPresenter({
       documentObj: dom.window.document,
-      elementId: 'status',
+      resolveElement: () => element,
       hideWhenEmpty: true,
     });
-    const element = dom.window.document.getElementById('status');
 
     presenter.setStatus('Preparing export...');
     expect(element.textContent).toBe('Preparing export...');
@@ -76,12 +76,12 @@ describe('createStatusPresenter', () => {
   });
 
   test('statusClassName controls the loading-state class for loading presenter consumers', () => {
+    const element = dom.window.document.getElementById('status');
     const presenter = createLoadingStatusPresenter({
       documentObj: dom.window.document,
-      elementId: 'status',
+      resolveElement: () => element,
       statusClassName: 'status-loading',
     });
-    const element = dom.window.document.getElementById('status');
 
     presenter.setStatus('Loading data...');
     expect(element.classList.contains('status-loading')).toBe(true);
@@ -89,11 +89,12 @@ describe('createStatusPresenter', () => {
   });
 
   test('rebinds to a replacement element with the same id', () => {
+    let currentElement = dom.window.document.getElementById('status');
     const presenter = createStatusPresenter({
       documentObj: dom.window.document,
-      elementId: 'status',
+      resolveElement: () => currentElement,
     });
-    const original = dom.window.document.getElementById('status');
+    const original = currentElement;
     const replacement = dom.window.document.createElement('div');
     replacement.id = 'status';
 
@@ -101,18 +102,19 @@ describe('createStatusPresenter', () => {
     expect(original.textContent).toBe('First message');
 
     original.replaceWith(replacement);
+    currentElement = replacement;
     presenter.setStatus('Second message');
     expect(replacement.textContent).toBe('Second message');
   });
 
-  test('can be created without a global document when no documentObj is injected', () => {
+  test('can be created without a global document when no documentObj or resolved element is available', () => {
     const originalDocument = global.document;
 
     delete global.document;
 
     try {
-      const presenter = createStatusPresenter({ elementId: 'status' });
-      const loadingPresenter = createLoadingStatusPresenter({ elementId: 'status' });
+      const presenter = createStatusPresenter();
+      const loadingPresenter = createLoadingStatusPresenter();
 
       expect(() => presenter.setStatus('Export ready.')).not.toThrow();
       expect(() => presenter.clear()).not.toThrow();
@@ -127,12 +129,12 @@ describe('createStatusPresenter', () => {
   });
 
   test('destroy cancels pending clear work and leaves the element unchanged afterwards', () => {
+    const element = dom.window.document.getElementById('status');
     const presenter = createStatusPresenter({
       documentObj: dom.window.document,
-      elementId: 'status',
+      resolveElement: () => element,
       hideWhenEmpty: true,
     });
-    const element = dom.window.document.getElementById('status');
 
     presenter.setStatus('Will clear soon.');
     presenter.scheduleClear(1200);

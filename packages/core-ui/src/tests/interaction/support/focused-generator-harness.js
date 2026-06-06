@@ -4,7 +4,7 @@ import { faker } from '@faker-js/faker';
 import RandExp from 'randexp';
 import { TestDataGenerator } from '@anywaydata/core/data_generation/testDataGenerator.js';
 import { Exporter } from '@anywaydata/core/grid/exporter.js';
-import { DataGeneratorPage } from '../../../../js/gui_components/generator/index.js';
+import { createDataGeneratorPage } from '../../../../js/gui_components/generator/runtime/data-generator-page-runtime.js';
 import { assertDataTableHasNoErrorIndicators, assertNoErrorIndicators } from './generated-value-quality.js';
 import { installDomGlobals, cleanupDomGlobals } from './testing-library-dom-setup.js';
 
@@ -107,7 +107,7 @@ function createFocusedGeneratorHarness() {
   function reset() {
     document.getElementById('app').innerHTML = '';
     CapturingDownload.reset();
-    page = new DataGeneratorPage({
+    page = createDataGeneratorPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       faker,
@@ -118,7 +118,6 @@ function createFocusedGeneratorHarness() {
       DownloadClass: CapturingDownload,
       TestDataGeneratorClass: TestDataGenerator,
     });
-    page.init();
   }
 
   async function addField() {

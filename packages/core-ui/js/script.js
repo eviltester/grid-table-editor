@@ -1,4 +1,4 @@
-import { bootstrapApp } from './gui_components/app/page/index.js';
+import { bootstrapApp } from './gui_components/app/page/app-page-runtime.js';
 
 // setup the grid after the page has finished loading
 if (typeof document !== 'undefined') {

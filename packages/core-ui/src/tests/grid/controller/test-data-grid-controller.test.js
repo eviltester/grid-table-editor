@@ -1,5 +1,6 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
+import * as appTestDataControllerExports from '../../../../js/gui_components/app/test-data-grid/controller/test-data-grid-controller.js';
 import { createTestDataGenerationPanelManager } from '../../../../js/gui_components/app/test-data-grid/controller/test-data-grid-controller.js';
 
 describe('test data grid controller', () => {
@@ -19,6 +20,11 @@ describe('test data grid controller', () => {
     delete global.document;
     delete global.Event;
     delete global.RandExp;
+  });
+
+  test('controller module keeps both runtime mount and non-runtime manager helpers available', () => {
+    expect(typeof appTestDataControllerExports.mountTestDataGenerationPanel).toBe('function');
+    expect(typeof appTestDataControllerExports.createTestDataGenerationPanelManager).toBe('function');
   });
 
   test('mounts the data population panel and wires generation actions through the shared adapter', () => {

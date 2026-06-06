@@ -1,5 +1,5 @@
 import { expect, userEvent, within } from 'storybook/test';
-import { createLoadingStatusPresenter } from '../../../../packages/core-ui/js/gui_components/shared/test-data/ui/index.js';
+import { createLoadingStatusPresenter } from '../../../../packages/core-ui/js/gui_components/shared/test-data/ui/status-presenter.js';
 
 function createLoadingStatusPresenterHarness({ root, args, remountable = false }) {
   let presenter = null;

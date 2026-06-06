@@ -1,5 +1,7 @@
-import { mapDataRuleToSchemaRow, createSchemaRowValidation } from '../../shared/test-data/schema/index.js';
-import { getVisibleDomainCommands, buildSchemaHelpModel } from '../../shared/test-data/help/index.js';
+import { mapDataRuleToSchemaRow } from '../../shared/test-data/schema/schema-row-mapper.js';
+import { createSchemaRowValidation } from '../../shared/test-data/schema/schema-row-validation.js';
+import { getVisibleDomainCommands } from '../../shared/test-data/help/domain-command-provider.js';
+import { buildSchemaHelpModel } from '../../shared/test-data/help/help-model-builder.js';
 
 function createGeneratorSchemaDefinitionSupport({
   createBlankRow,

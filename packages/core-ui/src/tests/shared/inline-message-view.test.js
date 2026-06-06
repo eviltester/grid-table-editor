@@ -1,5 +1,14 @@
 import { JSDOM } from 'jsdom';
+import * as inlineMessageExports from '../../../js/gui_components/shared/primitives/inline-message/index.js';
 import { createInlineMessageComponent } from '../../../js/gui_components/shared/primitives/inline-message/index.js';
+
+describe('inline-message public surface', () => {
+  test('keeps the inline-message barrel component-first', () => {
+    expect(typeof inlineMessageExports.createInlineMessageComponent).toBe('function');
+    expect(inlineMessageExports.InlineMessageController).toBeUndefined();
+    expect(inlineMessageExports.InlineMessageView).toBeUndefined();
+  });
+});
 
 describe('InlineMessageView', () => {
   let dom;

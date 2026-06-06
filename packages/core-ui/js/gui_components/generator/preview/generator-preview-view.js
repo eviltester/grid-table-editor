@@ -1,5 +1,5 @@
 import { resolveDocumentObj } from '../../shared/dom/default-objects.js';
-import { renderGeneratorOutputPreview } from '../generation/index.js';
+import { renderGeneratorOutputPreview } from '../generation/data-generator-generation-actions.js';
 
 class GeneratorPreviewView {
   constructor({ root, controller, documentObj, services = {}, ids = {} } = {}) {
@@ -50,6 +50,7 @@ class GeneratorPreviewView {
             <button
               type="button"
               class="helpicon"
+              data-help-role="help-icon"
               data-help="shared-generator-preview-help"
               aria-label="Show preview help"
             ></button>

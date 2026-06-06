@@ -27,6 +27,11 @@ describe('generator schema state bridge', () => {
       updatePairwiseButtonVisibility,
     });
 
+    expect(bridge.getCurrentSchemaState()).toEqual({
+      rows: [{ id: 'mounted-row' }],
+      errors: [],
+      isTextMode: true,
+    });
     expect(bridge.getRows()).toEqual([{ id: 'mounted-row' }]);
     expect(bridge.getTokens()).toEqual([{ kind: 'rule' }]);
     expect(bridge.getTextMode()).toBe(true);
@@ -62,6 +67,11 @@ describe('generator schema state bridge', () => {
       updatePairwiseButtonVisibility: jest.fn(),
     });
 
+    expect(bridge.getCurrentSchemaState()).toEqual({
+      rows: [{ id: 'session-row' }],
+      errors: [],
+      isTextMode: false,
+    });
     expect(bridge.getRows()).toEqual([{ id: 'session-row' }]);
     expect(bridge.getTokens()).toEqual([{ kind: 'session-token' }]);
     expect(bridge.getTextMode()).toBe(false);

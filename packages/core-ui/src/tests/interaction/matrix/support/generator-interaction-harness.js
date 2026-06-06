@@ -3,7 +3,7 @@ import { faker } from '@faker-js/faker';
 import RandExp from 'randexp';
 import { TestDataGenerator } from '@anywaydata/core/data_generation/testDataGenerator.js';
 import { Exporter } from '@anywaydata/core/grid/exporter.js';
-import { DataGeneratorPage } from '../../../../../js/gui_components/generator/index.js';
+import { createDataGeneratorPage } from '../../../../../js/gui_components/generator/runtime/data-generator-page-runtime.js';
 import { getFakerCommandHelp } from '../../../../../js/gui_components/shared/faker-command-help-metadata.js';
 import { getDomainCommandHelp } from '../../../../../js/gui_components/shared/domain-command-help-metadata.js';
 import { resolveFakerDocsUrl } from '../../../../../js/gui_components/shared/test-data/help/help-model-builder.js';
@@ -147,7 +147,7 @@ function createGeneratorInteractionHarness() {
     page?.destroy?.();
     document.getElementById('app').innerHTML = '';
     CapturingDownload.reset();
-    page = new DataGeneratorPage({
+    page = createDataGeneratorPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       faker,
@@ -158,7 +158,6 @@ function createGeneratorInteractionHarness() {
       DownloadClass: CapturingDownload,
       TestDataGeneratorClass: TestDataGenerator,
     });
-    page.init();
   }
 
   async function runScenario(scenario) {

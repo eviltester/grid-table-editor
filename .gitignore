@@ -22,3 +22,4 @@ testenv/
 .tmp
 .claude
 .pet-runs
+experiments

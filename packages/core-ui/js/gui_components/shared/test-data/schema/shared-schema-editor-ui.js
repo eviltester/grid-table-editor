@@ -2,10 +2,6 @@
  * Responsibilities:
  * - Shared schema-editor row rendering and interaction helpers.
  * - Keeps shared schema row markup, drag/drop indicators, and row action handling out of page-specific modules.
- *
- * Compatibility note:
- * - This module still carries some generator-era row/layout classes while Phase 3 finishes separating
- *   shared internals from generator naming, but new shared defaults should prefer neutral shared hooks first.
  */
 
 import { escapeHtml } from '../../html-escape.js';
@@ -20,13 +16,11 @@ import {
   normaliseSourceType,
 } from '../../schema-row-rule-mapper.js';
 import { applySchemaSourceTypeChange } from './schema-row-mapper.js';
-import { renderIconHtml } from '../../primitives/icon/index.js';
+import { renderIconHtml } from '../../primitives/icon/icon-core.js';
 
 const SCHEMA_ROW_DRAGGING_CLASS = 'shared-schema-row-dragging';
 const SCHEMA_ROW_DROP_BEFORE_CLASS = 'shared-schema-row-drop-before';
 const SCHEMA_ROW_DROP_AFTER_CLASS = 'shared-schema-row-drop-after';
-const SCHEMA_ROWS_KEY = 'schemaRows';
-const SCHEMA_MODE_HELP_ICON_KEY = 'schemaModeHelpIcon';
 const SHARED_SCHEMA_ROW_CLASS = 'shared-schema-row';
 const SHARED_SCHEMA_ROWS_CLASS = 'shared-schema-rows';
 const SHARED_SCHEMA_ROW_INVALID_CLASS = 'shared-schema-row-invalid';
@@ -127,6 +121,7 @@ function renderSharedSchemaRows({
                 <a
                     data-field="faker-doc-link"
                     class="helpicon ${SHARED_SCHEMA_HELP_LINK_CLASS}"
+                    data-help-role="help-icon"
                     data-help="${SHARED_SCHEMA_HELP_DATA_HELP}"
                     href="${escapeHtml(schemaHelp.docsUrl)}"
                     aria-label="${escapeHtml(schemaHelp.title)}"
@@ -321,8 +316,6 @@ export {
   SCHEMA_ROW_DRAGGING_CLASS,
   SCHEMA_ROW_DROP_BEFORE_CLASS,
   SCHEMA_ROW_DROP_AFTER_CLASS,
-  SCHEMA_ROWS_KEY,
-  SCHEMA_MODE_HELP_ICON_KEY,
   SHARED_SCHEMA_ROW_CLASS,
   SHARED_SCHEMA_ROWS_CLASS,
   SHARED_SCHEMA_ROW_INVALID_CLASS,

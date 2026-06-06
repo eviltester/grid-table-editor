@@ -1,4 +1,4 @@
-import { createConfirmDialogService } from '../shared/dialog-services/index.js';
+import { createConfirmDialogService } from '../shared/dialog-services/confirm-dialog-service.js';
 
 function getDefaultDocumentObj() {
   return typeof document !== 'undefined' ? document : null;

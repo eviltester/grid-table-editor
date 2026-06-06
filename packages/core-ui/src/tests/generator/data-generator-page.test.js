@@ -2,17 +2,31 @@ import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
 import { faker } from '@faker-js/faker';
 import RandExp from 'randexp';
+import { dataRulesToSchemaText } from '@anywaydata/core/data_generation/schema-rules-adapter.js';
+import { createDataGeneratorPage } from '../../../js/gui_components/generator/runtime/data-generator-page-runtime.js';
 import {
-  DataGeneratorPage,
   buildRuleSpecFromSchemaRow,
   extractLiteralValueFromRuleSpec,
   extractRegexValueFromRuleSpec,
-  schemaRowsToSpec,
-  schemaRowsToSpecWithTokens,
-  validateSchemaRows,
-} from '../../../js/gui_components/generator/index.js';
-import { getOutputFormatGroups } from '../../../js/gui_components/generator/options/index.js';
+  schemaRowsToSpec as schemaRowsToSpecHelper,
+  schemaRowsToSpecWithTokens as schemaRowsToSpecWithTokensHelper,
+  validateSchemaRows as validateSchemaRowsHelper,
+} from '../../../js/gui_components/generator/runtime/generator-schema-rule-helpers.js';
+import { createUninitializedDataGeneratorPage } from '../../../js/gui_components/generator/runtime/data-generator-page-runtime.js';
+import { getOutputFormatGroups } from '../../../js/gui_components/generator/options/options-ui-schema.js';
 import { TestDataGenerator } from '../../../../core/js/data_generation/testDataGenerator.js';
+
+function schemaRowsToSpec(schemaRows) {
+  return schemaRowsToSpecHelper({ schemaRows, dataRulesToSchemaText });
+}
+
+function schemaRowsToSpecWithTokens(schemaRows, schemaTokens) {
+  return schemaRowsToSpecWithTokensHelper({ schemaRows, schemaTokens, dataRulesToSchemaText });
+}
+
+function validateSchemaRows(schemaRows) {
+  return validateSchemaRowsHelper({ schemaRows });
+}
 
 class FakeTabulator {
   constructor(element, options) {
@@ -76,9 +90,13 @@ const outputFormatGroups = getOutputFormatGroups();
 const coreAndCodeFormats = [...outputFormatGroups.core, ...outputFormatGroups.code].map((entry) => entry.type);
 const allOutputFormats = [...coreAndCodeFormats, ...outputFormatGroups.unitTest.map((entry) => entry.type)];
 
-describe('DataGeneratorPage', () => {
+describe('generator page runtime factories', () => {
   let dom;
   let alertFn;
+
+  function createMountedPage(options = {}) {
+    return createDataGeneratorPage(options);
+  }
 
   function getSchemaModeToggleButton() {
     return document.querySelector('[data-role="schema-mode-toggle"]');
@@ -174,7 +192,7 @@ describe('DataGeneratorPage', () => {
     delete global.document;
 
     try {
-      const page = new DataGeneratorPage({
+      const page = createUninitializedDataGeneratorPage({
         parentElement: null,
         faker: { word: { noun: () => 'x' } },
         RandExp: function RandExp() {},
@@ -212,7 +230,7 @@ describe('DataGeneratorPage', () => {
   });
 
   test('schema source type dropdown uses enum, literal, regex, domain, faker order', () => {
-    const page = new DataGeneratorPage({
+    createMountedPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -224,7 +242,6 @@ describe('DataGeneratorPage', () => {
       DownloadClass: FakeDownload,
       TestDataGeneratorClass: TestDataGenerator,
     });
-    page.init();
 
     const sourceTypeSelect = document.querySelector('[data-field="sourceType"]');
     const optionValues = Array.from(sourceTypeSelect.querySelectorAll('option')).map((option) => option.value);
@@ -244,7 +261,7 @@ describe('DataGeneratorPage', () => {
   });
 
   test('uses helper-only alphabetical faker command list in schema editor', () => {
-    const page = new DataGeneratorPage({
+    const page = createMountedPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -256,7 +273,6 @@ describe('DataGeneratorPage', () => {
       DownloadClass: FakeDownload,
       TestDataGeneratorClass: TestDataGenerator,
     });
-    page.init();
     page.schemaRows[0].sourceType = 'faker';
     page.renderSchemaRows();
 
@@ -275,7 +291,7 @@ describe('DataGeneratorPage', () => {
   });
 
   test('mounted shared schema definition remains the source of truth for schema state setters', () => {
-    const page = new DataGeneratorPage({
+    const page = createMountedPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       faker,
@@ -381,7 +397,7 @@ describe('DataGeneratorPage', () => {
   });
 
   test('preview generates data into tabulator grid extension', () => {
-    const page = new DataGeneratorPage({
+    const page = createMountedPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -393,7 +409,6 @@ describe('DataGeneratorPage', () => {
       DownloadClass: FakeDownload,
       TestDataGeneratorClass: TestDataGenerator,
     });
-    page.init();
 
     page.schemaRows = [
       { id: '1', name: 'Name', sourceType: 'faker', command: 'person.firstName', params: '()', value: '' },
@@ -413,7 +428,7 @@ describe('DataGeneratorPage', () => {
   });
 
   test('preview serializes object-returning domain values as JSON', () => {
-    const page = new DataGeneratorPage({
+    const page = createMountedPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -425,7 +440,6 @@ describe('DataGeneratorPage', () => {
       DownloadClass: FakeDownload,
       TestDataGeneratorClass: TestDataGenerator,
     });
-    page.init();
 
     page.schemaRows = [
       { id: '1', name: 't4', sourceType: 'domain', command: 'science.chemicalElement', params: '', value: '' },
@@ -444,7 +458,7 @@ describe('DataGeneratorPage', () => {
   });
 
   test('empty literal schema value generates blank data cell', () => {
-    const page = new DataGeneratorPage({
+    const page = createMountedPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -456,7 +470,6 @@ describe('DataGeneratorPage', () => {
       DownloadClass: FakeDownload,
       TestDataGeneratorClass: TestDataGenerator,
     });
-    page.init();
 
     page.schemaRows = [{ id: '1', name: 't', sourceType: 'literal', command: '', params: '', value: '' }];
     page.renderSchemaRows();
@@ -468,7 +481,7 @@ describe('DataGeneratorPage', () => {
   });
 
   test('literal row value entered as literal(...) generates raw literal content', () => {
-    const page = new DataGeneratorPage({
+    const page = createMountedPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -480,7 +493,6 @@ describe('DataGeneratorPage', () => {
       DownloadClass: FakeDownload,
       TestDataGeneratorClass: TestDataGenerator,
     });
-    page.init();
 
     page.schemaRows = [{ id: '1', name: 't', sourceType: 'literal', command: '', params: '', value: 'literal(abc)' }];
     page.renderSchemaRows();
@@ -492,7 +504,7 @@ describe('DataGeneratorPage', () => {
   });
 
   test('preview rows input defaults to 10 and has max 50', () => {
-    const page = new DataGeneratorPage({
+    createMountedPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -504,7 +516,6 @@ describe('DataGeneratorPage', () => {
       DownloadClass: FakeDownload,
       TestDataGeneratorClass: TestDataGenerator,
     });
-    page.init();
 
     const previewRowsInput = getPreviewRowsInput();
     expect(previewRowsInput.value).toBe('10');
@@ -512,7 +523,7 @@ describe('DataGeneratorPage', () => {
   });
 
   test('preview rows above max show validation error', () => {
-    const page = new DataGeneratorPage({
+    const page = createMountedPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -524,7 +535,6 @@ describe('DataGeneratorPage', () => {
       DownloadClass: FakeDownload,
       TestDataGeneratorClass: TestDataGenerator,
     });
-    page.init();
     page.schemaRows = [{ id: '1', name: 'Name', sourceType: 'literal', command: '', params: '', value: 'fixed' }];
     page.renderSchemaRows();
 
@@ -536,7 +546,7 @@ describe('DataGeneratorPage', () => {
   });
 
   test('output preview updates when changing output type after preview', () => {
-    const page = new DataGeneratorPage({
+    const page = createMountedPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -548,7 +558,6 @@ describe('DataGeneratorPage', () => {
       DownloadClass: FakeDownload,
       TestDataGeneratorClass: TestDataGenerator,
     });
-    page.init();
 
     page.schemaRows = [{ id: '1', name: 'Name', sourceType: 'literal', command: '', params: '', value: 'fixed' }];
     page.renderSchemaRows();
@@ -566,7 +575,7 @@ describe('DataGeneratorPage', () => {
   });
 
   test('generate downloads file using selected output format', async () => {
-    const page = new DataGeneratorPage({
+    const page = createMountedPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -578,7 +587,6 @@ describe('DataGeneratorPage', () => {
       DownloadClass: FakeDownload,
       TestDataGeneratorClass: TestDataGenerator,
     });
-    page.init();
 
     page.schemaRows = [{ id: '1', name: 'Name', sourceType: 'literal', command: '', params: '', value: 'fixed' }];
     page.renderSchemaRows();
@@ -596,7 +604,7 @@ describe('DataGeneratorPage', () => {
   });
 
   test('explicit row count getters prefer component APIs before page-global DOM ids', () => {
-    const page = new DataGeneratorPage({
+    const page = createMountedPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -639,7 +647,7 @@ describe('DataGeneratorPage', () => {
   });
 
   test('explicit row count getters return invalid results when components are unavailable', () => {
-    const page = new DataGeneratorPage({
+    const page = createUninitializedDataGeneratorPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -655,17 +663,17 @@ describe('DataGeneratorPage', () => {
     expect(page.getPreviewRowCount()).toEqual({
       value: 0,
       valid: false,
-      errors: ['previewRowsCount must be a number greater than or equal to 0.'],
+      errors: ['Preview row count must be a number greater than or equal to 0.'],
     });
     expect(page.getGenerateRowCount()).toEqual({
       value: 0,
       valid: false,
-      errors: ['generateRowsCount must be a number greater than or equal to 0.'],
+      errors: ['Generate row count must be a number greater than or equal to 0.'],
     });
   });
 
   test('getSelectedOutputType falls back to controls state and then csv by default', () => {
-    const page = new DataGeneratorPage({
+    const page = createUninitializedDataGeneratorPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -687,7 +695,7 @@ describe('DataGeneratorPage', () => {
   });
 
   test('syncGeneratorControlsFormatStateIfChanged only resyncs controls when format changes', () => {
-    const page = new DataGeneratorPage({
+    const page = createUninitializedDataGeneratorPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -712,7 +720,7 @@ describe('DataGeneratorPage', () => {
   });
 
   test('pairwise button visibility updates through GeneratorControls state', () => {
-    const page = new DataGeneratorPage({
+    const page = createMountedPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -724,7 +732,6 @@ describe('DataGeneratorPage', () => {
       DownloadClass: FakeDownload,
       TestDataGeneratorClass: TestDataGenerator,
     });
-    page.init();
 
     page.schemaRows = [
       { id: '1', name: 'Browser', sourceType: 'enum', command: '', params: '', value: 'enum(chrome,firefox,safari)' },
@@ -743,7 +750,7 @@ describe('DataGeneratorPage', () => {
   });
 
   test('updateAllPairsButtonVisibility uses the explicit GeneratorControls pairwise API', () => {
-    const page = new DataGeneratorPage({
+    const page = createMountedPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -774,7 +781,7 @@ describe('DataGeneratorPage', () => {
   });
 
   test('updateAllPairsButtonVisibility delegates pairwise calculation to the schema generation bridge', () => {
-    const page = new DataGeneratorPage({
+    const page = createUninitializedDataGeneratorPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -790,18 +797,25 @@ describe('DataGeneratorPage', () => {
     page.generatorControls = {
       setPairwiseVisible: jest.fn(),
     };
+    page.generatorSchemaState = {
+      getCurrentSchemaState: jest.fn(() => ({
+        rows: [{ name: 'Browser', sourceType: 'enum', value: 'enum(chrome,firefox,safari)' }],
+        errors: [],
+      })),
+    };
     page.generatorSchemaGeneration = {
-      getPairwiseVisibility: jest.fn(() => false),
+      getPairwiseVisibility: jest.fn(({ getCurrentSchemaState }) => getCurrentSchemaState().rows.length > 1),
     };
 
-    page.updateAllPairsButtonVisibility();
+    expect(page.updateAllPairsButtonVisibility()).toBe(false);
 
     expect(page.generatorSchemaGeneration.getPairwiseVisibility).toHaveBeenCalledTimes(1);
+    expect(page.generatorSchemaState.getCurrentSchemaState).toHaveBeenCalledTimes(1);
     expect(page.generatorControls.setPairwiseVisible).toHaveBeenCalledWith(false);
   });
 
   test('page workflow methods delegate through the runtime actions bridge', async () => {
-    const page = new DataGeneratorPage({
+    const page = createUninitializedDataGeneratorPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -841,7 +855,7 @@ describe('DataGeneratorPage', () => {
   });
 
   test('remaining page facade methods delegate to focused state/view bridges', () => {
-    const page = new DataGeneratorPage({
+    const page = createUninitializedDataGeneratorPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -894,7 +908,7 @@ describe('DataGeneratorPage', () => {
   });
 
   test('renders options panel and applies options for selected type', () => {
-    const page = new DataGeneratorPage({
+    createMountedPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -906,7 +920,6 @@ describe('DataGeneratorPage', () => {
       DownloadClass: FakeDownload,
       TestDataGeneratorClass: TestDataGenerator,
     });
-    page.init();
 
     expect(document.querySelector('[data-role="generator-options-panel"] .delimited-options')).not.toBeNull();
     expect(FakeExporter.lastInstance.getOptionsForType).toHaveBeenCalledWith('csv');
@@ -937,7 +950,7 @@ describe('DataGeneratorPage', () => {
   });
 
   test('generate falls back to sync export when async export utility is unavailable', async () => {
-    const page = new DataGeneratorPage({
+    const page = createMountedPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -949,7 +962,6 @@ describe('DataGeneratorPage', () => {
       DownloadClass: FakeDownload,
       TestDataGeneratorClass: TestDataGenerator,
     });
-    page.init();
 
     page.schemaRows = [{ id: '1', name: 'Name', sourceType: 'literal', command: '', params: '', value: 'fixed' }];
     page.renderSchemaRows();
@@ -968,7 +980,7 @@ describe('DataGeneratorPage', () => {
   });
 
   test('shows command selector and params for faker/domain and value for regex/literal', () => {
-    const page = new DataGeneratorPage({
+    const page = createMountedPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -980,7 +992,6 @@ describe('DataGeneratorPage', () => {
       DownloadClass: FakeDownload,
       TestDataGeneratorClass: TestDataGenerator,
     });
-    page.init();
 
     page.schemaRows = [{ id: '1', name: 'A', sourceType: 'regex', command: 'word.noun', params: '()', value: '[A-Z]' }];
     page.renderSchemaRows();
@@ -1020,7 +1031,7 @@ describe('DataGeneratorPage', () => {
   });
 
   test('hides non-scalar domain commands for new domain rows', () => {
-    const page = new DataGeneratorPage({
+    const page = createMountedPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -1032,7 +1043,6 @@ describe('DataGeneratorPage', () => {
       DownloadClass: FakeDownload,
       TestDataGeneratorClass: TestDataGenerator,
     });
-    page.init();
 
     page.schemaRows = [{ id: '1', name: 'A', sourceType: 'domain', command: '', params: '', value: '' }];
     page.renderSchemaRows();
@@ -1046,7 +1056,7 @@ describe('DataGeneratorPage', () => {
   });
 
   test('preserves selected non-scalar domain command for existing parsed row', () => {
-    const page = new DataGeneratorPage({
+    const page = createMountedPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -1058,7 +1068,6 @@ describe('DataGeneratorPage', () => {
       DownloadClass: FakeDownload,
       TestDataGeneratorClass: TestDataGenerator,
     });
-    page.init();
 
     page.schemaRows = [
       { id: '1', name: 'A', sourceType: 'domain', command: 'science.chemicalElement', params: '', value: '' },
@@ -1073,7 +1082,7 @@ describe('DataGeneratorPage', () => {
   });
 
   test('shows schema help link for faker, regex and literal sources', () => {
-    const page = new DataGeneratorPage({
+    const page = createMountedPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -1085,7 +1094,6 @@ describe('DataGeneratorPage', () => {
       DownloadClass: FakeDownload,
       TestDataGeneratorClass: TestDataGenerator,
     });
-    page.init();
 
     page.schemaRows = [{ id: '1', name: 'Plane', sourceType: 'faker', command: '', params: '', value: '' }];
     page.renderSchemaRows();
@@ -1128,7 +1136,7 @@ describe('DataGeneratorPage', () => {
   });
 
   test('shows domain help with command metadata when domain command selected', () => {
-    const page = new DataGeneratorPage({
+    const page = createMountedPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -1140,7 +1148,6 @@ describe('DataGeneratorPage', () => {
       DownloadClass: FakeDownload,
       TestDataGeneratorClass: TestDataGenerator,
     });
-    page.init();
 
     page.schemaRows = [
       { id: '1', name: 'Age', sourceType: 'domain', command: 'number.int', params: '(1,10)', value: '' },
@@ -1154,7 +1161,7 @@ describe('DataGeneratorPage', () => {
   });
 
   test('shows domain index help link when domain source has no command selected', () => {
-    const page = new DataGeneratorPage({
+    const page = createMountedPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -1166,7 +1173,6 @@ describe('DataGeneratorPage', () => {
       DownloadClass: FakeDownload,
       TestDataGeneratorClass: TestDataGenerator,
     });
-    page.init();
 
     page.schemaRows = [{ id: '1', name: 'Age', sourceType: 'domain', command: '', params: '', value: '' }];
     page.renderSchemaRows();
@@ -1177,7 +1183,7 @@ describe('DataGeneratorPage', () => {
   });
 
   test('shows command metadata summary and params in faker help tooltip', () => {
-    const page = new DataGeneratorPage({
+    const page = createMountedPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -1189,7 +1195,6 @@ describe('DataGeneratorPage', () => {
       DownloadClass: FakeDownload,
       TestDataGeneratorClass: TestDataGenerator,
     });
-    page.init();
 
     page.schemaRows = [{ id: '1', name: 'X', sourceType: 'faker', command: 'number.int', params: '', value: '' }];
     page.renderSchemaRows();
@@ -1209,7 +1214,7 @@ describe('DataGeneratorPage', () => {
   test('re-renders schema rows without depending on window.updateHelpHints', () => {
     window.updateHelpHints = jest.fn();
 
-    const page = new DataGeneratorPage({
+    const page = createMountedPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -1221,7 +1226,6 @@ describe('DataGeneratorPage', () => {
       DownloadClass: FakeDownload,
       TestDataGeneratorClass: TestDataGenerator,
     });
-    page.init();
 
     window.updateHelpHints.mockClear();
     page.renderSchemaRows();
@@ -1237,7 +1241,7 @@ describe('DataGeneratorPage', () => {
       }
     }
 
-    const page = new DataGeneratorPage({
+    createMountedPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -1249,7 +1253,6 @@ describe('DataGeneratorPage', () => {
       DownloadClass: FakeDownload,
       TestDataGeneratorClass: TestDataGenerator,
     });
-    page.init();
 
     const outputSelect = getOutputFormatSelect();
     const children = Array.from(outputSelect.children);
@@ -1296,7 +1299,7 @@ describe('DataGeneratorPage', () => {
       }
     }
 
-    const page = new DataGeneratorPage({
+    createMountedPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -1308,7 +1311,6 @@ describe('DataGeneratorPage', () => {
       DownloadClass: FakeDownload,
       TestDataGeneratorClass: TestDataGenerator,
     });
-    page.init();
 
     const outputSelect = getOutputFormatSelect();
     const optionValues = Array.from(outputSelect.querySelectorAll('option')).map((option) => option.value);
@@ -1350,7 +1352,7 @@ describe('DataGeneratorPage', () => {
   });
 
   test('default validation errors surface inline and do not throw', () => {
-    const page = new DataGeneratorPage({
+    const page = createMountedPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       faker: { word: { noun: () => 'x' } },
@@ -1361,7 +1363,6 @@ describe('DataGeneratorPage', () => {
       DownloadClass: FakeDownload,
       TestDataGeneratorClass: TestDataGenerator,
     });
-    page.init();
     page.schemaRows = [{ id: '1', name: '', sourceType: 'regex', command: '', params: '', value: '' }];
     page.renderSchemaRows();
 
@@ -1370,7 +1371,7 @@ describe('DataGeneratorPage', () => {
   });
 
   test('toggles between schema controls and text editing with round trip', () => {
-    const page = new DataGeneratorPage({
+    const page = createMountedPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -1382,7 +1383,6 @@ describe('DataGeneratorPage', () => {
       DownloadClass: FakeDownload,
       TestDataGeneratorClass: TestDataGenerator,
     });
-    page.init();
     page.schemaRows = [{ id: '1', name: 'Name', sourceType: 'faker', command: 'word.noun', params: '()', value: '' }];
     page.renderSchemaRows();
 
@@ -1408,7 +1408,7 @@ describe('DataGeneratorPage', () => {
   });
 
   test('text to schema to text preserves literal type as literal(...)', () => {
-    const page = new DataGeneratorPage({
+    createMountedPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -1420,7 +1420,6 @@ describe('DataGeneratorPage', () => {
       DownloadClass: FakeDownload,
       TestDataGeneratorClass: TestDataGenerator,
     });
-    page.init();
 
     const toggle = getSchemaModeToggleButton();
     toggle.click();
@@ -1441,7 +1440,7 @@ describe('DataGeneratorPage', () => {
   });
 
   test('row mode to text mode preserves in-progress faker row with empty command', () => {
-    const page = new DataGeneratorPage({
+    const page = createMountedPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -1453,7 +1452,6 @@ describe('DataGeneratorPage', () => {
       DownloadClass: FakeDownload,
       TestDataGeneratorClass: TestDataGenerator,
     });
-    page.init();
 
     page.schemaRows = [{ id: '1', name: 'User Name', sourceType: 'faker', command: '', params: '', value: '' }];
     page.renderSchemaRows();
@@ -1463,7 +1461,7 @@ describe('DataGeneratorPage', () => {
   });
 
   test('row action buttons work immediately after switching from text mode to schema mode', () => {
-    const page = new DataGeneratorPage({
+    const page = createMountedPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -1475,7 +1473,6 @@ describe('DataGeneratorPage', () => {
       DownloadClass: FakeDownload,
       TestDataGeneratorClass: TestDataGenerator,
     });
-    page.init();
 
     const toggle = getSchemaModeToggleButton();
     toggle.click();
@@ -1490,7 +1487,7 @@ describe('DataGeneratorPage', () => {
   });
 
   test('semantic validation rerender preserves params caret position while editing', () => {
-    const page = new DataGeneratorPage({
+    const page = createMountedPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -1502,7 +1499,6 @@ describe('DataGeneratorPage', () => {
       DownloadClass: FakeDownload,
       TestDataGeneratorClass: TestDataGenerator,
     });
-    page.init();
 
     page.schemaRows = [
       { id: '1', name: 'Name', sourceType: 'domain', command: 'person.fullName', params: '(10)', value: '' },
@@ -1526,7 +1522,7 @@ describe('DataGeneratorPage', () => {
     const hideAll = jest.fn();
     window.tippy = { hideAll };
 
-    const page = new DataGeneratorPage({
+    createMountedPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -1538,7 +1534,6 @@ describe('DataGeneratorPage', () => {
       DownloadClass: FakeDownload,
       TestDataGeneratorClass: TestDataGenerator,
     });
-    page.init();
 
     const hideInstance = jest.fn();
     getSchemaModeHelpIcon()._tippy = { hide: hideInstance };
@@ -1549,7 +1544,7 @@ describe('DataGeneratorPage', () => {
   });
 
   test('schema mode help shows docs link only for Edit as Text and keeps sample button at end', () => {
-    const page = new DataGeneratorPage({
+    createMountedPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -1561,7 +1556,6 @@ describe('DataGeneratorPage', () => {
       DownloadClass: FakeDownload,
       TestDataGeneratorClass: TestDataGenerator,
     });
-    page.init();
 
     const helpIcon = getSchemaModeHelpIcon();
     const editAsTextHtml = helpIcon.getAttribute('data-help-text');
@@ -1575,7 +1569,7 @@ describe('DataGeneratorPage', () => {
   });
 
   test('text mode preserves comments while schema rows exclude them', () => {
-    const page = new DataGeneratorPage({
+    const page = createMountedPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -1587,7 +1581,6 @@ describe('DataGeneratorPage', () => {
       DownloadClass: FakeDownload,
       TestDataGeneratorClass: TestDataGenerator,
     });
-    page.init();
 
     const toggle = getSchemaModeToggleButton();
     toggle.click();
@@ -1605,7 +1598,7 @@ describe('DataGeneratorPage', () => {
   });
 
   test('text mode round-trip preserves blank lines exactly', () => {
-    const page = new DataGeneratorPage({
+    createMountedPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -1617,7 +1610,6 @@ describe('DataGeneratorPage', () => {
       DownloadClass: FakeDownload,
       TestDataGeneratorClass: TestDataGenerator,
     });
-    page.init();
 
     const originalText = '# note\n\nPriority\nenum(high,medium,low)\n\n\nStatus\nenum(active,inactive,pending)';
     const toggle = getSchemaModeToggleButton();
@@ -1632,7 +1624,7 @@ describe('DataGeneratorPage', () => {
   });
 
   test('text mode preserves previous typed method rows when command text becomes invalid', () => {
-    const page = new DataGeneratorPage({
+    const page = createMountedPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -1644,7 +1636,6 @@ describe('DataGeneratorPage', () => {
       DownloadClass: FakeDownload,
       TestDataGeneratorClass: TestDataGenerator,
     });
-    page.init();
 
     page.schemaRows = [
       { id: '1', name: 'Name', sourceType: 'domain', command: 'person.fullName', params: '', value: '' },
@@ -1669,7 +1660,7 @@ describe('DataGeneratorPage', () => {
   });
 
   test('text mode accepts hash-prefixed rule text after a column name', () => {
-    const page = new DataGeneratorPage({
+    const page = createMountedPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -1681,7 +1672,6 @@ describe('DataGeneratorPage', () => {
       DownloadClass: FakeDownload,
       TestDataGeneratorClass: TestDataGenerator,
     });
-    page.init();
 
     const toggle = getSchemaModeToggleButton();
     toggle.click();
@@ -1697,7 +1687,7 @@ describe('DataGeneratorPage', () => {
   });
 
   test('maps science.chemicalElement.name to domain command without treating trailing name as params', () => {
-    const page = new DataGeneratorPage({
+    const page = createMountedPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -1709,7 +1699,6 @@ describe('DataGeneratorPage', () => {
       DownloadClass: FakeDownload,
       TestDataGeneratorClass: TestDataGenerator,
     });
-    page.init();
 
     const parsed = page.schemaDefinition.parseTextToRows('Element\nscience.chemicalElement.name');
     expect(parsed.errors).toEqual([]);
@@ -1720,7 +1709,7 @@ describe('DataGeneratorPage', () => {
   });
 
   test('shared schema definition parser can be used directly when mounted on the page', () => {
-    const page = new DataGeneratorPage({
+    const page = createMountedPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -1750,7 +1739,7 @@ describe('DataGeneratorPage', () => {
   });
 
   test('adding schema rows does not discard existing parsed comments', () => {
-    const page = new DataGeneratorPage({
+    const page = createMountedPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -1762,7 +1751,6 @@ describe('DataGeneratorPage', () => {
       DownloadClass: FakeDownload,
       TestDataGeneratorClass: TestDataGenerator,
     });
-    page.init();
 
     let toggle = getSchemaModeToggleButton();
     toggle.click();
@@ -1785,7 +1773,7 @@ describe('DataGeneratorPage', () => {
   });
 
   test('adding schema rows preserves whitespace-only blank lines in parsed comment blocks', () => {
-    const page = new DataGeneratorPage({
+    const page = createMountedPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -1797,7 +1785,6 @@ describe('DataGeneratorPage', () => {
       DownloadClass: FakeDownload,
       TestDataGeneratorClass: TestDataGenerator,
     });
-    page.init();
 
     let toggle = getSchemaModeToggleButton();
     toggle.click();
@@ -1821,7 +1808,7 @@ describe('DataGeneratorPage', () => {
   });
 
   test('reordering schema rows keeps blank line before moved response-time row', () => {
-    const page = new DataGeneratorPage({
+    const page = createMountedPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -1833,7 +1820,6 @@ describe('DataGeneratorPage', () => {
       DownloadClass: FakeDownload,
       TestDataGeneratorClass: TestDataGenerator,
     });
-    page.init();
 
     const toggle = getSchemaModeToggleButton();
     toggle.click();
@@ -1872,7 +1858,7 @@ Authorization Token
   });
 
   test('edit as text shows empty textarea for untouched blank schema', () => {
-    const page = new DataGeneratorPage({
+    createMountedPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -1884,7 +1870,6 @@ Authorization Token
       DownloadClass: FakeDownload,
       TestDataGeneratorClass: TestDataGenerator,
     });
-    page.init();
 
     const toggle = getSchemaModeToggleButton();
     toggle.click();
@@ -1894,7 +1879,7 @@ Authorization Token
   });
 
   test('can generate directly from text mode without toggling back to schema mode', async () => {
-    const page = new DataGeneratorPage({
+    const page = createMountedPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -1906,7 +1891,6 @@ Authorization Token
       DownloadClass: FakeDownload,
       TestDataGeneratorClass: TestDataGenerator,
     });
-    page.init();
 
     const toggle = getSchemaModeToggleButton();
     toggle.click();
@@ -1927,7 +1911,7 @@ Authorization Token
   test('invalid text schema shows inline missing-definition error for 5 seconds when toggling to schema mode', () => {
     jest.useFakeTimers();
     try {
-      const page = new DataGeneratorPage({
+      createMountedPage({
         parentElement: document.getElementById('app'),
         documentObj: document,
         alertFn,
@@ -1939,7 +1923,6 @@ Authorization Token
         DownloadClass: FakeDownload,
         TestDataGeneratorClass: TestDataGenerator,
       });
-      page.init();
 
       const toggle = getSchemaModeToggleButton();
       toggle.click();
@@ -1968,7 +1951,7 @@ Authorization Token
   });
 
   test('schema mode toggle routes schema error and clear callbacks through the schema runtime bridge', () => {
-    const page = new DataGeneratorPage({
+    const page = createMountedPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -1980,7 +1963,6 @@ Authorization Token
       DownloadClass: FakeDownload,
       TestDataGeneratorClass: TestDataGenerator,
     });
-    page.init();
 
     const showSchemaErrorStatus = jest.fn();
     const clearSchemaErrorStatus = jest.fn();
@@ -2009,7 +1991,7 @@ Authorization Token
   });
 
   test('empty text mode schema keeps zero rows and shows add-row validation', async () => {
-    const page = new DataGeneratorPage({
+    const page = createMountedPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
@@ -2021,7 +2003,6 @@ Authorization Token
       DownloadClass: FakeDownload,
       TestDataGeneratorClass: TestDataGenerator,
     });
-    page.init();
 
     const toggle = getSchemaModeToggleButton();
     toggle.click();

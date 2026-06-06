@@ -1,5 +1,5 @@
 import { jest } from '@jest/globals';
-import { applyGeneratorFormatOptions } from '../../../js/gui_components/generator/options/index.js';
+import { applyGeneratorFormatOptions } from '../../../js/gui_components/generator/options/apply-generator-format-options.js';
 
 describe('applyGeneratorFormatOptions', () => {
   test('sanitizes exporter options and runs post-apply callbacks', () => {

@@ -310,7 +310,7 @@ Current status:
 - Generator runtime adoption also moved the shared text-mode syncing, method-picker command selection, semantic-validation caret preservation, and pairwise-button visibility behavior onto the shared component path.
 - `SharedSchemaDefinition` no longer emits fixed child IDs by default. Shared consumers now bind through root-scoped schema hooks, while app/generator hosts can still opt into explicit child IDs only where a documented compatibility contract truly requires them.
 - Storybook now documents the shared component directly with empty, sample, validation, text-mode, command-picker, and pairwise-capable enum stories.
-- The old generator-specific schema wrapper layer is gone. Generator-specific schema behavior now lives only in explicit generator-owned support modules such as `generator/help/*` and `generator/schema-support/*`, rather than a parallel generator-owned rendering/event surface underneath the shared component.
+- The old generator-specific schema wrapper layer is gone. Generator-specific schema behavior now lives only in explicit generator-owned support modules such as `generator/schema-support/*` plus generator-configured shared helpers, rather than a parallel generator-owned rendering/event surface underneath the shared component.
 
 ### Phase 4: Generator Page Composition
 
@@ -329,7 +329,7 @@ Current status:
 
 - `GeneratorControls` now lives under `generator/controls/` with a controller, view, and create-component factory.
 - `GeneratorPage` now lives under `generator/page/` with a controller, view, and create-component factory that composes shared schema definition, generator controls, generator preview, and the schema timed-status surface.
-- `DataGeneratorPage` now mounts `GeneratorPage` instead of wiring generator feature roots directly through the old host coordinator path.
+- The generator runtime factory now mounts `GeneratorPage` instead of wiring generator feature roots directly through the old host coordinator path.
 - `GeneratorControls` is now mounted through `GeneratorPage`, and that feature owns the generate row-count control, output-format select, generate/pairwise buttons, status surface, and shared `FormatOptionsPanel`.
 - `GeneratorPreview` now lives under `generator/preview/` with a controller, view, and create-component factory.
 - `GeneratorPreview` is now mounted through `GeneratorPage`, and that feature owns the preview row-count control, preview trigger, output preview textarea, and preview-grid host while preserving the existing DOM IDs used by browser tests.
@@ -371,7 +371,7 @@ Current status:
 - `ImportExportToolbar`, `FormatSelector`, and `TextPreviewEditor` now live under their own app feature folders and are mounted through `ImportExportWorkspace` rather than through direct page bootstrap wiring.
 - The app bootstrap now mounts the import/export area through `createImportExportWorkspaceComponent(...)`, and the `tabbedTextArea` preview region now lives inside that feature boundary instead of as a separate sibling shell.
 - The extracted workspace reuses the shared `FormatOptionsPanel`, and the current import/export behavior now runs through the workspace controller/services path instead of the old import/export controls path underneath.
-- File input, drag/drop, file reading, download, and clipboard behavior now flow through explicit Phase 6 app-side adapters/services under `app/import-export-adapters/`, so the legacy import/export control layer no longer talks directly to `FileReader`, `DragDropControl`, or download/copy browser APIs.
+- File input, drag/drop, file reading, download, and clipboard behavior now flow through explicit Phase 6 app-side adapters/services under `app/import-export-adapters/`, so the legacy import/export control layer no longer talks directly to `FileReader`, the drop-zone adapter surface, or download/copy browser APIs.
 - Storybook now documents `ImportExportWorkspace`, `ImportExportToolbar`, `FormatSelector`, and `TextPreviewEditor` directly with small component stories instead of relying only on the older broader app/export harnesses.
 - The export-format preview stories now mount through `ImportExportWorkspace` via a dedicated `export-preview-story-harness.js` helper rather than the older split `ImportExportControls + TabbedTextControl` story path or the broader omnibus `storybook-harnesses.js` module.
 - Existing app browser flows for format switching, extension-label updates, preview/edit mode, and export-format rendering remain covered after the Phase 6 extraction.
@@ -437,7 +437,7 @@ Use this section as the follow-on backlog rather than adding a Phase 9. The goal
 
 Current status:
 
-- The empty generator controller wrapper has been removed. `packages/core-ui/js/gui_components/generator/index.js` now exports `DataGeneratorPage` and related schema helpers directly from `generator/runtime/data-generator-page-runtime.js`.
+- The empty generator controller wrapper and the extra top-level generator feature pass-through barrel are both gone. Standalone bootstrap, focused harnesses, and generator runtime coverage now import `createDataGeneratorPage(...)` directly from `generator/runtime/data-generator-page-runtime.js`, while low-level unmounted runtime coverage uses a dedicated runtime-module helper instead of treating a `DataGeneratorPage` class as part of the public feature surface.
 - The unused `DataGeneratorPageRuntime` alias was removed after confirming there were no internal consumers.
 - The remaining app-side main-grid compatibility facade has been removed. The app runtime and app page Storybook story now both mount `createDataGridComponent(...)` directly while injecting the supported Tabulator services explicitly.
 - The hidden AG Grid runtime selector path has been removed, along with its AG Grid runtime/test files, after confirming there was no real product-facing AG Grid entry point beyond the old compatibility override path.
@@ -524,6 +524,38 @@ Current status:
 - [x] Public API names reflect the current component/page model.
 - [x] Reusable components avoid fixed internal IDs except where there is an intentional page-level or legacy contract.
 - [x] `pnpm run verify:local` passes after each completed hardening item or coherent item group.
+
+## Storybook-Driven Visible Component Backlog
+
+Use this backlog when the next migration step should be chosen from the reviewer-facing Storybook surface rather than from internal helper seams alone.
+
+- [x] Add dedicated Storybook coverage for the method-picker dialog in `shared/test-data/ui/method-picker-modal.js`, including:
+  - confirmed selection flow
+  - cancel flow
+  - filtered or tab-scoped selection flow
+- [x] Add dedicated Storybook coverage for `PopulationModeSelector` instead of only showing it inside `DataPopulationPanel`.
+- [x] Add dedicated Storybook coverage for `PopulationActions` instead of only showing it inside `DataPopulationPanel`.
+- [ ] Split the app import/export drop-zone surface into a reviewer-facing visual component or explicit Storybook-visible boundary instead of leaving drag/drop behavior visible only through the full workspace story.
+- [ ] Add standalone Storybook coverage for the app page shell structure so reviewers can inspect shell composition separately from full app bootstrap.
+- [ ] Add standalone Storybook coverage for the generator page shell structure so reviewers can inspect shell composition separately from full generator bootstrap.
+- [ ] Re-audit Storybook after each new visible split and add follow-up unchecked items when a feature still renders meaningful visible child UI only through a broader page story.
+
+Current status:
+
+- The command picker dialog now has dedicated reviewer-facing Storybook coverage in `apps/web/src/stories/method-picker-dialog.stories.js`, with confirmed, cancelled, and filtered-selection flows.
+- `PopulationModeSelector` now has dedicated reviewer-facing Storybook coverage in `apps/web/src/stories/population-mode-selector.stories.js`, with default, emitted-change, and alternate-initial-mode states.
+- `PopulationActions` now has dedicated reviewer-facing Storybook coverage in `apps/web/src/stories/population-actions.stories.js`, with default, pairwise-visible, and busy-state examples.
+- The next strongest Storybook-driven gap is now the app import/export drop-zone surface, which is still only visible through the broader workspace story instead of a reviewer-facing visual component boundary.
+- App and generator page shell composition are already exercised indirectly in page stories and focused tests, but they are not yet documented as standalone reviewer-facing shell stories.
+
+## Generator Runtime Simplification Follow-On
+
+The generator runtime has become more indirect than the MVC-style component architecture we want to end up with. Use [docs/generator-runtime-simplification-map.md](D:/github/grid-table-editor/docs/generator-runtime-simplification-map.md) as the concrete collapse plan for the next generator-side cleanup pass.
+
+Current status:
+
+- The generator runtime is functionally decomposed, but still too layered.
+- The strongest simplification targets are the runtime boot stack, the page-config assembly chain, and the remaining bridge/facade/dependencies naming clusters.
 
 ## Tracking Across Sessions
 

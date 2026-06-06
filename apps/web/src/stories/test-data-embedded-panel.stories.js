@@ -11,17 +11,15 @@ import { createAppSchemaDefinitionProps } from '../../../../packages/core-ui/js/
 import {
   createSchemaTextSyncState,
   initializeSchemaErrorDisplay,
-} from '../../../../packages/core-ui/js/gui_components/app/test-data-grid/schema/index.js';
+} from '../../../../packages/core-ui/js/gui_components/app/test-data-grid/schema/test-data-grid-schema-text-sync.js';
 import {
   identifyFakerCommands,
   getMethodPickerOptions,
   getVisibleDomainCommandOptions,
   FAKER_COMMANDS,
 } from '../../../../packages/core-ui/js/gui_components/app/test-data-grid/schema/test-data-command-catalog.js';
-import {
-  mapDataRuleToSchemaRow,
-  validateSchemaRows as validateSharedSchemaRows,
-} from '../../../../packages/core-ui/js/gui_components/shared/test-data/schema/index.js';
+import { validateSchemaRows as validateSharedSchemaRows } from '../../../../packages/core-ui/js/gui_components/shared/test-data/schema/schema-editor-core.js';
+import { mapDataRuleToSchemaRow } from '../../../../packages/core-ui/js/gui_components/shared/test-data/schema/schema-row-mapper.js';
 
 function createBlankSchemaRow(id, overrides = {}) {
   return {

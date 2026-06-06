@@ -7,7 +7,7 @@ class MethodPickerDialogComponent {
     this.searchInput = this.overlay.locator('[data-role="method-picker-search"]');
     this.tabButtons = this.overlay.locator('[data-role="method-picker-tab"]');
     this.commandLabels = this.overlay.locator('[data-role="method-picker-command"]');
-    this.applyButton = this.overlay.locator('[data-action="apply"]');
+    this.applyButton = this.overlay.locator('[data-role="method-picker-apply-button"]');
   }
 
   async expectOpen() {

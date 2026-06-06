@@ -12,13 +12,11 @@ import {
   getMethodPickerOptions,
   getFakerCommands,
   getDomainCommands,
-} from '../../../../packages/core-ui/js/gui_components/app/test-data-grid/schema/index.js';
-import {
-  TEST_DATA_GRID_SAMPLE_SCHEMA_TEXT,
-  mapDataRuleToSchemaRow,
-  validateSchemaRows as validateSharedSchemaRows,
-} from '../../../../packages/core-ui/js/gui_components/shared/test-data/schema/index.js';
-import { getVisibleDomainCommands as getVisibleDomainCommandsForStory } from '../../../../packages/core-ui/js/gui_components/shared/test-data/help/index.js';
+} from '../../../../packages/core-ui/js/gui_components/app/test-data-grid/schema/test-data-command-catalog.js';
+import { validateSchemaRows as validateSharedSchemaRows } from '../../../../packages/core-ui/js/gui_components/shared/test-data/schema/schema-editor-core.js';
+import { mapDataRuleToSchemaRow } from '../../../../packages/core-ui/js/gui_components/shared/test-data/schema/schema-row-mapper.js';
+import { TEST_DATA_GRID_SAMPLE_SCHEMA_TEXT } from '../../../../packages/core-ui/js/gui_components/shared/test-data/schema/schema-examples.js';
+import { getVisibleDomainCommands as getVisibleDomainCommandsForStory } from '../../../../packages/core-ui/js/gui_components/shared/test-data/help/domain-command-provider.js';
 
 let storyInstanceCounter = 0;
 

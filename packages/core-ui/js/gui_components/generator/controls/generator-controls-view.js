@@ -1,5 +1,5 @@
 import { resolveDocumentObj, resolveWindowObj } from '../../shared/dom/default-objects.js';
-import { renderIconHtml } from '../../shared/primitives/icon/index.js';
+import { renderIconHtml } from '../../shared/primitives/icon/icon-core.js';
 
 class GeneratorControlsView {
   constructor({ root, controller, documentObj, services = {}, ids = {} } = {}) {
@@ -63,6 +63,7 @@ class GeneratorControlsView {
           <button
             type="button"
             class="helpicon"
+            data-help-role="help-icon"
             data-help="shared-generator-generate-data-help"
             aria-label="Show file generation help"
           ></button>
@@ -72,6 +73,7 @@ class GeneratorControlsView {
           <button
             type="button"
             class="helpicon"
+            data-help-role="help-icon"
             data-help="shared-generator-pairwise-help"
             aria-label="Show pairwise generation help"
           ></button>

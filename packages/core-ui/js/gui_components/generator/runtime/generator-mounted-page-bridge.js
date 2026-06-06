@@ -1,21 +1,12 @@
 function createGeneratorMountedPageBridge() {
   return {
-    connectMountedPage({ generatorPage, ExporterClass, getPreviewGrid } = {}) {
-      const mountedFeatures = {
+    connectMountedPage({ generatorPage } = {}) {
+      return {
         schemaErrorDisplay: generatorPage?.getSchemaErrorDisplay?.(),
         generatorControls: generatorPage?.getGeneratorControls?.(),
         generatorPreview: generatorPage?.getGeneratorPreview?.(),
         schemaDefinition: generatorPage?.getSchemaDefinition?.(),
       };
-
-      mountedFeatures.exporter = new ExporterClass(getPreviewGrid?.() || null);
-
-      return mountedFeatures;
-    },
-
-    initializeMountedPage({ renderSchemaRows, syncInitialFormatState } = {}) {
-      renderSchemaRows?.();
-      syncInitialFormatState?.();
     },
   };
 }

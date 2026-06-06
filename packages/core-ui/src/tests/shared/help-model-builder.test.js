@@ -2,8 +2,13 @@ import {
   buildSchemaHelpModel,
   renderSchemaHelpHtml,
 } from '../../../js/gui_components/shared/test-data/help/help-model-builder.js';
+import { getVisibleDomainCommands } from '../../../js/gui_components/shared/test-data/help/domain-command-provider.js';
 
 describe('help-model-builder', () => {
+  test('domain-command provider exports the visible-command helper directly', () => {
+    expect(typeof getVisibleDomainCommands).toBe('function');
+  });
+
   test('builds faker command help from metadata', () => {
     const model = buildSchemaHelpModel('faker', 'person.firstName');
 

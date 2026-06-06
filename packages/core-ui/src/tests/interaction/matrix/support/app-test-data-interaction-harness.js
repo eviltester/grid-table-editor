@@ -1,7 +1,7 @@
 import { fireEvent, within, waitFor } from '@testing-library/dom';
 import RandExp from 'randexp';
 import { Exporter } from '@anywaydata/core/grid/exporter.js';
-import { createTestDataGenerationPanelManager } from '../../../../../js/gui_components/app/test-data-grid/index.js';
+import { createTestDataGenerationPanelManager } from '../../../../../js/gui_components/app/test-data-grid/controller/test-data-grid-controller.js';
 import { installDomGlobals, cleanupDomGlobals } from '../../support/testing-library-dom-setup.js';
 import { applyDeterministicScenarioSeed, withDeterministicScenarioSeed } from './deterministic-scenario-seed.js';
 import { assertDataTableHasNoErrorIndicators, assertNoErrorIndicators } from '../../support/generated-value-quality.js';

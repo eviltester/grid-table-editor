@@ -1,9 +1,10 @@
-import { applySanitizedUiOptionsToTargets } from '../../generator/options/index.js';
-import { createConfirmDialogService } from '../../shared/dialog-services/index.js';
+import { applySanitizedUiOptionsToTargets } from '../../generator/options/options-catalog-adapter.js';
+import { createConfirmDialogService } from '../../shared/dialog-services/confirm-dialog-service.js';
 import { resolveDocumentObj, resolveWindowObj } from '../../shared/dom/default-objects.js';
 import { createFormatOptionsPanel } from '../../shared/format-options-panel/index.js';
 import { createFormatSelectorComponent } from '../format-selector/index.js';
-import { createFileImportBindingsAdapter, createFileReadService } from '../import-export-adapters/index.js';
+import { createFileImportBindingsAdapter } from '../import-export-adapters/file-import-bindings-adapter.js';
+import { createFileReadService } from '../import-export-adapters/file-read-service.js';
 import { createImportExportToolbarComponent } from '../import-export-toolbar/index.js';
 import { createTextPreviewEditorComponent } from '../text-preview-editor/index.js';
 import { ImportExportWorkspaceController } from './import-export-workspace-controller.js';
@@ -466,4 +467,4 @@ function createImportExportWorkspaceComponent({ root, props = {}, services = {},
   };
 }
 
-export { createImportExportWorkspaceComponent, ImportExportWorkspaceController, ImportExportWorkspaceView };
+export { createImportExportWorkspaceComponent };

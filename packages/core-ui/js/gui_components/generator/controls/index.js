@@ -1,8 +1,8 @@
 import { createFormatOptionsPanel } from '../../shared/format-options-panel/index.js';
 import { createRowCountControl } from '../../shared/row-count-control/index.js';
-import { createLoadingStatusPresenter, createStatusPresenter } from '../../shared/test-data/ui/index.js';
+import { createLoadingStatusPresenter, createStatusPresenter } from '../../shared/test-data/ui/status-presenter.js';
 import { createUpdateHelpHints } from '../../../help/help-tooltips.js';
-import { getOutputFormatGroups } from '../options/index.js';
+import { getOutputFormatGroups } from '../options/options-ui-schema.js';
 import { GeneratorControlsController } from './generator-controls-controller.js';
 import { GeneratorControlsView } from './generator-controls-view.js';
 import { resolveDocumentObj } from '../../shared/dom/default-objects.js';
@@ -73,4 +73,4 @@ function createGeneratorControlsComponent({ root, props = {}, services = {}, cal
   };
 }
 
-export { createGeneratorControlsComponent, GeneratorControlsController, GeneratorControlsView };
+export { createGeneratorControlsComponent };

@@ -96,4 +96,4 @@ function createDataPopulationPanelComponent({ root, props = {}, services = {}, c
   };
 }
 
-export { createDataPopulationPanelComponent, DataPopulationPanelController, DataPopulationPanelView };
+export { createDataPopulationPanelComponent };

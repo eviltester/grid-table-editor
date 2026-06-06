@@ -2,8 +2,24 @@ import { getNumberArrayFrom } from '@anywaydata/core/utils/number-convertor.js';
 import { applySharedOptionTips, applyUiPanelOnlyTips } from './format-option-help.js';
 import { DEFAULT_DELIMITER_MAPPINGS } from './format-option-panel-definition-shared.js';
 import { escapeHtml, selectorForName, setSelectValue, optionHtml } from './format-option-panel-dom.js';
-import { BASE_FORMAT_OPTION_DEFINITIONS, CORE_FORMAT_ORDER } from './base/index.js';
-import { CODE_FORMAT_OPTION_DEFINITIONS, CODE_FORMAT_ORDER } from './code/index.js';
+import { asciitableDefinition } from './base/asciitable-definition.js';
+import { csvDefinition } from './base/csv-definition.js';
+import { dsvDefinition } from './base/dsv-definition.js';
+import { gherkinDefinition } from './base/gherkin-definition.js';
+import { htmlDefinition } from './base/html-definition.js';
+import { jsonDefinition, jsonlDefinition } from './base/json-definition.js';
+import { markdownDefinition } from './base/markdown-definition.js';
+import { sqlDefinition } from './base/sql-definition.js';
+import { xmlDefinition } from './base/xml-definition.js';
+import { csharpDefinition } from './code/csharp-definition.js';
+import { javaDefinition } from './code/java-definition.js';
+import { javascriptDefinition } from './code/javascript-definition.js';
+import { kotlinDefinition } from './code/kotlin-definition.js';
+import { perlDefinition } from './code/perl-definition.js';
+import { phpDefinition } from './code/php-definition.js';
+import { pythonDefinition } from './code/python-definition.js';
+import { rubyDefinition } from './code/ruby-definition.js';
+import { typescriptDefinition } from './code/typescript-definition.js';
 import { createTestFrameworkDefinition } from './code-unit-test/test-framework-definition.js';
 
 function resolveMappedValue(value, mappings, fallback) {
@@ -88,7 +104,7 @@ function writeField(root, field, options) {
 
 function renderField(field) {
   const help = field.help
-    ? `<span class="helpicon option-help-icon" data-help="${escapeHtml(field.help)}"></span>`
+    ? `<span class="helpicon option-help-icon" data-role="option-help-icon" data-help-role="option-help-icon" data-help="${escapeHtml(field.help)}"></span>`
     : '';
   const childClass = field.child ? ' option-child' : '';
   const className = `${field.className || field.name}${childClass}`;
@@ -117,7 +133,7 @@ function renderField(field) {
         ? `
       <div class="${escapeHtml(`format-option-field ${field.customClassName || `custom-${field.name}`} option-child`)}">
         <label class="format-option-block-label">
-          <span class="helpicon option-help-icon" data-help="${escapeHtml(field.customHelp)}"></span>
+          <span class="helpicon option-help-icon" data-role="option-help-icon" data-help-role="option-help-icon" data-help="${escapeHtml(field.customHelp)}"></span>
           <span class="format-option-label-text">${escapeHtml(field.customLabel || 'Custom')}</span>
           <input class="format-option-control" type="text" name="${escapeHtml(field.customName)}" value="" style="width:${escapeHtml(field.customWidth || '100%')}">
         </label>
@@ -181,7 +197,7 @@ class DeclarativeFormatOptionPanel {
       <div class="${escapeHtml(this.definition.panelClassName)}" style="width:100%" data-format-options-panel="${escapeHtml(
         this.definition.format
       )}">
-        <div><p><strong>Options</strong> <span data-help="${escapeHtml(this.definition.titleHelp)}" class="helpicon"></span></p></div>
+        <div><p><strong>Options</strong> <span data-help="${escapeHtml(this.definition.titleHelp)}" data-help-role="help-icon" class="helpicon"></span></p></div>
         ${this.definition.fields.map((field) => renderField(field)).join('')}
         <div class="apply">
           <button class="apply-options" data-role="apply-options-button">Apply</button>
@@ -279,6 +295,35 @@ class DeclarativeFormatOptionPanel {
     return this.root.querySelector('[data-role="apply-options-button"]');
   }
 }
+
+const CORE_FORMAT_ORDER = ['csv', 'json', 'jsonl', 'xml', 'sql', 'markdown', 'dsv', 'html', 'gherkin', 'asciitable'];
+
+const BASE_FORMAT_OPTION_DEFINITIONS = {
+  csv: csvDefinition,
+  dsv: dsvDefinition,
+  json: jsonDefinition,
+  jsonl: jsonlDefinition,
+  xml: xmlDefinition,
+  sql: sqlDefinition,
+  markdown: markdownDefinition,
+  html: htmlDefinition,
+  gherkin: gherkinDefinition,
+  asciitable: asciitableDefinition,
+};
+
+const CODE_FORMAT_ORDER = ['csharp', 'java', 'javascript', 'kotlin', 'perl', 'php', 'python', 'ruby', 'typescript'];
+
+const CODE_FORMAT_OPTION_DEFINITIONS = {
+  csharp: csharpDefinition,
+  java: javaDefinition,
+  javascript: javascriptDefinition,
+  kotlin: kotlinDefinition,
+  perl: perlDefinition,
+  php: phpDefinition,
+  python: pythonDefinition,
+  ruby: rubyDefinition,
+  typescript: typescriptDefinition,
+};
 
 const FORMAT_OPTION_DEFINITIONS = {
   ...BASE_FORMAT_OPTION_DEFINITIONS,

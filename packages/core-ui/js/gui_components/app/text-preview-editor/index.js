@@ -63,4 +63,4 @@ function createTextPreviewEditorComponent({ root, props = {}, callbacks = {}, se
   };
 }
 
-export { createTextPreviewEditorComponent, TextPreviewEditorController, TextPreviewEditorView };
+export { createTextPreviewEditorComponent };

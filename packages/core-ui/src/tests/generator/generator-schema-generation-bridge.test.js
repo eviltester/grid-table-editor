@@ -1,5 +1,5 @@
 import { describe, expect, jest, test } from '@jest/globals';
-import { createGeneratorSchemaGenerationBridge } from '../../../js/gui_components/generator/generation/index.js';
+import { createGeneratorSchemaGenerationBridge } from '../../../js/gui_components/generator/generation/generator-schema-generation-bridge.js';
 
 describe('generator schema generation bridge', () => {
   test('creates configured generators and enum counts through shared generation helpers', () => {

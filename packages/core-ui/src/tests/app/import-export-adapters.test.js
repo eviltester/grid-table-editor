@@ -4,6 +4,10 @@ import { createFileReadService } from '../../../js/gui_components/app/import-exp
 import { createFileImportBindingsAdapter } from '../../../js/gui_components/app/import-export-adapters/file-import-bindings-adapter.js';
 
 describe('import-export adapters', () => {
+  test('file-import bindings adapter resolves through its direct module', () => {
+    expect(typeof createFileImportBindingsAdapter).toBe('function');
+  });
+
   describe('createFileReadService', () => {
     let readerInstance;
 
@@ -108,10 +112,10 @@ describe('import-export adapters', () => {
       const adapter = createFileImportBindingsAdapter({
         root: documentObj.getElementById('root'),
         onFileSelected,
-        createDragDropControl: (readFileFunction) => ({
+        createDragDropAdapterFn: (onFileDrop) => ({
           configureAsDropZone: (element) => {
             configureAsDropZone(element);
-            readFileFunction({ name: 'drop.csv' });
+            onFileDrop({ name: 'drop.csv' });
           },
           destroy,
         }),

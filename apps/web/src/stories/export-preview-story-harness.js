@@ -5,7 +5,7 @@ import { createImportExportWorkspaceComponent } from '../../../../packages/core-
 import {
   getCodeLanguageSubtasks,
   getUnitTestLanguageSubtasks,
-} from '../../../../packages/core-ui/js/gui_components/generator/options/index.js';
+} from '../../../../packages/core-ui/js/gui_components/generator/options/options-catalog-adapter.js';
 
 let storySurfaceCounter = 0;
 

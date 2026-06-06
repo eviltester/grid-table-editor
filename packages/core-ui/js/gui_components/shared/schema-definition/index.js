@@ -87,4 +87,4 @@ function createSharedSchemaDefinitionComponent({ root, props = {}, callbacks = {
   };
 }
 
-export { createSharedSchemaDefinitionComponent, SharedSchemaDefinitionController, SharedSchemaDefinitionView };
+export { createSharedSchemaDefinitionComponent };

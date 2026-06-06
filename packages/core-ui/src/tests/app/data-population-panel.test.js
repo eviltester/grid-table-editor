@@ -1,6 +1,7 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
 import { within } from '@testing-library/dom';
+import * as dataPopulationPanelExports from '../../../js/gui_components/app/data-population-panel/index.js';
 import { createDataPopulationPanelComponent } from '../../../js/gui_components/app/data-population-panel/index.js';
 
 describe('DataPopulationPanel', () => {
@@ -18,6 +19,12 @@ describe('DataPopulationPanel', () => {
     delete global.window;
     delete global.document;
     delete global.Event;
+  });
+
+  test('public barrel is component-factory-only', () => {
+    expect(dataPopulationPanelExports.createDataPopulationPanelComponent).toBe(createDataPopulationPanelComponent);
+    expect(dataPopulationPanelExports.DataPopulationPanelController).toBeUndefined();
+    expect(dataPopulationPanelExports.DataPopulationPanelView).toBeUndefined();
   });
 
   test('composes actions, row count, mode selector, and schema definition', () => {

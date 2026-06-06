@@ -1,5 +1,6 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
+import * as importExportToolbarExports from '../../../js/gui_components/app/import-export-toolbar/index.js';
 import { createImportExportToolbarComponent } from '../../../js/gui_components/app/import-export-toolbar/index.js';
 
 describe('ImportExportToolbar', () => {
@@ -24,10 +25,16 @@ describe('ImportExportToolbar', () => {
     jest.restoreAllMocks();
   });
 
+  test('public barrel is component-factory-only', () => {
+    expect(importExportToolbarExports.createImportExportToolbarComponent).toBe(createImportExportToolbarComponent);
+    expect(importExportToolbarExports.ImportExportToolbarController).toBeUndefined();
+    expect(importExportToolbarExports.ImportExportToolbarView).toBeUndefined();
+  });
+
   test('binds tooltip help on mount for the toolbar help icon', () => {
     createImportExportToolbarComponent({ root, documentObj });
 
-    const helpIcon = root.querySelector('.helpicon[data-help]');
+    const helpIcon = root.querySelector('[data-help-role="help-icon"][data-help]');
     const setTextFromGridButton = root.querySelector('[data-role="set-text-from-grid-button"]');
     const setGridFromTextButton = root.querySelector('[data-role="set-grid-from-text-button"]');
     const fileInput = root.querySelector('[data-role="file-input"]');
@@ -57,7 +64,7 @@ describe('ImportExportToolbar', () => {
     try {
       createImportExportToolbarComponent({ root });
 
-      const helpIcon = root.querySelector('.helpicon[data-help]');
+      const helpIcon = root.querySelector('[data-help-role="help-icon"][data-help]');
       expect(helpIcon).not.toBeNull();
       expect(global.tippy).toHaveBeenCalled();
     } finally {

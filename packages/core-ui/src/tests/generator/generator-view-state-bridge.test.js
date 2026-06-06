@@ -27,7 +27,11 @@ describe('generator view state bridge', () => {
       getGeneratorControls: () => controls,
       getGeneratorPreview: () => preview,
       getExporter: () => exporter,
-      createUnavailableRowCountResult: (inputId) => ({ value: 0, valid: false, errors: [`${inputId} invalid`] }),
+      createUnavailableRowCountResult: (fieldLabel) => ({
+        value: 0,
+        valid: false,
+        errors: [`${fieldLabel} invalid`],
+      }),
     });
 
     expect(bridge.getSelectedOutputType()).toBe('json');
@@ -68,21 +72,25 @@ describe('generator view state bridge', () => {
       getGeneratorControls: () => null,
       getGeneratorPreview: () => null,
       getExporter: () => null,
-      createUnavailableRowCountResult: (inputId) => ({ value: 0, valid: false, errors: [`${inputId} invalid`] }),
+      createUnavailableRowCountResult: (fieldLabel) => ({
+        value: 0,
+        valid: false,
+        errors: [`${fieldLabel} invalid`],
+      }),
     });
 
     expect(bridge.getSelectedOutputType()).toBe('csv');
     expect(bridge.getPreviewRowCount()).toEqual({
       value: 0,
       valid: false,
-      errors: ['previewRowsCount invalid'],
+      errors: ['Preview row count invalid'],
     });
     expect(bridge.getPreviewGrid()).toBeNull();
     expect(bridge.getPreviewTableApi()).toBeNull();
     expect(bridge.getGenerateRowCount()).toEqual({
       value: 0,
       valid: false,
-      errors: ['generateRowsCount invalid'],
+      errors: ['Generate row count invalid'],
     });
     expect(() => bridge.renderOutputPreviewForCurrentSelection()).not.toThrow();
     expect(bridge.syncGeneratorControlsFormatState('csv')).toBe(true);

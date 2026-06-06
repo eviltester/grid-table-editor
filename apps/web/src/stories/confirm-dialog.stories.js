@@ -1,5 +1,5 @@
 import { expect, userEvent, within } from 'storybook/test';
-import { createConfirmDialogService } from '../../../../packages/core-ui/js/gui_components/shared/dialog-services/index.js';
+import { createConfirmDialogService } from '../../../../packages/core-ui/js/gui_components/shared/dialog-services/confirm-dialog-service.js';
 
 function renderConfirmDialogStory(args) {
   const root = document.createElement('section');

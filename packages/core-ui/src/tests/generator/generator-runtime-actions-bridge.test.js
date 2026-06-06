@@ -32,7 +32,13 @@ describe('generator runtime actions bridge', () => {
     const schemaGeneration = {
       createConfiguredGenerator: jest.fn(() => configuredGenerator),
       countEnumColumns: jest.fn(() => 1),
-      getPairwiseVisibility: jest.fn(() => true),
+      getPairwiseVisibility: jest.fn(({ getCurrentSchemaState }) => {
+        const currentState = getCurrentSchemaState();
+        return currentState.rows.length > 0 && currentState.errors.length === 0;
+      }),
+    };
+    const schemaState = {
+      getCurrentSchemaState: jest.fn(() => ({ rows: [{ sourceType: 'enum' }], errors: [] })),
     };
     const exporter = {
       canExport: jest.fn(() => true),
@@ -63,6 +69,7 @@ describe('generator runtime actions bridge', () => {
       getViewState: () => viewState,
       getSchemaRuntime: () => schemaRuntime,
       getSchemaGeneration: () => schemaGeneration,
+      getSchemaState: () => schemaState,
     });
 
     const applyResult = bridge.applyCurrentTypeOptions({
@@ -93,10 +100,9 @@ describe('generator runtime actions bridge', () => {
       undefined
     );
 
-    const pairwiseVisible = bridge.updateAllPairsButtonVisibility({
-      getCurrentSchemaState: () => ({ rows: [{ sourceType: 'enum' }], errors: [] }),
-    });
+    const pairwiseVisible = bridge.updateAllPairsButtonVisibility();
     expect(pairwiseVisible).toBe(true);
+    expect(schemaState.getCurrentSchemaState).toHaveBeenCalledTimes(1);
     expect(schemaGeneration.getPairwiseVisibility).toHaveBeenCalled();
     expect(viewState.setPairwiseVisible).toHaveBeenCalledWith(true);
   });

@@ -1,7 +1,15 @@
 import { jest } from '@jest/globals';
-import { RowCountControlController } from '../../../js/gui_components/shared/row-count-control/index.js';
+import * as rowCountControlExports from '../../../js/gui_components/shared/row-count-control/index.js';
+import { RowCountControlController } from '../../../js/gui_components/shared/row-count-control/row-count-control-controller.js';
 
 describe('row-count-control controller', () => {
+  test('public barrel is component-factory-only', () => {
+    expect(typeof rowCountControlExports.createRowCountControl).toBe('function');
+    expect(rowCountControlExports.parseRowCountInputElement).toBeUndefined();
+    expect(rowCountControlExports.RowCountControlController).toBeUndefined();
+    expect(rowCountControlExports.RowCountControlView).toBeUndefined();
+  });
+
   test('defaults to no fixed input id when one is not provided', () => {
     const controller = new RowCountControlController();
 

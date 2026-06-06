@@ -24,4 +24,4 @@ function createAppPageComponent({ root, props = {} } = {}) {
   };
 }
 
-export { createAppPageComponent, AppPageShellController, AppPageShellView };
+export { createAppPageComponent };

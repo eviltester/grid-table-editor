@@ -187,7 +187,7 @@ const appOnlyInlineHelpEntries = {
         <li>Use import/export controls to switch between text formats and grid data.</li>
         <li>Use column and row controls directly in the grid to shape your table.</li>
       </ul>
-      <button type="button" class="instructions-sample-data-button">Load Sample Data</button>
+      <button type="button" class="instructions-sample-data-button" data-role="instructions-action-button" data-action-id="load-sample-data">Load Sample Data</button>
     `,
   'test-data-summary-title': `
       <p>The Test Data section allows you to randomly generate data to populate the grid. You can then export to the various supported formats.</p>

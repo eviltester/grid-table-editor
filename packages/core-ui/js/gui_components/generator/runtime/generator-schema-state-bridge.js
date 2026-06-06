@@ -7,6 +7,22 @@ function createGeneratorSchemaStateBridge({
   const getResolvedSchemaSession = () => getSchemaSession?.() || null;
 
   return {
+    getCurrentSchemaState() {
+      if (getResolvedSchemaDefinition()?.getState) {
+        const state = getResolvedSchemaDefinition().getState() || {};
+        return {
+          rows: state.rows || [],
+          errors: [],
+          isTextMode: state.isTextMode === true,
+        };
+      }
+      return {
+        rows: getResolvedSchemaSession()?.getRows?.() || [],
+        errors: [],
+        isTextMode: getResolvedSchemaSession()?.getTextMode?.() === true,
+      };
+    },
+
     getRows() {
       if (getResolvedSchemaDefinition()?.getState) {
         return getResolvedSchemaDefinition().getState().rows || [];

@@ -32,4 +32,4 @@ function createImportExportToolbarComponent({ root, props = {}, callbacks = {}, 
   };
 }
 
-export { createImportExportToolbarComponent, ImportExportToolbarController, ImportExportToolbarView };
+export { createImportExportToolbarComponent };

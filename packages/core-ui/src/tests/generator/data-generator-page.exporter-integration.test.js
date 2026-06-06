@@ -2,7 +2,7 @@ import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
 import { faker } from '@faker-js/faker';
 import RandExp from 'randexp';
-import { DataGeneratorPage } from '../../../js/gui_components/generator/index.js';
+import { createDataGeneratorPage } from '../../../js/gui_components/generator/runtime/data-generator-page-runtime.js';
 import { Exporter } from '../../../../core/js/grid/exporter.js';
 import { TestDataGenerator } from '../../../../core/js/data_generation/testDataGenerator.js';
 
@@ -37,6 +37,10 @@ class FakeDownload {
 describe('DataGeneratorPage exporter integration', () => {
   let dom;
 
+  function createMountedPage(options = {}) {
+    return createDataGeneratorPage(options);
+  }
+
   function getPreviewButton() {
     return document.querySelector('[data-role="generator-preview-button"]');
   }
@@ -70,7 +74,7 @@ describe('DataGeneratorPage exporter integration', () => {
   });
 
   test('preview uses real exporter for csv output', () => {
-    const page = new DataGeneratorPage({
+    const page = createMountedPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       faker,
@@ -81,7 +85,6 @@ describe('DataGeneratorPage exporter integration', () => {
       DownloadClass: FakeDownload,
       TestDataGeneratorClass: TestDataGenerator,
     });
-    page.init();
 
     page.schemaRows = [{ id: '1', name: 'FixedValue', sourceType: 'literal', command: '', params: '', value: 'A' }];
     page.renderSchemaRows();
@@ -94,7 +97,7 @@ describe('DataGeneratorPage exporter integration', () => {
   });
 
   test('generate data file uses real exporter output and extension', async () => {
-    const page = new DataGeneratorPage({
+    const page = createMountedPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       faker,
@@ -105,7 +108,6 @@ describe('DataGeneratorPage exporter integration', () => {
       DownloadClass: FakeDownload,
       TestDataGeneratorClass: TestDataGenerator,
     });
-    page.init();
 
     page.schemaRows = [{ id: '1', name: 'FixedValue', sourceType: 'literal', command: '', params: '', value: 'A' }];
     page.renderSchemaRows();
@@ -120,7 +122,7 @@ describe('DataGeneratorPage exporter integration', () => {
   });
 
   test('applyCurrentTypeOptions updates real exporter options', () => {
-    const page = new DataGeneratorPage({
+    const page = createMountedPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
       faker,
@@ -131,7 +133,6 @@ describe('DataGeneratorPage exporter integration', () => {
       DownloadClass: FakeDownload,
       TestDataGeneratorClass: TestDataGenerator,
     });
-    page.init();
 
     page.applyCurrentTypeOptions({
       outputFormat: 'json',

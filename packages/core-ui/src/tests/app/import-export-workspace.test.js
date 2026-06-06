@@ -2,6 +2,7 @@ import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-tab
 import { jest } from '@jest/globals';
 import { fireEvent, waitFor } from '@testing-library/dom';
 import { JSDOM } from 'jsdom';
+import * as importExportWorkspaceExports from '../../../js/gui_components/app/import-export-workspace/index.js';
 import { createImportExportWorkspaceComponent } from '../../../js/gui_components/app/import-export-workspace/index.js';
 
 function createTable(rowCount = 3) {
@@ -84,6 +85,14 @@ describe('ImportExportWorkspace', () => {
     jest.restoreAllMocks();
     delete global.document;
     delete global.window;
+  });
+
+  test('public barrel is component-factory-only', () => {
+    expect(importExportWorkspaceExports.createImportExportWorkspaceComponent).toBe(
+      createImportExportWorkspaceComponent
+    );
+    expect(importExportWorkspaceExports.ImportExportWorkspaceController).toBeUndefined();
+    expect(importExportWorkspaceExports.ImportExportWorkspaceView).toBeUndefined();
   });
 
   test('mounts real controls, normalizes preview row count, and renders format previews without legacy controls', () => {

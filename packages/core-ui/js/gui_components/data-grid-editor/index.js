@@ -49,4 +49,4 @@ function createDataGridComponent({ root, props = {}, services = {}, documentObj 
   };
 }
 
-export { createDataGridComponent, DataGridComponentController, DataGridComponentView };
+export { createDataGridComponent };

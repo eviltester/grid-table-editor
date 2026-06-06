@@ -42,4 +42,4 @@ function createPopulationActionsComponent({ root, props = {}, callbacks = {}, do
   };
 }
 
-export { createPopulationActionsComponent, PopulationActionsController, PopulationActionsView };
+export { createPopulationActionsComponent };

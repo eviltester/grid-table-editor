@@ -1,15 +1,34 @@
 import { OPTION_KEYS_BY_FORMAT } from '@anywaydata/core';
 import {
-  applySanitizedUiOptionsToTargets,
   TEST_FRAMEWORK_GROUPS,
   getCodeLanguageSubtasks,
   getTestFrameworkFormats,
   getTestFrameworkLabel,
   getUnitTestLanguageSubtasks,
+} from '../../../js/gui_components/generator/options/options-catalog-adapter.js';
+import {
+  applySanitizedUiOptionsToTargets,
   sanitizeUiOptionsForFormat,
-} from '../../../js/gui_components/generator/options/index.js';
+} from '../../../js/gui_components/generator/options/options-catalog-adapter.js';
 
 describe('options catalog adapter', () => {
+  test('generator options barrel keeps catalog helpers direct-import-only', () => {
+    return import('../../../js/gui_components/generator/options/apply-generator-format-options.js').then(
+      (generatorOptions) => {
+        expect(typeof generatorOptions.applyGeneratorFormatOptions).toBe('function');
+        expect(generatorOptions.getCodeLanguageSubtasks).toBeUndefined();
+        expect(generatorOptions.getUnitTestLanguageSubtasks).toBeUndefined();
+        expect(generatorOptions.getOutputFormatGroups).toBeUndefined();
+        expect(generatorOptions.sanitizeUiOptionsForFormat).toBeUndefined();
+        expect(generatorOptions.applySanitizedUiOptionsToTargets).toBeUndefined();
+        expect(generatorOptions.OPTION_UI_SCHEMA_BY_FORMAT).toBeUndefined();
+        expect(generatorOptions.TEST_FRAMEWORK_GROUPS).toBeUndefined();
+        expect(generatorOptions.getTestFrameworkFormats).toBeUndefined();
+        expect(generatorOptions.getTestFrameworkLabel).toBeUndefined();
+      }
+    );
+  });
+
   test('discovers test framework formats from core option catalog', () => {
     const discovered = getTestFrameworkFormats();
     expect(discovered).toContain('junit5');

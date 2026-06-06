@@ -11,15 +11,15 @@ describe('grid-error-surface', () => {
     const domB = new JSDOM(`<!doctype html><html><body><div id="${GRID_ERROR_ELEMENT_ID}"></div></body></html>`);
 
     try {
-      const displayA1 = getGridErrorDisplay(domA.window.document);
-      const displayA2 = getGridErrorDisplay(domA.window.document);
-      const displayB = getGridErrorDisplay(domB.window.document);
+      const displayA1 = getGridErrorDisplay({ documentObj: domA.window.document, elementId: GRID_ERROR_ELEMENT_ID });
+      const displayA2 = getGridErrorDisplay({ documentObj: domA.window.document, elementId: GRID_ERROR_ELEMENT_ID });
+      const displayB = getGridErrorDisplay({ documentObj: domB.window.document, elementId: GRID_ERROR_ELEMENT_ID });
 
       expect(displayA1).toBe(displayA2);
       expect(displayA1).not.toBe(displayB);
 
-      showGridError('A error', domA.window.document);
-      showGridError('B error', domB.window.document);
+      showGridError('A error', { documentObj: domA.window.document, elementId: GRID_ERROR_ELEMENT_ID });
+      showGridError('B error', { documentObj: domB.window.document, elementId: GRID_ERROR_ELEMENT_ID });
 
       expect(domA.window.document.getElementById(GRID_ERROR_ELEMENT_ID).textContent).toBe('A error');
       expect(domB.window.document.getElementById(GRID_ERROR_ELEMENT_ID).textContent).toBe('B error');
@@ -33,7 +33,7 @@ describe('grid-error-surface', () => {
     const dom = new JSDOM('<!doctype html><html><body></body></html>');
 
     try {
-      const display = getGridErrorDisplay(dom.window.document);
+      const display = getGridErrorDisplay({ documentObj: dom.window.document, elementId: GRID_ERROR_ELEMENT_ID });
       expect(() => display.show('Missing root')).not.toThrow();
       expect(display.getState()).toEqual({});
     } finally {
@@ -42,10 +42,10 @@ describe('grid-error-surface', () => {
   });
 
   test('returns a no-op surface without a document object', () => {
-    const display = getGridErrorDisplay(null);
+    const display = getGridErrorDisplay();
 
     expect(() => display.show('Missing root')).not.toThrow();
-    expect(() => showGridError('No document', null)).not.toThrow();
+    expect(() => showGridError('No document')).not.toThrow();
     expect(display.getState()).toEqual({});
   });
 

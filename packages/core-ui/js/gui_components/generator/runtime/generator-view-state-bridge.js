@@ -46,13 +46,13 @@ function createGeneratorViewStateBridge({
       if (getPreview()?.getPreviewRowCount) {
         return getPreview().getPreviewRowCount();
       }
-      return createUnavailableRowCountResult('previewRowsCount');
+      return createUnavailableRowCountResult('Preview row count');
     },
     getGenerateRowCount() {
       if (getControls()?.getGenerateRowCount) {
         return getControls().getGenerateRowCount();
       }
-      return createUnavailableRowCountResult('generateRowsCount');
+      return createUnavailableRowCountResult('Generate row count');
     },
     setGenerationButtonsBusy(isBusy) {
       getControls()?.setGenerationButtonsBusy?.(isBusy);

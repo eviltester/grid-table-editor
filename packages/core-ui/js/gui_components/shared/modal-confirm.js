@@ -1,7 +1,5 @@
 import { getDefaultDocumentObj, getDefaultWindowObj, resolveWindowObj } from './dom/default-objects.js';
 
-const LEGACY_CONFIRM_COMPONENTS = new WeakMap();
-
 function ensureConfirmElements(documentObj = getDefaultDocumentObj()) {
   if (!documentObj) {
     return null;
@@ -18,7 +16,7 @@ function ensureConfirmElements(documentObj = getDefaultDocumentObj()) {
   backdrop.id = 'confirm-modal-backdrop';
   backdrop.className = 'text-input-modal-backdrop';
   backdrop.innerHTML = `
-    <div class="text-input-modal" role="dialog" aria-modal="true" aria-labelledby="confirm-modal-title">
+    <div class="text-input-modal" data-role="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="confirm-modal-title">
       <h3 id="confirm-modal-title" data-role="confirm-dialog-title" class="text-input-modal-title"></h3>
       <p id="confirm-modal-message" data-role="confirm-dialog-message" class="text-input-modal-message"></p>
       <div class="text-input-modal-actions">
@@ -116,24 +114,4 @@ function createConfirmDialogComponent({
   };
 }
 
-function getLegacyConfirmComponent(documentObj = getDefaultDocumentObj(), windowObj = getDefaultWindowObj()) {
-  if (!documentObj) {
-    return createConfirmDialogComponent({ documentObj: null, windowObj });
-  }
-  if (LEGACY_CONFIRM_COMPONENTS.has(documentObj)) {
-    return LEGACY_CONFIRM_COMPONENTS.get(documentObj);
-  }
-  const component = createConfirmDialogComponent({ documentObj, windowObj });
-  LEGACY_CONFIRM_COMPONENTS.set(documentObj, component);
-  return component;
-}
-
-function showConfirmModal({
-  documentObj = getDefaultDocumentObj(),
-  windowObj = getDefaultWindowObj(),
-  ...options
-} = {}) {
-  return getLegacyConfirmComponent(documentObj, windowObj).requestConfirm(options);
-}
-
-export { createConfirmDialogComponent, showConfirmModal };
+export { createConfirmDialogComponent };

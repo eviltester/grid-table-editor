@@ -1,7 +1,5 @@
-import {
-  getTestFrameworkLabel,
-  getUnitTestLanguageSubtasks,
-} from '../../../../packages/core-ui/js/gui_components/generator/options/index.js';
+import { getUnitTestLanguageSubtasks } from '../../../../packages/core-ui/js/gui_components/generator/options/options-catalog-adapter.js';
+import { getTestFrameworkLabel } from '../../../../packages/core-ui/js/gui_components/generator/options/options-catalog-adapter.js';
 import {
   createUnitTestStory,
   playGenericApply,

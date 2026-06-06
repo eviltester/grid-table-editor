@@ -1,7 +1,14 @@
 import { describe, expect, jest, test } from '@jest/globals';
-import { GeneratorControlsController } from '../../../js/gui_components/generator/controls/index.js';
+import * as generatorControlsExports from '../../../js/gui_components/generator/controls/index.js';
+import { GeneratorControlsController } from '../../../js/gui_components/generator/controls/generator-controls-controller.js';
 
 describe('GeneratorControlsController', () => {
+  test('controls barrel is component-factory-only', () => {
+    expect(typeof generatorControlsExports.createGeneratorControlsComponent).toBe('function');
+    expect(generatorControlsExports.GeneratorControlsController).toBeUndefined();
+    expect(generatorControlsExports.GeneratorControlsView).toBeUndefined();
+  });
+
   test('tracks selected format and pairwise visibility from props', () => {
     const onFormatChanged = jest.fn();
     const controller = new GeneratorControlsController({

@@ -1,20 +1,44 @@
 import { appOnlyInlineHelpEntries, sharedInlineHelpEntries } from './inline-help-content.js';
 import { getDefaultDocumentObj, resolveWindowObj } from '../gui_components/shared/dom/default-objects.js';
-import { decorateIconContainer } from '../gui_components/shared/primitives/icon/index.js';
+import { decorateIconContainer } from '../gui_components/shared/primitives/icon/icon-core.js';
 
-function ensureInlineHelpContainer(documentObj) {
-  let container = documentObj.getElementById('inline-help-items');
+const GLOBAL_INLINE_HELP_CONTAINER_ID = 'inline-help-items';
+const SCOPED_INLINE_HELP_CONTAINER_ROLE = 'inline-help-items';
+
+function ensureGlobalInlineHelpContainer(documentObj) {
+  let container = documentObj.getElementById(GLOBAL_INLINE_HELP_CONTAINER_ID);
   if (!container) {
     container = documentObj.createElement('div');
-    container.id = 'inline-help-items';
+    container.id = GLOBAL_INLINE_HELP_CONTAINER_ID;
     container.style.display = 'none';
     documentObj.body.appendChild(container);
   }
   return container;
 }
 
-function renderInlineHelpItems(documentObj, entries) {
-  const container = ensureInlineHelpContainer(documentObj);
+function ensureScopedInlineHelpContainer(documentObj, rootElement) {
+  if (!rootElement) {
+    return ensureGlobalInlineHelpContainer(documentObj);
+  }
+
+  let container = rootElement.querySelector(`[data-role="${SCOPED_INLINE_HELP_CONTAINER_ROLE}"]`);
+  if (!container) {
+    container = documentObj.createElement('div');
+    container.style.display = 'none';
+    container.setAttribute('data-role', SCOPED_INLINE_HELP_CONTAINER_ROLE);
+    rootElement.appendChild(container);
+  }
+  return container;
+}
+
+function ensureInlineHelpContainer(documentObj, { rootElement, useGlobalContainer = true } = {}) {
+  return useGlobalContainer
+    ? ensureGlobalInlineHelpContainer(documentObj)
+    : ensureScopedInlineHelpContainer(documentObj, rootElement);
+}
+
+function renderInlineHelpItems(documentObj, entries, options = {}) {
+  const container = ensureInlineHelpContainer(documentObj, options);
   container.innerHTML = '';
   Object.entries(entries).forEach(([key, html]) => {
     const item = documentObj.createElement('div');
@@ -25,8 +49,8 @@ function renderInlineHelpItems(documentObj, entries) {
   return container;
 }
 
-function upsertInlineHelpItems(documentObj, entries) {
-  const container = ensureInlineHelpContainer(documentObj);
+function upsertInlineHelpItems(documentObj, entries, options = {}) {
+  const container = ensureInlineHelpContainer(documentObj, options);
   Object.entries(entries).forEach(([key, html]) => {
     let item = container.querySelector(`div[data-name='${key}']`);
     if (!item) {
@@ -74,9 +98,24 @@ function decorateHelpIcon(element) {
     element.setAttribute('role', 'button');
   }
   if (!element.hasAttribute('aria-label')) {
-    const isOptionHelp = element.classList.contains('option-help-icon');
+    const isOptionHelp =
+      element.getAttribute('data-role') === 'option-help-icon' ||
+      element.getAttribute('data-help-role') === 'option-help-icon';
     element.setAttribute('aria-label', isOptionHelp ? 'Show help for this option' : 'Show help');
   }
+}
+
+function resolveHelpElements(resolveHelpElementsFn) {
+  if (typeof resolveHelpElementsFn !== 'function') {
+    return [];
+  }
+
+  const resolvedElements = resolveHelpElementsFn();
+  if (!resolvedElements) {
+    return [];
+  }
+
+  return Array.from(resolvedElements).filter(Boolean);
 }
 
 function createHelpTooltipService({
@@ -84,8 +123,9 @@ function createHelpTooltipService({
   windowObj,
   rootElement = documentObj,
   entries = sharedInlineHelpEntries,
-  registerWindowHook = false,
   tippyFn,
+  useGlobalInlineHelpContainer = true,
+  resolveHelpElements: resolveHelpElementsFn,
 } = {}) {
   const resolvedWindowObj = resolveWindowObj(windowObj, documentObj);
 
@@ -94,9 +134,12 @@ function createHelpTooltipService({
       return;
     }
 
-    const inlineHelpContainer = upsertInlineHelpItems(documentObj, entries);
+    const inlineHelpContainer = upsertInlineHelpItems(documentObj, entries, {
+      rootElement,
+      useGlobalContainer: useGlobalInlineHelpContainer,
+    });
 
-    const helpIcons = rootElement?.querySelectorAll?.('.helpicon[data-help]') || [];
+    const helpIcons = resolveHelpElements(resolveHelpElementsFn);
     helpIcons.forEach((element) => {
       decorateHelpIcon(element);
     });
@@ -121,20 +164,11 @@ function createHelpTooltipService({
   };
 
   const destroy = () => {
-    const helpIcons = rootElement?.querySelectorAll?.('.helpicon[data-help]') || [];
+    const helpIcons = resolveHelpElements(resolveHelpElementsFn);
     helpIcons.forEach((element) => {
       element?._tippy?.destroy?.();
     });
-    if (registerWindowHook) {
-      if (resolvedWindowObj?.updateHelpHints === update) {
-        delete resolvedWindowObj.updateHelpHints;
-      }
-    }
   };
-
-  if (registerWindowHook && resolvedWindowObj) {
-    resolvedWindowObj.updateHelpHints = update;
-  }
 
   return {
     update,
@@ -142,13 +176,23 @@ function createHelpTooltipService({
   };
 }
 
-function createUpdateHelpHints(documentObj, rootElement = documentObj, { windowObj, tippyFn } = {}) {
+function createScopedHelpElementResolver(rootElement) {
+  return () => rootElement?.querySelectorAll?.('[data-help-role][data-help]') || [];
+}
+
+function createUpdateHelpHints(
+  documentObj,
+  rootElement = documentObj,
+  { windowObj, tippyFn, resolveHelpElements } = {}
+) {
   return createHelpTooltipService({
     documentObj,
     windowObj,
     rootElement,
     entries: sharedInlineHelpEntries,
     tippyFn,
+    useGlobalInlineHelpContainer: false,
+    resolveHelpElements: resolveHelpElements || createScopedHelpElementResolver(rootElement),
   }).update;
 }
 
@@ -157,6 +201,7 @@ function initHelpTooltips({
   windowObj,
   includeAppOnlyEntries = false,
   tippyFn,
+  rootElement = documentObj,
 } = {}) {
   if (!documentObj) {
     return null;
@@ -165,14 +210,17 @@ function initHelpTooltips({
     ? { ...sharedInlineHelpEntries, ...appOnlyInlineHelpEntries }
     : sharedInlineHelpEntries;
 
-  renderInlineHelpItems(documentObj, entries);
+  renderInlineHelpItems(documentObj, entries, {
+    useGlobalContainer: true,
+  });
 
   const service = createHelpTooltipService({
     documentObj,
     windowObj,
+    rootElement,
     entries,
-    registerWindowHook: true,
     tippyFn,
+    resolveHelpElements: createScopedHelpElementResolver(rootElement),
   });
   service.update();
   return service;

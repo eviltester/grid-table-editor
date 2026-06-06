@@ -118,7 +118,9 @@ describe('GeneratorControlsView', () => {
     expect(dom.window.document.querySelector('[data-role="generator-generate-pairwise-button"]')).not.toBeNull();
     expect(dom.window.document.querySelector('[data-role="generator-pairwise-button-wrapper"]')).not.toBeNull();
     expect(dom.window.document.querySelector('[data-role="generator-status-text"]')).not.toBeNull();
-    const helpButtons = Array.from(dom.window.document.querySelectorAll('.shared-button-with-help .helpicon'));
+    const helpButtons = Array.from(
+      dom.window.document.querySelectorAll('.shared-button-with-help [data-help-role="help-icon"]')
+    );
     expect(helpButtons).toHaveLength(2);
     expect(helpButtons.every((element) => element.tagName === 'BUTTON')).toBe(true);
     expect(helpButtons.every((element) => element.getAttribute('type') === 'button')).toBe(true);

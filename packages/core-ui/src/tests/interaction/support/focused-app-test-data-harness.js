@@ -2,7 +2,7 @@ import { fireEvent, waitFor, within } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 import RandExp from 'randexp';
 import { Exporter } from '@anywaydata/core/grid/exporter.js';
-import { createTestDataGenerationPanelManager } from '../../../../js/gui_components/app/test-data-grid/index.js';
+import { createTestDataGenerationPanelManager } from '../../../../js/gui_components/app/test-data-grid/controller/test-data-grid-controller.js';
 import { assertDataTableHasNoErrorIndicators, assertNoErrorIndicators } from './generated-value-quality.js';
 import { installDomGlobals, cleanupDomGlobals } from './testing-library-dom-setup.js';
 

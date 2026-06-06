@@ -1,4 +1,4 @@
-import { parseNonNegativeCount } from '../test-data/generation/index.js';
+import { parseNonNegativeCount } from '../test-data/generation/generation-runtime.js';
 
 function resolveInputElementName(inputElement, inputId) {
   if (inputId) {

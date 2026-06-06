@@ -47,7 +47,7 @@ describe('method picker modal', () => {
 
     const firstTile = getOverlay().querySelector('[data-role="method-picker-tile"]');
     firstTile.click();
-    getOverlay().querySelector('[data-action="apply"]').click();
+    getOverlay().querySelector('[data-role="method-picker-apply-button"]').click();
 
     const result = await promise;
     expect(result).toEqual({ sourceType: 'domain', command: 'location.city' });
@@ -82,8 +82,11 @@ describe('method picker modal', () => {
     expect(getDetail()).not.toBeNull();
     expect(getOverlay().querySelector('[data-role="method-picker-tile"]')).not.toBeNull();
     expect(getOverlay().querySelector('[data-role="method-picker-command"]')).not.toBeNull();
+    expect(getOverlay().querySelector('[data-role="method-picker-close-button"]')).not.toBeNull();
+    expect(getOverlay().querySelector('[data-role="method-picker-cancel-button"]')).not.toBeNull();
+    expect(getOverlay().querySelector('[data-role="method-picker-apply-button"]')).not.toBeNull();
 
-    getOverlay().querySelector('[data-action="cancel"]').click();
+    getOverlay().querySelector('[data-role="method-picker-cancel-button"]').click();
     await promise;
   });
 
@@ -129,7 +132,7 @@ describe('method picker modal', () => {
     expect(typesTable.textContent).toContain('Req');
     expect(typesTable.textContent).toContain('optional');
 
-    getOverlay().querySelector('[data-action="cancel"]').click();
+    getOverlay().querySelector('[data-role="method-picker-cancel-button"]').click();
     await promise;
   });
 
@@ -173,7 +176,7 @@ describe('method picker modal', () => {
     expect(docsLink.getAttribute('rel')).toContain('noopener');
     expect(docsLink.getAttribute('rel')).toContain('noreferrer');
 
-    getOverlay().querySelector('[data-action="cancel"]').click();
+    getOverlay().querySelector('[data-role="method-picker-cancel-button"]').click();
     await promise;
   });
 
@@ -198,7 +201,7 @@ describe('method picker modal', () => {
     );
     expect(emptyStates).toEqual(['No params']);
 
-    getOverlay().querySelector('[data-action="cancel"]').click();
+    getOverlay().querySelector('[data-role="method-picker-cancel-button"]').click();
     await promise;
   });
 
@@ -249,7 +252,7 @@ describe('method picker modal', () => {
     );
     expect(filtered).toEqual(['literal']);
 
-    getOverlay().querySelector('[data-action="cancel"]').click();
+    getOverlay().querySelector('[data-role="method-picker-cancel-button"]').click();
     await promise;
   });
 
@@ -277,7 +280,7 @@ describe('method picker modal', () => {
     );
     expect(commands).toEqual(['enum']);
 
-    getOverlay().querySelector('[data-action="cancel"]').click();
+    getOverlay().querySelector('[data-role="method-picker-cancel-button"]').click();
     await promise;
   });
 

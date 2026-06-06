@@ -6,13 +6,13 @@
 
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 import { PairwiseTestDataGenerator } from '@anywaydata/core/data_generation/all-pairs/pairwiseTestDataGenerator.js';
-import { schemaErrorsToText } from '../../shared/test-data/schema/index.js';
+import { schemaErrorsToText } from '../../shared/test-data/schema/schema-error-text.js';
 import {
   createConfiguredGeneratorFromSchemaRows,
   createPreviewDataTable,
   createPairwiseDataTable,
-  isPairwiseEligibleForSchemaRows,
-} from '../../shared/test-data/generation/index.js';
+} from '../../shared/test-data/generation/generation-controller.js';
+import { isPairwiseEligibleForSchemaRows } from '../../shared/test-data/generation/ui-derived-state.js';
 import {
   SOURCE_TYPE_FAKER,
   SOURCE_TYPE_DOMAIN,

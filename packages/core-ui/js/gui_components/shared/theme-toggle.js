@@ -5,7 +5,6 @@ const DARK_THEME = 'dark';
 const THEME_TOGGLE_COMPONENT_OWNER = 'theme-toggle-component';
 const THEME_TOGGLE_CONTAINER_ROLE = 'theme-toggle-container';
 const THEME_TOGGLE_BUTTON_ROLE = 'theme-toggle-button';
-const themeToggleInstances = new WeakMap();
 
 function getDefaultDocumentObj() {
   return typeof document !== 'undefined' ? document : null;
@@ -59,11 +58,11 @@ function resolveThemeToggleHost({ rootElement, hostElement } = {}) {
     return hostElement;
   }
 
-  if (rootElement?.matches?.('.header, [data-role="theme-toggle-host"]')) {
+  if (rootElement?.matches?.('[data-role="theme-toggle-host"]')) {
     return rootElement;
   }
 
-  return rootElement?.querySelector?.('.header, [data-role="theme-toggle-host"]') || null;
+  return rootElement?.querySelector?.('[data-role="theme-toggle-host"]') || null;
 }
 
 function ensureThemeToggleElements({ documentObj, hostElement } = {}) {
@@ -71,7 +70,7 @@ function ensureThemeToggleElements({ documentObj, hostElement } = {}) {
     return null;
   }
 
-  let container = hostElement.querySelector(`.theme-toggle-container[data-role="${THEME_TOGGLE_CONTAINER_ROLE}"]`);
+  let container = hostElement.querySelector(`[data-role="${THEME_TOGGLE_CONTAINER_ROLE}"]`);
   if (!container) {
     container = documentObj.createElement('div');
     container.className = 'theme-toggle-container';
@@ -176,40 +175,4 @@ function createThemeToggleComponent({
   };
 }
 
-function initThemeToggle({
-  documentObj = getDefaultDocumentObj(),
-  windowObj = getDefaultWindowObj(),
-  rootElement = documentObj,
-  hostElement,
-  props = {},
-} = {}) {
-  if (!documentObj) {
-    return null;
-  }
-
-  themeToggleInstances.get(documentObj)?.destroy?.();
-
-  const component = createThemeToggleComponent({
-    documentObj,
-    windowObj,
-    rootElement,
-    hostElement,
-    props,
-  });
-  if (!component) {
-    return null;
-  }
-
-  themeToggleInstances.set(documentObj, component);
-  return {
-    ...component,
-    destroy() {
-      component.destroy();
-      if (themeToggleInstances.get(documentObj) === component) {
-        themeToggleInstances.delete(documentObj);
-      }
-    },
-  };
-}
-
-export { createThemeToggleComponent, initThemeToggle };
+export { createThemeToggleComponent };

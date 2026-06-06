@@ -76,9 +76,12 @@ describe('script module initialization', () => {
         }
       },
     }));
-    jest.unstable_mockModule('../../../../../packages/core-ui/js/gui_components/app/test-data-grid/index.js', () => ({
-      mountTestDataGenerationPanel,
-    }));
+    jest.unstable_mockModule(
+      '../../../../../packages/core-ui/js/gui_components/app/test-data-grid/controller/test-data-grid-controller.js',
+      () => ({
+        mountTestDataGenerationPanel,
+      })
+    );
     jest.unstable_mockModule('../../../../../packages/core-ui/js/gui_components/data-grid-editor/index.js', () => ({
       createDataGridComponent,
     }));

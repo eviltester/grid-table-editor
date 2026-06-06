@@ -1,7 +1,7 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
 import { within } from '@testing-library/dom';
-import { mountTestDataGenerationPanel } from '../../../../js/gui_components/app/test-data-grid/index.js';
+import { mountTestDataGenerationPanel } from '../../../../js/gui_components/app/test-data-grid/controller/test-data-grid-controller.js';
 
 describe('test data schema editor compatibility', () => {
   let dom;

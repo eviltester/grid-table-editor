@@ -1,8 +1,6 @@
 import { JSDOM } from 'jsdom';
-import {
-  createConfirmDialogService,
-  createTextInputDialogService,
-} from '../../../js/gui_components/shared/dialog-services/index.js';
+import { createConfirmDialogService } from '../../../js/gui_components/shared/dialog-services/confirm-dialog-service.js';
+import { createTextInputDialogService } from '../../../js/gui_components/shared/dialog-services/text-input-dialog-service.js';
 
 describe('dialog services', () => {
   let dom;

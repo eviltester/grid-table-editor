@@ -1,5 +1,5 @@
 import { expect, userEvent, within } from 'storybook/test';
-import { createTextInputDialogService } from '../../../../packages/core-ui/js/gui_components/shared/dialog-services/index.js';
+import { createTextInputDialogService } from '../../../../packages/core-ui/js/gui_components/shared/dialog-services/text-input-dialog-service.js';
 
 function renderTextInputDialogStory(args) {
   const root = document.createElement('section');

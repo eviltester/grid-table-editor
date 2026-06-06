@@ -9,7 +9,7 @@ class DataPopulationPanelView {
     this.callbacks = callbacks;
     this.ids = { ...ids };
     this.toolbar = null;
-    this.schemaDefinition = null;
+    this.schemaPanel = null;
   }
 
   mount() {
@@ -30,9 +30,7 @@ class DataPopulationPanelView {
         aria-label="Test Data Population Panel"
       >
         <div data-role="test-data-population-toolbar-root"></div>
-        <div class="test-data-schema-edit-zone shared-schema-section">
-          <div${this.ids.schemaDefinitionRoot ? ` id="${this.ids.schemaDefinitionRoot}"` : ''} data-role="schema-definition-root"></div>
-        </div>
+        <div data-role="test-data-schema-panel-host"></div>
       </section>
     `;
   }
@@ -56,11 +54,20 @@ class DataPopulationPanelView {
       },
     });
 
-    this.schemaDefinition = this.services.createSharedSchemaDefinitionComponent?.({
-      root: this.root.querySelector('[data-role="schema-definition-root"]'),
+    this.schemaPanel = this.services.createSchemaPanelComponent?.({
+      root: this.root.querySelector('[data-role="test-data-schema-panel-host"]'),
       documentObj: this.documentObj,
-      props: state.schemaDefinitionProps,
-      callbacks: this.callbacks.schemaDefinition || {},
+      props: {
+        className: 'test-data-schema-edit-zone shared-schema-section',
+        rootDataRole: 'test-data-schema-panel-root',
+        schemaDefinitionRootDataRole: 'schema-definition-root',
+        ariaLabel: 'Test data schema panel',
+        ids: this.ids,
+        schemaDefinitionProps: state.schemaDefinitionProps,
+      },
+      callbacks: {
+        schemaDefinition: this.callbacks.schemaDefinition || {},
+      },
     });
   }
 
@@ -73,12 +80,18 @@ class DataPopulationPanelView {
       rowCountProps: state.rowCountProps,
       actionIds: state.actionIds,
     });
-    this.schemaDefinition?.update?.(state.schemaDefinitionProps);
+    this.schemaPanel?.update?.({
+      className: 'test-data-schema-edit-zone shared-schema-section',
+      rootDataRole: 'test-data-schema-panel-root',
+      schemaDefinitionRootDataRole: 'schema-definition-root',
+      ariaLabel: 'Test data schema panel',
+      schemaDefinitionProps: state.schemaDefinitionProps,
+    });
   }
 
   destroy() {
     this.toolbar?.destroy?.();
-    this.schemaDefinition?.destroy?.();
+    this.schemaPanel?.destroy?.();
     this.root.replaceChildren();
   }
 
@@ -111,7 +124,7 @@ class DataPopulationPanelView {
   }
 
   getSchemaDefinition() {
-    return this.schemaDefinition;
+    return this.schemaPanel?.getSchemaDefinition?.() || null;
   }
 }
 

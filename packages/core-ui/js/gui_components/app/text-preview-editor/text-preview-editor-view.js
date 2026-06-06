@@ -7,6 +7,7 @@ class TextPreviewEditorView {
     this.documentObj = resolveDocumentObj(documentObj, root);
     this.services = services;
     this.previewRowCountControl = null;
+    this.optionsPreviewSplitLayout = null;
     this.handleModeClick = () => this.controller.toggleMode();
     this.handleAutoPreviewChange = (event) =>
       this.controller.setAutoPreviewEnabled(event?.currentTarget?.checked === true);
@@ -56,31 +57,35 @@ class TextPreviewEditorView {
         </div>
       </div>
       <div data-role="format-subtasks-root" class="conversionSubtasks" style="display: none"></div>
-
-      <div class="edit-area" data-role="edit-area">
-          <div class="options-parent" data-role="options-panel-root" style="display: none"></div>
-          <div
-            class="options-preview-splitter"
-            data-role="options-preview-splitter"
-            style="display: none"
-            role="separator"
-            tabindex="0"
-            aria-orientation="vertical"
-            aria-label="Resize options panel"
-          ></div>
-          <div data-role="preview-text-wrapper" style="height: 30%; width:100%;">
-            <textarea
-              class="textrepresentation"
-              name="Markdown"
-              data-role="preview-text-editor"
-              aria-label="Preview text editor"
-            ></textarea>
-          </div>
-      </div>
+      <div data-role="options-preview-layout-root"></div>
     `;
   }
 
   createControls() {
+    const createOptionsPreviewSplitLayoutComponent = this.services.createOptionsPreviewSplitLayoutComponent;
+    const layoutRoot = this.root.querySelector('[data-role="options-preview-layout-root"]');
+    if (layoutRoot && typeof createOptionsPreviewSplitLayoutComponent === 'function') {
+      this.optionsPreviewSplitLayout = createOptionsPreviewSplitLayoutComponent({
+        root: layoutRoot,
+        documentObj: this.documentObj,
+        props: {
+          optionsSupported: false,
+        },
+      });
+
+      const previewPanelRoot = this.optionsPreviewSplitLayout.getPreviewPanelRoot?.();
+      if (previewPanelRoot) {
+        previewPanelRoot.innerHTML = `
+          <textarea
+            class="textrepresentation"
+            name="Markdown"
+            data-role="preview-text-editor"
+            aria-label="Preview text editor"
+          ></textarea>
+        `;
+      }
+    }
+
     const createRowCountControl = this.services.createRowCountControl;
     const rowCountRoot = this.root.querySelector('[data-role="preview-row-count-root"]');
     if (rowCountRoot && typeof createRowCountControl === 'function') {
@@ -163,6 +168,8 @@ class TextPreviewEditorView {
     this.getCopyButton()?.removeEventListener('click', this.handleCopyClick);
     this.previewRowCountControl?.destroy?.();
     this.previewRowCountControl = null;
+    this.optionsPreviewSplitLayout?.destroy?.();
+    this.optionsPreviewSplitLayout = null;
     this.root.replaceChildren();
   }
 
@@ -183,19 +190,25 @@ class TextPreviewEditorView {
   }
 
   getEditArea() {
-    return this.getElement('edit-area');
+    return this.optionsPreviewSplitLayout?.getEditArea?.() || null;
   }
 
   getOptionsPanelRoot() {
-    return this.getElement('options-panel-root');
+    return this.optionsPreviewSplitLayout?.getOptionsPanelRoot?.() || null;
   }
 
   getOptionsPreviewSplitter() {
-    return this.getElement('options-preview-splitter');
+    return this.optionsPreviewSplitLayout?.getOptionsPreviewSplitter?.() || null;
   }
 
   getTextAreaWrapper() {
-    return this.getElement('preview-text-wrapper');
+    return this.optionsPreviewSplitLayout?.getPreviewPanelRoot?.() || null;
+  }
+
+  setOptionsPanelSupported(optionsSupported) {
+    this.optionsPreviewSplitLayout?.update?.({
+      optionsSupported,
+    });
   }
 
   getTextValue() {

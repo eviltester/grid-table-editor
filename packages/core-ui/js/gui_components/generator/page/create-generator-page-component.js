@@ -1,7 +1,7 @@
 import { resolveDocumentObj } from '../../shared/dom/default-objects.js';
+import { createSchemaPanelComponent } from '../../shared/schema-panel/index.js';
 import { createGeneratorControlsComponent } from '../controls/index.js';
 import { createGeneratorPreviewComponent } from '../preview/index.js';
-import { createGeneratorSchemaPanelComponent } from '../schema-panel/index.js';
 import { GeneratorPageController } from './generator-page-controller.js';
 import { GeneratorPageView } from './generator-page-view.js';
 
@@ -15,8 +15,7 @@ function createGeneratorPageComponent({ root, props = {}, services = {}, callbac
     services: {
       createGeneratorControlsComponent: services.createGeneratorControlsComponent || createGeneratorControlsComponent,
       createGeneratorPreviewComponent: services.createGeneratorPreviewComponent || createGeneratorPreviewComponent,
-      createGeneratorSchemaPanelComponent:
-        services.createGeneratorSchemaPanelComponent || createGeneratorSchemaPanelComponent,
+      createSchemaPanelComponent: services.createSchemaPanelComponent || createSchemaPanelComponent,
       generatorControlsServices: services.generatorControlsServices || {},
       generatorPreviewServices: services.generatorPreviewServices || {},
     },

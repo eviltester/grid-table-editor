@@ -51,10 +51,18 @@ class GeneratorPageView {
       callbacks: this.callbacks.generatorPreview || {},
     });
 
-    this.generatorSchemaPanel = this.services.createGeneratorSchemaPanelComponent?.({
+    this.generatorSchemaPanel = this.services.createSchemaPanelComponent?.({
       root: this.root.querySelector('[data-role="generator-schema-panel-root"]'),
       documentObj: this.documentObj,
       props: {
+        className: 'generator-schema',
+        sectionId: 'generatorSchemaSection',
+        sectionOrder: '2',
+        ariaLabelledBy: 'generatorSchemaHeading',
+        rootDataRole: 'generator-schema-panel-root',
+        schemaDefinitionRootDataRole: 'generator-schema-definition-root',
+        useTimedSchemaErrorDisplay: true,
+        schemaErrorTimeoutMs: 5000,
         schemaDefinitionProps: {
           ...state.schemaDefinitionProps,
         },
@@ -68,6 +76,14 @@ class GeneratorPageView {
   render() {
     const state = this.controller.getState();
     this.generatorSchemaPanel?.update?.({
+      className: 'generator-schema',
+      sectionId: 'generatorSchemaSection',
+      sectionOrder: '2',
+      ariaLabelledBy: 'generatorSchemaHeading',
+      rootDataRole: 'generator-schema-panel-root',
+      schemaDefinitionRootDataRole: 'generator-schema-definition-root',
+      useTimedSchemaErrorDisplay: true,
+      schemaErrorTimeoutMs: 5000,
       schemaDefinitionProps: {
         ...state.schemaDefinitionProps,
       },

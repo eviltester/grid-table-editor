@@ -543,8 +543,12 @@ Use this backlog when the next migration step should be chosen from the reviewer
 - [x] Add standalone Storybook coverage for the app page shell structure so reviewers can inspect shell composition separately from full app bootstrap.
 - [x] Add standalone Storybook coverage for the generator page shell structure so reviewers can inspect shell composition separately from full generator bootstrap.
 - [x] Re-audit Storybook after each new visible split and add follow-up unchecked items when a feature still renders meaningful visible child UI only through a broader page story.
-- [x] Split the generator-specific schema section wrapper out of `GeneratorPage` and add standalone Storybook coverage for it as a reviewer-facing feature component.
-- [ ] Re-audit app and generator page stories again after the generator schema-panel extraction to identify the next visible feature wrapper that still only appears through a broader page story.
+- [x] Split the schema section wrapper into one shared `SchemaPanel` component and add standalone Storybook coverage for the app and generator host configurations.
+- [x] Re-audit app and generator page stories again after the shared schema-panel extraction to identify the next visible feature wrapper that still only appears through a broader page story.
+- [x] Extract the import/export options-preview split layout from `ImportExportWorkspaceView` into a focused component or view helper with Storybook coverage for supported format, unsupported format, keyboard resize, and narrow-width clamping states.
+- [ ] Split the generator output-format dropdown from `GeneratorControlsView` into a focused `GeneratorOutputFormatSelector` component with Storybook coverage for core formats, code formats, unit-test formats, and unsupported-format filtering.
+- [ ] Expand `GeneratorControls` Storybook coverage with busy/loading/status states so reviewers can inspect the composed row count, format selector, actions, options panel, and status integration without using the full generator page story.
+- [ ] Add a small re-audit note for `TextPreviewEditor` after the options-preview split extraction to decide whether its right-side controls need a separate toolbar component or whether the current focused story is enough.
 
 Current status:
 
@@ -556,7 +560,9 @@ Current status:
 - The embedded app test-data panel no longer exposes a separate `Refresh Text Preview` button; successful generate/amend flows now refresh the preview automatically so the shared action cluster stays aligned with the generator surface.
 - The import/export toolbar Storybook docs now expose the real file-input and drag/drop surface directly, with dedicated reviewer-facing stories for the default toolbar, file-import boundary, and busy/status state instead of leaving drag/drop behavior implicit inside the full workspace story.
 - App and generator page shell composition now also have standalone reviewer-facing Storybook coverage in `app-page-shell.stories.js` and `generator-page-shell.stories.js`, using explicit placeholder mount-root cards so reviewers can inspect shell layout separately from full bootstrap/runtime behavior.
-- The re-audit found one more real generator-side visible seam: `GeneratorPage` still owned the generator-specific schema section wrapper around the shared schema definition. That wrapper is now split into its own `GeneratorSchemaPanel` component with standalone Storybook coverage in `generator-schema-panel.stories.js`, so the next re-audit can focus on any remaining visible wrappers rather than this schema-section shell.
+- The re-audit found that both app and generator still owned visible schema wrapper markup around the shared schema definition. That wrapper is now one shared `SchemaPanel` component with standalone Storybook host coverage in `generator-schema-panel.stories.js` and `test-data-schema-panel.stories.js`, so `DataPopulationPanel` and `GeneratorPage` both compose a shared schema wrapper instead of carrying host-local copies.
+- The post-`SchemaPanel` re-audit found no urgent missing primary stories for schema, page shells, instructions, app data population, generator controls, generator preview, data grid editor, import/export toolbar, text preview editor, format selector, or format options. The next useful Storybook-driven splits are smaller visible sub-surfaces: the import/export options-preview split layout and the generator output-format selector.
+- The import/export options-preview shell is now a focused app-side component with its own Storybook docs and direct tests. `ImportExportWorkspaceView` no longer owns the splitter drag/keyboard/clamping behavior itself; it now composes the dedicated split-layout boundary through `TextPreviewEditor`.
 
 ## Generator Runtime Simplification Follow-On
 

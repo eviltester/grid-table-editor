@@ -1,9 +1,9 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
-import * as generatorSchemaPanelExports from '../../../js/gui_components/generator/schema-panel/index.js';
-import { createGeneratorSchemaPanelComponent } from '../../../js/gui_components/generator/schema-panel/index.js';
+import * as schemaPanelExports from '../../../js/gui_components/shared/schema-panel/index.js';
+import { createSchemaPanelComponent } from '../../../js/gui_components/shared/schema-panel/index.js';
 
-describe('GeneratorSchemaPanel', () => {
+describe('SchemaPanel generator host configuration', () => {
   let dom;
 
   beforeEach(() => {
@@ -19,9 +19,9 @@ describe('GeneratorSchemaPanel', () => {
   });
 
   test('public barrel is component-factory-only', () => {
-    expect(generatorSchemaPanelExports.createGeneratorSchemaPanelComponent).toBe(createGeneratorSchemaPanelComponent);
-    expect(generatorSchemaPanelExports.GeneratorSchemaPanelController).toBeUndefined();
-    expect(generatorSchemaPanelExports.GeneratorSchemaPanelView).toBeUndefined();
+    expect(schemaPanelExports.createSchemaPanelComponent).toBe(createSchemaPanelComponent);
+    expect(schemaPanelExports.SchemaPanelController).toBeUndefined();
+    expect(schemaPanelExports.SchemaPanelView).toBeUndefined();
   });
 
   test('renders generator schema wrapper and injects schema error display into the shared schema definition', () => {
@@ -35,10 +35,18 @@ describe('GeneratorSchemaPanel', () => {
       destroy: jest.fn(),
     };
 
-    const component = createGeneratorSchemaPanelComponent({
+    const component = createSchemaPanelComponent({
       root: document.getElementById('root'),
       documentObj: document,
       props: {
+        className: 'generator-schema',
+        sectionId: 'generatorSchemaSection',
+        sectionOrder: '2',
+        ariaLabelledBy: 'generatorSchemaHeading',
+        rootDataRole: 'generator-schema-panel-root',
+        schemaDefinitionRootDataRole: 'generator-schema-definition-root',
+        useTimedSchemaErrorDisplay: true,
+        schemaErrorTimeoutMs: 5000,
         schemaDefinitionProps: {
           headingText: 'Schema',
         },

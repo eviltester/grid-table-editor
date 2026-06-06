@@ -24,7 +24,7 @@ describe('GeneratorPageView', () => {
         schemaDefinitionProps: { headingText: 'Schema' },
       },
       services: {
-        createGeneratorSchemaPanelComponent: ({ root }) => {
+        createSchemaPanelComponent: ({ root }) => {
           root.innerHTML = '<div id="generatorSchemaPanelMounted">schema-panel</div>';
           return {
             update() {},

@@ -1,4 +1,5 @@
 import { createSharedSchemaDefinitionComponent } from '../../shared/schema-definition/index.js';
+import { createSchemaPanelComponent } from '../../shared/schema-panel/index.js';
 import { createTestDataPopulationToolbarComponent } from '../test-data-population-toolbar/index.js';
 import { DataPopulationPanelController } from './data-population-panel-controller.js';
 import { DataPopulationPanelView } from './data-population-panel-view.js';
@@ -15,8 +16,17 @@ function createDataPopulationPanelComponent({ root, props = {}, services = {}, c
     services: {
       createTestDataPopulationToolbarComponent:
         services.createTestDataPopulationToolbarComponent || createTestDataPopulationToolbarComponent,
-      createSharedSchemaDefinitionComponent:
-        services.createSharedSchemaDefinitionComponent || createSharedSchemaDefinitionComponent,
+      createSchemaPanelComponent:
+        services.createSchemaPanelComponent ||
+        ((schemaPanelOptions) =>
+          createSchemaPanelComponent({
+            ...schemaPanelOptions,
+            services: {
+              ...(schemaPanelOptions.services || {}),
+              createSharedSchemaDefinitionComponent:
+                services.createSharedSchemaDefinitionComponent || createSharedSchemaDefinitionComponent,
+            },
+          })),
     },
     callbacks,
   });

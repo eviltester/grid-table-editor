@@ -80,7 +80,15 @@ describe('DataPopulationPanel', () => {
         },
       },
       services: {
-        createSharedSchemaDefinitionComponent: () => schemaDefinition,
+        createSchemaPanelComponent: ({ root }) => {
+          root.innerHTML =
+            '<div data-role="test-data-schema-panel-root"><div data-role="schema-definition-root"></div></div>';
+          return {
+            update: jest.fn(),
+            destroy: jest.fn(() => schemaDefinition.destroy()),
+            getSchemaDefinition: () => schemaDefinition,
+          };
+        },
       },
       callbacks: { onGenerate, onModeChange },
     });
@@ -206,7 +214,14 @@ describe('DataPopulationPanel', () => {
         },
       },
       services: {
-        createSharedSchemaDefinitionComponent: () => firstSchemaDefinition,
+        createSchemaPanelComponent: ({ root, props }) => {
+          root.innerHTML = `<div data-role="test-data-schema-panel-root"><div id="${props.ids.schemaDefinitionRoot}" data-role="schema-definition-root"></div></div>`;
+          return {
+            update: jest.fn(),
+            destroy: jest.fn(() => firstSchemaDefinition.destroy()),
+            getSchemaDefinition: () => firstSchemaDefinition,
+          };
+        },
       },
     });
 
@@ -230,7 +245,14 @@ describe('DataPopulationPanel', () => {
         },
       },
       services: {
-        createSharedSchemaDefinitionComponent: () => secondSchemaDefinition,
+        createSchemaPanelComponent: ({ root, props }) => {
+          root.innerHTML = `<div data-role="test-data-schema-panel-root"><div id="${props.ids.schemaDefinitionRoot}" data-role="schema-definition-root"></div></div>`;
+          return {
+            update: jest.fn(),
+            destroy: jest.fn(() => secondSchemaDefinition.destroy()),
+            getSchemaDefinition: () => secondSchemaDefinition,
+          };
+        },
       },
     });
 

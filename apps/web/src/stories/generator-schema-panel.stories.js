@@ -6,7 +6,7 @@ import {
   dataRulesToSchemaText,
   schemaRowsToDataRules,
 } from '@anywaydata/core/data_generation/schema-rules-adapter.js';
-import { createGeneratorSchemaPanelComponent } from '../../../../packages/core-ui/js/gui_components/generator/schema-panel/index.js';
+import { createSchemaPanelComponent } from '../../../../packages/core-ui/js/gui_components/shared/schema-panel/index.js';
 import { validateSchemaRows as validateSharedSchemaRows } from '../../../../packages/core-ui/js/gui_components/shared/test-data/schema/schema-editor-core.js';
 import { getKnownFakerCommandsAlphabetical } from '../../../../packages/core-ui/js/gui_components/shared/faker-commands.js';
 import { getKnownDomainCommandsAlphabetical } from '../../../../packages/core-ui/js/gui_components/shared/domain-commands.js';
@@ -74,10 +74,18 @@ function renderGeneratorSchemaPanelStory(args) {
   componentRoot.setAttribute('role', 'group');
   root.appendChild(componentRoot);
 
-  const component = createGeneratorSchemaPanelComponent({
+  const component = createSchemaPanelComponent({
     root: componentRoot,
     documentObj: document,
     props: {
+      className: 'generator-schema',
+      sectionId: 'generatorSchemaSection',
+      sectionOrder: '2',
+      ariaLabelledBy: 'generatorSchemaHeading',
+      rootDataRole: 'generator-schema-panel-root',
+      schemaDefinitionRootDataRole: 'generator-schema-definition-root',
+      useTimedSchemaErrorDisplay: true,
+      schemaErrorTimeoutMs: 5000,
       schemaDefinitionProps: createGeneratorSchemaStoryProps(),
     },
   });
@@ -95,13 +103,13 @@ function renderGeneratorSchemaPanelStory(args) {
 }
 
 const meta = {
-  title: 'Generator/Schema Panel',
+  title: 'Shared/SchemaPanel/Generator Host',
   tags: ['autodocs'],
   parameters: {
     docs: {
       description: {
         component:
-          'GeneratorSchemaPanel is the generator-specific wrapper around the shared schema-definition component. It owns the generator schema section layout plus the timed schema-error presenter, so reviewers can inspect that feature boundary without loading the full generator page.',
+          'SchemaPanel is the shared wrapper around the shared schema-definition component. This story shows the generator host configuration, including generator section styling and the timed schema-error presenter, without loading the full generator page.',
       },
     },
   },

@@ -1,13 +1,13 @@
-import { createTimedStatusPresenter } from '../../shared/timed-error-display.js';
-import { createSharedSchemaDefinitionComponent } from '../../shared/schema-definition/index.js';
-import { resolveDocumentObj } from '../../shared/dom/default-objects.js';
-import { GeneratorSchemaPanelController } from './generator-schema-panel-controller.js';
-import { GeneratorSchemaPanelView } from './generator-schema-panel-view.js';
+import { resolveDocumentObj } from '../dom/default-objects.js';
+import { createSharedSchemaDefinitionComponent } from '../schema-definition/index.js';
+import { createTimedStatusPresenter } from '../timed-error-display.js';
+import { SchemaPanelController } from './schema-panel-controller.js';
+import { SchemaPanelView } from './schema-panel-view.js';
 
-function createGeneratorSchemaPanelComponent({ root, props = {}, services = {}, callbacks = {}, documentObj } = {}) {
+function createSchemaPanelComponent({ root, props = {}, services = {}, callbacks = {}, documentObj } = {}) {
   const resolvedDocumentObj = resolveDocumentObj(documentObj, root);
-  const controller = new GeneratorSchemaPanelController({ props });
-  const view = new GeneratorSchemaPanelView({
+  const controller = new SchemaPanelController({ props });
+  const view = new SchemaPanelView({
     root,
     controller,
     documentObj: resolvedDocumentObj,
@@ -41,4 +41,4 @@ function createGeneratorSchemaPanelComponent({ root, props = {}, services = {}, 
   };
 }
 
-export { createGeneratorSchemaPanelComponent };
+export { createSchemaPanelComponent };

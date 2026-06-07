@@ -4,6 +4,19 @@ import { decorateIconContainer } from '../gui_components/shared/primitives/icon/
 
 const GLOBAL_INLINE_HELP_CONTAINER_ID = 'inline-help-items';
 const SCOPED_INLINE_HELP_CONTAINER_ROLE = 'inline-help-items';
+const DOCUMENT_NODE = 9;
+
+function resolveScopedContainerRoot(documentObj, rootElement) {
+  if (!rootElement) {
+    return documentObj?.body || documentObj?.documentElement || rootElement;
+  }
+
+  if (rootElement.nodeType === DOCUMENT_NODE) {
+    return rootElement.body || rootElement.documentElement || rootElement;
+  }
+
+  return rootElement;
+}
 
 function ensureGlobalInlineHelpContainer(documentObj) {
   let container = documentObj.getElementById(GLOBAL_INLINE_HELP_CONTAINER_ID);
@@ -21,12 +34,13 @@ function ensureScopedInlineHelpContainer(documentObj, rootElement) {
     return ensureGlobalInlineHelpContainer(documentObj);
   }
 
-  let container = rootElement.querySelector(`[data-role="${SCOPED_INLINE_HELP_CONTAINER_ROLE}"]`);
+  const scopedContainerRoot = resolveScopedContainerRoot(documentObj, rootElement);
+  let container = scopedContainerRoot.querySelector(`[data-role="${SCOPED_INLINE_HELP_CONTAINER_ROLE}"]`);
   if (!container) {
     container = documentObj.createElement('div');
     container.style.display = 'none';
     container.setAttribute('data-role', SCOPED_INLINE_HELP_CONTAINER_ROLE);
-    rootElement.appendChild(container);
+    scopedContainerRoot.appendChild(container);
   }
   return container;
 }

@@ -175,6 +175,21 @@ describe('help tooltips module', () => {
     expect(helpIcon.getAttribute('aria-label')).toBe('Show help');
   });
 
+  test('createUpdateHelpHints defaults document roots to body instead of appending containers directly to the document', () => {
+    const helpIcon = dom.window.document.createElement('span');
+    helpIcon.className = 'helpicon';
+    helpIcon.setAttribute('data-help-role', 'help-icon');
+    helpIcon.setAttribute('data-help', 'csv-options');
+    dom.window.document.body.appendChild(helpIcon);
+
+    const updateHelpHints = createUpdateHelpHints(dom.window.document, undefined, {
+      windowObj: { tippy: jest.fn() },
+    });
+
+    expect(() => updateHelpHints()).not.toThrow();
+    expect(dom.window.document.body.querySelector('[data-role="inline-help-items"]')).not.toBeNull();
+  });
+
   test('createHelpTooltipService exposes destroy lifecycle for scoped tooltip instances', () => {
     const root = dom.window.document.createElement('section');
     root.innerHTML = `<span class="helpicon" data-help-role="help-icon" data-help="csv-options"></span>`;

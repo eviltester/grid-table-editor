@@ -20,7 +20,6 @@
     "testenv:create": "node ./scripts/create-testenv.mjs",
     "generate:faker-help": "node ./scripts/generate-faker-help.js",
     "test:browser": "node ./node_modules/@playwright/test/cli.js test",
-    "test:browser:smoke": "node ./node_modules/@playwright/test/cli.js test --config=playwright-smoke.config.js",
     "test:browser:headed": "node ./node_modules/@playwright/test/cli.js test --headed",
     "test:browser:install": "node ./node_modules/@playwright/test/cli.js install chromium",
     "test:api": "node ./node_modules/@playwright/test/cli.js test --config=playwright-api.config.js",

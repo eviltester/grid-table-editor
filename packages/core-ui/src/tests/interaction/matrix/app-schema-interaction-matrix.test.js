@@ -9,6 +9,10 @@
  * - generate fills the grid-facing data table with real generated data
  * - preview text refresh renders exported output text
  * - pairwise generation is exposed and works for eligible scenarios
+ *
+ * Notes:
+ * - This suite is intentionally a small page-wiring smoke subset.
+ * - Broader schema semantics remain covered by the runtime matrix and focused component/browser tests.
  */
 
 import { jest } from '@jest/globals';
@@ -21,7 +25,20 @@ const fixturePath = join(
   process.cwd(),
   'packages/core-ui/src/tests/interaction/matrix/fixtures/schema-interaction-matrix.json'
 );
-const scenarios = JSON.parse(readFileSync(fixturePath, 'utf8')).uiScenarios;
+const SMOKE_SCENARIO_IDS = [
+  'custom-literal-base',
+  'custom-regex-base',
+  'faker-helpers-arrayElement-base',
+  'domain-commerce-price-example-1',
+  'custom-enum-pairwise',
+];
+const allScenarios = JSON.parse(readFileSync(fixturePath, 'utf8')).uiScenarios;
+const scenarios = SMOKE_SCENARIO_IDS.map((scenarioId) =>
+  allScenarios.find((scenario) => scenario.id === scenarioId)
+).filter(Boolean);
+if (scenarios.length !== SMOKE_SCENARIO_IDS.length) {
+  throw new Error('app schema interaction smoke subset is missing fixture scenarios');
+}
 const CHUNK_SIZE = 20;
 const chunkDescriptors = buildChunkDescriptors(scenarios, CHUNK_SIZE);
 

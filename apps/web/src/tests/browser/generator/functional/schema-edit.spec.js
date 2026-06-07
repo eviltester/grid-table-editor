@@ -108,6 +108,29 @@ test.describe('Generator Schema Editing', () => {
     expectNoPageErrors(pageErrors);
   });
 
+  test('schema help shows tippy tooltip content for faker and literal', async ({ page }) => {
+    const { generatorPage, pageErrors } = await openGenerator(page);
+
+    await generatorPage.schema.setTextMode(false);
+    await generatorPage.schema.setRowSourceType(0, 'faker');
+    const helpIcon = generatorPage.page.locator('[data-field="faker-doc-link"]').first();
+
+    await helpIcon.hover();
+    await expect(
+      generatorPage.page
+        .locator('.tippy-content')
+        .filter({ hasText: 'Faker commands generate realistic random values' })
+    ).toBeVisible();
+
+    await generatorPage.schema.setRowSourceType(0, 'literal');
+    await generatorPage.page.locator('[data-field="faker-doc-link"]').first().hover();
+    await expect(
+      generatorPage.page.locator('.tippy-content').filter({ hasText: 'Literal data repeats the exact text' })
+    ).toBeVisible();
+
+    expectNoPageErrors(pageErrors);
+  });
+
   test('domain rows with invalid params stay domain after text mode round-trip in the generator editor', async ({
     page,
   }) => {

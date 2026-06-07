@@ -128,9 +128,9 @@ This is the current repo-level audit after the latest Storybook and generator ru
 ### Main Remaining MVC Gaps
 
 - `ImportExportWorkspace`
-  - Much closer to clean MVC now.
-  - The component entrypoint is thin, and the async import/export workflow now lives in [create-import-export-workspace-runtime.js](D:/github/grid-table-editor/packages/core-ui/js/gui_components/app/import-export-workspace/create-import-export-workspace-runtime.js) instead of inside the public component factory.
-  - The remaining question is whether that runtime should eventually split again into a smaller workflow service plus a thinner feature runtime, but the main "factory is the feature brain" problem is resolved.
+  - Now clean enough to treat as an honest MVC-style feature boundary.
+  - The component entrypoint is thin, the runtime is lifecycle-and-wiring focused, and the async import/export/preview behavior now lives in [create-import-export-workspace-workflow-service.js](D:/github/grid-table-editor/packages/core-ui/js/gui_components/app/import-export-workspace/create-import-export-workspace-workflow-service.js).
+  - The remaining follow-up here is only optional naming or micro-splits if a future change makes the workflow service too broad again.
 
 - generator runtime dependency clusters
   - Much closer to clean MVC now.
@@ -142,14 +142,12 @@ This is the current repo-level audit after the latest Storybook and generator ru
   - The next Storybook-driven split remains the output-format selector, so the component surface can expose that visible choice area independently instead of only as one region inside the larger controls component.
 
 - `TextPreviewEditor`
-  - Improved after the split-layout extraction, but still worth a follow-up re-audit.
-  - The right-side controls may still deserve their own toolbar boundary if further Storybook review shows that preview/edit toggle behavior is still too coupled to the text area surface.
+  - The re-audit justified one more visible split.
+  - `TextPreviewEditor` now composes a dedicated `TextPreviewToolbar` for the Preview/Edit control cluster, which leaves the parent editor closer to an honest textarea-plus-split-layout boundary.
 
 ## Recommended Next Cleanup Order
 
-1. Re-audit `TextPreviewEditor` after the generator selector split to decide whether its right-side controls need their own toolbar component.
-2. Decide whether `ImportExportWorkspace` should keep one feature runtime or split again into a thinner runtime plus a narrower import/export workflow service.
-3. Decide whether the remaining generator schema-generation helper should stay separate or be renamed as a service in a future cleanup.
+1. Decide whether the remaining generator schema-generation helper should stay separate or be renamed as a service in a future cleanup.
 
 ## Short Review Questions
 

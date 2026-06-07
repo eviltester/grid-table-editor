@@ -1,7 +1,6 @@
-import { createUpdateHelpHints } from '../../../help/help-tooltips.js';
 import { createOptionsPreviewSplitLayoutComponent } from '../options-preview-split-layout/index.js';
+import { createTextPreviewToolbarComponent } from '../text-preview-toolbar/index.js';
 import { resolveDocumentObj } from '../../shared/dom/default-objects.js';
-import { createRowCountControl } from '../../shared/row-count-control/index.js';
 import { TextPreviewEditorController } from './text-preview-editor-controller.js';
 import { TextPreviewEditorView } from './text-preview-editor-view.js';
 
@@ -13,10 +12,10 @@ function createTextPreviewEditorComponent({ root, props = {}, callbacks = {}, se
     controller,
     documentObj: resolvedDocumentObj,
     services: {
+      createTextPreviewToolbarComponent:
+        services.createTextPreviewToolbarComponent || createTextPreviewToolbarComponent,
       createOptionsPreviewSplitLayoutComponent:
         services.createOptionsPreviewSplitLayoutComponent || createOptionsPreviewSplitLayoutComponent,
-      createRowCountControl: services.createRowCountControl || createRowCountControl,
-      updateHelpHints: createUpdateHelpHints(resolvedDocumentObj, root),
     },
   });
 

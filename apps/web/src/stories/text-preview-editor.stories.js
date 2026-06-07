@@ -24,7 +24,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'TextPreviewEditor is the app-side preview/edit component. It renders the Preview/Edit toggle, Auto Preview checkbox, compact preview row-count spinbutton, shared text area, copy button, and options/preview split-panel shell.',
+          'TextPreviewEditor is the app-side preview/edit component. It now composes the focused TextPreviewToolbar for the visible Preview/Edit controls while continuing to own the shared text area and options/preview split-panel shell.',
       },
     },
   },

@@ -1,7 +1,7 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
 import { within } from '@testing-library/dom';
-import { mountTestDataGenerationPanel } from '../../../../js/gui_components/app/test-data-grid/index.js';
+import { mountTestDataGenerationPanel } from '../../../../js/gui_components/app/test-data-grid/controller/test-data-grid-controller.js';
 
 describe('test data schema editor compatibility', () => {
   let dom;
@@ -36,7 +36,10 @@ describe('test data schema editor compatibility', () => {
 
   function setup(gridExtras = {}) {
     const importer = { setGridFromGenericDataTable: jest.fn(() => Promise.resolve()) };
-    const renderer = { renderTextFromGrid: jest.fn(() => Promise.resolve('')) };
+    const renderer = {
+      getState: jest.fn(() => ({ mode: 'preview', autoPreviewEnabled: true })),
+      renderTextFromGrid: jest.fn(() => Promise.resolve('')),
+    };
     mountTestDataGenerationPanel('host', importer, renderer, {
       getRowCount: jest.fn(() => 0),
       getSelectedRowIndexes: jest.fn(() => []),
@@ -76,14 +79,29 @@ describe('test data schema editor compatibility', () => {
     expect(countInput.value).toBe('3');
   });
 
-  test('refresh text preview button renders text on demand', async () => {
+  test('generate updates the text preview automatically', async () => {
     const { renderer } = setup();
+    const sourceTypeSelect = document.querySelector(
+      '[data-role="schema-rows-region"] .shared-schema-row select[data-field="sourceType"]'
+    );
+    sourceTypeSelect.value = 'literal';
+    sourceTypeSelect.dispatchEvent(new Event('change', { bubbles: true }));
+    document.querySelector('[data-role="schema-rows-region"] input[data-field="name"]').value = 'Status';
+    document
+      .querySelector('[data-role="schema-rows-region"] input[data-field="name"]')
+      .dispatchEvent(new Event('input', { bubbles: true }));
+    document.querySelector('[data-role="schema-rows-region"] input[data-field="value"]').value = 'Active';
+    document
+      .querySelector('[data-role="schema-rows-region"] input[data-field="value"]')
+      .dispatchEvent(new Event('input', { bubbles: true }));
     within(document.querySelector('[data-role="data-population-panel-root"]'))
-      .getByRole('button', { name: /refresh text preview/i })
+      .getByRole('button', { name: /^generate$/i })
       .click();
-    await flushUi();
+    await waitForCondition(() => renderer.renderTextFromGrid.mock.calls.length === 1);
     expect(renderer.renderTextFromGrid).toHaveBeenCalledTimes(1);
-    expect(document.querySelector('[data-role="population-status"]').textContent).toContain('Text preview refreshed');
+    expect(document.querySelector('[data-role="population-status"]').textContent).toContain(
+      'Generate complete. Grid and preview updated.'
+    );
   });
 
   test('invalid schema reports validation error', async () => {

@@ -17,7 +17,7 @@ test.describe('4. Import Export Basic', () => {
     expectNoPageErrors(pageErrors);
   });
 
-  test('Auto Preview updates text on grid edits in preview mode and is disabled in edit mode', async ({ page }) => {
+  test('Auto Sync updates text on grid edits in preview mode and is disabled in edit mode', async ({ page }) => {
     const { appPage, pageErrors } = await openApp(page);
     const primaryColumnName = await seedRows(appPage, ['A', 'B']);
 

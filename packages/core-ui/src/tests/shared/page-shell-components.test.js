@@ -1,6 +1,8 @@
 import { JSDOM } from 'jsdom';
-import { createAppPageComponent } from '../../../js/gui_components/app/page/index.js';
-import { createGeneratorPageShellComponent } from '../../../js/gui_components/generator/page/index.js';
+import * as appPageRuntimeExports from '../../../js/gui_components/app/page/app-page-runtime.js';
+import { createAppPageComponent } from '../../../js/gui_components/app/page/app-page-shell.js';
+import * as generatorPageExports from '../../../js/gui_components/generator/page/index.js';
+import { createGeneratorPageShellComponent } from '../../../js/gui_components/generator/page/create-generator-page-shell-component.js';
 
 describe('page shell components', () => {
   let dom;
@@ -15,6 +17,17 @@ describe('page shell components', () => {
     dom.window.close();
     delete global.window;
     delete global.document;
+  });
+
+  test('page runtime entries stay narrow', () => {
+    expect(typeof appPageRuntimeExports.bootstrapApp).toBe('function');
+    expect(appPageRuntimeExports.createAppPageComponent).toBeUndefined();
+    expect(appPageRuntimeExports.AppPageShellController).toBeUndefined();
+    expect(appPageRuntimeExports.AppPageShellView).toBeUndefined();
+    expect(typeof generatorPageExports.createGeneratorPageComponent).toBe('function');
+    expect(generatorPageExports.createGeneratorPageShellComponent).toBeUndefined();
+    expect(generatorPageExports.GeneratorPageShellController).toBeUndefined();
+    expect(generatorPageExports.GeneratorPageShellView).toBeUndefined();
   });
 
   test('app page component renders shared app shell structure', () => {
@@ -33,6 +46,7 @@ describe('page shell components', () => {
     expect(root.querySelector('.header')).toBeNull();
     expect(root.querySelector('#initial-load')).toBeNull();
     expect(root.querySelector('.testDataSchemaGui details')?.hasAttribute('open')).toBe(true);
+    expect(root.querySelector('.importexport details')).toBeNull();
     expect(
       Array.from(root.querySelector('.main-app')?.children || []).map((element) => {
         if (element.id) {

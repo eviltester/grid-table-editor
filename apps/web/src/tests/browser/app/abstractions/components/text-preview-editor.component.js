@@ -11,7 +11,7 @@ class TextPreviewEditorComponent {
     this.tabsList = this.container.locator('[data-role="format-tabs-list"]');
     this.outputTextArea = this.container.locator('[data-role="preview-text-editor"]').first();
     this.previewOrEditButton = this.container.getByRole('button', { name: /^(preview|edit)$/i });
-    this.autoPreviewCheckbox = this.container.getByRole('checkbox', { name: /auto preview/i });
+    this.autoPreviewCheckbox = this.container.getByRole('checkbox', { name: /auto sync/i });
     this.copyButton = this.container.getByRole('button', { name: /^copy$/i });
     this.subtasks = this.container.locator('[data-role="format-subtasks-root"]');
 

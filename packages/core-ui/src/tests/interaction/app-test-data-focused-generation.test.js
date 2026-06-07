@@ -4,7 +4,7 @@
  *
  * Asserts:
  * - generation-mode radio changes update visible row-count defaults
- * - generate and refresh preview use real generated/exported data
+ * - generate auto-refreshes preview using real generated/exported data
  * - pairwise visibility follows enum eligibility and pairwise generation succeeds
  * - amend modes respect grid row counts and selected-row requirements
  */
@@ -37,7 +37,8 @@ describe('app test-data focused generation flows', () => {
     expect(harness.getGenerateCount()).toBe('3');
   });
 
-  test('generate and refresh preview use real output without error indicators', async () => {
+  test('generate auto-refreshes preview with real output and no error indicators', async () => {
+    harness.setPreviewState({ mode: 'preview', autoPreviewEnabled: true });
     await harness.addColumn();
     await harness.fillGridRow(0, {
       name: 'Counter',
@@ -48,10 +49,24 @@ describe('app test-data focused generation flows', () => {
     await harness.setGenerateCount(2);
     await harness.clickGenerate();
     harness.assertSuccessfulGeneration('app focused generate');
-
-    await harness.clickRefreshPreview();
-    harness.assertSuccessfulPreview('app focused refresh preview');
+    harness.assertSuccessfulPreview('app focused auto preview');
     expect(harness.getPreviewText()).toContain('Counter');
+  });
+
+  test('generate does not refresh preview when auto preview is off and preview is not in edit mode', async () => {
+    harness.setPreviewState({ mode: 'preview', autoPreviewEnabled: false });
+    await harness.addColumn();
+    await harness.fillGridRow(0, {
+      name: 'Counter',
+      sourceType: 'domain',
+      command: 'string.counterString',
+      params: '()',
+    });
+    await harness.setGenerateCount(2);
+    await harness.clickGenerate({ waitForData: false });
+    await waitFor(() => expect(harness.getLatestDataTable()).toBeTruthy());
+    harness.assertSuccessfulGeneration('app focused generate without preview refresh');
+    expect(harness.getPreviewText()).toBe('');
   });
 
   test('pairwise generation is only visible for eligible schema and succeeds when shown', async () => {

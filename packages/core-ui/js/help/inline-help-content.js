@@ -10,6 +10,34 @@ const sharedInlineHelpEntries = {
       </ul>
       <p>The options shown depend on the output type, some types are not supported for input and so only the output options will be shown.</p>
     `,
+  'import-export-grid-preview-sync': `
+      <p>Use the Grid/Preview Sync controls to keep the text preview and grid aligned for the selected output format.</p>
+      <ul>
+        <li>"Set Text From Grid"<br> refreshes the text box using the current grid data and chosen output format.</li>
+        <li>"Set Grid From Text"<br> <a class="helplink" href="/docs/editing-data/text-editing" target="anywaydatadocs">imports the text box content</a> back into the grid.</li>
+      </ul>
+      <p>In Preview mode, Set Grid From Text stays disabled until the preview text has been edited. In Edit mode, it is available immediately.</p>
+    `,
+  'import-export-import': `
+      <p>Use the Import controls to load external text into the current grid using the selected format.</p>
+      <ul>
+        <li>"Choose File"<br> lets you <a class="helplink" href="/docs/editing-data/import-from-file" target="anywaydatadocs">import a text file</a> of the chosen format.</li>
+        <li>"Drag and Drop File"<br> imports the dropped file contents using the currently chosen format.</li>
+      </ul>
+      <p>If a format does not support import, the import controls stay hidden while export-only actions remain available.</p>
+    `,
+  'import-export-download': `
+      <p>Use Download to <a class="helplink" href="/docs/editing-data/exporting-data" target="anywaydatadocs">export the Data Grid</a> items in the chosen format.</p>
+      <p>The filename extension follows the currently selected output type, and export status appears beside the button while the download is being prepared.</p>
+    `,
+  'auto-sync-help': `
+      <p><strong>Auto Sync</strong> keeps the preview text refreshed from the grid while you stay in Preview mode.</p>
+      <p>When enabled, grid edits automatically update the preview using the selected format. In Edit mode it is disabled so your manual text edits are not overwritten.</p>
+    `,
+  'export-format-tabs-help': `
+      <p>Choose Tabs for Export format Preview. Code and Code (Unit Test) have sub tabs to choose the programming language and framework.</p>
+      <p><a class="helplink" href="https://anywaydata.com/docs/category/data-formats" target="_blank" rel="noopener noreferrer">Data Formats docs</a></p>
+    `,
   'markdown-table-options': `
       <p>Export the table data as <a class="helplink" href="docs/data-formats/markdown/markdown" target="anywaydatadocs">Markdown</a>, a human readable format which can be easily converted to HTML or PDF.</p>
       <p>Choose from the list of <a class="helplink" href="docs/data-formats/markdown/options" target="anywaydatadocs">formatting options</a> and press the [Apply] button to render the data in the chosen style.</p>
@@ -187,7 +215,7 @@ const appOnlyInlineHelpEntries = {
         <li>Use import/export controls to switch between text formats and grid data.</li>
         <li>Use column and row controls directly in the grid to shape your table.</li>
       </ul>
-      <button type="button" class="instructions-sample-data-button">Load Sample Data</button>
+      <button type="button" class="instructions-sample-data-button" data-role="instructions-action-button" data-action-id="load-sample-data">Load Sample Data</button>
     `,
   'test-data-summary-title': `
       <p>The Test Data section allows you to randomly generate data to populate the grid. You can then export to the various supported formats.</p>

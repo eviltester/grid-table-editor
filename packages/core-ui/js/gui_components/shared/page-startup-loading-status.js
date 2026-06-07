@@ -1,10 +1,10 @@
-import { createLoadingStatusPresenter, createStatusPresenter } from './test-data/ui/index.js';
+import { createLoadingStatusPresenter, createStatusPresenter } from './test-data/ui/status-presenter.js';
 import { resolveDocumentObj } from './dom/default-objects.js';
 
 function createPageStartupLoadingStatus({
   documentObj,
   rootElement = null,
-  elementId,
+  resolveElement = null,
   message = 'Please Wait, Loading Libraries...',
   statusClassName = 'is-loading',
   visibleDisplay = 'inline-block',
@@ -12,16 +12,17 @@ function createPageStartupLoadingStatus({
   createLoadingStatusPresenterFn = createLoadingStatusPresenter,
 } = {}) {
   const resolvedDocumentObj = resolveDocumentObj(documentObj, rootElement);
+  const resolveStatusElement = typeof resolveElement === 'function' ? resolveElement : () => null;
   const statusPresenter = createStatusPresenterFn({
     documentObj: resolvedDocumentObj,
-    elementId,
+    resolveElement: resolveStatusElement,
     hideWhenEmpty: false,
     statusClassName,
     visibleDisplay,
   });
   const loadingPresenter = createLoadingStatusPresenterFn({
     documentObj: resolvedDocumentObj,
-    elementId,
+    resolveElement: resolveStatusElement,
     hideWhenEmpty: false,
     statusClassName,
     visibleDisplay,
@@ -34,7 +35,7 @@ function createPageStartupLoadingStatus({
     clear() {
       statusPresenter.clear();
       loadingPresenter.clear();
-      resolvedDocumentObj?.getElementById?.(elementId)?.remove();
+      resolveStatusElement()?.remove?.();
     },
     fail(nextMessage = 'Failed to load libraries. Check console for details.') {
       statusPresenter.setStatus(nextMessage, { severity: 'error' });

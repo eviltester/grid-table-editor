@@ -1,12 +1,12 @@
-import { DragDropControl } from '../drag-drop-control.js';
+import { createDragDropAdapter } from '../drag-drop-control.js';
 
 class FileImportBindingsAdapter {
-  constructor({ root, onFileSelected, createDragDropControl } = {}) {
+  constructor({ root, onFileSelected, createDragDropAdapterFn } = {}) {
     this.root = root;
     this.onFileSelected = onFileSelected;
-    this.createDragDropControl = createDragDropControl || ((readFileFunction) => new DragDropControl(readFileFunction));
+    this.createDragDropAdapterFn = createDragDropAdapterFn || ((onFileDrop) => createDragDropAdapter({ onFileDrop }));
     this.fileInputElement = null;
-    this.dragDropControl = null;
+    this.dragDropAdapter = null;
     this.handleFileInputClick = (event) => {
       event.currentTarget.value = '';
     };
@@ -24,15 +24,15 @@ class FileImportBindingsAdapter {
 
     const dropZone = this.root?.querySelector?.('[data-role="drop-zone"]') || null;
     if (dropZone) {
-      this.dragDropControl = this.createDragDropControl((file) => this.onFileSelected?.(file));
-      this.dragDropControl.configureAsDropZone(dropZone);
+      this.dragDropAdapter = this.createDragDropAdapterFn((file) => this.onFileSelected?.(file));
+      this.dragDropAdapter.configureAsDropZone(dropZone);
     }
   }
 
   destroy() {
     this.fileInputElement?.removeEventListener('click', this.handleFileInputClick, false);
     this.fileInputElement?.removeEventListener('change', this.handleFileInputChange, false);
-    this.dragDropControl?.destroy?.();
+    this.dragDropAdapter?.destroy?.();
   }
 }
 
@@ -42,4 +42,4 @@ function createFileImportBindingsAdapter(options) {
   return adapter;
 }
 
-export { createFileImportBindingsAdapter, FileImportBindingsAdapter };
+export { createFileImportBindingsAdapter };

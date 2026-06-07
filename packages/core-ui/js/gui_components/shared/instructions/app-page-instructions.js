@@ -27,7 +27,13 @@ const APP_PAGE_INSTRUCTIONS_PROPS = {
     'Adding a number of rows to generate and clicking [Generate] button',
     'Rule can be a RegEx expression or a domain or faker API call e.g. (Connie|Bob) or name.firstName',
   ],
-  actions: [{ className: 'instructions-copy-to-grid-button', label: 'Copy Instructions To Grid' }],
+  actions: [
+    {
+      className: 'instructions-copy-to-grid-button',
+      label: 'Copy Instructions To Grid',
+      actionId: 'copy-instructions-to-grid',
+    },
+  ],
   footerHtml: `
     <div class="footer">
       <p>

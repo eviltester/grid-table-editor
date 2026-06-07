@@ -33,12 +33,13 @@ import {
   createConfiguredGeneratorFromSchemaRows,
   createPreviewDataTable,
   createPairwiseDataTable,
-} from '../../../../js/gui_components/shared/test-data/generation/index.js';
+} from '../../../../js/gui_components/shared/test-data/generation/generation-controller.js';
+import { parseSchemaTextToRows } from '../../../../js/gui_components/shared/test-data/schema/schema-controller.js';
 import {
-  parseSchemaTextToRows,
   validateSchemaRows,
   schemaRowsToSpec,
-} from '../../../../js/gui_components/shared/test-data/schema/index.js';
+} from '../../../../js/gui_components/shared/test-data/schema/schema-editor-core.js';
+import { mapDataRuleToSchemaRow } from '../../../../js/gui_components/shared/test-data/schema/schema-row-mapper.js';
 import {
   buildRuleSpecFromSchemaRow,
   extractLiteralValueFromRuleSpec,
@@ -49,7 +50,6 @@ import {
   SOURCE_TYPE_ENUM,
   SOURCE_TYPE_REGEX,
 } from '../../../../js/gui_components/shared/schema-row-rule-mapper.js';
-import { mapDataRuleToSchemaRow } from '../../../../js/gui_components/shared/test-data/schema/index.js';
 
 const fixturePath = join(
   process.cwd(),

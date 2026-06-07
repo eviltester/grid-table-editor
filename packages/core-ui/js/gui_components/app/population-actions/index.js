@@ -1,14 +1,26 @@
 import { PopulationActionsController } from './population-actions-controller.js';
 import { PopulationActionsView } from './population-actions-view.js';
 import { resolveDocumentObj } from '../../shared/dom/default-objects.js';
+import { createUpdateHelpHints } from '../../../help/help-tooltips.js';
 
-function createPopulationActionsComponent({ root, props = {}, callbacks = {}, documentObj } = {}) {
+function createPopulationActionsComponent({
+  root,
+  props = {},
+  ids = {},
+  callbacks = {},
+  services = {},
+  documentObj,
+} = {}) {
   const controller = new PopulationActionsController({ props, callbacks });
+  const resolvedDocumentObj = resolveDocumentObj(documentObj, root);
   const view = new PopulationActionsView({
     root,
     controller,
-    documentObj: resolveDocumentObj(documentObj, root),
-    ids: props.ids || {},
+    documentObj: resolvedDocumentObj,
+    ids: Object.keys(ids || {}).length > 0 ? ids : props.ids || {},
+    services: {
+      updateHelpHints: services.updateHelpHints || createUpdateHelpHints(resolvedDocumentObj, root),
+    },
   });
   view.mount();
 
@@ -32,14 +44,10 @@ function createPopulationActionsComponent({ root, props = {}, callbacks = {}, do
       controller.updateProps({ generatePairwiseBusy: isBusy === true });
       view.render();
     },
-    setRefreshPreviewBusy(isBusy) {
-      controller.updateProps({ refreshPreviewBusy: isBusy === true });
-      view.render();
-    },
     getState() {
       return controller.getState();
     },
   };
 }
 
-export { createPopulationActionsComponent, PopulationActionsController, PopulationActionsView };
+export { createPopulationActionsComponent };

@@ -79,7 +79,7 @@ describe('GeneratorPreviewView', () => {
     expect(document.querySelector('[data-role="generator-preview-button"]')).not.toBeNull();
     expect(document.querySelector('[data-role="generator-output-preview"]')).not.toBeNull();
     expect(document.querySelector('[data-role="generator-preview-grid"]')).not.toBeNull();
-    const previewHelpIcon = document.querySelector('.shared-button-with-help .helpicon');
+    const previewHelpIcon = document.querySelector('.shared-button-with-help [data-help-role="help-icon"]');
     expect(previewHelpIcon?.getAttribute('data-help')).toBe('shared-generator-preview-help');
     expect(previewHelpIcon?.hasAttribute('data-help-text')).toBe(false);
     expect(getPreviewRowsInput().id).toBe('');

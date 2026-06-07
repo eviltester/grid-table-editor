@@ -1,8 +1,16 @@
 import { FormatSelectorController, createDefaultTabDefinitions } from './format-selector-controller.js';
 import { FormatSelectorView } from './format-selector-view.js';
 import { resolveDocumentObj } from '../../shared/dom/default-objects.js';
+import { createUpdateHelpHints } from '../../../help/help-tooltips.js';
 
-function createFormatSelectorComponent({ root, subtasksRoot, props = {}, callbacks = {}, documentObj } = {}) {
+function createFormatSelectorComponent({
+  root,
+  subtasksRoot,
+  props = {},
+  callbacks = {},
+  services = {},
+  documentObj,
+} = {}) {
   const resolvedDocumentObj = resolveDocumentObj(documentObj, root || subtasksRoot);
   const controller = new FormatSelectorController({
     props: {
@@ -17,6 +25,9 @@ function createFormatSelectorComponent({ root, subtasksRoot, props = {}, callbac
     subtasksRoot,
     controller,
     documentObj: resolvedDocumentObj,
+    services: {
+      updateHelpHints: services.updateHelpHints || createUpdateHelpHints(resolvedDocumentObj, root),
+    },
   });
 
   view.mount();
@@ -38,4 +49,4 @@ function createFormatSelectorComponent({ root, subtasksRoot, props = {}, callbac
   };
 }
 
-export { createFormatSelectorComponent, FormatSelectorController, FormatSelectorView, createDefaultTabDefinitions };
+export { createFormatSelectorComponent };

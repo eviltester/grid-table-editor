@@ -1,5 +1,6 @@
 import { JSDOM } from 'jsdom';
 import { jest } from '@jest/globals';
+import * as formatSelectorExports from '../../../js/gui_components/app/format-selector/index.js';
 import { createFormatSelectorComponent } from '../../../js/gui_components/app/format-selector/index.js';
 
 describe('FormatSelector', () => {
@@ -13,6 +14,13 @@ describe('FormatSelector', () => {
 
   afterEach(() => {
     dom.window.close();
+  });
+
+  test('public barrel is component-factory-only', () => {
+    expect(formatSelectorExports.createFormatSelectorComponent).toBe(createFormatSelectorComponent);
+    expect(formatSelectorExports.FormatSelectorController).toBeUndefined();
+    expect(formatSelectorExports.FormatSelectorView).toBeUndefined();
+    expect(formatSelectorExports.createDefaultTabDefinitions).toBeUndefined();
   });
 
   test('selecting a grouped code format emits the selected subtask type', () => {
@@ -40,5 +48,9 @@ describe('FormatSelector', () => {
         .querySelector('[data-role="format-subtask-item"][data-active-format="true"]')
         ?.getAttribute('data-type')
     ).toBe('python');
+    const helpButton = documentObj.querySelector('[data-role="format-tabs-help"]');
+    expect(helpButton?.getAttribute('data-help')).toBe('export-format-tabs-help');
+    expect(helpButton?.getAttribute('role')).toBe('button');
+    expect(helpButton?.getAttribute('aria-label')).toBe('Show help');
   });
 });

@@ -5,8 +5,6 @@ import {
   hideVisibleHelpTooltips,
   handleSharedSchemaRowInputChange,
   handleSharedSchemaRowButtonClick,
-  SCHEMA_ROWS_KEY,
-  SCHEMA_MODE_HELP_ICON_KEY,
   SHARED_SCHEMA_ROW_INVALID_CLASS,
   SHARED_SCHEMA_FIELD_INVALID_CLASS,
   SHARED_SCHEMA_ROW_VALIDATION_CLASS,
@@ -26,6 +24,9 @@ import {
   applySchemaRowDropInstructionIndicator,
 } from '../../../js/gui_components/shared/test-data/schema/shared-schema-editor-ui.js';
 
+const TEST_SCHEMA_ROWS_ID = 'schemaRows';
+const TEST_SCHEMA_MODE_HELP_ICON_ID = 'schemaModeHelpIcon';
+
 describe('shared schema editor ui', () => {
   let dom;
   let rowsElement;
@@ -34,14 +35,14 @@ describe('shared schema editor ui', () => {
   beforeEach(() => {
     dom = new JSDOM(
       `<!doctype html><html><body>
-        <div id="${SCHEMA_ROWS_KEY}"></div>
-        <span id="${SCHEMA_MODE_HELP_ICON_KEY}"></span>
+        <div id="${TEST_SCHEMA_ROWS_ID}"></div>
+        <span id="${TEST_SCHEMA_MODE_HELP_ICON_ID}"></span>
       </body></html>`
     );
     global.document = dom.window.document;
     global.window = dom.window;
-    rowsElement = document.getElementById(SCHEMA_ROWS_KEY);
-    modeHelpIconElement = document.getElementById(SCHEMA_MODE_HELP_ICON_KEY);
+    rowsElement = document.getElementById(TEST_SCHEMA_ROWS_ID);
+    modeHelpIconElement = document.getElementById(TEST_SCHEMA_MODE_HELP_ICON_ID);
   });
 
   afterEach(() => {

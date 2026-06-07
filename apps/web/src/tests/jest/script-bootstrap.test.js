@@ -1,7 +1,7 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
 import { bootstrapApp } from '../../../../../packages/core-ui/js/script.js';
-import { APP_PAGE_INSTRUCTIONS_PROPS } from '../../../../../packages/core-ui/js/gui_components/shared/instructions/index.js';
+import { APP_PAGE_INSTRUCTIONS_PROPS } from '../../../../../packages/core-ui/js/gui_components/shared/instructions/app-page-instructions.js';
 
 describe('script bootstrap', () => {
   let dom;
@@ -9,7 +9,7 @@ describe('script bootstrap', () => {
   beforeEach(() => {
     dom = new JSDOM(
       `<!doctype html><html><body>
-            <div class="header"><div class="pageheading">AnyWayData</div></div>
+            <div class="header" data-role="theme-toggle-host"><div class="pageheading">AnyWayData</div></div>
             <div id="app-page-root"></div>
             <p id="initial-load" class="import-progress-status startup-loading-status">Please Wait, Loading Libraries...</p>
         </body></html>`,
@@ -127,6 +127,7 @@ describe('script bootstrap', () => {
 
   test('wires controller and test data integration without scheduling instructions import', async () => {
     const mountTestDataGenerationPanelFn = jest.fn();
+    const initHelpTooltipsFn = jest.fn();
     const gridExtras = {
       clearGrid: jest.fn(),
       setGridFromGenericDataTable: jest.fn(),
@@ -174,6 +175,7 @@ describe('script bootstrap', () => {
       ExporterClass,
       ImporterClass,
       mountTestDataGenerationPanelFn,
+      initHelpTooltipsFn,
     });
 
     expect(createImportExportWorkspaceComponentFn).toHaveBeenCalledWith({
@@ -187,6 +189,11 @@ describe('script bootstrap', () => {
     expect(renderTextFromGrid).toHaveBeenCalledTimes(1);
     expect(setFileFormatType).toHaveBeenCalledTimes(1);
     expect(setOptionsViewForFormatType).toHaveBeenCalledTimes(1);
+    expect(initHelpTooltipsFn).toHaveBeenCalledWith({
+      documentObj: dom.window.document,
+      includeAppOnlyEntries: true,
+      rootElement: dom.window.document.getElementById('app-page-root'),
+    });
     expect(mountTestDataGenerationPanelFn).toHaveBeenCalledWith(
       'testDataGeneratorContainer',
       importerInstance,
@@ -241,7 +248,8 @@ describe('script bootstrap', () => {
     });
 
     const button = dom.window.document.createElement('button');
-    button.className = 'instructions-sample-data-button';
+    button.setAttribute('data-role', 'instructions-action-button');
+    button.setAttribute('data-action-id', 'load-sample-data');
     dom.window.document.body.appendChild(button);
     button.click();
 
@@ -295,7 +303,8 @@ describe('script bootstrap', () => {
     });
 
     const button = dom.window.document.createElement('button');
-    button.className = 'instructions-copy-to-grid-button';
+    button.setAttribute('data-role', 'instructions-action-button');
+    button.setAttribute('data-action-id', 'copy-instructions-to-grid');
     dom.window.document.body.appendChild(button);
     button.click();
 

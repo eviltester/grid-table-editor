@@ -19,11 +19,11 @@ import {
   createConfiguredGeneratorFromSchemaRows,
   createPreviewDataTable,
   createPairwiseDataTable,
-} from '../packages/core-ui/js/gui_components/shared/test-data/generation/index.js';
+} from '../packages/core-ui/js/gui_components/shared/test-data/generation/generation-controller.js';
 import {
   validateSchemaRows,
   schemaRowsToSpec,
-} from '../packages/core-ui/js/gui_components/shared/test-data/schema/index.js';
+} from '../packages/core-ui/js/gui_components/shared/test-data/schema/schema-editor-core.js';
 import {
   buildRuleSpecFromSchemaRow,
   extractLiteralValueFromRuleSpec,

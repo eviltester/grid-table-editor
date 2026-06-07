@@ -1,10 +1,7 @@
 import { JSDOM } from 'jsdom';
-import {
-  createTextInputDialogComponent,
-  showTextInputModal,
-} from '../../../js/gui_components/shared/modal-text-input.js';
+import { createTextInputDialogComponent } from '../../../js/gui_components/shared/modal-text-input.js';
 
-describe('showTextInputModal', () => {
+describe('createTextInputDialogComponent', () => {
   let dom;
 
   beforeEach(() => {
@@ -18,8 +15,10 @@ describe('showTextInputModal', () => {
   });
 
   test('returns input text when clicking OK', async () => {
-    const promise = showTextInputModal({
+    const component = createTextInputDialogComponent({
       documentObj: document,
+    });
+    const promise = component.requestTextInput({
       title: 'Column Name',
       initialValue: 'Old',
     });
@@ -32,8 +31,10 @@ describe('showTextInputModal', () => {
   });
 
   test('returns null when cancel is clicked', async () => {
-    const promise = showTextInputModal({
+    const component = createTextInputDialogComponent({
       documentObj: document,
+    });
+    const promise = component.requestTextInput({
       title: 'Column Name',
       initialValue: 'Old',
     });
@@ -42,8 +43,10 @@ describe('showTextInputModal', () => {
   });
 
   test('returns null when clicking outside the modal', async () => {
-    const promise = showTextInputModal({
+    const component = createTextInputDialogComponent({
       documentObj: document,
+    });
+    const promise = component.requestTextInput({
       title: 'Column Name',
       initialValue: 'Old',
     });
@@ -77,6 +80,23 @@ describe('showTextInputModal', () => {
     scheduledCallbacks[0]();
     expect(document.activeElement).toBe(document.querySelector('[data-role="text-input-dialog-field"]'));
 
+    document.querySelector('[data-role="text-input-dialog-cancel"]').click();
+    await expect(promise).resolves.toBeNull();
+  });
+
+  test('uses the rooted dialog hook instead of the styling class for modal wiring', async () => {
+    const component = createTextInputDialogComponent({
+      documentObj: document,
+    });
+    const dialogRoot = document.querySelector('[data-role="text-input-dialog"]');
+    dialogRoot.className = 'renamed-dialog-shell';
+
+    const promise = component.requestTextInput({
+      title: 'Column Name',
+      initialValue: 'Old',
+    });
+
+    expect(dialogRoot.getAttribute('aria-describedby')).toBe('text-input-modal-field');
     document.querySelector('[data-role="text-input-dialog-cancel"]').click();
     await expect(promise).resolves.toBeNull();
   });

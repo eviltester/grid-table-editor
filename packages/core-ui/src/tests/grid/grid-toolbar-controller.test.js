@@ -1,7 +1,14 @@
 import { jest } from '@jest/globals';
+import * as gridToolbarExports from '../../../js/gui_components/data-grid-editor/grid-toolbar/index.js';
 import { GridToolbarController } from '../../../js/gui_components/data-grid-editor/grid-toolbar/grid-toolbar-controller.js';
 
 describe('GridToolbarController', () => {
+  test('public barrel is component-factory-only', () => {
+    expect(typeof gridToolbarExports.createGridToolbarComponent).toBe('function');
+    expect(gridToolbarExports.GridToolbarController).toBeUndefined();
+    expect(gridToolbarExports.GridToolbarView).toBeUndefined();
+  });
+
   test('tracks filter text and unique-column-name state while emitting toolbar intent callbacks', () => {
     const callbacks = {
       onAddRow: jest.fn(),

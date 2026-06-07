@@ -1,4 +1,7 @@
-import { getCodeLanguageSubtasks, getUnitTestLanguageSubtasks } from '../../generator/options/index.js';
+import {
+  getCodeLanguageSubtasks,
+  getUnitTestLanguageSubtasks,
+} from '../../generator/options/options-catalog-adapter.js';
 
 function createDefaultTabDefinitions() {
   return [

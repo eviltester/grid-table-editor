@@ -21,4 +21,4 @@ function createGridToolbarComponent({ root, props = {}, callbacks = {}, document
   };
 }
 
-export { createGridToolbarComponent, GridToolbarController, GridToolbarView };
+export { createGridToolbarComponent };

@@ -1,7 +1,7 @@
 import { JSDOM } from 'jsdom';
-import { createConfirmDialogComponent, showConfirmModal } from '../../../js/gui_components/shared/modal-confirm.js';
+import { createConfirmDialogComponent } from '../../../js/gui_components/shared/modal-confirm.js';
 
-describe('showConfirmModal', () => {
+describe('createConfirmDialogComponent', () => {
   let dom;
 
   beforeEach(() => {
@@ -16,8 +16,10 @@ describe('showConfirmModal', () => {
   });
 
   test('returns true when clicking OK', async () => {
-    const promise = showConfirmModal({
+    const component = createConfirmDialogComponent({
       documentObj: document,
+    });
+    const promise = component.requestConfirm({
       title: 'Delete Column',
       message: 'Are you sure?',
     });
@@ -26,8 +28,10 @@ describe('showConfirmModal', () => {
   });
 
   test('returns false when clicking Cancel', async () => {
-    const promise = showConfirmModal({
+    const component = createConfirmDialogComponent({
       documentObj: document,
+    });
+    const promise = component.requestConfirm({
       title: 'Delete Column',
       message: 'Are you sure?',
     });
@@ -36,8 +40,10 @@ describe('showConfirmModal', () => {
   });
 
   test('returns false when clicking backdrop', async () => {
-    const promise = showConfirmModal({
+    const component = createConfirmDialogComponent({
       documentObj: document,
+    });
+    const promise = component.requestConfirm({
       title: 'Delete Column',
       message: 'Are you sure?',
     });
@@ -46,8 +52,10 @@ describe('showConfirmModal', () => {
   });
 
   test('returns false on Escape key', async () => {
-    const promise = showConfirmModal({
+    const component = createConfirmDialogComponent({
       documentObj: document,
+    });
+    const promise = component.requestConfirm({
       title: 'Delete Column',
       message: 'Are you sure?',
     });

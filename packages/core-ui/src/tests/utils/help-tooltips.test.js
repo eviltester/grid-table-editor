@@ -41,17 +41,38 @@ describe('help tooltips module', () => {
     expect(container.querySelector("div[data-name='test-data-summary-title']")).not.toBeNull();
   });
 
-  test('registers window.updateHelpHints and handles missing tippy', () => {
+  test('initHelpTooltips scopes help-icon scanning to the provided root element', () => {
+    const root = dom.window.document.createElement('section');
+    root.innerHTML = `<span class="helpicon" data-help-role="help-icon" data-help="json-options"></span>`;
+    dom.window.document.body.appendChild(root);
+
+    const outsideHelpIcon = dom.window.document.createElement('span');
+    outsideHelpIcon.className = 'helpicon';
+    outsideHelpIcon.setAttribute('data-help-role', 'help-icon');
+    outsideHelpIcon.setAttribute('data-help', 'csv-options');
+    dom.window.document.body.appendChild(outsideHelpIcon);
+
+    const tippy = jest.fn();
+    initHelpTooltips({
+      documentObj: dom.window.document,
+      windowObj: { tippy },
+      rootElement: root,
+    });
+
+    const [helpIcons] = tippy.mock.calls[0];
+    expect(Array.from(helpIcons)).toEqual([root.querySelector('[data-help-role="help-icon"]')]);
+  });
+
+  test('handles missing tippy without creating a window-global update hook', () => {
     const service = initHelpTooltips({ documentObj: dom.window.document });
-    expect(typeof dom.window.updateHelpHints).toBe('function');
-    expect(() => dom.window.updateHelpHints()).not.toThrow();
+    expect(() => service.update()).not.toThrow();
     service.destroy();
     expect(dom.window.updateHelpHints).toBeUndefined();
   });
 
   test('createUpdateHelpHints seeds shared inline help entries for scoped component usage', () => {
     const root = dom.window.document.createElement('section');
-    root.innerHTML = `<span class="helpicon" data-help="csv-options"></span>`;
+    root.innerHTML = `<span class="helpicon" data-help-role="help-icon" data-help="csv-options"></span>`;
     dom.window.document.body.appendChild(root);
 
     const tippy = jest.fn();
@@ -61,11 +82,12 @@ describe('help tooltips module', () => {
     });
     updateHelpHints();
 
-    const container = dom.window.document.getElementById('inline-help-items');
+    const container = root.querySelector('[data-role="inline-help-items"]');
     expect(container).not.toBeNull();
     expect(container.querySelector("div[data-name='csv-options']")).not.toBeNull();
+    expect(dom.window.document.getElementById('inline-help-items')).toBeNull();
     expect(tippy).toHaveBeenCalledTimes(1);
-    const helpIcon = root.querySelector('.helpicon');
+    const helpIcon = root.querySelector('[data-help-role="help-icon"]');
     expect(helpIcon.getAttribute('tabindex')).toBe('0');
     expect(helpIcon.getAttribute('role')).toBe('button');
     expect(helpIcon.getAttribute('aria-label')).toBe('Show help');
@@ -84,7 +106,7 @@ describe('help tooltips module', () => {
 
   test('tooltip content keeps using the owned inline-help container instead of re-querying it globally', () => {
     const root = dom.window.document.createElement('section');
-    root.innerHTML = `<span class="helpicon" data-help="csv-options"></span>`;
+    root.innerHTML = `<span class="helpicon" data-help-role="help-icon" data-help="csv-options"></span>`;
     dom.window.document.body.appendChild(root);
 
     const tippy = jest.fn();
@@ -95,7 +117,7 @@ describe('help tooltips module', () => {
     updateHelpHints();
 
     const [, tippyOptions] = tippy.mock.calls[0];
-    const helpIcon = root.querySelector('.helpicon');
+    const helpIcon = root.querySelector('[data-help-role="help-icon"]');
     const getElementByIdSpy = jest.spyOn(dom.window.document, 'getElementById').mockImplementation(() => {
       throw new Error('unexpected global help container lookup');
     });
@@ -104,9 +126,26 @@ describe('help tooltips module', () => {
     expect(getElementByIdSpy).not.toHaveBeenCalled();
   });
 
+  test('scoped updateHelpHints uses root-scoped help containers instead of creating the global registry', () => {
+    const root = dom.window.document.createElement('section');
+    root.innerHTML = `<span class="helpicon" data-help-role="help-icon" data-help="json-options"></span>`;
+    dom.window.document.body.appendChild(root);
+
+    const getElementByIdSpy = jest.spyOn(dom.window.document, 'getElementById');
+    const updateHelpHints = createUpdateHelpHints(dom.window.document, root, {
+      windowObj: { tippy: jest.fn() },
+    });
+
+    updateHelpHints();
+
+    expect(root.querySelector('[data-role="inline-help-items"]')).not.toBeNull();
+    expect(dom.window.document.querySelector('#inline-help-items')).toBeNull();
+    expect(getElementByIdSpy).not.toHaveBeenCalledWith('inline-help-items');
+  });
+
   test('option help icons get an option-specific accessible label', () => {
     const root = dom.window.document.createElement('section');
-    root.innerHTML = `<span class="helpicon option-help-icon" data-help="csv-option-header"></span>`;
+    root.innerHTML = `<span class="helpicon option-help-icon" data-role="option-help-icon" data-help-role="option-help-icon" data-help="csv-option-header"></span>`;
     dom.window.document.body.appendChild(root);
 
     const tippy = jest.fn();
@@ -116,7 +155,7 @@ describe('help tooltips module', () => {
     });
     updateHelpHints();
 
-    const helpIcon = root.querySelector('.helpicon');
+    const helpIcon = root.querySelector('[data-help-role="option-help-icon"]');
     expect(helpIcon.getAttribute('tabindex')).toBe('0');
     expect(helpIcon.getAttribute('role')).toBe('button');
     expect(helpIcon.getAttribute('aria-label')).toBe('Show help for this option');
@@ -125,34 +164,48 @@ describe('help tooltips module', () => {
 
   test('renders help icons even when tippy is unavailable', () => {
     const root = dom.window.document.createElement('section');
-    root.innerHTML = `<span class="helpicon" data-help="csv-options"></span>`;
+    root.innerHTML = `<span class="helpicon" data-help-role="help-icon" data-help="csv-options"></span>`;
     dom.window.document.body.appendChild(root);
 
     const updateHelpHints = createUpdateHelpHints(dom.window.document, root);
     updateHelpHints();
 
-    const helpIcon = root.querySelector('.helpicon');
+    const helpIcon = root.querySelector('[data-help-role="help-icon"]');
     expect(helpIcon.querySelector('svg.helpicon-svg')).not.toBeNull();
     expect(helpIcon.getAttribute('aria-label')).toBe('Show help');
   });
 
-  test('createHelpTooltipService exposes destroy lifecycle and clears the window hook it registered', () => {
+  test('createUpdateHelpHints defaults document roots to body instead of appending containers directly to the document', () => {
+    const helpIcon = dom.window.document.createElement('span');
+    helpIcon.className = 'helpicon';
+    helpIcon.setAttribute('data-help-role', 'help-icon');
+    helpIcon.setAttribute('data-help', 'csv-options');
+    dom.window.document.body.appendChild(helpIcon);
+
+    const updateHelpHints = createUpdateHelpHints(dom.window.document, undefined, {
+      windowObj: { tippy: jest.fn() },
+    });
+
+    expect(() => updateHelpHints()).not.toThrow();
+    expect(dom.window.document.body.querySelector('[data-role="inline-help-items"]')).not.toBeNull();
+  });
+
+  test('createHelpTooltipService exposes destroy lifecycle for scoped tooltip instances', () => {
     const root = dom.window.document.createElement('section');
-    root.innerHTML = `<span class="helpicon" data-help="csv-options"></span>`;
+    root.innerHTML = `<span class="helpicon" data-help-role="help-icon" data-help="csv-options"></span>`;
     dom.window.document.body.appendChild(root);
 
     const destroyMock = jest.fn();
-    root.querySelector('.helpicon')._tippy = { destroy: destroyMock };
+    root.querySelector('[data-help-role="help-icon"]')._tippy = { destroy: destroyMock };
 
     const service = createHelpTooltipService({
       documentObj: dom.window.document,
       windowObj: dom.window,
       rootElement: root,
-      registerWindowHook: true,
+      resolveHelpElements: () => root.querySelectorAll('[data-help-role][data-help]'),
     });
 
     service.update();
-    expect(dom.window.updateHelpHints).toBe(service.update);
 
     service.destroy();
 
@@ -163,26 +216,28 @@ describe('help tooltips module', () => {
   test('createHelpTooltipService destroy only tears down scoped tooltip instances', () => {
     const root = dom.window.document.createElement('section');
     root.innerHTML = `
-      <span class="helpicon" data-help="csv-options"></span>
-      <span class="helpicon" data-help="json-options"></span>
+      <span class="helpicon" data-help-role="help-icon" data-help="csv-options"></span>
+      <span class="helpicon" data-help-role="help-icon" data-help="json-options"></span>
     `;
     dom.window.document.body.appendChild(root);
 
     const outsideHelpIcon = dom.window.document.createElement('span');
     outsideHelpIcon.className = 'helpicon';
+    outsideHelpIcon.setAttribute('data-help-role', 'help-icon');
     outsideHelpIcon.setAttribute('data-help', 'xml-options');
     const outsideDestroyMock = jest.fn();
     outsideHelpIcon._tippy = { destroy: outsideDestroyMock };
     dom.window.document.body.appendChild(outsideHelpIcon);
 
     const scopedDestroyMocks = [jest.fn(), jest.fn()];
-    const scopedHelpIcons = Array.from(root.querySelectorAll('.helpicon'));
+    const scopedHelpIcons = Array.from(root.querySelectorAll('[data-help-role="help-icon"]'));
     scopedHelpIcons[0]._tippy = { destroy: scopedDestroyMocks[0] };
     scopedHelpIcons[1]._tippy = { destroy: scopedDestroyMocks[1] };
 
     const service = createHelpTooltipService({
       documentObj: dom.window.document,
       rootElement: root,
+      resolveHelpElements: () => root.querySelectorAll('[data-help-role][data-help]'),
     });
 
     service.destroy();
@@ -194,7 +249,7 @@ describe('help tooltips module', () => {
 
   test('prefers injected tippy/browser dependencies instead of ambient global tippy', () => {
     const root = dom.window.document.createElement('section');
-    root.innerHTML = `<span class="helpicon" data-help="csv-options"></span>`;
+    root.innerHTML = `<span class="helpicon" data-help-role="help-icon" data-help="csv-options"></span>`;
     dom.window.document.body.appendChild(root);
 
     const injectedTippy = jest.fn();
@@ -204,11 +259,37 @@ describe('help tooltips module', () => {
       documentObj: dom.window.document,
       windowObj: { tippy: injectedTippy },
       rootElement: root,
+      resolveHelpElements: () => root.querySelectorAll('[data-help-role][data-help]'),
     });
 
     service.update();
 
     expect(injectedTippy).toHaveBeenCalledTimes(1);
     expect(global.tippy).not.toHaveBeenCalled();
+  });
+
+  test('createHelpTooltipService uses the injected help-element resolver instead of scanning the root itself', () => {
+    const root = dom.window.document.createElement('section');
+    root.innerHTML = `<span class="helpicon" data-help-role="help-icon" data-help="csv-options"></span>`;
+    dom.window.document.body.appendChild(root);
+
+    const helpIcon = root.querySelector('[data-help-role="help-icon"]');
+    const rootQuerySpy = jest.spyOn(root, 'querySelectorAll').mockImplementation(() => {
+      throw new Error('unexpected root scan');
+    });
+    const tippy = jest.fn();
+
+    const service = createHelpTooltipService({
+      documentObj: dom.window.document,
+      rootElement: root,
+      tippyFn: tippy,
+      resolveHelpElements: () => [helpIcon],
+    });
+
+    expect(() => service.update()).not.toThrow();
+    service.destroy();
+
+    expect(rootQuerySpy).not.toHaveBeenCalled();
+    expect(tippy).toHaveBeenCalledTimes(1);
   });
 });

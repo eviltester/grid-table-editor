@@ -269,9 +269,17 @@ That path removes the most obvious duplication first while preserving the highes
 ### Current Status
 
 - The runtime matrix remains unchanged.
-- The shared `uiScenarios` fixture used by the app and generator JSDOM matrices has been reduced to a representative subset.
-- The current representative UI matrix keeps 19 scenarios instead of the earlier 41, preserving:
-  - custom enum, literal, regex, and pairwise coverage
-  - representative faker helper coverage across exact and structural cases
-  - representative domain coverage across formatting, passwords, literals, counters, and character generation
-- The next shrink decision should be based on observed gate/runtime improvement and any signal gaps, not on restoring broad duplicated app-vs-generator sweeps by default.
+- `app-schema-interaction-matrix.test.js` and `generator-schema-interaction-matrix.test.js` now run a page-wiring smoke subset instead of the full shared `uiScenarios` fixture.
+- The retained page-shell smoke scenarios are:
+  - `custom-literal-base`
+  - `custom-regex-base`
+  - `faker-helpers-arrayElement-base`
+  - `domain-commerce-price-example-1`
+  - `custom-enum-pairwise`
+- The smoke subset keeps:
+  - simple schema editing and generate wiring
+  - regex/text synchronization coverage
+  - one representative faker helper flow
+  - one representative domain/options flow
+  - pairwise wiring coverage
+- The broader semantics matrix still lives in `schema-interaction-runtime-matrix.test.js`, with parity sweeps remaining opt-in.

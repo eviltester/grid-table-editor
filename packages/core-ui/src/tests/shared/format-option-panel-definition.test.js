@@ -3,6 +3,7 @@ import {
   createFormatOptionPanel,
   getFormatOptionDefinition,
 } from '../../../js/gui_components/shared/format-options-panel/format-option-panel-definition.js';
+import * as generatorOptions from '../../../js/gui_components/generator/options/apply-generator-format-options.js';
 import { getOptionPanelDefinitions } from '../../../js/gui_components/generator/options/options-ui-schema.js';
 
 function createRoot() {
@@ -14,6 +15,14 @@ function createRoot() {
 }
 
 describe('format option panel definitions', () => {
+  test('generator options public surface keeps catalog helpers direct-import-only', () => {
+    expect(generatorOptions.createOptionsPanelsForParent).toBeUndefined();
+    expect(generatorOptions.getOutputFormatGroups).toBeUndefined();
+    expect(generatorOptions.getCodeLanguageSubtasks).toBeUndefined();
+    expect(generatorOptions.getUnitTestLanguageSubtasks).toBeUndefined();
+    expect(typeof generatorOptions.applyGeneratorFormatOptions).toBe('function');
+  });
+
   test('every option definition exposes the component-compatible panel contract', () => {
     const { dom, root } = createRoot();
     const definitions = getOptionPanelDefinitions();
@@ -36,6 +45,7 @@ describe('format option panel definitions', () => {
       expect(payload.outputFormat).toBeTruthy();
       expect(payload.options).toEqual(expect.any(Object));
       expect(root.querySelector('[data-role="apply-options-button"]')).not.toBeNull();
+      expect(root.querySelector('[data-role="option-help-icon"]')).not.toBeNull();
       panel.destroy();
     });
 
@@ -134,6 +144,7 @@ describe('format option panel definitions', () => {
     expect(decimalColumnsInput.classList.contains('format-option-control')).toBe(true);
     expect(importStatementsTextarea.classList.contains('format-option-control')).toBe(true);
     expect(importStatementsTextarea.classList.contains('format-option-textarea')).toBe(true);
+    expect(root.querySelectorAll('[data-role="option-help-icon"]').length).toBeGreaterThan(0);
     expect(decimalColumnsInput.closest('.format-option-field')).not.toBeNull();
     expect(importStatementsTextarea.closest('.format-option-field')).not.toBeNull();
     expect(decimalColumnsInput.closest('label')?.classList.contains('format-option-block-label')).toBe(true);

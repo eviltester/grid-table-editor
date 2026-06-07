@@ -1,6 +1,7 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
 import { within } from '@testing-library/dom';
+import * as dataPopulationPanelExports from '../../../js/gui_components/app/data-population-panel/index.js';
 import { createDataPopulationPanelComponent } from '../../../js/gui_components/app/data-population-panel/index.js';
 
 describe('DataPopulationPanel', () => {
@@ -18,6 +19,12 @@ describe('DataPopulationPanel', () => {
     delete global.window;
     delete global.document;
     delete global.Event;
+  });
+
+  test('public barrel is component-factory-only', () => {
+    expect(dataPopulationPanelExports.createDataPopulationPanelComponent).toBe(createDataPopulationPanelComponent);
+    expect(dataPopulationPanelExports.DataPopulationPanelController).toBeUndefined();
+    expect(dataPopulationPanelExports.DataPopulationPanelView).toBeUndefined();
   });
 
   test('composes actions, row count, mode selector, and schema definition', () => {
@@ -73,7 +80,15 @@ describe('DataPopulationPanel', () => {
         },
       },
       services: {
-        createSharedSchemaDefinitionComponent: () => schemaDefinition,
+        createSchemaPanelComponent: ({ root }) => {
+          root.innerHTML =
+            '<div data-role="test-data-schema-panel-root"><div data-role="schema-definition-root"></div></div>';
+          return {
+            update: jest.fn(),
+            destroy: jest.fn(() => schemaDefinition.destroy()),
+            getSchemaDefinition: () => schemaDefinition,
+          };
+        },
       },
       callbacks: { onGenerate, onModeChange },
     });
@@ -82,7 +97,7 @@ describe('DataPopulationPanel', () => {
     const panelQueries = within(panelRoot);
     const generateButton = panelQueries.getByRole('button', { name: /^generate$/i });
     const generatePairwiseButton = panelRoot.querySelector('[data-role="generate-pairwise-button"]');
-    const refreshPreviewButton = panelQueries.getByRole('button', { name: /refresh text preview/i });
+    const generatePairwiseWrapper = panelRoot.querySelector('[data-role="generate-pairwise-button-wrapper"]');
     const rowCountInput = panelQueries.getByRole('spinbutton', { name: 'How Many?' });
 
     expect(panelRoot).not.toBeNull();
@@ -96,9 +111,10 @@ describe('DataPopulationPanel', () => {
     expect(document.getElementById('populationActionsRoot')).toBeNull();
     expect(document.getElementById('generateCountControl')).toBeNull();
     expect(document.getElementById('populationModeSelectorRoot')).toBeNull();
+    expect(panelRoot.querySelectorAll('[data-help-role="help-icon"]')).toHaveLength(2);
 
     component.setPairwiseVisible(true);
-    expect(generatePairwiseButton.style.display).toBe('');
+    expect(generatePairwiseWrapper.style.display).toBe('inline-flex');
 
     component.setRowCountValue(4);
     expect(rowCountInput.value).toBe('4');
@@ -106,14 +122,11 @@ describe('DataPopulationPanel', () => {
 
     component.setGenerateBusy(true);
     component.setGeneratePairwiseBusy(true);
-    component.setRefreshPreviewBusy(true);
     expect(generateButton.disabled).toBe(true);
     expect(generatePairwiseButton.disabled).toBe(true);
-    expect(refreshPreviewButton.disabled).toBe(true);
 
     component.setGenerateBusy(false);
     component.setGeneratePairwiseBusy(false);
-    component.setRefreshPreviewBusy(false);
 
     generateButton.click();
     expect(onGenerate).toHaveBeenCalled();
@@ -188,8 +201,8 @@ describe('DataPopulationPanel', () => {
         ids: { schemaDefinitionRoot: 'testDataSchemaDefinitionA' },
         actionIds: {
           generateButton: 'generatedata-a',
+          generatePairwiseButtonWrapper: 'generateallpairs-wrapper-a',
           generatePairwiseButton: 'generateallpairs-a',
-          refreshPreviewButton: 'refreshtestdatapreview-a',
           status: 'testdata-status-a',
         },
         rowCountProps: {
@@ -201,7 +214,14 @@ describe('DataPopulationPanel', () => {
         },
       },
       services: {
-        createSharedSchemaDefinitionComponent: () => firstSchemaDefinition,
+        createSchemaPanelComponent: ({ root, props }) => {
+          root.innerHTML = `<div data-role="test-data-schema-panel-root"><div id="${props.ids.schemaDefinitionRoot}" data-role="schema-definition-root"></div></div>`;
+          return {
+            update: jest.fn(),
+            destroy: jest.fn(() => firstSchemaDefinition.destroy()),
+            getSchemaDefinition: () => firstSchemaDefinition,
+          };
+        },
       },
     });
 
@@ -212,8 +232,8 @@ describe('DataPopulationPanel', () => {
         ids: { schemaDefinitionRoot: 'testDataSchemaDefinitionB' },
         actionIds: {
           generateButton: 'generatedata-b',
+          generatePairwiseButtonWrapper: 'generateallpairs-wrapper-b',
           generatePairwiseButton: 'generateallpairs-b',
-          refreshPreviewButton: 'refreshtestdatapreview-b',
           status: 'testdata-status-b',
         },
         rowCountProps: {
@@ -225,7 +245,14 @@ describe('DataPopulationPanel', () => {
         },
       },
       services: {
-        createSharedSchemaDefinitionComponent: () => secondSchemaDefinition,
+        createSchemaPanelComponent: ({ root, props }) => {
+          root.innerHTML = `<div data-role="test-data-schema-panel-root"><div id="${props.ids.schemaDefinitionRoot}" data-role="schema-definition-root"></div></div>`;
+          return {
+            update: jest.fn(),
+            destroy: jest.fn(() => secondSchemaDefinition.destroy()),
+            getSchemaDefinition: () => secondSchemaDefinition,
+          };
+        },
       },
     });
 

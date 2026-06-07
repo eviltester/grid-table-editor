@@ -7,10 +7,9 @@ class GeneratorPageView {
     this.documentObj = resolveDocumentObj(documentObj, root);
     this.services = services;
     this.callbacks = callbacks;
-    this.schemaDefinition = null;
+    this.generatorSchemaPanel = null;
     this.generatorControls = null;
     this.generatorPreview = null;
-    this.schemaErrorDisplay = null;
   }
 
   mount() {
@@ -26,9 +25,7 @@ class GeneratorPageView {
   template() {
     return `
       <section class="shared-generator-page generator-page" aria-label="Data Generator">
-        <section class="generator-schema" id="generatorSchemaSection" data-section-order="2" aria-labelledby="generatorSchemaHeading">
-          <div data-role="generator-schema-definition-root"></div>
-        </section>
+        <div data-role="generator-schema-panel-root"></div>
         <div data-role="generator-controls-root"></div>
         <div data-role="generator-preview-root"></div>
       </section>
@@ -54,43 +51,56 @@ class GeneratorPageView {
       callbacks: this.callbacks.generatorPreview || {},
     });
 
-    this.schemaDefinition = this.services.createSharedSchemaDefinitionComponent?.({
-      root: this.root.querySelector('[data-role="generator-schema-definition-root"]'),
+    this.generatorSchemaPanel = this.services.createSchemaPanelComponent?.({
+      root: this.root.querySelector('[data-role="generator-schema-panel-root"]'),
       documentObj: this.documentObj,
       props: {
-        ...state.schemaDefinitionProps,
+        className: 'generator-schema',
+        sectionId: 'generatorSchemaSection',
+        sectionOrder: '2',
+        ariaLabelledBy: 'generatorSchemaHeading',
+        rootDataRole: 'generator-schema-panel-root',
+        schemaDefinitionRootDataRole: 'generator-schema-definition-root',
+        useTimedSchemaErrorDisplay: true,
+        schemaErrorTimeoutMs: 5000,
+        schemaDefinitionProps: {
+          ...state.schemaDefinitionProps,
+        },
       },
-      callbacks: this.callbacks.schemaDefinition || {},
-    });
-
-    this.schemaErrorDisplay = this.services.createTimedStatusPresenter?.({
-      documentObj: this.documentObj,
-      resolveElement: () =>
-        this.root?.querySelector?.('[data-role="generator-schema-definition-root"] [data-role="schema-error"]') || null,
-      timeoutMs: 5000,
-    });
-    this.schemaDefinition?.update?.({
-      ...state.schemaDefinitionProps,
-      schemaErrorDisplay: this.schemaErrorDisplay,
+      callbacks: {
+        schemaDefinition: this.callbacks.schemaDefinition || {},
+      },
     });
   }
 
   render() {
     const state = this.controller.getState();
+    this.generatorSchemaPanel?.update?.({
+      className: 'generator-schema',
+      sectionId: 'generatorSchemaSection',
+      sectionOrder: '2',
+      ariaLabelledBy: 'generatorSchemaHeading',
+      rootDataRole: 'generator-schema-panel-root',
+      schemaDefinitionRootDataRole: 'generator-schema-definition-root',
+      useTimedSchemaErrorDisplay: true,
+      schemaErrorTimeoutMs: 5000,
+      schemaDefinitionProps: {
+        ...state.schemaDefinitionProps,
+      },
+    });
     this.generatorControls?.update?.(state.controlsProps);
     this.generatorPreview?.update?.(state.previewProps);
   }
 
   destroy() {
-    this.schemaDefinition?.destroy?.();
+    this.generatorSchemaPanel?.destroy?.();
     this.generatorControls?.destroy?.();
     this.generatorPreview?.destroy?.();
-    this.schemaErrorDisplay?.destroy?.();
     this.root.replaceChildren();
   }
 
   getSchemaDefinition() {
-    return this.schemaDefinition;
+    return this.generatorSchemaPanel?.getSchemaDefinition?.() || null;
   }
 
   getGeneratorControls() {
@@ -102,7 +112,7 @@ class GeneratorPageView {
   }
 
   getSchemaErrorDisplay() {
-    return this.schemaErrorDisplay;
+    return this.generatorSchemaPanel?.getSchemaErrorDisplay?.() || null;
   }
 }
 

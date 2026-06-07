@@ -32,7 +32,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'FormatSelector is the Phase 6 app-side component that owns the import/export format tabs and grouped code/unit-test subtask selection.',
+          'FormatSelector is the Phase 6 app-side component that owns the import/export format tabs and grouped code/unit-test subtask selection. The help icon next to the tabs explains when grouped subtabs appear and links reviewers to the Data Formats docs.',
       },
     },
   },
@@ -60,6 +60,10 @@ export const Default = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
+    await expect(canvas.getByRole('button', { name: 'Show help' })).toHaveAttribute(
+      'data-help',
+      'export-format-tabs-help'
+    );
     await userEvent.click(canvas.getByRole('link', { name: 'JSON' }));
     await expect(
       canvasElement.querySelector('[data-role="format-main-tab-item"][data-active-format="true"]')

@@ -7,16 +7,14 @@ import {
   dataRulesToSchemaText,
   schemaRowsToDataRules,
 } from '@anywaydata/core/data_generation/schema-rules-adapter.js';
-import {
-  createGeneratorPageComponent,
-  createGeneratorPageShellComponent,
-} from '../../../../packages/core-ui/js/gui_components/generator/page/index.js';
-import { buildGeneratorSchemaModeHelpHtml } from '../../../../packages/core-ui/js/gui_components/generator/help/index.js';
+import { createGeneratorPageComponent } from '../../../../packages/core-ui/js/gui_components/generator/page/create-generator-page-component.js';
+import { createGeneratorPageShellComponent } from '../../../../packages/core-ui/js/gui_components/generator/page/create-generator-page-shell-component.js';
 import { GENERATOR_DEFAULT_EXAMPLE_SCHEMA_TEXT } from '../../../../packages/core-ui/js/gui_components/shared/test-data/schema/schema-examples.js';
-import { validateSchemaRows as validateSharedSchemaRows } from '../../../../packages/core-ui/js/gui_components/shared/test-data/schema/index.js';
+import { validateSchemaRows as validateSharedSchemaRows } from '../../../../packages/core-ui/js/gui_components/shared/test-data/schema/schema-editor-core.js';
 import { getKnownFakerCommandsAlphabetical } from '../../../../packages/core-ui/js/gui_components/shared/faker-commands.js';
 import { getKnownDomainCommandsAlphabetical } from '../../../../packages/core-ui/js/gui_components/shared/domain-commands.js';
-import { createGeneratorSchemaDefinitionSupport } from '../../../../packages/core-ui/js/gui_components/generator/schema-support/index.js';
+import { buildSchemaModeHelpHtml } from '../../../../packages/core-ui/js/gui_components/shared/test-data/help/schema-mode-help-builder.js';
+import { createGeneratorSchemaDefinitionSupport } from '../../../../packages/core-ui/js/gui_components/generator/schema-support/create-generator-schema-definition-support.js';
 import { GridExtension as TabulatorGridExtension } from '../../../../packages/core-ui/js/gui_components/data-grid-editor/tabulator/gridExtension-tabulator.js';
 
 function createStoryDataTable(headers, rows) {
@@ -71,9 +69,10 @@ function createGeneratorSchemaStoryProps(ids = {}) {
     fakerCommands,
     domainCommands,
     buildModeHelpHtml: ({ inTextMode }) =>
-      buildGeneratorSchemaModeHelpHtml({
+      buildSchemaModeHelpHtml({
         inTextMode,
-        generateToFileHelpUrl: 'https://anywaydata.com/docs/test-data/generate-to-file',
+        supplementalLinkUrl: 'https://anywaydata.com/docs/test-data/generate-to-file',
+        supplementalLinkText: 'Generate To File docs',
       }),
     validateSchemaRows: (rows) =>
       validateSharedSchemaRows({
@@ -137,6 +136,10 @@ function renderGeneratorPageStory(args) {
   heading.style.whiteSpace = 'nowrap';
   heading.style.border = '0';
   root.appendChild(heading);
+  const themeToggleHost = document.createElement('div');
+  themeToggleHost.setAttribute('data-role', 'theme-toggle-host');
+  themeToggleHost.style.minHeight = '2.5rem';
+  root.appendChild(themeToggleHost);
   const shellRoot = document.createElement('div');
   shellRoot.id = `${storyPrefix}-generator-page-root`;
   root.appendChild(shellRoot);

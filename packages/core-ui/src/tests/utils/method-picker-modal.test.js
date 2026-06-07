@@ -47,7 +47,7 @@ describe('method picker modal', () => {
 
     const firstTile = getOverlay().querySelector('[data-role="method-picker-tile"]');
     firstTile.click();
-    getOverlay().querySelector('[data-action="apply"]').click();
+    getOverlay().querySelector('[data-role="method-picker-apply-button"]').click();
 
     const result = await promise;
     expect(result).toEqual({ sourceType: 'domain', command: 'location.city' });
@@ -82,9 +82,42 @@ describe('method picker modal', () => {
     expect(getDetail()).not.toBeNull();
     expect(getOverlay().querySelector('[data-role="method-picker-tile"]')).not.toBeNull();
     expect(getOverlay().querySelector('[data-role="method-picker-command"]')).not.toBeNull();
+    expect(getOverlay().querySelector('[data-role="method-picker-close-button"]')).not.toBeNull();
+    expect(getOverlay().querySelector('[data-role="method-picker-cancel-button"]')).not.toBeNull();
+    expect(getOverlay().querySelector('[data-role="method-picker-apply-button"]')).not.toBeNull();
 
-    getOverlay().querySelector('[data-action="cancel"]').click();
+    getOverlay().querySelector('[data-role="method-picker-cancel-button"]').click();
     await promise;
+  });
+
+  test('mirrors apply button disabled state to aria-disabled', async () => {
+    const emptyPromise = openMethodPickerModal({
+      documentObj: document,
+      windowObj: window,
+      options: [],
+      currentCommand: '',
+    });
+
+    const emptyApplyButton = getOverlay().querySelector('[data-role="method-picker-apply-button"]');
+    expect(emptyApplyButton.disabled).toBe(true);
+    expect(emptyApplyButton.getAttribute('aria-disabled')).toBe('true');
+
+    getOverlay().querySelector('[data-role="method-picker-cancel-button"]').click();
+    await emptyPromise;
+
+    const populatedPromise = openMethodPickerModal({
+      documentObj: document,
+      windowObj: window,
+      options: [{ sourceType: 'domain', command: 'number.int', helpModel: { summary: '', params: [], example: '' } }],
+      currentCommand: 'number.int',
+    });
+
+    const populatedApplyButton = getOverlay().querySelector('[data-role="method-picker-apply-button"]');
+    expect(populatedApplyButton.disabled).toBe(false);
+    expect(populatedApplyButton.getAttribute('aria-disabled')).toBe('false');
+
+    getOverlay().querySelector('[data-role="method-picker-cancel-button"]').click();
+    await populatedPromise;
   });
 
   test('renders parameter details before parameter types with expected columns', async () => {
@@ -129,7 +162,7 @@ describe('method picker modal', () => {
     expect(typesTable.textContent).toContain('Req');
     expect(typesTable.textContent).toContain('optional');
 
-    getOverlay().querySelector('[data-action="cancel"]').click();
+    getOverlay().querySelector('[data-role="method-picker-cancel-button"]').click();
     await promise;
   });
 
@@ -173,7 +206,7 @@ describe('method picker modal', () => {
     expect(docsLink.getAttribute('rel')).toContain('noopener');
     expect(docsLink.getAttribute('rel')).toContain('noreferrer');
 
-    getOverlay().querySelector('[data-action="cancel"]').click();
+    getOverlay().querySelector('[data-role="method-picker-cancel-button"]').click();
     await promise;
   });
 
@@ -198,7 +231,7 @@ describe('method picker modal', () => {
     );
     expect(emptyStates).toEqual(['No params']);
 
-    getOverlay().querySelector('[data-action="cancel"]').click();
+    getOverlay().querySelector('[data-role="method-picker-cancel-button"]').click();
     await promise;
   });
 
@@ -249,7 +282,7 @@ describe('method picker modal', () => {
     );
     expect(filtered).toEqual(['literal']);
 
-    getOverlay().querySelector('[data-action="cancel"]').click();
+    getOverlay().querySelector('[data-role="method-picker-cancel-button"]').click();
     await promise;
   });
 
@@ -277,7 +310,7 @@ describe('method picker modal', () => {
     );
     expect(commands).toEqual(['enum']);
 
-    getOverlay().querySelector('[data-action="cancel"]').click();
+    getOverlay().querySelector('[data-role="method-picker-cancel-button"]').click();
     await promise;
   });
 

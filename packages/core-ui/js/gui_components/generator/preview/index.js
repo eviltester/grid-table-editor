@@ -102,10 +102,4 @@ function createGeneratorPreviewComponent({ root, props = {}, services = {}, call
   };
 }
 
-export {
-  createDefaultPreviewGridFactory,
-  createGeneratorPreviewComponent,
-  GeneratorPreviewController,
-  GeneratorPreviewView,
-  createTabulatorGridAdapter,
-};
+export { createGeneratorPreviewComponent };

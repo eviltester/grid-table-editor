@@ -1,7 +1,14 @@
 import { jest } from '@jest/globals';
+import * as dataGridComponentExports from '../../../js/gui_components/data-grid-editor/index.js';
 import { DataGridComponentController } from '../../../js/gui_components/data-grid-editor/data-grid-component-controller.js';
 
 describe('DataGridComponentController', () => {
+  test('public barrel is component-factory-only', () => {
+    expect(typeof dataGridComponentExports.createDataGridComponent).toBe('function');
+    expect(dataGridComponentExports.DataGridComponentController).toBeUndefined();
+    expect(dataGridComponentExports.DataGridComponentView).toBeUndefined();
+  });
+
   test('proxies toolbar actions to grid extras and keeps filter state in sync', async () => {
     const gridExtras = {
       addRow: jest.fn(),

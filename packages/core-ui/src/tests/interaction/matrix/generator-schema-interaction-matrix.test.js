@@ -9,6 +9,10 @@
  * - file generation produces downloadable output
  * - pairwise generation is available and works for eligible scenarios
  * - command help links rendered in the DOM match the live definition metadata
+ *
+ * Notes:
+ * - This suite is intentionally a small page-wiring smoke subset.
+ * - Broader schema semantics remain covered by the runtime matrix and focused component/browser tests.
  */
 
 import { jest } from '@jest/globals';
@@ -21,7 +25,20 @@ const fixturePath = join(
   process.cwd(),
   'packages/core-ui/src/tests/interaction/matrix/fixtures/schema-interaction-matrix.json'
 );
-const scenarios = JSON.parse(readFileSync(fixturePath, 'utf8')).uiScenarios;
+const SMOKE_SCENARIO_IDS = [
+  'custom-literal-base',
+  'custom-regex-base',
+  'faker-helpers-arrayElement-base',
+  'domain-commerce-price-example-1',
+  'custom-enum-pairwise',
+];
+const allScenarios = JSON.parse(readFileSync(fixturePath, 'utf8')).uiScenarios;
+const scenarios = SMOKE_SCENARIO_IDS.map((scenarioId) =>
+  allScenarios.find((scenario) => scenario.id === scenarioId)
+).filter(Boolean);
+if (scenarios.length !== SMOKE_SCENARIO_IDS.length) {
+  throw new Error('generator schema interaction smoke subset is missing fixture scenarios');
+}
 const CHUNK_SIZE = 20;
 const chunkDescriptors = buildChunkDescriptors(scenarios, CHUNK_SIZE);
 

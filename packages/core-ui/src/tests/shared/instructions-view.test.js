@@ -1,9 +1,8 @@
 import { JSDOM } from 'jsdom';
-import {
-  createInstructionsComponent,
-  APP_PAGE_INSTRUCTIONS_PROPS,
-  GENERATOR_PAGE_INSTRUCTIONS_PROPS,
-} from '../../../js/gui_components/shared/instructions/index.js';
+import { createInstructionsComponent } from '../../../js/gui_components/shared/instructions/index.js';
+import { APP_PAGE_INSTRUCTIONS_PROPS } from '../../../js/gui_components/shared/instructions/app-page-instructions.js';
+import { GENERATOR_PAGE_INSTRUCTIONS_PROPS } from '../../../js/gui_components/shared/instructions/generator-page-instructions.js';
+import * as instructionsExports from '../../../js/gui_components/shared/instructions/index.js';
 import { jest } from '@jest/globals';
 
 describe('instructions view', () => {
@@ -23,6 +22,14 @@ describe('instructions view', () => {
     delete global.Event;
   });
 
+  test('public barrel is component-factory-only', () => {
+    expect(instructionsExports.createInstructionsComponent).toBe(createInstructionsComponent);
+    expect(instructionsExports.APP_PAGE_INSTRUCTIONS_PROPS).toBeUndefined();
+    expect(instructionsExports.GENERATOR_PAGE_INSTRUCTIONS_PROPS).toBeUndefined();
+    expect(instructionsExports.InstructionsController).toBeUndefined();
+    expect(instructionsExports.InstructionsView).toBeUndefined();
+  });
+
   test('renders the app instructions variant with copy action and footer content', () => {
     const root = document.getElementById('root');
     createInstructionsComponent({
@@ -34,7 +41,9 @@ describe('instructions view', () => {
     expect(root.textContent).toContain('Instructions');
     expect(root.textContent).toContain('Copy Instructions To Grid');
     expect(root.textContent).toContain('Alan Richardson');
-    expect(root.querySelector('.instructions-copy-to-grid-button')).not.toBeNull();
+    expect(
+      root.querySelector('[data-role="instructions-action-button"][data-action-id="copy-instructions-to-grid"]')
+    ).not.toBeNull();
     expect(root.querySelectorAll('.instruction-item-icon svg.instruction-action-icon')).toHaveLength(5);
     expect(root.querySelector('.instruction-item-icon[title="Rename column"]')).not.toBeNull();
   });
@@ -48,7 +57,7 @@ describe('instructions view', () => {
 
     expect(root.textContent).toContain('Data Generator Instructions');
     expect(root.textContent).toContain('Generate Pairwise combinations');
-    expect(root.querySelector('.instructions-copy-to-grid-button')).toBeNull();
+    expect(root.querySelector('[data-role="instructions-action-button"]')).toBeNull();
     const helpIcon = root.querySelector('[data-help="shared-generator-screen-overview"]');
     expect(helpIcon).not.toBeNull();
     expect(helpIcon.hasAttribute('data-help-text')).toBe(false);
@@ -79,7 +88,7 @@ describe('instructions view', () => {
     component.update(GENERATOR_PAGE_INSTRUCTIONS_PROPS);
 
     expect(root.textContent).toContain('Data Generator Instructions');
-    expect(root.querySelector('.instructions-copy-to-grid-button')).toBeNull();
+    expect(root.querySelector('[data-role="instructions-action-button"]')).toBeNull();
 
     component.destroy();
     expect(root.children.length).toBe(0);

@@ -52,6 +52,7 @@ describe('TextPreviewEditor', () => {
     const copyButton = root.querySelector('[data-role="copy-text-button"]');
     const selectorRoot = root.querySelector('[data-role="format-selector-root"]');
     const subtasksRoot = root.querySelector('[data-role="format-subtasks-root"]');
+    const layoutRoot = root.querySelector('[data-role="options-preview-layout-root"]');
     const editArea = root.querySelector('[data-role="edit-area"]');
     const optionsPanelRoot = root.querySelector('[data-role="options-panel-root"]');
     const optionsPreviewSplitter = root.querySelector('[data-role="options-preview-splitter"]');
@@ -65,6 +66,7 @@ describe('TextPreviewEditor', () => {
     expect(previewRowCount.id).toBe('');
     expect(previewRowCount.getAttribute('aria-label')).toBe('Preview row count');
     expect(previewRowCount.min).toBe('1');
+    expect(layoutRoot).not.toBeNull();
     expect(editArea).not.toBeNull();
     expect(optionsPanelRoot).not.toBeNull();
     expect(optionsPreviewSplitter).not.toBeNull();

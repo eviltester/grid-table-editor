@@ -1,8 +1,6 @@
 import { describe, expect, test } from '@jest/globals';
-import {
-  createGeneratorSchemaDefinitionSupport,
-  createGeneratorSchemaRowFactory,
-} from '../../../js/gui_components/generator/schema-support/index.js';
+import { createGeneratorSchemaDefinitionSupport } from '../../../js/gui_components/generator/schema-support/create-generator-schema-definition-support.js';
+import { createGeneratorSchemaRowFactory } from '../../../js/gui_components/generator/schema-support/create-generator-schema-row-factory.js';
 
 describe('generator schema definition support', () => {
   test('creates generator blank schema rows through a focused factory', () => {

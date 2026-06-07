@@ -19,12 +19,12 @@ describe('TimedStatusDisplay', () => {
   });
 
   test('show auto clears after timeout using the shared inline message behavior', () => {
+    const element = dom.window.document.getElementById('error');
     const display = new TimedStatusDisplay({
       documentObj: dom.window.document,
-      elementId: 'error',
+      resolveElement: () => element,
       timeoutMs: 5000,
     });
-    const element = dom.window.document.getElementById('error');
 
     display.show('Something failed', { severity: 'error' });
     expect(element.textContent).toBe('Something failed');
@@ -36,12 +36,12 @@ describe('TimedStatusDisplay', () => {
   });
 
   test('destroy clears active timeout and removes visible error state', () => {
+    const element = dom.window.document.getElementById('error');
     const display = new TimedStatusDisplay({
       documentObj: dom.window.document,
-      elementId: 'error',
+      resolveElement: () => element,
       timeoutMs: 5000,
     });
-    const element = dom.window.document.getElementById('error');
 
     display.show('Something failed', { severity: 'error' });
     expect(element.textContent).toBe('Something failed');
@@ -57,12 +57,13 @@ describe('TimedStatusDisplay', () => {
   });
 
   test('rebinds to a replacement element with the same id', () => {
+    let currentElement = dom.window.document.getElementById('error');
     const display = new TimedStatusDisplay({
       documentObj: dom.window.document,
-      elementId: 'error',
+      resolveElement: () => currentElement,
       timeoutMs: 5000,
     });
-    const original = dom.window.document.getElementById('error');
+    const original = currentElement;
     const replacement = dom.window.document.createElement('div');
     replacement.id = 'error';
 
@@ -70,6 +71,7 @@ describe('TimedStatusDisplay', () => {
     expect(original.textContent).toBe('Original error');
 
     original.replaceWith(replacement);
+    currentElement = replacement;
     display.show('Replacement error', { severity: 'warning', timeoutMs: 5000 });
 
     expect(replacement.textContent).toBe('Replacement error');
@@ -77,12 +79,12 @@ describe('TimedStatusDisplay', () => {
   });
 
   test('createTimedStatusPresenter returns the same timed behavior through the service-style API', () => {
+    const element = dom.window.document.getElementById('error');
     const presenter = createTimedStatusPresenter({
       documentObj: dom.window.document,
-      elementId: 'error',
+      resolveElement: () => element,
       timeoutMs: 5000,
     });
-    const element = dom.window.document.getElementById('error');
 
     presenter.show('Schema invalid', { severity: 'warning' });
     expect(element.textContent).toBe('Schema invalid');
@@ -94,12 +96,12 @@ describe('TimedStatusDisplay', () => {
   });
 
   test('createTimedStatusPresenter supports normal severity without setting data-severity', () => {
+    const element = dom.window.document.getElementById('error');
     const presenter = createTimedStatusPresenter({
       documentObj: dom.window.document,
-      elementId: 'error',
+      resolveElement: () => element,
       timeoutMs: 5000,
     });
-    const element = dom.window.document.getElementById('error');
 
     presenter.show('Text preview refreshed.', { severity: 'normal' });
     expect(element.textContent).toBe('Text preview refreshed.');
@@ -123,7 +125,7 @@ describe('TimedStatusDisplay', () => {
   test('TimedStatusDisplay wraps the service-style presenter API', () => {
     const display = new TimedStatusDisplay({
       documentObj: dom.window.document,
-      elementId: 'error',
+      resolveElement: () => dom.window.document.getElementById('error'),
       timeoutMs: 5000,
     });
 

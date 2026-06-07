@@ -48,12 +48,20 @@ function createFullTextFromGrid({ exporter, type }) {
   return exporter.getGridAs?.(type) || '';
 }
 
+function normalizeImportedTextContent(text) {
+  const rawText = typeof text === 'string' ? text : String(text ?? '');
+  return rawText.replace(/^\uFEFF/, '').replace(/\r\n?/g, '\n');
+}
+
 function createPreviewTextFromDataTable({ exporter, type, dataTable, previewRowLimit }) {
   const limitedDataTable = limitDataTableRows(dataTable, previewRowLimit);
   return exporter?.getDataTableAs?.(type, limitedDataTable) || '';
 }
 
-function createClipboardService({ documentObj } = {}) {
+function createClipboardService({ documentObj, windowObj } = {}) {
+  const getClipboard = () =>
+    resolveWindowObj(windowObj, documentObj)?.navigator?.clipboard || globalThis.navigator?.clipboard;
+
   return {
     copyFromTextArea(textArea) {
       if (!textArea) {
@@ -63,6 +71,16 @@ function createClipboardService({ documentObj } = {}) {
       textArea.select();
       textArea.setSelectionRange(0, 99999);
       documentObj?.execCommand?.('copy');
+    },
+    canReadText() {
+      return typeof getClipboard()?.readText === 'function';
+    },
+    async readText() {
+      const clipboard = getClipboard();
+      if (typeof clipboard?.readText !== 'function') {
+        throw new Error('Clipboard read is not available in this browser.');
+      }
+      return clipboard.readText();
     },
   };
 }
@@ -134,6 +152,7 @@ export {
   createPreviewTextFromGrid,
   createYieldToUi,
   limitDataTableRows,
+  normalizeImportedTextContent,
   normalizePreviewRowLimit,
   previewThenImportToGrid,
   scheduleTimeout,

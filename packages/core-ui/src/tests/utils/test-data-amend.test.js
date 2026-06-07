@@ -1,4 +1,5 @@
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
+import { createTestDataGenerationService } from '../../../js/gui_components/app/test-data-grid/generation/test-data-generation-service.js';
 import {
   TEST_DATA_MODES,
   createAmendedTable,
@@ -25,6 +26,10 @@ function createDataTable(headers, rows) {
 }
 
 describe('test-data amend behavior', () => {
+  test('test-data generation service resolves through its direct module', () => {
+    expect(typeof createTestDataGenerationService).toBe('function');
+  });
+
   test('new table mode generates exact row count', () => {
     const generator = createGenerator(
       ['A', 'B'],

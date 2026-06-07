@@ -22,3 +22,5 @@ testenv/
 .tmp
 .claude
 .pet-runs
+experiments
+.codex-logs/

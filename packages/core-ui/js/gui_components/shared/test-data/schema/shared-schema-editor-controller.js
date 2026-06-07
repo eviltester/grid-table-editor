@@ -1,5 +1,5 @@
-import { openMethodPickerModal } from '../ui/index.js';
-import { buildSchemaHelpModel, renderSchemaHelpHtml } from '../help/index.js';
+import { openMethodPickerModal } from '../ui/method-picker-modal.js';
+import { buildSchemaHelpModel, renderSchemaHelpHtml } from '../help/help-model-builder.js';
 import {
   SOURCE_TYPE_DOMAIN,
   SOURCE_TYPE_ENUM,

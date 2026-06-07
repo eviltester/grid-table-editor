@@ -139,7 +139,7 @@ function openMethodPickerModal({
     )}">
       <header class="method-picker-header">
         <h3>${escapeHtml(title)}</h3>
-        <button type="button" class="method-picker-close" data-action="close" aria-label="Close">×</button>
+        <button type="button" class="method-picker-close" data-role="method-picker-close-button" aria-label="Close">×</button>
       </header>
       <div class="method-picker-toolbar">
         <input
@@ -156,8 +156,8 @@ function openMethodPickerModal({
         <aside class="method-picker-detail" data-role="method-picker-detail" aria-label="Method details"></aside>
       </div>
       <footer class="method-picker-footer">
-        <button type="button" data-action="cancel">Cancel</button>
-        <button type="button" data-action="apply" class="method-picker-apply">Apply</button>
+        <button type="button" data-role="method-picker-cancel-button">Cancel</button>
+        <button type="button" data-role="method-picker-apply-button" class="method-picker-apply">Apply</button>
       </footer>
     </div>
   `;
@@ -166,7 +166,7 @@ function openMethodPickerModal({
   const listElem = overlay.querySelector('[data-role="method-picker-list"]');
   const detailElem = overlay.querySelector('[data-role="method-picker-detail"]');
   const tabsElem = overlay.querySelector('[data-role="method-picker-tabs"]');
-  const applyButton = overlay.querySelector('[data-action="apply"]');
+  const applyButton = overlay.querySelector('[data-role="method-picker-apply-button"]');
 
   const recent = readRecent(windowObj);
   const prepared = (Array.isArray(options) ? options : []).map((option) => ({
@@ -192,6 +192,11 @@ function openMethodPickerModal({
     ? currentCommand
     : prepared[0]?.command || '';
   let tabButtons = [];
+
+  function syncApplyButtonState() {
+    applyButton.disabled = !selectedCommand;
+    applyButton.setAttribute('aria-disabled', applyButton.disabled ? 'true' : 'false');
+  }
 
   function renderTabs() {
     tabsElem.innerHTML = tabSpecs
@@ -299,7 +304,7 @@ function openMethodPickerModal({
       })
       .join('');
     renderDetail();
-    applyButton.disabled = !selectedCommand;
+    syncApplyButtonState();
   }
 
   return new Promise((resolve) => {
@@ -309,12 +314,14 @@ function openMethodPickerModal({
     }
 
     overlay.addEventListener('click', (event) => {
-      const closeAction = event.target?.getAttribute?.('data-action');
-      if (event.target === overlay || closeAction === 'close' || closeAction === 'cancel') {
+      const closeButton = event.target?.closest?.('[data-role="method-picker-close-button"]');
+      const cancelButton = event.target?.closest?.('[data-role="method-picker-cancel-button"]');
+      const applyActionButton = event.target?.closest?.('[data-role="method-picker-apply-button"]');
+      if (event.target === overlay || closeButton || cancelButton) {
         close(null);
         return;
       }
-      if (closeAction === 'apply') {
+      if (applyActionButton) {
         const selected = getSelected();
         if (!selected) {
           return;

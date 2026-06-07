@@ -4,12 +4,15 @@ class ImportExportWorkspaceComponent {
   constructor(page) {
     this.page = page;
     this.container = page.locator('#import-export-controls');
+    this.disclosure = this.container.locator('[data-role="import-export-toolbar-details"]').first();
+    this.disclosureSummary = this.disclosure.locator('summary').first();
     this.setTextFromGridButton = this.container.getByRole('button', { name: /set text from grid/i });
     this.setGridFromTextButton = this.container.getByRole('button', { name: /set grid from text/i });
+    this.clipboardImportButton = this.container.getByRole('button', { name: /import from clipboard/i });
     this.downloadButton = this.container.getByRole('button', { name: /download/i });
     this.importLabel = this.container
       .locator('label')
-      .filter({ hasText: /import \^:/i })
+      .filter({ hasText: /import:/i })
       .first();
     this.fileInput = this.importLabel.locator('input[type="file"]').first();
     this.dropZone = this.container
@@ -25,7 +28,7 @@ class ImportExportWorkspaceComponent {
   async expectVisible() {
     await expect(this.container).toBeVisible();
     await expect(this.setTextFromGridButton).toBeVisible();
-    await expect(this.downloadButton).toBeVisible();
+    await expect(this.disclosureSummary).toBeVisible();
   }
 
   async expectReady() {
@@ -40,11 +43,18 @@ class ImportExportWorkspaceComponent {
     await this.setGridFromTextButton.click();
   }
 
+  async importFromClipboard() {
+    await this.openImportExportDetails();
+    await this.clipboardImportButton.click();
+  }
+
   async uploadFile(filePath) {
+    await this.openImportExportDetails();
     await this.fileInput.setInputFiles(filePath);
   }
 
   async clickDownloadAndWaitForEvent() {
+    await this.openImportExportDetails();
     const downloadPromise = this.page.waitForEvent('download');
     await this.downloadButton.click();
     return downloadPromise;
@@ -71,14 +81,17 @@ class ImportExportWorkspaceComponent {
   }
 
   async isImportVisible() {
+    await this.openImportExportDetails();
     return this.importLabel.isVisible();
   }
 
   async isDropZoneVisible() {
+    await this.openImportExportDetails();
     return this.dropZone.isVisible();
   }
 
   async isDownloadVisible() {
+    await this.openImportExportDetails();
     return this.downloadButton.isVisible();
   }
 
@@ -99,6 +112,14 @@ class ImportExportWorkspaceComponent {
 
   async getErrorText() {
     return ((await this.errorStatus.textContent()) || '').trim();
+  }
+
+  async openImportExportDetails() {
+    if (await this.disclosure.evaluate((element) => element.open)) {
+      return;
+    }
+    await this.disclosureSummary.click();
+    await expect(this.disclosure).toHaveJSProperty('open', true);
   }
 }
 

@@ -1,6 +1,6 @@
-import { createUpdateHelpHints } from '../../../help/help-tooltips.js';
+import { createOptionsPreviewSplitLayoutComponent } from '../options-preview-split-layout/index.js';
+import { createTextPreviewToolbarComponent } from '../text-preview-toolbar/index.js';
 import { resolveDocumentObj } from '../../shared/dom/default-objects.js';
-import { createRowCountControl } from '../../shared/row-count-control/index.js';
 import { TextPreviewEditorController } from './text-preview-editor-controller.js';
 import { TextPreviewEditorView } from './text-preview-editor-view.js';
 
@@ -12,8 +12,10 @@ function createTextPreviewEditorComponent({ root, props = {}, callbacks = {}, se
     controller,
     documentObj: resolvedDocumentObj,
     services: {
-      createRowCountControl: services.createRowCountControl || createRowCountControl,
-      updateHelpHints: createUpdateHelpHints(resolvedDocumentObj, root),
+      createTextPreviewToolbarComponent:
+        services.createTextPreviewToolbarComponent || createTextPreviewToolbarComponent,
+      createOptionsPreviewSplitLayoutComponent:
+        services.createOptionsPreviewSplitLayoutComponent || createOptionsPreviewSplitLayoutComponent,
     },
   });
 
@@ -51,6 +53,9 @@ function createTextPreviewEditorComponent({ root, props = {}, callbacks = {}, se
     getTextAreaWrapper() {
       return view.getTextAreaWrapper();
     },
+    setOptionsPanelSupported(optionsSupported) {
+      view.setOptionsPanelSupported(optionsSupported);
+    },
     getTextValue() {
       return view.getTextValue();
     },
@@ -63,4 +68,4 @@ function createTextPreviewEditorComponent({ root, props = {}, callbacks = {}, se
   };
 }
 
-export { createTextPreviewEditorComponent, TextPreviewEditorController, TextPreviewEditorView };
+export { createTextPreviewEditorComponent };

@@ -6,7 +6,7 @@
  */
 
 import { createTimedStatusPresenter } from '../../../shared/timed-error-display.js';
-import { parseSchemaTextToRows } from '../../../shared/test-data/schema/index.js';
+import { parseSchemaTextToRows } from '../../../shared/test-data/schema/schema-controller.js';
 import { getDefaultDocumentObj } from '../../../shared/dom/default-objects.js';
 
 function createSchemaTextSyncState() {

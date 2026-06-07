@@ -1,7 +1,7 @@
 import { fireEvent, within, waitFor } from '@testing-library/dom';
 import RandExp from 'randexp';
 import { Exporter } from '@anywaydata/core/grid/exporter.js';
-import { createTestDataGenerationPanelManager } from '../../../../../js/gui_components/app/test-data-grid/index.js';
+import { createTestDataGenerationPanelManager } from '../../../../../js/gui_components/app/test-data-grid/controller/test-data-grid-controller.js';
 import { installDomGlobals, cleanupDomGlobals } from '../../support/testing-library-dom-setup.js';
 import { applyDeterministicScenarioSeed, withDeterministicScenarioSeed } from './deterministic-scenario-seed.js';
 import { assertDataTableHasNoErrorIndicators, assertNoErrorIndicators } from '../../support/generated-value-quality.js';
@@ -73,6 +73,10 @@ function createAppTestDataInteractionHarness() {
   );
   global.RandExp = RandExp;
   let latestDataTable = null;
+  const previewState = {
+    mode: 'preview',
+    autoPreviewEnabled: true,
+  };
   const control = createTestDataGenerationPanelManager({
     documentObj: document,
     windowObj: window,
@@ -84,6 +88,8 @@ function createAppTestDataInteractionHarness() {
     document.getElementById('host').innerHTML = '';
     document.getElementById('testDataPreviewCapture').textContent = '';
     latestDataTable = null;
+    previewState.mode = 'preview';
+    previewState.autoPreviewEnabled = true;
 
     const exporter = new Exporter({
       getGridAsGenericDataTable: () => latestDataTable,
@@ -102,6 +108,9 @@ function createAppTestDataInteractionHarness() {
     };
 
     const textPreviewRenderer = {
+      getState() {
+        return { ...previewState };
+      },
       async renderTextFromGrid() {
         const text = latestDataTable ? exporter.getDataTableAs('csv', latestDataTable) : '';
         document.getElementById('testDataPreviewCapture').textContent = text;
@@ -180,7 +189,6 @@ function createAppTestDataInteractionHarness() {
       const previewCsv = exporter.getDataTableAs('csv', latestDataTable) || '';
       assertNoErrorIndicators(previewCsv, `${scenario.id} app preview csv`);
 
-      clickElement(within(document.body).getByRole('button', { name: /refresh text preview/i }));
       await waitFor(() =>
         expect(document.getElementById('testDataPreviewCapture').textContent.length).toBeGreaterThan(0)
       );

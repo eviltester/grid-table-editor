@@ -1,7 +1,6 @@
-import { createRowCountControl } from '../../shared/row-count-control/index.js';
 import { createSharedSchemaDefinitionComponent } from '../../shared/schema-definition/index.js';
-import { createPopulationActionsComponent } from '../population-actions/index.js';
-import { createPopulationModeSelectorComponent } from '../population-mode-selector/index.js';
+import { createSchemaPanelComponent } from '../../shared/schema-panel/index.js';
+import { createTestDataPopulationToolbarComponent } from '../test-data-population-toolbar/index.js';
 import { DataPopulationPanelController } from './data-population-panel-controller.js';
 import { DataPopulationPanelView } from './data-population-panel-view.js';
 import { resolveDocumentObj } from '../../shared/dom/default-objects.js';
@@ -15,12 +14,19 @@ function createDataPopulationPanelComponent({ root, props = {}, services = {}, c
     documentObj: resolvedDocumentObj,
     ids: props.ids || {},
     services: {
-      createPopulationActionsComponent: services.createPopulationActionsComponent || createPopulationActionsComponent,
-      createPopulationModeSelectorComponent:
-        services.createPopulationModeSelectorComponent || createPopulationModeSelectorComponent,
-      createRowCountControl: services.createRowCountControl || createRowCountControl,
-      createSharedSchemaDefinitionComponent:
-        services.createSharedSchemaDefinitionComponent || createSharedSchemaDefinitionComponent,
+      createTestDataPopulationToolbarComponent:
+        services.createTestDataPopulationToolbarComponent || createTestDataPopulationToolbarComponent,
+      createSchemaPanelComponent:
+        services.createSchemaPanelComponent ||
+        ((schemaPanelOptions) =>
+          createSchemaPanelComponent({
+            ...schemaPanelOptions,
+            services: {
+              ...(schemaPanelOptions.services || {}),
+              createSharedSchemaDefinitionComponent:
+                services.createSharedSchemaDefinitionComponent || createSharedSchemaDefinitionComponent,
+            },
+          })),
     },
     callbacks,
   });
@@ -66,9 +72,6 @@ function createDataPopulationPanelComponent({ root, props = {}, services = {}, c
     setGeneratePairwiseBusy(isBusy) {
       view.setGeneratePairwiseBusy(isBusy);
     },
-    setRefreshPreviewBusy(isBusy) {
-      view.setRefreshPreviewBusy(isBusy);
-    },
     validateSchemaRows({ syncFromText = true } = {}) {
       if (syncFromText) {
         const isTextMode = view.getSchemaDefinition()?.getState?.()?.isTextMode === true;
@@ -96,4 +99,4 @@ function createDataPopulationPanelComponent({ root, props = {}, services = {}, c
   };
 }
 
-export { createDataPopulationPanelComponent, DataPopulationPanelController, DataPopulationPanelView };
+export { createDataPopulationPanelComponent };

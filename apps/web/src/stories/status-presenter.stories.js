@@ -1,9 +1,24 @@
+import React from 'react';
+import { Canvas, Controls, Description, Title } from '@storybook/addon-docs/blocks';
 import { expect, userEvent, within } from 'storybook/test';
-import { createStatusPresenter } from '../../../../packages/core-ui/js/gui_components/shared/test-data/ui/index.js';
+import { createStatusPresenter } from '../../../../packages/core-ui/js/gui_components/shared/test-data/ui/status-presenter.js';
 
-function createStatusPresenterHarness({ root, args, remountable = false }) {
+function createStatusPresenterHarness({
+  root,
+  args,
+  remountable = false,
+  startVisible = false,
+  showControls = true,
+} = {}) {
   let presenter = null;
   let presenterRoot = null;
+
+  const showStatus = () => {
+    presenter.setStatus(args.message, {
+      severity: args.severity,
+      dismissable: args.dismissable,
+    });
+  };
 
   const mountPresenter = () => {
     presenter?.destroy?.();
@@ -24,28 +39,31 @@ function createStatusPresenterHarness({ root, args, remountable = false }) {
       statusClassName: args.statusClassName,
       visibleDisplay: args.visibleDisplay,
     });
+
+    if (startVisible) {
+      showStatus();
+    }
   };
 
   root.style.display = 'grid';
   root.style.gap = '0.75rem';
   root.innerHTML = `
-    <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+    ${
+      showControls
+        ? `<div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
       <button type="button" data-action="show">Show status</button>
       <button type="button" data-action="clear">Clear status</button>
       ${remountable ? '<button type="button" data-action="remount">Destroy and remount</button>' : ''}
-    </div>
+    </div>`
+        : ''
+    }
     <div data-role="presenter-host"></div>
   `;
 
   presenterRoot = root.querySelector('[data-role="presenter-host"]');
   mountPresenter();
 
-  root.querySelector('[data-action="show"]')?.addEventListener('click', () => {
-    presenter.setStatus(args.message, {
-      severity: args.severity,
-      dismissable: args.dismissable,
-    });
-  });
+  root.querySelector('[data-action="show"]')?.addEventListener('click', showStatus);
   root.querySelector('[data-action="clear"]')?.addEventListener('click', () => {
     presenter.clear();
   });
@@ -70,9 +88,21 @@ const meta = {
   tags: ['autodocs'],
   parameters: {
     docs: {
+      page: () =>
+        React.createElement(
+          React.Fragment,
+          null,
+          React.createElement(Title),
+          React.createElement(Description),
+          React.createElement(Controls),
+          React.createElement(Canvas, { of: VisualAlwaysVisible }),
+          React.createElement(Canvas, { of: CompletionStatus }),
+          React.createElement(Canvas, { of: DismissableStatus }),
+          React.createElement(Canvas, { of: RemountableStatus })
+        ),
       description: {
         component:
-          'Service-level Storybook coverage for `createStatusPresenter`, the non-loading app/generator status API layered over the inline-message primitive. Use this for completion, informational, warning, and error status messages that should not show the loading spinner. Dismissable statuses render a small close button that clears the message using the same shared clear path.',
+          'Service-level Storybook coverage for `createStatusPresenter`, the non-loading app/generator status API layered over the inline-message primitive. Use this for completion, informational, warning, and error status messages that should not show the loading spinner. Dismissable statuses render a small close button that clears the message using the same shared clear path, and the always-visible story exposes severity and dismissable controls directly for visual review.',
       },
     },
   },
@@ -104,7 +134,7 @@ const meta = {
     },
   },
   args: {
-    message: 'Generate complete. Refresh text preview if needed.',
+    message: 'Generate complete. Grid and preview updated.',
     hideWhenEmpty: true,
     severity: 'normal',
     dismissable: false,
@@ -115,13 +145,49 @@ const meta = {
 
 export default meta;
 
+export const VisualAlwaysVisible = {
+  args: {
+    message: 'Schema validation failed.',
+    severity: 'error',
+    dismissable: true,
+  },
+  render: (args) =>
+    createStatusPresenterHarness({
+      root: document.createElement('section'),
+      args,
+      startVisible: true,
+      showControls: false,
+    }),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'This reviewer-facing example mounts the non-loading status presenter already visible with no trigger controls. Use the Storybook controls to switch severities, toggle dismissability, and change the message text, then use the dismiss button to confirm the same visible surface handles those states without showing the loading spinner.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const status = canvas.getByRole('status');
+
+    await expect(status).toHaveTextContent('Schema validation failed.');
+    await expect(status).toHaveAttribute('data-severity', 'error');
+    await expect(status).not.toHaveClass('is-loading');
+
+    const dismissButton = within(status).getByRole('button', { name: 'Dismiss message' });
+    await userEvent.click(dismissButton);
+    await expect(status).toHaveTextContent('');
+    await expect(status).not.toHaveClass('is-loading');
+  },
+};
+
 export const CompletionStatus = {
   render: renderStatusPresenterStory,
   parameters: {
     docs: {
       description: {
         story:
-          'Click **Show status** to demonstrate the non-loading completion state used by the app after generation steps such as `Generated 9 pairwise combinations.` and `Generate complete. Refresh text preview if needed.` This mode keeps the status visible without the loading spinner until a later action replaces it or the host clears it.',
+          'Click **Show status** to demonstrate the non-loading completion state used by the app after generation steps such as `Generated 9 pairwise combinations.` and `Generate complete. Grid and preview updated.` This mode keeps the status visible without the loading spinner until a later action replaces it or the host clears it.',
       },
     },
   },
@@ -132,7 +198,7 @@ export const CompletionStatus = {
     const status = canvas.getByRole('status');
 
     await userEvent.click(showButton);
-    await expect(status).toHaveTextContent('Generate complete. Refresh text preview if needed.');
+    await expect(status).toHaveTextContent('Generate complete. Grid and preview updated.');
     await expect(status).not.toHaveClass('is-loading');
     expect(status.querySelector('[data-role="loading-indicator"]')?.style.display).toBe('none');
 

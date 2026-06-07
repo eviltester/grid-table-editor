@@ -8,10 +8,8 @@ class DataPopulationPanelView {
     this.services = services;
     this.callbacks = callbacks;
     this.ids = { ...ids };
-    this.populationActions = null;
-    this.populationModeSelector = null;
-    this.rowCountControl = null;
-    this.schemaDefinition = null;
+    this.toolbar = null;
+    this.schemaPanel = null;
   }
 
   mount() {
@@ -31,119 +29,102 @@ class DataPopulationPanelView {
         data-role="data-population-panel-root"
         aria-label="Test Data Population Panel"
       >
-        <div class="data-population-toolbar">
-          <div data-role="population-actions-root"></div>
-          <span data-role="row-count-root"></span>
-          <div data-role="population-mode-selector-root"></div>
-        </div>
-        <div class="test-data-schema-edit-zone shared-schema-section">
-          <div${this.ids.schemaDefinitionRoot ? ` id="${this.ids.schemaDefinitionRoot}"` : ''} data-role="schema-definition-root"></div>
-        </div>
+        <div data-role="test-data-population-toolbar-root"></div>
+        <div data-role="test-data-schema-panel-host"></div>
       </section>
     `;
   }
 
   createFeatures() {
     const state = this.controller.getState();
-    this.populationActions = this.services.createPopulationActionsComponent?.({
-      root: this.root.querySelector('[data-role="population-actions-root"]'),
+    this.toolbar = this.services.createTestDataPopulationToolbarComponent?.({
+      root: this.root.querySelector('[data-role="test-data-population-toolbar-root"]'),
       documentObj: this.documentObj,
       props: {
+        selectedMode: state.selectedMode,
         pairwiseVisible: state.pairwiseVisible,
-        ids: state.actionIds,
+        modeOptions: state.modeOptions,
+        rowCountProps: state.rowCountProps,
+        actionIds: state.actionIds,
       },
       callbacks: {
         onGenerate: this.callbacks.onGenerate,
         onGeneratePairwise: this.callbacks.onGeneratePairwise,
-        onRefreshPreview: this.callbacks.onRefreshPreview,
+        onModeChange: (mode) => this.controller.handleModeChange(mode),
       },
     });
 
-    this.rowCountControl = this.services.createRowCountControl?.({
-      root: this.root.querySelector('[data-role="row-count-root"]'),
-      documentObj: this.documentObj,
-      props: state.rowCountProps,
-    });
-
-    this.populationModeSelector = this.services.createPopulationModeSelectorComponent?.({
-      root: this.root.querySelector('[data-role="population-mode-selector-root"]'),
+    this.schemaPanel = this.services.createSchemaPanelComponent?.({
+      root: this.root.querySelector('[data-role="test-data-schema-panel-host"]'),
       documentObj: this.documentObj,
       props: {
-        name: 'testDataGenerationMode',
-        options: state.modeOptions,
-        selectedMode: state.selectedMode,
+        className: 'test-data-schema-edit-zone shared-schema-section',
+        rootDataRole: 'test-data-schema-panel-root',
+        schemaDefinitionRootDataRole: 'schema-definition-root',
+        ariaLabel: 'Test data schema panel',
+        ids: this.ids,
+        schemaDefinitionProps: state.schemaDefinitionProps,
       },
       callbacks: {
-        onChange: (mode) => this.controller.handleModeChange(mode),
+        schemaDefinition: this.callbacks.schemaDefinition || {},
       },
-    });
-
-    this.schemaDefinition = this.services.createSharedSchemaDefinitionComponent?.({
-      root: this.root.querySelector('[data-role="schema-definition-root"]'),
-      documentObj: this.documentObj,
-      props: state.schemaDefinitionProps,
-      callbacks: this.callbacks.schemaDefinition || {},
     });
   }
 
   render() {
     const state = this.controller.getState();
-    this.populationActions?.update?.({ pairwiseVisible: state.pairwiseVisible });
-    this.populationModeSelector?.update?.({
-      name: 'testDataGenerationMode',
-      options: state.modeOptions,
+    this.toolbar?.update?.({
       selectedMode: state.selectedMode,
+      pairwiseVisible: state.pairwiseVisible,
+      modeOptions: state.modeOptions,
+      rowCountProps: state.rowCountProps,
+      actionIds: state.actionIds,
     });
-    this.rowCountControl?.update?.(state.rowCountProps);
-    this.schemaDefinition?.update?.(state.schemaDefinitionProps);
+    this.schemaPanel?.update?.({
+      className: 'test-data-schema-edit-zone shared-schema-section',
+      rootDataRole: 'test-data-schema-panel-root',
+      schemaDefinitionRootDataRole: 'schema-definition-root',
+      ariaLabel: 'Test data schema panel',
+      schemaDefinitionProps: state.schemaDefinitionProps,
+    });
   }
 
   destroy() {
-    this.populationActions?.destroy?.();
-    this.populationModeSelector?.destroy?.();
-    this.rowCountControl?.destroy?.();
-    this.schemaDefinition?.destroy?.();
+    this.toolbar?.destroy?.();
+    this.schemaPanel?.destroy?.();
     this.root.replaceChildren();
   }
 
   setPairwiseVisible(isVisible) {
-    this.populationActions?.setPairwiseVisible?.(isVisible);
+    this.toolbar?.setPairwiseVisible?.(isVisible);
   }
 
   setRowCountValue(value) {
-    const state = this.controller.getState();
-    this.rowCountControl?.update?.({
-      ...state.rowCountProps,
-      value,
-    });
+    this.toolbar?.setRowCountValue?.(value);
   }
 
   getMode() {
-    return this.populationModeSelector?.getMode?.() || this.controller.getState().selectedMode;
+    return this.toolbar?.getMode?.() || this.controller.getState().selectedMode;
   }
 
   getRowCountState() {
-    return this.rowCountControl?.getState?.() || null;
+    return this.toolbar?.getRowCountState?.() || null;
   }
 
   getRowCountInputValue() {
-    return this.rowCountControl?.getState?.()?.inputValue ?? null;
+    return this.toolbar?.getRowCountInputValue?.() ?? null;
   }
 
   setGenerateBusy(isBusy) {
-    this.populationActions?.setGenerateBusy?.(isBusy);
+    this.toolbar?.setGenerateBusy?.(isBusy);
   }
 
   setGeneratePairwiseBusy(isBusy) {
-    this.populationActions?.setGeneratePairwiseBusy?.(isBusy);
-  }
-
-  setRefreshPreviewBusy(isBusy) {
-    this.populationActions?.setRefreshPreviewBusy?.(isBusy);
+    this.toolbar?.setGeneratePairwiseBusy?.(isBusy);
   }
 
   getSchemaDefinition() {
-    return this.schemaDefinition;
+    return this.schemaPanel?.getSchemaDefinition?.() || null;
   }
 }
 

@@ -1,4 +1,4 @@
-import { renderIconHtml } from '../primitives/icon/index.js';
+import { renderIconHtml } from '../primitives/icon/icon-core.js';
 
 function escapeHtml(value) {
   return String(value ?? '')
@@ -58,7 +58,8 @@ class InstructionsView {
       .map((action) => {
         const className = escapeHtml(action.className || '');
         const label = escapeHtml(action.label || '');
-        return `<button type="button" class="${className}">${label}</button>`;
+        const actionId = escapeHtml(action.actionId || '');
+        return `<button type="button" class="${className}" data-role="instructions-action-button" data-action-id="${actionId}">${label}</button>`;
       })
       .join('');
     const helpAttributes = state.helpText ? ` data-help-text="${escapeHtml(state.helpText)}"` : '';
@@ -70,7 +71,7 @@ class InstructionsView {
         <details${openAttribute}>
           <summary>
             ${escapeHtml(state.title)}
-            <span data-help="${escapeHtml(state.helpKey || '')}" class="helpicon"${helpAttributes}></span>
+            <span data-help="${escapeHtml(state.helpKey || '')}" data-help-role="help-icon" class="helpicon"${helpAttributes}></span>
           </summary>
           <ul>${itemsHtml}</ul>
           ${actionsHtml}

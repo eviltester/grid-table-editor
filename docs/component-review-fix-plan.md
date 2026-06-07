@@ -74,7 +74,7 @@ Current progress:
   - `packages/core-ui/js/gui_components/app/import-export-adapters/export-actions-adapter.js`
   - `packages/core-ui/js/gui_components/app/page/app-page-runtime.js`
   - `packages/core-ui/js/gui_components/app/test-data-grid/schema/test-data-grid-schema-grid-controller.js`
-  - `packages/core-ui/js/gui_components/generator/runtime/data-generator-page-runtime.js`
+  - `packages/core-ui/js/gui_components/generator/runtime/create-generator-page.js`
 
 ## Phase 2: Multi-Instance Component Safety
 

@@ -17,7 +17,7 @@ describe('createPageStartupLoadingStatus', () => {
   test('fail renders an explicit error severity state', () => {
     const status = createPageStartupLoadingStatus({
       documentObj: dom.window.document,
-      elementId: 'startup-status',
+      resolveElement: () => dom.window.document.getElementById('startup-status'),
     });
     const element = dom.window.document.getElementById('startup-status');
 
@@ -31,7 +31,7 @@ describe('createPageStartupLoadingStatus', () => {
   test('clear removes the startup element when a document is available', () => {
     const status = createPageStartupLoadingStatus({
       documentObj: dom.window.document,
-      elementId: 'startup-status',
+      resolveElement: () => dom.window.document.getElementById('startup-status'),
     });
 
     status.show();
@@ -43,7 +43,7 @@ describe('createPageStartupLoadingStatus', () => {
   test('show, fail, and clear do not throw when documentObj is null', () => {
     const status = createPageStartupLoadingStatus({
       documentObj: null,
-      elementId: 'startup-status',
+      resolveElement: () => null,
     });
 
     expect(() => status.show()).not.toThrow();
@@ -59,7 +59,7 @@ describe('createPageStartupLoadingStatus', () => {
       const rootElement = dom.window.document.body;
       const status = createPageStartupLoadingStatus({
         rootElement,
-        elementId: 'startup-status',
+        resolveElement: () => dom.window.document.getElementById('startup-status'),
       });
 
       status.show('Loading from root...');

@@ -1,9 +1,10 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
-import { createThemeToggleComponent, initThemeToggle } from '../../../js/gui_components/shared/theme-toggle.js';
+import { createThemeToggleComponent } from '../../../js/gui_components/shared/theme-toggle.js';
+import * as themeToggleModule from '../../../js/gui_components/shared/theme-toggle.js';
 
 function createPage() {
-  document.body.innerHTML = '<div class="header"></div>';
+  document.body.innerHTML = '<div class="header" data-role="theme-toggle-host"></div>';
 }
 
 describe('theme toggle', () => {
@@ -24,10 +25,19 @@ describe('theme toggle', () => {
     jest.restoreAllMocks();
   });
 
+  test('shared theme-toggle module stays component-factory-only', () => {
+    expect(typeof themeToggleModule.createThemeToggleComponent).toBe('function');
+    expect(themeToggleModule.initThemeToggle).toBeUndefined();
+  });
+
   test('reads docusaurus theme preference from localStorage key "theme"', () => {
     window.localStorage.setItem('theme', 'dark');
 
-    const component = initThemeToggle();
+    const component = createThemeToggleComponent({
+      documentObj: document,
+      windowObj: window,
+      hostElement: document.querySelector('[data-role="theme-toggle-host"]'),
+    });
     const toggleButton = document.querySelector('[data-role="theme-toggle-button"]');
 
     expect(document.body.classList.contains('theme-dark')).toBe(true);
@@ -39,7 +49,11 @@ describe('theme toggle', () => {
   test('falls back to legacy key and migrates on toggle', () => {
     window.localStorage.setItem('anywaydata-theme', 'light');
 
-    const component = initThemeToggle();
+    const component = createThemeToggleComponent({
+      documentObj: document,
+      windowObj: window,
+      hostElement: document.querySelector('[data-role="theme-toggle-host"]'),
+    });
     component.toggleTheme();
 
     expect(component.getState()).toEqual({ theme: 'dark' });
@@ -76,19 +90,43 @@ describe('theme toggle', () => {
 
     component.destroy();
 
-    expect(root.querySelector('.theme-toggle-container')).toBeNull();
+    expect(root.querySelector('[data-role="theme-toggle-container"]')).toBeNull();
   });
 
-  test('initThemeToggle replaces an earlier instance and tears down the old owned container', () => {
-    const firstComponent = initThemeToggle();
+  test('createThemeToggleComponent returns null when no explicit host is available', () => {
+    const root = document.createElement('section');
+    document.body.appendChild(root);
+
+    const component = createThemeToggleComponent({
+      documentObj: document,
+      windowObj: window,
+      rootElement: root,
+    });
+
+    expect(component).toBeNull();
+  });
+
+  test('createThemeToggleComponent can be recreated after destroy on the same host', () => {
+    const hostElement = document.querySelector('[data-role="theme-toggle-host"]');
+    const firstComponent = createThemeToggleComponent({
+      documentObj: document,
+      windowObj: window,
+      hostElement,
+    });
     const firstButton = document.querySelector('[data-role="theme-toggle-button"]');
 
-    const secondComponent = initThemeToggle();
+    firstComponent.destroy();
+    expect(firstButton?.isConnected).toBe(false);
+
+    const secondComponent = createThemeToggleComponent({
+      documentObj: document,
+      windowObj: window,
+      hostElement,
+    });
     const secondButton = document.querySelector('[data-role="theme-toggle-button"]');
 
-    expect(firstComponent).not.toBe(secondComponent);
-    expect(firstButton?.isConnected).toBe(false);
     expect(secondButton?.isConnected).toBe(true);
+    expect(secondButton).not.toBe(firstButton);
 
     secondComponent.destroy();
     expect(document.querySelector('[data-role="theme-toggle-button"]')).toBeNull();
@@ -102,7 +140,7 @@ describe('theme toggle', () => {
     delete global.window;
 
     try {
-      expect(() => initThemeToggle()).not.toThrow();
+      expect(() => createThemeToggleComponent()).not.toThrow();
     } finally {
       global.document = originalDocument;
       global.window = originalWindow;

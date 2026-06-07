@@ -12,7 +12,7 @@ test.describe('4. Import Export Basic', () => {
     fs.writeFileSync(valid, 'Name\nOne\nTwo\n');
 
     try {
-      await expect(appPage.importExportWorkspace.dropZone).toBeVisible();
+      await expect(await appPage.importExportWorkspace.isDropZoneVisible()).toBe(true);
       await appPage.importExportWorkspace.uploadFile(valid);
       await expect.poll(async () => appPage.gridEditor.renderer.countRows()).toBeGreaterThanOrEqual(2);
       await appPage.importExportWorkspace.expectProgressStatusContains('Import complete');

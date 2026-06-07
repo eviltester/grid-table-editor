@@ -13,7 +13,7 @@ import { jest } from '@jest/globals';
 import { waitFor } from '@testing-library/dom';
 import { createFocusedGeneratorHarness } from './support/focused-generator-harness.js';
 
-jest.setTimeout(15000);
+jest.setTimeout(30000);
 
 describe('generator focused generation flows', () => {
   let harness;

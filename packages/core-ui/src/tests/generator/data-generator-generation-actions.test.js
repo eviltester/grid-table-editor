@@ -1,9 +1,10 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
+import { createGeneratorSchemaGenerationService } from '../../../js/gui_components/generator/generation/generator-schema-generation-service.js';
 import {
   renderGeneratorOutputPreview,
   updateGeneratorPairwiseButtonVisibility,
-} from '../../../js/gui_components/generator/generation/index.js';
+} from '../../../js/gui_components/generator/generation/data-generator-generation-actions.js';
 
 describe('generator generation actions', () => {
   let dom;
@@ -16,6 +17,10 @@ describe('generator generation actions', () => {
 
   afterEach(() => {
     dom.window.close();
+  });
+
+  test('schema-generation service resolves through its direct module', () => {
+    expect(typeof createGeneratorSchemaGenerationService).toBe('function');
   });
 
   test('updateGeneratorPairwiseButtonVisibility hides wrapper for invalid schema', () => {

@@ -1,4 +1,4 @@
-import { createSharedSchemaEditorController } from '../test-data/schema/index.js';
+import { createSharedSchemaEditorController } from '../test-data/schema/shared-schema-editor-controller.js';
 import { getDefaultDocumentObj } from '../dom/default-objects.js';
 
 const DEFAULT_SHARED_SCHEMA_IDS = Object.freeze({});

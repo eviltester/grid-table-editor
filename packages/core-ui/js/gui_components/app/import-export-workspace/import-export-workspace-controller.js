@@ -16,6 +16,7 @@ class ImportExportWorkspaceController {
       exportStatusLoading: props.exportStatusLoading === true,
       errorStatusMessage: props.errorStatusMessage || '',
       supportsImport: props.supportsImport !== false,
+      supportsClipboardImport: props.supportsClipboardImport !== false,
       supportsExport: props.supportsExport !== false,
       fileExtension: props.fileExtension || '.csv',
     };
@@ -65,6 +66,9 @@ class ImportExportWorkspaceController {
     if (Object.prototype.hasOwnProperty.call(nextProps, 'supportsImport')) {
       this.state.supportsImport = nextProps.supportsImport !== false;
     }
+    if (Object.prototype.hasOwnProperty.call(nextProps, 'supportsClipboardImport')) {
+      this.state.supportsClipboardImport = nextProps.supportsClipboardImport !== false;
+    }
     if (Object.prototype.hasOwnProperty.call(nextProps, 'supportsExport')) {
       this.state.supportsExport = nextProps.supportsExport !== false;
     }
@@ -98,10 +102,13 @@ class ImportExportWorkspaceController {
     this.updateProps(nextProps);
   }
 
-  setSupportState({ supportsImport, supportsExport, fileExtension } = {}) {
+  setSupportState({ supportsImport, supportsClipboardImport, supportsExport, fileExtension } = {}) {
     const nextProps = {};
     if (Object.prototype.hasOwnProperty.call(arguments[0] || {}, 'supportsImport')) {
       nextProps.supportsImport = supportsImport;
+    }
+    if (Object.prototype.hasOwnProperty.call(arguments[0] || {}, 'supportsClipboardImport')) {
+      nextProps.supportsClipboardImport = supportsClipboardImport;
     }
     if (Object.prototype.hasOwnProperty.call(arguments[0] || {}, 'supportsExport')) {
       nextProps.supportsExport = supportsExport;

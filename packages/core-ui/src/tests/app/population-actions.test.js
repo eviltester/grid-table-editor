@@ -1,5 +1,6 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
+import * as populationActionsExports from '../../../js/gui_components/app/population-actions/index.js';
 import { createPopulationActionsComponent } from '../../../js/gui_components/app/population-actions/index.js';
 
 describe('PopulationActions', () => {
@@ -19,59 +20,71 @@ describe('PopulationActions', () => {
     delete global.Event;
   });
 
+  test('public barrel is component-factory-only', () => {
+    expect(populationActionsExports.createPopulationActionsComponent).toBe(createPopulationActionsComponent);
+    expect(populationActionsExports.PopulationActionsController).toBeUndefined();
+    expect(populationActionsExports.PopulationActionsView).toBeUndefined();
+  });
+
   test('renders actions, toggles pairwise visibility, and emits clicks', () => {
     const onGenerate = jest.fn();
     const onGeneratePairwise = jest.fn();
-    const onRefreshPreview = jest.fn();
 
     const component = createPopulationActionsComponent({
       root: document.getElementById('root'),
-      props: { pairwiseVisible: false },
+      props: {
+        pairwiseVisible: false,
+        generateHelpHtml: '<p>Generate to grid.</p>',
+        generatePairwiseHelpHtml: '<p>Generate pairwise to grid.</p>',
+        statusVisible: true,
+      },
       callbacks: {
         onGenerate,
         onGeneratePairwise,
-        onRefreshPreview,
       },
     });
 
     const root = document.getElementById('root');
     const generateButton = root.querySelector('[data-role="generate-button"]');
     const generatePairwiseButton = root.querySelector('[data-role="generate-pairwise-button"]');
-    const refreshPreviewButton = root.querySelector('[data-role="refresh-preview-button"]');
+    const generatePairwiseWrapper = root.querySelector('[data-role="generate-pairwise-button-wrapper"]');
+    const helpButtons = root.querySelectorAll('[data-help-role="help-icon"]');
     const status = root.querySelector('[data-role="population-status"]');
 
     expect(generateButton?.id).toBe('');
     expect(generatePairwiseButton?.id).toBe('');
-    expect(refreshPreviewButton?.id).toBe('');
     expect(status?.id).toBe('');
     expect(document.getElementById('generatedata')).toBeNull();
     expect(document.getElementById('generateallpairs')).toBeNull();
-    expect(document.getElementById('refreshtestdatapreview')).toBeNull();
     expect(document.getElementById('testdata-status')).toBeNull();
+    expect(helpButtons).toHaveLength(2);
+    expect(helpButtons[0].getAttribute('data-help-text')).toContain('Generate to grid.');
+    expect(helpButtons[1].getAttribute('data-help-text')).toContain('Generate pairwise to grid.');
+    expect(generateButton.querySelector('svg.shared-file-action-icon')).not.toBeNull();
+    expect(generatePairwiseButton.querySelector('svg.shared-file-action-icon')).not.toBeNull();
 
-    expect(generatePairwiseButton.style.display).toBe('none');
+    expect(generatePairwiseWrapper.style.display).toBe('none');
 
     component.setPairwiseVisible(true);
-    expect(generatePairwiseButton.style.display).toBe('');
+    expect(generatePairwiseWrapper.style.display).toBe('inline-flex');
 
     component.setGenerateBusy(true);
     component.setGeneratePairwiseBusy(true);
-    component.setRefreshPreviewBusy(true);
     expect(generateButton.disabled).toBe(true);
     expect(generatePairwiseButton.disabled).toBe(true);
-    expect(refreshPreviewButton.disabled).toBe(true);
+    expect(generateButton.getAttribute('aria-disabled')).toBe('true');
+    expect(generatePairwiseButton.getAttribute('aria-disabled')).toBe('true');
 
     component.setGenerateBusy(false);
     component.setGeneratePairwiseBusy(false);
-    component.setRefreshPreviewBusy(false);
+    expect(generateButton.getAttribute('aria-disabled')).toBe('false');
+    expect(generatePairwiseButton.getAttribute('aria-disabled')).toBe('false');
 
     generateButton.click();
     generatePairwiseButton.click();
-    refreshPreviewButton.click();
 
     expect(onGenerate).toHaveBeenCalled();
     expect(onGeneratePairwise).toHaveBeenCalled();
-    expect(onRefreshPreview).toHaveBeenCalled();
     component.destroy();
   });
 
@@ -84,10 +97,11 @@ describe('PopulationActions', () => {
       root: rootA,
       props: {
         pairwiseVisible: true,
+        statusVisible: true,
         ids: {
           generateButton: 'generatedata-a',
+          generatePairwiseButtonWrapper: 'generateallpairs-wrapper-a',
           generatePairwiseButton: 'generateallpairs-a',
-          refreshPreviewButton: 'refreshtestdatapreview-a',
           status: 'testdata-status-a',
         },
       },
@@ -102,10 +116,11 @@ describe('PopulationActions', () => {
       root: siblingRoot,
       props: {
         pairwiseVisible: false,
+        statusVisible: true,
         ids: {
           generateButton: 'generatedata-b',
+          generatePairwiseButtonWrapper: 'generateallpairs-wrapper-b',
           generatePairwiseButton: 'generateallpairs-b',
-          refreshPreviewButton: 'refreshtestdatapreview-b',
           status: 'testdata-status-b',
         },
       },
@@ -113,23 +128,23 @@ describe('PopulationActions', () => {
     });
 
     const generateButtonA = rootA.querySelector('[data-role="generate-button"]');
-    const generatePairwiseButtonA = rootA.querySelector('[data-role="generate-pairwise-button"]');
-    const generatePairwiseButtonB = siblingRoot.querySelector('[data-role="generate-pairwise-button"]');
+    const generatePairwiseWrapperA = rootA.querySelector('[data-role="generate-pairwise-button-wrapper"]');
+    const generatePairwiseWrapperB = siblingRoot.querySelector('[data-role="generate-pairwise-button-wrapper"]');
     const statusA = rootA.querySelector('[data-role="population-status"]');
     const statusB = siblingRoot.querySelector('[data-role="population-status"]');
 
     expect(generateButtonA?.id).toBe('generatedata-a');
-    expect(rootA.querySelector('[data-role="refresh-preview-button"]')?.id).toBe('refreshtestdatapreview-a');
+    expect(generatePairwiseWrapperA?.id).toBe('generateallpairs-wrapper-a');
     expect(statusA?.id).toBe('testdata-status-a');
     expect(siblingRoot.querySelector('[data-role="generate-button"]')?.id).toBe('generatedata-b');
-    expect(siblingRoot.querySelector('[data-role="refresh-preview-button"]')?.id).toBe('refreshtestdatapreview-b');
+    expect(generatePairwiseWrapperB?.id).toBe('generateallpairs-wrapper-b');
     expect(statusB?.id).toBe('testdata-status-b');
 
     generateButtonA.click();
     expect(onGenerateA).toHaveBeenCalledTimes(1);
     expect(onGenerateB).not.toHaveBeenCalled();
-    expect(generatePairwiseButtonA.style.display).toBe('');
-    expect(generatePairwiseButtonB.style.display).toBe('none');
+    expect(generatePairwiseWrapperA.style.display).toBe('inline-flex');
+    expect(generatePairwiseWrapperB.style.display).toBe('none');
 
     componentA.destroy();
     componentB.destroy();

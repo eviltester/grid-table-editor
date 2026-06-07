@@ -2,6 +2,7 @@ import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-tab
 import { jest } from '@jest/globals';
 import { fireEvent, waitFor } from '@testing-library/dom';
 import { JSDOM } from 'jsdom';
+import * as importExportWorkspaceExports from '../../../js/gui_components/app/import-export-workspace/index.js';
 import { createImportExportWorkspaceComponent } from '../../../js/gui_components/app/import-export-workspace/index.js';
 
 function createTable(rowCount = 3) {
@@ -32,6 +33,10 @@ function getPreviewTextArea(documentObj) {
 
 function getCopyTextButton(documentObj) {
   return documentObj.querySelector('[data-role="text-preview-editor-root"] [data-role="copy-text-button"]');
+}
+
+function getCopyTextButtonLabel(documentObj) {
+  return documentObj.querySelector('[data-role="text-preview-editor-root"] [data-role="copy-text-label"]');
 }
 
 function createHarness({ props = {}, services = {} } = {}) {
@@ -65,6 +70,11 @@ function createHarness({ props = {}, services = {} } = {}) {
       yieldToUi: async () => {},
       scheduleTimeoutFn: jest.fn(),
       requestConfirm: jest.fn(async () => true),
+      clipboardService: {
+        copyFromTextArea: jest.fn(),
+        readText: jest.fn(async () => 'Name,Role\nAda,Engineer'),
+        canReadText: jest.fn(() => true),
+      },
       ...services,
     },
   });
@@ -86,6 +96,14 @@ describe('ImportExportWorkspace', () => {
     delete global.window;
   });
 
+  test('public barrel is component-factory-only', () => {
+    expect(importExportWorkspaceExports.createImportExportWorkspaceComponent).toBe(
+      createImportExportWorkspaceComponent
+    );
+    expect(importExportWorkspaceExports.ImportExportWorkspaceController).toBeUndefined();
+    expect(importExportWorkspaceExports.ImportExportWorkspaceView).toBeUndefined();
+  });
+
   test('mounts real controls, normalizes preview row count, and renders format previews without legacy controls', () => {
     const { component, documentObj, dom, exporter } = createHarness({
       props: { previewRowLimit: 0 },
@@ -94,6 +112,15 @@ describe('ImportExportWorkspace', () => {
     expect(documentObj.querySelector('#tabbedTextArea')).not.toBeNull();
     expect(documentObj.querySelector('[data-role="text-preview-editor-root"]')).not.toBeNull();
     expect(documentObj.querySelector('#settextfromgridbutton')).not.toBeNull();
+    expect(documentObj.querySelector('[data-role="grid-preview-sync-root"] #settextfromgridbutton')).not.toBeNull();
+    expect(documentObj.querySelector('[data-role="import-export-toolbar-details"] #settextfromgridbutton')).toBeNull();
+    expect(documentObj.querySelector('[data-role="import-export-toolbar-details"]')?.open).toBe(false);
+    expect(
+      documentObj.querySelector('[data-role="import-export-toolbar-details"] [data-role="auto-preview-checkbox"]')
+    ).toBeNull();
+    expect(
+      documentObj.querySelector('[data-role="import-export-toolbar-details"] [data-role="preview-edit-mode-button"]')
+    ).toBeNull();
     expect(getPreviewRowCountInput(documentObj)).not.toBeNull();
     expect(getPreviewRowCountInput(documentObj).getAttribute('aria-label')).toBe('Preview row count');
     expect(documentObj.querySelector('[data-role="text-preview-editor-root"] [data-role="edit-area"]')).not.toBeNull();
@@ -206,7 +233,7 @@ describe('ImportExportWorkspace', () => {
     fireEvent.click(getCopyTextButton(documentObj));
 
     expect(clipboardService.copyFromTextArea).toHaveBeenCalledWith(getPreviewTextArea(documentObj));
-    expect(getCopyTextButton(documentObj).textContent).toBe('Copied');
+    expect(getCopyTextButtonLabel(documentObj).textContent).toBe('Copied');
 
     fireEvent.click(documentObj.querySelector('#filedownload'));
 
@@ -240,6 +267,30 @@ describe('ImportExportWorkspace', () => {
     await waitFor(() => expect(importer.setGridFromGenericDataTable).toHaveBeenCalledTimes(1));
     expect(getPreviewTextArea(documentObj).value).toBe('csv:rows:1');
     expect(documentObj.querySelector('#import-progress-status').textContent).toBe('Import complete.');
+
+    component.destroy();
+    dom.window.close();
+  });
+
+  test('imports clipboard text through the toolbar import control and shows completion status', async () => {
+    const clipboardService = {
+      copyFromTextArea: jest.fn(),
+      readText: jest.fn(async () => '\uFEFFName,Role\r\nAda,Engineer'),
+      canReadText: jest.fn(() => true),
+    };
+    const { component, documentObj, dom, importer } = createHarness({
+      props: { previewRowLimit: 1 },
+      services: { clipboardService },
+    });
+
+    fireEvent.click(documentObj.querySelector('[data-role="clipboard-import-button"]'));
+
+    await waitFor(() => expect(clipboardService.readText).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(importer.importText).toHaveBeenCalledWith('csv', 'Name,Role\nAda,Engineer'));
+    await waitFor(() => expect(getPreviewTextArea(documentObj).value).toBe('csv:rows:1'));
+    await waitFor(() =>
+      expect(documentObj.querySelector('#import-progress-status').textContent).toBe('Import complete.')
+    );
 
     component.destroy();
     dom.window.close();

@@ -94,6 +94,7 @@ class SharedSchemaDefinitionView {
             <span
               ${renderOptionalIdAttr(viewModel.ids.helpIcon)}
               class="helpicon"
+              data-help-role="help-icon"
               data-role="schema-mode-help"
               data-help="${viewModel.helpIconDataHelp}"></span>
             <button

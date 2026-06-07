@@ -1,5 +1,7 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
+import * as generatorPreviewTabulatorAdapter from '../../../js/gui_components/generator/preview/tabulator-grid-adapter.js';
+import * as tabulatorGridAdapterExports from '../../../js/gui_components/data-grid-editor/tabulator-grid-adapter.js';
 import { createTabulatorGridAdapter } from '../../../js/gui_components/data-grid-editor/tabulator-grid-adapter.js';
 
 class FakeTabulator {
@@ -33,6 +35,13 @@ describe('TabulatorGridAdapter', () => {
 
   afterEach(() => {
     dom.window.close();
+  });
+
+  test('keeps the shared and generator preview adapter surfaces factory-only', () => {
+    expect(typeof tabulatorGridAdapterExports.createTabulatorGridAdapter).toBe('function');
+    expect(tabulatorGridAdapterExports.TabulatorGridAdapter).toBeUndefined();
+    expect(typeof generatorPreviewTabulatorAdapter.createTabulatorGridAdapter).toBe('function');
+    expect(generatorPreviewTabulatorAdapter.TabulatorGridAdapter).toBeUndefined();
   });
 
   test('creates tabulator and grid-extension APIs and forwards destroy', async () => {
@@ -108,6 +117,56 @@ describe('TabulatorGridAdapter', () => {
     expect(cancelAnimationFrameFn).toHaveBeenCalledWith('frame-1');
     expect(ambientCancelAnimationFrame).not.toHaveBeenCalled();
     expect(scheduledCallbacks).toHaveLength(1);
+  });
+
+  test('keeps detached-root retries asynchronous when requestAnimationFrame is unavailable', async () => {
+    const rootElement = document.createElement('div');
+    const scheduledCallbacks = [];
+    const setTimeoutFn = jest.fn((callback) => {
+      scheduledCallbacks.push(callback);
+      return 'timeout-1';
+    });
+    const clearTimeoutFn = jest.fn();
+
+    const adapter = createTabulatorGridAdapter({
+      rootElement,
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      windowObj: {},
+      setTimeoutFn,
+      clearTimeoutFn,
+    });
+
+    expect(setTimeoutFn).toHaveBeenCalledTimes(1);
+    expect(adapter.getTableApi()).toBeNull();
+    expect(scheduledCallbacks).toHaveLength(1);
+
+    document.body.appendChild(rootElement);
+    scheduledCallbacks[0]();
+    await adapter.whenReady();
+
+    expect(adapter.getTableApi()).toBeInstanceOf(FakeTabulator);
+    adapter.destroy();
+    expect(clearTimeoutFn).not.toHaveBeenCalled();
+  });
+
+  test('cancels timeout-based detached-root retries during destroy', () => {
+    const rootElement = document.createElement('div');
+    const setTimeoutFn = jest.fn(() => 'timeout-1');
+    const clearTimeoutFn = jest.fn();
+
+    const adapter = createTabulatorGridAdapter({
+      rootElement,
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      windowObj: {},
+      setTimeoutFn,
+      clearTimeoutFn,
+    });
+
+    adapter.destroy();
+
+    expect(clearTimeoutFn).toHaveBeenCalledWith('timeout-1');
   });
 
   test('queues setGridFromGenericDataTable until the grid is mounted', async () => {

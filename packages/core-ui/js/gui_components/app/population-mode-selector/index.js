@@ -28,4 +28,4 @@ function createPopulationModeSelectorComponent({ root, props = {}, callbacks = {
   };
 }
 
-export { createPopulationModeSelectorComponent, PopulationModeSelectorController, PopulationModeSelectorView };
+export { createPopulationModeSelectorComponent };

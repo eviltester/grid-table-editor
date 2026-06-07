@@ -1,4 +1,4 @@
-import { createSchemaRowValidation } from '../../shared/test-data/schema/index.js';
+import { createSchemaRowValidation } from '../../shared/test-data/schema/schema-row-validation.js';
 import { SOURCE_TYPE_REGEX } from '../../shared/schema-row-rule-mapper.js';
 
 function createGeneratorSchemaRowFactory({ createRowId } = {}) {

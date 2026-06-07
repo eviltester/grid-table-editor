@@ -1,6 +1,8 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
-import { createSharedSchemaEditorController } from '../../../js/gui_components/shared/test-data/schema/index.js';
+import * as schemaControllerExports from '../../../js/gui_components/shared/test-data/schema/schema-controller.js';
+import * as schemaEditorCoreExports from '../../../js/gui_components/shared/test-data/schema/schema-editor-core.js';
+import { createSharedSchemaEditorController } from '../../../js/gui_components/shared/test-data/schema/shared-schema-editor-controller.js';
 
 function createRoot(documentObj) {
   const root = documentObj.createElement('section');
@@ -29,6 +31,16 @@ describe('createSharedSchemaEditorController', () => {
     delete global.document;
     delete global.window;
     jest.restoreAllMocks();
+  });
+
+  test('shared schema helpers now resolve through the focused controller/core modules directly', () => {
+    expect(typeof schemaControllerExports.parseSchemaTextToRows).toBe('function');
+    expect(typeof schemaEditorCoreExports.validateSchemaRows).toBe('function');
+    expect(typeof schemaEditorCoreExports.schemaRowsToSpec).toBe('function');
+    expect(typeof schemaEditorCoreExports.schemaRowsToSpecWithTokens).toBe('function');
+    expect(schemaControllerExports.validateSchemaRows).toBeUndefined();
+    expect(schemaEditorCoreExports.parseSchemaTextToRows).toBeUndefined();
+    expect(schemaEditorCoreExports.createSharedSchemaEditorController).toBeUndefined();
   });
 
   test('uses the injected timer api for semantic-validation debounce scheduling and cleanup', () => {

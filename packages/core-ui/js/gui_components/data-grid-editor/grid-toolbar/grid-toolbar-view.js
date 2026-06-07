@@ -53,38 +53,38 @@ class GridToolbarView {
       return;
     }
 
-    if (target.closest('[data-role="add-row-button"], #addRowButton')) {
+    if (target.closest('[data-role="add-row-button"]')) {
       this.controller.triggerAddRow();
       return;
     }
-    if (target.closest('[data-role="add-rows-above-button"], #addRowsAboveButton')) {
+    if (target.closest('[data-role="add-rows-above-button"]')) {
       this.controller.triggerAddRowsAbove();
       return;
     }
-    if (target.closest('[data-role="add-rows-below-button"], #addRowsBelowButton')) {
+    if (target.closest('[data-role="add-rows-below-button"]')) {
       this.controller.triggerAddRowsBelow();
       return;
     }
-    if (target.closest('[data-role="delete-selected-rows-button"], #deleteSelectedRowsButton')) {
+    if (target.closest('[data-role="delete-selected-rows-button"]')) {
       this.controller.triggerDeleteSelectedRows();
       return;
     }
-    if (target.closest('[data-role="clear-filters-button"], #clearFiltersButton')) {
+    if (target.closest('[data-role="clear-filters-button"]')) {
       this.controller.triggerClearFilters();
       this.render();
       return;
     }
-    if (target.closest('[data-role="clear-sort-button"], #clearSortButton')) {
+    if (target.closest('[data-role="clear-sort-button"]')) {
       this.controller.triggerClearSort();
       return;
     }
-    if (target.closest('[data-role="clear-table-button"], #clearTableButton')) {
+    if (target.closest('[data-role="clear-table-button"]')) {
       this.controller.triggerClearTable();
     }
   }
 
   onInput(event) {
-    const input = event.target?.closest?.('[data-role="filter-text-input"], #filter-text-box');
+    const input = event.target?.closest?.('[data-role="filter-text-input"]');
     if (!input) {
       return;
     }
@@ -92,7 +92,7 @@ class GridToolbarView {
   }
 
   onChange(event) {
-    const checkbox = event.target?.closest?.('[data-role="unique-column-names-checkbox"], #uniqueColumnNamesCheckbox');
+    const checkbox = event.target?.closest?.('[data-role="unique-column-names-checkbox"]');
     if (!checkbox) {
       return;
     }
@@ -101,12 +101,12 @@ class GridToolbarView {
 
   render() {
     const state = this.controller.getState();
-    const filterInput = this.getElement('filter-text-input', '#filter-text-box');
+    const filterInput = this.getElement('filter-text-input');
     if (filterInput && filterInput.value !== state.filterText) {
       filterInput.value = state.filterText;
     }
 
-    const checkbox = this.getElement('unique-column-names-checkbox', '#uniqueColumnNamesCheckbox');
+    const checkbox = this.getElement('unique-column-names-checkbox');
     if (checkbox) {
       checkbox.checked = state.uniqueColumnNames === true;
     }
@@ -119,8 +119,8 @@ class GridToolbarView {
     this.root.replaceChildren();
   }
 
-  getElement(role, fallbackSelector) {
-    return this.root.querySelector(`[data-role="${role}"]`) || this.root.querySelector(fallbackSelector);
+  getElement(role) {
+    return this.root.querySelector(`[data-role="${role}"]`);
   }
 }
 

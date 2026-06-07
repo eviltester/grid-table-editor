@@ -9,16 +9,16 @@ import {
   getKnownDomainCommandsAlphabetical,
   getDomainKeywordByCommand,
 } from '../../../../../js/gui_components/shared/domain-commands.js';
-import { getVisibleDomainCommands } from '../../../../../js/gui_components/shared/test-data/help/index.js';
+import { getVisibleDomainCommands } from '../../../../../js/gui_components/shared/test-data/help/domain-command-provider.js';
 import { getDomainCommandHelp } from '../../../../../js/gui_components/shared/domain-command-help-metadata.js';
 import {
   createConfiguredGeneratorFromSchemaRows,
   createPreviewDataTable,
-} from '../../../../../js/gui_components/shared/test-data/generation/index.js';
+} from '../../../../../js/gui_components/shared/test-data/generation/generation-controller.js';
 import {
   validateSchemaRows,
   schemaRowsToSpec,
-} from '../../../../../js/gui_components/shared/test-data/schema/index.js';
+} from '../../../../../js/gui_components/shared/test-data/schema/schema-editor-core.js';
 import {
   SOURCE_TYPE_ENUM,
   SOURCE_TYPE_LITERAL,

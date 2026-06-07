@@ -12,8 +12,8 @@ import {
   createAmendedTable,
   createTableFromGenerator,
   normaliseCount,
-  createTestDataGenerationService,
-} from '../generation/index.js';
+} from '../generation/test-data-amend.js';
+import { createTestDataGenerationService } from '../generation/test-data-generation-service.js';
 import {
   schemaTextToDataRules,
   dataRulesToSchemaText,
@@ -21,7 +21,12 @@ import {
 } from '@anywaydata/core/data_generation/schema-rules-adapter.js';
 import { PairwiseTestDataGenerator } from '@anywaydata/core/data_generation/all-pairs/pairwiseTestDataGenerator.js';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
-import { FAKER_COMMANDS, identifyFakerCommands, getMethodPickerOptions } from '../schema/index.js';
+import { identifyFakerCommands, getMethodPickerOptions, FAKER_COMMANDS } from '../schema/test-data-command-catalog.js';
+import {
+  createSchemaTextSyncState,
+  showSchemaError,
+  initializeSchemaErrorDisplay,
+} from '../schema/test-data-grid-schema-text-sync.js';
 import {
   createTestDataUiStatusService,
   setTestDataStatus,
@@ -30,12 +35,11 @@ import {
   scheduleTestDataStatusReset,
   yieldToUi,
 } from '../ui/test-data-ui-status.js';
-import { createSchemaTextSyncState, showSchemaError, initializeSchemaErrorDisplay } from '../schema/index.js';
 import {
-  mapDataRuleToSchemaRow,
   validateSchemaRows as validateSharedSchemaRows,
   schemaRowsToSpecWithTokens as schemaRowsToSpecWithTokensShared,
-} from '../../../shared/test-data/schema/index.js';
+} from '../../../shared/test-data/schema/schema-editor-core.js';
+import { mapDataRuleToSchemaRow } from '../../../shared/test-data/schema/schema-row-mapper.js';
 import { buildDataRuleFromSchemaRow } from '../../../shared/schema-row-rule-mapper.js';
 import { createAppSchemaDefinitionProps } from '../schema/test-data-grid-schema-grid-controller.js';
 import { createTestDataGridActionAdapter } from '../controller/test-data-grid-action-adapter.js';
@@ -172,7 +176,6 @@ function createTestDataGenerationPanelManager({
       getRequestedRowCount: () => state.dataPopulationPanel?.getRowCountInputValue?.(),
       setGenerateBusy: (isBusy) => state.dataPopulationPanel?.setGenerateBusy?.(isBusy),
       setGeneratePairwiseBusy: (isBusy) => state.dataPopulationPanel?.setGeneratePairwiseBusy?.(isBusy),
-      setRefreshPreviewBusy: (isBusy) => state.dataPopulationPanel?.setRefreshPreviewBusy?.(isBusy),
       setPairwiseVisible: (isVisible) => state.dataPopulationPanel?.setPairwiseVisible?.(isVisible),
     });
   }
@@ -205,11 +208,8 @@ function createTestDataGenerationPanelManager({
     }
 
     state.generationService = createGenerationService();
-    const statusServiceApi = getStatusServiceApi();
     state.actionAdapter = createTestDataGridActionAdapterFn({
       getGenerationService: () => state.generationService,
-      clearPendingStatusReset: statusServiceApi.clearPendingStatusReset,
-      scheduleStatusReset: statusServiceApi.scheduleStatusReset,
     });
 
     if (!resolvedDocument || !parentElem) {
@@ -261,7 +261,6 @@ function createTestDataGenerationPanelManager({
       callbacks: {
         onGenerate: () => state.actionAdapter.generateTestData(),
         onGeneratePairwise: () => state.actionAdapter.generatePairwiseTestData(),
-        onRefreshPreview: () => state.actionAdapter.refreshTestDataPreview(),
         onModeChange: applyModeDefaultRowCount,
         schemaDefinition: {
           onSchemaError: (message) => state.schemaTextSyncState?.schemaErrorDisplay?.show?.(message),

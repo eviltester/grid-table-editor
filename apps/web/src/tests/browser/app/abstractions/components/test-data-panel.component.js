@@ -12,9 +12,8 @@ class TestDataPanelComponent {
     this.panelRoot = page.locator('[data-role="data-population-panel-root"]');
     this.details = this.container.locator('details');
     this.heading = this.container.getByText('Test Data', { exact: true });
-    this.generateButton = this.container.getByRole('button', { name: 'Generate' });
+    this.generateButton = this.container.getByRole('button', { name: 'Generate', exact: true });
     this.generatePairwiseButton = this.container.getByRole('button', { name: 'Generate Pairwise' });
-    this.refreshTextPreviewButton = this.container.getByRole('button', { name: 'Refresh Text Preview' });
     this.generateCountInput = this.container.getByRole('spinbutton', { name: 'How Many?' });
     this.newTableMode = this.container.locator('input[name="testDataGenerationMode"][value="new-table"]');
     this.amendTableMode = this.container.locator('input[name="testDataGenerationMode"][value="amend-table"]');
@@ -77,7 +76,6 @@ class TestDataPanelComponent {
 
   async expectExpanded() {
     await expect(this.generateButton).toBeVisible();
-    await expect(this.refreshTextPreviewButton).toBeVisible();
     await expect(this.generateCountInput).toBeVisible();
     await expect(this.schemaGrid).toBeVisible();
   }
@@ -124,10 +122,6 @@ class TestDataPanelComponent {
 
   async clickGeneratePairwise() {
     await this.overlaySafeActivation.activateButton(this.generatePairwiseButton);
-  }
-
-  async clickRefreshTextPreview() {
-    await this.refreshTextPreviewButton.click();
   }
 
   async getStatusText() {

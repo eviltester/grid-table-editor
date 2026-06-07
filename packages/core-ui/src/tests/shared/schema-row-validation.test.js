@@ -4,7 +4,7 @@ import { schemaTextToDataRules } from '../../../../core/js/data_generation/schem
 import {
   getSchemaRowSemanticValidationIssues,
   getSchemaRowValidationIssues,
-} from '../../../js/gui_components/shared/test-data/schema/index.js';
+} from '../../../js/gui_components/shared/test-data/schema/schema-row-validation.js';
 
 describe('schema-row-validation', () => {
   test('reports semantic validation issues for invalid domain params', () => {

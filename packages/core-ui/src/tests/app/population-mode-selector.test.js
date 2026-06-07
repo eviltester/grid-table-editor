@@ -1,5 +1,6 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
+import * as populationModeSelectorExports from '../../../js/gui_components/app/population-mode-selector/index.js';
 import { createPopulationModeSelectorComponent } from '../../../js/gui_components/app/population-mode-selector/index.js';
 
 describe('PopulationModeSelector', () => {
@@ -17,6 +18,14 @@ describe('PopulationModeSelector', () => {
     delete global.window;
     delete global.document;
     delete global.Event;
+  });
+
+  test('public barrel is component-factory-only', () => {
+    expect(populationModeSelectorExports.createPopulationModeSelectorComponent).toBe(
+      createPopulationModeSelectorComponent
+    );
+    expect(populationModeSelectorExports.PopulationModeSelectorController).toBeUndefined();
+    expect(populationModeSelectorExports.PopulationModeSelectorView).toBeUndefined();
   });
 
   test('renders radio options and emits mode changes', () => {

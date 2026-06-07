@@ -1,4 +1,4 @@
-import { renderIconHtml } from '../../shared/primitives/icon/index.js';
+import { renderIconHtml } from '../../shared/primitives/icon/icon-core.js';
 
 const COLUMN_HEADER_ACTIONS = [
   {

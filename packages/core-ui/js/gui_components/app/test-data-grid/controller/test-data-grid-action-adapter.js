@@ -4,7 +4,7 @@
  * - Keeps service invocation and preview status-reset wiring out of the main grid control.
  */
 
-function createTestDataGridActionAdapter({ getGenerationService, clearPendingStatusReset, scheduleStatusReset } = {}) {
+function createTestDataGridActionAdapter({ getGenerationService } = {}) {
   async function generatePairwiseTestData() {
     await getGenerationService?.()?.generatePairwiseTestData?.();
   }
@@ -13,17 +13,9 @@ function createTestDataGridActionAdapter({ getGenerationService, clearPendingSta
     await getGenerationService?.()?.generateTestData?.();
   }
 
-  async function refreshTestDataPreview() {
-    await getGenerationService?.()?.refreshTestDataPreview?.({
-      clearPendingStatusReset,
-      scheduleStatusReset,
-    });
-  }
-
   return {
     generatePairwiseTestData,
     generateTestData,
-    refreshTestDataPreview,
   };
 }
 

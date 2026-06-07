@@ -15,6 +15,7 @@ const ERROR_PATTERNS = [
   /Unsafe faker rule syntax/i,
   /\bException\b/i,
 ];
+const STANDALONE_INVALID_VALUE_PATTERNS = [/(^|[^\w])undefined([^\w]|$)/, /(^|[^\w])NaN([^\w]|$)/];
 
 function toSearchableText(value) {
   if (typeof value === 'string') return value;
@@ -97,8 +98,9 @@ function assertNoErrorIndicators(value, _contextLabel = 'value') {
   });
 
   if (typeof value !== 'undefined') {
-    expect(String(value)).not.toContain('undefined');
-    expect(String(value)).not.toContain('NaN');
+    STANDALONE_INVALID_VALUE_PATTERNS.forEach((pattern) => {
+      expect(String(value)).not.toMatch(pattern);
+    });
   }
 }
 

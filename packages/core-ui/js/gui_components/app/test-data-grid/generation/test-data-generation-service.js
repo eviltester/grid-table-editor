@@ -5,12 +5,12 @@
  * - Owns generation progress/status transitions and preview refresh behavior.
  */
 
-import { schemaErrorsToText } from '../../../shared/test-data/schema/index.js';
+import { schemaErrorsToText } from '../../../shared/test-data/schema/schema-error-text.js';
 import {
   createConfiguredGeneratorFromSchemaRows,
   createPairwiseDataTable,
-  isPairwiseEligibleForSchemaRows,
-} from '../../../shared/test-data/generation/index.js';
+} from '../../../shared/test-data/generation/generation-controller.js';
+import { isPairwiseEligibleForSchemaRows } from '../../../shared/test-data/generation/ui-derived-state.js';
 import {
   SOURCE_TYPE_FAKER,
   SOURCE_TYPE_DOMAIN,
@@ -47,7 +47,6 @@ function createTestDataGenerationService({
   getRequestedRowCount = () => null,
   setGenerateBusy = () => {},
   setGeneratePairwiseBusy = () => {},
-  setRefreshPreviewBusy = () => {},
   setPairwiseVisible = () => {},
 }) {
   function getCurrentSchemaRowValidation(options) {
@@ -87,6 +86,34 @@ function createTestDataGenerationService({
 
   function hidePairwiseButton() {
     setPairwiseVisible(false);
+  }
+
+  function shouldSyncTextPreviewFromGrid() {
+    const textPreviewRenderer = getTextPreviewRenderer?.();
+    const previewState = textPreviewRenderer?.getState?.();
+    if (!previewState) {
+      return false;
+    }
+
+    if (previewState.mode === 'edit') {
+      return true;
+    }
+
+    return previewState.mode === 'preview' && previewState.autoPreviewEnabled === true;
+  }
+
+  async function syncTextPreviewFromGrid() {
+    if (!shouldSyncTextPreviewFromGrid()) {
+      return false;
+    }
+
+    const textPreviewRenderer = getTextPreviewRenderer?.();
+    if (!textPreviewRenderer?.renderTextFromGrid) {
+      return false;
+    }
+
+    await Promise.resolve(textPreviewRenderer.renderTextFromGrid());
+    return true;
   }
 
   function updatePairwiseButtonVisibility() {
@@ -156,7 +183,13 @@ function createTestDataGenerationService({
         await Promise.resolve(getImporter().setGridFromGenericDataTable(dataTable));
       }
 
-      setTestDataStatus(`Generated ${dataTable.getRowCount()} pairwise combinations.`, { dismissable: true });
+      const previewUpdated = await syncTextPreviewFromGrid();
+      setTestDataStatus(
+        `Generated ${dataTable.getRowCount()} pairwise combinations. ${
+          previewUpdated ? 'Grid and preview updated.' : 'Grid updated.'
+        }`,
+        { dismissable: true }
+      );
       await yieldToUi();
     } catch (error) {
       console.error('Pairwise generation error:', error);
@@ -273,8 +306,12 @@ function createTestDataGenerationService({
         await Promise.resolve(getImporter().setGridFromGenericDataTable(dataTable));
       }
 
+      const previewUpdated = await syncTextPreviewFromGrid();
       const completedModeLabel = generationMode === TEST_DATA_MODES.NEW_TABLE ? 'Generate' : 'Amend';
-      setTestDataStatus(`${completedModeLabel} complete. Refresh text preview if needed.`, { dismissable: true });
+      setTestDataStatus(
+        `${completedModeLabel} complete. ${previewUpdated ? 'Grid and preview updated.' : 'Grid updated.'}`,
+        { dismissable: true }
+      );
     } catch (error) {
       console.error('Generate/amend failed', error);
       setTestDataStatus('Generate failed. Check console for details.', { severity: 'error', dismissable: true });
@@ -284,38 +321,12 @@ function createTestDataGenerationService({
     }
   }
 
-  async function refreshTestDataPreview({ clearPendingStatusReset, scheduleStatusReset }) {
-    const textPreviewRenderer = getTextPreviewRenderer();
-    if (!textPreviewRenderer) {
-      return;
-    }
-    clearPendingStatusReset();
-    setTestDataLoadingStatus('Refreshing text preview...');
-    setRefreshPreviewBusy(true);
-
-    try {
-      await yieldToUi();
-      await Promise.resolve(textPreviewRenderer.renderTextFromGrid());
-      setTestDataStatus('Text preview refreshed.');
-      scheduleStatusReset();
-    } catch (error) {
-      console.error('Failed to refresh text preview', error);
-      setTestDataStatus('Text preview refresh failed. Check console for details.', {
-        severity: 'error',
-        dismissable: true,
-      });
-    } finally {
-      setRefreshPreviewBusy(false);
-    }
-  }
-
   return {
     schemaErrorsToText,
     getRulesParserFromTextArea,
     updatePairwiseButtonVisibility,
     generatePairwiseTestData,
     generateTestData,
-    refreshTestDataPreview,
   };
 }
 

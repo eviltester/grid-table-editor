@@ -1,5 +1,4 @@
 import { createTimedStatusPresenter } from '../shared/timed-error-display.js';
-import { getDefaultDocumentObj } from '../shared/dom/default-objects.js';
 
 const GRID_ERROR_ELEMENT_ID = 'grid-column-error';
 const sharedGridErrorSurfacesByDocument = new WeakMap();
@@ -13,28 +12,16 @@ const missingGridErrorSurface = {
   },
 };
 
-function normalizeGridErrorSurfaceOptions(optionsOrDocument = getDefaultDocumentObj()) {
-  if (
-    !optionsOrDocument ||
-    typeof optionsOrDocument.getElementById === 'function' ||
-    typeof optionsOrDocument.createElement === 'function'
-  ) {
-    return {
-      documentObj: optionsOrDocument || null,
-      elementId: GRID_ERROR_ELEMENT_ID,
-      resolveElement: null,
-    };
-  }
-
+function normalizeGridErrorSurfaceOptions(options = {}) {
   return {
-    documentObj: optionsOrDocument.documentObj || getDefaultDocumentObj(),
-    elementId: optionsOrDocument.elementId || GRID_ERROR_ELEMENT_ID,
-    resolveElement: typeof optionsOrDocument.resolveElement === 'function' ? optionsOrDocument.resolveElement : null,
+    documentObj: options.documentObj || null,
+    elementId: options.elementId || GRID_ERROR_ELEMENT_ID,
+    resolveElement: typeof options.resolveElement === 'function' ? options.resolveElement : null,
   };
 }
 
-function getGridErrorDisplay(optionsOrDocument = getDefaultDocumentObj()) {
-  const { documentObj, elementId, resolveElement } = normalizeGridErrorSurfaceOptions(optionsOrDocument);
+function getGridErrorDisplay(options = {}) {
+  const { documentObj, elementId, resolveElement } = normalizeGridErrorSurfaceOptions(options);
   if (!documentObj) {
     return missingGridErrorSurface;
   }
@@ -52,7 +39,6 @@ function getGridErrorDisplay(optionsOrDocument = getDefaultDocumentObj()) {
 
     const display = createTimedStatusPresenter({
       documentObj,
-      elementId,
       resolveElement,
       timeoutMs: 5000,
     });
@@ -72,19 +58,19 @@ function getGridErrorDisplay(optionsOrDocument = getDefaultDocumentObj()) {
 
   const display = createTimedStatusPresenter({
     documentObj,
-    elementId,
+    resolveElement: () => documentObj.getElementById(elementId),
     timeoutMs: 5000,
   });
   sharedGridErrorSurfacesByDocument.set(documentObj, display);
   return display;
 }
 
-function showGridError(message, optionsOrDocument = getDefaultDocumentObj()) {
+function showGridError(message, options = {}) {
   const text = String(message ?? '').trim();
   if (!text) {
     return;
   }
-  getGridErrorDisplay(optionsOrDocument).show(text, { severity: 'error', timeoutMs: 5000 });
+  getGridErrorDisplay(options).show(text, { severity: 'error', timeoutMs: 5000 });
 }
 
 export { GRID_ERROR_ELEMENT_ID, getGridErrorDisplay, showGridError };

@@ -4,7 +4,8 @@
  * - Lets grid-engine adapters provide only the engine-specific read/write hooks for column operations.
  */
 
-import { createConfirmDialogService, createTextInputDialogService } from '../../shared/dialog-services/index.js';
+import { createConfirmDialogService } from '../../shared/dialog-services/confirm-dialog-service.js';
+import { createTextInputDialogService } from '../../shared/dialog-services/text-input-dialog-service.js';
 
 function getDefaultDocumentObj() {
   return typeof document !== 'undefined' ? document : null;

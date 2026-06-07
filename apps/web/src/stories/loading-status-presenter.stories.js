@@ -1,9 +1,21 @@
+import React from 'react';
+import { Canvas, Controls, Description, Title } from '@storybook/addon-docs/blocks';
 import { expect, userEvent, within } from 'storybook/test';
-import { createLoadingStatusPresenter } from '../../../../packages/core-ui/js/gui_components/shared/test-data/ui/index.js';
+import { createLoadingStatusPresenter } from '../../../../packages/core-ui/js/gui_components/shared/test-data/ui/status-presenter.js';
 
-function createLoadingStatusPresenterHarness({ root, args, remountable = false }) {
+function createLoadingStatusPresenterHarness({
+  root,
+  args,
+  remountable = false,
+  startVisible = false,
+  showControls = true,
+} = {}) {
   let presenter = null;
   let presenterRoot = null;
+
+  const showStatus = () => {
+    presenter.setStatus(args.message);
+  };
 
   const mountPresenter = () => {
     presenter?.destroy?.();
@@ -24,25 +36,31 @@ function createLoadingStatusPresenterHarness({ root, args, remountable = false }
       statusClassName: args.statusClassName,
       visibleDisplay: args.visibleDisplay,
     });
+
+    if (startVisible) {
+      showStatus();
+    }
   };
 
   root.style.display = 'grid';
   root.style.gap = '0.75rem';
   root.innerHTML = `
-    <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+    ${
+      showControls
+        ? `<div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
       <button type="button" data-action="show">Show loading status</button>
       <button type="button" data-action="clear">Clear status</button>
       ${remountable ? '<button type="button" data-action="remount">Destroy and remount</button>' : ''}
-    </div>
+    </div>`
+        : ''
+    }
     <div data-role="presenter-host"></div>
   `;
 
   presenterRoot = root.querySelector('[data-role="presenter-host"]');
   mountPresenter();
 
-  root.querySelector('[data-action="show"]')?.addEventListener('click', () => {
-    presenter.setStatus(args.message);
-  });
+  root.querySelector('[data-action="show"]')?.addEventListener('click', showStatus);
   root.querySelector('[data-action="clear"]')?.addEventListener('click', () => {
     presenter.clear();
   });
@@ -67,9 +85,20 @@ const meta = {
   tags: ['autodocs'],
   parameters: {
     docs: {
+      page: () =>
+        React.createElement(
+          React.Fragment,
+          null,
+          React.createElement(Title),
+          React.createElement(Description),
+          React.createElement(Controls),
+          React.createElement(Canvas, { of: VisualAlwaysVisible }),
+          React.createElement(Canvas, { of: LoadingStatus }),
+          React.createElement(Canvas, { of: RemountableLoadingStatus })
+        ),
       description: {
         component:
-          'Service-level Storybook coverage for `createLoadingStatusPresenter`, the loading-only status API layered over the inline-message primitive. Use this when work is actively in progress and the shared spinner/loading class should always be shown.',
+          'Service-level Storybook coverage for `createLoadingStatusPresenter`, the loading-only status API layered over the inline-message primitive. The always-visible story shows the rendered loading surface immediately, while the other stories keep the interaction-focused service examples.',
       },
     },
   },
@@ -100,6 +129,31 @@ const meta = {
 };
 
 export default meta;
+
+export const VisualAlwaysVisible = {
+  render: (args) =>
+    createLoadingStatusPresenterHarness({
+      root: document.createElement('section'),
+      args,
+      startVisible: true,
+      showControls: false,
+    }),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'This reviewer-facing example mounts the loading presenter already visible with no trigger controls. Use the Storybook controls to change the message or display behavior and inspect the loading-only surface directly.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const status = canvas.getByRole('status');
+    await expect(status).toHaveTextContent('Preparing export...');
+    await expect(status).toHaveClass('is-loading');
+    expect(status.querySelector('[data-role="loading-indicator"]')?.style.display).toBe('inline-block');
+  },
+};
 
 export const LoadingStatus = {
   render: renderLoadingStatusPresenterStory,

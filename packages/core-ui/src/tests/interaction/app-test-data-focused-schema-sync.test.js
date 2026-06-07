@@ -12,7 +12,7 @@
 
 import { waitFor } from '@testing-library/dom';
 import { jest } from '@jest/globals';
-import { TEST_DATA_GRID_SAMPLE_SCHEMA_TEXT } from '../../../js/gui_components/shared/test-data/schema/index.js';
+import { TEST_DATA_GRID_SAMPLE_SCHEMA_TEXT } from '../../../js/gui_components/shared/test-data/schema/schema-examples.js';
 import { createFocusedAppTestDataHarness } from './support/focused-app-test-data-harness.js';
 
 jest.setTimeout(15000);

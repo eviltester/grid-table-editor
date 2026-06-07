@@ -11,17 +11,15 @@ import { createAppSchemaDefinitionProps } from '../../../../packages/core-ui/js/
 import {
   createSchemaTextSyncState,
   initializeSchemaErrorDisplay,
-} from '../../../../packages/core-ui/js/gui_components/app/test-data-grid/schema/index.js';
+} from '../../../../packages/core-ui/js/gui_components/app/test-data-grid/schema/test-data-grid-schema-text-sync.js';
 import {
   identifyFakerCommands,
   getMethodPickerOptions,
   getVisibleDomainCommandOptions,
   FAKER_COMMANDS,
 } from '../../../../packages/core-ui/js/gui_components/app/test-data-grid/schema/test-data-command-catalog.js';
-import {
-  mapDataRuleToSchemaRow,
-  validateSchemaRows as validateSharedSchemaRows,
-} from '../../../../packages/core-ui/js/gui_components/shared/test-data/schema/index.js';
+import { validateSchemaRows as validateSharedSchemaRows } from '../../../../packages/core-ui/js/gui_components/shared/test-data/schema/schema-editor-core.js';
+import { mapDataRuleToSchemaRow } from '../../../../packages/core-ui/js/gui_components/shared/test-data/schema/schema-row-mapper.js';
 
 function createBlankSchemaRow(id, overrides = {}) {
   return {
@@ -130,9 +128,6 @@ function renderDataPopulationPanelStory(args) {
       onGeneratePairwise: () => {
         log.textContent = 'action:generate-pairwise';
       },
-      onRefreshPreview: () => {
-        log.textContent = 'action:refresh-preview';
-      },
       schemaDefinition: {
         onSchemaError: (message) => {
           const errorElement = getSchemaErrorElement(componentRoot);
@@ -217,7 +212,7 @@ export const NewTableMode = {
     docs: {
       description: {
         story:
-          'Shows the embedded panel in its default new-table mode. Review the shared row-count control, schema editor, and primary Generate action without pairwise generation enabled. Try Generate and Refresh Text Preview to confirm the composed panel callbacks fire through the interaction log.',
+          'Shows the embedded panel in its default new-table mode. Review the shared row-count control, schema editor, and primary Generate action without pairwise generation enabled. Try Generate to confirm the composed panel callback fires through the interaction log.',
       },
     },
   },
@@ -229,8 +224,6 @@ export const NewTableMode = {
     await expect(canvas.queryByRole('button', { name: 'Generate Pairwise' })).toBeNull();
     await userEvent.click(canvas.getByRole('button', { name: 'Generate' }));
     await expect(canvas.getByText('action:generate')).toBeVisible();
-    await userEvent.click(canvas.getByRole('button', { name: 'Refresh Text Preview' }));
-    await expect(canvas.getByText('action:refresh-preview')).toBeVisible();
   },
 };
 

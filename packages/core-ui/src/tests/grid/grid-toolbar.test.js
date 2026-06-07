@@ -78,4 +78,36 @@ describe('GridToolbar', () => {
     expect(root.querySelector('[data-role="filter-text-input"]')?.id).toBe('filter-text-box');
     expect(root.querySelector('[data-role="unique-column-names-checkbox"]')?.id).toBe('uniqueColumnNamesCheckbox');
   });
+
+  test('private toolbar behavior still works when legacy child ids change', () => {
+    const callbacks = {
+      onAddRow: jest.fn(),
+      onFilterTextChange: jest.fn(),
+      onUniqueColumnNamesChange: jest.fn(),
+    };
+
+    createGridToolbarComponent({
+      root,
+      documentObj: document,
+      callbacks,
+    });
+
+    const addRowButton = root.querySelector('[data-role="add-row-button"]');
+    const filterInput = root.querySelector('[data-role="filter-text-input"]');
+    const uniqueNamesCheckbox = root.querySelector('[data-role="unique-column-names-checkbox"]');
+
+    addRowButton.id = 'changed-add-row-id';
+    filterInput.id = 'changed-filter-id';
+    uniqueNamesCheckbox.id = 'changed-unique-id';
+
+    addRowButton.click();
+    filterInput.value = 'beta';
+    filterInput.dispatchEvent(new Event('input', { bubbles: true }));
+    uniqueNamesCheckbox.checked = true;
+    uniqueNamesCheckbox.dispatchEvent(new Event('change', { bubbles: true }));
+
+    expect(callbacks.onAddRow).toHaveBeenCalledTimes(1);
+    expect(callbacks.onFilterTextChange).toHaveBeenCalledWith('beta');
+    expect(callbacks.onUniqueColumnNamesChange).toHaveBeenCalledWith(true);
+  });
 });

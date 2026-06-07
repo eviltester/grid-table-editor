@@ -1,4 +1,4 @@
-import { createTextInputDialogService } from '../shared/dialog-services/index.js';
+import { createTextInputDialogService } from '../shared/dialog-services/text-input-dialog-service.js';
 import { escapeHtml } from '../shared/html-escape.js';
 import { createGridToolbarComponent } from './grid-toolbar/index.js';
 import { showGridError } from './grid-error-surface.js';
@@ -7,7 +7,7 @@ import { renderColumnHeaderActionButtonsHtml } from './shared/column-header-acti
 import { createTabulatorGridAdapter } from './tabulator-grid-adapter.js';
 import { GridExtension as TabulatorGridExtension } from './tabulator/gridExtension-tabulator.js';
 import { resolveDocumentObj, resolveWindowObj } from '../shared/dom/default-objects.js';
-import { renderIconHtml } from '../shared/primitives/icon/index.js';
+import { renderIconHtml } from '../shared/primitives/icon/icon-core.js';
 
 function createAppGridTabulatorOptions({
   textInputDialogService,

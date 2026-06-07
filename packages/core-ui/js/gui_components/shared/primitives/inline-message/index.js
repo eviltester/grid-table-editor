@@ -41,4 +41,4 @@ function createInlineMessageComponent({ root, props = {} } = {}) {
   };
 }
 
-export { createInlineMessageComponent, InlineMessageController, InlineMessageView };
+export { createInlineMessageComponent };

@@ -14,7 +14,7 @@ class AppPageShellView {
 
   template() {
     const state = this.controller.getState();
-    const openAttribute = state.showTestDataOpen ? ' open' : '';
+    const testDataOpenAttribute = state.showTestDataOpen ? ' open' : '';
 
     return `
       <div id="page-instructions"></div>
@@ -23,8 +23,8 @@ class AppPageShellView {
         <div id="main-grid-view"></div>
 
         <div class="testDataSchemaGui" data-role="test-data-panel-shell">
-          <details${openAttribute}>
-            <summary>Test Data <span data-help="test-data-summary-title" class="helpicon"></span></summary>
+          <details${testDataOpenAttribute}>
+            <summary>Test Data <span data-help="test-data-summary-title" data-help-role="help-icon" class="helpicon"></span></summary>
             <div id="testDataGeneratorContainer"></div>
           </details>
         </div>

@@ -1,17 +1,26 @@
 import { Importer } from '@anywaydata/core/grid/importer.js';
 import { Exporter } from '@anywaydata/core/grid/exporter.js';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
-import { mountTestDataGenerationPanel } from '../test-data-grid/index.js';
+import { mountTestDataGenerationPanel } from '../test-data-grid/controller/test-data-grid-controller.js';
 import { createDataGridComponent } from '../../data-grid-editor/index.js';
 import { ensureGridLibraryLoaded } from '../../data-grid-editor/grid-library-loader.js';
 import { GridExtension as TabulatorGridExtension } from '../../data-grid-editor/tabulator/gridExtension-tabulator.js';
 import { createImportExportWorkspaceComponent } from '../import-export-workspace/index.js';
-import { createInstructionsComponent, APP_PAGE_INSTRUCTIONS_PROPS } from '../../shared/instructions/index.js';
+import { createInstructionsComponent } from '../../shared/instructions/index.js';
+import { APP_PAGE_INSTRUCTIONS_PROPS } from '../../shared/instructions/app-page-instructions.js';
 import { createAppPageComponent } from './app-page-shell.js';
 import { initHelpTooltips } from '../../../help/help-tooltips.js';
-import { initThemeToggle } from '../../shared/theme-toggle.js';
+import { createThemeToggleComponent } from '../../shared/theme-toggle.js';
 import { createPageStartupLoadingStatus } from '../../shared/page-startup-loading-status.js';
 import { getDefaultDocumentObj, resolveWindowObj } from '../../shared/dom/default-objects.js';
+
+function resolveThemeToggleHostElement(documentObj) {
+  return documentObj?.querySelector?.('[data-role="theme-toggle-host"]') || null;
+}
+
+function resolveAppStartupLoadingElement(documentObj) {
+  return documentObj?.getElementById?.('initial-load') || null;
+}
 
 function createSampleGridData() {
   const sampleData = new GenericDataTable();
@@ -69,14 +78,21 @@ function createInstructionsGridActions({ documentObj = getDefaultDocumentObj(), 
     }
 
     clickHandler = (event) => {
-      if (event.target.closest('.instructions-sample-data-button')) {
-        event.preventDefault();
-        event.stopPropagation();
+      const actionButton = event.target.closest?.('[data-role="instructions-action-button"]');
+      const actionId = actionButton?.getAttribute?.('data-action-id');
+      if (!actionId) {
+        return;
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      if (actionId === 'load-sample-data') {
         setSampleGridData();
         return;
       }
 
-      if (event.target.closest('.instructions-copy-to-grid-button')) {
+      if (actionId === 'copy-instructions-to-grid') {
         event.preventDefault();
         event.stopPropagation();
         setInstructionsGridData();
@@ -113,15 +129,17 @@ async function bootstrapApp({
   ExporterClass = Exporter,
   ImporterClass = Importer,
   mountTestDataGenerationPanelFn = mountTestDataGenerationPanel,
+  initHelpTooltipsFn = initHelpTooltips,
 } = {}) {
   if (!documentObj) {
     return null;
   }
   const resolvedWindowObj = resolveWindowObj(null, documentObj);
   const resolvedTabulatorCtor = TabulatorCtor || resolvedWindowObj?.Tabulator || globalThis.Tabulator;
-  const themeToggle = initThemeToggle({
+  const themeToggle = createThemeToggleComponent({
     documentObj,
     windowObj: resolvedWindowObj,
+    hostElement: resolveThemeToggleHostElement(documentObj),
   });
   const pageRoot = documentObj.getElementById('app-page-root');
   const appPageComponent = pageRoot
@@ -131,7 +149,7 @@ async function bootstrapApp({
     : null;
   const startupLoadingStatus = createPageStartupLoadingStatus({
     documentObj,
-    elementId: 'initial-load',
+    resolveElement: () => resolveAppStartupLoadingElement(documentObj),
   });
   startupLoadingStatus.show();
 
@@ -182,7 +200,11 @@ async function bootstrapApp({
     importExportController.renderTextFromGrid();
     importExportController.setFileFormatType();
     importExportController.setOptionsViewForFormatType();
-    initHelpTooltips({ documentObj, includeAppOnlyEntries: true });
+    initHelpTooltipsFn({
+      documentObj,
+      includeAppOnlyEntries: true,
+      rootElement: pageRoot || documentObj,
+    });
 
     instructionsGridActions = createInstructionsGridActions({
       documentObj,

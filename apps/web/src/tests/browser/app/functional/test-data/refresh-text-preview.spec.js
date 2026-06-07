@@ -3,7 +3,7 @@ const { openApp, expectNoPageErrors, expect } = require('../../abstractions/help
 const { assertNoCommonErrorPatterns } = require('../../abstractions/helpers/output-quality-helpers');
 
 test.describe('7. Test Data Generation', () => {
-  test('Refresh Text Preview populates CSV preview after generation', async ({ page }) => {
+  test('generated data automatically refreshes the CSV preview', async ({ page }) => {
     const { appPage, pageErrors } = await openApp(page);
 
     await appPage.testDataPanel.expand();
@@ -27,7 +27,6 @@ test.describe('7. Test Data Generation', () => {
     assertNoCommonErrorPatterns(values);
 
     await appPage.textPreviewEditor.selectFormat('CSV');
-    await appPage.testDataPanel.clickRefreshTextPreview();
 
     await expect.poll(async () => appPage.textPreviewEditor.getOutputText()).toContain('First Name');
     await expect.poll(async () => appPage.textPreviewEditor.getOutputText()).toContain(values[0]);

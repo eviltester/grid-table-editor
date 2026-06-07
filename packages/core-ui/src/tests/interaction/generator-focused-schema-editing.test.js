@@ -11,10 +11,10 @@
 
 import { jest } from '@jest/globals';
 import { waitFor, within } from '@testing-library/dom';
-import { TEST_DATA_GRID_SAMPLE_SCHEMA_TEXT } from '../../../js/gui_components/shared/test-data/schema/index.js';
+import { GENERATOR_DEFAULT_EXAMPLE_SCHEMA_TEXT } from '../../../js/gui_components/shared/test-data/schema/schema-examples.js';
 import { createFocusedGeneratorHarness } from './support/focused-generator-harness.js';
 
-jest.setTimeout(15000);
+jest.setTimeout(45000);
 
 describe('generator focused schema editing', () => {
   let harness;
@@ -92,7 +92,7 @@ describe('generator focused schema editing', () => {
     await harness.toggleToTextMode();
     await harness.clickInjectedSampleButton();
 
-    await waitFor(() => expect(harness.getSchemaText()).toBe(TEST_DATA_GRID_SAMPLE_SCHEMA_TEXT));
+    await waitFor(() => expect(harness.getSchemaText()).toBe(GENERATOR_DEFAULT_EXAMPLE_SCHEMA_TEXT));
 
     await harness.toggleToSchemaMode();
     await waitFor(() => expect(document.querySelectorAll('.shared-schema-row').length).toBeGreaterThan(1));

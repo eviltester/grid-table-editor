@@ -1,4 +1,4 @@
-import { parseNonNegativeCount } from '../test-data/generation/index.js';
+import { parseNonNegativeCount } from '../test-data/generation/generation-runtime.js';
 
 function normalizeProps(props = {}) {
   const min = Number.isFinite(Number.parseInt(props.min, 10)) ? Number.parseInt(props.min, 10) : 0;

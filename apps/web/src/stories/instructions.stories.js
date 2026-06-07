@@ -1,9 +1,7 @@
 import { expect, userEvent, within } from 'storybook/test';
-import {
-  createInstructionsComponent,
-  APP_PAGE_INSTRUCTIONS_PROPS,
-  GENERATOR_PAGE_INSTRUCTIONS_PROPS,
-} from '../../../../packages/core-ui/js/gui_components/shared/instructions/index.js';
+import { createInstructionsComponent } from '../../../../packages/core-ui/js/gui_components/shared/instructions/index.js';
+import { APP_PAGE_INSTRUCTIONS_PROPS } from '../../../../packages/core-ui/js/gui_components/shared/instructions/app-page-instructions.js';
+import { GENERATOR_PAGE_INSTRUCTIONS_PROPS } from '../../../../packages/core-ui/js/gui_components/shared/instructions/generator-page-instructions.js';
 
 function renderInstructionsStory(args) {
   const root = document.createElement('section');
@@ -27,7 +25,8 @@ function renderInstructionsStory(args) {
   });
 
   componentRoot.addEventListener('click', (event) => {
-    if (event.target.closest('.instructions-copy-to-grid-button')) {
+    const actionButton = event.target.closest('[data-role="instructions-action-button"]');
+    if (actionButton?.getAttribute('data-action-id') === 'copy-instructions-to-grid') {
       log.textContent = 'action:copy-instructions-to-grid';
     }
   });

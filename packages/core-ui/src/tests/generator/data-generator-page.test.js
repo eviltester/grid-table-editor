@@ -3,7 +3,7 @@ import { JSDOM } from 'jsdom';
 import { faker } from '@faker-js/faker';
 import RandExp from 'randexp';
 import { dataRulesToSchemaText } from '@anywaydata/core/data_generation/schema-rules-adapter.js';
-import { createDataGeneratorPage } from '../../../js/gui_components/generator/runtime/data-generator-page-runtime.js';
+import { createDataGeneratorPage } from '../../../js/gui_components/generator/runtime/create-generator-page.js';
 import {
   buildRuleSpecFromSchemaRow,
   extractLiteralValueFromRuleSpec,
@@ -12,7 +12,7 @@ import {
   schemaRowsToSpecWithTokens as schemaRowsToSpecWithTokensHelper,
   validateSchemaRows as validateSchemaRowsHelper,
 } from '../../../js/gui_components/generator/runtime/generator-schema-rule-helpers.js';
-import { createUninitializedDataGeneratorPage } from '../../../js/gui_components/generator/runtime/data-generator-page-runtime.js';
+import { createUninitializedDataGeneratorPage } from '../../../js/gui_components/generator/runtime/create-generator-page.js';
 import { getOutputFormatGroups } from '../../../js/gui_components/generator/options/options-ui-schema.js';
 import { TestDataGenerator } from '../../../../core/js/data_generation/testDataGenerator.js';
 
@@ -810,7 +810,7 @@ describe('generator page runtime factories', () => {
     expect(page.generatorControls.setPairwiseVisible).toHaveBeenCalledWith(true);
   });
 
-  test('updateAllPairsButtonVisibility delegates pairwise calculation to the schema generation bridge', () => {
+  test('updateAllPairsButtonVisibility delegates pairwise calculation to the schema generation service', () => {
     const page = createUninitializedDataGeneratorPage({
       parentElement: document.getElementById('app'),
       documentObj: document,
@@ -833,13 +833,13 @@ describe('generator page runtime factories', () => {
         errors: [],
       })),
     };
-    page.generatorSchemaGeneration = {
+    page.generatorSchemaGenerationService = {
       getPairwiseVisibility: jest.fn(({ getCurrentSchemaState }) => getCurrentSchemaState().rows.length > 1),
     };
 
     expect(page.updateAllPairsButtonVisibility()).toBe(false);
 
-    expect(page.generatorSchemaGeneration.getPairwiseVisibility).toHaveBeenCalledTimes(1);
+    expect(page.generatorSchemaGenerationService.getPairwiseVisibility).toHaveBeenCalledTimes(1);
     expect(page.generatorSchemaState.getCurrentSchemaState).toHaveBeenCalledTimes(1);
     expect(page.generatorControls.setPairwiseVisible).toHaveBeenCalledWith(false);
   });

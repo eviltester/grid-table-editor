@@ -1,7 +1,7 @@
 import { describe, expect, jest, test } from '@jest/globals';
-import { createGeneratorRuntimeInteractionServices } from '../../../js/gui_components/generator/runtime/create-generator-runtime-interaction-services.js';
+import { createGeneratorPageServices } from '../../../js/gui_components/generator/runtime/create-generator-page-services.js';
 
-describe('createGeneratorRuntimeInteractionServices', () => {
+describe('createGeneratorPageServices', () => {
   test('builds the mounted view-state and runtime-action services around the runtime', () => {
     const runtime = {
       schemaDefinition: {
@@ -27,12 +27,12 @@ describe('createGeneratorRuntimeInteractionServices', () => {
           isTextMode: false,
         })),
       },
-      generatorSchemaGeneration: {
+      generatorSchemaGenerationService: {
         getPairwiseVisibility: jest.fn(() => true),
       },
     };
 
-    const services = createGeneratorRuntimeInteractionServices({
+    const services = createGeneratorPageServices({
       runtime,
       DownloadClass: class FakeDownload {},
       faker: {},

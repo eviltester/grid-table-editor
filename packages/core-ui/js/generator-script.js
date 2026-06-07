@@ -1,5 +1,5 @@
 import { ensureGridLibraryLoaded } from './gui_components/data-grid-editor/grid-library-loader.js';
-import { createDataGeneratorPage } from './gui_components/generator/runtime/data-generator-page-runtime.js';
+import { createDataGeneratorPage } from './gui_components/generator/runtime/create-generator-page.js';
 import { faker } from '@faker-js/faker';
 import { initHelpTooltips } from './help/help-tooltips.js';
 import { createThemeToggleComponent } from './gui_components/shared/theme-toggle.js';

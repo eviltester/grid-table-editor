@@ -1,7 +1,7 @@
 import { describe, expect, jest, test } from '@jest/globals';
-import { createGeneratorRuntimeActionsService } from '../../../js/gui_components/generator/runtime/create-generator-runtime-actions-service.js';
+import { createGeneratorPageActionsService } from '../../../js/gui_components/generator/runtime/generator-page-actions-service.js';
 
-describe('createGeneratorRuntimeActionsService', () => {
+describe('createGeneratorPageActionsService', () => {
   test('builds runtime actions around the mounted runtime services', () => {
     const runtime = {
       generatorViewState: {
@@ -18,13 +18,13 @@ describe('createGeneratorRuntimeActionsService', () => {
           isTextMode: false,
         })),
       },
-      generatorSchemaGeneration: {
+      generatorSchemaGenerationService: {
         getPairwiseVisibility: jest.fn(() => true),
       },
       exporter: null,
     };
 
-    const generatorRuntimeActions = createGeneratorRuntimeActionsService({
+    const generatorRuntimeActions = createGeneratorPageActionsService({
       runtime,
       DownloadClass: class FakeDownload {},
       faker: {},

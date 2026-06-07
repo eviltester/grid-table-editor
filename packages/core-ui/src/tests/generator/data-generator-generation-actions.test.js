@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
-import { createGeneratorSchemaGenerationBridge } from '../../../js/gui_components/generator/generation/generator-schema-generation-bridge.js';
+import { createGeneratorSchemaGenerationService } from '../../../js/gui_components/generator/generation/generator-schema-generation-service.js';
 import {
   renderGeneratorOutputPreview,
   updateGeneratorPairwiseButtonVisibility,
@@ -19,8 +19,8 @@ describe('generator generation actions', () => {
     dom.window.close();
   });
 
-  test('schema-generation bridge resolves through its direct module', () => {
-    expect(typeof createGeneratorSchemaGenerationBridge).toBe('function');
+  test('schema-generation service resolves through its direct module', () => {
+    expect(typeof createGeneratorSchemaGenerationService).toBe('function');
   });
 
   test('updateGeneratorPairwiseButtonVisibility hides wrapper for invalid schema', () => {

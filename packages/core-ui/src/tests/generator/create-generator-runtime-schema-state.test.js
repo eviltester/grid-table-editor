@@ -1,8 +1,8 @@
 import { describe, expect, jest, test } from '@jest/globals';
-import { defineGeneratorRuntimeSchemaState } from '../../../js/gui_components/generator/runtime/create-generator-runtime-schema-state.js';
+import { defineGeneratorPageSchemaState } from '../../../js/gui_components/generator/runtime/define-generator-page-schema-state.js';
 
-describe('defineGeneratorRuntimeSchemaState', () => {
-  test('bridges schema state properties onto the runtime facade', () => {
+describe('defineGeneratorPageSchemaState', () => {
+  test('bridges schema state properties onto the page service', () => {
     const generatorSchemaState = {
       getRows: jest.fn(() => [{ id: 'row-1' }]),
       setRows: jest.fn(),
@@ -13,8 +13,8 @@ describe('defineGeneratorRuntimeSchemaState', () => {
     };
     const runtime = { generatorSchemaState };
 
-    defineGeneratorRuntimeSchemaState(runtime, {
-      getRuntime: () => runtime,
+    defineGeneratorPageSchemaState(runtime, {
+      getPageService: () => runtime,
     });
 
     expect(runtime.schemaRows).toEqual([{ id: 'row-1' }]);

@@ -4,7 +4,7 @@ import { faker } from '@faker-js/faker';
 import RandExp from 'randexp';
 import { TestDataGenerator } from '@anywaydata/core/data_generation/testDataGenerator.js';
 import { Exporter } from '@anywaydata/core/grid/exporter.js';
-import { createDataGeneratorPage } from '../../../../js/gui_components/generator/runtime/data-generator-page-runtime.js';
+import { createDataGeneratorPage } from '../../../../js/gui_components/generator/runtime/create-generator-page.js';
 import { assertDataTableHasNoErrorIndicators, assertNoErrorIndicators } from './generated-value-quality.js';
 import { installDomGlobals, cleanupDomGlobals } from './testing-library-dom-setup.js';
 

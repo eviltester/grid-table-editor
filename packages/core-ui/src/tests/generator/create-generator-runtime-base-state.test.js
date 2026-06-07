@@ -1,6 +1,6 @@
 import { describe, expect, test } from '@jest/globals';
 import { TestDataGenerator } from '../../../../core/js/data_generation/testDataGenerator.js';
-import { createGeneratorRuntimeBaseState } from '../../../js/gui_components/generator/runtime/create-generator-runtime-base-state.js';
+import { createGeneratorPageBaseState } from '../../../js/gui_components/generator/runtime/create-generator-page-base-state.js';
 
 class FakeTabulator {}
 
@@ -10,14 +10,14 @@ class FakeExporter {}
 
 class FakeDownload {}
 
-describe('createGeneratorRuntimeBaseState', () => {
+describe('createGeneratorPageBaseState', () => {
   test('builds base runtime state from injected options and defaults', () => {
     const parentElement = { id: 'root' };
     const documentObj = { nodeType: 9 };
     const faker = { word: { noun: () => 'x' } };
     const RandExp = function RandExp() {};
 
-    const baseState = createGeneratorRuntimeBaseState({
+    const baseState = createGeneratorPageBaseState({
       options: {
         parentElement,
         documentObj,
@@ -49,7 +49,7 @@ describe('createGeneratorRuntimeBaseState', () => {
     delete global.document;
 
     try {
-      const baseState = createGeneratorRuntimeBaseState({
+      const baseState = createGeneratorPageBaseState({
         options: {
           parentElement: null,
           faker: { word: { noun: () => 'x' } },

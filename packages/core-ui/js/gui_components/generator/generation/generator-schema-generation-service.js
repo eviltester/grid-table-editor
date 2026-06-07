@@ -1,7 +1,7 @@
 import { createConfiguredGeneratorForPage, countGeneratorEnumColumns } from './data-generator-generation-actions.js';
 import { updateGeneratorPairwiseButtonVisibility } from './data-generator-generation-actions.js';
 
-function createGeneratorSchemaGenerationBridge({
+function createGeneratorSchemaGenerationService({
   syncSchemaRowsFromTextMode,
   validateSchemaRows,
   schemaRowsToSpec,
@@ -38,4 +38,4 @@ function createGeneratorSchemaGenerationBridge({
   };
 }
 
-export { createGeneratorSchemaGenerationBridge };
+export { createGeneratorSchemaGenerationService };

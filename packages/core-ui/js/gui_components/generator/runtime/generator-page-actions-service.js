@@ -7,10 +7,10 @@ import {
 } from '../generation/data-generator-generation-actions.js';
 import { applyGeneratorFormatOptions } from '../options/apply-generator-format-options.js';
 
-function createGeneratorRuntimeActionsService({ runtime, DownloadClass, faker, RandExp } = {}) {
+function createGeneratorPageActionsService({ runtime, DownloadClass, faker, RandExp } = {}) {
   const getResolvedViewState = () => runtime?.generatorViewState || null;
   const getResolvedSchemaRuntime = () => runtime?.generatorSchemaRuntime || null;
-  const getResolvedSchemaGeneration = () => runtime?.generatorSchemaGeneration || null;
+  const getResolvedSchemaGenerationService = () => runtime?.generatorSchemaGenerationService || null;
   const getResolvedSchemaState = () => runtime?.generatorSchemaState || null;
 
   return {
@@ -31,7 +31,7 @@ function createGeneratorRuntimeActionsService({ runtime, DownloadClass, faker, R
     previewData() {
       return previewGeneratorData({
         getPreviewRowCount: () => getResolvedViewState()?.getPreviewRowCount?.(),
-        createConfiguredGenerator: () => getResolvedSchemaGeneration()?.createConfiguredGenerator?.(),
+        createConfiguredGenerator: () => getResolvedSchemaGenerationService()?.createConfiguredGenerator?.(),
         buildDataTable: (generator, rowCount) => buildPreviewDataTable({ generator, rowCount }),
         setPreviewDataTable: (dataTable) => getResolvedViewState()?.setPreviewDataTable?.(dataTable),
         renderOutputPreviewForCurrentSelection: () =>
@@ -44,7 +44,7 @@ function createGeneratorRuntimeActionsService({ runtime, DownloadClass, faker, R
     async generateDataFile() {
       await generateGeneratorDataFile({
         getGenerateRowCount: () => getResolvedViewState()?.getGenerateRowCount?.(),
-        createConfiguredGenerator: () => getResolvedSchemaGeneration()?.createConfiguredGenerator?.(),
+        createConfiguredGenerator: () => getResolvedSchemaGenerationService()?.createConfiguredGenerator?.(),
         getSelectedOutputType: () => getResolvedViewState()?.getSelectedOutputType?.(),
         exporter: runtime?.exporter,
         clearGenerationStatus: () => getResolvedViewState()?.clearGenerationStatus?.(),
@@ -61,8 +61,8 @@ function createGeneratorRuntimeActionsService({ runtime, DownloadClass, faker, R
 
     async generateAllPairsDataFile() {
       await generateGeneratorAllPairsDataFile({
-        createConfiguredGenerator: () => getResolvedSchemaGeneration()?.createConfiguredGenerator?.(),
-        countEnumColumns: () => getResolvedSchemaGeneration()?.countEnumColumns?.() || 0,
+        createConfiguredGenerator: () => getResolvedSchemaGenerationService()?.createConfiguredGenerator?.(),
+        countEnumColumns: () => getResolvedSchemaGenerationService()?.countEnumColumns?.() || 0,
         getSelectedOutputType: () => getResolvedViewState()?.getSelectedOutputType?.(),
         exporter: runtime?.exporter,
         clearGenerationStatus: () => getResolvedViewState()?.clearGenerationStatus?.(),
@@ -83,7 +83,7 @@ function createGeneratorRuntimeActionsService({ runtime, DownloadClass, faker, R
     },
 
     updateAllPairsButtonVisibility() {
-      const isVisible = getResolvedSchemaGeneration()?.getPairwiseVisibility?.({
+      const isVisible = getResolvedSchemaGenerationService()?.getPairwiseVisibility?.({
         getCurrentSchemaState: () => getResolvedSchemaState()?.getCurrentSchemaState?.(),
       });
       getResolvedViewState()?.setPairwiseVisible?.(isVisible);
@@ -92,4 +92,4 @@ function createGeneratorRuntimeActionsService({ runtime, DownloadClass, faker, R
   };
 }
 
-export { createGeneratorRuntimeActionsService };
+export { createGeneratorPageActionsService };

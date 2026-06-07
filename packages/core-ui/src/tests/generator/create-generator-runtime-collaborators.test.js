@@ -1,7 +1,7 @@
 import { describe, expect, jest, test } from '@jest/globals';
-import { createGeneratorRuntimeCollaborators } from '../../../js/gui_components/generator/runtime/create-generator-runtime-collaborators.js';
+import { createGeneratorPageServices } from '../../../js/gui_components/generator/runtime/create-generator-page-services.js';
 
-describe('createGeneratorRuntimeCollaborators', () => {
+describe('createGeneratorPageServices', () => {
   test('adds view-state and runtime-action services on top of the schema collaborator bundle', () => {
     const runtime = {
       schemaDefinition: {
@@ -19,7 +19,7 @@ describe('createGeneratorRuntimeCollaborators', () => {
       exporter: null,
     };
 
-    const collaborators = createGeneratorRuntimeCollaborators({
+    const collaborators = createGeneratorPageServices({
       runtime,
       faker: {},
       RandExp: function RandExp() {},

@@ -4,7 +4,7 @@ import { Download } from '../../shared/download.js';
 import { GridExtension as TabulatorGridExtension } from '../../data-grid-editor/tabulator/gridExtension-tabulator.js';
 import { getDefaultDocumentObj } from '../../shared/dom/default-objects.js';
 
-function createGeneratorRuntimeBaseState({ options = {} } = {}) {
+function createGeneratorPageBaseState({ options = {} } = {}) {
   const {
     parentElement,
     documentObj = getDefaultDocumentObj(),
@@ -30,4 +30,4 @@ function createGeneratorRuntimeBaseState({ options = {} } = {}) {
   };
 }
 
-export { createGeneratorRuntimeBaseState };
+export { createGeneratorPageBaseState };

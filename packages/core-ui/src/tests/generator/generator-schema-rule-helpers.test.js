@@ -1,6 +1,6 @@
 import { describe, expect, test } from '@jest/globals';
 import { dataRulesToSchemaText } from '@anywaydata/core/data_generation/schema-rules-adapter.js';
-import * as generatorRuntimeExports from '../../../js/gui_components/generator/runtime/data-generator-page-runtime.js';
+import * as generatorRuntimeExports from '../../../js/gui_components/generator/runtime/create-generator-page.js';
 import {
   buildRuleSpecFromSchemaRow,
   extractLiteralValueFromRuleSpec,

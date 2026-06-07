@@ -1,8 +1,8 @@
 import { describe, expect, jest, test } from '@jest/globals';
-import { createGeneratorRuntimeSchemaRuntime } from '../../../js/gui_components/generator/runtime/create-generator-runtime-schema-runtime.js';
+import { createGeneratorPageSchemaServices } from '../../../js/gui_components/generator/runtime/create-generator-page-schema-services.js';
 
-describe('createGeneratorRuntimeSchemaRuntime', () => {
-  test('builds the generator schema support, session, runtime, generation, and state services together', () => {
+describe('createGeneratorPageSchemaServices', () => {
+  test('builds the generator schema support, session, runtime, generation service, and state services together', () => {
     const runtime = {
       schemaDefinition: {
         getState: jest.fn(() => ({
@@ -26,7 +26,7 @@ describe('createGeneratorRuntimeSchemaRuntime', () => {
       },
     };
 
-    const schemaRuntime = createGeneratorRuntimeSchemaRuntime({
+    const schemaRuntime = createGeneratorPageSchemaServices({
       runtime,
       faker: {},
       RandExp: function RandExp() {},
@@ -42,7 +42,7 @@ describe('createGeneratorRuntimeSchemaRuntime', () => {
 
     Object.assign(runtime, schemaRuntime);
     runtime.updateAllPairsButtonVisibility = jest.fn(() => {
-      const isVisible = runtime.generatorSchemaGeneration.getPairwiseVisibility({
+      const isVisible = runtime.generatorSchemaGenerationService.getPairwiseVisibility({
         getCurrentSchemaState: () => runtime.generatorSchemaState.getCurrentSchemaState(),
       });
       runtime.generatorControls.setPairwiseVisible(isVisible);
@@ -54,7 +54,7 @@ describe('createGeneratorRuntimeSchemaRuntime', () => {
     expect(runtime.generatorSchemaDefinitionSupport).toBeDefined();
     expect(runtime.schemaSession).toBeDefined();
     expect(runtime.generatorSchemaRuntime).toBeDefined();
-    expect(runtime.generatorSchemaGeneration).toBeDefined();
+    expect(runtime.generatorSchemaGenerationService).toBeDefined();
     expect(runtime.generatorSchemaState).toBeDefined();
     expect(runtime.generatorSchemaState.getCurrentSchemaState()).toEqual({
       rows: [
@@ -65,7 +65,7 @@ describe('createGeneratorRuntimeSchemaRuntime', () => {
       isTextMode: false,
     });
 
-    const pairwiseVisible = runtime.generatorSchemaGeneration.getPairwiseVisibility({
+    const pairwiseVisible = runtime.generatorSchemaGenerationService.getPairwiseVisibility({
       getCurrentSchemaState: () => runtime.generatorSchemaState.getCurrentSchemaState(),
     });
     runtime.generatorSchemaState.renderSchemaRows();

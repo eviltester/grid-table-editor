@@ -1,7 +1,7 @@
 import { describe, expect, jest, test } from '@jest/globals';
-import { createGeneratorSchemaGenerationBridge } from '../../../js/gui_components/generator/generation/generator-schema-generation-bridge.js';
+import { createGeneratorSchemaGenerationService } from '../../../js/gui_components/generator/generation/generator-schema-generation-service.js';
 
-describe('generator schema generation bridge', () => {
+describe('generator schema generation service', () => {
   test('creates configured generators and enum counts through shared generation helpers', () => {
     const syncSchemaRowsFromTextMode = jest
       .fn()
@@ -48,7 +48,7 @@ describe('generator schema generation bridge', () => {
       }
     };
 
-    const bridge = createGeneratorSchemaGenerationBridge({
+    const service = createGeneratorSchemaGenerationService({
       syncSchemaRowsFromTextMode,
       validateSchemaRows,
       schemaRowsToSpec,
@@ -57,19 +57,19 @@ describe('generator schema generation bridge', () => {
       RandExp: function RandExp() {},
     });
 
-    const configured = bridge.createConfiguredGenerator();
+    const configured = service.createConfiguredGenerator();
     expect(configured.errors).toEqual([]);
     expect(configured.generator).toBeInstanceOf(TestDataGeneratorClass);
     expect(configured.generator.spec).toBe('Browser\nenum(chrome,firefox)');
 
-    const enumCount = bridge.countEnumColumns();
+    const enumCount = service.countEnumColumns();
     expect(enumCount).toBe(2);
     expect(syncSchemaRowsFromTextMode).toHaveBeenCalledTimes(2);
     expect(validateSchemaRows).toHaveBeenCalledTimes(2);
   });
 
   test('calculates pairwise visibility through the shared generation helper boundary', () => {
-    const bridge = createGeneratorSchemaGenerationBridge({
+    const service = createGeneratorSchemaGenerationService({
       syncSchemaRowsFromTextMode: jest.fn(),
       validateSchemaRows: jest.fn((rows) => ({ rows, errors: [] })),
       schemaRowsToSpec: jest.fn(),
@@ -78,7 +78,7 @@ describe('generator schema generation bridge', () => {
       RandExp: function RandExp() {},
     });
 
-    const isVisible = bridge.getPairwiseVisibility({
+    const isVisible = service.getPairwiseVisibility({
       getCurrentSchemaState: () => ({
         rows: [
           { name: 'Browser', sourceType: 'enum', value: 'enum(chrome,firefox,safari)' },

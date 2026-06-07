@@ -4,18 +4,24 @@ import { createGeneratorPageComponentServices } from './create-generator-page-co
 
 function createGeneratorPageRuntimeConfig({ runtime } = {}) {
   const handleRowsChanged = () => runtime.updateAllPairsButtonVisibility?.();
+  const props = createGeneratorPageComponentProps({
+    schemaTextToDataRules: runtime.schemaTextToDataRules,
+    dataRulesToSchemaText: runtime.dataRulesToSchemaText,
+    faker: runtime.faker,
+    RandExp: runtime.RandExp,
+    generatorSchemaDefinitionSupport: runtime.generatorSchemaDefinitionSupport,
+    fakerCommands: runtime.fakerCommands,
+    sampleSchemaText: runtime.sampleSchemaText,
+    onRowsChanged: handleRowsChanged,
+  });
+  const selectedFormat = props.controlsProps?.selectedFormat || 'csv';
+  props.controlsProps = {
+    ...props.controlsProps,
+    currentOptions: runtime.exporter?.getOptionsForType?.(selectedFormat),
+  };
 
   return {
-    props: createGeneratorPageComponentProps({
-      schemaTextToDataRules: runtime.schemaTextToDataRules,
-      dataRulesToSchemaText: runtime.dataRulesToSchemaText,
-      faker: runtime.faker,
-      RandExp: runtime.RandExp,
-      generatorSchemaDefinitionSupport: runtime.generatorSchemaDefinitionSupport,
-      fakerCommands: runtime.fakerCommands,
-      sampleSchemaText: runtime.sampleSchemaText,
-      onRowsChanged: handleRowsChanged,
-    }),
+    props,
     services: createGeneratorPageComponentServices({
       getExporter: () => runtime.exporter,
       TabulatorCtor: runtime.TabulatorCtor,

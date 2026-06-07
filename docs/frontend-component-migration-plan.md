@@ -205,7 +205,7 @@ Use these conventions for shared component work unless a stronger local pattern 
 The existing code already has useful partial boundaries:
 
 - App bootstrap: `packages/core-ui/js/script.js`
-- Generator page entrypoint: `packages/core-ui/js/gui_components/generator/runtime/data-generator-page-runtime.js`
+- Generator page entrypoint: `packages/core-ui/js/gui_components/generator/runtime/create-generator-page.js`
 - Generator shell and event binding: `packages/core-ui/js/gui_components/generator/host/`
 - Generator generation actions: `packages/core-ui/js/gui_components/generator/generation/`
 - App test-data panel host: `packages/core-ui/js/gui_components/app/test-data-grid/host/`
@@ -415,7 +415,7 @@ Current status:
 Current status:
 
 - `packages/core-ui/js/script.js` now only owns DOM-ready bootstrap wiring and delegates the app-page setup to `app/page/app-page-runtime.js`, which in turn owns the remaining startup orchestration and instruction-sample grid actions.
-- The generator public entrypoint now exports directly from `generator/runtime/data-generator-page-runtime.js`, so the old empty controller wrapper has been removed.
+- The generator public entrypoint now exports directly from `generator/runtime/create-generator-page.js`, so the old empty controller wrapper has been removed.
 - The legacy generator host layout/coordinator files under `gui_components/generator/host/` are removed; `GeneratorPageView` now owns the generator page shell and feature composition directly.
 - The legacy app test-data host binder/coordinator files under `gui_components/app/test-data-grid/host/` are removed; `DataPopulationPanel` and `SharedSchemaDefinition` now own that behavior directly.
 - The old Storybook `storybook-harnesses.js` file and the legacy `Test Data / Generator` story set are removed, along with the document monkey-patching they depended on.
@@ -440,7 +440,7 @@ Use this section as the follow-on backlog rather than adding a Phase 9. The goal
 
 Current status:
 
-- The empty generator controller wrapper and the extra top-level generator feature pass-through barrel are both gone. Standalone bootstrap, focused harnesses, and generator runtime coverage now import `createDataGeneratorPage(...)` directly from `generator/runtime/data-generator-page-runtime.js`, while low-level unmounted runtime coverage uses a dedicated runtime-module helper instead of treating a `DataGeneratorPage` class as part of the public feature surface.
+- The empty generator controller wrapper and the extra top-level generator feature pass-through barrel are both gone. Standalone bootstrap, focused harnesses, and generator runtime coverage now import `createDataGeneratorPage(...)` directly from `generator/runtime/create-generator-page.js`, while low-level unmounted runtime coverage uses a dedicated runtime-module helper instead of treating a `DataGeneratorPage` class as part of the public feature surface.
 - The unused `DataGeneratorPageRuntime` alias was removed after confirming there were no internal consumers.
 - The remaining app-side main-grid compatibility facade has been removed. The app runtime and app page Storybook story now both mount `createDataGridComponent(...)` directly while injecting the supported Tabulator services explicitly.
 - The hidden AG Grid runtime selector path has been removed, along with its AG Grid runtime/test files, after confirming there was no real product-facing AG Grid entry point beyond the old compatibility override path.
@@ -573,7 +573,7 @@ The generator runtime has become more indirect than the MVC-style component arch
 Current status:
 
 - The runtime boot stack and page-config assembly chain have now been collapsed into direct runtime and runtime-config builders.
-- The strongest remaining simplification target is the surviving action/view-state/schema helper cluster and its older bridge/dependencies naming.
+- The earlier bridge/dependencies naming in the surviving action/view-state/schema helper cluster has now been reduced to responsibility-based service/runtime names, including the generator schema-generation service.
 
 ## MVC Cleanliness Follow-On
 
@@ -588,10 +588,11 @@ Current status:
 
 - `ImportExportWorkspace` now routes its async import/export orchestration through `create-import-export-workspace-runtime.js`, so the public component entrypoint is mostly a thin wrapper around document/window resolution and runtime delegation instead of owning the feature workflow directly.
 - `ImportExportWorkspace` runtime now delegates the actual import/export/preview behavior into `create-import-export-workspace-workflow-service.js`, leaving the runtime responsible mainly for dependency setup, child-component composition, and lifecycle wiring.
-- The generator runtime now uses direct collaborator/service names for the live action and view-state cluster: `create-generator-runtime-collaborators.js`, `create-generator-runtime-interaction-services.js`, `create-generator-runtime-actions-service.js`, `create-generator-runtime-view-state.js`, and `create-generator-runtime-schema-runtime.js`.
+- The generator page runtime now uses direct page-service names for the live action, view-state, and schema cluster: `create-generator-page-services.js`, `generator-page-actions-service.js`, `generator-page-view-state.js`, and `create-generator-page-schema-services.js`.
 - `GeneratorControls` now composes a dedicated `GeneratorOutputFormatSelector` component, and Storybook documents that selector directly through `generator-output-format-selector.stories.js` instead of only through the larger controls surface.
 - `TextPreviewEditor` now composes a dedicated `TextPreviewToolbar` component for its Preview/Edit controls, leaving the parent editor responsible for textarea and options/preview split-layout composition instead of the whole visible top toolbar surface.
-- The generator schema runtime is now assembled through one direct responsibility-based builder instead of separate support/session/services wrappers, and the mounted-page state maps page collaborators directly instead of going through a mounted-page bridge. The next generator-side MVC cleanup is now narrower follow-up regrouping only if the remaining schema generation helper still feels too adapter-shaped.
+- The generator schema runtime is now assembled through one direct responsibility-based builder instead of separate support/session/services wrappers, and the mounted-page state maps page collaborators directly instead of going through a mounted-page bridge.
+- The schema-to-generator helper is now named and used as `createGeneratorSchemaGenerationService(...)` / `generatorSchemaGenerationService`, so the last live generator-side `bridge` label in that path has been removed.
 
 ## Tracking Across Sessions
 

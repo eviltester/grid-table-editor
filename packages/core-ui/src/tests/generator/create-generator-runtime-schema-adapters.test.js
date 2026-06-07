@@ -1,12 +1,9 @@
 import { describe, expect, test } from '@jest/globals';
-import { dataRulesToSchemaText } from '@anywaydata/core/data_generation/schema-rules-adapter.js';
-import { createGeneratorRuntimeSchemaAdapters } from '../../../js/gui_components/generator/runtime/create-generator-runtime-schema-adapters.js';
+import { createGeneratorPageDefaults } from '../../../js/gui_components/generator/runtime/create-generator-page-defaults.js';
 
-describe('createGeneratorRuntimeSchemaAdapters', () => {
-  test('builds runtime schema helper adapters around dataRulesToSchemaText', () => {
-    const adapters = createGeneratorRuntimeSchemaAdapters({
-      dataRulesToSchemaText,
-    });
+describe('createGeneratorPageDefaults schema helpers', () => {
+  test('builds page schema helpers around dataRulesToSchemaText', () => {
+    const adapters = createGeneratorPageDefaults();
 
     expect(
       adapters.schemaRowsToSpec([
@@ -23,10 +20,8 @@ describe('createGeneratorRuntimeSchemaAdapters', () => {
     ).toBe('# top\nStatus\nenum(active,inactive)');
   });
 
-  test('exposes schema validation through the runtime adapter contract', () => {
-    const adapters = createGeneratorRuntimeSchemaAdapters({
-      dataRulesToSchemaText: () => '',
-    });
+  test('exposes schema validation through the page-defaults contract', () => {
+    const adapters = createGeneratorPageDefaults();
 
     const result = adapters.validateSchemaRows([
       { name: '', sourceType: 'regex', value: '[0-9]' },

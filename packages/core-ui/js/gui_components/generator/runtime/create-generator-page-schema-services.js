@@ -3,13 +3,13 @@ import { getKnownDomainCommandsAlphabetical } from '../../shared/domain-commands
 import { buildSchemaModeHelpHtml } from '../../shared/test-data/help/schema-mode-help-builder.js';
 import { createSchemaEditingSession } from '../../shared/test-data/schema/schema-controller.js';
 import { GENERATE_TO_FILE_HELP_URL } from '../constants.js';
-import { createGeneratorSchemaGenerationBridge } from '../generation/generator-schema-generation-bridge.js';
+import { createGeneratorSchemaGenerationService } from '../generation/generator-schema-generation-service.js';
 import { createGeneratorSchemaDefinitionSupport } from '../schema-support/create-generator-schema-definition-support.js';
 import { createGeneratorSchemaRowFactory } from '../schema-support/create-generator-schema-row-factory.js';
 import { createGeneratorSchemaRuntimeService } from './generator-schema-runtime-service.js';
 import { createGeneratorSchemaStateService } from './generator-schema-state-service.js';
 
-function createGeneratorRuntimeSchemaRuntime({
+function createGeneratorPageSchemaServices({
   runtime,
   faker,
   RandExp,
@@ -17,7 +17,7 @@ function createGeneratorRuntimeSchemaRuntime({
   schemaTextToDataRules,
   schemaRowsToSpec,
   schemaRowsToSpecWithTokens,
-  validateSchemaRows,
+  validateSchemaRows = (rows) => ({ rows, errors: [] }),
   mapRuleToRow,
   dataRulesToSchemaText,
   sampleSchemaText,
@@ -60,7 +60,7 @@ function createGeneratorRuntimeSchemaRuntime({
     scheduleClearGenerationStatus: (delay) => runtime?.generatorViewState?.scheduleClearGenerationStatus(delay),
   });
 
-  const generatorSchemaGeneration = createGeneratorSchemaGenerationBridge({
+  const generatorSchemaGenerationService = createGeneratorSchemaGenerationService({
     syncSchemaRowsFromTextMode: (options) => runtime?.generatorSchemaRuntime?.syncSchemaRowsFromTextMode(options),
     validateSchemaRows,
     schemaRowsToSpec,
@@ -81,7 +81,7 @@ function createGeneratorRuntimeSchemaRuntime({
     generatorSchemaDefinitionSupport,
     schemaSession,
     generatorSchemaRuntime,
-    generatorSchemaGeneration,
+    generatorSchemaGenerationService,
     generatorSchemaState,
     schemaTextToDataRules,
     dataRulesToSchemaText,
@@ -89,4 +89,4 @@ function createGeneratorRuntimeSchemaRuntime({
   };
 }
 
-export { createGeneratorRuntimeSchemaRuntime };
+export { createGeneratorPageSchemaServices };

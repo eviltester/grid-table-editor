@@ -2,13 +2,13 @@
 
 This document is the concrete follow-on plan for simplifying the generator-side runtime and page assembly.
 
-It exists because the current generator path is technically decomposed, but still too indirect for a clean MVC-style component architecture. The runtime currently relies on multiple layers of shells, facades, bridges, dependency builders, callback builders, and page-config composers that mostly forward to one another.
+It exists because the generator path was technically decomposed, but still too indirect for a clean MVC-style component architecture. The older runtime relied on multiple layers of shells, facades, bridges, dependency builders, callback builders, and page-config composers that mostly forwarded to one another.
 
 The goal of this map is not to remove all helper functions. The goal is to collapse helper stacks that no longer create a meaningful architectural boundary.
 
 ## Problem Statement
 
-The current generator path is more layered than the app-side component model it was meant to support.
+The older generator path was more layered than the app-side component model it was meant to support.
 
 The main signs of over-indirection are:
 
@@ -17,7 +17,7 @@ The main signs of over-indirection are:
 - page-config assembly is split across many tiny files that are not meaningful reviewer-facing boundaries
 - tests currently protect some of those intermediate seams even when those seams do not represent intentional product architecture
 
-The result is a system that is more decomposed than a monolith, but less understandable than a straightforward runtime + page-component composition.
+The result was a system that was more decomposed than a monolith, but less understandable than a straightforward runtime + page-component composition. The current shape is simpler: `create-generator-page.js` -> `generator-page-service.js` -> `create-generator-page-services.js` plus `create-generator-page-runtime-mount.js`.
 
 ## Current Layer Map
 
@@ -60,15 +60,16 @@ That chain is too deep for one visible page component. Some of the deeper prop/c
 
 ### Runtime action and view-state cluster
 
-Mounted runtime interaction state currently flows through:
+Mounted runtime interaction state now flows through:
 
-- `create-generator-runtime-interaction-services.js`
-- `create-generator-runtime-view-state.js`
-- `create-generator-runtime-actions-service.js`
+- `create-generator-page-services.js`
+- `generator-page-view-state.js`
+- `generator-page-actions-service.js`
 
 Status:
 
 - the misleading `*Dependencies` and `*Bridge` names are gone from the live action/view-state path
+- the schema-generation helper is now also a responsibility-named service rather than a local `bridge`
 - the remaining work here is further collapse or regrouping only if the surviving services still feel too indirect after schema cleanup
 
 ### Schema runtime cluster
@@ -119,7 +120,7 @@ That runtime creator should:
 
 #### Keep
 
-- `create-generator-runtime-factory-inputs.js` only if it still honestly owns externally injected parser/sample-schema inputs
+- `create-generator-page-defaults.js` only if it still honestly owns externally injected parser/sample-schema inputs
 - `create-generator-page-runtime-mount.js` only if it remains a real mount-orchestration unit
 
 #### Collapse or delete
@@ -185,9 +186,9 @@ Use simpler names and shapes based on what the code really is:
 
 #### Strong collapse candidates
 
-- `create-generator-runtime-actions-service.js`
+- `generator-page-actions-service.js`
   - inline only if the direct runtime creator becomes easier to read
-- `create-generator-runtime-view-state.js`
+- `generator-page-view-state.js`
   - inline only if runtime/page mount readability improves
 - `generator-mounted-page-bridge.js`
   - inline if it is only a mounted-page convenience wrapper
@@ -228,7 +229,7 @@ The schema layer should read like feature responsibilities, not like a stack of 
 
 Status:
 
-- completed by replacing the wrapper chain with direct `create-generator-runtime-schema-runtime.js` assembly
+- completed by replacing the wrapper chain with direct `create-generator-page-schema-services.js` assembly
 
 ### Target 5: Stop splitting helpers that are not reviewer-facing or architecturally durable
 
@@ -269,7 +270,7 @@ Success criteria:
 Status:
 
 - completed in the current runtime pass
-- replaced with direct `create-generator-runtime.js` wiring from `data-generator-page-runtime.js`
+- replaced with direct `create-generator-page.js` wiring into `generator-page-service.js`
 
 ### Pass B: Collapse page-config assembly
 
@@ -310,7 +311,7 @@ Success criteria:
 Status:
 
 - completed in the current runtime pass
-- schema support, schema session, schema runtime behavior, and schema state wiring now assemble through direct `create-generator-runtime-schema-runtime.js` wiring
+- schema support, schema session, schema runtime behavior, and schema state wiring now assemble through direct `create-generator-page-schema-services.js` wiring
 - mounted-page collaborator mapping is now direct inside `create-generator-mounted-page-state.js` instead of going through `generator-mounted-page-bridge.js`
 
 ## What To Keep Intentionally

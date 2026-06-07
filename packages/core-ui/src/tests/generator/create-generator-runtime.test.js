@@ -1,7 +1,7 @@
 import { describe, expect, jest, test } from '@jest/globals';
-import { createGeneratorRuntime } from '../../../js/gui_components/generator/runtime/create-generator-runtime.js';
+import { createGeneratorPageService } from '../../../js/gui_components/generator/runtime/generator-page-service.js';
 
-describe('createGeneratorRuntime', () => {
+describe('createGeneratorPageService', () => {
   function createRuntime(overrides = {}) {
     const createBaseState = jest.fn(() => ({
       parentElement: { id: 'root' },
@@ -27,7 +27,7 @@ describe('createGeneratorRuntime', () => {
         renderSchemaRows: jest.fn(),
       },
     }));
-    const createRuntimeCollaboratorsFn = jest.fn(() => ({
+    const createPageServices = jest.fn(() => ({
       generatorSchemaDefinitionSupport: {
         mapRuleToRow: jest.fn((rule, index) => ({ rule, index })),
       },
@@ -42,40 +42,40 @@ describe('createGeneratorRuntime', () => {
       },
       generatorControls: { id: 'controls' },
     }));
-    const assertRuntimeMountable = jest.fn();
-    const defineSchemaState = jest.fn((runtime, { getRuntime }) => {
+    const assertPageMountable = jest.fn();
+    const defineSchemaState = jest.fn((runtime, { getPageService }) => {
       Object.defineProperties(runtime, {
         schemaRows: {
           configurable: true,
           get() {
-            return getRuntime().generatorSchemaState.rows;
+            return getPageService().generatorSchemaState.rows;
           },
           set(value) {
-            getRuntime().generatorSchemaState.rows = value;
+            getPageService().generatorSchemaState.rows = value;
           },
         },
         schemaTextTokens: {
           configurable: true,
           get() {
-            return getRuntime().generatorSchemaState.tokens;
+            return getPageService().generatorSchemaState.tokens;
           },
           set(value) {
-            getRuntime().generatorSchemaState.tokens = value;
+            getPageService().generatorSchemaState.tokens = value;
           },
         },
         isTextMode: {
           configurable: true,
           get() {
-            return getRuntime().generatorSchemaState.textMode;
+            return getPageService().generatorSchemaState.textMode;
           },
           set(value) {
-            getRuntime().generatorSchemaState.textMode = value;
+            getPageService().generatorSchemaState.textMode = value;
           },
         },
       });
     });
 
-    const runtime = createGeneratorRuntime({
+    const runtime = createGeneratorPageService({
       options: { parentElement: { id: 'root' } },
       schemaTextToDataRules: jest.fn(),
       schemaRowsToSpec: jest.fn(),
@@ -84,9 +84,9 @@ describe('createGeneratorRuntime', () => {
       dataRulesToSchemaText: jest.fn(),
       sampleSchemaText: 'Name\nliteral(x)',
       createBaseState,
-      createRuntimeCollaboratorsFn,
+      createPageServices,
       createPageRuntimeMount,
-      assertRuntimeMountable,
+      assertPageMountable,
       defineSchemaState,
       ...overrides,
     });
@@ -94,9 +94,9 @@ describe('createGeneratorRuntime', () => {
     return {
       runtime,
       createBaseState,
-      createRuntimeCollaboratorsFn,
+      createPageServices,
       createPageRuntimeMount,
-      assertRuntimeMountable,
+      assertPageMountable,
       defineSchemaState,
     };
   }
@@ -108,7 +108,7 @@ describe('createGeneratorRuntime', () => {
     const validateSchemaRows = jest.fn();
     const dataRulesToSchemaText = jest.fn();
     const createUnavailableRowCountResult = jest.fn(() => ({ value: 0, valid: false, errors: ['missing'] }));
-    const createRuntimeCollaboratorsFn = jest.fn(() => ({
+    const createPageServices = jest.fn(() => ({
       generatorSchemaDefinitionSupport: {
         mapRuleToRow: jest.fn((rule, index) => ({ id: `${rule}-${index}` })),
       },
@@ -132,19 +132,19 @@ describe('createGeneratorRuntime', () => {
         getGenerateRowCount: jest.fn(() => ({ value: 9, valid: true, errors: [] })),
       },
     }));
-    const defineSchemaState = jest.fn((runtime, { getRuntime }) => {
+    const defineSchemaState = jest.fn((runtime, { getPageService }) => {
       Object.defineProperty(runtime, 'schemaRows', {
         configurable: true,
         get() {
-          return getRuntime().generatorSchemaState.rows;
+          return getPageService().generatorSchemaState.rows;
         },
         set(value) {
-          getRuntime().generatorSchemaState.rows = value;
+          getPageService().generatorSchemaState.rows = value;
         },
       });
     });
 
-    const runtime = createGeneratorRuntime({
+    const runtime = createGeneratorPageService({
       options: { parentElement: { id: 'root' } },
       schemaTextToDataRules,
       schemaRowsToSpec,
@@ -159,12 +159,12 @@ describe('createGeneratorRuntime', () => {
         TestDataGeneratorClass: class FakeGenerator {},
         DownloadClass: class FakeDownload {},
       }),
-      createRuntimeCollaboratorsFn,
+      createPageServices,
       defineSchemaState,
       createUnavailableRowCountResult,
     });
 
-    expect(createRuntimeCollaboratorsFn).toHaveBeenCalledWith(
+    expect(createPageServices).toHaveBeenCalledWith(
       expect.objectContaining({
         runtime,
         schemaTextToDataRules,
@@ -177,10 +177,10 @@ describe('createGeneratorRuntime', () => {
       })
     );
 
-    const dependencyArgs = createRuntimeCollaboratorsFn.mock.calls[0][0];
+    const dependencyArgs = createPageServices.mock.calls[0][0];
     expect(dependencyArgs.mapRuleToRow('rule', 2)).toEqual({ id: 'rule-2' });
     expect(defineSchemaState).toHaveBeenCalledWith(runtime, {
-      getRuntime: expect.any(Function),
+      getPageService: expect.any(Function),
     });
 
     runtime.schemaRows = [{ id: 'row-1' }];
@@ -188,7 +188,7 @@ describe('createGeneratorRuntime', () => {
   });
 
   test('exposes the page-facing runtime api over view state, actions, and mounted lifecycle', async () => {
-    const { runtime, createPageRuntimeMount, assertRuntimeMountable } = createRuntime();
+    const { runtime, createPageRuntimeMount, assertPageMountable } = createRuntime();
 
     expect(runtime.getSelectedOutputType()).toBe('json');
     expect(runtime.syncGeneratorControlsFormatStateIfChanged('csv', 'json')).toBe(true);
@@ -207,7 +207,7 @@ describe('createGeneratorRuntime', () => {
     expect(runtime.generatorSchemaState.renderSchemaRows).toHaveBeenCalledTimes(1);
     expect(runtime.generatorRuntimeActions.generateDataFile).toHaveBeenCalledTimes(1);
     expect(runtime.generatorRuntimeActions.generateAllPairsDataFile).toHaveBeenCalledTimes(1);
-    expect(assertRuntimeMountable).toHaveBeenCalledWith(runtime);
+    expect(assertPageMountable).toHaveBeenCalledWith(runtime);
     expect(createPageRuntimeMount).toHaveBeenCalledWith({
       runtime,
     });

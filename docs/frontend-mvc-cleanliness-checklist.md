@@ -134,8 +134,9 @@ This is the current repo-level audit after the latest Storybook and generator ru
 
 - generator runtime dependency clusters
   - Much closer to clean MVC now.
-  - The top runtime boot path is direct, the action/view-state cluster uses responsibility-based naming, and the schema layer now assembles through one direct builder: `create-generator-runtime-schema-runtime.js`.
-  - The remaining question is whether the schema-generation helper should eventually be renamed or merged again, but the bigger wrapper pyramid is gone.
+  - The top page boot path is now direct and human-readable: `create-generator-page.js` -> `generator-page-service.js` -> `create-generator-page-services.js`.
+  - The schema layer now assembles through one direct builder: `create-generator-page-schema-services.js`, and the remaining page interaction helpers use responsibility-based names such as `generator-page-actions-service.js` and `generator-page-view-state.js`.
+  - The bigger wrapper pyramid is gone; the remaining question is only whether a future change makes one of these surviving page services too broad again.
 
 - `GeneratorControls`
   - Mostly good, but still slightly too broad visually.
@@ -147,7 +148,7 @@ This is the current repo-level audit after the latest Storybook and generator ru
 
 ## Recommended Next Cleanup Order
 
-1. Decide whether the remaining generator schema-generation helper should stay separate or be renamed as a service in a future cleanup.
+1. Re-audit generator runtime only when a future change shows a new helper stack growing beyond a small runtime-plus-service shape.
 
 ## Short Review Questions
 

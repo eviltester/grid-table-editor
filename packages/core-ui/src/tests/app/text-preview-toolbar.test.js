@@ -55,20 +55,28 @@ describe('TextPreviewToolbar', () => {
     });
 
     const helpIcon = root.querySelector('[data-role="preview-edit-mode-help"]');
+    const autoSyncHelpIcon = root.querySelector('[data-role="auto-sync-help"]');
     const previewRowCount = getPreviewRowCountInput(root);
     const previewButton = root.querySelector('[data-role="preview-edit-mode-button"]');
     const autoPreviewCheckbox = root.querySelector('[data-role="auto-preview-checkbox"]');
     const copyButton = root.querySelector('[data-role="copy-text-button"]');
+    const copyButtonLabel = root.querySelector('[data-role="copy-text-label"]');
+    const copyButtonIcon = root.querySelector('.text-preview-toolbar__copy-icon');
     const selectorRoot = root.querySelector('[data-role="format-selector-root"]');
     const subtasksRoot = root.querySelector('[data-role="format-subtasks-root"]');
 
     expect(global.tippy).toHaveBeenCalled();
+    expect(autoSyncHelpIcon.getAttribute('data-help')).toBe('auto-sync-help');
+    expect(autoSyncHelpIcon.getAttribute('role')).toBe('button');
+    expect(autoSyncHelpIcon.getAttribute('aria-label')).toBe('Show help for this option');
     expect(helpIcon.getAttribute('role')).toBe('button');
     expect(helpIcon.getAttribute('aria-label')).toBe('Show help for this option');
     expect(previewRowCount.value).toBe('10');
     expect(previewRowCount.getAttribute('aria-label')).toBe('Preview row count');
     expect(getRenderedButtonText(previewButton)).toBe('Preview');
     expect(helpIcon.getAttribute('data-help-text')).toContain('first 10 rows');
+    expect(copyButtonIcon).not.toBeNull();
+    expect(copyButtonLabel.textContent).toBe('Copy');
     expect(selectorRoot).not.toBeNull();
     expect(subtasksRoot).not.toBeNull();
 
@@ -98,6 +106,6 @@ describe('TextPreviewToolbar', () => {
     expect(helpIcon.getAttribute('data-help-text')).toContain('Edit mode');
 
     component.setCopyButtonText('Copied');
-    expect(copyButton.textContent).toBe('Copied');
+    expect(copyButtonLabel.textContent).toBe('Copied');
   });
 });

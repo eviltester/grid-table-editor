@@ -32,6 +32,12 @@ const ICONS = {
     ['rect', { x: '9', y: '9', width: '13', height: '13', rx: '2', ry: '2' }],
     ['path', { d: 'M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1' }],
   ],
+  'clipboard-paste': [
+    ['path', { d: 'M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2' }],
+    ['rect', { x: '8', y: '2', width: '8', height: '4', rx: '1', ry: '1' }],
+    ['path', { d: 'M12 10v8' }],
+    ['path', { d: 'm8.5 14 3.5 4 3.5-4' }],
+  ],
   file: [
     ['path', { d: 'M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z' }],
     ['path', { d: 'M14 2v6h6' }],
@@ -43,6 +49,13 @@ const ICONS = {
     ['path', { d: 'M9 14h6' }],
   ],
   filter: [['path', { d: 'M22 3H2l8 9.46V19l4 2v-8.54z' }]],
+  grid: [
+    ['rect', { x: '3', y: '4', width: '18', height: '16', rx: '1', ry: '1' }],
+    ['path', { d: 'M3 10h18' }],
+    ['path', { d: 'M3 15h18' }],
+    ['path', { d: 'M9 4v16' }],
+    ['path', { d: 'M15 4v16' }],
+  ],
   'grip-vertical': [
     ['circle', { cx: '9', cy: '6', r: '1' }],
     ['circle', { cx: '9', cy: '12', r: '1' }],

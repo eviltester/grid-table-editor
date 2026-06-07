@@ -6,10 +6,11 @@ class ImportExportWorkspaceComponent {
     this.container = page.locator('#import-export-controls');
     this.setTextFromGridButton = this.container.getByRole('button', { name: /set text from grid/i });
     this.setGridFromTextButton = this.container.getByRole('button', { name: /set grid from text/i });
+    this.clipboardImportButton = this.container.getByRole('button', { name: /import from clipboard/i });
     this.downloadButton = this.container.getByRole('button', { name: /download/i });
     this.importLabel = this.container
       .locator('label')
-      .filter({ hasText: /import \^:/i })
+      .filter({ hasText: /import:/i })
       .first();
     this.fileInput = this.importLabel.locator('input[type="file"]').first();
     this.dropZone = this.container
@@ -38,6 +39,10 @@ class ImportExportWorkspaceComponent {
 
   async setGridFromText() {
     await this.setGridFromTextButton.click();
+  }
+
+  async importFromClipboard() {
+    await this.clipboardImportButton.click();
   }
 
   async uploadFile(filePath) {

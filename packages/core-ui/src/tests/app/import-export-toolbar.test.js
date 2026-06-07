@@ -31,13 +31,14 @@ describe('ImportExportToolbar', () => {
     expect(importExportToolbarExports.ImportExportToolbarView).toBeUndefined();
   });
 
-  test('binds tooltip help on mount for the toolbar help icon', () => {
+  test('binds tooltip help on mount for each toolbar section help icon', () => {
     createImportExportToolbarComponent({ root, documentObj });
 
-    const helpIcon = root.querySelector('[data-help-role="help-icon"][data-help]');
+    const helpIcons = Array.from(root.querySelectorAll('[data-help-role="help-icon"][data-help]'));
     const setTextFromGridButton = root.querySelector('[data-role="set-text-from-grid-button"]');
     const setGridFromTextButton = root.querySelector('[data-role="set-grid-from-text-button"]');
     const fileInput = root.querySelector('[data-role="file-input"]');
+    const clipboardImportButton = root.querySelector('[data-role="clipboard-import-button"]');
     const dropZone = root.querySelector('[data-role="drop-zone"]');
     const fileFormatLabels = root.querySelectorAll('[data-role="file-format-label"]');
     const exportStatus = root.querySelector('[data-role="export-progress-status"]');
@@ -45,16 +46,35 @@ describe('ImportExportToolbar', () => {
     const errorStatus = root.querySelector('[data-role="error-status"]');
 
     expect(global.tippy).toHaveBeenCalled();
-    expect(helpIcon.getAttribute('role')).toBe('button');
-    expect(helpIcon.getAttribute('aria-label')).toBe('Show help');
+    expect(helpIcons).toHaveLength(3);
+    expect(helpIcons.map((icon) => icon.getAttribute('data-help'))).toEqual([
+      'import-export-grid-preview-sync',
+      'import-export-import',
+      'import-export-download',
+    ]);
+    helpIcons.forEach((icon) => {
+      expect(icon.getAttribute('role')).toBe('button');
+      expect(icon.getAttribute('aria-label')).toBe('Show help');
+    });
     expect(setTextFromGridButton?.id).toBe('settextfromgridbutton');
     expect(setGridFromTextButton?.id).toBe('setgridfromtextbutton');
     expect(fileInput?.id).toBe('csvinput');
+    expect(clipboardImportButton?.textContent).toContain('From Clipboard');
     expect(dropZone?.id).toBe('dropzone');
     expect(fileFormatLabels).toHaveLength(3);
     expect(exportStatus?.id).toBe('export-progress-status');
     expect(importStatus?.id).toBe('import-progress-status');
     expect(errorStatus?.id).toBe('import-export-error');
+  });
+
+  test('renders import controls before the download segment in the composed toolbar layout', () => {
+    createImportExportToolbarComponent({ root, documentObj });
+
+    const dropZone = root.querySelector('[data-role="drop-zone"]');
+    const downloadButton = root.querySelector('[data-role="download-button"]');
+    const { Node } = root.ownerDocument.defaultView;
+
+    expect(dropZone.compareDocumentPosition(downloadButton) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
   test('can mount from the root ownerDocument without a global document', () => {
@@ -64,8 +84,8 @@ describe('ImportExportToolbar', () => {
     try {
       createImportExportToolbarComponent({ root });
 
-      const helpIcon = root.querySelector('[data-help-role="help-icon"][data-help]');
-      expect(helpIcon).not.toBeNull();
+      const helpIcons = root.querySelectorAll('[data-help-role="help-icon"][data-help]');
+      expect(helpIcons).toHaveLength(3);
       expect(global.tippy).toHaveBeenCalled();
     } finally {
       global.document = originalDocument;
@@ -89,6 +109,7 @@ describe('ImportExportToolbar', () => {
     const downloadButton = root.querySelector('[data-role="download-button"]');
     const setTextFromGridButton = root.querySelector('[data-role="set-text-from-grid-button"]');
     const setGridFromTextButton = root.querySelector('[data-role="set-grid-from-text-button"]');
+    const clipboardImportButton = root.querySelector('[data-role="clipboard-import-button"]');
 
     expect(downloadButton.disabled).toBe(false);
     expect(downloadButton.getAttribute('aria-disabled')).toBe('false');
@@ -96,6 +117,8 @@ describe('ImportExportToolbar', () => {
     expect(setTextFromGridButton.getAttribute('aria-disabled')).toBe('false');
     expect(setGridFromTextButton.disabled).toBe(true);
     expect(setGridFromTextButton.getAttribute('aria-disabled')).toBe('true');
+    expect(clipboardImportButton.disabled).toBe(false);
+    expect(clipboardImportButton.getAttribute('aria-disabled')).toBe('false');
 
     component.update({ importBusy: true, exportBusy: true });
 
@@ -105,6 +128,8 @@ describe('ImportExportToolbar', () => {
     expect(setTextFromGridButton.getAttribute('aria-disabled')).toBe('true');
     expect(setGridFromTextButton.disabled).toBe(true);
     expect(setGridFromTextButton.getAttribute('aria-disabled')).toBe('true');
+    expect(clipboardImportButton.disabled).toBe(true);
+    expect(clipboardImportButton.getAttribute('aria-disabled')).toBe('true');
   });
 
   test('binds file selection through the default file-import adapter in standalone usage', () => {

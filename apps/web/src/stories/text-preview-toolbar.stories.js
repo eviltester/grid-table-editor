@@ -69,7 +69,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'TextPreviewToolbar is the focused right-side control cluster extracted from TextPreviewEditor. It owns the Preview/Edit toggle, Auto Preview checkbox, preview-row count control, help tooltip, copy button, and format-selector mount roots, while the parent editor continues to own the text area and split-layout shell.',
+          'TextPreviewToolbar is the focused right-side control cluster extracted from TextPreviewEditor. It owns the Preview/Edit toggle, Auto Sync checkbox and help tippy, preview-row count control, help tooltip, copy button, and format-selector mount roots, while the parent editor continues to own the text area and split-layout shell.',
       },
     },
   },
@@ -90,17 +90,20 @@ export const PreviewMode = {
     docs: {
       description: {
         story:
-          'Shows the toolbar in Preview mode with Auto Preview enabled. Hover the help button to confirm the tooltip mentions the first 10 rows, change the preview row count, and use the action log to confirm the toolbar emits focused events without the larger text editor shell.',
+          'Shows the toolbar in Preview mode with Auto Sync enabled. Hover the help button to confirm the tooltip mentions the first 10 rows, change the preview row count, and use the action log to confirm the toolbar emits focused events without the larger text editor shell.',
       },
     },
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const helpButton = canvas.getByRole('button', { name: 'Show help for this option' });
+    const helpButtons = canvas.getAllByRole('button', { name: 'Show help for this option' });
+    const autoSyncHelpButton = helpButtons[0];
+    const modeHelpButton = helpButtons[1];
     const previewRowCount = canvas.getByRole('spinbutton', { name: 'Preview row count' });
 
-    await userEvent.hover(helpButton);
-    await expect(helpButton).toHaveAttribute('data-help-text', expect.stringContaining('first 10 rows'));
+    await userEvent.hover(modeHelpButton);
+    await expect(modeHelpButton).toHaveAttribute('data-help-text', expect.stringContaining('first 10 rows'));
+    await expect(autoSyncHelpButton).toHaveAttribute('data-help', 'auto-sync-help');
     await expect(previewRowCount).toHaveValue(10);
   },
 };
@@ -114,14 +117,14 @@ export const EditMode = {
     docs: {
       description: {
         story:
-          'Shows the toolbar in Edit mode, where Auto Preview and the preview-row count are disabled. Reviewers should hover the help button and confirm the edit-mode guidance replaces the preview-specific row-count explanation.',
+          'Shows the toolbar in Edit mode, where Auto Sync and the preview-row count are disabled. Reviewers should hover the help button and confirm the edit-mode guidance replaces the preview-specific row-count explanation.',
       },
     },
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const helpButton = canvas.getByRole('button', { name: 'Show help for this option' });
-    const autoPreviewCheckbox = canvas.getByRole('checkbox', { name: 'Auto Preview' });
+    const helpButton = canvas.getAllByRole('button', { name: 'Show help for this option' })[1];
+    const autoPreviewCheckbox = canvas.getByRole('checkbox', { name: 'Auto Sync' });
 
     await userEvent.hover(helpButton);
     await expect(helpButton).toHaveAttribute(

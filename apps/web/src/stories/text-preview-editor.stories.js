@@ -43,14 +43,14 @@ export const PreviewMode = {
     docs: {
       description: {
         story:
-          'Shows Preview mode with Auto Preview enabled and the dedicated preview row-count spinbutton set to 10. Reviewers should hover the help button, confirm the tooltip mentions the first 10 rows, and try changing the Preview row count to see how the preview-specific guidance follows that value while the toggle button remains labeled Preview.',
+          'Shows Preview mode with Auto Sync enabled and the dedicated preview row-count spinbutton set to 10. Reviewers should hover the help button, confirm the tooltip mentions the first 10 rows, and try changing the Preview row count to see how the preview-specific guidance follows that value while the toggle button remains labeled Preview.',
       },
     },
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const helpButton = canvas.getByRole('button', { name: 'Show help for this option' });
-    const autoPreviewCheckbox = canvas.getByRole('checkbox', { name: 'Auto Preview' });
+    const helpButton = canvas.getAllByRole('button', { name: 'Show help for this option' })[1];
+    const autoPreviewCheckbox = canvas.getByRole('checkbox', { name: 'Auto Sync' });
 
     await userEvent.hover(helpButton);
     await expect(helpButton).toHaveAttribute('data-help-text', expect.stringContaining('first 10 rows'));
@@ -69,14 +69,14 @@ export const EditMode = {
   parameters: {
     docs: {
       description: {
-        story: 'Edit-mode state with the toggle button switched to Edit and Auto Preview disabled.',
+        story: 'Edit-mode state with the toggle button switched to Edit and Auto Sync disabled.',
       },
     },
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const helpButton = canvas.getByRole('button', { name: 'Show help for this option' });
-    const autoPreviewCheckbox = canvas.getByRole('checkbox', { name: 'Auto Preview' });
+    const helpButton = canvas.getAllByRole('button', { name: 'Show help for this option' })[1];
+    const autoPreviewCheckbox = canvas.getByRole('checkbox', { name: 'Auto Sync' });
 
     await userEvent.hover(helpButton);
     await expect(helpButton).toHaveAttribute(

@@ -140,7 +140,7 @@ export const Default = {
     const canvas = within(canvasElement);
     const outputPreview = canvas.getByRole('textbox', { name: 'Preview text editor' });
     await expect(canvas.getByRole('spinbutton', { name: 'Preview row count' })).toHaveValue(10);
-    await userEvent.click(canvas.getByRole('button', { name: 'v Set Text From Grid v' }));
+    await userEvent.click(canvas.getByRole('button', { name: 'Set Text From Grid' }));
     await waitFor(() => {
       expect(outputPreview.value).toContain('"First Name","Status"');
     });

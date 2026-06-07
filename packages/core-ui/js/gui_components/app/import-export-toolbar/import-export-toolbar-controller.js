@@ -7,6 +7,7 @@ class ImportExportToolbarController {
       importBusy: props.importBusy === true,
       exportBusy: props.exportBusy === true,
       supportsImport: props.supportsImport !== false,
+      supportsClipboardImport: props.supportsClipboardImport !== false,
       supportsExport: props.supportsExport !== false,
       fileExtension: props.fileExtension || '.csv',
       importStatusMessage: props.importStatusMessage || '',
@@ -39,6 +40,9 @@ class ImportExportToolbarController {
     }
     if (Object.prototype.hasOwnProperty.call(nextProps, 'supportsImport')) {
       this.state.supportsImport = nextProps.supportsImport !== false;
+    }
+    if (Object.prototype.hasOwnProperty.call(nextProps, 'supportsClipboardImport')) {
+      this.state.supportsClipboardImport = nextProps.supportsClipboardImport !== false;
     }
     if (Object.prototype.hasOwnProperty.call(nextProps, 'supportsExport')) {
       this.state.supportsExport = nextProps.supportsExport !== false;

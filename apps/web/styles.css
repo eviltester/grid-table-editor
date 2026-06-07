@@ -95,6 +95,12 @@ div.header div {
   display: flex;
 }
 
+.conversionTypesHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
 .type-select {
   display: block;
   padding: 0.5rem 1rem;
@@ -190,6 +196,81 @@ body.theme-dark .dragdropzone {
   color: #000000;
 }
 
+.import-export-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.import-export-toolbar__segment {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.import-export-toolbar__segment--sync,
+.import-export-grid-preview-sync-control {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.import-export-sync-button__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.4rem;
+  margin-right: 0.35rem;
+  font-weight: 700;
+}
+
+.import-export-sync-button__icon--combo {
+  gap: 0.3rem;
+  min-width: auto;
+  margin-right: 0;
+}
+
+.import-export-sync-button__svg-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.import-export-sync-button__arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.import-export-toolbar__segment--import,
+.import-export-import-control {
+  min-width: 14rem;
+}
+
+.import-export-import-control {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.55rem;
+}
+
+.import-export-import-control__clipboard-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.import-export-import-control__clipboard-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.import-export-toolbar__segment--download,
+.import-export-download-control {
+  min-width: 10rem;
+}
+
 /* add set of buttons to the right of the tabs */
 
 /*.conversionTypes{
@@ -200,6 +281,17 @@ body.theme-dark .dragdropzone {
   margin-left: auto;
   margin-right: auto;
   align-items: flex-end;
+}
+
+.text-preview-toolbar__copy-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.text-preview-toolbar__copy-icon {
+  width: 1rem;
+  height: 1rem;
 }
 
 /*.rightbuttons button{

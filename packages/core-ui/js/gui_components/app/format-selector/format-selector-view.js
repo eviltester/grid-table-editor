@@ -1,11 +1,12 @@
 import { resolveDocumentObj } from '../../shared/dom/default-objects.js';
 
 class FormatSelectorView {
-  constructor({ root, subtasksRoot, controller, documentObj } = {}) {
+  constructor({ root, subtasksRoot, controller, documentObj, services = {} } = {}) {
     this.root = root;
     this.subtasksRoot = subtasksRoot;
     this.controller = controller;
     this.documentObj = resolveDocumentObj(documentObj, root || subtasksRoot);
+    this.services = services;
     this.handleRootClick = (event) => this.handleClick(event);
     this.handleSubtasksClick = (event) => this.handleClick(event);
   }
@@ -15,9 +16,20 @@ class FormatSelectorView {
       throw new Error('FormatSelectorView requires root and subtasksRoot');
     }
 
-    this.root.innerHTML = '<ul class="conversionTypesList" data-role="format-tabs-list"></ul>';
+    this.root.innerHTML = `
+      <div class="conversionTypesHeader" data-role="format-tabs-header">
+        <span
+          class="helpicon"
+          data-role="format-tabs-help"
+          data-help-role="help-icon"
+          data-help="export-format-tabs-help"
+        ></span>
+        <ul class="conversionTypesList" data-role="format-tabs-list"></ul>
+      </div>
+    `;
     this.bindEvents();
     this.render();
+    this.services.updateHelpHints?.();
   }
 
   bindEvents() {
@@ -89,6 +101,7 @@ class FormatSelectorView {
         .join('')}
       </ul>`;
     this.subtasksRoot.style.display = 'block';
+    this.services.updateHelpHints?.();
   }
 
   destroy() {

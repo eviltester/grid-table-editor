@@ -1,3 +1,4 @@
+import { renderIconHtml } from '../../shared/primitives/icon/icon-core.js';
 import { resolveDocumentObj } from '../../shared/dom/default-objects.js';
 
 class TextPreviewToolbarView {
@@ -33,9 +34,16 @@ class TextPreviewToolbarView {
       <div class="conversionTabs">
         <div data-role="format-selector-root" class="conversionTypes"></div>
         <div class="rightbuttons" data-role="text-preview-toolbar-actions">
+          <span
+            title="Auto Sync help"
+            data-role="auto-sync-help"
+            data-help="auto-sync-help"
+            class="helpicon option-help-icon"
+            data-help-role="option-help-icon"
+          ></span>
           <label data-role="auto-preview-label" class="auto-preview-control">
             <input type="checkbox" data-role="auto-preview-checkbox" />
-            Auto Preview
+            Auto Sync
           </label>
           <span
             title="Preview/Edit mode help"
@@ -50,7 +58,10 @@ class TextPreviewToolbarView {
             data-role="preview-edit-mode-button"
           >Preview</button>
           <span data-role="preview-row-count-root"></span>
-          <button type="button" title="Copy text to clipboard" data-role="copy-text-button">Copy</button>
+          <button type="button" title="Copy text to clipboard" data-role="copy-text-button" class="text-preview-toolbar__copy-button">
+            ${renderIconHtml('copy', { className: 'app-icon text-preview-toolbar__copy-icon' })}
+            <span data-role="copy-text-label">Copy</span>
+          </button>
         </div>
       </div>
       <div data-role="format-subtasks-root" class="conversionSubtasks" style="display: none"></div>
@@ -154,9 +165,9 @@ class TextPreviewToolbarView {
   }
 
   setCopyButtonText(value) {
-    const button = this.getCopyButton();
-    if (button) {
-      button.textContent = value || 'Copy';
+    const buttonLabel = this.getElement('copy-text-label');
+    if (buttonLabel) {
+      buttonLabel.textContent = value || 'Copy';
     }
   }
 

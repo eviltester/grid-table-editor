@@ -44,7 +44,7 @@ async function applyDelimitedSemicolon(canvas) {
 
 async function playSetTextFromGrid({ canvasElement }) {
   const canvas = within(canvasElement);
-  await clickByText(canvas, 'v Set Text From Grid v');
+  await clickByText(canvas, 'Set Text From Grid');
   const textArea = getPreviewTextEditor(canvas);
   await waitFor(() => {
     expect(textArea.value?.length || 0).toBeGreaterThan(0);
@@ -57,8 +57,8 @@ async function playCsvRoundTrip({ canvasElement }) {
   await waitFor(() => expect(canvas.getByText('Edit')).toBeTruthy());
 
   const textArea = await setTextareaValue(canvas, 'Name,Role\nAda,Engineer\nBob,Tester');
-  await clickByText(canvas, '^ Set Grid From Text ^');
-  const setGridFromTextButton = canvas.getByRole('button', { name: '^ Set Grid From Text ^' });
+  await clickByText(canvas, 'Set Grid From Text');
+  const setGridFromTextButton = canvas.getByRole('button', { name: 'Set Grid From Text' });
 
   await waitFor(() => {
     expect(textArea.value).toContain('Ada');

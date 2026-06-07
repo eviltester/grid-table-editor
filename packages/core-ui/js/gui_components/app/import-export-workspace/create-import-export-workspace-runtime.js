@@ -20,7 +20,7 @@ function createImportExportWorkspaceRuntime({ root, props = {}, services = {}, d
   const confirmDialogService = createConfirmDialogService({ documentObj });
   const requestConfirm =
     typeof services.requestConfirm === 'function' ? services.requestConfirm : confirmDialogService.requestConfirm;
-  const clipboardService = services.clipboardService || createClipboardService({ documentObj });
+  const clipboardService = services.clipboardService || createClipboardService({ documentObj, windowObj });
   const downloadService =
     services.downloadService ||
     createDownloadService({
@@ -88,6 +88,7 @@ function createImportExportWorkspaceRuntime({ root, props = {}, services = {}, d
       onSetGridFromText: workflow.importTextArea,
       onDownload: workflow.fileDownload,
       onFileSelected: workflow.loadFile,
+      onImportFromClipboard: workflow.importFromClipboard,
       onApplyOptions: ({ sanitized }) => {
         workflow.applyOptionsToTargets(sanitized);
         workflow.setOptionsViewForFormatType();
@@ -147,6 +148,7 @@ function createImportExportWorkspaceRuntime({ root, props = {}, services = {}, d
     readFile: workflow.readFile,
     fileDownload: workflow.fileDownload,
     copyText: workflow.copyText,
+    importFromClipboard: workflow.importFromClipboard,
     toggleTextEditMode: workflow.toggleTextEditMode,
     getPreviewRowLimit() {
       return getState().previewRowLimit;

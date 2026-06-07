@@ -27,7 +27,7 @@ describe('TextPreviewToolbarController', () => {
     expect(controller.getState().previewRowLimit).toBe(12);
   });
 
-  test('emits mode, auto preview, and copy actions through callbacks', () => {
+  test('emits mode, auto sync, and copy actions through callbacks', () => {
     const onToggleMode = jest.fn();
     const onAutoPreviewChange = jest.fn();
     const onCopyText = jest.fn();

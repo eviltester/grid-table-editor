@@ -583,6 +583,9 @@ Use `docs/frontend-mvc-cleanliness-checklist.md` as the repo-specific audit guid
 - [x] Continue the generator runtime simplification pass by collapsing the remaining schema support/session/runtime helper cluster after the action/view-state/service naming cleanup.
 - [x] Split the generator output-format selector from `GeneratorControls` into a focused reviewer-facing component with its own Storybook coverage.
 - [x] Re-audit `TextPreviewEditor` after the output-format-selector split to decide whether its right-side controls should become a dedicated toolbar component.
+- [x] Re-audit `ImportExportWorkspace` after the generator-page simplification pass and split the remaining workflow service if it still spans multiple already-visible child surfaces.
+- [x] Split the visible import/export toolbar into reviewer-facing `Grid Preview Sync`, `Import`, and `Download` MVC components so drag/drop no longer sits implicitly after Download in one broad surface.
+- [ ] Expand `GeneratorControls` Storybook coverage with busy/loading/status states so reviewers can inspect the composed status surface directly.
 
 Current status:
 
@@ -593,6 +596,9 @@ Current status:
 - `TextPreviewEditor` now composes a dedicated `TextPreviewToolbar` component for its Preview/Edit controls, leaving the parent editor responsible for textarea and options/preview split-layout composition instead of the whole visible top toolbar surface.
 - The generator schema runtime is now assembled through one direct responsibility-based builder instead of separate support/session/services wrappers, and the mounted-page state maps page collaborators directly instead of going through a mounted-page bridge.
 - The schema-to-generator helper is now named and used as `createGeneratorSchemaGenerationService(...)` / `generatorSchemaGenerationService`, so the last live generator-side `bridge` label in that path has been removed.
+- The fresh post-simplification MVC re-audit found no new urgent generator-page runtime sprawl.
+- `ImportExportWorkspace` now also has a cleaner service map: the old broad workspace workflow has been split into `create-import-export-preview-workflow-service.js` and `create-import-export-file-transfer-service.js`, while `create-import-export-workspace-workflow-service.js` now mainly composes those narrower services for the runtime.
+- `ImportExportToolbar` is now also split along its visible review boundaries: `ImportExportGridPreviewSyncControl`, `ImportExportImportControl`, and `ImportExportDownloadControl` each have their own MVC component and Storybook coverage, while the toolbar host keeps only help/error framing plus composed layout.
 
 ## Tracking Across Sessions
 

@@ -51,6 +51,10 @@ function renderImportExportToolbarStory(args) {
         args.onFileSelected?.(file);
         result.textContent = file ? `file:${file.name}` : 'file:none';
       },
+      onImportFromClipboard: () => {
+        args.onImportFromClipboard?.();
+        result.textContent = 'action:import-from-clipboard';
+      },
     },
   });
 
@@ -85,7 +89,7 @@ const meta = {
         ),
       description: {
         component:
-          'ImportExportToolbar is the app-side component that owns the import/export action buttons, file input, drag/drop zone, and inline status/error surfaces. The standalone story now uses the real file-input and drop-zone binding path instead of leaving that behavior hidden behind the full workspace story.',
+          'ImportExportToolbar is now a thin host around three reviewer-visible child components: Grid Preview Sync Control, Import Control, and Download Control. Each segment now owns its own help tippy, so the composed toolbar story documents three separate help affordances rather than one toolbar-wide tooltip.',
       },
     },
   },
@@ -106,6 +110,7 @@ const meta = {
     onSetGridFromText: fn(),
     onDownload: fn(),
     onFileSelected: fn(),
+    onImportFromClipboard: fn(),
   },
   argTypes: {
     mode: {
@@ -173,6 +178,10 @@ const meta = {
       description: 'Storybook action fired when a file is chosen from the file input or dropped on the drop zone.',
       table: { category: 'Events' },
     },
+    onImportFromClipboard: {
+      description: 'Storybook action fired when From Clipboard is clicked.',
+      table: { category: 'Events' },
+    },
   },
   render: renderImportExportToolbarStory,
 };
@@ -185,19 +194,21 @@ export const Default = {
     docs: {
       description: {
         story:
-          'Default toolbar state before import/export work begins. Reviewers should see the drag/drop surface immediately, confirm the help affordance exists, and use **Set Text From Grid** or **Download** to watch the Storybook Actions panel and the local action log update.',
+          'Default composed toolbar state. Reviewers should see the new order immediately: sync controls first, then import controls with drag/drop, then Download. Hover each help icon and confirm the Actions panel still reflects the real child behavior rather than one shared toolbar tippy.',
       },
     },
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const helpButton = canvas.getByRole('button', { name: 'Show help' });
-    const setTextButton = canvas.getByRole('button', { name: 'v Set Text From Grid v' });
-    const setGridButton = canvas.getByRole('button', { name: '^ Set Grid From Text ^' });
+    const helpButtons = canvas.getAllByRole('button', { name: 'Show help' });
+    const setTextButton = canvas.getByRole('button', { name: 'Set Text From Grid' });
+    const setGridButton = canvas.getByRole('button', { name: 'Set Grid From Text' });
     const downloadButton = canvas.getByRole('button', { name: /\.csv Download/i });
 
-    await userEvent.hover(helpButton);
-    await expect(helpButton).toHaveAttribute('data-help', 'import-export-controls');
+    await expect(helpButtons).toHaveLength(3);
+    await expect(helpButtons[0]).toHaveAttribute('data-help', 'import-export-grid-preview-sync');
+    await expect(helpButtons[1]).toHaveAttribute('data-help', 'import-export-import');
+    await expect(helpButtons[2]).toHaveAttribute('data-help', 'import-export-download');
     await expect(getDropZoneLabel(canvas)).toBeVisible();
     await expect(setTextButton).toBeEnabled();
     await expect(setGridButton).toBeDisabled();
@@ -221,11 +232,13 @@ export const FileImportSurface = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const file = new File(['name,status\\nAva,active'], 'story-import.csv', { type: 'text/csv' });
-    const fileInput = canvas.getByLabelText(/\.csv import \^:/i);
+    const fileInput = canvas.getByLabelText(/\.csv import:/i);
 
     await userEvent.upload(fileInput, file);
     await expect(canvas.getByText('file:story-import.csv')).toBeVisible();
     await expect(getDropZoneLabel(canvas)).toBeVisible();
+    await userEvent.click(canvas.getByRole('button', { name: 'Import From Clipboard' }));
+    await expect(canvas.getByText('action:import-from-clipboard')).toBeVisible();
   },
 };
 
@@ -251,8 +264,8 @@ export const BusyAndStatus = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await expect(canvas.getByRole('button', { name: 'v Set Text From Grid v' })).toBeDisabled();
-    await expect(canvas.getByRole('button', { name: '^ Set Grid From Text ^' })).toBeDisabled();
+    await expect(canvas.getByRole('button', { name: 'Set Text From Grid' })).toBeDisabled();
+    await expect(canvas.getByRole('button', { name: 'Set Grid From Text' })).toBeDisabled();
     await expect(canvas.getByRole('button', { name: /\.csv Download/i })).toBeDisabled();
     await expect(canvas.getByText('Importing full data into grid...')).toBeVisible();
     await expect(canvas.getByText('Generating export text...')).toBeVisible();

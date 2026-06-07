@@ -45,6 +45,7 @@ class ImportExportWorkspaceView {
         onSetGridFromText: this.services.onSetGridFromText,
         onDownload: this.services.onDownload,
         onFileSelected: this.services.onFileSelected,
+        onImportFromClipboard: this.services.onImportFromClipboard,
       },
       services: {
         createFileImportBindingsAdapter: this.services.createFileImportBindingsAdapter,

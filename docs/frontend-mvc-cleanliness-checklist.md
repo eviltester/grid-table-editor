@@ -128,9 +128,9 @@ This is the current repo-level audit after the latest Storybook and generator ru
 ### Main Remaining MVC Gaps
 
 - `ImportExportWorkspace`
-  - Now clean enough to treat as an honest MVC-style feature boundary.
-  - The component entrypoint is thin, the runtime is lifecycle-and-wiring focused, and the async import/export/preview behavior now lives in [create-import-export-workspace-workflow-service.js](D:/github/grid-table-editor/packages/core-ui/js/gui_components/app/import-export-workspace/create-import-export-workspace-workflow-service.js).
-  - The remaining follow-up here is only optional naming or micro-splits if a future change makes the workflow service too broad again.
+  - Now clean enough to treat as an honest MVC-style feature boundary again.
+  - The component entrypoint is thin, the runtime is lifecycle-and-wiring focused, and the old broad workflow layer is now split into [create-import-export-preview-workflow-service.js](D:/github/grid-table-editor/packages/core-ui/js/gui_components/app/import-export-workspace/create-import-export-preview-workflow-service.js) and [create-import-export-file-transfer-service.js](D:/github/grid-table-editor/packages/core-ui/js/gui_components/app/import-export-workspace/create-import-export-file-transfer-service.js), with [create-import-export-workspace-workflow-service.js](D:/github/grid-table-editor/packages/core-ui/js/gui_components/app/import-export-workspace/create-import-export-workspace-workflow-service.js) reduced to thin composition.
+  - The remaining follow-up here is only optional micro-splitting if one of those two services grows broad again.
 
 - generator runtime dependency clusters
   - Much closer to clean MVC now.
@@ -139,8 +139,8 @@ This is the current repo-level audit after the latest Storybook and generator ru
   - The bigger wrapper pyramid is gone; the remaining question is only whether a future change makes one of these surviving page services too broad again.
 
 - `GeneratorControls`
-  - Mostly good, but still slightly too broad visually.
-  - The next Storybook-driven split remains the output-format selector, so the component surface can expose that visible choice area independently instead of only as one region inside the larger controls component.
+  - Much healthier after the output-format-selector split.
+  - The remaining gap is now mainly reviewer coverage, not hidden runtime breadth: Storybook should still gain explicit busy/loading/status stories for the composed control surface.
 
 - `TextPreviewEditor`
   - The re-audit justified one more visible split.
@@ -148,7 +148,8 @@ This is the current repo-level audit after the latest Storybook and generator ru
 
 ## Recommended Next Cleanup Order
 
-1. Re-audit generator runtime only when a future change shows a new helper stack growing beyond a small runtime-plus-service shape.
+1. Expand `GeneratorControls` reviewer-facing Storybook coverage with busy/loading/status states.
+2. Re-audit generator runtime only when a future change shows a new helper stack growing beyond a small runtime-plus-service shape.
 
 ## Short Review Questions
 

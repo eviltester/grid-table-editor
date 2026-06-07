@@ -413,7 +413,7 @@ function renderGridPreviewStory({
     });
   });
 
-  const setTextFromGridButton = getButtonByText(surface, 'v Set Text From Grid v');
+  const setTextFromGridButton = surface.querySelector('[data-role="set-text-from-grid-button"]');
   setTextFromGridButton?.addEventListener('click', () => {
     emitAction('onSetTextFromGrid', {
       ...getPreviewActionPayload(
@@ -434,7 +434,7 @@ function renderGridPreviewStory({
     });
   });
 
-  getCheckboxByLabelText(surface, 'Auto Preview')?.addEventListener('change', (event) => {
+  getCheckboxByLabelText(surface, 'Auto Sync')?.addEventListener('change', (event) => {
     emitAction('onAutoPreviewChanged', {
       enabled: event?.currentTarget?.checked === true,
       mode: workspace.isPreviewTextMode() ? 'preview' : 'edit',

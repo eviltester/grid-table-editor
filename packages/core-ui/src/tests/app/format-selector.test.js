@@ -48,5 +48,9 @@ describe('FormatSelector', () => {
         .querySelector('[data-role="format-subtask-item"][data-active-format="true"]')
         ?.getAttribute('data-type')
     ).toBe('python');
+    const helpButton = documentObj.querySelector('[data-role="format-tabs-help"]');
+    expect(helpButton?.getAttribute('data-help')).toBe('export-format-tabs-help');
+    expect(helpButton?.getAttribute('role')).toBe('button');
+    expect(helpButton?.getAttribute('aria-label')).toBe('Show help');
   });
 });

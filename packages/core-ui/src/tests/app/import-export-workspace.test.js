@@ -35,6 +35,10 @@ function getCopyTextButton(documentObj) {
   return documentObj.querySelector('[data-role="text-preview-editor-root"] [data-role="copy-text-button"]');
 }
 
+function getCopyTextButtonLabel(documentObj) {
+  return documentObj.querySelector('[data-role="text-preview-editor-root"] [data-role="copy-text-label"]');
+}
+
 function createHarness({ props = {}, services = {} } = {}) {
   const dom = new JSDOM('<!doctype html><html><body><div id="root"></div></body></html>');
   const documentObj = dom.window.document;
@@ -66,6 +70,11 @@ function createHarness({ props = {}, services = {} } = {}) {
       yieldToUi: async () => {},
       scheduleTimeoutFn: jest.fn(),
       requestConfirm: jest.fn(async () => true),
+      clipboardService: {
+        copyFromTextArea: jest.fn(),
+        readText: jest.fn(async () => 'Name,Role\nAda,Engineer'),
+        canReadText: jest.fn(() => true),
+      },
       ...services,
     },
   });
@@ -215,7 +224,7 @@ describe('ImportExportWorkspace', () => {
     fireEvent.click(getCopyTextButton(documentObj));
 
     expect(clipboardService.copyFromTextArea).toHaveBeenCalledWith(getPreviewTextArea(documentObj));
-    expect(getCopyTextButton(documentObj).textContent).toBe('Copied');
+    expect(getCopyTextButtonLabel(documentObj).textContent).toBe('Copied');
 
     fireEvent.click(documentObj.querySelector('#filedownload'));
 
@@ -249,6 +258,30 @@ describe('ImportExportWorkspace', () => {
     await waitFor(() => expect(importer.setGridFromGenericDataTable).toHaveBeenCalledTimes(1));
     expect(getPreviewTextArea(documentObj).value).toBe('csv:rows:1');
     expect(documentObj.querySelector('#import-progress-status').textContent).toBe('Import complete.');
+
+    component.destroy();
+    dom.window.close();
+  });
+
+  test('imports clipboard text through the toolbar import control and shows completion status', async () => {
+    const clipboardService = {
+      copyFromTextArea: jest.fn(),
+      readText: jest.fn(async () => '\uFEFFName,Role\r\nAda,Engineer'),
+      canReadText: jest.fn(() => true),
+    };
+    const { component, documentObj, dom, importer } = createHarness({
+      props: { previewRowLimit: 1 },
+      services: { clipboardService },
+    });
+
+    fireEvent.click(documentObj.querySelector('[data-role="clipboard-import-button"]'));
+
+    await waitFor(() => expect(clipboardService.readText).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(importer.importText).toHaveBeenCalledWith('csv', 'Name,Role\nAda,Engineer'));
+    await waitFor(() => expect(getPreviewTextArea(documentObj).value).toBe('csv:rows:1'));
+    await waitFor(() =>
+      expect(documentObj.querySelector('#import-progress-status').textContent).toBe('Import complete.')
+    );
 
     component.destroy();
     dom.window.close();

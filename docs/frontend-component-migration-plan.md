@@ -548,7 +548,7 @@ Use this backlog when the next migration step should be chosen from the reviewer
 - [x] Extract the import/export options-preview split layout from `ImportExportWorkspaceView` into a focused component or view helper with Storybook coverage for supported format, unsupported format, keyboard resize, and narrow-width clamping states.
 - [x] Split the generator output-format dropdown from `GeneratorControlsView` into a focused `GeneratorOutputFormatSelector` component with Storybook coverage for core formats, code formats, unit-test formats, and unsupported-format filtering.
 - [ ] Expand `GeneratorControls` Storybook coverage with busy/loading/status states so reviewers can inspect the composed row count, format selector, actions, options panel, and status integration without using the full generator page story.
-- [x] Add a small re-audit note for `TextPreviewEditor` after the options-preview split extraction to decide whether its right-side controls need a separate toolbar component or whether the current focused story is enough.
+- [x] Add a small re-audit note for `TextPreviewEditor` after the options-preview split extraction to decide whether its Preview/Edit controls need a separate toolbar component or whether the current focused story is enough.
 
 Current status:
 
@@ -564,7 +564,8 @@ Current status:
 - The post-`SchemaPanel` re-audit found no urgent missing primary stories for schema, page shells, instructions, app data population, generator controls, generator preview, data grid editor, import/export toolbar, text preview editor, format selector, or format options. The next useful Storybook-driven splits are smaller visible sub-surfaces: the import/export options-preview split layout and the generator output-format selector.
 - The import/export options-preview shell is now a focused app-side component with its own Storybook docs and direct tests. `ImportExportWorkspaceView` no longer owns the splitter drag/keyboard/clamping behavior itself; it now composes the dedicated split-layout boundary through `TextPreviewEditor`.
 - `GeneratorControls` now composes a dedicated `GeneratorOutputFormatSelector` component, and Storybook documents that selector directly through `generator-output-format-selector.stories.js` instead of only through the larger controls surface.
-- The `TextPreviewEditor` re-audit showed that its right-side Preview/Edit controls were still a meaningful visible sub-surface. That cluster is now a dedicated `TextPreviewToolbar` component with its own Storybook docs and focused tests, while `TextPreviewEditor` keeps the textarea and split-layout shell composition.
+- The `TextPreviewEditor` re-audit showed that its Preview/Edit controls were still a meaningful visible sub-surface. That cluster is now a dedicated `TextPreviewToolbar` component with its own Storybook docs and focused tests, while `TextPreviewEditor` keeps the textarea and split-layout shell composition.
+- The app page shell now wraps Import / Export in a native `details` section, matching the Test Data shell pattern while preserving `#import-export-controls` as the workspace mount root.
 
 ## Generator Runtime Simplification Follow-On
 
@@ -582,7 +583,7 @@ Use `docs/frontend-mvc-cleanliness-checklist.md` as the repo-specific audit guid
 - [x] Extract an explicit import/export workspace runtime or workflow service so `createImportExportWorkspaceComponent(...)` becomes thin wiring instead of owning the current async import/export orchestration directly.
 - [x] Continue the generator runtime simplification pass by collapsing the remaining schema support/session/runtime helper cluster after the action/view-state/service naming cleanup.
 - [x] Split the generator output-format selector from `GeneratorControls` into a focused reviewer-facing component with its own Storybook coverage.
-- [x] Re-audit `TextPreviewEditor` after the output-format-selector split to decide whether its right-side controls should become a dedicated toolbar component.
+- [x] Re-audit `TextPreviewEditor` after the output-format-selector split to decide whether its Preview/Edit controls should become a dedicated toolbar component.
 - [x] Re-audit `ImportExportWorkspace` after the generator-page simplification pass and split the remaining workflow service if it still spans multiple already-visible child surfaces.
 - [x] Split the visible import/export toolbar into reviewer-facing `Grid Preview Sync`, `Import`, and `Download` MVC components so drag/drop no longer sits implicitly after Download in one broad surface.
 - [ ] Expand `GeneratorControls` Storybook coverage with busy/loading/status states so reviewers can inspect the composed status surface directly.

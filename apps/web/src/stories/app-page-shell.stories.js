@@ -48,7 +48,7 @@ function mountShellPlaceholders(root) {
   root.querySelector('#import-export-controls')?.append(
     createShellPlaceholder({
       title: 'Import / Export Workspace Mount Root',
-      description: 'Import/export workspace mounts here beside the grid and test-data panel.',
+      description: 'Import/export workspace mounts inside the details shell beside the grid and test-data panel.',
       minHeight: '10rem',
     })
   );
@@ -68,6 +68,7 @@ function renderAppPageShellStory(args) {
     root: componentRoot,
     props: {
       showTestDataOpen: args.showTestDataOpen,
+      showImportExportOpen: args.showImportExportOpen,
     },
   });
 
@@ -84,18 +85,23 @@ const meta = {
     docs: {
       description: {
         component:
-          'AppPageShell owns only the reusable page layout roots for instructions, main grid, embedded test-data panel, and import/export workspace. The visible cards in these stories are explicit placeholders so reviewers can inspect shell composition without bootstrapping the full runtime.',
+          'AppPageShell owns only the reusable page layout roots for instructions, main grid, embedded test-data panel, and import/export workspace. Test Data and Import / Export both use native details shells, and the visible cards in these stories are explicit placeholders so reviewers can inspect shell composition without bootstrapping the full runtime.',
       },
     },
   },
   args: {
     showTestDataOpen: false,
+    showImportExportOpen: true,
     compactLayout: false,
   },
   argTypes: {
     showTestDataOpen: {
       control: 'boolean',
       description: 'Whether the embedded test-data details shell starts expanded.',
+    },
+    showImportExportOpen: {
+      control: 'boolean',
+      description: 'Whether the import/export details shell starts expanded.',
     },
     compactLayout: {
       control: 'boolean',
@@ -120,18 +126,24 @@ export const ClosedByDefault = {
     const canvas = within(canvasElement);
     const shell = canvas.getByRole('group', { name: 'App page shell example' });
     const summary = canvas.getByText('Test Data');
+    const importExportSummary = canvas.getByText('Import / Export');
     await expect(canvas.getByText('Instructions Mount Root')).toBeVisible();
     await expect(canvas.getByText('Grid Editor Mount Root')).toBeVisible();
     await expect(canvas.getByText('Import / Export Workspace Mount Root')).toBeVisible();
-    await expect(shell.querySelector('details')?.open).toBe(false);
+    const details = shell.querySelectorAll('details');
+    await expect(details[0]?.open).toBe(false);
+    await expect(details[1]?.open).toBe(true);
     await userEvent.click(summary);
-    await expect(shell.querySelector('details')?.open).toBe(true);
+    await expect(details[0]?.open).toBe(true);
+    await userEvent.click(importExportSummary);
+    await expect(details[1]?.open).toBe(false);
   },
 };
 
 export const OpenByDefault = {
   args: {
     showTestDataOpen: true,
+    showImportExportOpen: true,
   },
   parameters: {
     docs: {
@@ -144,15 +156,16 @@ export const OpenByDefault = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await expect(canvas.getByText('Test Data Panel Mount Root')).toBeVisible();
-    await expect(canvas.getByRole('group', { name: 'App page shell example' }).querySelector('details')?.open).toBe(
-      true
-    );
+    const details = canvas.getByRole('group', { name: 'App page shell example' }).querySelectorAll('details');
+    await expect(details[0]?.open).toBe(true);
+    await expect(details[1]?.open).toBe(true);
   },
 };
 
 export const CompactLayout = {
   args: {
     showTestDataOpen: true,
+    showImportExportOpen: true,
     compactLayout: true,
   },
   parameters: {

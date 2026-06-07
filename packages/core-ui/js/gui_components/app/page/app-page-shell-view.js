@@ -14,7 +14,8 @@ class AppPageShellView {
 
   template() {
     const state = this.controller.getState();
-    const openAttribute = state.showTestDataOpen ? ' open' : '';
+    const testDataOpenAttribute = state.showTestDataOpen ? ' open' : '';
+    const importExportOpenAttribute = state.showImportExportOpen ? ' open' : '';
 
     return `
       <div id="page-instructions"></div>
@@ -23,13 +24,18 @@ class AppPageShellView {
         <div id="main-grid-view"></div>
 
         <div class="testDataSchemaGui" data-role="test-data-panel-shell">
-          <details${openAttribute}>
+          <details${testDataOpenAttribute}>
             <summary>Test Data <span data-help="test-data-summary-title" data-help-role="help-icon" class="helpicon"></span></summary>
             <div id="testDataGeneratorContainer"></div>
           </details>
         </div>
 
-        <div class="importexport" id="import-export-controls"></div>
+        <div class="importexport" data-role="import-export-panel-shell">
+          <details${importExportOpenAttribute}>
+            <summary>Import / Export</summary>
+            <div id="import-export-controls"></div>
+          </details>
+        </div>
       </div>
     `;
   }

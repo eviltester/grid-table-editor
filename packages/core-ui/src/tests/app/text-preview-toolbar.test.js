@@ -64,13 +64,18 @@ describe('TextPreviewToolbar', () => {
     const copyButtonIcon = root.querySelector('.text-preview-toolbar__copy-icon');
     const selectorRoot = root.querySelector('[data-role="format-selector-root"]');
     const subtasksRoot = root.querySelector('[data-role="format-subtasks-root"]');
+    const actionsRoot = root.querySelector('[data-role="text-preview-toolbar-actions"]');
 
     expect(global.tippy).toHaveBeenCalled();
+    expect(
+      actionsRoot.compareDocumentPosition(selectorRoot) & dom.window.Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy();
     expect(autoSyncHelpIcon.getAttribute('data-help')).toBe('auto-sync-help');
     expect(autoSyncHelpIcon.getAttribute('role')).toBe('button');
     expect(autoSyncHelpIcon.getAttribute('aria-label')).toBe('Show help for this option');
     expect(helpIcon.getAttribute('role')).toBe('button');
     expect(helpIcon.getAttribute('aria-label')).toBe('Show help for this option');
+    expect(helpIcon.classList.contains('text-preview-toolbar__preview-row-help')).toBe(true);
     expect(previewRowCount.value).toBe('10');
     expect(previewRowCount.getAttribute('aria-label')).toBe('Preview row count');
     expect(getRenderedButtonText(previewButton)).toBe('Preview');

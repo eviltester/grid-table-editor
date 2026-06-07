@@ -2,6 +2,7 @@ class AppPageShellController {
   constructor({ props = {} } = {}) {
     this.props = {
       showTestDataOpen: false,
+      showImportExportOpen: true,
       ...props,
     };
   }

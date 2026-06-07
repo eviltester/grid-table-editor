@@ -1,6 +1,7 @@
 import Papa from 'papaparse';
 import RandExp from 'randexp';
 import tippy from 'tippy.js';
+import 'tippy.js/dist/tippy.css';
 import '@popperjs/core';
 
 globalThis.Papa = Papa;

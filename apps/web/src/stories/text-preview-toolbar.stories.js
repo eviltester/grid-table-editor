@@ -69,7 +69,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'TextPreviewToolbar is the focused right-side control cluster extracted from TextPreviewEditor. It owns the Preview/Edit toggle, Auto Sync checkbox and help tippy, preview-row count control, help tooltip, copy button, and format-selector mount roots, while the parent editor continues to own the text area and split-layout shell.',
+          'TextPreviewToolbar is the focused control cluster extracted from TextPreviewEditor. It renders the Preview/Edit actions above the export-format tabs, owns the Auto Sync checkbox and help tippy, preview-row count control, help tooltip, copy button, and format-selector mount roots, while the parent editor continues to own the text area and split-layout shell.',
       },
     },
   },

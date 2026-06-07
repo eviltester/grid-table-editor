@@ -3,8 +3,10 @@ import { createFormatOptionsPanel } from '../../shared/format-options-panel/inde
 import { createFormatSelectorComponent } from '../format-selector/index.js';
 import { createFileImportBindingsAdapter } from '../import-export-adapters/file-import-bindings-adapter.js';
 import { createFileReadService } from '../import-export-adapters/file-read-service.js';
+import { createImportExportGridPreviewSyncControlComponent } from '../import-export-grid-preview-sync-control/index.js';
 import { createImportExportToolbarComponent } from '../import-export-toolbar/index.js';
 import { createTextPreviewEditorComponent } from '../text-preview-editor/index.js';
+import { createUpdateHelpHints } from '../../../help/help-tooltips.js';
 import {
   createClipboardService,
   createDownloadService,
@@ -72,6 +74,9 @@ function createImportExportWorkspaceRuntime({ root, props = {}, services = {}, d
     controller,
     documentObj,
     services: {
+      updateHelpHints: services.updateHelpHints || createUpdateHelpHints(documentObj, root),
+      createImportExportGridPreviewSyncControlComponent:
+        services.createImportExportGridPreviewSyncControlComponent || createImportExportGridPreviewSyncControlComponent,
       createImportExportToolbarComponent:
         services.createImportExportToolbarComponent || createImportExportToolbarComponent,
       createTextPreviewEditorComponent: services.createTextPreviewEditorComponent || createTextPreviewEditorComponent,

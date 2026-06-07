@@ -24,7 +24,6 @@ function createOpenAppPageStoryComponent({ root }) {
     root,
     props: {
       showTestDataOpen: true,
-      showImportExportOpen: true,
     },
   });
 }

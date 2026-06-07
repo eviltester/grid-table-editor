@@ -565,7 +565,7 @@ Current status:
 - The import/export options-preview shell is now a focused app-side component with its own Storybook docs and direct tests. `ImportExportWorkspaceView` no longer owns the splitter drag/keyboard/clamping behavior itself; it now composes the dedicated split-layout boundary through `TextPreviewEditor`.
 - `GeneratorControls` now composes a dedicated `GeneratorOutputFormatSelector` component, and Storybook documents that selector directly through `generator-output-format-selector.stories.js` instead of only through the larger controls surface.
 - The `TextPreviewEditor` re-audit showed that its Preview/Edit controls were still a meaningful visible sub-surface. That cluster is now a dedicated `TextPreviewToolbar` component with its own Storybook docs and focused tests, while `TextPreviewEditor` keeps the textarea and split-layout shell composition.
-- The app page shell now wraps Import / Export in a native `details` section, matching the Test Data shell pattern while preserving `#import-export-controls` as the workspace mount root.
+- `ImportExportWorkspace` now shows a dedicated grid/preview sync row above a closed-by-default native `Import / Export` details section, leaving Auto Sync, Preview/Edit, row count, format tabs, and text preview outside the collapsible import/export toolbar area.
 
 ## Generator Runtime Simplification Follow-On
 
@@ -599,7 +599,7 @@ Current status:
 - The schema-to-generator helper is now named and used as `createGeneratorSchemaGenerationService(...)` / `generatorSchemaGenerationService`, so the last live generator-side `bridge` label in that path has been removed.
 - The fresh post-simplification MVC re-audit found no new urgent generator-page runtime sprawl.
 - `ImportExportWorkspace` now also has a cleaner service map: the old broad workspace workflow has been split into `create-import-export-preview-workflow-service.js` and `create-import-export-file-transfer-service.js`, while `create-import-export-workspace-workflow-service.js` now mainly composes those narrower services for the runtime.
-- `ImportExportToolbar` is now also split along its visible review boundaries: `ImportExportGridPreviewSyncControl`, `ImportExportImportControl`, and `ImportExportDownloadControl` each have their own MVC component and Storybook coverage, while the toolbar host keeps only help/error framing plus composed layout.
+- `ImportExportToolbar` is now also split along its visible review boundaries: `ImportExportGridPreviewSyncControl`, `ImportExportImportControl`, and `ImportExportDownloadControl` each have their own MVC component and Storybook coverage. The workspace now renders the sync control as its own visible row, while the toolbar host keeps only import/download help-error framing plus composed layout inside the disclosure.
 
 ## Tracking Across Sessions
 

@@ -23,7 +23,6 @@ class ImportExportToolbarView {
   template() {
     return `
       <div class="import-export-toolbar" data-role="import-export-toolbar">
-        <div data-role="grid-preview-sync-root" class="import-export-toolbar__segment import-export-toolbar__segment--sync"></div>
         <div data-role="import-control-root" class="import-export-toolbar__segment import-export-toolbar__segment--import"></div>
         <div data-role="download-control-root" class="import-export-toolbar__segment import-export-toolbar__segment--download"></div>
       </div>
@@ -33,17 +32,6 @@ class ImportExportToolbarView {
 
   createFeatures() {
     const state = this.controller.getState();
-    this.gridPreviewSyncControl = this.services.createImportExportGridPreviewSyncControlComponent?.({
-      root: this.getElement('grid-preview-sync-root'),
-      props: {
-        ...state,
-        helpDataHelp: 'import-export-grid-preview-sync',
-      },
-      callbacks: {
-        onSetTextFromGrid: this.callbacks.onSetTextFromGrid,
-        onSetGridFromText: this.callbacks.onSetGridFromText,
-      },
-    });
     this.importControl = this.services.createImportExportImportControlComponent?.({
       root: this.getElement('import-control-root'),
       props: {
@@ -73,7 +61,6 @@ class ImportExportToolbarView {
   render() {
     const state = this.controller.getState();
     const errorStatus = this.getElement('error-status');
-    this.gridPreviewSyncControl?.update?.(state);
     this.importControl?.update?.(state);
     this.downloadControl?.update?.(state);
     if (errorStatus) {
@@ -86,10 +73,8 @@ class ImportExportToolbarView {
   destroy() {
     this.downloadControl?.destroy?.();
     this.importControl?.destroy?.();
-    this.gridPreviewSyncControl?.destroy?.();
     this.downloadControl = null;
     this.importControl = null;
-    this.gridPreviewSyncControl = null;
     this.root.replaceChildren();
   }
 

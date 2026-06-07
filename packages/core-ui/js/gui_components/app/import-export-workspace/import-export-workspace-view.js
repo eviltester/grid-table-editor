@@ -1,6 +1,7 @@
 import { resolveDocumentObj } from '../../shared/dom/default-objects.js';
 
 const TOOLBAR_ROOT_ROLE = 'import-export-toolbar-root';
+const GRID_PREVIEW_SYNC_ROOT_ROLE = 'grid-preview-sync-root';
 const TEXT_PREVIEW_EDITOR_ROOT_ROLE = 'text-preview-editor-root';
 
 class ImportExportWorkspaceView {
@@ -10,6 +11,7 @@ class ImportExportWorkspaceView {
     this.documentObj = resolveDocumentObj(documentObj, root);
     this.services = services;
     this.toolbar = null;
+    this.gridPreviewSyncControl = null;
     this.textPreviewEditor = null;
     this.formatSelector = null;
     this.formatOptionsPanel = null;
@@ -23,12 +25,17 @@ class ImportExportWorkspaceView {
     this.root.innerHTML = this.template();
     this.createFeatures();
     this.render();
+    this.services.updateHelpHints?.();
   }
 
   template() {
     return `
       <section class="import-export-workspace" aria-label="Import Export Workspace">
-        <div class="importexport" id="importExportToolbarRoot" data-role="${TOOLBAR_ROOT_ROLE}"></div>
+        <div class="import-export-workspace__sync-row" data-role="${GRID_PREVIEW_SYNC_ROOT_ROLE}"></div>
+        <details class="import-export-workspace__toolbar-details" data-role="import-export-toolbar-details">
+          <summary>Import / Export</summary>
+          <div class="importexport" id="importExportToolbarRoot" data-role="${TOOLBAR_ROOT_ROLE}"></div>
+        </details>
         <div class="tabbedTextArea" id="tabbedTextArea" data-role="${TEXT_PREVIEW_EDITOR_ROOT_ROLE}"></div>
       </section>
     `;
@@ -36,13 +43,23 @@ class ImportExportWorkspaceView {
 
   createFeatures() {
     const state = this.controller.getState();
+    this.gridPreviewSyncControl = this.services.createImportExportGridPreviewSyncControlComponent?.({
+      root: this.getElementByRole(GRID_PREVIEW_SYNC_ROOT_ROLE),
+      props: {
+        ...state,
+        helpDataHelp: 'import-export-grid-preview-sync',
+      },
+      callbacks: {
+        onSetTextFromGrid: this.services.onSetTextFromGrid,
+        onSetGridFromText: this.services.onSetGridFromText,
+      },
+    });
+
     this.toolbar = this.services.createImportExportToolbarComponent?.({
       root: this.getElementByRole(TOOLBAR_ROOT_ROLE),
       documentObj: this.documentObj,
       props: state,
       callbacks: {
-        onSetTextFromGrid: this.services.onSetTextFromGrid,
-        onSetGridFromText: this.services.onSetGridFromText,
         onDownload: this.services.onDownload,
         onFileSelected: this.services.onFileSelected,
         onImportFromClipboard: this.services.onImportFromClipboard,
@@ -88,6 +105,7 @@ class ImportExportWorkspaceView {
 
   render() {
     const state = this.controller.getState();
+    this.gridPreviewSyncControl?.update?.(state);
     this.toolbar?.update?.(state);
     this.textPreviewEditor?.update?.({
       mode: state.mode,
@@ -97,6 +115,7 @@ class ImportExportWorkspaceView {
     this.formatSelector?.update?.({
       selectedFormat: state.selectedFormat,
     });
+    this.services.updateHelpHints?.();
   }
 
   destroy() {
@@ -104,6 +123,7 @@ class ImportExportWorkspaceView {
     this.formatSelector?.destroy?.();
     this.textPreviewEditor?.destroy?.();
     this.toolbar?.destroy?.();
+    this.gridPreviewSyncControl?.destroy?.();
     this.root.replaceChildren();
   }
 

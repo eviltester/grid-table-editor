@@ -35,14 +35,6 @@ function renderImportExportToolbarStory(args) {
       errorStatusMessage: args.errorStatusMessage,
     },
     callbacks: {
-      onSetTextFromGrid: () => {
-        args.onSetTextFromGrid?.();
-        result.textContent = 'action:set-text-from-grid';
-      },
-      onSetGridFromText: () => {
-        args.onSetGridFromText?.();
-        result.textContent = 'action:set-grid-from-text';
-      },
       onDownload: () => {
         args.onDownload?.();
         result.textContent = 'action:download';
@@ -89,7 +81,7 @@ const meta = {
         ),
       description: {
         component:
-          'ImportExportToolbar is now a thin host around three reviewer-visible child components: Grid Preview Sync Control, Import Control, and Download Control. Each segment now owns its own help tippy, so the composed toolbar story documents three separate help affordances rather than one toolbar-wide tooltip.',
+          'ImportExportToolbar is now a thin host around the import and download MVC components only. The grid/preview sync control moved up into the parent workspace, so this story focuses on the closed-disclosure contents: import help, file and clipboard import, drag/drop, download, and shared error/status messaging.',
       },
     },
   },
@@ -106,22 +98,11 @@ const meta = {
     exportStatusMessage: '',
     exportStatusLoading: false,
     errorStatusMessage: '',
-    onSetTextFromGrid: fn(),
-    onSetGridFromText: fn(),
     onDownload: fn(),
     onFileSelected: fn(),
     onImportFromClipboard: fn(),
   },
   argTypes: {
-    mode: {
-      control: 'select',
-      options: ['preview', 'edit'],
-      description: 'Preview/edit mode used to determine whether Set Grid From Text is enabled.',
-    },
-    previewTextDirty: {
-      control: 'boolean',
-      description: 'When true in preview mode, Set Grid From Text becomes enabled.',
-    },
     fileExtension: {
       control: 'text',
       description: 'Visible file-extension label shown on import and download affordances.',
@@ -162,14 +143,6 @@ const meta = {
       control: 'text',
       description: 'Persistent error/status message shown at the end of the toolbar.',
     },
-    onSetTextFromGrid: {
-      description: 'Storybook action fired when Set Text From Grid is clicked.',
-      table: { category: 'Events' },
-    },
-    onSetGridFromText: {
-      description: 'Storybook action fired when Set Grid From Text is clicked.',
-      table: { category: 'Events' },
-    },
     onDownload: {
       description: 'Storybook action fired when Download is clicked.',
       table: { category: 'Events' },
@@ -194,24 +167,19 @@ export const Default = {
     docs: {
       description: {
         story:
-          'Default composed toolbar state. Reviewers should see the new order immediately: sync controls first, then import controls with drag/drop, then Download. Hover each help icon and confirm the Actions panel still reflects the real child behavior rather than one shared toolbar tippy.',
+          'Default import/export disclosure contents. Reviewers should see import controls with drag/drop first, then Download. Hover each help icon and confirm the Actions panel still reflects the real child behavior rather than one shared toolbar tippy.',
       },
     },
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const helpButtons = canvas.getAllByRole('button', { name: 'Show help' });
-    const setTextButton = canvas.getByRole('button', { name: 'Set Text From Grid' });
-    const setGridButton = canvas.getByRole('button', { name: 'Set Grid From Text' });
     const downloadButton = canvas.getByRole('button', { name: /\.csv Download/i });
 
-    await expect(helpButtons).toHaveLength(3);
-    await expect(helpButtons[0]).toHaveAttribute('data-help', 'import-export-grid-preview-sync');
-    await expect(helpButtons[1]).toHaveAttribute('data-help', 'import-export-import');
-    await expect(helpButtons[2]).toHaveAttribute('data-help', 'import-export-download');
+    await expect(helpButtons).toHaveLength(2);
+    await expect(helpButtons[0]).toHaveAttribute('data-help', 'import-export-import');
+    await expect(helpButtons[1]).toHaveAttribute('data-help', 'import-export-download');
     await expect(getDropZoneLabel(canvas)).toBeVisible();
-    await expect(setTextButton).toBeEnabled();
-    await expect(setGridButton).toBeDisabled();
     await expect(downloadButton).toBeEnabled();
 
     await userEvent.click(downloadButton);
@@ -244,8 +212,6 @@ export const FileImportSurface = {
 
 export const BusyAndStatus = {
   args: {
-    mode: 'edit',
-    previewTextDirty: true,
     importBusy: true,
     exportBusy: true,
     importStatusMessage: 'Importing full data into grid...',
@@ -258,14 +224,13 @@ export const BusyAndStatus = {
     docs: {
       description: {
         story:
-          'Shows the important busy/status review state. Reviewers should see **Set Text From Grid**, **Set Grid From Text**, and **Download** disabled immediately, with the import/export progress messages visible at the same time.',
+          'Shows the important busy/status review state. Reviewers should see the import inputs, clipboard action, and **Download** disabled immediately, with the import/export progress messages visible at the same time.',
       },
     },
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await expect(canvas.getByRole('button', { name: 'Set Text From Grid' })).toBeDisabled();
-    await expect(canvas.getByRole('button', { name: 'Set Grid From Text' })).toBeDisabled();
+    await expect(canvas.getByRole('button', { name: 'Import From Clipboard' })).toBeDisabled();
     await expect(canvas.getByRole('button', { name: /\.csv Download/i })).toBeDisabled();
     await expect(canvas.getByText('Importing full data into grid...')).toBeVisible();
     await expect(canvas.getByText('Generating export text...')).toBeVisible();

@@ -36,7 +36,6 @@ describe('page shell components', () => {
       root,
       props: {
         showTestDataOpen: true,
-        showImportExportOpen: true,
       },
     });
 
@@ -47,8 +46,7 @@ describe('page shell components', () => {
     expect(root.querySelector('.header')).toBeNull();
     expect(root.querySelector('#initial-load')).toBeNull();
     expect(root.querySelector('.testDataSchemaGui details')?.hasAttribute('open')).toBe(true);
-    expect(root.querySelector('.importexport details')?.hasAttribute('open')).toBe(true);
-    expect(root.querySelector('.importexport summary')?.textContent).toContain('Import / Export');
+    expect(root.querySelector('.importexport details')).toBeNull();
     expect(
       Array.from(root.querySelector('.main-app')?.children || []).map((element) => {
         if (element.id) {
@@ -59,13 +57,9 @@ describe('page shell components', () => {
           return 'testDataSchemaGui';
         }
 
-        if (element.classList.contains('importexport')) {
-          return 'importexport';
-        }
-
         return element.tagName.toLowerCase();
       })
-    ).toEqual(['main-grid-view', 'testDataSchemaGui', 'importexport']);
+    ).toEqual(['main-grid-view', 'testDataSchemaGui', 'import-export-controls']);
 
     component.destroy();
     expect(root.children.length).toBe(0);

@@ -15,7 +15,6 @@ class AppPageShellView {
   template() {
     const state = this.controller.getState();
     const testDataOpenAttribute = state.showTestDataOpen ? ' open' : '';
-    const importExportOpenAttribute = state.showImportExportOpen ? ' open' : '';
 
     return `
       <div id="page-instructions"></div>
@@ -30,12 +29,7 @@ class AppPageShellView {
           </details>
         </div>
 
-        <div class="importexport" data-role="import-export-panel-shell">
-          <details${importExportOpenAttribute}>
-            <summary>Import / Export</summary>
-            <div id="import-export-controls"></div>
-          </details>
-        </div>
+        <div class="importexport" id="import-export-controls"></div>
       </div>
     `;
   }

@@ -97,7 +97,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'ImportExportWorkspace is the app-side component-owned import/export feature. It composes the toolbar, format selector, options panel, preview/edit text editor, row-count control, file import, copy, and download behavior without delegating to the old legacy controls.',
+          'ImportExportWorkspace is the app-side component-owned import/export feature. It composes a grid/preview sync row, an import/export disclosure, and the preview/edit text workspace without delegating to the old legacy controls. The Import / Export details shell wraps only the import and download toolbar; the grid/preview sync row plus Auto Sync, Preview/Edit, row count, format tabs, and text preview remain visible outside that disclosure.',
       },
     },
   },
@@ -132,13 +132,21 @@ export const Default = {
     docs: {
       description: {
         story:
-          'Shows the composed app-side import/export workspace mounted through the new Phase 6 feature boundary. Use the compact preview row-count input next to Preview to change the sample size, click Set Text From Grid to refresh preview text, and switch formats inside the same mounted component tree.',
+          'Shows the composed app-side import/export workspace mounted through the new Phase 6 feature boundary. The grid/preview sync actions stay visible above the closed Import / Export disclosure by default, while Auto Sync, Preview/Edit, row count, format tabs, and text preview remain available below. Expand Import / Export to inspect file import and download, use the compact preview row-count input next to Preview to change the sample size, and click Set Text From Grid to refresh preview text.',
       },
     },
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const outputPreview = canvas.getByRole('textbox', { name: 'Preview text editor' });
+    const disclosure = canvasElement.querySelector('[data-role="import-export-toolbar-details"]');
+    await expect(disclosure?.open).toBe(false);
+    await expect(canvas.getByRole('checkbox', { name: 'Auto Sync' })).toBeVisible();
+    await expect(canvas.getByRole('button', { name: 'Preview' })).toBeVisible();
+    await expect(canvas.getByRole('button', { name: 'Set Text From Grid' })).toBeVisible();
+    await expect(outputPreview).toBeVisible();
+    await userEvent.click(canvas.getByText('Import / Export'));
+    await expect(disclosure?.open).toBe(true);
     await expect(canvas.getByRole('spinbutton', { name: 'Preview row count' })).toHaveValue(10);
     await userEvent.click(canvas.getByRole('button', { name: 'Set Text From Grid' }));
     await waitFor(() => {

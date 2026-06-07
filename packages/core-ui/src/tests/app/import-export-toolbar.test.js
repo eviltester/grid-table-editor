@@ -35,8 +35,6 @@ describe('ImportExportToolbar', () => {
     createImportExportToolbarComponent({ root, documentObj });
 
     const helpIcons = Array.from(root.querySelectorAll('[data-help-role="help-icon"][data-help]'));
-    const setTextFromGridButton = root.querySelector('[data-role="set-text-from-grid-button"]');
-    const setGridFromTextButton = root.querySelector('[data-role="set-grid-from-text-button"]');
     const fileInput = root.querySelector('[data-role="file-input"]');
     const clipboardImportButton = root.querySelector('[data-role="clipboard-import-button"]');
     const dropZone = root.querySelector('[data-role="drop-zone"]');
@@ -46,9 +44,8 @@ describe('ImportExportToolbar', () => {
     const errorStatus = root.querySelector('[data-role="error-status"]');
 
     expect(global.tippy).toHaveBeenCalled();
-    expect(helpIcons).toHaveLength(3);
+    expect(helpIcons).toHaveLength(2);
     expect(helpIcons.map((icon) => icon.getAttribute('data-help'))).toEqual([
-      'import-export-grid-preview-sync',
       'import-export-import',
       'import-export-download',
     ]);
@@ -56,8 +53,6 @@ describe('ImportExportToolbar', () => {
       expect(icon.getAttribute('role')).toBe('button');
       expect(icon.getAttribute('aria-label')).toBe('Show help');
     });
-    expect(setTextFromGridButton?.id).toBe('settextfromgridbutton');
-    expect(setGridFromTextButton?.id).toBe('setgridfromtextbutton');
     expect(fileInput?.id).toBe('csvinput');
     expect(clipboardImportButton?.textContent).toContain('From Clipboard');
     expect(dropZone?.id).toBe('dropzone');
@@ -85,7 +80,7 @@ describe('ImportExportToolbar', () => {
       createImportExportToolbarComponent({ root });
 
       const helpIcons = root.querySelectorAll('[data-help-role="help-icon"][data-help]');
-      expect(helpIcons).toHaveLength(3);
+      expect(helpIcons).toHaveLength(2);
       expect(global.tippy).toHaveBeenCalled();
     } finally {
       global.document = originalDocument;
@@ -107,16 +102,10 @@ describe('ImportExportToolbar', () => {
     });
 
     const downloadButton = root.querySelector('[data-role="download-button"]');
-    const setTextFromGridButton = root.querySelector('[data-role="set-text-from-grid-button"]');
-    const setGridFromTextButton = root.querySelector('[data-role="set-grid-from-text-button"]');
     const clipboardImportButton = root.querySelector('[data-role="clipboard-import-button"]');
 
     expect(downloadButton.disabled).toBe(false);
     expect(downloadButton.getAttribute('aria-disabled')).toBe('false');
-    expect(setTextFromGridButton.disabled).toBe(false);
-    expect(setTextFromGridButton.getAttribute('aria-disabled')).toBe('false');
-    expect(setGridFromTextButton.disabled).toBe(true);
-    expect(setGridFromTextButton.getAttribute('aria-disabled')).toBe('true');
     expect(clipboardImportButton.disabled).toBe(false);
     expect(clipboardImportButton.getAttribute('aria-disabled')).toBe('false');
 
@@ -124,10 +113,6 @@ describe('ImportExportToolbar', () => {
 
     expect(downloadButton.disabled).toBe(true);
     expect(downloadButton.getAttribute('aria-disabled')).toBe('true');
-    expect(setTextFromGridButton.disabled).toBe(true);
-    expect(setTextFromGridButton.getAttribute('aria-disabled')).toBe('true');
-    expect(setGridFromTextButton.disabled).toBe(true);
-    expect(setGridFromTextButton.getAttribute('aria-disabled')).toBe('true');
     expect(clipboardImportButton.disabled).toBe(true);
     expect(clipboardImportButton.getAttribute('aria-disabled')).toBe('true');
   });

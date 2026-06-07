@@ -112,6 +112,15 @@ describe('ImportExportWorkspace', () => {
     expect(documentObj.querySelector('#tabbedTextArea')).not.toBeNull();
     expect(documentObj.querySelector('[data-role="text-preview-editor-root"]')).not.toBeNull();
     expect(documentObj.querySelector('#settextfromgridbutton')).not.toBeNull();
+    expect(documentObj.querySelector('[data-role="grid-preview-sync-root"] #settextfromgridbutton')).not.toBeNull();
+    expect(documentObj.querySelector('[data-role="import-export-toolbar-details"] #settextfromgridbutton')).toBeNull();
+    expect(documentObj.querySelector('[data-role="import-export-toolbar-details"]')?.open).toBe(false);
+    expect(
+      documentObj.querySelector('[data-role="import-export-toolbar-details"] [data-role="auto-preview-checkbox"]')
+    ).toBeNull();
+    expect(
+      documentObj.querySelector('[data-role="import-export-toolbar-details"] [data-role="preview-edit-mode-button"]')
+    ).toBeNull();
     expect(getPreviewRowCountInput(documentObj)).not.toBeNull();
     expect(getPreviewRowCountInput(documentObj).getAttribute('aria-label')).toBe('Preview row count');
     expect(documentObj.querySelector('[data-role="text-preview-editor-root"] [data-role="edit-area"]')).not.toBeNull();

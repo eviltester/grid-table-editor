@@ -71,6 +71,9 @@ body.theme-dark a:hover {
 
 .main-app {
   margin: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 /* was #3D5249 - then docusaurus uses #2e8555*/
@@ -203,13 +206,34 @@ body.theme-dark .dragdropzone {
   gap: 0.75rem;
 }
 
+.import-export-workspace {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.import-export-workspace__sync-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.import-export-workspace__toolbar-details {
+  margin: 0;
+  padding-bottom: 0.5rem;
+}
+
+.import-export-workspace__toolbar-details > summary {
+  margin-bottom: 1rem;
+}
+
 .import-export-toolbar__segment {
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
 }
 
-.import-export-toolbar__segment--sync,
 .import-export-grid-preview-sync-control {
   display: flex;
   flex-wrap: wrap;

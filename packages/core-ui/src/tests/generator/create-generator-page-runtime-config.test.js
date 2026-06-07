@@ -20,7 +20,14 @@ describe('createGeneratorPageRuntimeConfig', () => {
       dataRulesToSchemaText: jest.fn(),
       faker: { word: { noun: () => 'x' } },
       RandExp: function RandExp() {},
-      generatorSchemaDefinitionSupport: { id: 'schema-support' },
+      generatorSchemaDefinitionSupport: {
+        createBlankRow: jest.fn(() => ({ name: '', sourceType: 'faker', value: '' })),
+        mapRuleToRow: jest.fn(),
+        getMethodPickerOptions: jest.fn(() => []),
+        getVisibleDomainCommands: jest.fn(() => []),
+        buildModeHelpHtml: jest.fn(() => '<p>help</p>'),
+        validateSchemaRows: jest.fn((rows) => ({ rows, errors: [] })),
+      },
       fakerCommands: ['helpers.arrayElement'],
       sampleSchemaText: 'Name\nliteral(x)',
       exporter,
@@ -47,6 +54,7 @@ describe('createGeneratorPageRuntimeConfig', () => {
     expect(config.props.controlsProps).toBeDefined();
     expect(config.props.previewProps).toBeDefined();
     expect(config.props.schemaDefinitionProps.fakerCommands).toEqual(['helpers.arrayElement']);
+    expect(config.props.schemaDefinitionProps.headingText).toBe('Schema');
     expect(config.services.generatorControlsServices.getCurrentOptionsForFormat('csv')).toEqual({ type: 'csv' });
     expect(config.services.generatorPreviewServices.TabulatorCtor).toBe(runtime.TabulatorCtor);
     expect(config.services.generatorPreviewServices.GridExtensionClass).toBe(runtime.GridExtensionClass);

@@ -1,46 +1,77 @@
-import { createGeneratorPageComponentCallbacks } from './create-generator-page-component-callbacks.js';
-import { createGeneratorPageComponentProps } from './create-generator-page-component-props.js';
-import { createGeneratorPageComponentServices } from './create-generator-page-component-services.js';
-
 function createGeneratorPageRuntimeConfig({ runtime } = {}) {
   const handleRowsChanged = () => runtime.updateAllPairsButtonVisibility?.();
-  const props = createGeneratorPageComponentProps({
-    schemaTextToDataRules: runtime.schemaTextToDataRules,
-    dataRulesToSchemaText: runtime.dataRulesToSchemaText,
-    faker: runtime.faker,
-    RandExp: runtime.RandExp,
-    generatorSchemaDefinitionSupport: runtime.generatorSchemaDefinitionSupport,
-    fakerCommands: runtime.fakerCommands,
-    sampleSchemaText: runtime.sampleSchemaText,
-    onRowsChanged: handleRowsChanged,
-  });
-  const selectedFormat = props.controlsProps?.selectedFormat || 'csv';
-  props.controlsProps = {
-    ...props.controlsProps,
-    currentOptions: runtime.exporter?.getOptionsForType?.(selectedFormat),
-  };
+  const selectedFormat = 'csv';
 
   return {
-    props,
-    services: createGeneratorPageComponentServices({
-      getExporter: () => runtime.exporter,
-      TabulatorCtor: runtime.TabulatorCtor,
-      GridExtensionClass: runtime.GridExtensionClass,
-    }),
-    callbacks: createGeneratorPageComponentCallbacks({
-      onApplyOptions: (sanitized) => runtime.applyCurrentTypeOptions(sanitized),
-      onGenerateData: () => {
-        void runtime.generateDataFile();
+    props: {
+      controlsProps: {
+        selectedFormat,
+        currentOptions: runtime.exporter?.getOptionsForType?.(selectedFormat),
+        pairwiseVisible: false,
       },
-      onGeneratePairwise: () => {
-        void runtime.generateAllPairsDataFile();
+      previewProps: {
+        outputPreviewText: '',
       },
-      onPreview: () => runtime.previewData(),
-      onRenderOutputPreview: () => runtime.generatorViewState.renderOutputPreviewForCurrentSelection(),
-      onSchemaError: (message) => runtime.generatorSchemaRuntime?.showSchemaErrorStatus(message),
-      onSchemaClear: () => runtime.generatorSchemaRuntime?.clearSchemaErrorStatus(),
-      onRowsChanged: handleRowsChanged,
-    }),
+      schemaDefinitionProps: {
+        headingText: 'Schema',
+        sectionClassName: 'shared-schema-definition-shell shared-schema-section',
+        headingClassName: 'shared-schema-heading',
+        errorClassName: 'shared-schema-error',
+        helpGroupClassName: 'shared-schema-button-with-help',
+        rowsClassName: 'shared-schema-rows',
+        textContainerClassName: 'shared-schema-text',
+        footerClassName: 'shared-schema-footer',
+        helpIconDataHelp: 'shared-schema-mode-help',
+        schemaTextToDataRules:
+          runtime.schemaTextToDataRules || (() => ({ dataRules: [], errors: [], schemaTokens: [] })),
+        dataRulesToSchemaText: runtime.dataRulesToSchemaText || (() => ''),
+        faker: runtime.faker,
+        RandExp: runtime.RandExp,
+        createBlankRow: runtime.generatorSchemaDefinitionSupport.createBlankRow,
+        mapRuleToRow: runtime.generatorSchemaDefinitionSupport.mapRuleToRow,
+        getMethodPickerOptions: runtime.generatorSchemaDefinitionSupport.getMethodPickerOptions,
+        getVisibleDomainCommands: runtime.generatorSchemaDefinitionSupport.getVisibleDomainCommands,
+        fakerCommands: runtime.fakerCommands,
+        sampleSchemaText: runtime.sampleSchemaText,
+        buildModeHelpHtml: runtime.generatorSchemaDefinitionSupport.buildModeHelpHtml,
+        validateSchemaRows: runtime.generatorSchemaDefinitionSupport.validateSchemaRows,
+        updatePairwiseButtonVisibility: handleRowsChanged,
+      },
+    },
+    services: {
+      generatorControlsServices: {
+        canExportFormat: (type) => runtime.exporter?.canExport?.(type) !== false,
+        getCurrentOptionsForFormat: (type) => runtime.exporter?.getOptionsForType?.(type),
+      },
+      generatorPreviewServices: {
+        TabulatorCtor: runtime.TabulatorCtor,
+        GridExtensionClass: runtime.GridExtensionClass,
+      },
+    },
+    callbacks: {
+      generatorControls: {
+        onFormatChanged: () => {
+          runtime.generatorViewState.renderOutputPreviewForCurrentSelection();
+        },
+        onApplyOptions: ({ sanitized }) => {
+          runtime.applyCurrentTypeOptions(sanitized);
+        },
+        onGenerateData: () => {
+          void runtime.generateDataFile();
+        },
+        onGeneratePairwise: () => {
+          void runtime.generateAllPairsDataFile();
+        },
+      },
+      generatorPreview: {
+        onPreview: () => runtime.previewData(),
+      },
+      schemaDefinition: {
+        onSchemaError: (message) => runtime.generatorSchemaRuntime?.showSchemaErrorStatus(message),
+        onSchemaClear: () => runtime.generatorSchemaRuntime?.clearSchemaErrorStatus(),
+        onRowsChanged: handleRowsChanged,
+      },
+    },
   };
 }
 

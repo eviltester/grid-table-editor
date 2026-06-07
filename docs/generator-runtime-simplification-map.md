@@ -17,7 +17,7 @@ The main signs of over-indirection are:
 - page-config assembly is split across many tiny files that are not meaningful reviewer-facing boundaries
 - tests currently protect some of those intermediate seams even when those seams do not represent intentional product architecture
 
-The result was a system that was more decomposed than a monolith, but less understandable than a straightforward runtime + page-component composition. The current shape is simpler: `create-generator-page.js` -> `generator-page-service.js` -> `create-generator-page-services.js` plus `create-generator-page-runtime-mount.js`.
+The result was a system that was more decomposed than a monolith, but less understandable than a straightforward runtime + page-component composition. The current shape is simpler: `create-generator-page.js` -> `generator-page-service.js` -> `create-generator-page-runtime-mount.js` / `create-generator-page-runtime-config.js`.
 
 ## Current Layer Map
 
@@ -43,26 +43,19 @@ This is the strongest simplification target. Several of these layers only exist 
 
 ### Page config chain
 
-Mounted page creation currently flows like this:
+Mounted page creation now flows like this:
 
 1. `create-generator-page-runtime-mount.js`
-2. `create-generator-page-component-runtime-config.js`
-3. `create-generator-page-component-config-inputs.js`
-4. `create-generator-page-component-runtime-dependencies.js`
-5. `create-generator-page-component-runtime-callbacks.js`
-6. `create-generator-page-component-config.js`
-7. `create-generator-page-component-config-dependencies.js`
-8. `create-generator-page-component-props.js`
-9. `create-generator-page-component-services.js`
-10. `create-generator-page-component-callbacks.js`
+2. `create-generator-page-runtime-config.js`
+3. `create-generator-page-component.js`
 
-That chain is too deep for one visible page component. Some of the deeper prop/callback helpers are still useful, but the current stack has too many composition-only pass-throughs.
+That shape is much better than the older config-of-config chain, but it is still worth watching for future re-growth in the runtime folder.
 
 ### Runtime action and view-state cluster
 
 Mounted runtime interaction state now flows through:
 
-- `create-generator-page-services.js`
+- `generator-page-service.js`
 - `generator-page-view-state.js`
 - `generator-page-actions-service.js`
 
@@ -151,11 +144,7 @@ Reduce page assembly to:
 - `createGeneratorPageRuntimeConfig(runtime)`
 - `createGeneratorPageRuntimeMount(...)`
 
-Optionally keep a few meaningful sub-builders where they are truly readable:
-
-- `create-generator-schema-definition-props.js`
-- `create-generator-controls-callbacks.js`
-- `create-generator-preview-callbacks.js`
+Optionally keep a few meaningful sub-builders where they are truly readable.
 
 #### Collapse or delete
 
@@ -285,6 +274,7 @@ Status:
 
 - completed in the current runtime pass
 - replaced with direct `create-generator-page-runtime-config.js` used by `create-generator-page-runtime-mount.js`
+- the remaining tiny prop/callback/service helper files were flattened into that one runtime-config module in the latest cleanup pass
 
 ### Pass C: Rename or inline runtime action/view-state bridges
 
@@ -322,8 +312,7 @@ These look like reasonable enduring boundaries today:
 
 - `create-generator-page-component.js`
 - `create-generator-page-shell-component.js`
-- `create-generator-schema-definition-props.js` if schema-definition prop assembly stays materially complex
-- `create-generator-controls-services.js` and `create-generator-preview-services.js` if they continue to isolate real service injection
+- `create-generator-page-schema-services.js`
 - `tabulator-grid-adapter.js` in preview, because it is a real third-party adapter boundary
 
 ## Short Version

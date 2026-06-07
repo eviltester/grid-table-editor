@@ -27,7 +27,7 @@ describe('createGeneratorPageService', () => {
         renderSchemaRows: jest.fn(),
       },
     }));
-    const createPageServices = jest.fn(() => ({
+    const createSchemaServices = jest.fn(() => ({
       generatorSchemaDefinitionSupport: {
         mapRuleToRow: jest.fn((rule, index) => ({ rule, index })),
       },
@@ -35,6 +35,19 @@ describe('createGeneratorPageService', () => {
         showSchemaErrorStatus: jest.fn(),
         clearSchemaErrorStatus: jest.fn(),
       },
+    }));
+    const createViewState = jest.fn(() => ({
+      getSelectedOutputType: jest.fn(() => 'json'),
+      syncGeneratorControlsFormatStateIfChanged: jest.fn(() => true),
+      getPreviewRowCount: jest.fn(() => ({ value: 3, valid: true, errors: [] })),
+      getGenerateRowCount: jest.fn(() => ({ value: 9, valid: true, errors: [] })),
+    }));
+    const createRuntimeActions = jest.fn(() => ({
+      applyCurrentTypeOptions: jest.fn(() => ({ applied: true })),
+      previewData: jest.fn(() => 'previewed'),
+      generateDataFile: jest.fn(async () => 'generated'),
+      generateAllPairsDataFile: jest.fn(async () => 'pairwise'),
+      updateAllPairsButtonVisibility: jest.fn(() => false),
     }));
     const createPageRuntimeMount = jest.fn(() => ({
       generatorPage: {
@@ -84,7 +97,9 @@ describe('createGeneratorPageService', () => {
       dataRulesToSchemaText: jest.fn(),
       sampleSchemaText: 'Name\nliteral(x)',
       createBaseState,
-      createPageServices,
+      createSchemaServices,
+      createViewState,
+      createRuntimeActions,
       createPageRuntimeMount,
       assertPageMountable,
       defineSchemaState,
@@ -94,7 +109,9 @@ describe('createGeneratorPageService', () => {
     return {
       runtime,
       createBaseState,
-      createPageServices,
+      createSchemaServices,
+      createViewState,
+      createRuntimeActions,
       createPageRuntimeMount,
       assertPageMountable,
       defineSchemaState,
@@ -108,16 +125,9 @@ describe('createGeneratorPageService', () => {
     const validateSchemaRows = jest.fn();
     const dataRulesToSchemaText = jest.fn();
     const createUnavailableRowCountResult = jest.fn(() => ({ value: 0, valid: false, errors: ['missing'] }));
-    const createPageServices = jest.fn(() => ({
+    const createSchemaServices = jest.fn(() => ({
       generatorSchemaDefinitionSupport: {
         mapRuleToRow: jest.fn((rule, index) => ({ id: `${rule}-${index}` })),
-      },
-      generatorRuntimeActions: {
-        applyCurrentTypeOptions: jest.fn(() => ({ applied: true })),
-        previewData: jest.fn(() => 'previewed'),
-        generateDataFile: jest.fn(async () => 'generated'),
-        generateAllPairsDataFile: jest.fn(async () => 'pairwise'),
-        updateAllPairsButtonVisibility: jest.fn(() => false),
       },
       generatorSchemaState: {
         rows: [],
@@ -125,12 +135,19 @@ describe('createGeneratorPageService', () => {
         textMode: false,
         renderSchemaRows: jest.fn(),
       },
-      generatorViewState: {
-        getSelectedOutputType: jest.fn(() => 'json'),
-        syncGeneratorControlsFormatStateIfChanged: jest.fn(() => true),
-        getPreviewRowCount: jest.fn(() => ({ value: 3, valid: true, errors: [] })),
-        getGenerateRowCount: jest.fn(() => ({ value: 9, valid: true, errors: [] })),
-      },
+    }));
+    const createViewState = jest.fn(() => ({
+      getSelectedOutputType: jest.fn(() => 'json'),
+      syncGeneratorControlsFormatStateIfChanged: jest.fn(() => true),
+      getPreviewRowCount: jest.fn(() => ({ value: 3, valid: true, errors: [] })),
+      getGenerateRowCount: jest.fn(() => ({ value: 9, valid: true, errors: [] })),
+    }));
+    const createRuntimeActions = jest.fn(() => ({
+      applyCurrentTypeOptions: jest.fn(() => ({ applied: true })),
+      previewData: jest.fn(() => 'previewed'),
+      generateDataFile: jest.fn(async () => 'generated'),
+      generateAllPairsDataFile: jest.fn(async () => 'pairwise'),
+      updateAllPairsButtonVisibility: jest.fn(() => false),
     }));
     const defineSchemaState = jest.fn((runtime, { getPageService }) => {
       Object.defineProperty(runtime, 'schemaRows', {
@@ -159,12 +176,14 @@ describe('createGeneratorPageService', () => {
         TestDataGeneratorClass: class FakeGenerator {},
         DownloadClass: class FakeDownload {},
       }),
-      createPageServices,
+      createSchemaServices,
+      createViewState,
+      createRuntimeActions,
       defineSchemaState,
       createUnavailableRowCountResult,
     });
 
-    expect(createPageServices).toHaveBeenCalledWith(
+    expect(createSchemaServices).toHaveBeenCalledWith(
       expect.objectContaining({
         runtime,
         schemaTextToDataRules,
@@ -173,11 +192,21 @@ describe('createGeneratorPageService', () => {
         validateSchemaRows,
         dataRulesToSchemaText,
         sampleSchemaText: 'Name\nliteral(x)',
-        createUnavailableRowCountResult,
       })
     );
 
-    const dependencyArgs = createPageServices.mock.calls[0][0];
+    expect(createViewState).toHaveBeenCalledWith({
+      runtime,
+      createUnavailableRowCountResult,
+    });
+    expect(createRuntimeActions).toHaveBeenCalledWith({
+      runtime,
+      DownloadClass: runtime.DownloadClass,
+      faker: runtime.faker,
+      RandExp: runtime.RandExp,
+    });
+
+    const dependencyArgs = createSchemaServices.mock.calls[0][0];
     expect(dependencyArgs.mapRuleToRow('rule', 2)).toEqual({ id: 'rule-2' });
     expect(defineSchemaState).toHaveBeenCalledWith(runtime, {
       getPageService: expect.any(Function),

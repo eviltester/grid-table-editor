@@ -1,9 +1,11 @@
 import { assertGeneratorRuntimeMountable } from './assert-generator-runtime-mountable.js';
 import { createGeneratorPageRuntimeMount } from './create-generator-page-runtime-mount.js';
 import { createGeneratorPageBaseState } from './create-generator-page-base-state.js';
-import { createGeneratorPageServices } from './create-generator-page-services.js';
 import { defineGeneratorPageSchemaState } from './define-generator-page-schema-state.js';
 import { createGeneratorUnavailableRowCountResult } from './create-generator-unavailable-row-count-result.js';
+import { createGeneratorPageActionsService } from './generator-page-actions-service.js';
+import { createGeneratorPageSchemaServices } from './create-generator-page-schema-services.js';
+import { createGeneratorPageViewState } from './generator-page-view-state.js';
 
 function createGeneratorPageService({
   options = {},
@@ -14,7 +16,9 @@ function createGeneratorPageService({
   dataRulesToSchemaText,
   sampleSchemaText,
   createBaseState = createGeneratorPageBaseState,
-  createPageServices = createGeneratorPageServices,
+  createSchemaServices = createGeneratorPageSchemaServices,
+  createViewState = createGeneratorPageViewState,
+  createRuntimeActions = createGeneratorPageActionsService,
   createPageRuntimeMount = createGeneratorPageRuntimeMount,
   assertPageMountable = assertGeneratorRuntimeMountable,
   defineSchemaState = defineGeneratorPageSchemaState,
@@ -89,12 +93,11 @@ function createGeneratorPageService({
 
   Object.assign(
     pageService,
-    createPageServices({
+    createSchemaServices({
       runtime: pageService,
       faker: pageService.faker,
       RandExp: pageService.RandExp,
       TestDataGeneratorClass: pageService.TestDataGeneratorClass,
-      DownloadClass: pageService.DownloadClass,
       schemaTextToDataRules,
       schemaRowsToSpec,
       schemaRowsToSpecWithTokens,
@@ -102,8 +105,19 @@ function createGeneratorPageService({
       mapRuleToRow: (rule, index) => pageService.generatorSchemaDefinitionSupport.mapRuleToRow(rule, index),
       dataRulesToSchemaText,
       sampleSchemaText,
-      createUnavailableRowCountResult,
-    })
+    }),
+    {
+      generatorViewState: createViewState({
+        runtime: pageService,
+        createUnavailableRowCountResult,
+      }),
+      generatorRuntimeActions: createRuntimeActions({
+        runtime: pageService,
+        DownloadClass: pageService.DownloadClass,
+        faker: pageService.faker,
+        RandExp: pageService.RandExp,
+      }),
+    }
   );
 
   defineSchemaState(pageService, {

@@ -134,7 +134,7 @@ This is the current repo-level audit after the latest Storybook and generator ru
 
 - generator runtime dependency clusters
   - Much closer to clean MVC now.
-  - The top page boot path is now direct and human-readable: `create-generator-page.js` -> `generator-page-service.js` -> `create-generator-page-services.js`.
+  - The top page boot path is now direct and human-readable: `create-generator-page.js` -> `generator-page-service.js` -> `create-generator-page-runtime-mount.js` / `create-generator-page-runtime-config.js`.
   - The schema layer now assembles through one direct builder: `create-generator-page-schema-services.js`, and the remaining page interaction helpers use responsibility-based names such as `generator-page-actions-service.js` and `generator-page-view-state.js`.
   - The bigger wrapper pyramid is gone; the remaining question is only whether a future change makes one of these surviving page services too broad again.
 

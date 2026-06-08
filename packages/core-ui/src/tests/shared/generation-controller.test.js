@@ -3,6 +3,7 @@ import {
   createConfiguredGeneratorFromSchemaRows,
   createPreviewDataTable,
   createPairwiseDataTable,
+  createCombinationsDataTable,
 } from '../../../js/gui_components/shared/test-data/generation/generation-controller.js';
 import { isPairwiseEligibleForSchemaRows } from '../../../js/gui_components/shared/test-data/generation/ui-derived-state.js';
 import { jest } from '@jest/globals';
@@ -187,5 +188,40 @@ describe('generation-controller', () => {
 
     expect(pairwiseTable.headers).toEqual(['A', 'B']);
     expect(pairwiseTable.rows).toEqual([['x', 'y']]);
+  });
+
+  test('creates combinations table through the shared n-wise adapter', () => {
+    class FakeCombinationsGenerator {
+      initializeFromRules(rules, options) {
+        this.rules = rules;
+        this.options = options;
+        return { isError: false };
+      }
+      generateAllDataRecordsAsRows() {
+        return {
+          isError: false,
+          data: {
+            data: [
+              ['A', 'B', 'C'],
+              ['x', 'y', 'z'],
+            ],
+            stats: { strength: this.options.strength, algorithm: this.options.algorithm },
+          },
+        };
+      }
+    }
+
+    const table = createCombinationsDataTable({
+      generator: { testDataRules: () => [{ type: 'enum' }, { type: 'enum' }, { type: 'enum' }] },
+      CombinationsTestDataGeneratorClass: FakeCombinationsGenerator,
+      GenericDataTableClass: FakeGenericDataTable,
+      faker: {},
+      RandExp: function RandExp() {},
+      options: { strength: 3, algorithm: 'greedy' },
+    });
+
+    expect(table.headers).toEqual(['A', 'B', 'C']);
+    expect(table.rows).toEqual([['x', 'y', 'z']]);
+    expect(table.__combinationStats).toEqual({ strength: 3, algorithm: 'greedy' });
   });
 });

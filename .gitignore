@@ -23,8 +23,5 @@ testenv/
 .claude
 .pet-runs
 experiments
-!experiments/
 experiments/*
-!experiments/n-wise/
-!experiments/n-wise/**
 .codex-logs/

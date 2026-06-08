@@ -1006,6 +1006,130 @@ body.theme-dark .generator-status-text[data-severity='info'] {
   box-shadow: 0 0 0 3px #d6eefc;
 }
 
+.n-wise-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(10, 22, 16, 0.45);
+  z-index: 2200;
+}
+
+.n-wise-dialog {
+  width: min(92vw, 560px);
+  max-height: calc(100vh - 2rem);
+  overflow: auto;
+  background: var(--panel-bg);
+  color: var(--page-text);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+}
+
+.n-wise-dialog-header,
+.n-wise-dialog-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.8rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.n-wise-dialog-header h3 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.n-wise-dialog-close {
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  line-height: 1;
+}
+
+.n-wise-dialog-body {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0.8rem;
+}
+
+.n-wise-dialog-explanation,
+.n-wise-dialog-description,
+.n-wise-dialog-docs {
+  margin: 0;
+  line-height: 1.4;
+}
+
+.n-wise-dialog-field {
+  display: grid;
+  gap: 0.25rem;
+  font-weight: 600;
+}
+
+.n-wise-dialog-field select {
+  width: 100%;
+  min-width: 0;
+}
+
+.n-wise-strategy-list {
+  display: grid;
+  gap: 0.5rem;
+  max-height: min(42vh, 22rem);
+  overflow: auto;
+  padding: 0.35rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.n-wise-strategy-option {
+  display: grid;
+  gap: 0.25rem;
+  width: 100%;
+  min-width: 0;
+  padding: 0.65rem 0.75rem;
+  text-align: left;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--panel-bg);
+  color: var(--page-text);
+  cursor: pointer;
+}
+
+.n-wise-strategy-option.is-selected {
+  border-color: #23784d;
+  box-shadow: inset 4px 0 0 #23784d;
+}
+
+.n-wise-strategy-name {
+  font-weight: 700;
+}
+
+.n-wise-strategy-description {
+  font-weight: 400;
+  line-height: 1.35;
+}
+
+.n-wise-dialog-actions {
+  border-top: 1px solid var(--border-color);
+  border-bottom: 0;
+  justify-content: flex-end;
+}
+
+.n-wise-dialog-primary {
+  font-weight: 700;
+}
+
+.n-wise-dialog button:focus-visible,
+.n-wise-dialog select:focus-visible {
+  outline: 3px solid #0b6aa2;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 3px #d6eefc;
+}
+
 .shared-schema-footer,
 .generator-schema-footer {
   margin-top: 0.6rem;

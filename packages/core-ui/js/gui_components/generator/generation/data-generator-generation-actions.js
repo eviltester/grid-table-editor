@@ -5,12 +5,14 @@
  */
 
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
+import { CombinationsTestDataGenerator } from '@anywaydata/core/data_generation/n-wise/combinationsTestDataGenerator.js';
 import { PairwiseTestDataGenerator } from '@anywaydata/core/data_generation/n-wise/pairwiseTestDataGenerator.js';
 import { schemaErrorsToText } from '../../shared/test-data/schema/schema-error-text.js';
 import {
   createConfiguredGeneratorFromSchemaRows,
   createPreviewDataTable,
   createPairwiseDataTable,
+  createCombinationsDataTable,
 } from '../../shared/test-data/generation/generation-controller.js';
 import { isPairwiseEligibleForSchemaRows } from '../../shared/test-data/generation/ui-derived-state.js';
 import {
@@ -70,6 +72,17 @@ function buildPairwiseDataTable({ generator, faker, RandExp }) {
     GenericDataTableClass: GenericDataTable,
     faker,
     RandExp,
+  });
+}
+
+function buildCombinationsDataTable({ generator, faker, RandExp, options }) {
+  return createCombinationsDataTable({
+    generator,
+    CombinationsTestDataGeneratorClass: CombinationsTestDataGenerator,
+    GenericDataTableClass: GenericDataTable,
+    faker,
+    RandExp,
+    options,
   });
 }
 
@@ -291,14 +304,90 @@ async function generateGeneratorAllPairsDataFile({
   }
 }
 
+async function generateGeneratorCombinationsDataFile({
+  createConfiguredGenerator,
+  countEnumColumns,
+  getSelectedOutputType,
+  exporter,
+  clearGenerationStatus,
+  setGenerationButtonBusy,
+  setGenerationStatus,
+  showGenerationLoadingStatus,
+  buildCombinationsDataTable: buildCombinationsDataTableFn,
+  DownloadClass,
+  surfacePageError,
+  clearPageError,
+  scheduleClearGenerationStatus,
+  selection,
+}) {
+  const strength = Number.parseInt(selection?.strength, 10);
+  const algorithm = selection?.algorithm;
+  const enumColumnCount = countEnumColumns();
+  if (!Number.isInteger(strength) || strength < 2 || strength > enumColumnCount) {
+    surfacePageError(`n-wise strength must be between 2 and ${enumColumnCount} for this schema.`);
+    return;
+  }
+
+  const configured = createConfiguredGenerator();
+  if (configured.errors?.length > 0) {
+    surfacePageError(schemaErrorsToText(configured.errors), { useSchemaStatus: true });
+    return;
+  }
+
+  const type = getSelectedOutputType();
+  if (!exporter.canExport(type)) {
+    surfacePageError(`Output format ${type} is not supported.`);
+    return;
+  }
+
+  clearGenerationStatus();
+  setGenerationButtonBusy(true);
+  showGenerationLoadingStatus(`Generating ${strength}-wise combinations...`);
+
+  try {
+    const dataTable = buildCombinationsDataTableFn(configured.generator, {
+      strength,
+      algorithm,
+      seed: 1,
+      candidateCount: 20,
+      runs: algorithm === 'aetg' ? 2 : 1,
+    });
+    if (!dataTable) {
+      surfacePageError('Failed to generate combinations data.');
+      setGenerationStatus('Combination generation failed.', { severity: 'error', dismissable: true });
+      return;
+    }
+
+    clearPageError?.();
+    dataTable.__generatorFilename = `n-wise-combinations-data${exporter.getFileExtensionFor(type)}`;
+    const { filename } = await exportDataTableToDownload({
+      type,
+      dataTable,
+      exporter,
+      DownloadClass,
+      showGenerationLoadingStatus,
+    });
+    setGenerationStatus(`Download ready: ${filename} (${dataTable.getRowCount()} combinations)`);
+    scheduleClearGenerationStatus();
+  } catch (error) {
+    console.error(error);
+    surfacePageError('Unable to generate combinations data file.');
+    setGenerationStatus('Failed to generate combinations data file.', { severity: 'error', dismissable: true });
+  } finally {
+    setGenerationButtonBusy(false);
+  }
+}
+
 export {
   createConfiguredGeneratorForPage,
   buildPreviewDataTable,
   buildPairwiseDataTable,
+  buildCombinationsDataTable,
   renderGeneratorOutputPreview,
   updateGeneratorPairwiseButtonVisibility,
   countGeneratorEnumColumns,
   previewGeneratorData,
   generateGeneratorDataFile,
   generateGeneratorAllPairsDataFile,
+  generateGeneratorCombinationsDataFile,
 };

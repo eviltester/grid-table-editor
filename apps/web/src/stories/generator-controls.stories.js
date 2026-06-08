@@ -135,14 +135,14 @@ export const PairwiseReady = {
     docs: {
       description: {
         story:
-          'Shows the same control surface when the current schema is eligible for pairwise generation. The Pairwise button should be visible immediately and the interaction proves it emits the expected action.',
+          'Shows the same control surface when the current schema is eligible for combination generation. The Generate Combinations button should be visible immediately and the interaction proves it emits the expected action.',
       },
     },
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await expect(canvas.getByRole('button', { name: 'Generate Pairwise' })).toBeVisible();
-    await userEvent.click(canvas.getByRole('button', { name: 'Generate Pairwise' }));
+    await expect(canvas.getByRole('button', { name: 'Generate Combinations' })).toBeVisible();
+    await userEvent.click(canvas.getByRole('button', { name: 'Generate Combinations' }));
     await expect(canvas.getByText('generate:pairwise')).toBeTruthy();
   },
 };

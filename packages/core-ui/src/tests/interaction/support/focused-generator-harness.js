@@ -177,8 +177,10 @@ function createFocusedGeneratorHarness() {
   }
 
   async function clickGeneratePairwise() {
-    await user.click(within(document.body).getByRole('button', { name: /generate pairwise/i }));
-    await waitFor(() => expect(CapturingDownload.lastDownload?.filename).toMatch(/all-pairs-data/));
+    await user.click(within(document.body).getByRole('button', { name: /generate combinations/i }));
+    const dialog = within(document.body).getByRole('dialog', { name: /generate combinations/i });
+    await user.click(within(dialog).getByRole('button', { name: /^generate$/i }));
+    await waitFor(() => expect(CapturingDownload.lastDownload?.filename).toMatch(/n-wise-combinations-data/));
   }
 
   async function setPreviewCount(value) {

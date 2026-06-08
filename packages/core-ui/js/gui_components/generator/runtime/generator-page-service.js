@@ -86,6 +86,14 @@ function createGeneratorPageService({
       await pageService.generatorRuntimeActions.generateAllPairsDataFile();
     },
 
+    openGenerateCombinationsDialog() {
+      return pageService.generatorRuntimeActions.openGenerateCombinationsDialog();
+    },
+
+    async generateCombinationsDataFile(selection) {
+      await pageService.generatorRuntimeActions.generateCombinationsDataFile(selection);
+    },
+
     updateAllPairsButtonVisibility() {
       return pageService.generatorRuntimeActions.updateAllPairsButtonVisibility();
     },

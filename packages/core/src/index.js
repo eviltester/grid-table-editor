@@ -6,6 +6,10 @@ import { Exporter } from '../js/grid/exporter.js';
 import { Importer } from '../js/grid/importer.js';
 import { KNOWN_FAKER_COMMANDS } from '../js/faker/faker-commands.js';
 import { PairwiseTestDataGenerator } from '../js/data_generation/n-wise/pairwiseTestDataGenerator.js';
+import {
+  CombinationAlgorithm,
+  CombinationsTestDataGenerator,
+} from '../js/data_generation/n-wise/combinationsTestDataGenerator.js';
 import { parseSchemaText } from '../js/data_generation/schema-conversion.js';
 import { hasSafeFakerLiteralArguments } from '../js/data_generation/faker/safeLiteralArgumentParser.js';
 import {
@@ -844,4 +848,5 @@ export async function streamFromTextSpec({
 
 export { SUPPORTED_FORMATS };
 export { Exporter, GenericDataTable };
+export { CombinationAlgorithm, CombinationsTestDataGenerator, PairwiseTestDataGenerator };
 export { OPTION_KEYS_BY_FORMAT, OPTION_TIPS_BY_FORMAT, normalizeFormat, sanitizeOptionsForFormat, getTipsForFormat };

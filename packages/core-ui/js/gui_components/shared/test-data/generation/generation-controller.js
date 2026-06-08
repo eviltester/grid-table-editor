@@ -5,7 +5,11 @@
  */
 
 import { parseSchemaText } from '../schema/schema-runtime.js';
-import { createTableFromGenerator, createPairwiseTableFromGenerator } from './generation-runtime.js';
+import {
+  createTableFromGenerator,
+  createPairwiseTableFromGenerator,
+  createCombinationsTableFromGenerator,
+} from './generation-runtime.js';
 
 function createGeneratorFromDataRules({ dataRules = [], TestDataGeneratorClass, faker, RandExp }) {
   const generator = new TestDataGeneratorClass(faker, RandExp);
@@ -116,10 +120,29 @@ function createPairwiseDataTable({ generator, PairwiseTestDataGeneratorClass, Ge
   });
 }
 
+function createCombinationsDataTable({
+  generator,
+  CombinationsTestDataGeneratorClass,
+  GenericDataTableClass,
+  faker,
+  RandExp,
+  options,
+}) {
+  return createCombinationsTableFromGenerator({
+    generator,
+    CombinationsTestDataGeneratorClass,
+    GenericDataTableClass,
+    faker,
+    RandExp,
+    options,
+  });
+}
+
 export {
   createGeneratorFromDataRules,
   createConfiguredGeneratorFromSchemaText,
   createConfiguredGeneratorFromSchemaRows,
   createPreviewDataTable,
   createPairwiseDataTable,
+  createCombinationsDataTable,
 };

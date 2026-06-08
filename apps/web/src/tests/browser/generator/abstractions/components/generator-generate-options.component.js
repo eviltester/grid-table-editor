@@ -7,7 +7,7 @@ class GeneratorGenerateOptionsComponent {
     this.rowsCountInput = page.getByRole('spinbutton', { name: 'Generate Rows' });
     this.outputFormatSelect = page.getByLabel('Output Format');
     this.generateDataButton = page.getByRole('button', { name: 'Generate Data' });
-    this.generatePairwiseButton = page.getByRole('button', { name: 'Generate Pairwise' });
+    this.generateCombinationsButton = page.getByRole('button', { name: 'Generate Combinations' });
   }
 
   async expectReady() {
@@ -30,7 +30,7 @@ class GeneratorGenerateOptionsComponent {
   }
 
   async clickGeneratePairwise() {
-    await this.generatePairwiseButton.click();
+    await this.generateCombinationsButton.click();
   }
 }
 

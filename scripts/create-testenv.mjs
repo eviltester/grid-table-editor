@@ -215,7 +215,7 @@ function renderIndexPage({ branchName, commitSha, buildTimestamp }) {
   <body>
     <main>
       <h1>Test Environment</h1>
-      <p>Static build for GitHub Pages-style review, including the main app, generator, and Storybook.</p>
+      <p>Static build for GitHub Pages-style review, including the main app, generator, combinatorial explorer, and Storybook.</p>
       <p class="live-link">Access the live version with docs at <a href="https://anywaydata.com">AnyWayData.com</a>.</p>
       <section class="meta" aria-label="Build metadata">
         <article class="meta-card">
@@ -241,6 +241,11 @@ function renderIndexPage({ branchName, commitSha, buildTimestamp }) {
           <h2>Generator</h2>
           <p>The standalone schema-driven test data generator.</p>
           <a href="./generator.html">Open generator.html</a>
+        </article>
+        <article class="card">
+          <h2>Combinatorial</h2>
+          <p>The experimental n-wise strategy comparison environment.</p>
+          <a href="./combinatorial.html">Open combinatorial.html</a>
         </article>
         <article class="card">
           <h2>Storybook</h2>

@@ -68,7 +68,7 @@ enum("6.1","6.2","6.3")
 | bach-allpairs | 16 | 135 | 135 | 100.0 | n/a |
 | greedy | 17 | 135 | 135 | 100.0 | 2 |
 | ipog | 17 | 135 | 135 | 100.0 | 1 |
-| pairwise-simple | 17 | 135 | 135 | 100.0 | n/a |
+| pairwise | 17 | 135 | 135 | 100.0 | n/a |
 
 ### Scenario 6x3 - Strength 3
 
@@ -144,7 +144,7 @@ enum("6.1","6.2","6.3","6.4")
 | bach-allpairs | 28 | 240 | 240 | 100.0 | n/a |
 | greedy | 28 | 240 | 240 | 100.0 | 1 |
 | ipog | 28 | 240 | 240 | 100.0 | 1 |
-| pairwise-simple | 28 | 240 | 240 | 100.0 | n/a |
+| pairwise | 28 | 240 | 240 | 100.0 | n/a |
 
 ### Scenario 6x4 - Strength 3
 

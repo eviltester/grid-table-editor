@@ -1,7 +1,8 @@
 export function generateIpogRecords(context) {
   const { model } = context;
   let activeParameterCount = context.strength;
-  context.dataRecords = model.generateFullFactorialRecords(activeParameterCount);
+  context.dataRecords.length = 0;
+  context.dataRecords.push(...model.generateFullFactorialRecords(activeParameterCount));
 
   for (let parameterIndex = activeParameterCount; parameterIndex < context.parameters.length; parameterIndex += 1) {
     activeParameterCount = parameterIndex + 1;

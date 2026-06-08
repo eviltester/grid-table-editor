@@ -11,7 +11,8 @@ class CombinationsDialogController {
     const enumColumnCount = Number.parseInt(props.enumColumnCount, 10) || 0;
     const enumValueCounts = Array.isArray(props.enumValueCounts) ? [...props.enumValueCounts] : [];
     const strengths = getAvailableStrengths(enumColumnCount);
-    const selectedStrength = strengths.includes(props.selectedStrength) ? props.selectedStrength : strengths[0] || 2;
+    const numericSelectedStrength = Number(props.selectedStrength);
+    const selectedStrength = strengths.includes(numericSelectedStrength) ? numericSelectedStrength : strengths[0] || 2;
     const strategies = getStrategiesForStrength(selectedStrength, { valueCounts: enumValueCounts });
     const selectedAlgorithm = strategies.some((strategy) => strategy.id === props.selectedAlgorithm)
       ? props.selectedAlgorithm

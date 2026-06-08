@@ -13,6 +13,7 @@ import {
 } from '../../../shared/test-data/generation/generation-controller.js';
 import { isPairwiseEligibleForSchemaRows } from '../../../shared/test-data/generation/ui-derived-state.js';
 import { EnumParser } from '@anywaydata/core/data_generation/utils/enumParser.js';
+import { CombinationAlgorithm } from '@anywaydata/core/data_generation/n-wise/combinationsTestDataGenerator.js';
 import {
   SOURCE_TYPE_FAKER,
   SOURCE_TYPE_DOMAIN,
@@ -295,7 +296,7 @@ function createTestDataGenerationService({
           algorithm,
           seed: 1,
           candidateCount: 20,
-          runs: algorithm === 'aetg' ? 2 : 1,
+          runs: algorithm === CombinationAlgorithm.AETG ? 2 : 1,
         },
       });
 

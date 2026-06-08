@@ -3,10 +3,11 @@ import { escapeHtml } from '../html-escape.js';
 import { N_WISE_DOCS_URL, getStrengthExplanation } from '../../generator/generation/n-wise-generation-options.js';
 
 class CombinationsDialogView {
-  constructor({ root, controller, documentObj } = {}) {
+  constructor({ root, controller, documentObj, ownsRoot = false } = {}) {
     this.root = root;
     this.controller = controller;
     this.documentObj = resolveDocumentObj(documentObj, root);
+    this.ownsRoot = ownsRoot;
     this.handleStrengthChange = (event) => {
       this.controller.setStrength(event.target.value);
       this.renderDialog();
@@ -152,7 +153,6 @@ class CombinationsDialogView {
 
   bindDialogEvents() {
     const strengthSelect = this.root.querySelector('[data-role="n-wise-strength-select"]');
-    strengthSelect?.addEventListener('input', this.handleStrengthChange);
     strengthSelect?.addEventListener('change', this.handleStrengthChange);
     this.root
       .querySelectorAll('[data-role="n-wise-strategy-option"]')
@@ -167,7 +167,9 @@ class CombinationsDialogView {
     this.root.removeEventListener('click', this.handleBackdropClick);
     this.root.removeEventListener('keydown', this.handleKeyDown);
     this.root.replaceChildren();
-    this.root.remove();
+    if (this.ownsRoot) {
+      this.root.remove();
+    }
   }
 }
 

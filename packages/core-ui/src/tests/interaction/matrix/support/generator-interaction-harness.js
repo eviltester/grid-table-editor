@@ -90,8 +90,8 @@ function getGeneratePairwiseButton() {
   return document.querySelector('[data-role="generator-generate-pairwise-button"]');
 }
 
-function getGenerateCombinationsDialog() {
-  return within(document.body).getByRole('dialog', { name: /generate combinations/i });
+async function getGenerateCombinationsDialog() {
+  return within(document.body).findByRole('dialog', { name: /generate combinations/i });
 }
 
 function getGeneratePairwiseButtonWrapper() {
@@ -229,7 +229,7 @@ function createGeneratorInteractionHarness() {
         CapturingDownload.reset();
         applyDeterministicScenarioSeed(scenario.id);
         clickElement(getGeneratePairwiseButton());
-        clickElement(within(getGenerateCombinationsDialog()).getByRole('button', { name: /^generate$/i }));
+        clickElement(within(await getGenerateCombinationsDialog()).getByRole('button', { name: /^generate$/i }));
         await waitFor(() => expect(CapturingDownload.lastDownload?.filename).toMatch(/n-wise-combinations-data/));
         pairwiseCsv = CapturingDownload.lastDownload?.text || '';
       }

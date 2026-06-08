@@ -92,6 +92,7 @@ export class NWiseGenerator {
     this.model = new NWiseCoverageModel(this.parameters, this.strength);
     this.dataRecords = [];
     this.strategyBenchmarkDetails = createStrategyBenchmarkDetails();
+    this.executedRuns = this.algorithm === NWiseAlgorithm.AETG ? this.runs : 1;
     this.benchmarkStats = {
       ...createInitialBenchmarkStats({
         algorithm: this.algorithm,
@@ -197,8 +198,10 @@ export class NWiseGenerator {
     const snapshot = createMeasurementSnapshot();
 
     if (this.algorithm === NWiseAlgorithm.AETG && this.runs > 1 && this.strength !== this.parameters.length) {
+      this.executedRuns = this.runs;
       this.generateBestAetgRun();
     } else {
+      this.executedRuns = 1;
       this.executeStrategyRun();
     }
 
@@ -209,6 +212,7 @@ export class NWiseGenerator {
   generateBestAetgRun() {
     let bestRecords = null;
     let bestStats = null;
+    let bestBenchmarkDetails = null;
 
     for (let runIndex = 0; runIndex < this.runs; runIndex += 1) {
       this.executeStrategyRun(runIndex);
@@ -221,10 +225,12 @@ export class NWiseGenerator {
       ) {
         bestRecords = cloneRecords(this.dataRecords);
         bestStats = stats;
+        bestBenchmarkDetails = { ...this.strategyBenchmarkDetails };
       }
     }
 
     this.dataRecords = bestRecords || [];
+    this.strategyBenchmarkDetails = bestBenchmarkDetails || createStrategyBenchmarkDetails();
     this.model.resetCoverage();
     for (const record of this.dataRecords) {
       this.model.updateCoverage(record);
@@ -251,7 +257,7 @@ export class NWiseGenerator {
       coveredTuples: stats.coveredTuples,
       coveragePercentage: stats.coveragePercentage,
       runtimeMs: measurement.runtimeMs,
-      runs: this.algorithm === NWiseAlgorithm.AETG ? this.runs : 1,
+      runs: this.executedRuns,
       heapUsedBeforeBytes: measurement.memoryBefore?.heapUsed ?? null,
       heapUsedAfterBytes: measurement.memoryAfter?.heapUsed ?? null,
       heapUsedDeltaBytes: computeMemoryDelta(measurement.memoryBefore, measurement.memoryAfter, 'heapUsed'),

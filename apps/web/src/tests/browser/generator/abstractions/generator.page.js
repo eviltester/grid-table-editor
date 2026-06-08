@@ -34,7 +34,7 @@ class GeneratorPage {
   }
 
   async downloadGeneratedPairwiseData() {
-    await this.generateOptions.clickGeneratePairwise();
+    await this.generateOptions.clickGenerateCombinations();
     const dialog = this.page.getByRole('dialog', { name: 'Generate Combinations' });
     await expect(dialog).toBeVisible();
     const downloadPromise = this.page.waitForEvent('download');

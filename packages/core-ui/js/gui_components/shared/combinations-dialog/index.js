@@ -5,7 +5,8 @@ import { CombinationsDialogView } from './combinations-dialog-view.js';
 function createCombinationsDialogComponent({ root, props = {}, callbacks = {}, documentObj } = {}) {
   const resolvedDocumentObj = resolveDocumentObj(documentObj, root);
   const resolvedRoot = root || resolvedDocumentObj?.createElement?.('div');
-  if (!root && resolvedDocumentObj?.body && resolvedRoot) {
+  const ownsRoot = !root;
+  if (ownsRoot && resolvedDocumentObj?.body && resolvedRoot) {
     resolvedDocumentObj.body.appendChild(resolvedRoot);
   }
   const controller = new CombinationsDialogController({ props, callbacks });
@@ -13,6 +14,7 @@ function createCombinationsDialogComponent({ root, props = {}, callbacks = {}, d
     root: resolvedRoot,
     controller,
     documentObj: resolvedDocumentObj,
+    ownsRoot,
   });
   view.mount();
 

@@ -5,7 +5,10 @@
  */
 
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
-import { CombinationsTestDataGenerator } from '@anywaydata/core/data_generation/n-wise/combinationsTestDataGenerator.js';
+import {
+  CombinationAlgorithm,
+  CombinationsTestDataGenerator,
+} from '@anywaydata/core/data_generation/n-wise/combinationsTestDataGenerator.js';
 import { PairwiseTestDataGenerator } from '@anywaydata/core/data_generation/n-wise/pairwiseTestDataGenerator.js';
 import { EnumParser } from '@anywaydata/core/data_generation/utils/enumParser.js';
 import { schemaErrorsToText } from '../../shared/test-data/schema/schema-error-text.js';
@@ -167,12 +170,15 @@ function getGeneratorEnumValueCounts({ syncSchemaRowsFromTextMode, validateSchem
   }
 
   return rows
-    .filter(
-      (row) =>
-        String(row?.sourceType || '')
-          .trim()
-          .toLowerCase() === SOURCE_TYPE_ENUM
-    )
+    .filter((row) => {
+      const sourceType = String(row?.sourceType || '')
+        .trim()
+        .toLowerCase();
+      const command = String(row?.command || '')
+        .trim()
+        .toLowerCase();
+      return sourceType === SOURCE_TYPE_ENUM || (sourceType === SOURCE_TYPE_DOMAIN && command === 'datatype.enum');
+    })
     .map((row) => {
       try {
         return EnumParser.extractEnumValues(buildRuleSpecFromSchemaRow(row)).length;
@@ -379,7 +385,7 @@ async function generateGeneratorCombinationsDataFile({
       algorithm,
       seed: 1,
       candidateCount: 20,
-      runs: algorithm === 'aetg' ? 2 : 1,
+      runs: algorithm === CombinationAlgorithm.AETG ? 2 : 1,
     });
     if (!dataTable) {
       surfacePageError('Failed to generate combinations data.');

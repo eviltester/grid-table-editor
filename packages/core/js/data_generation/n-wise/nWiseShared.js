@@ -31,6 +31,16 @@ export function deserializeTuple(tupleKey) {
 }
 
 export function combinations(items, size) {
+  if (!Array.isArray(items)) {
+    throw new Error('combinations expects items to be an array.');
+  }
+  if (!Number.isInteger(size) || size < 0) {
+    throw new Error('combinations expects size to be a non-negative integer.');
+  }
+  if (size === 0 || size > items.length) {
+    return [];
+  }
+
   const results = [];
   const current = [];
 

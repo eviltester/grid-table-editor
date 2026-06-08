@@ -84,23 +84,26 @@ export class CombinationsTestDataGenerator extends PairwiseTestDataGenerator {
   constructor(faker = null, RandExp = null, options = {}) {
     super(faker, RandExp, options);
     this.combinationGenerator = null;
-    this.combinationOptions = {
+    this.defaultCombinationOptions = {
       strength: 2,
       algorithm: CombinationAlgorithm.PAIRWISE,
       seed: 1,
       candidateCount: 20,
       runs: 1,
     };
+    this.combinationOptions = {
+      ...this.defaultCombinationOptions,
+    };
   }
 
   initializeFromRules(rules, options = {}) {
     this.resetGenerationState();
     this.combinationGenerator = null;
-    this.combinationOptions = {
-      ...this.combinationOptions,
+    const nextCombinationOptions = {
+      ...this.defaultCombinationOptions,
       ...options,
-      strength: Number.parseInt(options.strength ?? this.combinationOptions.strength, 10),
-      algorithm: options.algorithm || this.combinationOptions.algorithm,
+      strength: Number.parseInt(options.strength ?? this.defaultCombinationOptions.strength, 10),
+      algorithm: options.algorithm || this.defaultCombinationOptions.algorithm,
     };
 
     try {
@@ -120,26 +123,27 @@ export class CombinationsTestDataGenerator extends PairwiseTestDataGenerator {
       this.enumRules = enumRules;
       this.nonEnumRules = nonEnumRules;
 
-      if (!SUPPORTED_COMBINATION_ALGORITHMS.has(this.combinationOptions.algorithm)) {
-        return errorResponse(`Unsupported combination generation algorithm: ${this.combinationOptions.algorithm}`);
+      if (!SUPPORTED_COMBINATION_ALGORITHMS.has(nextCombinationOptions.algorithm)) {
+        return errorResponse(`Unsupported combination generation algorithm: ${nextCombinationOptions.algorithm}`);
       }
-      if (!Number.isInteger(this.combinationOptions.strength) || this.combinationOptions.strength < 2) {
+      if (!Number.isInteger(nextCombinationOptions.strength) || nextCombinationOptions.strength < 2) {
         return errorResponse('Combination generation strength must be an integer of at least 2');
       }
-      if (this.enumRules.length < this.combinationOptions.strength) {
+      if (this.enumRules.length < nextCombinationOptions.strength) {
         return errorResponse(
-          `Combination generation strength ${this.combinationOptions.strength} requires at least ${this.combinationOptions.strength} ENUM parameters`
+          `Combination generation strength ${nextCombinationOptions.strength} requires at least ${nextCombinationOptions.strength} ENUM parameters`
         );
       }
       if (
         [CombinationAlgorithm.PAIRWISE, CombinationAlgorithm.BACH_ALLPAIRS].includes(
-          this.combinationOptions.algorithm
+          nextCombinationOptions.algorithm
         ) &&
-        this.combinationOptions.strength !== 2
+        nextCombinationOptions.strength !== 2
       ) {
         return errorResponse('Pairwise algorithms only support strength 2');
       }
 
+      this.combinationOptions = nextCombinationOptions;
       const parameters = this.convertEnumRulesToParameters(this.enumRules);
       const enumCombinations = this.generateEnumCombinations(parameters);
 
@@ -220,11 +224,17 @@ export class CombinationsTestDataGenerator extends PairwiseTestDataGenerator {
       return { available: false };
     }
 
+    const coverageStats = this.combinationGenerator.getCoverageStats();
+    const totalTuples = coverageStats.totalTuples ?? coverageStats.totalPairs ?? 0;
+    const coveredTuples = coverageStats.coveredTuples ?? coverageStats.coveredPairs ?? 0;
+
     return {
       available: true,
       algorithm: this.combinationOptions.algorithm,
       strength: this.combinationOptions.strength,
-      ...this.combinationGenerator.getCoverageStats(),
+      ...coverageStats,
+      totalTuples,
+      coveredTuples,
     };
   }
 }

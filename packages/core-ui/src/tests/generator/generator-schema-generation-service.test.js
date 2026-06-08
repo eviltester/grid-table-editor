@@ -90,4 +90,23 @@ describe('generator schema generation service', () => {
 
     expect(isVisible).toBe(true);
   });
+
+  test('includes domain datatype.enum rows when collecting enum value counts', () => {
+    const service = createGeneratorSchemaGenerationService({
+      syncSchemaRowsFromTextMode: jest.fn(() => ({
+        rows: [
+          { name: 'Status', sourceType: 'domain', command: 'datatype.enum', params: 'active,inactive,pending' },
+          { name: 'Priority', sourceType: 'enum', value: 'enum(high,low)' },
+        ],
+        errors: [],
+      })),
+      validateSchemaRows: jest.fn((rows) => ({ rows, errors: [] })),
+      schemaRowsToSpec: jest.fn(),
+      TestDataGeneratorClass: class FakeGenerator {},
+      faker: {},
+      RandExp: function RandExp() {},
+    });
+
+    expect(service.getEnumValueCounts()).toEqual([3, 2]);
+  });
 });

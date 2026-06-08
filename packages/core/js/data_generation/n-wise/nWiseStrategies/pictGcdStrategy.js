@@ -29,14 +29,16 @@ function selectBestPictBinding(context, record) {
 
 export function generatePictGcdRecords(context) {
   const { model, dataRecords } = context;
+  let exhaustedTargets = false;
 
-  while (!model.isFullyCovered()) {
+  while (!model.isFullyCovered() && !exhaustedTargets) {
     let record = new Map();
 
     while (record.size < context.parameters.length) {
       if (record.size === 0) {
         const seedTuple = selectRandomOpenTuple(model, selectMostOpenTarget(model, context.random), context.random);
         if (!seedTuple) {
+          exhaustedTargets = true;
           break;
         }
         record = model.createRecordFromTuple(seedTuple);
@@ -47,6 +49,10 @@ export function generatePictGcdRecords(context) {
         }
         record.set(bestBinding.parameter.name, bestBinding.value);
       }
+    }
+
+    if (exhaustedTargets) {
+      break;
     }
 
     record = completeRecord(model, context.parameters, record);

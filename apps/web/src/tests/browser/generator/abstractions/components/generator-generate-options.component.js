@@ -29,7 +29,7 @@ class GeneratorGenerateOptionsComponent {
     await this.generateDataButton.click();
   }
 
-  async clickGeneratePairwise() {
+  async clickGenerateCombinations() {
     await this.generateCombinationsButton.click();
   }
 }

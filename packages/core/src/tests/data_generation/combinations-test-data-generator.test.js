@@ -41,6 +41,29 @@ describe('CombinationsTestDataGenerator', () => {
     );
   });
 
+  test('normalizes pairwise coverage stats to stable tuple fields', () => {
+    const generator = new CombinationsTestDataGenerator();
+    const initResult = generator.initializeFromRules(createRules(3), {
+      strength: 2,
+      algorithm: CombinationAlgorithm.PAIRWISE,
+    });
+
+    expect(initResult.isError).toBe(false);
+    expect(generator.getStats()).toEqual(
+      expect.objectContaining({
+        available: true,
+        algorithm: CombinationAlgorithm.PAIRWISE,
+        strength: 2,
+        totalPairs: expect.any(Number),
+        coveredPairs: expect.any(Number),
+        totalTuples: expect.any(Number),
+        coveredTuples: expect.any(Number),
+      })
+    );
+    expect(generator.getStats().totalTuples).toBe(generator.getStats().totalPairs);
+    expect(generator.getStats().coveredTuples).toBe(generator.getStats().coveredPairs);
+  });
+
   test('generates strength 2 rows with Bach AllPairs', () => {
     const generator = new CombinationsTestDataGenerator();
     const initResult = generator.initializeFromRules(createRules(6), {
@@ -149,5 +172,62 @@ describe('CombinationsTestDataGenerator', () => {
         algorithm: CombinationAlgorithm.BACH_ALLPAIRS,
       }).errorMessage
     ).toMatch(/only support strength 2/);
+    expect(
+      generator.initializeFromRules(createRules(3), {
+        strength: 2,
+        algorithm: CombinationAlgorithm.PAIRWISE,
+      }).isError
+    ).toBe(false);
+  });
+
+  test('resets combination options back to defaults between initialize calls', () => {
+    const generator = new CombinationsTestDataGenerator();
+
+    const firstInit = generator.initializeFromRules(createRules(4), {
+      strength: 4,
+      algorithm: CombinationAlgorithm.GREEDY,
+    });
+    expect(firstInit.isError).toBe(false);
+    expect(generator.getStats()).toEqual(
+      expect.objectContaining({
+        available: true,
+        algorithm: CombinationAlgorithm.GREEDY,
+        strength: 4,
+      })
+    );
+
+    const secondInit = generator.initializeFromRules(createRules(2));
+    expect(secondInit.isError).toBe(false);
+    expect(generator.getStats()).toEqual(
+      expect.objectContaining({
+        available: true,
+        algorithm: CombinationAlgorithm.PAIRWISE,
+        strength: 2,
+      })
+    );
+  });
+
+  test('does not persist invalid options after a failed initialization attempt', () => {
+    const generator = new CombinationsTestDataGenerator();
+
+    const invalidInit = generator.initializeFromRules(createRules(3), {
+      strength: 3,
+      algorithm: CombinationAlgorithm.PAIRWISE,
+    });
+    expect(invalidInit.isError).toBe(true);
+    expect(generator.getStats()).toEqual({ available: false });
+
+    const validInit = generator.initializeFromRules(createRules(3), {
+      strength: 2,
+      algorithm: CombinationAlgorithm.PAIRWISE,
+    });
+    expect(validInit.isError).toBe(false);
+    expect(generator.getStats()).toEqual(
+      expect.objectContaining({
+        available: true,
+        algorithm: CombinationAlgorithm.PAIRWISE,
+        strength: 2,
+      })
+    );
   });
 });

@@ -3,6 +3,7 @@ import { BachAllPairsGenerator } from '../../../packages/core/js/data_generation
 import { CartesianProductGenerator } from '../../../packages/core/js/data_generation/n-wise/combinationsTestDataGenerator.js';
 import { NWiseGenerator } from '../../../packages/core/js/data_generation/n-wise/nWiseGenerator.js';
 import { EnumParser } from '../../../packages/core/js/data_generation/utils/enumParser.js';
+import { isExplicitEnumRule } from '../../../packages/core/js/data_generation/utils/enum-rule-detection.js';
 import {
   CombinationAlgorithm,
   COMBINATION_STRATEGIES,
@@ -52,16 +53,6 @@ function normaliseAlgorithmLabel(algorithm) {
   return strategy?.label || algorithm;
 }
 
-function isEnumRule(ruleSpec) {
-  const spec = String(ruleSpec || '').trim();
-  return (
-    EnumParser.isAwdEnumFormat(spec) ||
-    EnumParser.isShorthandEnumFormat(spec) ||
-    spec.includes(',') ||
-    (spec.startsWith('(') && spec.endsWith(')') && spec.includes(','))
-  );
-}
-
 function parseEnumParameters(schemaText) {
   const contentLines = String(schemaText || '')
     .split(/\r?\n/)
@@ -77,7 +68,7 @@ function parseEnumParameters(schemaText) {
       errors.push('Schema must use pairs of lines: column name followed by generation rule.');
       break;
     }
-    if (!isEnumRule(ruleSpec)) {
+    if (!isExplicitEnumRule(ruleSpec)) {
       continue;
     }
     try {
@@ -346,6 +337,19 @@ function generateCombinatorial() {
   renderSummary(results, parameters, strength);
   renderDetails(results);
   generateButton.disabled = false;
+  const failedRuns = results.filter((result) => result.error).length;
+  if (failedRuns > 0) {
+    const successfulRuns = results.length - failedRuns;
+    const severity = successfulRuns > 0 ? 'warning' : 'error';
+    setStatus(
+      `Completed ${results.length} strategy runs for ${strength}-wise coverage with ${failedRuns} failure${
+        failedRuns === 1 ? '' : 's'
+      }.`,
+      severity
+    );
+    return;
+  }
+
   setStatus(`Completed ${results.length} strategy runs for ${strength}-wise coverage.`, 'success');
 }
 

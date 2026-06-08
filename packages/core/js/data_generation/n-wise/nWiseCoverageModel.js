@@ -3,9 +3,22 @@ import { combinations, cartesianProduct, serializeTuple } from './nWiseShared.js
 export class NWiseCoverageModel {
   constructor(parameters, strength) {
     this.parameters = parameters;
-    this.strength = strength;
+    this.strength = this.validateStrength(strength);
     this.coverageTargets = this.createCoverageTargets();
     this.coverage = this.createCoverageForTargets(this.coverageTargets);
+  }
+
+  validateStrength(strength) {
+    if (!Number.isInteger(strength)) {
+      throw new Error('NWiseCoverageModel strength must be an integer.');
+    }
+    if (strength < 1) {
+      throw new Error('NWiseCoverageModel strength must be at least 1.');
+    }
+    if (strength > this.parameters.length) {
+      throw new Error('NWiseCoverageModel strength cannot exceed the number of parameters.');
+    }
+    return strength;
   }
 
   createCoverageTargets({ parameterLimit = this.parameters.length } = {}) {

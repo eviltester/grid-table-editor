@@ -224,4 +224,75 @@ describe('generation-controller', () => {
     expect(table.rows).toEqual([['x', 'y', 'z']]);
     expect(table.__combinationStats).toEqual({ strength: 3, algorithm: 'greedy' });
   });
+
+  test('returns null when combinations initialization fails', () => {
+    class FakeCombinationsGenerator {
+      initializeFromRules() {
+        return { isError: true, errorMessage: 'bad init' };
+      }
+    }
+
+    const table = createCombinationsDataTable({
+      generator: { testDataRules: () => [{ type: 'enum' }, { type: 'enum' }] },
+      CombinationsTestDataGeneratorClass: FakeCombinationsGenerator,
+      GenericDataTableClass: FakeGenericDataTable,
+      faker: {},
+      RandExp: function RandExp() {},
+      options: { strength: 2, algorithm: 'pairwise' },
+    });
+
+    expect(table).toBeNull();
+  });
+
+  test('returns null when combinations generation fails after initialization', () => {
+    class FakeCombinationsGenerator {
+      initializeFromRules() {
+        return { isError: false };
+      }
+      generateAllDataRecordsAsRows() {
+        return { isError: true, errorMessage: 'bad generation' };
+      }
+    }
+
+    const table = createCombinationsDataTable({
+      generator: { testDataRules: () => [{ type: 'enum' }, { type: 'enum' }] },
+      CombinationsTestDataGeneratorClass: FakeCombinationsGenerator,
+      GenericDataTableClass: FakeGenericDataTable,
+      faker: {},
+      RandExp: function RandExp() {},
+      options: { strength: 2, algorithm: 'pairwise' },
+    });
+
+    expect(table).toBeNull();
+  });
+
+  test('falls back to null combination stats when combinations output omits stats', () => {
+    class FakeCombinationsGenerator {
+      initializeFromRules() {
+        return { isError: false };
+      }
+      generateAllDataRecordsAsRows() {
+        return {
+          isError: false,
+          data: {
+            data: [
+              ['A', 'B'],
+              ['x', 'y'],
+            ],
+          },
+        };
+      }
+    }
+
+    const table = createCombinationsDataTable({
+      generator: { testDataRules: () => [{ type: 'enum' }, { type: 'enum' }] },
+      CombinationsTestDataGeneratorClass: FakeCombinationsGenerator,
+      GenericDataTableClass: FakeGenericDataTable,
+      faker: {},
+      RandExp: function RandExp() {},
+      options: { strength: 2, algorithm: 'pairwise' },
+    });
+
+    expect(table.__combinationStats).toBeNull();
+  });
 });

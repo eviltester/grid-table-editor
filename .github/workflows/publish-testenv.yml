@@ -1,4 +1,5 @@
 name: Publish Test Environment
+# Deploys the test environment to GitHub Pages on push to master or manual trigger
 
 on:
   push:

@@ -4,13 +4,16 @@
 const {themes} = require('prism-react-renderer');
 const lightTheme = themes.github;
 const darkTheme = themes.dracula;
+const siteUrl = process.env.DOCS_SITE_URL || 'https://anywaydata.com';
+const baseUrl = process.env.DOCS_BASE_URL || '/';
+const appUrl = new URL(`.${baseUrl}app.html`, `${siteUrl}/`).toString();
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'AnyWayData - Data Table Editor & Generator',
   tagline: 'Edit and Generate Test Data in Your Browser',
-  url: 'https://anywaydata.com',
-  baseUrl: '/',
+  url: siteUrl,
+  baseUrl,
   onBrokenLinks: 'throw',
   markdown: {
     hooks: {
@@ -70,7 +73,7 @@ const config = {
         //  src: 'img/logo.svg',
         //},
         items: [
-          {href: 'https://anywaydata.com/app.html', label: 'App', position: 'left'},
+          {href: appUrl, label: 'App', position: 'left'},
           {
             type: 'doc',
             docId: 'intro',

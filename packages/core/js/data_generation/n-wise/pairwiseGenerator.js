@@ -174,6 +174,11 @@ export class PairwiseGenerator {
         const val2 = record.get(param2.name);
         const valuePair = this.serializeTuple(val1, val2);
 
+        const targetPairs = this.allPairs.get(pairKey);
+        if (!targetPairs.has(valuePair)) {
+          continue;
+        }
+
         const covered = this.coverage.get(pairKey);
         if (!covered.has(valuePair)) {
           score++;
@@ -198,7 +203,9 @@ export class PairwiseGenerator {
         const val2 = record.get(param2.name);
         const valuePair = this.serializeTuple(val1, val2);
 
-        this.coverage.get(pairKey).add(valuePair);
+        if (this.allPairs.get(pairKey).has(valuePair)) {
+          this.coverage.get(pairKey).add(valuePair);
+        }
       }
     }
   }

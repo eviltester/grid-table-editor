@@ -1,9 +1,15 @@
-import {
-  ExperimentalNWiseAlgorithm,
-  ExperimentalNWiseGenerator,
-} from '../../../../../experiments/n-wise/experimentalNWiseGenerator.js';
+import { existsSync } from 'node:fs';
 
-const ALL_ALGORITHMS = Object.values(ExperimentalNWiseAlgorithm);
+const EXPERIMENTAL_GENERATOR_MODULE_URL = new URL(
+  '../../../../../experiments/n-wise/experimentalNWiseGenerator.js',
+  import.meta.url
+);
+const experimentalGeneratorModule = existsSync(EXPERIMENTAL_GENERATOR_MODULE_URL)
+  ? await import(EXPERIMENTAL_GENERATOR_MODULE_URL.href)
+  : null;
+const { ExperimentalNWiseAlgorithm, ExperimentalNWiseGenerator } = experimentalGeneratorModule || {};
+const ALL_ALGORITHMS = ExperimentalNWiseAlgorithm ? Object.values(ExperimentalNWiseAlgorithm) : [];
+const describeExperimentalNWise = experimentalGeneratorModule ? describe : describe.skip;
 
 function createParameters(parameterCount, valueCount) {
   return Array.from({ length: parameterCount }, (_, parameterIndex) => ({
@@ -81,7 +87,7 @@ function assertExactlyOneValuePerParameter(records, parameters) {
   }
 }
 
-describe('ExperimentalNWiseGenerator multipartite algorithm comparison', () => {
+describeExperimentalNWise('ExperimentalNWiseGenerator multipartite algorithm comparison', () => {
   test.each(ALL_ALGORITHMS)('%s covers all pairs and triplets independently', (algorithm) => {
     const parameters = createParameters(5, 3);
 

@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Combinatorial Test Environment - AnyWayData</title>
+    <meta
+      name="description"
+      content="Experimental combinatorial test environment for comparing n-wise generation strategies against an AnyWayData schema."
+    />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="author" content="Alan Richardson" />
+    <script type="module" src="/src/combinatorial-entry.js"></script>
+
+    <script defer data-domain="anywaydata.com" src="https://plausible.io/js/plausible.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="styles.css" />
+  </head>
+
+  <body>
+    <div class="header" data-role="theme-toggle-host">
+      <div class="pageheading"><a href="/">AnyWayData</a></div>
+      <div class="mainmenu"><a href="/app.html">App</a></div>
+      <div class="mainmenu"><a href="/generator.html">Generator</a></div>
+      <div class="mainmenu"><a href="/docs/intro">Docs</a></div>
+      <div class="mainmenu"><a href="/blog">Blog</a></div>
+    </div>
+
+    <main class="combinatorial-page" id="combinatorial-root">
+      <section class="combinatorial-intro">
+        <h1>Combinatorial Strategies</h1>
+        <p>
+          Compare n-wise generation strategies against an AnyWayData enum schema. This experimental page runs each
+          selected strategy and reports coverage, row count, and runtime.
+        </p>
+      </section>
+
+      <section class="combinatorial-workspace" aria-label="Combinatorial configuration">
+        <div class="combinatorial-schema-panel">
+          <label class="combinatorial-label" for="combinatorial-schema">Schema</label>
+          <textarea id="combinatorial-schema" class="combinatorial-schema-editor" spellcheck="false"></textarea>
+        </div>
+
+        <div class="combinatorial-options-panel">
+          <label class="combinatorial-label" for="combinatorial-strength">n</label>
+          <select id="combinatorial-strength"></select>
+
+          <fieldset class="combinatorial-strategy-fieldset">
+            <legend>Strategies</legend>
+            <div id="combinatorial-strategies" class="combinatorial-strategy-checkboxes"></div>
+          </fieldset>
+
+          <button id="generate-combinatorial" class="combinatorial-generate-button" type="button">
+            Generate Combinatorial
+          </button>
+
+          <p id="combinatorial-status" class="combinatorial-status" role="status" aria-live="polite"></p>
+        </div>
+      </section>
+
+      <section class="combinatorial-results" aria-label="Combinatorial results">
+        <h2>Strategy Metrics</h2>
+        <div id="combinatorial-summary"></div>
+
+        <h2>Generated Data</h2>
+        <div id="combinatorial-details"></div>
+      </section>
+    </main>
+  </body>
+</html>

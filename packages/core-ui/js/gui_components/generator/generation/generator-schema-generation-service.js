@@ -1,4 +1,8 @@
-import { createConfiguredGeneratorForPage, countGeneratorEnumColumns } from './data-generator-generation-actions.js';
+import {
+  createConfiguredGeneratorForPage,
+  countGeneratorEnumColumns,
+  getGeneratorEnumValueCounts,
+} from './data-generator-generation-actions.js';
 import { updateGeneratorPairwiseButtonVisibility } from './data-generator-generation-actions.js';
 
 function createGeneratorSchemaGenerationService({
@@ -23,6 +27,13 @@ function createGeneratorSchemaGenerationService({
 
     countEnumColumns() {
       return countGeneratorEnumColumns({
+        syncSchemaRowsFromTextMode,
+        validateSchemaRows,
+      });
+    },
+
+    getEnumValueCounts() {
+      return getGeneratorEnumValueCounts({
         syncSchemaRowsFromTextMode,
         validateSchemaRows,
       });

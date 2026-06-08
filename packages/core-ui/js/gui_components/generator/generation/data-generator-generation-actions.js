@@ -7,6 +7,7 @@
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 import { CombinationsTestDataGenerator } from '@anywaydata/core/data_generation/n-wise/combinationsTestDataGenerator.js';
 import { PairwiseTestDataGenerator } from '@anywaydata/core/data_generation/n-wise/pairwiseTestDataGenerator.js';
+import { EnumParser } from '@anywaydata/core/data_generation/utils/enumParser.js';
 import { schemaErrorsToText } from '../../shared/test-data/schema/schema-error-text.js';
 import {
   createConfiguredGeneratorFromSchemaRows,
@@ -152,6 +153,34 @@ function countGeneratorEnumColumns({ syncSchemaRowsFromTextMode, validateSchemaR
         .trim()
         .toLowerCase() === SOURCE_TYPE_ENUM
   ).length;
+}
+
+function getGeneratorEnumValueCounts({ syncSchemaRowsFromTextMode, validateSchemaRows }) {
+  const parsed = syncSchemaRowsFromTextMode({ showErrors: false, applySemanticValidation: false });
+  if (parsed.errors?.length > 0) {
+    return [];
+  }
+
+  const { errors, rows } = validateSchemaRows(parsed.rows);
+  if (errors.length > 0) {
+    return [];
+  }
+
+  return rows
+    .filter(
+      (row) =>
+        String(row?.sourceType || '')
+          .trim()
+          .toLowerCase() === SOURCE_TYPE_ENUM
+    )
+    .map((row) => {
+      try {
+        return EnumParser.extractEnumValues(buildRuleSpecFromSchemaRow(row)).length;
+      } catch {
+        return 0;
+      }
+    })
+    .filter((count) => count > 0);
 }
 
 function previewGeneratorData({
@@ -386,6 +415,7 @@ export {
   renderGeneratorOutputPreview,
   updateGeneratorPairwiseButtonVisibility,
   countGeneratorEnumColumns,
+  getGeneratorEnumValueCounts,
   previewGeneratorData,
   generateGeneratorDataFile,
   generateGeneratorAllPairsDataFile,

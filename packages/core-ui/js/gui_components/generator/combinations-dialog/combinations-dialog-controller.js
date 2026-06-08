@@ -9,9 +9,10 @@ class CombinationsDialogController {
   constructor({ props = {}, callbacks = {} } = {}) {
     this.callbacks = callbacks;
     const enumColumnCount = Number.parseInt(props.enumColumnCount, 10) || 0;
+    const enumValueCounts = Array.isArray(props.enumValueCounts) ? [...props.enumValueCounts] : [];
     const strengths = getAvailableStrengths(enumColumnCount);
     const selectedStrength = strengths.includes(props.selectedStrength) ? props.selectedStrength : strengths[0] || 2;
-    const strategies = getStrategiesForStrength(selectedStrength);
+    const strategies = getStrategiesForStrength(selectedStrength, { valueCounts: enumValueCounts });
     const selectedAlgorithm = strategies.some((strategy) => strategy.id === props.selectedAlgorithm)
       ? props.selectedAlgorithm
       : strategies[0]?.id || CombinationAlgorithm.PAIRWISE;
@@ -19,6 +20,7 @@ class CombinationsDialogController {
     this.state = {
       open: false,
       enumColumnCount,
+      enumValueCounts,
       strengths,
       selectedStrength,
       selectedAlgorithm,
@@ -30,16 +32,20 @@ class CombinationsDialogController {
     return {
       ...this.state,
       strengths: [...this.state.strengths],
+      enumValueCounts: [...this.state.enumValueCounts],
       strategies: [...this.state.strategies],
     };
   }
 
   open(props = {}) {
     const enumColumnCount = Number.parseInt(props.enumColumnCount ?? this.state.enumColumnCount, 10) || 0;
+    const enumValueCounts = Array.isArray(props.enumValueCounts)
+      ? [...props.enumValueCounts]
+      : this.state.enumValueCounts;
     const strengths = getAvailableStrengths(enumColumnCount);
     const requestedStrength = Number.parseInt(props.selectedStrength ?? this.state.selectedStrength, 10);
     const selectedStrength = strengths.includes(requestedStrength) ? requestedStrength : strengths[0] || 2;
-    const strategies = getStrategiesForStrength(selectedStrength);
+    const strategies = getStrategiesForStrength(selectedStrength, { valueCounts: enumValueCounts });
     const requestedAlgorithm = props.selectedAlgorithm ?? this.state.selectedAlgorithm;
     const selectedAlgorithm = strategies.some((strategy) => strategy.id === requestedAlgorithm)
       ? requestedAlgorithm
@@ -48,6 +54,7 @@ class CombinationsDialogController {
     this.state = {
       open: true,
       enumColumnCount,
+      enumValueCounts,
       strengths,
       selectedStrength,
       selectedAlgorithm,
@@ -65,7 +72,7 @@ class CombinationsDialogController {
     if (!this.state.strengths.includes(parsedStrength)) {
       return;
     }
-    const strategies = getStrategiesForStrength(parsedStrength);
+    const strategies = getStrategiesForStrength(parsedStrength, { valueCounts: this.state.enumValueCounts });
     const selectedAlgorithm = strategies.some((strategy) => strategy.id === this.state.selectedAlgorithm)
       ? this.state.selectedAlgorithm
       : strategies[0]?.id || CombinationAlgorithm.PAIRWISE;

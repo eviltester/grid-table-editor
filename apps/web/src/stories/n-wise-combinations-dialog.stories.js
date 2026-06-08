@@ -33,6 +33,7 @@ function renderDialogStory(args) {
   const openDialog = () =>
     component.open({
       enumColumnCount: args.enumColumnCount,
+      enumValueCounts: args.enumValueCounts,
       selectedStrength: args.selectedStrength,
       selectedAlgorithm: args.selectedAlgorithm,
     });
@@ -58,6 +59,7 @@ const meta = {
   },
   args: {
     enumColumnCount: 4,
+    enumValueCounts: [3, 3, 3, 3],
     selectedStrength: 2,
     selectedAlgorithm: CombinationAlgorithm.PAIRWISE,
     openOnRender: true,
@@ -66,6 +68,10 @@ const meta = {
     enumColumnCount: {
       control: { type: 'number', min: 0, max: 8, step: 1 },
       description: 'Number of enum columns in the current schema. Valid n values are 2 through this count.',
+    },
+    enumValueCounts: {
+      control: 'object',
+      description: 'Value counts for enum columns, used to calculate the Cartesian Product strategy row count.',
     },
     selectedStrength: {
       control: { type: 'number', min: 2, max: 8, step: 1 },
@@ -96,7 +102,7 @@ export const StrengthFiltering = {
     docs: {
       description: {
         story:
-          'Demonstrates valid n values for a four-enum schema with 3-wise selected. The current pairwise strategy is not available because the current pairwise implementation only supports strength 2.',
+          'Demonstrates valid n values for a four-enum schema with 3-wise selected. Pairwise strategies are not available because they only support strength 2.',
       },
     },
   },

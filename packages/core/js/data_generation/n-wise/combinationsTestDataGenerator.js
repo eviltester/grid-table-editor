@@ -1,15 +1,84 @@
 import { PairwiseGenerator } from './pairwiseGenerator.js';
+import { BachAllPairsGenerator } from './bachAllPairsGenerator.js';
 import { NWiseAlgorithm, NWiseGenerator } from './nWiseGenerator.js';
+import { NWiseCoverageModel } from './nWiseCoverageModel.js';
+import { cartesianProduct } from './nWiseShared.js';
 import { dataResponse, errorResponse } from '../ruleResponse.js';
 import { EnumParser } from '../utils/enumParser.js';
 import { PairwiseTestDataGenerator } from './pairwiseTestDataGenerator.js';
 
 export const CombinationAlgorithm = Object.freeze({
   PAIRWISE: 'pairwise',
+  BACH_ALLPAIRS: 'bach-allpairs',
+  CARTESIAN_PRODUCT: 'cartesian-product',
   ...NWiseAlgorithm,
 });
 
 export const SUPPORTED_COMBINATION_ALGORITHMS = new Set(Object.values(CombinationAlgorithm));
+
+export class CartesianProductGenerator {
+  constructor(parameters, { strength = parameters.length } = {}) {
+    this.parameters = parameters;
+    this.strength = strength;
+    this.model = new NWiseCoverageModel(parameters, strength);
+    this.dataRecords = [];
+  }
+
+  generateDataSet() {
+    this.dataRecords = cartesianProduct(this.parameters.map((parameter) => parameter.values)).map((values) => {
+      const record = new Map();
+      for (let index = 0; index < this.parameters.length; index += 1) {
+        record.set(this.parameters[index].name, values[index]);
+      }
+      return record;
+    });
+
+    this.model.resetCoverage();
+    for (const record of this.dataRecords) {
+      this.model.updateCoverage(record);
+    }
+    return this.dataRecords;
+  }
+
+  getCoverageStats() {
+    return {
+      algorithm: CombinationAlgorithm.CARTESIAN_PRODUCT,
+      ...this.model.getCoverageStats(this.dataRecords.length),
+    };
+  }
+
+  getBenchmarkStats() {
+    const stats = this.getCoverageStats();
+    return {
+      algorithm: CombinationAlgorithm.CARTESIAN_PRODUCT,
+      strength: this.strength,
+      parameterCount: this.parameters.length,
+      valueCounts: this.parameters.map((parameter) => parameter.values.length),
+      rowCount: this.dataRecords.length,
+      totalTuples: stats.totalTuples,
+      coveredTuples: stats.coveredTuples,
+      coveragePercentage: stats.coveragePercentage,
+      runtimeMs: 0,
+      runs: 1,
+      heapUsedBeforeBytes: null,
+      heapUsedAfterBytes: null,
+      heapUsedDeltaBytes: null,
+      rssBeforeBytes: null,
+      rssAfterBytes: null,
+      rssDeltaBytes: null,
+    };
+  }
+
+  exportDataRecords() {
+    return this.dataRecords.map((record) => {
+      const exportedRecord = {};
+      for (const [key, value] of record) {
+        exportedRecord[key] = value;
+      }
+      return exportedRecord;
+    });
+  }
+}
 
 export class CombinationsTestDataGenerator extends PairwiseTestDataGenerator {
   constructor(faker = null, RandExp = null, options = {}) {
@@ -63,10 +132,12 @@ export class CombinationsTestDataGenerator extends PairwiseTestDataGenerator {
         );
       }
       if (
-        this.combinationOptions.algorithm === CombinationAlgorithm.PAIRWISE &&
+        [CombinationAlgorithm.PAIRWISE, CombinationAlgorithm.BACH_ALLPAIRS].includes(
+          this.combinationOptions.algorithm
+        ) &&
         this.combinationOptions.strength !== 2
       ) {
-        return errorResponse('The current pairwise implementation only supports strength 2');
+        return errorResponse('Pairwise algorithms only support strength 2');
       }
 
       const parameters = this.convertEnumRulesToParameters(this.enumRules);
@@ -91,6 +162,20 @@ export class CombinationsTestDataGenerator extends PairwiseTestDataGenerator {
       this.pairwiseGenerator = new PairwiseGenerator(parameters);
       this.combinationGenerator = this.pairwiseGenerator;
       return this.pairwiseGenerator.generateDataSet();
+    }
+
+    if (this.combinationOptions.algorithm === CombinationAlgorithm.BACH_ALLPAIRS) {
+      this.combinationGenerator = new BachAllPairsGenerator(parameters, {
+        seed: this.combinationOptions.seed,
+      });
+      return this.combinationGenerator.generateDataSet();
+    }
+
+    if (this.combinationOptions.algorithm === CombinationAlgorithm.CARTESIAN_PRODUCT) {
+      this.combinationGenerator = new CartesianProductGenerator(parameters, {
+        strength: this.combinationOptions.strength,
+      });
+      return this.combinationGenerator.generateDataSet();
     }
 
     this.combinationGenerator = new NWiseGenerator(parameters, {

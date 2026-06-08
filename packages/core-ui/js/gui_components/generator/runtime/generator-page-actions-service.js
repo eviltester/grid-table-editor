@@ -109,13 +109,14 @@ function createGeneratorPageActionsService({
 
     openGenerateCombinationsDialog() {
       const enumColumnCount = getResolvedSchemaGenerationService()?.countEnumColumns?.() || 0;
+      const enumValueCounts = getResolvedSchemaGenerationService()?.getEnumValueCounts?.() || [];
       if (enumColumnCount < 2) {
         getResolvedSchemaRuntime()?.surfacePageError?.(
           'Combination generation requires at least 2 enum columns because n-wise generation combines finite enum values.'
         );
         return false;
       }
-      ensureCombinationsDialog(actions).open({ enumColumnCount });
+      ensureCombinationsDialog(actions).open({ enumColumnCount, enumValueCounts });
       return true;
     },
 

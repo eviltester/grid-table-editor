@@ -3,7 +3,7 @@ import {
   SUPPORTED_COMBINATION_ALGORITHMS,
 } from '@anywaydata/core/data_generation/n-wise/combinationsTestDataGenerator.js';
 
-const N_WISE_DOCS_URL = 'docs/n-wise-generation.html';
+const N_WISE_DOCS_URL = '/docs/test-data/n-wise-testing';
 
 const COMBINATION_STRATEGY_ROW_COUNT_ORDER = Object.freeze({
   2: [
@@ -11,9 +11,11 @@ const COMBINATION_STRATEGY_ROW_COUNT_ORDER = Object.freeze({
     CombinationAlgorithm.AETG,
     CombinationAlgorithm.COMPATIBILITY_GRAPH,
     CombinationAlgorithm.HYPERGRAPH_VERTEX,
+    CombinationAlgorithm.BACH_ALLPAIRS,
     CombinationAlgorithm.PAIRWISE,
     CombinationAlgorithm.GREEDY,
     CombinationAlgorithm.IPOG,
+    CombinationAlgorithm.CARTESIAN_PRODUCT,
   ],
   3: [
     CombinationAlgorithm.GREEDY,
@@ -22,6 +24,7 @@ const COMBINATION_STRATEGY_ROW_COUNT_ORDER = Object.freeze({
     CombinationAlgorithm.PICT_GCD,
     CombinationAlgorithm.HYPERGRAPH_VERTEX,
     CombinationAlgorithm.COMPATIBILITY_GRAPH,
+    CombinationAlgorithm.CARTESIAN_PRODUCT,
   ],
   4: [
     CombinationAlgorithm.AETG,
@@ -30,6 +33,7 @@ const COMBINATION_STRATEGY_ROW_COUNT_ORDER = Object.freeze({
     CombinationAlgorithm.HYPERGRAPH_VERTEX,
     CombinationAlgorithm.IPOG,
     CombinationAlgorithm.COMPATIBILITY_GRAPH,
+    CombinationAlgorithm.CARTESIAN_PRODUCT,
   ],
   5: [
     CombinationAlgorithm.GREEDY,
@@ -38,6 +42,7 @@ const COMBINATION_STRATEGY_ROW_COUNT_ORDER = Object.freeze({
     CombinationAlgorithm.HYPERGRAPH_VERTEX,
     CombinationAlgorithm.PICT_GCD,
     CombinationAlgorithm.COMPATIBILITY_GRAPH,
+    CombinationAlgorithm.CARTESIAN_PRODUCT,
   ],
   6: [
     CombinationAlgorithm.GREEDY,
@@ -46,17 +51,26 @@ const COMBINATION_STRATEGY_ROW_COUNT_ORDER = Object.freeze({
     CombinationAlgorithm.AETG,
     CombinationAlgorithm.HYPERGRAPH_VERTEX,
     CombinationAlgorithm.COMPATIBILITY_GRAPH,
+    CombinationAlgorithm.CARTESIAN_PRODUCT,
   ],
 });
 
 const COMBINATION_STRATEGIES = Object.freeze([
   {
     id: CombinationAlgorithm.PAIRWISE,
-    label: 'Pairwise (current)',
+    label: 'Pairwise (simple)',
     strengthMin: 2,
     strengthMax: 2,
     description:
       'Pick for legacy-compatible 2-wise output. It is stable and familiar, though PICT and AETG used fewer rows in our sample runs.',
+  },
+  {
+    id: CombinationAlgorithm.BACH_ALLPAIRS,
+    label: 'Bach AllPairs',
+    strengthMin: 2,
+    strengthMax: 2,
+    description:
+      'Pick for 2-wise when you want Bach Allpairs-style pair-frequency balancing. It targets lower row counts than the simple legacy pairwise algorithm while staying fast.',
   },
   {
     id: CombinationAlgorithm.GREEDY,
@@ -100,7 +114,54 @@ const COMBINATION_STRATEGIES = Object.freeze([
     description:
       'Pick as the graph-informed comparator that stays closer on rows than compatibility graph, with higher runtime.',
   },
+  {
+    id: CombinationAlgorithm.CARTESIAN_PRODUCT,
+    label: 'Cartesian Product',
+    strengthMin: 2,
+    description:
+      'Pick only when you intentionally want every full combination rather than a reduced n-wise covering set.',
+  },
 ]);
+
+function normaliseValueCounts(valueCounts = []) {
+  if (!Array.isArray(valueCounts)) {
+    return [];
+  }
+  return valueCounts.map((count) => Number.parseInt(count, 10)).filter((count) => Number.isInteger(count) && count > 0);
+}
+
+function calculateCartesianProductRows(valueCounts = []) {
+  const counts = normaliseValueCounts(valueCounts);
+  if (counts.length === 0) {
+    return 0;
+  }
+  return counts.reduce((total, count) => total * count, 1);
+}
+
+function formatCartesianProductExpression(valueCounts = []) {
+  const counts = normaliseValueCounts(valueCounts);
+  return counts.length > 0 ? counts.join('*') : '?';
+}
+
+function getStrategyDescription(strategy, { valueCounts = [] } = {}) {
+  if (strategy?.id !== CombinationAlgorithm.CARTESIAN_PRODUCT) {
+    return strategy?.description || '';
+  }
+
+  const rowCount = calculateCartesianProductRows(valueCounts);
+  const expression = formatCartesianProductExpression(valueCounts);
+  if (rowCount <= 0) {
+    return strategy.description;
+  }
+  return `Will generate ${rowCount.toLocaleString()} rows to cover (${expression}) combinations.`;
+}
+
+function attachStrategyDescriptions(strategies, options = {}) {
+  return strategies.map((strategy) => ({
+    ...strategy,
+    description: getStrategyDescription(strategy, options),
+  }));
+}
 
 function getAvailableStrengths(enumColumnCount) {
   const count = Number.parseInt(enumColumnCount, 10);
@@ -112,18 +173,19 @@ function getAvailableStrengths(enumColumnCount) {
 
 function getStrengthExplanation(enumColumnCount) {
   const strengths = getAvailableStrengths(enumColumnCount);
+  const introduction = 'Generate rows to cover the enum value combinations.';
   if (strengths.length === 0) {
-    return 'Add at least 2 enum columns to generate combinations. n-wise generation only combines enum columns because those columns have a known finite value set.';
+    return `${introduction} Add at least 2 enum columns to generate combinations. n-wise generation only combines enum columns because those columns have a known finite value set.`;
   }
   const maxStrength = strengths[strengths.length - 1];
-  return `Available n values are 2 through ${maxStrength}. The maximum is ${maxStrength} because this schema has ${enumColumnCount} enum columns, and n cannot be greater than the number of finite enum columns.`;
+  return `${introduction} Available n values are 2 through ${maxStrength}. The maximum is ${maxStrength} because this schema has ${enumColumnCount} enum columns, and n cannot be greater than the number of finite enum columns.`;
 }
 
-function getStrategiesForStrength(strength) {
+function getStrategiesForStrength(strength, options = {}) {
   const parsedStrength = Number.parseInt(strength, 10);
   const rowCountOrder = COMBINATION_STRATEGY_ROW_COUNT_ORDER[parsedStrength] || [];
   const orderIndex = new Map(rowCountOrder.map((algorithm, index) => [algorithm, index]));
-  return COMBINATION_STRATEGIES.filter(
+  const strategies = COMBINATION_STRATEGIES.filter(
     (strategy) =>
       SUPPORTED_COMBINATION_ALGORITHMS.has(strategy.id) &&
       parsedStrength >= strategy.strengthMin &&
@@ -133,6 +195,8 @@ function getStrategiesForStrength(strength) {
     const rightIndex = orderIndex.has(right.id) ? orderIndex.get(right.id) : Number.MAX_SAFE_INTEGER;
     return leftIndex - rightIndex;
   });
+
+  return attachStrategyDescriptions(strategies, options);
 }
 
 function getStrategyById(strategyId) {
@@ -143,8 +207,10 @@ export {
   CombinationAlgorithm,
   N_WISE_DOCS_URL,
   COMBINATION_STRATEGIES,
+  calculateCartesianProductRows,
   getAvailableStrengths,
   getStrengthExplanation,
   getStrategiesForStrength,
   getStrategyById,
+  getStrategyDescription,
 };

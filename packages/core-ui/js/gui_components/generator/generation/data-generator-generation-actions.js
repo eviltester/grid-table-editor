@@ -5,7 +5,7 @@
  */
 
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
-import { PairwiseTestDataGenerator } from '@anywaydata/core/data_generation/all-pairs/pairwiseTestDataGenerator.js';
+import { PairwiseTestDataGenerator } from '@anywaydata/core/data_generation/n-wise/pairwiseTestDataGenerator.js';
 import { schemaErrorsToText } from '../../shared/test-data/schema/schema-error-text.js';
 import {
   createConfiguredGeneratorFromSchemaRows,

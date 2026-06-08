@@ -5,7 +5,7 @@ import { GenericDataTable } from '../js/data_formats/generic-data-table.js';
 import { Exporter } from '../js/grid/exporter.js';
 import { Importer } from '../js/grid/importer.js';
 import { KNOWN_FAKER_COMMANDS } from '../js/faker/faker-commands.js';
-import { PairwiseTestDataGenerator } from '../js/data_generation/all-pairs/pairwiseTestDataGenerator.js';
+import { PairwiseTestDataGenerator } from '../js/data_generation/n-wise/pairwiseTestDataGenerator.js';
 import { parseSchemaText } from '../js/data_generation/schema-conversion.js';
 import { hasSafeFakerLiteralArguments } from '../js/data_generation/faker/safeLiteralArgumentParser.js';
 import {

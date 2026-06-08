@@ -1,5 +1,5 @@
-import { PairwiseGenerator } from '@anywaydata/core/data_generation/all-pairs/pairwiseGenerator.js';
-import { PairwiseTestDataGenerator } from '@anywaydata/core/data_generation/all-pairs/pairwiseTestDataGenerator.js';
+import { PairwiseGenerator } from '@anywaydata/core/data_generation/n-wise/pairwiseGenerator.js';
+import { PairwiseTestDataGenerator } from '@anywaydata/core/data_generation/n-wise/pairwiseTestDataGenerator.js';
 import { TestDataRule, RuleType } from '@anywaydata/core/data_generation/testDataRule.js';
 import { faker } from '@faker-js/faker';
 import {

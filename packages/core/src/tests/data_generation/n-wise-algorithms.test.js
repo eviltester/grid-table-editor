@@ -1,4 +1,4 @@
-import { NWiseAlgorithm, NWiseGenerator } from '@anywaydata/core/data_generation/all-pairs/nWiseGenerator.js';
+import { NWiseAlgorithm, NWiseGenerator } from '@anywaydata/core/data_generation/n-wise/nWiseGenerator.js';
 
 const ALL_ALGORITHMS = Object.values(NWiseAlgorithm);
 
@@ -196,6 +196,12 @@ describe('NWiseGenerator algorithm comparison', () => {
     expectNumberOrNull(stats.rssBeforeBytes);
     expectNumberOrNull(stats.rssAfterBytes);
     expectNumberOrNull(stats.rssDeltaBytes);
+    expect(typeof stats.rowsGeneratedByGraphPhase).toBe('number');
+    expect(typeof stats.rowsGeneratedByFallback).toBe('number');
+    expect(typeof stats.lookaheadEvaluations).toBe('number');
+    expect(typeof stats.candidateEvaluations).toBe('number');
+    expect(typeof stats.seedEdgesConsidered).toBe('number');
+    expect(stats.phaseSwitchRow === null || typeof stats.phaseSwitchRow === 'number').toBe(true);
   });
 });
 

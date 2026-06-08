@@ -93,6 +93,12 @@ export function createVertexId(vertex) {
   return `${vertex.parameterIndex}:${vertex.value}`;
 }
 
+export function getEdgeKey(leftVertex, rightVertex) {
+  const leftId = createVertexId(leftVertex);
+  const rightId = createVertexId(rightVertex);
+  return leftId < rightId ? `${leftId}|${rightId}` : `${rightId}|${leftId}`;
+}
+
 export function hydrateVertex(parameters, parameterIndex, value) {
   return {
     parameterIndex,
@@ -124,6 +130,77 @@ export function getUncoveredTuplesWithVertices(context) {
   }
 
   return tuples;
+}
+
+export function buildNodeIndex(parameters) {
+  return parameters.flatMap((parameter, parameterIndex) =>
+    parameter.values.map((value) => hydrateVertex(parameters, parameterIndex, value))
+  );
+}
+
+export function buildUncoveredTupleIncidence(context) {
+  const nodeWeights = new Map();
+  const edgeWeights = new Map();
+  const uncoveredTuples = [];
+
+  for (const target of context.model.coverageTargets) {
+    const covered = context.model.coverage.get(target.key);
+    for (const tuple of target.tuples) {
+      if (covered.has(tuple.key)) {
+        continue;
+      }
+
+      const vertices = target.subset.map((parameterIndex, valueIndex) =>
+        hydrateVertex(context.parameters, parameterIndex, tuple.values[valueIndex])
+      );
+
+      const uncoveredTuple = {
+        subset: target.subset,
+        values: tuple.values,
+        vertices,
+      };
+      uncoveredTuples.push(uncoveredTuple);
+
+      for (const vertex of vertices) {
+        const vertexId = createVertexId(vertex);
+        nodeWeights.set(vertexId, (nodeWeights.get(vertexId) || 0) + 1);
+      }
+
+      for (let index = 0; index < vertices.length; index += 1) {
+        for (let nextIndex = index + 1; nextIndex < vertices.length; nextIndex += 1) {
+          const edgeKey = getEdgeKey(vertices[index], vertices[nextIndex]);
+          edgeWeights.set(edgeKey, (edgeWeights.get(edgeKey) || 0) + 1);
+        }
+      }
+    }
+  }
+
+  return { uncoveredTuples, nodeWeights, edgeWeights };
+}
+
+export function createUncoveredIncidenceCache(context) {
+  let cachedIncidence = null;
+
+  return {
+    getCurrent() {
+      if (!cachedIncidence) {
+        cachedIncidence = buildUncoveredTupleIncidence(context);
+      }
+      return cachedIncidence;
+    },
+    invalidate() {
+      cachedIncidence = null;
+    },
+  };
+}
+
+export function tupleContainsVertex(tuple, vertex) {
+  const tuplePosition = tuple.subset.indexOf(vertex.parameterIndex);
+  return tuplePosition !== -1 && tuple.values[tuplePosition] === vertex.value;
+}
+
+export function tupleMatchesSelection(tuple, selectedVertices) {
+  return selectedVertices.every((vertex) => tupleContainsVertex(tuple, vertex));
 }
 
 export function pickBestGraphVertex(vertices, scoreLookup, random) {

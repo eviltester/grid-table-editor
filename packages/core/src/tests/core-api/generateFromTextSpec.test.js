@@ -1,5 +1,5 @@
 import { generateFromTextSpec, validateSafeFakerRules, SUPPORTED_FORMATS } from '../../index.js';
-import { PairwiseTestDataGenerator } from '../../../js/data_generation/all-pairs/pairwiseTestDataGenerator.js';
+import { PairwiseTestDataGenerator } from '../../../js/data_generation/n-wise/pairwiseTestDataGenerator.js';
 import {
   assertNoCommonErrorPatternsInRows,
   assertNoCommonErrorPatternsInValue,

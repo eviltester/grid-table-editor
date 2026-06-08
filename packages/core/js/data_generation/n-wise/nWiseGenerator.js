@@ -29,6 +29,23 @@ function createInitialBenchmarkStats({ algorithm, strength, parameters, runs }) 
     rssBeforeBytes: null,
     rssAfterBytes: null,
     rssDeltaBytes: null,
+    rowsGeneratedByGraphPhase: 0,
+    rowsGeneratedByFallback: 0,
+    lookaheadEvaluations: 0,
+    candidateEvaluations: 0,
+    seedEdgesConsidered: 0,
+    phaseSwitchRow: null,
+  };
+}
+
+function createStrategyBenchmarkDetails() {
+  return {
+    rowsGeneratedByGraphPhase: 0,
+    rowsGeneratedByFallback: 0,
+    lookaheadEvaluations: 0,
+    candidateEvaluations: 0,
+    seedEdgesConsidered: 0,
+    phaseSwitchRow: null,
   };
 }
 
@@ -74,6 +91,7 @@ export class NWiseGenerator {
     this.random = createSeededRandom(this.seed);
     this.model = new NWiseCoverageModel(this.parameters, this.strength);
     this.dataRecords = [];
+    this.strategyBenchmarkDetails = createStrategyBenchmarkDetails();
     this.benchmarkStats = {
       ...createInitialBenchmarkStats({
         algorithm: this.algorithm,
@@ -136,6 +154,7 @@ export class NWiseGenerator {
     this.random = createSeededRandom(this.seed + seedOffset);
     this.dataRecords = [];
     this.model.resetCoverage();
+    this.strategyBenchmarkDetails = createStrategyBenchmarkDetails();
   }
 
   createStrategyContext() {
@@ -147,6 +166,7 @@ export class NWiseGenerator {
       random: this.random,
       model: this.model,
       dataRecords: this.dataRecords,
+      benchmarkDetails: this.strategyBenchmarkDetails,
     };
   }
 
@@ -238,6 +258,12 @@ export class NWiseGenerator {
       rssBeforeBytes: measurement.memoryBefore?.rss ?? null,
       rssAfterBytes: measurement.memoryAfter?.rss ?? null,
       rssDeltaBytes: computeMemoryDelta(measurement.memoryBefore, measurement.memoryAfter, 'rss'),
+      rowsGeneratedByGraphPhase: this.strategyBenchmarkDetails.rowsGeneratedByGraphPhase,
+      rowsGeneratedByFallback: this.strategyBenchmarkDetails.rowsGeneratedByFallback,
+      lookaheadEvaluations: this.strategyBenchmarkDetails.lookaheadEvaluations,
+      candidateEvaluations: this.strategyBenchmarkDetails.candidateEvaluations,
+      seedEdgesConsidered: this.strategyBenchmarkDetails.seedEdgesConsidered,
+      phaseSwitchRow: this.strategyBenchmarkDetails.phaseSwitchRow,
     };
   }
 

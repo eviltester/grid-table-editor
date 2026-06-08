@@ -19,7 +19,7 @@ import {
   dataRulesToSchemaText,
   schemaRowsToDataRules,
 } from '@anywaydata/core/data_generation/schema-rules-adapter.js';
-import { PairwiseTestDataGenerator } from '@anywaydata/core/data_generation/all-pairs/pairwiseTestDataGenerator.js';
+import { PairwiseTestDataGenerator } from '@anywaydata/core/data_generation/n-wise/pairwiseTestDataGenerator.js';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 import { identifyFakerCommands, getMethodPickerOptions, FAKER_COMMANDS } from '../schema/test-data-command-catalog.js';
 import {

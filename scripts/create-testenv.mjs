@@ -296,6 +296,7 @@ runCommand('pnpm', ['exec', 'storybook', 'build', '--output-dir', storybookDir])
 
 await hideTopHeaderInBuiltPage(path.join(outputDir, 'app.html'));
 await hideTopHeaderInBuiltPage(path.join(outputDir, 'generator.html'));
+await hideTopHeaderInBuiltPage(path.join(outputDir, 'combinatorial.html'));
 
 await writeFile(path.join(outputDir, 'index.html'), renderIndexPage(buildMetadata), 'utf8');
 

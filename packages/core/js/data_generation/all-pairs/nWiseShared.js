@@ -3,6 +3,8 @@ export const NWiseAlgorithm = Object.freeze({
   PICT_GCD: 'pict-gcd',
   AETG: 'aetg',
   IPOG: 'ipog',
+  COMPATIBILITY_GRAPH: 'compatibility-graph',
+  HYPERGRAPH_VERTEX: 'hypergraph-vertex',
 });
 
 export const SUPPORTED_N_WISE_ALGORITHMS = new Set(Object.values(NWiseAlgorithm));

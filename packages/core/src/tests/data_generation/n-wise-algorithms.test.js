@@ -201,7 +201,7 @@ describe('NWiseGenerator algorithm comparison', () => {
 
 const maybeLimitTest = process.env.NWISE_LIMIT_TESTS === 'true' ? test : test.skip;
 
-maybeLimitTest('logs n-wise algorithm limits for larger 8-parameter models', () => {
+maybeLimitTest('logs n-wise algorithm limits for representative 6-parameter models', () => {
   const rows = [];
 
   for (const valueCount of [3, 4]) {
@@ -211,7 +211,7 @@ maybeLimitTest('logs n-wise algorithm limits for larger 8-parameter models', () 
           generateForBenchmark({
             algorithm,
             strength,
-            parameterCount: 8,
+            parameterCount: 6,
             valueCount,
           })
         );

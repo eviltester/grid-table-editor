@@ -30,7 +30,11 @@ describe('test data grid controller', () => {
   test('mounts the data population panel and wires generation actions through the shared adapter', () => {
     const updatePairwiseButtonVisibility = jest.fn();
     const generateTestData = jest.fn();
-    const generatePairwiseTestData = jest.fn();
+    const generateCombinationsTestData = jest.fn();
+    const combinationsDialog = {
+      open: jest.fn(),
+      destroy: jest.fn(),
+    };
     const initializeSchemaErrorDisplayFn = jest.fn();
     const identifyFakerCommandsFn = jest.fn();
     const uiStatusService = {
@@ -45,7 +49,9 @@ describe('test data grid controller', () => {
     const createTestDataGenerationServiceFn = jest.fn(() => ({
       updatePairwiseButtonVisibility,
       generateTestData,
-      generatePairwiseTestData,
+      generateCombinationsTestData,
+      countEnumColumns: jest.fn(() => 2),
+      getEnumValueCounts: jest.fn(() => [3, 2]),
     }));
     const panel = {
       destroy: jest.fn(),
@@ -61,7 +67,9 @@ describe('test data grid controller', () => {
       return {
         updatePairwiseButtonVisibility,
         generateTestData,
-        generatePairwiseTestData,
+        generateCombinationsTestData,
+        countEnumColumns: jest.fn(() => 2),
+        getEnumValueCounts: jest.fn(() => [3, 2]),
       };
     });
     const createDataPopulationPanelComponentFn = jest.fn(({ callbacks }) => {
@@ -76,6 +84,7 @@ describe('test data grid controller', () => {
       createTestDataGenerationServiceFn,
       createDataPopulationPanelComponentFn,
       createTestDataUiStatusServiceFn,
+      createCombinationsDialogComponentFn: jest.fn(() => combinationsDialog),
     });
 
     const importer = { setGridFromGenericDataTable: jest.fn() };
@@ -121,7 +130,7 @@ describe('test data grid controller', () => {
     panel.callbacks.onGeneratePairwise();
 
     expect(generateTestData).toHaveBeenCalledTimes(1);
-    expect(generatePairwiseTestData).toHaveBeenCalledTimes(1);
+    expect(combinationsDialog.open).toHaveBeenCalledWith({ enumColumnCount: 2, enumValueCounts: [3, 2] });
 
     expect(state.importer).toBe(importer);
     expect(state.textPreviewRenderer).toBe(textPreviewRenderer);

@@ -69,6 +69,7 @@ describe('TestDataPopulationToolbar', () => {
 
     component.setPairwiseVisible(true);
     expect(generatePairwiseWrapper.style.display).toBe('inline-flex');
+    const generateCombinationsButton = toolbarQueries.getByRole('button', { name: 'Generate Combinations' });
 
     component.setRowCountValue(4);
     expect(rowCountInput.value).toBe('4');
@@ -77,6 +78,7 @@ describe('TestDataPopulationToolbar', () => {
     component.setGenerateBusy(true);
     component.setGeneratePairwiseBusy(true);
     expect(generateButton.disabled).toBe(true);
+    expect(generateCombinationsButton.disabled).toBe(true);
     expect(generateButton.getAttribute('aria-disabled')).toBe('true');
 
     component.setGenerateBusy(false);

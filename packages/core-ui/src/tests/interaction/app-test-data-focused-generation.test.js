@@ -5,7 +5,7 @@
  * Asserts:
  * - generation-mode radio changes update visible row-count defaults
  * - generate auto-refreshes preview using real generated/exported data
- * - pairwise visibility follows enum eligibility and pairwise generation succeeds
+ * - combination visibility follows enum eligibility and n-wise generation succeeds
  * - amend modes respect grid row counts and selected-row requirements
  */
 
@@ -69,7 +69,7 @@ describe('app test-data focused generation flows', () => {
     expect(harness.getPreviewText()).toBe('');
   });
 
-  test('pairwise generation is only visible for eligible schema and succeeds when shown', async () => {
+  test('combination generation is only visible for eligible schema and succeeds when shown', async () => {
     expect(harness.getPairwiseButton().style.display).toBe('none');
 
     await harness.setSchemaText('Status\nenum(active,inactive,pending)');
@@ -78,9 +78,9 @@ describe('app test-data focused generation flows', () => {
     await harness.setSchemaText('Status\nenum(active,inactive,pending)\nPriority\nenum(high,medium,low)');
 
     await waitFor(() => expect(harness.getPairwiseButton().style.display).not.toBe('none'));
-    await harness.clickGeneratePairwise();
+    await harness.clickGenerateCombinations();
 
-    harness.assertSuccessfulGeneration('app focused pairwise');
+    harness.assertSuccessfulGeneration('app focused combinations');
     expect(harness.getLatestDataTable().getRowCount()).toBeGreaterThan(4);
   });
 

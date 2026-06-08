@@ -126,7 +126,7 @@ function renderDataPopulationPanelStory(args) {
         log.textContent = 'action:generate';
       },
       onGeneratePairwise: () => {
-        log.textContent = 'action:generate-pairwise';
+        log.textContent = 'action:generate-combinations';
       },
       schemaDefinition: {
         onSchemaError: (message) => {
@@ -187,7 +187,7 @@ const meta = {
     },
     pairwiseVisible: {
       control: 'boolean',
-      description: 'Whether the Generate Pairwise action is available.',
+      description: 'Whether the Generate Combinations action is available.',
     },
     rowCount: {
       control: 'number',
@@ -212,7 +212,7 @@ export const NewTableMode = {
     docs: {
       description: {
         story:
-          'Shows the embedded panel in its default new-table mode. Review the shared row-count control, schema editor, and primary Generate action without pairwise generation enabled. Try Generate to confirm the composed panel callback fires through the interaction log.',
+          'Shows the embedded panel in its default new-table mode. Review the shared row-count control, schema editor, and primary Generate action without combinations generation enabled. Try Generate to confirm the composed panel callback fires through the interaction log.',
       },
     },
   },
@@ -221,7 +221,7 @@ export const NewTableMode = {
     await expect(canvas.getByRole('button', { name: 'Generate' })).toBeVisible();
     await expect(canvas.getByLabelText('How Many?')).toHaveValue(1);
     await expect(canvas.getByRole('radio', { name: 'New Table' })).toBeChecked();
-    await expect(canvas.queryByRole('button', { name: 'Generate Pairwise' })).toBeNull();
+    await expect(canvas.queryByRole('button', { name: 'Generate Combinations' })).toBeNull();
     await userEvent.click(canvas.getByRole('button', { name: 'Generate' }));
     await expect(canvas.getByText('action:generate')).toBeVisible();
   },
@@ -263,15 +263,15 @@ export const AmendSelectedMode = {
     docs: {
       description: {
         story:
-          'Shows the amend-selected mode with pairwise generation available. This is the strongest Storybook proxy for the app path that amends selected rows with an enum-driven schema. Use Generate Pairwise to confirm the composed panel action flows through the shared interaction log.',
+          'Shows the amend-selected mode with combinations generation available. This is the strongest Storybook proxy for the app path that amends selected rows with an enum-driven schema. Use Generate Combinations to confirm the composed panel action flows through the shared interaction log.',
       },
     },
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await expect(canvas.getByRole('radio', { name: 'Amend Selected' })).toBeChecked();
-    await expect(canvas.getByRole('button', { name: 'Generate Pairwise' })).toBeVisible();
-    await userEvent.click(canvas.getByRole('button', { name: 'Generate Pairwise' }));
-    await expect(canvas.getByText('action:generate-pairwise')).toBeVisible();
+    await expect(canvas.getByRole('button', { name: 'Generate Combinations' })).toBeVisible();
+    await userEvent.click(canvas.getByRole('button', { name: 'Generate Combinations' }));
+    await expect(canvas.getByText('action:generate-combinations')).toBeVisible();
   },
 };

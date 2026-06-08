@@ -7,7 +7,7 @@ import {
   generateGeneratorAllPairsDataFile,
   generateGeneratorCombinationsDataFile,
 } from '../generation/data-generator-generation-actions.js';
-import { createCombinationsDialogComponent } from '../combinations-dialog/index.js';
+import { createCombinationsDialogComponent } from '../../shared/combinations-dialog/index.js';
 import { applyGeneratorFormatOptions } from '../options/apply-generator-format-options.js';
 
 function createGeneratorPageActionsService({

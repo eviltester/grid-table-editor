@@ -1,5 +1,5 @@
 import { expect, within } from 'storybook/test';
-import { createCombinationsDialogComponent } from '../../../../packages/core-ui/js/gui_components/generator/combinations-dialog/index.js';
+import { createCombinationsDialogComponent } from '../../../../packages/core-ui/js/gui_components/shared/combinations-dialog/index.js';
 import { CombinationAlgorithm } from '../../../../packages/core-ui/js/gui_components/generator/generation/n-wise-generation-options.js';
 
 function renderDialogStory(args) {
@@ -47,13 +47,13 @@ function renderDialogStory(args) {
 }
 
 const meta = {
-  title: 'Pages/Generator/N-Wise Combinations Dialog',
+  title: 'Shared/N-Wise Combinations Dialog',
   tags: ['autodocs'],
   parameters: {
     docs: {
       description: {
         component:
-          'The Generate Combinations dialog constrains n-wise strengths to the current enum-column count, filters strategies by selected strength, and returns the selected strength plus strategy to the generator page workflow.',
+          'The Generate Combinations dialog is a shared modal used by both the generator and app workflows. It constrains n-wise strengths to the current enum-column count, filters strategies by selected strength, and returns the selected strength plus strategy to the host surface.',
       },
     },
   },

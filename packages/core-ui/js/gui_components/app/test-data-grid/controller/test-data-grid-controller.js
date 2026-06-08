@@ -20,6 +20,7 @@ import {
   schemaRowsToDataRules,
 } from '@anywaydata/core/data_generation/schema-rules-adapter.js';
 import { PairwiseTestDataGenerator } from '@anywaydata/core/data_generation/n-wise/pairwiseTestDataGenerator.js';
+import { CombinationsTestDataGenerator } from '@anywaydata/core/data_generation/n-wise/combinationsTestDataGenerator.js';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 import { identifyFakerCommands, getMethodPickerOptions, FAKER_COMMANDS } from '../schema/test-data-command-catalog.js';
 import {
@@ -45,6 +46,7 @@ import { createAppSchemaDefinitionProps } from '../schema/test-data-grid-schema-
 import { createTestDataGridActionAdapter } from '../controller/test-data-grid-action-adapter.js';
 import { createDataPopulationPanelComponent } from '../../data-population-panel/index.js';
 import { resolveDocumentObj } from '../../../shared/dom/default-objects.js';
+import { createCombinationsDialogComponent } from '../../../shared/combinations-dialog/index.js';
 
 import { faker } from 'https://cdn.skypack.dev/@faker-js/faker@v9.7.0';
 
@@ -66,6 +68,7 @@ function createTestDataGenerationPanelManager({
   createTestDataGridActionAdapterFn = createTestDataGridActionAdapter,
   createDataPopulationPanelComponentFn = createDataPopulationPanelComponent,
   createTestDataUiStatusServiceFn = createTestDataUiStatusService,
+  createCombinationsDialogComponentFn = createCombinationsDialogComponent,
 } = {}) {
   const state = {
     debouncer: new DebouncerClass(),
@@ -77,6 +80,7 @@ function createTestDataGenerationPanelManager({
     dataPopulationPanel: null,
     actionAdapter: null,
     uiStatusService: null,
+    combinationsDialog: null,
   };
 
   function showTestDataSchemaError(message) {
@@ -155,6 +159,7 @@ function createTestDataGenerationPanelManager({
         }),
       TestDataGeneratorClass: TestDataGenerator,
       PairwiseTestDataGeneratorClass: PairwiseTestDataGenerator,
+      CombinationsTestDataGeneratorClass: CombinationsTestDataGenerator,
       GenericDataTableClass: GenericDataTable,
       TEST_DATA_MODES,
       normaliseCount,
@@ -180,9 +185,48 @@ function createTestDataGenerationPanelManager({
     });
   }
 
+  function ensureCombinationsDialog(resolvedDocument) {
+    if (state.combinationsDialog) {
+      return state.combinationsDialog;
+    }
+
+    state.combinationsDialog = createCombinationsDialogComponentFn({
+      documentObj: resolvedDocument,
+      callbacks: {
+        onSubmit: (selection) => {
+          void state.generationService?.generateCombinationsTestData?.(selection);
+        },
+      },
+    });
+
+    return state.combinationsDialog;
+  }
+
+  function openGenerateCombinationsDialog() {
+    const resolvedDocument = getResolvedDocument();
+    const enumColumnCount = state.generationService?.countEnumColumns?.() || 0;
+    const enumValueCounts = state.generationService?.getEnumValueCounts?.() || [];
+
+    if (enumColumnCount < 2) {
+      showTestDataSchemaError(
+        'Combination generation requires at least 2 enum columns because n-wise generation combines finite enum values.'
+      );
+      getStatusServiceApi().setTestDataStatus('Insufficient enum columns.', {
+        severity: 'warning',
+        dismissable: true,
+      });
+      return false;
+    }
+
+    ensureCombinationsDialog(resolvedDocument).open({ enumColumnCount, enumValueCounts });
+    return true;
+  }
+
   function mountTestDataGenerationPanel(parentId, importer, textPreviewRenderer, gridExtras) {
     state.dataPopulationPanel?.destroy?.();
     state.uiStatusService?.destroy?.();
+    state.combinationsDialog?.destroy?.();
+    state.combinationsDialog = null;
     state.debouncer?.clear?.();
     identifyFakerCommandsFn(faker);
 
@@ -260,7 +304,7 @@ function createTestDataGenerationPanelManager({
       },
       callbacks: {
         onGenerate: () => state.actionAdapter.generateTestData(),
-        onGeneratePairwise: () => state.actionAdapter.generatePairwiseTestData(),
+        onGeneratePairwise: () => openGenerateCombinationsDialog(),
         onModeChange: applyModeDefaultRowCount,
         schemaDefinition: {
           onSchemaError: (message) => state.schemaTextSyncState?.schemaErrorDisplay?.show?.(message),
@@ -283,6 +327,8 @@ function createTestDataGenerationPanelManager({
     destroy: () => {
       state.dataPopulationPanel?.destroy?.();
       state.uiStatusService?.destroy?.();
+      state.combinationsDialog?.destroy?.();
+      state.combinationsDialog = null;
       state.debouncer?.clear?.();
     },
   };

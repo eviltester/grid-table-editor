@@ -13,7 +13,11 @@ class TestDataPanelComponent {
     this.details = this.container.locator('details');
     this.heading = this.container.getByText('Test Data', { exact: true });
     this.generateButton = this.container.getByRole('button', { name: 'Generate', exact: true });
-    this.generatePairwiseButton = this.container.getByRole('button', { name: 'Generate Pairwise' });
+    this.generatePairwiseButton = this.container.getByRole('button', { name: 'Generate Combinations' });
+    this.combinationsDialog = page.getByRole('dialog', { name: 'Generate Combinations' });
+    this.combinationsDialogStrengthSelect = this.combinationsDialog.getByLabel('n');
+    this.combinationsDialogCancelButton = this.combinationsDialog.getByRole('button', { name: 'Cancel' });
+    this.combinationsDialogGenerateButton = this.combinationsDialog.getByRole('button', { name: 'Generate' });
     this.generateCountInput = this.container.getByRole('spinbutton', { name: 'How Many?' });
     this.newTableMode = this.container.locator('input[name="testDataGenerationMode"][value="new-table"]');
     this.amendTableMode = this.container.locator('input[name="testDataGenerationMode"][value="amend-table"]');
@@ -121,7 +125,30 @@ class TestDataPanelComponent {
   }
 
   async clickGeneratePairwise() {
+    await this.openGenerateCombinationsDialog();
+    await this.combinationsDialogGenerateButton.click();
+  }
+
+  async openGenerateCombinationsDialog() {
     await this.overlaySafeActivation.activateButton(this.generatePairwiseButton);
+    await expect(this.combinationsDialog).toBeVisible();
+  }
+
+  async cancelGenerateCombinationsDialog() {
+    await this.combinationsDialogCancelButton.click();
+    await expect(this.combinationsDialog).toBeHidden();
+  }
+
+  async setCombinationStrength(strength) {
+    await this.combinationsDialogStrengthSelect.selectOption(String(strength));
+  }
+
+  async chooseCombinationStrategy(strategyName) {
+    await this.combinationsDialog.getByRole('radio', { name: new RegExp(strategyName, 'i') }).click();
+  }
+
+  async submitGenerateCombinationsDialog() {
+    await this.combinationsDialogGenerateButton.click();
   }
 
   async getStatusText() {

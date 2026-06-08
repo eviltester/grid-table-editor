@@ -1,4 +1,4 @@
-import { resolveDocumentObj } from '../../shared/dom/default-objects.js';
+import { resolveDocumentObj } from '../dom/default-objects.js';
 import { CombinationsDialogController } from './combinations-dialog-controller.js';
 import { CombinationsDialogView } from './combinations-dialog-view.js';
 

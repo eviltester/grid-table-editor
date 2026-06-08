@@ -9,8 +9,10 @@ import { schemaErrorsToText } from '../../../shared/test-data/schema/schema-erro
 import {
   createConfiguredGeneratorFromSchemaRows,
   createPairwiseDataTable,
+  createCombinationsDataTable,
 } from '../../../shared/test-data/generation/generation-controller.js';
 import { isPairwiseEligibleForSchemaRows } from '../../../shared/test-data/generation/ui-derived-state.js';
+import { EnumParser } from '@anywaydata/core/data_generation/utils/enumParser.js';
 import {
   SOURCE_TYPE_FAKER,
   SOURCE_TYPE_DOMAIN,
@@ -25,6 +27,7 @@ import {
 function createTestDataGenerationService({
   TestDataGeneratorClass,
   PairwiseTestDataGeneratorClass,
+  CombinationsTestDataGeneratorClass,
   GenericDataTableClass,
   TEST_DATA_MODES,
   normaliseCount,
@@ -129,6 +132,42 @@ function createTestDataGenerationService({
     }
   }
 
+  function countEnumColumns() {
+    const rowValidation = getCurrentSchemaRowValidation({ syncFromText: false });
+    if (rowValidation.errors.length > 0) {
+      return 0;
+    }
+    return (rowValidation.rows || []).filter(
+      (row) =>
+        String(row?.sourceType || '')
+          .trim()
+          .toLowerCase() === SOURCE_TYPE_ENUM
+    ).length;
+  }
+
+  function getEnumValueCounts() {
+    const rowValidation = getCurrentSchemaRowValidation({ syncFromText: false });
+    if (rowValidation.errors.length > 0) {
+      return [];
+    }
+
+    return (rowValidation.rows || [])
+      .filter(
+        (row) =>
+          String(row?.sourceType || '')
+            .trim()
+            .toLowerCase() === SOURCE_TYPE_ENUM
+      )
+      .map((row) => {
+        try {
+          return EnumParser.extractEnumValues(buildRuleSpecFromSchemaRow(row)).length;
+        } catch {
+          return 0;
+        }
+      })
+      .filter((count) => count > 0);
+  }
+
   async function generatePairwiseTestData() {
     debouncer.clear('populateTestDataGrid');
     syncSchemaTextFromGridBeforeGenerate();
@@ -195,6 +234,93 @@ function createTestDataGenerationService({
       console.error('Pairwise generation error:', error);
       showSchemaError(`Pairwise generation failed: ${error.message}`);
       setTestDataStatus('Pairwise generation failed.', { severity: 'error', dismissable: true });
+    } finally {
+      setGeneratePairwiseBusy(false);
+    }
+  }
+
+  async function generateCombinationsTestData(selection) {
+    debouncer.clear('populateTestDataGrid');
+    syncSchemaTextFromGridBeforeGenerate();
+
+    const strength = Number.parseInt(selection?.strength, 10);
+    const algorithm = selection?.algorithm;
+    const enumColumnCount = countEnumColumns();
+
+    if (!Number.isInteger(strength) || strength < 2 || strength > enumColumnCount) {
+      showSchemaError(`n-wise strength must be between 2 and ${enumColumnCount} for this schema.`);
+      setTestDataStatus('Invalid n-wise strength.', { severity: 'warning', dismissable: true });
+      return;
+    }
+
+    setTestDataLoadingStatus(`Generating ${strength}-wise combinations...`);
+    setGeneratePairwiseBusy(true);
+
+    try {
+      const rowValidation = getCurrentSchemaRowValidation();
+      if (rowValidation.errors.length > 0) {
+        const errorMessages = schemaErrorsToText(rowValidation.errors);
+        showSchemaError(errorMessages);
+        setTestDataStatus('Schema validation failed.', { severity: 'error', dismissable: true });
+        return;
+      }
+
+      const { generator, errors } = getRulesParserFromTextArea(rowValidation);
+
+      if (errors.length > 0 || !generator) {
+        const errorMessages = schemaErrorsToText(errors);
+        showSchemaError(errorMessages);
+        setTestDataStatus('Schema validation failed.', { severity: 'error', dismissable: true });
+        return;
+      }
+
+      if (!isPairwiseEligibleForSchemaRows(rowValidation.rows || [])) {
+        showSchemaError(
+          'Combination generation requires at least 2 enum columns because n-wise generation combines finite enum values.'
+        );
+        setTestDataStatus('Insufficient enum columns.', { severity: 'warning', dismissable: true });
+        return;
+      }
+
+      await yieldToUi();
+
+      const dataTable = createCombinationsDataTable({
+        generator,
+        CombinationsTestDataGeneratorClass,
+        GenericDataTableClass,
+        faker,
+        RandExp,
+        options: {
+          strength,
+          algorithm,
+          seed: 1,
+          candidateCount: 20,
+          runs: algorithm === 'aetg' ? 2 : 1,
+        },
+      });
+
+      if (!dataTable) {
+        showSchemaError('Failed to generate combinations data.');
+        setTestDataStatus('Combination generation failed.', { severity: 'error', dismissable: true });
+        return;
+      }
+
+      setTestDataLoadingStatus('Applying data to grid...');
+      await yieldToUi();
+      await Promise.resolve(getImporter().setGridFromGenericDataTable(dataTable));
+
+      const previewUpdated = await syncTextPreviewFromGrid();
+      setTestDataStatus(
+        `Generated ${dataTable.getRowCount()} ${strength}-wise combinations. ${
+          previewUpdated ? 'Grid and preview updated.' : 'Grid updated.'
+        }`,
+        { dismissable: true }
+      );
+      await yieldToUi();
+    } catch (error) {
+      console.error('Combination generation error:', error);
+      showSchemaError(`Combination generation failed: ${error.message}`);
+      setTestDataStatus('Combination generation failed.', { severity: 'error', dismissable: true });
     } finally {
       setGeneratePairwiseBusy(false);
     }
@@ -325,7 +451,10 @@ function createTestDataGenerationService({
     schemaErrorsToText,
     getRulesParserFromTextArea,
     updatePairwiseButtonVisibility,
+    countEnumColumns,
+    getEnumValueCounts,
     generatePairwiseTestData,
+    generateCombinationsTestData,
     generateTestData,
   };
 }

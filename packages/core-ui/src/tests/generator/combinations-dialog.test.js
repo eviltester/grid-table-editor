@@ -1,6 +1,6 @@
 import { describe, expect, jest, test } from '@jest/globals';
 import { JSDOM } from 'jsdom';
-import { createCombinationsDialogComponent } from '../../../js/gui_components/generator/combinations-dialog/index.js';
+import { createCombinationsDialogComponent } from '../../../js/gui_components/shared/combinations-dialog/index.js';
 import { CombinationAlgorithm } from '../../../js/gui_components/generator/generation/n-wise-generation-options.js';
 
 describe('combinations dialog', () => {

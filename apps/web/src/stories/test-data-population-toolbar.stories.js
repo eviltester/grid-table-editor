@@ -47,7 +47,7 @@ function renderToolbarStory(args) {
       },
       onGeneratePairwise: () => {
         args.onGeneratePairwise?.();
-        log.textContent = 'action:generate-pairwise';
+        log.textContent = 'action:generate-secondary';
       },
       onModeChange: (mode) => {
         args.onModeChange?.(mode);
@@ -101,7 +101,7 @@ const meta = {
     },
     pairwiseVisible: {
       control: 'boolean',
-      description: 'Whether the shared pairwise action is visible.',
+      description: 'Whether the shared combinations action is visible.',
     },
     generateBusy: {
       control: 'boolean',
@@ -109,7 +109,7 @@ const meta = {
     },
     generatePairwiseBusy: {
       control: 'boolean',
-      description: 'Disables the pairwise action when true.',
+      description: 'Disables the combinations action when true.',
     },
     rowCount: {
       control: 'number',
@@ -156,14 +156,14 @@ export const PairwiseAndBusy = {
     docs: {
       description: {
         story:
-          'Shows the composed toolbar with pairwise generation visible and both actions busy. This keeps the reviewer-facing horizontal layout intact while making the disabled app state obvious.',
+          'Shows the composed toolbar with combinations generation visible and both actions busy. This keeps the reviewer-facing horizontal layout intact while making the disabled app state obvious.',
       },
     },
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await expect(canvas.getByRole('button', { name: 'Generate' })).toBeDisabled();
-    await expect(canvas.getByRole('button', { name: 'Generate Pairwise' })).toBeDisabled();
+    await expect(canvas.getByRole('button', { name: 'Generate Combinations' })).toBeDisabled();
     await expect(canvas.getByRole('radio', { name: 'Amend Selected' })).toBeChecked();
   },
 };
@@ -183,7 +183,7 @@ export const NarrowWrapLayout = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await expect(canvas.getByRole('button', { name: 'Generate Pairwise' })).toBeVisible();
+    await expect(canvas.getByRole('button', { name: 'Generate Combinations' })).toBeVisible();
     await userEvent.click(canvas.getByRole('radio', { name: 'Amend Table' }));
     await expect(canvas.getByText('selected:amend-table')).toBeVisible();
   },

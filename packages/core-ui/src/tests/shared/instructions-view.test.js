@@ -56,7 +56,7 @@ describe('instructions view', () => {
     });
 
     expect(root.textContent).toContain('Data Generator Instructions');
-    expect(root.textContent).toContain('Generate Pairwise combinations');
+    expect(root.textContent).toContain('Generate Combinations with n-wise coverage');
     expect(root.querySelector('[data-role="instructions-action-button"]')).toBeNull();
     const helpIcon = root.querySelector('[data-help="shared-generator-screen-overview"]');
     expect(helpIcon).not.toBeNull();

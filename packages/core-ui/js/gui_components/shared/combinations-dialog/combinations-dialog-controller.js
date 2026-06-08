@@ -3,7 +3,7 @@ import {
   getAvailableStrengths,
   getStrategiesForStrength,
   getStrategyById,
-} from '../generation/n-wise-generation-options.js';
+} from '../../generator/generation/n-wise-generation-options.js';
 
 class CombinationsDialogController {
   constructor({ props = {}, callbacks = {} } = {}) {

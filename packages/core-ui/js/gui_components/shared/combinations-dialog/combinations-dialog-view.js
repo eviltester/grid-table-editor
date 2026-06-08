@@ -1,6 +1,6 @@
-import { resolveDocumentObj } from '../../shared/dom/default-objects.js';
-import { escapeHtml } from '../../shared/html-escape.js';
-import { N_WISE_DOCS_URL, getStrengthExplanation } from '../generation/n-wise-generation-options.js';
+import { resolveDocumentObj } from '../dom/default-objects.js';
+import { escapeHtml } from '../html-escape.js';
+import { N_WISE_DOCS_URL, getStrengthExplanation } from '../../generator/generation/n-wise-generation-options.js';
 
 class CombinationsDialogView {
   constructor({ root, controller, documentObj } = {}) {

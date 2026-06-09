@@ -79,10 +79,13 @@ describe('script bootstrap', () => {
     expect(createDataGridComponentFn).toHaveBeenCalledWith({
       root: dom.window.document.getElementById('main-grid-view'),
       documentObj: dom.window.document,
-      services: {
+      services: expect.objectContaining({
         TabulatorCtor: globalThis.Tabulator,
         GridExtensionClass: expect.any(Function),
-      },
+        getPreviewExportFormats: expect.any(Function),
+        previewAs: expect.any(Function),
+        exportAs: expect.any(Function),
+      }),
     });
     expect(dom.window.document.getElementById('initial-load')).toBeNull();
   });

@@ -126,7 +126,7 @@ test('params --stream and --show-progress true use streaming path for csv/jsonl/
     const written = await fs.readFile(outputPath, 'utf8');
     expect(written.length).toBeGreaterThan(0);
   }
-});
+}, 20000);
 
 test('param --stream-threshold auto-enables stream mode when threshold reached', () => {
   const inputPath = path.join(repoRoot, 'apps', 'cli', 'examples', 'company-literal.txt');

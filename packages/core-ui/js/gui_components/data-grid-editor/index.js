@@ -42,7 +42,9 @@ function createDataGridComponent({ root, props = {}, services = {}, documentObj 
     whenReady() {
       return view.whenGridReady();
     },
-    sizeColumnsToFit() {},
+    sizeColumnsToFit() {
+      controller.sizeColumnsToFit();
+    },
     getState() {
       return controller.getState();
     },

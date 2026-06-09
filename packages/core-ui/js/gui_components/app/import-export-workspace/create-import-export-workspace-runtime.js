@@ -141,6 +141,24 @@ function createImportExportWorkspaceRuntime({ root, props = {}, services = {}, d
     setFileFormatType(format) {
       workflow.handleFormatChange(format ?? getType());
     },
+    openDetails() {
+      view.openToolbarDetails?.();
+      render();
+    },
+    previewAs(format) {
+      const selectedFormat = format ?? getType();
+      if (controller.getState().mode !== 'preview') {
+        controller.updateProps({ mode: 'preview', previewTextDirty: false });
+        render();
+      }
+      workflow.handleFormatChange(selectedFormat);
+      return workflow.renderTextFromGrid();
+    },
+    async downloadAs(format) {
+      const selectedFormat = format ?? getType();
+      workflow.handleFormatChange(selectedFormat);
+      return workflow.fileDownload();
+    },
     setOptionsViewForFormatType: workflow.setOptionsViewForFormatType,
     setCurrentTypeOptions: workflow.setCurrentTypeOptions,
     applyCurrentTypeOptions(options) {

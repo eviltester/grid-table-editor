@@ -139,6 +139,17 @@ class ImportExportWorkspaceView {
     return this.textPreviewEditor?.getTextArea?.() || null;
   }
 
+  getToolbarDetailsElement() {
+    return this.getElementByRole('import-export-toolbar-details');
+  }
+
+  openToolbarDetails() {
+    const detailsElement = this.getToolbarDetailsElement();
+    if (detailsElement) {
+      detailsElement.open = true;
+    }
+  }
+
   setCopyButtonText(value) {
     this.textPreviewEditor?.setCopyButtonText?.(value);
   }

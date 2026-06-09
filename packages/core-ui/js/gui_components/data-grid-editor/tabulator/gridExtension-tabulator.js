@@ -51,6 +51,43 @@ class GridExtensionTabulator {
     }
   }
 
+  sizeColumnsToFit() {
+    const columnDefinitions = this.tabulator.getColumnDefinitions?.() || [];
+    if (columnDefinitions.length === 0) {
+      return;
+    }
+
+    const columnsByField = new Map();
+    if (typeof this.tabulator.getColumns === 'function') {
+      this.tabulator.getColumns().forEach((column) => {
+        const definition = column?.getDefinition?.() || {};
+        if (definition.field) {
+          columnsByField.set(definition.field, column);
+        }
+      });
+    }
+
+    this._runWithoutRedraw(() => {
+      columnDefinitions.forEach((definition) => {
+        const field = definition?.field;
+        if (!field) {
+          return;
+        }
+
+        const width = this._estimateColumnWidth(field);
+        const column = columnsByField.get(field);
+        if (typeof column?.setWidth === 'function') {
+          column.setWidth(width);
+          return;
+        }
+
+        if (typeof column?.updateDefinition === 'function') {
+          column.updateDefinition({ width });
+        }
+      });
+    });
+  }
+
   // [x] convert to tabulature
   filterText(text) {
     this.tabUtils.filterAcrossAllColumns(text);
@@ -686,16 +723,19 @@ class GridExtensionTabulator {
   }
 
   _estimateFirstColumnWidth(firstColumnField) {
+    return this._estimateColumnWidth(firstColumnField);
+  }
+
+  _estimateColumnWidth(fieldName) {
     const columnDefinitions = this.tabulator.getColumnDefinitions?.() || [];
-    const firstDefinition =
-      columnDefinitions.find((definition) => definition.field === firstColumnField) || columnDefinitions[0] || {};
-    const titleLength = String(firstDefinition.title || '').length;
+    const columnDefinition = columnDefinitions.find((definition) => definition.field === fieldName) || {};
+    const titleLength = String(columnDefinition.title || '').length;
 
     const activeRows = typeof this.tabulator.getData === 'function' ? this.tabulator.getData('active') : [];
     let maxTextLength = titleLength;
     if (Array.isArray(activeRows)) {
       for (let rowIndex = 0; rowIndex < activeRows.length; rowIndex++) {
-        const value = activeRows[rowIndex]?.[firstColumnField];
+        const value = activeRows[rowIndex]?.[fieldName];
         const valueLength = String(value ?? '').length;
         if (valueLength > maxTextLength) {
           maxTextLength = valueLength;

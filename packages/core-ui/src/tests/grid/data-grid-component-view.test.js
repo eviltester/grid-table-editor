@@ -7,6 +7,7 @@ class FakeTabulator {
     this.rootElement = rootElement;
     this.options = options;
     this.destroy = jest.fn();
+    this.getRows = jest.fn(() => []);
   }
 }
 
@@ -19,6 +20,7 @@ class FakeGridExtension {
     this.deleteSelectedRows = jest.fn();
     this.clearFilters = jest.fn();
     this.clearSort = jest.fn();
+    this.sizeColumnsToFit = jest.fn();
     this.filterText = jest.fn();
     this.clearGrid = jest.fn();
     this.destroy = jest.fn();
@@ -88,6 +90,82 @@ describe('DataGridComponent view', () => {
 
     root.querySelector('[data-role="add-row-button"]').click();
     expect(component.getGridExtras().addRow).toHaveBeenCalledTimes(1);
+
+    component.destroy();
+  });
+
+  test('opens a right-click context menu and routes grid, preview, and export actions through injected services', async () => {
+    const root = document.createElement('section');
+    document.body.appendChild(root);
+    const previewAs = jest.fn(async () => {});
+    const exportAs = jest.fn(async () => {});
+    const component = createDataGridComponent({
+      root,
+      documentObj: document,
+      services: {
+        TabulatorCtor: FakeTabulator,
+        GridExtensionClass: FakeGridExtension,
+        previewAs,
+        exportAs,
+        getPreviewExportFormats: () => [
+          { type: 'csv', label: 'CSV' },
+          { type: 'json', label: 'JSON' },
+        ],
+      },
+    });
+
+    await component.whenReady();
+
+    const gridRoot = root.querySelector('[data-role="data-grid-root"]');
+    gridRoot.dispatchEvent(
+      new dom.window.MouseEvent('contextmenu', {
+        bubbles: true,
+        cancelable: true,
+        clientX: 32,
+        clientY: 48,
+      })
+    );
+
+    const menuRoot = root.querySelector('[data-role="data-grid-context-menu"]');
+    expect(menuRoot.hidden).toBe(false);
+
+    menuRoot.querySelector('[data-context-action="auto-fit-columns"]').click();
+    expect(component.getGridExtras().sizeColumnsToFit).toHaveBeenCalledTimes(1);
+
+    gridRoot.dispatchEvent(
+      new dom.window.MouseEvent('contextmenu', {
+        bubbles: true,
+        cancelable: true,
+        clientX: 32,
+        clientY: 48,
+      })
+    );
+    menuRoot.querySelector('[data-context-action="preview-format"]').click();
+    expect(previewAs).toHaveBeenCalledWith('csv');
+
+    gridRoot.dispatchEvent(
+      new dom.window.MouseEvent('contextmenu', {
+        bubbles: true,
+        cancelable: true,
+        clientX: 32,
+        clientY: 48,
+      })
+    );
+    menuRoot.querySelector('[data-context-action="export-format"]').click();
+    expect(exportAs).toHaveBeenCalledWith('csv');
+
+    gridRoot.dispatchEvent(
+      new dom.window.MouseEvent('contextmenu', {
+        bubbles: true,
+        cancelable: true,
+        clientX: 32,
+        clientY: 48,
+      })
+    );
+    const uniqueColumnNamesCheckbox = menuRoot.querySelector('[data-context-action="unique-column-names"]');
+    uniqueColumnNamesCheckbox.checked = true;
+    uniqueColumnNamesCheckbox.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+    expect(component.getState().uniqueColumnNames).toBe(true);
 
     component.destroy();
   });

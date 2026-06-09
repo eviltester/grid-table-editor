@@ -67,6 +67,10 @@ class DataGridComponentController {
     this.getGridExtras()?.clearSort?.();
   }
 
+  sizeColumnsToFit() {
+    this.getGridExtras()?.sizeColumnsToFit?.();
+  }
+
   setFilterText(filterText) {
     this.state.filterText = filterText || '';
     this.getGridExtras()?.filterText?.(this.state.filterText);

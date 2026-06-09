@@ -4,7 +4,7 @@ import {
   buildEstimateSummary,
   filterAlgorithmsForCartesianConfirmation,
   initCombinatorialPage,
-} from '../../combinatorial-entry.js';
+} from '../../combinatorial-entry.mjs';
 
 function createCombinatorialDom() {
   return new JSDOM(`<!doctype html><html><body>

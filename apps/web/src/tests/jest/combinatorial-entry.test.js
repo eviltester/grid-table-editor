@@ -1,5 +1,10 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
+import {
+  buildEstimateSummary,
+  filterAlgorithmsForCartesianConfirmation,
+  initCombinatorialPage,
+} from '../../combinatorial-entry.js';
 
 function createCombinatorialDom() {
   return new JSDOM(`<!doctype html><html><body>
@@ -19,19 +24,13 @@ function createCombinatorialDom() {
 
 describe('combinatorial entry', () => {
   afterEach(() => {
-    jest.resetModules();
     jest.restoreAllMocks();
     delete global.document;
     delete global.window;
   });
 
-  test('buildEstimateSummary returns cartesian, lower-bound, and tuple totals', async () => {
-    const originalDocument = global.document;
-    delete global.document;
-
-    const module = await import('../../combinatorial-entry.js');
-
-    const summary = module.buildEstimateSummary(
+  test('buildEstimateSummary returns cartesian, lower-bound, and tuple totals', () => {
+    const summary = buildEstimateSummary(
       [
         { name: 'Browser', values: ['Chrome', 'Firefox', 'Safari'] },
         { name: 'OS', values: ['Windows', 'macOS', 'Linux'] },
@@ -46,18 +45,12 @@ describe('combinatorial entry', () => {
       theoreticalMinimumRows: 27,
       totalRequiredTuples: 108,
     });
-
-    global.document = originalDocument;
   });
 
   test('filterAlgorithmsForCartesianConfirmation skips cartesian when the user cancels a large run', async () => {
-    const originalDocument = global.document;
-    delete global.document;
-
-    const module = await import('../../combinatorial-entry.js');
     const requestConfirm = jest.fn(async () => false);
 
-    const filtered = await module.filterAlgorithmsForCartesianConfirmation({
+    const filtered = await filterAlgorithmsForCartesianConfirmation({
       algorithms: ['greedy', 'cartesian-product'],
       parameters: Array.from({ length: 5 }, (_, index) => ({
         name: `P${index + 1}`,
@@ -74,18 +67,13 @@ describe('combinatorial entry', () => {
       okLabel: 'Run cartesian product',
       cancelLabel: 'Skip cartesian product',
     });
-
-    global.document = originalDocument;
   });
 
   test('initialises with cartesian product unchecked and updates estimates when n changes', async () => {
     const dom = createCombinatorialDom();
     global.window = dom.window;
     global.document = dom.window.document;
-
-    await jest.isolateModulesAsync(async () => {
-      await import('../../combinatorial-entry.js');
-    });
+    initCombinatorialPage({ documentObj: global.document });
 
     const cartesianCheckbox = global.document.querySelector('input[value="cartesian-product"]');
     const estimatesRoot = global.document.getElementById('combinatorial-estimates');

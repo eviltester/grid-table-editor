@@ -49,7 +49,13 @@ function normaliseAlgorithmLabel(algorithm) {
 }
 
 function formatNumber(value) {
-  return Number.isFinite(value) ? Number(value).toLocaleString() : '0';
+  if (value === Number.POSITIVE_INFINITY) {
+    return 'Too large to estimate';
+  }
+  if (value === Number.NEGATIVE_INFINITY) {
+    return 'Too small to estimate';
+  }
+  return Number.isFinite(value) ? Number(value).toLocaleString('en-US') : 'Unknown';
 }
 
 function parseEnumParameters(schemaText) {
@@ -115,12 +121,30 @@ function calculateRequiredTupleCount(parameters, strength) {
   return model.getTotalTargetTupleCount();
 }
 
+function calculateEstimateDetails(parameters, strength) {
+  if (!Array.isArray(parameters) || parameters.length === 0) {
+    return {
+      theoreticalMinimumRows: 0,
+      totalRequiredTuples: 0,
+    };
+  }
+
+  const model = new NWiseCoverageModel(parameters, strength);
+  return {
+    theoreticalMinimumRows: model.coverageTargets.reduce(
+      (largestTupleSet, target) => Math.max(largestTupleSet, target.tuples.length),
+      0
+    ),
+    totalRequiredTuples: model.getTotalTargetTupleCount(),
+  };
+}
+
 function buildEstimateSummary(parameters, strength) {
   const cartesianRowCount = calculateCartesianProductRows(getValueCounts(parameters));
-  const theoreticalMinimumRows =
-    parameters.length >= strength && strength >= 1 ? calculateTheoreticalMinimumRows(parameters, strength) : 0;
-  const totalRequiredTuples =
-    parameters.length >= strength && strength >= 1 ? calculateRequiredTupleCount(parameters, strength) : 0;
+  const { theoreticalMinimumRows, totalRequiredTuples } =
+    parameters.length >= strength && strength >= 1
+      ? calculateEstimateDetails(parameters, strength)
+      : { theoreticalMinimumRows: 0, totalRequiredTuples: 0 };
 
   return {
     cartesianRowCount,
@@ -161,7 +185,10 @@ async function filterAlgorithmsForCartesianConfirmation({
   }
 
   const cartesianRowCount = calculateCartesianProductRows(getValueCounts(parameters));
-  if (!Number.isFinite(cartesianRowCount) || cartesianRowCount <= threshold || typeof requestConfirm !== 'function') {
+  if (typeof requestConfirm !== 'function') {
+    return selectedAlgorithms;
+  }
+  if (Number.isFinite(cartesianRowCount) && cartesianRowCount <= threshold) {
     return selectedAlgorithms;
   }
 
@@ -469,45 +496,47 @@ function createCombinatorialPage({
     setProgress(`Running 0/${selectedAlgorithms.length} strategies...`, { running: true });
 
     const results = [];
-    for (let index = 0; index < selectedAlgorithms.length; index += 1) {
-      const algorithm = selectedAlgorithms[index];
-      const label = normaliseAlgorithmLabel(algorithm);
-      setProgress(`Running ${index + 1}/${selectedAlgorithms.length}: ${label}`, { running: true });
-      setStatus(`Switching to ${label}...`);
-      await yieldToBrowser();
+    try {
+      for (let index = 0; index < selectedAlgorithms.length; index += 1) {
+        const algorithm = selectedAlgorithms[index];
+        const label = normaliseAlgorithmLabel(algorithm);
+        setProgress(`Running ${index + 1}/${selectedAlgorithms.length}: ${label}`, { running: true });
+        setStatus(`Switching to ${label}...`);
+        await yieldToBrowser();
 
-      try {
-        results.push(runAlgorithm({ algorithm, parameters, strength }));
-      } catch (error) {
-        results.push({
-          stats: createIdleResultStats(algorithm),
-          records: [],
-          error: error.message,
-        });
+        try {
+          results.push(runAlgorithm({ algorithm, parameters, strength }));
+        } catch (error) {
+          results.push({
+            stats: createIdleResultStats(algorithm),
+            records: [],
+            error: error.message,
+          });
+        }
+
+        renderSummary(results, parameters, strength);
+        renderDetails(results);
+        await yieldToBrowser();
       }
 
-      renderSummary(results, parameters, strength);
-      renderDetails(results);
-      await yieldToBrowser();
+      const failedRuns = results.filter((result) => result.error).length;
+      if (failedRuns > 0) {
+        const successfulRuns = results.length - failedRuns;
+        const severity = successfulRuns > 0 ? 'warning' : 'error';
+        setStatus(
+          `Completed ${results.length} strategy runs for ${strength}-wise coverage with ${failedRuns} failure${
+            failedRuns === 1 ? '' : 's'
+          }.`,
+          severity
+        );
+        return;
+      }
+
+      setStatus(`Completed ${results.length} strategy runs for ${strength}-wise coverage.`, 'success');
+    } finally {
+      generateButton.disabled = false;
+      setProgress('');
     }
-
-    generateButton.disabled = false;
-    setProgress('');
-
-    const failedRuns = results.filter((result) => result.error).length;
-    if (failedRuns > 0) {
-      const successfulRuns = results.length - failedRuns;
-      const severity = successfulRuns > 0 ? 'warning' : 'error';
-      setStatus(
-        `Completed ${results.length} strategy runs for ${strength}-wise coverage with ${failedRuns} failure${
-          failedRuns === 1 ? '' : 's'
-        }.`,
-        severity
-      );
-      return;
-    }
-
-    setStatus(`Completed ${results.length} strategy runs for ${strength}-wise coverage.`, 'success');
   }
 
   function initialise() {
@@ -568,7 +597,6 @@ function initCombinatorialPage({ documentObj = globalThis.document } = {}) {
 
   const confirmDialogService = createConfirmDialogService({ documentObj });
   const page = createCombinatorialPage({
-    root,
     schemaEditor,
     strengthSelect,
     strategiesRoot,

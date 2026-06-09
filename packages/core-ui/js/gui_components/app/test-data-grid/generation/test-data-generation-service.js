@@ -11,9 +11,12 @@ import {
   createPairwiseDataTable,
   createCombinationsDataTable,
 } from '../../../shared/test-data/generation/generation-controller.js';
-import { isPairwiseEligibleForSchemaRows } from '../../../shared/test-data/generation/ui-derived-state.js';
+import { isNWiseEligibleForSchemaRows } from '../../../shared/test-data/generation/ui-derived-state.js';
 import { EnumParser } from '@anywaydata/core/data_generation/utils/enumParser.js';
-import { CombinationAlgorithm } from '@anywaydata/core/data_generation/n-wise/combinationsTestDataGenerator.js';
+import {
+  CombinationAlgorithm,
+  DEFAULT_AETG_RUNS,
+} from '@anywaydata/core/data_generation/n-wise/combinationsTestDataGenerator.js';
 import {
   SOURCE_TYPE_FAKER,
   SOURCE_TYPE_DOMAIN,
@@ -126,7 +129,7 @@ function createTestDataGenerationService({
       hidePairwiseButton();
       return;
     }
-    if (isPairwiseEligibleForSchemaRows(rowValidation.rows || [])) {
+    if (isNWiseEligibleForSchemaRows(rowValidation.rows || [])) {
       showPairwiseButton();
     } else {
       hidePairwiseButton();
@@ -138,12 +141,17 @@ function createTestDataGenerationService({
     if (rowValidation.errors.length > 0) {
       return 0;
     }
-    return (rowValidation.rows || []).filter(
-      (row) =>
-        String(row?.sourceType || '')
-          .trim()
-          .toLowerCase() === SOURCE_TYPE_ENUM
-    ).length;
+    return (rowValidation.rows || []).filter((row) => {
+      try {
+        return (
+          String(row?.sourceType || '')
+            .trim()
+            .toLowerCase() === SOURCE_TYPE_ENUM
+        );
+      } catch {
+        return false;
+      }
+    }).length;
   }
 
   function getEnumValueCounts() {
@@ -161,8 +169,14 @@ function createTestDataGenerationService({
       )
       .map((row) => {
         try {
-          return EnumParser.extractEnumValues(buildRuleSpecFromSchemaRow(row)).length;
-        } catch {
+          const ruleSpec = buildRuleSpecFromSchemaRow(row);
+          return EnumParser.extractEnumValues(ruleSpec).length;
+        } catch (error) {
+          console.error('Failed to extract enum values for schema row rule spec.', {
+            row,
+            ruleSpec: row?.params,
+            error,
+          });
           return 0;
         }
       })
@@ -194,7 +208,7 @@ function createTestDataGenerationService({
         return;
       }
 
-      if (!isPairwiseEligibleForSchemaRows(rowValidation.rows || [])) {
+      if (!isNWiseEligibleForSchemaRows(rowValidation.rows || [])) {
         showSchemaError('Pairwise generation requires at least 2 enum columns.');
         setTestDataStatus('Insufficient enum columns.', { severity: 'warning', dismissable: true });
         return;
@@ -275,7 +289,7 @@ function createTestDataGenerationService({
         return;
       }
 
-      if (!isPairwiseEligibleForSchemaRows(rowValidation.rows || [])) {
+      if (!isNWiseEligibleForSchemaRows(rowValidation.rows || [])) {
         showSchemaError(
           'Combination generation requires at least 2 enum columns because n-wise generation combines finite enum values.'
         );
@@ -296,7 +310,8 @@ function createTestDataGenerationService({
           algorithm,
           seed: 1,
           candidateCount: 20,
-          runs: algorithm === CombinationAlgorithm.AETG ? 2 : 1,
+          // AETG is randomized, so we run it twice and keep the better result.
+          runs: algorithm === CombinationAlgorithm.AETG ? DEFAULT_AETG_RUNS : 1,
         },
       });
 

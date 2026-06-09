@@ -20,7 +20,7 @@ function countEnumSchemaRows(rows = []) {
   ).length;
 }
 
-function isPairwiseEligibleForSchemaRows(rows = [], options = {}) {
+function isNWiseEligibleForSchemaRows(rows = [], options = {}) {
   return hasMinimumEnumColumns(countEnumSchemaRows(rows), options);
 }
 
@@ -28,4 +28,4 @@ function isPairwiseEligibleForDataRules(rules = [], options = {}) {
   return hasMinimumEnumColumns(countEnumRules(rules), options);
 }
 
-export { hasMinimumEnumColumns, countEnumSchemaRows, isPairwiseEligibleForSchemaRows, isPairwiseEligibleForDataRules };
+export { hasMinimumEnumColumns, countEnumSchemaRows, isNWiseEligibleForSchemaRows, isPairwiseEligibleForDataRules };

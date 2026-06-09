@@ -7,12 +7,17 @@ export function generateIpogRecords(context) {
   for (let parameterIndex = activeParameterCount; parameterIndex < context.parameters.length; parameterIndex += 1) {
     activeParameterCount = parameterIndex + 1;
     const slice = model.createParameterCoverageSlice(activeParameterCount, parameterIndex);
+    const parameterValues = context.parameters[parameterIndex]?.values;
+
+    if (!Array.isArray(parameterValues) || parameterValues.length === 0) {
+      continue;
+    }
 
     for (const record of context.dataRecords) {
-      let bestValue = context.parameters[parameterIndex].values[0];
-      let bestScore = -1;
+      let bestValue = parameterValues[0];
+      let bestScore = Number.NEGATIVE_INFINITY;
 
-      for (const value of context.parameters[parameterIndex].values) {
+      for (const value of parameterValues) {
         record.set(context.parameters[parameterIndex].name, value);
         const score = model.calculateCoverageScore(record, slice.targets, slice.coverage);
         if (score > bestScore) {

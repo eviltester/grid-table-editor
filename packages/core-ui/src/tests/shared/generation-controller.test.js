@@ -5,7 +5,7 @@ import {
   createPairwiseDataTable,
   createCombinationsDataTable,
 } from '../../../js/gui_components/shared/test-data/generation/generation-controller.js';
-import { isPairwiseEligibleForSchemaRows } from '../../../js/gui_components/shared/test-data/generation/ui-derived-state.js';
+import { isNWiseEligibleForSchemaRows } from '../../../js/gui_components/shared/test-data/generation/ui-derived-state.js';
 import { jest } from '@jest/globals';
 
 class FakeGenericDataTable {
@@ -27,7 +27,7 @@ class FakeGenericDataTable {
 describe('generation-controller', () => {
   test('row-based generation helpers remain available through direct modules', () => {
     expect(typeof createConfiguredGeneratorFromSchemaRows).toBe('function');
-    expect(typeof isPairwiseEligibleForSchemaRows).toBe('function');
+    expect(typeof isNWiseEligibleForSchemaRows).toBe('function');
   });
 
   test('creates generator from schema text parse result', () => {

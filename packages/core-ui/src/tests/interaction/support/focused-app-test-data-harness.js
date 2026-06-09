@@ -261,8 +261,12 @@ function createFocusedAppTestDataHarness() {
     return getPanelQueries().getByRole('spinbutton', { name: 'How Many?' }).value;
   }
 
-  function getPairwiseButton() {
+  function getCombinationsButton() {
     return getPanelRoot().querySelector('[data-role="generate-pairwise-button-wrapper"]');
+  }
+
+  function getPairwiseButton() {
+    return getCombinationsButton();
   }
 
   function getPreviewText() {
@@ -312,6 +316,7 @@ function createFocusedAppTestDataHarness() {
     getSchemaText,
     getSchemaErrorText,
     getGenerateCount,
+    getCombinationsButton,
     getPairwiseButton,
     getPreviewText,
     getLatestDataTable,

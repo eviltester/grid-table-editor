@@ -6,7 +6,17 @@ describe('isExplicitEnumRule', () => {
     expect(isExplicitEnumRule('enum("Chrome","Firefox")')).toBe(true);
     expect(isExplicitEnumRule('enum "Chrome","Firefox"')).toBe(true);
     expect(isExplicitEnumRule('("Chrome","Firefox")')).toBe(true);
+    expect(isExplicitEnumRule('enum("Chrome")')).toBe(true);
+    expect(isExplicitEnumRule('("Chrome")')).toBe(false);
+    expect(isExplicitEnumRule('enum()')).toBe(true);
+    expect(isExplicitEnumRule('()')).toBe(false);
 
+    expect(isExplicitEnumRule(null)).toBe(false);
+    expect(isExplicitEnumRule(undefined)).toBe(false);
+    expect(isExplicitEnumRule('')).toBe(false);
+    expect(isExplicitEnumRule('   ')).toBe(false);
+    expect(isExplicitEnumRule('(Chrome,Firefox')).toBe(false);
+    expect(isExplicitEnumRule('Chrome,Firefox)')).toBe(false);
     expect(isExplicitEnumRule('regex("[A,B]")')).toBe(false);
     expect(isExplicitEnumRule('literal.value("A,B")')).toBe(false);
     expect(isExplicitEnumRule('domain(city,state)')).toBe(false);

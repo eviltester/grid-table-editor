@@ -15,6 +15,7 @@ export const CombinationAlgorithm = Object.freeze({
 });
 
 export const SUPPORTED_COMBINATION_ALGORITHMS = new Set(Object.values(CombinationAlgorithm));
+export const DEFAULT_AETG_RUNS = 2;
 
 export class CartesianProductGenerator {
   constructor(parameters, { strength = parameters.length } = {}) {

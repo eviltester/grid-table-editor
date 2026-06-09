@@ -46,8 +46,8 @@ function renderToolbarStory(args) {
         log.textContent = 'action:generate';
       },
       onGeneratePairwise: () => {
-        args.onGeneratePairwise?.();
-        log.textContent = 'action:generate-secondary';
+        args.onGenerateCombinations?.();
+        log.textContent = 'action:generate-combinations';
       },
       onModeChange: (mode) => {
         args.onModeChange?.(mode);
@@ -90,7 +90,7 @@ const meta = {
     rowCount: 1,
     maxWidth: '',
     onGenerate: fn(),
-    onGeneratePairwise: fn(),
+    onGenerateCombinations: fn(),
     onModeChange: fn(),
   },
   argTypes: {

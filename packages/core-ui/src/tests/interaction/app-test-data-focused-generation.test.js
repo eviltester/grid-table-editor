@@ -70,14 +70,14 @@ describe('app test-data focused generation flows', () => {
   });
 
   test('combination generation is only visible for eligible schema and succeeds when shown', async () => {
-    expect(harness.getPairwiseButton().style.display).toBe('none');
+    expect(harness.getCombinationsButton().style.display).toBe('none');
 
     await harness.setSchemaText('Status\nenum(active,inactive,pending)');
-    expect(harness.getPairwiseButton().style.display).toBe('none');
+    expect(harness.getCombinationsButton().style.display).toBe('none');
 
     await harness.setSchemaText('Status\nenum(active,inactive,pending)\nPriority\nenum(high,medium,low)');
 
-    await waitFor(() => expect(harness.getPairwiseButton().style.display).not.toBe('none'));
+    await waitFor(() => expect(harness.getCombinationsButton().style.display).not.toBe('none'));
     await harness.clickGenerateCombinations();
 
     harness.assertSuccessfulGeneration('app focused combinations');

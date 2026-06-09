@@ -101,6 +101,10 @@ function renderDataPopulationPanelStory(args) {
 
   const schemaTextSyncState = createSchemaTextSyncState();
 
+  const onGenerateCombinations = () => {
+    log.textContent = 'action:generate-combinations';
+  };
+
   const component = createDataPopulationPanelComponent({
     root: componentRoot,
     documentObj: document,
@@ -125,9 +129,7 @@ function renderDataPopulationPanelStory(args) {
       onGenerate: () => {
         log.textContent = 'action:generate';
       },
-      onGeneratePairwise: () => {
-        log.textContent = 'action:generate-combinations';
-      },
+      onGeneratePairwise: onGenerateCombinations,
       schemaDefinition: {
         onSchemaError: (message) => {
           const errorElement = getSchemaErrorElement(componentRoot);

@@ -62,7 +62,9 @@ function runCommand(command, args, options = {}) {
   });
 
   if (result.status !== 0) {
-    process.exit(result.status ?? 1);
+    throw new Error(
+      `Command failed: ${command} ${args.join(' ')} (status ${result.status ?? 1}${result.signal ? `, signal ${result.signal}` : ''})`,
+    );
   }
 }
 
@@ -585,6 +587,9 @@ async function main() {
   }
 
   await copyWebBuildIntoDirectory(tempWebDir, fullSiteDir);
+  await hideTopHeaderInBuiltPage(path.join(fullSiteDir, 'app.html'));
+  await hideTopHeaderInBuiltPage(path.join(fullSiteDir, 'generator.html'));
+  await hideTopHeaderInBuiltPage(path.join(fullSiteDir, 'combinatorial.html'));
   await rm(tempWebDir, {
     recursive: true,
     force: true,

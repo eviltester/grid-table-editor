@@ -8,6 +8,7 @@ import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-tab
 import {
   CombinationAlgorithm,
   CombinationsTestDataGenerator,
+  DEFAULT_AETG_RUNS,
 } from '@anywaydata/core/data_generation/n-wise/combinationsTestDataGenerator.js';
 import { PairwiseTestDataGenerator } from '@anywaydata/core/data_generation/n-wise/pairwiseTestDataGenerator.js';
 import { EnumParser } from '@anywaydata/core/data_generation/utils/enumParser.js';
@@ -18,7 +19,7 @@ import {
   createPairwiseDataTable,
   createCombinationsDataTable,
 } from '../../shared/test-data/generation/generation-controller.js';
-import { isPairwiseEligibleForSchemaRows } from '../../shared/test-data/generation/ui-derived-state.js';
+import { isNWiseEligibleForSchemaRows } from '../../shared/test-data/generation/ui-derived-state.js';
 import {
   SOURCE_TYPE_FAKER,
   SOURCE_TYPE_DOMAIN,
@@ -135,7 +136,7 @@ function updateGeneratorPairwiseButtonVisibility({
       ? getCurrentSchemaState()
       : syncSchemaRowsFromTextMode({ showErrors: false, applySemanticValidation: false });
   const { errors, rows } = validateSchemaRows(parsed.rows || []);
-  const isVisible = !parsed.errors?.length && !errors.length && isPairwiseEligibleForSchemaRows(rows);
+  const isVisible = !parsed.errors?.length && !errors.length && isNWiseEligibleForSchemaRows(rows);
   return isVisible;
 }
 
@@ -385,7 +386,8 @@ async function generateGeneratorCombinationsDataFile({
       algorithm,
       seed: 1,
       candidateCount: 20,
-      runs: algorithm === CombinationAlgorithm.AETG ? 2 : 1,
+      // AETG is randomized, so we run it twice and keep the better result.
+      runs: algorithm === CombinationAlgorithm.AETG ? DEFAULT_AETG_RUNS : 1,
     });
     if (!dataTable) {
       surfacePageError('Failed to generate combinations data.');

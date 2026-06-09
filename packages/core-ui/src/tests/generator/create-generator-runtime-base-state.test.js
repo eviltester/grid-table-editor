@@ -14,6 +14,7 @@ describe('createGeneratorPageBaseState', () => {
   test('builds base runtime state from injected options and defaults', () => {
     const parentElement = { id: 'root' };
     const documentObj = { nodeType: 9 };
+    const windowObj = { navigator: { platform: 'Win32' } };
     const faker = { word: { noun: () => 'x' } };
     const RandExp = function RandExp() {};
 
@@ -21,6 +22,7 @@ describe('createGeneratorPageBaseState', () => {
       options: {
         parentElement,
         documentObj,
+        windowObj,
         faker,
         RandExp,
         TabulatorCtor: FakeTabulator,
@@ -36,7 +38,7 @@ describe('createGeneratorPageBaseState', () => {
       documentObj,
       faker,
       RandExp,
-      windowObj: undefined,
+      windowObj,
       TabulatorCtor: FakeTabulator,
       GridExtensionClass: FakeGridExtension,
       ExporterClass: FakeExporter,

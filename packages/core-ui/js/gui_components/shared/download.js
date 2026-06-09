@@ -23,7 +23,10 @@ class Download {
       return false;
     }
 
-    const blob = new this.BlobCtor([text], { type: mimeType });
+    const blob = new this.BlobCtor([text], {
+      type: mimeType,
+      endings: 'transparent',
+    });
     const url = this.URLObj.createObjectURL(blob);
     const element = this.documentObj.createElement('a');
     element.setAttribute('href', url);

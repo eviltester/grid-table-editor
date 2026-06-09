@@ -13,6 +13,14 @@ const baseUrl = process.env.DOCS_BASE_URL || '/';
 const appUrl = new URL(`.${baseUrl}app.html`, `${siteUrl}/`).toString();
 const canonicalSiteUrl = process.env.DOCS_TEST_CANONICAL_SITE_URL || 'https://anywaydata.com';
 const isTestBuild = isDocsTestBuild(process.env);
+const scripts = isTestBuild
+  ? [
+      {src: 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7132305589272099', async: true, crossorigin: 'anonymous'},
+    ]
+  : [
+      {src: 'https://plausible.io/js/script.js', defer: true, 'data-domain': 'anywaydata.com'},
+      {src: 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7132305589272099', async: true, crossorigin: 'anonymous'},
+    ];
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -170,10 +178,7 @@ const config = {
         },
       },
     }),
-    scripts: [
-      {src: 'https://plausible.io/js/script.js', defer: true, 'data-domain': 'anywaydata.com'},
-      {src: 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7132305589272099', async: true, crossorigin: 'anonymous'}
-    ],
+    scripts,
 };
 
 module.exports = config;

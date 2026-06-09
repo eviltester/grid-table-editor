@@ -26,6 +26,25 @@ const ROOT_PAGE_CANONICALS = {
   'generator.html': `${TESTENV_CANONICAL_SITE_URL}/generator.html`,
   'combinatorial.html': `${TESTENV_CANONICAL_SITE_URL}/combinatorial.html`,
 };
+const TESTENV_INDICATOR_STYLE = `<style data-testenv-indicator>
+      body::before {
+        content: "Test Environment";
+        position: fixed;
+        top: 12px;
+        left: 12px;
+        z-index: 2147483647;
+        padding: 0.45rem 0.75rem;
+        border: 1px solid rgba(110, 35, 12, 0.35);
+        border-radius: 999px;
+        background: rgba(255, 244, 214, 0.96);
+        color: #6e230c;
+        box-shadow: 0 10px 24px rgba(110, 35, 12, 0.18);
+        font: 700 12px/1.2 Arial, Helvetica, sans-serif;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        pointer-events: none;
+      }
+    </style>`;
 
 function isMainModule() {
   return process.argv[1] ? fileURLToPath(import.meta.url) === path.resolve(process.argv[1]) : false;
@@ -157,6 +176,16 @@ function upsertCanonicalLink(html, canonicalUrl) {
   return html.replace('</head>', `    ${tag}\n  </head>`);
 }
 
+function upsertHeadStyle(html, markerAttribute, styleTag) {
+  const stylePattern = new RegExp(`<style[^>]*${escapeRegExp(markerAttribute)}[^>]*>[\\s\\S]*?<\\/style>`, 'i');
+
+  if (stylePattern.test(html)) {
+    return html.replace(stylePattern, styleTag);
+  }
+
+  return html.replace('</head>', `${styleTag}\n  </head>`);
+}
+
 function applySeoDirectivesToHtml(
   html,
   {
@@ -169,6 +198,8 @@ function applySeoDirectivesToHtml(
   for (const botName of TESTENV_BOT_NAMES) {
     nextHtml = upsertMetaTag(nextHtml, botName, robotsDirectives);
   }
+
+  nextHtml = upsertHeadStyle(nextHtml, 'data-testenv-indicator', TESTENV_INDICATOR_STYLE);
 
   return upsertCanonicalLink(nextHtml, canonicalUrl);
 }
@@ -374,6 +405,24 @@ function renderIndexPage({ branchName, commitSha, buildTimestamp }) {
 
       .card a:hover {
         background: var(--link-hover);
+      }
+
+      body::before {
+        content: "Test Environment";
+        position: fixed;
+        top: 12px;
+        left: 12px;
+        z-index: 2147483647;
+        padding: 0.45rem 0.75rem;
+        border: 1px solid rgba(110, 35, 12, 0.35);
+        border-radius: 999px;
+        background: rgba(255, 244, 214, 0.96);
+        color: #6e230c;
+        box-shadow: 0 10px 24px rgba(110, 35, 12, 0.18);
+        font: 700 12px/1.2 Arial, Helvetica, sans-serif;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        pointer-events: none;
       }
     </style>
   </head>

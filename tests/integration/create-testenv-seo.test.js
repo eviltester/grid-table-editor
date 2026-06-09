@@ -1,6 +1,7 @@
 import {
   ROOT_CANONICAL_URL,
   TESTENV_CANONICAL_SITE_URL,
+  applySeoDirectivesToHtml,
   createLlmsTxt,
   createSiteRobotsTxt,
   createTestenvRobotsTxt,
@@ -40,5 +41,13 @@ describe('create-testenv SEO helpers', () => {
     expect(html).toContain('<meta name="robots" content="noindex,nofollow,noarchive,nosnippet" />');
     expect(html).toContain('<meta name="googlebot" content="noindex,nofollow,noarchive,nosnippet" />');
     expect(html).toContain('<link rel="canonical" href="https://anywaydata.com/" />');
+    expect(html).toContain('content: "Test Environment"');
+  });
+
+  test('injects the test environment indicator into rewritten html pages', () => {
+    const html = applySeoDirectivesToHtml('<!doctype html><html><head><title>Storybook</title></head><body></body></html>');
+
+    expect(html).toContain('data-testenv-indicator');
+    expect(html).toContain('content: "Test Environment"');
   });
 });

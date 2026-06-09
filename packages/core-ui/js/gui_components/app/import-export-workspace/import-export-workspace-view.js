@@ -61,6 +61,7 @@ class ImportExportWorkspaceView {
       props: state,
       callbacks: {
         onDownload: this.services.onDownload,
+        onExportEncodingSettingsChange: this.services.onExportEncodingSettingsChange,
         onFileSelected: this.services.onFileSelected,
         onImportFromClipboard: this.services.onImportFromClipboard,
       },

@@ -242,13 +242,26 @@ describe('ImportExportWorkspace', () => {
     expect(clipboardService.copyFromTextArea).toHaveBeenCalledWith(getPreviewTextArea(documentObj));
     expect(getCopyTextButtonLabel(documentObj).textContent).toBe('Copied');
 
+    const toolbarDetails = documentObj.querySelector('[data-role="import-export-toolbar-details"]');
+    toolbarDetails.open = true;
+    const lineEndingSelect = documentObj.querySelector('[data-role="line-ending-select"]');
+    const includeBomCheckbox = documentObj.querySelector('[data-role="include-bom-checkbox"]');
+
+    fireEvent.change(lineEndingSelect, { target: { value: 'lf' } });
+    fireEvent.click(includeBomCheckbox);
+
+    expect(component.getState().exportEncodingSettings).toEqual({
+      lineEnding: 'lf',
+      includeBom: true,
+    });
+
     fireEvent.click(documentObj.querySelector('#filedownload'));
 
     await waitFor(() =>
       expect(downloadService.downloadText).toHaveBeenCalledWith('export.csv', 'full:csv', {
         exportEncodingSettings: {
-          lineEnding: 'crlf',
-          includeBom: false,
+          lineEnding: 'lf',
+          includeBom: true,
         },
       })
     );

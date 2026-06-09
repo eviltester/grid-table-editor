@@ -2,7 +2,7 @@ const { test } = require('@playwright/test');
 const { openApp, seedRows, expectNoPageErrors, expect } = require('../../../abstractions/helpers/scenario-helpers');
 
 test.describe('1. Grid Basic Operations', () => {
-  test('Right click context menu can add rows, preview, and export', async ({ page }) => {
+  test('Right click context menu can add rows and sync unique column names to the toolbar', async ({ page }) => {
     const { appPage, pageErrors } = await openApp(page);
     await seedRows(appPage, ['Alpha', 'Beta']);
 
@@ -14,14 +14,9 @@ test.describe('1. Grid Basic Operations', () => {
     await expect.poll(async () => appPage.gridEditor.renderer.countRows()).toBe(initialRowCount + 1);
 
     await appPage.gridEditor.openContextMenuOnCell(columnName, 0);
-    await appPage.gridEditor.contextMenuPreviewAs('JSON');
-    await expect.poll(async () => appPage.textPreviewEditor.getOutputText()).toContain('"Alpha"');
-
-    await appPage.gridEditor.openContextMenuOnCell(columnName, 0);
-    const downloadPromise = page.waitForEvent('download');
-    await appPage.gridEditor.contextMenuExportAs('CSV');
-    const download = await downloadPromise;
-    expect(download.suggestedFilename()).toMatch(/\.csv$/i);
+    await appPage.gridEditor.contextMenuSetUniqueColumnNames(true);
+    await expect(appPage.gridEditor.uniqueColumnNamesCheckbox).toBeChecked();
+    await expect(appPage.gridEditor.contextMenu).toBeHidden();
 
     expectNoPageErrors(pageErrors);
   });

@@ -8,7 +8,6 @@ import { createTabulatorGridAdapter } from './tabulator-grid-adapter.js';
 import { GridExtension as TabulatorGridExtension } from './tabulator/gridExtension-tabulator.js';
 import { resolveDocumentObj, resolveWindowObj } from '../shared/dom/default-objects.js';
 import { renderIconHtml } from '../shared/primitives/icon/icon-core.js';
-import { createDefaultTabDefinitions } from '../app/format-selector/format-selector-controller.js';
 
 function createAppGridTabulatorOptions({
   textInputDialogService,
@@ -257,23 +256,6 @@ class DataGridComponentView {
     return this.gridReadyPromise;
   }
 
-  getContextMenuItems() {
-    const configuredItems = this.services.getPreviewExportFormats?.();
-    if (Array.isArray(configuredItems) && configuredItems.length > 0) {
-      return configuredItems;
-    }
-
-    return createDefaultTabDefinitions().flatMap((definition) => {
-      if (Array.isArray(definition.subtasks)) {
-        return definition.subtasks.map((subtask) => ({
-          type: subtask.selectedType || subtask.type,
-          label: subtask.label,
-        }));
-      }
-      return definition.type ? [{ type: definition.type, label: definition.label }] : [];
-    });
-  }
-
   renderContextMenu() {
     const menuRoot = this.root.querySelector('[data-role="data-grid-context-menu"]');
     if (!menuRoot) {
@@ -281,7 +263,6 @@ class DataGridComponentView {
     }
 
     const state = this.controller.getState();
-    const formatItems = this.getContextMenuItems();
     menuRoot.hidden = false;
     menuRoot.style.left = `${this.contextMenuState.x}px`;
     menuRoot.style.top = `${this.contextMenuState.y}px`;
@@ -309,33 +290,6 @@ class DataGridComponentView {
         <button type="button" data-context-action="reset-table" role="menuitem">Reset Table</button>
         <button type="button" data-context-action="auto-fit-columns" role="menuitem">Auto Fit Columns</button>
       </div>
-      <div class="data-grid-context-menu__separator" role="separator"></div>
-      <details class="data-grid-context-menu__details">
-        <summary>Preview As</summary>
-        <div class="data-grid-context-menu__submenu">
-          ${formatItems
-            .map(
-              ({ type, label }) =>
-                `<button type="button" data-context-action="preview-format" data-format-type="${escapeHtml(
-                  type
-                )}" role="menuitem">${escapeHtml(label)}</button>`
-            )
-            .join('')}
-        </div>
-      </details>
-      <details class="data-grid-context-menu__details">
-        <summary>Export As</summary>
-        <div class="data-grid-context-menu__submenu">
-          ${formatItems
-            .map(
-              ({ type, label }) =>
-                `<button type="button" data-context-action="export-format" data-format-type="${escapeHtml(
-                  type
-                )}" role="menuitem">${escapeHtml(label)}</button>`
-            )
-            .join('')}
-        </div>
-      </details>
     `;
   }
 
@@ -416,12 +370,6 @@ class DataGridComponentView {
       await this.controller.clearTable();
     } else if (action === 'auto-fit-columns') {
       this.controller.sizeColumnsToFit();
-    } else if (action === 'preview-format') {
-      const format = actionElement.getAttribute('data-format-type');
-      await this.services.previewAs?.(format);
-    } else if (action === 'export-format') {
-      const format = actionElement.getAttribute('data-format-type');
-      await this.services.exportAs?.(format);
     }
 
     this.closeContextMenu();
@@ -433,6 +381,7 @@ class DataGridComponentView {
       return;
     }
     this.controller.setUniqueColumnNames(checkbox.checked === true);
+    this.toolbar?.update?.(this.controller.getState());
     this.closeContextMenu();
   }
 

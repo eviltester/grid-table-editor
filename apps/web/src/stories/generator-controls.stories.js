@@ -179,6 +179,6 @@ export const BusyWithWindowsEncoding = {
     await userEvent.click(settingsSummary);
     await expect(canvas.getByLabelText('Line endings')).toHaveValue('crlf');
     await expect(canvas.getByRole('checkbox', { name: 'Include BOM' })).toBeChecked();
-    await expect(canvas.getByRole('button', { name: 'Generate Pairwise' })).toBeVisible();
+    await expect(canvas.getByRole('button', { name: 'Generate Combinations' })).toBeVisible();
   },
 };

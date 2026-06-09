@@ -1187,6 +1187,20 @@ body.theme-dark .generator-status-text[data-severity='info'] {
   width: 100%;
 }
 
+.combinatorial-estimates {
+  display: grid;
+  gap: 0.3rem;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: rgba(35, 120, 77, 0.05);
+  line-height: 1.35;
+}
+
+.combinatorial-estimates strong {
+  font-weight: 700;
+}
+
 .combinatorial-strategy-fieldset {
   min-width: 0;
   margin: 0;
@@ -1230,6 +1244,26 @@ body.theme-dark .generator-status-text[data-severity='info'] {
   min-height: 1.4rem;
   margin: 0;
   line-height: 1.4;
+}
+
+.combinatorial-progress {
+  min-height: 1.4rem;
+  margin: 0;
+  line-height: 1.4;
+  color: #1f5f80;
+}
+
+.combinatorial-progress[data-state='running']::before {
+  content: '';
+  display: inline-block;
+  width: 0.8rem;
+  height: 0.8rem;
+  margin-right: 0.45rem;
+  border: 2px solid rgba(31, 95, 128, 0.25);
+  border-top-color: #1f5f80;
+  border-radius: 50%;
+  vertical-align: -0.1rem;
+  animation: combinatorial-spin 0.9s linear infinite;
 }
 
 .combinatorial-status[data-severity='error'],
@@ -1295,6 +1329,12 @@ body.theme-dark .generator-status-text[data-severity='info'] {
 .combinatorial-run-details > .combinatorial-table-wrapper,
 .combinatorial-run-details > p {
   margin: 0.75rem;
+}
+
+@keyframes combinatorial-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @media (max-width: 820px) {

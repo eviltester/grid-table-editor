@@ -1,11 +1,14 @@
 import { PairwiseGenerator } from '../../../packages/core/js/data_generation/n-wise/pairwiseGenerator.js';
 import { BachAllPairsGenerator } from '../../../packages/core/js/data_generation/n-wise/bachAllPairsGenerator.js';
 import { CartesianProductGenerator } from '../../../packages/core/js/data_generation/n-wise/combinationsTestDataGenerator.js';
+import { NWiseCoverageModel } from '../../../packages/core/js/data_generation/n-wise/nWiseCoverageModel.js';
 import { NWiseGenerator } from '../../../packages/core/js/data_generation/n-wise/nWiseGenerator.js';
 import { EnumParser } from '../../../packages/core/js/data_generation/utils/enumParser.js';
 import { isExplicitEnumRule } from '../../../packages/core/js/data_generation/utils/enum-rule-detection.js';
+import { createConfirmDialogService } from '../../../packages/core-ui/js/gui_components/shared/dialog-services/confirm-dialog-service.js';
 import {
   CombinationAlgorithm,
+  calculateCartesianProductRows,
   COMBINATION_STRATEGIES,
   getAvailableStrengths,
   getStrategiesForStrength,
@@ -27,17 +30,9 @@ const DEFAULT_SELECTED_ALGORITHMS = new Set([
   CombinationAlgorithm.PICT_GCD,
   CombinationAlgorithm.AETG,
   CombinationAlgorithm.IPOG,
-  CombinationAlgorithm.CARTESIAN_PRODUCT,
 ]);
 
-const root = document.getElementById('combinatorial-root');
-const schemaEditor = document.getElementById('combinatorial-schema');
-const strengthSelect = document.getElementById('combinatorial-strength');
-const strategiesRoot = document.getElementById('combinatorial-strategies');
-const generateButton = document.getElementById('generate-combinatorial');
-const statusElement = document.getElementById('combinatorial-status');
-const summaryRoot = document.getElementById('combinatorial-summary');
-const detailsRoot = document.getElementById('combinatorial-details');
+const CARTESIAN_CONFIRM_THRESHOLD = 10000;
 
 function escapeHtml(value) {
   return String(value ?? '')
@@ -51,6 +46,10 @@ function escapeHtml(value) {
 function normaliseAlgorithmLabel(algorithm) {
   const strategy = COMBINATION_STRATEGIES.find((item) => item.id === algorithm);
   return strategy?.label || algorithm;
+}
+
+function formatNumber(value) {
+  return Number.isFinite(value) ? Number(value).toLocaleString() : '0';
 }
 
 function parseEnumParameters(schemaText) {
@@ -100,61 +99,93 @@ function getValueCounts(parameters) {
   return parameters.map((parameter) => parameter.values.length);
 }
 
-function setStatus(message, severity = 'info') {
-  statusElement.textContent = message;
-  statusElement.dataset.severity = severity;
-}
-
-function getSelectedStrength() {
-  return Number.parseInt(strengthSelect.value, 10);
-}
-
-function getSelectedAlgorithms() {
-  return Array.from(strategiesRoot.querySelectorAll('input[type="checkbox"]:checked'))
-    .map((input) => input.value)
-    .filter(Boolean);
-}
-
-function renderStrengthOptions() {
-  const { parameters } = parseEnumParameters(schemaEditor.value);
-  const currentStrength = getSelectedStrength();
-  const strengths = getAvailableStrengths(parameters.length);
-  strengthSelect.innerHTML = strengths
-    .map((strength) => `<option value="${strength}">${strength}-wise</option>`)
-    .join('');
-
-  if (strengths.length > 0) {
-    strengthSelect.value = strengths.includes(currentStrength) ? String(currentStrength) : String(strengths[0]);
+function calculateTheoreticalMinimumRows(parameters, strength) {
+  if (!Array.isArray(parameters) || parameters.length === 0) {
+    return 0;
   }
-  strengthSelect.disabled = strengths.length === 0;
+  const model = new NWiseCoverageModel(parameters, strength);
+  return model.coverageTargets.reduce((largestTupleSet, target) => Math.max(largestTupleSet, target.tuples.length), 0);
 }
 
-function renderStrategyCheckboxes() {
-  const strength = getSelectedStrength();
-  const { parameters } = parseEnumParameters(schemaEditor.value);
-  const availableStrategies = getStrategiesForStrength(strength, { valueCounts: getValueCounts(parameters) });
-  const selectedAlgorithms = new Set(getSelectedAlgorithms());
-  if (selectedAlgorithms.size === 0) {
-    for (const algorithm of DEFAULT_SELECTED_ALGORITHMS) {
-      selectedAlgorithms.add(algorithm);
+function calculateRequiredTupleCount(parameters, strength) {
+  if (!Array.isArray(parameters) || parameters.length === 0) {
+    return 0;
+  }
+  const model = new NWiseCoverageModel(parameters, strength);
+  return model.getTotalTargetTupleCount();
+}
+
+function buildEstimateSummary(parameters, strength) {
+  const cartesianRowCount = calculateCartesianProductRows(getValueCounts(parameters));
+  const theoreticalMinimumRows =
+    parameters.length >= strength && strength >= 1 ? calculateTheoreticalMinimumRows(parameters, strength) : 0;
+  const totalRequiredTuples =
+    parameters.length >= strength && strength >= 1 ? calculateRequiredTupleCount(parameters, strength) : 0;
+
+  return {
+    cartesianRowCount,
+    theoreticalMinimumRows,
+    totalRequiredTuples,
+  };
+}
+
+function sortResultsByRowCount(results) {
+  return [...results].sort((left, right) => {
+    const leftHasError = Boolean(left?.error);
+    const rightHasError = Boolean(right?.error);
+    if (leftHasError !== rightHasError) {
+      return leftHasError ? 1 : -1;
     }
-  }
 
-  strategiesRoot.innerHTML = availableStrategies
-    .map((strategy) => {
-      const checked = selectedAlgorithms.has(strategy.id) ? ' checked' : '';
-      return `<label class="combinatorial-strategy-checkbox">
-        <input type="checkbox" value="${escapeHtml(strategy.id)}"${checked}>
-        <span class="combinatorial-strategy-name">${escapeHtml(strategy.label)}</span>
-        <span class="combinatorial-strategy-description">${escapeHtml(strategy.description)}</span>
-      </label>`;
-    })
-    .join('');
+    const leftRows = Number.isFinite(left?.stats?.rowCount) ? left.stats.rowCount : Number.MAX_SAFE_INTEGER;
+    const rightRows = Number.isFinite(right?.stats?.rowCount) ? right.stats.rowCount : Number.MAX_SAFE_INTEGER;
+    if (leftRows !== rightRows) {
+      return leftRows - rightRows;
+    }
+
+    const leftRuntime = Number.isFinite(left?.stats?.runtimeMs) ? left.stats.runtimeMs : Number.MAX_SAFE_INTEGER;
+    const rightRuntime = Number.isFinite(right?.stats?.runtimeMs) ? right.stats.runtimeMs : Number.MAX_SAFE_INTEGER;
+    return leftRuntime - rightRuntime;
+  });
 }
 
-function renderControls() {
-  renderStrengthOptions();
-  renderStrategyCheckboxes();
+async function filterAlgorithmsForCartesianConfirmation({
+  algorithms,
+  parameters,
+  requestConfirm,
+  threshold = CARTESIAN_CONFIRM_THRESHOLD,
+}) {
+  const selectedAlgorithms = Array.isArray(algorithms) ? [...algorithms] : [];
+  if (!selectedAlgorithms.includes(CombinationAlgorithm.CARTESIAN_PRODUCT)) {
+    return selectedAlgorithms;
+  }
+
+  const cartesianRowCount = calculateCartesianProductRows(getValueCounts(parameters));
+  if (!Number.isFinite(cartesianRowCount) || cartesianRowCount <= threshold || typeof requestConfirm !== 'function') {
+    return selectedAlgorithms;
+  }
+
+  const confirmed = await requestConfirm({
+    title: 'Cartesian product generation',
+    message: `You included cartesian product generation. Are you sure? this will generate ${formatNumber(cartesianRowCount)} data rows.`,
+    okLabel: 'Run cartesian product',
+    cancelLabel: 'Skip cartesian product',
+  });
+
+  return confirmed
+    ? selectedAlgorithms
+    : selectedAlgorithms.filter((algorithm) => algorithm !== CombinationAlgorithm.CARTESIAN_PRODUCT);
+}
+
+function createIdleResultStats(algorithm) {
+  return {
+    algorithm,
+    rowCount: 0,
+    totalTuples: 0,
+    coveredTuples: 0,
+    coveragePercentage: 0,
+    runtimeMs: 0,
+  };
 }
 
 function normalisePairwiseStats({ generator, algorithm, runtimeMs }) {
@@ -214,51 +245,6 @@ function runAlgorithm({ algorithm, parameters, strength }) {
   };
 }
 
-function renderSummary(results, parameters, strength) {
-  if (results.length === 0) {
-    summaryRoot.innerHTML = '<p>No strategy results to show.</p>';
-    return;
-  }
-
-  const shape = getParameterShape(parameters);
-  const rows = results
-    .map(({ stats, error }) => {
-      const coverage = Number.isFinite(stats?.coveragePercentage) ? stats.coveragePercentage.toFixed(1) : '0.0';
-      const runtime = Number.isFinite(stats?.runtimeMs) ? stats.runtimeMs.toFixed(2) : '0.00';
-      return `<tr>
-        <td>${escapeHtml(normaliseAlgorithmLabel(stats.algorithm))}</td>
-        <td>${strength}</td>
-        <td>${escapeHtml(shape)}</td>
-        <td>${error ? 'n/a' : escapeHtml(stats.rowCount)}</td>
-        <td>${error ? 'n/a' : escapeHtml(stats.totalTuples)}</td>
-        <td>${error ? 'n/a' : escapeHtml(stats.coveredTuples)}</td>
-        <td>${error ? 'n/a' : coverage}</td>
-        <td>${error ? 'n/a' : runtime}</td>
-        <td>${error ? escapeHtml(error) : 'OK'}</td>
-      </tr>`;
-    })
-    .join('');
-
-  summaryRoot.innerHTML = `<div class="combinatorial-table-wrapper">
-    <table class="combinatorial-table">
-      <thead>
-        <tr>
-          <th>Strategy</th>
-          <th>Strength</th>
-          <th>Shape</th>
-          <th>Rows</th>
-          <th>Total required tuples</th>
-          <th>Covered tuples</th>
-          <th>Coverage %</th>
-          <th>Runtime ms</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>${rows}</tbody>
-    </table>
-  </div>`;
-}
-
 function renderRecordsTable(records) {
   if (!Array.isArray(records) || records.length === 0) {
     return '<p>No generated rows.</p>';
@@ -277,89 +263,338 @@ function renderRecordsTable(records) {
   </div>`;
 }
 
-function renderDetails(results) {
-  detailsRoot.innerHTML = results
-    .map(({ stats, records, error }) => {
-      const runtime = Number.isFinite(stats?.runtimeMs) ? stats.runtimeMs.toFixed(2) : '0.00';
-      const title = `${normaliseAlgorithmLabel(stats.algorithm)} - ${error ? 'failed' : `${stats.rowCount} rows`} - ${runtime} ms`;
-      return `<details class="combinatorial-run-details">
-        <summary>${escapeHtml(title)}</summary>
-        ${error ? `<p class="combinatorial-error">${escapeHtml(error)}</p>` : renderRecordsTable(records)}
-      </details>`;
-    })
-    .join('');
-}
-
-function generateCombinatorial() {
-  const { parameters, errors } = parseEnumParameters(schemaEditor.value);
-  summaryRoot.innerHTML = '';
-  detailsRoot.innerHTML = '';
-
-  if (errors.length > 0) {
-    setStatus(errors.join(' '), 'error');
-    return;
-  }
-  if (parameters.length < 2) {
-    setStatus('Add at least two enum fields to compare combinatorial strategies.', 'error');
-    return;
+function createCombinatorialPage({
+  schemaEditor,
+  strengthSelect,
+  strategiesRoot,
+  estimatesRoot,
+  generateButton,
+  progressElement,
+  statusElement,
+  summaryRoot,
+  detailsRoot,
+  requestConfirm,
+}) {
+  function setStatus(message, severity = 'info') {
+    statusElement.textContent = message;
+    statusElement.dataset.severity = severity;
   }
 
-  renderControls();
-  const strength = getSelectedStrength();
-  const selectedAlgorithms = getSelectedAlgorithms();
-  if (selectedAlgorithms.length === 0) {
-    setStatus('Select at least one strategy.', 'error');
-    return;
+  function setProgress(message = '', { running = false } = {}) {
+    progressElement.hidden = !message;
+    progressElement.textContent = message;
+    progressElement.dataset.state = running ? 'running' : 'idle';
   }
 
-  setStatus(`Running ${selectedAlgorithms.length} strategies...`);
-  generateButton.disabled = true;
+  function getSelectedStrength() {
+    return Number.parseInt(strengthSelect.value, 10);
+  }
 
-  const results = selectedAlgorithms.map((algorithm) => {
-    try {
-      return runAlgorithm({ algorithm, parameters, strength });
-    } catch (error) {
-      return {
-        stats: {
-          algorithm,
-          rowCount: 0,
-          totalTuples: 0,
-          coveredTuples: 0,
-          coveragePercentage: 0,
-          runtimeMs: 0,
-        },
-        records: [],
-        error: error.message,
-      };
+  function getSelectedAlgorithms() {
+    return Array.from(strategiesRoot.querySelectorAll('input[type="checkbox"]:checked'))
+      .map((input) => input.value)
+      .filter(Boolean);
+  }
+
+  function renderStrengthOptions() {
+    const { parameters } = parseEnumParameters(schemaEditor.value);
+    const currentStrength = getSelectedStrength();
+    const strengths = getAvailableStrengths(parameters.length);
+    strengthSelect.innerHTML = strengths
+      .map((strength) => `<option value="${strength}">${strength}-wise</option>`)
+      .join('');
+
+    if (strengths.length > 0) {
+      strengthSelect.value = strengths.includes(currentStrength) ? String(currentStrength) : String(strengths[0]);
     }
-  });
-
-  renderSummary(results, parameters, strength);
-  renderDetails(results);
-  generateButton.disabled = false;
-  const failedRuns = results.filter((result) => result.error).length;
-  if (failedRuns > 0) {
-    const successfulRuns = results.length - failedRuns;
-    const severity = successfulRuns > 0 ? 'warning' : 'error';
-    setStatus(
-      `Completed ${results.length} strategy runs for ${strength}-wise coverage with ${failedRuns} failure${
-        failedRuns === 1 ? '' : 's'
-      }.`,
-      severity
-    );
-    return;
+    strengthSelect.disabled = strengths.length === 0;
   }
 
-  setStatus(`Completed ${results.length} strategy runs for ${strength}-wise coverage.`, 'success');
+  function renderEstimateSummary() {
+    const { parameters } = parseEnumParameters(schemaEditor.value);
+    const strength = getSelectedStrength();
+    if (parameters.length < 2 || !Number.isInteger(strength)) {
+      estimatesRoot.innerHTML =
+        '<p>Add at least two enum fields to see cartesian size and n-wise coverage estimates.</p>';
+      return;
+    }
+
+    const summary = buildEstimateSummary(parameters, strength);
+    estimatesRoot.innerHTML = `
+      <div><strong>Cartesian product:</strong> ${escapeHtml(formatNumber(summary.cartesianRowCount))} rows</div>
+      <div><strong>Theoretical minimum:</strong> at least ${escapeHtml(formatNumber(summary.theoreticalMinimumRows))} rows</div>
+      <div><strong>${escapeHtml(`${strength}-wise`)}</strong> requires ${escapeHtml(
+        formatNumber(summary.totalRequiredTuples)
+      )} target tuples.</div>
+    `;
+  }
+
+  function renderStrategyCheckboxes() {
+    const strength = getSelectedStrength();
+    const { parameters } = parseEnumParameters(schemaEditor.value);
+    const availableStrategies = getStrategiesForStrength(strength, { valueCounts: getValueCounts(parameters) });
+    const selectedAlgorithms = new Set(getSelectedAlgorithms());
+    if (selectedAlgorithms.size === 0) {
+      for (const algorithm of DEFAULT_SELECTED_ALGORITHMS) {
+        selectedAlgorithms.add(algorithm);
+      }
+    }
+
+    strategiesRoot.innerHTML = availableStrategies
+      .map((strategy) => {
+        const checked = selectedAlgorithms.has(strategy.id) ? ' checked' : '';
+        return `<label class="combinatorial-strategy-checkbox">
+          <input type="checkbox" value="${escapeHtml(strategy.id)}"${checked}>
+          <span class="combinatorial-strategy-name">${escapeHtml(strategy.label)}</span>
+          <span class="combinatorial-strategy-description">${escapeHtml(strategy.description)}</span>
+        </label>`;
+      })
+      .join('');
+  }
+
+  function renderControls() {
+    renderStrengthOptions();
+    renderStrategyCheckboxes();
+    renderEstimateSummary();
+  }
+
+  function renderSummary(results, parameters, strength) {
+    if (results.length === 0) {
+      summaryRoot.innerHTML = '<p>No strategy results to show.</p>';
+      return;
+    }
+
+    const shape = getParameterShape(parameters);
+    const rows = sortResultsByRowCount(results)
+      .map(({ stats, error }) => {
+        const coverage = Number.isFinite(stats?.coveragePercentage) ? stats.coveragePercentage.toFixed(1) : '0.0';
+        const runtime = Number.isFinite(stats?.runtimeMs) ? stats.runtimeMs.toFixed(2) : '0.00';
+        return `<tr>
+          <td>${escapeHtml(normaliseAlgorithmLabel(stats.algorithm))}</td>
+          <td>${strength}</td>
+          <td>${escapeHtml(shape)}</td>
+          <td>${error ? 'n/a' : escapeHtml(stats.rowCount)}</td>
+          <td>${error ? 'n/a' : escapeHtml(stats.totalTuples)}</td>
+          <td>${error ? 'n/a' : escapeHtml(stats.coveredTuples)}</td>
+          <td>${error ? 'n/a' : coverage}</td>
+          <td>${error ? 'n/a' : runtime}</td>
+          <td>${error ? escapeHtml(error) : 'OK'}</td>
+        </tr>`;
+      })
+      .join('');
+
+    summaryRoot.innerHTML = `<div class="combinatorial-table-wrapper">
+      <table class="combinatorial-table">
+        <thead>
+          <tr>
+            <th>Strategy</th>
+            <th>Strength</th>
+            <th>Shape</th>
+            <th>Rows</th>
+            <th>Total required tuples</th>
+            <th>Covered tuples</th>
+            <th>Coverage %</th>
+            <th>Runtime ms</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
+  }
+
+  function renderDetails(results) {
+    detailsRoot.innerHTML = sortResultsByRowCount(results)
+      .map(({ stats, records, error }) => {
+        const runtime = Number.isFinite(stats?.runtimeMs) ? stats.runtimeMs.toFixed(2) : '0.00';
+        const title = `${normaliseAlgorithmLabel(stats.algorithm)} - ${error ? 'failed' : `${stats.rowCount} rows`} - ${runtime} ms`;
+        return `<details class="combinatorial-run-details">
+          <summary>${escapeHtml(title)}</summary>
+          ${error ? `<p class="combinatorial-error">${escapeHtml(error)}</p>` : renderRecordsTable(records)}
+        </details>`;
+      })
+      .join('');
+  }
+
+  async function yieldToBrowser() {
+    await new Promise((resolve) => {
+      (globalThis.requestAnimationFrame || globalThis.setTimeout)(() => resolve(), 0);
+    });
+  }
+
+  function syncSelectedAlgorithms(algorithms) {
+    const selectedSet = new Set(algorithms);
+    for (const input of strategiesRoot.querySelectorAll('input[type="checkbox"]')) {
+      input.checked = selectedSet.has(input.value);
+    }
+  }
+
+  async function generateCombinatorial() {
+    const { parameters, errors } = parseEnumParameters(schemaEditor.value);
+    summaryRoot.innerHTML = '';
+    detailsRoot.innerHTML = '';
+
+    if (errors.length > 0) {
+      setStatus(errors.join(' '), 'error');
+      return;
+    }
+    if (parameters.length < 2) {
+      setStatus('Add at least two enum fields to compare combinatorial strategies.', 'error');
+      return;
+    }
+
+    renderControls();
+    const strength = getSelectedStrength();
+    let selectedAlgorithms = getSelectedAlgorithms();
+    if (selectedAlgorithms.length === 0) {
+      setStatus('Select at least one strategy.', 'error');
+      return;
+    }
+
+    selectedAlgorithms = await filterAlgorithmsForCartesianConfirmation({
+      algorithms: selectedAlgorithms,
+      parameters,
+      requestConfirm,
+    });
+    syncSelectedAlgorithms(selectedAlgorithms);
+
+    if (selectedAlgorithms.length === 0) {
+      setStatus('Cartesian product run cancelled. No strategies remain selected.', 'warning');
+      setProgress('');
+      return;
+    }
+
+    generateButton.disabled = true;
+    setStatus(`Running ${selectedAlgorithms.length} strategies...`);
+    setProgress(`Running 0/${selectedAlgorithms.length} strategies...`, { running: true });
+
+    const results = [];
+    for (let index = 0; index < selectedAlgorithms.length; index += 1) {
+      const algorithm = selectedAlgorithms[index];
+      const label = normaliseAlgorithmLabel(algorithm);
+      setProgress(`Running ${index + 1}/${selectedAlgorithms.length}: ${label}`, { running: true });
+      setStatus(`Switching to ${label}...`);
+      await yieldToBrowser();
+
+      try {
+        results.push(runAlgorithm({ algorithm, parameters, strength }));
+      } catch (error) {
+        results.push({
+          stats: createIdleResultStats(algorithm),
+          records: [],
+          error: error.message,
+        });
+      }
+
+      renderSummary(results, parameters, strength);
+      renderDetails(results);
+      await yieldToBrowser();
+    }
+
+    generateButton.disabled = false;
+    setProgress('');
+
+    const failedRuns = results.filter((result) => result.error).length;
+    if (failedRuns > 0) {
+      const successfulRuns = results.length - failedRuns;
+      const severity = successfulRuns > 0 ? 'warning' : 'error';
+      setStatus(
+        `Completed ${results.length} strategy runs for ${strength}-wise coverage with ${failedRuns} failure${
+          failedRuns === 1 ? '' : 's'
+        }.`,
+        severity
+      );
+      return;
+    }
+
+    setStatus(`Completed ${results.length} strategy runs for ${strength}-wise coverage.`, 'success');
+  }
+
+  function initialise() {
+    schemaEditor.value = DEFAULT_SCHEMA;
+    renderControls();
+    setStatus('Ready.');
+    setProgress('');
+    schemaEditor.addEventListener('input', renderControls);
+    strengthSelect.addEventListener('change', () => {
+      renderStrategyCheckboxes();
+      renderEstimateSummary();
+    });
+    generateButton.addEventListener('click', () => {
+      void generateCombinatorial();
+    });
+  }
+
+  return {
+    initialise,
+    generateCombinatorial,
+    renderControls,
+    renderEstimateSummary,
+    setStatus,
+    setProgress,
+  };
 }
 
-schemaEditor.value = DEFAULT_SCHEMA;
-renderControls();
+function initCombinatorialPage({ documentObj = globalThis.document } = {}) {
+  if (!documentObj) {
+    return null;
+  }
 
-schemaEditor.addEventListener('input', renderControls);
-strengthSelect.addEventListener('change', renderStrategyCheckboxes);
-generateButton.addEventListener('click', generateCombinatorial);
+  const root = documentObj.getElementById('combinatorial-root');
+  const schemaEditor = documentObj.getElementById('combinatorial-schema');
+  const strengthSelect = documentObj.getElementById('combinatorial-strength');
+  const strategiesRoot = documentObj.getElementById('combinatorial-strategies');
+  const estimatesRoot = documentObj.getElementById('combinatorial-estimates');
+  const generateButton = documentObj.getElementById('generate-combinatorial');
+  const progressElement = documentObj.getElementById('combinatorial-progress');
+  const statusElement = documentObj.getElementById('combinatorial-status');
+  const summaryRoot = documentObj.getElementById('combinatorial-summary');
+  const detailsRoot = documentObj.getElementById('combinatorial-details');
 
-if (root) {
-  setStatus('Ready.');
+  if (
+    !root ||
+    !schemaEditor ||
+    !strengthSelect ||
+    !strategiesRoot ||
+    !estimatesRoot ||
+    !generateButton ||
+    !progressElement ||
+    !statusElement ||
+    !summaryRoot ||
+    !detailsRoot
+  ) {
+    return null;
+  }
+
+  const confirmDialogService = createConfirmDialogService({ documentObj });
+  const page = createCombinatorialPage({
+    root,
+    schemaEditor,
+    strengthSelect,
+    strategiesRoot,
+    estimatesRoot,
+    generateButton,
+    progressElement,
+    statusElement,
+    summaryRoot,
+    detailsRoot,
+    requestConfirm: confirmDialogService.requestConfirm,
+  });
+  page.initialise();
+  return page;
 }
+
+if (globalThis.document) {
+  initCombinatorialPage();
+}
+
+export {
+  buildEstimateSummary,
+  calculateRequiredTupleCount,
+  calculateTheoreticalMinimumRows,
+  createCombinatorialPage,
+  filterAlgorithmsForCartesianConfirmation,
+  initCombinatorialPage,
+  parseEnumParameters,
+  sortResultsByRowCount,
+};

@@ -43,6 +43,7 @@
         <div class="combinatorial-options-panel">
           <label class="combinatorial-label" for="combinatorial-strength">n</label>
           <select id="combinatorial-strength"></select>
+          <div id="combinatorial-estimates" class="combinatorial-estimates" aria-live="polite"></div>
 
           <fieldset class="combinatorial-strategy-fieldset">
             <legend>Strategies</legend>
@@ -53,6 +54,7 @@
             Generate Combinatorial
           </button>
 
+          <p id="combinatorial-progress" class="combinatorial-progress" role="status" aria-live="polite" hidden></p>
           <p id="combinatorial-status" class="combinatorial-status" role="status" aria-live="polite"></p>
         </div>
       </section>

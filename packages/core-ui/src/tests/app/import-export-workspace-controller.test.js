@@ -53,4 +53,26 @@ describe('ImportExportWorkspaceController', () => {
     );
     expect(controller.canSetGridFromText()).toBe(false);
   });
+
+  test('preserves includeBom when export encoding updates omit it', () => {
+    const controller = new ImportExportWorkspaceController({
+      props: {
+        exportEncodingSettings: {
+          lineEnding: 'lf',
+          includeBom: true,
+        },
+      },
+    });
+
+    controller.updateProps({
+      exportEncodingSettings: {
+        lineEnding: 'crlf',
+      },
+    });
+
+    expect(controller.getState().exportEncodingSettings).toEqual({
+      lineEnding: 'crlf',
+      includeBom: true,
+    });
+  });
 });

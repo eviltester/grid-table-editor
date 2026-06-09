@@ -42,11 +42,12 @@ const meta = {
           React.createElement(Controls),
           React.createElement(Canvas, { of: Default }),
           React.createElement(Canvas, { of: Busy }),
+          React.createElement(Canvas, { of: WindowsEncoding }),
           React.createElement(Canvas, { of: Hidden })
         ),
       description: {
         component:
-          'Reviewer-facing download control for export start and export progress state. In the composed toolbar it now follows the import control instead of preceding drag and drop.',
+          'Reviewer-facing download control for export start, export progress state, and file transport settings. The settings menu applies file-only line endings and optional UTF-8 BOM output without changing the visible preview text.',
       },
     },
   },
@@ -55,6 +56,10 @@ const meta = {
     importBusy: false,
     exportBusy: false,
     fileExtension: '.csv',
+    exportEncodingSettings: {
+      lineEnding: 'lf',
+      includeBom: false,
+    },
     exportStatusMessage: '',
     exportStatusLoading: false,
     onDownload: fn(),
@@ -98,6 +103,31 @@ export const Busy = {
     const canvas = within(canvasElement);
     await expect(canvas.getByRole('button', { name: /\.csv Download/i })).toBeDisabled();
     await expect(canvas.getByText('Generating export text...')).toBeVisible();
+  },
+};
+
+export const WindowsEncoding = {
+  args: {
+    exportEncodingSettings: {
+      lineEnding: 'crlf',
+      includeBom: true,
+    },
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Non-default file transport settings. Open the Settings menu to review the Windows CR/LF selection and BOM checkbox state that will be applied only to downloaded files.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const settingsSummary = canvasElement.querySelector('[data-role="export-encoding-summary"]');
+    await expect(settingsSummary).toBeTruthy();
+    await userEvent.click(settingsSummary);
+    await expect(canvas.getByLabelText('Line endings')).toHaveValue('crlf');
+    await expect(canvas.getByRole('checkbox', { name: 'Include BOM' })).toBeChecked();
   },
 };
 

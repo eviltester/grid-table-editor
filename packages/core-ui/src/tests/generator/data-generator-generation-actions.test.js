@@ -2,6 +2,7 @@ import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
 import { createGeneratorSchemaGenerationService } from '../../../js/gui_components/generator/generation/generator-schema-generation-service.js';
 import {
+  generateGeneratorDataFile,
   renderGeneratorOutputPreview,
   updateGeneratorPairwiseButtonVisibility,
 } from '../../../js/gui_components/generator/generation/data-generator-generation-actions.js';
@@ -78,5 +79,49 @@ describe('generator generation actions', () => {
     });
 
     expect(isVisible).toBe(true);
+  });
+
+  test('generateGeneratorDataFile applies export encoding settings only to downloads', async () => {
+    const downloadFile = jest.fn();
+    class FakeDownload {
+      constructor(filename) {
+        this.filename = filename;
+      }
+
+      downloadFile(text) {
+        downloadFile({ filename: this.filename, text });
+      }
+    }
+
+    await generateGeneratorDataFile({
+      getGenerateRowCount: () => ({ value: 2, errors: [] }),
+      createConfiguredGenerator: () => ({
+        generator: { generateHeadersArray: () => ['Name'], generateRow: () => ['Ada'] },
+      }),
+      getSelectedOutputType: () => 'csv',
+      exporter: {
+        canExport: () => true,
+        getFileExtensionFor: () => '.csv',
+        getDataTableAs: () => 'Name\nAda',
+      },
+      clearGenerationStatus: jest.fn(),
+      setGenerationButtonBusy: jest.fn(),
+      setGenerationStatus: jest.fn(),
+      showGenerationLoadingStatus: jest.fn(),
+      getExportEncodingSettings: () => ({ lineEnding: 'crlf', includeBom: true }),
+      buildDataTable: () => ({
+        __generatorFilename: 'generated-data.csv',
+        getRowCount: () => 1,
+      }),
+      DownloadClass: FakeDownload,
+      surfacePageError: jest.fn(),
+      clearPageError: jest.fn(),
+      scheduleClearGenerationStatus: jest.fn(),
+    });
+
+    expect(downloadFile).toHaveBeenCalledWith({
+      filename: 'generated-data.csv',
+      text: '\uFEFFName\r\nAda',
+    });
   });
 });

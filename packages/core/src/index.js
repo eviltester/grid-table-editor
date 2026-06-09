@@ -20,6 +20,12 @@ import {
   getTipsForFormat,
 } from '../js/options/format-option-catalog.js';
 import { CoreGenerationErrors } from './core-generation-errors.js';
+import {
+  EXPORT_LINE_ENDINGS,
+  applyExportTextEncoding,
+  resolveDefaultLineEndingForPlatform,
+  resolveExportTextEncodingSettings,
+} from './export-text-encoding.js';
 
 if (typeof globalThis.Papa === 'undefined') {
   globalThis.Papa = Papa;
@@ -373,6 +379,13 @@ export function generateFromTextSpec({
     },
   };
 }
+
+export {
+  EXPORT_LINE_ENDINGS,
+  applyExportTextEncoding,
+  resolveDefaultLineEndingForPlatform,
+  resolveExportTextEncodingSettings,
+};
 
 export function amendFromTextSpecAndData({
   textSpec,

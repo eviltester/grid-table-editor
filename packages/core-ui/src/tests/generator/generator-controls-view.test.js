@@ -102,6 +102,8 @@ describe('GeneratorControlsView', () => {
     });
 
     const outputSelect = getOutputFormatSelect(dom.window.document);
+    const lineEndingSelect = dom.window.document.querySelector('[data-role="line-ending-select"]');
+    const includeBomCheckbox = dom.window.document.querySelector('[data-role="include-bom-checkbox"]');
     expect(outputSelect).not.toBeNull();
     expect(Array.from(outputSelect.querySelectorAll('option')).map((option) => option.value)).toEqual([
       'csv',
@@ -118,6 +120,10 @@ describe('GeneratorControlsView', () => {
     expect(dom.window.document.querySelector('[data-role="generator-generate-pairwise-button"]')).not.toBeNull();
     expect(dom.window.document.querySelector('[data-role="generator-pairwise-button-wrapper"]')).not.toBeNull();
     expect(dom.window.document.querySelector('[data-role="generator-status-text"]')).not.toBeNull();
+    expect(lineEndingSelect).not.toBeNull();
+    expect(includeBomCheckbox).not.toBeNull();
+    expect(lineEndingSelect.value).toBe('lf');
+    expect(includeBomCheckbox.checked).toBe(false);
     const helpButtons = Array.from(
       dom.window.document.querySelectorAll('.shared-button-with-help [data-help-role="help-icon"]')
     );
@@ -162,6 +168,14 @@ describe('GeneratorControlsView', () => {
     getGeneratePairwiseButton(dom.window.document).click();
     expect(onGenerateData).toHaveBeenCalled();
     expect(onGeneratePairwise).toHaveBeenCalled();
+
+    lineEndingSelect.value = 'crlf';
+    lineEndingSelect.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+    includeBomCheckbox.click();
+    expect(component.getState().exportEncodingSettings).toEqual({
+      lineEnding: 'crlf',
+      includeBom: true,
+    });
 
     component.update({
       selectedFormat: 'json',
@@ -259,6 +273,7 @@ describe('GeneratorControlsView', () => {
       });
 
       expect(getOutputFormatSelect(dom.window.document)).not.toBeNull();
+      expect(dom.window.document.querySelector('[data-role="line-ending-select"]')).not.toBeNull();
       component.destroy();
     } finally {
       global.document = originalDocument;

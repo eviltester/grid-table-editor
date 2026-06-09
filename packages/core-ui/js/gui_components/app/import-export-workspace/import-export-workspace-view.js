@@ -61,6 +61,7 @@ class ImportExportWorkspaceView {
       props: state,
       callbacks: {
         onDownload: this.services.onDownload,
+        onExportEncodingSettingsChange: this.services.onExportEncodingSettingsChange,
         onFileSelected: this.services.onFileSelected,
         onImportFromClipboard: this.services.onImportFromClipboard,
       },
@@ -137,6 +138,17 @@ class ImportExportWorkspaceView {
 
   getTextArea() {
     return this.textPreviewEditor?.getTextArea?.() || null;
+  }
+
+  getToolbarDetailsElement() {
+    return this.getElementByRole('import-export-toolbar-details');
+  }
+
+  openToolbarDetails() {
+    const detailsElement = this.getToolbarDetailsElement();
+    if (detailsElement) {
+      detailsElement.open = true;
+    }
   }
 
   setCopyButtonText(value) {

@@ -10,13 +10,13 @@
     "apps/*"
   ],
   "scripts": {
-    "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js",
-    "testverbose": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --verbose",
-    "testcoverage": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --coverage",
+    "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --config ./jest.config.cjs",
+    "testverbose": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --config ./jest.config.cjs --verbose",
+    "testcoverage": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --config ./jest.config.cjs --coverage",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "node ./scripts/run-build-storybook.mjs",
     "test:storybook": "node ./scripts/run-storybook-tests.mjs",
-    "test:ui:jest": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js packages/core-ui/src/tests apps/web/src/tests/jest",
+    "test:ui:jest": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --config ./jest.config.cjs --testPathPatterns packages/core-ui/src/tests apps/web/src/tests/jest",
     "testenv:create": "node ./scripts/create-testenv.mjs",
     "generate:faker-help": "node ./scripts/generate-faker-help.js",
     "test:browser": "node ./node_modules/@playwright/test/cli.js test",
@@ -38,7 +38,7 @@
     "build:web": "vite build --config ./apps/web/vite.config.mjs",
     "preview:web": "vite preview --config ./apps/web/vite.config.mjs",
     "serve:web": "pnpm run dev:web",
-    "benchmark:tabulator": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js packages/core-ui/src/tests/grid/tabulator-performance.benchmark.test.js --runInBand",
+    "benchmark:tabulator": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --config ./jest.config.cjs --runTestsByPath packages/core-ui/src/tests/grid/tabulator-performance.benchmark.test.js --runInBand",
     "anywaydata:mac": "pnpm --dir docs-src run anywaydata && pnpm run build:web && node ./scripts/merge-web-build-into-docs-build.js && cp -R ./build/ ../../anywaydata-com",
     "anywaydata:win": "pnpm --dir docs-src run anywaydata && pnpm run build:web && node .\\scripts\\merge-web-build-into-docs-build.js && echo cleaning anywaydata for deployment && ..\\anywaydata-com\\make-ready-for-prod.bat",
     "previewdocs": "pnpm --dir docs-src run start",
@@ -50,11 +50,11 @@
   "jest": {
     "verbose": true,
     "transform": {},
-    "testMatch": [
-      "<rootDir>/packages/core/src/tests/**/*.test.js",
-      "<rootDir>/packages/core-ui/src/tests/**/*.test.js",
-      "<rootDir>/tests/integration/**/*.test.js",
-      "<rootDir>/apps/web/src/tests/jest/**/*.test.js"
+    "testRegex": [
+      "packages[/\\\\]core[/\\\\]src[/\\\\]tests[/\\\\].*\\.test\\.js$",
+      "packages[/\\\\]core-ui[/\\\\]src[/\\\\]tests[/\\\\].*\\.test\\.js$",
+      "tests[/\\\\]integration[/\\\\].*\\.test\\.js$",
+      "apps[/\\\\]web[/\\\\]src[/\\\\]tests[/\\\\]jest[/\\\\].*\\.test\\.js$"
     ],
     "testPathIgnorePatterns": [
       "/node_modules/",

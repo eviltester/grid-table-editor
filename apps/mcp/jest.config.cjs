@@ -4,5 +4,5 @@ module.exports = {
   ...baseConfig,
   testEnvironment: 'node',
   rootDir: '../..',
-  testMatch: ['**/apps/cli/src/tests/**/*.test.js'],
+  testMatch: ['**/apps/mcp/src/*.test.js'],
 };

@@ -54,6 +54,7 @@ class ImportExportToolbarView {
       },
       callbacks: {
         onDownload: this.callbacks.onDownload,
+        onExportEncodingSettingsChange: this.callbacks.onExportEncodingSettingsChange,
       },
     });
   }

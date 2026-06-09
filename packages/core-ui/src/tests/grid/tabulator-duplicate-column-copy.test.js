@@ -4,6 +4,7 @@ import { GridExtension as GridExtensionTabulator } from '../../../js/gui_compone
 function createColumnComponent(definition) {
   return {
     getDefinition: () => definition,
+    setWidth: jest.fn(),
   };
 }
 
@@ -89,5 +90,42 @@ describe('GridExtensionTabulator duplicate column', () => {
       .find((column) => column.title === 'Instructions Copy').field;
     expect(tabulator._rowData[0][duplicatedField]).toBe(tabulator._rowData[0].column1);
     expect(tabulator._rowData[1][duplicatedField]).toBe(tabulator._rowData[1].column1);
+  });
+
+  test('sizeColumnsToFit samples active rows instead of scanning the full data set', () => {
+    const columnDefinitions = [{ title: 'Instructions', field: 'column1' }];
+    const sampledRows = Array.from({ length: 500 }, (_, index) => ({
+      column1: index === 499 ? '1234567890' : 'short',
+    }));
+    const ignoredLongRow = { column1: 'x'.repeat(200) };
+    const rowData = [...sampledRows, ignoredLongRow];
+    const columnComponent = createColumnComponent(columnDefinitions[0]);
+    const tabulator = {
+      _rowData: rowData,
+      getColumnDefinitions() {
+        return columnDefinitions;
+      },
+      getColumns() {
+        return [columnComponent];
+      },
+      getRows(mode) {
+        if (mode !== 'active') {
+          return [];
+        }
+        return this._rowData.map((row) => ({
+          getData: () => row,
+        }));
+      },
+      getData: jest.fn(),
+      on: jest.fn(),
+      off: jest.fn(),
+      redraw() {},
+    };
+    const extension = new GridExtensionTabulator(tabulator);
+
+    extension.sizeColumnsToFit();
+
+    expect(columnComponent.setWidth).toHaveBeenCalledWith(128);
+    expect(tabulator.getData).not.toHaveBeenCalled();
   });
 });

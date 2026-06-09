@@ -4,6 +4,10 @@ class GeneratorControlsController {
     this.state = {
       selectedFormat: props.selectedFormat || 'csv',
       currentOptions: props.currentOptions,
+      exportEncodingSettings: {
+        lineEnding: props.exportEncodingSettings?.lineEnding || 'lf',
+        includeBom: props.exportEncodingSettings?.includeBom === true,
+      },
       pairwiseVisible: props.pairwiseVisible === true,
       generationButtonsBusy: props.generationButtonsBusy === true,
       statusMessage: props.statusMessage || '',
@@ -36,6 +40,18 @@ class GeneratorControlsController {
         ? nextProps.loadingStatusMessage || ''
         : this.state.loadingStatusMessage,
       selectedFormat: nextProps.selectedFormat || this.state.selectedFormat || 'csv',
+      exportEncodingSettings: Object.prototype.hasOwnProperty.call(nextProps, 'exportEncodingSettings')
+        ? (() => {
+            const nextExportEncodingSettings = nextProps.exportEncodingSettings || {};
+            return {
+              ...this.state.exportEncodingSettings,
+              ...nextExportEncodingSettings,
+              includeBom: Object.prototype.hasOwnProperty.call(nextExportEncodingSettings, 'includeBom')
+                ? nextExportEncodingSettings.includeBom === true
+                : this.state.exportEncodingSettings.includeBom,
+            };
+          })()
+        : this.state.exportEncodingSettings,
     };
   }
 
@@ -47,6 +63,14 @@ class GeneratorControlsController {
 
   setPairwiseVisible(pairwiseVisible) {
     this.state.pairwiseVisible = pairwiseVisible === true;
+  }
+
+  setExportEncodingSettings(nextSettings = {}) {
+    this.state.exportEncodingSettings = {
+      ...this.state.exportEncodingSettings,
+      ...nextSettings,
+      includeBom: nextSettings.includeBom ?? this.state.exportEncodingSettings.includeBom,
+    };
   }
 
   setGenerationButtonsBusy(generationButtonsBusy) {

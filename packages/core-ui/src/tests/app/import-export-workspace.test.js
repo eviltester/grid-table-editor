@@ -39,9 +39,15 @@ function getCopyTextButtonLabel(documentObj) {
   return documentObj.querySelector('[data-role="text-preview-editor-root"] [data-role="copy-text-label"]');
 }
 
-function createHarness({ props = {}, services = {} } = {}) {
+function createHarness({ props = {}, services = {}, navigatorPlatform } = {}) {
   const dom = new JSDOM('<!doctype html><html><body><div id="root"></div></body></html>');
   const documentObj = dom.window.document;
+  if (typeof navigatorPlatform === 'string') {
+    Object.defineProperty(dom.window.navigator, 'platform', {
+      configurable: true,
+      value: navigatorPlatform,
+    });
+  }
   global.document = documentObj;
   global.window = dom.window;
   const exporter = {
@@ -223,6 +229,7 @@ describe('ImportExportWorkspace', () => {
     const clipboardService = { copyFromTextArea: jest.fn() };
     const downloadService = { downloadText: jest.fn() };
     const { component, documentObj, dom } = createHarness({
+      navigatorPlatform: 'Win32',
       services: {
         clipboardService,
         downloadService,
@@ -235,9 +242,29 @@ describe('ImportExportWorkspace', () => {
     expect(clipboardService.copyFromTextArea).toHaveBeenCalledWith(getPreviewTextArea(documentObj));
     expect(getCopyTextButtonLabel(documentObj).textContent).toBe('Copied');
 
+    const toolbarDetails = documentObj.querySelector('[data-role="import-export-toolbar-details"]');
+    toolbarDetails.open = true;
+    const lineEndingSelect = documentObj.querySelector('[data-role="line-ending-select"]');
+    const includeBomCheckbox = documentObj.querySelector('[data-role="include-bom-checkbox"]');
+
+    fireEvent.change(lineEndingSelect, { target: { value: 'lf' } });
+    fireEvent.click(includeBomCheckbox);
+
+    expect(component.getState().exportEncodingSettings).toEqual({
+      lineEnding: 'lf',
+      includeBom: true,
+    });
+
     fireEvent.click(documentObj.querySelector('#filedownload'));
 
-    await waitFor(() => expect(downloadService.downloadText).toHaveBeenCalledWith('export.csv', 'full:csv'));
+    await waitFor(() =>
+      expect(downloadService.downloadText).toHaveBeenCalledWith('export.csv', 'full:csv', {
+        exportEncodingSettings: {
+          lineEnding: 'lf',
+          includeBom: true,
+        },
+      })
+    );
     expect(documentObj.querySelector('#export-progress-status').textContent).toBe('Download started.');
 
     component.destroy();

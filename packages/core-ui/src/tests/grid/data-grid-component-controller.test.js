@@ -17,6 +17,7 @@ describe('DataGridComponentController', () => {
       deleteSelectedRows: jest.fn(),
       clearFilters: jest.fn(),
       clearSort: jest.fn(),
+      sizeColumnsToFit: jest.fn(),
       filterText: jest.fn(),
       clearGrid: jest.fn(),
     };
@@ -34,6 +35,7 @@ describe('DataGridComponentController', () => {
     controller.setFilterText('alpha');
     controller.clearFilters();
     controller.clearSort();
+    controller.sizeColumnsToFit();
     await controller.deleteSelectedRows();
     await controller.clearTable();
 
@@ -43,6 +45,7 @@ describe('DataGridComponentController', () => {
     expect(gridExtras.filterText).toHaveBeenCalledWith('alpha');
     expect(gridExtras.clearFilters).toHaveBeenCalledTimes(1);
     expect(gridExtras.clearSort).toHaveBeenCalledTimes(1);
+    expect(gridExtras.sizeColumnsToFit).toHaveBeenCalledTimes(1);
     expect(gridExtras.deleteSelectedRows).toHaveBeenCalledTimes(1);
     expect(gridExtras.clearGrid).toHaveBeenCalledTimes(1);
     expect(controller.getState().filterText).toBe('');

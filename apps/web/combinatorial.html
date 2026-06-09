@@ -9,7 +9,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="author" content="Alan Richardson" />
-    <script type="module" src="/src/combinatorial-entry.js"></script>
+    <script type="module" src="/src/combinatorial-entry.mjs"></script>
 
     <script defer data-domain="anywaydata.com" src="https://plausible.io/js/plausible.js"></script>
 
@@ -43,6 +43,7 @@
         <div class="combinatorial-options-panel">
           <label class="combinatorial-label" for="combinatorial-strength">n</label>
           <select id="combinatorial-strength"></select>
+          <div id="combinatorial-estimates" class="combinatorial-estimates" aria-live="polite"></div>
 
           <fieldset class="combinatorial-strategy-fieldset">
             <legend>Strategies</legend>
@@ -53,6 +54,7 @@
             Generate Combinatorial
           </button>
 
+          <p id="combinatorial-progress" class="combinatorial-progress" role="status" aria-live="polite" hidden></p>
           <p id="combinatorial-status" class="combinatorial-status" role="status" aria-live="polite"></p>
         </div>
       </section>

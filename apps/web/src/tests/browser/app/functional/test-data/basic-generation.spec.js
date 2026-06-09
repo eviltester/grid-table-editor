@@ -21,6 +21,7 @@ test.describe('7. Test Data Generation', () => {
     await appPage.testDataPanel.clickGenerate();
     await expect.poll(async () => appPage.gridEditor.renderer.countRows()).toBe(5);
     await expect.poll(async () => appPage.gridEditor.header.getColumnNames()).toContain('First Name');
+    await appPage.gridEditor.expectTotalRows(5);
 
     const values = await appPage.gridEditor.renderer.getColumnTextsByName('First Name');
     expect(values).toHaveLength(5);

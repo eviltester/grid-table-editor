@@ -135,11 +135,14 @@ class DataGridComponentView {
     this.root = root;
     this.controller = controller;
     this.documentObj = resolveDocumentObj(documentObj, root);
+    this.windowObj = resolveWindowObj(services.windowObj, this.documentObj);
     this.services = services;
     this.toolbar = null;
     this.gridAdapter = null;
     this.gridReadyPromise = Promise.resolve(null);
     this.textInputDialogService = null;
+    this.unsubscribeGridChanged = null;
+    this.totalRowsFrame = null;
     this.contextMenuState = { open: false, x: 0, y: 0 };
     this.handleGridContextMenu = (event) => this.onGridContextMenu(event);
     this.handleRootClick = (event) => this.onRootClick(event);
@@ -171,6 +174,12 @@ class DataGridComponentView {
         ></div>
         <div id="myGrid" style="height: 500px; width:100%;" class="ag-theme-alpine" data-role="data-grid-root"></div>
         <div
+          data-role="grid-total-rows"
+          class="data-grid-total-rows"
+          aria-live="polite"
+          role="status"
+        >Total rows: 0</div>
+        <div
           class="data-grid-context-menu"
           data-role="data-grid-context-menu"
           hidden
@@ -184,7 +193,6 @@ class DataGridComponentView {
     const gridRoot = this.root.querySelector('[data-role="data-grid-root"]');
     const createGridToolbar = this.services.createGridToolbar || createGridToolbarComponent;
     this.textInputDialogService = createTextInputDialogService({ documentObj: this.documentObj });
-    const resolvedWindowObj = resolveWindowObj(this.services.windowObj, this.documentObj);
     const showScopedGridError = (message) =>
       showGridError(message, {
         documentObj: this.documentObj,
@@ -218,12 +226,21 @@ class DataGridComponentView {
     this.gridAdapter = createTabulatorGridAdapter({
       rootElement: gridRoot,
       documentObj: this.documentObj,
-      windowObj: resolvedWindowObj,
-      TabulatorCtor: this.services.TabulatorCtor || resolvedWindowObj?.Tabulator || globalThis.Tabulator,
+      windowObj: this.windowObj,
+      TabulatorCtor: this.services.TabulatorCtor || this.windowObj?.Tabulator || globalThis.Tabulator,
       GridExtensionClass: this.services.GridExtensionClass || TabulatorGridExtension,
       tabulatorOptions,
     });
     this.gridReadyPromise = this.gridAdapter.whenReady();
+    this.gridReadyPromise.then(() => {
+      const gridExtras = this.getGridExtras();
+      this.unsubscribeGridChanged?.();
+      this.unsubscribeGridChanged =
+        typeof gridExtras?.onGridChanged === 'function'
+          ? gridExtras.onGridChanged(() => this.scheduleSyncTotalRows())
+          : null;
+      this.scheduleSyncTotalRows();
+    });
     gridRoot?.addEventListener('contextmenu', this.handleGridContextMenu);
     this.root.addEventListener('click', this.handleRootClick);
     this.root.addEventListener('change', this.handleRootChange);
@@ -233,9 +250,38 @@ class DataGridComponentView {
 
   render() {
     this.toolbar?.update?.(this.controller.getState());
+    this.scheduleSyncTotalRows();
     if (this.contextMenuState.open) {
       this.renderContextMenu();
     }
+  }
+
+  scheduleSyncTotalRows() {
+    if (this.totalRowsFrame !== null) {
+      this.windowObj?.cancelAnimationFrame?.(this.totalRowsFrame);
+      this.totalRowsFrame = null;
+    }
+
+    const requestAnimationFrameFn = this.windowObj?.requestAnimationFrame?.bind(this.windowObj);
+    if (typeof requestAnimationFrameFn !== 'function') {
+      this.syncTotalRows();
+      return;
+    }
+
+    this.totalRowsFrame = requestAnimationFrameFn(() => {
+      this.totalRowsFrame = null;
+      this.syncTotalRows();
+    });
+  }
+
+  syncTotalRows() {
+    const totalRowsElement = this.root?.querySelector?.('[data-role="grid-total-rows"]');
+    if (!totalRowsElement) {
+      return;
+    }
+
+    const totalRows = this.getGridExtras()?.getTotalRowCount?.() ?? this.getTableApi()?.getDataCount?.() ?? 0;
+    totalRowsElement.textContent = `Total rows: ${Number.isFinite(totalRows) ? totalRows : 0}`;
   }
 
   getGridAdapter() {
@@ -409,6 +455,12 @@ class DataGridComponentView {
     this.documentObj?.removeEventListener?.('pointerdown', this.handleDocumentPointerDown);
     this.documentObj?.removeEventListener?.('keydown', this.handleDocumentKeyDown);
     this.closeContextMenu();
+    if (this.totalRowsFrame !== null) {
+      this.windowObj?.cancelAnimationFrame?.(this.totalRowsFrame);
+      this.totalRowsFrame = null;
+    }
+    this.unsubscribeGridChanged?.();
+    this.unsubscribeGridChanged = null;
     this.toolbar?.destroy?.();
     this.toolbar = null;
     this.gridAdapter?.destroy?.();

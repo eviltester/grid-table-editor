@@ -41,7 +41,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'DataGridComponent is the Phase 7 app-side component boundary that composes the extracted GridToolbar with the shared late-mount-safe TabulatorGridAdapter. It preserves the current app DOM contract while moving the main grid onto the component model.',
+          'DataGridComponent is the Phase 7 app-side component boundary that composes the extracted GridToolbar with the shared late-mount-safe TabulatorGridAdapter. It preserves the current app DOM contract while moving the main grid onto the component model, including the live total-row status underneath the grid.',
       },
     },
   },
@@ -66,6 +66,7 @@ export const EmptyGrid = {
     const canvas = within(canvasElement);
     await userEvent.click(await canvas.findByRole('button', { name: 'Add Row' }));
     await expect(await canvas.findByText('~rename-me', { exact: true })).toBeVisible();
+    await expect(await canvas.findByText('Total rows: 1', { exact: true })).toBeVisible();
   },
 };
 
@@ -86,5 +87,6 @@ export const WithSampleData = {
     await expect(await canvas.findByText('First Name', { exact: true })).toBeVisible();
     await expect(await canvas.findByText('Ava', { exact: true })).toBeVisible();
     await expect(await canvas.findByText('Paused', { exact: true })).toBeVisible();
+    await expect(await canvas.findByText('Total rows: 2', { exact: true })).toBeVisible();
   },
 };

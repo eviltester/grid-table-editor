@@ -256,6 +256,18 @@ class GridExtensionTabulator {
     return 0;
   }
 
+  getTotalRowCount() {
+    if (typeof this.tabulator.getDataCount === 'function') {
+      const totalCount = this.tabulator.getDataCount();
+      if (Number.isFinite(totalCount)) {
+        return totalCount;
+      }
+    }
+
+    const allRows = typeof this.tabulator.getData === 'function' ? this.tabulator.getData() : undefined;
+    return Array.isArray(allRows) ? allRows.length : 0;
+  }
+
   getSelectedRowIndexes() {
     const selectedRows = this.tabulator.getSelectedRows();
     if (!Array.isArray(selectedRows)) {

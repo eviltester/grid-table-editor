@@ -14,6 +14,8 @@ class FakeTabulator {
 class FakeGridExtension {
   constructor(tableApi) {
     this.tableApi = tableApi;
+    this.totalRowCount = 0;
+    this.gridChangeCallbacks = new Set();
     this.addRow = jest.fn();
     this.addRowsRelativeToSelection = jest.fn();
     this.getNumberOfSelectedRows = jest.fn(() => 0);
@@ -23,12 +25,26 @@ class FakeGridExtension {
     this.sizeColumnsToFit = jest.fn();
     this.filterText = jest.fn();
     this.clearGrid = jest.fn();
+    this.getTotalRowCount = jest.fn(() => this.totalRowCount);
+    this.onGridChanged = jest.fn((callback) => {
+      this.gridChangeCallbacks.add(callback);
+      return () => this.gridChangeCallbacks.delete(callback);
+    });
     this.destroy = jest.fn();
+  }
+
+  setTotalRowCount(count) {
+    this.totalRowCount = count;
+    this.gridChangeCallbacks.forEach((callback) => callback());
   }
 }
 
 describe('DataGridComponent view', () => {
   let dom;
+  const waitForAnimationFrame = () =>
+    new Promise((resolve) => {
+      dom.window.requestAnimationFrame(() => resolve());
+    });
 
   beforeEach(() => {
     dom = new JSDOM('<!doctype html><html><body></body></html>', {
@@ -63,6 +79,7 @@ describe('DataGridComponent view', () => {
     expect(root.querySelector('[data-role="add-row-button"]')).toBeTruthy();
     expect(root.querySelector('#myGrid')).toBeTruthy();
     expect(root.querySelector('[data-role="grid-error-status"]')?.id).toBe('grid-column-error');
+    expect(root.querySelector('[data-role="grid-total-rows"]')?.textContent).toBe('Total rows: 0');
     expect(component.getTableApi()).toBeInstanceOf(FakeTabulator);
     expect(component.getGridExtras()).toBeInstanceOf(FakeGridExtension);
     const headerHtml = component.getTableApi().options.columnDefaults.titleFormatter({
@@ -90,6 +107,34 @@ describe('DataGridComponent view', () => {
 
     root.querySelector('[data-role="add-row-button"]').click();
     expect(component.getGridExtras().addRow).toHaveBeenCalledTimes(1);
+
+    component.destroy();
+  });
+
+  test('shows the total row count and updates it when the grid changes', async () => {
+    const root = document.createElement('section');
+    document.body.appendChild(root);
+    const component = createDataGridComponent({
+      root,
+      documentObj: document,
+      services: {
+        TabulatorCtor: FakeTabulator,
+        GridExtensionClass: FakeGridExtension,
+      },
+    });
+
+    await component.whenReady();
+
+    const totalRows = root.querySelector('[data-role="grid-total-rows"]');
+    expect(totalRows?.textContent).toBe('Total rows: 0');
+
+    component.getGridExtras().setTotalRowCount(3);
+    await waitForAnimationFrame();
+    expect(totalRows?.textContent).toBe('Total rows: 3');
+
+    component.getGridExtras().setTotalRowCount(8);
+    await waitForAnimationFrame();
+    expect(totalRows?.textContent).toBe('Total rows: 8');
 
     component.destroy();
   });

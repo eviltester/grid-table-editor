@@ -184,17 +184,17 @@ class GridEditorComponent {
   }
 
   async contextMenuAddRow() {
-    await this.contextMenu.getByRole('button', { name: 'Add Row', exact: true }).click();
+    await this.contextMenu.getByRole('menuitem', { name: 'Add Row', exact: true }).click();
   }
 
   async contextMenuPreviewAs(formatName) {
     await this.contextMenu.locator('summary', { hasText: 'Preview As' }).click();
-    await this.contextMenu.getByRole('button', { name: formatName, exact: true }).click();
+    await this.contextMenu.getByRole('menuitem', { name: formatName, exact: true }).click();
   }
 
   async contextMenuExportAs(formatName) {
     await this.contextMenu.locator('summary', { hasText: 'Export As' }).click();
-    await this.contextMenu.getByRole('button', { name: formatName, exact: true }).click();
+    await this.contextMenu.getByRole('menuitem', { name: formatName, exact: true }).click();
   }
 
   async setUniqueColumnNames(enabled = true) {

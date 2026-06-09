@@ -190,6 +190,4 @@ enum("6.1","6.2","6.3","6.4")
 | ipog | 4096 | 4096 | 4096 | 100.0 | 3 |
 | pict-gcd | 4096 | 4096 | 4096 | 100.0 | 3 |
 
-## Experimental graph family
 
-The multipartite graph walk and lookahead experiments remain outside the normal generator code path. See the experimental n-wise report in the repository under `experiments/n-wise/` for the current graph-family comparison.

@@ -173,8 +173,6 @@ class DataGridComponentView {
         <div
           class="data-grid-context-menu"
           data-role="data-grid-context-menu"
-          role="menu"
-          aria-label="Data grid context menu"
           hidden
         ></div>
       </section>
@@ -268,10 +266,10 @@ class DataGridComponentView {
     menuRoot.style.top = `${this.contextMenuState.y}px`;
     menuRoot.innerHTML = `
       <div class="data-grid-context-menu__section">
-        <button type="button" data-context-action="add-row" role="menuitem">Add Row</button>
-        <button type="button" data-context-action="add-rows-above" role="menuitem">Add Rows Above</button>
-        <button type="button" data-context-action="add-rows-below" role="menuitem">Add Rows Below</button>
-        <button type="button" data-context-action="delete-selected-rows" role="menuitem">Delete Selected Rows</button>
+        <button type="button" data-context-action="add-row">Add Row</button>
+        <button type="button" data-context-action="add-rows-above">Add Rows Above</button>
+        <button type="button" data-context-action="add-rows-below">Add Rows Below</button>
+        <button type="button" data-context-action="delete-selected-rows">Delete Selected Rows</button>
       </div>
       <div class="data-grid-context-menu__separator" role="separator"></div>
       <label class="data-grid-context-menu__checkbox">
@@ -284,11 +282,11 @@ class DataGridComponentView {
       </label>
       <div class="data-grid-context-menu__separator" role="separator"></div>
       <div class="data-grid-context-menu__section">
-        <button type="button" data-context-action="edit-filter" role="menuitem">Filter...</button>
-        <button type="button" data-context-action="clear-filters" role="menuitem">Clear Filters</button>
-        <button type="button" data-context-action="clear-sort" role="menuitem">Clear Sort</button>
-        <button type="button" data-context-action="reset-table" role="menuitem">Reset Table</button>
-        <button type="button" data-context-action="auto-fit-columns" role="menuitem">Auto Fit Columns</button>
+        <button type="button" data-context-action="edit-filter">Filter...</button>
+        <button type="button" data-context-action="clear-filters">Clear Filters</button>
+        <button type="button" data-context-action="clear-sort">Clear Sort</button>
+        <button type="button" data-context-action="reset-table">Reset Table</button>
+        <button type="button" data-context-action="auto-fit-columns">Auto Fit Columns</button>
       </div>
     `;
   }

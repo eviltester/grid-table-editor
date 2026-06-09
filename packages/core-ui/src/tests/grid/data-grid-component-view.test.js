@@ -120,6 +120,8 @@ describe('DataGridComponent view', () => {
 
     const menuRoot = root.querySelector('[data-role="data-grid-context-menu"]');
     expect(menuRoot.hidden).toBe(false);
+    expect(menuRoot.getAttribute('role')).toBeNull();
+    expect(menuRoot.getAttribute('aria-label')).toBeNull();
 
     menuRoot.querySelector('[data-context-action="auto-fit-columns"]').click();
     expect(component.getGridExtras().sizeColumnsToFit).toHaveBeenCalledTimes(1);

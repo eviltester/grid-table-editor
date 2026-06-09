@@ -1,5 +1,7 @@
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 import { TabulatorHelper } from './tabulator-helpers.js';
+
+const AUTO_FIT_ROW_SAMPLE_LIMIT = 500;
 /*
     A wrapper for Tabulature to conform to the main abstraction
     that makes it easier to add new columns
@@ -731,7 +733,7 @@ class GridExtensionTabulator {
     const columnDefinition = columnDefinitions.find((definition) => definition.field === fieldName) || {};
     const titleLength = String(columnDefinition.title || '').length;
 
-    const activeRows = typeof this.tabulator.getData === 'function' ? this.tabulator.getData('active') : [];
+    const activeRows = this._getLimitedActiveRowData(AUTO_FIT_ROW_SAMPLE_LIMIT);
     let maxTextLength = titleLength;
     if (Array.isArray(activeRows)) {
       for (let rowIndex = 0; rowIndex < activeRows.length; rowIndex++) {

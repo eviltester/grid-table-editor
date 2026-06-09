@@ -184,7 +184,7 @@ class GridEditorComponent {
   }
 
   async contextMenuAddRow() {
-    await this.contextMenu.getByRole('menuitem', { name: 'Add Row', exact: true }).click();
+    await this.contextMenu.getByRole('button', { name: 'Add Row', exact: true }).click();
   }
 
   async contextMenuSetUniqueColumnNames(enabled = true) {

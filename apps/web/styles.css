@@ -1159,6 +1159,7 @@ body.theme-dark .generator-status-text[data-severity='info'] {
 .combinatorial-results {
   display: grid;
   gap: 0.75rem;
+  min-width: 0;
 }
 
 .combinatorial-label,
@@ -1168,9 +1169,12 @@ body.theme-dark .generator-status-text[data-severity='info'] {
 
 .combinatorial-schema-editor {
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   min-height: 24rem;
   resize: vertical;
   padding: 0.75rem;
+  box-sizing: border-box;
   border: 1px solid var(--border-color);
   border-radius: 8px;
   background: var(--panel-bg);

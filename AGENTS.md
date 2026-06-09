@@ -29,7 +29,6 @@ If verification fails:
 When changing UI code, UI test abstractions, or browser tests:
 
 - run `pnpm run verify:ui`
-- run `pnpm run test:browser:smoke` first when you want a quick browser-wiring signal before the full Playwright suite
 - run `pnpm run test:browser`
 - run `pnpm run test:storybook`
 - run `pnpm run build-storybook`

@@ -199,7 +199,11 @@ function createAppTestDataInteractionHarness() {
       if (scenario.pairwiseEligible) {
         const previousRowCount = latestDataTable.getRowCount();
         applyDeterministicScenarioSeed(scenario.id);
-        clickElement(within(document.body).getByRole('button', { name: /generate pairwise/i }));
+        clickElement(within(document.body).getByRole('button', { name: /generate combinations/i }));
+        const dialog = await waitFor(() =>
+          within(document.body).getByRole('dialog', { name: 'Generate Combinations' })
+        );
+        clickElement(within(dialog).getByRole('button', { name: /^generate$/i }));
         await waitFor(() => expect(latestDataTable.getRowCount()).toBeGreaterThan(previousRowCount));
         assertDataTableHasNoErrorIndicators(latestDataTable, `${scenario.id} pairwise`);
         pairwiseCsv = exporter.getDataTableAs('csv', latestDataTable) || '';

@@ -228,7 +228,7 @@ const meta = {
     },
     pairwiseVisible: {
       control: 'boolean',
-      description: 'Whether the pairwise button is visible in the controls feature.',
+      description: 'Whether the Generate Combinations button is visible in the controls feature.',
     },
     outputPreviewText: {
       control: 'text',
@@ -286,14 +286,14 @@ export const PairwiseReady = {
     docs: {
       description: {
         story:
-          'Shows the composed page when pairwise generation is available and the preview feature already has output text and preview rows. The page-level story should still expose the real schema help affordance and a visible preview table, not just the surrounding shells.',
+          'Shows the composed page when combination generation is available and the preview feature already has output text and preview rows. The page-level story should still expose the real schema help affordance and a visible preview table, not just the surrounding shells.',
       },
     },
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const previewGridRegion = await canvas.findByLabelText('Data Table Preview Grid');
-    await expect(await canvas.findByRole('button', { name: 'Generate Pairwise' })).toBeVisible();
+    await expect(await canvas.findByRole('button', { name: 'Generate Combinations' })).toBeVisible();
     await expect(canvas.getByRole('textbox', { name: 'Output Preview' })).toHaveValue('Status,Priority\nactive,high');
     await expect(previewGridRegion).toBeVisible();
     await expect(await within(previewGridRegion).findByText('Status', { exact: true })).toBeVisible();
@@ -326,7 +326,7 @@ export const WithPreviewGridAdapter = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const previewGridRegion = await canvas.findByLabelText('Data Table Preview Grid');
-    await expect(await canvas.findByRole('button', { name: 'Generate Pairwise' })).toBeVisible();
+    await expect(await canvas.findByRole('button', { name: 'Generate Combinations' })).toBeVisible();
     await expect(canvas.getByRole('textbox', { name: 'Output Preview' })).toHaveValue(
       'Email,Status\nava@example.com,active'
     );

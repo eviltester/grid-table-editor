@@ -6,7 +6,7 @@ const GENERATOR_PAGE_INSTRUCTIONS_PROPS = {
     'Use + and - to add or remove rows and arrows to reorder.',
     'Use Preview to generate a sample set into the table.',
     'Use Generate Data to download file output in the selected format.',
-    'If your schema contains at least two enums then you can Generate Pairwise combinations.',
+    'If your schema contains at least two enums then you can Generate Combinations with n-wise coverage.',
     'Click between "Edit as Text" and "Edit as Schema" to use the edit view that works best for you.',
     'Preview and Generate row counts are independent.',
   ],

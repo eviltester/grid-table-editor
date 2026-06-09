@@ -23,4 +23,5 @@ testenv/
 .claude
 .pet-runs
 experiments
+experiments/*
 .codex-logs/

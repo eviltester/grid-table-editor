@@ -10,6 +10,7 @@ import styles from './index.module.css';
 
 function HomepageHeader() {
   const {siteConfig} = useDocusaurusContext();
+  const appUrl = new URL(`.${siteConfig.baseUrl}app.html`, `${siteConfig.url}/`).toString();
   return (
     <header className={clsx('hero hero--primary', styles.heroBanner)}>
       <div className="container">
@@ -18,7 +19,7 @@ function HomepageHeader() {
         <div className={styles.buttons}>
           <a
             className="button button--secondary button--lg"
-            href="/app.html">
+            href={appUrl}>
             Use The Application
           </a>
         </div>

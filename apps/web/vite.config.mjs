@@ -23,6 +23,7 @@ export default defineConfig({
         index: path.resolve(__dirname, 'index.html'),
         app: path.resolve(__dirname, 'app.html'),
         generator: path.resolve(__dirname, 'generator.html'),
+        combinatorial: path.resolve(__dirname, 'combinatorial.html'),
       },
     },
   },

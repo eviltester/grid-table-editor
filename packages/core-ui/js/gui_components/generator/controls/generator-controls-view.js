@@ -7,9 +7,9 @@ const GENERATE_TO_FILE_HELP_HTML = `
   <p><a class="helplink" href="${GENERATE_TO_FILE_HELP_URL}" target="_blank" rel="noopener noreferrer">Generate To File docs</a></p>
 `;
 
-const GENERATE_PAIRWISE_TO_FILE_HELP_HTML = `
-  <p>Generate pairwise data from the current schema to a file.</p>
-  <p><a class="helplink" href="https://anywaydata.com/docs/test-data/pairwise-testing" target="_blank" rel="noopener noreferrer">Pairwise testing docs</a></p>
+const GENERATE_COMBINATIONS_TO_FILE_HELP_HTML = `
+  <p>Generate n-wise combinations from enum columns in the current schema.</p>
+  <p><a class="helplink" href="/docs/test-data/n-wise-testing" target="_blank" rel="noopener noreferrer">N-wise generation docs</a></p>
 `;
 
 class GeneratorControlsView {
@@ -154,11 +154,11 @@ class GeneratorControlsView {
         props: {
           pairwiseVisible: false,
           generateLabel: 'Generate Data',
-          generatePairwiseLabel: 'Generate Pairwise',
+          generatePairwiseLabel: 'Generate Combinations',
           generateHelpHtml: GENERATE_TO_FILE_HELP_HTML,
-          generatePairwiseHelpHtml: GENERATE_PAIRWISE_TO_FILE_HELP_HTML,
+          generatePairwiseHelpHtml: GENERATE_COMBINATIONS_TO_FILE_HELP_HTML,
           generateHelpLabel: 'Show file generation help',
-          generatePairwiseHelpLabel: 'Show pairwise generation help',
+          generatePairwiseHelpLabel: 'Show combination generation help',
           roleNames: {
             generateButton: 'generator-generate-data-button',
             generatePairwiseButton: 'generator-generate-pairwise-button',

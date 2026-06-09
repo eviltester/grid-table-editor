@@ -5,7 +5,7 @@ describe('createGeneratorPageRuntimeConfig', () => {
   test('builds page props, services, and callbacks directly from the runtime', async () => {
     const applyCurrentTypeOptions = jest.fn(() => ({ applied: true }));
     const generateDataFile = jest.fn(async () => 'generated');
-    const generateAllPairsDataFile = jest.fn(async () => 'pairwise');
+    const openGenerateCombinationsDialog = jest.fn();
     const previewData = jest.fn(() => 'previewed');
     const renderOutputPreviewForCurrentSelection = jest.fn();
     const showSchemaErrorStatus = jest.fn();
@@ -35,7 +35,7 @@ describe('createGeneratorPageRuntimeConfig', () => {
       GridExtensionClass: class FakeGridExtension {},
       applyCurrentTypeOptions,
       generateDataFile,
-      generateAllPairsDataFile,
+      openGenerateCombinationsDialog,
       previewData,
       updateAllPairsButtonVisibility,
       generatorViewState: {
@@ -70,7 +70,7 @@ describe('createGeneratorPageRuntimeConfig', () => {
 
     expect(applyCurrentTypeOptions).toHaveBeenCalledWith({ outputFormat: 'json' });
     expect(generateDataFile).toHaveBeenCalledTimes(1);
-    expect(generateAllPairsDataFile).toHaveBeenCalledTimes(1);
+    expect(openGenerateCombinationsDialog).toHaveBeenCalledTimes(1);
     expect(previewData).toHaveBeenCalledTimes(1);
     expect(renderOutputPreviewForCurrentSelection).toHaveBeenCalledTimes(1);
     expect(showSchemaErrorStatus).toHaveBeenCalledWith('bad schema');

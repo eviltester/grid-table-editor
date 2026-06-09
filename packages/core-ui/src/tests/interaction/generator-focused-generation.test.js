@@ -77,7 +77,7 @@ describe('generator focused generation flows', () => {
     await harness.clickGeneratePairwise();
 
     harness.assertSuccessfulDownload('generator focused pairwise download');
-    expect(harness.getLastDownload().filename).toBe('all-pairs-data.csv');
+    expect(harness.getLastDownload().filename).toBe('n-wise-combinations-data.csv');
     expect(harness.getLastDownload().text).toContain('Status');
     expect(harness.getLastDownload().text.split(/\r?\n/).filter(Boolean).length).toBeGreaterThan(4);
   });

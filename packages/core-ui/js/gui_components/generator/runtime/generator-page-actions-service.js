@@ -1,19 +1,44 @@
 import {
   buildPreviewDataTable,
   buildPairwiseDataTable,
+  buildCombinationsDataTable,
   previewGeneratorData,
   generateGeneratorDataFile,
   generateGeneratorAllPairsDataFile,
+  generateGeneratorCombinationsDataFile,
 } from '../generation/data-generator-generation-actions.js';
+import { createCombinationsDialogComponent } from '../../shared/combinations-dialog/index.js';
 import { applyGeneratorFormatOptions } from '../options/apply-generator-format-options.js';
 
-function createGeneratorPageActionsService({ runtime, DownloadClass, faker, RandExp } = {}) {
+function createGeneratorPageActionsService({
+  runtime,
+  DownloadClass,
+  faker,
+  RandExp,
+  createCombinationsDialog = createCombinationsDialogComponent,
+} = {}) {
   const getResolvedViewState = () => runtime?.generatorViewState || null;
   const getResolvedSchemaRuntime = () => runtime?.generatorSchemaRuntime || null;
   const getResolvedSchemaGenerationService = () => runtime?.generatorSchemaGenerationService || null;
   const getResolvedSchemaState = () => runtime?.generatorSchemaState || null;
+  let combinationsDialog = null;
 
-  return {
+  function ensureCombinationsDialog(actions) {
+    if (combinationsDialog) {
+      return combinationsDialog;
+    }
+    combinationsDialog = createCombinationsDialog({
+      documentObj: runtime?.documentObj,
+      callbacks: {
+        onSubmit: (selection) => {
+          void actions.generateCombinationsDataFile(selection);
+        },
+      },
+    });
+    return combinationsDialog;
+  }
+
+  const actions = {
     applyCurrentTypeOptions(options) {
       return applyGeneratorFormatOptions({
         options,
@@ -84,6 +109,44 @@ function createGeneratorPageActionsService({ runtime, DownloadClass, faker, Rand
       });
     },
 
+    openGenerateCombinationsDialog() {
+      const enumColumnCount = getResolvedSchemaGenerationService()?.countEnumColumns?.() || 0;
+      const enumValueCounts = getResolvedSchemaGenerationService()?.getEnumValueCounts?.() || [];
+      if (enumColumnCount < 2) {
+        getResolvedSchemaRuntime()?.surfacePageError?.(
+          'Combination generation requires at least 2 enum columns because n-wise generation combines finite enum values.'
+        );
+        return false;
+      }
+      ensureCombinationsDialog(actions).open({ enumColumnCount, enumValueCounts });
+      return true;
+    },
+
+    async generateCombinationsDataFile(selection) {
+      await generateGeneratorCombinationsDataFile({
+        createConfiguredGenerator: () => getResolvedSchemaGenerationService()?.createConfiguredGenerator?.(),
+        countEnumColumns: () => getResolvedSchemaGenerationService()?.countEnumColumns?.() || 0,
+        getSelectedOutputType: () => getResolvedViewState()?.getSelectedOutputType?.(),
+        exporter: runtime?.exporter,
+        clearGenerationStatus: () => getResolvedViewState()?.clearGenerationStatus?.(),
+        setGenerationButtonBusy: (isBusy) => getResolvedViewState()?.setGenerationButtonsBusy?.(isBusy),
+        setGenerationStatus: (message, options) => getResolvedViewState()?.setGenerationStatus?.(message, options),
+        showGenerationLoadingStatus: (message) => getResolvedViewState()?.showGenerationLoadingStatus?.(message),
+        buildCombinationsDataTable: (generator, options) =>
+          buildCombinationsDataTable({
+            generator,
+            faker,
+            RandExp,
+            options,
+          }),
+        DownloadClass,
+        surfacePageError: (message, options) => getResolvedSchemaRuntime()?.surfacePageError?.(message, options),
+        clearPageError: () => getResolvedSchemaRuntime()?.clearSchemaErrorStatus?.(),
+        scheduleClearGenerationStatus: (delay) => getResolvedViewState()?.scheduleClearGenerationStatus?.(delay),
+        selection,
+      });
+    },
+
     updateAllPairsButtonVisibility() {
       const isVisible = getResolvedSchemaGenerationService()?.getPairwiseVisibility?.({
         getCurrentSchemaState: () => getResolvedSchemaState()?.getCurrentSchemaState?.(),
@@ -92,6 +155,8 @@ function createGeneratorPageActionsService({ runtime, DownloadClass, faker, Rand
       return isVisible;
     },
   };
+
+  return actions;
 }
 
 export { createGeneratorPageActionsService };

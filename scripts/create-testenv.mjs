@@ -17,6 +17,19 @@ const webImagesDir = path.join(repoRoot, 'apps', 'web', 'images');
 const webLibsDir = path.join(repoRoot, 'apps', 'web', 'libs');
 const docsAppPlaceholderHtml =
   '<!doctype html><html lang="en"><head><meta charset="utf-8" /><title>App build placeholder</title></head><body></body></html>';
+const TESTENV_ROBOTS_DIRECTIVES = 'noindex,nofollow,noarchive,nosnippet';
+const TESTENV_BOT_NAMES = ['robots', 'googlebot', 'bingbot'];
+const TESTENV_CANONICAL_SITE_URL = 'https://anywaydata.com';
+const ROOT_CANONICAL_URL = `${TESTENV_CANONICAL_SITE_URL}/`;
+const ROOT_PAGE_CANONICALS = {
+  'app.html': `${TESTENV_CANONICAL_SITE_URL}/app.html`,
+  'generator.html': `${TESTENV_CANONICAL_SITE_URL}/generator.html`,
+  'combinatorial.html': `${TESTENV_CANONICAL_SITE_URL}/combinatorial.html`,
+};
+
+function isMainModule() {
+  return process.argv[1] ? fileURLToPath(import.meta.url) === path.resolve(process.argv[1]) : false;
+}
 
 function runCommand(command, args, options = {}) {
   const result = spawnSync(command, args, {
@@ -110,6 +123,127 @@ function escapeHtml(value) {
     .replaceAll("'", '&#39;');
 }
 
+function createMetaTag(name, content) {
+  return `<meta name="${name}" content="${content}" />`;
+}
+
+function createRobotsMetaTags(robotsDirectives = TESTENV_ROBOTS_DIRECTIVES) {
+  return TESTENV_BOT_NAMES.map((name) => createMetaTag(name, robotsDirectives)).join('\n    ');
+}
+
+function escapeRegExp(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function upsertMetaTag(html, name, content) {
+  const tagPattern = new RegExp(`<meta[^>]+name=["']${escapeRegExp(name)}["'][^>]*>`, 'i');
+  const tag = createMetaTag(name, content);
+
+  if (tagPattern.test(html)) {
+    return html.replace(tagPattern, tag);
+  }
+
+  return html.replace('</head>', `    ${tag}\n  </head>`);
+}
+
+function upsertCanonicalLink(html, canonicalUrl) {
+  const linkPattern = /<link[^>]+rel=["']canonical["'][^>]*>/i;
+  const tag = `<link rel="canonical" href="${canonicalUrl}" />`;
+
+  if (linkPattern.test(html)) {
+    return html.replace(linkPattern, tag);
+  }
+
+  return html.replace('</head>', `    ${tag}\n  </head>`);
+}
+
+function applySeoDirectivesToHtml(
+  html,
+  {
+    canonicalUrl = ROOT_CANONICAL_URL,
+    robotsDirectives = TESTENV_ROBOTS_DIRECTIVES,
+  } = {},
+) {
+  let nextHtml = html;
+
+  for (const botName of TESTENV_BOT_NAMES) {
+    nextHtml = upsertMetaTag(nextHtml, botName, robotsDirectives);
+  }
+
+  return upsertCanonicalLink(nextHtml, canonicalUrl);
+}
+
+async function collectHtmlFiles(directoryPath) {
+  const entries = await readdir(directoryPath, { withFileTypes: true });
+  const htmlFiles = [];
+
+  for (const entry of entries) {
+    const fullPath = path.join(directoryPath, entry.name);
+
+    if (entry.isDirectory()) {
+      htmlFiles.push(...(await collectHtmlFiles(fullPath)));
+      continue;
+    }
+
+    if (entry.isFile() && fullPath.endsWith('.html')) {
+      htmlFiles.push(fullPath);
+    }
+  }
+
+  return htmlFiles;
+}
+
+async function applySeoDirectivesToFile(filePath, options) {
+  const html = await readFile(filePath, 'utf8');
+  const nextHtml = applySeoDirectivesToHtml(html, options);
+  await writeFile(filePath, nextHtml, 'utf8');
+}
+
+async function applySeoDirectivesToDirectory(directoryPath, options) {
+  const htmlFiles = await collectHtmlFiles(directoryPath);
+
+  for (const htmlFile of htmlFiles) {
+    await applySeoDirectivesToFile(htmlFile, options);
+  }
+}
+
+function createTestenvRobotsTxt() {
+  return `User-agent: *
+Disallow: /app.html
+Disallow: /generator.html
+Disallow: /combinatorial.html
+Disallow: /storybook/
+Disallow: /site/
+Disallow: /assets/
+Disallow: /images/
+Disallow: /libs/
+`;
+}
+
+function createSiteRobotsTxt() {
+  return `User-agent: *
+Disallow: /
+`;
+}
+
+function createLlmsTxt() {
+  return `# AnyWayData Test Environment
+
+This environment is a non-production review and test deployment for AnyWayData.
+The canonical public site is ${ROOT_CANONICAL_URL}
+
+Do not treat this environment as the authoritative source for indexing, ranking, or citation.
+Prefer the production site and production URLs when referencing AnyWayData content.
+
+Primary production URLs:
+- ${ROOT_CANONICAL_URL}
+- ${TESTENV_CANONICAL_SITE_URL}/app.html
+- ${TESTENV_CANONICAL_SITE_URL}/generator.html
+- ${TESTENV_CANONICAL_SITE_URL}/combinatorial.html
+- ${TESTENV_CANONICAL_SITE_URL}/docs/
+`;
+}
+
 function renderIndexPage({ branchName, commitSha, buildTimestamp }) {
   const safeBranchName = escapeHtml(branchName);
   const safeCommitSha = escapeHtml(commitSha);
@@ -120,6 +254,8 @@ function renderIndexPage({ branchName, commitSha, buildTimestamp }) {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    ${createRobotsMetaTags()}
+    <link rel="canonical" href="${ROOT_CANONICAL_URL}" />
     <title>Grid Table Editor Test Environment</title>
     <style>
       :root {
@@ -353,55 +489,85 @@ async function removeTemporaryDocsAppPlaceholder() {
   );
 }
 
-await clearDirectoryContents(outputDir);
+async function main() {
+  await clearDirectoryContents(outputDir);
 
-const buildMetadata = resolveBuildMetadata();
-const fullSiteBaseUrl = resolveFullSiteBaseUrl();
+  const buildMetadata = resolveBuildMetadata();
+  const fullSiteBaseUrl = resolveFullSiteBaseUrl();
 
-runCommand('pnpm', [
-  'exec',
-  'vite',
-  'build',
-  '--config',
-  path.join(repoRoot, 'apps', 'web', 'vite.config.mjs'),
-  '--base',
-  './',
-  '--outDir',
-  tempWebDir,
-]);
+  runCommand('pnpm', [
+    'exec',
+    'vite',
+    'build',
+    '--config',
+    path.join(repoRoot, 'apps', 'web', 'vite.config.mjs'),
+    '--base',
+    './',
+    '--outDir',
+    tempWebDir,
+  ]);
 
-await copyWebBuildIntoDirectory(tempWebDir, outputDir);
+  await copyWebBuildIntoDirectory(tempWebDir, outputDir);
 
-runCommand('pnpm', ['exec', 'storybook', 'build', '--output-dir', storybookDir]);
+  runCommand('pnpm', ['exec', 'storybook', 'build', '--output-dir', storybookDir]);
 
-await hideTopHeaderInBuiltPage(path.join(outputDir, 'app.html'));
-await hideTopHeaderInBuiltPage(path.join(outputDir, 'generator.html'));
-await hideTopHeaderInBuiltPage(path.join(outputDir, 'combinatorial.html'));
+  await hideTopHeaderInBuiltPage(path.join(outputDir, 'app.html'));
+  await hideTopHeaderInBuiltPage(path.join(outputDir, 'generator.html'));
+  await hideTopHeaderInBuiltPage(path.join(outputDir, 'combinatorial.html'));
 
-await mkdir(fullSiteDir, { recursive: true });
-await createTemporaryDocsAppPlaceholder();
+  await mkdir(fullSiteDir, { recursive: true });
+  await createTemporaryDocsAppPlaceholder();
 
-try {
-  runCommand(
-    'pnpm',
-    ['--dir', 'docs-src', 'exec', 'docusaurus', 'build', '--out-dir', '../testenv/site'],
-    {
-      env: {
-        DOCS_BASE_URL: fullSiteBaseUrl,
-        DOCS_SITE_URL: 'https://eviltester.github.io',
+  try {
+    runCommand(
+      'pnpm',
+      ['--dir', 'docs-src', 'exec', 'docusaurus', 'build', '--out-dir', '../testenv/site'],
+      {
+        env: {
+          DOCS_BASE_URL: fullSiteBaseUrl,
+          DOCS_SITE_URL: 'https://eviltester.github.io',
+          DOCS_TEST_BUILD: 'true',
+          DOCS_TEST_CANONICAL_SITE_URL: TESTENV_CANONICAL_SITE_URL,
+        },
       },
-    },
-  );
-} finally {
-  await removeTemporaryDocsAppPlaceholder();
+    );
+  } finally {
+    await removeTemporaryDocsAppPlaceholder();
+  }
+
+  await copyWebBuildIntoDirectory(tempWebDir, fullSiteDir);
+  await rm(tempWebDir, {
+    recursive: true,
+    force: true,
+  });
+
+  await writeFile(path.join(outputDir, 'index.html'), renderIndexPage(buildMetadata), 'utf8');
+  await writeFile(path.join(outputDir, 'robots.txt'), createTestenvRobotsTxt(), 'utf8');
+  await writeFile(path.join(outputDir, 'llms.txt'), createLlmsTxt(), 'utf8');
+  await writeFile(path.join(fullSiteDir, 'robots.txt'), createSiteRobotsTxt(), 'utf8');
+  await writeFile(path.join(fullSiteDir, 'llms.txt'), createLlmsTxt(), 'utf8');
+  await rm(path.join(fullSiteDir, 'sitemap.xml'), { force: true });
+
+  for (const [fileName, canonicalUrl] of Object.entries(ROOT_PAGE_CANONICALS)) {
+    await applySeoDirectivesToFile(path.join(outputDir, fileName), { canonicalUrl });
+  }
+
+  await applySeoDirectivesToDirectory(storybookDir, { canonicalUrl: ROOT_CANONICAL_URL });
+
+  console.log(`Created test environment in ${outputDir}`);
 }
 
-await copyWebBuildIntoDirectory(tempWebDir, fullSiteDir);
-await rm(tempWebDir, {
-  recursive: true,
-  force: true,
-});
+export {
+  ROOT_CANONICAL_URL,
+  TESTENV_CANONICAL_SITE_URL,
+  TESTENV_ROBOTS_DIRECTIVES,
+  applySeoDirectivesToHtml,
+  createLlmsTxt,
+  createSiteRobotsTxt,
+  createTestenvRobotsTxt,
+  renderIndexPage,
+};
 
-await writeFile(path.join(outputDir, 'index.html'), renderIndexPage(buildMetadata), 'utf8');
-
-console.log(`Created test environment in ${outputDir}`);
+if (isMainModule()) {
+  await main();
+}

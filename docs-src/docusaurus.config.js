@@ -2,11 +2,17 @@
 // Note: type annotations allow type checking and IDEs autocompletion
 
 const {themes} = require('prism-react-renderer');
+const {
+  createTestBuildSeoPlugin,
+  isDocsTestBuild,
+} = require('./test-build-seo.cjs');
 const lightTheme = themes.github;
 const darkTheme = themes.dracula;
 const siteUrl = process.env.DOCS_SITE_URL || 'https://anywaydata.com';
 const baseUrl = process.env.DOCS_BASE_URL || '/';
 const appUrl = new URL(`.${baseUrl}app.html`, `${siteUrl}/`).toString();
+const canonicalSiteUrl = process.env.DOCS_TEST_CANONICAL_SITE_URL || 'https://anywaydata.com';
+const isTestBuild = isDocsTestBuild(process.env);
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -34,6 +40,15 @@ const config = {
     defaultLocale: 'en',
     locales: ['en'],
   },
+  noIndex: isTestBuild,
+  plugins: isTestBuild
+    ? [
+        createTestBuildSeoPlugin({
+          canonicalSiteUrl,
+          docsBaseUrl: baseUrl,
+        }),
+      ]
+    : [],
 
   presets: [
     [

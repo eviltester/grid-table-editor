@@ -34,7 +34,7 @@ import {
   SOURCE_TYPE_ENUM,
   SOURCE_TYPE_REGEX,
 } from '../packages/core-ui/js/gui_components/shared/schema-row-rule-mapper.js';
-import { PairwiseTestDataGenerator } from '../packages/core/js/data_generation/all-pairs/pairwiseTestDataGenerator.js';
+import { PairwiseTestDataGenerator } from '../packages/core/js/data_generation/n-wise/pairwiseTestDataGenerator.js';
 
 const generatedAt = new Date().toISOString();
 const coverageScenarios = buildSchemaInteractionScenarios();

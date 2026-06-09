@@ -6,8 +6,8 @@ const GENERATE_TO_GRID_HELP_HTML = `
 `;
 
 const GENERATE_PAIRWISE_TO_GRID_HELP_HTML = `
-  <p>Generate pairwise data from the current schema directly into the grid.</p>
-  <p><a class="helplink" href="https://anywaydata.com/docs/test-data/pairwise-testing" target="_blank" rel="noopener noreferrer">Pairwise testing docs</a></p>
+  <p>Generate n-wise combinations from enum columns in the current schema directly into the grid.</p>
+  <p><a class="helplink" href="/docs/test-data/n-wise-testing" target="_blank" rel="noopener noreferrer">N-wise generation docs</a></p>
 `;
 
 class TestDataPopulationToolbarView {
@@ -56,8 +56,10 @@ class TestDataPopulationToolbarView {
         generateBusy: state.generateBusy,
         generatePairwiseBusy: state.generatePairwiseBusy,
         ids: state.actionIds,
+        generatePairwiseLabel: 'Generate Combinations',
         generateHelpHtml: GENERATE_TO_GRID_HELP_HTML,
         generatePairwiseHelpHtml: GENERATE_PAIRWISE_TO_GRID_HELP_HTML,
+        generatePairwiseHelpLabel: 'Show combination generation help',
         statusVisible: true,
       },
       callbacks: {
@@ -93,8 +95,10 @@ class TestDataPopulationToolbarView {
       generateBusy: state.generateBusy,
       generatePairwiseBusy: state.generatePairwiseBusy,
       ids: state.actionIds,
+      generatePairwiseLabel: 'Generate Combinations',
       generateHelpHtml: GENERATE_TO_GRID_HELP_HTML,
       generatePairwiseHelpHtml: GENERATE_PAIRWISE_TO_GRID_HELP_HTML,
+      generatePairwiseHelpLabel: 'Show combination generation help',
       statusVisible: true,
     });
     this.populationModeSelector?.update?.({

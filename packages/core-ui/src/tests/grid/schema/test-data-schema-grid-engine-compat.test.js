@@ -118,7 +118,7 @@ describe('test data schema editor compatibility', () => {
     );
   });
 
-  test('pairwise generation reports error when fewer than two enum columns exist', async () => {
+  test('combination generation reports an error when fewer than two enum columns exist', async () => {
     setup();
     const schemaTextArea = document.querySelector('[data-role="schema-textbox"]');
     schemaTextArea.value = 'OnlyEnum\nenum(a,b)';
@@ -135,7 +135,7 @@ describe('test data schema editor compatibility', () => {
     document.querySelector('[data-role="data-population-panel-root"] [data-role="generate-pairwise-button"]').click();
     await flushUi();
     expect(document.querySelector('[data-role="schema-error"]').textContent).toContain(
-      'Pairwise generation requires at least 2 enum columns.'
+      'Combination generation requires at least 2 enum columns because n-wise generation combines finite enum values.'
     );
   });
 });

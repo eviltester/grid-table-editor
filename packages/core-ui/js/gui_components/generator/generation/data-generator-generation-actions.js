@@ -5,14 +5,21 @@
  */
 
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
-import { PairwiseTestDataGenerator } from '@anywaydata/core/data_generation/all-pairs/pairwiseTestDataGenerator.js';
+import {
+  CombinationAlgorithm,
+  CombinationsTestDataGenerator,
+  DEFAULT_AETG_RUNS,
+} from '@anywaydata/core/data_generation/n-wise/combinationsTestDataGenerator.js';
+import { PairwiseTestDataGenerator } from '@anywaydata/core/data_generation/n-wise/pairwiseTestDataGenerator.js';
+import { EnumParser } from '@anywaydata/core/data_generation/utils/enumParser.js';
 import { schemaErrorsToText } from '../../shared/test-data/schema/schema-error-text.js';
 import {
   createConfiguredGeneratorFromSchemaRows,
   createPreviewDataTable,
   createPairwiseDataTable,
+  createCombinationsDataTable,
 } from '../../shared/test-data/generation/generation-controller.js';
-import { isPairwiseEligibleForSchemaRows } from '../../shared/test-data/generation/ui-derived-state.js';
+import { isNWiseEligibleForSchemaRows } from '../../shared/test-data/generation/ui-derived-state.js';
 import {
   SOURCE_TYPE_FAKER,
   SOURCE_TYPE_DOMAIN,
@@ -73,6 +80,17 @@ function buildPairwiseDataTable({ generator, faker, RandExp }) {
   });
 }
 
+function buildCombinationsDataTable({ generator, faker, RandExp, options }) {
+  return createCombinationsDataTable({
+    generator,
+    CombinationsTestDataGeneratorClass: CombinationsTestDataGenerator,
+    GenericDataTableClass: GenericDataTable,
+    faker,
+    RandExp,
+    options,
+  });
+}
+
 function renderGeneratorOutputPreview({ getSelectedOutputType, getPreviewDataTable, exporter, setOutputPreviewText }) {
   const type = getSelectedOutputType();
   const dataTable = getPreviewDataTable?.() || null;
@@ -118,7 +136,7 @@ function updateGeneratorPairwiseButtonVisibility({
       ? getCurrentSchemaState()
       : syncSchemaRowsFromTextMode({ showErrors: false, applySemanticValidation: false });
   const { errors, rows } = validateSchemaRows(parsed.rows || []);
-  const isVisible = !parsed.errors?.length && !errors.length && isPairwiseEligibleForSchemaRows(rows);
+  const isVisible = !parsed.errors?.length && !errors.length && isNWiseEligibleForSchemaRows(rows);
   return isVisible;
 }
 
@@ -139,6 +157,37 @@ function countGeneratorEnumColumns({ syncSchemaRowsFromTextMode, validateSchemaR
         .trim()
         .toLowerCase() === SOURCE_TYPE_ENUM
   ).length;
+}
+
+function getGeneratorEnumValueCounts({ syncSchemaRowsFromTextMode, validateSchemaRows }) {
+  const parsed = syncSchemaRowsFromTextMode({ showErrors: false, applySemanticValidation: false });
+  if (parsed.errors?.length > 0) {
+    return [];
+  }
+
+  const { errors, rows } = validateSchemaRows(parsed.rows);
+  if (errors.length > 0) {
+    return [];
+  }
+
+  return rows
+    .filter((row) => {
+      const sourceType = String(row?.sourceType || '')
+        .trim()
+        .toLowerCase();
+      const command = String(row?.command || '')
+        .trim()
+        .toLowerCase();
+      return sourceType === SOURCE_TYPE_ENUM || (sourceType === SOURCE_TYPE_DOMAIN && command === 'datatype.enum');
+    })
+    .map((row) => {
+      try {
+        return EnumParser.extractEnumValues(buildRuleSpecFromSchemaRow(row)).length;
+      } catch {
+        return 0;
+      }
+    })
+    .filter((count) => count > 0);
 }
 
 function previewGeneratorData({
@@ -291,14 +340,92 @@ async function generateGeneratorAllPairsDataFile({
   }
 }
 
+async function generateGeneratorCombinationsDataFile({
+  createConfiguredGenerator,
+  countEnumColumns,
+  getSelectedOutputType,
+  exporter,
+  clearGenerationStatus,
+  setGenerationButtonBusy,
+  setGenerationStatus,
+  showGenerationLoadingStatus,
+  buildCombinationsDataTable: buildCombinationsDataTableFn,
+  DownloadClass,
+  surfacePageError,
+  clearPageError,
+  scheduleClearGenerationStatus,
+  selection,
+}) {
+  const strength = Number.parseInt(selection?.strength, 10);
+  const algorithm = selection?.algorithm;
+  const enumColumnCount = countEnumColumns();
+  if (!Number.isInteger(strength) || strength < 2 || strength > enumColumnCount) {
+    surfacePageError(`n-wise strength must be between 2 and ${enumColumnCount} for this schema.`);
+    return;
+  }
+
+  const configured = createConfiguredGenerator();
+  if (configured.errors?.length > 0) {
+    surfacePageError(schemaErrorsToText(configured.errors), { useSchemaStatus: true });
+    return;
+  }
+
+  const type = getSelectedOutputType();
+  if (!exporter.canExport(type)) {
+    surfacePageError(`Output format ${type} is not supported.`);
+    return;
+  }
+
+  clearGenerationStatus();
+  setGenerationButtonBusy(true);
+  showGenerationLoadingStatus(`Generating ${strength}-wise combinations...`);
+
+  try {
+    const dataTable = buildCombinationsDataTableFn(configured.generator, {
+      strength,
+      algorithm,
+      seed: 1,
+      candidateCount: 20,
+      // AETG is randomized, so we run it twice and keep the better result.
+      runs: algorithm === CombinationAlgorithm.AETG ? DEFAULT_AETG_RUNS : 1,
+    });
+    if (!dataTable) {
+      surfacePageError('Failed to generate combinations data.');
+      setGenerationStatus('Combination generation failed.', { severity: 'error', dismissable: true });
+      return;
+    }
+
+    clearPageError?.();
+    dataTable.__generatorFilename = `n-wise-combinations-data${exporter.getFileExtensionFor(type)}`;
+    const { filename } = await exportDataTableToDownload({
+      type,
+      dataTable,
+      exporter,
+      DownloadClass,
+      showGenerationLoadingStatus,
+    });
+    setGenerationStatus(`Download ready: ${filename} (${dataTable.getRowCount()} combinations)`);
+    scheduleClearGenerationStatus();
+  } catch (error) {
+    console.error(error);
+    surfacePageError('Unable to generate combinations data file.');
+    setGenerationStatus('Failed to generate combinations data file.', { severity: 'error', dismissable: true });
+  } finally {
+    setGenerationButtonBusy(false);
+  }
+}
+
 export {
   createConfiguredGeneratorForPage,
   buildPreviewDataTable,
   buildPairwiseDataTable,
+  buildCombinationsDataTable,
   renderGeneratorOutputPreview,
   updateGeneratorPairwiseButtonVisibility,
   countGeneratorEnumColumns,
+  getGeneratorEnumValueCounts,
   previewGeneratorData,
   generateGeneratorDataFile,
   generateGeneratorAllPairsDataFile,
+  generateGeneratorCombinationsDataFile,
 };

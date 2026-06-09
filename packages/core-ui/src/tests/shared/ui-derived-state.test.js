@@ -1,7 +1,7 @@
 import {
   countEnumSchemaRows,
   hasMinimumEnumColumns,
-  isPairwiseEligibleForSchemaRows,
+  isNWiseEligibleForSchemaRows,
   isPairwiseEligibleForDataRules,
 } from '../../../js/gui_components/shared/test-data/generation/ui-derived-state.js';
 
@@ -11,7 +11,7 @@ describe('ui-derived-state', () => {
 
     expect(countEnumSchemaRows(rows)).toBe(2);
     expect(hasMinimumEnumColumns(2)).toBe(true);
-    expect(isPairwiseEligibleForSchemaRows(rows)).toBe(true);
+    expect(isNWiseEligibleForSchemaRows(rows)).toBe(true);
   });
 
   test('checks pairwise eligibility from parsed rules', () => {

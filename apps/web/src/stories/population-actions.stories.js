@@ -36,7 +36,7 @@ function renderPopulationActionsStory(args) {
       },
       onGeneratePairwise: () => {
         args.onGeneratePairwise?.();
-        result.textContent = 'action:generate-pairwise';
+        result.textContent = 'action:generate-secondary';
       },
     },
   });
@@ -63,7 +63,7 @@ const meta = {
         ),
       description: {
         component:
-          'PopulationActions is the reusable action cluster shared by the app test-data panel and the generator controls. It owns the Generate and optional Generate Pairwise actions, plus the host-configured help tippies for each action.',
+          'PopulationActions is the reusable action cluster shared by the app test-data panel and the generator controls. It owns the Generate action plus an optional secondary combination action, with host-configured labels and help tippies for each action.',
       },
     },
   },
@@ -72,18 +72,18 @@ const meta = {
     generateBusy: false,
     generatePairwiseBusy: false,
     generateLabel: 'Generate',
-    generatePairwiseLabel: 'Generate Pairwise',
+    generatePairwiseLabel: 'Generate Combinations',
     generateHelpHtml:
       '<p>Generate data from the current schema directly into the grid.</p><p><a class="helplink" href="/docs/test-data/test-data-generation" target="anywaydatadocs">Test-data generation docs</a></p>',
     generatePairwiseHelpHtml:
-      '<p>Generate pairwise data from the current schema directly into the grid.</p><p><a class="helplink" href="https://anywaydata.com/docs/test-data/pairwise-testing" target="_blank" rel="noopener noreferrer">Pairwise testing docs</a></p>',
+      '<p>Generate n-wise combinations from enum columns in the current schema directly into the grid.</p><p><a class="helplink" href="/docs/test-data/n-wise-testing" target="_blank" rel="noopener noreferrer">N-wise generation docs</a></p>',
     onGenerate: fn(),
     onGeneratePairwise: fn(),
   },
   argTypes: {
     pairwiseVisible: {
       control: 'boolean',
-      description: 'Whether the Generate Pairwise button is shown.',
+      description: 'Whether the optional secondary action button is shown.',
     },
     generateBusy: {
       control: 'boolean',
@@ -91,7 +91,7 @@ const meta = {
     },
     generatePairwiseBusy: {
       control: 'boolean',
-      description: 'Disables the Generate Pairwise button when true.',
+      description: 'Disables the optional secondary action button when true.',
     },
     generateLabel: {
       control: 'text',
@@ -99,7 +99,7 @@ const meta = {
     },
     generatePairwiseLabel: {
       control: 'text',
-      description: 'Secondary pairwise action label shown when pairwise is visible.',
+      description: 'Secondary action label shown when the optional action is visible.',
     },
     generateHelpHtml: {
       control: 'text',
@@ -107,14 +107,14 @@ const meta = {
     },
     generatePairwiseHelpHtml: {
       control: 'text',
-      description: 'Raw HTML used as the Generate Pairwise help tippy content, including links.',
+      description: 'Raw HTML used as the secondary action help tippy content, including links.',
     },
     onGenerate: {
       description: 'Storybook action fired when the primary Generate button is clicked.',
       table: { category: 'Events' },
     },
     onGeneratePairwise: {
-      description: 'Storybook action fired when the Generate Pairwise button is clicked.',
+      description: 'Storybook action fired when the secondary action button is clicked.',
       table: { category: 'Events' },
     },
   },
@@ -136,7 +136,7 @@ export const Default = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await expect(canvas.getByRole('button', { name: 'Generate', exact: true })).toBeEnabled();
-    await expect(canvas.queryByRole('button', { name: 'Generate Pairwise' })).toBeNull();
+    await expect(canvas.queryByRole('button', { name: 'Generate Combinations' })).toBeNull();
     await expect(canvas.getAllByRole('button', { name: /show .* help/i })).toHaveLength(1);
     await userEvent.click(canvas.getByRole('button', { name: 'Generate', exact: true }));
     await expect(canvas.getByText('action:generate')).toBeVisible();
@@ -152,17 +152,17 @@ export const PairwiseAvailable = {
     docs: {
       description: {
         story:
-          'Documents the alternate visible state where pairwise generation is available. Use **Generate Pairwise** and confirm both the story log and the Actions panel record the pairwise action. This is the same shared visual contract used by the generator page, with host-specific help HTML supplied by the embedding surface.',
+          'Documents the alternate visible state where the combinations action is available. Use **Generate Combinations** and confirm both the story log and the Actions panel record the secondary action. This is the same shared visual contract used by the generator page, with host-specific help HTML supplied by the embedding surface.',
       },
     },
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await expect(canvas.getByRole('button', { name: 'Generate Pairwise' })).toBeVisible();
-    await expect(canvas.getByRole('button', { name: 'Generate Pairwise' })).toBeEnabled();
+    await expect(canvas.getByRole('button', { name: 'Generate Combinations' })).toBeVisible();
+    await expect(canvas.getByRole('button', { name: 'Generate Combinations' })).toBeEnabled();
     await expect(canvas.getAllByRole('button', { name: /show .* help/i })).toHaveLength(2);
-    await userEvent.click(canvas.getByRole('button', { name: 'Generate Pairwise' }));
-    await expect(canvas.getByText('action:generate-pairwise')).toBeVisible();
+    await userEvent.click(canvas.getByRole('button', { name: 'Generate Combinations' }));
+    await expect(canvas.getByText('action:generate-secondary')).toBeVisible();
   },
 };
 
@@ -184,11 +184,14 @@ export const BusyStates = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await expect(canvas.getByRole('button', { name: 'Generate', exact: true })).toBeDisabled();
-    await expect(canvas.getByRole('button', { name: 'Generate Pairwise' })).toBeDisabled();
+    await expect(canvas.getByRole('button', { name: 'Generate Combinations' })).toBeDisabled();
     await expect(canvas.getByRole('button', { name: 'Generate', exact: true })).toHaveAttribute(
       'aria-disabled',
       'true'
     );
-    await expect(canvas.getByRole('button', { name: 'Generate Pairwise' })).toHaveAttribute('aria-disabled', 'true');
+    await expect(canvas.getByRole('button', { name: 'Generate Combinations' })).toHaveAttribute(
+      'aria-disabled',
+      'true'
+    );
   },
 };

@@ -199,12 +199,23 @@ function createFocusedAppTestDataHarness() {
     }
   }
 
-  async function clickGeneratePairwise() {
-    await user.click(within(document.body).getByRole('button', { name: /generate pairwise/i }));
+  async function clickGenerateCombinations() {
+    await user.click(within(document.body).getByRole('button', { name: /generate combinations/i }));
+    const dialog = await waitForDialog();
+    await user.click(within(dialog).getByRole('button', { name: /^generate$/i }));
     await waitFor(() => expect(latestDataTable).toBeTruthy());
     await waitFor(() =>
       expect(document.getElementById('testDataPreviewCapture').textContent.length).toBeGreaterThan(0)
     );
+  }
+
+  async function waitForDialog() {
+    let dialog = null;
+    await waitFor(() => {
+      dialog = within(document.body).getByRole('dialog', { name: 'Generate Combinations' });
+      expect(dialog).toBeTruthy();
+    });
+    return dialog;
   }
 
   async function setGenerateCount(value) {
@@ -250,8 +261,12 @@ function createFocusedAppTestDataHarness() {
     return getPanelQueries().getByRole('spinbutton', { name: 'How Many?' }).value;
   }
 
-  function getPairwiseButton() {
+  function getCombinationsButton() {
     return getPanelRoot().querySelector('[data-role="generate-pairwise-button-wrapper"]');
+  }
+
+  function getPairwiseButton() {
+    return getCombinationsButton();
   }
 
   function getPreviewText() {
@@ -292,7 +307,7 @@ function createFocusedAppTestDataHarness() {
     fillGridRow,
     setSchemaText,
     clickGenerate,
-    clickGeneratePairwise,
+    clickGenerateCombinations,
     setGenerateCount,
     selectMode,
     clickInjectedSampleButton,
@@ -301,6 +316,7 @@ function createFocusedAppTestDataHarness() {
     getSchemaText,
     getSchemaErrorText,
     getGenerateCount,
+    getCombinationsButton,
     getPairwiseButton,
     getPreviewText,
     getLatestDataTable,

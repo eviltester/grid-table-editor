@@ -1006,6 +1006,303 @@ body.theme-dark .generator-status-text[data-severity='info'] {
   box-shadow: 0 0 0 3px #d6eefc;
 }
 
+.n-wise-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(10, 22, 16, 0.45);
+  z-index: 2200;
+}
+
+.n-wise-dialog {
+  width: min(92vw, 560px);
+  max-height: calc(100vh - 2rem);
+  overflow: auto;
+  background: var(--panel-bg);
+  color: var(--page-text);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+}
+
+.n-wise-dialog-header,
+.n-wise-dialog-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.8rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.n-wise-dialog-header h3 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.n-wise-dialog-close {
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  line-height: 1;
+}
+
+.n-wise-dialog-body {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0.8rem;
+}
+
+.n-wise-dialog-explanation,
+.n-wise-dialog-description,
+.n-wise-dialog-docs {
+  margin: 0;
+  line-height: 1.4;
+}
+
+.n-wise-dialog-field {
+  display: grid;
+  gap: 0.25rem;
+  font-weight: 600;
+}
+
+.n-wise-dialog-field select {
+  width: 100%;
+  min-width: 0;
+}
+
+.n-wise-strategy-list {
+  display: grid;
+  gap: 0.5rem;
+  max-height: min(42vh, 22rem);
+  overflow: auto;
+  padding: 0.35rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.n-wise-strategy-option {
+  display: grid;
+  gap: 0.25rem;
+  width: 100%;
+  min-width: 0;
+  padding: 0.65rem 0.75rem;
+  text-align: left;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--panel-bg);
+  color: var(--page-text);
+  cursor: pointer;
+}
+
+.n-wise-strategy-option.is-selected {
+  border-color: #23784d;
+  box-shadow: inset 4px 0 0 #23784d;
+}
+
+.n-wise-strategy-name {
+  font-weight: 700;
+}
+
+.n-wise-strategy-description {
+  font-weight: 400;
+  line-height: 1.35;
+}
+
+.n-wise-dialog-actions {
+  border-top: 1px solid var(--border-color);
+  border-bottom: 0;
+  justify-content: flex-end;
+}
+
+.n-wise-dialog-primary {
+  font-weight: 700;
+}
+
+.n-wise-dialog button:focus-visible,
+.n-wise-dialog select:focus-visible {
+  outline: 3px solid #0b6aa2;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 3px #d6eefc;
+}
+
+.combinatorial-page {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.combinatorial-intro h1,
+.combinatorial-results h2 {
+  margin: 0 0 0.5rem;
+}
+
+.combinatorial-intro p {
+  max-width: 70rem;
+  margin: 0 0 1rem;
+  line-height: 1.45;
+}
+
+.combinatorial-workspace {
+  display: grid;
+  grid-template-columns: minmax(18rem, 1fr) minmax(16rem, 24rem);
+  gap: 1rem;
+  align-items: start;
+}
+
+.combinatorial-schema-panel,
+.combinatorial-options-panel,
+.combinatorial-results {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.combinatorial-label,
+.combinatorial-strategy-fieldset legend {
+  font-weight: 700;
+}
+
+.combinatorial-schema-editor {
+  width: 100%;
+  min-height: 24rem;
+  resize: vertical;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--panel-bg);
+  color: var(--page-text);
+  font:
+    0.95rem/1.4 ui-monospace,
+    SFMono-Regular,
+    Consolas,
+    monospace;
+}
+
+.combinatorial-options-panel select,
+.combinatorial-generate-button {
+  width: 100%;
+}
+
+.combinatorial-strategy-fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+}
+
+.combinatorial-strategy-checkboxes {
+  display: grid;
+  gap: 0.5rem;
+  max-height: 22rem;
+  overflow: auto;
+}
+
+.combinatorial-strategy-checkbox {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.15rem 0.5rem;
+  align-items: start;
+  padding: 0.55rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--panel-bg);
+}
+
+.combinatorial-strategy-checkbox input {
+  margin-top: 0.2rem;
+}
+
+.combinatorial-strategy-name {
+  font-weight: 700;
+}
+
+.combinatorial-strategy-description {
+  grid-column: 2;
+  line-height: 1.35;
+}
+
+.combinatorial-status {
+  min-height: 1.4rem;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.combinatorial-status[data-severity='error'],
+.combinatorial-error {
+  color: #9c1f1f;
+}
+
+.combinatorial-status[data-severity='success'] {
+  color: #23784d;
+}
+
+.combinatorial-results {
+  margin-top: 1.25rem;
+}
+
+.combinatorial-table-wrapper {
+  width: 100%;
+  overflow: auto;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+}
+
+.combinatorial-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--panel-bg);
+}
+
+.combinatorial-table th,
+.combinatorial-table td {
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid var(--border-color);
+  text-align: left;
+  vertical-align: top;
+}
+
+.combinatorial-table th {
+  font-weight: 700;
+  background: rgba(35, 120, 77, 0.08);
+}
+
+.combinatorial-data-table td,
+.combinatorial-data-table th {
+  white-space: nowrap;
+}
+
+.combinatorial-run-details {
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--panel-bg);
+}
+
+.combinatorial-run-details summary {
+  padding: 0.7rem 0.8rem;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.combinatorial-run-details[open] summary {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.combinatorial-run-details > .combinatorial-table-wrapper,
+.combinatorial-run-details > p {
+  margin: 0.75rem;
+}
+
+@media (max-width: 820px) {
+  .combinatorial-workspace {
+    grid-template-columns: 1fr;
+  }
+}
+
 .shared-schema-footer,
 .generator-schema-footer {
   margin-top: 0.6rem;

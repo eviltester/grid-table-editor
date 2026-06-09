@@ -95,6 +95,6 @@ export const Generator = {
     const canvas = within(canvasElement);
     await expect(canvas.getByText('Data Generator Instructions')).toBeVisible();
     await expect(canvas.queryByRole('button', { name: 'Copy Instructions To Grid' })).toBeNull();
-    await expect(canvas.getByText(/Generate Pairwise combinations/i)).toBeVisible();
+    await expect(canvas.getByText(/Generate Combinations with n-wise coverage/i)).toBeVisible();
   },
 };

@@ -231,6 +231,8 @@ describe('generator page runtime factories', () => {
     expect(typeof page.previewData).toBe('function');
     expect(typeof page.generateDataFile).toBe('function');
     expect(typeof page.generateAllPairsDataFile).toBe('function');
+    expect(typeof page.openGenerateCombinationsDialog).toBe('function');
+    expect(typeof page.generateCombinationsDataFile).toBe('function');
     expect(typeof page.updateAllPairsButtonVisibility).toBe('function');
     expect(typeof page.getSelectedOutputType).toBe('function');
     expect(typeof page.syncGeneratorControlsFormatStateIfChanged).toBe('function');
@@ -862,12 +864,16 @@ describe('generator page runtime factories', () => {
     const previewData = jest.fn();
     const generateDataFile = jest.fn(async () => {});
     const generateAllPairsDataFile = jest.fn(async () => {});
+    const openGenerateCombinationsDialog = jest.fn();
+    const generateCombinationsDataFile = jest.fn(async () => {});
     const updateAllPairsButtonVisibility = jest.fn(() => true);
     page.generatorRuntimeActions = {
       applyCurrentTypeOptions,
       previewData,
       generateDataFile,
       generateAllPairsDataFile,
+      openGenerateCombinationsDialog,
+      generateCombinationsDataFile,
       updateAllPairsButtonVisibility,
     };
 
@@ -875,12 +881,16 @@ describe('generator page runtime factories', () => {
     page.previewData();
     await page.generateDataFile();
     await page.generateAllPairsDataFile();
+    page.openGenerateCombinationsDialog();
+    await page.generateCombinationsDataFile({ strength: 3, algorithm: 'greedy' });
     expect(page.updateAllPairsButtonVisibility()).toBe(true);
 
     expect(applyCurrentTypeOptions).toHaveBeenCalledWith({ outputFormat: 'json' });
     expect(previewData).toHaveBeenCalledTimes(1);
     expect(generateDataFile).toHaveBeenCalledTimes(1);
     expect(generateAllPairsDataFile).toHaveBeenCalledTimes(1);
+    expect(openGenerateCombinationsDialog).toHaveBeenCalledTimes(1);
+    expect(generateCombinationsDataFile).toHaveBeenCalledWith({ strength: 3, algorithm: 'greedy' });
     expect(updateAllPairsButtonVisibility).toHaveBeenCalledTimes(1);
   });
 

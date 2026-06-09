@@ -1,6 +1,6 @@
 import { EnumTestDataRuleValidator } from '../../../js/data_generation/enum/enumTestDataRuleValidator.js';
 import { TestDataRule } from '../../../js/data_generation/testDataRule.js';
-import { PairwiseTestDataGenerator } from '../../../js/data_generation/all-pairs/pairwiseTestDataGenerator.js';
+import { PairwiseTestDataGenerator } from '../../../js/data_generation/n-wise/pairwiseTestDataGenerator.js';
 import { EnumParser } from '../../../js/data_generation/utils/enumParser.js';
 import { assertNoCommonErrorPatternsInRows } from '../utils/outputQualityAssertions.js';
 

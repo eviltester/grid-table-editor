@@ -1,7 +1,7 @@
 /*
  * Responsibilities:
  * - Shared runtime helpers for generated value normalization and table construction.
- * - Shared pairwise generation adapter used by app and generator page flows.
+ * - Shared pairwise and n-wise generation adapters used by app and generator page flows.
  * - Shared parsing for non-negative count inputs.
  */
 
@@ -74,6 +74,44 @@ function createPairwiseTableFromGenerator({
   }
 }
 
+function createCombinationsTableFromGenerator({
+  generator,
+  CombinationsTestDataGeneratorClass,
+  GenericDataTableClass,
+  faker,
+  RandExp,
+  options = {},
+}) {
+  try {
+    const combinationsGenerator = new CombinationsTestDataGeneratorClass(faker, RandExp);
+    const initResult = combinationsGenerator.initializeFromRules(generator.testDataRules(), options);
+
+    if (initResult.isError) {
+      console.error('Combinations initialization error:', initResult.errorMessage);
+      return null;
+    }
+
+    const dataResult = combinationsGenerator.generateAllDataRecordsAsRows();
+    if (dataResult.isError) {
+      console.error('Combinations generation error:', dataResult.errorMessage);
+      return null;
+    }
+
+    const dataTable = new GenericDataTableClass();
+    const [headers, ...rows] = dataResult.data.data;
+    dataTable.setHeaders(headers);
+    rows.forEach((row) => {
+      dataTable.appendDataRow(row);
+    });
+
+    dataTable.__combinationStats = dataResult.data.stats || null;
+    return dataTable;
+  } catch (error) {
+    console.error('Combinations table creation error:', error);
+    return null;
+  }
+}
+
 function parseNonNegativeCount(value, { min = 0, max = null } = {}) {
   const parsed = Number.parseInt(value, 10);
   if (!Number.isFinite(parsed)) {
@@ -91,5 +129,6 @@ export {
   normaliseGeneratedRow,
   createTableFromGenerator,
   createPairwiseTableFromGenerator,
+  createCombinationsTableFromGenerator,
   parseNonNegativeCount,
 };

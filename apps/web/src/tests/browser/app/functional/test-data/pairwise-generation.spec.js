@@ -3,6 +3,25 @@ const { openApp, expectNoPageErrors, expect } = require('../../abstractions/help
 const { assertStrictBooleanCell } = require('../../../shared/helpers/boolean-assertions');
 
 test.describe('7. Test Data Generation', () => {
+  test('Generate Combinations dialog cancel leaves the grid unchanged', async ({ page }) => {
+    const { appPage, pageErrors } = await openApp(page);
+
+    await appPage.testDataPanel.expand();
+    await appPage.testDataPanel.expectExpanded();
+
+    await appPage.testDataPanel.setSchemaText(
+      'Browser\nenum(chrome,firefox,safari)\n\nPlan\nenum(free,pro,enterprise)\n\nFixed\nliteral(CONSTANT)'
+    );
+
+    const initialRowCount = await appPage.gridEditor.renderer.countRows();
+
+    await appPage.testDataPanel.openGenerateCombinationsDialog();
+    await appPage.testDataPanel.cancelGenerateCombinationsDialog();
+
+    await expect.poll(async () => appPage.gridEditor.renderer.countRows()).toBe(initialRowCount);
+    expectNoPageErrors(pageErrors);
+  });
+
   test('Pairwise generation covers all enum combinations with valid values', async ({ page }) => {
     const { appPage, pageErrors } = await openApp(page);
 
@@ -57,6 +76,47 @@ test.describe('7. Test Data Generation', () => {
 
     expect(actualEnumPairs).toEqual(expectedEnumPairs);
     expect(observedBooleanValues).toEqual(new Set(['true', 'false']));
+    expectNoPageErrors(pageErrors);
+  });
+
+  test('Generate Combinations dialog can use a different strategy and strength', async ({ page }) => {
+    const { appPage, pageErrors } = await openApp(page);
+
+    await appPage.testDataPanel.expand();
+    await appPage.testDataPanel.expectExpanded();
+
+    await appPage.testDataPanel.setSchemaText(
+      'Browser\nenum(chrome,firefox,safari)\n\nPlan\nenum(free,pro,enterprise)\n\nRegion\nenum(amer,emea,apac)\n\nFixed\nliteral(CONSTANT)'
+    );
+
+    await appPage.testDataPanel.openGenerateCombinationsDialog();
+    await appPage.testDataPanel.setCombinationStrength(3);
+    await appPage.testDataPanel.chooseCombinationStrategy('Cartesian Product');
+    await appPage.testDataPanel.submitGenerateCombinationsDialog();
+
+    await expect.poll(async () => appPage.gridEditor.renderer.countRows()).toBe(27);
+
+    const browserValues = await appPage.gridEditor.renderer.getColumnTextsByName('Browser');
+    const planValues = await appPage.gridEditor.renderer.getColumnTextsByName('Plan');
+    const regionValues = await appPage.gridEditor.renderer.getColumnTextsByName('Region');
+    const fixedValues = await appPage.gridEditor.renderer.getColumnTextsByName('Fixed');
+
+    const expectedTriples = new Set();
+    ['chrome', 'firefox', 'safari'].forEach((browser) => {
+      ['free', 'pro', 'enterprise'].forEach((plan) => {
+        ['amer', 'emea', 'apac'].forEach((region) => {
+          expectedTriples.add(`${browser}|${plan}|${region}`);
+        });
+      });
+    });
+
+    const actualTriples = new Set();
+    for (let i = 0; i < browserValues.length; i += 1) {
+      expect(fixedValues[i]).toBe('CONSTANT');
+      actualTriples.add(`${browserValues[i]}|${planValues[i]}|${regionValues[i]}`);
+    }
+
+    expect(actualTriples).toEqual(expectedTriples);
     expectNoPageErrors(pageErrors);
   });
 });

@@ -35,7 +35,8 @@ describe('PopulationActions', () => {
       props: {
         pairwiseVisible: false,
         generateHelpHtml: '<p>Generate to grid.</p>',
-        generatePairwiseHelpHtml: '<p>Generate pairwise to grid.</p>',
+        generatePairwiseLabel: 'Generate Combinations',
+        generatePairwiseHelpHtml: '<p>Generate n-wise combinations to grid.</p>',
         statusVisible: true,
       },
       callbacks: {
@@ -59,7 +60,8 @@ describe('PopulationActions', () => {
     expect(document.getElementById('testdata-status')).toBeNull();
     expect(helpButtons).toHaveLength(2);
     expect(helpButtons[0].getAttribute('data-help-text')).toContain('Generate to grid.');
-    expect(helpButtons[1].getAttribute('data-help-text')).toContain('Generate pairwise to grid.');
+    expect(generatePairwiseButton.textContent).toContain('Generate Combinations');
+    expect(helpButtons[1].getAttribute('data-help-text')).toContain('Generate n-wise combinations to grid.');
     expect(generateButton.querySelector('svg.shared-file-action-icon')).not.toBeNull();
     expect(generatePairwiseButton.querySelector('svg.shared-file-action-icon')).not.toBeNull();
 

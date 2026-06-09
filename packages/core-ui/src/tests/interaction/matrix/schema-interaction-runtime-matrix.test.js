@@ -20,7 +20,7 @@ import RandExp from 'randexp';
 import { TestDataGenerator } from '@anywaydata/core/data_generation/testDataGenerator.js';
 import { Exporter } from '@anywaydata/core/grid/exporter.js';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
-import { PairwiseTestDataGenerator } from '@anywaydata/core/data_generation/all-pairs/pairwiseTestDataGenerator.js';
+import { PairwiseTestDataGenerator } from '@anywaydata/core/data_generation/n-wise/pairwiseTestDataGenerator.js';
 import {
   schemaTextToDataRules,
   dataRulesToSchemaText,

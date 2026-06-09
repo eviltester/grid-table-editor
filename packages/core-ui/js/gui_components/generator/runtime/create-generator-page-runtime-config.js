@@ -60,7 +60,7 @@ function createGeneratorPageRuntimeConfig({ runtime } = {}) {
           void runtime.generateDataFile();
         },
         onGeneratePairwise: () => {
-          void runtime.generateAllPairsDataFile();
+          runtime.openGenerateCombinationsDialog();
         },
       },
       generatorPreview: {

@@ -172,6 +172,113 @@ describe('test-data-generation-service', () => {
     expect(setGeneratePairwiseBusy.mock.calls).toEqual([[true], [false]]);
   });
 
+  test('generateCombinationsTestData validates enum availability and applies the generated table', async () => {
+    const validateCurrentSchemaRows = jest.fn(() => ({
+      errors: [],
+      rows: [
+        { name: 'Status', sourceType: 'enum', value: 'active,inactive,pending' },
+        { name: 'Type', sourceType: 'enum', value: 'admin,user' },
+        { name: 'Priority', sourceType: 'enum', value: 'high,low' },
+      ],
+    }));
+    const setTestDataLoadingStatus = jest.fn();
+    const setTestDataStatus = jest.fn();
+    const setGeneratePairwiseBusy = jest.fn();
+    const importer = { setGridFromGenericDataTable: jest.fn(() => Promise.resolve()) };
+
+    const generator = {
+      importSpec: jest.fn(),
+      compile: jest.fn(),
+      compiler: { validate: jest.fn() },
+      testDataRules: () => [{ type: 'enum' }, { type: 'enum' }, { type: 'enum' }],
+      isValid: () => true,
+      errors: () => [],
+    };
+
+    const service = createTestDataGenerationService({
+      TestDataGeneratorClass: function TestDataGeneratorClass() {
+        return generator;
+      },
+      PairwiseTestDataGeneratorClass: class {},
+      CombinationsTestDataGeneratorClass: class FakeCombinationsTestDataGenerator {
+        initializeFromRules(_rules, options) {
+          this.options = options;
+          return { isError: false };
+        }
+        generateAllDataRecordsAsRows() {
+          return {
+            isError: false,
+            data: {
+              data: [
+                ['Status', 'Type', 'Priority'],
+                ['active', 'admin', 'high'],
+                ['inactive', 'user', 'low'],
+              ],
+            },
+          };
+        }
+      },
+      GenericDataTableClass: class FakeGenericDataTable {
+        constructor() {
+          this.headers = [];
+          this.rows = [];
+        }
+        setHeaders(headers) {
+          this.headers = headers;
+        }
+        appendDataRow(row) {
+          this.rows.push(row);
+        }
+        getRowCount() {
+          return this.rows.length;
+        }
+      },
+      TEST_DATA_MODES: {
+        NEW_TABLE: 'new-table',
+        AMEND_TABLE: 'amend-table',
+        AMEND_SELECTED: 'amend-selected',
+      },
+      normaliseCount: () => 3,
+      createTableFromGenerator: jest.fn(),
+      createAmendedTable: jest.fn(),
+      schemaRowsToSpec: jest.fn(
+        () => 'Status\nenum(active,inactive,pending)\nType\nenum(admin,user)\nPriority\nenum(high,low)'
+      ),
+      faker: {},
+      RandExp: function RandExp() {},
+      debouncer: { clear: jest.fn() },
+      syncSchemaTextFromGridBeforeGenerate: jest.fn(),
+      setTestDataStatus,
+      setTestDataLoadingStatus,
+      showSchemaError: jest.fn(),
+      yieldToUi: jest.fn(() => Promise.resolve()),
+      validateCurrentSchemaRows,
+      getImporter: () => importer,
+      getTextPreviewRenderer: () => ({
+        getState: () => ({ mode: 'preview', autoPreviewEnabled: true }),
+        renderTextFromGrid: jest.fn(() => Promise.resolve()),
+      }),
+      getMainGridExtras: jest.fn(),
+      getGenerationMode: () => 'new-table',
+      setGeneratePairwiseBusy,
+    });
+
+    await service.generateCombinationsTestData({ strength: 2, algorithm: 'greedy' });
+
+    expect(validateCurrentSchemaRows).toHaveBeenCalledTimes(2);
+    expect(setTestDataLoadingStatus.mock.calls).toEqual([
+      ['Generating 2-wise combinations...'],
+      ['Applying data to grid...'],
+    ]);
+    expect(setGeneratePairwiseBusy.mock.calls).toEqual([[true], [false]]);
+    expect(importer.setGridFromGenericDataTable).toHaveBeenCalledTimes(1);
+    expect(setTestDataStatus).toHaveBeenCalledWith('Generated 2 2-wise combinations. Grid and preview updated.', {
+      dismissable: true,
+    });
+    expect(service.countEnumColumns()).toBe(3);
+    expect(service.getEnumValueCounts()).toEqual([3, 2, 2]);
+  });
+
   test('generateTestData refreshes the text preview automatically after a successful grid update when auto preview is enabled', async () => {
     const renderTextFromGrid = jest.fn(() => Promise.resolve());
     const setTestDataLoadingStatus = jest.fn();

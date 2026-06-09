@@ -1,4 +1,4 @@
-import { PairwiseTestDataGenerator } from '@anywaydata/core/data_generation/all-pairs/pairwiseTestDataGenerator.js';
+import { PairwiseTestDataGenerator } from '@anywaydata/core/data_generation/n-wise/pairwiseTestDataGenerator.js';
 import { TestDataRule } from '@anywaydata/core/data_generation/testDataRule.js';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 import { assertNoCommonErrorPatternsInRows } from '../utils/outputQualityAssertions.js';

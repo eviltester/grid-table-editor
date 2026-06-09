@@ -127,7 +127,7 @@ describe('GeneratorControlsView', () => {
     expect(helpButtons.map((element) => element.getAttribute('data-help-text'))).toEqual(
       expect.arrayContaining([
         expect.stringContaining('Generate data for the current schema and output format to a file.'),
-        expect.stringContaining('Generate pairwise data from the current schema to a file.'),
+        expect.stringContaining('Generate n-wise combinations from enum columns in the current schema.'),
       ])
     );
     expect(getGenerateDataButton(dom.window.document).querySelector('svg.shared-file-action-icon')).not.toBeNull();

@@ -1,5 +1,5 @@
-import { PairwiseGenerator } from '@anywaydata/core/data_generation/all-pairs/pairwiseGenerator.js';
-import { PairwiseTestDataGenerator } from '@anywaydata/core/data_generation/all-pairs/pairwiseTestDataGenerator.js';
+import { PairwiseGenerator } from '@anywaydata/core/data_generation/n-wise/pairwiseGenerator.js';
+import { PairwiseTestDataGenerator } from '@anywaydata/core/data_generation/n-wise/pairwiseTestDataGenerator.js';
 import { TestDataRule, RuleType } from '@anywaydata/core/data_generation/testDataRule.js';
 import { faker } from '@faker-js/faker';
 import {
@@ -94,6 +94,48 @@ describe('Pairwise Combinatorial Matching Data Generation', () => {
       expect(aPairs.has('A1:B2')).toBe(true);
       expect(aPairs.has('A2:B1')).toBe(true);
       expect(aPairs.has('A2:B2')).toBe(true);
+    });
+
+    test('should score only real target pairs for partial records', () => {
+      const parameters = [
+        { name: 'A', values: ['A1', 'A2'] },
+        { name: 'B', values: ['B1', 'B2'] },
+        { name: 'C', values: ['C1', 'C2'] },
+      ];
+
+      const generator = new PairwiseGenerator(parameters);
+
+      expect(generator.calculateCoverageScore(new Map([['A', 'A1']]))).toBe(0);
+      expect(
+        generator.calculateCoverageScore(
+          new Map([
+            ['A', 'A1'],
+            ['B', 'B1'],
+          ])
+        )
+      ).toBe(1);
+    });
+
+    test('should not add invalid or missing values to coverage totals', () => {
+      const parameters = [
+        { name: 'A', values: ['A1', 'A2'] },
+        { name: 'B', values: ['B1', 'B2'] },
+      ];
+
+      const generator = new PairwiseGenerator(parameters);
+
+      generator.updateCoverage(new Map([['A', 'A1']]));
+      generator.updateCoverage(
+        new Map([
+          ['A', 'A1'],
+          ['B', 'not-a-real-value'],
+        ])
+      );
+
+      expect(generator.getCoverageStats()).toMatchObject({
+        totalPairs: 4,
+        coveredPairs: 0,
+      });
     });
 
     test('should handle large parameter spaces efficiently', () => {

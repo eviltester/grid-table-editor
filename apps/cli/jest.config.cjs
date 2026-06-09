@@ -4,5 +4,5 @@ module.exports = {
   transform: {
     '^.+\\.js$': 'babel-jest',
   },
-  testMatch: ['<rootDir>/src/tests/**/*.test.js'],
+  testRegex: 'src[/\\\\]tests[/\\\\].*\\.test\\.js$',
 };

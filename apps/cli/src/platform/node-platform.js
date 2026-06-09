@@ -1,18 +1,28 @@
 import fs from 'node:fs/promises';
 import { createWriteStream } from 'node:fs';
+import { applyExportTextEncoding, resolveExportTextEncodingSettings } from '@anywaydata/core';
 
 export function createNodePlatform() {
   return {
     name: 'node',
+    getRuntimePlatform() {
+      return process.platform;
+    },
     async readText(path) {
       return fs.readFile(path, 'utf8');
     },
-    async writeText(path, content) {
-      await fs.writeFile(path, content, 'utf8');
+    async writeText(path, content, exportEncodingSettings = {}) {
+      const encodedContent = applyExportTextEncoding(content, exportEncodingSettings, { platform: process.platform });
+      await fs.writeFile(path, encodedContent, 'utf8');
     },
-    createLineWriter(path) {
+    createLineWriter(path, exportEncodingSettings = {}) {
+      const resolvedEncodingSettings = resolveExportTextEncodingSettings(exportEncodingSettings, {
+        platform: process.platform,
+      });
+      const lineSuffix = resolvedEncodingSettings.lineEnding === 'crlf' ? '\r\n' : '\n';
       const stream = createWriteStream(path, { encoding: 'utf8' });
       let streamError = null;
+      let wroteBom = false;
       stream.on('error', (error) => {
         streamError = error;
       });
@@ -22,7 +32,9 @@ export function createNodePlatform() {
             throw streamError;
           }
           await new Promise((resolve, reject) => {
-            const ok = stream.write(`${line}\n`);
+            const prefix = !wroteBom && resolvedEncodingSettings.includeBom ? '\uFEFF' : '';
+            const ok = stream.write(`${prefix}${String(line ?? '')}${lineSuffix}`);
+            wroteBom = true;
             if (ok) {
               resolve();
               return;

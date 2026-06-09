@@ -23,6 +23,7 @@ describe('GeneratorControlsController', () => {
     expect(controller.getState()).toEqual({
       selectedFormat: 'json',
       currentOptions: { options: { prettyPrint: true } },
+      exportEncodingSettings: { lineEnding: 'lf', includeBom: false },
       pairwiseVisible: true,
       generationButtonsBusy: false,
       statusMessage: '',
@@ -70,6 +71,7 @@ describe('GeneratorControlsController', () => {
     expect(controller.getState()).toEqual({
       selectedFormat: 'json',
       currentOptions: { options: { prettyPrint: true } },
+      exportEncodingSettings: { lineEnding: 'lf', includeBom: false },
       pairwiseVisible: true,
       generationButtonsBusy: false,
       statusMessage: '',
@@ -106,6 +108,17 @@ describe('GeneratorControlsController', () => {
 
     controller.setGenerationButtonsBusy(false);
     expect(controller.getState().generationButtonsBusy).toBe(false);
+  });
+
+  test('supports explicit export encoding updates', () => {
+    const controller = new GeneratorControlsController();
+
+    controller.setExportEncodingSettings({ lineEnding: 'crlf', includeBom: true });
+
+    expect(controller.getState().exportEncodingSettings).toEqual({
+      lineEnding: 'crlf',
+      includeBom: true,
+    });
   });
 
   test('tracks explicit status and loading state', () => {

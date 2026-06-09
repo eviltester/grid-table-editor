@@ -41,6 +41,11 @@ function createImportExportWorkspaceWorkflowService({
     render();
   };
 
+  const updateExportEncodingSettings = (nextSettings = {}) => {
+    controller.setExportEncodingSettings(nextSettings);
+    render();
+  };
+
   const showError = (message) => {
     const text = String(message ?? '').trim();
     if (!text) {
@@ -111,6 +116,7 @@ function createImportExportWorkspaceWorkflowService({
     ...fileTransferWorkflow,
     setTextFromString,
     syncSupportState,
+    updateExportEncodingSettings,
   };
 }
 

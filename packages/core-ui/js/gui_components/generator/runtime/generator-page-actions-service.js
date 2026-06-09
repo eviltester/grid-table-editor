@@ -51,6 +51,7 @@ function createGeneratorPageActionsService({ runtime, DownloadClass, faker, Rand
         setGenerationButtonBusy: (isBusy) => getResolvedViewState()?.setGenerationButtonsBusy?.(isBusy),
         setGenerationStatus: (message, options) => getResolvedViewState()?.setGenerationStatus?.(message, options),
         showGenerationLoadingStatus: (message) => getResolvedViewState()?.showGenerationLoadingStatus?.(message),
+        getExportEncodingSettings: () => getResolvedViewState()?.getExportEncodingSettings?.(),
         buildDataTable: (generator, rowCount) => buildPreviewDataTable({ generator, rowCount }),
         DownloadClass,
         surfacePageError: (message, options) => getResolvedSchemaRuntime()?.surfacePageError?.(message, options),
@@ -69,6 +70,7 @@ function createGeneratorPageActionsService({ runtime, DownloadClass, faker, Rand
         setGenerationButtonBusy: (isBusy) => getResolvedViewState()?.setGenerationButtonsBusy?.(isBusy),
         setGenerationStatus: (message, options) => getResolvedViewState()?.setGenerationStatus?.(message, options),
         showGenerationLoadingStatus: (message) => getResolvedViewState()?.showGenerationLoadingStatus?.(message),
+        getExportEncodingSettings: () => getResolvedViewState()?.getExportEncodingSettings?.(),
         buildAllPairsDataTable: (generator) =>
           buildPairwiseDataTable({
             generator,

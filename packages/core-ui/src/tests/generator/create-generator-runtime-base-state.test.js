@@ -36,11 +36,16 @@ describe('createGeneratorPageBaseState', () => {
       documentObj,
       faker,
       RandExp,
+      windowObj: undefined,
       TabulatorCtor: FakeTabulator,
       GridExtensionClass: FakeGridExtension,
       ExporterClass: FakeExporter,
       DownloadClass: FakeDownload,
       TestDataGeneratorClass: TestDataGenerator,
+      defaultExportEncodingSettings: {
+        lineEnding: 'crlf',
+        includeBom: false,
+      },
     });
   });
 

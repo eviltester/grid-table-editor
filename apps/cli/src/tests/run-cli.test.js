@@ -8,23 +8,26 @@ function makePlatform({ textSpec = 'Name\nBob', shouldThrowRead = false } = {}) 
     writes,
     out,
     err,
+    getRuntimePlatform() {
+      return 'linux';
+    },
     async readText() {
       if (shouldThrowRead) {
         throw new Error('missing file');
       }
       return textSpec;
     },
-    async writeText(path, content) {
-      writes.push({ path, content });
+    async writeText(path, content, exportEncodingSettings) {
+      writes.push({ path, content, exportEncodingSettings });
     },
-    createLineWriter() {
+    createLineWriter(_path, exportEncodingSettings) {
       const lines = [];
       return {
         async writeLine(line) {
           lines.push(line);
         },
         async close() {
-          writes.push({ path: 'stream', content: lines.join('\n') });
+          writes.push({ path: 'stream', content: lines.join('\n'), exportEncodingSettings });
         },
       };
     },
@@ -76,6 +79,10 @@ test('writes output file in buffered mode', async () => {
   expect(code).toBe(0);
   expect(platform.writes.length).toBe(1);
   expect(platform.writes[0].path).toBe('out.csv');
+  expect(platform.writes[0].exportEncodingSettings).toEqual({
+    lineEnding: 'lf',
+    includeBom: false,
+  });
 });
 
 test('returns error when stream writer fails', async () => {
@@ -126,6 +133,58 @@ test('ignores stream mode when pairwise is requested', async () => {
   expect(platform.err.join('')).toBe('');
   expect(platform.writes.length).toBe(1);
   expect(platform.writes[0].path).toBe('out.csv');
+});
+
+test('passes explicit export encoding settings to buffered file output', async () => {
+  const platform = makePlatform();
+  const code = await runCliCommand({
+    platform,
+    options: {
+      inputFile: 'spec.txt',
+      outputFile: 'out.csv',
+      format: 'csv',
+      rowCount: 2,
+      testMode: false,
+      showProgress: false,
+      shouldStream: false,
+      lineEndings: 'crlf',
+      bom: true,
+      unsafeFakerExpressions: false,
+      pairwise: false,
+    },
+  });
+
+  expect(code).toBe(0);
+  expect(platform.writes[0].exportEncodingSettings).toEqual({
+    lineEnding: 'crlf',
+    includeBom: true,
+  });
+});
+
+test('passes explicit export encoding settings to streaming file output', async () => {
+  const platform = makePlatform();
+  const code = await runCliCommand({
+    platform,
+    options: {
+      inputFile: 'spec.txt',
+      outputFile: 'out.csv',
+      format: 'csv',
+      rowCount: 2,
+      testMode: false,
+      showProgress: false,
+      shouldStream: true,
+      lineEndings: 'crlf',
+      bom: true,
+      unsafeFakerExpressions: false,
+      pairwise: false,
+    },
+  });
+
+  expect(code).toBe(0);
+  expect(platform.writes[0].exportEncodingSettings).toEqual({
+    lineEnding: 'crlf',
+    includeBom: true,
+  });
 });
 
 test('reports warning in test mode when stream mode is ignored for pairwise', async () => {

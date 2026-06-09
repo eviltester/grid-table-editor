@@ -10,6 +10,10 @@ class ImportExportToolbarController {
       supportsClipboardImport: props.supportsClipboardImport !== false,
       supportsExport: props.supportsExport !== false,
       fileExtension: props.fileExtension || '.csv',
+      exportEncodingSettings: {
+        lineEnding: props.exportEncodingSettings?.lineEnding || 'lf',
+        includeBom: props.exportEncodingSettings?.includeBom === true,
+      },
       importStatusMessage: props.importStatusMessage || '',
       importStatusLoading: props.importStatusLoading === true,
       exportStatusMessage: props.exportStatusMessage || '',
@@ -49,6 +53,13 @@ class ImportExportToolbarController {
     }
     if (Object.prototype.hasOwnProperty.call(nextProps, 'fileExtension')) {
       this.state.fileExtension = nextProps.fileExtension || '.csv';
+    }
+    if (Object.prototype.hasOwnProperty.call(nextProps, 'exportEncodingSettings')) {
+      this.state.exportEncodingSettings = {
+        ...this.state.exportEncodingSettings,
+        ...(nextProps.exportEncodingSettings || {}),
+        includeBom: nextProps.exportEncodingSettings?.includeBom === true,
+      };
     }
     if (Object.prototype.hasOwnProperty.call(nextProps, 'importStatusMessage')) {
       this.state.importStatusMessage = nextProps.importStatusMessage || '';

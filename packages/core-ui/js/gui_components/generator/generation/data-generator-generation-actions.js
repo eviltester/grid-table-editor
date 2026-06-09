@@ -4,6 +4,7 @@
  * - Wraps shared generation helpers so generator UI can stay thin.
  */
 
+import { applyExportTextEncoding } from '@anywaydata/core';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 import { PairwiseTestDataGenerator } from '@anywaydata/core/data_generation/all-pairs/pairwiseTestDataGenerator.js';
 import { schemaErrorsToText } from '../../shared/test-data/schema/schema-error-text.js';
@@ -90,7 +91,14 @@ function renderGeneratorOutputPreview({ getSelectedOutputType, getPreviewDataTab
   }
 }
 
-async function exportDataTableToDownload({ type, dataTable, exporter, DownloadClass, showGenerationLoadingStatus }) {
+async function exportDataTableToDownload({
+  type,
+  dataTable,
+  exporter,
+  DownloadClass,
+  showGenerationLoadingStatus,
+  exportEncodingSettings,
+}) {
   let text = '';
   if (typeof exporter.getDataTableAsAsync === 'function') {
     text = await exporter.getDataTableAsAsync(type, dataTable, (message) => {
@@ -104,7 +112,7 @@ async function exportDataTableToDownload({ type, dataTable, exporter, DownloadCl
 
   const filename = dataTable.__generatorFilename;
   const downloader = new DownloadClass(filename);
-  downloader.downloadFile(text);
+  downloader.downloadFile(applyExportTextEncoding(text, exportEncodingSettings));
   return { filename };
 }
 
@@ -177,6 +185,7 @@ async function generateGeneratorDataFile({
   setGenerationButtonBusy,
   setGenerationStatus,
   showGenerationLoadingStatus,
+  getExportEncodingSettings,
   buildDataTable,
   DownloadClass,
   surfacePageError,
@@ -215,6 +224,7 @@ async function generateGeneratorDataFile({
       exporter,
       DownloadClass,
       showGenerationLoadingStatus,
+      exportEncodingSettings: getExportEncodingSettings?.(),
     });
     setGenerationStatus(`Download ready: ${filename}`);
     scheduleClearGenerationStatus();
@@ -236,6 +246,7 @@ async function generateGeneratorAllPairsDataFile({
   setGenerationButtonBusy,
   setGenerationStatus,
   showGenerationLoadingStatus,
+  getExportEncodingSettings,
   buildAllPairsDataTable,
   DownloadClass,
   surfacePageError,
@@ -279,6 +290,7 @@ async function generateGeneratorAllPairsDataFile({
       exporter,
       DownloadClass,
       showGenerationLoadingStatus,
+      exportEncodingSettings: getExportEncodingSettings?.(),
     });
     setGenerationStatus(`Download ready: ${filename} (${dataTable.getRowCount()} combinations)`);
     scheduleClearGenerationStatus();

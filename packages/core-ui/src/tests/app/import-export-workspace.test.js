@@ -237,7 +237,14 @@ describe('ImportExportWorkspace', () => {
 
     fireEvent.click(documentObj.querySelector('#filedownload'));
 
-    await waitFor(() => expect(downloadService.downloadText).toHaveBeenCalledWith('export.csv', 'full:csv'));
+    await waitFor(() =>
+      expect(downloadService.downloadText).toHaveBeenCalledWith('export.csv', 'full:csv', {
+        exportEncodingSettings: {
+          lineEnding: 'crlf',
+          includeBom: false,
+        },
+      })
+    );
     expect(documentObj.querySelector('#export-progress-status').textContent).toBe('Download started.');
 
     component.destroy();

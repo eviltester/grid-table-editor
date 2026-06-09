@@ -13,12 +13,20 @@ import {
   createYieldToUi,
   scheduleTimeout,
 } from './import-export-workspace-services.js';
+import { resolveDefaultBrowserExportEncodingSettings } from '../../shared/export-encoding-settings.js';
 import { ImportExportWorkspaceController } from './import-export-workspace-controller.js';
 import { ImportExportWorkspaceView } from './import-export-workspace-view.js';
 import { createImportExportWorkspaceWorkflowService } from './create-import-export-workspace-workflow-service.js';
 
 function createImportExportWorkspaceRuntime({ root, props = {}, services = {}, documentObj, windowObj } = {}) {
-  const controller = new ImportExportWorkspaceController({ props });
+  const defaultExportEncodingSettings =
+    props.exportEncodingSettings || resolveDefaultBrowserExportEncodingSettings({ documentObj, windowObj });
+  const controller = new ImportExportWorkspaceController({
+    props: {
+      ...props,
+      exportEncodingSettings: defaultExportEncodingSettings,
+    },
+  });
   const confirmDialogService = createConfirmDialogService({ documentObj });
   const requestConfirm =
     typeof services.requestConfirm === 'function' ? services.requestConfirm : confirmDialogService.requestConfirm;
@@ -92,6 +100,7 @@ function createImportExportWorkspaceRuntime({ root, props = {}, services = {}, d
       onSetTextFromGrid: workflow.renderTextFromGrid,
       onSetGridFromText: workflow.importTextArea,
       onDownload: workflow.fileDownload,
+      onExportEncodingSettingsChange: workflow.updateExportEncodingSettings,
       onFileSelected: workflow.loadFile,
       onImportFromClipboard: workflow.importFromClipboard,
       onApplyOptions: ({ sanitized }) => {

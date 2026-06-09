@@ -549,6 +549,7 @@ Use this backlog when the next migration step should be chosen from the reviewer
 - [x] Split the generator output-format dropdown from `GeneratorControlsView` into a focused `GeneratorOutputFormatSelector` component with Storybook coverage for core formats, code formats, unit-test formats, and unsupported-format filtering.
 - [ ] Expand `GeneratorControls` Storybook coverage with busy/loading/status states so reviewers can inspect the composed row count, format selector, actions, options panel, and status integration without using the full generator page story.
 - [x] Add a small re-audit note for `TextPreviewEditor` after the options-preview split extraction to decide whether its Preview/Edit controls need a separate toolbar component or whether the current focused story is enough.
+- [x] Add reviewer-facing file export encoding settings coverage for app download controls and generator controls so OS-default line endings and explicit CR/LF+BOM transport settings are documented outside full page stories.
 
 Current status:
 
@@ -566,6 +567,7 @@ Current status:
 - `GeneratorControls` now composes a dedicated `GeneratorOutputFormatSelector` component, and Storybook documents that selector directly through `generator-output-format-selector.stories.js` instead of only through the larger controls surface.
 - The `TextPreviewEditor` re-audit showed that its Preview/Edit controls were still a meaningful visible sub-surface. That cluster is now a dedicated `TextPreviewToolbar` component with its own Storybook docs and focused tests, while `TextPreviewEditor` keeps the textarea and split-layout shell composition.
 - `ImportExportWorkspace` now shows a dedicated grid/preview sync row above a closed-by-default native `Import / Export` details section, leaving Auto Sync, Preview/Edit, row count, format tabs, and text preview outside the collapsible import/export toolbar area.
+- App download controls and generator controls now also expose reviewer-facing file export encoding settings through a small settings disclosure, with Storybook examples covering default OS-derived line endings and explicit Windows CR/LF plus BOM output.
 
 ## Generator Runtime Simplification Follow-On
 

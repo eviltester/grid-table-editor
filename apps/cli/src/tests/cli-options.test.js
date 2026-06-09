@@ -64,3 +64,21 @@ test('amend command options are parsed', () => {
   expect(opts.rowCount).toBe(3);
   expect(opts.shouldStream).toBe(false);
 });
+
+test('export encoding flags are parsed', () => {
+  const opts = parseCliOptions([
+    'node',
+    'cli',
+    'generate',
+    '-i',
+    'spec.txt',
+    '-n',
+    '3',
+    '--line-endings',
+    'crlf',
+    '--bom',
+  ]);
+
+  expect(opts.lineEndings).toBe('crlf');
+  expect(opts.bom).toBe(true);
+});

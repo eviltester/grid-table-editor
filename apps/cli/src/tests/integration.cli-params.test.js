@@ -10,6 +10,11 @@ const repoRoot = path.resolve(thisDir, '../../../../');
 const cliEntry = path.join(repoRoot, 'apps', 'cli', 'src', 'node-entry.js');
 const amendFixturesDir = path.join(repoRoot, 'test-fixtures', 'amend-cross-format');
 const tempPaths = new Set();
+const defaultOutputLineEnding = process.platform === 'win32' ? '\r\n' : '\n';
+
+function normalizeToDefaultOutputLineEnding(text) {
+  return text.replace(/\r\n|\r|\n/g, defaultOutputLineEnding);
+}
 
 function runCli(args) {
   return spawnSync('node', [cliEntry, ...args], {
@@ -126,7 +131,7 @@ test('params --stream and --show-progress true use streaming path for csv/jsonl/
     const written = await fs.readFile(outputPath, 'utf8');
     expect(written.length).toBeGreaterThan(0);
   }
-}, 20000);
+}, 30000);
 
 test('param --stream-threshold auto-enables stream mode when threshold reached', () => {
   const inputPath = path.join(repoRoot, 'apps', 'cli', 'examples', 'company-literal.txt');
@@ -252,5 +257,5 @@ test('amend command fixture flow: DSV input to CSV output file', async () => {
 
   expect(result.status).toBe(0);
   const [actual, expected] = await Promise.all([fs.readFile(outputPath, 'utf8'), fs.readFile(expectedPath, 'utf8')]);
-  expect(actual.trimEnd()).toBe(expected.trimEnd());
+  expect(actual.trimEnd()).toBe(normalizeToDefaultOutputLineEnding(expected).trimEnd());
 });

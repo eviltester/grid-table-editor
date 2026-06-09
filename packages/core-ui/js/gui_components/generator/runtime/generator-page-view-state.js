@@ -41,6 +41,9 @@ function createGeneratorPageViewState({ runtime, createUnavailableRowCountResult
     showGenerationLoadingStatus(message) {
       runtime?.generatorControls?.showLoadingStatus?.(message);
     },
+    getExportEncodingSettings() {
+      return runtime?.generatorControls?.getState?.()?.exportEncodingSettings || runtime?.defaultExportEncodingSettings;
+    },
     setGenerationStatus(message, options) {
       runtime?.generatorControls?.setStatus?.(message, options);
     },

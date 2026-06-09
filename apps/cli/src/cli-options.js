@@ -49,6 +49,16 @@ export function parseCliOptions(argvInput = process.argv) {
       default: false,
       describe: 'Allow expression-style faker arguments (unsafe for untrusted input)',
     })
+    .option('line-endings', {
+      type: 'string',
+      choices: ['lf', 'crlf'],
+      describe: 'Line endings for file output: lf or crlf (defaults to the current OS)',
+    })
+    .option('bom', {
+      type: 'boolean',
+      default: false,
+      describe: 'Write a UTF-8 BOM when output is written to a file',
+    })
     .option('pairwise', {
       type: 'boolean',
       default: false,
@@ -79,6 +89,8 @@ export function parseCliOptions(argvInput = process.argv) {
     testMode: parsed.testMode === true,
     showProgress,
     shouldStream,
+    lineEndings: parsed['line-endings'] ? String(parsed['line-endings']).toLowerCase() : undefined,
+    bom: parsed.bom === true,
     unsafeFakerExpressions: parsed['unsafe-faker-expressions'] === true,
     pairwise: parsed.pairwise === true,
   };

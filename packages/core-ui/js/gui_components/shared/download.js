@@ -12,7 +12,7 @@ class Download {
     this.BlobCtor = BlobCtor || resolvedWindowObj?.Blob || globalThis.Blob;
   }
 
-  downloadFile(text) {
+  downloadFile(text, { mimeType = 'text/plain;charset=utf-8' } = {}) {
     if (
       !this.documentObj?.body?.appendChild ||
       typeof this.documentObj.createElement !== 'function' ||
@@ -23,7 +23,10 @@ class Download {
       return false;
     }
 
-    const blob = new this.BlobCtor([text], { type: 'text/plain;charset=utf-8' });
+    const blob = new this.BlobCtor([text], {
+      type: mimeType,
+      endings: 'transparent',
+    });
     const url = this.URLObj.createObjectURL(blob);
     const element = this.documentObj.createElement('a');
     element.setAttribute('href', url);

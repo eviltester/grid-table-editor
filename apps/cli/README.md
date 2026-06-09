@@ -61,6 +61,12 @@ Write to an output file:
 anywaydata generate -i exampleTestDataSpec.txt -n 3 -o output.csv
 ```
 
+Write CRLF line endings and a UTF-8 BOM to an output file:
+
+```bash
+anywaydata generate -i exampleTestDataSpec.txt -n 3 -o output.csv --line-endings crlf --bom
+```
+
 Redirect stdout:
 
 ```bash
@@ -82,6 +88,8 @@ anywaydata amend --schema-file schema.txt --data-file input.csv --input-format c
 - `-n, --numberOfLines` row count (required, overridden to `1` by `--testMode`)
 - `-f, --format` output format (e.g. `csv`, `json`, `jsonl`, `xml`, `sql`)
 - `-o, --outputfile` optional output file path
+- `--line-endings` file-output line endings: `lf` or `crlf` (defaults to the current OS)
+- `--bom` write a UTF-8 BOM when output is written to a file
 - `-t, --testMode` generate one row and print diagnostics/example output
 - `--show-progress` force progress logs on/off
 - `--stream` enable stream mode when supported

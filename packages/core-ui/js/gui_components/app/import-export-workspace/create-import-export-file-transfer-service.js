@@ -111,7 +111,9 @@ function createImportExportFileTransferService({
 
       setExportStatus?.('Starting download...', true);
       await yieldToUi();
-      downloadService?.downloadText?.(filename, text);
+      downloadService?.downloadText?.(filename, text, {
+        exportEncodingSettings: getCurrentState().exportEncodingSettings,
+      });
       setExportStatus?.('Download started.', false);
     } catch (error) {
       console.error('Failed exporting download', error);

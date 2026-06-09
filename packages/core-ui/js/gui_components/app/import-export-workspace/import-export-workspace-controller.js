@@ -19,6 +19,10 @@ class ImportExportWorkspaceController {
       supportsClipboardImport: props.supportsClipboardImport !== false,
       supportsExport: props.supportsExport !== false,
       fileExtension: props.fileExtension || '.csv',
+      exportEncodingSettings: {
+        lineEnding: props.exportEncodingSettings?.lineEnding || 'lf',
+        includeBom: props.exportEncodingSettings?.includeBom === true,
+      },
     };
   }
 
@@ -75,6 +79,16 @@ class ImportExportWorkspaceController {
     if (Object.prototype.hasOwnProperty.call(nextProps, 'fileExtension')) {
       this.state.fileExtension = nextProps.fileExtension || '.csv';
     }
+    if (Object.prototype.hasOwnProperty.call(nextProps, 'exportEncodingSettings')) {
+      const nextExportEncodingSettings = nextProps.exportEncodingSettings || {};
+      this.state.exportEncodingSettings = {
+        ...this.state.exportEncodingSettings,
+        ...nextExportEncodingSettings,
+        includeBom: Object.prototype.hasOwnProperty.call(nextExportEncodingSettings, 'includeBom')
+          ? nextExportEncodingSettings.includeBom === true
+          : this.state.exportEncodingSettings.includeBom,
+      };
+    }
   }
 
   setImportStatus(message = '', isLoading = false) {
@@ -121,6 +135,15 @@ class ImportExportWorkspaceController {
 
   markPreviewTextDirty(isDirty) {
     this.updateProps({ previewTextDirty: isDirty === true });
+  }
+
+  setExportEncodingSettings(nextSettings = {}) {
+    this.updateProps({
+      exportEncodingSettings: {
+        ...this.state.exportEncodingSettings,
+        ...nextSettings,
+      },
+    });
   }
 
   canSetGridFromText() {

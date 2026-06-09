@@ -114,7 +114,12 @@ describe('createImportExportFileTransferService', () => {
 
     await harness.workflow.fileDownload();
 
-    expect(downloadService.downloadText).toHaveBeenCalledWith('export.json', '{"rows":2}');
+    expect(downloadService.downloadText).toHaveBeenCalledWith('export.json', '{"rows":2}', {
+      exportEncodingSettings: {
+        lineEnding: 'lf',
+        includeBom: false,
+      },
+    });
     expect(harness.controller.getState().exportBusy).toBe(false);
     expect(harness.controller.getState().exportStatusMessage).toBe('Download started.');
   });

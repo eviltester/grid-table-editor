@@ -1,5 +1,5 @@
 module.exports = {
   testEnvironment: "node",
-  testMatch: ["<rootDir>/src/*.test.js"],
+  testRegex: "src[/\\\\].*\\.test\\.js$",
   transform: {},
 };

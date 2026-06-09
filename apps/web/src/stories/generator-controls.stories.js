@@ -55,6 +55,7 @@ function renderGeneratorControlsStory(args) {
       selectedFormat: args.selectedFormat,
       currentOptions: args.currentOptions,
       pairwiseVisible: args.pairwiseVisible,
+      exportEncodingSettings: args.exportEncodingSettings,
     },
     services: {
       getOutputFormatGroups: createFormatGroups,
@@ -87,6 +88,10 @@ const meta = {
     selectedFormat: 'csv',
     currentOptions: { options: { header: true, quoteChar: '"' } },
     pairwiseVisible: false,
+    exportEncodingSettings: {
+      lineEnding: 'lf',
+      includeBom: false,
+    },
   },
   argTypes: {
     selectedFormat: {
@@ -102,6 +107,10 @@ const meta = {
       control: 'boolean',
       description: 'Whether the pairwise action button is visible for the current schema state.',
     },
+    exportEncodingSettings: {
+      control: false,
+      description: 'File-only export encoding settings used for generated downloads.',
+    },
   },
   render: renderGeneratorControlsStory,
 };
@@ -113,7 +122,7 @@ export const Default = {
     docs: {
       description: {
         story:
-          'Shows the default generator control surface with CSV selected. Try changing the output format and then click Generate Data to see the small event log update.',
+          'Shows the default generator control surface with CSV selected. Try changing the output format, open the Settings menu to inspect file export defaults, and then click Generate Data to see the small event log update.',
       },
     },
   },
@@ -144,5 +153,32 @@ export const PairwiseReady = {
     await expect(canvas.getByRole('button', { name: 'Generate Combinations' })).toBeVisible();
     await userEvent.click(canvas.getByRole('button', { name: 'Generate Combinations' }));
     await expect(canvas.getByText('generate:pairwise')).toBeTruthy();
+  },
+};
+
+export const BusyWithWindowsEncoding = {
+  args: {
+    pairwiseVisible: true,
+    exportEncodingSettings: {
+      lineEnding: 'crlf',
+      includeBom: true,
+    },
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Reviewer-facing example of the composed controls with pairwise enabled and non-default file export transport settings. Open the Settings menu to confirm that CR/LF and BOM are configured for downloads without changing the on-page preview behavior.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const settingsSummary = canvasElement.querySelector('[data-role="export-encoding-summary"]');
+    await expect(settingsSummary).toBeTruthy();
+    await userEvent.click(settingsSummary);
+    await expect(canvas.getByLabelText('Line endings')).toHaveValue('crlf');
+    await expect(canvas.getByRole('checkbox', { name: 'Include BOM' })).toBeChecked();
+    await expect(canvas.getByRole('button', { name: 'Generate Combinations' })).toBeVisible();
   },
 };

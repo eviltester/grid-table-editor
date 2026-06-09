@@ -8,6 +8,7 @@ function createGeneratorPageRuntimeConfig({ runtime } = {}) {
         selectedFormat,
         currentOptions: runtime.exporter?.getOptionsForType?.(selectedFormat),
         pairwiseVisible: false,
+        exportEncodingSettings: runtime.defaultExportEncodingSettings,
       },
       previewProps: {
         outputPreviewText: '',

@@ -6,6 +6,10 @@ class ImportExportDownloadControlController {
       importBusy: props.importBusy === true,
       exportBusy: props.exportBusy === true,
       fileExtension: props.fileExtension || '.csv',
+      exportEncodingSettings: {
+        lineEnding: props.exportEncodingSettings?.lineEnding || 'lf',
+        includeBom: props.exportEncodingSettings?.includeBom === true,
+      },
       exportStatusMessage: props.exportStatusMessage || '',
       exportStatusLoading: props.exportStatusLoading === true,
     };
@@ -30,6 +34,16 @@ class ImportExportDownloadControlController {
     }
     if (Object.prototype.hasOwnProperty.call(nextProps, 'fileExtension')) {
       this.state.fileExtension = nextProps.fileExtension || '.csv';
+    }
+    if (Object.prototype.hasOwnProperty.call(nextProps, 'exportEncodingSettings')) {
+      const nextExportEncodingSettings = nextProps.exportEncodingSettings || {};
+      this.state.exportEncodingSettings = {
+        ...this.state.exportEncodingSettings,
+        ...nextExportEncodingSettings,
+        includeBom: Object.prototype.hasOwnProperty.call(nextExportEncodingSettings, 'includeBom')
+          ? nextExportEncodingSettings.includeBom === true
+          : this.state.exportEncodingSettings.includeBom,
+      };
     }
     if (Object.prototype.hasOwnProperty.call(nextProps, 'exportStatusMessage')) {
       this.state.exportStatusMessage = nextProps.exportStatusMessage || '';

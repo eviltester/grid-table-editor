@@ -35,7 +35,10 @@ describe('Download', () => {
 
     download.downloadFile('hello world');
 
-    expect(BlobCtor).toHaveBeenCalledWith(['hello world'], { type: 'text/plain;charset=utf-8' });
+    expect(BlobCtor).toHaveBeenCalledWith(['hello world'], {
+      type: 'text/plain;charset=utf-8',
+      endings: 'transparent',
+    });
     expect(URLObj.createObjectURL).toHaveBeenCalledTimes(1);
     expect(appendSpy).toHaveBeenCalledTimes(1);
     const anchor = appendSpy.mock.calls[0][0];
@@ -91,6 +94,7 @@ describe('Download', () => {
 
       expect(ownerWindowObj.Blob).toHaveBeenCalledWith(['owner-window-text'], {
         type: 'text/plain;charset=utf-8',
+        endings: 'transparent',
       });
       expect(ownerWindowObj.URL.createObjectURL).toHaveBeenCalledTimes(1);
       expect(global.URL.createObjectURL).not.toHaveBeenCalled();

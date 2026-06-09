@@ -1,4 +1,5 @@
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
+import { applyExportTextEncoding } from '@anywaydata/core';
 import { Download } from '../../shared/download.js';
 import { resolveWindowObj } from '../../shared/dom/default-objects.js';
 import { scheduleTimeout } from '../../shared/unref-timeout.js';
@@ -87,8 +88,9 @@ function createClipboardService({ documentObj, windowObj } = {}) {
 
 function createDownloadService({ DownloadCtor = Download, documentObj, URLObj, BlobCtor } = {}) {
   return {
-    downloadText(filename, text) {
-      new DownloadCtor(filename, { documentObj, URLObj, BlobCtor }).downloadFile(text);
+    downloadText(filename, text, { exportEncodingSettings, platform, mimeType } = {}) {
+      const encodedText = applyExportTextEncoding(text, exportEncodingSettings, { platform });
+      new DownloadCtor(filename, { documentObj, URLObj, BlobCtor }).downloadFile(encodedText, { mimeType });
     },
   };
 }

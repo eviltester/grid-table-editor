@@ -1,18 +1,31 @@
+import { applyExportTextEncoding, resolveExportTextEncodingSettings } from '@anywaydata/core';
+
 export function createBunPlatform() {
   const bunRef = globalThis.Bun;
   return {
     name: 'bun',
+    getRuntimePlatform() {
+      return process.platform;
+    },
     async readText(path) {
       const file = bunRef.file(path);
       return file.text();
     },
-    async writeText(path, content) {
-      await bunRef.write(path, content);
+    async writeText(path, content, exportEncodingSettings = {}) {
+      await bunRef.write(
+        path,
+        applyExportTextEncoding(content, exportEncodingSettings, { platform: process.platform })
+      );
     },
-    createLineWriter(path) {
+    createLineWriter(path, exportEncodingSettings = {}) {
+      const resolvedEncodingSettings = resolveExportTextEncodingSettings(exportEncodingSettings, {
+        platform: process.platform,
+      });
+      const lineSuffix = resolvedEncodingSettings.lineEnding === 'crlf' ? '\r\n' : '\n';
       const writer = bunRef.file(path).writer();
       let writerError = null;
       let closed = false;
+      let wroteBom = false;
       return {
         async writeLine(line) {
           if (closed) {
@@ -22,7 +35,9 @@ export function createBunPlatform() {
             throw writerError;
           }
           try {
-            writer.write(`${line}\n`);
+            const prefix = !wroteBom && resolvedEncodingSettings.includeBom ? '\uFEFF' : '';
+            writer.write(`${prefix}${String(line ?? '')}${lineSuffix}`);
+            wroteBom = true;
           } catch (error) {
             writerError = error;
             throw error;

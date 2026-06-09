@@ -66,14 +66,19 @@ describe('import-export workspace services', () => {
       BlobCtor,
     });
 
-    downloadService.downloadText('export.csv', 'id,name');
+    downloadService.downloadText('export.csv', 'id,name', {
+      exportEncodingSettings: {
+        lineEnding: 'crlf',
+        includeBom: true,
+      },
+    });
 
     expect(DownloadCtor).toHaveBeenCalledWith('export.csv', {
       documentObj,
       URLObj,
       BlobCtor,
     });
-    expect(downloadFile).toHaveBeenCalledWith('id,name');
+    expect(downloadFile).toHaveBeenCalledWith('\uFEFFid,name', { mimeType: undefined });
   });
 
   test('prefers injected scheduling callbacks over ambient globals in yield-to-ui', async () => {

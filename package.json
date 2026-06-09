@@ -50,11 +50,11 @@
   "jest": {
     "verbose": true,
     "transform": {},
-    "testMatch": [
-      "<rootDir>/packages/core/src/tests/**/*.test.js",
-      "<rootDir>/packages/core-ui/src/tests/**/*.test.js",
-      "<rootDir>/tests/integration/**/*.test.js",
-      "<rootDir>/apps/web/src/tests/jest/**/*.test.js"
+    "testRegex": [
+      "packages[/\\\\]core[/\\\\]src[/\\\\]tests[/\\\\].*\\.test\\.js$",
+      "packages[/\\\\]core-ui[/\\\\]src[/\\\\]tests[/\\\\].*\\.test\\.js$",
+      "tests[/\\\\]integration[/\\\\].*\\.test\\.js$",
+      "apps[/\\\\]web[/\\\\]src[/\\\\]tests[/\\\\]jest[/\\\\].*\\.test\\.js$"
     ],
     "testPathIgnorePatterns": [
       "/node_modules/",

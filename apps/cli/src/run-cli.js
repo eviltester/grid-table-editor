@@ -1,6 +1,7 @@
 import {
   amendFromTextSpecAndData,
   generateFromTextSpec,
+  resolveExportTextEncodingSettings,
   streamFromTextSpec,
   SUPPORTED_FORMATS,
 } from '@anywaydata/core';
@@ -25,6 +26,13 @@ function formatCanonicalErrors(errors = []) {
 }
 
 export async function runCliCommand({ options, platform }) {
+  const outputEncodingSettings = resolveExportTextEncodingSettings(
+    {
+      lineEnding: options.lineEndings,
+      includeBom: options.bom === true,
+    },
+    { platform: platform.getRuntimePlatform?.() }
+  );
   const progress = (message) => {
     if (options.showProgress) {
       writeLine(platform.stdout, message);
@@ -102,7 +110,7 @@ export async function runCliCommand({ options, platform }) {
       }
     }
     if (options.outputFile) {
-      await platform.writeText(options.outputFile, result.rendered);
+      await platform.writeText(options.outputFile, result.rendered, outputEncodingSettings);
       progress(`> Writing output to ${options.outputFile}`);
     } else {
       platform.stdout(`${result.rendered}\n`);
@@ -122,7 +130,7 @@ export async function runCliCommand({ options, platform }) {
 
   if (useStreamMode && ['csv', 'jsonl', 'dsv', 'json', 'xml'].includes(outputFormat)) {
     const streamedLines = [];
-    const writer = options.outputFile ? platform.createLineWriter(options.outputFile) : null;
+    const writer = options.outputFile ? platform.createLineWriter(options.outputFile, outputEncodingSettings) : null;
     let writerClosed = false;
     try {
       const streamResult = await streamFromTextSpec({
@@ -206,7 +214,7 @@ export async function runCliCommand({ options, platform }) {
   }
 
   if (options.outputFile) {
-    await platform.writeText(options.outputFile, result.rendered);
+    await platform.writeText(options.outputFile, result.rendered, outputEncodingSettings);
     progress(`> Writing output to ${options.outputFile}`);
   } else {
     platform.stdout(`${result.rendered}\n`);

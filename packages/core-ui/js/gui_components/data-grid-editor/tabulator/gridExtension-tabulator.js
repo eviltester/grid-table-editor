@@ -1,5 +1,7 @@
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 import { TabulatorHelper } from './tabulator-helpers.js';
+
+const AUTO_FIT_ROW_SAMPLE_LIMIT = 500;
 /*
     A wrapper for Tabulature to conform to the main abstraction
     that makes it easier to add new columns
@@ -49,6 +51,43 @@ class GridExtensionTabulator {
     if (typeof this.tabulator.clearSort === 'function') {
       this.tabulator.clearSort();
     }
+  }
+
+  sizeColumnsToFit() {
+    const columnDefinitions = this.tabulator.getColumnDefinitions?.() || [];
+    if (columnDefinitions.length === 0) {
+      return;
+    }
+
+    const columnsByField = new Map();
+    if (typeof this.tabulator.getColumns === 'function') {
+      this.tabulator.getColumns().forEach((column) => {
+        const definition = column?.getDefinition?.() || {};
+        if (definition.field) {
+          columnsByField.set(definition.field, column);
+        }
+      });
+    }
+
+    this._runWithoutRedraw(() => {
+      columnDefinitions.forEach((definition) => {
+        const field = definition?.field;
+        if (!field) {
+          return;
+        }
+
+        const width = this._estimateColumnWidth(field);
+        const column = columnsByField.get(field);
+        if (typeof column?.setWidth === 'function') {
+          column.setWidth(width);
+          return;
+        }
+
+        if (typeof column?.updateDefinition === 'function') {
+          column.updateDefinition({ width });
+        }
+      });
+    });
   }
 
   // [x] convert to tabulature
@@ -686,16 +725,19 @@ class GridExtensionTabulator {
   }
 
   _estimateFirstColumnWidth(firstColumnField) {
-    const columnDefinitions = this.tabulator.getColumnDefinitions?.() || [];
-    const firstDefinition =
-      columnDefinitions.find((definition) => definition.field === firstColumnField) || columnDefinitions[0] || {};
-    const titleLength = String(firstDefinition.title || '').length;
+    return this._estimateColumnWidth(firstColumnField);
+  }
 
-    const activeRows = typeof this.tabulator.getData === 'function' ? this.tabulator.getData('active') : [];
+  _estimateColumnWidth(fieldName) {
+    const columnDefinitions = this.tabulator.getColumnDefinitions?.() || [];
+    const columnDefinition = columnDefinitions.find((definition) => definition.field === fieldName) || {};
+    const titleLength = String(columnDefinition.title || '').length;
+
+    const activeRows = this._getLimitedActiveRowData(AUTO_FIT_ROW_SAMPLE_LIMIT);
     let maxTextLength = titleLength;
     if (Array.isArray(activeRows)) {
       for (let rowIndex = 0; rowIndex < activeRows.length; rowIndex++) {
-        const value = activeRows[rowIndex]?.[firstColumnField];
+        const value = activeRows[rowIndex]?.[fieldName];
         const valueLength = String(value ?? '').length;
         if (valueLength > maxTextLength) {
           maxTextLength = valueLength;

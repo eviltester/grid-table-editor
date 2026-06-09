@@ -1,8 +1,8 @@
+const baseConfig = require('../../jest.config.cjs');
+
 module.exports = {
-  verbose: true,
+  ...baseConfig,
   testEnvironment: 'node',
-  transform: {
-    '^.+\\.js$': 'babel-jest',
-  },
-  testRegex: 'src[/\\\\]tests[/\\\\].*\\.test\\.js$',
+  rootDir: '../..',
+  testMatch: ['**/apps/cli/src/tests/**/*.test.js'],
 };

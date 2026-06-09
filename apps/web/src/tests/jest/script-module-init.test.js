@@ -117,10 +117,13 @@ describe('script module initialization', () => {
     expect(createDataGridComponent).toHaveBeenCalledWith({
       root: global.document.getElementById('main-grid-view'),
       documentObj: global.document,
-      services: {
+      services: expect.objectContaining({
         TabulatorCtor: globalThis.Tabulator,
         GridExtensionClass: expect.any(Function),
-      },
+        getPreviewExportFormats: expect.any(Function),
+        previewAs: expect.any(Function),
+        exportAs: expect.any(Function),
+      }),
     });
     expect(createImportExportWorkspaceComponent).toHaveBeenCalledWith({
       root: global.document.getElementById('import-export-controls'),

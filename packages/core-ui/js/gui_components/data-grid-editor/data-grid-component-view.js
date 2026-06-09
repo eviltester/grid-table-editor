@@ -139,6 +139,13 @@ class DataGridComponentView {
     this.toolbar = null;
     this.gridAdapter = null;
     this.gridReadyPromise = Promise.resolve(null);
+    this.textInputDialogService = null;
+    this.contextMenuState = { open: false, x: 0, y: 0 };
+    this.handleGridContextMenu = (event) => this.onGridContextMenu(event);
+    this.handleRootClick = (event) => this.onRootClick(event);
+    this.handleRootChange = (event) => this.onRootChange(event);
+    this.handleDocumentPointerDown = (event) => this.onDocumentPointerDown(event);
+    this.handleDocumentKeyDown = (event) => this.onDocumentKeyDown(event);
   }
 
   mount() {
@@ -163,6 +170,11 @@ class DataGridComponentView {
           role="status"
         ></div>
         <div id="myGrid" style="height: 500px; width:100%;" class="ag-theme-alpine" data-role="data-grid-root"></div>
+        <div
+          class="data-grid-context-menu"
+          data-role="data-grid-context-menu"
+          hidden
+        ></div>
       </section>
     `;
   }
@@ -171,7 +183,7 @@ class DataGridComponentView {
     const toolbarRoot = this.root.querySelector('[data-role="grid-toolbar-root"]');
     const gridRoot = this.root.querySelector('[data-role="data-grid-root"]');
     const createGridToolbar = this.services.createGridToolbar || createGridToolbarComponent;
-    const textInputDialogService = createTextInputDialogService({ documentObj: this.documentObj });
+    this.textInputDialogService = createTextInputDialogService({ documentObj: this.documentObj });
     const resolvedWindowObj = resolveWindowObj(this.services.windowObj, this.documentObj);
     const showScopedGridError = (message) =>
       showGridError(message, {
@@ -181,7 +193,7 @@ class DataGridComponentView {
     const tabulatorOptions =
       this.services.tabulatorOptions ||
       createAppGridTabulatorOptions({
-        textInputDialogService,
+        textInputDialogService: this.textInputDialogService,
         surfaceError: showScopedGridError,
         shouldEnforceUniqueNames: () => this.controller.getState().uniqueColumnNames === true,
       });
@@ -212,10 +224,18 @@ class DataGridComponentView {
       tabulatorOptions,
     });
     this.gridReadyPromise = this.gridAdapter.whenReady();
+    gridRoot?.addEventListener('contextmenu', this.handleGridContextMenu);
+    this.root.addEventListener('click', this.handleRootClick);
+    this.root.addEventListener('change', this.handleRootChange);
+    this.documentObj?.addEventListener?.('pointerdown', this.handleDocumentPointerDown);
+    this.documentObj?.addEventListener?.('keydown', this.handleDocumentKeyDown);
   }
 
   render() {
     this.toolbar?.update?.(this.controller.getState());
+    if (this.contextMenuState.open) {
+      this.renderContextMenu();
+    }
   }
 
   getGridAdapter() {
@@ -234,7 +254,161 @@ class DataGridComponentView {
     return this.gridReadyPromise;
   }
 
+  renderContextMenu() {
+    const menuRoot = this.root.querySelector('[data-role="data-grid-context-menu"]');
+    if (!menuRoot) {
+      return;
+    }
+
+    const state = this.controller.getState();
+    menuRoot.hidden = false;
+    menuRoot.style.left = `${this.contextMenuState.x}px`;
+    menuRoot.style.top = `${this.contextMenuState.y}px`;
+    menuRoot.innerHTML = `
+      <div class="data-grid-context-menu__section">
+        <button type="button" data-context-action="add-row">Add Row</button>
+        <button type="button" data-context-action="add-rows-above">Add Rows Above</button>
+        <button type="button" data-context-action="add-rows-below">Add Rows Below</button>
+        <button type="button" data-context-action="delete-selected-rows">Delete Selected Rows</button>
+      </div>
+      <div class="data-grid-context-menu__separator" role="separator"></div>
+      <label class="data-grid-context-menu__checkbox">
+        <input
+          type="checkbox"
+          data-context-action="unique-column-names"
+          ${state.uniqueColumnNames ? 'checked' : ''}
+        />
+        Enforce Unique Column Names
+      </label>
+      <div class="data-grid-context-menu__separator" role="separator"></div>
+      <div class="data-grid-context-menu__section">
+        <button type="button" data-context-action="edit-filter">Filter...</button>
+        <button type="button" data-context-action="clear-filters">Clear Filters</button>
+        <button type="button" data-context-action="clear-sort">Clear Sort</button>
+        <button type="button" data-context-action="reset-table">Reset Table</button>
+        <button type="button" data-context-action="auto-fit-columns">Auto Fit Columns</button>
+      </div>
+    `;
+  }
+
+  openContextMenu(x, y) {
+    this.contextMenuState = { open: true, x, y };
+    this.renderContextMenu();
+  }
+
+  closeContextMenu() {
+    this.contextMenuState = { ...this.contextMenuState, open: false };
+    const menuRoot = this.root.querySelector('[data-role="data-grid-context-menu"]');
+    if (!menuRoot) {
+      return;
+    }
+    menuRoot.hidden = true;
+    menuRoot.replaceChildren();
+  }
+
+  onGridContextMenu(event) {
+    event.preventDefault();
+    this.syncSelectionToContextTarget(event.target);
+    this.openContextMenu(event.clientX, event.clientY);
+  }
+
+  syncSelectionToContextTarget(target) {
+    const rowElement = target?.closest?.('.tabulator-row');
+    if (!rowElement) {
+      return;
+    }
+
+    const tableApi = this.getTableApi();
+    const rowComponents = typeof tableApi?.getRows === 'function' ? tableApi.getRows() : [];
+    const targetRow = rowComponents.find((rowComponent) => rowComponent?.getElement?.() === rowElement);
+    if (!targetRow || rowElement.classList.contains('tabulator-selected')) {
+      return;
+    }
+
+    if (typeof tableApi?.deselectRow === 'function') {
+      tableApi.deselectRow();
+    }
+    targetRow.select?.();
+  }
+
+  async onRootClick(event) {
+    const actionElement = event.target?.closest?.('[data-context-action]');
+    if (!actionElement) {
+      return;
+    }
+
+    const action = actionElement.getAttribute('data-context-action');
+    if (!action || action === 'unique-column-names') {
+      return;
+    }
+
+    if (action === 'add-row') {
+      this.controller.addRow();
+    } else if (action === 'add-rows-above') {
+      this.controller.addRows(-1);
+    } else if (action === 'add-rows-below') {
+      this.controller.addRows(1);
+    } else if (action === 'delete-selected-rows') {
+      await this.controller.deleteSelectedRows();
+    } else if (action === 'edit-filter') {
+      const nextFilter = await this.textInputDialogService?.requestTextInput?.({
+        title: 'Filter Grid',
+        initialValue: this.controller.getState().filterText || '',
+      });
+      if (nextFilter !== null) {
+        this.controller.setFilterText(nextFilter);
+        this.render();
+      }
+    } else if (action === 'clear-filters') {
+      this.controller.clearFilters();
+      this.render();
+    } else if (action === 'clear-sort') {
+      this.controller.clearSort();
+    } else if (action === 'reset-table') {
+      await this.controller.clearTable();
+    } else if (action === 'auto-fit-columns') {
+      this.controller.sizeColumnsToFit();
+    }
+
+    this.closeContextMenu();
+  }
+
+  onRootChange(event) {
+    const checkbox = event.target?.closest?.('[data-context-action="unique-column-names"]');
+    if (!checkbox) {
+      return;
+    }
+    this.controller.setUniqueColumnNames(checkbox.checked === true);
+    this.toolbar?.update?.(this.controller.getState());
+    this.closeContextMenu();
+  }
+
+  onDocumentPointerDown(event) {
+    if (!this.contextMenuState.open) {
+      return;
+    }
+    const menuRoot = this.root.querySelector('[data-role="data-grid-context-menu"]');
+    if (menuRoot?.contains?.(event.target)) {
+      return;
+    }
+    this.closeContextMenu();
+  }
+
+  onDocumentKeyDown(event) {
+    if (event.key === 'Escape' && this.contextMenuState.open) {
+      this.closeContextMenu();
+    }
+  }
+
   destroy() {
+    this.root
+      .querySelector('[data-role="data-grid-root"]')
+      ?.removeEventListener('contextmenu', this.handleGridContextMenu);
+    this.root.removeEventListener('click', this.handleRootClick);
+    this.root.removeEventListener('change', this.handleRootChange);
+    this.documentObj?.removeEventListener?.('pointerdown', this.handleDocumentPointerDown);
+    this.documentObj?.removeEventListener?.('keydown', this.handleDocumentKeyDown);
+    this.closeContextMenu();
     this.toolbar?.destroy?.();
     this.toolbar = null;
     this.gridAdapter?.destroy?.();

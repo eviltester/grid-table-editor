@@ -10,6 +10,7 @@ class GridEditorComponent {
     this.toolbar = this.container.locator('[data-role="grid-toolbar-root"]');
     this.errorStatus = this.container.locator('[data-role="grid-error-status"]').first();
     this.grid = this.container.locator('[data-role="data-grid-root"]');
+    this.contextMenu = this.page.locator('[data-role="data-grid-context-menu"]');
     this.renderer = new GridRendererComponent(page, this.grid);
     this.header = new GridHeaderComponent(page, this.grid, this.renderer);
     this.confirmDialog = new ConfirmDialogComponent(page);
@@ -174,6 +175,24 @@ class GridEditorComponent {
   async resetTable() {
     await this.resetTableButton.click();
     await this._acceptConfirmIfVisible();
+  }
+
+  async openContextMenuOnCell(columnName, rowIndex) {
+    const columnIndex = await this.renderer._columnIndexByName(columnName);
+    await this.renderer.row(rowIndex).locator('.tabulator-cell').nth(columnIndex).click({ button: 'right' });
+    await expect(this.contextMenu).toBeVisible();
+  }
+
+  async contextMenuAddRow() {
+    await this.contextMenu.getByRole('button', { name: 'Add Row', exact: true }).click();
+  }
+
+  async contextMenuSetUniqueColumnNames(enabled = true) {
+    const checkbox = this.contextMenu.getByRole('checkbox', { name: 'Enforce Unique Column Names' });
+    const isChecked = await checkbox.isChecked();
+    if (isChecked !== enabled) {
+      await checkbox.click();
+    }
   }
 
   async setUniqueColumnNames(enabled = true) {

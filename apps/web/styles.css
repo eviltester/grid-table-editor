@@ -700,6 +700,61 @@ Custom header styles for default items
   height: 0.8rem;
 }
 
+.data-grid-context-menu {
+  position: fixed;
+  z-index: 2500;
+  min-width: 14rem;
+  max-width: min(22rem, calc(100vw - 1rem));
+  padding: 0.45rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--panel-bg);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+}
+
+.data-grid-context-menu__section,
+.data-grid-context-menu__submenu {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.data-grid-context-menu__section > button,
+.data-grid-context-menu__submenu > button {
+  width: 100%;
+  text-align: left;
+}
+
+.data-grid-context-menu__separator {
+  height: 1px;
+  margin: 0.45rem 0;
+  background: color-mix(in srgb, var(--border-color) 75%, transparent);
+}
+
+.data-grid-context-menu__checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.95rem;
+}
+
+.data-grid-context-menu__details {
+  margin: 0;
+}
+
+.data-grid-context-menu__details > summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.data-grid-context-menu__details[open] {
+  border: 0;
+  background: transparent;
+}
+
+.data-grid-context-menu__details[open] > summary {
+  margin-bottom: 0.35rem;
+}
+
 /* Docs */
 
 .bodycontent {

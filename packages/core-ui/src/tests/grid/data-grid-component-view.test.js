@@ -7,6 +7,7 @@ class FakeTabulator {
     this.rootElement = rootElement;
     this.options = options;
     this.destroy = jest.fn();
+    this.getRows = jest.fn(() => []);
   }
 }
 
@@ -19,6 +20,7 @@ class FakeGridExtension {
     this.deleteSelectedRows = jest.fn();
     this.clearFilters = jest.fn();
     this.clearSort = jest.fn();
+    this.sizeColumnsToFit = jest.fn();
     this.filterText = jest.fn();
     this.clearGrid = jest.fn();
     this.destroy = jest.fn();
@@ -88,6 +90,58 @@ describe('DataGridComponent view', () => {
 
     root.querySelector('[data-role="add-row-button"]').click();
     expect(component.getGridExtras().addRow).toHaveBeenCalledTimes(1);
+
+    component.destroy();
+  });
+
+  test('opens a right-click context menu, routes grid actions, and syncs unique column names back to the toolbar', async () => {
+    const root = document.createElement('section');
+    document.body.appendChild(root);
+    const component = createDataGridComponent({
+      root,
+      documentObj: document,
+      services: {
+        TabulatorCtor: FakeTabulator,
+        GridExtensionClass: FakeGridExtension,
+      },
+    });
+
+    await component.whenReady();
+
+    const gridRoot = root.querySelector('[data-role="data-grid-root"]');
+    gridRoot.dispatchEvent(
+      new dom.window.MouseEvent('contextmenu', {
+        bubbles: true,
+        cancelable: true,
+        clientX: 32,
+        clientY: 48,
+      })
+    );
+
+    const menuRoot = root.querySelector('[data-role="data-grid-context-menu"]');
+    expect(menuRoot.hidden).toBe(false);
+    expect(menuRoot.getAttribute('role')).toBeNull();
+    expect(menuRoot.getAttribute('aria-label')).toBeNull();
+
+    menuRoot.querySelector('[data-context-action="auto-fit-columns"]').click();
+    expect(component.getGridExtras().sizeColumnsToFit).toHaveBeenCalledTimes(1);
+
+    expect(menuRoot.textContent).not.toContain('Preview As');
+    expect(menuRoot.textContent).not.toContain('Export As');
+
+    gridRoot.dispatchEvent(
+      new dom.window.MouseEvent('contextmenu', {
+        bubbles: true,
+        cancelable: true,
+        clientX: 32,
+        clientY: 48,
+      })
+    );
+    const uniqueColumnNamesCheckbox = menuRoot.querySelector('[data-context-action="unique-column-names"]');
+    uniqueColumnNamesCheckbox.checked = true;
+    uniqueColumnNamesCheckbox.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+    expect(component.getState().uniqueColumnNames).toBe(true);
+    expect(root.querySelector('[data-role="unique-column-names-checkbox"]')?.checked).toBe(true);
 
     component.destroy();
   });

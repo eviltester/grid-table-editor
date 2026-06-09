@@ -6,6 +6,7 @@ import { createDataGridComponent } from '../../data-grid-editor/index.js';
 import { ensureGridLibraryLoaded } from '../../data-grid-editor/grid-library-loader.js';
 import { GridExtension as TabulatorGridExtension } from '../../data-grid-editor/tabulator/gridExtension-tabulator.js';
 import { createImportExportWorkspaceComponent } from '../import-export-workspace/index.js';
+import { createDefaultTabDefinitions } from '../format-selector/format-selector-controller.js';
 import { createInstructionsComponent } from '../../shared/instructions/index.js';
 import { APP_PAGE_INSTRUCTIONS_PROPS } from '../../shared/instructions/app-page-instructions.js';
 import { createAppPageComponent } from './app-page-shell.js';
@@ -117,6 +118,18 @@ function createInstructionsGridActions({ documentObj = getDefaultDocumentObj(), 
   };
 }
 
+function createContextMenuFormatItems() {
+  return createDefaultTabDefinitions().flatMap((definition) => {
+    if (Array.isArray(definition.subtasks)) {
+      return definition.subtasks.map((subtask) => ({
+        type: subtask.selectedType || subtask.type,
+        label: subtask.label,
+      }));
+    }
+    return definition.type ? [{ type: definition.type, label: definition.label }] : [];
+  });
+}
+
 async function bootstrapApp({
   documentObj = getDefaultDocumentObj(),
   ensureGridLibraryLoadedFn = ensureGridLibraryLoaded,
@@ -168,6 +181,7 @@ async function bootstrapApp({
   let exporter = null;
   let importer = null;
   let instructionsGridActions = null;
+  const contextMenuFormatItems = createContextMenuFormatItems();
   try {
     mainDataGrid = createDataGridComponentFn({
       root: documentObj.getElementById('main-grid-view'),
@@ -175,6 +189,15 @@ async function bootstrapApp({
       services: {
         TabulatorCtor: resolvedTabulatorCtor,
         GridExtensionClass,
+        getPreviewExportFormats: () => contextMenuFormatItems,
+        previewAs: async (format) => {
+          importExportController?.openDetails?.();
+          return importExportController?.previewAs?.(format);
+        },
+        exportAs: async (format) => {
+          importExportController?.openDetails?.();
+          return importExportController?.downloadAs?.(format);
+        },
       },
     });
 

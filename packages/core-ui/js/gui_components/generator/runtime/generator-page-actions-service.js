@@ -9,6 +9,7 @@ import {
 } from '../generation/data-generator-generation-actions.js';
 import { createCombinationsDialogComponent } from '../../shared/combinations-dialog/index.js';
 import { applyGeneratorFormatOptions } from '../options/apply-generator-format-options.js';
+import { createConfirmDialogService } from '../../shared/dialog-services/confirm-dialog-service.js';
 
 function createGeneratorPageActionsService({
   runtime,
@@ -17,6 +18,7 @@ function createGeneratorPageActionsService({
   RandExp,
   createCombinationsDialog = createCombinationsDialogComponent,
 } = {}) {
+  const confirmDialogService = createConfirmDialogService({ documentObj: runtime?.documentObj });
   const getResolvedViewState = () => runtime?.generatorViewState || null;
   const getResolvedSchemaRuntime = () => runtime?.generatorSchemaRuntime || null;
   const getResolvedSchemaGenerationService = () => runtime?.generatorSchemaGenerationService || null;
@@ -126,6 +128,7 @@ function createGeneratorPageActionsService({
       await generateGeneratorCombinationsDataFile({
         createConfiguredGenerator: () => getResolvedSchemaGenerationService()?.createConfiguredGenerator?.(),
         countEnumColumns: () => getResolvedSchemaGenerationService()?.countEnumColumns?.() || 0,
+        getEnumValueCounts: () => getResolvedSchemaGenerationService()?.getEnumValueCounts?.() || [],
         getSelectedOutputType: () => getResolvedViewState()?.getSelectedOutputType?.(),
         exporter: runtime?.exporter,
         clearGenerationStatus: () => getResolvedViewState()?.clearGenerationStatus?.(),
@@ -144,6 +147,7 @@ function createGeneratorPageActionsService({
         clearPageError: () => getResolvedSchemaRuntime()?.clearSchemaErrorStatus?.(),
         scheduleClearGenerationStatus: (delay) => getResolvedViewState()?.scheduleClearGenerationStatus?.(delay),
         selection,
+        requestConfirm: confirmDialogService.requestConfirm,
       });
     },
 

@@ -47,6 +47,7 @@ import { createTestDataGridActionAdapter } from '../controller/test-data-grid-ac
 import { createDataPopulationPanelComponent } from '../../data-population-panel/index.js';
 import { resolveDocumentObj } from '../../../shared/dom/default-objects.js';
 import { createCombinationsDialogComponent } from '../../../shared/combinations-dialog/index.js';
+import { createConfirmDialogService } from '../../../shared/dialog-services/confirm-dialog-service.js';
 
 import { faker } from 'https://cdn.skypack.dev/@faker-js/faker@v9.7.0';
 
@@ -148,6 +149,7 @@ function createTestDataGenerationPanelManager({
   function createGenerationService() {
     const resolvedRandExpClass = getRandExpClass();
     const statusServiceApi = getStatusServiceApi();
+    const confirmDialogService = createConfirmDialogService({ documentObj: getResolvedDocument() });
     return createTestDataGenerationServiceFn({
       schemaTextToDataRules: schemaTextToDataRulesFn,
       schemaRowsToSpec: (schemaRows) =>
@@ -182,6 +184,7 @@ function createTestDataGenerationPanelManager({
       setGenerateBusy: (isBusy) => state.dataPopulationPanel?.setGenerateBusy?.(isBusy),
       setGeneratePairwiseBusy: (isBusy) => state.dataPopulationPanel?.setGeneratePairwiseBusy?.(isBusy),
       setPairwiseVisible: (isVisible) => state.dataPopulationPanel?.setPairwiseVisible?.(isVisible),
+      requestConfirm: confirmDialogService.requestConfirm,
     });
   }
 

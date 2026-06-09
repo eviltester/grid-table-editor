@@ -2,6 +2,7 @@ import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
 import { createGeneratorSchemaGenerationService } from '../../../js/gui_components/generator/generation/generator-schema-generation-service.js';
 import {
+  generateGeneratorCombinationsDataFile,
   generateGeneratorDataFile,
   renderGeneratorOutputPreview,
   updateGeneratorPairwiseButtonVisibility,
@@ -122,6 +123,48 @@ describe('generator generation actions', () => {
     expect(downloadFile).toHaveBeenCalledWith({
       filename: 'generated-data.csv',
       text: '\uFEFFName\r\nAda',
+    });
+  });
+
+  test('generateGeneratorCombinationsDataFile prompts before large cartesian runs and skips when cancelled', async () => {
+    const requestConfirm = jest.fn(async () => false);
+    const setGenerationStatus = jest.fn();
+    const buildCombinationsDataTable = jest.fn();
+
+    await generateGeneratorCombinationsDataFile({
+      createConfiguredGenerator: () => ({
+        generator: { testDataRules: () => [{}, {}, {}, {}] },
+      }),
+      countEnumColumns: () => 4,
+      getEnumValueCounts: () => [11, 11, 11, 11],
+      getSelectedOutputType: () => 'csv',
+      exporter: {
+        canExport: () => true,
+        getFileExtensionFor: () => '.csv',
+      },
+      clearGenerationStatus: jest.fn(),
+      setGenerationButtonBusy: jest.fn(),
+      setGenerationStatus,
+      showGenerationLoadingStatus: jest.fn(),
+      buildCombinationsDataTable,
+      DownloadClass: class FakeDownload {},
+      surfacePageError: jest.fn(),
+      clearPageError: jest.fn(),
+      scheduleClearGenerationStatus: jest.fn(),
+      selection: { strength: 4, algorithm: 'cartesian-product' },
+      requestConfirm,
+    });
+
+    expect(requestConfirm).toHaveBeenCalledWith({
+      title: 'Cartesian product generation',
+      message: expect.stringContaining('14,641'),
+      okLabel: 'Run cartesian product',
+      cancelLabel: 'Skip cartesian product',
+    });
+    expect(buildCombinationsDataTable).not.toHaveBeenCalled();
+    expect(setGenerationStatus).toHaveBeenCalledWith('Cartesian product generation skipped.', {
+      severity: 'warning',
+      dismissable: true,
     });
   });
 });

@@ -10,6 +10,7 @@ import {
   CombinationAlgorithm,
   calculateCartesianProductRows,
   COMBINATION_STRATEGIES,
+  confirmCartesianProductSelection,
   getAvailableStrengths,
   getStrategiesForStrength,
 } from '../../../packages/core-ui/js/gui_components/generator/generation/n-wise-generation-options.js';
@@ -31,8 +32,6 @@ const DEFAULT_SELECTED_ALGORITHMS = new Set([
   CombinationAlgorithm.AETG,
   CombinationAlgorithm.IPOG,
 ]);
-
-const CARTESIAN_CONFIRM_THRESHOLD = 10000;
 
 function escapeHtml(value) {
   return String(value ?? '')
@@ -173,30 +172,17 @@ function sortResultsByRowCount(results) {
   });
 }
 
-async function filterAlgorithmsForCartesianConfirmation({
-  algorithms,
-  parameters,
-  requestConfirm,
-  threshold = CARTESIAN_CONFIRM_THRESHOLD,
-}) {
+async function filterAlgorithmsForCartesianConfirmation({ algorithms, parameters, requestConfirm, threshold }) {
   const selectedAlgorithms = Array.isArray(algorithms) ? [...algorithms] : [];
   if (!selectedAlgorithms.includes(CombinationAlgorithm.CARTESIAN_PRODUCT)) {
     return selectedAlgorithms;
   }
 
-  const cartesianRowCount = calculateCartesianProductRows(getValueCounts(parameters));
-  if (typeof requestConfirm !== 'function') {
-    return selectedAlgorithms;
-  }
-  if (Number.isFinite(cartesianRowCount) && cartesianRowCount <= threshold) {
-    return selectedAlgorithms;
-  }
-
-  const confirmed = await requestConfirm({
-    title: 'Cartesian product generation',
-    message: `You included cartesian product generation. Are you sure? this will generate ${formatNumber(cartesianRowCount)} data rows.`,
-    okLabel: 'Run cartesian product',
-    cancelLabel: 'Skip cartesian product',
+  const confirmed = await confirmCartesianProductSelection({
+    algorithm: CombinationAlgorithm.CARTESIAN_PRODUCT,
+    valueCounts: getValueCounts(parameters),
+    requestConfirm,
+    threshold,
   });
 
   return confirmed

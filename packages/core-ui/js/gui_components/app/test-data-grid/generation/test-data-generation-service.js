@@ -17,6 +17,7 @@ import {
   CombinationAlgorithm,
   DEFAULT_AETG_RUNS,
 } from '@anywaydata/core/data_generation/n-wise/combinationsTestDataGenerator.js';
+import { confirmCartesianProductSelection } from '../../../generator/generation/n-wise-generation-options.js';
 import {
   SOURCE_TYPE_FAKER,
   SOURCE_TYPE_DOMAIN,
@@ -55,6 +56,7 @@ function createTestDataGenerationService({
   setGenerateBusy = () => {},
   setGeneratePairwiseBusy = () => {},
   setPairwiseVisible = () => {},
+  requestConfirm,
 }) {
   function getCurrentSchemaRowValidation(options) {
     return validateCurrentSchemaRows?.(options) || { errors: [], rows: [] };
@@ -294,6 +296,16 @@ function createTestDataGenerationService({
           'Combination generation requires at least 2 enum columns because n-wise generation combines finite enum values.'
         );
         setTestDataStatus('Insufficient enum columns.', { severity: 'warning', dismissable: true });
+        return;
+      }
+
+      const confirmed = await confirmCartesianProductSelection({
+        algorithm,
+        valueCounts: getEnumValueCounts(),
+        requestConfirm,
+      });
+      if (!confirmed) {
+        setTestDataStatus('Cartesian product generation skipped.', { severity: 'warning', dismissable: true });
         return;
       }
 

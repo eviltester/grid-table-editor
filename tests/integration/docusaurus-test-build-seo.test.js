@@ -52,6 +52,11 @@ describe('Docusaurus test build SEO', () => {
     expect(transformedHtml).toContain('<meta name="bingbot" content="noindex,nofollow,noarchive,nosnippet">');
     expect(transformedHtml).toContain('data-testenv-indicator');
     expect(transformedHtml).toContain('content: "Test Environment"');
+    expect(transformedHtml).toContain('top: 0;');
+    expect(transformedHtml).toContain('left: 0;');
+    expect(transformedHtml).toContain('border: 0;');
+    expect(transformedHtml).toContain('box-shadow: none;');
+    expect(transformedHtml).toContain('font: 700 6px/1.2 Arial, Helvetica, sans-serif;');
     expect(transformedHtml).toContain('content="https://anywaydata.com/docs/intro"');
     expect(transformedHtml).toContain('href="https://anywaydata.com/docs/intro"');
     expect(transformedHtml).toContain('"@context":"https://schema.org"');

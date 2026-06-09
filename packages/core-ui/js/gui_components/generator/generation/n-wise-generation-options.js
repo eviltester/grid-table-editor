@@ -4,6 +4,7 @@ import {
 } from '@anywaydata/core/data_generation/n-wise/combinationsTestDataGenerator.js';
 
 const N_WISE_DOCS_URL = '/docs/test-data/n-wise-testing';
+const CARTESIAN_CONFIRM_THRESHOLD = 10000;
 
 const COMBINATION_STRATEGY_ROW_COUNT_ORDER = Object.freeze({
   2: [
@@ -203,11 +204,50 @@ function getStrategyById(strategyId) {
   return COMBINATION_STRATEGIES.find((strategy) => strategy.id === strategyId) || null;
 }
 
+function formatCombinationCount(value) {
+  if (value === Number.POSITIVE_INFINITY) {
+    return 'Too large to estimate';
+  }
+  if (value === Number.NEGATIVE_INFINITY) {
+    return 'Too small to estimate';
+  }
+  return Number.isFinite(value) ? Number(value).toLocaleString('en-US') : 'Unknown';
+}
+
+async function confirmCartesianProductSelection({
+  algorithm,
+  valueCounts = [],
+  requestConfirm,
+  threshold = CARTESIAN_CONFIRM_THRESHOLD,
+} = {}) {
+  if (algorithm !== CombinationAlgorithm.CARTESIAN_PRODUCT) {
+    return true;
+  }
+
+  const cartesianRowCount = calculateCartesianProductRows(valueCounts);
+  if (typeof requestConfirm !== 'function') {
+    return true;
+  }
+  if (Number.isFinite(cartesianRowCount) && cartesianRowCount <= threshold) {
+    return true;
+  }
+
+  return requestConfirm({
+    title: 'Cartesian product generation',
+    message: `You included cartesian product generation. Are you sure? this will generate ${formatCombinationCount(cartesianRowCount)} data rows.`,
+    okLabel: 'Run cartesian product',
+    cancelLabel: 'Skip cartesian product',
+  });
+}
+
 export {
+  CARTESIAN_CONFIRM_THRESHOLD,
   CombinationAlgorithm,
   N_WISE_DOCS_URL,
   COMBINATION_STRATEGIES,
   calculateCartesianProductRows,
+  confirmCartesianProductSelection,
+  formatCombinationCount,
   getAvailableStrengths,
   getStrengthExplanation,
   getStrategiesForStrength,

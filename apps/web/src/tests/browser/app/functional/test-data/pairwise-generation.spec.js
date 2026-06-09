@@ -119,4 +119,34 @@ test.describe('7. Test Data Generation', () => {
     expect(actualTriples).toEqual(expectedTriples);
     expectNoPageErrors(pageErrors);
   });
+
+  test('large cartesian combination runs require confirmation before generating', async ({ page }) => {
+    const { appPage, pageErrors } = await openApp(page);
+
+    await appPage.testDataPanel.expand();
+    await appPage.testDataPanel.expectExpanded();
+
+    await appPage.testDataPanel.setSchemaText(
+      'A\nenum(a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11)\n\nB\nenum(b1,b2,b3,b4,b5,b6,b7,b8,b9,b10,b11)\n\nC\nenum(c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11)\n\nD\nenum(d1,d2,d3,d4,d5,d6,d7,d8,d9,d10,d11)'
+    );
+
+    const initialRowCount = await appPage.gridEditor.renderer.countRows();
+
+    await appPage.testDataPanel.openGenerateCombinationsDialog();
+    await appPage.testDataPanel.setCombinationStrength(4);
+    await appPage.testDataPanel.chooseCombinationStrategy('Cartesian Product');
+    await appPage.testDataPanel.submitGenerateCombinationsDialog();
+
+    const confirmDialog = page.getByRole('dialog', { name: 'Cartesian product generation' });
+    await expect(confirmDialog).toBeVisible();
+    await expect(confirmDialog.getByText(/14,641 data rows/i)).toBeVisible();
+    await confirmDialog.getByRole('button', { name: 'Skip cartesian product' }).click();
+
+    await expect(confirmDialog).toBeHidden();
+    await expect.poll(async () => appPage.gridEditor.renderer.countRows()).toBe(initialRowCount);
+    await expect
+      .poll(async () => appPage.testDataPanel.getStatusText())
+      .toContain('Cartesian product generation skipped.');
+    expectNoPageErrors(pageErrors);
+  });
 });

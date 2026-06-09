@@ -49,5 +49,10 @@ describe('create-testenv SEO helpers', () => {
 
     expect(html).toContain('data-testenv-indicator');
     expect(html).toContain('content: "Test Environment"');
+    expect(html).toContain('top: 0;');
+    expect(html).toContain('left: 0;');
+    expect(html).toContain('border: 0;');
+    expect(html).toContain('box-shadow: none;');
+    expect(html).toContain('font: 700 6px/1.2 Arial, Helvetica, sans-serif;');
   });
 });

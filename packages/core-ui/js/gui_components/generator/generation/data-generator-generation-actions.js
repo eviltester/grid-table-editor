@@ -31,6 +31,7 @@ import {
   extractLiteralValueFromRuleSpec,
   extractRegexValueFromRuleSpec,
 } from '../../shared/schema-row-rule-mapper.js';
+import { confirmCartesianProductSelection } from './n-wise-generation-options.js';
 
 function createConfiguredGeneratorForPage({
   syncSchemaRowsFromTextMode,
@@ -355,6 +356,7 @@ async function generateGeneratorAllPairsDataFile({
 async function generateGeneratorCombinationsDataFile({
   createConfiguredGenerator,
   countEnumColumns,
+  getEnumValueCounts,
   getSelectedOutputType,
   exporter,
   clearGenerationStatus,
@@ -367,6 +369,7 @@ async function generateGeneratorCombinationsDataFile({
   clearPageError,
   scheduleClearGenerationStatus,
   selection,
+  requestConfirm,
 }) {
   const strength = Number.parseInt(selection?.strength, 10);
   const algorithm = selection?.algorithm;
@@ -379,6 +382,16 @@ async function generateGeneratorCombinationsDataFile({
   const configured = createConfiguredGenerator();
   if (configured.errors?.length > 0) {
     surfacePageError(schemaErrorsToText(configured.errors), { useSchemaStatus: true });
+    return;
+  }
+
+  const confirmed = await confirmCartesianProductSelection({
+    algorithm,
+    valueCounts: getEnumValueCounts?.() || [],
+    requestConfirm,
+  });
+  if (!confirmed) {
+    setGenerationStatus('Cartesian product generation skipped.', { severity: 'warning', dismissable: true });
     return;
   }
 

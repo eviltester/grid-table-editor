@@ -7,16 +7,17 @@ const TEST_BUILD_INDICATOR_STYLE = `<style data-testenv-indicator>
 body::before {
   content: "Test Environment";
   position: fixed;
-  top: 12px;
-  left: 12px;
+  top: 0;
+  left: 0;
   z-index: 2147483647;
-  padding: 0.45rem 0.75rem;
-  border: 1px solid rgba(110, 35, 12, 0.35);
-  border-radius: 999px;
+  margin: 0;
+  padding: 0.225rem 0.375rem;
+  border: 0;
+  border-radius: 0;
   background: rgba(255, 244, 214, 0.96);
   color: #6e230c;
-  box-shadow: 0 10px 24px rgba(110, 35, 12, 0.18);
-  font: 700 12px/1.2 Arial, Helvetica, sans-serif;
+  box-shadow: none;
+  font: 700 6px/1.2 Arial, Helvetica, sans-serif;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   pointer-events: none;

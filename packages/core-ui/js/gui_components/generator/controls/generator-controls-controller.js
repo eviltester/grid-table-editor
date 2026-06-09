@@ -41,11 +41,16 @@ class GeneratorControlsController {
         : this.state.loadingStatusMessage,
       selectedFormat: nextProps.selectedFormat || this.state.selectedFormat || 'csv',
       exportEncodingSettings: Object.prototype.hasOwnProperty.call(nextProps, 'exportEncodingSettings')
-        ? {
-            ...this.state.exportEncodingSettings,
-            ...(nextProps.exportEncodingSettings || {}),
-            includeBom: nextProps.exportEncodingSettings?.includeBom === true,
-          }
+        ? (() => {
+            const nextExportEncodingSettings = nextProps.exportEncodingSettings || {};
+            return {
+              ...this.state.exportEncodingSettings,
+              ...nextExportEncodingSettings,
+              includeBom: Object.prototype.hasOwnProperty.call(nextExportEncodingSettings, 'includeBom')
+                ? nextExportEncodingSettings.includeBom === true
+                : this.state.exportEncodingSettings.includeBom,
+            };
+          })()
         : this.state.exportEncodingSettings,
     };
   }

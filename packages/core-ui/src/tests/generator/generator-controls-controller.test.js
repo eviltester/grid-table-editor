@@ -121,6 +121,18 @@ describe('GeneratorControlsController', () => {
     });
   });
 
+  test('preserves includeBom when export encoding updates omit it', () => {
+    const controller = new GeneratorControlsController();
+
+    controller.setExportEncodingSettings({ includeBom: true });
+    controller.setExportEncodingSettings({ lineEnding: 'crlf' });
+
+    expect(controller.getState().exportEncodingSettings).toEqual({
+      lineEnding: 'crlf',
+      includeBom: true,
+    });
+  });
+
   test('tracks explicit status and loading state', () => {
     const controller = new GeneratorControlsController({
       props: {

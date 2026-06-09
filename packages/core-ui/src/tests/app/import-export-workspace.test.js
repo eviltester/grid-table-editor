@@ -39,9 +39,15 @@ function getCopyTextButtonLabel(documentObj) {
   return documentObj.querySelector('[data-role="text-preview-editor-root"] [data-role="copy-text-label"]');
 }
 
-function createHarness({ props = {}, services = {} } = {}) {
+function createHarness({ props = {}, services = {}, navigatorPlatform } = {}) {
   const dom = new JSDOM('<!doctype html><html><body><div id="root"></div></body></html>');
   const documentObj = dom.window.document;
+  if (typeof navigatorPlatform === 'string') {
+    Object.defineProperty(dom.window.navigator, 'platform', {
+      configurable: true,
+      value: navigatorPlatform,
+    });
+  }
   global.document = documentObj;
   global.window = dom.window;
   const exporter = {
@@ -223,6 +229,7 @@ describe('ImportExportWorkspace', () => {
     const clipboardService = { copyFromTextArea: jest.fn() };
     const downloadService = { downloadText: jest.fn() };
     const { component, documentObj, dom } = createHarness({
+      navigatorPlatform: 'Win32',
       services: {
         clipboardService,
         downloadService,

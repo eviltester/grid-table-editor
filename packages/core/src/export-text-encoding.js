@@ -11,7 +11,8 @@ function normalizePlatformToken(platform) {
 
 function resolveDefaultLineEndingForPlatform(platform) {
   const normalizedPlatform = normalizePlatformToken(platform);
-  return normalizedPlatform.includes('win') ? EXPORT_LINE_ENDINGS.crlf : EXPORT_LINE_ENDINGS.lf;
+  const isWindowsPlatform = normalizedPlatform.startsWith('win') || normalizedPlatform.includes('windows');
+  return isWindowsPlatform ? EXPORT_LINE_ENDINGS.crlf : EXPORT_LINE_ENDINGS.lf;
 }
 
 function resolveExportTextEncodingSettings(settings = {}, { platform } = {}) {

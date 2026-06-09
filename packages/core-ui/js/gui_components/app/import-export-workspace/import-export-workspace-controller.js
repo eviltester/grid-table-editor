@@ -80,10 +80,13 @@ class ImportExportWorkspaceController {
       this.state.fileExtension = nextProps.fileExtension || '.csv';
     }
     if (Object.prototype.hasOwnProperty.call(nextProps, 'exportEncodingSettings')) {
+      const nextExportEncodingSettings = nextProps.exportEncodingSettings || {};
       this.state.exportEncodingSettings = {
         ...this.state.exportEncodingSettings,
-        ...(nextProps.exportEncodingSettings || {}),
-        includeBom: nextProps.exportEncodingSettings?.includeBom === true,
+        ...nextExportEncodingSettings,
+        includeBom: Object.prototype.hasOwnProperty.call(nextExportEncodingSettings, 'includeBom')
+          ? nextExportEncodingSettings.includeBom === true
+          : this.state.exportEncodingSettings.includeBom,
       };
     }
   }

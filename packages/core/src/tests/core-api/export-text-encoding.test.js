@@ -12,6 +12,7 @@ describe('export text encoding', () => {
   });
 
   test('defaults to LF for non-Windows platforms', () => {
+    expect(resolveDefaultLineEndingForPlatform('darwin')).toBe(EXPORT_LINE_ENDINGS.lf);
     expect(resolveDefaultLineEndingForPlatform('linux')).toBe(EXPORT_LINE_ENDINGS.lf);
     expect(resolveDefaultLineEndingForPlatform('MacIntel')).toBe(EXPORT_LINE_ENDINGS.lf);
   });

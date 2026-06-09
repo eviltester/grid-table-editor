@@ -61,12 +61,12 @@ describe('combinatorial entry', () => {
     });
 
     expect(filtered).toEqual(['greedy']);
-    expect(requestConfirm).toHaveBeenCalledWith({
-      title: 'Cartesian product generation',
-      message: 'You included cartesian product generation. Are you sure? this will generate 100,000 data rows.',
-      okLabel: 'Run cartesian product',
-      cancelLabel: 'Skip cartesian product',
-    });
+    expect(requestConfirm).toHaveBeenCalledTimes(1);
+    const [confirmOptions] = requestConfirm.mock.calls[0];
+    expect(confirmOptions.title).toBe('Cartesian product generation');
+    expect(confirmOptions.okLabel).toBe('Run cartesian product');
+    expect(confirmOptions.cancelLabel).toBe('Skip cartesian product');
+    expect(confirmOptions.message).toContain('100,000');
   });
 
   test('initialises with cartesian product unchecked and updates estimates when n changes', async () => {

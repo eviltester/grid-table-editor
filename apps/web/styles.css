@@ -26,6 +26,8 @@ Light to dark grey green: F6FFF8, EAF4F4, CCE3DE, A4C3B2, 2D6A4F, 6B9080, 3D5249
   --button-bg: #2d6a4f;
   --button-text: #ffffff;
   --border-color: #a9d6e5;
+  --progress-info-color: #1f5f80;
+  --progress-info-border-color: rgba(31, 95, 128, 0.25);
 }
 
 body.theme-dark {
@@ -37,6 +39,8 @@ body.theme-dark {
   --button-bg: #1f9f84;
   --button-text: #ffffff;
   --border-color: #3a3b3c;
+  --progress-info-color: #89c2d9;
+  --progress-info-border-color: rgba(137, 194, 217, 0.35);
 }
 
 body {
@@ -1254,7 +1258,7 @@ body.theme-dark .generator-status-text[data-severity='info'] {
   min-height: 1.4rem;
   margin: 0;
   line-height: 1.4;
-  color: #1f5f80;
+  color: var(--progress-info-color);
 }
 
 .combinatorial-progress[data-state='running']::before {
@@ -1263,8 +1267,8 @@ body.theme-dark .generator-status-text[data-severity='info'] {
   width: 0.8rem;
   height: 0.8rem;
   margin-right: 0.45rem;
-  border: 2px solid rgba(31, 95, 128, 0.25);
-  border-top-color: #1f5f80;
+  border: 2px solid var(--progress-info-border-color);
+  border-top-color: var(--progress-info-color);
   border-radius: 50%;
   vertical-align: -0.1rem;
   animation: combinatorial-spin 0.9s linear infinite;
@@ -1338,6 +1342,13 @@ body.theme-dark .generator-status-text[data-severity='info'] {
 @keyframes combinatorial-spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .combinatorial-progress[data-state='running']::before {
+    animation: none;
+    transform: none;
   }
 }
 

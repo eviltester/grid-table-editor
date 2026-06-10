@@ -31,7 +31,7 @@ class TestDataRules {
   addConstraint(constraint) {
     this.constraints.push({
       sourceText: String(constraint?.sourceText ?? ''),
-      ast: constraint?.ast || null,
+      ast: constraint?.ast ?? null,
       terminator: constraint?.terminator || ';',
       referencedParameters: Array.isArray(constraint?.referencedParameters)
         ? constraint.referencedParameters.map((name) => String(name ?? '').trim())

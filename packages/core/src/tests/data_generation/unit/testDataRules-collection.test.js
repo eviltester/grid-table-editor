@@ -37,4 +37,12 @@ describe('TestDataRules collection behavior', () => {
 
     expect(rules.getRule('missing')).toBeUndefined();
   });
+
+  test('addConstraint preserves falsy AST values instead of coercing them to null', () => {
+    const rules = new TestDataRules();
+
+    rules.addConstraint({ sourceText: 'IF ...', ast: false });
+
+    expect(rules.constraints[0].ast).toBe(false);
+  });
 });

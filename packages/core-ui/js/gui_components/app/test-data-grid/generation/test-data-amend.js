@@ -6,7 +6,9 @@
  */
 
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
+import { CONSTRAINT_FAILURE_BATCH_SIZE } from '@anywaydata/core';
 import {
+  getGeneratorGenerationErrors,
   normaliseGeneratedCellValue,
   normaliseGeneratedRow as normaliseGeneratedRowValues,
   createTableFromGenerator as createTableFromGeneratorShared,
@@ -40,7 +42,7 @@ function createAmendedTable({ mode, desiredRowCount, generator, currentDataTable
     dataTable: sourceTable,
     noSelectedRows: false,
     generationErrors: [],
-    generationStats: { generatedRows: 0, failedRows: 0 },
+    generationStats: { generatedRows: 0, failedRows: 0, failedAttempts: 0 },
   };
 
   if (mode === TEST_DATA_MODES.AMEND_SELECTED) {
@@ -57,10 +59,15 @@ function createAmendedTable({ mode, desiredRowCount, generator, currentDataTable
         continue;
       }
       const generatedRow = generator.generateRow();
-      const generationErrors = typeof generator?.generationErrors === 'function' ? generator.generationErrors() : [];
+      const generationErrors = getGeneratorGenerationErrors(generator);
       if (generationErrors.length > 0) {
         result.generationErrors = generationErrors;
         result.generationStats.failedRows += 1;
+        result.generationStats.failedAttempts += generationErrors.some(
+          (error) => error?.code === 'constraint_generation_failed'
+        )
+          ? CONSTRAINT_FAILURE_BATCH_SIZE
+          : 1;
         return result;
       }
       applyGeneratedValuesToRow(rows[targetRowIndex], normaliseGeneratedRowValues(generatedRow), schemaHeaderIndexes);
@@ -76,10 +83,15 @@ function createAmendedTable({ mode, desiredRowCount, generator, currentDataTable
       rows.push(createBlankRow(headers.length));
     }
     const generatedRow = generator.generateRow();
-    const generationErrors = typeof generator?.generationErrors === 'function' ? generator.generationErrors() : [];
+    const generationErrors = getGeneratorGenerationErrors(generator);
     if (generationErrors.length > 0) {
       result.generationErrors = generationErrors;
       result.generationStats.failedRows += 1;
+      result.generationStats.failedAttempts += generationErrors.some(
+        (error) => error?.code === 'constraint_generation_failed'
+      )
+        ? CONSTRAINT_FAILURE_BATCH_SIZE
+        : 1;
       return result;
     }
     applyGeneratedValuesToRow(rows[rowIndex], normaliseGeneratedRowValues(generatedRow), schemaHeaderIndexes);

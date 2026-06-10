@@ -11,7 +11,10 @@ import {
   createPairwiseDataTable,
   createCombinationsDataTable,
 } from '../../../shared/test-data/generation/generation-controller.js';
-import { normaliseGeneratedRow } from '../../../shared/test-data/generation/generation-runtime.js';
+import {
+  getGeneratorGenerationErrors,
+  normaliseGeneratedRow,
+} from '../../../shared/test-data/generation/generation-runtime.js';
 import { isNWiseEligibleForSchemaRows } from '../../../shared/test-data/generation/ui-derived-state.js';
 import { EnumParser } from '@anywaydata/core/data_generation/utils/enumParser.js';
 import { CONSTRAINT_FAILURE_BATCH_SIZE } from '@anywaydata/core';
@@ -30,6 +33,8 @@ import {
   extractLiteralValueFromRuleSpec,
   extractRegexValueFromRuleSpec,
 } from '../../../shared/schema-row-rule-mapper.js';
+
+const MAX_CONSTRAINT_RETRY_BATCHES = 10;
 
 function createTestDataGenerationService({
   schemaTextToDataRules,
@@ -143,10 +148,6 @@ function createTestDataGenerationService({
     }
   }
 
-  function getGeneratorGenerationErrors(generator) {
-    return typeof generator?.generationErrors === 'function' ? generator.generationErrors() : [];
-  }
-
   function isConstraintGenerationFailure(generationErrors = []) {
     return (Array.isArray(generationErrors) ? generationErrors : []).some(
       (error) => String(error?.code || '') === 'constraint_generation_failed'
@@ -191,12 +192,20 @@ function createTestDataGenerationService({
     let generatedRows = 0;
     let failedRows = 0;
     let aborted = false;
+    let retryLimitReached = false;
+    let constraintFailureBatches = 0;
 
     while (generatedRows < desiredRowCount) {
       const generatedRow = generator.generateRow();
       const generationErrors = getGeneratorGenerationErrors(generator);
       if (isConstraintGenerationFailure(generationErrors)) {
         failedRows += CONSTRAINT_FAILURE_BATCH_SIZE;
+        constraintFailureBatches += 1;
+        if (constraintFailureBatches > MAX_CONSTRAINT_RETRY_BATCHES) {
+          retryLimitReached = true;
+          aborted = true;
+          break;
+        }
         const shouldContinue = await requestConstraintImpactDecision({ generatedRows, failedRows });
         if (!shouldContinue) {
           aborted = true;
@@ -213,7 +222,7 @@ function createTestDataGenerationService({
       generatedRows += 1;
     }
 
-    return { dataTable, generatedRows, failedRows, aborted, generationErrors: [] };
+    return { dataTable, generatedRows, failedRows, aborted, retryLimitReached, generationErrors: [] };
   }
 
   function countEnumColumns() {
@@ -500,8 +509,9 @@ function createTestDataGenerationService({
             generatedRows: monitoredGeneration.generatedRows,
             failedRows: monitoredGeneration.failedRows,
           });
-          showSchemaError(message);
-          setTestDataStatus(`${message} ${previewUpdated ? 'Grid and preview updated.' : 'Grid updated.'}`, {
+          const surfacedMessage = monitoredGeneration.retryLimitReached ? `${message} Retry limit reached.` : message;
+          showSchemaError(surfacedMessage);
+          setTestDataStatus(`${surfacedMessage} ${previewUpdated ? 'Grid and preview updated.' : 'Grid updated.'}`, {
             severity: 'warning',
             dismissable: true,
           });
@@ -557,7 +567,7 @@ function createTestDataGenerationService({
           if ((amendResult.generationErrors || []).length > 0) {
             constraintImpactMessage = buildConstraintImpactMessage({
               generatedRows: amendResult.generationStats?.generatedRows || 0,
-              failedRows: (amendResult.generationStats?.failedRows || 0) * CONSTRAINT_FAILURE_BATCH_SIZE,
+              failedRows: amendResult.generationStats?.failedAttempts || 0,
             });
             showSchemaError(constraintImpactMessage);
             dataTable = amendResult.dataTable;

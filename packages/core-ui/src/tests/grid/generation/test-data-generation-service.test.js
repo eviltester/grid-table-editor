@@ -777,4 +777,82 @@ describe('test-data-generation-service', () => {
       { severity: 'warning', dismissable: true }
     );
   });
+
+  test('generateTestData stops after repeated continue confirmations when constraints never recover', async () => {
+    const importer = { setGridFromGenericDataTable: jest.fn(() => Promise.resolve()) };
+    const requestConfirm = jest.fn(async () => true);
+    const setTestDataStatus = jest.fn();
+    const showSchemaError = jest.fn();
+    const generator = {
+      importSpec: jest.fn(),
+      compile: jest.fn(),
+      compiler: { validate: jest.fn() },
+      testDataRules: () => [{}],
+      isValid: () => true,
+      errors: () => [],
+      generateHeadersArray: () => ['Status'],
+      generateRow: () => null,
+      generationErrors: () => [{ code: 'constraint_generation_failed' }],
+    };
+
+    const service = createTestDataGenerationService({
+      TestDataGeneratorClass: function TestDataGeneratorClass() {
+        return generator;
+      },
+      PairwiseTestDataGeneratorClass: class {},
+      GenericDataTableClass: class FakeGenericDataTable {
+        constructor() {
+          this.headers = [];
+          this.rows = [];
+        }
+        setHeaders(headers) {
+          this.headers = headers;
+        }
+        appendDataRow(row) {
+          this.rows.push(row);
+        }
+        getRowCount() {
+          return this.rows.length;
+        }
+      },
+      TEST_DATA_MODES: {
+        NEW_TABLE: 'new-table',
+        AMEND_TABLE: 'amend-table',
+        AMEND_SELECTED: 'amend-selected',
+      },
+      normaliseCount: () => 1,
+      createTableFromGenerator: jest.fn(),
+      createAmendedTable: jest.fn(),
+      schemaRowsToSpec: jest.fn(() => 'Status\nenum("Open","Closed")'),
+      faker: {},
+      RandExp: function RandExp() {},
+      debouncer: { clear: jest.fn() },
+      syncSchemaTextFromGridBeforeGenerate: jest.fn(),
+      setTestDataStatus,
+      setTestDataLoadingStatus: jest.fn(),
+      showSchemaError,
+      yieldToUi: jest.fn(() => Promise.resolve()),
+      validateCurrentSchemaRows: jest.fn(() => ({
+        rows: [{ name: 'Status', sourceType: 'enum', value: '"Open","Closed"' }],
+        errors: [],
+      })),
+      getImporter: () => importer,
+      getTextPreviewRenderer: jest.fn(),
+      getMainGridExtras: jest.fn(),
+      getGenerationMode: () => 'new-table',
+      getRequestedRowCount: () => 1,
+      requestConfirm,
+    });
+
+    await service.generateTestData();
+
+    expect(requestConfirm).toHaveBeenCalledTimes(10);
+    expect(showSchemaError).toHaveBeenCalledWith(
+      'Schema Constraints are impacting row generation - generated 0 rows, failed to generate 11000 rows. Consider changing constraints to improve row generation. Retry limit reached.'
+    );
+    expect(setTestDataStatus).toHaveBeenCalledWith(
+      'Schema Constraints are impacting row generation - generated 0 rows, failed to generate 11000 rows. Consider changing constraints to improve row generation. Retry limit reached. Grid updated.',
+      { severity: 'warning', dismissable: true }
+    );
+  });
 });

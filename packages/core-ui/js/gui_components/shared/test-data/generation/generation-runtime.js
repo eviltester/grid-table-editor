@@ -146,6 +146,7 @@ function parseNonNegativeCount(value, { min = 0, max = null } = {}) {
 export {
   normaliseGeneratedCellValue,
   normaliseGeneratedRow,
+  getGeneratorGenerationErrors,
   createTableFromGenerator,
   createPairwiseTableFromGenerator,
   createCombinationsTableFromGenerator,

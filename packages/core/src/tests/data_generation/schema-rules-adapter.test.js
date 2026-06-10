@@ -5,6 +5,7 @@ import {
   dataRulesToSchemaText,
   schemaRowsToDataRules,
 } from '../../../js/data_generation/schema-rules-adapter.js';
+import { parseSchemaText } from '../../../js/data_generation/schema-conversion.js';
 
 describe('schema rules adapter', () => {
   test('returns dataRules for valid schema text', () => {
@@ -131,6 +132,23 @@ IF [Priority] = "high" THEN [Status] = "open" ENDIF`;
     });
 
     expect(rendered.text).toBe(schemaText);
+  });
+
+  test('returns constraint AST copies that do not share mutable state with the generator', () => {
+    const parsed = parseSchemaText({
+      schemaText: `Priority
+enum(high,low)
+Status
+enum(open,closed)
+
+IF [Priority] = "high" THEN [Status] = "open" ENDIF`,
+      faker,
+      RandExp,
+    });
+
+    parsed.constraints[0].ast.condition.left.name = 'Changed';
+
+    expect(parsed.generator.schemaConstraints()[0].ast.condition.left.name).toBe('Priority');
   });
 
   test('reports invalid enum values used in constraints', () => {

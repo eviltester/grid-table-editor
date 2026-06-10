@@ -1,4 +1,15 @@
 import { TestDataGenerator } from './testDataGenerator.js';
+
+function cloneConstraintAst(ast) {
+  if (ast == null) {
+    return null;
+  }
+  if (typeof structuredClone === 'function') {
+    return structuredClone(ast);
+  }
+  return JSON.parse(JSON.stringify(ast));
+}
+
 function cloneRule(rule) {
   return {
     name: String(rule?.name ?? ''),
@@ -11,7 +22,7 @@ function cloneRule(rule) {
 function cloneConstraint(constraint) {
   return {
     sourceText: String(constraint?.sourceText ?? ''),
-    ast: constraint?.ast || null,
+    ast: cloneConstraintAst(constraint?.ast),
     terminator: constraint?.terminator || ';',
     referencedParameters: Array.isArray(constraint?.referencedParameters)
       ? constraint.referencedParameters.map((name) => String(name ?? '').trim())

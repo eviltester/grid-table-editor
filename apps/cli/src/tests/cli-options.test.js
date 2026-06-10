@@ -52,6 +52,9 @@ test('amend command options are parsed', () => {
     'data.csv',
     '--input-format',
     'csv',
+    '--trim-input',
+    '--trim-input-fields',
+    'Name,Role',
     '-n',
     '3',
     '-f',
@@ -63,6 +66,8 @@ test('amend command options are parsed', () => {
   expect(opts.inputFormat).toBe('csv');
   expect(opts.rowCount).toBe(3);
   expect(opts.shouldStream).toBe(false);
+  expect(opts.trimInput).toBe(true);
+  expect(opts.trimInputFieldsCsv).toBe('Name,Role');
 });
 
 test('export encoding flags are parsed', () => {

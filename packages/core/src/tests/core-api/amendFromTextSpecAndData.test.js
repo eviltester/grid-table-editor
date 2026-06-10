@@ -220,3 +220,60 @@ test('malformed input data returns structured error', () => {
   expect(result.errors[0].code).toBe('input_parse_error');
   expect(result.errors[0].message).toContain('Unable to parse inputData using inputFormat "json".');
 });
+
+test('trimInput trims whitespace from every imported field before amend processing', () => {
+  const result = amendFromTextSpecAndData({
+    textSpec: 'Status\nActive',
+    inputData: '"Name","Role"\n"  Alice  ","  Engineer  "',
+    inputFormat: 'csv',
+    outputFormat: 'json',
+    rowCount: 0,
+    trimInput: true,
+  });
+
+  expect(result.ok).toBe(true);
+  expect(result.rows).toEqual([['Alice', 'Engineer', '']]);
+});
+
+test('trimInputFieldsCsv trims only listed imported columns with exact header matches', () => {
+  const result = amendFromTextSpecAndData({
+    textSpec: 'Status\nActive',
+    inputData: '"Name","Role"\n"  Alice  ","  Engineer  "',
+    inputFormat: 'csv',
+    outputFormat: 'json',
+    rowCount: 0,
+    trimInputFieldsCsv: 'Name',
+  });
+
+  expect(result.ok).toBe(true);
+  expect(result.rows).toEqual([['Alice', '  Engineer  ', '']]);
+});
+
+test('trimInput and trimInputFieldsCsv use union behavior and ignore blank duplicate field entries', () => {
+  const result = amendFromTextSpecAndData({
+    textSpec: 'Status\nActive',
+    inputData: '"Name","Role"\n"  Alice  ","  Engineer  "',
+    inputFormat: 'csv',
+    outputFormat: 'json',
+    rowCount: 0,
+    trimInput: true,
+    trimInputFieldsCsv: 'Role, ,Role',
+  });
+
+  expect(result.ok).toBe(true);
+  expect(result.rows).toEqual([['Alice', 'Engineer', '']]);
+});
+
+test('trimInputFieldsCsv does not trim unlisted or non-exact-match columns', () => {
+  const result = amendFromTextSpecAndData({
+    textSpec: 'Status\nActive',
+    inputData: '"Name","Role"\n"  Alice  ","  Engineer  "',
+    inputFormat: 'csv',
+    outputFormat: 'json',
+    rowCount: 0,
+    trimInputFieldsCsv: 'name,Unknown',
+  });
+
+  expect(result.ok).toBe(true);
+  expect(result.rows).toEqual([['  Alice  ', '  Engineer  ', '']]);
+});

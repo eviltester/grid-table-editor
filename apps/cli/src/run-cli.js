@@ -95,6 +95,8 @@ export async function runCliCommand({ options, platform }) {
       rowCount: options.rowCount,
       outputFormat,
       options: formatterOptions,
+      trimInput: options.trimInput === true,
+      trimInputFieldsCsv: options.trimInputFieldsCsv || '',
       unsafeFakerExpressions: options.unsafeFakerExpressions,
       stream: options.shouldStream,
     });

@@ -7,8 +7,10 @@ test.describe('1. Grid Basic Operations', () => {
 
     await appPage.gridEditor.expectVisible();
     const before = await appPage.gridEditor.renderer.countRows();
+    await appPage.gridEditor.expectTotalRows(before);
     await appPage.gridEditor.addRow();
     await expect.poll(async () => appPage.gridEditor.renderer.countRows()).toBe(before + 1);
+    await appPage.gridEditor.expectTotalRows(before + 1);
 
     const [columnName] = await appPage.gridEditor.header.getColumnNames();
     await appPage.gridEditor.renderer.setCellTextByColumnName(columnName, before, 'Test Data');

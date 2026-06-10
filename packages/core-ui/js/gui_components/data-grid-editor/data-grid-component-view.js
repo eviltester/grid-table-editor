@@ -1,6 +1,7 @@
 import { createTextInputDialogService } from '../shared/dialog-services/text-input-dialog-service.js';
 import { escapeHtml } from '../shared/html-escape.js';
 import { createGridToolbarComponent } from './grid-toolbar/index.js';
+import { createGridRowVisibilitySummaryComponent } from './grid-row-visibility-summary/index.js';
 import { showGridError } from './grid-error-surface.js';
 import { GuardedColumnEdits } from './shared/guarded-column-edits.js';
 import { renderColumnHeaderActionButtonsHtml } from './shared/column-header-action-buttons.js';
@@ -135,11 +136,15 @@ class DataGridComponentView {
     this.root = root;
     this.controller = controller;
     this.documentObj = resolveDocumentObj(documentObj, root);
+    this.windowObj = resolveWindowObj(services.windowObj, this.documentObj);
     this.services = services;
     this.toolbar = null;
     this.gridAdapter = null;
     this.gridReadyPromise = Promise.resolve(null);
     this.textInputDialogService = null;
+    this.unsubscribeGridChanged = null;
+    this.gridRowVisibilitySummary = null;
+    this.totalRowsFrame = null;
     this.contextMenuState = { open: false, x: 0, y: 0 };
     this.handleGridContextMenu = (event) => this.onGridContextMenu(event);
     this.handleRootClick = (event) => this.onRootClick(event);
@@ -170,6 +175,7 @@ class DataGridComponentView {
           role="status"
         ></div>
         <div id="myGrid" style="height: 500px; width:100%;" class="ag-theme-alpine" data-role="data-grid-root"></div>
+        <div data-role="grid-row-visibility-summary-root"></div>
         <div
           class="data-grid-context-menu"
           data-role="data-grid-context-menu"
@@ -184,7 +190,6 @@ class DataGridComponentView {
     const gridRoot = this.root.querySelector('[data-role="data-grid-root"]');
     const createGridToolbar = this.services.createGridToolbar || createGridToolbarComponent;
     this.textInputDialogService = createTextInputDialogService({ documentObj: this.documentObj });
-    const resolvedWindowObj = resolveWindowObj(this.services.windowObj, this.documentObj);
     const showScopedGridError = (message) =>
       showGridError(message, {
         documentObj: this.documentObj,
@@ -214,16 +219,35 @@ class DataGridComponentView {
         onUniqueColumnNamesChange: (uniqueColumnNames) => this.controller.setUniqueColumnNames(uniqueColumnNames),
       },
     });
+    const gridRowVisibilitySummaryRoot = this.root.querySelector('[data-role="grid-row-visibility-summary-root"]');
+    this.gridRowVisibilitySummary = createGridRowVisibilitySummaryComponent({
+      root: gridRowVisibilitySummaryRoot,
+      documentObj: this.documentObj,
+      props: {
+        totalRowCount: 0,
+        visibleRowCount: 0,
+        hasActiveFilters: false,
+      },
+    });
 
     this.gridAdapter = createTabulatorGridAdapter({
       rootElement: gridRoot,
       documentObj: this.documentObj,
-      windowObj: resolvedWindowObj,
-      TabulatorCtor: this.services.TabulatorCtor || resolvedWindowObj?.Tabulator || globalThis.Tabulator,
+      windowObj: this.windowObj,
+      TabulatorCtor: this.services.TabulatorCtor || this.windowObj?.Tabulator || globalThis.Tabulator,
       GridExtensionClass: this.services.GridExtensionClass || TabulatorGridExtension,
       tabulatorOptions,
     });
     this.gridReadyPromise = this.gridAdapter.whenReady();
+    this.gridReadyPromise.then(() => {
+      const gridExtras = this.getGridExtras();
+      this.unsubscribeGridChanged?.();
+      this.unsubscribeGridChanged =
+        typeof gridExtras?.onGridChanged === 'function'
+          ? gridExtras.onGridChanged(() => this.scheduleSyncTotalRows())
+          : null;
+      this.scheduleSyncTotalRows();
+    });
     gridRoot?.addEventListener('contextmenu', this.handleGridContextMenu);
     this.root.addEventListener('click', this.handleRootClick);
     this.root.addEventListener('change', this.handleRootChange);
@@ -233,9 +257,47 @@ class DataGridComponentView {
 
   render() {
     this.toolbar?.update?.(this.controller.getState());
+    this.scheduleSyncTotalRows();
     if (this.contextMenuState.open) {
       this.renderContextMenu();
     }
+  }
+
+  scheduleSyncTotalRows() {
+    if (this.totalRowsFrame !== null) {
+      this.windowObj?.cancelAnimationFrame?.(this.totalRowsFrame);
+      this.totalRowsFrame = null;
+    }
+
+    const requestAnimationFrameFn = this.windowObj?.requestAnimationFrame?.bind(this.windowObj);
+    if (typeof requestAnimationFrameFn !== 'function') {
+      this.syncTotalRows();
+      return;
+    }
+
+    this.totalRowsFrame = requestAnimationFrameFn(() => {
+      this.totalRowsFrame = null;
+      this.syncTotalRows();
+    });
+  }
+
+  syncTotalRows() {
+    if (!this.gridRowVisibilitySummary) {
+      return;
+    }
+
+    const visibilitySummary = this.getGridExtras()?.getRowVisibilitySummary?.() || null;
+    const totalRows = visibilitySummary?.totalRowCount ?? this.getGridExtras()?.getTotalRowCount?.() ?? 0;
+    const visibleRowCount = visibilitySummary?.visibleRowCount ?? this.getGridExtras()?.getVisibleRowCount?.() ?? 0;
+    const hasActiveFilters = visibilitySummary?.hasActiveFilters === true;
+    const normalizedTotalRows = Number.isFinite(totalRows) ? totalRows : 0;
+    const normalizedVisibleRowCount = Number.isFinite(visibleRowCount) ? visibleRowCount : 0;
+
+    this.gridRowVisibilitySummary.update({
+      totalRowCount: normalizedTotalRows,
+      visibleRowCount: normalizedVisibleRowCount,
+      hasActiveFilters,
+    });
   }
 
   getGridAdapter() {
@@ -409,6 +471,14 @@ class DataGridComponentView {
     this.documentObj?.removeEventListener?.('pointerdown', this.handleDocumentPointerDown);
     this.documentObj?.removeEventListener?.('keydown', this.handleDocumentKeyDown);
     this.closeContextMenu();
+    if (this.totalRowsFrame !== null) {
+      this.windowObj?.cancelAnimationFrame?.(this.totalRowsFrame);
+      this.totalRowsFrame = null;
+    }
+    this.unsubscribeGridChanged?.();
+    this.unsubscribeGridChanged = null;
+    this.gridRowVisibilitySummary?.destroy?.();
+    this.gridRowVisibilitySummary = null;
     this.toolbar?.destroy?.();
     this.toolbar = null;
     this.gridAdapter?.destroy?.();

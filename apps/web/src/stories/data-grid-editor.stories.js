@@ -42,7 +42,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'DataGridComponent is the Phase 7 app-side component boundary that composes the extracted GridToolbar with the shared late-mount-safe TabulatorGridAdapter. It preserves the current app DOM contract while moving the main grid onto the component model, including the live total-row status underneath the grid.',
+          'DataGridComponent is the Phase 7 app-side component boundary that composes the extracted GridToolbar, the dedicated GridRowVisibilitySummary MVC control, and the shared late-mount-safe TabulatorGridAdapter. It preserves the current app DOM contract while moving the main grid and its live row-summary status onto the component model.',
       },
     },
   },
@@ -59,7 +59,7 @@ export const EmptyGrid = {
     docs: {
       description: {
         story:
-          'Shows the componentized app-side grid editor with the real Tabulator renderer but without seeded rows. Try using Add Row to confirm the toolbar is mounted through the new component boundary and the real grid host is present.',
+          'Shows the componentized app-side grid editor with the real Tabulator renderer but without seeded rows. Try using Add Row to confirm the toolbar, extracted row-summary status, and real grid host are mounted through the new component boundary.',
       },
     },
   },
@@ -82,7 +82,7 @@ export const WithSampleData = {
     docs: {
       description: {
         story:
-          'Shows the same component after seeding real grid data through the shared grid extension API. This is the high-fidelity story for reviewing the real Tabulator-backed app grid surface.',
+          'Shows the same component after seeding real grid data through the shared grid extension API. This is the high-fidelity story for reviewing the real Tabulator-backed app grid surface together with its extracted row-summary control.',
       },
     },
   },

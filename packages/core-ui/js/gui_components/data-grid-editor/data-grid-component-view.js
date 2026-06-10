@@ -1,6 +1,7 @@
 import { createTextInputDialogService } from '../shared/dialog-services/text-input-dialog-service.js';
 import { escapeHtml } from '../shared/html-escape.js';
 import { createGridToolbarComponent } from './grid-toolbar/index.js';
+import { createGridRowVisibilitySummaryComponent } from './grid-row-visibility-summary/index.js';
 import { showGridError } from './grid-error-surface.js';
 import { GuardedColumnEdits } from './shared/guarded-column-edits.js';
 import { renderColumnHeaderActionButtonsHtml } from './shared/column-header-action-buttons.js';
@@ -142,6 +143,7 @@ class DataGridComponentView {
     this.gridReadyPromise = Promise.resolve(null);
     this.textInputDialogService = null;
     this.unsubscribeGridChanged = null;
+    this.gridRowVisibilitySummary = null;
     this.totalRowsFrame = null;
     this.contextMenuState = { open: false, x: 0, y: 0 };
     this.handleGridContextMenu = (event) => this.onGridContextMenu(event);
@@ -173,12 +175,7 @@ class DataGridComponentView {
           role="status"
         ></div>
         <div id="myGrid" style="height: 500px; width:100%;" class="ag-theme-alpine" data-role="data-grid-root"></div>
-        <div
-          data-role="grid-total-rows"
-          class="data-grid-total-rows"
-          aria-live="polite"
-          role="status"
-        >Total rows: 0</div>
+        <div data-role="grid-row-visibility-summary-root"></div>
         <div
           class="data-grid-context-menu"
           data-role="data-grid-context-menu"
@@ -220,6 +217,16 @@ class DataGridComponentView {
         onClearTable: () => this.controller.clearTable(),
         onFilterTextChange: (filterText) => this.controller.setFilterText(filterText),
         onUniqueColumnNamesChange: (uniqueColumnNames) => this.controller.setUniqueColumnNames(uniqueColumnNames),
+      },
+    });
+    const gridRowVisibilitySummaryRoot = this.root.querySelector('[data-role="grid-row-visibility-summary-root"]');
+    this.gridRowVisibilitySummary = createGridRowVisibilitySummaryComponent({
+      root: gridRowVisibilitySummaryRoot,
+      documentObj: this.documentObj,
+      props: {
+        totalRowCount: 0,
+        visibleRowCount: 0,
+        hasActiveFilters: false,
       },
     });
 
@@ -275,8 +282,7 @@ class DataGridComponentView {
   }
 
   syncTotalRows() {
-    const totalRowsElement = this.root?.querySelector?.('[data-role="grid-total-rows"]');
-    if (!totalRowsElement) {
+    if (!this.gridRowVisibilitySummary) {
       return;
     }
 
@@ -287,9 +293,11 @@ class DataGridComponentView {
     const normalizedTotalRows = Number.isFinite(totalRows) ? totalRows : 0;
     const normalizedVisibleRowCount = Number.isFinite(visibleRowCount) ? visibleRowCount : 0;
 
-    totalRowsElement.textContent = hasActiveFilters
-      ? `Total rows: ${normalizedTotalRows} | Filtered Visible: ${normalizedVisibleRowCount}`
-      : `Total rows: ${normalizedTotalRows}`;
+    this.gridRowVisibilitySummary.update({
+      totalRowCount: normalizedTotalRows,
+      visibleRowCount: normalizedVisibleRowCount,
+      hasActiveFilters,
+    });
   }
 
   getGridAdapter() {
@@ -469,6 +477,8 @@ class DataGridComponentView {
     }
     this.unsubscribeGridChanged?.();
     this.unsubscribeGridChanged = null;
+    this.gridRowVisibilitySummary?.destroy?.();
+    this.gridRowVisibilitySummary = null;
     this.toolbar?.destroy?.();
     this.toolbar = null;
     this.gridAdapter?.destroy?.();

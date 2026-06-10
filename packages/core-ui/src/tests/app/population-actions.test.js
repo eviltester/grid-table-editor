@@ -29,6 +29,7 @@ describe('PopulationActions', () => {
   test('renders actions, toggles pairwise visibility, and emits clicks', () => {
     const onGenerate = jest.fn();
     const onGeneratePairwise = jest.fn();
+    const onGenerateSchemaFromGrid = jest.fn();
 
     const component = createPopulationActionsComponent({
       root: document.getElementById('root'),
@@ -37,17 +38,20 @@ describe('PopulationActions', () => {
         generateHelpHtml: '<p>Generate to grid.</p>',
         generatePairwiseLabel: 'Generate Combinations',
         generatePairwiseHelpHtml: '<p>Generate n-wise combinations to grid.</p>',
+        generateSchemaHelpHtml: '<p>Generate enum-only schema from grid values.</p>',
         statusVisible: true,
       },
       callbacks: {
         onGenerate,
         onGeneratePairwise,
+        onGenerateSchemaFromGrid,
       },
     });
 
     const root = document.getElementById('root');
     const generateButton = root.querySelector('[data-role="generate-button"]');
     const generatePairwiseButton = root.querySelector('[data-role="generate-pairwise-button"]');
+    const generateSchemaButton = root.querySelector('[data-role="generate-schema-button"]');
     const generatePairwiseWrapper = root.querySelector('[data-role="generate-pairwise-button-wrapper"]');
     const helpButtons = root.querySelectorAll('[data-help-role="help-icon"]');
     const status = root.querySelector('[data-role="population-status"]');
@@ -58,12 +62,15 @@ describe('PopulationActions', () => {
     expect(document.getElementById('generatedata')).toBeNull();
     expect(document.getElementById('generateallpairs')).toBeNull();
     expect(document.getElementById('testdata-status')).toBeNull();
-    expect(helpButtons).toHaveLength(2);
+    expect(helpButtons).toHaveLength(3);
     expect(helpButtons[0].getAttribute('data-help-text')).toContain('Generate to grid.');
     expect(generatePairwiseButton.textContent).toContain('Generate Combinations');
     expect(helpButtons[1].getAttribute('data-help-text')).toContain('Generate n-wise combinations to grid.');
+    expect(generateSchemaButton.textContent).toContain('Grid to Enum Schema');
+    expect(helpButtons[2].getAttribute('data-help-text')).toContain('enum-only schema');
     expect(generateButton.querySelector('svg.shared-file-action-icon')).not.toBeNull();
     expect(generatePairwiseButton.querySelector('svg.shared-file-action-icon')).not.toBeNull();
+    expect(generateSchemaButton.querySelector('svg.shared-file-action-icon')).not.toBeNull();
 
     expect(generatePairwiseWrapper.style.display).toBe('none');
 
@@ -81,12 +88,18 @@ describe('PopulationActions', () => {
     component.setGeneratePairwiseBusy(false);
     expect(generateButton.getAttribute('aria-disabled')).toBe('false');
     expect(generatePairwiseButton.getAttribute('aria-disabled')).toBe('false');
+    component.setGenerateSchemaBusy(true);
+    expect(generateSchemaButton.disabled).toBe(true);
+    component.setGenerateSchemaBusy(false);
+    expect(generateSchemaButton.getAttribute('aria-disabled')).toBe('false');
 
     generateButton.click();
     generatePairwiseButton.click();
+    generateSchemaButton.click();
 
     expect(onGenerate).toHaveBeenCalled();
     expect(onGeneratePairwise).toHaveBeenCalled();
+    expect(onGenerateSchemaFromGrid).toHaveBeenCalled();
     component.destroy();
   });
 

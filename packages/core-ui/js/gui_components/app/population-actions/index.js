@@ -44,6 +44,10 @@ function createPopulationActionsComponent({
       controller.updateProps({ generatePairwiseBusy: isBusy === true });
       view.render();
     },
+    setGenerateSchemaBusy(isBusy) {
+      controller.updateProps({ generateSchemaBusy: isBusy === true });
+      view.render();
+    },
     getState() {
       return controller.getState();
     },

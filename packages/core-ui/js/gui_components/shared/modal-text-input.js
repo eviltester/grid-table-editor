@@ -18,6 +18,8 @@ function ensureModalElements(documentObj = getDefaultDocumentObj()) {
   backdrop.innerHTML = `
     <div class="text-input-modal" data-role="text-input-dialog" role="dialog" aria-modal="true" aria-labelledby="text-input-modal-title">
       <h3 id="text-input-modal-title" data-role="text-input-dialog-title" class="text-input-modal-title"></h3>
+      <p data-role="text-input-dialog-message" class="text-input-modal-message"></p>
+      <label for="text-input-modal-field" data-role="text-input-dialog-label" class="text-input-modal-label"></label>
       <input id="text-input-modal-field" data-role="text-input-dialog-field" type="text" class="text-input-modal-field" />
       <div class="text-input-modal-actions">
         <button id="text-input-modal-ok" data-role="text-input-dialog-ok" type="button">OK</button>
@@ -49,7 +51,18 @@ function createTextInputDialogComponent({
   };
 
   return {
-    requestTextInput({ title = 'Enter Value', initialValue = '', okLabel = 'OK', cancelLabel = 'Cancel' } = {}) {
+    requestTextInput({
+      title = 'Enter Value',
+      message = '',
+      label = '',
+      initialValue = '',
+      okLabel = 'OK',
+      cancelLabel = 'Cancel',
+      inputType = 'text',
+      min,
+      max,
+      step,
+    } = {}) {
       closeActiveModal(null);
       if (!backdrop) {
         return Promise.resolve(null);
@@ -57,12 +70,36 @@ function createTextInputDialogComponent({
 
       const modal = backdrop.querySelector('[data-role="text-input-dialog"]');
       const titleElem = backdrop.querySelector('[data-role="text-input-dialog-title"]');
+      const messageElem = backdrop.querySelector('[data-role="text-input-dialog-message"]');
+      const labelElem = backdrop.querySelector('[data-role="text-input-dialog-label"]');
       const inputElem = backdrop.querySelector('[data-role="text-input-dialog-field"]');
       const okButton = backdrop.querySelector('[data-role="text-input-dialog-ok"]');
       const cancelButton = backdrop.querySelector('[data-role="text-input-dialog-cancel"]');
 
-      titleElem.textContent = String(title || 'Enter Value');
+      titleElem.textContent = String(title ?? 'Enter Value');
+      const messageText = String(message ?? '');
+      messageElem.textContent = messageText;
+      messageElem.hidden = messageText.length === 0;
+      const labelText = String(label ?? '');
+      labelElem.textContent = labelText;
+      labelElem.hidden = labelText.length === 0;
       inputElem.value = String(initialValue ?? '');
+      inputElem.type = String(inputType || 'text');
+      if (min === undefined || min === null || min === '') {
+        inputElem.removeAttribute('min');
+      } else {
+        inputElem.setAttribute('min', String(min));
+      }
+      if (max === undefined || max === null || max === '') {
+        inputElem.removeAttribute('max');
+      } else {
+        inputElem.setAttribute('max', String(max));
+      }
+      if (step === undefined || step === null || step === '') {
+        inputElem.removeAttribute('step');
+      } else {
+        inputElem.setAttribute('step', String(step));
+      }
       okButton.textContent = String(okLabel || 'OK');
       cancelButton.textContent = String(cancelLabel || 'Cancel');
       backdrop.style.display = 'flex';

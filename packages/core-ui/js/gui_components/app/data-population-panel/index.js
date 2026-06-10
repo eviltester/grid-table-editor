@@ -72,6 +72,10 @@ function createDataPopulationPanelComponent({ root, props = {}, services = {}, c
     setGeneratePairwiseBusy(isBusy) {
       view.setGeneratePairwiseBusy(isBusy);
     },
+    setGenerateSchemaBusy(isBusy) {
+      controller.updateProps({ generateSchemaBusy: isBusy === true });
+      view.setGenerateSchemaBusy(isBusy);
+    },
     validateSchemaRows({ syncFromText = true } = {}) {
       if (syncFromText) {
         const isTextMode = view.getSchemaDefinition()?.getState?.()?.isTextMode === true;
@@ -89,6 +93,9 @@ function createDataPopulationPanelComponent({ root, props = {}, services = {}, c
     },
     syncSchemaTextFromRows() {
       return view.getSchemaDefinition()?.syncTextFromRows?.();
+    },
+    replaceSchemaRows(rows) {
+      return view.getSchemaDefinition()?.replaceRows?.(rows);
     },
     insertSampleSchema() {
       return view.getSchemaDefinition()?.insertSampleSchema?.();

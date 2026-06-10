@@ -58,9 +58,26 @@ describe('test data grid controller', () => {
       getMode: jest.fn(() => 'amend-selected'),
       setPairwiseVisible: jest.fn(),
       setRowCountValue: jest.fn(),
+      setGenerateSchemaBusy: jest.fn(),
       validateSchemaRows: jest.fn(() => ({ rows: [], errors: [] })),
       syncSchemaTextFromRows: jest.fn(),
       insertSampleSchema: jest.fn(),
+      getSchemaDefinition: jest.fn(() => ({ replaceRows: jest.fn() })),
+      getState: jest.fn(() => ({
+        schemaDefinitionProps: {
+          createBlankRow: () => ({
+            id: 'generated-row',
+            name: '',
+            sourceType: 'regex',
+            command: '',
+            params: '',
+            value: '',
+            comments: '',
+            leadingTextLines: [],
+          }),
+        },
+      })),
+      replaceSchemaRows: jest.fn(() => ({ rows: [{ name: 'Status' }], errors: [] })),
     };
     createTestDataGenerationServiceFn.mockImplementation((options) => {
       generationServiceOptions.push(options);
@@ -151,9 +168,17 @@ describe('test data grid controller', () => {
       getMode: jest.fn(() => 'new-table'),
       setPairwiseVisible: jest.fn(),
       setRowCountValue,
+      setGenerateSchemaBusy: jest.fn(),
       validateSchemaRows: jest.fn(() => ({ rows: [], errors: [] })),
       syncSchemaTextFromRows: jest.fn(),
       insertSampleSchema: jest.fn(),
+      getSchemaDefinition: jest.fn(() => ({ replaceRows: jest.fn() })),
+      getState: jest.fn(() => ({
+        schemaDefinitionProps: {
+          createBlankRow: () => ({ id: 'row-1', name: '', sourceType: 'regex', command: '', params: '', value: '' }),
+        },
+      })),
+      replaceSchemaRows: jest.fn(() => ({ rows: [], errors: [] })),
     };
     const createDataPopulationPanelComponentFn = jest.fn(({ callbacks }) => {
       panel.callbacks = callbacks;
@@ -204,6 +229,7 @@ describe('test data grid controller', () => {
         getMode: jest.fn(() => 'new-table'),
         setPairwiseVisible: jest.fn(),
         setRowCountValue: jest.fn(),
+        setGenerateSchemaBusy: jest.fn(),
       })),
     });
 
@@ -225,9 +251,17 @@ describe('test data grid controller', () => {
       getMode: jest.fn(() => 'new-table'),
       setPairwiseVisible: jest.fn(),
       setRowCountValue: jest.fn(),
+      setGenerateSchemaBusy: jest.fn(),
       validateSchemaRows: jest.fn(() => ({ rows: [], errors: [] })),
       syncSchemaTextFromRows: jest.fn(),
       insertSampleSchema: jest.fn(),
+      getSchemaDefinition: jest.fn(() => ({ replaceRows: jest.fn() })),
+      getState: jest.fn(() => ({
+        schemaDefinitionProps: {
+          createBlankRow: () => ({ id: 'row-1', name: '', sourceType: 'regex', command: '', params: '', value: '' }),
+        },
+      })),
+      replaceSchemaRows: jest.fn(() => ({ rows: [], errors: [] })),
     }));
 
     const control = createTestDataGenerationPanelManager({
@@ -273,9 +307,17 @@ describe('test data grid controller', () => {
       setRowCountValue: jest.fn(),
       setGenerateBusy: jest.fn(),
       setGeneratePairwiseBusy: jest.fn(),
+      setGenerateSchemaBusy: jest.fn(),
       validateSchemaRows: jest.fn(() => ({ rows: [], errors: [] })),
       syncSchemaTextFromRows: jest.fn(),
       insertSampleSchema: jest.fn(),
+      getSchemaDefinition: jest.fn(() => ({ replaceRows: jest.fn() })),
+      getState: jest.fn(() => ({
+        schemaDefinitionProps: {
+          createBlankRow: () => ({ id: 'row-1', name: '', sourceType: 'regex', command: '', params: '', value: '' }),
+        },
+      })),
+      replaceSchemaRows: jest.fn(() => ({ rows: [], errors: [] })),
     };
     const panelB = {
       destroy: jest.fn(),
@@ -285,9 +327,17 @@ describe('test data grid controller', () => {
       setRowCountValue: jest.fn(),
       setGenerateBusy: jest.fn(),
       setGeneratePairwiseBusy: jest.fn(),
+      setGenerateSchemaBusy: jest.fn(),
       validateSchemaRows: jest.fn(() => ({ rows: [], errors: [] })),
       syncSchemaTextFromRows: jest.fn(),
       insertSampleSchema: jest.fn(),
+      getSchemaDefinition: jest.fn(() => ({ replaceRows: jest.fn() })),
+      getState: jest.fn(() => ({
+        schemaDefinitionProps: {
+          createBlankRow: () => ({ id: 'row-1', name: '', sourceType: 'regex', command: '', params: '', value: '' }),
+        },
+      })),
+      replaceSchemaRows: jest.fn(() => ({ rows: [], errors: [] })),
     };
     const generationServiceOptions = [];
     const createTestDataGenerationServiceFn = jest.fn((options) => {
@@ -370,5 +420,304 @@ describe('test data grid controller', () => {
     } finally {
       global.document = originalDocument;
     }
+  });
+
+  test('builds enum schema rows from the current grid and replaces the schema after the user accepts', async () => {
+    const requestTextInput = jest.fn(async () => '2');
+    const textInputDialogService = {
+      requestTextInput,
+      destroy: jest.fn(),
+    };
+    const confirmDialogService = {
+      requestConfirm: jest.fn(async () => true),
+      destroy: jest.fn(),
+    };
+    const panel = {
+      destroy: jest.fn(),
+      getMode: jest.fn(() => 'new-table'),
+      setPairwiseVisible: jest.fn(),
+      setRowCountValue: jest.fn(),
+      setGenerateSchemaBusy: jest.fn(),
+      validateSchemaRows: jest.fn(() => ({ rows: [], errors: [] })),
+      syncSchemaTextFromRows: jest.fn(),
+      insertSampleSchema: jest.fn(),
+      getSchemaDefinition: jest.fn(() => ({ replaceRows: jest.fn() })),
+      getState: jest.fn(() => ({
+        schemaDefinitionProps: {
+          createBlankRow: () => ({
+            id: 'generated-row',
+            name: '',
+            sourceType: 'regex',
+            command: '',
+            params: '',
+            value: '',
+            comments: '',
+            leadingTextLines: [],
+          }),
+        },
+      })),
+      replaceSchemaRows: jest.fn(() => ({ rows: [{ name: 'Status' }], errors: [] })),
+    };
+    const createDataPopulationPanelComponentFn = jest.fn(({ callbacks }) => {
+      panel.callbacks = callbacks;
+      return panel;
+    });
+
+    const control = createTestDataGenerationPanelManager({
+      documentObj: document,
+      initializeSchemaErrorDisplayFn: jest.fn(),
+      identifyFakerCommandsFn: jest.fn(),
+      createTestDataGenerationServiceFn: jest.fn(() => ({
+        updatePairwiseButtonVisibility: jest.fn(),
+        generateTestData: jest.fn(),
+        generatePairwiseTestData: jest.fn(),
+      })),
+      createDataPopulationPanelComponentFn,
+      createTestDataUiStatusServiceFn: jest.fn(() => ({
+        setTestDataStatus: jest.fn(),
+        setTestDataLoadingStatus: jest.fn(),
+        clearPendingTestDataStatusReset: jest.fn(),
+        scheduleTestDataStatusReset: jest.fn(),
+        destroy: jest.fn(),
+      })),
+      createCombinationsDialogComponentFn: jest.fn(() => ({ destroy: jest.fn() })),
+    });
+
+    control.mountTestDataGenerationPanel(
+      'host',
+      {},
+      {},
+      {
+        getGridAsGenericDataTable: jest.fn(() => ({
+          getHeaders: () => ['Status', 'Priority'],
+          getRowCount: () => 4,
+          getCell: (rowIndex, columnIndex) =>
+            [
+              ['active', 'high'],
+              ['pending', 'low'],
+              ['active', 'low'],
+              ['inactive', 'high'],
+            ][rowIndex][columnIndex],
+        })),
+      }
+    );
+
+    const controlWithDialogs = createTestDataGenerationPanelManager({
+      documentObj: document,
+      initializeSchemaErrorDisplayFn: jest.fn(),
+      identifyFakerCommandsFn: jest.fn(),
+      createTestDataGenerationServiceFn: jest.fn(() => ({
+        updatePairwiseButtonVisibility: jest.fn(),
+        generateTestData: jest.fn(),
+        generatePairwiseTestData: jest.fn(),
+      })),
+      createDataPopulationPanelComponentFn,
+      createTestDataUiStatusServiceFn: jest.fn(() => ({
+        setTestDataStatus: jest.fn(),
+        setTestDataLoadingStatus: jest.fn(),
+        clearPendingTestDataStatusReset: jest.fn(),
+        scheduleTestDataStatusReset: jest.fn(),
+        destroy: jest.fn(),
+      })),
+      createCombinationsDialogComponentFn: jest.fn(() => ({ destroy: jest.fn() })),
+      createTextInputDialogServiceFn: jest.fn(() => textInputDialogService),
+      createConfirmDialogServiceFn: jest.fn(() => confirmDialogService),
+    });
+
+    controlWithDialogs.mountTestDataGenerationPanel(
+      'host',
+      {},
+      {},
+      {
+        getGridAsGenericDataTable: jest.fn(() => ({
+          getHeaders: () => ['Status', 'Priority'],
+          getRowCount: () => 4,
+          getCell: (rowIndex, columnIndex) =>
+            [
+              ['active', 'high'],
+              ['pending', 'low'],
+              ['active', 'low'],
+              ['inactive', 'high'],
+            ][rowIndex][columnIndex],
+        })),
+      }
+    );
+
+    await panel.callbacks.onGenerateSchemaFromGrid();
+
+    expect(requestTextInput).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: 'Grid to Enum Schema',
+        message: '- largest Column has 3 unique values',
+        label: 'Limit imported enum(s) to max size of',
+        initialValue: '3',
+        inputType: 'number',
+      })
+    );
+    expect(confirmDialogService.requestConfirm).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: expect.stringContaining('Truncate to first 2 values'),
+      })
+    );
+    expect(panel.replaceSchemaRows).toHaveBeenCalledWith([
+      expect.objectContaining({ name: 'Status', sourceType: 'enum', value: 'active,pending' }),
+      expect.objectContaining({ name: 'Priority', sourceType: 'enum', value: 'high,low' }),
+    ]);
+    expect(panel.setGenerateSchemaBusy.mock.calls).toEqual([[true], [false]]);
+  });
+
+  test('caps the suggested enum limit prompt at 256 when the grid has more unique values', async () => {
+    const requestTextInput = jest.fn(async () => null);
+    const textInputDialogService = {
+      requestTextInput,
+      destroy: jest.fn(),
+    };
+    const panel = {
+      destroy: jest.fn(),
+      getMode: jest.fn(() => 'new-table'),
+      setPairwiseVisible: jest.fn(),
+      setRowCountValue: jest.fn(),
+      setGenerateSchemaBusy: jest.fn(),
+      validateSchemaRows: jest.fn(() => ({ rows: [], errors: [] })),
+      syncSchemaTextFromRows: jest.fn(),
+      insertSampleSchema: jest.fn(),
+      getSchemaDefinition: jest.fn(() => ({ replaceRows: jest.fn() })),
+      getState: jest.fn(() => ({
+        schemaDefinitionProps: {
+          createBlankRow: () => ({
+            id: 'generated-row',
+            name: '',
+            sourceType: 'regex',
+            command: '',
+            params: '',
+            value: '',
+            comments: '',
+            leadingTextLines: [],
+          }),
+        },
+      })),
+      replaceSchemaRows: jest.fn(() => ({ rows: [], errors: [] })),
+    };
+    const createDataPopulationPanelComponentFn = jest.fn(({ callbacks }) => {
+      panel.callbacks = callbacks;
+      return panel;
+    });
+
+    const control = createTestDataGenerationPanelManager({
+      documentObj: document,
+      initializeSchemaErrorDisplayFn: jest.fn(),
+      identifyFakerCommandsFn: jest.fn(),
+      createTestDataGenerationServiceFn: jest.fn(() => ({
+        updatePairwiseButtonVisibility: jest.fn(),
+        generateTestData: jest.fn(),
+        generatePairwiseTestData: jest.fn(),
+      })),
+      createDataPopulationPanelComponentFn,
+      createTestDataUiStatusServiceFn: jest.fn(() => ({
+        setTestDataStatus: jest.fn(),
+        setTestDataLoadingStatus: jest.fn(),
+        clearPendingTestDataStatusReset: jest.fn(),
+        scheduleTestDataStatusReset: jest.fn(),
+        destroy: jest.fn(),
+      })),
+      createCombinationsDialogComponentFn: jest.fn(() => ({ destroy: jest.fn() })),
+      createTextInputDialogServiceFn: jest.fn(() => textInputDialogService),
+    });
+
+    control.mountTestDataGenerationPanel(
+      'host',
+      {},
+      {},
+      {
+        getGridAsGenericDataTable: jest.fn(() => ({
+          getHeaders: () => ['Status'],
+          getRowCount: () => 300,
+          getCell: (rowIndex) => `value-${rowIndex}`,
+        })),
+      }
+    );
+
+    await panel.callbacks.onGenerateSchemaFromGrid();
+
+    expect(requestTextInput).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: '- largest Column has 300 unique values',
+        initialValue: '256',
+        inputType: 'number',
+      })
+    );
+    expect(panel.replaceSchemaRows).not.toHaveBeenCalled();
+  });
+
+  test('resets the schema busy flag when loading status throws during grid-to-enum startup', async () => {
+    const panel = {
+      destroy: jest.fn(),
+      getMode: jest.fn(() => 'new-table'),
+      setPairwiseVisible: jest.fn(),
+      setRowCountValue: jest.fn(),
+      setGenerateSchemaBusy: jest.fn(),
+      validateSchemaRows: jest.fn(() => ({ rows: [], errors: [] })),
+      syncSchemaTextFromRows: jest.fn(),
+      insertSampleSchema: jest.fn(),
+      getSchemaDefinition: jest.fn(() => ({ replaceRows: jest.fn() })),
+      getState: jest.fn(() => ({
+        schemaDefinitionProps: {
+          createBlankRow: () => ({
+            id: 'generated-row',
+            name: '',
+            sourceType: 'regex',
+            command: '',
+            params: '',
+            value: '',
+            comments: '',
+            leadingTextLines: [],
+          }),
+        },
+      })),
+      replaceSchemaRows: jest.fn(() => ({ rows: [], errors: [] })),
+    };
+    const createDataPopulationPanelComponentFn = jest.fn(({ callbacks }) => {
+      panel.callbacks = callbacks;
+      return panel;
+    });
+    const loadingError = new Error('status torn down');
+
+    const control = createTestDataGenerationPanelManager({
+      documentObj: document,
+      initializeSchemaErrorDisplayFn: jest.fn(),
+      identifyFakerCommandsFn: jest.fn(),
+      createTestDataGenerationServiceFn: jest.fn(() => ({
+        updatePairwiseButtonVisibility: jest.fn(),
+        generateTestData: jest.fn(),
+        generatePairwiseTestData: jest.fn(),
+      })),
+      createDataPopulationPanelComponentFn,
+      createTestDataUiStatusServiceFn: jest.fn(() => ({
+        setTestDataStatus: jest.fn(),
+        setTestDataLoadingStatus: jest.fn(() => {
+          throw loadingError;
+        }),
+        clearPendingTestDataStatusReset: jest.fn(),
+        scheduleTestDataStatusReset: jest.fn(),
+        destroy: jest.fn(),
+      })),
+      createCombinationsDialogComponentFn: jest.fn(() => ({ destroy: jest.fn() })),
+    });
+
+    control.mountTestDataGenerationPanel(
+      'host',
+      {},
+      {},
+      {
+        getGridAsGenericDataTable: jest.fn(() => ({
+          getHeaders: () => ['Status'],
+          getRowCount: () => 1,
+          getCell: () => 'active',
+        })),
+      }
+    );
+
+    await expect(panel.callbacks.onGenerateSchemaFromGrid()).rejects.toThrow(loadingError);
+    expect(panel.setGenerateSchemaBusy.mock.calls).toEqual([[true], [false]]);
   });
 });

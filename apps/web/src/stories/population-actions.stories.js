@@ -26,8 +26,10 @@ function renderPopulationActionsStory(args) {
       generatePairwiseBusy: args.generatePairwiseBusy,
       generateLabel: args.generateLabel,
       generatePairwiseLabel: args.generatePairwiseLabel,
+      generateSchemaLabel: 'Grid to Enum Schema',
       generateHelpHtml: args.generateHelpHtml,
       generatePairwiseHelpHtml: args.generatePairwiseHelpHtml,
+      generateSchemaHelpHtml: '<p>Scan the current grid and build an enum-only schema from visible values.</p>',
     },
     callbacks: {
       onGenerate: () => {
@@ -37,6 +39,10 @@ function renderPopulationActionsStory(args) {
       onGeneratePairwise: () => {
         args.onGeneratePairwise?.();
         result.textContent = 'action:generate-secondary';
+      },
+      onGenerateSchemaFromGrid: () => {
+        args.onGenerateSchemaFromGrid?.();
+        result.textContent = 'action:generate-schema';
       },
     },
   });
@@ -79,6 +85,7 @@ const meta = {
       '<p>Generate n-wise combinations from enum columns in the current schema directly into the grid.</p><p><a class="helplink" href="/docs/test-data/n-wise-testing" target="_blank" rel="noopener noreferrer">N-wise generation docs</a></p>',
     onGenerate: fn(),
     onGeneratePairwise: fn(),
+    onGenerateSchemaFromGrid: fn(),
   },
   argTypes: {
     pairwiseVisible: {
@@ -117,6 +124,10 @@ const meta = {
       description: 'Storybook action fired when the secondary action button is clicked.',
       table: { category: 'Events' },
     },
+    onGenerateSchemaFromGrid: {
+      description: 'Storybook action fired when the Grid to Enum Schema button is clicked.',
+      table: { category: 'Events' },
+    },
   },
   render: renderPopulationActionsStory,
 };
@@ -137,7 +148,8 @@ export const Default = {
     const canvas = within(canvasElement);
     await expect(canvas.getByRole('button', { name: 'Generate', exact: true })).toBeEnabled();
     await expect(canvas.queryByRole('button', { name: 'Generate Combinations' })).toBeNull();
-    await expect(canvas.getAllByRole('button', { name: /show .* help/i })).toHaveLength(1);
+    await expect(canvas.getByRole('button', { name: 'Grid to Enum Schema' })).toBeVisible();
+    await expect(canvas.getAllByRole('button', { name: /show .* help/i })).toHaveLength(2);
     await userEvent.click(canvas.getByRole('button', { name: 'Generate', exact: true }));
     await expect(canvas.getByText('action:generate')).toBeVisible();
   },
@@ -160,7 +172,8 @@ export const PairwiseAvailable = {
     const canvas = within(canvasElement);
     await expect(canvas.getByRole('button', { name: 'Generate Combinations' })).toBeVisible();
     await expect(canvas.getByRole('button', { name: 'Generate Combinations' })).toBeEnabled();
-    await expect(canvas.getAllByRole('button', { name: /show .* help/i })).toHaveLength(2);
+    await expect(canvas.getByRole('button', { name: 'Grid to Enum Schema' })).toBeVisible();
+    await expect(canvas.getAllByRole('button', { name: /show .* help/i })).toHaveLength(3);
     await userEvent.click(canvas.getByRole('button', { name: 'Generate Combinations' }));
     await expect(canvas.getByText('action:generate-secondary')).toBeVisible();
   },
@@ -185,6 +198,7 @@ export const BusyStates = {
     const canvas = within(canvasElement);
     await expect(canvas.getByRole('button', { name: 'Generate', exact: true })).toBeDisabled();
     await expect(canvas.getByRole('button', { name: 'Generate Combinations' })).toBeDisabled();
+    await expect(canvas.getByRole('button', { name: 'Grid to Enum Schema' })).toBeEnabled();
     await expect(canvas.getByRole('button', { name: 'Generate', exact: true })).toHaveAttribute(
       'aria-disabled',
       'true'

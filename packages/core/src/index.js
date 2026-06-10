@@ -32,7 +32,7 @@ if (typeof globalThis.Papa === 'undefined') {
 }
 
 const DEFAULT_FORMAT = 'json';
-const CONSTRAINT_FAILURE_BATCH_SIZE = 1000;
+export const CONSTRAINT_FAILURE_BATCH_SIZE = 1000;
 const SUPPORTED_FORMATS = [
   'csv',
   'dsv',

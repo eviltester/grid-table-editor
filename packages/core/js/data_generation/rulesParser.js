@@ -3,26 +3,56 @@ import { SchemaParsingErrors } from './schema-parsing-errors.js';
 import { parseConstraintText } from './schema-constraint-parser.js';
 
 function startsConstraint(trimmedLine) {
-  return /^IF\b/i.test(trimmedLine);
+  return /^IF\s+(?:\[|\(|NOT\b)/i.test(trimmedLine);
+}
+
+function isEscapedQuote(text, index) {
+  let backslashCount = 0;
+  let back = index - 1;
+  while (back >= 0 && text[back] === '\\') {
+    backslashCount += 1;
+    back -= 1;
+  }
+  return backslashCount % 2 !== 0;
 }
 
 function findConstraintTerminatorIndex(text) {
   let inQuote = null;
+  let inParameter = false;
   for (let index = 0; index < text.length; index += 1) {
     const char = text[index];
-    if ((char === '"' || char === "'") && text[index - 1] !== '\\') {
-      inQuote = inQuote === char ? null : inQuote || char;
+    if (char === '"' || char === "'") {
+      if (!isEscapedQuote(text, index)) {
+        inQuote = inQuote === char ? null : inQuote || char;
+      }
       continue;
     }
     if (inQuote) {
       continue;
     }
+    if (char === '[') {
+      inParameter = true;
+      continue;
+    }
+    if (char === ']' && inParameter) {
+      inParameter = false;
+      continue;
+    }
+    if (inParameter) {
+      continue;
+    }
     if (char === ';') {
       return index;
     }
+    if (
+      text.slice(index, index + 5).toUpperCase() === 'ENDIF' &&
+      !/[A-Z0-9_]/i.test(text[index - 1] || '') &&
+      !/[A-Z0-9_]/i.test(text[index + 5] || '')
+    ) {
+      return index;
+    }
   }
-  const endifMatch = text.match(/\bENDIF\b/i);
-  return endifMatch ? endifMatch.index : -1;
+  return -1;
 }
 
 function collectConstraintBlock(defnLines, startIndex) {

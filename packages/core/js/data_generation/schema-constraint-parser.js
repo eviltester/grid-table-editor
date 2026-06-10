@@ -382,11 +382,27 @@ function parseConstraint(tokens, { sourceText = '' } = {}) {
     return parseTerm();
   }
 
-  function parsePredicate() {
+  function parseAndPredicate() {
     let left = parseClause();
-    while (stream.peek()?.type === 'AND' || stream.peek()?.type === 'OR') {
+    while (stream.peek()?.type === 'AND') {
       const operator = stream.consume();
       const right = parseClause();
+      left = {
+        kind: 'logical',
+        operator: operator.type,
+        left,
+        right,
+        line: operator.line,
+      };
+    }
+    return left;
+  }
+
+  function parsePredicate() {
+    let left = parseAndPredicate();
+    while (stream.peek()?.type === 'OR') {
+      const operator = stream.consume();
+      const right = parseAndPredicate();
       left = {
         kind: 'logical',
         operator: operator.type,

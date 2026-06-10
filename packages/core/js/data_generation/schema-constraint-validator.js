@@ -19,6 +19,14 @@ function matchesLikePattern(value, pattern) {
   return new RegExp(`^${escapeRegexPattern(pattern)}$`).test(normalizeScalarValue(value));
 }
 
+function buildRegexMatcher(ruleSpec) {
+  try {
+    return new RegExp(`^(?:${String(ruleSpec || '')})$`);
+  } catch {
+    return null;
+  }
+}
+
 function matchesRuleScalarValue(rule, value) {
   const normalizedValue = normalizeScalarValue(value);
   switch (
@@ -28,8 +36,10 @@ function matchesRuleScalarValue(rule, value) {
   ) {
     case 'enum':
       return EnumParser.extractEnumValues(rule.ruleSpec).includes(normalizedValue);
-    case 'regex':
-      return new RegExp(`^(?:${String(rule.ruleSpec || '')})$`).test(normalizedValue);
+    case 'regex': {
+      const matcher = buildRegexMatcher(rule.ruleSpec);
+      return matcher ? matcher.test(normalizedValue) : null;
+    }
     case 'literal':
       return normalizeScalarValue(rule.ruleSpec) === normalizedValue;
     default:

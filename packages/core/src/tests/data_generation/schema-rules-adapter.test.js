@@ -173,6 +173,26 @@ IF [Ticket] = "bob" THEN [Ticket] <> "xyz" ENDIF`,
     );
   });
 
+  test('keeps invalid regex rule errors stable when constraints reference the same column', () => {
+    const parsed = schemaTextToDataRules({
+      schemaText: `Ticket
+regex([)
+
+IF [Ticket] = "ABC-1234" THEN [Ticket] <> "XYZ-9999" ENDIF`,
+      faker,
+      RandExp,
+    });
+
+    expect(parsed.dataRules).toEqual([]);
+    expect(() => parsed.errors).not.toThrow();
+    expect(parsed.errors).toContainEqual(
+      expect.objectContaining({
+        code: 'compiler_validation_error',
+        column: 'Ticket',
+      })
+    );
+  });
+
   test('converts schema rows to data rules with canonical validation errors', () => {
     const result = schemaRowsToDataRules({
       schemaRows: [

@@ -14,6 +14,7 @@ import {
 import { normaliseGeneratedRow } from '../../../shared/test-data/generation/generation-runtime.js';
 import { isNWiseEligibleForSchemaRows } from '../../../shared/test-data/generation/ui-derived-state.js';
 import { EnumParser } from '@anywaydata/core/data_generation/utils/enumParser.js';
+import { CONSTRAINT_FAILURE_BATCH_SIZE } from '@anywaydata/core';
 import {
   CombinationAlgorithm,
   DEFAULT_AETG_RUNS,
@@ -30,8 +31,6 @@ import {
   extractRegexValueFromRuleSpec,
 } from '../../../shared/schema-row-rule-mapper.js';
 
-const CONSTRAINT_FAILURE_BATCH_SIZE = 1000;
-
 function createTestDataGenerationService({
   schemaTextToDataRules,
   TestDataGeneratorClass,
@@ -40,7 +39,6 @@ function createTestDataGenerationService({
   GenericDataTableClass,
   TEST_DATA_MODES,
   normaliseCount,
-  createTableFromGenerator: _createTableFromGenerator,
   createAmendedTable,
   schemaRowsToSpec,
   faker,

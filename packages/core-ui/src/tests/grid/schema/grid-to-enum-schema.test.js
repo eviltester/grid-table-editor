@@ -74,4 +74,24 @@ describe('grid-to-enum-schema', () => {
       }),
     ]);
   });
+
+  test('quotes enum values that contain commas so they stay single choices', () => {
+    const table = createTable({
+      headers: ['City'],
+      rows: [['New York, NY'], ['London'], ['New York, NY']],
+    });
+
+    const result = createEnumSchemaRowsFromGrid({
+      dataTable: table,
+      createBlankRow: () => ({ id: 'row', sourceType: 'regex', value: 'seed' }),
+    });
+
+    expect(result.rows).toEqual([
+      expect.objectContaining({
+        name: 'City',
+        sourceType: 'enum',
+        value: '"New York, NY",London',
+      }),
+    ]);
+  });
 });

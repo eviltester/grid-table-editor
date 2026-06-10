@@ -215,15 +215,13 @@ function createTestDataGenerationPanelManager({
       return false;
     }
 
-    state.dataPopulationPanel?.setGenerateSchemaBusy?.(true);
-    statusServiceApi.setTestDataLoadingStatus('Scanning grid for enum schema...');
-
     try {
+      state.dataPopulationPanel?.setGenerateSchemaBusy?.(true);
+      statusServiceApi.setTestDataLoadingStatus('Scanning grid for enum schema...');
       const dataTable = await Promise.resolve(gridExtras.getGridAsGenericDataTable());
       const initialSummary = createEnumSchemaRowsFromGrid({
         dataTable,
         maxEnumValues: DEFAULT_ENUM_LIMIT,
-        createBlankRow,
       });
 
       if (initialSummary.usableColumns.length === 0) {

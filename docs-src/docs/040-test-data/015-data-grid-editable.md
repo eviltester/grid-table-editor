@@ -60,7 +60,7 @@ The default value is:
 - the largest column unique-value count when it is `256` or less
 - `256` when the largest column has more than `256` unique values
 
-If the chosen limit is lower than the number of unique values in one or more columns then AnyWayData will ask for confirmation before truncating the schema. Truncation keeps the first values seen in current grid row order.
+If the chosen limit is lower than the number of unique values in one or more columns, then AnyWayData will ask for confirmation before truncating the schema. Truncation keeps the first values seen in current grid row order.
 
 When accepted, the generated enum schema replaces the existing schema definition in the Test Data editor. The schema grid, schema text area, validation state, and pairwise button visibility are all refreshed automatically.
 
@@ -136,5 +136,4 @@ Press the `[Generate]` button to generate the data.
 The schema in the Column Definition Data Grid will be used to generate the data.
 
 All data generation happens in the browser so the amount of data you can generate is limited only by the performance and memory of your computer.
-
 

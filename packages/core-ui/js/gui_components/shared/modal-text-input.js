@@ -76,11 +76,11 @@ function createTextInputDialogComponent({
       const okButton = backdrop.querySelector('[data-role="text-input-dialog-ok"]');
       const cancelButton = backdrop.querySelector('[data-role="text-input-dialog-cancel"]');
 
-      titleElem.textContent = String(title || 'Enter Value');
-      const messageText = String(message || '');
+      titleElem.textContent = String(title ?? 'Enter Value');
+      const messageText = String(message ?? '');
       messageElem.textContent = messageText;
       messageElem.hidden = messageText.length === 0;
-      const labelText = String(label || '');
+      const labelText = String(label ?? '');
       labelElem.textContent = labelText;
       labelElem.hidden = labelText.length === 0;
       inputElem.value = String(initialValue ?? '');

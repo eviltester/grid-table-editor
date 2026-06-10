@@ -14,6 +14,14 @@ function normaliseGridCellValue(value) {
   return String(value ?? '').trim();
 }
 
+function serialiseEnumSchemaValue(value) {
+  const normalised = normaliseGridCellValue(value);
+  if (!/[,"\r\n]/.test(normalised)) {
+    return normalised;
+  }
+  return `"${normalised.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
+}
+
 function buildGridEnumSchemaSummary({ dataTable, maxEnumValues = DEFAULT_ENUM_LIMIT } = {}) {
   const headers = Array.isArray(dataTable?.getHeaders?.()) ? dataTable.getHeaders() : [];
   const rowCount = Number.parseInt(dataTable?.getRowCount?.() ?? 0, 10) || 0;
@@ -64,7 +72,7 @@ function createEnumSchemaRowsFromGrid({ dataTable, maxEnumValues = DEFAULT_ENUM_
     sourceType: SOURCE_TYPE_ENUM,
     command: '',
     params: '',
-    value: column.keptValues.join(','),
+    value: column.keptValues.map(serialiseEnumSchemaValue).join(','),
     comments: '',
     leadingTextLines: [],
   }));

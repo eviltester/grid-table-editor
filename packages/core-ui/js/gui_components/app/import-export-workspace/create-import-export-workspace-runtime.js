@@ -103,6 +103,7 @@ function createImportExportWorkspaceRuntime({ root, props = {}, services = {}, d
       onExportEncodingSettingsChange: workflow.updateExportEncodingSettings,
       onFileSelected: workflow.loadFile,
       onImportFromClipboard: workflow.importFromClipboard,
+      onImportTrimSettingsChange: workflow.updateImportTrimSettings,
       onApplyOptions: ({ sanitized }) => {
         workflow.applyOptionsToTargets(sanitized);
         workflow.setOptionsViewForFormatType();

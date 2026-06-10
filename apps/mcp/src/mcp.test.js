@@ -377,6 +377,35 @@ test('MCP server handles amend_data_from_spec tool call', () => {
   expect((payload.diagnostics?.warnings || []).join(' ')).toContain('stream is ignored');
 });
 
+test('MCP amend tool schema includes import trim options', () => {
+  const response = requestServer({ jsonrpc: '2.0', id: 1500, method: 'tools/list' });
+  const amendTool = response?.result?.tools?.find((tool) => tool.name === 'amend_data_from_spec');
+  expect(amendTool?.inputSchema?.properties?.trimInput?.type).toBe('boolean');
+  expect(amendTool?.inputSchema?.properties?.trimInputFieldsCsv?.type).toBe('string');
+});
+
+test('MCP amend tool applies trimInputFieldsCsv to imported values', () => {
+  const response = requestServer({
+    jsonrpc: '2.0',
+    id: 1501,
+    method: 'tools/call',
+    params: {
+      name: 'amend_data_from_spec',
+      arguments: {
+        textSpec: 'Status\nActive',
+        inputData: '"Name","Role"\n"  Alice  ","  Engineer  "',
+        inputFormat: 'csv',
+        rowCount: 0,
+        outputFormat: 'json',
+        trimInputFieldsCsv: 'Name',
+      },
+    },
+  });
+  const payload = JSON.parse(response?.result?.content?.[0]?.text || '{}');
+  expect(payload.ok).toBe(true);
+  expect(payload.rows).toEqual([['Alice', '  Engineer  ', '']]);
+});
+
 test('MCP amend parity matches core', () => {
   const coreResult = amendFromTextSpecAndData({
     textSpec: 'Name\nBob',

@@ -7,6 +7,7 @@ import { CsvConvertor } from '../data_formats/csv-convertor.js';
 import { JsonConvertor, JsonConvertorOptions } from '../data_formats/json-convertor.js';
 import { JavascriptConvertor, JavascriptConvertorOptions } from '../data_formats/javascript-convertor.js';
 import { fileTypes } from '../data_formats/file-types.js';
+import { applyImportTrimSettingsToDataTable } from './import-trim-settings.js';
 import { PapaWrappa } from '../utils/papawrappa.js';
 
 class Importer {
@@ -32,6 +33,10 @@ class Importer {
     this.convertors['csv'].setPapaParse(new PapaWrappa());
     this.convertors['json'] = new JsonConvertor();
     this.convertors['javascript'] = new JavascriptConvertor();
+    this.importSettings = {
+      trimInput: false,
+      trimInputFieldsCsv: '',
+    };
   }
 
   canImport(type) {
@@ -47,6 +52,15 @@ class Importer {
       let optionsToUse = this.options[type];
       optionsToUse.mergeOptions(options);
     }
+  }
+
+  setImportSettings(settings = {}) {
+    this.importSettings = {
+      ...this.importSettings,
+      ...settings,
+      trimInput: settings.trimInput === true,
+      trimInputFieldsCsv: settings.trimInputFieldsCsv ?? this.importSettings.trimInputFieldsCsv ?? '',
+    };
   }
 
   // text area import
@@ -72,7 +86,8 @@ class Importer {
     let convertorToUse = this.convertors[typeToImport];
     if (convertorToUse !== undefined) {
       convertorToUse?.setOptions?.(optionsToUse);
-      return convertorToUse.toDataTable(textToImport);
+      const dataTable = convertorToUse.toDataTable(textToImport);
+      return applyImportTrimSettingsToDataTable(dataTable, this.importSettings);
     }
     return undefined;
   }

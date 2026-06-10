@@ -298,10 +298,16 @@ Supported options:
 - `-o, --outputfile` write output to file instead of stdout
 - `-t, --testMode` enable diagnostics mode and generate one row
 - `--unsafe-faker-expressions` allow expression-style faker args (disabled by default)
+- `--trim-input` trim whitespace from every imported field value before amend processing
+- `--trim-input-fields` comma-separated imported field names to trim before amend processing
 
 Amend existing data with a schema:
 
 `anywaydata amend --schema-file schema.txt --data-file input.csv --input-format csv -f json -o amended.json`
+
+Trim imported input values during amend:
+
+`anywaydata amend --schema-file schema.txt --data-file input.csv --input-format csv --trim-input-fields Name,Email -f json`
 
 Pairwise note:
 
@@ -370,6 +376,7 @@ Amend imported data endpoint:
 `POST http://localhost:3000/v1/generate/amend`
 
 - JSON body fields: `textSpec` (required), `inputData` (required raw text), `inputFormat` (required), `rowCount` (optional, defaults to input row count), `outputFormat` (optional), `responseFormat` (optional), `stream` (optional and ignored)
+- amend trim controls: `trimInput` trims all imported field values; `trimInputFieldsCsv` trims only the listed imported field names
 - `rowCount` must be `<=` imported row count
 - response returns the full resulting dataset after amendment
 
@@ -499,6 +506,8 @@ Inputs:
 - `outputFormat` (required string e.g. `csv`, `json`, `jsonl`, `xml`, `sql`)
 - `options` (optional object)
 - `seed` (optional number)
+- `trimInput` (optional boolean for `amend_data_from_spec`)
+- `trimInputFieldsCsv` (optional string for `amend_data_from_spec`)
 
 Discoverability support:
 

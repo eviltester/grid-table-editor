@@ -46,6 +46,11 @@ function createImportExportWorkspaceWorkflowService({
     render();
   };
 
+  const updateImportTrimSettings = (nextSettings = {}) => {
+    controller.setImportTrimSettings(nextSettings);
+    render();
+  };
+
   const showError = (message) => {
     const text = String(message ?? '').trim();
     if (!text) {
@@ -117,6 +122,7 @@ function createImportExportWorkspaceWorkflowService({
     setTextFromString,
     syncSupportState,
     updateExportEncodingSettings,
+    updateImportTrimSettings,
   };
 }
 

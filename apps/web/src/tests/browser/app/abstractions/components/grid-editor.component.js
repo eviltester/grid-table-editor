@@ -10,6 +10,7 @@ class GridEditorComponent {
     this.toolbar = this.container.locator('[data-role="grid-toolbar-root"]');
     this.errorStatus = this.container.locator('[data-role="grid-error-status"]').first();
     this.grid = this.container.locator('[data-role="data-grid-root"]');
+    this.totalRows = this.container.locator('[data-role="grid-total-rows"]').first();
     this.contextMenu = this.page.locator('[data-role="data-grid-context-menu"]');
     this.renderer = new GridRendererComponent(page, this.grid);
     this.header = new GridHeaderComponent(page, this.grid, this.renderer);
@@ -36,6 +37,15 @@ class GridEditorComponent {
     await expect(this.clearFiltersButton).toBeVisible();
     await expect(this.clearSortButton).toBeVisible();
     await expect(this.resetTableButton).toBeVisible();
+    await expect(this.totalRows).toBeVisible();
+  }
+
+  async expectTotalRows(count) {
+    await expect(this.totalRows).toHaveText(`Total rows: ${count}`);
+  }
+
+  async expectFilteredVisibleRows({ totalRows, visibleRows }) {
+    await expect(this.totalRows).toHaveText(`Total rows: ${totalRows} | Filtered Visible: ${visibleRows}`);
   }
 
   async expectReady() {

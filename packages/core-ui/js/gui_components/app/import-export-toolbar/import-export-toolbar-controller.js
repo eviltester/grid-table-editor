@@ -1,3 +1,5 @@
+import { applyImportTrimProps, createImportTrimState } from '../import-export-trim-state.js';
+
 class ImportExportToolbarController {
   constructor({ props = {} } = {}) {
     this.state = {
@@ -19,6 +21,7 @@ class ImportExportToolbarController {
       exportStatusMessage: props.exportStatusMessage || '',
       exportStatusLoading: props.exportStatusLoading === true,
       errorStatusMessage: props.errorStatusMessage || '',
+      ...createImportTrimState(props),
     };
   }
 
@@ -79,6 +82,7 @@ class ImportExportToolbarController {
     if (Object.prototype.hasOwnProperty.call(nextProps, 'errorStatusMessage')) {
       this.state.errorStatusMessage = nextProps.errorStatusMessage || '';
     }
+    applyImportTrimProps(this.state, nextProps);
   }
 
   canSetGridFromText() {

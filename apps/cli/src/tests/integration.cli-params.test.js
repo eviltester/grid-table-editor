@@ -205,6 +205,33 @@ test('amend command applies schema to existing data', async () => {
   expect(JSON.parse(result.stdout.trim())).toEqual([{ Name: 'Bob' }, { Name: 'Eve' }]);
 });
 
+test('amend command trim flags affect imported input values before amend processing', async () => {
+  const schemaPath = tempFile('trim-schema');
+  const dataPath = tempFile('trim-data');
+  await fs.writeFile(schemaPath, 'Status\nActive', 'utf8');
+  await fs.writeFile(dataPath, '"Name","Role"\n"  Alice  ","  Engineer  "', 'utf8');
+
+  const result = runCli([
+    'amend',
+    '--schema-file',
+    schemaPath,
+    '--data-file',
+    dataPath,
+    '--input-format',
+    'csv',
+    '--trim-input-fields',
+    'Name',
+    '-n',
+    '0',
+    '-f',
+    'json',
+    '--show-progress',
+    'false',
+  ]);
+  expect(result.status).toBe(0);
+  expect(JSON.parse(result.stdout.trim())).toEqual([{ Name: 'Alice', Role: '  Engineer  ', Status: '' }]);
+});
+
 test('amend command fixture flow: CSV input to DSV output on stdout', async () => {
   const schemaPath = path.join(amendFixturesDir, 'schema.txt');
   const dataPath = path.join(amendFixturesDir, 'input.csv');

@@ -1,5 +1,6 @@
 import { jest } from '@jest/globals';
 import { GridExtension as GridExtensionTabulator } from '../../../js/gui_components/data-grid-editor/tabulator/gridExtension-tabulator.js';
+import { TabulatorHelper } from '../../../js/gui_components/data-grid-editor/tabulator/tabulator-helpers.js';
 
 function createColumnComponent(definition) {
   return {
@@ -46,15 +47,30 @@ function createTabulatorStub() {
 }
 
 describe('GridExtensionTabulator duplicate column', () => {
+  test('tabulator helper returns the underlying addData result for row insertion helpers', () => {
+    const addDataResult = Promise.resolve('row-added');
+    const tabulator = {
+      addData: jest.fn(() => addDataResult),
+    };
+    const helper = new TabulatorHelper(tabulator);
+    const rowToAdd = { column1: 'Alpha' };
+
+    expect(helper.addRowToBottom(rowToAdd)).toBe(addDataResult);
+    expect(helper.addRowToTop(rowToAdd)).toBe(addDataResult);
+    expect(tabulator.addData).toHaveBeenNthCalledWith(1, [rowToAdd], false);
+    expect(tabulator.addData).toHaveBeenNthCalledWith(2, [rowToAdd], true);
+  });
+
   test('binds tabulator change listeners only once per table across wrapper instances', () => {
     const tabulator = createTabulatorStub();
     new GridExtensionTabulator(tabulator);
     new GridExtensionTabulator(tabulator);
 
-    expect(tabulator.on).toHaveBeenCalledTimes(3);
+    expect(tabulator.on).toHaveBeenCalledTimes(4);
     expect(tabulator.on).toHaveBeenNthCalledWith(1, 'cellEdited', expect.any(Function));
     expect(tabulator.on).toHaveBeenNthCalledWith(2, 'rowMoved', expect.any(Function));
     expect(tabulator.on).toHaveBeenNthCalledWith(3, 'columnMoved', expect.any(Function));
+    expect(tabulator.on).toHaveBeenNthCalledWith(4, 'dataFiltered', expect.any(Function));
   });
 
   test('destroy unregisters shared tabulator grid-change listeners', () => {
@@ -63,19 +79,23 @@ describe('GridExtensionTabulator duplicate column', () => {
     const cellEditedCall = tabulator.on.mock.calls.find((call) => call[0] === 'cellEdited');
     const rowMovedCall = tabulator.on.mock.calls.find((call) => call[0] === 'rowMoved');
     const columnMovedCall = tabulator.on.mock.calls.find((call) => call[0] === 'columnMoved');
+    const dataFilteredCall = tabulator.on.mock.calls.find((call) => call[0] === 'dataFiltered');
     expect(cellEditedCall).toBeDefined();
     expect(rowMovedCall).toBeDefined();
     expect(columnMovedCall).toBeDefined();
+    expect(dataFilteredCall).toBeDefined();
     const cellEditedHandler = cellEditedCall[1];
     const rowMovedHandler = rowMovedCall[1];
     const columnMovedHandler = columnMovedCall[1];
+    const dataFilteredHandler = dataFilteredCall[1];
 
     extension.destroy();
 
-    expect(tabulator.off).toHaveBeenCalledTimes(3);
+    expect(tabulator.off).toHaveBeenCalledTimes(4);
     expect(tabulator.off).toHaveBeenNthCalledWith(1, 'cellEdited', cellEditedHandler);
     expect(tabulator.off).toHaveBeenNthCalledWith(2, 'rowMoved', rowMovedHandler);
     expect(tabulator.off).toHaveBeenNthCalledWith(3, 'columnMoved', columnMovedHandler);
+    expect(tabulator.off).toHaveBeenNthCalledWith(4, 'dataFiltered', dataFilteredHandler);
   });
 
   test('copies source column values into duplicate column', async () => {
@@ -127,5 +147,32 @@ describe('GridExtensionTabulator duplicate column', () => {
 
     expect(columnComponent.setWidth).toHaveBeenCalledWith(128);
     expect(tabulator.getData).not.toHaveBeenCalled();
+  });
+
+  test('addRow waits for async row insertion before notifying grid change listeners', async () => {
+    let resolveAddData;
+    const addDataPromise = new Promise((resolve) => {
+      resolveAddData = resolve;
+    });
+    const tabulator = {
+      getColumnDefinitions() {
+        return [{ title: 'Instructions', field: 'column1' }];
+      },
+      addData: jest.fn(() => addDataPromise),
+      on: jest.fn(),
+      off: jest.fn(),
+    };
+    const extension = new GridExtensionTabulator(tabulator);
+    const gridChanged = jest.fn();
+    extension.onGridChanged(gridChanged);
+
+    const addRowPromise = extension.addRow();
+
+    expect(gridChanged).not.toHaveBeenCalled();
+
+    resolveAddData();
+    await addRowPromise;
+
+    expect(gridChanged).toHaveBeenCalledTimes(1);
   });
 });

@@ -84,6 +84,24 @@ describe('Importer', () => {
     expect(importer.options.unknown).toBeUndefined();
   });
 
+  test('toGenericDataTable trims imported values when import trim settings are enabled', () => {
+    const importer = new Importer({ setGridFromGenericDataTable: jest.fn() });
+    importer.setImportSettings({ trimInput: true });
+
+    const result = importer.toGenericDataTable('csv', 'Name,Role\n  Connie  ,  QA  ');
+
+    expect(result.getRow(0)).toEqual(['Connie', 'QA']);
+  });
+
+  test('toGenericDataTable trims only listed imported columns when trimInputFieldsCsv is provided', () => {
+    const importer = new Importer({ setGridFromGenericDataTable: jest.fn() });
+    importer.setImportSettings({ trimInputFieldsCsv: 'Name' });
+
+    const result = importer.toGenericDataTable('csv', 'Name,Role\n  Connie  ,  QA  ');
+
+    expect(result.getRow(0)).toEqual(['Connie', '  QA  ']);
+  });
+
   test('toGenericDataTable uses empty options when a type has no configured options object', () => {
     const importer = new Importer({ setGridFromGenericDataTable: jest.fn() });
     const expectedTable = new GenericDataTable();

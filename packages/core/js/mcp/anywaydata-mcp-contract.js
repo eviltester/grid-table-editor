@@ -268,6 +268,14 @@ function createAmendDataTool() {
         outputFormat: { type: 'string', enum: SUPPORTED_FORMATS },
         options: GENERATE_OPTIONS_SCHEMA,
         seed: { type: 'number' },
+        trimInput: {
+          type: 'boolean',
+          description: 'Trim whitespace from every imported input field value before amend processing.',
+        },
+        trimInputFieldsCsv: {
+          type: 'string',
+          description: 'Comma-separated imported field names whose values should be trimmed before amend processing.',
+        },
         stream: {
           type: 'boolean',
           description: 'Accepted for compatibility and ignored for amend operation (always buffered).',

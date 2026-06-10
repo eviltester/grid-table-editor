@@ -96,9 +96,6 @@ importers:
       prettier:
         specifier: 3.3.3
         version: 3.3.3
-      prism-react-renderer:
-        specifier: 2.4.1
-        version: 2.4.1(react@18.2.0)
       react:
         specifier: 18.2.0
         version: 18.2.0
@@ -15906,12 +15903,6 @@ snapshots:
       react-is: 18.3.1
 
   pretty-time@1.1.0: {}
-
-  prism-react-renderer@2.4.1(react@18.2.0):
-    dependencies:
-      '@types/prismjs': 1.26.6
-      clsx: 2.1.1
-      react: 18.2.0
 
   prism-react-renderer@2.4.1(react@19.2.5):
     dependencies:

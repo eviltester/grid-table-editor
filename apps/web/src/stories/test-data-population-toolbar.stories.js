@@ -27,6 +27,7 @@ function renderToolbarStory(args) {
       pairwiseVisible: args.pairwiseVisible,
       generateBusy: args.generateBusy,
       generatePairwiseBusy: args.generatePairwiseBusy,
+      generateSchemaBusy: args.generateSchemaBusy,
       modeOptions: [
         { value: 'new-table', label: 'New Table' },
         { value: 'amend-table', label: 'Amend Table' },
@@ -48,6 +49,10 @@ function renderToolbarStory(args) {
       onGeneratePairwise: () => {
         args.onGenerateCombinations?.();
         log.textContent = 'action:generate-combinations';
+      },
+      onGenerateSchemaFromGrid: () => {
+        args.onGenerateSchema?.();
+        log.textContent = 'action:generate-schema';
       },
       onModeChange: (mode) => {
         args.onModeChange?.(mode);
@@ -87,10 +92,12 @@ const meta = {
     pairwiseVisible: false,
     generateBusy: false,
     generatePairwiseBusy: false,
+    generateSchemaBusy: false,
     rowCount: 1,
     maxWidth: '',
     onGenerate: fn(),
     onGenerateCombinations: fn(),
+    onGenerateSchema: fn(),
     onModeChange: fn(),
   },
   argTypes: {
@@ -110,6 +117,10 @@ const meta = {
     generatePairwiseBusy: {
       control: 'boolean',
       description: 'Disables the combinations action when true.',
+    },
+    generateSchemaBusy: {
+      control: 'boolean',
+      description: 'Disables the Grid to Enum Schema action when true.',
     },
     rowCount: {
       control: 'number',
@@ -137,6 +148,7 @@ export const Default = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await expect(canvas.getByRole('button', { name: 'Generate' })).toBeVisible();
+    await expect(canvas.getByRole('button', { name: 'Grid to Enum Schema' })).toBeVisible();
     await expect(canvas.getByRole('spinbutton', { name: 'How Many?' })).toHaveValue(1);
     await expect(canvas.getByRole('radio', { name: 'New Table' })).toBeChecked();
     await userEvent.click(canvas.getByRole('button', { name: 'Generate' }));
@@ -149,6 +161,7 @@ export const PairwiseAndBusy = {
     pairwiseVisible: true,
     generateBusy: true,
     generatePairwiseBusy: true,
+    generateSchemaBusy: true,
     selectedMode: 'amend-selected',
     rowCount: 3,
   },
@@ -164,6 +177,7 @@ export const PairwiseAndBusy = {
     const canvas = within(canvasElement);
     await expect(canvas.getByRole('button', { name: 'Generate' })).toBeDisabled();
     await expect(canvas.getByRole('button', { name: 'Generate Combinations' })).toBeDisabled();
+    await expect(canvas.getByRole('button', { name: 'Grid to Enum Schema' })).toBeDisabled();
     await expect(canvas.getByRole('radio', { name: 'Amend Selected' })).toBeChecked();
   },
 };

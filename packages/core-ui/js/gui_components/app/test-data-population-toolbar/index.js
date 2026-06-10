@@ -67,6 +67,10 @@ function createTestDataPopulationToolbarComponent({
       controller.updateProps({ generatePairwiseBusy: isBusy === true });
       view.setGeneratePairwiseBusy(isBusy);
     },
+    setGenerateSchemaBusy(isBusy) {
+      controller.updateProps({ generateSchemaBusy: isBusy === true });
+      view.setGenerateSchemaBusy(isBusy);
+    },
     getState() {
       return controller.getState();
     },

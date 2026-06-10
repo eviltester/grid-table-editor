@@ -264,4 +264,28 @@ describe('shared-schema-definition view', () => {
     expect(reboundBinding).toBeTruthy();
     expect(reboundBinding.options.content(helpIcon)).toContain('Edit as Schema');
   });
+
+  test('replaceRows rerenders and refreshes text mode output', () => {
+    const component = createComponent();
+
+    fireEvent.click(document.querySelector('[data-role="schema-mode-toggle"]'));
+
+    const result = component.replaceRows([
+      {
+        id: 'replacement-row',
+        name: 'Status',
+        sourceType: 'enum',
+        command: '',
+        params: '',
+        value: 'active,inactive',
+        comments: '',
+        leadingTextLines: [],
+      },
+    ]);
+
+    expect(result.errors).toEqual([]);
+    expect(component.getState().rows).toHaveLength(1);
+    expect(document.querySelector('[data-role="schema-textbox"]').value).toContain('Status\nenum(active,inactive)');
+    expect(document.querySelectorAll('.shared-schema-row')).toHaveLength(1);
+  });
 });

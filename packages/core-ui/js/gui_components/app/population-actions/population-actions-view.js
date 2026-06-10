@@ -11,6 +11,7 @@ class PopulationActionsView {
     this.services = services;
     this.handleGenerate = () => this.controller.handleGenerate();
     this.handleGeneratePairwise = () => this.controller.handleGeneratePairwise();
+    this.handleGenerateSchemaFromGrid = () => this.controller.handleGenerateSchemaFromGrid();
   }
 
   buildOptionalIdAttr(id) {
@@ -43,12 +44,14 @@ class PopulationActionsView {
     this.generatePairwiseButton = this.root.querySelector(
       `[data-role="${this.getRoleName('generatePairwiseButton')}"]`
     );
+    this.generateSchemaButton = this.root.querySelector(`[data-role="${this.getRoleName('generateSchemaButton')}"]`);
     this.generatePairwiseWrapper = this.root.querySelector(
       `[data-role="${this.getRoleName('generatePairwiseWrapper')}"]`
     );
 
     this.generateButton?.addEventListener('click', this.handleGenerate);
     this.generatePairwiseButton?.addEventListener('click', this.handleGeneratePairwise);
+    this.generateSchemaButton?.addEventListener('click', this.handleGenerateSchemaFromGrid);
     this.render();
   }
 
@@ -85,6 +88,16 @@ class PopulationActionsView {
           ${escapeHtml(state.generatePairwiseLabel)}
         </button>
       </span>
+      <span class="shared-button-with-help">
+        ${this.renderHelpButton({
+          helpHtml: state.generateSchemaHelpHtml,
+          ariaLabel: state.generateSchemaHelpLabel,
+        })}
+        <button data-role="${escapeHtml(this.getRoleName('generateSchemaButton', state))}">
+          ${renderIconHtml('grid', { className: 'app-icon shared-file-action-icon generator-file-icon' })}
+          ${escapeHtml(state.generateSchemaLabel)}
+        </button>
+      </span>
       ${
         state.statusVisible
           ? `
@@ -116,6 +129,11 @@ class PopulationActionsView {
       this.generatePairwiseButton.setAttribute('aria-disabled', state.generatePairwiseBusy === true ? 'true' : 'false');
       this.generatePairwiseButton.setAttribute('aria-busy', state.generatePairwiseBusy === true ? 'true' : 'false');
     }
+    if (this.generateSchemaButton) {
+      this.generateSchemaButton.disabled = state.generateSchemaBusy === true;
+      this.generateSchemaButton.setAttribute('aria-disabled', state.generateSchemaBusy === true ? 'true' : 'false');
+      this.generateSchemaButton.setAttribute('aria-busy', state.generateSchemaBusy === true ? 'true' : 'false');
+    }
     if (this.generatePairwiseWrapper) {
       this.generatePairwiseWrapper.style.display = state.pairwiseVisible ? 'inline-flex' : 'none';
     }
@@ -125,6 +143,7 @@ class PopulationActionsView {
   destroy() {
     this.generateButton?.removeEventListener('click', this.handleGenerate);
     this.generatePairwiseButton?.removeEventListener('click', this.handleGeneratePairwise);
+    this.generateSchemaButton?.removeEventListener('click', this.handleGenerateSchemaFromGrid);
     this.root.replaceChildren();
   }
 }

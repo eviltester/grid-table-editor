@@ -9,6 +9,7 @@ class TestDataPopulationToolbarController {
       actionIds: { ...(props.actionIds || {}) },
       generateBusy: props.generateBusy === true,
       generatePairwiseBusy: props.generatePairwiseBusy === true,
+      generateSchemaBusy: props.generateSchemaBusy === true,
     };
   }
 
@@ -24,6 +25,7 @@ class TestDataPopulationToolbarController {
         : this.state.rowCountProps,
       generateBusy: nextProps.generateBusy ?? this.state.generateBusy,
       generatePairwiseBusy: nextProps.generatePairwiseBusy ?? this.state.generatePairwiseBusy,
+      generateSchemaBusy: nextProps.generateSchemaBusy ?? this.state.generateSchemaBusy,
     };
   }
 

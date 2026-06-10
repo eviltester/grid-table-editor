@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>WebMCP Interface - AnyWayData</title>
+    <meta
+      name="description"
+      content="Expose the AnyWayData generation MCP tools directly from the browser through a dedicated WebMCP page."
+    />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="author" content="Alan Richardson" />
+
+    <script type="module" src="/src/webmcp-entry.mjs"></script>
+
+    <link rel="stylesheet" type="text/css" href="styles.css" />
+  </head>
+
+  <body>
+    <div class="header" data-role="theme-toggle-host">
+      <div class="pageheading"><a href="./">AnyWayData</a></div>
+      <div class="mainmenu"><a href="app.html">App</a></div>
+      <div class="mainmenu"><a href="generator.html">Generator</a></div>
+      <div class="mainmenu">&nbsp;WebMCP&nbsp;</div>
+      <div class="mainmenu"><a href="docs/intro">Docs</a></div>
+      <div class="mainmenu"><a href="blog">Blog</a></div>
+    </div>
+
+    <main id="webmcp-page-root" class="bodycontent webmcp-page">
+      <section class="webmcp-hero">
+        <p class="webmcp-eyebrow">AI Integration Surface</p>
+        <h1>AnyWayData WebMCP</h1>
+        <p class="webmcp-lead">
+          This page mirrors the existing AnyWayData MCP tool surface in the browser so AI clients can discover and call
+          the same generation workflows through WebMCP.
+        </p>
+        <p id="webmcp-status" class="import-progress-status startup-loading-status" role="status" aria-live="polite">
+          Preparing WebMCP tool registration...
+        </p>
+      </section>
+
+      <section class="webmcp-section">
+        <h2>How To Use It</h2>
+        <ol class="webmcp-steps">
+          <li>Open this page in the browser session your AI client can access.</li>
+          <li>Use a WebMCP-capable client or bridge to inspect the tools registered on this page.</li>
+          <li>Call the AnyWayData tools directly for generation, amend, and option-schema discovery workflows.</li>
+        </ol>
+      </section>
+
+      <section class="webmcp-section">
+        <h2>Available Tools</h2>
+        <div id="webmcp-tool-list" class="webmcp-card-grid"></div>
+      </section>
+
+      <section class="webmcp-section">
+        <h2>Available Resources</h2>
+        <div id="webmcp-resource-list" class="webmcp-card-grid"></div>
+      </section>
+
+      <section class="webmcp-section">
+        <h2>Install Examples For MCP Hosts</h2>
+        <p class="webmcp-supporting-copy">
+          The browser page is the WebMCP-facing surface. These examples mirror the current Node MCP setup options that
+          the browser-facing page is intended to complement.
+        </p>
+        <div id="webmcp-config-examples" class="webmcp-config-grid"></div>
+      </section>
+    </main>
+  </body>
+</html>

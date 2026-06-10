@@ -16,6 +16,7 @@ The Web UI is best for interactive editing, import/export, and conversion.
 
 - Main app: [https://anywaydata.com/app.html](https://anywaydata.com/app.html)
 - Generator: [https://anywaydata.com/generator.html](https://anywaydata.com/generator.html)
+- WebMCP: [https://anywaydata.com/webmcp.html](https://anywaydata.com/webmcp.html)
 
 ## Local Run
 
@@ -31,6 +32,7 @@ Then open:
 - `http://127.0.0.1:4173/`
 - `http://127.0.0.1:4173/app.html`
 - `http://127.0.0.1:4173/generator.html`
+- `http://127.0.0.1:4173/webmcp.html`
 
 ## Docker Run
 
@@ -51,6 +53,7 @@ Open:
 - `http://localhost:8080/`
 - `http://localhost:8080/app.html`
 - `http://localhost:8080/generator.html`
+- `http://localhost:8080/webmcp.html`
 
 ## Notes
 
@@ -58,4 +61,3 @@ Open:
 - Node builds the web app with `pnpm run build:web`.
 - Nginx serves the built static files from `apps/web/dist`.
 - API endpoints are documented in [REST API](/docs/interfaces-and-deployment/rest-api).
-

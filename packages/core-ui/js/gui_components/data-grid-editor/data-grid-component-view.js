@@ -280,8 +280,16 @@ class DataGridComponentView {
       return;
     }
 
-    const totalRows = this.getGridExtras()?.getTotalRowCount?.() ?? this.getTableApi()?.getDataCount?.() ?? 0;
-    totalRowsElement.textContent = `Total rows: ${Number.isFinite(totalRows) ? totalRows : 0}`;
+    const visibilitySummary = this.getGridExtras()?.getRowVisibilitySummary?.() || null;
+    const totalRows = visibilitySummary?.totalRowCount ?? this.getGridExtras()?.getTotalRowCount?.() ?? 0;
+    const visibleRowCount = visibilitySummary?.visibleRowCount ?? this.getGridExtras()?.getVisibleRowCount?.() ?? 0;
+    const hasActiveFilters = visibilitySummary?.hasActiveFilters === true;
+    const normalizedTotalRows = Number.isFinite(totalRows) ? totalRows : 0;
+    const normalizedVisibleRowCount = Number.isFinite(visibleRowCount) ? visibleRowCount : 0;
+
+    totalRowsElement.textContent = hasActiveFilters
+      ? `Total rows: ${normalizedTotalRows} | Filtered Visible: ${normalizedVisibleRowCount}`
+      : `Total rows: ${normalizedTotalRows}`;
   }
 
   getGridAdapter() {

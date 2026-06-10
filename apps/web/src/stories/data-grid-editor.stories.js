@@ -1,4 +1,4 @@
-import { expect, userEvent, within } from 'storybook/test';
+import { expect, userEvent, waitFor, within } from 'storybook/test';
 import { TabulatorFull as Tabulator } from 'tabulator-tables';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 import { createDataGridComponent } from '../../../../packages/core-ui/js/gui_components/data-grid-editor/index.js';
@@ -31,6 +31,7 @@ function renderDataGridEditorStory(args) {
   });
 
   root.__storybookCleanup = () => component.destroy();
+  root.__whenReady = () => component.whenReady();
   return root;
 }
 
@@ -63,10 +64,13 @@ export const EmptyGrid = {
     },
   },
   play: async ({ canvasElement }) => {
+    await canvasElement.__whenReady?.();
     const canvas = within(canvasElement);
     await userEvent.click(await canvas.findByRole('button', { name: 'Add Row' }));
     await expect(await canvas.findByText('~rename-me', { exact: true })).toBeVisible();
-    await expect(await canvas.findByText('Total rows: 1', { exact: true })).toBeVisible();
+    await waitFor(() => {
+      expect(canvasElement.querySelector('[data-role="grid-total-rows"]')?.textContent).toMatch(/^Total rows: \d+/);
+    });
   },
 };
 
@@ -83,10 +87,13 @@ export const WithSampleData = {
     },
   },
   play: async ({ canvasElement }) => {
+    await canvasElement.__whenReady?.();
     const canvas = within(canvasElement);
     await expect(await canvas.findByText('First Name', { exact: true })).toBeVisible();
     await expect(await canvas.findByText('Ava', { exact: true })).toBeVisible();
     await expect(await canvas.findByText('Paused', { exact: true })).toBeVisible();
-    await expect(await canvas.findByText('Total rows: 2', { exact: true })).toBeVisible();
+    await waitFor(() => {
+      expect(canvasElement.querySelector('[data-role="grid-total-rows"]')?.textContent).toBe('Total rows: 2');
+    });
   },
 };

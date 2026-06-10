@@ -44,6 +44,10 @@ class GridEditorComponent {
     await expect(this.totalRows).toHaveText(`Total rows: ${count}`);
   }
 
+  async expectFilteredVisibleRows({ totalRows, visibleRows }) {
+    await expect(this.totalRows).toHaveText(`Total rows: ${totalRows} | Filtered Visible: ${visibleRows}`);
+  }
+
   async expectReady() {
     await this.expectVisible();
     await this.header.expectHasAnyColumns();

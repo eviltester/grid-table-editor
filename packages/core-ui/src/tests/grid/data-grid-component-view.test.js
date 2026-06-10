@@ -15,6 +15,8 @@ class FakeGridExtension {
   constructor(tableApi) {
     this.tableApi = tableApi;
     this.totalRowCount = 0;
+    this.visibleRowCount = 0;
+    this.hasFilters = false;
     this.gridChangeCallbacks = new Set();
     this.addRow = jest.fn();
     this.addRowsRelativeToSelection = jest.fn();
@@ -26,6 +28,13 @@ class FakeGridExtension {
     this.filterText = jest.fn();
     this.clearGrid = jest.fn();
     this.getTotalRowCount = jest.fn(() => this.totalRowCount);
+    this.getVisibleRowCount = jest.fn(() => this.visibleRowCount);
+    this.hasActiveFilters = jest.fn(() => this.hasFilters);
+    this.getRowVisibilitySummary = jest.fn(() => ({
+      totalRowCount: this.totalRowCount,
+      visibleRowCount: this.visibleRowCount,
+      hasActiveFilters: this.hasFilters,
+    }));
     this.onGridChanged = jest.fn((callback) => {
       this.gridChangeCallbacks.add(callback);
       return () => this.gridChangeCallbacks.delete(callback);
@@ -35,6 +44,14 @@ class FakeGridExtension {
 
   setTotalRowCount(count) {
     this.totalRowCount = count;
+    this.visibleRowCount = count;
+    this.gridChangeCallbacks.forEach((callback) => callback());
+  }
+
+  setFilterSummary({ totalRowCount, visibleRowCount, hasActiveFilters }) {
+    this.totalRowCount = totalRowCount;
+    this.visibleRowCount = visibleRowCount;
+    this.hasFilters = hasActiveFilters === true;
     this.gridChangeCallbacks.forEach((callback) => callback());
   }
 }
@@ -133,6 +150,40 @@ describe('DataGridComponent view', () => {
     expect(totalRows?.textContent).toBe('Total rows: 3');
 
     component.getGridExtras().setTotalRowCount(8);
+    await waitForAnimationFrame();
+    expect(totalRows?.textContent).toBe('Total rows: 8');
+
+    component.destroy();
+  });
+
+  test('shows filtered visible count only while filters are active', async () => {
+    const root = document.createElement('section');
+    document.body.appendChild(root);
+    const component = createDataGridComponent({
+      root,
+      documentObj: document,
+      services: {
+        TabulatorCtor: FakeTabulator,
+        GridExtensionClass: FakeGridExtension,
+      },
+    });
+
+    await component.whenReady();
+
+    const totalRows = root.querySelector('[data-role="grid-total-rows"]');
+    component.getGridExtras().setFilterSummary({
+      totalRowCount: 8,
+      visibleRowCount: 3,
+      hasActiveFilters: true,
+    });
+    await waitForAnimationFrame();
+    expect(totalRows?.textContent).toBe('Total rows: 8 | Filtered Visible: 3');
+
+    component.getGridExtras().setFilterSummary({
+      totalRowCount: 8,
+      visibleRowCount: 8,
+      hasActiveFilters: false,
+    });
     await waitForAnimationFrame();
     expect(totalRows?.textContent).toBe('Total rows: 8');
 

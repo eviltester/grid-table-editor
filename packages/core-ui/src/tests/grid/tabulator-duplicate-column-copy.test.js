@@ -51,10 +51,11 @@ describe('GridExtensionTabulator duplicate column', () => {
     new GridExtensionTabulator(tabulator);
     new GridExtensionTabulator(tabulator);
 
-    expect(tabulator.on).toHaveBeenCalledTimes(3);
+    expect(tabulator.on).toHaveBeenCalledTimes(4);
     expect(tabulator.on).toHaveBeenNthCalledWith(1, 'cellEdited', expect.any(Function));
     expect(tabulator.on).toHaveBeenNthCalledWith(2, 'rowMoved', expect.any(Function));
     expect(tabulator.on).toHaveBeenNthCalledWith(3, 'columnMoved', expect.any(Function));
+    expect(tabulator.on).toHaveBeenNthCalledWith(4, 'dataFiltered', expect.any(Function));
   });
 
   test('destroy unregisters shared tabulator grid-change listeners', () => {
@@ -63,19 +64,23 @@ describe('GridExtensionTabulator duplicate column', () => {
     const cellEditedCall = tabulator.on.mock.calls.find((call) => call[0] === 'cellEdited');
     const rowMovedCall = tabulator.on.mock.calls.find((call) => call[0] === 'rowMoved');
     const columnMovedCall = tabulator.on.mock.calls.find((call) => call[0] === 'columnMoved');
+    const dataFilteredCall = tabulator.on.mock.calls.find((call) => call[0] === 'dataFiltered');
     expect(cellEditedCall).toBeDefined();
     expect(rowMovedCall).toBeDefined();
     expect(columnMovedCall).toBeDefined();
+    expect(dataFilteredCall).toBeDefined();
     const cellEditedHandler = cellEditedCall[1];
     const rowMovedHandler = rowMovedCall[1];
     const columnMovedHandler = columnMovedCall[1];
+    const dataFilteredHandler = dataFilteredCall[1];
 
     extension.destroy();
 
-    expect(tabulator.off).toHaveBeenCalledTimes(3);
+    expect(tabulator.off).toHaveBeenCalledTimes(4);
     expect(tabulator.off).toHaveBeenNthCalledWith(1, 'cellEdited', cellEditedHandler);
     expect(tabulator.off).toHaveBeenNthCalledWith(2, 'rowMoved', rowMovedHandler);
     expect(tabulator.off).toHaveBeenNthCalledWith(3, 'columnMoved', columnMovedHandler);
+    expect(tabulator.off).toHaveBeenNthCalledWith(4, 'dataFiltered', dataFilteredHandler);
   });
 
   test('copies source column values into duplicate column', async () => {

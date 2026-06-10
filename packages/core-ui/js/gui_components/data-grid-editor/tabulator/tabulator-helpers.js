@@ -37,6 +37,14 @@ class TabulatorHelper {
     });
   }
 
+  getActiveGlobalFilterQuery() {
+    return this._activeGlobalFilterQuery;
+  }
+
+  clearGlobalFilterQuery() {
+    this._activeGlobalFilterQuery = '';
+  }
+
   addRowToBottom(rowToAdd) {
     // add row to bottom of table - false for bottom, true for top
     this.addRow(rowToAdd, false);

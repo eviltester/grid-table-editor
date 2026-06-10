@@ -45,6 +45,8 @@ class GridExtensionTabulator {
   clearFilters() {
     // true means clear all header filters as well
     this.tabulator.clearFilter(true);
+    this.tabUtils.clearGlobalFilterQuery();
+    this._notifyGridChanged();
   }
 
   clearSort() {
@@ -93,6 +95,7 @@ class GridExtensionTabulator {
   // [x] convert to tabulature
   filterText(text) {
     this.tabUtils.filterAcrossAllColumns(text);
+    this._notifyGridChanged();
   }
 
   // [x] convert to tabulature
@@ -268,6 +271,52 @@ class GridExtensionTabulator {
     return Array.isArray(allRows) ? allRows.length : 0;
   }
 
+  getVisibleRowCount() {
+    return this.getRowCount();
+  }
+
+  hasActiveFilters() {
+    const activeGlobalFilter = String(this.tabUtils?.getActiveGlobalFilterQuery?.() || '').trim();
+    if (activeGlobalFilter.length > 0) {
+      return true;
+    }
+
+    if (typeof this.tabulator.getHeaderFilters === 'function') {
+      const headerFilters = this.tabulator.getHeaderFilters();
+      const hasHeaderFilters =
+        Array.isArray(headerFilters) &&
+        headerFilters.some((filter) => {
+          if (filter === null || filter === undefined) {
+            return false;
+          }
+          if (typeof filter === 'string') {
+            return filter.trim().length > 0;
+          }
+          if (typeof filter === 'object' && Object.prototype.hasOwnProperty.call(filter, 'value')) {
+            return String(filter.value ?? '').trim().length > 0;
+          }
+          return true;
+        });
+      if (hasHeaderFilters) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  getRowVisibilitySummary() {
+    const totalRowCount = this.getTotalRowCount();
+    const visibleRowCount = this.getVisibleRowCount();
+    const hasActiveFilters = this.hasActiveFilters() || visibleRowCount !== totalRowCount;
+
+    return {
+      totalRowCount,
+      visibleRowCount,
+      hasActiveFilters,
+    };
+  }
+
   getSelectedRowIndexes() {
     const selectedRows = this.tabulator.getSelectedRows();
     if (!Array.isArray(selectedRows)) {
@@ -419,8 +468,9 @@ class GridExtensionTabulator {
 
   // [x] convert to tabulature
   addRow() {
-    this.tabUtils.addRowToBottom(this._getBlankRowData());
-    this._notifyGridChanged();
+    return Promise.resolve(this.tabUtils.addRowToBottom(this._getBlankRowData())).then(() => {
+      this._notifyGridChanged();
+    });
   }
 
   // [x] convert to tabulature
@@ -432,13 +482,13 @@ class GridExtensionTabulator {
     if (selectedRows.length == 0) {
       // and there are no rows then add to top
       if (this.tabulator.getDataCount() == 0 || position < 0) {
-        this.tabUtils.addRowToTop(this._getBlankRowData());
-        this._notifyGridChanged();
-        return;
+        return Promise.resolve(this.tabUtils.addRowToTop(this._getBlankRowData())).then(() => {
+          this._notifyGridChanged();
+        });
       } else {
-        this.tabUtils.addRowToBottom(this._getBlankRowData());
-        this._notifyGridChanged();
-        return;
+        return Promise.resolve(this.tabUtils.addRowToBottom(this._getBlankRowData())).then(() => {
+          this._notifyGridChanged();
+        });
       }
     }
 
@@ -459,8 +509,9 @@ class GridExtensionTabulator {
     if (position > 0) {
       addAbove = false;
     }
-    this.tabulator.addData(objectsToAdd, addAbove, relativeToRow);
-    this._notifyGridChanged();
+    return Promise.resolve(this.tabulator.addData(objectsToAdd, addAbove, relativeToRow)).then(() => {
+      this._notifyGridChanged();
+    });
   }
 
   // calculate the max row from a selection of rows
@@ -1067,11 +1118,13 @@ class GridExtensionTabulator {
       cellEdited: () => this._notifyGridChanged(),
       rowMoved: () => this._notifyGridChanged(),
       columnMoved: () => this._notifyGridChanged(),
+      dataFiltered: () => this._notifyGridChanged(),
     };
     this.tabulator.__gridChangedEventHandlers = handlers;
     this.tabulator.on('cellEdited', handlers.cellEdited);
     this.tabulator.on('rowMoved', handlers.rowMoved);
     this.tabulator.on('columnMoved', handlers.columnMoved);
+    this.tabulator.on('dataFiltered', handlers.dataFiltered);
     this.tabulator.__gridChangedEventsBound = true;
   }
 
@@ -1092,6 +1145,9 @@ class GridExtensionTabulator {
     }
     if (typeof handlers.columnMoved === 'function') {
       this.tabulator.off('columnMoved', handlers.columnMoved);
+    }
+    if (typeof handlers.dataFiltered === 'function') {
+      this.tabulator.off('dataFiltered', handlers.dataFiltered);
     }
     this.tabulator.__gridChangedEventsBound = false;
     delete this.tabulator.__gridChangedEventHandlers;

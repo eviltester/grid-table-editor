@@ -6,6 +6,7 @@ class ImportExportImportControlView {
     this.controller = controller;
     this.callbacks = callbacks;
     this.services = services;
+    this.instanceId = ImportExportImportControlView.nextInstanceId++;
     this.fileImportBindings = null;
     this.handleImportFromClipboardClick = () => this.callbacks.onImportFromClipboard?.();
     this.handleTrimInputChange = () => this.emitImportTrimSettingsChange();
@@ -26,6 +27,8 @@ class ImportExportImportControlView {
 
   template() {
     const state = this.controller.getState();
+    const trimInputGroupName = this.getRadioGroupName('trim-input');
+    const trimInputFieldsGroupName = this.getRadioGroupName('trim-input-fields');
     return `
       <div class="import-export-import-control" data-role="import-control">
         <span data-help="${state.helpDataHelp}" data-help-role="help-icon" class="helpicon"></span>
@@ -38,13 +41,13 @@ class ImportExportImportControlView {
             <fieldset class="import-export-import-control__settings-group">
               <legend>Trim Input</legend>
               <label>
-                <input type="radio" name="importTrimInput" value="off" data-role="trim-input-off-radio" ${
+                <input type="radio" name="${trimInputGroupName}" value="off" data-role="trim-input-off-radio" ${
                   state.trimInput === true ? '' : 'checked'
                 }>
                 <span>Off</span>
               </label>
               <label>
-                <input type="radio" name="importTrimInput" value="on" data-role="trim-input-on-radio" ${
+                <input type="radio" name="${trimInputGroupName}" value="on" data-role="trim-input-on-radio" ${
                   state.trimInput === true ? 'checked' : ''
                 }>
                 <span>On</span>
@@ -53,13 +56,13 @@ class ImportExportImportControlView {
             <fieldset class="import-export-import-control__settings-group">
               <legend>Trim Input Fields</legend>
               <label>
-                <input type="radio" name="importTrimFieldsMode" value="off" data-role="trim-input-fields-off-radio" ${
+                <input type="radio" name="${trimInputFieldsGroupName}" value="off" data-role="trim-input-fields-off-radio" ${
                   state.trimInputFieldsEnabled === true ? '' : 'checked'
                 }>
                 <span>Off</span>
               </label>
               <label>
-                <input type="radio" name="importTrimFieldsMode" value="selected" data-role="trim-input-fields-selected-radio" ${
+                <input type="radio" name="${trimInputFieldsGroupName}" value="selected" data-role="trim-input-fields-selected-radio" ${
                   state.trimInputFieldsEnabled === true ? 'checked' : ''
                 }>
                 <span>Selected Fields</span>
@@ -191,9 +194,15 @@ class ImportExportImportControlView {
     this.callbacks.onImportTrimSettingsChange?.(nextSettings);
   }
 
+  getRadioGroupName(groupName) {
+    return `import-export-import-control-${groupName}-${this.instanceId}`;
+  }
+
   getElement(role) {
     return this.root.querySelector(`[data-role="${role}"]`);
   }
 }
+
+ImportExportImportControlView.nextInstanceId = 1;
 
 export { ImportExportImportControlView };

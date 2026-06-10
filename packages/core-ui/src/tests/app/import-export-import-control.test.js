@@ -85,6 +85,46 @@ describe('ImportExportImportControl', () => {
     });
   });
 
+  test('isolates trim radio groups across multiple mounted controls', () => {
+    const firstRoot = dom.window.document.createElement('div');
+    const secondRoot = dom.window.document.createElement('div');
+    dom.window.document.body.append(firstRoot, secondRoot);
+
+    const createServices = () => ({
+      createFileImportBindingsAdapter: () => ({ destroy: jest.fn() }),
+    });
+
+    const firstComponent = createImportExportImportControlComponent({
+      root: firstRoot,
+      services: createServices(),
+    });
+    const secondComponent = createImportExportImportControlComponent({
+      root: secondRoot,
+      services: createServices(),
+    });
+
+    try {
+      const firstOnRadio = firstRoot.querySelector('[data-role="trim-input-on-radio"]');
+      const firstOffRadio = firstRoot.querySelector('[data-role="trim-input-off-radio"]');
+      const secondOnRadio = secondRoot.querySelector('[data-role="trim-input-on-radio"]');
+      const secondOffRadio = secondRoot.querySelector('[data-role="trim-input-off-radio"]');
+
+      expect(firstOnRadio.name).not.toBe(secondOnRadio.name);
+      expect(firstOffRadio.name).toBe(firstOnRadio.name);
+      expect(secondOffRadio.name).toBe(secondOnRadio.name);
+
+      firstOnRadio.click();
+
+      expect(firstOnRadio.checked).toBe(true);
+      expect(firstOffRadio.checked).toBe(false);
+      expect(secondOnRadio.checked).toBe(false);
+      expect(secondOffRadio.checked).toBe(true);
+    } finally {
+      firstComponent.destroy();
+      secondComponent.destroy();
+    }
+  });
+
   test('disables the file input and shows progress status while importing', () => {
     createImportExportImportControlComponent({
       root,

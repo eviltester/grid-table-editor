@@ -88,6 +88,7 @@ describe('webmcp page bootstrap', () => {
 
   test('shows an error status when WebMCP tool registration throws', async () => {
     const registrationError = new Error('registration failed');
+    const destroy = jest.fn();
 
     await expect(
       bootstrapWebMcpPage({
@@ -97,7 +98,7 @@ describe('webmcp page bootstrap', () => {
             throw registrationError;
           },
         },
-        createThemeToggleComponentFn: () => null,
+        createThemeToggleComponentFn: () => ({ destroy }),
       })
     ).rejects.toThrow('registration failed');
 
@@ -105,5 +106,6 @@ describe('webmcp page bootstrap', () => {
     expect(statusElement.textContent).toContain('Unable to register AnyWayData WebMCP tools: registration failed');
     expect(statusElement.getAttribute('data-severity')).toBe('error');
     expect(statusElement.classList.contains('is-loading')).toBe(false);
+    expect(destroy).toHaveBeenCalledTimes(1);
   });
 });

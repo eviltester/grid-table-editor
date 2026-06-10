@@ -378,7 +378,7 @@ function createInstallGuideResource() {
       codex_local_repo: {
         command: 'node',
         args: ['apps/mcp/src/index.js'],
-        cwd: 'D:/github/grid-table-editor',
+        cwd: '<path-to-repo>',
       },
       codex_npx: {
         command: 'npx',

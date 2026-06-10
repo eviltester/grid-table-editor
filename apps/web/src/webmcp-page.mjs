@@ -195,6 +195,7 @@ async function bootstrapWebMcpPage({
     setStatus(statusElement, `Unable to register AnyWayData WebMCP tools: ${message}`, {
       severity: 'error',
     });
+    themeToggle?.destroy?.();
     throw error;
   }
 

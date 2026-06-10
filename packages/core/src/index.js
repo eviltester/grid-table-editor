@@ -32,6 +32,7 @@ if (typeof globalThis.Papa === 'undefined') {
 }
 
 const DEFAULT_FORMAT = 'json';
+const CONSTRAINT_FAILURE_BATCH_SIZE = 1000;
 const SUPPORTED_FORMATS = [
   'csv',
   'dsv',
@@ -279,6 +280,26 @@ function normaliseGeneratedRowValues(row = []) {
   return row.map((value) => normaliseGeneratedCellValue(value));
 }
 
+function getGeneratorRuntimeErrors(generator) {
+  return typeof generator?.generationErrors === 'function' ? generator.generationErrors() : [];
+}
+
+function createConstraintImpactFailure({
+  generatedCount = 0,
+  failedCount = CONSTRAINT_FAILURE_BATCH_SIZE,
+  report = '',
+} = {}) {
+  return {
+    ok: false,
+    errors: [CoreGenerationErrors.constraintImpactingRowGeneration(generatedCount, failedCount)],
+    diagnostics: {
+      report,
+      generatedCount,
+      failedCount,
+    },
+  };
+}
+
 export function generateFromTextSpec({
   textSpec,
   rowCount,
@@ -310,7 +331,9 @@ export function generateFromTextSpec({
       diagnosticsWarnings.push('rowCount is ignored when pairwise generation is enabled.');
     }
     const pairwiseGenerator = new PairwiseTestDataGenerator(scopedFaker, RandExp);
-    const initResult = pairwiseGenerator.initializeFromRules(generator.testDataRules());
+    const initResult = pairwiseGenerator.initializeFromRules(generator.testDataRules(), {
+      constraints: typeof generator.schemaConstraints === 'function' ? generator.schemaConstraints() : [],
+    });
     if (initResult?.isError) {
       return {
         ok: false,
@@ -351,7 +374,16 @@ export function generateFromTextSpec({
   } else {
     dataTable.setHeaders(generator.generateHeadersArray());
     for (let index = 0; index < safeRowCount; index += 1) {
-      dataTable.appendDataRow(normaliseGeneratedRowValues(generator.generateRow()));
+      const generatedRow = generator.generateRow();
+      const generationErrors = getGeneratorRuntimeErrors(generator);
+      if (generationErrors.length > 0) {
+        return createConstraintImpactFailure({
+          generatedCount: index,
+          failedCount: CONSTRAINT_FAILURE_BATCH_SIZE,
+          report: generator.compilationReport(),
+        });
+      }
+      dataTable.appendDataRow(normaliseGeneratedRowValues(generatedRow));
     }
   }
 
@@ -502,6 +534,14 @@ export function amendFromTextSpecAndData({
       targetRow.push('');
     }
     const generatedRow = generator.generateRow();
+    const generationErrors = getGeneratorRuntimeErrors(generator);
+    if (generationErrors.length > 0) {
+      return createConstraintImpactFailure({
+        generatedCount: rowIndex,
+        failedCount: CONSTRAINT_FAILURE_BATCH_SIZE,
+        report: generator.compilationReport(),
+      });
+    }
     for (let schemaIndex = 0; schemaIndex < schemaHeaderIndexes.length; schemaIndex += 1) {
       const targetIndex = schemaHeaderIndexes[schemaIndex];
       const generatedValue = generatedRow[schemaIndex];
@@ -807,7 +847,16 @@ export async function streamFromTextSpec({
   }
 
   for (let index = 0; index < safeRowCount; index += 1) {
-    const rowArray = normaliseGeneratedRowValues(generator.generateRow());
+    const generatedRow = generator.generateRow();
+    const generationErrors = getGeneratorRuntimeErrors(generator);
+    if (generationErrors.length > 0) {
+      return createConstraintImpactFailure({
+        generatedCount: index,
+        failedCount: CONSTRAINT_FAILURE_BATCH_SIZE,
+        report,
+      });
+    }
+    const rowArray = normaliseGeneratedRowValues(generatedRow);
     if (firstRow === null) {
       firstRow = rowArray;
     }

@@ -34,6 +34,15 @@ export class CoreGenerationErrors {
     };
   }
 
+  static constraintImpactingRowGeneration(generatedCount, failedCount) {
+    return {
+      code: 'constraint_generation_failed',
+      message: `Schema Constraints are impacting row generation - generated ${generatedCount} rows, failed to generate ${failedCount} rows. Consider changing constraints to improve row generation.`,
+      generatedCount,
+      failedCount,
+    };
+  }
+
   static invalidInputDataRequired() {
     return {
       code: 'invalid_input_data',

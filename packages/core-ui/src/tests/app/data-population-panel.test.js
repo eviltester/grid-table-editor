@@ -147,6 +147,73 @@ describe('DataPopulationPanel', () => {
     expect(schemaDefinition.destroy).toHaveBeenCalled();
   });
 
+  test('does not sync schema text from rows while schema definition is in text mode', () => {
+    const syncTextFromRows = jest.fn();
+    const schemaDefinition = {
+      update: jest.fn(),
+      destroy: jest.fn(),
+      getState: jest.fn(() => ({ isTextMode: true })),
+      validateRows: jest.fn(() => ({ rows: [], errors: [] })),
+      syncTextFromRows,
+    };
+
+    const component = createDataPopulationPanelComponent({
+      root: document.getElementById('root'),
+      props: {
+        selectedMode: 'new-table',
+        pairwiseVisible: false,
+        modeOptions: [{ value: 'new-table', label: 'New Table' }],
+        rowCountProps: {
+          label: 'How Many?',
+          min: 1,
+          step: 1,
+          value: 1,
+          normalizeOnInput: true,
+        },
+        schemaDefinitionProps: {
+          schemaTextToDataRules: () => ({ dataRules: [], errors: [], schemaTokens: [] }),
+          dataRulesToSchemaText: () => '',
+          createBlankRow: () => ({
+            id: 'row-1',
+            name: '',
+            sourceType: 'regex',
+            command: '',
+            params: '',
+            value: '',
+            comments: '',
+            leadingTextLines: [],
+          }),
+          mapRuleToRow: (value) => value,
+          getMethodPickerOptions: () => [],
+          getVisibleDomainCommands: () => [],
+          fakerCommands: [],
+          sampleSchemaText: '',
+          buildModeHelpHtml: () => '',
+          validateSchemaRows: (rows) => ({ rows, errors: [] }),
+          updatePairwiseButtonVisibility: () => {},
+        },
+      },
+      services: {
+        createSchemaPanelComponent: ({ root }) => {
+          root.innerHTML =
+            '<div data-role="test-data-schema-panel-root"><div data-role="schema-definition-root"></div></div>';
+          return {
+            update: jest.fn(),
+            destroy: jest.fn(() => schemaDefinition.destroy()),
+            getSchemaDefinition: () => schemaDefinition,
+          };
+        },
+      },
+    });
+
+    const result = component.syncSchemaTextFromRows();
+
+    expect(result).toBe(false);
+    expect(syncTextFromRows).not.toHaveBeenCalled();
+
+    component.destroy();
+  });
+
   test('supports two panel instances with isolated action ids and row counts', () => {
     const firstSchemaDefinition = {
       update: jest.fn(),

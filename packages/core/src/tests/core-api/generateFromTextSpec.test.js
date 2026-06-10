@@ -88,6 +88,112 @@ test('generateFromTextSpec accepts # prefixed rule content lines', () => {
   assertNoCommonErrorPatternsInRows(result.rows);
 });
 
+test('generateFromTextSpec enforces IF THEN constraints during row generation', () => {
+  const result = generateFromTextSpec({
+    textSpec: `Priority
+enum(high,low)
+Status
+enum(open,closed)
+IF [Priority] = "high" THEN [Status] = "open" ENDIF`,
+    rowCount: 20,
+    outputFormat: 'json',
+  });
+
+  expect(result.ok).toBe(true);
+  result.rows.forEach((row) => {
+    if (row[0] === 'high') {
+      expect(row[1]).toBe('open');
+    }
+  });
+});
+
+test('generateFromTextSpec returns an early validation error for impossible literal constraints', () => {
+  const result = generateFromTextSpec({
+    textSpec: `Status
+literal(closed)
+IF [Status] = "closed" THEN [Status] = "open" ENDIF`,
+    rowCount: 1,
+    outputFormat: 'json',
+  });
+
+  expect(result.ok).toBe(false);
+  expect(result.errors).toContainEqual(
+    expect.objectContaining({
+      code: 'invalid_constraint_literal_value',
+      parameterName: 'Status',
+    })
+  );
+});
+
+test('generateFromTextSpec returns semantic constraint validation errors for invalid enum and regex values', () => {
+  const enumResult = generateFromTextSpec({
+    textSpec: `Priority
+enum(high,low)
+
+IF [Priority] = "urgent" THEN [Priority] = "high" ENDIF`,
+    rowCount: 1,
+    outputFormat: 'json',
+  });
+
+  expect(enumResult.ok).toBe(false);
+  expect(enumResult.errors).toContainEqual(
+    expect.objectContaining({
+      code: 'invalid_constraint_enum_value',
+      parameterName: 'Priority',
+    })
+  );
+
+  const regexResult = generateFromTextSpec({
+    textSpec: `Ticket
+[A-Z]{3}-\\d{4}
+
+IF [Ticket] = "bob" THEN [Ticket] <> "ABC-1234" ENDIF`,
+    rowCount: 1,
+    outputFormat: 'json',
+  });
+
+  expect(regexResult.ok).toBe(false);
+  expect(regexResult.errors).toContainEqual(
+    expect.objectContaining({
+      code: 'invalid_constraint_regex_value',
+      parameterName: 'Ticket',
+    })
+  );
+});
+
+test('generateFromTextSpec stops when constraints make row generation impossible at runtime', () => {
+  const result = generateFromTextSpec({
+    textSpec: `Status
+enum("Open","Closed")
+
+IF [Status] = "Open" THEN [Status] = "Closed";
+IF [Status] = "Closed" THEN [Status] = "Open";`,
+    rowCount: 3,
+    outputFormat: 'json',
+  });
+
+  expect(result.ok).toBe(false);
+  expect(result.errors).toContainEqual(
+    expect.objectContaining({
+      code: 'constraint_generation_failed',
+      message:
+        'Schema Constraints are impacting row generation - generated 0 rows, failed to generate 1000 rows. Consider changing constraints to improve row generation.',
+      generatedCount: 0,
+      failedCount: 1000,
+    })
+  );
+});
+
+test('validateSafeFakerRules ignores constraint lines when checking faker rules', () => {
+  const result = validateSafeFakerRules(`Name
+person.firstName("female")
+Status
+enum(active,inactive)
+IF [Status] = "inactive" THEN [Name] <> "" ENDIF`);
+
+  expect(result.ok).toBe(true);
+});
+
 test('generateFromTextSpec renders test framework output', () => {
   const result = generateFromTextSpec({ textSpec: 'Name\nBob', rowCount: 1, outputFormat: 'pytest' });
   expect(result.ok).toBe(true);

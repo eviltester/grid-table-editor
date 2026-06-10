@@ -36,14 +36,18 @@ function createAmendedTable({ mode, desiredRowCount, generator, currentDataTable
   const schemaHeaderIndexes = schemaHeaders.map((header) => headerIndexMap[header]);
   const rows = ensureWorkingTableShape(sourceTable, headers);
   const desiredCount = normaliseCount(desiredRowCount);
+  const result = {
+    dataTable: sourceTable,
+    noSelectedRows: false,
+    generationErrors: [],
+    generationStats: { generatedRows: 0, failedRows: 0 },
+  };
 
   if (mode === TEST_DATA_MODES.AMEND_SELECTED) {
     const selectedIndexes = normaliseSelectedIndexes(selectedRowIndexes);
     if (selectedIndexes.length === 0) {
-      return {
-        dataTable: sourceTable,
-        noSelectedRows: true,
-      };
+      result.noSelectedRows = true;
+      return result;
     }
 
     const rowsToAmend = Math.min(desiredCount, selectedIndexes.length);
@@ -52,17 +56,18 @@ function createAmendedTable({ mode, desiredRowCount, generator, currentDataTable
       if (targetRowIndex < 0 || targetRowIndex >= rows.length) {
         continue;
       }
-      applyGeneratedValuesToRow(
-        rows[targetRowIndex],
-        normaliseGeneratedRowValues(generator.generateRow()),
-        schemaHeaderIndexes
-      );
+      const generatedRow = generator.generateRow();
+      const generationErrors = typeof generator?.generationErrors === 'function' ? generator.generationErrors() : [];
+      if (generationErrors.length > 0) {
+        result.generationErrors = generationErrors;
+        result.generationStats.failedRows += 1;
+        return result;
+      }
+      applyGeneratedValuesToRow(rows[targetRowIndex], normaliseGeneratedRowValues(generatedRow), schemaHeaderIndexes);
+      result.generationStats.generatedRows += 1;
     }
 
-    return {
-      dataTable: sourceTable,
-      noSelectedRows: false,
-    };
+    return result;
   }
 
   // amend-table mode
@@ -70,18 +75,19 @@ function createAmendedTable({ mode, desiredRowCount, generator, currentDataTable
     if (rowIndex >= rows.length) {
       rows.push(createBlankRow(headers.length));
     }
-    applyGeneratedValuesToRow(
-      rows[rowIndex],
-      normaliseGeneratedRowValues(generator.generateRow()),
-      schemaHeaderIndexes
-    );
+    const generatedRow = generator.generateRow();
+    const generationErrors = typeof generator?.generationErrors === 'function' ? generator.generationErrors() : [];
+    if (generationErrors.length > 0) {
+      result.generationErrors = generationErrors;
+      result.generationStats.failedRows += 1;
+      return result;
+    }
+    applyGeneratedValuesToRow(rows[rowIndex], normaliseGeneratedRowValues(generatedRow), schemaHeaderIndexes);
+    result.generationStats.generatedRows += 1;
   }
 
   // keep existing rows untouched when desiredCount < existingRowCount
-  return {
-    dataTable: sourceTable,
-    noSelectedRows: false,
-  };
+  return result;
 }
 
 function mergeHeaders(baseHeaders, schemaHeaders) {

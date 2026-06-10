@@ -8,6 +8,7 @@ export const RuleType = {
   LITERAL: 'literal',
   BOOLEAN: 'boolean',
   ENUM: 'enum',
+  CONSTRAINT: 'constraint',
 };
 
 class TestDataRule {

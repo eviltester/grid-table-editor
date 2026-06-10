@@ -24,18 +24,44 @@ function createConfiguredGeneratorFromSchemaText({
   faker,
   RandExp,
 }) {
+  const generator = new TestDataGeneratorClass(faker, RandExp);
+  if (typeof generator.importSpec === 'function' && typeof generator.compile === 'function') {
+    generator.importSpec(String(schemaText ?? ''));
+    generator.compile();
+
+    if (typeof generator.isValid === 'function' && !generator.isValid()) {
+      return {
+        generator: null,
+        errors: typeof generator.errors === 'function' ? generator.errors() : [],
+        dataRules: [],
+        tokens:
+          typeof generator.rulesParser?.getSchemaTokens === 'function' ? generator.rulesParser.getSchemaTokens() : [],
+      };
+    }
+
+    return {
+      generator,
+      errors: [],
+      dataRules: typeof generator.testDataRules === 'function' ? generator.testDataRules() : [],
+      tokens:
+        typeof generator.rulesParser?.getSchemaTokens === 'function' ? generator.rulesParser.getSchemaTokens() : [],
+    };
+  }
+
   const parseResult = parseSchemaText({ schemaTextToDataRules, schemaText, faker, RandExp });
   if (parseResult.errors.length > 0) {
     return { generator: null, errors: parseResult.errors, dataRules: [], tokens: parseResult.schemaTokens || [] };
   }
 
   return {
-    generator: createGeneratorFromDataRules({
-      dataRules: parseResult.dataRules,
-      TestDataGeneratorClass,
-      faker,
-      RandExp,
-    }),
+    generator:
+      parseResult.generator ||
+      createGeneratorFromDataRules({
+        dataRules: parseResult.dataRules,
+        TestDataGeneratorClass,
+        faker,
+        RandExp,
+      }),
     errors: [],
     dataRules: parseResult.dataRules,
     tokens: parseResult.schemaTokens || [],
@@ -46,6 +72,8 @@ function createConfiguredGeneratorFromSchemaRows({
   schemaRows = [],
   validateSchemaRows,
   schemaRowsToSpec,
+  schemaText = '',
+  schemaTextToDataRules,
   TestDataGeneratorClass,
   faker,
   RandExp,
@@ -67,6 +95,17 @@ function createConfiguredGeneratorFromSchemaRows({
   const { errors, rows } = validateSchemaRows(schemaRows);
   if (errors.length > 0) {
     return { generator: null, errors, rows: [] };
+  }
+
+  const resolvedSchemaText = String(schemaText || '').trim();
+  if (resolvedSchemaText.length > 0) {
+    return createConfiguredGeneratorFromSchemaText({
+      schemaTextToDataRules,
+      schemaText: resolvedSchemaText,
+      TestDataGeneratorClass,
+      faker,
+      RandExp,
+    });
   }
 
   const generator = new TestDataGeneratorClass(faker, RandExp);

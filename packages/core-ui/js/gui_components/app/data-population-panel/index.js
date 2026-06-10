@@ -88,7 +88,15 @@ function createDataPopulationPanelComponent({ root, props = {}, services = {}, c
       return view.getSchemaDefinition()?.validateRows?.() || { rows: [], errors: [] };
     },
     syncSchemaTextFromRows() {
-      return view.getSchemaDefinition()?.syncTextFromRows?.();
+      const schemaDefinition = view.getSchemaDefinition?.();
+      const isTextMode = schemaDefinition?.getState?.()?.isTextMode === true;
+      if (isTextMode) {
+        return false;
+      }
+      return schemaDefinition?.syncTextFromRows?.();
+    },
+    getSchemaText() {
+      return view.getSchemaDefinition()?.getSchemaText?.() || '';
     },
     insertSampleSchema() {
       return view.getSchemaDefinition()?.insertSampleSchema?.();

@@ -427,6 +427,71 @@ test('MCP amend tool returns amend-specific failure message', () => {
   expect(payload.error.message).toBe('Failed to amend data from specification.');
 });
 
+test('MCP server enforces valid IF THEN constraints during successful generation', () => {
+  const response = requestServer({
+    jsonrpc: '2.0',
+    id: 161.5,
+    method: 'tools/call',
+    params: {
+      name: 'generate_data_from_spec',
+      arguments: {
+        textSpec: `Priority
+enum("High","Low")
+Status
+enum("Open","Closed")
+
+IF [Priority] = "High" THEN [Status] = "Open";`,
+        rowCount: 20,
+        outputFormat: 'json',
+      },
+    },
+  });
+  const payload = JSON.parse(response?.result?.content?.[0]?.text || '{}');
+  expect(response?.result?.isError).toBe(false);
+  expect(payload.ok).toBe(true);
+  expect(payload.headers).toEqual(['Priority', 'Status']);
+  expect(payload.rows).toHaveLength(20);
+  payload.rows.forEach((row) => {
+    if (row[0] === 'High') {
+      expect(row[1]).toBe('Open');
+    }
+  });
+});
+
+test('MCP server returns constraint generation failure details for impossible runtime constraints', () => {
+  const response = requestServer({
+    jsonrpc: '2.0',
+    id: 162,
+    method: 'tools/call',
+    params: {
+      name: 'generate_data_from_spec',
+      arguments: {
+        textSpec: `Status
+enum("Open","Closed")
+
+IF [Status] = "Open" THEN [Status] = "Closed";
+IF [Status] = "Closed" THEN [Status] = "Open";`,
+        rowCount: 1,
+        outputFormat: 'json',
+      },
+    },
+  });
+  const payload = JSON.parse(response?.result?.content?.[0]?.text || '{}');
+  expect(response?.result?.isError).toBe(true);
+  expect(payload.ok).toBe(false);
+  expect(payload.error.code).toBe('generation_failed');
+  expect(payload.error.message).toBe('Failed to generate data from specification.');
+  expect(payload.error.details.errors).toContainEqual(
+    expect.objectContaining({
+      code: 'constraint_generation_failed',
+      message:
+        'Schema Constraints are impacting row generation - generated 0 rows, failed to generate 1000 rows. Consider changing constraints to improve row generation.',
+      generatedCount: 0,
+      failedCount: 1000,
+    })
+  );
+});
+
 test('MCP parity: rendered output matches core for all unit-test frameworks', () => {
   const frameworks = [
     'junit4',

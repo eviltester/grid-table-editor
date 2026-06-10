@@ -68,6 +68,19 @@ column 1
 
 When no type is present it is assumed to be a Regex e.g. `1234` is a Regex that represents the string "1234"
 
+## Schema constraints
+
+Schema definitions can also include `IF ... THEN ...` constraints to restrict which combinations of generated values are valid.
+
+Constraints are useful when one field controls another, for example:
+
+- if `Priority` is `high` then `Status` must be `open`
+- if `Country` is `US` then `State` must be a valid US state code
+- if one value is selected then another value must not be used
+
+Constraints are authored in schema text and are available from the `Schema Constraints` section when you are editing in schema row mode.
+
+For the full schema format, supported operators, and copy-paste examples, see [Schema Definition](./018-Schema-Definition.md).
 
 ## Test Data Grid
 
@@ -102,7 +115,6 @@ Press the `[Generate]` button to generate the data.
 The schema in the Column Definition Data Grid will be used to generate the data.
 
 All data generation happens in the browser so the amount of data you can generate is limited only by the performance and memory of your computer.
-
 
 
 

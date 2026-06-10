@@ -1494,6 +1494,26 @@ body.theme-dark .generator-status-text[data-severity='info'] {
   color: var(--page-text);
 }
 
+.shared-schema-constraints,
+.generator-schema-constraints {
+  margin-top: 0.75rem;
+}
+
+.shared-schema-constraints-summary,
+.generator-schema-constraints-summary {
+  cursor: pointer;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.shared-schema-constraints-textarea,
+.generator-schema-constraints-textarea {
+  width: 100%;
+  min-height: 8rem;
+  margin-top: 0.6rem;
+  color: var(--page-text);
+}
+
 .shared-schema-row {
   display: grid;
   gap: 0.4rem;

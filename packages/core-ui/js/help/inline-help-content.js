@@ -164,6 +164,7 @@ const sharedInlineHelpEntries = {
       <p><strong>Schema Edit Mode</strong></p>
       <p>Switch between row-based schema editing and text schema editing.</p>
       <p>Row mode is useful for guided field editing, while text mode is useful for quick bulk updates.</p>
+      <p>Constraint statements such as <code>IF [Status] = "Closed" THEN [Resolved] = "Yes" ENDIF</code> are text-mode only.</p>
     `,
   'shared-schema-help': `
       <p><strong>Schema Field Help</strong></p>
@@ -195,11 +196,12 @@ const sharedInlineHelpEntries = {
 
 const appOnlyInlineHelpEntries = {
   'test-data-text-schema-help': `
-      <p>Define schema as repeating line pairs:</p>
+      <p>Define schema as repeating line pairs, with optional constraint statements after the field rules:</p>
       <ul>
         <li>Line 1: column header name</li>
         <li>Line 2: data definition</li>
       </ul>
+      <p>Use bracketed column references inside constraints, e.g. <code>IF [Age] &lt; 16 THEN [Work] = "School" ENDIF</code>.</p>
       <p>Definition types:</p>
       <ul>
         <li><strong>Literal</strong>: fixed text value for every generated row.</li>

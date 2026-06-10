@@ -11,6 +11,7 @@ import {
   createPairwiseDataTable,
   createCombinationsDataTable,
 } from '../../../shared/test-data/generation/generation-controller.js';
+import { normaliseGeneratedRow } from '../../../shared/test-data/generation/generation-runtime.js';
 import { isNWiseEligibleForSchemaRows } from '../../../shared/test-data/generation/ui-derived-state.js';
 import { EnumParser } from '@anywaydata/core/data_generation/utils/enumParser.js';
 import {
@@ -29,20 +30,24 @@ import {
   extractRegexValueFromRuleSpec,
 } from '../../../shared/schema-row-rule-mapper.js';
 
+const CONSTRAINT_FAILURE_BATCH_SIZE = 1000;
+
 function createTestDataGenerationService({
+  schemaTextToDataRules,
   TestDataGeneratorClass,
   PairwiseTestDataGeneratorClass,
   CombinationsTestDataGeneratorClass,
   GenericDataTableClass,
   TEST_DATA_MODES,
   normaliseCount,
-  createTableFromGenerator,
+  createTableFromGenerator: _createTableFromGenerator,
   createAmendedTable,
   schemaRowsToSpec,
   faker,
   RandExp,
   debouncer,
   syncSchemaTextFromGridBeforeGenerate,
+  getSchemaText = () => '',
   setTestDataStatus,
   setTestDataLoadingStatus,
   showSchemaError,
@@ -67,6 +72,8 @@ function createTestDataGenerationService({
       schemaRows,
       validateSchemaRows: () => ({ errors: [], rows: schemaRows }),
       schemaRowsToSpec,
+      schemaText: getSchemaText(),
+      schemaTextToDataRules,
       TestDataGeneratorClass,
       faker,
       RandExp,
@@ -136,6 +143,79 @@ function createTestDataGenerationService({
     } else {
       hidePairwiseButton();
     }
+  }
+
+  function getGeneratorGenerationErrors(generator) {
+    return typeof generator?.generationErrors === 'function' ? generator.generationErrors() : [];
+  }
+
+  function isConstraintGenerationFailure(generationErrors = []) {
+    return (Array.isArray(generationErrors) ? generationErrors : []).some(
+      (error) => String(error?.code || '') === 'constraint_generation_failed'
+    );
+  }
+
+  function buildConstraintImpactMessage({ generatedRows = 0, failedRows = 0 } = {}) {
+    return `Schema Constraints are impacting row generation - generated ${generatedRows} rows, failed to generate ${failedRows} rows. Consider changing constraints to improve row generation.`;
+  }
+
+  async function requestConstraintImpactDecision({ generatedRows = 0, failedRows = 0 } = {}) {
+    if (typeof requestConfirm !== 'function') {
+      return false;
+    }
+
+    return Boolean(
+      await requestConfirm({
+        title: 'Schema Constraints are impacting row generation',
+        message: buildConstraintImpactMessage({ generatedRows, failedRows }),
+        okLabel: 'Continue',
+        cancelLabel: 'Abort',
+      })
+    );
+  }
+
+  async function createMonitoredTableFromGenerator({ desiredRowCount, generator }) {
+    const dataTable = new GenericDataTableClass();
+    if (typeof dataTable.setHeaders !== 'function') {
+      dataTable.headers = [];
+      dataTable.rows = [];
+      dataTable.setHeaders = (headers) => {
+        dataTable.headers = Array.isArray(headers) ? [...headers] : [];
+      };
+      dataTable.appendDataRow = (row) => {
+        dataTable.rows.push(Array.isArray(row) ? [...row] : []);
+      };
+      dataTable.getRowCount = () => dataTable.rows.length;
+      dataTable.getRow = (index) => dataTable.rows[index];
+    }
+    dataTable.setHeaders(generator.generateHeadersArray());
+
+    let generatedRows = 0;
+    let failedRows = 0;
+    let aborted = false;
+
+    while (generatedRows < desiredRowCount) {
+      const generatedRow = generator.generateRow();
+      const generationErrors = getGeneratorGenerationErrors(generator);
+      if (isConstraintGenerationFailure(generationErrors)) {
+        failedRows += CONSTRAINT_FAILURE_BATCH_SIZE;
+        const shouldContinue = await requestConstraintImpactDecision({ generatedRows, failedRows });
+        if (!shouldContinue) {
+          aborted = true;
+          break;
+        }
+        continue;
+      }
+
+      if (generationErrors.length > 0) {
+        return { dataTable, generatedRows, failedRows, aborted, generationErrors };
+      }
+
+      dataTable.appendDataRow(normaliseGeneratedRow(generatedRow));
+      generatedRows += 1;
+    }
+
+    return { dataTable, generatedRows, failedRows, aborted, generationErrors: [] };
   }
 
   function countEnumColumns() {
@@ -401,8 +481,34 @@ function createTestDataGenerationService({
       await yieldToUi();
 
       let dataTable;
+      let constraintImpactMessage = '';
       if (generationMode === TEST_DATA_MODES.NEW_TABLE) {
-        dataTable = createTableFromGenerator(desiredRowCount, generator);
+        const monitoredGeneration = await createMonitoredTableFromGenerator({
+          desiredRowCount,
+          generator,
+        });
+        if (monitoredGeneration.generationErrors.length > 0) {
+          throw new Error(schemaErrorsToText(monitoredGeneration.generationErrors));
+        }
+        dataTable = monitoredGeneration.dataTable;
+
+        if (monitoredGeneration.failedRows > 0 && monitoredGeneration.aborted) {
+          setTestDataLoadingStatus('Applying valid rows to grid...');
+          await yieldToUi();
+          await Promise.resolve(getImporter().setGridFromGenericDataTable(dataTable));
+
+          const previewUpdated = await syncTextPreviewFromGrid();
+          const message = buildConstraintImpactMessage({
+            generatedRows: monitoredGeneration.generatedRows,
+            failedRows: monitoredGeneration.failedRows,
+          });
+          showSchemaError(message);
+          setTestDataStatus(`${message} ${previewUpdated ? 'Grid and preview updated.' : 'Grid updated.'}`, {
+            severity: 'warning',
+            dismissable: true,
+          });
+          return;
+        }
       } else {
         const gridExtras = getMainGridExtras();
         if (!gridExtras) {
@@ -450,7 +556,16 @@ function createTestDataGenerationService({
             return;
           }
 
-          dataTable = amendResult.dataTable;
+          if ((amendResult.generationErrors || []).length > 0) {
+            constraintImpactMessage = buildConstraintImpactMessage({
+              generatedRows: amendResult.generationStats?.generatedRows || 0,
+              failedRows: (amendResult.generationStats?.failedRows || 0) * CONSTRAINT_FAILURE_BATCH_SIZE,
+            });
+            showSchemaError(constraintImpactMessage);
+            dataTable = amendResult.dataTable;
+          } else {
+            dataTable = amendResult.dataTable;
+          }
         }
       }
 
@@ -461,11 +576,21 @@ function createTestDataGenerationService({
       }
 
       const previewUpdated = await syncTextPreviewFromGrid();
-      const completedModeLabel = generationMode === TEST_DATA_MODES.NEW_TABLE ? 'Generate' : 'Amend';
-      setTestDataStatus(
-        `${completedModeLabel} complete. ${previewUpdated ? 'Grid and preview updated.' : 'Grid updated.'}`,
-        { dismissable: true }
-      );
+      if (constraintImpactMessage) {
+        setTestDataStatus(
+          `${constraintImpactMessage} ${previewUpdated ? 'Grid and preview updated.' : 'Grid updated.'}`,
+          {
+            severity: 'warning',
+            dismissable: true,
+          }
+        );
+      } else {
+        const completedModeLabel = generationMode === TEST_DATA_MODES.NEW_TABLE ? 'Generate' : 'Amend';
+        setTestDataStatus(
+          `${completedModeLabel} complete. ${previewUpdated ? 'Grid and preview updated.' : 'Grid updated.'}`,
+          { dismissable: true }
+        );
+      }
     } catch (error) {
       console.error('Generate/amend failed', error);
       setTestDataStatus('Generate failed. Check console for details.', { severity: 'error', dismissable: true });

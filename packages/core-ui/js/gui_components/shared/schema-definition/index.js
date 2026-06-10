@@ -48,6 +48,9 @@ function createSharedSchemaDefinitionComponent({ root, props = {}, callbacks = {
     syncTextFromRows() {
       return controller.syncTextFromRows();
     },
+    getSchemaText() {
+      return controller.getSchemaText();
+    },
     addRow() {
       return controller.addRow();
     },

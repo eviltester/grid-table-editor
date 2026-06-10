@@ -128,4 +128,25 @@ enum(active,inactive,pending)`;
     const output = parser.renderSpecFromRulesWithComments(parser.testDataRules.rules);
     expect(output).toBe(inputText);
   });
+
+  test('parses IF THEN constraints and preserves them as schema tokens', () => {
+    const inputText = `Status
+enum(active,inactive)
+Result
+enum(pass,fail)
+
+IF [Status] = "inactive" THEN [Result] = "fail" ENDIF`;
+
+    const parser = new RulesParser(faker, RandExp);
+    parser.parseText(inputText);
+
+    expect(parser.isValid()).toBe(true);
+    expect(parser.testDataRules.constraints).toHaveLength(1);
+    expect(parser.testDataRules.constraints[0]).toMatchObject({
+      terminator: 'ENDIF',
+      referencedParameters: ['Status', 'Result'],
+    });
+    expect(parser.getSchemaTokens().some((token) => token.kind === 'constraint')).toBe(true);
+    expect(parser.renderSpecFromRulesWithTokens(parser.testDataRules.rules)).toBe(inputText);
+  });
 });

@@ -89,6 +89,7 @@ The spec is a paragraph of text where each line is either a 'name' or a 'rule':
 - **Comments**: lines starting with `#` (optionally prefixed by whitespace) are treated as comments.
 - **Blank lines**: blank lines are allowed and ignored, so you can separate column groups for readability.
 - **Column definitions**: each column is defined as `name` followed by `rule` on the next logical content line.
+- **Constraints**: optional `IF ... THEN ...` statements may appear in text mode after the field definitions, terminated by either `;` or `ENDIF`.
 
 ```
 # optional comment
@@ -99,10 +100,15 @@ rule
 # another comment
 name
 rule
+
+IF [name] = "Bob" THEN [status] = "active" ENDIF
 ```
 
 - `name` will be used as a column name
 - `rule` will be used to generate the data
+- constraint parameter references must use bracketed column names, e.g. `[Status]`
+- constraints are currently text-mode only in the editor UI
+- pairwise / n-wise generation with constraints supports only constraints that reference enum columns
 
 A `rule` can be a regex string e.g.
 

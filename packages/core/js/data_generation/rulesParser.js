@@ -1,5 +1,48 @@
 import { TestDataRules } from './testDataRules.js';
 import { SchemaParsingErrors } from './schema-parsing-errors.js';
+import { parseConstraintText } from './schema-constraint-parser.js';
+
+function startsConstraint(trimmedLine) {
+  return /^IF\b/i.test(trimmedLine);
+}
+
+function findConstraintTerminatorIndex(text) {
+  let inQuote = null;
+  for (let index = 0; index < text.length; index += 1) {
+    const char = text[index];
+    if ((char === '"' || char === "'") && text[index - 1] !== '\\') {
+      inQuote = inQuote === char ? null : inQuote || char;
+      continue;
+    }
+    if (inQuote) {
+      continue;
+    }
+    if (char === ';') {
+      return index;
+    }
+  }
+  const endifMatch = text.match(/\bENDIF\b/i);
+  return endifMatch ? endifMatch.index : -1;
+}
+
+function collectConstraintBlock(defnLines, startIndex) {
+  const lines = [];
+  let endIndex = startIndex;
+  for (; endIndex < defnLines.length; endIndex += 1) {
+    lines.push(defnLines[endIndex]);
+    const joined = lines.join('\n');
+    if (findConstraintTerminatorIndex(joined) >= 0) {
+      return {
+        text: joined,
+        endIndex,
+      };
+    }
+  }
+  return {
+    text: lines.join('\n'),
+    endIndex: defnLines.length - 1,
+  };
+}
 
 export class RulesParser {
   constructor(aFaker, RandExp, options = {}) {
@@ -46,6 +89,31 @@ export class RulesParser {
           pendingLeadingTextLines.push(line);
           continue;
         }
+        if (startsConstraint(trimmed)) {
+          const constraintBlock = collectConstraintBlock(defnLines, index);
+          const parsedConstraint = parseConstraintText(constraintBlock.text, { startLine: index + 1 });
+          if (!parsedConstraint.ok) {
+            this.errors.push(...parsedConstraint.errors);
+            return;
+          }
+          this.testDataRules.addConstraint({
+            sourceText: constraintBlock.text,
+            ast: parsedConstraint.ast,
+            terminator: parsedConstraint.terminator,
+            referencedParameters: parsedConstraint.referencedParameters,
+            line: index + 1,
+          });
+          this.schemaTokens.push({
+            kind: 'constraint',
+            text: constraintBlock.text,
+            line: index + 1,
+            endLine: constraintBlock.endIndex + 1,
+            terminator: parsedConstraint.terminator,
+          });
+          index = constraintBlock.endIndex;
+          pendingLeadingTextLines = [];
+          continue;
+        }
         pendingName = trimmed;
         pendingNameLine = index + 1;
         continue;
@@ -74,6 +142,22 @@ export class RulesParser {
 
     if (this.testDataRules.rules.length === 0) {
       this.errors.push(SchemaParsingErrors.invalidSchemaPairing());
+      return;
+    }
+
+    const knownColumns = new Set(this.testDataRules.rules.map((rule) => String(rule?.name ?? '').trim()));
+    this.testDataRules.constraints.forEach((constraint) => {
+      const referencedParameters = Array.isArray(constraint?.referencedParameters)
+        ? constraint.referencedParameters
+        : [];
+      referencedParameters.forEach((parameterName) => {
+        if (!knownColumns.has(parameterName)) {
+          this.errors.push(SchemaParsingErrors.unknownConstraintParameter(parameterName, constraint?.line));
+        }
+      });
+    });
+    if (this.errors.length > 0) {
+      this.testDataRules.constraints = [];
     }
   }
 
@@ -94,6 +178,10 @@ export class RulesParser {
     this.schemaTokens.forEach((token) => {
       if (token.kind === 'comment' || token.kind === 'blank') {
         outputLines.push(token.text ?? '');
+        return;
+      }
+      if (token.kind === 'constraint') {
+        outputLines.push(...String(token.text ?? '').split('\n'));
         return;
       }
       if (token.kind === 'rule') {

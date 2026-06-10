@@ -4,6 +4,7 @@ import { LiteralTestDataGenerator } from './literal/literalTestDataGenerator.js'
 import { EnumTestDataGenerator } from './enum/enumTestDataGenerator.js';
 import { DomainTestDataGenerator } from './domain/domainTestDataGenerator.js';
 import { dataResponse } from './ruleResponse.js';
+import { evaluateConstraint } from './schema-constraint-evaluator.js';
 
 export class RulesBasedDataGenerator {
   constructor(aFaker, RandExp, options = {}) {
@@ -19,7 +20,7 @@ export class RulesBasedDataGenerator {
     this.defaultGenerator = new DefaultTestDataGenerator();
   }
 
-  generateFromRules(thisMany, fromRules) {
+  generateFromRules(thisMany, fromRules, options = {}) {
     // given some rules
     // generate thisMany instances
     // data is row of values where the first row is the headers
@@ -29,56 +30,72 @@ export class RulesBasedDataGenerator {
     data.push(headers);
 
     for (var row = 0; row < thisMany; row++) {
-      const aRow = this.generateRandomRow(fromRules);
+      const aRow = this.generateRandomRow(fromRules, options);
       data.push(aRow);
     }
 
     return data;
   }
 
-  generateRandomRow(fromRules) {
-    const aRow = fromRules.map((rule) => {
-      var dataGen = '';
-      var generator;
-      var value;
+  generateRandomRow(fromRules, { constraints = [], maxAttempts = 1 } = {}) {
+    const rules = Array.isArray(fromRules) ? fromRules : [];
+    const safeConstraints = Array.isArray(constraints) ? constraints : [];
 
-      switch (rule.type) {
-        case 'faker': // is faker?
-          generator = this.fakerGenerator;
-          break;
+    const createRow = () =>
+      rules.map((rule) => {
+        var dataGen = '';
+        var generator;
+        var value;
 
-        case 'regex':
-          generator = this.regexGenerator;
-          break;
+        switch (rule.type) {
+          case 'faker': // is faker?
+            generator = this.fakerGenerator;
+            break;
 
-        case 'literal':
-          generator = this.literalGenerator;
-          break;
+          case 'regex':
+            generator = this.regexGenerator;
+            break;
 
-        case 'enum':
-          generator = this.enumGenerator;
-          break;
-        case 'domain':
-          generator = this.domainGenerator;
-          break;
+          case 'literal':
+            generator = this.literalGenerator;
+            break;
 
-        default:
-          console.warn(`${rule.name} has Unidentified rule type ${rule.type} with spec ${rule.ruleSpec}`);
-          generator = this.defaultGenerator;
+          case 'enum':
+            generator = this.enumGenerator;
+            break;
+          case 'domain':
+            generator = this.domainGenerator;
+            break;
+
+          default:
+            console.warn(`${rule.name} has Unidentified rule type ${rule.type} with spec ${rule.ruleSpec}`);
+            generator = this.defaultGenerator;
+        }
+
+        value = generator.generateFrom(rule);
+
+        if (value.isError) {
+          dataGen = '**ERROR**';
+        } else {
+          dataGen = value.data;
+        }
+
+        return dataGen;
+      });
+
+    for (let attempt = 0; attempt < Math.max(1, maxAttempts); attempt += 1) {
+      const generatedRow = createRow();
+      if (safeConstraints.length === 0) {
+        return generatedRow;
       }
-
-      value = generator.generateFrom(rule);
-
-      if (value.isError) {
-        dataGen = '**ERROR**';
-      } else {
-        dataGen = value.data;
+      const record = Object.fromEntries(rules.map((rule, index) => [rule.name, generatedRow[index]]));
+      const isValid = safeConstraints.every((constraint) => evaluateConstraint(constraint, record));
+      if (isValid) {
+        return generatedRow;
       }
+    }
 
-      return dataGen;
-    });
-
-    return aRow;
+    return null;
   }
 }
 

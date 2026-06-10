@@ -41,6 +41,10 @@ function getSchemaTextArea(rootElement) {
   return rootElement?.querySelector?.('[data-role="schema-textbox"]') || null;
 }
 
+function getSchemaConstraintsTextArea(rootElement) {
+  return rootElement?.querySelector?.('[data-role="schema-constraints-textbox"]') || null;
+}
+
 function buildStoryHelpHtml({ inTextMode }) {
   if (inTextMode) {
     return `
@@ -261,7 +265,7 @@ export const ValidationError = {
     const canvas = within(canvasElement);
     const openTextModeButton = canvas.getByRole('button', { name: /edit as text/i });
     await userEvent.click(openTextModeButton);
-    const textArea = canvas.getByRole('textbox');
+    const textArea = canvas.getByRole('textbox', { name: /schema text/i });
     const toggleButton = canvas.getByRole('button', { name: /edit as schema/i });
     await userEvent.clear(textArea);
     await userEvent.type(textArea, 'OnlyName');
@@ -288,13 +292,48 @@ export const TextMode = {
   },
   play: async ({ canvasElement }) => {
     expectTextModeVisible(canvasElement);
-    const textArea = within(canvasElement).getByRole('textbox');
+    const textArea = within(canvasElement).getByRole('textbox', { name: /schema text/i });
     await expect(textArea.value).toContain('Status');
     await expect(textArea.value).toContain('enum(active,inactive,pending)');
     const helpIcon = canvasElement.querySelector('[data-role="schema-mode-help"]');
     await userEvent.hover(helpIcon);
     await expectSchemaHelpContent(helpIcon, { helpHeadingText: 'Edit as Schema' });
     await userEvent.unhover(helpIcon);
+  },
+};
+
+export const ConstrainedTextMode = {
+  render: renderSharedSchemaDefinitionStory,
+  args: {
+    initialText: `Priority
+enum(high,low)
+Status
+enum(open,closed)
+IF [Priority] = "high" THEN [Status] = "open" ENDIF`,
+    showErrors: true,
+    startInTextMode: true,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Constraint-focused workflow. This demonstrates switching from text mode back to row mode, where constraints move into the dedicated Schema Constraints details editor and remain editable there.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    expectTextModeVisible(canvasElement);
+    const canvas = within(canvasElement);
+    const toggleButton = canvas.getByRole('button', { name: /edit as schema/i });
+    const schemaTextArea = canvas.getByRole('textbox', { name: /schema text/i });
+    await expect(schemaTextArea.value).toContain('IF [Priority] = "high" THEN [Status] = "open" ENDIF');
+    await userEvent.click(toggleButton);
+    const constraintsTextArea = getSchemaConstraintsTextArea(canvasElement);
+    await expect(constraintsTextArea).not.toBeNull();
+    await expect(canvasElement.querySelector('[data-role="schema-constraints-summary"]').textContent).toBe(
+      'Schema Constraints (1)'
+    );
+    await expect(constraintsTextArea.value).toContain('IF [Priority] = "high" THEN [Status] = "open" ENDIF');
   },
 };
 

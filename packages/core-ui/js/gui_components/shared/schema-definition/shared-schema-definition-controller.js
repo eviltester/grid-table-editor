@@ -36,6 +36,10 @@ class SharedSchemaDefinitionController {
       helpGroupClassName: this.props.helpGroupClassName || 'shared-schema-button-with-help',
       rowsClassName: this.props.rowsClassName || 'shared-schema-rows',
       textContainerClassName: this.props.textContainerClassName || 'shared-schema-text',
+      constraintsDetailsClassName: this.props.constraintsDetailsClassName || 'shared-schema-constraints',
+      constraintsSummaryClassName: this.props.constraintsSummaryClassName || 'shared-schema-constraints-summary',
+      constraintsTextAreaClassName:
+        this.props.constraintsTextAreaClassName || 'testDataSchemaTextArea shared-schema-constraints-textarea',
       footerClassName: this.props.footerClassName || 'shared-schema-footer',
       textAreaClassName: this.props.textAreaClassName || 'testDataSchemaTextArea',
       addButtonClassName: this.props.addButtonClassName || '',
@@ -43,6 +47,8 @@ class SharedSchemaDefinitionController {
       toggleButtonTitle: this.props.toggleButtonTitle || 'Toggle schema text mode',
       addButtonLabel: this.props.addButtonLabel || '+ Add Field',
       textAreaPlaceholder: this.props.textAreaPlaceholder || 'Column Name\nrule\nColumn Name\nrule',
+      constraintsTextAreaPlaceholder:
+        this.props.constraintsTextAreaPlaceholder || 'IF [Column] = "value" THEN [Other Column] = "value" ENDIF',
       ids: {
         rows: ids.rows || null,
         textContainer: ids.textContainer || null,
@@ -119,6 +125,14 @@ class SharedSchemaDefinitionController {
 
   syncTextFromRows() {
     return this.schemaEditor?.syncTextFromRows?.();
+  }
+
+  getSchemaText() {
+    return this.schemaEditor?.getSchemaText?.() || '';
+  }
+
+  syncConstraintsFromEditor(options) {
+    return this.schemaEditor?.syncConstraintsFromEditor?.(options) || { rows: [], errors: [] };
   }
 
   addRow() {

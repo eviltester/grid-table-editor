@@ -6,6 +6,7 @@ import { cartesianProduct } from './nWiseShared.js';
 import { dataResponse, errorResponse } from '../ruleResponse.js';
 import { EnumParser } from '../utils/enumParser.js';
 import { PairwiseTestDataGenerator } from './pairwiseTestDataGenerator.js';
+import { createCoveredRecordSetFromValidRecords } from './constrained-combinations.js';
 
 export const CombinationAlgorithm = Object.freeze({
   PAIRWISE: 'pairwise',
@@ -108,6 +109,7 @@ export class CombinationsTestDataGenerator extends PairwiseTestDataGenerator {
     };
 
     try {
+      this.constraints = Array.isArray(options?.constraints) ? options.constraints : [];
       this.orderedRules = [...rules];
       const { enumRules, nonEnumRules } = rules.reduce(
         (acc, rule) => {
@@ -123,6 +125,14 @@ export class CombinationsTestDataGenerator extends PairwiseTestDataGenerator {
 
       this.enumRules = enumRules;
       this.nonEnumRules = nonEnumRules;
+
+      const enumRuleNames = new Set(this.enumRules.map((rule) => rule.name));
+      const nonEnumConstraintReference = this.constraints.find((constraint) =>
+        (constraint?.referencedParameters || []).some((parameterName) => !enumRuleNames.has(parameterName))
+      );
+      if (nonEnumConstraintReference) {
+        return errorResponse('Combination constraints can only reference enum columns.');
+      }
 
       if (!SUPPORTED_COMBINATION_ALGORITHMS.has(nextCombinationOptions.algorithm)) {
         return errorResponse(`Unsupported combination generation algorithm: ${nextCombinationOptions.algorithm}`);
@@ -146,7 +156,13 @@ export class CombinationsTestDataGenerator extends PairwiseTestDataGenerator {
 
       this.combinationOptions = nextCombinationOptions;
       const parameters = this.convertEnumRulesToParameters(this.enumRules);
-      const enumCombinations = this.generateEnumCombinations(parameters);
+      const enumCombinations =
+        this.constraints.length > 0
+          ? this.generateConstrainedEnumCombinations(parameters)
+          : this.generateEnumCombinations(parameters);
+      if (enumCombinations?.isError) {
+        return enumCombinations;
+      }
 
       this.dataRecords = this.generateCompleteDataRecords(enumCombinations);
       this.currentRecordIndex = 0;
@@ -192,6 +208,21 @@ export class CombinationsTestDataGenerator extends PairwiseTestDataGenerator {
     });
     this.combinationGenerator.generateDataSet();
     return this.combinationGenerator.dataRecords;
+  }
+
+  generateConstrainedEnumCombinations(parameters) {
+    const constrained = createCoveredRecordSetFromValidRecords(
+      parameters,
+      this.combinationOptions.strength,
+      this.constraints
+    );
+    if (!constrained.ok) {
+      return errorResponse(constrained.error);
+    }
+    this.combinationGenerator = {
+      getCoverageStats: () => constrained.model.getCoverageStats(constrained.selectedRecords.length),
+    };
+    return constrained.selectedRecords;
   }
 
   convertEnumRulesToParameters(enumRules) {

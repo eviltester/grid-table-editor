@@ -1,16 +1,14 @@
 import { createThemeToggleComponent } from '../../../packages/core-ui/js/gui_components/shared/theme-toggle.js';
 import {
-  ANYWAYDATA_MCP_RESOURCE_URIS,
   executeAnyWayDataMcpTool,
-  listAnyWayDataMcpResources,
   listAnyWayDataMcpTools,
-  readAnyWayDataMcpResource,
 } from '@anywaydata/core/mcp/anywaydata-mcp-contract.js';
 
 function findModelContext(documentObj) {
   if (!documentObj) {
     return null;
   }
+
   return documentObj.modelContext || documentObj.defaultView?.navigator?.modelContext || null;
 }
 
@@ -67,62 +65,13 @@ function createToolCard(documentObj, tool) {
   return article;
 }
 
-function createResourceCard(documentObj, resource) {
-  const article = documentObj.createElement('article');
-  article.className = 'webmcp-card';
-
-  const heading = documentObj.createElement('h3');
-  heading.className = 'webmcp-card__title';
-  heading.textContent = resource.name;
-  article.appendChild(heading);
-
-  const description = documentObj.createElement('p');
-  description.className = 'webmcp-card__body';
-  description.textContent = resource.description;
-  article.appendChild(description);
-
-  const uri = documentObj.createElement('code');
-  uri.className = 'webmcp-card__code';
-  uri.textContent = resource.uri;
-  article.appendChild(uri);
-
-  return article;
-}
-
-function renderInstallExamples(documentObj, installGuide) {
-  const host = documentObj.getElementById('webmcp-config-examples');
-  if (!host || !installGuide?.examples) {
-    return;
-  }
-
-  host.replaceChildren();
-  Object.entries(installGuide.examples).forEach(([name, example]) => {
-    const wrapper = documentObj.createElement('article');
-    wrapper.className = 'webmcp-config-example';
-
-    const heading = documentObj.createElement('h3');
-    heading.className = 'webmcp-card__title';
-    heading.textContent = name.replaceAll('_', ' ');
-    wrapper.appendChild(heading);
-
-    const block = documentObj.createElement('pre');
-    block.className = 'webmcp-code-block';
-    const code = documentObj.createElement('code');
-    code.textContent = JSON.stringify(example, null, 2);
-    block.appendChild(code);
-    wrapper.appendChild(block);
-
-    host.appendChild(wrapper);
-  });
-}
-
 async function registerTools({ modelContext, tools }) {
   const registrations = [];
 
   try {
-    tools.forEach((tool) => {
+    for (const tool of tools) {
       const abortController = new globalThis.AbortController();
-      modelContext.registerTool(
+      await modelContext.registerTool(
         {
           name: tool.name,
           description: tool.description,
@@ -135,7 +84,7 @@ async function registerTools({ modelContext, tools }) {
         { signal: abortController.signal }
       );
       registrations.push(abortController);
-    });
+    }
   } catch (error) {
     registrations.forEach((registration) => registration.abort());
     throw error;
@@ -155,14 +104,9 @@ async function bootstrapWebMcpPage({
 
   const statusElement = documentObj.getElementById('webmcp-status');
   const toolListElement = documentObj.getElementById('webmcp-tool-list');
-  const resourceListElement = documentObj.getElementById('webmcp-resource-list');
   const tools = listAnyWayDataMcpTools();
-  const resources = listAnyWayDataMcpResources();
-  const installGuide = readAnyWayDataMcpResource(ANYWAYDATA_MCP_RESOURCE_URIS.installGuide);
 
   appendListItems(toolListElement, tools, (tool) => createToolCard(documentObj, tool));
-  appendListItems(resourceListElement, resources, (resource) => createResourceCard(documentObj, resource));
-  renderInstallExamples(documentObj, installGuide);
 
   const themeToggle = createThemeToggleComponentFn({
     documentObj,
@@ -172,7 +116,7 @@ async function bootstrapWebMcpPage({
   if (!modelContext?.registerTool) {
     setStatus(
       statusElement,
-      'WebMCP runtime not detected in this browser session. The page still documents the available AnyWayData MCP tools.',
+      'document.modelContext is not available in this browser session. This page still documents the in-browser AnyWayData tools.',
       { severity: 'warning' }
     );
 
@@ -184,24 +128,25 @@ async function bootstrapWebMcpPage({
     };
   }
 
-  setStatus(statusElement, 'Registering AnyWayData tools with WebMCP...', { isLoading: true });
+  setStatus(statusElement, 'Registering AnyWayData tools with document.modelContext...', { isLoading: true });
 
   let registrations;
-
   try {
     registrations = await registerTools({ modelContext, tools });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    setStatus(statusElement, `Unable to register AnyWayData WebMCP tools: ${message}`, {
+    setStatus(statusElement, `Unable to register AnyWayData tools with document.modelContext: ${message}`, {
       severity: 'error',
     });
     themeToggle?.destroy?.();
     throw error;
   }
 
-  setStatus(statusElement, `Registered ${tools.length} AnyWayData tools for WebMCP clients on this page.`, {
-    severity: 'info',
-  });
+  setStatus(
+    statusElement,
+    `Registered ${tools.length} AnyWayData tools with document.modelContext for in-browser WebMCP agents.`,
+    { severity: 'info' }
+  );
 
   return {
     destroy() {

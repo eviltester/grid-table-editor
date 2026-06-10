@@ -1,4 +1,6 @@
-import '@mcp-b/webmcp-polyfill';
+import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
+
+initializeWebMCPPolyfill();
 
 void import('./webmcp-page.mjs')
   .then(({ bootstrapWebMcpPage }) => bootstrapWebMcpPage())

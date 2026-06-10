@@ -4,8 +4,9 @@
     <title>WebMCP Interface - AnyWayData</title>
     <meta
       name="description"
-      content="Expose the AnyWayData generation MCP tools directly from the browser through a dedicated WebMCP page."
+      content="Experimental in-browser WebMCP surface for exposing AnyWayData tools through document.modelContext."
     />
+    <meta name="robots" content="noindex, nofollow" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="author" content="Alan Richardson" />
@@ -20,50 +21,88 @@
       <div class="pageheading"><a href="./">AnyWayData</a></div>
       <div class="mainmenu"><a href="app.html">App</a></div>
       <div class="mainmenu"><a href="generator.html">Generator</a></div>
-      <div class="mainmenu">&nbsp;WebMCP&nbsp;</div>
       <div class="mainmenu"><a href="docs/intro">Docs</a></div>
       <div class="mainmenu"><a href="blog">Blog</a></div>
     </div>
 
     <main id="webmcp-page-root" class="bodycontent webmcp-page">
       <section class="webmcp-hero">
-        <p class="webmcp-eyebrow">AI Integration Surface</p>
+        <p class="webmcp-eyebrow">Experimental Test Environment</p>
         <h1>AnyWayData WebMCP</h1>
         <p class="webmcp-lead">
-          This page mirrors the existing AnyWayData MCP tool surface in the browser so AI clients can discover and call
-          the same generation workflows through WebMCP.
+          This page exposes the AnyWayData generation workflows directly through <code>document.modelContext</code> so
+          browser-integrated agents can discover and call in-browser tools. It is an ongoing WebMCP experiment rather
+          than a documented product surface.
         </p>
         <p id="webmcp-status" class="import-progress-status startup-loading-status" role="status" aria-live="polite">
-          Preparing WebMCP tool registration...
+          Preparing in-browser WebMCP tool registration...
         </p>
+      </section>
+
+      <section class="webmcp-section">
+        <h2>When To Use This</h2>
+        <ul class="webmcp-steps">
+          <li>You want an AI platform to work with AnyWayData inside the browser, not through a separate stdio MCP server.</li>
+          <li>You want the active page to expose tools directly from the current browser session.</li>
+          <li>You are experimenting with browser-native WebMCP support and accept that the ecosystem is still early.</li>
+        </ul>
       </section>
 
       <section class="webmcp-section">
         <h2>How To Use It</h2>
         <ol class="webmcp-steps">
-          <li>Open this page in the browser session your AI client can access.</li>
-          <li>Use a WebMCP-capable client or bridge to inspect the tools registered on this page.</li>
-          <li>Call the AnyWayData tools directly for generation, amend, and option-schema discovery workflows.</li>
+          <li>Open this page in a browser or agent runtime that supports WebMCP through <code>document.modelContext</code>.</li>
+          <li>The page registers the AnyWayData tools directly in-browser as soon as it loads.</li>
+          <li>Ask your browser-integrated agent to discover and invoke the tools available on this page.</li>
+          <li>Use the AnyWayData tools for generation, amend, and option-schema discovery workflows.</li>
         </ol>
+        <p class="webmcp-supporting-copy">
+          Reference material:
+          <a href="https://github.com/webmachinelearning/webmcp">webmachinelearning/webmcp</a>,
+          the
+          <a href="https://developer.chrome.com/docs/ai/webmcp">Chrome WebMCP documentation</a>.
+        </p>
+      </section>
+
+      <section class="webmcp-section">
+        <h2>How It Works</h2>
+        <ul class="webmcp-steps">
+          <li><code>webmcp.html</code> registers AnyWayData tools on page load through <code>document.modelContext.registerTool(...)</code>.</li>
+          <li>A browser-integrated AI runtime discovers those tools from the active page.</li>
+          <li>Tool execution runs in the browser against the current page session.</li>
+          <li>This experiment is separate from the stdio MCP server flow.</li>
+        </ul>
+      </section>
+
+      <section class="webmcp-section">
+        <h2>Platform Setup Notes</h2>
+        <ul class="webmcp-steps">
+          <li>Do not configure this page as a stdio MCP server or through an <code>mcpServers</code> host config block.</li>
+          <li>If your AI platform asks for a page or origin to inspect, use this page in the same browser session.</li>
+          <li>Chrome currently treats WebMCP as experimental and documents local testing support through <code>chrome://flags/#enable-webmcp-testing</code>.</li>
+          <li>Chrome also documents origin-trial support and the Model Context Tool Inspector extension for manual inspection.</li>
+        </ul>
+      </section>
+
+      <section class="webmcp-section">
+        <h2>Run This Experiment</h2>
+        <p class="webmcp-supporting-copy">
+          Local development: run <code>pnpm install</code> then <code>pnpm run dev:web</code>, and open
+          <code>http://127.0.0.1:4173/webmcp.html</code>.
+        </p>
+        <p class="webmcp-supporting-copy">
+          Docker preview: build with <code>docker build -f apps/web/Dockerfile -t anywaydata-web .</code>, run
+          <code>docker run --rm -p 8080:80 anywaydata-web</code>, then open <code>http://localhost:8080/webmcp.html</code>.
+        </p>
+        <p class="webmcp-supporting-copy">
+          In deployed test environments this page can be exposed as <code>/webmcp</code> without being linked from the
+          main app navigation.
+        </p>
       </section>
 
       <section class="webmcp-section">
         <h2>Available Tools</h2>
         <div id="webmcp-tool-list" class="webmcp-card-grid"></div>
-      </section>
-
-      <section class="webmcp-section">
-        <h2>Available Resources</h2>
-        <div id="webmcp-resource-list" class="webmcp-card-grid"></div>
-      </section>
-
-      <section class="webmcp-section">
-        <h2>Install Examples For MCP Hosts</h2>
-        <p class="webmcp-supporting-copy">
-          The browser page is the WebMCP-facing surface. These examples mirror the current Node MCP setup options that
-          the browser-facing page is intended to complement.
-        </p>
-        <div id="webmcp-config-examples" class="webmcp-config-grid"></div>
       </section>
     </main>
   </body>

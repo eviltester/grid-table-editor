@@ -74,21 +74,23 @@ function buildFormatOptionCatalog() {
 const FORMAT_OPTIONS_CATALOG = buildFormatOptionCatalog();
 
 function buildGenerateOptionsSchema() {
-  const oneOf = SUPPORTED_FORMATS.map((format) => ({
-    type: 'object',
-    properties: {
-      outputFormat: { const: format },
-      options: FORMAT_OPTIONS_CATALOG[format].optionSchema,
-    },
-    required: ['outputFormat'],
-  }));
+  const mergedProperties = {};
+
+  for (const format of SUPPORTED_FORMATS) {
+    const optionSchema = FORMAT_OPTIONS_CATALOG[format].optionSchema;
+    for (const [optionName, propertySchema] of Object.entries(optionSchema.properties || {})) {
+      if (!mergedProperties[optionName]) {
+        mergedProperties[optionName] = propertySchema;
+      }
+    }
+  }
 
   return {
     type: 'object',
     description:
-      'Formatter options for the selected outputFormat. For full schema/defaults, call get_output_format_options_schema.',
+      'Flat formatter options object for the selected top-level outputFormat. For full per-format schema/defaults, call get_output_format_options_schema.',
     additionalProperties: true,
-    oneOf,
+    properties: mergedProperties,
   };
 }
 

@@ -115,19 +115,6 @@ function renderInstallExamples(documentObj, installGuide) {
   });
 }
 
-function createWebMcpToolResponse(payload) {
-  return {
-    content: [
-      {
-        type: 'text',
-        text: JSON.stringify(payload),
-      },
-    ],
-    structuredContent: payload,
-    isError: payload?.ok === false,
-  };
-}
-
 async function registerTools({ modelContext, tools }) {
   const registrations = [];
 
@@ -141,7 +128,7 @@ async function registerTools({ modelContext, tools }) {
           inputSchema: tool.inputSchema,
           outputSchema: tool.outputSchema,
           async execute(args) {
-            return createWebMcpToolResponse(executeAnyWayDataMcpTool(tool.name, args));
+            return executeAnyWayDataMcpTool(tool.name, args);
           },
         },
         { signal: abortController.signal }
@@ -200,7 +187,17 @@ async function bootstrapWebMcpPage({
 
   setStatus(statusElement, 'Registering AnyWayData tools with WebMCP...', { isLoading: true });
 
-  const registrations = await registerTools({ modelContext, tools });
+  let registrations;
+
+  try {
+    registrations = await registerTools({ modelContext, tools });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    setStatus(statusElement, `Unable to register AnyWayData WebMCP tools: ${message}`, {
+      severity: 'error',
+    });
+    throw error;
+  }
 
   setStatus(statusElement, `Registered ${tools.length} AnyWayData tools for WebMCP clients on this page.`, {
     severity: 'info',
@@ -215,4 +212,4 @@ async function bootstrapWebMcpPage({
   };
 }
 
-export { bootstrapWebMcpPage, createWebMcpToolResponse, findModelContext };
+export { bootstrapWebMcpPage, findModelContext };

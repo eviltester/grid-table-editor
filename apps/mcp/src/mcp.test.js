@@ -31,7 +31,10 @@ test('MCP server lists tools', () => {
   const generateTool = response?.result?.tools?.find((tool) => tool.name === 'generate_data_from_spec');
   const generateSchema = generateTool?.inputSchema?.properties?.options;
   expect(generateSchema?.type).toBe('object');
-  expect(Array.isArray(generateSchema?.oneOf)).toBeTruthy();
+  expect(generateSchema?.description).toContain('Flat formatter options object');
+  expect(generateSchema?.properties?.delimiter).toBeTruthy();
+  expect(generateSchema?.properties?.outputFormat).toBeUndefined();
+  expect(generateSchema?.properties?.options).toBeUndefined();
   expect(generateTool?.outputSchema).toBeTruthy();
 });
 
@@ -142,7 +145,7 @@ test('MCP generation uses includeSetup for representative frameworks', () => {
         textSpec: 'Name\nBob',
         rowCount: 1,
         outputFormat: 'jest',
-        options: { outputFormat: 'jest', options: { includeSetup: true } },
+        options: { includeSetup: true },
       },
     },
   });
@@ -160,7 +163,7 @@ test('MCP generation uses includeSetup for representative frameworks', () => {
         textSpec: 'Name\nBob',
         rowCount: 1,
         outputFormat: 'phpunit',
-        options: { outputFormat: 'phpunit', options: { includeSetup: true } },
+        options: { includeSetup: true },
       },
     },
   });
@@ -444,12 +447,9 @@ test('MCP parity: rendered output matches core for all unit-test frameworks', ()
 
   for (const outputFormat of frameworks) {
     const options = {
-      outputFormat,
-      options: {
-        includeSetup: true,
-        prettyPrint: true,
-        dataSourceStrategy: 'provider',
-      },
+      includeSetup: true,
+      prettyPrint: true,
+      dataSourceStrategy: 'provider',
     };
     const coreResult = generateFromTextSpec({
       textSpec: 'Name\nBob\nAge\n21',

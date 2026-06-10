@@ -186,3 +186,64 @@ test('/v1/generate supports pairwise for x-www-form-urlencoded payloads', async 
     ['Safari', 'Dark'],
   ]);
 });
+
+test('/v1/generate enforces valid IF THEN constraints during successful generation', async () => {
+  const response = await fetch(url('/v1/generate'), {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+      textSpec: `Priority
+enum("High","Low")
+Status
+enum("Open","Closed")
+
+IF [Priority] = "High" THEN [Status] = "Open";`,
+      rowCount: 20,
+      outputFormat: 'json',
+    }),
+  });
+
+  expect(response.status).toBe(200);
+  const body = await response.json();
+  expect(body.headers).toEqual(['Priority', 'Status']);
+  expect(body.rows).toHaveLength(20);
+  body.rows.forEach((row) => {
+    if (row[0] === 'High') {
+      expect(row[1]).toBe('Open');
+    }
+  });
+});
+
+test('/v1/generate returns constraint generation failures for impossible runtime constraints', async () => {
+  const response = await fetch(url('/v1/generate'), {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+      textSpec: `Status
+enum("Open","Closed")
+
+IF [Status] = "Open" THEN [Status] = "Closed";
+IF [Status] = "Closed" THEN [Status] = "Open";`,
+      rowCount: 1,
+      outputFormat: 'json',
+    }),
+  });
+
+  expect(response.status).toBe(400);
+  const body = await response.json();
+  expect(body.errors).toContainEqual(
+    expect.objectContaining({
+      code: 'constraint_generation_failed',
+      message:
+        'Schema Constraints are impacting row generation - generated 0 rows, failed to generate 1000 rows. Consider changing constraints to improve row generation.',
+      generatedCount: 0,
+      failedCount: 1000,
+    })
+  );
+  expect(body.diagnostics).toEqual(
+    expect.objectContaining({
+      generatedCount: 0,
+      failedCount: 1000,
+    })
+  );
+});

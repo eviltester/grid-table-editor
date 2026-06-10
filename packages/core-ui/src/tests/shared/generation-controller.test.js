@@ -105,6 +105,49 @@ describe('generation-controller', () => {
     expect(result.generator.testDataRules()[1]).toEqual({ type: 'literal', ruleSpec: '' });
   });
 
+  test('creates configured generator from composed schema text when provided', () => {
+    const schemaTextToDataRules = jest.fn().mockReturnValue({
+      dataRules: [{ name: 'Status', ruleSpec: 'enum("Open","Closed")', type: 'enum' }],
+      errors: [],
+      schemaTokens: [
+        { kind: 'rule' },
+        { kind: 'constraint', text: 'IF [Status] = "Open" THEN [Status] = "Closed" ENDIF' },
+      ],
+      constraints: [{ sourceText: 'IF [Status] = "Open" THEN [Status] = "Closed" ENDIF' }],
+      generator: { generatedFromText: true },
+    });
+
+    const result = createConfiguredGeneratorFromSchemaRows({
+      schemaRows: [{ name: 'Status', sourceType: 'enum', value: '"Open","Closed"' }],
+      validateSchemaRows: () => ({
+        errors: [],
+        rows: [{ name: 'Status', sourceType: 'enum', value: '"Open","Closed"' }],
+      }),
+      schemaRowsToSpec: jest.fn(() => 'Status\nenum("Open","Closed")'),
+      schemaText: 'Status\nenum("Open","Closed")\n\nIF [Status] = "Open" THEN [Status] = "Closed" ENDIF',
+      schemaTextToDataRules,
+      TestDataGeneratorClass: class {},
+      faker: {},
+      RandExp: function RandExp() {},
+      buildRuleSpecFromSchemaRow: (row) => row.value,
+      extractLiteralValueFromRuleSpec: (value) => value,
+      extractRegexValueFromRuleSpec: (value) => value,
+      SOURCE_TYPE_FAKER: 'faker',
+      SOURCE_TYPE_DOMAIN: 'domain',
+      SOURCE_TYPE_LITERAL: 'literal',
+      SOURCE_TYPE_ENUM: 'enum',
+      SOURCE_TYPE_REGEX: 'regex',
+    });
+
+    expect(schemaTextToDataRules).toHaveBeenCalledWith(
+      expect.objectContaining({
+        schemaText: 'Status\nenum("Open","Closed")\n\nIF [Status] = "Open" THEN [Status] = "Closed" ENDIF',
+      })
+    );
+    expect(result.generator).toEqual({ generatedFromText: true });
+    expect(result.errors).toEqual([]);
+  });
+
   test('treats domain datatype.enum row as enum rule type', () => {
     class FakeGenerator {
       constructor() {

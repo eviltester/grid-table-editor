@@ -230,4 +230,41 @@ describe('CombinationsTestDataGenerator', () => {
       })
     );
   });
+
+  test('supports constrained combination generation for enum-only references', () => {
+    const generator = new CombinationsTestDataGenerator();
+    const initResult = generator.initializeFromRules(createRules(3, ['a', 'b']), {
+      strength: 2,
+      algorithm: CombinationAlgorithm.PAIRWISE,
+      constraints: [
+        {
+          ast: {
+            kind: 'if-then-constraint',
+            condition: {
+              kind: 'comparison',
+              relation: '=',
+              left: { kind: 'parameter', name: 'P1' },
+              right: { kind: 'value', valueType: 'string', value: '1.a' },
+            },
+            consequence: {
+              kind: 'comparison',
+              relation: '=',
+              left: { kind: 'parameter', name: 'P2' },
+              right: { kind: 'value', valueType: 'string', value: '2.a' },
+            },
+          },
+          referencedParameters: ['P1', 'P2'],
+        },
+      ],
+    });
+
+    expect(initResult.isError).toBe(false);
+    const rowsResult = generator.generateAllDataRecordsAsRows();
+    expect(rowsResult.isError).toBe(false);
+    rowsResult.data.data.slice(1).forEach((row) => {
+      if (row[0] === '1.a') {
+        expect(row[1]).toBe('2.a');
+      }
+    });
+  });
 });

@@ -189,6 +189,7 @@ describe('shared-schema-definition view', () => {
     expect(document.querySelector('.shared-schema-heading')).toBeTruthy();
     expect(document.querySelector('.shared-schema-rows')).toBeTruthy();
     expect(document.querySelector('.shared-schema-text')).toBeTruthy();
+    expect(document.querySelector('.shared-schema-constraints')).toBeTruthy();
     expect(document.querySelector('.shared-schema-footer')).toBeTruthy();
     expect(document.querySelector('[data-role="schema-rows-region"]').className).toBe('shared-schema-rows');
     expect(document.querySelector('[data-role="schema-text-region"]').className).toBe('shared-schema-text');
@@ -220,6 +221,118 @@ describe('shared-schema-definition view', () => {
     component.syncFromText({ showErrors: true });
 
     expect(document.querySelector('[data-role="schema-error"]').textContent.length).toBeGreaterThan(0);
+  });
+
+  test('shows constrained schemas in the schema constraints details editor after switching back to row mode', () => {
+    const component = createComponent();
+    const toggleButton = document.querySelector('[data-role="schema-mode-toggle"]');
+    const textArea = document.querySelector('[data-role="schema-textbox"]');
+
+    fireEvent.click(toggleButton);
+    textArea.value = `Priority
+enum(high,low)
+Status
+enum(open,closed)
+IF [Priority] = "high" THEN [Status] = "open" ENDIF`;
+    component.syncFromText({ showErrors: true, force: true });
+
+    fireEvent.click(toggleButton);
+    expect(document.querySelector('[data-role="schema-text-region"]').style.display).toBe('none');
+    expect(document.querySelector('[data-role="schema-rows-region"]').style.display).toBe('flex');
+    expect(document.querySelector('[data-role="schema-constraints-summary"]').textContent).toBe(
+      'Schema Constraints (1)'
+    );
+    expect(document.querySelector('[data-role="schema-constraints-region"]').open).toBe(true);
+    expect(document.querySelector('[data-role="schema-constraints-textbox"]').value).toContain(
+      'IF [Priority] = "high" THEN [Status] = "open" ENDIF'
+    );
+  });
+
+  test('updates the constraints details editor and preserves edited constraints when toggling modes', () => {
+    const component = createComponent();
+    const toggleButton = document.querySelector('[data-role="schema-mode-toggle"]');
+    const textArea = document.querySelector('[data-role="schema-textbox"]');
+
+    fireEvent.click(toggleButton);
+    textArea.value = `Priority
+enum(high,low)
+Status
+enum(open,closed)
+IF [Priority] = "high" THEN [Status] = "open" ENDIF`;
+    component.syncFromText({ showErrors: true, force: true });
+    fireEvent.click(toggleButton);
+
+    const constraintsTextArea = document.querySelector('[data-role="schema-constraints-textbox"]');
+    constraintsTextArea.value = 'IF [Priority] = "low" THEN [Status] = "closed" ENDIF';
+    fireEvent.input(constraintsTextArea);
+    fireEvent.focusOut(constraintsTextArea);
+
+    expect(document.querySelector('[data-role="schema-error"]').textContent).toBe('');
+    expect(document.querySelector('[data-role="schema-constraints-summary"]').textContent).toBe(
+      'Schema Constraints (1)'
+    );
+
+    fireEvent.click(toggleButton);
+
+    expect(document.querySelector('[data-role="schema-textbox"]').value).toContain(
+      'IF [Priority] = "low" THEN [Status] = "closed" ENDIF'
+    );
+  });
+
+  test('preserves comment lines in the schema constraints section when toggling modes', () => {
+    const component = createComponent();
+    const toggleButton = document.querySelector('[data-role="schema-mode-toggle"]');
+    const textArea = document.querySelector('[data-role="schema-textbox"]');
+    const originalText = `Priority
+enum(high,low)
+Status
+enum(open,closed)
+
+# open items must stay open
+IF [Priority] = "high" THEN [Status] = "open" ENDIF
+
+# low priority items can close
+IF [Priority] = "low" THEN [Status] = "closed";`;
+
+    fireEvent.click(toggleButton);
+    textArea.value = originalText;
+    component.syncFromText({ showErrors: true, force: true });
+    fireEvent.click(toggleButton);
+
+    const constraintsTextArea = document.querySelector('[data-role="schema-constraints-textbox"]');
+    expect(constraintsTextArea.value).toBe(
+      `# open items must stay open
+IF [Priority] = "high" THEN [Status] = "open" ENDIF
+
+# low priority items can close
+IF [Priority] = "low" THEN [Status] = "closed";`
+    );
+
+    fireEvent.click(toggleButton);
+    expect(document.querySelector('[data-role="schema-textbox"]').value).toBe(originalText);
+  });
+
+  test('toggling between schema and text mode does not add extra blank lines before constraints', () => {
+    const component = createComponent();
+    const toggleButton = document.querySelector('[data-role="schema-mode-toggle"]');
+    const textArea = document.querySelector('[data-role="schema-textbox"]');
+    const originalText = `Priority
+enum(high,low)
+
+Status
+enum(open,closed)
+
+IF [Priority] = "high" THEN [Status] = "open" ENDIF`;
+
+    fireEvent.click(toggleButton);
+    textArea.value = originalText;
+    component.syncFromText({ showErrors: true, force: true });
+
+    fireEvent.click(toggleButton);
+    fireEvent.click(toggleButton);
+    fireEvent.click(toggleButton);
+
+    expect(document.querySelector('[data-role="schema-textbox"]').value).toBe(originalText);
   });
 
   test('works with generator page ids while shared internals keep using neutral schema keys', () => {

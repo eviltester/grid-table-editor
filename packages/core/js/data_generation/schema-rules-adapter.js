@@ -104,12 +104,13 @@ export function schemaTextToDataRules({
     dataRules: parseResult.ok || includeInvalidRules ? parseResult.rules : [],
     errors: parseResult.errors,
     schemaTokens: parseResult.tokens,
+    constraints: parseResult.constraints || [],
     compilationReport: parseResult.report,
   };
 }
 
-export function dataRulesToSchemaText({ dataRules, schemaTokens = [] } = {}) {
-  const renderResult = renderSchemaText({ rules: dataRules, tokens: schemaTokens });
+export function dataRulesToSchemaText({ dataRules, schemaTokens = [], constraints = [] } = {}) {
+  const renderResult = renderSchemaText({ rules: dataRules, constraints, tokens: schemaTokens });
   return { text: renderResult.text, errors: renderResult.errors };
 }
 

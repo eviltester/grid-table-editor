@@ -7,6 +7,9 @@ const SCHEMA_ADD_FIELD_ROLE = 'schema-add-field';
 const SCHEMA_MODE_TOGGLE_ROLE = 'schema-mode-toggle';
 const SCHEMA_MODE_HELP_ROLE = 'schema-mode-help';
 const SCHEMA_ERROR_ROLE = 'schema-error';
+const SCHEMA_CONSTRAINTS_REGION_ROLE = 'schema-constraints-region';
+const SCHEMA_CONSTRAINTS_SUMMARY_ROLE = 'schema-constraints-summary';
+const SCHEMA_CONSTRAINTS_TEXTBOX_ROLE = 'schema-constraints-textbox';
 
 function renderOptionalIdAttr(idValue) {
   return idValue ? ` id="${idValue}"` : '';
@@ -67,6 +70,12 @@ class SharedSchemaDefinitionView {
     this.handleTextFocusOut = () => {
       this.controller.syncFromText({ showErrors: false, force: true });
     };
+    this.handleConstraintsInput = () => {
+      this.controller.syncConstraintsFromEditor({ showErrors: false });
+    };
+    this.handleConstraintsFocusOut = () => {
+      this.controller.syncConstraintsFromEditor({ showErrors: true });
+    };
   }
 
   getElementByRole(role) {
@@ -110,8 +119,19 @@ class SharedSchemaDefinitionView {
             ${renderOptionalIdAttr(viewModel.ids.text)}
             class="${viewModel.textAreaClassName}"
             data-role="schema-textbox"
+            aria-label="Schema text"
             placeholder="${viewModel.textAreaPlaceholder}"></textarea>
         </div>
+        <details class="${viewModel.constraintsDetailsClassName}" data-role="schema-constraints-region">
+          <summary class="${viewModel.constraintsSummaryClassName}" data-role="schema-constraints-summary">
+            Schema Constraints (0)
+          </summary>
+          <textarea
+            class="${viewModel.constraintsTextAreaClassName}"
+            data-role="schema-constraints-textbox"
+            aria-label="Schema constraints"
+            placeholder="${viewModel.constraintsTextAreaPlaceholder}"></textarea>
+        </details>
         <div class="${viewModel.footerClassName}" data-role="schema-footer">
           <button
             ${renderOptionalIdAttr(viewModel.ids.addButton)}
@@ -128,6 +148,9 @@ class SharedSchemaDefinitionView {
     this.helpIconElement = this.getElementByRole(SCHEMA_MODE_HELP_ROLE);
     this.errorElement = this.getElementByRole(SCHEMA_ERROR_ROLE);
     this.textAreaElement = this.getElementByRole(SCHEMA_TEXTBOX_ROLE);
+    this.constraintsRegionElement = this.getElementByRole(SCHEMA_CONSTRAINTS_REGION_ROLE);
+    this.constraintsSummaryElement = this.getElementByRole(SCHEMA_CONSTRAINTS_SUMMARY_ROLE);
+    this.constraintsTextAreaElement = this.getElementByRole(SCHEMA_CONSTRAINTS_TEXTBOX_ROLE);
     this.controller.attachElements?.({
       rowsElement: this.rowsElement,
       textContainerElement: this.textContainerElement,
@@ -136,6 +159,9 @@ class SharedSchemaDefinitionView {
       helpIconElement: this.helpIconElement,
       errorElement: this.errorElement,
       textElement: this.textAreaElement,
+      constraintsRegionElement: this.constraintsRegionElement,
+      constraintsSummaryElement: this.constraintsSummaryElement,
+      constraintsTextElement: this.constraintsTextAreaElement,
     });
 
     this.rowsElement?.addEventListener('input', this.handleContainerInput);
@@ -153,6 +179,9 @@ class SharedSchemaDefinitionView {
     this.textAreaElement?.addEventListener('input', this.handleTextInput);
     this.textAreaElement?.addEventListener('change', this.handleTextInput);
     this.textAreaElement?.addEventListener('focusout', this.handleTextFocusOut);
+    this.constraintsTextAreaElement?.addEventListener('input', this.handleConstraintsInput);
+    this.constraintsTextAreaElement?.addEventListener('change', this.handleConstraintsInput);
+    this.constraintsTextAreaElement?.addEventListener('focusout', this.handleConstraintsFocusOut);
 
     this.controller.init();
   }
@@ -177,6 +206,9 @@ class SharedSchemaDefinitionView {
     this.textAreaElement?.removeEventListener('input', this.handleTextInput);
     this.textAreaElement?.removeEventListener('change', this.handleTextInput);
     this.textAreaElement?.removeEventListener('focusout', this.handleTextFocusOut);
+    this.constraintsTextAreaElement?.removeEventListener('input', this.handleConstraintsInput);
+    this.constraintsTextAreaElement?.removeEventListener('change', this.handleConstraintsInput);
+    this.constraintsTextAreaElement?.removeEventListener('focusout', this.handleConstraintsFocusOut);
     this.root.replaceChildren();
   }
 }

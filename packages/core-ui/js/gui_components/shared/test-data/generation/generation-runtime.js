@@ -29,11 +29,25 @@ function normaliseGeneratedRow(row = []) {
   return row.map((value) => normaliseGeneratedCellValue(value));
 }
 
+function getGeneratorGenerationErrors(generator) {
+  return typeof generator?.generationErrors === 'function' ? generator.generationErrors() : [];
+}
+
 function createTableFromGenerator({ rowCount = 0, generator, GenericDataTableClass }) {
   const outputTable = new GenericDataTableClass();
   outputTable.setHeaders(generator.generateHeadersArray());
+  outputTable.__generationErrors = [];
+  outputTable.__generationStats = { generatedRows: 0, failedRows: 0 };
   for (let rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-    outputTable.appendDataRow(normaliseGeneratedRow(generator.generateRow()));
+    const generatedRow = generator.generateRow();
+    const generationErrors = getGeneratorGenerationErrors(generator);
+    if (generationErrors.length > 0) {
+      outputTable.__generationErrors = generationErrors;
+      outputTable.__generationStats.failedRows += 1;
+      break;
+    }
+    outputTable.appendDataRow(normaliseGeneratedRow(generatedRow));
+    outputTable.__generationStats.generatedRows += 1;
   }
   return outputTable;
 }
@@ -47,7 +61,9 @@ function createPairwiseTableFromGenerator({
 }) {
   try {
     const pairwiseGenerator = new PairwiseTestDataGeneratorClass(faker, RandExp);
-    const initResult = pairwiseGenerator.initializeFromRules(generator.testDataRules());
+    const initResult = pairwiseGenerator.initializeFromRules(generator.testDataRules(), {
+      constraints: typeof generator.schemaConstraints === 'function' ? generator.schemaConstraints() : [],
+    });
 
     if (initResult.isError) {
       console.error('Pairwise initialization error:', initResult.errorMessage);
@@ -84,7 +100,10 @@ function createCombinationsTableFromGenerator({
 }) {
   try {
     const combinationsGenerator = new CombinationsTestDataGeneratorClass(faker, RandExp);
-    const initResult = combinationsGenerator.initializeFromRules(generator.testDataRules(), options);
+    const initResult = combinationsGenerator.initializeFromRules(generator.testDataRules(), {
+      ...options,
+      constraints: typeof generator.schemaConstraints === 'function' ? generator.schemaConstraints() : [],
+    });
 
     if (initResult.isError) {
       console.error('Combinations initialization error:', initResult.errorMessage);
@@ -127,6 +146,7 @@ function parseNonNegativeCount(value, { min = 0, max = null } = {}) {
 export {
   normaliseGeneratedCellValue,
   normaliseGeneratedRow,
+  getGeneratorGenerationErrors,
   createTableFromGenerator,
   createPairwiseTableFromGenerator,
   createCombinationsTableFromGenerator,

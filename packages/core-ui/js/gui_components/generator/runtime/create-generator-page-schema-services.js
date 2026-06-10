@@ -64,6 +64,8 @@ function createGeneratorPageSchemaServices({
     syncSchemaRowsFromTextMode: (options) => runtime?.generatorSchemaRuntime?.syncSchemaRowsFromTextMode(options),
     validateSchemaRows,
     schemaRowsToSpec,
+    schemaTextToDataRules,
+    getSchemaText: () => runtime?.schemaDefinition?.getSchemaText?.() || '',
     TestDataGeneratorClass,
     faker,
     RandExp,

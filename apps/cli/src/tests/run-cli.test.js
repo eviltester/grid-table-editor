@@ -308,3 +308,67 @@ test('accepts uppercase format names via shared normalization', async () => {
   expect(code).toBe(0);
   expect(platform.err.join('')).toBe('');
 });
+
+test('enforces valid IF THEN constraints during successful CLI generation', async () => {
+  const platform = makePlatform({
+    textSpec: `Priority
+enum("High","Low")
+Status
+enum("Open","Closed")
+
+IF [Priority] = "High" THEN [Status] = "Open";`,
+  });
+  const code = await runCliCommand({
+    platform,
+    options: {
+      inputFile: 'spec.txt',
+      outputFile: null,
+      format: 'json',
+      rowCount: 20,
+      testMode: false,
+      showProgress: false,
+      shouldStream: false,
+      unsafeFakerExpressions: false,
+      pairwise: false,
+    },
+  });
+
+  expect(code).toBe(0);
+  const parsed = JSON.parse(platform.out.join('').trim());
+  expect(parsed).toHaveLength(20);
+  parsed.forEach((row) => {
+    if (row.Priority === 'High') {
+      expect(row.Status).toBe('Open');
+    }
+  });
+});
+
+test('reports constraint generation failures for impossible runtime constraints', async () => {
+  const platform = makePlatform({
+    textSpec: `Status
+enum("Open","Closed")
+
+IF [Status] = "Open" THEN [Status] = "Closed";
+IF [Status] = "Closed" THEN [Status] = "Open";`,
+  });
+  const code = await runCliCommand({
+    platform,
+    options: {
+      inputFile: 'spec.txt',
+      outputFile: null,
+      format: 'json',
+      rowCount: 1,
+      testMode: false,
+      showProgress: false,
+      shouldStream: false,
+      unsafeFakerExpressions: false,
+      pairwise: false,
+    },
+  });
+
+  expect(code).toBe(1);
+  expect(platform.err.join('')).toContain('[constraint_generation_failed]');
+  expect(platform.err.join('')).toContain(
+    'Schema Constraints are impacting row generation - generated 0 rows, failed to generate 1000 rows. Consider changing constraints to improve row generation.'
+  );
+});

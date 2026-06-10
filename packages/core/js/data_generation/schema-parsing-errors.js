@@ -49,6 +49,144 @@ export class SchemaParsingErrors {
     };
   }
 
+  static invalidConstraintSyntax(message, line) {
+    return {
+      code: 'invalid_constraint_syntax',
+      message: Number.isInteger(line) ? `Line ${line}: ${message}` : message,
+      ...(Number.isInteger(line) ? { line } : {}),
+    };
+  }
+
+  static unknownConstraintParameter(parameterName, line) {
+    return {
+      code: 'unknown_constraint_parameter',
+      message: Number.isInteger(line)
+        ? `Line ${line}: unknown constraint parameter [${parameterName}].`
+        : `Unknown constraint parameter [${parameterName}].`,
+      parameterName,
+      ...(Number.isInteger(line) ? { line } : {}),
+    };
+  }
+
+  static invalidConstraintEnumValue(parameterName, value, line) {
+    return {
+      code: 'invalid_constraint_enum_value',
+      message: Number.isInteger(line)
+        ? `Line ${line}: constraint value "${value}" is not a valid enum value for [${parameterName}].`
+        : `Constraint value "${value}" is not a valid enum value for [${parameterName}].`,
+      parameterName,
+      value,
+      ...(Number.isInteger(line) ? { line } : {}),
+    };
+  }
+
+  static invalidConstraintRegexValue(parameterName, value, line) {
+    return {
+      code: 'invalid_constraint_regex_value',
+      message: Number.isInteger(line)
+        ? `Line ${line}: constraint value "${value}" does not match the regex for [${parameterName}].`
+        : `Constraint value "${value}" does not match the regex for [${parameterName}].`,
+      parameterName,
+      value,
+      ...(Number.isInteger(line) ? { line } : {}),
+    };
+  }
+
+  static invalidConstraintRegexSet(parameterName, values, line) {
+    const renderedValues = Array.isArray(values) ? values.map((value) => `"${value}"`).join(', ') : '';
+    return {
+      code: 'invalid_constraint_regex_set',
+      message: Number.isInteger(line)
+        ? `Line ${line}: constraint IN set ${renderedValues} does not contain any values that match the regex for [${parameterName}].`
+        : `Constraint IN set ${renderedValues} does not contain any values that match the regex for [${parameterName}].`,
+      parameterName,
+      values,
+      ...(Number.isInteger(line) ? { line } : {}),
+    };
+  }
+
+  static invalidConstraintLiteralValue(parameterName, value, expectedValue, line) {
+    return {
+      code: 'invalid_constraint_literal_value',
+      message: Number.isInteger(line)
+        ? `Line ${line}: constraint value "${value}" does not match the literal value "${expectedValue}" for [${parameterName}].`
+        : `Constraint value "${value}" does not match the literal value "${expectedValue}" for [${parameterName}].`,
+      parameterName,
+      value,
+      expectedValue,
+      ...(Number.isInteger(line) ? { line } : {}),
+    };
+  }
+
+  static invalidConstraintLiteralExclusion(parameterName, value, line) {
+    return {
+      code: 'invalid_constraint_literal_exclusion',
+      message: Number.isInteger(line)
+        ? `Line ${line}: constraint excludes the only literal value "${value}" for [${parameterName}].`
+        : `Constraint excludes the only literal value "${value}" for [${parameterName}].`,
+      parameterName,
+      value,
+      ...(Number.isInteger(line) ? { line } : {}),
+    };
+  }
+
+  static invalidConstraintInSet(parameterName, values, line) {
+    const renderedValues = Array.isArray(values) ? values.map((value) => `"${value}"`).join(', ') : '';
+    return {
+      code: 'invalid_constraint_in_set',
+      message: Number.isInteger(line)
+        ? `Line ${line}: constraint IN set ${renderedValues} does not contain any valid values for [${parameterName}].`
+        : `Constraint IN set ${renderedValues} does not contain any valid values for [${parameterName}].`,
+      parameterName,
+      values,
+      ...(Number.isInteger(line) ? { line } : {}),
+    };
+  }
+
+  static invalidConstraintNotInSet(parameterName, values, line) {
+    const renderedValues = Array.isArray(values) ? values.map((value) => `"${value}"`).join(', ') : '';
+    return {
+      code: 'invalid_constraint_not_in_set',
+      message: Number.isInteger(line)
+        ? `Line ${line}: constraint NOT IN set ${renderedValues} excludes every possible value for [${parameterName}].`
+        : `Constraint NOT IN set ${renderedValues} excludes every possible value for [${parameterName}].`,
+      parameterName,
+      values,
+      ...(Number.isInteger(line) ? { line } : {}),
+    };
+  }
+
+  static invalidConstraintLikePattern(parameterName, pattern, line) {
+    return {
+      code: 'invalid_constraint_like_pattern',
+      message: Number.isInteger(line)
+        ? `Line ${line}: constraint LIKE pattern "${pattern}" cannot match any values for [${parameterName}].`
+        : `Constraint LIKE pattern "${pattern}" cannot match any values for [${parameterName}].`,
+      parameterName,
+      pattern,
+      ...(Number.isInteger(line) ? { line } : {}),
+    };
+  }
+
+  static invalidConstraintNotLikePattern(parameterName, pattern, line) {
+    return {
+      code: 'invalid_constraint_not_like_pattern',
+      message: Number.isInteger(line)
+        ? `Line ${line}: constraint NOT LIKE pattern "${pattern}" excludes every possible value for [${parameterName}].`
+        : `Constraint NOT LIKE pattern "${pattern}" excludes every possible value for [${parameterName}].`,
+      parameterName,
+      pattern,
+      ...(Number.isInteger(line) ? { line } : {}),
+    };
+  }
+
+  static constraintGenerationFailed(reason) {
+    return {
+      code: 'constraint_generation_failed',
+      message: reason || 'Unable to generate a row that satisfies the schema constraints.',
+    };
+  }
+
   static missingRuleDefinition(column, line) {
     return {
       code: 'missing_rule_definition',

@@ -176,6 +176,7 @@ function createTestDataGenerationPanelManager({
       RandExp: resolvedRandExpClass,
       debouncer: state.debouncer,
       syncSchemaTextFromGridBeforeGenerate: () => state.dataPopulationPanel?.syncSchemaTextFromRows?.(),
+      getSchemaText: () => state.dataPopulationPanel?.getSchemaText?.() || '',
       setTestDataStatus: statusServiceApi.setTestDataStatus,
       setTestDataLoadingStatus: statusServiceApi.setTestDataLoadingStatus,
       showSchemaError: showTestDataSchemaError,

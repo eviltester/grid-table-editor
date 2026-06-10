@@ -2,6 +2,7 @@ import { PairwiseGenerator } from './pairwiseGenerator.js';
 import { dataResponse, errorResponse } from '../ruleResponse.js';
 import { EnumParser } from '../utils/enumParser.js';
 import { DomainTestDataGenerator } from '../domain/domainTestDataGenerator.js';
+import { createCoveredRecordSetFromValidRecords } from './constrained-combinations.js';
 
 /**
  * Pairwise Matching Data Generator
@@ -34,6 +35,8 @@ export class PairwiseTestDataGenerator {
     if (faker) {
       this.domainGenerator = new DomainTestDataGenerator(this.faker);
     }
+    this.constraints = [];
+    this.coverageStats = null;
   }
 
   /**
@@ -41,9 +44,10 @@ export class PairwiseTestDataGenerator {
    * Only ENUM rules participate in pairwise combinations
    * Other rule types generate random values per row
    */
-  initializeFromRules(rules) {
+  initializeFromRules(rules, options = {}) {
     this.resetGenerationState();
     try {
+      this.constraints = Array.isArray(options?.constraints) ? options.constraints : [];
       this.orderedRules = [...rules];
       // Separate enum rules from non-enum rules in a single iteration
       const { enumRules, nonEnumRules } = rules.reduce(
@@ -61,22 +65,40 @@ export class PairwiseTestDataGenerator {
       this.enumRules = enumRules;
       this.nonEnumRules = nonEnumRules;
 
+      const enumRuleNames = new Set(this.enumRules.map((rule) => rule.name));
+      const nonEnumConstraintReference = this.constraints.find((constraint) =>
+        (constraint?.referencedParameters || []).some((parameterName) => !enumRuleNames.has(parameterName))
+      );
+      if (nonEnumConstraintReference) {
+        return errorResponse('Pairwise constraints can only reference enum columns.');
+      }
+
       if (this.enumRules.length < 2) {
         return errorResponse('Pairwise testing requires at least 2 ENUM parameters');
       }
 
       // Convert only enum rules to pairwise parameters
       const parameters = this.convertEnumRulesToParameters(this.enumRules);
-
-      this.pairwiseGenerator = new PairwiseGenerator(parameters);
-      const enumCombinations = this.pairwiseGenerator.generateDataSet();
+      let enumCombinations = null;
+      if (this.constraints.length > 0) {
+        const constrained = createCoveredRecordSetFromValidRecords(parameters, 2, this.constraints);
+        if (!constrained.ok) {
+          return errorResponse(constrained.error);
+        }
+        enumCombinations = constrained.selectedRecords;
+        this.coverageStats = constrained.model.getCoverageStats(enumCombinations.length);
+      } else {
+        this.pairwiseGenerator = new PairwiseGenerator(parameters);
+        enumCombinations = this.pairwiseGenerator.generateDataSet();
+        this.coverageStats = this.pairwiseGenerator.getCoverageStats();
+      }
 
       // Generate complete data records by adding random values for non-enum rules
       this.dataRecords = this.generateCompleteDataRecords(enumCombinations);
       this.currentRecordIndex = 0;
 
       if (this.options.enableLogging) {
-        const stats = this.pairwiseGenerator.getCoverageStats();
+        const stats = this.coverageStats || this.pairwiseGenerator?.getCoverageStats?.() || { coveragePercentage: 0 };
         console.log(
           `Generated ${this.dataRecords.length} data records with ${stats.coveragePercentage.toFixed(1)}% pairwise coverage`
         );
@@ -99,6 +121,8 @@ export class PairwiseTestDataGenerator {
     this.orderedRules = [];
     this.enumRules = [];
     this.nonEnumRules = [];
+    this.constraints = [];
+    this.coverageStats = null;
   }
 
   /**
@@ -323,7 +347,7 @@ export class PairwiseTestDataGenerator {
    * Generate all data records as data rows (compatible with existing system)
    */
   generateAllDataRecordsAsRows() {
-    if (!this.pairwiseGenerator) {
+    if (!this.pairwiseGenerator && !this.coverageStats) {
       return errorResponse('Pairwise generator not initialized');
     }
 
@@ -337,7 +361,7 @@ export class PairwiseTestDataGenerator {
 
     return dataResponse({
       data: rows,
-      stats: this.pairwiseGenerator.getCoverageStats(),
+      stats: this.coverageStats || this.pairwiseGenerator.getCoverageStats(),
     });
   }
 
@@ -368,13 +392,13 @@ export class PairwiseTestDataGenerator {
    * Get coverage and generation statistics
    */
   getStats() {
-    if (!this.pairwiseGenerator) {
+    if (!this.pairwiseGenerator && !this.coverageStats) {
       return { available: false };
     }
 
     return {
       available: true,
-      ...this.pairwiseGenerator.getCoverageStats(),
+      ...(this.coverageStats || this.pairwiseGenerator.getCoverageStats()),
     };
   }
 }

@@ -15,6 +15,7 @@ function createGenerator(headers, rows) {
       cursor += 1;
       return [...row];
     },
+    generationErrors: () => [],
   };
 }
 
@@ -124,5 +125,23 @@ describe('test-data amend behavior', () => {
 
     expect(result.noSelectedRows).toBe(true);
     expect(result.dataTable.getRow(0)).toEqual(['old']);
+  });
+
+  test('new table mode stops before appending blank rows when generation fails', () => {
+    let attempts = 0;
+    const generator = {
+      generateHeadersArray: () => ['Status'],
+      generateRow: () => {
+        attempts += 1;
+        return attempts === 1 ? ['Open'] : null;
+      },
+      generationErrors: () => (attempts >= 2 ? [{ code: 'constraint_generation_failed' }] : []),
+    };
+
+    const table = createTableFromGenerator(3, generator);
+
+    expect(table.getRowCount()).toBe(1);
+    expect(table.getRow(0)).toEqual(['Open']);
+    expect(table.__generationErrors).toEqual([{ code: 'constraint_generation_failed' }]);
   });
 });

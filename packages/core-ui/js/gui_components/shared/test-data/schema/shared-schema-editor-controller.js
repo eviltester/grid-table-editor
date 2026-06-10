@@ -10,7 +10,11 @@ import {
   normaliseFakerCommand,
   buildDataRuleFromSchemaRow,
 } from '../../schema-row-rule-mapper.js';
-import { createSchemaEditingSession, parseSchemaTextToRows } from './schema-controller.js';
+import {
+  createSchemaEditingSession,
+  parseSchemaTextToRows,
+  buildConstraintTextFromTokens,
+} from './schema-controller.js';
 import { applySchemaCommandSelection } from './schema-row-mapper.js';
 import { schemaRowsToSpecWithTokens } from './schema-editor-core.js';
 import { schemaErrorsToText } from './schema-error-text.js';
@@ -34,6 +38,9 @@ const SCHEMA_TEXT_ROLE = 'schema-textbox';
 const SCHEMA_ADD_BUTTON_ROLE = 'schema-add-field';
 const SCHEMA_MODE_TOGGLE_ROLE = 'schema-mode-toggle';
 const SCHEMA_MODE_HELP_ROLE = 'schema-mode-help';
+const SCHEMA_CONSTRAINTS_REGION_ROLE = 'schema-constraints-region';
+const SCHEMA_CONSTRAINTS_SUMMARY_ROLE = 'schema-constraints-summary';
+const SCHEMA_CONSTRAINTS_TEXT_ROLE = 'schema-constraints-textbox';
 
 function createSharedSchemaEditorController({
   documentObj = getDefaultDocumentObj(),
@@ -84,6 +91,12 @@ function createSharedSchemaEditorController({
   const getAddButtonElement = () => elements.addButtonElement || getElementByRole(SCHEMA_ADD_BUTTON_ROLE);
   const getToggleButtonElement = () => elements.toggleButtonElement || getElementByRole(SCHEMA_MODE_TOGGLE_ROLE);
   const getModeHelpIconElement = () => elements.helpIconElement || getElementByRole(SCHEMA_MODE_HELP_ROLE);
+  const getConstraintsRegionElement = () =>
+    elements.constraintsRegionElement || getElementByRole(SCHEMA_CONSTRAINTS_REGION_ROLE);
+  const getConstraintsSummaryElement = () =>
+    elements.constraintsSummaryElement || getElementByRole(SCHEMA_CONSTRAINTS_SUMMARY_ROLE);
+  const getConstraintsTextElement = () =>
+    elements.constraintsTextElement || getElementByRole(SCHEMA_CONSTRAINTS_TEXT_ROLE);
 
   const refreshHelpHints = () => {
     updateHelpHints?.();
@@ -100,17 +113,19 @@ function createSharedSchemaEditorController({
     onSchemaClear?.();
   };
 
-  const getSchemaHelpData = (sourceType, commandValue) => {
-    const model = buildSchemaHelpModel(sourceType, commandValue);
-    return {
-      show: model.show === true,
-      title: model.title || '',
-      docsUrl: model.docsUrl || '#',
-      html: renderSchemaHelpHtml(model),
-    };
+  const getConstraintEditorHint = () =>
+    'Edit IF ... THEN schema constraints in the Schema Constraints section while using row mode.';
+
+  const getRuleOnlyTokens = () => {
+    const tokens = session.getTokens();
+    const lastRuleIndex = tokens.reduce(
+      (latestIndex, token, index) => (token?.kind === 'rule' ? index : latestIndex),
+      -1
+    );
+    return lastRuleIndex >= 0 ? tokens.slice(0, lastRuleIndex + 1) : [];
   };
 
-  const serialiseRowsToText = () => {
+  const serialiseRowsOnlyToText = () => {
     const rowsForSerialization = session.getRows().map((row) => {
       if (String(row?.sourceType || '').toLowerCase() !== SOURCE_TYPE_FAKER) {
         return row;
@@ -124,11 +139,34 @@ function createSharedSchemaEditorController({
     return (
       schemaRowsToSpecWithTokens({
         schemaRows: rowsForSerialization,
-        schemaTokens: session.getTokens(),
+        schemaTokens: getRuleOnlyTokens(),
         buildDataRuleFromSchemaRow,
         dataRulesToSchemaText,
       }) || ''
     );
+  };
+
+  const composeSchemaText = ({ constraintText = session.getConstraintText() } = {}) => {
+    const rulesText = serialiseRowsOnlyToText();
+    const normalizedRulesText = String(rulesText ?? '').replace(/\n+$/u, '');
+    const normalizedConstraintText = String(constraintText ?? '').replace(/^\n+/u, '');
+    if (normalizedConstraintText.trim().length === 0) {
+      return rulesText;
+    }
+    if (normalizedRulesText.trim().length === 0) {
+      return normalizedConstraintText;
+    }
+    return `${normalizedRulesText}\n\n${normalizedConstraintText}`;
+  };
+
+  const getSchemaHelpData = (sourceType, commandValue) => {
+    const model = buildSchemaHelpModel(sourceType, commandValue);
+    return {
+      show: model.show === true,
+      title: model.title || '',
+      docsUrl: model.docsUrl || '#',
+      html: renderSchemaHelpHtml(model),
+    };
   };
 
   const revalidateRows = () => {
@@ -213,10 +251,30 @@ function createSharedSchemaEditorController({
   const syncTextFromRows = () => {
     const textElement = getTextElement();
     if (textElement) {
-      textElement.value = serialiseRowsToText();
+      textElement.value = composeSchemaText();
     }
     updatePairwiseButtonVisibility();
     onRowsChanged?.(session.getRows());
+  };
+
+  const updateConstraintsView = () => {
+    const constraintsRegionElement = getConstraintsRegionElement();
+    const constraintsSummaryElement = getConstraintsSummaryElement();
+    const constraintsTextElement = getConstraintsTextElement();
+    const constraintCount = session.getConstraints().length;
+    const constraintText = session.getConstraintText();
+
+    if (constraintsRegionElement) {
+      constraintsRegionElement.style.display = session.getTextMode() ? 'none' : 'block';
+      constraintsRegionElement.open = constraintText.trim().length > 0;
+      constraintsRegionElement.title = getConstraintEditorHint();
+    }
+    if (constraintsSummaryElement) {
+      constraintsSummaryElement.textContent = `Schema Constraints (${constraintCount})`;
+    }
+    if (constraintsTextElement && documentObj?.activeElement !== constraintsTextElement) {
+      constraintsTextElement.value = constraintText;
+    }
   };
 
   const renderRows = () => {
@@ -258,7 +316,10 @@ function createSharedSchemaEditorController({
     }
     if (toggleButtonElement) {
       toggleButtonElement.textContent = isTextMode ? 'Edit as Schema' : 'Edit as Text';
+      toggleButtonElement.disabled = false;
+      toggleButtonElement.title = 'Toggle schema text mode';
     }
+    updateConstraintsView();
     updateModeHelp();
   };
 
@@ -280,11 +341,14 @@ function createSharedSchemaEditorController({
       clearSchemaError();
       session.setRows([], { allowEmpty: true });
       session.setTokens([]);
+      session.setConstraints([]);
+      session.setConstraintText('');
       revalidateRows();
       renderRows();
+      updateConstraintsView();
       updatePairwiseButtonVisibility();
       onRowsChanged?.(session.getRows());
-      return { rows: session.getRows(), errors: [], tokens: session.getTokens() };
+      return { rows: session.getRows(), errors: [], tokens: session.getTokens(), constraints: [] };
     }
     const parsed = parseSchemaTextToRows({
       schemaTextToDataRules,
@@ -312,9 +376,56 @@ function createSharedSchemaEditorController({
     clearAllSemanticValidationTimers();
     session.setRows(parsed.rows || []);
     session.setTokens(parsed.tokens || []);
+    session.setConstraints(parsed.constraints || []);
+    session.setConstraintText(buildConstraintTextFromTokens(parsed.tokens || [], parsed.constraints || []));
+    updateModeView();
     revalidateRows();
     applySemanticValidationForAllRows();
     return { rows: session.getRows(), errors: [], tokens: session.getTokens() };
+  };
+
+  const syncConstraintsFromEditor = ({ showErrors = false } = {}) => {
+    const constraintsTextElement = getConstraintsTextElement();
+    if (!constraintsTextElement) {
+      return {
+        rows: session.getRows(),
+        errors: [],
+        tokens: session.getTokens(),
+        constraints: session.getConstraints(),
+      };
+    }
+    const constraintText = String(constraintsTextElement.value || '');
+    session.setConstraintText(constraintText);
+    updateConstraintsView();
+    const parsed = parseSchemaTextToRows({
+      schemaTextToDataRules,
+      schemaText: composeSchemaText({ constraintText }),
+      faker,
+      RandExp,
+      previousRows: session.getRows(),
+      mapRuleToRow: (rule, leadingTextLines = []) => {
+        const mapped =
+          typeof mapRuleToRow === 'function' ? mapRuleToRow(rule, leadingTextLines) : createBlankRow(leadingTextLines);
+        if (mapped?.id) {
+          return mapped;
+        }
+        return { ...createBlankRow(), ...mapped };
+      },
+    });
+    if (parsed.errors.length > 0) {
+      if (showErrors) {
+        setSchemaError(schemaErrorsToText(parsed.errors));
+      }
+      onSchemaParseError?.(parsed.errors);
+      return parsed;
+    }
+    clearSchemaError();
+    session.setTokens(parsed.tokens || []);
+    session.setConstraints(parsed.constraints || []);
+    session.setConstraintText(constraintText);
+    updateConstraintsView();
+    syncTextFromRows();
+    return { rows: session.getRows(), errors: [], tokens: session.getTokens(), constraints: session.getConstraints() };
   };
 
   const toggleMode = () => {
@@ -609,6 +720,8 @@ function createSharedSchemaEditorController({
     validateRows: () => revalidateRows(),
     handleFocusOut,
     syncTextFromRows,
+    getSchemaText: () => composeSchemaText(),
+    syncConstraintsFromEditor,
     addRow,
     addRowAfter,
     removeRowAt,

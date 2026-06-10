@@ -128,4 +128,88 @@ enum(active,inactive,pending)`;
     const output = parser.renderSpecFromRulesWithComments(parser.testDataRules.rules);
     expect(output).toBe(inputText);
   });
+
+  test('parses IF THEN constraints and preserves them as schema tokens', () => {
+    const inputText = `Status
+enum(active,inactive)
+Result
+enum(pass,fail)
+
+IF [Status] = "inactive" THEN [Result] = "fail" ENDIF`;
+
+    const parser = new RulesParser(faker, RandExp);
+    parser.parseText(inputText);
+
+    expect(parser.isValid()).toBe(true);
+    expect(parser.testDataRules.constraints).toHaveLength(1);
+    expect(parser.testDataRules.constraints[0]).toMatchObject({
+      terminator: 'ENDIF',
+      referencedParameters: ['Status', 'Result'],
+    });
+    expect(parser.getSchemaTokens().some((token) => token.kind === 'constraint')).toBe(true);
+    expect(parser.renderSpecFromRulesWithTokens(parser.testDataRules.rules)).toBe(inputText);
+  });
+
+  test('does not treat IF-prefixed field names as constraints', () => {
+    const inputText = `IF Condition
+enum(yes,no)
+Status
+enum(open,closed)`;
+
+    const parser = new RulesParser(faker, RandExp);
+    parser.parseText(inputText);
+
+    expect(parser.isValid()).toBe(true);
+    expect(parser.errors).toHaveLength(0);
+    expect(parser.testDataRules.rules).toHaveLength(2);
+    expect(parser.testDataRules.rules[0].name).toBe('IF Condition');
+    expect(parser.testDataRules.rules[0].ruleSpec).toBe('enum(yes,no)');
+    expect(parser.testDataRules.constraints).toHaveLength(0);
+  });
+
+  test('does not treat ENDIF inside a parameter reference as the constraint terminator', () => {
+    const inputText = `ENDIF
+enum(yes,no)
+Status
+enum(open,closed)
+
+IF [Status] = "open" THEN [ENDIF] = "yes" ENDIF`;
+
+    const parser = new RulesParser(faker, RandExp);
+    parser.parseText(inputText);
+
+    expect(parser.isValid()).toBe(true);
+    expect(parser.errors).toHaveLength(0);
+    expect(parser.testDataRules.rules).toHaveLength(2);
+    expect(parser.testDataRules.constraints).toHaveLength(1);
+    expect(parser.testDataRules.constraints[0]).toMatchObject({
+      terminator: 'ENDIF',
+      referencedParameters: ['Status', 'ENDIF'],
+    });
+  });
+
+  test('handles doubled backslashes before quotes when scanning for a constraint terminator', () => {
+    const inputText = `Column One
+enum("a\\\\","b")
+Column Two
+enum(yes,no)
+
+IF [Column One] = "a\\\\" THEN [Column Two] = "yes";
+Status
+enum(active,inactive)`;
+
+    const parser = new RulesParser(faker, RandExp);
+    parser.parseText(inputText);
+
+    expect(parser.isValid()).toBe(true);
+    expect(parser.errors).toHaveLength(0);
+    expect(parser.testDataRules.rules).toHaveLength(3);
+    expect(parser.testDataRules.constraints).toHaveLength(1);
+    expect(parser.testDataRules.constraints[0]).toMatchObject({
+      terminator: ';',
+      referencedParameters: ['Column One', 'Column Two'],
+    });
+    expect(parser.testDataRules.rules[2].name).toBe('Status');
+    expect(parser.testDataRules.rules[2].ruleSpec).toBe('enum(active,inactive)');
+  });
 });

@@ -322,6 +322,81 @@ describe('Pairwise Combinatorial Matching Data Generation', () => {
       });
       assertNoCommonErrorPatternsInRows(rows);
     });
+
+    test('supports enum-only constraints for pairwise generation', () => {
+      const rules = [
+        { name: 'Browser', type: 'enum', ruleSpec: 'enum(chrome,firefox)' },
+        { name: 'Auth', type: 'enum', ruleSpec: 'enum(password,sso)' },
+      ];
+
+      const generator = new PairwiseTestDataGenerator();
+      const initResult = generator.initializeFromRules(rules, {
+        constraints: [
+          {
+            ast: {
+              kind: 'if-then-constraint',
+              condition: {
+                kind: 'comparison',
+                relation: '=',
+                left: { kind: 'parameter', name: 'Browser' },
+                right: { kind: 'value', valueType: 'string', value: 'chrome' },
+              },
+              consequence: {
+                kind: 'comparison',
+                relation: '=',
+                left: { kind: 'parameter', name: 'Auth' },
+                right: { kind: 'value', valueType: 'string', value: 'password' },
+              },
+            },
+            referencedParameters: ['Browser', 'Auth'],
+          },
+        ],
+      });
+
+      expect(initResult.isError).toBe(false);
+      const result = generator.generateAllDataRecordsAsRows();
+      expect(result.isError).toBe(false);
+      result.data.data.slice(1).forEach((row) => {
+        if (row[0] === 'chrome') {
+          expect(row[1]).toBe('password');
+        }
+      });
+      expect(result.data.stats.coveragePercentage).toBe(100);
+    });
+
+    test('rejects pairwise constraints that reference non-enum columns', () => {
+      const rules = [
+        { name: 'Browser', type: 'enum', ruleSpec: 'enum(chrome,firefox)' },
+        { name: 'Token', type: 'literal', ruleSpec: 'always' },
+      ];
+
+      const generator = new PairwiseTestDataGenerator();
+      const initResult = generator.initializeFromRules(rules, {
+        constraints: [
+          {
+            ast: {
+              kind: 'if-then-constraint',
+              condition: {
+                kind: 'comparison',
+                relation: '=',
+                left: { kind: 'parameter', name: 'Browser' },
+                right: { kind: 'value', valueType: 'string', value: 'chrome' },
+              },
+              consequence: {
+                kind: 'comparison',
+                relation: '=',
+                left: { kind: 'parameter', name: 'Token' },
+                right: { kind: 'value', valueType: 'string', value: 'always' },
+              },
+            },
+            referencedParameters: ['Browser', 'Token'],
+          },
+        ],
+      });
+
+      expect(initResult.isError).toBe(true);
+      expect(initResult.errorMessage).toMatch(/enum columns/);
+    });
   });
 
   describe('Real-world scenarios', () => {

@@ -5,6 +5,7 @@ import {
   dataRulesToSchemaText,
   schemaRowsToDataRules,
 } from '../../../js/data_generation/schema-rules-adapter.js';
+import { parseSchemaText } from '../../../js/data_generation/schema-conversion.js';
 
 describe('schema rules adapter', () => {
   test('returns dataRules for valid schema text', () => {
@@ -101,6 +102,113 @@ describe('schema rules adapter', () => {
 
     expect(rendered.errors).toEqual([]);
     expect(rendered.text).toBe('# top\n\nPriority\nenum(high,medium,low)\n\n\nStatus\nenum(active,inactive,pending)');
+  });
+
+  test('parses and round-trips schema constraints preserving the authored terminator', () => {
+    const schemaText = `Priority
+enum(high,low)
+Status
+enum(open,closed)
+
+IF [Priority] = "high" THEN [Status] = "open" ENDIF`;
+
+    const parsed = schemaTextToDataRules({
+      schemaText,
+      faker,
+      RandExp,
+    });
+
+    expect(parsed.errors).toEqual([]);
+    expect(parsed.constraints).toHaveLength(1);
+    expect(parsed.constraints[0]).toMatchObject({
+      terminator: 'ENDIF',
+      referencedParameters: ['Priority', 'Status'],
+    });
+
+    const rendered = dataRulesToSchemaText({
+      dataRules: parsed.dataRules,
+      schemaTokens: parsed.schemaTokens,
+      constraints: parsed.constraints,
+    });
+
+    expect(rendered.text).toBe(schemaText);
+  });
+
+  test('returns constraint AST copies that do not share mutable state with the generator', () => {
+    const parsed = parseSchemaText({
+      schemaText: `Priority
+enum(high,low)
+Status
+enum(open,closed)
+
+IF [Priority] = "high" THEN [Status] = "open" ENDIF`,
+      faker,
+      RandExp,
+    });
+
+    parsed.constraints[0].ast.condition.left.name = 'Changed';
+
+    expect(parsed.generator.schemaConstraints()[0].ast.condition.left.name).toBe('Priority');
+  });
+
+  test('reports invalid enum values used in constraints', () => {
+    const parsed = schemaTextToDataRules({
+      schemaText: `Priority
+enum(high,low)
+Status
+enum(open,closed)
+
+IF [Priority] = "urgent" THEN [Status] = "open" ENDIF`,
+      faker,
+      RandExp,
+    });
+
+    expect(parsed.dataRules).toEqual([]);
+    expect(parsed.errors).toContainEqual(
+      expect.objectContaining({
+        code: 'invalid_constraint_enum_value',
+        parameterName: 'Priority',
+      })
+    );
+  });
+
+  test('reports invalid regex values used in constraints', () => {
+    const parsed = schemaTextToDataRules({
+      schemaText: `Ticket
+[A-Z]{3}-\\d{4}
+
+IF [Ticket] = "bob" THEN [Ticket] <> "xyz" ENDIF`,
+      faker,
+      RandExp,
+    });
+
+    expect(parsed.dataRules).toEqual([]);
+    expect(parsed.errors).toContainEqual(
+      expect.objectContaining({
+        code: 'invalid_constraint_regex_value',
+        parameterName: 'Ticket',
+      })
+    );
+  });
+
+  test('keeps invalid regex rule errors stable when constraints reference the same column', () => {
+    const parsed = schemaTextToDataRules({
+      schemaText: `Ticket
+regex([)
+
+IF [Ticket] = "ABC-1234" THEN [Ticket] <> "XYZ-9999" ENDIF`,
+      faker,
+      RandExp,
+    });
+
+    expect(parsed.dataRules).toEqual([]);
+    expect(() => parsed.errors).not.toThrow();
+    expect(parsed.errors).toContainEqual(
+      expect.objectContaining({
+        code: 'compiler_validation_error',
+        column: 'Ticket',
+      })
+    );
   });
 
   test('converts schema rows to data rules with canonical validation errors', () => {

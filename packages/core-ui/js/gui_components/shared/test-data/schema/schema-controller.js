@@ -22,9 +22,10 @@ function parseSchemaTextToRows({ schemaTextToDataRules, schemaText, faker, RandE
 
   const tokens = Array.isArray(parseResult.schemaTokens) ? parseResult.schemaTokens : [];
   const parseErrors = Array.isArray(parseResult.errors) ? parseResult.errors : [];
+  const parsedConstraints = Array.isArray(parseResult.constraints) ? parseResult.constraints : [];
   const blockingErrors = parseErrors.filter((error) => !isRecoverableSchemaParseError(error));
   if (blockingErrors.length > 0) {
-    return { rows: [], errors: blockingErrors, tokens };
+    return { rows: [], errors: blockingErrors, tokens, constraints: parsedConstraints };
   }
 
   const parsedRows = mapParsedRulesToRows({
@@ -44,6 +45,7 @@ function parseSchemaTextToRows({ schemaTextToDataRules, schemaText, faker, RandE
     ),
     errors: [],
     tokens,
+    constraints: parsedConstraints,
   };
 }
 
@@ -90,6 +92,43 @@ function moveSchemaRowToIndex(rows = [], fromIndex, toIndex) {
   return nextRows;
 }
 
+function buildConstraintTextFromTokens(tokens = [], constraints = []) {
+  const safeTokens = Array.isArray(tokens) ? tokens : [];
+  const lastRuleIndex = safeTokens.reduce(
+    (latestIndex, token, index) => (token?.kind === 'rule' ? index : latestIndex),
+    -1
+  );
+  const constraintSectionTokens = safeTokens.slice(lastRuleIndex + 1);
+  const hasConstraintSectionTokens = constraintSectionTokens.some(
+    (token) => token?.kind === 'constraint' || token?.kind === 'comment' || token?.kind === 'blank'
+  );
+
+  if (hasConstraintSectionTokens) {
+    let constraintIndex = 0;
+    const lines = constraintSectionTokens.flatMap((token) => {
+      if (token?.kind === 'comment' || token?.kind === 'blank') {
+        return [String(token.text ?? '')];
+      }
+      if (token?.kind === 'constraint') {
+        const sourceText = String(constraints[constraintIndex]?.sourceText ?? token.text ?? '');
+        constraintIndex += 1;
+        return sourceText.split('\n');
+      }
+      return [];
+    });
+
+    while (lines.length > 0 && String(lines[0] ?? '').trim().length === 0) {
+      lines.shift();
+    }
+
+    return lines.join('\n');
+  }
+
+  return (Array.isArray(constraints) ? constraints : [])
+    .map((constraint) => String(constraint?.sourceText ?? ''))
+    .join('\n\n');
+}
+
 function createSchemaEditingSession({
   createBlankSchemaRow,
   schemaTextToDataRules,
@@ -99,11 +138,15 @@ function createSchemaEditingSession({
   schemaRowsToSpecWithTokens,
   initialRows,
   initialTokens = [],
+  initialConstraints = [],
+  initialConstraintText = '',
   initialTextMode = false,
 } = {}) {
   const state = {
     rows: Array.isArray(initialRows) && initialRows.length > 0 ? initialRows.slice() : [createBlankSchemaRow()],
     tokens: Array.isArray(initialTokens) ? initialTokens.slice() : [],
+    constraints: Array.isArray(initialConstraints) ? initialConstraints.slice() : [],
+    constraintText: String(initialConstraintText ?? ''),
     isTextMode: initialTextMode === true,
   };
 
@@ -129,6 +172,24 @@ function createSchemaEditingSession({
     return state.tokens;
   }
 
+  function getConstraints() {
+    return state.constraints;
+  }
+
+  function setConstraints(constraints) {
+    state.constraints = Array.isArray(constraints) ? constraints : [];
+    return state.constraints;
+  }
+
+  function getConstraintText() {
+    return state.constraintText;
+  }
+
+  function setConstraintText(constraintText) {
+    state.constraintText = String(constraintText ?? '');
+    return state.constraintText;
+  }
+
   function getTextMode() {
     return state.isTextMode;
   }
@@ -140,6 +201,15 @@ function createSchemaEditingSession({
 
   function getTrailingTextLinesFromTokens() {
     if (!Array.isArray(state.tokens) || state.tokens.length === 0) {
+      return [];
+    }
+
+    const lastRuleIndex = state.tokens.reduce(
+      (latestIndex, token, index) => (token?.kind === 'rule' ? index : latestIndex),
+      -1
+    );
+    const hasConstraintSection = state.tokens.slice(lastRuleIndex + 1).some((token) => token?.kind === 'constraint');
+    if (hasConstraintSection) {
       return [];
     }
 
@@ -171,7 +241,7 @@ function createSchemaEditingSession({
   function parseTextToRows(schemaText) {
     const text = String(schemaText ?? '');
     if (text.trim().length === 0) {
-      return { rows: [], errors: [], tokens: [] };
+      return { rows: [], errors: [], tokens: [], constraints: [] };
     }
 
     return parseSchemaTextToRows({
@@ -200,7 +270,9 @@ function createSchemaEditingSession({
       state.rows = parsed.rows;
     }
     state.tokens = parsed.tokens || [];
-    return { rows: state.rows, errors: [], tokens: state.tokens };
+    state.constraints = parsed.constraints || [];
+    state.constraintText = buildConstraintTextFromTokens(state.tokens, state.constraints);
+    return { rows: state.rows, errors: [], tokens: state.tokens, constraints: state.constraints };
   }
 
   function toggleMode({ schemaText, preserveEmptyRows = true } = {}) {
@@ -211,11 +283,14 @@ function createSchemaEditingSession({
       }
       state.rows = parsed.rows.length > 0 || !preserveEmptyRows ? parsed.rows : [createBlankSchemaRow()];
       state.tokens = parsed.tokens || [];
+      state.constraints = parsed.constraints || [];
+      state.constraintText = buildConstraintTextFromTokens(state.tokens, state.constraints);
       state.isTextMode = false;
       return {
         ok: true,
         rows: state.rows,
         tokens: state.tokens,
+        constraints: state.constraints,
         isTextMode: state.isTextMode,
       };
     }
@@ -227,6 +302,7 @@ function createSchemaEditingSession({
       schemaText: text,
       rows: state.rows,
       tokens: state.tokens,
+      constraints: state.constraints,
       isTextMode: state.isTextMode,
     };
   }
@@ -270,9 +346,19 @@ function createSchemaEditingSession({
     setRows,
     getTokens,
     setTokens,
+    getConstraints,
+    setConstraints,
+    getConstraintText,
+    setConstraintText,
     getTextMode,
     setTextMode,
-    getState: () => ({ rows: state.rows, tokens: state.tokens, isTextMode: state.isTextMode }),
+    getState: () => ({
+      rows: state.rows,
+      tokens: state.tokens,
+      constraints: state.constraints,
+      constraintText: state.constraintText,
+      isTextMode: state.isTextMode,
+    }),
     parseTextToRows,
     syncRowsFromText,
     toggleMode,
@@ -291,5 +377,6 @@ export {
   removeSchemaRowAt,
   moveSchemaRow,
   moveSchemaRowToIndex,
+  buildConstraintTextFromTokens,
   createSchemaEditingSession,
 };

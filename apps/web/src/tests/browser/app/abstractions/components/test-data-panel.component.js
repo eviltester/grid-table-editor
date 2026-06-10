@@ -12,7 +12,7 @@ class TestDataPanelComponent {
     this.page = page;
     this.container = page.locator('[data-role="test-data-panel-shell"]');
     this.panelRoot = page.locator('[data-role="data-population-panel-root"]');
-    this.details = this.container.locator('details');
+    this.details = this.container.locator(':scope > details');
     this.heading = this.container.getByText('Test Data', { exact: true });
     this.generateButton = this.container.getByRole('button', { name: 'Generate', exact: true });
     this.generatePairwiseButton = this.container.getByRole('button', { name: 'Generate Combinations' });

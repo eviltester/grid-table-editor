@@ -1,4 +1,4 @@
-import '@mcp-b/global';
+import '@mcp-b/webmcp-polyfill';
 
 void import('./webmcp-page.mjs')
   .then(({ bootstrapWebMcpPage }) => bootstrapWebMcpPage())

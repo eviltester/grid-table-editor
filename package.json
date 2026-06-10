@@ -98,7 +98,7 @@
   "homepage": "https://github.com/eviltester/grid-table-editor#readme",
   "dependencies": {
     "@anywaydata/core": "workspace:^",
-    "@mcp-b/global": "3.0.0",
+    "@mcp-b/webmcp-polyfill": "3.0.0",
     "@popperjs/core": "2.11.8",
     "papaparse": "5.5.3",
     "randexp": "0.5.3",

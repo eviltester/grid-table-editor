@@ -211,6 +211,8 @@ export function createApiService({
       outputFormat = 'csv',
       options,
       seed,
+      trimInput,
+      trimInputFieldsCsv,
       unsafeFakerExpressions,
       stream,
     } = payload;
@@ -242,6 +244,8 @@ export function createApiService({
         outputFormat: concreteOutputFormat,
         options: effectiveOptions,
         seed: parsedSeed.seed,
+        trimInput: parseBooleanFlag(trimInput),
+        trimInputFieldsCsv,
         unsafeFakerExpressions: unsafeFakerExpressions || false,
         stream,
       });

@@ -41,4 +41,21 @@ test.describe('POST /v1/generate/amend', () => {
     expect(Array.isArray(body.diagnostics)).toBe(false);
     expect(typeof body.diagnostics).toBe('object');
   });
+
+  test('amend trimInputFieldsCsv trims only listed imported columns', async ({ request }) => {
+    const response = await request.post(apiUrl('/v1/generate/amend'), {
+      data: {
+        textSpec: 'Status\nActive',
+        inputData: '"Name","Role"\n"  Alice  ","  Engineer  "',
+        inputFormat: 'csv',
+        rowCount: 0,
+        outputFormat: 'json',
+        trimInputFieldsCsv: 'Name',
+      },
+    });
+
+    expect(response.status()).toBe(200);
+    const body = await response.json();
+    expect(body.rows).toEqual([['Alice', '  Engineer  ', '']]);
+  });
 });

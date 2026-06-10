@@ -50,6 +50,41 @@ describe('ImportExportImportControl', () => {
     expect(createFileImportBindingsAdapter).toHaveBeenCalledTimes(1);
   });
 
+  test('emits import trim settings and enables the field list only in selected-fields mode', () => {
+    const onImportTrimSettingsChange = jest.fn();
+    createImportExportImportControlComponent({
+      root,
+      props: {
+        trimInput: false,
+        trimInputFieldsEnabled: false,
+        trimInputFieldsCsv: 'Name',
+      },
+      callbacks: {
+        onImportTrimSettingsChange,
+      },
+      services: {
+        createFileImportBindingsAdapter: () => ({ destroy: jest.fn() }),
+      },
+    });
+
+    const trimInputOnRadio = root.querySelector('[data-role="trim-input-on-radio"]');
+    const trimInputFieldsSelectedRadio = root.querySelector('[data-role="trim-input-fields-selected-radio"]');
+    const trimInputFieldsText = root.querySelector('[data-role="trim-input-fields-text"]');
+
+    expect(trimInputFieldsText.disabled).toBe(true);
+
+    trimInputOnRadio.click();
+    trimInputFieldsSelectedRadio.click();
+    trimInputFieldsText.value = 'Name, Role';
+    trimInputFieldsText.dispatchEvent(new dom.window.Event('input', { bubbles: true }));
+
+    expect(onImportTrimSettingsChange).toHaveBeenLastCalledWith({
+      trimInput: true,
+      trimInputFieldsEnabled: true,
+      trimInputFieldsCsv: 'Name, Role',
+    });
+  });
+
   test('disables the file input and shows progress status while importing', () => {
     createImportExportImportControlComponent({
       root,

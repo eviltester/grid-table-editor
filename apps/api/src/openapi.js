@@ -418,6 +418,16 @@ const openApiDocument = {
                   outputFormat: { type: 'string', default: 'csv' },
                   options: { type: 'object' },
                   seed: { type: 'number' },
+                  trimInput: {
+                    type: 'boolean',
+                    default: false,
+                    description: 'Trim whitespace from every imported input field value before amend processing.',
+                  },
+                  trimInputFieldsCsv: {
+                    type: 'string',
+                    description:
+                      'Comma-separated imported field names whose values should be trimmed before amend processing.',
+                  },
                   unsafeFakerExpressions: { type: 'boolean', default: false },
                   responseFormat: { type: 'string', enum: ['rows', 'rendered', 'all', 'raw'], default: 'rows' },
                   stream: { type: 'boolean', description: 'Accepted for compatibility and ignored for amend mode.' },

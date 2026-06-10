@@ -64,6 +64,7 @@ class ImportExportWorkspaceView {
         onExportEncodingSettingsChange: this.services.onExportEncodingSettingsChange,
         onFileSelected: this.services.onFileSelected,
         onImportFromClipboard: this.services.onImportFromClipboard,
+        onImportTrimSettingsChange: this.services.onImportTrimSettingsChange,
       },
       services: {
         createFileImportBindingsAdapter: this.services.createFileImportBindingsAdapter,

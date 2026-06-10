@@ -33,6 +33,9 @@ function renderImportExportToolbarStory(args) {
       exportStatusMessage: args.exportStatusMessage,
       exportStatusLoading: args.exportStatusLoading,
       errorStatusMessage: args.errorStatusMessage,
+      trimInput: args.trimInput,
+      trimInputFieldsEnabled: args.trimInputFieldsEnabled,
+      trimInputFieldsCsv: args.trimInputFieldsCsv,
     },
     callbacks: {
       onDownload: () => {
@@ -46,6 +49,10 @@ function renderImportExportToolbarStory(args) {
       onImportFromClipboard: () => {
         args.onImportFromClipboard?.();
         result.textContent = 'action:import-from-clipboard';
+      },
+      onImportTrimSettingsChange: (settings) => {
+        args.onImportTrimSettingsChange?.(settings);
+        result.textContent = `trim:${JSON.stringify(settings)}`;
       },
     },
   });
@@ -77,6 +84,7 @@ const meta = {
           React.createElement(Controls),
           React.createElement(Canvas, { of: Default }),
           React.createElement(Canvas, { of: FileImportSurface }),
+          React.createElement(Canvas, { of: ImportTrimSettings }),
           React.createElement(Canvas, { of: BusyAndStatus })
         ),
       description: {
@@ -98,9 +106,13 @@ const meta = {
     exportStatusMessage: '',
     exportStatusLoading: false,
     errorStatusMessage: '',
+    trimInput: false,
+    trimInputFieldsEnabled: false,
+    trimInputFieldsCsv: '',
     onDownload: fn(),
     onFileSelected: fn(),
     onImportFromClipboard: fn(),
+    onImportTrimSettingsChange: fn(),
   },
   argTypes: {
     fileExtension: {
@@ -143,6 +155,18 @@ const meta = {
       control: 'text',
       description: 'Persistent error/status message shown at the end of the toolbar.',
     },
+    trimInput: {
+      control: 'boolean',
+      description: 'When true, imported input values are trimmed before import/amend processing.',
+    },
+    trimInputFieldsEnabled: {
+      control: 'boolean',
+      description: 'Enables field-list trimming in the import settings disclosure.',
+    },
+    trimInputFieldsCsv: {
+      control: 'text',
+      description: 'Comma-separated imported field names trimmed when selected-fields mode is enabled.',
+    },
     onDownload: {
       description: 'Storybook action fired when Download is clicked.',
       table: { category: 'Events' },
@@ -153,6 +177,10 @@ const meta = {
     },
     onImportFromClipboard: {
       description: 'Storybook action fired when From Clipboard is clicked.',
+      table: { category: 'Events' },
+    },
+    onImportTrimSettingsChange: {
+      description: 'Storybook action fired when the import trim settings change.',
       table: { category: 'Events' },
     },
   },
@@ -234,5 +262,30 @@ export const BusyAndStatus = {
     await expect(canvas.getByRole('button', { name: /\.csv Download/i })).toBeDisabled();
     await expect(canvas.getByText('Importing full data into grid...')).toBeVisible();
     await expect(canvas.getByText('Generating export text...')).toBeVisible();
+  },
+};
+
+export const ImportTrimSettings = {
+  args: {
+    trimInput: true,
+    trimInputFieldsEnabled: true,
+    trimInputFieldsCsv: 'Name, Email',
+  },
+  render: renderImportExportToolbarStory,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Documents the import-only trim settings behind the import settings disclosure. Toggle the radio groups and edit the CSV textbox to confirm the emitted settings payload shown in the story log.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByLabelText('Import settings'));
+    const textInput = canvas.getByRole('textbox', { name: /trim input fields csv/i });
+    await userEvent.clear(textInput);
+    await userEvent.type(textInput, 'Name, Role');
+    await expect(canvas.getByText(/"trimInputFieldsCsv":"Name, Role"/)).toBeVisible();
   },
 };

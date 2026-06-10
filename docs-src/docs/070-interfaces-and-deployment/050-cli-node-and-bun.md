@@ -47,6 +47,8 @@ Parameter guide for the examples:
 - `--stream`: enable streaming generation when supported (`csv`, `jsonl`, `dsv`, `json`, `xml`).
 - `--stream-threshold`: auto-enable streaming when `rowCount >= threshold` and `--outputfile` is set (default `5000`).
 - `--unsafe-faker-expressions`: opt-in to expression-style faker arguments (unsafe for untrusted input).
+- `--trim-input`: trim whitespace from every imported field value before amend processing.
+- `--trim-input-fields`: comma-separated imported field names to trim before amend processing.
 - `--help`: show CLI usage and options.
 - `amend --schema-file --data-file --input-format`: import input data and amend it with schema rules.
 
@@ -82,6 +84,7 @@ anywaydata amend \
   --schema-file schema.txt \
   --data-file input.csv \
   --input-format csv \
+  --trim-input-fields Name,Email \
   -f dsv
 ```
 
@@ -154,4 +157,3 @@ anywaydata generate -i input.txt -n 10 -f csv --unsafe-faker-expressions
 - Choose **CLI** for local scripts and shell pipelines.
 - Choose [REST API](/docs/interfaces-and-deployment/rest-api) for HTTP integrations and OpenAPI.
 - Choose [MCP](/docs/interfaces-and-deployment/mcp) for stdio tool integrations with MCP hosts.
-

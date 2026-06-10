@@ -4,6 +4,7 @@ import Papa from 'papaparse';
 import { GenericDataTable } from '../js/data_formats/generic-data-table.js';
 import { Exporter } from '../js/grid/exporter.js';
 import { Importer } from '../js/grid/importer.js';
+import { applyImportTrimSettingsToDataTable, normalizeImportTrimSettings } from '../js/grid/import-trim-settings.js';
 import { KNOWN_FAKER_COMMANDS } from '../js/faker/faker-commands.js';
 import { PairwiseTestDataGenerator } from '../js/data_generation/n-wise/pairwiseTestDataGenerator.js';
 import {
@@ -395,6 +396,8 @@ export function amendFromTextSpecAndData({
   outputFormat = DEFAULT_FORMAT,
   options = {},
   seed,
+  trimInput = false,
+  trimInputFieldsCsv = '',
   unsafeFakerExpressions = false,
   stream = false,
 } = {}) {
@@ -419,6 +422,7 @@ export function amendFromTextSpecAndData({
 
   const normalisedInputFormat = String(inputFormat).trim().toLowerCase();
   const importer = createImporter();
+  importer.setImportSettings({ trimInput, trimInputFieldsCsv });
   if (!importer.canImport(normalisedInputFormat)) {
     return {
       ok: false,
@@ -863,3 +867,4 @@ export { SUPPORTED_FORMATS };
 export { Exporter, GenericDataTable };
 export { CombinationAlgorithm, CombinationsTestDataGenerator, PairwiseTestDataGenerator };
 export { OPTION_KEYS_BY_FORMAT, OPTION_TIPS_BY_FORMAT, normalizeFormat, sanitizeOptionsForFormat, getTipsForFormat };
+export { applyImportTrimSettingsToDataTable, normalizeImportTrimSettings };

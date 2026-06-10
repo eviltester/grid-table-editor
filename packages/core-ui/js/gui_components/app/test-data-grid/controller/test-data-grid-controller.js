@@ -48,6 +48,8 @@ import { createDataPopulationPanelComponent } from '../../data-population-panel/
 import { resolveDocumentObj } from '../../../shared/dom/default-objects.js';
 import { createCombinationsDialogComponent } from '../../../shared/combinations-dialog/index.js';
 import { createConfirmDialogService } from '../../../shared/dialog-services/confirm-dialog-service.js';
+import { createTextInputDialogService } from '../../../shared/dialog-services/text-input-dialog-service.js';
+import { DEFAULT_ENUM_LIMIT, createEnumSchemaRowsFromGrid, normaliseEnumLimit } from '../schema/grid-to-enum-schema.js';
 
 import { faker } from 'https://cdn.skypack.dev/@faker-js/faker@v9.7.0';
 
@@ -70,6 +72,8 @@ function createTestDataGenerationPanelManager({
   createDataPopulationPanelComponentFn = createDataPopulationPanelComponent,
   createTestDataUiStatusServiceFn = createTestDataUiStatusService,
   createCombinationsDialogComponentFn = createCombinationsDialogComponent,
+  createConfirmDialogServiceFn = createConfirmDialogService,
+  createTextInputDialogServiceFn = createTextInputDialogService,
 } = {}) {
   const state = {
     debouncer: new DebouncerClass(),
@@ -82,6 +86,7 @@ function createTestDataGenerationPanelManager({
     actionAdapter: null,
     uiStatusService: null,
     combinationsDialog: null,
+    textInputDialogService: null,
   };
 
   function showTestDataSchemaError(message) {
@@ -149,7 +154,7 @@ function createTestDataGenerationPanelManager({
   function createGenerationService() {
     const resolvedRandExpClass = getRandExpClass();
     const statusServiceApi = getStatusServiceApi();
-    const confirmDialogService = createConfirmDialogService({ documentObj: getResolvedDocument() });
+    const confirmDialogService = createConfirmDialogServiceFn({ documentObj: getResolvedDocument() });
     return createTestDataGenerationServiceFn({
       schemaTextToDataRules: schemaTextToDataRulesFn,
       schemaRowsToSpec: (schemaRows) =>
@@ -187,6 +192,109 @@ function createTestDataGenerationPanelManager({
       setPairwiseVisible: (isVisible) => state.dataPopulationPanel?.setPairwiseVisible?.(isVisible),
       requestConfirm: confirmDialogService.requestConfirm,
     });
+  }
+
+  function ensureTextInputDialogService() {
+    if (!state.textInputDialogService) {
+      state.textInputDialogService = createTextInputDialogServiceFn({ documentObj: getResolvedDocument() });
+    }
+    return state.textInputDialogService;
+  }
+
+  async function generateEnumSchemaFromGrid() {
+    const statusServiceApi = getStatusServiceApi();
+    const gridExtras = getMainGridExtras();
+    const schemaDefinition = state.dataPopulationPanel?.getSchemaDefinition?.();
+    const createBlankRow = state.dataPopulationPanel?.getState?.()?.schemaDefinitionProps?.createBlankRow;
+
+    if (!gridExtras?.getGridAsGenericDataTable || !schemaDefinition || typeof createBlankRow !== 'function') {
+      showTestDataSchemaError('Grid to schema is not available.');
+      statusServiceApi.setTestDataStatus('Unable to build schema from the grid.', {
+        severity: 'error',
+        dismissable: true,
+      });
+      return false;
+    }
+
+    try {
+      state.dataPopulationPanel?.setGenerateSchemaBusy?.(true);
+      statusServiceApi.setTestDataLoadingStatus('Scanning grid for enum schema...');
+      const dataTable = await Promise.resolve(gridExtras.getGridAsGenericDataTable());
+      const initialSummary = createEnumSchemaRowsFromGrid({
+        dataTable,
+        maxEnumValues: DEFAULT_ENUM_LIMIT,
+      });
+
+      if (initialSummary.usableColumns.length === 0) {
+        showTestDataSchemaError('No non-empty column values were found to build enum schema rows.');
+        statusServiceApi.setTestDataStatus('No enum schema rows generated from the current grid.', {
+          severity: 'warning',
+          dismissable: true,
+        });
+        return false;
+      }
+
+      const suggestedLimit = Math.min(initialSummary.maxUniqueValueCount || DEFAULT_ENUM_LIMIT, DEFAULT_ENUM_LIMIT);
+      const requestedLimit = await ensureTextInputDialogService().requestTextInput({
+        title: 'Grid to Enum Schema',
+        message: `- largest Column has ${initialSummary.maxUniqueValueCount} unique values`,
+        label: 'Limit imported enum(s) to max size of',
+        initialValue: String(suggestedLimit),
+        okLabel: 'Build Schema',
+        cancelLabel: 'Cancel',
+        inputType: 'number',
+        min: 1,
+        step: 1,
+      });
+      if (requestedLimit === null) {
+        statusServiceApi.setTestDataStatus('Grid to enum schema cancelled.', {
+          severity: 'warning',
+          dismissable: true,
+        });
+        return false;
+      }
+
+      const maxEnumValues = normaliseEnumLimit(requestedLimit);
+      const summary = createEnumSchemaRowsFromGrid({
+        dataTable,
+        maxEnumValues,
+        createBlankRow,
+      });
+
+      if (summary.truncatedColumnCount > 0) {
+        const confirmDialogService = createConfirmDialogServiceFn({ documentObj: getResolvedDocument() });
+        const shouldTruncate = await confirmDialogService.requestConfirm({
+          title: 'Confirm enum truncation',
+          message: `Enum limit ${maxEnumValues} is less than current values. Truncate to first ${maxEnumValues} values for affected columns?`,
+          okLabel: 'Truncate Schema',
+          cancelLabel: 'Cancel',
+        });
+        confirmDialogService.destroy();
+        if (!shouldTruncate) {
+          statusServiceApi.setTestDataStatus('Grid to enum schema cancelled.', {
+            severity: 'warning',
+            dismissable: true,
+          });
+          return false;
+        }
+      }
+
+      const validation = state.dataPopulationPanel?.replaceSchemaRows?.(summary.rows) || { errors: [] };
+      if (validation.errors?.length > 0) {
+        statusServiceApi.setTestDataStatus('Schema replacement completed with validation warnings.', {
+          severity: 'warning',
+          dismissable: true,
+        });
+      } else {
+        statusServiceApi.setTestDataStatus(
+          `Created ${summary.rows.length} enum schema rows${summary.truncatedColumnCount > 0 ? ` with truncation in ${summary.truncatedColumnCount} column${summary.truncatedColumnCount === 1 ? '' : 's'}` : ''}.`,
+          { dismissable: true }
+        );
+      }
+      return true;
+    } finally {
+      state.dataPopulationPanel?.setGenerateSchemaBusy?.(false);
+    }
   }
 
   function ensureCombinationsDialog(resolvedDocument) {
@@ -230,7 +338,9 @@ function createTestDataGenerationPanelManager({
     state.dataPopulationPanel?.destroy?.();
     state.uiStatusService?.destroy?.();
     state.combinationsDialog?.destroy?.();
+    state.textInputDialogService?.destroy?.();
     state.combinationsDialog = null;
+    state.textInputDialogService = null;
     state.debouncer?.clear?.();
     identifyFakerCommandsFn(faker);
 
@@ -309,6 +419,7 @@ function createTestDataGenerationPanelManager({
       callbacks: {
         onGenerate: () => state.actionAdapter.generateTestData(),
         onGeneratePairwise: () => openGenerateCombinationsDialog(),
+        onGenerateSchemaFromGrid: generateEnumSchemaFromGrid,
         onModeChange: applyModeDefaultRowCount,
         schemaDefinition: {
           onSchemaError: (message) => state.schemaTextSyncState?.schemaErrorDisplay?.show?.(message),
@@ -332,7 +443,9 @@ function createTestDataGenerationPanelManager({
       state.dataPopulationPanel?.destroy?.();
       state.uiStatusService?.destroy?.();
       state.combinationsDialog?.destroy?.();
+      state.textInputDialogService?.destroy?.();
       state.combinationsDialog = null;
+      state.textInputDialogService = null;
       state.debouncer?.clear?.();
     },
   };

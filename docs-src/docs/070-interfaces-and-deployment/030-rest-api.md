@@ -142,6 +142,8 @@ Both endpoints generate data from the same schema language and output formats. T
 `POST /v1/generate/amend` behavior:
 
 - accepts `textSpec`, `inputData`, `inputFormat`, optional `rowCount`, `outputFormat`, `responseFormat`
+- optional `trimInput: true` trims all imported field values before amend processing
+- optional `trimInputFieldsCsv: "Name,Email"` trims only the listed imported field names
 - defaults `rowCount` to imported row count
 - if `rowCount` is provided and smaller, only first `N` rows are amended
 - output always returns the full resulting dataset
@@ -218,6 +220,7 @@ curl -X POST http://localhost:3000/v1/generate/amend \
     "inputFormat": "csv",
     "rowCount": 2,
     "outputFormat": "dsv",
+    "trimInputFieldsCsv": "Name",
     "responseFormat": "all",
     "stream": true
   }'
@@ -267,5 +270,4 @@ curl http://localhost:3000/openapi.json
 
 - If you run on a non-default port, replace `3000` in all examples.
 - For MCP tool integrations, see [MCP](/docs/interfaces-and-deployment/mcp).
-
 

@@ -680,6 +680,16 @@ function createSharedSchemaEditorController({
     syncTextFromRows();
   };
 
+  const replaceRows = (rows) => {
+    session.setRows(rows, { allowEmpty: Array.isArray(rows) && rows.length === 0 });
+    session.setTokens([]);
+    const validation = revalidateRows();
+    renderRows();
+    syncTextFromRows();
+    updateModeView();
+    return validation;
+  };
+
   const init = () => {
     if (session.getRows().length === 0) {
       session.addRowAfterIndex(-1);
@@ -718,6 +728,7 @@ function createSharedSchemaEditorController({
     moveRowAt,
     render: () => renderRows(),
     setRows: (rows, options) => session.setRows(rows, options),
+    replaceRows,
     setTokens: (tokens) => session.setTokens(tokens),
     getTokens: () => session.getTokens(),
     setTextMode: (isTextMode) => session.setTextMode(isTextMode),

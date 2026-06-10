@@ -1,5 +1,7 @@
 const { expect } = require('@playwright/test');
 const { GridRendererComponent } = require('./grid-renderer.component');
+const { ConfirmDialogComponent } = require('./confirm-dialog.component');
+const { TextInputDialogComponent } = require('./text-input-dialog.component');
 const { SchemaEditorComponent } = require('../../../shared/abstractions/components/schema-editor.component');
 const {
   OverlaySafeActivationComponent,
@@ -14,6 +16,7 @@ class TestDataPanelComponent {
     this.heading = this.container.getByText('Test Data', { exact: true });
     this.generateButton = this.container.getByRole('button', { name: 'Generate', exact: true });
     this.generatePairwiseButton = this.container.getByRole('button', { name: 'Generate Combinations' });
+    this.generateSchemaButton = this.container.getByRole('button', { name: 'Grid to Enum Schema', exact: true });
     this.combinationsDialog = page.getByRole('dialog', { name: 'Generate Combinations' });
     this.combinationsDialogStrengthSelect = this.combinationsDialog.getByLabel('n');
     this.combinationsDialogCancelButton = this.combinationsDialog.getByRole('button', { name: 'Cancel' });
@@ -26,6 +29,8 @@ class TestDataPanelComponent {
     this.deleteSelectedSchemaRowsButton = this.container.getByRole('button', { name: '- Delete Selected' });
     this.selectedSchemaRowIndex = 0;
     this.overlaySafeActivation = new OverlaySafeActivationComponent(page);
+    this.confirmDialog = new ConfirmDialogComponent(page);
+    this.textInputDialog = new TextInputDialogComponent(page);
     this.schemaEditor = new SchemaEditorComponent(page, {
       rootSelector: '[data-role="data-population-panel-root"]',
       fieldMap: {
@@ -132,6 +137,15 @@ class TestDataPanelComponent {
   async openGenerateCombinationsDialog() {
     await this.overlaySafeActivation.activateButton(this.generatePairwiseButton);
     await expect(this.combinationsDialog).toBeVisible();
+  }
+
+  async openGridToEnumSchemaDialog() {
+    await this.overlaySafeActivation.activateButton(this.generateSchemaButton);
+    await this.textInputDialog.expectVisible();
+  }
+
+  async submitGridToEnumSchemaLimit(value) {
+    await this.textInputDialog.submit(value, { submitLabel: /build schema/i });
   }
 
   async cancelGenerateCombinationsDialog() {

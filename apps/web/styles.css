@@ -80,6 +80,13 @@ body.theme-dark a:hover {
   gap: 1rem;
 }
 
+.data-grid-total-rows {
+  color: var(--page-text);
+  background: transparent;
+  font-size: 1.05rem;
+  line-height: 1.4;
+}
+
 /* was #3D5249 - then docusaurus uses #2e8555*/
 .header {
   background-color: var(--header-bg);

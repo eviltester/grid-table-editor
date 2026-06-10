@@ -18,11 +18,11 @@ class ConfirmDialogComponent {
     await expect(this.backdrop).toBeHidden();
   }
 
-  async confirmIfVisible() {
+  async confirmIfVisible(options = {}) {
     if (!(await this.isVisible())) {
       return false;
     }
-    await this.confirm();
+    await this.confirm(options);
     return true;
   }
 
@@ -34,9 +34,9 @@ class ConfirmDialogComponent {
     return true;
   }
 
-  async confirm() {
+  async confirm({ confirmLabel = /^ok$/i } = {}) {
     await this.expectVisible();
-    await this.backdrop.getByRole('button', { name: /^ok$/i }).click();
+    await this.backdrop.getByRole('button', { name: confirmLabel }).click();
     await this.expectHidden();
   }
 

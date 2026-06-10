@@ -72,6 +72,9 @@ function createSharedSchemaDefinitionComponent({ root, props = {}, callbacks = {
     setRows(rows) {
       return controller.setRows(rows);
     },
+    replaceRows(rows) {
+      return controller.replaceRows(rows);
+    },
     setTokens(tokens) {
       return controller.setTokens(tokens);
     },

@@ -46,10 +46,12 @@ class DataPopulationPanelView {
         modeOptions: state.modeOptions,
         rowCountProps: state.rowCountProps,
         actionIds: state.actionIds,
+        generateSchemaBusy: state.generateSchemaBusy,
       },
       callbacks: {
         onGenerate: this.callbacks.onGenerate,
         onGeneratePairwise: this.callbacks.onGeneratePairwise,
+        onGenerateSchemaFromGrid: this.callbacks.onGenerateSchemaFromGrid,
         onModeChange: (mode) => this.controller.handleModeChange(mode),
       },
     });
@@ -79,6 +81,7 @@ class DataPopulationPanelView {
       modeOptions: state.modeOptions,
       rowCountProps: state.rowCountProps,
       actionIds: state.actionIds,
+      generateSchemaBusy: state.generateSchemaBusy,
     });
     this.schemaPanel?.update?.({
       className: 'test-data-schema-edit-zone shared-schema-section',
@@ -121,6 +124,10 @@ class DataPopulationPanelView {
 
   setGeneratePairwiseBusy(isBusy) {
     this.toolbar?.setGeneratePairwiseBusy?.(isBusy);
+  }
+
+  setGenerateSchemaBusy(isBusy) {
+    this.toolbar?.setGenerateSchemaBusy?.(isBusy);
   }
 
   getSchemaDefinition() {

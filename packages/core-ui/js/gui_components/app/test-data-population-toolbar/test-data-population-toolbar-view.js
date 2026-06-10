@@ -10,6 +10,10 @@ const GENERATE_PAIRWISE_TO_GRID_HELP_HTML = `
   <p><a class="helplink" href="/docs/test-data/n-wise-testing" target="_blank" rel="noopener noreferrer">N-wise generation docs</a></p>
 `;
 
+const GRID_TO_SCHEMA_HELP_HTML = `
+  <p>Scan the current grid and build an enum-only schema from the visible column values.</p>
+`;
+
 class TestDataPopulationToolbarView {
   constructor({ root, controller, documentObj, services = {}, callbacks = {} } = {}) {
     this.root = root;
@@ -60,11 +64,15 @@ class TestDataPopulationToolbarView {
         generateHelpHtml: GENERATE_TO_GRID_HELP_HTML,
         generatePairwiseHelpHtml: GENERATE_PAIRWISE_TO_GRID_HELP_HTML,
         generatePairwiseHelpLabel: 'Show combination generation help',
+        generateSchemaLabel: 'Grid to Enum Schema',
+        generateSchemaHelpHtml: GRID_TO_SCHEMA_HELP_HTML,
+        generateSchemaHelpLabel: 'Show grid to enum schema help',
         statusVisible: true,
       },
       callbacks: {
         onGenerate: this.callbacks.onGenerate,
         onGeneratePairwise: this.callbacks.onGeneratePairwise,
+        onGenerateSchemaFromGrid: this.callbacks.onGenerateSchemaFromGrid,
       },
     });
 
@@ -99,7 +107,11 @@ class TestDataPopulationToolbarView {
       generateHelpHtml: GENERATE_TO_GRID_HELP_HTML,
       generatePairwiseHelpHtml: GENERATE_PAIRWISE_TO_GRID_HELP_HTML,
       generatePairwiseHelpLabel: 'Show combination generation help',
+      generateSchemaLabel: 'Grid to Enum Schema',
+      generateSchemaHelpHtml: GRID_TO_SCHEMA_HELP_HTML,
+      generateSchemaHelpLabel: 'Show grid to enum schema help',
       statusVisible: true,
+      generateSchemaBusy: state.generateSchemaBusy,
     });
     this.populationModeSelector?.update?.({
       name: 'testDataGenerationMode',
@@ -146,6 +158,10 @@ class TestDataPopulationToolbarView {
 
   setGeneratePairwiseBusy(isBusy) {
     this.populationActions?.setGeneratePairwiseBusy?.(isBusy);
+  }
+
+  setGenerateSchemaBusy(isBusy) {
+    this.populationActions?.setGenerateSchemaBusy?.(isBusy);
   }
 }
 

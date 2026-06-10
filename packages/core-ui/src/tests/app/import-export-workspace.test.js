@@ -64,6 +64,7 @@ function createHarness({ props = {}, services = {}, navigatorPlatform } = {}) {
     toGenericDataTable: jest.fn(() => createTable(4)),
     setGridFromGenericDataTable: jest.fn(() => Promise.resolve()),
     importText: jest.fn(() => Promise.resolve()),
+    setImportSettings: jest.fn(),
   };
   const component = createImportExportWorkspaceComponent({
     root: documentObj.getElementById('root'),
@@ -291,6 +292,10 @@ describe('ImportExportWorkspace', () => {
     fireEvent.change(fileInput);
 
     await waitFor(() => expect(fileReadService.readText).toHaveBeenCalledTimes(1));
+    expect(importer.setImportSettings).toHaveBeenCalledWith({
+      trimInput: false,
+      trimInputFieldsCsv: '',
+    });
     await waitFor(() => expect(importer.setGridFromGenericDataTable).toHaveBeenCalledTimes(1));
     expect(getPreviewTextArea(documentObj).value).toBe('csv:rows:1');
     expect(documentObj.querySelector('#import-progress-status').textContent).toBe('Import complete.');
@@ -313,6 +318,10 @@ describe('ImportExportWorkspace', () => {
     fireEvent.click(documentObj.querySelector('[data-role="clipboard-import-button"]'));
 
     await waitFor(() => expect(clipboardService.readText).toHaveBeenCalledTimes(1));
+    expect(importer.setImportSettings).toHaveBeenCalledWith({
+      trimInput: false,
+      trimInputFieldsCsv: '',
+    });
     await waitFor(() => expect(importer.importText).toHaveBeenCalledWith('csv', 'Name,Role\nAda,Engineer'));
     await waitFor(() => expect(getPreviewTextArea(documentObj).value).toBe('csv:rows:1'));
     await waitFor(() =>
@@ -365,6 +374,7 @@ describe('ImportExportWorkspace', () => {
       toGenericDataTable: jest.fn(() => createTable(4)),
       setGridFromGenericDataTable: jest.fn(() => Promise.resolve()),
       importText: jest.fn(() => Promise.resolve()),
+      setImportSettings: jest.fn(),
     };
     const component = createImportExportWorkspaceComponent({
       root: documentObj.getElementById('root'),
@@ -414,6 +424,7 @@ describe('ImportExportWorkspace', () => {
       toGenericDataTable: jest.fn(() => createTable(4)),
       setGridFromGenericDataTable: jest.fn(() => Promise.resolve()),
       importText: jest.fn(() => Promise.resolve()),
+      setImportSettings: jest.fn(),
     };
     const { component, documentObj, dom } = createHarness({
       props: { mode: 'edit' },
@@ -427,6 +438,10 @@ describe('ImportExportWorkspace', () => {
 
     fireEvent.click(importButton);
 
+    expect(importer.setImportSettings).toHaveBeenCalledWith({
+      trimInput: false,
+      trimInputFieldsCsv: '',
+    });
     await waitFor(() => expect(importer.importText).toHaveBeenCalledWith('csv', textArea.value));
     expect(component.getState().importBusy).toBe(false);
     expect(documentObj.querySelector('#import-progress-status').textContent).toBe('Import complete.');
@@ -495,6 +510,50 @@ describe('ImportExportWorkspace', () => {
     expect(documentObj.querySelector('#setgridfromtextbutton').disabled).toBe(true);
     expect(documentObj.querySelector('#settextfromgridbutton').disabled).toBe(true);
     expect(documentObj.querySelector('#filedownload').disabled).toBe(true);
+
+    component.destroy();
+    dom.window.close();
+  });
+
+  test('threads import trim settings through clipboard and file imports', async () => {
+    const clipboardService = {
+      copyFromTextArea: jest.fn(),
+      readText: jest.fn(async () => 'Name,Role\n  Ada  ,  Engineer  '),
+      canReadText: jest.fn(() => true),
+    };
+    const fileReadService = {
+      readText: jest.fn(async () => 'Name,Role\n  Ada  ,  Engineer  '),
+    };
+    const { component, documentObj, dom, importer } = createHarness({
+      props: {
+        trimInput: true,
+        trimInputFieldsEnabled: true,
+        trimInputFieldsCsv: 'Role',
+      },
+      services: { clipboardService, fileReadService },
+    });
+
+    fireEvent.click(documentObj.querySelector('[data-role="clipboard-import-button"]'));
+    await waitFor(() =>
+      expect(importer.setImportSettings).toHaveBeenCalledWith({
+        trimInput: true,
+        trimInputFieldsCsv: 'Role',
+      })
+    );
+
+    const fileInput = documentObj.querySelector('#csvinput');
+    Object.defineProperty(fileInput, 'files', {
+      configurable: true,
+      value: [{ name: 'trimmed.csv' }],
+    });
+    fireEvent.change(fileInput);
+
+    await waitFor(() =>
+      expect(importer.setImportSettings).toHaveBeenLastCalledWith({
+        trimInput: true,
+        trimInputFieldsCsv: 'Role',
+      })
+    );
 
     component.destroy();
     dom.window.close();

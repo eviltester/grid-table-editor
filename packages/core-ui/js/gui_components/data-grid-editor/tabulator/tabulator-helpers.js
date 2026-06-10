@@ -37,19 +37,27 @@ class TabulatorHelper {
     });
   }
 
+  getActiveGlobalFilterQuery() {
+    return this._activeGlobalFilterQuery;
+  }
+
+  clearGlobalFilterQuery() {
+    this._activeGlobalFilterQuery = '';
+  }
+
   addRowToBottom(rowToAdd) {
     // add row to bottom of table - false for bottom, true for top
-    this.addRow(rowToAdd, false);
+    return this.addRow(rowToAdd, false);
   }
 
   addRowToTop(rowToAdd) {
     // add row to top of table - false for bottom, true for top
-    this.addRow(rowToAdd, true);
+    return this.addRow(rowToAdd, true);
   }
 
   addRow(rowToAdd, addToTop) {
     // add row to bottom of table - false for bottom, true for top
-    this.tabulator.addData([rowToAdd], addToTop);
+    return this.tabulator.addData([rowToAdd], addToTop);
   }
 }
 

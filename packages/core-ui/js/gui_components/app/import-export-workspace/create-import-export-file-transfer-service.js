@@ -34,6 +34,15 @@ function createImportExportFileTransferService({
   const getImporter = () => importer?.() || null;
   const getExporter = () => exporter?.() || null;
 
+  const getCurrentImportTrimSettings = () => ({
+    trimInput: getCurrentState().trimInput === true,
+    trimInputFieldsCsv: getCurrentState().trimInputFieldsEnabled === true ? getCurrentState().trimInputFieldsCsv : '',
+  });
+
+  const applyImportTrimSettings = () => {
+    getImporter()?.setImportSettings?.(getCurrentImportTrimSettings());
+  };
+
   const importPreviewText = async (text) => {
     await previewThenImportToGrid({
       importer: getImporter(),
@@ -53,6 +62,7 @@ function createImportExportFileTransferService({
   async function importTextContent(text, { sourceLabel = 'import text' } = {}) {
     const normalizedText = normalizeImportedTextContent(text);
     const currentImporter = getImporter();
+    applyImportTrimSettings();
 
     setImportStatus?.(
       getCurrentState().mode === 'preview'
@@ -137,6 +147,7 @@ function createImportExportFileTransferService({
     }
 
     setCurrentTypeOptions?.();
+    applyImportTrimSettings();
 
     if (state.mode === 'preview') {
       if (!state.previewTextDirty) {
@@ -194,6 +205,7 @@ function createImportExportFileTransferService({
     }
 
     setCurrentTypeOptions?.();
+    applyImportTrimSettings();
     controller.setBusyState({ importBusy: true });
     setImportStatus?.('Reading clipboard text...', true);
     render?.();

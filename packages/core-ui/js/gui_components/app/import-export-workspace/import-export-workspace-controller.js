@@ -1,4 +1,5 @@
 import { normalizePreviewRowLimit } from './import-export-workspace-services.js';
+import { applyImportTrimProps, createImportTrimState } from '../import-export-trim-state.js';
 
 class ImportExportWorkspaceController {
   constructor({ props = {} } = {}) {
@@ -23,6 +24,7 @@ class ImportExportWorkspaceController {
         lineEnding: props.exportEncodingSettings?.lineEnding || 'lf',
         includeBom: props.exportEncodingSettings?.includeBom === true,
       },
+      ...createImportTrimState(props),
     };
   }
 
@@ -89,6 +91,7 @@ class ImportExportWorkspaceController {
           : this.state.exportEncodingSettings.includeBom,
       };
     }
+    applyImportTrimProps(this.state, nextProps);
   }
 
   setImportStatus(message = '', isLoading = false) {
@@ -144,6 +147,10 @@ class ImportExportWorkspaceController {
         ...nextSettings,
       },
     });
+  }
+
+  setImportTrimSettings(nextSettings = {}) {
+    this.updateProps(createImportTrimState(nextSettings));
   }
 
   canSetGridFromText() {

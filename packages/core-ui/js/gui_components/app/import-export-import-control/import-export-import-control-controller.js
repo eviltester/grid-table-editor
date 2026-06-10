@@ -1,3 +1,5 @@
+import { applyImportTrimProps, createImportTrimState } from '../import-export-trim-state.js';
+
 class ImportExportImportControlController {
   constructor({ props = {} } = {}) {
     this.state = {
@@ -8,6 +10,7 @@ class ImportExportImportControlController {
       fileExtension: props.fileExtension || '.csv',
       importStatusMessage: props.importStatusMessage || '',
       importStatusLoading: props.importStatusLoading === true,
+      ...createImportTrimState(props),
     };
   }
 
@@ -37,6 +40,7 @@ class ImportExportImportControlController {
     if (Object.prototype.hasOwnProperty.call(nextProps, 'importStatusLoading')) {
       this.state.importStatusLoading = nextProps.importStatusLoading === true;
     }
+    applyImportTrimProps(this.state, nextProps);
   }
 }
 

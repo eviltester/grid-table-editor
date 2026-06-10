@@ -3,6 +3,10 @@
  * Handles both simple comma-separated and function-based enum formats
  */
 export class EnumParser {
+  static unescapeQuotedEnumValue(value) {
+    return String(value ?? '').replace(/\\(["\\])/g, '$1');
+  }
+
   static isShorthandEnumFormat(ruleSpec) {
     return /^enum\s+/.test(String(ruleSpec || '').trim());
   }
@@ -51,7 +55,7 @@ export class EnumParser {
       .map((v) => {
         const trimmed = v.trim();
         if (trimmed.startsWith('"') && trimmed.endsWith('"') && trimmed.length >= 2) {
-          return trimmed.slice(1, -1);
+          return this.unescapeQuotedEnumValue(trimmed.slice(1, -1));
         }
         return trimmed;
       });
@@ -108,7 +112,7 @@ export class EnumParser {
     return values.map((value) => {
       const trimmed = value.trim();
       if (trimmed.startsWith('"') && trimmed.endsWith('"') && trimmed.length >= 2) {
-        return trimmed.slice(1, -1);
+        return this.unescapeQuotedEnumValue(trimmed.slice(1, -1));
       }
       return trimmed;
     });

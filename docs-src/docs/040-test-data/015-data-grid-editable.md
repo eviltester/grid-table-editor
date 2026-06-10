@@ -32,6 +32,40 @@ The definition grid acts as a schema/template:
 
 Generated rows are inserted into the main editable data grid.
 
+## Grid to Enum Schema
+
+The `Grid to Enum Schema` action scans the current main data grid and builds a schema definition from the values already in the table.
+
+Use this when you already have example rows in the editable grid and want to quickly turn those values into `Enum` generation rules.
+
+The generated schema uses:
+
+- one schema row per grid column
+- the current column header as the schema row name
+- `Enum` as the source type for every generated row
+- unique values collected in first-seen row order
+
+### How it works
+
+1. Open the `Test Data` section in `app.html`.
+2. Press `Grid to Enum Schema`.
+3. Enter a maximum number of enum values to keep for each column.
+4. Confirm truncation if any column has more unique values than the chosen limit.
+5. Review the generated schema and press `Generate` or `Generate Pairwise` as needed.
+
+The limit prompt shows the largest unique-value count found in the scanned grid and uses a numeric input field to reduce entry mistakes.
+
+The default value is:
+
+- the largest column unique-value count when it is `256` or less
+- `256` when the largest column has more than `256` unique values
+
+If the chosen limit is lower than the number of unique values in one or more columns, then AnyWayData will ask for confirmation before truncating the schema. Truncation keeps the first values seen in current grid row order.
+
+When accepted, the generated enum schema replaces the existing schema definition in the Test Data editor. The schema grid, schema text area, validation state, and pairwise button visibility are all refreshed automatically.
+
+If the grid is empty, or no usable values can be extracted, then the existing schema is left unchanged.
+
 ## Generate Modes in the Grid
 
 When generating in `app.html`, you can choose whether generation replaces data or amends existing rows:
@@ -115,6 +149,3 @@ Press the `[Generate]` button to generate the data.
 The schema in the Column Definition Data Grid will be used to generate the data.
 
 All data generation happens in the browser so the amount of data you can generate is limited only by the performance and memory of your computer.
-
-
-

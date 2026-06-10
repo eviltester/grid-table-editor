@@ -41,6 +41,7 @@ class ImportExportToolbarView {
       callbacks: {
         onFileSelected: this.callbacks.onFileSelected,
         onImportFromClipboard: this.callbacks.onImportFromClipboard,
+        onImportTrimSettingsChange: this.callbacks.onImportTrimSettingsChange,
       },
       services: {
         createFileImportBindingsAdapter: this.services.createFileImportBindingsAdapter,

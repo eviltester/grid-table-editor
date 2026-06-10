@@ -8,6 +8,7 @@ class DataPopulationPanelController {
       rowCountProps: { ...(props.rowCountProps || {}) },
       actionIds: { ...(props.actionIds || {}) },
       schemaDefinitionProps: { ...(props.schemaDefinitionProps || {}) },
+      generateSchemaBusy: props.generateSchemaBusy === true,
     };
   }
 
@@ -24,6 +25,7 @@ class DataPopulationPanelController {
       schemaDefinitionProps: nextProps.schemaDefinitionProps
         ? { ...this.state.schemaDefinitionProps, ...nextProps.schemaDefinitionProps }
         : this.state.schemaDefinitionProps,
+      generateSchemaBusy: nextProps.generateSchemaBusy ?? this.state.generateSchemaBusy,
     };
   }
 

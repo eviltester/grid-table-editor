@@ -11,6 +11,15 @@ export function parseCliOptions(argvInput = process.argv) {
     .option('schema-file', { type: 'string', describe: 'Schema file path for amend command' })
     .option('data-file', { type: 'string', describe: 'Input data file path for amend command' })
     .option('input-format', { type: 'string', describe: 'Input data format for amend command (e.g. csv, json)' })
+    .option('trim-input', {
+      type: 'boolean',
+      default: false,
+      describe: 'Trim whitespace from every imported input field value before amend processing',
+    })
+    .option('trim-input-fields', {
+      type: 'string',
+      describe: 'Comma-separated imported field names whose values should be trimmed before amend processing',
+    })
     .option('n', {
       alias: 'numberOfLines',
       type: 'number',
@@ -93,5 +102,7 @@ export function parseCliOptions(argvInput = process.argv) {
     bom: parsed.bom === true,
     unsafeFakerExpressions: parsed['unsafe-faker-expressions'] === true,
     pairwise: parsed.pairwise === true,
+    trimInput: command === 'amend' && parsed['trim-input'] === true,
+    trimInputFieldsCsv: command === 'amend' ? parsed['trim-input-fields'] || '' : '',
   };
 }

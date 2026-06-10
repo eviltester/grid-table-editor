@@ -24,6 +24,12 @@ test.describe('Health and docs endpoints', () => {
     expect(body.openapi).toBe('3.0.3');
     expect(body.paths['/v1/generate']).toBeTruthy();
     expect(body.paths['/v1/generate/amend']).toBeTruthy();
+    expect(
+      body.paths['/v1/generate/amend'].post.requestBody.content['application/json'].schema.properties.trimInput
+    ).toBeTruthy();
+    expect(
+      body.paths['/v1/generate/amend'].post.requestBody.content['application/json'].schema.properties.trimInputFieldsCsv
+    ).toBeTruthy();
   });
 
   test('GET /v1/docs serves Swagger UI html', async ({ request }) => {

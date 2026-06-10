@@ -29,6 +29,7 @@ describe('DataPopulationPanel', () => {
 
   test('composes actions, row count, mode selector, and schema definition', () => {
     const onGenerate = jest.fn();
+    const onGenerateSchemaFromGrid = jest.fn();
     const onModeChange = jest.fn();
 
     const schemaDefinition = {
@@ -38,6 +39,7 @@ describe('DataPopulationPanel', () => {
       validateRows: jest.fn(() => ({ rows: [], errors: [] })),
       syncTextFromRows: jest.fn(),
       insertSampleSchema: jest.fn(),
+      replaceRows: jest.fn(() => ({ rows: [{ name: 'Status' }], errors: [] })),
     };
 
     const component = createDataPopulationPanelComponent({
@@ -90,7 +92,7 @@ describe('DataPopulationPanel', () => {
           };
         },
       },
-      callbacks: { onGenerate, onModeChange },
+      callbacks: { onGenerate, onGenerateSchemaFromGrid, onModeChange },
     });
 
     const panelRoot = document.querySelector('[data-role="data-population-panel-root"]');
@@ -98,6 +100,7 @@ describe('DataPopulationPanel', () => {
     const generateButton = panelQueries.getByRole('button', { name: /^generate$/i });
     const generatePairwiseButton = panelRoot.querySelector('[data-role="generate-pairwise-button"]');
     const generatePairwiseWrapper = panelRoot.querySelector('[data-role="generate-pairwise-button-wrapper"]');
+    const generateSchemaButton = panelQueries.getByRole('button', { name: /^grid to enum schema$/i });
     const rowCountInput = panelQueries.getByRole('spinbutton', { name: 'How Many?' });
 
     expect(panelRoot).not.toBeNull();
@@ -111,7 +114,7 @@ describe('DataPopulationPanel', () => {
     expect(document.getElementById('populationActionsRoot')).toBeNull();
     expect(document.getElementById('generateCountControl')).toBeNull();
     expect(document.getElementById('populationModeSelectorRoot')).toBeNull();
-    expect(panelRoot.querySelectorAll('[data-help-role="help-icon"]')).toHaveLength(2);
+    expect(panelRoot.querySelectorAll('[data-help-role="help-icon"]')).toHaveLength(3);
 
     component.setPairwiseVisible(true);
     expect(generatePairwiseWrapper.style.display).toBe('inline-flex');
@@ -130,6 +133,8 @@ describe('DataPopulationPanel', () => {
 
     generateButton.click();
     expect(onGenerate).toHaveBeenCalled();
+    generateSchemaButton.click();
+    expect(onGenerateSchemaFromGrid).toHaveBeenCalled();
 
     const amendSelected = document.querySelector('input[name="testDataGenerationMode"][value="amend-selected"]');
     amendSelected.checked = true;
@@ -139,8 +144,15 @@ describe('DataPopulationPanel', () => {
 
     expect(component.validateSchemaRows()).toEqual({ rows: [], errors: [] });
     component.syncSchemaTextFromRows();
+    expect(component.replaceSchemaRows([{ name: 'Status', sourceType: 'enum', value: 'active,inactive' }])).toEqual({
+      rows: [{ name: 'Status' }],
+      errors: [],
+    });
     component.insertSampleSchema();
     expect(schemaDefinition.syncTextFromRows).toHaveBeenCalled();
+    expect(schemaDefinition.replaceRows).toHaveBeenCalledWith([
+      { name: 'Status', sourceType: 'enum', value: 'active,inactive' },
+    ]);
     expect(schemaDefinition.insertSampleSchema).toHaveBeenCalled();
 
     component.destroy();

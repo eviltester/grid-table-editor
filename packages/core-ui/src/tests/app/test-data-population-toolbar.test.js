@@ -30,6 +30,7 @@ describe('TestDataPopulationToolbar', () => {
   test('composes actions, row count, and mode selector', () => {
     const onGenerate = jest.fn();
     const onGeneratePairwise = jest.fn();
+    const onGenerateSchemaFromGrid = jest.fn();
     const onModeChange = jest.fn();
 
     const component = createTestDataPopulationToolbarComponent({
@@ -52,6 +53,7 @@ describe('TestDataPopulationToolbar', () => {
       callbacks: {
         onGenerate,
         onGeneratePairwise,
+        onGenerateSchemaFromGrid,
         onModeChange,
       },
     });
@@ -59,6 +61,7 @@ describe('TestDataPopulationToolbar', () => {
     const toolbarRoot = document.querySelector('[data-role="test-data-population-toolbar-root"]');
     const toolbarQueries = within(toolbarRoot);
     const generateButton = toolbarQueries.getByRole('button', { name: /^generate$/i });
+    const generateSchemaButton = toolbarQueries.getByRole('button', { name: /^grid to enum schema$/i });
     const rowCountInput = toolbarQueries.getByRole('spinbutton', { name: 'How Many?' });
     const generatePairwiseWrapper = toolbarRoot.querySelector('[data-role="generate-pairwise-button-wrapper"]');
 
@@ -77,14 +80,19 @@ describe('TestDataPopulationToolbar', () => {
 
     component.setGenerateBusy(true);
     component.setGeneratePairwiseBusy(true);
+    component.setGenerateSchemaBusy(true);
     expect(generateButton.disabled).toBe(true);
     expect(generateCombinationsButton.disabled).toBe(true);
+    expect(generateSchemaButton.disabled).toBe(true);
     expect(generateButton.getAttribute('aria-disabled')).toBe('true');
 
     component.setGenerateBusy(false);
     component.setGeneratePairwiseBusy(false);
+    component.setGenerateSchemaBusy(false);
     generateButton.click();
+    generateSchemaButton.click();
     expect(onGenerate).toHaveBeenCalled();
+    expect(onGenerateSchemaFromGrid).toHaveBeenCalled();
 
     const amendSelected = toolbarQueries.getByRole('radio', { name: 'Amend Selected' });
     amendSelected.checked = true;

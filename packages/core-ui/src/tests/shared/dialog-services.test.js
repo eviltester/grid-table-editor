@@ -105,14 +105,26 @@ describe('dialog services', () => {
 
     const resultPromise = service.requestTextInput({
       title: 'Filter Column',
-      initialValue: 'Old',
+      message: 'Only numeric values are allowed',
+      label: 'Maximum size',
+      initialValue: '3',
+      inputType: 'number',
+      min: 1,
+      step: 1,
     });
 
     const input = dom.window.document.getElementById('text-input-modal-field');
-    input.value = 'Updated';
+    expect(dom.window.document.querySelector('[data-role="text-input-dialog-message"]').textContent).toBe(
+      'Only numeric values are allowed'
+    );
+    expect(dom.window.document.querySelector('[data-role="text-input-dialog-label"]').textContent).toBe('Maximum size');
+    expect(input.getAttribute('type')).toBe('number');
+    expect(input.getAttribute('min')).toBe('1');
+    expect(input.getAttribute('step')).toBe('1');
+    input.value = '42';
     dom.window.document.getElementById('text-input-modal-ok').click();
 
-    await expect(resultPromise).resolves.toBe('Updated');
+    await expect(resultPromise).resolves.toBe('42');
   });
 
   test('text input dialog service resolves null on cancel, backdrop dismiss, and Escape', async () => {

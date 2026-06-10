@@ -100,4 +100,35 @@ describe('createTextInputDialogComponent', () => {
     document.querySelector('[data-role="text-input-dialog-cancel"]').click();
     await expect(promise).resolves.toBeNull();
   });
+
+  test('renders optional message, label, and numeric field configuration', async () => {
+    const component = createTextInputDialogComponent({
+      documentObj: document,
+    });
+
+    const promise = component.requestTextInput({
+      title: 'Grid to Enum Schema',
+      message: '- largest Column has 9 unique values',
+      label: 'Limit imported enum(s) to max size of',
+      initialValue: '9',
+      inputType: 'number',
+      min: 1,
+      step: 1,
+    });
+
+    const message = document.querySelector('[data-role="text-input-dialog-message"]');
+    const label = document.querySelector('[data-role="text-input-dialog-label"]');
+    const input = document.querySelector('[data-role="text-input-dialog-field"]');
+
+    expect(message.textContent).toBe('- largest Column has 9 unique values');
+    expect(message.hidden).toBe(false);
+    expect(label.textContent).toBe('Limit imported enum(s) to max size of');
+    expect(label.hidden).toBe(false);
+    expect(input.getAttribute('type')).toBe('number');
+    expect(input.getAttribute('min')).toBe('1');
+    expect(input.getAttribute('step')).toBe('1');
+
+    document.querySelector('[data-role="text-input-dialog-cancel"]').click();
+    await expect(promise).resolves.toBeNull();
+  });
 });

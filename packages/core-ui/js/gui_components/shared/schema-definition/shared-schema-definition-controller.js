@@ -163,6 +163,10 @@ class SharedSchemaDefinitionController {
     return this.schemaEditor?.setRows?.(rows, { allowEmpty: Array.isArray(rows) && rows.length === 0 });
   }
 
+  replaceRows(rows) {
+    return this.schemaEditor?.replaceRows?.(rows) || { rows: [], errors: [] };
+  }
+
   setTokens(tokens) {
     return this.schemaEditor?.setTokens?.(tokens);
   }

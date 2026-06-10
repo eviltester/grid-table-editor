@@ -246,6 +246,7 @@ function createTestenvRobotsTxt() {
 Disallow: /app.html
 Disallow: /generator.html
 Disallow: /combinatorial.html
+Disallow: /webmcp.html
 Disallow: /storybook/
 Disallow: /site/
 Disallow: /assets/
@@ -464,6 +465,11 @@ function renderIndexPage({ branchName, commitSha, buildTimestamp }) {
           <h2>Combinatorial</h2>
           <p>The experimental n-wise strategy comparison environment.</p>
           <a href="./combinatorial.html">Open combinatorial.html</a>
+        </article>
+        <article class="card">
+          <h2>WebMCP</h2>
+          <p>The experimental in-browser MCP surface for browser-integrated AI tooling.</p>
+          <a href="./webmcp.html">Open webmcp.html</a>
         </article>
         <article class="card">
           <h2>Storybook</h2>

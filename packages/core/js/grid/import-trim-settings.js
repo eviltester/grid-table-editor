@@ -1,5 +1,6 @@
 function normalizeImportTrimSettings({ trimInput = false, trimInputFieldsCsv = '' } = {}) {
-  const trimInputFields = String(trimInputFieldsCsv ?? '')
+  const normalizedTrimInputFieldsCsv = typeof trimInputFieldsCsv === 'string' ? trimInputFieldsCsv : '';
+  const trimInputFields = normalizedTrimInputFieldsCsv
     .split(',')
     .map((fieldName) => fieldName.trim())
     .filter((fieldName) => fieldName.length > 0);
@@ -44,6 +45,9 @@ function applyImportTrimSettingsToDataTable(dataTable, settings = {}) {
     }
     for (let columnIndex = 0; columnIndex < columnsToTrim.length; columnIndex += 1) {
       if (columnsToTrim[columnIndex] !== true) {
+        continue;
+      }
+      if (columnIndex >= row.length) {
         continue;
       }
       row[columnIndex] = trimImportedCellValue(row[columnIndex]);

@@ -1,5 +1,6 @@
 import { createThemeToggleComponent } from '../../../packages/core-ui/js/gui_components/shared/theme-toggle.js';
 import {
+  ANYWAYDATA_MCP_RESOURCE_URIS,
   executeAnyWayDataMcpTool,
   listAnyWayDataMcpResources,
   listAnyWayDataMcpTools,
@@ -157,9 +158,7 @@ async function bootstrapWebMcpPage({
   const resourceListElement = documentObj.getElementById('webmcp-resource-list');
   const tools = listAnyWayDataMcpTools();
   const resources = listAnyWayDataMcpResources();
-  const installGuide = readAnyWayDataMcpResource(
-    resources.find((resource) => resource.name === 'Install Config Examples')?.uri
-  );
+  const installGuide = readAnyWayDataMcpResource(ANYWAYDATA_MCP_RESOURCE_URIS.installGuide);
 
   appendListItems(toolListElement, tools, (tool) => createToolCard(documentObj, tool));
   appendListItems(resourceListElement, resources, (resource) => createResourceCard(documentObj, resource));

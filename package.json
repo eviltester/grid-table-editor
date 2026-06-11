@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "packageManager": "pnpm@11.1.1",
+  "engines": {
+    "node": ">=24.9.0"
+  },
   "description": "A simple Data Table Editor that generates Markdown, CSV or JSON. It can also be used to interchange data between the formats, supporting editing in the grid.",
   "main": "apps/web/index.html",
   "workspaces": [

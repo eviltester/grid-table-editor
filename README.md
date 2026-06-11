@@ -27,7 +27,7 @@ The application is live at [AnyWayData.com](https://anywaydata.com)
 - Or clone and run locally with Vite:
 - `pnpm install`
 - `pnpm run dev:web`
-- open `http://127.0.0.1:4173/app.html` or `http://127.0.0.1:4173/generator.html`
+- open `http://127.0.0.1:4173/app.html`, `http://127.0.0.1:4173/generator.html`, or `http://127.0.0.1:4173/webmcp.html`
 
 Use `pnpm run build:web` to create a production build and `pnpm run preview:web` to preview the built output.
 The old static-server flow (e.g. `python3 -m http.server`) is no longer the recommended local runtime path.
@@ -724,6 +724,7 @@ Then open:
 - `http://localhost:8080/`
 - `http://localhost:8080/app.html`
 - `http://localhost:8080/generator.html`
+- `http://localhost:8080/webmcp.html`
 
 Notes:
 

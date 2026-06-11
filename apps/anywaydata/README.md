@@ -26,6 +26,7 @@ Then open:
 - `http://localhost:8080/`
 - `http://localhost:8080/app.html`
 - `http://localhost:8080/generator.html`
+- `http://localhost:8080/webmcp.html`
 
 ## Notes
 

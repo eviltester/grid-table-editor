@@ -1,4 +1,3 @@
-# syntax=docker/dockerfile:1
 FROM node:22-alpine AS deps
 WORKDIR /app
 ENV HUSKY=0
@@ -19,5 +18,4 @@ COPY packages/core ./packages/core
 COPY apps/api ./apps/api
 EXPOSE 3000
 CMD ["node", "apps/api/src/index.js"]
-
 

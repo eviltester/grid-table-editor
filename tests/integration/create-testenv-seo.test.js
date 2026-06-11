@@ -15,6 +15,7 @@ describe('create-testenv SEO helpers', () => {
     expect(robotsTxt).toContain('Disallow: /app.html');
     expect(robotsTxt).toContain('Disallow: /generator.html');
     expect(robotsTxt).toContain('Disallow: /combinatorial.html');
+    expect(robotsTxt).toContain('Disallow: /webmcp.html');
     expect(robotsTxt).toContain('Disallow: /storybook/');
     expect(robotsTxt).toContain('Disallow: /site/');
   });
@@ -42,6 +43,7 @@ describe('create-testenv SEO helpers', () => {
     expect(html).toContain('<meta name="googlebot" content="noindex,nofollow,noarchive,nosnippet" />');
     expect(html).toContain('<link rel="canonical" href="https://anywaydata.com/" />');
     expect(html).toContain('content: "Test Environment"');
+    expect(html).toContain('Open webmcp.html');
   });
 
   test('injects the test environment indicator into rewritten html pages', () => {

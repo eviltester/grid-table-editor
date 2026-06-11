@@ -769,6 +769,105 @@ Custom header styles for default items
   margin: auto;
 }
 
+.webmcp-page {
+  padding: 1.5rem 1rem 2.5rem;
+}
+
+.webmcp-hero {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1.4rem;
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  background: radial-gradient(circle at top right, rgba(46, 133, 85, 0.14), transparent 36%),
+    linear-gradient(135deg, color-mix(in srgb, var(--panel-bg) 88%, #ebf9f2 12%), var(--panel-bg));
+}
+
+.webmcp-eyebrow {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #1b4332;
+}
+
+.webmcp-lead,
+.webmcp-supporting-copy {
+  max-width: 56rem;
+  line-height: 1.5;
+}
+
+.webmcp-section {
+  margin-top: 1.25rem;
+}
+
+.webmcp-card-grid,
+.webmcp-config-grid {
+  display: grid;
+  gap: 0.9rem;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+}
+
+.webmcp-card,
+.webmcp-config-example {
+  display: grid;
+  gap: 0.55rem;
+  padding: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  background: var(--panel-bg);
+}
+
+.webmcp-card__title {
+  margin: 0;
+}
+
+.webmcp-card__body,
+.webmcp-card__meta {
+  margin: 0;
+  line-height: 1.45;
+}
+
+.webmcp-card__meta {
+  font-size: 0.92rem;
+  color: #1f5f80;
+}
+
+.webmcp-card__code {
+  display: inline-block;
+  padding: 0.2rem 0.4rem;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--panel-bg) 84%, #e6f4ef 16%);
+  overflow-wrap: anywhere;
+}
+
+.webmcp-code-block {
+  margin: 0;
+  padding: 0.85rem;
+  border-radius: 10px;
+  background: #0f1720;
+  color: #eaf6ff;
+  overflow: auto;
+}
+
+.webmcp-steps {
+  line-height: 1.6;
+}
+
+body.theme-dark .webmcp-eyebrow {
+  color: #b7e4c7;
+}
+
+body.theme-dark .webmcp-card__meta {
+  color: #9ed0f0;
+}
+
+body.theme-dark .webmcp-code-block {
+  background: #11161d;
+  color: #d8ebf7;
+}
+
 .header .pageheading {
   font-size: 1em;
   display: inline;

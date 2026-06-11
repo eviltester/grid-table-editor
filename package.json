@@ -70,6 +70,7 @@
     ],
     "moduleNameMapper": {
       "^@anywaydata/core$": "<rootDir>/packages/core/src/index.js",
+      "^@anywaydata/core/mcp/(.*)$": "<rootDir>/packages/core/js/mcp/$1",
       "^@anywaydata/core/(.*)$": "<rootDir>/packages/core/js/$1",
       "^@anywaydata/core/data_formats/(.*)$": "<rootDir>/packages/core/js/data_formats/$1",
       "https://cdn.skypack.dev/@faker-js/faker@v9.7.0": "@faker-js/faker",
@@ -96,6 +97,8 @@
   },
   "homepage": "https://github.com/eviltester/grid-table-editor#readme",
   "dependencies": {
+    "@anywaydata/core": "workspace:^",
+    "@mcp-b/webmcp-polyfill": "3.0.0",
     "@popperjs/core": "2.11.8",
     "papaparse": "5.5.3",
     "randexp": "0.5.3",

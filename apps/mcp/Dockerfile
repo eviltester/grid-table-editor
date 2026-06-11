@@ -1,4 +1,3 @@
-# syntax=docker/dockerfile:1
 FROM node:22-alpine AS deps
 WORKDIR /app
 ENV HUSKY=0
@@ -16,4 +15,3 @@ COPY package.json ./package.json
 COPY packages/core ./packages/core
 COPY apps/mcp ./apps/mcp
 CMD ["node", "apps/mcp/src/index.js"]
-

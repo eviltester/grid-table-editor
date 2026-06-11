@@ -1,5 +1,3 @@
-# syntax=docker/dockerfile:1
-
 FROM node:22-alpine AS builder
 WORKDIR /app
 
@@ -18,5 +16,4 @@ WORKDIR /usr/share/nginx/html
 
 # Serve the built browser app only (no docs-src / docusaurus build pipeline)
 COPY --from=builder /app/apps/web/dist/ ./
-
 

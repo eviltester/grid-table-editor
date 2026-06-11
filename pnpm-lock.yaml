@@ -37,8 +37,8 @@ importers:
         specifier: 10.0.1
         version: 10.0.1(eslint@10.4.1(jiti@1.21.7))
       '@faker-js/faker':
-        specifier: 9.7.0
-        version: 9.7.0
+        specifier: 10.4.0
+        version: 10.4.0
       '@playwright/test':
         specifier: 1.60.0
         version: 1.60.0
@@ -183,8 +183,8 @@ importers:
   packages/core:
     dependencies:
       '@faker-js/faker':
-        specifier: 9.7.0
-        version: 9.7.0
+        specifier: 10.4.0
+        version: 10.4.0
       papaparse:
         specifier: 5.5.3
         version: 5.5.3
@@ -1876,9 +1876,9 @@ packages:
       '@noble/hashes':
         optional: true
 
-  '@faker-js/faker@9.7.0':
-    resolution: {integrity: sha512-aozo5vqjCmDoXLNUJarFZx2IN/GgGaogY4TMJ6so/WLZOWpSV7fvj2dmrV6sEAnUm1O7aCrhTibjpzeDFgNqbg==}
-    engines: {node: '>=18.0.0', npm: '>=9.0.0'}
+  '@faker-js/faker@10.4.0':
+    resolution: {integrity: sha512-sDBWI3yLy8EcDzgobvJTWq1MJYzAkQdpjXuPukga9wXonhpMRvd1Izuo2Qgwey2OiEoRIBr35RMU9HJRoOHzpw==}
+    engines: {node: ^20.19.0 || ^22.13.0 || ^23.5.0 || >=24.0.0, npm: '>=10'}
 
   '@hapi/hoek@9.3.0':
     resolution: {integrity: sha512-/c6rf4UJlmHlC9b5BaNvzAcFv7HZ2QHaV0D4/HNlBdvFnvQq8RI4kYdhyPCl7Xj+oWvTWQ8ujhqS53LIgAe6KQ==}
@@ -11209,7 +11209,7 @@ snapshots:
 
   '@exodus/bytes@1.15.1': {}
 
-  '@faker-js/faker@9.7.0': {}
+  '@faker-js/faker@10.4.0': {}
 
   '@hapi/hoek@9.3.0': {}
 

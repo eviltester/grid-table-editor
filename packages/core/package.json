@@ -27,7 +27,7 @@
     "test": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js --config ../../jest.config.cjs --testPathPatterns packages/core/src/tests"
   },
   "dependencies": {
-    "@faker-js/faker": "9.7.0",
+    "@faker-js/faker": "10.4.0",
     "papaparse": "5.5.3",
     "randexp": "0.5.3"
   }

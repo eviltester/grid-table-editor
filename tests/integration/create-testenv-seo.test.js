@@ -5,6 +5,7 @@ import {
   createLlmsTxt,
   createSiteRobotsTxt,
   createTestenvRobotsTxt,
+  hideTopHeaderInBuiltHtml,
   renderIndexPage,
 } from '../../scripts/create-testenv.mjs';
 
@@ -47,7 +48,9 @@ describe('create-testenv SEO helpers', () => {
   });
 
   test('injects the test environment indicator into rewritten html pages', () => {
-    const html = applySeoDirectivesToHtml('<!doctype html><html><head><title>Storybook</title></head><body></body></html>');
+    const html = applySeoDirectivesToHtml(
+      '<!doctype html><html><head><title>Storybook</title></head><body></body></html>'
+    );
 
     expect(html).toContain('data-testenv-indicator');
     expect(html).toContain('content: "Test Environment"');
@@ -56,5 +59,44 @@ describe('create-testenv SEO helpers', () => {
     expect(html).toContain('border: 0;');
     expect(html).toContain('box-shadow: none;');
     expect(html).toContain('font: 700 6px/1.2 Arial, Helvetica, sans-serif;');
+  });
+
+  test('site page SEO rewrite preserves the visible navbar while adding the test environment indicator', () => {
+    const sourceHtml = `
+      <!doctype html>
+      <html>
+        <head><title>App</title></head>
+        <body>
+          <div class="header" data-role="theme-toggle-host">AnyWayData</div>
+        </body>
+      </html>
+    `;
+
+    const html = applySeoDirectivesToHtml(sourceHtml, {
+      canonicalUrl: `${TESTENV_CANONICAL_SITE_URL}/app.html`,
+    });
+
+    expect(html).toContain('data-testenv-indicator');
+    expect(html).toContain('class="header"');
+    expect(html).not.toContain('data-testenv-hide-header');
+    expect(html).toContain('<link rel="canonical" href="https://anywaydata.com/app.html" />');
+  });
+
+  test('standalone app pages can be rewritten to hide the top header', () => {
+    const sourceHtml = `
+      <!doctype html>
+      <html>
+        <head><title>Standalone App</title></head>
+        <body>
+          <div class="header" data-role="theme-toggle-host">AnyWayData</div>
+        </body>
+      </html>
+    `;
+
+    const html = hideTopHeaderInBuiltHtml(sourceHtml);
+
+    expect(html).toContain('data-testenv-hide-header');
+    expect(html).toContain('.header {');
+    expect(html).toContain('display: none !important;');
   });
 });

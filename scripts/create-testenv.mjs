@@ -64,7 +64,7 @@ function runCommand(command, args, options = {}) {
 
   if (result.status !== 0) {
     throw new Error(
-      `Command failed: ${command} ${args.join(' ')} (status ${result.status ?? 1}${result.signal ? `, signal ${result.signal}` : ''})`,
+      `Command failed: ${command} ${args.join(' ')} (status ${result.status ?? 1}${result.signal ? `, signal ${result.signal}` : ''})`
     );
   }
 }
@@ -191,10 +191,7 @@ function upsertHeadStyle(html, markerAttribute, styleTag) {
 
 function applySeoDirectivesToHtml(
   html,
-  {
-    canonicalUrl = ROOT_CANONICAL_URL,
-    robotsDirectives = TESTENV_ROBOTS_DIRECTIVES,
-  } = {},
+  { canonicalUrl = ROOT_CANONICAL_URL, robotsDirectives = TESTENV_ROBOTS_DIRECTIVES } = {}
 ) {
   let nextHtml = html;
 
@@ -495,13 +492,17 @@ const TESTENV_HIDE_HEADER_STYLE = `
       }
     </style>`;
 
-async function hideTopHeaderInBuiltPage(pagePath) {
-  const html = await readFile(pagePath, 'utf8');
+function hideTopHeaderInBuiltHtml(html) {
   if (html.includes('data-testenv-hide-header')) {
-    return;
+    return html;
   }
 
-  const nextHtml = html.replace('</head>', `${TESTENV_HIDE_HEADER_STYLE}\n  </head>`);
+  return html.replace('</head>', `${TESTENV_HIDE_HEADER_STYLE}\n  </head>`);
+}
+
+async function hideTopHeaderInBuiltPage(pagePath) {
+  const html = await readFile(pagePath, 'utf8');
+  const nextHtml = hideTopHeaderInBuiltHtml(html);
   await writeFile(pagePath, nextHtml, 'utf8');
 }
 
@@ -541,11 +542,7 @@ async function createTemporaryDocsAppPlaceholder() {
 }
 
 async function removeTemporaryDocsAppPlaceholder() {
-  await writeFile(
-    docsAppPlaceholderPath,
-    '<p>This will be overwritten during the npm build.</p>',
-    'utf8',
-  );
+  await writeFile(docsAppPlaceholderPath, '<p>This will be overwritten during the npm build.</p>', 'utf8');
 }
 
 async function main() {
@@ -578,26 +575,19 @@ async function main() {
   await createTemporaryDocsAppPlaceholder();
 
   try {
-    runCommand(
-      'pnpm',
-      ['--dir', 'docs-src', 'exec', 'docusaurus', 'build', '--out-dir', '../testenv/site'],
-      {
-        env: {
-          DOCS_BASE_URL: fullSiteBaseUrl,
-          DOCS_SITE_URL: 'https://eviltester.github.io',
-          DOCS_TEST_BUILD: 'true',
-          DOCS_TEST_CANONICAL_SITE_URL: TESTENV_CANONICAL_SITE_URL,
-        },
+    runCommand('pnpm', ['--dir', 'docs-src', 'exec', 'docusaurus', 'build', '--out-dir', '../testenv/site'], {
+      env: {
+        DOCS_BASE_URL: fullSiteBaseUrl,
+        DOCS_SITE_URL: 'https://eviltester.github.io',
+        DOCS_TEST_BUILD: 'true',
+        DOCS_TEST_CANONICAL_SITE_URL: TESTENV_CANONICAL_SITE_URL,
       },
-    );
+    });
   } finally {
     await removeTemporaryDocsAppPlaceholder();
   }
 
   await copyWebBuildIntoDirectory(tempWebDir, fullSiteDir);
-  await hideTopHeaderInBuiltPage(path.join(fullSiteDir, 'app.html'));
-  await hideTopHeaderInBuiltPage(path.join(fullSiteDir, 'generator.html'));
-  await hideTopHeaderInBuiltPage(path.join(fullSiteDir, 'combinatorial.html'));
   await rm(tempWebDir, {
     recursive: true,
     force: true,
@@ -627,6 +617,7 @@ export {
   createLlmsTxt,
   createSiteRobotsTxt,
   createTestenvRobotsTxt,
+  hideTopHeaderInBuiltHtml,
   renderIndexPage,
 };
 

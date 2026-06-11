@@ -100,8 +100,12 @@ function renderSpecFromRulesWithTokens(rules, constraints, schemaTokens) {
       return;
     }
     if (token?.kind === 'rule' && rowIndex < rows.length) {
-      outputLines.push(rows[rowIndex].name);
-      outputLines.push(rows[rowIndex].rule);
+      if (token.inline) {
+        outputLines.push(`${rows[rowIndex].name}${token.separator || ': '}${rows[rowIndex].rule}`);
+      } else {
+        outputLines.push(rows[rowIndex].name);
+        outputLines.push(rows[rowIndex].rule);
+      }
       rowIndex += 1;
     }
   });

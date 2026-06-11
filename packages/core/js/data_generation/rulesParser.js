@@ -6,6 +6,57 @@ function startsConstraint(trimmedLine) {
   return /^IF\s+(?:\[|\(|NOT\b)/i.test(trimmedLine);
 }
 
+function looksLikeInlineRuleSpec(ruleText) {
+  const trimmed = String(ruleText ?? '').trim();
+  if (trimmed.length === 0 || startsConstraint(trimmed)) {
+    return false;
+  }
+
+  if (
+    /^(?:enum|literal|regex|datatype\.(?:enum|literal|regex)|awd\.datatype\.(?:enum|literal|regex))\s*\(/i.test(trimmed)
+  ) {
+    return true;
+  }
+
+  if (/^(?:faker\.)?[A-Za-z][A-Za-z0-9_]*(?:\.[A-Za-z][A-Za-z0-9_]*)+(?:\s*\(.*\)\s*|\s*)$/i.test(trimmed)) {
+    return true;
+  }
+
+  if (!trimmed.includes(',')) {
+    return false;
+  }
+
+  const values = trimmed.split(',').map((value) => value.trim());
+  if (values.length < 2 || values.some((value) => value.length === 0 || value.length > 50)) {
+    return false;
+  }
+
+  return !values.some((value) => /[[\]{}()^$*+?|\\]/.test(value) || (value.includes('.') && /[A-Z]/.test(value)));
+}
+
+function parseInlineRuleDefinition(line) {
+  const source = String(line ?? '');
+  for (let index = 0; index < source.length; index += 1) {
+    if (source[index] !== ':') {
+      continue;
+    }
+
+    const name = source.slice(0, index).trim();
+    const rule = source.slice(index + 1).trim();
+    if (name.length === 0 || !looksLikeInlineRuleSpec(rule)) {
+      continue;
+    }
+
+    return {
+      name,
+      rule,
+      separator: ': ',
+    };
+  }
+
+  return null;
+}
+
 function isEscapedQuote(text, index) {
   let backslashCount = 0;
   let back = index - 1;
@@ -144,6 +195,22 @@ export class RulesParser {
           pendingLeadingTextLines = [];
           continue;
         }
+        const inlineRule = parseInlineRuleDefinition(line);
+        if (inlineRule) {
+          this.testDataRules.addRule(inlineRule.name, inlineRule.rule, {
+            comments: pendingLeadingTextLines.join('\n'),
+          });
+          this.schemaTokens.push({
+            kind: 'rule',
+            name: inlineRule.name,
+            rule: inlineRule.rule,
+            line: index + 1,
+            inline: true,
+            separator: inlineRule.separator,
+          });
+          pendingLeadingTextLines = [];
+          continue;
+        }
         pendingName = trimmed;
         pendingNameLine = index + 1;
         continue;
@@ -216,8 +283,12 @@ export class RulesParser {
       }
       if (token.kind === 'rule') {
         if (rowIndex < rows.length) {
-          outputLines.push(rows[rowIndex].name);
-          outputLines.push(rows[rowIndex].rule);
+          if (token.inline) {
+            outputLines.push(`${rows[rowIndex].name}${token.separator || ': '}${rows[rowIndex].rule}`);
+          } else {
+            outputLines.push(rows[rowIndex].name);
+            outputLines.push(rows[rowIndex].rule);
+          }
           rowIndex += 1;
         }
       }

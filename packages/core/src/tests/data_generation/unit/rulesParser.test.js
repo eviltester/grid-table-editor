@@ -18,6 +18,22 @@ person.fullName`;
     expect(parser.testDataRules.rules[0].ruleSpec).toBe('person.fullName');
   });
 
+  test('can parse inline pict-style column definitions into rules', () => {
+    const inputText = `Browser: Chrome,Firefox,Safari
+Status: enum("Open","Closed")
+Name: person.fullName`;
+
+    const parser = new RulesParser(faker, RandExp);
+    parser.parseText(inputText);
+
+    expect(parser.isValid()).toBe(true);
+    expect(parser.testDataRules.rules).toHaveLength(3);
+    expect(parser.testDataRules.rules[0]).toMatchObject({ name: 'Browser', ruleSpec: 'Chrome,Firefox,Safari' });
+    expect(parser.testDataRules.rules[1]).toMatchObject({ name: 'Status', ruleSpec: 'enum("Open","Closed")' });
+    expect(parser.testDataRules.rules[2]).toMatchObject({ name: 'Name', ruleSpec: 'person.fullName' });
+    expect(parser.getSchemaTokens().every((token) => token.kind !== 'rule' || token.inline === true)).toBe(true);
+  });
+
   test('flags an empty rule definition line', () => {
     const inputText = `Name
 `;
@@ -113,6 +129,17 @@ enum(active,inactive,pending)`;
     expect(output).toBe(inputText);
   });
 
+  test('preserves inline pict-style rules when rebuilding from parsed tokens', () => {
+    const inputText = `# compact
+Priority: enum(high,medium,low)
+Status: person.jobTitle`;
+
+    const parser = new RulesParser(faker, RandExp);
+    parser.parseText(inputText);
+
+    expect(parser.renderSpecFromRulesWithTokens(parser.testDataRules.rules)).toBe(inputText);
+  });
+
   test('preserves comments and blank lines when rebuilding from rule comments', () => {
     const inputText = `# one
 
@@ -165,6 +192,21 @@ enum(open,closed)`;
     expect(parser.testDataRules.rules[0].name).toBe('IF Condition');
     expect(parser.testDataRules.rules[0].ruleSpec).toBe('enum(yes,no)');
     expect(parser.testDataRules.constraints).toHaveLength(0);
+  });
+
+  test('does not treat non-rule colon lines as inline pict definitions', () => {
+    const inputText = `Environment: Browser
+enum(chrome,firefox)`;
+
+    const parser = new RulesParser(faker, RandExp);
+    parser.parseText(inputText);
+
+    expect(parser.isValid()).toBe(true);
+    expect(parser.testDataRules.rules).toHaveLength(1);
+    expect(parser.testDataRules.rules[0]).toMatchObject({
+      name: 'Environment: Browser',
+      ruleSpec: 'enum(chrome,firefox)',
+    });
   });
 
   test('does not treat ENDIF inside a parameter reference as the constraint terminator', () => {

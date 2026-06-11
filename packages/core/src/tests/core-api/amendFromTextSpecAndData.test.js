@@ -57,6 +57,24 @@ test('defaults rowCount to imported row count', () => {
   expect(result.diagnostics.importedRowCount).toBe(2);
 });
 
+test('supports pict-style inline schema definitions for amend flows', () => {
+  const result = amendFromTextSpecAndData({
+    textSpec: 'Status: literal(Active)\nRole: enum(Admin,User)',
+    inputData: '"Name"\n"Alice"\n"Eve"',
+    inputFormat: 'csv',
+    outputFormat: 'json',
+  });
+
+  expect(result.ok).toBe(true);
+  expect(result.headers).toEqual(['Name', 'Status', 'Role']);
+  expect(result.rows).toHaveLength(2);
+  result.rows.forEach((row) => {
+    expect(['Alice', 'Eve']).toContain(row[0]);
+    expect(row[1]).toBe('Active');
+    expect(['Admin', 'User']).toContain(row[2]);
+  });
+});
+
 test('amends only first N rows when rowCount is smaller', () => {
   const result = amendFromTextSpecAndData({
     textSpec: 'Name\nBob',

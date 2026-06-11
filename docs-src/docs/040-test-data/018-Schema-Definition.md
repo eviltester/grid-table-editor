@@ -16,7 +16,7 @@ This page explains:
 
 ## Basic schema format
 
-A schema is written as repeating two-line field definitions:
+A schema is usually written as repeating two-line field definitions:
 
 ```text
 Column Name
@@ -31,6 +31,14 @@ enum("Open","In Progress","Closed")
 ```
 
 This creates one output column called `Status`.
+
+You can also use a compact inline form when you prefer a PICT-style layout:
+
+```text
+Status: enum("Open","In Progress","Closed")
+```
+
+Both formats are supported, and you can mix them in the same schema.
 
 ## Field rule examples
 

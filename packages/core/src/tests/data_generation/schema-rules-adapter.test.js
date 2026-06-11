@@ -84,6 +84,30 @@ describe('schema rules adapter', () => {
     expect(rendered.text).toBe('t1\nliteral("")\nt2\nliteral(   123)');
   });
 
+  test('round-trips pict-style inline schema tokens', () => {
+    const schemaText = `Priority: enum(high,medium,low)
+Status: person.jobTitle`;
+
+    const parsed = schemaTextToDataRules({
+      schemaText,
+      faker,
+      RandExp,
+    });
+
+    expect(parsed.errors).toEqual([]);
+    expect(parsed.schemaTokens).toEqual([
+      expect.objectContaining({ kind: 'rule', inline: true }),
+      expect.objectContaining({ kind: 'rule', inline: true }),
+    ]);
+
+    const rendered = dataRulesToSchemaText({
+      dataRules: parsed.dataRules,
+      schemaTokens: parsed.schemaTokens,
+    });
+
+    expect(rendered.text).toBe(schemaText);
+  });
+
   test('prefers schema tokens when rendering so blank lines are preserved', () => {
     const rendered = dataRulesToSchemaText({
       dataRules: [

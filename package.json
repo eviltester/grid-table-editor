@@ -125,7 +125,7 @@
     "jest": "30.4.2",
     "jest-environment-jsdom": "30.4.1",
     "jest-extended": "7.0.0",
-    "jsdom": "26.1.0",
+    "jsdom": "29.1.1",
     "playwright": "1.60.0",
     "prettier": "3.8.3",
     "react": "18.2.0",

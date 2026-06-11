@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "packageManager": "pnpm@11.1.1",
+  "engines": {
+    "node": ">=24.9.0"
+  },
   "description": "A simple Data Table Editor that generates Markdown, CSV or JSON. It can also be used to interchange data between the formats, supporting editing in the grid.",
   "main": "apps/web/index.html",
   "workspaces": [
@@ -125,7 +128,7 @@
     "jest": "30.4.2",
     "jest-environment-jsdom": "30.4.1",
     "jest-extended": "7.0.0",
-    "jsdom": "26.1.0",
+    "jsdom": "29.1.1",
     "playwright": "1.60.0",
     "prettier": "3.8.3",
     "react": "18.2.0",

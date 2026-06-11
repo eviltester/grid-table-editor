@@ -29,10 +29,10 @@ jobs:
       - name: Set up Pages
         uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d
 
-      - name: Use Node.js 22.21.1
+      - name: Use Node.js 24.16.0
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
         with:
-          node-version: 22.21.1
+          node-version: 24.16.0
 
       - name: Set up pnpm
         shell: bash

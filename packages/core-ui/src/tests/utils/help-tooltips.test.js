@@ -139,8 +139,8 @@ describe('help tooltips module', () => {
     updateHelpHints();
 
     expect(root.querySelector('[data-role="inline-help-items"]')).not.toBeNull();
-    expect(dom.window.document.querySelector('#inline-help-items')).toBeNull();
     expect(getElementByIdSpy).not.toHaveBeenCalledWith('inline-help-items');
+    expect(dom.window.document.querySelector('#inline-help-items')).toBeNull();
   });
 
   test('option help icons get an option-specific accessible label', () => {

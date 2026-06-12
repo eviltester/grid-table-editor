@@ -709,6 +709,7 @@ Custom header styles for default items
 
 .data-grid-context-menu {
   position: fixed;
+  /* Keep this below the shared modal backdrops so confirm dialogs stay unobscured. */
   z-index: 2500;
   min-width: 14rem;
   max-width: min(22rem, calc(100vw - 1rem));
@@ -1189,6 +1190,7 @@ body.theme-dark .generator-status-text[data-severity='info'] {
   align-items: center;
   justify-content: center;
   background: rgba(10, 22, 16, 0.45);
+  /* Keep this above the grid context menu to avoid right-click action overlap bugs. */
   z-index: 3000;
 }
 

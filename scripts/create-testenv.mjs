@@ -495,13 +495,17 @@ const TESTENV_HIDE_HEADER_STYLE = `
       }
     </style>`;
 
-async function hideTopHeaderInBuiltPage(pagePath) {
-  const html = await readFile(pagePath, 'utf8');
+function applyTopHeaderHideToHtml(html) {
   if (html.includes('data-testenv-hide-header')) {
-    return;
+    return html;
   }
 
-  const nextHtml = html.replace('</head>', `${TESTENV_HIDE_HEADER_STYLE}\n  </head>`);
+  return html.replace('</head>', `${TESTENV_HIDE_HEADER_STYLE}\n  </head>`);
+}
+
+async function hideTopHeaderInBuiltPage(pagePath) {
+  const html = await readFile(pagePath, 'utf8');
+  const nextHtml = applyTopHeaderHideToHtml(html);
   await writeFile(pagePath, nextHtml, 'utf8');
 }
 
@@ -573,6 +577,7 @@ async function main() {
   await hideTopHeaderInBuiltPage(path.join(outputDir, 'app.html'));
   await hideTopHeaderInBuiltPage(path.join(outputDir, 'generator.html'));
   await hideTopHeaderInBuiltPage(path.join(outputDir, 'combinatorial.html'));
+  await hideTopHeaderInBuiltPage(path.join(outputDir, 'webmcp.html'));
 
   await mkdir(fullSiteDir, { recursive: true });
   await createTemporaryDocsAppPlaceholder();
@@ -595,9 +600,15 @@ async function main() {
   }
 
   await copyWebBuildIntoDirectory(tempWebDir, fullSiteDir);
-  await hideTopHeaderInBuiltPage(path.join(fullSiteDir, 'app.html'));
-  await hideTopHeaderInBuiltPage(path.join(fullSiteDir, 'generator.html'));
-  await hideTopHeaderInBuiltPage(path.join(fullSiteDir, 'combinatorial.html'));
+  await applySeoDirectivesToFile(path.join(fullSiteDir, 'app.html'), {
+    canonicalUrl: ROOT_PAGE_CANONICALS['app.html'],
+  });
+  await applySeoDirectivesToFile(path.join(fullSiteDir, 'generator.html'), {
+    canonicalUrl: ROOT_PAGE_CANONICALS['generator.html'],
+  });
+  await applySeoDirectivesToFile(path.join(fullSiteDir, 'combinatorial.html'), {
+    canonicalUrl: ROOT_PAGE_CANONICALS['combinatorial.html'],
+  });
   await rm(tempWebDir, {
     recursive: true,
     force: true,
@@ -624,6 +635,7 @@ export {
   TESTENV_CANONICAL_SITE_URL,
   TESTENV_ROBOTS_DIRECTIVES,
   applySeoDirectivesToHtml,
+  applyTopHeaderHideToHtml,
   createLlmsTxt,
   createSiteRobotsTxt,
   createTestenvRobotsTxt,

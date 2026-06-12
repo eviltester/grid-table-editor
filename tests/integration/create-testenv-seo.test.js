@@ -2,6 +2,7 @@ import {
   ROOT_CANONICAL_URL,
   TESTENV_CANONICAL_SITE_URL,
   applySeoDirectivesToHtml,
+  applyTopHeaderHideToHtml,
   createLlmsTxt,
   createSiteRobotsTxt,
   createTestenvRobotsTxt,
@@ -56,5 +57,21 @@ describe('create-testenv SEO helpers', () => {
     expect(html).toContain('border: 0;');
     expect(html).toContain('box-shadow: none;');
     expect(html).toContain('font: 700 6px/1.2 Arial, Helvetica, sans-serif;');
+  });
+
+  test('adds the testenv header-hiding style for top-level published app pages', () => {
+    const html = applyTopHeaderHideToHtml('<!doctype html><html><head><title>WebMCP</title></head><body><div class="header"></div></body></html>');
+
+    expect(html).toContain('data-testenv-hide-header');
+    expect(html).toContain('.header {');
+    expect(html).toContain('display: none !important;');
+  });
+
+  test('does not duplicate the top-level header-hiding style', () => {
+    const html = applyTopHeaderHideToHtml(
+      '<!doctype html><html><head><style data-testenv-hide-header>.header{display:none!important;}</style></head><body></body></html>',
+    );
+
+    expect(html.match(/data-testenv-hide-header/g)).toHaveLength(1);
   });
 });

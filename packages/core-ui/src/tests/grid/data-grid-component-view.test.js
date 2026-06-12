@@ -242,6 +242,60 @@ describe('DataGridComponent view', () => {
     component.destroy();
   });
 
+  test('closes the right-click context menu before opening delete confirmation flows', async () => {
+    const root = document.createElement('section');
+    document.body.appendChild(root);
+    let resolveConfirm;
+    const requestConfirm = jest.fn(
+      () =>
+        new Promise((resolve) => {
+          resolveConfirm = resolve;
+        })
+    );
+    const component = createDataGridComponent({
+      root,
+      documentObj: document,
+      services: {
+        TabulatorCtor: FakeTabulator,
+        GridExtensionClass: FakeGridExtension,
+        requestConfirm,
+      },
+    });
+
+    await component.whenReady();
+    component.getGridExtras().getNumberOfSelectedRows.mockReturnValue(1);
+
+    const gridRoot = root.querySelector('[data-role="data-grid-root"]');
+    gridRoot.dispatchEvent(
+      new dom.window.MouseEvent('contextmenu', {
+        bubbles: true,
+        cancelable: true,
+        clientX: 32,
+        clientY: 48,
+      })
+    );
+
+    const menuRoot = root.querySelector('[data-role="data-grid-context-menu"]');
+    expect(menuRoot.hidden).toBe(false);
+
+    menuRoot.querySelector('[data-context-action="delete-selected-rows"]').click();
+
+    expect(menuRoot.hidden).toBe(true);
+    expect(menuRoot.childElementCount).toBe(0);
+    expect(requestConfirm).toHaveBeenCalledWith({
+      title: 'Delete Rows',
+      message: 'Are you Sure You Want to Delete Rows?',
+    });
+    expect(component.getGridExtras().deleteSelectedRows).not.toHaveBeenCalled();
+
+    resolveConfirm(true);
+    await Promise.resolve();
+
+    expect(component.getGridExtras().deleteSelectedRows).toHaveBeenCalledTimes(1);
+
+    component.destroy();
+  });
+
   test('prefers the root owner window Tabulator when no service override is supplied', async () => {
     const originalTabulator = globalThis.Tabulator;
     const root = document.createElement('section');

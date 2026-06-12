@@ -1189,7 +1189,7 @@ body.theme-dark .generator-status-text[data-severity='info'] {
   align-items: center;
   justify-content: center;
   background: rgba(10, 22, 16, 0.45);
-  z-index: 2000;
+  z-index: 3000;
 }
 
 .text-input-modal {

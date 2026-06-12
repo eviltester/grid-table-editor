@@ -66,6 +66,26 @@ When accepted, the generated enum schema replaces the existing schema definition
 
 If the grid is empty, or no usable values can be extracted, then the existing schema is left unchanged.
 
+Example source grid:
+
+```text
+Browser,Device,Theme
+Chrome,Desktop,Light
+Firefox,Mobile,Dark
+Chrome,Tablet,Dark
+```
+
+Example generated enum schema:
+
+```text
+Browser
+enum("Chrome","Firefox")
+Device
+enum("Desktop","Mobile","Tablet")
+Theme
+enum("Light","Dark")
+```
+
 ## Generate Modes in the Grid
 
 When generating in `app.html`, you can choose whether generation replaces data or amends existing rows:
@@ -75,6 +95,20 @@ When generating in `app.html`, you can choose whether generation replaces data o
 - `Amend Selected` applies generation only to selected rows in the main grid
 
 These modes are useful when you want to iteratively enrich existing data instead of always starting from a blank table.
+
+## Main grid context menu
+
+The main editable grid also supports a right-click context menu for common grid actions.
+
+Use it when you want to work directly in the grid without moving to another toolbar control first.
+
+Typical uses include:
+
+- adding or deleting rows
+- adding or deleting columns
+- grid-focused edit actions close to the current selection
+
+This makes the editable grid feel more like a spreadsheet-style workspace during cleanup and refinement.
 
 ## Pairwise generation
 
@@ -129,6 +163,24 @@ You can rename the column by double clicking on the `Column Name` field.
 The Type is the `type` of data that will be generated in the column. This can be a `Literal` (static text), a `RegEx` (Regular Expression), an `Enum` (comma-separated values), or one of the predefined random data types from Faker.
 
 When you have 2 or more `Enum` type columns, the `Generate Pairwise` button will appear, allowing you to generate optimal combinatorial test data with complete pairwise coverage.
+
+## Row count summary
+
+The main data grid shows an always-visible total row count beneath the grid.
+
+When filters are active, the summary also shows the filtered visible count.
+
+Examples:
+
+```text
+Total rows: 125
+```
+
+```text
+Total rows: 125 | Filtered Visible: 12
+```
+
+This makes it easier to confirm the effect of import, filtering, amend operations, and generated data volumes at a glance.
 
 ## Types
 

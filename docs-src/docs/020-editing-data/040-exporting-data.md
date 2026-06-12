@@ -15,6 +15,24 @@ When a tab has been selected the download button will change to match the format
 
 Pressing the download button will start a conversion of the data in the grid to the specific format.
 
+### File transport settings
+
+Downloads also support file-only transport settings:
+
+- line endings: `LF` or `Windows (CR/LF)`
+- optional UTF-8 `BOM`
+
+These settings are useful when:
+
+- a Windows tool expects `CR/LF`
+- a spreadsheet or editor works better with BOM-prefixed UTF-8 files
+- you want the downloaded file to match the target toolchain without changing the on-screen preview text
+
+Example:
+
+- preview text can stay normal `LF` text in the browser
+- downloaded `.csv` can use `CR/LF` plus `Include BOM`
+
 ## Exporting to Clipboard
 
 To export to clipboard either:

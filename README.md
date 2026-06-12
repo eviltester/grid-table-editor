@@ -88,7 +88,7 @@ The spec is a paragraph of text where each line is either a 'name' or a 'rule':
 
 - **Comments**: lines starting with `#` (optionally prefixed by whitespace) are treated as comments.
 - **Blank lines**: blank lines are allowed and ignored, so you can separate column groups for readability.
-- **Column definitions**: each column is defined as `name` followed by `rule` on the next logical content line.
+- **Column definitions**: each column can be defined either as `name` followed by `rule` on the next logical content line, or inline as `name: rule`.
 - **Constraints**: optional `IF ... THEN ...` statements may appear in text mode after the field definitions, terminated by either `;` or `ENDIF`.
 
 ```
@@ -100,6 +100,9 @@ rule
 # another comment
 name
 rule
+
+# compact pict-style alternative
+status: enum(active,inactive)
 
 IF [name] = "Bob" THEN [status] = "active" ENDIF
 ```

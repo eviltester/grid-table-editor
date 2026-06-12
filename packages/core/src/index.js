@@ -78,14 +78,73 @@ const SUPPORTED_FORMATS = [
   'asciitable',
 ];
 
+function looksLikeInlineSchemaRule(ruleText) {
+  const trimmed = String(ruleText ?? '').trim();
+  if (trimmed.length === 0 || /^IF\s+(?:\[|\(|NOT\b)/i.test(trimmed)) {
+    return false;
+  }
+
+  if (
+    /^(?:enum|literal|regex|datatype\.(?:enum|literal|regex)|awd\.datatype\.(?:enum|literal|regex))\s*\(/i.test(trimmed)
+  ) {
+    return true;
+  }
+
+  if (/^(?:faker\.)?[A-Za-z][A-Za-z0-9_]*(?:\.[A-Za-z][A-Za-z0-9_]*)+(?:\s*\(.*\)\s*|\s*)$/i.test(trimmed)) {
+    return true;
+  }
+
+  if (!trimmed.includes(',')) {
+    return false;
+  }
+
+  const values = trimmed.split(',').map((value) => value.trim());
+  if (values.length < 2 || values.some((value) => value.length === 0 || value.length > 50)) {
+    return false;
+  }
+
+  return !values.some((value) => /[[\]{}()^$*+?|\\]/.test(value) || (value.includes('.') && /[A-Z]/.test(value)));
+}
+
 function extractRuleLines(textSpec) {
   if (typeof textSpec !== 'string') {
     return [];
   }
   const lines = textSpec.split(/\r?\n/);
   const ruleLines = [];
-  for (let i = 1; i < lines.length; i += 2) {
-    ruleLines.push(lines[i].trim());
+  let pendingName = null;
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (trimmed.length === 0 || /^\s*#/.test(line) || /^IF\s+(?:\[|\(|NOT\b)/i.test(trimmed)) {
+      pendingName = null;
+      continue;
+    }
+
+    let matchedInlineRule = false;
+    for (let separatorIndex = 0; separatorIndex < line.length; separatorIndex += 1) {
+      if (line[separatorIndex] !== ':') {
+        continue;
+      }
+      const rule = line.slice(separatorIndex + 1).trim();
+      if (looksLikeInlineSchemaRule(rule)) {
+        ruleLines.push(rule);
+        pendingName = null;
+        matchedInlineRule = true;
+        break;
+      }
+    }
+
+    if (matchedInlineRule) {
+      continue;
+    }
+
+    if (pendingName === null) {
+      pendingName = trimmed;
+      continue;
+    }
+
+    ruleLines.push(trimmed);
+    pendingName = null;
   }
   return ruleLines;
 }

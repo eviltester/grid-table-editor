@@ -40,6 +40,24 @@ test('generateFromTextSpec generates rows for valid spec', () => {
   assertNoCommonErrorPatternsInRows(result.rows);
 });
 
+test('generateFromTextSpec supports pict-style inline schema definitions', () => {
+  const result = generateFromTextSpec({
+    textSpec: 'Browser: Chrome,Firefox,Safari\nStatus: enum("Open","Closed")\nName: person.fullName',
+    rowCount: 3,
+    outputFormat: 'json',
+  });
+
+  expect(result.ok).toBe(true);
+  expect(result.headers).toEqual(['Browser', 'Status', 'Name']);
+  expect(result.rows).toHaveLength(3);
+  result.rows.forEach((row) => {
+    expect(['Chrome', 'Firefox', 'Safari']).toContain(row[0]);
+    expect(['Open', 'Closed']).toContain(row[1]);
+    expect(String(row[2]).length).toBeGreaterThan(0);
+  });
+  assertNoCommonErrorPatternsInRows(result.rows);
+});
+
 test('generateFromTextSpec serializes object return values as JSON strings', () => {
   const result = generateFromTextSpec({
     textSpec: 'Currency\nfinance.currency',
@@ -252,6 +270,11 @@ test('validateSafeFakerRules rejects unknown faker commands in safe mode', () =>
 
 test('validateSafeFakerRules accepts known faker commands with literal args', () => {
   const result = validateSafeFakerRules('Name\nperson.firstName("female")');
+  expect(result.ok).toBe(true);
+});
+
+test('validateSafeFakerRules accepts pict-style inline faker commands', () => {
+  const result = validateSafeFakerRules('Name: person.firstName("female")\nStatus: enum(active,inactive)');
   expect(result.ok).toBe(true);
 });
 

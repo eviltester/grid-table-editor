@@ -604,6 +604,9 @@ async function main() {
   await applySeoDirectivesToFile(path.join(fullSiteDir, 'combinatorial.html'), {
     canonicalUrl: ROOT_PAGE_CANONICALS['combinatorial.html'],
   });
+  await applySeoDirectivesToFile(path.join(fullSiteDir, 'webmcp.html'), {
+    canonicalUrl: ROOT_PAGE_CANONICALS['webmcp.html'],
+  });
   await rm(tempWebDir, {
     recursive: true,
     force: true,

@@ -140,6 +140,20 @@ Status: person.jobTitle`;
     expect(parser.renderSpecFromRulesWithTokens(parser.testDataRules.rules)).toBe(inputText);
   });
 
+  test('preserves authored inline separator spacing when rebuilding from parsed tokens', () => {
+    const inputText = `Name:person.fullName
+Role:   enum(admin,user)`;
+
+    const parser = new RulesParser(faker, RandExp);
+    parser.parseText(inputText);
+
+    expect(parser.getSchemaTokens()).toEqual([
+      expect.objectContaining({ kind: 'rule', separator: ':' }),
+      expect.objectContaining({ kind: 'rule', separator: ':   ' }),
+    ]);
+    expect(parser.renderSpecFromRulesWithTokens(parser.testDataRules.rules)).toBe(inputText);
+  });
+
   test('preserves comments and blank lines when rebuilding from rule comments', () => {
     const inputText = `# one
 

@@ -11,6 +11,7 @@ import {
   CombinationAlgorithm,
   CombinationsTestDataGenerator,
 } from '../js/data_generation/n-wise/combinationsTestDataGenerator.js';
+import { looksLikeInlineRuleSpec, startsConstraint } from '../js/data_generation/inline-schema-rule.js';
 import { parseSchemaText } from '../js/data_generation/schema-conversion.js';
 import { hasSafeFakerLiteralArguments } from '../js/data_generation/faker/safeLiteralArgumentParser.js';
 import {
@@ -78,34 +79,6 @@ const SUPPORTED_FORMATS = [
   'asciitable',
 ];
 
-function looksLikeInlineSchemaRule(ruleText) {
-  const trimmed = String(ruleText ?? '').trim();
-  if (trimmed.length === 0 || /^IF\s+(?:\[|\(|NOT\b)/i.test(trimmed)) {
-    return false;
-  }
-
-  if (
-    /^(?:enum|literal|regex|datatype\.(?:enum|literal|regex)|awd\.datatype\.(?:enum|literal|regex))\s*\(/i.test(trimmed)
-  ) {
-    return true;
-  }
-
-  if (/^(?:faker\.)?[A-Za-z][A-Za-z0-9_]*(?:\.[A-Za-z][A-Za-z0-9_]*)+(?:\s*\(.*\)\s*|\s*)$/i.test(trimmed)) {
-    return true;
-  }
-
-  if (!trimmed.includes(',')) {
-    return false;
-  }
-
-  const values = trimmed.split(',').map((value) => value.trim());
-  if (values.length < 2 || values.some((value) => value.length === 0 || value.length > 50)) {
-    return false;
-  }
-
-  return !values.some((value) => /[[\]{}()^$*+?|\\]/.test(value) || (value.includes('.') && /[A-Z]/.test(value)));
-}
-
 function extractRuleLines(textSpec) {
   if (typeof textSpec !== 'string') {
     return [];
@@ -115,7 +88,7 @@ function extractRuleLines(textSpec) {
   let pendingName = null;
   for (const line of lines) {
     const trimmed = line.trim();
-    if (trimmed.length === 0 || /^\s*#/.test(line) || /^IF\s+(?:\[|\(|NOT\b)/i.test(trimmed)) {
+    if (trimmed.length === 0 || /^\s*#/.test(line) || startsConstraint(trimmed)) {
       pendingName = null;
       continue;
     }
@@ -126,7 +99,7 @@ function extractRuleLines(textSpec) {
         continue;
       }
       const rule = line.slice(separatorIndex + 1).trim();
-      if (looksLikeInlineSchemaRule(rule)) {
+      if (looksLikeInlineRuleSpec(rule)) {
         ruleLines.push(rule);
         pendingName = null;
         matchedInlineRule = true;

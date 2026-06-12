@@ -31,6 +31,7 @@ describe('create-testenv SEO helpers', () => {
 
     expect(llmsTxt).toContain('non-production review and test deployment');
     expect(llmsTxt).toContain(ROOT_CANONICAL_URL);
+    expect(llmsTxt).toContain(`${TESTENV_CANONICAL_SITE_URL}/webmcp.html`);
     expect(llmsTxt).toContain(`${TESTENV_CANONICAL_SITE_URL}/docs/`);
   });
 
@@ -107,6 +108,16 @@ describe('create-testenv SEO helpers', () => {
     expect(html).toContain('data-testenv-hide-header');
     expect(html).toContain('.header {');
     expect(html).toContain('display: none !important;');
+  });
+
+  test('SEO rewrite can target webmcp.html with canonical and test environment marker', () => {
+    const html = applySeoDirectivesToHtml('<!doctype html><html><head><title>WebMCP</title></head><body></body></html>', {
+      canonicalUrl: `${TESTENV_CANONICAL_SITE_URL}/webmcp.html`,
+    });
+
+    expect(html).toContain('data-testenv-indicator');
+    expect(html).toContain('<meta name="robots" content="noindex,nofollow,noarchive,nosnippet" />');
+    expect(html).toContain('<link rel="canonical" href="https://anywaydata.com/webmcp.html" />');
   });
 
   test('updates the existing top-level header-hiding style without duplicating it', () => {

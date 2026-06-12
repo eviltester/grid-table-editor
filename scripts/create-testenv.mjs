@@ -25,6 +25,7 @@ const ROOT_PAGE_CANONICALS = {
   'app.html': `${TESTENV_CANONICAL_SITE_URL}/app.html`,
   'generator.html': `${TESTENV_CANONICAL_SITE_URL}/generator.html`,
   'combinatorial.html': `${TESTENV_CANONICAL_SITE_URL}/combinatorial.html`,
+  'webmcp.html': `${TESTENV_CANONICAL_SITE_URL}/webmcp.html`,
 };
 const TESTENV_INDICATOR_STYLE = `<style data-testenv-indicator>
       body::before {
@@ -272,6 +273,7 @@ Primary production URLs:
 - ${TESTENV_CANONICAL_SITE_URL}/app.html
 - ${TESTENV_CANONICAL_SITE_URL}/generator.html
 - ${TESTENV_CANONICAL_SITE_URL}/combinatorial.html
+- ${TESTENV_CANONICAL_SITE_URL}/webmcp.html
 - ${TESTENV_CANONICAL_SITE_URL}/docs/
 `;
 }

@@ -442,18 +442,43 @@ jobs:
             docker rm -f web-ci >/dev/null 2>&1 || true
           }
           trap cleanup EXIT
+          web_curl() {
+            for attempt in {1..5}; do
+              if curl -fsS "$@"; then
+                return 0
+              fi
+              sleep 1
+            done
+            echo "Web smoke request failed after retries: curl $*"
+            docker ps -a --filter "name=web-ci" || true
+            docker logs web-ci || true
+            exit 1
+          }
 
           docker build -f apps/web/Dockerfile -t anywaydata-web-ci .
           docker run -d --rm --name web-ci -p 18080:80 anywaydata-web-ci
 
+          ready=0
           for i in {1..20}; do
+            if ! docker ps --format '{{.Names}}' | grep -q '^web-ci$'; then
+              echo "Web container exited before readiness check completed"
+              docker ps -a --filter "name=web-ci" || true
+              docker logs web-ci || true
+              exit 1
+            fi
             if curl -fsS http://127.0.0.1:18080/app.html >/dev/null; then
+              ready=1
               break
             fi
             sleep 1
           done
-          curl -fsS http://127.0.0.1:18080/app.html | grep -q "AnyWayData"
-          curl -fsS http://127.0.0.1:18080/generator.html | grep -q "AnyWayData"
+          if [ "$ready" -ne 1 ]; then
+            docker logs web-ci || true
+            echo "Web container did not become ready within timeout"
+            exit 1
+          fi
+          web_curl http://127.0.0.1:18080/app.html | grep -q "AnyWayData"
+          web_curl http://127.0.0.1:18080/generator.html | grep -q "AnyWayData"
           echo "Web docker smoke test passed"
 
       - name: Docker smoke test (AnyWayData full site)
@@ -464,16 +489,41 @@ jobs:
             docker rm -f site-ci >/dev/null 2>&1 || true
           }
           trap cleanup EXIT
+          site_curl() {
+            for attempt in {1..5}; do
+              if curl -fsS "$@"; then
+                return 0
+              fi
+              sleep 1
+            done
+            echo "AnyWayData full-site smoke request failed after retries: curl $*"
+            docker ps -a --filter "name=site-ci" || true
+            docker logs site-ci || true
+            exit 1
+          }
 
           docker build -f apps/anywaydata/Dockerfile -t anywaydata-site-ci .
           docker run -d --rm --name site-ci -p 18081:8080 anywaydata-site-ci
 
+          ready=0
           for i in {1..20}; do
+            if ! docker ps --format '{{.Names}}' | grep -q '^site-ci$'; then
+              echo "AnyWayData full-site container exited before readiness check completed"
+              docker ps -a --filter "name=site-ci" || true
+              docker logs site-ci || true
+              exit 1
+            fi
             if curl -fsS http://127.0.0.1:18081/ >/dev/null; then
+              ready=1
               break
             fi
             sleep 1
           done
-          curl -fsS http://127.0.0.1:18081/ | grep -q "AnyWayData"
-          curl -fsS http://127.0.0.1:18081/app.html | grep -q "AnyWayData"
+          if [ "$ready" -ne 1 ]; then
+            docker logs site-ci || true
+            echo "AnyWayData full-site container did not become ready within timeout"
+            exit 1
+          fi
+          site_curl http://127.0.0.1:18081/ | grep -q "AnyWayData"
+          site_curl http://127.0.0.1:18081/app.html | grep -q "AnyWayData"
           echo "AnyWayData full-site docker smoke test passed"

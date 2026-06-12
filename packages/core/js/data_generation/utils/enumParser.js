@@ -88,9 +88,7 @@ export class EnumParser {
         inQuotes = !inQuotes;
       } else if (char === ',' && !inQuotes) {
         // Found separator outside quotes
-        if (currentValue.trim().length > 0) {
-          values.push(currentValue.trim());
-        }
+        values.push(currentValue.trim());
         currentValue = '';
       } else {
         // Add character to current value
@@ -100,11 +98,9 @@ export class EnumParser {
     }
 
     // Add final value
-    if (currentValue.trim().length > 0) {
-      values.push(currentValue.trim());
-    }
+    values.push(currentValue.trim());
 
-    if (values.length === 0) {
+    if (values.length === 0 || values.every((value) => value.length === 0)) {
       throw new Error('No valid values found in enum');
     }
 

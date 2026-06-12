@@ -496,11 +496,7 @@ const TESTENV_HIDE_HEADER_STYLE = `
     </style>`;
 
 function applyTopHeaderHideToHtml(html) {
-  if (html.includes('data-testenv-hide-header')) {
-    return html;
-  }
-
-  return html.replace('</head>', `${TESTENV_HIDE_HEADER_STYLE}\n  </head>`);
+  return upsertHeadStyle(html, 'data-testenv-hide-header', TESTENV_HIDE_HEADER_STYLE);
 }
 
 async function hideTopHeaderInBuiltPage(pagePath) {

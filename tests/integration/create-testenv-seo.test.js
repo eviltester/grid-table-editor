@@ -67,11 +67,13 @@ describe('create-testenv SEO helpers', () => {
     expect(html).toContain('display: none !important;');
   });
 
-  test('does not duplicate the top-level header-hiding style', () => {
+  test('updates the existing top-level header-hiding style without duplicating it', () => {
     const html = applyTopHeaderHideToHtml(
-      '<!doctype html><html><head><style data-testenv-hide-header>.header{display:none!important;}</style></head><body></body></html>',
+      '<!doctype html><html><head><style data-testenv-hide-header>.header{display:block!important;}</style></head><body></body></html>',
     );
 
     expect(html.match(/data-testenv-hide-header/g)).toHaveLength(1);
+    expect(html).toContain('display: none !important;');
+    expect(html).not.toContain('display:block!important;');
   });
 });

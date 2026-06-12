@@ -18,6 +18,7 @@ describe('TestDataRulesCompiler with Enum Support', () => {
 
     test('detects awd enum formats', () => {
       expect(compiler.isEnumPattern('enum("A", "B")')).toBe(true);
+      expect(compiler.isEnumPattern('enum("A")')).toBe(true);
       expect(compiler.isEnumPattern('datatype.enum("Red", "Blue")')).toBe(true);
       expect(compiler.isEnumPattern('awd.datatype.enum("Small", "Large")')).toBe(true);
     });
@@ -47,6 +48,15 @@ describe('TestDataRulesCompiler with Enum Support', () => {
 
     test('compiles awd enum format correctly', () => {
       const rules = [new TestDataRule('Priority', 'datatype.enum("High", "Medium", "Low")')];
+
+      compiler.compile(rules);
+
+      expect(rules[0].type).toBe('enum');
+      expect(compiler.isValid()).toBe(true);
+    });
+
+    test('compiles explicit single-value enum correctly', () => {
+      const rules = [new TestDataRule('Status', 'enum("Open")')];
 
       compiler.compile(rules);
 

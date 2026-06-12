@@ -48,6 +48,28 @@ describe('EnumTestDataRuleValidator', () => {
       expect(validator.isValid()).toBe(true);
     });
 
+    test('accepts explicit enum syntax with one value', () => {
+      const rule = new TestDataRule('Single', 'enum("OnlyOne")');
+      rule.type = 'enum';
+
+      const validator = new EnumTestDataRuleValidator();
+      const isValid = validator.validate(rule);
+
+      expect(isValid).toBe(true);
+      expect(validator.isValid()).toBe(true);
+    });
+
+    test('accepts explicit enum syntax with one unquoted numeric value', () => {
+      const rule = new TestDataRule('Single', 'enum(10)');
+      rule.type = 'enum';
+
+      const validator = new EnumTestDataRuleValidator();
+      const isValid = validator.validate(rule);
+
+      expect(isValid).toBe(true);
+      expect(validator.isValid()).toBe(true);
+    });
+
     test('rejects enum with only one value', () => {
       const rule = new TestDataRule('Single', 'OnlyOne');
       rule.type = 'enum';
@@ -80,6 +102,28 @@ describe('EnumTestDataRuleValidator', () => {
       expect(isValid).toBe(false);
       expect(validator.getValidationError()).toContain('Invalid enum format');
     });
+
+    test('rejects explicit enum with trailing empty argument', () => {
+      const rule = new TestDataRule('Bad', 'enum("OnlyOne",)');
+      rule.type = 'enum';
+
+      const validator = new EnumTestDataRuleValidator();
+      const isValid = validator.validate(rule);
+
+      expect(isValid).toBe(false);
+      expect(validator.getValidationError()).toContain('cannot be empty');
+    });
+
+    test('rejects explicit enum with empty argument between values', () => {
+      const rule = new TestDataRule('Bad', 'enum("One",,"Two")');
+      rule.type = 'enum';
+
+      const validator = new EnumTestDataRuleValidator();
+      const isValid = validator.validate(rule);
+
+      expect(isValid).toBe(false);
+      expect(validator.getValidationError()).toContain('cannot be empty');
+    });
   });
 
   describe('extractAwdEnumValues', () => {
@@ -105,6 +149,30 @@ describe('EnumTestDataRuleValidator', () => {
       const values = EnumParser.extractAwdEnumValues('enum(basic,"with space",advanced)');
 
       expect(values).toEqual(['basic', 'with space', 'advanced']);
+    });
+
+    test('extracts a single explicit enum value', () => {
+      const values = EnumParser.extractAwdEnumValues('enum("Open")');
+
+      expect(values).toEqual(['Open']);
+    });
+
+    test('extracts a single explicit unquoted numeric enum value', () => {
+      const values = EnumParser.extractAwdEnumValues('enum(10)');
+
+      expect(values).toEqual(['10']);
+    });
+
+    test('preserves trailing empty explicit enum arguments for validation', () => {
+      const values = EnumParser.extractAwdEnumValues('enum("Open",)');
+
+      expect(values).toEqual(['Open', '']);
+    });
+
+    test('preserves empty explicit enum arguments between commas for validation', () => {
+      const values = EnumParser.extractAwdEnumValues('enum("Open",,"Closed")');
+
+      expect(values).toEqual(['Open', '', 'Closed']);
     });
 
     test('extracts shorthand enum values without parentheses', () => {

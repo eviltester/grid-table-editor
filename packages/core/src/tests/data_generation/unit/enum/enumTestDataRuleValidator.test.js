@@ -59,6 +59,17 @@ describe('EnumTestDataRuleValidator', () => {
       expect(validator.isValid()).toBe(true);
     });
 
+    test('accepts explicit enum syntax with one unquoted numeric value', () => {
+      const rule = new TestDataRule('Single', 'enum(10)');
+      rule.type = 'enum';
+
+      const validator = new EnumTestDataRuleValidator();
+      const isValid = validator.validate(rule);
+
+      expect(isValid).toBe(true);
+      expect(validator.isValid()).toBe(true);
+    });
+
     test('rejects enum with only one value', () => {
       const rule = new TestDataRule('Single', 'OnlyOne');
       rule.type = 'enum';
@@ -144,6 +155,12 @@ describe('EnumTestDataRuleValidator', () => {
       const values = EnumParser.extractAwdEnumValues('enum("Open")');
 
       expect(values).toEqual(['Open']);
+    });
+
+    test('extracts a single explicit unquoted numeric enum value', () => {
+      const values = EnumParser.extractAwdEnumValues('enum(10)');
+
+      expect(values).toEqual(['10']);
     });
 
     test('preserves trailing empty explicit enum arguments for validation', () => {

@@ -16,8 +16,7 @@ export class EnumTestDataRuleValidator {
 
       // Explicit enum(...) syntax supports a single value, while implicit CSV enums still need at least two.
       if (enumValues.length < minimumValues) {
-        this.validationError =
-          minimumValues === 1 ? 'Enum must have at least 1 value' : 'Enum must have at least 2 values';
+        this.validationError = `Enum must have at least ${minimumValues} value${minimumValues === 1 ? '' : 's'}`;
         return false;
       }
 

@@ -1,5 +1,11 @@
 # @anywaydata/core
 
+## 1.4.0
+
+### Minor Changes
+
+- n-wise generation and ui tidy
+
 ## 1.3.0
 
 ### Minor Changes

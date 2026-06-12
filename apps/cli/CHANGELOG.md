@@ -1,5 +1,16 @@
 # @anywaydata/cli
 
+## 0.4.0
+
+### Minor Changes
+
+- n-wise generation and ui tidy
+
+### Patch Changes
+
+- Updated dependencies
+  - @anywaydata/core@1.4.0
+
 ## 0.3.0
 
 ### Minor Changes

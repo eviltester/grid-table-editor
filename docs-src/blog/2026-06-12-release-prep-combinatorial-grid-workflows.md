@@ -198,7 +198,7 @@ Docs:
 
 - [Data Grid Editable](/docs/test-data/data-grid-editable)
 
-## Why this release matters
+## Why should you care?
 
 Taken together, these features make the tool better at moving through the whole workflow:
 
@@ -208,4 +208,4 @@ Taken together, these features make the tool better at moving through the whole 
 4. generate the right amount of combinatorial coverage
 5. export in the format and file encoding you actually need
 
-The release is not just about adding more generation power. It also reduces setup time and cleanup time around that generation.
+The release adds more generation power, reduces setup time, and cleanup time around that generation.

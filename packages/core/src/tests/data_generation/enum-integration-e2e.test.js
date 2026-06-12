@@ -40,6 +40,25 @@ datatype.enum("High", "Medium", "Low")`;
       });
     });
 
+    test('single-value explicit enum stays typed as enum and generates that value', () => {
+      const schemaText = `Status
+enum("Open")`;
+
+      const result = generateFromTextSpec({
+        textSpec: schemaText,
+        rowCount: 5,
+        outputFormat: 'json',
+      });
+
+      expect(result.ok).toBe(true);
+      expect(result.headers).toEqual(['Status']);
+      expect(result.rows).toHaveLength(5);
+
+      result.rows.forEach((row) => {
+        expect(row[0]).toBe('Open');
+      });
+    });
+
     test('mixed schema with enum, faker, and regex works', () => {
       const schemaText = `Name
 person.firstName

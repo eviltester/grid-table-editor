@@ -61,7 +61,7 @@ describe('create-testenv SEO helpers', () => {
     expect(html).toContain('font: 700 6px/1.2 Arial, Helvetica, sans-serif;');
   });
 
-  test('site page SEO rewrite preserves the visible navbar while adding the test environment indicator', () => {
+  test('SEO rewrite keeps existing headers intact while adding the test environment indicator', () => {
     const sourceHtml = `
       <!doctype html>
       <html>

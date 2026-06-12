@@ -503,6 +503,11 @@ function hideTopHeaderInBuiltHtml(html) {
 async function hideTopHeaderInBuiltPage(pagePath) {
   const html = await readFile(pagePath, 'utf8');
   const nextHtml = hideTopHeaderInBuiltHtml(html);
+
+  if (nextHtml === html) {
+    return;
+  }
+
   await writeFile(pagePath, nextHtml, 'utf8');
 }
 

@@ -25,6 +25,7 @@ const ROOT_PAGE_CANONICALS = {
   'app.html': `${TESTENV_CANONICAL_SITE_URL}/app.html`,
   'generator.html': `${TESTENV_CANONICAL_SITE_URL}/generator.html`,
   'combinatorial.html': `${TESTENV_CANONICAL_SITE_URL}/combinatorial.html`,
+  'webmcp.html': `${TESTENV_CANONICAL_SITE_URL}/webmcp.html`,
 };
 const TESTENV_INDICATOR_STYLE = `<style data-testenv-indicator>
       body::before {
@@ -272,6 +273,7 @@ Primary production URLs:
 - ${TESTENV_CANONICAL_SITE_URL}/app.html
 - ${TESTENV_CANONICAL_SITE_URL}/generator.html
 - ${TESTENV_CANONICAL_SITE_URL}/combinatorial.html
+- ${TESTENV_CANONICAL_SITE_URL}/webmcp.html
 - ${TESTENV_CANONICAL_SITE_URL}/docs/
 `;
 }
@@ -493,11 +495,11 @@ const TESTENV_HIDE_HEADER_STYLE = `
     </style>`;
 
 function hideTopHeaderInBuiltHtml(html) {
-  if (html.includes('data-testenv-hide-header')) {
-    return html;
-  }
+  return upsertHeadStyle(html, 'data-testenv-hide-header', TESTENV_HIDE_HEADER_STYLE);
+}
 
-  return html.replace('</head>', `${TESTENV_HIDE_HEADER_STYLE}\n  </head>`);
+function applyTopHeaderHideToHtml(html) {
+  return hideTopHeaderInBuiltHtml(html);
 }
 
 async function hideTopHeaderInBuiltPage(pagePath) {
@@ -507,7 +509,6 @@ async function hideTopHeaderInBuiltPage(pagePath) {
   if (nextHtml === html) {
     return;
   }
-
   await writeFile(pagePath, nextHtml, 'utf8');
 }
 
@@ -575,6 +576,7 @@ async function main() {
   await hideTopHeaderInBuiltPage(path.join(outputDir, 'app.html'));
   await hideTopHeaderInBuiltPage(path.join(outputDir, 'generator.html'));
   await hideTopHeaderInBuiltPage(path.join(outputDir, 'combinatorial.html'));
+  await hideTopHeaderInBuiltPage(path.join(outputDir, 'webmcp.html'));
 
   await mkdir(fullSiteDir, { recursive: true });
   await createTemporaryDocsAppPlaceholder();
@@ -593,6 +595,18 @@ async function main() {
   }
 
   await copyWebBuildIntoDirectory(tempWebDir, fullSiteDir);
+  await applySeoDirectivesToFile(path.join(fullSiteDir, 'app.html'), {
+    canonicalUrl: ROOT_PAGE_CANONICALS['app.html'],
+  });
+  await applySeoDirectivesToFile(path.join(fullSiteDir, 'generator.html'), {
+    canonicalUrl: ROOT_PAGE_CANONICALS['generator.html'],
+  });
+  await applySeoDirectivesToFile(path.join(fullSiteDir, 'combinatorial.html'), {
+    canonicalUrl: ROOT_PAGE_CANONICALS['combinatorial.html'],
+  });
+  await applySeoDirectivesToFile(path.join(fullSiteDir, 'webmcp.html'), {
+    canonicalUrl: ROOT_PAGE_CANONICALS['webmcp.html'],
+  });
   await rm(tempWebDir, {
     recursive: true,
     force: true,
@@ -619,6 +633,7 @@ export {
   TESTENV_CANONICAL_SITE_URL,
   TESTENV_ROBOTS_DIRECTIVES,
   applySeoDirectivesToHtml,
+  applyTopHeaderHideToHtml,
   createLlmsTxt,
   createSiteRobotsTxt,
   createTestenvRobotsTxt,

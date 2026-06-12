@@ -404,6 +404,8 @@ class DataGridComponentView {
       return;
     }
 
+    this.closeContextMenu();
+
     if (action === 'add-row') {
       this.controller.addRow();
     } else if (action === 'add-rows-above') {
@@ -431,8 +433,6 @@ class DataGridComponentView {
     } else if (action === 'auto-fit-columns') {
       this.controller.sizeColumnsToFit();
     }
-
-    this.closeContextMenu();
   }
 
   onRootChange(event) {

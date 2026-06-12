@@ -38,6 +38,13 @@ You can also use a compact inline form when you prefer a PICT-style layout:
 Status: enum("Open","In Progress","Closed")
 ```
 
+For enum-heavy schemas, a shorter `name: values` form is also supported:
+
+```text
+Browser: Chrome,Firefox,Safari
+Theme: Light,Dark
+```
+
 Both formats are supported, and you can mix them in the same schema.
 
 ## Field rule examples

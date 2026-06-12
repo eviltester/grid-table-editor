@@ -1,6 +1,6 @@
 {
   "name": "@anywaydata/core",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "type": "module",
   "private": false,
   "main": "./src/index.js",

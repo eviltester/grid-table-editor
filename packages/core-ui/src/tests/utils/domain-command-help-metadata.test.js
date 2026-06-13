@@ -18,4 +18,10 @@ describe('domain command help metadata docs links', () => {
     expect(autoIncrementHelp).toBeTruthy();
     expect(autoIncrementHelp.docsUrl).toBe('https://anywaydata.com/docs/test-data/domain/autoIncrement');
   });
+
+  test('keeps explicit anywaydata docs pages for custom domain commands', () => {
+    const sequenceHelp = getDomainCommandHelp('autoIncrement.sequence');
+    expect(sequenceHelp).toBeTruthy();
+    expect(sequenceHelp.docsUrl).toBe('https://anywaydata.com/docs/test-data/auto-increment-sequences');
+  });
 });

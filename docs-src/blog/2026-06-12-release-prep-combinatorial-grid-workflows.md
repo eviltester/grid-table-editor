@@ -126,7 +126,32 @@ Docs:
 
 ![Grid to enum schema in the app](/img/release-198/grid-to-enum-schema.png)
 
-## 5. PICT-style inline enum definitions such as `Name: values`
+## 5. Constraint-aware auto-increment sequences for generated identifiers
+
+Schemas can now generate sequential IDs through the domain model with `autoIncrement.sequence`.
+
+Example:
+
+```text
+Filename
+autoIncrement.sequence(start=1, step=5, prefix="filename", suffix=".txt", zeropadding=3)
+```
+
+Generated values:
+
+```text
+filename001.txt
+filename0006.txt
+filename011.txt
+```
+
+This is especially useful for ticket IDs, filenames, and human-readable references because the sequence only advances when a row is accepted. If a generated row is rejected by constraints and retried, the skipped attempt does not consume the next number.
+
+Docs:
+
+- [Auto Increment Sequences](/docs/test-data/auto-increment-sequences)
+
+## 6. PICT-style inline enum definitions such as `Name: values`
 
 Schema text now fits more naturally with compact PICT-style authoring.
 
@@ -151,7 +176,7 @@ Docs:
 
 - [Schema Definition](/docs/test-data/Schema-Definition)
 
-## 6. Import trimming controls for cleaner amend and import workflows
+## 7. Import trimming controls for cleaner amend and import workflows
 
 Imported files and clipboard data can now be normalized during import.
 
@@ -174,7 +199,7 @@ Docs:
 
 ![Import trim settings](/img/release-198/import-trim-settings.png)
 
-## 7. File export settings for line endings and BOM
+## 8. File export settings for line endings and BOM
 
 Downloads now support file transport settings without changing the preview text shown in the browser.
 
@@ -191,7 +216,7 @@ Docs:
 
 ![Download encoding settings](/img/release-198/export-encoding-settings.png)
 
-## 8. Right-click context menu in the main data grid
+## 9. Right-click context menu in the main data grid
 
 The editable grid now has a right-click context menu for common grid actions.
 
@@ -201,7 +226,7 @@ Docs:
 
 - [Data Grid Editable](/docs/test-data/data-grid-editable)
 
-## 9. Always-visible total row counts in the data grid
+## 10. Always-visible total row counts in the data grid
 
 The main grid now shows total row counts, and filtered views also show how many rows remain visible.
 

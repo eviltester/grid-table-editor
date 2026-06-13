@@ -25,6 +25,9 @@ export class TestDataGenerator {
 
   importSpec(textContent) {
     this.runtimeErrors = [];
+    if (typeof this.generator?.resetState === 'function') {
+      this.generator.resetState();
+    }
     this.rulesParser.parseText(textContent);
   }
 

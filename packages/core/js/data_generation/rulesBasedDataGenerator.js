@@ -41,6 +41,7 @@ export class RulesBasedDataGenerator {
   generateRandomRow(fromRules, { constraints = [], maxAttempts = 1, rowIndex = 0, runStartedAt = new Date() } = {}) {
     const rules = Array.isArray(fromRules) ? fromRules : [];
     const safeConstraints = Array.isArray(constraints) ? constraints : [];
+    const committedGeneratorState = this.captureGeneratorStates();
 
     const createRow = () =>
       rules.map((rule) => {
@@ -85,6 +86,9 @@ export class RulesBasedDataGenerator {
       });
 
     for (let attempt = 0; attempt < Math.max(1, maxAttempts); attempt += 1) {
+      if (attempt > 0) {
+        this.restoreGeneratorStates(committedGeneratorState);
+      }
       const generatedRow = createRow();
       if (safeConstraints.length === 0) {
         return generatedRow;
@@ -96,7 +100,27 @@ export class RulesBasedDataGenerator {
       }
     }
 
+    this.restoreGeneratorStates(committedGeneratorState);
     return null;
+  }
+
+  captureGeneratorStates() {
+    return {
+      domainGenerator:
+        typeof this.domainGenerator?.captureState === 'function' ? this.domainGenerator.captureState() : null,
+    };
+  }
+
+  resetState() {
+    if (typeof this.domainGenerator?.resetState === 'function') {
+      this.domainGenerator.resetState();
+    }
+  }
+
+  restoreGeneratorStates(snapshot = {}) {
+    if (typeof this.domainGenerator?.restoreState === 'function') {
+      this.domainGenerator.restoreState(snapshot?.domainGenerator || null);
+    }
   }
 }
 

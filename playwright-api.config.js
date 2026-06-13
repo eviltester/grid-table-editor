@@ -8,7 +8,7 @@ module.exports = defineConfig({
   testDir: './apps/api/src/tests',
   testMatch: '**/*.spec.js',
   timeout: 30000,
-  workers: 1,
+  workers: process.env.CI ? 6 : 1,
   expect: {
     timeout: 15000,
   },

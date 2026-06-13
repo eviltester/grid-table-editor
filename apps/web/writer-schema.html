@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Writer API Schema Prototype - AnyWayData</title>
+    <meta
+      name="description"
+      content="Experimental test-environment-only prototype for generating AnyWayData schemas from natural-language prompts with Chrome's Writer API."
+    />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="author" content="Alan Richardson" />
+
+    <script type="module" src="/src/writer-schema-entry.mjs"></script>
+
+    <link rel="stylesheet" type="text/css" href="styles.css" />
+  </head>
+
+  <body>
+    <main id="writer-schema-page-root" class="bodycontent writer-schema-page">
+      <section class="writer-schema-hero">
+        <div class="writer-schema-hero__toolbar" data-role="theme-toggle-host"></div>
+        <p class="writer-schema-eyebrow">Experimental Test Environment</p>
+        <h1>Writer API Schema Prototype</h1>
+        <p class="writer-schema-lead">
+          This page uses Chrome's in-browser Writer API to turn a natural-language prompt into structured schema field
+          data, then maps that result into the real AnyWayData schema editor.
+        </p>
+        <ul class="writer-schema-supporting-copy">
+          <li>Open <code>chrome://flags</code> in Chrome.</li>
+          <li>
+            Enable
+            <code>#optimization-guide-on-device-model</code>.
+          </li>
+          <li>
+            Enable
+            <code>#prompt-api-for-gemini-nano-multimodal-input</code>.
+          </li>
+          <li>
+            Enable
+            <code>#writer-api-for-gemini-nano</code>.
+          </li>
+          <li>Relaunch Chrome, then load this page again.</li>
+        </ul>
+        <p
+          id="writer-schema-support-status"
+          class="import-progress-status startup-loading-status"
+          role="status"
+          aria-live="polite"
+        >
+          Checking Writer API availability...
+        </p>
+      </section>
+
+      <section class="writer-schema-layout" aria-label="Writer API schema prototype workspace">
+        <section class="writer-schema-card writer-schema-card--prompt" aria-labelledby="writer-schema-prompt-heading">
+          <div class="writer-schema-card__header">
+            <h2 id="writer-schema-prompt-heading">Prompt</h2>
+            <button id="writer-schema-example-prompt" type="button">Load example prompt</button>
+          </div>
+          <label class="writer-schema-label" for="writer-schema-prompt">Describe the schema you want</label>
+          <textarea
+            id="writer-schema-prompt"
+            class="writer-schema-textarea"
+            spellcheck="false"
+            placeholder="Create 10 fields that represent the inventory of a bookshop"
+          ></textarea>
+          <div class="writer-schema-actions">
+            <button id="writer-schema-generate" type="button">Generate schema from prompt</button>
+          </div>
+          <p class="writer-schema-supporting-copy">
+            Local Chrome setup reference:
+            <code>chrome://flags/#optimization-guide-on-device-model</code>,
+            <code>chrome://flags/#prompt-api-for-gemini-nano-multimodal-input</code>, and
+            <code>chrome://flags/#writer-api-for-gemini-nano</code>.
+          </p>
+          <p id="writer-schema-generation-status" class="import-progress-status" role="status" aria-live="polite">
+            Ready for a prompt.
+          </p>
+        </section>
+
+        <section class="writer-schema-card" aria-labelledby="writer-schema-progress-heading">
+          <div class="writer-schema-card__header">
+            <h2 id="writer-schema-progress-heading">Progress Log</h2>
+          </div>
+          <p class="writer-schema-supporting-copy">
+            Generation stages and streaming updates from the Writer request lifecycle.
+          </p>
+          <ol id="writer-schema-progress-output" class="writer-schema-progress-output" aria-live="polite">
+            <li>No generation activity yet.</li>
+          </ol>
+        </section>
+      </section>
+
+      <section class="writer-schema-layout" aria-label="Writer API diagnostics">
+        <section class="writer-schema-card" aria-labelledby="writer-schema-request-heading">
+          <div class="writer-schema-card__header">
+            <h2 id="writer-schema-request-heading">Full Request</h2>
+          </div>
+          <p class="writer-schema-supporting-copy">
+            The exact prompt, shared context, task context, and language options sent to the Writer API.
+          </p>
+          <pre id="writer-schema-request-output" class="writer-schema-json-output" aria-live="polite">
+No Writer request has been sent yet.</pre
+          >
+        </section>
+
+        <section class="writer-schema-card" aria-labelledby="writer-schema-raw-heading">
+          <div class="writer-schema-card__header">
+            <h2 id="writer-schema-raw-heading">Raw AI Response</h2>
+          </div>
+          <p class="writer-schema-supporting-copy">
+            The full text returned by the Writer API before parsing and schema validation.
+          </p>
+          <pre id="writer-schema-raw-output" class="writer-schema-json-output" aria-live="polite">
+No raw Writer response yet.</pre
+          >
+        </section>
+      </section>
+
+      <section class="writer-schema-layout" aria-label="Writer API progress and errors">
+        <section class="writer-schema-card writer-schema-card--json" aria-labelledby="writer-schema-json-heading">
+          <div class="writer-schema-card__header">
+            <h2 id="writer-schema-json-heading">Structured Output</h2>
+          </div>
+          <p class="writer-schema-supporting-copy">
+            The Writer API returns prompt-constrained JSON text for this prototype. The page validates and normalizes it
+            before populating the schema editor.
+          </p>
+          <pre id="writer-schema-json-output" class="writer-schema-json-output" aria-live="polite">No output yet.</pre>
+        </section>
+
+        <section class="writer-schema-card" aria-labelledby="writer-schema-error-heading">
+          <div class="writer-schema-card__header">
+            <h2 id="writer-schema-error-heading">Full Error</h2>
+          </div>
+          <p class="writer-schema-supporting-copy">
+            The full error text, including the exact validation failure when schema parsing goes wrong.
+          </p>
+          <pre id="writer-schema-error-output" class="writer-schema-json-output" aria-live="polite">No errors yet.</pre>
+        </section>
+      </section>
+
+      <section class="writer-schema-card writer-schema-card--editor" aria-labelledby="writer-schema-editor-heading">
+        <div class="writer-schema-card__header">
+          <h2 id="writer-schema-editor-heading">Schema Editor</h2>
+        </div>
+        <p class="writer-schema-supporting-copy">
+          This is the same shared schema-definition component used by the app and generator paths.
+        </p>
+        <div id="writer-schema-editor-root"></div>
+      </section>
+    </main>
+  </body>
+</html>

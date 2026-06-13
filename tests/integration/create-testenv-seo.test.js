@@ -18,6 +18,7 @@ describe('create-testenv SEO helpers', () => {
     expect(robotsTxt).toContain('Disallow: /generator.html');
     expect(robotsTxt).toContain('Disallow: /combinatorial.html');
     expect(robotsTxt).toContain('Disallow: /webmcp.html');
+    expect(robotsTxt).toContain('Disallow: /writer-schema.html');
     expect(robotsTxt).toContain('Disallow: /storybook/');
     expect(robotsTxt).toContain('Disallow: /site/');
   });
@@ -32,6 +33,7 @@ describe('create-testenv SEO helpers', () => {
     expect(llmsTxt).toContain('non-production review and test deployment');
     expect(llmsTxt).toContain(ROOT_CANONICAL_URL);
     expect(llmsTxt).toContain(`${TESTENV_CANONICAL_SITE_URL}/webmcp.html`);
+    expect(llmsTxt).toContain(`${TESTENV_CANONICAL_SITE_URL}/writer-schema.html`);
     expect(llmsTxt).toContain(`${TESTENV_CANONICAL_SITE_URL}/docs/`);
   });
 
@@ -47,6 +49,7 @@ describe('create-testenv SEO helpers', () => {
     expect(html).toContain('<link rel="canonical" href="https://anywaydata.com/" />');
     expect(html).toContain('content: "Test Environment"');
     expect(html).toContain('Open webmcp.html');
+    expect(html).toContain('Open writer-schema.html');
   });
 
   test('injects the test environment indicator into rewritten html pages', () => {
@@ -103,7 +106,9 @@ describe('create-testenv SEO helpers', () => {
   });
 
   test('adds the testenv header-hiding style for top-level published app pages', () => {
-    const html = applyTopHeaderHideToHtml('<!doctype html><html><head><title>WebMCP</title></head><body><div class="header"></div></body></html>');
+    const html = applyTopHeaderHideToHtml(
+      '<!doctype html><html><head><title>WebMCP</title></head><body><div class="header"></div></body></html>'
+    );
 
     expect(html).toContain('data-testenv-hide-header');
     expect(html).toContain('.header {');
@@ -111,18 +116,34 @@ describe('create-testenv SEO helpers', () => {
   });
 
   test('SEO rewrite can target webmcp.html with canonical and test environment marker', () => {
-    const html = applySeoDirectivesToHtml('<!doctype html><html><head><title>WebMCP</title></head><body></body></html>', {
-      canonicalUrl: `${TESTENV_CANONICAL_SITE_URL}/webmcp.html`,
-    });
+    const html = applySeoDirectivesToHtml(
+      '<!doctype html><html><head><title>WebMCP</title></head><body></body></html>',
+      {
+        canonicalUrl: `${TESTENV_CANONICAL_SITE_URL}/webmcp.html`,
+      }
+    );
 
     expect(html).toContain('data-testenv-indicator');
     expect(html).toContain('<meta name="robots" content="noindex,nofollow,noarchive,nosnippet" />');
     expect(html).toContain('<link rel="canonical" href="https://anywaydata.com/webmcp.html" />');
   });
 
+  test('SEO rewrite can target writer-schema.html with canonical and test environment marker', () => {
+    const html = applySeoDirectivesToHtml(
+      '<!doctype html><html><head><title>Writer Schema</title></head><body></body></html>',
+      {
+        canonicalUrl: `${TESTENV_CANONICAL_SITE_URL}/writer-schema.html`,
+      }
+    );
+
+    expect(html).toContain('data-testenv-indicator');
+    expect(html).toContain('<meta name="robots" content="noindex,nofollow,noarchive,nosnippet" />');
+    expect(html).toContain('<link rel="canonical" href="https://anywaydata.com/writer-schema.html" />');
+  });
+
   test('updates the existing top-level header-hiding style without duplicating it', () => {
     const html = applyTopHeaderHideToHtml(
-      '<!doctype html><html><head><style data-testenv-hide-header>.header{display:block!important;}</style></head><body></body></html>',
+      '<!doctype html><html><head><style data-testenv-hide-header>.header{display:block!important;}</style></head><body></body></html>'
     );
 
     expect(html.match(/data-testenv-hide-header/g)).toHaveLength(1);

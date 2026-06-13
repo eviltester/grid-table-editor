@@ -174,12 +174,20 @@ function executeCustomAutoIncrementTimestamp(executionContext = {}) {
   const typeArg = args[2];
   const outputFormatArg = args[3];
   const inputFormatArg = args[4];
+  const state = executionContext.autoIncrementState || null;
   const rowIndex =
     Number.isInteger(executionContext.rowIndex) && executionContext.rowIndex > 0 ? executionContext.rowIndex : 0;
   const now = resolveNow(executionContext);
   const startDate = resolveStartDate(startArg, inputFormatArg, now);
   const stepValue = typeof stepArg === 'undefined' ? DEFAULT_STEP_VALUE : getNumericArg(stepArg, 'step');
   const stepType = normaliseStepType(typeArg);
+
+  if (state && typeof state === 'object') {
+    const currentDate = state.nextDate instanceof Date ? cloneDate(state.nextDate) : startDate;
+    state.nextDate = addStep(cloneDate(currentDate), stepValue, stepType);
+    return formatTimestamp(currentDate, outputFormatArg);
+  }
+
   const offsetDate = rowIndex === 0 ? startDate : addStep(startDate, stepValue * rowIndex, stepType);
   return formatTimestamp(offsetDate, outputFormatArg);
 }

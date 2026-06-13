@@ -14,6 +14,7 @@ import {
 import { looksLikeInlineRuleSpec, startsConstraint } from '../js/data_generation/inline-schema-rule.js';
 import { parseSchemaText } from '../js/data_generation/schema-conversion.js';
 import { hasSafeFakerLiteralArguments } from '../js/data_generation/faker/safeLiteralArgumentParser.js';
+import { getDomainKeywordByAlias } from '../js/domain/domain-keywords.js';
 import {
   OPTION_KEYS_BY_FORMAT,
   OPTION_TIPS_BY_FORMAT,
@@ -153,6 +154,10 @@ export function validateSafeFakerRules(textSpec) {
     }
 
     const fakerCommand = getFakerCommandFromRule(ruleLine);
+    if (getDomainKeywordByAlias(fakerCommand)) {
+      continue;
+    }
+
     if (!knownCommandSet.has(fakerCommand)) {
       return {
         ok: false,

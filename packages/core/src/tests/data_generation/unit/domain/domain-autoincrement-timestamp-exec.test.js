@@ -54,4 +54,29 @@ describe('autoIncrement.timestamp domain keyword execution', () => {
       'Invalid argument for type: expected milliseconds, seconds, minutes, hours, days, weeks, months, or years.'
     );
   });
+
+  test('advances via auto increment state when rows are generated one at a time', () => {
+    const state = {};
+
+    expect(
+      executeDomainKeyword('autoIncrement.timestamp', {
+        args: ['2026-06-12T16:00:00Z', 1, 'hours'],
+        autoIncrementState: state,
+      })
+    ).toBe('2026-06-12T16:00:00Z');
+
+    expect(
+      executeDomainKeyword('autoIncrement.timestamp', {
+        args: ['2026-06-12T16:00:00Z', 1, 'hours'],
+        autoIncrementState: state,
+      })
+    ).toBe('2026-06-12T17:00:00Z');
+
+    expect(
+      executeDomainKeyword('autoIncrement.timestamp', {
+        args: ['2026-06-12T16:00:00Z', 1, 'hours'],
+        autoIncrementState: state,
+      })
+    ).toBe('2026-06-12T18:00:00Z');
+  });
 });

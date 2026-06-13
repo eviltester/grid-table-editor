@@ -54,6 +54,26 @@ test('MCP server handles generate_data_from_spec tool call', () => {
   expect(response?.result?.structuredContent?.ok).toBe(true);
 });
 
+test('MCP server allows registered domain commands in safe mode', () => {
+  const response = requestServer({
+    jsonrpc: '2.0',
+    id: 202,
+    method: 'tools/call',
+    params: {
+      name: 'generate_data_from_spec',
+      arguments: {
+        textSpec: 't2\nautoIncrement.timestamp(start="12th June 2026 at 4pm", step=60, type="minutes")',
+        rowCount: 3,
+        outputFormat: 'json',
+      },
+    },
+  });
+  const payload = JSON.parse(response?.result?.content?.[0]?.text || '{}');
+  expect(payload.ok).toBe(true);
+  expect(payload.rows).toEqual([['2026-06-12T16:00:00Z'], ['2026-06-12T17:00:00Z'], ['2026-06-12T18:00:00Z']]);
+  expect(response?.result?.isError).toBe(false);
+});
+
 test('MCP server accepts comments and blank lines in textSpec', () => {
   const response = requestServer({
     jsonrpc: '2.0',

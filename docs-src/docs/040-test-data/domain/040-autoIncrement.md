@@ -52,11 +52,11 @@ Generates a timestamp that starts from a fixed point and increments by the confi
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `start` | `string\|number` | no | Starting timestamp. Defaults to the generation run start time. Strings may be ISO-8601, a date-fns formatted value when `inputFormat` is provided, or a permissive natural-language date parsed with chrono-node. |
+| `start` | `string\|number` | no | Starting timestamp. Defaults to the generation run start time. Valid examples include `2026-06-12T12:39:23Z`, `20/03/1969`, `12-06-2026 12:39:23`, or a Unix timestamp such as `1718195963000`. |
 | `step` | `number` | no | Amount added for each generated row. Defaults to `1`. |
 | `type` | `string` | no | Unit applied to `step` for each row. Supports `milliseconds`, `seconds`, `minutes`, `hours`, `days`, `weeks`, `months`, or `years`. Defaults to `seconds`. |
-| `outputFormat` | `string` | no | Output format. Defaults to ISO-8601 without milliseconds. Use `iso8601` for the default behaviour or a date-fns format string. |
-| `inputFormat` | `string` | no | Optional date-fns parse format used only for `start` when that value is not ISO-8601. |
+| `outputFormat` | `string` | no | Output format. Defaults to ISO-8601 without milliseconds. Use `iso8601` for the default behaviour or a custom pattern such as `yyyy-MM-dd HH:mm:ss`. |
+| `inputFormat` | `string` | no | Optional parse pattern used only for `start` when you want to match a specific text shape such as `dd/MM/yyyy` or `dd-MM-yyyy HH:mm:ss`. |
 
 Examples:
 

@@ -278,6 +278,13 @@ test('validateSafeFakerRules accepts pict-style inline faker commands', () => {
   expect(result.ok).toBe(true);
 });
 
+test('validateSafeFakerRules accepts registered domain keywords', () => {
+  const result = validateSafeFakerRules(
+    'CreatedAt\nautoIncrement.timestamp(start="12th June 2026 at 4pm", step=60, type="minutes")'
+  );
+  expect(result.ok).toBe(true);
+});
+
 test('validateSafeFakerRules accepts js-style object literal faker args', () => {
   const result = validateSafeFakerRules('Template\nhelpers.mustache("{{name}}", { name: "Ada" })');
   expect(result.ok).toBe(true);

@@ -23,7 +23,7 @@ const DOMAIN_CUSTOM_AUTOINCREMENT_KEYWORD_DEFINITIONS = [
           type: 'string|number',
           required: false,
           description:
-            'Starting timestamp. Defaults to the generation run start time. Strings may be ISO-8601, a date-fns formatted value when inputFormat is provided, or a permissive natural-language date parsed with chrono-node.',
+            'Starting timestamp. Defaults to the generation run start time. Valid examples include "2026-06-12T12:39:23Z", "20/03/1969", "12-06-2026 12:39:23", or a Unix timestamp like 1718195963000.',
           examples: ['2026-06-12T12:39:23Z', '20/03/1969', 1718195963000],
         },
         {
@@ -46,7 +46,7 @@ const DOMAIN_CUSTOM_AUTOINCREMENT_KEYWORD_DEFINITIONS = [
           type: 'string',
           required: false,
           description:
-            'Output format. Defaults to ISO-8601 without milliseconds. Use "iso8601" for the default behaviour or a date-fns format string.',
+            'Output format. Defaults to ISO-8601 without milliseconds. Use "iso8601" for the default behaviour or a custom pattern such as "yyyy-MM-dd HH:mm:ss".',
           examples: ['iso8601', "yyyy-MM-dd'T'HH:mm:ssXXX"],
         },
         {
@@ -54,7 +54,7 @@ const DOMAIN_CUSTOM_AUTOINCREMENT_KEYWORD_DEFINITIONS = [
           type: 'string',
           required: false,
           description:
-            'Optional date-fns parse format used only for the start argument when that value is not ISO-8601.',
+            'Optional parse pattern used only for the start argument when you want to match a specific text shape such as "dd/MM/yyyy" or "dd-MM-yyyy HH:mm:ss".',
           examples: ['dd/MM/yyyy', 'yyyy-MM-dd HH:mm:ss'],
         },
       ],

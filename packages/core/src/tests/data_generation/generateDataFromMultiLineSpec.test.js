@@ -161,6 +161,21 @@ describe('TestDataGenerator meets Acceptance Criteria', () => {
       expect(data[1][1]).toMatch(/^[A-Z]{4}$/);
       assertNoCommonErrorPatternsInRows(data.slice(1));
     });
+
+    test('resets auto increment sequence state when a new spec is imported', () => {
+      const generator = new TestDataGenerator(faker, RandExp);
+
+      generator.importSpec('Sequence\nautoIncrement.sequence(start=10,step=5)');
+      generator.compile();
+
+      expect(generator.generateRow()).toEqual([10]);
+      expect(generator.generateRow()).toEqual([15]);
+
+      generator.importSpec('Sequence\nautoIncrement.sequence(start=10,step=5)');
+      generator.compile();
+
+      expect(generator.generateRow()).toEqual([10]);
+    });
   });
 
   describe('TestDataGenerator parsing detects errors in spec', () => {

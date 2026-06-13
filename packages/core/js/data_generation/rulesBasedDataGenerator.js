@@ -108,6 +108,12 @@ export class RulesBasedDataGenerator {
     };
   }
 
+  resetState() {
+    if (typeof this.domainGenerator?.resetState === 'function') {
+      this.domainGenerator.resetState();
+    }
+  }
+
   restoreGeneratorStates(snapshot = {}) {
     if (typeof this.domainGenerator?.restoreState === 'function') {
       this.domainGenerator.restoreState(snapshot?.domainGenerator || null);

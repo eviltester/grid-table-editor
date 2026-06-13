@@ -29,6 +29,12 @@ class DomainTestDataGenerator {
     }
   }
 
+  resetState() {
+    this.autoIncrementStates = new Map();
+    this.ruleAutoIncrementKeys = new WeakMap();
+    this.nextAutoIncrementRuleId = 1;
+  }
+
   captureState() {
     return {
       autoIncrementStates: Array.from(this.autoIncrementStates.entries()).map(([key, value]) => [key, { ...value }]),
@@ -38,8 +44,7 @@ class DomainTestDataGenerator {
 
   restoreState(snapshot = null) {
     if (!snapshot) {
-      this.autoIncrementStates = new Map();
-      this.nextAutoIncrementRuleId = 1;
+      this.resetState();
       return;
     }
 

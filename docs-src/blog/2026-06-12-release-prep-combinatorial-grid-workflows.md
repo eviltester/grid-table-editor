@@ -1,6 +1,4 @@
----
-slug: release-prep-combinatorial-grid-workflows
-title: 'Release Prep: Stronger Combinatorial Generation and Faster Grid Workflows'
+slug: combinatorial-grid-workflows
 authors: [alan]
 tags: [release, feature, combinatorial, schema, import, export, ux]
 date: 2026-06-12T10:00

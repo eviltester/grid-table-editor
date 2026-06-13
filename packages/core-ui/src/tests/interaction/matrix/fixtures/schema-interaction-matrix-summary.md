@@ -1,6 +1,6 @@
 # Schema Interaction Matrix Summary
 
-Generated: `2026-06-05T08:29:21.640Z`
+Generated: `2026-06-13T09:26:58.331Z`
 
 This file describes what the interaction matrix covers.
 
@@ -10,36 +10,36 @@ This file describes what the interaction matrix covers.
 
 ## Coverage Scenarios
 
-Scenario count: **619**
-Generated preview data count: **608**
+Scenario count: **632**
+Generated preview data count: **621**
 Review-only scenario count: **0**
 Non-executable scenario count: **11**
 
 ### By Source Type
 
-| Key       | Count |
-| --------- | ----: |
-| `domain`  |   559 |
-| `enum`    |     2 |
-| `faker`   |    54 |
-| `literal` |     2 |
-| `regex`   |     2 |
+| Key | Count |
+| --- | ---: |
+| `domain` | 572 |
+| `enum` | 2 |
+| `faker` | 54 |
+| `literal` | 2 |
+| `regex` | 2 |
 
 ### By Origin
 
-| Key        | Count |
-| ---------- | ----: |
-| `arg`      |   211 |
-| `base`     |   258 |
-| `custom`   |     6 |
-| `empty`    |     2 |
-| `example`  |    27 |
-| `pair`     |   117 |
-| `pairwise` |     1 |
+| Key | Count |
+| --- | ---: |
+| `arg` | 216 |
+| `base` | 259 |
+| `custom` | 6 |
+| `empty` | 2 |
+| `example` | 30 |
+| `pair` | 121 |
+| `pairwise` | 1 |
 
 ### Commands By Source Type
 
-#### `domain` (244)
+#### `domain` (245)
 
 - `airline.aircraftType`
 - `airline.flightNumber`
@@ -67,6 +67,7 @@ Non-executable scenario count: **11**
 - `animal.rodent`
 - `animal.snake`
 - `animal.type`
+- `autoIncrement.sequence`
 - `book.author`
 - `book.format`
 - `book.genre`
@@ -325,7 +326,6 @@ Non-executable scenario count: **11**
 - Command(s): `enum(active,inactive,pending)`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Status"
 "pending"
@@ -337,15 +337,12 @@ Non-executable scenario count: **11**
 - UI preview parity: `exact`
 - Schema Rows: `Status: enum(active,inactive,pending)`, `Priority: enum(high,medium,low)`
 - Preview data:
-
 ```csv
 "Status","Priority"
 "inactive","medium"
 "inactive","low"
 ```
-
 - Pairwise preview data:
-
 ```csv
 "Status","Priority"
 "active","high"
@@ -364,7 +361,6 @@ Non-executable scenario count: **11**
 - Command(s): `literal("Pending")`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Status"
 "Pending"
@@ -375,7 +371,6 @@ Non-executable scenario count: **11**
 - Command(s): `literal("")`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Status"
 ""
@@ -386,7 +381,6 @@ Non-executable scenario count: **11**
 - Command(s): `regex("[A-Z]{2}[0-9]{2}")`
 - UI preview parity: `structural`
 - Preview data:
-
 ```csv
 "Code"
 "VC23"
@@ -397,7 +391,6 @@ Non-executable scenario count: **11**
 - Command(s): `regex("")`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Code"
 ""
@@ -408,7 +401,6 @@ Non-executable scenario count: **11**
 - Command(s): `helpers.arrayElement(["A", "B"])`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Value"
 "B"
@@ -419,7 +411,6 @@ Non-executable scenario count: **11**
 - Command(s): `helpers.arrayElement(["A", "B", "C"])`
 - UI preview parity: `structural`
 - Preview data:
-
 ```csv
 "Value"
 "A"
@@ -429,7 +420,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `helpers.arrayElement(["A", "B"])`
 - Preview data:
-
 ```csv
 "Value"
 "B"
@@ -440,7 +430,6 @@ Non-executable scenario count: **11**
 - Command(s): `helpers.arrayElements(["A", "B", "C"], 2)`
 - UI preview parity: `structural`
 - Preview data:
-
 ```csv
 "Value"
 "[""B"",""A""]"
@@ -451,7 +440,6 @@ Non-executable scenario count: **11**
 - Command(s): `helpers.arrayElements(["A", "B", "C"], 2)`
 - UI preview parity: `structural`
 - Preview data:
-
 ```csv
 "Value"
 "[""A"",""B""]"
@@ -461,7 +449,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `helpers.arrayElements(["A", "B"])`
 - Preview data:
-
 ```csv
 "Value"
 "[""B""]"
@@ -471,7 +458,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `helpers.arrayElements(["A", "B"], 2)`
 - Preview data:
-
 ```csv
 "Value"
 "[""A"",""B""]"
@@ -481,7 +467,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `helpers.arrayElements(["A", "B"], 2)`
 - Preview data:
-
 ```csv
 "Value"
 "[""B"",""A""]"
@@ -492,7 +477,6 @@ Non-executable scenario count: **11**
 - Command(s): `helpers.fake("{{person.firstName}}")`
 - UI preview parity: `structural`
 - Preview data:
-
 ```csv
 "Value"
 "Melvin"
@@ -503,7 +487,6 @@ Non-executable scenario count: **11**
 - Command(s): `helpers.fake("Hi, my name is {{person.firstName}} {{person.lastName}}!")`
 - UI preview parity: `structural`
 - Preview data:
-
 ```csv
 "Value"
 "Hi, my name is Ardith Weber!"
@@ -513,7 +496,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `helpers.fake("[A-Z]{2}")`
 - Preview data:
-
 ```csv
 "Value"
 "[A-Z]{2}"
@@ -524,7 +506,6 @@ Non-executable scenario count: **11**
 - Command(s): `helpers.fromRegExp("[A-Z]{2}")`
 - UI preview parity: `structural`
 - Preview data:
-
 ```csv
 "Value"
 "BJ"
@@ -535,7 +516,6 @@ Non-executable scenario count: **11**
 - Command(s): `helpers.fromRegExp("[A-Z]{2}[0-9]{2}")`
 - UI preview parity: `structural`
 - Preview data:
-
 ```csv
 "Value"
 "PU71"
@@ -545,7 +525,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `helpers.fromRegExp("[A-Z]{2}")`
 - Preview data:
-
 ```csv
 "Value"
 "XA"
@@ -606,7 +585,6 @@ Non-executable scenario count: **11**
 - Command(s): `helpers.mustache("{{name}}", { name: "Ada" })`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Value"
 "Ada"
@@ -617,7 +595,6 @@ Non-executable scenario count: **11**
 - Command(s): `helpers.mustache("Hello {{name}}", { name: "Ada" })`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Value"
 "Hello Ada"
@@ -627,7 +604,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `helpers.mustache("{{name}}")`
 - Preview data:
-
 ```csv
 "Value"
 "{{name}}"
@@ -637,7 +613,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `helpers.mustache("{{name}}", {})`
 - Preview data:
-
 ```csv
 "Value"
 "{{name}}"
@@ -647,7 +622,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `helpers.mustache("{{name}}", {})`
 - Preview data:
-
 ```csv
 "Value"
 "{{name}}"
@@ -658,7 +632,6 @@ Non-executable scenario count: **11**
 - Command(s): `helpers.rangeToNumber({ min: 1, max: 2 })`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Value"
 "1"
@@ -669,7 +642,6 @@ Non-executable scenario count: **11**
 - Command(s): `helpers.rangeToNumber({ min: 1, max: 2 })`
 - UI preview parity: `structural`
 - Preview data:
-
 ```csv
 "Value"
 "2"
@@ -679,7 +651,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `helpers.rangeToNumber(2)`
 - Preview data:
-
 ```csv
 "Value"
 "2"
@@ -689,7 +660,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `helpers.replaceCreditCardSymbols()`
 - Preview data:
-
 ```csv
 "Value"
 "6453-3460-3761-5138-2959"
@@ -700,7 +670,6 @@ Non-executable scenario count: **11**
 - Command(s): `helpers.replaceCreditCardSymbols("1234-[4-9]-##!!-L")`
 - UI preview parity: `structural`
 - Preview data:
-
 ```csv
 "Value"
 "1234-5-4775-8"
@@ -710,7 +679,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `helpers.replaceCreditCardSymbols("helpers-replaceCreditCardSymbols-string")`
 - Preview data:
-
 ```csv
 "Value"
 "helpers-replaceCreditCardSymbols-string"
@@ -720,7 +688,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `helpers.replaceCreditCardSymbols("helpers-replaceCreditCardSymbols-string", "helpers-replaceCreditCardSymbols-symbol")`
 - Preview data:
-
 ```csv
 "Value"
 "helpers-replaceCreditCardSymbols-string"
@@ -730,7 +697,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `helpers.replaceCreditCardSymbols("helpers-replaceCreditCardSymbols-string", "helpers-replaceCreditCardSymbols-symbol")`
 - Preview data:
-
 ```csv
 "Value"
 "helpers-replaceCreditCardSymbols-string"
@@ -740,7 +706,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `helpers.replaceSymbols()`
 - Preview data:
-
 ```csv
 "Value"
 ""
@@ -751,7 +716,6 @@ Non-executable scenario count: **11**
 - Command(s): `helpers.replaceSymbols("##??-##")`
 - UI preview parity: `structural`
 - Preview data:
-
 ```csv
 "Value"
 "47UI-39"
@@ -761,7 +725,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `helpers.replaceSymbols("helpers-replaceSymbols-string")`
 - Preview data:
-
 ```csv
 "Value"
 "helpers-replaceSymbols-string"
@@ -772,7 +735,6 @@ Non-executable scenario count: **11**
 - Command(s): `helpers.shuffle(["A", "B", "C"])`
 - UI preview parity: `structural`
 - Preview data:
-
 ```csv
 "Value"
 "[""B"",""A"",""C""]"
@@ -783,7 +745,6 @@ Non-executable scenario count: **11**
 - Command(s): `helpers.shuffle(["A", "B", "C"])`
 - UI preview parity: `structural`
 - Preview data:
-
 ```csv
 "Value"
 "[""B"",""A"",""C""]"
@@ -793,7 +754,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `helpers.shuffle(["A", "B"])`
 - Preview data:
-
 ```csv
 "Value"
 "[""A"",""B""]"
@@ -803,7 +763,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `helpers.slugify()`
 - Preview data:
-
 ```csv
 "Value"
 ""
@@ -814,7 +773,6 @@ Non-executable scenario count: **11**
 - Command(s): `helpers.slugify("Hello World 2026")`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Value"
 "Hello-World-2026"
@@ -824,7 +782,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `helpers.slugify("helpers-slugify-string")`
 - Preview data:
-
 ```csv
 "Value"
 "helpers-slugify-string"
@@ -835,7 +792,6 @@ Non-executable scenario count: **11**
 - Command(s): `helpers.uniqueArray(["A", "B"], 4)`
 - UI preview parity: `structural`
 - Preview data:
-
 ```csv
 "Value"
 "[""A"",""B""]"
@@ -846,7 +802,6 @@ Non-executable scenario count: **11**
 - Command(s): `helpers.uniqueArray(["red", "green", "blue"], 2)`
 - UI preview parity: `structural`
 - Preview data:
-
 ```csv
 "Value"
 "[""blue"",""green""]"
@@ -856,7 +811,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `helpers.uniqueArray(["A", "B"])`
 - Preview data:
-
 ```csv
 "Value"
 "[]"
@@ -866,7 +820,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `helpers.uniqueArray(["A", "B"], 4)`
 - Preview data:
-
 ```csv
 "Value"
 "[""B"",""A""]"
@@ -876,7 +829,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `helpers.uniqueArray(["A", "B"], 4)`
 - Preview data:
-
 ```csv
 "Value"
 "[""A"",""B""]"
@@ -887,7 +839,6 @@ Non-executable scenario count: **11**
 - Command(s): `helpers.weightedArrayElement([{ "weight": 1, "value": "A" }, { "weight": 2, "value": "B" }])`
 - UI preview parity: `structural`
 - Preview data:
-
 ```csv
 "Value"
 "A"
@@ -898,7 +849,6 @@ Non-executable scenario count: **11**
 - Command(s): `helpers.weightedArrayElement([{ weight: 5, value: "sunny" }, { weight: 1, value: "rainy" }])`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Value"
 "sunny"
@@ -913,7 +863,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `airline.aircraftType()`
 - Preview data:
-
 ```csv
 "Value"
 "widebody"
@@ -923,7 +872,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `airline.flightNumber()`
 - Preview data:
-
 ```csv
 "Value"
 "54"
@@ -933,7 +881,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `airline.iataCode()`
 - Preview data:
-
 ```csv
 "Value"
 "VS"
@@ -943,7 +890,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `airline.name()`
 - Preview data:
-
 ```csv
 "Value"
 "Juneyao Airlines"
@@ -953,7 +899,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `airline.recordLocator()`
 - Preview data:
-
 ```csv
 "Value"
 "QYNEDR"
@@ -963,7 +908,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `airline.seat()`
 - Preview data:
-
 ```csv
 "Value"
 "29B"
@@ -974,7 +918,6 @@ Non-executable scenario count: **11**
 - Command(s): `airline.seat()`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Value"
 "32C"
@@ -985,7 +928,6 @@ Non-executable scenario count: **11**
 - Command(s): `airline.seat(aircraftType="widebody")`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Value"
 "55J"
@@ -995,7 +937,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `airline.seat(aircraftType="widebody")`
 - Preview data:
-
 ```csv
 "Value"
 "3A"
@@ -1005,7 +946,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `airplane.iataTypeCode()`
 - Preview data:
-
 ```csv
 "Value"
 "345"
@@ -1015,7 +955,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `airplane.name()`
 - Preview data:
-
 ```csv
 "Value"
 "Boeing 747-400"
@@ -1025,7 +964,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `airport.iataCode()`
 - Preview data:
-
 ```csv
 "Value"
 "MEX"
@@ -1035,7 +973,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `airport.name()`
 - Preview data:
-
 ```csv
 "Value"
 "Hobart International Airport"
@@ -1045,7 +982,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `animal.bear()`
 - Preview data:
-
 ```csv
 "Value"
 "American black bear"
@@ -1055,7 +991,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `animal.bird()`
 - Preview data:
-
 ```csv
 "Value"
 "Red-footed Booby"
@@ -1065,7 +1000,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `animal.cat()`
 - Preview data:
-
 ```csv
 "Value"
 "Ojos Azules"
@@ -1075,7 +1009,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `animal.cetacean()`
 - Preview data:
-
 ```csv
 "Value"
 "Blue Whale"
@@ -1085,7 +1018,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `animal.cow()`
 - Preview data:
-
 ```csv
 "Value"
 "Mandalong Special"
@@ -1095,7 +1027,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `animal.crocodilia()`
 - Preview data:
-
 ```csv
 "Value"
 "Cuban Crocodile"
@@ -1105,7 +1036,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `animal.dog()`
 - Preview data:
-
 ```csv
 "Value"
 "Yakutian Laika"
@@ -1115,7 +1045,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `animal.fish()`
 - Preview data:
-
 ```csv
 "Value"
 "Jumbo flying squid"
@@ -1125,7 +1054,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `animal.horse()`
 - Preview data:
-
 ```csv
 "Value"
 "Trait Du Nord"
@@ -1135,7 +1063,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `animal.insect()`
 - Preview data:
-
 ```csv
 "Value"
 "False honey ant"
@@ -1145,7 +1072,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `animal.lion()`
 - Preview data:
-
 ```csv
 "Value"
 "Cape lion"
@@ -1155,7 +1081,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `animal.petName()`
 - Preview data:
-
 ```csv
 "Value"
 "Bandit"
@@ -1165,7 +1090,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `animal.rabbit()`
 - Preview data:
-
 ```csv
 "Value"
 "Silver"
@@ -1175,7 +1099,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `animal.rodent()`
 - Preview data:
-
 ```csv
 "Value"
 "Bonetto's tuco-tuco"
@@ -1185,7 +1108,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `animal.snake()`
 - Preview data:
-
 ```csv
 "Value"
 "White-lipped keelback"
@@ -1195,17 +1117,132 @@ Non-executable scenario count: **11**
 
 - Command(s): `animal.type()`
 - Preview data:
-
 ```csv
 "Value"
 "elephant"
+```
+
+#### `domain-autoIncrement-sequence-base`
+
+- Command(s): `autoIncrement.sequence(1, 5, "filename", ".txt", 3)`
+- Preview data:
+```csv
+"Value"
+"filename001.txt"
+```
+
+#### `domain-autoIncrement-sequence-example-1`
+
+- Command(s): `autoIncrement.sequence()`
+- Preview data:
+```csv
+"Value"
+"1"
+```
+
+#### `domain-autoIncrement-sequence-example-2`
+
+- Command(s): `autoIncrement.sequence(start=10, step=5)`
+- Preview data:
+```csv
+"Value"
+"10"
+```
+
+#### `domain-autoIncrement-sequence-example-3`
+
+- Command(s): `autoIncrement.sequence(start=1, step=5, prefix="filename", suffix=".txt", zeropadding=3)`
+- Preview data:
+```csv
+"Value"
+"filename001.txt"
+```
+
+#### `domain-autoIncrement-sequence-arg-start`
+
+- Command(s): `autoIncrement.sequence(start=10)`
+- Preview data:
+```csv
+"Value"
+"10"
+```
+
+#### `domain-autoIncrement-sequence-arg-step`
+
+- Command(s): `autoIncrement.sequence(step=5)`
+- Preview data:
+```csv
+"Value"
+"1"
+```
+
+#### `domain-autoIncrement-sequence-arg-prefix`
+
+- Command(s): `autoIncrement.sequence(prefix="filename")`
+- Preview data:
+```csv
+"Value"
+"filename1"
+```
+
+#### `domain-autoIncrement-sequence-arg-suffix`
+
+- Command(s): `autoIncrement.sequence(suffix=".txt")`
+- Preview data:
+```csv
+"Value"
+"1.txt"
+```
+
+#### `domain-autoIncrement-sequence-arg-zeropadding`
+
+- Command(s): `autoIncrement.sequence(zeropadding=3)`
+- Preview data:
+```csv
+"Value"
+"001"
+```
+
+#### `domain-autoIncrement-sequence-pair-start-step`
+
+- Command(s): `autoIncrement.sequence(start=10, step=5)`
+- Preview data:
+```csv
+"Value"
+"10"
+```
+
+#### `domain-autoIncrement-sequence-pair-step-prefix`
+
+- Command(s): `autoIncrement.sequence(step=5, prefix="filename")`
+- Preview data:
+```csv
+"Value"
+"filename1"
+```
+
+#### `domain-autoIncrement-sequence-pair-prefix-suffix`
+
+- Command(s): `autoIncrement.sequence(prefix="filename", suffix=".txt")`
+- Preview data:
+```csv
+"Value"
+"filename1.txt"
+```
+
+#### `domain-autoIncrement-sequence-pair-suffix-zeropadding`
+
+- Command(s): `autoIncrement.sequence(suffix=".txt", zeropadding=3)`
+- Preview data:
+```csv
+"Value"
+"001.txt"
 ```
 
 #### `domain-book-author-base`
 
 - Command(s): `book.author()`
 - Preview data:
-
 ```csv
 "Value"
 "Hermann Broch"
@@ -1215,7 +1252,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `book.format()`
 - Preview data:
-
 ```csv
 "Value"
 "Ebook"
@@ -1225,7 +1261,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `book.genre()`
 - Preview data:
-
 ```csv
 "Value"
 "Philosophy"
@@ -1235,7 +1270,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `book.publisher()`
 - Preview data:
-
 ```csv
 "Value"
 "Hodder & Stoughton"
@@ -1245,7 +1279,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `book.series()`
 - Preview data:
-
 ```csv
 "Value"
 "Colonel Race"
@@ -1255,7 +1288,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `book.title()`
 - Preview data:
-
 ```csv
 "Value"
 "The Sound and the Fury"
@@ -1265,7 +1297,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `chemicalElement.atomicNumber()`
 - Preview data:
-
 ```csv
 "Value"
 "9"
@@ -1275,7 +1306,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `chemicalElement.name()`
 - Preview data:
-
 ```csv
 "Value"
 "Meitnerium"
@@ -1285,7 +1315,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `chemicalElement.symbol()`
 - Preview data:
-
 ```csv
 "Value"
 "Lv"
@@ -1295,7 +1324,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `color.cssSupportedFunction()`
 - Preview data:
-
 ```csv
 "Value"
 "hwb"
@@ -1305,7 +1333,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `color.cssSupportedSpace()`
 - Preview data:
-
 ```csv
 "Value"
 "sRGB"
@@ -1315,7 +1342,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `color.human()`
 - Preview data:
-
 ```csv
 "Value"
 "turquoise"
@@ -1325,7 +1351,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `color.rgb()`
 - Preview data:
-
 ```csv
 "Value"
 "#bce97e"
@@ -1335,7 +1360,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `color.rgb(casing="upper")`
 - Preview data:
-
 ```csv
 "Value"
 "#BCBFC4"
@@ -1345,7 +1369,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `color.rgb(format="hex")`
 - Preview data:
-
 ```csv
 "Value"
 "#9be19f"
@@ -1355,7 +1378,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `color.rgb(includeAlpha=true)`
 - Preview data:
-
 ```csv
 "Value"
 "#71d66e8f"
@@ -1365,7 +1387,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `color.rgb(prefix="#")`
 - Preview data:
-
 ```csv
 "Value"
 "#dceba6"
@@ -1375,7 +1396,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `color.rgb(casing="upper", format="hex")`
 - Preview data:
-
 ```csv
 "Value"
 "#F948CC"
@@ -1385,7 +1405,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `color.rgb(format="hex", includeAlpha=true)`
 - Preview data:
-
 ```csv
 "Value"
 "#bd037ce9"
@@ -1395,7 +1414,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `color.rgb(includeAlpha=true, prefix="#")`
 - Preview data:
-
 ```csv
 "Value"
 "#d95bfefc"
@@ -1405,7 +1423,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `color.space()`
 - Preview data:
-
 ```csv
 "Value"
 "CIEUVW"
@@ -1415,7 +1432,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `commerce.department()`
 - Preview data:
-
 ```csv
 "Value"
 "Home"
@@ -1425,7 +1441,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `commerce.isbn()`
 - Preview data:
-
 ```csv
 "Value"
 "978-0-276-38715-9"
@@ -1435,7 +1450,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `commerce.isbn(separator="-")`
 - Preview data:
-
 ```csv
 "Value"
 "978-1-01-952776-4"
@@ -1445,7 +1459,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `commerce.isbn(variant="13")`
 - Preview data:
-
 ```csv
 "Value"
 "978-0-9939513-5-0"
@@ -1455,7 +1468,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `commerce.isbn(separator="-", variant="13")`
 - Preview data:
-
 ```csv
 "Value"
 "978-1-63392-157-3"
@@ -1465,7 +1477,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `commerce.price()`
 - Preview data:
-
 ```csv
 "Value"
 "557.85"
@@ -1476,7 +1487,6 @@ Non-executable scenario count: **11**
 - Command(s): `commerce.price(dec=2, max=10, min=1, symbol="$")`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Value"
 "$3.69"
@@ -1486,7 +1496,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `commerce.price(dec=2)`
 - Preview data:
-
 ```csv
 "Value"
 "489.39"
@@ -1496,7 +1505,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `commerce.price(max=100)`
 - Preview data:
-
 ```csv
 "Value"
 "11.69"
@@ -1506,7 +1514,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `commerce.price(min=1)`
 - Preview data:
-
 ```csv
 "Value"
 "624.89"
@@ -1516,7 +1523,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `commerce.price(symbol="$")`
 - Preview data:
-
 ```csv
 "Value"
 "$408.79"
@@ -1526,7 +1532,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `commerce.price(dec=2, max=100)`
 - Preview data:
-
 ```csv
 "Value"
 "80.09"
@@ -1536,7 +1541,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `commerce.price(max=100, min=1)`
 - Preview data:
-
 ```csv
 "Value"
 "65.60"
@@ -1546,7 +1550,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `commerce.price(min=1, symbol="$")`
 - Preview data:
-
 ```csv
 "Value"
 "$80.15"
@@ -1556,7 +1559,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `commerce.product()`
 - Preview data:
-
 ```csv
 "Value"
 "Salad"
@@ -1566,7 +1568,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `commerce.productAdjective()`
 - Preview data:
-
 ```csv
 "Value"
 "Rustic"
@@ -1576,7 +1577,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `commerce.productDescription()`
 - Preview data:
-
 ```csv
 "Value"
 "Discover the inconsequential new Gloves with an exciting mix of Cotton ingredients"
@@ -1586,7 +1586,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `commerce.productMaterial()`
 - Preview data:
-
 ```csv
 "Value"
 "Silk"
@@ -1596,7 +1595,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `commerce.productName()`
 - Preview data:
-
 ```csv
 "Value"
 "Practical Aluminum Shirt"
@@ -1606,7 +1604,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `company.buzzAdjective()`
 - Preview data:
-
 ```csv
 "Value"
 "B2B"
@@ -1616,7 +1613,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `company.buzzNoun()`
 - Preview data:
-
 ```csv
 "Value"
 "schemas"
@@ -1626,7 +1622,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `company.buzzPhrase()`
 - Preview data:
-
 ```csv
 "Value"
 "engineer scalable smart contracts"
@@ -1636,7 +1631,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `company.buzzVerb()`
 - Preview data:
-
 ```csv
 "Value"
 "expedite"
@@ -1646,7 +1640,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `company.catchPhrase()`
 - Preview data:
-
 ```csv
 "Value"
 "Synchronised fault-tolerant service-desk"
@@ -1656,7 +1649,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `company.catchPhraseAdjective()`
 - Preview data:
-
 ```csv
 "Value"
 "Diverse"
@@ -1666,7 +1658,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `company.catchPhraseDescriptor()`
 - Preview data:
-
 ```csv
 "Value"
 "zero trust"
@@ -1676,7 +1667,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `company.catchPhraseNoun()`
 - Preview data:
-
 ```csv
 "Value"
 "hardware"
@@ -1686,7 +1676,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `company.name()`
 - Preview data:
-
 ```csv
 "Value"
 "Yundt, Boehm and Roob"
@@ -1696,7 +1685,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `database.collation()`
 - Preview data:
-
 ```csv
 "Value"
 "utf8_bin"
@@ -1706,7 +1694,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `database.column()`
 - Preview data:
-
 ```csv
 "Value"
 "updatedAt"
@@ -1716,7 +1703,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `database.engine()`
 - Preview data:
-
 ```csv
 "Value"
 "MyISAM"
@@ -1726,7 +1712,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `database.mongodbObjectId()`
 - Preview data:
-
 ```csv
 "Value"
 "d62d29cffe9912ddfddddb58"
@@ -1736,7 +1721,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `database.type()`
 - Preview data:
-
 ```csv
 "Value"
 "point"
@@ -1746,7 +1730,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `datatype.boolean()`
 - Preview data:
-
 ```csv
 "Value"
 "false"
@@ -1756,7 +1739,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `datatype.boolean(probability=2)`
 - Preview data:
-
 ```csv
 "Value"
 "true"
@@ -1766,7 +1748,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `datatype.enum("active", "inactive", "pending")`
 - Preview data:
-
 ```csv
 "Value"
 "active"
@@ -1776,17 +1757,15 @@ Non-executable scenario count: **11**
 
 - Command(s): `date.anytime()`
 - Preview data:
-
 ```csv
 "Value"
-"2026-06-14T17:27:29.813Z"
+"2026-06-22T18:25:06.486Z"
 ```
 
 #### `domain-date-anytime-arg-refDate`
 
 - Command(s): `date.anytime(refDate=1577836800000)`
 - Preview data:
-
 ```csv
 "Value"
 "2020-09-21T21:46:38.236Z"
@@ -1796,7 +1775,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `date.between(1577836800000, 1609372800000)`
 - Preview data:
-
 ```csv
 "Value"
 "2020-07-25T19:48:55.233Z"
@@ -1806,7 +1784,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `date.between(from=1577836800000, to=1609372800000)`
 - Preview data:
-
 ```csv
 "Value"
 "2020-08-02T19:17:11.407Z"
@@ -1816,7 +1793,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `date.between(to=1609372800000, from=1577836800000)`
 - Preview data:
-
 ```csv
 "Value"
 "2020-07-28T01:45:25.825Z"
@@ -1826,7 +1802,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `date.between(from=1577836800000, to=1609372800000)`
 - Preview data:
-
 ```csv
 "Value"
 "2020-04-01T08:35:52.015Z"
@@ -1836,10 +1811,9 @@ Non-executable scenario count: **11**
 
 - Command(s): `date.birthdate()`
 - Preview data:
-
 ```csv
 "Value"
-"1957-08-09T17:22:41.817Z"
+"1957-08-17T18:20:18.489Z"
 ```
 
 #### `domain-date-birthdate-example-1`
@@ -1847,7 +1821,6 @@ Non-executable scenario count: **11**
 - Command(s): `date.birthdate(refDate=20000, max=69, min=16, mode="age")`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Value"
 "1920-10-04T17:22:24.125Z"
@@ -1857,7 +1830,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `date.birthdate(refDate=1577836800000, min=18, max=65, mode="age")`
 - Preview data:
-
 ```csv
 "Value"
 "1986-12-14T21:23:27.338Z"
@@ -1867,37 +1839,33 @@ Non-executable scenario count: **11**
 
 - Command(s): `date.birthdate(max=65, min=18, mode="age")`
 - Preview data:
-
 ```csv
 "Value"
-"1979-06-27T21:29:30.261Z"
+"1979-07-05T22:27:06.933Z"
 ```
 
 #### `domain-date-birthdate-arg-min`
 
 - Command(s): `date.birthdate(min=18, max=65, mode="age")`
 - Preview data:
-
 ```csv
 "Value"
-"1970-08-23T12:52:57.755Z"
+"1970-08-31T13:50:34.426Z"
 ```
 
 #### `domain-date-birthdate-arg-mode`
 
 - Command(s): `date.birthdate(mode="age", min=18, max=65)`
 - Preview data:
-
 ```csv
 "Value"
-"1989-12-05T00:20:09.176Z"
+"1989-12-13T01:17:45.847Z"
 ```
 
 #### `domain-date-birthdate-pair-refDate-max`
 
 - Command(s): `date.birthdate(refDate=1577836800000, max=65, min=18, mode="age")`
 - Preview data:
-
 ```csv
 "Value"
 "1973-08-07T06:26:36.179Z"
@@ -1907,37 +1875,33 @@ Non-executable scenario count: **11**
 
 - Command(s): `date.birthdate(max=65, min=18, mode="age")`
 - Preview data:
-
 ```csv
 "Value"
-"1979-10-16T15:52:00.006Z"
+"1979-10-24T16:49:36.678Z"
 ```
 
 #### `domain-date-birthdate-pair-min-mode`
 
 - Command(s): `date.birthdate(min=18, mode="age", max=65)`
 - Preview data:
-
 ```csv
 "Value"
-"1970-04-10T18:35:31.758Z"
+"1970-04-18T19:33:08.429Z"
 ```
 
 #### `domain-date-future-base`
 
 - Command(s): `date.future()`
 - Preview data:
-
 ```csv
 "Value"
-"2026-09-20T03:51:38.560Z"
+"2026-09-28T04:49:15.231Z"
 ```
 
 #### `domain-date-future-arg-refDate`
 
 - Command(s): `date.future(refDate=1577836800000)`
 - Preview data:
-
 ```csv
 "Value"
 "2020-01-10T14:38:46.292Z"
@@ -1947,17 +1911,15 @@ Non-executable scenario count: **11**
 
 - Command(s): `date.future(years=2)`
 - Preview data:
-
 ```csv
 "Value"
-"2027-12-02T22:34:48.865Z"
+"2027-12-10T23:32:25.536Z"
 ```
 
 #### `domain-date-future-pair-refDate-years`
 
 - Command(s): `date.future(refDate=1577836800000, years=2)`
 - Preview data:
-
 ```csv
 "Value"
 "2021-08-02T04:49:51.903Z"
@@ -1967,7 +1929,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `date.month()`
 - Preview data:
-
 ```csv
 "Value"
 "August"
@@ -1977,7 +1938,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `date.month(abbreviated=true)`
 - Preview data:
-
 ```csv
 "Value"
 "Jun"
@@ -1987,7 +1947,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `date.month(context=true)`
 - Preview data:
-
 ```csv
 "Value"
 "August"
@@ -1997,7 +1956,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `date.month(abbreviated=true, context=true)`
 - Preview data:
-
 ```csv
 "Value"
 "Jul"
@@ -2007,17 +1965,15 @@ Non-executable scenario count: **11**
 
 - Command(s): `date.past()`
 - Preview data:
-
 ```csv
 "Value"
-"2026-01-03T01:30:36.733Z"
+"2026-01-11T02:28:13.403Z"
 ```
 
 #### `domain-date-past-arg-refDate`
 
 - Command(s): `date.past(refDate=1577836800000)`
 - Preview data:
-
 ```csv
 "Value"
 "2019-08-27T00:03:49.125Z"
@@ -2027,17 +1983,15 @@ Non-executable scenario count: **11**
 
 - Command(s): `date.past(years=2)`
 - Preview data:
-
 ```csv
 "Value"
-"2025-06-07T14:30:30.127Z"
+"2025-06-15T15:28:06.798Z"
 ```
 
 #### `domain-date-past-pair-refDate-years`
 
 - Command(s): `date.past(refDate=1577836800000, years=2)`
 - Preview data:
-
 ```csv
 "Value"
 "2019-05-16T08:15:04.782Z"
@@ -2047,27 +2001,24 @@ Non-executable scenario count: **11**
 
 - Command(s): `date.recent()`
 - Preview data:
-
 ```csv
 "Value"
-"2026-06-05T08:19:51.622Z"
+"2026-06-13T09:17:28.292Z"
 ```
 
 #### `domain-date-recent-arg-days`
 
 - Command(s): `date.recent(days=7)`
 - Preview data:
-
 ```csv
 "Value"
-"2026-06-03T14:07:54.292Z"
+"2026-06-11T15:05:30.962Z"
 ```
 
 #### `domain-date-recent-arg-refDate`
 
 - Command(s): `date.recent(refDate=1577836800000)`
 - Preview data:
-
 ```csv
 "Value"
 "2019-12-31T17:33:19.970Z"
@@ -2077,7 +2028,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `date.recent(days=7, refDate=1577836800000)`
 - Preview data:
-
 ```csv
 "Value"
 "2019-12-31T16:09:08.524Z"
@@ -2087,27 +2037,24 @@ Non-executable scenario count: **11**
 
 - Command(s): `date.soon()`
 - Preview data:
-
 ```csv
 "Value"
-"2026-06-05T10:20:34.383Z"
+"2026-06-13T11:18:11.053Z"
 ```
 
 #### `domain-date-soon-arg-days`
 
 - Command(s): `date.soon(days=7)`
 - Preview data:
-
 ```csv
 "Value"
-"2026-06-07T02:48:22.611Z"
+"2026-06-15T03:45:59.281Z"
 ```
 
 #### `domain-date-soon-arg-refDate`
 
 - Command(s): `date.soon(refDate=1577836800000)`
 - Preview data:
-
 ```csv
 "Value"
 "2020-01-01T14:00:11.275Z"
@@ -2117,7 +2064,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `date.soon(days=7, refDate=1577836800000)`
 - Preview data:
-
 ```csv
 "Value"
 "2020-01-05T05:26:41.692Z"
@@ -2127,7 +2073,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `date.timeZone()`
 - Preview data:
-
 ```csv
 "Value"
 "Africa/Blantyre"
@@ -2137,7 +2082,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `date.weekday()`
 - Preview data:
-
 ```csv
 "Value"
 "Sunday"
@@ -2147,7 +2091,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `date.weekday(abbreviated=true)`
 - Preview data:
-
 ```csv
 "Value"
 "Fri"
@@ -2157,7 +2100,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `date.weekday(context=true)`
 - Preview data:
-
 ```csv
 "Value"
 "Sunday"
@@ -2167,7 +2109,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `date.weekday(abbreviated=true, context=true)`
 - Preview data:
-
 ```csv
 "Value"
 "Wed"
@@ -2177,7 +2118,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `finance.accountName()`
 - Preview data:
-
 ```csv
 "Value"
 "Credit Card Account"
@@ -2187,7 +2127,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `finance.accountNumber()`
 - Preview data:
-
 ```csv
 "Value"
 "12741818"
@@ -2197,7 +2136,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `finance.accountNumber(length=4)`
 - Preview data:
-
 ```csv
 "Value"
 "0626"
@@ -2207,7 +2145,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `finance.amount()`
 - Preview data:
-
 ```csv
 "Value"
 "98.23"
@@ -2217,7 +2154,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `finance.amount(autoFormat=true)`
 - Preview data:
-
 ```csv
 "Value"
 "243.58"
@@ -2227,7 +2163,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `finance.amount(dec=2)`
 - Preview data:
-
 ```csv
 "Value"
 "180.47"
@@ -2237,7 +2172,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `finance.amount(max=100)`
 - Preview data:
-
 ```csv
 "Value"
 "98.06"
@@ -2247,7 +2181,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `finance.amount(min=1)`
 - Preview data:
-
 ```csv
 "Value"
 "745.17"
@@ -2257,7 +2190,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `finance.amount(symbol="$")`
 - Preview data:
-
 ```csv
 "Value"
 "$439.51"
@@ -2267,7 +2199,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `finance.amount(autoFormat=true, dec=2)`
 - Preview data:
-
 ```csv
 "Value"
 "823.64"
@@ -2277,7 +2208,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `finance.amount(dec=2, max=100)`
 - Preview data:
-
 ```csv
 "Value"
 "61.65"
@@ -2287,7 +2217,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `finance.amount(max=100, min=1)`
 - Preview data:
-
 ```csv
 "Value"
 "73.22"
@@ -2297,7 +2226,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `finance.amount(min=1, symbol="$")`
 - Preview data:
-
 ```csv
 "Value"
 "$738.40"
@@ -2307,7 +2235,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `finance.bic()`
 - Preview data:
-
 ```csv
 "Value"
 "SCXGMW70"
@@ -2317,7 +2244,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `finance.bic(includeBranchCode=true)`
 - Preview data:
-
 ```csv
 "Value"
 "TOZQSBL96NT"
@@ -2327,7 +2253,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `finance.bitcoinAddress()`
 - Preview data:
-
 ```csv
 "Value"
 "34fzp3Y8vj9LnQmtgNeraDGfkqT2rk"
@@ -2337,7 +2262,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `finance.creditCardCVV()`
 - Preview data:
-
 ```csv
 "Value"
 "463"
@@ -2347,7 +2271,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `finance.creditCardIssuer()`
 - Preview data:
-
 ```csv
 "Value"
 "american_express"
@@ -2357,7 +2280,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `finance.creditCardNumber()`
 - Preview data:
-
 ```csv
 "Value"
 "3529-6738-8179-4135"
@@ -2367,7 +2289,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `finance.creditCardNumber(issuer="finance-creditCardNumber-issuer")`
 - Preview data:
-
 ```csv
 "Value"
 "3044-612107-9965"
@@ -2377,7 +2298,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `finance.currencyCode()`
 - Preview data:
-
 ```csv
 "Value"
 "LBP"
@@ -2387,7 +2307,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `finance.currencyName()`
 - Preview data:
-
 ```csv
 "Value"
 "Cedi"
@@ -2397,7 +2316,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `finance.currencyNumericCode()`
 - Preview data:
-
 ```csv
 "Value"
 "934"
@@ -2407,7 +2325,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `finance.currencySymbol()`
 - Preview data:
-
 ```csv
 "Value"
 "₴"
@@ -2417,7 +2334,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `finance.ethereumAddress()`
 - Preview data:
-
 ```csv
 "Value"
 "0x05a9f11aa9ac6713b564dc821edb1cee4ea9bb33"
@@ -2427,7 +2343,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `finance.iban()`
 - Preview data:
-
 ```csv
 "Value"
 "LV80HNUZ1327310107987"
@@ -2437,7 +2352,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `finance.iban(countryCode="GB")`
 - Preview data:
-
 ```csv
 "Value"
 "GB93ZCOC36631779090042"
@@ -2447,7 +2361,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `finance.iban(formatted=true)`
 - Preview data:
-
 ```csv
 "Value"
 "FI75 6537 4040 0859 87"
@@ -2457,7 +2370,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `finance.iban(countryCode="GB", formatted=true)`
 - Preview data:
-
 ```csv
 "Value"
 "GB63 QSMG 1465 6277 3690 20"
@@ -2467,7 +2379,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `finance.litecoinAddress()`
 - Preview data:
-
 ```csv
 "Value"
 "387GmSW4s1E1t16xYaNCi9zgLtV5cDM"
@@ -2477,7 +2388,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `finance.maskedNumber()`
 - Preview data:
-
 ```csv
 "Value"
 "(...1483)"
@@ -2487,7 +2397,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `finance.maskedNumber(length=4)`
 - Preview data:
-
 ```csv
 "Value"
 "(...7138)"
@@ -2497,7 +2406,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `finance.pin()`
 - Preview data:
-
 ```csv
 "Value"
 "2035"
@@ -2507,7 +2415,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `finance.pin(length=4)`
 - Preview data:
-
 ```csv
 "Value"
 "1155"
@@ -2517,7 +2424,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `finance.routingNumber()`
 - Preview data:
-
 ```csv
 "Value"
 "960542158"
@@ -2527,7 +2433,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `finance.transactionDescription()`
 - Preview data:
-
 ```csv
 "Value"
 "payment processed at Ullrich LLC for PKR 490.00, using card ending ****1272. Account: ***8641."
@@ -2537,7 +2442,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `finance.transactionType()`
 - Preview data:
-
 ```csv
 "Value"
 "withdrawal"
@@ -2547,7 +2451,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `food.adjective()`
 - Preview data:
-
 ```csv
 "Value"
 "fluffy"
@@ -2557,7 +2460,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `food.description()`
 - Preview data:
-
 ```csv
 "Value"
 "A classic pie filled with delicious venison and crunchy purple rice, baked in a smoky pastry crust and topped with a golden-brown lattice."
@@ -2567,7 +2469,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `food.dish()`
 - Preview data:
-
 ```csv
 "Value"
 "Passionfruit Pie"
@@ -2577,7 +2478,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `food.ethnicCategory()`
 - Preview data:
-
 ```csv
 "Value"
 "Belarusian"
@@ -2587,7 +2487,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `food.fruit()`
 - Preview data:
-
 ```csv
 "Value"
 "grape"
@@ -2597,7 +2496,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `food.ingredient()`
 - Preview data:
-
 ```csv
 "Value"
 "bonza"
@@ -2607,7 +2505,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `food.meat()`
 - Preview data:
-
 ```csv
 "Value"
 "crocodile"
@@ -2617,7 +2514,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `food.spice()`
 - Preview data:
-
 ```csv
 "Value"
 "achiote seed"
@@ -2627,7 +2523,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `food.vegetable()`
 - Preview data:
-
 ```csv
 "Value"
 "lettuce"
@@ -2637,7 +2532,6 @@ Non-executable scenario count: **11**
 
 - Command(s): `git.branch()`
 - Preview data:
-
 ```csv
 "Value"
 "array-input"
@@ -2647,22 +2541,20 @@ Non-executable scenario count: **11**
 
 - Command(s): `git.commitDate()`
 - Preview data:
-
 ```csv
 "Value"
-"Thu Jun 4 09:17:39 2026 -0700"
+"Fri Jun 12 10:15:16 2026 -0700"
 ```
 
 #### `domain-git-commitEntry-base`
 
 - Command(s): `git.commitEntry()`
 - Preview data:
-
 ```csv
 "Value"
 "commit 7738bbde748c2e27e1520b9bf8bb637a48e2feaa
 Author: Josie Russel <Josie.Russel95@yahoo.com>
-Date: Thu Jun 4 10:02:55 2026 +0700
+Date: Fri Jun 12 11:00:32 2026 +0700
 
     transmit solid state protocol
 "
@@ -2672,7 +2564,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `git.commitMessage()`
 - Preview data:
-
 ```csv
 "Value"
 "program multi-byte alarm"
@@ -2682,7 +2573,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `git.commitSha()`
 - Preview data:
-
 ```csv
 "Value"
 "aa5bda8d6f6a71fed1ccffd89a4ea33d4ec21e7e"
@@ -2692,7 +2582,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `hacker.abbreviation()`
 - Preview data:
-
 ```csv
 "Value"
 "UDP"
@@ -2702,7 +2591,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `hacker.adjective()`
 - Preview data:
-
 ```csv
 "Value"
 "solid state"
@@ -2712,7 +2600,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `hacker.ingverb()`
 - Preview data:
-
 ```csv
 "Value"
 "bypassing"
@@ -2722,7 +2609,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `hacker.noun()`
 - Preview data:
-
 ```csv
 "Value"
 "card"
@@ -2732,7 +2618,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `hacker.phrase()`
 - Preview data:
-
 ```csv
 "Value"
 "compressing the array won't do anything, we need to bypass the cross-platform PCI alarm!"
@@ -2742,7 +2627,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `hacker.verb()`
 - Preview data:
-
 ```csv
 "Value"
 "calculate"
@@ -2752,7 +2636,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `image.avatar()`
 - Preview data:
-
 ```csv
 "Value"
 "https://cdn.jsdelivr.net/gh/faker-js/assets-person-portrait/female/512/20.jpg"
@@ -2762,7 +2645,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `image.avatarGitHub()`
 - Preview data:
-
 ```csv
 "Value"
 "https://avatars.githubusercontent.com/u/16590067"
@@ -2772,7 +2654,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `image.avatarLegacy()`
 - Preview data:
-
 ```csv
 "Value"
 "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/8.jpg"
@@ -2782,7 +2663,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `image.dataUri()`
 - Preview data:
-
 ```csv
 "Value"
 "data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20version%3D%221.1%22%20baseProfile%3D%22full%22%20width%3D%222476%22%20height%3D%223320%22%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22%23db2805%22%2F%3E%3Ctext%20x%3D%221238%22%20y%3D%221660%22%20font-size%3D%2220%22%20alignment-baseline%3D%22middle%22%20text-anchor%3D%22middle%22%20fill%3D%22white%22%3E2476x3320%3C%2Ftext%3E%3C%2Fsvg%3E"
@@ -2792,7 +2672,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `image.personPortrait()`
 - Preview data:
-
 ```csv
 "Value"
 "https://cdn.jsdelivr.net/gh/faker-js/assets-person-portrait/male/512/96.jpg"
@@ -2802,7 +2681,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `image.url()`
 - Preview data:
-
 ```csv
 "Value"
 "https://loremflickr.com/3937/617?lock=3931926876699204"
@@ -2812,7 +2690,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `image.url(height=2)`
 - Preview data:
-
 ```csv
 "Value"
 "https://loremflickr.com/3193/2?lock=3191839961479511"
@@ -2822,7 +2699,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `image.url(width=3)`
 - Preview data:
-
 ```csv
 "Value"
 "https://picsum.photos/seed/3UIYDPaNWB/3/984"
@@ -2832,7 +2708,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `image.url(height=2, width=3)`
 - Preview data:
-
 ```csv
 "Value"
 "https://loremflickr.com/3/2?lock=7146576591433292"
@@ -2842,7 +2717,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `image.urlLoremFlickr()`
 - Preview data:
-
 ```csv
 "Value"
 "https://loremflickr.com/3481/2017?lock=3236073595510946"
@@ -2852,7 +2726,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `image.urlPicsumPhotos()`
 - Preview data:
-
 ```csv
 "Value"
 "https://picsum.photos/seed/s9gojEHeQ/1634/3581?grayscale&blur=1"
@@ -2862,7 +2735,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `image.urlPlaceholder()`
 - Preview data:
-
 ```csv
 "Value"
 "https://via.placeholder.com/3214x1881/defd36/91bc2c.jpg?text=comedo%20vespillo%20venio"
@@ -2872,7 +2744,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.color()`
 - Preview data:
-
 ```csv
 "Value"
 "#2f0204"
@@ -2882,7 +2753,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.displayName()`
 - Preview data:
-
 ```csv
 "Value"
 "Demetrius.Kuhlman"
@@ -2892,7 +2762,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.domainName()`
 - Preview data:
-
 ```csv
 "Value"
 "french-tuber.org"
@@ -2902,7 +2771,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.domainSuffix()`
 - Preview data:
-
 ```csv
 "Value"
 "name"
@@ -2912,7 +2780,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.domainWord()`
 - Preview data:
-
 ```csv
 "Value"
 "pure-alb"
@@ -2922,7 +2789,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.email()`
 - Preview data:
-
 ```csv
 "Value"
 "Brian42@yahoo.com"
@@ -2932,7 +2798,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.email(allowSpecialCharacters=true)`
 - Preview data:
-
 ```csv
 "Value"
 "Brant=Abernathy@hotmail.com"
@@ -2942,7 +2807,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.email(firstName="Ada")`
 - Preview data:
-
 ```csv
 "Value"
 "Ada.Schumm@gmail.com"
@@ -2952,7 +2816,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.email(lastName="Lovelace")`
 - Preview data:
-
 ```csv
 "Value"
 "Gavin.Lovelace62@yahoo.com"
@@ -2962,7 +2825,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.email(provider="example.com")`
 - Preview data:
-
 ```csv
 "Value"
 "Viola.Torphy@example.com"
@@ -2972,7 +2834,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.email(allowSpecialCharacters=true, firstName="Ada")`
 - Preview data:
-
 ```csv
 "Value"
 "Ada93@hotmail.com"
@@ -2982,7 +2843,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.email(firstName="Ada", lastName="Lovelace")`
 - Preview data:
-
 ```csv
 "Value"
 "Ada.Lovelace55@yahoo.com"
@@ -2992,7 +2852,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.email(lastName="Lovelace", provider="example.com")`
 - Preview data:
-
 ```csv
 "Value"
 "Euna.Lovelace@example.com"
@@ -3002,7 +2861,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.emoji()`
 - Preview data:
-
 ```csv
 "Value"
 "🐆"
@@ -3012,7 +2870,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.emoji(types=["food"])`
 - Preview data:
-
 ```csv
 "Value"
 "🫑"
@@ -3022,7 +2879,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.exampleEmail()`
 - Preview data:
-
 ```csv
 "Value"
 "Hulda5@example.org"
@@ -3032,7 +2888,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.httpMethod()`
 - Preview data:
-
 ```csv
 "Value"
 "PATCH"
@@ -3042,7 +2897,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.httpStatusCode()`
 - Preview data:
-
 ```csv
 "Value"
 "401"
@@ -3052,7 +2906,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.ip()`
 - Preview data:
-
 ```csv
 "Value"
 "229.141.100.182"
@@ -3062,7 +2915,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.ipv4()`
 - Preview data:
-
 ```csv
 "Value"
 "52.210.222.85"
@@ -3072,7 +2924,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.ipv4(cidrBlock="192.168.0.0/24")`
 - Preview data:
-
 ```csv
 "Value"
 "192.168.0.68"
@@ -3082,7 +2933,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.ipv4(network="private-a")`
 - Preview data:
-
 ```csv
 "Value"
 "10.77.209.214"
@@ -3092,7 +2942,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.ipv4(cidrBlock="192.168.0.0/24", network="private-a")`
 - Preview data:
-
 ```csv
 "Value"
 "192.168.0.45"
@@ -3102,7 +2951,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.ipv6()`
 - Preview data:
-
 ```csv
 "Value"
 "ff36:bc8e:3eea:4c8e:ac0b:50a2:fc4a:dbcf"
@@ -3112,27 +2960,24 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.jwt()`
 - Preview data:
-
 ```csv
 "Value"
-"eyJhbGciOiJIUzM4NCIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3ODA1NjMzMjgsImV4cCI6MTc4MDYxOTQwOSwibmJmIjoxNzc3MzU0NDExLCJpc3MiOiJTYXR0ZXJmaWVsZCBHcm91cCIsInN1YiI6IjYxMzIwNjNhLTE5MjktNDkwZi1iNWNhLTM2MWU2NmM1MmRkNCIsImF1ZCI6IjQwNjEwNWNkLTE2MjgtNDA4Yi1iN2EyLWQ2NmM1M2Y3NGFiNSIsImp0aSI6IjU4YmNiMzdkLTRkOGEtNGYyZS04ZDNmLTQyMGM4MGExNGMwNCJ9.MLGSLGF7hNjp6RghVgC2GZIDrfHAZBBIZ8WaqXFphTbyRPkIFKnEnnSToLoWkvDw"
+"eyJhbGciOiJIUzM4NCIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3ODEyNTc5ODUsImV4cCI6MTc4MTMxNDA2NiwibmJmIjoxNzc4MDQ5MDY3LCJpc3MiOiJTYXR0ZXJmaWVsZCBHcm91cCIsInN1YiI6IjYxMzIwNjNhLTE5MjktNDkwZi1iNWNhLTM2MWU2NmM1MmRkNCIsImF1ZCI6IjQwNjEwNWNkLTE2MjgtNDA4Yi1iN2EyLWQ2NmM1M2Y3NGFiNSIsImp0aSI6IjU4YmNiMzdkLTRkOGEtNGYyZS04ZDNmLTQyMGM4MGExNGMwNCJ9.MLGSLGF7hNjp6RghVgC2GZIDrfHAZBBIZ8WaqXFphTbyRPkIFKnEnnSToLoWkvDw"
 ```
 
 #### `domain-internet-jwt-arg-header`
 
 - Command(s): `internet.jwt(header={})`
 - Preview data:
-
 ```csv
 "Value"
-"e30.eyJpYXQiOjE3ODA1NzMwMzUsImV4cCI6MTc4MDU5NTQ4NywibmJmIjoxNzg2OTE1ODAzLCJpc3MiOiJGYWhleSwgS2lobiBhbmQgUmVpY2hlcnQiLCJzdWIiOiIxYzQyMmU2ZS1lNzcxLTRmMDAtYmU3OS02NzAwNGViZjg1OGYiLCJhdWQiOiI5MmY3OTFiMy0wYTI5LTQ4ZjItOWUxZS00MGU1Yzk2NTkzYWQiLCJqdGkiOiJkNzk2YzA3Yy0zNjRmLTQzNjgtYWJhZS00N2M3NTExODk4MWEifQ.e8QhcTHj4nBTF2jK53PylJjqBpYeMf9N0oMfTsbM6jKYhngnf0HuiaRiyjUW5TWk"
+"e30.eyJpYXQiOjE3ODEyNjc2OTEsImV4cCI6MTc4MTI5MDE0MywibmJmIjoxNzg3NjEwNDYwLCJpc3MiOiJGYWhleSwgS2lobiBhbmQgUmVpY2hlcnQiLCJzdWIiOiIxYzQyMmU2ZS1lNzcxLTRmMDAtYmU3OS02NzAwNGViZjg1OGYiLCJhdWQiOiI5MmY3OTFiMy0wYTI5LTQ4ZjItOWUxZS00MGU1Yzk2NTkzYWQiLCJqdGkiOiJkNzk2YzA3Yy0zNjRmLTQzNjgtYWJhZS00N2M3NTExODk4MWEifQ.e8QhcTHj4nBTF2jK53PylJjqBpYeMf9N0oMfTsbM6jKYhngnf0HuiaRiyjUW5TWk"
 ```
 
 #### `domain-internet-jwt-arg-payload`
 
 - Command(s): `internet.jwt(payload={})`
 - Preview data:
-
 ```csv
 "Value"
 "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.e30.bzBMPPc25eqL3Wz5ty1xLOmqFcQ5UhbkK5Bz27pZJGMImquk9U1G93TTIT78S0Li"
@@ -3142,7 +2987,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.jwt(refDate=4)`
 - Preview data:
-
 ```csv
 "Value"
 "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOi0xMTYxMCwiZXhwIjo2OTYyMSwibmJmIjozMTE3NTUyMywiaXNzIjoiU2lwZXMsIEJhdHogYW5kIExvd2UiLCJzdWIiOiIxZWVhZGYwNC0zMDQ2LTRkYmItOWVhNC0yMGY1Zjg5N2Y2YWQiLCJhdWQiOiI2ZmJhMDFiYS0yMWY0LTRlZTQtYmVlZC1iZjA2MDlhMTNkMzAiLCJqdGkiOiI0NDFlMWI4ZC00MmFhLTQzM2UtODA0Ni05YmNiZmFjY2ZjZGIifQ.ShTkX7nPtnWynmGL3sA1GZzI2AzKj6Mj3LgvWpTuDw2z02aONYVFT1gwYoVsPPH4"
@@ -3152,7 +2996,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.jwt(header={}, payload={})`
 - Preview data:
-
 ```csv
 "Value"
 "e30.e30.O604I0hDV1mFaT0FXBy2U9vHZNugne9xahCoN7ydkh96jHDR36zV9TDxv6yQjGqM"
@@ -3162,7 +3005,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.jwt(payload={}, refDate=4)`
 - Preview data:
-
 ```csv
 "Value"
 "eyJhbGciOiJFUzUxMiIsInR5cCI6IkpXVCJ9.e30.cqMtfsjVRe4taxGy1S7uH1KOAlSBZSXQoKXttlGA5b8LcMBlMXhYYMZxt7ED45qV"
@@ -3172,7 +3014,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.jwtAlgorithm()`
 - Preview data:
-
 ```csv
 "Value"
 "ES256"
@@ -3182,7 +3023,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.mac()`
 - Preview data:
-
 ```csv
 "Value"
 "45:11:8d:5b:a6:32"
@@ -3192,7 +3032,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.mac(separator="-")`
 - Preview data:
-
 ```csv
 "Value"
 "c0-c3-a3-5e-ef-da"
@@ -3202,7 +3041,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.password()`
 - Preview data:
-
 ```csv
 "Value"
 "TBoqXmfYfXk3I3A"
@@ -3213,7 +3051,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 - Command(s): `internet.password(length=10, memorable=false, pattern="[A-Za-z0-9]", prefix="#")`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Value"
 "#wMJJrPMVo"
@@ -3223,7 +3060,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.password(length=12)`
 - Preview data:
-
 ```csv
 "Value"
 "hzyT0010JBYb"
@@ -3233,7 +3069,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.password(memorable=true)`
 - Preview data:
-
 ```csv
 "Value"
 "zapeboqulewufuf"
@@ -3243,7 +3078,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.password(pattern="[A-Z]")`
 - Preview data:
-
 ```csv
 "Value"
 "BVSNRUBNEAWUTJT"
@@ -3253,7 +3087,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.password(prefix="#")`
 - Preview data:
-
 ```csv
 "Value"
 "#xxsm9CX1flFshv"
@@ -3263,7 +3096,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.password(length=12, memorable=true)`
 - Preview data:
-
 ```csv
 "Value"
 "jecotucenedo"
@@ -3273,7 +3105,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.password(memorable=true, pattern="[A-Z]")`
 - Preview data:
-
 ```csv
 "Value"
 "nomudolunexolec"
@@ -3283,7 +3114,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.password(pattern="[A-Z]", prefix="#")`
 - Preview data:
-
 ```csv
 "Value"
 "#EXCEEXMTTHRSHT"
@@ -3293,7 +3123,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.port()`
 - Preview data:
-
 ```csv
 "Value"
 "63399"
@@ -3303,7 +3132,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.protocol()`
 - Preview data:
-
 ```csv
 "Value"
 "http"
@@ -3313,7 +3141,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.url()`
 - Preview data:
-
 ```csv
 "Value"
 "https://grave-overheard.org"
@@ -3323,7 +3150,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.url(appendSlash=true)`
 - Preview data:
-
 ```csv
 "Value"
 "https://pleasing-scrap.biz/"
@@ -3333,7 +3159,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.url(protocol="https")`
 - Preview data:
-
 ```csv
 "Value"
 "https://zealous-flat.net"
@@ -3343,7 +3168,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.url(appendSlash=true, protocol="https")`
 - Preview data:
-
 ```csv
 "Value"
 "https://good-natured-hovel.info/"
@@ -3353,7 +3177,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.userAgent()`
 - Preview data:
-
 ```csv
 "Value"
 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/560.22 (KHTML, like Gecko) Chrome/100.9.0.1 Safari/555.7 Edg/113.8.7.15"
@@ -3363,7 +3186,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.username()`
 - Preview data:
-
 ```csv
 "Value"
 "Kailey2"
@@ -3373,7 +3195,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.username(firstName="Ada")`
 - Preview data:
-
 ```csv
 "Value"
 "Ada_Bode"
@@ -3383,7 +3204,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.username(lastName="Lovelace")`
 - Preview data:
-
 ```csv
 "Value"
 "Dallin.Lovelace"
@@ -3393,7 +3213,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.username(firstName="Ada", lastName="Lovelace")`
 - Preview data:
-
 ```csv
 "Value"
 "Ada.Lovelace"
@@ -3403,7 +3222,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.userName()`
 - Preview data:
-
 ```csv
 "Value"
 "Marlee30"
@@ -3413,7 +3231,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `literal.value()`
 - Preview data:
-
 ```csv
 "Value"
 ""
@@ -3424,7 +3241,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 - Command(s): `literal.value("Pending")`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Value"
 "Pending"
@@ -3435,7 +3251,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 - Command(s): `literal.value("")`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Value"
 ""
@@ -3445,7 +3260,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `literal.value(value=true)`
 - Preview data:
-
 ```csv
 "Value"
 "true"
@@ -3455,7 +3269,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.buildingNumber()`
 - Preview data:
-
 ```csv
 "Value"
 "86561"
@@ -3465,7 +3278,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.cardinalDirection()`
 - Preview data:
-
 ```csv
 "Value"
 "North"
@@ -3475,7 +3287,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.city()`
 - Preview data:
-
 ```csv
 "Value"
 "Antelope"
@@ -3485,7 +3296,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.continent()`
 - Preview data:
-
 ```csv
 "Value"
 "Africa"
@@ -3495,7 +3305,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.country()`
 - Preview data:
-
 ```csv
 "Value"
 "Eritrea"
@@ -3505,7 +3314,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.countryCode()`
 - Preview data:
-
 ```csv
 "Value"
 "GU"
@@ -3515,7 +3323,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.county()`
 - Preview data:
-
 ```csv
 "Value"
 "Cumbria"
@@ -3525,7 +3332,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.direction()`
 - Preview data:
-
 ```csv
 "Value"
 "West"
@@ -3535,7 +3341,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.direction(abbreviated=true)`
 - Preview data:
-
 ```csv
 "Value"
 "S"
@@ -3545,7 +3350,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.latitude()`
 - Preview data:
-
 ```csv
 "Value"
 "41.3757"
@@ -3555,7 +3359,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.latitude(min=1)`
 - Preview data:
-
 ```csv
 "Value"
 "12.2218"
@@ -3565,7 +3368,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.latitude(max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "-85.9885"
@@ -3575,7 +3377,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.latitude(precision=4)`
 - Preview data:
-
 ```csv
 "Value"
 "-16.2319"
@@ -3585,7 +3386,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.latitude(min=1, max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "2.315"
@@ -3595,7 +3395,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.latitude(max=3, precision=4)`
 - Preview data:
-
 ```csv
 "Value"
 "-52.1397"
@@ -3605,7 +3404,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.longitude()`
 - Preview data:
-
 ```csv
 "Value"
 "156.4157"
@@ -3615,7 +3413,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.longitude(min=1)`
 - Preview data:
-
 ```csv
 "Value"
 "26.1188"
@@ -3625,7 +3422,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.longitude(max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "-68.5071"
@@ -3635,7 +3431,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.longitude(precision=4)`
 - Preview data:
-
 ```csv
 "Value"
 "-52.7542"
@@ -3645,7 +3440,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.longitude(min=1, max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "1.1204"
@@ -3655,7 +3449,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.longitude(max=3, precision=4)`
 - Preview data:
-
 ```csv
 "Value"
 "-134.0996"
@@ -3665,7 +3458,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.ordinalDirection()`
 - Preview data:
-
 ```csv
 "Value"
 "Southeast"
@@ -3675,7 +3467,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.secondaryAddress()`
 - Preview data:
-
 ```csv
 "Value"
 "Apt. 818"
@@ -3685,7 +3476,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.state()`
 - Preview data:
-
 ```csv
 "Value"
 "Michigan"
@@ -3695,7 +3485,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.state(abbreviated=true)`
 - Preview data:
-
 ```csv
 "Value"
 "WI"
@@ -3705,7 +3494,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.street()`
 - Preview data:
-
 ```csv
 "Value"
 "Brown Trafficway"
@@ -3715,7 +3503,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.streetAddress()`
 - Preview data:
-
 ```csv
 "Value"
 "428 Grant Walks"
@@ -3725,7 +3512,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.streetAddress(useFullAddress=true)`
 - Preview data:
-
 ```csv
 "Value"
 "6267 Euclid Avenue Apt. 758"
@@ -3735,7 +3521,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.timeZone()`
 - Preview data:
-
 ```csv
 "Value"
 "America/North_Dakota/Beulah"
@@ -3745,7 +3530,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.zipCode()`
 - Preview data:
-
 ```csv
 "Value"
 "86088"
@@ -3755,7 +3539,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `lorem.lines()`
 - Preview data:
-
 ```csv
 "Value"
 "Celo defetiscor magnam chirographum peccatus contigo solium aggredior truculenter.
@@ -3769,7 +3552,6 @@ Speciosus demulceo celebrer copiose cunabula caritas ambulo caveo unde."
 
 - Command(s): `lorem.lines(min=1)`
 - Preview data:
-
 ```csv
 "Value"
 "Abutor viridis tripudio calculus totam venio blanditiis talio."
@@ -3779,7 +3561,6 @@ Speciosus demulceo celebrer copiose cunabula caritas ambulo caveo unde."
 
 - Command(s): `lorem.lines(max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "Voluptatem vinum balbus ago.
@@ -3792,7 +3573,6 @@ Ager conor adipisci admiratio cicuta id ullus apto ara conitor."
 
 - Command(s): `lorem.lines(lineCount=2)`
 - Preview data:
-
 ```csv
 "Value"
 "Comparo celebrer capio.
@@ -3803,7 +3583,6 @@ Nesciunt ipsa acerbitas cilicium thalassinus inflammatio."
 
 - Command(s): `lorem.lines(lineCountMax=2)`
 - Preview data:
-
 ```csv
 "Value"
 "Commodi civitas peccatus aestus ager nesciunt laboriosam quos.
@@ -3817,7 +3596,6 @@ Creta conforto usitas sol."
 
 - Command(s): `lorem.lines(lineCountMin=1)`
 - Preview data:
-
 ```csv
 "Value"
 "Calculus valetudo adopto tergeo tyrannus quaerat.
@@ -3831,7 +3609,6 @@ Sint ultra adsum vester tres tametsi."
 
 - Command(s): `lorem.lines(min=1, max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "Dolore vere conicio suggero demo."
@@ -3841,7 +3618,6 @@ Sint ultra adsum vester tres tametsi."
 
 - Command(s): `lorem.lines(max=3, lineCount=2)`
 - Preview data:
-
 ```csv
 "Value"
 "Aperiam cervus perspiciatis dedico deputo combibo tutis vester quis vigilo."
@@ -3851,7 +3627,6 @@ Sint ultra adsum vester tres tametsi."
 
 - Command(s): `lorem.lines(lineCount=2, lineCountMax=2)`
 - Preview data:
-
 ```csv
 "Value"
 "Tres vacuus somnus asper allatus allatus."
@@ -3861,7 +3636,6 @@ Sint ultra adsum vester tres tametsi."
 
 - Command(s): `lorem.lines(lineCountMax=2, lineCountMin=1)`
 - Preview data:
-
 ```csv
 "Value"
 "Nemo sophismata illo itaque.
@@ -3872,7 +3646,6 @@ Cernuus solutio sed comes degusto suscipio territo civitas."
 
 - Command(s): `lorem.paragraph()`
 - Preview data:
-
 ```csv
 "Value"
 "Voluptate adopto arguo. Titulus summisse molestiae arx careo patior. Alveus conservo canto succedo demergo cupressus collum amplus cotidie autem."
@@ -3882,7 +3655,6 @@ Cernuus solutio sed comes degusto suscipio territo civitas."
 
 - Command(s): `lorem.paragraph(min=1)`
 - Preview data:
-
 ```csv
 "Value"
 "Decerno theatrum crapula utroque crastinus demoror bis."
@@ -3892,7 +3664,6 @@ Cernuus solutio sed comes degusto suscipio territo civitas."
 
 - Command(s): `lorem.paragraph(max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "Vulnero deleniti vitae aspicio sapiente. Decumbo voluptate claustrum ascisco angustus thema synagoga. Ad conspergo adfectus casso allatus patior."
@@ -3902,7 +3673,6 @@ Cernuus solutio sed comes degusto suscipio territo civitas."
 
 - Command(s): `lorem.paragraph(sentenceCount=4)`
 - Preview data:
-
 ```csv
 "Value"
 "Tergeo congregatio tolero. Trepide consuasor censura. Architecto aegrus creptio fugiat atqui delego."
@@ -3912,7 +3682,6 @@ Cernuus solutio sed comes degusto suscipio territo civitas."
 
 - Command(s): `lorem.paragraph(sentenceCountMax=5)`
 - Preview data:
-
 ```csv
 "Value"
 "Amiculum ambulo depraedor clibanus quae tres coepi complectus creptio. Condico tonsor curatio aggero accusantium utrum demergo. Deripio creo trucido civis despecto."
@@ -3922,7 +3691,6 @@ Cernuus solutio sed comes degusto suscipio territo civitas."
 
 - Command(s): `lorem.paragraph(sentenceCountMin=6)`
 - Preview data:
-
 ```csv
 "Value"
 "Alo quod argentum illo cattus decretum. Tenuis nemo conor campana bardus collum sint. Benevolentia sui sint tripudio conicio."
@@ -3932,7 +3700,6 @@ Cernuus solutio sed comes degusto suscipio territo civitas."
 
 - Command(s): `lorem.paragraph(min=1, max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "Labore labore torrens vesco tumultus attollo canto canonicus cupiditate."
@@ -3942,7 +3709,6 @@ Cernuus solutio sed comes degusto suscipio territo civitas."
 
 - Command(s): `lorem.paragraph(max=3, sentenceCount=4)`
 - Preview data:
-
 ```csv
 "Value"
 "Repellendus aperiam textilis claro volubilis voluptas sophismata veritas tibi umerus. Ultio deleniti voco audacia depulso astrum inflammatio vulnus. Occaecati tactus titulus vel communis."
@@ -3952,7 +3718,6 @@ Cernuus solutio sed comes degusto suscipio territo civitas."
 
 - Command(s): `lorem.paragraph(sentenceCount=4, sentenceCountMax=5)`
 - Preview data:
-
 ```csv
 "Value"
 "Tandem victus repellendus varius distinctio cur varietas video. Totus occaecati bene est vacuus versus. Voluptate crustulum adhuc artificiose libero super aperte labore peior laborum."
@@ -3962,7 +3727,6 @@ Cernuus solutio sed comes degusto suscipio territo civitas."
 
 - Command(s): `lorem.paragraph(sentenceCountMax=5, sentenceCountMin=6)`
 - Preview data:
-
 ```csv
 "Value"
 "Quas tonsor ambulo tum. Ascit aggredior crepusculum quis constans articulus corona adiuvo. Thesis amita video solium ultra exercitationem."
@@ -3972,7 +3736,6 @@ Cernuus solutio sed comes degusto suscipio territo civitas."
 
 - Command(s): `lorem.paragraphs()`
 - Preview data:
-
 ```csv
 "Value"
 "Tandem surgo ulterius defero aut veniam communis. Porro claro conturbo urbs aestivus cognomen advenio aureus sulum collum. Tertius apud bonus ara fugit totam tempora veritas.
@@ -3984,7 +3747,6 @@ Defendo tergo spectaculum. Caries laborum spes solitudo aestivus. Curvo comparo 
 
 - Command(s): `lorem.paragraphs(min=1)`
 - Preview data:
-
 ```csv
 "Value"
 "Arca deprimo confugo amplexus arcus vulnus vester titulus super suffoco. Cruentus debilito adulatio audacia vicinus pax attonbitus delicate cuius. Arbustum demens doloribus dolor."
@@ -3994,7 +3756,6 @@ Defendo tergo spectaculum. Caries laborum spes solitudo aestivus. Curvo comparo 
 
 - Command(s): `lorem.paragraphs(max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "Cogo decet adflicto sumptus ut. Amo sustineo creta templum. Sapiente creator non decipio comes comminor aro aliquid curso.3Amplitudo et aliqua solitudo cruciamentum atque versus sustineo audacia credo. Alias decipio demens nemo speciosus absens ustilo vinco. Cetera impedit despecto apto.3Viriliter denuo thymbra curiositas vomito rerum canonicus amplitudo. Comprehendo bestia ambulo aranea adipiscor temperantia amaritudo culpo curia addo. Ex pax canonicus statua sperno adfero copia vulgaris videlicet."
@@ -4004,7 +3765,6 @@ Defendo tergo spectaculum. Caries laborum spes solitudo aestivus. Curvo comparo 
 
 - Command(s): `lorem.paragraphs(paragraphCount=4)`
 - Preview data:
-
 ```csv
 "Value"
 "Avaritia decor odio alienus aliquid confido delectus. Curriculum angelus cubo vulgaris crustulum vinco canonicus ventito. Patruus depulso venio addo.
@@ -4016,7 +3776,6 @@ Cohors complectus chirographum aiunt bibo condico appono cornu censura. Consequu
 
 - Command(s): `lorem.paragraphs(separator="-")`
 - Preview data:
-
 ```csv
 "Value"
 "Auxilium capto volva arca perspiciatis. Quod odio cum turpis ascisco culpa sed consequuntur cogo. Tracto ademptio quas sufficio decet tempora utrum.
@@ -4028,7 +3787,6 @@ Patruus vorax cariosus laboriosam. Defleo vox textor desipio voluptas apostolus 
 
 - Command(s): `lorem.paragraphs(paragraphCountMax=6)`
 - Preview data:
-
 ```csv
 "Value"
 "Varius averto adeptio vestigium versus acerbitas peccatus fugit. Tam cunctatio crebro demitto corrumpo. Conicio vester utroque ascit ab unde quidem.
@@ -4040,7 +3798,6 @@ Sophismata angustus alveus eveniet ventito. Theatrum somnus conduco sublime. Cor
 
 - Command(s): `lorem.paragraphs(paragraphCountMin=7)`
 - Preview data:
-
 ```csv
 "Value"
 "Strues aeneus debilito pectus capto perferendis antiquus doloremque placeat acsi. Advoco ventosus suus collum thymum truculenter beneficium ratione cruciamentum. Coniecto valens terreo.
@@ -4052,7 +3809,6 @@ Arca aro vinculum. Synagoga alias tracto ars conforto crudelis solitudo ascisco.
 
 - Command(s): `lorem.paragraphs(min=1, max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "Arbitro aequus turbo cur coerceo bestia acer facilis. Collum ut varietas chirographum pecto coadunatio. Pariatur derelinquo solus rem tempus arcus necessitatibus validus voluptate."
@@ -4062,7 +3818,6 @@ Arca aro vinculum. Synagoga alias tracto ars conforto crudelis solitudo ascisco.
 
 - Command(s): `lorem.paragraphs(max=3, paragraphCount=4)`
 - Preview data:
-
 ```csv
 "Value"
 "Sopor collum suus. Thalassinus speculum ut. Audeo beneficium arx repellat teres creator numquam carmen.3Velum cubitum aranea surculus arceo centum tantillus cumque. Defero capto demo summisse sto venio stultus adnuo derelinquo. Crepusculum acer tantum vulgo.3Sufficio accendo compono arcesso voluptates surculus demulceo. Denuncio tantum tertius angustus. Distinctio delectus iste pariatur."
@@ -4072,7 +3827,6 @@ Arca aro vinculum. Synagoga alias tracto ars conforto crudelis solitudo ascisco.
 
 - Command(s): `lorem.paragraphs(paragraphCount=4, separator="-")`
 - Preview data:
-
 ```csv
 "Value"
 "Culpo arcesso voluptatum antiquus suscipit. Vestrum nam advenio aer tabula tondeo expedita eaque. Odio decretum tunc sint volubilis casus reprehenderit odio nulla.
@@ -4084,7 +3838,6 @@ Spoliatio taceo deporto temporibus adfectus ipsum. Cum tyrannus adhuc totam. Ill
 
 - Command(s): `lorem.paragraphs(separator="-", paragraphCountMax=6)`
 - Preview data:
-
 ```csv
 "Value"
 "Aiunt amicitia animus decimus. Temeritas quis nemo. Tibi ubi optio absconditus aufero.
@@ -4096,7 +3849,6 @@ Velut conicio temptatio armarium sint aspicio apostolus. Tolero claudeo congrega
 
 - Command(s): `lorem.paragraphs(paragraphCountMax=6, paragraphCountMin=7)`
 - Preview data:
-
 ```csv
 "Value"
 "Color crur suffragium veniam voluptas. Commodi angelus molestias suppono asper ait eum thymbra synagoga. Magnam utpote asper stips.
@@ -4108,7 +3860,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.sentence()`
 - Preview data:
-
 ```csv
 "Value"
 "Thymum curo rerum utrum."
@@ -4118,7 +3869,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.sentence(min=1)`
 - Preview data:
-
 ```csv
 "Value"
 "Appello."
@@ -4128,7 +3878,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.sentence(max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "Ter textus admoneo acceptus deripio ullam succedo clam odit succurro."
@@ -4138,7 +3887,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.sentence(wordCount=4)`
 - Preview data:
-
 ```csv
 "Value"
 "Voluptas despecto admoneo aestivus auxilium adhuc aegre dicta."
@@ -4148,7 +3896,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.sentence(wordCountMax=5)`
 - Preview data:
-
 ```csv
 "Value"
 "Vivo accendo sint placeat supellex amoveo damnatio aegre."
@@ -4158,7 +3905,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.sentence(wordCountMin=6)`
 - Preview data:
-
 ```csv
 "Value"
 "Denuo torqueo id cohibeo deludo depono truculenter delectatio tolero."
@@ -4168,7 +3914,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.sentence(min=1, max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "Summa."
@@ -4178,7 +3923,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.sentence(max=3, wordCount=4)`
 - Preview data:
-
 ```csv
 "Value"
 "Civis reprehenderit tripudio."
@@ -4188,7 +3932,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.sentence(wordCount=4, wordCountMax=5)`
 - Preview data:
-
 ```csv
 "Value"
 "Tego vilitas assumenda desidero."
@@ -4198,7 +3941,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.sentence(wordCountMax=5, wordCountMin=6)`
 - Preview data:
-
 ```csv
 "Value"
 "Pecto sequi accommodo aegrotatio."
@@ -4208,7 +3950,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.sentences()`
 - Preview data:
-
 ```csv
 "Value"
 "Virgo blandior adflicto. Adeo vos sortitus conventus ventito. Arca defessus tres argumentum amissio."
@@ -4218,7 +3959,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.sentences(min=1)`
 - Preview data:
-
 ```csv
 "Value"
 "Ullam coruscus alienus avaritia vulnero."
@@ -4228,7 +3968,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.sentences(max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "Officiis angustus assentator cur sit.3Totam utilis tergiversatio clibanus auditor cunabula cena.3Umquam deporto caelum.3Vomito consequuntur soleo voluptates tamisium textilis deprecator absque ambitus demo.3Depono cunae tergum spectaculum quia expedita.3Thalassinus tyrannus molestias bellicus."
@@ -4238,7 +3977,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.sentences(sentenceCount=4)`
 - Preview data:
-
 ```csv
 "Value"
 "Vilis valens vacuus theatrum excepturi cras conservo vinculum. Termes antiquus aggero deserunt. Artificiose aestivus audax doloremque basium."
@@ -4248,7 +3986,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.sentences(separator="-")`
 - Preview data:
-
 ```csv
 "Value"
 "Virgo cibus tres speculum vacuus omnis talio comprehendo earum. Demens ambitus minima advenio abeo. Usitas surculus veniam atrox carcer thorax corona. Taceo bos solutio tamquam admoveo villa cognomen tertius placeat. Causa alo bellum vestigium video ademptio vomica. Crudelis consectetur spectaculum tempus ullam."
@@ -4258,7 +3995,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.sentences(sentenceCountMax=6)`
 - Preview data:
-
 ```csv
 "Value"
 "Nemo ciminatio coruscus cognomen cum uredo adsidue sodalitas stipes cometes. Acerbitas turpis terebro sodalitas colligo deputo. Thermae truculenter absorbeo textor tyrannus arbustum debeo. Ducimus antepono solium arca tergo celebrer torqueo. Toties vesco cras stabilis tamisium infit summa beatus sublime coerceo."
@@ -4268,7 +4004,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.sentences(sentenceCountMin=7)`
 - Preview data:
-
 ```csv
 "Value"
 "Beneficium vita viduo clementia. Exercitationem tergiversatio appello. Commodi harum validus surculus venio enim cultellus claudeo. Illo tot trucido thymbra teneo laudantium sopor autem. Verbera amitto tertius vomito subseco tertius. Subvenio charisma velut."
@@ -4278,7 +4013,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.sentences(min=1, max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "Aedificium amo demum vicinus tribuo."
@@ -4288,7 +4022,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.sentences(max=3, sentenceCount=4)`
 - Preview data:
-
 ```csv
 "Value"
 "Caute carcer sumo textor.3Cariosus denuncio nostrum depulso pecto ad aduro.3Utilis defero tardus aequus taceo angustus beneficium carcer voluptatem volaticus.3Cras abbas avaritia."
@@ -4298,7 +4031,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.sentences(sentenceCount=4, separator="-")`
 - Preview data:
-
 ```csv
 "Value"
 "Atrocitas arbitro desidero torrens atqui despecto vito dolore. Arto sol tendo. Adeo triduana facilis cum laboriosam amicitia. Voluptas surculus tabernus voluptatibus victus."
@@ -4308,7 +4040,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.sentences(separator="-", sentenceCountMax=6)`
 - Preview data:
-
 ```csv
 "Value"
 "Cattus animadverto urbs utrimque subiungo sint vulgivagus conqueror nostrum. Cibo coma adsidue aequus virtus considero dolore aetas commodo officia. Atavus adsuesco eaque degusto. Tepidus supellex attonbitus. Accommodo summopere iusto celo vivo amor vivo quidem."
@@ -4318,7 +4049,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.sentences(sentenceCountMax=6, sentenceCountMin=7)`
 - Preview data:
-
 ```csv
 "Value"
 "Carmen bestia angelus tergiversatio cunabula assumenda terror tamisium sed alias. Perferendis audio odit facere. Canonicus suscipit voluptas. Vito corroboro incidunt recusandae ultra civis repellendus."
@@ -4328,7 +4058,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.slug()`
 - Preview data:
-
 ```csv
 "Value"
 "vacuus-arcesso-volva"
@@ -4338,7 +4067,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.slug(min=1)`
 - Preview data:
-
 ```csv
 "Value"
 "vociferor"
@@ -4348,7 +4076,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.slug(max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "assumenda-nam-capillus"
@@ -4358,7 +4085,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.slug(wordCount=4)`
 - Preview data:
-
 ```csv
 "Value"
 "vulariter-est-antea"
@@ -4368,7 +4094,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.slug(wordCountMax=5)`
 - Preview data:
-
 ```csv
 "Value"
 "adipisci-absque-acies"
@@ -4378,7 +4103,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.slug(wordCountMin=6)`
 - Preview data:
-
 ```csv
 "Value"
 "curatio-strenuus-voluntarius"
@@ -4388,7 +4112,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.slug(min=1, max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "advoco"
@@ -4398,7 +4121,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.slug(max=3, wordCount=4)`
 - Preview data:
-
 ```csv
 "Value"
 "comitatus-spiculum-tandem"
@@ -4408,7 +4130,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.slug(wordCount=4, wordCountMax=5)`
 - Preview data:
-
 ```csv
 "Value"
 "clarus-dedico-totus"
@@ -4418,7 +4139,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.slug(wordCountMax=5, wordCountMin=6)`
 - Preview data:
-
 ```csv
 "Value"
 "vita-celebrer-adinventitias"
@@ -4428,7 +4148,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.text()`
 - Preview data:
-
 ```csv
 "Value"
 "Calamitas tristis iste consectetur bos sed verbum capitulus. Civitas absorbeo stella cilicium delinquo odit admoneo vinco auctor cui. Adhuc consuasor sui ullus vilis tergum neque contra.
@@ -4440,7 +4159,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `lorem.word()`
 - Preview data:
-
 ```csv
 "Value"
 "careo"
@@ -4450,7 +4168,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `lorem.word(min=1)`
 - Preview data:
-
 ```csv
 "Value"
 "defluo"
@@ -4460,7 +4177,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `lorem.word(max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "voluptates"
@@ -4470,7 +4186,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `lorem.word(length=4)`
 - Preview data:
-
 ```csv
 "Value"
 "nemo"
@@ -4480,7 +4195,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `lorem.word(strategy="lorem-word-strategy")`
 - Preview data:
-
 ```csv
 "Value"
 "id"
@@ -4490,7 +4204,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `lorem.word(min=1, max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "vero"
@@ -4500,7 +4213,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `lorem.word(max=3, length=4)`
 - Preview data:
-
 ```csv
 "Value"
 "curo"
@@ -4510,7 +4222,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `lorem.word(length=4, strategy="lorem-word-strategy")`
 - Preview data:
-
 ```csv
 "Value"
 "vito"
@@ -4520,7 +4231,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `lorem.words()`
 - Preview data:
-
 ```csv
 "Value"
 "verus voluptates suppellex"
@@ -4530,7 +4240,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `lorem.words(min=1)`
 - Preview data:
-
 ```csv
 "Value"
 "tollo"
@@ -4540,7 +4249,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `lorem.words(max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "illum triduana deficio"
@@ -4550,7 +4258,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `lorem.words(wordCount=4)`
 - Preview data:
-
 ```csv
 "Value"
 "optio cohaero uredo"
@@ -4560,7 +4267,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `lorem.words(wordCountMax=5)`
 - Preview data:
-
 ```csv
 "Value"
 "texo dolorum spargo"
@@ -4570,7 +4276,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `lorem.words(wordCountMin=6)`
 - Preview data:
-
 ```csv
 "Value"
 "defero vacuus impedit"
@@ -4580,7 +4285,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `lorem.words(min=1, max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "cibus"
@@ -4590,7 +4294,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `lorem.words(max=3, wordCount=4)`
 - Preview data:
-
 ```csv
 "Value"
 "mollitia abeo urbs"
@@ -4600,7 +4303,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `lorem.words(wordCount=4, wordCountMax=5)`
 - Preview data:
-
 ```csv
 "Value"
 "sollicito tondeo et"
@@ -4610,7 +4312,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `lorem.words(wordCountMax=5, wordCountMin=6)`
 - Preview data:
-
 ```csv
 "Value"
 "depono cedo absum"
@@ -4620,7 +4321,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `music.album()`
 - Preview data:
-
 ```csv
 "Value"
 "Majestic"
@@ -4630,7 +4330,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `music.artist()`
 - Preview data:
-
 ```csv
 "Value"
 "George Michael"
@@ -4640,7 +4339,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `music.genre()`
 - Preview data:
-
 ```csv
 "Value"
 "Latin"
@@ -4650,7 +4348,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `music.songName()`
 - Preview data:
-
 ```csv
 "Value"
 "You've Got a Friend"
@@ -4660,7 +4357,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.bigInt()`
 - Preview data:
-
 ```csv
 "Value"
 "571092089829729"
@@ -4670,7 +4366,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.bigInt(value=true)`
 - Preview data:
-
 ```csv
 "Value"
 "586349396167377"
@@ -4680,7 +4375,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.binary()`
 - Preview data:
-
 ```csv
 "Value"
 "0"
@@ -4690,7 +4384,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.binary(max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "0"
@@ -4700,7 +4393,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.binary(min=1)`
 - Preview data:
-
 ```csv
 "Value"
 "1"
@@ -4710,7 +4402,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.binary(max=3, min=1)`
 - Preview data:
-
 ```csv
 "Value"
 "1"
@@ -4720,7 +4411,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.float()`
 - Preview data:
-
 ```csv
 "Value"
 "0.3550653996448585"
@@ -4730,7 +4420,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.float(fractionDigits=2)`
 - Preview data:
-
 ```csv
 "Value"
 "0.73"
@@ -4740,7 +4429,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.float(max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "2.7132336805883557"
@@ -4750,7 +4438,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.float(min=1)`
 - Preview data:
-
 ```csv
 "Value"
 "1"
@@ -4760,7 +4447,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.float(multipleOf=0.5)`
 - Preview data:
-
 ```csv
 "Value"
 "1"
@@ -4770,7 +4456,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.float(fractionDigits=2, max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "0.32"
@@ -4780,7 +4465,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.float(max=3, min=1)`
 - Preview data:
-
 ```csv
 "Value"
 "2.8150852265633652"
@@ -4790,7 +4474,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.float(min=1, multipleOf=0.5)`
 - Preview data:
-
 ```csv
 "Value"
 "1"
@@ -4800,7 +4483,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.hex()`
 - Preview data:
-
 ```csv
 "Value"
 "f"
@@ -4810,7 +4492,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.hex(min=1)`
 - Preview data:
-
 ```csv
 "Value"
 "b"
@@ -4820,7 +4501,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.hex(max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "3"
@@ -4830,7 +4510,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.hex(min=1, max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "3"
@@ -4840,7 +4519,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.int()`
 - Preview data:
-
 ```csv
 "Value"
 "1105340026189529"
@@ -4850,7 +4528,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.int(min=1)`
 - Preview data:
-
 ```csv
 "Value"
 "4151426716022040"
@@ -4860,7 +4537,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.int(max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "3"
@@ -4870,7 +4546,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.int(multipleOf=4)`
 - Preview data:
-
 ```csv
 "Value"
 "3324814506500716"
@@ -4880,7 +4555,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.int(min=1, max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "1"
@@ -4890,7 +4564,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.int(max=3, multipleOf=4)`
 - Preview data:
-
 ```csv
 "Value"
 "0"
@@ -4900,7 +4573,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.octal()`
 - Preview data:
-
 ```csv
 "Value"
 "7"
@@ -4910,7 +4582,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.octal(max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "3"
@@ -4920,7 +4591,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.octal(min=1)`
 - Preview data:
-
 ```csv
 "Value"
 "6"
@@ -4930,7 +4600,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.octal(max=3, min=1)`
 - Preview data:
-
 ```csv
 "Value"
 "1"
@@ -4940,7 +4609,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.romanNumeral()`
 - Preview data:
-
 ```csv
 "Value"
 "MMMCDXXI"
@@ -4950,7 +4618,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.romanNumeral(min=1)`
 - Preview data:
-
 ```csv
 "Value"
 "CCXCI"
@@ -4960,7 +4627,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.romanNumeral(max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "I"
@@ -4970,7 +4636,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.romanNumeral(min=1, max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "II"
@@ -4980,7 +4645,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `person.bio()`
 - Preview data:
-
 ```csv
 "Value"
 "environmentalist"
@@ -4990,7 +4654,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `person.firstName()`
 - Preview data:
-
 ```csv
 "Value"
 "Osbaldo"
@@ -5000,7 +4663,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `person.firstName(sex="male")`
 - Preview data:
-
 ```csv
 "Value"
 "Jon"
@@ -5010,7 +4672,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `person.fullName()`
 - Preview data:
-
 ```csv
 "Value"
 "Dixie Beer"
@@ -5020,7 +4681,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `person.gender()`
 - Preview data:
-
 ```csv
 "Value"
 "Female to male transgender man"
@@ -5030,7 +4690,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `person.jobArea()`
 - Preview data:
-
 ```csv
 "Value"
 "Directives"
@@ -5040,7 +4699,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `person.jobDescriptor()`
 - Preview data:
-
 ```csv
 "Value"
 "International"
@@ -5050,7 +4708,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `person.jobTitle()`
 - Preview data:
-
 ```csv
 "Value"
 "Human Accountability Producer"
@@ -5060,7 +4717,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `person.jobType()`
 - Preview data:
-
 ```csv
 "Value"
 "Manager"
@@ -5070,7 +4726,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `person.lastName()`
 - Preview data:
-
 ```csv
 "Value"
 "Koss"
@@ -5080,7 +4735,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `person.lastName(sex="male")`
 - Preview data:
-
 ```csv
 "Value"
 "Krajcik"
@@ -5090,7 +4744,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `person.middleName()`
 - Preview data:
-
 ```csv
 "Value"
 "Reagan"
@@ -5100,7 +4753,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `person.middleName(sex="male")`
 - Preview data:
-
 ```csv
 "Value"
 "Harrison"
@@ -5110,7 +4762,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `person.prefix()`
 - Preview data:
-
 ```csv
 "Value"
 "Dr."
@@ -5120,7 +4771,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `person.prefix(sex="male")`
 - Preview data:
-
 ```csv
 "Value"
 "Mr."
@@ -5130,7 +4780,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `person.sex()`
 - Preview data:
-
 ```csv
 "Value"
 "male"
@@ -5140,7 +4789,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `person.sexType()`
 - Preview data:
-
 ```csv
 "Value"
 "male"
@@ -5150,7 +4798,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `person.suffix()`
 - Preview data:
-
 ```csv
 "Value"
 "DVM"
@@ -5160,7 +4807,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `person.zodiacSign()`
 - Preview data:
-
 ```csv
 "Value"
 "Leo"
@@ -5170,7 +4816,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `phone.imei()`
 - Preview data:
-
 ```csv
 "Value"
 "79-903165-712789-0"
@@ -5180,7 +4825,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `phone.number()`
 - Preview data:
-
 ```csv
 "Value"
 "1-329-484-4271 x034"
@@ -5190,7 +4834,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `phone.number(style="international")`
 - Preview data:
-
 ```csv
 "Value"
 "+18882200058"
@@ -5200,7 +4843,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.alpha()`
 - Preview data:
-
 ```csv
 "Value"
 "l"
@@ -5210,7 +4852,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.alpha(length=4)`
 - Preview data:
-
 ```csv
 "Value"
 "eNHO"
@@ -5220,7 +4861,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.alpha(casing="upper")`
 - Preview data:
-
 ```csv
 "Value"
 "J"
@@ -5230,7 +4870,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.alpha(exclude=["A", "B"])`
 - Preview data:
-
 ```csv
 "Value"
 "Z"
@@ -5240,7 +4879,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.alpha(length=4, casing="upper")`
 - Preview data:
-
 ```csv
 "Value"
 "XLKS"
@@ -5250,7 +4888,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.alpha(casing="upper", exclude=["A", "B"])`
 - Preview data:
-
 ```csv
 "Value"
 "F"
@@ -5260,7 +4897,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.alphanumeric()`
 - Preview data:
-
 ```csv
 "Value"
 "U"
@@ -5270,7 +4906,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.alphanumeric(length=4)`
 - Preview data:
-
 ```csv
 "Value"
 "LmDo"
@@ -5280,7 +4915,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.alphanumeric(casing="upper")`
 - Preview data:
-
 ```csv
 "Value"
 "2"
@@ -5290,7 +4924,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.alphanumeric(exclude=["A", "B"])`
 - Preview data:
-
 ```csv
 "Value"
 "N"
@@ -5300,7 +4933,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.alphanumeric(length=4, casing="upper")`
 - Preview data:
-
 ```csv
 "Value"
 "IF7H"
@@ -5310,7 +4942,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.alphanumeric(casing="upper", exclude=["A", "B"])`
 - Preview data:
-
 ```csv
 "Value"
 "I"
@@ -5320,7 +4951,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.binary()`
 - Preview data:
-
 ```csv
 "Value"
 "0b1"
@@ -5330,7 +4960,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.binary(length=4)`
 - Preview data:
-
 ```csv
 "Value"
 "0b0001"
@@ -5340,7 +4969,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.binary(prefix="#")`
 - Preview data:
-
 ```csv
 "Value"
 "#1"
@@ -5350,7 +4978,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.binary(length=4, prefix="#")`
 - Preview data:
-
 ```csv
 "Value"
 "#0001"
@@ -5360,7 +4987,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.counterString(1, 25, "*")`
 - Preview data:
-
 ```csv
 "Value"
 "2*4*6*8*11*"
@@ -5371,7 +4997,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 - Command(s): `string.counterString()`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Value"
 "2*4*"
@@ -5382,7 +5007,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 - Command(s): `string.counterString(15)`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Value"
 "*3*5*7*9*12*15*"
@@ -5393,7 +5017,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 - Command(s): `string.counterString(min=5, max=12)`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Value"
 "2*4*6*"
@@ -5404,7 +5027,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 - Command(s): `string.counterString(min=12, max=12, delimiter="#")`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Value"
 "#3#5#7#9#12#"
@@ -5414,7 +5036,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.counterString(min=5)`
 - Preview data:
-
 ```csv
 "Value"
 "*3*5*"
@@ -5424,7 +5045,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.counterString(max=12)`
 - Preview data:
-
 ```csv
 "Value"
 "2*4*6*8*"
@@ -5434,7 +5054,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.counterString(delimiter="#")`
 - Preview data:
-
 ```csv
 "Value"
 "2#4#6#8#11#14#17#"
@@ -5444,7 +5063,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.counterString(min=5, max=12)`
 - Preview data:
-
 ```csv
 "Value"
 "*3*5*"
@@ -5454,7 +5072,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.counterString(max=12, delimiter="#")`
 - Preview data:
-
 ```csv
 "Value"
 "#3#5#7#"
@@ -5465,7 +5082,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 - Command(s): `string.fromCharacters("ABC123", 4)`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Value"
 "A3C3"
@@ -5476,7 +5092,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 - Command(s): `string.fromCharacters("ABC123", 6)`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Value"
 "C1A22B"
@@ -5487,7 +5102,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 - Command(s): `string.fromCharacters(characters=["A", "B", "C"], length=4)`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Value"
 "CBAB"
@@ -5497,7 +5111,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.fromCharacters(characters="ABC123")`
 - Preview data:
-
 ```csv
 "Value"
 "B"
@@ -5507,7 +5120,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.fromCharacters(characters="ABC123", length=4)`
 - Preview data:
-
 ```csv
 "Value"
 "2221"
@@ -5517,7 +5129,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.fromCharacters(characters="ABC123", length=4)`
 - Preview data:
-
 ```csv
 "Value"
 "2CBB"
@@ -5527,7 +5138,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.hexadecimal()`
 - Preview data:
-
 ```csv
 "Value"
 "0xC"
@@ -5537,7 +5147,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.hexadecimal(casing="upper")`
 - Preview data:
-
 ```csv
 "Value"
 "0x8"
@@ -5547,7 +5156,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.hexadecimal(length=4)`
 - Preview data:
-
 ```csv
 "Value"
 "0xbAbc"
@@ -5557,7 +5165,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.hexadecimal(prefix="#")`
 - Preview data:
-
 ```csv
 "Value"
 "#E"
@@ -5567,7 +5174,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.hexadecimal(casing="upper", length=4)`
 - Preview data:
-
 ```csv
 "Value"
 "0x8E8E"
@@ -5577,7 +5183,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.hexadecimal(length=4, prefix="#")`
 - Preview data:
-
 ```csv
 "Value"
 "#ffef"
@@ -5587,7 +5192,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.nanoid()`
 - Preview data:
-
 ```csv
 "Value"
 "NdoP5wwyLFTWcdq-2JUPT"
@@ -5597,7 +5201,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.nanoid(length=4)`
 - Preview data:
-
 ```csv
 "Value"
 "emm-"
@@ -5607,7 +5210,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.numeric()`
 - Preview data:
-
 ```csv
 "Value"
 "8"
@@ -5617,7 +5219,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.numeric(length=4)`
 - Preview data:
-
 ```csv
 "Value"
 "2920"
@@ -5627,7 +5228,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.numeric(allowLeadingZeros=true)`
 - Preview data:
-
 ```csv
 "Value"
 "1"
@@ -5637,7 +5237,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.numeric(exclude=["A", "B"])`
 - Preview data:
-
 ```csv
 "Value"
 "1"
@@ -5647,7 +5246,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.numeric(length=4, allowLeadingZeros=true)`
 - Preview data:
-
 ```csv
 "Value"
 "8990"
@@ -5657,7 +5255,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.numeric(allowLeadingZeros=true, exclude=["A", "B"])`
 - Preview data:
-
 ```csv
 "Value"
 "6"
@@ -5667,7 +5264,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.octal()`
 - Preview data:
-
 ```csv
 "Value"
 "0o3"
@@ -5677,7 +5273,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.octal(length=4)`
 - Preview data:
-
 ```csv
 "Value"
 "0o5416"
@@ -5687,7 +5282,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.octal(prefix="#")`
 - Preview data:
-
 ```csv
 "Value"
 "#6"
@@ -5697,7 +5291,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.octal(length=4, prefix="#")`
 - Preview data:
-
 ```csv
 "Value"
 "#2612"
@@ -5707,7 +5300,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.sample()`
 - Preview data:
-
 ```csv
 "Value"
 "<BaB/g[//`"
@@ -5717,7 +5309,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.sample(length=4)`
 - Preview data:
-
 ```csv
 "Value"
 "}*V4"
@@ -5727,7 +5318,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.symbol()`
 - Preview data:
-
 ```csv
 "Value"
 ")"
@@ -5737,7 +5327,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.symbol(length=4)`
 - Preview data:
-
 ```csv
 "Value"
 ">#>'"
@@ -5747,17 +5336,15 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.ulid()`
 - Preview data:
-
 ```csv
 "Value"
-"01KTBEDCFN4MY648F8XPVTRQE9"
+"01KV04WM3F4MY648F8XPVTRQE9"
 ```
 
 #### `domain-string-ulid-arg-refDate`
 
 - Command(s): `string.ulid(refDate=2)`
 - Preview data:
-
 ```csv
 "Value"
 "00000000022P5BDQJ90BT5VFMX"
@@ -5767,7 +5354,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.uuid()`
 - Preview data:
-
 ```csv
 "Value"
 "5188d2de-3f7b-4998-a61f-cb3e78b71bb8"
@@ -5777,7 +5363,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `system.commonFileExt()`
 - Preview data:
-
 ```csv
 "Value"
 "m2v"
@@ -5787,7 +5372,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `system.commonFileName()`
 - Preview data:
-
 ```csv
 "Value"
 "because.htm"
@@ -5797,7 +5381,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `system.commonFileName(extension="system-commonFileName-extension")`
 - Preview data:
-
 ```csv
 "Value"
 "brush_oh.system-commonFileName-extension"
@@ -5807,7 +5390,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `system.commonFileType()`
 - Preview data:
-
 ```csv
 "Value"
 "text"
@@ -5817,7 +5399,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `system.cron()`
 - Preview data:
-
 ```csv
 "Value"
 "* * * 8 ?"
@@ -5827,7 +5408,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `system.cron(includeNonStandard=true)`
 - Preview data:
-
 ```csv
 "Value"
 "22 6 14 7 1"
@@ -5837,7 +5417,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `system.cron(includeYear=true)`
 - Preview data:
-
 ```csv
 "Value"
 "* 1 ? 9 5 *"
@@ -5847,7 +5426,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `system.cron(includeNonStandard=true, includeYear=true)`
 - Preview data:
-
 ```csv
 "Value"
 "@hourly"
@@ -5857,7 +5435,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `system.directoryPath()`
 - Preview data:
-
 ```csv
 "Value"
 "/etc"
@@ -5867,7 +5444,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `system.fileExt()`
 - Preview data:
-
 ```csv
 "Value"
 "ear"
@@ -5877,7 +5453,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `system.fileExt(mimeType="system-fileExt-mimeType")`
 - Preview data:
-
 ```csv
 "Value"
 "epub"
@@ -5887,7 +5462,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `system.fileName()`
 - Preview data:
-
 ```csv
 "Value"
 "finally.otf"
@@ -5897,7 +5471,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `system.filePath()`
 - Preview data:
-
 ```csv
 "Value"
 "/lost+found/bah.epub"
@@ -5907,7 +5480,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `system.fileType()`
 - Preview data:
-
 ```csv
 "Value"
 "application"
@@ -5917,7 +5489,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `system.mimeType()`
 - Preview data:
-
 ```csv
 "Value"
 "image/gif"
@@ -5927,7 +5498,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `system.networkInterface()`
 - Preview data:
-
 ```csv
 "Value"
 "ens0d1"
@@ -5937,7 +5507,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `system.semver()`
 - Preview data:
-
 ```csv
 "Value"
 "6.20.15"
@@ -5947,7 +5516,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `vehicle.bicycle()`
 - Preview data:
-
 ```csv
 "Value"
 "Hybrid Bicycle"
@@ -5957,7 +5525,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `vehicle.color()`
 - Preview data:
-
 ```csv
 "Value"
 "fuchsia"
@@ -5967,7 +5534,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `vehicle.fuel()`
 - Preview data:
-
 ```csv
 "Value"
 "Electric"
@@ -5977,7 +5543,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `vehicle.manufacturer()`
 - Preview data:
-
 ```csv
 "Value"
 "Chrysler"
@@ -5987,7 +5552,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `vehicle.model()`
 - Preview data:
-
 ```csv
 "Value"
 "CTS"
@@ -5997,7 +5561,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `vehicle.type()`
 - Preview data:
-
 ```csv
 "Value"
 "Convertible"
@@ -6007,7 +5570,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `vehicle.vehicle()`
 - Preview data:
-
 ```csv
 "Value"
 "Smart Alpine"
@@ -6017,7 +5579,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `vehicle.vin()`
 - Preview data:
-
 ```csv
 "Value"
 "928JZDANRWG098654"
@@ -6027,7 +5588,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `vehicle.vrm()`
 - Preview data:
-
 ```csv
 "Value"
 "RN16HVP"
@@ -6037,7 +5597,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.adjective()`
 - Preview data:
-
 ```csv
 "Value"
 "moist"
@@ -6047,7 +5606,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.adjective(length=4)`
 - Preview data:
-
 ```csv
 "Value"
 "zany"
@@ -6057,7 +5615,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.adjective(max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "distorted"
@@ -6067,7 +5624,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.adjective(strategy="word-adjective-strategy")`
 - Preview data:
-
 ```csv
 "Value"
 "illiterate"
@@ -6077,7 +5633,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.adjective(length=4, max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "live"
@@ -6087,7 +5642,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.adjective(max=3, strategy="word-adjective-strategy")`
 - Preview data:
-
 ```csv
 "Value"
 "blue"
@@ -6097,7 +5651,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.adverb()`
 - Preview data:
-
 ```csv
 "Value"
 "certainly"
@@ -6107,7 +5660,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.adverb(length=4)`
 - Preview data:
-
 ```csv
 "Value"
 "very"
@@ -6117,7 +5669,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.adverb(max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "swiftly"
@@ -6127,7 +5678,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.adverb(strategy="word-adverb-strategy")`
 - Preview data:
-
 ```csv
 "Value"
 "voluntarily"
@@ -6137,7 +5687,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.adverb(length=4, max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "fast"
@@ -6147,7 +5696,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.adverb(max=3, strategy="word-adverb-strategy")`
 - Preview data:
-
 ```csv
 "Value"
 "majestically"
@@ -6157,7 +5705,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.conjunction()`
 - Preview data:
-
 ```csv
 "Value"
 "why"
@@ -6167,7 +5714,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.conjunction(length=4)`
 - Preview data:
-
 ```csv
 "Value"
 "what"
@@ -6177,7 +5723,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.conjunction(max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "whoever"
@@ -6187,7 +5732,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.conjunction(strategy="word-conjunction-strategy")`
 - Preview data:
-
 ```csv
 "Value"
 "inasmuch"
@@ -6197,7 +5741,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.conjunction(length=4, max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "once"
@@ -6207,7 +5750,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.conjunction(max=3, strategy="word-conjunction-strategy")`
 - Preview data:
-
 ```csv
 "Value"
 "for"
@@ -6217,7 +5759,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.interjection()`
 - Preview data:
-
 ```csv
 "Value"
 "blah"
@@ -6227,7 +5768,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.interjection(length=4)`
 - Preview data:
-
 ```csv
 "Value"
 "gosh"
@@ -6237,7 +5777,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.interjection(max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "ah"
@@ -6247,7 +5786,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.interjection(strategy="word-interjection-strategy")`
 - Preview data:
-
 ```csv
 "Value"
 "er"
@@ -6257,7 +5795,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.interjection(length=4, max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "pish"
@@ -6267,7 +5804,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.interjection(max=3, strategy="word-interjection-strategy")`
 - Preview data:
-
 ```csv
 "Value"
 "whoa"
@@ -6277,7 +5813,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.noun()`
 - Preview data:
-
 ```csv
 "Value"
 "foodstuffs"
@@ -6287,7 +5822,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.noun(length=4)`
 - Preview data:
-
 ```csv
 "Value"
 "coal"
@@ -6297,7 +5831,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.noun(max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "backbone"
@@ -6307,7 +5840,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.noun(strategy="word-noun-strategy")`
 - Preview data:
-
 ```csv
 "Value"
 "meander"
@@ -6317,7 +5849,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.noun(length=4, max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "king"
@@ -6327,7 +5858,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.noun(max=3, strategy="word-noun-strategy")`
 - Preview data:
-
 ```csv
 "Value"
 "numeric"
@@ -6337,7 +5867,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.preposition()`
 - Preview data:
-
 ```csv
 "Value"
 "times"
@@ -6347,7 +5876,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.preposition(length=4)`
 - Preview data:
-
 ```csv
 "Value"
 "with"
@@ -6357,7 +5885,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.preposition(max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "a"
@@ -6367,7 +5894,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.preposition(strategy="word-preposition-strategy")`
 - Preview data:
-
 ```csv
 "Value"
 "than"
@@ -6377,7 +5903,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.preposition(length=4, max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "plus"
@@ -6387,7 +5912,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.preposition(max=3, strategy="word-preposition-strategy")`
 - Preview data:
-
 ```csv
 "Value"
 "near"
@@ -6397,7 +5921,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.sample()`
 - Preview data:
-
 ```csv
 "Value"
 "microchip"
@@ -6407,7 +5930,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.sample(length=4)`
 - Preview data:
-
 ```csv
 "Value"
 "when"
@@ -6417,7 +5939,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.sample(max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "aha"
@@ -6427,7 +5948,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.sample(strategy="word-sample-strategy")`
 - Preview data:
-
 ```csv
 "Value"
 "ew"
@@ -6437,7 +5957,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.sample(length=4, max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "lamp"
@@ -6447,7 +5966,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.sample(max=3, strategy="word-sample-strategy")`
 - Preview data:
-
 ```csv
 "Value"
 "an"
@@ -6457,7 +5975,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.verb()`
 - Preview data:
-
 ```csv
 "Value"
 "federate"
@@ -6467,7 +5984,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.verb(length=4)`
 - Preview data:
-
 ```csv
 "Value"
 "pant"
@@ -6477,7 +5993,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.verb(max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "braid"
@@ -6487,7 +6002,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.verb(strategy="word-verb-strategy")`
 - Preview data:
-
 ```csv
 "Value"
 "prance"
@@ -6497,7 +6011,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.verb(length=4, max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "come"
@@ -6507,7 +6020,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.verb(max=3, strategy="word-verb-strategy")`
 - Preview data:
-
 ```csv
 "Value"
 "pant"
@@ -6517,7 +6029,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.words()`
 - Preview data:
-
 ```csv
 "Value"
 "mutate ack"
@@ -6527,7 +6038,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.words(count=2)`
 - Preview data:
-
 ```csv
 "Value"
 "instead conservative"
@@ -6537,7 +6047,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.words(max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "yahoo"
@@ -6547,44 +6056,44 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.words(count=2, max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "brr whoever"
 ```
 
+
 ## Runtime Scenarios
 
-Scenario count: **608**
-Generated preview data count: **608**
+Scenario count: **621**
+Generated preview data count: **621**
 Review-only scenario count: **0**
 Non-executable scenario count: **0**
 
 ### By Source Type
 
-| Key       | Count |
-| --------- | ----: |
-| `domain`  |   559 |
-| `enum`    |     2 |
-| `faker`   |    43 |
-| `literal` |     2 |
-| `regex`   |     2 |
+| Key | Count |
+| --- | ---: |
+| `domain` | 572 |
+| `enum` | 2 |
+| `faker` | 43 |
+| `literal` | 2 |
+| `regex` | 2 |
 
 ### By Origin
 
-| Key        | Count |
-| ---------- | ----: |
-| `arg`      |   206 |
-| `base`     |   256 |
-| `custom`   |     6 |
-| `empty`    |     2 |
-| `example`  |    25 |
-| `pair`     |   115 |
-| `pairwise` |     1 |
+| Key | Count |
+| --- | ---: |
+| `arg` | 211 |
+| `base` | 257 |
+| `custom` | 6 |
+| `empty` | 2 |
+| `example` | 28 |
+| `pair` | 119 |
+| `pairwise` | 1 |
 
 ### Commands By Source Type
 
-#### `domain` (244)
+#### `domain` (245)
 
 - `airline.aircraftType`
 - `airline.flightNumber`
@@ -6612,6 +6121,7 @@ Non-executable scenario count: **0**
 - `animal.rodent`
 - `animal.snake`
 - `animal.type`
+- `autoIncrement.sequence`
 - `book.author`
 - `book.format`
 - `book.genre`
@@ -6868,7 +6378,6 @@ Non-executable scenario count: **0**
 - Command(s): `enum(active,inactive,pending)`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Status"
 "pending"
@@ -6880,15 +6389,12 @@ Non-executable scenario count: **0**
 - UI preview parity: `exact`
 - Schema Rows: `Status: enum(active,inactive,pending)`, `Priority: enum(high,medium,low)`
 - Preview data:
-
 ```csv
 "Status","Priority"
 "inactive","medium"
 "inactive","low"
 ```
-
 - Pairwise preview data:
-
 ```csv
 "Status","Priority"
 "active","high"
@@ -6907,7 +6413,6 @@ Non-executable scenario count: **0**
 - Command(s): `literal("Pending")`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Status"
 "Pending"
@@ -6918,7 +6423,6 @@ Non-executable scenario count: **0**
 - Command(s): `literal("")`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Status"
 ""
@@ -6929,7 +6433,6 @@ Non-executable scenario count: **0**
 - Command(s): `regex("[A-Z]{2}[0-9]{2}")`
 - UI preview parity: `structural`
 - Preview data:
-
 ```csv
 "Code"
 "VC23"
@@ -6940,7 +6443,6 @@ Non-executable scenario count: **0**
 - Command(s): `regex("")`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Code"
 ""
@@ -6951,7 +6453,6 @@ Non-executable scenario count: **0**
 - Command(s): `helpers.arrayElement(["A", "B"])`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Value"
 "B"
@@ -6962,7 +6463,6 @@ Non-executable scenario count: **0**
 - Command(s): `helpers.arrayElement(["A", "B", "C"])`
 - UI preview parity: `structural`
 - Preview data:
-
 ```csv
 "Value"
 "A"
@@ -6972,7 +6472,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `helpers.arrayElement(["A", "B"])`
 - Preview data:
-
 ```csv
 "Value"
 "B"
@@ -6983,7 +6482,6 @@ Non-executable scenario count: **0**
 - Command(s): `helpers.arrayElements(["A", "B", "C"], 2)`
 - UI preview parity: `structural`
 - Preview data:
-
 ```csv
 "Value"
 "[""B"",""A""]"
@@ -6994,7 +6492,6 @@ Non-executable scenario count: **0**
 - Command(s): `helpers.arrayElements(["A", "B", "C"], 2)`
 - UI preview parity: `structural`
 - Preview data:
-
 ```csv
 "Value"
 "[""A"",""B""]"
@@ -7004,7 +6501,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `helpers.arrayElements(["A", "B"])`
 - Preview data:
-
 ```csv
 "Value"
 "[""B""]"
@@ -7014,7 +6510,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `helpers.arrayElements(["A", "B"], 2)`
 - Preview data:
-
 ```csv
 "Value"
 "[""A"",""B""]"
@@ -7024,7 +6519,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `helpers.arrayElements(["A", "B"], 2)`
 - Preview data:
-
 ```csv
 "Value"
 "[""B"",""A""]"
@@ -7035,7 +6529,6 @@ Non-executable scenario count: **0**
 - Command(s): `helpers.fake("{{person.firstName}}")`
 - UI preview parity: `structural`
 - Preview data:
-
 ```csv
 "Value"
 "Melvin"
@@ -7046,7 +6539,6 @@ Non-executable scenario count: **0**
 - Command(s): `helpers.fake("Hi, my name is {{person.firstName}} {{person.lastName}}!")`
 - UI preview parity: `structural`
 - Preview data:
-
 ```csv
 "Value"
 "Hi, my name is Ardith Weber!"
@@ -7056,7 +6548,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `helpers.fake("[A-Z]{2}")`
 - Preview data:
-
 ```csv
 "Value"
 "[A-Z]{2}"
@@ -7067,7 +6558,6 @@ Non-executable scenario count: **0**
 - Command(s): `helpers.fromRegExp("[A-Z]{2}")`
 - UI preview parity: `structural`
 - Preview data:
-
 ```csv
 "Value"
 "BJ"
@@ -7078,7 +6568,6 @@ Non-executable scenario count: **0**
 - Command(s): `helpers.fromRegExp("[A-Z]{2}[0-9]{2}")`
 - UI preview parity: `structural`
 - Preview data:
-
 ```csv
 "Value"
 "PU71"
@@ -7088,7 +6577,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `helpers.fromRegExp("[A-Z]{2}")`
 - Preview data:
-
 ```csv
 "Value"
 "XA"
@@ -7099,7 +6587,6 @@ Non-executable scenario count: **0**
 - Command(s): `helpers.mustache("{{name}}", { name: "Ada" })`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Value"
 "Ada"
@@ -7110,7 +6597,6 @@ Non-executable scenario count: **0**
 - Command(s): `helpers.mustache("Hello {{name}}", { name: "Ada" })`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Value"
 "Hello Ada"
@@ -7120,7 +6606,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `helpers.mustache("{{name}}")`
 - Preview data:
-
 ```csv
 "Value"
 "{{name}}"
@@ -7130,7 +6615,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `helpers.mustache("{{name}}", {})`
 - Preview data:
-
 ```csv
 "Value"
 "{{name}}"
@@ -7140,7 +6624,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `helpers.mustache("{{name}}", {})`
 - Preview data:
-
 ```csv
 "Value"
 "{{name}}"
@@ -7151,7 +6634,6 @@ Non-executable scenario count: **0**
 - Command(s): `helpers.rangeToNumber({ min: 1, max: 2 })`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Value"
 "1"
@@ -7162,7 +6644,6 @@ Non-executable scenario count: **0**
 - Command(s): `helpers.rangeToNumber({ min: 1, max: 2 })`
 - UI preview parity: `structural`
 - Preview data:
-
 ```csv
 "Value"
 "2"
@@ -7172,7 +6653,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `helpers.rangeToNumber(2)`
 - Preview data:
-
 ```csv
 "Value"
 "2"
@@ -7182,7 +6662,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `helpers.replaceCreditCardSymbols()`
 - Preview data:
-
 ```csv
 "Value"
 "6453-3460-3761-5138-2959"
@@ -7193,7 +6672,6 @@ Non-executable scenario count: **0**
 - Command(s): `helpers.replaceCreditCardSymbols("1234-[4-9]-##!!-L")`
 - UI preview parity: `structural`
 - Preview data:
-
 ```csv
 "Value"
 "1234-5-4775-8"
@@ -7203,7 +6681,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `helpers.replaceCreditCardSymbols("helpers-replaceCreditCardSymbols-string")`
 - Preview data:
-
 ```csv
 "Value"
 "helpers-replaceCreditCardSymbols-string"
@@ -7213,7 +6690,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `helpers.replaceCreditCardSymbols("helpers-replaceCreditCardSymbols-string", "helpers-replaceCreditCardSymbols-symbol")`
 - Preview data:
-
 ```csv
 "Value"
 "helpers-replaceCreditCardSymbols-string"
@@ -7223,7 +6699,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `helpers.replaceCreditCardSymbols("helpers-replaceCreditCardSymbols-string", "helpers-replaceCreditCardSymbols-symbol")`
 - Preview data:
-
 ```csv
 "Value"
 "helpers-replaceCreditCardSymbols-string"
@@ -7233,7 +6708,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `helpers.replaceSymbols()`
 - Preview data:
-
 ```csv
 "Value"
 ""
@@ -7244,7 +6718,6 @@ Non-executable scenario count: **0**
 - Command(s): `helpers.replaceSymbols("##??-##")`
 - UI preview parity: `structural`
 - Preview data:
-
 ```csv
 "Value"
 "47UI-39"
@@ -7254,7 +6727,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `helpers.replaceSymbols("helpers-replaceSymbols-string")`
 - Preview data:
-
 ```csv
 "Value"
 "helpers-replaceSymbols-string"
@@ -7265,7 +6737,6 @@ Non-executable scenario count: **0**
 - Command(s): `helpers.shuffle(["A", "B", "C"])`
 - UI preview parity: `structural`
 - Preview data:
-
 ```csv
 "Value"
 "[""B"",""A"",""C""]"
@@ -7276,7 +6747,6 @@ Non-executable scenario count: **0**
 - Command(s): `helpers.shuffle(["A", "B", "C"])`
 - UI preview parity: `structural`
 - Preview data:
-
 ```csv
 "Value"
 "[""B"",""A"",""C""]"
@@ -7286,7 +6756,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `helpers.shuffle(["A", "B"])`
 - Preview data:
-
 ```csv
 "Value"
 "[""A"",""B""]"
@@ -7296,7 +6765,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `helpers.slugify()`
 - Preview data:
-
 ```csv
 "Value"
 ""
@@ -7307,7 +6775,6 @@ Non-executable scenario count: **0**
 - Command(s): `helpers.slugify("Hello World 2026")`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Value"
 "Hello-World-2026"
@@ -7317,7 +6784,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `helpers.slugify("helpers-slugify-string")`
 - Preview data:
-
 ```csv
 "Value"
 "helpers-slugify-string"
@@ -7328,7 +6794,6 @@ Non-executable scenario count: **0**
 - Command(s): `helpers.uniqueArray(["A", "B"], 4)`
 - UI preview parity: `structural`
 - Preview data:
-
 ```csv
 "Value"
 "[""A"",""B""]"
@@ -7339,7 +6804,6 @@ Non-executable scenario count: **0**
 - Command(s): `helpers.uniqueArray(["red", "green", "blue"], 2)`
 - UI preview parity: `structural`
 - Preview data:
-
 ```csv
 "Value"
 "[""blue"",""green""]"
@@ -7349,7 +6813,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `helpers.uniqueArray(["A", "B"])`
 - Preview data:
-
 ```csv
 "Value"
 "[]"
@@ -7359,7 +6822,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `helpers.uniqueArray(["A", "B"], 4)`
 - Preview data:
-
 ```csv
 "Value"
 "[""B"",""A""]"
@@ -7369,7 +6831,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `helpers.uniqueArray(["A", "B"], 4)`
 - Preview data:
-
 ```csv
 "Value"
 "[""A"",""B""]"
@@ -7380,7 +6841,6 @@ Non-executable scenario count: **0**
 - Command(s): `helpers.weightedArrayElement([{ "weight": 1, "value": "A" }, { "weight": 2, "value": "B" }])`
 - UI preview parity: `structural`
 - Preview data:
-
 ```csv
 "Value"
 "A"
@@ -7391,7 +6851,6 @@ Non-executable scenario count: **0**
 - Command(s): `helpers.weightedArrayElement([{ weight: 5, value: "sunny" }, { weight: 1, value: "rainy" }])`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Value"
 "sunny"
@@ -7401,7 +6860,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `airline.aircraftType()`
 - Preview data:
-
 ```csv
 "Value"
 "widebody"
@@ -7411,7 +6869,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `airline.flightNumber()`
 - Preview data:
-
 ```csv
 "Value"
 "54"
@@ -7421,7 +6878,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `airline.iataCode()`
 - Preview data:
-
 ```csv
 "Value"
 "VS"
@@ -7431,7 +6887,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `airline.name()`
 - Preview data:
-
 ```csv
 "Value"
 "Juneyao Airlines"
@@ -7441,7 +6896,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `airline.recordLocator()`
 - Preview data:
-
 ```csv
 "Value"
 "QYNEDR"
@@ -7451,7 +6905,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `airline.seat()`
 - Preview data:
-
 ```csv
 "Value"
 "29B"
@@ -7462,7 +6915,6 @@ Non-executable scenario count: **0**
 - Command(s): `airline.seat()`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Value"
 "32C"
@@ -7473,7 +6925,6 @@ Non-executable scenario count: **0**
 - Command(s): `airline.seat(aircraftType="widebody")`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Value"
 "55J"
@@ -7483,7 +6934,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `airline.seat(aircraftType="widebody")`
 - Preview data:
-
 ```csv
 "Value"
 "3A"
@@ -7493,7 +6943,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `airplane.iataTypeCode()`
 - Preview data:
-
 ```csv
 "Value"
 "345"
@@ -7503,7 +6952,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `airplane.name()`
 - Preview data:
-
 ```csv
 "Value"
 "Boeing 747-400"
@@ -7513,7 +6961,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `airport.iataCode()`
 - Preview data:
-
 ```csv
 "Value"
 "MEX"
@@ -7523,7 +6970,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `airport.name()`
 - Preview data:
-
 ```csv
 "Value"
 "Hobart International Airport"
@@ -7533,7 +6979,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `animal.bear()`
 - Preview data:
-
 ```csv
 "Value"
 "American black bear"
@@ -7543,7 +6988,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `animal.bird()`
 - Preview data:
-
 ```csv
 "Value"
 "Red-footed Booby"
@@ -7553,7 +6997,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `animal.cat()`
 - Preview data:
-
 ```csv
 "Value"
 "Ojos Azules"
@@ -7563,7 +7006,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `animal.cetacean()`
 - Preview data:
-
 ```csv
 "Value"
 "Blue Whale"
@@ -7573,7 +7015,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `animal.cow()`
 - Preview data:
-
 ```csv
 "Value"
 "Mandalong Special"
@@ -7583,7 +7024,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `animal.crocodilia()`
 - Preview data:
-
 ```csv
 "Value"
 "Cuban Crocodile"
@@ -7593,7 +7033,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `animal.dog()`
 - Preview data:
-
 ```csv
 "Value"
 "Yakutian Laika"
@@ -7603,7 +7042,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `animal.fish()`
 - Preview data:
-
 ```csv
 "Value"
 "Jumbo flying squid"
@@ -7613,7 +7051,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `animal.horse()`
 - Preview data:
-
 ```csv
 "Value"
 "Trait Du Nord"
@@ -7623,7 +7060,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `animal.insect()`
 - Preview data:
-
 ```csv
 "Value"
 "False honey ant"
@@ -7633,7 +7069,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `animal.lion()`
 - Preview data:
-
 ```csv
 "Value"
 "Cape lion"
@@ -7643,7 +7078,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `animal.petName()`
 - Preview data:
-
 ```csv
 "Value"
 "Bandit"
@@ -7653,7 +7087,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `animal.rabbit()`
 - Preview data:
-
 ```csv
 "Value"
 "Silver"
@@ -7663,7 +7096,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `animal.rodent()`
 - Preview data:
-
 ```csv
 "Value"
 "Bonetto's tuco-tuco"
@@ -7673,7 +7105,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `animal.snake()`
 - Preview data:
-
 ```csv
 "Value"
 "White-lipped keelback"
@@ -7683,17 +7114,132 @@ Non-executable scenario count: **0**
 
 - Command(s): `animal.type()`
 - Preview data:
-
 ```csv
 "Value"
 "elephant"
+```
+
+#### `domain-autoIncrement-sequence-base`
+
+- Command(s): `autoIncrement.sequence(1, 5, "filename", ".txt", 3)`
+- Preview data:
+```csv
+"Value"
+"filename001.txt"
+```
+
+#### `domain-autoIncrement-sequence-example-1`
+
+- Command(s): `autoIncrement.sequence()`
+- Preview data:
+```csv
+"Value"
+"1"
+```
+
+#### `domain-autoIncrement-sequence-example-2`
+
+- Command(s): `autoIncrement.sequence(start=10, step=5)`
+- Preview data:
+```csv
+"Value"
+"10"
+```
+
+#### `domain-autoIncrement-sequence-example-3`
+
+- Command(s): `autoIncrement.sequence(start=1, step=5, prefix="filename", suffix=".txt", zeropadding=3)`
+- Preview data:
+```csv
+"Value"
+"filename001.txt"
+```
+
+#### `domain-autoIncrement-sequence-arg-start`
+
+- Command(s): `autoIncrement.sequence(start=10)`
+- Preview data:
+```csv
+"Value"
+"10"
+```
+
+#### `domain-autoIncrement-sequence-arg-step`
+
+- Command(s): `autoIncrement.sequence(step=5)`
+- Preview data:
+```csv
+"Value"
+"1"
+```
+
+#### `domain-autoIncrement-sequence-arg-prefix`
+
+- Command(s): `autoIncrement.sequence(prefix="filename")`
+- Preview data:
+```csv
+"Value"
+"filename1"
+```
+
+#### `domain-autoIncrement-sequence-arg-suffix`
+
+- Command(s): `autoIncrement.sequence(suffix=".txt")`
+- Preview data:
+```csv
+"Value"
+"1.txt"
+```
+
+#### `domain-autoIncrement-sequence-arg-zeropadding`
+
+- Command(s): `autoIncrement.sequence(zeropadding=3)`
+- Preview data:
+```csv
+"Value"
+"001"
+```
+
+#### `domain-autoIncrement-sequence-pair-start-step`
+
+- Command(s): `autoIncrement.sequence(start=10, step=5)`
+- Preview data:
+```csv
+"Value"
+"10"
+```
+
+#### `domain-autoIncrement-sequence-pair-step-prefix`
+
+- Command(s): `autoIncrement.sequence(step=5, prefix="filename")`
+- Preview data:
+```csv
+"Value"
+"filename1"
+```
+
+#### `domain-autoIncrement-sequence-pair-prefix-suffix`
+
+- Command(s): `autoIncrement.sequence(prefix="filename", suffix=".txt")`
+- Preview data:
+```csv
+"Value"
+"filename1.txt"
+```
+
+#### `domain-autoIncrement-sequence-pair-suffix-zeropadding`
+
+- Command(s): `autoIncrement.sequence(suffix=".txt", zeropadding=3)`
+- Preview data:
+```csv
+"Value"
+"001.txt"
 ```
 
 #### `domain-book-author-base`
 
 - Command(s): `book.author()`
 - Preview data:
-
 ```csv
 "Value"
 "Hermann Broch"
@@ -7703,7 +7249,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `book.format()`
 - Preview data:
-
 ```csv
 "Value"
 "Ebook"
@@ -7713,7 +7258,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `book.genre()`
 - Preview data:
-
 ```csv
 "Value"
 "Philosophy"
@@ -7723,7 +7267,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `book.publisher()`
 - Preview data:
-
 ```csv
 "Value"
 "Hodder & Stoughton"
@@ -7733,7 +7276,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `book.series()`
 - Preview data:
-
 ```csv
 "Value"
 "Colonel Race"
@@ -7743,7 +7285,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `book.title()`
 - Preview data:
-
 ```csv
 "Value"
 "The Sound and the Fury"
@@ -7753,7 +7294,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `chemicalElement.atomicNumber()`
 - Preview data:
-
 ```csv
 "Value"
 "9"
@@ -7763,7 +7303,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `chemicalElement.name()`
 - Preview data:
-
 ```csv
 "Value"
 "Meitnerium"
@@ -7773,7 +7312,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `chemicalElement.symbol()`
 - Preview data:
-
 ```csv
 "Value"
 "Lv"
@@ -7783,7 +7321,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `color.cssSupportedFunction()`
 - Preview data:
-
 ```csv
 "Value"
 "hwb"
@@ -7793,7 +7330,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `color.cssSupportedSpace()`
 - Preview data:
-
 ```csv
 "Value"
 "sRGB"
@@ -7803,7 +7339,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `color.human()`
 - Preview data:
-
 ```csv
 "Value"
 "turquoise"
@@ -7813,7 +7348,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `color.rgb()`
 - Preview data:
-
 ```csv
 "Value"
 "#bce97e"
@@ -7823,7 +7357,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `color.rgb(casing="upper")`
 - Preview data:
-
 ```csv
 "Value"
 "#BCBFC4"
@@ -7833,7 +7366,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `color.rgb(format="hex")`
 - Preview data:
-
 ```csv
 "Value"
 "#9be19f"
@@ -7843,7 +7375,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `color.rgb(includeAlpha=true)`
 - Preview data:
-
 ```csv
 "Value"
 "#71d66e8f"
@@ -7853,7 +7384,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `color.rgb(prefix="#")`
 - Preview data:
-
 ```csv
 "Value"
 "#dceba6"
@@ -7863,7 +7393,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `color.rgb(casing="upper", format="hex")`
 - Preview data:
-
 ```csv
 "Value"
 "#F948CC"
@@ -7873,7 +7402,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `color.rgb(format="hex", includeAlpha=true)`
 - Preview data:
-
 ```csv
 "Value"
 "#bd037ce9"
@@ -7883,7 +7411,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `color.rgb(includeAlpha=true, prefix="#")`
 - Preview data:
-
 ```csv
 "Value"
 "#d95bfefc"
@@ -7893,7 +7420,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `color.space()`
 - Preview data:
-
 ```csv
 "Value"
 "CIEUVW"
@@ -7903,7 +7429,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `commerce.department()`
 - Preview data:
-
 ```csv
 "Value"
 "Home"
@@ -7913,7 +7438,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `commerce.isbn()`
 - Preview data:
-
 ```csv
 "Value"
 "978-0-276-38715-9"
@@ -7923,7 +7447,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `commerce.isbn(separator="-")`
 - Preview data:
-
 ```csv
 "Value"
 "978-1-01-952776-4"
@@ -7933,7 +7456,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `commerce.isbn(variant="13")`
 - Preview data:
-
 ```csv
 "Value"
 "978-0-9939513-5-0"
@@ -7943,7 +7465,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `commerce.isbn(separator="-", variant="13")`
 - Preview data:
-
 ```csv
 "Value"
 "978-1-63392-157-3"
@@ -7953,7 +7474,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `commerce.price()`
 - Preview data:
-
 ```csv
 "Value"
 "557.85"
@@ -7964,7 +7484,6 @@ Non-executable scenario count: **0**
 - Command(s): `commerce.price(dec=2, max=10, min=1, symbol="$")`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Value"
 "$3.69"
@@ -7974,7 +7493,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `commerce.price(dec=2)`
 - Preview data:
-
 ```csv
 "Value"
 "489.39"
@@ -7984,7 +7502,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `commerce.price(max=100)`
 - Preview data:
-
 ```csv
 "Value"
 "11.69"
@@ -7994,7 +7511,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `commerce.price(min=1)`
 - Preview data:
-
 ```csv
 "Value"
 "624.89"
@@ -8004,7 +7520,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `commerce.price(symbol="$")`
 - Preview data:
-
 ```csv
 "Value"
 "$408.79"
@@ -8014,7 +7529,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `commerce.price(dec=2, max=100)`
 - Preview data:
-
 ```csv
 "Value"
 "80.09"
@@ -8024,7 +7538,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `commerce.price(max=100, min=1)`
 - Preview data:
-
 ```csv
 "Value"
 "65.60"
@@ -8034,7 +7547,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `commerce.price(min=1, symbol="$")`
 - Preview data:
-
 ```csv
 "Value"
 "$80.15"
@@ -8044,7 +7556,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `commerce.product()`
 - Preview data:
-
 ```csv
 "Value"
 "Salad"
@@ -8054,7 +7565,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `commerce.productAdjective()`
 - Preview data:
-
 ```csv
 "Value"
 "Rustic"
@@ -8064,7 +7574,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `commerce.productDescription()`
 - Preview data:
-
 ```csv
 "Value"
 "Discover the inconsequential new Gloves with an exciting mix of Cotton ingredients"
@@ -8074,7 +7583,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `commerce.productMaterial()`
 - Preview data:
-
 ```csv
 "Value"
 "Silk"
@@ -8084,7 +7592,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `commerce.productName()`
 - Preview data:
-
 ```csv
 "Value"
 "Practical Aluminum Shirt"
@@ -8094,7 +7601,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `company.buzzAdjective()`
 - Preview data:
-
 ```csv
 "Value"
 "B2B"
@@ -8104,7 +7610,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `company.buzzNoun()`
 - Preview data:
-
 ```csv
 "Value"
 "schemas"
@@ -8114,7 +7619,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `company.buzzPhrase()`
 - Preview data:
-
 ```csv
 "Value"
 "engineer scalable smart contracts"
@@ -8124,7 +7628,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `company.buzzVerb()`
 - Preview data:
-
 ```csv
 "Value"
 "expedite"
@@ -8134,7 +7637,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `company.catchPhrase()`
 - Preview data:
-
 ```csv
 "Value"
 "Synchronised fault-tolerant service-desk"
@@ -8144,7 +7646,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `company.catchPhraseAdjective()`
 - Preview data:
-
 ```csv
 "Value"
 "Diverse"
@@ -8154,7 +7655,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `company.catchPhraseDescriptor()`
 - Preview data:
-
 ```csv
 "Value"
 "zero trust"
@@ -8164,7 +7664,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `company.catchPhraseNoun()`
 - Preview data:
-
 ```csv
 "Value"
 "hardware"
@@ -8174,7 +7673,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `company.name()`
 - Preview data:
-
 ```csv
 "Value"
 "Yundt, Boehm and Roob"
@@ -8184,7 +7682,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `database.collation()`
 - Preview data:
-
 ```csv
 "Value"
 "utf8_bin"
@@ -8194,7 +7691,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `database.column()`
 - Preview data:
-
 ```csv
 "Value"
 "updatedAt"
@@ -8204,7 +7700,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `database.engine()`
 - Preview data:
-
 ```csv
 "Value"
 "MyISAM"
@@ -8214,7 +7709,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `database.mongodbObjectId()`
 - Preview data:
-
 ```csv
 "Value"
 "d62d29cffe9912ddfddddb58"
@@ -8224,7 +7718,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `database.type()`
 - Preview data:
-
 ```csv
 "Value"
 "point"
@@ -8234,7 +7727,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `datatype.boolean()`
 - Preview data:
-
 ```csv
 "Value"
 "false"
@@ -8244,7 +7736,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `datatype.boolean(probability=2)`
 - Preview data:
-
 ```csv
 "Value"
 "true"
@@ -8254,7 +7745,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `datatype.enum("active", "inactive", "pending")`
 - Preview data:
-
 ```csv
 "Value"
 "active"
@@ -8264,17 +7754,15 @@ Non-executable scenario count: **0**
 
 - Command(s): `date.anytime()`
 - Preview data:
-
 ```csv
 "Value"
-"2026-06-14T17:27:29.813Z"
+"2026-06-22T18:25:06.486Z"
 ```
 
 #### `domain-date-anytime-arg-refDate`
 
 - Command(s): `date.anytime(refDate=1577836800000)`
 - Preview data:
-
 ```csv
 "Value"
 "2020-09-21T21:46:38.236Z"
@@ -8284,7 +7772,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `date.between(1577836800000, 1609372800000)`
 - Preview data:
-
 ```csv
 "Value"
 "2020-07-25T19:48:55.233Z"
@@ -8294,7 +7781,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `date.between(from=1577836800000, to=1609372800000)`
 - Preview data:
-
 ```csv
 "Value"
 "2020-08-02T19:17:11.407Z"
@@ -8304,7 +7790,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `date.between(to=1609372800000, from=1577836800000)`
 - Preview data:
-
 ```csv
 "Value"
 "2020-07-28T01:45:25.825Z"
@@ -8314,7 +7799,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `date.between(from=1577836800000, to=1609372800000)`
 - Preview data:
-
 ```csv
 "Value"
 "2020-04-01T08:35:52.015Z"
@@ -8324,10 +7808,9 @@ Non-executable scenario count: **0**
 
 - Command(s): `date.birthdate()`
 - Preview data:
-
 ```csv
 "Value"
-"1957-08-09T17:22:41.817Z"
+"1957-08-17T18:20:18.489Z"
 ```
 
 #### `domain-date-birthdate-example-1`
@@ -8335,7 +7818,6 @@ Non-executable scenario count: **0**
 - Command(s): `date.birthdate(refDate=20000, max=69, min=16, mode="age")`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Value"
 "1920-10-04T17:22:24.125Z"
@@ -8345,7 +7827,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `date.birthdate(refDate=1577836800000, min=18, max=65, mode="age")`
 - Preview data:
-
 ```csv
 "Value"
 "1986-12-14T21:23:27.338Z"
@@ -8355,37 +7836,33 @@ Non-executable scenario count: **0**
 
 - Command(s): `date.birthdate(max=65, min=18, mode="age")`
 - Preview data:
-
 ```csv
 "Value"
-"1979-06-27T21:29:30.261Z"
+"1979-07-05T22:27:06.933Z"
 ```
 
 #### `domain-date-birthdate-arg-min`
 
 - Command(s): `date.birthdate(min=18, max=65, mode="age")`
 - Preview data:
-
 ```csv
 "Value"
-"1970-08-23T12:52:57.755Z"
+"1970-08-31T13:50:34.426Z"
 ```
 
 #### `domain-date-birthdate-arg-mode`
 
 - Command(s): `date.birthdate(mode="age", min=18, max=65)`
 - Preview data:
-
 ```csv
 "Value"
-"1989-12-05T00:20:09.176Z"
+"1989-12-13T01:17:45.847Z"
 ```
 
 #### `domain-date-birthdate-pair-refDate-max`
 
 - Command(s): `date.birthdate(refDate=1577836800000, max=65, min=18, mode="age")`
 - Preview data:
-
 ```csv
 "Value"
 "1973-08-07T06:26:36.179Z"
@@ -8395,37 +7872,33 @@ Non-executable scenario count: **0**
 
 - Command(s): `date.birthdate(max=65, min=18, mode="age")`
 - Preview data:
-
 ```csv
 "Value"
-"1979-10-16T15:52:00.006Z"
+"1979-10-24T16:49:36.678Z"
 ```
 
 #### `domain-date-birthdate-pair-min-mode`
 
 - Command(s): `date.birthdate(min=18, mode="age", max=65)`
 - Preview data:
-
 ```csv
 "Value"
-"1970-04-10T18:35:31.758Z"
+"1970-04-18T19:33:08.429Z"
 ```
 
 #### `domain-date-future-base`
 
 - Command(s): `date.future()`
 - Preview data:
-
 ```csv
 "Value"
-"2026-09-20T03:51:38.560Z"
+"2026-09-28T04:49:15.231Z"
 ```
 
 #### `domain-date-future-arg-refDate`
 
 - Command(s): `date.future(refDate=1577836800000)`
 - Preview data:
-
 ```csv
 "Value"
 "2020-01-10T14:38:46.292Z"
@@ -8435,17 +7908,15 @@ Non-executable scenario count: **0**
 
 - Command(s): `date.future(years=2)`
 - Preview data:
-
 ```csv
 "Value"
-"2027-12-02T22:34:48.865Z"
+"2027-12-10T23:32:25.536Z"
 ```
 
 #### `domain-date-future-pair-refDate-years`
 
 - Command(s): `date.future(refDate=1577836800000, years=2)`
 - Preview data:
-
 ```csv
 "Value"
 "2021-08-02T04:49:51.903Z"
@@ -8455,7 +7926,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `date.month()`
 - Preview data:
-
 ```csv
 "Value"
 "August"
@@ -8465,7 +7935,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `date.month(abbreviated=true)`
 - Preview data:
-
 ```csv
 "Value"
 "Jun"
@@ -8475,7 +7944,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `date.month(context=true)`
 - Preview data:
-
 ```csv
 "Value"
 "August"
@@ -8485,7 +7953,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `date.month(abbreviated=true, context=true)`
 - Preview data:
-
 ```csv
 "Value"
 "Jul"
@@ -8495,17 +7962,15 @@ Non-executable scenario count: **0**
 
 - Command(s): `date.past()`
 - Preview data:
-
 ```csv
 "Value"
-"2026-01-03T01:30:36.733Z"
+"2026-01-11T02:28:13.403Z"
 ```
 
 #### `domain-date-past-arg-refDate`
 
 - Command(s): `date.past(refDate=1577836800000)`
 - Preview data:
-
 ```csv
 "Value"
 "2019-08-27T00:03:49.125Z"
@@ -8515,17 +7980,15 @@ Non-executable scenario count: **0**
 
 - Command(s): `date.past(years=2)`
 - Preview data:
-
 ```csv
 "Value"
-"2025-06-07T14:30:30.127Z"
+"2025-06-15T15:28:06.798Z"
 ```
 
 #### `domain-date-past-pair-refDate-years`
 
 - Command(s): `date.past(refDate=1577836800000, years=2)`
 - Preview data:
-
 ```csv
 "Value"
 "2019-05-16T08:15:04.782Z"
@@ -8535,27 +7998,24 @@ Non-executable scenario count: **0**
 
 - Command(s): `date.recent()`
 - Preview data:
-
 ```csv
 "Value"
-"2026-06-05T08:19:51.622Z"
+"2026-06-13T09:17:28.292Z"
 ```
 
 #### `domain-date-recent-arg-days`
 
 - Command(s): `date.recent(days=7)`
 - Preview data:
-
 ```csv
 "Value"
-"2026-06-03T14:07:54.292Z"
+"2026-06-11T15:05:30.962Z"
 ```
 
 #### `domain-date-recent-arg-refDate`
 
 - Command(s): `date.recent(refDate=1577836800000)`
 - Preview data:
-
 ```csv
 "Value"
 "2019-12-31T17:33:19.970Z"
@@ -8565,7 +8025,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `date.recent(days=7, refDate=1577836800000)`
 - Preview data:
-
 ```csv
 "Value"
 "2019-12-31T16:09:08.524Z"
@@ -8575,27 +8034,24 @@ Non-executable scenario count: **0**
 
 - Command(s): `date.soon()`
 - Preview data:
-
 ```csv
 "Value"
-"2026-06-05T10:20:34.383Z"
+"2026-06-13T11:18:11.053Z"
 ```
 
 #### `domain-date-soon-arg-days`
 
 - Command(s): `date.soon(days=7)`
 - Preview data:
-
 ```csv
 "Value"
-"2026-06-07T02:48:22.611Z"
+"2026-06-15T03:45:59.281Z"
 ```
 
 #### `domain-date-soon-arg-refDate`
 
 - Command(s): `date.soon(refDate=1577836800000)`
 - Preview data:
-
 ```csv
 "Value"
 "2020-01-01T14:00:11.275Z"
@@ -8605,7 +8061,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `date.soon(days=7, refDate=1577836800000)`
 - Preview data:
-
 ```csv
 "Value"
 "2020-01-05T05:26:41.692Z"
@@ -8615,7 +8070,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `date.timeZone()`
 - Preview data:
-
 ```csv
 "Value"
 "Africa/Blantyre"
@@ -8625,7 +8079,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `date.weekday()`
 - Preview data:
-
 ```csv
 "Value"
 "Sunday"
@@ -8635,7 +8088,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `date.weekday(abbreviated=true)`
 - Preview data:
-
 ```csv
 "Value"
 "Fri"
@@ -8645,7 +8097,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `date.weekday(context=true)`
 - Preview data:
-
 ```csv
 "Value"
 "Sunday"
@@ -8655,7 +8106,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `date.weekday(abbreviated=true, context=true)`
 - Preview data:
-
 ```csv
 "Value"
 "Wed"
@@ -8665,7 +8115,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `finance.accountName()`
 - Preview data:
-
 ```csv
 "Value"
 "Credit Card Account"
@@ -8675,7 +8124,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `finance.accountNumber()`
 - Preview data:
-
 ```csv
 "Value"
 "12741818"
@@ -8685,7 +8133,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `finance.accountNumber(length=4)`
 - Preview data:
-
 ```csv
 "Value"
 "0626"
@@ -8695,7 +8142,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `finance.amount()`
 - Preview data:
-
 ```csv
 "Value"
 "98.23"
@@ -8705,7 +8151,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `finance.amount(autoFormat=true)`
 - Preview data:
-
 ```csv
 "Value"
 "243.58"
@@ -8715,7 +8160,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `finance.amount(dec=2)`
 - Preview data:
-
 ```csv
 "Value"
 "180.47"
@@ -8725,7 +8169,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `finance.amount(max=100)`
 - Preview data:
-
 ```csv
 "Value"
 "98.06"
@@ -8735,7 +8178,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `finance.amount(min=1)`
 - Preview data:
-
 ```csv
 "Value"
 "745.17"
@@ -8745,7 +8187,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `finance.amount(symbol="$")`
 - Preview data:
-
 ```csv
 "Value"
 "$439.51"
@@ -8755,7 +8196,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `finance.amount(autoFormat=true, dec=2)`
 - Preview data:
-
 ```csv
 "Value"
 "823.64"
@@ -8765,7 +8205,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `finance.amount(dec=2, max=100)`
 - Preview data:
-
 ```csv
 "Value"
 "61.65"
@@ -8775,7 +8214,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `finance.amount(max=100, min=1)`
 - Preview data:
-
 ```csv
 "Value"
 "73.22"
@@ -8785,7 +8223,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `finance.amount(min=1, symbol="$")`
 - Preview data:
-
 ```csv
 "Value"
 "$738.40"
@@ -8795,7 +8232,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `finance.bic()`
 - Preview data:
-
 ```csv
 "Value"
 "SCXGMW70"
@@ -8805,7 +8241,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `finance.bic(includeBranchCode=true)`
 - Preview data:
-
 ```csv
 "Value"
 "TOZQSBL96NT"
@@ -8815,7 +8250,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `finance.bitcoinAddress()`
 - Preview data:
-
 ```csv
 "Value"
 "34fzp3Y8vj9LnQmtgNeraDGfkqT2rk"
@@ -8825,7 +8259,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `finance.creditCardCVV()`
 - Preview data:
-
 ```csv
 "Value"
 "463"
@@ -8835,7 +8268,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `finance.creditCardIssuer()`
 - Preview data:
-
 ```csv
 "Value"
 "american_express"
@@ -8845,7 +8277,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `finance.creditCardNumber()`
 - Preview data:
-
 ```csv
 "Value"
 "3529-6738-8179-4135"
@@ -8855,7 +8286,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `finance.creditCardNumber(issuer="finance-creditCardNumber-issuer")`
 - Preview data:
-
 ```csv
 "Value"
 "3044-612107-9965"
@@ -8865,7 +8295,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `finance.currencyCode()`
 - Preview data:
-
 ```csv
 "Value"
 "LBP"
@@ -8875,7 +8304,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `finance.currencyName()`
 - Preview data:
-
 ```csv
 "Value"
 "Cedi"
@@ -8885,7 +8313,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `finance.currencyNumericCode()`
 - Preview data:
-
 ```csv
 "Value"
 "934"
@@ -8895,7 +8322,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `finance.currencySymbol()`
 - Preview data:
-
 ```csv
 "Value"
 "₴"
@@ -8905,7 +8331,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `finance.ethereumAddress()`
 - Preview data:
-
 ```csv
 "Value"
 "0x05a9f11aa9ac6713b564dc821edb1cee4ea9bb33"
@@ -8915,7 +8340,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `finance.iban()`
 - Preview data:
-
 ```csv
 "Value"
 "LV80HNUZ1327310107987"
@@ -8925,7 +8349,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `finance.iban(countryCode="GB")`
 - Preview data:
-
 ```csv
 "Value"
 "GB93ZCOC36631779090042"
@@ -8935,7 +8358,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `finance.iban(formatted=true)`
 - Preview data:
-
 ```csv
 "Value"
 "FI75 6537 4040 0859 87"
@@ -8945,7 +8367,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `finance.iban(countryCode="GB", formatted=true)`
 - Preview data:
-
 ```csv
 "Value"
 "GB63 QSMG 1465 6277 3690 20"
@@ -8955,7 +8376,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `finance.litecoinAddress()`
 - Preview data:
-
 ```csv
 "Value"
 "387GmSW4s1E1t16xYaNCi9zgLtV5cDM"
@@ -8965,7 +8385,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `finance.maskedNumber()`
 - Preview data:
-
 ```csv
 "Value"
 "(...1483)"
@@ -8975,7 +8394,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `finance.maskedNumber(length=4)`
 - Preview data:
-
 ```csv
 "Value"
 "(...7138)"
@@ -8985,7 +8403,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `finance.pin()`
 - Preview data:
-
 ```csv
 "Value"
 "2035"
@@ -8995,7 +8412,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `finance.pin(length=4)`
 - Preview data:
-
 ```csv
 "Value"
 "1155"
@@ -9005,7 +8421,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `finance.routingNumber()`
 - Preview data:
-
 ```csv
 "Value"
 "960542158"
@@ -9015,7 +8430,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `finance.transactionDescription()`
 - Preview data:
-
 ```csv
 "Value"
 "payment processed at Ullrich LLC for PKR 490.00, using card ending ****1272. Account: ***8641."
@@ -9025,7 +8439,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `finance.transactionType()`
 - Preview data:
-
 ```csv
 "Value"
 "withdrawal"
@@ -9035,7 +8448,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `food.adjective()`
 - Preview data:
-
 ```csv
 "Value"
 "fluffy"
@@ -9045,7 +8457,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `food.description()`
 - Preview data:
-
 ```csv
 "Value"
 "A classic pie filled with delicious venison and crunchy purple rice, baked in a smoky pastry crust and topped with a golden-brown lattice."
@@ -9055,7 +8466,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `food.dish()`
 - Preview data:
-
 ```csv
 "Value"
 "Passionfruit Pie"
@@ -9065,7 +8475,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `food.ethnicCategory()`
 - Preview data:
-
 ```csv
 "Value"
 "Belarusian"
@@ -9075,7 +8484,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `food.fruit()`
 - Preview data:
-
 ```csv
 "Value"
 "grape"
@@ -9085,7 +8493,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `food.ingredient()`
 - Preview data:
-
 ```csv
 "Value"
 "bonza"
@@ -9095,7 +8502,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `food.meat()`
 - Preview data:
-
 ```csv
 "Value"
 "crocodile"
@@ -9105,7 +8511,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `food.spice()`
 - Preview data:
-
 ```csv
 "Value"
 "achiote seed"
@@ -9115,7 +8520,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `food.vegetable()`
 - Preview data:
-
 ```csv
 "Value"
 "lettuce"
@@ -9125,7 +8529,6 @@ Non-executable scenario count: **0**
 
 - Command(s): `git.branch()`
 - Preview data:
-
 ```csv
 "Value"
 "array-input"
@@ -9135,22 +8538,20 @@ Non-executable scenario count: **0**
 
 - Command(s): `git.commitDate()`
 - Preview data:
-
 ```csv
 "Value"
-"Thu Jun 4 09:17:39 2026 -0700"
+"Fri Jun 12 10:15:16 2026 -0700"
 ```
 
 #### `domain-git-commitEntry-base`
 
 - Command(s): `git.commitEntry()`
 - Preview data:
-
 ```csv
 "Value"
 "commit 7738bbde748c2e27e1520b9bf8bb637a48e2feaa
 Author: Josie Russel <Josie.Russel95@yahoo.com>
-Date: Thu Jun 4 10:02:55 2026 +0700
+Date: Fri Jun 12 11:00:32 2026 +0700
 
     transmit solid state protocol
 "
@@ -9160,7 +8561,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `git.commitMessage()`
 - Preview data:
-
 ```csv
 "Value"
 "program multi-byte alarm"
@@ -9170,7 +8570,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `git.commitSha()`
 - Preview data:
-
 ```csv
 "Value"
 "aa5bda8d6f6a71fed1ccffd89a4ea33d4ec21e7e"
@@ -9180,7 +8579,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `hacker.abbreviation()`
 - Preview data:
-
 ```csv
 "Value"
 "UDP"
@@ -9190,7 +8588,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `hacker.adjective()`
 - Preview data:
-
 ```csv
 "Value"
 "solid state"
@@ -9200,7 +8597,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `hacker.ingverb()`
 - Preview data:
-
 ```csv
 "Value"
 "bypassing"
@@ -9210,7 +8606,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `hacker.noun()`
 - Preview data:
-
 ```csv
 "Value"
 "card"
@@ -9220,7 +8615,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `hacker.phrase()`
 - Preview data:
-
 ```csv
 "Value"
 "compressing the array won't do anything, we need to bypass the cross-platform PCI alarm!"
@@ -9230,7 +8624,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `hacker.verb()`
 - Preview data:
-
 ```csv
 "Value"
 "calculate"
@@ -9240,7 +8633,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `image.avatar()`
 - Preview data:
-
 ```csv
 "Value"
 "https://cdn.jsdelivr.net/gh/faker-js/assets-person-portrait/female/512/20.jpg"
@@ -9250,7 +8642,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `image.avatarGitHub()`
 - Preview data:
-
 ```csv
 "Value"
 "https://avatars.githubusercontent.com/u/16590067"
@@ -9260,7 +8651,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `image.avatarLegacy()`
 - Preview data:
-
 ```csv
 "Value"
 "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/8.jpg"
@@ -9270,7 +8660,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `image.dataUri()`
 - Preview data:
-
 ```csv
 "Value"
 "data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20version%3D%221.1%22%20baseProfile%3D%22full%22%20width%3D%222476%22%20height%3D%223320%22%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22%23db2805%22%2F%3E%3Ctext%20x%3D%221238%22%20y%3D%221660%22%20font-size%3D%2220%22%20alignment-baseline%3D%22middle%22%20text-anchor%3D%22middle%22%20fill%3D%22white%22%3E2476x3320%3C%2Ftext%3E%3C%2Fsvg%3E"
@@ -9280,7 +8669,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `image.personPortrait()`
 - Preview data:
-
 ```csv
 "Value"
 "https://cdn.jsdelivr.net/gh/faker-js/assets-person-portrait/male/512/96.jpg"
@@ -9290,7 +8678,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `image.url()`
 - Preview data:
-
 ```csv
 "Value"
 "https://loremflickr.com/3937/617?lock=3931926876699204"
@@ -9300,7 +8687,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `image.url(height=2)`
 - Preview data:
-
 ```csv
 "Value"
 "https://loremflickr.com/3193/2?lock=3191839961479511"
@@ -9310,7 +8696,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `image.url(width=3)`
 - Preview data:
-
 ```csv
 "Value"
 "https://picsum.photos/seed/3UIYDPaNWB/3/984"
@@ -9320,7 +8705,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `image.url(height=2, width=3)`
 - Preview data:
-
 ```csv
 "Value"
 "https://loremflickr.com/3/2?lock=7146576591433292"
@@ -9330,7 +8714,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `image.urlLoremFlickr()`
 - Preview data:
-
 ```csv
 "Value"
 "https://loremflickr.com/3481/2017?lock=3236073595510946"
@@ -9340,7 +8723,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `image.urlPicsumPhotos()`
 - Preview data:
-
 ```csv
 "Value"
 "https://picsum.photos/seed/s9gojEHeQ/1634/3581?grayscale&blur=1"
@@ -9350,7 +8732,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `image.urlPlaceholder()`
 - Preview data:
-
 ```csv
 "Value"
 "https://via.placeholder.com/3214x1881/defd36/91bc2c.jpg?text=comedo%20vespillo%20venio"
@@ -9360,7 +8741,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.color()`
 - Preview data:
-
 ```csv
 "Value"
 "#2f0204"
@@ -9370,7 +8750,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.displayName()`
 - Preview data:
-
 ```csv
 "Value"
 "Demetrius.Kuhlman"
@@ -9380,7 +8759,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.domainName()`
 - Preview data:
-
 ```csv
 "Value"
 "french-tuber.org"
@@ -9390,7 +8768,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.domainSuffix()`
 - Preview data:
-
 ```csv
 "Value"
 "name"
@@ -9400,7 +8777,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.domainWord()`
 - Preview data:
-
 ```csv
 "Value"
 "pure-alb"
@@ -9410,7 +8786,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.email()`
 - Preview data:
-
 ```csv
 "Value"
 "Brian42@yahoo.com"
@@ -9420,7 +8795,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.email(allowSpecialCharacters=true)`
 - Preview data:
-
 ```csv
 "Value"
 "Brant=Abernathy@hotmail.com"
@@ -9430,7 +8804,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.email(firstName="Ada")`
 - Preview data:
-
 ```csv
 "Value"
 "Ada.Schumm@gmail.com"
@@ -9440,7 +8813,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.email(lastName="Lovelace")`
 - Preview data:
-
 ```csv
 "Value"
 "Gavin.Lovelace62@yahoo.com"
@@ -9450,7 +8822,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.email(provider="example.com")`
 - Preview data:
-
 ```csv
 "Value"
 "Viola.Torphy@example.com"
@@ -9460,7 +8831,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.email(allowSpecialCharacters=true, firstName="Ada")`
 - Preview data:
-
 ```csv
 "Value"
 "Ada93@hotmail.com"
@@ -9470,7 +8840,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.email(firstName="Ada", lastName="Lovelace")`
 - Preview data:
-
 ```csv
 "Value"
 "Ada.Lovelace55@yahoo.com"
@@ -9480,7 +8849,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.email(lastName="Lovelace", provider="example.com")`
 - Preview data:
-
 ```csv
 "Value"
 "Euna.Lovelace@example.com"
@@ -9490,7 +8858,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.emoji()`
 - Preview data:
-
 ```csv
 "Value"
 "🐆"
@@ -9500,7 +8867,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.emoji(types=["food"])`
 - Preview data:
-
 ```csv
 "Value"
 "🫑"
@@ -9510,7 +8876,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.exampleEmail()`
 - Preview data:
-
 ```csv
 "Value"
 "Hulda5@example.org"
@@ -9520,7 +8885,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.httpMethod()`
 - Preview data:
-
 ```csv
 "Value"
 "PATCH"
@@ -9530,7 +8894,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.httpStatusCode()`
 - Preview data:
-
 ```csv
 "Value"
 "401"
@@ -9540,7 +8903,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.ip()`
 - Preview data:
-
 ```csv
 "Value"
 "229.141.100.182"
@@ -9550,7 +8912,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.ipv4()`
 - Preview data:
-
 ```csv
 "Value"
 "52.210.222.85"
@@ -9560,7 +8921,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.ipv4(cidrBlock="192.168.0.0/24")`
 - Preview data:
-
 ```csv
 "Value"
 "192.168.0.68"
@@ -9570,7 +8930,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.ipv4(network="private-a")`
 - Preview data:
-
 ```csv
 "Value"
 "10.77.209.214"
@@ -9580,7 +8939,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.ipv4(cidrBlock="192.168.0.0/24", network="private-a")`
 - Preview data:
-
 ```csv
 "Value"
 "192.168.0.45"
@@ -9590,7 +8948,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.ipv6()`
 - Preview data:
-
 ```csv
 "Value"
 "ff36:bc8e:3eea:4c8e:ac0b:50a2:fc4a:dbcf"
@@ -9600,27 +8957,24 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.jwt()`
 - Preview data:
-
 ```csv
 "Value"
-"eyJhbGciOiJIUzM4NCIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3ODA1NjMzMjgsImV4cCI6MTc4MDYxOTQwOSwibmJmIjoxNzc3MzU0NDExLCJpc3MiOiJTYXR0ZXJmaWVsZCBHcm91cCIsInN1YiI6IjYxMzIwNjNhLTE5MjktNDkwZi1iNWNhLTM2MWU2NmM1MmRkNCIsImF1ZCI6IjQwNjEwNWNkLTE2MjgtNDA4Yi1iN2EyLWQ2NmM1M2Y3NGFiNSIsImp0aSI6IjU4YmNiMzdkLTRkOGEtNGYyZS04ZDNmLTQyMGM4MGExNGMwNCJ9.MLGSLGF7hNjp6RghVgC2GZIDrfHAZBBIZ8WaqXFphTbyRPkIFKnEnnSToLoWkvDw"
+"eyJhbGciOiJIUzM4NCIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3ODEyNTc5ODUsImV4cCI6MTc4MTMxNDA2NiwibmJmIjoxNzc4MDQ5MDY3LCJpc3MiOiJTYXR0ZXJmaWVsZCBHcm91cCIsInN1YiI6IjYxMzIwNjNhLTE5MjktNDkwZi1iNWNhLTM2MWU2NmM1MmRkNCIsImF1ZCI6IjQwNjEwNWNkLTE2MjgtNDA4Yi1iN2EyLWQ2NmM1M2Y3NGFiNSIsImp0aSI6IjU4YmNiMzdkLTRkOGEtNGYyZS04ZDNmLTQyMGM4MGExNGMwNCJ9.MLGSLGF7hNjp6RghVgC2GZIDrfHAZBBIZ8WaqXFphTbyRPkIFKnEnnSToLoWkvDw"
 ```
 
 #### `domain-internet-jwt-arg-header`
 
 - Command(s): `internet.jwt(header={})`
 - Preview data:
-
 ```csv
 "Value"
-"e30.eyJpYXQiOjE3ODA1NzMwMzUsImV4cCI6MTc4MDU5NTQ4NywibmJmIjoxNzg2OTE1ODAzLCJpc3MiOiJGYWhleSwgS2lobiBhbmQgUmVpY2hlcnQiLCJzdWIiOiIxYzQyMmU2ZS1lNzcxLTRmMDAtYmU3OS02NzAwNGViZjg1OGYiLCJhdWQiOiI5MmY3OTFiMy0wYTI5LTQ4ZjItOWUxZS00MGU1Yzk2NTkzYWQiLCJqdGkiOiJkNzk2YzA3Yy0zNjRmLTQzNjgtYWJhZS00N2M3NTExODk4MWEifQ.e8QhcTHj4nBTF2jK53PylJjqBpYeMf9N0oMfTsbM6jKYhngnf0HuiaRiyjUW5TWk"
+"e30.eyJpYXQiOjE3ODEyNjc2OTEsImV4cCI6MTc4MTI5MDE0MywibmJmIjoxNzg3NjEwNDYwLCJpc3MiOiJGYWhleSwgS2lobiBhbmQgUmVpY2hlcnQiLCJzdWIiOiIxYzQyMmU2ZS1lNzcxLTRmMDAtYmU3OS02NzAwNGViZjg1OGYiLCJhdWQiOiI5MmY3OTFiMy0wYTI5LTQ4ZjItOWUxZS00MGU1Yzk2NTkzYWQiLCJqdGkiOiJkNzk2YzA3Yy0zNjRmLTQzNjgtYWJhZS00N2M3NTExODk4MWEifQ.e8QhcTHj4nBTF2jK53PylJjqBpYeMf9N0oMfTsbM6jKYhngnf0HuiaRiyjUW5TWk"
 ```
 
 #### `domain-internet-jwt-arg-payload`
 
 - Command(s): `internet.jwt(payload={})`
 - Preview data:
-
 ```csv
 "Value"
 "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.e30.bzBMPPc25eqL3Wz5ty1xLOmqFcQ5UhbkK5Bz27pZJGMImquk9U1G93TTIT78S0Li"
@@ -9630,7 +8984,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.jwt(refDate=4)`
 - Preview data:
-
 ```csv
 "Value"
 "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOi0xMTYxMCwiZXhwIjo2OTYyMSwibmJmIjozMTE3NTUyMywiaXNzIjoiU2lwZXMsIEJhdHogYW5kIExvd2UiLCJzdWIiOiIxZWVhZGYwNC0zMDQ2LTRkYmItOWVhNC0yMGY1Zjg5N2Y2YWQiLCJhdWQiOiI2ZmJhMDFiYS0yMWY0LTRlZTQtYmVlZC1iZjA2MDlhMTNkMzAiLCJqdGkiOiI0NDFlMWI4ZC00MmFhLTQzM2UtODA0Ni05YmNiZmFjY2ZjZGIifQ.ShTkX7nPtnWynmGL3sA1GZzI2AzKj6Mj3LgvWpTuDw2z02aONYVFT1gwYoVsPPH4"
@@ -9640,7 +8993,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.jwt(header={}, payload={})`
 - Preview data:
-
 ```csv
 "Value"
 "e30.e30.O604I0hDV1mFaT0FXBy2U9vHZNugne9xahCoN7ydkh96jHDR36zV9TDxv6yQjGqM"
@@ -9650,7 +9002,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.jwt(payload={}, refDate=4)`
 - Preview data:
-
 ```csv
 "Value"
 "eyJhbGciOiJFUzUxMiIsInR5cCI6IkpXVCJ9.e30.cqMtfsjVRe4taxGy1S7uH1KOAlSBZSXQoKXttlGA5b8LcMBlMXhYYMZxt7ED45qV"
@@ -9660,7 +9011,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.jwtAlgorithm()`
 - Preview data:
-
 ```csv
 "Value"
 "ES256"
@@ -9670,7 +9020,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.mac()`
 - Preview data:
-
 ```csv
 "Value"
 "45:11:8d:5b:a6:32"
@@ -9680,7 +9029,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.mac(separator="-")`
 - Preview data:
-
 ```csv
 "Value"
 "c0-c3-a3-5e-ef-da"
@@ -9690,7 +9038,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.password()`
 - Preview data:
-
 ```csv
 "Value"
 "TBoqXmfYfXk3I3A"
@@ -9701,7 +9048,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 - Command(s): `internet.password(length=10, memorable=false, pattern="[A-Za-z0-9]", prefix="#")`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Value"
 "#wMJJrPMVo"
@@ -9711,7 +9057,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.password(length=12)`
 - Preview data:
-
 ```csv
 "Value"
 "hzyT0010JBYb"
@@ -9721,7 +9066,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.password(memorable=true)`
 - Preview data:
-
 ```csv
 "Value"
 "zapeboqulewufuf"
@@ -9731,7 +9075,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.password(pattern="[A-Z]")`
 - Preview data:
-
 ```csv
 "Value"
 "BVSNRUBNEAWUTJT"
@@ -9741,7 +9084,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.password(prefix="#")`
 - Preview data:
-
 ```csv
 "Value"
 "#xxsm9CX1flFshv"
@@ -9751,7 +9093,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.password(length=12, memorable=true)`
 - Preview data:
-
 ```csv
 "Value"
 "jecotucenedo"
@@ -9761,7 +9102,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.password(memorable=true, pattern="[A-Z]")`
 - Preview data:
-
 ```csv
 "Value"
 "nomudolunexolec"
@@ -9771,7 +9111,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.password(pattern="[A-Z]", prefix="#")`
 - Preview data:
-
 ```csv
 "Value"
 "#EXCEEXMTTHRSHT"
@@ -9781,7 +9120,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.port()`
 - Preview data:
-
 ```csv
 "Value"
 "63399"
@@ -9791,7 +9129,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.protocol()`
 - Preview data:
-
 ```csv
 "Value"
 "http"
@@ -9801,7 +9138,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.url()`
 - Preview data:
-
 ```csv
 "Value"
 "https://grave-overheard.org"
@@ -9811,7 +9147,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.url(appendSlash=true)`
 - Preview data:
-
 ```csv
 "Value"
 "https://pleasing-scrap.biz/"
@@ -9821,7 +9156,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.url(protocol="https")`
 - Preview data:
-
 ```csv
 "Value"
 "https://zealous-flat.net"
@@ -9831,7 +9165,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.url(appendSlash=true, protocol="https")`
 - Preview data:
-
 ```csv
 "Value"
 "https://good-natured-hovel.info/"
@@ -9841,7 +9174,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.userAgent()`
 - Preview data:
-
 ```csv
 "Value"
 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/560.22 (KHTML, like Gecko) Chrome/100.9.0.1 Safari/555.7 Edg/113.8.7.15"
@@ -9851,7 +9183,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.username()`
 - Preview data:
-
 ```csv
 "Value"
 "Kailey2"
@@ -9861,7 +9192,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.username(firstName="Ada")`
 - Preview data:
-
 ```csv
 "Value"
 "Ada_Bode"
@@ -9871,7 +9201,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.username(lastName="Lovelace")`
 - Preview data:
-
 ```csv
 "Value"
 "Dallin.Lovelace"
@@ -9881,7 +9210,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.username(firstName="Ada", lastName="Lovelace")`
 - Preview data:
-
 ```csv
 "Value"
 "Ada.Lovelace"
@@ -9891,7 +9219,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `internet.userName()`
 - Preview data:
-
 ```csv
 "Value"
 "Marlee30"
@@ -9901,7 +9228,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `literal.value()`
 - Preview data:
-
 ```csv
 "Value"
 ""
@@ -9912,7 +9238,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 - Command(s): `literal.value("Pending")`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Value"
 "Pending"
@@ -9923,7 +9248,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 - Command(s): `literal.value("")`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Value"
 ""
@@ -9933,7 +9257,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `literal.value(value=true)`
 - Preview data:
-
 ```csv
 "Value"
 "true"
@@ -9943,7 +9266,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.buildingNumber()`
 - Preview data:
-
 ```csv
 "Value"
 "86561"
@@ -9953,7 +9275,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.cardinalDirection()`
 - Preview data:
-
 ```csv
 "Value"
 "North"
@@ -9963,7 +9284,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.city()`
 - Preview data:
-
 ```csv
 "Value"
 "Antelope"
@@ -9973,7 +9293,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.continent()`
 - Preview data:
-
 ```csv
 "Value"
 "Africa"
@@ -9983,7 +9302,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.country()`
 - Preview data:
-
 ```csv
 "Value"
 "Eritrea"
@@ -9993,7 +9311,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.countryCode()`
 - Preview data:
-
 ```csv
 "Value"
 "GU"
@@ -10003,7 +9320,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.county()`
 - Preview data:
-
 ```csv
 "Value"
 "Cumbria"
@@ -10013,7 +9329,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.direction()`
 - Preview data:
-
 ```csv
 "Value"
 "West"
@@ -10023,7 +9338,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.direction(abbreviated=true)`
 - Preview data:
-
 ```csv
 "Value"
 "S"
@@ -10033,7 +9347,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.latitude()`
 - Preview data:
-
 ```csv
 "Value"
 "41.3757"
@@ -10043,7 +9356,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.latitude(min=1)`
 - Preview data:
-
 ```csv
 "Value"
 "12.2218"
@@ -10053,7 +9365,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.latitude(max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "-85.9885"
@@ -10063,7 +9374,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.latitude(precision=4)`
 - Preview data:
-
 ```csv
 "Value"
 "-16.2319"
@@ -10073,7 +9383,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.latitude(min=1, max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "2.315"
@@ -10083,7 +9392,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.latitude(max=3, precision=4)`
 - Preview data:
-
 ```csv
 "Value"
 "-52.1397"
@@ -10093,7 +9401,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.longitude()`
 - Preview data:
-
 ```csv
 "Value"
 "156.4157"
@@ -10103,7 +9410,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.longitude(min=1)`
 - Preview data:
-
 ```csv
 "Value"
 "26.1188"
@@ -10113,7 +9419,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.longitude(max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "-68.5071"
@@ -10123,7 +9428,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.longitude(precision=4)`
 - Preview data:
-
 ```csv
 "Value"
 "-52.7542"
@@ -10133,7 +9437,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.longitude(min=1, max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "1.1204"
@@ -10143,7 +9446,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.longitude(max=3, precision=4)`
 - Preview data:
-
 ```csv
 "Value"
 "-134.0996"
@@ -10153,7 +9455,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.ordinalDirection()`
 - Preview data:
-
 ```csv
 "Value"
 "Southeast"
@@ -10163,7 +9464,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.secondaryAddress()`
 - Preview data:
-
 ```csv
 "Value"
 "Apt. 818"
@@ -10173,7 +9473,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.state()`
 - Preview data:
-
 ```csv
 "Value"
 "Michigan"
@@ -10183,7 +9482,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.state(abbreviated=true)`
 - Preview data:
-
 ```csv
 "Value"
 "WI"
@@ -10193,7 +9491,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.street()`
 - Preview data:
-
 ```csv
 "Value"
 "Brown Trafficway"
@@ -10203,7 +9500,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.streetAddress()`
 - Preview data:
-
 ```csv
 "Value"
 "428 Grant Walks"
@@ -10213,7 +9509,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.streetAddress(useFullAddress=true)`
 - Preview data:
-
 ```csv
 "Value"
 "6267 Euclid Avenue Apt. 758"
@@ -10223,7 +9518,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.timeZone()`
 - Preview data:
-
 ```csv
 "Value"
 "America/North_Dakota/Beulah"
@@ -10233,7 +9527,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `location.zipCode()`
 - Preview data:
-
 ```csv
 "Value"
 "86088"
@@ -10243,7 +9536,6 @@ Date: Thu Jun 4 10:02:55 2026 +0700
 
 - Command(s): `lorem.lines()`
 - Preview data:
-
 ```csv
 "Value"
 "Celo defetiscor magnam chirographum peccatus contigo solium aggredior truculenter.
@@ -10257,7 +9549,6 @@ Speciosus demulceo celebrer copiose cunabula caritas ambulo caveo unde."
 
 - Command(s): `lorem.lines(min=1)`
 - Preview data:
-
 ```csv
 "Value"
 "Abutor viridis tripudio calculus totam venio blanditiis talio."
@@ -10267,7 +9558,6 @@ Speciosus demulceo celebrer copiose cunabula caritas ambulo caveo unde."
 
 - Command(s): `lorem.lines(max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "Voluptatem vinum balbus ago.
@@ -10280,7 +9570,6 @@ Ager conor adipisci admiratio cicuta id ullus apto ara conitor."
 
 - Command(s): `lorem.lines(lineCount=2)`
 - Preview data:
-
 ```csv
 "Value"
 "Comparo celebrer capio.
@@ -10291,7 +9580,6 @@ Nesciunt ipsa acerbitas cilicium thalassinus inflammatio."
 
 - Command(s): `lorem.lines(lineCountMax=2)`
 - Preview data:
-
 ```csv
 "Value"
 "Commodi civitas peccatus aestus ager nesciunt laboriosam quos.
@@ -10305,7 +9593,6 @@ Creta conforto usitas sol."
 
 - Command(s): `lorem.lines(lineCountMin=1)`
 - Preview data:
-
 ```csv
 "Value"
 "Calculus valetudo adopto tergeo tyrannus quaerat.
@@ -10319,7 +9606,6 @@ Sint ultra adsum vester tres tametsi."
 
 - Command(s): `lorem.lines(min=1, max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "Dolore vere conicio suggero demo."
@@ -10329,7 +9615,6 @@ Sint ultra adsum vester tres tametsi."
 
 - Command(s): `lorem.lines(max=3, lineCount=2)`
 - Preview data:
-
 ```csv
 "Value"
 "Aperiam cervus perspiciatis dedico deputo combibo tutis vester quis vigilo."
@@ -10339,7 +9624,6 @@ Sint ultra adsum vester tres tametsi."
 
 - Command(s): `lorem.lines(lineCount=2, lineCountMax=2)`
 - Preview data:
-
 ```csv
 "Value"
 "Tres vacuus somnus asper allatus allatus."
@@ -10349,7 +9633,6 @@ Sint ultra adsum vester tres tametsi."
 
 - Command(s): `lorem.lines(lineCountMax=2, lineCountMin=1)`
 - Preview data:
-
 ```csv
 "Value"
 "Nemo sophismata illo itaque.
@@ -10360,7 +9643,6 @@ Cernuus solutio sed comes degusto suscipio territo civitas."
 
 - Command(s): `lorem.paragraph()`
 - Preview data:
-
 ```csv
 "Value"
 "Voluptate adopto arguo. Titulus summisse molestiae arx careo patior. Alveus conservo canto succedo demergo cupressus collum amplus cotidie autem."
@@ -10370,7 +9652,6 @@ Cernuus solutio sed comes degusto suscipio territo civitas."
 
 - Command(s): `lorem.paragraph(min=1)`
 - Preview data:
-
 ```csv
 "Value"
 "Decerno theatrum crapula utroque crastinus demoror bis."
@@ -10380,7 +9661,6 @@ Cernuus solutio sed comes degusto suscipio territo civitas."
 
 - Command(s): `lorem.paragraph(max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "Vulnero deleniti vitae aspicio sapiente. Decumbo voluptate claustrum ascisco angustus thema synagoga. Ad conspergo adfectus casso allatus patior."
@@ -10390,7 +9670,6 @@ Cernuus solutio sed comes degusto suscipio territo civitas."
 
 - Command(s): `lorem.paragraph(sentenceCount=4)`
 - Preview data:
-
 ```csv
 "Value"
 "Tergeo congregatio tolero. Trepide consuasor censura. Architecto aegrus creptio fugiat atqui delego."
@@ -10400,7 +9679,6 @@ Cernuus solutio sed comes degusto suscipio territo civitas."
 
 - Command(s): `lorem.paragraph(sentenceCountMax=5)`
 - Preview data:
-
 ```csv
 "Value"
 "Amiculum ambulo depraedor clibanus quae tres coepi complectus creptio. Condico tonsor curatio aggero accusantium utrum demergo. Deripio creo trucido civis despecto."
@@ -10410,7 +9688,6 @@ Cernuus solutio sed comes degusto suscipio territo civitas."
 
 - Command(s): `lorem.paragraph(sentenceCountMin=6)`
 - Preview data:
-
 ```csv
 "Value"
 "Alo quod argentum illo cattus decretum. Tenuis nemo conor campana bardus collum sint. Benevolentia sui sint tripudio conicio."
@@ -10420,7 +9697,6 @@ Cernuus solutio sed comes degusto suscipio territo civitas."
 
 - Command(s): `lorem.paragraph(min=1, max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "Labore labore torrens vesco tumultus attollo canto canonicus cupiditate."
@@ -10430,7 +9706,6 @@ Cernuus solutio sed comes degusto suscipio territo civitas."
 
 - Command(s): `lorem.paragraph(max=3, sentenceCount=4)`
 - Preview data:
-
 ```csv
 "Value"
 "Repellendus aperiam textilis claro volubilis voluptas sophismata veritas tibi umerus. Ultio deleniti voco audacia depulso astrum inflammatio vulnus. Occaecati tactus titulus vel communis."
@@ -10440,7 +9715,6 @@ Cernuus solutio sed comes degusto suscipio territo civitas."
 
 - Command(s): `lorem.paragraph(sentenceCount=4, sentenceCountMax=5)`
 - Preview data:
-
 ```csv
 "Value"
 "Tandem victus repellendus varius distinctio cur varietas video. Totus occaecati bene est vacuus versus. Voluptate crustulum adhuc artificiose libero super aperte labore peior laborum."
@@ -10450,7 +9724,6 @@ Cernuus solutio sed comes degusto suscipio territo civitas."
 
 - Command(s): `lorem.paragraph(sentenceCountMax=5, sentenceCountMin=6)`
 - Preview data:
-
 ```csv
 "Value"
 "Quas tonsor ambulo tum. Ascit aggredior crepusculum quis constans articulus corona adiuvo. Thesis amita video solium ultra exercitationem."
@@ -10460,7 +9733,6 @@ Cernuus solutio sed comes degusto suscipio territo civitas."
 
 - Command(s): `lorem.paragraphs()`
 - Preview data:
-
 ```csv
 "Value"
 "Tandem surgo ulterius defero aut veniam communis. Porro claro conturbo urbs aestivus cognomen advenio aureus sulum collum. Tertius apud bonus ara fugit totam tempora veritas.
@@ -10472,7 +9744,6 @@ Defendo tergo spectaculum. Caries laborum spes solitudo aestivus. Curvo comparo 
 
 - Command(s): `lorem.paragraphs(min=1)`
 - Preview data:
-
 ```csv
 "Value"
 "Arca deprimo confugo amplexus arcus vulnus vester titulus super suffoco. Cruentus debilito adulatio audacia vicinus pax attonbitus delicate cuius. Arbustum demens doloribus dolor."
@@ -10482,7 +9753,6 @@ Defendo tergo spectaculum. Caries laborum spes solitudo aestivus. Curvo comparo 
 
 - Command(s): `lorem.paragraphs(max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "Cogo decet adflicto sumptus ut. Amo sustineo creta templum. Sapiente creator non decipio comes comminor aro aliquid curso.3Amplitudo et aliqua solitudo cruciamentum atque versus sustineo audacia credo. Alias decipio demens nemo speciosus absens ustilo vinco. Cetera impedit despecto apto.3Viriliter denuo thymbra curiositas vomito rerum canonicus amplitudo. Comprehendo bestia ambulo aranea adipiscor temperantia amaritudo culpo curia addo. Ex pax canonicus statua sperno adfero copia vulgaris videlicet."
@@ -10492,7 +9762,6 @@ Defendo tergo spectaculum. Caries laborum spes solitudo aestivus. Curvo comparo 
 
 - Command(s): `lorem.paragraphs(paragraphCount=4)`
 - Preview data:
-
 ```csv
 "Value"
 "Avaritia decor odio alienus aliquid confido delectus. Curriculum angelus cubo vulgaris crustulum vinco canonicus ventito. Patruus depulso venio addo.
@@ -10504,7 +9773,6 @@ Cohors complectus chirographum aiunt bibo condico appono cornu censura. Consequu
 
 - Command(s): `lorem.paragraphs(separator="-")`
 - Preview data:
-
 ```csv
 "Value"
 "Auxilium capto volva arca perspiciatis. Quod odio cum turpis ascisco culpa sed consequuntur cogo. Tracto ademptio quas sufficio decet tempora utrum.
@@ -10516,7 +9784,6 @@ Patruus vorax cariosus laboriosam. Defleo vox textor desipio voluptas apostolus 
 
 - Command(s): `lorem.paragraphs(paragraphCountMax=6)`
 - Preview data:
-
 ```csv
 "Value"
 "Varius averto adeptio vestigium versus acerbitas peccatus fugit. Tam cunctatio crebro demitto corrumpo. Conicio vester utroque ascit ab unde quidem.
@@ -10528,7 +9795,6 @@ Sophismata angustus alveus eveniet ventito. Theatrum somnus conduco sublime. Cor
 
 - Command(s): `lorem.paragraphs(paragraphCountMin=7)`
 - Preview data:
-
 ```csv
 "Value"
 "Strues aeneus debilito pectus capto perferendis antiquus doloremque placeat acsi. Advoco ventosus suus collum thymum truculenter beneficium ratione cruciamentum. Coniecto valens terreo.
@@ -10540,7 +9806,6 @@ Arca aro vinculum. Synagoga alias tracto ars conforto crudelis solitudo ascisco.
 
 - Command(s): `lorem.paragraphs(min=1, max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "Arbitro aequus turbo cur coerceo bestia acer facilis. Collum ut varietas chirographum pecto coadunatio. Pariatur derelinquo solus rem tempus arcus necessitatibus validus voluptate."
@@ -10550,7 +9815,6 @@ Arca aro vinculum. Synagoga alias tracto ars conforto crudelis solitudo ascisco.
 
 - Command(s): `lorem.paragraphs(max=3, paragraphCount=4)`
 - Preview data:
-
 ```csv
 "Value"
 "Sopor collum suus. Thalassinus speculum ut. Audeo beneficium arx repellat teres creator numquam carmen.3Velum cubitum aranea surculus arceo centum tantillus cumque. Defero capto demo summisse sto venio stultus adnuo derelinquo. Crepusculum acer tantum vulgo.3Sufficio accendo compono arcesso voluptates surculus demulceo. Denuncio tantum tertius angustus. Distinctio delectus iste pariatur."
@@ -10560,7 +9824,6 @@ Arca aro vinculum. Synagoga alias tracto ars conforto crudelis solitudo ascisco.
 
 - Command(s): `lorem.paragraphs(paragraphCount=4, separator="-")`
 - Preview data:
-
 ```csv
 "Value"
 "Culpo arcesso voluptatum antiquus suscipit. Vestrum nam advenio aer tabula tondeo expedita eaque. Odio decretum tunc sint volubilis casus reprehenderit odio nulla.
@@ -10572,7 +9835,6 @@ Spoliatio taceo deporto temporibus adfectus ipsum. Cum tyrannus adhuc totam. Ill
 
 - Command(s): `lorem.paragraphs(separator="-", paragraphCountMax=6)`
 - Preview data:
-
 ```csv
 "Value"
 "Aiunt amicitia animus decimus. Temeritas quis nemo. Tibi ubi optio absconditus aufero.
@@ -10584,7 +9846,6 @@ Velut conicio temptatio armarium sint aspicio apostolus. Tolero claudeo congrega
 
 - Command(s): `lorem.paragraphs(paragraphCountMax=6, paragraphCountMin=7)`
 - Preview data:
-
 ```csv
 "Value"
 "Color crur suffragium veniam voluptas. Commodi angelus molestias suppono asper ait eum thymbra synagoga. Magnam utpote asper stips.
@@ -10596,7 +9857,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.sentence()`
 - Preview data:
-
 ```csv
 "Value"
 "Thymum curo rerum utrum."
@@ -10606,7 +9866,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.sentence(min=1)`
 - Preview data:
-
 ```csv
 "Value"
 "Appello."
@@ -10616,7 +9875,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.sentence(max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "Ter textus admoneo acceptus deripio ullam succedo clam odit succurro."
@@ -10626,7 +9884,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.sentence(wordCount=4)`
 - Preview data:
-
 ```csv
 "Value"
 "Voluptas despecto admoneo aestivus auxilium adhuc aegre dicta."
@@ -10636,7 +9893,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.sentence(wordCountMax=5)`
 - Preview data:
-
 ```csv
 "Value"
 "Vivo accendo sint placeat supellex amoveo damnatio aegre."
@@ -10646,7 +9902,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.sentence(wordCountMin=6)`
 - Preview data:
-
 ```csv
 "Value"
 "Denuo torqueo id cohibeo deludo depono truculenter delectatio tolero."
@@ -10656,7 +9911,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.sentence(min=1, max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "Summa."
@@ -10666,7 +9920,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.sentence(max=3, wordCount=4)`
 - Preview data:
-
 ```csv
 "Value"
 "Civis reprehenderit tripudio."
@@ -10676,7 +9929,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.sentence(wordCount=4, wordCountMax=5)`
 - Preview data:
-
 ```csv
 "Value"
 "Tego vilitas assumenda desidero."
@@ -10686,7 +9938,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.sentence(wordCountMax=5, wordCountMin=6)`
 - Preview data:
-
 ```csv
 "Value"
 "Pecto sequi accommodo aegrotatio."
@@ -10696,7 +9947,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.sentences()`
 - Preview data:
-
 ```csv
 "Value"
 "Virgo blandior adflicto. Adeo vos sortitus conventus ventito. Arca defessus tres argumentum amissio."
@@ -10706,7 +9956,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.sentences(min=1)`
 - Preview data:
-
 ```csv
 "Value"
 "Ullam coruscus alienus avaritia vulnero."
@@ -10716,7 +9965,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.sentences(max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "Officiis angustus assentator cur sit.3Totam utilis tergiversatio clibanus auditor cunabula cena.3Umquam deporto caelum.3Vomito consequuntur soleo voluptates tamisium textilis deprecator absque ambitus demo.3Depono cunae tergum spectaculum quia expedita.3Thalassinus tyrannus molestias bellicus."
@@ -10726,7 +9974,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.sentences(sentenceCount=4)`
 - Preview data:
-
 ```csv
 "Value"
 "Vilis valens vacuus theatrum excepturi cras conservo vinculum. Termes antiquus aggero deserunt. Artificiose aestivus audax doloremque basium."
@@ -10736,7 +9983,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.sentences(separator="-")`
 - Preview data:
-
 ```csv
 "Value"
 "Virgo cibus tres speculum vacuus omnis talio comprehendo earum. Demens ambitus minima advenio abeo. Usitas surculus veniam atrox carcer thorax corona. Taceo bos solutio tamquam admoveo villa cognomen tertius placeat. Causa alo bellum vestigium video ademptio vomica. Crudelis consectetur spectaculum tempus ullam."
@@ -10746,7 +9992,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.sentences(sentenceCountMax=6)`
 - Preview data:
-
 ```csv
 "Value"
 "Nemo ciminatio coruscus cognomen cum uredo adsidue sodalitas stipes cometes. Acerbitas turpis terebro sodalitas colligo deputo. Thermae truculenter absorbeo textor tyrannus arbustum debeo. Ducimus antepono solium arca tergo celebrer torqueo. Toties vesco cras stabilis tamisium infit summa beatus sublime coerceo."
@@ -10756,7 +10001,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.sentences(sentenceCountMin=7)`
 - Preview data:
-
 ```csv
 "Value"
 "Beneficium vita viduo clementia. Exercitationem tergiversatio appello. Commodi harum validus surculus venio enim cultellus claudeo. Illo tot trucido thymbra teneo laudantium sopor autem. Verbera amitto tertius vomito subseco tertius. Subvenio charisma velut."
@@ -10766,7 +10010,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.sentences(min=1, max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "Aedificium amo demum vicinus tribuo."
@@ -10776,7 +10019,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.sentences(max=3, sentenceCount=4)`
 - Preview data:
-
 ```csv
 "Value"
 "Caute carcer sumo textor.3Cariosus denuncio nostrum depulso pecto ad aduro.3Utilis defero tardus aequus taceo angustus beneficium carcer voluptatem volaticus.3Cras abbas avaritia."
@@ -10786,7 +10028,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.sentences(sentenceCount=4, separator="-")`
 - Preview data:
-
 ```csv
 "Value"
 "Atrocitas arbitro desidero torrens atqui despecto vito dolore. Arto sol tendo. Adeo triduana facilis cum laboriosam amicitia. Voluptas surculus tabernus voluptatibus victus."
@@ -10796,7 +10037,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.sentences(separator="-", sentenceCountMax=6)`
 - Preview data:
-
 ```csv
 "Value"
 "Cattus animadverto urbs utrimque subiungo sint vulgivagus conqueror nostrum. Cibo coma adsidue aequus virtus considero dolore aetas commodo officia. Atavus adsuesco eaque degusto. Tepidus supellex attonbitus. Accommodo summopere iusto celo vivo amor vivo quidem."
@@ -10806,7 +10046,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.sentences(sentenceCountMax=6, sentenceCountMin=7)`
 - Preview data:
-
 ```csv
 "Value"
 "Carmen bestia angelus tergiversatio cunabula assumenda terror tamisium sed alias. Perferendis audio odit facere. Canonicus suscipit voluptas. Vito corroboro incidunt recusandae ultra civis repellendus."
@@ -10816,7 +10055,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.slug()`
 - Preview data:
-
 ```csv
 "Value"
 "vacuus-arcesso-volva"
@@ -10826,7 +10064,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.slug(min=1)`
 - Preview data:
-
 ```csv
 "Value"
 "vociferor"
@@ -10836,7 +10073,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.slug(max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "assumenda-nam-capillus"
@@ -10846,7 +10082,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.slug(wordCount=4)`
 - Preview data:
-
 ```csv
 "Value"
 "vulariter-est-antea"
@@ -10856,7 +10091,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.slug(wordCountMax=5)`
 - Preview data:
-
 ```csv
 "Value"
 "adipisci-absque-acies"
@@ -10866,7 +10100,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.slug(wordCountMin=6)`
 - Preview data:
-
 ```csv
 "Value"
 "curatio-strenuus-voluntarius"
@@ -10876,7 +10109,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.slug(min=1, max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "advoco"
@@ -10886,7 +10118,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.slug(max=3, wordCount=4)`
 - Preview data:
-
 ```csv
 "Value"
 "comitatus-spiculum-tandem"
@@ -10896,7 +10127,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.slug(wordCount=4, wordCountMax=5)`
 - Preview data:
-
 ```csv
 "Value"
 "clarus-dedico-totus"
@@ -10906,7 +10136,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.slug(wordCountMax=5, wordCountMin=6)`
 - Preview data:
-
 ```csv
 "Value"
 "vita-celebrer-adinventitias"
@@ -10916,7 +10145,6 @@ Absorbeo canonicus acquiro subnecto vito vacuus. Eveniet arcus appono viriliter 
 
 - Command(s): `lorem.text()`
 - Preview data:
-
 ```csv
 "Value"
 "Calamitas tristis iste consectetur bos sed verbum capitulus. Civitas absorbeo stella cilicium delinquo odit admoneo vinco auctor cui. Adhuc consuasor sui ullus vilis tergum neque contra.
@@ -10928,7 +10156,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `lorem.word()`
 - Preview data:
-
 ```csv
 "Value"
 "careo"
@@ -10938,7 +10165,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `lorem.word(min=1)`
 - Preview data:
-
 ```csv
 "Value"
 "defluo"
@@ -10948,7 +10174,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `lorem.word(max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "voluptates"
@@ -10958,7 +10183,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `lorem.word(length=4)`
 - Preview data:
-
 ```csv
 "Value"
 "nemo"
@@ -10968,7 +10192,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `lorem.word(strategy="lorem-word-strategy")`
 - Preview data:
-
 ```csv
 "Value"
 "id"
@@ -10978,7 +10201,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `lorem.word(min=1, max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "vero"
@@ -10988,7 +10210,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `lorem.word(max=3, length=4)`
 - Preview data:
-
 ```csv
 "Value"
 "curo"
@@ -10998,7 +10219,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `lorem.word(length=4, strategy="lorem-word-strategy")`
 - Preview data:
-
 ```csv
 "Value"
 "vito"
@@ -11008,7 +10228,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `lorem.words()`
 - Preview data:
-
 ```csv
 "Value"
 "verus voluptates suppellex"
@@ -11018,7 +10237,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `lorem.words(min=1)`
 - Preview data:
-
 ```csv
 "Value"
 "tollo"
@@ -11028,7 +10246,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `lorem.words(max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "illum triduana deficio"
@@ -11038,7 +10255,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `lorem.words(wordCount=4)`
 - Preview data:
-
 ```csv
 "Value"
 "optio cohaero uredo"
@@ -11048,7 +10264,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `lorem.words(wordCountMax=5)`
 - Preview data:
-
 ```csv
 "Value"
 "texo dolorum spargo"
@@ -11058,7 +10273,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `lorem.words(wordCountMin=6)`
 - Preview data:
-
 ```csv
 "Value"
 "defero vacuus impedit"
@@ -11068,7 +10282,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `lorem.words(min=1, max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "cibus"
@@ -11078,7 +10291,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `lorem.words(max=3, wordCount=4)`
 - Preview data:
-
 ```csv
 "Value"
 "mollitia abeo urbs"
@@ -11088,7 +10300,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `lorem.words(wordCount=4, wordCountMax=5)`
 - Preview data:
-
 ```csv
 "Value"
 "sollicito tondeo et"
@@ -11098,7 +10309,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `lorem.words(wordCountMax=5, wordCountMin=6)`
 - Preview data:
-
 ```csv
 "Value"
 "depono cedo absum"
@@ -11108,7 +10318,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `music.album()`
 - Preview data:
-
 ```csv
 "Value"
 "Majestic"
@@ -11118,7 +10327,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `music.artist()`
 - Preview data:
-
 ```csv
 "Value"
 "George Michael"
@@ -11128,7 +10336,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `music.genre()`
 - Preview data:
-
 ```csv
 "Value"
 "Latin"
@@ -11138,7 +10345,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `music.songName()`
 - Preview data:
-
 ```csv
 "Value"
 "You've Got a Friend"
@@ -11148,7 +10354,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.bigInt()`
 - Preview data:
-
 ```csv
 "Value"
 "571092089829729"
@@ -11158,7 +10363,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.bigInt(value=true)`
 - Preview data:
-
 ```csv
 "Value"
 "586349396167377"
@@ -11168,7 +10372,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.binary()`
 - Preview data:
-
 ```csv
 "Value"
 "0"
@@ -11178,7 +10381,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.binary(max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "0"
@@ -11188,7 +10390,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.binary(min=1)`
 - Preview data:
-
 ```csv
 "Value"
 "1"
@@ -11198,7 +10399,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.binary(max=3, min=1)`
 - Preview data:
-
 ```csv
 "Value"
 "1"
@@ -11208,7 +10408,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.float()`
 - Preview data:
-
 ```csv
 "Value"
 "0.3550653996448585"
@@ -11218,7 +10417,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.float(fractionDigits=2)`
 - Preview data:
-
 ```csv
 "Value"
 "0.73"
@@ -11228,7 +10426,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.float(max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "2.7132336805883557"
@@ -11238,7 +10435,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.float(min=1)`
 - Preview data:
-
 ```csv
 "Value"
 "1"
@@ -11248,7 +10444,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.float(multipleOf=0.5)`
 - Preview data:
-
 ```csv
 "Value"
 "1"
@@ -11258,7 +10453,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.float(fractionDigits=2, max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "0.32"
@@ -11268,7 +10462,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.float(max=3, min=1)`
 - Preview data:
-
 ```csv
 "Value"
 "2.8150852265633652"
@@ -11278,7 +10471,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.float(min=1, multipleOf=0.5)`
 - Preview data:
-
 ```csv
 "Value"
 "1"
@@ -11288,7 +10480,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.hex()`
 - Preview data:
-
 ```csv
 "Value"
 "f"
@@ -11298,7 +10489,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.hex(min=1)`
 - Preview data:
-
 ```csv
 "Value"
 "b"
@@ -11308,7 +10498,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.hex(max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "3"
@@ -11318,7 +10507,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.hex(min=1, max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "3"
@@ -11328,7 +10516,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.int()`
 - Preview data:
-
 ```csv
 "Value"
 "1105340026189529"
@@ -11338,7 +10525,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.int(min=1)`
 - Preview data:
-
 ```csv
 "Value"
 "4151426716022040"
@@ -11348,7 +10534,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.int(max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "3"
@@ -11358,7 +10543,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.int(multipleOf=4)`
 - Preview data:
-
 ```csv
 "Value"
 "3324814506500716"
@@ -11368,7 +10552,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.int(min=1, max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "1"
@@ -11378,7 +10561,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.int(max=3, multipleOf=4)`
 - Preview data:
-
 ```csv
 "Value"
 "0"
@@ -11388,7 +10570,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.octal()`
 - Preview data:
-
 ```csv
 "Value"
 "7"
@@ -11398,7 +10579,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.octal(max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "3"
@@ -11408,7 +10588,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.octal(min=1)`
 - Preview data:
-
 ```csv
 "Value"
 "6"
@@ -11418,7 +10597,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.octal(max=3, min=1)`
 - Preview data:
-
 ```csv
 "Value"
 "1"
@@ -11428,7 +10606,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.romanNumeral()`
 - Preview data:
-
 ```csv
 "Value"
 "MMMCDXXI"
@@ -11438,7 +10615,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.romanNumeral(min=1)`
 - Preview data:
-
 ```csv
 "Value"
 "CCXCI"
@@ -11448,7 +10624,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.romanNumeral(max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "I"
@@ -11458,7 +10633,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `number.romanNumeral(min=1, max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "II"
@@ -11468,7 +10642,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `person.bio()`
 - Preview data:
-
 ```csv
 "Value"
 "environmentalist"
@@ -11478,7 +10651,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `person.firstName()`
 - Preview data:
-
 ```csv
 "Value"
 "Osbaldo"
@@ -11488,7 +10660,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `person.firstName(sex="male")`
 - Preview data:
-
 ```csv
 "Value"
 "Jon"
@@ -11498,7 +10669,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `person.fullName()`
 - Preview data:
-
 ```csv
 "Value"
 "Dixie Beer"
@@ -11508,7 +10678,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `person.gender()`
 - Preview data:
-
 ```csv
 "Value"
 "Female to male transgender man"
@@ -11518,7 +10687,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `person.jobArea()`
 - Preview data:
-
 ```csv
 "Value"
 "Directives"
@@ -11528,7 +10696,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `person.jobDescriptor()`
 - Preview data:
-
 ```csv
 "Value"
 "International"
@@ -11538,7 +10705,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `person.jobTitle()`
 - Preview data:
-
 ```csv
 "Value"
 "Human Accountability Producer"
@@ -11548,7 +10714,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `person.jobType()`
 - Preview data:
-
 ```csv
 "Value"
 "Manager"
@@ -11558,7 +10723,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `person.lastName()`
 - Preview data:
-
 ```csv
 "Value"
 "Koss"
@@ -11568,7 +10732,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `person.lastName(sex="male")`
 - Preview data:
-
 ```csv
 "Value"
 "Krajcik"
@@ -11578,7 +10741,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `person.middleName()`
 - Preview data:
-
 ```csv
 "Value"
 "Reagan"
@@ -11588,7 +10750,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `person.middleName(sex="male")`
 - Preview data:
-
 ```csv
 "Value"
 "Harrison"
@@ -11598,7 +10759,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `person.prefix()`
 - Preview data:
-
 ```csv
 "Value"
 "Dr."
@@ -11608,7 +10768,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `person.prefix(sex="male")`
 - Preview data:
-
 ```csv
 "Value"
 "Mr."
@@ -11618,7 +10777,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `person.sex()`
 - Preview data:
-
 ```csv
 "Value"
 "male"
@@ -11628,7 +10786,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `person.sexType()`
 - Preview data:
-
 ```csv
 "Value"
 "male"
@@ -11638,7 +10795,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `person.suffix()`
 - Preview data:
-
 ```csv
 "Value"
 "DVM"
@@ -11648,7 +10804,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `person.zodiacSign()`
 - Preview data:
-
 ```csv
 "Value"
 "Leo"
@@ -11658,7 +10813,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `phone.imei()`
 - Preview data:
-
 ```csv
 "Value"
 "79-903165-712789-0"
@@ -11668,7 +10822,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `phone.number()`
 - Preview data:
-
 ```csv
 "Value"
 "1-329-484-4271 x034"
@@ -11678,7 +10831,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `phone.number(style="international")`
 - Preview data:
-
 ```csv
 "Value"
 "+18882200058"
@@ -11688,7 +10840,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.alpha()`
 - Preview data:
-
 ```csv
 "Value"
 "l"
@@ -11698,7 +10849,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.alpha(length=4)`
 - Preview data:
-
 ```csv
 "Value"
 "eNHO"
@@ -11708,7 +10858,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.alpha(casing="upper")`
 - Preview data:
-
 ```csv
 "Value"
 "J"
@@ -11718,7 +10867,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.alpha(exclude=["A", "B"])`
 - Preview data:
-
 ```csv
 "Value"
 "Z"
@@ -11728,7 +10876,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.alpha(length=4, casing="upper")`
 - Preview data:
-
 ```csv
 "Value"
 "XLKS"
@@ -11738,7 +10885,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.alpha(casing="upper", exclude=["A", "B"])`
 - Preview data:
-
 ```csv
 "Value"
 "F"
@@ -11748,7 +10894,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.alphanumeric()`
 - Preview data:
-
 ```csv
 "Value"
 "U"
@@ -11758,7 +10903,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.alphanumeric(length=4)`
 - Preview data:
-
 ```csv
 "Value"
 "LmDo"
@@ -11768,7 +10912,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.alphanumeric(casing="upper")`
 - Preview data:
-
 ```csv
 "Value"
 "2"
@@ -11778,7 +10921,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.alphanumeric(exclude=["A", "B"])`
 - Preview data:
-
 ```csv
 "Value"
 "N"
@@ -11788,7 +10930,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.alphanumeric(length=4, casing="upper")`
 - Preview data:
-
 ```csv
 "Value"
 "IF7H"
@@ -11798,7 +10939,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.alphanumeric(casing="upper", exclude=["A", "B"])`
 - Preview data:
-
 ```csv
 "Value"
 "I"
@@ -11808,7 +10948,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.binary()`
 - Preview data:
-
 ```csv
 "Value"
 "0b1"
@@ -11818,7 +10957,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.binary(length=4)`
 - Preview data:
-
 ```csv
 "Value"
 "0b0001"
@@ -11828,7 +10966,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.binary(prefix="#")`
 - Preview data:
-
 ```csv
 "Value"
 "#1"
@@ -11838,7 +10975,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.binary(length=4, prefix="#")`
 - Preview data:
-
 ```csv
 "Value"
 "#0001"
@@ -11848,7 +10984,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.counterString(1, 25, "*")`
 - Preview data:
-
 ```csv
 "Value"
 "2*4*6*8*11*"
@@ -11859,7 +10994,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 - Command(s): `string.counterString()`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Value"
 "2*4*"
@@ -11870,7 +11004,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 - Command(s): `string.counterString(15)`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Value"
 "*3*5*7*9*12*15*"
@@ -11881,7 +11014,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 - Command(s): `string.counterString(min=5, max=12)`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Value"
 "2*4*6*"
@@ -11892,7 +11024,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 - Command(s): `string.counterString(min=12, max=12, delimiter="#")`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Value"
 "#3#5#7#9#12#"
@@ -11902,7 +11033,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.counterString(min=5)`
 - Preview data:
-
 ```csv
 "Value"
 "*3*5*"
@@ -11912,7 +11042,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.counterString(max=12)`
 - Preview data:
-
 ```csv
 "Value"
 "2*4*6*8*"
@@ -11922,7 +11051,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.counterString(delimiter="#")`
 - Preview data:
-
 ```csv
 "Value"
 "2#4#6#8#11#14#17#"
@@ -11932,7 +11060,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.counterString(min=5, max=12)`
 - Preview data:
-
 ```csv
 "Value"
 "*3*5*"
@@ -11942,7 +11069,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.counterString(max=12, delimiter="#")`
 - Preview data:
-
 ```csv
 "Value"
 "#3#5#7#"
@@ -11953,7 +11079,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 - Command(s): `string.fromCharacters("ABC123", 4)`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Value"
 "A3C3"
@@ -11964,7 +11089,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 - Command(s): `string.fromCharacters("ABC123", 6)`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Value"
 "C1A22B"
@@ -11975,7 +11099,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 - Command(s): `string.fromCharacters(characters=["A", "B", "C"], length=4)`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Value"
 "CBAB"
@@ -11985,7 +11108,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.fromCharacters(characters="ABC123")`
 - Preview data:
-
 ```csv
 "Value"
 "B"
@@ -11995,7 +11117,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.fromCharacters(characters="ABC123", length=4)`
 - Preview data:
-
 ```csv
 "Value"
 "2221"
@@ -12005,7 +11126,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.fromCharacters(characters="ABC123", length=4)`
 - Preview data:
-
 ```csv
 "Value"
 "2CBB"
@@ -12015,7 +11135,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.hexadecimal()`
 - Preview data:
-
 ```csv
 "Value"
 "0xC"
@@ -12025,7 +11144,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.hexadecimal(casing="upper")`
 - Preview data:
-
 ```csv
 "Value"
 "0x8"
@@ -12035,7 +11153,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.hexadecimal(length=4)`
 - Preview data:
-
 ```csv
 "Value"
 "0xbAbc"
@@ -12045,7 +11162,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.hexadecimal(prefix="#")`
 - Preview data:
-
 ```csv
 "Value"
 "#E"
@@ -12055,7 +11171,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.hexadecimal(casing="upper", length=4)`
 - Preview data:
-
 ```csv
 "Value"
 "0x8E8E"
@@ -12065,7 +11180,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.hexadecimal(length=4, prefix="#")`
 - Preview data:
-
 ```csv
 "Value"
 "#ffef"
@@ -12075,7 +11189,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.nanoid()`
 - Preview data:
-
 ```csv
 "Value"
 "NdoP5wwyLFTWcdq-2JUPT"
@@ -12085,7 +11198,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.nanoid(length=4)`
 - Preview data:
-
 ```csv
 "Value"
 "emm-"
@@ -12095,7 +11207,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.numeric()`
 - Preview data:
-
 ```csv
 "Value"
 "8"
@@ -12105,7 +11216,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.numeric(length=4)`
 - Preview data:
-
 ```csv
 "Value"
 "2920"
@@ -12115,7 +11225,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.numeric(allowLeadingZeros=true)`
 - Preview data:
-
 ```csv
 "Value"
 "1"
@@ -12125,7 +11234,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.numeric(exclude=["A", "B"])`
 - Preview data:
-
 ```csv
 "Value"
 "1"
@@ -12135,7 +11243,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.numeric(length=4, allowLeadingZeros=true)`
 - Preview data:
-
 ```csv
 "Value"
 "8990"
@@ -12145,7 +11252,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.numeric(allowLeadingZeros=true, exclude=["A", "B"])`
 - Preview data:
-
 ```csv
 "Value"
 "6"
@@ -12155,7 +11261,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.octal()`
 - Preview data:
-
 ```csv
 "Value"
 "0o3"
@@ -12165,7 +11270,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.octal(length=4)`
 - Preview data:
-
 ```csv
 "Value"
 "0o5416"
@@ -12175,7 +11279,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.octal(prefix="#")`
 - Preview data:
-
 ```csv
 "Value"
 "#6"
@@ -12185,7 +11288,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.octal(length=4, prefix="#")`
 - Preview data:
-
 ```csv
 "Value"
 "#2612"
@@ -12195,7 +11297,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.sample()`
 - Preview data:
-
 ```csv
 "Value"
 "<BaB/g[//`"
@@ -12205,7 +11306,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.sample(length=4)`
 - Preview data:
-
 ```csv
 "Value"
 "}*V4"
@@ -12215,7 +11315,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.symbol()`
 - Preview data:
-
 ```csv
 "Value"
 ")"
@@ -12225,7 +11324,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.symbol(length=4)`
 - Preview data:
-
 ```csv
 "Value"
 ">#>'"
@@ -12235,17 +11333,15 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.ulid()`
 - Preview data:
-
 ```csv
 "Value"
-"01KTBEDCFN4MY648F8XPVTRQE9"
+"01KV04WM3F4MY648F8XPVTRQE9"
 ```
 
 #### `domain-string-ulid-arg-refDate`
 
 - Command(s): `string.ulid(refDate=2)`
 - Preview data:
-
 ```csv
 "Value"
 "00000000022P5BDQJ90BT5VFMX"
@@ -12255,7 +11351,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `string.uuid()`
 - Preview data:
-
 ```csv
 "Value"
 "5188d2de-3f7b-4998-a61f-cb3e78b71bb8"
@@ -12265,7 +11360,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `system.commonFileExt()`
 - Preview data:
-
 ```csv
 "Value"
 "m2v"
@@ -12275,7 +11369,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `system.commonFileName()`
 - Preview data:
-
 ```csv
 "Value"
 "because.htm"
@@ -12285,7 +11378,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `system.commonFileName(extension="system-commonFileName-extension")`
 - Preview data:
-
 ```csv
 "Value"
 "brush_oh.system-commonFileName-extension"
@@ -12295,7 +11387,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `system.commonFileType()`
 - Preview data:
-
 ```csv
 "Value"
 "text"
@@ -12305,7 +11396,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `system.cron()`
 - Preview data:
-
 ```csv
 "Value"
 "* * * 8 ?"
@@ -12315,7 +11405,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `system.cron(includeNonStandard=true)`
 - Preview data:
-
 ```csv
 "Value"
 "22 6 14 7 1"
@@ -12325,7 +11414,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `system.cron(includeYear=true)`
 - Preview data:
-
 ```csv
 "Value"
 "* 1 ? 9 5 *"
@@ -12335,7 +11423,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `system.cron(includeNonStandard=true, includeYear=true)`
 - Preview data:
-
 ```csv
 "Value"
 "@hourly"
@@ -12345,7 +11432,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `system.directoryPath()`
 - Preview data:
-
 ```csv
 "Value"
 "/etc"
@@ -12355,7 +11441,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `system.fileExt()`
 - Preview data:
-
 ```csv
 "Value"
 "ear"
@@ -12365,7 +11450,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `system.fileExt(mimeType="system-fileExt-mimeType")`
 - Preview data:
-
 ```csv
 "Value"
 "epub"
@@ -12375,7 +11459,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `system.fileName()`
 - Preview data:
-
 ```csv
 "Value"
 "finally.otf"
@@ -12385,7 +11468,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `system.filePath()`
 - Preview data:
-
 ```csv
 "Value"
 "/lost+found/bah.epub"
@@ -12395,7 +11477,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `system.fileType()`
 - Preview data:
-
 ```csv
 "Value"
 "application"
@@ -12405,7 +11486,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `system.mimeType()`
 - Preview data:
-
 ```csv
 "Value"
 "image/gif"
@@ -12415,7 +11495,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `system.networkInterface()`
 - Preview data:
-
 ```csv
 "Value"
 "ens0d1"
@@ -12425,7 +11504,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `system.semver()`
 - Preview data:
-
 ```csv
 "Value"
 "6.20.15"
@@ -12435,7 +11513,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `vehicle.bicycle()`
 - Preview data:
-
 ```csv
 "Value"
 "Hybrid Bicycle"
@@ -12445,7 +11522,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `vehicle.color()`
 - Preview data:
-
 ```csv
 "Value"
 "fuchsia"
@@ -12455,7 +11531,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `vehicle.fuel()`
 - Preview data:
-
 ```csv
 "Value"
 "Electric"
@@ -12465,7 +11540,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `vehicle.manufacturer()`
 - Preview data:
-
 ```csv
 "Value"
 "Chrysler"
@@ -12475,7 +11549,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `vehicle.model()`
 - Preview data:
-
 ```csv
 "Value"
 "CTS"
@@ -12485,7 +11558,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `vehicle.type()`
 - Preview data:
-
 ```csv
 "Value"
 "Convertible"
@@ -12495,7 +11567,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `vehicle.vehicle()`
 - Preview data:
-
 ```csv
 "Value"
 "Smart Alpine"
@@ -12505,7 +11576,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `vehicle.vin()`
 - Preview data:
-
 ```csv
 "Value"
 "928JZDANRWG098654"
@@ -12515,7 +11585,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `vehicle.vrm()`
 - Preview data:
-
 ```csv
 "Value"
 "RN16HVP"
@@ -12525,7 +11594,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.adjective()`
 - Preview data:
-
 ```csv
 "Value"
 "moist"
@@ -12535,7 +11603,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.adjective(length=4)`
 - Preview data:
-
 ```csv
 "Value"
 "zany"
@@ -12545,7 +11612,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.adjective(max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "distorted"
@@ -12555,7 +11621,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.adjective(strategy="word-adjective-strategy")`
 - Preview data:
-
 ```csv
 "Value"
 "illiterate"
@@ -12565,7 +11630,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.adjective(length=4, max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "live"
@@ -12575,7 +11639,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.adjective(max=3, strategy="word-adjective-strategy")`
 - Preview data:
-
 ```csv
 "Value"
 "blue"
@@ -12585,7 +11648,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.adverb()`
 - Preview data:
-
 ```csv
 "Value"
 "certainly"
@@ -12595,7 +11657,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.adverb(length=4)`
 - Preview data:
-
 ```csv
 "Value"
 "very"
@@ -12605,7 +11666,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.adverb(max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "swiftly"
@@ -12615,7 +11675,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.adverb(strategy="word-adverb-strategy")`
 - Preview data:
-
 ```csv
 "Value"
 "voluntarily"
@@ -12625,7 +11684,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.adverb(length=4, max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "fast"
@@ -12635,7 +11693,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.adverb(max=3, strategy="word-adverb-strategy")`
 - Preview data:
-
 ```csv
 "Value"
 "majestically"
@@ -12645,7 +11702,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.conjunction()`
 - Preview data:
-
 ```csv
 "Value"
 "why"
@@ -12655,7 +11711,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.conjunction(length=4)`
 - Preview data:
-
 ```csv
 "Value"
 "what"
@@ -12665,7 +11720,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.conjunction(max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "whoever"
@@ -12675,7 +11729,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.conjunction(strategy="word-conjunction-strategy")`
 - Preview data:
-
 ```csv
 "Value"
 "inasmuch"
@@ -12685,7 +11738,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.conjunction(length=4, max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "once"
@@ -12695,7 +11747,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.conjunction(max=3, strategy="word-conjunction-strategy")`
 - Preview data:
-
 ```csv
 "Value"
 "for"
@@ -12705,7 +11756,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.interjection()`
 - Preview data:
-
 ```csv
 "Value"
 "blah"
@@ -12715,7 +11765,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.interjection(length=4)`
 - Preview data:
-
 ```csv
 "Value"
 "gosh"
@@ -12725,7 +11774,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.interjection(max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "ah"
@@ -12735,7 +11783,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.interjection(strategy="word-interjection-strategy")`
 - Preview data:
-
 ```csv
 "Value"
 "er"
@@ -12745,7 +11792,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.interjection(length=4, max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "pish"
@@ -12755,7 +11801,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.interjection(max=3, strategy="word-interjection-strategy")`
 - Preview data:
-
 ```csv
 "Value"
 "whoa"
@@ -12765,7 +11810,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.noun()`
 - Preview data:
-
 ```csv
 "Value"
 "foodstuffs"
@@ -12775,7 +11819,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.noun(length=4)`
 - Preview data:
-
 ```csv
 "Value"
 "coal"
@@ -12785,7 +11828,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.noun(max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "backbone"
@@ -12795,7 +11837,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.noun(strategy="word-noun-strategy")`
 - Preview data:
-
 ```csv
 "Value"
 "meander"
@@ -12805,7 +11846,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.noun(length=4, max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "king"
@@ -12815,7 +11855,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.noun(max=3, strategy="word-noun-strategy")`
 - Preview data:
-
 ```csv
 "Value"
 "numeric"
@@ -12825,7 +11864,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.preposition()`
 - Preview data:
-
 ```csv
 "Value"
 "times"
@@ -12835,7 +11873,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.preposition(length=4)`
 - Preview data:
-
 ```csv
 "Value"
 "with"
@@ -12845,7 +11882,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.preposition(max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "a"
@@ -12855,7 +11891,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.preposition(strategy="word-preposition-strategy")`
 - Preview data:
-
 ```csv
 "Value"
 "than"
@@ -12865,7 +11900,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.preposition(length=4, max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "plus"
@@ -12875,7 +11909,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.preposition(max=3, strategy="word-preposition-strategy")`
 - Preview data:
-
 ```csv
 "Value"
 "near"
@@ -12885,7 +11918,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.sample()`
 - Preview data:
-
 ```csv
 "Value"
 "microchip"
@@ -12895,7 +11927,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.sample(length=4)`
 - Preview data:
-
 ```csv
 "Value"
 "when"
@@ -12905,7 +11936,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.sample(max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "aha"
@@ -12915,7 +11945,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.sample(strategy="word-sample-strategy")`
 - Preview data:
-
 ```csv
 "Value"
 "ew"
@@ -12925,7 +11954,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.sample(length=4, max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "lamp"
@@ -12935,7 +11963,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.sample(max=3, strategy="word-sample-strategy")`
 - Preview data:
-
 ```csv
 "Value"
 "an"
@@ -12945,7 +11972,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.verb()`
 - Preview data:
-
 ```csv
 "Value"
 "federate"
@@ -12955,7 +11981,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.verb(length=4)`
 - Preview data:
-
 ```csv
 "Value"
 "pant"
@@ -12965,7 +11990,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.verb(max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "braid"
@@ -12975,7 +11999,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.verb(strategy="word-verb-strategy")`
 - Preview data:
-
 ```csv
 "Value"
 "prance"
@@ -12985,7 +12008,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.verb(length=4, max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "come"
@@ -12995,7 +12017,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.verb(max=3, strategy="word-verb-strategy")`
 - Preview data:
-
 ```csv
 "Value"
 "pant"
@@ -13005,7 +12026,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.words()`
 - Preview data:
-
 ```csv
 "Value"
 "mutate ack"
@@ -13015,7 +12035,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.words(count=2)`
 - Preview data:
-
 ```csv
 "Value"
 "instead conservative"
@@ -13025,7 +12044,6 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.words(max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "yahoo"
@@ -13035,47 +12053,47 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 - Command(s): `word.words(count=2, max=3)`
 - Preview data:
-
 ```csv
 "Value"
 "brr whoever"
 ```
 
+
 ## UI Scenarios
 
-Scenario count: **19**
-Generated preview data count: **19**
+Scenario count: **20**
+Generated preview data count: **20**
 Review-only scenario count: **0**
 Non-executable scenario count: **0**
 Exact preview parity scenario count: **15**
-Structural-only preview parity scenario count: **4**
+Structural-only preview parity scenario count: **5**
 
 ### By Source Type
 
-| Key       | Count |
-| --------- | ----: |
-| `domain`  |     7 |
-| `enum`    |     2 |
-| `faker`   |     6 |
-| `literal` |     2 |
-| `regex`   |     2 |
+| Key | Count |
+| --- | ---: |
+| `domain` | 8 |
+| `enum` | 2 |
+| `faker` | 6 |
+| `literal` | 2 |
+| `regex` | 2 |
 
 ### By Origin
 
-| Key        | Count |
-| ---------- | ----: |
-| `base`     |     4 |
-| `custom`   |     6 |
-| `empty`    |     2 |
-| `example`  |     9 |
-| `pairwise` |     1 |
+| Key | Count |
+| --- | ---: |
+| `base` | 4 |
+| `custom` | 6 |
+| `empty` | 2 |
+| `example` | 10 |
+| `pairwise` | 1 |
 
 ### UI Parity Modes
 
-| Mode         | Count |
-| ------------ | ----: |
-| `exact`      |    15 |
-| `structural` |     4 |
+| Mode | Count |
+| --- | ---: |
+| `exact` | 15 |
+| `structural` | 5 |
 
 ### Structural-Only UI Scenarios
 
@@ -13083,12 +12101,14 @@ Structural-only preview parity scenario count: **4**
 - `faker-helpers-fake-base` - `helpers.fake("{{person.firstName}}")`
 - `faker-helpers-fromRegExp-example-1` - `helpers.fromRegExp("[A-Z]{2}[0-9]{2}")`
 - `faker-helpers-uniqueArray-example-1` - `helpers.uniqueArray(["red", "green", "blue"], 2)`
+- `domain-autoIncrement-sequence-example-1` - `autoIncrement.sequence()`
 
 ### Commands By Source Type
 
-#### `domain` (7)
+#### `domain` (8)
 
 - `airline.seat`
+- `autoIncrement.sequence`
 - `commerce.price`
 - `date.birthdate`
 - `internet.password`
@@ -13127,7 +12147,6 @@ Structural-only preview parity scenario count: **4**
 - Command(s): `enum(active,inactive,pending)`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Status"
 "pending"
@@ -13139,15 +12158,12 @@ Structural-only preview parity scenario count: **4**
 - UI preview parity: `exact`
 - Schema Rows: `Status: enum(active,inactive,pending)`, `Priority: enum(high,medium,low)`
 - Preview data:
-
 ```csv
 "Status","Priority"
 "inactive","medium"
 "inactive","low"
 ```
-
 - Pairwise preview data:
-
 ```csv
 "Status","Priority"
 "active","high"
@@ -13166,7 +12182,6 @@ Structural-only preview parity scenario count: **4**
 - Command(s): `literal("Pending")`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Status"
 "Pending"
@@ -13177,7 +12192,6 @@ Structural-only preview parity scenario count: **4**
 - Command(s): `literal("")`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Status"
 ""
@@ -13188,7 +12202,6 @@ Structural-only preview parity scenario count: **4**
 - Command(s): `regex("[A-Z]{2}[0-9]{2}")`
 - UI preview parity: `structural`
 - Preview data:
-
 ```csv
 "Code"
 "VC23"
@@ -13199,7 +12212,6 @@ Structural-only preview parity scenario count: **4**
 - Command(s): `regex("")`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Code"
 ""
@@ -13210,7 +12222,6 @@ Structural-only preview parity scenario count: **4**
 - Command(s): `helpers.arrayElement(["A", "B"])`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Value"
 "B"
@@ -13221,7 +12232,6 @@ Structural-only preview parity scenario count: **4**
 - Command(s): `helpers.fake("{{person.firstName}}")`
 - UI preview parity: `structural`
 - Preview data:
-
 ```csv
 "Value"
 "Melvin"
@@ -13232,7 +12242,6 @@ Structural-only preview parity scenario count: **4**
 - Command(s): `helpers.fromRegExp("[A-Z]{2}[0-9]{2}")`
 - UI preview parity: `structural`
 - Preview data:
-
 ```csv
 "Value"
 "PU71"
@@ -13243,7 +12252,6 @@ Structural-only preview parity scenario count: **4**
 - Command(s): `helpers.mustache("{{name}}", { name: "Ada" })`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Value"
 "Ada"
@@ -13254,7 +12262,6 @@ Structural-only preview parity scenario count: **4**
 - Command(s): `helpers.uniqueArray(["red", "green", "blue"], 2)`
 - UI preview parity: `structural`
 - Preview data:
-
 ```csv
 "Value"
 "[""blue"",""green""]"
@@ -13265,7 +12272,6 @@ Structural-only preview parity scenario count: **4**
 - Command(s): `helpers.weightedArrayElement([{ weight: 5, value: "sunny" }, { weight: 1, value: "rainy" }])`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Value"
 "sunny"
@@ -13276,10 +12282,19 @@ Structural-only preview parity scenario count: **4**
 - Command(s): `airline.seat()`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Value"
 "32C"
+```
+
+#### `domain-autoIncrement-sequence-example-1`
+
+- Command(s): `autoIncrement.sequence()`
+- UI preview parity: `structural`
+- Preview data:
+```csv
+"Value"
+"1"
 ```
 
 #### `domain-commerce-price-example-1`
@@ -13287,7 +12302,6 @@ Structural-only preview parity scenario count: **4**
 - Command(s): `commerce.price(dec=2, max=10, min=1, symbol="$")`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Value"
 "$3.69"
@@ -13298,7 +12312,6 @@ Structural-only preview parity scenario count: **4**
 - Command(s): `date.birthdate(refDate=20000, max=69, min=16, mode="age")`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Value"
 "1920-10-04T17:22:24.125Z"
@@ -13309,7 +12322,6 @@ Structural-only preview parity scenario count: **4**
 - Command(s): `internet.password(length=10, memorable=false, pattern="[A-Za-z0-9]", prefix="#")`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Value"
 "#wMJJrPMVo"
@@ -13320,7 +12332,6 @@ Structural-only preview parity scenario count: **4**
 - Command(s): `literal.value("Pending")`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Value"
 "Pending"
@@ -13331,7 +12342,6 @@ Structural-only preview parity scenario count: **4**
 - Command(s): `string.counterString()`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Value"
 "2*4*"
@@ -13342,8 +12352,8 @@ Structural-only preview parity scenario count: **4**
 - Command(s): `string.fromCharacters("ABC123", 4)`
 - UI preview parity: `exact`
 - Preview data:
-
 ```csv
 "Value"
 "A3C3"
 ```
+

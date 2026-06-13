@@ -114,6 +114,7 @@ const invocationOverrides = {
 };
 const nonDeterministicExamples = new Set(['helpers.maybe']);
 const domainIntroOverrides = {
+  autoIncrement: 'The `autoIncrement` domain provides stateful sequence helpers for accepted generated rows.',
   literal: 'The `literal` domain returns caller-provided values directly and does not invoke faker.',
 };
 

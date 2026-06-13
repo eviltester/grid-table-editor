@@ -127,6 +127,10 @@ const DOMAIN_PARAM_OVERRIDES = {
     defaults: ['1', '25', '"*"'],
     named: { min: '2', max: '5', delimiter: '"#"' },
   },
+  'autoIncrement.sequence': {
+    defaults: ['1', '5', '"filename"', '".txt"', '3'],
+    named: { start: '10', step: '5', prefix: '"T-"', suffix: '""', zeropadding: '2' },
+  },
   'string.fromCharacters': {
     defaults: ['"ABC123"', '4'],
     named: { characters: '"ABC123"', length: '4' },
@@ -153,6 +157,7 @@ const UI_REPRESENTATIVE_SCENARIO_IDS = new Set([
   'domain-commerce-price-example-1',
   'domain-date-birthdate-example-1',
   'domain-internet-password-example-1',
+  'domain-autoIncrement-sequence-example-1',
   'domain-literal-value-example-1',
   'domain-string-counterString-example-1',
   'domain-string-fromCharacters-base',
@@ -291,8 +296,10 @@ function buildGenericParamValue({ paramName, paramType, command, sourceType, ind
   if (lowerName === 'length') return '4';
   if (lowerName === 'linelength') return '4';
   if (lowerName === 'prefix') return '"#"';
+  if (lowerName === 'suffix') return '".txt"';
   if (lowerName === 'separator') return '"-"';
   if (lowerName === 'delimiter') return '"*"';
+  if (lowerName === 'zeropadding') return '3';
   if (lowerName === 'variant') return '"13"';
   if (lowerName === 'protocol') return '"https"';
   if (lowerName === 'provider') return '"example.com"';

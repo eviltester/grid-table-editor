@@ -64,6 +64,7 @@ For faker helper templates and utility functions, use faker helpers:
 
 - [airline](/docs/test-data/domain/airline)
 - [animal](/docs/test-data/domain/animal)
+- [autoIncrement](/docs/test-data/domain/autoIncrement)
 - [book](/docs/test-data/domain/book)
 - [color](/docs/test-data/domain/color)
 - [commerce](/docs/test-data/domain/commerce)

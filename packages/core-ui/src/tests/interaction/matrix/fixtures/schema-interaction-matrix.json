@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-05T08:29:21.640Z",
+  "generatedAt": "2026-06-13T09:26:58.331Z",
   "coverageScenarios": [
     {
       "id": "custom-enum-base",
@@ -1965,6 +1965,292 @@
       "expectStructuredSerialization": false,
       "coveredArgs": [],
       "origins": ["base"]
+    },
+    {
+      "id": "domain-autoIncrement-sequence-base",
+      "sourceType": "domain",
+      "command": "autoIncrement.sequence",
+      "label": "autoIncrement.sequence",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.sequence",
+          "params": "(1, 5, \"filename\", \".txt\", 3)",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.sequence(1, 5, \"filename\", \".txt\", 3)",
+      "expectedUiSchemaText": "Value\nautoIncrement.sequence(1, 5, \"filename\", \".txt\", 3)",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": [],
+      "origins": ["base"]
+    },
+    {
+      "id": "domain-autoIncrement-sequence-example-1",
+      "sourceType": "domain",
+      "command": "autoIncrement.sequence",
+      "label": "autoIncrement.sequence example 1",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.sequence",
+          "params": "()",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.sequence()",
+      "expectedUiSchemaText": "Value\nautoIncrement.sequence()",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["start", "step", "prefix", "suffix", "zeropadding"],
+      "origins": ["example"]
+    },
+    {
+      "id": "domain-autoIncrement-sequence-example-2",
+      "sourceType": "domain",
+      "command": "autoIncrement.sequence",
+      "label": "autoIncrement.sequence example 2",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.sequence",
+          "params": "(start=10, step=5)",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.sequence(start=10, step=5)",
+      "expectedUiSchemaText": "Value\nautoIncrement.sequence(start=10, step=5)",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["start", "step", "prefix", "suffix", "zeropadding"],
+      "origins": ["example"]
+    },
+    {
+      "id": "domain-autoIncrement-sequence-example-3",
+      "sourceType": "domain",
+      "command": "autoIncrement.sequence",
+      "label": "autoIncrement.sequence example 3",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.sequence",
+          "params": "(start=1, step=5, prefix=\"filename\", suffix=\".txt\", zeropadding=3)",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.sequence(start=1, step=5, prefix=\"filename\", suffix=\".txt\", zeropadding=3)",
+      "expectedUiSchemaText": "Value\nautoIncrement.sequence(start=1, step=5, prefix=\"filename\", suffix=\".txt\", zeropadding=3)",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["start", "step", "prefix", "suffix", "zeropadding"],
+      "origins": ["example"]
+    },
+    {
+      "id": "domain-autoIncrement-sequence-arg-start",
+      "sourceType": "domain",
+      "command": "autoIncrement.sequence",
+      "label": "autoIncrement.sequence arg start",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.sequence",
+          "params": "(start=10)",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.sequence(start=10)",
+      "expectedUiSchemaText": "Value\nautoIncrement.sequence(start=10)",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["start"],
+      "origins": ["arg"]
+    },
+    {
+      "id": "domain-autoIncrement-sequence-arg-step",
+      "sourceType": "domain",
+      "command": "autoIncrement.sequence",
+      "label": "autoIncrement.sequence arg step",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.sequence",
+          "params": "(step=5)",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.sequence(step=5)",
+      "expectedUiSchemaText": "Value\nautoIncrement.sequence(step=5)",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["step"],
+      "origins": ["arg"]
+    },
+    {
+      "id": "domain-autoIncrement-sequence-arg-prefix",
+      "sourceType": "domain",
+      "command": "autoIncrement.sequence",
+      "label": "autoIncrement.sequence arg prefix",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.sequence",
+          "params": "(prefix=\"filename\")",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.sequence(prefix=\"filename\")",
+      "expectedUiSchemaText": "Value\nautoIncrement.sequence(prefix=\"filename\")",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["prefix"],
+      "origins": ["arg"]
+    },
+    {
+      "id": "domain-autoIncrement-sequence-arg-suffix",
+      "sourceType": "domain",
+      "command": "autoIncrement.sequence",
+      "label": "autoIncrement.sequence arg suffix",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.sequence",
+          "params": "(suffix=\".txt\")",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.sequence(suffix=\".txt\")",
+      "expectedUiSchemaText": "Value\nautoIncrement.sequence(suffix=\".txt\")",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["suffix"],
+      "origins": ["arg"]
+    },
+    {
+      "id": "domain-autoIncrement-sequence-arg-zeropadding",
+      "sourceType": "domain",
+      "command": "autoIncrement.sequence",
+      "label": "autoIncrement.sequence arg zeropadding",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.sequence",
+          "params": "(zeropadding=3)",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.sequence(zeropadding=3)",
+      "expectedUiSchemaText": "Value\nautoIncrement.sequence(zeropadding=3)",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["zeropadding"],
+      "origins": ["arg"]
+    },
+    {
+      "id": "domain-autoIncrement-sequence-pair-start-step",
+      "sourceType": "domain",
+      "command": "autoIncrement.sequence",
+      "label": "autoIncrement.sequence pair start/step",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.sequence",
+          "params": "(start=10, step=5)",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.sequence(start=10, step=5)",
+      "expectedUiSchemaText": "Value\nautoIncrement.sequence(start=10, step=5)",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["start", "step"],
+      "origins": ["pair"]
+    },
+    {
+      "id": "domain-autoIncrement-sequence-pair-step-prefix",
+      "sourceType": "domain",
+      "command": "autoIncrement.sequence",
+      "label": "autoIncrement.sequence pair step/prefix",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.sequence",
+          "params": "(step=5, prefix=\"filename\")",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.sequence(step=5, prefix=\"filename\")",
+      "expectedUiSchemaText": "Value\nautoIncrement.sequence(step=5, prefix=\"filename\")",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["step", "prefix"],
+      "origins": ["pair"]
+    },
+    {
+      "id": "domain-autoIncrement-sequence-pair-prefix-suffix",
+      "sourceType": "domain",
+      "command": "autoIncrement.sequence",
+      "label": "autoIncrement.sequence pair prefix/suffix",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.sequence",
+          "params": "(prefix=\"filename\", suffix=\".txt\")",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.sequence(prefix=\"filename\", suffix=\".txt\")",
+      "expectedUiSchemaText": "Value\nautoIncrement.sequence(prefix=\"filename\", suffix=\".txt\")",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["prefix", "suffix"],
+      "origins": ["pair"]
+    },
+    {
+      "id": "domain-autoIncrement-sequence-pair-suffix-zeropadding",
+      "sourceType": "domain",
+      "command": "autoIncrement.sequence",
+      "label": "autoIncrement.sequence pair suffix/zeropadding",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.sequence",
+          "params": "(suffix=\".txt\", zeropadding=3)",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.sequence(suffix=\".txt\", zeropadding=3)",
+      "expectedUiSchemaText": "Value\nautoIncrement.sequence(suffix=\".txt\", zeropadding=3)",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["suffix", "zeropadding"],
+      "origins": ["pair"]
     },
     {
       "id": "domain-book-author-base",
@@ -15352,6 +15638,292 @@
       "origins": ["base"]
     },
     {
+      "id": "domain-autoIncrement-sequence-base",
+      "sourceType": "domain",
+      "command": "autoIncrement.sequence",
+      "label": "autoIncrement.sequence",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.sequence",
+          "params": "(1, 5, \"filename\", \".txt\", 3)",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.sequence(1, 5, \"filename\", \".txt\", 3)",
+      "expectedUiSchemaText": "Value\nautoIncrement.sequence(1, 5, \"filename\", \".txt\", 3)",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": [],
+      "origins": ["base"]
+    },
+    {
+      "id": "domain-autoIncrement-sequence-example-1",
+      "sourceType": "domain",
+      "command": "autoIncrement.sequence",
+      "label": "autoIncrement.sequence example 1",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.sequence",
+          "params": "()",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.sequence()",
+      "expectedUiSchemaText": "Value\nautoIncrement.sequence()",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["start", "step", "prefix", "suffix", "zeropadding"],
+      "origins": ["example"]
+    },
+    {
+      "id": "domain-autoIncrement-sequence-example-2",
+      "sourceType": "domain",
+      "command": "autoIncrement.sequence",
+      "label": "autoIncrement.sequence example 2",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.sequence",
+          "params": "(start=10, step=5)",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.sequence(start=10, step=5)",
+      "expectedUiSchemaText": "Value\nautoIncrement.sequence(start=10, step=5)",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["start", "step", "prefix", "suffix", "zeropadding"],
+      "origins": ["example"]
+    },
+    {
+      "id": "domain-autoIncrement-sequence-example-3",
+      "sourceType": "domain",
+      "command": "autoIncrement.sequence",
+      "label": "autoIncrement.sequence example 3",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.sequence",
+          "params": "(start=1, step=5, prefix=\"filename\", suffix=\".txt\", zeropadding=3)",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.sequence(start=1, step=5, prefix=\"filename\", suffix=\".txt\", zeropadding=3)",
+      "expectedUiSchemaText": "Value\nautoIncrement.sequence(start=1, step=5, prefix=\"filename\", suffix=\".txt\", zeropadding=3)",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["start", "step", "prefix", "suffix", "zeropadding"],
+      "origins": ["example"]
+    },
+    {
+      "id": "domain-autoIncrement-sequence-arg-start",
+      "sourceType": "domain",
+      "command": "autoIncrement.sequence",
+      "label": "autoIncrement.sequence arg start",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.sequence",
+          "params": "(start=10)",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.sequence(start=10)",
+      "expectedUiSchemaText": "Value\nautoIncrement.sequence(start=10)",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["start"],
+      "origins": ["arg"]
+    },
+    {
+      "id": "domain-autoIncrement-sequence-arg-step",
+      "sourceType": "domain",
+      "command": "autoIncrement.sequence",
+      "label": "autoIncrement.sequence arg step",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.sequence",
+          "params": "(step=5)",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.sequence(step=5)",
+      "expectedUiSchemaText": "Value\nautoIncrement.sequence(step=5)",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["step"],
+      "origins": ["arg"]
+    },
+    {
+      "id": "domain-autoIncrement-sequence-arg-prefix",
+      "sourceType": "domain",
+      "command": "autoIncrement.sequence",
+      "label": "autoIncrement.sequence arg prefix",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.sequence",
+          "params": "(prefix=\"filename\")",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.sequence(prefix=\"filename\")",
+      "expectedUiSchemaText": "Value\nautoIncrement.sequence(prefix=\"filename\")",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["prefix"],
+      "origins": ["arg"]
+    },
+    {
+      "id": "domain-autoIncrement-sequence-arg-suffix",
+      "sourceType": "domain",
+      "command": "autoIncrement.sequence",
+      "label": "autoIncrement.sequence arg suffix",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.sequence",
+          "params": "(suffix=\".txt\")",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.sequence(suffix=\".txt\")",
+      "expectedUiSchemaText": "Value\nautoIncrement.sequence(suffix=\".txt\")",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["suffix"],
+      "origins": ["arg"]
+    },
+    {
+      "id": "domain-autoIncrement-sequence-arg-zeropadding",
+      "sourceType": "domain",
+      "command": "autoIncrement.sequence",
+      "label": "autoIncrement.sequence arg zeropadding",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.sequence",
+          "params": "(zeropadding=3)",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.sequence(zeropadding=3)",
+      "expectedUiSchemaText": "Value\nautoIncrement.sequence(zeropadding=3)",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["zeropadding"],
+      "origins": ["arg"]
+    },
+    {
+      "id": "domain-autoIncrement-sequence-pair-start-step",
+      "sourceType": "domain",
+      "command": "autoIncrement.sequence",
+      "label": "autoIncrement.sequence pair start/step",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.sequence",
+          "params": "(start=10, step=5)",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.sequence(start=10, step=5)",
+      "expectedUiSchemaText": "Value\nautoIncrement.sequence(start=10, step=5)",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["start", "step"],
+      "origins": ["pair"]
+    },
+    {
+      "id": "domain-autoIncrement-sequence-pair-step-prefix",
+      "sourceType": "domain",
+      "command": "autoIncrement.sequence",
+      "label": "autoIncrement.sequence pair step/prefix",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.sequence",
+          "params": "(step=5, prefix=\"filename\")",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.sequence(step=5, prefix=\"filename\")",
+      "expectedUiSchemaText": "Value\nautoIncrement.sequence(step=5, prefix=\"filename\")",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["step", "prefix"],
+      "origins": ["pair"]
+    },
+    {
+      "id": "domain-autoIncrement-sequence-pair-prefix-suffix",
+      "sourceType": "domain",
+      "command": "autoIncrement.sequence",
+      "label": "autoIncrement.sequence pair prefix/suffix",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.sequence",
+          "params": "(prefix=\"filename\", suffix=\".txt\")",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.sequence(prefix=\"filename\", suffix=\".txt\")",
+      "expectedUiSchemaText": "Value\nautoIncrement.sequence(prefix=\"filename\", suffix=\".txt\")",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["prefix", "suffix"],
+      "origins": ["pair"]
+    },
+    {
+      "id": "domain-autoIncrement-sequence-pair-suffix-zeropadding",
+      "sourceType": "domain",
+      "command": "autoIncrement.sequence",
+      "label": "autoIncrement.sequence pair suffix/zeropadding",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.sequence",
+          "params": "(suffix=\".txt\", zeropadding=3)",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.sequence(suffix=\".txt\", zeropadding=3)",
+      "expectedUiSchemaText": "Value\nautoIncrement.sequence(suffix=\".txt\", zeropadding=3)",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["suffix", "zeropadding"],
+      "origins": ["pair"]
+    },
+    {
       "id": "domain-book-author-base",
       "sourceType": "domain",
       "command": "book.author",
@@ -27343,6 +27915,31 @@
       "origins": ["example"],
       "parityMode": "exact",
       "exactPreviewParity": true,
+      "structuralParity": true
+    },
+    {
+      "id": "domain-autoIncrement-sequence-example-1",
+      "sourceType": "domain",
+      "command": "autoIncrement.sequence",
+      "label": "autoIncrement.sequence example 1",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.sequence",
+          "params": "()",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.sequence()",
+      "expectedUiSchemaText": "Value\nautoIncrement.sequence()",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["start", "step", "prefix", "suffix", "zeropadding"],
+      "origins": ["example"],
+      "parityMode": "structural",
+      "exactPreviewParity": false,
       "structuralParity": true
     },
     {

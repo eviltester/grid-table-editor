@@ -107,6 +107,9 @@ describe('schema interaction scenario builder', () => {
     expect(scenarios.find((scenario) => scenario.id === 'domain-internet-password-example-1')?.rows[0]?.params).toBe(
       '(length=10, memorable=false, pattern="[A-Za-z0-9]", prefix="#")'
     );
+    expect(
+      scenarios.find((scenario) => scenario.id === 'domain-autoIncrement-sequence-example-1')?.rows[0]?.params
+    ).toBe('()');
   });
 
   test('domain argument scenarios prefer examples from keyword definitions', () => {
@@ -128,6 +131,12 @@ describe('schema interaction scenario builder', () => {
 
   test('integer-like domain args expose integer metadata in definitions', () => {
     expect(getDomainCommandHelp('string.counterString')?.args?.find((arg) => arg.name === 'min')?.type).toBe('integer');
+    expect(getDomainCommandHelp('autoIncrement.sequence')?.args?.find((arg) => arg.name === 'start')?.type).toBe(
+      'integer'
+    );
+    expect(getDomainCommandHelp('autoIncrement.sequence')?.args?.find((arg) => arg.name === 'zeropadding')?.type).toBe(
+      'integer'
+    );
     expect(getDomainCommandHelp('string.fromCharacters')?.args?.find((arg) => arg.name === 'length')?.type).toBe(
       'integer'
     );
@@ -149,6 +158,9 @@ describe('schema interaction scenario builder', () => {
     expect(scenarios.find((scenario) => scenario.id === 'domain-date-birthdate-arg-max')?.rows[0]?.params).toBe(
       '(max=65, min=18, mode="age")'
     );
+    expect(
+      scenarios.find((scenario) => scenario.id === 'domain-autoIncrement-sequence-arg-zeropadding')?.rows[0]?.params
+    ).toBe('(zeropadding=3)');
   });
 
   test('definitions describe executable option types and return types for matrix generation', () => {

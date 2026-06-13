@@ -1,5 +1,5 @@
 ---
-sidebar_position: 90
+sidebar_position: 100
 title: "datatype Domain"
 description: "Domain keyword reference for datatype."
 ---

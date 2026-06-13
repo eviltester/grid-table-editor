@@ -85,7 +85,9 @@ export class RulesBasedDataGenerator {
       });
 
     for (let attempt = 0; attempt < Math.max(1, maxAttempts); attempt += 1) {
-      this.restoreGeneratorStates(committedGeneratorState);
+      if (attempt > 0) {
+        this.restoreGeneratorStates(committedGeneratorState);
+      }
       const generatedRow = createRow();
       if (safeConstraints.length === 0) {
         return generatedRow;

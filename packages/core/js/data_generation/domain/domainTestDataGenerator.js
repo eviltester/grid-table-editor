@@ -53,9 +53,10 @@ class DomainTestDataGenerator {
         ? snapshot.autoIncrementStates.map(([key, value]) => [key, { ...value }])
         : []
     );
-    this.nextAutoIncrementRuleId = Number.isInteger(snapshot.nextAutoIncrementRuleId)
+    const restoredNextRuleId = Number.isInteger(snapshot.nextAutoIncrementRuleId)
       ? snapshot.nextAutoIncrementRuleId
       : 1;
+    this.nextAutoIncrementRuleId = Math.max(this.nextAutoIncrementRuleId, restoredNextRuleId);
   }
 
   #getAutoIncrementStateForRule(aRule) {

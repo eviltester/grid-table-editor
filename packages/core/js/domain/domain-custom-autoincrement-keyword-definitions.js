@@ -29,7 +29,7 @@ const DOMAIN_CUSTOM_AUTOINCREMENT_KEYWORD_DEFINITIONS = [
           name: 'step',
           type: 'integer',
           required: false,
-          description: 'Amount added after each accepted row. Defaults to 1.',
+          description: 'Non-zero amount added after each accepted row. Defaults to 1.',
           examples: [5],
         },
         {

@@ -32,6 +32,10 @@ function executeCustomAutoIncrementSequence(executionContext = {}) {
   const suffix = getStringArg(args[3], '');
   const zeroPadding = getIntegerArg(args[4], 'zeropadding', 0);
 
+  if (step === 0) {
+    throw new Error('Invalid argument for step: expected a non-zero integer.');
+  }
+
   if (zeroPadding < 0) {
     throw new Error('Invalid argument for zeropadding: expected an integer greater than or equal to 0.');
   }

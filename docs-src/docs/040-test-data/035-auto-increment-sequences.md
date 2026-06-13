@@ -79,7 +79,7 @@ If a generated row fails the constraint and is retried, the ticket sequence does
 - `start`
   Starting integer. Defaults to `1`.
 - `step`
-  Increment between accepted rows. Defaults to `1`.
+  Non-zero increment between accepted rows. Defaults to `1`.
 - `prefix`
   Optional text before the number.
 - `suffix`

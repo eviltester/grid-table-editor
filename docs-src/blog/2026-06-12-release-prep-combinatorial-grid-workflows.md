@@ -103,7 +103,7 @@ Docs:
 
 ![Grid to enum schema in the app](/img/release-198/grid-to-enum-schema.png)
 
-## 4. Constraint-aware auto increment sequences for generated identifiers
+## 4. Constraint-aware auto-increment sequences for generated identifiers
 
 Schemas can now generate sequential IDs through the domain model with `autoIncrement.sequence`.
 

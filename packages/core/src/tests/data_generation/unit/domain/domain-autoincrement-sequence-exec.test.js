@@ -96,6 +96,12 @@ describe('autoIncrement.sequence domain keyword execution', () => {
     ).toThrow('Invalid argument for step: expected an integer.');
   });
 
+  test('rejects zero step argument', () => {
+    expect(() =>
+      executeDomainKeyword('autoIncrement.sequence', { faker, args: [1, 0], autoIncrementState: {} })
+    ).toThrow('Invalid argument for step: expected a non-zero integer.');
+  });
+
   test('rejects negative zeropadding', () => {
     expect(() =>
       executeDomainKeyword('autoIncrement.sequence', { faker, args: [1, 1, '', '', -1], autoIncrementState: {} })

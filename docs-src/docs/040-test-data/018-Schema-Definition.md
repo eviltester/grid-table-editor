@@ -96,7 +96,7 @@ CreatedAt
 autoIncrement.timestamp(start="2026-06-12T12:39:23Z", step=1, type="seconds")
 ```
 
-This generates names such as `Alice Smith`, or deterministic timestamps when you need time-ordered rows.
+The `Customer Name` example generates names such as `Alice Smith`. The `CreatedAt` example generates deterministic timestamps for time-ordered rows.
 
 ## Comments and blank lines
 

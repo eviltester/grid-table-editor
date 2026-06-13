@@ -27,6 +27,17 @@ describe('AnyWayData MCP contract', () => {
     expect(result.format).toBe('json');
   });
 
+  test('executes domain keyword generation through the shared contract', () => {
+    const result = executeAnyWayDataMcpTool('generate_data_from_spec', {
+      textSpec: 't2\nautoIncrement.timestamp(start="12th June 2026 at 4pm", step=60, type="minutes")',
+      rowCount: 3,
+      outputFormat: 'json',
+    });
+
+    expect(result.ok).toBe(true);
+    expect(result.rows).toEqual([['2026-06-12T16:00:00Z'], ['2026-06-12T17:00:00Z'], ['2026-06-12T18:00:00Z']]);
+  });
+
   test('describes flat formatter options on generation tools', () => {
     const generateTool = listAnyWayDataMcpTools().find((tool) => tool.name === 'generate_data_from_spec');
     const amendTool = listAnyWayDataMcpTools().find((tool) => tool.name === 'amend_data_from_spec');

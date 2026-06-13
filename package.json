@@ -25,7 +25,7 @@
     "test:browser": "node ./node_modules/@playwright/test/cli.js test",
     "test:browser:headed": "node ./node_modules/@playwright/test/cli.js test --headed",
     "test:browser:install": "node ./node_modules/@playwright/test/cli.js install chromium",
-    "test:api": "node ./node_modules/@playwright/test/cli.js test --config=playwright-api.config.js",
+    "test:api": "node ./scripts/run-playwright-api-tests.mjs",
     "test:api:headed": "node ./node_modules/@playwright/test/cli.js test --config=playwright-api.config.js --headed",
     "test:api:verbose": "node ./node_modules/@playwright/test/cli.js test --config=playwright-api.config.js --reporter=verbose",
     "lint": "eslint \"apps/**/*.js\" \"packages/**/*.js\"",
@@ -103,6 +103,9 @@
     "@anywaydata/core": "workspace:^",
     "@mcp-b/webmcp-polyfill": "3.0.0",
     "@popperjs/core": "2.11.8",
+    "chrono-node": "^2.9.1",
+    "date-fns": "^4.4.0",
+    "date-fns-tz": "^3.2.0",
     "papaparse": "5.5.3",
     "randexp": "0.5.3",
     "tippy.js": "6.3.7"

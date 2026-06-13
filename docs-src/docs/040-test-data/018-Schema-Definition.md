@@ -91,7 +91,12 @@ Customer Name
 person.fullName
 ```
 
-This generates names such as `Alice Smith`.
+```text
+CreatedAt
+autoIncrement.timestamp(start="2026-06-12T12:39:23Z", step=1, type="seconds")
+```
+
+The `Customer Name` example generates names such as `Alice Smith`. The `CreatedAt` example generates deterministic timestamps for time-ordered rows.
 
 ## Comments and blank lines
 

@@ -13,6 +13,12 @@ describe('domain command help metadata docs links', () => {
     expect(enumHelp.docsUrl).toBe('https://anywaydata.com/docs/test-data/domain/datatype');
   });
 
+  test('maps autoIncrement timestamp help to the autoIncrement domain page', () => {
+    const autoIncrementHelp = getDomainCommandHelp('autoIncrement.timestamp');
+    expect(autoIncrementHelp).toBeTruthy();
+    expect(autoIncrementHelp.docsUrl).toBe('https://anywaydata.com/docs/test-data/domain/autoIncrement');
+  });
+
   test('keeps explicit anywaydata docs pages for custom domain commands', () => {
     const sequenceHelp = getDomainCommandHelp('autoIncrement.sequence');
     expect(sequenceHelp).toBeTruthy();

@@ -10,7 +10,7 @@ class DomainTestDataGenerator {
     this.nextAutoIncrementRuleId = 1;
   }
 
-  generateFrom(aRule) {
+  generateFrom(aRule, executionContext = {}) {
     const ruleSpec = String(aRule?.ruleSpec || '').trim();
     const parsed = parseKeywordInvocation(ruleSpec);
     if (Array.isArray(parsed?.errors) && parsed.errors.length > 0) {
@@ -19,6 +19,7 @@ class DomainTestDataGenerator {
 
     try {
       const result = executeDomainKeyword(parsed.keyword, {
+        ...executionContext,
         faker: this.faker,
         args: Array.isArray(parsed.args) ? parsed.args : [],
         autoIncrementState: this.#getAutoIncrementStateForRule(aRule),

@@ -66,6 +66,15 @@ describe('help-model-builder', () => {
     expect(renderSchemaHelpHtml(model)).toContain('delimiter');
   });
 
+  test('builds domain help for auto-increment timestamps with step metadata', () => {
+    const model = buildSchemaHelpModel('domain', 'autoIncrement.timestamp');
+
+    expect(model.show).toBe(true);
+    expect(model.heading).toContain('autoIncrement.timestamp');
+    expect(renderSchemaHelpHtml(model)).toContain('run start time');
+    expect(renderSchemaHelpHtml(model)).toContain('outputFormat');
+  });
+
   test('preserves custom domain docs links and parameters for auto increment help', () => {
     const model = buildSchemaHelpModel('domain', 'autoIncrement.sequence');
 

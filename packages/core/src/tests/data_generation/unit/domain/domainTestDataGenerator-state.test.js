@@ -15,4 +15,40 @@ describe('DomainTestDataGenerator state restore', () => {
 
     expect(generator.generateFrom(secondRule).data).toBe(100);
   });
+
+  test('uses the generator faker instance instead of an execution-context override', () => {
+    const generatorFaker = {
+      person: {
+        firstName: () => 'generator-faker',
+      },
+    };
+    const overrideFaker = {
+      person: {
+        firstName: () => 'override-faker',
+      },
+    };
+    const generator = new DomainTestDataGenerator(generatorFaker);
+
+    const result = generator.generateFrom(
+      { ruleSpec: 'person.firstName' },
+      {
+        faker: overrideFaker,
+      }
+    );
+
+    expect(result.data).toBe('generator-faker');
+  });
+
+  test('uses parsed rule args instead of execution-context args overrides', () => {
+    const generator = new DomainTestDataGenerator(faker);
+
+    const result = generator.generateFrom(
+      { ruleSpec: 'literal.value("from-rule")' },
+      {
+        args: ['from-context'],
+      }
+    );
+
+    expect(result.data).toBe('from-rule');
+  });
 });

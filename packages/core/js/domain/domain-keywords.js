@@ -1,4 +1,5 @@
 import { DOMAIN_KEYWORD_DEFINITIONS } from './domain-keyword-definitions.js';
+import { executeCustomAutoIncrementTimestamp } from './auto-increment-timestamp.js';
 import { executeCustomAutoIncrementSequence } from './auto-increment-sequence.js';
 import { executeCustomCounterString } from './counterstring.js';
 
@@ -224,6 +225,7 @@ function applyFakerArgTransform(keyword, args = []) {
 }
 
 const BUILT_IN_CUSTOM_DELEGATES = {
+  'autoIncrement.timestamp': executeCustomAutoIncrementTimestamp,
   'autoIncrement.sequence': executeCustomAutoIncrementSequence,
   'literal.value': (executionContext = {}) => {
     const args = Array.isArray(executionContext.args) ? executionContext.args : [];

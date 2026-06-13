@@ -1,6 +1,6 @@
 ---
 slug: release-prep-combinatorial-grid-workflows
-title: "Release Prep: Stronger Combinatorial Generation and Faster Grid Workflows"
+title: 'Release Prep: Stronger Combinatorial Generation and Faster Grid Workflows'
 authors: [alan]
 tags: [release, feature, combinatorial, schema, import, export, ux]
 date: 2026-06-12T10:00
@@ -12,7 +12,30 @@ This release adds broader combinatorial generation, schema authoring improvement
 
 <!-- truncate -->
 
-## 1. N-wise combinatorial generation, not just pairwise
+## 1. Auto-increment timestamps for deterministic event streams
+
+You can now generate timestamps that move forward one row at a time instead of relying on purely random dates.
+
+Example:
+
+```text
+CreatedAt
+autoIncrement.timestamp(start="2026-06-12T12:39:23Z", step=1, type="seconds")
+```
+
+That produces:
+
+- row 1: `2026-06-12T12:39:23Z`
+- row 2: `2026-06-12T12:39:24Z`
+- row 3: `2026-06-12T12:39:25Z`
+
+This is useful for audit logs, event streams, ordered API records, and any test data where time should progress predictably across generated rows.
+
+Docs:
+
+- [autoIncrement Domain](/docs/test-data/domain/autoIncrement)
+
+## 2. N-wise combinatorial generation, not just pairwise
 
 The biggest addition is that combinatorial generation now goes beyond pairwise.
 
@@ -42,7 +65,7 @@ Docs:
 
 ![N-wise combinations dialog](/img/release-198/n-wise-generation.png)
 
-## 2. Schema constraints with PICT-style `IF ... THEN ...`
+## 3. Schema constraints with PICT-style `IF ... THEN ...`
 
 Schema constraints make generated combinations more realistic by filtering out invalid rows.
 
@@ -71,7 +94,7 @@ Docs:
 
 - [Schema Definition](/docs/test-data/Schema-Definition)
 
-## 3. Grid to Enum Schema for turning existing tables into generators
+## 4. Grid to Enum Schema for turning existing tables into generators
 
 If you already have representative data in the main grid, you can now turn that grid into an enum schema automatically.
 
@@ -103,7 +126,7 @@ Docs:
 
 ![Grid to enum schema in the app](/img/release-198/grid-to-enum-schema.png)
 
-## 4. Constraint-aware auto-increment sequences for generated identifiers
+## 5. Constraint-aware auto-increment sequences for generated identifiers
 
 Schemas can now generate sequential IDs through the domain model with `autoIncrement.sequence`.
 
@@ -128,7 +151,7 @@ Docs:
 
 - [Auto Increment Sequences](/docs/test-data/auto-increment-sequences)
 
-## 5. PICT-style inline enum definitions such as `Name: values`
+## 6. PICT-style inline enum definitions such as `Name: values`
 
 Schema text now fits more naturally with compact PICT-style authoring.
 
@@ -153,7 +176,7 @@ Docs:
 
 - [Schema Definition](/docs/test-data/Schema-Definition)
 
-## 6. Import trimming controls for cleaner amend and import workflows
+## 7. Import trimming controls for cleaner amend and import workflows
 
 Imported files and clipboard data can now be normalized during import.
 
@@ -176,7 +199,7 @@ Docs:
 
 ![Import trim settings](/img/release-198/import-trim-settings.png)
 
-## 7. File export settings for line endings and BOM
+## 8. File export settings for line endings and BOM
 
 Downloads now support file transport settings without changing the preview text shown in the browser.
 
@@ -193,7 +216,7 @@ Docs:
 
 ![Download encoding settings](/img/release-198/export-encoding-settings.png)
 
-## 8. Right-click context menu in the main data grid
+## 9. Right-click context menu in the main data grid
 
 The editable grid now has a right-click context menu for common grid actions.
 
@@ -203,7 +226,7 @@ Docs:
 
 - [Data Grid Editable](/docs/test-data/data-grid-editable)
 
-## 9. Always-visible total row counts in the data grid
+## 10. Always-visible total row counts in the data grid
 
 The main grid now shows total row counts, and filtered views also show how many rows remain visible.
 

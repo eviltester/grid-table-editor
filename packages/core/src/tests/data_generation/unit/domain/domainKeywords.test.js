@@ -155,6 +155,8 @@ describe('domain keyword catalog', () => {
     expect(byKeyword.get('finance.accountNumber')?.help?.returnType).toBe('string');
     expect(byKeyword.get('date.month')?.help?.returnType).toBe('string');
     expect(byKeyword.get('date.weekday')?.help?.returnType).toBe('string');
+    expect(byKeyword.get('autoIncrement.timestamp')?.delegate?.type).toBe('custom');
+    expect(byKeyword.get('autoIncrement.timestamp')?.help?.returnType).toBe('string');
     expect(byKeyword.get('internet.email')?.delegate?.argTransform).toBe('optionsFromHelpArgs');
     expect(byKeyword.get('internet.httpStatusCode')?.help?.returnType).toBe('number');
     expect(byKeyword.get('internet.port')?.help?.returnType).toBe('number');

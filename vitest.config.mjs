@@ -16,7 +16,7 @@ export default defineConfig({
           storybookTest({
             configDir: path.join(dirname, '.storybook'),
             storybookUrl: 'http://127.0.0.1:6006',
-            storybookScript: 'pnpm exec storybook dev -p 6006 --exact-port --ci',
+            storybookScript: 'pnpm exec storybook dev -p 6006 --host 127.0.0.1 --exact-port --ci',
           }),
         ],
         test: {
@@ -27,6 +27,10 @@ export default defineConfig({
             enabled: true,
             headless: true,
             provider: playwright({}),
+            api: {
+              host: '127.0.0.1',
+              port: 51315,
+            },
             instances: [{ browser: 'chromium' }],
           },
         },

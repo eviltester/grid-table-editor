@@ -176,6 +176,17 @@ describe('TestDataGenerator meets Acceptance Criteria', () => {
 
       expect(generator.generateRow()).toEqual([10]);
     });
+
+    test('increments auto increment timestamp when rows are generated one at a time', () => {
+      const generator = new TestDataGenerator(faker, RandExp);
+
+      generator.importSpec('CreatedAt\nautoIncrement.timestamp(start="2026-06-12T16:00:00Z",step=1,type="hours")');
+      generator.compile();
+
+      expect(generator.generateRow()).toEqual(['2026-06-12T16:00:00Z']);
+      expect(generator.generateRow()).toEqual(['2026-06-12T17:00:00Z']);
+      expect(generator.generateRow()).toEqual(['2026-06-12T18:00:00Z']);
+    });
   });
 
   describe('TestDataGenerator parsing detects errors in spec', () => {

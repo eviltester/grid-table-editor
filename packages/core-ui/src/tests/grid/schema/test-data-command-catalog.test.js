@@ -71,6 +71,7 @@ describe('Test Data Command Catalog', () => {
     it('should also populate domain commands for the domain dropdown section', () => {
       const domainCommands = getDomainCommands();
       expect(domainCommands.length).toBeGreaterThan(0);
+      expect(domainCommands).toContain('autoIncrement.timestamp');
       expect(domainCommands).toContain('number.int');
       expect(domainCommands).toContain('string.counterString');
       expect(domainCommands.some((command) => command.startsWith('helpers.'))).toBe(false);
@@ -78,8 +79,10 @@ describe('Test Data Command Catalog', () => {
 
     it('should provide picker options with schema help metadata', () => {
       const values = getMethodPickerOptions('');
+      const autoIncrementEntry = values.find((entry) => entry.command === 'autoIncrement.timestamp');
       const domainEntry = values.find((entry) => entry.command === 'number.int');
       const fakerEntry = values.find((entry) => entry.command === 'helpers.arrayElement');
+      expect(autoIncrementEntry?.sourceType).toBe('domain');
       expect(domainEntry?.sourceType).toBe('domain');
       expect(fakerEntry?.sourceType).toBe('faker');
       expect(Array.isArray(domainEntry?.helpModel?.params)).toBe(true);

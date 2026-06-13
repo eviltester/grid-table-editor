@@ -38,7 +38,7 @@ function ensurePortFree(port) {
 
 ensurePortFree(6006);
 
-const child = spawn('pnpm', ['exec', 'vitest', '--project=storybook', '--run'], {
+const child = spawn('pnpm', ['exec', 'vitest', '--project=storybook', '--run', '--api.host=127.0.0.1'], {
   stdio: 'inherit',
   shell: process.platform === 'win32',
 });

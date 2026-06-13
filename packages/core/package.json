@@ -28,6 +28,9 @@
   },
   "dependencies": {
     "@faker-js/faker": "9.7.0",
+    "chrono-node": "^2.9.1",
+    "date-fns": "^4.4.0",
+    "date-fns-tz": "^3.2.0",
     "papaparse": "5.5.3",
     "randexp": "0.5.3"
   }

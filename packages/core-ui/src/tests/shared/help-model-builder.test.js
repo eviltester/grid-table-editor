@@ -66,6 +66,15 @@ describe('help-model-builder', () => {
     expect(renderSchemaHelpHtml(model)).toContain('delimiter');
   });
 
+  test('builds domain help for auto-increment timestamps with step metadata', () => {
+    const model = buildSchemaHelpModel('domain', 'autoIncrement.timestamp');
+
+    expect(model.show).toBe(true);
+    expect(model.heading).toContain('autoIncrement.timestamp');
+    expect(renderSchemaHelpHtml(model)).toContain('run start time');
+    expect(renderSchemaHelpHtml(model)).toContain('outputFormat');
+  });
+
   test('maps faker helpers docs link to anywaydata faker helpers docs', () => {
     const model = buildSchemaHelpModel('faker', 'helpers.fake');
     expect(model.docsUrl).toBe('https://anywaydata.com/docs/test-data/faker/helpers');

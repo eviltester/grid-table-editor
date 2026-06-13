@@ -7,7 +7,7 @@ class DomainTestDataGenerator {
     this.faker = aFaker;
   }
 
-  generateFrom(aRule) {
+  generateFrom(aRule, executionContext = {}) {
     const ruleSpec = String(aRule?.ruleSpec || '').trim();
     const parsed = parseKeywordInvocation(ruleSpec);
     if (Array.isArray(parsed?.errors) && parsed.errors.length > 0) {
@@ -18,6 +18,7 @@ class DomainTestDataGenerator {
       const result = executeDomainKeyword(parsed.keyword, {
         faker: this.faker,
         args: Array.isArray(parsed.args) ? parsed.args : [],
+        ...executionContext,
       });
       return dataResponse(result);
     } catch (error) {

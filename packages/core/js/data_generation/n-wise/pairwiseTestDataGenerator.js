@@ -202,7 +202,8 @@ export class PairwiseTestDataGenerator {
    * for non-enum rules
    */
   generateCompleteDataRecords(enumCombinations) {
-    return enumCombinations.map((enumRecord) => {
+    const runStartedAt = new Date();
+    return enumCombinations.map((enumRecord, rowIndex) => {
       const completeRecord = {};
 
       // Preserve original schema order across enum and non-enum columns.
@@ -210,7 +211,7 @@ export class PairwiseTestDataGenerator {
         if (this.isRuleType(rule, 'enum')) {
           completeRecord[rule.name] = enumRecord.get(rule.name);
         } else {
-          completeRecord[rule.name] = this.generateRandomValueForRule(rule);
+          completeRecord[rule.name] = this.generateRandomValueForRule(rule, { rowIndex, runStartedAt });
         }
       }
 
@@ -221,7 +222,7 @@ export class PairwiseTestDataGenerator {
   /**
    * Generate a random value for a non-enum rule
    */
-  generateRandomValueForRule(rule) {
+  generateRandomValueForRule(rule, generationContext = {}) {
     switch (rule.type) {
       case 'literal':
         return rule.ruleSpec;
@@ -236,7 +237,7 @@ export class PairwiseTestDataGenerator {
         return this.generateRegexValue(rule);
 
       case 'domain':
-        return this.generateDomainValue(rule);
+        return this.generateDomainValue(rule, generationContext);
 
       default:
         return `random_${rule.name}_${Math.floor(Math.random() * 1000)}`;
@@ -302,10 +303,10 @@ export class PairwiseTestDataGenerator {
   /**
    * Generate a value using domain keywords
    */
-  generateDomainValue(rule) {
+  generateDomainValue(rule, generationContext = {}) {
     try {
       if (this.domainGenerator) {
-        const result = this.domainGenerator.generateFrom(rule);
+        const result = this.domainGenerator.generateFrom(rule, generationContext);
         return result.data ?? `domain_${rule.ruleSpec}_${Math.floor(Math.random() * 1000)}`;
       }
       return `domain_${rule.ruleSpec}_${Math.floor(Math.random() * 1000)}`;

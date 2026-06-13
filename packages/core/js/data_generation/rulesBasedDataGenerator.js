@@ -29,15 +29,16 @@ export class RulesBasedDataGenerator {
     const headers = fromRules.map((rule) => rule.name);
     data.push(headers);
 
+    const runStartedAt = new Date();
     for (var row = 0; row < thisMany; row++) {
-      const aRow = this.generateRandomRow(fromRules, options);
+      const aRow = this.generateRandomRow(fromRules, { ...options, rowIndex: row, runStartedAt });
       data.push(aRow);
     }
 
     return data;
   }
 
-  generateRandomRow(fromRules, { constraints = [], maxAttempts = 1 } = {}) {
+  generateRandomRow(fromRules, { constraints = [], maxAttempts = 1, rowIndex = 0, runStartedAt = new Date() } = {}) {
     const rules = Array.isArray(fromRules) ? fromRules : [];
     const safeConstraints = Array.isArray(constraints) ? constraints : [];
 
@@ -72,7 +73,7 @@ export class RulesBasedDataGenerator {
             generator = this.defaultGenerator;
         }
 
-        value = generator.generateFrom(rule);
+        value = generator.generateFrom(rule, { rowIndex, runStartedAt });
 
         if (value.isError) {
           dataGen = '**ERROR**';

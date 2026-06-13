@@ -76,9 +76,12 @@ export class TestDataGenerator {
 
   generateRow() {
     this.runtimeErrors = [];
+    const runStartedAt = new Date();
     const generatedRow = this.generator.generateRandomRow(this.rulesParser.testDataRules.rules, {
       constraints: this.rulesParser.testDataRules.constraints,
       maxAttempts: 1000,
+      rowIndex: 0,
+      runStartedAt,
     });
     if (!generatedRow) {
       this.runtimeErrors = [SchemaParsingErrors.constraintGenerationFailed()];

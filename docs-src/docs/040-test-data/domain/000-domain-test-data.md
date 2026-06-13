@@ -40,6 +40,11 @@ date.between(from=1577836800000, to=1659312000000)
 ```
 
 ```txt
+CreatedAt
+autoIncrement.timestamp(start="2026-06-12T12:39:23Z", step=1, type="seconds")
+```
+
+```txt
 IBAN
 finance.iban(formatted=true, countryCode="GB")
 IBANDE
@@ -62,6 +67,7 @@ For faker helper templates and utility functions, use faker helpers:
 
 ## Domains
 
+- [autoIncrement](/docs/test-data/domain/autoIncrement)
 - [airline](/docs/test-data/domain/airline)
 - [animal](/docs/test-data/domain/animal)
 - [book](/docs/test-data/domain/book)

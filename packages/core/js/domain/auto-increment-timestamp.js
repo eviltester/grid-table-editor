@@ -176,7 +176,7 @@ function executeCustomAutoIncrementTimestamp(executionContext = {}) {
   const inputFormatArg = args[4];
   const state = executionContext.autoIncrementState || null;
   const rowIndex =
-    Number.isInteger(executionContext.rowIndex) && executionContext.rowIndex > 0 ? executionContext.rowIndex : 0;
+    Number.isInteger(executionContext.rowIndex) && executionContext.rowIndex >= 0 ? executionContext.rowIndex : 0;
   const now = resolveNow(executionContext);
   const startDate = resolveStartDate(startArg, inputFormatArg, now);
   const stepValue = typeof stepArg === 'undefined' ? DEFAULT_STEP_VALUE : getNumericArg(stepArg, 'step');

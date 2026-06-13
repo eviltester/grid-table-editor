@@ -29,12 +29,19 @@ function getDomainPageFromCommand(command) {
 }
 
 function resolveDomainDocsUrl(command, keywordDocsUrl) {
+  const explicitDocsUrl = String(keywordDocsUrl || '').trim();
+  if (
+    explicitDocsUrl.startsWith('https://anywaydata.com/') ||
+    explicitDocsUrl.startsWith('/docs/') ||
+    explicitDocsUrl.startsWith('docs/')
+  ) {
+    return explicitDocsUrl;
+  }
   const domainPage = getDomainPageFromCommand(command);
   if (domainPage) {
     return domainPage;
   }
-  const fallback = String(keywordDocsUrl || '').trim();
-  return fallback || `${ANYWAYDATA_DOMAIN_DOCS_BASE}/domain-test-data`;
+  return explicitDocsUrl || `${ANYWAYDATA_DOMAIN_DOCS_BASE}/domain-test-data`;
 }
 
 function getDomainCommandHelp(command) {

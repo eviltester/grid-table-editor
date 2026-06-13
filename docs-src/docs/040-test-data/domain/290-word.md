@@ -1,5 +1,5 @@
 ---
-sidebar_position: 280
+sidebar_position: 290
 title: "word Domain"
 description: "Domain keyword reference for word."
 ---

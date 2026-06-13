@@ -1,5 +1,5 @@
 ---
-sidebar_position: 110
+sidebar_position: 120
 title: "finance Domain"
 description: "Domain keyword reference for finance."
 ---

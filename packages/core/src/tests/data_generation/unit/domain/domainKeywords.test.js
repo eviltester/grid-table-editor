@@ -146,6 +146,10 @@ describe('domain keyword catalog', () => {
     const byKeyword = new Map(DOMAIN_KEYWORDS.map((entry) => [entry.keyword, entry]));
 
     expect(byKeyword.get('literal.value')?.help?.returnType).toBe('string|number|boolean');
+    expect(byKeyword.get('autoIncrement.sequence')?.help?.returnType).toBe('string|number');
+    expect(byKeyword.get('autoIncrement.sequence')?.help?.docsUrl).toBe(
+      'https://anywaydata.com/docs/test-data/auto-increment-sequences'
+    );
     expect(byKeyword.get('datatype.boolean')?.help?.args.map((arg) => arg.name)).toEqual(['probability']);
     expect(byKeyword.get('finance.accountName')?.help?.returnType).toBe('string');
     expect(byKeyword.get('finance.accountNumber')?.help?.returnType).toBe('string');
@@ -283,6 +287,12 @@ describe('domain keyword delegation', () => {
     });
 
     expect(result).toBe('Pending');
+  });
+
+  test('uses built-in auto increment delegate when no custom override is supplied', () => {
+    const state = {};
+    expect(executeDomainKeyword('autoIncrement.sequence', { args: [], autoIncrementState: state })).toBe(1);
+    expect(executeDomainKeyword('autoIncrement.sequence', { args: [], autoIncrementState: state })).toBe(2);
   });
 
   test('allows custom literal delegate to override built-in behavior', () => {

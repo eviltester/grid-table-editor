@@ -66,6 +66,15 @@ describe('help-model-builder', () => {
     expect(renderSchemaHelpHtml(model)).toContain('delimiter');
   });
 
+  test('preserves custom domain docs links and parameters for auto increment help', () => {
+    const model = buildSchemaHelpModel('domain', 'autoIncrement.sequence');
+
+    expect(model.docsUrl).toBe('https://anywaydata.com/docs/test-data/auto-increment-sequences');
+    expect(model.params.map((param) => param.name)).toEqual(['start', 'step', 'prefix', 'suffix', 'zeropadding']);
+    expect(renderSchemaHelpHtml(model)).toContain('accepted row');
+    expect(renderSchemaHelpHtml(model)).toContain('zeropadding');
+  });
+
   test('maps faker helpers docs link to anywaydata faker helpers docs', () => {
     const model = buildSchemaHelpModel('faker', 'helpers.fake');
     expect(model.docsUrl).toBe('https://anywaydata.com/docs/test-data/faker/helpers');

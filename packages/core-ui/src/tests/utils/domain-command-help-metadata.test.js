@@ -12,4 +12,10 @@ describe('domain command help metadata docs links', () => {
     expect(enumHelp).toBeTruthy();
     expect(enumHelp.docsUrl).toBe('https://anywaydata.com/docs/test-data/domain/datatype');
   });
+
+  test('keeps explicit anywaydata docs pages for custom domain commands', () => {
+    const sequenceHelp = getDomainCommandHelp('autoIncrement.sequence');
+    expect(sequenceHelp).toBeTruthy();
+    expect(sequenceHelp.docsUrl).toBe('https://anywaydata.com/docs/test-data/auto-increment-sequences');
+  });
 });

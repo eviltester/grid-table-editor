@@ -19,9 +19,9 @@ class DomainTestDataGenerator {
 
     try {
       const result = executeDomainKeyword(parsed.keyword, {
+        ...executionContext,
         faker: this.faker,
         args: Array.isArray(parsed.args) ? parsed.args : [],
-        ...executionContext,
         autoIncrementState: this.#getAutoIncrementStateForRule(aRule),
       });
       return dataResponse(result);

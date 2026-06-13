@@ -77,7 +77,7 @@ describe('domain generation integration', () => {
     const secondRow = generator.generateRow();
 
     expect(generator.isValid()).toBe(true);
-    expect(firstRow).toEqual(['T-001', 'yes']);
-    expect(secondRow).toEqual(['T-002', 'yes']);
+    expect(firstRow).toEqual(['T-01', 'yes']);
+    expect(secondRow).toEqual(['T-02', 'yes']);
   });
 });

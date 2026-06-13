@@ -23,7 +23,7 @@ Generates an incrementing sequence. Values only advance when a generated row is 
 | `step` | `integer` | no | Amount added after each accepted row. Defaults to 1. |
 | `prefix` | `string` | no | Optional text added before the numeric portion. |
 | `suffix` | `string` | no | Optional text added after the numeric portion. |
-| `zeropadding` | `integer` | no | Minimum zero-padding size for the numeric portion. A value of 3 renders 1 as 0001. Defaults to 0. |
+| `zeropadding` | `integer` | no | Total digit width for the numeric portion. A value of 3 renders 1 as 001, while 100 stays 100. Defaults to 0. |
 
 Examples:
 
@@ -42,4 +42,4 @@ autoIncrement.sequence(start=1, step=5, prefix="filename", suffix=".txt", zeropa
 Example return values:
 - `1`
 - `15`
-- `filename0001.txt`
+- `filename001.txt`

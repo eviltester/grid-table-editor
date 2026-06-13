@@ -15,7 +15,7 @@ const DOMAIN_CUSTOM_AUTOINCREMENT_KEYWORD_DEFINITIONS = [
         'autoIncrement.sequence(start=10, step=5)',
         'autoIncrement.sequence(start=1, step=5, prefix="filename", suffix=".txt", zeropadding=3)',
       ],
-      exampleReturnValues: ['1', '15', 'filename0001.txt'],
+      exampleReturnValues: ['1', '15', 'filename001.txt'],
       returnType: 'string|number',
       args: [
         {
@@ -51,7 +51,7 @@ const DOMAIN_CUSTOM_AUTOINCREMENT_KEYWORD_DEFINITIONS = [
           type: 'integer',
           required: false,
           description:
-            'Minimum zero-padding size for the numeric portion. A value of 3 renders 1 as 0001. Defaults to 0.',
+            'Total digit width for the numeric portion. A value of 3 renders 1 as 001, while 100 stays 100. Defaults to 0.',
           examples: [3],
         },
       ],

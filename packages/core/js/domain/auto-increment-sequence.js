@@ -19,8 +19,7 @@ function formatAutoIncrementValue(value, zeroPadding) {
   const integerValue = Number(value);
   const sign = integerValue < 0 ? '-' : '';
   const digits = Math.abs(integerValue).toString();
-  const minimumWidth = zeroPadding + 1;
-  return `${sign}${digits.padStart(minimumWidth, '0')}`;
+  return `${sign}${digits.padStart(Math.max(0, zeroPadding), '0')}`;
 }
 
 function executeCustomAutoIncrementSequence(executionContext = {}) {

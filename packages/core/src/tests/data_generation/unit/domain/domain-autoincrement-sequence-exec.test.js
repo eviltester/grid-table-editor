@@ -34,14 +34,14 @@ describe('autoIncrement.sequence domain keyword execution', () => {
         args: [1, 5, 'filename', '.txt', 3],
         autoIncrementState: state,
       })
-    ).toBe('filename0001.txt');
+    ).toBe('filename001.txt');
     expect(
       executeDomainKeyword('autoIncrement.sequence', {
         faker,
         args: [1, 5, 'filename', '.txt', 3],
         autoIncrementState: state,
       })
-    ).toBe('filename0006.txt');
+    ).toBe('filename006.txt');
   });
 
   test('supports named parameters', () => {
@@ -52,11 +52,28 @@ describe('autoIncrement.sequence domain keyword execution', () => {
 
     expect(parsed.errors).toEqual([]);
     expect(executeDomainKeyword(parsed.keyword, { faker, args: parsed.args, autoIncrementState: state })).toBe(
-      'filename0001.txt'
+      'filename001.txt'
     );
     expect(executeDomainKeyword(parsed.keyword, { faker, args: parsed.args, autoIncrementState: state })).toBe(
-      'filename0006.txt'
+      'filename006.txt'
     );
+  });
+
+  test('uses zeropadding as total digit width rather than extra zero count', () => {
+    const state = {};
+
+    expect(
+      executeDomainKeyword('autoIncrement.sequence', { faker, args: [1, 99, '', '', 3], autoIncrementState: state })
+    ).toBe('001');
+    expect(
+      executeDomainKeyword('autoIncrement.sequence', { faker, args: [1, 99, '', '', 3], autoIncrementState: state })
+    ).toBe('100');
+    expect(
+      executeDomainKeyword('autoIncrement.sequence', { faker, args: [1, 900, '', '', 3], autoIncrementState: {} })
+    ).toBe('001');
+    expect(
+      executeDomainKeyword('autoIncrement.sequence', { faker, args: [1000, 1, '', '', 3], autoIncrementState: {} })
+    ).toBe('1000');
   });
 
   test('supports negative steps', () => {

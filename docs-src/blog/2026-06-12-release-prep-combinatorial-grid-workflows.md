@@ -117,9 +117,9 @@ autoIncrement.sequence(start=1, step=5, prefix="filename", suffix=".txt", zeropa
 Generated values:
 
 ```text
-filename0001.txt
+filename001.txt
 filename0006.txt
-filename0011.txt
+filename011.txt
 ```
 
 This is especially useful for ticket IDs, filenames, and human-readable references because the sequence only advances when a row is accepted. If a generated row is rejected by constraints and retried, the skipped attempt does not consume the next number.

@@ -50,12 +50,12 @@ autoIncrement.sequence(start=1, step=5, prefix="filename", suffix=".txt", zeropa
 Example output:
 
 ```txt
-filename0001.txt
-filename0006.txt
-filename0011.txt
+filename001.txt
+filename006.txt
+filename011.txt
 ```
 
-`zeropadding=3` means the numeric portion is padded to at least four digits, so `1` becomes `0001`.
+`zeropadding=3` means the numeric portion is padded to a total width of three digits, so `1` becomes `001`, `100` stays `100`, and `1000` stays `1000`.
 
 ## Constraint-Aware Sequences
 

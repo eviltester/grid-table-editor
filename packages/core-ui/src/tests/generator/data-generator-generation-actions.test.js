@@ -4,6 +4,7 @@ import { createGeneratorSchemaGenerationService } from '../../../js/gui_componen
 import {
   generateGeneratorCombinationsDataFile,
   generateGeneratorDataFile,
+  generateGeneratorAllPairsDataFile,
   renderGeneratorOutputPreview,
   updateGeneratorPairwiseButtonVisibility,
 } from '../../../js/gui_components/generator/generation/data-generator-generation-actions.js';
@@ -166,5 +167,43 @@ describe('generator generation actions', () => {
       severity: 'warning',
       dismissable: true,
     });
+  });
+
+  test('generateGeneratorAllPairsDataFile rejects pairwise export before invoking session generation when fewer than two enum columns exist', async () => {
+    const createConfiguredSession = jest.fn(() => ({
+      errors: [],
+      session: {
+        generatePairwise: jest.fn(() => ({
+          ok: true,
+          headers: ['Browser'],
+          rows: [['Chrome']],
+        })),
+      },
+    }));
+    const surfacePageError = jest.fn();
+
+    await generateGeneratorAllPairsDataFile({
+      createConfiguredSession,
+      countEnumColumns: () => 1,
+      getSelectedOutputType: () => 'csv',
+      exporter: {
+        canExport: () => true,
+        getFileExtensionFor: () => '.csv',
+        getDataTableAs: () => 'Browser\nChrome',
+      },
+      clearGenerationStatus: jest.fn(),
+      setGenerationButtonBusy: jest.fn(),
+      setGenerationStatus: jest.fn(),
+      showGenerationLoadingStatus: jest.fn(),
+      getExportEncodingSettings: () => ({}),
+      buildAllPairsDataTable: jest.fn(),
+      DownloadClass: class FakeDownload {},
+      surfacePageError,
+      clearPageError: jest.fn(),
+      scheduleClearGenerationStatus: jest.fn(),
+    });
+
+    expect(createConfiguredSession).not.toHaveBeenCalled();
+    expect(surfacePageError).toHaveBeenCalledWith('Pairwise generation requires at least 2 enum columns.');
   });
 });

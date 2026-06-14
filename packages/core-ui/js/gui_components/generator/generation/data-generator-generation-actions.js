@@ -390,6 +390,11 @@ async function generateGeneratorAllPairsDataFile({
   clearPageError,
   scheduleClearGenerationStatus,
 }) {
+  if (countEnumColumns() < 2) {
+    surfacePageError('Pairwise generation requires at least 2 enum columns.');
+    return;
+  }
+
   let dataTable;
   if (typeof createConfiguredSession === 'function') {
     const configuredSession = createConfiguredSession();
@@ -412,11 +417,6 @@ async function generateGeneratorAllPairsDataFile({
     }
 
     dataTable = buildAllPairsDataTable(configured.generator);
-  }
-
-  if (countEnumColumns() < 2) {
-    surfacePageError('Pairwise generation requires at least 2 enum columns.');
-    return;
   }
 
   const type = getSelectedOutputType();

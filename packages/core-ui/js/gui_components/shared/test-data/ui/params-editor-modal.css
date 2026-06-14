@@ -155,8 +155,12 @@ body.theme-dark {
 }
 
 .params-editor-table input {
+  display: block;
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   padding: 8px 10px;
+  box-sizing: border-box;
 }
 
 .params-editor-required-checkbox-label {

@@ -651,6 +651,8 @@ async function runWriterSchemaGeneration({ WriterCtor, promptText, domainCommand
         createOptions,
       },
     });
+  } finally {
+    writer.destroy?.();
   }
 }
 
@@ -770,9 +772,9 @@ async function bootstrapWriterSchemaPage({
         WriterCtor,
         promptText,
         domainCommands: schemaDefinitionProps.writerContextDomainCommands,
-      sampleSchemaText: schemaDefinitionProps.sampleSchemaText,
-      onStatus: (message, options = {}) => {
-        setStatus(generationStatusElement, message, options);
+        sampleSchemaText: schemaDefinitionProps.sampleSchemaText,
+        onStatus: (message, options = {}) => {
+          setStatus(generationStatusElement, message, options);
           appendProgressOutput(progressOutputElement, message, documentObj);
           if (typeof options.rawResponseText === 'string') {
             setTextOutput(rawOutputElement, options.rawResponseText, 'No raw Writer response yet.');
@@ -794,8 +796,8 @@ async function bootstrapWriterSchemaPage({
         'No errors yet.'
       );
       setJsonOutput(requestOutputElement, result.requestDetails);
-      schemaComponent.replaceRows?.(result.schemaRows);
       schemaComponent.setTextMode?.(false);
+      schemaComponent.replaceRows?.(result.schemaRows);
       schemaComponent.render?.();
       schemaComponent.syncTextFromRows?.();
 

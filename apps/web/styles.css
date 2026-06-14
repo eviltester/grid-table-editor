@@ -341,7 +341,8 @@ body.theme-dark .dragdropzone {
   margin: 0.75rem 0;
 }
 
-.writer-schema-card button {
+.writer-schema-card__header > button,
+.writer-schema-actions > button {
   border: 0;
   border-radius: 999px;
   background: var(--button-bg);
@@ -352,7 +353,8 @@ body.theme-dark .dragdropzone {
   padding: 0.7rem 1rem;
 }
 
-.writer-schema-card button:disabled {
+.writer-schema-card__header > button:disabled,
+.writer-schema-actions > button:disabled {
   cursor: progress;
   opacity: 0.7;
 }

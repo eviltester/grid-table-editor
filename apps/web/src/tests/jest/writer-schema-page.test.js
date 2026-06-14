@@ -112,6 +112,7 @@ describe('writer schema prototype page', () => {
 
   test('runWriterSchemaGeneration parses structured JSON text returned by Writer', async () => {
     const writer = {
+      destroy: jest.fn(),
       write: jest.fn(async () =>
         JSON.stringify({
           schemaFields: [
@@ -166,6 +167,7 @@ describe('writer schema prototype page', () => {
       { name: 'Genre', sourceType: 'enum', value: '"Fiction","Non-fiction"' },
     ]);
     expect(result.normalizationErrors).toEqual([]);
+    expect(writer.destroy).toHaveBeenCalledTimes(1);
   });
 
   test('bootstrap warns when Writer API support is unavailable', async () => {
@@ -225,6 +227,9 @@ describe('writer schema prototype page', () => {
 
     expect(schemaComponent.replaceRows).toHaveBeenCalledWith(
       expect.arrayContaining([expect.objectContaining({ name: 'Book Title', command: 'commerce.productName' })])
+    );
+    expect(schemaComponent.setTextMode.mock.invocationCallOrder[0]).toBeLessThan(
+      schemaComponent.replaceRows.mock.invocationCallOrder[0]
     );
     expect(schemaComponent.syncTextFromRows).toHaveBeenCalledTimes(1);
     expect(dom.window.document.getElementById('writer-schema-generation-status').textContent).toContain(

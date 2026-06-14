@@ -11,8 +11,14 @@ export default defineConfig({
     alias: [
       { find: /^@anywaydata\/core$/, replacement: path.resolve(__dirname, '../../packages/core/src/index.js') },
       { find: /^@anywaydata\/core\/mcp\/(.*)$/, replacement: path.resolve(__dirname, '../../packages/core/js/mcp/$1') },
-      { find: /^@anywaydata\/core\/faker\/(.*)$/, replacement: path.resolve(__dirname, '../../packages/core/js/faker/$1') },
-      { find: /^@anywaydata\/core\/domain\/(.*)$/, replacement: path.resolve(__dirname, '../../packages/core/js/domain/$1') },
+      {
+        find: /^@anywaydata\/core\/faker\/(.*)$/,
+        replacement: path.resolve(__dirname, '../../packages/core/js/faker/$1'),
+      },
+      {
+        find: /^@anywaydata\/core\/domain\/(.*)$/,
+        replacement: path.resolve(__dirname, '../../packages/core/js/domain/$1'),
+      },
       {
         find: /^@anywaydata\/core\/data_formats\/(.*)$/,
         replacement: path.resolve(__dirname, '../../packages/core/js/data_formats/$1'),
@@ -21,9 +27,18 @@ export default defineConfig({
         find: /^@anywaydata\/core\/data_generation\/(.*)$/,
         replacement: path.resolve(__dirname, '../../packages/core/js/data_generation/$1'),
       },
-      { find: /^@anywaydata\/core\/grid\/(.*)$/, replacement: path.resolve(__dirname, '../../packages/core/js/grid/$1') },
-      { find: /^@anywaydata\/core\/utils\/(.*)$/, replacement: path.resolve(__dirname, '../../packages/core/js/utils/$1') },
-      { find: /^@anywaydata\/core\/libs\/(.*)$/, replacement: path.resolve(__dirname, '../../packages/core/js/libs/$1') },
+      {
+        find: /^@anywaydata\/core\/grid\/(.*)$/,
+        replacement: path.resolve(__dirname, '../../packages/core/js/grid/$1'),
+      },
+      {
+        find: /^@anywaydata\/core\/utils\/(.*)$/,
+        replacement: path.resolve(__dirname, '../../packages/core/js/utils/$1'),
+      },
+      {
+        find: /^@anywaydata\/core\/libs\/(.*)$/,
+        replacement: path.resolve(__dirname, '../../packages/core/js/libs/$1'),
+      },
     ],
   },
   server: {
@@ -44,6 +59,7 @@ export default defineConfig({
         generator: path.resolve(__dirname, 'generator.html'),
         webmcp: path.resolve(__dirname, 'webmcp.html'),
         combinatorial: path.resolve(__dirname, 'combinatorial.html'),
+        writerSchema: path.resolve(__dirname, 'writer-schema.html'),
       },
     },
   },

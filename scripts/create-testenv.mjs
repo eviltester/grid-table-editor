@@ -26,6 +26,7 @@ const ROOT_PAGE_CANONICALS = {
   'generator.html': `${TESTENV_CANONICAL_SITE_URL}/generator.html`,
   'combinatorial.html': `${TESTENV_CANONICAL_SITE_URL}/combinatorial.html`,
   'webmcp.html': `${TESTENV_CANONICAL_SITE_URL}/webmcp.html`,
+  'writer-schema.html': `${TESTENV_CANONICAL_SITE_URL}/writer-schema.html`,
 };
 const TESTENV_INDICATOR_STYLE = `<style data-testenv-indicator>
       body::before {
@@ -245,6 +246,7 @@ Disallow: /app.html
 Disallow: /generator.html
 Disallow: /combinatorial.html
 Disallow: /webmcp.html
+Disallow: /writer-schema.html
 Disallow: /storybook/
 Disallow: /site/
 Disallow: /assets/
@@ -274,6 +276,7 @@ Primary production URLs:
 - ${TESTENV_CANONICAL_SITE_URL}/generator.html
 - ${TESTENV_CANONICAL_SITE_URL}/combinatorial.html
 - ${TESTENV_CANONICAL_SITE_URL}/webmcp.html
+- ${TESTENV_CANONICAL_SITE_URL}/writer-schema.html
 - ${TESTENV_CANONICAL_SITE_URL}/docs/
 `;
 }
@@ -433,7 +436,7 @@ function renderIndexPage({ branchName, commitSha, buildTimestamp }) {
   <body>
     <main>
       <h1>Test Environment</h1>
-      <p>Static build for GitHub Pages-style review, including the main app, generator, combinatorial explorer, Storybook, and a full merged AnyWayData site.</p>
+      <p>Static build for GitHub Pages-style review, including the main app, generator, experimental AI/test surfaces, Storybook, and a full merged AnyWayData site.</p>
       <p class="live-link">Access the live version with docs at <a href="https://anywaydata.com">AnyWayData.com</a>.</p>
       <section class="meta" aria-label="Build metadata">
         <article class="meta-card">
@@ -469,6 +472,11 @@ function renderIndexPage({ branchName, commitSha, buildTimestamp }) {
           <h2>WebMCP</h2>
           <p>The experimental in-browser MCP surface for browser-integrated AI tooling.</p>
           <a href="./webmcp.html">Open webmcp.html</a>
+        </article>
+        <article class="card">
+          <h2>Writer Schema</h2>
+          <p>The experimental Writer API prototype for turning prompts into AnyWayData schemas.</p>
+          <a href="./writer-schema.html">Open writer-schema.html</a>
         </article>
         <article class="card">
           <h2>Storybook</h2>
@@ -577,6 +585,7 @@ async function main() {
   await hideTopHeaderInBuiltPage(path.join(outputDir, 'generator.html'));
   await hideTopHeaderInBuiltPage(path.join(outputDir, 'combinatorial.html'));
   await hideTopHeaderInBuiltPage(path.join(outputDir, 'webmcp.html'));
+  await hideTopHeaderInBuiltPage(path.join(outputDir, 'writer-schema.html'));
 
   await mkdir(fullSiteDir, { recursive: true });
   await createTemporaryDocsAppPlaceholder();
@@ -606,6 +615,9 @@ async function main() {
   });
   await applySeoDirectivesToFile(path.join(fullSiteDir, 'webmcp.html'), {
     canonicalUrl: ROOT_PAGE_CANONICALS['webmcp.html'],
+  });
+  await applySeoDirectivesToFile(path.join(fullSiteDir, 'writer-schema.html'), {
+    canonicalUrl: ROOT_PAGE_CANONICALS['writer-schema.html'],
   });
   await rm(tempWebDir, {
     recursive: true,

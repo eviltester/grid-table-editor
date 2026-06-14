@@ -432,10 +432,10 @@ export const ParamsDialog = {
     storyMinHeight: '820px',
     initialRows: [
       {
-        id: 'enum-row',
-        name: 'Status',
+        id: 'sequence-row',
+        name: 'SequenceId',
         sourceType: 'domain',
-        command: 'datatype.enum',
+        command: 'autoIncrement.sequence',
         params: '',
         value: '',
         comments: '',
@@ -448,7 +448,7 @@ export const ParamsDialog = {
     docs: {
       description: {
         story:
-          'Guided params editing flow for documented command params. This story reserves a taller canvas so the modal stays inside the visible Storybook frame while reviewers open the dialog, fill values through the structured table, and confirm the generated schema params text is applied back to the shared row editor.',
+          'Guided params editing flow for documented command params. This story demonstrates the value-only editor: required state appears as read-only checkboxes, documented defaults are prefilled into the value inputs, and string values are auto-quoted when the generated schema params text is built. The taller canvas keeps the modal inside the visible Storybook frame while reviewers inspect the defaults and apply updated values back into the shared row editor.',
       },
     },
   },
@@ -459,16 +459,19 @@ export const ParamsDialog = {
     expect(paramsButton).not.toBeNull();
     await userEvent.click(paramsButton);
 
-    const dialog = within(document.body).getByRole('dialog', { name: /edit params for .*datatype\.enum/i });
+    const dialog = within(document.body).getByRole('dialog', { name: /edit params for .*autoincrement\.sequence/i });
     const dialogScope = within(dialog);
-    const valuesInput = dialogScope.getByRole('textbox', { name: /values value/i });
-    await userEvent.type(valuesInput, 'active,inactive,pending');
-    await expect(dialogScope.getByText('(active,inactive,pending)')).toBeTruthy();
+    expect(dialog.querySelector('[data-role="params-editor-mode"]')).toBeNull();
+    await expect(dialogScope.getByRole('textbox', { name: /start value/i }).value).toBe('1');
+    await expect(dialogScope.getByRole('textbox', { name: /step value/i }).value).toBe('1');
+    const prefixInput = dialogScope.getByRole('textbox', { name: /prefix value/i });
+    await userEvent.type(prefixInput, 'filename');
+    await expect(dialogScope.getByText('(start=1,step=1,prefix="filename",zeropadding=0)')).toBeTruthy();
     await userEvent.click(dialogScope.getByRole('button', { name: /^apply$/i }));
 
     await waitFor(() =>
       expect(canvasElement.querySelector('.shared-schema-row [data-field="params"]').value).toBe(
-        '(active,inactive,pending)'
+        '(start=1,step=1,prefix="filename",zeropadding=0)'
       )
     );
   },

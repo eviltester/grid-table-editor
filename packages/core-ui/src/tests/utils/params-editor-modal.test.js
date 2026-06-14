@@ -49,6 +49,24 @@ describe('params editor modal', () => {
     ]);
   });
 
+  test('prefills explicit default values when there are no existing params', () => {
+    const parsed = parseInitialParamEntries({
+      params: [
+        { name: 'start', type: 'integer', optional: true, defaultValue: '1' },
+        { name: 'step', type: 'integer', optional: true, defaultValue: '1' },
+        { name: 'zeropadding', type: 'integer', optional: true, defaultValue: '0' },
+      ],
+      initialParams: '',
+    });
+
+    expect(parsed.error).toBe('');
+    expect(parsed.entries).toEqual([
+      expect.objectContaining({ name: 'start', value: '1', defaultValue: '1' }),
+      expect.objectContaining({ name: 'step', value: '1', defaultValue: '1' }),
+      expect.objectContaining({ name: 'zeropadding', value: '0', defaultValue: '0' }),
+    ]);
+  });
+
   test('parses variadic documented params as a single editable list value', () => {
     const parsed = parseInitialParamEntries({
       params: [{ name: 'values', type: 'comma-separated list', optional: false, variadic: true }],
@@ -96,6 +114,34 @@ describe('params editor modal', () => {
     expect(result).toEqual({
       paramsText: '(style=13)',
       errors: ['Row 1: invalid domain params - unsupported option.'],
+    });
+  });
+
+  test('auto quotes string values even when the editor input includes surrounding quotes', () => {
+    const result = buildParamsTextFromEditorEntries({
+      entries: [{ name: 'prefix', type: 'string', value: '"filename"', mode: 'text', optional: true }],
+    });
+
+    expect(result).toEqual({
+      paramsText: '("filename")',
+      errors: [],
+    });
+  });
+
+  test('switches to named params when later values skip optional gaps', () => {
+    const result = buildParamsTextFromEditorEntries({
+      entries: [
+        { name: 'start', type: 'integer', value: '1', mode: 'auto', optional: true },
+        { name: 'step', type: 'integer', value: '1', mode: 'auto', optional: true },
+        { name: 'prefix', type: 'string', value: 'filename', mode: 'auto', optional: true },
+        { name: 'suffix', type: 'string', value: '', mode: 'auto', optional: true },
+        { name: 'zeropadding', type: 'integer', value: '0', mode: 'auto', optional: true },
+      ],
+    });
+
+    expect(result).toEqual({
+      paramsText: '(start=1,step=1,prefix="filename",zeropadding=0)',
+      errors: [],
     });
   });
 
@@ -175,6 +221,44 @@ describe('params editor modal', () => {
 
     expect(warning).toBeNull();
     expect(input.value).toBe('active,inactive,pending');
+
+    fireEvent.click(within(dialog).getByRole('button', { name: /^cancel$/i }));
+    await expect(promise).resolves.toBeNull();
+  });
+
+  test('renders checkbox-based req state and omits the format selector for auto increment defaults', async () => {
+    const promise = openParamsEditorModal({
+      documentObj: document,
+      windowObj: window,
+      commandLabel: 'autoIncrement.sequence',
+      helpModel: {
+        summary: 'Sequence helper',
+        params: [
+          { name: 'start', type: 'integer', optional: true, defaultValue: '1' },
+          { name: 'step', type: 'integer', optional: true, defaultValue: '1' },
+          { name: 'prefix', type: 'string', optional: true, defaultValue: '' },
+          { name: 'suffix', type: 'string', optional: true, defaultValue: '' },
+          { name: 'zeropadding', type: 'integer', optional: true, defaultValue: '0' },
+        ],
+      },
+      initialParams: '',
+    });
+
+    const dialog = within(getOverlay()).getByRole('dialog', { name: /edit params for autoincrement\.sequence/i });
+    const headerCells = Array.from(dialog.querySelectorAll('th')).map((cell) => cell.textContent.trim());
+    expect(headerCells).toEqual(['Name', 'Type', 'Req', 'Value']);
+    expect(dialog.querySelector('[data-role="params-editor-mode"]')).toBeNull();
+
+    const reqBoxes = Array.from(dialog.querySelectorAll('[data-role="params-editor-required"]'));
+    expect(reqBoxes).toHaveLength(5);
+    expect(reqBoxes.every((box) => box.checked === false)).toBe(true);
+
+    const startInput = within(dialog).getByRole('textbox', { name: /start value/i });
+    const zeroPaddingInput = within(dialog).getByRole('textbox', { name: /zeropadding value/i });
+    expect(startInput.value).toBe('1');
+    expect(zeroPaddingInput.value).toBe('0');
+    expect(dialog.textContent).toContain('Default: 1');
+    expect(dialog.textContent).toContain('Default: 0');
 
     fireEvent.click(within(dialog).getByRole('button', { name: /^cancel$/i }));
     await expect(promise).resolves.toBeNull();

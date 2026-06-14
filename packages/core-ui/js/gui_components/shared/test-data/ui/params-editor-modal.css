@@ -81,8 +81,7 @@ body.theme-dark {
 
 .params-editor-close,
 .params-editor-footer button,
-.params-editor-table input,
-.params-editor-table select {
+.params-editor-table input {
   border: 1px solid var(--pe-border, #ddd);
   border-radius: 8px;
   background: var(--pe-bg, #fff);
@@ -155,10 +154,29 @@ body.theme-dark {
   border-bottom: 0;
 }
 
-.params-editor-table input,
-.params-editor-table select {
+.params-editor-table input {
   width: 100%;
   padding: 8px 10px;
+}
+
+.params-editor-required-checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+}
+
+.params-editor-required-checkbox-label input[type='checkbox'] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--pe-accent, #3366ff);
+  cursor: default;
+}
+
+.params-editor-default-hint {
+  margin: 6px 0 0;
+  color: var(--pe-muted, #555);
+  font-size: 12px;
 }
 
 .params-editor-preview-block {
@@ -190,8 +208,7 @@ body.theme-dark {
 }
 
 .params-editor-modal button:focus-visible,
-.params-editor-modal input:focus-visible,
-.params-editor-modal select:focus-visible {
+.params-editor-modal input:focus-visible {
   outline: 2px solid var(--pe-focus, #4a80ff);
   outline-offset: 2px;
 }

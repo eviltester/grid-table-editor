@@ -143,8 +143,10 @@ function parseInitialParamEntries({ params = [], initialParams = '' } = {}) {
         name: param?.name || '',
         type: param?.type || '',
         optional: param?.optional === true,
+        variadic: param?.variadic === true,
         example: param?.example || '',
-        value: '',
+        defaultValue: String(param?.defaultValue ?? ''),
+        value: String(param?.defaultValue ?? ''),
         mode: 'auto',
       })),
       error: '',
@@ -171,7 +173,9 @@ function parseInitialParamEntries({ params = [], initialParams = '' } = {}) {
         name: param?.name || '',
         type: param?.type || '',
         optional: param?.optional === true,
+        variadic: param?.variadic === true,
         example: param?.example || '',
+        defaultValue: String(param?.defaultValue ?? ''),
         value: rawValue ? unquoteValue(rawValue) : '',
         mode: inferEditorMode(rawValue, param?.type || ''),
       };
@@ -200,7 +204,7 @@ function formatEditorValue(value, mode, paramType = '') {
   if (resolvedMode === 'raw') {
     return rawValue.trim();
   }
-  return JSON.stringify(rawValue);
+  return JSON.stringify(unquoteValue(rawValue));
 }
 
 function buildParamsTextFromEditorEntries({ entries = [], validateParams = null } = {}) {
@@ -222,12 +226,25 @@ function buildParamsTextFromEditorEntries({ entries = [], validateParams = null 
     };
   }
 
+  const shouldUseNamedParams = normalizedEntries.slice(0, lastFilledIndex + 1).some((entry, index) => {
+    const trimmedValue = String(entry?.value ?? '').trim();
+    if (trimmedValue || entry?.optional !== true) {
+      return false;
+    }
+    return normalizedEntries
+      .slice(index + 1, lastFilledIndex + 1)
+      .some((laterEntry) => String(laterEntry?.value ?? '').trim().length > 0);
+  });
+
   const formattedValues = [];
   for (let index = 0; index <= lastFilledIndex; index += 1) {
     const entry = normalizedEntries[index] || {};
     const rawValue = String(entry.value ?? '');
     const trimmedValue = rawValue.trim();
     if (!trimmedValue) {
+      if (entry.optional === true && shouldUseNamedParams) {
+        continue;
+      }
       errors.push(`Param ${entry.name || index + 1} must be filled before later params can be used.`);
       continue;
     }
@@ -238,7 +255,10 @@ function buildParamsTextFromEditorEntries({ entries = [], validateParams = null 
         continue;
       }
     }
-    formattedValues.push(formatEditorValue(rawValue, entry.mode || 'auto', entry.type || ''));
+    const formattedValue = formatEditorValue(rawValue, entry.mode || 'auto', entry.type || '');
+    formattedValues.push(
+      shouldUseNamedParams && entry.name && entry.variadic !== true ? `${entry.name}=${formattedValue}` : formattedValue
+    );
   }
 
   const paramsText = formattedValues.length > 0 ? `(${formattedValues.join(',')})` : '';
@@ -262,13 +282,16 @@ function renderEntryRows(entries = []) {
         <tr>
           <td><label for="params-editor-value-${index}"><code>${escapeHtml(entry.name)}</code></label></td>
           <td><code>${escapeHtml(entry.type || 'unknown')}</code></td>
-          <td>${entry.optional ? 'Optional' : 'Required'}</td>
           <td>
-            <select data-role="params-editor-mode" data-index="${index}" aria-label="Format ${escapeHtml(entry.name)}">
-              <option value="auto" ${entry.mode === 'auto' ? 'selected' : ''}>Auto</option>
-              <option value="text" ${entry.mode === 'text' ? 'selected' : ''}>Quote text</option>
-              <option value="raw" ${entry.mode === 'raw' ? 'selected' : ''}>Raw expression</option>
-            </select>
+            <label class="params-editor-required-checkbox-label" aria-label="Required ${escapeHtml(entry.name)}">
+              <input
+                data-role="params-editor-required"
+                data-index="${index}"
+                type="checkbox"
+                ${entry.optional ? '' : 'checked'}
+                disabled
+              />
+            </label>
           </td>
           <td>
             <input
@@ -280,6 +303,11 @@ function renderEntryRows(entries = []) {
               placeholder="${escapeHtml(entry.example || '')}"
               aria-label="${escapeHtml(entry.name)} value"
             />
+            ${
+              entry.defaultValue
+                ? `<p class="params-editor-default-hint">Default: <code>${escapeHtml(entry.defaultValue)}</code></p>`
+                : ''
+            }
           </td>
         </tr>
       `
@@ -331,7 +359,6 @@ function openParamsEditorModal({
                       <th>Name</th>
                       <th>Type</th>
                       <th>Req</th>
-                      <th>Format</th>
                       <th>Value</th>
                     </tr>
                   </thead>
@@ -356,7 +383,6 @@ function openParamsEditorModal({
   const errorElement = overlay.querySelector('[data-role="params-editor-error"]');
   const applyButton = overlay.querySelector('[data-role="params-editor-apply-button"]');
   const valueInputs = () => Array.from(overlay.querySelectorAll('[data-role="params-editor-value"]'));
-  const modeInputs = () => Array.from(overlay.querySelectorAll('[data-role="params-editor-mode"]'));
   const warningVisible = Boolean(parsed.error);
   let currentEntries = parsed.entries.map((entry) => ({ ...entry }));
 
@@ -372,7 +398,6 @@ function openParamsEditorModal({
     currentEntries = currentEntries.map((entry, index) => ({
       ...entry,
       value: valueInputs()[index]?.value ?? entry.value,
-      mode: modeInputs()[index]?.value ?? entry.mode,
     }));
     const result = buildParamsTextFromEditorEntries({
       entries: currentEntries,
@@ -428,7 +453,6 @@ function openParamsEditorModal({
     });
 
     valueInputs().forEach((input) => input.addEventListener('input', syncPreview));
-    modeInputs().forEach((select) => select.addEventListener('change', syncPreview));
 
     documentObj.body.appendChild(overlay);
     syncPreview();

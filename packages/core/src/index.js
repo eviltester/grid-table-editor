@@ -1191,6 +1191,7 @@ export function amendFromTextSpecAndData({
   trimInput = false,
   trimInputFieldsCsv = '',
   unsafeFakerExpressions = false,
+  safeFakerRules = false,
   stream = false,
 } = {}) {
   const errors = [];
@@ -1262,6 +1263,7 @@ export function amendFromTextSpecAndData({
     textSpec,
     seed,
     unsafeFakerExpressions,
+    safeFakerRules,
   });
   if (!session.isValid()) {
     return { ok: false, errors: session.getErrors(), diagnostics: session.diagnostics || {} };

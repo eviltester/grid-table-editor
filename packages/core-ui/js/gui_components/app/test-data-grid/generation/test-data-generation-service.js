@@ -487,8 +487,27 @@ function createTestDataGenerationService({
         return;
       }
 
+      if (
+        generationMode === TEST_DATA_MODES.AMEND_SELECTED &&
+        typeof gridExtras?.getSelectedRowIndexes !== 'function'
+      ) {
+        showSchemaError('Grid interface unavailable.');
+        setTestDataStatus('Unable to access current grid.', { severity: 'error', dismissable: true });
+        return;
+      }
+
+      if (
+        (generationMode === TEST_DATA_MODES.AMEND_TABLE || generationMode === TEST_DATA_MODES.AMEND_SELECTED) &&
+        typeof gridExtras?.applyGeneratedSchemaAmend !== 'function' &&
+        typeof gridExtras?.getGridAsGenericDataTable !== 'function'
+      ) {
+        showSchemaError('Grid interface unavailable.');
+        setTestDataStatus('Unable to access current grid.', { severity: 'error', dismissable: true });
+        return;
+      }
+
       const selectedRowIndexes =
-        generationMode === TEST_DATA_MODES.AMEND_SELECTED ? gridExtras.getSelectedRowIndexes?.() || [] : [];
+        generationMode === TEST_DATA_MODES.AMEND_SELECTED ? gridExtras.getSelectedRowIndexes() || [] : [];
 
       if (generationMode === TEST_DATA_MODES.AMEND_SELECTED && selectedRowIndexes.length === 0) {
         showSchemaError('No rows selected.');

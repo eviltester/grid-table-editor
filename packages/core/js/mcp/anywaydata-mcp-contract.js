@@ -354,10 +354,13 @@ function executeGenerateOrAmendTool(toolName, args = {}) {
     ? {
         ok: false,
         errors: safeSession.getErrors(),
-        diagnostics: {},
+        diagnostics: safeSession.diagnostics || {},
       }
     : toolName === 'amend_data_from_spec'
-      ? amendFromTextSpecAndData(normalizedArgs)
+      ? amendFromTextSpecAndData({
+          ...normalizedArgs,
+          safeFakerRules: true,
+        })
       : normalizedArgs.pairwise
         ? safeSession.generatePairwise({
             rowCount: normalizedArgs.rowCount,

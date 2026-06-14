@@ -295,3 +295,21 @@ test('trimInputFieldsCsv does not trim unlisted or non-exact-match columns', () 
   expect(result.ok).toBe(true);
   expect(result.rows).toEqual([['  Alice  ', '  Engineer  ', '']]);
 });
+
+test('safeFakerRules enforces safe faker validation for amend flows', () => {
+  const result = amendFromTextSpecAndData({
+    textSpec: 'Sentence\nhelpers.mustache("x", {count: () => `${this.number.int()}`})',
+    inputData: '[{"Name":"Alice"}]',
+    inputFormat: 'json',
+    rowCount: 1,
+    outputFormat: 'json',
+    safeFakerRules: true,
+  });
+
+  expect(result.ok).toBe(false);
+  expect(result.errors).toContainEqual(
+    expect.objectContaining({
+      code: 'unsafe_faker_rule',
+    })
+  );
+});

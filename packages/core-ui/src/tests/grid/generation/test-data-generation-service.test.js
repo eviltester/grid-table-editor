@@ -1067,4 +1067,130 @@ describe('test-data-generation-service', () => {
       dismissable: true,
     });
   });
+
+  test('generateTestData surfaces a grid wiring error when amend-selected cannot read selected rows', async () => {
+    const showSchemaError = jest.fn();
+    const setTestDataStatus = jest.fn();
+    const createGenerationSessionFn = jest.fn(() => ({
+      isValid: () => true,
+      getErrors: () => [],
+    }));
+    const generator = {
+      importSpec: jest.fn(),
+      compile: jest.fn(),
+      compiler: { validate: jest.fn() },
+      testDataRules: () => [{}],
+      isValid: () => true,
+      errors: () => [],
+      generateHeadersArray: () => ['Status'],
+      generateRow: () => ['Active'],
+    };
+
+    const service = createTestDataGenerationService({
+      TestDataGeneratorClass: function TestDataGeneratorClass() {
+        return generator;
+      },
+      PairwiseTestDataGeneratorClass: class {},
+      GenericDataTableClass: class {},
+      TEST_DATA_MODES: {
+        NEW_TABLE: 'new-table',
+        AMEND_TABLE: 'amend-table',
+        AMEND_SELECTED: 'amend-selected',
+      },
+      normaliseCount: () => 1,
+      createTableFromGenerator: jest.fn(),
+      createAmendedTable: jest.fn(),
+      schemaRowsToSpec: jest.fn(() => 'Status\nliteral(Active)'),
+      faker: {},
+      RandExp: function RandExp() {},
+      debouncer: { clear: jest.fn() },
+      syncSchemaTextFromGridBeforeGenerate: jest.fn(),
+      setTestDataStatus,
+      setTestDataLoadingStatus: jest.fn(),
+      showSchemaError,
+      yieldToUi: jest.fn(() => Promise.resolve()),
+      validateCurrentSchemaRows: jest.fn(() => ({
+        rows: [{ name: 'Status', sourceType: 'literal', value: 'Active' }],
+        errors: [],
+      })),
+      getImporter: jest.fn(),
+      getTextPreviewRenderer: jest.fn(),
+      getMainGridExtras: () => ({
+        getGridAsGenericDataTable: jest.fn(),
+      }),
+      getGenerationMode: () => 'amend-selected',
+      getRequestedRowCount: () => 1,
+      createGenerationSessionFn,
+    });
+
+    await service.generateTestData();
+
+    expect(showSchemaError).toHaveBeenCalledWith('Grid interface unavailable.');
+    expect(setTestDataStatus).toHaveBeenCalledWith('Unable to access current grid.', {
+      severity: 'error',
+      dismissable: true,
+    });
+  });
+
+  test('generateTestData surfaces a grid wiring error when amend mode has no amend-capable grid contract', async () => {
+    const showSchemaError = jest.fn();
+    const setTestDataStatus = jest.fn();
+    const createGenerationSessionFn = jest.fn(() => ({
+      isValid: () => true,
+      getErrors: () => [],
+    }));
+    const generator = {
+      importSpec: jest.fn(),
+      compile: jest.fn(),
+      compiler: { validate: jest.fn() },
+      testDataRules: () => [{}],
+      isValid: () => true,
+      errors: () => [],
+      generateHeadersArray: () => ['Status'],
+      generateRow: () => ['Active'],
+    };
+
+    const service = createTestDataGenerationService({
+      TestDataGeneratorClass: function TestDataGeneratorClass() {
+        return generator;
+      },
+      PairwiseTestDataGeneratorClass: class {},
+      GenericDataTableClass: class {},
+      TEST_DATA_MODES: {
+        NEW_TABLE: 'new-table',
+        AMEND_TABLE: 'amend-table',
+        AMEND_SELECTED: 'amend-selected',
+      },
+      normaliseCount: () => 1,
+      createTableFromGenerator: jest.fn(),
+      createAmendedTable: jest.fn(),
+      schemaRowsToSpec: jest.fn(() => 'Status\nliteral(Active)'),
+      faker: {},
+      RandExp: function RandExp() {},
+      debouncer: { clear: jest.fn() },
+      syncSchemaTextFromGridBeforeGenerate: jest.fn(),
+      setTestDataStatus,
+      setTestDataLoadingStatus: jest.fn(),
+      showSchemaError,
+      yieldToUi: jest.fn(() => Promise.resolve()),
+      validateCurrentSchemaRows: jest.fn(() => ({
+        rows: [{ name: 'Status', sourceType: 'literal', value: 'Active' }],
+        errors: [],
+      })),
+      getImporter: jest.fn(),
+      getTextPreviewRenderer: jest.fn(),
+      getMainGridExtras: () => ({}),
+      getGenerationMode: () => 'amend-table',
+      getRequestedRowCount: () => 1,
+      createGenerationSessionFn,
+    });
+
+    await service.generateTestData();
+
+    expect(showSchemaError).toHaveBeenCalledWith('Grid interface unavailable.');
+    expect(setTestDataStatus).toHaveBeenCalledWith('Unable to access current grid.', {
+      severity: 'error',
+      dismissable: true,
+    });
+  });
 });

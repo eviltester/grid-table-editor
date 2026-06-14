@@ -1,18 +1,23 @@
 const { expect } = require('@playwright/test');
 
+function escapeRegExp(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 class ParamsEditorDialogComponent {
   constructor(page) {
     this.page = page;
     this.overlay = page.locator('[data-role="params-editor-overlay"]');
-    this.applyButton = this.overlay.locator('[data-role="params-editor-apply-button"]');
+    this.dialog = page.getByRole('dialog', { name: /^edit params for /i });
+    this.applyButton = this.dialog.getByRole('button', { name: /^apply$/i });
   }
 
   async expectOpen() {
-    await expect(this.overlay.locator('[data-role="params-editor-dialog"]')).toBeVisible();
+    await expect(this.dialog).toBeVisible();
   }
 
   valueInput(name) {
-    return this.overlay.getByRole('textbox', { name: new RegExp(`^${name} value$`, 'i') });
+    return this.dialog.getByRole('textbox', { name: new RegExp(`^${escapeRegExp(name)} value$`, 'i') });
   }
 
   async setValue(name, value) {

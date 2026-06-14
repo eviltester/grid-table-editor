@@ -135,7 +135,7 @@ describe('params editor modal', () => {
     });
 
     expect(result).toEqual({
-      paramsText: '("en-GB",["Ada","Bob"])',
+      paramsText: '(locale="en-GB",items=["Ada","Bob"])',
       errors: [],
     });
   });
@@ -148,7 +148,7 @@ describe('params editor modal', () => {
       ],
     });
 
-    expect(result.paramsText).toBe('("later")');
+    expect(result.paramsText).toBe('(second="later")');
     expect(result.errors).toEqual(['Param first must be filled before later params can be used.']);
   });
 
@@ -159,7 +159,7 @@ describe('params editor modal', () => {
     });
 
     expect(result).toEqual({
-      paramsText: '(style=13)',
+      paramsText: '(style=style=13)',
       errors: ['Row 1: invalid domain params - unsupported option.'],
     });
   });
@@ -170,7 +170,7 @@ describe('params editor modal', () => {
     });
 
     expect(result).toEqual({
-      paramsText: '("filename")',
+      paramsText: '(prefix="filename")',
       errors: [],
     });
   });
@@ -212,6 +212,7 @@ describe('params editor modal', () => {
 
     expect(applyButton.disabled).toBe(true);
     expect(error.textContent).toContain('required');
+    expect(error.hidden).toBe(false);
     expect(preview.textContent).toBe('()');
 
     input.value = 'active,inactive,pending';
@@ -219,12 +220,15 @@ describe('params editor modal', () => {
 
     expect(applyButton.disabled).toBe(false);
     expect(error.textContent).toBe('');
+    expect(error.hidden).toBe(true);
     expect(
-      within(dialog).getByText('(active,inactive,pending)', { selector: '[data-role="params-editor-preview"]' })
+      within(dialog).getByText('(values=active,inactive,pending)', {
+        selector: '[data-role="params-editor-preview"]',
+      })
     ).toBeTruthy();
 
     fireEvent.click(applyButton);
-    await expect(promise).resolves.toBe('(active,inactive,pending)');
+    await expect(promise).resolves.toBe('(values=active,inactive,pending)');
   });
 
   test('shows a warning when existing params cannot be mapped to the documented fields', async () => {
@@ -241,9 +245,12 @@ describe('params editor modal', () => {
 
     const dialog = within(getOverlay()).getByRole('dialog', { name: /edit params for food\.ingredient/i });
     const warning = dialog.querySelector('[data-role="params-editor-warning"]');
+    const error = dialog.querySelector('[data-role="params-editor-error"]');
     const applyButton = within(dialog).getByRole('button', { name: /^apply$/i });
 
     expect(warning.textContent).toContain('documented fields');
+    expect(error.textContent).toBe('');
+    expect(error.hidden).toBe(true);
     expect(applyButton.disabled).toBe(true);
 
     fireEvent.click(within(dialog).getByRole('button', { name: /^cancel$/i }));
@@ -353,6 +360,95 @@ describe('params editor modal', () => {
     expect(helpIcons[1].getAttribute('data-help-text')).toContain('Optional.');
     expect(helpIcons[1].getAttribute('data-help-text')).toContain('Default: 10');
     expect(helpIcons[1].getAttribute('data-help-text')).toContain('<code>100</code>');
+
+    fireEvent.click(within(dialog).getByRole('button', { name: /^cancel$/i }));
+    await expect(promise).resolves.toBeNull();
+  });
+
+  test('adds command-level tooltip help next to the command label', async () => {
+    const promise = openParamsEditorModal({
+      documentObj: document,
+      windowObj: window,
+      commandLabel: 'number.int',
+      helpModel: {
+        heading: 'faker.number.int',
+        summary: 'Generates an integer within the configured range.',
+        docsUrl: 'https://example.com/docs/number-int',
+        params: [{ name: 'min', type: 'integer', optional: true }],
+      },
+      initialParams: '',
+    });
+
+    const dialog = within(getOverlay()).getByRole('dialog', { name: /edit params for number\.int/i });
+    const commandHelpIcon = dialog.querySelector('[data-role="params-editor-command-help"]');
+
+    expect(commandHelpIcon).toBeTruthy();
+    expect(commandHelpIcon.getAttribute('data-help-text')).toContain('<strong>faker.number.int</strong>');
+    expect(commandHelpIcon.getAttribute('data-help-text')).toContain(
+      'Generates an integer within the configured range.'
+    );
+    expect(commandHelpIcon.getAttribute('data-help-text')).toContain('https://example.com/docs/number-int');
+
+    fireEvent.click(within(dialog).getByRole('button', { name: /^cancel$/i }));
+    await expect(promise).resolves.toBeNull();
+  });
+
+  test('renders boolean params as radios instead of a text input and applies false', async () => {
+    const promise = openParamsEditorModal({
+      documentObj: document,
+      windowObj: window,
+      commandLabel: 'awd.domain.location.direction',
+      helpModel: {
+        summary: 'Returns a random direction.',
+        params: [{ name: 'abbreviated', type: 'boolean', optional: true }],
+      },
+      initialParams: '',
+    });
+
+    const dialog = within(getOverlay()).getByRole('dialog', {
+      name: /edit params for awd\.domain\.location\.direction/i,
+    });
+
+    expect(within(dialog).queryByRole('textbox', { name: /abbreviated value/i })).toBeNull();
+
+    const unsetRadio = within(dialog).getByRole('radio', { name: /unset/i });
+    const trueRadio = within(dialog).getByRole('radio', { name: /true/i });
+    const falseRadio = within(dialog).getByRole('radio', { name: /false/i });
+
+    expect(unsetRadio.checked).toBe(true);
+    expect(trueRadio.checked).toBe(false);
+    expect(falseRadio.checked).toBe(false);
+
+    fireEvent.click(falseRadio);
+
+    expect(
+      within(dialog).getByText('(abbreviated=false)', {
+        selector: '[data-role="params-editor-preview"]',
+      })
+    ).toBeTruthy();
+
+    fireEvent.click(within(dialog).getByRole('button', { name: /^apply$/i }));
+    await expect(promise).resolves.toBe('(abbreviated=false)');
+  });
+
+  test('prefills required boolean params from existing values', async () => {
+    const promise = openParamsEditorModal({
+      documentObj: document,
+      windowObj: window,
+      commandLabel: 'datatype.boolean',
+      helpModel: {
+        summary: 'Boolean helper',
+        params: [{ name: 'strict', type: 'boolean', optional: false }],
+      },
+      initialParams: '(true)',
+    });
+
+    const dialog = within(getOverlay()).getByRole('dialog', { name: /edit params for datatype\.boolean/i });
+    const trueRadio = within(dialog).getByRole('radio', { name: /true/i });
+    const falseRadio = within(dialog).getByRole('radio', { name: /false/i });
+
+    expect(trueRadio.checked).toBe(true);
+    expect(falseRadio.checked).toBe(false);
 
     fireEvent.click(within(dialog).getByRole('button', { name: /^cancel$/i }));
     await expect(promise).resolves.toBeNull();

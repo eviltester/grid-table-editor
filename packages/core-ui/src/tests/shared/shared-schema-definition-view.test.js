@@ -444,7 +444,7 @@ IF [Priority] = "high" THEN [Status] = "open" ENDIF`;
     await Promise.resolve();
     await Promise.resolve();
 
-    expect(document.querySelector('[data-field="params"]').value).toBe('(active,inactive,pending)');
-    expect(component.getSchemaText()).toContain('enum(active,inactive,pending)');
+    expect(document.querySelector('[data-field="params"]').value).toBe('(values=active,inactive,pending)');
+    expect(component.getSchemaText()).toContain('enum(values=active,inactive,pending)');
   });
 });

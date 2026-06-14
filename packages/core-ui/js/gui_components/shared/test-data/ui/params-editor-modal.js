@@ -344,23 +344,13 @@ function buildParamsTextFromEditorEntries({ entries = [], validateParams = null 
     };
   }
 
-  const shouldUseNamedParams = normalizedEntries.slice(0, lastFilledIndex + 1).some((entry, index) => {
-    const trimmedValue = String(entry?.value ?? '').trim();
-    if (trimmedValue || entry?.optional !== true) {
-      return false;
-    }
-    return normalizedEntries
-      .slice(index + 1, lastFilledIndex + 1)
-      .some((laterEntry) => String(laterEntry?.value ?? '').trim().length > 0);
-  });
-
   const formattedValues = [];
   for (let index = 0; index <= lastFilledIndex; index += 1) {
     const entry = normalizedEntries[index] || {};
     const rawValue = String(entry.value ?? '');
     const trimmedValue = rawValue.trim();
     if (!trimmedValue) {
-      if (entry.optional === true && shouldUseNamedParams) {
+      if (entry.optional === true) {
         continue;
       }
       errors.push(`Param ${entry.name || index + 1} must be filled before later params can be used.`);
@@ -374,9 +364,7 @@ function buildParamsTextFromEditorEntries({ entries = [], validateParams = null 
       }
     }
     const formattedValue = formatEditorValue(rawValue, entry.mode || 'auto', entry.type || '');
-    formattedValues.push(
-      shouldUseNamedParams && entry.name && entry.variadic !== true ? `${entry.name}=${formattedValue}` : formattedValue
-    );
+    formattedValues.push(entry.name && entry.variadic !== true ? `${entry.name}=${formattedValue}` : formattedValue);
   }
 
   const paramsText = formattedValues.length > 0 ? `(${formattedValues.join(',')})` : '';
@@ -456,15 +444,119 @@ function buildParamHelpHtml(entry = {}) {
   return sections.join('');
 }
 
+function buildCommandHelpHtml(helpModel = {}, commandLabel = '') {
+  const title = String(helpModel.heading || commandLabel || 'Command').trim();
+  const description = String(helpModel.summary || helpModel.description || '').trim();
+  const docsUrl = String(helpModel.docsUrl || '').trim();
+  const sections = [`<p><strong>${escapeHtml(title)}</strong></p>`];
+
+  if (description) {
+    sections.push(`<p>${escapeHtml(description)}</p>`);
+  }
+
+  if (docsUrl) {
+    sections.push(
+      `<p><a class="helplink" href="${escapeHtml(docsUrl)}" target="_blank" rel="noopener noreferrer">Learn more</a></p>`
+    );
+  }
+
+  return sections.join('');
+}
+
+function isBooleanParamType(paramType = '') {
+  return /\b(bool|boolean)\b/iu.test(String(paramType || ''));
+}
+
+function renderValueEditor(entry, index) {
+  if (isBooleanParamType(entry.type || '')) {
+    const value = String(entry.value ?? '')
+      .trim()
+      .toLowerCase();
+    const radioName = `params-editor-boolean-${index}`;
+    const hasUnsetOption = entry.optional === true;
+
+    return `
+      <fieldset class="params-editor-boolean-group" data-role="params-editor-boolean-group">
+        <legend class="params-editor-boolean-legend sr-only">${escapeHtml(entry.name)} value</legend>
+        ${
+          hasUnsetOption
+            ? `<label class="params-editor-boolean-option">
+                <input
+                  type="radio"
+                  name="${radioName}"
+                  data-role="params-editor-boolean"
+                  data-index="${index}"
+                  value=""
+                  ${value !== 'true' && value !== 'false' ? 'checked' : ''}
+                />
+                <span>Unset</span>
+              </label>`
+            : ''
+        }
+        <label class="params-editor-boolean-option">
+          <input
+            type="radio"
+            name="${radioName}"
+            data-role="params-editor-boolean"
+            data-index="${index}"
+            value="true"
+            ${value === 'true' ? 'checked' : ''}
+          />
+          <span>True</span>
+        </label>
+        <label class="params-editor-boolean-option">
+          <input
+            type="radio"
+            name="${radioName}"
+            data-role="params-editor-boolean"
+            data-index="${index}"
+            value="false"
+            ${value === 'false' ? 'checked' : ''}
+          />
+          <span>False</span>
+        </label>
+      </fieldset>
+    `;
+  }
+
+  return `
+    <input
+      id="params-editor-value-${index}"
+      data-role="params-editor-value"
+      data-index="${index}"
+      type="text"
+      value="${escapeHtml(entry.value)}"
+      placeholder="${escapeHtml(entry.example || '')}"
+      aria-label="${escapeHtml(entry.name)} value"
+    />
+  `;
+}
+
+function readRenderedEntryValue(rootElement, entry, index) {
+  if (isBooleanParamType(entry?.type || '')) {
+    const checkedBooleanOption = rootElement.querySelector(
+      `[data-role="params-editor-boolean"][data-index="${index}"]:checked`
+    );
+    return checkedBooleanOption?.value ?? '';
+  }
+
+  return (
+    rootElement.querySelector(`[data-role="params-editor-value"][data-index="${index}"]`)?.value ?? entry?.value ?? ''
+  );
+}
+
 function renderEntryRows(entries = []) {
   return entries
     .map((entry, index) => {
       const helpHtml = buildParamHelpHtml(entry);
+      const nameLabel = isBooleanParamType(entry.type || '')
+        ? `<code>${escapeHtml(entry.name)}</code>`
+        : `<label for="params-editor-value-${index}"><code>${escapeHtml(entry.name)}</code></label>`;
       return `
         <tr>
           <td>
             <div class="params-editor-name-cell">
-              <label for="params-editor-value-${index}"><code>${escapeHtml(entry.name)}</code></label>
+              ${nameLabel}
               <span
                 class="helpicon params-editor-help-icon"
                 data-role="params-editor-param-help"
@@ -487,15 +579,7 @@ function renderEntryRows(entries = []) {
             </label>
           </td>
           <td>
-            <input
-              id="params-editor-value-${index}"
-              data-role="params-editor-value"
-              data-index="${index}"
-              type="text"
-              value="${escapeHtml(entry.value)}"
-              placeholder="${escapeHtml(entry.example || '')}"
-              aria-label="${escapeHtml(entry.name)} value"
-            />
+            ${renderValueEditor(entry, index)}
             ${
               entry.defaultValue
                 ? `<p class="params-editor-default-hint">Default: <code>${escapeHtml(entry.defaultValue)}</code></p>`
@@ -529,6 +613,7 @@ function openParamsEditorModal({
   const overlay = documentObj.createElement('div');
   overlay.className = 'params-editor-overlay';
   overlay.setAttribute('data-role', 'params-editor-overlay');
+  const commandHelpHtml = buildCommandHelpHtml(helpModel, commandLabel);
   overlay.innerHTML = `
     <div class="params-editor-modal" data-role="params-editor-dialog" role="dialog" aria-modal="true" aria-label="${escapeHtml(
       `Edit params for ${commandLabel}`
@@ -536,7 +621,20 @@ function openParamsEditorModal({
       <header class="params-editor-header">
         <div>
           <h3>Edit Params</h3>
-          <p class="params-editor-subtitle">${escapeHtml(commandLabel)}</p>
+          <div class="params-editor-subtitle-row">
+            <p class="params-editor-subtitle">${escapeHtml(commandLabel)}</p>
+            ${
+              commandHelpHtml
+                ? `<span
+                    class="helpicon params-editor-help-icon"
+                    data-role="params-editor-command-help"
+                    data-help-role="help-icon"
+                    data-help="params-editor-command-help"
+                    data-help-text="${escapeHtml(commandHelpHtml)}"
+                  ></span>`
+                : ''
+            }
+          </div>
         </div>
         <button type="button" class="params-editor-close" data-role="params-editor-close-button" aria-label="Close">×</button>
       </header>
@@ -576,6 +674,7 @@ function openParamsEditorModal({
   const errorElement = overlay.querySelector('[data-role="params-editor-error"]');
   const applyButton = overlay.querySelector('[data-role="params-editor-apply-button"]');
   const valueInputs = () => Array.from(overlay.querySelectorAll('[data-role="params-editor-value"]'));
+  const booleanInputs = () => Array.from(overlay.querySelectorAll('[data-role="params-editor-boolean"]'));
   const helpTooltipService = createHelpTooltipService({
     documentObj,
     windowObj,
@@ -587,10 +686,16 @@ function openParamsEditorModal({
   const warningVisible = Boolean(parsed.error);
   let currentEntries = parsed.entries.map((entry) => ({ ...entry }));
 
+  function setErrorMessage(message = '') {
+    const resolvedMessage = String(message || '');
+    errorElement.textContent = resolvedMessage;
+    errorElement.hidden = resolvedMessage.length === 0;
+  }
+
   function syncPreview() {
     if (warningVisible) {
       previewElement.textContent = initialParams || '';
-      errorElement.textContent = parsed.error;
+      setErrorMessage('');
       applyButton.disabled = true;
       applyButton.setAttribute('aria-disabled', 'true');
       return;
@@ -598,14 +703,14 @@ function openParamsEditorModal({
 
     currentEntries = currentEntries.map((entry, index) => ({
       ...entry,
-      value: valueInputs()[index]?.value ?? entry.value,
+      value: readRenderedEntryValue(overlay, entry, index),
     }));
     const result = buildParamsTextFromEditorEntries({
       entries: currentEntries,
       validateParams,
     });
     previewElement.textContent = result.paramsText || '()';
-    errorElement.textContent = result.errors[0] || '';
+    setErrorMessage(result.errors[0] || '');
     const hasErrors = result.errors.length > 0;
     applyButton.disabled = hasErrors;
     applyButton.setAttribute('aria-disabled', hasErrors ? 'true' : 'false');
@@ -655,11 +760,12 @@ function openParamsEditorModal({
     });
 
     valueInputs().forEach((input) => input.addEventListener('input', syncPreview));
+    booleanInputs().forEach((input) => input.addEventListener('change', syncPreview));
 
     documentObj.body.appendChild(overlay);
     helpTooltipService.update();
     syncPreview();
-    const firstInput = valueInputs()[0];
+    const firstInput = valueInputs()[0] || booleanInputs()[0];
     const focusFn = windowObj?.requestAnimationFrame?.bind(windowObj) || windowObj?.setTimeout?.bind(windowObj);
     focusFn?.(() => firstInput?.focus?.());
   });

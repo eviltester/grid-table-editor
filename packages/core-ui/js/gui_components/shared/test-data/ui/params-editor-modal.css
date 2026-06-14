@@ -79,9 +79,16 @@ body.theme-dark {
   color: var(--pe-muted, #555);
 }
 
+.params-editor-subtitle-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
 .params-editor-close,
 .params-editor-footer button,
-.params-editor-table input {
+[data-role='params-editor-value'] {
   border: 1px solid var(--pe-border, #ddd);
   border-radius: 8px;
   background: var(--pe-bg, #fff);
@@ -121,6 +128,10 @@ body.theme-dark {
 .params-editor-error {
   color: var(--pe-error, #b42318);
   background: var(--pe-error-soft, #fef3f2);
+}
+
+.params-editor-error[hidden] {
+  display: none;
 }
 
 .params-editor-table-wrap {
@@ -164,13 +175,25 @@ body.theme-dark {
   flex: 0 0 auto;
 }
 
-.params-editor-table input {
+[data-role='params-editor-value'] {
   display: block;
   width: 100%;
   max-width: 100%;
   min-width: 0;
   padding: 8px 10px;
   box-sizing: border-box;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .params-editor-required-checkbox-label {
@@ -191,6 +214,29 @@ body.theme-dark {
   margin: 6px 0 0;
   color: var(--pe-muted, #555);
   font-size: 12px;
+}
+
+.params-editor-boolean-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  min-height: 38px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.params-editor-boolean-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 38px;
+  color: var(--pe-text, #111);
+}
+
+.params-editor-boolean-option input[type='radio'] {
+  margin: 0;
+  accent-color: var(--pe-accent, #3366ff);
 }
 
 .params-editor-preview-block {

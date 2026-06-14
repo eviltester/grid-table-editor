@@ -177,6 +177,9 @@ function createSharedSchemaEditorController({
     if (!command) {
       return null;
     }
+    if (typeof getMethodPickerOptions !== 'function') {
+      return null;
+    }
     const sourceType = normaliseSourceType(row?.sourceType);
     return (getMethodPickerOptions(command) || []).find(
       (option) =>
@@ -581,7 +584,8 @@ function createSharedSchemaEditorController({
             syncTextFromRows();
             scheduleSemanticValidationForRow(rowId, { immediate: true });
           }
-        } catch {
+        } catch (error) {
+          console.error('Failed opening schema method picker.', error);
           return;
         }
       }
@@ -594,8 +598,8 @@ function createSharedSchemaEditorController({
       const index = session.getRows().findIndex((entry) => entry.id === rowId);
       if (index >= 0) {
         const row = session.getRows()[index];
-        const methodOption = getMethodOptionForRow(row);
         try {
+          const methodOption = getMethodOptionForRow(row);
           const paramsText = await openParamsEditorModal({
             documentObj,
             windowObj: resolveWindowObj(null, documentObj),
@@ -615,7 +619,8 @@ function createSharedSchemaEditorController({
             syncTextFromRows();
             scheduleSemanticValidationForRow(rowId, { immediate: true });
           }
-        } catch {
+        } catch (error) {
+          console.error('Failed opening params editor dialog.', error);
           return;
         }
       }

@@ -1,5 +1,6 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
+import { fireEvent, within } from '@testing-library/dom';
 import * as schemaControllerExports from '../../../js/gui_components/shared/test-data/schema/schema-controller.js';
 import * as schemaEditorCoreExports from '../../../js/gui_components/shared/test-data/schema/schema-editor-core.js';
 import { createSharedSchemaEditorController } from '../../../js/gui_components/shared/test-data/schema/shared-schema-editor-controller.js';
@@ -145,14 +146,110 @@ describe('createSharedSchemaEditorController', () => {
     const paramsButton = dom.window.document.querySelector('[data-action="edit-params"]');
     const dialogPromise = controller.handleClick({ target: paramsButton });
 
-    const dialog = dom.window.document.querySelector('[data-role="params-editor-dialog"]');
+    const dialog = within(dom.window.document.body).getByRole('dialog', { name: /edit params for datatype\.enum/i });
     expect(dialog).not.toBeNull();
-    const paramsInput = dialog.querySelector('[data-role="params-editor-value"]');
+    const paramsInput = within(dialog).getByRole('textbox', { name: /values value/i });
     paramsInput.value = 'active,inactive,pending';
-    paramsInput.dispatchEvent(new dom.window.Event('input', { bubbles: true }));
-    dialog.querySelector('[data-role="params-editor-apply-button"]').click();
+    fireEvent.input(paramsInput);
+    fireEvent.click(within(dialog).getByRole('button', { name: /^apply$/i }));
 
     await dialogPromise;
-    expect(dom.window.document.querySelector('[data-field="params"]').value).toBe('(active,inactive,pending)');
+    expect(dom.window.document.querySelector('[data-field="params"]').value).toBe('(values=active,inactive,pending)');
+  });
+
+  test('logs unexpected params editor failures instead of silently swallowing them', async () => {
+    const root = createRoot(dom.window.document);
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    const controller = createSharedSchemaEditorController({
+      documentObj: dom.window.document,
+      rootElement: root,
+      createBlankRow: () => ({
+        id: 'row-1',
+        name: 'Status',
+        sourceType: 'domain',
+        command: 'datatype.enum',
+        value: '',
+        params: '',
+        semanticValidationIssues: [],
+      }),
+      mapRuleToRow: () => ({
+        id: 'row-1',
+        name: 'Status',
+        sourceType: 'domain',
+        command: 'datatype.enum',
+        value: '',
+        params: '',
+        semanticValidationIssues: [],
+      }),
+      schemaTextToDataRules: jest.fn(() => ({ dataRules: [], errors: [] })),
+      dataRulesToSchemaText: jest.fn(() => ''),
+      getMethodPickerOptions: () => {
+        throw new Error('boom from params dialog');
+      },
+      getVisibleDomainCommands: () => ['datatype.enum'],
+      validateSchemaRows: jest.fn((rows) => ({ rows, errors: [] })),
+      updatePairwiseButtonVisibility: jest.fn(),
+      updateHelpHints: jest.fn(),
+    });
+
+    controller.init();
+    const paramsButton = dom.window.document.querySelector('[data-action="edit-params"]');
+
+    await controller.handleClick({ target: paramsButton });
+
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      'Failed opening params editor dialog.',
+      expect.objectContaining({ message: 'boom from params dialog' })
+    );
+    expect(dom.window.document.querySelector('[data-field="params"]').value).toBe('');
+  });
+
+  test('still opens the params dialog safely when getMethodPickerOptions is not a function', async () => {
+    const root = createRoot(dom.window.document);
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    const controller = createSharedSchemaEditorController({
+      documentObj: dom.window.document,
+      rootElement: root,
+      createBlankRow: () => ({
+        id: 'row-1',
+        name: 'Status',
+        sourceType: 'domain',
+        command: 'datatype.enum',
+        value: '',
+        params: '',
+        semanticValidationIssues: [],
+      }),
+      mapRuleToRow: () => ({
+        id: 'row-1',
+        name: 'Status',
+        sourceType: 'domain',
+        command: 'datatype.enum',
+        value: '',
+        params: '',
+        semanticValidationIssues: [],
+      }),
+      schemaTextToDataRules: jest.fn(() => ({ dataRules: [], errors: [] })),
+      dataRulesToSchemaText: jest.fn(() => ''),
+      getMethodPickerOptions: undefined,
+      getVisibleDomainCommands: () => ['datatype.enum'],
+      validateSchemaRows: jest.fn((rows) => ({ rows, errors: [] })),
+      updatePairwiseButtonVisibility: jest.fn(),
+      updateHelpHints: jest.fn(),
+    });
+
+    controller.init();
+    const paramsButton = dom.window.document.querySelector('[data-action="edit-params"]');
+
+    const dialogPromise = controller.handleClick({ target: paramsButton });
+
+    const dialog = within(dom.window.document.body).getByRole('dialog', { name: /edit params for datatype\.enum/i });
+    expect(dialog).not.toBeNull();
+    expect(dom.window.document.querySelector('[data-field="params"]').value).toBe('');
+    expect(consoleErrorSpy).not.toHaveBeenCalled();
+
+    fireEvent.click(within(dialog).getByRole('button', { name: /^cancel$/i }));
+    await expect(dialogPromise).resolves.toBeUndefined();
   });
 });

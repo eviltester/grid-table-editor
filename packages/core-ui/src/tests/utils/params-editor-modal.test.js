@@ -84,6 +84,48 @@ describe('params editor modal', () => {
     ]);
   });
 
+  test('maps named params to matching documented fields instead of positional slots', () => {
+    const parsed = parseInitialParamEntries({
+      params: [
+        { name: 'start', type: 'string|number', optional: true },
+        { name: 'step', type: 'number', optional: true, defaultValue: '1' },
+        { name: 'type', type: 'string', optional: true },
+        { name: 'outputFormat', type: 'string', optional: true },
+        { name: 'inputFormat', type: 'string', optional: true },
+      ],
+      initialParams: '(step=10,outputFormat="YYYY-MM-DD")',
+    });
+
+    expect(parsed.error).toBe('');
+    expect(parsed.entries).toEqual([
+      expect.objectContaining({ name: 'start', value: '' }),
+      expect.objectContaining({ name: 'step', value: '10' }),
+      expect.objectContaining({ name: 'type', value: '' }),
+      expect.objectContaining({ name: 'outputFormat', value: 'YYYY-MM-DD' }),
+      expect.objectContaining({ name: 'inputFormat', value: '' }),
+    ]);
+  });
+
+  test('supports mixed positional and named params in the same invocation', () => {
+    const parsed = parseInitialParamEntries({
+      params: [
+        { name: 'start', type: 'string|number', optional: true },
+        { name: 'step', type: 'number', optional: true },
+        { name: 'type', type: 'string', optional: true },
+        { name: 'outputFormat', type: 'string', optional: true },
+      ],
+      initialParams: '("2026-06-12T12:39:23Z",step=15,outputFormat="yyyy-MM-dd")',
+    });
+
+    expect(parsed.error).toBe('');
+    expect(parsed.entries).toEqual([
+      expect.objectContaining({ name: 'start', value: '2026-06-12T12:39:23Z' }),
+      expect.objectContaining({ name: 'step', value: '15' }),
+      expect.objectContaining({ name: 'type', value: '' }),
+      expect.objectContaining({ name: 'outputFormat', value: 'yyyy-MM-dd' }),
+    ]);
+  });
+
   test('builds params text using auto quoting and raw array preservation', () => {
     const result = buildParamsTextFromEditorEntries({
       entries: [

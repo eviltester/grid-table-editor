@@ -100,6 +100,47 @@ function splitTopLevelCommaSeparated(text) {
   return { values: items.filter((item, index, array) => item.length > 0 || index < array.length - 1), error: '' };
 }
 
+function splitTopLevelNamedAssignment(text) {
+  const value = String(text ?? '').trim();
+  let quote = '';
+  let depthParen = 0;
+  let depthBracket = 0;
+  let depthBrace = 0;
+
+  for (let index = 0; index < value.length; index += 1) {
+    const char = value[index];
+    const previous = value[index - 1];
+
+    if (quote) {
+      if (char === quote && previous !== '\\') {
+        quote = '';
+      }
+      continue;
+    }
+
+    if (char === '"' || char === "'") {
+      quote = char;
+      continue;
+    }
+
+    if (char === '(') depthParen += 1;
+    if (char === ')') depthParen -= 1;
+    if (char === '[') depthBracket += 1;
+    if (char === ']') depthBracket -= 1;
+    if (char === '{') depthBrace += 1;
+    if (char === '}') depthBrace -= 1;
+
+    if (char === '=' && depthParen === 0 && depthBracket === 0 && depthBrace === 0) {
+      return {
+        name: value.slice(0, index).trim(),
+        rawValue: value.slice(index + 1).trim(),
+      };
+    }
+  }
+
+  return null;
+}
+
 function unquoteValue(value) {
   const trimmed = String(value ?? '').trim();
   if (trimmed.length < 2) {
@@ -177,7 +218,54 @@ function parseInitialParamEntries({ params = [], initialParams = '' } = {}) {
   if (split.error) {
     return { entries: [], error: split.error };
   }
-  if (split.values.length > metadata.length && !hasVariadicTail) {
+  const namedParamIndex = new Map(
+    metadata
+      .map((param, index) => [
+        String(param?.name || '')
+          .trim()
+          .toLowerCase(),
+        index,
+      ])
+      .filter(([name]) => Boolean(name))
+  );
+  const assignedValues = new Array(metadata.length).fill('');
+  const explicitlyAssigned = new Set();
+  const positionalValues = [];
+
+  split.values.forEach((value) => {
+    const namedAssignment = splitTopLevelNamedAssignment(value);
+    const paramIndex = namedAssignment ? namedParamIndex.get(namedAssignment.name.toLowerCase()) : undefined;
+    if (namedAssignment && paramIndex !== undefined) {
+      assignedValues[paramIndex] = namedAssignment.rawValue;
+      explicitlyAssigned.add(paramIndex);
+      return;
+    }
+    positionalValues.push(value);
+  });
+
+  if (positionalValues.length > metadata.length && !hasVariadicTail) {
+    return {
+      entries: [],
+      error:
+        'Current params use more values than the documented fields. Edit the raw params text directly for this command.',
+    };
+  }
+
+  let positionalCursor = 0;
+  metadata.forEach((param, index) => {
+    if (explicitlyAssigned.has(index)) {
+      return;
+    }
+    if (hasVariadicTail && index === variadicIndex) {
+      assignedValues[index] = positionalValues.slice(positionalCursor).join(',');
+      positionalCursor = positionalValues.length;
+      return;
+    }
+    assignedValues[index] = positionalValues[positionalCursor] || '';
+    positionalCursor += 1;
+  });
+
+  if (positionalCursor < positionalValues.length && !hasVariadicTail) {
     return {
       entries: [],
       error:
@@ -187,8 +275,7 @@ function parseInitialParamEntries({ params = [], initialParams = '' } = {}) {
 
   return {
     entries: metadata.map((param, index) => {
-      const rawValue =
-        hasVariadicTail && index === variadicIndex ? split.values.slice(index).join(',') : split.values[index] || '';
+      const rawValue = assignedValues[index] || '';
       return {
         name: param?.name || '',
         type: param?.type || '',

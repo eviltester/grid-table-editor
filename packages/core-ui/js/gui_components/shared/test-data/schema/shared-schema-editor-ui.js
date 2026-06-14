@@ -144,7 +144,7 @@ function renderSharedSchemaRows({
                           aria-label="Edit params for ${escapeHtml(row.command || 'selected command')}"
                           title="${hasDocumentedParams ? 'Edit params in dialog' : 'No documented params available'}"
                           ${hasDocumentedParams ? '' : 'disabled'}
-                        >${renderIconHtml('settings')}</button>
+                        >${renderIconHtml('pencil')}</button>
                       </div>`
                     : `<input type="text" data-field="value" placeholder="Value / Regex" value="${escapeHtml(row.value)}">`
                 }

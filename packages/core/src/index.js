@@ -190,43 +190,59 @@ function createImporter() {
   });
 }
 
-function createScopedFaker(seed) {
-  const scopedFaker = new Faker({ locale: faker.rawDefinitions });
-  if (typeof seed === 'number') {
+function createScopedFaker(seed, fakerOverride) {
+  const scopedFaker = fakerOverride || new Faker({ locale: faker.rawDefinitions });
+  if (typeof seed === 'number' && typeof scopedFaker?.seed === 'function') {
     scopedFaker.seed(seed);
   }
   return scopedFaker;
 }
 
-function parseAndCompileSchema({
-  textSpec,
-  fakerInstance,
-  unsafeFakerExpressions = false,
-  rowCount,
-  outputFormat = DEFAULT_FORMAT,
-} = {}) {
-  const errors = [];
-  if (typeof textSpec !== 'string' || textSpec.trim().length === 0) {
-    errors.push(CoreGenerationErrors.invalidTextSpecRequired());
-  }
-
-  const safeRowCount = Number.parseInt(rowCount, 10);
-  if (!Number.isInteger(safeRowCount) || safeRowCount < 0) {
-    errors.push(CoreGenerationErrors.invalidRowCountRequired());
-  }
-
+function validateSupportedOutputFormat(outputFormat = DEFAULT_FORMAT) {
   if (!SUPPORTED_FORMATS.includes(outputFormat)) {
-    errors.push(CoreGenerationErrors.invalidOutputFormat(SUPPORTED_FORMATS));
+    return {
+      ok: false,
+      errors: [CoreGenerationErrors.invalidOutputFormat(SUPPORTED_FORMATS)],
+      diagnostics: { supportedFormats: SUPPORTED_FORMATS },
+    };
   }
 
-  if (errors.length > 0) {
-    return { ok: false, errors, diagnostics: { supportedFormats: SUPPORTED_FORMATS } };
+  return { ok: true };
+}
+
+function compileGenerationState({
+  textSpec,
+  seed,
+  unsafeFakerExpressions = false,
+  safeFakerRules = false,
+  fakerInstance,
+  RandExpClass = RandExp,
+} = {}) {
+  if (typeof textSpec !== 'string' || textSpec.trim().length === 0) {
+    return { ok: false, errors: [CoreGenerationErrors.invalidTextSpecRequired()], diagnostics: {} };
   }
 
+  if (safeFakerRules) {
+    const safeValidation = validateSafeFakerRules(textSpec);
+    if (!safeValidation.ok) {
+      return {
+        ok: false,
+        errors: [
+          {
+            code: 'unsafe_faker_rule',
+            message: safeValidation.error,
+          },
+        ],
+        diagnostics: { mode: 'safe' },
+      };
+    }
+  }
+
+  const scopedFaker = createScopedFaker(seed, fakerInstance);
   const parseResult = parseSchemaText({
     schemaText: textSpec,
-    faker: fakerInstance,
-    RandExp,
+    faker: scopedFaker,
+    RandExp: RandExpClass,
     options: { unsafeFakerExpressions },
   });
 
@@ -240,7 +256,15 @@ function parseAndCompileSchema({
     };
   }
 
-  return { ok: true, generator: parseResult.generator, safeRowCount };
+  return {
+    ok: true,
+    faker: scopedFaker,
+    RandExpClass,
+    generator: parseResult.generator,
+    diagnostics: {
+      report: parseResult.generator?.compilationReport?.() || parseResult.report || '',
+    },
+  };
 }
 
 export function createExporterForDefaults() {
@@ -285,15 +309,6 @@ function toRowsWithHeaderMap(dataTable) {
   return { headers, rows };
 }
 
-function tableToRows(dataTable) {
-  const headers = dataTable.getHeaders();
-  const rows = [];
-  for (let rowIndex = 0; rowIndex < dataTable.getRowCount(); rowIndex += 1) {
-    rows.push(dataTable.getRow(rowIndex));
-  }
-  return { headers, rows };
-}
-
 function normaliseGeneratedCellValue(value) {
   if (value === undefined || value === null) {
     return '';
@@ -322,6 +337,109 @@ function getGeneratorRuntimeErrors(generator) {
   return typeof generator?.generationErrors === 'function' ? generator.generationErrors() : [];
 }
 
+function isConstraintGenerationFailure(errors = []) {
+  return (Array.isArray(errors) ? errors : []).some(
+    (error) => String(error?.code || '') === 'constraint_generation_failed'
+  );
+}
+
+function createDataTableFromRows(headers = [], rows = []) {
+  const dataTable = new GenericDataTable();
+  dataTable.setHeaders(Array.isArray(headers) ? [...headers] : []);
+  rows.forEach((row) => {
+    dataTable.appendDataRow(Array.isArray(row) ? [...row] : []);
+  });
+  return dataTable;
+}
+
+function renderGeneratedRows({ headers = [], rows = [], outputFormat, options = {} } = {}) {
+  if (!outputFormat) {
+    return '';
+  }
+
+  const formatValidation = validateSupportedOutputFormat(outputFormat);
+  if (!formatValidation.ok) {
+    return formatValidation;
+  }
+
+  const exporter = createExporter();
+  if (options && Object.keys(options).length > 0) {
+    exporter.setOptionsForType(outputFormat, options);
+  }
+
+  return {
+    ok: true,
+    rendered: exporter.getDataTableAs(outputFormat, createDataTableFromRows(headers, rows)) || '',
+  };
+}
+
+function reorderRowsToOriginalHeaders(generatedRows = [], originalHeaders = []) {
+  const generatedHeaders = Array.isArray(generatedRows[0]) ? generatedRows[0] : [];
+  const generatedHeaderIndexes = new Map(generatedHeaders.map((header, index) => [header, index]));
+  const rows = [];
+  for (let rowIndex = 1; rowIndex < generatedRows.length; rowIndex += 1) {
+    const generatedRow = Array.isArray(generatedRows[rowIndex])
+      ? normaliseGeneratedRowValues(generatedRows[rowIndex])
+      : [];
+    rows.push(
+      originalHeaders.map((header) => {
+        const generatedIndex = generatedHeaderIndexes.get(header);
+        return generatedIndex === undefined ? '' : generatedRow[generatedIndex];
+      })
+    );
+  }
+  return rows;
+}
+
+function createGenerationRowsResult({
+  headers = [],
+  rows = [],
+  diagnostics = {},
+  outputFormat,
+  options = {},
+  errors = [],
+  warnings = [],
+  aborted = false,
+  partial = false,
+} = {}) {
+  const renderedResult = renderGeneratedRows({ headers, rows, outputFormat, options });
+  if (outputFormat && !renderedResult.ok) {
+    return renderedResult;
+  }
+
+  const nextDiagnostics = {
+    ...diagnostics,
+    warnings,
+  };
+
+  return {
+    ok: errors.length === 0,
+    errors,
+    headers,
+    rows,
+    rendered: renderedResult?.rendered || '',
+    format: outputFormat,
+    diagnostics: nextDiagnostics,
+    aborted,
+    partial,
+  };
+}
+
+function normalizeAmendWorkingSet({ headers = [], rows = [] } = {}) {
+  const safeHeaders = Array.isArray(headers) ? [...headers] : [];
+  const safeRows = Array.isArray(rows)
+    ? rows.map((row) => {
+        const nextRow = Array.isArray(row) ? [...row] : [];
+        while (nextRow.length < safeHeaders.length) {
+          nextRow.push('');
+        }
+        return nextRow;
+      })
+    : [];
+
+  return { headers: safeHeaders, rows: safeRows };
+}
+
 function createConstraintImpactFailure({
   generatedCount = 0,
   failedCount = CONSTRAINT_FAILURE_BATCH_SIZE,
@@ -338,6 +456,675 @@ function createConstraintImpactFailure({
   };
 }
 
+function validateRowCount(rowCount) {
+  const safeRowCount = Number.parseInt(rowCount, 10);
+  if (!Number.isInteger(safeRowCount) || safeRowCount < 0) {
+    return {
+      ok: false,
+      errors: [CoreGenerationErrors.invalidRowCountRequired()],
+      diagnostics: {},
+    };
+  }
+
+  return { ok: true, rowCount: safeRowCount };
+}
+
+function generateRowsSync({ generator, rowCount, outputFormat, options = {}, diagnostics = {} } = {}) {
+  const rowCountValidation = validateRowCount(rowCount);
+  if (!rowCountValidation.ok) {
+    return rowCountValidation;
+  }
+
+  const safeRowCount = rowCountValidation.rowCount;
+  const headers = generator.generateHeadersArray();
+  const rows = [];
+
+  for (let index = 0; index < safeRowCount; index += 1) {
+    const generatedRow = generator.generateRow();
+    const generationErrors = getGeneratorRuntimeErrors(generator);
+    if (generationErrors.length > 0) {
+      if (isConstraintGenerationFailure(generationErrors)) {
+        return createConstraintImpactFailure({
+          generatedCount: index,
+          failedCount: CONSTRAINT_FAILURE_BATCH_SIZE,
+          report: diagnostics.report,
+        });
+      }
+
+      return {
+        ok: false,
+        errors: generationErrors,
+        diagnostics: {
+          ...diagnostics,
+          rowCount: rows.length,
+        },
+      };
+    }
+
+    rows.push(normaliseGeneratedRowValues(generatedRow));
+  }
+
+  return createGenerationRowsResult({
+    headers,
+    rows,
+    diagnostics: {
+      ...diagnostics,
+      rowCount: safeRowCount,
+    },
+    outputFormat,
+    options,
+  });
+}
+
+async function generateRowsWithHooks({
+  generator,
+  rowCount,
+  outputFormat,
+  options = {},
+  diagnostics = {},
+  hooks = {},
+} = {}) {
+  const rowCountValidation = validateRowCount(rowCount);
+  if (!rowCountValidation.ok) {
+    return rowCountValidation;
+  }
+
+  const safeRowCount = rowCountValidation.rowCount;
+  const headers = generator.generateHeadersArray();
+  const rows = [];
+  let failedRows = 0;
+  let retryCount = 0;
+
+  for (let index = 0; index < safeRowCount; ) {
+    const generatedRow = generator.generateRow();
+    const generationErrors = getGeneratorRuntimeErrors(generator);
+    if (generationErrors.length > 0) {
+      if (!isConstraintGenerationFailure(generationErrors)) {
+        return {
+          ok: false,
+          errors: generationErrors,
+          headers,
+          rows,
+          diagnostics: {
+            ...diagnostics,
+            rowCount: rows.length,
+            failedRows,
+            retryCount,
+          },
+          partial: rows.length > 0,
+          aborted: false,
+        };
+      }
+
+      failedRows += CONSTRAINT_FAILURE_BATCH_SIZE;
+      let continueRequested = false;
+      const continueGeneration = () => {
+        continueRequested = true;
+      };
+
+      await hooks.onConstraintImpact?.({
+        generatedRows: rows.length,
+        failedRows,
+        retryCount,
+        continueGeneration,
+        message: CoreGenerationErrors.constraintImpactingRowGeneration(rows.length, failedRows).message,
+      });
+
+      if (!continueRequested) {
+        await hooks.onPartialResult?.({
+          generatedRows: rows.length,
+          failedRows,
+          aborted: true,
+          headers,
+          rows,
+        });
+
+        return createGenerationRowsResult({
+          headers,
+          rows,
+          diagnostics: {
+            ...diagnostics,
+            rowCount: rows.length,
+            failedRows,
+            retryCount,
+          },
+          outputFormat,
+          options,
+          errors: [CoreGenerationErrors.constraintImpactingRowGeneration(rows.length, failedRows)],
+          aborted: true,
+          partial: rows.length > 0,
+        });
+      }
+
+      retryCount += 1;
+      continue;
+    }
+
+    rows.push(normaliseGeneratedRowValues(generatedRow));
+    index += 1;
+    await hooks.onProgress?.({
+      phase: 'generateRows',
+      generatedRows: rows.length,
+      targetRows: safeRowCount,
+      message: `Generated ${rows.length} of ${safeRowCount} rows.`,
+    });
+  }
+
+  return createGenerationRowsResult({
+    headers,
+    rows,
+    diagnostics: {
+      ...diagnostics,
+      rowCount: safeRowCount,
+      failedRows,
+      retryCount,
+    },
+    outputFormat,
+    options,
+  });
+}
+
+function generatePairwiseRows({
+  generator,
+  fakerInstance,
+  RandExpClass = RandExp,
+  outputFormat,
+  options = {},
+  diagnostics = {},
+  rowCount,
+} = {}) {
+  const warnings = [];
+  if (rowCount !== undefined && rowCount !== null) {
+    warnings.push('rowCount is ignored when pairwise generation is enabled.');
+  }
+
+  const pairwiseGenerator = new PairwiseTestDataGenerator(fakerInstance, RandExpClass);
+  const initResult = pairwiseGenerator.initializeFromRules(generator.testDataRules(), {
+    constraints: typeof generator.schemaConstraints === 'function' ? generator.schemaConstraints() : [],
+  });
+  if (initResult?.isError) {
+    return {
+      ok: false,
+      errors: [CoreGenerationErrors.pairwiseInitializationFailed(initResult.errorMessage)],
+      diagnostics: {
+        ...diagnostics,
+      },
+    };
+  }
+
+  const rowsResult = pairwiseGenerator.generateAllDataRecordsAsRows();
+  if (rowsResult?.isError) {
+    return {
+      ok: false,
+      errors: [CoreGenerationErrors.pairwiseGenerationFailed(rowsResult.errorMessage)],
+      diagnostics: {
+        ...diagnostics,
+      },
+    };
+  }
+
+  const headers = generator.generateHeadersArray();
+  const rows = reorderRowsToOriginalHeaders(rowsResult?.data?.data || [], headers);
+  return createGenerationRowsResult({
+    headers,
+    rows,
+    diagnostics: {
+      ...diagnostics,
+      rowCount: rows.length,
+      pairwise: true,
+    },
+    outputFormat,
+    options,
+    warnings,
+  });
+}
+
+function mergeHeaders(baseHeaders, schemaHeaders) {
+  const mergedHeaders = [...baseHeaders];
+  for (const header of schemaHeaders) {
+    if (!mergedHeaders.includes(header)) {
+      mergedHeaders.push(header);
+    }
+  }
+  return mergedHeaders;
+}
+
+function applyGeneratedValuesToRow(targetRow, generatedRow, schemaHeaderIndexes) {
+  for (let schemaIndex = 0; schemaIndex < schemaHeaderIndexes.length; schemaIndex += 1) {
+    const targetIndex = schemaHeaderIndexes[schemaIndex];
+    targetRow[targetIndex] = normaliseGeneratedCellValue(generatedRow[schemaIndex]);
+  }
+}
+
+function normalizeSelectedIndexes(selectedRowIndexes = []) {
+  if (!Array.isArray(selectedRowIndexes)) {
+    return [];
+  }
+
+  return [
+    ...new Set(
+      selectedRowIndexes
+        .filter((value) => Number.isFinite(value))
+        .map((value) => Math.floor(value))
+        .filter((value) => value >= 0)
+    ),
+  ].sort((left, right) => left - right);
+}
+
+function amendRowsSync({
+  generator,
+  headers = [],
+  rows = [],
+  rowCount,
+  mode = 'amend-table',
+  selectedRowIndexes = [],
+  outputFormat,
+  options = {},
+  diagnostics = {},
+} = {}) {
+  const normalized = normalizeAmendWorkingSet({ headers, rows });
+  const importedRowCount = normalized.rows.length;
+  const amendCount = normaliseAmendCount(rowCount, importedRowCount);
+  if (amendCount === undefined) {
+    return {
+      ok: false,
+      errors: [CoreGenerationErrors.invalidAmendRowCount()],
+      diagnostics: {},
+    };
+  }
+  if (mode !== 'amend-selected' && amendCount > importedRowCount) {
+    return {
+      ok: false,
+      errors: [CoreGenerationErrors.rowCountExceedsImported(importedRowCount)],
+      diagnostics: { importedRowCount },
+    };
+  }
+
+  const schemaHeaders = generator.generateHeadersArray();
+  const mergedHeaders = mergeHeaders(normalized.headers, schemaHeaders);
+  const headerIndexMap = new Map(mergedHeaders.map((header, index) => [header, index]));
+  const schemaHeaderIndexes = schemaHeaders.map((header) => headerIndexMap.get(header));
+  const workingRows = normalizeAmendWorkingSet({ headers: mergedHeaders, rows: normalized.rows }).rows;
+
+  if (mode === 'amend-selected') {
+    const normalizedIndexes = normalizeSelectedIndexes(selectedRowIndexes);
+    if (normalizedIndexes.length === 0) {
+      return {
+        ok: true,
+        errors: [],
+        headers: mergedHeaders,
+        rows: workingRows,
+        rendered: '',
+        format: outputFormat,
+        diagnostics: {
+          ...diagnostics,
+          rowCount: 0,
+          importedRowCount,
+          noSelectedRows: true,
+        },
+      };
+    }
+
+    const rowsToAmend = Math.min(amendCount, normalizedIndexes.length);
+    for (let amendIndex = 0; amendIndex < rowsToAmend; amendIndex += 1) {
+      const targetRowIndex = normalizedIndexes[amendIndex];
+      if (targetRowIndex < 0 || targetRowIndex >= workingRows.length) {
+        continue;
+      }
+
+      const generatedRow = generator.generateRow();
+      const generationErrors = getGeneratorRuntimeErrors(generator);
+      if (generationErrors.length > 0) {
+        if (isConstraintGenerationFailure(generationErrors)) {
+          return createConstraintImpactFailure({
+            generatedCount: amendIndex,
+            failedCount: CONSTRAINT_FAILURE_BATCH_SIZE,
+            report: diagnostics.report,
+          });
+        }
+
+        return {
+          ok: false,
+          errors: generationErrors,
+          diagnostics: {
+            ...diagnostics,
+            rowCount: amendIndex,
+            importedRowCount,
+          },
+        };
+      }
+
+      applyGeneratedValuesToRow(
+        workingRows[targetRowIndex],
+        normaliseGeneratedRowValues(generatedRow),
+        schemaHeaderIndexes
+      );
+    }
+
+    return createGenerationRowsResult({
+      headers: mergedHeaders,
+      rows: workingRows,
+      diagnostics: {
+        ...diagnostics,
+        rowCount: Math.min(amendCount, normalizedIndexes.length),
+        importedRowCount,
+      },
+      outputFormat,
+      options,
+    });
+  }
+
+  for (let rowIndex = 0; rowIndex < amendCount; rowIndex += 1) {
+    while (rowIndex >= workingRows.length) {
+      workingRows.push(createBlankRow(mergedHeaders.length));
+    }
+
+    const generatedRow = generator.generateRow();
+    const generationErrors = getGeneratorRuntimeErrors(generator);
+    if (generationErrors.length > 0) {
+      if (isConstraintGenerationFailure(generationErrors)) {
+        return createConstraintImpactFailure({
+          generatedCount: rowIndex,
+          failedCount: CONSTRAINT_FAILURE_BATCH_SIZE,
+          report: diagnostics.report,
+        });
+      }
+
+      return {
+        ok: false,
+        errors: generationErrors,
+        diagnostics: {
+          ...diagnostics,
+          rowCount: rowIndex,
+          importedRowCount,
+        },
+      };
+    }
+
+    applyGeneratedValuesToRow(workingRows[rowIndex], normaliseGeneratedRowValues(generatedRow), schemaHeaderIndexes);
+  }
+
+  return createGenerationRowsResult({
+    headers: mergedHeaders,
+    rows: workingRows,
+    diagnostics: {
+      ...diagnostics,
+      rowCount: amendCount,
+      importedRowCount,
+    },
+    outputFormat,
+    options,
+  });
+}
+
+async function streamRowsFromGenerator({
+  generator,
+  rowCount,
+  outputFormat = DEFAULT_FORMAT,
+  options = {},
+  onChunk,
+  collectRows = false,
+  diagnostics = {},
+  hooks = {},
+} = {}) {
+  if (typeof onChunk !== 'function') {
+    return {
+      ok: false,
+      errors: ['onChunk callback is required and must be a function.'],
+      diagnostics: {},
+    };
+  }
+
+  const rowCountValidation = validateRowCount(rowCount);
+  if (!rowCountValidation.ok) {
+    return rowCountValidation;
+  }
+
+  if (!['csv', 'jsonl', 'dsv', 'json', 'xml'].includes(outputFormat)) {
+    return {
+      ok: false,
+      errors: ['Streaming currently supports only csv, jsonl, dsv, json and xml formats.'],
+      diagnostics: {
+        supportedStreamingFormats: ['csv', 'jsonl', 'dsv', 'json', 'xml'],
+      },
+    };
+  }
+
+  const safeRowCount = rowCountValidation.rowCount;
+  const headers = generator.generateHeadersArray();
+  const rows = collectRows ? [] : null;
+  let firstRow = null;
+  const csvSettings = outputFormat === 'csv' ? getCsvStreamSettings(options) : null;
+  const dsvSettings = outputFormat === 'dsv' ? getDsvStreamSettings(options) : null;
+  const diagnosticsWarnings = getUnsupportedStreamingOptionWarnings(outputFormat, options);
+  const xmlContext = outputFormat === 'xml' ? createXmlStreamContext(headers, options, diagnosticsWarnings) : null;
+
+  if (outputFormat === 'csv' && csvSettings.includeHeader) {
+    await onChunk(headers.map((header) => quoteCsvValue(header, csvSettings)).join(','));
+  }
+  if (outputFormat === 'dsv' && dsvSettings.includeHeader) {
+    await onChunk(headers.map((header) => quoteCsvValue(header, dsvSettings)).join(dsvSettings.delimiter));
+  }
+  if (outputFormat === 'json') {
+    await onChunk('[');
+  }
+  if (outputFormat === 'xml') {
+    if (xmlContext.includeXmlHeader) {
+      await onChunk('<?xml version="1.0" encoding="utf-8"?>');
+    }
+    await onChunk(`<${xmlContext.rootElementName}${xmlContext.xmlnsAttribute}>`);
+  }
+
+  for (let index = 0; index < safeRowCount; index += 1) {
+    const generatedRow = generator.generateRow();
+    const generationErrors = getGeneratorRuntimeErrors(generator);
+    if (generationErrors.length > 0) {
+      if (isConstraintGenerationFailure(generationErrors)) {
+        return createConstraintImpactFailure({
+          generatedCount: index,
+          failedCount: CONSTRAINT_FAILURE_BATCH_SIZE,
+          report: diagnostics.report,
+        });
+      }
+
+      return {
+        ok: false,
+        errors: generationErrors,
+        diagnostics: {
+          ...diagnostics,
+          rowCount: index,
+        },
+      };
+    }
+
+    const rowArray = normaliseGeneratedRowValues(generatedRow);
+    if (firstRow === null) {
+      firstRow = rowArray;
+    }
+    if (rows) {
+      rows.push(rowArray);
+    }
+    if (outputFormat === 'csv') {
+      await onChunk(rowToCsv(headers, rowArray, csvSettings));
+    } else if (outputFormat === 'dsv') {
+      await onChunk(rowToDsv(headers, rowArray, dsvSettings));
+    } else if (outputFormat === 'jsonl') {
+      await onChunk(rowToJsonLine(headers, rowArray, options));
+    } else if (outputFormat === 'json') {
+      const rowObject = rowArrayToObject(headers, rowArray, options);
+      await onChunk(index === 0 ? JSON.stringify(rowObject) : `,${JSON.stringify(rowObject)}`);
+    } else if (outputFormat === 'xml') {
+      await onChunk(
+        rowToXmlItem(
+          headers,
+          xmlContext.headerXmlNames,
+          rowArray,
+          xmlContext.knownAttributeColumnNames,
+          xmlContext.itemElementName
+        )
+      );
+    }
+
+    await hooks.onProgress?.({
+      phase: 'streamRows',
+      generatedRows: index + 1,
+      targetRows: safeRowCount,
+      message: `Streamed ${index + 1} of ${safeRowCount} rows.`,
+    });
+  }
+  if (outputFormat === 'json') {
+    await onChunk(']');
+  }
+  if (outputFormat === 'xml') {
+    await onChunk(`</${xmlContext.rootElementName}>`);
+  }
+
+  return {
+    ok: true,
+    errors: [],
+    headers,
+    rows: rows || [],
+    format: outputFormat,
+    diagnostics: {
+      ...diagnostics,
+      rowCount: safeRowCount,
+      streamed: true,
+      firstRow,
+      collectRows,
+      warnings: diagnosticsWarnings,
+    },
+  };
+}
+
+function createGenerationSession({
+  textSpec,
+  seed,
+  unsafeFakerExpressions = false,
+  safeFakerRules = false,
+  schemaSource = null,
+  fakerInstance,
+  RandExpClass = RandExp,
+} = {}) {
+  const compiled = compileGenerationState({
+    textSpec,
+    seed,
+    unsafeFakerExpressions,
+    safeFakerRules,
+    fakerInstance,
+    RandExpClass,
+  });
+  const baseDiagnostics = {
+    ...(compiled.diagnostics || {}),
+    schemaSource,
+  };
+
+  return {
+    schemaSource,
+    diagnostics: baseDiagnostics,
+    isValid() {
+      return compiled.ok === true;
+    },
+    getErrors() {
+      return compiled.ok ? [] : compiled.errors || [];
+    },
+    generateRows({ rowCount, hooks, outputFormat, options = {} } = {}) {
+      if (!compiled.ok) {
+        return {
+          ok: false,
+          errors: compiled.errors,
+          diagnostics: compiled.diagnostics || {},
+        };
+      }
+
+      if (hooks && Object.keys(hooks).length > 0) {
+        return generateRowsWithHooks({
+          generator: compiled.generator,
+          rowCount,
+          hooks,
+          outputFormat,
+          options,
+          diagnostics: baseDiagnostics,
+        });
+      }
+
+      return generateRowsSync({
+        generator: compiled.generator,
+        rowCount,
+        outputFormat,
+        options,
+        diagnostics: baseDiagnostics,
+      });
+    },
+    amendRows({ headers = [], rows = [], rowCount, mode, selectedRowIndexes = [], outputFormat, options = {} } = {}) {
+      if (!compiled.ok) {
+        return {
+          ok: false,
+          errors: compiled.errors,
+          diagnostics: compiled.diagnostics || {},
+        };
+      }
+
+      return amendRowsSync({
+        generator: compiled.generator,
+        headers,
+        rows,
+        rowCount,
+        mode,
+        selectedRowIndexes,
+        outputFormat,
+        options,
+        diagnostics: baseDiagnostics,
+      });
+    },
+    generatePairwise({ rowCount, outputFormat, options = {} } = {}) {
+      if (!compiled.ok) {
+        return {
+          ok: false,
+          errors: compiled.errors,
+          diagnostics: compiled.diagnostics || {},
+        };
+      }
+
+      return generatePairwiseRows({
+        generator: compiled.generator,
+        fakerInstance: compiled.faker,
+        RandExpClass: compiled.RandExpClass,
+        rowCount,
+        outputFormat,
+        options,
+        diagnostics: baseDiagnostics,
+      });
+    },
+    streamRows({
+      rowCount,
+      outputFormat = DEFAULT_FORMAT,
+      options = {},
+      onChunk,
+      collectRows = false,
+      hooks = {},
+    } = {}) {
+      if (!compiled.ok) {
+        return Promise.resolve({
+          ok: false,
+          errors: compiled.errors,
+          diagnostics: compiled.diagnostics || {},
+        });
+      }
+
+      return streamRowsFromGenerator({
+        generator: compiled.generator,
+        rowCount,
+        outputFormat,
+        options,
+        onChunk,
+        collectRows,
+        diagnostics: baseDiagnostics,
+        hooks,
+      });
+    },
+  };
+}
+
 export function generateFromTextSpec({
   textSpec,
   rowCount,
@@ -347,107 +1134,20 @@ export function generateFromTextSpec({
   pairwise = false,
   unsafeFakerExpressions = false,
 } = {}) {
-  const scopedFaker = createScopedFaker(seed);
-  const parsed = parseAndCompileSchema({
+  const formatValidation = validateSupportedOutputFormat(outputFormat);
+  if (!formatValidation.ok) {
+    return formatValidation;
+  }
+
+  const session = createGenerationSession({
     textSpec,
-    fakerInstance: scopedFaker,
+    seed,
     unsafeFakerExpressions,
-    rowCount,
-    outputFormat,
   });
-  if (!parsed.ok) {
-    return parsed;
-  }
-  const { generator, safeRowCount } = parsed;
 
-  const dataTable = new GenericDataTable();
-  let effectiveRowCount = safeRowCount;
-  const diagnosticsWarnings = [];
-
-  if (pairwise) {
-    if (rowCount !== undefined && rowCount !== null) {
-      diagnosticsWarnings.push('rowCount is ignored when pairwise generation is enabled.');
-    }
-    const pairwiseGenerator = new PairwiseTestDataGenerator(scopedFaker, RandExp);
-    const initResult = pairwiseGenerator.initializeFromRules(generator.testDataRules(), {
-      constraints: typeof generator.schemaConstraints === 'function' ? generator.schemaConstraints() : [],
-    });
-    if (initResult?.isError) {
-      return {
-        ok: false,
-        errors: [CoreGenerationErrors.pairwiseInitializationFailed(initResult.errorMessage)],
-        diagnostics: {
-          report: generator.compilationReport(),
-        },
-      };
-    }
-
-    const rowsResult = pairwiseGenerator.generateAllDataRecordsAsRows();
-    if (rowsResult?.isError) {
-      return {
-        ok: false,
-        errors: [CoreGenerationErrors.pairwiseGenerationFailed(rowsResult.errorMessage)],
-        diagnostics: {
-          report: generator.compilationReport(),
-        },
-      };
-    }
-
-    const generatedRows = rowsResult?.data?.data || [];
-    const generatedHeaders = Array.isArray(generatedRows[0]) ? generatedRows[0] : [];
-    const originalHeaders = generator.generateHeadersArray();
-    const generatedHeaderIndexes = new Map(generatedHeaders.map((header, index) => [header, index]));
-    dataTable.setHeaders(originalHeaders);
-    for (let rowIndex = 1; rowIndex < generatedRows.length; rowIndex += 1) {
-      const generatedRow = Array.isArray(generatedRows[rowIndex])
-        ? normaliseGeneratedRowValues(generatedRows[rowIndex])
-        : [];
-      const reorderedRow = originalHeaders.map((header) => {
-        const generatedIndex = generatedHeaderIndexes.get(header);
-        return generatedIndex === undefined ? '' : generatedRow[generatedIndex];
-      });
-      dataTable.appendDataRow(reorderedRow);
-    }
-    effectiveRowCount = Math.max(generatedRows.length - 1, 0);
-  } else {
-    dataTable.setHeaders(generator.generateHeadersArray());
-    for (let index = 0; index < safeRowCount; index += 1) {
-      const generatedRow = generator.generateRow();
-      const generationErrors = getGeneratorRuntimeErrors(generator);
-      if (generationErrors.length > 0) {
-        return createConstraintImpactFailure({
-          generatedCount: index,
-          failedCount: CONSTRAINT_FAILURE_BATCH_SIZE,
-          report: generator.compilationReport(),
-        });
-      }
-      dataTable.appendDataRow(normaliseGeneratedRowValues(generatedRow));
-    }
-  }
-
-  const exporter = createExporter();
-  if (options && Object.keys(options).length > 0) {
-    exporter.setOptionsForType(outputFormat, options);
-  }
-
-  let rendered = '';
-  rendered = exporter.getDataTableAs(outputFormat, dataTable) || '';
-
-  const { headers, rows } = tableToRows(dataTable);
-  return {
-    ok: true,
-    errors: [],
-    headers,
-    rows,
-    rendered,
-    format: outputFormat,
-    diagnostics: {
-      report: generator.compilationReport(),
-      rowCount: effectiveRowCount,
-      pairwise,
-      warnings: diagnosticsWarnings,
-    },
-  };
+  return pairwise
+    ? session.generatePairwise({ rowCount, outputFormat, options })
+    : session.generateRows({ rowCount, outputFormat, options });
 }
 
 export {
@@ -487,6 +1187,11 @@ export function amendFromTextSpecAndData({
   }
   if (errors.length > 0) {
     return { ok: false, errors, diagnostics: { supportedFormats: SUPPORTED_FORMATS } };
+  }
+
+  const formatValidation = validateSupportedOutputFormat(outputFormat);
+  if (!formatValidation.ok) {
+    return formatValidation;
   }
 
   const normalisedInputFormat = String(inputFormat).trim().toLowerCase();
@@ -535,104 +1240,38 @@ export function amendFromTextSpecAndData({
     };
   }
 
-  const scopedFaker = createScopedFaker(seed);
-  const parseResult = parseSchemaText({
-    schemaText: textSpec,
-    faker: scopedFaker,
-    RandExp,
-    options: { unsafeFakerExpressions },
+  const session = createGenerationSession({
+    textSpec,
+    seed,
+    unsafeFakerExpressions,
   });
-  if (!parseResult.ok) {
-    return { ok: false, errors: parseResult.errors, diagnostics: { report: parseResult.report } };
+  if (!session.isValid()) {
+    return { ok: false, errors: session.getErrors(), diagnostics: session.diagnostics || {} };
   }
-  const generator = parseResult.generator;
 
   if (stream === true || stream === 'true') {
     diagnosticsWarnings.push('stream is ignored for amend operations and buffered mode is always used.');
   }
-
-  const schemaHeaders = generator.generateHeadersArray();
-  const baseHeaders = sourceTable.getHeaders();
-  const mergedHeaders = [...baseHeaders];
-  for (const header of schemaHeaders) {
-    if (!mergedHeaders.includes(header)) {
-      mergedHeaders.push(header);
-    }
+  const { headers, rows } = toRowsWithHeaderMap(sourceTable);
+  const result = session.amendRows({
+    headers,
+    rows,
+    rowCount: amendCount,
+    mode: 'amend-table',
+    outputFormat,
+    options,
+  });
+  if (!result.ok) {
+    return result;
   }
-
-  const headerIndexMap = new Map(mergedHeaders.map((header, index) => [header, index]));
-  const schemaHeaderIndexes = schemaHeaders.map((header) => headerIndexMap.get(header));
-  const { rows } = toRowsWithHeaderMap(sourceTable);
-  for (const row of rows) {
-    while (row.length < mergedHeaders.length) {
-      row.push('');
-    }
-  }
-
-  for (let rowIndex = 0; rowIndex < amendCount; rowIndex += 1) {
-    const targetRow = rows[rowIndex] || createBlankRow(mergedHeaders.length);
-    while (targetRow.length < mergedHeaders.length) {
-      targetRow.push('');
-    }
-    const generatedRow = generator.generateRow();
-    const generationErrors = getGeneratorRuntimeErrors(generator);
-    if (generationErrors.length > 0) {
-      return createConstraintImpactFailure({
-        generatedCount: rowIndex,
-        failedCount: CONSTRAINT_FAILURE_BATCH_SIZE,
-        report: generator.compilationReport(),
-      });
-    }
-    for (let schemaIndex = 0; schemaIndex < schemaHeaderIndexes.length; schemaIndex += 1) {
-      const targetIndex = schemaHeaderIndexes[schemaIndex];
-      const generatedValue = generatedRow[schemaIndex];
-      targetRow[targetIndex] = normaliseGeneratedCellValue(generatedValue);
-    }
-    rows[rowIndex] = targetRow;
-  }
-
-  const outputTable = new GenericDataTable();
-  outputTable.setHeaders(mergedHeaders);
-  outputTable.rows = rows;
-
-  const exporter = createExporter();
-  if (options && Object.keys(options).length > 0) {
-    exporter.setOptionsForType(outputFormat, options);
-  }
-  const rendered = exporter.getDataTableAs(outputFormat, outputTable) || '';
-  const { headers, rows: resultRows } = tableToRows(outputTable);
 
   return {
-    ok: true,
-    errors: [],
-    headers,
-    rows: resultRows,
-    rendered,
-    format: outputFormat,
+    ...result,
     diagnostics: {
-      report: generator.compilationReport(),
-      rowCount: amendCount,
-      importedRowCount,
-      warnings: diagnosticsWarnings,
+      ...result.diagnostics,
+      warnings: [...(result.diagnostics?.warnings || []), ...diagnosticsWarnings],
     },
   };
-}
-
-function createAndValidateGenerator({
-  textSpec,
-  rowCount,
-  outputFormat = DEFAULT_FORMAT,
-  unsafeFakerExpressions = false,
-  seed,
-} = {}) {
-  const scopedFaker = createScopedFaker(seed);
-  return parseAndCompileSchema({
-    textSpec,
-    fakerInstance: scopedFaker,
-    unsafeFakerExpressions,
-    rowCount,
-    outputFormat,
-  });
 }
 
 function getCsvStreamSettings(options = {}) {
@@ -824,25 +1463,6 @@ export async function streamFromTextSpec({
   onChunk,
   collectRows = false,
 } = {}) {
-  if (typeof onChunk !== 'function') {
-    return {
-      ok: false,
-      errors: ['onChunk callback is required and must be a function.'],
-      diagnostics: {},
-    };
-  }
-
-  const validation = createAndValidateGenerator({
-    textSpec,
-    rowCount,
-    outputFormat,
-    unsafeFakerExpressions,
-    seed,
-  });
-  if (!validation.ok) {
-    return validation;
-  }
-
   if (pairwise) {
     return {
       ok: false,
@@ -850,107 +1470,24 @@ export async function streamFromTextSpec({
       diagnostics: {},
     };
   }
+  const session = createGenerationSession({
+    textSpec,
+    seed,
+    unsafeFakerExpressions,
+  });
 
-  if (!['csv', 'jsonl', 'dsv', 'json', 'xml'].includes(outputFormat)) {
-    return {
-      ok: false,
-      errors: ['Streaming currently supports only csv, jsonl, dsv, json and xml formats.'],
-      diagnostics: {
-        supportedStreamingFormats: ['csv', 'jsonl', 'dsv', 'json', 'xml'],
-      },
-    };
-  }
-
-  const { generator, safeRowCount } = validation;
-  const headers = generator.generateHeadersArray();
-  const rows = collectRows ? [] : null;
-  let firstRow = null;
-  const report = generator.compilationReport();
-  const csvSettings = outputFormat === 'csv' ? getCsvStreamSettings(options) : null;
-  const dsvSettings = outputFormat === 'dsv' ? getDsvStreamSettings(options) : null;
-  const diagnosticsWarnings = getUnsupportedStreamingOptionWarnings(outputFormat, options);
-  const xmlContext = outputFormat === 'xml' ? createXmlStreamContext(headers, options, diagnosticsWarnings) : null;
-
-  if (outputFormat === 'csv' && csvSettings.includeHeader) {
-    await onChunk(headers.map((header) => quoteCsvValue(header, csvSettings)).join(','));
-  }
-  if (outputFormat === 'dsv' && dsvSettings.includeHeader) {
-    await onChunk(headers.map((header) => quoteCsvValue(header, dsvSettings)).join(dsvSettings.delimiter));
-  }
-  if (outputFormat === 'json') {
-    await onChunk('[');
-  }
-  if (outputFormat === 'xml') {
-    if (xmlContext.includeXmlHeader) {
-      await onChunk('<?xml version="1.0" encoding="utf-8"?>');
-    }
-    await onChunk(`<${xmlContext.rootElementName}${xmlContext.xmlnsAttribute}>`);
-  }
-
-  for (let index = 0; index < safeRowCount; index += 1) {
-    const generatedRow = generator.generateRow();
-    const generationErrors = getGeneratorRuntimeErrors(generator);
-    if (generationErrors.length > 0) {
-      return createConstraintImpactFailure({
-        generatedCount: index,
-        failedCount: CONSTRAINT_FAILURE_BATCH_SIZE,
-        report,
-      });
-    }
-    const rowArray = normaliseGeneratedRowValues(generatedRow);
-    if (firstRow === null) {
-      firstRow = rowArray;
-    }
-    if (rows) {
-      rows.push(rowArray);
-    }
-    if (outputFormat === 'csv') {
-      await onChunk(rowToCsv(headers, rowArray, csvSettings));
-    } else if (outputFormat === 'dsv') {
-      await onChunk(rowToDsv(headers, rowArray, dsvSettings));
-    } else if (outputFormat === 'jsonl') {
-      await onChunk(rowToJsonLine(headers, rowArray, options));
-    } else if (outputFormat === 'json') {
-      const rowObject = rowArrayToObject(headers, rowArray, options);
-      await onChunk(index === 0 ? JSON.stringify(rowObject) : `,${JSON.stringify(rowObject)}`);
-    } else if (outputFormat === 'xml') {
-      await onChunk(
-        rowToXmlItem(
-          headers,
-          xmlContext.headerXmlNames,
-          rowArray,
-          xmlContext.knownAttributeColumnNames,
-          xmlContext.itemElementName
-        )
-      );
-    }
-  }
-  if (outputFormat === 'json') {
-    await onChunk(']');
-  }
-  if (outputFormat === 'xml') {
-    await onChunk(`</${xmlContext.rootElementName}>`);
-  }
-
-  return {
-    ok: true,
-    errors: [],
-    headers,
-    rows: rows || [],
-    format: outputFormat,
-    diagnostics: {
-      report,
-      rowCount: safeRowCount,
-      streamed: true,
-      firstRow,
-      collectRows,
-      warnings: diagnosticsWarnings,
-    },
-  };
+  return session.streamRows({
+    rowCount,
+    outputFormat,
+    options,
+    onChunk,
+    collectRows,
+  });
 }
 
 export { SUPPORTED_FORMATS };
 export { Exporter, GenericDataTable };
+export { createGenerationSession };
 export { CombinationAlgorithm, CombinationsTestDataGenerator, PairwiseTestDataGenerator };
 export { OPTION_KEYS_BY_FORMAT, OPTION_TIPS_BY_FORMAT, normalizeFormat, sanitizeOptionsForFormat, getTipsForFormat };
 export { applyImportTrimSettingsToDataTable, normalizeImportTrimSettings };

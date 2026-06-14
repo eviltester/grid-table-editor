@@ -4,7 +4,7 @@
  * - Wraps shared generation helpers so generator UI can stay thin.
  */
 
-import { applyExportTextEncoding } from '@anywaydata/core';
+import { applyExportTextEncoding, createGenerationSession } from '@anywaydata/core';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 import {
   CombinationAlgorithm,
@@ -68,6 +68,40 @@ function createConfiguredGeneratorForPage({
   });
 }
 
+function createConfiguredSessionForPage({
+  syncSchemaRowsFromTextMode,
+  validateSchemaRows,
+  schemaRowsToSpec,
+  getSchemaText = () => '',
+  faker,
+  RandExp,
+}) {
+  const parsed = syncSchemaRowsFromTextMode({ showErrors: false, applySemanticValidation: false });
+  if (parsed.errors?.length > 0) {
+    return { errors: parsed.errors };
+  }
+
+  const validated = validateSchemaRows(parsed.rows || []);
+  if (validated.errors?.length > 0) {
+    return { errors: validated.errors };
+  }
+
+  const explicitSchemaText = String(getSchemaText() || '').trim();
+  const textSpec = explicitSchemaText.length > 0 ? explicitSchemaText : schemaRowsToSpec(validated.rows || []);
+  const session = createGenerationSession({
+    textSpec,
+    schemaSource: 'generator-page',
+    fakerInstance: faker,
+    RandExpClass: RandExp,
+  });
+
+  if (!session.isValid()) {
+    return { errors: session.getErrors() };
+  }
+
+  return { session, errors: [] };
+}
+
 function buildPreviewDataTable({ generator, rowCount }) {
   return createPreviewDataTable({
     rowCount,
@@ -95,6 +129,15 @@ function buildCombinationsDataTable({ generator, faker, RandExp, options }) {
     RandExp,
     options,
   });
+}
+
+function buildDataTableFromRowsResult({ headers = [], rows = [] }) {
+  const dataTable = new GenericDataTable();
+  dataTable.setHeaders(headers);
+  rows.forEach((row) => {
+    dataTable.appendDataRow(Array.isArray(row) ? [...row] : []);
+  });
+  return dataTable;
 }
 
 function renderGeneratorOutputPreview({ getSelectedOutputType, getPreviewDataTable, exporter, setOutputPreviewText }) {
@@ -206,6 +249,7 @@ function getGeneratorEnumValueCounts({ syncSchemaRowsFromTextMode, validateSchem
 function previewGeneratorData({
   getPreviewRowCount,
   createConfiguredGenerator,
+  createConfiguredSession,
   buildDataTable,
   setPreviewDataTable,
   renderOutputPreviewForCurrentSelection,
@@ -215,6 +259,26 @@ function previewGeneratorData({
   const rowCount = getPreviewRowCount();
   if (rowCount.errors.length > 0) {
     surfacePageError(rowCount.errors.join('\n'));
+    return;
+  }
+
+  if (typeof createConfiguredSession === 'function') {
+    const configuredSession = createConfiguredSession();
+    if (configuredSession.errors?.length > 0) {
+      surfacePageError(schemaErrorsToText(configuredSession.errors), { useSchemaStatus: true });
+      return;
+    }
+
+    const result = configuredSession.session.generateRows({ rowCount: rowCount.value });
+    if (!result.ok) {
+      surfacePageError(schemaErrorsToText(result.errors), { useSchemaStatus: true });
+      return;
+    }
+
+    const dataTable = buildDataTableFromRowsResult(result);
+    clearPageError?.();
+    setPreviewDataTable?.(dataTable);
+    renderOutputPreviewForCurrentSelection();
     return;
   }
 
@@ -233,6 +297,7 @@ function previewGeneratorData({
 async function generateGeneratorDataFile({
   getGenerateRowCount,
   createConfiguredGenerator,
+  createConfiguredSession,
   getSelectedOutputType,
   exporter,
   clearGenerationStatus,
@@ -252,10 +317,28 @@ async function generateGeneratorDataFile({
     return;
   }
 
-  const configured = createConfiguredGenerator();
-  if (configured.errors?.length > 0) {
-    surfacePageError(schemaErrorsToText(configured.errors), { useSchemaStatus: true });
-    return;
+  let dataTable;
+  if (typeof createConfiguredSession === 'function') {
+    const configuredSession = createConfiguredSession();
+    if (configuredSession.errors?.length > 0) {
+      surfacePageError(schemaErrorsToText(configuredSession.errors), { useSchemaStatus: true });
+      return;
+    }
+
+    const result = configuredSession.session.generateRows({ rowCount: rowCount.value });
+    if (!result.ok) {
+      surfacePageError(schemaErrorsToText(result.errors), { useSchemaStatus: true });
+      return;
+    }
+    dataTable = buildDataTableFromRowsResult(result);
+  } else {
+    const configured = createConfiguredGenerator();
+    if (configured.errors?.length > 0) {
+      surfacePageError(schemaErrorsToText(configured.errors), { useSchemaStatus: true });
+      return;
+    }
+
+    dataTable = buildDataTable(configured.generator, rowCount.value);
   }
 
   const type = getSelectedOutputType();
@@ -269,7 +352,6 @@ async function generateGeneratorDataFile({
   showGenerationLoadingStatus(`Preparing ${type.toUpperCase()} export...`);
 
   try {
-    const dataTable = buildDataTable(configured.generator, rowCount.value);
     clearPageError?.();
     dataTable.__generatorFilename = `generated-data${exporter.getFileExtensionFor(type)}`;
     const { filename } = await exportDataTableToDownload({
@@ -293,6 +375,7 @@ async function generateGeneratorDataFile({
 
 async function generateGeneratorAllPairsDataFile({
   createConfiguredGenerator,
+  createConfiguredSession,
   countEnumColumns,
   getSelectedOutputType,
   exporter,
@@ -307,10 +390,28 @@ async function generateGeneratorAllPairsDataFile({
   clearPageError,
   scheduleClearGenerationStatus,
 }) {
-  const configured = createConfiguredGenerator();
-  if (configured.errors?.length > 0) {
-    surfacePageError(schemaErrorsToText(configured.errors), { useSchemaStatus: true });
-    return;
+  let dataTable;
+  if (typeof createConfiguredSession === 'function') {
+    const configuredSession = createConfiguredSession();
+    if (configuredSession.errors?.length > 0) {
+      surfacePageError(schemaErrorsToText(configuredSession.errors), { useSchemaStatus: true });
+      return;
+    }
+
+    const result = configuredSession.session.generatePairwise({});
+    if (!result.ok) {
+      surfacePageError(schemaErrorsToText(result.errors), { useSchemaStatus: true });
+      return;
+    }
+    dataTable = buildDataTableFromRowsResult(result);
+  } else {
+    const configured = createConfiguredGenerator();
+    if (configured.errors?.length > 0) {
+      surfacePageError(schemaErrorsToText(configured.errors), { useSchemaStatus: true });
+      return;
+    }
+
+    dataTable = buildAllPairsDataTable(configured.generator);
   }
 
   if (countEnumColumns() < 2) {
@@ -329,7 +430,6 @@ async function generateGeneratorAllPairsDataFile({
   showGenerationLoadingStatus('Generating pairwise combinations...');
 
   try {
-    const dataTable = buildAllPairsDataTable(configured.generator);
     if (!dataTable) {
       surfacePageError('Failed to generate pairwise data.');
       setGenerationStatus('Pairwise generation failed.', { severity: 'error', dismissable: true });
@@ -446,6 +546,7 @@ async function generateGeneratorCombinationsDataFile({
 
 export {
   createConfiguredGeneratorForPage,
+  createConfiguredSessionForPage,
   buildPreviewDataTable,
   buildPairwiseDataTable,
   buildCombinationsDataTable,

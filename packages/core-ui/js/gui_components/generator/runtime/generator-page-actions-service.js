@@ -59,6 +59,7 @@ function createGeneratorPageActionsService({
       return previewGeneratorData({
         getPreviewRowCount: () => getResolvedViewState()?.getPreviewRowCount?.(),
         createConfiguredGenerator: () => getResolvedSchemaGenerationService()?.createConfiguredGenerator?.(),
+        createConfiguredSession: () => getResolvedSchemaGenerationService()?.createConfiguredSession?.(),
         buildDataTable: (generator, rowCount) => buildPreviewDataTable({ generator, rowCount }),
         setPreviewDataTable: (dataTable) => getResolvedViewState()?.setPreviewDataTable?.(dataTable),
         renderOutputPreviewForCurrentSelection: () =>
@@ -72,6 +73,7 @@ function createGeneratorPageActionsService({
       await generateGeneratorDataFile({
         getGenerateRowCount: () => getResolvedViewState()?.getGenerateRowCount?.(),
         createConfiguredGenerator: () => getResolvedSchemaGenerationService()?.createConfiguredGenerator?.(),
+        createConfiguredSession: () => getResolvedSchemaGenerationService()?.createConfiguredSession?.(),
         getSelectedOutputType: () => getResolvedViewState()?.getSelectedOutputType?.(),
         exporter: runtime?.exporter,
         clearGenerationStatus: () => getResolvedViewState()?.clearGenerationStatus?.(),
@@ -90,6 +92,7 @@ function createGeneratorPageActionsService({
     async generateAllPairsDataFile() {
       await generateGeneratorAllPairsDataFile({
         createConfiguredGenerator: () => getResolvedSchemaGenerationService()?.createConfiguredGenerator?.(),
+        createConfiguredSession: () => getResolvedSchemaGenerationService()?.createConfiguredSession?.(),
         countEnumColumns: () => getResolvedSchemaGenerationService()?.countEnumColumns?.() || 0,
         getSelectedOutputType: () => getResolvedViewState()?.getSelectedOutputType?.(),
         exporter: runtime?.exporter,

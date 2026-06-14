@@ -1,10 +1,9 @@
 import {
   amendFromTextSpecAndData,
+  createGenerationSession,
   createExporterForDefaults,
   getTipsForFormat,
-  generateFromTextSpec,
   SUPPORTED_FORMATS,
-  validateSafeFakerRules,
 } from '../../src/index.js';
 
 const ANYWAYDATA_MCP_SERVER_INFO = {
@@ -210,16 +209,6 @@ function validateTextSpecLength(args) {
   return null;
 }
 
-function validateSafeSpec(args) {
-  const validation = validateSafeFakerRules(args.textSpec);
-  if (!validation.ok) {
-    return createToolError('unsafe_faker_rule', validation.error, {
-      mode: 'safe',
-    });
-  }
-  return null;
-}
-
 function createGenerateDataTool() {
   return {
     name: 'generate_data_from_spec',
@@ -353,21 +342,43 @@ function executeGenerateOrAmendTool(toolName, args = {}) {
     return textSpecLengthError;
   }
 
-  const safeSpecError = validateSafeSpec(normalizedArgs);
-  if (safeSpecError) {
-    return safeSpecError;
-  }
-
   const result =
     toolName === 'amend_data_from_spec'
       ? amendFromTextSpecAndData(normalizedArgs)
-      : generateFromTextSpec(normalizedArgs);
+      : (() => {
+          const session = createGenerationSession({
+            textSpec: normalizedArgs.textSpec,
+            seed: normalizedArgs.seed,
+            unsafeFakerExpressions: false,
+            safeFakerRules: true,
+            schemaSource: 'mcp',
+          });
+
+          return normalizedArgs.pairwise
+            ? session.generatePairwise({
+                rowCount: normalizedArgs.rowCount,
+                outputFormat: normalizedArgs.outputFormat,
+                options: normalizedArgs.options,
+              })
+            : session.generateRows({
+                rowCount: normalizedArgs.rowCount,
+                outputFormat: normalizedArgs.outputFormat,
+                options: normalizedArgs.options,
+              });
+        })();
 
   if (result.ok) {
     return result;
   }
 
   const isAmendTool = toolName === 'amend_data_from_spec';
+  const isSafeRuleError = (result.errors || []).some((error) => error?.code === 'unsafe_faker_rule');
+  if (isSafeRuleError) {
+    return createToolError('unsafe_faker_rule', result.errors[0]?.message || 'Unsafe faker rule syntax detected.', {
+      mode: 'safe',
+    });
+  }
+
   return createToolError(
     isAmendTool ? 'amend_failed' : 'generation_failed',
     isAmendTool ? 'Failed to amend data from specification.' : 'Failed to generate data from specification.',

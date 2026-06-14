@@ -1,5 +1,6 @@
 import {
   createConfiguredGeneratorForPage,
+  createConfiguredSessionForPage,
   countGeneratorEnumColumns,
   getGeneratorEnumValueCounts,
 } from './data-generator-generation-actions.js';
@@ -24,6 +25,17 @@ function createGeneratorSchemaGenerationService({
         schemaTextToDataRules,
         getSchemaText,
         TestDataGeneratorClass,
+        faker,
+        RandExp,
+      });
+    },
+
+    createConfiguredSession() {
+      return createConfiguredSessionForPage({
+        syncSchemaRowsFromTextMode,
+        validateSchemaRows,
+        schemaRowsToSpec,
+        getSchemaText,
         faker,
         RandExp,
       });

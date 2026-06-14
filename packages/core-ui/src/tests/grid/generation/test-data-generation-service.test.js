@@ -614,7 +614,6 @@ describe('test-data-generation-service', () => {
     const importer = { setGridFromGenericDataTable: jest.fn(() => Promise.resolve()) };
     const requestConfirm = jest.fn(async () => true);
     const setTestDataStatus = jest.fn();
-    let attempts = 0;
     const generator = {
       importSpec: jest.fn(),
       compile: jest.fn(),
@@ -623,12 +622,26 @@ describe('test-data-generation-service', () => {
       isValid: () => true,
       errors: () => [],
       generateHeadersArray: () => ['Status'],
-      generateRow: () => {
-        attempts += 1;
-        return attempts === 1 ? null : ['Open'];
-      },
-      generationErrors: () => (attempts === 1 ? [{ code: 'constraint_generation_failed' }] : []),
+      generateRow: () => ['Open'],
     };
+    const createGenerationSessionFn = jest.fn(() => ({
+      isValid: () => true,
+      getErrors: () => [],
+      generateRows: async ({ hooks }) => {
+        await hooks.onConstraintImpact({
+          generatedRows: 0,
+          failedRows: 1000,
+          retryCount: 0,
+          continueGeneration: jest.fn(),
+        });
+        return {
+          ok: true,
+          headers: ['Status'],
+          rows: [['Open']],
+          diagnostics: { rowCount: 1 },
+        };
+      },
+    }));
 
     const service = createTestDataGenerationService({
       TestDataGeneratorClass: function TestDataGeneratorClass() {
@@ -677,6 +690,7 @@ describe('test-data-generation-service', () => {
       getGenerationMode: () => 'new-table',
       getRequestedRowCount: () => 1,
       requestConfirm,
+      createGenerationSessionFn,
     });
 
     await service.generateTestData();
@@ -699,7 +713,6 @@ describe('test-data-generation-service', () => {
     const requestConfirm = jest.fn(async () => false);
     const setTestDataStatus = jest.fn();
     const showSchemaError = jest.fn();
-    let attempts = 0;
     const generator = {
       importSpec: jest.fn(),
       compile: jest.fn(),
@@ -708,12 +721,35 @@ describe('test-data-generation-service', () => {
       isValid: () => true,
       errors: () => [],
       generateHeadersArray: () => ['Status'],
-      generateRow: () => {
-        attempts += 1;
-        return attempts === 1 ? ['Closed'] : null;
-      },
-      generationErrors: () => (attempts >= 2 ? [{ code: 'constraint_generation_failed' }] : []),
+      generateRow: () => ['Closed'],
     };
+    const createGenerationSessionFn = jest.fn(() => ({
+      isValid: () => true,
+      getErrors: () => [],
+      generateRows: async ({ hooks }) => {
+        await hooks.onConstraintImpact({
+          generatedRows: 1,
+          failedRows: 1000,
+          retryCount: 0,
+          continueGeneration: jest.fn(),
+        });
+        return {
+          ok: false,
+          aborted: true,
+          partial: true,
+          headers: ['Status'],
+          rows: [['Closed']],
+          diagnostics: { rowCount: 1, failedRows: 1000, retryCount: 0 },
+          errors: [
+            {
+              code: 'constraint_generation_failed',
+              message:
+                'Schema Constraints are impacting row generation - generated 1 rows, failed to generate 1000 rows. Consider changing constraints to improve row generation.',
+            },
+          ],
+        };
+      },
+    }));
 
     const service = createTestDataGenerationService({
       TestDataGeneratorClass: function TestDataGeneratorClass() {
@@ -762,6 +798,7 @@ describe('test-data-generation-service', () => {
       getGenerationMode: () => 'new-table',
       getRequestedRowCount: () => 2,
       requestConfirm,
+      createGenerationSessionFn,
     });
 
     await service.generateTestData();
@@ -791,9 +828,37 @@ describe('test-data-generation-service', () => {
       isValid: () => true,
       errors: () => [],
       generateHeadersArray: () => ['Status'],
-      generateRow: () => null,
-      generationErrors: () => [{ code: 'constraint_generation_failed' }],
+      generateRow: () => ['Open'],
     };
+    const createGenerationSessionFn = jest.fn(() => ({
+      isValid: () => true,
+      getErrors: () => [],
+      generateRows: async ({ hooks }) => {
+        for (let retryCount = 0; retryCount <= 10; retryCount += 1) {
+          await hooks.onConstraintImpact({
+            generatedRows: 0,
+            failedRows: (retryCount + 1) * 1000,
+            retryCount,
+            continueGeneration: jest.fn(),
+          });
+        }
+        return {
+          ok: false,
+          aborted: true,
+          partial: false,
+          headers: ['Status'],
+          rows: [],
+          diagnostics: { rowCount: 0, failedRows: 11000, retryCount: 10 },
+          errors: [
+            {
+              code: 'constraint_generation_failed',
+              message:
+                'Schema Constraints are impacting row generation - generated 0 rows, failed to generate 11000 rows. Consider changing constraints to improve row generation.',
+            },
+          ],
+        };
+      },
+    }));
 
     const service = createTestDataGenerationService({
       TestDataGeneratorClass: function TestDataGeneratorClass() {
@@ -842,6 +907,7 @@ describe('test-data-generation-service', () => {
       getGenerationMode: () => 'new-table',
       getRequestedRowCount: () => 1,
       requestConfirm,
+      createGenerationSessionFn,
     });
 
     await service.generateTestData();

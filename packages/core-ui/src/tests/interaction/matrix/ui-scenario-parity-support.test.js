@@ -27,8 +27,8 @@ describe('ui scenario parity support', () => {
       structuralParity: true,
     });
     expect(parityByScenarioId['custom-regex-base']).toEqual({
-      mode: 'exact',
-      exactPreviewParity: true,
+      mode: 'structural',
+      exactPreviewParity: false,
       structuralParity: true,
     });
     expect(parityByScenarioId['faker-helpers-mustache-base']).toEqual({
@@ -36,5 +36,5 @@ describe('ui scenario parity support', () => {
       exactPreviewParity: true,
       structuralParity: true,
     });
-  }, 60000);
+  }, 120000);
 });

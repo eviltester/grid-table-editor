@@ -38,6 +38,22 @@ describe('AnyWayData MCP contract', () => {
     expect(result.rows).toEqual([['2026-06-12T16:00:00Z'], ['2026-06-12T17:00:00Z'], ['2026-06-12T18:00:00Z']]);
   });
 
+  test('preserves safe faker validation for amend requests', () => {
+    const result = executeAnyWayDataMcpTool('amend_data_from_spec', {
+      textSpec: 'Sentence\nhelpers.mustache("x", {count: () => `${this.number.int()}`})',
+      inputData: '[{"Name":"Alice"}]',
+      inputFormat: 'json',
+      rowCount: 1,
+      outputFormat: 'json',
+    });
+
+    expect(result.ok).toBe(false);
+    expect(result.error.code).toBe('unsafe_faker_rule');
+    expect(result.error.details).toEqual({
+      mode: 'safe',
+    });
+  });
+
   test('describes flat formatter options on generation tools', () => {
     const generateTool = listAnyWayDataMcpTools().find((tool) => tool.name === 'generate_data_from_spec');
     const amendTool = listAnyWayDataMcpTools().find((tool) => tool.name === 'amend_data_from_spec');

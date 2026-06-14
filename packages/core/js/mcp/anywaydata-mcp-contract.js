@@ -342,30 +342,33 @@ function executeGenerateOrAmendTool(toolName, args = {}) {
     return textSpecLengthError;
   }
 
-  const result =
-    toolName === 'amend_data_from_spec'
-      ? amendFromTextSpecAndData(normalizedArgs)
-      : (() => {
-          const session = createGenerationSession({
-            textSpec: normalizedArgs.textSpec,
-            seed: normalizedArgs.seed,
-            unsafeFakerExpressions: false,
-            safeFakerRules: true,
-            schemaSource: 'mcp',
-          });
+  const safeSession = createGenerationSession({
+    textSpec: normalizedArgs.textSpec,
+    seed: normalizedArgs.seed,
+    unsafeFakerExpressions: false,
+    safeFakerRules: true,
+    schemaSource: 'mcp',
+  });
 
-          return normalizedArgs.pairwise
-            ? session.generatePairwise({
-                rowCount: normalizedArgs.rowCount,
-                outputFormat: normalizedArgs.outputFormat,
-                options: normalizedArgs.options,
-              })
-            : session.generateRows({
-                rowCount: normalizedArgs.rowCount,
-                outputFormat: normalizedArgs.outputFormat,
-                options: normalizedArgs.options,
-              });
-        })();
+  const result = !safeSession.isValid()
+    ? {
+        ok: false,
+        errors: safeSession.getErrors(),
+        diagnostics: {},
+      }
+    : toolName === 'amend_data_from_spec'
+      ? amendFromTextSpecAndData(normalizedArgs)
+      : normalizedArgs.pairwise
+        ? safeSession.generatePairwise({
+            rowCount: normalizedArgs.rowCount,
+            outputFormat: normalizedArgs.outputFormat,
+            options: normalizedArgs.options,
+          })
+        : safeSession.generateRows({
+            rowCount: normalizedArgs.rowCount,
+            outputFormat: normalizedArgs.outputFormat,
+            options: normalizedArgs.options,
+          });
 
   if (result.ok) {
     return result;

@@ -257,6 +257,18 @@ body.theme-dark .dragdropzone {
   max-width: 75ch;
 }
 
+.writer-schema-flag-links {
+  margin: 0.45rem 0 0;
+  padding-left: 1.25rem;
+}
+
+.writer-schema-flag-links li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .writer-schema-layout {
   display: grid;
   grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
@@ -278,6 +290,12 @@ body.theme-dark .dragdropzone {
 
 .writer-schema-card__header h2 {
   margin: 0;
+}
+
+.writer-schema-inline-actions {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .writer-schema-label {
@@ -302,7 +320,7 @@ body.theme-dark .dragdropzone {
 .writer-schema-json-output {
   overflow: auto;
   white-space: pre-wrap;
-  word-break: break-word;
+  overflow-wrap: break-word;
   font-family: 'Courier New', Courier, monospace;
   line-height: 1.4;
   resize: vertical;
@@ -312,7 +330,6 @@ body.theme-dark .dragdropzone {
 .writer-schema-progress-output {
   box-sizing: border-box;
   margin: 0;
-  padding: 0 0 0 1.25rem;
   display: flex;
   flex-direction: column;
   gap: 0.55rem;
@@ -342,6 +359,8 @@ body.theme-dark .dragdropzone {
 }
 
 .writer-schema-card__header > button,
+.writer-schema-flag-copy-button,
+.writer-schema-inline-actions > button,
 .writer-schema-actions > button {
   border: 0;
   border-radius: 999px;
@@ -354,9 +373,25 @@ body.theme-dark .dragdropzone {
 }
 
 .writer-schema-card__header > button:disabled,
+.writer-schema-flag-copy-button:disabled,
+.writer-schema-inline-actions > button:disabled,
 .writer-schema-actions > button:disabled {
   cursor: progress;
   opacity: 0.7;
+}
+
+.writer-schema-flag-copy-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.75rem;
+}
+
+.writer-schema-action-icon {
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.35rem;
+  vertical-align: -0.15rem;
 }
 
 body.theme-dark .writer-schema-eyebrow {

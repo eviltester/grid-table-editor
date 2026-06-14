@@ -305,6 +305,7 @@ Current status:
 
 - `SharedSchemaDefinition` now lives under `shared/schema-definition/` with a controller, view, and create-component factory.
 - The new component reuses the existing shared schema parsing, validation, row-editing, command-picker, drag/drop, and text-mode logic from `shared/test-data/schema/` instead of duplicating those rules.
+- The shared schema row editor now also exposes a documented params-edit dialog for commands with parameter metadata, so app and generator hosts share the same guided param-entry flow and semantic validation path instead of leaving params as raw punctuation-only text entry.
 - The app test-data panel now mounts its schema editor through `SharedSchemaDefinition`, keeping the same DOM IDs so the rest of the app flow and browser tests continue to treat the schema surface as a black box.
 - The generator page now also mounts its live schema editor through `SharedSchemaDefinition`, while preserving the page-level `#generatorSchemaSection` host contract, row-level browser interactions, and text-mode generate/pairwise flows.
 - Generator runtime adoption also moved the shared text-mode syncing, method-picker command selection, semantic-validation caret preservation, and pairwise-button visibility behavior onto the shared component path.

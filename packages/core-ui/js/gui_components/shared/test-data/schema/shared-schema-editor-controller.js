@@ -1,4 +1,5 @@
 import { openMethodPickerModal } from '../ui/method-picker-modal.js';
+import { openParamsEditorModal } from '../ui/params-editor-modal.js';
 import { buildSchemaHelpModel, renderSchemaHelpHtml } from '../help/help-model-builder.js';
 import {
   SOURCE_TYPE_DOMAIN,
@@ -8,6 +9,7 @@ import {
   SOURCE_TYPE_REGEX,
   normaliseDomainCommand,
   normaliseFakerCommand,
+  normaliseSourceType,
   buildDataRuleFromSchemaRow,
 } from '../../schema-row-rule-mapper.js';
 import {
@@ -166,7 +168,40 @@ function createSharedSchemaEditorController({
       title: model.title || '',
       docsUrl: model.docsUrl || '#',
       html: renderSchemaHelpHtml(model),
+      params: Array.isArray(model.params) ? model.params : [],
     };
+  };
+
+  const getMethodOptionForRow = (row) => {
+    const command = String(row?.command || '').trim();
+    if (!command) {
+      return null;
+    }
+    const sourceType = normaliseSourceType(row?.sourceType);
+    return (getMethodPickerOptions(command) || []).find(
+      (option) =>
+        String(option?.command || '').trim() === command && normaliseSourceType(option?.sourceType) === sourceType
+    );
+  };
+
+  const validateParamsForRow = (row, paramsText) => {
+    const rowIndex = session.getRows().findIndex((entry) => entry.id === row?.id);
+    if (rowIndex < 0) {
+      return [];
+    }
+    const candidateRow = {
+      ...row,
+      params: paramsText,
+      semanticValidationIssues: [],
+    };
+    return getSchemaRowSemanticValidationIssues(candidateRow, rowIndex, {
+      schemaTextToDataRules,
+      faker,
+      RandExp,
+      includeBracketGuidance: false,
+    })
+      .map((issue) => issue?.message)
+      .filter(Boolean);
   };
 
   const revalidateRows = () => {
@@ -541,6 +576,40 @@ function createSharedSchemaEditorController({
                     : normaliseFakerCommand(selected.command),
               })
             );
+            revalidateRows();
+            renderRows();
+            syncTextFromRows();
+            scheduleSemanticValidationForRow(rowId, { immediate: true });
+          }
+        } catch {
+          return;
+        }
+      }
+      return;
+    }
+
+    const paramsButton = event?.target?.closest?.('[data-action="edit-params"]');
+    if (paramsButton) {
+      const rowId = paramsButton.getAttribute('data-row-id');
+      const index = session.getRows().findIndex((entry) => entry.id === rowId);
+      if (index >= 0) {
+        const row = session.getRows()[index];
+        const methodOption = getMethodOptionForRow(row);
+        try {
+          const paramsText = await openParamsEditorModal({
+            documentObj,
+            windowObj: resolveWindowObj(null, documentObj),
+            commandLabel: methodOption?.helpModel?.heading || row.command,
+            helpModel: methodOption?.helpModel || buildSchemaHelpModel(row.sourceType, row.command),
+            initialParams: row.params,
+            validateParams: (nextParamsText) => validateParamsForRow(row, nextParamsText),
+          });
+          if (paramsText !== null) {
+            session.updateRowAtIndex(index, (currentRow) => ({
+              ...currentRow,
+              params: paramsText,
+              semanticValidationIssues: [],
+            }));
             revalidateRows();
             renderRows();
             syncTextFromRows();

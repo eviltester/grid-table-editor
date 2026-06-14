@@ -1,4 +1,4 @@
-import { expect, userEvent, within } from 'storybook/test';
+import { expect, userEvent, waitFor, within } from 'storybook/test';
 import RandExp from 'randexp';
 import { faker } from '@faker-js/faker';
 import {
@@ -421,5 +421,51 @@ export const CommandPicker = {
 
     const commandInput = canvasElement.querySelector('[data-field="command"]');
     await expect(commandInput?.value).toBe('helpers.fake');
+  },
+};
+
+export const ParamsDialog = {
+  render: renderSharedSchemaDefinitionStory,
+  args: {
+    initialRows: [
+      {
+        id: 'enum-row',
+        name: 'Status',
+        sourceType: 'domain',
+        command: 'datatype.enum',
+        params: '',
+        value: '',
+        comments: '',
+        leadingTextLines: [],
+      },
+    ],
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Guided params editing flow for documented command params. Reviewers can open the params dialog, fill values through the structured table, and confirm the generated schema params text is applied back to the shared row editor.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    expectSchemaModeVisible(canvasElement);
+    const initialRow = canvasElement.querySelector('.shared-schema-row');
+    const paramsButton = initialRow.querySelector('[data-action="edit-params"]');
+    expect(paramsButton).not.toBeNull();
+    await userEvent.click(paramsButton);
+
+    const dialog = within(document.body).getByRole('dialog', { name: /edit params for .*datatype\.enum/i });
+    const dialogScope = within(dialog);
+    const valuesInput = dialogScope.getByRole('textbox', { name: /values value/i });
+    await userEvent.type(valuesInput, 'active,inactive,pending');
+    await expect(dialogScope.getByText('(active,inactive,pending)')).toBeTruthy();
+    await userEvent.click(dialogScope.getByRole('button', { name: /^apply$/i }));
+
+    await waitFor(() =>
+      expect(canvasElement.querySelector('.shared-schema-row [data-field="params"]').value).toBe(
+        '(active,inactive,pending)'
+      )
+    );
   },
 };

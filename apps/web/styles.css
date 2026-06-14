@@ -1865,7 +1865,7 @@ body.theme-dark .shared-schema-row-validation {
     align-self: center;
     margin: 0 0.2rem;
   }
-  .shared-schema-row > input[data-field='params'] {
+  .shared-schema-row > .shared-schema-params-control {
     grid-column: 1 / span 3;
     grid-row: 4;
     min-width: 0;
@@ -1897,6 +1897,23 @@ body.theme-dark .shared-schema-row-validation {
 
 .shared-schema-command-picker-control {
   position: relative;
+}
+
+.shared-schema-params-control {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) max-content;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+.shared-schema-params-control > input[data-field='params'] {
+  min-width: 0;
+  width: 100%;
+}
+
+.shared-schema-params-button[disabled] {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 .shared-schema-command-picker-shadow-select {

@@ -24,12 +24,14 @@ describe('createSharedSchemaEditorController', () => {
     dom = new JSDOM('<!doctype html><html><body></body></html>');
     global.document = dom.window.document;
     global.window = dom.window;
+    global.navigator = dom.window.navigator;
   });
 
   afterEach(() => {
     dom.window.close();
     delete global.document;
     delete global.window;
+    delete global.navigator;
     jest.restoreAllMocks();
   });
 
@@ -95,5 +97,62 @@ describe('createSharedSchemaEditorController', () => {
     controller.destroy();
 
     expect(timerApi.clearTimeout).toHaveBeenCalledWith('timer-1');
+  });
+
+  test('opens the params editor dialog and applies validated params back to the row', async () => {
+    const root = createRoot(dom.window.document);
+    const controller = createSharedSchemaEditorController({
+      documentObj: dom.window.document,
+      rootElement: root,
+      createBlankRow: () => ({
+        id: 'row-1',
+        name: 'Status',
+        sourceType: 'domain',
+        command: 'datatype.enum',
+        value: '',
+        params: '',
+        semanticValidationIssues: [],
+      }),
+      mapRuleToRow: () => ({
+        id: 'row-1',
+        name: 'Status',
+        sourceType: 'domain',
+        command: 'datatype.enum',
+        value: '',
+        params: '',
+        semanticValidationIssues: [],
+      }),
+      schemaTextToDataRules: jest.fn(() => ({ dataRules: [], errors: [] })),
+      dataRulesToSchemaText: jest.fn(() => ''),
+      getMethodPickerOptions: () => [
+        {
+          sourceType: 'domain',
+          command: 'datatype.enum',
+          helpModel: {
+            heading: 'datatype.enum',
+            summary: 'Enum helper',
+            params: [{ name: 'values', type: 'comma-separated list', optional: false }],
+          },
+        },
+      ],
+      getVisibleDomainCommands: () => ['datatype.enum'],
+      validateSchemaRows: jest.fn((rows) => ({ rows, errors: [] })),
+      updatePairwiseButtonVisibility: jest.fn(),
+      updateHelpHints: jest.fn(),
+    });
+
+    controller.init();
+    const paramsButton = dom.window.document.querySelector('[data-action="edit-params"]');
+    const dialogPromise = controller.handleClick({ target: paramsButton });
+
+    const dialog = dom.window.document.querySelector('[data-role="params-editor-dialog"]');
+    expect(dialog).not.toBeNull();
+    const paramsInput = dialog.querySelector('[data-role="params-editor-value"]');
+    paramsInput.value = 'active,inactive,pending';
+    paramsInput.dispatchEvent(new dom.window.Event('input', { bubbles: true }));
+    dialog.querySelector('[data-role="params-editor-apply-button"]').click();
+
+    await dialogPromise;
+    expect(dom.window.document.querySelector('[data-field="params"]').value).toBe('(active,inactive,pending)');
   });
 });

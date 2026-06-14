@@ -1,6 +1,7 @@
 const { expect } = require('@playwright/test');
 const { MethodPickerDialogComponent } = require('./method-picker-dialog.component');
 const { OverlaySafeActivationComponent } = require('./overlay-safe-activation.component');
+const { ParamsEditorDialogComponent } = require('./params-editor-dialog.component');
 
 class SchemaEditorComponent {
   constructor(page, config) {
@@ -31,6 +32,7 @@ class SchemaEditorComponent {
       ? page.locator(this.config.addFieldSelector)
       : this.root.locator('[data-role="schema-add-field"]');
     this.methodPicker = new MethodPickerDialogComponent(page);
+    this.paramsEditor = new ParamsEditorDialogComponent(page);
   }
 
   row(index) {
@@ -169,6 +171,16 @@ class SchemaEditorComponent {
     await this.ensureSchemaMode();
     await this.dismissOpenHelpTooltips();
     await this.row(index).locator(`button[data-action="${action}"]`).click();
+  }
+
+  async editRowParamsWithDialog(index, valuesByName) {
+    await this.ensureSchemaMode();
+    await this.dismissOpenHelpTooltips();
+    await this.row(index).locator('[data-action="edit-params"]').click();
+    for (const [name, value] of Object.entries(valuesByName || {})) {
+      await this.paramsEditor.setValue(name, value);
+    }
+    await this.paramsEditor.apply();
   }
 
   async dragRowToIndex(fromIndex, toIndex, { placement = 'before' } = {}) {

@@ -1,3 +1,4 @@
+import { createHelpTooltipService } from '../../../../help/help-tooltips.js';
 import { getDefaultDocumentObj, getDefaultWindowObj, resolveWindowObj } from '../../dom/default-objects.js';
 
 const STYLE_ID = 'params-editor-modal-styles-link';
@@ -28,6 +29,14 @@ function stripOuterParens(text) {
     return value.slice(1, -1);
   }
   return value;
+}
+
+function toExampleList(value) {
+  if (Array.isArray(value)) {
+    return value.map((entry) => String(entry || '').trim()).filter(Boolean);
+  }
+  const single = String(value || '').trim();
+  return single ? [single] : [];
 }
 
 function splitTopLevelCommaSeparated(text) {
@@ -144,8 +153,19 @@ function parseInitialParamEntries({ params = [], initialParams = '' } = {}) {
         type: param?.type || '',
         optional: param?.optional === true,
         variadic: param?.variadic === true,
+        description: param?.description || '',
         example: param?.example || '',
+        examples: Array.isArray(param?.examples) ? param.examples : [],
         defaultValue: String(param?.defaultValue ?? ''),
+        min: param?.min,
+        minimum: param?.minimum,
+        max: param?.max,
+        maximum: param?.maximum,
+        pattern: param?.pattern,
+        multipleOf: param?.multipleOf,
+        allowedValues: Array.isArray(param?.allowedValues) ? param.allowedValues : [],
+        choices: Array.isArray(param?.choices) ? param.choices : [],
+        enumValues: Array.isArray(param?.enumValues) ? param.enumValues : [],
         value: String(param?.defaultValue ?? ''),
         mode: 'auto',
       })),
@@ -174,8 +194,19 @@ function parseInitialParamEntries({ params = [], initialParams = '' } = {}) {
         type: param?.type || '',
         optional: param?.optional === true,
         variadic: param?.variadic === true,
+        description: param?.description || '',
         example: param?.example || '',
+        examples: Array.isArray(param?.examples) ? param.examples : [],
         defaultValue: String(param?.defaultValue ?? ''),
+        min: param?.min,
+        minimum: param?.minimum,
+        max: param?.max,
+        maximum: param?.maximum,
+        pattern: param?.pattern,
+        multipleOf: param?.multipleOf,
+        allowedValues: Array.isArray(param?.allowedValues) ? param.allowedValues : [],
+        choices: Array.isArray(param?.choices) ? param.choices : [],
+        enumValues: Array.isArray(param?.enumValues) ? param.enumValues : [],
         value: rawValue ? unquoteValue(rawValue) : '',
         mode: inferEditorMode(rawValue, param?.type || ''),
       };
@@ -275,12 +306,87 @@ function buildParamsTextFromEditorEntries({ entries = [], validateParams = null 
   };
 }
 
+function buildParamValidationRules(entry = {}) {
+  const rules = [entry.optional ? 'Optional.' : 'Required.'];
+  const defaultValue = String(entry.defaultValue ?? '').trim();
+  if (defaultValue) {
+    rules.push(`Default: ${defaultValue}`);
+  }
+  if (entry.variadic) {
+    rules.push('Accepts multiple values in this one field.');
+  }
+
+  const numericRules = [
+    ['Minimum', entry.minimum ?? entry.min],
+    ['Maximum', entry.maximum ?? entry.max],
+    ['Multiple of', entry.multipleOf],
+  ];
+  numericRules.forEach(([label, value]) => {
+    if (value !== undefined && value !== null && String(value).trim() !== '') {
+      rules.push(`${label}: ${value}`);
+    }
+  });
+
+  const pattern = String(entry.pattern ?? '').trim();
+  if (pattern) {
+    rules.push(`Pattern: ${pattern}`);
+  }
+
+  const allowedValues = entry.allowedValues || entry.choices || entry.enumValues || [];
+  if (Array.isArray(allowedValues) && allowedValues.length > 0) {
+    rules.push(`Allowed values: ${allowedValues.join(', ')}`);
+  }
+
+  return rules;
+}
+
+function buildParamHelpHtml(entry = {}) {
+  const description = String(entry.description || '').trim();
+  const examples = [...new Set([...toExampleList(entry.example), ...toExampleList(entry.examples)])];
+  const rules = buildParamValidationRules(entry);
+  const sections = [`<p><strong>${escapeHtml(entry.name || 'Param')}</strong></p>`];
+
+  if (description) {
+    sections.push(`<p>${escapeHtml(description)}</p>`);
+  }
+
+  sections.push(`<p><strong>Type:</strong> <code>${escapeHtml(entry.type || 'unknown')}</code></p>`);
+
+  if (examples.length > 0) {
+    sections.push(
+      `<p><strong>Examples:</strong></p><ul>${examples
+        .map((example) => `<li><code>${escapeHtml(example)}</code></li>`)
+        .join('')}</ul>`
+    );
+  }
+
+  if (rules.length > 0) {
+    sections.push(
+      `<p><strong>Rules:</strong></p><ul>${rules.map((rule) => `<li>${escapeHtml(rule)}</li>`).join('')}</ul>`
+    );
+  }
+
+  return sections.join('');
+}
+
 function renderEntryRows(entries = []) {
   return entries
-    .map(
-      (entry, index) => `
+    .map((entry, index) => {
+      const helpHtml = buildParamHelpHtml(entry);
+      return `
         <tr>
-          <td><label for="params-editor-value-${index}"><code>${escapeHtml(entry.name)}</code></label></td>
+          <td>
+            <div class="params-editor-name-cell">
+              <label for="params-editor-value-${index}"><code>${escapeHtml(entry.name)}</code></label>
+              <span
+                class="helpicon params-editor-help-icon"
+                data-role="params-editor-param-help"
+                data-help-role="help-icon"
+                data-help="params-editor-param-help-${index}"
+                data-help-text="${escapeHtml(helpHtml)}"
+              ></span>
+            </div>
+          </td>
           <td><code>${escapeHtml(entry.type || 'unknown')}</code></td>
           <td>
             <label class="params-editor-required-checkbox-label" aria-label="Required ${escapeHtml(entry.name)}">
@@ -310,8 +416,8 @@ function renderEntryRows(entries = []) {
             }
           </td>
         </tr>
-      `
-    )
+      `;
+    })
     .join('');
 }
 
@@ -383,6 +489,14 @@ function openParamsEditorModal({
   const errorElement = overlay.querySelector('[data-role="params-editor-error"]');
   const applyButton = overlay.querySelector('[data-role="params-editor-apply-button"]');
   const valueInputs = () => Array.from(overlay.querySelectorAll('[data-role="params-editor-value"]'));
+  const helpTooltipService = createHelpTooltipService({
+    documentObj,
+    windowObj,
+    rootElement: overlay,
+    entries: {},
+    useGlobalInlineHelpContainer: false,
+    resolveHelpElements: () => overlay.querySelectorAll('[data-help-role][data-help]'),
+  });
   const warningVisible = Boolean(parsed.error);
   let currentEntries = parsed.entries.map((entry) => ({ ...entry }));
 
@@ -413,6 +527,7 @@ function openParamsEditorModal({
 
   return new Promise((resolve) => {
     function close(result) {
+      helpTooltipService.destroy();
       overlay.remove();
       resolve(result ?? null);
     }
@@ -455,6 +570,7 @@ function openParamsEditorModal({
     valueInputs().forEach((input) => input.addEventListener('input', syncPreview));
 
     documentObj.body.appendChild(overlay);
+    helpTooltipService.update();
     syncPreview();
     const firstInput = valueInputs()[0];
     const focusFn = windowObj?.requestAnimationFrame?.bind(windowObj) || windowObj?.setTimeout?.bind(windowObj);

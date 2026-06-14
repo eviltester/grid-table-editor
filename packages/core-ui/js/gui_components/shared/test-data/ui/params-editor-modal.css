@@ -154,6 +154,16 @@ body.theme-dark {
   border-bottom: 0;
 }
 
+.params-editor-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.params-editor-help-icon {
+  flex: 0 0 auto;
+}
+
 .params-editor-table input {
   display: block;
   width: 100%;

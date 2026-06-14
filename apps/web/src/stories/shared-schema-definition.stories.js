@@ -448,7 +448,7 @@ export const ParamsDialog = {
     docs: {
       description: {
         story:
-          'Guided params editing flow for documented command params. This story demonstrates the value-only editor: required state appears as read-only checkboxes, documented defaults are prefilled into the value inputs, and string values are auto-quoted when the generated schema params text is built. The taller canvas keeps the modal inside the visible Storybook frame while reviewers inspect the defaults and apply updated values back into the shared row editor.',
+          'Guided params editing flow for documented command params. This story demonstrates the value-only editor: required state appears as read-only checkboxes, documented defaults are prefilled into the value inputs, each param row exposes a help tippy with descriptions/examples/rules, and string values are auto-quoted when the generated schema params text is built. Hover a row help icon to review the metadata before editing and applying the params back into the shared row editor.',
       },
     },
   },
@@ -461,7 +461,11 @@ export const ParamsDialog = {
 
     const dialog = within(document.body).getByRole('dialog', { name: /edit params for .*autoincrement\.sequence/i });
     const dialogScope = within(dialog);
+    const firstHelpIcon = dialog.querySelector('[data-role="params-editor-param-help"]');
     expect(dialog.querySelector('[data-role="params-editor-mode"]')).toBeNull();
+    await expect(firstHelpIcon).toHaveAttribute('data-help-text', expect.stringContaining('<strong>Rules:</strong>'));
+    await expect(firstHelpIcon).toHaveAttribute('data-help-text', expect.stringContaining('Optional.'));
+    await expect(firstHelpIcon).toHaveAttribute('data-help-text', expect.stringContaining('Default: 1'));
     await expect(dialogScope.getByRole('textbox', { name: /start value/i }).value).toBe('1');
     await expect(dialogScope.getByRole('textbox', { name: /step value/i }).value).toBe('1');
     const prefixInput = dialogScope.getByRole('textbox', { name: /prefix value/i });

@@ -1,5 +1,6 @@
 import { JSDOM } from 'jsdom';
 import { fireEvent, within } from '@testing-library/dom';
+import { jest } from '@jest/globals';
 import {
   splitTopLevelCommaSeparated,
   parseInitialParamEntries,
@@ -16,6 +17,8 @@ describe('params editor modal', () => {
     global.document = dom.window.document;
     global.window = dom.window;
     global.navigator = dom.window.navigator;
+    global.tippy = jest.fn();
+    dom.window.tippy = global.tippy;
     getOverlay = () => document.querySelector('[data-role="params-editor-overlay"]');
   });
 
@@ -24,6 +27,8 @@ describe('params editor modal', () => {
     delete global.document;
     delete global.window;
     delete global.navigator;
+    delete global.tippy;
+    delete dom.window.tippy;
   });
 
   test('splits top-level comma values while preserving nested arrays and quoted commas', () => {
@@ -259,6 +264,53 @@ describe('params editor modal', () => {
     expect(zeroPaddingInput.value).toBe('0');
     expect(dialog.textContent).toContain('Default: 1');
     expect(dialog.textContent).toContain('Default: 0');
+
+    fireEvent.click(within(dialog).getByRole('button', { name: /^cancel$/i }));
+    await expect(promise).resolves.toBeNull();
+  });
+
+  test('binds per-param tooltip help with descriptions, examples, and derived rules', async () => {
+    const promise = openParamsEditorModal({
+      documentObj: document,
+      windowObj: window,
+      commandLabel: 'number.int',
+      helpModel: {
+        summary: 'Integer helper',
+        params: [
+          {
+            name: 'min',
+            type: 'integer',
+            optional: false,
+            description: 'Lower bound for the generated integer.',
+            example: '1',
+          },
+          {
+            name: 'max',
+            type: 'integer',
+            optional: true,
+            defaultValue: '10',
+            description: 'Upper bound for the generated integer.',
+            examples: ['10', '100'],
+          },
+        ],
+      },
+      initialParams: '(1,10)',
+    });
+
+    const dialog = within(getOverlay()).getByRole('dialog', { name: /edit params for number\.int/i });
+    const helpIcons = dialog.querySelectorAll('[data-role="params-editor-param-help"]');
+    expect(helpIcons).toHaveLength(2);
+    expect(global.tippy).toHaveBeenCalled();
+
+    expect(helpIcons[0].getAttribute('data-help-text')).toContain('<strong>min</strong>');
+    expect(helpIcons[0].getAttribute('data-help-text')).toContain('Lower bound for the generated integer.');
+    expect(helpIcons[0].getAttribute('data-help-text')).toContain('<strong>Examples:</strong>');
+    expect(helpIcons[0].getAttribute('data-help-text')).toContain('<strong>Rules:</strong>');
+    expect(helpIcons[0].getAttribute('data-help-text')).toContain('Required.');
+
+    expect(helpIcons[1].getAttribute('data-help-text')).toContain('Optional.');
+    expect(helpIcons[1].getAttribute('data-help-text')).toContain('Default: 10');
+    expect(helpIcons[1].getAttribute('data-help-text')).toContain('<code>100</code>');
 
     fireEvent.click(within(dialog).getByRole('button', { name: /^cancel$/i }));
     await expect(promise).resolves.toBeNull();

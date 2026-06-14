@@ -80,8 +80,24 @@ describe('help-model-builder', () => {
 
     expect(model.docsUrl).toBe('https://anywaydata.com/docs/test-data/auto-increment-sequences');
     expect(model.params.map((param) => param.name)).toEqual(['start', 'step', 'prefix', 'suffix', 'zeropadding']);
+    expect(model.params.map((param) => param.optional)).toEqual([true, true, true, true, true]);
+    expect(model.params.map((param) => param.defaultValue)).toEqual(['1', '1', '', '', '0']);
     expect(renderSchemaHelpHtml(model)).toContain('accepted row');
     expect(renderSchemaHelpHtml(model)).toContain('zeropadding');
+  });
+
+  test('keeps documented params for datatype.enum domain help', () => {
+    const model = buildSchemaHelpModel('domain', 'datatype.enum');
+
+    expect(model.params).toEqual([
+      expect.objectContaining({
+        name: 'values',
+        variadic: true,
+        optional: false,
+      }),
+    ]);
+    expect(renderSchemaHelpHtml(model)).toContain('Schema params field');
+    expect(renderSchemaHelpHtml(model)).toContain('values');
   });
 
   test('maps faker helpers docs link to anywaydata faker helpers docs', () => {

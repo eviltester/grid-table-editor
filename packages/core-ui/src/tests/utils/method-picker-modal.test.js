@@ -327,4 +327,21 @@ describe('method picker modal', () => {
       global.window = originalWindow;
     }
   });
+
+  test('injects critical inline layout styles before the external stylesheet loads', async () => {
+    const promise = openMethodPickerModal({
+      documentObj: document,
+      windowObj: window,
+      options: [{ sourceType: 'domain', command: 'number.int', helpModel: { summary: '', params: [], example: '' } }],
+      currentCommand: 'number.int',
+    });
+
+    const criticalStyle = document.getElementById('method-picker-modal-critical-styles');
+    expect(criticalStyle).not.toBeNull();
+    expect(criticalStyle.textContent).toContain('.method-picker-overlay');
+    expect(criticalStyle.textContent).toContain('.method-picker-content');
+
+    getOverlay().querySelector('[data-role="method-picker-cancel-button"]').click();
+    await promise;
+  });
 });

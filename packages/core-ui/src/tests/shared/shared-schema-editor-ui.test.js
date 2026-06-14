@@ -17,6 +17,8 @@ import {
   SHARED_SCHEMA_COMMAND_PICKER_SHADOW_SELECT_CLASS,
   SHARED_SCHEMA_COMMAND_ROW_CLASS,
   SHARED_SCHEMA_VALUE_ROW_CLASS,
+  SHARED_SCHEMA_PARAMS_CONTROL_CLASS,
+  SHARED_SCHEMA_PARAMS_BUTTON_CLASS,
   SCHEMA_ROW_DRAGGING_CLASS,
   SCHEMA_ROW_DROP_BEFORE_CLASS,
   SCHEMA_ROW_DROP_AFTER_CLASS,
@@ -197,7 +199,7 @@ describe('shared schema editor ui', () => {
       rowsElement,
       schemaRows: [{ id: '1', name: 'First', sourceType: 'faker', command: 'person.firstName', params: '' }],
       fakerCommands: ['person.firstName'],
-      getSchemaHelpData: () => ({ show: false, docsUrl: '', title: '', html: '' }),
+      getSchemaHelpData: () => ({ show: false, docsUrl: '', title: '', html: '', params: [{ name: 'locale' }] }),
       updateAllPairsButtonVisibility: () => {},
     });
 
@@ -206,6 +208,8 @@ describe('shared schema editor ui', () => {
     const commandPickerControl = document.querySelector(`.${SHARED_SCHEMA_COMMAND_PICKER_CONTROL_CLASS}`);
     const commandPickerButton = document.querySelector(`.${SHARED_SCHEMA_COMMAND_PICKER_BUTTON_CLASS}`);
     const commandPickerSelect = document.querySelector(`.${SHARED_SCHEMA_COMMAND_PICKER_SHADOW_SELECT_CLASS}`);
+    const paramsControl = document.querySelector(`.${SHARED_SCHEMA_PARAMS_CONTROL_CLASS}`);
+    const paramsButton = document.querySelector(`.${SHARED_SCHEMA_PARAMS_BUTTON_CLASS}`);
 
     expect(rowActions).not.toBeNull();
     expect(document.querySelector('.generator-row-actions')).toBeNull();
@@ -217,6 +221,28 @@ describe('shared schema editor ui', () => {
     expect(document.querySelector('.generator-command-picker-button')).toBeNull();
     expect(commandPickerSelect).not.toBeNull();
     expect(document.querySelector('.generator-command-picker-shadow-select')).toBeNull();
+    expect(paramsControl).not.toBeNull();
+    expect(paramsButton).not.toBeNull();
+    expect(paramsButton.disabled).toBe(false);
+  });
+
+  test('disables the params dialog button when no documented params exist', () => {
+    renderSharedSchemaRows({
+      documentObj: document,
+      rowsElement,
+      schemaRows: [{ id: '1', name: 'First', sourceType: 'domain', command: 'person.firstName', params: '' }],
+      getVisibleDomainCommands: () => ['person.firstName'],
+      getSchemaHelpData: () => ({
+        show: true,
+        docsUrl: '/docs/example',
+        title: 'Help',
+        html: '<p>Help</p>',
+        params: [],
+      }),
+      updateAllPairsButtonVisibility: () => {},
+    });
+
+    expect(document.querySelector(`.${SHARED_SCHEMA_PARAMS_BUTTON_CLASS}`)?.disabled).toBe(true);
   });
 
   test('renders row layout state with shared-only classes', () => {

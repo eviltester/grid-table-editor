@@ -1,4 +1,4 @@
-import { expect, userEvent, within } from 'storybook/test';
+import { expect, userEvent, waitFor, within } from 'storybook/test';
 import RandExp from 'randexp';
 import { faker } from '@faker-js/faker';
 import {
@@ -87,6 +87,7 @@ function renderSharedSchemaDefinitionStory(args) {
   const fakerCommands = getFakerCommands().filter((command) => command !== 'RegEx' && command.startsWith('helpers.'));
   const domainCommands = getDomainCommands();
   const root = document.createElement('section');
+  root.style.minHeight = args.storyMinHeight || 'auto';
   const ids = createIds(args.idPrefix || 'shared-schema');
   const createBlankRow = createBlankRowFactory(args.idPrefix || 'story-schema-row');
   const component = createSharedSchemaDefinitionComponent({
@@ -201,6 +202,7 @@ const meta = {
     initialText: '',
     showErrors: false,
     startInTextMode: false,
+    storyMinHeight: 'auto',
   },
 };
 
@@ -421,5 +423,60 @@ export const CommandPicker = {
 
     const commandInput = canvasElement.querySelector('[data-field="command"]');
     await expect(commandInput?.value).toBe('helpers.fake');
+  },
+};
+
+export const ParamsDialog = {
+  render: renderSharedSchemaDefinitionStory,
+  args: {
+    storyMinHeight: '820px',
+    initialRows: [
+      {
+        id: 'sequence-row',
+        name: 'SequenceId',
+        sourceType: 'domain',
+        command: 'autoIncrement.sequence',
+        params: '',
+        value: '',
+        comments: '',
+        leadingTextLines: [],
+      },
+    ],
+  },
+  parameters: {
+    layout: 'fullscreen',
+    docs: {
+      description: {
+        story:
+          'Guided params editing flow for documented command params. This story demonstrates the value-only editor: required state appears as read-only checkboxes, documented defaults are prefilled into the value inputs, each param row exposes a help tippy with descriptions/examples/rules, and string values are auto-quoted when the generated schema params text is built. Hover a row help icon to review the metadata before editing and applying the params back into the shared row editor.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    expectSchemaModeVisible(canvasElement);
+    const initialRow = canvasElement.querySelector('.shared-schema-row');
+    const paramsButton = initialRow.querySelector('[data-action="edit-params"]');
+    expect(paramsButton).not.toBeNull();
+    await userEvent.click(paramsButton);
+
+    const dialog = within(document.body).getByRole('dialog', { name: /edit params for .*autoincrement\.sequence/i });
+    const dialogScope = within(dialog);
+    const firstHelpIcon = dialog.querySelector('[data-role="params-editor-param-help"]');
+    expect(dialog.querySelector('[data-role="params-editor-mode"]')).toBeNull();
+    await expect(firstHelpIcon).toHaveAttribute('data-help-text', expect.stringContaining('<strong>Rules:</strong>'));
+    await expect(firstHelpIcon).toHaveAttribute('data-help-text', expect.stringContaining('Optional.'));
+    await expect(firstHelpIcon).toHaveAttribute('data-help-text', expect.stringContaining('Default: 1'));
+    await expect(dialogScope.getByRole('textbox', { name: /start value/i }).value).toBe('1');
+    await expect(dialogScope.getByRole('textbox', { name: /step value/i }).value).toBe('1');
+    const prefixInput = dialogScope.getByRole('textbox', { name: /prefix value/i });
+    await userEvent.type(prefixInput, 'filename');
+    await expect(dialogScope.getByText('(start=1,step=1,prefix="filename",zeropadding=0)')).toBeTruthy();
+    await userEvent.click(dialogScope.getByRole('button', { name: /^apply$/i }));
+
+    await waitFor(() =>
+      expect(canvasElement.querySelector('.shared-schema-row [data-field="params"]').value).toBe(
+        '(start=1,step=1,prefix="filename",zeropadding=0)'
+      )
+    );
   },
 };

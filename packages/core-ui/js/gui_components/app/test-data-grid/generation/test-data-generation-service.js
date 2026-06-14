@@ -10,7 +10,6 @@ import {
   createConfiguredGeneratorFromSchemaRows,
   createCombinationsDataTable,
 } from '../../../shared/test-data/generation/generation-controller.js';
-import {} from '../../../shared/test-data/generation/generation-runtime.js';
 import { isNWiseEligibleForSchemaRows } from '../../../shared/test-data/generation/ui-derived-state.js';
 import { EnumParser } from '@anywaydata/core/data_generation/utils/enumParser.js';
 import { CONSTRAINT_FAILURE_BATCH_SIZE, createGenerationSession } from '@anywaydata/core';

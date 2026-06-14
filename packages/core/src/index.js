@@ -469,6 +469,14 @@ function validateRowCount(rowCount) {
   return { ok: true, rowCount: safeRowCount };
 }
 
+function validateOptionalOutputFormat(outputFormat) {
+  if (!outputFormat) {
+    return { ok: true };
+  }
+
+  return validateSupportedOutputFormat(outputFormat);
+}
+
 function generateRowsSync({ generator, rowCount, outputFormat, options = {}, diagnostics = {} } = {}) {
   const rowCountValidation = validateRowCount(rowCount);
   if (!rowCountValidation.ok) {
@@ -1036,6 +1044,11 @@ function createGenerationSession({
         };
       }
 
+      const formatValidation = validateOptionalOutputFormat(outputFormat);
+      if (!formatValidation.ok) {
+        return formatValidation;
+      }
+
       if (hooks && Object.keys(hooks).length > 0) {
         return generateRowsWithHooks({
           generator: compiled.generator,
@@ -1064,6 +1077,11 @@ function createGenerationSession({
         };
       }
 
+      const formatValidation = validateOptionalOutputFormat(outputFormat);
+      if (!formatValidation.ok) {
+        return formatValidation;
+      }
+
       return amendRowsSync({
         generator: compiled.generator,
         headers,
@@ -1083,6 +1101,11 @@ function createGenerationSession({
           errors: compiled.errors,
           diagnostics: compiled.diagnostics || {},
         };
+      }
+
+      const formatValidation = validateOptionalOutputFormat(outputFormat);
+      if (!formatValidation.ok) {
+        return formatValidation;
       }
 
       return generatePairwiseRows({

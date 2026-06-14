@@ -212,6 +212,25 @@ test.describe('Generator Schema Editing', () => {
     expectNoPageErrors(pageErrors);
   });
 
+  test('documented command params can be edited through the guided params dialog', async ({ page }) => {
+    const { generatorPage, pageErrors } = await openGenerator(page);
+
+    await generatorPage.schema.setTextMode(false);
+    await generatorPage.schema.setRowName(0, 'Status');
+    await generatorPage.schema.editor.setRowTypeValue(0, 'datatype.enum');
+    await generatorPage.schema.editor.editRowParamsWithDialog(0, {
+      values: 'active,inactive,pending',
+    });
+
+    await expect(generatorPage.schema.row(0).locator('[data-action="pick-command"]')).toHaveText('datatype.enum');
+    await expect(generatorPage.schema.row(0).locator('input[data-field="params"]')).toHaveValue(
+      '(active,inactive,pending)'
+    );
+    await expect.poll(async () => generatorPage.schema.getSchemaText()).toContain('enum(active,inactive,pending)');
+
+    expectNoPageErrors(pageErrors);
+  });
+
   test('schema edit buttons states are correct across top middle and bottom rows', async ({ page }) => {
     const { generatorPage, pageErrors } = await openGenerator(page);
 

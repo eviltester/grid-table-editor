@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
-import { fireEvent } from '@testing-library/dom';
+import { fireEvent, within } from '@testing-library/dom';
 import {
   schemaTextToDataRules,
   dataRulesToSchemaText,
@@ -41,6 +41,7 @@ describe('shared-schema-definition view', () => {
     dom = new JSDOM('<!doctype html><html><body><div id="root"></div></body></html>');
     global.window = dom.window;
     global.document = dom.window.document;
+    global.navigator = dom.window.navigator;
     global.Event = dom.window.Event;
     tippyInstances = [];
     global.tippy = jest.fn((elements, options) => {
@@ -64,6 +65,7 @@ describe('shared-schema-definition view', () => {
     dom.window.close();
     delete global.window;
     delete global.document;
+    delete global.navigator;
     delete global.Event;
     delete global.tippy;
     delete dom.window.tippy;
@@ -103,7 +105,6 @@ describe('shared-schema-definition view', () => {
           row.leadingTextLines = Array.isArray(leadingTextLines) ? leadingTextLines.slice() : [];
           return row;
         },
-        getMethodPickerOptions: () => [],
         getVisibleDomainCommands: () => ['string.counterString'],
         fakerCommands: ['helpers.arrayElement'],
         sampleSchemaText: TEST_DATA_GRID_SAMPLE_SCHEMA_TEXT,
@@ -112,6 +113,22 @@ describe('shared-schema-definition view', () => {
             ? '<p>Edit as Schema</p><button type="button" class="shared-schema-sample-button">Insert Example Schema</button>'
             : '<p>Edit as Text</p><button type="button" class="shared-schema-sample-button">Insert Example Schema</button>',
         validateSchemaRows,
+        getMethodPickerOptions: (currentValue = '') => {
+          if (currentValue === 'datatype.enum') {
+            return [
+              {
+                sourceType: 'domain',
+                command: 'datatype.enum',
+                helpModel: {
+                  heading: 'datatype.enum',
+                  summary: 'Enum helper',
+                  params: [{ name: 'values', type: 'comma-separated list', optional: false }],
+                },
+              },
+            ];
+          }
+          return [];
+        },
       },
       callbacks: {
         onSchemaError: (message) => {
@@ -147,7 +164,6 @@ describe('shared-schema-definition view', () => {
           row.leadingTextLines = Array.isArray(leadingTextLines) ? leadingTextLines.slice() : [];
           return row;
         },
-        getMethodPickerOptions: () => [],
         getVisibleDomainCommands: () => ['string.counterString'],
         fakerCommands: ['helpers.arrayElement'],
         sampleSchemaText: TEST_DATA_GRID_SAMPLE_SCHEMA_TEXT,
@@ -400,5 +416,35 @@ IF [Priority] = "high" THEN [Status] = "open" ENDIF`;
     expect(component.getState().rows).toHaveLength(1);
     expect(document.querySelector('[data-role="schema-textbox"]').value).toContain('Status\nenum(active,inactive)');
     expect(document.querySelectorAll('.shared-schema-row')).toHaveLength(1);
+  });
+
+  test('guided params dialog applies generated params back into the shared row editor', async () => {
+    const component = createComponent();
+
+    component.replaceRows([
+      {
+        id: 'enum-row',
+        name: 'Status',
+        sourceType: 'domain',
+        command: 'datatype.enum',
+        params: '',
+        value: '',
+        comments: '',
+        leadingTextLines: [],
+      },
+    ]);
+
+    fireEvent.click(document.querySelector('[data-action="edit-params"]'));
+
+    const dialog = within(document.body).getByRole('dialog', { name: /edit params for datatype\.enum/i });
+    const valuesInput = within(dialog).getByRole('textbox', { name: /values value/i });
+    valuesInput.value = 'active,inactive,pending';
+    fireEvent.input(valuesInput);
+    fireEvent.click(within(dialog).getByRole('button', { name: /^apply$/i }));
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(document.querySelector('[data-field="params"]').value).toBe('(values=active,inactive,pending)');
+    expect(component.getSchemaText()).toContain('enum(values=active,inactive,pending)');
   });
 });

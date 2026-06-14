@@ -27,6 +27,15 @@ const HELP_URLS = Object.freeze({
   enum: 'https://anywaydata.com/docs/category/generating-data',
 });
 
+const ENUM_VALUE_PARAM = Object.freeze({
+  name: 'values',
+  type: 'comma-separated list',
+  variadic: true,
+  optional: false,
+  description: 'List of allowed values chosen at random during generation.',
+  example: 'active,inactive,pending',
+});
+
 function resolveFakerDocsUrl(command, docsUrl) {
   const normalizedCommand = String(command || '').trim();
   if (normalizedCommand.startsWith('helpers.')) {
@@ -40,6 +49,54 @@ function cleanParamText(text) {
     .replace(/\/\*[\s\S]*?\*\//g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
+}
+
+function extractSimpleDefaultValue(param = {}) {
+  if (Object.prototype.hasOwnProperty.call(param, 'defaultValue')) {
+    return param.defaultValue;
+  }
+  if (Object.prototype.hasOwnProperty.call(param, 'default')) {
+    return param.default;
+  }
+
+  const description = cleanParamText(param.description);
+  const match = description.match(/defaults?\s+to\s+("[^"]*"|'[^']*'|-?\d+(?:\.\d+)?|true|false|null)\.?$/iu);
+  if (!match) {
+    return '';
+  }
+
+  const value = match[1];
+  if (value.startsWith('"') || value.startsWith("'")) {
+    return value.slice(1, -1);
+  }
+  return value;
+}
+
+function normalizeHelpParam(param = {}) {
+  return {
+    ...param,
+    optional: param.optional === true || param.required === false,
+    defaultValue: extractSimpleDefaultValue(param),
+  };
+}
+
+function normalizeHelpParams(params = []) {
+  return (Array.isArray(params) ? params : []).map((param) => normalizeHelpParam(param));
+}
+
+function resolveDomainHelpParams(command, commandHelp) {
+  const normalized = normalizeHelpParams(commandHelp?.args || []);
+  if (normalized.length > 0) {
+    return normalized;
+  }
+  if (
+    String(command || '')
+      .trim()
+      .toLowerCase() === 'datatype.enum'
+  ) {
+    return normalizeHelpParams([ENUM_VALUE_PARAM]);
+  }
+  return [];
 }
 
 function buildCallSignature(heading, params) {
@@ -169,11 +226,8 @@ function buildSchemaHelpModel(sourceType, commandValue) {
       {
         params: [
           {
-            name: 'values',
-            type: 'comma-separated list',
-            optional: false,
+            ...ENUM_VALUE_PARAM,
             description: 'List of allowed values randomly selected during generation.',
-            example: 'active,inactive,pending',
           },
         ],
         example: 'enum active,inactive,pending',
@@ -198,7 +252,7 @@ function buildSchemaHelpModel(sourceType, commandValue) {
       heading: `faker.${command}`,
       summary: commandHelp?.summary || `Generates data using faker.${command}.`,
       docsUrl: resolveFakerDocsUrl(command, commandHelp?.docsUrl),
-      params: commandHelp?.params || [],
+      params: normalizeHelpParams(commandHelp?.params || []),
       example: commandHelp?.example || '',
       examples: Array.isArray(commandHelp?.examples) ? commandHelp.examples : [],
       exampleReturnValues: Array.isArray(commandHelp?.exampleReturnValues)
@@ -226,7 +280,7 @@ function buildSchemaHelpModel(sourceType, commandValue) {
       heading: commandHelp?.canonical || command,
       summary: commandHelp?.summary || `Generates data using ${commandHelp?.canonical || command}.`,
       docsUrl: commandHelp?.docsUrl || HELP_URLS.domain,
-      params: commandHelp?.args || [],
+      params: resolveDomainHelpParams(command, commandHelp),
       example: commandHelp?.example || '',
       examples: Array.isArray(commandHelp?.examples) ? commandHelp.examples : [],
       exampleReturnValues: Array.isArray(commandHelp?.exampleReturnValues)

@@ -3,6 +3,7 @@ import { getDefaultDocumentObj, getDefaultWindowObj, resolveWindowObj } from '..
 const RECENT_STORAGE_KEY = 'anywaydata.method-picker.recent';
 const MAX_RECENT = 8;
 const STYLE_ID = 'method-picker-modal-styles-link';
+const CRITICAL_STYLE_ID = 'method-picker-modal-critical-styles';
 const CORE_COMMANDS = new Set(['enum', 'literal', 'regex']);
 
 function escapeHtml(text) {
@@ -55,6 +56,75 @@ function toExampleList(value) {
   }
   const single = String(value || '').trim();
   return single ? [single] : [];
+}
+
+function ensureCriticalStyles(documentObj) {
+  if (!documentObj?.head || documentObj.getElementById(CRITICAL_STYLE_ID)) {
+    return;
+  }
+  const style = documentObj.createElement('style');
+  style.id = CRITICAL_STYLE_ID;
+  style.textContent = `
+    .method-picker-overlay {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 6000;
+      background: rgba(15, 23, 42, 0.45);
+    }
+
+    .method-picker-modal {
+      width: min(1200px, 100%);
+      max-height: calc(100vh - 40px);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border-radius: 12px;
+      background: #ffffff;
+      color: #121620;
+      border: 1px solid #d6dce8;
+    }
+
+    .method-picker-header,
+    .method-picker-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 16px;
+    }
+
+    .method-picker-toolbar {
+      display: grid;
+      grid-template-columns: minmax(220px, 1fr);
+      gap: 10px;
+      padding: 12px 16px;
+    }
+
+    .method-picker-content {
+      display: grid;
+      grid-template-columns: minmax(260px, 1.1fr) minmax(280px, 1fr);
+      flex: 1;
+      min-height: 0;
+    }
+
+    .method-picker-list,
+    .method-picker-detail {
+      min-height: 0;
+      overflow: auto;
+      padding: 12px;
+    }
+
+    @media (max-width: 980px) {
+      .method-picker-content {
+        grid-template-columns: 1fr;
+      }
+    }
+  `;
+  documentObj.head.appendChild(style);
 }
 
 function ensureStyles(documentObj) {
@@ -129,6 +199,7 @@ function openMethodPickerModal({
     return Promise.resolve(null);
   }
   windowObj = resolveWindowObj(windowObj, documentObj);
+  ensureCriticalStyles(documentObj);
   ensureStyles(documentObj);
   const overlay = documentObj.createElement('div');
   overlay.className = 'method-picker-overlay';

@@ -35,6 +35,8 @@ const SHARED_SCHEMA_COMMAND_PICKER_BUTTON_CLASS = 'shared-schema-command-picker-
 const SHARED_SCHEMA_COMMAND_PICKER_SHADOW_SELECT_CLASS = 'shared-schema-command-picker-shadow-select';
 const SHARED_SCHEMA_COMMAND_ROW_CLASS = 'shared-schema-row-command';
 const SHARED_SCHEMA_VALUE_ROW_CLASS = 'shared-schema-row-value';
+const SHARED_SCHEMA_PARAMS_CONTROL_CLASS = 'shared-schema-params-control';
+const SHARED_SCHEMA_PARAMS_BUTTON_CLASS = 'shared-schema-params-button';
 const SHARED_SCHEMA_ROW_SELECTOR = '.shared-schema-row';
 const SHARED_SCHEMA_ROWS_SELECTOR = '.shared-schema-rows';
 
@@ -78,6 +80,7 @@ function renderSharedSchemaRows({
     const hasCommandValidationError = validationIssues.some((issue) => issue?.field === 'command');
     const hasParamsValidationError = validationIssues.some((issue) => issue?.field === 'params');
     const schemaHelp = getSchemaHelpData(normalisedSourceType, row.command);
+    const hasDocumentedParams = Array.isArray(schemaHelp?.params) && schemaHelp.params.length > 0;
     const rowElem = resolvedDocument.createElement('div');
     rowElem.className = `${SHARED_SCHEMA_ROW_CLASS} ${
       isCommandSource ? SHARED_SCHEMA_COMMAND_ROW_CLASS : SHARED_SCHEMA_VALUE_ROW_CLASS
@@ -131,7 +134,18 @@ function renderSharedSchemaRows({
                 ></a>
                 ${
                   isCommandSource
-                    ? `<input type="text" data-field="params" class="${hasParamsValidationError ? SHARED_SCHEMA_FIELD_INVALID_CLASS : ''}" placeholder="Params e.g. (10)" value="${escapeHtml(row.params)}">`
+                    ? `<div class="${SHARED_SCHEMA_PARAMS_CONTROL_CLASS}">
+                        <input type="text" data-field="params" class="${hasParamsValidationError ? SHARED_SCHEMA_FIELD_INVALID_CLASS : ''}" placeholder="Params e.g. (10)" value="${escapeHtml(row.params)}">
+                        <button
+                          type="button"
+                          data-action="edit-params"
+                          data-row-id="${row.id}"
+                          class="icon-button ${SHARED_SCHEMA_PARAMS_BUTTON_CLASS}"
+                          aria-label="Edit params for ${escapeHtml(row.command || 'selected command')}"
+                          title="${hasDocumentedParams ? 'Edit params in dialog' : 'No documented params available'}"
+                          ${hasDocumentedParams ? '' : 'disabled'}
+                        >${renderIconHtml('pencil')}</button>
+                      </div>`
                     : `<input type="text" data-field="value" placeholder="Value / Regex" value="${escapeHtml(row.value)}">`
                 }
                 ${
@@ -330,6 +344,8 @@ export {
   SHARED_SCHEMA_COMMAND_PICKER_SHADOW_SELECT_CLASS,
   SHARED_SCHEMA_COMMAND_ROW_CLASS,
   SHARED_SCHEMA_VALUE_ROW_CLASS,
+  SHARED_SCHEMA_PARAMS_CONTROL_CLASS,
+  SHARED_SCHEMA_PARAMS_BUTTON_CLASS,
   SHARED_SCHEMA_ROW_SELECTOR,
   SHARED_SCHEMA_ROWS_SELECTOR,
   hideVisibleHelpTooltips,

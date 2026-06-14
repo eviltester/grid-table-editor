@@ -87,6 +87,7 @@ function renderSharedSchemaDefinitionStory(args) {
   const fakerCommands = getFakerCommands().filter((command) => command !== 'RegEx' && command.startsWith('helpers.'));
   const domainCommands = getDomainCommands();
   const root = document.createElement('section');
+  root.style.minHeight = args.storyMinHeight || 'auto';
   const ids = createIds(args.idPrefix || 'shared-schema');
   const createBlankRow = createBlankRowFactory(args.idPrefix || 'story-schema-row');
   const component = createSharedSchemaDefinitionComponent({
@@ -201,6 +202,7 @@ const meta = {
     initialText: '',
     showErrors: false,
     startInTextMode: false,
+    storyMinHeight: 'auto',
   },
 };
 
@@ -427,6 +429,7 @@ export const CommandPicker = {
 export const ParamsDialog = {
   render: renderSharedSchemaDefinitionStory,
   args: {
+    storyMinHeight: '820px',
     initialRows: [
       {
         id: 'enum-row',
@@ -441,10 +444,11 @@ export const ParamsDialog = {
     ],
   },
   parameters: {
+    layout: 'fullscreen',
     docs: {
       description: {
         story:
-          'Guided params editing flow for documented command params. Reviewers can open the params dialog, fill values through the structured table, and confirm the generated schema params text is applied back to the shared row editor.',
+          'Guided params editing flow for documented command params. This story reserves a taller canvas so the modal stays inside the visible Storybook frame while reviewers open the dialog, fill values through the structured table, and confirm the generated schema params text is applied back to the shared row editor.',
       },
     },
   },

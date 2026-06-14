@@ -20,6 +20,11 @@ describe('writer schema prototype page', () => {
         <div class="header" data-role="theme-toggle-host"><div class="pageheading">AnyWayData</div></div>
         <main id="writer-schema-page-root">
           <p id="writer-schema-support-status">Checking Writer API availability...</p>
+          <button
+            id="writer-schema-copy-flag"
+            type="button"
+            data-copy-text="chrome://flags/#writer-api-for-gemini-nano"
+          ></button>
           <textarea id="writer-schema-prompt"></textarea>
           <button id="writer-schema-example-prompt" type="button">Load example prompt</button>
           <button id="writer-schema-generate" type="button">Generate schema from prompt</button>
@@ -254,6 +259,34 @@ describe('writer schema prototype page', () => {
       'Writer API is not available'
     );
     expect(dom.window.document.getElementById('writer-schema-prompt').value).toBe(DEFAULT_PROMPT);
+  });
+
+  test('bootstrap copies setup flag URLs to the clipboard', async () => {
+    const schemaComponent = {
+      destroy: jest.fn(),
+      replaceRows: jest.fn(),
+      setTextMode: jest.fn(),
+      render: jest.fn(),
+      syncTextFromRows: jest.fn(),
+      validateRows: jest.fn(() => ({ errors: [] })),
+      getSchemaText: jest.fn(() => ''),
+    };
+
+    await bootstrapWriterSchemaPage({
+      documentObj: dom.window.document,
+      WriterCtor: null,
+      navigatorObj,
+      createThemeToggleComponentFn: () => ({ destroy: jest.fn() }),
+      createSharedSchemaDefinitionComponentFn: () => schemaComponent,
+    });
+
+    dom.window.document.getElementById('writer-schema-copy-flag').click();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(navigatorObj.clipboard.writeText).toHaveBeenCalledWith('chrome://flags/#writer-api-for-gemini-nano');
+    expect(dom.window.document.getElementById('writer-schema-generation-status').textContent).toContain(
+      'Copied the Chrome flags URL to the clipboard.'
+    );
   });
 
   test('bootstrap generates rows and populates the shared schema component', async () => {

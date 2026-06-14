@@ -177,6 +177,17 @@ function createBlankRowFactory(prefix = 'writer-schema-row') {
   });
 }
 
+function decorateWriterCopyButton(buttonElement, labelText = 'Copy') {
+  if (!buttonElement || buttonElement.childElementCount > 0) {
+    return;
+  }
+
+  buttonElement.insertAdjacentHTML(
+    'afterbegin',
+    `${renderIconHtml('copy', { className: 'app-icon writer-schema-action-icon' })}<span>${labelText}</span>`
+  );
+}
+
 function validateSchemaRows(schemaRows) {
   return validateSharedSchemaRows({
     schemaRows,
@@ -716,15 +727,18 @@ async function bootstrapWriterSchemaPage({
   const copyPromptButton = documentObj.getElementById('writer-schema-copy-prompt');
   const createSchemaFromResponseButton = documentObj.getElementById('writer-schema-create-schema');
   const schemaRoot = documentObj.getElementById('writer-schema-editor-root');
+  const setupFlagCopyButtons = Array.from(documentObj.querySelectorAll('[data-copy-text]'));
 
-  copyRequestButton?.insertAdjacentHTML(
-    'afterbegin',
-    `${renderIconHtml('copy', { className: 'app-icon writer-schema-action-icon' })}<span>Copy JSON</span>`
-  );
-  copyPromptButton?.insertAdjacentHTML(
-    'afterbegin',
-    `${renderIconHtml('clipboard-paste', { className: 'app-icon writer-schema-action-icon' })}<span>Copy Prompt</span>`
-  );
+  decorateWriterCopyButton(copyRequestButton, 'Copy JSON');
+  if (copyPromptButton && copyPromptButton.childElementCount === 0) {
+    copyPromptButton.insertAdjacentHTML(
+      'afterbegin',
+      `${renderIconHtml('clipboard-paste', { className: 'app-icon writer-schema-action-icon' })}<span>Copy Prompt</span>`
+    );
+  }
+  setupFlagCopyButtons.forEach((buttonElement) => {
+    decorateWriterCopyButton(buttonElement, 'Copy');
+  });
 
   const schemaDefinitionProps = createSchemaDefinitionProps();
   const schemaComponent = createSharedSchemaDefinitionComponentFn({
@@ -1011,6 +1025,22 @@ async function bootstrapWriterSchemaPage({
   });
   createSchemaFromResponseButton?.addEventListener('click', () => {
     void createSchemaFromResponse().catch(() => {});
+  });
+  setupFlagCopyButtons.forEach((buttonElement) => {
+    buttonElement.addEventListener('click', () => {
+      void copyTextToClipboard(buttonElement.getAttribute('data-copy-text') || '', { navigatorObj })
+        .then(() => {
+          setStatus(generationStatusElement, 'Copied the Chrome flags URL to the clipboard.', {
+            severity: 'info',
+          });
+        })
+        .catch((error) => {
+          const message = error instanceof Error ? error.message : String(error);
+          setStatus(generationStatusElement, `Unable to copy the Chrome flags URL: ${message}`, {
+            severity: 'error',
+          });
+        });
+    });
   });
 
   return {

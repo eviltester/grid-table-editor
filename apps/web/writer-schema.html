@@ -96,6 +96,10 @@
         <section class="writer-schema-card" aria-labelledby="writer-schema-request-heading">
           <div class="writer-schema-card__header">
             <h2 id="writer-schema-request-heading">Full Request</h2>
+            <div class="writer-schema-inline-actions">
+              <button id="writer-schema-copy-request" type="button" aria-label="Copy full request JSON"></button>
+              <button id="writer-schema-copy-prompt" type="button" aria-label="Copy API request as prompt"></button>
+            </div>
           </div>
           <p class="writer-schema-supporting-copy">
             The exact prompt, shared context, task context, and language options sent to the Writer API.
@@ -139,6 +143,26 @@ No raw Writer response yet.</pre
           </p>
           <pre id="writer-schema-error-output" class="writer-schema-json-output" aria-live="polite">No errors yet.</pre>
         </section>
+      </section>
+
+      <section class="writer-schema-card" aria-labelledby="writer-schema-process-heading">
+        <div class="writer-schema-card__header">
+          <h2 id="writer-schema-process-heading">Process AI Response</h2>
+        </div>
+        <p class="writer-schema-supporting-copy">
+          Paste a response from any AI system here, then create schema rows from the returned JSON without calling the
+          browser Writer API again.
+        </p>
+        <label class="writer-schema-label" for="writer-schema-process-response">Paste AI response text</label>
+        <textarea
+          id="writer-schema-process-response"
+          class="writer-schema-textarea"
+          spellcheck="false"
+          placeholder='{"schemaFields":[{"name":"Book Title","sourceType":"domain","command":"commerce.productName"}]}'
+        ></textarea>
+        <div class="writer-schema-actions">
+          <button id="writer-schema-create-schema" type="button">Create Schema</button>
+        </div>
       </section>
 
       <section class="writer-schema-card writer-schema-card--editor" aria-labelledby="writer-schema-editor-heading">

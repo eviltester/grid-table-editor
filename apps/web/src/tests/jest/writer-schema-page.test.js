@@ -12,6 +12,7 @@ import {
 
 describe('writer schema prototype page', () => {
   let dom;
+  let navigatorObj;
 
   beforeEach(() => {
     dom = new JSDOM(
@@ -28,11 +29,20 @@ describe('writer schema prototype page', () => {
           <pre id="writer-schema-raw-output">No raw Writer response yet.</pre>
           <pre id="writer-schema-error-output">No errors yet.</pre>
           <ol id="writer-schema-progress-output"><li>No generation activity yet.</li></ol>
+          <button id="writer-schema-copy-request" type="button"></button>
+          <button id="writer-schema-copy-prompt" type="button"></button>
+          <textarea id="writer-schema-process-response"></textarea>
+          <button id="writer-schema-create-schema" type="button">Create Schema</button>
           <div id="writer-schema-editor-root"></div>
         </main>
       </body></html>`,
       { url: 'https://example.test/writer-schema.html' }
     );
+    navigatorObj = {
+      clipboard: {
+        writeText: jest.fn(async () => {}),
+      },
+    };
   });
 
   afterEach(() => {
@@ -170,6 +180,57 @@ describe('writer schema prototype page', () => {
     expect(writer.destroy).toHaveBeenCalledTimes(1);
   });
 
+  test('runWriterSchemaGeneration accumulates streaming Writer chunks into structured output', async () => {
+    const writer = {
+      destroy: jest.fn(),
+      writeStreaming: jest.fn(async function* () {
+        yield '{"schemaFields":[';
+        yield '{"name":"Book Title","sourceType":"domain","command":"commerce.productName"},';
+        yield '{"name":"Genre","sourceType":"enum","values":["Fiction","Non-fiction"]}';
+        yield ']}';
+      }),
+    };
+    const WriterCtor = {
+      create: jest.fn(async () => writer),
+    };
+
+    const result = await runWriterSchemaGeneration({
+      WriterCtor,
+      promptText: DEFAULT_PROMPT,
+      domainCommands: ['commerce.productName', 'person.fullName'],
+      sampleSchemaText: 'Name\nperson.fullName',
+      onStatus: jest.fn(),
+    });
+
+    expect(WriterCtor.create).toHaveBeenCalledTimes(1);
+    expect(writer.writeStreaming).toHaveBeenCalledWith(
+      DEFAULT_PROMPT,
+      expect.objectContaining({
+        context: expect.any(String),
+        expectedInputLanguages: ['en'],
+        expectedContextLanguages: ['en'],
+        outputLanguage: 'en',
+      })
+    );
+    expect(result.parsedPayload.schemaFields).toHaveLength(2);
+    expect(result.requestDetails).toMatchObject({
+      promptText: DEFAULT_PROMPT,
+      taskContext: expect.any(String),
+      writeOptions: expect.objectContaining({
+        outputLanguage: 'en',
+      }),
+      createOptions: expect.objectContaining({
+        sharedContext: expect.any(String),
+      }),
+    });
+    expect(result.schemaRows).toMatchObject([
+      { name: 'Book Title', sourceType: 'domain', command: 'commerce.productName' },
+      { name: 'Genre', sourceType: 'enum', value: '"Fiction","Non-fiction"' },
+    ]);
+    expect(result.normalizationErrors).toEqual([]);
+    expect(writer.destroy).toHaveBeenCalledTimes(1);
+  });
+
   test('bootstrap warns when Writer API support is unavailable', async () => {
     const schemaComponent = {
       destroy: jest.fn(),
@@ -184,6 +245,7 @@ describe('writer schema prototype page', () => {
     await bootstrapWriterSchemaPage({
       documentObj: dom.window.document,
       WriterCtor: null,
+      navigatorObj,
       createThemeToggleComponentFn: () => ({ destroy: jest.fn() }),
       createSharedSchemaDefinitionComponentFn: () => schemaComponent,
     });
@@ -219,6 +281,7 @@ describe('writer schema prototype page', () => {
     const page = await bootstrapWriterSchemaPage({
       documentObj: dom.window.document,
       WriterCtor,
+      navigatorObj,
       createThemeToggleComponentFn: () => ({ destroy: jest.fn() }),
       createSharedSchemaDefinitionComponentFn: () => schemaComponent,
     });
@@ -233,7 +296,7 @@ describe('writer schema prototype page', () => {
     );
     expect(schemaComponent.syncTextFromRows).toHaveBeenCalledTimes(1);
     expect(dom.window.document.getElementById('writer-schema-generation-status').textContent).toContain(
-      'Generated 1 schema fields'
+      'Processed Writer API output into 1 schema fields.'
     );
     expect(dom.window.document.getElementById('writer-schema-json-output').textContent).toContain('Book Title');
     expect(dom.window.document.getElementById('writer-schema-request-output').textContent).toContain(
@@ -244,7 +307,19 @@ describe('writer schema prototype page', () => {
     );
     expect(dom.window.document.getElementById('writer-schema-error-output').textContent).toBe('No errors yet.');
     expect(dom.window.document.getElementById('writer-schema-progress-output').textContent).toContain(
-      'Schema generation completed successfully.'
+      'Processed Writer API output successfully.'
+    );
+
+    await page.copyLatestRequestJson();
+    await page.copyLatestRequestAsPrompt();
+
+    expect(navigatorObj.clipboard.writeText).toHaveBeenNthCalledWith(
+      1,
+      expect.stringContaining('"promptText": "Create 10 fields that represent the inventory of a bookshop"')
+    );
+    expect(navigatorObj.clipboard.writeText).toHaveBeenNthCalledWith(
+      2,
+      expect.stringContaining('Generate an AnyWayData schema response using the following request details.')
     );
   });
 
@@ -272,6 +347,7 @@ describe('writer schema prototype page', () => {
     const page = await bootstrapWriterSchemaPage({
       documentObj: dom.window.document,
       WriterCtor,
+      navigatorObj,
       createThemeToggleComponentFn: () => ({ destroy: jest.fn() }),
       createSharedSchemaDefinitionComponentFn: () => schemaComponent,
     });
@@ -325,6 +401,7 @@ describe('writer schema prototype page', () => {
     const page = await bootstrapWriterSchemaPage({
       documentObj: dom.window.document,
       WriterCtor,
+      navigatorObj,
       createThemeToggleComponentFn: () => ({ destroy: jest.fn() }),
       createSharedSchemaDefinitionComponentFn: () => schemaComponent,
     });
@@ -341,7 +418,43 @@ describe('writer schema prototype page', () => {
       'unsupported command "commerce.publisher"'
     );
     expect(dom.window.document.getElementById('writer-schema-progress-output').textContent).toContain(
-      'Completed with partial recovery.'
+      'Processed Writer API output with partial recovery.'
+    );
+  });
+
+  test('bootstrap processes a pasted AI response into schema rows', async () => {
+    const schemaComponent = {
+      destroy: jest.fn(),
+      replaceRows: jest.fn(),
+      setTextMode: jest.fn(),
+      render: jest.fn(),
+      syncTextFromRows: jest.fn(),
+      validateRows: jest.fn(() => ({ errors: [] })),
+      getSchemaText: jest.fn(() => 'Book Title\ncommerce.productName()'),
+    };
+
+    const page = await bootstrapWriterSchemaPage({
+      documentObj: dom.window.document,
+      WriterCtor: null,
+      navigatorObj,
+      createThemeToggleComponentFn: () => ({ destroy: jest.fn() }),
+      createSharedSchemaDefinitionComponentFn: () => schemaComponent,
+    });
+
+    dom.window.document.getElementById('writer-schema-process-response').value = JSON.stringify({
+      schemaFields: [{ name: 'Book Title', sourceType: 'domain', command: 'commerce.productName' }],
+    });
+
+    await page.createSchemaFromResponse();
+
+    expect(schemaComponent.replaceRows).toHaveBeenCalledWith(
+      expect.arrayContaining([expect.objectContaining({ name: 'Book Title', command: 'commerce.productName' })])
+    );
+    expect(dom.window.document.getElementById('writer-schema-generation-status').textContent).toContain(
+      'Processed pasted AI response into 1 schema fields.'
+    );
+    expect(dom.window.document.getElementById('writer-schema-raw-output').textContent).toContain(
+      'commerce.productName'
     );
   });
 });

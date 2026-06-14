@@ -22,6 +22,7 @@ import {
 } from '../../../packages/core-ui/js/gui_components/app/test-data-grid/schema/test-data-command-catalog.js';
 import { getDomainCommandHelp } from '../../../packages/core-ui/js/gui_components/shared/domain-command-help-metadata.js';
 import { getVisibleDomainCommands } from '../../../packages/core-ui/js/gui_components/shared/test-data/help/domain-command-provider.js';
+import { renderIconHtml } from '../../../packages/core-ui/js/gui_components/shared/primitives/icon/icon-core.js';
 
 const DEFAULT_PROMPT = 'Create 10 fields that represent the inventory of a bookshop';
 const WRITER_SUPPORTED_SOURCE_TYPES = new Set(['domain', 'enum', 'literal', 'regex']);
@@ -127,6 +128,39 @@ function buildWriterRequestDetails({ promptText, sharedContext, taskContext, wri
     taskContext,
     writeOptions,
   };
+}
+
+function createCopyApiRequestPrompt(requestDetails = {}) {
+  const promptText = String(requestDetails.promptText || '').trim();
+  const sharedContext = String(requestDetails.sharedContext || '').trim();
+  const taskContext = String(requestDetails.taskContext || '').trim();
+  const writeOptionsJson = JSON.stringify(requestDetails.writeOptions || {}, null, 2);
+
+  return [
+    'Generate an AnyWayData schema response using the following request details.',
+    'Return JSON only, with no markdown fences or explanation.',
+    '',
+    'User prompt:',
+    promptText,
+    '',
+    'Shared context:',
+    sharedContext,
+    '',
+    'Task context:',
+    taskContext,
+    '',
+    'Write options:',
+    writeOptionsJson,
+  ].join('\n');
+}
+
+async function copyTextToClipboard(text, { navigatorObj = globalThis.navigator } = {}) {
+  const clipboard = navigatorObj?.clipboard;
+  if (typeof clipboard?.writeText !== 'function') {
+    throw new Error('Clipboard copy is not available in this browser session.');
+  }
+
+  await clipboard.writeText(String(text ?? ''));
 }
 
 function createBlankRowFactory(prefix = 'writer-schema-row') {
@@ -659,6 +693,7 @@ async function runWriterSchemaGeneration({ WriterCtor, promptText, domainCommand
 async function bootstrapWriterSchemaPage({
   documentObj = globalThis.document,
   WriterCtor = globalThis.Writer,
+  navigatorObj = globalThis.navigator,
   createThemeToggleComponentFn = createThemeToggleComponent,
   createSharedSchemaDefinitionComponentFn = createSharedSchemaDefinitionComponent,
 } = {}) {
@@ -673,10 +708,23 @@ async function bootstrapWriterSchemaPage({
   const errorOutputElement = documentObj.getElementById('writer-schema-error-output');
   const progressOutputElement = documentObj.getElementById('writer-schema-progress-output');
   const requestOutputElement = documentObj.getElementById('writer-schema-request-output');
+  const processResponseElement = documentObj.getElementById('writer-schema-process-response');
   const promptElement = documentObj.getElementById('writer-schema-prompt');
   const generateButton = documentObj.getElementById('writer-schema-generate');
   const examplePromptButton = documentObj.getElementById('writer-schema-example-prompt');
+  const copyRequestButton = documentObj.getElementById('writer-schema-copy-request');
+  const copyPromptButton = documentObj.getElementById('writer-schema-copy-prompt');
+  const createSchemaFromResponseButton = documentObj.getElementById('writer-schema-create-schema');
   const schemaRoot = documentObj.getElementById('writer-schema-editor-root');
+
+  copyRequestButton?.insertAdjacentHTML(
+    'afterbegin',
+    `${renderIconHtml('copy', { className: 'app-icon writer-schema-action-icon' })}<span>Copy JSON</span>`
+  );
+  copyPromptButton?.insertAdjacentHTML(
+    'afterbegin',
+    `${renderIconHtml('clipboard-paste', { className: 'app-icon writer-schema-action-icon' })}<span>Copy Prompt</span>`
+  );
 
   const schemaDefinitionProps = createSchemaDefinitionProps();
   const schemaComponent = createSharedSchemaDefinitionComponentFn({
@@ -737,6 +785,77 @@ async function bootstrapWriterSchemaPage({
   }
 
   let isGenerating = false;
+  let latestRequestDetails = null;
+
+  function applySchemaResult(result, { sourceLabel = 'schema response', keepRawResponse = true } = {}) {
+    setJsonOutput(jsonOutputElement, result.parsedPayload);
+    if (keepRawResponse) {
+      setTextOutput(rawOutputElement, result.responseText, 'No raw Writer response yet.');
+    }
+
+    const normalizationErrors = Array.isArray(result.normalizationErrors) ? result.normalizationErrors : [];
+    setTextOutput(
+      errorOutputElement,
+      normalizationErrors.length > 0 ? normalizationErrors.map((item) => item.message).join('\n\n') : '',
+      'No errors yet.'
+    );
+    if (result.requestDetails) {
+      latestRequestDetails = result.requestDetails;
+      setJsonOutput(requestOutputElement, result.requestDetails);
+    }
+    schemaComponent.setTextMode?.(false);
+    schemaComponent.replaceRows?.(result.schemaRows);
+    schemaComponent.render?.();
+    schemaComponent.syncTextFromRows?.();
+
+    const validation = schemaComponent.validateRows?.() || { errors: [] };
+    const renderedSchemaText =
+      typeof schemaComponent.getSchemaText === 'function'
+        ? schemaComponent.getSchemaText()
+        : result.schemaRows.map((row) => `${row.name}\n${buildRuleSpecFromSchemaRow(row)}`).join('\n\n');
+
+    if (Array.isArray(validation.errors) && validation.errors.length > 0) {
+      throw new Error(validation.errors.map((error) => error?.message || String(error)).join('; '));
+    }
+
+    if (normalizationErrors.length > 0) {
+      setStatus(
+        generationStatusElement,
+        `Processed ${sourceLabel} into ${result.schemaRows.length} schema fields. ${normalizationErrors.length} generated field${normalizationErrors.length === 1 ? '' : 's'} could not be mapped and were left out.`,
+        { severity: 'warning' }
+      );
+      appendProgressOutput(
+        progressOutputElement,
+        `Processed ${sourceLabel} with partial recovery. ${normalizationErrors.length} field${normalizationErrors.length === 1 ? '' : 's'} were rejected during normalization.`,
+        documentObj
+      );
+    } else {
+      setStatus(generationStatusElement, `Processed ${sourceLabel} into ${result.schemaRows.length} schema fields.`, {
+        severity: 'info',
+      });
+      appendProgressOutput(progressOutputElement, `Processed ${sourceLabel} successfully.`, documentObj);
+    }
+
+    return {
+      ...result,
+      renderedSchemaText,
+    };
+  }
+
+  function parseSchemaFromAiResponse(responseText) {
+    const parsedPayload = parseWriterStructuredOutput(responseText);
+    const { schemaRows, normalizationErrors } = normalizeStructuredSchemaPayload(parsedPayload, {
+      allowedDomainCommands: schemaDefinitionProps.writerContextDomainCommands,
+    });
+
+    return {
+      parsedPayload,
+      schemaRows,
+      normalizationErrors,
+      responseText,
+      requestDetails: latestRequestDetails,
+    };
+  }
 
   async function generateFromPrompt() {
     const promptText = String(promptElement?.value || '').trim();
@@ -784,57 +903,7 @@ async function bootstrapWriterSchemaPage({
           }
         },
       });
-
-      setJsonOutput(jsonOutputElement, result.parsedPayload);
-      setTextOutput(rawOutputElement, result.responseText, 'No raw Writer response yet.');
-      const normalizationErrors = Array.isArray(result.normalizationErrors) ? result.normalizationErrors : [];
-      setTextOutput(
-        errorOutputElement,
-        normalizationErrors.length > 0
-          ? normalizationErrors.map((item) => item.message).join('\n\n')
-          : '',
-        'No errors yet.'
-      );
-      setJsonOutput(requestOutputElement, result.requestDetails);
-      schemaComponent.setTextMode?.(false);
-      schemaComponent.replaceRows?.(result.schemaRows);
-      schemaComponent.render?.();
-      schemaComponent.syncTextFromRows?.();
-
-      const validation = schemaComponent.validateRows?.() || { errors: [] };
-      const renderedSchemaText =
-        typeof schemaComponent.getSchemaText === 'function'
-          ? schemaComponent.getSchemaText()
-          : result.schemaRows.map((row) => `${row.name}\n${buildRuleSpecFromSchemaRow(row)}`).join('\n\n');
-
-      if (Array.isArray(validation.errors) && validation.errors.length > 0) {
-        throw new Error(validation.errors.map((error) => error?.message || String(error)).join('; '));
-      }
-
-      if (normalizationErrors.length > 0) {
-        setStatus(
-          generationStatusElement,
-          `Generated ${result.schemaRows.length} schema fields. ${normalizationErrors.length} generated field${normalizationErrors.length === 1 ? '' : 's'} could not be mapped and were left out.`,
-          { severity: 'warning' }
-        );
-        appendProgressOutput(
-          progressOutputElement,
-          `Completed with partial recovery. ${normalizationErrors.length} field${normalizationErrors.length === 1 ? '' : 's'} were rejected during normalization.`,
-          documentObj
-        );
-      } else {
-        setStatus(
-          generationStatusElement,
-          `Generated ${result.schemaRows.length} schema fields and populated the shared schema editor.`,
-          { severity: 'info' }
-        );
-        appendProgressOutput(progressOutputElement, 'Schema generation completed successfully.', documentObj);
-      }
-
-      return {
-        ...result,
-        renderedSchemaText,
-      };
+      return applySchemaResult(result, { sourceLabel: 'Writer API output' });
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       const fullErrorText =
@@ -857,12 +926,91 @@ async function bootstrapWriterSchemaPage({
     }
   }
 
+  async function copyLatestRequestJson() {
+    if (!latestRequestDetails) {
+      setStatus(generationStatusElement, 'Generate a schema before copying the full request.', {
+        severity: 'warning',
+      });
+      return false;
+    }
+
+    await copyTextToClipboard(JSON.stringify(latestRequestDetails, null, 2), { navigatorObj });
+    setStatus(generationStatusElement, 'Copied the full request JSON to the clipboard.', {
+      severity: 'info',
+    });
+    return true;
+  }
+
+  async function copyLatestRequestAsPrompt() {
+    if (!latestRequestDetails) {
+      setStatus(generationStatusElement, 'Generate a schema before copying the request as a prompt.', {
+        severity: 'warning',
+      });
+      return false;
+    }
+
+    await copyTextToClipboard(createCopyApiRequestPrompt(latestRequestDetails), { navigatorObj });
+    setStatus(generationStatusElement, 'Copied the API request as a reusable prompt.', {
+      severity: 'info',
+    });
+    return true;
+  }
+
+  async function createSchemaFromResponse() {
+    const responseText = String(processResponseElement?.value || '').trim();
+    if (!responseText) {
+      setStatus(generationStatusElement, 'Paste an AI response before creating a schema.', {
+        severity: 'warning',
+      });
+      return null;
+    }
+
+    setTextOutput(rawOutputElement, responseText, 'No raw Writer response yet.');
+    appendProgressOutput(progressOutputElement, 'Processing pasted AI response into schema rows.', documentObj);
+
+    try {
+      const result = parseSchemaFromAiResponse(responseText);
+      return applySchemaResult(result, { sourceLabel: 'pasted AI response' });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      setTextOutput(
+        errorOutputElement,
+        error instanceof Error && error.stack ? error.stack : `Error: ${message}`,
+        'No errors yet.'
+      );
+      appendProgressOutput(progressOutputElement, `Processing pasted AI response failed: ${message}`, documentObj);
+      setStatus(generationStatusElement, `Unable to process the pasted AI response: ${message}`, {
+        severity: 'error',
+      });
+      throw error;
+    }
+  }
+
   examplePromptButton?.addEventListener('click', () => {
     promptElement.value = DEFAULT_PROMPT;
     promptElement.focus();
   });
+  copyRequestButton?.addEventListener('click', () => {
+    void copyLatestRequestJson().catch((error) => {
+      const message = error instanceof Error ? error.message : String(error);
+      setStatus(generationStatusElement, `Unable to copy the full request: ${message}`, {
+        severity: 'error',
+      });
+    });
+  });
+  copyPromptButton?.addEventListener('click', () => {
+    void copyLatestRequestAsPrompt().catch((error) => {
+      const message = error instanceof Error ? error.message : String(error);
+      setStatus(generationStatusElement, `Unable to copy the request prompt: ${message}`, {
+        severity: 'error',
+      });
+    });
+  });
   generateButton?.addEventListener('click', () => {
     void generateFromPrompt().catch(() => {});
+  });
+  createSchemaFromResponseButton?.addEventListener('click', () => {
+    void createSchemaFromResponse().catch(() => {});
   });
 
   return {
@@ -870,6 +1018,9 @@ async function bootstrapWriterSchemaPage({
       themeToggle?.destroy?.();
       schemaComponent?.destroy?.();
     },
+    copyLatestRequestAsPrompt,
+    copyLatestRequestJson,
+    createSchemaFromResponse,
     generateFromPrompt,
     getSchemaComponent() {
       return schemaComponent;

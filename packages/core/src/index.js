@@ -1189,11 +1189,6 @@ export function amendFromTextSpecAndData({
     return { ok: false, errors, diagnostics: { supportedFormats: SUPPORTED_FORMATS } };
   }
 
-  const formatValidation = validateSupportedOutputFormat(outputFormat);
-  if (!formatValidation.ok) {
-    return formatValidation;
-  }
-
   const normalisedInputFormat = String(inputFormat).trim().toLowerCase();
   const importer = createImporter();
   importer.setImportSettings({ trimInput, trimInputFieldsCsv });

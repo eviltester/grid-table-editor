@@ -921,4 +921,94 @@ describe('test-data-generation-service', () => {
       { severity: 'warning', dismissable: true }
     );
   });
+
+  test('generateTestData does not apply a replacement table when fallback amendRows returns a hard error', async () => {
+    const importer = { setGridFromGenericDataTable: jest.fn(() => Promise.resolve()) };
+    const showSchemaError = jest.fn();
+    const setTestDataStatus = jest.fn();
+    const currentDataTable = {
+      rows: [['existing']],
+      getHeaders: () => ['Name'],
+    };
+    const createGenerationSessionFn = jest.fn(() => ({
+      isValid: () => true,
+      getErrors: () => [],
+      amendRows: () => ({
+        ok: false,
+        errors: [
+          {
+            code: 'row_count_exceeds_imported',
+            message: 'Row count exceeds imported row count 1.',
+          },
+        ],
+        diagnostics: { importedRowCount: 1 },
+      }),
+    }));
+
+    const service = createTestDataGenerationService({
+      TestDataGeneratorClass: function TestDataGeneratorClass() {
+        return {
+          importSpec: jest.fn(),
+          compile: jest.fn(),
+          compiler: { validate: jest.fn() },
+          testDataRules: () => [{}],
+          isValid: () => true,
+          errors: () => [],
+          generateHeadersArray: () => ['Status'],
+          generateRow: () => ['Active'],
+        };
+      },
+      PairwiseTestDataGeneratorClass: class {},
+      GenericDataTableClass: class FakeGenericDataTable {
+        constructor() {
+          this.headers = [];
+          this.rows = [];
+        }
+        setHeaders(headers) {
+          this.headers = headers;
+        }
+        appendDataRow(row) {
+          this.rows.push(row);
+        }
+      },
+      TEST_DATA_MODES: {
+        NEW_TABLE: 'new-table',
+        AMEND_TABLE: 'amend-table',
+        AMEND_SELECTED: 'amend-selected',
+      },
+      normaliseCount: () => 2,
+      createTableFromGenerator: jest.fn(),
+      createAmendedTable: jest.fn(),
+      schemaRowsToSpec: jest.fn(() => 'Status\nliteral(Active)'),
+      faker: {},
+      RandExp: function RandExp() {},
+      debouncer: { clear: jest.fn() },
+      syncSchemaTextFromGridBeforeGenerate: jest.fn(),
+      setTestDataStatus,
+      setTestDataLoadingStatus: jest.fn(),
+      showSchemaError,
+      yieldToUi: jest.fn(() => Promise.resolve()),
+      validateCurrentSchemaRows: jest.fn(() => ({
+        rows: [{ name: 'Status', sourceType: 'literal', value: 'Active' }],
+        errors: [],
+      })),
+      getImporter: () => importer,
+      getTextPreviewRenderer: jest.fn(),
+      getMainGridExtras: () => ({
+        getGridAsGenericDataTable: () => currentDataTable,
+      }),
+      getGenerationMode: () => 'amend-table',
+      getRequestedRowCount: () => 2,
+      createGenerationSessionFn,
+    });
+
+    await service.generateTestData();
+
+    expect(importer.setGridFromGenericDataTable).not.toHaveBeenCalled();
+    expect(showSchemaError).toHaveBeenCalledWith('Row count exceeds imported row count 1.');
+    expect(setTestDataStatus).toHaveBeenCalledWith('Amend failed.', {
+      severity: 'error',
+      dismissable: true,
+    });
+  });
 });

@@ -203,6 +203,12 @@ function createTestDataGenerationService({
     return `Schema Constraints are impacting row generation - generated ${generatedRows} rows, failed to generate ${failedRows} rows. Consider changing constraints to improve row generation.`;
   }
 
+  function hasConstraintGenerationFailure(errors = []) {
+    return (Array.isArray(errors) ? errors : []).some(
+      (error) => String(error?.code || '').trim() === 'constraint_generation_failed'
+    );
+  }
+
   async function requestConstraintImpactDecision({ generatedRows = 0, failedRows = 0 } = {}) {
     if (typeof requestConfirm !== 'function') {
       return false;
@@ -573,16 +579,17 @@ function createTestDataGenerationService({
           }
 
           if (!amendResult.ok) {
-            constraintImpactMessage = buildConstraintImpactMessage({
-              generatedRows: amendResult.diagnostics?.rowCount || 0,
-              failedRows: amendResult.diagnostics?.failedCount || CONSTRAINT_FAILURE_BATCH_SIZE,
+            const errorMessages = schemaErrorsToText(amendResult.errors || []);
+            const isConstraintFailure = hasConstraintGenerationFailure(amendResult.errors);
+            showSchemaError(errorMessages);
+            setTestDataStatus(isConstraintFailure ? 'Amend stopped by schema constraints.' : 'Amend failed.', {
+              severity: isConstraintFailure ? 'warning' : 'error',
+              dismissable: true,
             });
-            showSchemaError(constraintImpactMessage);
+            return;
           }
 
-          dataTable = createDataTableFromResult(
-            amendResult.ok ? amendResult : { headers: amendResult.headers || [], rows: amendResult.rows || [] }
-          );
+          dataTable = createDataTableFromResult(amendResult);
         }
       }
 

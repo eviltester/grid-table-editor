@@ -451,8 +451,6 @@ function createTestDataGenerationService({
       const generationMode = getGenerationMode();
       const rowValidation = getCurrentSchemaRowValidation();
       const gridExtras = getMainGridExtras();
-      const selectedRowIndexes =
-        generationMode === TEST_DATA_MODES.AMEND_SELECTED ? gridExtras?.getSelectedRowIndexes?.() || [] : [];
 
       if (rowValidation.errors.length > 0) {
         const errorMessages = schemaErrorsToText(rowValidation.errors);
@@ -479,6 +477,18 @@ function createTestDataGenerationService({
         setTestDataStatus('Invalid row count.', { severity: 'warning', dismissable: true });
         return;
       }
+
+      if (
+        (generationMode === TEST_DATA_MODES.AMEND_TABLE || generationMode === TEST_DATA_MODES.AMEND_SELECTED) &&
+        !gridExtras
+      ) {
+        showSchemaError('Grid interface unavailable.');
+        setTestDataStatus('Unable to access current grid.', { severity: 'error', dismissable: true });
+        return;
+      }
+
+      const selectedRowIndexes =
+        generationMode === TEST_DATA_MODES.AMEND_SELECTED ? gridExtras.getSelectedRowIndexes?.() || [] : [];
 
       if (generationMode === TEST_DATA_MODES.AMEND_SELECTED && selectedRowIndexes.length === 0) {
         showSchemaError('No rows selected.');

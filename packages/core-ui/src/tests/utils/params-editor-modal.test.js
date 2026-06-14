@@ -49,6 +49,18 @@ describe('params editor modal', () => {
     ]);
   });
 
+  test('parses variadic documented params as a single editable list value', () => {
+    const parsed = parseInitialParamEntries({
+      params: [{ name: 'values', type: 'comma-separated list', optional: false, variadic: true }],
+      initialParams: '(active,inactive,pending)',
+    });
+
+    expect(parsed.error).toBe('');
+    expect(parsed.entries).toEqual([
+      expect.objectContaining({ name: 'values', value: 'active,inactive,pending', mode: 'raw' }),
+    ]);
+  });
+
   test('builds params text using auto quoting and raw array preservation', () => {
     const result = buildParamsTextFromEditorEntries({
       entries: [
@@ -140,6 +152,29 @@ describe('params editor modal', () => {
 
     expect(warning.textContent).toContain('documented fields');
     expect(applyButton.disabled).toBe(true);
+
+    fireEvent.click(within(dialog).getByRole('button', { name: /^cancel$/i }));
+    await expect(promise).resolves.toBeNull();
+  });
+
+  test('opens enum params with an existing unbounded list without showing an overflow warning', async () => {
+    const promise = openParamsEditorModal({
+      documentObj: document,
+      windowObj: window,
+      commandLabel: 'datatype.enum',
+      helpModel: {
+        summary: 'Enum helper',
+        params: [{ name: 'values', type: 'comma-separated list', optional: false, variadic: true }],
+      },
+      initialParams: '(active,inactive,pending)',
+    });
+
+    const dialog = within(getOverlay()).getByRole('dialog', { name: /edit params for datatype\.enum/i });
+    const warning = dialog.querySelector('[data-role="params-editor-warning"]');
+    const input = within(dialog).getByRole('textbox', { name: /values value/i });
+
+    expect(warning).toBeNull();
+    expect(input.value).toBe('active,inactive,pending');
 
     fireEvent.click(within(dialog).getByRole('button', { name: /^cancel$/i }));
     await expect(promise).resolves.toBeNull();

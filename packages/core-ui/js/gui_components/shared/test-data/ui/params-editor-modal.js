@@ -134,6 +134,8 @@ function inferEditorMode(rawValue, paramType = '') {
 
 function parseInitialParamEntries({ params = [], initialParams = '' } = {}) {
   const metadata = Array.isArray(params) ? params : [];
+  const variadicIndex = metadata.findIndex((param) => param?.variadic === true);
+  const hasVariadicTail = variadicIndex >= 0 && variadicIndex === metadata.length - 1;
   const trimmed = stripOuterParens(initialParams);
   if (!trimmed) {
     return {
@@ -153,7 +155,7 @@ function parseInitialParamEntries({ params = [], initialParams = '' } = {}) {
   if (split.error) {
     return { entries: [], error: split.error };
   }
-  if (split.values.length > metadata.length) {
+  if (split.values.length > metadata.length && !hasVariadicTail) {
     return {
       entries: [],
       error:
@@ -163,7 +165,8 @@ function parseInitialParamEntries({ params = [], initialParams = '' } = {}) {
 
   return {
     entries: metadata.map((param, index) => {
-      const rawValue = split.values[index] || '';
+      const rawValue =
+        hasVariadicTail && index === variadicIndex ? split.values.slice(index).join(',') : split.values[index] || '';
       return {
         name: param?.name || '',
         type: param?.type || '',

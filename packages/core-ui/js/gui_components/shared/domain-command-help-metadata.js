@@ -16,6 +16,7 @@ const SYNTHETIC_DOMAIN_HELP = Object.freeze({
       {
         name: 'values',
         type: 'comma-separated list',
+        variadic: true,
         optional: false,
         description: 'List of allowed enum values chosen at random during generation.',
         example: 'active,inactive,pending',

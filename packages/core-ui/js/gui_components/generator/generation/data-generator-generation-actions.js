@@ -1,147 +1,13 @@
 /*
  * Responsibilities:
  * - Generator-page preview/export workflows and pairwise eligibility checks.
- * - Wraps shared generation helpers so generator UI can stay thin.
+ * - Keeps generator shell responsibilities thin while delegating execution to the shared generation engine.
  */
 
-import { applyExportTextEncoding, createGenerationSession } from '@anywaydata/core';
-import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
-import {
-  CombinationAlgorithm,
-  CombinationsTestDataGenerator,
-  DEFAULT_AETG_RUNS,
-} from '@anywaydata/core/data_generation/n-wise/combinationsTestDataGenerator.js';
-import { PairwiseTestDataGenerator } from '@anywaydata/core/data_generation/n-wise/pairwiseTestDataGenerator.js';
-import { EnumParser } from '@anywaydata/core/data_generation/utils/enumParser.js';
+import { applyExportTextEncoding } from '@anywaydata/core';
 import { schemaErrorsToText } from '../../shared/test-data/schema/schema-error-text.js';
-import {
-  createConfiguredGeneratorFromSchemaRows,
-  createPreviewDataTable,
-  createPairwiseDataTable,
-  createCombinationsDataTable,
-} from '../../shared/test-data/generation/generation-controller.js';
-import {
-  isEnumLikeSchemaRow,
-  isNWiseEligibleForSchemaRows,
-} from '../../shared/test-data/generation/ui-derived-state.js';
-import {
-  SOURCE_TYPE_FAKER,
-  SOURCE_TYPE_DOMAIN,
-  SOURCE_TYPE_REGEX,
-  SOURCE_TYPE_LITERAL,
-  SOURCE_TYPE_ENUM,
-  buildRuleSpecFromSchemaRow,
-  extractLiteralValueFromRuleSpec,
-  extractRegexValueFromRuleSpec,
-} from '../../shared/schema-row-rule-mapper.js';
+import { isNWiseEligibleForSchemaRows } from '../../shared/test-data/generation/ui-derived-state.js';
 import { confirmCartesianProductSelection } from './n-wise-generation-options.js';
-
-function createConfiguredGeneratorForPage({
-  syncSchemaRowsFromTextMode,
-  validateSchemaRows,
-  schemaRowsToSpec,
-  schemaTextToDataRules,
-  getSchemaText = () => '',
-  TestDataGeneratorClass,
-  faker,
-  RandExp,
-}) {
-  const parsed = syncSchemaRowsFromTextMode({ showErrors: false, applySemanticValidation: false });
-  if (parsed.errors?.length > 0) {
-    return { errors: parsed.errors };
-  }
-
-  return createConfiguredGeneratorFromSchemaRows({
-    schemaRows: parsed.rows,
-    validateSchemaRows,
-    schemaRowsToSpec,
-    schemaText: getSchemaText(),
-    schemaTextToDataRules,
-    TestDataGeneratorClass,
-    faker,
-    RandExp,
-    buildRuleSpecFromSchemaRow,
-    extractLiteralValueFromRuleSpec,
-    extractRegexValueFromRuleSpec,
-    SOURCE_TYPE_FAKER,
-    SOURCE_TYPE_DOMAIN,
-    SOURCE_TYPE_LITERAL,
-    SOURCE_TYPE_ENUM,
-    SOURCE_TYPE_REGEX,
-  });
-}
-
-function createConfiguredSessionForPage({
-  syncSchemaRowsFromTextMode,
-  validateSchemaRows,
-  schemaRowsToSpec,
-  getSchemaText = () => '',
-  faker,
-  RandExp,
-}) {
-  const parsed = syncSchemaRowsFromTextMode({ showErrors: false, applySemanticValidation: false });
-  if (parsed.errors?.length > 0) {
-    return { errors: parsed.errors };
-  }
-
-  const validated = validateSchemaRows(parsed.rows || []);
-  if (validated.errors?.length > 0) {
-    return { errors: validated.errors };
-  }
-
-  const explicitSchemaText = String(getSchemaText() || '').trim();
-  const textSpec = explicitSchemaText.length > 0 ? explicitSchemaText : schemaRowsToSpec(validated.rows || []);
-  const session = createGenerationSession({
-    textSpec,
-    schemaSource: 'generator-page',
-    fakerInstance: faker,
-    RandExpClass: RandExp,
-  });
-
-  if (!session.isValid()) {
-    return { errors: session.getErrors() };
-  }
-
-  return { session, errors: [] };
-}
-
-function buildPreviewDataTable({ generator, rowCount }) {
-  return createPreviewDataTable({
-    rowCount,
-    generator,
-    GenericDataTableClass: GenericDataTable,
-  });
-}
-
-function buildPairwiseDataTable({ generator, faker, RandExp }) {
-  return createPairwiseDataTable({
-    generator,
-    PairwiseTestDataGeneratorClass: PairwiseTestDataGenerator,
-    GenericDataTableClass: GenericDataTable,
-    faker,
-    RandExp,
-  });
-}
-
-function buildCombinationsDataTable({ generator, faker, RandExp, options }) {
-  return createCombinationsDataTable({
-    generator,
-    CombinationsTestDataGeneratorClass: CombinationsTestDataGenerator,
-    GenericDataTableClass: GenericDataTable,
-    faker,
-    RandExp,
-    options,
-  });
-}
-
-function buildDataTableFromRowsResult({ headers = [], rows = [] }) {
-  const dataTable = new GenericDataTable();
-  dataTable.setHeaders(headers);
-  rows.forEach((row) => {
-    dataTable.appendDataRow(Array.isArray(row) ? [...row] : []);
-  });
-  return dataTable;
-}
 
 function renderGeneratorOutputPreview({ getSelectedOutputType, getPreviewDataTable, exporter, setOutputPreviewText }) {
   const type = getSelectedOutputType();
@@ -195,99 +61,49 @@ function updateGeneratorPairwiseButtonVisibility({
       ? getCurrentSchemaState()
       : syncSchemaRowsFromTextMode({ showErrors: false, applySemanticValidation: false });
   const { errors, rows } = validateSchemaRows(parsed.rows || []);
-  const isVisible = !parsed.errors?.length && !errors.length && isNWiseEligibleForSchemaRows(rows);
-  return isVisible;
+  return !parsed.errors?.length && !errors.length && isNWiseEligibleForSchemaRows(rows);
 }
 
-function countGeneratorEnumColumns({ syncSchemaRowsFromTextMode, validateSchemaRows }) {
-  const parsed = syncSchemaRowsFromTextMode({ showErrors: false, applySemanticValidation: false });
-  if (parsed.errors?.length > 0) {
-    return 0;
-  }
-
-  const { errors, rows } = validateSchemaRows(parsed.rows);
-  if (errors.length > 0) {
-    return 0;
-  }
-
-  return rows.filter((row) => isEnumLikeSchemaRow(row)).length;
-}
-
-function getGeneratorEnumValueCounts({ syncSchemaRowsFromTextMode, validateSchemaRows }) {
-  const parsed = syncSchemaRowsFromTextMode({ showErrors: false, applySemanticValidation: false });
-  if (parsed.errors?.length > 0) {
-    return [];
-  }
-
-  const { errors, rows } = validateSchemaRows(parsed.rows);
-  if (errors.length > 0) {
-    return [];
-  }
-
-  return rows
-    .filter((row) => isEnumLikeSchemaRow(row))
-    .map((row) => {
-      try {
-        return EnumParser.extractEnumValues(buildRuleSpecFromSchemaRow(row)).length;
-      } catch {
-        return 0;
-      }
-    })
-    .filter((count) => count > 0);
+function surfaceGenerationErrors(result, surfacePageError) {
+  surfacePageError(schemaErrorsToText(result.errors || []), { useSchemaStatus: true });
 }
 
 function previewGeneratorData({
   getPreviewRowCount,
-  createConfiguredGenerator,
-  createConfiguredSession,
-  buildDataTable,
+  schemaGenerationService,
   setPreviewDataTable,
   renderOutputPreviewForCurrentSelection,
   surfacePageError,
   clearPageError,
 }) {
+  function applyResult(result) {
+    if (!result?.ok) {
+      surfaceGenerationErrors(result || {}, surfacePageError);
+      return;
+    }
+
+    clearPageError?.();
+    setPreviewDataTable?.(result.dataTable);
+    renderOutputPreviewForCurrentSelection();
+  }
+
   const rowCount = getPreviewRowCount();
   if (rowCount.errors.length > 0) {
     surfacePageError(rowCount.errors.join('\n'));
     return;
   }
 
-  if (typeof createConfiguredSession === 'function') {
-    const configuredSession = createConfiguredSession();
-    if (configuredSession.errors?.length > 0) {
-      surfacePageError(schemaErrorsToText(configuredSession.errors), { useSchemaStatus: true });
-      return;
-    }
-
-    const result = configuredSession.session.generateRows({ rowCount: rowCount.value });
-    if (!result.ok) {
-      surfacePageError(schemaErrorsToText(result.errors), { useSchemaStatus: true });
-      return;
-    }
-
-    const dataTable = buildDataTableFromRowsResult(result);
-    clearPageError?.();
-    setPreviewDataTable?.(dataTable);
-    renderOutputPreviewForCurrentSelection();
-    return;
+  const result = schemaGenerationService?.generateRows?.({ rowCount: rowCount.value });
+  if (typeof result?.then === 'function') {
+    return result.then(applyResult);
   }
 
-  const configured = createConfiguredGenerator();
-  if (configured.errors?.length > 0) {
-    surfacePageError(schemaErrorsToText(configured.errors), { useSchemaStatus: true });
-    return;
-  }
-
-  const dataTable = buildDataTable(configured.generator, rowCount.value);
-  clearPageError?.();
-  setPreviewDataTable?.(dataTable);
-  renderOutputPreviewForCurrentSelection();
+  return applyResult(result);
 }
 
 async function generateGeneratorDataFile({
   getGenerateRowCount,
-  createConfiguredGenerator,
-  createConfiguredSession,
+  schemaGenerationService,
   getSelectedOutputType,
   exporter,
   clearGenerationStatus,
@@ -295,7 +111,6 @@ async function generateGeneratorDataFile({
   setGenerationStatus,
   showGenerationLoadingStatus,
   getExportEncodingSettings,
-  buildDataTable,
   DownloadClass,
   surfacePageError,
   clearPageError,
@@ -307,28 +122,10 @@ async function generateGeneratorDataFile({
     return;
   }
 
-  let dataTable;
-  if (typeof createConfiguredSession === 'function') {
-    const configuredSession = createConfiguredSession();
-    if (configuredSession.errors?.length > 0) {
-      surfacePageError(schemaErrorsToText(configuredSession.errors), { useSchemaStatus: true });
-      return;
-    }
-
-    const result = configuredSession.session.generateRows({ rowCount: rowCount.value });
-    if (!result.ok) {
-      surfacePageError(schemaErrorsToText(result.errors), { useSchemaStatus: true });
-      return;
-    }
-    dataTable = buildDataTableFromRowsResult(result);
-  } else {
-    const configured = createConfiguredGenerator();
-    if (configured.errors?.length > 0) {
-      surfacePageError(schemaErrorsToText(configured.errors), { useSchemaStatus: true });
-      return;
-    }
-
-    dataTable = buildDataTable(configured.generator, rowCount.value);
+  const result = await schemaGenerationService?.generateRows?.({ rowCount: rowCount.value });
+  if (!result?.ok) {
+    surfaceGenerationErrors(result || {}, surfacePageError);
+    return;
   }
 
   const type = getSelectedOutputType();
@@ -343,10 +140,10 @@ async function generateGeneratorDataFile({
 
   try {
     clearPageError?.();
-    dataTable.__generatorFilename = `generated-data${exporter.getFileExtensionFor(type)}`;
+    result.dataTable.__generatorFilename = `generated-data${exporter.getFileExtensionFor(type)}`;
     const { filename } = await exportDataTableToDownload({
       type,
-      dataTable,
+      dataTable: result.dataTable,
       exporter,
       DownloadClass,
       showGenerationLoadingStatus,
@@ -364,9 +161,7 @@ async function generateGeneratorDataFile({
 }
 
 async function generateGeneratorAllPairsDataFile({
-  createConfiguredGenerator,
-  createConfiguredSession,
-  countEnumColumns,
+  schemaGenerationService,
   getSelectedOutputType,
   exporter,
   clearGenerationStatus,
@@ -374,39 +169,15 @@ async function generateGeneratorAllPairsDataFile({
   setGenerationStatus,
   showGenerationLoadingStatus,
   getExportEncodingSettings,
-  buildAllPairsDataTable,
   DownloadClass,
   surfacePageError,
   clearPageError,
   scheduleClearGenerationStatus,
 }) {
-  if (countEnumColumns() < 2) {
-    surfacePageError('Pairwise generation requires at least 2 enum columns.');
+  const result = schemaGenerationService?.generatePairwise?.();
+  if (!result?.ok) {
+    surfaceGenerationErrors(result || {}, surfacePageError);
     return;
-  }
-
-  let dataTable;
-  if (typeof createConfiguredSession === 'function') {
-    const configuredSession = createConfiguredSession();
-    if (configuredSession.errors?.length > 0) {
-      surfacePageError(schemaErrorsToText(configuredSession.errors), { useSchemaStatus: true });
-      return;
-    }
-
-    const result = configuredSession.session.generatePairwise({});
-    if (!result.ok) {
-      surfacePageError(schemaErrorsToText(result.errors), { useSchemaStatus: true });
-      return;
-    }
-    dataTable = buildDataTableFromRowsResult(result);
-  } else {
-    const configured = createConfiguredGenerator();
-    if (configured.errors?.length > 0) {
-      surfacePageError(schemaErrorsToText(configured.errors), { useSchemaStatus: true });
-      return;
-    }
-
-    dataTable = buildAllPairsDataTable(configured.generator);
   }
 
   const type = getSelectedOutputType();
@@ -420,23 +191,17 @@ async function generateGeneratorAllPairsDataFile({
   showGenerationLoadingStatus('Generating pairwise combinations...');
 
   try {
-    if (!dataTable) {
-      surfacePageError('Failed to generate pairwise data.');
-      setGenerationStatus('Pairwise generation failed.', { severity: 'error', dismissable: true });
-      return;
-    }
-
     clearPageError?.();
-    dataTable.__generatorFilename = `all-pairs-data${exporter.getFileExtensionFor(type)}`;
+    result.dataTable.__generatorFilename = `all-pairs-data${exporter.getFileExtensionFor(type)}`;
     const { filename } = await exportDataTableToDownload({
       type,
-      dataTable,
+      dataTable: result.dataTable,
       exporter,
       DownloadClass,
       showGenerationLoadingStatus,
       exportEncodingSettings: getExportEncodingSettings?.(),
     });
-    setGenerationStatus(`Download ready: ${filename} (${dataTable.getRowCount()} combinations)`);
+    setGenerationStatus(`Download ready: ${filename} (${result.dataTable.getRowCount()} combinations)`);
     scheduleClearGenerationStatus();
   } catch (error) {
     console.error(error);
@@ -448,16 +213,13 @@ async function generateGeneratorAllPairsDataFile({
 }
 
 async function generateGeneratorCombinationsDataFile({
-  createConfiguredGenerator,
-  countEnumColumns,
-  getEnumValueCounts,
+  schemaGenerationService,
   getSelectedOutputType,
   exporter,
   clearGenerationStatus,
   setGenerationButtonBusy,
   setGenerationStatus,
   showGenerationLoadingStatus,
-  buildCombinationsDataTable: buildCombinationsDataTableFn,
   DownloadClass,
   surfacePageError,
   clearPageError,
@@ -467,25 +229,24 @@ async function generateGeneratorCombinationsDataFile({
 }) {
   const strength = Number.parseInt(selection?.strength, 10);
   const algorithm = selection?.algorithm;
-  const enumColumnCount = countEnumColumns();
-  if (!Number.isInteger(strength) || strength < 2 || strength > enumColumnCount) {
-    surfacePageError(`n-wise strength must be between 2 and ${enumColumnCount} for this schema.`);
-    return;
-  }
-
-  const configured = createConfiguredGenerator();
-  if (configured.errors?.length > 0) {
-    surfacePageError(schemaErrorsToText(configured.errors), { useSchemaStatus: true });
-    return;
-  }
+  const combinationInput = schemaGenerationService?.getCombinationInput?.() || {
+    enumColumnCount: 0,
+    enumValueCounts: [],
+  };
 
   const confirmed = await confirmCartesianProductSelection({
     algorithm,
-    valueCounts: getEnumValueCounts?.() || [],
+    valueCounts: combinationInput.enumValueCounts || [],
     requestConfirm,
   });
   if (!confirmed) {
     setGenerationStatus('Cartesian product generation skipped.', { severity: 'warning', dismissable: true });
+    return;
+  }
+
+  const result = schemaGenerationService?.generateCombinations?.({ strength, algorithm });
+  if (!result?.ok) {
+    surfaceGenerationErrors(result || {}, surfacePageError);
     return;
   }
 
@@ -500,30 +261,16 @@ async function generateGeneratorCombinationsDataFile({
   showGenerationLoadingStatus(`Generating ${strength}-wise combinations...`);
 
   try {
-    const dataTable = buildCombinationsDataTableFn(configured.generator, {
-      strength,
-      algorithm,
-      seed: 1,
-      candidateCount: 20,
-      // AETG is randomized, so we run it twice and keep the better result.
-      runs: algorithm === CombinationAlgorithm.AETG ? DEFAULT_AETG_RUNS : 1,
-    });
-    if (!dataTable) {
-      surfacePageError('Failed to generate combinations data.');
-      setGenerationStatus('Combination generation failed.', { severity: 'error', dismissable: true });
-      return;
-    }
-
     clearPageError?.();
-    dataTable.__generatorFilename = `n-wise-combinations-data${exporter.getFileExtensionFor(type)}`;
+    result.dataTable.__generatorFilename = `n-wise-combinations-data${exporter.getFileExtensionFor(type)}`;
     const { filename } = await exportDataTableToDownload({
       type,
-      dataTable,
+      dataTable: result.dataTable,
       exporter,
       DownloadClass,
       showGenerationLoadingStatus,
     });
-    setGenerationStatus(`Download ready: ${filename} (${dataTable.getRowCount()} combinations)`);
+    setGenerationStatus(`Download ready: ${filename} (${result.dataTable.getRowCount()} combinations)`);
     scheduleClearGenerationStatus();
   } catch (error) {
     console.error(error);
@@ -535,15 +282,8 @@ async function generateGeneratorCombinationsDataFile({
 }
 
 export {
-  createConfiguredGeneratorForPage,
-  createConfiguredSessionForPage,
-  buildPreviewDataTable,
-  buildPairwiseDataTable,
-  buildCombinationsDataTable,
   renderGeneratorOutputPreview,
   updateGeneratorPairwiseButtonVisibility,
-  countGeneratorEnumColumns,
-  getGeneratorEnumValueCounts,
   previewGeneratorData,
   generateGeneratorDataFile,
   generateGeneratorAllPairsDataFile,

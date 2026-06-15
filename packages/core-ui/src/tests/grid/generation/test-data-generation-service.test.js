@@ -101,6 +101,17 @@ describe('test-data-generation-service', () => {
       },
     }));
 
+    const createGenerationSessionFn = jest.fn(() => ({
+      isValid: () => true,
+      getErrors: () => [],
+      generateRows: async () => ({
+        ok: true,
+        headers: ['Status'],
+        rows: [['Closed']],
+        diagnostics: { rowCount: 1 },
+      }),
+    }));
+
     const service = createTestDataGenerationService({
       schemaTextToDataRules,
       TestDataGeneratorClass: class {},
@@ -133,13 +144,14 @@ describe('test-data-generation-service', () => {
       getGenerationMode: () => 'new-table',
       getRequestedRowCount: () => 1,
       setGenerateBusy: jest.fn(),
+      createGenerationSessionFn,
     });
 
     await service.generateTestData();
 
-    expect(schemaTextToDataRules).toHaveBeenCalledWith(
+    expect(createGenerationSessionFn).toHaveBeenCalledWith(
       expect.objectContaining({
-        schemaText: 'Status\nenum("Open","Closed")\n\nIF [Status] = "Open" THEN [Status] = "Closed" ENDIF',
+        textSpec: 'Status\nenum("Open","Closed")\n\nIF [Status] = "Open" THEN [Status] = "Closed" ENDIF',
       })
     );
   });
@@ -335,7 +347,7 @@ describe('test-data-generation-service', () => {
 
     await service.generateCombinationsTestData({ strength: 2, algorithm: 'greedy' });
 
-    expect(validateCurrentSchemaRows).toHaveBeenCalledTimes(3);
+    expect(validateCurrentSchemaRows).toHaveBeenCalledTimes(4);
     expect(setTestDataLoadingStatus.mock.calls).toEqual([
       ['Generating 2-wise combinations...'],
       ['Applying data to grid...'],

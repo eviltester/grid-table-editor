@@ -1,25 +1,18 @@
 /*
  * Responsibilities:
- * - Encapsulates generate/amend/pairwise execution flows for test-data grid.
- * - Handles schema parsing into generator rules and validation error surfacing.
- * - Owns generation progress/status transitions and preview refresh behavior.
+ * - Thin embedded-app shell for grid generation/amend workflows.
+ * - Delegates shared execution to the session-backed UI generation engine.
+ * - Keeps grid contract checks, preview sync, and user-facing status updates local to the app surface.
  */
 
 import { schemaErrorsToText } from '../../../shared/test-data/schema/schema-error-text.js';
+import { createConfiguredGeneratorFromSchemaRows } from '../../../shared/test-data/generation/generation-controller.js';
+import { isNWiseEligibleForSchemaRows } from '../../../shared/test-data/generation/ui-derived-state.js';
 import {
-  createConfiguredGeneratorFromSchemaRows,
-  createCombinationsDataTable,
-} from '../../../shared/test-data/generation/generation-controller.js';
-import {
-  isEnumLikeSchemaRow,
-  isNWiseEligibleForSchemaRows,
-} from '../../../shared/test-data/generation/ui-derived-state.js';
-import { EnumParser } from '@anywaydata/core/data_generation/utils/enumParser.js';
-import { CONSTRAINT_FAILURE_BATCH_SIZE, createGenerationSession } from '@anywaydata/core';
-import {
-  CombinationAlgorithm,
-  DEFAULT_AETG_RUNS,
-} from '@anywaydata/core/data_generation/n-wise/combinationsTestDataGenerator.js';
+  buildConstraintImpactMessage,
+  createUiGenerationSessionService,
+} from '../../../shared/test-data/generation/ui-generation-session-service.js';
+import { createGenerationSession } from '@anywaydata/core';
 import { confirmCartesianProductSelection } from '../../../generator/generation/n-wise-generation-options.js';
 import {
   SOURCE_TYPE_FAKER,
@@ -69,10 +62,15 @@ function createTestDataGenerationService({
     return validateCurrentSchemaRows?.(options) || { errors: [], rows: [] };
   }
 
-  function createGeneratorFromSchemaRows(schemaRows) {
+  function createConfiguredGenerator(validationOptions) {
+    const rowValidation = getCurrentSchemaRowValidation(validationOptions);
+    if (rowValidation.errors.length > 0) {
+      return { generator: null, errors: rowValidation.errors, rows: rowValidation.rows || [] };
+    }
+
     return createConfiguredGeneratorFromSchemaRows({
-      schemaRows,
-      validateSchemaRows: () => ({ errors: [], rows: schemaRows }),
+      schemaRows: rowValidation.rows || [],
+      validateSchemaRows: () => rowValidation,
       schemaRowsToSpec,
       schemaText: getSchemaText(),
       schemaTextToDataRules,
@@ -90,67 +88,25 @@ function createTestDataGenerationService({
     });
   }
 
+  const generationEngine = createUiGenerationSessionService({
+    getValidatedSchemaState: getCurrentSchemaRowValidation,
+    getSchemaText,
+    schemaRowsToSpec,
+    schemaSource: 'app-test-data-grid',
+    GenericDataTableClass,
+    CombinationsTestDataGeneratorClass,
+    createConfiguredGenerator,
+    createGenerationSessionFn,
+    faker,
+    RandExp,
+  });
+
   function getRulesParserFromTextArea(rowValidation = getCurrentSchemaRowValidation({ syncFromText: false })) {
     if (rowValidation.errors.length > 0) {
       return { generator: null, errors: rowValidation.errors };
     }
-    const parseResult = createGeneratorFromSchemaRows(rowValidation.rows || []);
+    const parseResult = createConfiguredGenerator({ schemaState: rowValidation });
     return { generator: parseResult.generator, errors: parseResult.errors };
-  }
-
-  function buildGenerationSchemaText(rowValidation = getCurrentSchemaRowValidation({ syncFromText: false })) {
-    const explicitSchemaText = String(getSchemaText?.() || '').trim();
-    if (explicitSchemaText.length > 0) {
-      return explicitSchemaText;
-    }
-
-    return schemaRowsToSpec(rowValidation.rows || []);
-  }
-
-  function createCoreGenerationSession(rowValidation = getCurrentSchemaRowValidation({ syncFromText: false })) {
-    if (rowValidation.errors.length > 0) {
-      return { session: null, errors: rowValidation.errors };
-    }
-
-    const generatorParse = getRulesParserFromTextArea(rowValidation);
-    if (generatorParse.errors.length > 0) {
-      return { session: null, errors: generatorParse.errors };
-    }
-
-    const session = createGenerationSessionFn({
-      textSpec: buildGenerationSchemaText(rowValidation),
-      schemaSource: 'app-test-data-grid',
-      fakerInstance: faker,
-      RandExpClass: RandExp,
-    });
-
-    if (!session.isValid()) {
-      return { session: null, errors: session.getErrors() };
-    }
-
-    return { session, errors: [] };
-  }
-
-  function createDataTableFromResult(result) {
-    const dataTable = new GenericDataTableClass();
-    if (typeof dataTable.setHeaders !== 'function') {
-      dataTable.headers = [];
-      dataTable.rows = [];
-      dataTable.setHeaders = (headers) => {
-        dataTable.headers = Array.isArray(headers) ? [...headers] : [];
-      };
-      dataTable.appendDataRow = (row) => {
-        dataTable.rows.push(Array.isArray(row) ? [...row] : []);
-      };
-      dataTable.getRowCount = () => dataTable.rows.length;
-      dataTable.getRow = (index) => dataTable.rows[index];
-    }
-
-    dataTable.setHeaders(result.headers || []);
-    (result.rows || []).forEach((row) => {
-      dataTable.appendDataRow(Array.isArray(row) ? [...row] : []);
-    });
-    return dataTable;
   }
 
   function showPairwiseButton() {
@@ -202,16 +158,6 @@ function createTestDataGenerationService({
     }
   }
 
-  function buildConstraintImpactMessage({ generatedRows = 0, failedRows = 0 } = {}) {
-    return `Schema Constraints are impacting row generation - generated ${generatedRows} rows, failed to generate ${failedRows} rows. Consider changing constraints to improve row generation.`;
-  }
-
-  function hasConstraintGenerationFailure(errors = []) {
-    return (Array.isArray(errors) ? errors : []).some(
-      (error) => String(error?.code || '').trim() === 'constraint_generation_failed'
-    );
-  }
-
   async function requestConstraintImpactDecision({ generatedRows = 0, failedRows = 0 } = {}) {
     if (typeof requestConfirm !== 'function') {
       return false;
@@ -228,35 +174,27 @@ function createTestDataGenerationService({
   }
 
   function countEnumColumns() {
-    const rowValidation = getCurrentSchemaRowValidation({ syncFromText: false });
-    if (rowValidation.errors.length > 0) {
-      return 0;
-    }
-    return (rowValidation.rows || []).filter((row) => isEnumLikeSchemaRow(row)).length;
+    return generationEngine.countEnumColumns({ syncFromText: false });
   }
 
   function getEnumValueCounts() {
-    const rowValidation = getCurrentSchemaRowValidation({ syncFromText: false });
-    if (rowValidation.errors.length > 0) {
-      return [];
-    }
+    return generationEngine.getEnumValueCounts({ syncFromText: false });
+  }
 
-    return (rowValidation.rows || [])
-      .filter((row) => isEnumLikeSchemaRow(row))
-      .map((row) => {
-        try {
-          const ruleSpec = buildRuleSpecFromSchemaRow(row);
-          return EnumParser.extractEnumValues(ruleSpec).length;
-        } catch (error) {
-          console.error('Failed to extract enum values for schema row rule spec.', {
-            row,
-            ruleSpec: row?.params,
-            error,
-          });
-          return 0;
-        }
-      })
-      .filter((count) => count > 0);
+  async function applyGeneratedTableAndStatus({
+    dataTable,
+    loadingMessage = 'Applying data to grid...',
+    successMessage,
+    statusOptions = { dismissable: true },
+  }) {
+    setTestDataLoadingStatus(loadingMessage);
+    await yieldToUi();
+    await Promise.resolve(getImporter().setGridFromGenericDataTable(dataTable));
+    const previewUpdated = await syncTextPreviewFromGrid();
+    setTestDataStatus(
+      `${successMessage} ${previewUpdated ? 'Grid and preview updated.' : 'Grid updated.'}`,
+      statusOptions
+    );
   }
 
   async function generatePairwiseTestData() {
@@ -266,57 +204,29 @@ function createTestDataGenerationService({
     setGeneratePairwiseBusy(true);
 
     try {
-      const rowValidation = getCurrentSchemaRowValidation();
-      if (rowValidation.errors.length > 0) {
-        const errorMessages = schemaErrorsToText(rowValidation.errors);
-        showSchemaError(errorMessages);
-        setTestDataStatus('Schema validation failed.', { severity: 'error', dismissable: true });
-        return;
-      }
-
-      const { session, errors } = createCoreGenerationSession(rowValidation);
-
-      if (errors.length > 0 || !session) {
-        const errorMessages = schemaErrorsToText(errors);
-        console.log(errorMessages);
-        showSchemaError(errorMessages);
-        setTestDataStatus('Schema validation failed.', { severity: 'error', dismissable: true });
-        return;
-      }
-
-      if (!isNWiseEligibleForSchemaRows(rowValidation.rows || [])) {
-        showSchemaError('Pairwise generation requires at least 2 enum columns.');
-        setTestDataStatus('Insufficient enum columns.', { severity: 'warning', dismissable: true });
-        return;
-      }
-
       await yieldToUi();
       setTestDataLoadingStatus('Generating pairwise combinations...');
       await yieldToUi();
 
-      const result = session.generatePairwise({
-        outputFormat: 'json',
-      });
+      const result = generationEngine.generatePairwise();
       if (!result.ok) {
-        showSchemaError('Failed to generate pairwise data.');
-        setTestDataStatus('Pairwise generation failed.', { severity: 'error', dismissable: true });
+        showSchemaError(schemaErrorsToText(result.errors || []));
+        setTestDataStatus(
+          result.errors?.some((error) => error?.code === 'insufficient_enum_columns')
+            ? 'Insufficient enum columns.'
+            : 'Pairwise generation failed.',
+          {
+            severity: result.errors?.some((error) => error?.code === 'insufficient_enum_columns') ? 'warning' : 'error',
+            dismissable: true,
+          }
+        );
         return;
       }
-      const dataTable = createDataTableFromResult(result);
 
-      if (dataTable) {
-        setTestDataLoadingStatus('Applying data to grid...');
-        await yieldToUi();
-        await Promise.resolve(getImporter().setGridFromGenericDataTable(dataTable));
-      }
-
-      const previewUpdated = await syncTextPreviewFromGrid();
-      setTestDataStatus(
-        `Generated ${dataTable.getRowCount()} pairwise combinations. ${
-          previewUpdated ? 'Grid and preview updated.' : 'Grid updated.'
-        }`,
-        { dismissable: true }
-      );
+      await applyGeneratedTableAndStatus({
+        dataTable: result.dataTable,
+        successMessage: `Generated ${result.dataTable.getRowCount()} pairwise combinations.`,
+      });
       await yieldToUi();
     } catch (error) {
       console.error('Pairwise generation error:', error);
@@ -330,49 +240,13 @@ function createTestDataGenerationService({
   async function generateCombinationsTestData(selection) {
     debouncer.clear('populateTestDataGrid');
     syncSchemaTextFromGridBeforeGenerate();
-
-    const strength = Number.parseInt(selection?.strength, 10);
-    const algorithm = selection?.algorithm;
-    const enumColumnCount = countEnumColumns();
-
-    if (!Number.isInteger(strength) || strength < 2 || strength > enumColumnCount) {
-      showSchemaError(`n-wise strength must be between 2 and ${enumColumnCount} for this schema.`);
-      setTestDataStatus('Invalid n-wise strength.', { severity: 'warning', dismissable: true });
-      return;
-    }
-
-    setTestDataLoadingStatus(`Generating ${strength}-wise combinations...`);
     setGeneratePairwiseBusy(true);
 
     try {
-      const rowValidation = getCurrentSchemaRowValidation();
-      if (rowValidation.errors.length > 0) {
-        const errorMessages = schemaErrorsToText(rowValidation.errors);
-        showSchemaError(errorMessages);
-        setTestDataStatus('Schema validation failed.', { severity: 'error', dismissable: true });
-        return;
-      }
-
-      const { generator, errors } = getRulesParserFromTextArea(rowValidation);
-
-      if (errors.length > 0 || !generator) {
-        const errorMessages = schemaErrorsToText(errors);
-        showSchemaError(errorMessages);
-        setTestDataStatus('Schema validation failed.', { severity: 'error', dismissable: true });
-        return;
-      }
-
-      if (!isNWiseEligibleForSchemaRows(rowValidation.rows || [])) {
-        showSchemaError(
-          'Combination generation requires at least 2 enum columns because n-wise generation combines finite enum values.'
-        );
-        setTestDataStatus('Insufficient enum columns.', { severity: 'warning', dismissable: true });
-        return;
-      }
-
+      const algorithm = selection?.algorithm;
       const confirmed = await confirmCartesianProductSelection({
         algorithm,
-        valueCounts: getEnumValueCounts(),
+        valueCounts: generationEngine.getCombinationInput({ syncFromText: false }).enumValueCounts,
         requestConfirm,
       });
       if (!confirmed) {
@@ -380,41 +254,39 @@ function createTestDataGenerationService({
         return;
       }
 
+      const strength = Number.parseInt(selection?.strength, 10);
+      setTestDataLoadingStatus(`Generating ${strength}-wise combinations...`);
       await yieldToUi();
 
-      const dataTable = createCombinationsDataTable({
-        generator,
-        CombinationsTestDataGeneratorClass,
-        GenericDataTableClass,
-        faker,
-        RandExp,
-        options: {
-          strength,
-          algorithm,
-          seed: 1,
-          candidateCount: 20,
-          // AETG is randomized, so we run it twice and keep the better result.
-          runs: algorithm === CombinationAlgorithm.AETG ? DEFAULT_AETG_RUNS : 1,
-        },
+      const result = generationEngine.generateCombinations({
+        strength,
+        algorithm,
+        validationOptions: { syncFromText: false },
       });
-
-      if (!dataTable) {
-        showSchemaError('Failed to generate combinations data.');
-        setTestDataStatus('Combination generation failed.', { severity: 'error', dismissable: true });
+      if (!result.ok) {
+        showSchemaError(schemaErrorsToText(result.errors || []));
+        setTestDataStatus(
+          result.errors?.some(
+            (error) => error?.code === 'invalid_nwise_strength' || error?.code === 'insufficient_enum_columns'
+          )
+            ? 'Invalid n-wise strength.'
+            : 'Combination generation failed.',
+          {
+            severity: result.errors?.some(
+              (error) => error?.code === 'invalid_nwise_strength' || error?.code === 'insufficient_enum_columns'
+            )
+              ? 'warning'
+              : 'error',
+            dismissable: true,
+          }
+        );
         return;
       }
 
-      setTestDataLoadingStatus('Applying data to grid...');
-      await yieldToUi();
-      await Promise.resolve(getImporter().setGridFromGenericDataTable(dataTable));
-
-      const previewUpdated = await syncTextPreviewFromGrid();
-      setTestDataStatus(
-        `Generated ${dataTable.getRowCount()} ${strength}-wise combinations. ${
-          previewUpdated ? 'Grid and preview updated.' : 'Grid updated.'
-        }`,
-        { dismissable: true }
-      );
+      await applyGeneratedTableAndStatus({
+        dataTable: result.dataTable,
+        successMessage: `Generated ${result.dataTable.getRowCount()} ${strength}-wise combinations.`,
+      });
       await yieldToUi();
     } catch (error) {
       console.error('Combination generation error:', error);
@@ -437,25 +309,7 @@ function createTestDataGenerationService({
       const desiredRowCountParsed = Number.parseInt(desiredRowCountRaw, 10);
       const desiredRowCount = normaliseCount(desiredRowCountRaw);
       const generationMode = getGenerationMode();
-      const rowValidation = getCurrentSchemaRowValidation();
       const gridExtras = getMainGridExtras();
-
-      if (rowValidation.errors.length > 0) {
-        const errorMessages = schemaErrorsToText(rowValidation.errors);
-        showSchemaError(errorMessages);
-        setTestDataStatus('Schema validation failed.', { severity: 'error', dismissable: true });
-        return;
-      }
-
-      const { session, errors } = createCoreGenerationSession(rowValidation);
-
-      if (errors.length > 0 || !session) {
-        const errorMessages = schemaErrorsToText(errors);
-        console.log(errorMessages);
-        showSchemaError(errorMessages);
-        setTestDataStatus('Schema validation failed.', { severity: 'error', dismissable: true });
-        return;
-      }
 
       if (
         !Number.isFinite(desiredRowCountParsed) ||
@@ -509,129 +363,116 @@ function createTestDataGenerationService({
       );
       await yieldToUi();
 
-      let dataTable;
-      let constraintImpactMessage = '';
-      let retryLimitReached = false;
       if (generationMode === TEST_DATA_MODES.NEW_TABLE) {
-        const monitoredGeneration = await session.generateRows({
+        let retryLimitReached = false;
+        const result = await generationEngine.generateRows({
           rowCount: desiredRowCount,
-          hooks: {
-            onConstraintImpact: async ({ generatedRows, failedRows, retryCount, continueGeneration }) => {
-              if (retryCount >= MAX_CONSTRAINT_RETRY_BATCHES) {
-                retryLimitReached = true;
-                return;
-              }
+          onConstraintImpact: async ({ generatedRows, failedRows, retryCount, continueGeneration }) => {
+            if (retryCount >= MAX_CONSTRAINT_RETRY_BATCHES) {
+              retryLimitReached = true;
+              return;
+            }
 
-              const shouldContinue = await requestConstraintImpactDecision({ generatedRows, failedRows });
-              if (shouldContinue) {
-                continueGeneration();
-              }
-            },
+            const shouldContinue = await requestConstraintImpactDecision({ generatedRows, failedRows });
+            if (shouldContinue) {
+              continueGeneration();
+            }
           },
         });
-        if (!monitoredGeneration.ok && !monitoredGeneration.aborted) {
-          throw new Error(schemaErrorsToText(monitoredGeneration.errors || []));
+
+        if (!result.ok && !result.aborted) {
+          showSchemaError(schemaErrorsToText(result.errors || []));
+          setTestDataStatus('Schema validation failed.', { severity: 'error', dismissable: true });
+          return;
         }
-        dataTable = createDataTableFromResult(monitoredGeneration);
 
-        if (monitoredGeneration.aborted) {
-          setTestDataLoadingStatus('Applying valid rows to grid...');
-          await yieldToUi();
-          await Promise.resolve(getImporter().setGridFromGenericDataTable(dataTable));
-
-          const previewUpdated = await syncTextPreviewFromGrid();
-          const message = buildConstraintImpactMessage({
-            generatedRows: monitoredGeneration.rows.length,
-            failedRows: monitoredGeneration.diagnostics?.failedRows || CONSTRAINT_FAILURE_BATCH_SIZE,
-          });
-          const surfacedMessage = retryLimitReached ? `${message} Retry limit reached.` : message;
+        if (result.aborted) {
+          const surfacedMessage = retryLimitReached
+            ? `${buildConstraintImpactMessage({
+                generatedRows: result.statusContext.generatedRows,
+                failedRows: result.statusContext.failedRows,
+              })} Retry limit reached.`
+            : buildConstraintImpactMessage({
+                generatedRows: result.statusContext.generatedRows,
+                failedRows: result.statusContext.failedRows,
+              });
           showSchemaError(surfacedMessage);
-          setTestDataStatus(`${surfacedMessage} ${previewUpdated ? 'Grid and preview updated.' : 'Grid updated.'}`, {
-            severity: 'warning',
-            dismissable: true,
+          await applyGeneratedTableAndStatus({
+            dataTable: result.dataTable,
+            loadingMessage: 'Applying valid rows to grid...',
+            successMessage: surfacedMessage,
+            statusOptions: { severity: 'warning', dismissable: true },
           });
           return;
         }
-      } else {
-        if (!gridExtras) {
-          showSchemaError('Grid interface unavailable for amend mode.');
-          setTestDataStatus('Grid interface unavailable.', { severity: 'error', dismissable: true });
-          return;
-        }
-        if (typeof gridExtras.applyGeneratedSchemaAmend === 'function') {
-          const { generator } = getRulesParserFromTextArea(rowValidation);
-          setTestDataLoadingStatus('Amending rows...');
-          await yieldToUi();
-          const directAmendResult = await Promise.resolve(
-            gridExtras.applyGeneratedSchemaAmend({
-              mode: generationMode,
-              desiredRowCount,
-              schemaHeaders: generator.generateHeadersArray(),
-              generateRow: () => generator.generateRow(),
-              selectedRowIndexes,
-            })
-          );
 
-          if (generationMode === TEST_DATA_MODES.AMEND_SELECTED && directAmendResult?.noSelectedRows) {
-            showSchemaError('No rows selected.');
-            setTestDataStatus('No selected rows to amend.', { severity: 'warning', dismissable: true });
-            return;
-          }
-
-          dataTable = null;
-        } else {
-          const currentDataTable = gridExtras.getGridAsGenericDataTable();
-          const amendResult = session.amendRows({
-            headers: currentDataTable?.getHeaders?.() || [],
-            rows: currentDataTable?.rows || [],
-            rowCount: desiredRowCount,
-            mode: generationMode,
-            selectedRowIndexes,
-          });
-
-          if (generationMode === TEST_DATA_MODES.AMEND_SELECTED && amendResult.diagnostics?.noSelectedRows) {
-            showSchemaError('No rows selected.');
-            setTestDataStatus('No selected rows to amend.', { severity: 'warning', dismissable: true });
-            return;
-          }
-
-          if (!amendResult.ok) {
-            const errorMessages = schemaErrorsToText(amendResult.errors || []);
-            const isConstraintFailure = hasConstraintGenerationFailure(amendResult.errors);
-            showSchemaError(errorMessages);
-            setTestDataStatus(isConstraintFailure ? 'Amend stopped by schema constraints.' : 'Amend failed.', {
-              severity: isConstraintFailure ? 'warning' : 'error',
-              dismissable: true,
-            });
-            return;
-          }
-
-          dataTable = createDataTableFromResult(amendResult);
-        }
+        await applyGeneratedTableAndStatus({
+          dataTable: result.dataTable,
+          successMessage: 'Generate complete.',
+        });
+        return;
       }
 
-      if (dataTable) {
-        setTestDataLoadingStatus('Applying data to grid...');
+      if (typeof gridExtras.applyGeneratedSchemaAmend === 'function') {
+        const directAmendAdapter = generationEngine.createDirectAmendAdapter({ syncFromText: false });
+        if (!directAmendAdapter.ok) {
+          showSchemaError(schemaErrorsToText(directAmendAdapter.errors || []));
+          setTestDataStatus('Schema validation failed.', { severity: 'error', dismissable: true });
+          return;
+        }
+
+        setTestDataLoadingStatus('Amending rows...');
         await yieldToUi();
-        await Promise.resolve(getImporter().setGridFromGenericDataTable(dataTable));
+        const directAmendResult = await Promise.resolve(
+          gridExtras.applyGeneratedSchemaAmend({
+            mode: generationMode,
+            desiredRowCount,
+            schemaHeaders: directAmendAdapter.schemaHeaders,
+            generateRow: directAmendAdapter.generateRow,
+            selectedRowIndexes,
+          })
+        );
+
+        if (generationMode === TEST_DATA_MODES.AMEND_SELECTED && directAmendResult?.noSelectedRows) {
+          showSchemaError('No rows selected.');
+          setTestDataStatus('No selected rows to amend.', { severity: 'warning', dismissable: true });
+          return;
+        }
+
+        const previewUpdated = await syncTextPreviewFromGrid();
+        setTestDataStatus(`Amend complete. ${previewUpdated ? 'Grid and preview updated.' : 'Grid updated.'}`, {
+          dismissable: true,
+        });
+        return;
       }
 
-      const previewUpdated = await syncTextPreviewFromGrid();
-      if (constraintImpactMessage) {
+      const amendResult = generationEngine.amendRows({
+        dataTable: gridExtras.getGridAsGenericDataTable(),
+        rowCount: desiredRowCount,
+        mode: generationMode,
+        selectedRowIndexes,
+      });
+
+      if (!amendResult.ok) {
+        showSchemaError(schemaErrorsToText(amendResult.errors || []));
         setTestDataStatus(
-          `${constraintImpactMessage} ${previewUpdated ? 'Grid and preview updated.' : 'Grid updated.'}`,
+          amendResult.errors?.some((error) => error?.code === 'constraint_generation_failed')
+            ? 'Amend stopped by schema constraints.'
+            : 'Amend failed.',
           {
-            severity: 'warning',
+            severity: amendResult.errors?.some((error) => error?.code === 'constraint_generation_failed')
+              ? 'warning'
+              : 'error',
             dismissable: true,
           }
         );
-      } else {
-        const completedModeLabel = generationMode === TEST_DATA_MODES.NEW_TABLE ? 'Generate' : 'Amend';
-        setTestDataStatus(
-          `${completedModeLabel} complete. ${previewUpdated ? 'Grid and preview updated.' : 'Grid updated.'}`,
-          { dismissable: true }
-        );
+        return;
       }
+
+      await applyGeneratedTableAndStatus({
+        dataTable: amendResult.dataTable,
+        successMessage: 'Amend complete.',
+      });
     } catch (error) {
       console.error('Generate/amend failed', error);
       setTestDataStatus('Generate failed. Check console for details.', { severity: 'error', dismissable: true });

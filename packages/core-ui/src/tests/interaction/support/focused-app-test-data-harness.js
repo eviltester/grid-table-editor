@@ -2,6 +2,7 @@ import { fireEvent, waitFor, within } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 import RandExp from 'randexp';
 import { Exporter } from '@anywaydata/core/grid/exporter.js';
+import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 import { createTestDataGenerationPanelManager } from '../../../../js/gui_components/app/test-data-grid/controller/test-data-grid-controller.js';
 import { assertDataTableHasNoErrorIndicators, assertNoErrorIndicators } from './generated-value-quality.js';
 import { installDomGlobals, cleanupDomGlobals } from './testing-library-dom-setup.js';
@@ -113,6 +114,57 @@ function createFocusedAppTestDataHarness() {
       getRowCount: () => mainGridState.rowCount,
       getSelectedRowIndexes: () => mainGridState.selectedRowIndexes.slice(),
       getGridAsGenericDataTable: () => latestDataTable,
+      async applyGeneratedSchemaAmend({
+        mode,
+        desiredRowCount,
+        schemaHeaders = [],
+        generateRow,
+        selectedRowIndexes = [],
+      } = {}) {
+        if (mode === 'amend-selected' && selectedRowIndexes.length === 0) {
+          return { noSelectedRows: true, amendedRows: 0 };
+        }
+
+        if (!latestDataTable) {
+          latestDataTable = new GenericDataTable();
+          latestDataTable.setHeaders(Array.isArray(schemaHeaders) ? [...schemaHeaders] : []);
+        } else {
+          const mergedHeaders = [...latestDataTable.getHeaders()];
+          for (const header of schemaHeaders) {
+            if (!mergedHeaders.includes(header)) {
+              mergedHeaders.push(header);
+            }
+          }
+          latestDataTable.setHeaders(mergedHeaders);
+        }
+
+        const headers = latestDataTable.getHeaders();
+        const headerIndexes = new Map(headers.map((header, index) => [header, index]));
+        const targetIndexes =
+          mode === 'amend-selected'
+            ? selectedRowIndexes
+            : Array.from({ length: Number(desiredRowCount) || 0 }, (_value, index) => index);
+
+        if (!Array.isArray(latestDataTable.rows)) {
+          latestDataTable.rows = [];
+        }
+
+        targetIndexes.forEach((rowIndex) => {
+          while (latestDataTable.rows.length <= rowIndex) {
+            latestDataTable.rows.push(new Array(headers.length).fill(''));
+          }
+          while (latestDataTable.rows[rowIndex].length < headers.length) {
+            latestDataTable.rows[rowIndex].push('');
+          }
+
+          const generatedRow = typeof generateRow === 'function' ? generateRow() : [];
+          schemaHeaders.forEach((header, schemaIndex) => {
+            latestDataTable.rows[rowIndex][headerIndexes.get(header)] = generatedRow[schemaIndex] ?? '';
+          });
+        });
+
+        return { noSelectedRows: false, amendedRows: targetIndexes.length };
+      },
     };
 
     control = createTestDataGenerationPanelManager({

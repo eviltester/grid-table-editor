@@ -101,6 +101,17 @@ describe('test-data-generation-service', () => {
       },
     }));
 
+    const createGenerationSessionFn = jest.fn(() => ({
+      isValid: () => true,
+      getErrors: () => [],
+      generateRows: async () => ({
+        ok: true,
+        headers: ['Status'],
+        rows: [['Closed']],
+        diagnostics: { rowCount: 1 },
+      }),
+    }));
+
     const service = createTestDataGenerationService({
       schemaTextToDataRules,
       TestDataGeneratorClass: class {},
@@ -133,13 +144,14 @@ describe('test-data-generation-service', () => {
       getGenerationMode: () => 'new-table',
       getRequestedRowCount: () => 1,
       setGenerateBusy: jest.fn(),
+      createGenerationSessionFn,
     });
 
     await service.generateTestData();
 
-    expect(schemaTextToDataRules).toHaveBeenCalledWith(
+    expect(createGenerationSessionFn).toHaveBeenCalledWith(
       expect.objectContaining({
-        schemaText: 'Status\nenum("Open","Closed")\n\nIF [Status] = "Open" THEN [Status] = "Closed" ENDIF',
+        textSpec: 'Status\nenum("Open","Closed")\n\nIF [Status] = "Open" THEN [Status] = "Closed" ENDIF',
       })
     );
   });
@@ -335,7 +347,7 @@ describe('test-data-generation-service', () => {
 
     await service.generateCombinationsTestData({ strength: 2, algorithm: 'greedy' });
 
-    expect(validateCurrentSchemaRows).toHaveBeenCalledTimes(3);
+    expect(validateCurrentSchemaRows).toHaveBeenCalledTimes(4);
     expect(setTestDataLoadingStatus.mock.calls).toEqual([
       ['Generating 2-wise combinations...'],
       ['Applying data to grid...'],
@@ -418,6 +430,45 @@ describe('test-data-generation-service', () => {
       severity: 'warning',
       dismissable: true,
     });
+  });
+
+  test('countEnumColumns includes domain datatype.enum rows for app test-data generation', () => {
+    const service = createTestDataGenerationService({
+      TestDataGeneratorClass: class {},
+      PairwiseTestDataGeneratorClass: class {},
+      GenericDataTableClass: class {},
+      TEST_DATA_MODES: {
+        NEW_TABLE: 'new-table',
+        AMEND_TABLE: 'amend-table',
+        AMEND_SELECTED: 'amend-selected',
+      },
+      normaliseCount: () => 1,
+      createTableFromGenerator: jest.fn(),
+      createAmendedTable: jest.fn(),
+      schemaRowsToSpec: jest.fn(),
+      faker: {},
+      RandExp: function RandExp() {},
+      debouncer: { clear: jest.fn() },
+      syncSchemaTextFromGridBeforeGenerate: jest.fn(),
+      setTestDataStatus: jest.fn(),
+      setTestDataLoadingStatus: jest.fn(),
+      showSchemaError: jest.fn(),
+      yieldToUi: jest.fn(() => Promise.resolve()),
+      validateCurrentSchemaRows: jest.fn(() => ({
+        errors: [],
+        rows: [
+          { name: 'Status', sourceType: 'domain', command: 'datatype.enum', params: 'active,inactive,pending' },
+          { name: 'Priority', sourceType: 'enum', value: 'enum(high,low)' },
+        ],
+      })),
+      getImporter: jest.fn(),
+      getTextPreviewRenderer: jest.fn(),
+      getMainGridExtras: jest.fn(),
+      getGenerationMode: () => 'new-table',
+    });
+
+    expect(service.countEnumColumns()).toBe(2);
+    expect(service.getEnumValueCounts()).toEqual([3, 2]);
   });
 
   test('generateTestData refreshes the text preview automatically after a successful grid update when auto preview is enabled', async () => {
@@ -614,7 +665,6 @@ describe('test-data-generation-service', () => {
     const importer = { setGridFromGenericDataTable: jest.fn(() => Promise.resolve()) };
     const requestConfirm = jest.fn(async () => true);
     const setTestDataStatus = jest.fn();
-    let attempts = 0;
     const generator = {
       importSpec: jest.fn(),
       compile: jest.fn(),
@@ -623,12 +673,26 @@ describe('test-data-generation-service', () => {
       isValid: () => true,
       errors: () => [],
       generateHeadersArray: () => ['Status'],
-      generateRow: () => {
-        attempts += 1;
-        return attempts === 1 ? null : ['Open'];
-      },
-      generationErrors: () => (attempts === 1 ? [{ code: 'constraint_generation_failed' }] : []),
+      generateRow: () => ['Open'],
     };
+    const createGenerationSessionFn = jest.fn(() => ({
+      isValid: () => true,
+      getErrors: () => [],
+      generateRows: async ({ hooks }) => {
+        await hooks.onConstraintImpact({
+          generatedRows: 0,
+          failedRows: 1000,
+          retryCount: 0,
+          continueGeneration: jest.fn(),
+        });
+        return {
+          ok: true,
+          headers: ['Status'],
+          rows: [['Open']],
+          diagnostics: { rowCount: 1 },
+        };
+      },
+    }));
 
     const service = createTestDataGenerationService({
       TestDataGeneratorClass: function TestDataGeneratorClass() {
@@ -677,6 +741,7 @@ describe('test-data-generation-service', () => {
       getGenerationMode: () => 'new-table',
       getRequestedRowCount: () => 1,
       requestConfirm,
+      createGenerationSessionFn,
     });
 
     await service.generateTestData();
@@ -699,7 +764,6 @@ describe('test-data-generation-service', () => {
     const requestConfirm = jest.fn(async () => false);
     const setTestDataStatus = jest.fn();
     const showSchemaError = jest.fn();
-    let attempts = 0;
     const generator = {
       importSpec: jest.fn(),
       compile: jest.fn(),
@@ -708,12 +772,35 @@ describe('test-data-generation-service', () => {
       isValid: () => true,
       errors: () => [],
       generateHeadersArray: () => ['Status'],
-      generateRow: () => {
-        attempts += 1;
-        return attempts === 1 ? ['Closed'] : null;
-      },
-      generationErrors: () => (attempts >= 2 ? [{ code: 'constraint_generation_failed' }] : []),
+      generateRow: () => ['Closed'],
     };
+    const createGenerationSessionFn = jest.fn(() => ({
+      isValid: () => true,
+      getErrors: () => [],
+      generateRows: async ({ hooks }) => {
+        await hooks.onConstraintImpact({
+          generatedRows: 1,
+          failedRows: 1000,
+          retryCount: 0,
+          continueGeneration: jest.fn(),
+        });
+        return {
+          ok: false,
+          aborted: true,
+          partial: true,
+          headers: ['Status'],
+          rows: [['Closed']],
+          diagnostics: { rowCount: 1, failedRows: 1000, retryCount: 0 },
+          errors: [
+            {
+              code: 'constraint_generation_failed',
+              message:
+                'Schema Constraints are impacting row generation - generated 1 rows, failed to generate 1000 rows. Consider changing constraints to improve row generation.',
+            },
+          ],
+        };
+      },
+    }));
 
     const service = createTestDataGenerationService({
       TestDataGeneratorClass: function TestDataGeneratorClass() {
@@ -762,6 +849,7 @@ describe('test-data-generation-service', () => {
       getGenerationMode: () => 'new-table',
       getRequestedRowCount: () => 2,
       requestConfirm,
+      createGenerationSessionFn,
     });
 
     await service.generateTestData();
@@ -791,9 +879,37 @@ describe('test-data-generation-service', () => {
       isValid: () => true,
       errors: () => [],
       generateHeadersArray: () => ['Status'],
-      generateRow: () => null,
-      generationErrors: () => [{ code: 'constraint_generation_failed' }],
+      generateRow: () => ['Open'],
     };
+    const createGenerationSessionFn = jest.fn(() => ({
+      isValid: () => true,
+      getErrors: () => [],
+      generateRows: async ({ hooks }) => {
+        for (let retryCount = 0; retryCount <= 10; retryCount += 1) {
+          await hooks.onConstraintImpact({
+            generatedRows: 0,
+            failedRows: (retryCount + 1) * 1000,
+            retryCount,
+            continueGeneration: jest.fn(),
+          });
+        }
+        return {
+          ok: false,
+          aborted: true,
+          partial: false,
+          headers: ['Status'],
+          rows: [],
+          diagnostics: { rowCount: 0, failedRows: 11000, retryCount: 10 },
+          errors: [
+            {
+              code: 'constraint_generation_failed',
+              message:
+                'Schema Constraints are impacting row generation - generated 0 rows, failed to generate 11000 rows. Consider changing constraints to improve row generation.',
+            },
+          ],
+        };
+      },
+    }));
 
     const service = createTestDataGenerationService({
       TestDataGeneratorClass: function TestDataGeneratorClass() {
@@ -842,6 +958,7 @@ describe('test-data-generation-service', () => {
       getGenerationMode: () => 'new-table',
       getRequestedRowCount: () => 1,
       requestConfirm,
+      createGenerationSessionFn,
     });
 
     await service.generateTestData();
@@ -854,5 +971,277 @@ describe('test-data-generation-service', () => {
       'Schema Constraints are impacting row generation - generated 0 rows, failed to generate 11000 rows. Consider changing constraints to improve row generation. Retry limit reached. Grid updated.',
       { severity: 'warning', dismissable: true }
     );
+  });
+
+  test('generateTestData does not apply a replacement table when fallback amendRows returns a hard error', async () => {
+    const importer = { setGridFromGenericDataTable: jest.fn(() => Promise.resolve()) };
+    const showSchemaError = jest.fn();
+    const setTestDataStatus = jest.fn();
+    const currentDataTable = {
+      rows: [['existing']],
+      getHeaders: () => ['Name'],
+    };
+    const createGenerationSessionFn = jest.fn(() => ({
+      isValid: () => true,
+      getErrors: () => [],
+      amendRows: () => ({
+        ok: false,
+        errors: [
+          {
+            code: 'row_count_exceeds_imported',
+            message: 'Row count exceeds imported row count 1.',
+          },
+        ],
+        diagnostics: { importedRowCount: 1 },
+      }),
+    }));
+
+    const service = createTestDataGenerationService({
+      TestDataGeneratorClass: function TestDataGeneratorClass() {
+        return {
+          importSpec: jest.fn(),
+          compile: jest.fn(),
+          compiler: { validate: jest.fn() },
+          testDataRules: () => [{}],
+          isValid: () => true,
+          errors: () => [],
+          generateHeadersArray: () => ['Status'],
+          generateRow: () => ['Active'],
+        };
+      },
+      PairwiseTestDataGeneratorClass: class {},
+      GenericDataTableClass: class FakeGenericDataTable {
+        constructor() {
+          this.headers = [];
+          this.rows = [];
+        }
+        setHeaders(headers) {
+          this.headers = headers;
+        }
+        appendDataRow(row) {
+          this.rows.push(row);
+        }
+      },
+      TEST_DATA_MODES: {
+        NEW_TABLE: 'new-table',
+        AMEND_TABLE: 'amend-table',
+        AMEND_SELECTED: 'amend-selected',
+      },
+      normaliseCount: () => 2,
+      createTableFromGenerator: jest.fn(),
+      createAmendedTable: jest.fn(),
+      schemaRowsToSpec: jest.fn(() => 'Status\nliteral(Active)'),
+      faker: {},
+      RandExp: function RandExp() {},
+      debouncer: { clear: jest.fn() },
+      syncSchemaTextFromGridBeforeGenerate: jest.fn(),
+      setTestDataStatus,
+      setTestDataLoadingStatus: jest.fn(),
+      showSchemaError,
+      yieldToUi: jest.fn(() => Promise.resolve()),
+      validateCurrentSchemaRows: jest.fn(() => ({
+        rows: [{ name: 'Status', sourceType: 'literal', value: 'Active' }],
+        errors: [],
+      })),
+      getImporter: () => importer,
+      getTextPreviewRenderer: jest.fn(),
+      getMainGridExtras: () => ({
+        getGridAsGenericDataTable: () => currentDataTable,
+      }),
+      getGenerationMode: () => 'amend-table',
+      getRequestedRowCount: () => 2,
+      createGenerationSessionFn,
+    });
+
+    await service.generateTestData();
+
+    expect(importer.setGridFromGenericDataTable).not.toHaveBeenCalled();
+    expect(showSchemaError).toHaveBeenCalledWith('Row count exceeds imported row count 1.');
+    expect(setTestDataStatus).toHaveBeenCalledWith('Amend failed.', {
+      severity: 'error',
+      dismissable: true,
+    });
+  });
+
+  test('generateTestData surfaces a grid wiring error before the amend-selected empty-selection warning', async () => {
+    const setTestDataStatus = jest.fn();
+    const showSchemaError = jest.fn();
+
+    const service = createTestDataGenerationService({
+      TestDataGeneratorClass: function TestDataGeneratorClass() {
+        return {
+          importSpec: jest.fn(),
+          compile: jest.fn(),
+          compiler: { validate: jest.fn() },
+          testDataRules: () => [{}],
+          isValid: () => true,
+          errors: () => [],
+          generateHeadersArray: () => ['Status'],
+          generateRow: () => ['Active'],
+        };
+      },
+      PairwiseTestDataGeneratorClass: class {},
+      GenericDataTableClass: class {},
+      TEST_DATA_MODES: {
+        NEW_TABLE: 'new-table',
+        AMEND_TABLE: 'amend-table',
+        AMEND_SELECTED: 'amend-selected',
+      },
+      normaliseCount: () => 1,
+      createTableFromGenerator: jest.fn(),
+      createAmendedTable: jest.fn(),
+      schemaRowsToSpec: jest.fn(() => 'Status\nliteral(Active)'),
+      faker: {},
+      RandExp: function RandExp() {},
+      debouncer: { clear: jest.fn() },
+      syncSchemaTextFromGridBeforeGenerate: jest.fn(),
+      setTestDataStatus,
+      setTestDataLoadingStatus: jest.fn(),
+      showSchemaError,
+      yieldToUi: jest.fn(() => Promise.resolve()),
+      validateCurrentSchemaRows: jest.fn(() => ({
+        rows: [{ name: 'Status', sourceType: 'literal', value: 'Active' }],
+        errors: [],
+      })),
+      getImporter: jest.fn(),
+      getTextPreviewRenderer: jest.fn(),
+      getMainGridExtras: () => undefined,
+      getGenerationMode: () => 'amend-selected',
+      getRequestedRowCount: () => 1,
+    });
+
+    await service.generateTestData();
+
+    expect(showSchemaError).toHaveBeenCalledWith('Grid interface unavailable.');
+    expect(setTestDataStatus).toHaveBeenCalledWith('Unable to access current grid.', {
+      severity: 'error',
+      dismissable: true,
+    });
+  });
+
+  test('generateTestData surfaces a grid wiring error when amend-selected cannot read selected rows', async () => {
+    const showSchemaError = jest.fn();
+    const setTestDataStatus = jest.fn();
+    const createGenerationSessionFn = jest.fn(() => ({
+      isValid: () => true,
+      getErrors: () => [],
+    }));
+    const generator = {
+      importSpec: jest.fn(),
+      compile: jest.fn(),
+      compiler: { validate: jest.fn() },
+      testDataRules: () => [{}],
+      isValid: () => true,
+      errors: () => [],
+      generateHeadersArray: () => ['Status'],
+      generateRow: () => ['Active'],
+    };
+
+    const service = createTestDataGenerationService({
+      TestDataGeneratorClass: function TestDataGeneratorClass() {
+        return generator;
+      },
+      PairwiseTestDataGeneratorClass: class {},
+      GenericDataTableClass: class {},
+      TEST_DATA_MODES: {
+        NEW_TABLE: 'new-table',
+        AMEND_TABLE: 'amend-table',
+        AMEND_SELECTED: 'amend-selected',
+      },
+      normaliseCount: () => 1,
+      createTableFromGenerator: jest.fn(),
+      createAmendedTable: jest.fn(),
+      schemaRowsToSpec: jest.fn(() => 'Status\nliteral(Active)'),
+      faker: {},
+      RandExp: function RandExp() {},
+      debouncer: { clear: jest.fn() },
+      syncSchemaTextFromGridBeforeGenerate: jest.fn(),
+      setTestDataStatus,
+      setTestDataLoadingStatus: jest.fn(),
+      showSchemaError,
+      yieldToUi: jest.fn(() => Promise.resolve()),
+      validateCurrentSchemaRows: jest.fn(() => ({
+        rows: [{ name: 'Status', sourceType: 'literal', value: 'Active' }],
+        errors: [],
+      })),
+      getImporter: jest.fn(),
+      getTextPreviewRenderer: jest.fn(),
+      getMainGridExtras: () => ({
+        getGridAsGenericDataTable: jest.fn(),
+      }),
+      getGenerationMode: () => 'amend-selected',
+      getRequestedRowCount: () => 1,
+      createGenerationSessionFn,
+    });
+
+    await service.generateTestData();
+
+    expect(showSchemaError).toHaveBeenCalledWith('Grid interface unavailable.');
+    expect(setTestDataStatus).toHaveBeenCalledWith('Unable to access current grid.', {
+      severity: 'error',
+      dismissable: true,
+    });
+  });
+
+  test('generateTestData surfaces a grid wiring error when amend mode has no amend-capable grid contract', async () => {
+    const showSchemaError = jest.fn();
+    const setTestDataStatus = jest.fn();
+    const createGenerationSessionFn = jest.fn(() => ({
+      isValid: () => true,
+      getErrors: () => [],
+    }));
+    const generator = {
+      importSpec: jest.fn(),
+      compile: jest.fn(),
+      compiler: { validate: jest.fn() },
+      testDataRules: () => [{}],
+      isValid: () => true,
+      errors: () => [],
+      generateHeadersArray: () => ['Status'],
+      generateRow: () => ['Active'],
+    };
+
+    const service = createTestDataGenerationService({
+      TestDataGeneratorClass: function TestDataGeneratorClass() {
+        return generator;
+      },
+      PairwiseTestDataGeneratorClass: class {},
+      GenericDataTableClass: class {},
+      TEST_DATA_MODES: {
+        NEW_TABLE: 'new-table',
+        AMEND_TABLE: 'amend-table',
+        AMEND_SELECTED: 'amend-selected',
+      },
+      normaliseCount: () => 1,
+      createTableFromGenerator: jest.fn(),
+      createAmendedTable: jest.fn(),
+      schemaRowsToSpec: jest.fn(() => 'Status\nliteral(Active)'),
+      faker: {},
+      RandExp: function RandExp() {},
+      debouncer: { clear: jest.fn() },
+      syncSchemaTextFromGridBeforeGenerate: jest.fn(),
+      setTestDataStatus,
+      setTestDataLoadingStatus: jest.fn(),
+      showSchemaError,
+      yieldToUi: jest.fn(() => Promise.resolve()),
+      validateCurrentSchemaRows: jest.fn(() => ({
+        rows: [{ name: 'Status', sourceType: 'literal', value: 'Active' }],
+        errors: [],
+      })),
+      getImporter: jest.fn(),
+      getTextPreviewRenderer: jest.fn(),
+      getMainGridExtras: () => ({}),
+      getGenerationMode: () => 'amend-table',
+      getRequestedRowCount: () => 1,
+      createGenerationSessionFn,
+    });
+
+    await service.generateTestData();
+
+    expect(showSchemaError).toHaveBeenCalledWith('Grid interface unavailable.');
+    expect(setTestDataStatus).toHaveBeenCalledWith('Unable to access current grid.', {
+      severity: 'error',
+      dismissable: true,
+    });
   });
 });

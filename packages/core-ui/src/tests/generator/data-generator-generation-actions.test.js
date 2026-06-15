@@ -4,6 +4,7 @@ import { createGeneratorSchemaGenerationService } from '../../../js/gui_componen
 import {
   generateGeneratorCombinationsDataFile,
   generateGeneratorDataFile,
+  generateGeneratorAllPairsDataFile,
   renderGeneratorOutputPreview,
   updateGeneratorPairwiseButtonVisibility,
 } from '../../../js/gui_components/generator/generation/data-generator-generation-actions.js';
@@ -96,9 +97,15 @@ describe('generator generation actions', () => {
 
     await generateGeneratorDataFile({
       getGenerateRowCount: () => ({ value: 2, errors: [] }),
-      createConfiguredGenerator: () => ({
-        generator: { generateHeadersArray: () => ['Name'], generateRow: () => ['Ada'] },
-      }),
+      schemaGenerationService: {
+        generateRows: jest.fn(async () => ({
+          ok: true,
+          dataTable: {
+            __generatorFilename: 'generated-data.csv',
+            getRowCount: () => 1,
+          },
+        })),
+      },
       getSelectedOutputType: () => 'csv',
       exporter: {
         canExport: () => true,
@@ -110,10 +117,6 @@ describe('generator generation actions', () => {
       setGenerationStatus: jest.fn(),
       showGenerationLoadingStatus: jest.fn(),
       getExportEncodingSettings: () => ({ lineEnding: 'crlf', includeBom: true }),
-      buildDataTable: () => ({
-        __generatorFilename: 'generated-data.csv',
-        getRowCount: () => 1,
-      }),
       DownloadClass: FakeDownload,
       surfacePageError: jest.fn(),
       clearPageError: jest.fn(),
@@ -129,14 +132,11 @@ describe('generator generation actions', () => {
   test('generateGeneratorCombinationsDataFile prompts before large cartesian runs and skips when cancelled', async () => {
     const requestConfirm = jest.fn(async () => false);
     const setGenerationStatus = jest.fn();
-    const buildCombinationsDataTable = jest.fn();
 
     await generateGeneratorCombinationsDataFile({
-      createConfiguredGenerator: () => ({
-        generator: { testDataRules: () => [{}, {}, {}, {}] },
-      }),
-      countEnumColumns: () => 4,
-      getEnumValueCounts: () => [11, 11, 11, 11],
+      schemaGenerationService: {
+        getCombinationInput: () => ({ enumColumnCount: 4, enumValueCounts: [11, 11, 11, 11] }),
+      },
       getSelectedOutputType: () => 'csv',
       exporter: {
         canExport: () => true,
@@ -146,7 +146,6 @@ describe('generator generation actions', () => {
       setGenerationButtonBusy: jest.fn(),
       setGenerationStatus,
       showGenerationLoadingStatus: jest.fn(),
-      buildCombinationsDataTable,
       DownloadClass: class FakeDownload {},
       surfacePageError: jest.fn(),
       clearPageError: jest.fn(),
@@ -161,10 +160,43 @@ describe('generator generation actions', () => {
       okLabel: 'Run cartesian product',
       cancelLabel: 'Skip cartesian product',
     });
-    expect(buildCombinationsDataTable).not.toHaveBeenCalled();
     expect(setGenerationStatus).toHaveBeenCalledWith('Cartesian product generation skipped.', {
       severity: 'warning',
       dismissable: true,
+    });
+  });
+
+  test('generateGeneratorAllPairsDataFile rejects pairwise export before invoking session generation when fewer than two enum columns exist', async () => {
+    const generatePairwise = jest.fn(() => ({
+      ok: false,
+      errors: [{ code: 'insufficient_enum_columns', message: 'Pairwise generation requires at least 2 enum columns.' }],
+    }));
+    const surfacePageError = jest.fn();
+
+    await generateGeneratorAllPairsDataFile({
+      schemaGenerationService: {
+        generatePairwise,
+      },
+      getSelectedOutputType: () => 'csv',
+      exporter: {
+        canExport: () => true,
+        getFileExtensionFor: () => '.csv',
+        getDataTableAs: () => 'Browser\nChrome',
+      },
+      clearGenerationStatus: jest.fn(),
+      setGenerationButtonBusy: jest.fn(),
+      setGenerationStatus: jest.fn(),
+      showGenerationLoadingStatus: jest.fn(),
+      getExportEncodingSettings: () => ({}),
+      DownloadClass: class FakeDownload {},
+      surfacePageError,
+      clearPageError: jest.fn(),
+      scheduleClearGenerationStatus: jest.fn(),
+    });
+
+    expect(generatePairwise).toHaveBeenCalledTimes(1);
+    expect(surfacePageError).toHaveBeenCalledWith('Pairwise generation requires at least 2 enum columns.', {
+      useSchemaStatus: true,
     });
   });
 });

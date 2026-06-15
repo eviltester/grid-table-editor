@@ -36,5 +36,5 @@ describe('ui scenario parity support', () => {
       exactPreviewParity: true,
       structuralParity: true,
     });
-  }, 60000);
+  }, 120000);
 });

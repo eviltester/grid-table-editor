@@ -5,8 +5,11 @@
  */
 
 import { applyExportTextEncoding } from '@anywaydata/core';
-import { schemaErrorsToText } from '../../shared/test-data/schema/schema-error-text.js';
 import { isNWiseEligibleForSchemaRows } from '../../shared/test-data/generation/ui-derived-state.js';
+import {
+  presentUiGenerationNotice,
+  presentUiGenerationResult,
+} from '../../shared/test-data/generation/ui-generation-status-presenter.js';
 import { confirmCartesianProductSelection } from './n-wise-generation-options.js';
 
 function renderGeneratorOutputPreview({ getSelectedOutputType, getPreviewDataTable, exporter, setOutputPreviewText }) {
@@ -64,8 +67,21 @@ function updateGeneratorPairwiseButtonVisibility({
   return !parsed.errors?.length && !errors.length && isNWiseEligibleForSchemaRows(rows);
 }
 
-function surfaceGenerationErrors(result, surfacePageError) {
-  surfacePageError(schemaErrorsToText(result.errors || []), { useSchemaStatus: true });
+function surfaceGenerationResult({ operationKind, result, surfacePageError, setGenerationStatus, filename = '' }) {
+  const presentation = presentUiGenerationResult({
+    surface: 'generator',
+    operationKind,
+    result,
+    filename,
+  });
+
+  if (presentation.schemaMessage) {
+    surfacePageError(presentation.schemaMessage, { useSchemaStatus: true });
+  }
+
+  if (presentation.statusMessage) {
+    setGenerationStatus?.(presentation.statusMessage, presentation.statusOptions || undefined);
+  }
 }
 
 function previewGeneratorData({
@@ -78,7 +94,11 @@ function previewGeneratorData({
 }) {
   function applyResult(result) {
     if (!result?.ok) {
-      surfaceGenerationErrors(result || {}, surfacePageError);
+      surfaceGenerationResult({
+        operationKind: 'generateRows',
+        result: result || {},
+        surfacePageError,
+      });
       return;
     }
 
@@ -124,7 +144,12 @@ async function generateGeneratorDataFile({
 
   const result = await schemaGenerationService?.generateRows?.({ rowCount: rowCount.value });
   if (!result?.ok) {
-    surfaceGenerationErrors(result || {}, surfacePageError);
+    surfaceGenerationResult({
+      operationKind: 'generateRows',
+      result: result || {},
+      surfacePageError,
+      setGenerationStatus,
+    });
     return;
   }
 
@@ -149,7 +174,13 @@ async function generateGeneratorDataFile({
       showGenerationLoadingStatus,
       exportEncodingSettings: getExportEncodingSettings?.(),
     });
-    setGenerationStatus(`Download ready: ${filename}`);
+    const presentation = presentUiGenerationResult({
+      surface: 'generator',
+      operationKind: 'generateRows',
+      result,
+      filename,
+    });
+    setGenerationStatus(presentation.statusMessage);
     scheduleClearGenerationStatus();
   } catch (error) {
     console.error(error);
@@ -176,7 +207,12 @@ async function generateGeneratorAllPairsDataFile({
 }) {
   const result = schemaGenerationService?.generatePairwise?.();
   if (!result?.ok) {
-    surfaceGenerationErrors(result || {}, surfacePageError);
+    surfaceGenerationResult({
+      operationKind: 'generatePairwise',
+      result: result || {},
+      surfacePageError,
+      setGenerationStatus,
+    });
     return;
   }
 
@@ -201,7 +237,13 @@ async function generateGeneratorAllPairsDataFile({
       showGenerationLoadingStatus,
       exportEncodingSettings: getExportEncodingSettings?.(),
     });
-    setGenerationStatus(`Download ready: ${filename} (${result.dataTable.getRowCount()} combinations)`);
+    const presentation = presentUiGenerationResult({
+      surface: 'generator',
+      operationKind: 'generatePairwise',
+      result,
+      filename,
+    });
+    setGenerationStatus(presentation.statusMessage);
     scheduleClearGenerationStatus();
   } catch (error) {
     console.error(error);
@@ -240,13 +282,22 @@ async function generateGeneratorCombinationsDataFile({
     requestConfirm,
   });
   if (!confirmed) {
-    setGenerationStatus('Cartesian product generation skipped.', { severity: 'warning', dismissable: true });
+    const presentation = presentUiGenerationNotice({
+      noticeKind: 'cartesianSkipped',
+      surface: 'generator',
+    });
+    setGenerationStatus(presentation.statusMessage, presentation.statusOptions);
     return;
   }
 
   const result = schemaGenerationService?.generateCombinations?.({ strength, algorithm });
   if (!result?.ok) {
-    surfaceGenerationErrors(result || {}, surfacePageError);
+    surfaceGenerationResult({
+      operationKind: 'generateCombinations',
+      result: result || {},
+      surfacePageError,
+      setGenerationStatus,
+    });
     return;
   }
 
@@ -270,7 +321,13 @@ async function generateGeneratorCombinationsDataFile({
       DownloadClass,
       showGenerationLoadingStatus,
     });
-    setGenerationStatus(`Download ready: ${filename} (${result.dataTable.getRowCount()} combinations)`);
+    const presentation = presentUiGenerationResult({
+      surface: 'generator',
+      operationKind: 'generateCombinations',
+      result,
+      filename,
+    });
+    setGenerationStatus(presentation.statusMessage);
     scheduleClearGenerationStatus();
   } catch (error) {
     console.error(error);

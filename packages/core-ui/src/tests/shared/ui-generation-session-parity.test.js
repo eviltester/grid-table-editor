@@ -44,7 +44,7 @@ function schemaRowsToSpec(schemaRows = []) {
 }
 
 describe('ui generation parity', () => {
-  test('app and generator share enum counts and pairwise output for the same schema', async () => {
+  test('app and generator share combination input and pairwise output for the same schema', async () => {
     const schemaRows = [
       { name: 'Status', sourceType: 'enum', value: 'enum(active,inactive)' },
       { name: 'Priority', sourceType: 'enum', value: 'enum(high,low)' },
@@ -95,9 +95,11 @@ describe('ui generation parity', () => {
     });
 
     expect(appService.countEnumColumns()).toBe(2);
-    expect(generatorService.countEnumColumns()).toBe(2);
     expect(appService.getEnumValueCounts()).toEqual([2, 2]);
-    expect(generatorService.getEnumValueCounts()).toEqual([2, 2]);
+    expect(generatorService.getCombinationInput()).toEqual({
+      enumColumnCount: 2,
+      enumValueCounts: [2, 2],
+    });
 
     await appService.generatePairwiseTestData();
     const generatorResult = generatorService.generatePairwise();

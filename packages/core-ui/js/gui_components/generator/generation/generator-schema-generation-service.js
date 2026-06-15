@@ -76,27 +76,8 @@ function createGeneratorSchemaGenerationService({
   });
 
   return {
-    createConfiguredGenerator(options) {
-      return createConfiguredGenerator(options);
-    },
-
-    createConfiguredSession(options) {
-      const sessionContext = generationEngine.createSessionContext(options);
-      return sessionContext.ok
-        ? { session: sessionContext.session, errors: [] }
-        : { session: null, errors: sessionContext.errors || [] };
-    },
-
     createSessionContext(options) {
       return generationEngine.createSessionContext(options);
-    },
-
-    countEnumColumns(options) {
-      return generationEngine.countEnumColumns(options);
-    },
-
-    getEnumValueCounts(options) {
-      return generationEngine.getEnumValueCounts(options);
     },
 
     getPairwiseVisibility({ getCurrentSchemaState } = {}) {

@@ -2,17 +2,17 @@ import { describe, expect, jest, test } from '@jest/globals';
 import { createGeneratorSchemaGenerationService } from '../../../js/gui_components/generator/generation/generator-schema-generation-service.js';
 
 describe('generator schema generation service', () => {
-  test('creates configured generators and enum counts through shared generation helpers', () => {
+  test('creates session context and combination input through the shared generation helper boundary', () => {
     const syncSchemaRowsFromTextMode = jest
       .fn()
       .mockReturnValueOnce({
-        rows: [{ name: 'Browser', sourceType: 'enum', value: 'enum(chrome,firefox)' }],
+        rows: [{ name: 'Browser', sourceType: 'enum', value: 'chrome,firefox' }],
         errors: [],
       })
       .mockReturnValueOnce({
         rows: [
-          { name: 'Browser', sourceType: 'enum', value: 'enum(chrome,firefox)' },
-          { name: 'Plan', sourceType: 'enum', value: 'enum(free,pro)' },
+          { name: 'Browser', sourceType: 'enum', value: 'chrome,firefox' },
+          { name: 'Plan', sourceType: 'enum', value: 'free,pro' },
         ],
         errors: [],
       });
@@ -57,15 +57,14 @@ describe('generator schema generation service', () => {
       RandExp: function RandExp() {},
     });
 
-    const configured = service.createConfiguredGenerator();
-    expect(configured.errors).toEqual([]);
-    expect(configured.generator).toBeInstanceOf(TestDataGeneratorClass);
-    expect(configured.generator.spec).toBe('Browser\nenum(chrome,firefox)');
+    const sessionContext = service.createSessionContext();
+    expect(sessionContext.ok).toBe(true);
+    expect(sessionContext.textSpec).toBe('Browser\nenum(chrome,firefox)');
 
-    const enumCount = service.countEnumColumns();
-    expect(enumCount).toBe(2);
-    expect(syncSchemaRowsFromTextMode).toHaveBeenCalledTimes(2);
-    expect(validateSchemaRows).toHaveBeenCalledTimes(2);
+    const combinationInput = service.getCombinationInput();
+    expect(combinationInput.enumColumnCount).toBe(2);
+    expect(syncSchemaRowsFromTextMode).toHaveBeenCalledTimes(3);
+    expect(validateSchemaRows).toHaveBeenCalledTimes(3);
   });
 
   test('calculates pairwise visibility through the shared generation helper boundary', () => {
@@ -107,7 +106,7 @@ describe('generator schema generation service', () => {
       RandExp: function RandExp() {},
     });
 
-    expect(service.getEnumValueCounts()).toEqual([3, 2]);
+    expect(service.getCombinationInput().enumValueCounts).toEqual([3, 2]);
   });
 
   test('includes domain datatype.enum rows when counting enum columns', () => {
@@ -126,6 +125,6 @@ describe('generator schema generation service', () => {
       RandExp: function RandExp() {},
     });
 
-    expect(service.countEnumColumns()).toBe(2);
+    expect(service.getCombinationInput().enumColumnCount).toBe(2);
   });
 });

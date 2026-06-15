@@ -12,6 +12,10 @@ import {
   buildConstraintImpactMessage,
   createUiGenerationSessionService,
 } from '../../../shared/test-data/generation/ui-generation-session-service.js';
+import {
+  presentUiGenerationNotice,
+  presentUiGenerationResult,
+} from '../../../shared/test-data/generation/ui-generation-status-presenter.js';
 import { createGenerationSession } from '@anywaydata/core';
 import { confirmCartesianProductSelection } from '../../../generator/generation/n-wise-generation-options.js';
 import {
@@ -181,20 +185,33 @@ function createTestDataGenerationService({
     return generationEngine.getEnumValueCounts({ syncFromText: false });
   }
 
+  function surfaceEnginePresentation(presentation) {
+    if (presentation?.schemaMessage) {
+      showSchemaError(presentation.schemaMessage);
+    }
+    if (presentation?.statusMessage) {
+      setTestDataStatus(presentation.statusMessage, presentation.statusOptions || { dismissable: true });
+    }
+  }
+
   async function applyGeneratedTableAndStatus({
     dataTable,
     loadingMessage = 'Applying data to grid...',
-    successMessage,
-    statusOptions = { dismissable: true },
+    presentationOptions,
   }) {
     setTestDataLoadingStatus(loadingMessage);
     await yieldToUi();
     await Promise.resolve(getImporter().setGridFromGenericDataTable(dataTable));
     const previewUpdated = await syncTextPreviewFromGrid();
-    setTestDataStatus(
-      `${successMessage} ${previewUpdated ? 'Grid and preview updated.' : 'Grid updated.'}`,
-      statusOptions
-    );
+    const presentation = presentUiGenerationResult({
+      surface: 'app',
+      previewUpdated,
+      ...presentationOptions,
+    });
+    if (presentation.schemaMessage) {
+      showSchemaError(presentation.schemaMessage);
+    }
+    setTestDataStatus(presentation.statusMessage, presentation.statusOptions || { dismissable: true });
   }
 
   async function generatePairwiseTestData() {
@@ -210,22 +227,22 @@ function createTestDataGenerationService({
 
       const result = generationEngine.generatePairwise();
       if (!result.ok) {
-        showSchemaError(schemaErrorsToText(result.errors || []));
-        setTestDataStatus(
-          result.errors?.some((error) => error?.code === 'insufficient_enum_columns')
-            ? 'Insufficient enum columns.'
-            : 'Pairwise generation failed.',
-          {
-            severity: result.errors?.some((error) => error?.code === 'insufficient_enum_columns') ? 'warning' : 'error',
-            dismissable: true,
-          }
+        surfaceEnginePresentation(
+          presentUiGenerationResult({
+            surface: 'app',
+            operationKind: 'generatePairwise',
+            result,
+          })
         );
         return;
       }
 
       await applyGeneratedTableAndStatus({
         dataTable: result.dataTable,
-        successMessage: `Generated ${result.dataTable.getRowCount()} pairwise combinations.`,
+        presentationOptions: {
+          operationKind: 'generatePairwise',
+          result,
+        },
       });
       await yieldToUi();
     } catch (error) {
@@ -250,7 +267,11 @@ function createTestDataGenerationService({
         requestConfirm,
       });
       if (!confirmed) {
-        setTestDataStatus('Cartesian product generation skipped.', { severity: 'warning', dismissable: true });
+        const presentation = presentUiGenerationNotice({
+          noticeKind: 'cartesianSkipped',
+          surface: 'app',
+        });
+        setTestDataStatus(presentation.statusMessage, presentation.statusOptions);
         return;
       }
 
@@ -264,28 +285,23 @@ function createTestDataGenerationService({
         validationOptions: { syncFromText: false },
       });
       if (!result.ok) {
-        showSchemaError(schemaErrorsToText(result.errors || []));
-        setTestDataStatus(
-          result.errors?.some(
-            (error) => error?.code === 'invalid_nwise_strength' || error?.code === 'insufficient_enum_columns'
-          )
-            ? 'Invalid n-wise strength.'
-            : 'Combination generation failed.',
-          {
-            severity: result.errors?.some(
-              (error) => error?.code === 'invalid_nwise_strength' || error?.code === 'insufficient_enum_columns'
-            )
-              ? 'warning'
-              : 'error',
-            dismissable: true,
-          }
+        surfaceEnginePresentation(
+          presentUiGenerationResult({
+            surface: 'app',
+            operationKind: 'generateCombinations',
+            result,
+          })
         );
         return;
       }
 
       await applyGeneratedTableAndStatus({
         dataTable: result.dataTable,
-        successMessage: `Generated ${result.dataTable.getRowCount()} ${strength}-wise combinations.`,
+        presentationOptions: {
+          operationKind: 'generateCombinations',
+          result,
+          strength,
+        },
       });
       await yieldToUi();
     } catch (error) {
@@ -381,34 +397,35 @@ function createTestDataGenerationService({
         });
 
         if (!result.ok && !result.aborted) {
-          showSchemaError(schemaErrorsToText(result.errors || []));
-          setTestDataStatus('Schema validation failed.', { severity: 'error', dismissable: true });
+          surfaceEnginePresentation(
+            presentUiGenerationResult({
+              surface: 'app',
+              operationKind: 'generateRows',
+              result,
+            })
+          );
           return;
         }
 
         if (result.aborted) {
-          const surfacedMessage = retryLimitReached
-            ? `${buildConstraintImpactMessage({
-                generatedRows: result.statusContext.generatedRows,
-                failedRows: result.statusContext.failedRows,
-              })} Retry limit reached.`
-            : buildConstraintImpactMessage({
-                generatedRows: result.statusContext.generatedRows,
-                failedRows: result.statusContext.failedRows,
-              });
-          showSchemaError(surfacedMessage);
           await applyGeneratedTableAndStatus({
             dataTable: result.dataTable,
             loadingMessage: 'Applying valid rows to grid...',
-            successMessage: surfacedMessage,
-            statusOptions: { severity: 'warning', dismissable: true },
+            presentationOptions: {
+              operationKind: 'generateRows',
+              result,
+              retryLimitReached,
+            },
           });
           return;
         }
 
         await applyGeneratedTableAndStatus({
           dataTable: result.dataTable,
-          successMessage: 'Generate complete.',
+          presentationOptions: {
+            operationKind: 'generateRows',
+            result,
+          },
         });
         return;
       }
@@ -440,9 +457,12 @@ function createTestDataGenerationService({
         }
 
         const previewUpdated = await syncTextPreviewFromGrid();
-        setTestDataStatus(`Amend complete. ${previewUpdated ? 'Grid and preview updated.' : 'Grid updated.'}`, {
-          dismissable: true,
+        const presentation = presentUiGenerationNotice({
+          noticeKind: 'amendSuccess',
+          surface: 'app',
+          previewUpdated,
         });
+        setTestDataStatus(presentation.statusMessage, presentation.statusOptions);
         return;
       }
 
@@ -454,24 +474,22 @@ function createTestDataGenerationService({
       });
 
       if (!amendResult.ok) {
-        showSchemaError(schemaErrorsToText(amendResult.errors || []));
-        setTestDataStatus(
-          amendResult.errors?.some((error) => error?.code === 'constraint_generation_failed')
-            ? 'Amend stopped by schema constraints.'
-            : 'Amend failed.',
-          {
-            severity: amendResult.errors?.some((error) => error?.code === 'constraint_generation_failed')
-              ? 'warning'
-              : 'error',
-            dismissable: true,
-          }
+        surfaceEnginePresentation(
+          presentUiGenerationResult({
+            surface: 'app',
+            operationKind: 'amendRows',
+            result: amendResult,
+          })
         );
         return;
       }
 
       await applyGeneratedTableAndStatus({
         dataTable: amendResult.dataTable,
-        successMessage: 'Amend complete.',
+        presentationOptions: {
+          operationKind: 'amendRows',
+          result: amendResult,
+        },
       });
     } catch (error) {
       console.error('Generate/amend failed', error);

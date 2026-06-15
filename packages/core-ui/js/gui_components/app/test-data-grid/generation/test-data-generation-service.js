@@ -10,7 +10,10 @@ import {
   createConfiguredGeneratorFromSchemaRows,
   createCombinationsDataTable,
 } from '../../../shared/test-data/generation/generation-controller.js';
-import { isNWiseEligibleForSchemaRows } from '../../../shared/test-data/generation/ui-derived-state.js';
+import {
+  isEnumLikeSchemaRow,
+  isNWiseEligibleForSchemaRows,
+} from '../../../shared/test-data/generation/ui-derived-state.js';
 import { EnumParser } from '@anywaydata/core/data_generation/utils/enumParser.js';
 import { CONSTRAINT_FAILURE_BATCH_SIZE, createGenerationSession } from '@anywaydata/core';
 import {
@@ -229,17 +232,7 @@ function createTestDataGenerationService({
     if (rowValidation.errors.length > 0) {
       return 0;
     }
-    return (rowValidation.rows || []).filter((row) => {
-      try {
-        return (
-          String(row?.sourceType || '')
-            .trim()
-            .toLowerCase() === SOURCE_TYPE_ENUM
-        );
-      } catch {
-        return false;
-      }
-    }).length;
+    return (rowValidation.rows || []).filter((row) => isEnumLikeSchemaRow(row)).length;
   }
 
   function getEnumValueCounts() {
@@ -249,12 +242,7 @@ function createTestDataGenerationService({
     }
 
     return (rowValidation.rows || [])
-      .filter(
-        (row) =>
-          String(row?.sourceType || '')
-            .trim()
-            .toLowerCase() === SOURCE_TYPE_ENUM
-      )
+      .filter((row) => isEnumLikeSchemaRow(row))
       .map((row) => {
         try {
           const ruleSpec = buildRuleSpecFromSchemaRow(row);

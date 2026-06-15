@@ -420,6 +420,45 @@ describe('test-data-generation-service', () => {
     });
   });
 
+  test('countEnumColumns includes domain datatype.enum rows for app test-data generation', () => {
+    const service = createTestDataGenerationService({
+      TestDataGeneratorClass: class {},
+      PairwiseTestDataGeneratorClass: class {},
+      GenericDataTableClass: class {},
+      TEST_DATA_MODES: {
+        NEW_TABLE: 'new-table',
+        AMEND_TABLE: 'amend-table',
+        AMEND_SELECTED: 'amend-selected',
+      },
+      normaliseCount: () => 1,
+      createTableFromGenerator: jest.fn(),
+      createAmendedTable: jest.fn(),
+      schemaRowsToSpec: jest.fn(),
+      faker: {},
+      RandExp: function RandExp() {},
+      debouncer: { clear: jest.fn() },
+      syncSchemaTextFromGridBeforeGenerate: jest.fn(),
+      setTestDataStatus: jest.fn(),
+      setTestDataLoadingStatus: jest.fn(),
+      showSchemaError: jest.fn(),
+      yieldToUi: jest.fn(() => Promise.resolve()),
+      validateCurrentSchemaRows: jest.fn(() => ({
+        errors: [],
+        rows: [
+          { name: 'Status', sourceType: 'domain', command: 'datatype.enum', params: 'active,inactive,pending' },
+          { name: 'Priority', sourceType: 'enum', value: 'enum(high,low)' },
+        ],
+      })),
+      getImporter: jest.fn(),
+      getTextPreviewRenderer: jest.fn(),
+      getMainGridExtras: jest.fn(),
+      getGenerationMode: () => 'new-table',
+    });
+
+    expect(service.countEnumColumns()).toBe(2);
+    expect(service.getEnumValueCounts()).toEqual([3, 2]);
+  });
+
   test('generateTestData refreshes the text preview automatically after a successful grid update when auto preview is enabled', async () => {
     const renderTextFromGrid = jest.fn(() => Promise.resolve());
     const setTestDataLoadingStatus = jest.fn();

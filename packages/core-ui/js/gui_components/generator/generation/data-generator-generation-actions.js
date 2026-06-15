@@ -20,7 +20,10 @@ import {
   createPairwiseDataTable,
   createCombinationsDataTable,
 } from '../../shared/test-data/generation/generation-controller.js';
-import { isNWiseEligibleForSchemaRows } from '../../shared/test-data/generation/ui-derived-state.js';
+import {
+  isEnumLikeSchemaRow,
+  isNWiseEligibleForSchemaRows,
+} from '../../shared/test-data/generation/ui-derived-state.js';
 import {
   SOURCE_TYPE_FAKER,
   SOURCE_TYPE_DOMAIN,
@@ -207,12 +210,7 @@ function countGeneratorEnumColumns({ syncSchemaRowsFromTextMode, validateSchemaR
     return 0;
   }
 
-  return rows.filter(
-    (row) =>
-      String(row?.sourceType || '')
-        .trim()
-        .toLowerCase() === SOURCE_TYPE_ENUM
-  ).length;
+  return rows.filter((row) => isEnumLikeSchemaRow(row)).length;
 }
 
 function getGeneratorEnumValueCounts({ syncSchemaRowsFromTextMode, validateSchemaRows }) {
@@ -227,15 +225,7 @@ function getGeneratorEnumValueCounts({ syncSchemaRowsFromTextMode, validateSchem
   }
 
   return rows
-    .filter((row) => {
-      const sourceType = String(row?.sourceType || '')
-        .trim()
-        .toLowerCase();
-      const command = String(row?.command || '')
-        .trim()
-        .toLowerCase();
-      return sourceType === SOURCE_TYPE_ENUM || (sourceType === SOURCE_TYPE_DOMAIN && command === 'datatype.enum');
-    })
+    .filter((row) => isEnumLikeSchemaRow(row))
     .map((row) => {
       try {
         return EnumParser.extractEnumValues(buildRuleSpecFromSchemaRow(row)).length;

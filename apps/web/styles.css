@@ -1361,6 +1361,13 @@ body.theme-dark .generator-status-text[data-severity='info'] {
   margin-left: auto;
 }
 
+.shared-schema-file-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
 .shared-inline-error-status,
 .shared-schema-error,
 .generator-schema-error-text {
@@ -1912,6 +1919,10 @@ body.theme-dark .generator-status-text[data-severity='info'] {
 
 .icon-button * {
   color: inherit;
+}
+
+body.theme-dark .shared-schema-file-actions .icon-button {
+  border-color: color-mix(in srgb, var(--border-color) 75%, #d7efe3 25%);
 }
 
 .shared-generator-preview,

@@ -4,9 +4,10 @@ import { getDefaultDocumentObj } from '../dom/default-objects.js';
 const DEFAULT_SHARED_SCHEMA_IDS = Object.freeze({});
 
 class SharedSchemaDefinitionController {
-  constructor({ props = {}, callbacks = {}, documentObj = getDefaultDocumentObj() } = {}) {
+  constructor({ props = {}, callbacks = {}, services = {}, documentObj = getDefaultDocumentObj() } = {}) {
     this.props = { ...props };
     this.callbacks = callbacks;
+    this.services = services;
     this.documentObj = documentObj;
     this.schemaEditor = null;
   }
@@ -49,6 +50,12 @@ class SharedSchemaDefinitionController {
       textAreaPlaceholder: this.props.textAreaPlaceholder || 'Column Name\nrule\nColumn Name\nrule',
       constraintsTextAreaPlaceholder:
         this.props.constraintsTextAreaPlaceholder || 'IF [Column] = "value" THEN [Other Column] = "value" ENDIF',
+      fileActionsClassName: this.props.fileActionsClassName || 'shared-schema-file-actions',
+      loadFileButtonClassName: this.props.loadFileButtonClassName || 'icon-button',
+      saveFileButtonClassName: this.props.saveFileButtonClassName || 'icon-button',
+      loadFileButtonLabel: this.props.loadFileButtonLabel || 'Load Schema File',
+      saveFileButtonLabel: this.props.saveFileButtonLabel || 'Save Schema File',
+      loadFileInputAccept: this.props.loadFileInputAccept || '.txt,.schema,text/plain',
       ids: {
         rows: ids.rows || null,
         textContainer: ids.textContainer || null,
@@ -132,10 +139,6 @@ class SharedSchemaDefinitionController {
     return this.schemaEditor?.getSchemaText?.() || '';
   }
 
-  loadSchemaText(schemaText, options) {
-    return this.schemaEditor?.loadSchemaText?.(schemaText, options) || { rows: [], errors: [] };
-  }
-
   syncConstraintsFromEditor(options) {
     return this.schemaEditor?.syncConstraintsFromEditor?.(options) || { rows: [], errors: [] };
   }
@@ -184,8 +187,83 @@ class SharedSchemaDefinitionController {
     return this.schemaEditor?.setTextMode?.(isTextMode);
   }
 
+  setSchemaError(message) {
+    const text = String(message || '');
+    this.props.schemaErrorDisplay?.show?.(text);
+    this.callbacks.onSchemaError?.(text);
+  }
+
+  clearSchemaError() {
+    this.props.schemaErrorDisplay?.clear?.();
+    this.callbacks.onSchemaClear?.();
+  }
+
+  async loadSchemaFromFile(file) {
+    if (!file) {
+      return null;
+    }
+
+    const fileTransferService = this.services.schemaFileTransferService;
+    if (typeof fileTransferService?.readSchemaTextFile !== 'function') {
+      const message = 'Schema file loading is not available in this browser.';
+      this.setSchemaError(message);
+      return { rows: this.getState().rows || [], errors: [new Error(message)] };
+    }
+
+    try {
+      this.clearSchemaError();
+      const schemaText = await fileTransferService.readSchemaTextFile(file);
+      const result = this.loadSchemaText(schemaText, { showErrors: true, preferRowMode: true });
+      if (result?.applied !== false) {
+        this.callbacks.onSchemaFileLoaded?.({
+          fileName: file.name || '',
+          schemaText,
+          result,
+        });
+      }
+      return result;
+    } catch (error) {
+      const message = `Unable to load schema file: ${error?.message || String(error)}`;
+      this.setSchemaError(message);
+      return { rows: this.getState().rows || [], errors: [new Error(message)] };
+    }
+  }
+
+  loadSchemaText(schemaText, options) {
+    return this.schemaEditor?.loadSchemaText?.(schemaText, options) || { rows: [], errors: [] };
+  }
+
+  saveSchemaToFile({ filename = this.props.schemaFileName || 'schema.txt' } = {}) {
+    const fileTransferService = this.services.schemaFileTransferService;
+    if (typeof fileTransferService?.downloadSchemaText !== 'function') {
+      const message = 'Schema file saving is not available in this browser.';
+      this.setSchemaError(message);
+      return false;
+    }
+
+    this.clearSchemaError();
+    const schemaText = this.getSchemaText();
+    const didStartDownload = fileTransferService.downloadSchemaText(schemaText, {
+      filename,
+    });
+    this.callbacks.onSchemaFileSaved?.({
+      filename,
+      schemaText,
+      didStartDownload,
+    });
+    return didStartDownload;
+  }
+
   getState() {
-    return this.schemaEditor?.getState?.() || { schemaRows: [], schemaTextTokens: [], isTextMode: false };
+    return (
+      this.schemaEditor?.getState?.() || {
+        rows: [],
+        tokens: [],
+        constraints: [],
+        constraintText: '',
+        isTextMode: false,
+      }
+    );
   }
 
   handleInput(event) {

@@ -66,6 +66,18 @@ describe('SharedSchemaDefinitionController', () => {
     expect(DEFAULT_SHARED_SCHEMA_IDS).toEqual({});
   });
 
+  test('getState fallback matches the shared schema editor session shape before attach', () => {
+    const controller = new SharedSchemaDefinitionController();
+
+    expect(controller.getState()).toEqual({
+      rows: [],
+      tokens: [],
+      constraints: [],
+      constraintText: '',
+      isTextMode: false,
+    });
+  });
+
   test('forwards moveRowToIndex through the shared schema definition boundary', () => {
     const controller = new SharedSchemaDefinitionController();
     controller.schemaEditor = {
@@ -91,5 +103,149 @@ describe('SharedSchemaDefinitionController', () => {
       errors: [],
       tokens: [],
     });
+  });
+
+  test('saveSchemaToFile forwards schema text through the shared file transfer service', () => {
+    const schemaFileTransferService = {
+      downloadSchemaText: jest.fn(() => true),
+    };
+    const controller = new SharedSchemaDefinitionController({
+      props: {
+        schemaFileName: 'writer-schema.txt',
+      },
+      services: {
+        schemaFileTransferService,
+      },
+    });
+    controller.schemaEditor = {
+      getSchemaText: jest.fn(() => 'Field\nliteral(value)'),
+    };
+
+    const result = controller.saveSchemaToFile();
+
+    expect(result).toBe(true);
+    expect(schemaFileTransferService.downloadSchemaText).toHaveBeenCalledWith('Field\nliteral(value)', {
+      filename: 'writer-schema.txt',
+    });
+  });
+
+  test('saveSchemaToFile surfaces a clear error when download support is unavailable', () => {
+    const controller = new SharedSchemaDefinitionController({
+      props: {
+        schemaErrorDisplay: {
+          show: jest.fn(),
+          clear: jest.fn(),
+        },
+      },
+      services: {
+        schemaFileTransferService: {},
+      },
+    });
+    controller.schemaEditor = {
+      getSchemaText: jest.fn(() => 'Field\nliteral(value)'),
+    };
+
+    const result = controller.saveSchemaToFile();
+
+    expect(result).toBe(false);
+    expect(controller.props.schemaErrorDisplay.show).toHaveBeenCalledWith(
+      'Schema file saving is not available in this browser.'
+    );
+  });
+
+  test('loadSchemaFromFile reads text through the shared file transfer service and applies it through the editor', async () => {
+    const schemaFileTransferService = {
+      readSchemaTextFile: jest.fn(async () => 'Loaded Name\nliteral(Ada)'),
+    };
+    const onSchemaFileLoaded = jest.fn();
+    const controller = new SharedSchemaDefinitionController({
+      services: {
+        schemaFileTransferService,
+      },
+      callbacks: {
+        onSchemaFileLoaded,
+      },
+    });
+    controller.schemaEditor = {
+      loadSchemaText: jest.fn(() => ({ rows: [{ name: 'Loaded Name' }], errors: [], applied: true })),
+      getState: jest.fn(() => ({ rows: [], tokens: [], isTextMode: false })),
+    };
+
+    const result = await controller.loadSchemaFromFile({ name: 'schema.txt' });
+
+    expect(schemaFileTransferService.readSchemaTextFile).toHaveBeenCalledWith({ name: 'schema.txt' });
+    expect(controller.schemaEditor.loadSchemaText).toHaveBeenCalledWith('Loaded Name\nliteral(Ada)', {
+      showErrors: true,
+      preferRowMode: true,
+    });
+    expect(result).toEqual({
+      rows: [{ name: 'Loaded Name' }],
+      errors: [],
+      applied: true,
+    });
+    expect(onSchemaFileLoaded).toHaveBeenCalledWith({
+      fileName: 'schema.txt',
+      schemaText: 'Loaded Name\nliteral(Ada)',
+      result: {
+        rows: [{ name: 'Loaded Name' }],
+        errors: [],
+        applied: true,
+      },
+    });
+  });
+
+  test('loadSchemaFromFile does not emit onSchemaFileLoaded when schema parsing fails', async () => {
+    const schemaFileTransferService = {
+      readSchemaTextFile: jest.fn(async () => 'Broken Name'),
+    };
+    const onSchemaFileLoaded = jest.fn();
+    const controller = new SharedSchemaDefinitionController({
+      services: {
+        schemaFileTransferService,
+      },
+      callbacks: {
+        onSchemaFileLoaded,
+      },
+    });
+    controller.schemaEditor = {
+      loadSchemaText: jest.fn(() => ({ rows: [], errors: [new Error('Missing value')], applied: false })),
+      getState: jest.fn(() => ({ rows: [{ name: 'Existing Name' }], tokens: [], isTextMode: false })),
+    };
+
+    const result = await controller.loadSchemaFromFile({ name: 'broken-schema.txt' });
+
+    expect(result.applied).toBe(false);
+    expect(result.errors).toHaveLength(1);
+    expect(onSchemaFileLoaded).not.toHaveBeenCalled();
+  });
+
+  test('loadSchemaFromFile surfaces wrapped file read failures with a useful message', async () => {
+    const schemaFileTransferService = {
+      readSchemaTextFile: jest.fn(async () => {
+        throw new Error('Reading the schema file failed.');
+      }),
+    };
+    const controller = new SharedSchemaDefinitionController({
+      services: {
+        schemaFileTransferService,
+      },
+      props: {
+        schemaErrorDisplay: {
+          show: jest.fn(),
+          clear: jest.fn(),
+        },
+      },
+    });
+    controller.schemaEditor = {
+      getState: jest.fn(() => ({ rows: [{ name: 'Existing Name' }], tokens: [], isTextMode: false })),
+    };
+
+    const result = await controller.loadSchemaFromFile({ name: 'schema.txt' });
+
+    expect(controller.props.schemaErrorDisplay.show).toHaveBeenCalledWith(
+      'Unable to load schema file: Reading the schema file failed.'
+    );
+    expect(result.errors[0].message).toBe('Unable to load schema file: Reading the schema file failed.');
+    expect(result.rows).toEqual([{ name: 'Existing Name' }]);
   });
 });

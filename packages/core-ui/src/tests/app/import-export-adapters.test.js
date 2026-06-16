@@ -40,6 +40,16 @@ describe('import-export adapters', () => {
       expect(onProgress).toHaveBeenCalledWith(expect.objectContaining({ loaded: 5 }));
     });
 
+    test('reads text when callbacks are omitted', async () => {
+      const service = createFileReadService({ FileReaderCtor: FakeFileReader });
+      const promise = service.readText({ name: 'sample.csv' }, null);
+
+      readerInstance.emit('progress', { loaded: 5, total: 10, lengthComputable: true });
+      readerInstance.emit('load', { target: { result: 'a,b\n1,2' } });
+
+      await expect(promise).resolves.toBe('a,b\n1,2');
+    });
+
     test('rejects with typed abort/error results', async () => {
       const service = createFileReadService({ FileReaderCtor: FakeFileReader });
       const abortPromise = service.readText({ name: 'abort.csv' });

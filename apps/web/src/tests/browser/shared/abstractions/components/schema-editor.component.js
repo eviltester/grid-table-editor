@@ -31,6 +31,9 @@ class SchemaEditorComponent {
     this.addFieldButton = this.config.addFieldSelector
       ? page.locator(this.config.addFieldSelector)
       : this.root.locator('[data-role="schema-add-field"]');
+    this.loadFileButton = this.root.getByRole('button', { name: /load schema file/i });
+    this.saveFileButton = this.root.getByRole('button', { name: /save schema file/i });
+    this.fileInput = this.root.locator('[data-role="schema-file-input"]');
     this.methodPicker = new MethodPickerDialogComponent(page);
     this.paramsEditor = new ParamsEditorDialogComponent(page);
   }
@@ -103,6 +106,16 @@ class SchemaEditorComponent {
       return;
     }
     await this.addFieldButton.click();
+  }
+
+  async loadSchemaFile(file) {
+    await this.fileInput.setInputFiles(file);
+  }
+
+  async saveSchemaFileAndWaitForDownload() {
+    const downloadPromise = this.page.waitForEvent('download');
+    await this.saveFileButton.click();
+    return downloadPromise;
   }
 
   async getRowCount() {

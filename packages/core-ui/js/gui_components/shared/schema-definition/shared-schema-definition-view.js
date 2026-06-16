@@ -10,6 +10,9 @@ const SCHEMA_ERROR_ROLE = 'schema-error';
 const SCHEMA_CONSTRAINTS_REGION_ROLE = 'schema-constraints-region';
 const SCHEMA_CONSTRAINTS_SUMMARY_ROLE = 'schema-constraints-summary';
 const SCHEMA_CONSTRAINTS_TEXTBOX_ROLE = 'schema-constraints-textbox';
+const SCHEMA_FILE_INPUT_ROLE = 'schema-file-input';
+const SCHEMA_LOAD_FILE_BUTTON_ROLE = 'schema-load-file-button';
+const SCHEMA_SAVE_FILE_BUTTON_ROLE = 'schema-save-file-button';
 
 function renderOptionalIdAttr(idValue) {
   return idValue ? ` id="${idValue}"` : '';
@@ -76,6 +79,22 @@ class SharedSchemaDefinitionView {
     this.handleConstraintsFocusOut = () => {
       this.controller.syncConstraintsFromEditor({ showErrors: true });
     };
+    this.handleLoadFileButtonClick = () => {
+      this.fileInputElement?.click?.();
+    };
+    this.handleFileInputChange = async (event) => {
+      const file = event?.target?.files?.[0] || null;
+      if (!file) {
+        return;
+      }
+      await this.controller.loadSchemaFromFile(file);
+      if (event?.target) {
+        event.target.value = '';
+      }
+    };
+    this.handleSaveFileButtonClick = () => {
+      this.controller.saveSchemaToFile();
+    };
   }
 
   getElementByRole(role) {
@@ -111,6 +130,22 @@ class SharedSchemaDefinitionView {
               class="icon-button"
               data-role="schema-mode-toggle"
               title="${viewModel.toggleButtonTitle}">Edit as Text</button>
+          </span>
+          <span class="${viewModel.fileActionsClassName}" data-role="schema-file-actions">
+            <button
+              type="button"
+              class="${viewModel.loadFileButtonClassName}"
+              data-role="schema-load-file-button">${viewModel.loadFileButtonLabel}</button>
+            <input
+              type="file"
+              data-role="schema-file-input"
+              accept="${viewModel.loadFileInputAccept}"
+              aria-label="${viewModel.loadFileButtonLabel}"
+              hidden>
+            <button
+              type="button"
+              class="${viewModel.saveFileButtonClassName}"
+              data-role="schema-save-file-button">${viewModel.saveFileButtonLabel}</button>
           </span>
         </div>
         <div${renderOptionalIdAttr(viewModel.ids.rows)} class="${viewModel.rowsClassName}" data-role="schema-rows-region"></div>
@@ -151,6 +186,9 @@ class SharedSchemaDefinitionView {
     this.constraintsRegionElement = this.getElementByRole(SCHEMA_CONSTRAINTS_REGION_ROLE);
     this.constraintsSummaryElement = this.getElementByRole(SCHEMA_CONSTRAINTS_SUMMARY_ROLE);
     this.constraintsTextAreaElement = this.getElementByRole(SCHEMA_CONSTRAINTS_TEXTBOX_ROLE);
+    this.fileInputElement = this.getElementByRole(SCHEMA_FILE_INPUT_ROLE);
+    this.loadFileButtonElement = this.getElementByRole(SCHEMA_LOAD_FILE_BUTTON_ROLE);
+    this.saveFileButtonElement = this.getElementByRole(SCHEMA_SAVE_FILE_BUTTON_ROLE);
     this.controller.attachElements?.({
       rowsElement: this.rowsElement,
       textContainerElement: this.textContainerElement,
@@ -182,6 +220,9 @@ class SharedSchemaDefinitionView {
     this.constraintsTextAreaElement?.addEventListener('input', this.handleConstraintsInput);
     this.constraintsTextAreaElement?.addEventListener('change', this.handleConstraintsInput);
     this.constraintsTextAreaElement?.addEventListener('focusout', this.handleConstraintsFocusOut);
+    this.loadFileButtonElement?.addEventListener('click', this.handleLoadFileButtonClick);
+    this.fileInputElement?.addEventListener('change', this.handleFileInputChange);
+    this.saveFileButtonElement?.addEventListener('click', this.handleSaveFileButtonClick);
 
     this.controller.init();
   }
@@ -209,6 +250,9 @@ class SharedSchemaDefinitionView {
     this.constraintsTextAreaElement?.removeEventListener('input', this.handleConstraintsInput);
     this.constraintsTextAreaElement?.removeEventListener('change', this.handleConstraintsInput);
     this.constraintsTextAreaElement?.removeEventListener('focusout', this.handleConstraintsFocusOut);
+    this.loadFileButtonElement?.removeEventListener('click', this.handleLoadFileButtonClick);
+    this.fileInputElement?.removeEventListener('change', this.handleFileInputChange);
+    this.saveFileButtonElement?.removeEventListener('click', this.handleSaveFileButtonClick);
     this.root.replaceChildren();
   }
 }

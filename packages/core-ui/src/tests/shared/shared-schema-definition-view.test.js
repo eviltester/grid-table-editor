@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
-import { fireEvent, within } from '@testing-library/dom';
+import { fireEvent, waitFor, within } from '@testing-library/dom';
 import {
   schemaTextToDataRules,
   dataRulesToSchemaText,
@@ -85,7 +85,7 @@ describe('shared-schema-definition view', () => {
     expect(sharedSchemaModule.TEST_DATA_GRID_SAMPLE_SCHEMA_TEXT).toBeUndefined();
   });
 
-  function createComponent() {
+  function createComponent({ services = {} } = {}) {
     const root = document.getElementById('root');
     const createBlankRow = createBlankRowFactory();
     return createSharedSchemaDefinitionComponent({
@@ -139,6 +139,13 @@ describe('shared-schema-definition view', () => {
           const errorElement = document.querySelector('[data-role="schema-error"]');
           errorElement.textContent = '';
         },
+      },
+      services: {
+        schemaFileTransferService: {
+          readSchemaTextFile: jest.fn(async (file) => String((await file.text?.()) || '')),
+          downloadSchemaText: jest.fn(() => true),
+        },
+        ...services,
       },
     });
   }
@@ -195,6 +202,9 @@ describe('shared-schema-definition view', () => {
     expect(document.querySelector('[data-role="schema-textbox"]')).toBeTruthy();
     expect(document.querySelector('[data-role="schema-mode-toggle"]')).toBeTruthy();
     expect(document.querySelector('[data-role="schema-add-field"]')).toBeTruthy();
+    expect(document.querySelector('[data-role="schema-load-file-button"]')).toBeTruthy();
+    expect(document.querySelector('[data-role="schema-save-file-button"]')).toBeTruthy();
+    expect(document.querySelector('[data-role="schema-file-input"]')).toBeTruthy();
     expect(document.querySelector('[data-role="schema-mode-help"]').getAttribute('data-help')).toBe(
       'shared-schema-mode-help'
     );
@@ -416,6 +426,174 @@ IF [Priority] = "high" THEN [Status] = "open" ENDIF`;
     expect(component.getState().rows).toHaveLength(1);
     expect(document.querySelector('[data-role="schema-textbox"]').value).toContain('Status\nenum(active,inactive)');
     expect(document.querySelectorAll('.shared-schema-row')).toHaveLength(1);
+  });
+
+  test('save schema file action downloads the current shared schema text', () => {
+    const downloadSchemaText = jest.fn(() => true);
+    const component = createComponent({
+      services: {
+        schemaFileTransferService: {
+          readSchemaTextFile: jest.fn(async () => ''),
+          downloadSchemaText,
+        },
+      },
+    });
+
+    component.replaceRows([
+      {
+        id: 'download-row',
+        name: 'Status',
+        sourceType: 'enum',
+        command: '',
+        params: '',
+        value: 'active,inactive',
+        comments: '',
+        leadingTextLines: [],
+      },
+    ]);
+
+    fireEvent.click(document.querySelector('[data-role="schema-save-file-button"]'));
+
+    expect(downloadSchemaText).toHaveBeenCalledWith('Status\nenum(active,inactive)', {
+      filename: 'schema.txt',
+    });
+  });
+
+  test('save schema file action downloads the visible text mode edits when the schema text is invalid', () => {
+    const downloadSchemaText = jest.fn(() => true);
+    const component = createComponent({
+      services: {
+        schemaFileTransferService: {
+          readSchemaTextFile: jest.fn(async () => ''),
+          downloadSchemaText,
+        },
+      },
+    });
+
+    component.replaceRows([
+      {
+        id: 'existing-row',
+        name: 'Status',
+        sourceType: 'enum',
+        command: '',
+        params: '',
+        value: 'active,inactive',
+        comments: '',
+        leadingTextLines: [],
+      },
+    ]);
+
+    fireEvent.click(document.querySelector('[data-role="schema-mode-toggle"]'));
+
+    const textArea = document.querySelector('[data-role="schema-textbox"]');
+    textArea.value = 'Broken Name';
+    fireEvent.input(textArea);
+
+    fireEvent.click(document.querySelector('[data-role="schema-save-file-button"]'));
+
+    expect(document.querySelector('[data-role="schema-text-region"]').style.display).toBe('block');
+    expect(downloadSchemaText).toHaveBeenCalledWith('Broken Name', {
+      filename: 'schema.txt',
+    });
+  });
+
+  test('save schema file action surfaces a clear error when download support is unavailable', () => {
+    createComponent({
+      services: {
+        schemaFileTransferService: {
+          readSchemaTextFile: jest.fn(async () => ''),
+        },
+      },
+    });
+
+    fireEvent.click(document.querySelector('[data-role="schema-save-file-button"]'));
+
+    expect(document.querySelector('[data-role="schema-error"]').textContent).toBe(
+      'Schema file saving is not available in this browser.'
+    );
+  });
+
+  test('load schema file action replaces the current schema from a plain text file', async () => {
+    createComponent({
+      services: {
+        schemaFileTransferService: {
+          readSchemaTextFile: jest.fn(async () => 'Loaded Name\nliteral(Ada)\nLoaded Status\nenum(active,inactive)'),
+          downloadSchemaText: jest.fn(() => true),
+        },
+      },
+    });
+
+    const fileInput = document.querySelector('[data-role="schema-file-input"]');
+    Object.defineProperty(fileInput, 'files', {
+      configurable: true,
+      value: [{ name: 'schema.txt' }],
+    });
+
+    fireEvent.change(fileInput);
+    await waitFor(() => {
+      expect(document.querySelector('[data-role="schema-text-region"]').style.display).toBe('none');
+      expect(document.querySelectorAll('.shared-schema-row')).toHaveLength(2);
+    });
+
+    expect(document.querySelector('[data-role="schema-text-region"]').style.display).toBe('none');
+    expect(document.querySelectorAll('.shared-schema-row')).toHaveLength(2);
+    expect(within(document.body).getByDisplayValue('Loaded Name')).toBeTruthy();
+    expect(within(document.body).getByDisplayValue('Loaded Status')).toBeTruthy();
+  });
+
+  test('loadSchemaText preserves text mode by default for existing callers', () => {
+    const component = createComponent();
+
+    fireEvent.click(document.querySelector('[data-role="schema-mode-toggle"]'));
+
+    expect(document.querySelector('[data-role="schema-text-region"]').style.display).toBe('block');
+
+    component.loadSchemaText('Loaded Name\nliteral(Ada)', { showErrors: true });
+
+    expect(document.querySelector('[data-role="schema-text-region"]').style.display).toBe('block');
+    expect(document.querySelector('[data-role="schema-rows-region"]').style.display).toBe('none');
+    expect(document.querySelector('[data-role="schema-textbox"]').value).toBe('Loaded Name\nliteral(Ada)');
+  });
+
+  test('loadSchemaText preserves row mode by default for existing callers when parsing fails', () => {
+    const component = createComponent();
+
+    expect(document.querySelector('[data-role="schema-rows-region"]').style.display).not.toBe('none');
+
+    const result = component.loadSchemaText('OnlyName', { showErrors: true });
+
+    expect(result.applied).toBe(false);
+    expect(result.errors.length).toBeGreaterThan(0);
+    expect(document.querySelector('[data-role="schema-rows-region"]').style.display).not.toBe('none');
+    expect(document.querySelector('[data-role="schema-text-region"]').style.display).toBe('none');
+    expect(document.querySelector('[data-role="schema-textbox"]').value).toBe('OnlyName');
+  });
+
+  test('load schema file action surfaces schema parse errors and keeps the loaded text visible', async () => {
+    createComponent({
+      services: {
+        schemaFileTransferService: {
+          readSchemaTextFile: jest.fn(async () => 'OnlyName'),
+          downloadSchemaText: jest.fn(() => true),
+        },
+      },
+    });
+
+    const fileInput = document.querySelector('[data-role="schema-file-input"]');
+    Object.defineProperty(fileInput, 'files', {
+      configurable: true,
+      value: [{ name: 'broken-schema.txt' }],
+    });
+
+    fireEvent.change(fileInput);
+    await waitFor(() => {
+      expect(document.querySelector('[data-role="schema-error"]').textContent.length).toBeGreaterThan(0);
+      expect(document.querySelector('[data-role="schema-textbox"]').value).toBe('OnlyName');
+    });
+
+    expect(document.querySelector('[data-role="schema-error"]').textContent.length).toBeGreaterThan(0);
+    expect(document.querySelector('[data-role="schema-text-region"]').style.display).toBe('block');
+    expect(document.querySelector('[data-role="schema-textbox"]').value).toBe('OnlyName');
   });
 
   test('guided params dialog applies generated params back into the shared row editor', async () => {

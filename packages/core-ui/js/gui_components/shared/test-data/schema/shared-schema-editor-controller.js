@@ -522,7 +522,8 @@ function createSharedSchemaEditorController({
     }
   };
 
-  const loadSchemaText = (schemaText, { showErrors = true, preferRowMode = true } = {}) => {
+  const loadSchemaText = (schemaText, { showErrors = true, preferRowMode } = {}) => {
+    const previousTextMode = session.getTextMode();
     const textArea = getTextElement();
     if (textArea) {
       textArea.value = String(schemaText ?? '');
@@ -535,11 +536,14 @@ function createSharedSchemaEditorController({
       return { ...parsed, applied: false };
     }
 
-    if (preferRowMode) {
+    const shouldUseRowMode = preferRowMode === undefined ? !previousTextMode : Boolean(preferRowMode);
+
+    if (shouldUseRowMode) {
       session.setTextMode(false);
       updateModeView();
       applySemanticValidationForAllRows();
     } else {
+      session.setTextMode(true);
       updateModeView();
     }
 

@@ -539,6 +539,20 @@ IF [Priority] = "high" THEN [Status] = "open" ENDIF`;
     expect(within(document.body).getByDisplayValue('Loaded Status')).toBeTruthy();
   });
 
+  test('loadSchemaText preserves text mode by default for existing callers', () => {
+    const component = createComponent();
+
+    fireEvent.click(document.querySelector('[data-role="schema-mode-toggle"]'));
+
+    expect(document.querySelector('[data-role="schema-text-region"]').style.display).toBe('block');
+
+    component.loadSchemaText('Loaded Name\nliteral(Ada)', { showErrors: true });
+
+    expect(document.querySelector('[data-role="schema-text-region"]').style.display).toBe('block');
+    expect(document.querySelector('[data-role="schema-rows-region"]').style.display).toBe('none');
+    expect(document.querySelector('[data-role="schema-textbox"]').value).toBe('Loaded Name\nliteral(Ada)');
+  });
+
   test('load schema file action surfaces schema parse errors and keeps the loaded text visible', async () => {
     createComponent({
       services: {

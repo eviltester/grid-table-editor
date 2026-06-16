@@ -214,11 +214,13 @@ class SharedSchemaDefinitionController {
       this.clearSchemaError();
       const schemaText = await fileTransferService.readSchemaTextFile(file);
       const result = this.loadSchemaText(schemaText, { showErrors: true, preferRowMode: true });
-      this.callbacks.onSchemaFileLoaded?.({
-        fileName: file.name || '',
-        schemaText,
-        result,
-      });
+      if (result?.applied !== false) {
+        this.callbacks.onSchemaFileLoaded?.({
+          fileName: file.name || '',
+          schemaText,
+          result,
+        });
+      }
       return result;
     } catch (error) {
       const message = `Unable to load schema file: ${error?.message || String(error)}`;

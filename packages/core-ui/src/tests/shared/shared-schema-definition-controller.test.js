@@ -157,9 +157,13 @@ describe('SharedSchemaDefinitionController', () => {
     const schemaFileTransferService = {
       readSchemaTextFile: jest.fn(async () => 'Loaded Name\nliteral(Ada)'),
     };
+    const onSchemaFileLoaded = jest.fn();
     const controller = new SharedSchemaDefinitionController({
       services: {
         schemaFileTransferService,
+      },
+      callbacks: {
+        onSchemaFileLoaded,
       },
     });
     controller.schemaEditor = {
@@ -179,6 +183,40 @@ describe('SharedSchemaDefinitionController', () => {
       errors: [],
       applied: true,
     });
+    expect(onSchemaFileLoaded).toHaveBeenCalledWith({
+      fileName: 'schema.txt',
+      schemaText: 'Loaded Name\nliteral(Ada)',
+      result: {
+        rows: [{ name: 'Loaded Name' }],
+        errors: [],
+        applied: true,
+      },
+    });
+  });
+
+  test('loadSchemaFromFile does not emit onSchemaFileLoaded when schema parsing fails', async () => {
+    const schemaFileTransferService = {
+      readSchemaTextFile: jest.fn(async () => 'Broken Name'),
+    };
+    const onSchemaFileLoaded = jest.fn();
+    const controller = new SharedSchemaDefinitionController({
+      services: {
+        schemaFileTransferService,
+      },
+      callbacks: {
+        onSchemaFileLoaded,
+      },
+    });
+    controller.schemaEditor = {
+      loadSchemaText: jest.fn(() => ({ rows: [], errors: [new Error('Missing value')], applied: false })),
+      getState: jest.fn(() => ({ rows: [{ name: 'Existing Name' }], tokens: [], isTextMode: false })),
+    };
+
+    const result = await controller.loadSchemaFromFile({ name: 'broken-schema.txt' });
+
+    expect(result.applied).toBe(false);
+    expect(result.errors).toHaveLength(1);
+    expect(onSchemaFileLoaded).not.toHaveBeenCalled();
   });
 
   test('loadSchemaFromFile surfaces wrapped file read failures with a useful message', async () => {

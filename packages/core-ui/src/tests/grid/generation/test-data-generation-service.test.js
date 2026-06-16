@@ -475,6 +475,7 @@ describe('test-data-generation-service', () => {
     const renderTextFromGrid = jest.fn(() => Promise.resolve());
     const setTestDataLoadingStatus = jest.fn();
     const setTestDataStatus = jest.fn();
+    const recordLastUsedSchema = jest.fn();
     const importer = { setGridFromGenericDataTable: jest.fn(() => Promise.resolve()) };
     const generator = {
       importSpec: jest.fn(),
@@ -524,15 +525,194 @@ describe('test-data-generation-service', () => {
       getMainGridExtras: jest.fn(),
       getGenerationMode: () => 'new-table',
       getRequestedRowCount: () => 3,
+      recordLastUsedSchema,
     });
 
     await service.generateTestData();
 
     expect(importer.setGridFromGenericDataTable).toHaveBeenCalledTimes(1);
     expect(renderTextFromGrid).toHaveBeenCalledTimes(1);
+    expect(recordLastUsedSchema).toHaveBeenCalledTimes(1);
     expect(setTestDataStatus).toHaveBeenCalledWith('Generate complete. Grid and preview updated.', {
       dismissable: true,
     });
+  });
+
+  test('generatePairwiseTestData ignores last-used persistence failures after a successful grid update', async () => {
+    const setTestDataStatus = jest.fn();
+    const importer = { setGridFromGenericDataTable: jest.fn(() => Promise.resolve()) };
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    const service = createTestDataGenerationService({
+      TestDataGeneratorClass: function TestDataGeneratorClass() {
+        return {
+          importSpec: jest.fn(),
+          compile: jest.fn(),
+          compiler: { validate: jest.fn() },
+          testDataRules: () => [{ type: 'enum' }, { type: 'enum' }],
+          isValid: () => true,
+          errors: () => [],
+        };
+      },
+      PairwiseTestDataGeneratorClass: class FakePairwiseTestDataGenerator {
+        initializeFromRules() {
+          return { isError: false };
+        }
+        generateAllDataRecordsAsRows() {
+          return {
+            isError: false,
+            data: {
+              data: [
+                ['Status', 'Type'],
+                ['active', 'admin'],
+              ],
+            },
+          };
+        }
+      },
+      GenericDataTableClass: class FakeGenericDataTable {
+        constructor() {
+          this.headers = [];
+          this.rows = [];
+        }
+        setHeaders(headers) {
+          this.headers = headers;
+        }
+        appendDataRow(row) {
+          this.rows.push(row);
+        }
+        getRowCount() {
+          return this.rows.length;
+        }
+        getRow(index) {
+          return this.rows[index];
+        }
+      },
+      TEST_DATA_MODES: {
+        NEW_TABLE: 'new-table',
+        AMEND_TABLE: 'amend-table',
+        AMEND_SELECTED: 'amend-selected',
+      },
+      normaliseCount: () => 2,
+      createAmendedTable: jest.fn(),
+      schemaRowsToSpec: jest.fn(() => 'Status\nenum(active,inactive)\nType\nenum(admin,user)'),
+      faker: {},
+      RandExp: function RandExp() {},
+      debouncer: { clear: jest.fn() },
+      syncSchemaTextFromGridBeforeGenerate: jest.fn(),
+      setTestDataStatus,
+      setTestDataLoadingStatus: jest.fn(),
+      showSchemaError: jest.fn(),
+      yieldToUi: jest.fn(() => Promise.resolve()),
+      validateCurrentSchemaRows: jest.fn(() => ({
+        errors: [],
+        rows: [
+          { name: 'Status', sourceType: 'enum', value: 'active,inactive' },
+          { name: 'Type', sourceType: 'enum', value: 'admin,user' },
+        ],
+      })),
+      getImporter: () => importer,
+      getTextPreviewRenderer: jest.fn(),
+      getMainGridExtras: jest.fn(),
+      getGenerationMode: () => 'new-table',
+      setGeneratePairwiseBusy: jest.fn(),
+      recordLastUsedSchema: jest.fn(() => Promise.reject(new Error('storage failed'))),
+    });
+
+    await service.generatePairwiseTestData();
+
+    expect(importer.setGridFromGenericDataTable).toHaveBeenCalledTimes(1);
+    expect(setTestDataStatus).toHaveBeenCalledWith('Generated 4 pairwise combinations. Grid updated.', {
+      dismissable: true,
+    });
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      'Failed to record last used schema.',
+      expect.objectContaining({ message: 'storage failed' })
+    );
+  });
+
+  test('generateCombinationsTestData records last used schema on success', async () => {
+    const recordLastUsedSchema = jest.fn();
+    const importer = { setGridFromGenericDataTable: jest.fn(() => Promise.resolve()) };
+
+    const service = createTestDataGenerationService({
+      TestDataGeneratorClass: function TestDataGeneratorClass() {
+        return {
+          importSpec: jest.fn(),
+          compile: jest.fn(),
+          compiler: { validate: jest.fn() },
+          testDataRules: () => [{ type: 'enum' }, { type: 'enum' }, { type: 'enum' }],
+          isValid: () => true,
+          errors: () => [],
+        };
+      },
+      PairwiseTestDataGeneratorClass: class {},
+      CombinationsTestDataGeneratorClass: class FakeCombinationsTestDataGenerator {
+        initializeFromRules() {
+          return { isError: false };
+        }
+        generateAllDataRecordsAsRows() {
+          return {
+            isError: false,
+            data: {
+              data: [
+                ['Status', 'Type', 'Priority'],
+                ['active', 'admin', 'high'],
+              ],
+            },
+          };
+        }
+      },
+      GenericDataTableClass: class FakeGenericDataTable {
+        constructor() {
+          this.headers = [];
+          this.rows = [];
+        }
+        setHeaders(headers) {
+          this.headers = headers;
+        }
+        appendDataRow(row) {
+          this.rows.push(row);
+        }
+        getRowCount() {
+          return this.rows.length;
+        }
+      },
+      TEST_DATA_MODES: {
+        NEW_TABLE: 'new-table',
+        AMEND_TABLE: 'amend-table',
+        AMEND_SELECTED: 'amend-selected',
+      },
+      normaliseCount: () => 2,
+      createAmendedTable: jest.fn(),
+      schemaRowsToSpec: jest.fn(() => 'schema'),
+      faker: {},
+      RandExp: function RandExp() {},
+      debouncer: { clear: jest.fn() },
+      syncSchemaTextFromGridBeforeGenerate: jest.fn(),
+      setTestDataStatus: jest.fn(),
+      setTestDataLoadingStatus: jest.fn(),
+      showSchemaError: jest.fn(),
+      yieldToUi: jest.fn(() => Promise.resolve()),
+      validateCurrentSchemaRows: jest.fn(() => ({
+        errors: [],
+        rows: [
+          { name: 'Status', sourceType: 'enum', value: 'active,inactive,pending' },
+          { name: 'Type', sourceType: 'enum', value: 'admin,user' },
+          { name: 'Priority', sourceType: 'enum', value: 'high,low' },
+        ],
+      })),
+      getImporter: () => importer,
+      getTextPreviewRenderer: jest.fn(),
+      getMainGridExtras: jest.fn(),
+      getGenerationMode: () => 'new-table',
+      setGeneratePairwiseBusy: jest.fn(),
+      recordLastUsedSchema,
+    });
+
+    await service.generateCombinationsTestData({ strength: 2, algorithm: 'greedy' });
+
+    expect(recordLastUsedSchema).toHaveBeenCalledTimes(1);
   });
 
   test('generateTestData does not refresh the text preview when auto preview is disabled in preview mode', async () => {

@@ -88,7 +88,9 @@ class PopulationActionsView {
           ${escapeHtml(state.generatePairwiseLabel)}
         </button>
       </span>
-      <span class="shared-button-with-help">
+      ${
+        state.generateSchemaVisible
+          ? `<span class="shared-button-with-help">
         ${this.renderHelpButton({
           helpHtml: state.generateSchemaHelpHtml,
           ariaLabel: state.generateSchemaHelpLabel,
@@ -97,7 +99,9 @@ class PopulationActionsView {
           ${renderIconHtml('grid', { className: 'app-icon shared-file-action-icon generator-file-icon' })}
           ${escapeHtml(state.generateSchemaLabel)}
         </button>
-      </span>
+      </span>`
+          : ''
+      }
       ${
         state.statusVisible
           ? `

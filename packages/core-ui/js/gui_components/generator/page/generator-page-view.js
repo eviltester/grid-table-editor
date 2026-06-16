@@ -61,6 +61,8 @@ class GeneratorPageView {
         ariaLabelledBy: 'generatorSchemaHeading',
         rootDataRole: 'generator-schema-panel-root',
         schemaDefinitionRootDataRole: 'generator-schema-definition-root',
+        storedSchemasEnabled: true,
+        storedSchemasProps: state.storedSchemasProps,
         useTimedSchemaErrorDisplay: true,
         schemaErrorTimeoutMs: 5000,
         schemaDefinitionProps: {
@@ -69,6 +71,7 @@ class GeneratorPageView {
       },
       callbacks: {
         schemaDefinition: this.callbacks.schemaDefinition || {},
+        storedSchemas: this.callbacks.storedSchemas || {},
       },
     });
   }
@@ -82,6 +85,8 @@ class GeneratorPageView {
       ariaLabelledBy: 'generatorSchemaHeading',
       rootDataRole: 'generator-schema-panel-root',
       schemaDefinitionRootDataRole: 'generator-schema-definition-root',
+      storedSchemasEnabled: true,
+      storedSchemasProps: state.storedSchemasProps,
       useTimedSchemaErrorDisplay: true,
       schemaErrorTimeoutMs: 5000,
       schemaDefinitionProps: {
@@ -113,6 +118,10 @@ class GeneratorPageView {
 
   getSchemaErrorDisplay() {
     return this.generatorSchemaPanel?.getSchemaErrorDisplay?.() || null;
+  }
+
+  recordCurrentSchemaAsLastUsed() {
+    return this.generatorSchemaPanel?.recordCurrentSchemaAsLastUsed?.() || null;
   }
 }
 

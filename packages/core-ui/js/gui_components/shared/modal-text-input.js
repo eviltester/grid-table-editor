@@ -61,6 +61,7 @@ function createTextInputDialogComponent({
       inputType = 'text',
       min,
       max,
+      maxLength,
       step,
     } = {}) {
       closeActiveModal(null);
@@ -94,6 +95,11 @@ function createTextInputDialogComponent({
         inputElem.removeAttribute('max');
       } else {
         inputElem.setAttribute('max', String(max));
+      }
+      if (maxLength === undefined || maxLength === null || maxLength === '') {
+        inputElem.removeAttribute('maxlength');
+      } else {
+        inputElem.setAttribute('maxlength', String(maxLength));
       }
       if (step === undefined || step === null || step === '') {
         inputElem.removeAttribute('step');

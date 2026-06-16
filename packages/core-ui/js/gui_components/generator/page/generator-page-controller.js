@@ -4,6 +4,7 @@ class GeneratorPageController {
       controlsProps: props.controlsProps || {},
       previewProps: props.previewProps || {},
       schemaDefinitionProps: props.schemaDefinitionProps || {},
+      storedSchemasProps: props.storedSchemasProps || {},
     };
   }
 
@@ -12,6 +13,7 @@ class GeneratorPageController {
       controlsProps: { ...this.state.controlsProps },
       previewProps: { ...this.state.previewProps },
       schemaDefinitionProps: { ...this.state.schemaDefinitionProps },
+      storedSchemasProps: { ...this.state.storedSchemasProps },
     };
   }
 
@@ -32,6 +34,12 @@ class GeneratorPageController {
       this.state.schemaDefinitionProps = {
         ...this.state.schemaDefinitionProps,
         ...nextProps.schemaDefinitionProps,
+      };
+    }
+    if (Object.prototype.hasOwnProperty.call(nextProps, 'storedSchemasProps')) {
+      this.state.storedSchemasProps = {
+        ...this.state.storedSchemasProps,
+        ...nextProps.storedSchemasProps,
       };
     }
   }

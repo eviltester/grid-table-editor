@@ -91,6 +91,7 @@ function previewGeneratorData({
   renderOutputPreviewForCurrentSelection,
   surfacePageError,
   clearPageError,
+  recordLastUsedSchema = () => null,
 }) {
   function applyResult(result) {
     if (!result?.ok) {
@@ -105,6 +106,7 @@ function previewGeneratorData({
     clearPageError?.();
     setPreviewDataTable?.(result.dataTable);
     renderOutputPreviewForCurrentSelection();
+    void recordLastUsedSchemaSafely(recordLastUsedSchema);
   }
 
   const rowCount = getPreviewRowCount();
@@ -121,6 +123,14 @@ function previewGeneratorData({
   return applyResult(result);
 }
 
+async function recordLastUsedSchemaSafely(recordLastUsedSchema) {
+  try {
+    await Promise.resolve(recordLastUsedSchema?.());
+  } catch (error) {
+    console.error('Failed to record last used schema.', error);
+  }
+}
+
 async function generateGeneratorDataFile({
   getGenerateRowCount,
   schemaGenerationService,
@@ -135,6 +145,7 @@ async function generateGeneratorDataFile({
   surfacePageError,
   clearPageError,
   scheduleClearGenerationStatus,
+  recordLastUsedSchema = () => null,
 }) {
   const rowCount = getGenerateRowCount();
   if (rowCount.errors.length > 0) {
@@ -174,6 +185,7 @@ async function generateGeneratorDataFile({
       showGenerationLoadingStatus,
       exportEncodingSettings: getExportEncodingSettings?.(),
     });
+    await recordLastUsedSchemaSafely(recordLastUsedSchema);
     const presentation = presentUiGenerationResult({
       surface: 'generator',
       operationKind: 'generateRows',
@@ -204,6 +216,7 @@ async function generateGeneratorAllPairsDataFile({
   surfacePageError,
   clearPageError,
   scheduleClearGenerationStatus,
+  recordLastUsedSchema = () => null,
 }) {
   const result = schemaGenerationService?.generatePairwise?.();
   if (!result?.ok) {
@@ -237,6 +250,7 @@ async function generateGeneratorAllPairsDataFile({
       showGenerationLoadingStatus,
       exportEncodingSettings: getExportEncodingSettings?.(),
     });
+    await recordLastUsedSchemaSafely(recordLastUsedSchema);
     const presentation = presentUiGenerationResult({
       surface: 'generator',
       operationKind: 'generatePairwise',
@@ -268,6 +282,7 @@ async function generateGeneratorCombinationsDataFile({
   scheduleClearGenerationStatus,
   selection,
   requestConfirm,
+  recordLastUsedSchema = () => null,
 }) {
   const strength = Number.parseInt(selection?.strength, 10);
   const algorithm = selection?.algorithm;
@@ -321,6 +336,7 @@ async function generateGeneratorCombinationsDataFile({
       DownloadClass,
       showGenerationLoadingStatus,
     });
+    await recordLastUsedSchemaSafely(recordLastUsedSchema);
     const presentation = presentUiGenerationResult({
       surface: 'generator',
       operationKind: 'generateCombinations',

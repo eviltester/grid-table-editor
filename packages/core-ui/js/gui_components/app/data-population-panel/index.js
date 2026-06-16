@@ -105,6 +105,9 @@ function createDataPopulationPanelComponent({ root, props = {}, services = {}, c
     replaceSchemaRows(rows) {
       return view.getSchemaDefinition()?.replaceRows?.(rows);
     },
+    recordCurrentSchemaAsLastUsed() {
+      return view.recordCurrentSchemaAsLastUsed?.() || null;
+    },
     insertSampleSchema() {
       return view.getSchemaDefinition()?.insertSampleSchema?.();
     },

@@ -10,6 +10,7 @@ class SchemaPanelView {
     this.callbacks = callbacks;
     this.schemaDefinition = null;
     this.schemaErrorDisplay = null;
+    this.storedSchemasManager = null;
   }
 
   mount() {
@@ -38,6 +39,7 @@ class SchemaPanelView {
         data-role="${escapeHtml(state.rootDataRole)}"${sectionId}${sectionOrder}${ariaLabel}${ariaLabelledBy}
       >
         <div${schemaDefinitionRootId} data-role="${escapeHtml(state.schemaDefinitionRootDataRole)}"></div>
+        ${state.storedSchemasEnabled ? `<div data-role="${escapeHtml(state.storedSchemasRootDataRole)}"></div>` : ''}
       </section>
     `;
   }
@@ -52,7 +54,13 @@ class SchemaPanelView {
       props: {
         ...state.schemaDefinitionProps,
       },
-      callbacks: this.callbacks.schemaDefinition || {},
+      callbacks: {
+        ...(this.callbacks.schemaDefinition || {}),
+        onSchemaTextChanged: (schemaText) => {
+          this.storedSchemasManager?.setCurrentSchemaText?.(schemaText);
+          this.callbacks.schemaDefinition?.onSchemaTextChanged?.(schemaText);
+        },
+      },
     });
 
     if (state.useTimedSchemaErrorDisplay) {
@@ -65,11 +73,36 @@ class SchemaPanelView {
       });
     }
 
+    if (state.storedSchemasEnabled) {
+      const storedSchemasRoot = this.root.querySelector(`[data-role="${state.storedSchemasRootDataRole}"]`);
+      this.storedSchemasManager =
+        this.services.createStoredSchemasManagerComponent?.({
+          root: storedSchemasRoot,
+          documentObj: this.documentObj,
+          props: {
+            currentSchemaText: this.schemaDefinition?.getSchemaText?.() || '',
+            ...(state.storedSchemasProps || {}),
+          },
+          callbacks: {
+            onSchemaLoaded: (schemaText) => {
+              this.schemaDefinition?.loadSchemaText?.(schemaText, { showErrors: true });
+              this.storedSchemasManager?.setCurrentSchemaText?.(schemaText);
+              this.callbacks.storedSchemas?.onSchemaLoaded?.(schemaText);
+            },
+            onStatus: (message, options) => this.callbacks.storedSchemas?.onStatus?.(message, options),
+          },
+        }) || null;
+    }
+
     this.updateSchemaDefinition();
   }
 
   render() {
     this.updateSchemaDefinition();
+    this.storedSchemasManager?.update?.({
+      ...(this.controller.getState().storedSchemasProps || {}),
+      currentSchemaText: this.schemaDefinition?.getSchemaText?.() || '',
+    });
   }
 
   updateSchemaDefinition() {
@@ -87,6 +120,7 @@ class SchemaPanelView {
   destroy() {
     this.schemaDefinition?.destroy?.();
     this.schemaErrorDisplay?.destroy?.();
+    this.storedSchemasManager?.destroy?.();
     this.root.replaceChildren();
   }
 
@@ -96,6 +130,10 @@ class SchemaPanelView {
 
   getSchemaErrorDisplay() {
     return this.schemaErrorDisplay;
+  }
+
+  getStoredSchemasManager() {
+    return this.storedSchemasManager;
   }
 }
 

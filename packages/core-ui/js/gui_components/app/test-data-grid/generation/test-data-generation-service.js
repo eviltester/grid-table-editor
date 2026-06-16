@@ -60,14 +60,23 @@ function createTestDataGenerationService({
   setGeneratePairwiseBusy = () => {},
   setPairwiseVisible = () => {},
   requestConfirm,
+  recordLastUsedSchema = () => null,
   createGenerationSessionFn = createGenerationSession,
 }) {
   function getCurrentSchemaRowValidation(options) {
     return validateCurrentSchemaRows?.(options) || { errors: [], rows: [] };
   }
 
+  async function recordLastUsedSchemaSafely() {
+    try {
+      await Promise.resolve(recordLastUsedSchema?.());
+    } catch (error) {
+      console.error('Failed to record last used schema.', error);
+    }
+  }
+
   function createConfiguredGenerator(validationOptions) {
-    const rowValidation = getCurrentSchemaRowValidation(validationOptions);
+    const rowValidation = validationOptions?.schemaState || getCurrentSchemaRowValidation(validationOptions);
     if (rowValidation.errors.length > 0) {
       return { generator: null, errors: rowValidation.errors, rows: rowValidation.rows || [] };
     }
@@ -198,11 +207,15 @@ function createTestDataGenerationService({
     dataTable,
     loadingMessage = 'Applying data to grid...',
     presentationOptions,
+    recordLastUsed = false,
   }) {
     setTestDataLoadingStatus(loadingMessage);
     await yieldToUi();
     await Promise.resolve(getImporter().setGridFromGenericDataTable(dataTable));
     const previewUpdated = await syncTextPreviewFromGrid();
+    if (recordLastUsed) {
+      await recordLastUsedSchemaSafely();
+    }
     const presentation = presentUiGenerationResult({
       surface: 'app',
       previewUpdated,
@@ -243,6 +256,7 @@ function createTestDataGenerationService({
           operationKind: 'generatePairwise',
           result,
         },
+        recordLastUsed: true,
       });
       await yieldToUi();
     } catch (error) {
@@ -302,6 +316,7 @@ function createTestDataGenerationService({
           result,
           strength,
         },
+        recordLastUsed: true,
       });
       await yieldToUi();
     } catch (error) {
@@ -416,6 +431,7 @@ function createTestDataGenerationService({
               result,
               retryLimitReached,
             },
+            recordLastUsed: true,
           });
           return;
         }
@@ -426,6 +442,7 @@ function createTestDataGenerationService({
             operationKind: 'generateRows',
             result,
           },
+          recordLastUsed: true,
         });
         return;
       }
@@ -457,6 +474,7 @@ function createTestDataGenerationService({
         }
 
         const previewUpdated = await syncTextPreviewFromGrid();
+        await recordLastUsedSchemaSafely();
         const presentation = presentUiGenerationNotice({
           noticeKind: 'amendSuccess',
           surface: 'app',
@@ -490,6 +508,7 @@ function createTestDataGenerationService({
           operationKind: 'amendRows',
           result: amendResult,
         },
+        recordLastUsed: true,
       });
     } catch (error) {
       console.error('Generate/amend failed', error);

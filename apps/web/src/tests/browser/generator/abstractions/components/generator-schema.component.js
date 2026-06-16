@@ -1,5 +1,7 @@
 const { expect } = require('@playwright/test');
 const { SchemaEditorComponent } = require('../../../shared/abstractions/components/schema-editor.component');
+const { TextInputDialogComponent } = require('../../../app/abstractions/components/text-input-dialog.component');
+const { ConfirmDialogComponent } = require('../../../app/abstractions/components/confirm-dialog.component');
 
 class GeneratorSchemaComponent {
   constructor(page) {
@@ -12,6 +14,15 @@ class GeneratorSchemaComponent {
     this.textArea = this.editor.textArea;
     this.rows = this.editor.rows;
     this.errorStatus = this.container.locator('[data-role="schema-error"]');
+    this.storedSchemasSummary = this.container.getByText(/Managed Stored Schemas/);
+    this.storedSchemasSaveAsButton = this.container.getByRole('button', { name: 'Save Schema As' });
+    this.storedSchemasRecoverDraftButton = this.container.getByRole('button', { name: 'Recover Draft' });
+    this.storedSchemasLastUsedSelect = this.container.getByLabel('Last Used');
+    this.storedSchemasLoadLastUsedButton = this.container.getByRole('button', { name: /^Load$/ });
+    this.storedSchemasLoadSavedButton = this.container.getByRole('button', { name: 'Load Saved Schema' });
+    this.storedSchemasDialog = page.getByRole('dialog', { name: 'Saved Schemas' });
+    this.textInputDialog = new TextInputDialogComponent(page);
+    this.confirmDialog = new ConfirmDialogComponent(page);
   }
 
   async expectReady() {
@@ -61,6 +72,76 @@ class GeneratorSchemaComponent {
 
   async clickRowAction(index, action) {
     await this.row(index).locator(`button[data-action="${action}"]`).click();
+  }
+
+  async expandStoredSchemas() {
+    const details = this.container.locator('[data-role="stored-schemas-details"]');
+    if ((await details.getAttribute('open')) === null) {
+      await this.storedSchemasSummary.click();
+    }
+  }
+
+  async saveSchemaAs(name) {
+    await this.expandStoredSchemas();
+    await this.storedSchemasSaveAsButton.click();
+    await this.textInputDialog.submit(name, { submitLabel: /save schema/i });
+  }
+
+  async recoverDraft() {
+    await this.expandStoredSchemas();
+    await this.storedSchemasRecoverDraftButton.click();
+  }
+
+  async loadLastUsed() {
+    await this.expandStoredSchemas();
+    await this.storedSchemasLastUsedSelect.selectOption({ index: 1 });
+    await this.storedSchemasLoadLastUsedButton.click();
+  }
+
+  async openSavedSchemasDialog() {
+    await this.expandStoredSchemas();
+    await this.storedSchemasLoadSavedButton.click();
+    await expect(this.storedSchemasDialog).toBeVisible();
+  }
+
+  getSavedSchemaRows() {
+    return this.storedSchemasDialog.locator('[data-role="stored-schemas-dialog-row"]');
+  }
+
+  async getSavedSchemaRowByExactName(name) {
+    const rows = await this.getSavedSchemaRows().all();
+    const matchingRows = [];
+
+    for (const row of rows) {
+      if ((await row.locator('strong').innerText()).trim() === name) {
+        matchingRows.push(row);
+      }
+    }
+
+    expect(matchingRows).toHaveLength(1);
+    return matchingRows[0];
+  }
+
+  async loadSavedSchemaByName(name) {
+    await this.openSavedSchemasDialog();
+    const row = await this.getSavedSchemaRowByExactName(name);
+    await row.getByRole('button', { name: 'Load' }).click();
+    await expect(this.storedSchemasDialog).toBeHidden();
+  }
+
+  async renameSavedSchema(name, nextName) {
+    await this.openSavedSchemasDialog();
+    const row = await this.getSavedSchemaRowByExactName(name);
+    await row.getByRole('button', { name: 'Rename' }).click();
+    await row.getByRole('textbox').fill(nextName);
+    await row.getByRole('button', { name: 'Apply' }).click();
+  }
+
+  async deleteSavedSchema(name) {
+    await this.openSavedSchemasDialog();
+    const row = await this.getSavedSchemaRowByExactName(name);
+    await row.getByRole('button', { name: 'Delete' }).click();
+    await this.confirmDialog.confirm({ confirmLabel: /delete/i });
   }
 }
 

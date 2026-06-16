@@ -252,4 +252,60 @@ describe('createSharedSchemaEditorController', () => {
     fireEvent.click(within(dialog).getByRole('button', { name: /^cancel$/i }));
     await expect(dialogPromise).resolves.toBeUndefined();
   });
+
+  test('emits schema text changes when text mode contains invalid in-progress schema text', () => {
+    const root = createRoot(dom.window.document);
+    const onSchemaTextChanged = jest.fn();
+    const schemaTextToDataRules = jest.fn(() => ({
+      dataRules: [],
+      errors: [{ code: 'missing_rule_definition', message: 'Missing generator definition' }],
+      schemaTokens: [],
+      constraints: [],
+    }));
+
+    const controller = createSharedSchemaEditorController({
+      documentObj: dom.window.document,
+      rootElement: root,
+      createBlankRow: () => ({
+        id: 'row-1',
+        name: '',
+        sourceType: 'literal',
+        command: 'literal',
+        value: '',
+        params: '',
+        semanticValidationIssues: [],
+      }),
+      mapRuleToRow: () => ({
+        id: 'row-1',
+        name: '',
+        sourceType: 'literal',
+        command: 'literal',
+        value: '',
+        params: '',
+        semanticValidationIssues: [],
+      }),
+      schemaTextToDataRules,
+      dataRulesToSchemaText: jest.fn(() => ''),
+      onSchemaTextChanged,
+      validateSchemaRows: jest.fn((rows) => ({ rows, errors: [] })),
+      updatePairwiseButtonVisibility: jest.fn(),
+      updateHelpHints: jest.fn(),
+    });
+
+    controller.init();
+    controller.setTextMode(true);
+
+    const textArea = root.querySelector('[data-role="schema-textbox"]');
+    textArea.value = 'OnlyName';
+
+    const result = controller.syncFromText({ showErrors: true });
+
+    expect(schemaTextToDataRules).toHaveBeenCalledWith(
+      expect.objectContaining({
+        schemaText: 'OnlyName',
+      })
+    );
+    expect(result.errors).toEqual([{ code: 'missing_rule_definition', message: 'Missing generator definition' }]);
+    expect(onSchemaTextChanged).toHaveBeenLastCalledWith('OnlyName');
+  });
 });

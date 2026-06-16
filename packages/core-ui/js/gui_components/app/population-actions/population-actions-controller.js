@@ -15,6 +15,7 @@ class PopulationActionsController {
       generateHelpLabel: props.generateHelpLabel || 'Show generate help',
       generatePairwiseHelpLabel: props.generatePairwiseHelpLabel || 'Show pairwise generation help',
       generateSchemaHelpLabel: props.generateSchemaHelpLabel || 'Show grid to schema help',
+      generateSchemaVisible: props.generateSchemaVisible !== false,
       statusVisible: props.statusVisible === true,
       roleNames: {
         generateButton: props.roleNames?.generateButton || 'generate-button',
@@ -42,6 +43,7 @@ class PopulationActionsController {
       generateHelpLabel: nextProps.generateHelpLabel ?? this.state.generateHelpLabel,
       generatePairwiseHelpLabel: nextProps.generatePairwiseHelpLabel ?? this.state.generatePairwiseHelpLabel,
       generateSchemaHelpLabel: nextProps.generateSchemaHelpLabel ?? this.state.generateSchemaHelpLabel,
+      generateSchemaVisible: nextProps.generateSchemaVisible ?? this.state.generateSchemaVisible,
       statusVisible: nextProps.statusVisible ?? this.state.statusVisible,
       roleNames: nextProps.roleNames
         ? {

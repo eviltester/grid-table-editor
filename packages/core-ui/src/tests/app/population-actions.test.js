@@ -164,4 +164,17 @@ describe('PopulationActions', () => {
     componentA.destroy();
     componentB.destroy();
   });
+
+  test('can hide the grid to enum schema action when a host does not support it', () => {
+    const component = createPopulationActionsComponent({
+      root: document.getElementById('root'),
+      props: {
+        generateSchemaVisible: false,
+      },
+    });
+
+    expect(document.querySelector('[data-role="generate-schema-button"]')).toBeNull();
+
+    component.destroy();
+  });
 });

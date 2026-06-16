@@ -153,6 +153,7 @@ class GeneratorControlsView {
         documentObj: this.documentObj,
         props: {
           pairwiseVisible: false,
+          generateSchemaVisible: false,
           generateLabel: 'Generate Data',
           generatePairwiseLabel: 'Generate Combinations',
           generateHelpHtml: GENERATE_TO_FILE_HELP_HTML,

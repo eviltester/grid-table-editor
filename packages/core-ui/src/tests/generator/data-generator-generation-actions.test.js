@@ -4,6 +4,7 @@ import { createGeneratorSchemaGenerationService } from '../../../js/gui_componen
 import {
   generateGeneratorCombinationsDataFile,
   generateGeneratorDataFile,
+  previewGeneratorData,
   renderGeneratorOutputPreview,
   updateGeneratorPairwiseButtonVisibility,
 } from '../../../js/gui_components/generator/generation/data-generator-generation-actions.js';
@@ -67,6 +68,25 @@ describe('generator generation actions', () => {
     expect(setOutputPreviewText).toHaveBeenCalledWith('json:sync:2');
   });
 
+  test('previewGeneratorData records last used schema after a successful preview', () => {
+    const recordLastUsedSchema = jest.fn();
+
+    previewGeneratorData({
+      getPreviewRowCount: () => ({ value: 2, errors: [] }),
+      createConfiguredGenerator: () => ({
+        generator: { generateHeadersArray: () => ['Name'], generateRow: () => ['Ada'] },
+      }),
+      buildDataTable: () => ({ getRowCount: () => 2 }),
+      setPreviewDataTable: jest.fn(),
+      renderOutputPreviewForCurrentSelection: jest.fn(),
+      surfacePageError: jest.fn(),
+      clearPageError: jest.fn(),
+      recordLastUsedSchema,
+    });
+
+    expect(recordLastUsedSchema).toHaveBeenCalledTimes(1);
+  });
+
   test('updateGeneratorPairwiseButtonVisibility does not require a document object', () => {
     const isVisible = updateGeneratorPairwiseButtonVisibility({
       getCurrentSchemaState: () => ({
@@ -127,6 +147,85 @@ describe('generator generation actions', () => {
       filename: 'generated-data.csv',
       text: '\uFEFFName\r\nAda',
     });
+  });
+
+  test('generateGeneratorDataFile ignores last-used persistence failures after a successful export', async () => {
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const setGenerationStatus = jest.fn();
+
+    await generateGeneratorDataFile({
+      getGenerateRowCount: () => ({ value: 2, errors: [] }),
+      createConfiguredGenerator: () => ({
+        generator: { generateHeadersArray: () => ['Name'], generateRow: () => ['Ada'] },
+      }),
+      getSelectedOutputType: () => 'csv',
+      exporter: {
+        canExport: () => true,
+        getFileExtensionFor: () => '.csv',
+        getDataTableAs: () => 'Name\nAda',
+      },
+      clearGenerationStatus: jest.fn(),
+      setGenerationButtonBusy: jest.fn(),
+      setGenerationStatus,
+      showGenerationLoadingStatus: jest.fn(),
+      getExportEncodingSettings: () => ({}),
+      buildDataTable: () => ({
+        __generatorFilename: 'generated-data.csv',
+        getRowCount: () => 1,
+      }),
+      DownloadClass: class FakeDownload {
+        constructor() {}
+        downloadFile() {}
+      },
+      surfacePageError: jest.fn(),
+      clearPageError: jest.fn(),
+      scheduleClearGenerationStatus: jest.fn(),
+      recordLastUsedSchema: jest.fn(() => Promise.reject(new Error('storage failed'))),
+    });
+
+    expect(setGenerationStatus).toHaveBeenCalledWith('Download ready: generated-data.csv');
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      'Failed to record last used schema.',
+      expect.objectContaining({ message: 'storage failed' })
+    );
+  });
+
+  test('generateGeneratorCombinationsDataFile records last used schema on success', async () => {
+    const recordLastUsedSchema = jest.fn();
+
+    await generateGeneratorCombinationsDataFile({
+      createConfiguredGenerator: () => ({
+        generator: { testDataRules: () => [{}, {}, {}] },
+      }),
+      countEnumColumns: () => 3,
+      getEnumValueCounts: () => [3, 2, 2],
+      getSelectedOutputType: () => 'csv',
+      exporter: {
+        canExport: () => true,
+        getFileExtensionFor: () => '.csv',
+        getDataTableAs: () => 'data',
+      },
+      clearGenerationStatus: jest.fn(),
+      setGenerationButtonBusy: jest.fn(),
+      setGenerationStatus: jest.fn(),
+      showGenerationLoadingStatus: jest.fn(),
+      buildCombinationsDataTable: () => ({
+        __generatorFilename: 'n-wise-combinations-data.csv',
+        getRowCount: () => 1,
+      }),
+      DownloadClass: class FakeDownload {
+        constructor() {}
+        downloadFile() {}
+      },
+      surfacePageError: jest.fn(),
+      clearPageError: jest.fn(),
+      scheduleClearGenerationStatus: jest.fn(),
+      selection: { strength: 2, algorithm: 'greedy' },
+      requestConfirm: jest.fn(async () => true),
+      recordLastUsedSchema,
+    });
+
+    expect(recordLastUsedSchema).toHaveBeenCalledTimes(1);
   });
 
   test('generateGeneratorCombinationsDataFile prompts before large cartesian runs and skips when cancelled', async () => {

@@ -26,6 +26,10 @@ describe('GeneratorControlsView', () => {
     return documentObj.querySelector('[data-role="generator-generate-pairwise-button"]');
   }
 
+  function getGenerateSchemaButton(documentObj) {
+    return documentObj.querySelector('[data-role="generate-schema-button"]');
+  }
+
   function getGeneratePairwiseButtonWrapper(documentObj) {
     return documentObj.querySelector('[data-role="generator-pairwise-button-wrapper"]');
   }
@@ -119,6 +123,7 @@ describe('GeneratorControlsView', () => {
     expect(dom.window.document.querySelector('[data-role="generator-generate-data-button"]')).not.toBeNull();
     expect(dom.window.document.querySelector('[data-role="generator-generate-pairwise-button"]')).not.toBeNull();
     expect(dom.window.document.querySelector('[data-role="generator-pairwise-button-wrapper"]')).not.toBeNull();
+    expect(getGenerateSchemaButton(dom.window.document)).toBeNull();
     expect(dom.window.document.querySelector('[data-role="generator-status-text"]')).not.toBeNull();
     expect(lineEndingSelect).not.toBeNull();
     expect(includeBomCheckbox).not.toBeNull();

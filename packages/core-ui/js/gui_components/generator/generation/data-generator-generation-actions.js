@@ -211,6 +211,7 @@ function previewGeneratorData({
   renderOutputPreviewForCurrentSelection,
   surfacePageError,
   clearPageError,
+  recordLastUsedSchema = () => null,
 }) {
   const rowCount = getPreviewRowCount();
   if (rowCount.errors.length > 0) {
@@ -228,6 +229,17 @@ function previewGeneratorData({
   clearPageError?.();
   setPreviewDataTable?.(dataTable);
   renderOutputPreviewForCurrentSelection();
+  Promise.resolve(recordLastUsedSchema?.()).catch((error) => {
+    console.error('Failed to record last used schema.', error);
+  });
+}
+
+async function recordLastUsedSchemaSafely(recordLastUsedSchema) {
+  try {
+    await Promise.resolve(recordLastUsedSchema?.());
+  } catch (error) {
+    console.error('Failed to record last used schema.', error);
+  }
 }
 
 async function generateGeneratorDataFile({
@@ -281,7 +293,7 @@ async function generateGeneratorDataFile({
       showGenerationLoadingStatus,
       exportEncodingSettings: getExportEncodingSettings?.(),
     });
-    await Promise.resolve(recordLastUsedSchema?.());
+    await recordLastUsedSchemaSafely(recordLastUsedSchema);
     setGenerationStatus(`Download ready: ${filename}`);
     scheduleClearGenerationStatus();
   } catch (error) {
@@ -349,7 +361,7 @@ async function generateGeneratorAllPairsDataFile({
       showGenerationLoadingStatus,
       exportEncodingSettings: getExportEncodingSettings?.(),
     });
-    await Promise.resolve(recordLastUsedSchema?.());
+    await recordLastUsedSchemaSafely(recordLastUsedSchema);
     setGenerationStatus(`Download ready: ${filename} (${dataTable.getRowCount()} combinations)`);
     scheduleClearGenerationStatus();
   } catch (error) {
@@ -438,7 +450,7 @@ async function generateGeneratorCombinationsDataFile({
       DownloadClass,
       showGenerationLoadingStatus,
     });
-    await Promise.resolve(recordLastUsedSchema?.());
+    await recordLastUsedSchemaSafely(recordLastUsedSchema);
     setGenerationStatus(`Download ready: ${filename} (${dataTable.getRowCount()} combinations)`);
     scheduleClearGenerationStatus();
   } catch (error) {

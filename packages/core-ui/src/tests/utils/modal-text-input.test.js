@@ -131,4 +131,22 @@ describe('createTextInputDialogComponent', () => {
     document.querySelector('[data-role="text-input-dialog-cancel"]').click();
     await expect(promise).resolves.toBeNull();
   });
+
+  test('applies an input maxlength when requested', async () => {
+    const component = createTextInputDialogComponent({
+      documentObj: document,
+    });
+
+    const promise = component.requestTextInput({
+      title: 'Schema Name',
+      initialValue: 'Short name',
+      maxLength: 50,
+    });
+
+    const input = document.querySelector('[data-role="text-input-dialog-field"]');
+    expect(input.getAttribute('maxlength')).toBe('50');
+
+    document.querySelector('[data-role="text-input-dialog-cancel"]').click();
+    await expect(promise).resolves.toBeNull();
+  });
 });

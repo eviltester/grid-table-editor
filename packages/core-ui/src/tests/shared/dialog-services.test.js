@@ -1,6 +1,8 @@
+import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
 import { createConfirmDialogService } from '../../../js/gui_components/shared/dialog-services/confirm-dialog-service.js';
 import { createTextInputDialogService } from '../../../js/gui_components/shared/dialog-services/text-input-dialog-service.js';
+import { createStoredSchemasDialogService } from '../../../js/gui_components/shared/dialog-services/stored-schemas-dialog-service.js';
 
 describe('dialog services', () => {
   let dom;
@@ -211,5 +213,58 @@ describe('dialog services', () => {
 
     await expect(resultPromise).resolves.toBeNull();
     expect(dom.window.document.getElementById('text-input-modal-backdrop')).toBeNull();
+  });
+
+  test('stored schemas dialog hides while delete confirmation is shown and restores afterwards', async () => {
+    const service = createStoredSchemasDialogService({ documentObj: dom.window.document, windowObj: dom.window });
+    const storage = {
+      loadSavedSchemas: () => ({
+        saved: [{ id: 'saved-1', name: 'Saved schema', schemaText: 'Name\nliteral(Ada)' }],
+      }),
+      deleteSavedSchema: jest.fn(() => ({ ok: true })),
+    };
+
+    await service.openStoredSchemasDialog({ storage });
+
+    const storedDialogBackdrop = dom.window.document.getElementById('stored-schemas-dialog-backdrop');
+    expect(storedDialogBackdrop.style.display).toBe('flex');
+
+    dom.window.document.querySelector('[data-action="delete"]').click();
+    expect(storedDialogBackdrop.style.display).toBe('none');
+    expect(dom.window.document.getElementById('confirm-modal-backdrop').style.display).toBe('flex');
+
+    dom.window.document.getElementById('confirm-modal-cancel').click();
+    await Promise.resolve();
+    expect(storedDialogBackdrop.style.display).toBe('flex');
+    expect(storage.deleteSavedSchema).not.toHaveBeenCalled();
+
+    dom.window.document.querySelector('[data-action="delete"]').click();
+    expect(storedDialogBackdrop.style.display).toBe('none');
+
+    dom.window.document.getElementById('confirm-modal-ok').click();
+    await Promise.resolve();
+    expect(storedDialogBackdrop.style.display).toBe('flex');
+    expect(storage.deleteSavedSchema).toHaveBeenCalledWith('saved-1');
+
+    service.destroy();
+  });
+
+  test('stored schemas dialog escapes saved schema names when rendering rows', async () => {
+    const service = createStoredSchemasDialogService({ documentObj: dom.window.document, windowObj: dom.window });
+    const maliciousName = '<img src=x onerror="window.__xss=true">Stored';
+    const storage = {
+      loadSavedSchemas: () => ({
+        saved: [{ id: 'saved-1', name: maliciousName, schemaText: 'Name\nliteral(Ada)' }],
+      }),
+    };
+
+    await service.openStoredSchemasDialog({ storage });
+
+    const row = dom.window.document.querySelector('[data-role="stored-schemas-dialog-row"]');
+    expect(row.textContent).toContain(maliciousName);
+    expect(row.querySelector('img')).toBeNull();
+    expect(dom.window.__xss).toBeUndefined();
+
+    service.destroy();
   });
 });

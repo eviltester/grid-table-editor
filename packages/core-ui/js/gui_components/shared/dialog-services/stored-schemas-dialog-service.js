@@ -29,12 +29,14 @@ function createStoredSchemasDialogService({ documentObj, windowObj } = {}) {
             refreshEntries();
           },
           onDelete: async (entry) => {
+            dialog?.hide?.();
             const shouldDelete = await confirmDialogService.requestConfirm({
               title: 'Delete Stored Schema',
               message: `Delete Stored Schema named ${entry.name}?`,
               okLabel: 'Delete',
               cancelLabel: 'Cancel',
             });
+            dialog?.show?.();
             if (!shouldDelete) {
               return;
             }
@@ -48,7 +50,7 @@ function createStoredSchemasDialogService({ documentObj, windowObj } = {}) {
           },
         },
       });
-      dialog.open((storage?.loadSavedSchemas?.().saved || []).slice());
+      dialog.open((storage?.loadSavedSchemas?.()?.saved || []).slice());
       return dialog;
     },
     destroy() {

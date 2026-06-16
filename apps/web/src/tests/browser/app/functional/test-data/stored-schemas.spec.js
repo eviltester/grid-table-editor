@@ -8,7 +8,8 @@ test.describe('Test Data Stored Schemas', () => {
 
     await appPage.testDataPanel.expand();
     await appPage.testDataPanel.setSchemaText('Draft Name\nliteral(Ada)\nDraft Status\nliteral(active)');
-    await page.waitForTimeout(450);
+    await appPage.testDataPanel.expandStoredSchemas();
+    await expect(appPage.testDataPanel.storedSchemasRecoverDraftButton).toBeEnabled();
 
     await appPage.goto();
     await appPage.testDataPanel.expand();

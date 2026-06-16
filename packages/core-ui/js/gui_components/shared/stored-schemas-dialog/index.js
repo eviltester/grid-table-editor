@@ -14,6 +14,12 @@ function createStoredSchemasDialogComponent({ documentObj, windowObj, callbacks 
     open(entries) {
       view.open(entries);
     },
+    show() {
+      view.show();
+    },
+    hide() {
+      view.hide();
+    },
     setEntries(entries) {
       view.setEntries(entries);
     },

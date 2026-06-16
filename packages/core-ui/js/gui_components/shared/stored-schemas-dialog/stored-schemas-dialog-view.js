@@ -1,5 +1,7 @@
 import { resolveDocumentObj, resolveWindowObj } from '../dom/default-objects.js';
+import { escapeHtml } from '../html-escape.js';
 import { buildPreviewText } from '../stored-schemas-manager/stored-schemas-manager-controller.js';
+import { MAX_STORED_SCHEMA_NAME_LENGTH } from '../stored-schemas/stored-schemas-storage.js';
 
 function ensureDialogElements(documentObj) {
   let backdrop = documentObj.getElementById('stored-schemas-dialog-backdrop');
@@ -81,7 +83,11 @@ class StoredSchemasDialogView {
       }
     };
     this.handleRenameInput = (event) => {
-      this.controller.setRenameValue(event.target?.value || '');
+      const truncatedValue = String(event.target?.value || '').slice(0, MAX_STORED_SCHEMA_NAME_LENGTH);
+      if (event.target) {
+        event.target.value = truncatedValue;
+      }
+      this.controller.setRenameValue(truncatedValue);
     };
     this.handleCloseClick = () => this.close();
   }
@@ -92,7 +98,7 @@ class StoredSchemasDialogView {
 
   open(entries = []) {
     this.controller.open(entries);
-    this.backdrop.style.display = 'flex';
+    this.show();
     this.render();
     this.backdrop.addEventListener('click', this.handleBackdropClick);
     this.getListElement()?.addEventListener('click', this.handleContainerClick);
@@ -114,29 +120,33 @@ class StoredSchemasDialogView {
     listElement.innerHTML = state.entries
       .map((entry) => {
         const isRenaming = state.renamingId === entry.id;
+        const escapedEntryId = escapeHtml(entry.id);
+        const escapedEntryName = escapeHtml(entry.name);
+        const escapedRenameValue = escapeHtml(state.renameValue);
+        const escapedPreviewText = escapeHtml(buildPreviewText(entry.schemaText) || 'No schema preview available.');
         return `
           <section class="stored-schemas-dialog__row" data-role="stored-schemas-dialog-row">
             <div class="stored-schemas-dialog__name">
               ${
                 isRenaming
-                  ? `<input type="text" aria-label="Rename ${entry.name}" data-role="stored-schemas-rename-input" value="${entry.name.replace(/"/g, '&quot;')}">`
-                  : `<strong>${entry.name}</strong>`
+                  ? `<input type="text" aria-label="Rename ${escapedEntryName}" data-role="stored-schemas-rename-input" maxlength="${MAX_STORED_SCHEMA_NAME_LENGTH}" value="${escapedRenameValue}">`
+                  : `<strong>${escapedEntryName}</strong>`
               }
               <span
                 class="helpicon"
                 data-help-role="option-help-icon"
                 data-role="stored-schemas-dialog-preview"
-                data-help-text="${buildPreviewText(entry.schemaText) || 'No schema preview available.'}"></span>
+                data-help-text="${escapedPreviewText}"></span>
             </div>
             <div class="stored-schemas-dialog__actions">
-              <button type="button" data-action="load" data-id="${entry.id}">Load</button>
+              <button type="button" data-action="load" data-id="${escapedEntryId}">Load</button>
               ${
                 isRenaming
-                  ? `<button type="button" data-action="apply-rename" data-id="${entry.id}">Apply</button>
-                     <button type="button" data-action="cancel-rename" data-id="${entry.id}">Cancel</button>`
-                  : `<button type="button" data-action="rename" data-id="${entry.id}">Rename</button>`
+                  ? `<button type="button" data-action="apply-rename" data-id="${escapedEntryId}">Apply</button>
+                     <button type="button" data-action="cancel-rename" data-id="${escapedEntryId}">Cancel</button>`
+                  : `<button type="button" data-action="rename" data-id="${escapedEntryId}">Rename</button>`
               }
-              <button type="button" data-action="delete" data-id="${entry.id}">Delete</button>
+              <button type="button" data-action="delete" data-id="${escapedEntryId}">Delete</button>
             </div>
           </section>
         `;
@@ -150,6 +160,14 @@ class StoredSchemasDialogView {
     this.render();
   }
 
+  show() {
+    this.backdrop.style.display = 'flex';
+  }
+
+  hide() {
+    this.backdrop.style.display = 'none';
+  }
+
   close() {
     this.controller.close();
     this.backdrop.removeEventListener('click', this.handleBackdropClick);
@@ -158,7 +176,7 @@ class StoredSchemasDialogView {
     this.backdrop
       .querySelector('[data-role="stored-schemas-dialog-close"]')
       ?.removeEventListener('click', this.handleCloseClick);
-    this.backdrop.style.display = 'none';
+    this.hide();
   }
 
   destroy() {

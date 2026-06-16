@@ -2,6 +2,7 @@ const STORED_SCHEMAS_STORAGE_KEY = 'anywaydata:stored-schemas:v1';
 const STORED_SCHEMAS_VERSION = 1;
 const MAX_SAVED_SCHEMAS = 50;
 const MAX_LAST_USED_SCHEMAS = 10;
+const MAX_STORED_SCHEMA_NAME_LENGTH = 50;
 
 function getDefaultStorageState() {
   return {
@@ -26,7 +27,7 @@ function sanitizeEntry(entry, fallbackName = 'stored schema') {
   }
   return {
     id: String(entry.id || createEntryId()),
-    name: String(entry.name || fallbackName),
+    name: normalizeName(entry.name, fallbackName),
     schemaText,
     updatedAt: String(entry.updatedAt || new Date().toISOString()),
   };
@@ -53,7 +54,9 @@ function sanitizeState(rawState) {
 }
 
 function normalizeName(name, fallbackName) {
-  const normalized = String(name || '').trim();
+  const normalized = String(name || '')
+    .trim()
+    .slice(0, MAX_STORED_SCHEMA_NAME_LENGTH);
   return normalized || fallbackName;
 }
 
@@ -82,6 +85,7 @@ function createStoredSchemasStorage({
         errorMessage: '',
       };
     } catch {
+      storage?.removeItem?.(storageKey);
       return {
         ok: false,
         state: getDefaultStorageState(),
@@ -180,12 +184,13 @@ function createStoredSchemasStorage({
       };
     }
     const readResult = readState();
+    const timestamp = now();
     const previousEntries = readResult.state.lastUsed.filter((entry) => entry.schemaText !== normalizedText);
     const nextEntry = {
       id: readResult.state.lastUsed.find((entry) => entry.schemaText === normalizedText)?.id || createId(),
-      name: `last used - ${now()}`,
+      name: `last used - ${timestamp}`,
       schemaText: normalizedText,
-      updatedAt: now(),
+      updatedAt: timestamp,
     };
     const nextState = {
       ...readResult.state,
@@ -287,6 +292,7 @@ function createStoredSchemasStorage({
   return {
     MAX_SAVED_SCHEMAS,
     MAX_LAST_USED_SCHEMAS,
+    MAX_STORED_SCHEMA_NAME_LENGTH,
     STORED_SCHEMAS_STORAGE_KEY,
     getSummaryState,
     saveDraft,
@@ -300,4 +306,10 @@ function createStoredSchemasStorage({
   };
 }
 
-export { STORED_SCHEMAS_STORAGE_KEY, MAX_SAVED_SCHEMAS, MAX_LAST_USED_SCHEMAS, createStoredSchemasStorage };
+export {
+  STORED_SCHEMAS_STORAGE_KEY,
+  MAX_SAVED_SCHEMAS,
+  MAX_LAST_USED_SCHEMAS,
+  MAX_STORED_SCHEMA_NAME_LENGTH,
+  createStoredSchemasStorage,
+};

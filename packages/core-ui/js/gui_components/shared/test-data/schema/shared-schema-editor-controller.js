@@ -105,8 +105,11 @@ function createSharedSchemaEditorController({
     updateHelpHints?.();
   };
 
+  const getCurrentSchemaText = () =>
+    session.getTextMode() ? String(getTextElement()?.value || '') : composeSchemaText();
+
   const emitSchemaTextChanged = () => {
-    onSchemaTextChanged?.(composeSchemaText());
+    onSchemaTextChanged?.(getCurrentSchemaText());
   };
 
   const setSchemaError = (message) => {
@@ -415,6 +418,7 @@ function createSharedSchemaEditorController({
         setSchemaError(schemaErrorsToText(parsed.errors));
       }
       onSchemaParseError?.(parsed.errors);
+      emitSchemaTextChanged();
       return parsed;
     }
     clearSchemaError();
@@ -471,7 +475,6 @@ function createSharedSchemaEditorController({
     session.setConstraintText(constraintText);
     updateConstraintsView();
     syncTextFromRows();
-    emitSchemaTextChanged();
     return { rows: session.getRows(), errors: [], tokens: session.getTokens(), constraints: session.getConstraints() };
   };
 
@@ -770,7 +773,6 @@ function createSharedSchemaEditorController({
     renderRows();
     syncTextFromRows();
     updateModeView();
-    emitSchemaTextChanged();
     return validation;
   };
 
@@ -788,8 +790,6 @@ function createSharedSchemaEditorController({
       updateModeView();
       renderRows();
       syncTextFromRows();
-    } else {
-      emitSchemaTextChanged();
     }
     return { rows: session.getRows(), errors: [], tokens: session.getTokens() };
   };

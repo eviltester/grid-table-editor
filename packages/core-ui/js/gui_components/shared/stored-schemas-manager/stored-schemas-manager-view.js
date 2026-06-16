@@ -1,4 +1,6 @@
 import { resolveDocumentObj, resolveWindowObj } from '../dom/default-objects.js';
+import { escapeHtml } from '../html-escape.js';
+import { MAX_STORED_SCHEMA_NAME_LENGTH } from '../stored-schemas/stored-schemas-storage.js';
 
 class StoredSchemasManagerView {
   constructor({ root, controller, documentObj, windowObj, services = {}, callbacks = {} } = {}) {
@@ -21,6 +23,7 @@ class StoredSchemasManagerView {
         initialValue: '',
         okLabel: 'Save Schema',
         cancelLabel: 'Cancel',
+        maxLength: MAX_STORED_SCHEMA_NAME_LENGTH,
       });
       if (requestedName === null) {
         return;
@@ -29,8 +32,6 @@ class StoredSchemasManagerView {
       this.refreshFromStorage(result?.errorMessage || '');
       if (result?.ok) {
         this.callbacks.onStatus?.(`Saved schema "${result.entry?.name || requestedName}".`, { dismissable: true });
-      } else if (result?.errorMessage) {
-        this.callbacks.onStatus?.(result.errorMessage, { severity: 'error', dismissable: true });
       }
     };
     this.handleRecoverDraftClick = () => {
@@ -54,8 +55,6 @@ class StoredSchemasManagerView {
       this.refreshFromStorage(result?.errorMessage || '');
       if (result?.ok) {
         this.callbacks.onStatus?.('Cleared last used schemas.', { dismissable: true });
-      } else if (result?.errorMessage) {
-        this.callbacks.onStatus?.(result.errorMessage, { severity: 'error', dismissable: true });
       }
     };
     this.handleLoadSavedClick = async () => {
@@ -165,12 +164,12 @@ class StoredSchemasManagerView {
       openSavedDialogButton.disabled = viewModel.loadSavedDisabled;
     }
     if (draftPreview) {
-      draftPreview.setAttribute('data-help-text', viewModel.recoverDraftPreview || 'No draft saved yet.');
+      draftPreview.setAttribute('data-help-text', escapeHtml(viewModel.recoverDraftPreview || 'No draft saved yet.'));
     }
     if (lastUsedPreview) {
       lastUsedPreview.setAttribute(
         'data-help-text',
-        viewModel.selectedLastUsedPreview || 'No last used schema selected.'
+        escapeHtml(viewModel.selectedLastUsedPreview || 'No last used schema selected.')
       );
     }
     if (lastUsedSelect) {

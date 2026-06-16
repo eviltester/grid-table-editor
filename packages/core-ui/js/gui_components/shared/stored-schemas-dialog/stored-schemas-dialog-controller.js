@@ -1,3 +1,5 @@
+import { MAX_STORED_SCHEMA_NAME_LENGTH } from '../stored-schemas/stored-schemas-storage.js';
+
 class StoredSchemasDialogController {
   constructor() {
     this.state = {
@@ -33,11 +35,11 @@ class StoredSchemasDialogController {
 
   startRename(id, currentName) {
     this.state.renamingId = id;
-    this.state.renameValue = currentName || '';
+    this.state.renameValue = String(currentName || '').slice(0, MAX_STORED_SCHEMA_NAME_LENGTH);
   }
 
   setRenameValue(value) {
-    this.state.renameValue = String(value || '');
+    this.state.renameValue = String(value || '').slice(0, MAX_STORED_SCHEMA_NAME_LENGTH);
   }
 
   cancelRename() {

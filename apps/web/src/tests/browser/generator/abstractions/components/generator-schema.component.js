@@ -104,16 +104,34 @@ class GeneratorSchemaComponent {
     await expect(this.storedSchemasDialog).toBeVisible();
   }
 
+  getSavedSchemaRows() {
+    return this.storedSchemasDialog.locator('[data-role="stored-schemas-dialog-row"]');
+  }
+
+  async getSavedSchemaRowByExactName(name) {
+    const rows = await this.getSavedSchemaRows().all();
+    const matchingRows = [];
+
+    for (const row of rows) {
+      if ((await row.locator('strong').innerText()).trim() === name) {
+        matchingRows.push(row);
+      }
+    }
+
+    expect(matchingRows).toHaveLength(1);
+    return matchingRows[0];
+  }
+
   async loadSavedSchemaByName(name) {
     await this.openSavedSchemasDialog();
-    const row = this.storedSchemasDialog.locator('[data-role="stored-schemas-dialog-row"]').filter({ hasText: name });
+    const row = await this.getSavedSchemaRowByExactName(name);
     await row.getByRole('button', { name: 'Load' }).click();
     await expect(this.storedSchemasDialog).toBeHidden();
   }
 
   async renameSavedSchema(name, nextName) {
     await this.openSavedSchemasDialog();
-    const row = this.storedSchemasDialog.locator('[data-role="stored-schemas-dialog-row"]').filter({ hasText: name });
+    const row = await this.getSavedSchemaRowByExactName(name);
     await row.getByRole('button', { name: 'Rename' }).click();
     await row.getByRole('textbox').fill(nextName);
     await row.getByRole('button', { name: 'Apply' }).click();
@@ -121,7 +139,7 @@ class GeneratorSchemaComponent {
 
   async deleteSavedSchema(name) {
     await this.openSavedSchemasDialog();
-    const row = this.storedSchemasDialog.locator('[data-role="stored-schemas-dialog-row"]').filter({ hasText: name });
+    const row = await this.getSavedSchemaRowByExactName(name);
     await row.getByRole('button', { name: 'Delete' }).click();
     await this.confirmDialog.confirm({ confirmLabel: /delete/i });
   }

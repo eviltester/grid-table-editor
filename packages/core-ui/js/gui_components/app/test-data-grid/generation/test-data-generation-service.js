@@ -71,6 +71,14 @@ function createTestDataGenerationService({
     return validateCurrentSchemaRows?.(options) || { errors: [], rows: [] };
   }
 
+  async function recordLastUsedSchemaSafely() {
+    try {
+      await Promise.resolve(recordLastUsedSchema?.());
+    } catch (error) {
+      console.error('Failed to record last used schema.', error);
+    }
+  }
+
   function createGeneratorFromSchemaRows(schemaRows) {
     return createConfiguredGeneratorFromSchemaRows({
       schemaRows,
@@ -328,7 +336,7 @@ function createTestDataGenerationService({
       }
 
       const previewUpdated = await syncTextPreviewFromGrid();
-      await Promise.resolve(recordLastUsedSchema?.());
+      await recordLastUsedSchemaSafely();
       setTestDataStatus(
         `Generated ${dataTable.getRowCount()} pairwise combinations. ${
           previewUpdated ? 'Grid and preview updated.' : 'Grid updated.'
@@ -427,7 +435,7 @@ function createTestDataGenerationService({
       await Promise.resolve(getImporter().setGridFromGenericDataTable(dataTable));
 
       const previewUpdated = await syncTextPreviewFromGrid();
-      await Promise.resolve(recordLastUsedSchema?.());
+      await recordLastUsedSchemaSafely();
       setTestDataStatus(
         `Generated ${dataTable.getRowCount()} ${strength}-wise combinations. ${
           previewUpdated ? 'Grid and preview updated.' : 'Grid updated.'
@@ -587,7 +595,7 @@ function createTestDataGenerationService({
       }
 
       const previewUpdated = await syncTextPreviewFromGrid();
-      await Promise.resolve(recordLastUsedSchema?.());
+      await recordLastUsedSchemaSafely();
       if (constraintImpactMessage) {
         setTestDataStatus(
           `${constraintImpactMessage} ${previewUpdated ? 'Grid and preview updated.' : 'Grid updated.'}`,

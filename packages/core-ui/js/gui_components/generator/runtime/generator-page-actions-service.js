@@ -65,6 +65,7 @@ function createGeneratorPageActionsService({
           getResolvedViewState()?.renderOutputPreviewForCurrentSelection?.(),
         surfacePageError: (message, options) => getResolvedSchemaRuntime()?.surfacePageError?.(message, options),
         clearPageError: () => getResolvedSchemaRuntime()?.clearSchemaErrorStatus?.(),
+        recordLastUsedSchema: () => runtime?.generatorPage?.recordCurrentSchemaAsLastUsed?.(),
       });
     },
 

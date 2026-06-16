@@ -38,6 +38,14 @@ class GeneratorSchemaComponent {
     await this.editor.setSchemaText(schemaText, { ensureTextMode: true });
   }
 
+  async loadSchemaFile(file) {
+    await this.editor.loadSchemaFile(file);
+  }
+
+  async saveSchemaFileAndWaitForDownload() {
+    return this.editor.saveSchemaFileAndWaitForDownload();
+  }
+
   async addField() {
     await this.editor.addField();
   }

@@ -92,4 +92,56 @@ describe('SharedSchemaDefinitionController', () => {
       tokens: [],
     });
   });
+
+  test('saveSchemaToFile forwards schema text through the shared file transfer service', () => {
+    const schemaFileTransferService = {
+      downloadSchemaText: jest.fn(() => true),
+    };
+    const controller = new SharedSchemaDefinitionController({
+      props: {
+        schemaFileName: 'writer-schema.txt',
+      },
+      services: {
+        schemaFileTransferService,
+      },
+    });
+    controller.schemaEditor = {
+      getSchemaText: jest.fn(() => 'Field\nliteral(value)'),
+    };
+
+    const result = controller.saveSchemaToFile();
+
+    expect(result).toBe(true);
+    expect(schemaFileTransferService.downloadSchemaText).toHaveBeenCalledWith('Field\nliteral(value)', {
+      filename: 'writer-schema.txt',
+    });
+  });
+
+  test('loadSchemaFromFile reads text through the shared file transfer service and applies it through the editor', async () => {
+    const schemaFileTransferService = {
+      readSchemaTextFile: jest.fn(async () => 'Loaded Name\nliteral(Ada)'),
+    };
+    const controller = new SharedSchemaDefinitionController({
+      services: {
+        schemaFileTransferService,
+      },
+    });
+    controller.schemaEditor = {
+      loadSchemaText: jest.fn(() => ({ rows: [{ name: 'Loaded Name' }], errors: [], applied: true })),
+      getState: jest.fn(() => ({ rows: [], tokens: [], isTextMode: false })),
+    };
+
+    const result = await controller.loadSchemaFromFile({ name: 'schema.txt' });
+
+    expect(schemaFileTransferService.readSchemaTextFile).toHaveBeenCalledWith({ name: 'schema.txt' });
+    expect(controller.schemaEditor.loadSchemaText).toHaveBeenCalledWith('Loaded Name\nliteral(Ada)', {
+      showErrors: true,
+      preferRowMode: true,
+    });
+    expect(result).toEqual({
+      rows: [{ name: 'Loaded Name' }],
+      errors: [],
+      applied: true,
+    });
+  });
 });

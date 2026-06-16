@@ -194,6 +194,14 @@ class TestDataPanelComponent {
     await this.schemaEditor.setSchemaText(specText, { ensureTextMode: true, pressTab: true, waitMs: 1200 });
   }
 
+  async loadSchemaFile(file) {
+    await this.schemaEditor.loadSchemaFile(file);
+  }
+
+  async saveSchemaFileAndWaitForDownload() {
+    return this.schemaEditor.saveSchemaFileAndWaitForDownload();
+  }
+
   async setSchemaTextMode(enabled) {
     await this.schemaEditor.setTextMode(Boolean(enabled));
   }

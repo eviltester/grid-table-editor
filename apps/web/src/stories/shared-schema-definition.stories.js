@@ -134,6 +134,7 @@ function renderSharedSchemaDefinitionStory(args) {
         }
       },
     },
+    services: args.services || {},
     documentObj: document,
   });
 
@@ -203,6 +204,7 @@ const meta = {
     showErrors: false,
     startInTextMode: false,
     storyMinHeight: 'auto',
+    services: {},
   },
 };
 
@@ -221,10 +223,63 @@ export const EmptySchema = {
   play: async ({ canvasElement }) => {
     expectSchemaModeVisible(canvasElement);
     expect(within(canvasElement).getAllByPlaceholderText('Column Name')).toHaveLength(1);
+    expect(within(canvasElement).getByRole('button', { name: /load schema file/i })).toBeVisible();
+    expect(within(canvasElement).getByRole('button', { name: /save schema file/i })).toBeVisible();
     const helpIcon = canvasElement.querySelector('[data-role="schema-mode-help"]');
     await userEvent.hover(helpIcon);
     await expectSchemaHelpContent(helpIcon, { helpHeadingText: 'Edit as Text' });
     await userEvent.unhover(helpIcon);
+  },
+};
+
+export const LoadSchemaFile = {
+  render: renderSharedSchemaDefinitionStory,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Loads schema text from a plain text file through the shared file input control. Upload a schema text file and confirm the shared editor switches back to row mode with the parsed fields visible.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const fileInput = canvasElement.querySelector('[data-role="schema-file-input"]');
+    const file = new File(['Loaded Name\nliteral(Ada)\nLoaded Status\nliteral(active)'], 'schema.txt', {
+      type: 'text/plain',
+    });
+
+    await userEvent.upload(fileInput, file);
+
+    await waitFor(() => {
+      expect(canvasElement.querySelectorAll('.shared-schema-row').length).toBeGreaterThan(1);
+    });
+    expect(await within(canvasElement).findByDisplayValue('Loaded Name')).toBeVisible();
+    expect(await within(canvasElement).findByDisplayValue('Loaded Status')).toBeVisible();
+  },
+};
+
+export const InvalidSchemaFile = {
+  render: renderSharedSchemaDefinitionStory,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Invalid file-load state. This story documents how the shared schema error surface reports parsing problems when a loaded file does not match the supported plain schema text format.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const fileInput = canvasElement.querySelector('[data-role="schema-file-input"]');
+    const file = new File(['OnlyName'], 'broken-schema.txt', {
+      type: 'text/plain',
+    });
+
+    await userEvent.upload(fileInput, file);
+
+    await waitFor(() => {
+      expect((canvasElement.querySelector('[data-role="schema-error"]')?.textContent || '').length).toBeGreaterThan(0);
+    });
+    expect(canvasElement.querySelector('[data-role="schema-text-region"]')).toBeVisible();
   },
 };
 

@@ -522,6 +522,35 @@ function createSharedSchemaEditorController({
     }
   };
 
+  const loadSchemaText = (schemaText, { showErrors = true, preferRowMode = true } = {}) => {
+    const textArea = getTextElement();
+    if (textArea) {
+      textArea.value = String(schemaText ?? '');
+    }
+
+    session.setTextMode(true);
+    updateModeView();
+    const parsed = syncFromText({ showErrors, force: true });
+    if (parsed?.errors?.length > 0) {
+      return { ...parsed, applied: false };
+    }
+
+    if (preferRowMode) {
+      session.setTextMode(false);
+      updateModeView();
+      applySemanticValidationForAllRows();
+    } else {
+      updateModeView();
+    }
+
+    return {
+      rows: session.getRows(),
+      errors: [],
+      tokens: session.getTokens(),
+      applied: true,
+    };
+  };
+
   const handleInput = (event) => {
     const rowElem = event?.target?.closest?.(SHARED_SCHEMA_ROW_SELECTOR);
     const rowId = rowElem?.getAttribute?.('data-row-id');
@@ -776,24 +805,6 @@ function createSharedSchemaEditorController({
     return validation;
   };
 
-  const loadSchemaText = (schemaText, { showErrors = true } = {}) => {
-    const textElement = getTextElement();
-    const normalizedText = String(schemaText || '');
-    if (textElement) {
-      textElement.value = normalizedText;
-    }
-    const parsed = syncFromText({ showErrors, force: true });
-    if (parsed?.errors?.length > 0) {
-      return parsed;
-    }
-    if (!session.getTextMode()) {
-      updateModeView();
-      renderRows();
-      syncTextFromRows();
-    }
-    return { rows: session.getRows(), errors: [], tokens: session.getTokens() };
-  };
-
   const init = () => {
     if (session.getRows().length === 0) {
       session.addRowAfterIndex(-1);
@@ -819,12 +830,12 @@ function createSharedSchemaEditorController({
     handleDragEnd,
     toggleMode,
     insertSampleSchema,
+    loadSchemaText,
     parseTextToRows: (schemaText) => session.parseTextToRows(schemaText),
     syncFromText,
     validateRows: () => revalidateRows(),
     handleFocusOut,
     syncTextFromRows,
-    loadSchemaText,
     getSchemaText: () => composeSchemaText(),
     syncConstraintsFromEditor,
     addRow,

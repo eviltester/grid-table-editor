@@ -2,9 +2,12 @@ import { SharedSchemaDefinitionController } from './shared-schema-definition-con
 import { SharedSchemaDefinitionView } from './shared-schema-definition-view.js';
 import { createUpdateHelpHints } from '../../../help/help-tooltips.js';
 import { resolveDocumentObj } from '../dom/default-objects.js';
+import { createSchemaFileTransferService } from '../schema-file-transfer-service.js';
 
-function createSharedSchemaDefinitionComponent({ root, props = {}, callbacks = {}, documentObj } = {}) {
+function createSharedSchemaDefinitionComponent({ root, props = {}, callbacks = {}, services = {}, documentObj } = {}) {
   const resolvedDocumentObj = resolveDocumentObj(documentObj, root);
+  const schemaFileTransferService =
+    services.schemaFileTransferService || createSchemaFileTransferService({ documentObj: resolvedDocumentObj });
   const controller = new SharedSchemaDefinitionController({
     props: {
       ...props,
@@ -12,6 +15,9 @@ function createSharedSchemaDefinitionComponent({ root, props = {}, callbacks = {
       updateHelpHints: props.updateHelpHints || createUpdateHelpHints(resolvedDocumentObj, root),
     },
     callbacks,
+    services: {
+      schemaFileTransferService,
+    },
     documentObj: resolvedDocumentObj,
   });
   const view = new SharedSchemaDefinitionView({
@@ -51,9 +57,6 @@ function createSharedSchemaDefinitionComponent({ root, props = {}, callbacks = {
     getSchemaText() {
       return controller.getSchemaText();
     },
-    loadSchemaText(schemaText, options) {
-      return controller.loadSchemaText(schemaText, options);
-    },
     addRow() {
       return controller.addRow();
     },
@@ -86,6 +89,15 @@ function createSharedSchemaDefinitionComponent({ root, props = {}, callbacks = {
     },
     setTextMode(isTextMode) {
       return controller.setTextMode(isTextMode);
+    },
+    loadSchemaFromFile(file) {
+      return controller.loadSchemaFromFile(file);
+    },
+    loadSchemaText(schemaText, options) {
+      return controller.loadSchemaText(schemaText, options);
+    },
+    saveSchemaToFile(options) {
+      return controller.saveSchemaToFile(options);
     },
     getState() {
       return controller.getState();

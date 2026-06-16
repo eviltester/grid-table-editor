@@ -1,7 +1,4 @@
 import {
-  buildPreviewDataTable,
-  buildPairwiseDataTable,
-  buildCombinationsDataTable,
   previewGeneratorData,
   generateGeneratorDataFile,
   generateGeneratorAllPairsDataFile,
@@ -14,8 +11,6 @@ import { createConfirmDialogService } from '../../shared/dialog-services/confirm
 function createGeneratorPageActionsService({
   runtime,
   DownloadClass,
-  faker,
-  RandExp,
   createCombinationsDialog = createCombinationsDialogComponent,
 } = {}) {
   const confirmDialogService = createConfirmDialogService({ documentObj: runtime?.documentObj });
@@ -58,8 +53,7 @@ function createGeneratorPageActionsService({
     previewData() {
       return previewGeneratorData({
         getPreviewRowCount: () => getResolvedViewState()?.getPreviewRowCount?.(),
-        createConfiguredGenerator: () => getResolvedSchemaGenerationService()?.createConfiguredGenerator?.(),
-        buildDataTable: (generator, rowCount) => buildPreviewDataTable({ generator, rowCount }),
+        schemaGenerationService: getResolvedSchemaGenerationService(),
         setPreviewDataTable: (dataTable) => getResolvedViewState()?.setPreviewDataTable?.(dataTable),
         renderOutputPreviewForCurrentSelection: () =>
           getResolvedViewState()?.renderOutputPreviewForCurrentSelection?.(),
@@ -72,7 +66,7 @@ function createGeneratorPageActionsService({
     async generateDataFile() {
       await generateGeneratorDataFile({
         getGenerateRowCount: () => getResolvedViewState()?.getGenerateRowCount?.(),
-        createConfiguredGenerator: () => getResolvedSchemaGenerationService()?.createConfiguredGenerator?.(),
+        schemaGenerationService: getResolvedSchemaGenerationService(),
         getSelectedOutputType: () => getResolvedViewState()?.getSelectedOutputType?.(),
         exporter: runtime?.exporter,
         clearGenerationStatus: () => getResolvedViewState()?.clearGenerationStatus?.(),
@@ -80,7 +74,6 @@ function createGeneratorPageActionsService({
         setGenerationStatus: (message, options) => getResolvedViewState()?.setGenerationStatus?.(message, options),
         showGenerationLoadingStatus: (message) => getResolvedViewState()?.showGenerationLoadingStatus?.(message),
         getExportEncodingSettings: () => getResolvedViewState()?.getExportEncodingSettings?.(),
-        buildDataTable: (generator, rowCount) => buildPreviewDataTable({ generator, rowCount }),
         DownloadClass,
         surfacePageError: (message, options) => getResolvedSchemaRuntime()?.surfacePageError?.(message, options),
         clearPageError: () => getResolvedSchemaRuntime()?.clearSchemaErrorStatus?.(),
@@ -91,8 +84,7 @@ function createGeneratorPageActionsService({
 
     async generateAllPairsDataFile() {
       await generateGeneratorAllPairsDataFile({
-        createConfiguredGenerator: () => getResolvedSchemaGenerationService()?.createConfiguredGenerator?.(),
-        countEnumColumns: () => getResolvedSchemaGenerationService()?.countEnumColumns?.() || 0,
+        schemaGenerationService: getResolvedSchemaGenerationService(),
         getSelectedOutputType: () => getResolvedViewState()?.getSelectedOutputType?.(),
         exporter: runtime?.exporter,
         clearGenerationStatus: () => getResolvedViewState()?.clearGenerationStatus?.(),
@@ -100,12 +92,6 @@ function createGeneratorPageActionsService({
         setGenerationStatus: (message, options) => getResolvedViewState()?.setGenerationStatus?.(message, options),
         showGenerationLoadingStatus: (message) => getResolvedViewState()?.showGenerationLoadingStatus?.(message),
         getExportEncodingSettings: () => getResolvedViewState()?.getExportEncodingSettings?.(),
-        buildAllPairsDataTable: (generator) =>
-          buildPairwiseDataTable({
-            generator,
-            faker,
-            RandExp,
-          }),
         DownloadClass,
         surfacePageError: (message, options) => getResolvedSchemaRuntime()?.surfacePageError?.(message, options),
         clearPageError: () => getResolvedSchemaRuntime()?.clearSchemaErrorStatus?.(),
@@ -115,8 +101,10 @@ function createGeneratorPageActionsService({
     },
 
     openGenerateCombinationsDialog() {
-      const enumColumnCount = getResolvedSchemaGenerationService()?.countEnumColumns?.() || 0;
-      const enumValueCounts = getResolvedSchemaGenerationService()?.getEnumValueCounts?.() || [];
+      const { enumColumnCount, enumValueCounts } = getResolvedSchemaGenerationService()?.getCombinationInput?.() || {
+        enumColumnCount: 0,
+        enumValueCounts: [],
+      };
       if (enumColumnCount < 2) {
         getResolvedSchemaRuntime()?.surfacePageError?.(
           'Combination generation requires at least 2 enum columns because n-wise generation combines finite enum values.'
@@ -129,22 +117,13 @@ function createGeneratorPageActionsService({
 
     async generateCombinationsDataFile(selection) {
       await generateGeneratorCombinationsDataFile({
-        createConfiguredGenerator: () => getResolvedSchemaGenerationService()?.createConfiguredGenerator?.(),
-        countEnumColumns: () => getResolvedSchemaGenerationService()?.countEnumColumns?.() || 0,
-        getEnumValueCounts: () => getResolvedSchemaGenerationService()?.getEnumValueCounts?.() || [],
+        schemaGenerationService: getResolvedSchemaGenerationService(),
         getSelectedOutputType: () => getResolvedViewState()?.getSelectedOutputType?.(),
         exporter: runtime?.exporter,
         clearGenerationStatus: () => getResolvedViewState()?.clearGenerationStatus?.(),
         setGenerationButtonBusy: (isBusy) => getResolvedViewState()?.setGenerationButtonsBusy?.(isBusy),
         setGenerationStatus: (message, options) => getResolvedViewState()?.setGenerationStatus?.(message, options),
         showGenerationLoadingStatus: (message) => getResolvedViewState()?.showGenerationLoadingStatus?.(message),
-        buildCombinationsDataTable: (generator, options) =>
-          buildCombinationsDataTable({
-            generator,
-            faker,
-            RandExp,
-            options,
-          }),
         DownloadClass,
         surfacePageError: (message, options) => getResolvedSchemaRuntime()?.surfacePageError?.(message, options),
         clearPageError: () => getResolvedSchemaRuntime()?.clearSchemaErrorStatus?.(),

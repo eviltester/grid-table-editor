@@ -14,6 +14,16 @@ describe('ui-derived-state', () => {
     expect(isNWiseEligibleForSchemaRows(rows)).toBe(true);
   });
 
+  test('treats domain datatype.enum rows as enum-capable for n-wise eligibility', () => {
+    const rows = [
+      { sourceType: 'domain', command: 'datatype.enum', params: 'active,inactive,pending' },
+      { sourceType: 'enum', value: 'enum(high,low)' },
+    ];
+
+    expect(countEnumSchemaRows(rows)).toBe(2);
+    expect(isNWiseEligibleForSchemaRows(rows)).toBe(true);
+  });
+
   test('checks pairwise eligibility from parsed rules', () => {
     expect(isPairwiseEligibleForDataRules([{ type: 'enum' }, { type: 'regex' }])).toBe(false);
     expect(isPairwiseEligibleForDataRules([{ type: 'enum' }, { type: 'enum' }])).toBe(true);

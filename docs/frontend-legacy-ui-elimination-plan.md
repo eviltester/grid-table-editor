@@ -125,7 +125,7 @@ Active production blockers assigned to Phase 3:
 Active production blockers assigned to Phase 4:
 
 - `packages/core-ui/js/gui_components/generator/runtime/create-generator-page.js` / `generator-page-service.js`: the old generator page coordinator gap is now much smaller, but the page-level orchestration cluster should still be re-audited if new behavior starts accumulating there again.
-- `packages/core-ui/js/gui_components/generator/generation/data-generator-generation-actions.js`: the old page-level DOM-id parsing blocker has been cleared. Generation helpers now consume explicit row-count/runtime contracts and pairwise eligibility helpers, leaving the remaining Phase 4 work centered on the top-level runtime shell instead of the generation helper layer.
+- `packages/core-ui/js/gui_components/generator/generation/data-generator-generation-actions.js`: the old page-level DOM-id parsing blocker has been cleared. Generation helpers now consume explicit row-count/runtime contracts and pairwise eligibility helpers, and row generation / pairwise / n-wise / buffered amend execution now flow through the shared `shared/test-data/generation/ui-generation-session-service.js` boundary used by both the app and generator shells. Remaining Phase 4 work is now limited to page-shell/runtime orchestration rather than duplicate generation execution paths.
 
 Compatibility and grid work assigned to Phase 5:
 
@@ -555,5 +555,4 @@ Exit criteria:
 - Update this document whenever new legacy work is discovered.
 - Add unchecked follow-up items immediately when a phase reveals more work.
 - Treat a feature as incomplete if the componentized shell still delegates core behavior to a legacy control.
-
 

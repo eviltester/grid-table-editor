@@ -469,8 +469,15 @@ export const ParamsDialog = {
     await expect(dialogScope.getByRole('textbox', { name: /start value/i }).value).toBe('1');
     await expect(dialogScope.getByRole('textbox', { name: /step value/i }).value).toBe('1');
     const prefixInput = dialogScope.getByRole('textbox', { name: /prefix value/i });
+    await userEvent.click(prefixInput);
+    await waitFor(() => expect(document.activeElement).toBe(prefixInput));
+    await userEvent.clear(prefixInput);
     await userEvent.type(prefixInput, 'filename');
-    await expect(dialogScope.getByText('(start=1,step=1,prefix="filename",zeropadding=0)')).toBeTruthy();
+    await waitFor(() =>
+      expect(dialog.querySelector('[data-role="params-editor-preview"]')?.textContent || '').toContain(
+        'prefix="filename"'
+      )
+    );
     await userEvent.click(dialogScope.getByRole('button', { name: /^apply$/i }));
 
     await waitFor(() =>

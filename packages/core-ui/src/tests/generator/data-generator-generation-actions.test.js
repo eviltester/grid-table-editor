@@ -4,6 +4,7 @@ import { createGeneratorSchemaGenerationService } from '../../../js/gui_componen
 import {
   generateGeneratorCombinationsDataFile,
   generateGeneratorDataFile,
+  generateGeneratorAllPairsDataFile,
   previewGeneratorData,
   renderGeneratorOutputPreview,
   updateGeneratorPairwiseButtonVisibility,
@@ -73,10 +74,12 @@ describe('generator generation actions', () => {
 
     previewGeneratorData({
       getPreviewRowCount: () => ({ value: 2, errors: [] }),
-      createConfiguredGenerator: () => ({
-        generator: { generateHeadersArray: () => ['Name'], generateRow: () => ['Ada'] },
-      }),
-      buildDataTable: () => ({ getRowCount: () => 2 }),
+      schemaGenerationService: {
+        generateRows: () => ({
+          ok: true,
+          dataTable: { getRowCount: () => 2 },
+        }),
+      },
       setPreviewDataTable: jest.fn(),
       renderOutputPreviewForCurrentSelection: jest.fn(),
       surfacePageError: jest.fn(),
@@ -117,9 +120,15 @@ describe('generator generation actions', () => {
 
     await generateGeneratorDataFile({
       getGenerateRowCount: () => ({ value: 2, errors: [] }),
-      createConfiguredGenerator: () => ({
-        generator: { generateHeadersArray: () => ['Name'], generateRow: () => ['Ada'] },
-      }),
+      schemaGenerationService: {
+        generateRows: jest.fn(async () => ({
+          ok: true,
+          dataTable: {
+            __generatorFilename: 'generated-data.csv',
+            getRowCount: () => 1,
+          },
+        })),
+      },
       getSelectedOutputType: () => 'csv',
       exporter: {
         canExport: () => true,
@@ -131,10 +140,6 @@ describe('generator generation actions', () => {
       setGenerationStatus: jest.fn(),
       showGenerationLoadingStatus: jest.fn(),
       getExportEncodingSettings: () => ({ lineEnding: 'crlf', includeBom: true }),
-      buildDataTable: () => ({
-        __generatorFilename: 'generated-data.csv',
-        getRowCount: () => 1,
-      }),
       DownloadClass: FakeDownload,
       surfacePageError: jest.fn(),
       clearPageError: jest.fn(),
@@ -155,9 +160,15 @@ describe('generator generation actions', () => {
 
     await generateGeneratorDataFile({
       getGenerateRowCount: () => ({ value: 2, errors: [] }),
-      createConfiguredGenerator: () => ({
-        generator: { generateHeadersArray: () => ['Name'], generateRow: () => ['Ada'] },
-      }),
+      schemaGenerationService: {
+        generateRows: jest.fn(async () => ({
+          ok: true,
+          dataTable: {
+            __generatorFilename: 'generated-data.csv',
+            getRowCount: () => 1,
+          },
+        })),
+      },
       getSelectedOutputType: () => 'csv',
       exporter: {
         canExport: () => true,
@@ -169,10 +180,6 @@ describe('generator generation actions', () => {
       setGenerationStatus,
       showGenerationLoadingStatus: jest.fn(),
       getExportEncodingSettings: () => ({}),
-      buildDataTable: () => ({
-        __generatorFilename: 'generated-data.csv',
-        getRowCount: () => 1,
-      }),
       DownloadClass: class FakeDownload {
         constructor() {}
         downloadFile() {}
@@ -190,15 +197,57 @@ describe('generator generation actions', () => {
     );
   });
 
+  test('generateGeneratorCombinationsDataFile prompts before large cartesian runs and skips when cancelled', async () => {
+    const requestConfirm = jest.fn(async () => false);
+    const setGenerationStatus = jest.fn();
+
+    await generateGeneratorCombinationsDataFile({
+      schemaGenerationService: {
+        getCombinationInput: () => ({ enumColumnCount: 4, enumValueCounts: [11, 11, 11, 11] }),
+      },
+      getSelectedOutputType: () => 'csv',
+      exporter: {
+        canExport: () => true,
+        getFileExtensionFor: () => '.csv',
+      },
+      clearGenerationStatus: jest.fn(),
+      setGenerationButtonBusy: jest.fn(),
+      setGenerationStatus,
+      showGenerationLoadingStatus: jest.fn(),
+      DownloadClass: class FakeDownload {},
+      surfacePageError: jest.fn(),
+      clearPageError: jest.fn(),
+      scheduleClearGenerationStatus: jest.fn(),
+      selection: { strength: 4, algorithm: 'cartesian-product' },
+      requestConfirm,
+    });
+
+    expect(requestConfirm).toHaveBeenCalledWith({
+      title: 'Cartesian product generation',
+      message: expect.stringContaining('14,641'),
+      okLabel: 'Run cartesian product',
+      cancelLabel: 'Skip cartesian product',
+    });
+    expect(setGenerationStatus).toHaveBeenCalledWith('Cartesian product generation skipped.', {
+      severity: 'warning',
+      dismissable: true,
+    });
+  });
+
   test('generateGeneratorCombinationsDataFile records last used schema on success', async () => {
     const recordLastUsedSchema = jest.fn();
 
     await generateGeneratorCombinationsDataFile({
-      createConfiguredGenerator: () => ({
-        generator: { testDataRules: () => [{}, {}, {}] },
-      }),
-      countEnumColumns: () => 3,
-      getEnumValueCounts: () => [3, 2, 2],
+      schemaGenerationService: {
+        getCombinationInput: () => ({ enumColumnCount: 3, enumValueCounts: [3, 2, 2] }),
+        generateCombinations: () => ({
+          ok: true,
+          dataTable: {
+            __generatorFilename: 'n-wise-combinations-data.csv',
+            getRowCount: () => 1,
+          },
+        }),
+      },
       getSelectedOutputType: () => 'csv',
       exporter: {
         canExport: () => true,
@@ -209,10 +258,6 @@ describe('generator generation actions', () => {
       setGenerationButtonBusy: jest.fn(),
       setGenerationStatus: jest.fn(),
       showGenerationLoadingStatus: jest.fn(),
-      buildCombinationsDataTable: () => ({
-        __generatorFilename: 'n-wise-combinations-data.csv',
-        getRowCount: () => 1,
-      }),
       DownloadClass: class FakeDownload {
         constructor() {}
         downloadFile() {}
@@ -228,45 +273,37 @@ describe('generator generation actions', () => {
     expect(recordLastUsedSchema).toHaveBeenCalledTimes(1);
   });
 
-  test('generateGeneratorCombinationsDataFile prompts before large cartesian runs and skips when cancelled', async () => {
-    const requestConfirm = jest.fn(async () => false);
-    const setGenerationStatus = jest.fn();
-    const buildCombinationsDataTable = jest.fn();
+  test('generateGeneratorAllPairsDataFile rejects pairwise export before invoking session generation when fewer than two enum columns exist', async () => {
+    const generatePairwise = jest.fn(() => ({
+      ok: false,
+      errors: [{ code: 'insufficient_enum_columns', message: 'Pairwise generation requires at least 2 enum columns.' }],
+    }));
+    const surfacePageError = jest.fn();
 
-    await generateGeneratorCombinationsDataFile({
-      createConfiguredGenerator: () => ({
-        generator: { testDataRules: () => [{}, {}, {}, {}] },
-      }),
-      countEnumColumns: () => 4,
-      getEnumValueCounts: () => [11, 11, 11, 11],
+    await generateGeneratorAllPairsDataFile({
+      schemaGenerationService: {
+        generatePairwise,
+      },
       getSelectedOutputType: () => 'csv',
       exporter: {
         canExport: () => true,
         getFileExtensionFor: () => '.csv',
+        getDataTableAs: () => 'Browser\nChrome',
       },
       clearGenerationStatus: jest.fn(),
       setGenerationButtonBusy: jest.fn(),
-      setGenerationStatus,
+      setGenerationStatus: jest.fn(),
       showGenerationLoadingStatus: jest.fn(),
-      buildCombinationsDataTable,
+      getExportEncodingSettings: () => ({}),
       DownloadClass: class FakeDownload {},
-      surfacePageError: jest.fn(),
+      surfacePageError,
       clearPageError: jest.fn(),
       scheduleClearGenerationStatus: jest.fn(),
-      selection: { strength: 4, algorithm: 'cartesian-product' },
-      requestConfirm,
     });
 
-    expect(requestConfirm).toHaveBeenCalledWith({
-      title: 'Cartesian product generation',
-      message: expect.stringContaining('14,641'),
-      okLabel: 'Run cartesian product',
-      cancelLabel: 'Skip cartesian product',
-    });
-    expect(buildCombinationsDataTable).not.toHaveBeenCalled();
-    expect(setGenerationStatus).toHaveBeenCalledWith('Cartesian product generation skipped.', {
-      severity: 'warning',
-      dismissable: true,
+    expect(generatePairwise).toHaveBeenCalledTimes(1);
+    expect(surfacePageError).toHaveBeenCalledWith('Pairwise generation requires at least 2 enum columns.', {
+      useSchemaStatus: true,
     });
   });
 });

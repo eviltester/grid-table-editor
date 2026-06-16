@@ -253,7 +253,15 @@ class SharedSchemaDefinitionController {
   }
 
   getState() {
-    return this.schemaEditor?.getState?.() || { schemaRows: [], schemaTextTokens: [], isTextMode: false };
+    return (
+      this.schemaEditor?.getState?.() || {
+        rows: [],
+        tokens: [],
+        constraints: [],
+        constraintText: '',
+        isTextMode: false,
+      }
+    );
   }
 
   handleInput(event) {

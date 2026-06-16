@@ -66,6 +66,18 @@ describe('SharedSchemaDefinitionController', () => {
     expect(DEFAULT_SHARED_SCHEMA_IDS).toEqual({});
   });
 
+  test('getState fallback matches the shared schema editor session shape before attach', () => {
+    const controller = new SharedSchemaDefinitionController();
+
+    expect(controller.getState()).toEqual({
+      rows: [],
+      tokens: [],
+      constraints: [],
+      constraintText: '',
+      isTextMode: false,
+    });
+  });
+
   test('forwards moveRowToIndex through the shared schema definition boundary', () => {
     const controller = new SharedSchemaDefinitionController();
     controller.schemaEditor = {

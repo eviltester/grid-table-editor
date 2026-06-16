@@ -459,6 +459,44 @@ IF [Priority] = "high" THEN [Status] = "open" ENDIF`;
     });
   });
 
+  test('save schema file action downloads the visible text mode edits when the schema text is invalid', () => {
+    const downloadSchemaText = jest.fn(() => true);
+    const component = createComponent({
+      services: {
+        schemaFileTransferService: {
+          readSchemaTextFile: jest.fn(async () => ''),
+          downloadSchemaText,
+        },
+      },
+    });
+
+    component.replaceRows([
+      {
+        id: 'existing-row',
+        name: 'Status',
+        sourceType: 'enum',
+        command: '',
+        params: '',
+        value: 'active,inactive',
+        comments: '',
+        leadingTextLines: [],
+      },
+    ]);
+
+    fireEvent.click(document.querySelector('[data-role="schema-mode-toggle"]'));
+
+    const textArea = document.querySelector('[data-role="schema-textbox"]');
+    textArea.value = 'Broken Name';
+    fireEvent.input(textArea);
+
+    fireEvent.click(document.querySelector('[data-role="schema-save-file-button"]'));
+
+    expect(document.querySelector('[data-role="schema-text-region"]').style.display).toBe('block');
+    expect(downloadSchemaText).toHaveBeenCalledWith('Broken Name', {
+      filename: 'schema.txt',
+    });
+  });
+
   test('save schema file action surfaces a clear error when download support is unavailable', () => {
     createComponent({
       services: {

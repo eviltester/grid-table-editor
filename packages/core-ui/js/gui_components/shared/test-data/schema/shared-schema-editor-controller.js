@@ -836,7 +836,7 @@ function createSharedSchemaEditorController({
     validateRows: () => revalidateRows(),
     handleFocusOut,
     syncTextFromRows,
-    getSchemaText: () => composeSchemaText(),
+    getSchemaText: () => getCurrentSchemaText(),
     syncConstraintsFromEditor,
     addRow,
     addRowAfter,

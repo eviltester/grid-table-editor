@@ -9,6 +9,21 @@ function normalizeSchemaFileText(text) {
   return rawText.replace(/^\uFEFF/u, '').replace(/\r\n?/gu, '\n');
 }
 
+function toSchemaFileReadError(error) {
+  if (error instanceof Error) {
+    return error;
+  }
+
+  const type = error?.type === 'abort' ? 'aborted' : 'failed';
+  const wrappedError = new Error(`Reading the schema file ${type}.`, { cause: error });
+
+  if (wrappedError.cause === undefined) {
+    wrappedError.cause = error;
+  }
+
+  return wrappedError;
+}
+
 function createSchemaFileTransferService({
   documentObj = getDefaultDocumentObj(),
   windowObj = getDefaultWindowObj(),
@@ -20,8 +35,12 @@ function createSchemaFileTransferService({
 } = {}) {
   return {
     async readSchemaTextFile(file, callbacks = {}) {
-      const text = await fileReadService.readText(file, callbacks);
-      return normalizeSchemaFileText(text);
+      try {
+        const text = await fileReadService.readText(file, callbacks);
+        return normalizeSchemaFileText(text);
+      } catch (error) {
+        throw toSchemaFileReadError(error);
+      }
     },
 
     downloadSchemaText(schemaText, { filename = defaultFilename, mimeType = 'text/plain;charset=utf-8' } = {}) {
@@ -35,4 +54,4 @@ function createSchemaFileTransferService({
   };
 }
 
-export { DEFAULT_SCHEMA_FILENAME, createSchemaFileTransferService, normalizeSchemaFileText };
+export { DEFAULT_SCHEMA_FILENAME, createSchemaFileTransferService, normalizeSchemaFileText, toSchemaFileReadError };

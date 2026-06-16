@@ -144,4 +144,34 @@ describe('SharedSchemaDefinitionController', () => {
       applied: true,
     });
   });
+
+  test('loadSchemaFromFile surfaces wrapped file read failures with a useful message', async () => {
+    const schemaFileTransferService = {
+      readSchemaTextFile: jest.fn(async () => {
+        throw new Error('Reading the schema file failed.');
+      }),
+    };
+    const controller = new SharedSchemaDefinitionController({
+      services: {
+        schemaFileTransferService,
+      },
+      props: {
+        schemaErrorDisplay: {
+          show: jest.fn(),
+          clear: jest.fn(),
+        },
+      },
+    });
+    controller.schemaEditor = {
+      getState: jest.fn(() => ({ rows: [{ name: 'Existing Name' }], tokens: [], isTextMode: false })),
+    };
+
+    const result = await controller.loadSchemaFromFile({ name: 'schema.txt' });
+
+    expect(controller.props.schemaErrorDisplay.show).toHaveBeenCalledWith(
+      'Unable to load schema file: Reading the schema file failed.'
+    );
+    expect(result.errors[0].message).toBe('Unable to load schema file: Reading the schema file failed.');
+    expect(result.rows).toEqual([{ name: 'Existing Name' }]);
+  });
 });

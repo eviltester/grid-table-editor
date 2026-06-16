@@ -232,8 +232,16 @@ class SharedSchemaDefinitionController {
   }
 
   saveSchemaToFile({ filename = this.props.schemaFileName || 'schema.txt' } = {}) {
+    const fileTransferService = this.services.schemaFileTransferService;
+    if (typeof fileTransferService?.downloadSchemaText !== 'function') {
+      const message = 'Schema file saving is not available in this browser.';
+      this.setSchemaError(message);
+      return false;
+    }
+
+    this.clearSchemaError();
     const schemaText = this.getSchemaText();
-    const didStartDownload = this.services.schemaFileTransferService?.downloadSchemaText?.(schemaText, {
+    const didStartDownload = fileTransferService.downloadSchemaText(schemaText, {
       filename,
     });
     this.callbacks.onSchemaFileSaved?.({

@@ -459,6 +459,22 @@ IF [Priority] = "high" THEN [Status] = "open" ENDIF`;
     });
   });
 
+  test('save schema file action surfaces a clear error when download support is unavailable', () => {
+    createComponent({
+      services: {
+        schemaFileTransferService: {
+          readSchemaTextFile: jest.fn(async () => ''),
+        },
+      },
+    });
+
+    fireEvent.click(document.querySelector('[data-role="schema-save-file-button"]'));
+
+    expect(document.querySelector('[data-role="schema-error"]').textContent).toBe(
+      'Schema file saving is not available in this browser.'
+    );
+  });
+
   test('load schema file action replaces the current schema from a plain text file', async () => {
     createComponent({
       services: {

@@ -117,6 +117,30 @@ describe('SharedSchemaDefinitionController', () => {
     });
   });
 
+  test('saveSchemaToFile surfaces a clear error when download support is unavailable', () => {
+    const controller = new SharedSchemaDefinitionController({
+      props: {
+        schemaErrorDisplay: {
+          show: jest.fn(),
+          clear: jest.fn(),
+        },
+      },
+      services: {
+        schemaFileTransferService: {},
+      },
+    });
+    controller.schemaEditor = {
+      getSchemaText: jest.fn(() => 'Field\nliteral(value)'),
+    };
+
+    const result = controller.saveSchemaToFile();
+
+    expect(result).toBe(false);
+    expect(controller.props.schemaErrorDisplay.show).toHaveBeenCalledWith(
+      'Schema file saving is not available in this browser.'
+    );
+  });
+
   test('loadSchemaFromFile reads text through the shared file transfer service and applies it through the editor', async () => {
     const schemaFileTransferService = {
       readSchemaTextFile: jest.fn(async () => 'Loaded Name\nliteral(Ada)'),

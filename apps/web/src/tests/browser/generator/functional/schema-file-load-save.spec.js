@@ -12,8 +12,8 @@ test.describe('Generator Schema File Load Save', () => {
       buffer: Buffer.from('Generated Name\nliteral(Ada)\nGenerated Status\nenum(active,inactive)'),
     });
 
-    expect(await generatorPage.schema.getSchemaText()).toContain('Generated Name');
-    expect(await generatorPage.schema.getSchemaText()).toContain('Generated Status');
+    await expect.poll(async () => generatorPage.schema.getSchemaText()).toContain('Generated Name');
+    await expect.poll(async () => generatorPage.schema.getSchemaText()).toContain('Generated Status');
 
     const download = await generatorPage.schema.saveSchemaFileAndWaitForDownload();
     expect(download.suggestedFilename()).toBe('schema.txt');

@@ -13,8 +13,8 @@ test.describe('Test Data Schema File Load Save', () => {
       buffer: Buffer.from('Loaded Name\nliteral(Ada)\nLoaded Status\nenum(active,inactive)'),
     });
 
-    expect(await appPage.testDataPanel.getSchemaText()).toContain('Loaded Name');
-    expect(await appPage.testDataPanel.getSchemaText()).toContain('Loaded Status');
+    await expect.poll(async () => appPage.testDataPanel.getSchemaText()).toContain('Loaded Name');
+    await expect.poll(async () => appPage.testDataPanel.getSchemaText()).toContain('Loaded Status');
 
     const download = await appPage.testDataPanel.saveSchemaFileAndWaitForDownload();
     expect(download.suggestedFilename()).toBe('schema.txt');

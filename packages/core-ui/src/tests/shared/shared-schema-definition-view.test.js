@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
-import { fireEvent, within } from '@testing-library/dom';
+import { fireEvent, waitFor, within } from '@testing-library/dom';
 import {
   schemaTextToDataRules,
   dataRulesToSchemaText,
@@ -530,8 +530,10 @@ IF [Priority] = "high" THEN [Status] = "open" ENDIF`;
     });
 
     fireEvent.change(fileInput);
-    await Promise.resolve();
-    await Promise.resolve();
+    await waitFor(() => {
+      expect(document.querySelector('[data-role="schema-text-region"]').style.display).toBe('none');
+      expect(document.querySelectorAll('.shared-schema-row')).toHaveLength(2);
+    });
 
     expect(document.querySelector('[data-role="schema-text-region"]').style.display).toBe('none');
     expect(document.querySelectorAll('.shared-schema-row')).toHaveLength(2);
@@ -570,8 +572,10 @@ IF [Priority] = "high" THEN [Status] = "open" ENDIF`;
     });
 
     fireEvent.change(fileInput);
-    await Promise.resolve();
-    await Promise.resolve();
+    await waitFor(() => {
+      expect(document.querySelector('[data-role="schema-error"]').textContent.length).toBeGreaterThan(0);
+      expect(document.querySelector('[data-role="schema-textbox"]').value).toBe('OnlyName');
+    });
 
     expect(document.querySelector('[data-role="schema-error"]').textContent.length).toBeGreaterThan(0);
     expect(document.querySelector('[data-role="schema-text-region"]').style.display).toBe('block');

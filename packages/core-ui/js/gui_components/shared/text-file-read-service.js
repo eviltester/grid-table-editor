@@ -16,7 +16,7 @@ function createTextFileReadService({
 
       if (!ResolvedFileReaderCtor) {
         const error = new Error('FileReader is not available');
-        callbacks.onError?.(error);
+        callbacks?.onError?.(error);
         return Promise.reject(error);
       }
 
@@ -24,22 +24,22 @@ function createTextFileReadService({
         const reader = new ResolvedFileReaderCtor();
 
         reader.addEventListener('progress', (event) => {
-          callbacks.onProgress?.(event);
+          callbacks?.onProgress?.(event);
         });
 
         reader.addEventListener('load', (event) => {
           const text = event?.target?.result ?? '';
-          callbacks.onLoad?.(text, event);
+          callbacks?.onLoad?.(text, event);
           resolve(text);
         });
 
         reader.addEventListener('error', (event) => {
-          callbacks.onError?.(event);
+          callbacks?.onError?.(event);
           reject({ type: 'error', event });
         });
 
         reader.addEventListener('abort', (event) => {
-          callbacks.onAbort?.(event);
+          callbacks?.onAbort?.(event);
           reject({ type: 'abort', event });
         });
 

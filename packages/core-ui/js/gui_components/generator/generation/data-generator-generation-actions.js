@@ -106,9 +106,7 @@ function previewGeneratorData({
     clearPageError?.();
     setPreviewDataTable?.(result.dataTable);
     renderOutputPreviewForCurrentSelection();
-    Promise.resolve(recordLastUsedSchema?.()).catch((error) => {
-      console.error('Failed to record last used schema.', error);
-    });
+    void recordLastUsedSchemaSafely(recordLastUsedSchema);
   }
 
   const rowCount = getPreviewRowCount();

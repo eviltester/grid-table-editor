@@ -90,6 +90,38 @@ describe('generator generation actions', () => {
     expect(recordLastUsedSchema).toHaveBeenCalledTimes(1);
   });
 
+  test('previewGeneratorData ignores synchronous last-used persistence failures after a successful preview', async () => {
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const setPreviewDataTable = jest.fn();
+    const renderOutputPreviewForCurrentSelection = jest.fn();
+
+    previewGeneratorData({
+      getPreviewRowCount: () => ({ value: 2, errors: [] }),
+      schemaGenerationService: {
+        generateRows: () => ({
+          ok: true,
+          dataTable: { getRowCount: () => 2 },
+        }),
+      },
+      setPreviewDataTable,
+      renderOutputPreviewForCurrentSelection,
+      surfacePageError: jest.fn(),
+      clearPageError: jest.fn(),
+      recordLastUsedSchema: () => {
+        throw new Error('storage failed');
+      },
+    });
+
+    await Promise.resolve();
+
+    expect(setPreviewDataTable).toHaveBeenCalledTimes(1);
+    expect(renderOutputPreviewForCurrentSelection).toHaveBeenCalledTimes(1);
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      'Failed to record last used schema.',
+      expect.objectContaining({ message: 'storage failed' })
+    );
+  });
+
   test('updateGeneratorPairwiseButtonVisibility does not require a document object', () => {
     const isVisible = updateGeneratorPairwiseButtonVisibility({
       getCurrentSchemaState: () => ({

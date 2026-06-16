@@ -555,6 +555,20 @@ IF [Priority] = "high" THEN [Status] = "open" ENDIF`;
     expect(document.querySelector('[data-role="schema-textbox"]').value).toBe('Loaded Name\nliteral(Ada)');
   });
 
+  test('loadSchemaText preserves row mode by default for existing callers when parsing fails', () => {
+    const component = createComponent();
+
+    expect(document.querySelector('[data-role="schema-rows-region"]').style.display).not.toBe('none');
+
+    const result = component.loadSchemaText('OnlyName', { showErrors: true });
+
+    expect(result.applied).toBe(false);
+    expect(result.errors.length).toBeGreaterThan(0);
+    expect(document.querySelector('[data-role="schema-rows-region"]').style.display).not.toBe('none');
+    expect(document.querySelector('[data-role="schema-text-region"]').style.display).toBe('none');
+    expect(document.querySelector('[data-role="schema-textbox"]').value).toBe('OnlyName');
+  });
+
   test('load schema file action surfaces schema parse errors and keeps the loaded text visible', async () => {
     createComponent({
       services: {

@@ -533,6 +533,10 @@ function createSharedSchemaEditorController({
     updateModeView();
     const parsed = syncFromText({ showErrors, force: true });
     if (parsed?.errors?.length > 0) {
+      if (preferRowMode === undefined && !previousTextMode) {
+        session.setTextMode(false);
+        updateModeView();
+      }
       return { ...parsed, applied: false };
     }
 

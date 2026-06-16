@@ -8,6 +8,8 @@ class DataPopulationPanelController {
       rowCountProps: { ...(props.rowCountProps || {}) },
       actionIds: { ...(props.actionIds || {}) },
       schemaDefinitionProps: { ...(props.schemaDefinitionProps || {}) },
+      storedSchemasEnabled: props.storedSchemasEnabled === true,
+      storedSchemasProps: { ...(props.storedSchemasProps || {}) },
       generateSchemaBusy: props.generateSchemaBusy === true,
     };
   }
@@ -25,6 +27,10 @@ class DataPopulationPanelController {
       schemaDefinitionProps: nextProps.schemaDefinitionProps
         ? { ...this.state.schemaDefinitionProps, ...nextProps.schemaDefinitionProps }
         : this.state.schemaDefinitionProps,
+      storedSchemasEnabled: nextProps.storedSchemasEnabled ?? this.state.storedSchemasEnabled,
+      storedSchemasProps: nextProps.storedSchemasProps
+        ? { ...this.state.storedSchemasProps, ...nextProps.storedSchemasProps }
+        : this.state.storedSchemasProps,
       generateSchemaBusy: nextProps.generateSchemaBusy ?? this.state.generateSchemaBusy,
     };
   }
@@ -36,6 +42,7 @@ class DataPopulationPanelController {
       actionIds: { ...this.state.actionIds },
       rowCountProps: { ...this.state.rowCountProps },
       schemaDefinitionProps: { ...this.state.schemaDefinitionProps },
+      storedSchemasProps: { ...this.state.storedSchemasProps },
     };
   }
 

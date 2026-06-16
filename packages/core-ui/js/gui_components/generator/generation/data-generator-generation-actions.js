@@ -245,6 +245,7 @@ async function generateGeneratorDataFile({
   surfacePageError,
   clearPageError,
   scheduleClearGenerationStatus,
+  recordLastUsedSchema = () => null,
 }) {
   const rowCount = getGenerateRowCount();
   if (rowCount.errors.length > 0) {
@@ -280,6 +281,7 @@ async function generateGeneratorDataFile({
       showGenerationLoadingStatus,
       exportEncodingSettings: getExportEncodingSettings?.(),
     });
+    await Promise.resolve(recordLastUsedSchema?.());
     setGenerationStatus(`Download ready: ${filename}`);
     scheduleClearGenerationStatus();
   } catch (error) {
@@ -306,6 +308,7 @@ async function generateGeneratorAllPairsDataFile({
   surfacePageError,
   clearPageError,
   scheduleClearGenerationStatus,
+  recordLastUsedSchema = () => null,
 }) {
   const configured = createConfiguredGenerator();
   if (configured.errors?.length > 0) {
@@ -346,6 +349,7 @@ async function generateGeneratorAllPairsDataFile({
       showGenerationLoadingStatus,
       exportEncodingSettings: getExportEncodingSettings?.(),
     });
+    await Promise.resolve(recordLastUsedSchema?.());
     setGenerationStatus(`Download ready: ${filename} (${dataTable.getRowCount()} combinations)`);
     scheduleClearGenerationStatus();
   } catch (error) {
@@ -374,6 +378,7 @@ async function generateGeneratorCombinationsDataFile({
   scheduleClearGenerationStatus,
   selection,
   requestConfirm,
+  recordLastUsedSchema = () => null,
 }) {
   const strength = Number.parseInt(selection?.strength, 10);
   const algorithm = selection?.algorithm;
@@ -433,6 +438,7 @@ async function generateGeneratorCombinationsDataFile({
       DownloadClass,
       showGenerationLoadingStatus,
     });
+    await Promise.resolve(recordLastUsedSchema?.());
     setGenerationStatus(`Download ready: ${filename} (${dataTable.getRowCount()} combinations)`);
     scheduleClearGenerationStatus();
   } catch (error) {

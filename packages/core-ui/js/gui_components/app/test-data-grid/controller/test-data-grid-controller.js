@@ -191,6 +191,7 @@ function createTestDataGenerationPanelManager({
       setGeneratePairwiseBusy: (isBusy) => state.dataPopulationPanel?.setGeneratePairwiseBusy?.(isBusy),
       setPairwiseVisible: (isVisible) => state.dataPopulationPanel?.setPairwiseVisible?.(isVisible),
       requestConfirm: confirmDialogService.requestConfirm,
+      recordLastUsedSchema: () => state.dataPopulationPanel?.recordCurrentSchemaAsLastUsed?.(),
     });
   }
 
@@ -415,6 +416,8 @@ function createTestDataGenerationPanelManager({
           },
           mapRuleToRow: mapDataRuleToSchemaRow,
         }),
+        storedSchemasEnabled: true,
+        storedSchemasProps: {},
       },
       callbacks: {
         onGenerate: () => state.actionAdapter.generateTestData(),
@@ -425,6 +428,9 @@ function createTestDataGenerationPanelManager({
           onSchemaError: (message) => state.schemaTextSyncState?.schemaErrorDisplay?.show?.(message),
           onSchemaClear: () => state.schemaTextSyncState?.schemaErrorDisplay?.clear?.(),
           onSchemaParseError: () => getStatusServiceApi().setTestDataStatus('', false),
+        },
+        storedSchemas: {
+          onStatus: (message, options = {}) => getStatusServiceApi().setTestDataStatus(message, options),
         },
       },
     });

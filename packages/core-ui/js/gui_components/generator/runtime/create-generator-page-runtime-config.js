@@ -13,6 +13,7 @@ function createGeneratorPageRuntimeConfig({ runtime } = {}) {
       previewProps: {
         outputPreviewText: '',
       },
+      storedSchemasProps: {},
       schemaDefinitionProps: {
         headingText: 'Schema',
         sectionClassName: 'shared-schema-definition-shell shared-schema-section',
@@ -71,6 +72,9 @@ function createGeneratorPageRuntimeConfig({ runtime } = {}) {
         onSchemaError: (message) => runtime.generatorSchemaRuntime?.showSchemaErrorStatus(message),
         onSchemaClear: () => runtime.generatorSchemaRuntime?.clearSchemaErrorStatus(),
         onRowsChanged: handleRowsChanged,
+      },
+      storedSchemas: {
+        onStatus: (message, options) => runtime.generatorViewState?.setGenerationStatus?.(message, options),
       },
     },
   };

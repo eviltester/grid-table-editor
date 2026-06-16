@@ -44,6 +44,9 @@ function createGeneratorPageComponent({ root, props = {}, services = {}, callbac
     getSchemaErrorDisplay() {
       return view.getSchemaErrorDisplay();
     },
+    recordCurrentSchemaAsLastUsed() {
+      return view.recordCurrentSchemaAsLastUsed();
+    },
   };
 }
 

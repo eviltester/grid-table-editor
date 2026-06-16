@@ -424,6 +424,7 @@ describe('test-data-generation-service', () => {
     const renderTextFromGrid = jest.fn(() => Promise.resolve());
     const setTestDataLoadingStatus = jest.fn();
     const setTestDataStatus = jest.fn();
+    const recordLastUsedSchema = jest.fn();
     const importer = { setGridFromGenericDataTable: jest.fn(() => Promise.resolve()) };
     const generator = {
       importSpec: jest.fn(),
@@ -473,12 +474,14 @@ describe('test-data-generation-service', () => {
       getMainGridExtras: jest.fn(),
       getGenerationMode: () => 'new-table',
       getRequestedRowCount: () => 3,
+      recordLastUsedSchema,
     });
 
     await service.generateTestData();
 
     expect(importer.setGridFromGenericDataTable).toHaveBeenCalledTimes(1);
     expect(renderTextFromGrid).toHaveBeenCalledTimes(1);
+    expect(recordLastUsedSchema).toHaveBeenCalledTimes(1);
     expect(setTestDataStatus).toHaveBeenCalledWith('Generate complete. Grid and preview updated.', {
       dismissable: true,
     });

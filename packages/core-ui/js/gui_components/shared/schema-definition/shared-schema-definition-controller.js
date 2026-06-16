@@ -84,6 +84,7 @@ class SharedSchemaDefinitionController {
       onSchemaClear: this.callbacks.onSchemaClear,
       onSchemaParseError: this.callbacks.onSchemaParseError,
       onRowsChanged: this.callbacks.onRowsChanged,
+      onSchemaTextChanged: this.callbacks.onSchemaTextChanged,
       validateSchemaRows: this.props.validateSchemaRows,
       updatePairwiseButtonVisibility: this.props.updatePairwiseButtonVisibility,
       updateHelpHints: this.props.updateHelpHints,
@@ -129,6 +130,10 @@ class SharedSchemaDefinitionController {
 
   getSchemaText() {
     return this.schemaEditor?.getSchemaText?.() || '';
+  }
+
+  loadSchemaText(schemaText, options) {
+    return this.schemaEditor?.loadSchemaText?.(schemaText, options) || { rows: [], errors: [] };
   }
 
   syncConstraintsFromEditor(options) {

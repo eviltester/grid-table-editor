@@ -66,9 +66,12 @@ class DataPopulationPanelView {
         ariaLabel: 'Test data schema panel',
         ids: this.ids,
         schemaDefinitionProps: state.schemaDefinitionProps,
+        storedSchemasEnabled: state.storedSchemasEnabled,
+        storedSchemasProps: state.storedSchemasProps,
       },
       callbacks: {
         schemaDefinition: this.callbacks.schemaDefinition || {},
+        storedSchemas: this.callbacks.storedSchemas || {},
       },
     });
   }
@@ -89,6 +92,8 @@ class DataPopulationPanelView {
       schemaDefinitionRootDataRole: 'schema-definition-root',
       ariaLabel: 'Test data schema panel',
       schemaDefinitionProps: state.schemaDefinitionProps,
+      storedSchemasEnabled: state.storedSchemasEnabled,
+      storedSchemasProps: state.storedSchemasProps,
     });
   }
 
@@ -132,6 +137,10 @@ class DataPopulationPanelView {
 
   getSchemaDefinition() {
     return this.schemaPanel?.getSchemaDefinition?.() || null;
+  }
+
+  recordCurrentSchemaAsLastUsed() {
+    return this.schemaPanel?.recordCurrentSchemaAsLastUsed?.() || null;
   }
 }
 

@@ -84,6 +84,7 @@ describe('generator generation actions', () => {
 
   test('generateGeneratorDataFile applies export encoding settings only to downloads', async () => {
     const downloadFile = jest.fn();
+    const recordLastUsedSchema = jest.fn();
     class FakeDownload {
       constructor(filename) {
         this.filename = filename;
@@ -118,8 +119,10 @@ describe('generator generation actions', () => {
       surfacePageError: jest.fn(),
       clearPageError: jest.fn(),
       scheduleClearGenerationStatus: jest.fn(),
+      recordLastUsedSchema,
     });
 
+    expect(recordLastUsedSchema).toHaveBeenCalledTimes(1);
     expect(downloadFile).toHaveBeenCalledWith({
       filename: 'generated-data.csv',
       text: '\uFEFFName\r\nAda',

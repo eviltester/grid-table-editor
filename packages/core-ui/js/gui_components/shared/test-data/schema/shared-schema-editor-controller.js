@@ -62,6 +62,7 @@ function createSharedSchemaEditorController({
   onSchemaClear,
   onSchemaParseError,
   onRowsChanged,
+  onSchemaTextChanged,
   validateSchemaRows,
   updatePairwiseButtonVisibility = () => {},
   updateHelpHints,
@@ -102,6 +103,10 @@ function createSharedSchemaEditorController({
 
   const refreshHelpHints = () => {
     updateHelpHints?.();
+  };
+
+  const emitSchemaTextChanged = () => {
+    onSchemaTextChanged?.(composeSchemaText());
   };
 
   const setSchemaError = (message) => {
@@ -293,6 +298,7 @@ function createSharedSchemaEditorController({
     }
     updatePairwiseButtonVisibility();
     onRowsChanged?.(session.getRows());
+    emitSchemaTextChanged();
   };
 
   const updateConstraintsView = () => {
@@ -386,6 +392,7 @@ function createSharedSchemaEditorController({
       updateConstraintsView();
       updatePairwiseButtonVisibility();
       onRowsChanged?.(session.getRows());
+      emitSchemaTextChanged();
       return { rows: session.getRows(), errors: [], tokens: session.getTokens(), constraints: [] };
     }
     const parsed = parseSchemaTextToRows({
@@ -419,6 +426,7 @@ function createSharedSchemaEditorController({
     updateModeView();
     revalidateRows();
     applySemanticValidationForAllRows();
+    emitSchemaTextChanged();
     return { rows: session.getRows(), errors: [], tokens: session.getTokens() };
   };
 
@@ -463,6 +471,7 @@ function createSharedSchemaEditorController({
     session.setConstraintText(constraintText);
     updateConstraintsView();
     syncTextFromRows();
+    emitSchemaTextChanged();
     return { rows: session.getRows(), errors: [], tokens: session.getTokens(), constraints: session.getConstraints() };
   };
 
@@ -761,7 +770,28 @@ function createSharedSchemaEditorController({
     renderRows();
     syncTextFromRows();
     updateModeView();
+    emitSchemaTextChanged();
     return validation;
+  };
+
+  const loadSchemaText = (schemaText, { showErrors = true } = {}) => {
+    const textElement = getTextElement();
+    const normalizedText = String(schemaText || '');
+    if (textElement) {
+      textElement.value = normalizedText;
+    }
+    const parsed = syncFromText({ showErrors, force: true });
+    if (parsed?.errors?.length > 0) {
+      return parsed;
+    }
+    if (!session.getTextMode()) {
+      updateModeView();
+      renderRows();
+      syncTextFromRows();
+    } else {
+      emitSchemaTextChanged();
+    }
+    return { rows: session.getRows(), errors: [], tokens: session.getTokens() };
   };
 
   const init = () => {
@@ -794,6 +824,7 @@ function createSharedSchemaEditorController({
     validateRows: () => revalidateRows(),
     handleFocusOut,
     syncTextFromRows,
+    loadSchemaText,
     getSchemaText: () => composeSchemaText(),
     syncConstraintsFromEditor,
     addRow,

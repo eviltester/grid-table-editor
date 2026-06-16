@@ -54,6 +54,13 @@ class TestDataPanelComponent {
     this.schemaTextArea = this.schemaEditor.textArea;
     this.schemaError = this.panelRoot.locator('[data-role="schema-error"]');
     this.status = this.panelRoot.locator('[data-role="population-status"]').first();
+    this.storedSchemasSummary = this.panelRoot.getByText(/Managed Stored Schemas/);
+    this.storedSchemasSaveAsButton = this.panelRoot.getByRole('button', { name: 'Save Schema As' });
+    this.storedSchemasRecoverDraftButton = this.panelRoot.getByRole('button', { name: 'Recover Draft' });
+    this.storedSchemasLastUsedSelect = this.panelRoot.getByLabel('Last Used');
+    this.storedSchemasLoadLastUsedButton = this.panelRoot.getByRole('button', { name: /^Load$/ });
+    this.storedSchemasLoadSavedButton = this.panelRoot.getByRole('button', { name: 'Load Saved Schema' });
+    this.storedSchemasDialog = page.getByRole('dialog', { name: 'Saved Schemas' });
     this.schemaGrid = this.schemaEditor.rowsContainer;
     this.schemaRenderer = new GridRendererComponent(page, this.schemaGrid);
   }
@@ -87,6 +94,58 @@ class TestDataPanelComponent {
     await expect(this.generateButton).toBeVisible();
     await expect(this.generateCountInput).toBeVisible();
     await expect(this.schemaGrid).toBeVisible();
+  }
+
+  async expandStoredSchemas() {
+    const details = this.panelRoot.locator('[data-role="stored-schemas-details"]');
+    if ((await details.getAttribute('open')) === null) {
+      await this.storedSchemasSummary.click();
+    }
+  }
+
+  async saveSchemaAs(name) {
+    await this.expandStoredSchemas();
+    await this.storedSchemasSaveAsButton.click();
+    await this.textInputDialog.submit(name, { submitLabel: /save schema/i });
+  }
+
+  async recoverDraft() {
+    await this.expandStoredSchemas();
+    await this.storedSchemasRecoverDraftButton.click();
+  }
+
+  async loadLastUsed() {
+    await this.expandStoredSchemas();
+    await this.storedSchemasLastUsedSelect.selectOption({ index: 1 });
+    await this.storedSchemasLoadLastUsedButton.click();
+  }
+
+  async openSavedSchemasDialog() {
+    await this.expandStoredSchemas();
+    await this.storedSchemasLoadSavedButton.click();
+    await expect(this.storedSchemasDialog).toBeVisible();
+  }
+
+  async loadSavedSchemaByName(name) {
+    await this.openSavedSchemasDialog();
+    const row = this.storedSchemasDialog.locator('[data-role="stored-schemas-dialog-row"]').filter({ hasText: name });
+    await row.getByRole('button', { name: 'Load' }).click();
+    await expect(this.storedSchemasDialog).toBeHidden();
+  }
+
+  async renameSavedSchema(name, nextName) {
+    await this.openSavedSchemasDialog();
+    const row = this.storedSchemasDialog.locator('[data-role="stored-schemas-dialog-row"]').filter({ hasText: name });
+    await row.getByRole('button', { name: 'Rename' }).click();
+    await row.getByRole('textbox').fill(nextName);
+    await row.getByRole('button', { name: 'Apply' }).click();
+  }
+
+  async deleteSavedSchema(name) {
+    await this.openSavedSchemasDialog();
+    const row = this.storedSchemasDialog.locator('[data-role="stored-schemas-dialog-row"]').filter({ hasText: name });
+    await row.getByRole('button', { name: 'Delete' }).click();
+    await this.confirmDialog.confirm({ confirmLabel: /delete/i });
   }
 
   async isExpanded() {

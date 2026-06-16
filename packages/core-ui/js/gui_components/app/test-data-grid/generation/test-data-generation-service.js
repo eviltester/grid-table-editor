@@ -65,6 +65,7 @@ function createTestDataGenerationService({
   setGeneratePairwiseBusy = () => {},
   setPairwiseVisible = () => {},
   requestConfirm,
+  recordLastUsedSchema = () => null,
 }) {
   function getCurrentSchemaRowValidation(options) {
     return validateCurrentSchemaRows?.(options) || { errors: [], rows: [] };
@@ -327,6 +328,7 @@ function createTestDataGenerationService({
       }
 
       const previewUpdated = await syncTextPreviewFromGrid();
+      await Promise.resolve(recordLastUsedSchema?.());
       setTestDataStatus(
         `Generated ${dataTable.getRowCount()} pairwise combinations. ${
           previewUpdated ? 'Grid and preview updated.' : 'Grid updated.'
@@ -425,6 +427,7 @@ function createTestDataGenerationService({
       await Promise.resolve(getImporter().setGridFromGenericDataTable(dataTable));
 
       const previewUpdated = await syncTextPreviewFromGrid();
+      await Promise.resolve(recordLastUsedSchema?.());
       setTestDataStatus(
         `Generated ${dataTable.getRowCount()} ${strength}-wise combinations. ${
           previewUpdated ? 'Grid and preview updated.' : 'Grid updated.'
@@ -584,6 +587,7 @@ function createTestDataGenerationService({
       }
 
       const previewUpdated = await syncTextPreviewFromGrid();
+      await Promise.resolve(recordLastUsedSchema?.());
       if (constraintImpactMessage) {
         setTestDataStatus(
           `${constraintImpactMessage} ${previewUpdated ? 'Grid and preview updated.' : 'Grid updated.'}`,

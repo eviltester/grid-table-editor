@@ -606,6 +606,7 @@ Current status:
 - The fresh post-simplification MVC re-audit found no new urgent generator-page runtime sprawl.
 - `ImportExportWorkspace` now also has a cleaner service map: the old broad workspace workflow has been split into `create-import-export-preview-workflow-service.js` and `create-import-export-file-transfer-service.js`, while `create-import-export-workspace-workflow-service.js` now mainly composes those narrower services for the runtime.
 - `ImportExportToolbar` is now also split along its visible review boundaries: `ImportExportGridPreviewSyncControl`, `ImportExportImportControl`, and `ImportExportDownloadControl` each have their own MVC component and Storybook coverage. The workspace now renders the sync control as its own visible row, while the toolbar host keeps only import/download help-error framing plus composed layout inside the disclosure.
+- Shared schema storage is now tracked as a reusable MVC surface as well: `SchemaPanel` can compose a shared `StoredSchemasManager` below the shared schema editor so app and generator hosts can share draft recovery, last-used history, and named saved-schema management without pushing storage logic back into page runtimes.
 
 ## Tracking Across Sessions
 

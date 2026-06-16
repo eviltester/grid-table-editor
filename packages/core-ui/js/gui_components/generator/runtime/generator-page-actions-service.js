@@ -84,6 +84,7 @@ function createGeneratorPageActionsService({
         surfacePageError: (message, options) => getResolvedSchemaRuntime()?.surfacePageError?.(message, options),
         clearPageError: () => getResolvedSchemaRuntime()?.clearSchemaErrorStatus?.(),
         scheduleClearGenerationStatus: (delay) => getResolvedViewState()?.scheduleClearGenerationStatus?.(delay),
+        recordLastUsedSchema: () => runtime?.generatorPage?.recordCurrentSchemaAsLastUsed?.(),
       });
     },
 
@@ -108,6 +109,7 @@ function createGeneratorPageActionsService({
         surfacePageError: (message, options) => getResolvedSchemaRuntime()?.surfacePageError?.(message, options),
         clearPageError: () => getResolvedSchemaRuntime()?.clearSchemaErrorStatus?.(),
         scheduleClearGenerationStatus: (delay) => getResolvedViewState()?.scheduleClearGenerationStatus?.(delay),
+        recordLastUsedSchema: () => runtime?.generatorPage?.recordCurrentSchemaAsLastUsed?.(),
       });
     },
 
@@ -148,6 +150,7 @@ function createGeneratorPageActionsService({
         scheduleClearGenerationStatus: (delay) => getResolvedViewState()?.scheduleClearGenerationStatus?.(delay),
         selection,
         requestConfirm: confirmDialogService.requestConfirm,
+        recordLastUsedSchema: () => runtime?.generatorPage?.recordCurrentSchemaAsLastUsed?.(),
       });
     },
 

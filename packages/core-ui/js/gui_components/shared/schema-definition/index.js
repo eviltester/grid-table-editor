@@ -51,6 +51,9 @@ function createSharedSchemaDefinitionComponent({ root, props = {}, callbacks = {
     getSchemaText() {
       return controller.getSchemaText();
     },
+    loadSchemaText(schemaText, options) {
+      return controller.loadSchemaText(schemaText, options);
+    },
     addRow() {
       return controller.addRow();
     },

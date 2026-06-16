@@ -10,11 +10,7 @@ function normalizeSchemaFileText(text) {
 }
 
 function toSchemaFileReadError(error) {
-  if (error instanceof Error) {
-    return error;
-  }
-
-  const type = error?.type === 'abort' ? 'aborted' : 'failed';
+  const type = error?.type === 'abort' || error?.name === 'AbortError' ? 'aborted' : 'failed';
   const wrappedError = new Error(`Reading the schema file ${type}.`, { cause: error });
 
   if (wrappedError.cause === undefined) {

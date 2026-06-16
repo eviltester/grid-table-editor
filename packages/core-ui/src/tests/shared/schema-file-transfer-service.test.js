@@ -27,13 +27,25 @@ describe('schema-file-transfer-service', () => {
     };
     const service = createSchemaFileTransferService({ fileReadService });
 
-    await expect(service.readSchemaTextFile({ name: 'schema.txt' })).rejects.toThrow('Reading the schema file failed.');
+    await expect(service.readSchemaTextFile({ name: 'schema.txt' })).rejects.toMatchObject({
+      message: 'Reading the schema file failed.',
+      cause: fileReadError,
+    });
+  });
 
-    try {
-      await service.readSchemaTextFile({ name: 'schema.txt' });
-    } catch (error) {
-      expect(error.cause).toBe(fileReadError);
-    }
+  test('wraps error instances in the normalized failed schema read contract', async () => {
+    const fileReadError = new Error('boom');
+    const fileReadService = {
+      readText: jest.fn(async () => {
+        throw fileReadError;
+      }),
+    };
+    const service = createSchemaFileTransferService({ fileReadService });
+
+    await expect(service.readSchemaTextFile({ name: 'schema.txt' })).rejects.toMatchObject({
+      message: 'Reading the schema file failed.',
+      cause: fileReadError,
+    });
   });
 
   test('wraps aborted file reads in a clear abort error', async () => {
@@ -45,14 +57,9 @@ describe('schema-file-transfer-service', () => {
     };
     const service = createSchemaFileTransferService({ fileReadService });
 
-    await expect(service.readSchemaTextFile({ name: 'schema.txt' })).rejects.toThrow(
-      'Reading the schema file aborted.'
-    );
-
-    try {
-      await service.readSchemaTextFile({ name: 'schema.txt' });
-    } catch (error) {
-      expect(error.cause).toBe(fileReadAbort);
-    }
+    await expect(service.readSchemaTextFile({ name: 'schema.txt' })).rejects.toMatchObject({
+      message: 'Reading the schema file aborted.',
+      cause: fileReadAbort,
+    });
   });
 });

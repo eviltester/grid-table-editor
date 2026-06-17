@@ -119,7 +119,7 @@
     "@storybook/addon-a11y": "10.4.1",
     "@storybook/addon-docs": "10.4.1",
     "@storybook/addon-vitest": "10.4.1",
-    "@storybook/html-vite": "10.4.1",
+    "@storybook/html-vite": "10.4.4",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/user-event": "^14.6.1",

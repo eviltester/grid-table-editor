@@ -1,0 +1,4 @@
+# Bad schema: the field name is present but the rule definition is missing.
+# All surfaces should reject this and surface a "requires a data definition"
+# style validation error.
+OnlyName

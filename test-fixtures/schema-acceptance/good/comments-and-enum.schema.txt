@@ -1,0 +1,9 @@
+# Good schema: comments and blank lines should be ignored consistently.
+# Priority is intentionally enum-based so acceptance checks validate
+# allowed values instead of one exact row ordering.
+Priority
+enum(high,medium,low)
+
+# This literal column gives one stable value across all rows.
+Status
+literal(active)

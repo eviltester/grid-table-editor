@@ -1,0 +1,6 @@
+# Bad schema: the constraint contradicts the literal value.
+# All surfaces should reject this during validation/generation.
+Status
+literal(closed)
+
+IF [Status] = "closed" THEN [Status] = "open" ENDIF

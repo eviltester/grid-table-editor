@@ -1,6 +1,6 @@
 # Schema Interaction Matrix Summary
 
-Generated: `2026-06-13T09:26:58.331Z`
+Generated: `2026-06-17T13:02:55.544Z`
 
 This file describes what the interaction matrix covers.
 
@@ -10,8 +10,8 @@ This file describes what the interaction matrix covers.
 
 ## Coverage Scenarios
 
-Scenario count: **632**
-Generated preview data count: **621**
+Scenario count: **642**
+Generated preview data count: **631**
 Review-only scenario count: **0**
 Non-executable scenario count: **11**
 
@@ -19,7 +19,7 @@ Non-executable scenario count: **11**
 
 | Key | Count |
 | --- | ---: |
-| `domain` | 572 |
+| `domain` | 582 |
 | `enum` | 2 |
 | `faker` | 54 |
 | `literal` | 2 |
@@ -29,17 +29,17 @@ Non-executable scenario count: **11**
 
 | Key | Count |
 | --- | ---: |
-| `arg` | 216 |
-| `base` | 259 |
+| `arg` | 222 |
+| `base` | 256 |
 | `custom` | 6 |
 | `empty` | 2 |
-| `example` | 30 |
-| `pair` | 121 |
+| `example` | 33 |
+| `pair` | 125 |
 | `pairwise` | 1 |
 
 ### Commands By Source Type
 
-#### `domain` (245)
+#### `domain` (242)
 
 - `airline.aircraftType`
 - `airline.flightNumber`
@@ -68,6 +68,7 @@ Non-executable scenario count: **11**
 - `animal.snake`
 - `animal.type`
 - `autoIncrement.sequence`
+- `autoIncrement.timestamp`
 - `book.author`
 - `book.format`
 - `book.genre`
@@ -90,6 +91,7 @@ Non-executable scenario count: **11**
 - `commerce.productDescription`
 - `commerce.productMaterial`
 - `commerce.productName`
+- `commerce.upc`
 - `company.buzzAdjective`
 - `company.buzzNoun`
 - `company.buzzPhrase`
@@ -131,7 +133,6 @@ Non-executable scenario count: **11**
 - `finance.ethereumAddress`
 - `finance.iban`
 - `finance.litecoinAddress`
-- `finance.maskedNumber`
 - `finance.pin`
 - `finance.routingNumber`
 - `finance.transactionDescription`
@@ -158,14 +159,11 @@ Non-executable scenario count: **11**
 - `hacker.verb`
 - `image.avatar`
 - `image.avatarGitHub`
-- `image.avatarLegacy`
 - `image.dataUri`
 - `image.personPortrait`
 - `image.url`
 - `image.urlLoremFlickr`
 - `image.urlPicsumPhotos`
-- `image.urlPlaceholder`
-- `internet.color`
 - `internet.displayName`
 - `internet.domainName`
 - `internet.domainSuffix`
@@ -187,7 +185,6 @@ Non-executable scenario count: **11**
 - `internet.url`
 - `internet.userAgent`
 - `internet.username`
-- `internet.userName`
 - `literal.value`
 - `location.buildingNumber`
 - `location.cardinalDirection`
@@ -479,7 +476,7 @@ Non-executable scenario count: **11**
 - Preview data:
 ```csv
 "Value"
-"Melvin"
+"Douglas"
 ```
 
 #### `faker-helpers-fake-example-1`
@@ -489,7 +486,7 @@ Non-executable scenario count: **11**
 - Preview data:
 ```csv
 "Value"
-"Hi, my name is Ardith Weber!"
+"Hi, my name is Rhonda Wyman!"
 ```
 
 #### `faker-helpers-fake-arg-pattern`
@@ -1239,6 +1236,123 @@ Non-executable scenario count: **11**
 "001.txt"
 ```
 
+#### `domain-autoIncrement-timestamp-base`
+
+- Command(s): `autoIncrement.timestamp()`
+- Preview data:
+```csv
+"Value"
+"2026-06-17T13:02:55Z"
+```
+
+#### `domain-autoIncrement-timestamp-example-1`
+
+- Command(s): `autoIncrement.timestamp()`
+- Preview data:
+```csv
+"Value"
+"2026-06-17T13:02:55Z"
+```
+
+#### `domain-autoIncrement-timestamp-example-2`
+
+- Command(s): `autoIncrement.timestamp(start="20/03/1969", step=1, type="days")`
+- Preview data:
+```csv
+"Value"
+"1969-03-20T12:00:00Z"
+```
+
+#### `domain-autoIncrement-timestamp-example-3`
+
+- Command(s): `autoIncrement.timestamp(start="2026-06-12 12:39:23", step=15, type="minutes", outputFormat="yyyy-MM-dd HH:mm:ss")`
+- Preview data:
+```csv
+"Value"
+"2026-06-12 11:39:23"
+```
+
+#### `domain-autoIncrement-timestamp-arg-start`
+
+- Command(s): `autoIncrement.timestamp(start="2026-06-12T12:39:23Z")`
+- Preview data:
+```csv
+"Value"
+"2026-06-12T12:39:23Z"
+```
+
+#### `domain-autoIncrement-timestamp-arg-step`
+
+- Command(s): `autoIncrement.timestamp(step=1)`
+- Preview data:
+```csv
+"Value"
+"2026-06-17T13:02:55Z"
+```
+
+#### `domain-autoIncrement-timestamp-arg-type`
+
+- Command(s): `autoIncrement.timestamp(type="seconds")`
+- Preview data:
+```csv
+"Value"
+"2026-06-17T13:02:55Z"
+```
+
+#### `domain-autoIncrement-timestamp-arg-outputFormat`
+
+- Command(s): `autoIncrement.timestamp(outputFormat="iso8601")`
+- Preview data:
+```csv
+"Value"
+"2026-06-17T13:02:55Z"
+```
+
+#### `domain-autoIncrement-timestamp-arg-inputFormat`
+
+- Command(s): `autoIncrement.timestamp(inputFormat="dd/MM/yyyy")`
+- Preview data:
+```csv
+"Value"
+"2026-06-17T13:02:55Z"
+```
+
+#### `domain-autoIncrement-timestamp-pair-start-step`
+
+- Command(s): `autoIncrement.timestamp(start="2026-06-12T12:39:23Z", step=1)`
+- Preview data:
+```csv
+"Value"
+"2026-06-12T12:39:23Z"
+```
+
+#### `domain-autoIncrement-timestamp-pair-step-type`
+
+- Command(s): `autoIncrement.timestamp(step=1, type="seconds")`
+- Preview data:
+```csv
+"Value"
+"2026-06-17T13:02:55Z"
+```
+
+#### `domain-autoIncrement-timestamp-pair-type-outputFormat`
+
+- Command(s): `autoIncrement.timestamp(type="seconds", outputFormat="iso8601")`
+- Preview data:
+```csv
+"Value"
+"2026-06-17T13:02:55Z"
+```
+
+#### `domain-autoIncrement-timestamp-pair-outputFormat-inputFormat`
+
+- Command(s): `autoIncrement.timestamp(outputFormat="iso8601", inputFormat="dd/MM/yyyy")`
+- Preview data:
+```csv
+"Value"
+"2026-06-17T13:02:55Z"
+```
+
 #### `domain-book-author-base`
 
 - Command(s): `book.author()`
@@ -1600,6 +1714,24 @@ Non-executable scenario count: **11**
 "Practical Aluminum Shirt"
 ```
 
+#### `domain-commerce-upc-base`
+
+- Command(s): `commerce.upc()`
+- Preview data:
+```csv
+"Value"
+"930326813865"
+```
+
+#### `domain-commerce-upc-arg-prefix`
+
+- Command(s): `commerce.upc(prefix="01234")`
+- Preview data:
+```csv
+"Value"
+"012345065699"
+```
+
 #### `domain-company-buzzAdjective-base`
 
 - Command(s): `company.buzzAdjective()`
@@ -1678,7 +1810,7 @@ Non-executable scenario count: **11**
 - Preview data:
 ```csv
 "Value"
-"Yundt, Boehm and Roob"
+"Roob, Schmidt and Jacobi-Lind"
 ```
 
 #### `domain-database-collation-base`
@@ -1753,13 +1885,22 @@ Non-executable scenario count: **11**
 "active"
 ```
 
+#### `domain-datatype-enum-arg-values`
+
+- Command(s): `datatype.enum(values="datatype-enum-values")`
+- Preview data:
+```csv
+"Value"
+"values=datatype-enum-values"
+```
+
 #### `domain-date-anytime-base`
 
 - Command(s): `date.anytime()`
 - Preview data:
 ```csv
 "Value"
-"2026-06-22T18:25:06.486Z"
+"2026-06-26T22:01:03.744Z"
 ```
 
 #### `domain-date-anytime-arg-refDate`
@@ -1813,7 +1954,7 @@ Non-executable scenario count: **11**
 - Preview data:
 ```csv
 "Value"
-"1957-08-17T18:20:18.489Z"
+"1957-08-21T21:56:15.746Z"
 ```
 
 #### `domain-date-birthdate-example-1`
@@ -1841,7 +1982,7 @@ Non-executable scenario count: **11**
 - Preview data:
 ```csv
 "Value"
-"1979-07-05T22:27:06.933Z"
+"1979-07-10T02:03:04.191Z"
 ```
 
 #### `domain-date-birthdate-arg-min`
@@ -1850,7 +1991,7 @@ Non-executable scenario count: **11**
 - Preview data:
 ```csv
 "Value"
-"1970-08-31T13:50:34.426Z"
+"1970-09-04T17:26:31.684Z"
 ```
 
 #### `domain-date-birthdate-arg-mode`
@@ -1859,7 +2000,7 @@ Non-executable scenario count: **11**
 - Preview data:
 ```csv
 "Value"
-"1989-12-13T01:17:45.847Z"
+"1989-12-17T04:53:43.105Z"
 ```
 
 #### `domain-date-birthdate-pair-refDate-max`
@@ -1877,7 +2018,7 @@ Non-executable scenario count: **11**
 - Preview data:
 ```csv
 "Value"
-"1979-10-24T16:49:36.678Z"
+"1979-10-28T20:25:33.935Z"
 ```
 
 #### `domain-date-birthdate-pair-min-mode`
@@ -1886,7 +2027,7 @@ Non-executable scenario count: **11**
 - Preview data:
 ```csv
 "Value"
-"1970-04-18T19:33:08.429Z"
+"1970-04-22T23:09:05.686Z"
 ```
 
 #### `domain-date-future-base`
@@ -1895,7 +2036,7 @@ Non-executable scenario count: **11**
 - Preview data:
 ```csv
 "Value"
-"2026-09-28T04:49:15.231Z"
+"2026-10-02T08:25:12.488Z"
 ```
 
 #### `domain-date-future-arg-refDate`
@@ -1913,7 +2054,7 @@ Non-executable scenario count: **11**
 - Preview data:
 ```csv
 "Value"
-"2027-12-10T23:32:25.536Z"
+"2027-12-15T03:08:22.793Z"
 ```
 
 #### `domain-date-future-pair-refDate-years`
@@ -1967,7 +2108,7 @@ Non-executable scenario count: **11**
 - Preview data:
 ```csv
 "Value"
-"2026-01-11T02:28:13.403Z"
+"2026-01-15T06:04:10.661Z"
 ```
 
 #### `domain-date-past-arg-refDate`
@@ -1985,7 +2126,7 @@ Non-executable scenario count: **11**
 - Preview data:
 ```csv
 "Value"
-"2025-06-15T15:28:06.798Z"
+"2025-06-19T19:04:04.055Z"
 ```
 
 #### `domain-date-past-pair-refDate-years`
@@ -2003,7 +2144,7 @@ Non-executable scenario count: **11**
 - Preview data:
 ```csv
 "Value"
-"2026-06-13T09:17:28.292Z"
+"2026-06-17T12:53:25.549Z"
 ```
 
 #### `domain-date-recent-arg-days`
@@ -2012,7 +2153,7 @@ Non-executable scenario count: **11**
 - Preview data:
 ```csv
 "Value"
-"2026-06-11T15:05:30.962Z"
+"2026-06-15T18:41:28.219Z"
 ```
 
 #### `domain-date-recent-arg-refDate`
@@ -2039,7 +2180,7 @@ Non-executable scenario count: **11**
 - Preview data:
 ```csv
 "Value"
-"2026-06-13T11:18:11.053Z"
+"2026-06-17T14:54:08.311Z"
 ```
 
 #### `domain-date-soon-arg-days`
@@ -2048,7 +2189,7 @@ Non-executable scenario count: **11**
 - Preview data:
 ```csv
 "Value"
-"2026-06-15T03:45:59.281Z"
+"2026-06-19T07:21:56.539Z"
 ```
 
 #### `domain-date-soon-arg-refDate`
@@ -2384,24 +2525,6 @@ Non-executable scenario count: **11**
 "387GmSW4s1E1t16xYaNCi9zgLtV5cDM"
 ```
 
-#### `domain-finance-maskedNumber-base`
-
-- Command(s): `finance.maskedNumber()`
-- Preview data:
-```csv
-"Value"
-"(...1483)"
-```
-
-#### `domain-finance-maskedNumber-arg-length`
-
-- Command(s): `finance.maskedNumber(length=4)`
-- Preview data:
-```csv
-"Value"
-"(...7138)"
-```
-
 #### `domain-finance-pin-base`
 
 - Command(s): `finance.pin()`
@@ -2435,7 +2558,7 @@ Non-executable scenario count: **11**
 - Preview data:
 ```csv
 "Value"
-"payment processed at Ullrich LLC for PKR 490.00, using card ending ****1272. Account: ***8641."
+"payment processed at Parker Inc for CRC 202.96, using card ending ****7286. Account: ***4194."
 ```
 
 #### `domain-finance-transactionType-base`
@@ -2471,7 +2594,7 @@ Non-executable scenario count: **11**
 - Preview data:
 ```csv
 "Value"
-"Passionfruit Pie"
+"Peach And Tangelo Tart"
 ```
 
 #### `domain-food-ethnicCategory-base`
@@ -2489,7 +2612,7 @@ Non-executable scenario count: **11**
 - Preview data:
 ```csv
 "Value"
-"grape"
+"grapefruit"
 ```
 
 #### `domain-food-ingredient-base`
@@ -2525,7 +2648,7 @@ Non-executable scenario count: **11**
 - Preview data:
 ```csv
 "Value"
-"lettuce"
+"leeks"
 ```
 
 #### `domain-git-branch-base`
@@ -2543,7 +2666,7 @@ Non-executable scenario count: **11**
 - Preview data:
 ```csv
 "Value"
-"Fri Jun 12 10:15:16 2026 -0700"
+"Tue Jun 16 13:51:13 2026 -0700"
 ```
 
 #### `domain-git-commitEntry-base`
@@ -2553,10 +2676,10 @@ Non-executable scenario count: **11**
 ```csv
 "Value"
 "commit 7738bbde748c2e27e1520b9bf8bb637a48e2feaa
-Author: Josie Russel <Josie.Russel95@yahoo.com>
-Date: Fri Jun 12 11:00:32 2026 +0700
+Author: Norberto.Robel36 <Norberto.Robel@gmail.com>
+Date: Wed Jun 17 09:26:44 2026 +0900
 
-    transmit solid state protocol
+    transmit open-source application
 "
 ```
 
@@ -2620,7 +2743,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"compressing the array won't do anything, we need to bypass the cross-platform PCI alarm!"
+"connecting the array won't do anything, we need to bypass the 1080p IP capacitor!"
 ```
 
 #### `domain-hacker-verb-base`
@@ -2650,15 +2773,6 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 "https://avatars.githubusercontent.com/u/16590067"
 ```
 
-#### `domain-image-avatarLegacy-base`
-
-- Command(s): `image.avatarLegacy()`
-- Preview data:
-```csv
-"Value"
-"https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/8.jpg"
-```
-
 #### `domain-image-dataUri-base`
 
 - Command(s): `image.dataUri()`
@@ -2683,7 +2797,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"https://loremflickr.com/3937/617?lock=3931926876699204"
+"https://picsum.photos/seed/rXzuqSX/3937/617"
 ```
 
 #### `domain-image-url-arg-height`
@@ -2692,7 +2806,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"https://loremflickr.com/3193/2?lock=3191839961479511"
+"https://picsum.photos/seed/lDB434I/3193/2"
 ```
 
 #### `domain-image-url-arg-width`
@@ -2701,7 +2815,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"https://picsum.photos/seed/3UIYDPaNWB/3/984"
+"https://picsum.photos/seed/V3UIYDPa/3/984"
 ```
 
 #### `domain-image-url-pair-height-width`
@@ -2710,7 +2824,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"https://loremflickr.com/3/2?lock=7146576591433292"
+"https://picsum.photos/seed/N4LRBx/3/2"
 ```
 
 #### `domain-image-urlLoremFlickr-base`
@@ -2731,31 +2845,13 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 "https://picsum.photos/seed/s9gojEHeQ/1634/3581?grayscale&blur=1"
 ```
 
-#### `domain-image-urlPlaceholder-base`
-
-- Command(s): `image.urlPlaceholder()`
-- Preview data:
-```csv
-"Value"
-"https://via.placeholder.com/3214x1881/defd36/91bc2c.jpg?text=comedo%20vespillo%20venio"
-```
-
-#### `domain-internet-color-base`
-
-- Command(s): `internet.color()`
-- Preview data:
-```csv
-"Value"
-"#2f0204"
-```
-
 #### `domain-internet-displayName-base`
 
 - Command(s): `internet.displayName()`
 - Preview data:
 ```csv
 "Value"
-"Demetrius.Kuhlman"
+"Jaylin5"
 ```
 
 #### `domain-internet-domainName-base`
@@ -2791,7 +2887,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"Brian42@yahoo.com"
+"Hulda22@hotmail.com"
 ```
 
 #### `domain-internet-email-arg-allowSpecialCharacters`
@@ -2800,7 +2896,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"Brant=Abernathy@hotmail.com"
+"Adrienne_Mitchell56@yahoo.com"
 ```
 
 #### `domain-internet-email-arg-firstName`
@@ -2809,7 +2905,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"Ada.Schumm@gmail.com"
+"Ada.Bednar49@gmail.com"
 ```
 
 #### `domain-internet-email-arg-lastName`
@@ -2818,7 +2914,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"Gavin.Lovelace62@yahoo.com"
+"Mandy.Lovelace@hotmail.com"
 ```
 
 #### `domain-internet-email-arg-provider`
@@ -2827,7 +2923,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"Viola.Torphy@example.com"
+"Shany.Mertz@example.com"
 ```
 
 #### `domain-internet-email-pair-allowSpecialCharacters-firstName`
@@ -2836,7 +2932,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"Ada93@hotmail.com"
+"Ada_Rau@yahoo.com"
 ```
 
 #### `domain-internet-email-pair-firstName-lastName`
@@ -2845,7 +2941,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"Ada.Lovelace55@yahoo.com"
+"Ada.Lovelace55@hotmail.com"
 ```
 
 #### `domain-internet-email-pair-lastName-provider`
@@ -2854,7 +2950,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"Euna.Lovelace@example.com"
+"Nora_Lovelace@example.com"
 ```
 
 #### `domain-internet-emoji-base`
@@ -2863,7 +2959,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"🐆"
+"🏵️"
 ```
 
 #### `domain-internet-emoji-arg-types`
@@ -2872,7 +2968,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"🫑"
+"🍖"
 ```
 
 #### `domain-internet-exampleEmail-base`
@@ -2881,7 +2977,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"Hulda5@example.org"
+"Amalia_Bednar@example.com"
 ```
 
 #### `domain-internet-httpMethod-base`
@@ -2962,7 +3058,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"eyJhbGciOiJIUzM4NCIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3ODEyNTc5ODUsImV4cCI6MTc4MTMxNDA2NiwibmJmIjoxNzc4MDQ5MDY3LCJpc3MiOiJTYXR0ZXJmaWVsZCBHcm91cCIsInN1YiI6IjYxMzIwNjNhLTE5MjktNDkwZi1iNWNhLTM2MWU2NmM1MmRkNCIsImF1ZCI6IjQwNjEwNWNkLTE2MjgtNDA4Yi1iN2EyLWQ2NmM1M2Y3NGFiNSIsImp0aSI6IjU4YmNiMzdkLTRkOGEtNGYyZS04ZDNmLTQyMGM4MGExNGMwNCJ9.MLGSLGF7hNjp6RghVgC2GZIDrfHAZBBIZ8WaqXFphTbyRPkIFKnEnnSToLoWkvDw"
+"eyJhbGciOiJFUzM4NCIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3ODE2MTY1NDIsImV4cCI6MTc4MTY3MjYyMywibmJmIjoxNzc4NDA3NjI1LCJpc3MiOiJIb3dlIEdyb3VwIiwic3ViIjoiMzIwNjNhMTktMjk5MC00ZjVjLThhMzYtMWU2NmM1MmRkNGY0IiwiYXVkIjoiNjEwNWNkMTYtMjgwOC00YjdhLWEyZDYtNmM1M2Y3NGFiNWQ1IiwianRpIjoiYmNiMzdkNGQtOGFmMi00ZWQzLWJmNDItMGM4MGExNGMwNDFjIn0.GSLGF7hNjp6RghVgC2GZIDrfHAZBBIZ8WaqXFphTbyRPkIFKnEnnSToLoWkvDwsi"
 ```
 
 #### `domain-internet-jwt-arg-header`
@@ -2971,7 +3067,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"e30.eyJpYXQiOjE3ODEyNjc2OTEsImV4cCI6MTc4MTI5MDE0MywibmJmIjoxNzg3NjEwNDYwLCJpc3MiOiJGYWhleSwgS2lobiBhbmQgUmVpY2hlcnQiLCJzdWIiOiIxYzQyMmU2ZS1lNzcxLTRmMDAtYmU3OS02NzAwNGViZjg1OGYiLCJhdWQiOiI5MmY3OTFiMy0wYTI5LTQ4ZjItOWUxZS00MGU1Yzk2NTkzYWQiLCJqdGkiOiJkNzk2YzA3Yy0zNjRmLTQzNjgtYWJhZS00N2M3NTExODk4MWEifQ.e8QhcTHj4nBTF2jK53PylJjqBpYeMf9N0oMfTsbM6jKYhngnf0HuiaRiyjUW5TWk"
+"e30.eyJpYXQiOjE3ODE2MjYyNDksImV4cCI6MTc4MTY0ODcwMSwibmJmIjoxNzg3OTY5MDE3LCJpc3MiOiJSZWljaGVydCwgR3JhbnQgYW5kIFZvblJ1ZWRlbiIsInN1YiI6IjZlZTc3MWYwLTBlNzktNDY3MC04MDRlLWJmODU4ZmM5MmY3OSIsImF1ZCI6ImIzMGEyOThmLTJlMWUtNDQwZS04NWM5LTY1OTNhZDVkNzk2YyIsImp0aSI6IjdjMzY0ZjM2LThiYWUtNDQ3Yy1iNzUxLTE4OTgxYTkzMmQ0MyJ9.Hj4nBTF2jK53PylJjqBpYeMf9N0oMfTsbM6jKYhngnf0HuiaRiyjUW5TWkqAp5aj"
 ```
 
 #### `domain-internet-jwt-arg-payload`
@@ -2980,7 +3076,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.e30.bzBMPPc25eqL3Wz5ty1xLOmqFcQ5UhbkK5Bz27pZJGMImquk9U1G93TTIT78S0Li"
+"eyJhbGciOiJFUzUxMiIsInR5cCI6IkpXVCJ9.e30.bzBMPPc25eqL3Wz5ty1xLOmqFcQ5UhbkK5Bz27pZJGMImquk9U1G93TTIT78S0Li"
 ```
 
 #### `domain-internet-jwt-arg-refDate`
@@ -2989,7 +3085,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOi0xMTYxMCwiZXhwIjo2OTYyMSwibmJmIjozMTE3NTUyMywiaXNzIjoiU2lwZXMsIEJhdHogYW5kIExvd2UiLCJzdWIiOiIxZWVhZGYwNC0zMDQ2LTRkYmItOWVhNC0yMGY1Zjg5N2Y2YWQiLCJhdWQiOiI2ZmJhMDFiYS0yMWY0LTRlZTQtYmVlZC1iZjA2MDlhMTNkMzAiLCJqdGkiOiI0NDFlMWI4ZC00MmFhLTQzM2UtODA0Ni05YmNiZmFjY2ZjZGIifQ.ShTkX7nPtnWynmGL3sA1GZzI2AzKj6Mj3LgvWpTuDw2z02aONYVFT1gwYoVsPPH4"
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOi0xMTYxMCwiZXhwIjo2OTYyMSwibmJmIjozMTE3NTUyMywiaXNzIjoiTG93ZSwgV2F0c2ljYSBhbmQgV2l6YSIsInN1YiI6IjA0MzA0NmRiLWJlYTQtNDIwZi04NWY4LTk3ZjZhZDc2ZmJhMCIsImF1ZCI6ImJhMjFmNGVlLTRlZWQtNGJmMC1hNjA5LWExM2QzMGY0NDFlMSIsImp0aSI6IjhkNDJhYTMzLWUwNDYtNDliYy04YmZhLWNjZmNkYjNlNGU1ZiJ9.nPtnWynmGL3sA1GZzI2AzKj6Mj3LgvWpTuDw2z02aONYVFT1gwYoVsPPH4UrH0jN"
 ```
 
 #### `domain-internet-jwt-pair-header-payload`
@@ -3007,7 +3103,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"eyJhbGciOiJFUzUxMiIsInR5cCI6IkpXVCJ9.e30.cqMtfsjVRe4taxGy1S7uH1KOAlSBZSXQoKXttlGA5b8LcMBlMXhYYMZxt7ED45qV"
+"eyJhbGciOiJQUzUxMiIsInR5cCI6IkpXVCJ9.e30.cqMtfsjVRe4taxGy1S7uH1KOAlSBZSXQoKXttlGA5b8LcMBlMXhYYMZxt7ED45qV"
 ```
 
 #### `domain-internet-jwtAlgorithm-base`
@@ -3016,7 +3112,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"ES256"
+"PS256"
 ```
 
 #### `domain-internet-mac-base`
@@ -3152,7 +3248,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"https://pleasing-scrap.biz/"
+"https://pleasing-scrap.com/"
 ```
 
 #### `domain-internet-url-arg-protocol`
@@ -3179,7 +3275,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/560.22 (KHTML, like Gecko) Chrome/100.9.0.1 Safari/555.7 Edg/113.8.7.15"
+"Googlebot/2.1 (+http://www.google.com/bot.html)"
 ```
 
 #### `domain-internet-username-base`
@@ -3188,7 +3284,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"Kailey2"
+"Jeremiah.Shanahan"
 ```
 
 #### `domain-internet-username-arg-firstName`
@@ -3197,7 +3293,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"Ada_Bode"
+"Ada_Metz53"
 ```
 
 #### `domain-internet-username-arg-lastName`
@@ -3206,7 +3302,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"Dallin.Lovelace"
+"Carla_Lovelace"
 ```
 
 #### `domain-internet-username-pair-firstName-lastName`
@@ -3216,15 +3312,6 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 ```csv
 "Value"
 "Ada.Lovelace"
-```
-
-#### `domain-internet-userName-base`
-
-- Command(s): `internet.userName()`
-- Preview data:
-```csv
-"Value"
-"Marlee30"
 ```
 
 #### `domain-literal-value-base`
@@ -3496,7 +3583,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"Brown Trafficway"
+"Gerhold Creek"
 ```
 
 #### `domain-location-streetAddress-base`
@@ -3505,7 +3592,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"428 Grant Walks"
+"428 Kunze-Johnston Trafficway"
 ```
 
 #### `domain-location-streetAddress-arg-useFullAddress`
@@ -4656,7 +4743,7 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 - Preview data:
 ```csv
 "Value"
-"Osbaldo"
+"Moses"
 ```
 
 #### `domain-person-firstName-arg-sex`
@@ -4665,7 +4752,7 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 - Preview data:
 ```csv
 "Value"
-"Jon"
+"Stephen"
 ```
 
 #### `domain-person-fullName-base`
@@ -4674,7 +4761,7 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 - Preview data:
 ```csv
 "Value"
-"Dixie Beer"
+"Candace Champlin"
 ```
 
 #### `domain-person-gender-base`
@@ -4728,7 +4815,7 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 - Preview data:
 ```csv
 "Value"
-"Koss"
+"Pacocha"
 ```
 
 #### `domain-person-lastName-arg-sex`
@@ -4746,7 +4833,7 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 - Preview data:
 ```csv
 "Value"
-"Reagan"
+"Luke"
 ```
 
 #### `domain-person-middleName-arg-sex`
@@ -4755,7 +4842,7 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 - Preview data:
 ```csv
 "Value"
-"Harrison"
+"Ezra"
 ```
 
 #### `domain-person-prefix-base`
@@ -4764,7 +4851,7 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 - Preview data:
 ```csv
 "Value"
-"Dr."
+"Miss"
 ```
 
 #### `domain-person-prefix-arg-sex`
@@ -5338,7 +5425,7 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 - Preview data:
 ```csv
 "Value"
-"01KV04WM3F4MY648F8XPVTRQE9"
+"01KVATTXNN4MY648F8XPVTRQE9"
 ```
 
 #### `domain-string-ulid-arg-refDate`
@@ -5365,7 +5452,7 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 - Preview data:
 ```csv
 "Value"
-"m2v"
+"mpg"
 ```
 
 #### `domain-system-commonFileName-base`
@@ -5374,7 +5461,7 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 - Preview data:
 ```csv
 "Value"
-"because.htm"
+"because.html"
 ```
 
 #### `domain-system-commonFileName-arg-extension`
@@ -5437,7 +5524,7 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 - Preview data:
 ```csv
 "Value"
-"/etc"
+"/bin"
 ```
 
 #### `domain-system-fileExt-base`
@@ -5446,7 +5533,7 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 - Preview data:
 ```csv
 "Value"
-"ear"
+"war"
 ```
 
 #### `domain-system-fileExt-arg-mimeType`
@@ -5473,7 +5560,7 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 - Preview data:
 ```csv
 "Value"
-"/lost+found/bah.epub"
+"/home/user/bah.epub"
 ```
 
 #### `domain-system-fileType-base`
@@ -6064,8 +6151,8 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 
 ## Runtime Scenarios
 
-Scenario count: **621**
-Generated preview data count: **621**
+Scenario count: **631**
+Generated preview data count: **631**
 Review-only scenario count: **0**
 Non-executable scenario count: **0**
 
@@ -6073,7 +6160,7 @@ Non-executable scenario count: **0**
 
 | Key | Count |
 | --- | ---: |
-| `domain` | 572 |
+| `domain` | 582 |
 | `enum` | 2 |
 | `faker` | 43 |
 | `literal` | 2 |
@@ -6083,17 +6170,17 @@ Non-executable scenario count: **0**
 
 | Key | Count |
 | --- | ---: |
-| `arg` | 211 |
-| `base` | 257 |
+| `arg` | 217 |
+| `base` | 254 |
 | `custom` | 6 |
 | `empty` | 2 |
-| `example` | 28 |
-| `pair` | 119 |
+| `example` | 31 |
+| `pair` | 123 |
 | `pairwise` | 1 |
 
 ### Commands By Source Type
 
-#### `domain` (245)
+#### `domain` (242)
 
 - `airline.aircraftType`
 - `airline.flightNumber`
@@ -6122,6 +6209,7 @@ Non-executable scenario count: **0**
 - `animal.snake`
 - `animal.type`
 - `autoIncrement.sequence`
+- `autoIncrement.timestamp`
 - `book.author`
 - `book.format`
 - `book.genre`
@@ -6144,6 +6232,7 @@ Non-executable scenario count: **0**
 - `commerce.productDescription`
 - `commerce.productMaterial`
 - `commerce.productName`
+- `commerce.upc`
 - `company.buzzAdjective`
 - `company.buzzNoun`
 - `company.buzzPhrase`
@@ -6185,7 +6274,6 @@ Non-executable scenario count: **0**
 - `finance.ethereumAddress`
 - `finance.iban`
 - `finance.litecoinAddress`
-- `finance.maskedNumber`
 - `finance.pin`
 - `finance.routingNumber`
 - `finance.transactionDescription`
@@ -6212,14 +6300,11 @@ Non-executable scenario count: **0**
 - `hacker.verb`
 - `image.avatar`
 - `image.avatarGitHub`
-- `image.avatarLegacy`
 - `image.dataUri`
 - `image.personPortrait`
 - `image.url`
 - `image.urlLoremFlickr`
 - `image.urlPicsumPhotos`
-- `image.urlPlaceholder`
-- `internet.color`
 - `internet.displayName`
 - `internet.domainName`
 - `internet.domainSuffix`
@@ -6241,7 +6326,6 @@ Non-executable scenario count: **0**
 - `internet.url`
 - `internet.userAgent`
 - `internet.username`
-- `internet.userName`
 - `literal.value`
 - `location.buildingNumber`
 - `location.cardinalDirection`
@@ -6531,7 +6615,7 @@ Non-executable scenario count: **0**
 - Preview data:
 ```csv
 "Value"
-"Melvin"
+"Douglas"
 ```
 
 #### `faker-helpers-fake-example-1`
@@ -6541,7 +6625,7 @@ Non-executable scenario count: **0**
 - Preview data:
 ```csv
 "Value"
-"Hi, my name is Ardith Weber!"
+"Hi, my name is Rhonda Wyman!"
 ```
 
 #### `faker-helpers-fake-arg-pattern`
@@ -7236,6 +7320,123 @@ Non-executable scenario count: **0**
 "001.txt"
 ```
 
+#### `domain-autoIncrement-timestamp-base`
+
+- Command(s): `autoIncrement.timestamp()`
+- Preview data:
+```csv
+"Value"
+"2026-06-17T13:02:55Z"
+```
+
+#### `domain-autoIncrement-timestamp-example-1`
+
+- Command(s): `autoIncrement.timestamp()`
+- Preview data:
+```csv
+"Value"
+"2026-06-17T13:02:55Z"
+```
+
+#### `domain-autoIncrement-timestamp-example-2`
+
+- Command(s): `autoIncrement.timestamp(start="20/03/1969", step=1, type="days")`
+- Preview data:
+```csv
+"Value"
+"1969-03-20T12:00:00Z"
+```
+
+#### `domain-autoIncrement-timestamp-example-3`
+
+- Command(s): `autoIncrement.timestamp(start="2026-06-12 12:39:23", step=15, type="minutes", outputFormat="yyyy-MM-dd HH:mm:ss")`
+- Preview data:
+```csv
+"Value"
+"2026-06-12 11:39:23"
+```
+
+#### `domain-autoIncrement-timestamp-arg-start`
+
+- Command(s): `autoIncrement.timestamp(start="2026-06-12T12:39:23Z")`
+- Preview data:
+```csv
+"Value"
+"2026-06-12T12:39:23Z"
+```
+
+#### `domain-autoIncrement-timestamp-arg-step`
+
+- Command(s): `autoIncrement.timestamp(step=1)`
+- Preview data:
+```csv
+"Value"
+"2026-06-17T13:02:55Z"
+```
+
+#### `domain-autoIncrement-timestamp-arg-type`
+
+- Command(s): `autoIncrement.timestamp(type="seconds")`
+- Preview data:
+```csv
+"Value"
+"2026-06-17T13:02:55Z"
+```
+
+#### `domain-autoIncrement-timestamp-arg-outputFormat`
+
+- Command(s): `autoIncrement.timestamp(outputFormat="iso8601")`
+- Preview data:
+```csv
+"Value"
+"2026-06-17T13:02:55Z"
+```
+
+#### `domain-autoIncrement-timestamp-arg-inputFormat`
+
+- Command(s): `autoIncrement.timestamp(inputFormat="dd/MM/yyyy")`
+- Preview data:
+```csv
+"Value"
+"2026-06-17T13:02:55Z"
+```
+
+#### `domain-autoIncrement-timestamp-pair-start-step`
+
+- Command(s): `autoIncrement.timestamp(start="2026-06-12T12:39:23Z", step=1)`
+- Preview data:
+```csv
+"Value"
+"2026-06-12T12:39:23Z"
+```
+
+#### `domain-autoIncrement-timestamp-pair-step-type`
+
+- Command(s): `autoIncrement.timestamp(step=1, type="seconds")`
+- Preview data:
+```csv
+"Value"
+"2026-06-17T13:02:55Z"
+```
+
+#### `domain-autoIncrement-timestamp-pair-type-outputFormat`
+
+- Command(s): `autoIncrement.timestamp(type="seconds", outputFormat="iso8601")`
+- Preview data:
+```csv
+"Value"
+"2026-06-17T13:02:55Z"
+```
+
+#### `domain-autoIncrement-timestamp-pair-outputFormat-inputFormat`
+
+- Command(s): `autoIncrement.timestamp(outputFormat="iso8601", inputFormat="dd/MM/yyyy")`
+- Preview data:
+```csv
+"Value"
+"2026-06-17T13:02:55Z"
+```
+
 #### `domain-book-author-base`
 
 - Command(s): `book.author()`
@@ -7597,6 +7798,24 @@ Non-executable scenario count: **0**
 "Practical Aluminum Shirt"
 ```
 
+#### `domain-commerce-upc-base`
+
+- Command(s): `commerce.upc()`
+- Preview data:
+```csv
+"Value"
+"930326813865"
+```
+
+#### `domain-commerce-upc-arg-prefix`
+
+- Command(s): `commerce.upc(prefix="01234")`
+- Preview data:
+```csv
+"Value"
+"012345065699"
+```
+
 #### `domain-company-buzzAdjective-base`
 
 - Command(s): `company.buzzAdjective()`
@@ -7675,7 +7894,7 @@ Non-executable scenario count: **0**
 - Preview data:
 ```csv
 "Value"
-"Yundt, Boehm and Roob"
+"Roob, Schmidt and Jacobi-Lind"
 ```
 
 #### `domain-database-collation-base`
@@ -7750,13 +7969,22 @@ Non-executable scenario count: **0**
 "active"
 ```
 
+#### `domain-datatype-enum-arg-values`
+
+- Command(s): `datatype.enum(values="datatype-enum-values")`
+- Preview data:
+```csv
+"Value"
+"values=datatype-enum-values"
+```
+
 #### `domain-date-anytime-base`
 
 - Command(s): `date.anytime()`
 - Preview data:
 ```csv
 "Value"
-"2026-06-22T18:25:06.486Z"
+"2026-06-26T22:01:03.744Z"
 ```
 
 #### `domain-date-anytime-arg-refDate`
@@ -7810,7 +8038,7 @@ Non-executable scenario count: **0**
 - Preview data:
 ```csv
 "Value"
-"1957-08-17T18:20:18.489Z"
+"1957-08-21T21:56:15.746Z"
 ```
 
 #### `domain-date-birthdate-example-1`
@@ -7838,7 +8066,7 @@ Non-executable scenario count: **0**
 - Preview data:
 ```csv
 "Value"
-"1979-07-05T22:27:06.933Z"
+"1979-07-10T02:03:04.191Z"
 ```
 
 #### `domain-date-birthdate-arg-min`
@@ -7847,7 +8075,7 @@ Non-executable scenario count: **0**
 - Preview data:
 ```csv
 "Value"
-"1970-08-31T13:50:34.426Z"
+"1970-09-04T17:26:31.684Z"
 ```
 
 #### `domain-date-birthdate-arg-mode`
@@ -7856,7 +8084,7 @@ Non-executable scenario count: **0**
 - Preview data:
 ```csv
 "Value"
-"1989-12-13T01:17:45.847Z"
+"1989-12-17T04:53:43.105Z"
 ```
 
 #### `domain-date-birthdate-pair-refDate-max`
@@ -7874,7 +8102,7 @@ Non-executable scenario count: **0**
 - Preview data:
 ```csv
 "Value"
-"1979-10-24T16:49:36.678Z"
+"1979-10-28T20:25:33.935Z"
 ```
 
 #### `domain-date-birthdate-pair-min-mode`
@@ -7883,7 +8111,7 @@ Non-executable scenario count: **0**
 - Preview data:
 ```csv
 "Value"
-"1970-04-18T19:33:08.429Z"
+"1970-04-22T23:09:05.686Z"
 ```
 
 #### `domain-date-future-base`
@@ -7892,7 +8120,7 @@ Non-executable scenario count: **0**
 - Preview data:
 ```csv
 "Value"
-"2026-09-28T04:49:15.231Z"
+"2026-10-02T08:25:12.488Z"
 ```
 
 #### `domain-date-future-arg-refDate`
@@ -7910,7 +8138,7 @@ Non-executable scenario count: **0**
 - Preview data:
 ```csv
 "Value"
-"2027-12-10T23:32:25.536Z"
+"2027-12-15T03:08:22.793Z"
 ```
 
 #### `domain-date-future-pair-refDate-years`
@@ -7964,7 +8192,7 @@ Non-executable scenario count: **0**
 - Preview data:
 ```csv
 "Value"
-"2026-01-11T02:28:13.403Z"
+"2026-01-15T06:04:10.661Z"
 ```
 
 #### `domain-date-past-arg-refDate`
@@ -7982,7 +8210,7 @@ Non-executable scenario count: **0**
 - Preview data:
 ```csv
 "Value"
-"2025-06-15T15:28:06.798Z"
+"2025-06-19T19:04:04.055Z"
 ```
 
 #### `domain-date-past-pair-refDate-years`
@@ -8000,7 +8228,7 @@ Non-executable scenario count: **0**
 - Preview data:
 ```csv
 "Value"
-"2026-06-13T09:17:28.292Z"
+"2026-06-17T12:53:25.549Z"
 ```
 
 #### `domain-date-recent-arg-days`
@@ -8009,7 +8237,7 @@ Non-executable scenario count: **0**
 - Preview data:
 ```csv
 "Value"
-"2026-06-11T15:05:30.962Z"
+"2026-06-15T18:41:28.219Z"
 ```
 
 #### `domain-date-recent-arg-refDate`
@@ -8036,7 +8264,7 @@ Non-executable scenario count: **0**
 - Preview data:
 ```csv
 "Value"
-"2026-06-13T11:18:11.053Z"
+"2026-06-17T14:54:08.311Z"
 ```
 
 #### `domain-date-soon-arg-days`
@@ -8045,7 +8273,7 @@ Non-executable scenario count: **0**
 - Preview data:
 ```csv
 "Value"
-"2026-06-15T03:45:59.281Z"
+"2026-06-19T07:21:56.539Z"
 ```
 
 #### `domain-date-soon-arg-refDate`
@@ -8381,24 +8609,6 @@ Non-executable scenario count: **0**
 "387GmSW4s1E1t16xYaNCi9zgLtV5cDM"
 ```
 
-#### `domain-finance-maskedNumber-base`
-
-- Command(s): `finance.maskedNumber()`
-- Preview data:
-```csv
-"Value"
-"(...1483)"
-```
-
-#### `domain-finance-maskedNumber-arg-length`
-
-- Command(s): `finance.maskedNumber(length=4)`
-- Preview data:
-```csv
-"Value"
-"(...7138)"
-```
-
 #### `domain-finance-pin-base`
 
 - Command(s): `finance.pin()`
@@ -8432,7 +8642,7 @@ Non-executable scenario count: **0**
 - Preview data:
 ```csv
 "Value"
-"payment processed at Ullrich LLC for PKR 490.00, using card ending ****1272. Account: ***8641."
+"payment processed at Parker Inc for CRC 202.96, using card ending ****7286. Account: ***4194."
 ```
 
 #### `domain-finance-transactionType-base`
@@ -8468,7 +8678,7 @@ Non-executable scenario count: **0**
 - Preview data:
 ```csv
 "Value"
-"Passionfruit Pie"
+"Peach And Tangelo Tart"
 ```
 
 #### `domain-food-ethnicCategory-base`
@@ -8486,7 +8696,7 @@ Non-executable scenario count: **0**
 - Preview data:
 ```csv
 "Value"
-"grape"
+"grapefruit"
 ```
 
 #### `domain-food-ingredient-base`
@@ -8522,7 +8732,7 @@ Non-executable scenario count: **0**
 - Preview data:
 ```csv
 "Value"
-"lettuce"
+"leeks"
 ```
 
 #### `domain-git-branch-base`
@@ -8540,7 +8750,7 @@ Non-executable scenario count: **0**
 - Preview data:
 ```csv
 "Value"
-"Fri Jun 12 10:15:16 2026 -0700"
+"Tue Jun 16 13:51:13 2026 -0700"
 ```
 
 #### `domain-git-commitEntry-base`
@@ -8550,10 +8760,10 @@ Non-executable scenario count: **0**
 ```csv
 "Value"
 "commit 7738bbde748c2e27e1520b9bf8bb637a48e2feaa
-Author: Josie Russel <Josie.Russel95@yahoo.com>
-Date: Fri Jun 12 11:00:32 2026 +0700
+Author: Norberto.Robel36 <Norberto.Robel@gmail.com>
+Date: Wed Jun 17 09:26:44 2026 +0900
 
-    transmit solid state protocol
+    transmit open-source application
 "
 ```
 
@@ -8617,7 +8827,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"compressing the array won't do anything, we need to bypass the cross-platform PCI alarm!"
+"connecting the array won't do anything, we need to bypass the 1080p IP capacitor!"
 ```
 
 #### `domain-hacker-verb-base`
@@ -8647,15 +8857,6 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 "https://avatars.githubusercontent.com/u/16590067"
 ```
 
-#### `domain-image-avatarLegacy-base`
-
-- Command(s): `image.avatarLegacy()`
-- Preview data:
-```csv
-"Value"
-"https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/8.jpg"
-```
-
 #### `domain-image-dataUri-base`
 
 - Command(s): `image.dataUri()`
@@ -8680,7 +8881,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"https://loremflickr.com/3937/617?lock=3931926876699204"
+"https://picsum.photos/seed/rXzuqSX/3937/617"
 ```
 
 #### `domain-image-url-arg-height`
@@ -8689,7 +8890,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"https://loremflickr.com/3193/2?lock=3191839961479511"
+"https://picsum.photos/seed/lDB434I/3193/2"
 ```
 
 #### `domain-image-url-arg-width`
@@ -8698,7 +8899,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"https://picsum.photos/seed/3UIYDPaNWB/3/984"
+"https://picsum.photos/seed/V3UIYDPa/3/984"
 ```
 
 #### `domain-image-url-pair-height-width`
@@ -8707,7 +8908,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"https://loremflickr.com/3/2?lock=7146576591433292"
+"https://picsum.photos/seed/N4LRBx/3/2"
 ```
 
 #### `domain-image-urlLoremFlickr-base`
@@ -8728,31 +8929,13 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 "https://picsum.photos/seed/s9gojEHeQ/1634/3581?grayscale&blur=1"
 ```
 
-#### `domain-image-urlPlaceholder-base`
-
-- Command(s): `image.urlPlaceholder()`
-- Preview data:
-```csv
-"Value"
-"https://via.placeholder.com/3214x1881/defd36/91bc2c.jpg?text=comedo%20vespillo%20venio"
-```
-
-#### `domain-internet-color-base`
-
-- Command(s): `internet.color()`
-- Preview data:
-```csv
-"Value"
-"#2f0204"
-```
-
 #### `domain-internet-displayName-base`
 
 - Command(s): `internet.displayName()`
 - Preview data:
 ```csv
 "Value"
-"Demetrius.Kuhlman"
+"Jaylin5"
 ```
 
 #### `domain-internet-domainName-base`
@@ -8788,7 +8971,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"Brian42@yahoo.com"
+"Hulda22@hotmail.com"
 ```
 
 #### `domain-internet-email-arg-allowSpecialCharacters`
@@ -8797,7 +8980,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"Brant=Abernathy@hotmail.com"
+"Adrienne_Mitchell56@yahoo.com"
 ```
 
 #### `domain-internet-email-arg-firstName`
@@ -8806,7 +8989,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"Ada.Schumm@gmail.com"
+"Ada.Bednar49@gmail.com"
 ```
 
 #### `domain-internet-email-arg-lastName`
@@ -8815,7 +8998,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"Gavin.Lovelace62@yahoo.com"
+"Mandy.Lovelace@hotmail.com"
 ```
 
 #### `domain-internet-email-arg-provider`
@@ -8824,7 +9007,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"Viola.Torphy@example.com"
+"Shany.Mertz@example.com"
 ```
 
 #### `domain-internet-email-pair-allowSpecialCharacters-firstName`
@@ -8833,7 +9016,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"Ada93@hotmail.com"
+"Ada_Rau@yahoo.com"
 ```
 
 #### `domain-internet-email-pair-firstName-lastName`
@@ -8842,7 +9025,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"Ada.Lovelace55@yahoo.com"
+"Ada.Lovelace55@hotmail.com"
 ```
 
 #### `domain-internet-email-pair-lastName-provider`
@@ -8851,7 +9034,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"Euna.Lovelace@example.com"
+"Nora_Lovelace@example.com"
 ```
 
 #### `domain-internet-emoji-base`
@@ -8860,7 +9043,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"🐆"
+"🏵️"
 ```
 
 #### `domain-internet-emoji-arg-types`
@@ -8869,7 +9052,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"🫑"
+"🍖"
 ```
 
 #### `domain-internet-exampleEmail-base`
@@ -8878,7 +9061,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"Hulda5@example.org"
+"Amalia_Bednar@example.com"
 ```
 
 #### `domain-internet-httpMethod-base`
@@ -8959,7 +9142,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"eyJhbGciOiJIUzM4NCIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3ODEyNTc5ODUsImV4cCI6MTc4MTMxNDA2NiwibmJmIjoxNzc4MDQ5MDY3LCJpc3MiOiJTYXR0ZXJmaWVsZCBHcm91cCIsInN1YiI6IjYxMzIwNjNhLTE5MjktNDkwZi1iNWNhLTM2MWU2NmM1MmRkNCIsImF1ZCI6IjQwNjEwNWNkLTE2MjgtNDA4Yi1iN2EyLWQ2NmM1M2Y3NGFiNSIsImp0aSI6IjU4YmNiMzdkLTRkOGEtNGYyZS04ZDNmLTQyMGM4MGExNGMwNCJ9.MLGSLGF7hNjp6RghVgC2GZIDrfHAZBBIZ8WaqXFphTbyRPkIFKnEnnSToLoWkvDw"
+"eyJhbGciOiJFUzM4NCIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3ODE2MTY1NDIsImV4cCI6MTc4MTY3MjYyMywibmJmIjoxNzc4NDA3NjI1LCJpc3MiOiJIb3dlIEdyb3VwIiwic3ViIjoiMzIwNjNhMTktMjk5MC00ZjVjLThhMzYtMWU2NmM1MmRkNGY0IiwiYXVkIjoiNjEwNWNkMTYtMjgwOC00YjdhLWEyZDYtNmM1M2Y3NGFiNWQ1IiwianRpIjoiYmNiMzdkNGQtOGFmMi00ZWQzLWJmNDItMGM4MGExNGMwNDFjIn0.GSLGF7hNjp6RghVgC2GZIDrfHAZBBIZ8WaqXFphTbyRPkIFKnEnnSToLoWkvDwsi"
 ```
 
 #### `domain-internet-jwt-arg-header`
@@ -8968,7 +9151,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"e30.eyJpYXQiOjE3ODEyNjc2OTEsImV4cCI6MTc4MTI5MDE0MywibmJmIjoxNzg3NjEwNDYwLCJpc3MiOiJGYWhleSwgS2lobiBhbmQgUmVpY2hlcnQiLCJzdWIiOiIxYzQyMmU2ZS1lNzcxLTRmMDAtYmU3OS02NzAwNGViZjg1OGYiLCJhdWQiOiI5MmY3OTFiMy0wYTI5LTQ4ZjItOWUxZS00MGU1Yzk2NTkzYWQiLCJqdGkiOiJkNzk2YzA3Yy0zNjRmLTQzNjgtYWJhZS00N2M3NTExODk4MWEifQ.e8QhcTHj4nBTF2jK53PylJjqBpYeMf9N0oMfTsbM6jKYhngnf0HuiaRiyjUW5TWk"
+"e30.eyJpYXQiOjE3ODE2MjYyNDksImV4cCI6MTc4MTY0ODcwMSwibmJmIjoxNzg3OTY5MDE3LCJpc3MiOiJSZWljaGVydCwgR3JhbnQgYW5kIFZvblJ1ZWRlbiIsInN1YiI6IjZlZTc3MWYwLTBlNzktNDY3MC04MDRlLWJmODU4ZmM5MmY3OSIsImF1ZCI6ImIzMGEyOThmLTJlMWUtNDQwZS04NWM5LTY1OTNhZDVkNzk2YyIsImp0aSI6IjdjMzY0ZjM2LThiYWUtNDQ3Yy1iNzUxLTE4OTgxYTkzMmQ0MyJ9.Hj4nBTF2jK53PylJjqBpYeMf9N0oMfTsbM6jKYhngnf0HuiaRiyjUW5TWkqAp5aj"
 ```
 
 #### `domain-internet-jwt-arg-payload`
@@ -8977,7 +9160,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.e30.bzBMPPc25eqL3Wz5ty1xLOmqFcQ5UhbkK5Bz27pZJGMImquk9U1G93TTIT78S0Li"
+"eyJhbGciOiJFUzUxMiIsInR5cCI6IkpXVCJ9.e30.bzBMPPc25eqL3Wz5ty1xLOmqFcQ5UhbkK5Bz27pZJGMImquk9U1G93TTIT78S0Li"
 ```
 
 #### `domain-internet-jwt-arg-refDate`
@@ -8986,7 +9169,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOi0xMTYxMCwiZXhwIjo2OTYyMSwibmJmIjozMTE3NTUyMywiaXNzIjoiU2lwZXMsIEJhdHogYW5kIExvd2UiLCJzdWIiOiIxZWVhZGYwNC0zMDQ2LTRkYmItOWVhNC0yMGY1Zjg5N2Y2YWQiLCJhdWQiOiI2ZmJhMDFiYS0yMWY0LTRlZTQtYmVlZC1iZjA2MDlhMTNkMzAiLCJqdGkiOiI0NDFlMWI4ZC00MmFhLTQzM2UtODA0Ni05YmNiZmFjY2ZjZGIifQ.ShTkX7nPtnWynmGL3sA1GZzI2AzKj6Mj3LgvWpTuDw2z02aONYVFT1gwYoVsPPH4"
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOi0xMTYxMCwiZXhwIjo2OTYyMSwibmJmIjozMTE3NTUyMywiaXNzIjoiTG93ZSwgV2F0c2ljYSBhbmQgV2l6YSIsInN1YiI6IjA0MzA0NmRiLWJlYTQtNDIwZi04NWY4LTk3ZjZhZDc2ZmJhMCIsImF1ZCI6ImJhMjFmNGVlLTRlZWQtNGJmMC1hNjA5LWExM2QzMGY0NDFlMSIsImp0aSI6IjhkNDJhYTMzLWUwNDYtNDliYy04YmZhLWNjZmNkYjNlNGU1ZiJ9.nPtnWynmGL3sA1GZzI2AzKj6Mj3LgvWpTuDw2z02aONYVFT1gwYoVsPPH4UrH0jN"
 ```
 
 #### `domain-internet-jwt-pair-header-payload`
@@ -9004,7 +9187,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"eyJhbGciOiJFUzUxMiIsInR5cCI6IkpXVCJ9.e30.cqMtfsjVRe4taxGy1S7uH1KOAlSBZSXQoKXttlGA5b8LcMBlMXhYYMZxt7ED45qV"
+"eyJhbGciOiJQUzUxMiIsInR5cCI6IkpXVCJ9.e30.cqMtfsjVRe4taxGy1S7uH1KOAlSBZSXQoKXttlGA5b8LcMBlMXhYYMZxt7ED45qV"
 ```
 
 #### `domain-internet-jwtAlgorithm-base`
@@ -9013,7 +9196,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"ES256"
+"PS256"
 ```
 
 #### `domain-internet-mac-base`
@@ -9149,7 +9332,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"https://pleasing-scrap.biz/"
+"https://pleasing-scrap.com/"
 ```
 
 #### `domain-internet-url-arg-protocol`
@@ -9176,7 +9359,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/560.22 (KHTML, like Gecko) Chrome/100.9.0.1 Safari/555.7 Edg/113.8.7.15"
+"Googlebot/2.1 (+http://www.google.com/bot.html)"
 ```
 
 #### `domain-internet-username-base`
@@ -9185,7 +9368,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"Kailey2"
+"Jeremiah.Shanahan"
 ```
 
 #### `domain-internet-username-arg-firstName`
@@ -9194,7 +9377,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"Ada_Bode"
+"Ada_Metz53"
 ```
 
 #### `domain-internet-username-arg-lastName`
@@ -9203,7 +9386,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"Dallin.Lovelace"
+"Carla_Lovelace"
 ```
 
 #### `domain-internet-username-pair-firstName-lastName`
@@ -9213,15 +9396,6 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 ```csv
 "Value"
 "Ada.Lovelace"
-```
-
-#### `domain-internet-userName-base`
-
-- Command(s): `internet.userName()`
-- Preview data:
-```csv
-"Value"
-"Marlee30"
 ```
 
 #### `domain-literal-value-base`
@@ -9493,7 +9667,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"Brown Trafficway"
+"Gerhold Creek"
 ```
 
 #### `domain-location-streetAddress-base`
@@ -9502,7 +9676,7 @@ Date: Fri Jun 12 11:00:32 2026 +0700
 - Preview data:
 ```csv
 "Value"
-"428 Grant Walks"
+"428 Kunze-Johnston Trafficway"
 ```
 
 #### `domain-location-streetAddress-arg-useFullAddress`
@@ -10653,7 +10827,7 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 - Preview data:
 ```csv
 "Value"
-"Osbaldo"
+"Moses"
 ```
 
 #### `domain-person-firstName-arg-sex`
@@ -10662,7 +10836,7 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 - Preview data:
 ```csv
 "Value"
-"Jon"
+"Stephen"
 ```
 
 #### `domain-person-fullName-base`
@@ -10671,7 +10845,7 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 - Preview data:
 ```csv
 "Value"
-"Dixie Beer"
+"Candace Champlin"
 ```
 
 #### `domain-person-gender-base`
@@ -10725,7 +10899,7 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 - Preview data:
 ```csv
 "Value"
-"Koss"
+"Pacocha"
 ```
 
 #### `domain-person-lastName-arg-sex`
@@ -10743,7 +10917,7 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 - Preview data:
 ```csv
 "Value"
-"Reagan"
+"Luke"
 ```
 
 #### `domain-person-middleName-arg-sex`
@@ -10752,7 +10926,7 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 - Preview data:
 ```csv
 "Value"
-"Harrison"
+"Ezra"
 ```
 
 #### `domain-person-prefix-base`
@@ -10761,7 +10935,7 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 - Preview data:
 ```csv
 "Value"
-"Dr."
+"Miss"
 ```
 
 #### `domain-person-prefix-arg-sex`
@@ -11335,7 +11509,7 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 - Preview data:
 ```csv
 "Value"
-"01KV04WM3F4MY648F8XPVTRQE9"
+"01KVATTXNN4MY648F8XPVTRQE9"
 ```
 
 #### `domain-string-ulid-arg-refDate`
@@ -11362,7 +11536,7 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 - Preview data:
 ```csv
 "Value"
-"m2v"
+"mpg"
 ```
 
 #### `domain-system-commonFileName-base`
@@ -11371,7 +11545,7 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 - Preview data:
 ```csv
 "Value"
-"because.htm"
+"because.html"
 ```
 
 #### `domain-system-commonFileName-arg-extension`
@@ -11434,7 +11608,7 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 - Preview data:
 ```csv
 "Value"
-"/etc"
+"/bin"
 ```
 
 #### `domain-system-fileExt-base`
@@ -11443,7 +11617,7 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 - Preview data:
 ```csv
 "Value"
-"ear"
+"war"
 ```
 
 #### `domain-system-fileExt-arg-mimeType`
@@ -11470,7 +11644,7 @@ Adicio voluptatibus non aut brevis est sponte arguo iure. Bos confido venustas. 
 - Preview data:
 ```csv
 "Value"
-"/lost+found/bah.epub"
+"/home/user/bah.epub"
 ```
 
 #### `domain-system-fileType-base`
@@ -12234,7 +12408,7 @@ Structural-only preview parity scenario count: **5**
 - Preview data:
 ```csv
 "Value"
-"Melvin"
+"Douglas"
 ```
 
 #### `faker-helpers-fromRegExp-example-1`

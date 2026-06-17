@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach } from '@jest/globals';
 import { faker } from '@faker-js/faker';
 import RandExp from 'randexp';
 import { TestDataGenerator } from '@anywaydata/core/data_generation/testDataGenerator.js';
+import { FORBIDDEN_FAKER_COMMANDS } from '../../../../js/gui_components/shared/faker-commands.js';
 import {
   identifyFakerCommands,
   getFakerCommands,
@@ -47,13 +48,11 @@ describe('Test Data Command Catalog', () => {
       expect(commands).toContain('helpers.arrayElement');
     });
 
-    it('should exclude bad helpers commands', () => {
+    it('should not include forbidden helper commands in the catalog', () => {
       const commands = getFakerCommands();
-      // These helpers are known to be unsuitable
-      expect(commands).not.toContain('helpers.objectKey');
-      expect(commands).not.toContain('helpers.objectValue');
-      expect(commands).not.toContain('helpers.objectEntry');
-      expect(commands).not.toContain('helpers.enumValue');
+      FORBIDDEN_FAKER_COMMANDS.forEach((command) => {
+        expect(commands).not.toContain(command);
+      });
     });
 
     it('should sort commands by descending length to avoid prefix collisions', () => {
@@ -86,6 +85,9 @@ describe('Test Data Command Catalog', () => {
       expect(domainEntry?.sourceType).toBe('domain');
       expect(fakerEntry?.sourceType).toBe('faker');
       expect(Array.isArray(domainEntry?.helpModel?.params)).toBe(true);
+      FORBIDDEN_FAKER_COMMANDS.forEach((command) => {
+        expect(values.map((entry) => entry.command)).not.toContain(command);
+      });
     });
 
     it('should keep non-scalar domain commands out of default picker options', () => {

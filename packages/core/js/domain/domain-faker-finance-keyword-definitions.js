@@ -300,27 +300,6 @@ const DOMAIN_FAKER_FINANCE_KEYWORD_DEFINITIONS = [
     },
   },
   {
-    keyword: 'finance.maskedNumber',
-    delegate: {
-      type: 'faker',
-      target: 'finance.maskedNumber',
-    },
-    help: {
-      summary: 'Generates a random masked number.',
-      docsUrl: 'https://fakerjs.dev/api/finance',
-      example: '(...0934)',
-      returnType: 'string',
-      args: [
-        {
-          name: 'length',
-          type: 'number',
-          required: false,
-          description: 'Desired length of the generated value.',
-        },
-      ],
-    },
-  },
-  {
     keyword: 'finance.pin',
     delegate: {
       type: 'faker',

@@ -123,6 +123,7 @@ function sampleValueForKeywordArg(keywordName, argName, typeName) {
   if (argName === 'precision') return 2;
   if (argName === 'dec') return 2;
   if (argName === 'multipleOf') return 1;
+  if (key === 'commerce.upc.prefix') return '01234';
   if (argName === 'prefix') return 'pre';
   if (argName === 'symbol') return '$';
   if (argName === 'refDate') return Date.now();

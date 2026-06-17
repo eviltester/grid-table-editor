@@ -204,10 +204,6 @@ function determineExecutionStatus(scenario) {
   }
 
   if (scenario.sourceType === 'faker') {
-    const nonExecutableFakerCommands = new Set(['internet.ipv4', 'internet.ipv6']);
-    if (nonExecutableFakerCommands.has(scenario.command)) {
-      return 'non-executable';
-    }
     return canGenerateCleanPreview(scenario) ? 'generated' : 'non-executable';
   }
 

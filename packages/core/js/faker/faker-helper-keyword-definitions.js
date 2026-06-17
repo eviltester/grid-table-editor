@@ -71,6 +71,54 @@ const FAKER_HELPER_KEYWORD_DEFINITIONS = {
     ],
     examples: ['helpers.arrayElement(["A", "B", "C"])'],
   },
+  'helpers.objectKey': {
+    summary: 'Returns one random key from the supplied object.',
+    params: [
+      {
+        name: 'object',
+        optional: false,
+        type: 'object',
+        description: 'Object whose enumerable keys are used as candidate values.',
+      },
+    ],
+    examples: ['helpers.objectKey({ red: "#f00", blue: "#00f" })'],
+  },
+  'helpers.objectValue': {
+    summary: 'Returns one random value from the supplied object.',
+    params: [
+      {
+        name: 'object',
+        optional: false,
+        type: 'object',
+        description: 'Object whose enumerable values are used as candidate values.',
+      },
+    ],
+    examples: ['helpers.objectValue({ red: "#f00", blue: "#00f" })'],
+  },
+  'helpers.objectEntry': {
+    summary: 'Returns one random [key, value] entry from the supplied object.',
+    params: [
+      {
+        name: 'object',
+        optional: false,
+        type: 'object',
+        description: 'Object whose enumerable entries are used as candidate values.',
+      },
+    ],
+    examples: ['helpers.objectEntry({ red: "#f00", blue: "#00f" })'],
+  },
+  'helpers.enumValue': {
+    summary: 'Returns one random value from the supplied enum-like object.',
+    params: [
+      {
+        name: 'enumObject',
+        optional: false,
+        type: 'object',
+        description: 'Enum-like object to sample from while ignoring numeric reverse-mapping keys.',
+      },
+    ],
+    examples: ['helpers.enumValue({ Pending: "pending", Active: "active" })'],
+  },
   'helpers.slugify': {
     summary: 'Converts a string into a URL-friendly slug.',
     params: [

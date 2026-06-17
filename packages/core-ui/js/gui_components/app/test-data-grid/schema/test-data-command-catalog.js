@@ -6,8 +6,8 @@
  */
 
 import {
-  getKnownFakerCommandsAlphabetical,
-  getKnownFakerCommandsLongestFirst,
+  getAllowedFakerCommandsAlphabetical,
+  getAllowedFakerCommandsLongestFirst,
 } from '../../../shared/faker-commands.js';
 import {
   getKnownDomainCommandsAlphabetical,
@@ -28,10 +28,10 @@ function identifyFakerCommands() {
   DOMAIN_COMMANDS_LONGEST_FIRST.length = 0;
 
   TOP_LEVEL_TYPE_OPTIONS.forEach((typeOption) => FAKER_COMMANDS.push(typeOption));
-  getKnownFakerCommandsAlphabetical()
+  getAllowedFakerCommandsAlphabetical()
     .filter((command) => command !== 'RegEx' && command.startsWith('helpers.'))
     .forEach((command) => FAKER_COMMANDS.push(command));
-  getKnownFakerCommandsLongestFirst()
+  getAllowedFakerCommandsLongestFirst()
     .filter((command) => command.startsWith('helpers.'))
     .forEach((command) => FAKER_COMMANDS_LONGEST_FIRST.push(command));
   getKnownDomainCommandsAlphabetical().forEach((command) => DOMAIN_COMMANDS.push(command));
@@ -57,7 +57,7 @@ function getMethodPickerOptions(currentValue = '') {
     commands: getKnownDomainCommandsAlphabetical(),
     currentCommand: String(currentValue || '').trim(),
   });
-  const fakerCommands = getKnownFakerCommandsAlphabetical().filter(
+  const fakerCommands = getAllowedFakerCommandsAlphabetical().filter(
     (command) => command !== 'RegEx' && command.startsWith('helpers.')
   );
   const options = [...typeOptions];

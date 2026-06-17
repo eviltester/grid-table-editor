@@ -59,4 +59,24 @@ describe('schema-row-validation', () => {
       }),
     ]);
   });
+
+  test('reports forbidden faker commands as known but not allowed', () => {
+    const issues = getSchemaRowValidationIssues(
+      {
+        name: 'Value',
+        sourceType: 'faker',
+        command: 'helpers.objectKey',
+        params: '({"red":"#f00"})',
+      },
+      0
+    );
+
+    expect(issues).toEqual([
+      expect.objectContaining({
+        code: 'forbidden_faker_command',
+        field: 'command',
+        message: expect.stringContaining('helpers.objectKey'),
+      }),
+    ]);
+  });
 });

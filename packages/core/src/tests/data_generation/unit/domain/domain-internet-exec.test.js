@@ -10,12 +10,6 @@ function decodeJwtPart(part) {
 }
 
 describe('internet domain keyword execution', () => {
-  test('executes internet.color', () => {
-    const result = executeDomainKeyword('internet.color', { faker, args: [] });
-    console.log('internet.color', result);
-    expectMeaningfulString(result);
-  });
-
   test('executes internet.displayName', () => {
     const result = executeDomainKeyword('internet.displayName', { faker, args: [] });
     console.log('internet.displayName', result);
@@ -177,12 +171,6 @@ describe('internet domain keyword execution', () => {
   test('executes internet.username', () => {
     const result = executeDomainKeyword('internet.username', { faker, args: [] });
     console.log('internet.username', result);
-    expectMeaningfulString(result);
-  });
-
-  test('executes internet.userName', () => {
-    const result = executeDomainKeyword('internet.userName', { faker, args: [] });
-    console.log('internet.userName', result);
     expectMeaningfulString(result);
   });
 });

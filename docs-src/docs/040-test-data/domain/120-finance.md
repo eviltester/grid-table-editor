@@ -339,30 +339,6 @@ finance.litecoinAddress()
 Example return values:
 - `M7nWopfUfSjA8cmGWvuENRLu6GU4C1iTK`
 
-### `finance.maskedNumber`
-
-Generates a random masked number.
-
-- Canonical: `awd.domain.finance.maskedNumber`
-- Faker docs: [https://fakerjs.dev/api/finance](https://fakerjs.dev/api/finance)
-
-| Arg | Type | Required | Description |
-| --- | --- | --- | --- |
-| `length` | `number` | no | Desired length of the generated value. |
-
-Examples:
-
-```txt
-finance.maskedNumber()
-```
-
-```txt
-finance.maskedNumber(length=1)
-```
-
-Example return values:
-- `(...0934)`
-
 ### `finance.pin`
 
 Generates a random PIN number.

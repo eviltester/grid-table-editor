@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-13T09:26:58.331Z",
+  "generatedAt": "2026-06-17T13:02:55.544Z",
   "coverageScenarios": [
     {
       "id": "custom-enum-base",
@@ -2253,6 +2253,292 @@
       "origins": ["pair"]
     },
     {
+      "id": "domain-autoIncrement-timestamp-base",
+      "sourceType": "domain",
+      "command": "autoIncrement.timestamp",
+      "label": "autoIncrement.timestamp",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.timestamp",
+          "params": "()",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.timestamp()",
+      "expectedUiSchemaText": "Value\nautoIncrement.timestamp()",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": [],
+      "origins": ["base"]
+    },
+    {
+      "id": "domain-autoIncrement-timestamp-example-1",
+      "sourceType": "domain",
+      "command": "autoIncrement.timestamp",
+      "label": "autoIncrement.timestamp example 1",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.timestamp",
+          "params": "()",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.timestamp()",
+      "expectedUiSchemaText": "Value\nautoIncrement.timestamp()",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["start", "step", "type", "outputFormat", "inputFormat"],
+      "origins": ["example"]
+    },
+    {
+      "id": "domain-autoIncrement-timestamp-example-2",
+      "sourceType": "domain",
+      "command": "autoIncrement.timestamp",
+      "label": "autoIncrement.timestamp example 2",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.timestamp",
+          "params": "(start=\"20/03/1969\", step=1, type=\"days\")",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.timestamp(start=\"20/03/1969\", step=1, type=\"days\")",
+      "expectedUiSchemaText": "Value\nautoIncrement.timestamp(start=\"20/03/1969\", step=1, type=\"days\")",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["start", "step", "type", "outputFormat", "inputFormat"],
+      "origins": ["example"]
+    },
+    {
+      "id": "domain-autoIncrement-timestamp-example-3",
+      "sourceType": "domain",
+      "command": "autoIncrement.timestamp",
+      "label": "autoIncrement.timestamp example 3",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.timestamp",
+          "params": "(start=\"2026-06-12 12:39:23\", step=15, type=\"minutes\", outputFormat=\"yyyy-MM-dd HH:mm:ss\")",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.timestamp(start=\"2026-06-12 12:39:23\", step=15, type=\"minutes\", outputFormat=\"yyyy-MM-dd HH:mm:ss\")",
+      "expectedUiSchemaText": "Value\nautoIncrement.timestamp(start=\"2026-06-12 12:39:23\", step=15, type=\"minutes\", outputFormat=\"yyyy-MM-dd HH:mm:ss\")",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["start", "step", "type", "outputFormat", "inputFormat"],
+      "origins": ["example"]
+    },
+    {
+      "id": "domain-autoIncrement-timestamp-arg-start",
+      "sourceType": "domain",
+      "command": "autoIncrement.timestamp",
+      "label": "autoIncrement.timestamp arg start",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.timestamp",
+          "params": "(start=\"2026-06-12T12:39:23Z\")",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.timestamp(start=\"2026-06-12T12:39:23Z\")",
+      "expectedUiSchemaText": "Value\nautoIncrement.timestamp(start=\"2026-06-12T12:39:23Z\")",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["start"],
+      "origins": ["arg"]
+    },
+    {
+      "id": "domain-autoIncrement-timestamp-arg-step",
+      "sourceType": "domain",
+      "command": "autoIncrement.timestamp",
+      "label": "autoIncrement.timestamp arg step",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.timestamp",
+          "params": "(step=1)",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.timestamp(step=1)",
+      "expectedUiSchemaText": "Value\nautoIncrement.timestamp(step=1)",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["step"],
+      "origins": ["arg"]
+    },
+    {
+      "id": "domain-autoIncrement-timestamp-arg-type",
+      "sourceType": "domain",
+      "command": "autoIncrement.timestamp",
+      "label": "autoIncrement.timestamp arg type",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.timestamp",
+          "params": "(type=\"seconds\")",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.timestamp(type=\"seconds\")",
+      "expectedUiSchemaText": "Value\nautoIncrement.timestamp(type=\"seconds\")",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["type"],
+      "origins": ["arg"]
+    },
+    {
+      "id": "domain-autoIncrement-timestamp-arg-outputFormat",
+      "sourceType": "domain",
+      "command": "autoIncrement.timestamp",
+      "label": "autoIncrement.timestamp arg outputFormat",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.timestamp",
+          "params": "(outputFormat=\"iso8601\")",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.timestamp(outputFormat=\"iso8601\")",
+      "expectedUiSchemaText": "Value\nautoIncrement.timestamp(outputFormat=\"iso8601\")",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["outputFormat"],
+      "origins": ["arg"]
+    },
+    {
+      "id": "domain-autoIncrement-timestamp-arg-inputFormat",
+      "sourceType": "domain",
+      "command": "autoIncrement.timestamp",
+      "label": "autoIncrement.timestamp arg inputFormat",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.timestamp",
+          "params": "(inputFormat=\"dd/MM/yyyy\")",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.timestamp(inputFormat=\"dd/MM/yyyy\")",
+      "expectedUiSchemaText": "Value\nautoIncrement.timestamp(inputFormat=\"dd/MM/yyyy\")",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["inputFormat"],
+      "origins": ["arg"]
+    },
+    {
+      "id": "domain-autoIncrement-timestamp-pair-start-step",
+      "sourceType": "domain",
+      "command": "autoIncrement.timestamp",
+      "label": "autoIncrement.timestamp pair start/step",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.timestamp",
+          "params": "(start=\"2026-06-12T12:39:23Z\", step=1)",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.timestamp(start=\"2026-06-12T12:39:23Z\", step=1)",
+      "expectedUiSchemaText": "Value\nautoIncrement.timestamp(start=\"2026-06-12T12:39:23Z\", step=1)",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["start", "step"],
+      "origins": ["pair"]
+    },
+    {
+      "id": "domain-autoIncrement-timestamp-pair-step-type",
+      "sourceType": "domain",
+      "command": "autoIncrement.timestamp",
+      "label": "autoIncrement.timestamp pair step/type",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.timestamp",
+          "params": "(step=1, type=\"seconds\")",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.timestamp(step=1, type=\"seconds\")",
+      "expectedUiSchemaText": "Value\nautoIncrement.timestamp(step=1, type=\"seconds\")",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["step", "type"],
+      "origins": ["pair"]
+    },
+    {
+      "id": "domain-autoIncrement-timestamp-pair-type-outputFormat",
+      "sourceType": "domain",
+      "command": "autoIncrement.timestamp",
+      "label": "autoIncrement.timestamp pair type/outputFormat",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.timestamp",
+          "params": "(type=\"seconds\", outputFormat=\"iso8601\")",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.timestamp(type=\"seconds\", outputFormat=\"iso8601\")",
+      "expectedUiSchemaText": "Value\nautoIncrement.timestamp(type=\"seconds\", outputFormat=\"iso8601\")",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["type", "outputFormat"],
+      "origins": ["pair"]
+    },
+    {
+      "id": "domain-autoIncrement-timestamp-pair-outputFormat-inputFormat",
+      "sourceType": "domain",
+      "command": "autoIncrement.timestamp",
+      "label": "autoIncrement.timestamp pair outputFormat/inputFormat",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.timestamp",
+          "params": "(outputFormat=\"iso8601\", inputFormat=\"dd/MM/yyyy\")",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.timestamp(outputFormat=\"iso8601\", inputFormat=\"dd/MM/yyyy\")",
+      "expectedUiSchemaText": "Value\nautoIncrement.timestamp(outputFormat=\"iso8601\", inputFormat=\"dd/MM/yyyy\")",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["outputFormat", "inputFormat"],
+      "origins": ["pair"]
+    },
+    {
       "id": "domain-book-author-base",
       "sourceType": "domain",
       "command": "book.author",
@@ -3133,6 +3419,50 @@
       "origins": ["base"]
     },
     {
+      "id": "domain-commerce-upc-base",
+      "sourceType": "domain",
+      "command": "commerce.upc",
+      "label": "commerce.upc",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "commerce.upc",
+          "params": "()",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\ncommerce.upc()",
+      "expectedUiSchemaText": "Value\ncommerce.upc()",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": [],
+      "origins": ["base"]
+    },
+    {
+      "id": "domain-commerce-upc-arg-prefix",
+      "sourceType": "domain",
+      "command": "commerce.upc",
+      "label": "commerce.upc arg prefix",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "commerce.upc",
+          "params": "(prefix=\"01234\")",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\ncommerce.upc(prefix=\"01234\")",
+      "expectedUiSchemaText": "Value\ncommerce.upc(prefix=\"01234\")",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["prefix"],
+      "origins": ["arg"]
+    },
+    {
       "id": "domain-company-buzzAdjective-base",
       "sourceType": "domain",
       "command": "company.buzzAdjective",
@@ -3505,6 +3835,28 @@
       "expectStructuredSerialization": false,
       "coveredArgs": [],
       "origins": ["base"]
+    },
+    {
+      "id": "domain-datatype-enum-arg-values",
+      "sourceType": "domain",
+      "command": "datatype.enum",
+      "label": "datatype.enum arg values",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "datatype.enum",
+          "params": "(values=\"datatype-enum-values\")",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\ndatatype.enum(values=\"datatype-enum-values\")",
+      "expectedUiSchemaText": "Value\nenum(values=\"datatype-enum-values\")",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["values"],
+      "origins": ["arg"]
     },
     {
       "id": "domain-date-anytime-base",
@@ -5047,50 +5399,6 @@
       "origins": ["base"]
     },
     {
-      "id": "domain-finance-maskedNumber-base",
-      "sourceType": "domain",
-      "command": "finance.maskedNumber",
-      "label": "finance.maskedNumber",
-      "rows": [
-        {
-          "name": "Value",
-          "sourceType": "domain",
-          "command": "finance.maskedNumber",
-          "params": "()",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Value\nfinance.maskedNumber()",
-      "expectedUiSchemaText": "Value\nfinance.maskedNumber()",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": [],
-      "origins": ["base"]
-    },
-    {
-      "id": "domain-finance-maskedNumber-arg-length",
-      "sourceType": "domain",
-      "command": "finance.maskedNumber",
-      "label": "finance.maskedNumber arg length",
-      "rows": [
-        {
-          "name": "Value",
-          "sourceType": "domain",
-          "command": "finance.maskedNumber",
-          "params": "(length=4)",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Value\nfinance.maskedNumber(length=4)",
-      "expectedUiSchemaText": "Value\nfinance.maskedNumber(length=4)",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": ["length"],
-      "origins": ["arg"]
-    },
-    {
       "id": "domain-finance-pin-base",
       "sourceType": "domain",
       "command": "finance.pin",
@@ -5685,28 +5993,6 @@
       "origins": ["base"]
     },
     {
-      "id": "domain-image-avatarLegacy-base",
-      "sourceType": "domain",
-      "command": "image.avatarLegacy",
-      "label": "image.avatarLegacy",
-      "rows": [
-        {
-          "name": "Value",
-          "sourceType": "domain",
-          "command": "image.avatarLegacy",
-          "params": "()",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Value\nimage.avatarLegacy()",
-      "expectedUiSchemaText": "Value\nimage.avatarLegacy()",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": [],
-      "origins": ["base"]
-    },
-    {
       "id": "domain-image-dataUri-base",
       "sourceType": "domain",
       "command": "image.dataUri",
@@ -5876,50 +6162,6 @@
       ],
       "expectedSchemaText": "Value\nimage.urlPicsumPhotos()",
       "expectedUiSchemaText": "Value\nimage.urlPicsumPhotos()",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": [],
-      "origins": ["base"]
-    },
-    {
-      "id": "domain-image-urlPlaceholder-base",
-      "sourceType": "domain",
-      "command": "image.urlPlaceholder",
-      "label": "image.urlPlaceholder",
-      "rows": [
-        {
-          "name": "Value",
-          "sourceType": "domain",
-          "command": "image.urlPlaceholder",
-          "params": "()",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Value\nimage.urlPlaceholder()",
-      "expectedUiSchemaText": "Value\nimage.urlPlaceholder()",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": [],
-      "origins": ["base"]
-    },
-    {
-      "id": "domain-internet-color-base",
-      "sourceType": "domain",
-      "command": "internet.color",
-      "label": "internet.color",
-      "rows": [
-        {
-          "name": "Value",
-          "sourceType": "domain",
-          "command": "internet.color",
-          "params": "()",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Value\ninternet.color()",
-      "expectedUiSchemaText": "Value\ninternet.color()",
       "expectedFileExtension": ".csv",
       "pairwiseEligible": false,
       "expectStructuredSerialization": false,
@@ -7069,28 +7311,6 @@
       "expectStructuredSerialization": false,
       "coveredArgs": ["firstName", "lastName"],
       "origins": ["pair"]
-    },
-    {
-      "id": "domain-internet-userName-base",
-      "sourceType": "domain",
-      "command": "internet.userName",
-      "label": "internet.userName",
-      "rows": [
-        {
-          "name": "Value",
-          "sourceType": "domain",
-          "command": "internet.userName",
-          "params": "()",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Value\ninternet.userName()",
-      "expectedUiSchemaText": "Value\ninternet.userName()",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": [],
-      "origins": ["base"]
     },
     {
       "id": "domain-literal-value-base",
@@ -15924,6 +16144,292 @@
       "origins": ["pair"]
     },
     {
+      "id": "domain-autoIncrement-timestamp-base",
+      "sourceType": "domain",
+      "command": "autoIncrement.timestamp",
+      "label": "autoIncrement.timestamp",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.timestamp",
+          "params": "()",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.timestamp()",
+      "expectedUiSchemaText": "Value\nautoIncrement.timestamp()",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": [],
+      "origins": ["base"]
+    },
+    {
+      "id": "domain-autoIncrement-timestamp-example-1",
+      "sourceType": "domain",
+      "command": "autoIncrement.timestamp",
+      "label": "autoIncrement.timestamp example 1",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.timestamp",
+          "params": "()",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.timestamp()",
+      "expectedUiSchemaText": "Value\nautoIncrement.timestamp()",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["start", "step", "type", "outputFormat", "inputFormat"],
+      "origins": ["example"]
+    },
+    {
+      "id": "domain-autoIncrement-timestamp-example-2",
+      "sourceType": "domain",
+      "command": "autoIncrement.timestamp",
+      "label": "autoIncrement.timestamp example 2",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.timestamp",
+          "params": "(start=\"20/03/1969\", step=1, type=\"days\")",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.timestamp(start=\"20/03/1969\", step=1, type=\"days\")",
+      "expectedUiSchemaText": "Value\nautoIncrement.timestamp(start=\"20/03/1969\", step=1, type=\"days\")",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["start", "step", "type", "outputFormat", "inputFormat"],
+      "origins": ["example"]
+    },
+    {
+      "id": "domain-autoIncrement-timestamp-example-3",
+      "sourceType": "domain",
+      "command": "autoIncrement.timestamp",
+      "label": "autoIncrement.timestamp example 3",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.timestamp",
+          "params": "(start=\"2026-06-12 12:39:23\", step=15, type=\"minutes\", outputFormat=\"yyyy-MM-dd HH:mm:ss\")",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.timestamp(start=\"2026-06-12 12:39:23\", step=15, type=\"minutes\", outputFormat=\"yyyy-MM-dd HH:mm:ss\")",
+      "expectedUiSchemaText": "Value\nautoIncrement.timestamp(start=\"2026-06-12 12:39:23\", step=15, type=\"minutes\", outputFormat=\"yyyy-MM-dd HH:mm:ss\")",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["start", "step", "type", "outputFormat", "inputFormat"],
+      "origins": ["example"]
+    },
+    {
+      "id": "domain-autoIncrement-timestamp-arg-start",
+      "sourceType": "domain",
+      "command": "autoIncrement.timestamp",
+      "label": "autoIncrement.timestamp arg start",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.timestamp",
+          "params": "(start=\"2026-06-12T12:39:23Z\")",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.timestamp(start=\"2026-06-12T12:39:23Z\")",
+      "expectedUiSchemaText": "Value\nautoIncrement.timestamp(start=\"2026-06-12T12:39:23Z\")",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["start"],
+      "origins": ["arg"]
+    },
+    {
+      "id": "domain-autoIncrement-timestamp-arg-step",
+      "sourceType": "domain",
+      "command": "autoIncrement.timestamp",
+      "label": "autoIncrement.timestamp arg step",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.timestamp",
+          "params": "(step=1)",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.timestamp(step=1)",
+      "expectedUiSchemaText": "Value\nautoIncrement.timestamp(step=1)",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["step"],
+      "origins": ["arg"]
+    },
+    {
+      "id": "domain-autoIncrement-timestamp-arg-type",
+      "sourceType": "domain",
+      "command": "autoIncrement.timestamp",
+      "label": "autoIncrement.timestamp arg type",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.timestamp",
+          "params": "(type=\"seconds\")",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.timestamp(type=\"seconds\")",
+      "expectedUiSchemaText": "Value\nautoIncrement.timestamp(type=\"seconds\")",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["type"],
+      "origins": ["arg"]
+    },
+    {
+      "id": "domain-autoIncrement-timestamp-arg-outputFormat",
+      "sourceType": "domain",
+      "command": "autoIncrement.timestamp",
+      "label": "autoIncrement.timestamp arg outputFormat",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.timestamp",
+          "params": "(outputFormat=\"iso8601\")",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.timestamp(outputFormat=\"iso8601\")",
+      "expectedUiSchemaText": "Value\nautoIncrement.timestamp(outputFormat=\"iso8601\")",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["outputFormat"],
+      "origins": ["arg"]
+    },
+    {
+      "id": "domain-autoIncrement-timestamp-arg-inputFormat",
+      "sourceType": "domain",
+      "command": "autoIncrement.timestamp",
+      "label": "autoIncrement.timestamp arg inputFormat",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.timestamp",
+          "params": "(inputFormat=\"dd/MM/yyyy\")",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.timestamp(inputFormat=\"dd/MM/yyyy\")",
+      "expectedUiSchemaText": "Value\nautoIncrement.timestamp(inputFormat=\"dd/MM/yyyy\")",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["inputFormat"],
+      "origins": ["arg"]
+    },
+    {
+      "id": "domain-autoIncrement-timestamp-pair-start-step",
+      "sourceType": "domain",
+      "command": "autoIncrement.timestamp",
+      "label": "autoIncrement.timestamp pair start/step",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.timestamp",
+          "params": "(start=\"2026-06-12T12:39:23Z\", step=1)",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.timestamp(start=\"2026-06-12T12:39:23Z\", step=1)",
+      "expectedUiSchemaText": "Value\nautoIncrement.timestamp(start=\"2026-06-12T12:39:23Z\", step=1)",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["start", "step"],
+      "origins": ["pair"]
+    },
+    {
+      "id": "domain-autoIncrement-timestamp-pair-step-type",
+      "sourceType": "domain",
+      "command": "autoIncrement.timestamp",
+      "label": "autoIncrement.timestamp pair step/type",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.timestamp",
+          "params": "(step=1, type=\"seconds\")",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.timestamp(step=1, type=\"seconds\")",
+      "expectedUiSchemaText": "Value\nautoIncrement.timestamp(step=1, type=\"seconds\")",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["step", "type"],
+      "origins": ["pair"]
+    },
+    {
+      "id": "domain-autoIncrement-timestamp-pair-type-outputFormat",
+      "sourceType": "domain",
+      "command": "autoIncrement.timestamp",
+      "label": "autoIncrement.timestamp pair type/outputFormat",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.timestamp",
+          "params": "(type=\"seconds\", outputFormat=\"iso8601\")",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.timestamp(type=\"seconds\", outputFormat=\"iso8601\")",
+      "expectedUiSchemaText": "Value\nautoIncrement.timestamp(type=\"seconds\", outputFormat=\"iso8601\")",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["type", "outputFormat"],
+      "origins": ["pair"]
+    },
+    {
+      "id": "domain-autoIncrement-timestamp-pair-outputFormat-inputFormat",
+      "sourceType": "domain",
+      "command": "autoIncrement.timestamp",
+      "label": "autoIncrement.timestamp pair outputFormat/inputFormat",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "autoIncrement.timestamp",
+          "params": "(outputFormat=\"iso8601\", inputFormat=\"dd/MM/yyyy\")",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\nautoIncrement.timestamp(outputFormat=\"iso8601\", inputFormat=\"dd/MM/yyyy\")",
+      "expectedUiSchemaText": "Value\nautoIncrement.timestamp(outputFormat=\"iso8601\", inputFormat=\"dd/MM/yyyy\")",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["outputFormat", "inputFormat"],
+      "origins": ["pair"]
+    },
+    {
       "id": "domain-book-author-base",
       "sourceType": "domain",
       "command": "book.author",
@@ -16804,6 +17310,50 @@
       "origins": ["base"]
     },
     {
+      "id": "domain-commerce-upc-base",
+      "sourceType": "domain",
+      "command": "commerce.upc",
+      "label": "commerce.upc",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "commerce.upc",
+          "params": "()",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\ncommerce.upc()",
+      "expectedUiSchemaText": "Value\ncommerce.upc()",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": [],
+      "origins": ["base"]
+    },
+    {
+      "id": "domain-commerce-upc-arg-prefix",
+      "sourceType": "domain",
+      "command": "commerce.upc",
+      "label": "commerce.upc arg prefix",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "commerce.upc",
+          "params": "(prefix=\"01234\")",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\ncommerce.upc(prefix=\"01234\")",
+      "expectedUiSchemaText": "Value\ncommerce.upc(prefix=\"01234\")",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["prefix"],
+      "origins": ["arg"]
+    },
+    {
       "id": "domain-company-buzzAdjective-base",
       "sourceType": "domain",
       "command": "company.buzzAdjective",
@@ -17176,6 +17726,28 @@
       "expectStructuredSerialization": false,
       "coveredArgs": [],
       "origins": ["base"]
+    },
+    {
+      "id": "domain-datatype-enum-arg-values",
+      "sourceType": "domain",
+      "command": "datatype.enum",
+      "label": "datatype.enum arg values",
+      "rows": [
+        {
+          "name": "Value",
+          "sourceType": "domain",
+          "command": "datatype.enum",
+          "params": "(values=\"datatype-enum-values\")",
+          "value": ""
+        }
+      ],
+      "expectedSchemaText": "Value\ndatatype.enum(values=\"datatype-enum-values\")",
+      "expectedUiSchemaText": "Value\nenum(values=\"datatype-enum-values\")",
+      "expectedFileExtension": ".csv",
+      "pairwiseEligible": false,
+      "expectStructuredSerialization": false,
+      "coveredArgs": ["values"],
+      "origins": ["arg"]
     },
     {
       "id": "domain-date-anytime-base",
@@ -18718,50 +19290,6 @@
       "origins": ["base"]
     },
     {
-      "id": "domain-finance-maskedNumber-base",
-      "sourceType": "domain",
-      "command": "finance.maskedNumber",
-      "label": "finance.maskedNumber",
-      "rows": [
-        {
-          "name": "Value",
-          "sourceType": "domain",
-          "command": "finance.maskedNumber",
-          "params": "()",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Value\nfinance.maskedNumber()",
-      "expectedUiSchemaText": "Value\nfinance.maskedNumber()",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": [],
-      "origins": ["base"]
-    },
-    {
-      "id": "domain-finance-maskedNumber-arg-length",
-      "sourceType": "domain",
-      "command": "finance.maskedNumber",
-      "label": "finance.maskedNumber arg length",
-      "rows": [
-        {
-          "name": "Value",
-          "sourceType": "domain",
-          "command": "finance.maskedNumber",
-          "params": "(length=4)",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Value\nfinance.maskedNumber(length=4)",
-      "expectedUiSchemaText": "Value\nfinance.maskedNumber(length=4)",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": ["length"],
-      "origins": ["arg"]
-    },
-    {
       "id": "domain-finance-pin-base",
       "sourceType": "domain",
       "command": "finance.pin",
@@ -19356,28 +19884,6 @@
       "origins": ["base"]
     },
     {
-      "id": "domain-image-avatarLegacy-base",
-      "sourceType": "domain",
-      "command": "image.avatarLegacy",
-      "label": "image.avatarLegacy",
-      "rows": [
-        {
-          "name": "Value",
-          "sourceType": "domain",
-          "command": "image.avatarLegacy",
-          "params": "()",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Value\nimage.avatarLegacy()",
-      "expectedUiSchemaText": "Value\nimage.avatarLegacy()",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": [],
-      "origins": ["base"]
-    },
-    {
       "id": "domain-image-dataUri-base",
       "sourceType": "domain",
       "command": "image.dataUri",
@@ -19547,50 +20053,6 @@
       ],
       "expectedSchemaText": "Value\nimage.urlPicsumPhotos()",
       "expectedUiSchemaText": "Value\nimage.urlPicsumPhotos()",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": [],
-      "origins": ["base"]
-    },
-    {
-      "id": "domain-image-urlPlaceholder-base",
-      "sourceType": "domain",
-      "command": "image.urlPlaceholder",
-      "label": "image.urlPlaceholder",
-      "rows": [
-        {
-          "name": "Value",
-          "sourceType": "domain",
-          "command": "image.urlPlaceholder",
-          "params": "()",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Value\nimage.urlPlaceholder()",
-      "expectedUiSchemaText": "Value\nimage.urlPlaceholder()",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": [],
-      "origins": ["base"]
-    },
-    {
-      "id": "domain-internet-color-base",
-      "sourceType": "domain",
-      "command": "internet.color",
-      "label": "internet.color",
-      "rows": [
-        {
-          "name": "Value",
-          "sourceType": "domain",
-          "command": "internet.color",
-          "params": "()",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Value\ninternet.color()",
-      "expectedUiSchemaText": "Value\ninternet.color()",
       "expectedFileExtension": ".csv",
       "pairwiseEligible": false,
       "expectStructuredSerialization": false,
@@ -20740,28 +21202,6 @@
       "expectStructuredSerialization": false,
       "coveredArgs": ["firstName", "lastName"],
       "origins": ["pair"]
-    },
-    {
-      "id": "domain-internet-userName-base",
-      "sourceType": "domain",
-      "command": "internet.userName",
-      "label": "internet.userName",
-      "rows": [
-        {
-          "name": "Value",
-          "sourceType": "domain",
-          "command": "internet.userName",
-          "params": "()",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Value\ninternet.userName()",
-      "expectedUiSchemaText": "Value\ninternet.userName()",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": [],
-      "origins": ["base"]
     },
     {
       "id": "domain-literal-value-base",

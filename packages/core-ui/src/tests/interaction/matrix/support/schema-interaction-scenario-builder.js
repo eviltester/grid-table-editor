@@ -1,4 +1,4 @@
-import { getKnownFakerCommandsAlphabetical } from '../../../../../js/gui_components/shared/faker-commands.js';
+import { getAllowedFakerCommandsAlphabetical } from '../../../../../js/gui_components/shared/faker-commands.js';
 import { getFakerCommandHelp } from '../../../../../js/gui_components/shared/faker-command-help-metadata.js';
 import { faker } from '@faker-js/faker';
 import RandExp from 'randexp';
@@ -38,7 +38,7 @@ const CUSTOM_SOURCE_TYPES = [
   SOURCE_TYPE_DOMAIN,
 ];
 const DEFAULT_ROW_NAME = 'Value';
-const FAKER_INTERACTION_COMMANDS = getKnownFakerCommandsAlphabetical().filter(
+const FAKER_INTERACTION_COMMANDS = getAllowedFakerCommandsAlphabetical().filter(
   (command) => command !== 'RegEx' && command.startsWith('helpers.')
 );
 
@@ -100,6 +100,10 @@ const CUSTOM_SCENARIOS = [
 const FAKER_PARAM_OVERRIDES = {
   'helpers.arrayElement': ['["A", "B"]'],
   'helpers.arrayElements': ['["A", "B", "C"]', '2'],
+  'helpers.objectKey': ['{"red":"#f00","blue":"#00f"}'],
+  'helpers.objectValue': ['{"red":"#f00","blue":"#00f"}'],
+  'helpers.objectEntry': ['{"red":"#f00","blue":"#00f"}'],
+  'helpers.enumValue': ['{"Pending":"pending","Active":"active"}'],
   'date.between': ['{ from: "2020-01-01T00:00:00.000Z", to: "2020-12-31T00:00:00.000Z" }'],
   'date.betweens': ['{ from: "2020-01-01T00:00:00.000Z", to: "2020-12-31T00:00:00.000Z", count: 2 }'],
   'helpers.fake': ['"{{person.firstName}}"'],
@@ -137,7 +141,6 @@ const DOMAIN_PARAM_OVERRIDES = {
   },
 };
 
-const NON_EXECUTABLE_RUNTIME_COMMANDS = new Set(['internet.ipv4', 'internet.ipv6']);
 const DOMAIN_SCENARIO_EXECUTION_CACHE = new Map();
 const FAKER_SCENARIO_EXECUTION_CACHE = new Map();
 const UI_REPRESENTATIVE_SCENARIO_IDS = new Set([
@@ -866,9 +869,6 @@ function getScenarioExecutionStatus(scenario) {
     return canGenerateDomainScenarioPreview(scenario) ? 'generated' : 'non-executable';
   }
   if (scenario.sourceType === SOURCE_TYPE_FAKER) {
-    if (NON_EXECUTABLE_RUNTIME_COMMANDS.has(scenario.command)) {
-      return 'non-executable';
-    }
     return canGenerateFakerScenarioPreview(scenario) ? 'generated' : 'non-executable';
   }
   if (scenario.origins.includes('custom') || scenario.origins.includes('example')) {

@@ -40,7 +40,9 @@ describe('faker command help metadata', () => {
     const imageDataUri = getFakerCommandHelp('image.dataUri');
 
     expect(firstName.params).toEqual(
-      expect.arrayContaining([expect.objectContaining({ name: 'sex', optional: true, type: "'female' | 'male'" })])
+      expect.arrayContaining([
+        expect.objectContaining({ name: 'sex', optional: true, type: "'female' | 'generic' | 'male'" }),
+      ])
     );
     expect(firstName.example.length).toBeGreaterThan(0);
 

@@ -8,7 +8,7 @@ import {
   buildRuleSpecFromSchemaRow,
 } from '../../schema-row-rule-mapper.js';
 import { Faker } from '@faker-js/faker';
-import { getKnownFakerCommandsAlphabetical } from '../../faker-commands.js';
+import { getKnownFakerCommandsAlphabetical, isForbiddenFakerCommand } from '../../faker-commands.js';
 import { getKnownDomainCommandsAlphabetical } from '../../domain-commands.js';
 
 const KNOWN_FAKER_COMMANDS = new Set(
@@ -127,6 +127,16 @@ function getStaticSchemaRowValidationIssues(row, rowIndex) {
           code: 'unknown_faker_command',
           field: 'command',
           message: `Row ${rowIndex + 1}: unknown faker command "${command}".`,
+        })
+      );
+    }
+    if (isForbiddenFakerCommand(command)) {
+      issues.push(
+        createRowValidationIssue({
+          rowIndex,
+          code: 'forbidden_faker_command',
+          field: 'command',
+          message: `Row ${rowIndex + 1}: faker command "${command}" is known but not allowed for schema/API use.`,
         })
       );
     }

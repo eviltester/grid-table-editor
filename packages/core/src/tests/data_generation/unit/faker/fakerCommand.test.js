@@ -90,8 +90,17 @@ describe('Can parse, compile, validate and execute Faker commands', () => {
       const validation = command.compile(faker);
 
       expect(validation.isError).toBe(true);
-      expect(validation.errorMessage).toBe('Could not find Faker API Command person..fullName {person.}');
+      expect(validation.errorMessage).toBe('Could not find Faker API Command person..fullName {person}');
       expect(command.fakerFunctionName).toBe('person..fullName');
+    });
+
+    test('can compile commands with digits in the method name', () => {
+      const command = new FakerCommand('internet.ipv4');
+      command.parse();
+      const validation = command.compile(faker);
+
+      expect(validation.isError).toBe(false);
+      expect(command.fakerFunctionName).toBe('internet.ipv4');
     });
   });
 
@@ -133,6 +142,32 @@ describe('Can parse, compile, validate and execute Faker commands', () => {
       expect(validation.isError).toBe(false);
       expect(execution.isError).toBe(false);
       expect(execution.data.length).toBe(4);
+    });
+
+    test('can generate ipv4 data using faker', () => {
+      const command = new FakerCommand('internet.ipv4');
+      command.parse();
+      command.compile(faker);
+      const validation = command.validate(faker);
+      const execution = command.execute(faker);
+
+      expect(validation.isError).toBe(false);
+      expect(execution.isError).toBe(false);
+      expect(execution.data).toMatch(/^(25[0-5]|2[0-4]\d|1?\d?\d)(\.(25[0-5]|2[0-4]\d|1?\d?\d)){3}$/);
+    });
+
+    test('can generate ipv6 data using faker', () => {
+      const command = new FakerCommand('internet.ipv6');
+      command.parse();
+      command.compile(faker);
+      const validation = command.validate(faker);
+      const execution = command.execute(faker);
+
+      expect(validation.isError).toBe(false);
+      expect(execution.isError).toBe(false);
+      expect(typeof execution.data).toBe('string');
+      expect(execution.data.length).toBeGreaterThan(0);
+      expect(execution.data).toContain(':');
     });
   });
 });

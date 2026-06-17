@@ -1,7 +1,7 @@
 const KNOWN_FAKER_COMMANDS = [
   'RegEx',
 
-  // v9.7.0
+  // v10.4.0
   //"_randomizer.next","_randomizer.seed",
   'datatype.boolean',
   'date.month',
@@ -21,6 +21,10 @@ const KNOWN_FAKER_COMMANDS = [
   'helpers.fromRegExp',
   'helpers.maybe',
   'helpers.arrayElement',
+  'helpers.objectKey',
+  'helpers.objectValue',
+  'helpers.objectEntry',
+  'helpers.enumValue',
   'helpers.slugify',
   'helpers.replaceSymbols',
   'helpers.replaceCreditCardSymbols',
@@ -30,7 +34,6 @@ const KNOWN_FAKER_COMMANDS = [
   'helpers.arrayElements',
   'helpers.rangeToNumber',
   'helpers.multiple',
-  // "helpers.objectKey","helpers.objectValue","helpers.objectEntry","helpers.enumValue",
   'number.int',
   'number.float',
   'number.binary',
@@ -101,6 +104,7 @@ const KNOWN_FAKER_COMMANDS = [
   'commerce.product',
   'commerce.productDescription',
   'commerce.isbn',
+  'commerce.upc',
   'company.name',
   'company.catchPhrase',
   'company.buzzPhrase',
@@ -118,7 +122,6 @@ const KNOWN_FAKER_COMMANDS = [
   'finance.accountNumber',
   'finance.accountName',
   'finance.routingNumber',
-  'finance.maskedNumber',
   'finance.amount',
   'finance.transactionType',
   'finance.currency',
@@ -159,15 +162,12 @@ const KNOWN_FAKER_COMMANDS = [
   'image.avatar',
   'image.avatarGitHub',
   'image.personPortrait',
-  'image.avatarLegacy',
   'image.url',
   'image.urlLoremFlickr',
   'image.urlPicsumPhotos',
-  'image.urlPlaceholder',
   'image.dataUri',
   'internet.email',
   'internet.exampleEmail',
-  'internet.userName',
   'internet.username',
   'internet.displayName',
   'internet.protocol',
@@ -182,7 +182,6 @@ const KNOWN_FAKER_COMMANDS = [
   'internet.ipv6',
   'internet.port',
   'internet.userAgent',
-  'internet.color',
   'internet.mac',
   'internet.password',
   'internet.emoji',
@@ -273,6 +272,13 @@ const KNOWN_FAKER_COMMANDS = [
   'word.words',
 ];
 
+const FORBIDDEN_FAKER_COMMANDS = [
+  'helpers.objectKey',
+  'helpers.objectValue',
+  'helpers.objectEntry',
+  'helpers.enumValue',
+];
+
 function compareAlphabetically(left, right) {
   return left.localeCompare(right);
 }
@@ -287,4 +293,26 @@ function getKnownFakerCommandsLongestFirst() {
   );
 }
 
-export { KNOWN_FAKER_COMMANDS, getKnownFakerCommandsAlphabetical, getKnownFakerCommandsLongestFirst };
+function getAllowedFakerCommandsAlphabetical() {
+  const forbidden = new Set(FORBIDDEN_FAKER_COMMANDS);
+  return getKnownFakerCommandsAlphabetical().filter((command) => !forbidden.has(command));
+}
+
+function getAllowedFakerCommandsLongestFirst() {
+  const forbidden = new Set(FORBIDDEN_FAKER_COMMANDS);
+  return getKnownFakerCommandsLongestFirst().filter((command) => !forbidden.has(command));
+}
+
+function isForbiddenFakerCommand(command) {
+  return FORBIDDEN_FAKER_COMMANDS.includes(String(command || '').trim());
+}
+
+export {
+  KNOWN_FAKER_COMMANDS,
+  FORBIDDEN_FAKER_COMMANDS,
+  getKnownFakerCommandsAlphabetical,
+  getKnownFakerCommandsLongestFirst,
+  getAllowedFakerCommandsAlphabetical,
+  getAllowedFakerCommandsLongestFirst,
+  isForbiddenFakerCommand,
+};

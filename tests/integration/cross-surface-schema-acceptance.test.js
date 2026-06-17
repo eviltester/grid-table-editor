@@ -48,8 +48,9 @@ function requestMcpServer(payload) {
 function runCliScenario(scenario) {
   const cliEntry = path.join(repoRoot, 'apps', 'cli', 'src', 'node-entry.js');
 
+  let stdout;
   try {
-    const stdout = execFileSync(
+    stdout = execFileSync(
       process.execPath,
       [
         cliEntry,
@@ -70,10 +71,16 @@ function runCliScenario(scenario) {
         timeout: CROSS_SURFACE_PROCESS_TIMEOUT_MS,
       }
     );
-
-    return normalizeCliSuccess(stdout, scenario.expectedHeaders);
   } catch (error) {
     return normalizeCliFailure(error.stderr || error.stdout || error.message);
+  }
+
+  try {
+    return normalizeCliSuccess(stdout, scenario.expectedHeaders);
+  } catch (error) {
+    throw new Error(
+      `CLI returned non-JSON output for schema acceptance scenario "${scenario.id}": ${error.message}`
+    );
   }
 }
 

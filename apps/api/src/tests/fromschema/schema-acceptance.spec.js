@@ -9,6 +9,8 @@ const {
 const { normalizeApiBody } = require('../../../../../tests/integration/support/schema-acceptance-assertions.cjs');
 
 test.describe('POST /v1/generate/fromschema schema acceptance', () => {
+  test.describe.configure({ mode: 'serial' });
+
   test.beforeAll(async () => {
     await setupApiServer();
   });
@@ -16,8 +18,6 @@ test.describe('POST /v1/generate/fromschema schema acceptance', () => {
   test.afterAll(async () => {
     await teardownApiServer();
   });
-
-  test.describe.configure({ mode: 'serial' });
 
   for (const scenario of SCHEMA_ACCEPTANCE_SCENARIOS) {
     test(`${scenario.id} matches shared acceptance criteria`, async ({ request }) => {

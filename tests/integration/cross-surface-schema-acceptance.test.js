@@ -45,6 +45,31 @@ function requestMcpServer(payload) {
   return response;
 }
 
+function parseMcpScenarioPayload(response, scenarioId) {
+  if (response?.error) {
+    const code = response.error.code ?? 'unknown';
+    const message = response.error.message || JSON.stringify(response.error);
+    throw new Error(
+      `MCP JSON-RPC error for schema acceptance scenario "${scenarioId}" [${code}]: ${message}`
+    );
+  }
+
+  const text = response?.result?.content?.[0]?.text;
+  if (typeof text !== 'string' || text.trim() === '') {
+    throw new Error(
+      `MCP returned no result payload for schema acceptance scenario "${scenarioId}".`
+    );
+  }
+
+  try {
+    return JSON.parse(text);
+  } catch (error) {
+    throw new Error(
+      `MCP returned non-JSON payload for schema acceptance scenario "${scenarioId}": ${error.message}`
+    );
+  }
+}
+
 function runCliScenario(scenario) {
   const cliEntry = path.join(repoRoot, 'apps', 'cli', 'src', 'node-entry.js');
 
@@ -104,7 +129,7 @@ describe('cross-surface schema acceptance (CLI + MCP)', () => {
         },
       },
     });
-    const payload = JSON.parse(response?.result?.content?.[0]?.text || '{}');
+    const payload = parseMcpScenarioPayload(response, scenario.id);
     const normalized = normalizeMcpPayload(payload);
     scenario.assertAcceptance(expect, normalized);
   });

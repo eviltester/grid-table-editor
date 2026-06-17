@@ -268,6 +268,23 @@ test('validateSafeFakerRules rejects unknown faker commands in safe mode', () =>
   expect(result.error).toMatch(/Unknown faker command in safe mode/);
 });
 
+test('validateSafeFakerRules rejects forbidden faker commands in safe mode', () => {
+  const result = validateSafeFakerRules('Value\nhelpers.objectKey({"red":"#f00"})');
+  expect(result.ok).toBe(false);
+  expect(result.error).toMatch(/Forbidden faker command in safe mode/);
+});
+
+test('generateFromTextSpec rejects forbidden faker commands even without safe mode enabled', () => {
+  const result = generateFromTextSpec({
+    textSpec: 'Value\nhelpers.objectKey({"red":"#f00"})',
+    rowCount: 1,
+    outputFormat: 'json',
+  });
+
+  expect(result.ok).toBe(false);
+  expect(result.errors[0]?.message || result.errors[0]).toMatch(/Forbidden faker command/);
+});
+
 test('validateSafeFakerRules accepts known faker commands with literal args', () => {
   const result = validateSafeFakerRules('Name\nperson.firstName("female")');
   expect(result.ok).toBe(true);

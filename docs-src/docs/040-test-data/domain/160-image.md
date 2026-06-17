@@ -50,24 +50,6 @@ image.avatarGitHub()
 Example return values:
 - `https://avatars.githubusercontent.com/u/22969292`
 
-### `image.avatarLegacy`
-
-Generates a random avatar from `https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar`.
-
-- Canonical: `awd.domain.image.avatarLegacy`
-- Faker docs: [https://fakerjs.dev/api/image](https://fakerjs.dev/api/image)
-
-No parameters.
-
-Examples:
-
-```txt
-image.avatarLegacy()
-```
-
-Example return values:
-- `https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/1198.jpg`
-
 ### `image.dataUri`
 
 Generates a random data uri containing an URL-encoded SVG image or a Base64-encoded SVG image.
@@ -164,21 +146,3 @@ image.urlPicsumPhotos()
 
 Example return values:
 - `https://picsum.photos/seed/UBLQun43/2068/162?blur=8`
-
-### `image.urlPlaceholder`
-
-Generates a random image url provided via https://via.placeholder.com/.
-
-- Canonical: `awd.domain.image.urlPlaceholder`
-- Faker docs: [https://fakerjs.dev/api/image](https://fakerjs.dev/api/image)
-
-No parameters.
-
-Examples:
-
-```txt
-image.urlPlaceholder()
-```
-
-Example return values:
-- `https://via.placeholder.com/2302x1759/a80adf/2de69f.gif?text=utrimque%20summa%20dolores`

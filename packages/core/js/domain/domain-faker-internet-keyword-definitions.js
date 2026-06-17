@@ -1,19 +1,5 @@
 const DOMAIN_FAKER_INTERNET_KEYWORD_DEFINITIONS = [
   {
-    keyword: 'internet.color',
-    delegate: {
-      type: 'faker',
-      target: 'internet.color',
-    },
-    help: {
-      summary: 'Generates a random css hex color code in aesthetically pleasing color palette.',
-      docsUrl: 'https://fakerjs.dev/api/internet',
-      example: '#290551',
-      returnType: 'string',
-      args: [],
-    },
-  },
-  {
     keyword: 'internet.displayName',
     delegate: {
       type: 'faker',
@@ -445,20 +431,6 @@ const DOMAIN_FAKER_INTERNET_KEYWORD_DEFINITIONS = [
           description: 'The optional last name to use.',
         },
       ],
-    },
-  },
-  {
-    keyword: 'internet.userName',
-    delegate: {
-      type: 'faker',
-      target: 'internet.userName',
-    },
-    help: {
-      summary: "Generates a username using the given person's name as base.",
-      docsUrl: 'https://fakerjs.dev/api/internet',
-      example: 'Ana_Keebler',
-      returnType: 'string',
-      args: [],
     },
   },
 ];

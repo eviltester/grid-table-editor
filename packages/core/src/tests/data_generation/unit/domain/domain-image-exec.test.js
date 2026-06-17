@@ -15,12 +15,6 @@ describe('image domain keyword execution', () => {
     expectMeaningfulString(result);
   });
 
-  test('executes image.avatarLegacy', () => {
-    const result = executeDomainKeyword('image.avatarLegacy', { faker, args: [] });
-    console.log('image.avatarLegacy', result);
-    expectMeaningfulString(result);
-  });
-
   test('executes image.dataUri', () => {
     const result = executeDomainKeyword('image.dataUri', { faker, args: [] });
     console.log('image.dataUri', result);
@@ -48,12 +42,6 @@ describe('image domain keyword execution', () => {
   test('executes image.urlPicsumPhotos', () => {
     const result = executeDomainKeyword('image.urlPicsumPhotos', { faker, args: [] });
     console.log('image.urlPicsumPhotos', result);
-    expectMeaningfulString(result);
-  });
-
-  test('executes image.urlPlaceholder', () => {
-    const result = executeDomainKeyword('image.urlPlaceholder', { faker, args: [] });
-    console.log('image.urlPlaceholder', result);
     expectMeaningfulString(result);
   });
 });

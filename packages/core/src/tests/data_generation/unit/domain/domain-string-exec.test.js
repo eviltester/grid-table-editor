@@ -181,9 +181,25 @@ describe('string domain keyword execution', () => {
     expectMeaningfulString(result);
   });
 
-  test('string.uuid rejects unexpected arguments because docs define none', () => {
-    expect(() => runWithSeed(1111, 'string.uuid', ['v4'])).toThrow(
-      'Too many arguments supplied. Expected 0, received 1.'
+  test('string.uuid accepts documented version and refDate args', () => {
+    const uuidV4 = runWithSeed(1111, 'string.uuid', [4]);
+    const uuidV7A = runWithSeed(1111, 'string.uuid', [7, 1]);
+    const uuidV7B = runWithSeed(1111, 'string.uuid', [7, 2]);
+
+    expect(uuidV4).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}$/);
+    expect(uuidV7A).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}$/);
+    expect(uuidV7B).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}$/);
+    expect(uuidV7A).not.toBe(uuidV7B);
+  });
+
+  test('string.uuid defaults to version 7 when refDate is provided without version', () => {
+    const uuid = executeDomainKeyword('string.uuid', { faker, args: [undefined, 1] });
+    expect(uuid).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}$/);
+  });
+
+  test('string.uuid rejects refDate with version 4', () => {
+    expect(() => executeDomainKeyword('string.uuid', { faker, args: [4, 1] })).toThrow(
+      'Invalid argument combination for string.uuid: refDate requires version 7.'
     );
   });
 });

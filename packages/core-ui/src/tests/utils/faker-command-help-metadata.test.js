@@ -38,9 +38,12 @@ describe('faker command help metadata', () => {
     const firstName = getFakerCommandHelp('person.firstName');
     const nestedPropertyAccess = getFakerCommandHelp('airline.airplane.name');
     const imageDataUri = getFakerCommandHelp('image.dataUri');
+    const uuid = getFakerCommandHelp('string.uuid');
 
     expect(firstName.params).toEqual(
-      expect.arrayContaining([expect.objectContaining({ name: 'sex', optional: true, type: "'female' | 'male'" })])
+      expect.arrayContaining([
+        expect.objectContaining({ name: 'sex', optional: true, type: "'female' | 'generic' | 'male'" }),
+      ])
     );
     expect(firstName.example.length).toBeGreaterThan(0);
 
@@ -48,6 +51,20 @@ describe('faker command help metadata', () => {
       expect.arrayContaining([expect.objectContaining({ name: 'options', optional: true, type: 'object' })])
     );
     expect(imageDataUri.example.length).toBeGreaterThan(0);
+
+    expect(uuid.summary).toContain('Returns a UUID');
+    expect(uuid.params).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ name: 'version', optional: true, type: '4 | 7' }),
+        expect.objectContaining({ name: 'refDate', optional: true, type: 'string | Date | number' }),
+      ])
+    );
+    expect(uuid.params.find((param) => param.name === 'version')?.description).toContain(
+      'version 7 is used automatically'
+    );
+    expect(uuid.params.find((param) => param.name === 'refDate')?.description).toContain(
+      'Providing refDate with version 4 is invalid'
+    );
 
     expect(nestedPropertyAccess).toBeDefined();
     expect(nestedPropertyAccess.summary.length).toBeGreaterThan(0);
@@ -81,6 +98,7 @@ describe('faker command help metadata', () => {
         }),
       ])
     );
+    expect(rangeToNumber.example).toBe('2');
     expect(rangeToNumber.examples).toContain('helpers.rangeToNumber({ min: 1, max: 2 })');
   });
 });

@@ -169,3 +169,23 @@ commerce.productName()
 
 Example return values:
 - `Soft Bronze Towels`
+
+### `commerce.upc`
+
+Returns a valid UPC-A (12 digits).
+
+- Canonical: `awd.domain.commerce.upc`
+- Faker docs: [https://fakerjs.dev/api/commerce](https://fakerjs.dev/api/commerce)
+
+| Arg | Type | Required | Description |
+| --- | --- | --- | --- |
+| `prefix` | `string` | no | Optional numeric prefix for the UPC body (0-11 digits). |
+
+Examples:
+
+```txt
+commerce.upc()
+```
+
+Example return values:
+- `036000291452`

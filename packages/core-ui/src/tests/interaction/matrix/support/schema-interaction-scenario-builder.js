@@ -1,4 +1,4 @@
-import { getKnownFakerCommandsAlphabetical } from '../../../../../js/gui_components/shared/faker-commands.js';
+import { getAllowedFakerCommandsAlphabetical } from '../../../../../js/gui_components/shared/faker-commands.js';
 import { getFakerCommandHelp } from '../../../../../js/gui_components/shared/faker-command-help-metadata.js';
 import { faker } from '@faker-js/faker';
 import RandExp from 'randexp';
@@ -38,7 +38,7 @@ const CUSTOM_SOURCE_TYPES = [
   SOURCE_TYPE_DOMAIN,
 ];
 const DEFAULT_ROW_NAME = 'Value';
-const FAKER_INTERACTION_COMMANDS = getKnownFakerCommandsAlphabetical().filter(
+const FAKER_INTERACTION_COMMANDS = getAllowedFakerCommandsAlphabetical().filter(
   (command) => command !== 'RegEx' && command.startsWith('helpers.')
 );
 
@@ -137,7 +137,6 @@ const DOMAIN_PARAM_OVERRIDES = {
   },
 };
 
-const NON_EXECUTABLE_RUNTIME_COMMANDS = new Set(['internet.ipv4', 'internet.ipv6']);
 const DOMAIN_SCENARIO_EXECUTION_CACHE = new Map();
 const FAKER_SCENARIO_EXECUTION_CACHE = new Map();
 const UI_REPRESENTATIVE_SCENARIO_IDS = new Set([
@@ -306,6 +305,8 @@ function buildGenericParamValue({ paramName, paramType, command, sourceType, ind
   if (lowerName === 'firstname') return '"Ada"';
   if (lowerName === 'lastname') return '"Lovelace"';
   if (lowerName === 'sex') return '"male"';
+  if (lowerName === 'version') return '7';
+  if (lowerName === 'refdate') return '1';
   if (!typeText.includes('integer') && !typeText.includes('number') && lowerName === 'from') {
     return '"2020-01-01T00:00:00.000Z"';
   }
@@ -866,9 +867,6 @@ function getScenarioExecutionStatus(scenario) {
     return canGenerateDomainScenarioPreview(scenario) ? 'generated' : 'non-executable';
   }
   if (scenario.sourceType === SOURCE_TYPE_FAKER) {
-    if (NON_EXECUTABLE_RUNTIME_COMMANDS.has(scenario.command)) {
-      return 'non-executable';
-    }
     return canGenerateFakerScenarioPreview(scenario) ? 'generated' : 'non-executable';
   }
   if (scenario.origins.includes('custom') || scenario.origins.includes('example')) {

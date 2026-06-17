@@ -20,6 +20,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { createGeneratorInteractionHarness } from './support/generator-interaction-harness.js';
 import { buildChunkDescriptors, formatCommandsForConsole } from './support/schema-interaction-matrix-report.js';
+import { findScenarioByLogicalId } from './support/scenario-fixture-identity.js';
 
 const fixturePath = join(
   process.cwd(),
@@ -33,9 +34,9 @@ const SMOKE_SCENARIO_IDS = [
   'custom-enum-pairwise',
 ];
 const allScenarios = JSON.parse(readFileSync(fixturePath, 'utf8')).uiScenarios;
-const scenarios = SMOKE_SCENARIO_IDS.map((scenarioId) =>
-  allScenarios.find((scenario) => scenario.id === scenarioId)
-).filter(Boolean);
+const scenarios = SMOKE_SCENARIO_IDS.map((scenarioId) => findScenarioByLogicalId(allScenarios, scenarioId)).filter(
+  Boolean
+);
 if (scenarios.length !== SMOKE_SCENARIO_IDS.length) {
   throw new Error('generator schema interaction smoke subset is missing fixture scenarios');
 }

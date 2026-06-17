@@ -173,9 +173,11 @@ function isTypeMatch(value, typeName) {
   }
   const allowed = raw.split('|').map((entry) => entry.trim());
   for (const item of allowed) {
+    if (/^[+-]?\d+(\.\d+)?$/.test(item) && typeof value === 'number' && Object.is(value, Number(item))) return true;
     if (item === 'string' && typeof value === 'string') return true;
     if (item === 'integer' && typeof value === 'number' && Number.isInteger(value)) return true;
     if (item === 'number' && typeof value === 'number' && Number.isFinite(value)) return true;
+    if (item === 'date' && value instanceof Date && !Number.isNaN(value.valueOf())) return true;
     if (item === 'regexp' && (value instanceof RegExp || typeof value === 'string')) return true;
     if (item === 'boolean' && typeof value === 'boolean') return true;
     if (item === 'array' && Array.isArray(value)) return true;
@@ -195,6 +197,25 @@ function coerceHelpArgValue(spec, value) {
   }
 
   return value;
+}
+
+function normaliseStringUuidOptions(options) {
+  if (!Object.prototype.hasOwnProperty.call(options, 'refDate')) {
+    return options;
+  }
+
+  if (!Object.prototype.hasOwnProperty.call(options, 'version')) {
+    return {
+      ...options,
+      version: 7,
+    };
+  }
+
+  if (options.version === 4) {
+    throw new Error('Invalid argument combination for string.uuid: refDate requires version 7.');
+  }
+
+  return options;
 }
 
 function applyFakerArgTransform(keyword, args = []) {
@@ -218,6 +239,9 @@ function applyFakerArgTransform(keyword, args = []) {
         continue;
       }
       options[key] = coerceHelpArgValue(argSchema[index], argValue);
+    }
+    if (keyword?.keyword === 'string.uuid') {
+      return Object.keys(options).length > 0 ? [normaliseStringUuidOptions(options)] : [];
     }
     return Object.keys(options).length > 0 ? [options] : [];
   }

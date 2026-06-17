@@ -5,7 +5,7 @@ import { GenericDataTable } from '../js/data_formats/generic-data-table.js';
 import { Exporter } from '../js/grid/exporter.js';
 import { Importer } from '../js/grid/importer.js';
 import { applyImportTrimSettingsToDataTable, normalizeImportTrimSettings } from '../js/grid/import-trim-settings.js';
-import { KNOWN_FAKER_COMMANDS } from '../js/faker/faker-commands.js';
+import { getAllowedFakerCommandsAlphabetical, isForbiddenFakerCommand } from '../js/faker/faker-commands.js';
 import { PairwiseTestDataGenerator } from '../js/data_generation/n-wise/pairwiseTestDataGenerator.js';
 import {
   CombinationAlgorithm,
@@ -144,9 +144,8 @@ function hasSafeFakerArguments(ruleLine) {
   return hasSafeFakerLiteralArguments(ruleLine);
 }
 
-export function validateSafeFakerRules(textSpec) {
+function validateForbiddenFakerRules(textSpec) {
   const ruleLines = extractRuleLines(textSpec);
-  const knownCommandSet = new Set(KNOWN_FAKER_COMMANDS.filter((command) => command !== 'RegEx'));
 
   for (const ruleLine of ruleLines) {
     if (!looksLikeFakerRule(ruleLine)) {
@@ -158,7 +157,39 @@ export function validateSafeFakerRules(textSpec) {
       continue;
     }
 
-    if (!knownCommandSet.has(fakerCommand)) {
+    if (isForbiddenFakerCommand(fakerCommand)) {
+      return {
+        ok: false,
+        error: `Forbidden faker command: ${fakerCommand}. This command is known but not allowed through the API.`,
+      };
+    }
+  }
+
+  return { ok: true };
+}
+
+export function validateSafeFakerRules(textSpec) {
+  const ruleLines = extractRuleLines(textSpec);
+  const allowedCommandSet = new Set(getAllowedFakerCommandsAlphabetical().filter((command) => command !== 'RegEx'));
+
+  for (const ruleLine of ruleLines) {
+    if (!looksLikeFakerRule(ruleLine)) {
+      continue;
+    }
+
+    const fakerCommand = getFakerCommandFromRule(ruleLine);
+    if (getDomainKeywordByAlias(fakerCommand)) {
+      continue;
+    }
+
+    if (isForbiddenFakerCommand(fakerCommand)) {
+      return {
+        ok: false,
+        error: `Forbidden faker command in safe mode: ${fakerCommand}. This command is known but not allowed through the API.`,
+      };
+    }
+
+    if (!allowedCommandSet.has(fakerCommand)) {
       return {
         ok: false,
         error: `Unknown faker command in safe mode: ${fakerCommand}. Use --unsafe-faker-expressions to opt in.`,
@@ -220,6 +251,20 @@ function compileGenerationState({
 } = {}) {
   if (typeof textSpec !== 'string' || textSpec.trim().length === 0) {
     return { ok: false, errors: [CoreGenerationErrors.invalidTextSpecRequired()], diagnostics: {} };
+  }
+
+  const forbiddenValidation = validateForbiddenFakerRules(textSpec);
+  if (!forbiddenValidation.ok) {
+    return {
+      ok: false,
+      errors: [
+        {
+          code: 'unsafe_faker_rule',
+          message: forbiddenValidation.error,
+        },
+      ],
+      diagnostics: { mode: safeFakerRules ? 'safe' : 'default' },
+    };
   }
 
   if (safeFakerRules) {

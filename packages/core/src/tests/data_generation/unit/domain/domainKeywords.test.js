@@ -342,6 +342,11 @@ function sampleValueForType(type) {
   const allowed = String(type || '')
     .split('|')
     .map((entry) => entry.trim());
+  const numericLiterals = allowed.filter((entry) => /^[+-]?\d+(\.\d+)?$/.test(entry)).map((entry) => Number(entry));
+
+  if (numericLiterals.length === allowed.length && numericLiterals.length > 0) {
+    return numericLiterals[0];
+  }
 
   if (allowed.includes('integer')) return 7;
   if (allowed.includes('number')) return 7;
@@ -397,6 +402,9 @@ describe('faker keyword invocation styles', () => {
   for (const keyword of fakerKeywordsWithArgs) {
     test(`${keyword.keyword} supports equivalent positional and named argument invocation`, () => {
       const sampleArgs = keyword.help.args.map((arg) => sampleValueForType(arg.type));
+      if (keyword.keyword === 'string.uuid' && sampleArgs.length >= 2) {
+        sampleArgs[0] = 7;
+      }
 
       const positionalInvocation = `${keyword.keyword}(${sampleArgs.map(valueToInvocationLiteral).join(', ')})`;
       const namedInvocation = `${keyword.keyword}(${keyword.help.args

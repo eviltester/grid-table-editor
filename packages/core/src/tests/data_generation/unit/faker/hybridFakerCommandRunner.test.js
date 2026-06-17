@@ -76,6 +76,13 @@ describe('Hybrid Faker Command Runner', () => {
     expect(result.errorMessage).toContain('Security');
   });
 
+  test('should block forbidden helper commands even with simple literal args', () => {
+    const result = runFakerCommand('helpers.objectKey', '({"red":"#f00"})', faker);
+
+    expect(result.isError).toBe(true);
+    expect(result.errorMessage).toContain('Forbidden faker command');
+  });
+
   test('should handle property accessors with safe method', () => {
     const result = runFakerCommand('airline.airplane', '()', faker, ['name']);
 

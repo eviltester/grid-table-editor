@@ -1,205 +1,95 @@
 {
-  "custom-enum-base": {
+  "ui:custom-enum-base": {
     "mode": "exact",
     "exactPreviewParity": true,
     "structuralParity": true
   },
-  "custom-enum-pairwise": {
+  "ui:custom-enum-pairwise": {
     "mode": "exact",
     "exactPreviewParity": true,
     "structuralParity": true
   },
-  "custom-literal-base": {
+  "ui:custom-literal-base": {
     "mode": "exact",
     "exactPreviewParity": true,
     "structuralParity": true
   },
-  "custom-literal-empty": {
+  "ui:custom-literal-empty": {
     "mode": "exact",
     "exactPreviewParity": true,
     "structuralParity": true
   },
-  "custom-regex-base": {
+  "ui:custom-regex-base": {
     "mode": "structural",
     "exactPreviewParity": false,
     "structuralParity": true
   },
-  "custom-regex-empty": {
+  "ui:custom-regex-empty": {
     "mode": "exact",
     "exactPreviewParity": true,
     "structuralParity": true
   },
-  "faker-helpers-arrayElement-base": {
+  "ui:faker-helpers-arrayElement-base": {
     "mode": "exact",
     "exactPreviewParity": true,
     "structuralParity": true
   },
-  "faker-helpers-arrayElement-example-1": {
+  "ui:faker-helpers-fake-base": {
     "mode": "structural",
     "exactPreviewParity": false,
     "structuralParity": true
   },
-  "faker-helpers-arrayElements-base": {
+  "ui:faker-helpers-fromRegExp-example-1": {
     "mode": "structural",
     "exactPreviewParity": false,
     "structuralParity": true
   },
-  "faker-helpers-arrayElements-example-1": {
+  "ui:faker-helpers-mustache-base": {
+    "mode": "exact",
+    "exactPreviewParity": true,
+    "structuralParity": true
+  },
+  "ui:faker-helpers-uniqueArray-example-1": {
     "mode": "structural",
     "exactPreviewParity": false,
     "structuralParity": true
   },
-  "faker-helpers-fake-base": {
-    "mode": "structural",
-    "exactPreviewParity": false,
-    "structuralParity": true
-  },
-  "faker-helpers-fake-example-1": {
-    "mode": "structural",
-    "exactPreviewParity": false,
-    "structuralParity": true
-  },
-  "faker-helpers-fromRegExp-base": {
-    "mode": "structural",
-    "exactPreviewParity": false,
-    "structuralParity": true
-  },
-  "faker-helpers-fromRegExp-example-1": {
-    "mode": "structural",
-    "exactPreviewParity": false,
-    "structuralParity": true
-  },
-  "faker-helpers-mustache-base": {
+  "ui:faker-helpers-weightedArrayElement-example-1": {
     "mode": "exact",
     "exactPreviewParity": true,
     "structuralParity": true
   },
-  "faker-helpers-mustache-example-1": {
+  "ui:domain-airline-seat-example-1": {
     "mode": "exact",
     "exactPreviewParity": true,
     "structuralParity": true
   },
-  "faker-helpers-rangeToNumber-base": {
+  "ui:domain-commerce-price-example-1": {
     "mode": "exact",
     "exactPreviewParity": true,
     "structuralParity": true
   },
-  "faker-helpers-rangeToNumber-example-1": {
-    "mode": "structural",
-    "exactPreviewParity": false,
-    "structuralParity": true
-  },
-  "faker-helpers-replaceCreditCardSymbols-example-1": {
-    "mode": "structural",
-    "exactPreviewParity": false,
-    "structuralParity": true
-  },
-  "faker-helpers-replaceSymbols-example-1": {
-    "mode": "structural",
-    "exactPreviewParity": false,
-    "structuralParity": true
-  },
-  "faker-helpers-shuffle-base": {
-    "mode": "structural",
-    "exactPreviewParity": false,
-    "structuralParity": true
-  },
-  "faker-helpers-shuffle-example-1": {
-    "mode": "structural",
-    "exactPreviewParity": false,
-    "structuralParity": true
-  },
-  "faker-helpers-slugify-example-1": {
+  "ui:domain-date-birthdate-example-1": {
     "mode": "exact",
     "exactPreviewParity": true,
     "structuralParity": true
   },
-  "faker-helpers-uniqueArray-base": {
-    "mode": "structural",
-    "exactPreviewParity": false,
-    "structuralParity": true
-  },
-  "faker-helpers-uniqueArray-example-1": {
-    "mode": "structural",
-    "exactPreviewParity": false,
-    "structuralParity": true
-  },
-  "faker-helpers-weightedArrayElement-base": {
-    "mode": "structural",
-    "exactPreviewParity": false,
-    "structuralParity": true
-  },
-  "faker-helpers-weightedArrayElement-example-1": {
+  "ui:domain-internet-password-example-1": {
     "mode": "exact",
     "exactPreviewParity": true,
     "structuralParity": true
   },
-  "domain-airline-seat-example-1": {
+  "ui:domain-literal-value-example-1": {
     "mode": "exact",
     "exactPreviewParity": true,
     "structuralParity": true
   },
-  "domain-airline-seat-example-2": {
+  "ui:domain-string-counterString-example-1": {
     "mode": "exact",
     "exactPreviewParity": true,
     "structuralParity": true
   },
-  "domain-commerce-price-example-1": {
-    "mode": "exact",
-    "exactPreviewParity": true,
-    "structuralParity": true
-  },
-  "domain-date-birthdate-example-1": {
-    "mode": "exact",
-    "exactPreviewParity": true,
-    "structuralParity": true
-  },
-  "domain-internet-password-example-1": {
-    "mode": "exact",
-    "exactPreviewParity": true,
-    "structuralParity": true
-  },
-  "domain-literal-value-example-1": {
-    "mode": "exact",
-    "exactPreviewParity": true,
-    "structuralParity": true
-  },
-  "domain-literal-value-example-2": {
-    "mode": "exact",
-    "exactPreviewParity": true,
-    "structuralParity": true
-  },
-  "domain-string-counterString-example-1": {
-    "mode": "exact",
-    "exactPreviewParity": true,
-    "structuralParity": true
-  },
-  "domain-string-counterString-example-2": {
-    "mode": "exact",
-    "exactPreviewParity": true,
-    "structuralParity": true
-  },
-  "domain-string-counterString-example-3": {
-    "mode": "exact",
-    "exactPreviewParity": true,
-    "structuralParity": true
-  },
-  "domain-string-counterString-example-4": {
-    "mode": "exact",
-    "exactPreviewParity": true,
-    "structuralParity": true
-  },
-  "domain-string-fromCharacters-base": {
-    "mode": "exact",
-    "exactPreviewParity": true,
-    "structuralParity": true
-  },
-  "domain-string-fromCharacters-example-1": {
-    "mode": "exact",
-    "exactPreviewParity": true,
-    "structuralParity": true
-  },
-  "domain-string-fromCharacters-example-2": {
+  "ui:domain-string-fromCharacters-base": {
     "mode": "exact",
     "exactPreviewParity": true,
     "structuralParity": true

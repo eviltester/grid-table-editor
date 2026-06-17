@@ -14,24 +14,6 @@ The `internet` domain maps domain keywords to underlying faker implementations.
 
 ## Methods
 
-### `internet.color`
-
-Generates a random css hex color code in aesthetically pleasing color palette.
-
-- Canonical: `awd.domain.internet.color`
-- Faker docs: [https://fakerjs.dev/api/internet](https://fakerjs.dev/api/internet)
-
-No parameters.
-
-Examples:
-
-```txt
-internet.color()
-```
-
-Example return values:
-- `#290551`
-
 ### `internet.displayName`
 
 Generates a display name using the given person's name as base.
@@ -464,21 +446,3 @@ internet.username(firstName="Alex", lastName="Taylor")
 
 Example return values:
 - `Deanna51`
-
-### `internet.userName`
-
-Generates a username using the given person's name as base.
-
-- Canonical: `awd.domain.internet.userName`
-- Faker docs: [https://fakerjs.dev/api/internet](https://fakerjs.dev/api/internet)
-
-No parameters.
-
-Examples:
-
-```txt
-internet.userName()
-```
-
-Example return values:
-- `Ana_Keebler`

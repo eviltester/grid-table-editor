@@ -121,12 +121,6 @@ describe('finance domain keyword execution', () => {
     expectMeaningfulString(result);
   });
 
-  test('executes finance.maskedNumber', () => {
-    const result = executeDomainKeyword('finance.maskedNumber', { faker, args: [] });
-    console.log('finance.maskedNumber', result);
-    expectMeaningfulString(result);
-  });
-
   test('executes finance.pin', () => {
     const result = executeDomainKeyword('finance.pin', { faker, args: [] });
     console.log('finance.pin', result);

@@ -51,7 +51,7 @@ import { createConfirmDialogService } from '../../../shared/dialog-services/conf
 import { createTextInputDialogService } from '../../../shared/dialog-services/text-input-dialog-service.js';
 import { DEFAULT_ENUM_LIMIT, createEnumSchemaRowsFromGrid, normaliseEnumLimit } from '../schema/grid-to-enum-schema.js';
 
-import { faker } from 'https://cdn.skypack.dev/@faker-js/faker@v9.7.0';
+import { faker } from '@faker-js/faker';
 
 function createTestDataGenerationPanelManager({
   documentObj,

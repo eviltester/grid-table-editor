@@ -28,21 +28,6 @@ const DOMAIN_FAKER_IMAGE_KEYWORD_DEFINITIONS = [
     },
   },
   {
-    keyword: 'image.avatarLegacy',
-    delegate: {
-      type: 'faker',
-      target: 'image.avatarLegacy',
-    },
-    help: {
-      summary:
-        'Generates a random avatar from `https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar`.',
-      docsUrl: 'https://fakerjs.dev/api/image',
-      example: 'https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/1198.jpg',
-      returnType: 'string',
-      args: [],
-    },
-  },
-  {
     keyword: 'image.dataUri',
     delegate: {
       type: 'faker',
@@ -122,20 +107,6 @@ const DOMAIN_FAKER_IMAGE_KEYWORD_DEFINITIONS = [
       summary: 'Generates a random image url provided via https://picsum.photos.',
       docsUrl: 'https://fakerjs.dev/api/image',
       example: 'https://picsum.photos/seed/UBLQun43/2068/162?blur=8',
-      returnType: 'string',
-      args: [],
-    },
-  },
-  {
-    keyword: 'image.urlPlaceholder',
-    delegate: {
-      type: 'faker',
-      target: 'image.urlPlaceholder',
-    },
-    help: {
-      summary: 'Generates a random image url provided via https://via.placeholder.com/.',
-      docsUrl: 'https://fakerjs.dev/api/image',
-      example: 'https://via.placeholder.com/2302x1759/a80adf/2de69f.gif?text=utrimque%20summa%20dolores',
       returnType: 'string',
       args: [],
     },

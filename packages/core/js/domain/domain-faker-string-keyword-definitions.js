@@ -316,13 +316,29 @@ const DOMAIN_FAKER_STRING_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'string.uuid',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
-      summary: 'Returns a UUID v4 (Universally Unique Identifier).',
+      summary: 'Returns a UUID (Universally Unique Identifier).',
       docsUrl: 'https://fakerjs.dev/api/string',
       example: '0628ae51-7b6c-4d33-9f24-dae19fb245df',
       returnType: 'string',
-      args: [],
+      args: [
+        {
+          name: 'version',
+          type: '4|7',
+          required: false,
+          description:
+            'The specific UUID version to use. If refDate is supplied and version is omitted, version 7 is used automatically.',
+        },
+        {
+          name: 'refDate',
+          type: 'string|number|date',
+          required: false,
+          description:
+            'The timestamp to encode into the UUID. This is only valid for UUID v7. If refDate is supplied and version is omitted, version 7 is used automatically. Providing refDate with version 4 is invalid.',
+        },
+      ],
     },
   },
 ];

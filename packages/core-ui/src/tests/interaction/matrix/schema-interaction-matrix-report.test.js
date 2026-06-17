@@ -2,6 +2,7 @@ import { describe, test, expect } from '@jest/globals';
 import {
   buildChunkDescriptors,
   formatCommandsForConsole,
+  getScenarioDisplayOrigin,
   renderMatrixSummaryMarkdown,
 } from './support/schema-interaction-matrix-report.js';
 
@@ -23,6 +24,13 @@ describe('schema interaction matrix report', () => {
 
     expect(text).toContain('domain(1): string.counterString');
     expect(text).toContain('faker(2): helpers.fake, helpers.mustache');
+  });
+
+  test('getScenarioDisplayOrigin prefers the specific non-custom origin when multiple tags exist', () => {
+    expect(getScenarioDisplayOrigin({ origins: ['custom', 'empty'] })).toBe('empty');
+    expect(getScenarioDisplayOrigin({ origins: ['custom', 'pairwise'] })).toBe('pairwise');
+    expect(getScenarioDisplayOrigin({ origins: ['custom'] })).toBe('custom');
+    expect(getScenarioDisplayOrigin({ origins: ['base'] })).toBe('base');
   });
 
   test('renderMatrixSummaryMarkdown includes ui parity counts and structural-only list', () => {

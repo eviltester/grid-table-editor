@@ -44,6 +44,7 @@ function sampleValueForKeywordArg(keywordName, argName, typeName) {
   if (argName === 'from') return 1577836800000;
   if (argName === 'to') return 1580428800000;
   if (argName === 'refDate') return 1716110400000;
+  if (argName === 'version') return 7;
   if (argName === 'count') return 3;
   if (argName === 'min') return 1;
   if (argName === 'max') return 10;

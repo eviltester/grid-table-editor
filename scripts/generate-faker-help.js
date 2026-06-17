@@ -204,7 +204,7 @@ function extractParamDocs(jsDocBlock) {
     .map(sanitizeDocLine);
 
   for (const line of lines) {
-    const paramMatch = line.match(/^@param\s+\{[^}]+\}\s+(\[[^\]]+\]|[A-Za-z_$][\w$\.\-]*)(?:\s+-?\s*)?(.*)$/);
+    const paramMatch = line.match(/^@param\s+(?:\{[^}]+\}\s+)?(\[[^\]]+\]|[A-Za-z_$][\w$\.\-]*)(?:\s+-?\s*)?(.*)$/);
     if (!paramMatch) {
       continue;
     }
@@ -212,7 +212,7 @@ function extractParamDocs(jsDocBlock) {
     const rawName = paramMatch[1];
     const nameWithoutBrackets = rawName.replace(/^\[/, '').replace(/\]$/, '');
     const nameWithoutDefault = nameWithoutBrackets.split('=')[0];
-    const normalizedName = nameWithoutDefault.split('.')[0].trim();
+    const normalizedName = nameWithoutDefault.trim();
     if (!normalizedName) {
       continue;
     }
@@ -432,17 +432,43 @@ function formatExampleValue(value) {
 }
 
 function applyMetadataOverrides(command, metadata, helperOverrides = {}) {
+  const commandOverrides = {
+    'string.uuid': {
+      summary: 'Returns a UUID (Universally Unique Identifier).',
+      params: [
+        {
+          name: 'version',
+          optional: true,
+          type: '4 | 7',
+          description: 'The specific UUID version to use.',
+        },
+        {
+          name: 'refDate',
+          optional: true,
+          type: 'string | Date | number',
+          description: 'The timestamp to encode into the UUID. This parameter is only relevant for UUID v7.',
+        },
+      ],
+    },
+  };
+
+  const commandOverride = commandOverrides[command];
   const override = helperOverrides[command];
-  if (!override) {
+  if (!override && !commandOverride) {
     return metadata;
   }
 
+  const combinedOverride = {
+    ...(commandOverride || {}),
+    ...(override || {}),
+  };
+
   return {
     ...metadata,
-    summary: override.summary || metadata.summary,
-    params: Array.isArray(override.params) ? override.params : metadata.params,
-    example: override.example || metadata.example,
-    examples: Array.isArray(override.examples) ? override.examples : metadata.examples,
+    summary: combinedOverride.summary || metadata.summary,
+    params: Array.isArray(combinedOverride.params) ? combinedOverride.params : metadata.params,
+    example: combinedOverride.example || metadata.example,
+    examples: Array.isArray(combinedOverride.examples) ? combinedOverride.examples : metadata.examples,
   };
 }
 

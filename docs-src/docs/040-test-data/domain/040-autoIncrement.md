@@ -6,7 +6,7 @@ description: "Domain keyword reference for autoIncrement."
 
 # autoIncrement Domain
 
-The `autoIncrement` domain provides deterministic values that move forward for each generated row.
+The `autoIncrement` domain provides stateful sequence helpers for accepted generated rows.
 
 ## Methods
 
@@ -20,7 +20,7 @@ Generates an incrementing sequence. Values only advance when a generated row is 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
 | `start` | `integer` | no | Starting integer in the sequence. Defaults to 1. |
-| `step` | `integer` | no | Amount added after each accepted row. Defaults to 1. |
+| `step` | `integer` | no | Non-zero amount added after each accepted row. Defaults to 1. |
 | `prefix` | `string` | no | Optional text added before the numeric portion. |
 | `suffix` | `string` | no | Optional text added after the numeric portion. |
 | `zeropadding` | `integer` | no | Total digit width for the numeric portion. A value of 3 renders 1 as 001, while 100 stays 100. Defaults to 0. |
@@ -49,14 +49,15 @@ Example return values:
 Generates a timestamp that starts from a fixed point and increments by the configured amount for each generated row.
 
 - Canonical: `awd.domain.autoIncrement.timestamp`
+- Docs: [https://anywaydata.com/docs/test-data/domain/autoIncrement](https://anywaydata.com/docs/test-data/domain/autoIncrement)
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `start` | `string\|number` | no | Starting timestamp. Defaults to the generation run start time. Valid examples include `2026-06-12T12:39:23Z`, `20/03/1969`, `12-06-2026 12:39:23`, or a Unix timestamp such as `1718195963000`. |
-| `step` | `number` | no | Amount added for each generated row. Defaults to `1`. |
-| `type` | `string` | no | Unit applied to `step` for each row. Supports `milliseconds`, `seconds`, `minutes`, `hours`, `days`, `weeks`, `months`, or `years`. Defaults to `seconds`. |
-| `outputFormat` | `string` | no | Output format. Defaults to ISO-8601 without milliseconds. Use `iso8601` for the default behaviour or a custom pattern such as `yyyy-MM-dd HH:mm:ss`. |
-| `inputFormat` | `string` | no | Optional parse pattern used only for `start` when you want to match a specific text shape such as `dd/MM/yyyy` or `dd-MM-yyyy HH:mm:ss`. |
+| `start` | `string\|number` | no | Starting timestamp. Defaults to the generation run start time. Valid examples include "2026-06-12T12:39:23Z", "20/03/1969", "12-06-2026 12:39:23", or a Unix timestamp like 1718195963000. |
+| `step` | `number` | no | Amount added for each generated row. Defaults to 1. |
+| `type` | `string` | no | Unit applied to step for each row. Supports milliseconds, seconds, minutes, hours, days, weeks, months, or years. Defaults to seconds. |
+| `outputFormat` | `string` | no | Output format. Defaults to ISO-8601 without milliseconds. Use "iso8601" for the default behaviour or a custom pattern such as "yyyy-MM-dd HH:mm:ss". |
+| `inputFormat` | `string` | no | Optional parse pattern used only for the start argument when you want to match a specific text shape such as "dd/MM/yyyy" or "dd-MM-yyyy HH:mm:ss". |
 
 Examples:
 
@@ -65,15 +66,15 @@ autoIncrement.timestamp()
 ```
 
 ```txt
-autoIncrement.timestamp(start="2026-06-12T12:39:23Z", step=1, type="seconds")
+autoIncrement.timestamp(start="20/03/1969", step=1, type="days")
 ```
 
 ```txt
-autoIncrement.timestamp(start="20/03/1969", step=1, type="days", outputFormat="yyyy-MM-dd")
+autoIncrement.timestamp(start="2026-06-12 12:39:23", step=15, type="minutes", outputFormat="yyyy-MM-dd HH:mm:ss")
 ```
 
 ```txt
-autoIncrement.timestamp(start="12-06-2026 12:39:23", step=15, type="minutes", outputFormat="yyyy-MM-dd HH:mm:ss", inputFormat="dd-MM-yyyy HH:mm:ss")
+autoIncrement.timestamp(start="20/03/1969", inputFormat="dd/MM/yyyy", step=1, type="days")
 ```
 
 Example return values:

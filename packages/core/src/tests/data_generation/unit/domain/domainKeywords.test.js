@@ -342,6 +342,11 @@ function sampleValueForType(type) {
   const allowed = String(type || '')
     .split('|')
     .map((entry) => entry.trim());
+  const numericLiterals = allowed.filter((entry) => /^[+-]?\d+(\.\d+)?$/.test(entry)).map((entry) => Number(entry));
+
+  if (numericLiterals.length === allowed.length && numericLiterals.length > 0) {
+    return numericLiterals[0];
+  }
 
   if (allowed.includes('integer')) return 7;
   if (allowed.includes('number')) return 7;

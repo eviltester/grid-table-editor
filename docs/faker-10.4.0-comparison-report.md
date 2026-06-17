@@ -167,7 +167,7 @@ Recommended sequence for issue `#225`:
    `commerce.upc`, `helpers.enumValue`, `helpers.objectEntry`, `helpers.objectKey`, `helpers.objectValue`.
 3. Regenerate faker help metadata and manually review helper-command parameter docs that the type-extraction pass does not recover cleanly.
 4. Update any domain/help/method-picker surfaces that still expose removed commands.
-5. Optionally fix the `ipv4` / `ipv6` parser constraint in `FakerCommand` so the curated list matches real runtime capability more closely.
+5. Confirm the already-landed `ipv4` / `ipv6` parser fix remains covered so the curated list stays aligned with real runtime capability.
 
 Decisions:
 

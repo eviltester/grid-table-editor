@@ -51,6 +51,11 @@ function sampleValueForType(type) {
   const allowed = String(type || '')
     .split('|')
     .map((entry) => entry.trim());
+  const numericLiterals = allowed.filter((entry) => /^[+-]?\d+(\.\d+)?$/.test(entry)).map((entry) => Number(entry));
+
+  if (numericLiterals.length === allowed.length && numericLiterals.length > 0) {
+    return numericLiterals[0];
+  }
 
   if (allowed.includes('integer')) {
     return 7;
@@ -126,6 +131,7 @@ function sampleValueForKeywordArg(keywordName, argName, typeName) {
   if (key === 'commerce.upc.prefix') return '01234';
   if (argName === 'prefix') return 'pre';
   if (argName === 'symbol') return '$';
+  if (argName === 'version') return 7;
   if (argName === 'refDate') return Date.now();
   if (argName === 'from') return Date.now() - 86400000;
   if (argName === 'to') return Date.now() + 86400000;

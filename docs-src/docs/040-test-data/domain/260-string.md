@@ -327,12 +327,15 @@ Example return values:
 
 ### `string.uuid`
 
-Returns a UUID v4 (Universally Unique Identifier).
+Returns a UUID (Universally Unique Identifier).
 
 - Canonical: `awd.domain.string.uuid`
 - Faker docs: [https://fakerjs.dev/api/string](https://fakerjs.dev/api/string)
 
-No parameters.
+| Arg | Type | Required | Description |
+| --- | --- | --- | --- |
+| `version` | `4\|7` | no | The specific UUID version to use. |
+| `refDate` | `string\|number\|date` | no | The timestamp to encode into the UUID. This parameter is only relevant for UUID v7. |
 
 Examples:
 

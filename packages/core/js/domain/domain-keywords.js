@@ -173,9 +173,11 @@ function isTypeMatch(value, typeName) {
   }
   const allowed = raw.split('|').map((entry) => entry.trim());
   for (const item of allowed) {
+    if (/^[+-]?\d+(\.\d+)?$/.test(item) && typeof value === 'number' && Object.is(value, Number(item))) return true;
     if (item === 'string' && typeof value === 'string') return true;
     if (item === 'integer' && typeof value === 'number' && Number.isInteger(value)) return true;
     if (item === 'number' && typeof value === 'number' && Number.isFinite(value)) return true;
+    if (item === 'date' && value instanceof Date && !Number.isNaN(value.valueOf())) return true;
     if (item === 'regexp' && (value instanceof RegExp || typeof value === 'string')) return true;
     if (item === 'boolean' && typeof value === 'boolean') return true;
     if (item === 'array' && Array.isArray(value)) return true;

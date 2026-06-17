@@ -4,6 +4,7 @@
 
 import { errorResponse } from '../ruleResponse.js';
 import { parseFakerLiteralArguments } from './safeLiteralArgumentParser.js';
+import { isForbiddenFakerCommand } from '../../faker/faker-commands.js';
 
 function parseArgumentsSafely(argString) {
   if (!argString || argString === '()') {
@@ -165,6 +166,12 @@ function runFakerCommandWithFallback(thisCommand, theseArguments, usingFaker, pr
 }
 
 export function runFakerCommand(thisCommand, theseArguments, usingFaker, propertyAccessors = [], options = {}) {
+  if (isForbiddenFakerCommand(thisCommand)) {
+    return errorResponse(
+      `Forbidden faker command: ${thisCommand}. This command is known but not allowed through the API.`
+    );
+  }
+
   try {
     // First, try the safe approach (direct function calls)
     return runFakerCommandSafely(thisCommand, theseArguments, usingFaker, propertyAccessors);

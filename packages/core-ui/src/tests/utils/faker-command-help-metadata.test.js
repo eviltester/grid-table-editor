@@ -38,6 +38,7 @@ describe('faker command help metadata', () => {
     const firstName = getFakerCommandHelp('person.firstName');
     const nestedPropertyAccess = getFakerCommandHelp('airline.airplane.name');
     const imageDataUri = getFakerCommandHelp('image.dataUri');
+    const uuid = getFakerCommandHelp('string.uuid');
 
     expect(firstName.params).toEqual(
       expect.arrayContaining([
@@ -50,6 +51,14 @@ describe('faker command help metadata', () => {
       expect.arrayContaining([expect.objectContaining({ name: 'options', optional: true, type: 'object' })])
     );
     expect(imageDataUri.example.length).toBeGreaterThan(0);
+
+    expect(uuid.summary).toContain('Returns a UUID');
+    expect(uuid.params).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ name: 'version', optional: true, type: '4 | 7' }),
+        expect.objectContaining({ name: 'refDate', optional: true, type: 'string | Date | number' }),
+      ])
+    );
 
     expect(nestedPropertyAccess).toBeDefined();
     expect(nestedPropertyAccess.summary.length).toBeGreaterThan(0);

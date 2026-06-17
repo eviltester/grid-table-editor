@@ -305,6 +305,8 @@ function buildGenericParamValue({ paramName, paramType, command, sourceType, ind
   if (lowerName === 'firstname') return '"Ada"';
   if (lowerName === 'lastname') return '"Lovelace"';
   if (lowerName === 'sex') return '"male"';
+  if (lowerName === 'version') return '7';
+  if (lowerName === 'refdate') return '1';
   if (!typeText.includes('integer') && !typeText.includes('number') && lowerName === 'from') {
     return '"2020-01-01T00:00:00.000Z"';
   }

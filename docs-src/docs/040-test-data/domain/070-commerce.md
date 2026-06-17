@@ -187,9 +187,5 @@ Examples:
 commerce.upc()
 ```
 
-```txt
-commerce.upc(prefix="01234")
-```
-
 Example return values:
 - `036000291452`

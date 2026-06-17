@@ -144,6 +144,30 @@ function hasSafeFakerArguments(ruleLine) {
   return hasSafeFakerLiteralArguments(ruleLine);
 }
 
+function validateForbiddenFakerRules(textSpec) {
+  const ruleLines = extractRuleLines(textSpec);
+
+  for (const ruleLine of ruleLines) {
+    if (!looksLikeFakerRule(ruleLine)) {
+      continue;
+    }
+
+    const fakerCommand = getFakerCommandFromRule(ruleLine);
+    if (getDomainKeywordByAlias(fakerCommand)) {
+      continue;
+    }
+
+    if (isForbiddenFakerCommand(fakerCommand)) {
+      return {
+        ok: false,
+        error: `Forbidden faker command: ${fakerCommand}. This command is known but not allowed through the API.`,
+      };
+    }
+  }
+
+  return { ok: true };
+}
+
 export function validateSafeFakerRules(textSpec) {
   const ruleLines = extractRuleLines(textSpec);
   const allowedCommandSet = new Set(getAllowedFakerCommandsAlphabetical().filter((command) => command !== 'RegEx'));
@@ -227,6 +251,20 @@ function compileGenerationState({
 } = {}) {
   if (typeof textSpec !== 'string' || textSpec.trim().length === 0) {
     return { ok: false, errors: [CoreGenerationErrors.invalidTextSpecRequired()], diagnostics: {} };
+  }
+
+  const forbiddenValidation = validateForbiddenFakerRules(textSpec);
+  if (!forbiddenValidation.ok) {
+    return {
+      ok: false,
+      errors: [
+        {
+          code: 'unsafe_faker_rule',
+          message: forbiddenValidation.error,
+        },
+      ],
+      diagnostics: { mode: safeFakerRules ? 'safe' : 'default' },
+    };
   }
 
   if (safeFakerRules) {

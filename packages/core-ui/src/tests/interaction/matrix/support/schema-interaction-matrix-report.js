@@ -13,6 +13,23 @@ function uniqueSorted(values) {
   ].sort((left, right) => left.localeCompare(right));
 }
 
+function getScenarioDisplayOrigin(scenario) {
+  const origins = (Array.isArray(scenario?.origins) ? scenario.origins : []).map((origin) =>
+    String(origin || '').trim()
+  );
+  const filtered = origins.filter(Boolean);
+  if (filtered.length === 0) {
+    return 'unknown';
+  }
+
+  const nonCustomOrigins = filtered.filter((origin) => origin !== 'custom');
+  if (nonCustomOrigins.length > 0) {
+    return nonCustomOrigins[nonCustomOrigins.length - 1];
+  }
+
+  return filtered[0];
+}
+
 function buildCommandsBySourceType(scenarios) {
   const rows = new Map();
   (Array.isArray(scenarios) ? scenarios : []).forEach((scenario) => {
@@ -65,6 +82,10 @@ function formatScenarioRowSummary(row) {
   return `${name}: ${formatScenarioRowInvocation(row)}`;
 }
 
+function getScenarioDisplayId(scenario) {
+  return String(scenario?.scenarioId || scenario?.id || '').trim() || 'n/a';
+}
+
 function formatScenarioCommandLabel(scenario) {
   const rows = Array.isArray(scenario?.rows) ? scenario.rows : [];
   if (rows.length === 1) {
@@ -111,8 +132,8 @@ function buildChunkDescriptors(items, chunkSize) {
   const descriptors = [];
   for (let index = 0; index < items.length; index += chunkSize) {
     const scenarios = items.slice(index, index + chunkSize);
-    const firstId = scenarios[0]?.id || 'n/a';
-    const lastId = scenarios[scenarios.length - 1]?.id || 'n/a';
+    const firstId = getScenarioDisplayId(scenarios[0]);
+    const lastId = getScenarioDisplayId(scenarios[scenarios.length - 1]);
     descriptors.push({
       index: descriptors.length + 1,
       label: `chunk ${descriptors.length + 1} (${scenarios.length} scenarios) ${firstId} .. ${lastId}`,
@@ -127,10 +148,7 @@ function buildSubsetSummary(name, scenarios) {
     name,
     count: scenarios.length,
     bySourceType: countBy(scenarios, (scenario) => scenario.sourceType),
-    byOrigin: countBy(
-      scenarios.flatMap((scenario) => scenario.origins || []).map((origin) => ({ origin })),
-      (item) => item.origin
-    ),
+    byOrigin: countBy(scenarios, (scenario) => getScenarioDisplayOrigin(scenario)),
     commandsBySourceType: buildCommandsBySourceType(scenarios),
   };
 }
@@ -200,7 +218,7 @@ function renderSubsetMarkdown(name, scenarios, previewDataByScenarioId = {}, uiP
           '',
           ...(structuralOnlyScenarios.length
             ? structuralOnlyScenarios.map(
-                (scenario) => `- \`${scenario.id}\` - \`${formatScenarioCommandLabel(scenario)}\``
+                (scenario) => `- \`${getScenarioDisplayId(scenario)}\` - \`${formatScenarioCommandLabel(scenario)}\``
               )
             : ['None']),
           '',
@@ -219,7 +237,7 @@ function renderSubsetMarkdown(name, scenarios, previewDataByScenarioId = {}, uiP
     ...(scenarios.length
       ? [
           ...scenarios.flatMap((scenario) => [
-            `#### \`${scenario.id}\``,
+            `#### \`${getScenarioDisplayId(scenario)}\``,
             '',
             `- Command(s): \`${formatScenarioCommandLabel(scenario)}\``,
             ...[renderParityModeLine(scenario, uiParityByScenarioId)].filter(Boolean),
@@ -266,4 +284,4 @@ function renderMatrixSummaryMarkdown({
   ].join('\n');
 }
 
-export { buildChunkDescriptors, renderMatrixSummaryMarkdown, formatCommandsForConsole };
+export { buildChunkDescriptors, renderMatrixSummaryMarkdown, formatCommandsForConsole, getScenarioDisplayOrigin };

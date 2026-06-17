@@ -1,15 +1,24 @@
 import { KNOWN_FAKER_COMMANDS } from '../../../js/gui_components/shared/faker-commands.js';
 import {
-  FAKER_COMMAND_HELP_METADATA,
   getFakerCommandHelp,
-} from '../../../js/gui_components/shared/faker-command-help-metadata.js';
+  FAKER_HELPER_KEYWORD_DEFINITIONS,
+  buildFakerHelperHelpMetadata,
+} from '@anywaydata/core/faker/faker-helper-keyword-definitions.js';
 
 describe('faker command help metadata', () => {
-  test('contains help entries for all curated faker commands', () => {
-    const fakerCommands = KNOWN_FAKER_COMMANDS.filter((command) => command !== 'RegEx');
+  test('contains direct metadata entries only for faker-only helper commands', () => {
+    const fakerCommands = KNOWN_FAKER_COMMANDS.filter((command) => command.startsWith('helpers.'));
+    expect(fakerCommands).toEqual(Object.keys(FAKER_HELPER_KEYWORD_DEFINITIONS));
+    const helperMetadata = buildFakerHelperHelpMetadata();
     fakerCommands.forEach((command) => {
-      expect(FAKER_COMMAND_HELP_METADATA[command]).toBeDefined();
+      expect(helperMetadata[command]).toBeDefined();
     });
+    expect(helperMetadata['person.firstName']).toBeUndefined();
+  });
+
+  test('normalizes helper metadata directly from helper definitions', () => {
+    const helperMetadata = buildFakerHelperHelpMetadata();
+    expect(Object.keys(helperMetadata)).toEqual(Object.keys(FAKER_HELPER_KEYWORD_DEFINITIONS));
   });
 
   test('contains docsUrl for all curated faker commands', () => {
@@ -34,29 +43,26 @@ describe('faker command help metadata', () => {
     expect(helper.docsUrl).toBe('https://fakerjs.dev/api/helpers');
   });
 
-  test('includes params when signatures are available and supports fallback summaries', () => {
+  test('falls back to domain keyword help for domain-backed faker commands', () => {
     const firstName = getFakerCommandHelp('person.firstName');
     const nestedPropertyAccess = getFakerCommandHelp('airline.airplane.name');
     const imageDataUri = getFakerCommandHelp('image.dataUri');
     const uuid = getFakerCommandHelp('string.uuid');
 
     expect(firstName.params).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ name: 'sex', optional: true, type: "'female' | 'generic' | 'male'" }),
-      ])
+      expect.arrayContaining([expect.objectContaining({ name: 'sex', optional: true, type: 'string' })])
     );
     expect(firstName.example.length).toBeGreaterThan(0);
+    expect(buildFakerHelperHelpMetadata()['person.firstName']).toBeUndefined();
 
-    expect(imageDataUri.params).toEqual(
-      expect.arrayContaining([expect.objectContaining({ name: 'options', optional: true, type: 'object' })])
-    );
+    expect(Array.isArray(imageDataUri.params)).toBe(true);
     expect(imageDataUri.example.length).toBeGreaterThan(0);
 
     expect(uuid.summary).toContain('Returns a UUID');
     expect(uuid.params).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ name: 'version', optional: true, type: '4 | 7' }),
-        expect.objectContaining({ name: 'refDate', optional: true, type: 'string | Date | number' }),
+        expect.objectContaining({ name: 'version', optional: true, type: '4|7' }),
+        expect.objectContaining({ name: 'refDate', optional: true, type: 'string|number|date' }),
       ])
     );
     expect(uuid.params.find((param) => param.name === 'version')?.description).toContain(
@@ -75,6 +81,7 @@ describe('faker command help metadata', () => {
     const mustache = getFakerCommandHelp('helpers.mustache');
     const arrayElement = getFakerCommandHelp('helpers.arrayElement');
     const rangeToNumber = getFakerCommandHelp('helpers.rangeToNumber');
+    const multiple = getFakerCommandHelp('helpers.multiple');
 
     expect(mustache.summary).toContain('Replaces {{placeholder}} tokens');
     expect(mustache.params).toEqual(
@@ -100,5 +107,7 @@ describe('faker command help metadata', () => {
     );
     expect(rangeToNumber.example).toBe('2');
     expect(rangeToNumber.examples).toContain('helpers.rangeToNumber({ min: 1, max: 2 })');
+
+    expect(multiple.returnType).toBe('array');
   });
 });

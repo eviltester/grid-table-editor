@@ -1,3 +1,7 @@
+import { FAKER_HELPER_KEYWORD_DEFINITIONS } from './faker-helper-keyword-definitions.js';
+
+const HELPER_FAKER_COMMANDS = Object.keys(FAKER_HELPER_KEYWORD_DEFINITIONS);
+
 const KNOWN_FAKER_COMMANDS = [
   'RegEx',
 
@@ -15,25 +19,8 @@ const KNOWN_FAKER_COMMANDS = [
   'date.recent',
   'date.soon',
   'date.birthdate',
-  // Some helpers work just fine
-  'helpers.fake',
-  'helpers.mustache',
-  'helpers.fromRegExp',
-  'helpers.maybe',
-  'helpers.arrayElement',
-  'helpers.objectKey',
-  'helpers.objectValue',
-  'helpers.objectEntry',
-  'helpers.enumValue',
-  'helpers.slugify',
-  'helpers.replaceSymbols',
-  'helpers.replaceCreditCardSymbols',
-  'helpers.shuffle',
-  'helpers.uniqueArray',
-  'helpers.weightedArrayElement',
-  'helpers.arrayElements',
-  'helpers.rangeToNumber',
-  'helpers.multiple',
+  // Some helpers work just fine. Keep helper registration sourced from helper definitions.
+  ...HELPER_FAKER_COMMANDS,
   'number.int',
   'number.float',
   'number.binary',

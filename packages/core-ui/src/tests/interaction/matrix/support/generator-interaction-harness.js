@@ -4,7 +4,7 @@ import RandExp from 'randexp';
 import { TestDataGenerator } from '@anywaydata/core/data_generation/testDataGenerator.js';
 import { Exporter } from '@anywaydata/core/grid/exporter.js';
 import { createDataGeneratorPage } from '../../../../../js/gui_components/generator/runtime/create-generator-page.js';
-import { getFakerCommandHelp } from '../../../../../js/gui_components/shared/faker-command-help-metadata.js';
+import { getFakerCommandHelp } from '@anywaydata/core/faker/faker-helper-keyword-definitions.js';
 import { getDomainCommandHelp } from '../../../../../js/gui_components/shared/domain-command-help-metadata.js';
 import { resolveFakerDocsUrl } from '../../../../../js/gui_components/shared/test-data/help/help-model-builder.js';
 import {

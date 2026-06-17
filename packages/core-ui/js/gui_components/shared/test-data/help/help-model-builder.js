@@ -5,7 +5,7 @@
  * - Keeps command help behavior unit-testable without booting full pages.
  */
 
-import { getFakerCommandHelp } from '../../faker-command-help-metadata.js';
+import { getFakerCommandHelp } from '@anywaydata/core/faker/faker-helper-keyword-definitions.js';
 import { getDomainCommandHelp } from '../../domain-command-help-metadata.js';
 import { escapeHtml } from '../../html-escape.js';
 import {

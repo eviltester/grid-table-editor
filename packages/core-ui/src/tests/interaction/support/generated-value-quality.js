@@ -1,4 +1,4 @@
-import { getFakerCommandHelp } from '../../../../js/gui_components/shared/faker-command-help-metadata.js';
+import { getFakerCommandHelp } from '@anywaydata/core/faker/faker-helper-keyword-definitions.js';
 import { getDomainCommandHelp } from '../../../../js/gui_components/shared/domain-command-help-metadata.js';
 import {
   SOURCE_TYPE_DOMAIN,

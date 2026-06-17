@@ -1,5 +1,5 @@
 import { getAllowedFakerCommandsAlphabetical } from '../../../../../js/gui_components/shared/faker-commands.js';
-import { getFakerCommandHelp } from '../../../../../js/gui_components/shared/faker-command-help-metadata.js';
+import { getFakerCommandHelp } from '@anywaydata/core/faker/faker-helper-keyword-definitions.js';
 import { faker } from '@faker-js/faker';
 import RandExp from 'randexp';
 import { TestDataGenerator } from '@anywaydata/core/data_generation/testDataGenerator.js';

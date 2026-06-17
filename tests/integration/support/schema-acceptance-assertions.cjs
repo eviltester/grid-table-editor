@@ -22,6 +22,21 @@ function normalizeCellValue(value) {
   return String(value);
 }
 
+function inferObjectRowHeaders(parsedRows, fallbackHeaders = []) {
+  const discoveredHeaders = [];
+  for (const row of parsedRows) {
+    if (!row || typeof row !== 'object' || Array.isArray(row)) {
+      continue;
+    }
+    for (const key of Object.keys(row)) {
+      if (!discoveredHeaders.includes(key)) {
+        discoveredHeaders.push(String(key));
+      }
+    }
+  }
+  return discoveredHeaders.length > 0 ? discoveredHeaders : fallbackHeaders.map(String);
+}
+
 function normalizeApiBody(body) {
   if (body?.headers && body?.rows) {
     return {
@@ -65,12 +80,13 @@ function normalizeMcpPayload(payload) {
   };
 }
 
-function normalizeCliSuccess(stdoutText, expectedHeaders) {
+function normalizeCliSuccess(stdoutText, fallbackHeaders = []) {
   const parsed = JSON.parse(stdoutText.trim());
+  const headers = inferObjectRowHeaders(parsed, fallbackHeaders);
   return {
     ok: true,
-    headers: expectedHeaders.map(String),
-    rows: toObjectRows(parsed, expectedHeaders),
+    headers,
+    rows: toObjectRows(parsed, headers),
     format: 'json',
     rendered: stdoutText.trim(),
     diagnostics: {},
@@ -109,12 +125,13 @@ function normalizeUiGridResult({ headers, rows }) {
   };
 }
 
-function normalizeUiDownloadedJson(text, expectedHeaders) {
+function normalizeUiDownloadedJson(text, fallbackHeaders = []) {
   const parsed = JSON.parse(text);
+  const headers = inferObjectRowHeaders(parsed, fallbackHeaders);
   return {
     ok: true,
-    headers: expectedHeaders.map(String),
-    rows: toObjectRows(parsed, expectedHeaders),
+    headers,
+    rows: toObjectRows(parsed, headers),
     format: 'json',
     rendered: text,
     diagnostics: {},

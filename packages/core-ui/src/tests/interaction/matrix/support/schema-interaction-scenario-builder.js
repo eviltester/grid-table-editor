@@ -100,10 +100,6 @@ const CUSTOM_SCENARIOS = [
 const FAKER_PARAM_OVERRIDES = {
   'helpers.arrayElement': ['["A", "B"]'],
   'helpers.arrayElements': ['["A", "B", "C"]', '2'],
-  'helpers.objectKey': ['{"red":"#f00","blue":"#00f"}'],
-  'helpers.objectValue': ['{"red":"#f00","blue":"#00f"}'],
-  'helpers.objectEntry': ['{"red":"#f00","blue":"#00f"}'],
-  'helpers.enumValue': ['{"Pending":"pending","Active":"active"}'],
   'date.between': ['{ from: "2020-01-01T00:00:00.000Z", to: "2020-12-31T00:00:00.000Z" }'],
   'date.betweens': ['{ from: "2020-01-01T00:00:00.000Z", to: "2020-12-31T00:00:00.000Z", count: 2 }'],
   'helpers.fake': ['"{{person.firstName}}"'],

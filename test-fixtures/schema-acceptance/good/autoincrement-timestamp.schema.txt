@@ -1,0 +1,4 @@
+# Good schema: autoIncrement.timestamp should generate deterministic
+# timestamps when the start time, step, type, and output format are fixed.
+Created At
+autoIncrement.timestamp(start="2026-06-12T12:39:23Z", step=2, type="days", outputFormat="yyyy-MM-dd")

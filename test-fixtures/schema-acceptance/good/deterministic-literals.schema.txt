@@ -1,0 +1,7 @@
+# Good schema: deterministic literals so every surface should generate
+# the same headers, row count, and values.
+First Name
+literal(Alice)
+
+Status
+literal(active)

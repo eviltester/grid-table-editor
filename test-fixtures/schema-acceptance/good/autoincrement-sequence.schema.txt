@@ -1,0 +1,4 @@
+# Good schema: autoIncrement.sequence should generate a deterministic
+# sequence when start, step, prefix, suffix, and zero padding are fixed.
+Ticket
+autoIncrement.sequence(start=1, step=5, prefix="T-", suffix=".txt", zeropadding=3)

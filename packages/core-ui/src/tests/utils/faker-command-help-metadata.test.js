@@ -59,6 +59,12 @@ describe('faker command help metadata', () => {
         expect.objectContaining({ name: 'refDate', optional: true, type: 'string | Date | number' }),
       ])
     );
+    expect(uuid.params.find((param) => param.name === 'version')?.description).toContain(
+      'version 7 is used automatically'
+    );
+    expect(uuid.params.find((param) => param.name === 'refDate')?.description).toContain(
+      'Providing refDate with version 4 is invalid'
+    );
 
     expect(nestedPropertyAccess).toBeDefined();
     expect(nestedPropertyAccess.summary.length).toBeGreaterThan(0);
@@ -92,6 +98,7 @@ describe('faker command help metadata', () => {
         }),
       ])
     );
+    expect(rangeToNumber.example).toBe('2');
     expect(rangeToNumber.examples).toContain('helpers.rangeToNumber({ min: 1, max: 2 })');
   });
 });

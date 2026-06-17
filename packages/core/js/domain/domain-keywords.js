@@ -199,6 +199,25 @@ function coerceHelpArgValue(spec, value) {
   return value;
 }
 
+function normaliseStringUuidOptions(options) {
+  if (!Object.prototype.hasOwnProperty.call(options, 'refDate')) {
+    return options;
+  }
+
+  if (!Object.prototype.hasOwnProperty.call(options, 'version')) {
+    return {
+      ...options,
+      version: 7,
+    };
+  }
+
+  if (options.version === 4) {
+    throw new Error('Invalid argument combination for string.uuid: refDate requires version 7.');
+  }
+
+  return options;
+}
+
 function applyFakerArgTransform(keyword, args = []) {
   const transformName = String(keyword?.delegate?.argTransform || '').trim();
   if (!transformName) {
@@ -220,6 +239,9 @@ function applyFakerArgTransform(keyword, args = []) {
         continue;
       }
       options[key] = coerceHelpArgValue(argSchema[index], argValue);
+    }
+    if (keyword?.keyword === 'string.uuid') {
+      return Object.keys(options).length > 0 ? [normaliseStringUuidOptions(options)] : [];
     }
     return Object.keys(options).length > 0 ? [options] : [];
   }

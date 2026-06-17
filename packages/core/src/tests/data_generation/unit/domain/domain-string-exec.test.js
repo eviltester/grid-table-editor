@@ -191,4 +191,15 @@ describe('string domain keyword execution', () => {
     expect(uuidV7B).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}$/);
     expect(uuidV7A).not.toBe(uuidV7B);
   });
+
+  test('string.uuid defaults to version 7 when refDate is provided without version', () => {
+    const uuid = executeDomainKeyword('string.uuid', { faker, args: [undefined, 1] });
+    expect(uuid).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}$/);
+  });
+
+  test('string.uuid rejects refDate with version 4', () => {
+    expect(() => executeDomainKeyword('string.uuid', { faker, args: [4, 1] })).toThrow(
+      'Invalid argument combination for string.uuid: refDate requires version 7.'
+    );
+  });
 });

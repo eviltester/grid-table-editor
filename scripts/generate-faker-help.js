@@ -433,6 +433,9 @@ function formatExampleValue(value) {
 
 function applyMetadataOverrides(command, metadata, helperOverrides = {}) {
   const commandOverrides = {
+    'helpers.rangeToNumber': {
+      example: '2',
+    },
     'string.uuid': {
       summary: 'Returns a UUID (Universally Unique Identifier).',
       params: [
@@ -440,13 +443,15 @@ function applyMetadataOverrides(command, metadata, helperOverrides = {}) {
           name: 'version',
           optional: true,
           type: '4 | 7',
-          description: 'The specific UUID version to use.',
+          description:
+            'The specific UUID version to use. If refDate is supplied and version is omitted, version 7 is used automatically.',
         },
         {
           name: 'refDate',
           optional: true,
           type: 'string | Date | number',
-          description: 'The timestamp to encode into the UUID. This parameter is only relevant for UUID v7.',
+          description:
+            'The timestamp to encode into the UUID. This is only valid for UUID v7. If refDate is supplied and version is omitted, version 7 is used automatically. Providing refDate with version 4 is invalid.',
         },
       ],
     },

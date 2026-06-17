@@ -334,13 +334,17 @@ Returns a UUID (Universally Unique Identifier).
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `version` | `4\|7` | no | The specific UUID version to use. |
-| `refDate` | `string\|number\|date` | no | The timestamp to encode into the UUID. This parameter is only relevant for UUID v7. |
+| `version` | `4\|7` | no | The specific UUID version to use. If `refDate` is supplied and `version` is omitted, version `7` is used automatically. |
+| `refDate` | `string\|number\|date` | no | The timestamp to encode into the UUID. This is only valid for UUID v7. If `refDate` is supplied and `version` is omitted, version `7` is used automatically. Providing `refDate` with version `4` is invalid. |
 
 Examples:
 
 ```txt
 string.uuid()
+```
+
+```txt
+string.uuid(refDate=1)
 ```
 
 Example return values:

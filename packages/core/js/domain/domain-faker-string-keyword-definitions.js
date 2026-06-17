@@ -328,13 +328,15 @@ const DOMAIN_FAKER_STRING_KEYWORD_DEFINITIONS = [
           name: 'version',
           type: '4|7',
           required: false,
-          description: 'The specific UUID version to use.',
+          description:
+            'The specific UUID version to use. If refDate is supplied and version is omitted, version 7 is used automatically.',
         },
         {
           name: 'refDate',
           type: 'string|number|date',
           required: false,
-          description: 'The timestamp to encode into the UUID. This parameter is only relevant for UUID v7.',
+          description:
+            'The timestamp to encode into the UUID. This is only valid for UUID v7. If refDate is supplied and version is omitted, version 7 is used automatically. Providing refDate with version 4 is invalid.',
         },
       ],
     },

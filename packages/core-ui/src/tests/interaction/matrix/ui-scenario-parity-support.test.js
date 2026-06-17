@@ -30,6 +30,9 @@ describe('ui scenario parity support', () => {
     const literalScenario = findScenarioByLogicalId(uiScenarios, 'custom-literal-base');
     const regexScenario = findScenarioByLogicalId(uiScenarios, 'custom-regex-base');
     const mustacheScenario = findScenarioByLogicalId(uiScenarios, 'faker-helpers-mustache-base');
+    expect(literalScenario).toBeDefined();
+    expect(regexScenario).toBeDefined();
+    expect(mustacheScenario).toBeDefined();
     const parityByScenarioId = await probeUiScenarioParity(
       [literalScenario, regexScenario, mustacheScenario].filter(Boolean)
     );

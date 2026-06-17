@@ -418,7 +418,7 @@ const FAKER_COMMAND_HELP_METADATA = {
       },
     ],
     docsUrl: 'https://fakerjs.dev/api/helpers',
-    example: '5248677481580853',
+    example: '2',
     examples: ['helpers.rangeToNumber({ min: 1, max: 2 })'],
   },
   'helpers.multiple': {
@@ -652,13 +652,15 @@ const FAKER_COMMAND_HELP_METADATA = {
         name: 'version',
         optional: true,
         type: '4 | 7',
-        description: 'The specific UUID version to use.',
+        description:
+          'The specific UUID version to use. If refDate is supplied and version is omitted, version 7 is used automatically.',
       },
       {
         name: 'refDate',
         optional: true,
         type: 'string | Date | number',
-        description: 'The timestamp to encode into the UUID. This parameter is only relevant for UUID v7.',
+        description:
+          'The timestamp to encode into the UUID. This is only valid for UUID v7. If refDate is supplied and version is omitted, version 7 is used automatically. Providing refDate with version 4 is invalid.',
       },
     ],
     docsUrl: 'https://fakerjs.dev/api/string',

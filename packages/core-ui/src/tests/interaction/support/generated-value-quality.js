@@ -169,4 +169,9 @@ function assertScenarioDataQuality({ scenario, dataTable, exportedText = '', out
   });
 }
 
-export { assertNoErrorIndicators, assertDataTableHasNoErrorIndicators, assertScenarioDataQuality };
+export {
+  assertNoErrorIndicators,
+  assertDataTableHasNoErrorIndicators,
+  assertScenarioDataQuality,
+  hasPermissiveAllowedType,
+};

@@ -29,6 +29,7 @@ import {
   buildDataRuleFromSchemaRow,
 } from '../../../../../js/gui_components/shared/schema-row-rule-mapper.js';
 import { schemaRowsToDataRules, dataRulesToSchemaText } from '@anywaydata/core/data_generation/schema-rules-adapter.js';
+import { hasPermissiveAllowedType } from '../../support/generated-value-quality.js';
 
 const CUSTOM_SOURCE_TYPES = [
   SOURCE_TYPE_ENUM,
@@ -750,7 +751,7 @@ function scenarioRowLooksValid(row, value) {
   }
 
   const allowedTypes = getAllowedTypesForScenarioRow(row);
-  if (allowedTypes.includes('string') || allowedTypes.includes('unknown')) {
+  if (hasPermissiveAllowedType(allowedTypes)) {
     return true;
   }
 

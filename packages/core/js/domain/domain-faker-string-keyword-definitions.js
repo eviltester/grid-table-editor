@@ -1,10 +1,14 @@
 import {
+  validateAlphaStringValue,
+  validateAlphanumericStringValue,
   validateBinaryStringValue,
+  validateFromCharactersStringValue,
   validateHexadecimalStringValue,
   validateNanoIdValue,
   validateNumericStringValue,
   validateOctalStringValue,
-  validateStringValue,
+  validateSampleStringValue,
+  validateSymbolStringValue,
   validateUlidValue,
   validateUuidValue,
 } from '../command-help/command-help-validators.js';
@@ -23,7 +27,7 @@ const DOMAIN_FAKER_STRING_KEYWORD_DEFINITIONS = [
       summary: 'Generating a string consisting of letters in the English alphabet.',
       docsUrl: 'https://anywaydata.com/docs/test-data/domain/string',
       fakerDocsUrl: 'https://fakerjs.dev/api/string',
-      validator: validateStringValue,
+      validator: validateAlphaStringValue,
       returnType: 'string',
       usageExamples: [
         {
@@ -90,7 +94,7 @@ const DOMAIN_FAKER_STRING_KEYWORD_DEFINITIONS = [
       summary: 'Generating a string consisting of alpha characters and digits.',
       docsUrl: 'https://anywaydata.com/docs/test-data/domain/string',
       fakerDocsUrl: 'https://fakerjs.dev/api/string',
-      validator: validateStringValue,
+      validator: validateAlphanumericStringValue,
       returnType: 'string',
       usageExamples: [
         {
@@ -193,7 +197,7 @@ const DOMAIN_FAKER_STRING_KEYWORD_DEFINITIONS = [
       summary: 'Generates a string from the given characters.',
       docsUrl: 'https://anywaydata.com/docs/test-data/domain/string',
       fakerDocsUrl: 'https://fakerjs.dev/api/string',
-      validator: validateStringValue,
+      validator: validateFromCharactersStringValue,
       returnType: 'string',
       usageExamples: [
         {
@@ -436,7 +440,7 @@ const DOMAIN_FAKER_STRING_KEYWORD_DEFINITIONS = [
       summary: 'Returns a string containing UTF-16 chars between 33 and 125 (`!` to `}`).',
       docsUrl: 'https://anywaydata.com/docs/test-data/domain/string',
       fakerDocsUrl: 'https://fakerjs.dev/api/string',
-      validator: validateStringValue,
+      validator: validateSampleStringValue,
       returnType: 'string',
       usageExamples: [
         {
@@ -467,10 +471,11 @@ const DOMAIN_FAKER_STRING_KEYWORD_DEFINITIONS = [
       target: 'string.symbol',
     },
     help: {
-      summary: 'Returns a string containing only special characters from the following list:',
+      summary:
+        'Returns a string containing only ASCII symbol characters such as !, ", #, $, %, &, (, ), *, +, -, /, :, ;, <, =, >, ?, @, [, \\, ], ^, _, `, {, |, }, and ~.',
       docsUrl: 'https://anywaydata.com/docs/test-data/domain/string',
       fakerDocsUrl: 'https://fakerjs.dev/api/string',
-      validator: validateStringValue,
+      validator: validateSymbolStringValue,
       returnType: 'string',
       usageExamples: [
         {

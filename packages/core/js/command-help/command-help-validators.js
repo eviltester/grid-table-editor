@@ -47,7 +47,7 @@ const MIME_TYPE_REGEX = /^[A-Za-z0-9!#$&^_.+-]+\/[A-Za-z0-9!#$&^_.+-]+$/u;
 const SEMVER_REGEX =
   /^(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/u;
 const ULID_REGEX = /^[0-7][0-9A-HJKMNP-TV-Z]{25}$/u;
-const NANOID_REGEX = /^[A-Za-z0-9_-]+$/u;
+const NANOID_CHARACTER_CLASS = 'A-Za-z0-9_-';
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-([0-9a-f])[0-9a-f]{3}-([89ab])[0-9a-f]{3}-[0-9a-f]{12}$/iu;
 const BASE58_REGEX_SOURCE = '[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]';
 const BECH32_REGEX_SOURCE = '[ac-hj-np-z02-9]';
@@ -102,6 +102,17 @@ function createRegexValidator(regex) {
   return (value, context = {}) => validateStringValue(value, context) && regex.test(value);
 }
 
+function createDynamicRegexValidator(createRegex) {
+  return (value, context = {}) => {
+    if (!validateStringValue(value, context)) {
+      return false;
+    }
+
+    const regex = createRegex(context);
+    return regex instanceof RegExp && regex.test(value);
+  };
+}
+
 function createPredicateValidator(predicate) {
   return (value, context = {}) => validateStringValue(value, context) && predicate(value, context) === true;
 }
@@ -110,6 +121,64 @@ function getNormalizedContextCommand(context = {}) {
   return String(context?.command ?? context?.fieldDefinition?.command ?? '')
     .trim()
     .toLowerCase();
+}
+
+function escapeRegexLiteral(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
+}
+
+function escapeRegexCharacterClass(value) {
+  return String(value).replace(/[\\\]-^]/gu, '\\$&');
+}
+
+function normalizeCharacterEntries(value) {
+  if (Array.isArray(value)) {
+    return value.map((entry) => String(entry)).filter((entry) => entry.length > 0);
+  }
+
+  return [...String(value ?? '')].filter((entry) => entry.length > 0);
+}
+
+function buildRegexQuantifier(lengthValue, { minimum = 1 } = {}) {
+  const { min, max } = getNormalizedStringLengthBounds(lengthValue, { minimum });
+
+  if (max === Number.POSITIVE_INFINITY) {
+    if (min === 0) {
+      return '*';
+    }
+    if (min === 1) {
+      return '+';
+    }
+    return `{${min},}`;
+  }
+
+  if (min === max) {
+    return `{${min}}`;
+  }
+
+  return `{${min},${max}}`;
+}
+
+function buildCharacterClassRegex(allowedCharacters, lengthValue, options = {}) {
+  const characterClass = [...allowedCharacters].map((entry) => escapeRegexCharacterClass(entry)).join('');
+  if (characterClass.length === 0) {
+    return /^$/u;
+  }
+
+  return new RegExp(`^[${characterClass}]${buildRegexQuantifier(lengthValue, options)}$`, 'u');
+}
+
+function buildAlternationRegex(allowedEntries, lengthValue, options = {}) {
+  const alternatives = [...new Set(allowedEntries.map((entry) => String(entry)).filter((entry) => entry.length > 0))]
+    .sort((left, right) => right.length - left.length)
+    .map((entry) => escapeRegexLiteral(entry))
+    .join('|');
+
+  if (alternatives.length === 0) {
+    return /^$/u;
+  }
+
+  return new RegExp(`^(?:${alternatives})${buildRegexQuantifier(lengthValue, options)}$`, 'u');
 }
 
 function getContextParamSpecs(context = {}) {
@@ -140,7 +209,12 @@ function isExplicitZeroLengthStringConfig(context = {}) {
     if (!ZERO_LENGTH_STRING_PARAM_NAMES.has(paramName)) {
       return false;
     }
-    return Object.is(args[index], 0);
+    const argValue = args[index];
+    if (Object.is(argValue, 0)) {
+      return true;
+    }
+
+    return getNormalizedStringLengthBounds(argValue, { minimum: 1 }).min === 0;
   });
 }
 
@@ -607,6 +681,34 @@ const validateBinaryStringValue = createPredicateValidator((value, context = {})
   return /^[01]+$/u.test(body) && validateExactOrRangedLength(body, length);
 });
 
+const validateAlphaStringValue = createDynamicRegexValidator((context = {}) => {
+  const { length, casing = 'mixed', exclude = [] } = getContextNamedArgs(context);
+  const baseCharacters =
+    casing === 'upper'
+      ? 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+      : casing === 'lower'
+        ? 'abcdefghijklmnopqrstuvwxyz'
+        : 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+  const excludedCharacters = new Set(normalizeCharacterEntries(exclude));
+  const allowedCharacters = [...baseCharacters].filter((character) => !excludedCharacters.has(character));
+
+  return buildCharacterClassRegex(allowedCharacters, length, { minimum: 1 });
+});
+
+const validateAlphanumericStringValue = createDynamicRegexValidator((context = {}) => {
+  const { length, casing = 'mixed', exclude = [] } = getContextNamedArgs(context);
+  const baseCharacters =
+    casing === 'upper'
+      ? 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+      : casing === 'lower'
+        ? 'abcdefghijklmnopqrstuvwxyz0123456789'
+        : 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const excludedCharacters = new Set(normalizeCharacterEntries(exclude));
+  const allowedCharacters = [...baseCharacters].filter((character) => !excludedCharacters.has(character));
+
+  return buildCharacterClassRegex(allowedCharacters, length, { minimum: 1 });
+});
+
 const validateHexadecimalStringValue = createPredicateValidator((value, context = {}) => {
   const { casing = 'mixed', length, prefix = '0x' } = getContextNamedArgs(context);
   if (!value.startsWith(String(prefix))) {
@@ -625,6 +727,13 @@ const validateHexadecimalStringValue = createPredicateValidator((value, context 
     return /^[0-9a-f]+$/u.test(body);
   }
   return /^[0-9A-Fa-f]+$/u.test(body);
+});
+
+const validateFromCharactersStringValue = createDynamicRegexValidator((context = {}) => {
+  const { characters, length } = getContextNamedArgs(context);
+  const allowedEntries = normalizeCharacterEntries(characters);
+
+  return buildAlternationRegex(allowedEntries, length, { minimum: 1 });
 });
 
 const validateNumericStringValue = createPredicateValidator((value, context = {}) => {
@@ -647,9 +756,20 @@ const validateOctalStringValue = createPredicateValidator((value, context = {}) 
   return /^[0-7]+$/u.test(body) && validateExactOrRangedLength(body, length);
 });
 
-const validateNanoIdValue = createPredicateValidator((value, context = {}) => {
+const validateNanoIdValue = createDynamicRegexValidator((context = {}) => {
   const { length = 21 } = getContextNamedArgs(context);
-  return NANOID_REGEX.test(value) && validateExactOrRangedLength(value, length, { minimum: 1 });
+  return new RegExp(`^[${NANOID_CHARACTER_CLASS}]${buildRegexQuantifier(length, { minimum: 1 })}$`, 'u');
+});
+
+const validateSampleStringValue = createDynamicRegexValidator((context = {}) => {
+  const { length = 10 } = getContextNamedArgs(context);
+  return new RegExp(`^[!-}]${buildRegexQuantifier(length, { minimum: 1 })}$`, 'u');
+});
+
+const validateSymbolStringValue = createDynamicRegexValidator((context = {}) => {
+  const { length = 1 } = getContextNamedArgs(context);
+  const allowedSymbols = `!"#$%&'()*+,-./:;<=>?@[\\]^_\`{|}~`;
+  return buildCharacterClassRegex(allowedSymbols, length, { minimum: 1 });
 });
 
 const validateUlidValue = createPredicateValidator((value) => ULID_REGEX.test(value));
@@ -766,10 +886,13 @@ function validateEnumMemberValue(value, context = {}) {
 
 export {
   createPredicateValidator,
+  createDynamicRegexValidator,
   createRegexValidator,
   createStringEnumValidator,
   validateAccountNumberValue,
+  validateAlphaStringValue,
   validateAircraftIataTypeCodeValue,
+  validateAlphanumericStringValue,
   validateAirlineIataCodeValue,
   validateAirlineRecordLocatorValue,
   validateAirlineSeatValue,
@@ -794,6 +917,7 @@ export {
   validateEthereumAddressValue,
   validateExampleEmailValue,
   validateFlightNumberValue,
+  validateFromCharactersStringValue,
   validateHexadecimalStringValue,
   validateIbanValue,
   validateImeiValue,
@@ -815,10 +939,12 @@ export {
   validateOctalStringValue,
   validatePinValue,
   validateRoutingNumberValue,
+  validateSampleStringValue,
   validateSemverValue,
   validateStringOrNumberOrBooleanValue,
   validateStringOrNumberValue,
   validateStringValue,
+  validateSymbolStringValue,
   validateTimeZoneValue,
   validateUlidValue,
   validateUpcValue,

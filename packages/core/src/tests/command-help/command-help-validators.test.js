@@ -1,5 +1,7 @@
 import { validateCommandHelpValue } from '../../../js/command-help/command-help-contract.js';
 import {
+  validateAlphaStringValue,
+  validateAlphanumericStringValue,
   createPredicateValidator,
   createRegexValidator,
   createStringEnumValidator,
@@ -9,6 +11,7 @@ import {
   validateCountryCodeValue,
   validateCreditCardNumberValue,
   validateEnumMemberValue,
+  validateFromCharactersStringValue,
   validateIbanValue,
   validateImeiValue,
   validateIpValue,
@@ -18,6 +21,9 @@ import {
   validateMacAddressValue,
   validateRoutingNumberValue,
   validateLiteralValue,
+  validateNanoIdValue,
+  validateSampleStringValue,
+  validateSymbolStringValue,
   validateTimeZoneValue,
   validateUpcValue,
   validateUrlValue,
@@ -168,6 +174,23 @@ describe('command help validators', () => {
     expect(validateStringValue('', context)).toBe(true);
   });
 
+  test('string validator allows empty string when the configured length range includes zero', () => {
+    const context = {
+      help: {
+        args: [{ name: 'length' }],
+      },
+      args: [{ min: 0, max: 3 }],
+      fieldDefinition: {
+        sourceType: 'domain',
+        command: 'string.sample',
+        params: '(length={min:0,max:3})',
+        ruleSpec: 'string.sample(length={min:0,max:3})',
+      },
+    };
+
+    expect(validateStringValue('', context)).toBe(true);
+  });
+
   test('string validator allows empty string for helpers with empty input passthrough behavior', () => {
     const context = {
       command: 'helpers.slugify',
@@ -295,6 +318,123 @@ describe('command help validators', () => {
           args: [{ name: 'length' }, { name: 'prefix' }],
         },
         args: [4],
+      })
+    ).toBe(false);
+  });
+
+  test('alpha validator respects casing, exclusions, and length', () => {
+    const uppercaseContext = {
+      help: {
+        args: [{ name: 'length' }, { name: 'casing' }, { name: 'exclude' }],
+      },
+      args: [5, 'upper', ['A', 'B']],
+    };
+
+    expect(validateAlphaStringValue('KSCHD', uppercaseContext)).toBe(true);
+    expect(validateAlphaStringValue('KSaHD', uppercaseContext)).toBe(false);
+    expect(validateAlphaStringValue('ABCDZ', uppercaseContext)).toBe(false);
+    expect(validateAlphaStringValue('KSAH', uppercaseContext)).toBe(false);
+  });
+
+  test('alphanumeric validator respects casing, exclusions, and length', () => {
+    const context = {
+      help: {
+        args: [{ name: 'length' }, { name: 'casing' }, { name: 'exclude' }],
+      },
+      args: [6, 'lower', ['a', '1']],
+    };
+
+    expect(validateAlphanumericStringValue('bc2def', context)).toBe(true);
+    expect(validateAlphanumericStringValue('BC2DEF', context)).toBe(false);
+    expect(validateAlphanumericStringValue('ba2def', context)).toBe(false);
+    expect(validateAlphanumericStringValue('bc2de', context)).toBe(false);
+  });
+
+  test('fromCharacters validator only allows strings built from the declared source tokens', () => {
+    expect(
+      validateFromCharactersStringValue('xyzxy', {
+        help: {
+          args: [{ name: 'characters' }, { name: 'length' }],
+        },
+        args: ['xyz', 5],
+      })
+    ).toBe(true);
+
+    expect(
+      validateFromCharactersStringValue('abab', {
+        help: {
+          args: [{ name: 'characters' }, { name: 'length' }],
+        },
+        args: [['ab', 'cd'], 2],
+      })
+    ).toBe(true);
+
+    expect(
+      validateFromCharactersStringValue('abef', {
+        help: {
+          args: [{ name: 'characters' }, { name: 'length' }],
+        },
+        args: [['ab', 'cd'], 2],
+      })
+    ).toBe(false);
+  });
+
+  test('nanoid validator enforces the Nano ID alphabet and configured length', () => {
+    expect(
+      validateNanoIdValue('Abc123_-Xy', {
+        help: {
+          args: [{ name: 'length' }],
+        },
+        args: [10],
+      })
+    ).toBe(true);
+
+    expect(
+      validateNanoIdValue('Abc123_-X!', {
+        help: {
+          args: [{ name: 'length' }],
+        },
+        args: [10],
+      })
+    ).toBe(false);
+  });
+
+  test('sample validator restricts output to the documented ASCII range', () => {
+    expect(
+      validateSampleStringValue(`!AZaz09{}|`, {
+        help: {
+          args: [{ name: 'length' }],
+        },
+        args: [10],
+      })
+    ).toBe(true);
+
+    expect(
+      validateSampleStringValue(`bad\nline`, {
+        help: {
+          args: [{ name: 'length' }],
+        },
+        args: [8],
+      })
+    ).toBe(false);
+  });
+
+  test('symbol validator restricts output to documented symbol characters and length', () => {
+    expect(
+      validateSymbolStringValue(`!@#{}~`, {
+        help: {
+          args: [{ name: 'length' }],
+        },
+        args: [6],
+      })
+    ).toBe(true);
+
+    expect(
+      validateSymbolStringValue('!@#A{}', {
+        help: {
+          args: [{ name: 'length' }],
+        },
+        args: [6],
       })
     ).toBe(false);
   });

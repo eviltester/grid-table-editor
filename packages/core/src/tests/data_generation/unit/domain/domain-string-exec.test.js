@@ -106,6 +106,7 @@ describe('string domain keyword execution', () => {
   test('string.nanoid length arg affects output', () => {
     const result = runWithSeed(1051, 'string.nanoid', [10]);
     expect(result).toHaveLength(10);
+    expect(result).toMatch(/^[A-Za-z0-9_-]+$/);
   });
 
   test('executes string.numeric', () => {
@@ -152,6 +153,7 @@ describe('string domain keyword execution', () => {
   test('string.sample length arg affects output', () => {
     const result = runWithSeed(1081, 'string.sample', [10]);
     expect(result).toHaveLength(10);
+    expect(result).toMatch(/^[!-}]+$/);
   });
 
   test('executes string.symbol', () => {
@@ -162,6 +164,7 @@ describe('string domain keyword execution', () => {
   test('string.symbol length arg affects output', () => {
     const result = runWithSeed(1091, 'string.symbol', [6]);
     expect(result).toHaveLength(6);
+    expect(result).toMatch(/^[!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]+$/);
   });
 
   test('executes string.ulid', () => {

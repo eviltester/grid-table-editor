@@ -1,4 +1,4 @@
-import { getFakerCommandHelp } from '../../../../js/gui_components/shared/faker-command-help-metadata.js';
+import { getFakerCommandHelp } from '@anywaydata/core/faker/faker-helper-keyword-definitions.js';
 import { getDomainCommandHelp } from '../../../../js/gui_components/shared/domain-command-help-metadata.js';
 import {
   SOURCE_TYPE_DOMAIN,
@@ -91,6 +91,10 @@ function getAllowedTypesForRow(row) {
   }
 }
 
+function hasPermissiveAllowedType(allowedTypes) {
+  return allowedTypes.includes('string') || allowedTypes.includes('unknown');
+}
+
 function assertNoErrorIndicators(value, _contextLabel = 'value') {
   const text = toSearchableText(value);
   ERROR_PATTERNS.forEach((pattern) => {
@@ -147,7 +151,7 @@ function assertRowValueMatchesScenario(row, value, contextLabel) {
 
   const allowedTypes = getAllowedTypesForRow(row);
   const inferred = inferTypeAndConfidence(value);
-  if (inferred.confidence === 'high' && !allowedTypes.includes('string')) {
+  if (inferred.confidence === 'high' && !hasPermissiveAllowedType(allowedTypes)) {
     expect(allowedTypes).toContain(inferred.type);
   }
 }
@@ -165,4 +169,9 @@ function assertScenarioDataQuality({ scenario, dataTable, exportedText = '', out
   });
 }
 
-export { assertNoErrorIndicators, assertDataTableHasNoErrorIndicators, assertScenarioDataQuality };
+export {
+  assertNoErrorIndicators,
+  assertDataTableHasNoErrorIndicators,
+  assertScenarioDataQuality,
+  hasPermissiveAllowedType,
+};

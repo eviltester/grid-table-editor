@@ -1,4 +1,4 @@
-import { getDomainKeywordByCommand } from './domain-commands.js';
+import { getDomainKeywordHelpByAlias } from '@anywaydata/core/domain/domain-keywords.js';
 
 const ANYWAYDATA_DOMAIN_DOCS_BASE = 'https://anywaydata.com/docs/test-data/domain';
 
@@ -58,24 +58,20 @@ function getDomainCommandHelp(command) {
   if (synthetic) {
     return synthetic;
   }
-  const keyword = getDomainKeywordByCommand(command);
-  if (!keyword) {
+  const commandHelp = getDomainKeywordHelpByAlias(command);
+  if (!commandHelp) {
     return null;
   }
 
   return {
-    canonical: keyword.canonical,
-    summary: keyword.help?.summary || '',
-    docsUrl: resolveDomainDocsUrl(command, keyword.help?.docsUrl || ''),
-    example: keyword.help?.example || '',
-    examples: Array.isArray(keyword.help?.examples) ? keyword.help.examples : [],
-    exampleReturnValues: Array.isArray(keyword.help?.exampleReturnValues)
-      ? keyword.help.exampleReturnValues
-      : Array.isArray(keyword.help?.returnExamples)
-        ? keyword.help.returnExamples
-        : [],
-    returnType: keyword.help?.returnType || '',
-    args: Array.isArray(keyword.help?.args) ? keyword.help.args : [],
+    canonical: commandHelp.canonical,
+    summary: commandHelp.summary || '',
+    docsUrl: resolveDomainDocsUrl(command, commandHelp.docsUrl || ''),
+    example: commandHelp.example || '',
+    examples: Array.isArray(commandHelp.examples) ? commandHelp.examples : [],
+    exampleReturnValues: Array.isArray(commandHelp.exampleReturnValues) ? commandHelp.exampleReturnValues : [],
+    returnType: commandHelp.returnType || '',
+    args: Array.isArray(commandHelp.args) ? commandHelp.args : [],
   };
 }
 

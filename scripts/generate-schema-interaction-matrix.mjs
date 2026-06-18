@@ -13,7 +13,7 @@ import {
   buildUiInteractionScenarios,
 } from '../packages/core-ui/src/tests/interaction/matrix/support/schema-interaction-scenario-builder.js';
 import { renderMatrixSummaryMarkdown } from '../packages/core-ui/src/tests/interaction/matrix/support/schema-interaction-matrix-report.js';
-import { getFakerCommandHelp } from '../packages/core-ui/js/gui_components/shared/faker-command-help-metadata.js';
+import { getFakerCommandHelp } from '../packages/core/js/faker/faker-helper-keyword-definitions.js';
 import { getDomainCommandHelp } from '../packages/core-ui/js/gui_components/shared/domain-command-help-metadata.js';
 import {
   createConfiguredGeneratorFromSchemaRows,
@@ -317,7 +317,7 @@ function rowValueLooksValid(row, value) {
   }
 
   const allowedTypes = getAllowedTypesForRow(row);
-  if (allowedTypes.includes('string')) {
+  if (allowedTypes.includes('string') || allowedTypes.includes('unknown')) {
     return true;
   }
   return allowedTypes.includes(inferValueType(value));

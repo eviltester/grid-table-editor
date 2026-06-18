@@ -21,7 +21,6 @@
     "test:storybook": "node ./scripts/run-storybook-tests.mjs",
     "test:ui:jest": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --config ./jest.config.cjs --testPathPatterns packages/core-ui/src/tests apps/web/src/tests/jest",
     "testenv:create": "node ./scripts/create-testenv.mjs",
-    "generate:faker-help": "node ./scripts/generate-faker-help.js",
     "test:browser": "node ./node_modules/@playwright/test/cli.js test",
     "test:browser:headed": "node ./node_modules/@playwright/test/cli.js test --headed",
     "test:browser:install": "node ./node_modules/@playwright/test/cli.js install chromium",

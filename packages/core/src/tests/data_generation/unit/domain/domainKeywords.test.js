@@ -8,10 +8,15 @@ import {
   buildDomainKeywordCatalog,
   executeDomainKeyword,
   getDomainKeywordByAlias,
+  getDomainKeywordHelpByAlias,
   validateDomainKeywordArgs,
 } from '../../../../../js/domain/domain-keywords.js';
 import { parseKeywordInvocation } from '../../../../../js/domain/domain-keyword-parser.js';
-import { FAKER_COMMAND_HELP_METADATA } from '../../../../../js/faker/faker-command-help-metadata.js';
+import {
+  buildFakerHelperHelpMetadata,
+  getFakerCommandHelp,
+} from '../../../../../js/faker/faker-helper-keyword-definitions.js';
+import { FAKER_HELPER_KEYWORD_DEFINITIONS } from '../../../../../js/faker/faker-helper-keyword-definitions.js';
 
 describe('domain keyword catalog', () => {
   test('registers canonical awd.domain keywords for faker commands', () => {
@@ -48,49 +53,44 @@ describe('domain keyword catalog', () => {
     });
   });
 
-  test('includes all faker metadata params except object-wrapper options', () => {
-    const byKeyword = new Map(DOMAIN_KEYWORDS.map((entry) => [entry.keyword, entry]));
-    const mismatches = [];
-
-    for (const [keyword, fakerHelp] of Object.entries(FAKER_COMMAND_HELP_METADATA)) {
-      const domainKeyword = byKeyword.get(keyword);
-      if (!domainKeyword) {
-        continue;
-      }
-
-      const fakerParams = (fakerHelp?.params || []).map((param) => param.name).filter((name) => name !== 'options');
-      const domainParams = new Set((domainKeyword.help?.args || []).map((arg) => arg.name));
-      const missing = fakerParams.filter((name) => !domainParams.has(name));
-
-      if (missing.length > 0) {
-        mismatches.push({ keyword, missing });
-      }
-    }
-
-    expect(mismatches).toEqual([]);
+  test('keeps faker helper metadata file scoped to faker-only helper commands', () => {
+    const helperMetadata = buildFakerHelperHelpMetadata();
+    expect(Object.keys(helperMetadata).length).toBeGreaterThan(0);
+    expect(Object.keys(helperMetadata).every((keyword) => keyword.startsWith('helpers.'))).toBe(true);
+    expect(Object.keys(helperMetadata)).toEqual(Object.keys(FAKER_HELPER_KEYWORD_DEFINITIONS));
   });
 
-  test('uses optionsFromHelpArgs for options-based faker commands with flattened args', () => {
-    const byKeyword = new Map(DOMAIN_KEYWORDS.map((entry) => [entry.keyword, entry]));
-    const missingTransforms = [];
+  test('exposes domain-backed faker command help from the domain keyword source of truth', () => {
+    const mismatches = [];
 
-    for (const [keyword, fakerHelp] of Object.entries(FAKER_COMMAND_HELP_METADATA)) {
-      const domainKeyword = byKeyword.get(keyword);
-      if (!domainKeyword || domainKeyword.delegate?.type !== 'faker') {
-        continue;
+    DOMAIN_KEYWORDS.filter((entry) => entry.delegate?.type === DELEGATE_TYPE_FAKER).forEach((entry) => {
+      const domainHelp = getDomainKeywordHelpByAlias(entry.keyword);
+      const fakerHelp = getFakerCommandHelp(entry.keyword);
+
+      if (!domainHelp || !fakerHelp) {
+        mismatches.push({ keyword: entry.keyword, reason: 'missing help entry' });
+        return;
       }
 
-      const fakerParams = Array.isArray(fakerHelp?.params) ? fakerHelp.params : [];
-      const hasOptionsParam = fakerParams.some((param) => param.name === 'options');
-      const hasFlattenedArgs = Array.isArray(domainKeyword.help?.args) && domainKeyword.help.args.length > 0;
-      const hasTransform = domainKeyword.delegate?.argTransform === 'optionsFromHelpArgs';
+      const domainArgNames = (domainHelp.args || []).map((arg) => arg.name);
+      const fakerParamNames = (fakerHelp.params || []).map((param) => param.name);
 
-      if (hasOptionsParam && hasFlattenedArgs && !hasTransform) {
-        missingTransforms.push(keyword);
+      if (
+        fakerHelp.summary !== domainHelp.summary ||
+        fakerHelp.docsUrl !== domainHelp.docsUrl ||
+        fakerHelp.example !== domainHelp.example ||
+        fakerHelp.returnType !== domainHelp.returnType ||
+        JSON.stringify(fakerParamNames) !== JSON.stringify(domainArgNames)
+      ) {
+        mismatches.push({
+          keyword: entry.keyword,
+          domainArgNames,
+          fakerParamNames,
+        });
       }
-    }
+    });
 
-    expect(missingTransforms).toEqual([]);
+    expect(mismatches).toEqual([]);
   });
 
   test('is defined from standalone domain definitions with explicit delegates', () => {

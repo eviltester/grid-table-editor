@@ -139,6 +139,28 @@ function getDomainKeywordByAlias(alias, index = DOMAIN_KEYWORD_ALIAS_INDEX) {
   return index.byAlias[key];
 }
 
+function normalizeDomainKeywordHelp(keyword) {
+  if (!keyword) {
+    return null;
+  }
+
+  return {
+    canonical: String(keyword.canonical || '').trim(),
+    keyword: String(keyword.keyword || '').trim(),
+    summary: String(keyword.help?.summary || '').trim(),
+    docsUrl: String(keyword.help?.docsUrl || '').trim(),
+    example: String(keyword.help?.example || '').trim(),
+    examples: Array.isArray(keyword.help?.examples) ? keyword.help.examples : [],
+    exampleReturnValues: Array.isArray(keyword.help?.exampleReturnValues) ? keyword.help.exampleReturnValues : [],
+    returnType: String(keyword.help?.returnType || '').trim(),
+    args: Array.isArray(keyword.help?.args) ? keyword.help.args : [],
+  };
+}
+
+function getDomainKeywordHelpByAlias(alias, index = DOMAIN_KEYWORD_ALIAS_INDEX) {
+  return normalizeDomainKeywordHelp(getDomainKeywordByAlias(alias, index));
+}
+
 function runFakerDelegate(target, fakerInstance, args = [], resultPath = '') {
   const parts = String(target || '')
     .split('.')
@@ -348,4 +370,6 @@ export {
   buildAliasCandidates,
   getCommandFromCanonical,
   getDomainKeywordByAlias,
+  getDomainKeywordHelpByAlias,
+  normalizeDomainKeywordHelp,
 };

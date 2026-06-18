@@ -1,6 +1,15 @@
+import { getDomainKeywordHelpByAlias } from '../domain/domain-keywords.js';
+
+const FAKER_HELPERS_DOCS_URL = 'https://fakerjs.dev/api/helpers';
+
+// Faker helper definitions live here because helpers.* remains outside the domain keyword abstraction.
+// These definitions are the source of truth for helper command registration, params, examples, and help metadata.
 const FAKER_HELPER_KEYWORD_DEFINITIONS = {
   'helpers.fake': {
     summary: 'Interpolates faker template placeholders inside a string and returns the rendered result.',
+    docsUrl: FAKER_HELPERS_DOCS_URL,
+    example: '',
+    returnType: 'string',
     params: [
       {
         name: 'pattern',
@@ -13,6 +22,9 @@ const FAKER_HELPER_KEYWORD_DEFINITIONS = {
   },
   'helpers.mustache': {
     summary: 'Replaces {{placeholder}} tokens in a string using values from the supplied data object.',
+    docsUrl: FAKER_HELPERS_DOCS_URL,
+    example: '',
+    returnType: 'string',
     params: [
       {
         name: 'text',
@@ -31,6 +43,9 @@ const FAKER_HELPER_KEYWORD_DEFINITIONS = {
   },
   'helpers.fromRegExp': {
     summary: 'Generates a string that matches the supplied regular-expression-style pattern.',
+    docsUrl: FAKER_HELPERS_DOCS_URL,
+    example: '',
+    returnType: 'string',
     params: [
       {
         name: 'pattern',
@@ -43,6 +58,9 @@ const FAKER_HELPER_KEYWORD_DEFINITIONS = {
   },
   'helpers.maybe': {
     summary: 'Calls a callback and returns its value only when faker decides the optional value should be present.',
+    docsUrl: FAKER_HELPERS_DOCS_URL,
+    example: '',
+    returnType: 'unknown',
     params: [
       {
         name: 'callback',
@@ -61,6 +79,9 @@ const FAKER_HELPER_KEYWORD_DEFINITIONS = {
   },
   'helpers.arrayElement': {
     summary: 'Returns one random element from the supplied array.',
+    docsUrl: FAKER_HELPERS_DOCS_URL,
+    example: '',
+    returnType: 'unknown',
     params: [
       {
         name: 'array',
@@ -73,6 +94,9 @@ const FAKER_HELPER_KEYWORD_DEFINITIONS = {
   },
   'helpers.objectKey': {
     summary: 'Returns one random key from the supplied object.',
+    docsUrl: FAKER_HELPERS_DOCS_URL,
+    example: '',
+    returnType: 'string',
     params: [
       {
         name: 'object',
@@ -85,6 +109,9 @@ const FAKER_HELPER_KEYWORD_DEFINITIONS = {
   },
   'helpers.objectValue': {
     summary: 'Returns one random value from the supplied object.',
+    docsUrl: FAKER_HELPERS_DOCS_URL,
+    example: '',
+    returnType: 'unknown',
     params: [
       {
         name: 'object',
@@ -97,6 +124,9 @@ const FAKER_HELPER_KEYWORD_DEFINITIONS = {
   },
   'helpers.objectEntry': {
     summary: 'Returns one random [key, value] entry from the supplied object.',
+    docsUrl: FAKER_HELPERS_DOCS_URL,
+    example: '',
+    returnType: 'array',
     params: [
       {
         name: 'object',
@@ -109,6 +139,9 @@ const FAKER_HELPER_KEYWORD_DEFINITIONS = {
   },
   'helpers.enumValue': {
     summary: 'Returns one random value from the supplied enum-like object.',
+    docsUrl: FAKER_HELPERS_DOCS_URL,
+    example: '',
+    returnType: 'unknown',
     params: [
       {
         name: 'enumObject',
@@ -121,6 +154,9 @@ const FAKER_HELPER_KEYWORD_DEFINITIONS = {
   },
   'helpers.slugify': {
     summary: 'Converts a string into a URL-friendly slug.',
+    docsUrl: FAKER_HELPERS_DOCS_URL,
+    example: '',
+    returnType: 'string',
     params: [
       {
         name: 'string',
@@ -133,6 +169,9 @@ const FAKER_HELPER_KEYWORD_DEFINITIONS = {
   },
   'helpers.replaceSymbols': {
     summary: 'Replaces placeholder symbols such as # and ? in a string with random digits or letters.',
+    docsUrl: FAKER_HELPERS_DOCS_URL,
+    example: '',
+    returnType: 'string',
     params: [
       {
         name: 'string',
@@ -145,6 +184,9 @@ const FAKER_HELPER_KEYWORD_DEFINITIONS = {
   },
   'helpers.replaceCreditCardSymbols': {
     summary: 'Replaces credit-card placeholders and computes a valid Luhn checksum for the result.',
+    docsUrl: FAKER_HELPERS_DOCS_URL,
+    example: 'demo-card-####-fake',
+    returnType: 'string',
     params: [
       {
         name: 'string',
@@ -163,6 +205,9 @@ const FAKER_HELPER_KEYWORD_DEFINITIONS = {
   },
   'helpers.shuffle': {
     summary: 'Returns a shuffled copy of the supplied array.',
+    docsUrl: FAKER_HELPERS_DOCS_URL,
+    example: '',
+    returnType: 'array',
     params: [
       {
         name: 'array',
@@ -175,6 +220,9 @@ const FAKER_HELPER_KEYWORD_DEFINITIONS = {
   },
   'helpers.uniqueArray': {
     summary: 'Builds an array of unique values by repeatedly sampling a source until the requested length is reached.',
+    docsUrl: FAKER_HELPERS_DOCS_URL,
+    example: '[]',
+    returnType: 'array',
     params: [
       {
         name: 'source',
@@ -193,6 +241,9 @@ const FAKER_HELPER_KEYWORD_DEFINITIONS = {
   },
   'helpers.weightedArrayElement': {
     summary: 'Returns one value from a weighted array, favoring entries with higher weights.',
+    docsUrl: FAKER_HELPERS_DOCS_URL,
+    example: '',
+    returnType: 'unknown',
     params: [
       {
         name: 'array',
@@ -205,6 +256,9 @@ const FAKER_HELPER_KEYWORD_DEFINITIONS = {
   },
   'helpers.arrayElements': {
     summary: 'Returns multiple random elements from the supplied array.',
+    docsUrl: FAKER_HELPERS_DOCS_URL,
+    example: '',
+    returnType: 'array',
     params: [
       {
         name: 'array',
@@ -223,6 +277,9 @@ const FAKER_HELPER_KEYWORD_DEFINITIONS = {
   },
   'helpers.rangeToNumber': {
     summary: 'Converts a number or { min, max } range into a concrete number.',
+    docsUrl: FAKER_HELPERS_DOCS_URL,
+    example: '2',
+    returnType: 'number',
     params: [
       {
         name: 'numberOrRange',
@@ -235,6 +292,9 @@ const FAKER_HELPER_KEYWORD_DEFINITIONS = {
   },
   'helpers.multiple': {
     summary: 'Calls a generator callback multiple times and returns the collected results as an array.',
+    docsUrl: FAKER_HELPERS_DOCS_URL,
+    example: '[null,null,null]',
+    returnType: 'array',
     params: [
       {
         name: 'method',
@@ -253,4 +313,83 @@ const FAKER_HELPER_KEYWORD_DEFINITIONS = {
   },
 };
 
-export { FAKER_HELPER_KEYWORD_DEFINITIONS };
+function normalizeFakerHelperKeywordHelp(definition) {
+  if (!definition) {
+    return undefined;
+  }
+
+  return {
+    summary: String(definition.summary || '').trim(),
+    params: Array.isArray(definition.params)
+      ? definition.params.map((param) => ({
+          name: String(param.name || '').trim(),
+          optional: param.optional !== false,
+          type: String(param.type || '').trim(),
+          description: String(param.description || '').trim(),
+          examples: Array.isArray(param.examples) ? param.examples : [],
+        }))
+      : [],
+    docsUrl: String(definition.docsUrl || '').trim(),
+    example: String(definition.example || '').trim(),
+    examples: Array.isArray(definition.examples) ? definition.examples : [],
+    exampleReturnValues: Array.isArray(definition.exampleReturnValues) ? definition.exampleReturnValues : [],
+    returnType: String(definition.returnType || '').trim(),
+  };
+}
+
+function buildFakerHelperHelpMetadata(definitions = FAKER_HELPER_KEYWORD_DEFINITIONS) {
+  return Object.fromEntries(
+    Object.entries(definitions).map(([command, definition]) => [command, normalizeFakerHelperKeywordHelp(definition)])
+  );
+}
+
+function getFakerHelperKeywordHelp(commandValue, definitions = FAKER_HELPER_KEYWORD_DEFINITIONS) {
+  const command = String(commandValue || '').trim();
+  if (!Object.prototype.hasOwnProperty.call(definitions, command)) {
+    return undefined;
+  }
+  return normalizeFakerHelperKeywordHelp(definitions[command]);
+}
+
+function mapDomainKeywordHelpToFakerCommandHelp(commandHelp) {
+  if (!commandHelp) {
+    return undefined;
+  }
+
+  return {
+    summary: commandHelp.summary || '',
+    params: Array.isArray(commandHelp.args)
+      ? commandHelp.args.map((arg) => ({
+          name: arg.name,
+          optional: arg.required !== true,
+          type: arg.type,
+          description: arg.description || '',
+          examples: Array.isArray(arg.examples) ? arg.examples : [],
+        }))
+      : [],
+    docsUrl: commandHelp.docsUrl || '',
+    example: commandHelp.example || '',
+    examples: Array.isArray(commandHelp.examples) ? commandHelp.examples : [],
+    exampleReturnValues: Array.isArray(commandHelp.exampleReturnValues) ? commandHelp.exampleReturnValues : [],
+    returnType: commandHelp.returnType || '',
+  };
+}
+
+function getFakerCommandHelp(commandValue, definitions = FAKER_HELPER_KEYWORD_DEFINITIONS) {
+  const command = String(commandValue || '').trim();
+  const helperHelp = getFakerHelperKeywordHelp(command, definitions);
+  if (helperHelp) {
+    return helperHelp;
+  }
+  return mapDomainKeywordHelpToFakerCommandHelp(getDomainKeywordHelpByAlias(command));
+}
+
+export {
+  FAKER_HELPERS_DOCS_URL,
+  FAKER_HELPER_KEYWORD_DEFINITIONS,
+  buildFakerHelperHelpMetadata,
+  getFakerCommandHelp,
+  getFakerHelperKeywordHelp,
+  mapDomainKeywordHelpToFakerCommandHelp,
+  normalizeFakerHelperKeywordHelp,
+};

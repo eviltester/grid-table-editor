@@ -181,6 +181,18 @@ const ERROR_PATTERNS = [
   /Unsafe faker rule syntax/i,
   /\bException\b/i,
 ];
+const PRIMITIVE_TYPE_TOKENS = new Set([
+  'string',
+  'number',
+  'integer',
+  'boolean',
+  'array',
+  'object',
+  'date',
+  'regexp',
+  'unknown',
+  'bigint',
+]);
 
 function slugify(value) {
   return String(value || '')
@@ -269,6 +281,61 @@ function renderExampleParamValue(exampleValue) {
   return quoteString(String(exampleValue));
 }
 
+function parseLiteralTypeToken(token) {
+  const trimmed = String(token || '').trim();
+  if (!trimmed) {
+    return undefined;
+  }
+  if ((trimmed.startsWith('"') && trimmed.endsWith('"')) || (trimmed.startsWith("'") && trimmed.endsWith("'"))) {
+    return trimmed.slice(1, -1);
+  }
+  if (/^[+-]?\d+(\.\d+)?$/.test(trimmed)) {
+    return Number(trimmed);
+  }
+  return trimmed;
+}
+
+function getLiteralUnionValues(typeName) {
+  const typeTokens = String(typeName || '')
+    .split('|')
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+
+  if (typeTokens.length === 0) {
+    return [];
+  }
+
+  const literalValues = [];
+  for (const typeToken of typeTokens) {
+    if (PRIMITIVE_TYPE_TOKENS.has(typeToken)) {
+      return [];
+    }
+    const literalValue = parseLiteralTypeToken(typeToken);
+    if (typeof literalValue === 'undefined') {
+      return [];
+    }
+    literalValues.push(literalValue);
+  }
+
+  return literalValues;
+}
+
+function choosePreferredLiteralUnionValue(values, { paramName, command } = {}) {
+  if (!Array.isArray(values) || values.length === 0) {
+    return undefined;
+  }
+
+  if (paramName === 'strategy' && values.includes('any-length')) return 'any-length';
+  if (paramName === 'aircraftType' && values.includes('widebody')) return 'widebody';
+  if (paramName === 'protocol' && values.includes('https')) return 'https';
+  if (paramName === 'network' && command === 'internet.ipv4' && values.includes('private-a')) return 'private-a';
+  if (paramName === 'network' && command === 'finance.bitcoinAddress' && values.includes('testnet')) return 'testnet';
+  if (paramName === 'format' && values.includes('css')) return 'css';
+  if (paramName === 'casing' && values.includes('upper')) return 'upper';
+
+  return values[0];
+}
+
 function buildGenericParamValue({ paramName, paramType, command, sourceType, index, argExamples = [] }) {
   const normalisedName = String(paramName || '').trim();
   const lowerName = normalisedName.toLowerCase();
@@ -287,6 +354,16 @@ function buildGenericParamValue({ paramName, paramType, command, sourceType, ind
     }
   }
 
+  const literalUnionValues = getLiteralUnionValues(paramType);
+  if (literalUnionValues.length > 0) {
+    return renderExampleParamValue(
+      choosePreferredLiteralUnionValue(literalUnionValues, {
+        paramName: normalisedName,
+        command,
+      })
+    );
+  }
+
   if (lowerName === 'min') return '1';
   if (lowerName === 'max') return '3';
   if (lowerName === 'count') return '2';
@@ -300,7 +377,6 @@ function buildGenericParamValue({ paramName, paramType, command, sourceType, ind
   if (lowerName === 'separator') return '"-"';
   if (lowerName === 'delimiter') return '"*"';
   if (lowerName === 'zeropadding') return '3';
-  if (lowerName === 'variant') return '"13"';
   if (lowerName === 'protocol') return '"https"';
   if (lowerName === 'provider') return '"example.com"';
   if (lowerName === 'firstname') return '"Ada"';
@@ -456,6 +532,12 @@ function parseFakerExampleInvocation(example, command) {
   return null;
 }
 
+function getUsageExampleFunctionCalls(metadata = {}) {
+  return (Array.isArray(metadata?.usageExamples) ? metadata.usageExamples : [])
+    .map((usageExample) => String(usageExample?.functionCall || '').trim())
+    .filter(Boolean);
+}
+
 function buildDomainBaseParams(command, metadata) {
   const args = Array.isArray(metadata?.args) ? metadata.args : [];
   if (DOMAIN_PARAM_OVERRIDES[command]?.defaults) {
@@ -578,7 +660,7 @@ function buildFakerScenarios() {
   const scenarios = [];
 
   FAKER_INTERACTION_COMMANDS.forEach((command) => {
-    const metadata = getFakerCommandHelp(command) || { params: [], docsUrl: '', example: '' };
+    const metadata = getFakerCommandHelp(command) || { params: [], docsUrl: '', usageExamples: [] };
     scenarios.push(
       createScenario({
         id: `faker-${slugify(command)}-base`,
@@ -598,7 +680,7 @@ function buildFakerScenarios() {
         metadata,
       })
     );
-    const curatedExamples = Array.isArray(metadata.examples) ? metadata.examples : [];
+    const curatedExamples = getUsageExampleFunctionCalls(metadata);
     curatedExamples.forEach((example, exampleIndex) => {
       const params = parseFakerExampleInvocation(example, command);
       if (!params) {
@@ -628,7 +710,7 @@ function buildDomainScenarios() {
   const scenarios = [];
 
   commands.forEach((command) => {
-    const metadata = getDomainCommandHelp(command) || { args: [], docsUrl: '', example: '' };
+    const metadata = getDomainCommandHelp(command) || { args: [], docsUrl: '', usageExamples: [] };
     scenarios.push(
       createScenario({
         id: `domain-${slugify(command)}-base`,
@@ -649,9 +731,7 @@ function buildDomainScenarios() {
       })
     );
 
-    const curatedExamples = Array.isArray(getDomainKeywordByCommand(command)?.help?.examples)
-      ? getDomainKeywordByCommand(command).help.examples
-      : [];
+    const curatedExamples = getUsageExampleFunctionCalls(getDomainKeywordByCommand(command)?.help);
     curatedExamples.forEach((example, exampleIndex) => {
       const params = parseExampleInvocation(example, command);
       if (!params) {
@@ -741,6 +821,10 @@ function getAllowedTypesForScenarioRow(row) {
     .filter(Boolean);
 }
 
+function getLiteralUnionValuesForScenarioRow(row) {
+  return getLiteralUnionValues(getDomainCommandHelp(row.command)?.returnType || 'string');
+}
+
 function scenarioRowLooksValid(row, value) {
   if (hasErrorIndicators(value)) {
     return false;
@@ -751,6 +835,10 @@ function scenarioRowLooksValid(row, value) {
   }
 
   const allowedTypes = getAllowedTypesForScenarioRow(row);
+  const literalUnionValues = getLiteralUnionValuesForScenarioRow(row);
+  if (literalUnionValues.length > 0) {
+    return literalUnionValues.map((item) => String(item)).includes(String(value));
+  }
   if (hasPermissiveAllowedType(allowedTypes)) {
     return true;
   }

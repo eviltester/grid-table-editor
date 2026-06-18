@@ -6,9 +6,7 @@ import { executeDomainKeyword } from '../packages/core/js/domain/domain-keywords
 import { toInlineCode } from '../packages/core/js/domain/domain-doc-markdown.js';
 
 const configuredOutDir = process.env.ANYWAYDATA_DOMAIN_DOCS_OUT_DIR;
-const outDir = configuredOutDir
-  ? path.resolve(configuredOutDir)
-  : path.resolve('docs-src/docs/040-test-data/domain');
+const outDir = configuredOutDir ? path.resolve(configuredOutDir) : path.resolve('docs-src/docs/040-test-data/domain');
 fs.mkdirSync(outDir, { recursive: true });
 for (const fileName of fs.readdirSync(outDir)) {
   if (fileName.endsWith('.md')) {
@@ -117,6 +115,19 @@ const domainIntroOverrides = {
   autoIncrement: 'The `autoIncrement` domain provides stateful sequence helpers for accepted generated rows.',
   literal: 'The `literal` domain returns caller-provided values directly and does not invoke faker.',
 };
+const PRIMITIVE_TYPE_TOKENS = new Set([
+  'string',
+  'number',
+  'integer',
+  'boolean',
+  'array',
+  'object',
+  'date',
+  'regexp',
+  'unknown',
+  'bigint',
+  'comma-separated list',
+]);
 
 function escapeMdxText(value) {
   return String(value ?? '')
@@ -125,7 +136,9 @@ function escapeMdxText(value) {
 }
 
 function escapeMarkdownTableCell(value) {
-  const normalized = String(value ?? '').replaceAll('\r\n', '\n').replaceAll('\r', '\n');
+  const normalized = String(value ?? '')
+    .replaceAll('\r\n', '\n')
+    .replaceAll('\r', '\n');
   return escapeMdxText(normalized.replaceAll('\n', '<br/>')).replaceAll('|', '\\|');
 }
 
@@ -145,12 +158,10 @@ function canExecuteInvocation(keyword, args) {
 }
 
 function getDefinitionReturnValues(entry) {
-  const explicit = Array.isArray(entry?.help?.exampleReturnValues) ? entry.help.exampleReturnValues : [];
-  if (explicit.length > 0) {
-    return explicit;
-  }
-  const single = String(entry?.help?.example || '').trim();
-  return single ? [single] : [];
+  return (Array.isArray(entry?.help?.usageExamples) ? entry.help.usageExamples : [])
+    .filter((usageExample) => Object.prototype.hasOwnProperty.call(usageExample || {}, 'sampleReturnValue'))
+    .map((usageExample) => usageExample.sampleReturnValue)
+    .filter((value) => typeof value !== 'undefined');
 }
 
 function toNamedInvocation(keyword, argSpecs, typedArgs) {
@@ -195,25 +206,78 @@ function renderInvocation(keyword, typedArgs) {
   return `${keyword}(${renderedArgs.join(', ')})`;
 }
 
-function sampleValueForArg(argSpec) {
+function parseLiteralTypeToken(token) {
+  const trimmed = String(token || '').trim();
+  if (!trimmed) {
+    return undefined;
+  }
+  if ((trimmed.startsWith('"') && trimmed.endsWith('"')) || (trimmed.startsWith("'") && trimmed.endsWith("'"))) {
+    return trimmed.slice(1, -1);
+  }
+  if (/^[+-]?\d+(\.\d+)?$/.test(trimmed)) {
+    return Number(trimmed);
+  }
+  return trimmed;
+}
+
+function getLiteralUnionValues(typeName) {
+  const typeTokens = String(typeName || '')
+    .split('|')
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+
+  if (typeTokens.length === 0) {
+    return [];
+  }
+
+  const literalValues = [];
+  for (const typeToken of typeTokens) {
+    if (PRIMITIVE_TYPE_TOKENS.has(typeToken)) {
+      return [];
+    }
+    const literalValue = parseLiteralTypeToken(typeToken);
+    if (typeof literalValue === 'undefined') {
+      return [];
+    }
+    literalValues.push(literalValue);
+  }
+
+  return literalValues;
+}
+
+function choosePreferredLiteralUnionValue(values, name, keyword) {
+  if (!Array.isArray(values) || values.length === 0) {
+    return undefined;
+  }
+
+  if (name === 'strategy' && values.includes('any-length')) return 'any-length';
+  if (name === 'aircraftType' && values.includes('widebody')) return 'widebody';
+  if (name === 'protocol' && values.includes('https')) return 'https';
+  if (name === 'network' && keyword === 'internet.ipv4' && values.includes('private-a')) return 'private-a';
+  if (name === 'network' && keyword === 'finance.bitcoinAddress' && values.includes('testnet')) return 'testnet';
+  if (name === 'format' && values.includes('css')) return 'css';
+  if (name === 'casing' && values.includes('upper')) return 'upper';
+
+  return values[0];
+}
+
+function sampleValueForArg(argSpec, keyword = '') {
   const name = String(argSpec?.name || '').trim();
   const typeName = String(argSpec?.type || '').trim();
+  const examples = Array.isArray(argSpec?.examples) ? argSpec.examples.filter((value) => value !== undefined) : [];
+  if (examples.length > 0) {
+    return examples[0];
+  }
   if (name === 'firstName') return 'Alex';
   if (name === 'lastName') return 'Taylor';
   if (name === 'provider') return 'example.com';
   if (name === 'aircraftType') return 'narrowbody';
   if (name === 'countryCode') return 'GB';
   if (name === 'cidrBlock') return '192.168.0.0/24';
-  if (name === 'network') return 'private-a';
-  if (name === 'protocol') return 'https';
-  if (name === 'format') return 'hex';
-  if (name === 'casing') return 'lower';
   if (name === 'prefix') return '#';
   if (name === 'separator') return '-';
   if (name === 'characters') return 'ABC123';
-  if (name === 'variant') return '13';
   if (name === 'pattern') return '[A-Za-z0-9]';
-  if (name === 'strategy') return 'any-length';
   if (name === 'version') return 'v4';
   if (name === 'mode') return 'age';
   if (name === 'sex') return 'male';
@@ -228,6 +292,11 @@ function sampleValueForArg(argSpec) {
   if (name === 'context') return false;
   if (name === 'abbreviated') return false;
   if (name === 'memorable') return false;
+
+  const literalUnionValues = getLiteralUnionValues(typeName);
+  if (literalUnionValues.length > 0) {
+    return choosePreferredLiteralUnionValue(literalUnionValues, name, keyword);
+  }
 
   const first =
     typeName
@@ -258,16 +327,16 @@ for (const domain of domains) {
     '',
   ];
 
-  const docsByDomain = [
+  const fakerDocsByDomain = [
     ...new Set(
       keywords
-        .map((k) => String(k.help.docsUrl || '').trim())
+        .map((k) => String(k.help.fakerDocsUrl || '').trim())
         .filter((url) => url.length > 0 && url.includes('fakerjs.dev/api/'))
     ),
   ];
-  if (docsByDomain.length > 0) {
+  if (fakerDocsByDomain.length > 0) {
     lines.push('## Faker Documentation', '');
-    for (const url of docsByDomain) lines.push(`- [${url}](${url})`);
+    for (const url of fakerDocsByDomain) lines.push(`- [${url}](${url})`);
     lines.push('');
   }
 
@@ -278,9 +347,9 @@ for (const domain of domains) {
     const override = invocationOverrides[entry.keyword];
     const requiredArgSpecs = args.filter((a) => a.required);
     const typedRequiredArgs = requiredArgSpecs.map((a) => {
-      return sampleValueForArg(a);
+      return sampleValueForArg(a, entry.keyword);
     });
-    const sampledArgs = args.map((arg) => sampleValueForArg(arg));
+    const sampledArgs = args.map((arg) => sampleValueForArg(arg, entry.keyword));
     let executableExampleArgs = override ? override.args : typedRequiredArgs;
     if (!canExecuteInvocation(entry.keyword, executableExampleArgs)) {
       if (canExecuteInvocation(entry.keyword, sampledArgs)) {
@@ -303,8 +372,10 @@ for (const domain of domains) {
     lines.push(escapeMdxText(entry.help.summary || 'No summary provided.'), '');
     lines.push(`- Canonical: \`${entry.canonical}\``);
     if (entry.help.docsUrl) {
-      const docsLabel = String(entry?.delegate?.type || '') === 'faker' ? 'Faker docs' : 'Docs';
-      lines.push(`- ${docsLabel}: [${entry.help.docsUrl}](${entry.help.docsUrl})`);
+      lines.push(`- Docs: [${entry.help.docsUrl}](${entry.help.docsUrl})`);
+    }
+    if (entry.help.fakerDocsUrl) {
+      lines.push(`- Faker docs: [${entry.help.fakerDocsUrl}](${entry.help.fakerDocsUrl})`);
     }
     lines.push('');
 
@@ -322,7 +393,9 @@ for (const domain of domains) {
     }
 
     if (hasExecutableExample) {
-      const definitionExamples = Array.isArray(entry.help.examples) ? entry.help.examples.filter(Boolean) : [];
+      const definitionExamples = (Array.isArray(entry.help.usageExamples) ? entry.help.usageExamples : [])
+        .map((usageExample) => String(usageExample?.functionCall || '').trim())
+        .filter(Boolean);
       let namedInvocation = '';
       const allArgsValues = sampledArgs;
       if (args.length > 0 && canExecuteInvocation(entry.keyword, allArgsValues)) {
@@ -346,9 +419,9 @@ for (const domain of domains) {
         const seenExamples = new Set(primaryExamples);
         for (let index = 0; index < args.length; index += 1) {
           const arg = args[index];
-          const value = sampleValueForArg(arg);
+          const value = sampleValueForArg(arg, entry.keyword);
           const typedArgs = args.map((entryArg, argIndex) =>
-            argIndex === index ? value : sampleValueForArg(entryArg)
+            argIndex === index ? value : sampleValueForArg(entryArg, entry.keyword)
           );
           const fullNamed = toNamedInvocation(entry.keyword, args, typedArgs);
           if (fullNamed && canExecuteInvocation(entry.keyword, typedArgs)) {

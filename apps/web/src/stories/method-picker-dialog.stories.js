@@ -2,75 +2,28 @@ import React from 'react';
 import { Canvas, Controls, Description, Title } from '@storybook/addon-docs/blocks';
 import { expect, fn, userEvent, within } from 'storybook/test';
 import { openMethodPickerModal } from '../../../../packages/core-ui/js/gui_components/shared/test-data/ui/method-picker-modal.js';
+import { buildSchemaHelpModel } from '../../../../packages/core-ui/js/gui_components/shared/test-data/help/help-model-builder.js';
 
 const METHOD_PICKER_RECENT_STORAGE_KEY = 'anywaydata.method-picker.recent';
 const METHOD_PICKER_STYLE_ID = 'storybook-method-picker-modal-styles-link';
 const CORE_COMMANDS = new Set(['enum', 'literal', 'regex']);
 
-const METHOD_OPTIONS = [
-  {
-    sourceType: 'regex',
-    command: 'regex',
-    helpModel: {
-      summary: 'Generate values from a regular expression.',
-      heading: 'regex',
-      examples: ['regex("[A-Z]{3}")'],
-      params: [
-        {
-          name: 'pattern',
-          type: 'string',
-          description: 'Regular expression source used to build generated values.',
-          example: '"[A-Z]{3}"',
-        },
-      ],
-      exampleReturnValues: ['ABC', 'QWE'],
-      docsUrl: 'https://anywaydata.com/docs/test-data/regex',
-    },
-  },
-  {
-    sourceType: 'faker',
-    command: 'helpers.arrayElement',
-    helpModel: {
-      summary: 'Choose one item from the provided array.',
-      heading: 'helpers.arrayElement',
-      examples: ['helpers.arrayElement(["active", "paused", "deleted"])'],
-      params: [
-        {
-          name: 'array',
-          type: 'array',
-          description: 'List of values to choose from.',
-          example: '["active", "paused", "deleted"]',
-        },
-      ],
-      exampleReturnValues: ['active', 'paused'],
-      docsUrl: 'https://fakerjs.dev/api/helpers.html#arrayelement',
-    },
-  },
-  {
-    sourceType: 'domain',
-    command: 'internet.password',
-    helpModel: {
-      summary: 'Generate a password-like string.',
-      heading: 'internet.password',
-      examples: ['internet.password()'],
-      params: [],
-      exampleReturnValues: ['hS9!wQ2'],
-      docsUrl: 'https://fakerjs.dev/api/internet.html#password',
-    },
-  },
-  {
-    sourceType: 'domain',
-    command: 'commerce.price',
-    helpModel: {
-      summary: 'Generate a commerce-style price.',
-      heading: 'commerce.price',
-      examples: ['commerce.price()'],
-      params: [],
-      exampleReturnValues: ['19.99'],
-      docsUrl: 'https://fakerjs.dev/api/commerce.html#price',
-    },
-  },
-];
+const METHOD_OPTION_SPECS = Object.freeze([
+  { sourceType: 'regex', command: 'regex', helpCommand: '' },
+  { sourceType: 'faker', command: 'helpers.arrayElement', helpCommand: 'helpers.arrayElement' },
+  { sourceType: 'domain', command: 'internet.password', helpCommand: 'internet.password' },
+  { sourceType: 'domain', command: 'commerce.price', helpCommand: 'commerce.price' },
+]);
+
+function buildMethodOptions() {
+  return METHOD_OPTION_SPECS.map(({ sourceType, command, helpCommand }) => ({
+    sourceType,
+    command,
+    helpModel: buildSchemaHelpModel(sourceType, helpCommand),
+  }));
+}
+
+const METHOD_OPTIONS = buildMethodOptions();
 
 function escapeHtml(text) {
   return String(text ?? '')
@@ -91,23 +44,29 @@ function toExampleList(value) {
 
 function getReturnExamples(model) {
   const unique = new Set();
-  const add = (value) => {
-    toExampleList(value).forEach((entry) => unique.add(entry));
-  };
-  add(model?.example);
-  add(model?.exampleReturnValues);
-  add(model?.returnExamples);
-  return [...unique];
+  const usageExamples = Array.isArray(model?.usageExamples) ? model.usageExamples : [];
+  usageExamples.forEach((usageExample) => {
+    if (Object.prototype.hasOwnProperty.call(usageExample || {}, 'sampleReturnValue')) {
+      unique.add(String(usageExample.sampleReturnValue ?? '').trim());
+    }
+  });
+  toExampleList(model?.returnExamples).forEach((entry) => unique.add(entry));
+  return [...unique].filter(Boolean);
+}
+
+function getUsageFunctionCalls(model) {
+  return (Array.isArray(model?.usageExamples) ? model.usageExamples : [])
+    .map((usageExample) => String(usageExample?.functionCall || '').trim())
+    .filter(Boolean);
 }
 
 function buildSearchText(option) {
   const params = Array.isArray(option?.helpModel?.params) ? option.helpModel.params.map((p) => p?.name || '') : [];
-  const usageExamples = toExampleList(option?.helpModel?.examples);
+  const usageExamples = getUsageFunctionCalls(option?.helpModel);
   const returnExamples = getReturnExamples(option?.helpModel);
   return [
     option.command,
     option.helpModel?.summary || '',
-    option.helpModel?.example || '',
     usageExamples.join(' '),
     returnExamples.join(' '),
     params.join(' '),
@@ -293,7 +252,7 @@ function createVisualMethodPickerStory(root, args) {
       return;
     }
     const model = selected.helpModel || {};
-    const usageExamples = toExampleList(model.examples);
+    const usageExamples = getUsageFunctionCalls(model);
     const returnExamples = getReturnExamples(model);
     const docsUrl = String(model.docsUrl || '').trim();
     const hasParams = Array.isArray(model.params) && model.params.length > 0;
@@ -536,7 +495,7 @@ export const VisualAlwaysOpen = {
     await expect(canvas.getByRole('dialog', { name: 'Choose Method' })).toBeVisible();
     await expect(
       canvas.getByRole('button', {
-        name: 'helpers.arrayElement Choose one item from the provided array. faker',
+        name: 'helpers.arrayElement Returns one random element from the supplied array. faker',
       })
     ).toHaveClass('is-selected');
 
@@ -573,7 +532,9 @@ export const ChooseFakerMethod = {
     await userEvent.click(canvas.getByRole('button', { name: 'Open method picker' }));
     const dialog = within(document.body);
     await userEvent.click(
-      dialog.getByRole('button', { name: 'helpers.arrayElement Choose one item from the provided array. faker' })
+      dialog.getByRole('button', {
+        name: 'helpers.arrayElement Returns one random element from the supplied array. faker',
+      })
     );
     await userEvent.click(dialog.getByRole('button', { name: 'Apply' }));
     await expect(canvas.getByText('faker:helpers.arrayElement')).toBeVisible();
@@ -600,7 +561,7 @@ export const FilterAndChooseDomainMethod = {
     const dialog = within(document.body);
     await userEvent.type(dialog.getByRole('searchbox', { name: 'Filter methods' }), 'commerce');
     await userEvent.click(
-      dialog.getByRole('button', { name: 'commerce.price Generate a commerce-style price. domain' })
+      dialog.getByRole('button', { name: 'commerce.price Generates a price between min and max (inclusive). domain' })
     );
     await userEvent.click(dialog.getByRole('button', { name: 'Apply' }));
     await expect(canvas.getByText('domain:commerce.price')).toBeVisible();

@@ -285,7 +285,9 @@ function buildWriterDomainCommandGuide(domainCommands = []) {
         .slice(0, 6)
         .map((command) => {
           const help = getDomainCommandHelp(command);
-          const example = String(help?.example || '').trim();
+          const example = Array.isArray(help?.usageExamples)
+            ? String(help.usageExamples.find((usageExample) => usageExample?.functionCall)?.functionCall || '').trim()
+            : '';
           const summary = String(help?.summary || '')
             .trim()
             .replace(/\s+/g, ' ');

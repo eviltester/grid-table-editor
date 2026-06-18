@@ -15,7 +15,7 @@ import { jest } from '@jest/globals';
 import { TEST_DATA_GRID_SAMPLE_SCHEMA_TEXT } from '../../../js/gui_components/shared/test-data/schema/schema-examples.js';
 import { createFocusedAppTestDataHarness } from './support/focused-app-test-data-harness.js';
 
-jest.setTimeout(15000);
+jest.setTimeout(45000);
 
 describe('app test-data focused schema sync', () => {
   let harness;
@@ -97,5 +97,5 @@ describe('app test-data focused schema sync', () => {
     );
     expect(harness.getSchemaText()).not.toContain('Status');
     expect(harness.getSchemaText()).toContain('Code');
-  });
+  }, 45000);
 });

@@ -1,3 +1,5 @@
+import { validateBooleanValue } from '../command-help/command-help-validators.js';
+
 const DOMAIN_FAKER_DATATYPE_KEYWORD_DEFINITIONS = [
   {
     keyword: 'datatype.boolean',
@@ -8,9 +10,22 @@ const DOMAIN_FAKER_DATATYPE_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns the boolean value true or false.',
-      docsUrl: 'https://fakerjs.dev/api/datatype',
-      example: 'true',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/datatype',
+      fakerDocsUrl: 'https://fakerjs.dev/api/datatype',
+      validator: validateBooleanValue,
       returnType: 'boolean',
+      usageExamples: [
+        {
+          functionCall: 'datatype.boolean()',
+          sampleReturnValue: true,
+          description: 'Shows datatype.boolean when optional params are omitted.',
+        },
+        {
+          functionCall: 'datatype.boolean(probability=0.5)',
+          sampleReturnValue: true,
+          description: 'Shows datatype.boolean using probability.',
+        },
+      ],
       args: [
         {
           name: 'probability',

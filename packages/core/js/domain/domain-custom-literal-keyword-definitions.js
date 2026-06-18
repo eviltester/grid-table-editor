@@ -1,3 +1,5 @@
+import { validateLiteralValue } from '../command-help/command-help-validators.js';
+
 const DOMAIN_CUSTOM_LITERAL_KEYWORD_DEFINITIONS = [
   {
     keyword: 'literal.value',
@@ -8,10 +10,31 @@ const DOMAIN_CUSTOM_LITERAL_KEYWORD_DEFINITIONS = [
     help: {
       summary: 'Return the literal value provided by the caller.',
       docsUrl: 'https://anywaydata.com/docs/category/generating-data',
-      example: 'Pending',
-      examples: ['literal.value("Pending")', 'literal.value("")'],
-      exampleReturnValues: ['Pending', ''],
+      fakerDocsUrl: '',
+      validator: validateLiteralValue,
       returnType: 'string|number|boolean',
+      usageExamples: [
+        {
+          functionCall: 'literal.value("Pending")',
+          sampleReturnValue: 'Pending',
+          description: 'Shows literal.value in use.',
+        },
+        {
+          functionCall: 'literal.value("")',
+          sampleReturnValue: '',
+          description: 'Shows literal.value in use.',
+        },
+        {
+          functionCall: 'literal.value()',
+          sampleReturnValue: '',
+          description: 'Shows literal.value when optional params are omitted.',
+        },
+        {
+          functionCall: 'literal.value(value=1)',
+          sampleReturnValue: 1,
+          description: 'Shows literal.value using value.',
+        },
+      ],
       args: [
         {
           name: 'value',

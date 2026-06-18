@@ -38,16 +38,21 @@ function writeRecent(windowObj, entries) {
 
 function buildSearchText(option) {
   const params = Array.isArray(option?.helpModel?.params) ? option.helpModel.params.map((p) => p?.name || '') : [];
-  const usageExamples = toExampleList(option?.helpModel?.examples);
+  const usageExamples = getUsageFunctionCalls(option?.helpModel);
   const returnExamples = getReturnExamples(option?.helpModel);
   return [
     option.command,
     option.helpModel?.summary || '',
-    option.helpModel?.example || '',
     usageExamples.join(' '),
     returnExamples.join(' '),
     params.join(' '),
   ].join(' ');
+}
+
+function getUsageFunctionCalls(model) {
+  return (Array.isArray(model?.usageExamples) ? model.usageExamples : [])
+    .map((usageExample) => String(usageExample?.functionCall || '').trim())
+    .filter(Boolean);
 }
 
 function toExampleList(value) {
@@ -56,6 +61,26 @@ function toExampleList(value) {
   }
   const single = String(value || '').trim();
   return single ? [single] : [];
+}
+
+function normalizeReturnExampleValue(value) {
+  if (typeof value === 'bigint') {
+    return `${value}n`;
+  }
+
+  if (Array.isArray(value)) {
+    return JSON.stringify(value);
+  }
+
+  if (value instanceof Date) {
+    return value.toISOString();
+  }
+
+  if (value && typeof value === 'object') {
+    return JSON.stringify(value);
+  }
+
+  return String(value);
 }
 
 function ensureCriticalStyles(documentObj) {
@@ -178,13 +203,14 @@ function renderExampleList(examples, emptyText) {
 
 function getReturnExamples(model) {
   const unique = new Set();
-  const add = (value) => {
-    toExampleList(value).forEach((entry) => unique.add(entry));
-  };
-  add(model?.example);
-  add(model?.exampleReturnValues);
-  add(model?.returnExamples);
-  return [...unique];
+  const usageExamples = Array.isArray(model?.usageExamples) ? model.usageExamples : [];
+  usageExamples.forEach((usageExample) => {
+    if (Object.prototype.hasOwnProperty.call(usageExample || {}, 'sampleReturnValue')) {
+      unique.add(normalizeReturnExampleValue(usageExample.sampleReturnValue).trim());
+    }
+  });
+  toExampleList(model?.returnExamples).forEach((entry) => unique.add(entry));
+  return [...unique].filter(Boolean);
 }
 
 function openMethodPickerModal({
@@ -301,7 +327,7 @@ function openMethodPickerModal({
       return;
     }
     const model = selected.helpModel || {};
-    const usageExamples = toExampleList(model.examples);
+    const usageExamples = getUsageFunctionCalls(model);
     const returnExamples = getReturnExamples(model);
     const docsUrl = String(model.docsUrl || '').trim();
     const hasParams = Array.isArray(model.params) && model.params.length > 0;

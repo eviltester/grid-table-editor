@@ -1,3 +1,5 @@
+import { validateStringValue } from '../command-help/command-help-validators.js';
+
 const DOMAIN_FAKER_COMPANY_KEYWORD_DEFINITIONS = [
   {
     keyword: 'company.buzzAdjective',
@@ -7,9 +9,17 @@ const DOMAIN_FAKER_COMPANY_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random buzz adjective that can be used to demonstrate data being viewed by a manager.',
-      docsUrl: 'https://fakerjs.dev/api/company',
-      example: 'out-of-the-box',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/company',
+      fakerDocsUrl: 'https://fakerjs.dev/api/company',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'company.buzzAdjective',
+          sampleReturnValue: 'immersive',
+          description: 'Shows the default company.buzzAdjective call.',
+        },
+      ],
       args: [],
     },
   },
@@ -21,9 +31,17 @@ const DOMAIN_FAKER_COMPANY_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random buzz noun that can be used to demonstrate data being viewed by a manager.',
-      docsUrl: 'https://fakerjs.dev/api/company',
-      example: 'deliverables',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/company',
+      fakerDocsUrl: 'https://fakerjs.dev/api/company',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'company.buzzNoun',
+          sampleReturnValue: 'interfaces',
+          description: 'Shows the default company.buzzNoun call.',
+        },
+      ],
       args: [],
     },
   },
@@ -35,9 +53,17 @@ const DOMAIN_FAKER_COMPANY_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Generates a random buzz phrase that can be used to demonstrate data being viewed by a manager.',
-      docsUrl: 'https://fakerjs.dev/api/company',
-      example: 'streamline cutting-edge platforms',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/company',
+      fakerDocsUrl: 'https://fakerjs.dev/api/company',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'company.buzzPhrase',
+          sampleReturnValue: 'grow robust AI',
+          description: 'Shows the default company.buzzPhrase call.',
+        },
+      ],
       args: [],
     },
   },
@@ -49,9 +75,17 @@ const DOMAIN_FAKER_COMPANY_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random buzz verb that can be used to demonstrate data being viewed by a manager.',
-      docsUrl: 'https://fakerjs.dev/api/company',
-      example: 'disintermediate',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/company',
+      fakerDocsUrl: 'https://fakerjs.dev/api/company',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'company.buzzVerb',
+          sampleReturnValue: 'grow',
+          description: 'Shows the default company.buzzVerb call.',
+        },
+      ],
       args: [],
     },
   },
@@ -63,9 +97,17 @@ const DOMAIN_FAKER_COMPANY_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Generates a random catch phrase that can be displayed to an end user.',
-      docsUrl: 'https://fakerjs.dev/api/company',
-      example: 'Diverse AI-powered flexibility',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/company',
+      fakerDocsUrl: 'https://fakerjs.dev/api/company',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'company.catchPhrase',
+          sampleReturnValue: 'Integrated radical ability',
+          description: 'Shows the default company.catchPhrase call.',
+        },
+      ],
       args: [],
     },
   },
@@ -77,9 +119,17 @@ const DOMAIN_FAKER_COMPANY_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random catch phrase adjective that can be displayed to an end user.',
-      docsUrl: 'https://fakerjs.dev/api/company',
-      example: 'Distributed',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/company',
+      fakerDocsUrl: 'https://fakerjs.dev/api/company',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'company.catchPhraseAdjective',
+          sampleReturnValue: 'Integrated',
+          description: 'Shows the default company.catchPhraseAdjective call.',
+        },
+      ],
       args: [],
     },
   },
@@ -91,9 +141,17 @@ const DOMAIN_FAKER_COMPANY_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random catch phrase descriptor that can be displayed to an end user.',
-      docsUrl: 'https://fakerjs.dev/api/company',
-      example: 'encompassing',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/company',
+      fakerDocsUrl: 'https://fakerjs.dev/api/company',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'company.catchPhraseDescriptor',
+          sampleReturnValue: 'heuristic',
+          description: 'Shows the default company.catchPhraseDescriptor call.',
+        },
+      ],
       args: [],
     },
   },
@@ -105,9 +163,17 @@ const DOMAIN_FAKER_COMPANY_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random catch phrase noun that can be displayed to an end user.',
-      docsUrl: 'https://fakerjs.dev/api/company',
-      example: 'attitude',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/company',
+      fakerDocsUrl: 'https://fakerjs.dev/api/company',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'company.catchPhraseNoun',
+          sampleReturnValue: 'generative AI',
+          description: 'Shows the default company.catchPhraseNoun call.',
+        },
+      ],
       args: [],
     },
   },
@@ -119,9 +185,17 @@ const DOMAIN_FAKER_COMPANY_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Generates a random company name.',
-      docsUrl: 'https://fakerjs.dev/api/company',
-      example: 'Lang - Little',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/company',
+      fakerDocsUrl: 'https://fakerjs.dev/api/company',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'company.name',
+          sampleReturnValue: 'Gutmann Group',
+          description: 'Shows the default company.name call.',
+        },
+      ],
       args: [],
     },
   },

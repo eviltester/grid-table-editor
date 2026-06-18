@@ -19,6 +19,7 @@ The `airline` domain maps domain keywords to underlying faker implementations.
 Returns a random aircraft type.
 
 - Canonical: `awd.domain.airline.aircraftType`
+- Docs: [https://anywaydata.com/docs/test-data/domain/airline](https://anywaydata.com/docs/test-data/domain/airline)
 - Faker docs: [https://fakerjs.dev/api/airline](https://fakerjs.dev/api/airline)
 
 No parameters.
@@ -26,7 +27,7 @@ No parameters.
 Examples:
 
 ```txt
-airline.aircraftType()
+airline.aircraftType
 ```
 
 Example return values:
@@ -37,6 +38,7 @@ Example return values:
 Generate a value using faker airline.airline.
 
 - Canonical: `awd.domain.airline.airline`
+- Docs: [https://anywaydata.com/docs/test-data/domain/airline](https://anywaydata.com/docs/test-data/domain/airline)
 - Faker docs: [https://fakerjs.dev/api/airline](https://fakerjs.dev/api/airline)
 
 No parameters.
@@ -44,17 +46,18 @@ No parameters.
 Examples:
 
 ```txt
-airline.airline()
+airline.airline
 ```
 
 Example return values:
-- `{"name":"American Airlines","iataCode":"AA"}`
+- `{"name":"Flydubai","iataCode":"FZ"}`
 
 ### `airline.airline.iataCode`
 
 Generate an airline IATA code.
 
 - Canonical: `awd.domain.airline.airline.iataCode`
+- Docs: [https://anywaydata.com/docs/test-data/domain/airline](https://anywaydata.com/docs/test-data/domain/airline)
 - Faker docs: [https://fakerjs.dev/api/airline](https://fakerjs.dev/api/airline)
 
 No parameters.
@@ -62,17 +65,18 @@ No parameters.
 Examples:
 
 ```txt
-airline.airline.iataCode()
+airline.airline.iataCode
 ```
 
 Example return values:
-- `AA`
+- `FZ`
 
 ### `airline.airline.name`
 
 Generate an airline name.
 
 - Canonical: `awd.domain.airline.airline.name`
+- Docs: [https://anywaydata.com/docs/test-data/domain/airline](https://anywaydata.com/docs/test-data/domain/airline)
 - Faker docs: [https://fakerjs.dev/api/airline](https://fakerjs.dev/api/airline)
 
 No parameters.
@@ -80,17 +84,18 @@ No parameters.
 Examples:
 
 ```txt
-airline.airline.name()
+airline.airline.name
 ```
 
 Example return values:
-- `Acme Air`
+- `Flydubai`
 
 ### `airline.airplane`
 
 Generate a value using faker airline.airplane.
 
 - Canonical: `awd.domain.airline.airplane`
+- Docs: [https://anywaydata.com/docs/test-data/domain/airline](https://anywaydata.com/docs/test-data/domain/airline)
 - Faker docs: [https://fakerjs.dev/api/airline](https://fakerjs.dev/api/airline)
 
 No parameters.
@@ -98,17 +103,18 @@ No parameters.
 Examples:
 
 ```txt
-airline.airplane()
+airline.airplane
 ```
 
 Example return values:
-- `{"name":"Airbus A320","iataTypeCode":"A320"}`
+- `{"name":"Boeing 747-400D","iataTypeCode":"74J"}`
 
 ### `airline.airplane.iataTypeCode`
 
 Generate an airplane IATA type code.
 
 - Canonical: `awd.domain.airline.airplane.iataTypeCode`
+- Docs: [https://anywaydata.com/docs/test-data/domain/airline](https://anywaydata.com/docs/test-data/domain/airline)
 - Faker docs: [https://fakerjs.dev/api/airline](https://fakerjs.dev/api/airline)
 
 No parameters.
@@ -116,17 +122,18 @@ No parameters.
 Examples:
 
 ```txt
-airline.airplane.iataTypeCode()
+airline.airplane.iataTypeCode
 ```
 
 Example return values:
-- `A320`
+- `74J`
 
 ### `airline.airplane.name`
 
 Generate an airplane model name.
 
 - Canonical: `awd.domain.airline.airplane.name`
+- Docs: [https://anywaydata.com/docs/test-data/domain/airline](https://anywaydata.com/docs/test-data/domain/airline)
 - Faker docs: [https://fakerjs.dev/api/airline](https://fakerjs.dev/api/airline)
 
 No parameters.
@@ -134,17 +141,18 @@ No parameters.
 Examples:
 
 ```txt
-airline.airplane.name()
+airline.airplane.name
 ```
 
 Example return values:
-- `Boeing 737`
+- `Boeing 747-400D`
 
 ### `airline.airport`
 
 Generate a value using faker airline.airport.
 
 - Canonical: `awd.domain.airline.airport`
+- Docs: [https://anywaydata.com/docs/test-data/domain/airline](https://anywaydata.com/docs/test-data/domain/airline)
 - Faker docs: [https://fakerjs.dev/api/airline](https://fakerjs.dev/api/airline)
 
 No parameters.
@@ -152,17 +160,18 @@ No parameters.
 Examples:
 
 ```txt
-airline.airport()
+airline.airport
 ```
 
 Example return values:
-- `{"name":"Heathrow Airport","iataCode":"LHR"}`
+- `{"name":"Hurgada International Airport","iataCode":"HRG"}`
 
 ### `airline.airport.iataCode`
 
 Generate an airport IATA code.
 
 - Canonical: `awd.domain.airline.airport.iataCode`
+- Docs: [https://anywaydata.com/docs/test-data/domain/airline](https://anywaydata.com/docs/test-data/domain/airline)
 - Faker docs: [https://fakerjs.dev/api/airline](https://fakerjs.dev/api/airline)
 
 No parameters.
@@ -170,17 +179,18 @@ No parameters.
 Examples:
 
 ```txt
-airline.airport.iataCode()
+airline.airport.iataCode
 ```
 
 Example return values:
-- `LHR`
+- `HRG`
 
 ### `airline.airport.name`
 
 Generate an airport name.
 
 - Canonical: `awd.domain.airline.airport.name`
+- Docs: [https://anywaydata.com/docs/test-data/domain/airline](https://anywaydata.com/docs/test-data/domain/airline)
 - Faker docs: [https://fakerjs.dev/api/airline](https://fakerjs.dev/api/airline)
 
 No parameters.
@@ -188,17 +198,18 @@ No parameters.
 Examples:
 
 ```txt
-airline.airport.name()
+airline.airport.name
 ```
 
 Example return values:
-- `London Heathrow Airport`
+- `Hurgada International Airport`
 
 ### `airline.flightNumber`
 
 Returns a random flight number. Flight numbers are always 1 to 4 digits long and may include leading zeros.
 
 - Canonical: `awd.domain.airline.flightNumber`
+- Docs: [https://anywaydata.com/docs/test-data/domain/airline](https://anywaydata.com/docs/test-data/domain/airline)
 - Faker docs: [https://fakerjs.dev/api/airline](https://fakerjs.dev/api/airline)
 
 No parameters.
@@ -206,17 +217,18 @@ No parameters.
 Examples:
 
 ```txt
-airline.flightNumber()
+airline.flightNumber
 ```
 
 Example return values:
-- `1`
+- `70`
 
 ### `airline.recordLocator`
 
 Generates a random record locator. Record locators are 6-character alphanumeric booking references.
 
 - Canonical: `awd.domain.airline.recordLocator`
+- Docs: [https://anywaydata.com/docs/test-data/domain/airline](https://anywaydata.com/docs/test-data/domain/airline)
 - Faker docs: [https://fakerjs.dev/api/airline](https://fakerjs.dev/api/airline)
 
 No parameters.
@@ -224,22 +236,23 @@ No parameters.
 Examples:
 
 ```txt
-airline.recordLocator()
+airline.recordLocator
 ```
 
 Example return values:
-- `TCSJCN`
+- `KTAGDC`
 
 ### `airline.seat`
 
 Generates a random seat.
 
 - Canonical: `awd.domain.airline.seat`
+- Docs: [https://anywaydata.com/docs/test-data/domain/airline](https://anywaydata.com/docs/test-data/domain/airline)
 - Faker docs: [https://fakerjs.dev/api/airline](https://fakerjs.dev/api/airline)
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `aircraftType` | `string` | no | The aircraft type. Can be one of narrowbody, regional, widebody. |
+| `aircraftType` | `narrowbody\|regional\|widebody` | no | The aircraft type. Can be one of narrowbody, regional, widebody. |
 
 Examples:
 
@@ -251,5 +264,11 @@ airline.seat
 airline.seat(aircraftType="widebody")
 ```
 
+```txt
+airline.seat()
+```
+
 Example return values:
-- `17F`
+- `15E`
+- `26H`
+- `15E`

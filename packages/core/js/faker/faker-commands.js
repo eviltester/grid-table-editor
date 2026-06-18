@@ -150,7 +150,6 @@ const KNOWN_FAKER_COMMANDS = [
   'image.avatarGitHub',
   'image.personPortrait',
   'image.url',
-  'image.urlLoremFlickr',
   'image.urlPicsumPhotos',
   'image.dataUri',
   'internet.email',

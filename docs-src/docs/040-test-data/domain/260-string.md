@@ -19,12 +19,13 @@ The `string` domain maps domain keywords to underlying faker implementations.
 Generating a string consisting of letters in the English alphabet.
 
 - Canonical: `awd.domain.string.alpha`
+- Docs: [https://anywaydata.com/docs/test-data/domain/string](https://anywaydata.com/docs/test-data/domain/string)
 - Faker docs: [https://fakerjs.dev/api/string](https://fakerjs.dev/api/string)
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
 | `length` | `number` | no | Desired length of the generated value. |
-| `casing` | `string` | no | The casing of the characters. |
+| `casing` | `upper\|lower\|mixed` | no | The casing of the characters. |
 | `exclude` | `array` | no | An array with characters which should be excluded in the generated string. |
 
 Examples:
@@ -34,23 +35,45 @@ string.alpha()
 ```
 
 ```txt
-string.alpha(length=1, casing="lower", exclude=["item"])
+string.alpha(length=5)
+```
+
+```txt
+string.alpha(casing="upper")
+```
+
+```txt
+string.alpha(length=5, casing="upper")
+```
+
+```txt
+string.alpha(exclude=["A","B","C"])
+```
+
+```txt
+string.alpha(length=5, casing="upper", exclude=["A","B","C"])
 ```
 
 Example return values:
-- `R`
+- `v`
+- `vLaph`
+- `K`
+- `KSAHD`
+- `u`
+- `MTDJG`
 
 ### `string.alphanumeric`
 
 Generating a string consisting of alpha characters and digits.
 
 - Canonical: `awd.domain.string.alphanumeric`
+- Docs: [https://anywaydata.com/docs/test-data/domain/string](https://anywaydata.com/docs/test-data/domain/string)
 - Faker docs: [https://fakerjs.dev/api/string](https://fakerjs.dev/api/string)
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
 | `length` | `number` | no | Desired length of the generated value. |
-| `casing` | `string` | no | The casing of the characters. |
+| `casing` | `upper\|lower\|mixed` | no | The casing of the characters. |
 | `exclude` | `array` | no | An array of characters and digits which should be excluded in the generated string. |
 
 Examples:
@@ -60,17 +83,29 @@ string.alphanumeric()
 ```
 
 ```txt
-string.alphanumeric(length=1, casing="lower", exclude=["item"])
+string.alphanumeric(length=5)
+```
+
+```txt
+string.alphanumeric(casing="upper")
+```
+
+```txt
+string.alphanumeric(exclude=["A","B","C"])
 ```
 
 Example return values:
-- `s`
+- `p`
+- `pI0i9`
+- `F`
+- `o`
 
 ### `string.binary`
 
 Returns a binary string.
 
 - Canonical: `awd.domain.string.binary`
+- Docs: [https://anywaydata.com/docs/test-data/domain/string](https://anywaydata.com/docs/test-data/domain/string)
 - Faker docs: [https://fakerjs.dev/api/string](https://fakerjs.dev/api/string)
 
 | Arg | Type | Required | Description |
@@ -85,11 +120,17 @@ string.binary()
 ```
 
 ```txt
-string.binary(length=1, prefix="#")
+string.binary(length=5)
+```
+
+```txt
+string.binary(prefix="PRE-")
 ```
 
 Example return values:
 - `0b0`
+- `0b01000`
+- `PRE-0`
 
 ### `string.counterString`
 
@@ -111,7 +152,7 @@ string.counterString()
 ```
 
 ```txt
-string.counterString(15)
+string.counterString(min=15)
 ```
 
 ```txt
@@ -122,15 +163,33 @@ string.counterString(min=5, max=12)
 string.counterString(min=12, max=12, delimiter="#")
 ```
 
+```txt
+string.counterString(max=10, min=1)
+```
+
+```txt
+string.counterString(max=12)
+```
+
+```txt
+string.counterString(delimiter="#")
+```
+
 Example return values:
+- `*3*5*7*10*13*`
 - `*3*5*7*9*12*15*`
+- `*3*5*7*9*`
 - `#3#5#7#9#12#`
+- `2*4*6*`
+- `*3*5*7*`
+- `#3#5#7#10#13#`
 
 ### `string.fromCharacters`
 
 Generates a string from the given characters.
 
 - Canonical: `awd.domain.string.fromCharacters`
+- Docs: [https://anywaydata.com/docs/test-data/domain/string](https://anywaydata.com/docs/test-data/domain/string)
 - Faker docs: [https://fakerjs.dev/api/string](https://fakerjs.dev/api/string)
 
 | Arg | Type | Required | Description |
@@ -141,27 +200,33 @@ Generates a string from the given characters.
 Examples:
 
 ```txt
-string.fromCharacters("ABC123", 6)
+string.fromCharacters(characters="ABC123", length=6)
 ```
 
 ```txt
 string.fromCharacters(characters=["A", "B", "C"], length=4)
 ```
 
+```txt
+string.fromCharacters(characters="ABC123", length=4)
+```
+
 Example return values:
-- `A1B2`
-- `CB2A`
+- `C2ABAA`
+- `BCAA`
+- `C2AB`
 
 ### `string.hexadecimal`
 
 Returns a hexadecimal string.
 
 - Canonical: `awd.domain.string.hexadecimal`
+- Docs: [https://anywaydata.com/docs/test-data/domain/string](https://anywaydata.com/docs/test-data/domain/string)
 - Faker docs: [https://fakerjs.dev/api/string](https://fakerjs.dev/api/string)
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `casing` | `string` | no | Casing of the generated number. |
+| `casing` | `upper\|lower\|mixed` | no | Casing of the generated number. |
 | `length` | `number` | no | The length of the string (excluding the prefix) to generate either as a fixed length or as a length range. |
 | `prefix` | `string` | no | Prefix for the generated number. |
 
@@ -172,17 +237,29 @@ string.hexadecimal()
 ```
 
 ```txt
-string.hexadecimal(casing="lower", length=1, prefix="#")
+string.hexadecimal(casing="upper")
+```
+
+```txt
+string.hexadecimal(length=5)
+```
+
+```txt
+string.hexadecimal(prefix="PRE-")
 ```
 
 Example return values:
-- `0x1`
+- `0x9`
+- `0x9`
+- `0x9f063`
+- `PRE-9`
 
 ### `string.nanoid`
 
 Generates a Nano ID.
 
 - Canonical: `awd.domain.string.nanoid`
+- Docs: [https://anywaydata.com/docs/test-data/domain/string](https://anywaydata.com/docs/test-data/domain/string)
 - Faker docs: [https://fakerjs.dev/api/string](https://fakerjs.dev/api/string)
 
 | Arg | Type | Required | Description |
@@ -196,17 +273,19 @@ string.nanoid()
 ```
 
 ```txt
-string.nanoid(length=1)
+string.nanoid(length=5)
 ```
 
 Example return values:
-- `KLm49ferlh-eUmJpZdSIO`
+- `Ii5lxGSFycYGT2SqxjPK-`
+- `Ii5lx`
 
 ### `string.numeric`
 
 Generates a given length string of digits.
 
 - Canonical: `awd.domain.string.numeric`
+- Docs: [https://anywaydata.com/docs/test-data/domain/string](https://anywaydata.com/docs/test-data/domain/string)
 - Faker docs: [https://fakerjs.dev/api/string](https://fakerjs.dev/api/string)
 
 | Arg | Type | Required | Description |
@@ -222,17 +301,29 @@ string.numeric()
 ```
 
 ```txt
-string.numeric(length=1, allowLeadingZeros=true, exclude=["item"])
+string.numeric(length=5)
+```
+
+```txt
+string.numeric(allowLeadingZeros=true)
+```
+
+```txt
+string.numeric(exclude=["A","B","C"])
 ```
 
 Example return values:
-- `7`
+- `4`
+- `47031`
+- `4`
+- `4`
 
 ### `string.octal`
 
 Returns an octal string.
 
 - Canonical: `awd.domain.string.octal`
+- Docs: [https://anywaydata.com/docs/test-data/domain/string](https://anywaydata.com/docs/test-data/domain/string)
 - Faker docs: [https://fakerjs.dev/api/string](https://fakerjs.dev/api/string)
 
 | Arg | Type | Required | Description |
@@ -247,17 +338,24 @@ string.octal()
 ```
 
 ```txt
-string.octal(length=1, prefix="#")
+string.octal(length=5)
+```
+
+```txt
+string.octal(prefix="PRE-")
 ```
 
 Example return values:
-- `0o6`
+- `0o3`
+- `0o35021`
+- `PRE-3`
 
 ### `string.sample`
 
 Returns a string containing UTF-16 chars between 33 and 125 (`!` to `&#125;`).
 
 - Canonical: `awd.domain.string.sample`
+- Docs: [https://anywaydata.com/docs/test-data/domain/string](https://anywaydata.com/docs/test-data/domain/string)
 - Faker docs: [https://fakerjs.dev/api/string](https://fakerjs.dev/api/string)
 
 | Arg | Type | Required | Description |
@@ -271,17 +369,19 @@ string.sample()
 ```
 
 ```txt
-string.sample(length=1)
+string.sample(length=5)
 ```
 
 Example return values:
-- `\Fw;0e:G.H`
+- `Gc!=.)2AES`
+- `Gc!=.`
 
 ### `string.symbol`
 
 Returns a string containing only special characters from the following list:
 
 - Canonical: `awd.domain.string.symbol`
+- Docs: [https://anywaydata.com/docs/test-data/domain/string](https://anywaydata.com/docs/test-data/domain/string)
 - Faker docs: [https://fakerjs.dev/api/string](https://fakerjs.dev/api/string)
 
 | Arg | Type | Required | Description |
@@ -295,17 +395,19 @@ string.symbol()
 ```
 
 ```txt
-string.symbol(length=1)
+string.symbol(length=5)
 ```
 
 Example return values:
 - `.`
+- `.\!*%`
 
 ### `string.ulid`
 
 Returns a ULID (Universally Unique Lexicographically Sortable Identifier).
 
 - Canonical: `awd.domain.string.ulid`
+- Docs: [https://anywaydata.com/docs/test-data/domain/string](https://anywaydata.com/docs/test-data/domain/string)
 - Faker docs: [https://fakerjs.dev/api/string](https://fakerjs.dev/api/string)
 
 | Arg | Type | Required | Description |
@@ -319,23 +421,25 @@ string.ulid()
 ```
 
 ```txt
-string.ulid(refDate=1)
+string.ulid(refDate=1718755200000)
 ```
 
 Example return values:
-- `01KQADM2A0728G4D2HKCPWKS6N`
+- `01KVDQ3AJ0DQ09425BCHDN6W0N`
+- `01J0PWP300DQ09425BCHDN6W0N`
 
 ### `string.uuid`
 
 Returns a UUID (Universally Unique Identifier).
 
 - Canonical: `awd.domain.string.uuid`
+- Docs: [https://anywaydata.com/docs/test-data/domain/string](https://anywaydata.com/docs/test-data/domain/string)
 - Faker docs: [https://fakerjs.dev/api/string](https://fakerjs.dev/api/string)
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `version` | `4\|7` | no | The specific UUID version to use. If `refDate` is supplied and `version` is omitted, version `7` is used automatically. |
-| `refDate` | `string\|number\|date` | no | The timestamp to encode into the UUID. This is only valid for UUID v7. If `refDate` is supplied and `version` is omitted, version `7` is used automatically. Providing `refDate` with version `4` is invalid. |
+| `version` | `4\|7` | no | The specific UUID version to use. If refDate is supplied and version is omitted, version 7 is used automatically. |
+| `refDate` | `string\|number\|date` | no | The timestamp to encode into the UUID. This is only valid for UUID v7. If refDate is supplied and version is omitted, version 7 is used automatically. Providing refDate with version 4 is invalid. |
 
 Examples:
 
@@ -344,8 +448,14 @@ string.uuid()
 ```
 
 ```txt
-string.uuid(refDate=1)
+string.uuid(version=7)
+```
+
+```txt
+string.uuid(refDate="2026-06-18T00:00:00.000Z")
 ```
 
 Example return values:
-- `0628ae51-7b6c-4d33-9f24-dae19fb245df`
+- `6b042125-686a-43e0-8a68-23cf5bee102e`
+- `019edb71-aa40-76b0-8421-25686a3e0a68`
+- `019ed807-0800-76b0-8421-25686a3e0a68`

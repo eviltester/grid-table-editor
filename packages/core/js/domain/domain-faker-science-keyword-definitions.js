@@ -1,3 +1,9 @@
+import {
+  validateIntegerValue,
+  validateObjectValue,
+  validateStringValue,
+} from '../command-help/command-help-validators.js';
+
 const DOMAIN_FAKER_SCIENCE_KEYWORD_DEFINITIONS = [
   {
     keyword: 'science.chemicalElement',
@@ -7,9 +13,21 @@ const DOMAIN_FAKER_SCIENCE_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Generate a value using faker science.chemicalElement.',
-      docsUrl: 'https://fakerjs.dev/api/science',
-      example: '{"name":"Oxygen","symbol":"O","atomicNumber":8}',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/science',
+      fakerDocsUrl: 'https://fakerjs.dev/api/science',
+      validator: validateObjectValue,
       returnType: 'object',
+      usageExamples: [
+        {
+          functionCall: 'science.chemicalElement',
+          sampleReturnValue: {
+            symbol: 'Sn',
+            name: 'Tin',
+            atomicNumber: 50,
+          },
+          description: 'Shows the default science.chemicalElement call.',
+        },
+      ],
       args: [],
     },
   },
@@ -22,9 +40,17 @@ const DOMAIN_FAKER_SCIENCE_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Generate a chemical element atomic number.',
-      docsUrl: 'https://fakerjs.dev/api/science',
-      example: '8',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/science',
+      fakerDocsUrl: 'https://fakerjs.dev/api/science',
+      validator: validateIntegerValue,
       returnType: 'integer',
+      usageExamples: [
+        {
+          functionCall: 'science.chemicalElement.atomicNumber',
+          sampleReturnValue: 50,
+          description: 'Shows the default science.chemicalElement.atomicNumber call.',
+        },
+      ],
       args: [],
     },
   },
@@ -37,9 +63,17 @@ const DOMAIN_FAKER_SCIENCE_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Generate a chemical element name.',
-      docsUrl: 'https://fakerjs.dev/api/science',
-      example: 'Oxygen',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/science',
+      fakerDocsUrl: 'https://fakerjs.dev/api/science',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'science.chemicalElement.name',
+          sampleReturnValue: 'Tin',
+          description: 'Shows the default science.chemicalElement.name call.',
+        },
+      ],
       args: [],
     },
   },
@@ -52,9 +86,17 @@ const DOMAIN_FAKER_SCIENCE_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Generate a chemical element symbol.',
-      docsUrl: 'https://fakerjs.dev/api/science',
-      example: 'O',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/science',
+      fakerDocsUrl: 'https://fakerjs.dev/api/science',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'science.chemicalElement.symbol',
+          sampleReturnValue: 'Sn',
+          description: 'Shows the default science.chemicalElement.symbol call.',
+        },
+      ],
       args: [],
     },
   },
@@ -66,9 +108,20 @@ const DOMAIN_FAKER_SCIENCE_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random scientific unit.',
-      docsUrl: 'https://fakerjs.dev/api/science',
-      example: '{"name":"farad","symbol":"F"}',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/science',
+      fakerDocsUrl: 'https://fakerjs.dev/api/science',
+      validator: validateObjectValue,
       returnType: 'object',
+      usageExamples: [
+        {
+          functionCall: 'science.unit',
+          sampleReturnValue: {
+            name: 'watt',
+            symbol: 'W',
+          },
+          description: 'Shows the default science.unit call.',
+        },
+      ],
       args: [],
     },
   },

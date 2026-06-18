@@ -1,3 +1,5 @@
+import { validateIsbnValue, validateStringValue, validateUpcValue } from '../command-help/command-help-validators.js';
+
 const DOMAIN_FAKER_COMMERCE_KEYWORD_DEFINITIONS = [
   {
     keyword: 'commerce.department',
@@ -7,9 +9,17 @@ const DOMAIN_FAKER_COMMERCE_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a department inside a shop.',
-      docsUrl: 'https://fakerjs.dev/api/commerce',
-      example: 'Tools',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/commerce',
+      fakerDocsUrl: 'https://fakerjs.dev/api/commerce',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'commerce.department',
+          sampleReturnValue: 'Grocery',
+          description: 'Shows the default commerce.department call.',
+        },
+      ],
       args: [],
     },
   },
@@ -22,9 +32,27 @@ const DOMAIN_FAKER_COMMERCE_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random ISBN identifier.',
-      docsUrl: 'https://fakerjs.dev/api/commerce',
-      example: '978-1-996134-54-2',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/commerce',
+      fakerDocsUrl: 'https://fakerjs.dev/api/commerce',
+      validator: validateIsbnValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'commerce.isbn()',
+          sampleReturnValue: '978-0-7031-0133-4',
+          description: 'Shows commerce.isbn when optional params are omitted.',
+        },
+        {
+          functionCall: 'commerce.isbn(separator="-")',
+          sampleReturnValue: '978-0-7031-0133-4',
+          description: 'Shows commerce.isbn using separator.',
+        },
+        {
+          functionCall: 'commerce.isbn(variant=10)',
+          sampleReturnValue: '0-7031-0133-1',
+          description: 'Shows commerce.isbn using variant.',
+        },
+      ],
       args: [
         {
           name: 'separator',
@@ -34,9 +62,9 @@ const DOMAIN_FAKER_COMMERCE_KEYWORD_DEFINITIONS = [
         },
         {
           name: 'variant',
-          type: 'string',
+          type: '10|13',
           required: false,
-          description: 'ISBN length variant: use "10" for ISBN-10 or "13" for ISBN-13.',
+          description: 'ISBN length variant: use 10 for ISBN-10 or 13 for ISBN-13.',
         },
       ],
     },
@@ -50,10 +78,42 @@ const DOMAIN_FAKER_COMMERCE_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Generates a price between min and max (inclusive).',
-      docsUrl: 'https://fakerjs.dev/api/commerce',
-      example: '797.39',
-      examples: ['commerce.price(dec=2, max=10, min=1, symbol="$")'],
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/commerce',
+      fakerDocsUrl: 'https://fakerjs.dev/api/commerce',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'commerce.price(dec=2, max=10, min=1, symbol="$")',
+          sampleReturnValue: '$4.79',
+          description: 'Shows commerce.price in use.',
+        },
+        {
+          functionCall: 'commerce.price()',
+          sampleReturnValue: '417.69',
+          description: 'Shows commerce.price when optional params are omitted.',
+        },
+        {
+          functionCall: 'commerce.price(dec=2)',
+          sampleReturnValue: '417.69',
+          description: 'Shows commerce.price using dec.',
+        },
+        {
+          functionCall: 'commerce.price(max=100)',
+          sampleReturnValue: '42.29',
+          description: 'Shows commerce.price using max.',
+        },
+        {
+          functionCall: 'commerce.price(max=10, min=1)',
+          sampleReturnValue: '4.79',
+          description: 'Shows commerce.price using min.',
+        },
+        {
+          functionCall: 'commerce.price(symbol="$")',
+          sampleReturnValue: '$417.69',
+          description: 'Shows commerce.price using symbol.',
+        },
+      ],
       args: [
         {
           name: 'dec',
@@ -94,9 +154,17 @@ const DOMAIN_FAKER_COMMERCE_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a short product name.',
-      docsUrl: 'https://fakerjs.dev/api/commerce',
-      example: 'Bike',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/commerce',
+      fakerDocsUrl: 'https://fakerjs.dev/api/commerce',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'commerce.product',
+          sampleReturnValue: 'Gloves',
+          description: 'Shows the default commerce.product call.',
+        },
+      ],
       args: [],
     },
   },
@@ -108,9 +176,17 @@ const DOMAIN_FAKER_COMMERCE_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns an adjective describing a product.',
-      docsUrl: 'https://fakerjs.dev/api/commerce',
-      example: 'Luxurious',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/commerce',
+      fakerDocsUrl: 'https://fakerjs.dev/api/commerce',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'commerce.productAdjective',
+          sampleReturnValue: 'Handmade',
+          description: 'Shows the default commerce.productAdjective call.',
+        },
+      ],
       args: [],
     },
   },
@@ -122,9 +198,17 @@ const DOMAIN_FAKER_COMMERCE_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a product description.',
-      docsUrl: 'https://fakerjs.dev/api/commerce',
-      example: 'The green Hat combines Colombia aesthetics with Scandium-based durability',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/commerce',
+      fakerDocsUrl: 'https://fakerjs.dev/api/commerce',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'commerce.productDescription',
+          sampleReturnValue: 'New Sausages model with 1 GB RAM, 303 GB storage, and bruised features',
+          description: 'Shows the default commerce.productDescription call.',
+        },
+      ],
       args: [],
     },
   },
@@ -136,9 +220,17 @@ const DOMAIN_FAKER_COMMERCE_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a material of a product.',
-      docsUrl: 'https://fakerjs.dev/api/commerce',
-      example: 'Steel',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/commerce',
+      fakerDocsUrl: 'https://fakerjs.dev/api/commerce',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'commerce.productMaterial',
+          sampleReturnValue: 'Gold',
+          description: 'Shows the default commerce.productMaterial call.',
+        },
+      ],
       args: [],
     },
   },
@@ -150,9 +242,17 @@ const DOMAIN_FAKER_COMMERCE_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Generates a random descriptive product name.',
-      docsUrl: 'https://fakerjs.dev/api/commerce',
-      example: 'Soft Bronze Towels',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/commerce',
+      fakerDocsUrl: 'https://fakerjs.dev/api/commerce',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'commerce.productName',
+          sampleReturnValue: 'Handmade Plastic Bacon',
+          description: 'Shows the default commerce.productName call.',
+        },
+      ],
       args: [],
     },
   },
@@ -165,9 +265,22 @@ const DOMAIN_FAKER_COMMERCE_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a valid UPC-A (12 digits).',
-      docsUrl: 'https://fakerjs.dev/api/commerce',
-      example: '036000291452',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/commerce',
+      fakerDocsUrl: 'https://fakerjs.dev/api/commerce',
+      validator: validateUpcValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'commerce.upc()',
+          sampleReturnValue: '470310133543',
+          description: 'Shows commerce.upc when optional params are omitted.',
+        },
+        {
+          functionCall: 'commerce.upc(prefix="01234")',
+          sampleReturnValue: '012344703103',
+          description: 'Shows commerce.upc using prefix.',
+        },
+      ],
       args: [
         {
           name: 'prefix',

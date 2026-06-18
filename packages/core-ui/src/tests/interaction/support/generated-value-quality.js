@@ -16,6 +16,18 @@ const ERROR_PATTERNS = [
   /\bException\b/i,
 ];
 const STANDALONE_INVALID_VALUE_PATTERNS = [/(^|[^\w])undefined([^\w]|$)/, /(^|[^\w])NaN([^\w]|$)/];
+const PRIMITIVE_TYPE_TOKENS = new Set([
+  'string',
+  'number',
+  'integer',
+  'boolean',
+  'array',
+  'object',
+  'date',
+  'regexp',
+  'unknown',
+  'bigint',
+]);
 
 function toSearchableText(value) {
   if (typeof value === 'string') return value;
@@ -91,6 +103,41 @@ function getAllowedTypesForRow(row) {
   }
 }
 
+function parseLiteralTypeToken(token) {
+  const trimmed = String(token || '').trim();
+  if (!trimmed) {
+    return undefined;
+  }
+  if ((trimmed.startsWith('"') && trimmed.endsWith('"')) || (trimmed.startsWith("'") && trimmed.endsWith("'"))) {
+    return trimmed.slice(1, -1);
+  }
+  if (/^[+-]?\d+(\.\d+)?$/.test(trimmed)) {
+    return Number(trimmed);
+  }
+  return trimmed;
+}
+
+function getLiteralUnionValues(allowedTypes) {
+  if (!Array.isArray(allowedTypes) || allowedTypes.length === 0) {
+    return [];
+  }
+
+  const literalValues = [];
+  for (const typeToken of allowedTypes) {
+    const trimmed = String(typeToken || '').trim();
+    if (!trimmed || PRIMITIVE_TYPE_TOKENS.has(trimmed)) {
+      return [];
+    }
+    const literalValue = parseLiteralTypeToken(trimmed);
+    if (typeof literalValue === 'undefined') {
+      return [];
+    }
+    literalValues.push(literalValue);
+  }
+
+  return literalValues;
+}
+
 function hasPermissiveAllowedType(allowedTypes) {
   return allowedTypes.includes('string') || allowedTypes.includes('unknown');
 }
@@ -150,6 +197,12 @@ function assertRowValueMatchesScenario(row, value, contextLabel) {
   }
 
   const allowedTypes = getAllowedTypesForRow(row);
+  const literalUnionValues = getLiteralUnionValues(allowedTypes);
+  if (literalUnionValues.length > 0) {
+    expect(literalUnionValues.map((item) => String(item))).toContain(String(value));
+    return;
+  }
+
   const inferred = inferTypeAndConfidence(value);
   if (inferred.confidence === 'high' && !hasPermissiveAllowedType(allowedTypes)) {
     expect(allowedTypes).toContain(inferred.type);

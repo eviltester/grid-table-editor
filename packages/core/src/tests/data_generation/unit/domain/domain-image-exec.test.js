@@ -33,12 +33,6 @@ describe('image domain keyword execution', () => {
     expectMeaningfulString(result);
   });
 
-  test('executes image.urlLoremFlickr', () => {
-    const result = executeDomainKeyword('image.urlLoremFlickr', { faker, args: [] });
-    console.log('image.urlLoremFlickr', result);
-    expectMeaningfulString(result);
-  });
-
   test('executes image.urlPicsumPhotos', () => {
     const result = executeDomainKeyword('image.urlPicsumPhotos', { faker, args: [] });
     console.log('image.urlPicsumPhotos', result);

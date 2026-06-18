@@ -1052,7 +1052,7 @@ describe('generator page runtime factories', () => {
     expect(rowElem.querySelector('[data-field="command"]')).not.toBeNull();
     expect(rowElem.querySelector('[data-field="faker-doc-link"]').hidden).toBe(false);
     expect(rowElem.querySelector('[data-field="faker-doc-link"]').getAttribute('href')).toBe(
-      'https://fakerjs.dev/api/word'
+      'https://anywaydata.com/docs/test-data/domain/word'
     );
     expect(rowElem.querySelector('[data-field="params"]')).not.toBeNull();
     expect(rowElem.querySelector('[data-field="value"]')).toBeNull();
@@ -1241,7 +1241,7 @@ describe('generator page runtime factories', () => {
 
     const helpLink = document.querySelector('[data-field="faker-doc-link"]');
     expect(helpLink.hidden).toBe(false);
-    expect(helpLink.getAttribute('href')).toBe('https://fakerjs.dev/api/number');
+    expect(helpLink.getAttribute('href')).toBe('https://anywaydata.com/docs/test-data/domain/number');
     expect(helpLink.getAttribute('aria-label')).toBe('Faker command help: number.int');
     expect(helpLink.getAttribute('data-help-text')).toContain('<strong>faker.number.int</strong>');
     expect(helpLink.getAttribute('data-help-text')).toContain('<strong>Call:</strong>');

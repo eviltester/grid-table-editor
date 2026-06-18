@@ -19,6 +19,7 @@ The `datatype` domain maps domain keywords to underlying faker implementations.
 Returns the boolean value true or false.
 
 - Canonical: `awd.domain.datatype.boolean`
+- Docs: [https://anywaydata.com/docs/test-data/domain/datatype](https://anywaydata.com/docs/test-data/domain/datatype)
 - Faker docs: [https://fakerjs.dev/api/datatype](https://fakerjs.dev/api/datatype)
 
 | Arg | Type | Required | Description |
@@ -32,8 +33,9 @@ datatype.boolean()
 ```
 
 ```txt
-datatype.boolean(probability=1)
+datatype.boolean(probability=0.5)
 ```
 
 Example return values:
+- `true`
 - `true`

@@ -1,3 +1,5 @@
+import { validateStringValue, validateVinValue, validateVrmValue } from '../command-help/command-help-validators.js';
+
 const DOMAIN_FAKER_VEHICLE_KEYWORD_DEFINITIONS = [
   {
     keyword: 'vehicle.bicycle',
@@ -7,9 +9,17 @@ const DOMAIN_FAKER_VEHICLE_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a type of bicycle.',
-      docsUrl: 'https://fakerjs.dev/api/vehicle',
-      example: 'Touring Bicycle',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/vehicle',
+      fakerDocsUrl: 'https://fakerjs.dev/api/vehicle',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'vehicle.bicycle',
+          sampleReturnValue: 'Flat-Foot Comfort Bicycle',
+          description: 'Shows the default vehicle.bicycle call.',
+        },
+      ],
       args: [],
     },
   },
@@ -21,9 +31,17 @@ const DOMAIN_FAKER_VEHICLE_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a vehicle color.',
-      docsUrl: 'https://fakerjs.dev/api/vehicle',
-      example: 'sky blue',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/vehicle',
+      fakerDocsUrl: 'https://fakerjs.dev/api/vehicle',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'vehicle.color',
+          sampleReturnValue: 'magenta',
+          description: 'Shows the default vehicle.color call.',
+        },
+      ],
       args: [],
     },
   },
@@ -35,9 +53,17 @@ const DOMAIN_FAKER_VEHICLE_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a fuel type.',
-      docsUrl: 'https://fakerjs.dev/api/vehicle',
-      example: 'Gasoline',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/vehicle',
+      fakerDocsUrl: 'https://fakerjs.dev/api/vehicle',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'vehicle.fuel',
+          sampleReturnValue: 'Electric',
+          description: 'Shows the default vehicle.fuel call.',
+        },
+      ],
       args: [],
     },
   },
@@ -49,9 +75,17 @@ const DOMAIN_FAKER_VEHICLE_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a manufacturer name.',
-      docsUrl: 'https://fakerjs.dev/api/vehicle',
-      example: 'Hyundai',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/vehicle',
+      fakerDocsUrl: 'https://fakerjs.dev/api/vehicle',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'vehicle.manufacturer',
+          sampleReturnValue: 'Lamborghini',
+          description: 'Shows the default vehicle.manufacturer call.',
+        },
+      ],
       args: [],
     },
   },
@@ -63,9 +97,17 @@ const DOMAIN_FAKER_VEHICLE_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a vehicle model.',
-      docsUrl: 'https://fakerjs.dev/api/vehicle',
-      example: 'Aventador',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/vehicle',
+      fakerDocsUrl: 'https://fakerjs.dev/api/vehicle',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'vehicle.model',
+          sampleReturnValue: 'Escalade',
+          description: 'Shows the default vehicle.model call.',
+        },
+      ],
       args: [],
     },
   },
@@ -77,9 +119,17 @@ const DOMAIN_FAKER_VEHICLE_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a vehicle type.',
-      docsUrl: 'https://fakerjs.dev/api/vehicle',
-      example: 'Hatchback',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/vehicle',
+      fakerDocsUrl: 'https://fakerjs.dev/api/vehicle',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'vehicle.type',
+          sampleReturnValue: 'Extended Cab Pickup',
+          description: 'Shows the default vehicle.type call.',
+        },
+      ],
       args: [],
     },
   },
@@ -91,9 +141,17 @@ const DOMAIN_FAKER_VEHICLE_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random vehicle.',
-      docsUrl: 'https://fakerjs.dev/api/vehicle',
-      example: 'Ford CTS',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/vehicle',
+      fakerDocsUrl: 'https://fakerjs.dev/api/vehicle',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'vehicle.vehicle',
+          sampleReturnValue: 'Lamborghini Model X',
+          description: 'Shows the default vehicle.vehicle call.',
+        },
+      ],
       args: [],
     },
   },
@@ -105,9 +163,17 @@ const DOMAIN_FAKER_VEHICLE_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a vehicle identification number (VIN).',
-      docsUrl: 'https://fakerjs.dev/api/vehicle',
-      example: '7SJ9N0LM3LM265056',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/vehicle',
+      fakerDocsUrl: 'https://fakerjs.dev/api/vehicle',
+      validator: validateVinValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'vehicle.vin',
+          sampleReturnValue: 'DP09436BDHKN28064',
+          description: 'Shows the default vehicle.vin call.',
+        },
+      ],
       args: [],
     },
   },
@@ -119,9 +185,17 @@ const DOMAIN_FAKER_VEHICLE_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a vehicle registration number (Vehicle Registration Mark - VRM)',
-      docsUrl: 'https://fakerjs.dev/api/vehicle',
-      example: 'OD11RTZ',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/vehicle',
+      fakerDocsUrl: 'https://fakerjs.dev/api/vehicle',
+      validator: validateVrmValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'vehicle.vrm',
+          sampleReturnValue: 'KS03DCE',
+          description: 'Shows the default vehicle.vrm call.',
+        },
+      ],
       args: [],
     },
   },

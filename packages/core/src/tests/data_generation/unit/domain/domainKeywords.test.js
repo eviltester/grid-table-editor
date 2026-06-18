@@ -40,7 +40,16 @@ describe('domain keyword catalog', () => {
       expect(entry.help && typeof entry.help).toBe('object');
       expect(typeof entry.help.summary).toBe('string');
       expect(typeof entry.help.docsUrl).toBe('string');
-      expect(typeof entry.help.example).toBe('string');
+      expect(typeof entry.help.fakerDocsUrl).toBe('string');
+      expect(Array.isArray(entry.help.usageExamples)).toBe(true);
+      expect(entry.help.usageExamples.length).toBeGreaterThan(0);
+      expect(entry.help.usageExamples[0]).toEqual(
+        expect.objectContaining({
+          functionCall: expect.any(String),
+          description: expect.any(String),
+        })
+      );
+      expect(entry.help.validator).toBeDefined();
       expect(typeof entry.help.returnType).toBe('string');
       expect(entry.help.returnType.length).toBeGreaterThan(0);
       expect(Array.isArray(entry.help.args)).toBe(true);
@@ -78,14 +87,17 @@ describe('domain keyword catalog', () => {
       if (
         fakerHelp.summary !== domainHelp.summary ||
         fakerHelp.docsUrl !== domainHelp.docsUrl ||
-        fakerHelp.example !== domainHelp.example ||
+        fakerHelp.fakerDocsUrl !== domainHelp.fakerDocsUrl ||
         fakerHelp.returnType !== domainHelp.returnType ||
-        JSON.stringify(fakerParamNames) !== JSON.stringify(domainArgNames)
+        JSON.stringify(fakerParamNames) !== JSON.stringify(domainArgNames) ||
+        serializeExampleValue(fakerHelp.usageExamples || []) !== serializeExampleValue(domainHelp.usageExamples || [])
       ) {
         mismatches.push({
           keyword: entry.keyword,
           domainArgNames,
           fakerParamNames,
+          domainUsageExamples: domainHelp.usageExamples,
+          fakerUsageExamples: fakerHelp.usageExamples,
         });
       }
     });
@@ -102,12 +114,25 @@ describe('domain keyword catalog', () => {
     });
   });
 
-  test('standalone domain definitions include at least one help example', () => {
-    const missingExamples = DOMAIN_KEYWORD_DEFINITIONS.filter(
-      (definition) => typeof definition?.help?.example !== 'string' || definition.help.example.trim().length === 0
+  test('standalone domain definitions normalize to at least one structured usage example', () => {
+    const missingExamples = DOMAIN_KEYWORDS.filter(
+      (definition) => !Array.isArray(definition?.help?.usageExamples) || definition.help.usageExamples.length === 0
     ).map((definition) => definition.keyword);
 
     expect(missingExamples).toEqual([]);
+  });
+
+  test('standalone domain definitions expose explicit sample return values for every usage example', () => {
+    const missingSampleReturnValues = DOMAIN_KEYWORD_DEFINITIONS.flatMap((definition) => {
+      const usageExamples = Array.isArray(definition?.help?.usageExamples) ? definition.help.usageExamples : [];
+      return usageExamples
+        .map((usageExample, index) =>
+          typeof usageExample?.sampleReturnValue === 'undefined' ? `${definition.keyword} example ${index + 1}` : null
+        )
+        .filter(Boolean);
+    });
+
+    expect(missingSampleReturnValues).toEqual([]);
   });
 
   test('standalone domain definitions do not contain legacy placeholder argument docs', () => {
@@ -130,7 +155,20 @@ describe('domain keyword catalog', () => {
       {
         keyword: 'demo.echo',
         delegate: { type: 'custom', target: 'demo.echo' },
-        help: { summary: 'Echo', docsUrl: 'https://example.test', example: 'x', returnType: 'string', args: [] },
+        help: {
+          summary: 'Echo',
+          docsUrl: 'https://example.test',
+          usageExamples: [
+            {
+              functionCall: 'demo.echo()',
+              sampleReturnValue: 'x',
+              description: 'Shows demo.echo in use.',
+            },
+          ],
+          validator: (value) => typeof value === 'string',
+          returnType: 'string',
+          args: [],
+        },
       },
     ]);
     expect(catalog).toHaveLength(1);
@@ -150,6 +188,10 @@ describe('domain keyword catalog', () => {
     expect(byKeyword.get('autoIncrement.sequence')?.help?.docsUrl).toBe(
       'https://anywaydata.com/docs/test-data/auto-increment-sequences'
     );
+    expect(byKeyword.get('person.firstName')?.help?.docsUrl).toBe(
+      'https://anywaydata.com/docs/test-data/domain/person'
+    );
+    expect(byKeyword.get('person.firstName')?.help?.fakerDocsUrl).toBe('https://fakerjs.dev/api/person');
     expect(byKeyword.get('datatype.boolean')?.help?.args.map((arg) => arg.name)).toEqual(['probability']);
     expect(byKeyword.get('finance.accountName')?.help?.returnType).toBe('string');
     expect(byKeyword.get('finance.accountNumber')?.help?.returnType).toBe('string');
@@ -173,7 +215,8 @@ describe('domain keyword catalog', () => {
 
     for (const entry of DOMAIN_KEYWORDS) {
       const declaredType = String(entry?.help?.returnType || '');
-      const example = String(entry?.help?.example || '');
+      const exampleValue = entry?.help?.usageExamples?.[0]?.sampleReturnValue;
+      const example = typeof exampleValue === 'undefined' ? '' : exampleValue;
       const inferred = inferTypeFromExampleLiteral(example);
       const inferredType = inferred.type;
       const confidence = inferred.confidence;
@@ -182,6 +225,23 @@ describe('domain keyword catalog', () => {
         .split('|')
         .map((part) => part.trim())
         .filter((part) => part.length > 0);
+
+      if (allowedTypes.includes('string') && inferredType === 'date') {
+        continue;
+      }
+      if (allowedTypes.includes('integer') && inferredType === 'number') {
+        continue;
+      }
+      if (inferredType === 'string' && allowedTypes.includes(String(example))) {
+        continue;
+      }
+      if (
+        inferredType === 'string' &&
+        allowedTypes.includes(JSON.stringify(String(example))) &&
+        !allowedTypes.includes('string')
+      ) {
+        continue;
+      }
 
       if (allowedTypes.includes('object') && !exampleLooksLikeObjectLiteral(example)) {
         failures.push({
@@ -202,6 +262,30 @@ describe('domain keyword catalog', () => {
         });
       }
     }
+
+    expect(failures).toEqual([]);
+  });
+
+  test('faker-backed domain commands keep anywaydata docsUrl and upstream fakerDocsUrl', () => {
+    const failures = DOMAIN_KEYWORDS.filter((entry) => entry.delegate?.type === DELEGATE_TYPE_FAKER).flatMap(
+      (entry) => {
+        const docsUrl = String(entry.help?.docsUrl || '').trim();
+        const fakerDocsUrl = String(entry.help?.fakerDocsUrl || '').trim();
+        const failuresForEntry = [];
+
+        if (!docsUrl.startsWith('https://anywaydata.com/docs/')) {
+          failuresForEntry.push(`${entry.keyword}:docsUrl`);
+        }
+        if (docsUrl.includes('fakerjs.dev')) {
+          failuresForEntry.push(`${entry.keyword}:docsUrl-faker`);
+        }
+        if (!fakerDocsUrl.startsWith('https://fakerjs.dev/api/')) {
+          failuresForEntry.push(`${entry.keyword}:fakerDocsUrl`);
+        }
+
+        return failuresForEntry;
+      }
+    );
 
     expect(failures).toEqual([]);
   });
@@ -343,10 +427,22 @@ function sampleValueForType(type) {
     .split('|')
     .map((entry) => entry.trim());
   const numericLiterals = allowed.filter((entry) => /^[+-]?\d+(\.\d+)?$/.test(entry)).map((entry) => Number(entry));
+  const stringLiterals = allowed
+    .filter(
+      (entry) =>
+        !['string', 'integer', 'number', 'date', 'regexp', 'boolean', 'array', 'object'].includes(entry) &&
+        !/^[+-]?\d+(\.\d+)?$/.test(entry)
+    )
+    .map((entry) =>
+      (entry.startsWith('"') && entry.endsWith('"')) || (entry.startsWith("'") && entry.endsWith("'"))
+        ? entry.slice(1, -1)
+        : entry
+    );
 
   if (numericLiterals.length === allowed.length && numericLiterals.length > 0) {
     return numericLiterals[0];
   }
+  if (stringLiterals.length > 0) return stringLiterals[0];
 
   if (allowed.includes('integer')) return 7;
   if (allowed.includes('number')) return 7;
@@ -355,6 +451,33 @@ function sampleValueForType(type) {
   if (allowed.includes('array')) return ['x', 'y'];
   if (allowed.includes('object')) return { key: 'value' };
   return 'sample';
+}
+
+function normalizeExampleValue(value) {
+  if (typeof value === 'bigint') {
+    return {
+      __type: 'bigint',
+      value: value.toString(),
+    };
+  }
+
+  if (value instanceof Date) {
+    return value.toISOString();
+  }
+
+  if (Array.isArray(value)) {
+    return value.map((entry) => normalizeExampleValue(entry));
+  }
+
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(Object.entries(value).map(([key, entry]) => [key, normalizeExampleValue(entry)]));
+  }
+
+  return value;
+}
+
+function serializeExampleValue(value) {
+  return JSON.stringify(normalizeExampleValue(value));
 }
 
 function valueToInvocationLiteral(value) {
@@ -374,6 +497,24 @@ function valueToInvocationLiteral(value) {
 }
 
 function inferTypeFromExampleLiteral(example) {
+  if (example === null || typeof example === 'undefined') {
+    return { type: 'unknown', confidence: 'low' };
+  }
+  if (Array.isArray(example)) {
+    return { type: 'array', confidence: 'high' };
+  }
+  if (typeof example === 'object') {
+    return { type: 'object', confidence: 'high' };
+  }
+  if (typeof example === 'bigint') {
+    return { type: 'integer', confidence: 'high' };
+  }
+  if (typeof example === 'boolean') {
+    return { type: 'boolean', confidence: 'high' };
+  }
+  if (typeof example === 'number') {
+    return { type: 'number', confidence: Number.isFinite(example) ? 'high' : 'low' };
+  }
   const value = String(example || '').trim();
   if (value.length === 0) return { type: 'unknown', confidence: 'low' };
 
@@ -390,6 +531,9 @@ function inferTypeFromExampleLiteral(example) {
 }
 
 function exampleLooksLikeObjectLiteral(example) {
+  if (example && typeof example === 'object' && !Array.isArray(example)) {
+    return true;
+  }
   const value = String(example || '').trim();
   return value.startsWith('{') && value.endsWith('}');
 }

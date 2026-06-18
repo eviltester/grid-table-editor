@@ -1,3 +1,5 @@
+import { validateStringValue } from '../command-help/command-help-validators.js';
+
 const DOMAIN_FAKER_ANIMAL_KEYWORD_DEFINITIONS = [
   {
     keyword: 'animal.bear',
@@ -7,9 +9,17 @@ const DOMAIN_FAKER_ANIMAL_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random bear species.',
-      docsUrl: 'https://fakerjs.dev/api/animal',
-      example: 'Sloth bear',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/animal',
+      fakerDocsUrl: 'https://fakerjs.dev/api/animal',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'animal.bear',
+          sampleReturnValue: 'Giant panda',
+          description: 'Shows the default animal.bear call.',
+        },
+      ],
       args: [],
     },
   },
@@ -21,9 +31,17 @@ const DOMAIN_FAKER_ANIMAL_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random bird species.',
-      docsUrl: 'https://fakerjs.dev/api/animal',
-      example: 'Orange-crowned Warbler',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/animal',
+      fakerDocsUrl: 'https://fakerjs.dev/api/animal',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'animal.bird',
+          sampleReturnValue: 'Great-tailed Grackle',
+          description: 'Shows the default animal.bird call.',
+        },
+      ],
       args: [],
     },
   },
@@ -35,9 +53,17 @@ const DOMAIN_FAKER_ANIMAL_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random cat breed.',
-      docsUrl: 'https://fakerjs.dev/api/animal',
-      example: 'Russian Blue',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/animal',
+      fakerDocsUrl: 'https://fakerjs.dev/api/animal',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'animal.cat',
+          sampleReturnValue: 'Korat',
+          description: 'Shows the default animal.cat call.',
+        },
+      ],
       args: [],
     },
   },
@@ -49,9 +75,17 @@ const DOMAIN_FAKER_ANIMAL_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random cetacean species.',
-      docsUrl: 'https://fakerjs.dev/api/animal',
-      example: 'Hector’s Dolphin',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/animal',
+      fakerDocsUrl: 'https://fakerjs.dev/api/animal',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'animal.cetacean',
+          sampleReturnValue: 'Guiana Dolphin',
+          description: 'Shows the default animal.cetacean call.',
+        },
+      ],
       args: [],
     },
   },
@@ -63,9 +97,17 @@ const DOMAIN_FAKER_ANIMAL_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random cow species.',
-      docsUrl: 'https://fakerjs.dev/api/animal',
-      example: 'Aubrac',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/animal',
+      fakerDocsUrl: 'https://fakerjs.dev/api/animal',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'animal.cow',
+          sampleReturnValue: 'Gascon cattle',
+          description: 'Shows the default animal.cow call.',
+        },
+      ],
       args: [],
     },
   },
@@ -77,9 +119,17 @@ const DOMAIN_FAKER_ANIMAL_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random crocodilian species.',
-      docsUrl: 'https://fakerjs.dev/api/animal',
-      example: 'Nile Crocodile',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/animal',
+      fakerDocsUrl: 'https://fakerjs.dev/api/animal',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'animal.crocodilia',
+          sampleReturnValue: 'Gharial',
+          description: 'Shows the default animal.crocodilia call.',
+        },
+      ],
       args: [],
     },
   },
@@ -91,9 +141,17 @@ const DOMAIN_FAKER_ANIMAL_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random dog breed.',
-      docsUrl: 'https://fakerjs.dev/api/animal',
-      example: 'Jonangi',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/animal',
+      fakerDocsUrl: 'https://fakerjs.dev/api/animal',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'animal.dog',
+          sampleReturnValue: 'Grand Bleu de Gascogne',
+          description: 'Shows the default animal.dog call.',
+        },
+      ],
       args: [],
     },
   },
@@ -105,9 +163,17 @@ const DOMAIN_FAKER_ANIMAL_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random fish species.',
-      docsUrl: 'https://fakerjs.dev/api/animal',
-      example: 'Short mackerel',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/animal',
+      fakerDocsUrl: 'https://fakerjs.dev/api/animal',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'animal.fish',
+          sampleReturnValue: 'Gazami crab',
+          description: 'Shows the default animal.fish call.',
+        },
+      ],
       args: [],
     },
   },
@@ -119,9 +185,17 @@ const DOMAIN_FAKER_ANIMAL_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random horse breed.',
-      docsUrl: 'https://fakerjs.dev/api/animal',
-      example: 'Rottaler',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/animal',
+      fakerDocsUrl: 'https://fakerjs.dev/api/animal',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'animal.horse',
+          sampleReturnValue: 'Heihe Horse',
+          description: 'Shows the default animal.horse call.',
+        },
+      ],
       args: [],
     },
   },
@@ -133,9 +207,17 @@ const DOMAIN_FAKER_ANIMAL_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random insect species.',
-      docsUrl: 'https://fakerjs.dev/api/animal',
-      example: 'Pigeon tremex',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/animal',
+      fakerDocsUrl: 'https://fakerjs.dev/api/animal',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'animal.insect',
+          sampleReturnValue: 'Honey bee',
+          description: 'Shows the default animal.insect call.',
+        },
+      ],
       args: [],
     },
   },
@@ -147,9 +229,17 @@ const DOMAIN_FAKER_ANIMAL_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random lion species.',
-      docsUrl: 'https://fakerjs.dev/api/animal',
-      example: 'Masai Lion',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/animal',
+      fakerDocsUrl: 'https://fakerjs.dev/api/animal',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'animal.lion',
+          sampleReturnValue: 'Cape lion',
+          description: 'Shows the default animal.lion call.',
+        },
+      ],
       args: [],
     },
   },
@@ -161,9 +251,17 @@ const DOMAIN_FAKER_ANIMAL_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random pet name.',
-      docsUrl: 'https://fakerjs.dev/api/animal',
-      example: 'Stella',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/animal',
+      fakerDocsUrl: 'https://fakerjs.dev/api/animal',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'animal.petName',
+          sampleReturnValue: 'Gus',
+          description: 'Shows the default animal.petName call.',
+        },
+      ],
       args: [],
     },
   },
@@ -175,9 +273,17 @@ const DOMAIN_FAKER_ANIMAL_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random rabbit species.',
-      docsUrl: 'https://fakerjs.dev/api/animal',
-      example: 'Californian',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/animal',
+      fakerDocsUrl: 'https://fakerjs.dev/api/animal',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'animal.rabbit',
+          sampleReturnValue: 'Florida White',
+          description: 'Shows the default animal.rabbit call.',
+        },
+      ],
       args: [],
     },
   },
@@ -189,9 +295,17 @@ const DOMAIN_FAKER_ANIMAL_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random rodent breed.',
-      docsUrl: 'https://fakerjs.dev/api/animal',
-      example: "Natterer's tuco-tuco",
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/animal',
+      fakerDocsUrl: 'https://fakerjs.dev/api/animal',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'animal.rodent',
+          sampleReturnValue: 'Fukomys foxi',
+          description: 'Shows the default animal.rodent call.',
+        },
+      ],
       args: [],
     },
   },
@@ -203,9 +317,17 @@ const DOMAIN_FAKER_ANIMAL_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random snake species.',
-      docsUrl: 'https://fakerjs.dev/api/animal',
-      example: 'White-lipped python',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/animal',
+      fakerDocsUrl: 'https://fakerjs.dev/api/animal',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'animal.snake',
+          sampleReturnValue: 'Harlequin coral snake',
+          description: 'Shows the default animal.snake call.',
+        },
+      ],
       args: [],
     },
   },
@@ -217,9 +339,17 @@ const DOMAIN_FAKER_ANIMAL_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random animal type.',
-      docsUrl: 'https://fakerjs.dev/api/animal',
-      example: 'bear',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/animal',
+      fakerDocsUrl: 'https://fakerjs.dev/api/animal',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'animal.type',
+          sampleReturnValue: 'giraffe',
+          description: 'Shows the default animal.type call.',
+        },
+      ],
       args: [],
     },
   },

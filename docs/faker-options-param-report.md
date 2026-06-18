@@ -58,7 +58,6 @@ Generated from `packages/core/js/faker/faker-command-help-metadata.js` in the cu
 - `image.dataUri`
 - `image.personPortrait`
 - `image.url`
-- `image.urlLoremFlickr`
 - `image.urlPicsumPhotos`
 - `internet.displayName`
 - `internet.emoji`

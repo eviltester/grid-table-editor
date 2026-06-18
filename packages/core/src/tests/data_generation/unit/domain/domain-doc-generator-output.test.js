@@ -26,8 +26,8 @@ describe('domain docs generator output', () => {
 
       const locationDoc = fs.readFileSync(path.join(docsDir, locationDocName), 'utf8');
 
-      expect(locationDoc).toContain('- `{"name":"Icelandic","alpha2":"is","alpha3":"isl"}`');
-      expect(locationDoc).not.toContain('&#123;"name":"Icelandic","alpha2":"is","alpha3":"isl"&#125;');
+      expect(locationDoc).toMatch(/- `\{"name":"[^"]+","alpha2":"[a-z]{2}","alpha3":"[a-z]{3}"\}`/);
+      expect(locationDoc).not.toContain('&#123;"name":');
     } finally {
       fs.rmSync(docsDir, { recursive: true, force: true });
     }

@@ -1,3 +1,5 @@
+import { validateStringValue } from '../command-help/command-help-validators.js';
+
 const DOMAIN_FAKER_FOOD_KEYWORD_DEFINITIONS = [
   {
     keyword: 'food.adjective',
@@ -7,9 +9,17 @@ const DOMAIN_FAKER_FOOD_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Generates a random dish adjective.',
-      docsUrl: 'https://fakerjs.dev/api/food',
-      example: 'salty',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/food',
+      fakerDocsUrl: 'https://fakerjs.dev/api/food',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'food.adjective',
+          sampleReturnValue: 'juicy',
+          description: 'Shows the default food.adjective call.',
+        },
+      ],
       args: [],
     },
   },
@@ -21,9 +31,17 @@ const DOMAIN_FAKER_FOOD_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Generates a random dish description.',
-      docsUrl: 'https://fakerjs.dev/api/food',
-      example: 'Fresh mixed greens tossed with pimento-rubbed pigeon, bean shoots, and a light dressing.',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/food',
+      fakerDocsUrl: 'https://fakerjs.dev/api/food',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'food.description',
+          sampleReturnValue: 'An exquisite artichoke dish, paired with brown rice and a hint of cardamom.',
+          description: 'Shows the default food.description call.',
+        },
+      ],
       args: [],
     },
   },
@@ -35,9 +53,17 @@ const DOMAIN_FAKER_FOOD_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Generates a random dish name.',
-      docsUrl: 'https://fakerjs.dev/api/food',
-      example: 'Chicken Fajitas',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/food',
+      fakerDocsUrl: 'https://fakerjs.dev/api/food',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'food.dish',
+          sampleReturnValue: 'Cinnamon-crusted Chicken',
+          description: 'Shows the default food.dish call.',
+        },
+      ],
       args: [],
     },
   },
@@ -49,9 +75,17 @@ const DOMAIN_FAKER_FOOD_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: "Generates a random food's ethnic category.",
-      docsUrl: 'https://fakerjs.dev/api/food',
-      example: 'Lithuanian',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/food',
+      fakerDocsUrl: 'https://fakerjs.dev/api/food',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'food.ethnicCategory',
+          sampleReturnValue: 'Indonesian',
+          description: 'Shows the default food.ethnicCategory call.',
+        },
+      ],
       args: [],
     },
   },
@@ -63,9 +97,17 @@ const DOMAIN_FAKER_FOOD_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Generates a random fruit name.',
-      docsUrl: 'https://fakerjs.dev/api/food',
-      example: 'snowpea',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/food',
+      fakerDocsUrl: 'https://fakerjs.dev/api/food',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'food.fruit',
+          sampleReturnValue: 'grapefruit',
+          description: 'Shows the default food.fruit call.',
+        },
+      ],
       args: [],
     },
   },
@@ -77,9 +119,17 @@ const DOMAIN_FAKER_FOOD_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Generates a random ingredient name.',
-      docsUrl: 'https://fakerjs.dev/api/food',
-      example: 'spelt',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/food',
+      fakerDocsUrl: 'https://fakerjs.dev/api/food',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'food.ingredient',
+          sampleReturnValue: 'green pepper',
+          description: 'Shows the default food.ingredient call.',
+        },
+      ],
       args: [],
     },
   },
@@ -91,9 +141,17 @@ const DOMAIN_FAKER_FOOD_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Generates a random meat',
-      docsUrl: 'https://fakerjs.dev/api/food',
-      example: 'goose',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/food',
+      fakerDocsUrl: 'https://fakerjs.dev/api/food',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'food.meat',
+          sampleReturnValue: 'kangaroo',
+          description: 'Shows the default food.meat call.',
+        },
+      ],
       args: [],
     },
   },
@@ -105,9 +163,17 @@ const DOMAIN_FAKER_FOOD_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Generates a random spice name.',
-      docsUrl: 'https://fakerjs.dev/api/food',
-      example: 'poudre de colombo',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/food',
+      fakerDocsUrl: 'https://fakerjs.dev/api/food',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'food.spice',
+          sampleReturnValue: 'fines herbes',
+          description: 'Shows the default food.spice call.',
+        },
+      ],
       args: [],
     },
   },
@@ -119,9 +185,17 @@ const DOMAIN_FAKER_FOOD_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Generates a random vegetable name.',
-      docsUrl: 'https://fakerjs.dev/api/food',
-      example: 'snowpea sprouts',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/food',
+      fakerDocsUrl: 'https://fakerjs.dev/api/food',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'food.vegetable',
+          sampleReturnValue: 'eggplant',
+          description: 'Shows the default food.vegetable call.',
+        },
+      ],
       args: [],
     },
   },

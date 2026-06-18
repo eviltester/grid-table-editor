@@ -19,6 +19,7 @@ The `hacker` domain maps domain keywords to underlying faker implementations.
 Returns a random hacker/IT abbreviation.
 
 - Canonical: `awd.domain.hacker.abbreviation`
+- Docs: [https://anywaydata.com/docs/test-data/domain/hacker](https://anywaydata.com/docs/test-data/domain/hacker)
 - Faker docs: [https://fakerjs.dev/api/hacker](https://fakerjs.dev/api/hacker)
 
 No parameters.
@@ -26,17 +27,18 @@ No parameters.
 Examples:
 
 ```txt
-hacker.abbreviation()
+hacker.abbreviation
 ```
 
 Example return values:
-- `GB`
+- `IP`
 
 ### `hacker.adjective`
 
 Returns a random hacker/IT adjective.
 
 - Canonical: `awd.domain.hacker.adjective`
+- Docs: [https://anywaydata.com/docs/test-data/domain/hacker](https://anywaydata.com/docs/test-data/domain/hacker)
 - Faker docs: [https://fakerjs.dev/api/hacker](https://fakerjs.dev/api/hacker)
 
 No parameters.
@@ -44,17 +46,18 @@ No parameters.
 Examples:
 
 ```txt
-hacker.adjective()
+hacker.adjective
 ```
 
 Example return values:
-- `bluetooth`
+- `mobile`
 
 ### `hacker.ingverb`
 
 Returns a random hacker/IT verb for continuous actions (en: ing suffix; e.g. hacking).
 
 - Canonical: `awd.domain.hacker.ingverb`
+- Docs: [https://anywaydata.com/docs/test-data/domain/hacker](https://anywaydata.com/docs/test-data/domain/hacker)
 - Faker docs: [https://fakerjs.dev/api/hacker](https://fakerjs.dev/api/hacker)
 
 No parameters.
@@ -62,17 +65,18 @@ No parameters.
 Examples:
 
 ```txt
-hacker.ingverb()
+hacker.ingverb
 ```
 
 Example return values:
-- `synthesizing`
+- `generating`
 
 ### `hacker.noun`
 
 Returns a random hacker/IT noun.
 
 - Canonical: `awd.domain.hacker.noun`
+- Docs: [https://anywaydata.com/docs/test-data/domain/hacker](https://anywaydata.com/docs/test-data/domain/hacker)
 - Faker docs: [https://fakerjs.dev/api/hacker](https://fakerjs.dev/api/hacker)
 
 No parameters.
@@ -80,17 +84,18 @@ No parameters.
 Examples:
 
 ```txt
-hacker.noun()
+hacker.noun
 ```
 
 Example return values:
-- `program`
+- `firewall`
 
 ### `hacker.phrase`
 
 Generates a random hacker/IT phrase.
 
 - Canonical: `awd.domain.hacker.phrase`
+- Docs: [https://anywaydata.com/docs/test-data/domain/hacker](https://anywaydata.com/docs/test-data/domain/hacker)
 - Faker docs: [https://fakerjs.dev/api/hacker](https://fakerjs.dev/api/hacker)
 
 No parameters.
@@ -98,17 +103,18 @@ No parameters.
 Examples:
 
 ```txt
-hacker.phrase()
+hacker.phrase
 ```
 
 Example return values:
-- `compressing the application won't do anything, we need to reboot the neural JSON hard drive!`
+- `Try to back up the COM bus, maybe it will hack the mobile bus!`
 
 ### `hacker.verb`
 
 Returns a random hacker/IT verb.
 
 - Canonical: `awd.domain.hacker.verb`
+- Docs: [https://anywaydata.com/docs/test-data/domain/hacker](https://anywaydata.com/docs/test-data/domain/hacker)
 - Faker docs: [https://fakerjs.dev/api/hacker](https://fakerjs.dev/api/hacker)
 
 No parameters.
@@ -116,8 +122,8 @@ No parameters.
 Examples:
 
 ```txt
-hacker.verb()
+hacker.verb
 ```
 
 Example return values:
-- `program`
+- `hack`

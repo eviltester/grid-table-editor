@@ -19,6 +19,7 @@ The `animal` domain maps domain keywords to underlying faker implementations.
 Returns a random bear species.
 
 - Canonical: `awd.domain.animal.bear`
+- Docs: [https://anywaydata.com/docs/test-data/domain/animal](https://anywaydata.com/docs/test-data/domain/animal)
 - Faker docs: [https://fakerjs.dev/api/animal](https://fakerjs.dev/api/animal)
 
 No parameters.
@@ -26,17 +27,18 @@ No parameters.
 Examples:
 
 ```txt
-animal.bear()
+animal.bear
 ```
 
 Example return values:
-- `Sloth bear`
+- `Giant panda`
 
 ### `animal.bird`
 
 Returns a random bird species.
 
 - Canonical: `awd.domain.animal.bird`
+- Docs: [https://anywaydata.com/docs/test-data/domain/animal](https://anywaydata.com/docs/test-data/domain/animal)
 - Faker docs: [https://fakerjs.dev/api/animal](https://fakerjs.dev/api/animal)
 
 No parameters.
@@ -44,17 +46,18 @@ No parameters.
 Examples:
 
 ```txt
-animal.bird()
+animal.bird
 ```
 
 Example return values:
-- `Orange-crowned Warbler`
+- `Great-tailed Grackle`
 
 ### `animal.cat`
 
 Returns a random cat breed.
 
 - Canonical: `awd.domain.animal.cat`
+- Docs: [https://anywaydata.com/docs/test-data/domain/animal](https://anywaydata.com/docs/test-data/domain/animal)
 - Faker docs: [https://fakerjs.dev/api/animal](https://fakerjs.dev/api/animal)
 
 No parameters.
@@ -62,17 +65,18 @@ No parameters.
 Examples:
 
 ```txt
-animal.cat()
+animal.cat
 ```
 
 Example return values:
-- `Russian Blue`
+- `Korat`
 
 ### `animal.cetacean`
 
 Returns a random cetacean species.
 
 - Canonical: `awd.domain.animal.cetacean`
+- Docs: [https://anywaydata.com/docs/test-data/domain/animal](https://anywaydata.com/docs/test-data/domain/animal)
 - Faker docs: [https://fakerjs.dev/api/animal](https://fakerjs.dev/api/animal)
 
 No parameters.
@@ -80,17 +84,18 @@ No parameters.
 Examples:
 
 ```txt
-animal.cetacean()
+animal.cetacean
 ```
 
 Example return values:
-- `Hector’s Dolphin`
+- `Guiana Dolphin`
 
 ### `animal.cow`
 
 Returns a random cow species.
 
 - Canonical: `awd.domain.animal.cow`
+- Docs: [https://anywaydata.com/docs/test-data/domain/animal](https://anywaydata.com/docs/test-data/domain/animal)
 - Faker docs: [https://fakerjs.dev/api/animal](https://fakerjs.dev/api/animal)
 
 No parameters.
@@ -98,17 +103,18 @@ No parameters.
 Examples:
 
 ```txt
-animal.cow()
+animal.cow
 ```
 
 Example return values:
-- `Aubrac`
+- `Gascon cattle`
 
 ### `animal.crocodilia`
 
 Returns a random crocodilian species.
 
 - Canonical: `awd.domain.animal.crocodilia`
+- Docs: [https://anywaydata.com/docs/test-data/domain/animal](https://anywaydata.com/docs/test-data/domain/animal)
 - Faker docs: [https://fakerjs.dev/api/animal](https://fakerjs.dev/api/animal)
 
 No parameters.
@@ -116,17 +122,18 @@ No parameters.
 Examples:
 
 ```txt
-animal.crocodilia()
+animal.crocodilia
 ```
 
 Example return values:
-- `Nile Crocodile`
+- `Gharial`
 
 ### `animal.dog`
 
 Returns a random dog breed.
 
 - Canonical: `awd.domain.animal.dog`
+- Docs: [https://anywaydata.com/docs/test-data/domain/animal](https://anywaydata.com/docs/test-data/domain/animal)
 - Faker docs: [https://fakerjs.dev/api/animal](https://fakerjs.dev/api/animal)
 
 No parameters.
@@ -134,17 +141,18 @@ No parameters.
 Examples:
 
 ```txt
-animal.dog()
+animal.dog
 ```
 
 Example return values:
-- `Jonangi`
+- `Grand Bleu de Gascogne`
 
 ### `animal.fish`
 
 Returns a random fish species.
 
 - Canonical: `awd.domain.animal.fish`
+- Docs: [https://anywaydata.com/docs/test-data/domain/animal](https://anywaydata.com/docs/test-data/domain/animal)
 - Faker docs: [https://fakerjs.dev/api/animal](https://fakerjs.dev/api/animal)
 
 No parameters.
@@ -152,17 +160,18 @@ No parameters.
 Examples:
 
 ```txt
-animal.fish()
+animal.fish
 ```
 
 Example return values:
-- `Short mackerel`
+- `Gazami crab`
 
 ### `animal.horse`
 
 Returns a random horse breed.
 
 - Canonical: `awd.domain.animal.horse`
+- Docs: [https://anywaydata.com/docs/test-data/domain/animal](https://anywaydata.com/docs/test-data/domain/animal)
 - Faker docs: [https://fakerjs.dev/api/animal](https://fakerjs.dev/api/animal)
 
 No parameters.
@@ -170,17 +179,18 @@ No parameters.
 Examples:
 
 ```txt
-animal.horse()
+animal.horse
 ```
 
 Example return values:
-- `Rottaler`
+- `Heihe Horse`
 
 ### `animal.insect`
 
 Returns a random insect species.
 
 - Canonical: `awd.domain.animal.insect`
+- Docs: [https://anywaydata.com/docs/test-data/domain/animal](https://anywaydata.com/docs/test-data/domain/animal)
 - Faker docs: [https://fakerjs.dev/api/animal](https://fakerjs.dev/api/animal)
 
 No parameters.
@@ -188,17 +198,18 @@ No parameters.
 Examples:
 
 ```txt
-animal.insect()
+animal.insect
 ```
 
 Example return values:
-- `Pigeon tremex`
+- `Honey bee`
 
 ### `animal.lion`
 
 Returns a random lion species.
 
 - Canonical: `awd.domain.animal.lion`
+- Docs: [https://anywaydata.com/docs/test-data/domain/animal](https://anywaydata.com/docs/test-data/domain/animal)
 - Faker docs: [https://fakerjs.dev/api/animal](https://fakerjs.dev/api/animal)
 
 No parameters.
@@ -206,17 +217,18 @@ No parameters.
 Examples:
 
 ```txt
-animal.lion()
+animal.lion
 ```
 
 Example return values:
-- `Masai Lion`
+- `Cape lion`
 
 ### `animal.petName`
 
 Returns a random pet name.
 
 - Canonical: `awd.domain.animal.petName`
+- Docs: [https://anywaydata.com/docs/test-data/domain/animal](https://anywaydata.com/docs/test-data/domain/animal)
 - Faker docs: [https://fakerjs.dev/api/animal](https://fakerjs.dev/api/animal)
 
 No parameters.
@@ -224,17 +236,18 @@ No parameters.
 Examples:
 
 ```txt
-animal.petName()
+animal.petName
 ```
 
 Example return values:
-- `Stella`
+- `Gus`
 
 ### `animal.rabbit`
 
 Returns a random rabbit species.
 
 - Canonical: `awd.domain.animal.rabbit`
+- Docs: [https://anywaydata.com/docs/test-data/domain/animal](https://anywaydata.com/docs/test-data/domain/animal)
 - Faker docs: [https://fakerjs.dev/api/animal](https://fakerjs.dev/api/animal)
 
 No parameters.
@@ -242,17 +255,18 @@ No parameters.
 Examples:
 
 ```txt
-animal.rabbit()
+animal.rabbit
 ```
 
 Example return values:
-- `Californian`
+- `Florida White`
 
 ### `animal.rodent`
 
 Returns a random rodent breed.
 
 - Canonical: `awd.domain.animal.rodent`
+- Docs: [https://anywaydata.com/docs/test-data/domain/animal](https://anywaydata.com/docs/test-data/domain/animal)
 - Faker docs: [https://fakerjs.dev/api/animal](https://fakerjs.dev/api/animal)
 
 No parameters.
@@ -260,17 +274,18 @@ No parameters.
 Examples:
 
 ```txt
-animal.rodent()
+animal.rodent
 ```
 
 Example return values:
-- `Natterer's tuco-tuco`
+- `Fukomys foxi`
 
 ### `animal.snake`
 
 Returns a random snake species.
 
 - Canonical: `awd.domain.animal.snake`
+- Docs: [https://anywaydata.com/docs/test-data/domain/animal](https://anywaydata.com/docs/test-data/domain/animal)
 - Faker docs: [https://fakerjs.dev/api/animal](https://fakerjs.dev/api/animal)
 
 No parameters.
@@ -278,17 +293,18 @@ No parameters.
 Examples:
 
 ```txt
-animal.snake()
+animal.snake
 ```
 
 Example return values:
-- `White-lipped python`
+- `Harlequin coral snake`
 
 ### `animal.type`
 
 Returns a random animal type.
 
 - Canonical: `awd.domain.animal.type`
+- Docs: [https://anywaydata.com/docs/test-data/domain/animal](https://anywaydata.com/docs/test-data/domain/animal)
 - Faker docs: [https://fakerjs.dev/api/animal](https://fakerjs.dev/api/animal)
 
 No parameters.
@@ -296,8 +312,8 @@ No parameters.
 Examples:
 
 ```txt
-animal.type()
+animal.type
 ```
 
 Example return values:
-- `bear`
+- `giraffe`

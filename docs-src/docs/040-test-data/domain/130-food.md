@@ -19,6 +19,7 @@ The `food` domain maps domain keywords to underlying faker implementations.
 Generates a random dish adjective.
 
 - Canonical: `awd.domain.food.adjective`
+- Docs: [https://anywaydata.com/docs/test-data/domain/food](https://anywaydata.com/docs/test-data/domain/food)
 - Faker docs: [https://fakerjs.dev/api/food](https://fakerjs.dev/api/food)
 
 No parameters.
@@ -26,17 +27,18 @@ No parameters.
 Examples:
 
 ```txt
-food.adjective()
+food.adjective
 ```
 
 Example return values:
-- `salty`
+- `juicy`
 
 ### `food.description`
 
 Generates a random dish description.
 
 - Canonical: `awd.domain.food.description`
+- Docs: [https://anywaydata.com/docs/test-data/domain/food](https://anywaydata.com/docs/test-data/domain/food)
 - Faker docs: [https://fakerjs.dev/api/food](https://fakerjs.dev/api/food)
 
 No parameters.
@@ -44,17 +46,18 @@ No parameters.
 Examples:
 
 ```txt
-food.description()
+food.description
 ```
 
 Example return values:
-- `Fresh mixed greens tossed with pimento-rubbed pigeon, bean shoots, and a light dressing.`
+- `An exquisite artichoke dish, paired with brown rice and a hint of cardamom.`
 
 ### `food.dish`
 
 Generates a random dish name.
 
 - Canonical: `awd.domain.food.dish`
+- Docs: [https://anywaydata.com/docs/test-data/domain/food](https://anywaydata.com/docs/test-data/domain/food)
 - Faker docs: [https://fakerjs.dev/api/food](https://fakerjs.dev/api/food)
 
 No parameters.
@@ -62,17 +65,18 @@ No parameters.
 Examples:
 
 ```txt
-food.dish()
+food.dish
 ```
 
 Example return values:
-- `Chicken Fajitas`
+- `Cinnamon-crusted Chicken`
 
 ### `food.ethnicCategory`
 
 Generates a random food's ethnic category.
 
 - Canonical: `awd.domain.food.ethnicCategory`
+- Docs: [https://anywaydata.com/docs/test-data/domain/food](https://anywaydata.com/docs/test-data/domain/food)
 - Faker docs: [https://fakerjs.dev/api/food](https://fakerjs.dev/api/food)
 
 No parameters.
@@ -80,17 +84,18 @@ No parameters.
 Examples:
 
 ```txt
-food.ethnicCategory()
+food.ethnicCategory
 ```
 
 Example return values:
-- `Lithuanian`
+- `Indonesian`
 
 ### `food.fruit`
 
 Generates a random fruit name.
 
 - Canonical: `awd.domain.food.fruit`
+- Docs: [https://anywaydata.com/docs/test-data/domain/food](https://anywaydata.com/docs/test-data/domain/food)
 - Faker docs: [https://fakerjs.dev/api/food](https://fakerjs.dev/api/food)
 
 No parameters.
@@ -98,17 +103,18 @@ No parameters.
 Examples:
 
 ```txt
-food.fruit()
+food.fruit
 ```
 
 Example return values:
-- `snowpea`
+- `grapefruit`
 
 ### `food.ingredient`
 
 Generates a random ingredient name.
 
 - Canonical: `awd.domain.food.ingredient`
+- Docs: [https://anywaydata.com/docs/test-data/domain/food](https://anywaydata.com/docs/test-data/domain/food)
 - Faker docs: [https://fakerjs.dev/api/food](https://fakerjs.dev/api/food)
 
 No parameters.
@@ -116,17 +122,18 @@ No parameters.
 Examples:
 
 ```txt
-food.ingredient()
+food.ingredient
 ```
 
 Example return values:
-- `spelt`
+- `green pepper`
 
 ### `food.meat`
 
 Generates a random meat
 
 - Canonical: `awd.domain.food.meat`
+- Docs: [https://anywaydata.com/docs/test-data/domain/food](https://anywaydata.com/docs/test-data/domain/food)
 - Faker docs: [https://fakerjs.dev/api/food](https://fakerjs.dev/api/food)
 
 No parameters.
@@ -134,17 +141,18 @@ No parameters.
 Examples:
 
 ```txt
-food.meat()
+food.meat
 ```
 
 Example return values:
-- `goose`
+- `kangaroo`
 
 ### `food.spice`
 
 Generates a random spice name.
 
 - Canonical: `awd.domain.food.spice`
+- Docs: [https://anywaydata.com/docs/test-data/domain/food](https://anywaydata.com/docs/test-data/domain/food)
 - Faker docs: [https://fakerjs.dev/api/food](https://fakerjs.dev/api/food)
 
 No parameters.
@@ -152,17 +160,18 @@ No parameters.
 Examples:
 
 ```txt
-food.spice()
+food.spice
 ```
 
 Example return values:
-- `poudre de colombo`
+- `fines herbes`
 
 ### `food.vegetable`
 
 Generates a random vegetable name.
 
 - Canonical: `awd.domain.food.vegetable`
+- Docs: [https://anywaydata.com/docs/test-data/domain/food](https://anywaydata.com/docs/test-data/domain/food)
 - Faker docs: [https://fakerjs.dev/api/food](https://fakerjs.dev/api/food)
 
 No parameters.
@@ -170,8 +179,8 @@ No parameters.
 Examples:
 
 ```txt
-food.vegetable()
+food.vegetable
 ```
 
 Example return values:
-- `snowpea sprouts`
+- `eggplant`

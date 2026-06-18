@@ -24,12 +24,23 @@ Return the literal value provided by the caller.
 Examples:
 
 ```txt
-literal.value("Pending")
+literal.value(value="Pending")
 ```
 
 ```txt
-literal.value("")
+literal.value(value="")
+```
+
+```txt
+literal.value()
+```
+
+```txt
+literal.value(value=1)
 ```
 
 Example return values:
 - `Pending`
+- ``
+- ``
+- `1`

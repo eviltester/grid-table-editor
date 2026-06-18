@@ -19,6 +19,7 @@ The `book` domain maps domain keywords to underlying faker implementations.
 Returns a random author name.
 
 - Canonical: `awd.domain.book.author`
+- Docs: [https://anywaydata.com/docs/test-data/domain/book](https://anywaydata.com/docs/test-data/domain/book)
 - Faker docs: [https://fakerjs.dev/api/book](https://fakerjs.dev/api/book)
 
 No parameters.
@@ -26,17 +27,18 @@ No parameters.
 Examples:
 
 ```txt
-book.author()
+book.author
 ```
 
 Example return values:
-- `Jacqueline Crooks`
+- `Ian McEwan`
 
 ### `book.format`
 
 Returns a random book format.
 
 - Canonical: `awd.domain.book.format`
+- Docs: [https://anywaydata.com/docs/test-data/domain/book](https://anywaydata.com/docs/test-data/domain/book)
 - Faker docs: [https://fakerjs.dev/api/book](https://fakerjs.dev/api/book)
 
 No parameters.
@@ -44,17 +46,18 @@ No parameters.
 Examples:
 
 ```txt
-book.format()
+book.format
 ```
 
 Example return values:
-- `Paperback`
+- `Ebook`
 
 ### `book.genre`
 
 Returns a random genre.
 
 - Canonical: `awd.domain.book.genre`
+- Docs: [https://anywaydata.com/docs/test-data/domain/book](https://anywaydata.com/docs/test-data/domain/book)
 - Faker docs: [https://fakerjs.dev/api/book](https://fakerjs.dev/api/book)
 
 No parameters.
@@ -62,17 +65,18 @@ No parameters.
 Examples:
 
 ```txt
-book.genre()
+book.genre
 ```
 
 Example return values:
-- `Science Fiction`
+- `Graphic Novel`
 
 ### `book.publisher`
 
 Returns a random publisher.
 
 - Canonical: `awd.domain.book.publisher`
+- Docs: [https://anywaydata.com/docs/test-data/domain/book](https://anywaydata.com/docs/test-data/domain/book)
 - Faker docs: [https://fakerjs.dev/api/book](https://fakerjs.dev/api/book)
 
 No parameters.
@@ -80,17 +84,18 @@ No parameters.
 Examples:
 
 ```txt
-book.publisher()
+book.publisher
 ```
 
 Example return values:
-- `Butterworth-Heinemann`
+- `Golden Cockerel Press`
 
 ### `book.series`
 
 Returns a random series.
 
 - Canonical: `awd.domain.book.series`
+- Docs: [https://anywaydata.com/docs/test-data/domain/book](https://anywaydata.com/docs/test-data/domain/book)
 - Faker docs: [https://fakerjs.dev/api/book](https://fakerjs.dev/api/book)
 
 No parameters.
@@ -98,17 +103,18 @@ No parameters.
 Examples:
 
 ```txt
-book.series()
+book.series
 ```
 
 Example return values:
-- `The Inheritance Cycle`
+- `The Bartimaeus Trilogy`
 
 ### `book.title`
 
 Returns a random title.
 
 - Canonical: `awd.domain.book.title`
+- Docs: [https://anywaydata.com/docs/test-data/domain/book](https://anywaydata.com/docs/test-data/domain/book)
 - Faker docs: [https://fakerjs.dev/api/book](https://fakerjs.dev/api/book)
 
 No parameters.
@@ -116,8 +122,8 @@ No parameters.
 Examples:
 
 ```txt
-book.title()
+book.title
 ```
 
 Example return values:
-- `Animal Farm`
+- `Moby Dick`

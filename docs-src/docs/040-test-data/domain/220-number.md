@@ -19,6 +19,7 @@ The `number` domain maps domain keywords to underlying faker implementations.
 Returns a BigInt number.
 
 - Canonical: `awd.domain.number.bigInt`
+- Docs: [https://anywaydata.com/docs/test-data/domain/number](https://anywaydata.com/docs/test-data/domain/number)
 - Faker docs: [https://fakerjs.dev/api/number](https://fakerjs.dev/api/number)
 
 | Arg | Type | Required | Description |
@@ -32,17 +33,19 @@ number.bigInt()
 ```
 
 ```txt
-number.bigInt(value="value")
+number.bigInt(value=true)
 ```
 
 Example return values:
-- `347465151663036`
+- `703101335462806n`
+- `703101335462806n`
 
 ### `number.binary`
 
 Returns a binary string.
 
 - Canonical: `awd.domain.number.binary`
+- Docs: [https://anywaydata.com/docs/test-data/domain/number](https://anywaydata.com/docs/test-data/domain/number)
 - Faker docs: [https://fakerjs.dev/api/number](https://fakerjs.dev/api/number)
 
 | Arg | Type | Required | Description |
@@ -57,17 +60,24 @@ number.binary()
 ```
 
 ```txt
-number.binary(max=1, min=1)
+number.binary(max=5)
+```
+
+```txt
+number.binary(max=10, min=1)
 ```
 
 Example return values:
 - `0`
+- `10`
+- `101`
 
 ### `number.float`
 
 Returns a single random floating-point number, by default between `0.0` and `1.0`. To change the range, pass a `min` and `max` value. To limit the number of decimal places, pass a `multipleOf` or `fractionDigits` parameter.
 
 - Canonical: `awd.domain.number.float`
+- Docs: [https://anywaydata.com/docs/test-data/domain/number](https://anywaydata.com/docs/test-data/domain/number)
 - Faker docs: [https://fakerjs.dev/api/number](https://fakerjs.dev/api/number)
 
 | Arg | Type | Required | Description |
@@ -83,28 +93,45 @@ Examples:
 number.float()
 ```
 
-Type-in examples (named params):
-
 ```txt
-number.float(max=1)
+number.float(fractionDigits=2)
 ```
 
 ```txt
-number.float(min=1)
+number.float(multipleOf=0.5)
 ```
 
 ```txt
-number.float(multipleOf=1)
+number.float(min=1, max=10)
+```
+
+```txt
+number.float(min=1, max=10, fractionDigits=2)
+```
+
+```txt
+number.float(min=1, max=10, multipleOf=0.5)
+```
+
+```txt
+number.float(max=10)
 ```
 
 Example return values:
-- `0.5433707701438405`
+- `0.417022004702574`
+- `0.42`
+- `0.5`
+- `4.753198042323167`
+- `4.75`
+- `4.5`
+- `4.17022004702574`
 
 ### `number.hex`
 
 Returns a lowercase hexadecimal number.
 
 - Canonical: `awd.domain.number.hex`
+- Docs: [https://anywaydata.com/docs/test-data/domain/number](https://anywaydata.com/docs/test-data/domain/number)
 - Faker docs: [https://fakerjs.dev/api/number](https://fakerjs.dev/api/number)
 
 | Arg | Type | Required | Description |
@@ -119,17 +146,24 @@ number.hex()
 ```
 
 ```txt
-number.hex(min=1, max=1)
+number.hex(max=10, min=1)
+```
+
+```txt
+number.hex(max=5)
 ```
 
 Example return values:
-- `d`
+- `6`
+- `5`
+- `2`
 
 ### `number.int`
 
 Returns a single random integer between zero and the given max value or the given range.
 
 - Canonical: `awd.domain.number.int`
+- Docs: [https://anywaydata.com/docs/test-data/domain/number](https://anywaydata.com/docs/test-data/domain/number)
 - Faker docs: [https://fakerjs.dev/api/number](https://fakerjs.dev/api/number)
 
 | Arg | Type | Required | Description |
@@ -145,17 +179,29 @@ number.int()
 ```
 
 ```txt
-number.int(min=1, max=1, multipleOf=1)
+number.int(max=10, min=1)
+```
+
+```txt
+number.int(max=5)
+```
+
+```txt
+number.int(multipleOf=1)
 ```
 
 Example return values:
-- `5190574431878510`
+- `3756200289967619`
+- `5`
+- `2`
+- `3756200289967619`
 
 ### `number.octal`
 
 Returns an octal string.
 
 - Canonical: `awd.domain.number.octal`
+- Docs: [https://anywaydata.com/docs/test-data/domain/number](https://anywaydata.com/docs/test-data/domain/number)
 - Faker docs: [https://fakerjs.dev/api/number](https://fakerjs.dev/api/number)
 
 | Arg | Type | Required | Description |
@@ -170,17 +216,24 @@ number.octal()
 ```
 
 ```txt
-number.octal(max=1, min=1)
+number.octal(max=5)
+```
+
+```txt
+number.octal(max=10, min=1)
 ```
 
 Example return values:
-- `6`
+- `3`
+- `2`
+- `5`
 
 ### `number.romanNumeral`
 
 Returns a roman numeral in String format.
 
 - Canonical: `awd.domain.number.romanNumeral`
+- Docs: [https://anywaydata.com/docs/test-data/domain/number](https://anywaydata.com/docs/test-data/domain/number)
 - Faker docs: [https://fakerjs.dev/api/number](https://fakerjs.dev/api/number)
 
 | Arg | Type | Required | Description |
@@ -195,8 +248,14 @@ number.romanNumeral()
 ```
 
 ```txt
-number.romanNumeral(min=1, max=1)
+number.romanNumeral(max=10, min=1)
+```
+
+```txt
+number.romanNumeral(max=5)
 ```
 
 Example return values:
-- `XXXV`
+- `MDCLXVIII`
+- `V`
+- `III`

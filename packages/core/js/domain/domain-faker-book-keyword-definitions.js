@@ -1,3 +1,5 @@
+import { validateStringValue } from '../command-help/command-help-validators.js';
+
 const DOMAIN_FAKER_BOOK_KEYWORD_DEFINITIONS = [
   {
     keyword: 'book.author',
@@ -7,9 +9,17 @@ const DOMAIN_FAKER_BOOK_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random author name.',
-      docsUrl: 'https://fakerjs.dev/api/book',
-      example: 'Jacqueline Crooks',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/book',
+      fakerDocsUrl: 'https://fakerjs.dev/api/book',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'book.author',
+          sampleReturnValue: 'Ian McEwan',
+          description: 'Shows the default book.author call.',
+        },
+      ],
       args: [],
     },
   },
@@ -21,9 +31,17 @@ const DOMAIN_FAKER_BOOK_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random book format.',
-      docsUrl: 'https://fakerjs.dev/api/book',
-      example: 'Paperback',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/book',
+      fakerDocsUrl: 'https://fakerjs.dev/api/book',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'book.format',
+          sampleReturnValue: 'Ebook',
+          description: 'Shows the default book.format call.',
+        },
+      ],
       args: [],
     },
   },
@@ -35,9 +53,17 @@ const DOMAIN_FAKER_BOOK_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random genre.',
-      docsUrl: 'https://fakerjs.dev/api/book',
-      example: 'Science Fiction',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/book',
+      fakerDocsUrl: 'https://fakerjs.dev/api/book',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'book.genre',
+          sampleReturnValue: 'Graphic Novel',
+          description: 'Shows the default book.genre call.',
+        },
+      ],
       args: [],
     },
   },
@@ -49,9 +75,17 @@ const DOMAIN_FAKER_BOOK_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random publisher.',
-      docsUrl: 'https://fakerjs.dev/api/book',
-      example: 'Butterworth-Heinemann',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/book',
+      fakerDocsUrl: 'https://fakerjs.dev/api/book',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'book.publisher',
+          sampleReturnValue: 'Golden Cockerel Press',
+          description: 'Shows the default book.publisher call.',
+        },
+      ],
       args: [],
     },
   },
@@ -63,9 +97,17 @@ const DOMAIN_FAKER_BOOK_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random series.',
-      docsUrl: 'https://fakerjs.dev/api/book',
-      example: 'The Inheritance Cycle',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/book',
+      fakerDocsUrl: 'https://fakerjs.dev/api/book',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'book.series',
+          sampleReturnValue: 'The Bartimaeus Trilogy',
+          description: 'Shows the default book.series call.',
+        },
+      ],
       args: [],
     },
   },
@@ -77,9 +119,17 @@ const DOMAIN_FAKER_BOOK_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random title.',
-      docsUrl: 'https://fakerjs.dev/api/book',
-      example: 'Animal Farm',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/book',
+      fakerDocsUrl: 'https://fakerjs.dev/api/book',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'book.title',
+          sampleReturnValue: 'Moby Dick',
+          description: 'Shows the default book.title call.',
+        },
+      ],
       args: [],
     },
   },

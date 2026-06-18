@@ -166,7 +166,7 @@ describe('method picker modal', () => {
     await promise;
   });
 
-  test('renders usage from examples and deduped return examples from example + exampleReturnValues', async () => {
+  test('renders usage and deduped return examples from structured usageExamples', async () => {
     const promise = openMethodPickerModal({
       documentObj: document,
       windowObj: window,
@@ -178,9 +178,23 @@ describe('method picker modal', () => {
             summary: 'Enum helper',
             heading: 'datatype.enum',
             docsUrl: 'https://anywaydata.com/docs/category/generating-data',
-            example: 'active',
-            examples: ['enum active,inactive,pending', 'datatype.enum(active,inactive,pending)'],
-            exampleReturnValues: ['inactive', 'pending', 'active'],
+            usageExamples: [
+              {
+                functionCall: 'enum active,inactive,pending',
+                sampleReturnValue: 'active',
+                description: 'Shows enum helper usage.',
+              },
+              {
+                functionCall: 'datatype.enum(active,inactive,pending)',
+                sampleReturnValue: 'inactive',
+                description: 'Shows datatype.enum helper usage.',
+              },
+              {
+                functionCall: 'datatype.enum(open,closed)',
+                sampleReturnValue: 'pending',
+                description: 'Shows an alternate enum call.',
+              },
+            ],
             params: [],
           },
         },

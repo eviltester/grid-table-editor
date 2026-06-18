@@ -113,6 +113,18 @@ function buildSchemaParamsHint(params) {
   return `(${params.map((param) => param.name).join(', ')})`;
 }
 
+function getPrimaryUsageExample(model = {}) {
+  const usageExamples = Array.isArray(model?.usageExamples) ? model.usageExamples : [];
+  const firstUsageExample = usageExamples.find(
+    (usageExample) => typeof usageExample?.functionCall === 'string' && usageExample.functionCall.trim().length > 0
+  );
+  if (firstUsageExample) {
+    return firstUsageExample.functionCall.trim();
+  }
+  const example = String(model?.example || '').trim();
+  return example;
+}
+
 function renderSchemaHelpHtml(model) {
   if (!model?.show) {
     return '';
@@ -145,8 +157,9 @@ function renderSchemaHelpHtml(model) {
     sections.push(`<p><strong>Params:</strong></p><ul>${paramItems}</ul>`);
   }
 
-  if (model.example) {
-    sections.push(`<p><strong>Example:</strong> <code>${escapeHtml(model.example)}</code></p>`);
+  const primaryUsageExample = getPrimaryUsageExample(model);
+  if (primaryUsageExample) {
+    sections.push(`<p><strong>Example:</strong> <code>${escapeHtml(primaryUsageExample)}</code></p>`);
   } else if (model.kind === 'command') {
     sections.push('<p><strong>Example:</strong> Output depends on your selected params.</p>');
   }
@@ -172,6 +185,14 @@ function buildTypeHelpModel(typeName, summary, docsUrl, { params = [], example =
     docsUrl,
     params,
     example,
+    usageExamples: example
+      ? [
+          {
+            functionCall: example,
+            description: `${typeName} example usage.`,
+          },
+        ]
+      : [],
   };
 }
 
@@ -252,10 +273,9 @@ function buildSchemaHelpModel(sourceType, commandValue) {
       heading: `faker.${command}`,
       summary: commandHelp?.summary || `Generates data using faker.${command}.`,
       docsUrl: resolveFakerDocsUrl(command, commandHelp?.docsUrl),
+      fakerDocsUrl: String(commandHelp?.fakerDocsUrl || '').trim(),
       params: normalizeHelpParams(commandHelp?.params || []),
-      example: commandHelp?.example || '',
-      examples: Array.isArray(commandHelp?.examples) ? commandHelp.examples : [],
-      exampleReturnValues: Array.isArray(commandHelp?.exampleReturnValues) ? commandHelp.exampleReturnValues : [],
+      usageExamples: Array.isArray(commandHelp?.usageExamples) ? commandHelp.usageExamples : [],
     };
   }
 
@@ -276,10 +296,9 @@ function buildSchemaHelpModel(sourceType, commandValue) {
       heading: commandHelp?.canonical || command,
       summary: commandHelp?.summary || `Generates data using ${commandHelp?.canonical || command}.`,
       docsUrl: commandHelp?.docsUrl || HELP_URLS.domain,
+      fakerDocsUrl: String(commandHelp?.fakerDocsUrl || '').trim(),
       params: resolveDomainHelpParams(command, commandHelp),
-      example: commandHelp?.example || '',
-      examples: Array.isArray(commandHelp?.examples) ? commandHelp.examples : [],
-      exampleReturnValues: Array.isArray(commandHelp?.exampleReturnValues) ? commandHelp.exampleReturnValues : [],
+      usageExamples: Array.isArray(commandHelp?.usageExamples) ? commandHelp.usageExamples : [],
     };
   }
 

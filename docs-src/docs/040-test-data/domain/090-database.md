@@ -19,6 +19,7 @@ The `database` domain maps domain keywords to underlying faker implementations.
 Returns a random database collation.
 
 - Canonical: `awd.domain.database.collation`
+- Docs: [https://anywaydata.com/docs/test-data/domain/database](https://anywaydata.com/docs/test-data/domain/database)
 - Faker docs: [https://fakerjs.dev/api/database](https://fakerjs.dev/api/database)
 
 No parameters.
@@ -26,17 +27,18 @@ No parameters.
 Examples:
 
 ```txt
-database.collation()
+database.collation
 ```
 
 Example return values:
-- `utf8_bin`
+- `cp1250_bin`
 
 ### `database.column`
 
 Returns a random database column name.
 
 - Canonical: `awd.domain.database.column`
+- Docs: [https://anywaydata.com/docs/test-data/domain/database](https://anywaydata.com/docs/test-data/domain/database)
 - Faker docs: [https://fakerjs.dev/api/database](https://fakerjs.dev/api/database)
 
 No parameters.
@@ -44,17 +46,18 @@ No parameters.
 Examples:
 
 ```txt
-database.column()
+database.column
 ```
 
 Example return values:
-- `status`
+- `group`
 
 ### `database.engine`
 
 Returns a random database engine.
 
 - Canonical: `awd.domain.database.engine`
+- Docs: [https://anywaydata.com/docs/test-data/domain/database](https://anywaydata.com/docs/test-data/domain/database)
 - Faker docs: [https://fakerjs.dev/api/database](https://fakerjs.dev/api/database)
 
 No parameters.
@@ -62,17 +65,18 @@ No parameters.
 Examples:
 
 ```txt
-database.engine()
+database.engine
 ```
 
 Example return values:
-- `ARCHIVE`
+- `CSV`
 
 ### `database.mongodbObjectId`
 
 Returns a MongoDB ObjectId string.
 
 - Canonical: `awd.domain.database.mongodbObjectId`
+- Docs: [https://anywaydata.com/docs/test-data/domain/database](https://anywaydata.com/docs/test-data/domain/database)
 - Faker docs: [https://fakerjs.dev/api/database](https://fakerjs.dev/api/database)
 
 No parameters.
@@ -80,17 +84,18 @@ No parameters.
 Examples:
 
 ```txt
-database.mongodbObjectId()
+database.mongodbObjectId
 ```
 
 Example return values:
-- `e80bba2ae67c0c7dcc16bd57`
+- `9f0632478b9f4d0e9c34bf6f`
 
 ### `database.type`
 
 Returns a random database column type.
 
 - Canonical: `awd.domain.database.type`
+- Docs: [https://anywaydata.com/docs/test-data/domain/database](https://anywaydata.com/docs/test-data/domain/database)
 - Faker docs: [https://fakerjs.dev/api/database](https://fakerjs.dev/api/database)
 
 No parameters.
@@ -98,8 +103,8 @@ No parameters.
 Examples:
 
 ```txt
-database.type()
+database.type
 ```
 
 Example return values:
-- `smallint`
+- `float`

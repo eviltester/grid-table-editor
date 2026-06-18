@@ -57,7 +57,7 @@ describe('schema interaction scenario builder', () => {
       });
 
       const exampleScenarioCount = bucket.scenarios.filter((scenario) => scenario.origins.includes('example')).length;
-      const expectedExamples = Array.isArray(metadata.examples) ? metadata.examples.length : 0;
+      const expectedExamples = Array.isArray(metadata.usageExamples) ? metadata.usageExamples.length : 0;
       if (expectedExamples > 0) {
         expect(exampleScenarioCount).toBeGreaterThanOrEqual(expectedExamples);
       }
@@ -83,8 +83,8 @@ describe('schema interaction scenario builder', () => {
       });
 
       const exampleScenarioCount = bucket.scenarios.filter((scenario) => scenario.origins.includes('example')).length;
-      const expectedExamples = Array.isArray(getDomainKeywordByCommand(command)?.help?.examples)
-        ? getDomainKeywordByCommand(command).help.examples.length
+      const expectedExamples = Array.isArray(getDomainKeywordByCommand(command)?.help?.usageExamples)
+        ? getDomainKeywordByCommand(command).help.usageExamples.length
         : 0;
       if (expectedExamples > 0) {
         expect(exampleScenarioCount).toBeGreaterThanOrEqual(expectedExamples);
@@ -105,7 +105,10 @@ describe('schema interaction scenario builder', () => {
       '(refDate=20000, max=69, min=16, mode="age")'
     );
     expect(scenarios.find((scenario) => scenario.id === 'domain-internet-password-example-1')?.rows[0]?.params).toBe(
-      '(length=10, memorable=false, pattern="[A-Za-z0-9]", prefix="#")'
+      '()'
+    );
+    expect(scenarios.find((scenario) => scenario.id === 'domain-internet-password-example-2')?.rows[0]?.params).toBe(
+      '(length=12)'
     );
     expect(
       scenarios.find((scenario) => scenario.id === 'domain-autoIncrement-sequence-example-1')?.rows[0]?.params

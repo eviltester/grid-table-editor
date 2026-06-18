@@ -19,6 +19,7 @@ The `science` domain maps domain keywords to underlying faker implementations.
 Generate a value using faker science.chemicalElement.
 
 - Canonical: `awd.domain.science.chemicalElement`
+- Docs: [https://anywaydata.com/docs/test-data/domain/science](https://anywaydata.com/docs/test-data/domain/science)
 - Faker docs: [https://fakerjs.dev/api/science](https://fakerjs.dev/api/science)
 
 No parameters.
@@ -26,17 +27,18 @@ No parameters.
 Examples:
 
 ```txt
-science.chemicalElement()
+science.chemicalElement
 ```
 
 Example return values:
-- `{"name":"Oxygen","symbol":"O","atomicNumber":8}`
+- `{"symbol":"Sn","name":"Tin","atomicNumber":50}`
 
 ### `science.chemicalElement.atomicNumber`
 
 Generate a chemical element atomic number.
 
 - Canonical: `awd.domain.science.chemicalElement.atomicNumber`
+- Docs: [https://anywaydata.com/docs/test-data/domain/science](https://anywaydata.com/docs/test-data/domain/science)
 - Faker docs: [https://fakerjs.dev/api/science](https://fakerjs.dev/api/science)
 
 No parameters.
@@ -44,17 +46,18 @@ No parameters.
 Examples:
 
 ```txt
-science.chemicalElement.atomicNumber()
+science.chemicalElement.atomicNumber
 ```
 
 Example return values:
-- `8`
+- `50`
 
 ### `science.chemicalElement.name`
 
 Generate a chemical element name.
 
 - Canonical: `awd.domain.science.chemicalElement.name`
+- Docs: [https://anywaydata.com/docs/test-data/domain/science](https://anywaydata.com/docs/test-data/domain/science)
 - Faker docs: [https://fakerjs.dev/api/science](https://fakerjs.dev/api/science)
 
 No parameters.
@@ -62,17 +65,18 @@ No parameters.
 Examples:
 
 ```txt
-science.chemicalElement.name()
+science.chemicalElement.name
 ```
 
 Example return values:
-- `Oxygen`
+- `Tin`
 
 ### `science.chemicalElement.symbol`
 
 Generate a chemical element symbol.
 
 - Canonical: `awd.domain.science.chemicalElement.symbol`
+- Docs: [https://anywaydata.com/docs/test-data/domain/science](https://anywaydata.com/docs/test-data/domain/science)
 - Faker docs: [https://fakerjs.dev/api/science](https://fakerjs.dev/api/science)
 
 No parameters.
@@ -80,17 +84,18 @@ No parameters.
 Examples:
 
 ```txt
-science.chemicalElement.symbol()
+science.chemicalElement.symbol
 ```
 
 Example return values:
-- `O`
+- `Sn`
 
 ### `science.unit`
 
 Returns a random scientific unit.
 
 - Canonical: `awd.domain.science.unit`
+- Docs: [https://anywaydata.com/docs/test-data/domain/science](https://anywaydata.com/docs/test-data/domain/science)
 - Faker docs: [https://fakerjs.dev/api/science](https://fakerjs.dev/api/science)
 
 No parameters.
@@ -98,8 +103,8 @@ No parameters.
 Examples:
 
 ```txt
-science.unit()
+science.unit
 ```
 
 Example return values:
-- `{"name":"farad","symbol":"F"}`
+- `{"name":"watt","symbol":"W"}`

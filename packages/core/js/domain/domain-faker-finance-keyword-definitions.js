@@ -1,3 +1,23 @@
+import {
+  validateAccountNumberValue,
+  validateBicValue,
+  validateBitcoinAddressValue,
+  validateCreditCardCvvValue,
+  validateCreditCardNumberValue,
+  validateCurrencyCodeValue,
+  validateCurrencyNumericCodeValue,
+  validateEthereumAddressValue,
+  validateIbanValue,
+  validateLitecoinAddressValue,
+  validateObjectValue,
+  validatePinValue,
+  validateRoutingNumberValue,
+  validateStringValue,
+} from '../command-help/command-help-validators.js';
+
+const BITCOIN_ADDRESS_TYPE = 'legacy|segwit|bech32|taproot';
+const BITCOIN_NETWORK_TYPE = 'mainnet|testnet';
+
 const DOMAIN_FAKER_FINANCE_KEYWORD_DEFINITIONS = [
   {
     keyword: 'finance.accountName',
@@ -7,9 +27,17 @@ const DOMAIN_FAKER_FINANCE_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Generates a random account name.',
-      docsUrl: 'https://fakerjs.dev/api/finance',
-      example: 'Investment Account',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/finance',
+      fakerDocsUrl: 'https://fakerjs.dev/api/finance',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'finance.accountName',
+          sampleReturnValue: 'Home Loan Account',
+          description: 'Shows the default finance.accountName call.',
+        },
+      ],
       args: [],
     },
   },
@@ -21,9 +49,22 @@ const DOMAIN_FAKER_FINANCE_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Generates a random account number.',
-      docsUrl: 'https://fakerjs.dev/api/finance',
-      example: '43208795',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/finance',
+      fakerDocsUrl: 'https://fakerjs.dev/api/finance',
+      validator: validateAccountNumberValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'finance.accountNumber()',
+          sampleReturnValue: '47031013',
+          description: 'Shows finance.accountNumber when optional params are omitted.',
+        },
+        {
+          functionCall: 'finance.accountNumber(length=5)',
+          sampleReturnValue: '47031',
+          description: 'Shows finance.accountNumber using length.',
+        },
+      ],
       args: [
         {
           name: 'length',
@@ -43,9 +84,42 @@ const DOMAIN_FAKER_FINANCE_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Generates a random amount between the given bounds (inclusive).',
-      docsUrl: 'https://fakerjs.dev/api/finance',
-      example: '536.86',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/finance',
+      fakerDocsUrl: 'https://fakerjs.dev/api/finance',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'finance.amount()',
+          sampleReturnValue: '417.02',
+          description: 'Shows finance.amount when optional params are omitted.',
+        },
+        {
+          functionCall: 'finance.amount(autoFormat=true)',
+          sampleReturnValue: '417.02',
+          description: 'Shows finance.amount using autoFormat.',
+        },
+        {
+          functionCall: 'finance.amount(dec=2)',
+          sampleReturnValue: '417.02',
+          description: 'Shows finance.amount using dec.',
+        },
+        {
+          functionCall: 'finance.amount(max=100)',
+          sampleReturnValue: '41.70',
+          description: 'Shows finance.amount using max.',
+        },
+        {
+          functionCall: 'finance.amount(max=10, min=1)',
+          sampleReturnValue: '4.75',
+          description: 'Shows finance.amount using min.',
+        },
+        {
+          functionCall: 'finance.amount(symbol="$")',
+          sampleReturnValue: '$417.02',
+          description: 'Shows finance.amount using symbol.',
+        },
+      ],
       args: [
         {
           name: 'autoFormat',
@@ -94,9 +168,22 @@ const DOMAIN_FAKER_FINANCE_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Generates a random SWIFT/BIC code based on the ISO-9362 format.',
-      docsUrl: 'https://fakerjs.dev/api/finance',
-      example: 'TXWRPYFT',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/finance',
+      fakerDocsUrl: 'https://fakerjs.dev/api/finance',
+      validator: validateBicValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'finance.bic()',
+          sampleReturnValue: 'SAHDBI6CJFO',
+          description: 'Shows finance.bic when optional params are omitted.',
+        },
+        {
+          functionCall: 'finance.bic(includeBranchCode=true)',
+          sampleReturnValue: 'KSAHBZ36EJF',
+          description: 'Shows finance.bic using includeBranchCode.',
+        },
+      ],
       args: [
         {
           name: 'includeBranchCode',
@@ -112,13 +199,47 @@ const DOMAIN_FAKER_FINANCE_KEYWORD_DEFINITIONS = [
     delegate: {
       type: 'faker',
       target: 'finance.bitcoinAddress',
+      argTransform: 'optionsFromHelpArgs',
     },
     help: {
       summary: 'Generates a random Bitcoin address.',
-      docsUrl: 'https://fakerjs.dev/api/finance',
-      example: '39fu5Nhnibj2xa8FPVxCbX7y4xZi5SWd',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/finance',
+      fakerDocsUrl: 'https://fakerjs.dev/api/finance',
+      validator: validateBitcoinAddressValue,
       returnType: 'string',
-      args: [],
+      usageExamples: [
+        {
+          functionCall: 'finance.bitcoinAddress()',
+          sampleReturnValue: '31i96bmpxqFcS2Eqy9cNYjGST53aS6qX',
+          description: 'Shows finance.bitcoinAddress when optional params are omitted.',
+        },
+        {
+          functionCall: 'finance.bitcoinAddress(type="bech32")',
+          sampleReturnValue: 'bc1fr0a536dekfp7w0pfk57tycqww326w4fykqcpu0',
+          description: 'Shows finance.bitcoinAddress using type.',
+        },
+        {
+          functionCall: 'finance.bitcoinAddress(network="testnet")',
+          sampleReturnValue: '21i96bmpxqFcS2Eqy9cNYjGST53aS6qX',
+          description: 'Shows finance.bitcoinAddress using network.',
+        },
+      ],
+      args: [
+        {
+          name: 'type',
+          type: BITCOIN_ADDRESS_TYPE,
+          required: false,
+          description: "The bitcoin address type ('legacy', 'segwit', 'bech32' or 'taproot').",
+          examples: ['bech32'],
+        },
+        {
+          name: 'network',
+          type: BITCOIN_NETWORK_TYPE,
+          required: false,
+          description: "The bitcoin network ('mainnet' or 'testnet').",
+          examples: ['testnet'],
+        },
+      ],
     },
   },
   {
@@ -129,9 +250,17 @@ const DOMAIN_FAKER_FINANCE_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Generates a random credit card CVV.',
-      docsUrl: 'https://fakerjs.dev/api/finance',
-      example: '839',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/finance',
+      fakerDocsUrl: 'https://fakerjs.dev/api/finance',
+      validator: validateCreditCardCvvValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'finance.creditCardCVV',
+          sampleReturnValue: '470',
+          description: 'Shows the default finance.creditCardCVV call.',
+        },
+      ],
       args: [],
     },
   },
@@ -143,9 +272,17 @@ const DOMAIN_FAKER_FINANCE_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random credit card issuer.',
-      docsUrl: 'https://fakerjs.dev/api/finance',
-      example: 'jcb',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/finance',
+      fakerDocsUrl: 'https://fakerjs.dev/api/finance',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'finance.creditCardIssuer',
+          sampleReturnValue: 'discover',
+          description: 'Shows the default finance.creditCardIssuer call.',
+        },
+      ],
       args: [],
     },
   },
@@ -157,9 +294,22 @@ const DOMAIN_FAKER_FINANCE_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Generates a random credit card number.',
-      docsUrl: 'https://fakerjs.dev/api/finance',
-      example: '6449-4462-4996-7580',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/finance',
+      fakerDocsUrl: 'https://fakerjs.dev/api/finance',
+      validator: validateCreditCardNumberValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'finance.creditCardNumber()',
+          sampleReturnValue: '6503-1013-3546-2805',
+          description: 'Shows finance.creditCardNumber when optional params are omitted.',
+        },
+        {
+          functionCall: 'finance.creditCardNumber(issuer="Visa")',
+          sampleReturnValue: '4703101335466',
+          description: 'Shows finance.creditCardNumber using issuer.',
+        },
+      ],
       args: [
         {
           name: 'issuer',
@@ -178,9 +328,22 @@ const DOMAIN_FAKER_FINANCE_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random currency object, containing `code`, `name`, `symbol`, and `numericCode` properties.',
-      docsUrl: 'https://fakerjs.dev/api/finance',
-      example: '{"name":"Rial Omani","code":"OMR","symbol":"﷼","numericCode":"512"}',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/finance',
+      fakerDocsUrl: 'https://fakerjs.dev/api/finance',
+      validator: validateObjectValue,
       returnType: 'object',
+      usageExamples: [
+        {
+          functionCall: 'finance.currency',
+          sampleReturnValue: {
+            name: 'Jordanian Dinar',
+            code: 'JOD',
+            symbol: '',
+            numericCode: '400',
+          },
+          description: 'Shows the default finance.currency call.',
+        },
+      ],
       args: [],
     },
   },
@@ -192,9 +355,17 @@ const DOMAIN_FAKER_FINANCE_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random currency code.',
-      docsUrl: 'https://fakerjs.dev/api/finance',
-      example: 'ISK',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/finance',
+      fakerDocsUrl: 'https://fakerjs.dev/api/finance',
+      validator: validateCurrencyCodeValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'finance.currencyCode',
+          sampleReturnValue: 'JOD',
+          description: 'Shows the default finance.currencyCode call.',
+        },
+      ],
       args: [],
     },
   },
@@ -206,9 +377,17 @@ const DOMAIN_FAKER_FINANCE_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random currency name.',
-      docsUrl: 'https://fakerjs.dev/api/finance',
-      example: 'South Sudanese pound',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/finance',
+      fakerDocsUrl: 'https://fakerjs.dev/api/finance',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'finance.currencyName',
+          sampleReturnValue: 'Jordanian Dinar',
+          description: 'Shows the default finance.currencyName call.',
+        },
+      ],
       args: [],
     },
   },
@@ -220,9 +399,17 @@ const DOMAIN_FAKER_FINANCE_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random currency numeric code.',
-      docsUrl: 'https://fakerjs.dev/api/finance',
-      example: '270',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/finance',
+      fakerDocsUrl: 'https://fakerjs.dev/api/finance',
+      validator: validateCurrencyNumericCodeValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'finance.currencyNumericCode',
+          sampleReturnValue: '400',
+          description: 'Shows the default finance.currencyNumericCode call.',
+        },
+      ],
       args: [],
     },
   },
@@ -234,9 +421,17 @@ const DOMAIN_FAKER_FINANCE_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random currency symbol.',
-      docsUrl: 'https://fakerjs.dev/api/finance',
-      example: '₩',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/finance',
+      fakerDocsUrl: 'https://fakerjs.dev/api/finance',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'finance.currencySymbol',
+          sampleReturnValue: 'руб',
+          description: 'Shows the default finance.currencySymbol call.',
+        },
+      ],
       args: [],
     },
   },
@@ -248,9 +443,17 @@ const DOMAIN_FAKER_FINANCE_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Creates a random, non-checksum Ethereum address.',
-      docsUrl: 'https://fakerjs.dev/api/finance',
-      example: '0xf5d385aff27de9dee6eeeffd924ffd7dd2d252ca',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/finance',
+      fakerDocsUrl: 'https://fakerjs.dev/api/finance',
+      validator: validateEthereumAddressValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'finance.ethereumAddress',
+          sampleReturnValue: '0x9f0632478b9f4d0e9c34bf6fdd103d29fbf6fc0a',
+          description: 'Shows the default finance.ethereumAddress call.',
+        },
+      ],
       args: [],
     },
   },
@@ -263,9 +466,27 @@ const DOMAIN_FAKER_FINANCE_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Generates a random IBAN.',
-      docsUrl: 'https://fakerjs.dev/api/finance',
-      example: 'CH67001759079BP5WA811',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/finance',
+      fakerDocsUrl: 'https://fakerjs.dev/api/finance',
+      validator: validateIbanValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'finance.iban()',
+          sampleReturnValue: 'IE39SAHD00454601410936',
+          description: 'Shows finance.iban when optional params are omitted.',
+        },
+        {
+          functionCall: 'finance.iban(countryCode="GB")',
+          sampleReturnValue: 'GB98KSAH00235420410936',
+          description: 'Shows finance.iban using countryCode.',
+        },
+        {
+          functionCall: 'finance.iban(formatted=true)',
+          sampleReturnValue: 'IE39 SAHD 0045 4601 4109 36',
+          description: 'Shows finance.iban using formatted.',
+        },
+      ],
       args: [
         {
           name: 'countryCode',
@@ -293,9 +514,17 @@ const DOMAIN_FAKER_FINANCE_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Generates a random Litecoin address.',
-      docsUrl: 'https://fakerjs.dev/api/finance',
-      example: 'M7nWopfUfSjA8cmGWvuENRLu6GU4C1iTK',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/finance',
+      fakerDocsUrl: 'https://fakerjs.dev/api/finance',
+      validator: validateLitecoinAddressValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'finance.litecoinAddress',
+          sampleReturnValue: '31i96bmpxqFcS2Eqy9cNYjGST53aS',
+          description: 'Shows the default finance.litecoinAddress call.',
+        },
+      ],
       args: [],
     },
   },
@@ -307,9 +536,22 @@ const DOMAIN_FAKER_FINANCE_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Generates a random PIN number.',
-      docsUrl: 'https://fakerjs.dev/api/finance',
-      example: '1107',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/finance',
+      fakerDocsUrl: 'https://fakerjs.dev/api/finance',
+      validator: validatePinValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'finance.pin()',
+          sampleReturnValue: '4703',
+          description: 'Shows finance.pin when optional params are omitted.',
+        },
+        {
+          functionCall: 'finance.pin(length=5)',
+          sampleReturnValue: '47031',
+          description: 'Shows finance.pin using length.',
+        },
+      ],
       args: [
         {
           name: 'length',
@@ -328,9 +570,17 @@ const DOMAIN_FAKER_FINANCE_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Generates a random routing number.',
-      docsUrl: 'https://fakerjs.dev/api/finance',
-      example: '933657999',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/finance',
+      fakerDocsUrl: 'https://fakerjs.dev/api/finance',
+      validator: validateRoutingNumberValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'finance.routingNumber',
+          sampleReturnValue: '470310139',
+          description: 'Shows the default finance.routingNumber call.',
+        },
+      ],
       args: [],
     },
   },
@@ -342,10 +592,18 @@ const DOMAIN_FAKER_FINANCE_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Generates a random transaction description.',
-      docsUrl: 'https://fakerjs.dev/api/finance',
-      example:
-        'Transaction alert: deposit at Jones LLC using card ending ****4221 for an amount of GIP 94.88 on account ***3694.',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/finance',
+      fakerDocsUrl: 'https://fakerjs.dev/api/finance',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'finance.transactionDescription',
+          sampleReturnValue:
+            'You made a payment of AED 302.33 at Hegmann - Johnston using card ending in ****6280 from account ***6451.',
+          description: 'Shows the default finance.transactionDescription call.',
+        },
+      ],
       args: [],
     },
   },
@@ -357,9 +615,17 @@ const DOMAIN_FAKER_FINANCE_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random transaction type.',
-      docsUrl: 'https://fakerjs.dev/api/finance',
-      example: 'deposit',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/finance',
+      fakerDocsUrl: 'https://fakerjs.dev/api/finance',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'finance.transactionType',
+          sampleReturnValue: 'invoice',
+          description: 'Shows the default finance.transactionType call.',
+        },
+      ],
       args: [],
     },
   },

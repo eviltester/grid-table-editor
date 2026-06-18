@@ -1,3 +1,5 @@
+import { validateStringValue } from '../command-help/command-help-validators.js';
+
 const DOMAIN_FAKER_HACKER_KEYWORD_DEFINITIONS = [
   {
     keyword: 'hacker.abbreviation',
@@ -7,9 +9,17 @@ const DOMAIN_FAKER_HACKER_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random hacker/IT abbreviation.',
-      docsUrl: 'https://fakerjs.dev/api/hacker',
-      example: 'GB',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/hacker',
+      fakerDocsUrl: 'https://fakerjs.dev/api/hacker',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'hacker.abbreviation',
+          sampleReturnValue: 'IP',
+          description: 'Shows the default hacker.abbreviation call.',
+        },
+      ],
       args: [],
     },
   },
@@ -21,9 +31,17 @@ const DOMAIN_FAKER_HACKER_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random hacker/IT adjective.',
-      docsUrl: 'https://fakerjs.dev/api/hacker',
-      example: 'bluetooth',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/hacker',
+      fakerDocsUrl: 'https://fakerjs.dev/api/hacker',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'hacker.adjective',
+          sampleReturnValue: 'mobile',
+          description: 'Shows the default hacker.adjective call.',
+        },
+      ],
       args: [],
     },
   },
@@ -35,9 +53,17 @@ const DOMAIN_FAKER_HACKER_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random hacker/IT verb for continuous actions (en: ing suffix; e.g. hacking).',
-      docsUrl: 'https://fakerjs.dev/api/hacker',
-      example: 'synthesizing',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/hacker',
+      fakerDocsUrl: 'https://fakerjs.dev/api/hacker',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'hacker.ingverb',
+          sampleReturnValue: 'generating',
+          description: 'Shows the default hacker.ingverb call.',
+        },
+      ],
       args: [],
     },
   },
@@ -49,9 +75,17 @@ const DOMAIN_FAKER_HACKER_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random hacker/IT noun.',
-      docsUrl: 'https://fakerjs.dev/api/hacker',
-      example: 'program',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/hacker',
+      fakerDocsUrl: 'https://fakerjs.dev/api/hacker',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'hacker.noun',
+          sampleReturnValue: 'firewall',
+          description: 'Shows the default hacker.noun call.',
+        },
+      ],
       args: [],
     },
   },
@@ -63,9 +97,17 @@ const DOMAIN_FAKER_HACKER_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Generates a random hacker/IT phrase.',
-      docsUrl: 'https://fakerjs.dev/api/hacker',
-      example: "compressing the application won't do anything, we need to reboot the neural JSON hard drive!",
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/hacker',
+      fakerDocsUrl: 'https://fakerjs.dev/api/hacker',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'hacker.phrase',
+          sampleReturnValue: 'Try to back up the COM bus, maybe it will hack the mobile bus!',
+          description: 'Shows the default hacker.phrase call.',
+        },
+      ],
       args: [],
     },
   },
@@ -77,9 +119,17 @@ const DOMAIN_FAKER_HACKER_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random hacker/IT verb.',
-      docsUrl: 'https://fakerjs.dev/api/hacker',
-      example: 'program',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/hacker',
+      fakerDocsUrl: 'https://fakerjs.dev/api/hacker',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'hacker.verb',
+          sampleReturnValue: 'hack',
+          description: 'Shows the default hacker.verb call.',
+        },
+      ],
       args: [],
     },
   },

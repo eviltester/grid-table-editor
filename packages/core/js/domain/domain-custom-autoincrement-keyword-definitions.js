@@ -1,3 +1,5 @@
+import { validateStringOrNumberValue, validateStringValue } from '../command-help/command-help-validators.js';
+
 const DOMAIN_CUSTOM_AUTOINCREMENT_KEYWORD_DEFINITIONS = [
   {
     keyword: 'autoIncrement.timestamp',
@@ -9,15 +11,62 @@ const DOMAIN_CUSTOM_AUTOINCREMENT_KEYWORD_DEFINITIONS = [
       summary:
         'Generates a timestamp that starts from a fixed point and increments by the configured amount for each generated row.',
       docsUrl: 'https://anywaydata.com/docs/test-data/domain/autoIncrement',
-      example: 'autoIncrement.timestamp(start="2026-06-12T12:39:23Z", step=1, type="seconds")',
-      examples: [
-        'autoIncrement.timestamp()',
-        'autoIncrement.timestamp(start="20/03/1969", step=1, type="days")',
-        'autoIncrement.timestamp(start="2026-06-12 12:39:23", step=15, type="minutes", outputFormat="yyyy-MM-dd HH:mm:ss")',
-        'autoIncrement.timestamp(start="20/03/1969", inputFormat="dd/MM/yyyy", step=1, type="days")',
-      ],
-      exampleReturnValues: ['2026-06-12T12:39:23Z', '2026-06-12T12:39:24Z', '2026-06-12T12:39:25Z'],
+      fakerDocsUrl: '',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'autoIncrement.timestamp(start="2026-06-12T12:39:23Z", step=1, type="seconds")',
+          sampleReturnValue: '2026-06-12T12:39:23Z',
+          description: 'Shows autoIncrement.timestamp in use.',
+        },
+        {
+          functionCall: 'autoIncrement.timestamp()',
+          sampleReturnValue: '2026-06-18T15:55:20Z',
+          description: 'Shows autoIncrement.timestamp in use.',
+        },
+        {
+          functionCall: 'autoIncrement.timestamp(start="20/03/1969", step=1, type="days")',
+          sampleReturnValue: '1969-03-20T12:00:00Z',
+          description: 'Shows autoIncrement.timestamp in use.',
+        },
+        {
+          functionCall:
+            'autoIncrement.timestamp(start="2026-06-12 12:39:23", step=15, type="minutes", outputFormat="yyyy-MM-dd HH:mm:ss")',
+          sampleReturnValue: '2026-06-12 11:39:23',
+          description: 'Shows autoIncrement.timestamp in use.',
+        },
+        {
+          functionCall: 'autoIncrement.timestamp(start="20/03/1969", inputFormat="dd/MM/yyyy", step=1, type="days")',
+          sampleReturnValue: '1969-03-20T00:00:00Z',
+          description: 'Shows autoIncrement.timestamp in use.',
+        },
+        {
+          functionCall: 'autoIncrement.timestamp(start="2026-06-12T12:39:23Z")',
+          sampleReturnValue: '2026-06-12T12:39:23Z',
+          description: 'Shows autoIncrement.timestamp using start.',
+        },
+        {
+          functionCall: 'autoIncrement.timestamp(step=1)',
+          sampleReturnValue: '2026-06-18T15:55:20Z',
+          description: 'Shows autoIncrement.timestamp using step.',
+        },
+        {
+          functionCall: 'autoIncrement.timestamp(type="seconds")',
+          sampleReturnValue: '2026-06-18T15:55:20Z',
+          description: 'Shows autoIncrement.timestamp using type.',
+        },
+        {
+          functionCall: 'autoIncrement.timestamp(outputFormat="iso8601")',
+          sampleReturnValue: '2026-06-18T15:55:20Z',
+          description: 'Shows autoIncrement.timestamp using outputFormat.',
+        },
+        {
+          functionCall: 'autoIncrement.timestamp(start="20/03/1969", inputFormat="dd/MM/yyyy")',
+          sampleReturnValue: '1969-03-20T00:00:00Z',
+          description: 'Shows autoIncrement.timestamp using inputFormat.',
+        },
+      ],
       args: [
         {
           name: 'start',
@@ -71,14 +120,51 @@ const DOMAIN_CUSTOM_AUTOINCREMENT_KEYWORD_DEFINITIONS = [
       summary:
         'Generates an incrementing sequence. Values only advance when a generated row is accepted, so constraint-filtered rows do not consume sequence numbers.',
       docsUrl: 'https://anywaydata.com/docs/test-data/auto-increment-sequences',
-      example: '1',
-      examples: [
-        'autoIncrement.sequence()',
-        'autoIncrement.sequence(start=10, step=5)',
-        'autoIncrement.sequence(start=1, step=5, prefix="filename", suffix=".txt", zeropadding=3)',
-      ],
-      exampleReturnValues: ['1', '15', 'filename001.txt'],
+      fakerDocsUrl: '',
+      validator: validateStringOrNumberValue,
       returnType: 'string|number',
+      usageExamples: [
+        {
+          functionCall: 'autoIncrement.sequence()',
+          sampleReturnValue: 1,
+          description: 'Shows autoIncrement.sequence in use.',
+        },
+        {
+          functionCall: 'autoIncrement.sequence(start=10, step=5)',
+          sampleReturnValue: 10,
+          description: 'Shows autoIncrement.sequence in use.',
+        },
+        {
+          functionCall: 'autoIncrement.sequence(start=1, step=5, prefix="filename", suffix=".txt", zeropadding=3)',
+          sampleReturnValue: 'filename001.txt',
+          description: 'Shows autoIncrement.sequence in use.',
+        },
+        {
+          functionCall: 'autoIncrement.sequence(start=10)',
+          sampleReturnValue: 10,
+          description: 'Shows autoIncrement.sequence using start.',
+        },
+        {
+          functionCall: 'autoIncrement.sequence(step=5)',
+          sampleReturnValue: 1,
+          description: 'Shows autoIncrement.sequence using step.',
+        },
+        {
+          functionCall: 'autoIncrement.sequence(prefix="filename")',
+          sampleReturnValue: 'filename1',
+          description: 'Shows autoIncrement.sequence using prefix.',
+        },
+        {
+          functionCall: 'autoIncrement.sequence(suffix=".txt")',
+          sampleReturnValue: '1.txt',
+          description: 'Shows autoIncrement.sequence using suffix.',
+        },
+        {
+          functionCall: 'autoIncrement.sequence(zeropadding=3)',
+          sampleReturnValue: '001',
+          description: 'Shows autoIncrement.sequence using zeropadding.',
+        },
+      ],
       args: [
         {
           name: 'start',

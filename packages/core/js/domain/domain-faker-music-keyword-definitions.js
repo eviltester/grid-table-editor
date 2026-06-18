@@ -1,3 +1,5 @@
+import { validateStringValue } from '../command-help/command-help-validators.js';
+
 const DOMAIN_FAKER_MUSIC_KEYWORD_DEFINITIONS = [
   {
     keyword: 'music.album',
@@ -7,9 +9,17 @@ const DOMAIN_FAKER_MUSIC_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random album name.',
-      docsUrl: 'https://fakerjs.dev/api/music',
-      example: 'R&G (Rhythm & Gangsta): The Masterpiece',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/music',
+      fakerDocsUrl: 'https://fakerjs.dev/api/music',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'music.album',
+          sampleReturnValue: 'I Never Loved A Man The Way I Love You',
+          description: 'Shows the default music.album call.',
+        },
+      ],
       args: [],
     },
   },
@@ -21,9 +31,17 @@ const DOMAIN_FAKER_MUSIC_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random artist name.',
-      docsUrl: 'https://fakerjs.dev/api/music',
-      example: 'Chuck Berry',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/music',
+      fakerDocsUrl: 'https://fakerjs.dev/api/music',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'music.artist',
+          sampleReturnValue: 'Jon Bellion',
+          description: 'Shows the default music.artist call.',
+        },
+      ],
       args: [],
     },
   },
@@ -35,9 +53,17 @@ const DOMAIN_FAKER_MUSIC_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random music genre.',
-      docsUrl: 'https://fakerjs.dev/api/music',
-      example: 'Mainstream Jazz',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/music',
+      fakerDocsUrl: 'https://fakerjs.dev/api/music',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'music.genre',
+          sampleReturnValue: 'Hard Bop',
+          description: 'Shows the default music.genre call.',
+        },
+      ],
       args: [],
     },
   },
@@ -49,9 +75,17 @@ const DOMAIN_FAKER_MUSIC_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random song name.',
-      docsUrl: 'https://fakerjs.dev/api/music',
-      example: "I'm Sorry",
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/music',
+      fakerDocsUrl: 'https://fakerjs.dev/api/music',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'music.songName',
+          sampleReturnValue: 'Imagine',
+          description: 'Shows the default music.songName call.',
+        },
+      ],
       args: [],
     },
   },

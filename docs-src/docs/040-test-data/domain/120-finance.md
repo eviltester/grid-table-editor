@@ -19,6 +19,7 @@ The `finance` domain maps domain keywords to underlying faker implementations.
 Generates a random account name.
 
 - Canonical: `awd.domain.finance.accountName`
+- Docs: [https://anywaydata.com/docs/test-data/domain/finance](https://anywaydata.com/docs/test-data/domain/finance)
 - Faker docs: [https://fakerjs.dev/api/finance](https://fakerjs.dev/api/finance)
 
 No parameters.
@@ -26,17 +27,18 @@ No parameters.
 Examples:
 
 ```txt
-finance.accountName()
+finance.accountName
 ```
 
 Example return values:
-- `Investment Account`
+- `Home Loan Account`
 
 ### `finance.accountNumber`
 
 Generates a random account number.
 
 - Canonical: `awd.domain.finance.accountNumber`
+- Docs: [https://anywaydata.com/docs/test-data/domain/finance](https://anywaydata.com/docs/test-data/domain/finance)
 - Faker docs: [https://fakerjs.dev/api/finance](https://fakerjs.dev/api/finance)
 
 | Arg | Type | Required | Description |
@@ -50,17 +52,19 @@ finance.accountNumber()
 ```
 
 ```txt
-finance.accountNumber(length=1)
+finance.accountNumber(length=5)
 ```
 
 Example return values:
-- `43208795`
+- `47031013`
+- `47031`
 
 ### `finance.amount`
 
 Generates a random amount between the given bounds (inclusive).
 
 - Canonical: `awd.domain.finance.amount`
+- Docs: [https://anywaydata.com/docs/test-data/domain/finance](https://anywaydata.com/docs/test-data/domain/finance)
 - Faker docs: [https://fakerjs.dev/api/finance](https://fakerjs.dev/api/finance)
 
 | Arg | Type | Required | Description |
@@ -77,20 +81,40 @@ Examples:
 finance.amount()
 ```
 
-Type-in examples (named params):
-
 ```txt
 finance.amount(autoFormat=true)
 ```
 
+```txt
+finance.amount(dec=2)
+```
+
+```txt
+finance.amount(max=100)
+```
+
+```txt
+finance.amount(max=10, min=1)
+```
+
+```txt
+finance.amount(symbol="$")
+```
+
 Example return values:
-- `536.86`
+- `417.02`
+- `417.02`
+- `417.02`
+- `41.70`
+- `4.75`
+- `$417.02`
 
 ### `finance.bic`
 
 Generates a random SWIFT/BIC code based on the ISO-9362 format.
 
 - Canonical: `awd.domain.finance.bic`
+- Docs: [https://anywaydata.com/docs/test-data/domain/finance](https://anywaydata.com/docs/test-data/domain/finance)
 - Faker docs: [https://fakerjs.dev/api/finance](https://fakerjs.dev/api/finance)
 
 | Arg | Type | Required | Description |
@@ -108,16 +132,21 @@ finance.bic(includeBranchCode=true)
 ```
 
 Example return values:
-- `TXWRPYFT`
+- `SAHDBI6CJFO`
+- `KSAHBZ36EJF`
 
 ### `finance.bitcoinAddress`
 
 Generates a random Bitcoin address.
 
 - Canonical: `awd.domain.finance.bitcoinAddress`
+- Docs: [https://anywaydata.com/docs/test-data/domain/finance](https://anywaydata.com/docs/test-data/domain/finance)
 - Faker docs: [https://fakerjs.dev/api/finance](https://fakerjs.dev/api/finance)
 
-No parameters.
+| Arg | Type | Required | Description |
+| --- | --- | --- | --- |
+| `type` | `legacy\|segwit\|bech32\|taproot` | no | The bitcoin address type ('legacy', 'segwit', 'bech32' or 'taproot'). |
+| `network` | `mainnet\|testnet` | no | The bitcoin network ('mainnet' or 'testnet'). |
 
 Examples:
 
@@ -125,14 +154,25 @@ Examples:
 finance.bitcoinAddress()
 ```
 
+```txt
+finance.bitcoinAddress(type="bech32")
+```
+
+```txt
+finance.bitcoinAddress(network="testnet")
+```
+
 Example return values:
-- `39fu5Nhnibj2xa8FPVxCbX7y4xZi5SWd`
+- `31i96bmpxqFcS2Eqy9cNYjGST53aS6qX`
+- `bc1fr0a536dekfp7w0pfk57tycqww326w4fykqcpu0`
+- `21i96bmpxqFcS2Eqy9cNYjGST53aS6qX`
 
 ### `finance.creditCardCVV`
 
 Generates a random credit card CVV.
 
 - Canonical: `awd.domain.finance.creditCardCVV`
+- Docs: [https://anywaydata.com/docs/test-data/domain/finance](https://anywaydata.com/docs/test-data/domain/finance)
 - Faker docs: [https://fakerjs.dev/api/finance](https://fakerjs.dev/api/finance)
 
 No parameters.
@@ -140,17 +180,18 @@ No parameters.
 Examples:
 
 ```txt
-finance.creditCardCVV()
+finance.creditCardCVV
 ```
 
 Example return values:
-- `839`
+- `470`
 
 ### `finance.creditCardIssuer`
 
 Returns a random credit card issuer.
 
 - Canonical: `awd.domain.finance.creditCardIssuer`
+- Docs: [https://anywaydata.com/docs/test-data/domain/finance](https://anywaydata.com/docs/test-data/domain/finance)
 - Faker docs: [https://fakerjs.dev/api/finance](https://fakerjs.dev/api/finance)
 
 No parameters.
@@ -158,17 +199,18 @@ No parameters.
 Examples:
 
 ```txt
-finance.creditCardIssuer()
+finance.creditCardIssuer
 ```
 
 Example return values:
-- `jcb`
+- `discover`
 
 ### `finance.creditCardNumber`
 
 Generates a random credit card number.
 
 - Canonical: `awd.domain.finance.creditCardNumber`
+- Docs: [https://anywaydata.com/docs/test-data/domain/finance](https://anywaydata.com/docs/test-data/domain/finance)
 - Faker docs: [https://fakerjs.dev/api/finance](https://fakerjs.dev/api/finance)
 
 | Arg | Type | Required | Description |
@@ -182,17 +224,19 @@ finance.creditCardNumber()
 ```
 
 ```txt
-finance.creditCardNumber(issuer="value")
+finance.creditCardNumber(issuer="Visa")
 ```
 
 Example return values:
-- `6449-4462-4996-7580`
+- `6503-1013-3546-2805`
+- `4703101335466`
 
 ### `finance.currency`
 
 Returns a random currency object, containing `code`, `name`, `symbol`, and `numericCode` properties.
 
 - Canonical: `awd.domain.finance.currency`
+- Docs: [https://anywaydata.com/docs/test-data/domain/finance](https://anywaydata.com/docs/test-data/domain/finance)
 - Faker docs: [https://fakerjs.dev/api/finance](https://fakerjs.dev/api/finance)
 
 No parameters.
@@ -200,17 +244,18 @@ No parameters.
 Examples:
 
 ```txt
-finance.currency()
+finance.currency
 ```
 
 Example return values:
-- `{"name":"Rial Omani","code":"OMR","symbol":"﷼","numericCode":"512"}`
+- `{"name":"Jordanian Dinar","code":"JOD","symbol":"","numericCode":"400"}`
 
 ### `finance.currencyCode`
 
 Returns a random currency code.
 
 - Canonical: `awd.domain.finance.currencyCode`
+- Docs: [https://anywaydata.com/docs/test-data/domain/finance](https://anywaydata.com/docs/test-data/domain/finance)
 - Faker docs: [https://fakerjs.dev/api/finance](https://fakerjs.dev/api/finance)
 
 No parameters.
@@ -218,17 +263,18 @@ No parameters.
 Examples:
 
 ```txt
-finance.currencyCode()
+finance.currencyCode
 ```
 
 Example return values:
-- `ISK`
+- `JOD`
 
 ### `finance.currencyName`
 
 Returns a random currency name.
 
 - Canonical: `awd.domain.finance.currencyName`
+- Docs: [https://anywaydata.com/docs/test-data/domain/finance](https://anywaydata.com/docs/test-data/domain/finance)
 - Faker docs: [https://fakerjs.dev/api/finance](https://fakerjs.dev/api/finance)
 
 No parameters.
@@ -236,17 +282,18 @@ No parameters.
 Examples:
 
 ```txt
-finance.currencyName()
+finance.currencyName
 ```
 
 Example return values:
-- `South Sudanese pound`
+- `Jordanian Dinar`
 
 ### `finance.currencyNumericCode`
 
 Returns a random currency numeric code.
 
 - Canonical: `awd.domain.finance.currencyNumericCode`
+- Docs: [https://anywaydata.com/docs/test-data/domain/finance](https://anywaydata.com/docs/test-data/domain/finance)
 - Faker docs: [https://fakerjs.dev/api/finance](https://fakerjs.dev/api/finance)
 
 No parameters.
@@ -254,17 +301,18 @@ No parameters.
 Examples:
 
 ```txt
-finance.currencyNumericCode()
+finance.currencyNumericCode
 ```
 
 Example return values:
-- `270`
+- `400`
 
 ### `finance.currencySymbol`
 
 Returns a random currency symbol.
 
 - Canonical: `awd.domain.finance.currencySymbol`
+- Docs: [https://anywaydata.com/docs/test-data/domain/finance](https://anywaydata.com/docs/test-data/domain/finance)
 - Faker docs: [https://fakerjs.dev/api/finance](https://fakerjs.dev/api/finance)
 
 No parameters.
@@ -272,17 +320,18 @@ No parameters.
 Examples:
 
 ```txt
-finance.currencySymbol()
+finance.currencySymbol
 ```
 
 Example return values:
-- `₩`
+- `руб`
 
 ### `finance.ethereumAddress`
 
 Creates a random, non-checksum Ethereum address.
 
 - Canonical: `awd.domain.finance.ethereumAddress`
+- Docs: [https://anywaydata.com/docs/test-data/domain/finance](https://anywaydata.com/docs/test-data/domain/finance)
 - Faker docs: [https://fakerjs.dev/api/finance](https://fakerjs.dev/api/finance)
 
 No parameters.
@@ -290,17 +339,18 @@ No parameters.
 Examples:
 
 ```txt
-finance.ethereumAddress()
+finance.ethereumAddress
 ```
 
 Example return values:
-- `0xf5d385aff27de9dee6eeeffd924ffd7dd2d252ca`
+- `0x9f0632478b9f4d0e9c34bf6fdd103d29fbf6fc0a`
 
 ### `finance.iban`
 
 Generates a random IBAN.
 
 - Canonical: `awd.domain.finance.iban`
+- Docs: [https://anywaydata.com/docs/test-data/domain/finance](https://anywaydata.com/docs/test-data/domain/finance)
 - Faker docs: [https://fakerjs.dev/api/finance](https://fakerjs.dev/api/finance)
 
 | Arg | Type | Required | Description |
@@ -315,17 +365,24 @@ finance.iban()
 ```
 
 ```txt
-finance.iban(countryCode="GB", formatted=true)
+finance.iban(countryCode="GB")
+```
+
+```txt
+finance.iban(formatted=true)
 ```
 
 Example return values:
-- `CH67001759079BP5WA811`
+- `IE39SAHD00454601410936`
+- `GB98KSAH00235420410936`
+- `IE39 SAHD 0045 4601 4109 36`
 
 ### `finance.litecoinAddress`
 
 Generates a random Litecoin address.
 
 - Canonical: `awd.domain.finance.litecoinAddress`
+- Docs: [https://anywaydata.com/docs/test-data/domain/finance](https://anywaydata.com/docs/test-data/domain/finance)
 - Faker docs: [https://fakerjs.dev/api/finance](https://fakerjs.dev/api/finance)
 
 No parameters.
@@ -333,17 +390,18 @@ No parameters.
 Examples:
 
 ```txt
-finance.litecoinAddress()
+finance.litecoinAddress
 ```
 
 Example return values:
-- `M7nWopfUfSjA8cmGWvuENRLu6GU4C1iTK`
+- `31i96bmpxqFcS2Eqy9cNYjGST53aS`
 
 ### `finance.pin`
 
 Generates a random PIN number.
 
 - Canonical: `awd.domain.finance.pin`
+- Docs: [https://anywaydata.com/docs/test-data/domain/finance](https://anywaydata.com/docs/test-data/domain/finance)
 - Faker docs: [https://fakerjs.dev/api/finance](https://fakerjs.dev/api/finance)
 
 | Arg | Type | Required | Description |
@@ -357,17 +415,19 @@ finance.pin()
 ```
 
 ```txt
-finance.pin(length=1)
+finance.pin(length=5)
 ```
 
 Example return values:
-- `1107`
+- `4703`
+- `47031`
 
 ### `finance.routingNumber`
 
 Generates a random routing number.
 
 - Canonical: `awd.domain.finance.routingNumber`
+- Docs: [https://anywaydata.com/docs/test-data/domain/finance](https://anywaydata.com/docs/test-data/domain/finance)
 - Faker docs: [https://fakerjs.dev/api/finance](https://fakerjs.dev/api/finance)
 
 No parameters.
@@ -375,17 +435,18 @@ No parameters.
 Examples:
 
 ```txt
-finance.routingNumber()
+finance.routingNumber
 ```
 
 Example return values:
-- `933657999`
+- `470310139`
 
 ### `finance.transactionDescription`
 
 Generates a random transaction description.
 
 - Canonical: `awd.domain.finance.transactionDescription`
+- Docs: [https://anywaydata.com/docs/test-data/domain/finance](https://anywaydata.com/docs/test-data/domain/finance)
 - Faker docs: [https://fakerjs.dev/api/finance](https://fakerjs.dev/api/finance)
 
 No parameters.
@@ -393,17 +454,18 @@ No parameters.
 Examples:
 
 ```txt
-finance.transactionDescription()
+finance.transactionDescription
 ```
 
 Example return values:
-- `Transaction alert: deposit at Jones LLC using card ending ****4221 for an amount of GIP 94.88 on account ***3694.`
+- `You made a payment of AED 302.33 at Hegmann - Johnston using card ending in ****6280 from account ***6451.`
 
 ### `finance.transactionType`
 
 Returns a random transaction type.
 
 - Canonical: `awd.domain.finance.transactionType`
+- Docs: [https://anywaydata.com/docs/test-data/domain/finance](https://anywaydata.com/docs/test-data/domain/finance)
 - Faker docs: [https://fakerjs.dev/api/finance](https://fakerjs.dev/api/finance)
 
 No parameters.
@@ -411,8 +473,8 @@ No parameters.
 Examples:
 
 ```txt
-finance.transactionType()
+finance.transactionType
 ```
 
 Example return values:
-- `deposit`
+- `invoice`

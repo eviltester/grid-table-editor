@@ -19,6 +19,7 @@ The `system` domain maps domain keywords to underlying faker implementations.
 Returns a commonly used file extension.
 
 - Canonical: `awd.domain.system.commonFileExt`
+- Docs: [https://anywaydata.com/docs/test-data/domain/system](https://anywaydata.com/docs/test-data/domain/system)
 - Faker docs: [https://fakerjs.dev/api/system](https://fakerjs.dev/api/system)
 
 No parameters.
@@ -26,17 +27,18 @@ No parameters.
 Examples:
 
 ```txt
-system.commonFileExt()
+system.commonFileExt
 ```
 
 Example return values:
-- `pdf`
+- `png`
 
 ### `system.commonFileName`
 
 Returns a random file name with a given extension or a commonly used extension.
 
 - Canonical: `awd.domain.system.commonFileName`
+- Docs: [https://anywaydata.com/docs/test-data/domain/system](https://anywaydata.com/docs/test-data/domain/system)
 - Faker docs: [https://fakerjs.dev/api/system](https://fakerjs.dev/api/system)
 
 | Arg | Type | Required | Description |
@@ -54,13 +56,15 @@ system.commonFileName(extension="txt")
 ```
 
 Example return values:
-- `bleak.pdf`
+- `fog_aboard.mp4v`
+- `fog_aboard.txt`
 
 ### `system.commonFileType`
 
 Returns a commonly used file type.
 
 - Canonical: `awd.domain.system.commonFileType`
+- Docs: [https://anywaydata.com/docs/test-data/domain/system](https://anywaydata.com/docs/test-data/domain/system)
 - Faker docs: [https://fakerjs.dev/api/system](https://fakerjs.dev/api/system)
 
 No parameters.
@@ -68,17 +72,18 @@ No parameters.
 Examples:
 
 ```txt
-system.commonFileType()
+system.commonFileType
 ```
 
 Example return values:
-- `video`
+- `image`
 
 ### `system.cron`
 
 Returns a random cron expression.
 
 - Canonical: `awd.domain.system.cron`
+- Docs: [https://anywaydata.com/docs/test-data/domain/system](https://anywaydata.com/docs/test-data/domain/system)
 - Faker docs: [https://fakerjs.dev/api/system](https://fakerjs.dev/api/system)
 
 | Arg | Type | Required | Description |
@@ -93,17 +98,24 @@ system.cron()
 ```
 
 ```txt
-system.cron(includeNonStandard=true, includeYear=true)
+system.cron(includeNonStandard=true)
+```
+
+```txt
+system.cron(includeYear=true)
 ```
 
 Example return values:
-- `* 15 * * SAT`
+- `25 17 * 4 *`
+- `@annually`
+- `25 17 * 4 * 1994`
 
 ### `system.directoryPath`
 
 Returns a directory path.
 
 - Canonical: `awd.domain.system.directoryPath`
+- Docs: [https://anywaydata.com/docs/test-data/domain/system](https://anywaydata.com/docs/test-data/domain/system)
 - Faker docs: [https://fakerjs.dev/api/system](https://fakerjs.dev/api/system)
 
 No parameters.
@@ -111,17 +123,18 @@ No parameters.
 Examples:
 
 ```txt
-system.directoryPath()
+system.directoryPath
 ```
 
 Example return values:
-- `/bin`
+- `/opt/include`
 
 ### `system.fileExt`
 
 Returns a file extension.
 
 - Canonical: `awd.domain.system.fileExt`
+- Docs: [https://anywaydata.com/docs/test-data/domain/system](https://anywaydata.com/docs/test-data/domain/system)
 - Faker docs: [https://fakerjs.dev/api/system](https://fakerjs.dev/api/system)
 
 | Arg | Type | Required | Description |
@@ -139,13 +152,15 @@ system.fileExt(mimeType="image/png")
 ```
 
 Example return values:
-- `xsl`
+- `7z`
+- `7z`
 
 ### `system.fileName`
 
 Returns a random file name with extension.
 
 - Canonical: `awd.domain.system.fileName`
+- Docs: [https://anywaydata.com/docs/test-data/domain/system](https://anywaydata.com/docs/test-data/domain/system)
 - Faker docs: [https://fakerjs.dev/api/system](https://fakerjs.dev/api/system)
 
 No parameters.
@@ -153,17 +168,18 @@ No parameters.
 Examples:
 
 ```txt
-system.fileName()
+system.fileName
 ```
 
 Example return values:
-- `unsightly.woff`
+- `fog_aboard.otf`
 
 ### `system.filePath`
 
 Returns a file path.
 
 - Canonical: `awd.domain.system.filePath`
+- Docs: [https://anywaydata.com/docs/test-data/domain/system](https://anywaydata.com/docs/test-data/domain/system)
 - Faker docs: [https://fakerjs.dev/api/system](https://fakerjs.dev/api/system)
 
 No parameters.
@@ -171,17 +187,18 @@ No parameters.
 Examples:
 
 ```txt
-system.filePath()
+system.filePath
 ```
 
 Example return values:
-- `/tmp/ouch.xlt`
+- `/opt/include/down_reproachfully_besides.woff2`
 
 ### `system.fileType`
 
 Returns a file type.
 
 - Canonical: `awd.domain.system.fileType`
+- Docs: [https://anywaydata.com/docs/test-data/domain/system](https://anywaydata.com/docs/test-data/domain/system)
 - Faker docs: [https://fakerjs.dev/api/system](https://fakerjs.dev/api/system)
 
 No parameters.
@@ -189,7 +206,7 @@ No parameters.
 Examples:
 
 ```txt
-system.fileType()
+system.fileType
 ```
 
 Example return values:
@@ -200,6 +217,7 @@ Example return values:
 Returns a mime-type.
 
 - Canonical: `awd.domain.system.mimeType`
+- Docs: [https://anywaydata.com/docs/test-data/domain/system](https://anywaydata.com/docs/test-data/domain/system)
 - Faker docs: [https://fakerjs.dev/api/system](https://fakerjs.dev/api/system)
 
 No parameters.
@@ -207,17 +225,18 @@ No parameters.
 Examples:
 
 ```txt
-system.mimeType()
+system.mimeType
 ```
 
 Example return values:
-- `application/gzip`
+- `application/x-httpd-php`
 
 ### `system.networkInterface`
 
 Returns a random network interface.
 
 - Canonical: `awd.domain.system.networkInterface`
+- Docs: [https://anywaydata.com/docs/test-data/domain/system](https://anywaydata.com/docs/test-data/domain/system)
 - Faker docs: [https://fakerjs.dev/api/system](https://fakerjs.dev/api/system)
 
 No parameters.
@@ -225,17 +244,18 @@ No parameters.
 Examples:
 
 ```txt
-system.networkInterface()
+system.networkInterface
 ```
 
 Example return values:
-- `wlx3fba717f9f9c`
+- `wlx042125686a3e`
 
 ### `system.semver`
 
 Returns a semantic version.
 
 - Canonical: `awd.domain.system.semver`
+- Docs: [https://anywaydata.com/docs/test-data/domain/system](https://anywaydata.com/docs/test-data/domain/system)
 - Faker docs: [https://fakerjs.dev/api/system](https://fakerjs.dev/api/system)
 
 No parameters.
@@ -243,8 +263,8 @@ No parameters.
 Examples:
 
 ```txt
-system.semver()
+system.semver
 ```
 
 Example return values:
-- `4.3.6`
+- `4.15.0`

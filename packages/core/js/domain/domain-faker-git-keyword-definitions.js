@@ -1,3 +1,5 @@
+import { validateStringValue } from '../command-help/command-help-validators.js';
+
 const DOMAIN_FAKER_GIT_KEYWORD_DEFINITIONS = [
   {
     keyword: 'git.branch',
@@ -7,9 +9,17 @@ const DOMAIN_FAKER_GIT_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Generates a random branch name.',
-      docsUrl: 'https://fakerjs.dev/api/git',
-      example: 'array-compress',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/git',
+      fakerDocsUrl: 'https://fakerjs.dev/api/git',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'git.branch',
+          sampleReturnValue: 'firewall-parse',
+          description: 'Shows the default git.branch call.',
+        },
+      ],
       args: [],
     },
   },
@@ -21,9 +31,17 @@ const DOMAIN_FAKER_GIT_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Generates a date string for a git commit using the same format as `git log`.',
-      docsUrl: 'https://fakerjs.dev/api/git',
-      example: 'Tue Apr 28 04:28:58 2026 -0600',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/git',
+      fakerDocsUrl: 'https://fakerjs.dev/api/git',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'git.commitDate',
+          sampleReturnValue: 'Thu Jun 18 01:55:50 2026 +0600',
+          description: 'Shows the default git.commitDate call.',
+        },
+      ],
       args: [],
     },
   },
@@ -35,9 +53,22 @@ const DOMAIN_FAKER_GIT_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Generates a random commit entry as printed by `git log`.',
-      docsUrl: 'https://fakerjs.dev/api/git',
-      example: 'commit 4f9a2d1c Author: Alex Example <alex@example.com> Date: Tue May 19 2026',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/git',
+      fakerDocsUrl: 'https://fakerjs.dev/api/git',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'git.commitEntry',
+          sampleReturnValue:
+            'commit f0632478b9f4d0e9c34bf6fdd103d29fbf6fc0af\r\n' +
+            'Author: Ricardo Upton <Ricardo.Upton@gmail.com>\r\n' +
+            'Date: Wed Jun 17 19:26:37 2026 +0300\r\n' +
+            '\r\n' +
+            '    parse auxiliary feed\r\n',
+          description: 'Shows the default git.commitEntry call.',
+        },
+      ],
       args: [],
     },
   },
@@ -49,9 +80,17 @@ const DOMAIN_FAKER_GIT_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Generates a random commit message.',
-      docsUrl: 'https://fakerjs.dev/api/git',
-      example: 'reboot cross-platform system',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/git',
+      fakerDocsUrl: 'https://fakerjs.dev/api/git',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'git.commitMessage',
+          sampleReturnValue: 'hack optical alarm',
+          description: 'Shows the default git.commitMessage call.',
+        },
+      ],
       args: [],
     },
   },
@@ -63,9 +102,17 @@ const DOMAIN_FAKER_GIT_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Generates a random commit sha.',
-      docsUrl: 'https://fakerjs.dev/api/git',
-      example: '3418f0e64e8eae52ebd67b11d98e571fd6a81017',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/git',
+      fakerDocsUrl: 'https://fakerjs.dev/api/git',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'git.commitSha',
+          sampleReturnValue: '9f0632478b9f4d0e9c34bf6fdd103d29fbf6fc0a',
+          description: 'Shows the default git.commitSha call.',
+        },
+      ],
       args: [],
     },
   },

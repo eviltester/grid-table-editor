@@ -19,6 +19,7 @@ The `date` domain maps domain keywords to underlying faker implementations.
 Generates a random date that can be either in the past or in the future.
 
 - Canonical: `awd.domain.date.anytime`
+- Docs: [https://anywaydata.com/docs/test-data/domain/date](https://anywaydata.com/docs/test-data/domain/date)
 - Faker docs: [https://fakerjs.dev/api/date](https://fakerjs.dev/api/date)
 
 | Arg | Type | Required | Description |
@@ -31,57 +32,80 @@ Examples:
 date.anytime()
 ```
 
+```txt
+date.anytime(refDate=1577836800000)
+```
+
 Example return values:
-- `"2026-12-25T08:55:20.593Z"`
+- `2026-04-19T02:08:51.881Z`
+- `2019-11-01T10:13:31.881Z`
 
 ### `date.between`
 
 Generates a random date between the given boundaries.
 
 - Canonical: `awd.domain.date.between`
+- Docs: [https://anywaydata.com/docs/test-data/domain/date](https://anywaydata.com/docs/test-data/domain/date)
 - Faker docs: [https://fakerjs.dev/api/date](https://fakerjs.dev/api/date)
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `from` | `integer` | no | Start boundary as a Unix timestamp in milliseconds since epoch. |
-| `to` | `integer` | no | End boundary as a Unix timestamp in milliseconds since epoch. |
+| `from` | `integer` | yes | Start boundary as a Unix timestamp in milliseconds since epoch. |
+| `to` | `integer` | yes | End boundary as a Unix timestamp in milliseconds since epoch. |
 
 Examples:
 
 ```txt
-date.between(0, 2000000000000)
+date.between(from=1577836800000, to=1609372800000)
+```
+
+```txt
+date.between(from=1609459200000, to=1640995200000)
 ```
 
 Example return values:
-- `2026-01-15T12:34:56.000Z`
+- `2020-06-01T05:06:45.940Z`
+- `2021-06-02T05:06:45.940Z`
 
 ### `date.betweens`
 
 Generates random dates between the given boundaries. The dates will be returned in an array sorted in chronological order.
 
 - Canonical: `awd.domain.date.betweens`
+- Docs: [https://anywaydata.com/docs/test-data/domain/date](https://anywaydata.com/docs/test-data/domain/date)
 - Faker docs: [https://fakerjs.dev/api/date](https://fakerjs.dev/api/date)
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
 | `count` | `integer` | no | The number of dates to generate. |
-| `from` | `integer` | no | Start boundary as a Unix timestamp in milliseconds since epoch. |
-| `to` | `integer` | no | End boundary as a Unix timestamp in milliseconds since epoch. |
+| `from` | `integer` | yes | Start boundary as a Unix timestamp in milliseconds since epoch. |
+| `to` | `integer` | yes | End boundary as a Unix timestamp in milliseconds since epoch. |
 
 Examples:
 
 ```txt
-date.betweens(2, 0, 2000000000000)
+date.betweens(count=2, from=1577836800000, to=1609372800000)
+```
+
+```txt
+date.betweens(count=3, from=1609459200000, to=1640995200000)
+```
+
+```txt
+date.betweens(count=4, from=1640995200000, to=1672531200000)
 ```
 
 Example return values:
-- `["2026-01-15T12:34:56.000Z","2026-02-01T09:00:00.000Z"]`
+- `["2020-06-01T05:06:45.940Z","2020-09-19T22:02:33.225Z"]`
+- `["2021-01-01T01:00:06.924Z","2021-06-02T05:06:45.940Z","2021-09-20T22:02:33.225Z"]`
+- `["2022-01-01T01:00:06.924Z","2022-04-21T08:26:00.010Z","2022-06-02T05:06:45.940Z","2022-09-20T22:02:33.225Z"]`
 
 ### `date.birthdate`
 
 Returns a random birthdate. By default, the birthdate is generated for an adult between 18 and 80 years old.
 
 - Canonical: `awd.domain.date.birthdate`
+- Docs: [https://anywaydata.com/docs/test-data/domain/date](https://anywaydata.com/docs/test-data/domain/date)
 - Faker docs: [https://fakerjs.dev/api/date](https://fakerjs.dev/api/date)
 
 | Arg | Type | Required | Description |
@@ -89,7 +113,7 @@ Returns a random birthdate. By default, the birthdate is generated for an adult 
 | `refDate` | `integer` | no | Reference date as a Unix timestamp in milliseconds since epoch used as the generation anchor. |
 | `max` | `integer` | no | The maximum age/year to generate a birthdate for/in. |
 | `min` | `integer` | no | The minimum age/year to generate a birthdate for/in. |
-| `mode` | `string` | no | Either 'age' or 'year' to generate a birthdate based on the age or year range. |
+| `mode` | `age\|year` | no | Either 'age' or 'year' to generate a birthdate based on the age or year range. |
 
 Examples:
 
@@ -97,14 +121,40 @@ Examples:
 date.birthdate(refDate=20000, max=69, min=16, mode="age")
 ```
 
+```txt
+date.birthdate()
+```
+
+```txt
+date.birthdate(refDate=1577836800000)
+```
+
+```txt
+date.birthdate(max=65)
+```
+
+```txt
+date.birthdate(max=10, min=1)
+```
+
+```txt
+date.birthdate(mode="age")
+```
+
 Example return values:
-- `"1966-09-18T08:47:31.333Z"`
+- `1922-07-10T12:11:49.191Z`
+- `1971-09-27T08:09:14.757Z`
+- `1965-04-10T16:13:54.757Z`
+- `1980-06-25T11:25:42.848Z`
+- `2019-08-20T15:04:00.805Z`
+- `1971-09-27T08:09:14.757Z`
 
 ### `date.future`
 
 Generates a random date in the future.
 
 - Canonical: `awd.domain.date.future`
+- Docs: [https://anywaydata.com/docs/test-data/domain/date](https://anywaydata.com/docs/test-data/domain/date)
 - Faker docs: [https://fakerjs.dev/api/date](https://fakerjs.dev/api/date)
 
 | Arg | Type | Required | Description |
@@ -118,14 +168,25 @@ Examples:
 date.future()
 ```
 
+```txt
+date.future(refDate=1577836800000)
+```
+
+```txt
+date.future(years=2)
+```
+
 Example return values:
-- `"2027-02-07T18:41:48.525Z"`
+- `2026-11-17T21:02:06.523Z`
+- `2020-06-01T05:06:46.523Z`
+- `2027-04-19T02:08:52.463Z`
 
 ### `date.month`
 
 Returns a random name of a month.
 
 - Canonical: `awd.domain.date.month`
+- Docs: [https://anywaydata.com/docs/test-data/domain/date](https://anywaydata.com/docs/test-data/domain/date)
 - Faker docs: [https://fakerjs.dev/api/date](https://fakerjs.dev/api/date)
 
 | Arg | Type | Required | Description |
@@ -140,17 +201,24 @@ date.month()
 ```
 
 ```txt
-date.month(abbreviated=false, context=false)
+date.month(abbreviated=true)
+```
+
+```txt
+date.month(context=true)
 ```
 
 Example return values:
-- `February`
+- `July`
+- `Jul`
+- `July`
 
 ### `date.past`
 
 Generates a random date in the past.
 
 - Canonical: `awd.domain.date.past`
+- Docs: [https://anywaydata.com/docs/test-data/domain/date](https://anywaydata.com/docs/test-data/domain/date)
 - Faker docs: [https://fakerjs.dev/api/date](https://fakerjs.dev/api/date)
 
 | Arg | Type | Required | Description |
@@ -164,14 +232,25 @@ Examples:
 date.past()
 ```
 
+```txt
+date.past(refDate=1577836800000)
+```
+
+```txt
+date.past(years=2)
+```
+
 Example return values:
-- `"2025-07-01T11:48:55.347Z"`
+- `2025-11-17T21:02:05.523Z`
+- `2019-06-02T05:06:45.523Z`
+- `2025-04-19T02:08:51.463Z`
 
 ### `date.recent`
 
 Generates a random date in the recent past.
 
 - Canonical: `awd.domain.date.recent`
+- Docs: [https://anywaydata.com/docs/test-data/domain/date](https://anywaydata.com/docs/test-data/domain/date)
 - Faker docs: [https://fakerjs.dev/api/date](https://fakerjs.dev/api/date)
 
 | Arg | Type | Required | Description |
@@ -185,14 +264,25 @@ Examples:
 date.recent()
 ```
 
+```txt
+date.recent(days=7)
+```
+
+```txt
+date.recent(refDate=1577836800000)
+```
+
 Example return values:
-- `"2026-04-27T23:46:16.707Z"`
+- `2026-06-18T01:55:50.284Z`
+- `2026-06-14T13:58:54.491Z`
+- `2019-12-31T10:00:30.284Z`
 
 ### `date.soon`
 
 Generates a random date in the near future.
 
 - Canonical: `awd.domain.date.soon`
+- Docs: [https://anywaydata.com/docs/test-data/domain/date](https://anywaydata.com/docs/test-data/domain/date)
 - Faker docs: [https://fakerjs.dev/api/date](https://fakerjs.dev/api/date)
 
 | Arg | Type | Required | Description |
@@ -206,14 +296,25 @@ Examples:
 date.soon()
 ```
 
+```txt
+date.soon(days=7)
+```
+
+```txt
+date.soon(refDate=1577836800000)
+```
+
 Example return values:
-- `"2026-04-29T11:09:09.211Z"`
+- `2026-06-19T01:55:51.284Z`
+- `2026-06-21T13:58:55.491Z`
+- `2020-01-01T10:00:31.284Z`
 
 ### `date.timeZone`
 
 Returns a random IANA time zone relevant to this locale.
 
 - Canonical: `awd.domain.date.timeZone`
+- Docs: [https://anywaydata.com/docs/test-data/domain/date](https://anywaydata.com/docs/test-data/domain/date)
 - Faker docs: [https://fakerjs.dev/api/date](https://fakerjs.dev/api/date)
 
 No parameters.
@@ -221,17 +322,18 @@ No parameters.
 Examples:
 
 ```txt
-date.timeZone()
+date.timeZone
 ```
 
 Example return values:
-- `Europe/Stockholm`
+- `America/Santiago`
 
 ### `date.weekday`
 
 Returns a random day of the week.
 
 - Canonical: `awd.domain.date.weekday`
+- Docs: [https://anywaydata.com/docs/test-data/domain/date](https://anywaydata.com/docs/test-data/domain/date)
 - Faker docs: [https://fakerjs.dev/api/date](https://fakerjs.dev/api/date)
 
 | Arg | Type | Required | Description |
@@ -246,8 +348,14 @@ date.weekday()
 ```
 
 ```txt
-date.weekday(abbreviated=false, context=false)
+date.weekday(abbreviated=true)
+```
+
+```txt
+date.weekday(context=true)
 ```
 
 Example return values:
-- `Tuesday`
+- `Saturday`
+- `Sat`
+- `Saturday`

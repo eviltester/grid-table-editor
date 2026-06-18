@@ -39,10 +39,35 @@ autoIncrement.sequence(start=10, step=5)
 autoIncrement.sequence(start=1, step=5, prefix="filename", suffix=".txt", zeropadding=3)
 ```
 
+```txt
+autoIncrement.sequence(start=10)
+```
+
+```txt
+autoIncrement.sequence(step=5)
+```
+
+```txt
+autoIncrement.sequence(prefix="filename")
+```
+
+```txt
+autoIncrement.sequence(suffix=".txt")
+```
+
+```txt
+autoIncrement.sequence(zeropadding=3)
+```
+
 Example return values:
 - `1`
-- `15`
+- `10`
 - `filename001.txt`
+- `10`
+- `1`
+- `filename1`
+- `1.txt`
+- `001`
 
 ### `autoIncrement.timestamp`
 
@@ -62,6 +87,10 @@ Generates a timestamp that starts from a fixed point and increments by the confi
 Examples:
 
 ```txt
+autoIncrement.timestamp(start="2026-06-12T12:39:23Z", step=1, type="seconds")
+```
+
+```txt
 autoIncrement.timestamp()
 ```
 
@@ -77,7 +106,34 @@ autoIncrement.timestamp(start="2026-06-12 12:39:23", step=15, type="minutes", ou
 autoIncrement.timestamp(start="20/03/1969", inputFormat="dd/MM/yyyy", step=1, type="days")
 ```
 
+```txt
+autoIncrement.timestamp(start="2026-06-12T12:39:23Z")
+```
+
+```txt
+autoIncrement.timestamp(step=1)
+```
+
+```txt
+autoIncrement.timestamp(type="seconds")
+```
+
+```txt
+autoIncrement.timestamp(outputFormat="iso8601")
+```
+
+```txt
+autoIncrement.timestamp(start="20/03/1969", inputFormat="dd/MM/yyyy")
+```
+
 Example return values:
 - `2026-06-12T12:39:23Z`
-- `2026-06-12T12:39:24Z`
-- `2026-06-12T12:39:25Z`
+- `2026-06-18T15:55:20Z`
+- `1969-03-20T12:00:00Z`
+- `2026-06-12 11:39:23`
+- `1969-03-20T00:00:00Z`
+- `2026-06-12T12:39:23Z`
+- `2026-06-18T15:55:20Z`
+- `2026-06-18T15:55:20Z`
+- `2026-06-18T15:55:20Z`
+- `1969-03-20T00:00:00Z`

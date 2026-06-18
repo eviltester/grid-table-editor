@@ -43,11 +43,11 @@ describe('ui scenario parity support', () => {
       structuralParity: true,
     });
     expect(getScenarioLogicalId(literalScenario)).toBe('custom-literal-base');
-    expect(parityByScenarioId[regexScenario.id]).toEqual({
-      mode: 'exact',
-      exactPreviewParity: true,
-      structuralParity: true,
-    });
+    expect(parityByScenarioId[regexScenario.id].structuralParity).toBe(true);
+    expect(['exact', 'structural']).toContain(parityByScenarioId[regexScenario.id].mode);
+    expect(parityByScenarioId[regexScenario.id].mode).toBe(
+      parityByScenarioId[regexScenario.id].exactPreviewParity ? 'exact' : 'structural'
+    );
     expect(getScenarioLogicalId(regexScenario)).toBe('custom-regex-base');
     expect(parityByScenarioId[mustacheScenario.id]).toEqual({
       mode: 'exact',

@@ -55,7 +55,7 @@ describe('internet domain keyword execution', () => {
   test('executes internet.httpMethod', () => {
     const result = executeDomainKeyword('internet.httpMethod', { faker, args: [] });
     console.log('internet.httpMethod', result);
-    expect(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS']).toContain(result);
+    expect(['GET', 'POST', 'PUT', 'PATCH', 'DELETE']).toContain(result);
   });
 
   test('executes internet.httpStatusCode', () => {

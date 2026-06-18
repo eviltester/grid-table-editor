@@ -1,3 +1,10 @@
+import {
+  validateCronValue,
+  validateMimeTypeValue,
+  validateSemverValue,
+  validateStringValue,
+} from '../command-help/command-help-validators.js';
+
 const DOMAIN_FAKER_SYSTEM_KEYWORD_DEFINITIONS = [
   {
     keyword: 'system.commonFileExt',
@@ -7,9 +14,17 @@ const DOMAIN_FAKER_SYSTEM_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a commonly used file extension.',
-      docsUrl: 'https://fakerjs.dev/api/system',
-      example: 'pdf',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/system',
+      fakerDocsUrl: 'https://fakerjs.dev/api/system',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'system.commonFileExt',
+          sampleReturnValue: 'png',
+          description: 'Shows the default system.commonFileExt call.',
+        },
+      ],
       args: [],
     },
   },
@@ -21,9 +36,22 @@ const DOMAIN_FAKER_SYSTEM_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random file name with a given extension or a commonly used extension.',
-      docsUrl: 'https://fakerjs.dev/api/system',
-      example: 'bleak.pdf',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/system',
+      fakerDocsUrl: 'https://fakerjs.dev/api/system',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'system.commonFileName()',
+          sampleReturnValue: 'fog_aboard.mp4v',
+          description: 'Shows system.commonFileName when optional params are omitted.',
+        },
+        {
+          functionCall: 'system.commonFileName(extension="txt")',
+          sampleReturnValue: 'fog_aboard.txt',
+          description: 'Shows system.commonFileName using extension.',
+        },
+      ],
       args: [
         {
           name: 'extension',
@@ -42,9 +70,17 @@ const DOMAIN_FAKER_SYSTEM_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a commonly used file type.',
-      docsUrl: 'https://fakerjs.dev/api/system',
-      example: 'video',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/system',
+      fakerDocsUrl: 'https://fakerjs.dev/api/system',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'system.commonFileType',
+          sampleReturnValue: 'image',
+          description: 'Shows the default system.commonFileType call.',
+        },
+      ],
       args: [],
     },
   },
@@ -57,9 +93,27 @@ const DOMAIN_FAKER_SYSTEM_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random cron expression.',
-      docsUrl: 'https://fakerjs.dev/api/system',
-      example: '* 15 * * SAT',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/system',
+      fakerDocsUrl: 'https://fakerjs.dev/api/system',
+      validator: validateCronValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'system.cron()',
+          sampleReturnValue: '25 17 * 4 *',
+          description: 'Shows system.cron when optional params are omitted.',
+        },
+        {
+          functionCall: 'system.cron(includeNonStandard=true)',
+          sampleReturnValue: '@annually',
+          description: 'Shows system.cron using includeNonStandard.',
+        },
+        {
+          functionCall: 'system.cron(includeYear=true)',
+          sampleReturnValue: '25 17 * 4 * 1994',
+          description: 'Shows system.cron using includeYear.',
+        },
+      ],
       args: [
         {
           name: 'includeNonStandard',
@@ -84,9 +138,17 @@ const DOMAIN_FAKER_SYSTEM_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a directory path.',
-      docsUrl: 'https://fakerjs.dev/api/system',
-      example: '/bin',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/system',
+      fakerDocsUrl: 'https://fakerjs.dev/api/system',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'system.directoryPath',
+          sampleReturnValue: '/opt/include',
+          description: 'Shows the default system.directoryPath call.',
+        },
+      ],
       args: [],
     },
   },
@@ -99,9 +161,22 @@ const DOMAIN_FAKER_SYSTEM_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a file extension.',
-      docsUrl: 'https://fakerjs.dev/api/system',
-      example: 'xsl',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/system',
+      fakerDocsUrl: 'https://fakerjs.dev/api/system',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'system.fileExt()',
+          sampleReturnValue: '7z',
+          description: 'Shows system.fileExt when optional params are omitted.',
+        },
+        {
+          functionCall: 'system.fileExt(mimeType="image/png")',
+          sampleReturnValue: '7z',
+          description: 'Shows system.fileExt using mimeType.',
+        },
+      ],
       args: [
         {
           name: 'mimeType',
@@ -120,9 +195,17 @@ const DOMAIN_FAKER_SYSTEM_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random file name with extension.',
-      docsUrl: 'https://fakerjs.dev/api/system',
-      example: 'unsightly.woff',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/system',
+      fakerDocsUrl: 'https://fakerjs.dev/api/system',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'system.fileName',
+          sampleReturnValue: 'fog_aboard.otf',
+          description: 'Shows the default system.fileName call.',
+        },
+      ],
       args: [],
     },
   },
@@ -134,9 +217,17 @@ const DOMAIN_FAKER_SYSTEM_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a file path.',
-      docsUrl: 'https://fakerjs.dev/api/system',
-      example: '/tmp/ouch.xlt',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/system',
+      fakerDocsUrl: 'https://fakerjs.dev/api/system',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'system.filePath',
+          sampleReturnValue: '/opt/include/down_reproachfully_besides.woff2',
+          description: 'Shows the default system.filePath call.',
+        },
+      ],
       args: [],
     },
   },
@@ -148,9 +239,17 @@ const DOMAIN_FAKER_SYSTEM_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a file type.',
-      docsUrl: 'https://fakerjs.dev/api/system',
-      example: 'font',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/system',
+      fakerDocsUrl: 'https://fakerjs.dev/api/system',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'system.fileType',
+          sampleReturnValue: 'font',
+          description: 'Shows the default system.fileType call.',
+        },
+      ],
       args: [],
     },
   },
@@ -162,9 +261,17 @@ const DOMAIN_FAKER_SYSTEM_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a mime-type.',
-      docsUrl: 'https://fakerjs.dev/api/system',
-      example: 'application/gzip',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/system',
+      fakerDocsUrl: 'https://fakerjs.dev/api/system',
+      validator: validateMimeTypeValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'system.mimeType',
+          sampleReturnValue: 'application/x-httpd-php',
+          description: 'Shows the default system.mimeType call.',
+        },
+      ],
       args: [],
     },
   },
@@ -176,9 +283,17 @@ const DOMAIN_FAKER_SYSTEM_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a random network interface.',
-      docsUrl: 'https://fakerjs.dev/api/system',
-      example: 'wlx3fba717f9f9c',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/system',
+      fakerDocsUrl: 'https://fakerjs.dev/api/system',
+      validator: validateStringValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'system.networkInterface',
+          sampleReturnValue: 'wlx042125686a3e',
+          description: 'Shows the default system.networkInterface call.',
+        },
+      ],
       args: [],
     },
   },
@@ -190,9 +305,17 @@ const DOMAIN_FAKER_SYSTEM_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary: 'Returns a semantic version.',
-      docsUrl: 'https://fakerjs.dev/api/system',
-      example: '4.3.6',
+      docsUrl: 'https://anywaydata.com/docs/test-data/domain/system',
+      fakerDocsUrl: 'https://fakerjs.dev/api/system',
+      validator: validateSemverValue,
       returnType: 'string',
+      usageExamples: [
+        {
+          functionCall: 'system.semver',
+          sampleReturnValue: '4.15.0',
+          description: 'Shows the default system.semver call.',
+        },
+      ],
       args: [],
     },
   },

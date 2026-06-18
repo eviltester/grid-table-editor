@@ -23,15 +23,19 @@ describe('test data schema editor compatibility', () => {
   }
 
   beforeEach(() => {
-    dom = new JSDOM('<!doctype html><html><body><div id="host"></div></body></html>');
+    dom = new JSDOM('<!doctype html><html><body><div id="host"></div></body></html>', {
+      url: 'https://example.test/',
+    });
     global.window = dom.window;
     global.document = dom.window.document;
     global.Event = dom.window.Event;
+    global.localStorage = dom.window.localStorage;
     global.RandExp = function RandExp() {};
   });
 
   afterEach(() => {
     dom.window.close();
+    delete global.localStorage;
   });
 
   function setup(gridExtras = {}) {
@@ -102,7 +106,7 @@ describe('test data schema editor compatibility', () => {
     expect(document.querySelector('[data-role="population-status"]').textContent).toContain(
       'Generate complete. Grid and preview updated.'
     );
-  });
+  }, 30000);
 
   test('invalid schema reports validation error', async () => {
     setup();

@@ -19,6 +19,7 @@ The `company` domain maps domain keywords to underlying faker implementations.
 Returns a random buzz adjective that can be used to demonstrate data being viewed by a manager.
 
 - Canonical: `awd.domain.company.buzzAdjective`
+- Docs: [https://anywaydata.com/docs/test-data/domain/company](https://anywaydata.com/docs/test-data/domain/company)
 - Faker docs: [https://fakerjs.dev/api/company](https://fakerjs.dev/api/company)
 
 No parameters.
@@ -26,17 +27,18 @@ No parameters.
 Examples:
 
 ```txt
-company.buzzAdjective()
+company.buzzAdjective
 ```
 
 Example return values:
-- `out-of-the-box`
+- `immersive`
 
 ### `company.buzzNoun`
 
 Returns a random buzz noun that can be used to demonstrate data being viewed by a manager.
 
 - Canonical: `awd.domain.company.buzzNoun`
+- Docs: [https://anywaydata.com/docs/test-data/domain/company](https://anywaydata.com/docs/test-data/domain/company)
 - Faker docs: [https://fakerjs.dev/api/company](https://fakerjs.dev/api/company)
 
 No parameters.
@@ -44,17 +46,18 @@ No parameters.
 Examples:
 
 ```txt
-company.buzzNoun()
+company.buzzNoun
 ```
 
 Example return values:
-- `deliverables`
+- `interfaces`
 
 ### `company.buzzPhrase`
 
 Generates a random buzz phrase that can be used to demonstrate data being viewed by a manager.
 
 - Canonical: `awd.domain.company.buzzPhrase`
+- Docs: [https://anywaydata.com/docs/test-data/domain/company](https://anywaydata.com/docs/test-data/domain/company)
 - Faker docs: [https://fakerjs.dev/api/company](https://fakerjs.dev/api/company)
 
 No parameters.
@@ -62,17 +65,18 @@ No parameters.
 Examples:
 
 ```txt
-company.buzzPhrase()
+company.buzzPhrase
 ```
 
 Example return values:
-- `streamline cutting-edge platforms`
+- `grow robust AI`
 
 ### `company.buzzVerb`
 
 Returns a random buzz verb that can be used to demonstrate data being viewed by a manager.
 
 - Canonical: `awd.domain.company.buzzVerb`
+- Docs: [https://anywaydata.com/docs/test-data/domain/company](https://anywaydata.com/docs/test-data/domain/company)
 - Faker docs: [https://fakerjs.dev/api/company](https://fakerjs.dev/api/company)
 
 No parameters.
@@ -80,17 +84,18 @@ No parameters.
 Examples:
 
 ```txt
-company.buzzVerb()
+company.buzzVerb
 ```
 
 Example return values:
-- `disintermediate`
+- `grow`
 
 ### `company.catchPhrase`
 
 Generates a random catch phrase that can be displayed to an end user.
 
 - Canonical: `awd.domain.company.catchPhrase`
+- Docs: [https://anywaydata.com/docs/test-data/domain/company](https://anywaydata.com/docs/test-data/domain/company)
 - Faker docs: [https://fakerjs.dev/api/company](https://fakerjs.dev/api/company)
 
 No parameters.
@@ -98,17 +103,18 @@ No parameters.
 Examples:
 
 ```txt
-company.catchPhrase()
+company.catchPhrase
 ```
 
 Example return values:
-- `Diverse AI-powered flexibility`
+- `Integrated radical ability`
 
 ### `company.catchPhraseAdjective`
 
 Returns a random catch phrase adjective that can be displayed to an end user.
 
 - Canonical: `awd.domain.company.catchPhraseAdjective`
+- Docs: [https://anywaydata.com/docs/test-data/domain/company](https://anywaydata.com/docs/test-data/domain/company)
 - Faker docs: [https://fakerjs.dev/api/company](https://fakerjs.dev/api/company)
 
 No parameters.
@@ -116,17 +122,18 @@ No parameters.
 Examples:
 
 ```txt
-company.catchPhraseAdjective()
+company.catchPhraseAdjective
 ```
 
 Example return values:
-- `Distributed`
+- `Integrated`
 
 ### `company.catchPhraseDescriptor`
 
 Returns a random catch phrase descriptor that can be displayed to an end user.
 
 - Canonical: `awd.domain.company.catchPhraseDescriptor`
+- Docs: [https://anywaydata.com/docs/test-data/domain/company](https://anywaydata.com/docs/test-data/domain/company)
 - Faker docs: [https://fakerjs.dev/api/company](https://fakerjs.dev/api/company)
 
 No parameters.
@@ -134,17 +141,18 @@ No parameters.
 Examples:
 
 ```txt
-company.catchPhraseDescriptor()
+company.catchPhraseDescriptor
 ```
 
 Example return values:
-- `encompassing`
+- `heuristic`
 
 ### `company.catchPhraseNoun`
 
 Returns a random catch phrase noun that can be displayed to an end user.
 
 - Canonical: `awd.domain.company.catchPhraseNoun`
+- Docs: [https://anywaydata.com/docs/test-data/domain/company](https://anywaydata.com/docs/test-data/domain/company)
 - Faker docs: [https://fakerjs.dev/api/company](https://fakerjs.dev/api/company)
 
 No parameters.
@@ -152,17 +160,18 @@ No parameters.
 Examples:
 
 ```txt
-company.catchPhraseNoun()
+company.catchPhraseNoun
 ```
 
 Example return values:
-- `attitude`
+- `generative AI`
 
 ### `company.name`
 
 Generates a random company name.
 
 - Canonical: `awd.domain.company.name`
+- Docs: [https://anywaydata.com/docs/test-data/domain/company](https://anywaydata.com/docs/test-data/domain/company)
 - Faker docs: [https://fakerjs.dev/api/company](https://fakerjs.dev/api/company)
 
 No parameters.
@@ -170,8 +179,8 @@ No parameters.
 Examples:
 
 ```txt
-company.name()
+company.name
 ```
 
 Example return values:
-- `Lang - Little`
+- `Gutmann Group`

@@ -317,7 +317,7 @@ function rowValueLooksValid(row, value) {
   }
 
   const allowedTypes = getAllowedTypesForRow(row);
-  if (allowedTypes.includes('string')) {
+  if (allowedTypes.includes('string') || allowedTypes.includes('unknown')) {
     return true;
   }
   return allowedTypes.includes(inferValueType(value));

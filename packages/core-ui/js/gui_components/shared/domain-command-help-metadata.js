@@ -69,11 +69,7 @@ function getDomainCommandHelp(command) {
     docsUrl: resolveDomainDocsUrl(command, commandHelp.docsUrl || ''),
     example: commandHelp.example || '',
     examples: Array.isArray(commandHelp.examples) ? commandHelp.examples : [],
-    exampleReturnValues: Array.isArray(commandHelp.exampleReturnValues)
-      ? commandHelp.exampleReturnValues
-      : Array.isArray(commandHelp.returnExamples)
-        ? commandHelp.returnExamples
-        : [],
+    exampleReturnValues: Array.isArray(commandHelp.exampleReturnValues) ? commandHelp.exampleReturnValues : [],
     returnType: commandHelp.returnType || '',
     args: Array.isArray(commandHelp.args) ? commandHelp.args : [],
   };

@@ -523,9 +523,12 @@ export const ParamsDialog = {
     await expect(firstHelpIcon).toHaveAttribute('data-help-text', expect.stringContaining('Default: 1'));
     await expect(dialogScope.getByRole('textbox', { name: /start value/i }).value).toBe('1');
     await expect(dialogScope.getByRole('textbox', { name: /step value/i }).value).toBe('1');
-    const prefixInput = dialogScope.getByRole('textbox', { name: /prefix value/i });
+    let prefixInput = dialogScope.getByRole('textbox', { name: /prefix value/i });
     await userEvent.click(prefixInput);
-    await waitFor(() => expect(document.activeElement).toBe(prefixInput));
+    await waitFor(() => {
+      prefixInput = dialogScope.getByRole('textbox', { name: /prefix value/i });
+      expect(document.activeElement).toBe(prefixInput);
+    });
     await userEvent.clear(prefixInput);
     await userEvent.type(prefixInput, 'filename');
     await waitFor(() =>

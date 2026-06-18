@@ -81,7 +81,7 @@ const FAKER_HELPER_KEYWORD_DEFINITIONS = {
     summary: 'Returns one random element from the supplied array.',
     docsUrl: FAKER_HELPERS_DOCS_URL,
     example: '',
-    returnType: 'string',
+    returnType: 'unknown',
     params: [
       {
         name: 'array',
@@ -185,7 +185,7 @@ const FAKER_HELPER_KEYWORD_DEFINITIONS = {
   'helpers.replaceCreditCardSymbols': {
     summary: 'Replaces credit-card placeholders and computes a valid Luhn checksum for the result.',
     docsUrl: FAKER_HELPERS_DOCS_URL,
-    example: '6453-2433-5050-4456-3526',
+    example: 'demo-card-####-fake',
     returnType: 'string',
     params: [
       {
@@ -243,7 +243,7 @@ const FAKER_HELPER_KEYWORD_DEFINITIONS = {
     summary: 'Returns one value from a weighted array, favoring entries with higher weights.',
     docsUrl: FAKER_HELPERS_DOCS_URL,
     example: '',
-    returnType: 'string',
+    returnType: 'unknown',
     params: [
       {
         name: 'array',

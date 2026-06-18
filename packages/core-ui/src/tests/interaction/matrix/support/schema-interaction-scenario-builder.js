@@ -750,7 +750,7 @@ function scenarioRowLooksValid(row, value) {
   }
 
   const allowedTypes = getAllowedTypesForScenarioRow(row);
-  if (allowedTypes.includes('string')) {
+  if (allowedTypes.includes('string') || allowedTypes.includes('unknown')) {
     return true;
   }
 

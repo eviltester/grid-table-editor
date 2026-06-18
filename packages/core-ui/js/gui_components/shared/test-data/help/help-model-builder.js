@@ -255,11 +255,7 @@ function buildSchemaHelpModel(sourceType, commandValue) {
       params: normalizeHelpParams(commandHelp?.params || []),
       example: commandHelp?.example || '',
       examples: Array.isArray(commandHelp?.examples) ? commandHelp.examples : [],
-      exampleReturnValues: Array.isArray(commandHelp?.exampleReturnValues)
-        ? commandHelp.exampleReturnValues
-        : Array.isArray(commandHelp?.returnExamples)
-          ? commandHelp.returnExamples
-          : [],
+      exampleReturnValues: Array.isArray(commandHelp?.exampleReturnValues) ? commandHelp.exampleReturnValues : [],
     };
   }
 
@@ -283,11 +279,7 @@ function buildSchemaHelpModel(sourceType, commandValue) {
       params: resolveDomainHelpParams(command, commandHelp),
       example: commandHelp?.example || '',
       examples: Array.isArray(commandHelp?.examples) ? commandHelp.examples : [],
-      exampleReturnValues: Array.isArray(commandHelp?.exampleReturnValues)
-        ? commandHelp.exampleReturnValues
-        : Array.isArray(commandHelp?.returnExamples)
-          ? commandHelp.returnExamples
-          : [],
+      exampleReturnValues: Array.isArray(commandHelp?.exampleReturnValues) ? commandHelp.exampleReturnValues : [],
     };
   }
 

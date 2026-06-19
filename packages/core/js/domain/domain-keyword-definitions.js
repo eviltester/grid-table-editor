@@ -13,6 +13,7 @@ import { DOMAIN_FAKER_GIT_KEYWORD_DEFINITIONS } from './domain-faker-git-keyword
 import { DOMAIN_FAKER_HACKER_KEYWORD_DEFINITIONS } from './domain-faker-hacker-keyword-definitions.js';
 import { DOMAIN_FAKER_IMAGE_KEYWORD_DEFINITIONS } from './domain-faker-image-keyword-definitions.js';
 import { DOMAIN_FAKER_INTERNET_KEYWORD_DEFINITIONS } from './domain-faker-internet-keyword-definitions.js';
+import { DOMAIN_CUSTOM_INTERNET_KEYWORD_DEFINITIONS } from './domain-custom-internet-keyword-definitions.js';
 import { DOMAIN_CUSTOM_AUTOINCREMENT_KEYWORD_DEFINITIONS } from './domain-custom-autoincrement-keyword-definitions.js';
 import { DOMAIN_CUSTOM_LITERAL_KEYWORD_DEFINITIONS } from './domain-custom-literal-keyword-definitions.js';
 import { DOMAIN_FAKER_LOCATION_KEYWORD_DEFINITIONS } from './domain-faker-location-keyword-definitions.js';
@@ -44,6 +45,7 @@ const DOMAIN_KEYWORD_DEFINITIONS = [
   ...DOMAIN_FAKER_HACKER_KEYWORD_DEFINITIONS,
   ...DOMAIN_FAKER_IMAGE_KEYWORD_DEFINITIONS,
   ...DOMAIN_FAKER_INTERNET_KEYWORD_DEFINITIONS,
+  ...DOMAIN_CUSTOM_INTERNET_KEYWORD_DEFINITIONS,
   ...DOMAIN_CUSTOM_AUTOINCREMENT_KEYWORD_DEFINITIONS,
   ...DOMAIN_CUSTOM_LITERAL_KEYWORD_DEFINITIONS,
   ...DOMAIN_FAKER_LOCATION_KEYWORD_DEFINITIONS,

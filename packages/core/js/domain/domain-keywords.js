@@ -2,6 +2,7 @@ import { DOMAIN_KEYWORD_DEFINITIONS } from './domain-keyword-definitions.js';
 import { executeCustomAutoIncrementTimestamp } from './auto-increment-timestamp.js';
 import { executeCustomAutoIncrementSequence } from './auto-increment-sequence.js';
 import { executeCustomCounterString } from './counterstring.js';
+import { executeCustomInternetHttpMethod } from './internet-http-method.js';
 import { DomainKeywordInvocationParser } from './parser/DomainKeywordInvocationParser.js';
 import { normalizeUsageExamples } from '../command-help/command-help-contract.js';
 
@@ -360,6 +361,7 @@ function applyFakerArgTransform(keyword, args = []) {
 const BUILT_IN_CUSTOM_DELEGATES = {
   'autoIncrement.timestamp': executeCustomAutoIncrementTimestamp,
   'autoIncrement.sequence': executeCustomAutoIncrementSequence,
+  'internet.httpMethod': executeCustomInternetHttpMethod,
   'literal.value': (executionContext = {}) => {
     const args = Array.isArray(executionContext.args) ? executionContext.args : [];
     return typeof args[0] === 'undefined' ? '' : args[0];

@@ -55,7 +55,30 @@ describe('internet domain keyword execution', () => {
   test('executes internet.httpMethod', () => {
     const result = executeDomainKeyword('internet.httpMethod', { faker, args: [] });
     console.log('internet.httpMethod', result);
-    expect(['GET', 'POST', 'PUT', 'PATCH', 'DELETE']).toContain(result);
+    expect(['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'TRACE', 'CONNECT']).toContain(result);
+  });
+
+  test('internet.httpMethod supports commonOnly and excludes args', () => {
+    const commonOnlyResult = executeDomainKeyword('internet.httpMethod', { faker, args: [true] });
+    expect(['GET', 'HEAD', 'POST', 'PUT', 'DELETE']).toContain(commonOnlyResult);
+
+    const excludedResult = executeDomainKeyword('internet.httpMethod', { faker, args: [false, 'patch, TRACE'] });
+    expect(['PATCH', 'TRACE']).not.toContain(excludedResult);
+
+    const commonAndExcludedResult = executeDomainKeyword('internet.httpMethod', {
+      faker,
+      args: [true, 'head, delete'],
+    });
+    expect(['GET', 'POST', 'PUT']).toContain(commonAndExcludedResult);
+  });
+
+  test('internet.httpMethod throws when exclusions remove every allowed method', () => {
+    expect(() =>
+      executeDomainKeyword('internet.httpMethod', {
+        faker,
+        args: [true, 'get, head, post, put, delete'],
+      })
+    ).toThrow('Invalid argument for excludes: no HTTP methods remain after exclusions.');
   });
 
   test('executes internet.httpStatusCode', () => {

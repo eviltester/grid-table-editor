@@ -12,13 +12,11 @@ import {
   validateUrlValue,
 } from '../command-help/command-help-validators.js';
 
-const HTTP_METHOD_RETURN_TYPE = 'GET|POST|PUT|DELETE|PATCH';
 const HTTP_PROTOCOL_RETURN_TYPE = 'http|https';
 const IPV4_NETWORK_TYPE =
   'any|loopback|private-a|private-b|private-c|test-net-1|test-net-2|test-net-3|link-local|multicast';
 const MAC_SEPARATOR_TYPE = '":"|"-"|""';
 const JWT_ALGORITHM_RETURN_TYPE = 'ES256|ES384|ES512|HS256|HS384|HS512|PS256|PS384|PS512|RS256|RS384|RS512|none';
-const validateHttpMethodValue = createStringEnumValidator(HTTP_METHOD_RETURN_TYPE.split('|'));
 const validateProtocolValue = createStringEnumValidator(HTTP_PROTOCOL_RETURN_TYPE.split('|'));
 const validateJwtAlgorithmValue = createStringEnumValidator(JWT_ALGORITHM_RETURN_TYPE.split('|'));
 
@@ -233,28 +231,6 @@ const DOMAIN_FAKER_INTERNET_KEYWORD_DEFINITIONS = [
           functionCall: 'internet.exampleEmail',
           sampleReturnValue: 'Edwin.Dibbert@example.net',
           description: 'Shows the default internet.exampleEmail call.',
-        },
-      ],
-      args: [],
-    },
-  },
-  {
-    keyword: 'internet.httpMethod',
-    delegate: {
-      type: 'faker',
-      target: 'internet.httpMethod',
-    },
-    help: {
-      summary: 'Returns a random http method.',
-      docsUrl: 'https://anywaydata.com/docs/test-data/domain/internet',
-      fakerDocsUrl: 'https://fakerjs.dev/api/internet',
-      validator: validateHttpMethodValue,
-      returnType: HTTP_METHOD_RETURN_TYPE,
-      usageExamples: [
-        {
-          functionCall: 'internet.httpMethod',
-          sampleReturnValue: 'PUT',
-          description: 'Shows the default internet.httpMethod call.',
         },
       ],
       args: [],

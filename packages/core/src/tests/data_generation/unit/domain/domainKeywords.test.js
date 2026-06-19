@@ -200,6 +200,11 @@ describe('domain keyword catalog', () => {
     expect(byKeyword.get('autoIncrement.timestamp')?.delegate?.type).toBe('custom');
     expect(byKeyword.get('autoIncrement.timestamp')?.help?.returnType).toBe('string');
     expect(byKeyword.get('internet.email')?.delegate?.argTransform).toBe('optionsFromHelpArgs');
+    expect(byKeyword.get('internet.httpMethod')?.delegate?.type).toBe('custom');
+    expect(byKeyword.get('internet.httpMethod')?.help?.returnType).toBe(
+      'GET|HEAD|POST|PUT|DELETE|PATCH|OPTIONS|TRACE|CONNECT'
+    );
+    expect(byKeyword.get('internet.httpMethod')?.help?.fakerDocsUrl).toBe('');
     expect(byKeyword.get('internet.httpStatusCode')?.help?.returnType).toBe('number');
     expect(byKeyword.get('internet.port')?.help?.returnType).toBe('number');
     expect(byKeyword.get('location.country')?.help?.returnType).toBe('string');

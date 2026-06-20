@@ -252,7 +252,7 @@ Shows string.fromCharacters with only the required characters argument.
 string.fromCharacters(characters="ABC123")
 ```
 
-Returns: `B`
+Returns: `C`
 
 Shows string.fromCharacters in use.
 
@@ -462,7 +462,7 @@ Returns: `Gc!=.`
 
 ### `string.symbol`
 
-Returns a string containing only ASCII symbol characters such as !, ", #, $, %, &, (, ), *, +, -, /, :, ;, <, =, >, ?, @, [, \, ], ^, _, `, &#123;, |, &#125;, and ~.
+Returns a string containing only ASCII symbol characters such as !, ", #, $, %, &amp;, (, ), *, +, -, /, :, ;, &lt;, =, &gt;, ?, @, [, \, ], ^, _, `, &#123;, |, &#125;, and ~.
 
 - Canonical: `awd.domain.string.symbol`
 - Faker docs: [https://fakerjs.dev/api/string](https://fakerjs.dev/api/string)

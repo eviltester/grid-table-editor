@@ -99,7 +99,7 @@ Generates data using faker internet email.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `allowSpecialCharacters` | `boolean` | no | Whether special characters such as .!#$%&'*+-/=?^_`&#123;\|&#125;~ should be included in the email address. |
+| `allowSpecialCharacters` | `boolean` | no | Whether special characters such as .!#$%&amp;'*+-/=?^_`&#123;\|&#125;~ should be included in the email address. |
 | `firstName` | `string` | no | The optional first name to use. |
 | `lastName` | `string` | no | The optional last name to use. |
 | `provider` | `string` | no | The mail provider domain to use. If not specified, a random free mail provider will be chosen. |

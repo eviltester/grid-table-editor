@@ -113,6 +113,9 @@ const domainIntroOverrides = {
 
 function escapeMdxText(value) {
   return String(value ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
     .replaceAll('{', '&#123;')
     .replaceAll('}', '&#125;');
 }

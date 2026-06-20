@@ -1,0 +1,23 @@
+import { VEHICLE_BICYCLE_KEYWORD_DEFINITION } from './bicycle-keyword-definition.js';
+import { VEHICLE_COLOR_KEYWORD_DEFINITION } from './color-keyword-definition.js';
+import { VEHICLE_FUEL_KEYWORD_DEFINITION } from './fuel-keyword-definition.js';
+import { VEHICLE_MANUFACTURER_KEYWORD_DEFINITION } from './manufacturer-keyword-definition.js';
+import { VEHICLE_MODEL_KEYWORD_DEFINITION } from './model-keyword-definition.js';
+import { VEHICLE_TYPE_KEYWORD_DEFINITION } from './type-keyword-definition.js';
+import { VEHICLE_VEHICLE_KEYWORD_DEFINITION } from './vehicle-keyword-definition.js';
+import { VEHICLE_VIN_KEYWORD_DEFINITION } from './vin-keyword-definition.js';
+import { VEHICLE_VRM_KEYWORD_DEFINITION } from './vrm-keyword-definition.js';
+
+const VEHICLE_KEYWORD_DEFINITIONS = [
+  VEHICLE_BICYCLE_KEYWORD_DEFINITION,
+  VEHICLE_COLOR_KEYWORD_DEFINITION,
+  VEHICLE_FUEL_KEYWORD_DEFINITION,
+  VEHICLE_MANUFACTURER_KEYWORD_DEFINITION,
+  VEHICLE_MODEL_KEYWORD_DEFINITION,
+  VEHICLE_TYPE_KEYWORD_DEFINITION,
+  VEHICLE_VEHICLE_KEYWORD_DEFINITION,
+  VEHICLE_VIN_KEYWORD_DEFINITION,
+  VEHICLE_VRM_KEYWORD_DEFINITION,
+];
+
+export { VEHICLE_KEYWORD_DEFINITIONS };

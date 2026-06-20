@@ -1,0 +1,31 @@
+import { AIRLINE_AIRCRAFT_TYPE_KEYWORD_DEFINITION } from './aircraft-type-keyword-definition.js';
+import { AIRLINE_AIRLINE_KEYWORD_DEFINITION } from './airline-keyword-definition.js';
+import { AIRLINE_AIRLINE_IATA_CODE_KEYWORD_DEFINITION } from './airline-iata-code-keyword-definition.js';
+import { AIRLINE_AIRLINE_NAME_KEYWORD_DEFINITION } from './airline-name-keyword-definition.js';
+import { AIRLINE_AIRPLANE_KEYWORD_DEFINITION } from './airplane-keyword-definition.js';
+import { AIRLINE_AIRPLANE_IATA_TYPE_CODE_KEYWORD_DEFINITION } from './airplane-iata-type-code-keyword-definition.js';
+import { AIRLINE_AIRPLANE_NAME_KEYWORD_DEFINITION } from './airplane-name-keyword-definition.js';
+import { AIRLINE_AIRPORT_KEYWORD_DEFINITION } from './airport-keyword-definition.js';
+import { AIRLINE_AIRPORT_IATA_CODE_KEYWORD_DEFINITION } from './airport-iata-code-keyword-definition.js';
+import { AIRLINE_AIRPORT_NAME_KEYWORD_DEFINITION } from './airport-name-keyword-definition.js';
+import { AIRLINE_FLIGHT_NUMBER_KEYWORD_DEFINITION } from './flight-number-keyword-definition.js';
+import { AIRLINE_RECORD_LOCATOR_KEYWORD_DEFINITION } from './record-locator-keyword-definition.js';
+import { AIRLINE_SEAT_KEYWORD_DEFINITION } from './seat-keyword-definition.js';
+
+const AIRLINE_KEYWORD_DEFINITIONS = [
+  AIRLINE_AIRCRAFT_TYPE_KEYWORD_DEFINITION,
+  AIRLINE_AIRLINE_KEYWORD_DEFINITION,
+  AIRLINE_AIRLINE_IATA_CODE_KEYWORD_DEFINITION,
+  AIRLINE_AIRLINE_NAME_KEYWORD_DEFINITION,
+  AIRLINE_AIRPLANE_KEYWORD_DEFINITION,
+  AIRLINE_AIRPLANE_IATA_TYPE_CODE_KEYWORD_DEFINITION,
+  AIRLINE_AIRPLANE_NAME_KEYWORD_DEFINITION,
+  AIRLINE_AIRPORT_KEYWORD_DEFINITION,
+  AIRLINE_AIRPORT_IATA_CODE_KEYWORD_DEFINITION,
+  AIRLINE_AIRPORT_NAME_KEYWORD_DEFINITION,
+  AIRLINE_FLIGHT_NUMBER_KEYWORD_DEFINITION,
+  AIRLINE_RECORD_LOCATOR_KEYWORD_DEFINITION,
+  AIRLINE_SEAT_KEYWORD_DEFINITION,
+];
+
+export { AIRLINE_KEYWORD_DEFINITIONS };

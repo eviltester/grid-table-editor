@@ -1,0 +1,17 @@
+import { HACKER_ABBREVIATION_KEYWORD_DEFINITION } from './abbreviation-keyword-definition.js';
+import { HACKER_ADJECTIVE_KEYWORD_DEFINITION } from './adjective-keyword-definition.js';
+import { HACKER_INGVERB_KEYWORD_DEFINITION } from './ingverb-keyword-definition.js';
+import { HACKER_NOUN_KEYWORD_DEFINITION } from './noun-keyword-definition.js';
+import { HACKER_PHRASE_KEYWORD_DEFINITION } from './phrase-keyword-definition.js';
+import { HACKER_VERB_KEYWORD_DEFINITION } from './verb-keyword-definition.js';
+
+const HACKER_KEYWORD_DEFINITIONS = [
+  HACKER_ABBREVIATION_KEYWORD_DEFINITION,
+  HACKER_ADJECTIVE_KEYWORD_DEFINITION,
+  HACKER_INGVERB_KEYWORD_DEFINITION,
+  HACKER_NOUN_KEYWORD_DEFINITION,
+  HACKER_PHRASE_KEYWORD_DEFINITION,
+  HACKER_VERB_KEYWORD_DEFINITION,
+];
+
+export { HACKER_KEYWORD_DEFINITIONS };

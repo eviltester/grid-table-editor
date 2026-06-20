@@ -1,65 +1,61 @@
-import { DOMAIN_FAKER_AIRLINE_KEYWORD_DEFINITIONS } from './domain-faker-airline-keyword-definitions.js';
-import { DOMAIN_FAKER_ANIMAL_KEYWORD_DEFINITIONS } from './domain-faker-animal-keyword-definitions.js';
-import { DOMAIN_FAKER_BOOK_KEYWORD_DEFINITIONS } from './domain-faker-book-keyword-definitions.js';
-import { DOMAIN_FAKER_COLOR_KEYWORD_DEFINITIONS } from './domain-faker-color-keyword-definitions.js';
-import { DOMAIN_FAKER_COMMERCE_KEYWORD_DEFINITIONS } from './domain-faker-commerce-keyword-definitions.js';
-import { DOMAIN_FAKER_COMPANY_KEYWORD_DEFINITIONS } from './domain-faker-company-keyword-definitions.js';
-import { DOMAIN_FAKER_DATABASE_KEYWORD_DEFINITIONS } from './domain-faker-database-keyword-definitions.js';
-import { DOMAIN_FAKER_DATATYPE_KEYWORD_DEFINITIONS } from './domain-faker-datatype-keyword-definitions.js';
-import { DOMAIN_FAKER_DATE_KEYWORD_DEFINITIONS } from './domain-faker-date-keyword-definitions.js';
-import { DOMAIN_FAKER_FINANCE_KEYWORD_DEFINITIONS } from './domain-faker-finance-keyword-definitions.js';
-import { DOMAIN_FAKER_FOOD_KEYWORD_DEFINITIONS } from './domain-faker-food-keyword-definitions.js';
-import { DOMAIN_FAKER_GIT_KEYWORD_DEFINITIONS } from './domain-faker-git-keyword-definitions.js';
-import { DOMAIN_FAKER_HACKER_KEYWORD_DEFINITIONS } from './domain-faker-hacker-keyword-definitions.js';
-import { DOMAIN_FAKER_IMAGE_KEYWORD_DEFINITIONS } from './domain-faker-image-keyword-definitions.js';
-import { DOMAIN_FAKER_INTERNET_KEYWORD_DEFINITIONS } from './domain-faker-internet-keyword-definitions.js';
-import { DOMAIN_CUSTOM_INTERNET_KEYWORD_DEFINITIONS } from './domain-custom-internet-keyword-definitions.js';
-import { DOMAIN_CUSTOM_AUTOINCREMENT_KEYWORD_DEFINITIONS } from './domain-custom-autoincrement-keyword-definitions.js';
-import { DOMAIN_CUSTOM_LITERAL_KEYWORD_DEFINITIONS } from './domain-custom-literal-keyword-definitions.js';
-import { DOMAIN_FAKER_LOCATION_KEYWORD_DEFINITIONS } from './domain-faker-location-keyword-definitions.js';
-import { DOMAIN_FAKER_LOREM_KEYWORD_DEFINITIONS } from './domain-faker-lorem-keyword-definitions.js';
-import { DOMAIN_FAKER_MUSIC_KEYWORD_DEFINITIONS } from './domain-faker-music-keyword-definitions.js';
-import { DOMAIN_FAKER_NUMBER_KEYWORD_DEFINITIONS } from './domain-faker-number-keyword-definitions.js';
-import { DOMAIN_FAKER_PERSON_KEYWORD_DEFINITIONS } from './domain-faker-person-keyword-definitions.js';
-import { DOMAIN_FAKER_PHONE_KEYWORD_DEFINITIONS } from './domain-faker-phone-keyword-definitions.js';
-import { DOMAIN_FAKER_SCIENCE_KEYWORD_DEFINITIONS } from './domain-faker-science-keyword-definitions.js';
-import { DOMAIN_FAKER_STRING_KEYWORD_DEFINITIONS } from './domain-faker-string-keyword-definitions.js';
-import { DOMAIN_CUSTOM_STRING_KEYWORD_DEFINITIONS } from './domain-custom-string-keyword-definitions.js';
-import { DOMAIN_FAKER_SYSTEM_KEYWORD_DEFINITIONS } from './domain-faker-system-keyword-definitions.js';
-import { DOMAIN_FAKER_VEHICLE_KEYWORD_DEFINITIONS } from './domain-faker-vehicle-keyword-definitions.js';
-import { DOMAIN_FAKER_WORD_KEYWORD_DEFINITIONS } from './domain-faker-word-keyword-definitions.js';
+import { AIRLINE_KEYWORD_DEFINITIONS } from '../keywords/domain/airline/airline-keyword-definitions.js';
+import { ANIMAL_KEYWORD_DEFINITIONS } from '../keywords/domain/animal/animal-keyword-definitions.js';
+import { BOOK_KEYWORD_DEFINITIONS } from '../keywords/domain/book/book-keyword-definitions.js';
+import { COLOR_KEYWORD_DEFINITIONS } from '../keywords/domain/color/color-keyword-definitions.js';
+import { COMMERCE_KEYWORD_DEFINITIONS } from '../keywords/domain/commerce/commerce-keyword-definitions.js';
+import { COMPANY_KEYWORD_DEFINITIONS } from '../keywords/domain/company/company-keyword-definitions.js';
+import { DATABASE_KEYWORD_DEFINITIONS } from '../keywords/domain/database/database-keyword-definitions.js';
+import { DATATYPE_KEYWORD_DEFINITIONS } from '../keywords/domain/datatype/datatype-keyword-definitions.js';
+import { DATE_KEYWORD_DEFINITIONS } from '../keywords/domain/date/date-keyword-definitions.js';
+import { FINANCE_KEYWORD_DEFINITIONS } from '../keywords/domain/finance/finance-keyword-definitions.js';
+import { FOOD_KEYWORD_DEFINITIONS } from '../keywords/domain/food/food-keyword-definitions.js';
+import { GIT_KEYWORD_DEFINITIONS } from '../keywords/domain/git/git-keyword-definitions.js';
+import { HACKER_KEYWORD_DEFINITIONS } from '../keywords/domain/hacker/hacker-keyword-definitions.js';
+import { IMAGE_KEYWORD_DEFINITIONS } from '../keywords/domain/image/image-keyword-definitions.js';
+import { INTERNET_KEYWORD_DEFINITIONS } from '../keywords/domain/internet/internet-keyword-definitions.js';
+import { AUTOINCREMENT_KEYWORD_DEFINITIONS } from '../keywords/domain/autoincrement/autoincrement-keyword-definitions.js';
+import { LITERAL_KEYWORD_DEFINITIONS } from '../keywords/domain/literal/literal-keyword-definitions.js';
+import { LOCATION_KEYWORD_DEFINITIONS } from '../keywords/domain/location/location-keyword-definitions.js';
+import { LOREM_KEYWORD_DEFINITIONS } from '../keywords/domain/lorem/lorem-keyword-definitions.js';
+import { MUSIC_KEYWORD_DEFINITIONS } from '../keywords/domain/music/music-keyword-definitions.js';
+import { NUMBER_KEYWORD_DEFINITIONS } from '../keywords/domain/number/number-keyword-definitions.js';
+import { PERSON_KEYWORD_DEFINITIONS } from '../keywords/domain/person/person-keyword-definitions.js';
+import { PHONE_KEYWORD_DEFINITIONS } from '../keywords/domain/phone/phone-keyword-definitions.js';
+import { SCIENCE_KEYWORD_DEFINITIONS } from '../keywords/domain/science/science-keyword-definitions.js';
+import { STRING_KEYWORD_DEFINITIONS } from '../keywords/domain/string/string-keyword-definitions.js';
+import { SYSTEM_KEYWORD_DEFINITIONS } from '../keywords/domain/system/system-keyword-definitions.js';
+import { VEHICLE_KEYWORD_DEFINITIONS } from '../keywords/domain/vehicle/vehicle-keyword-definitions.js';
+import { WORD_KEYWORD_DEFINITIONS } from '../keywords/domain/word/word-keyword-definitions.js';
 
 const DOMAIN_KEYWORD_DEFINITIONS = [
-  ...DOMAIN_FAKER_AIRLINE_KEYWORD_DEFINITIONS,
-  ...DOMAIN_FAKER_ANIMAL_KEYWORD_DEFINITIONS,
-  ...DOMAIN_FAKER_BOOK_KEYWORD_DEFINITIONS,
-  ...DOMAIN_FAKER_COLOR_KEYWORD_DEFINITIONS,
-  ...DOMAIN_FAKER_COMMERCE_KEYWORD_DEFINITIONS,
-  ...DOMAIN_FAKER_COMPANY_KEYWORD_DEFINITIONS,
-  ...DOMAIN_FAKER_DATABASE_KEYWORD_DEFINITIONS,
-  ...DOMAIN_FAKER_DATATYPE_KEYWORD_DEFINITIONS,
-  ...DOMAIN_FAKER_DATE_KEYWORD_DEFINITIONS,
-  ...DOMAIN_FAKER_FINANCE_KEYWORD_DEFINITIONS,
-  ...DOMAIN_FAKER_FOOD_KEYWORD_DEFINITIONS,
-  ...DOMAIN_FAKER_GIT_KEYWORD_DEFINITIONS,
-  ...DOMAIN_FAKER_HACKER_KEYWORD_DEFINITIONS,
-  ...DOMAIN_FAKER_IMAGE_KEYWORD_DEFINITIONS,
-  ...DOMAIN_FAKER_INTERNET_KEYWORD_DEFINITIONS,
-  ...DOMAIN_CUSTOM_INTERNET_KEYWORD_DEFINITIONS,
-  ...DOMAIN_CUSTOM_AUTOINCREMENT_KEYWORD_DEFINITIONS,
-  ...DOMAIN_CUSTOM_LITERAL_KEYWORD_DEFINITIONS,
-  ...DOMAIN_FAKER_LOCATION_KEYWORD_DEFINITIONS,
-  ...DOMAIN_FAKER_LOREM_KEYWORD_DEFINITIONS,
-  ...DOMAIN_FAKER_MUSIC_KEYWORD_DEFINITIONS,
-  ...DOMAIN_FAKER_NUMBER_KEYWORD_DEFINITIONS,
-  ...DOMAIN_FAKER_PERSON_KEYWORD_DEFINITIONS,
-  ...DOMAIN_FAKER_PHONE_KEYWORD_DEFINITIONS,
-  ...DOMAIN_FAKER_SCIENCE_KEYWORD_DEFINITIONS,
-  ...DOMAIN_FAKER_STRING_KEYWORD_DEFINITIONS,
-  ...DOMAIN_CUSTOM_STRING_KEYWORD_DEFINITIONS,
-  ...DOMAIN_FAKER_SYSTEM_KEYWORD_DEFINITIONS,
-  ...DOMAIN_FAKER_VEHICLE_KEYWORD_DEFINITIONS,
-  ...DOMAIN_FAKER_WORD_KEYWORD_DEFINITIONS,
+  ...AIRLINE_KEYWORD_DEFINITIONS,
+  ...ANIMAL_KEYWORD_DEFINITIONS,
+  ...BOOK_KEYWORD_DEFINITIONS,
+  ...COLOR_KEYWORD_DEFINITIONS,
+  ...COMMERCE_KEYWORD_DEFINITIONS,
+  ...COMPANY_KEYWORD_DEFINITIONS,
+  ...DATABASE_KEYWORD_DEFINITIONS,
+  ...DATATYPE_KEYWORD_DEFINITIONS,
+  ...DATE_KEYWORD_DEFINITIONS,
+  ...FINANCE_KEYWORD_DEFINITIONS,
+  ...FOOD_KEYWORD_DEFINITIONS,
+  ...GIT_KEYWORD_DEFINITIONS,
+  ...HACKER_KEYWORD_DEFINITIONS,
+  ...IMAGE_KEYWORD_DEFINITIONS,
+  ...INTERNET_KEYWORD_DEFINITIONS,
+  ...AUTOINCREMENT_KEYWORD_DEFINITIONS,
+  ...LITERAL_KEYWORD_DEFINITIONS,
+  ...LOCATION_KEYWORD_DEFINITIONS,
+  ...LOREM_KEYWORD_DEFINITIONS,
+  ...MUSIC_KEYWORD_DEFINITIONS,
+  ...NUMBER_KEYWORD_DEFINITIONS,
+  ...PERSON_KEYWORD_DEFINITIONS,
+  ...PHONE_KEYWORD_DEFINITIONS,
+  ...SCIENCE_KEYWORD_DEFINITIONS,
+  ...STRING_KEYWORD_DEFINITIONS,
+  ...SYSTEM_KEYWORD_DEFINITIONS,
+  ...VEHICLE_KEYWORD_DEFINITIONS,
+  ...WORD_KEYWORD_DEFINITIONS,
 ];
 
 export { DOMAIN_KEYWORD_DEFINITIONS };

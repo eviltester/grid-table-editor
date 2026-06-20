@@ -58,21 +58,15 @@ describe('internet domain keyword execution', () => {
     expect(['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'TRACE', 'CONNECT']).toContain(result);
   });
 
-  test('internet.httpMethod supports commonOnly and excludes args', () => {
-    const commonOnlyResult = executeDomainKeyword('internet.httpMethod', { faker, args: [true] });
-    expect(['GET', 'HEAD', 'POST', 'PUT', 'DELETE']).toContain(commonOnlyResult);
+  test('internet.httpMethod supports named parameters through the parser and execution interface', () => {
+    const parsed = parseKeywordInvocation('internet.httpMethod(commonOnly=true, excludes="head, delete")');
+    expect(parsed.errors).toEqual([]);
 
-    const excludedResult = executeDomainKeyword('internet.httpMethod', { faker, args: [false, 'patch, TRACE'] });
-    expect(['PATCH', 'TRACE']).not.toContain(excludedResult);
-
-    const commonAndExcludedResult = executeDomainKeyword('internet.httpMethod', {
-      faker,
-      args: [true, 'head, delete'],
-    });
-    expect(['GET', 'POST', 'PUT']).toContain(commonAndExcludedResult);
+    const result = executeDomainKeyword(parsed.keyword, { faker, args: parsed.args });
+    expect(['GET', 'POST', 'PUT']).toContain(result);
   });
 
-  test('internet.httpMethod throws when exclusions remove every allowed method', () => {
+  test('internet.httpMethod surfaces helper validation errors through the execution interface', () => {
     expect(() =>
       executeDomainKeyword('internet.httpMethod', {
         faker,

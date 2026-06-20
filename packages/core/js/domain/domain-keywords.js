@@ -1,8 +1,8 @@
 import { DOMAIN_KEYWORD_DEFINITIONS } from './domain-keyword-definitions.js';
-import { executeCustomAutoIncrementTimestamp } from './auto-increment-timestamp.js';
-import { executeCustomAutoIncrementSequence } from './auto-increment-sequence.js';
-import { executeCustomCounterString } from './counterstring.js';
-import { executeCustomInternetHttpMethod } from './internet-http-method.js';
+import { executeCustomAutoIncrementTimestamp } from '../keywords/domain/autoincrement/auto-increment-timestamp.js';
+import { executeCustomAutoIncrementSequence } from '../keywords/domain/autoincrement/auto-increment-sequence.js';
+import { executeCustomCounterString } from '../keywords/domain/string/counterstring.js';
+import { executeCustomInternetHttpMethod } from '../keywords/domain/internet/internet-http-method.js';
 import { DomainKeywordInvocationParser } from './parser/DomainKeywordInvocationParser.js';
 import {
   isQuotedLiteralTypeToken,

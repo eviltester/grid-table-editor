@@ -1,10 +1,11 @@
 import {
   ALL_HTTP_METHODS,
   COMMON_HTTP_METHODS,
+  executeCustomInternetHttpMethod,
   getInternetHttpMethodPool,
   normalizeHttpMethodToken,
   parseExcludedHttpMethodsCsv,
-} from '../../../../../js/domain/internet-http-method.js';
+} from '../../../../../js/keywords/domain/internet/internet-http-method.js';
 
 describe('custom internet.httpMethod helpers', () => {
   test('normalizes http method tokens to trimmed uppercase values', () => {
@@ -32,5 +33,11 @@ describe('custom internet.httpMethod helpers', () => {
       'CONNECT',
     ]);
     expect(getInternetHttpMethodPool({ commonOnly: true, excludes: 'head, delete' })).toEqual(['GET', 'POST', 'PUT']);
+  });
+
+  test('throws when exclusions remove every available method', () => {
+    expect(() => executeCustomInternetHttpMethod({ args: [true, 'get, head, post, put, delete'] })).toThrow(
+      'Invalid argument for excludes: no HTTP methods remain after exclusions.'
+    );
   });
 });

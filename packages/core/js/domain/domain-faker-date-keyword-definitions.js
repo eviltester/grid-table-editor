@@ -101,6 +101,11 @@ const DOMAIN_FAKER_DATE_KEYWORD_DEFINITIONS = [
       returnType: 'array',
       usageExamples: [
         {
+          functionCall: 'date.betweens(from=1577836800000, to=1609372800000)',
+          sampleReturnValue: ['2020-02-03T16:53:09.924Z', '2020-02-23T13:34:53.772Z', '2020-04-20T08:26:00.010Z'],
+          description: 'Shows date.betweens with only the required range boundaries.',
+        },
+        {
           functionCall: 'date.betweens(count=2, from=1577836800000, to=1609372800000)',
           sampleReturnValue: ['2020-06-01T05:06:45.940Z', '2020-09-19T22:02:33.225Z'],
           description: 'Shows date.betweens returning two sorted dates within a range.',

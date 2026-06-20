@@ -397,6 +397,11 @@ const FAKER_HELPER_KEYWORD_DEFINITIONS = {
     ],
     usageExamples: [
       {
+        functionCall: 'helpers.arrayElements(["A", "B", "C"])',
+        sampleReturnValue: ['A', 'C'],
+        description: 'Shows helpers.arrayElements with only the required array argument.',
+      },
+      {
         functionCall: 'helpers.arrayElements(["A", "B", "C"], 2)',
         sampleReturnValue: ['C', 'B'],
         description: 'Shows helpers.arrayElements in use.',

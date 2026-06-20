@@ -40,6 +40,61 @@ describe('command help usage examples', () => {
     expect(missingCoverage).toEqual([]);
   });
 
+  test('commands include a base minimal valid example', () => {
+    const failures = commandCases.flatMap((entry) => {
+      const usageExamples = Array.isArray(entry.help?.usageExamples) ? entry.help.usageExamples : [];
+      const requiredParams = entry.params.filter(isRequiredParam);
+
+      if (entry.command.startsWith('helpers.')) {
+        const requiredArgCount = requiredParams.length;
+        const hasMinimalExample = usageExamples.some(
+          (usageExample) => getHelperExampleArgCount(usageExample.functionCall) === requiredArgCount
+        );
+
+        return hasMinimalExample
+          ? []
+          : [
+              {
+                command: `${entry.catalog}:${entry.command}`,
+                reason: `missing minimal positional example with ${requiredArgCount} required argument(s)`,
+              },
+            ];
+      }
+
+      const requiredParamNames = new Set(requiredParams.map((param) => param.name));
+      const hasMinimalExample = usageExamples.some((usageExample) => {
+        const parsed = DOMAIN_INVOCATION_PARSER.parse(usageExample.functionCall);
+        if (!parsed.ok || parsed.keyword !== entry.command) {
+          return false;
+        }
+
+        const namedArgs = (parsed.arguments || []).filter((argument) => argument.kind === 'named').map((arg) => arg.name);
+        const providedArgNames = new Set(namedArgs);
+
+        if ((parsed.arguments || []).length !== requiredParams.length) {
+          return false;
+        }
+
+        if (providedArgNames.size !== requiredParamNames.size) {
+          return false;
+        }
+
+        return [...requiredParamNames].every((name) => providedArgNames.has(name));
+      });
+
+      return hasMinimalExample
+        ? []
+        : [
+            {
+              command: `${entry.catalog}:${entry.command}`,
+              reason: `missing minimal named example with exactly ${requiredParams.length} required argument(s)`,
+            },
+          ];
+    });
+
+    expect(failures).toEqual([]);
+  });
+
   test('each optional parameter has a focused usage example and all-optional commands include a zero-arg example', () => {
     const failures = commandCases.flatMap((entry) => {
       const usageExamples = Array.isArray(entry.help?.usageExamples) ? entry.help.usageExamples : [];

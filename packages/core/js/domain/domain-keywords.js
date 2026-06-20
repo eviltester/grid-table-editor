@@ -4,7 +4,11 @@ import { executeCustomAutoIncrementSequence } from './auto-increment-sequence.js
 import { executeCustomCounterString } from './counterstring.js';
 import { executeCustomInternetHttpMethod } from './internet-http-method.js';
 import { DomainKeywordInvocationParser } from './parser/DomainKeywordInvocationParser.js';
-import { normalizeUsageExamples } from '../command-help/command-help-contract.js';
+import {
+  isQuotedLiteralTypeToken,
+  normalizeUsageExamples,
+  unquoteLiteralTypeToken,
+} from '../command-help/command-help-contract.js';
 
 const DOMAIN_ROOT_PREFIX = 'awd.domain.';
 const DOMAIN_PREFIX = 'domain.';
@@ -21,35 +25,14 @@ function buildCanonicalKeyword(fakerCommand) {
   return `${DOMAIN_ROOT_PREFIX}${command}`;
 }
 
-function serializeDomainInvocationValue(value, type = '') {
-  const allowedTypes = String(type || '')
-    .split('|')
-    .map((entry) => entry.trim())
-    .filter(Boolean);
-
+function serializeDomainInvocationValue(value) {
   if (typeof value === 'string') {
-    if (allowedTypes.includes('regexp')) {
-      return JSON.stringify(value);
-    }
     return JSON.stringify(value);
   }
   if (typeof value === 'number' || typeof value === 'boolean' || typeof value === 'bigint') {
     return String(value);
   }
   return JSON.stringify(value);
-}
-
-function unquoteLiteralTypeToken(value) {
-  const trimmed = String(value || '').trim();
-  if ((trimmed.startsWith('"') && trimmed.endsWith('"')) || (trimmed.startsWith("'") && trimmed.endsWith("'"))) {
-    return trimmed.slice(1, -1);
-  }
-  return trimmed;
-}
-
-function isQuotedLiteralTypeToken(value) {
-  const trimmed = String(value || '').trim();
-  return (trimmed.startsWith('"') && trimmed.endsWith('"')) || (trimmed.startsWith("'") && trimmed.endsWith("'"));
 }
 
 function normalizeDomainExampleFunctionCall(functionCall, keyword, args) {
@@ -67,9 +50,10 @@ function normalizeDomainExampleFunctionCall(functionCall, keyword, args) {
     return normalizedFunctionCall;
   }
 
+  const argTypeByName = new Map(args.map((arg) => [arg?.name, arg?.type]));
   const namedArgs = parsed.arguments.map((argument, index) => {
     if (argument.kind === 'named') {
-      return `${argument.name}=${serializeDomainInvocationValue(argument.value, args[index]?.type)}`;
+      return `${argument.name}=${serializeDomainInvocationValue(argument.value, argTypeByName.get(argument.name))}`;
     }
 
     const argName = args[index]?.name;

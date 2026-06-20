@@ -549,11 +549,30 @@ function getContextRuleSpec(context = {}) {
 
 function getCounterStringRangeFromContext(context = {}) {
   const args = getContextArgs(context);
+  const fieldDefinition = getFieldDefinitionFromContext(context);
+  const ruleSpec = getContextRuleSpec(context);
 
-  const hasMin = typeof args[0] !== 'undefined';
-  const hasMax = typeof args[1] !== 'undefined';
-  const minArg = hasMin ? args[0] : 1;
-  const maxArg = hasMax ? args[1] : hasMin ? minArg : 25;
+  const namedMin = ruleSpec.match(/\bmin\s*=\s*([+-]?\d+(?:\.\d+)?)/iu)?.[1];
+  const namedMax = ruleSpec.match(/\bmax\s*=\s*([+-]?\d+(?:\.\d+)?)/iu)?.[1];
+  const positionalBounds =
+    !namedMin && !namedMax
+      ? String(fieldDefinition?.params ?? '')
+          .replace(/^\(|\)$/gu, '')
+          .split(',')
+          .map((entry) => entry.trim())
+          .filter((entry) => /^[+-]?\d+(?:\.\d+)?$/u.test(entry))
+          .map((entry) => Number(entry))
+      : [];
+
+  const fieldMin = typeof namedMin !== 'undefined' ? Number(namedMin) : positionalBounds[0];
+  const fieldMax = typeof namedMax !== 'undefined' ? Number(namedMax) : positionalBounds[1];
+  const resolvedMin = typeof fieldMin !== 'undefined' ? fieldMin : args[0];
+  const resolvedMax = typeof fieldMax !== 'undefined' ? fieldMax : args[1];
+
+  const hasMin = typeof resolvedMin !== 'undefined';
+  const hasMax = typeof resolvedMax !== 'undefined';
+  const minArg = hasMin ? resolvedMin : 1;
+  const maxArg = hasMax ? resolvedMax : hasMin ? minArg : 25;
 
   const lowest = Math.max(1, Math.min(minArg, maxArg));
   const highest = Math.max(1, Math.max(minArg, maxArg));

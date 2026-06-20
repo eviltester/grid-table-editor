@@ -81,6 +81,20 @@ describe('command help validators', () => {
     expect(validateCounterStringValue('X3X5X7X9X12X', context)).toBe(true);
   });
 
+  test('counterstring validator falls back to fieldDefinition bounds when parsed args are unavailable', () => {
+    const context = {
+      fieldDefinition: {
+        sourceType: 'domain',
+        command: 'string.counterString',
+        params: '(min=12, max=12, delimiter="#")',
+        ruleSpec: 'string.counterString(min=12, max=12, delimiter="#")',
+      },
+    };
+
+    expect(validateCounterStringValue('#3#5#7#9#12#', context)).toBe(true);
+    expect(validateCounterStringValue('#3#5#7#9#', context)).toBe(false);
+  });
+
   test('enum validator only allows values declared on the field definition', () => {
     const context = {
       fieldDefinition: {
@@ -142,6 +156,13 @@ describe('command help validators', () => {
     expect(validator('AB')).toBe(true);
     expect(validator('A1')).toBe(false);
     expect(validator('')).toBe(false);
+  });
+
+  test('validateCommandHelpValue resets lastIndex for stateful regex validators', () => {
+    const validator = /^[A-Z]{2}$/gu;
+
+    expect(validateCommandHelpValue(validator, 'AB')).toBe(true);
+    expect(validateCommandHelpValue(validator, 'AB')).toBe(true);
   });
 
   test('predicate validators can enforce semantic checks', () => {

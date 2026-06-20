@@ -20,6 +20,10 @@ describe('domain docs parameter examples', () => {
           invalid.push(`${keyword.keyword}:parse`);
           continue;
         }
+        if (parsed.arguments.length > 0 && parsed.arguments.some((entry) => entry.kind !== 'named')) {
+          invalid.push(`${keyword.keyword}:non-named`);
+          continue;
+        }
 
         parsed.arguments
           .filter((entry) => entry.kind === 'named')

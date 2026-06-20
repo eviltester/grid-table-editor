@@ -110,6 +110,12 @@ function coerceSampleReturnValue(value, returnType = '') {
   if ((allowedTypes.includes('integer') || allowedTypes.includes('number')) && /^[+-]?\d+(?:\.\d+)?$/u.test(unquoted)) {
     return Number(unquoted);
   }
+  if (
+    allowedTypes.some((typeToken) => /^[+-]?\d+(?:\.\d+)?$/u.test(typeToken)) &&
+    /^[+-]?\d+(?:\.\d+)?$/u.test(unquoted)
+  ) {
+    return Number(unquoted);
+  }
   if (allowedTypes.includes('date')) {
     return unquoted;
   }
@@ -119,6 +125,9 @@ function coerceSampleReturnValue(value, returnType = '') {
 
 function validateCommandHelpValue(validator, value, context = {}) {
   if (validator instanceof RegExp) {
+    if (validator.global || validator.sticky) {
+      validator.lastIndex = 0;
+    }
     return validator.test(String(value ?? ''));
   }
   if (typeof validator === 'function') {
@@ -151,4 +160,11 @@ function normalizeUsageExamples({ command = '', returnType = '', usageExamples =
     .filter(Boolean);
 }
 
-export { createReturnValueValidator, normalizeUsageExamples, normalizeValidatorValue, validateCommandHelpValue };
+export {
+  createReturnValueValidator,
+  isQuotedLiteralTypeToken,
+  normalizeUsageExamples,
+  normalizeValidatorValue,
+  unquoteLiteralTypeToken,
+  validateCommandHelpValue,
+};

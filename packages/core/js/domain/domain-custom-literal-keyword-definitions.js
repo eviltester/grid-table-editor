@@ -15,12 +15,12 @@ const DOMAIN_CUSTOM_LITERAL_KEYWORD_DEFINITIONS = [
       returnType: 'string|number|boolean',
       usageExamples: [
         {
-          functionCall: 'literal.value("Pending")',
+          functionCall: 'literal.value(value="Pending")',
           sampleReturnValue: 'Pending',
           description: 'Shows literal.value in use.',
         },
         {
-          functionCall: 'literal.value("")',
+          functionCall: 'literal.value(value="")',
           sampleReturnValue: '',
           description: 'Shows literal.value in use.',
         },

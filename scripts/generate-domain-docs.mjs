@@ -268,6 +268,12 @@ function sampleValueForArg(argSpec, keyword = '') {
   if (examples.length > 0) {
     return examples[0];
   }
+
+  const literalUnionValues = getLiteralUnionValues(typeName);
+  if (literalUnionValues.length > 0) {
+    return choosePreferredLiteralUnionValue(literalUnionValues, name, keyword);
+  }
+
   if (name === 'firstName') return 'Alex';
   if (name === 'lastName') return 'Taylor';
   if (name === 'provider') return 'example.com';
@@ -278,7 +284,7 @@ function sampleValueForArg(argSpec, keyword = '') {
   if (name === 'separator') return '-';
   if (name === 'characters') return 'ABC123';
   if (name === 'pattern') return '[A-Za-z0-9]';
-  if (name === 'version') return 'v4';
+  if (name === 'version') return 4;
   if (name === 'mode') return 'age';
   if (name === 'sex') return 'male';
   if (name === 'mimeType') return 'image/png';
@@ -292,11 +298,6 @@ function sampleValueForArg(argSpec, keyword = '') {
   if (name === 'context') return false;
   if (name === 'abbreviated') return false;
   if (name === 'memorable') return false;
-
-  const literalUnionValues = getLiteralUnionValues(typeName);
-  if (literalUnionValues.length > 0) {
-    return choosePreferredLiteralUnionValue(literalUnionValues, name, keyword);
-  }
 
   const first =
     typeName

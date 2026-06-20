@@ -27,6 +27,7 @@ const PRIMITIVE_TYPE_TOKENS = new Set([
   'regexp',
   'unknown',
   'bigint',
+  'comma-separated list',
 ]);
 
 function toSearchableText(value) {

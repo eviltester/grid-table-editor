@@ -191,7 +191,7 @@ describe('method picker modal', () => {
               },
               {
                 functionCall: 'datatype.enum(open,closed)',
-                sampleReturnValue: 'pending',
+                sampleReturnValue: 'closed',
                 description: 'Shows an alternate enum call.',
               },
             ],
@@ -207,7 +207,7 @@ describe('method picker modal', () => {
     expect(usageSection.textContent).toContain('datatype.enum(active,inactive,pending)');
     expect(usageSection.textContent).toContain('active');
     expect(usageSection.textContent).toContain('inactive');
-    expect(usageSection.textContent).toContain('pending');
+    expect(usageSection.textContent).toContain('closed');
     const usageBlock = usageSection.innerHTML.split('<h5>Usage Examples</h5>')[1].split('<h5>Return Examples</h5>')[0];
     expect(usageBlock).not.toContain('<code>active</code>');
     const returnBlock = usageSection.innerHTML.split('<h5>Return Examples</h5>')[1];

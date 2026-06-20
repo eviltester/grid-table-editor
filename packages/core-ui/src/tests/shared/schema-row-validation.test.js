@@ -79,4 +79,18 @@ describe('schema-row-validation', () => {
       }),
     ]);
   });
+
+  test('bracket guidance suggests a corrected example instead of echoing broken syntax', () => {
+    const issues = getSchemaRowValidationIssues(
+      {
+        name: 'Code',
+        sourceType: 'domain',
+        command: 'string.alpha',
+        params: '(length=4',
+      },
+      0
+    );
+
+    expect(issues[0]?.message).toBe('Row 1: params should be wrapped in parentheses, e.g. (length=4).');
+  });
 });

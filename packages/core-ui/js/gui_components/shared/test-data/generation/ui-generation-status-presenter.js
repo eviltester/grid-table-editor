@@ -34,6 +34,13 @@ function createAppSuccessMessage({ operationKind, result, previewUpdated = false
   return `Generate complete. ${suffix}`;
 }
 
+function createBlockedMessage(surface, baseMessage) {
+  if (surface === 'app') {
+    return `${baseMessage} Grid unchanged.`;
+  }
+  return baseMessage;
+}
+
 function createGeneratorSuccessMessage({ operationKind, filename, result }) {
   const rowCount = getRowCount(result);
 
@@ -128,7 +135,7 @@ function presentUiGenerationResult({
     return {
       outcome: 'warning',
       schemaMessage,
-      statusMessage: 'Insufficient enum columns.',
+      statusMessage: createBlockedMessage(surface, 'Insufficient enum columns.'),
       statusOptions: { severity: 'warning', dismissable: true },
     };
   }
@@ -137,7 +144,7 @@ function presentUiGenerationResult({
     return {
       outcome: 'warning',
       schemaMessage,
-      statusMessage: 'Invalid n-wise strength.',
+      statusMessage: createBlockedMessage(surface, 'Invalid n-wise strength.'),
       statusOptions: { severity: 'warning', dismissable: true },
     };
   }
@@ -146,7 +153,7 @@ function presentUiGenerationResult({
     return {
       outcome: 'warning',
       schemaMessage,
-      statusMessage: 'Amend stopped by schema constraints.',
+      statusMessage: createBlockedMessage(surface, 'Amend stopped by schema constraints.'),
       statusOptions: { severity: 'warning', dismissable: true },
     };
   }
@@ -164,7 +171,7 @@ function presentUiGenerationResult({
     return {
       outcome: 'error',
       schemaMessage,
-      statusMessage: 'Pairwise generation failed.',
+      statusMessage: createBlockedMessage(surface, 'Pairwise generation failed.'),
       statusOptions: { severity: 'error', dismissable: true },
     };
   }
@@ -173,7 +180,7 @@ function presentUiGenerationResult({
     return {
       outcome: 'error',
       schemaMessage,
-      statusMessage: 'Combination generation failed.',
+      statusMessage: createBlockedMessage(surface, 'Combination generation failed.'),
       statusOptions: { severity: 'error', dismissable: true },
     };
   }
@@ -182,7 +189,7 @@ function presentUiGenerationResult({
     return {
       outcome: 'error',
       schemaMessage,
-      statusMessage: 'Amend failed.',
+      statusMessage: createBlockedMessage(surface, 'Amend failed.'),
       statusOptions: { severity: 'error', dismissable: true },
     };
   }
@@ -190,7 +197,7 @@ function presentUiGenerationResult({
   return {
     outcome: 'error',
     schemaMessage,
-    statusMessage: 'Schema validation failed.',
+    statusMessage: createBlockedMessage(surface, 'Schema validation failed.'),
     statusOptions: { severity: 'error', dismissable: true },
   };
 }

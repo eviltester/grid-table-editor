@@ -55,6 +55,7 @@ function createGeneratorPageActionsService({
         getPreviewRowCount: () => getResolvedViewState()?.getPreviewRowCount?.(),
         schemaGenerationService: getResolvedSchemaGenerationService(),
         setPreviewDataTable: (dataTable) => getResolvedViewState()?.setPreviewDataTable?.(dataTable),
+        clearOutputPreview: () => getResolvedViewState()?.clearOutputPreview?.(),
         renderOutputPreviewForCurrentSelection: () =>
           getResolvedViewState()?.renderOutputPreviewForCurrentSelection?.(),
         surfacePageError: (message, options) => getResolvedSchemaRuntime()?.surfacePageError?.(message, options),

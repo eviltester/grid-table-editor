@@ -57,6 +57,8 @@ describe('domain docs generator output', () => {
       expect(literalSection).toContain('Shows literal.value in use.');
       expect(literalSection).toContain('```txt\nliteral.value(value="Pending")\n```');
       expect(literalSection).toContain('Returns: `Pending`');
+      expect(literalSection).not.toContain('Command picker:');
+      expect(literalSection).not.toContain('Params field:');
       expect(literalSection).not.toContain('Example return values:');
       expect(literalSection).not.toContain('Type-in examples (named params):');
       expect(literalSection.indexOf('Shows literal.value in use.')).toBeLessThan(

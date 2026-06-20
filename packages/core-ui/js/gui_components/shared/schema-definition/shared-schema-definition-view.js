@@ -119,12 +119,13 @@ class SharedSchemaDefinitionView {
           ${headingMarkup}
           <span${renderOptionalIdAttr(viewModel.ids.error)} class="${viewModel.errorClassName}" data-role="schema-error" aria-live="polite" role="status"></span>
           <span class="${viewModel.helpGroupClassName}" data-role="schema-mode-toggle-group">
-            <span
+            <button
+              type="button"
               ${renderOptionalIdAttr(viewModel.ids.helpIcon)}
               class="helpicon"
               data-help-role="help-icon"
               data-role="schema-mode-help"
-              data-help="${viewModel.helpIconDataHelp}"></span>
+              data-help="${viewModel.helpIconDataHelp}"></button>
             <button
               ${renderOptionalIdAttr(viewModel.ids.toggleButton)}
               class="icon-button"

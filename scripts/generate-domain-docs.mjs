@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { DOMAIN_KEYWORDS } from '../packages/core/js/domain/domain-keywords.js';
+import { DOMAIN_KEYWORD_ALIAS_INDEX } from '../packages/core/js/domain/domain-keywords.js';
 import { toInlineCode } from '../packages/core/js/domain/domain-doc-markdown.js';
 
 const configuredOutDir = process.env.ANYWAYDATA_DOMAIN_DOCS_OUT_DIR;
@@ -12,11 +12,18 @@ for (const fileName of fs.readdirSync(outDir)) {
   }
 }
 
+const keywordEntries = Object.values(DOMAIN_KEYWORD_ALIAS_INDEX.byCanonical || {}).sort((left, right) =>
+  String(left.keyword || '').localeCompare(String(right.keyword || ''))
+);
+
 const byDomain = new Map();
-for (const keyword of DOMAIN_KEYWORDS) {
-  const domain = keyword.keyword.split('.')[0];
+for (const keyword of keywordEntries) {
+  const domain = String(keyword.keyword || '').split('.')[0];
   if (!byDomain.has(domain)) byDomain.set(domain, []);
-  byDomain.get(domain).push(keyword);
+  byDomain.get(domain).push({
+    ...keyword,
+    displayCommand: String(keyword.shortestUniqueAlias || keyword.keyword || '').trim(),
+  });
 }
 
 const domains = [...byDomain.keys()].sort((a, b) => a.localeCompare(b));
@@ -147,7 +154,9 @@ function getDefinitionUsageExamples(entry) {
 
 let pageIndex = 20;
 for (const domain of domains) {
-  const keywords = byDomain.get(domain).sort((a, b) => a.keyword.localeCompare(b.keyword));
+  const keywords = byDomain.get(domain).sort((a, b) =>
+    String(a.displayCommand || a.keyword || '').localeCompare(String(b.displayCommand || b.keyword || ''))
+  );
   const lines = [
     '---',
     `sidebar_position: ${pageIndex}`,
@@ -184,7 +193,8 @@ for (const domain of domains) {
       throw new Error(`Missing usageExamples for ${entry.keyword}. Domain docs are generated from curated examples.`);
     }
 
-    lines.push(`### \`${entry.keyword}\``, '');
+    const displayCommand = String(entry.displayCommand || entry.keyword || '').trim();
+    lines.push(`### \`${displayCommand}\``, '');
     lines.push(escapeMdxText(entry.help.summary || 'No summary provided.'), '');
     lines.push(`- Canonical: \`${entry.canonical}\``);
     if (entry.help.fakerDocsUrl) {

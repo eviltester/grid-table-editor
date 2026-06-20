@@ -91,6 +91,7 @@ describe('help tooltips module', () => {
     expect(helpIcon.getAttribute('tabindex')).toBe('0');
     expect(helpIcon.getAttribute('role')).toBe('button');
     expect(helpIcon.getAttribute('aria-label')).toBe('Show help');
+    expect(helpIcon.getAttribute('aria-expanded')).toBe('false');
     expect(helpIcon.querySelector('svg.helpicon-svg')).not.toBeNull();
     expect(helpIcon.querySelector('svg.helpicon-svg').getAttribute('aria-hidden')).toBe('true');
     expect(tippy).toHaveBeenCalledWith(
@@ -159,6 +160,7 @@ describe('help tooltips module', () => {
     expect(helpIcon.getAttribute('tabindex')).toBe('0');
     expect(helpIcon.getAttribute('role')).toBe('button');
     expect(helpIcon.getAttribute('aria-label')).toBe('Show help for this option');
+    expect(helpIcon.getAttribute('aria-expanded')).toBe('false');
     expect(helpIcon.querySelector('svg.helpicon-svg')).not.toBeNull();
   });
 
@@ -173,6 +175,7 @@ describe('help tooltips module', () => {
     const helpIcon = root.querySelector('[data-help-role="help-icon"]');
     expect(helpIcon.querySelector('svg.helpicon-svg')).not.toBeNull();
     expect(helpIcon.getAttribute('aria-label')).toBe('Show help');
+    expect(helpIcon.getAttribute('aria-expanded')).toBe('false');
   });
 
   test('createUpdateHelpHints defaults document roots to body instead of appending containers directly to the document', () => {

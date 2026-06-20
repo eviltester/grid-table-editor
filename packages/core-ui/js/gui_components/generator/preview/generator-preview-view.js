@@ -135,6 +135,11 @@ class GeneratorPreviewView {
 
   setPreviewDataTable(dataTable) {
     this.controller.setPreviewDataTable(dataTable);
+    if (!dataTable) {
+      this.previewGrid?.clearGrid?.();
+      this.previewGridAdapter?.getGridApi?.()?.clearGrid?.();
+      return;
+    }
     if (this.previewGrid?.setGridFromGenericDataTable) {
       this.previewGrid.setGridFromGenericDataTable(dataTable);
       return;

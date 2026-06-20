@@ -170,7 +170,9 @@ function createSharedSchemaEditorController({
   };
 
   const getSchemaHelpData = (sourceType, commandValue) => {
-    const model = buildSchemaHelpModel(sourceType, commandValue);
+    const model = buildSchemaHelpModel(sourceType, commandValue, {
+      windowObj: resolveWindowObj(null, documentObj),
+    });
     return {
       show: model.show === true,
       title: model.title || '',

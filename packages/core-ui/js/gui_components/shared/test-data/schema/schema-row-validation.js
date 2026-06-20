@@ -18,6 +18,24 @@ const KNOWN_DOMAIN_COMMANDS = new Set(
   getKnownDomainCommandsAlphabetical().map((command) => normaliseDomainCommand(command))
 );
 
+function buildBracketGuidanceExample(rawParams, command = '') {
+  const paramsText = String(rawParams ?? '').trim();
+  if (!paramsText) {
+    return '()';
+  }
+  const normalizedCommand = String(command || '')
+    .trim()
+    .toLowerCase();
+  if (normalizedCommand === 'datatype.enum') {
+    return 'active,inactive,pending';
+  }
+  const withoutLeadingParen = paramsText.startsWith('(') ? paramsText.slice(1).trim() : paramsText;
+  const withoutTrailingParen = withoutLeadingParen.endsWith(')')
+    ? withoutLeadingParen.slice(0, -1).trim()
+    : withoutLeadingParen;
+  return normaliseCommandParams(withoutTrailingParen);
+}
+
 function createSchemaRowValidation(issues = []) {
   const normalizedIssues = Array.isArray(issues) ? issues.filter(Boolean) : [];
   return {
@@ -146,7 +164,7 @@ function getStaticSchemaRowValidationIssues(row, rowIndex) {
           rowIndex,
           code: 'params_missing_brackets',
           field: 'params',
-          message: `Row ${rowIndex + 1}: params should be wrapped in parentheses, e.g. ${normaliseCommandParams(rawParams)}.`,
+          message: `Row ${rowIndex + 1}: params should be wrapped in parentheses, e.g. ${buildBracketGuidanceExample(rawParams, command)}.`,
         })
       );
     }
@@ -198,7 +216,7 @@ function getStaticSchemaRowValidationIssues(row, rowIndex) {
           rowIndex,
           code: 'params_missing_brackets',
           field: 'params',
-          message: `Row ${rowIndex + 1}: params should be wrapped in parentheses, e.g. ${normaliseCommandParams(rawParams)}.`,
+          message: `Row ${rowIndex + 1}: params should be wrapped in parentheses, e.g. ${buildBracketGuidanceExample(rawParams, command)}.`,
         })
       );
     }

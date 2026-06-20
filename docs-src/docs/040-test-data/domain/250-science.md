@@ -14,26 +14,7 @@ The `science` domain maps domain keywords to underlying faker implementations.
 
 ## Methods
 
-### `science.chemicalElement`
-
-Generate a value using faker science.chemicalElement.
-
-- Canonical: `awd.domain.science.chemicalElement`
-- Faker docs: [https://fakerjs.dev/api/science](https://fakerjs.dev/api/science)
-
-No parameters.
-
-Examples:
-
-Shows the default science.chemicalElement call.
-
-```txt
-science.chemicalElement
-```
-
-Returns: `{"symbol":"Sn","name":"Tin","atomicNumber":50}`
-
-### `science.chemicalElement.atomicNumber`
+### `chemicalElement.atomicNumber`
 
 Generate a chemical element atomic number.
 
@@ -52,7 +33,7 @@ science.chemicalElement.atomicNumber
 
 Returns: `50`
 
-### `science.chemicalElement.name`
+### `chemicalElement.name`
 
 Generate a chemical element name.
 
@@ -71,7 +52,7 @@ science.chemicalElement.name
 
 Returns: `Tin`
 
-### `science.chemicalElement.symbol`
+### `chemicalElement.symbol`
 
 Generate a chemical element symbol.
 
@@ -89,6 +70,25 @@ science.chemicalElement.symbol
 ```
 
 Returns: `Sn`
+
+### `science.chemicalElement`
+
+Generate a value using faker science.chemicalElement.
+
+- Canonical: `awd.domain.science.chemicalElement`
+- Faker docs: [https://fakerjs.dev/api/science](https://fakerjs.dev/api/science)
+
+No parameters.
+
+Examples:
+
+Shows the default science.chemicalElement call.
+
+```txt
+science.chemicalElement
+```
+
+Returns: `{"symbol":"Sn","name":"Tin","atomicNumber":50}`
 
 ### `science.unit`
 

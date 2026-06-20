@@ -1,5 +1,6 @@
 import { createHelpTooltipService } from '../../../../help/help-tooltips.js';
 import { getDefaultDocumentObj, getDefaultWindowObj, resolveWindowObj } from '../../dom/default-objects.js';
+import { resolveRuntimeDocsUrl } from '../help/runtime-docs-url.js';
 
 const STYLE_ID = 'params-editor-modal-styles-link';
 
@@ -444,10 +445,10 @@ function buildParamHelpHtml(entry = {}) {
   return sections.join('');
 }
 
-function buildCommandHelpHtml(helpModel = {}, commandLabel = '') {
+function buildCommandHelpHtml(helpModel = {}, commandLabel = '', { windowObj } = {}) {
   const title = String(helpModel.heading || commandLabel || 'Command').trim();
   const description = String(helpModel.summary || helpModel.description || '').trim();
-  const docsUrl = String(helpModel.docsUrl || '').trim();
+  const docsUrl = resolveRuntimeDocsUrl(helpModel.docsUrl, { windowObj });
   const sections = [`<p><strong>${escapeHtml(title)}</strong></p>`];
 
   if (description) {
@@ -613,7 +614,7 @@ function openParamsEditorModal({
   const overlay = documentObj.createElement('div');
   overlay.className = 'params-editor-overlay';
   overlay.setAttribute('data-role', 'params-editor-overlay');
-  const commandHelpHtml = buildCommandHelpHtml(helpModel, commandLabel);
+  const commandHelpHtml = buildCommandHelpHtml(helpModel, commandLabel, { windowObj });
   overlay.innerHTML = `
     <div class="params-editor-modal" data-role="params-editor-dialog" role="dialog" aria-modal="true" aria-label="${escapeHtml(
       `Edit params for ${commandLabel}`

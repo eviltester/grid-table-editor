@@ -8,6 +8,7 @@
 import { getFakerCommandHelp } from '@anywaydata/core/faker/faker-helper-keyword-definitions.js';
 import { getDomainCommandHelp } from '../../domain-command-help-metadata.js';
 import { escapeHtml } from '../../html-escape.js';
+import { resolveRuntimeDocsUrl } from './runtime-docs-url.js';
 import {
   SOURCE_TYPE_FAKER,
   SOURCE_TYPE_DOMAIN,
@@ -196,7 +197,7 @@ function buildTypeHelpModel(typeName, summary, docsUrl, { params = [], example =
   };
 }
 
-function buildSchemaHelpModel(sourceType, commandValue) {
+function buildSchemaHelpModel(sourceType, commandValue, { windowObj } = {}) {
   const normalisedSourceType = normaliseSourceType(sourceType);
 
   if (normalisedSourceType === SOURCE_TYPE_REGEX) {
@@ -272,7 +273,7 @@ function buildSchemaHelpModel(sourceType, commandValue) {
       title: `Faker command help: ${command}`,
       heading: `faker.${command}`,
       summary: commandHelp?.summary || `Generates data using faker.${command}.`,
-      docsUrl: resolveFakerDocsUrl(command, commandHelp?.docsUrl),
+      docsUrl: resolveRuntimeDocsUrl(resolveFakerDocsUrl(command, commandHelp?.docsUrl), { windowObj }),
       fakerDocsUrl: String(commandHelp?.fakerDocsUrl || '').trim(),
       params: normalizeHelpParams(commandHelp?.params || []),
       usageExamples: Array.isArray(commandHelp?.usageExamples) ? commandHelp.usageExamples : [],
@@ -295,7 +296,7 @@ function buildSchemaHelpModel(sourceType, commandValue) {
       title: `Domain command help: ${command}`,
       heading: commandHelp?.canonical || command,
       summary: commandHelp?.summary || `Generates data using ${commandHelp?.canonical || command}.`,
-      docsUrl: commandHelp?.docsUrl || HELP_URLS.domain,
+      docsUrl: resolveRuntimeDocsUrl(commandHelp?.docsUrl || HELP_URLS.domain, { windowObj }),
       fakerDocsUrl: String(commandHelp?.fakerDocsUrl || '').trim(),
       params: resolveDomainHelpParams(command, commandHelp),
       usageExamples: Array.isArray(commandHelp?.usageExamples) ? commandHelp.usageExamples : [],

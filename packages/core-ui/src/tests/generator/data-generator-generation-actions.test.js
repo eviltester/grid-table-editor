@@ -81,6 +81,7 @@ describe('generator generation actions', () => {
         }),
       },
       setPreviewDataTable: jest.fn(),
+      clearOutputPreview: jest.fn(),
       renderOutputPreviewForCurrentSelection: jest.fn(),
       surfacePageError: jest.fn(),
       clearPageError: jest.fn(),
@@ -104,6 +105,7 @@ describe('generator generation actions', () => {
         }),
       },
       setPreviewDataTable,
+      clearOutputPreview: jest.fn(),
       renderOutputPreviewForCurrentSelection,
       surfacePageError: jest.fn(),
       clearPageError: jest.fn(),
@@ -120,6 +122,31 @@ describe('generator generation actions', () => {
       'Failed to record last used schema.',
       expect.objectContaining({ message: 'storage failed' })
     );
+  });
+
+  test('previewGeneratorData clears stale preview surfaces when generation is blocked', () => {
+    const setPreviewDataTable = jest.fn();
+    const clearOutputPreview = jest.fn();
+    const surfacePageError = jest.fn();
+
+    previewGeneratorData({
+      getPreviewRowCount: () => ({ value: 2, errors: [] }),
+      schemaGenerationService: {
+        generateRows: () => ({
+          ok: false,
+          errors: [{ code: 'compiler_validation_error', message: 'Bad params' }],
+        }),
+      },
+      setPreviewDataTable,
+      clearOutputPreview,
+      renderOutputPreviewForCurrentSelection: jest.fn(),
+      surfacePageError,
+      clearPageError: jest.fn(),
+    });
+
+    expect(setPreviewDataTable).toHaveBeenCalledWith(null);
+    expect(clearOutputPreview).toHaveBeenCalledTimes(1);
+    expect(surfacePageError).toHaveBeenCalledWith('Bad params', { useSchemaStatus: true });
   });
 
   test('updateGeneratorPairwiseButtonVisibility does not require a document object', () => {

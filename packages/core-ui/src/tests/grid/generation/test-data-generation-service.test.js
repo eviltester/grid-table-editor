@@ -1237,7 +1237,7 @@ describe('test-data-generation-service', () => {
 
     expect(importer.setGridFromGenericDataTable).not.toHaveBeenCalled();
     expect(showSchemaError).toHaveBeenCalledWith('Row count exceeds imported row count 1.');
-    expect(setTestDataStatus).toHaveBeenCalledWith('Amend failed.', {
+    expect(setTestDataStatus).toHaveBeenCalledWith('Amend failed. Grid unchanged.', {
       severity: 'error',
       dismissable: true,
     });

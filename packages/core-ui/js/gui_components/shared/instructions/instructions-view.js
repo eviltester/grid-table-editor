@@ -71,7 +71,7 @@ class InstructionsView {
         <details${openAttribute}>
           <summary>
             ${escapeHtml(state.title)}
-            <span data-help="${escapeHtml(state.helpKey || '')}" data-help-role="help-icon" class="helpicon"${helpAttributes}></span>
+            <button type="button" data-help="${escapeHtml(state.helpKey || '')}" data-help-role="help-icon" class="helpicon"${helpAttributes}></button>
           </summary>
           <ul>${itemsHtml}</ul>
           ${actionsHtml}

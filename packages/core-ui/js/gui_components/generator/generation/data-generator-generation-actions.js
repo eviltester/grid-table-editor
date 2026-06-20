@@ -88,6 +88,7 @@ function previewGeneratorData({
   getPreviewRowCount,
   schemaGenerationService,
   setPreviewDataTable,
+  clearOutputPreview,
   renderOutputPreviewForCurrentSelection,
   surfacePageError,
   clearPageError,
@@ -95,6 +96,8 @@ function previewGeneratorData({
 }) {
   function applyResult(result) {
     if (!result?.ok) {
+      setPreviewDataTable?.(null);
+      clearOutputPreview?.();
       surfaceGenerationResult({
         operationKind: 'generateRows',
         result: result || {},
@@ -111,6 +114,8 @@ function previewGeneratorData({
 
   const rowCount = getPreviewRowCount();
   if (rowCount.errors.length > 0) {
+    setPreviewDataTable?.(null);
+    clearOutputPreview?.();
     surfacePageError(rowCount.errors.join('\n'));
     return;
   }

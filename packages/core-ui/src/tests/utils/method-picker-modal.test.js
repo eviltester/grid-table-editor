@@ -148,7 +148,7 @@ describe('method picker modal', () => {
     });
 
     const headings = Array.from(getDetail().querySelectorAll('h5')).map((el) => el.textContent.trim());
-    expect(headings).toEqual(['Parameter Details', 'Parameter Types', 'Return Examples']);
+    expect(headings.slice(0, 2)).toEqual(['Parameter Details', 'Parameter Types']);
 
     const detailsTable = getDetail().querySelector('.method-picker-param-details');
     expect(detailsTable.textContent).toContain('Name');
@@ -161,6 +161,7 @@ describe('method picker modal', () => {
     expect(typesTable.textContent).toContain('Type');
     expect(typesTable.textContent).toContain('Req');
     expect(typesTable.textContent).toContain('optional');
+    expect(headings).toContain('Return Examples');
 
     getOverlay().querySelector('[data-role="method-picker-cancel-button"]').click();
     await promise;
@@ -205,17 +206,17 @@ describe('method picker modal', () => {
     const usageSection = getDetail();
     expect(usageSection.textContent).toContain('enum active,inactive,pending');
     expect(usageSection.textContent).toContain('datatype.enum(active,inactive,pending)');
-    expect(usageSection.textContent).toContain('active');
-    expect(usageSection.textContent).toContain('inactive');
-    expect(usageSection.textContent).toContain('closed');
-    const usageBlock = usageSection.innerHTML.split('<h5>Usage Examples</h5>')[1].split('<h5>Return Examples</h5>')[0];
-    expect(usageBlock).not.toContain('<code>active</code>');
-    const returnBlock = usageSection.innerHTML.split('<h5>Return Examples</h5>')[1];
-    expect((returnBlock.match(/<code>active<\/code>/g) || []).length).toBe(1);
+    expect(usageSection.textContent).toContain('Command: datatype.enum');
+    expect(usageSection.textContent).toContain('Params field: active,inactive,pending');
+    expect(usageSection.textContent).toContain('Full call: datatype.enum(active,inactive,pending)');
+    expect(usageSection.textContent).toContain('Returns: active');
+    expect(usageSection.textContent).toContain('Returns: inactive');
+    expect(usageSection.textContent).toContain('Returns: closed');
+    expect(usageSection.innerHTML).not.toContain('<h5>Return Examples</h5>');
 
     const docsLink = getDetail().querySelector('.method-picker-docs-link a');
     expect(docsLink).not.toBeNull();
-    expect(docsLink.getAttribute('href')).toBe('https://anywaydata.com/docs/category/generating-data');
+    expect(docsLink.getAttribute('href')).toBe('https://example.com/docs/category/generating-data');
     expect(docsLink.getAttribute('target')).toBe('_blank');
     expect(docsLink.getAttribute('rel')).toContain('noopener');
     expect(docsLink.getAttribute('rel')).toContain('noreferrer');
@@ -232,18 +233,57 @@ describe('method picker modal', () => {
         {
           sourceType: 'faker',
           command: 'helpers.arrayElement',
-          helpModel: { summary: 'Pick', params: [], example: 'red' },
+          helpModel: {
+            summary: 'Pick',
+            params: [],
+            usageExamples: [
+              {
+                functionCall: 'helpers.arrayElement(["red","green","blue"])',
+                sampleReturnValue: 'red',
+                description: 'Picks one array member.',
+              },
+            ],
+          },
         },
       ],
       currentCommand: 'helpers.arrayElement',
     });
 
     const headings = Array.from(getDetail().querySelectorAll('h5')).map((el) => el.textContent.trim());
-    expect(headings).toEqual(['Parameter Details', 'Return Examples']);
+    expect(headings).toEqual(['Parameter Details', 'Usage Examples']);
     const emptyStates = Array.from(getDetail().querySelectorAll('.method-picker-table-wrap .method-picker-empty')).map(
       (el) => el.textContent.trim()
     );
     expect(emptyStates).toEqual(['No params']);
+
+    getOverlay().querySelector('[data-role="method-picker-cancel-button"]').click();
+    await promise;
+  });
+
+  test('localizes anyhowdata docs links for github pages deployments', async () => {
+    dom.reconfigure({ url: 'https://eviltester.github.io/grid-table-editor/generator.html' });
+
+    const promise = openMethodPickerModal({
+      documentObj: document,
+      windowObj: window,
+      options: [
+        {
+          sourceType: 'domain',
+          command: 'number.int',
+          helpModel: {
+            summary: 'Integer',
+            docsUrl: 'https://anywaydata.com/docs/test-data/domain/number',
+            params: [],
+          },
+        },
+      ],
+      currentCommand: 'number.int',
+    });
+
+    const docsLink = getDetail().querySelector('.method-picker-docs-link a');
+    expect(docsLink.getAttribute('href')).toBe(
+      'https://eviltester.github.io/grid-table-editor/site/docs/test-data/domain/number'
+    );
 
     getOverlay().querySelector('[data-role="method-picker-cancel-button"]').click();
     await promise;

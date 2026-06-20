@@ -32,9 +32,9 @@ const DOMAIN_CUSTOM_AUTOINCREMENT_KEYWORD_DEFINITIONS = [
         },
         {
           functionCall:
-            'autoIncrement.timestamp(start="2026-06-12 12:39:23", step=15, type="minutes", outputFormat="yyyy-MM-dd HH:mm:ss")',
-          sampleReturnValue: '2026-06-12 11:39:23',
-          description: 'Shows autoIncrement.timestamp in use.',
+            'autoIncrement.timestamp(start="2026-06-12T12:39:23Z", step=15, type="minutes", outputFormat="yyyy-MM-dd HH:mm:ss")',
+          sampleReturnValue: '2026-06-12 12:39:23',
+          description: 'Shows autoIncrement.timestamp using a custom output format.',
         },
         {
           functionCall: 'autoIncrement.timestamp(start="20/03/1969", inputFormat="dd/MM/yyyy", step=1, type="days")',

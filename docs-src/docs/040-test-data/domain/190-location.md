@@ -19,102 +19,101 @@ The `location` domain maps domain keywords to underlying faker implementations.
 Generates a random building number.
 
 - Canonical: `awd.domain.location.buildingNumber`
-- Docs: [https://anywaydata.com/docs/test-data/domain/location](https://anywaydata.com/docs/test-data/domain/location)
 - Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
 
 No parameters.
 
 Examples:
 
+Shows the default location.buildingNumber call.
+
 ```txt
 location.buildingNumber
 ```
 
-Example return values:
-- `7031`
+Returns: `7031`
 
 ### `location.cardinalDirection`
 
 Returns a random cardinal direction (north, east, south, west).
 
 - Canonical: `awd.domain.location.cardinalDirection`
-- Docs: [https://anywaydata.com/docs/test-data/domain/location](https://anywaydata.com/docs/test-data/domain/location)
 - Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
 
 No parameters.
 
 Examples:
 
+Shows the default location.cardinalDirection call.
+
 ```txt
 location.cardinalDirection
 ```
 
-Example return values:
-- `East`
+Returns: `East`
 
 ### `location.city`
 
 Generates a random localized city name.
 
 - Canonical: `awd.domain.location.city`
-- Docs: [https://anywaydata.com/docs/test-data/domain/location](https://anywaydata.com/docs/test-data/domain/location)
 - Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
 
 No parameters.
 
 Examples:
 
+Shows the default location.city call.
+
 ```txt
 location.city
 ```
 
-Example return values:
-- `Edwinville`
+Returns: `Edwinville`
 
 ### `location.continent`
 
 Returns a random continent name.
 
 - Canonical: `awd.domain.location.continent`
-- Docs: [https://anywaydata.com/docs/test-data/domain/location](https://anywaydata.com/docs/test-data/domain/location)
 - Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
 
 No parameters.
 
 Examples:
 
+Shows the default location.continent call.
+
 ```txt
 location.continent
 ```
 
-Example return values:
-- `Asia`
+Returns: `Asia`
 
 ### `location.country`
 
 Returns a random country name.
 
 - Canonical: `awd.domain.location.country`
-- Docs: [https://anywaydata.com/docs/test-data/domain/location](https://anywaydata.com/docs/test-data/domain/location)
 - Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
 
 No parameters.
 
 Examples:
 
+Shows the default location.country call.
+
 ```txt
 location.country
 ```
 
-Example return values:
-- `India`
+Returns: `India`
 
 ### `location.countryCode`
 
 Returns a random ISO_3166-1 country code.
 
 - Canonical: `awd.domain.location.countryCode`
-- Docs: [https://anywaydata.com/docs/test-data/domain/location](https://anywaydata.com/docs/test-data/domain/location)
 - Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
 
 | Arg | Type | Required | Description |
@@ -123,43 +122,46 @@ Returns a random ISO_3166-1 country code.
 
 Examples:
 
+Shows location.countryCode when optional params are omitted.
+
 ```txt
 location.countryCode()
 ```
+
+Returns: `IM`
+
+Shows location.countryCode using variant.
 
 ```txt
 location.countryCode(variant="alpha-3")
 ```
 
-Example return values:
-- `IM`
-- `IMN`
+Returns: `IMN`
 
 ### `location.county`
 
 Returns a random localized county, or other equivalent second-level administrative entity for the locale's country such as a district or department.
 
 - Canonical: `awd.domain.location.county`
-- Docs: [https://anywaydata.com/docs/test-data/domain/location](https://anywaydata.com/docs/test-data/domain/location)
 - Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
 
 No parameters.
 
 Examples:
 
+Shows the default location.county call.
+
 ```txt
 location.county
 ```
 
-Example return values:
-- `Cleveland`
+Returns: `Cleveland`
 
 ### `location.direction`
 
 Returns a random direction (cardinal and ordinal; northwest, east, etc).
 
 - Canonical: `awd.domain.location.direction`
-- Docs: [https://anywaydata.com/docs/test-data/domain/location](https://anywaydata.com/docs/test-data/domain/location)
 - Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
 
 | Arg | Type | Required | Description |
@@ -168,43 +170,46 @@ Returns a random direction (cardinal and ordinal; northwest, east, etc).
 
 Examples:
 
+Shows location.direction when optional params are omitted.
+
 ```txt
 location.direction()
 ```
+
+Returns: `West`
+
+Shows location.direction using abbreviated.
 
 ```txt
 location.direction(abbreviated=true)
 ```
 
-Example return values:
-- `West`
-- `W`
+Returns: `W`
 
 ### `location.language`
 
 Returns a random spoken language.
 
 - Canonical: `awd.domain.location.language`
-- Docs: [https://anywaydata.com/docs/test-data/domain/location](https://anywaydata.com/docs/test-data/domain/location)
 - Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
 
 No parameters.
 
 Examples:
 
+Shows the default location.language call.
+
 ```txt
 location.language
 ```
 
-Example return values:
-- `{"name":"Punjabi","alpha2":"pa","alpha3":"pan"}`
+Returns: `{"name":"Punjabi","alpha2":"pa","alpha3":"pan"}`
 
 ### `location.latitude`
 
 Generates a random latitude.
 
 - Canonical: `awd.domain.location.latitude`
-- Docs: [https://anywaydata.com/docs/test-data/domain/location](https://anywaydata.com/docs/test-data/domain/location)
 - Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
 
 | Arg | Type | Required | Description |
@@ -215,34 +220,43 @@ Generates a random latitude.
 
 Examples:
 
+Shows location.latitude when optional params are omitted.
+
 ```txt
 location.latitude()
 ```
+
+Returns: `-14.936`
+
+Shows location.latitude using min.
 
 ```txt
 location.latitude(max=10, min=1)
 ```
 
+Returns: `4.7532`
+
+Shows location.latitude using max.
+
 ```txt
 location.latitude(max=5)
 ```
+
+Returns: `-50.3829`
+
+Shows location.latitude using precision.
 
 ```txt
 location.latitude(precision=1)
 ```
 
-Example return values:
-- `-14.936`
-- `4.7532`
-- `-50.3829`
-- `-14.9`
+Returns: `-14.9`
 
 ### `location.longitude`
 
 Generates a random longitude.
 
 - Canonical: `awd.domain.location.longitude`
-- Docs: [https://anywaydata.com/docs/test-data/domain/location](https://anywaydata.com/docs/test-data/domain/location)
 - Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
 
 | Arg | Type | Required | Description |
@@ -253,91 +267,100 @@ Generates a random longitude.
 
 Examples:
 
+Shows location.longitude when optional params are omitted.
+
 ```txt
 location.longitude()
 ```
+
+Returns: `-29.8721`
+
+Shows location.longitude using min.
 
 ```txt
 location.longitude(max=10, min=1)
 ```
 
+Returns: `4.7532`
+
+Shows location.longitude using max.
+
 ```txt
 location.longitude(max=5)
 ```
+
+Returns: `-102.8509`
+
+Shows location.longitude using precision.
 
 ```txt
 location.longitude(precision=1)
 ```
 
-Example return values:
-- `-29.8721`
-- `4.7532`
-- `-102.8509`
-- `-29.9`
+Returns: `-29.9`
 
 ### `location.nearbyGPSCoordinate`
 
 Generates a random GPS coordinate within the specified radius from the given coordinate.
 
 - Canonical: `awd.domain.location.nearbyGPSCoordinate`
-- Docs: [https://anywaydata.com/docs/test-data/domain/location](https://anywaydata.com/docs/test-data/domain/location)
 - Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
 
 No parameters.
 
 Examples:
 
+Shows the default location.nearbyGPSCoordinate call.
+
 ```txt
 location.nearbyGPSCoordinate
 ```
 
-Example return values:
-- `[-14.936,79.3168]`
+Returns: `[-14.936,79.3168]`
 
 ### `location.ordinalDirection`
 
 Returns a random ordinal direction (northwest, southeast, etc).
 
 - Canonical: `awd.domain.location.ordinalDirection`
-- Docs: [https://anywaydata.com/docs/test-data/domain/location](https://anywaydata.com/docs/test-data/domain/location)
 - Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
 
 No parameters.
 
 Examples:
 
+Shows the default location.ordinalDirection call.
+
 ```txt
 location.ordinalDirection
 ```
 
-Example return values:
-- `Northwest`
+Returns: `Northwest`
 
 ### `location.secondaryAddress`
 
 Generates a random localized secondary address. This refers to a specific location at a given address
 
 - Canonical: `awd.domain.location.secondaryAddress`
-- Docs: [https://anywaydata.com/docs/test-data/domain/location](https://anywaydata.com/docs/test-data/domain/location)
 - Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
 
 No parameters.
 
 Examples:
 
+Shows the default location.secondaryAddress call.
+
 ```txt
 location.secondaryAddress
 ```
 
-Example return values:
-- `Apt. 703`
+Returns: `Apt. 703`
 
 ### `location.state`
 
 Returns a random localized state, or other equivalent first-level administrative entity for the locale's country such as a province or region.
 
 - Canonical: `awd.domain.location.state`
-- Docs: [https://anywaydata.com/docs/test-data/domain/location](https://anywaydata.com/docs/test-data/domain/location)
 - Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
 
 | Arg | Type | Required | Description |
@@ -346,43 +369,46 @@ Returns a random localized state, or other equivalent first-level administrative
 
 Examples:
 
+Shows location.state when optional params are omitted.
+
 ```txt
 location.state()
 ```
+
+Returns: `Massachusetts`
+
+Shows location.state using abbreviated.
 
 ```txt
 location.state(abbreviated=true)
 ```
 
-Example return values:
-- `Massachusetts`
-- `MA`
+Returns: `MA`
 
 ### `location.street`
 
 Generates a random localized street name.
 
 - Canonical: `awd.domain.location.street`
-- Docs: [https://anywaydata.com/docs/test-data/domain/location](https://anywaydata.com/docs/test-data/domain/location)
 - Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
 
 No parameters.
 
 Examples:
 
+Shows the default location.street call.
+
 ```txt
 location.street
 ```
 
-Example return values:
-- `Gutmann Creek`
+Returns: `Gutmann Creek`
 
 ### `location.streetAddress`
 
 Generates a random localized street address.
 
 - Canonical: `awd.domain.location.streetAddress`
-- Docs: [https://anywaydata.com/docs/test-data/domain/location](https://anywaydata.com/docs/test-data/domain/location)
 - Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
 
 | Arg | Type | Required | Description |
@@ -391,52 +417,56 @@ Generates a random localized street address.
 
 Examples:
 
+Shows location.streetAddress when optional params are omitted.
+
 ```txt
 location.streetAddress()
 ```
+
+Returns: `7031 Iris Mill`
+
+Shows location.streetAddress using useFullAddress.
 
 ```txt
 location.streetAddress(useFullAddress=true)
 ```
 
-Example return values:
-- `7031 Iris Mill`
-- `7031 Iris Mill Apt. 728`
+Returns: `7031 Iris Mill Apt. 728`
 
 ### `location.timeZone`
 
 Returns a random IANA time zone name.
 
 - Canonical: `awd.domain.location.timeZone`
-- Docs: [https://anywaydata.com/docs/test-data/domain/location](https://anywaydata.com/docs/test-data/domain/location)
 - Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
 
 No parameters.
 
 Examples:
 
+Shows the default location.timeZone call.
+
 ```txt
 location.timeZone
 ```
 
-Example return values:
-- `America/Santiago`
+Returns: `America/Santiago`
 
 ### `location.zipCode`
 
 Generates data using faker location zip code.
 
 - Canonical: `awd.domain.location.zipCode`
-- Docs: [https://anywaydata.com/docs/test-data/domain/location](https://anywaydata.com/docs/test-data/domain/location)
 - Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
 
 No parameters.
 
 Examples:
 
+Shows the default location.zipCode call.
+
 ```txt
 location.zipCode
 ```
 
-Example return values:
-- `70310`
+Returns: `70310`

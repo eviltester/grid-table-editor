@@ -68,7 +68,9 @@ describe('command help usage examples', () => {
           return false;
         }
 
-        const namedArgs = (parsed.arguments || []).filter((argument) => argument.kind === 'named').map((arg) => arg.name);
+        const namedArgs = (parsed.arguments || [])
+          .filter((argument) => argument.kind === 'named')
+          .map((arg) => arg.name);
         const providedArgNames = new Set(namedArgs);
 
         if ((parsed.arguments || []).length !== requiredParams.length) {

@@ -202,7 +202,7 @@ const DOMAIN_FAKER_STRING_KEYWORD_DEFINITIONS = [
       usageExamples: [
         {
           functionCall: 'string.fromCharacters(characters="ABC123")',
-          sampleReturnValue: 'B',
+          sampleReturnValue: 'C',
           description: 'Shows string.fromCharacters with only the required characters argument.',
         },
         {

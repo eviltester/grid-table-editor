@@ -19,7 +19,6 @@ The `lorem` domain maps domain keywords to underlying faker implementations.
 Generates the given number lines of lorem separated by `'\n'`.
 
 - Canonical: `awd.domain.lorem.lines`
-- Docs: [https://anywaydata.com/docs/test-data/domain/lorem](https://anywaydata.com/docs/test-data/domain/lorem)
 - Faker docs: [https://fakerjs.dev/api/lorem](https://fakerjs.dev/api/lorem)
 
 | Arg | Type | Required | Description |
@@ -32,44 +31,59 @@ Generates the given number lines of lorem separated by `'\n'`.
 
 Examples:
 
+Shows lorem.lines when optional params are omitted.
+
 ```txt
 lorem.lines()
 ```
+
+Returns: `A cognatus arca aliquam audentia coniuratio crux fugit.\nStillicidium bardus utrimque acsi spargo cur.\nAqua avaritia thesaurus volo combibo stultus utor.`
+
+Shows lorem.lines using min.
 
 ```txt
 lorem.lines(max=10, min=1)
 ```
 
+Returns: `Suppellex a cognatus arca aliquam audentia.`
+
+Shows lorem.lines using max.
+
 ```txt
 lorem.lines(max=5)
 ```
+
+Returns: `A cognatus arca aliquam audentia coniuratio crux fugit.\nStillicidium bardus utrimque acsi spargo cur.\nAqua avaritia thesaurus volo combibo stultus utor.`
+
+Shows lorem.lines using lineCount.
 
 ```txt
 lorem.lines(lineCount=5)
 ```
 
+Returns: `A cognatus arca aliquam audentia coniuratio crux fugit.\nStillicidium bardus utrimque acsi spargo cur.\nAqua avaritia thesaurus volo combibo stultus utor.`
+
+Shows lorem.lines using lineCountMax.
+
 ```txt
 lorem.lines(lineCountMax=5)
 ```
+
+Returns: `A cognatus arca aliquam audentia coniuratio crux fugit.\nStillicidium bardus utrimque acsi spargo cur.\nAqua avaritia thesaurus volo combibo stultus utor.`
+
+Shows lorem.lines using lineCountMin.
 
 ```txt
 lorem.lines(lineCountMin=5)
 ```
 
-Example return values:
-- `A cognatus arca aliquam audentia coniuratio crux fugit.\nStillicidium bardus utrimque acsi spargo cur.\nAqua avaritia thesaurus volo combibo stultus utor.`
-- `Suppellex a cognatus arca aliquam audentia.`
-- `A cognatus arca aliquam audentia coniuratio crux fugit.\nStillicidium bardus utrimque acsi spargo cur.\nAqua avaritia thesaurus volo combibo stultus utor.`
-- `A cognatus arca aliquam audentia coniuratio crux fugit.\nStillicidium bardus utrimque acsi spargo cur.\nAqua avaritia thesaurus volo combibo stultus utor.`
-- `A cognatus arca aliquam audentia coniuratio crux fugit.\nStillicidium bardus utrimque acsi spargo cur.\nAqua avaritia thesaurus volo combibo stultus utor.`
-- `A cognatus arca aliquam audentia coniuratio crux fugit.\nStillicidium bardus utrimque acsi spargo cur.\nAqua avaritia thesaurus volo combibo stultus utor.`
+Returns: `A cognatus arca aliquam audentia coniuratio crux fugit.\nStillicidium bardus utrimque acsi spargo cur.\nAqua avaritia thesaurus volo combibo stultus utor.`
 
 ### `lorem.paragraph`
 
 Generates a paragraph with the given number of sentences.
 
 - Canonical: `awd.domain.lorem.paragraph`
-- Docs: [https://anywaydata.com/docs/test-data/domain/lorem](https://anywaydata.com/docs/test-data/domain/lorem)
 - Faker docs: [https://fakerjs.dev/api/lorem](https://fakerjs.dev/api/lorem)
 
 | Arg | Type | Required | Description |
@@ -82,44 +96,59 @@ Generates a paragraph with the given number of sentences.
 
 Examples:
 
+Shows lorem.paragraph when optional params are omitted.
+
 ```txt
 lorem.paragraph()
 ```
+
+Returns: `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.`
+
+Shows lorem.paragraph using min.
 
 ```txt
 lorem.paragraph(max=10, min=1)
 ```
 
+Returns: `Suppellex a cognatus arca aliquam audentia.`
+
+Shows lorem.paragraph using max.
+
 ```txt
 lorem.paragraph(max=5)
 ```
+
+Returns: `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.`
+
+Shows lorem.paragraph using sentenceCount.
 
 ```txt
 lorem.paragraph(sentenceCount=5)
 ```
 
+Returns: `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.`
+
+Shows lorem.paragraph using sentenceCountMax.
+
 ```txt
 lorem.paragraph(sentenceCountMax=5)
 ```
+
+Returns: `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.`
+
+Shows lorem.paragraph using sentenceCountMin.
 
 ```txt
 lorem.paragraph(sentenceCountMin=5)
 ```
 
-Example return values:
-- `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.`
-- `Suppellex a cognatus arca aliquam audentia.`
-- `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.`
-- `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.`
-- `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.`
-- `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.`
+Returns: `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.`
 
 ### `lorem.paragraphs`
 
 Generates the given number of paragraphs.
 
 - Canonical: `awd.domain.lorem.paragraphs`
-- Docs: [https://anywaydata.com/docs/test-data/domain/lorem](https://anywaydata.com/docs/test-data/domain/lorem)
 - Faker docs: [https://fakerjs.dev/api/lorem](https://fakerjs.dev/api/lorem)
 
 | Arg | Type | Required | Description |
@@ -133,49 +162,67 @@ Generates the given number of paragraphs.
 
 Examples:
 
+Shows lorem.paragraphs when optional params are omitted.
+
 ```txt
 lorem.paragraphs()
 ```
+
+Returns: `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.\nVarius ago adflicto assentator utrimque altus curiositas vita expedita stultus. Stipes trucido accusamus tandem voveo. Cicuta testimonium amet dedico ver claudeo civis aperio.\nSpoliatio beneficium cena. Adnuo natus arca odit subseco ambulo. Suasoria cupio admiratio facilis sonitus dolorum.`
+
+Shows lorem.paragraphs using min.
 
 ```txt
 lorem.paragraphs(max=10, min=1)
 ```
 
+Returns: `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.`
+
+Shows lorem.paragraphs using max.
+
 ```txt
 lorem.paragraphs(max=5)
 ```
+
+Returns: `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.5Varius ago adflicto assentator utrimque altus curiositas vita expedita stultus. Stipes trucido accusamus tandem voveo. Cicuta testimonium amet dedico ver claudeo civis aperio.5Spoliatio beneficium cena. Adnuo natus arca odit subseco ambulo. Suasoria cupio admiratio facilis sonitus dolorum.`
+
+Shows lorem.paragraphs using paragraphCount.
 
 ```txt
 lorem.paragraphs(paragraphCount=5)
 ```
 
+Returns: `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.\nVarius ago adflicto assentator utrimque altus curiositas vita expedita stultus. Stipes trucido accusamus tandem voveo. Cicuta testimonium amet dedico ver claudeo civis aperio.\nSpoliatio beneficium cena. Adnuo natus arca odit subseco ambulo. Suasoria cupio admiratio facilis sonitus dolorum.`
+
+Shows lorem.paragraphs using separator.
+
 ```txt
 lorem.paragraphs(separator="-")
 ```
+
+Returns: `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.\nVarius ago adflicto assentator utrimque altus curiositas vita expedita stultus. Stipes trucido accusamus tandem voveo. Cicuta testimonium amet dedico ver claudeo civis aperio.\nSpoliatio beneficium cena. Adnuo natus arca odit subseco ambulo. Suasoria cupio admiratio facilis sonitus dolorum.`
+
+Shows lorem.paragraphs using paragraphCountMax.
 
 ```txt
 lorem.paragraphs(paragraphCountMax=5)
 ```
 
+Returns: `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.\nVarius ago adflicto assentator utrimque altus curiositas vita expedita stultus. Stipes trucido accusamus tandem voveo. Cicuta testimonium amet dedico ver claudeo civis aperio.\nSpoliatio beneficium cena. Adnuo natus arca odit subseco ambulo. Suasoria cupio admiratio facilis sonitus dolorum.`
+
+Shows lorem.paragraphs using paragraphCountMin.
+
 ```txt
 lorem.paragraphs(paragraphCountMin=5)
 ```
 
-Example return values:
-- `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.\nVarius ago adflicto assentator utrimque altus curiositas vita expedita stultus. Stipes trucido accusamus tandem voveo. Cicuta testimonium amet dedico ver claudeo civis aperio.\nSpoliatio beneficium cena. Adnuo natus arca odit subseco ambulo. Suasoria cupio admiratio facilis sonitus dolorum.`
-- `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.`
-- `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.5Varius ago adflicto assentator utrimque altus curiositas vita expedita stultus. Stipes trucido accusamus tandem voveo. Cicuta testimonium amet dedico ver claudeo civis aperio.5Spoliatio beneficium cena. Adnuo natus arca odit subseco ambulo. Suasoria cupio admiratio facilis sonitus dolorum.`
-- `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.\nVarius ago adflicto assentator utrimque altus curiositas vita expedita stultus. Stipes trucido accusamus tandem voveo. Cicuta testimonium amet dedico ver claudeo civis aperio.\nSpoliatio beneficium cena. Adnuo natus arca odit subseco ambulo. Suasoria cupio admiratio facilis sonitus dolorum.`
-- `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.\nVarius ago adflicto assentator utrimque altus curiositas vita expedita stultus. Stipes trucido accusamus tandem voveo. Cicuta testimonium amet dedico ver claudeo civis aperio.\nSpoliatio beneficium cena. Adnuo natus arca odit subseco ambulo. Suasoria cupio admiratio facilis sonitus dolorum.`
-- `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.\nVarius ago adflicto assentator utrimque altus curiositas vita expedita stultus. Stipes trucido accusamus tandem voveo. Cicuta testimonium amet dedico ver claudeo civis aperio.\nSpoliatio beneficium cena. Adnuo natus arca odit subseco ambulo. Suasoria cupio admiratio facilis sonitus dolorum.`
-- `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.\nVarius ago adflicto assentator utrimque altus curiositas vita expedita stultus. Stipes trucido accusamus tandem voveo. Cicuta testimonium amet dedico ver claudeo civis aperio.\nSpoliatio beneficium cena. Adnuo natus arca odit subseco ambulo. Suasoria cupio admiratio facilis sonitus dolorum.`
+Returns: `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.\nVarius ago adflicto assentator utrimque altus curiositas vita expedita stultus. Stipes trucido accusamus tandem voveo. Cicuta testimonium amet dedico ver claudeo civis aperio.\nSpoliatio beneficium cena. Adnuo natus arca odit subseco ambulo. Suasoria cupio admiratio facilis sonitus dolorum.`
 
 ### `lorem.sentence`
 
 Generates a space separated list of words beginning with a capital letter and ending with a period.
 
 - Canonical: `awd.domain.lorem.sentence`
-- Docs: [https://anywaydata.com/docs/test-data/domain/lorem](https://anywaydata.com/docs/test-data/domain/lorem)
 - Faker docs: [https://fakerjs.dev/api/lorem](https://fakerjs.dev/api/lorem)
 
 | Arg | Type | Required | Description |
@@ -188,44 +235,59 @@ Generates a space separated list of words beginning with a capital letter and en
 
 Examples:
 
+Shows lorem.sentence when optional params are omitted.
+
 ```txt
 lorem.sentence()
 ```
+
+Returns: `Suppellex a cognatus arca aliquam audentia.`
+
+Shows lorem.sentence using min.
 
 ```txt
 lorem.sentence(max=10, min=1)
 ```
 
+Returns: `Cur.`
+
+Shows lorem.sentence using max.
+
 ```txt
 lorem.sentence(max=5)
 ```
+
+Returns: `Suppellex a cognatus arca aliquam audentia.`
+
+Shows lorem.sentence using wordCount.
 
 ```txt
 lorem.sentence(wordCount=5)
 ```
 
+Returns: `Suppellex a cognatus arca aliquam audentia.`
+
+Shows lorem.sentence using wordCountMax.
+
 ```txt
 lorem.sentence(wordCountMax=5)
 ```
+
+Returns: `Suppellex a cognatus arca aliquam audentia.`
+
+Shows lorem.sentence using wordCountMin.
 
 ```txt
 lorem.sentence(wordCountMin=5)
 ```
 
-Example return values:
-- `Suppellex a cognatus arca aliquam audentia.`
-- `Cur.`
-- `Suppellex a cognatus arca aliquam audentia.`
-- `Suppellex a cognatus arca aliquam audentia.`
-- `Suppellex a cognatus arca aliquam audentia.`
-- `Suppellex a cognatus arca aliquam audentia.`
+Returns: `Suppellex a cognatus arca aliquam audentia.`
 
 ### `lorem.sentences`
 
 Generates the given number of sentences.
 
 - Canonical: `awd.domain.lorem.sentences`
-- Docs: [https://anywaydata.com/docs/test-data/domain/lorem](https://anywaydata.com/docs/test-data/domain/lorem)
 - Faker docs: [https://fakerjs.dev/api/lorem](https://fakerjs.dev/api/lorem)
 
 | Arg | Type | Required | Description |
@@ -239,49 +301,67 @@ Generates the given number of sentences.
 
 Examples:
 
+Shows lorem.sentences when optional params are omitted.
+
 ```txt
 lorem.sentences()
 ```
+
+Returns: `A cognatus arca aliquam audentia coniuratio crux fugit. Stillicidium bardus utrimque acsi spargo cur. Aqua avaritia thesaurus volo combibo stultus utor. Ago adflicto assentator utrimque altus curiositas vita expedita stultus comedo.`
+
+Shows lorem.sentences using min.
 
 ```txt
 lorem.sentences(max=10, min=1)
 ```
 
+Returns: `Suppellex a cognatus arca aliquam audentia.`
+
+Shows lorem.sentences using max.
+
 ```txt
 lorem.sentences(max=5)
 ```
+
+Returns: `A cognatus arca aliquam audentia coniuratio crux fugit.5Stillicidium bardus utrimque acsi spargo cur.5Aqua avaritia thesaurus volo combibo stultus utor.5Ago adflicto assentator utrimque altus curiositas vita expedita stultus comedo.`
+
+Shows lorem.sentences using sentenceCount.
 
 ```txt
 lorem.sentences(sentenceCount=5)
 ```
 
+Returns: `A cognatus arca aliquam audentia coniuratio crux fugit. Stillicidium bardus utrimque acsi spargo cur. Aqua avaritia thesaurus volo combibo stultus utor. Ago adflicto assentator utrimque altus curiositas vita expedita stultus comedo.`
+
+Shows lorem.sentences using separator.
+
 ```txt
 lorem.sentences(separator="-")
 ```
+
+Returns: `A cognatus arca aliquam audentia coniuratio crux fugit. Stillicidium bardus utrimque acsi spargo cur. Aqua avaritia thesaurus volo combibo stultus utor. Ago adflicto assentator utrimque altus curiositas vita expedita stultus comedo.`
+
+Shows lorem.sentences using sentenceCountMax.
 
 ```txt
 lorem.sentences(sentenceCountMax=5)
 ```
 
+Returns: `A cognatus arca aliquam audentia coniuratio crux fugit. Stillicidium bardus utrimque acsi spargo cur. Aqua avaritia thesaurus volo combibo stultus utor. Ago adflicto assentator utrimque altus curiositas vita expedita stultus comedo.`
+
+Shows lorem.sentences using sentenceCountMin.
+
 ```txt
 lorem.sentences(sentenceCountMin=5)
 ```
 
-Example return values:
-- `A cognatus arca aliquam audentia coniuratio crux fugit. Stillicidium bardus utrimque acsi spargo cur. Aqua avaritia thesaurus volo combibo stultus utor. Ago adflicto assentator utrimque altus curiositas vita expedita stultus comedo.`
-- `Suppellex a cognatus arca aliquam audentia.`
-- `A cognatus arca aliquam audentia coniuratio crux fugit.5Stillicidium bardus utrimque acsi spargo cur.5Aqua avaritia thesaurus volo combibo stultus utor.5Ago adflicto assentator utrimque altus curiositas vita expedita stultus comedo.`
-- `A cognatus arca aliquam audentia coniuratio crux fugit. Stillicidium bardus utrimque acsi spargo cur. Aqua avaritia thesaurus volo combibo stultus utor. Ago adflicto assentator utrimque altus curiositas vita expedita stultus comedo.`
-- `A cognatus arca aliquam audentia coniuratio crux fugit. Stillicidium bardus utrimque acsi spargo cur. Aqua avaritia thesaurus volo combibo stultus utor. Ago adflicto assentator utrimque altus curiositas vita expedita stultus comedo.`
-- `A cognatus arca aliquam audentia coniuratio crux fugit. Stillicidium bardus utrimque acsi spargo cur. Aqua avaritia thesaurus volo combibo stultus utor. Ago adflicto assentator utrimque altus curiositas vita expedita stultus comedo.`
-- `A cognatus arca aliquam audentia coniuratio crux fugit. Stillicidium bardus utrimque acsi spargo cur. Aqua avaritia thesaurus volo combibo stultus utor. Ago adflicto assentator utrimque altus curiositas vita expedita stultus comedo.`
+Returns: `A cognatus arca aliquam audentia coniuratio crux fugit. Stillicidium bardus utrimque acsi spargo cur. Aqua avaritia thesaurus volo combibo stultus utor. Ago adflicto assentator utrimque altus curiositas vita expedita stultus comedo.`
 
 ### `lorem.slug`
 
 Generates a slugified text consisting of the given number of hyphen separated words.
 
 - Canonical: `awd.domain.lorem.slug`
-- Docs: [https://anywaydata.com/docs/test-data/domain/lorem](https://anywaydata.com/docs/test-data/domain/lorem)
 - Faker docs: [https://fakerjs.dev/api/lorem](https://fakerjs.dev/api/lorem)
 
 | Arg | Type | Required | Description |
@@ -294,63 +374,78 @@ Generates a slugified text consisting of the given number of hyphen separated wo
 
 Examples:
 
+Shows lorem.slug when optional params are omitted.
+
 ```txt
 lorem.slug()
 ```
+
+Returns: `cur-suppellex-a`
+
+Shows lorem.slug using min.
 
 ```txt
 lorem.slug(max=10, min=1)
 ```
 
+Returns: `cur`
+
+Shows lorem.slug using max.
+
 ```txt
 lorem.slug(max=5)
 ```
+
+Returns: `cur-suppellex-a`
+
+Shows lorem.slug using wordCount.
 
 ```txt
 lorem.slug(wordCount=5)
 ```
 
+Returns: `cur-suppellex-a`
+
+Shows lorem.slug using wordCountMax.
+
 ```txt
 lorem.slug(wordCountMax=5)
 ```
+
+Returns: `cur-suppellex-a`
+
+Shows lorem.slug using wordCountMin.
 
 ```txt
 lorem.slug(wordCountMin=5)
 ```
 
-Example return values:
-- `cur-suppellex-a`
-- `cur`
-- `cur-suppellex-a`
-- `cur-suppellex-a`
-- `cur-suppellex-a`
-- `cur-suppellex-a`
+Returns: `cur-suppellex-a`
 
 ### `lorem.text`
 
 Generates a random text based on a random lorem method.
 
 - Canonical: `awd.domain.lorem.text`
-- Docs: [https://anywaydata.com/docs/test-data/domain/lorem](https://anywaydata.com/docs/test-data/domain/lorem)
 - Faker docs: [https://fakerjs.dev/api/lorem](https://fakerjs.dev/api/lorem)
 
 No parameters.
 
 Examples:
 
+Shows the default lorem.text call.
+
 ```txt
 lorem.text
 ```
 
-Example return values:
-- `A cognatus arca aliquam audentia coniuratio crux fugit. Stillicidium bardus utrimque acsi spargo cur. Aqua avaritia thesaurus volo combibo stultus utor.`
+Returns: `A cognatus arca aliquam audentia coniuratio crux fugit. Stillicidium bardus utrimque acsi spargo cur. Aqua avaritia thesaurus volo combibo stultus utor.`
 
 ### `lorem.word`
 
 Generates a word of a specified length.
 
 - Canonical: `awd.domain.lorem.word`
-- Docs: [https://anywaydata.com/docs/test-data/domain/lorem](https://anywaydata.com/docs/test-data/domain/lorem)
 - Faker docs: [https://fakerjs.dev/api/lorem](https://fakerjs.dev/api/lorem)
 
 | Arg | Type | Required | Description |
@@ -362,39 +457,51 @@ Generates a word of a specified length.
 
 Examples:
 
+Shows lorem.word when optional params are omitted.
+
 ```txt
 lorem.word()
 ```
+
+Returns: `cur`
+
+Shows lorem.word using min.
 
 ```txt
 lorem.word(max=10, min=1)
 ```
 
+Returns: `cur`
+
+Shows lorem.word using max.
+
 ```txt
 lorem.word(max=5)
 ```
+
+Returns: `cur`
+
+Shows lorem.word using length.
 
 ```txt
 lorem.word(length=5)
 ```
 
+Returns: `curvo`
+
+Shows lorem.word using strategy.
+
 ```txt
 lorem.word(strategy="any-length")
 ```
 
-Example return values:
-- `cur`
-- `cur`
-- `cur`
-- `curvo`
-- `cur`
+Returns: `cur`
 
 ### `lorem.words`
 
 Generates a space separated list of words.
 
 - Canonical: `awd.domain.lorem.words`
-- Docs: [https://anywaydata.com/docs/test-data/domain/lorem](https://anywaydata.com/docs/test-data/domain/lorem)
 - Faker docs: [https://fakerjs.dev/api/lorem](https://fakerjs.dev/api/lorem)
 
 | Arg | Type | Required | Description |
@@ -407,34 +514,50 @@ Generates a space separated list of words.
 
 Examples:
 
+Shows lorem.words when optional params are omitted.
+
 ```txt
 lorem.words()
 ```
+
+Returns: `cur suppellex a`
+
+Shows lorem.words using min.
 
 ```txt
 lorem.words(max=10, min=1)
 ```
 
+Returns: `cur`
+
+Shows lorem.words using max.
+
 ```txt
 lorem.words(max=5)
 ```
+
+Returns: `cur suppellex a`
+
+Shows lorem.words using wordCount.
 
 ```txt
 lorem.words(wordCount=5)
 ```
 
+Returns: `cur suppellex a`
+
+Shows lorem.words using wordCountMax.
+
 ```txt
 lorem.words(wordCountMax=5)
 ```
+
+Returns: `cur suppellex a`
+
+Shows lorem.words using wordCountMin.
 
 ```txt
 lorem.words(wordCountMin=5)
 ```
 
-Example return values:
-- `cur suppellex a`
-- `cur`
-- `cur suppellex a`
-- `cur suppellex a`
-- `cur suppellex a`
-- `cur suppellex a`
+Returns: `cur suppellex a`

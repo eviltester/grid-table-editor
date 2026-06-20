@@ -24,7 +24,7 @@ const DOMAIN_CUSTOM_INTERNET_KEYWORD_DEFINITIONS = [
     },
     help: {
       summary:
-        'Returns a random HTTP method from the full set GET, HEAD, POST, PUT, DELETE, PATCH, OPTIONS, TRACE, and CONNECT, with optional filtering for common methods and exclusions.',
+        'Returns a random HTTP request method from an AnywayData-defined pool of GET, HEAD, POST, PUT, DELETE, PATCH, OPTIONS, TRACE, and CONNECT, with optional filtering for common methods and exclusions.',
       docsUrl: 'https://anywaydata.com/docs/test-data/domain/internet',
       fakerDocsUrl: '',
       validator: validateHttpMethodValue,
@@ -60,7 +60,7 @@ const DOMAIN_CUSTOM_INTERNET_KEYWORD_DEFINITIONS = [
           type: 'string',
           required: false,
           description:
-            'Comma-separated HTTP methods to remove from the candidate set. Values are case-insensitive and surrounding spaces are trimmed.',
+            'Comma-separated HTTP methods to remove from the candidate set. Values are case-insensitive, surrounding spaces are trimmed, and generation throws if exclusions remove every available method.',
           examples: ['patch, TRACE'],
         },
       ],

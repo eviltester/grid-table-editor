@@ -19,26 +19,25 @@ The `phone` domain maps domain keywords to underlying faker implementations.
 Generates IMEI number.
 
 - Canonical: `awd.domain.phone.imei`
-- Docs: [https://anywaydata.com/docs/test-data/domain/phone](https://anywaydata.com/docs/test-data/domain/phone)
 - Faker docs: [https://fakerjs.dev/api/phone](https://fakerjs.dev/api/phone)
 
 No parameters.
 
 Examples:
 
+Shows the default phone.imei call.
+
 ```txt
 phone.imei
 ```
 
-Example return values:
-- `47-031013-354628-7`
+Returns: `47-031013-354628-7`
 
 ### `phone.number`
 
 Generates a random phone number.
 
 - Canonical: `awd.domain.phone.number`
-- Docs: [https://anywaydata.com/docs/test-data/domain/phone](https://anywaydata.com/docs/test-data/domain/phone)
 - Faker docs: [https://fakerjs.dev/api/phone](https://fakerjs.dev/api/phone)
 
 | Arg | Type | Required | Description |
@@ -47,14 +46,18 @@ Generates a random phone number.
 
 Examples:
 
+Shows phone.number when optional params are omitted.
+
 ```txt
 phone.number()
 ```
+
+Returns: `1-703-301-3354 x628`
+
+Shows phone.number using style.
 
 ```txt
 phone.number(style="international")
 ```
 
-Example return values:
-- `1-703-301-3354 x628`
-- `+15704101335`
+Returns: `+15704101335`

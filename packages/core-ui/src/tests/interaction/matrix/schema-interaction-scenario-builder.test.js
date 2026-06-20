@@ -115,20 +115,17 @@ describe('schema interaction scenario builder', () => {
     ).toBe('()');
   });
 
-  test('domain argument scenarios prefer examples from keyword definitions', () => {
+  test('base scenarios reuse minimal curated examples from keyword definitions', () => {
     const scenarios = buildSchemaInteractionScenarios();
 
-    expect(scenarios.find((scenario) => scenario.id === 'domain-airline-seat-arg-aircraftType')?.rows[0]?.params).toBe(
-      '(aircraftType="widebody")'
-    );
-    expect(scenarios.find((scenario) => scenario.id === 'domain-color-rgb-arg-casing')?.rows[0]?.params).toBe(
-      '(casing="upper")'
-    );
-    expect(scenarios.find((scenario) => scenario.id === 'domain-commerce-price-arg-symbol')?.rows[0]?.params).toBe(
-      '(symbol="$")'
+    expect(scenarios.find((scenario) => scenario.id === 'faker-helpers-arrayElements-base')?.rows[0]?.params).toBe(
+      '(["A", "B", "C"])'
     );
     expect(scenarios.find((scenario) => scenario.id === 'domain-date-between-base')?.rows[0]?.params).toBe(
-      '(1577836800000, 1609372800000)'
+      '(from=1577836800000, to=1609372800000)'
+    );
+    expect(scenarios.find((scenario) => scenario.id === 'domain-string-fromCharacters-base')?.rows[0]?.params).toBe(
+      '(characters="ABC123")'
     );
   });
 
@@ -149,21 +146,19 @@ describe('schema interaction scenario builder', () => {
     expect(getDomainCommandHelp('date.betweens')?.args?.find((arg) => arg.name === 'count')?.type).toBe('integer');
   });
 
-  test('domain arg scenarios include required companion args when needed', () => {
+  test('example-derived coverage still includes focused optional-parameter scenarios', () => {
     const scenarios = buildSchemaInteractionScenarios();
 
     expect(
-      scenarios.find((scenario) => scenario.id === 'domain-string-fromCharacters-arg-length')?.rows[0]?.params
-    ).toBe('(characters="ABC123", length=4)');
-    expect(scenarios.find((scenario) => scenario.id === 'domain-date-between-arg-from')?.rows[0]?.params).toBe(
-      '(from=1577836800000, to=1609372800000)'
-    );
-    expect(scenarios.find((scenario) => scenario.id === 'domain-date-birthdate-arg-max')?.rows[0]?.params).toBe(
-      '(max=65, min=18, mode="age")'
-    );
+      scenarios.find((scenario) => scenario.id === 'domain-string-fromCharacters-example-2')?.rows[0]?.params
+    ).toBe('(characters=["A", "B", "C"], length=4)');
+    expect(scenarios.find((scenario) => scenario.id === 'domain-datatype-enum-base')?.coveredArgs).toEqual(['values']);
+    expect(scenarios.find((scenario) => scenario.id === 'domain-date-birthdate-example-3')?.coveredArgs).toEqual([
+      'refDate',
+    ]);
     expect(
-      scenarios.find((scenario) => scenario.id === 'domain-autoIncrement-sequence-arg-zeropadding')?.rows[0]?.params
-    ).toBe('(zeropadding=3)');
+      scenarios.find((scenario) => scenario.id === 'domain-autoIncrement-sequence-example-5')?.coveredArgs
+    ).toEqual(['step']);
   });
 
   test('definitions describe executable option types and return types for matrix generation', () => {

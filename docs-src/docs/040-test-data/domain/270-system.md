@@ -19,26 +19,25 @@ The `system` domain maps domain keywords to underlying faker implementations.
 Returns a commonly used file extension.
 
 - Canonical: `awd.domain.system.commonFileExt`
-- Docs: [https://anywaydata.com/docs/test-data/domain/system](https://anywaydata.com/docs/test-data/domain/system)
 - Faker docs: [https://fakerjs.dev/api/system](https://fakerjs.dev/api/system)
 
 No parameters.
 
 Examples:
 
+Shows the default system.commonFileExt call.
+
 ```txt
 system.commonFileExt
 ```
 
-Example return values:
-- `png`
+Returns: `png`
 
 ### `system.commonFileName`
 
 Returns a random file name with a given extension or a commonly used extension.
 
 - Canonical: `awd.domain.system.commonFileName`
-- Docs: [https://anywaydata.com/docs/test-data/domain/system](https://anywaydata.com/docs/test-data/domain/system)
 - Faker docs: [https://fakerjs.dev/api/system](https://fakerjs.dev/api/system)
 
 | Arg | Type | Required | Description |
@@ -47,43 +46,46 @@ Returns a random file name with a given extension or a commonly used extension.
 
 Examples:
 
+Shows system.commonFileName when optional params are omitted.
+
 ```txt
 system.commonFileName()
 ```
+
+Returns: `fog_aboard.mp4v`
+
+Shows system.commonFileName using extension.
 
 ```txt
 system.commonFileName(extension="txt")
 ```
 
-Example return values:
-- `fog_aboard.mp4v`
-- `fog_aboard.txt`
+Returns: `fog_aboard.txt`
 
 ### `system.commonFileType`
 
 Returns a commonly used file type.
 
 - Canonical: `awd.domain.system.commonFileType`
-- Docs: [https://anywaydata.com/docs/test-data/domain/system](https://anywaydata.com/docs/test-data/domain/system)
 - Faker docs: [https://fakerjs.dev/api/system](https://fakerjs.dev/api/system)
 
 No parameters.
 
 Examples:
 
+Shows the default system.commonFileType call.
+
 ```txt
 system.commonFileType
 ```
 
-Example return values:
-- `image`
+Returns: `image`
 
 ### `system.cron`
 
 Returns a random cron expression.
 
 - Canonical: `awd.domain.system.cron`
-- Docs: [https://anywaydata.com/docs/test-data/domain/system](https://anywaydata.com/docs/test-data/domain/system)
 - Faker docs: [https://fakerjs.dev/api/system](https://fakerjs.dev/api/system)
 
 | Arg | Type | Required | Description |
@@ -93,48 +95,54 @@ Returns a random cron expression.
 
 Examples:
 
+Shows system.cron when optional params are omitted.
+
 ```txt
 system.cron()
 ```
+
+Returns: `25 17 * 4 *`
+
+Shows system.cron using includeNonStandard.
 
 ```txt
 system.cron(includeNonStandard=true)
 ```
 
+Returns: `@annually`
+
+Shows system.cron using includeYear.
+
 ```txt
 system.cron(includeYear=true)
 ```
 
-Example return values:
-- `25 17 * 4 *`
-- `@annually`
-- `25 17 * 4 * 1994`
+Returns: `25 17 * 4 * 1994`
 
 ### `system.directoryPath`
 
 Returns a directory path.
 
 - Canonical: `awd.domain.system.directoryPath`
-- Docs: [https://anywaydata.com/docs/test-data/domain/system](https://anywaydata.com/docs/test-data/domain/system)
 - Faker docs: [https://fakerjs.dev/api/system](https://fakerjs.dev/api/system)
 
 No parameters.
 
 Examples:
 
+Shows the default system.directoryPath call.
+
 ```txt
 system.directoryPath
 ```
 
-Example return values:
-- `/opt/include`
+Returns: `/opt/include`
 
 ### `system.fileExt`
 
 Returns a file extension.
 
 - Canonical: `awd.domain.system.fileExt`
-- Docs: [https://anywaydata.com/docs/test-data/domain/system](https://anywaydata.com/docs/test-data/domain/system)
 - Faker docs: [https://fakerjs.dev/api/system](https://fakerjs.dev/api/system)
 
 | Arg | Type | Required | Description |
@@ -143,128 +151,132 @@ Returns a file extension.
 
 Examples:
 
+Shows system.fileExt when optional params are omitted.
+
 ```txt
 system.fileExt()
 ```
+
+Returns: `7z`
+
+Shows system.fileExt using mimeType.
 
 ```txt
 system.fileExt(mimeType="image/png")
 ```
 
-Example return values:
-- `7z`
-- `7z`
+Returns: `7z`
 
 ### `system.fileName`
 
 Returns a random file name with extension.
 
 - Canonical: `awd.domain.system.fileName`
-- Docs: [https://anywaydata.com/docs/test-data/domain/system](https://anywaydata.com/docs/test-data/domain/system)
 - Faker docs: [https://fakerjs.dev/api/system](https://fakerjs.dev/api/system)
 
 No parameters.
 
 Examples:
 
+Shows the default system.fileName call.
+
 ```txt
 system.fileName
 ```
 
-Example return values:
-- `fog_aboard.otf`
+Returns: `fog_aboard.otf`
 
 ### `system.filePath`
 
 Returns a file path.
 
 - Canonical: `awd.domain.system.filePath`
-- Docs: [https://anywaydata.com/docs/test-data/domain/system](https://anywaydata.com/docs/test-data/domain/system)
 - Faker docs: [https://fakerjs.dev/api/system](https://fakerjs.dev/api/system)
 
 No parameters.
 
 Examples:
 
+Shows the default system.filePath call.
+
 ```txt
 system.filePath
 ```
 
-Example return values:
-- `/opt/include/down_reproachfully_besides.woff2`
+Returns: `/opt/include/down_reproachfully_besides.woff2`
 
 ### `system.fileType`
 
 Returns a file type.
 
 - Canonical: `awd.domain.system.fileType`
-- Docs: [https://anywaydata.com/docs/test-data/domain/system](https://anywaydata.com/docs/test-data/domain/system)
 - Faker docs: [https://fakerjs.dev/api/system](https://fakerjs.dev/api/system)
 
 No parameters.
 
 Examples:
 
+Shows the default system.fileType call.
+
 ```txt
 system.fileType
 ```
 
-Example return values:
-- `font`
+Returns: `font`
 
 ### `system.mimeType`
 
 Returns a mime-type.
 
 - Canonical: `awd.domain.system.mimeType`
-- Docs: [https://anywaydata.com/docs/test-data/domain/system](https://anywaydata.com/docs/test-data/domain/system)
 - Faker docs: [https://fakerjs.dev/api/system](https://fakerjs.dev/api/system)
 
 No parameters.
 
 Examples:
 
+Shows the default system.mimeType call.
+
 ```txt
 system.mimeType
 ```
 
-Example return values:
-- `application/x-httpd-php`
+Returns: `application/x-httpd-php`
 
 ### `system.networkInterface`
 
 Returns a random network interface.
 
 - Canonical: `awd.domain.system.networkInterface`
-- Docs: [https://anywaydata.com/docs/test-data/domain/system](https://anywaydata.com/docs/test-data/domain/system)
 - Faker docs: [https://fakerjs.dev/api/system](https://fakerjs.dev/api/system)
 
 No parameters.
 
 Examples:
 
+Shows the default system.networkInterface call.
+
 ```txt
 system.networkInterface
 ```
 
-Example return values:
-- `wlx042125686a3e`
+Returns: `wlx042125686a3e`
 
 ### `system.semver`
 
 Returns a semantic version.
 
 - Canonical: `awd.domain.system.semver`
-- Docs: [https://anywaydata.com/docs/test-data/domain/system](https://anywaydata.com/docs/test-data/domain/system)
 - Faker docs: [https://fakerjs.dev/api/system](https://fakerjs.dev/api/system)
 
 No parameters.
 
 Examples:
 
+Shows the default system.semver call.
+
 ```txt
 system.semver
 ```
 
-Example return values:
-- `4.15.0`
+Returns: `4.15.0`

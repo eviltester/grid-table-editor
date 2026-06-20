@@ -19,26 +19,25 @@ The `commerce` domain maps domain keywords to underlying faker implementations.
 Returns a department inside a shop.
 
 - Canonical: `awd.domain.commerce.department`
-- Docs: [https://anywaydata.com/docs/test-data/domain/commerce](https://anywaydata.com/docs/test-data/domain/commerce)
 - Faker docs: [https://fakerjs.dev/api/commerce](https://fakerjs.dev/api/commerce)
 
 No parameters.
 
 Examples:
 
+Shows the default commerce.department call.
+
 ```txt
 commerce.department
 ```
 
-Example return values:
-- `Grocery`
+Returns: `Grocery`
 
 ### `commerce.isbn`
 
 Returns a random ISBN identifier.
 
 - Canonical: `awd.domain.commerce.isbn`
-- Docs: [https://anywaydata.com/docs/test-data/domain/commerce](https://anywaydata.com/docs/test-data/domain/commerce)
 - Faker docs: [https://fakerjs.dev/api/commerce](https://fakerjs.dev/api/commerce)
 
 | Arg | Type | Required | Description |
@@ -48,29 +47,35 @@ Returns a random ISBN identifier.
 
 Examples:
 
+Shows commerce.isbn when optional params are omitted.
+
 ```txt
 commerce.isbn()
 ```
+
+Returns: `978-0-7031-0133-4`
+
+Shows commerce.isbn using separator.
 
 ```txt
 commerce.isbn(separator="-")
 ```
 
+Returns: `978-0-7031-0133-4`
+
+Shows commerce.isbn using variant.
+
 ```txt
 commerce.isbn(variant=10)
 ```
 
-Example return values:
-- `978-0-7031-0133-4`
-- `978-0-7031-0133-4`
-- `0-7031-0133-1`
+Returns: `0-7031-0133-1`
 
 ### `commerce.price`
 
 Generates a price between min and max (inclusive).
 
 - Canonical: `awd.domain.commerce.price`
-- Docs: [https://anywaydata.com/docs/test-data/domain/commerce](https://anywaydata.com/docs/test-data/domain/commerce)
 - Faker docs: [https://fakerjs.dev/api/commerce](https://fakerjs.dev/api/commerce)
 
 | Arg | Type | Required | Description |
@@ -82,139 +87,154 @@ Generates a price between min and max (inclusive).
 
 Examples:
 
+Shows commerce.price in use.
+
 ```txt
 commerce.price(dec=2, max=10, min=1, symbol="$")
 ```
+
+Returns: `$4.79`
+
+Shows commerce.price when optional params are omitted.
 
 ```txt
 commerce.price()
 ```
 
+Returns: `417.69`
+
+Shows commerce.price using dec.
+
 ```txt
 commerce.price(dec=2)
 ```
+
+Returns: `417.69`
+
+Shows commerce.price using max.
 
 ```txt
 commerce.price(max=100)
 ```
 
+Returns: `42.29`
+
+Shows commerce.price using min.
+
 ```txt
 commerce.price(max=10, min=1)
 ```
+
+Returns: `4.79`
+
+Shows commerce.price using symbol.
 
 ```txt
 commerce.price(symbol="$")
 ```
 
-Example return values:
-- `$4.79`
-- `417.69`
-- `417.69`
-- `42.29`
-- `4.79`
-- `$417.69`
+Returns: `$417.69`
 
 ### `commerce.product`
 
 Returns a short product name.
 
 - Canonical: `awd.domain.commerce.product`
-- Docs: [https://anywaydata.com/docs/test-data/domain/commerce](https://anywaydata.com/docs/test-data/domain/commerce)
 - Faker docs: [https://fakerjs.dev/api/commerce](https://fakerjs.dev/api/commerce)
 
 No parameters.
 
 Examples:
 
+Shows the default commerce.product call.
+
 ```txt
 commerce.product
 ```
 
-Example return values:
-- `Gloves`
+Returns: `Gloves`
 
 ### `commerce.productAdjective`
 
 Returns an adjective describing a product.
 
 - Canonical: `awd.domain.commerce.productAdjective`
-- Docs: [https://anywaydata.com/docs/test-data/domain/commerce](https://anywaydata.com/docs/test-data/domain/commerce)
 - Faker docs: [https://fakerjs.dev/api/commerce](https://fakerjs.dev/api/commerce)
 
 No parameters.
 
 Examples:
 
+Shows the default commerce.productAdjective call.
+
 ```txt
 commerce.productAdjective
 ```
 
-Example return values:
-- `Handmade`
+Returns: `Handmade`
 
 ### `commerce.productDescription`
 
 Returns a product description.
 
 - Canonical: `awd.domain.commerce.productDescription`
-- Docs: [https://anywaydata.com/docs/test-data/domain/commerce](https://anywaydata.com/docs/test-data/domain/commerce)
 - Faker docs: [https://fakerjs.dev/api/commerce](https://fakerjs.dev/api/commerce)
 
 No parameters.
 
 Examples:
 
+Shows the default commerce.productDescription call.
+
 ```txt
 commerce.productDescription
 ```
 
-Example return values:
-- `New Sausages model with 1 GB RAM, 303 GB storage, and bruised features`
+Returns: `New Sausages model with 1 GB RAM, 303 GB storage, and bruised features`
 
 ### `commerce.productMaterial`
 
 Returns a material of a product.
 
 - Canonical: `awd.domain.commerce.productMaterial`
-- Docs: [https://anywaydata.com/docs/test-data/domain/commerce](https://anywaydata.com/docs/test-data/domain/commerce)
 - Faker docs: [https://fakerjs.dev/api/commerce](https://fakerjs.dev/api/commerce)
 
 No parameters.
 
 Examples:
 
+Shows the default commerce.productMaterial call.
+
 ```txt
 commerce.productMaterial
 ```
 
-Example return values:
-- `Gold`
+Returns: `Gold`
 
 ### `commerce.productName`
 
 Generates a random descriptive product name.
 
 - Canonical: `awd.domain.commerce.productName`
-- Docs: [https://anywaydata.com/docs/test-data/domain/commerce](https://anywaydata.com/docs/test-data/domain/commerce)
 - Faker docs: [https://fakerjs.dev/api/commerce](https://fakerjs.dev/api/commerce)
 
 No parameters.
 
 Examples:
 
+Shows the default commerce.productName call.
+
 ```txt
 commerce.productName
 ```
 
-Example return values:
-- `Handmade Plastic Bacon`
+Returns: `Handmade Plastic Bacon`
 
 ### `commerce.upc`
 
 Returns a valid UPC-A (12 digits).
 
 - Canonical: `awd.domain.commerce.upc`
-- Docs: [https://anywaydata.com/docs/test-data/domain/commerce](https://anywaydata.com/docs/test-data/domain/commerce)
 - Faker docs: [https://fakerjs.dev/api/commerce](https://fakerjs.dev/api/commerce)
 
 | Arg | Type | Required | Description |
@@ -223,14 +243,18 @@ Returns a valid UPC-A (12 digits).
 
 Examples:
 
+Shows commerce.upc when optional params are omitted.
+
 ```txt
 commerce.upc()
 ```
+
+Returns: `470310133543`
+
+Shows commerce.upc using prefix.
 
 ```txt
 commerce.upc(prefix="01234")
 ```
 
-Example return values:
-- `470310133543`
-- `012344703103`
+Returns: `012344703103`

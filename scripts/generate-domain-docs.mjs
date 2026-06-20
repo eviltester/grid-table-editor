@@ -1,8 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { DOMAIN_KEYWORDS } from '../packages/core/js/domain/domain-keywords.js';
-import { faker } from '@faker-js/faker';
-import { executeDomainKeyword } from '../packages/core/js/domain/domain-keywords.js';
 import { toInlineCode } from '../packages/core/js/domain/domain-doc-markdown.js';
 
 const configuredOutDir = process.env.ANYWAYDATA_DOMAIN_DOCS_OUT_DIR;
@@ -106,28 +104,12 @@ for (const d of domains) {
 }
 fs.writeFileSync(path.join(outDir, '000-domain-test-data.md'), indexLines.join('\n'));
 
-const invocationOverrides = {
-  'date.between': { invocation: 'date.between(0, 2000000000000)', args: [0, 2000000000000] },
-  'date.betweens': { invocation: 'date.betweens(2, 0, 2000000000000)', args: [2, 0, 2000000000000] },
-};
-const nonDeterministicExamples = new Set(['helpers.maybe']);
 const domainIntroOverrides = {
   autoIncrement: 'The `autoIncrement` domain provides stateful sequence helpers for accepted generated rows.',
+  internet:
+    'The `internet` domain mostly maps domain keywords to faker-backed generators, but `internet.httpMethod` is implemented directly by AnywayData.',
   literal: 'The `literal` domain returns caller-provided values directly and does not invoke faker.',
 };
-const PRIMITIVE_TYPE_TOKENS = new Set([
-  'string',
-  'number',
-  'integer',
-  'boolean',
-  'array',
-  'object',
-  'date',
-  'regexp',
-  'unknown',
-  'bigint',
-  'comma-separated list',
-]);
 
 function escapeMdxText(value) {
   return String(value ?? '')
@@ -142,173 +124,22 @@ function escapeMarkdownTableCell(value) {
   return escapeMdxText(normalized.replaceAll('\n', '<br/>')).replaceAll('|', '\\|');
 }
 
-function canExecuteInvocation(keyword, args) {
-  try {
-    executeDomainKeyword(keyword, {
-      faker,
-      args,
-      customDelegates: {
-        'literal.value': (context) => context.args?.[0] ?? '',
-      },
-    });
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-function getDefinitionReturnValues(entry) {
+function getDefinitionUsageExamples(entry) {
   return (Array.isArray(entry?.help?.usageExamples) ? entry.help.usageExamples : [])
-    .filter((usageExample) => Object.prototype.hasOwnProperty.call(usageExample || {}, 'sampleReturnValue'))
-    .map((usageExample) => usageExample.sampleReturnValue)
-    .filter((value) => typeof value !== 'undefined');
-}
+    .map((usageExample) => {
+      const functionCall = String(usageExample?.functionCall || '').trim();
+      if (!functionCall) {
+        return null;
+      }
 
-function toNamedInvocation(keyword, argSpecs, typedArgs) {
-  if (!Array.isArray(argSpecs) || argSpecs.length === 0) {
-    return '';
-  }
-  const pairs = [];
-  for (let index = 0; index < argSpecs.length; index += 1) {
-    const spec = argSpecs[index];
-    const name = String(spec?.name || '').trim();
-    if (!name) {
-      return '';
-    }
-    const value = typedArgs[index];
-    const rendered =
-      typeof value === 'string'
-        ? `"${value}"`
-        : Array.isArray(value) || (value && typeof value === 'object')
-          ? JSON.stringify(value)
-          : String(value);
-    pairs.push(`${name}=${rendered}`);
-  }
-  return `${keyword}(${pairs.join(', ')})`;
-}
-
-function renderInvocation(keyword, typedArgs) {
-  if (!Array.isArray(typedArgs) || typedArgs.length === 0) {
-    return `${keyword}()`;
-  }
-  const renderedArgs = typedArgs.map((value) => {
-    if (typeof value === 'string') {
-      return `"${value}"`;
-    }
-    if (Array.isArray(value)) {
-      return JSON.stringify(value);
-    }
-    if (value && typeof value === 'object') {
-      return JSON.stringify(value);
-    }
-    return String(value);
-  });
-  return `${keyword}(${renderedArgs.join(', ')})`;
-}
-
-function parseLiteralTypeToken(token) {
-  const trimmed = String(token || '').trim();
-  if (!trimmed) {
-    return undefined;
-  }
-  if ((trimmed.startsWith('"') && trimmed.endsWith('"')) || (trimmed.startsWith("'") && trimmed.endsWith("'"))) {
-    return trimmed.slice(1, -1);
-  }
-  if (/^[+-]?\d+(\.\d+)?$/.test(trimmed)) {
-    return Number(trimmed);
-  }
-  return trimmed;
-}
-
-function getLiteralUnionValues(typeName) {
-  const typeTokens = String(typeName || '')
-    .split('|')
-    .map((entry) => entry.trim())
+      return {
+        functionCall,
+        description: String(usageExample?.description || '').trim(),
+        hasSampleReturnValue: Object.prototype.hasOwnProperty.call(usageExample || {}, 'sampleReturnValue'),
+        sampleReturnValue: usageExample?.sampleReturnValue,
+      };
+    })
     .filter(Boolean);
-
-  if (typeTokens.length === 0) {
-    return [];
-  }
-
-  const literalValues = [];
-  for (const typeToken of typeTokens) {
-    if (PRIMITIVE_TYPE_TOKENS.has(typeToken)) {
-      return [];
-    }
-    const literalValue = parseLiteralTypeToken(typeToken);
-    if (typeof literalValue === 'undefined') {
-      return [];
-    }
-    literalValues.push(literalValue);
-  }
-
-  return literalValues;
-}
-
-function choosePreferredLiteralUnionValue(values, name, keyword) {
-  if (!Array.isArray(values) || values.length === 0) {
-    return undefined;
-  }
-
-  if (name === 'strategy' && values.includes('any-length')) return 'any-length';
-  if (name === 'aircraftType' && values.includes('widebody')) return 'widebody';
-  if (name === 'protocol' && values.includes('https')) return 'https';
-  if (name === 'network' && keyword === 'internet.ipv4' && values.includes('private-a')) return 'private-a';
-  if (name === 'network' && keyword === 'finance.bitcoinAddress' && values.includes('testnet')) return 'testnet';
-  if (name === 'format' && values.includes('css')) return 'css';
-  if (name === 'casing' && values.includes('upper')) return 'upper';
-
-  return values[0];
-}
-
-function sampleValueForArg(argSpec, keyword = '') {
-  const name = String(argSpec?.name || '').trim();
-  const typeName = String(argSpec?.type || '').trim();
-  const examples = Array.isArray(argSpec?.examples) ? argSpec.examples.filter((value) => value !== undefined) : [];
-  if (examples.length > 0) {
-    return examples[0];
-  }
-
-  const literalUnionValues = getLiteralUnionValues(typeName);
-  if (literalUnionValues.length > 0) {
-    return choosePreferredLiteralUnionValue(literalUnionValues, name, keyword);
-  }
-
-  if (name === 'firstName') return 'Alex';
-  if (name === 'lastName') return 'Taylor';
-  if (name === 'provider') return 'example.com';
-  if (name === 'aircraftType') return 'narrowbody';
-  if (name === 'countryCode') return 'GB';
-  if (name === 'cidrBlock') return '192.168.0.0/24';
-  if (name === 'prefix') return '#';
-  if (name === 'separator') return '-';
-  if (name === 'characters') return 'ABC123';
-  if (name === 'pattern') return '[A-Za-z0-9]';
-  if (name === 'version') return 4;
-  if (name === 'mode') return 'age';
-  if (name === 'sex') return 'male';
-  if (name === 'mimeType') return 'image/png';
-  if (name === 'extension') return 'txt';
-  if (name === 'symbol') return '$';
-  if (name === 'types') return ['food', 'nature'];
-  if (name === 'list') return ['alpha', 'beta', 'gamma'];
-  if (name === 'header') return { alg: 'HS256', typ: 'JWT' };
-  if (name === 'payload') return { iss: 'Acme' };
-  if (name === 'style') return 'human';
-  if (name === 'context') return false;
-  if (name === 'abbreviated') return false;
-  if (name === 'memorable') return false;
-
-  const first =
-    typeName
-      .split('|')
-      .map((s) => s.trim())
-      .find(Boolean) || 'string';
-  if (first === 'number') return 1;
-  if (first === 'boolean') return true;
-  if (first === 'array') return ['item'];
-  if (first === 'object') return { key: 'value' };
-  return 'value';
 }
 
 let pageIndex = 20;
@@ -345,36 +176,14 @@ for (const domain of domains) {
 
   for (const entry of keywords) {
     const args = entry.help.args || [];
-    const override = invocationOverrides[entry.keyword];
-    const requiredArgSpecs = args.filter((a) => a.required);
-    const typedRequiredArgs = requiredArgSpecs.map((a) => {
-      return sampleValueForArg(a, entry.keyword);
-    });
-    const sampledArgs = args.map((arg) => sampleValueForArg(arg, entry.keyword));
-    let executableExampleArgs = override ? override.args : typedRequiredArgs;
-    if (!canExecuteInvocation(entry.keyword, executableExampleArgs)) {
-      if (canExecuteInvocation(entry.keyword, sampledArgs)) {
-        executableExampleArgs = sampledArgs;
-      } else {
-        for (let length = 1; length <= sampledArgs.length; length += 1) {
-          const trialArgs = sampledArgs.slice(0, length);
-          if (canExecuteInvocation(entry.keyword, trialArgs)) {
-            executableExampleArgs = trialArgs;
-            break;
-          }
-        }
-      }
+    const definitionUsageExamples = getDefinitionUsageExamples(entry);
+    if (definitionUsageExamples.length === 0) {
+      throw new Error(`Missing usageExamples for ${entry.keyword}. Domain docs are generated from curated examples.`);
     }
-
-    const hasExecutableExample =
-      !nonDeterministicExamples.has(entry.keyword) && canExecuteInvocation(entry.keyword, executableExampleArgs);
 
     lines.push(`### \`${entry.keyword}\``, '');
     lines.push(escapeMdxText(entry.help.summary || 'No summary provided.'), '');
     lines.push(`- Canonical: \`${entry.canonical}\``);
-    if (entry.help.docsUrl) {
-      lines.push(`- Docs: [${entry.help.docsUrl}](${entry.help.docsUrl})`);
-    }
     if (entry.help.fakerDocsUrl) {
       lines.push(`- Faker docs: [${entry.help.fakerDocsUrl}](${entry.help.fakerDocsUrl})`);
     }
@@ -393,89 +202,17 @@ for (const domain of domains) {
       lines.push('No parameters.', '');
     }
 
-    if (hasExecutableExample) {
-      const definitionExamples = (Array.isArray(entry.help.usageExamples) ? entry.help.usageExamples : [])
-        .map((usageExample) => String(usageExample?.functionCall || '').trim())
-        .filter(Boolean);
-      let namedInvocation = '';
-      const allArgsValues = sampledArgs;
-      if (args.length > 0 && canExecuteInvocation(entry.keyword, allArgsValues)) {
-        namedInvocation = toNamedInvocation(entry.keyword, args, allArgsValues);
-      } else if (requiredArgSpecs.length > 0) {
-        namedInvocation = toNamedInvocation(
-          entry.keyword,
-          requiredArgSpecs,
-          override ? override.args : typedRequiredArgs
-        );
+    lines.push('Examples:');
+    for (const usageExample of definitionUsageExamples) {
+      if (usageExample.description) {
+        lines.push('', escapeMdxText(usageExample.description));
       }
-      const invocation = override ? override.invocation : renderInvocation(entry.keyword, executableExampleArgs);
-      const primaryExamples =
-        definitionExamples.length > 0 ? definitionExamples : [invocation, namedInvocation].filter(Boolean);
-      lines.push('Examples:');
-      for (const example of primaryExamples) {
-        lines.push('', '```txt', example, '```');
+      lines.push('', '```txt', usageExample.functionCall, '```');
+      if (usageExample.hasSampleReturnValue) {
+        lines.push('', `Returns: ${toInlineCode(usageExample.sampleReturnValue)}`);
       }
-      if (args.length > 0 && definitionExamples.length === 0) {
-        const typeInExamples = [];
-        const seenExamples = new Set(primaryExamples);
-        for (let index = 0; index < args.length; index += 1) {
-          const arg = args[index];
-          const value = sampleValueForArg(arg, entry.keyword);
-          const typedArgs = args.map((entryArg, argIndex) =>
-            argIndex === index ? value : sampleValueForArg(entryArg, entry.keyword)
-          );
-          const fullNamed = toNamedInvocation(entry.keyword, args, typedArgs);
-          if (fullNamed && canExecuteInvocation(entry.keyword, typedArgs)) {
-            if (!seenExamples.has(fullNamed)) {
-              typeInExamples.push(fullNamed);
-              seenExamples.add(fullNamed);
-            }
-            continue;
-          }
-
-          const singleNamed = toNamedInvocation(entry.keyword, [arg], [value]);
-          if (singleNamed && canExecuteInvocation(entry.keyword, [value])) {
-            if (!seenExamples.has(singleNamed)) {
-              typeInExamples.push(singleNamed);
-              seenExamples.add(singleNamed);
-            }
-            continue;
-          }
-
-          const positional = renderInvocation(entry.keyword, [value]);
-          if (canExecuteInvocation(entry.keyword, [value])) {
-            if (!seenExamples.has(positional)) {
-              typeInExamples.push(positional);
-              seenExamples.add(positional);
-            }
-          }
-        }
-        if (typeInExamples.length > 0) {
-          lines.push('', 'Type-in examples (named params):');
-          for (const example of typeInExamples) {
-            lines.push('', '```txt', example, '```');
-          }
-        }
-      }
-      const returnValues = getDefinitionReturnValues(entry);
-      if (returnValues.length > 0) {
-        lines.push('', 'Example return values:');
-        for (const value of returnValues) {
-          lines.push(`- ${toInlineCode(value)}`);
-        }
-      }
-      lines.push('');
-    } else {
-      lines.push(
-        'Example:',
-        '',
-        'Literal-only parser example is not currently available for this method.',
-        '',
-        'Example return values:',
-        '- `Not available for this method with literal-only args.`',
-        ''
-      );
     }
+    lines.push('');
   }
 
   const file = `${String(pageIndex).padStart(3, '0')}-${domain}.md`;

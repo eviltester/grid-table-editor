@@ -6,7 +6,7 @@ description: "Domain keyword reference for internet."
 
 # internet Domain
 
-The `internet` domain maps domain keywords to underlying faker implementations.
+The `internet` domain mostly maps domain keywords to faker-backed generators, but `internet.httpMethod` is implemented directly by AnywayData.
 
 ## Faker Documentation
 
@@ -19,83 +19,82 @@ The `internet` domain maps domain keywords to underlying faker implementations.
 Generates a display name using the given person's name as base.
 
 - Canonical: `awd.domain.internet.displayName`
-- Docs: [https://anywaydata.com/docs/test-data/domain/internet](https://anywaydata.com/docs/test-data/domain/internet)
 - Faker docs: [https://fakerjs.dev/api/internet](https://fakerjs.dev/api/internet)
 
 No parameters.
 
 Examples:
 
+Shows the default internet.displayName call.
+
 ```txt
 internet.displayName
 ```
 
-Example return values:
-- `Aaliyah.Bosco`
+Returns: `Aaliyah.Bosco`
 
 ### `internet.domainName`
 
 Generates a random domain name.
 
 - Canonical: `awd.domain.internet.domainName`
-- Docs: [https://anywaydata.com/docs/test-data/domain/internet](https://anywaydata.com/docs/test-data/domain/internet)
 - Faker docs: [https://fakerjs.dev/api/internet](https://fakerjs.dev/api/internet)
 
 No parameters.
 
 Examples:
 
+Shows the default internet.domainName call.
+
 ```txt
 internet.domainName
 ```
 
-Example return values:
-- `inferior-punctuation.biz`
+Returns: `inferior-punctuation.biz`
 
 ### `internet.domainSuffix`
 
 Returns a random domain suffix.
 
 - Canonical: `awd.domain.internet.domainSuffix`
-- Docs: [https://anywaydata.com/docs/test-data/domain/internet](https://anywaydata.com/docs/test-data/domain/internet)
 - Faker docs: [https://fakerjs.dev/api/internet](https://fakerjs.dev/api/internet)
 
 No parameters.
 
 Examples:
 
+Shows the default internet.domainSuffix call.
+
 ```txt
 internet.domainSuffix
 ```
 
-Example return values:
-- `info`
+Returns: `info`
 
 ### `internet.domainWord`
 
 Generates a random domain word.
 
 - Canonical: `awd.domain.internet.domainWord`
-- Docs: [https://anywaydata.com/docs/test-data/domain/internet](https://anywaydata.com/docs/test-data/domain/internet)
 - Faker docs: [https://fakerjs.dev/api/internet](https://fakerjs.dev/api/internet)
 
 No parameters.
 
 Examples:
 
+Shows the default internet.domainWord call.
+
 ```txt
 internet.domainWord
 ```
 
-Example return values:
-- `inferior-punctuation`
+Returns: `inferior-punctuation`
 
 ### `internet.email`
 
 Generates data using faker internet email.
 
 - Canonical: `awd.domain.internet.email`
-- Docs: [https://anywaydata.com/docs/test-data/domain/internet](https://anywaydata.com/docs/test-data/domain/internet)
 - Faker docs: [https://fakerjs.dev/api/internet](https://fakerjs.dev/api/internet)
 
 | Arg | Type | Required | Description |
@@ -107,39 +106,51 @@ Generates data using faker internet email.
 
 Examples:
 
+Shows internet.email when optional params are omitted.
+
 ```txt
 internet.email()
 ```
+
+Returns: `Edwin.Dibbert@hotmail.com`
+
+Shows internet.email using allowSpecialCharacters.
 
 ```txt
 internet.email(allowSpecialCharacters=true)
 ```
 
+Returns: `Edwin.Dibbert@hotmail.com`
+
+Shows internet.email using firstName.
+
 ```txt
 internet.email(firstName="Ada")
 ```
+
+Returns: `Ada.Gutmann9@hotmail.com`
+
+Shows internet.email using lastName.
 
 ```txt
 internet.email(lastName="Lovelace")
 ```
 
+Returns: `Edwin.Lovelace9@hotmail.com`
+
+Shows internet.email using provider.
+
 ```txt
 internet.email(provider="example.com")
 ```
 
-Example return values:
-- `Edwin.Dibbert@hotmail.com`
-- `Edwin.Dibbert@hotmail.com`
-- `Ada.Gutmann9@hotmail.com`
-- `Edwin.Lovelace9@hotmail.com`
-- `Aaliyah.Bosco@example.com`
+Returns: `Aaliyah.Bosco@example.com`
 
 ### `internet.emoji`
 
 Generates a random emoji.
 
 - Canonical: `awd.domain.internet.emoji`
-- Docs: [https://anywaydata.com/docs/test-data/domain/internet](https://anywaydata.com/docs/test-data/domain/internet)
 - Faker docs: [https://fakerjs.dev/api/internet](https://fakerjs.dev/api/internet)
 
 | Arg | Type | Required | Description |
@@ -148,100 +159,121 @@ Generates a random emoji.
 
 Examples:
 
+Shows internet.emoji when optional params are omitted.
+
 ```txt
 internet.emoji()
 ```
+
+Returns: `🥣`
+
+Shows internet.emoji using types.
 
 ```txt
 internet.emoji(types=["food"])
 ```
 
-Example return values:
-- `🥣`
-- `🍲`
+Returns: `🍲`
 
 ### `internet.exampleEmail`
 
 Generates data using faker internet example email.
 
 - Canonical: `awd.domain.internet.exampleEmail`
-- Docs: [https://anywaydata.com/docs/test-data/domain/internet](https://anywaydata.com/docs/test-data/domain/internet)
 - Faker docs: [https://fakerjs.dev/api/internet](https://fakerjs.dev/api/internet)
 
 No parameters.
 
 Examples:
+
+Shows the default internet.exampleEmail call.
 
 ```txt
 internet.exampleEmail
 ```
 
-Example return values:
-- `Edwin.Dibbert@example.net`
+Returns: `Edwin.Dibbert@example.net`
 
 ### `internet.httpMethod`
 
-Returns a random http method.
+Returns a random HTTP request method from an AnywayData-defined pool of GET, HEAD, POST, PUT, DELETE, PATCH, OPTIONS, TRACE, and CONNECT, with optional filtering for common methods and exclusions.
 
 - Canonical: `awd.domain.internet.httpMethod`
-- Docs: [https://anywaydata.com/docs/test-data/domain/internet](https://anywaydata.com/docs/test-data/domain/internet)
-- Faker docs: [https://fakerjs.dev/api/internet](https://fakerjs.dev/api/internet)
 
-No parameters.
+| Arg | Type | Required | Description |
+| --- | --- | --- | --- |
+| `commonOnly` | `boolean` | no | When true, limits generation to GET, HEAD, POST, PUT, and DELETE. Defaults to false. |
+| `excludes` | `string` | no | Comma-separated HTTP methods to remove from the candidate set. Values are case-insensitive, surrounding spaces are trimmed, and generation throws if exclusions remove every available method. |
 
 Examples:
 
+Shows internet.httpMethod choosing from the full HTTP method set by default.
+
 ```txt
-internet.httpMethod
+internet.httpMethod()
 ```
 
-Example return values:
-- `PUT`
+Returns: `PUT`
+
+Shows internet.httpMethod restricted to the common request methods.
+
+```txt
+internet.httpMethod(commonOnly=true)
+```
+
+Returns: `POST`
+
+Shows internet.httpMethod trimming spaces, normalizing case, and excluding methods from the full set.
+
+```txt
+internet.httpMethod(excludes="patch, TRACE")
+```
+
+Returns: `POST`
 
 ### `internet.httpStatusCode`
 
 Generates a random HTTP status code.
 
 - Canonical: `awd.domain.internet.httpStatusCode`
-- Docs: [https://anywaydata.com/docs/test-data/domain/internet](https://anywaydata.com/docs/test-data/domain/internet)
 - Faker docs: [https://fakerjs.dev/api/internet](https://fakerjs.dev/api/internet)
 
 No parameters.
 
 Examples:
 
+Shows the default internet.httpStatusCode call.
+
 ```txt
 internet.httpStatusCode
 ```
 
-Example return values:
-- `306`
+Returns: `306`
 
 ### `internet.ip`
 
 Generates a random IPv4 or IPv6 address.
 
 - Canonical: `awd.domain.internet.ip`
-- Docs: [https://anywaydata.com/docs/test-data/domain/internet](https://anywaydata.com/docs/test-data/domain/internet)
 - Faker docs: [https://fakerjs.dev/api/internet](https://fakerjs.dev/api/internet)
 
 No parameters.
 
 Examples:
 
+Shows the default internet.ip call.
+
 ```txt
 internet.ip
 ```
 
-Example return values:
-- `184.103.47.157`
+Returns: `184.103.47.157`
 
 ### `internet.ipv4`
 
 Generates a random IPv4 address.
 
 - Canonical: `awd.domain.internet.ipv4`
-- Docs: [https://anywaydata.com/docs/test-data/domain/internet](https://anywaydata.com/docs/test-data/domain/internet)
 - Faker docs: [https://fakerjs.dev/api/internet](https://fakerjs.dev/api/internet)
 
 | Arg | Type | Required | Description |
@@ -251,48 +283,54 @@ Generates a random IPv4 address.
 
 Examples:
 
+Shows internet.ipv4 when optional params are omitted.
+
 ```txt
 internet.ipv4()
 ```
+
+Returns: `106.193.244.63`
+
+Shows internet.ipv4 using cidrBlock.
 
 ```txt
 internet.ipv4(cidrBlock="192.168.0.0/24")
 ```
 
+Returns: `192.168.0.106`
+
+Shows internet.ipv4 using network.
+
 ```txt
 internet.ipv4(network="private-a")
 ```
 
-Example return values:
-- `106.193.244.63`
-- `192.168.0.106`
-- `10.106.193.244`
+Returns: `10.106.193.244`
 
 ### `internet.ipv6`
 
 Generates a random IPv6 address.
 
 - Canonical: `awd.domain.internet.ipv6`
-- Docs: [https://anywaydata.com/docs/test-data/domain/internet](https://anywaydata.com/docs/test-data/domain/internet)
 - Faker docs: [https://fakerjs.dev/api/internet](https://fakerjs.dev/api/internet)
 
 No parameters.
 
 Examples:
 
+Shows the default internet.ipv6 call.
+
 ```txt
 internet.ipv6
 ```
 
-Example return values:
-- `9f06:3247:8b9f:4d0e:9c34:bf6f:dd10:3d29`
+Returns: `9f06:3247:8b9f:4d0e:9c34:bf6f:dd10:3d29`
 
 ### `internet.jwt`
 
 Generates a random JWT (JSON Web Token).
 
 - Canonical: `awd.domain.internet.jwt`
-- Docs: [https://anywaydata.com/docs/test-data/domain/internet](https://anywaydata.com/docs/test-data/domain/internet)
 - Faker docs: [https://fakerjs.dev/api/internet](https://fakerjs.dev/api/internet)
 
 | Arg | Type | Required | Description |
@@ -303,53 +341,62 @@ Generates a random JWT (JSON Web Token).
 
 Examples:
 
+Shows internet.jwt when optional params are omitted.
+
 ```txt
 internet.jwt()
 ```
+
+Returns: `eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3ODE3NDc3NTAsImV4cCI6MTc4MTc0Nzc2MSwibmJmIjoxNzY5MzMwODQwLCJpc3MiOiJIZWdtYW5uIC0gSm9obnN0b24iLCJzdWIiOiJhM2UwYTY4Mi0zY2Y1LTRiZWUtYTEwMi1lMTZmOGI1YWQwY2YiLCJhdWQiOiI0YzE3ZTQ0Mi0wYTM0LTQ3MDktODI5Yi0xNmI2MDhhOGY5ZTIiLCJqdGkiOiJjNjJlNWNiZS05YzU0LTRlNmYtOWE5MS1mNzk2M2U5MDk1OGUifQ.UC0VGZa8VH4KKVI7111fRxyQ7hAYy1NeOoRKy83726dIy04XzcfKcAYQeuCP914u`
+
+Shows internet.jwt using header.
 
 ```txt
 internet.jwt(header={"value":"sample"})
 ```
 
+Returns: `eyJ2YWx1ZSI6InNhbXBsZSJ9.eyJpYXQiOjE3ODE3NDc3NTAsImV4cCI6MTc4MTgwOTk4NywibmJmIjoxNzUwMjY5MzM0LCJpc3MiOiJEaWJiZXJ0IC0gTGluZCIsInN1YiI6IjZhM2UwYTY4LTIzY2YtNDViZS1iZTEwLTJlMTZmOGI1YWQwYyIsImF1ZCI6ImI0YzE3ZTQ0LTIwYTMtNDQ3MC04OTI5LWIxNmI2MDhhOGY5ZSIsImp0aSI6IjJjNjJlNWNiLWU5YzUtNDRlNi1iZmE5LTFmNzk2M2U5MDk1OCJ9.mUC0VGZa8VH4KKVI7111fRxyQ7hAYy1NeOoRKy83726dIy04XzcfKcAYQeuCP914`
+
+Shows internet.jwt using payload.
+
 ```txt
 internet.jwt(payload={"value":"sample"})
 ```
+
+Returns: `eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2YWx1ZSI6InNhbXBsZSJ9.0i95bloxpGcS1Fpy8cNYjGST52aS6qXxGjGP1KZKhM6rUih81Gdgu3z9AH6pHp3x`
+
+Shows internet.jwt using refDate.
 
 ```txt
 internet.jwt(refDate=1718755200000)
 ```
 
-Example return values:
-- `eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3ODE3NDc3NTAsImV4cCI6MTc4MTc0Nzc2MSwibmJmIjoxNzY5MzMwODQwLCJpc3MiOiJIZWdtYW5uIC0gSm9obnN0b24iLCJzdWIiOiJhM2UwYTY4Mi0zY2Y1LTRiZWUtYTEwMi1lMTZmOGI1YWQwY2YiLCJhdWQiOiI0YzE3ZTQ0Mi0wYTM0LTQ3MDktODI5Yi0xNmI2MDhhOGY5ZTIiLCJqdGkiOiJjNjJlNWNiZS05YzU0LTRlNmYtOWE5MS1mNzk2M2U5MDk1OGUifQ.UC0VGZa8VH4KKVI7111fRxyQ7hAYy1NeOoRKy83726dIy04XzcfKcAYQeuCP914u`
-- `eyJ2YWx1ZSI6InNhbXBsZSJ9.eyJpYXQiOjE3ODE3NDc3NTAsImV4cCI6MTc4MTgwOTk4NywibmJmIjoxNzUwMjY5MzM0LCJpc3MiOiJEaWJiZXJ0IC0gTGluZCIsInN1YiI6IjZhM2UwYTY4LTIzY2YtNDViZS1iZTEwLTJlMTZmOGI1YWQwYyIsImF1ZCI6ImI0YzE3ZTQ0LTIwYTMtNDQ3MC04OTI5LWIxNmI2MDhhOGY5ZSIsImp0aSI6IjJjNjJlNWNiLWU5YzUtNDRlNi1iZmE5LTFmNzk2M2U5MDk1OCJ9.mUC0VGZa8VH4KKVI7111fRxyQ7hAYy1NeOoRKy83726dIy04XzcfKcAYQeuCP914`
-- `eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2YWx1ZSI6InNhbXBsZSJ9.0i95bloxpGcS1Fpy8cNYjGST52aS6qXxGjGP1KZKhM6rUih81Gdgu3z9AH6pHp3x`
-- `eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MTg3MDQ4MzAsImV4cCI6MTcxODcwNDg0MSwibmJmIjoxNzA2Mjg3OTIwLCJpc3MiOiJIZWdtYW5uIC0gSm9obnN0b24iLCJzdWIiOiJhM2UwYTY4Mi0zY2Y1LTRiZWUtYTEwMi1lMTZmOGI1YWQwY2YiLCJhdWQiOiI0YzE3ZTQ0Mi0wYTM0LTQ3MDktODI5Yi0xNmI2MDhhOGY5ZTIiLCJqdGkiOiJjNjJlNWNiZS05YzU0LTRlNmYtOWE5MS1mNzk2M2U5MDk1OGUifQ.UC0VGZa8VH4KKVI7111fRxyQ7hAYy1NeOoRKy83726dIy04XzcfKcAYQeuCP914u`
+Returns: `eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MTg3MDQ4MzAsImV4cCI6MTcxODcwNDg0MSwibmJmIjoxNzA2Mjg3OTIwLCJpc3MiOiJIZWdtYW5uIC0gSm9obnN0b24iLCJzdWIiOiJhM2UwYTY4Mi0zY2Y1LTRiZWUtYTEwMi1lMTZmOGI1YWQwY2YiLCJhdWQiOiI0YzE3ZTQ0Mi0wYTM0LTQ3MDktODI5Yi0xNmI2MDhhOGY5ZTIiLCJqdGkiOiJjNjJlNWNiZS05YzU0LTRlNmYtOWE5MS1mNzk2M2U5MDk1OGUifQ.UC0VGZa8VH4KKVI7111fRxyQ7hAYy1NeOoRKy83726dIy04XzcfKcAYQeuCP914u`
 
 ### `internet.jwtAlgorithm`
 
 Generates a random JWT (JSON Web Token) Algorithm.
 
 - Canonical: `awd.domain.internet.jwtAlgorithm`
-- Docs: [https://anywaydata.com/docs/test-data/domain/internet](https://anywaydata.com/docs/test-data/domain/internet)
 - Faker docs: [https://fakerjs.dev/api/internet](https://fakerjs.dev/api/internet)
 
 No parameters.
 
 Examples:
 
+Shows the default internet.jwtAlgorithm call.
+
 ```txt
 internet.jwtAlgorithm
 ```
 
-Example return values:
-- `HS512`
+Returns: `HS512`
 
 ### `internet.mac`
 
 Generates a random mac address.
 
 - Canonical: `awd.domain.internet.mac`
-- Docs: [https://anywaydata.com/docs/test-data/domain/internet](https://anywaydata.com/docs/test-data/domain/internet)
 - Faker docs: [https://fakerjs.dev/api/internet](https://fakerjs.dev/api/internet)
 
 | Arg | Type | Required | Description |
@@ -358,24 +405,27 @@ Generates a random mac address.
 
 Examples:
 
+Shows internet.mac when optional params are omitted.
+
 ```txt
 internet.mac()
 ```
+
+Returns: `6b:04:21:25:68:6a`
+
+Shows internet.mac using separator.
 
 ```txt
 internet.mac(separator="-")
 ```
 
-Example return values:
-- `6b:04:21:25:68:6a`
-- `6b-04-21-25-68-6a`
+Returns: `6b-04-21-25-68-6a`
 
 ### `internet.password`
 
 Generates a random password-like string. Do not use this method for generating actual passwords for users.
 
 - Canonical: `awd.domain.internet.password`
-- Docs: [https://anywaydata.com/docs/test-data/domain/internet](https://anywaydata.com/docs/test-data/domain/internet)
 - Faker docs: [https://fakerjs.dev/api/internet](https://fakerjs.dev/api/internet)
 
 | Arg | Type | Required | Description |
@@ -387,92 +437,113 @@ Generates a random password-like string. Do not use this method for generating a
 
 Examples:
 
+Shows internet.password with all optional params omitted.
+
 ```txt
 internet.password()
 ```
+
+Returns: `He2AFTHb4tHV3mb`
+
+Shows internet.password using only a custom length.
 
 ```txt
 internet.password(length=12)
 ```
 
+Returns: `He2AFTHb4tHV`
+
+Shows internet.password using only the memorable flag.
+
 ```txt
 internet.password(memorable=true)
 ```
+
+Returns: `hefutisawetikub`
+
+Shows internet.password generating a memorable password-like string.
 
 ```txt
 internet.password(length=12, memorable=true)
 ```
 
+Returns: `hefutisaweti`
+
+Shows internet.password constrained only by a regex-style pattern.
+
 ```txt
 internet.password(pattern="[A-Z]")
 ```
+
+Returns: `HAFTHHVISKOWXHH`
+
+Shows internet.password constrained by a regex-style pattern.
 
 ```txt
 internet.password(length=12, memorable=false, pattern="[A-Z]")
 ```
 
+Returns: `HAFTHHVISKOW`
+
+Shows internet.password using only the prefix option.
+
 ```txt
 internet.password(prefix="#")
 ```
+
+Returns: `#He2AFTHb4tHV3m`
+
+Shows internet.password using length, pattern, and prefix together.
 
 ```txt
 internet.password(length=12, memorable=false, pattern="[A-Z]", prefix="#")
 ```
 
-Example return values:
-- `He2AFTHb4tHV3mb`
-- `He2AFTHb4tHV`
-- `hefutisawetikub`
-- `hefutisaweti`
-- `HAFTHHVISKOWXHH`
-- `HAFTHHVISKOW`
-- `#He2AFTHb4tHV3m`
-- `#HAFTHHVISKO`
+Returns: `#HAFTHHVISKO`
 
 ### `internet.port`
 
 Generates a random port number.
 
 - Canonical: `awd.domain.internet.port`
-- Docs: [https://anywaydata.com/docs/test-data/domain/internet](https://anywaydata.com/docs/test-data/domain/internet)
 - Faker docs: [https://fakerjs.dev/api/internet](https://fakerjs.dev/api/internet)
 
 No parameters.
 
 Examples:
 
+Shows the default internet.port call.
+
 ```txt
 internet.port
 ```
 
-Example return values:
-- `27329`
+Returns: `27329`
 
 ### `internet.protocol`
 
 Returns a random web protocol. Either `http` or `https`.
 
 - Canonical: `awd.domain.internet.protocol`
-- Docs: [https://anywaydata.com/docs/test-data/domain/internet](https://anywaydata.com/docs/test-data/domain/internet)
 - Faker docs: [https://fakerjs.dev/api/internet](https://fakerjs.dev/api/internet)
 
 No parameters.
 
 Examples:
 
+Shows the default internet.protocol call.
+
 ```txt
 internet.protocol
 ```
 
-Example return values:
-- `http`
+Returns: `http`
 
 ### `internet.url`
 
 Generates a random http(s) url.
 
 - Canonical: `awd.domain.internet.url`
-- Docs: [https://anywaydata.com/docs/test-data/domain/internet](https://anywaydata.com/docs/test-data/domain/internet)
 - Faker docs: [https://fakerjs.dev/api/internet](https://fakerjs.dev/api/internet)
 
 | Arg | Type | Required | Description |
@@ -482,48 +553,54 @@ Generates a random http(s) url.
 
 Examples:
 
+Shows internet.url when optional params are omitted.
+
 ```txt
 internet.url()
 ```
+
+Returns: `https://self-reliant-cd.com/`
+
+Shows internet.url using appendSlash.
 
 ```txt
 internet.url(appendSlash=true)
 ```
 
+Returns: `https://inferior-punctuation.biz/`
+
+Shows internet.url using protocol.
+
 ```txt
 internet.url(protocol="https")
 ```
 
-Example return values:
-- `https://self-reliant-cd.com/`
-- `https://inferior-punctuation.biz/`
-- `https://self-reliant-cd.com/`
+Returns: `https://self-reliant-cd.com/`
 
 ### `internet.userAgent`
 
 Generates a random user agent string.
 
 - Canonical: `awd.domain.internet.userAgent`
-- Docs: [https://anywaydata.com/docs/test-data/domain/internet](https://anywaydata.com/docs/test-data/domain/internet)
 - Faker docs: [https://fakerjs.dev/api/internet](https://fakerjs.dev/api/internet)
 
 No parameters.
 
 Examples:
 
+Shows the default internet.userAgent call.
+
 ```txt
 internet.userAgent
 ```
 
-Example return values:
-- `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/586.0.30 (KHTML, like Gecko) Version/16.1 Safari/546.9.18`
+Returns: `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/586.0.30 (KHTML, like Gecko) Version/16.1 Safari/546.9.18`
 
 ### `internet.username`
 
 Generates a username using the given person's name as base.
 
 - Canonical: `awd.domain.internet.username`
-- Docs: [https://anywaydata.com/docs/test-data/domain/internet](https://anywaydata.com/docs/test-data/domain/internet)
 - Faker docs: [https://fakerjs.dev/api/internet](https://fakerjs.dev/api/internet)
 
 | Arg | Type | Required | Description |
@@ -533,19 +610,26 @@ Generates a username using the given person's name as base.
 
 Examples:
 
+Shows internet.username when optional params are omitted.
+
 ```txt
 internet.username()
 ```
+
+Returns: `Aaliyah.Bosco`
+
+Shows internet.username using firstName.
 
 ```txt
 internet.username(firstName="Ada")
 ```
 
+Returns: `Ada.Abbott14`
+
+Shows internet.username using lastName.
+
 ```txt
 internet.username(lastName="Lovelace")
 ```
 
-Example return values:
-- `Aaliyah.Bosco`
-- `Ada.Abbott14`
-- `Aaliyah.Lovelace14`
+Returns: `Aaliyah.Lovelace14`

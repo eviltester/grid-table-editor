@@ -19,26 +19,25 @@ The `person` domain maps domain keywords to underlying faker implementations.
 Returns a random short biography
 
 - Canonical: `awd.domain.person.bio`
-- Docs: [https://anywaydata.com/docs/test-data/domain/person](https://anywaydata.com/docs/test-data/domain/person)
 - Faker docs: [https://fakerjs.dev/api/person](https://fakerjs.dev/api/person)
 
 No parameters.
 
 Examples:
 
+Shows the default person.bio call.
+
 ```txt
 person.bio
 ```
 
-Example return values:
-- `person, activist, entrepreneur ✌🏿`
+Returns: `person, activist, entrepreneur ✌🏿`
 
 ### `person.firstName`
 
 Returns a random first name.
 
 - Canonical: `awd.domain.person.firstName`
-- Docs: [https://anywaydata.com/docs/test-data/domain/person](https://anywaydata.com/docs/test-data/domain/person)
 - Faker docs: [https://fakerjs.dev/api/person](https://fakerjs.dev/api/person)
 
 | Arg | Type | Required | Description |
@@ -47,138 +46,141 @@ Returns a random first name.
 
 Examples:
 
+Shows person.firstName when optional params are omitted.
+
 ```txt
 person.firstName()
 ```
+
+Returns: `Aaliyah`
+
+Shows person.firstName using sex.
 
 ```txt
 person.firstName(sex="female")
 ```
 
-Example return values:
-- `Aaliyah`
-- `Monique`
+Returns: `Monique`
 
 ### `person.fullName`
 
 Generates a random full name.
 
 - Canonical: `awd.domain.person.fullName`
-- Docs: [https://anywaydata.com/docs/test-data/domain/person](https://anywaydata.com/docs/test-data/domain/person)
 - Faker docs: [https://fakerjs.dev/api/person](https://fakerjs.dev/api/person)
 
 No parameters.
 
 Examples:
 
+Shows the default person.fullName call.
+
 ```txt
 person.fullName
 ```
 
-Example return values:
-- `Aaliyah Corkery`
+Returns: `Aaliyah Corkery`
 
 ### `person.gender`
 
 Returns a random gender.
 
 - Canonical: `awd.domain.person.gender`
-- Docs: [https://anywaydata.com/docs/test-data/domain/person](https://anywaydata.com/docs/test-data/domain/person)
 - Faker docs: [https://fakerjs.dev/api/person](https://fakerjs.dev/api/person)
 
 No parameters.
 
 Examples:
 
+Shows the default person.gender call.
+
 ```txt
 person.gender
 ```
 
-Example return values:
-- `Genderflux`
+Returns: `Genderflux`
 
 ### `person.jobArea`
 
 Generates a random job area.
 
 - Canonical: `awd.domain.person.jobArea`
-- Docs: [https://anywaydata.com/docs/test-data/domain/person](https://anywaydata.com/docs/test-data/domain/person)
 - Faker docs: [https://fakerjs.dev/api/person](https://fakerjs.dev/api/person)
 
 No parameters.
 
 Examples:
 
+Shows the default person.jobArea call.
+
 ```txt
 person.jobArea
 ```
 
-Example return values:
-- `Group`
+Returns: `Group`
 
 ### `person.jobDescriptor`
 
 Generates a random job descriptor.
 
 - Canonical: `awd.domain.person.jobDescriptor`
-- Docs: [https://anywaydata.com/docs/test-data/domain/person](https://anywaydata.com/docs/test-data/domain/person)
 - Faker docs: [https://fakerjs.dev/api/person](https://fakerjs.dev/api/person)
 
 No parameters.
 
 Examples:
 
+Shows the default person.jobDescriptor call.
+
 ```txt
 person.jobDescriptor
 ```
 
-Example return values:
-- `Regional`
+Returns: `Regional`
 
 ### `person.jobTitle`
 
 Generates a random job title.
 
 - Canonical: `awd.domain.person.jobTitle`
-- Docs: [https://anywaydata.com/docs/test-data/domain/person](https://anywaydata.com/docs/test-data/domain/person)
 - Faker docs: [https://fakerjs.dev/api/person](https://fakerjs.dev/api/person)
 
 No parameters.
 
 Examples:
 
+Shows the default person.jobTitle call.
+
 ```txt
 person.jobTitle
 ```
 
-Example return values:
-- `Regional Assurance Supervisor`
+Returns: `Regional Assurance Supervisor`
 
 ### `person.jobType`
 
 Generates a random job type.
 
 - Canonical: `awd.domain.person.jobType`
-- Docs: [https://anywaydata.com/docs/test-data/domain/person](https://anywaydata.com/docs/test-data/domain/person)
 - Faker docs: [https://fakerjs.dev/api/person](https://fakerjs.dev/api/person)
 
 No parameters.
 
 Examples:
 
+Shows the default person.jobType call.
+
 ```txt
 person.jobType
 ```
 
-Example return values:
-- `Administrator`
+Returns: `Administrator`
 
 ### `person.lastName`
 
 Returns a random last name.
 
 - Canonical: `awd.domain.person.lastName`
-- Docs: [https://anywaydata.com/docs/test-data/domain/person](https://anywaydata.com/docs/test-data/domain/person)
 - Faker docs: [https://fakerjs.dev/api/person](https://fakerjs.dev/api/person)
 
 | Arg | Type | Required | Description |
@@ -187,24 +189,27 @@ Returns a random last name.
 
 Examples:
 
+Shows person.lastName when optional params are omitted.
+
 ```txt
 person.lastName()
 ```
+
+Returns: `Abbott`
+
+Shows person.lastName using sex.
 
 ```txt
 person.lastName(sex="female")
 ```
 
-Example return values:
-- `Abbott`
-- `Reichel`
+Returns: `Reichel`
 
 ### `person.middleName`
 
 Returns a random middle name.
 
 - Canonical: `awd.domain.person.middleName`
-- Docs: [https://anywaydata.com/docs/test-data/domain/person](https://anywaydata.com/docs/test-data/domain/person)
 - Faker docs: [https://fakerjs.dev/api/person](https://fakerjs.dev/api/person)
 
 | Arg | Type | Required | Description |
@@ -213,24 +218,27 @@ Returns a random middle name.
 
 Examples:
 
+Shows person.middleName when optional params are omitted.
+
 ```txt
 person.middleName()
 ```
+
+Returns: `Abigail`
+
+Shows person.middleName using sex.
 
 ```txt
 person.middleName(sex="female")
 ```
 
-Example return values:
-- `Abigail`
-- `Morgan`
+Returns: `Morgan`
 
 ### `person.prefix`
 
 Returns a random person prefix.
 
 - Canonical: `awd.domain.person.prefix`
-- Docs: [https://anywaydata.com/docs/test-data/domain/person](https://anywaydata.com/docs/test-data/domain/person)
 - Faker docs: [https://fakerjs.dev/api/person](https://fakerjs.dev/api/person)
 
 | Arg | Type | Required | Description |
@@ -239,90 +247,94 @@ Returns a random person prefix.
 
 Examples:
 
+Shows person.prefix when optional params are omitted.
+
 ```txt
 person.prefix()
 ```
+
+Returns: `Miss`
+
+Shows person.prefix using sex.
 
 ```txt
 person.prefix(sex="female")
 ```
 
-Example return values:
-- `Miss`
-- `Ms.`
+Returns: `Ms.`
 
 ### `person.sex`
 
 Returns a random sex.
 
 - Canonical: `awd.domain.person.sex`
-- Docs: [https://anywaydata.com/docs/test-data/domain/person](https://anywaydata.com/docs/test-data/domain/person)
 - Faker docs: [https://fakerjs.dev/api/person](https://fakerjs.dev/api/person)
 
 No parameters.
 
 Examples:
 
+Shows the default person.sex call.
+
 ```txt
 person.sex
 ```
 
-Example return values:
-- `female`
+Returns: `female`
 
 ### `person.sexType`
 
 Returns a random sex type. The `SexType` is intended to be used in parameters and conditions.
 
 - Canonical: `awd.domain.person.sexType`
-- Docs: [https://anywaydata.com/docs/test-data/domain/person](https://anywaydata.com/docs/test-data/domain/person)
 - Faker docs: [https://fakerjs.dev/api/person](https://fakerjs.dev/api/person)
 
 No parameters.
 
 Examples:
 
+Shows the default person.sexType call.
+
 ```txt
 person.sexType
 ```
 
-Example return values:
-- `female`
+Returns: `female`
 
 ### `person.suffix`
 
 Returns a random person suffix.
 
 - Canonical: `awd.domain.person.suffix`
-- Docs: [https://anywaydata.com/docs/test-data/domain/person](https://anywaydata.com/docs/test-data/domain/person)
 - Faker docs: [https://fakerjs.dev/api/person](https://fakerjs.dev/api/person)
 
 No parameters.
 
 Examples:
 
+Shows the default person.suffix call.
+
 ```txt
 person.suffix
 ```
 
-Example return values:
-- `III`
+Returns: `III`
 
 ### `person.zodiacSign`
 
 Returns a random zodiac sign.
 
 - Canonical: `awd.domain.person.zodiacSign`
-- Docs: [https://anywaydata.com/docs/test-data/domain/person](https://anywaydata.com/docs/test-data/domain/person)
 - Faker docs: [https://fakerjs.dev/api/person](https://fakerjs.dev/api/person)
 
 No parameters.
 
 Examples:
 
+Shows the default person.zodiacSign call.
+
 ```txt
 person.zodiacSign
 ```
 
-Example return values:
-- `Cancer`
+Returns: `Cancer`

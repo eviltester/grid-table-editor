@@ -19,7 +19,6 @@ The `color` domain maps domain keywords to underlying faker implementations.
 Returns a CMYK color.
 
 - Canonical: `awd.domain.color.cmyk`
-- Docs: [https://anywaydata.com/docs/test-data/domain/color](https://anywaydata.com/docs/test-data/domain/color)
 - Faker docs: [https://fakerjs.dev/api/color](https://fakerjs.dev/api/color)
 
 | Arg | Type | Required | Description |
@@ -28,24 +27,27 @@ Returns a CMYK color.
 
 Examples:
 
+Shows color.cmyk when optional params are omitted.
+
 ```txt
 color.cmyk()
 ```
+
+Returns: `[0.42,0.72,0,0.3]`
+
+Shows color.cmyk using format.
 
 ```txt
 color.cmyk(format="decimal")
 ```
 
-Example return values:
-- `[0.42,0.72,0,0.3]`
-- `[0.42,0.72,0,0.3]`
+Returns: `[0.42,0.72,0,0.3]`
 
 ### `color.colorByCSSColorSpace`
 
 Returns a random color based on CSS color space specified.
 
 - Canonical: `awd.domain.color.colorByCSSColorSpace`
-- Docs: [https://anywaydata.com/docs/test-data/domain/color](https://anywaydata.com/docs/test-data/domain/color)
 - Faker docs: [https://fakerjs.dev/api/color](https://fakerjs.dev/api/color)
 
 | Arg | Type | Required | Description |
@@ -55,67 +57,73 @@ Returns a random color based on CSS color space specified.
 
 Examples:
 
+Shows color.colorByCSSColorSpace when optional params are omitted.
+
 ```txt
 color.colorByCSSColorSpace()
 ```
+
+Returns: `[0.417,0.7203,0.0001]`
+
+Shows color.colorByCSSColorSpace using format.
 
 ```txt
 color.colorByCSSColorSpace(format="decimal")
 ```
 
+Returns: `[0.417,0.7203,0.0001]`
+
+Shows color.colorByCSSColorSpace using space.
+
 ```txt
 color.colorByCSSColorSpace(space="display-p3")
 ```
 
-Example return values:
-- `[0.417,0.7203,0.0001]`
-- `[0.417,0.7203,0.0001]`
-- `[0.417,0.7203,0.0001]`
+Returns: `[0.417,0.7203,0.0001]`
 
 ### `color.cssSupportedFunction`
 
 Returns a random css supported color function name.
 
 - Canonical: `awd.domain.color.cssSupportedFunction`
-- Docs: [https://anywaydata.com/docs/test-data/domain/color](https://anywaydata.com/docs/test-data/domain/color)
 - Faker docs: [https://fakerjs.dev/api/color](https://fakerjs.dev/api/color)
 
 No parameters.
 
 Examples:
 
+Shows the default color.cssSupportedFunction call.
+
 ```txt
 color.cssSupportedFunction
 ```
 
-Example return values:
-- `hsla`
+Returns: `hsla`
 
 ### `color.cssSupportedSpace`
 
 Returns a random css supported color space name.
 
 - Canonical: `awd.domain.color.cssSupportedSpace`
-- Docs: [https://anywaydata.com/docs/test-data/domain/color](https://anywaydata.com/docs/test-data/domain/color)
 - Faker docs: [https://fakerjs.dev/api/color](https://fakerjs.dev/api/color)
 
 No parameters.
 
 Examples:
 
+Shows the default color.cssSupportedSpace call.
+
 ```txt
 color.cssSupportedSpace
 ```
 
-Example return values:
-- `rec2020`
+Returns: `rec2020`
 
 ### `color.hsl`
 
 Returns an HSL color.
 
 - Canonical: `awd.domain.color.hsl`
-- Docs: [https://anywaydata.com/docs/test-data/domain/color](https://anywaydata.com/docs/test-data/domain/color)
 - Faker docs: [https://fakerjs.dev/api/color](https://fakerjs.dev/api/color)
 
 | Arg | Type | Required | Description |
@@ -125,53 +133,62 @@ Returns an HSL color.
 
 Examples:
 
+Shows color.hsl returning the default tuple output.
+
 ```txt
 color.hsl
 ```
+
+Returns: `[150,0.72,0]`
+
+Shows color.hsl returning CSS text without alpha.
 
 ```txt
 color.hsl(format="css")
 ```
 
+Returns: `hsl(150deg 72% 0%)`
+
+Shows color.hsl including alpha while keeping the tuple-style output.
+
 ```txt
 color.hsl(includeAlpha=true)
 ```
+
+Returns: `[150,0.72,0,0.3]`
+
+Shows color.hsl returning CSS text with alpha included.
 
 ```txt
 color.hsl(format="css", includeAlpha=true)
 ```
 
-Example return values:
-- `[150,0.72,0]`
-- `hsl(150deg 72% 0%)`
-- `[150,0.72,0,0.3]`
-- `hsl(150deg 72% 0% / 30)`
+Returns: `hsl(150deg 72% 0% / 30)`
 
 ### `color.human`
 
 Returns a random human-readable color name.
 
 - Canonical: `awd.domain.color.human`
-- Docs: [https://anywaydata.com/docs/test-data/domain/color](https://anywaydata.com/docs/test-data/domain/color)
 - Faker docs: [https://fakerjs.dev/api/color](https://fakerjs.dev/api/color)
 
 No parameters.
 
 Examples:
 
+Shows the default color.human call.
+
 ```txt
 color.human
 ```
 
-Example return values:
-- `magenta`
+Returns: `magenta`
 
 ### `color.hwb`
 
 Returns an HWB color.
 
 - Canonical: `awd.domain.color.hwb`
-- Docs: [https://anywaydata.com/docs/test-data/domain/color](https://anywaydata.com/docs/test-data/domain/color)
 - Faker docs: [https://fakerjs.dev/api/color](https://fakerjs.dev/api/color)
 
 | Arg | Type | Required | Description |
@@ -180,24 +197,27 @@ Returns an HWB color.
 
 Examples:
 
+Shows color.hwb when optional params are omitted.
+
 ```txt
 color.hwb()
 ```
+
+Returns: `[150,0.72,0]`
+
+Shows color.hwb using format.
 
 ```txt
 color.hwb(format="decimal")
 ```
 
-Example return values:
-- `[150,0.72,0]`
-- `[150,0.72,0]`
+Returns: `[150,0.72,0]`
 
 ### `color.lab`
 
 Returns a LAB (CIELAB) color.
 
 - Canonical: `awd.domain.color.lab`
-- Docs: [https://anywaydata.com/docs/test-data/domain/color](https://anywaydata.com/docs/test-data/domain/color)
 - Faker docs: [https://fakerjs.dev/api/color](https://fakerjs.dev/api/color)
 
 | Arg | Type | Required | Description |
@@ -206,24 +226,27 @@ Returns a LAB (CIELAB) color.
 
 Examples:
 
+Shows color.lab when optional params are omitted.
+
 ```txt
 color.lab()
 ```
+
+Returns: `[0.417022,44.0649,-99.9772]`
+
+Shows color.lab using format.
 
 ```txt
 color.lab(format="decimal")
 ```
 
-Example return values:
-- `[0.417022,44.0649,-99.9772]`
-- `[0.417022,44.0649,-99.9772]`
+Returns: `[0.417022,44.0649,-99.9772]`
 
 ### `color.lch`
 
 Returns an LCH color.
 
 - Canonical: `awd.domain.color.lch`
-- Docs: [https://anywaydata.com/docs/test-data/domain/color](https://anywaydata.com/docs/test-data/domain/color)
 - Faker docs: [https://fakerjs.dev/api/color](https://fakerjs.dev/api/color)
 
 | Arg | Type | Required | Description |
@@ -232,24 +255,27 @@ Returns an LCH color.
 
 Examples:
 
+Shows color.lch when optional params are omitted.
+
 ```txt
 color.lch()
 ```
+
+Returns: `[0.417022,165.7,0]`
+
+Shows color.lch using format.
 
 ```txt
 color.lch(format="decimal")
 ```
 
-Example return values:
-- `[0.417022,165.7,0]`
-- `[0.417022,165.7,0]`
+Returns: `[0.417022,165.7,0]`
 
 ### `color.rgb`
 
 Returns an RGB color.
 
 - Canonical: `awd.domain.color.rgb`
-- Docs: [https://anywaydata.com/docs/test-data/domain/color](https://anywaydata.com/docs/test-data/domain/color)
 - Faker docs: [https://fakerjs.dev/api/color](https://fakerjs.dev/api/color)
 
 | Arg | Type | Required | Description |
@@ -261,48 +287,61 @@ Returns an RGB color.
 
 Examples:
 
+Shows color.rgb when optional params are omitted.
+
 ```txt
 color.rgb()
 ```
+
+Returns: `#9f0632`
+
+Shows color.rgb using casing.
 
 ```txt
 color.rgb(casing="upper")
 ```
 
+Returns: `#9F0632`
+
+Shows color.rgb using format.
+
 ```txt
 color.rgb(format="hex")
 ```
+
+Returns: `#9f0632`
+
+Shows color.rgb using includeAlpha.
 
 ```txt
 color.rgb(includeAlpha=true)
 ```
 
+Returns: `#9f063247`
+
+Shows color.rgb using prefix.
+
 ```txt
 color.rgb(prefix="#")
 ```
 
-Example return values:
-- `#9f0632`
-- `#9F0632`
-- `#9f0632`
-- `#9f063247`
-- `#9f0632`
+Returns: `#9f0632`
 
 ### `color.space`
 
 Returns a random color space name from the worldwide accepted color spaces.
 
 - Canonical: `awd.domain.color.space`
-- Docs: [https://anywaydata.com/docs/test-data/domain/color](https://anywaydata.com/docs/test-data/domain/color)
 - Faker docs: [https://fakerjs.dev/api/color](https://fakerjs.dev/api/color)
 
 No parameters.
 
 Examples:
 
+Shows the default color.space call.
+
 ```txt
 color.space
 ```
 
-Example return values:
-- `HSV`
+Returns: `HSV`

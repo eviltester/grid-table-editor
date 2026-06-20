@@ -19,92 +19,92 @@ The `science` domain maps domain keywords to underlying faker implementations.
 Generate a value using faker science.chemicalElement.
 
 - Canonical: `awd.domain.science.chemicalElement`
-- Docs: [https://anywaydata.com/docs/test-data/domain/science](https://anywaydata.com/docs/test-data/domain/science)
 - Faker docs: [https://fakerjs.dev/api/science](https://fakerjs.dev/api/science)
 
 No parameters.
 
 Examples:
 
+Shows the default science.chemicalElement call.
+
 ```txt
 science.chemicalElement
 ```
 
-Example return values:
-- `{"symbol":"Sn","name":"Tin","atomicNumber":50}`
+Returns: `{"symbol":"Sn","name":"Tin","atomicNumber":50}`
 
 ### `science.chemicalElement.atomicNumber`
 
 Generate a chemical element atomic number.
 
 - Canonical: `awd.domain.science.chemicalElement.atomicNumber`
-- Docs: [https://anywaydata.com/docs/test-data/domain/science](https://anywaydata.com/docs/test-data/domain/science)
 - Faker docs: [https://fakerjs.dev/api/science](https://fakerjs.dev/api/science)
 
 No parameters.
 
 Examples:
 
+Shows the default science.chemicalElement.atomicNumber call.
+
 ```txt
 science.chemicalElement.atomicNumber
 ```
 
-Example return values:
-- `50`
+Returns: `50`
 
 ### `science.chemicalElement.name`
 
 Generate a chemical element name.
 
 - Canonical: `awd.domain.science.chemicalElement.name`
-- Docs: [https://anywaydata.com/docs/test-data/domain/science](https://anywaydata.com/docs/test-data/domain/science)
 - Faker docs: [https://fakerjs.dev/api/science](https://fakerjs.dev/api/science)
 
 No parameters.
 
 Examples:
 
+Shows the default science.chemicalElement.name call.
+
 ```txt
 science.chemicalElement.name
 ```
 
-Example return values:
-- `Tin`
+Returns: `Tin`
 
 ### `science.chemicalElement.symbol`
 
 Generate a chemical element symbol.
 
 - Canonical: `awd.domain.science.chemicalElement.symbol`
-- Docs: [https://anywaydata.com/docs/test-data/domain/science](https://anywaydata.com/docs/test-data/domain/science)
 - Faker docs: [https://fakerjs.dev/api/science](https://fakerjs.dev/api/science)
 
 No parameters.
 
 Examples:
 
+Shows the default science.chemicalElement.symbol call.
+
 ```txt
 science.chemicalElement.symbol
 ```
 
-Example return values:
-- `Sn`
+Returns: `Sn`
 
 ### `science.unit`
 
 Returns a random scientific unit.
 
 - Canonical: `awd.domain.science.unit`
-- Docs: [https://anywaydata.com/docs/test-data/domain/science](https://anywaydata.com/docs/test-data/domain/science)
 - Faker docs: [https://fakerjs.dev/api/science](https://fakerjs.dev/api/science)
 
 No parameters.
 
 Examples:
 
+Shows the default science.unit call.
+
 ```txt
 science.unit
 ```
 
-Example return values:
-- `{"name":"watt","symbol":"W"}`
+Returns: `{"name":"watt","symbol":"W"}`

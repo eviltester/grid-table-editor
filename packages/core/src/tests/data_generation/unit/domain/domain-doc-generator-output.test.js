@@ -147,16 +147,19 @@ describe('domain docs generator output', () => {
       const financeDocName = fs.readdirSync(docsDir).find((name) => /-finance\.md$/.test(name));
       const locationDocName = fs.readdirSync(docsDir).find((name) => /-location\.md$/.test(name));
       const dateDocName = fs.readdirSync(docsDir).find((name) => /-date\.md$/.test(name));
+      const scienceDocName = fs.readdirSync(docsDir).find((name) => /-science\.md$/.test(name));
 
       expect(airlineDocName).toBeDefined();
       expect(financeDocName).toBeDefined();
       expect(locationDocName).toBeDefined();
       expect(dateDocName).toBeDefined();
+      expect(scienceDocName).toBeDefined();
 
       const airlineDoc = fs.readFileSync(path.join(docsDir, airlineDocName), 'utf8');
       const financeDoc = fs.readFileSync(path.join(docsDir, financeDocName), 'utf8');
       const locationDoc = fs.readFileSync(path.join(docsDir, locationDocName), 'utf8');
       const dateDoc = fs.readFileSync(path.join(docsDir, dateDocName), 'utf8');
+      const scienceDoc = fs.readFileSync(path.join(docsDir, scienceDocName), 'utf8');
 
       expect(airlineDoc).not.toContain('### `airline.airplane`');
       expect(airlineDoc).toContain('### `airplane.name`');
@@ -168,9 +171,16 @@ describe('domain docs generator output', () => {
       expect(locationDoc).not.toContain('### `location.language`');
       expect(locationDoc).not.toContain('### `location.nearbyGPSCoordinate`');
       expect(locationDoc).toContain('### `location.city`');
+      expect(locationDoc).toContain('### `language.name`');
+      expect(locationDoc).toContain('### `language.alpha2`');
+      expect(locationDoc).toContain('### `language.alpha3`');
 
       expect(dateDoc).not.toContain('### `date.betweens`');
       expect(dateDoc).toContain('### `date.between`');
+
+      expect(scienceDoc).not.toContain('### `science.unit`');
+      expect(scienceDoc).toContain('### `unit.name`');
+      expect(scienceDoc).toContain('### `unit.symbol`');
     } finally {
       fs.rmSync(docsDir, { recursive: true, force: true });
     }

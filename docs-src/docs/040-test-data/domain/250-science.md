@@ -70,3 +70,41 @@ science.chemicalElement.symbol
 ```
 
 Returns: `Sn`
+
+### `unit.name`
+
+Generate a scientific unit name.
+
+- Canonical: `awd.domain.science.unit.name`
+- Faker docs: [https://fakerjs.dev/api/science](https://fakerjs.dev/api/science)
+
+No parameters.
+
+Examples:
+
+Shows the default science.unit.name call.
+
+```txt
+science.unit.name
+```
+
+Returns: `watt`
+
+### `unit.symbol`
+
+Generate a scientific unit symbol.
+
+- Canonical: `awd.domain.science.unit.symbol`
+- Faker docs: [https://fakerjs.dev/api/science](https://fakerjs.dev/api/science)
+
+No parameters.
+
+Examples:
+
+Shows the default science.unit.symbol call.
+
+```txt
+science.unit.symbol
+```
+
+Returns: `W`

@@ -45,4 +45,16 @@ describe('science domain keyword execution', () => {
       })
     );
   });
+
+  test('executes science.unit.name', () => {
+    const result = executeDomainKeyword('science.unit.name', { faker, args: [] });
+    console.log('science.unit.name', result);
+    expectMeaningfulString(result);
+  });
+
+  test('executes science.unit.symbol', () => {
+    const result = executeDomainKeyword('science.unit.symbol', { faker, args: [] });
+    console.log('science.unit.symbol', result);
+    expectMeaningfulString(result);
+  });
 });

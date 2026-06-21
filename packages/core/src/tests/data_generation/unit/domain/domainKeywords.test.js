@@ -213,6 +213,12 @@ describe('domain keyword catalog', () => {
     expect(byKeyword.get('location.direction')?.help?.returnType).toBe('string');
     expect(byKeyword.get('location.secondaryAddress')?.help?.returnType).toBe('string');
     expect(byKeyword.get('location.language')?.help?.returnType).toBe('object');
+    expect(byKeyword.get('location.language.name')?.help?.returnType).toBe('string');
+    expect(byKeyword.get('location.language.alpha2')?.help?.returnType).toBe('string');
+    expect(byKeyword.get('location.language.alpha3')?.help?.returnType).toBe('string');
+    expect(byKeyword.get('science.unit')?.help?.returnType).toBe('object');
+    expect(byKeyword.get('science.unit.name')?.help?.returnType).toBe('string');
+    expect(byKeyword.get('science.unit.symbol')?.help?.returnType).toBe('string');
   });
 
   test('example literals are consistent with declared returnType metadata', () => {
@@ -308,6 +314,14 @@ describe('domain keyword alias mapping', () => {
     expect(byDomain?.canonical).toBe(command.canonical);
     expect(byModule?.canonical).toBe(command.canonical);
     expect(byMinimal?.canonical).toBe(command.canonical);
+  });
+
+  test('resolves minimal aliases for flattened location.language and science.unit keywords', () => {
+    expect(getDomainKeywordByAlias('language.name')?.canonical).toBe('awd.domain.location.language.name');
+    expect(getDomainKeywordByAlias('language.alpha2')?.canonical).toBe('awd.domain.location.language.alpha2');
+    expect(getDomainKeywordByAlias('language.alpha3')?.canonical).toBe('awd.domain.location.language.alpha3');
+    expect(getDomainKeywordByAlias('unit.name')?.canonical).toBe('awd.domain.science.unit.name');
+    expect(getDomainKeywordByAlias('unit.symbol')?.canonical).toBe('awd.domain.science.unit.symbol');
   });
 
   test('falls back to longer unique aliases when shorter aliases collide', () => {

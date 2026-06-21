@@ -14,6 +14,63 @@ The `location` domain maps domain keywords to underlying faker implementations.
 
 ## Methods
 
+### `language.alpha2`
+
+Returns a random ISO 639-1 language code.
+
+- Canonical: `awd.domain.location.language.alpha2`
+- Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
+
+No parameters.
+
+Examples:
+
+Shows the default location.language.alpha2 call.
+
+```txt
+location.language.alpha2
+```
+
+Returns: `pa`
+
+### `language.alpha3`
+
+Returns a random ISO 639-2 or ISO 639-3 language code.
+
+- Canonical: `awd.domain.location.language.alpha3`
+- Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
+
+No parameters.
+
+Examples:
+
+Shows the default location.language.alpha3 call.
+
+```txt
+location.language.alpha3
+```
+
+Returns: `pan`
+
+### `language.name`
+
+Returns a random spoken language name.
+
+- Canonical: `awd.domain.location.language.name`
+- Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
+
+No parameters.
+
+Examples:
+
+Shows the default location.language.name call.
+
+```txt
+location.language.name
+```
+
+Returns: `Punjabi`
+
 ### `location.buildingNumber`
 
 Generates a random building number.

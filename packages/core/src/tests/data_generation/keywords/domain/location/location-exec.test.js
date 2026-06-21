@@ -64,6 +64,24 @@ describe('location domain keyword execution', () => {
     );
   });
 
+  test('executes location.language.name', () => {
+    const result = executeDomainKeyword('location.language.name', { faker, args: [] });
+    console.log('location.language.name', result);
+    expectMeaningfulString(result);
+  });
+
+  test('executes location.language.alpha2', () => {
+    const result = executeDomainKeyword('location.language.alpha2', { faker, args: [] });
+    console.log('location.language.alpha2', result);
+    expect(result).toMatch(/^[a-z]{2}$/);
+  });
+
+  test('executes location.language.alpha3', () => {
+    const result = executeDomainKeyword('location.language.alpha3', { faker, args: [] });
+    console.log('location.language.alpha3', result);
+    expect(result).toMatch(/^[a-z]{3}$/);
+  });
+
   test('executes location.latitude', () => {
     const result = executeDomainKeyword('location.latitude', { faker, args: [] });
     console.log('location.latitude', result);

@@ -1147,8 +1147,15 @@ describe('generator page runtime factories', () => {
       (option) => option.value
     );
     expect(options).toContain('number.int');
+    expect(options).toContain('unit.name');
+    expect(options).toContain('unit.symbol');
+    expect(options).toContain('language.name');
+    expect(options).toContain('language.alpha2');
+    expect(options).toContain('language.alpha3');
     expect(options).not.toContain('science.chemicalElement');
+    expect(options).not.toContain('science.unit');
     expect(options).not.toContain('finance.currency');
+    expect(options).not.toContain('location.language');
   });
 
   test('preserves selected non-scalar domain command for existing parsed row', () => {
@@ -1801,6 +1808,50 @@ describe('generator page runtime factories', () => {
     expect(parsed.rows).toHaveLength(1);
     expect(parsed.rows[0].sourceType).toBe('domain');
     expect(parsed.rows[0].command).toBe('chemicalElement.name');
+    expect(parsed.rows[0].params).toBe('');
+  });
+
+  test('maps location.language.alpha2 to domain command without treating trailing alpha2 as params', () => {
+    const page = createMountedPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker,
+      RandExp,
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: TestDataGenerator,
+    });
+
+    const parsed = page.schemaDefinition.parseTextToRows('Language\nlocation.language.alpha2');
+    expect(parsed.errors).toEqual([]);
+    expect(parsed.rows).toHaveLength(1);
+    expect(parsed.rows[0].sourceType).toBe('domain');
+    expect(parsed.rows[0].command).toBe('language.alpha2');
+    expect(parsed.rows[0].params).toBe('');
+  });
+
+  test('maps science.unit.symbol to domain command without treating trailing symbol as params', () => {
+    const page = createMountedPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker,
+      RandExp,
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: TestDataGenerator,
+    });
+
+    const parsed = page.schemaDefinition.parseTextToRows('Unit\nscience.unit.symbol');
+    expect(parsed.errors).toEqual([]);
+    expect(parsed.rows).toHaveLength(1);
+    expect(parsed.rows[0].sourceType).toBe('domain');
+    expect(parsed.rows[0].command).toBe('unit.symbol');
     expect(parsed.rows[0].params).toBe('');
   });
 

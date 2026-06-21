@@ -35,6 +35,8 @@ const IATA_AIRCRAFT_TYPE_CODE_REGEX = /^[A-Z0-9]{3}$/u;
 const FLIGHT_NUMBER_REGEX = /^\d{1,4}$/u;
 const AIRLINE_RECORD_LOCATOR_REGEX = /^[A-Z0-9]{6}$/u;
 const AIRLINE_SEAT_REGEX = /^[1-9]\d{0,2}[A-Z]{1,2}$/u;
+const LANGUAGE_ALPHA2_REGEX = /^[a-z]{2}$/u;
+const LANGUAGE_ALPHA3_REGEX = /^[a-z]{3}$/u;
 const MONGODB_OBJECT_ID_REGEX = /^[0-9a-f]{24}$/iu;
 const BIC_REGEX = /^[A-Z]{6}[A-Z0-9]{2}(?:[A-Z0-9]{3})?$/u;
 const CURRENCY_CODE_REGEX = /^[A-Z]{3}$/u;
@@ -611,6 +613,8 @@ const validateAircraftIataTypeCodeValue = createRegexValidator(IATA_AIRCRAFT_TYP
 const validateFlightNumberValue = createRegexValidator(FLIGHT_NUMBER_REGEX);
 const validateAirlineRecordLocatorValue = createRegexValidator(AIRLINE_RECORD_LOCATOR_REGEX);
 const validateAirlineSeatValue = createRegexValidator(AIRLINE_SEAT_REGEX);
+const validateLanguageAlpha2Value = createRegexValidator(LANGUAGE_ALPHA2_REGEX);
+const validateLanguageAlpha3Value = createRegexValidator(LANGUAGE_ALPHA3_REGEX);
 
 const validateBitcoinAddressValue = createPredicateValidator((value, context = {}) => {
   const { network = 'mainnet', type } = getContextNamedArgs(context);
@@ -946,6 +950,8 @@ export {
   validateIpv6Value,
   validateIsbnValue,
   validateJwtValue,
+  validateLanguageAlpha2Value,
+  validateLanguageAlpha3Value,
   validateLitecoinAddressValue,
   validateLiteralValue,
   validateMacAddressValue,

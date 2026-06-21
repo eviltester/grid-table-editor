@@ -18,6 +18,11 @@ describe('domain command visibility', () => {
     expect(isDomainCommandVisibleByDefault('airplane.iataTypeCode')).toBe(true);
     expect(isDomainCommandVisibleByDefault('finance.currencyCode')).toBe(true);
     expect(isDomainCommandVisibleByDefault('location.city')).toBe(true);
+    expect(isDomainCommandVisibleByDefault('language.name')).toBe(true);
+    expect(isDomainCommandVisibleByDefault('language.alpha2')).toBe(true);
+    expect(isDomainCommandVisibleByDefault('language.alpha3')).toBe(true);
+    expect(isDomainCommandVisibleByDefault('unit.name')).toBe(true);
+    expect(isDomainCommandVisibleByDefault('unit.symbol')).toBe(true);
     expect(isDomainCommandVisibleByDefault('datatype.enum')).toBe(true);
   });
 

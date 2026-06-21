@@ -6,7 +6,10 @@ import { LOCATION_COUNTRY_KEYWORD_DEFINITION } from './country-keyword-definitio
 import { LOCATION_COUNTRY_CODE_KEYWORD_DEFINITION } from './country-code-keyword-definition.js';
 import { LOCATION_COUNTY_KEYWORD_DEFINITION } from './county-keyword-definition.js';
 import { LOCATION_DIRECTION_KEYWORD_DEFINITION } from './direction-keyword-definition.js';
+import { LOCATION_LANGUAGE_ALPHA2_KEYWORD_DEFINITION } from './language-alpha2-keyword-definition.js';
+import { LOCATION_LANGUAGE_ALPHA3_KEYWORD_DEFINITION } from './language-alpha3-keyword-definition.js';
 import { LOCATION_LANGUAGE_KEYWORD_DEFINITION } from './language-keyword-definition.js';
+import { LOCATION_LANGUAGE_NAME_KEYWORD_DEFINITION } from './language-name-keyword-definition.js';
 import { LOCATION_LATITUDE_KEYWORD_DEFINITION } from './latitude-keyword-definition.js';
 import { LOCATION_LONGITUDE_KEYWORD_DEFINITION } from './longitude-keyword-definition.js';
 import { LOCATION_NEARBY_GPSCOORDINATE_KEYWORD_DEFINITION } from './nearby-gpscoordinate-keyword-definition.js';
@@ -28,6 +31,9 @@ const LOCATION_KEYWORD_DEFINITIONS = [
   LOCATION_COUNTY_KEYWORD_DEFINITION,
   LOCATION_DIRECTION_KEYWORD_DEFINITION,
   LOCATION_LANGUAGE_KEYWORD_DEFINITION,
+  LOCATION_LANGUAGE_ALPHA2_KEYWORD_DEFINITION,
+  LOCATION_LANGUAGE_ALPHA3_KEYWORD_DEFINITION,
+  LOCATION_LANGUAGE_NAME_KEYWORD_DEFINITION,
   LOCATION_LATITUDE_KEYWORD_DEFINITION,
   LOCATION_LONGITUDE_KEYWORD_DEFINITION,
   LOCATION_NEARBY_GPSCOORDINATE_KEYWORD_DEFINITION,

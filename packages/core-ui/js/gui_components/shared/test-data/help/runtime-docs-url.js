@@ -54,7 +54,7 @@ function resolveRuntimeDocsUrl(url, { windowObj } = {}) {
   }
 
   const hostname = String(location.hostname || '').toLowerCase();
-  if (hostname.endsWith('github.io')) {
+  if (hostname === 'github.io' || hostname.endsWith('.github.io')) {
     const repoBasePath = getGithubPagesRepoBasePath(location.pathname || '/');
     return `${location.origin}${repoBasePath}/site${docsPath}`;
   }

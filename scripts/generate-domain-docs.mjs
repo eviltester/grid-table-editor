@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { DOMAIN_KEYWORD_ALIAS_INDEX } from '../packages/core/js/domain/domain-keywords.js';
+import { isDomainCommandVisibleByDefault } from '../packages/core/js/domain/domain-command-visibility.js';
 import { toInlineCode } from '../packages/core/js/domain/domain-doc-markdown.js';
 
 const configuredOutDir = process.env.ANYWAYDATA_DOMAIN_DOCS_OUT_DIR;
@@ -18,6 +19,9 @@ const keywordEntries = Object.values(DOMAIN_KEYWORD_ALIAS_INDEX.byCanonical || {
 
 const byDomain = new Map();
 for (const keyword of keywordEntries) {
+  if (!isDomainCommandVisibleByDefault(keyword.keyword)) {
+    continue;
+  }
   const domain = String(keyword.keyword || '').split('.')[0];
   if (!byDomain.has(domain)) byDomain.set(domain, []);
   byDomain.get(domain).push({

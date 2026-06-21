@@ -33,63 +33,6 @@ airline.aircraftType
 
 Returns: `regional`
 
-### `airline.airline`
-
-Generate a value using faker airline.airline.
-
-- Canonical: `awd.domain.airline.airline`
-- Faker docs: [https://fakerjs.dev/api/airline](https://fakerjs.dev/api/airline)
-
-No parameters.
-
-Examples:
-
-Shows the default airline.airline call.
-
-```txt
-airline.airline
-```
-
-Returns: `{"name":"Flydubai","iataCode":"FZ"}`
-
-### `airline.airplane`
-
-Generate a value using faker airline.airplane.
-
-- Canonical: `awd.domain.airline.airplane`
-- Faker docs: [https://fakerjs.dev/api/airline](https://fakerjs.dev/api/airline)
-
-No parameters.
-
-Examples:
-
-Shows the default airline.airplane call.
-
-```txt
-airline.airplane
-```
-
-Returns: `{"name":"Boeing 747-400D","iataTypeCode":"74J"}`
-
-### `airline.airport`
-
-Generate a value using faker airline.airport.
-
-- Canonical: `awd.domain.airline.airport`
-- Faker docs: [https://fakerjs.dev/api/airline](https://fakerjs.dev/api/airline)
-
-No parameters.
-
-Examples:
-
-Shows the default airline.airport call.
-
-```txt
-airline.airport
-```
-
-Returns: `{"name":"Hurgada International Airport","iataCode":"HRG"}`
-
 ### `airline.flightNumber`
 
 Returns a random flight number. Flight numbers are always 1 to 4 digits long and may include leading zeros.

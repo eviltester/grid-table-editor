@@ -293,6 +293,34 @@ function isForbiddenFakerCommand(command) {
   return FORBIDDEN_FAKER_COMMANDS.includes(String(command || '').trim());
 }
 
+function normalizeFakerCommandCandidate(commandValue) {
+  const command = String(commandValue || '').trim();
+  if (!command) {
+    return '';
+  }
+
+  if (command.startsWith('faker.')) {
+    return command.slice('faker.'.length);
+  }
+
+  return command;
+}
+
+function extractFakerCommandCandidate(ruleSpec) {
+  const normalizedSpec = normalizeFakerCommandCandidate(ruleSpec);
+  if (!normalizedSpec) {
+    return '';
+  }
+
+  const parenIndex = normalizedSpec.indexOf('(');
+  const command = parenIndex >= 0 ? normalizedSpec.slice(0, parenIndex) : normalizedSpec;
+  return String(command || '').trim();
+}
+
+function isKnownFakerCommand(command) {
+  return KNOWN_FAKER_COMMANDS.includes(normalizeFakerCommandCandidate(command));
+}
+
 export {
   KNOWN_FAKER_COMMANDS,
   FORBIDDEN_FAKER_COMMANDS,
@@ -301,4 +329,7 @@ export {
   getAllowedFakerCommandsAlphabetical,
   getAllowedFakerCommandsLongestFirst,
   isForbiddenFakerCommand,
+  normalizeFakerCommandCandidate,
+  extractFakerCommandCandidate,
+  isKnownFakerCommand,
 };

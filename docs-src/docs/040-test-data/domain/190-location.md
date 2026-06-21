@@ -186,25 +186,6 @@ location.direction(abbreviated=true)
 
 Returns: `W`
 
-### `location.language`
-
-Returns a random spoken language.
-
-- Canonical: `awd.domain.location.language`
-- Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
-
-No parameters.
-
-Examples:
-
-Shows the default location.language call.
-
-```txt
-location.language
-```
-
-Returns: `{"name":"Punjabi","alpha2":"pa","alpha3":"pan"}`
-
 ### `location.latitude`
 
 Generates a random latitude.
@@ -298,25 +279,6 @@ location.longitude(precision=1)
 ```
 
 Returns: `-29.9`
-
-### `location.nearbyGPSCoordinate`
-
-Generates a random GPS coordinate within the specified radius from the given coordinate.
-
-- Canonical: `awd.domain.location.nearbyGPSCoordinate`
-- Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
-
-No parameters.
-
-Examples:
-
-Shows the default location.nearbyGPSCoordinate call.
-
-```txt
-location.nearbyGPSCoordinate
-```
-
-Returns: `[-14.936,79.3168]`
 
 ### `location.ordinalDirection`
 

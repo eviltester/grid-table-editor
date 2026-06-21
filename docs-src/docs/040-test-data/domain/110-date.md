@@ -73,53 +73,6 @@ date.between(from=1609459200000, to=1640995200000)
 
 Returns: `2021-06-02T05:06:45.940Z`
 
-### `date.betweens`
-
-Generates random dates between the given boundaries. The dates will be returned in an array sorted in chronological order.
-
-- Canonical: `awd.domain.date.betweens`
-- Faker docs: [https://fakerjs.dev/api/date](https://fakerjs.dev/api/date)
-
-| Arg | Type | Required | Description |
-| --- | --- | --- | --- |
-| `count` | `integer` | no | The number of dates to generate. |
-| `from` | `integer` | yes | Start boundary as a Unix timestamp in milliseconds since epoch. |
-| `to` | `integer` | yes | End boundary as a Unix timestamp in milliseconds since epoch. |
-
-Examples:
-
-Shows date.betweens with only the required range boundaries.
-
-```txt
-date.betweens(from=1577836800000, to=1609372800000)
-```
-
-Returns: `["2020-01-01T01:00:06.924Z","2020-06-01T05:06:45.940Z","2020-09-19T22:02:33.225Z"]`
-
-Shows date.betweens returning two sorted dates within a range.
-
-```txt
-date.betweens(count=2, from=1577836800000, to=1609372800000)
-```
-
-Returns: `["2020-06-01T05:06:45.940Z","2020-09-19T22:02:33.225Z"]`
-
-Shows date.betweens using a larger count within a bounded range.
-
-```txt
-date.betweens(count=3, from=1609459200000, to=1640995200000)
-```
-
-Returns: `["2021-01-01T01:00:06.924Z","2021-06-02T05:06:45.940Z","2021-09-20T22:02:33.225Z"]`
-
-Shows date.betweens with count, from, and to all supplied explicitly.
-
-```txt
-date.betweens(count=4, from=1640995200000, to=1672531200000)
-```
-
-Returns: `["2022-01-01T01:00:06.924Z","2022-04-21T08:26:00.010Z","2022-06-02T05:06:45.940Z","2022-09-20T22:02:33.225Z"]`
-
 ### `date.birthdate`
 
 Returns a random birthdate. By default, the birthdate is generated for an adult between 18 and 80 years old.

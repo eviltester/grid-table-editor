@@ -285,6 +285,24 @@ test('generateFromTextSpec rejects forbidden faker commands even without safe mo
   expect(result.errors[0]?.message || result.errors[0]).toMatch(/Forbidden faker command/);
 });
 
+test('generateFromTextSpec rejects malformed recognized faker helper invocations instead of treating them as regex', () => {
+  const result = generateFromTextSpec({
+    textSpec: 'Code\nhelpers.fromRegExp("("[A-Z]{2}[0-9]{2}")")',
+    rowCount: 1,
+    outputFormat: 'json',
+  });
+
+  expect(result.ok).toBe(false);
+  expect(result.rows).toBeUndefined();
+  expect(result.errors).toContainEqual(
+    expect.objectContaining({
+      code: 'compiler_validation_error',
+      column: 'Code',
+      message: expect.stringContaining('Unsafe faker rule syntax detected: requires complex argument parsing'),
+    })
+  );
+});
+
 test('validateSafeFakerRules accepts known faker commands with literal args', () => {
   const result = validateSafeFakerRules('Name\nperson.firstName("female")');
   expect(result.ok).toBe(true);

@@ -91,6 +91,30 @@ describe('schema rules adapter', () => {
     ]);
   });
 
+  test('returns malformed recognized faker invocations as faker rules when requested', () => {
+    const result = schemaTextToDataRules({
+      schemaText: 'Code\nhelpers.fromRegExp("("[A-Z]{2}[0-9]{2}")")',
+      faker,
+      RandExp,
+      includeInvalidRules: true,
+    });
+
+    expect(result.errors).toEqual([
+      expect.objectContaining({
+        code: 'compiler_validation_error',
+        column: 'Code',
+        message: expect.stringContaining('Unsafe faker rule syntax detected: requires complex argument parsing'),
+      }),
+    ]);
+    expect(result.dataRules).toEqual([
+      expect.objectContaining({
+        name: 'Code',
+        ruleSpec: 'helpers.fromRegExp("("[A-Z]{2}[0-9]{2}")")',
+        type: 'faker',
+      }),
+    ]);
+  });
+
   test('returns errors for invalid schema text', () => {
     const result = schemaTextToDataRules({
       schemaText: 't1\n',

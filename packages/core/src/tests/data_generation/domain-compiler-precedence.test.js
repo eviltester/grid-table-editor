@@ -47,4 +47,21 @@ describe('domain compiler precedence', () => {
     expect(rules[0].type).toBe('domain');
     expect(compiler.errors).toEqual([]);
   });
+
+  test('keeps malformed recognized faker invocations as faker instead of regex fallback', () => {
+    const compiler = new TestDataRulesCompiler(faker, RandExp);
+    const rules = [{ name: 'Code', type: '', ruleSpec: 'helpers.fromRegExp("("[A-Z]{2}[0-9]{2}")")' }];
+
+    compiler.compile(rules);
+    compiler.validate();
+
+    expect(rules[0].type).toBe('faker');
+    expect(compiler.errors).toContainEqual(
+      expect.objectContaining({
+        code: 'compiler_validation_error',
+        column: 'Code',
+        message: expect.stringContaining('Unsafe faker rule syntax detected: requires complex argument parsing'),
+      })
+    );
+  });
 });

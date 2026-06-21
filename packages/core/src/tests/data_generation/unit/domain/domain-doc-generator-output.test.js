@@ -8,7 +8,7 @@ const testDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(testDir, '../../../../../../..');
 
 describe('domain docs generator output', () => {
-  test('renders JSON example return values as literal inline code (no HTML brace entities)', () => {
+  test('omits hidden object-returning methods from generated docs', () => {
     const docsDir = fs.mkdtempSync(path.join(os.tmpdir(), 'anywaydata-domain-docs-'));
     try {
       execSync('node scripts/generate-domain-docs.mjs', {
@@ -26,7 +26,7 @@ describe('domain docs generator output', () => {
 
       const locationDoc = fs.readFileSync(path.join(docsDir, locationDocName), 'utf8');
 
-      expect(locationDoc).toMatch(/Returns: `\{"name":"[^"]+","alpha2":"[a-z]{2}","alpha3":"[a-z]{3}"\}`/);
+      expect(locationDoc).not.toContain('### `location.language`');
       expect(locationDoc).not.toContain('&#123;"name":');
     } finally {
       fs.rmSync(docsDir, { recursive: true, force: true });
@@ -125,6 +125,52 @@ describe('domain docs generator output', () => {
       expect(httpMethodSection).toContain('Returns a random HTTP request method from an AnywayData-defined pool');
       expect(httpMethodSection).toContain('generation throws if exclusions remove every available method.');
       expect(httpMethodSection).not.toContain('- Faker docs:');
+    } finally {
+      fs.rmSync(docsDir, { recursive: true, force: true });
+    }
+  });
+
+  test('omits non-scalar domain methods while keeping flattened scalar methods in generated docs', () => {
+    const docsDir = fs.mkdtempSync(path.join(os.tmpdir(), 'anywaydata-domain-docs-'));
+    try {
+      execSync('node scripts/generate-domain-docs.mjs', {
+        cwd: repoRoot,
+        stdio: 'pipe',
+        encoding: 'utf8',
+        env: {
+          ...process.env,
+          ANYWAYDATA_DOMAIN_DOCS_OUT_DIR: docsDir,
+        },
+      });
+
+      const airlineDocName = fs.readdirSync(docsDir).find((name) => /-airline\.md$/.test(name));
+      const financeDocName = fs.readdirSync(docsDir).find((name) => /-finance\.md$/.test(name));
+      const locationDocName = fs.readdirSync(docsDir).find((name) => /-location\.md$/.test(name));
+      const dateDocName = fs.readdirSync(docsDir).find((name) => /-date\.md$/.test(name));
+
+      expect(airlineDocName).toBeDefined();
+      expect(financeDocName).toBeDefined();
+      expect(locationDocName).toBeDefined();
+      expect(dateDocName).toBeDefined();
+
+      const airlineDoc = fs.readFileSync(path.join(docsDir, airlineDocName), 'utf8');
+      const financeDoc = fs.readFileSync(path.join(docsDir, financeDocName), 'utf8');
+      const locationDoc = fs.readFileSync(path.join(docsDir, locationDocName), 'utf8');
+      const dateDoc = fs.readFileSync(path.join(docsDir, dateDocName), 'utf8');
+
+      expect(airlineDoc).not.toContain('### `airline.airplane`');
+      expect(airlineDoc).toContain('### `airplane.name`');
+      expect(airlineDoc).toContain('### `airplane.iataTypeCode`');
+
+      expect(financeDoc).not.toContain('### `finance.currency`');
+      expect(financeDoc).toContain('### `finance.currencyCode`');
+
+      expect(locationDoc).not.toContain('### `location.language`');
+      expect(locationDoc).not.toContain('### `location.nearbyGPSCoordinate`');
+      expect(locationDoc).toContain('### `location.city`');
+
+      expect(dateDoc).not.toContain('### `date.betweens`');
+      expect(dateDoc).toContain('### `date.between`');
     } finally {
       fs.rmSync(docsDir, { recursive: true, force: true });
     }

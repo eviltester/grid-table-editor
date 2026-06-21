@@ -261,25 +261,6 @@ finance.creditCardNumber(issuer="Visa")
 
 Returns: `4703101335466`
 
-### `finance.currency`
-
-Returns a random currency object, containing `code`, `name`, `symbol`, and `numericCode` properties.
-
-- Canonical: `awd.domain.finance.currency`
-- Faker docs: [https://fakerjs.dev/api/finance](https://fakerjs.dev/api/finance)
-
-No parameters.
-
-Examples:
-
-Shows the default finance.currency call.
-
-```txt
-finance.currency
-```
-
-Returns: `{"name":"Jordanian Dinar","code":"JOD","symbol":"","numericCode":"400"}`
-
 ### `finance.currencyCode`
 
 Returns a random currency code.

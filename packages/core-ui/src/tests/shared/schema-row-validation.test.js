@@ -32,6 +32,32 @@ describe('schema-row-validation', () => {
     ]);
   });
 
+  test('reports typed domain param validation errors through the shared row validation path', () => {
+    const issues = getSchemaRowSemanticValidationIssues(
+      {
+        name: 'Method',
+        sourceType: 'domain',
+        command: 'internet.httpMethod',
+        params: '(commonOnly="true")',
+      },
+      0,
+      {
+        schemaTextToDataRules,
+        faker,
+        RandExp,
+      }
+    );
+
+    expect(issues).toEqual([
+      expect.objectContaining({
+        code: 'compiler_validation_error',
+        field: 'params',
+        message:
+          'Row 1: invalid domain params - Invalid keyword arguments: argument "commonOnly" must be boolean, not string',
+      }),
+    ]);
+  });
+
   test('merges precomputed semantic issues into row validation state', () => {
     const issues = getSchemaRowValidationIssues(
       {

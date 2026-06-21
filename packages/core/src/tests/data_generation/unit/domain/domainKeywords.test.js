@@ -408,7 +408,18 @@ describe('domain keyword arg validation', () => {
     const keyword = getDomainKeywordByAlias('literal.value');
     const result = validateDomainKeywordArgs(keyword, [{ bad: true }]);
     expect(result.ok).toBe(false);
-    expect(result.error).toContain('Invalid argument type');
+    expect(result.error).toBe(
+      'Invalid keyword arguments: argument "value" must be string, number or boolean, not object'
+    );
+  });
+
+  test('returns metadata-driven boolean type errors for named-param-backed domain args', () => {
+    const keyword = getDomainKeywordByAlias('internet.httpMethod');
+    const result = validateDomainKeywordArgs(keyword, ['true']);
+    expect(result).toEqual({
+      ok: false,
+      error: 'Invalid keyword arguments: argument "commonOnly" must be boolean, not string',
+    });
   });
 });
 

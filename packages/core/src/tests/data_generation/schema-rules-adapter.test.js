@@ -43,6 +43,54 @@ describe('schema rules adapter', () => {
     ]);
   });
 
+  test('returns invalid typed domain params as a domain rule when requested', () => {
+    const result = schemaTextToDataRules({
+      schemaText: 'Method\ninternet.httpMethod(commonOnly="true")',
+      faker,
+      RandExp,
+      includeInvalidRules: true,
+    });
+
+    expect(result.errors).toEqual([
+      expect.objectContaining({
+        code: 'compiler_validation_error',
+        column: 'Method',
+        message: expect.stringContaining('argument "commonOnly" must be boolean, not string'),
+      }),
+    ]);
+    expect(result.dataRules).toEqual([
+      expect.objectContaining({
+        name: 'Method',
+        ruleSpec: 'internet.httpMethod(commonOnly="true")',
+        type: 'domain',
+      }),
+    ]);
+  });
+
+  test('returns malformed recognized domain invocations as domain rules when requested', () => {
+    const result = schemaTextToDataRules({
+      schemaText: 'Method\ninternet.httpMethod(commonOnly=true',
+      faker,
+      RandExp,
+      includeInvalidRules: true,
+    });
+
+    expect(result.errors).toEqual([
+      expect.objectContaining({
+        code: 'compiler_validation_error',
+        column: 'Method',
+        message: expect.stringContaining('missing closing parenthesis'),
+      }),
+    ]);
+    expect(result.dataRules).toEqual([
+      expect.objectContaining({
+        name: 'Method',
+        ruleSpec: 'internet.httpMethod(commonOnly=true',
+        type: 'domain',
+      }),
+    ]);
+  });
+
   test('returns errors for invalid schema text', () => {
     const result = schemaTextToDataRules({
       schemaText: 't1\n',

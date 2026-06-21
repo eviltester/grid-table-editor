@@ -280,6 +280,51 @@ function isTypeMatch(value, typeName) {
   return false;
 }
 
+function describeValueType(value) {
+  if (value === null) {
+    return 'null';
+  }
+  if (Array.isArray(value)) {
+    return 'array';
+  }
+  if (value instanceof Date) {
+    return 'date';
+  }
+  if (value instanceof RegExp) {
+    return 'regexp';
+  }
+  if (typeof value === 'number') {
+    return Number.isInteger(value) ? 'integer' : 'number';
+  }
+  return typeof value;
+}
+
+function normalizeLiteralTypeToken(typeToken) {
+  if (isQuotedLiteralTypeToken(typeToken)) {
+    return JSON.stringify(unquoteLiteralTypeToken(typeToken));
+  }
+  return typeToken;
+}
+
+function formatExpectedType(typeName) {
+  const allowed = String(typeName || '')
+    .split('|')
+    .map((entry) => entry.trim())
+    .filter(Boolean)
+    .map((entry) => normalizeLiteralTypeToken(entry));
+
+  if (allowed.length === 0) {
+    return 'a valid value';
+  }
+  if (allowed.length === 1) {
+    return allowed[0];
+  }
+  if (allowed.length === 2) {
+    return `${allowed[0]} or ${allowed[1]}`;
+  }
+  return `${allowed.slice(0, -1).join(', ')} or ${allowed.at(-1)}`;
+}
+
 function coerceHelpArgValue(spec, value) {
   const allowedTypes = String(spec?.type || '')
     .split('|')
@@ -361,15 +406,15 @@ function validateDomainKeywordArgs(keyword, args = []) {
     const spec = schema[index];
     const value = argumentList[index];
     if (spec.required && typeof value === 'undefined') {
-      return { ok: false, error: `Missing required argument at position ${index}: ${spec.name}` };
-    }
-    if (typeof value !== 'undefined' && !isTypeMatch(value, spec.type)) {
-      if (String(spec.type || '').trim() === 'integer') {
-        return { ok: false, error: `Invalid argument for ${spec.name}: expected an integer.` };
-      }
       return {
         ok: false,
-        error: `Invalid argument type at position ${index}: ${spec.name} expected ${spec.type}`,
+        error: `Invalid keyword arguments: argument "${spec.name}" is required`,
+      };
+    }
+    if (typeof value !== 'undefined' && !isTypeMatch(value, spec.type)) {
+      return {
+        ok: false,
+        error: `Invalid keyword arguments: argument "${spec.name}" must be ${formatExpectedType(spec.type)}, not ${describeValueType(value)}`,
       };
     }
   }

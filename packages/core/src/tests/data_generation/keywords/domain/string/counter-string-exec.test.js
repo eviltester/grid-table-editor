@@ -26,7 +26,7 @@ describe('string.counterString domain keyword execution', () => {
 
   test('surfaces helper validation errors through the domain keyword interface', () => {
     expect(() => runWithSeed(1014, 'string.counterString', [1.2, 3])).toThrow(
-      'Invalid argument for min: expected an integer.'
+      'Invalid keyword arguments: argument "min" must be integer, not number'
     );
   });
 });

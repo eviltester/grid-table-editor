@@ -6,7 +6,10 @@
  */
 
 import { schemaErrorsToText } from '../../../shared/test-data/schema/schema-error-text.js';
-import { createConfiguredGeneratorFromSchemaRows } from '../../../shared/test-data/generation/generation-controller.js';
+import {
+  createConfiguredGeneratorFromSchemaRows,
+  schemaRowsToGenerationSpec,
+} from '../../../shared/test-data/generation/generation-controller.js';
 import { isNWiseEligibleForSchemaRows } from '../../../shared/test-data/generation/ui-derived-state.js';
 import {
   buildConstraintImpactMessage,
@@ -105,6 +108,12 @@ function createTestDataGenerationService({
     getValidatedSchemaState: getCurrentSchemaRowValidation,
     getSchemaText,
     schemaRowsToSpec,
+    schemaRowsToGenerationSpec: (schemaRows) =>
+      schemaRowsToGenerationSpec({
+        schemaRows,
+        buildRuleSpecFromSchemaRow,
+        SOURCE_TYPE_REGEX,
+      }),
     schemaSource: 'app-test-data-grid',
     GenericDataTableClass,
     CombinationsTestDataGeneratorClass,

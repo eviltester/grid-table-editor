@@ -117,6 +117,9 @@ function decorateHelpIcon(element) {
       element.getAttribute('data-help-role') === 'option-help-icon';
     element.setAttribute('aria-label', isOptionHelp ? 'Show help for this option' : 'Show help');
   }
+  if (!element.hasAttribute('aria-expanded')) {
+    element.setAttribute('aria-expanded', 'false');
+  }
 }
 
 function resolveHelpElements(resolveHelpElementsFn) {
@@ -166,6 +169,12 @@ function createHelpTooltipService({
     resolvedTippyFn(helpIcons, {
       content(reference) {
         return buildHelpTooltipContent(reference, inlineHelpContainer);
+      },
+      onShow(instance) {
+        instance.reference?.setAttribute?.('aria-expanded', 'true');
+      },
+      onHidden(instance) {
+        instance.reference?.setAttribute?.('aria-expanded', 'false');
       },
       placement: 'top-start',
       allowHTML: true,

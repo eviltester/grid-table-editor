@@ -3,6 +3,7 @@ module.exports = {
   transform: {},
   testMatch: [
     '**/packages/core/src/tests/**/*.test.js',
+    '**/packages/core/src/tests/**/*-test.js',
     '**/packages/core-ui/src/tests/**/*.test.js',
     '**/tests/integration/**/*.test.js',
     '**/apps/web/src/tests/jest/**/*.test.js',

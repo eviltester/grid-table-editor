@@ -198,7 +198,30 @@ describe('schema-row-mapper', () => {
       sourceType: 'domain',
       command: 'datatype.enum',
       params: 'active,inactive,pending',
-      value: 'active,inactive,pending',
+      value: '',
+    });
+  });
+
+  test('clears stale params when switching to a different command', () => {
+    const nextRow = applySchemaCommandSelection(
+      {
+        name: 'Status',
+        sourceType: 'domain',
+        command: 'string.alpha',
+        params: '(length=12)',
+        value: '',
+      },
+      {
+        sourceType: 'domain',
+        command: 'internet.email',
+      }
+    );
+
+    expect(nextRow).toMatchObject({
+      sourceType: 'domain',
+      command: 'internet.email',
+      params: '',
+      value: '',
     });
   });
 });

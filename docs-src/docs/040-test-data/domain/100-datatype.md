@@ -27,13 +27,18 @@ Returns the boolean value true or false.
 
 Examples:
 
+Shows datatype.boolean when optional params are omitted.
+
 ```txt
 datatype.boolean()
 ```
 
+Returns: `true`
+
+Shows datatype.boolean using probability.
+
 ```txt
-datatype.boolean(probability=1)
+datatype.boolean(probability=0.5)
 ```
 
-Example return values:
-- `true`
+Returns: `true`

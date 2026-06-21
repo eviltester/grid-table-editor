@@ -25,12 +25,13 @@ No parameters.
 
 Examples:
 
+Shows the default commerce.department call.
+
 ```txt
-commerce.department()
+commerce.department
 ```
 
-Example return values:
-- `Tools`
+Returns: `Grocery`
 
 ### `commerce.isbn`
 
@@ -42,20 +43,33 @@ Returns a random ISBN identifier.
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
 | `separator` | `string` | no | Separator inserted between generated items. |
-| `variant` | `string` | no | ISBN length variant: use "10" for ISBN-10 or "13" for ISBN-13. |
+| `variant` | `10\|13` | no | ISBN length variant: use 10 for ISBN-10 or 13 for ISBN-13. |
 
 Examples:
+
+Shows commerce.isbn when optional params are omitted.
 
 ```txt
 commerce.isbn()
 ```
 
+Returns: `978-0-7031-0133-4`
+
+Shows commerce.isbn using separator.
+
 ```txt
-commerce.isbn(separator="-", variant="13")
+commerce.isbn(separator="-")
 ```
 
-Example return values:
-- `978-1-996134-54-2`
+Returns: `978-0-7031-0133-4`
+
+Shows commerce.isbn using variant.
+
+```txt
+commerce.isbn(variant=10)
+```
+
+Returns: `0-7031-0133-1`
 
 ### `commerce.price`
 
@@ -73,12 +87,53 @@ Generates a price between min and max (inclusive).
 
 Examples:
 
+Shows commerce.price in use.
+
 ```txt
 commerce.price(dec=2, max=10, min=1, symbol="$")
 ```
 
-Example return values:
-- `797.39`
+Returns: `$4.79`
+
+Shows commerce.price when optional params are omitted.
+
+```txt
+commerce.price()
+```
+
+Returns: `417.69`
+
+Shows commerce.price using dec.
+
+```txt
+commerce.price(dec=2)
+```
+
+Returns: `417.69`
+
+Shows commerce.price using max.
+
+```txt
+commerce.price(max=100)
+```
+
+Returns: `42.29`
+
+Shows commerce.price using min.
+
+```txt
+commerce.price(max=10, min=1)
+```
+
+Returns: `4.79`
+
+Shows commerce.price using symbol.
+
+```txt
+commerce.price(symbol="$")
+```
+
+Returns: `$417.69`
 
 ### `commerce.product`
 
@@ -91,12 +146,13 @@ No parameters.
 
 Examples:
 
+Shows the default commerce.product call.
+
 ```txt
-commerce.product()
+commerce.product
 ```
 
-Example return values:
-- `Bike`
+Returns: `Gloves`
 
 ### `commerce.productAdjective`
 
@@ -109,12 +165,13 @@ No parameters.
 
 Examples:
 
+Shows the default commerce.productAdjective call.
+
 ```txt
-commerce.productAdjective()
+commerce.productAdjective
 ```
 
-Example return values:
-- `Luxurious`
+Returns: `Handmade`
 
 ### `commerce.productDescription`
 
@@ -127,12 +184,13 @@ No parameters.
 
 Examples:
 
+Shows the default commerce.productDescription call.
+
 ```txt
-commerce.productDescription()
+commerce.productDescription
 ```
 
-Example return values:
-- `The green Hat combines Colombia aesthetics with Scandium-based durability`
+Returns: `New Sausages model with 1 GB RAM, 303 GB storage, and bruised features`
 
 ### `commerce.productMaterial`
 
@@ -145,12 +203,13 @@ No parameters.
 
 Examples:
 
+Shows the default commerce.productMaterial call.
+
 ```txt
-commerce.productMaterial()
+commerce.productMaterial
 ```
 
-Example return values:
-- `Steel`
+Returns: `Gold`
 
 ### `commerce.productName`
 
@@ -163,12 +222,13 @@ No parameters.
 
 Examples:
 
+Shows the default commerce.productName call.
+
 ```txt
-commerce.productName()
+commerce.productName
 ```
 
-Example return values:
-- `Soft Bronze Towels`
+Returns: `Handmade Plastic Bacon`
 
 ### `commerce.upc`
 
@@ -183,9 +243,18 @@ Returns a valid UPC-A (12 digits).
 
 Examples:
 
+Shows commerce.upc when optional params are omitted.
+
 ```txt
 commerce.upc()
 ```
 
-Example return values:
-- `036000291452`
+Returns: `470310133543`
+
+Shows commerce.upc using prefix.
+
+```txt
+commerce.upc(prefix="01234")
+```
+
+Returns: `012344703103`

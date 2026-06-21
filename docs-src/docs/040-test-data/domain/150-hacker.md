@@ -25,12 +25,13 @@ No parameters.
 
 Examples:
 
+Shows the default hacker.abbreviation call.
+
 ```txt
-hacker.abbreviation()
+hacker.abbreviation
 ```
 
-Example return values:
-- `GB`
+Returns: `IP`
 
 ### `hacker.adjective`
 
@@ -43,12 +44,13 @@ No parameters.
 
 Examples:
 
+Shows the default hacker.adjective call.
+
 ```txt
-hacker.adjective()
+hacker.adjective
 ```
 
-Example return values:
-- `bluetooth`
+Returns: `mobile`
 
 ### `hacker.ingverb`
 
@@ -61,12 +63,13 @@ No parameters.
 
 Examples:
 
+Shows the default hacker.ingverb call.
+
 ```txt
-hacker.ingverb()
+hacker.ingverb
 ```
 
-Example return values:
-- `synthesizing`
+Returns: `generating`
 
 ### `hacker.noun`
 
@@ -79,12 +82,13 @@ No parameters.
 
 Examples:
 
+Shows the default hacker.noun call.
+
 ```txt
-hacker.noun()
+hacker.noun
 ```
 
-Example return values:
-- `program`
+Returns: `firewall`
 
 ### `hacker.phrase`
 
@@ -97,12 +101,13 @@ No parameters.
 
 Examples:
 
+Shows the default hacker.phrase call.
+
 ```txt
-hacker.phrase()
+hacker.phrase
 ```
 
-Example return values:
-- `compressing the application won't do anything, we need to reboot the neural JSON hard drive!`
+Returns: `Try to back up the COM bus, maybe it will hack the mobile bus!`
 
 ### `hacker.verb`
 
@@ -115,9 +120,10 @@ No parameters.
 
 Examples:
 
+Shows the default hacker.verb call.
+
 ```txt
-hacker.verb()
+hacker.verb
 ```
 
-Example return values:
-- `program`
+Returns: `hack`

@@ -25,12 +25,13 @@ No parameters.
 
 Examples:
 
+Shows the default animal.bear call.
+
 ```txt
-animal.bear()
+animal.bear
 ```
 
-Example return values:
-- `Sloth bear`
+Returns: `Giant panda`
 
 ### `animal.bird`
 
@@ -43,12 +44,13 @@ No parameters.
 
 Examples:
 
+Shows the default animal.bird call.
+
 ```txt
-animal.bird()
+animal.bird
 ```
 
-Example return values:
-- `Orange-crowned Warbler`
+Returns: `Great-tailed Grackle`
 
 ### `animal.cat`
 
@@ -61,12 +63,13 @@ No parameters.
 
 Examples:
 
+Shows the default animal.cat call.
+
 ```txt
-animal.cat()
+animal.cat
 ```
 
-Example return values:
-- `Russian Blue`
+Returns: `Korat`
 
 ### `animal.cetacean`
 
@@ -79,12 +82,13 @@ No parameters.
 
 Examples:
 
+Shows the default animal.cetacean call.
+
 ```txt
-animal.cetacean()
+animal.cetacean
 ```
 
-Example return values:
-- `Hector’s Dolphin`
+Returns: `Guiana Dolphin`
 
 ### `animal.cow`
 
@@ -97,12 +101,13 @@ No parameters.
 
 Examples:
 
+Shows the default animal.cow call.
+
 ```txt
-animal.cow()
+animal.cow
 ```
 
-Example return values:
-- `Aubrac`
+Returns: `Gascon cattle`
 
 ### `animal.crocodilia`
 
@@ -115,12 +120,13 @@ No parameters.
 
 Examples:
 
+Shows the default animal.crocodilia call.
+
 ```txt
-animal.crocodilia()
+animal.crocodilia
 ```
 
-Example return values:
-- `Nile Crocodile`
+Returns: `Gharial`
 
 ### `animal.dog`
 
@@ -133,12 +139,13 @@ No parameters.
 
 Examples:
 
+Shows the default animal.dog call.
+
 ```txt
-animal.dog()
+animal.dog
 ```
 
-Example return values:
-- `Jonangi`
+Returns: `Grand Bleu de Gascogne`
 
 ### `animal.fish`
 
@@ -151,12 +158,13 @@ No parameters.
 
 Examples:
 
+Shows the default animal.fish call.
+
 ```txt
-animal.fish()
+animal.fish
 ```
 
-Example return values:
-- `Short mackerel`
+Returns: `Gazami crab`
 
 ### `animal.horse`
 
@@ -169,12 +177,13 @@ No parameters.
 
 Examples:
 
+Shows the default animal.horse call.
+
 ```txt
-animal.horse()
+animal.horse
 ```
 
-Example return values:
-- `Rottaler`
+Returns: `Heihe Horse`
 
 ### `animal.insect`
 
@@ -187,12 +196,13 @@ No parameters.
 
 Examples:
 
+Shows the default animal.insect call.
+
 ```txt
-animal.insect()
+animal.insect
 ```
 
-Example return values:
-- `Pigeon tremex`
+Returns: `Honey bee`
 
 ### `animal.lion`
 
@@ -205,12 +215,13 @@ No parameters.
 
 Examples:
 
+Shows the default animal.lion call.
+
 ```txt
-animal.lion()
+animal.lion
 ```
 
-Example return values:
-- `Masai Lion`
+Returns: `Cape lion`
 
 ### `animal.petName`
 
@@ -223,12 +234,13 @@ No parameters.
 
 Examples:
 
+Shows the default animal.petName call.
+
 ```txt
-animal.petName()
+animal.petName
 ```
 
-Example return values:
-- `Stella`
+Returns: `Gus`
 
 ### `animal.rabbit`
 
@@ -241,12 +253,13 @@ No parameters.
 
 Examples:
 
+Shows the default animal.rabbit call.
+
 ```txt
-animal.rabbit()
+animal.rabbit
 ```
 
-Example return values:
-- `Californian`
+Returns: `Florida White`
 
 ### `animal.rodent`
 
@@ -259,12 +272,13 @@ No parameters.
 
 Examples:
 
+Shows the default animal.rodent call.
+
 ```txt
-animal.rodent()
+animal.rodent
 ```
 
-Example return values:
-- `Natterer's tuco-tuco`
+Returns: `Fukomys foxi`
 
 ### `animal.snake`
 
@@ -277,12 +291,13 @@ No parameters.
 
 Examples:
 
+Shows the default animal.snake call.
+
 ```txt
-animal.snake()
+animal.snake
 ```
 
-Example return values:
-- `White-lipped python`
+Returns: `Harlequin coral snake`
 
 ### `animal.type`
 
@@ -295,9 +310,10 @@ No parameters.
 
 Examples:
 
+Shows the default animal.type call.
+
 ```txt
-animal.type()
+animal.type
 ```
 
-Example return values:
-- `bear`
+Returns: `giraffe`

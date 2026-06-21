@@ -27,16 +27,21 @@ Returns a BigInt number.
 
 Examples:
 
+Shows number.bigInt with all optional params omitted.
+
 ```txt
 number.bigInt()
 ```
 
+Returns: `703101335462806n`
+
+Shows number.bigInt using a boolean base value.
+
 ```txt
-number.bigInt(value="value")
+number.bigInt(value=true)
 ```
 
-Example return values:
-- `347465151663036`
+Returns: `703101335462806n`
 
 ### `number.binary`
 
@@ -52,16 +57,29 @@ Returns a binary string.
 
 Examples:
 
+Shows number.binary when optional params are omitted.
+
 ```txt
 number.binary()
 ```
 
+Returns: `0`
+
+Shows number.binary using max.
+
 ```txt
-number.binary(max=1, min=1)
+number.binary(max=5)
 ```
 
-Example return values:
-- `0`
+Returns: `10`
+
+Shows number.binary using min.
+
+```txt
+number.binary(max=10, min=1)
+```
+
+Returns: `101`
 
 ### `number.float`
 
@@ -79,26 +97,61 @@ Returns a single random floating-point number, by default between `0.0` and `1.0
 
 Examples:
 
+Shows number.float with all optional params omitted.
+
 ```txt
 number.float()
 ```
 
-Type-in examples (named params):
+Returns: `0.417022004702574`
+
+Shows number.float rounding using only fractionDigits.
 
 ```txt
-number.float(max=1)
+number.float(fractionDigits=2)
 ```
+
+Returns: `0.42`
+
+Shows number.float constrained using only multipleOf.
 
 ```txt
-number.float(min=1)
+number.float(multipleOf=0.5)
 ```
+
+Returns: `0.5`
+
+Shows number.float with an explicit numeric range.
 
 ```txt
-number.float(multipleOf=1)
+number.float(min=1, max=10)
 ```
 
-Example return values:
-- `0.5433707701438405`
+Returns: `4.753198042323167`
+
+Shows number.float rounding with fractionDigits.
+
+```txt
+number.float(min=1, max=10, fractionDigits=2)
+```
+
+Returns: `4.75`
+
+Shows number.float constrained to a multiple.
+
+```txt
+number.float(min=1, max=10, multipleOf=0.5)
+```
+
+Returns: `4.5`
+
+Shows number.float using only an upper bound.
+
+```txt
+number.float(max=10)
+```
+
+Returns: `4.17022004702574`
 
 ### `number.hex`
 
@@ -114,16 +167,29 @@ Returns a lowercase hexadecimal number.
 
 Examples:
 
+Shows number.hex when optional params are omitted.
+
 ```txt
 number.hex()
 ```
 
+Returns: `6`
+
+Shows number.hex using min.
+
 ```txt
-number.hex(min=1, max=1)
+number.hex(max=10, min=1)
 ```
 
-Example return values:
-- `d`
+Returns: `5`
+
+Shows number.hex using max.
+
+```txt
+number.hex(max=5)
+```
+
+Returns: `2`
 
 ### `number.int`
 
@@ -140,16 +206,37 @@ Returns a single random integer between zero and the given max value or the give
 
 Examples:
 
+Shows number.int when optional params are omitted.
+
 ```txt
 number.int()
 ```
 
+Returns: `3756200289967619`
+
+Shows number.int using min.
+
 ```txt
-number.int(min=1, max=1, multipleOf=1)
+number.int(max=10, min=1)
 ```
 
-Example return values:
-- `5190574431878510`
+Returns: `5`
+
+Shows number.int using max.
+
+```txt
+number.int(max=5)
+```
+
+Returns: `2`
+
+Shows number.int using multipleOf.
+
+```txt
+number.int(multipleOf=1)
+```
+
+Returns: `3756200289967619`
 
 ### `number.octal`
 
@@ -165,16 +252,29 @@ Returns an octal string.
 
 Examples:
 
+Shows number.octal when optional params are omitted.
+
 ```txt
 number.octal()
 ```
 
+Returns: `3`
+
+Shows number.octal using max.
+
 ```txt
-number.octal(max=1, min=1)
+number.octal(max=5)
 ```
 
-Example return values:
-- `6`
+Returns: `2`
+
+Shows number.octal using min.
+
+```txt
+number.octal(max=10, min=1)
+```
+
+Returns: `5`
 
 ### `number.romanNumeral`
 
@@ -190,13 +290,26 @@ Returns a roman numeral in String format.
 
 Examples:
 
+Shows number.romanNumeral when optional params are omitted.
+
 ```txt
 number.romanNumeral()
 ```
 
+Returns: `MDCLXVIII`
+
+Shows number.romanNumeral using min.
+
 ```txt
-number.romanNumeral(min=1, max=1)
+number.romanNumeral(max=10, min=1)
 ```
 
-Example return values:
-- `XXXV`
+Returns: `V`
+
+Shows number.romanNumeral using max.
+
+```txt
+number.romanNumeral(max=5)
+```
+
+Returns: `III`

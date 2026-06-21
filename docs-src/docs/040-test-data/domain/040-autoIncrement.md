@@ -15,7 +15,6 @@ The `autoIncrement` domain provides stateful sequence helpers for accepted gener
 Generates an incrementing sequence. Values only advance when a generated row is accepted, so constraint-filtered rows do not consume sequence numbers.
 
 - Canonical: `awd.domain.autoIncrement.sequence`
-- Docs: [https://anywaydata.com/docs/test-data/auto-increment-sequences](https://anywaydata.com/docs/test-data/auto-increment-sequences)
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
@@ -27,29 +26,75 @@ Generates an incrementing sequence. Values only advance when a generated row is 
 
 Examples:
 
+Shows autoIncrement.sequence in use.
+
 ```txt
 autoIncrement.sequence()
 ```
+
+Returns: `1`
+
+Shows autoIncrement.sequence in use.
 
 ```txt
 autoIncrement.sequence(start=10, step=5)
 ```
 
+Returns: `10`
+
+Shows autoIncrement.sequence in use.
+
 ```txt
 autoIncrement.sequence(start=1, step=5, prefix="filename", suffix=".txt", zeropadding=3)
 ```
 
-Example return values:
-- `1`
-- `15`
-- `filename001.txt`
+Returns: `filename001.txt`
+
+Shows autoIncrement.sequence using start.
+
+```txt
+autoIncrement.sequence(start=10)
+```
+
+Returns: `10`
+
+Shows autoIncrement.sequence using step.
+
+```txt
+autoIncrement.sequence(step=5)
+```
+
+Returns: `1`
+
+Shows autoIncrement.sequence using prefix.
+
+```txt
+autoIncrement.sequence(prefix="filename")
+```
+
+Returns: `filename1`
+
+Shows autoIncrement.sequence using suffix.
+
+```txt
+autoIncrement.sequence(suffix=".txt")
+```
+
+Returns: `1.txt`
+
+Shows autoIncrement.sequence using zeropadding.
+
+```txt
+autoIncrement.sequence(zeropadding=3)
+```
+
+Returns: `001`
 
 ### `autoIncrement.timestamp`
 
 Generates a timestamp that starts from a fixed point and increments by the configured amount for each generated row.
 
 - Canonical: `awd.domain.autoIncrement.timestamp`
-- Docs: [https://anywaydata.com/docs/test-data/domain/autoIncrement](https://anywaydata.com/docs/test-data/domain/autoIncrement)
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
@@ -61,23 +106,82 @@ Generates a timestamp that starts from a fixed point and increments by the confi
 
 Examples:
 
+Shows autoIncrement.timestamp in use.
+
+```txt
+autoIncrement.timestamp(start="2026-06-12T12:39:23Z", step=1, type="seconds")
+```
+
+Returns: `2026-06-12T12:39:23Z`
+
+Shows autoIncrement.timestamp in use.
+
 ```txt
 autoIncrement.timestamp()
 ```
+
+Returns: `2026-06-18T15:55:20Z`
+
+Shows autoIncrement.timestamp in use.
 
 ```txt
 autoIncrement.timestamp(start="20/03/1969", step=1, type="days")
 ```
 
+Returns: `1969-03-20T12:00:00Z`
+
+Shows autoIncrement.timestamp using a custom output format.
+
 ```txt
-autoIncrement.timestamp(start="2026-06-12 12:39:23", step=15, type="minutes", outputFormat="yyyy-MM-dd HH:mm:ss")
+autoIncrement.timestamp(start="2026-06-12T12:39:23Z", step=15, type="minutes", outputFormat="yyyy-MM-dd HH:mm:ss")
 ```
+
+Returns: `2026-06-12 12:39:23`
+
+Shows autoIncrement.timestamp in use.
 
 ```txt
 autoIncrement.timestamp(start="20/03/1969", inputFormat="dd/MM/yyyy", step=1, type="days")
 ```
 
-Example return values:
-- `2026-06-12T12:39:23Z`
-- `2026-06-12T12:39:24Z`
-- `2026-06-12T12:39:25Z`
+Returns: `1969-03-20T00:00:00Z`
+
+Shows autoIncrement.timestamp using start.
+
+```txt
+autoIncrement.timestamp(start="2026-06-12T12:39:23Z")
+```
+
+Returns: `2026-06-12T12:39:23Z`
+
+Shows autoIncrement.timestamp using step.
+
+```txt
+autoIncrement.timestamp(step=1)
+```
+
+Returns: `2026-06-18T15:55:20Z`
+
+Shows autoIncrement.timestamp using type.
+
+```txt
+autoIncrement.timestamp(type="seconds")
+```
+
+Returns: `2026-06-18T15:55:20Z`
+
+Shows autoIncrement.timestamp using outputFormat.
+
+```txt
+autoIncrement.timestamp(outputFormat="iso8601")
+```
+
+Returns: `2026-06-18T15:55:20Z`
+
+Shows autoIncrement.timestamp using inputFormat.
+
+```txt
+autoIncrement.timestamp(start="20/03/1969", inputFormat="dd/MM/yyyy")
+```
+
+Returns: `1969-03-20T00:00:00Z`

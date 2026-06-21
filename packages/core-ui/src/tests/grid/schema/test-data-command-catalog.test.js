@@ -94,8 +94,15 @@ describe('Test Data Command Catalog', () => {
       const values = getMethodPickerOptions('');
       const commands = values.map((entry) => entry.command);
       expect(commands).toContain('number.int');
+      expect(commands).toContain('unit.name');
+      expect(commands).toContain('unit.symbol');
+      expect(commands).toContain('language.name');
+      expect(commands).toContain('language.alpha2');
+      expect(commands).toContain('language.alpha3');
       expect(commands).not.toContain('science.chemicalElement');
+      expect(commands).not.toContain('science.unit');
       expect(commands).not.toContain('finance.currency');
+      expect(commands).not.toContain('location.language');
     });
 
     it('should include the current non-scalar domain command when editing an existing row', () => {
@@ -123,6 +130,31 @@ describe('Test Data Command Catalog', () => {
     it('should execute airline.airplane.iataTypeCode as a string literal', () => {
       const generator = new TestDataGenerator(faker, RandExp);
       generator.importSpec('testColumn\nairline.airplane.iataTypeCode');
+      generator.compile();
+
+      expect(generator.isValid()).toBe(true);
+
+      const row = generator.generateRow();
+      expect(Array.isArray(row)).toBe(true);
+      expect(typeof row?.[0]).toBe('string');
+      expect(row?.[0]?.length).toBeGreaterThan(0);
+    });
+
+    it('should execute location.language.alpha2 as a string literal', () => {
+      const generator = new TestDataGenerator(faker, RandExp);
+      generator.importSpec('testColumn\nlocation.language.alpha2');
+      generator.compile();
+
+      expect(generator.isValid()).toBe(true);
+
+      const row = generator.generateRow();
+      expect(Array.isArray(row)).toBe(true);
+      expect(row?.[0]).toMatch(/^[a-z]{2}$/);
+    });
+
+    it('should execute science.unit.symbol as a string literal', () => {
+      const generator = new TestDataGenerator(faker, RandExp);
+      generator.importSpec('testColumn\nscience.unit.symbol');
       generator.compile();
 
       expect(generator.isValid()).toBe(true);

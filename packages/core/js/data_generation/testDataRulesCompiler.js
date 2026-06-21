@@ -107,6 +107,13 @@ export class TestDataRulesCompiler {
             rule.type = 'faker';
           } else {
             this.compilationReportLines.push(`${rule.name} is not a 'faker': ${fakerValidator.getValidationError()}`);
+            if (fakerValidator.lastParsed?.recognized === true) {
+              this.compilationReportLines.push(
+                `${rule.name} resolves to faker command '${fakerValidator.lastParsed.command}' but has invalid arguments: ${fakerValidator.getValidationError()}`
+              );
+              rule.type = 'faker';
+              return;
+            }
             // does the regex generation work?
             regexValidator.validate(rule);
             if (regexValidator.isValid()) {

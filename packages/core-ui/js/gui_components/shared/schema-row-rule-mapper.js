@@ -94,9 +94,8 @@ function buildRuleSpecFromSchemaRow(row) {
   if (sourceType === SOURCE_TYPE_REGEX) {
     const regexValue = String(row?.value ?? '');
     const trimmedRegexValue = regexValue.trim();
-    const hasName = String(row?.name ?? '').trim().length > 0;
-    if (trimmedRegexValue.length === 0 && hasName) {
-      return 'regex("")';
+    if (trimmedRegexValue.length === 0) {
+      return '';
     }
     if (/^(regex|datatype\.regex|awd\.datatype\.regex)\s*\(/i.test(trimmedRegexValue)) {
       return trimmedRegexValue;

@@ -17,6 +17,44 @@ function createGeneratorFromDataRules({ dataRules = [], TestDataGeneratorClass, 
   return generator;
 }
 
+function buildGenerationRuleSpecFromSchemaRow({ row, buildRuleSpecFromSchemaRow, SOURCE_TYPE_REGEX }) {
+  const ruleSpec = String(buildRuleSpecFromSchemaRow(row) || '');
+  if (String(row?.sourceType || '').toLowerCase() !== SOURCE_TYPE_REGEX) {
+    return ruleSpec;
+  }
+
+  const trimmedRuleSpec = ruleSpec.trim();
+  if (trimmedRuleSpec.length === 0) {
+    return '';
+  }
+
+  if (/^(regex|datatype\.regex|awd\.datatype\.regex)\s*\(/i.test(trimmedRuleSpec)) {
+    return ruleSpec;
+  }
+
+  return `regex(${String(row?.value ?? '')})`;
+}
+
+function schemaRowsToGenerationSpec({ schemaRows = [], buildRuleSpecFromSchemaRow, SOURCE_TYPE_REGEX }) {
+  return (Array.isArray(schemaRows) ? schemaRows : [])
+    .map((row) => {
+      const name = String(row?.name ?? '').trim();
+      const ruleSpec = buildGenerationRuleSpecFromSchemaRow({
+        row,
+        buildRuleSpecFromSchemaRow,
+        SOURCE_TYPE_REGEX,
+      });
+
+      if (name.length === 0 && ruleSpec.length === 0) {
+        return '';
+      }
+
+      return `${name}\n${ruleSpec}`;
+    })
+    .filter((entry) => entry.length > 0)
+    .join('\n');
+}
+
 function createConfiguredGeneratorFromSchemaText({
   schemaTextToDataRules,
   schemaText,
@@ -179,6 +217,8 @@ function createCombinationsDataTable({
 
 export {
   createGeneratorFromDataRules,
+  buildGenerationRuleSpecFromSchemaRow,
+  schemaRowsToGenerationSpec,
   createConfiguredGeneratorFromSchemaText,
   createConfiguredGeneratorFromSchemaRows,
   createPreviewDataTable,

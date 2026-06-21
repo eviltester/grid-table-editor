@@ -14,6 +14,63 @@ The `location` domain maps domain keywords to underlying faker implementations.
 
 ## Methods
 
+### `language.alpha2`
+
+Returns a random ISO 639-1 language code.
+
+- Canonical: `awd.domain.location.language.alpha2`
+- Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
+
+No parameters.
+
+Examples:
+
+Shows the default location.language.alpha2 call.
+
+```txt
+location.language.alpha2
+```
+
+Returns: `pa`
+
+### `language.alpha3`
+
+Returns a random ISO 639-2 or ISO 639-3 language code.
+
+- Canonical: `awd.domain.location.language.alpha3`
+- Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
+
+No parameters.
+
+Examples:
+
+Shows the default location.language.alpha3 call.
+
+```txt
+location.language.alpha3
+```
+
+Returns: `pan`
+
+### `language.name`
+
+Returns a random spoken language name.
+
+- Canonical: `awd.domain.location.language.name`
+- Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
+
+No parameters.
+
+Examples:
+
+Shows the default location.language.name call.
+
+```txt
+location.language.name
+```
+
+Returns: `Punjabi`
+
 ### `location.buildingNumber`
 
 Generates a random building number.
@@ -25,12 +82,13 @@ No parameters.
 
 Examples:
 
+Shows the default location.buildingNumber call.
+
 ```txt
-location.buildingNumber()
+location.buildingNumber
 ```
 
-Example return values:
-- `5075`
+Returns: `7031`
 
 ### `location.cardinalDirection`
 
@@ -43,12 +101,13 @@ No parameters.
 
 Examples:
 
+Shows the default location.cardinalDirection call.
+
 ```txt
-location.cardinalDirection()
+location.cardinalDirection
 ```
 
-Example return values:
-- `East`
+Returns: `East`
 
 ### `location.city`
 
@@ -61,12 +120,13 @@ No parameters.
 
 Examples:
 
+Shows the default location.city call.
+
 ```txt
-location.city()
+location.city
 ```
 
-Example return values:
-- `Stellachester`
+Returns: `Edwinville`
 
 ### `location.continent`
 
@@ -79,12 +139,13 @@ No parameters.
 
 Examples:
 
+Shows the default location.continent call.
+
 ```txt
-location.continent()
+location.continent
 ```
 
-Example return values:
-- `Asia`
+Returns: `Asia`
 
 ### `location.country`
 
@@ -97,12 +158,13 @@ No parameters.
 
 Examples:
 
+Shows the default location.country call.
+
 ```txt
-location.country()
+location.country
 ```
 
-Example return values:
-- `Svalbard & Jan Mayen Islands`
+Returns: `India`
 
 ### `location.countryCode`
 
@@ -111,16 +173,27 @@ Returns a random ISO_3166-1 country code.
 - Canonical: `awd.domain.location.countryCode`
 - Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
 
-No parameters.
+| Arg | Type | Required | Description |
+| --- | --- | --- | --- |
+| `variant` | `alpha-2\|alpha-3\|numeric` | no | The code to return. Can be either 'alpha-2' (two-letter code), 'alpha-3' (three-letter code) or 'numeric' (numeric code). |
 
 Examples:
+
+Shows location.countryCode when optional params are omitted.
 
 ```txt
 location.countryCode()
 ```
 
-Example return values:
-- `MG`
+Returns: `IM`
+
+Shows location.countryCode using variant.
+
+```txt
+location.countryCode(variant="alpha-3")
+```
+
+Returns: `IMN`
 
 ### `location.county`
 
@@ -133,12 +206,13 @@ No parameters.
 
 Examples:
 
+Shows the default location.county call.
+
 ```txt
-location.county()
+location.county
 ```
 
-Example return values:
-- `Northamptonshire`
+Returns: `Cleveland`
 
 ### `location.direction`
 
@@ -153,34 +227,21 @@ Returns a random direction (cardinal and ordinal; northwest, east, etc).
 
 Examples:
 
+Shows location.direction when optional params are omitted.
+
 ```txt
 location.direction()
 ```
 
-```txt
-location.direction(abbreviated=false)
-```
+Returns: `West`
 
-Example return values:
-- `North`
-
-### `location.language`
-
-Returns a random spoken language.
-
-- Canonical: `awd.domain.location.language`
-- Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
-
-No parameters.
-
-Examples:
+Shows location.direction using abbreviated.
 
 ```txt
-location.language()
+location.direction(abbreviated=true)
 ```
 
-Example return values:
-- `{"name":"Icelandic","alpha2":"is","alpha3":"isl"}`
+Returns: `W`
 
 ### `location.latitude`
 
@@ -197,16 +258,37 @@ Generates a random latitude.
 
 Examples:
 
+Shows location.latitude when optional params are omitted.
+
 ```txt
 location.latitude()
 ```
 
+Returns: `-14.936`
+
+Shows location.latitude using min.
+
 ```txt
-location.latitude(min=1, max=1, precision=1)
+location.latitude(max=10, min=1)
 ```
 
-Example return values:
-- `51.5448`
+Returns: `4.7532`
+
+Shows location.latitude using max.
+
+```txt
+location.latitude(max=5)
+```
+
+Returns: `-50.3829`
+
+Shows location.latitude using precision.
+
+```txt
+location.latitude(precision=1)
+```
+
+Returns: `-14.9`
 
 ### `location.longitude`
 
@@ -223,34 +305,37 @@ Generates a random longitude.
 
 Examples:
 
+Shows location.longitude when optional params are omitted.
+
 ```txt
 location.longitude()
 ```
 
-```txt
-location.longitude(min=1, max=1, precision=1)
-```
+Returns: `-29.8721`
 
-Example return values:
-- `92.3892`
-
-### `location.nearbyGPSCoordinate`
-
-Generates a random GPS coordinate within the specified radius from the given coordinate.
-
-- Canonical: `awd.domain.location.nearbyGPSCoordinate`
-- Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
-
-No parameters.
-
-Examples:
+Shows location.longitude using min.
 
 ```txt
-location.nearbyGPSCoordinate()
+location.longitude(max=10, min=1)
 ```
 
-Example return values:
-- `[58.313,9.9746]`
+Returns: `4.7532`
+
+Shows location.longitude using max.
+
+```txt
+location.longitude(max=5)
+```
+
+Returns: `-102.8509`
+
+Shows location.longitude using precision.
+
+```txt
+location.longitude(precision=1)
+```
+
+Returns: `-29.9`
 
 ### `location.ordinalDirection`
 
@@ -263,12 +348,13 @@ No parameters.
 
 Examples:
 
+Shows the default location.ordinalDirection call.
+
 ```txt
-location.ordinalDirection()
+location.ordinalDirection
 ```
 
-Example return values:
-- `Northeast`
+Returns: `Northwest`
 
 ### `location.secondaryAddress`
 
@@ -281,12 +367,13 @@ No parameters.
 
 Examples:
 
+Shows the default location.secondaryAddress call.
+
 ```txt
-location.secondaryAddress()
+location.secondaryAddress
 ```
 
-Example return values:
-- `Suite 634`
+Returns: `Apt. 703`
 
 ### `location.state`
 
@@ -301,16 +388,21 @@ Returns a random localized state, or other equivalent first-level administrative
 
 Examples:
 
+Shows location.state when optional params are omitted.
+
 ```txt
 location.state()
 ```
 
+Returns: `Massachusetts`
+
+Shows location.state using abbreviated.
+
 ```txt
-location.state(abbreviated=false)
+location.state(abbreviated=true)
 ```
 
-Example return values:
-- `Hawaii`
+Returns: `MA`
 
 ### `location.street`
 
@@ -323,12 +415,13 @@ No parameters.
 
 Examples:
 
+Shows the default location.street call.
+
 ```txt
-location.street()
+location.street
 ```
 
-Example return values:
-- `Viva Harbor`
+Returns: `Gutmann Creek`
 
 ### `location.streetAddress`
 
@@ -343,16 +436,21 @@ Generates a random localized street address.
 
 Examples:
 
+Shows location.streetAddress when optional params are omitted.
+
 ```txt
 location.streetAddress()
 ```
+
+Returns: `7031 Iris Mill`
+
+Shows location.streetAddress using useFullAddress.
 
 ```txt
 location.streetAddress(useFullAddress=true)
 ```
 
-Example return values:
-- `12056 Vandervort Common`
+Returns: `7031 Iris Mill Apt. 728`
 
 ### `location.timeZone`
 
@@ -365,12 +463,13 @@ No parameters.
 
 Examples:
 
+Shows the default location.timeZone call.
+
 ```txt
-location.timeZone()
+location.timeZone
 ```
 
-Example return values:
-- `Australia/Perth`
+Returns: `America/Santiago`
 
 ### `location.zipCode`
 
@@ -383,9 +482,10 @@ No parameters.
 
 Examples:
 
+Shows the default location.zipCode call.
+
 ```txt
-location.zipCode()
+location.zipCode
 ```
 
-Example return values:
-- `36791`
+Returns: `70310`

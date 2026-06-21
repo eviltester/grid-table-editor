@@ -88,8 +88,8 @@ describe('ui generation status presenter', () => {
       }),
     });
 
-    expect(insufficient.statusMessage).toBe('Insufficient enum columns.');
-    expect(invalidStrength.statusMessage).toBe('Invalid n-wise strength.');
+    expect(insufficient.statusMessage).toBe('Insufficient enum columns. Grid unchanged.');
+    expect(invalidStrength.statusMessage).toBe('Invalid n-wise strength. Grid unchanged.');
     expect(insufficient.statusOptions).toEqual({ severity: 'warning', dismissable: true });
     expect(invalidStrength.statusOptions).toEqual({ severity: 'warning', dismissable: true });
   });
@@ -126,7 +126,7 @@ describe('ui generation status presenter', () => {
           errors: [{ code: 'constraint_generation_failed', message: 'constraint failure' }],
         }),
       }).statusMessage
-    ).toBe('Amend stopped by schema constraints.');
+    ).toBe('Amend stopped by schema constraints. Grid unchanged.');
 
     expect(
       presentUiGenerationResult({
@@ -137,10 +137,10 @@ describe('ui generation status presenter', () => {
           errors: [{ code: 'row_count_exceeds_imported', message: 'Row count exceeds imported row count 1.' }],
         }),
       }).statusMessage
-    ).toBe('Amend failed.');
+    ).toBe('Amend failed. Grid unchanged.');
   });
 
-  test('presents equivalent generator and app failure metadata with the same base message', () => {
+  test('keeps generator failures unsuffixed while app failures explain that the grid is unchanged', () => {
     const result = createResult({
       ok: false,
       errors: [{ code: 'insufficient_enum_columns', message: 'Pairwise generation requires at least 2 enum columns.' }],
@@ -152,13 +152,14 @@ describe('ui generation status presenter', () => {
         operationKind: 'generatePairwise',
         result,
       }).statusMessage
-    ).toBe(
+    ).toBe('Insufficient enum columns. Grid unchanged.');
+    expect(
       presentUiGenerationResult({
         surface: 'generator',
         operationKind: 'generatePairwise',
         result,
       }).statusMessage
-    );
+    ).toBe('Insufficient enum columns.');
   });
 
   test('presents cartesian skip notices consistently across surfaces', () => {

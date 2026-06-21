@@ -1,12 +1,20 @@
 import { DOMAIN_KEYWORD_DEFINITIONS } from './domain-keyword-definitions.js';
-import { executeCustomAutoIncrementTimestamp } from './auto-increment-timestamp.js';
-import { executeCustomAutoIncrementSequence } from './auto-increment-sequence.js';
-import { executeCustomCounterString } from './counterstring.js';
+import { executeCustomAutoIncrementTimestamp } from '../keywords/domain/autoincrement/auto-increment-timestamp.js';
+import { executeCustomAutoIncrementSequence } from '../keywords/domain/autoincrement/auto-increment-sequence.js';
+import { executeCustomCounterString } from '../keywords/domain/string/counterstring.js';
+import { executeCustomInternetHttpMethod } from '../keywords/domain/internet/internet-http-method.js';
+import { DomainKeywordInvocationParser } from './parser/DomainKeywordInvocationParser.js';
+import {
+  isQuotedLiteralTypeToken,
+  normalizeUsageExamples,
+  unquoteLiteralTypeToken,
+} from '../command-help/command-help-contract.js';
 
 const DOMAIN_ROOT_PREFIX = 'awd.domain.';
 const DOMAIN_PREFIX = 'domain.';
 const DELEGATE_TYPE_FAKER = 'faker';
 const DELEGATE_TYPE_CUSTOM = 'custom';
+const DOMAIN_INVOCATION_PARSER = new DomainKeywordInvocationParser();
 
 function normaliseAlias(value) {
   return String(value || '').trim();
@@ -15,6 +23,62 @@ function normaliseAlias(value) {
 function buildCanonicalKeyword(fakerCommand) {
   const command = String(fakerCommand || '').trim();
   return `${DOMAIN_ROOT_PREFIX}${command}`;
+}
+
+function serializeDomainInvocationValue(value) {
+  if (typeof value === 'string') {
+    return JSON.stringify(value);
+  }
+  if (typeof value === 'number' || typeof value === 'boolean' || typeof value === 'bigint') {
+    return String(value);
+  }
+  return JSON.stringify(value);
+}
+
+function normalizeDomainExampleFunctionCall(functionCall, keyword, args) {
+  const normalizedFunctionCall = String(functionCall || '').trim();
+  if (!normalizedFunctionCall) {
+    return '';
+  }
+
+  const parsed = DOMAIN_INVOCATION_PARSER.parse(normalizedFunctionCall);
+  if (!parsed.ok || parsed.keyword !== keyword) {
+    return normalizedFunctionCall;
+  }
+
+  if ((parsed.arguments || []).length === 0 || parsed.arguments.every((argument) => argument.kind === 'named')) {
+    return normalizedFunctionCall;
+  }
+
+  const argTypeByName = new Map(args.map((arg) => [arg?.name, arg?.type]));
+  const namedArgs = parsed.arguments.map((argument, index) => {
+    if (argument.kind === 'named') {
+      return `${argument.name}=${serializeDomainInvocationValue(argument.value, argTypeByName.get(argument.name))}`;
+    }
+
+    const argName = args[index]?.name;
+    if (!argName) {
+      return null;
+    }
+    return `${argName}=${serializeDomainInvocationValue(argument.value, args[index]?.type)}`;
+  });
+
+  if (namedArgs.some((argument) => !argument)) {
+    return normalizedFunctionCall;
+  }
+
+  return `${keyword}(${namedArgs.join(', ')})`;
+}
+
+function normalizeDomainUsageExamplesToNamedForm(usageExamples, keyword, args) {
+  if (!Array.isArray(usageExamples)) {
+    return [];
+  }
+
+  return usageExamples.map((usageExample) => ({
+    ...usageExample,
+    functionCall: normalizeDomainExampleFunctionCall(usageExample?.functionCall, keyword, args),
+  }));
 }
 
 function getCommandFromCanonical(canonicalKeyword) {
@@ -46,6 +110,22 @@ function buildDomainKeywordCatalog(definitions = DOMAIN_KEYWORD_DEFINITIONS) {
   return definitions.map((definition) => {
     const keyword = String(definition?.keyword || '').trim();
     const canonical = buildCanonicalKeyword(keyword);
+    const normalizedArgs = Array.isArray(definition?.help?.args)
+      ? definition.help.args.map((arg) => ({
+          name: String(arg?.name || '').trim(),
+          type: String(arg?.type || '').trim(),
+          required: arg?.required === true,
+          description: String(arg?.description || '').trim(),
+          examples: Array.isArray(arg?.examples) ? arg.examples.filter((value) => value !== undefined) : [],
+        }))
+      : [];
+    const returnType = String(definition?.help?.returnType || '').trim();
+    const usageExamples = normalizeUsageExamples({
+      command: keyword,
+      returnType,
+      usageExamples: definition?.help?.usageExamples,
+    });
+    const normalizedUsageExamples = normalizeDomainUsageExamplesToNamedForm(usageExamples, keyword, normalizedArgs);
     return {
       canonical,
       keyword,
@@ -58,23 +138,11 @@ function buildDomainKeywordCatalog(definitions = DOMAIN_KEYWORD_DEFINITIONS) {
       help: {
         summary: String(definition?.help?.summary || '').trim(),
         docsUrl: String(definition?.help?.docsUrl || '').trim(),
-        example: String(definition?.help?.example || '').trim(),
-        examples: Array.isArray(definition?.help?.examples)
-          ? definition.help.examples.map((example) => String(example || '').trim()).filter(Boolean)
-          : [],
-        exampleReturnValues: Array.isArray(definition?.help?.exampleReturnValues)
-          ? definition.help.exampleReturnValues.map((value) => String(value || '').trim()).filter(Boolean)
-          : [],
-        returnType: String(definition?.help?.returnType || '').trim(),
-        args: Array.isArray(definition?.help?.args)
-          ? definition.help.args.map((arg) => ({
-              name: String(arg?.name || '').trim(),
-              type: String(arg?.type || '').trim(),
-              required: arg?.required === true,
-              description: String(arg?.description || '').trim(),
-              examples: Array.isArray(arg?.examples) ? arg.examples.filter((value) => value !== undefined) : [],
-            }))
-          : [],
+        fakerDocsUrl: String(definition?.help?.fakerDocsUrl || '').trim(),
+        usageExamples: normalizedUsageExamples,
+        validator: definition?.help?.validator,
+        returnType,
+        args: normalizedArgs,
       },
     };
   });
@@ -147,11 +215,12 @@ function normalizeDomainKeywordHelp(keyword) {
   return {
     canonical: String(keyword.canonical || '').trim(),
     keyword: String(keyword.keyword || '').trim(),
+    argTransform: String(keyword.delegate?.argTransform || '').trim(),
     summary: String(keyword.help?.summary || '').trim(),
     docsUrl: String(keyword.help?.docsUrl || '').trim(),
-    example: String(keyword.help?.example || '').trim(),
-    examples: Array.isArray(keyword.help?.examples) ? keyword.help.examples : [],
-    exampleReturnValues: Array.isArray(keyword.help?.exampleReturnValues) ? keyword.help.exampleReturnValues : [],
+    fakerDocsUrl: String(keyword.help?.fakerDocsUrl || '').trim(),
+    usageExamples: Array.isArray(keyword.help?.usageExamples) ? keyword.help.usageExamples : [],
+    validator: keyword.help?.validator,
     returnType: String(keyword.help?.returnType || '').trim(),
     args: Array.isArray(keyword.help?.args) ? keyword.help.args : [],
   };
@@ -204,8 +273,56 @@ function isTypeMatch(value, typeName) {
     if (item === 'boolean' && typeof value === 'boolean') return true;
     if (item === 'array' && Array.isArray(value)) return true;
     if (item === 'object' && value !== null && typeof value === 'object' && !Array.isArray(value)) return true;
+    if (isQuotedLiteralTypeToken(item) && typeof value === 'string' && value === unquoteLiteralTypeToken(item))
+      return true;
+    if (typeof value === 'string' && value === item) return true;
   }
   return false;
+}
+
+function describeValueType(value) {
+  if (value === null) {
+    return 'null';
+  }
+  if (Array.isArray(value)) {
+    return 'array';
+  }
+  if (value instanceof Date) {
+    return 'date';
+  }
+  if (value instanceof RegExp) {
+    return 'regexp';
+  }
+  if (typeof value === 'number') {
+    return Number.isInteger(value) ? 'integer' : 'number';
+  }
+  return typeof value;
+}
+
+function normalizeLiteralTypeToken(typeToken) {
+  if (isQuotedLiteralTypeToken(typeToken)) {
+    return JSON.stringify(unquoteLiteralTypeToken(typeToken));
+  }
+  return typeToken;
+}
+
+function formatExpectedType(typeName) {
+  const allowed = String(typeName || '')
+    .split('|')
+    .map((entry) => entry.trim())
+    .filter(Boolean)
+    .map((entry) => normalizeLiteralTypeToken(entry));
+
+  if (allowed.length === 0) {
+    return 'a valid value';
+  }
+  if (allowed.length === 1) {
+    return allowed[0];
+  }
+  if (allowed.length === 2) {
+    return `${allowed[0]} or ${allowed[1]}`;
+  }
+  return `${allowed.slice(0, -1).join(', ')} or ${allowed.at(-1)}`;
 }
 
 function coerceHelpArgValue(spec, value) {
@@ -273,6 +390,7 @@ function applyFakerArgTransform(keyword, args = []) {
 const BUILT_IN_CUSTOM_DELEGATES = {
   'autoIncrement.timestamp': executeCustomAutoIncrementTimestamp,
   'autoIncrement.sequence': executeCustomAutoIncrementSequence,
+  'internet.httpMethod': executeCustomInternetHttpMethod,
   'literal.value': (executionContext = {}) => {
     const args = Array.isArray(executionContext.args) ? executionContext.args : [];
     return typeof args[0] === 'undefined' ? '' : args[0];
@@ -288,15 +406,15 @@ function validateDomainKeywordArgs(keyword, args = []) {
     const spec = schema[index];
     const value = argumentList[index];
     if (spec.required && typeof value === 'undefined') {
-      return { ok: false, error: `Missing required argument at position ${index}: ${spec.name}` };
-    }
-    if (typeof value !== 'undefined' && !isTypeMatch(value, spec.type)) {
-      if (String(spec.type || '').trim() === 'integer') {
-        return { ok: false, error: `Invalid argument for ${spec.name}: expected an integer.` };
-      }
       return {
         ok: false,
-        error: `Invalid argument type at position ${index}: ${spec.name} expected ${spec.type}`,
+        error: `Invalid keyword arguments: argument "${spec.name}" is required`,
+      };
+    }
+    if (typeof value !== 'undefined' && !isTypeMatch(value, spec.type)) {
+      return {
+        ok: false,
+        error: `Invalid keyword arguments: argument "${spec.name}" must be ${formatExpectedType(spec.type)}, not ${describeValueType(value)}`,
       };
     }
   }

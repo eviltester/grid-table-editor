@@ -25,12 +25,13 @@ No parameters.
 
 Examples:
 
+Shows the default music.album call.
+
 ```txt
-music.album()
+music.album
 ```
 
-Example return values:
-- `R&G (Rhythm & Gangsta): The Masterpiece`
+Returns: `I Never Loved A Man The Way I Love You`
 
 ### `music.artist`
 
@@ -43,12 +44,13 @@ No parameters.
 
 Examples:
 
+Shows the default music.artist call.
+
 ```txt
-music.artist()
+music.artist
 ```
 
-Example return values:
-- `Chuck Berry`
+Returns: `Jon Bellion`
 
 ### `music.genre`
 
@@ -61,12 +63,13 @@ No parameters.
 
 Examples:
 
+Shows the default music.genre call.
+
 ```txt
-music.genre()
+music.genre
 ```
 
-Example return values:
-- `Mainstream Jazz`
+Returns: `Hard Bop`
 
 ### `music.songName`
 
@@ -79,9 +82,10 @@ No parameters.
 
 Examples:
 
+Shows the default music.songName call.
+
 ```txt
-music.songName()
+music.songName
 ```
 
-Example return values:
-- `I'm Sorry`
+Returns: `Imagine`

@@ -20,9 +20,23 @@ function sampleValueForType(typeName) {
   const types = String(typeName || '')
     .split('|')
     .map((entry) => entry.trim());
+  const stringLiterals = types
+    .filter(
+      (entry) =>
+        !['string', 'integer', 'number', 'date', 'regexp', 'boolean', 'array', 'object'].includes(entry) &&
+        !/^[+-]?\d+(\.\d+)?$/.test(entry)
+    )
+    .map((entry) =>
+      (entry.startsWith('"') && entry.endsWith('"')) || (entry.startsWith("'") && entry.endsWith("'"))
+        ? entry.slice(1, -1)
+        : entry
+    );
 
   if (types.includes('number') || types.includes('integer')) {
     return 7;
+  }
+  if (stringLiterals.length > 0) {
+    return stringLiterals[0];
   }
   if (types.includes('regexp')) {
     return '[A-Z]';
@@ -40,7 +54,7 @@ function sampleValueForType(typeName) {
 }
 
 function sampleValueForKeywordArg(keywordName, argName, typeName) {
-  void keywordName;
+  const key = `${keywordName}.${argName}`;
   if (argName === 'from') return 1577836800000;
   if (argName === 'to') return 1580428800000;
   if (argName === 'refDate') return 1716110400000;
@@ -55,7 +69,8 @@ function sampleValueForKeywordArg(keywordName, argName, typeName) {
   if (argName === 'protocol') return 'https';
   if (argName === 'countryCode') return 'GB';
   if (argName === 'mimeType') return 'image/png';
-  if (argName === 'network') return 'private';
+  if (key === 'internet.ipv4.network') return 'private-a';
+  if (key === 'finance.bitcoinAddress.network') return 'testnet';
   if (argName === 'cidrBlock') return '192.168.0.0/24';
   if (argName === 'types') return ['smiley'];
   if (argName === 'header') return { alg: 'HS256', typ: 'JWT' };

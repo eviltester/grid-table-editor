@@ -25,12 +25,13 @@ No parameters.
 
 Examples:
 
+Shows the default database.collation call.
+
 ```txt
-database.collation()
+database.collation
 ```
 
-Example return values:
-- `utf8_bin`
+Returns: `cp1250_bin`
 
 ### `database.column`
 
@@ -43,12 +44,13 @@ No parameters.
 
 Examples:
 
+Shows the default database.column call.
+
 ```txt
-database.column()
+database.column
 ```
 
-Example return values:
-- `status`
+Returns: `group`
 
 ### `database.engine`
 
@@ -61,12 +63,13 @@ No parameters.
 
 Examples:
 
+Shows the default database.engine call.
+
 ```txt
-database.engine()
+database.engine
 ```
 
-Example return values:
-- `ARCHIVE`
+Returns: `CSV`
 
 ### `database.mongodbObjectId`
 
@@ -79,12 +82,13 @@ No parameters.
 
 Examples:
 
+Shows the default database.mongodbObjectId call.
+
 ```txt
-database.mongodbObjectId()
+database.mongodbObjectId
 ```
 
-Example return values:
-- `e80bba2ae67c0c7dcc16bd57`
+Returns: `9f0632478b9f4d0e9c34bf6f`
 
 ### `database.type`
 
@@ -97,9 +101,10 @@ No parameters.
 
 Examples:
 
+Shows the default database.type call.
+
 ```txt
-database.type()
+database.type
 ```
 
-Example return values:
-- `smallint`
+Returns: `float`

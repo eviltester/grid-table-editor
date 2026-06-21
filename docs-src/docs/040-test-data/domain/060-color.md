@@ -23,20 +23,25 @@ Returns a CMYK color.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `format` | `string` | no | Format of generated CMYK color. |
+| `format` | `decimal\|css\|binary` | no | Format of generated CMYK color. |
 
 Examples:
+
+Shows color.cmyk when optional params are omitted.
 
 ```txt
 color.cmyk()
 ```
 
+Returns: `[0.42,0.72,0,0.3]`
+
+Shows color.cmyk using format.
+
 ```txt
-color.cmyk(format="hex")
+color.cmyk(format="decimal")
 ```
 
-Example return values:
-- `[0.95,0.17,0.23,1]`
+Returns: `[0.42,0.72,0,0.3]`
 
 ### `color.colorByCSSColorSpace`
 
@@ -45,16 +50,36 @@ Returns a random color based on CSS color space specified.
 - Canonical: `awd.domain.color.colorByCSSColorSpace`
 - Faker docs: [https://fakerjs.dev/api/color](https://fakerjs.dev/api/color)
 
-No parameters.
+| Arg | Type | Required | Description |
+| --- | --- | --- | --- |
+| `format` | `decimal\|css\|binary` | no | Format of generated RGB color. |
+| `space` | `sRGB\|display-p3\|rec2020\|a98-rgb\|prophoto-rgb` | no | Color space to generate the color for. |
 
 Examples:
+
+Shows color.colorByCSSColorSpace when optional params are omitted.
 
 ```txt
 color.colorByCSSColorSpace()
 ```
 
-Example return values:
-- `[0.5811,0.0479,0.1091]`
+Returns: `[0.417,0.7203,0.0001]`
+
+Shows color.colorByCSSColorSpace using format.
+
+```txt
+color.colorByCSSColorSpace(format="decimal")
+```
+
+Returns: `[0.417,0.7203,0.0001]`
+
+Shows color.colorByCSSColorSpace using space.
+
+```txt
+color.colorByCSSColorSpace(space="display-p3")
+```
+
+Returns: `[0.417,0.7203,0.0001]`
 
 ### `color.cssSupportedFunction`
 
@@ -67,12 +92,13 @@ No parameters.
 
 Examples:
 
+Shows the default color.cssSupportedFunction call.
+
 ```txt
-color.cssSupportedFunction()
+color.cssSupportedFunction
 ```
 
-Example return values:
-- `hsla`
+Returns: `hsla`
 
 ### `color.cssSupportedSpace`
 
@@ -85,12 +111,13 @@ No parameters.
 
 Examples:
 
+Shows the default color.cssSupportedSpace call.
+
 ```txt
-color.cssSupportedSpace()
+color.cssSupportedSpace
 ```
 
-Example return values:
-- `sRGB`
+Returns: `rec2020`
 
 ### `color.hsl`
 
@@ -101,21 +128,42 @@ Returns an HSL color.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `format` | `string` | no | Format of generated HSL color. |
+| `format` | `decimal\|css\|binary` | no | Format of generated HSL color. |
 | `includeAlpha` | `boolean` | no | Adds an alpha value to the color (RGBA). |
 
 Examples:
 
-```txt
-color.hsl()
-```
+Shows color.hsl returning the default tuple output.
 
 ```txt
-color.hsl(format="hex", includeAlpha=true)
+color.hsl
 ```
 
-Example return values:
-- `[212,0.78,0.54]`
+Returns: `[150,0.72,0]`
+
+Shows color.hsl returning CSS text without alpha.
+
+```txt
+color.hsl(format="css")
+```
+
+Returns: `hsl(150deg 72% 0%)`
+
+Shows color.hsl including alpha while keeping the tuple-style output.
+
+```txt
+color.hsl(includeAlpha=true)
+```
+
+Returns: `[150,0.72,0,0.3]`
+
+Shows color.hsl returning CSS text with alpha included.
+
+```txt
+color.hsl(format="css", includeAlpha=true)
+```
+
+Returns: `hsl(150deg 72% 0% / 30)`
 
 ### `color.human`
 
@@ -128,12 +176,13 @@ No parameters.
 
 Examples:
 
+Shows the default color.human call.
+
 ```txt
-color.human()
+color.human
 ```
 
-Example return values:
-- `green`
+Returns: `magenta`
 
 ### `color.hwb`
 
@@ -144,20 +193,25 @@ Returns an HWB color.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `format` | `string` | no | Format of generated RGB color. |
+| `format` | `decimal\|css\|binary` | no | Format of generated RGB color. |
 
 Examples:
+
+Shows color.hwb when optional params are omitted.
 
 ```txt
 color.hwb()
 ```
 
+Returns: `[150,0.72,0]`
+
+Shows color.hwb using format.
+
 ```txt
-color.hwb(format="hex")
+color.hwb(format="decimal")
 ```
 
-Example return values:
-- `[328,0.27,0.33]`
+Returns: `[150,0.72,0]`
 
 ### `color.lab`
 
@@ -168,20 +222,25 @@ Returns a LAB (CIELAB) color.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `format` | `string` | no | Format of generated RGB color. |
+| `format` | `decimal\|css\|binary` | no | Format of generated RGB color. |
 
 Examples:
+
+Shows color.lab when optional params are omitted.
 
 ```txt
 color.lab()
 ```
 
+Returns: `[0.417022,44.0649,-99.9772]`
+
+Shows color.lab using format.
+
 ```txt
-color.lab(format="hex")
+color.lab(format="decimal")
 ```
 
-Example return values:
-- `[0.071396,-55.6612,-66.7185]`
+Returns: `[0.417022,44.0649,-99.9772]`
 
 ### `color.lch`
 
@@ -192,20 +251,25 @@ Returns an LCH color.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `format` | `string` | no | Format of generated RGB color. |
+| `format` | `decimal\|css\|binary` | no | Format of generated RGB color. |
 
 Examples:
+
+Shows color.lch when optional params are omitted.
 
 ```txt
 color.lch()
 ```
 
+Returns: `[0.417022,165.7,0]`
+
+Shows color.lch using format.
+
 ```txt
-color.lch(format="hex")
+color.lch(format="decimal")
 ```
 
-Example return values:
-- `[0.469557,212.9,204.9]`
+Returns: `[0.417022,165.7,0]`
 
 ### `color.rgb`
 
@@ -216,23 +280,52 @@ Returns an RGB color.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `casing` | `string` | no | Letter type case of the generated hex color. Only applied when 'hex' format is used. |
-| `format` | `string` | no | Format of generated RGB color. |
+| `casing` | `lower\|upper\|mixed` | no | Letter type case of the generated hex color. Only applied when 'hex' format is used. |
+| `format` | `hex\|decimal\|css\|binary` | no | Format of generated RGB color. |
 | `includeAlpha` | `boolean` | no | Adds an alpha value to the color (RGBA). |
 | `prefix` | `string` | no | Prefix of the generated hex color. Only applied when 'hex' format is used. |
 
 Examples:
 
+Shows color.rgb when optional params are omitted.
+
 ```txt
 color.rgb()
 ```
 
+Returns: `#9f0632`
+
+Shows color.rgb using casing.
+
 ```txt
-color.rgb(casing="lower", format="hex", includeAlpha=true, prefix="#")
+color.rgb(casing="upper")
 ```
 
-Example return values:
-- `#ee8222`
+Returns: `#9F0632`
+
+Shows color.rgb using format.
+
+```txt
+color.rgb(format="hex")
+```
+
+Returns: `#9f0632`
+
+Shows color.rgb using includeAlpha.
+
+```txt
+color.rgb(includeAlpha=true)
+```
+
+Returns: `#9f063247`
+
+Shows color.rgb using prefix.
+
+```txt
+color.rgb(prefix="#")
+```
+
+Returns: `#9f0632`
 
 ### `color.space`
 
@@ -245,9 +338,10 @@ No parameters.
 
 Examples:
 
+Shows the default color.space call.
+
 ```txt
-color.space()
+color.space
 ```
 
-Example return values:
-- `HSL`
+Returns: `HSV`

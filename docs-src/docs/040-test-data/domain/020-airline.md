@@ -25,174 +25,13 @@ No parameters.
 
 Examples:
 
-```txt
-airline.aircraftType()
-```
-
-Example return values:
-- `regional`
-
-### `airline.airline`
-
-Generate a value using faker airline.airline.
-
-- Canonical: `awd.domain.airline.airline`
-- Faker docs: [https://fakerjs.dev/api/airline](https://fakerjs.dev/api/airline)
-
-No parameters.
-
-Examples:
+Shows the default airline.aircraftType call.
 
 ```txt
-airline.airline()
+airline.aircraftType
 ```
 
-Example return values:
-- `{"name":"American Airlines","iataCode":"AA"}`
-
-### `airline.airline.iataCode`
-
-Generate an airline IATA code.
-
-- Canonical: `awd.domain.airline.airline.iataCode`
-- Faker docs: [https://fakerjs.dev/api/airline](https://fakerjs.dev/api/airline)
-
-No parameters.
-
-Examples:
-
-```txt
-airline.airline.iataCode()
-```
-
-Example return values:
-- `AA`
-
-### `airline.airline.name`
-
-Generate an airline name.
-
-- Canonical: `awd.domain.airline.airline.name`
-- Faker docs: [https://fakerjs.dev/api/airline](https://fakerjs.dev/api/airline)
-
-No parameters.
-
-Examples:
-
-```txt
-airline.airline.name()
-```
-
-Example return values:
-- `Acme Air`
-
-### `airline.airplane`
-
-Generate a value using faker airline.airplane.
-
-- Canonical: `awd.domain.airline.airplane`
-- Faker docs: [https://fakerjs.dev/api/airline](https://fakerjs.dev/api/airline)
-
-No parameters.
-
-Examples:
-
-```txt
-airline.airplane()
-```
-
-Example return values:
-- `{"name":"Airbus A320","iataTypeCode":"A320"}`
-
-### `airline.airplane.iataTypeCode`
-
-Generate an airplane IATA type code.
-
-- Canonical: `awd.domain.airline.airplane.iataTypeCode`
-- Faker docs: [https://fakerjs.dev/api/airline](https://fakerjs.dev/api/airline)
-
-No parameters.
-
-Examples:
-
-```txt
-airline.airplane.iataTypeCode()
-```
-
-Example return values:
-- `A320`
-
-### `airline.airplane.name`
-
-Generate an airplane model name.
-
-- Canonical: `awd.domain.airline.airplane.name`
-- Faker docs: [https://fakerjs.dev/api/airline](https://fakerjs.dev/api/airline)
-
-No parameters.
-
-Examples:
-
-```txt
-airline.airplane.name()
-```
-
-Example return values:
-- `Boeing 737`
-
-### `airline.airport`
-
-Generate a value using faker airline.airport.
-
-- Canonical: `awd.domain.airline.airport`
-- Faker docs: [https://fakerjs.dev/api/airline](https://fakerjs.dev/api/airline)
-
-No parameters.
-
-Examples:
-
-```txt
-airline.airport()
-```
-
-Example return values:
-- `{"name":"Heathrow Airport","iataCode":"LHR"}`
-
-### `airline.airport.iataCode`
-
-Generate an airport IATA code.
-
-- Canonical: `awd.domain.airline.airport.iataCode`
-- Faker docs: [https://fakerjs.dev/api/airline](https://fakerjs.dev/api/airline)
-
-No parameters.
-
-Examples:
-
-```txt
-airline.airport.iataCode()
-```
-
-Example return values:
-- `LHR`
-
-### `airline.airport.name`
-
-Generate an airport name.
-
-- Canonical: `awd.domain.airline.airport.name`
-- Faker docs: [https://fakerjs.dev/api/airline](https://fakerjs.dev/api/airline)
-
-No parameters.
-
-Examples:
-
-```txt
-airline.airport.name()
-```
-
-Example return values:
-- `London Heathrow Airport`
+Returns: `regional`
 
 ### `airline.flightNumber`
 
@@ -205,12 +44,51 @@ No parameters.
 
 Examples:
 
+Shows the default airline.flightNumber call.
+
 ```txt
-airline.flightNumber()
+airline.flightNumber
 ```
 
-Example return values:
-- `1`
+Returns: `70`
+
+### `airline.iataCode`
+
+Generate an airline IATA code.
+
+- Canonical: `awd.domain.airline.airline.iataCode`
+- Faker docs: [https://fakerjs.dev/api/airline](https://fakerjs.dev/api/airline)
+
+No parameters.
+
+Examples:
+
+Shows the default airline.airline.iataCode call.
+
+```txt
+airline.airline.iataCode
+```
+
+Returns: `FZ`
+
+### `airline.name`
+
+Generate an airline name.
+
+- Canonical: `awd.domain.airline.airline.name`
+- Faker docs: [https://fakerjs.dev/api/airline](https://fakerjs.dev/api/airline)
+
+No parameters.
+
+Examples:
+
+Shows the default airline.airline.name call.
+
+```txt
+airline.airline.name
+```
+
+Returns: `Flydubai`
 
 ### `airline.recordLocator`
 
@@ -223,12 +101,13 @@ No parameters.
 
 Examples:
 
+Shows the default airline.recordLocator call.
+
 ```txt
-airline.recordLocator()
+airline.recordLocator
 ```
 
-Example return values:
-- `TCSJCN`
+Returns: `KTAGDC`
 
 ### `airline.seat`
 
@@ -239,17 +118,106 @@ Generates a random seat.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `aircraftType` | `string` | no | The aircraft type. Can be one of narrowbody, regional, widebody. |
+| `aircraftType` | `narrowbody\|regional\|widebody` | no | The aircraft type. Can be one of narrowbody, regional, widebody. |
 
 Examples:
+
+Shows airline.seat in use.
 
 ```txt
 airline.seat
 ```
 
+Returns: `15E`
+
+Shows airline.seat in use.
+
 ```txt
 airline.seat(aircraftType="widebody")
 ```
 
-Example return values:
-- `17F`
+Returns: `26H`
+
+Shows airline.seat when optional params are omitted.
+
+```txt
+airline.seat()
+```
+
+Returns: `15E`
+
+### `airplane.iataTypeCode`
+
+Generate an airplane IATA type code.
+
+- Canonical: `awd.domain.airline.airplane.iataTypeCode`
+- Faker docs: [https://fakerjs.dev/api/airline](https://fakerjs.dev/api/airline)
+
+No parameters.
+
+Examples:
+
+Shows the default airline.airplane.iataTypeCode call.
+
+```txt
+airline.airplane.iataTypeCode
+```
+
+Returns: `74J`
+
+### `airplane.name`
+
+Generate an airplane model name.
+
+- Canonical: `awd.domain.airline.airplane.name`
+- Faker docs: [https://fakerjs.dev/api/airline](https://fakerjs.dev/api/airline)
+
+No parameters.
+
+Examples:
+
+Shows the default airline.airplane.name call.
+
+```txt
+airline.airplane.name
+```
+
+Returns: `Boeing 747-400D`
+
+### `airport.iataCode`
+
+Generate an airport IATA code.
+
+- Canonical: `awd.domain.airline.airport.iataCode`
+- Faker docs: [https://fakerjs.dev/api/airline](https://fakerjs.dev/api/airline)
+
+No parameters.
+
+Examples:
+
+Shows the default airline.airport.iataCode call.
+
+```txt
+airline.airport.iataCode
+```
+
+Returns: `HRG`
+
+### `airport.name`
+
+Generate an airport name.
+
+- Canonical: `awd.domain.airline.airport.name`
+- Faker docs: [https://fakerjs.dev/api/airline](https://fakerjs.dev/api/airline)
+
+No parameters.
+
+Examples:
+
+Shows the default airline.airport.name call.
+
+```txt
+airline.airport.name
+```
+
+Returns: `Hurgada International Airport`

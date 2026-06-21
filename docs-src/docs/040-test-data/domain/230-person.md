@@ -25,12 +25,13 @@ No parameters.
 
 Examples:
 
+Shows the default person.bio call.
+
 ```txt
-person.bio()
+person.bio
 ```
 
-Example return values:
-- `musician`
+Returns: `person, activist, entrepreneur ✌🏿`
 
 ### `person.firstName`
 
@@ -41,20 +42,25 @@ Returns a random first name.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `sex` | `string` | no | Optional sex for first-name selection. Valid values: female or male. |
+| `sex` | `female\|male` | no | Optional sex for first-name selection. Valid values: female or male. |
 
 Examples:
+
+Shows person.firstName when optional params are omitted.
 
 ```txt
 person.firstName()
 ```
 
+Returns: `Aaliyah`
+
+Shows person.firstName using sex.
+
 ```txt
-person.firstName(sex="male")
+person.firstName(sex="female")
 ```
 
-Example return values:
-- `David`
+Returns: `Monique`
 
 ### `person.fullName`
 
@@ -67,12 +73,13 @@ No parameters.
 
 Examples:
 
+Shows the default person.fullName call.
+
 ```txt
-person.fullName()
+person.fullName
 ```
 
-Example return values:
-- `Mrs. Sheryl Zemlak DVM`
+Returns: `Aaliyah Corkery`
 
 ### `person.gender`
 
@@ -85,12 +92,13 @@ No parameters.
 
 Examples:
 
+Shows the default person.gender call.
+
 ```txt
-person.gender()
+person.gender
 ```
 
-Example return values:
-- `Female to male`
+Returns: `Genderflux`
 
 ### `person.jobArea`
 
@@ -103,12 +111,13 @@ No parameters.
 
 Examples:
 
+Shows the default person.jobArea call.
+
 ```txt
-person.jobArea()
+person.jobArea
 ```
 
-Example return values:
-- `Branding`
+Returns: `Group`
 
 ### `person.jobDescriptor`
 
@@ -121,12 +130,13 @@ No parameters.
 
 Examples:
 
+Shows the default person.jobDescriptor call.
+
 ```txt
-person.jobDescriptor()
+person.jobDescriptor
 ```
 
-Example return values:
-- `Direct`
+Returns: `Regional`
 
 ### `person.jobTitle`
 
@@ -139,12 +149,13 @@ No parameters.
 
 Examples:
 
+Shows the default person.jobTitle call.
+
 ```txt
-person.jobTitle()
+person.jobTitle
 ```
 
-Example return values:
-- `Senior Identity Technician`
+Returns: `Regional Assurance Supervisor`
 
 ### `person.jobType`
 
@@ -157,12 +168,13 @@ No parameters.
 
 Examples:
 
+Shows the default person.jobType call.
+
 ```txt
-person.jobType()
+person.jobType
 ```
 
-Example return values:
-- `Engineer`
+Returns: `Administrator`
 
 ### `person.lastName`
 
@@ -173,20 +185,25 @@ Returns a random last name.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `sex` | `string` | no | Optional sex for last-name selection. Valid values: female or male. |
+| `sex` | `female\|male` | no | Optional sex for last-name selection. Valid values: female or male. |
 
 Examples:
+
+Shows person.lastName when optional params are omitted.
 
 ```txt
 person.lastName()
 ```
 
+Returns: `Abbott`
+
+Shows person.lastName using sex.
+
 ```txt
-person.lastName(sex="male")
+person.lastName(sex="female")
 ```
 
-Example return values:
-- `Bernhard`
+Returns: `Reichel`
 
 ### `person.middleName`
 
@@ -197,20 +214,25 @@ Returns a random middle name.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `sex` | `string` | no | Optional sex for middle-name selection. Valid values: female or male. |
+| `sex` | `female\|male` | no | Optional sex for middle-name selection. Valid values: female or male. |
 
 Examples:
+
+Shows person.middleName when optional params are omitted.
 
 ```txt
 person.middleName()
 ```
 
+Returns: `Abigail`
+
+Shows person.middleName using sex.
+
 ```txt
-person.middleName(sex="male")
+person.middleName(sex="female")
 ```
 
-Example return values:
-- `Ryan`
+Returns: `Morgan`
 
 ### `person.prefix`
 
@@ -221,20 +243,25 @@ Returns a random person prefix.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `sex` | `string` | no | The optional sex to use. Can be either 'female' or 'male'. |
+| `sex` | `female\|male` | no | The optional sex to use. Can be either 'female' or 'male'. |
 
 Examples:
+
+Shows person.prefix when optional params are omitted.
 
 ```txt
 person.prefix()
 ```
 
+Returns: `Miss`
+
+Shows person.prefix using sex.
+
 ```txt
-person.prefix(sex="male")
+person.prefix(sex="female")
 ```
 
-Example return values:
-- `Mr.`
+Returns: `Ms.`
 
 ### `person.sex`
 
@@ -247,12 +274,13 @@ No parameters.
 
 Examples:
 
+Shows the default person.sex call.
+
 ```txt
-person.sex()
+person.sex
 ```
 
-Example return values:
-- `male`
+Returns: `female`
 
 ### `person.sexType`
 
@@ -265,12 +293,13 @@ No parameters.
 
 Examples:
 
+Shows the default person.sexType call.
+
 ```txt
-person.sexType()
+person.sexType
 ```
 
-Example return values:
-- `male`
+Returns: `female`
 
 ### `person.suffix`
 
@@ -283,12 +312,13 @@ No parameters.
 
 Examples:
 
+Shows the default person.suffix call.
+
 ```txt
-person.suffix()
+person.suffix
 ```
 
-Example return values:
-- `IV`
+Returns: `III`
 
 ### `person.zodiacSign`
 
@@ -301,9 +331,10 @@ No parameters.
 
 Examples:
 
+Shows the default person.zodiacSign call.
+
 ```txt
-person.zodiacSign()
+person.zodiacSign
 ```
 
-Example return values:
-- `Cancer`
+Returns: `Cancer`

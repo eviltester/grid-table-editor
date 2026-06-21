@@ -71,6 +71,9 @@ describe('page shell components', () => {
       root,
     });
 
+    expect(root.querySelector('.skip-link[href="#generator-main-content"]')).not.toBeNull();
+    expect(root.querySelector('main#generator-main-content')).not.toBeNull();
+    expect(root.querySelector('h1#generator-page-title')).not.toBeNull();
     expect(root.querySelector('#generator-instructions')).not.toBeNull();
     expect(root.querySelector('#generator-app')).not.toBeNull();
     expect(root.querySelector('.header')).toBeNull();

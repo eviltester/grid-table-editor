@@ -20,6 +20,10 @@ export default defineConfig({
         replacement: path.resolve(__dirname, '../../packages/core/js/domain/$1'),
       },
       {
+        find: /^@anywaydata\/core\/command-help\/(.*)$/,
+        replacement: path.resolve(__dirname, '../../packages/core/js/command-help/$1'),
+      },
+      {
         find: /^@anywaydata\/core\/data_formats\/(.*)$/,
         replacement: path.resolve(__dirname, '../../packages/core/js/data_formats/$1'),
       },

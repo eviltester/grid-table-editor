@@ -6,7 +6,7 @@ description: "Domain keyword reference for internet."
 
 # internet Domain
 
-The `internet` domain maps domain keywords to underlying faker implementations.
+The `internet` domain mostly maps domain keywords to faker-backed generators, but `internet.httpMethod` is implemented directly by AnywayData.
 
 ## Faker Documentation
 
@@ -25,12 +25,13 @@ No parameters.
 
 Examples:
 
+Shows the default internet.displayName call.
+
 ```txt
-internet.displayName()
+internet.displayName
 ```
 
-Example return values:
-- `Cordell0`
+Returns: `Aaliyah.Bosco`
 
 ### `internet.domainName`
 
@@ -43,12 +44,13 @@ No parameters.
 
 Examples:
 
+Shows the default internet.domainName call.
+
 ```txt
-internet.domainName()
+internet.domainName
 ```
 
-Example return values:
-- `beloved-peony.org`
+Returns: `inferior-punctuation.biz`
 
 ### `internet.domainSuffix`
 
@@ -61,12 +63,13 @@ No parameters.
 
 Examples:
 
+Shows the default internet.domainSuffix call.
+
 ```txt
-internet.domainSuffix()
+internet.domainSuffix
 ```
 
-Example return values:
-- `com`
+Returns: `info`
 
 ### `internet.domainWord`
 
@@ -79,12 +82,13 @@ No parameters.
 
 Examples:
 
+Shows the default internet.domainWord call.
+
 ```txt
-internet.domainWord()
+internet.domainWord
 ```
 
-Example return values:
-- `inexperienced-ravioli`
+Returns: `inferior-punctuation`
 
 ### `internet.email`
 
@@ -95,23 +99,52 @@ Generates data using faker internet email.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `allowSpecialCharacters` | `boolean` | no | Whether special characters such as .!#$%&'*+-/=?^_`&#123;\|&#125;~ should be included in the email address. |
+| `allowSpecialCharacters` | `boolean` | no | Whether special characters such as .!#$%&amp;'*+-/=?^_`&#123;\|&#125;~ should be included in the email address. |
 | `firstName` | `string` | no | The optional first name to use. |
 | `lastName` | `string` | no | The optional last name to use. |
 | `provider` | `string` | no | The mail provider domain to use. If not specified, a random free mail provider will be chosen. |
 
 Examples:
 
+Shows internet.email when optional params are omitted.
+
 ```txt
 internet.email()
 ```
 
+Returns: `Edwin.Dibbert@hotmail.com`
+
+Shows internet.email using allowSpecialCharacters.
+
 ```txt
-internet.email(allowSpecialCharacters=true, firstName="Alex", lastName="Taylor", provider="example.com")
+internet.email(allowSpecialCharacters=true)
 ```
 
-Example return values:
-- `Jana91@hotmail.com`
+Returns: `Edwin.Dibbert@hotmail.com`
+
+Shows internet.email using firstName.
+
+```txt
+internet.email(firstName="Ada")
+```
+
+Returns: `Ada.Gutmann9@hotmail.com`
+
+Shows internet.email using lastName.
+
+```txt
+internet.email(lastName="Lovelace")
+```
+
+Returns: `Edwin.Lovelace9@hotmail.com`
+
+Shows internet.email using provider.
+
+```txt
+internet.email(provider="example.com")
+```
+
+Returns: `Aaliyah.Bosco@example.com`
 
 ### `internet.emoji`
 
@@ -126,16 +159,21 @@ Generates a random emoji.
 
 Examples:
 
+Shows internet.emoji when optional params are omitted.
+
 ```txt
 internet.emoji()
 ```
 
+Returns: `🥣`
+
+Shows internet.emoji using types.
+
 ```txt
-internet.emoji(types=["food","nature"])
+internet.emoji(types=["food"])
 ```
 
-Example return values:
-- `🤨`
+Returns: `🍲`
 
 ### `internet.exampleEmail`
 
@@ -148,30 +186,50 @@ No parameters.
 
 Examples:
 
+Shows the default internet.exampleEmail call.
+
 ```txt
-internet.exampleEmail()
+internet.exampleEmail
 ```
 
-Example return values:
-- `Jeremie37@example.net`
+Returns: `Edwin.Dibbert@example.net`
 
 ### `internet.httpMethod`
 
-Returns a random http method.
+Returns a random HTTP request method from an AnywayData-defined pool of GET, HEAD, POST, PUT, DELETE, PATCH, OPTIONS, TRACE, and CONNECT, with optional filtering for common methods and exclusions.
 
 - Canonical: `awd.domain.internet.httpMethod`
-- Faker docs: [https://fakerjs.dev/api/internet](https://fakerjs.dev/api/internet)
 
-No parameters.
+| Arg | Type | Required | Description |
+| --- | --- | --- | --- |
+| `commonOnly` | `boolean` | no | When true, limits generation to GET, HEAD, POST, PUT, and DELETE. Defaults to false. |
+| `excludes` | `string` | no | Comma-separated HTTP methods to remove from the candidate set. Values are case-insensitive, surrounding spaces are trimmed, and generation throws if exclusions remove every available method. |
 
 Examples:
+
+Shows internet.httpMethod choosing from the full HTTP method set by default.
 
 ```txt
 internet.httpMethod()
 ```
 
-Example return values:
-- `PATCH`
+Returns: `PUT`
+
+Shows internet.httpMethod restricted to the common request methods.
+
+```txt
+internet.httpMethod(commonOnly=true)
+```
+
+Returns: `POST`
+
+Shows internet.httpMethod trimming spaces, normalizing case, and excluding methods from the full set.
+
+```txt
+internet.httpMethod(excludes="patch, TRACE")
+```
+
+Returns: `POST`
 
 ### `internet.httpStatusCode`
 
@@ -184,12 +242,13 @@ No parameters.
 
 Examples:
 
+Shows the default internet.httpStatusCode call.
+
 ```txt
-internet.httpStatusCode()
+internet.httpStatusCode
 ```
 
-Example return values:
-- `303`
+Returns: `306`
 
 ### `internet.ip`
 
@@ -202,12 +261,13 @@ No parameters.
 
 Examples:
 
+Shows the default internet.ip call.
+
 ```txt
-internet.ip()
+internet.ip
 ```
 
-Example return values:
-- `56.23.30.52`
+Returns: `184.103.47.157`
 
 ### `internet.ipv4`
 
@@ -219,20 +279,33 @@ Generates a random IPv4 address.
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
 | `cidrBlock` | `string` | no | The optional CIDR block to use. Must be in the format x.x.x.x/y. |
-| `network` | `string` | no | The optional network to use. This is intended as an alias for well-known cidrBlocks. |
+| `network` | `any\|loopback\|private-a\|private-b\|private-c\|test-net-1\|test-net-2\|test-net-3\|link-local\|multicast` | no | The optional network to use. This is intended as an alias for well-known cidrBlocks. |
 
 Examples:
+
+Shows internet.ipv4 when optional params are omitted.
 
 ```txt
 internet.ipv4()
 ```
 
+Returns: `106.193.244.63`
+
+Shows internet.ipv4 using cidrBlock.
+
 ```txt
-internet.ipv4(cidrBlock="192.168.0.0/24", network="private-a")
+internet.ipv4(cidrBlock="192.168.0.0/24")
 ```
 
-Example return values:
-- `192.168.0.42`
+Returns: `192.168.0.106`
+
+Shows internet.ipv4 using network.
+
+```txt
+internet.ipv4(network="private-a")
+```
+
+Returns: `10.106.193.244`
 
 ### `internet.ipv6`
 
@@ -245,12 +318,13 @@ No parameters.
 
 Examples:
 
+Shows the default internet.ipv6 call.
+
 ```txt
-internet.ipv6()
+internet.ipv6
 ```
 
-Example return values:
-- `2001:0db8:85a3:0000:0000:8a2e:0370:7334`
+Returns: `9f06:3247:8b9f:4d0e:9c34:bf6f:dd10:3d29`
 
 ### `internet.jwt`
 
@@ -267,16 +341,37 @@ Generates a random JWT (JSON Web Token).
 
 Examples:
 
+Shows internet.jwt when optional params are omitted.
+
 ```txt
 internet.jwt()
 ```
 
+Returns: `eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3ODE3NDc3NTAsImV4cCI6MTc4MTc0Nzc2MSwibmJmIjoxNzY5MzMwODQwLCJpc3MiOiJIZWdtYW5uIC0gSm9obnN0b24iLCJzdWIiOiJhM2UwYTY4Mi0zY2Y1LTRiZWUtYTEwMi1lMTZmOGI1YWQwY2YiLCJhdWQiOiI0YzE3ZTQ0Mi0wYTM0LTQ3MDktODI5Yi0xNmI2MDhhOGY5ZTIiLCJqdGkiOiJjNjJlNWNiZS05YzU0LTRlNmYtOWE5MS1mNzk2M2U5MDk1OGUifQ.UC0VGZa8VH4KKVI7111fRxyQ7hAYy1NeOoRKy83726dIy04XzcfKcAYQeuCP914u`
+
+Shows internet.jwt using header.
+
 ```txt
-internet.jwt(header={"alg":"HS256","typ":"JWT"}, payload={"iss":"Acme"}, refDate=1)
+internet.jwt(header={"value":"sample"})
 ```
 
-Example return values:
-- `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJBY21lIn0.c2lnbmF0dXJl`
+Returns: `eyJ2YWx1ZSI6InNhbXBsZSJ9.eyJpYXQiOjE3ODE3NDc3NTAsImV4cCI6MTc4MTgwOTk4NywibmJmIjoxNzUwMjY5MzM0LCJpc3MiOiJEaWJiZXJ0IC0gTGluZCIsInN1YiI6IjZhM2UwYTY4LTIzY2YtNDViZS1iZTEwLTJlMTZmOGI1YWQwYyIsImF1ZCI6ImI0YzE3ZTQ0LTIwYTMtNDQ3MC04OTI5LWIxNmI2MDhhOGY5ZSIsImp0aSI6IjJjNjJlNWNiLWU5YzUtNDRlNi1iZmE5LTFmNzk2M2U5MDk1OCJ9.mUC0VGZa8VH4KKVI7111fRxyQ7hAYy1NeOoRKy83726dIy04XzcfKcAYQeuCP914`
+
+Shows internet.jwt using payload.
+
+```txt
+internet.jwt(payload={"value":"sample"})
+```
+
+Returns: `eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2YWx1ZSI6InNhbXBsZSJ9.0i95bloxpGcS1Fpy8cNYjGST52aS6qXxGjGP1KZKhM6rUih81Gdgu3z9AH6pHp3x`
+
+Shows internet.jwt using refDate.
+
+```txt
+internet.jwt(refDate=1718755200000)
+```
+
+Returns: `eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MTg3MDQ4MzAsImV4cCI6MTcxODcwNDg0MSwibmJmIjoxNzA2Mjg3OTIwLCJpc3MiOiJIZWdtYW5uIC0gSm9obnN0b24iLCJzdWIiOiJhM2UwYTY4Mi0zY2Y1LTRiZWUtYTEwMi1lMTZmOGI1YWQwY2YiLCJhdWQiOiI0YzE3ZTQ0Mi0wYTM0LTQ3MDktODI5Yi0xNmI2MDhhOGY5ZTIiLCJqdGkiOiJjNjJlNWNiZS05YzU0LTRlNmYtOWE5MS1mNzk2M2U5MDk1OGUifQ.UC0VGZa8VH4KKVI7111fRxyQ7hAYy1NeOoRKy83726dIy04XzcfKcAYQeuCP914u`
 
 ### `internet.jwtAlgorithm`
 
@@ -289,12 +384,13 @@ No parameters.
 
 Examples:
 
+Shows the default internet.jwtAlgorithm call.
+
 ```txt
-internet.jwtAlgorithm()
+internet.jwtAlgorithm
 ```
 
-Example return values:
-- `PS384`
+Returns: `HS512`
 
 ### `internet.mac`
 
@@ -305,20 +401,25 @@ Generates a random mac address.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `separator` | `string` | no | The optional separator to use. Can be either ':', '-' or ''. |
+| `separator` | `":"\|"-"\|""` | no | The optional separator to use. Can be either ':', '-' or ''. |
 
 Examples:
+
+Shows internet.mac when optional params are omitted.
 
 ```txt
 internet.mac()
 ```
 
+Returns: `6b:04:21:25:68:6a`
+
+Shows internet.mac using separator.
+
 ```txt
 internet.mac(separator="-")
 ```
 
-Example return values:
-- `ae:a9:d7:ba:d2:bd`
+Returns: `6b-04-21-25-68-6a`
 
 ### `internet.password`
 
@@ -336,12 +437,69 @@ Generates a random password-like string. Do not use this method for generating a
 
 Examples:
 
+Shows internet.password with all optional params omitted.
+
 ```txt
-internet.password(length=10, memorable=false, pattern="[A-Za-z0-9]", prefix="#")
+internet.password()
 ```
 
-Example return values:
-- `og1ejoksrfwVbIF`
+Returns: `He2AFTHb4tHV3mb`
+
+Shows internet.password using only a custom length.
+
+```txt
+internet.password(length=12)
+```
+
+Returns: `He2AFTHb4tHV`
+
+Shows internet.password using only the memorable flag.
+
+```txt
+internet.password(memorable=true)
+```
+
+Returns: `hefutisawetikub`
+
+Shows internet.password generating a memorable password-like string.
+
+```txt
+internet.password(length=12, memorable=true)
+```
+
+Returns: `hefutisaweti`
+
+Shows internet.password constrained only by a regex-style pattern.
+
+```txt
+internet.password(pattern="[A-Z]")
+```
+
+Returns: `HAFTHHVISKOWXHH`
+
+Shows internet.password constrained by a regex-style pattern.
+
+```txt
+internet.password(length=12, memorable=false, pattern="[A-Z]")
+```
+
+Returns: `HAFTHHVISKOW`
+
+Shows internet.password using only the prefix option.
+
+```txt
+internet.password(prefix="#")
+```
+
+Returns: `#He2AFTHb4tHV3m`
+
+Shows internet.password using length, pattern, and prefix together.
+
+```txt
+internet.password(length=12, memorable=false, pattern="[A-Z]", prefix="#")
+```
+
+Returns: `#HAFTHHVISKO`
 
 ### `internet.port`
 
@@ -354,12 +512,13 @@ No parameters.
 
 Examples:
 
+Shows the default internet.port call.
+
 ```txt
-internet.port()
+internet.port
 ```
 
-Example return values:
-- `24545`
+Returns: `27329`
 
 ### `internet.protocol`
 
@@ -372,12 +531,13 @@ No parameters.
 
 Examples:
 
+Shows the default internet.protocol call.
+
 ```txt
-internet.protocol()
+internet.protocol
 ```
 
-Example return values:
-- `http`
+Returns: `http`
 
 ### `internet.url`
 
@@ -389,20 +549,33 @@ Generates a random http(s) url.
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
 | `appendSlash` | `boolean` | no | Whether to append a slash to the end of the url (path). |
-| `protocol` | `string` | no | The protocol to use. |
+| `protocol` | `http\|https` | no | The protocol to use. |
 
 Examples:
+
+Shows internet.url when optional params are omitted.
 
 ```txt
 internet.url()
 ```
 
+Returns: `https://self-reliant-cd.com/`
+
+Shows internet.url using appendSlash.
+
 ```txt
-internet.url(appendSlash=true, protocol="https")
+internet.url(appendSlash=true)
 ```
 
-Example return values:
-- `https://brave-interior.biz/`
+Returns: `https://inferior-punctuation.biz/`
+
+Shows internet.url using protocol.
+
+```txt
+internet.url(protocol="https")
+```
+
+Returns: `https://self-reliant-cd.com/`
 
 ### `internet.userAgent`
 
@@ -415,12 +588,13 @@ No parameters.
 
 Examples:
 
+Shows the default internet.userAgent call.
+
 ```txt
-internet.userAgent()
+internet.userAgent
 ```
 
-Example return values:
-- `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36`
+Returns: `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/586.0.30 (KHTML, like Gecko) Version/16.1 Safari/546.9.18`
 
 ### `internet.username`
 
@@ -436,13 +610,26 @@ Generates a username using the given person's name as base.
 
 Examples:
 
+Shows internet.username when optional params are omitted.
+
 ```txt
 internet.username()
 ```
 
+Returns: `Aaliyah.Bosco`
+
+Shows internet.username using firstName.
+
 ```txt
-internet.username(firstName="Alex", lastName="Taylor")
+internet.username(firstName="Ada")
 ```
 
-Example return values:
-- `Deanna51`
+Returns: `Ada.Abbott14`
+
+Shows internet.username using lastName.
+
+```txt
+internet.username(lastName="Lovelace")
+```
+
+Returns: `Aaliyah.Lovelace14`

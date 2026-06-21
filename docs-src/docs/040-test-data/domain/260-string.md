@@ -24,21 +24,58 @@ Generating a string consisting of letters in the English alphabet.
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
 | `length` | `number` | no | Desired length of the generated value. |
-| `casing` | `string` | no | The casing of the characters. |
+| `casing` | `upper\|lower\|mixed` | no | The casing of the characters. |
 | `exclude` | `array` | no | An array with characters which should be excluded in the generated string. |
 
 Examples:
+
+Shows string.alpha with all optional params omitted.
 
 ```txt
 string.alpha()
 ```
 
+Returns: `v`
+
+Shows string.alpha generating a fixed-length alphabetic value.
+
 ```txt
-string.alpha(length=1, casing="lower", exclude=["item"])
+string.alpha(length=5)
 ```
 
-Example return values:
-- `R`
+Returns: `vLaph`
+
+Shows string.alpha using only the casing option.
+
+```txt
+string.alpha(casing="upper")
+```
+
+Returns: `K`
+
+Shows string.alpha with explicit uppercase output.
+
+```txt
+string.alpha(length=5, casing="upper")
+```
+
+Returns: `KSAHD`
+
+Shows string.alpha excluding specific characters without setting length or casing.
+
+```txt
+string.alpha(exclude=["A","B","C"])
+```
+
+Returns: `u`
+
+Shows string.alpha excluding specific characters from the candidate set.
+
+```txt
+string.alpha(length=5, casing="upper", exclude=["A","B","C"])
+```
+
+Returns: `MTDJG`
 
 ### `string.alphanumeric`
 
@@ -50,21 +87,42 @@ Generating a string consisting of alpha characters and digits.
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
 | `length` | `number` | no | Desired length of the generated value. |
-| `casing` | `string` | no | The casing of the characters. |
+| `casing` | `upper\|lower\|mixed` | no | The casing of the characters. |
 | `exclude` | `array` | no | An array of characters and digits which should be excluded in the generated string. |
 
 Examples:
+
+Shows string.alphanumeric when optional params are omitted.
 
 ```txt
 string.alphanumeric()
 ```
 
+Returns: `p`
+
+Shows string.alphanumeric using length.
+
 ```txt
-string.alphanumeric(length=1, casing="lower", exclude=["item"])
+string.alphanumeric(length=5)
 ```
 
-Example return values:
-- `s`
+Returns: `pI0i9`
+
+Shows string.alphanumeric using casing.
+
+```txt
+string.alphanumeric(casing="upper")
+```
+
+Returns: `F`
+
+Shows string.alphanumeric using exclude.
+
+```txt
+string.alphanumeric(exclude=["A","B","C"])
+```
+
+Returns: `o`
 
 ### `string.binary`
 
@@ -80,23 +138,35 @@ Returns a binary string.
 
 Examples:
 
+Shows string.binary when optional params are omitted.
+
 ```txt
 string.binary()
 ```
 
+Returns: `0b0`
+
+Shows string.binary using length.
+
 ```txt
-string.binary(length=1, prefix="#")
+string.binary(length=5)
 ```
 
-Example return values:
-- `0b0`
+Returns: `0b01000`
+
+Shows string.binary using prefix.
+
+```txt
+string.binary(prefix="PRE-")
+```
+
+Returns: `PRE-0`
 
 ### `string.counterString`
 
 Generates a counterstring for a random length between min and max (or fixed length when only one value is provided). Defaults to min=1 and max=25 when omitted.
 
 - Canonical: `awd.domain.string.counterString`
-- Docs: [/docs/test-data/counterstrings](/docs/test-data/counterstrings)
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
@@ -106,25 +176,61 @@ Generates a counterstring for a random length between min and max (or fixed leng
 
 Examples:
 
+Shows string.counterString default from 1 to 25 chars.
+
 ```txt
 string.counterString()
 ```
 
+Returns: `*3*5*7*10*13*`
+
+Shows string.counterString with a fixed length of 15 chars.
+
 ```txt
-string.counterString(15)
+string.counterString(min=15)
 ```
+
+Returns: `*3*5*7*9*12*15*`
+
+Shows string.counterString with a length between 5 and 12 chars.
 
 ```txt
 string.counterString(min=5, max=12)
 ```
 
+Returns: `*3*5*7*9*`
+
+Shows string.counterString with a fixed length of 12 chars and a custom delimiter.
+
 ```txt
 string.counterString(min=12, max=12, delimiter="#")
 ```
 
-Example return values:
-- `*3*5*7*9*12*15*`
-- `#3#5#7#9#12#`
+Returns: `#3#5#7#9#12#`
+
+Shows string.counterString with a length between 1 and 10 chars.
+
+```txt
+string.counterString(max=10, min=1)
+```
+
+Returns: `2*4*6*`
+
+Shows string.counterString with a length between 1 and 12 chars.
+
+```txt
+string.counterString(max=12)
+```
+
+Returns: `*3*5*7*`
+
+Shows string.counterString using a custom delimiter and a length between 1 and 25 chars.
+
+```txt
+string.counterString(delimiter="#")
+```
+
+Returns: `#3#5#7#10#13#`
 
 ### `string.fromCharacters`
 
@@ -140,17 +246,29 @@ Generates a string from the given characters.
 
 Examples:
 
+Shows string.fromCharacters with only the required characters argument.
+
 ```txt
-string.fromCharacters("ABC123", 6)
+string.fromCharacters(characters="ABC123")
 ```
+
+Returns: `C`
+
+Shows string.fromCharacters in use.
 
 ```txt
 string.fromCharacters(characters=["A", "B", "C"], length=4)
 ```
 
-Example return values:
-- `A1B2`
-- `CB2A`
+Returns: `BCAA`
+
+Shows string.fromCharacters using length.
+
+```txt
+string.fromCharacters(characters="ABC123", length=4)
+```
+
+Returns: `C2AB`
 
 ### `string.hexadecimal`
 
@@ -161,22 +279,43 @@ Returns a hexadecimal string.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `casing` | `string` | no | Casing of the generated number. |
+| `casing` | `upper\|lower\|mixed` | no | Casing of the generated number. |
 | `length` | `number` | no | The length of the string (excluding the prefix) to generate either as a fixed length or as a length range. |
 | `prefix` | `string` | no | Prefix for the generated number. |
 
 Examples:
 
+Shows string.hexadecimal when optional params are omitted.
+
 ```txt
 string.hexadecimal()
 ```
 
+Returns: `0x9`
+
+Shows string.hexadecimal using casing.
+
 ```txt
-string.hexadecimal(casing="lower", length=1, prefix="#")
+string.hexadecimal(casing="upper")
 ```
 
-Example return values:
-- `0x1`
+Returns: `0x9`
+
+Shows string.hexadecimal using length.
+
+```txt
+string.hexadecimal(length=5)
+```
+
+Returns: `0x9f063`
+
+Shows string.hexadecimal using prefix.
+
+```txt
+string.hexadecimal(prefix="PRE-")
+```
+
+Returns: `PRE-9`
 
 ### `string.nanoid`
 
@@ -191,16 +330,21 @@ Generates a Nano ID.
 
 Examples:
 
+Shows string.nanoid when optional params are omitted.
+
 ```txt
 string.nanoid()
 ```
 
+Returns: `Ii5lxGSFycYGT2SqxjPK-`
+
+Shows string.nanoid using length.
+
 ```txt
-string.nanoid(length=1)
+string.nanoid(length=5)
 ```
 
-Example return values:
-- `KLm49ferlh-eUmJpZdSIO`
+Returns: `Ii5lx`
 
 ### `string.numeric`
 
@@ -217,16 +361,37 @@ Generates a given length string of digits.
 
 Examples:
 
+Shows string.numeric when optional params are omitted.
+
 ```txt
 string.numeric()
 ```
 
+Returns: `4`
+
+Shows string.numeric using length.
+
 ```txt
-string.numeric(length=1, allowLeadingZeros=true, exclude=["item"])
+string.numeric(length=5)
 ```
 
-Example return values:
-- `7`
+Returns: `47031`
+
+Shows string.numeric using allowLeadingZeros.
+
+```txt
+string.numeric(allowLeadingZeros=true)
+```
+
+Returns: `4`
+
+Shows string.numeric using exclude.
+
+```txt
+string.numeric(exclude=["A","B","C"])
+```
+
+Returns: `4`
 
 ### `string.octal`
 
@@ -242,16 +407,29 @@ Returns an octal string.
 
 Examples:
 
+Shows string.octal when optional params are omitted.
+
 ```txt
 string.octal()
 ```
 
+Returns: `0o3`
+
+Shows string.octal using length.
+
 ```txt
-string.octal(length=1, prefix="#")
+string.octal(length=5)
 ```
 
-Example return values:
-- `0o6`
+Returns: `0o35021`
+
+Shows string.octal using prefix.
+
+```txt
+string.octal(prefix="PRE-")
+```
+
+Returns: `PRE-3`
 
 ### `string.sample`
 
@@ -266,20 +444,25 @@ Returns a string containing UTF-16 chars between 33 and 125 (`!` to `&#125;`).
 
 Examples:
 
+Shows string.sample when optional params are omitted.
+
 ```txt
 string.sample()
 ```
 
+Returns: `Gc!=.)2AES`
+
+Shows string.sample using length.
+
 ```txt
-string.sample(length=1)
+string.sample(length=5)
 ```
 
-Example return values:
-- `\Fw;0e:G.H`
+Returns: `Gc!=.`
 
 ### `string.symbol`
 
-Returns a string containing only special characters from the following list:
+Returns a string containing only ASCII symbol characters such as !, ", #, $, %, &amp;, (, ), *, +, -, /, :, ;, &lt;, =, &gt;, ?, @, [, \, ], ^, _, `, &#123;, |, &#125;, and ~.
 
 - Canonical: `awd.domain.string.symbol`
 - Faker docs: [https://fakerjs.dev/api/string](https://fakerjs.dev/api/string)
@@ -290,16 +473,21 @@ Returns a string containing only special characters from the following list:
 
 Examples:
 
+Shows string.symbol when optional params are omitted.
+
 ```txt
 string.symbol()
 ```
 
+Returns: `.`
+
+Shows string.symbol using length.
+
 ```txt
-string.symbol(length=1)
+string.symbol(length=5)
 ```
 
-Example return values:
-- `.`
+Returns: `.\!*%`
 
 ### `string.ulid`
 
@@ -314,16 +502,21 @@ Returns a ULID (Universally Unique Lexicographically Sortable Identifier).
 
 Examples:
 
+Shows string.ulid when optional params are omitted.
+
 ```txt
 string.ulid()
 ```
 
+Returns: `01KVDQ3AJ0DQ09425BCHDN6W0N`
+
+Shows string.ulid using refDate.
+
 ```txt
-string.ulid(refDate=1)
+string.ulid(refDate=1718755200000)
 ```
 
-Example return values:
-- `01KQADM2A0728G4D2HKCPWKS6N`
+Returns: `01J0PWP300DQ09425BCHDN6W0N`
 
 ### `string.uuid`
 
@@ -334,18 +527,31 @@ Returns a UUID (Universally Unique Identifier).
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `version` | `4\|7` | no | The specific UUID version to use. If `refDate` is supplied and `version` is omitted, version `7` is used automatically. |
-| `refDate` | `string\|number\|date` | no | The timestamp to encode into the UUID. This is only valid for UUID v7. If `refDate` is supplied and `version` is omitted, version `7` is used automatically. Providing `refDate` with version `4` is invalid. |
+| `version` | `4\|7` | no | The specific UUID version to use. If refDate is supplied and version is omitted, version 7 is used automatically. |
+| `refDate` | `string\|number\|date` | no | The timestamp to encode into the UUID. This is only valid for UUID v7. If refDate is supplied and version is omitted, version 7 is used automatically. Providing refDate with version 4 is invalid. |
 
 Examples:
+
+Shows string.uuid when optional params are omitted.
 
 ```txt
 string.uuid()
 ```
 
+Returns: `6b042125-686a-43e0-8a68-23cf5bee102e`
+
+Shows string.uuid using version.
+
 ```txt
-string.uuid(refDate=1)
+string.uuid(version=7)
 ```
 
-Example return values:
-- `0628ae51-7b6c-4d33-9f24-dae19fb245df`
+Returns: `019edb71-aa40-76b0-8421-25686a3e0a68`
+
+Shows string.uuid using refDate.
+
+```txt
+string.uuid(refDate="2026-06-18T00:00:00.000Z")
+```
+
+Returns: `019ed807-0800-76b0-8421-25686a3e0a68`

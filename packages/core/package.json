@@ -9,6 +9,7 @@
     "./mcp/*": "./js/mcp/*",
     "./faker/*": "./js/faker/*",
     "./domain/*": "./js/domain/*",
+    "./command-help/*": "./js/command-help/*",
     "./data_formats/*": "./js/data_formats/*",
     "./data_generation/*": "./js/data_generation/*",
     "./grid/*": "./js/grid/*",

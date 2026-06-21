@@ -1,0 +1,6 @@
+import { PHONE_IMEI_KEYWORD_DEFINITION } from './imei-keyword-definition.js';
+import { PHONE_NUMBER_KEYWORD_DEFINITION } from './number-keyword-definition.js';
+
+const PHONE_KEYWORD_DEFINITIONS = [PHONE_IMEI_KEYWORD_DEFINITION, PHONE_NUMBER_KEYWORD_DEFINITION];
+
+export { PHONE_KEYWORD_DEFINITIONS };

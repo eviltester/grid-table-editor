@@ -14,7 +14,11 @@ class DomainKeywordParser {
 
     const parsed = this.invocationParser.parse(value);
     if (!parsed.ok) {
-      return { keyword: '', args: [], errors: [parsed.error] };
+      return {
+        keyword: String(parsed?.keyword || '').trim(),
+        args: [],
+        errors: [parsed.error],
+      };
     }
 
     const keyword = parsed.keyword;

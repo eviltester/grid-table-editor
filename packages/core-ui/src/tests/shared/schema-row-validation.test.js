@@ -32,6 +32,32 @@ describe('schema-row-validation', () => {
     ]);
   });
 
+  test('reports typed domain param validation errors through the shared row validation path', () => {
+    const issues = getSchemaRowSemanticValidationIssues(
+      {
+        name: 'Method',
+        sourceType: 'domain',
+        command: 'internet.httpMethod',
+        params: '(commonOnly="true")',
+      },
+      0,
+      {
+        schemaTextToDataRules,
+        faker,
+        RandExp,
+      }
+    );
+
+    expect(issues).toEqual([
+      expect.objectContaining({
+        code: 'compiler_validation_error',
+        field: 'params',
+        message:
+          'Row 1: invalid domain params - Invalid keyword arguments: argument "commonOnly" must be boolean, not string',
+      }),
+    ]);
+  });
+
   test('merges precomputed semantic issues into row validation state', () => {
     const issues = getSchemaRowValidationIssues(
       {
@@ -78,5 +104,62 @@ describe('schema-row-validation', () => {
         message: expect.stringContaining('helpers.objectKey'),
       }),
     ]);
+  });
+
+  test('reports missing regex value for blank regex rows', () => {
+    const issues = getSchemaRowValidationIssues(
+      {
+        name: 'Code',
+        sourceType: 'regex',
+        value: '   ',
+      },
+      0
+    );
+
+    expect(issues).toEqual([
+      expect.objectContaining({
+        code: 'missing_regex_value',
+        field: 'value',
+        message: 'Row 1: regex value is required.',
+      }),
+    ]);
+  });
+
+  test('reports invalid regex value through the shared row validation path', () => {
+    const issues = getSchemaRowSemanticValidationIssues(
+      {
+        name: 'Code',
+        sourceType: 'regex',
+        value: '[',
+      },
+      0,
+      {
+        schemaTextToDataRules,
+        faker,
+        RandExp,
+      }
+    );
+
+    expect(issues).toEqual([
+      expect.objectContaining({
+        code: 'compiler_validation_error',
+        field: 'value',
+        message: expect.stringContaining('Row 1: invalid regex value -'),
+      }),
+    ]);
+  });
+
+  test('bracket guidance suggests a corrected example instead of echoing broken syntax', () => {
+    const issues = getSchemaRowValidationIssues(
+      {
+        name: 'Code',
+        sourceType: 'domain',
+        command: 'string.alpha',
+        params: '(length=4',
+      },
+      0
+    );
+
+    expect(issues[0]?.message).toBe('Row 1: params should be wrapped in parentheses, e.g. (length=4).');
   });
 });

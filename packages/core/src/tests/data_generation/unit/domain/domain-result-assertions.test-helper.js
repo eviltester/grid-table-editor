@@ -64,7 +64,7 @@ function assertDomainKeywordResult(keyword, result) {
     expect(String(result).includes('.') || String(result).includes(':')).toBe(true);
   }
   if (/httpMethod$/i.test(keyword)) {
-    expect(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS']).toContain(String(result));
+    expect(['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'TRACE', 'CONNECT']).toContain(String(result));
   }
   if (/httpStatusCode$/i.test(keyword)) {
     const numeric = Number(result);

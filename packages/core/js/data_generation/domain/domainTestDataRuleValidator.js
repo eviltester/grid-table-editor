@@ -1,5 +1,9 @@
 import { parseKeywordInvocation } from '../../domain/domain-keyword-parser.js';
-import { DOMAIN_KEYWORD_ALIAS_INDEX } from '../../domain/domain-keywords.js';
+import {
+  DOMAIN_KEYWORD_ALIAS_INDEX,
+  getDomainKeywordByAlias,
+  validateDomainKeywordArgs,
+} from '../../domain/domain-keywords.js';
 
 class DomainTestDataRuleValidator {
   constructor() {
@@ -33,6 +37,18 @@ class DomainTestDataRuleValidator {
       this.validationError = Array.isArray(parsed?.errors)
         ? parsed.errors[0] || 'Invalid domain rule'
         : 'Invalid domain rule';
+      return false;
+    }
+
+    const keywordDefinition = getDomainKeywordByAlias(recognizedKeyword);
+    if (!keywordDefinition) {
+      this.validationError = `Unknown keyword: ${recognizedKeyword}`;
+      return false;
+    }
+
+    const argsValidation = validateDomainKeywordArgs(keywordDefinition, parsed.args);
+    if (!argsValidation.ok) {
+      this.validationError = argsValidation.error || 'Invalid keyword arguments';
       return false;
     }
 

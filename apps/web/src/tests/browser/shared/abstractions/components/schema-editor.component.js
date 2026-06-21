@@ -175,7 +175,7 @@ class SchemaEditorComponent {
       await this.methodPicker.chooseCommand(requested, { tab: pickerTab });
     }
 
-    if (assertSchemaTextIncludesType) {
+    if (assertSchemaTextIncludesType && lower !== 'regex') {
       await expect.poll(async () => (await this.getSchemaText()).toLowerCase(), { timeout: 3000 }).toContain(lower);
     }
   }

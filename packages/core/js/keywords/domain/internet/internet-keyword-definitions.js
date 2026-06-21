@@ -1,0 +1,47 @@
+import { INTERNET_DISPLAY_NAME_KEYWORD_DEFINITION } from './display-name-keyword-definition.js';
+import { INTERNET_DOMAIN_NAME_KEYWORD_DEFINITION } from './domain-name-keyword-definition.js';
+import { INTERNET_DOMAIN_SUFFIX_KEYWORD_DEFINITION } from './domain-suffix-keyword-definition.js';
+import { INTERNET_DOMAIN_WORD_KEYWORD_DEFINITION } from './domain-word-keyword-definition.js';
+import { INTERNET_EMAIL_KEYWORD_DEFINITION } from './email-keyword-definition.js';
+import { INTERNET_EMOJI_KEYWORD_DEFINITION } from './emoji-keyword-definition.js';
+import { INTERNET_EXAMPLE_EMAIL_KEYWORD_DEFINITION } from './example-email-keyword-definition.js';
+import { INTERNET_HTTP_STATUS_CODE_KEYWORD_DEFINITION } from './http-status-code-keyword-definition.js';
+import { INTERNET_IP_KEYWORD_DEFINITION } from './ip-keyword-definition.js';
+import { INTERNET_IPV4_KEYWORD_DEFINITION } from './ipv4-keyword-definition.js';
+import { INTERNET_IPV6_KEYWORD_DEFINITION } from './ipv6-keyword-definition.js';
+import { INTERNET_JWT_KEYWORD_DEFINITION } from './jwt-keyword-definition.js';
+import { INTERNET_JWT_ALGORITHM_KEYWORD_DEFINITION } from './jwt-algorithm-keyword-definition.js';
+import { INTERNET_MAC_KEYWORD_DEFINITION } from './mac-keyword-definition.js';
+import { INTERNET_PASSWORD_KEYWORD_DEFINITION } from './password-keyword-definition.js';
+import { INTERNET_PORT_KEYWORD_DEFINITION } from './port-keyword-definition.js';
+import { INTERNET_PROTOCOL_KEYWORD_DEFINITION } from './protocol-keyword-definition.js';
+import { INTERNET_URL_KEYWORD_DEFINITION } from './url-keyword-definition.js';
+import { INTERNET_USER_AGENT_KEYWORD_DEFINITION } from './user-agent-keyword-definition.js';
+import { INTERNET_USERNAME_KEYWORD_DEFINITION } from './username-keyword-definition.js';
+import { INTERNET_HTTP_METHOD_KEYWORD_DEFINITION } from './http-method-keyword-definition.js';
+
+const INTERNET_KEYWORD_DEFINITIONS = [
+  INTERNET_DISPLAY_NAME_KEYWORD_DEFINITION,
+  INTERNET_DOMAIN_NAME_KEYWORD_DEFINITION,
+  INTERNET_DOMAIN_SUFFIX_KEYWORD_DEFINITION,
+  INTERNET_DOMAIN_WORD_KEYWORD_DEFINITION,
+  INTERNET_EMAIL_KEYWORD_DEFINITION,
+  INTERNET_EMOJI_KEYWORD_DEFINITION,
+  INTERNET_EXAMPLE_EMAIL_KEYWORD_DEFINITION,
+  INTERNET_HTTP_STATUS_CODE_KEYWORD_DEFINITION,
+  INTERNET_IP_KEYWORD_DEFINITION,
+  INTERNET_IPV4_KEYWORD_DEFINITION,
+  INTERNET_IPV6_KEYWORD_DEFINITION,
+  INTERNET_JWT_KEYWORD_DEFINITION,
+  INTERNET_JWT_ALGORITHM_KEYWORD_DEFINITION,
+  INTERNET_MAC_KEYWORD_DEFINITION,
+  INTERNET_PASSWORD_KEYWORD_DEFINITION,
+  INTERNET_PORT_KEYWORD_DEFINITION,
+  INTERNET_PROTOCOL_KEYWORD_DEFINITION,
+  INTERNET_URL_KEYWORD_DEFINITION,
+  INTERNET_USER_AGENT_KEYWORD_DEFINITION,
+  INTERNET_USERNAME_KEYWORD_DEFINITION,
+  INTERNET_HTTP_METHOD_KEYWORD_DEFINITION,
+];
+
+export { INTERNET_KEYWORD_DEFINITIONS };

@@ -16,6 +16,17 @@ describe('help-model-builder', () => {
     expect(model.kind).toBe('command');
     expect(model.heading).toBe('faker.person.firstName');
     expect(model.docsUrl).toMatch(/^https:/);
+    expect(model.docsUrl).toBe('https://anywaydata.com/docs/test-data/domain/person');
+    expect(model.fakerDocsUrl).toBe('https://fakerjs.dev/api/person');
+    expect(model.usageExamples[0]).toEqual(
+      expect.objectContaining({
+        functionCall: expect.stringContaining('person.firstName'),
+        sampleReturnValue: expect.any(String),
+      })
+    );
+    expect(Object.prototype.hasOwnProperty.call(model, 'example')).toBe(false);
+    expect(Object.prototype.hasOwnProperty.call(model, 'examples')).toBe(false);
+    expect(Object.prototype.hasOwnProperty.call(model, 'exampleReturnValues')).toBe(false);
     expect(renderSchemaHelpHtml(model)).toContain('faker.person.firstName');
   });
 
@@ -63,6 +74,13 @@ describe('help-model-builder', () => {
     expect(model.show).toBe(true);
     expect(model.kind).toBe('command');
     expect(model.heading).toContain('counterString');
+    expect(model.usageExamples[0]).toEqual(
+      expect.objectContaining({
+        functionCall: expect.stringContaining('string.counterString'),
+        sampleReturnValue: expect.any(String),
+      })
+    );
+    expect(Object.prototype.hasOwnProperty.call(model, 'example')).toBe(false);
     expect(renderSchemaHelpHtml(model)).toContain('delimiter');
   });
 
@@ -102,6 +120,35 @@ describe('help-model-builder', () => {
 
   test('maps faker helpers docs link to anywaydata faker helpers docs', () => {
     const model = buildSchemaHelpModel('faker', 'helpers.fake');
+    expect(model.docsUrl).toBe('https://anywaydata.com/docs/test-data/faker/helpers');
+    expect(model.fakerDocsUrl).toBe('');
+  });
+
+  test('localizes anywaydata docs urls for github pages deployments when a window is provided', () => {
+    const model = buildSchemaHelpModel('domain', 'number.int', {
+      windowObj: {
+        location: {
+          origin: 'https://eviltester.github.io',
+          hostname: 'eviltester.github.io',
+          pathname: '/grid-table-editor/generator.html',
+        },
+      },
+    });
+
+    expect(model.docsUrl).toBe('https://eviltester.github.io/grid-table-editor/site/docs/test-data/domain/number');
+  });
+
+  test('does not rewrite docs urls when the window origin is not an http host', () => {
+    const model = buildSchemaHelpModel('faker', 'helpers.fake', {
+      windowObj: {
+        location: {
+          origin: 'null',
+          hostname: '',
+          pathname: '/generator.html',
+        },
+      },
+    });
+
     expect(model.docsUrl).toBe('https://anywaydata.com/docs/test-data/faker/helpers');
   });
 });

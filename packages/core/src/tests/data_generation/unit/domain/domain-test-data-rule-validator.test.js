@@ -11,4 +11,56 @@ describe('DomainTestDataRuleValidator', () => {
     expect(isValid).toBe(false);
     expect(validator.getValidationError()).toContain('helpers_not_supported_in_domain');
   });
+
+  test('accepts valid typed domain params', () => {
+    const validator = new DomainTestDataRuleValidator();
+
+    const isValid = validator.validate({ ruleSpec: 'internet.httpMethod(commonOnly=true)' });
+
+    expect(isValid).toBe(true);
+    expect(validator.lastParsed).toEqual(
+      expect.objectContaining({
+        keyword: 'internet.httpMethod',
+        recognized: true,
+        args: [true],
+        errors: [],
+      })
+    );
+  });
+
+  test('rejects mistyped domain params using keyword metadata', () => {
+    const validator = new DomainTestDataRuleValidator();
+
+    const isValid = validator.validate({ ruleSpec: 'internet.httpMethod(commonOnly="true")' });
+
+    expect(isValid).toBe(false);
+    expect(validator.getValidationError()).toBe(
+      'Invalid keyword arguments: argument "commonOnly" must be boolean, not string'
+    );
+    expect(validator.lastParsed).toEqual(
+      expect.objectContaining({
+        keyword: 'internet.httpMethod',
+        recognized: true,
+        args: ['true'],
+        errors: [],
+      })
+    );
+  });
+
+  test('keeps malformed recognized invocations on the domain path', () => {
+    const validator = new DomainTestDataRuleValidator();
+
+    const isValid = validator.validate({ ruleSpec: 'internet.httpMethod(commonOnly=true' });
+
+    expect(isValid).toBe(false);
+    expect(validator.getValidationError()).toBe('Invalid keyword invocation: missing closing parenthesis');
+    expect(validator.lastParsed).toEqual(
+      expect.objectContaining({
+        keyword: 'internet.httpMethod',
+        recognized: true,
+        args: [],
+        errors: ['Invalid keyword invocation: missing closing parenthesis'],
+      })
+    );
+  });
 });

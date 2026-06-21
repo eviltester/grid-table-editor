@@ -66,6 +66,10 @@ function buildConstraintImpactMessage({ generatedRows = 0, failedRows = 0 } = {}
   return `Schema Constraints are impacting row generation - generated ${generatedRows} rows, failed to generate ${failedRows} rows. Consider changing constraints to improve row generation.`;
 }
 
+function hasConstraintText(schemaText = '') {
+  return /^\s*IF\b/m.test(String(schemaText || ''));
+}
+
 function buildValidationError(code, message, diagnostics = {}) {
   return {
     ok: false,
@@ -124,6 +128,7 @@ function createUiGenerationSessionService({
   getValidatedSchemaState = () => ({ errors: [], rows: [] }),
   getSchemaText = () => '',
   schemaRowsToSpec = () => '',
+  schemaRowsToGenerationSpec = null,
   schemaSource = 'ui-generation',
   GenericDataTableClass,
   CombinationsTestDataGeneratorClass,
@@ -141,11 +146,19 @@ function createUiGenerationSessionService({
   }
 
   function buildGenerationSchemaText(schemaState) {
-    const explicitSchemaText = String(getSchemaText?.() || '').trim();
-    if (explicitSchemaText.length > 0) {
+    const explicitSchemaText = String(getSchemaText?.() || '');
+    const trimmedExplicitSchemaText = explicitSchemaText.trim();
+    const rowBasedSchemaText =
+      typeof schemaRowsToGenerationSpec === 'function'
+        ? schemaRowsToGenerationSpec(schemaState?.rows || [])
+        : schemaRowsToSpec(schemaState?.rows || []);
+    if (trimmedExplicitSchemaText.length === 0) {
+      return rowBasedSchemaText;
+    }
+    if (hasConstraintText(explicitSchemaText)) {
       return explicitSchemaText;
     }
-    return schemaRowsToSpec(schemaState?.rows || []);
+    return rowBasedSchemaText || explicitSchemaText;
   }
 
   function createSessionContext(validationOptions) {

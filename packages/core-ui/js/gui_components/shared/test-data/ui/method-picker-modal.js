@@ -1,4 +1,5 @@
 import { getDefaultDocumentObj, getDefaultWindowObj, resolveWindowObj } from '../../dom/default-objects.js';
+import { resolveRuntimeDocsUrl } from '../help/runtime-docs-url.js';
 
 const RECENT_STORAGE_KEY = 'anywaydata.method-picker.recent';
 const MAX_RECENT = 8;
@@ -38,16 +39,59 @@ function writeRecent(windowObj, entries) {
 
 function buildSearchText(option) {
   const params = Array.isArray(option?.helpModel?.params) ? option.helpModel.params.map((p) => p?.name || '') : [];
-  const usageExamples = toExampleList(option?.helpModel?.examples);
+  const usageExamples = getUsageFunctionCalls(option?.helpModel);
   const returnExamples = getReturnExamples(option?.helpModel);
   return [
     option.command,
     option.helpModel?.summary || '',
-    option.helpModel?.example || '',
     usageExamples.join(' '),
     returnExamples.join(' '),
     params.join(' '),
   ].join(' ');
+}
+
+function getUsageFunctionCalls(model) {
+  return (Array.isArray(model?.usageExamples) ? model.usageExamples : [])
+    .map((usageExample) => String(usageExample?.functionCall || '').trim())
+    .filter(Boolean);
+}
+
+function splitFunctionCall(functionCall, command = '') {
+  const text = String(functionCall || '').trim();
+  const normalizedCommand = String(command || '').trim();
+  if (!text) {
+    return { command: normalizedCommand, params: '' };
+  }
+  if (normalizedCommand && text === normalizedCommand) {
+    return { command: normalizedCommand, params: '' };
+  }
+  if (normalizedCommand && text.startsWith(`${normalizedCommand}(`) && text.endsWith(')')) {
+    return { command: normalizedCommand, params: text.slice(normalizedCommand.length) };
+  }
+
+  const openParenIndex = text.indexOf('(');
+  if (openParenIndex > 0 && text.endsWith(')')) {
+    return {
+      command: text.slice(0, openParenIndex).trim(),
+      params: text.slice(openParenIndex).trim(),
+    };
+  }
+
+  return { command: normalizedCommand || text, params: '' };
+}
+
+function formatParamsFieldValue(command, params) {
+  const trimmedCommand = String(command || '')
+    .trim()
+    .toLowerCase();
+  const trimmedParams = String(params || '').trim();
+  if (!trimmedParams || trimmedParams === '()') {
+    return 'Leave blank';
+  }
+  if (trimmedCommand === 'datatype.enum' && trimmedParams.startsWith('(') && trimmedParams.endsWith(')')) {
+    return trimmedParams.slice(1, -1).trim();
+  }
+  return trimmedParams;
 }
 
 function toExampleList(value) {
@@ -56,6 +100,26 @@ function toExampleList(value) {
   }
   const single = String(value || '').trim();
   return single ? [single] : [];
+}
+
+function normalizeReturnExampleValue(value) {
+  if (typeof value === 'bigint') {
+    return `${value}n`;
+  }
+
+  if (Array.isArray(value)) {
+    return JSON.stringify(value);
+  }
+
+  if (value instanceof Date) {
+    return value.toISOString();
+  }
+
+  if (value && typeof value === 'object') {
+    return JSON.stringify(value);
+  }
+
+  return String(value);
 }
 
 function ensureCriticalStyles(documentObj) {
@@ -176,15 +240,49 @@ function renderExampleList(examples, emptyText) {
   return `<ul class="method-picker-example-list">${rows}</ul>`;
 }
 
+function renderUsageExamples(model, selectedCommand) {
+  const usageExamples = Array.isArray(model?.usageExamples) ? model.usageExamples : [];
+  if (usageExamples.length === 0) {
+    return '';
+  }
+
+  return usageExamples
+    .map((usageExample) => {
+      const functionCall = String(usageExample?.functionCall || '').trim();
+      if (!functionCall) {
+        return '';
+      }
+      const description = String(usageExample?.description || '').trim();
+      const split = splitFunctionCall(functionCall, selectedCommand);
+      const paramsFieldValue = formatParamsFieldValue(split.command, split.params);
+      const hasSampleReturnValue = Object.prototype.hasOwnProperty.call(usageExample || {}, 'sampleReturnValue');
+      const sampleReturnValue = hasSampleReturnValue
+        ? normalizeReturnExampleValue(usageExample.sampleReturnValue).trim()
+        : '';
+
+      return `
+        <div class="method-picker-usage-example">
+          ${description ? `<p>${escapeHtml(description)}</p>` : ''}
+          <p><strong>Command:</strong> <code>${escapeHtml(split.command || selectedCommand || '')}</code></p>
+          <p><strong>Params field:</strong> <code>${escapeHtml(paramsFieldValue)}</code></p>
+          <p><strong>Full call:</strong> <code>${escapeHtml(functionCall)}</code></p>
+          ${sampleReturnValue ? `<p><strong>Returns:</strong> <code>${escapeHtml(sampleReturnValue)}</code></p>` : ''}
+        </div>
+      `;
+    })
+    .join('');
+}
+
 function getReturnExamples(model) {
   const unique = new Set();
-  const add = (value) => {
-    toExampleList(value).forEach((entry) => unique.add(entry));
-  };
-  add(model?.example);
-  add(model?.exampleReturnValues);
-  add(model?.returnExamples);
-  return [...unique];
+  const usageExamples = Array.isArray(model?.usageExamples) ? model.usageExamples : [];
+  usageExamples.forEach((usageExample) => {
+    if (Object.prototype.hasOwnProperty.call(usageExample || {}, 'sampleReturnValue')) {
+      unique.add(normalizeReturnExampleValue(usageExample.sampleReturnValue).trim());
+    }
+  });
+  toExampleList(model?.returnExamples).forEach((entry) => unique.add(entry));
+  return [...unique].filter(Boolean);
 }
 
 function openMethodPickerModal({
@@ -301,9 +399,9 @@ function openMethodPickerModal({
       return;
     }
     const model = selected.helpModel || {};
-    const usageExamples = toExampleList(model.examples);
+    const usageExamples = getUsageFunctionCalls(model);
     const returnExamples = getReturnExamples(model);
-    const docsUrl = String(model.docsUrl || '').trim();
+    const docsUrl = resolveRuntimeDocsUrl(model.docsUrl, { windowObj });
     const hasParams = Array.isArray(model.params) && model.params.length > 0;
     detailElem.innerHTML = `
       <h4>${escapeHtml(selected.command)}</h4>
@@ -312,9 +410,8 @@ function openMethodPickerModal({
       <h5>Parameter Details</h5>
       <div class="method-picker-table-wrap">${renderParameterDetailsTable(model)}</div>
       ${hasParams ? `<h5>Parameter Types</h5><div class="method-picker-table-wrap">${renderParameterTypesTable(model)}</div>` : ''}
-      ${usageExamples.length ? `<h5>Usage Examples</h5>${renderExampleList(usageExamples, '')}` : ''}
-      <h5>Return Examples</h5>
-      ${renderExampleList(returnExamples, 'No return examples available')}
+      ${usageExamples.length ? `<h5>Usage Examples</h5>${renderUsageExamples(model, selected.command)}` : ''}
+      ${usageExamples.length === 0 ? `<h5>Return Examples</h5>${renderExampleList(returnExamples, 'No return examples available')}` : ''}
       ${
         docsUrl
           ? `<p class="method-picker-docs-link"><a href="${escapeHtml(docsUrl)}" target="_blank" rel="noopener noreferrer">Open documentation</a></p>`

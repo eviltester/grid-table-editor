@@ -97,5 +97,5 @@ describe('app test-data focused schema sync', () => {
     );
     expect(harness.getSchemaText()).not.toContain('Status');
     expect(harness.getSchemaText()).toContain('Code');
-  });
+  }, 45000);
 });

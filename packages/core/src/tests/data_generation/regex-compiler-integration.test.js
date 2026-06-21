@@ -16,10 +16,63 @@ describe('TestDataRulesCompiler regex pattern detection', () => {
     expect(compiler.isRegexPattern('awd.datatype.regex(value)')).toBe(true);
   });
 
-  test('explicit empty regex compiles to regex empty string', () => {
+  test('explicit empty regex stays regex but fails validation', () => {
     const rules = [new TestDataRule('EmptyRegex', 'regex("")')];
     compiler.compile(rules);
+
     expect(rules[0].type).toBe('regex');
     expect(rules[0].ruleSpec).toBe('');
+    compiler.validate();
+    expect(compiler.errors).toContainEqual(
+      expect.objectContaining({
+        code: 'compiler_validation_error',
+        column: 'EmptyRegex',
+        message: expect.stringContaining('Regex pattern is required and cannot be blank'),
+      })
+    );
+  });
+
+  test('explicit malformed regex stays regex but fails validation', () => {
+    const rules = [new TestDataRule('BadRegex', 'datatype.regex([)')];
+    compiler.compile(rules);
+
+    expect(rules[0].type).toBe('regex');
+    expect(rules[0].ruleSpec).toBe('[');
+    compiler.validate();
+    expect(compiler.errors).toContainEqual(
+      expect.objectContaining({
+        code: 'compiler_validation_error',
+        column: 'BadRegex',
+        message: expect.stringContaining('Unterminated character class'),
+      })
+    );
+  });
+
+  test('untyped blank rules no longer fall through to regex', () => {
+    const rules = [new TestDataRule('BlankRule', '')];
+    compiler.compile(rules);
+
+    expect(rules[0].type).toBe('literal');
+    expect(compiler.errors).toContainEqual(
+      expect.objectContaining({
+        code: 'compiler_validation_error',
+        column: 'BlankRule',
+        message: "Evaluating BlankRule as 'literal'",
+      })
+    );
+  });
+
+  test('untyped malformed regex-like text falls back to literal', () => {
+    const rules = [new TestDataRule('RawBadRegex', '[')];
+    compiler.compile(rules);
+
+    expect(rules[0].type).toBe('literal');
+    expect(compiler.errors).toContainEqual(
+      expect.objectContaining({
+        code: 'compiler_validation_error',
+        column: 'RawBadRegex',
+        message: "Evaluating RawBadRegex as 'literal'",
+      })
+    );
   });
 });

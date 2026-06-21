@@ -24,6 +24,19 @@ If verification fails:
 - `verify:ci` is the full aggregate gate, including coverage, used to mirror the main-branch CI path locally.
 - Pull request CI runs parallel independent gates and intentionally skips coverage; coverage runs on `master` push CI.
 
+## Command Help Example Conventions
+
+When changing command help metadata, usage examples, or command-help tests:
+
+- treat `usageExamples` as the source of truth for example maintenance and validation
+- do not add or preserve legacy `example`, `examples`, or `exampleReturnValues` fields on keyword definitions or runtime command-help objects
+- use domain named-parameter invocation form for all non-`helpers.*` command help examples, e.g. `internet.password(length=12, memorable=true)`
+- allow faker-style invocation examples only for `helpers.*` commands
+- do not convert domain-backed command help examples into faker object or positional syntax when exposing help metadata
+- for domain commands, `docsUrl` must point to the AnyWayData docs page and never to `fakerjs.dev`
+- for faker-backed domain commands, expose the upstream Faker reference separately as `fakerDocsUrl`
+- validators are called as `(value, context)` and must use `context.fieldDefinition` for rule-specific checks such as enum membership or counterstring length bounds
+
 ## Browser Test Interaction Rules
 
 When changing UI code, UI test abstractions, or browser tests:

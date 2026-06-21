@@ -25,12 +25,13 @@ No parameters.
 
 Examples:
 
+Shows the default company.buzzAdjective call.
+
 ```txt
-company.buzzAdjective()
+company.buzzAdjective
 ```
 
-Example return values:
-- `out-of-the-box`
+Returns: `immersive`
 
 ### `company.buzzNoun`
 
@@ -43,12 +44,13 @@ No parameters.
 
 Examples:
 
+Shows the default company.buzzNoun call.
+
 ```txt
-company.buzzNoun()
+company.buzzNoun
 ```
 
-Example return values:
-- `deliverables`
+Returns: `interfaces`
 
 ### `company.buzzPhrase`
 
@@ -61,12 +63,13 @@ No parameters.
 
 Examples:
 
+Shows the default company.buzzPhrase call.
+
 ```txt
-company.buzzPhrase()
+company.buzzPhrase
 ```
 
-Example return values:
-- `streamline cutting-edge platforms`
+Returns: `grow robust AI`
 
 ### `company.buzzVerb`
 
@@ -79,12 +82,13 @@ No parameters.
 
 Examples:
 
+Shows the default company.buzzVerb call.
+
 ```txt
-company.buzzVerb()
+company.buzzVerb
 ```
 
-Example return values:
-- `disintermediate`
+Returns: `grow`
 
 ### `company.catchPhrase`
 
@@ -97,12 +101,13 @@ No parameters.
 
 Examples:
 
+Shows the default company.catchPhrase call.
+
 ```txt
-company.catchPhrase()
+company.catchPhrase
 ```
 
-Example return values:
-- `Diverse AI-powered flexibility`
+Returns: `Integrated radical ability`
 
 ### `company.catchPhraseAdjective`
 
@@ -115,12 +120,13 @@ No parameters.
 
 Examples:
 
+Shows the default company.catchPhraseAdjective call.
+
 ```txt
-company.catchPhraseAdjective()
+company.catchPhraseAdjective
 ```
 
-Example return values:
-- `Distributed`
+Returns: `Integrated`
 
 ### `company.catchPhraseDescriptor`
 
@@ -133,12 +139,13 @@ No parameters.
 
 Examples:
 
+Shows the default company.catchPhraseDescriptor call.
+
 ```txt
-company.catchPhraseDescriptor()
+company.catchPhraseDescriptor
 ```
 
-Example return values:
-- `encompassing`
+Returns: `heuristic`
 
 ### `company.catchPhraseNoun`
 
@@ -151,12 +158,13 @@ No parameters.
 
 Examples:
 
+Shows the default company.catchPhraseNoun call.
+
 ```txt
-company.catchPhraseNoun()
+company.catchPhraseNoun
 ```
 
-Example return values:
-- `attitude`
+Returns: `generative AI`
 
 ### `company.name`
 
@@ -169,9 +177,10 @@ No parameters.
 
 Examples:
 
+Shows the default company.name call.
+
 ```txt
-company.name()
+company.name
 ```
 
-Example return values:
-- `Lang - Little`
+Returns: `Gutmann Group`

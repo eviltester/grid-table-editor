@@ -14,25 +14,7 @@ The `science` domain maps domain keywords to underlying faker implementations.
 
 ## Methods
 
-### `science.chemicalElement`
-
-Generate a value using faker science.chemicalElement.
-
-- Canonical: `awd.domain.science.chemicalElement`
-- Faker docs: [https://fakerjs.dev/api/science](https://fakerjs.dev/api/science)
-
-No parameters.
-
-Examples:
-
-```txt
-science.chemicalElement()
-```
-
-Example return values:
-- `{"name":"Oxygen","symbol":"O","atomicNumber":8}`
-
-### `science.chemicalElement.atomicNumber`
+### `chemicalElement.atomicNumber`
 
 Generate a chemical element atomic number.
 
@@ -43,14 +25,15 @@ No parameters.
 
 Examples:
 
+Shows the default science.chemicalElement.atomicNumber call.
+
 ```txt
-science.chemicalElement.atomicNumber()
+science.chemicalElement.atomicNumber
 ```
 
-Example return values:
-- `8`
+Returns: `50`
 
-### `science.chemicalElement.name`
+### `chemicalElement.name`
 
 Generate a chemical element name.
 
@@ -61,14 +44,15 @@ No parameters.
 
 Examples:
 
+Shows the default science.chemicalElement.name call.
+
 ```txt
-science.chemicalElement.name()
+science.chemicalElement.name
 ```
 
-Example return values:
-- `Oxygen`
+Returns: `Tin`
 
-### `science.chemicalElement.symbol`
+### `chemicalElement.symbol`
 
 Generate a chemical element symbol.
 
@@ -79,27 +63,48 @@ No parameters.
 
 Examples:
 
+Shows the default science.chemicalElement.symbol call.
+
 ```txt
-science.chemicalElement.symbol()
+science.chemicalElement.symbol
 ```
 
-Example return values:
-- `O`
+Returns: `Sn`
 
-### `science.unit`
+### `unit.name`
 
-Returns a random scientific unit.
+Generate a scientific unit name.
 
-- Canonical: `awd.domain.science.unit`
+- Canonical: `awd.domain.science.unit.name`
 - Faker docs: [https://fakerjs.dev/api/science](https://fakerjs.dev/api/science)
 
 No parameters.
 
 Examples:
 
+Shows the default science.unit.name call.
+
 ```txt
-science.unit()
+science.unit.name
 ```
 
-Example return values:
-- `{"name":"farad","symbol":"F"}`
+Returns: `watt`
+
+### `unit.symbol`
+
+Generate a scientific unit symbol.
+
+- Canonical: `awd.domain.science.unit.symbol`
+- Faker docs: [https://fakerjs.dev/api/science](https://fakerjs.dev/api/science)
+
+No parameters.
+
+Examples:
+
+Shows the default science.unit.symbol call.
+
+```txt
+science.unit.symbol
+```
+
+Returns: `W`

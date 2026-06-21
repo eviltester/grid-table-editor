@@ -25,12 +25,13 @@ No parameters.
 
 Examples:
 
+Shows the default food.adjective call.
+
 ```txt
-food.adjective()
+food.adjective
 ```
 
-Example return values:
-- `salty`
+Returns: `juicy`
 
 ### `food.description`
 
@@ -43,12 +44,13 @@ No parameters.
 
 Examples:
 
+Shows the default food.description call.
+
 ```txt
-food.description()
+food.description
 ```
 
-Example return values:
-- `Fresh mixed greens tossed with pimento-rubbed pigeon, bean shoots, and a light dressing.`
+Returns: `An exquisite artichoke dish, paired with brown rice and a hint of cardamom.`
 
 ### `food.dish`
 
@@ -61,12 +63,13 @@ No parameters.
 
 Examples:
 
+Shows the default food.dish call.
+
 ```txt
-food.dish()
+food.dish
 ```
 
-Example return values:
-- `Chicken Fajitas`
+Returns: `Cinnamon-crusted Chicken`
 
 ### `food.ethnicCategory`
 
@@ -79,12 +82,13 @@ No parameters.
 
 Examples:
 
+Shows the default food.ethnicCategory call.
+
 ```txt
-food.ethnicCategory()
+food.ethnicCategory
 ```
 
-Example return values:
-- `Lithuanian`
+Returns: `Indonesian`
 
 ### `food.fruit`
 
@@ -97,12 +101,13 @@ No parameters.
 
 Examples:
 
+Shows the default food.fruit call.
+
 ```txt
-food.fruit()
+food.fruit
 ```
 
-Example return values:
-- `snowpea`
+Returns: `grapefruit`
 
 ### `food.ingredient`
 
@@ -115,12 +120,13 @@ No parameters.
 
 Examples:
 
+Shows the default food.ingredient call.
+
 ```txt
-food.ingredient()
+food.ingredient
 ```
 
-Example return values:
-- `spelt`
+Returns: `green pepper`
 
 ### `food.meat`
 
@@ -133,12 +139,13 @@ No parameters.
 
 Examples:
 
+Shows the default food.meat call.
+
 ```txt
-food.meat()
+food.meat
 ```
 
-Example return values:
-- `goose`
+Returns: `kangaroo`
 
 ### `food.spice`
 
@@ -151,12 +158,13 @@ No parameters.
 
 Examples:
 
+Shows the default food.spice call.
+
 ```txt
-food.spice()
+food.spice
 ```
 
-Example return values:
-- `poudre de colombo`
+Returns: `fines herbes`
 
 ### `food.vegetable`
 
@@ -169,9 +177,10 @@ No parameters.
 
 Examples:
 
+Shows the default food.vegetable call.
+
 ```txt
-food.vegetable()
+food.vegetable
 ```
 
-Example return values:
-- `snowpea sprouts`
+Returns: `eggplant`

@@ -15,7 +15,6 @@ The `literal` domain returns caller-provided values directly and does not invoke
 Return the literal value provided by the caller.
 
 - Canonical: `awd.domain.literal.value`
-- Docs: [https://anywaydata.com/docs/category/generating-data](https://anywaydata.com/docs/category/generating-data)
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
@@ -23,13 +22,34 @@ Return the literal value provided by the caller.
 
 Examples:
 
-```txt
-literal.value("Pending")
-```
+Shows literal.value in use.
 
 ```txt
-literal.value("")
+literal.value(value="Pending")
 ```
 
-Example return values:
-- `Pending`
+Returns: `Pending`
+
+Shows literal.value in use.
+
+```txt
+literal.value(value="")
+```
+
+Returns: ``
+
+Shows literal.value when optional params are omitted.
+
+```txt
+literal.value()
+```
+
+Returns: ``
+
+Shows literal.value using value.
+
+```txt
+literal.value(value=1)
+```
+
+Returns: `1`

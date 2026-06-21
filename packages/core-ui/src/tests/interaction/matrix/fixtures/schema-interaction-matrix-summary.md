@@ -162,7 +162,6 @@ Non-executable scenario count: **11**
 - `image.dataUri`
 - `image.personPortrait`
 - `image.url`
-- `image.urlLoremFlickr`
 - `image.urlPicsumPhotos`
 - `internet.displayName`
 - `internet.domainName`
@@ -2510,9 +2509,6 @@ Non-executable scenario count: **11**
 
 ```
 
-#### `domain-image-urlLoremFlickr-base`
-
-- Command(s): `image.urlLoremFlickr()`
 - Preview data:
 ```csv
 
@@ -5577,7 +5573,6 @@ Non-executable scenario count: **0**
 - `image.dataUri`
 - `image.personPortrait`
 - `image.url`
-- `image.urlLoremFlickr`
 - `image.urlPicsumPhotos`
 - `internet.displayName`
 - `internet.domainName`
@@ -7868,9 +7863,6 @@ Non-executable scenario count: **0**
 
 ```
 
-#### `domain-image-urlLoremFlickr-base`
-
-- Command(s): `image.urlLoremFlickr()`
 - Preview data:
 ```csv
 
@@ -11044,5 +11036,4 @@ Structural-only preview parity scenario count: **5**
 ```csv
 
 ```
-
 

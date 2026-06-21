@@ -1,4 +1,6 @@
 import { getDomainKeywordHelpByAlias } from '@anywaydata/core/domain/domain-keywords.js';
+import { normalizeUsageExamples } from '@anywaydata/core/command-help/command-help-contract.js';
+import { validateEnumMemberValue } from '@anywaydata/core/command-help/command-help-validators.js';
 
 const ANYWAYDATA_DOMAIN_DOCS_BASE = 'https://anywaydata.com/docs/test-data/domain';
 
@@ -8,10 +10,15 @@ const SYNTHETIC_DOMAIN_HELP = Object.freeze({
     summary:
       'Enum helper accepts a list of values and returns one value at random. Supports enum(value1,value2), enum value1,value2, or datatype.enum(value1,value2).',
     docsUrl: `${ANYWAYDATA_DOMAIN_DOCS_BASE}/datatype`,
-    example: 'datatype.enum(active,inactive,pending)',
-    examples: ['datatype.enum(active,inactive,pending)'],
-    exampleReturnValues: ['active', 'inactive', 'pending'],
+    usageExamples: [
+      {
+        functionCall: 'datatype.enum(active,inactive,pending)',
+        sampleReturnValue: 'active',
+        description: 'Shows the canonical datatype enum helper with three discrete values.',
+      },
+    ],
     returnType: 'string',
+    validator: validateEnumMemberValue,
     args: [
       {
         name: 'values',
@@ -24,6 +31,26 @@ const SYNTHETIC_DOMAIN_HELP = Object.freeze({
     ],
   },
 });
+
+function normalizeSyntheticDomainHelp(command, definition) {
+  const args = Array.isArray(definition?.args) ? definition.args : [];
+  const usageExamples = normalizeUsageExamples({
+    command,
+    returnType: definition?.returnType,
+    usageExamples: definition?.usageExamples,
+  });
+
+  return {
+    canonical: definition.canonical,
+    summary: definition.summary,
+    docsUrl: definition.docsUrl,
+    fakerDocsUrl: String(definition.fakerDocsUrl || '').trim(),
+    usageExamples,
+    validator: definition?.validator,
+    returnType: definition.returnType,
+    args,
+  };
+}
 
 function getDomainPageFromCommand(command) {
   const value = String(command || '').trim();
@@ -54,9 +81,10 @@ function resolveDomainDocsUrl(command, keywordDocsUrl) {
 }
 
 function getDomainCommandHelp(command) {
-  const synthetic = SYNTHETIC_DOMAIN_HELP[String(command || '').trim()];
+  const normalizedCommand = String(command || '').trim();
+  const synthetic = SYNTHETIC_DOMAIN_HELP[normalizedCommand];
   if (synthetic) {
-    return synthetic;
+    return normalizeSyntheticDomainHelp(normalizedCommand, synthetic);
   }
   const commandHelp = getDomainKeywordHelpByAlias(command);
   if (!commandHelp) {
@@ -67,9 +95,9 @@ function getDomainCommandHelp(command) {
     canonical: commandHelp.canonical,
     summary: commandHelp.summary || '',
     docsUrl: resolveDomainDocsUrl(command, commandHelp.docsUrl || ''),
-    example: commandHelp.example || '',
-    examples: Array.isArray(commandHelp.examples) ? commandHelp.examples : [],
-    exampleReturnValues: Array.isArray(commandHelp.exampleReturnValues) ? commandHelp.exampleReturnValues : [],
+    fakerDocsUrl: String(commandHelp.fakerDocsUrl || '').trim(),
+    usageExamples: Array.isArray(commandHelp.usageExamples) ? commandHelp.usageExamples : [],
+    validator: commandHelp.validator,
     returnType: commandHelp.returnType || '',
     args: Array.isArray(commandHelp.args) ? commandHelp.args : [],
   };

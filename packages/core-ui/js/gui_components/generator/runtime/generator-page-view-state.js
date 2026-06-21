@@ -35,6 +35,9 @@ function createGeneratorPageViewState({ runtime, createUnavailableRowCountResult
     setPreviewDataTable(dataTable) {
       runtime?.generatorPreview?.setPreviewDataTable?.(dataTable);
     },
+    clearOutputPreview() {
+      runtime?.generatorPreview?.clearOutputPreview?.();
+    },
     renderOutputPreviewForCurrentSelection() {
       runtime?.generatorPreview?.renderOutputPreview?.(getSelectedOutputType(), runtime?.exporter || null);
     },

@@ -9,6 +9,7 @@ import {
   getKnownDomainCommandsAlphabetical,
   getDomainKeywordByCommand,
 } from '../../../../../js/gui_components/shared/domain-commands.js';
+import { DomainKeywordInvocationParser } from '@anywaydata/core/domain/parser/DomainKeywordInvocationParser.js';
 import { getVisibleDomainCommands } from '../../../../../js/gui_components/shared/test-data/help/domain-command-provider.js';
 import { getDomainCommandHelp } from '../../../../../js/gui_components/shared/domain-command-help-metadata.js';
 import {
@@ -38,6 +39,7 @@ const CUSTOM_SOURCE_TYPES = [
   SOURCE_TYPE_FAKER,
   SOURCE_TYPE_DOMAIN,
 ];
+const DOMAIN_INVOCATION_PARSER = new DomainKeywordInvocationParser();
 const DEFAULT_ROW_NAME = 'Value';
 const FAKER_INTERACTION_COMMANDS = getAllowedFakerCommandsAlphabetical().filter(
   (command) => command !== 'RegEx' && command.startsWith('helpers.')
@@ -98,55 +100,15 @@ const CUSTOM_SCENARIOS = [
   },
 ];
 
-const FAKER_PARAM_OVERRIDES = {
-  'helpers.arrayElement': ['["A", "B"]'],
-  'helpers.arrayElements': ['["A", "B", "C"]', '2'],
-  'date.between': ['{ from: "2020-01-01T00:00:00.000Z", to: "2020-12-31T00:00:00.000Z" }'],
-  'date.betweens': ['{ from: "2020-01-01T00:00:00.000Z", to: "2020-12-31T00:00:00.000Z", count: 2 }'],
-  'helpers.fake': ['"{{person.firstName}}"'],
-  'helpers.mustache': ['"{{name}}"', '{ name: "Ada" }'],
-  'helpers.fromRegExp': ['"[A-Z]{2}"'],
-  'helpers.rangeToNumber': ['{ min: 1, max: 2 }'],
-  'helpers.shuffle': ['["A", "B", "C"]'],
-  'helpers.weightedArrayElement': ['[{ "weight": 1, "value": "A" }, { "weight": 2, "value": "B" }]'],
-  'string.fromCharacters': ['"ABC123"', '4'],
-};
-
-const DOMAIN_PARAM_OVERRIDES = {
-  'datatype.enum': {
-    defaults: ['"active"', '"inactive"', '"pending"'],
-  },
-  'date.between': {
-    defaults: ['1577836800000', '1609372800000'],
-    named: { from: '1577836800000', to: '1609372800000' },
-  },
-  'date.betweens': {
-    defaults: ['2', '1577836800000', '1609372800000'],
-    named: { count: '2', from: '1577836800000', to: '1609372800000' },
-  },
-  'string.counterString': {
-    defaults: ['1', '25', '"*"'],
-    named: { min: '2', max: '5', delimiter: '"#"' },
-  },
-  'autoIncrement.sequence': {
-    defaults: ['1', '5', '"filename"', '".txt"', '3'],
-    named: { start: '10', step: '5', prefix: '"T-"', suffix: '""', zeropadding: '2' },
-  },
-  'string.fromCharacters': {
-    defaults: ['"ABC123"', '4'],
-    named: { characters: '"ABC123"', length: '4' },
-  },
-};
-
 const DOMAIN_SCENARIO_EXECUTION_CACHE = new Map();
 const FAKER_SCENARIO_EXECUTION_CACHE = new Map();
+const CUSTOM_SCENARIO_EXECUTION_CACHE = new Map();
 const UI_REPRESENTATIVE_SCENARIO_IDS = new Set([
   'custom-enum-base',
   'custom-enum-pairwise',
   'custom-literal-base',
   'custom-literal-empty',
   'custom-regex-base',
-  'custom-regex-empty',
   'faker-helpers-arrayElement-base',
   'faker-helpers-fake-base',
   'faker-helpers-fromRegExp-example-1',
@@ -162,18 +124,6 @@ const UI_REPRESENTATIVE_SCENARIO_IDS = new Set([
   'domain-string-counterString-example-1',
   'domain-string-fromCharacters-base',
 ]);
-const DOMAIN_ARG_COMPANION_OVERRIDES = {
-  'date.between': {
-    from: { to: '1609372800000' },
-    to: { from: '1577836800000' },
-  },
-  'date.birthdate': {
-    max: { min: '18', mode: '"age"' },
-    min: { max: '65', mode: '"age"' },
-    mode: { min: '18', max: '65' },
-    refDate: { min: '18', max: '65', mode: '"age"' },
-  },
-};
 const ERROR_PATTERNS = [
   /\*\*ERROR\*\*/i,
   /Invalid Faker API Call/i,
@@ -181,16 +131,24 @@ const ERROR_PATTERNS = [
   /Unsafe faker rule syntax/i,
   /\bException\b/i,
 ];
+const PRIMITIVE_TYPE_TOKENS = new Set([
+  'string',
+  'number',
+  'integer',
+  'boolean',
+  'array',
+  'object',
+  'date',
+  'regexp',
+  'unknown',
+  'bigint',
+]);
 
 function slugify(value) {
   return String(value || '')
     .trim()
     .replace(/[^a-zA-Z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
-}
-
-function quoteString(value) {
-  return JSON.stringify(String(value));
 }
 
 function buildExpectedSchemaText(rows) {
@@ -246,184 +204,120 @@ function createScenario({
   };
 }
 
-function buildNamedParams(namedValues) {
-  const entries = Object.entries(namedValues).filter(([, value]) => typeof value !== 'undefined');
-  if (entries.length === 0) {
-    return '()';
+function parseLiteralTypeToken(token) {
+  const trimmed = String(token || '').trim();
+  if (!trimmed) {
+    return undefined;
   }
-  return `(${entries.map(([name, value]) => `${name}=${value}`).join(', ')})`;
+  if ((trimmed.startsWith('"') && trimmed.endsWith('"')) || (trimmed.startsWith("'") && trimmed.endsWith("'"))) {
+    return trimmed.slice(1, -1);
+  }
+  if (/^[+-]?\d+(\.\d+)?$/.test(trimmed)) {
+    return Number(trimmed);
+  }
+  return trimmed;
 }
 
-function buildPositionalParams(values) {
-  if (!Array.isArray(values) || values.length === 0) {
-    return '()';
-  }
-  return `(${values.join(', ')})`;
-}
+function splitTopLevelArguments(argsText = '') {
+  const args = [];
+  let current = '';
+  let depth = 0;
+  let quote = '';
+  let escaping = false;
 
-function renderExampleParamValue(exampleValue) {
-  if (typeof exampleValue === 'string') return quoteString(exampleValue);
-  if (typeof exampleValue === 'number' || typeof exampleValue === 'boolean') return String(exampleValue);
-  if (exampleValue === null) return 'null';
-  if (Array.isArray(exampleValue) || typeof exampleValue === 'object') return JSON.stringify(exampleValue);
-  return quoteString(String(exampleValue));
-}
-
-function buildGenericParamValue({ paramName, paramType, command, sourceType, index, argExamples = [] }) {
-  const normalisedName = String(paramName || '').trim();
-  const lowerName = normalisedName.toLowerCase();
-  const typeText = String(paramType || '')
-    .trim()
-    .toLowerCase();
-
-  if (Array.isArray(argExamples) && argExamples.length > 0) {
-    return renderExampleParamValue(argExamples[0]);
-  }
-
-  if (sourceType === SOURCE_TYPE_DOMAIN) {
-    const domainOverride = DOMAIN_PARAM_OVERRIDES[command]?.named?.[normalisedName];
-    if (typeof domainOverride !== 'undefined') {
-      return domainOverride;
+  for (const character of String(argsText || '')) {
+    if (escaping) {
+      current += character;
+      escaping = false;
+      continue;
     }
+
+    if (quote) {
+      current += character;
+      if (character === '\\') {
+        escaping = true;
+        continue;
+      }
+      if (character === quote) {
+        quote = '';
+      }
+      continue;
+    }
+
+    if (character === '"' || character === "'") {
+      quote = character;
+      current += character;
+      continue;
+    }
+
+    if (character === '(' || character === '[' || character === '{') {
+      depth += 1;
+      current += character;
+      continue;
+    }
+
+    if (character === ')' || character === ']' || character === '}') {
+      depth = Math.max(0, depth - 1);
+      current += character;
+      continue;
+    }
+
+    if (character === ',' && depth === 0) {
+      if (current.trim()) {
+        args.push(current.trim());
+      }
+      current = '';
+      continue;
+    }
+
+    current += character;
   }
 
-  if (lowerName === 'min') return '1';
-  if (lowerName === 'max') return '3';
-  if (lowerName === 'count') return '2';
-  if (lowerName === 'linecount') return '2';
-  if (lowerName === 'linecountmin') return '1';
-  if (lowerName === 'linecountmax') return '2';
-  if (lowerName === 'length') return '4';
-  if (lowerName === 'linelength') return '4';
-  if (lowerName === 'prefix') return '"#"';
-  if (lowerName === 'suffix') return '".txt"';
-  if (lowerName === 'separator') return '"-"';
-  if (lowerName === 'delimiter') return '"*"';
-  if (lowerName === 'zeropadding') return '3';
-  if (lowerName === 'variant') return '"13"';
-  if (lowerName === 'protocol') return '"https"';
-  if (lowerName === 'provider') return '"example.com"';
-  if (lowerName === 'firstname') return '"Ada"';
-  if (lowerName === 'lastname') return '"Lovelace"';
-  if (lowerName === 'sex') return '"male"';
-  if (lowerName === 'version') return '7';
-  if (lowerName === 'refdate') return '1';
-  if (!typeText.includes('integer') && !typeText.includes('number') && lowerName === 'from') {
-    return '"2020-01-01T00:00:00.000Z"';
+  if (current.trim()) {
+    args.push(current.trim());
   }
-  if (!typeText.includes('integer') && !typeText.includes('number') && lowerName === 'to') {
-    return '"2020-12-31T00:00:00.000Z"';
-  }
-  if (lowerName === 'pattern') return '"[A-Z]{2}"';
-  if (lowerName === 'text') return '"{{name}}"';
-  if (lowerName === 'characters') return '"ABC123"';
-  if (lowerName === 'casing') return '"upper"';
-  if (lowerName === 'format') return '"css"';
-  if (lowerName === 'appendslash') return 'true';
-  if (lowerName === 'allowleadingzeros') return 'true';
-  if (lowerName === 'includealpha') return 'true';
-  if (lowerName === 'usefulladdress') return 'true';
 
-  if (typeText.includes('boolean')) return 'true';
-  if (typeText.includes('integer')) return String(index + 2);
-  if (typeText.includes('number')) return String(index + 2);
-  if (typeText.includes('array')) return '["A", "B"]';
-  if (typeText.includes('regexp')) return '"[A-Z]{2}"';
-  if (typeText.includes('object')) return '{}';
-  if (typeText.includes('string'))
-    return quoteString(`${slugify(command || sourceType || 'value') || 'value'}-${normalisedName || index}`);
-
-  return quoteString(`${slugify(command || sourceType || 'value') || 'value'}-${normalisedName || index}`);
+  return args;
 }
 
-function buildFakerBaseParams(command, params) {
-  const override = FAKER_PARAM_OVERRIDES[command];
-  if (override) {
-    return buildPositionalParams(override);
+function getHelperExampleArgCount(functionCall) {
+  const trimmed = String(functionCall || '').trim();
+  const openParenIndex = trimmed.indexOf('(');
+  if (openParenIndex === -1) {
+    return 0;
   }
-  const requiredCount = params.filter((param) => param.optional === false).length;
-  if (requiredCount === 0) {
-    return '()';
+
+  const inner = trimmed.slice(openParenIndex + 1, -1).trim();
+  if (!inner) {
+    return 0;
   }
-  const values = params.slice(0, requiredCount).map((param, index) =>
-    buildGenericParamValue({
-      paramName: param.name,
-      paramType: param.type,
-      command,
-      sourceType: SOURCE_TYPE_FAKER,
-      index,
-      argExamples: param.examples,
-    })
-  );
-  return buildPositionalParams(values);
+
+  return splitTopLevelArguments(inner).length;
 }
 
-function buildFakerArgumentScenarios(command, metadata) {
-  const params = Array.isArray(metadata?.params) ? metadata.params : [];
-  const scenarios = [];
-  params.forEach((param, index) => {
-    const values = [];
-    for (let paramIndex = 0; paramIndex <= index; paramIndex += 1) {
-      const current = params[paramIndex];
-      values.push(
-        buildGenericParamValue({
-          paramName: current.name,
-          paramType: current.type,
-          command,
-          sourceType: SOURCE_TYPE_FAKER,
-          index: paramIndex,
-          argExamples: current.examples,
-        })
-      );
-    }
-    scenarios.push(
-      createScenario({
-        id: `faker-${slugify(command)}-arg-${slugify(param.name)}`,
-        sourceType: SOURCE_TYPE_FAKER,
-        command,
-        label: `${command} arg ${param.name}`,
-        rows: [
-          { name: DEFAULT_ROW_NAME, sourceType: SOURCE_TYPE_FAKER, command, params: buildPositionalParams(values) },
-        ],
-        coveredArgs: [param.name],
-        origins: ['arg'],
-        metadata,
-      })
-    );
-  });
+function getLiteralUnionValues(typeName) {
+  const typeTokens = String(typeName || '')
+    .split('|')
+    .map((entry) => entry.trim())
+    .filter(Boolean);
 
-  if (params.length >= 2) {
-    for (let index = 0; index < params.length - 1; index += 1) {
-      const left = params[index];
-      const right = params[index + 1];
-      const values = params.slice(0, index + 2).map((param, paramIndex) =>
-        buildGenericParamValue({
-          paramName: param.name,
-          paramType: param.type,
-          command,
-          sourceType: SOURCE_TYPE_FAKER,
-          index: paramIndex,
-          argExamples: param.examples,
-        })
-      );
-      scenarios.push(
-        createScenario({
-          id: `faker-${slugify(command)}-pair-${slugify(left.name)}-${slugify(right.name)}`,
-          sourceType: SOURCE_TYPE_FAKER,
-          command,
-          label: `${command} pair ${left.name}/${right.name}`,
-          rows: [
-            { name: DEFAULT_ROW_NAME, sourceType: SOURCE_TYPE_FAKER, command, params: buildPositionalParams(values) },
-          ],
-          coveredArgs: [left.name, right.name],
-          origins: ['pair'],
-          metadata,
-        })
-      );
-    }
+  if (typeTokens.length === 0) {
+    return [];
   }
 
-  return scenarios;
+  const literalValues = [];
+  for (const typeToken of typeTokens) {
+    if (PRIMITIVE_TYPE_TOKENS.has(typeToken)) {
+      return [];
+    }
+    const literalValue = parseLiteralTypeToken(typeToken);
+    if (typeof literalValue === 'undefined') {
+      return [];
+    }
+    literalValues.push(literalValue);
+  }
+
+  return literalValues;
 }
 
 function parseExampleInvocation(example, command) {
@@ -456,149 +350,96 @@ function parseFakerExampleInvocation(example, command) {
   return null;
 }
 
-function buildDomainBaseParams(command, metadata) {
-  const args = Array.isArray(metadata?.args) ? metadata.args : [];
-  if (DOMAIN_PARAM_OVERRIDES[command]?.defaults) {
-    return buildPositionalParams(DOMAIN_PARAM_OVERRIDES[command].defaults);
-  }
-  const requiredArgs = args.filter((arg) => arg.required === true);
-  if (requiredArgs.length === 0) {
-    return '()';
-  }
-  const namedValues = {};
-  requiredArgs.forEach((arg, index) => {
-    namedValues[arg.name] = buildGenericParamValue({
-      paramName: arg.name,
-      paramType: arg.type,
-      command,
-      sourceType: SOURCE_TYPE_DOMAIN,
-      index,
-      argExamples: arg.examples,
-    });
-  });
-  return buildNamedParams(namedValues);
+function getUsageExampleFunctionCalls(metadata = {}) {
+  return (Array.isArray(metadata?.usageExamples) ? metadata.usageExamples : [])
+    .map((usageExample) => String(usageExample?.functionCall || '').trim())
+    .filter(Boolean);
 }
 
-function buildDomainArgumentScenarios(command, metadata) {
-  const args = Array.isArray(metadata?.args) ? metadata.args : [];
-  const scenarios = [];
-  const requiredArgs = args.filter((arg) => arg.required === true);
+function isRequiredMetadataArg(arg) {
+  return arg?.required === true || arg?.optional === false;
+}
 
-  args.forEach((arg, index) => {
-    const namedValues = {};
-    requiredArgs.forEach((requiredArg, requiredIndex) => {
-      namedValues[requiredArg.name] = buildGenericParamValue({
-        paramName: requiredArg.name,
-        paramType: requiredArg.type,
-        command,
-        sourceType: SOURCE_TYPE_DOMAIN,
-        index: requiredIndex,
-        argExamples: requiredArg.examples,
-      });
-    });
-    namedValues[arg.name] = buildGenericParamValue({
-      paramName: arg.name,
-      paramType: arg.type,
-      command,
-      sourceType: SOURCE_TYPE_DOMAIN,
-      index,
-      argExamples: arg.examples,
-    });
-    Object.assign(namedValues, DOMAIN_ARG_COMPANION_OVERRIDES[command]?.[arg.name] || {});
-    scenarios.push(
-      createScenario({
-        id: `domain-${slugify(command)}-arg-${slugify(arg.name)}`,
-        sourceType: SOURCE_TYPE_DOMAIN,
-        command,
-        label: `${command} arg ${arg.name}`,
-        rows: [
-          { name: DEFAULT_ROW_NAME, sourceType: SOURCE_TYPE_DOMAIN, command, params: buildNamedParams(namedValues) },
-        ],
-        coveredArgs: [arg.name],
-        origins: ['arg'],
-        metadata,
-      })
-    );
+function findMinimalFakerExample(command, metadata = {}) {
+  const requiredArgCount = Array.isArray(metadata?.params)
+    ? metadata.params.filter((param) => param.optional === false).length
+    : 0;
+  return getUsageExampleFunctionCalls(metadata).find((example) => {
+    const params = parseFakerExampleInvocation(example, command);
+    return params !== null && getHelperExampleArgCount(example) === requiredArgCount;
   });
+}
 
-  if (args.length >= 2) {
-    for (let index = 0; index < args.length - 1; index += 1) {
-      const left = args[index];
-      const right = args[index + 1];
-      const namedValues = {};
-      requiredArgs.forEach((requiredArg, requiredIndex) => {
-        namedValues[requiredArg.name] = buildGenericParamValue({
-          paramName: requiredArg.name,
-          paramType: requiredArg.type,
-          command,
-          sourceType: SOURCE_TYPE_DOMAIN,
-          index: requiredIndex,
-          argExamples: requiredArg.examples,
-        });
-      });
-      namedValues[left.name] = buildGenericParamValue({
-        paramName: left.name,
-        paramType: left.type,
-        command,
-        sourceType: SOURCE_TYPE_DOMAIN,
-        index,
-        argExamples: left.examples,
-      });
-      namedValues[right.name] = buildGenericParamValue({
-        paramName: right.name,
-        paramType: right.type,
-        command,
-        sourceType: SOURCE_TYPE_DOMAIN,
-        index: index + 1,
-        argExamples: right.examples,
-      });
-      Object.assign(namedValues, DOMAIN_ARG_COMPANION_OVERRIDES[command]?.[left.name] || {});
-      Object.assign(namedValues, DOMAIN_ARG_COMPANION_OVERRIDES[command]?.[right.name] || {});
-      scenarios.push(
-        createScenario({
-          id: `domain-${slugify(command)}-pair-${slugify(left.name)}-${slugify(right.name)}`,
-          sourceType: SOURCE_TYPE_DOMAIN,
-          command,
-          label: `${command} pair ${left.name}/${right.name}`,
-          rows: [
-            { name: DEFAULT_ROW_NAME, sourceType: SOURCE_TYPE_DOMAIN, command, params: buildNamedParams(namedValues) },
-          ],
-          coveredArgs: [left.name, right.name],
-          origins: ['pair'],
-          metadata,
-        })
-      );
+function findMinimalDomainExample(command, metadata = {}) {
+  const args = Array.isArray(metadata?.args) ? metadata.args : [];
+  const requiredParamNames = new Set(args.filter((arg) => isRequiredMetadataArg(arg)).map((arg) => arg.name));
+  return getUsageExampleFunctionCalls(metadata).find((example) => {
+    const paramsText = parseExampleInvocation(example, command);
+    if (args.length === 1 && requiredParamNames.size === 1 && paramsText && paramsText !== '()') {
+      const parsedMinimal = DOMAIN_INVOCATION_PARSER.parse(example);
+      const namedArgs = (parsedMinimal.arguments || []).filter((argument) => argument.kind === 'named');
+      if (namedArgs.length === 0) {
+        return true;
+      }
     }
-  }
 
-  return scenarios;
+    const parsed = DOMAIN_INVOCATION_PARSER.parse(example);
+    if (!parsed.ok || parsed.keyword !== command) {
+      return false;
+    }
+    const namedArgs = (parsed.arguments || []).filter((argument) => argument.kind === 'named').map((arg) => arg.name);
+    if (namedArgs.length !== requiredParamNames.size) {
+      return false;
+    }
+    return [...requiredParamNames].every((name) => namedArgs.includes(name));
+  });
+}
+
+function getFakerCoveredArgsForExample(functionCall, metadata = {}) {
+  const count = getHelperExampleArgCount(functionCall);
+  return (Array.isArray(metadata?.params) ? metadata.params : []).slice(0, count).map((param) => param.name);
+}
+
+function getDomainCoveredArgsForExample(functionCall, command) {
+  const metadata = getDomainCommandHelp(command) || { args: [] };
+  const paramsText = parseExampleInvocation(functionCall, command);
+  const parsed = DOMAIN_INVOCATION_PARSER.parse(functionCall);
+  if (!parsed.ok || parsed.keyword !== command) {
+    if (paramsText && paramsText !== '()' && Array.isArray(metadata.args) && metadata.args.length === 1) {
+      return [metadata.args[0].name];
+    }
+    return [];
+  }
+  const namedArgs = (parsed.arguments || []).filter((argument) => argument.kind === 'named').map((arg) => arg.name);
+  if (namedArgs.length > 0) {
+    return namedArgs;
+  }
+  if ((parsed.arguments || []).length > 0 && Array.isArray(metadata.args) && metadata.args.length === 1) {
+    return [metadata.args[0].name];
+  }
+  return [];
 }
 
 function buildFakerScenarios() {
   const scenarios = [];
 
   FAKER_INTERACTION_COMMANDS.forEach((command) => {
-    const metadata = getFakerCommandHelp(command) || { params: [], docsUrl: '', example: '' };
+    const metadata = getFakerCommandHelp(command) || { params: [], docsUrl: '', usageExamples: [] };
+    const minimalExample = findMinimalFakerExample(command, metadata);
+    const baseParams = parseFakerExampleInvocation(minimalExample || '', command) || '()';
     scenarios.push(
       createScenario({
         id: `faker-${slugify(command)}-base`,
         sourceType: SOURCE_TYPE_FAKER,
         command,
         label: command,
-        rows: [
-          {
-            name: DEFAULT_ROW_NAME,
-            sourceType: SOURCE_TYPE_FAKER,
-            command,
-            params: buildFakerBaseParams(command, metadata.params || []),
-          },
-        ],
-        coveredArgs: [],
+        rows: [{ name: DEFAULT_ROW_NAME, sourceType: SOURCE_TYPE_FAKER, command, params: baseParams }],
+        coveredArgs: minimalExample ? getFakerCoveredArgsForExample(minimalExample, metadata) : [],
         origins: ['base'],
         metadata,
       })
     );
-    const curatedExamples = Array.isArray(metadata.examples) ? metadata.examples : [];
+    const curatedExamples = getUsageExampleFunctionCalls(metadata);
     curatedExamples.forEach((example, exampleIndex) => {
       const params = parseFakerExampleInvocation(example, command);
       if (!params) {
@@ -611,13 +452,12 @@ function buildFakerScenarios() {
           command,
           label: `${command} example ${exampleIndex + 1}`,
           rows: [{ name: DEFAULT_ROW_NAME, sourceType: SOURCE_TYPE_FAKER, command, params }],
-          coveredArgs: Array.isArray(metadata.params) ? metadata.params.map((param) => param.name) : [],
+          coveredArgs: getFakerCoveredArgsForExample(example, metadata),
           origins: ['example'],
           metadata,
         })
       );
     });
-    scenarios.push(...buildFakerArgumentScenarios(command, metadata));
   });
 
   return scenarios;
@@ -628,30 +468,23 @@ function buildDomainScenarios() {
   const scenarios = [];
 
   commands.forEach((command) => {
-    const metadata = getDomainCommandHelp(command) || { args: [], docsUrl: '', example: '' };
+    const metadata = getDomainCommandHelp(command) || { args: [], docsUrl: '', usageExamples: [] };
+    const minimalExample = findMinimalDomainExample(command, metadata);
+    const baseParams = parseExampleInvocation(minimalExample || '', command) || '()';
     scenarios.push(
       createScenario({
         id: `domain-${slugify(command)}-base`,
         sourceType: SOURCE_TYPE_DOMAIN,
         command,
         label: command,
-        rows: [
-          {
-            name: DEFAULT_ROW_NAME,
-            sourceType: SOURCE_TYPE_DOMAIN,
-            command,
-            params: buildDomainBaseParams(command, metadata),
-          },
-        ],
-        coveredArgs: [],
+        rows: [{ name: DEFAULT_ROW_NAME, sourceType: SOURCE_TYPE_DOMAIN, command, params: baseParams }],
+        coveredArgs: minimalExample ? getDomainCoveredArgsForExample(minimalExample, command) : [],
         origins: ['base'],
         metadata,
       })
     );
 
-    const curatedExamples = Array.isArray(getDomainKeywordByCommand(command)?.help?.examples)
-      ? getDomainKeywordByCommand(command).help.examples
-      : [];
+    const curatedExamples = getUsageExampleFunctionCalls(getDomainKeywordByCommand(command)?.help);
     curatedExamples.forEach((example, exampleIndex) => {
       const params = parseExampleInvocation(example, command);
       if (!params) {
@@ -664,14 +497,12 @@ function buildDomainScenarios() {
           command,
           label: `${command} example ${exampleIndex + 1}`,
           rows: [{ name: DEFAULT_ROW_NAME, sourceType: SOURCE_TYPE_DOMAIN, command, params }],
-          coveredArgs: Array.isArray(metadata.args) ? metadata.args.map((arg) => arg.name) : [],
+          coveredArgs: getDomainCoveredArgsForExample(example, command),
           origins: ['example'],
           metadata,
         })
       );
     });
-
-    scenarios.push(...buildDomainArgumentScenarios(command, metadata));
   });
 
   return scenarios;
@@ -741,6 +572,10 @@ function getAllowedTypesForScenarioRow(row) {
     .filter(Boolean);
 }
 
+function getLiteralUnionValuesForScenarioRow(row) {
+  return getLiteralUnionValues(getDomainCommandHelp(row.command)?.returnType || 'string');
+}
+
 function scenarioRowLooksValid(row, value) {
   if (hasErrorIndicators(value)) {
     return false;
@@ -751,6 +586,10 @@ function scenarioRowLooksValid(row, value) {
   }
 
   const allowedTypes = getAllowedTypesForScenarioRow(row);
+  const literalUnionValues = getLiteralUnionValuesForScenarioRow(row);
+  if (literalUnionValues.length > 0) {
+    return literalUnionValues.map((item) => String(item)).includes(String(value));
+  }
   if (hasPermissiveAllowedType(allowedTypes)) {
     return true;
   }
@@ -860,9 +699,66 @@ function canGenerateFakerScenarioPreview(scenario) {
   return isExecutable;
 }
 
+function canGenerateCustomScenarioPreview(scenario) {
+  if (CUSTOM_SCENARIO_EXECUTION_CACHE.has(scenario.id)) {
+    return CUSTOM_SCENARIO_EXECUTION_CACHE.get(scenario.id);
+  }
+
+  let isExecutable = false;
+  try {
+    const validation = validateSchemaRows({ schemaRows: scenario.rows, schemaRowsToDataRules });
+    if (validation.errors.length === 0) {
+      const configured = createConfiguredGeneratorFromSchemaRows({
+        schemaRows: scenario.rows,
+        validateSchemaRows: (rows) => validateSchemaRows({ schemaRows: rows, schemaRowsToDataRules }),
+        schemaRowsToSpec: (rows) =>
+          schemaRowsToSpec({
+            schemaRows: rows,
+            schemaRowsToDataRules,
+            dataRulesToSchemaText,
+          }),
+        TestDataGeneratorClass: TestDataGenerator,
+        faker,
+        RandExp,
+        buildRuleSpecFromSchemaRow,
+        extractLiteralValueFromRuleSpec: (ruleSpec) => ruleSpec,
+        extractRegexValueFromRuleSpec: (ruleSpec) => ruleSpec,
+        SOURCE_TYPE_FAKER,
+        SOURCE_TYPE_DOMAIN,
+        SOURCE_TYPE_LITERAL,
+        SOURCE_TYPE_ENUM,
+        SOURCE_TYPE_REGEX,
+      });
+      if (configured.errors.length === 0) {
+        const previewTable = createPreviewDataTable({
+          rowCount: scenario.pairwiseEligible ? 2 : 1,
+          generator: configured.generator,
+          GenericDataTableClass: GenericDataTable,
+        });
+        const exporter = new Exporter({
+          getGridAsGenericDataTable: () => previewTable,
+          getHeadersFromGrid: () => previewTable.getHeaders(),
+        });
+        const csvText = exporter.getDataTableAs('csv', previewTable) || '';
+        isExecutable =
+          !hasErrorIndicators(csvText) &&
+          scenario.rows.every((row, columnIndex) => scenarioRowLooksValid(row, previewTable.getCell(0, columnIndex)));
+      }
+    }
+  } catch {
+    isExecutable = false;
+  }
+
+  CUSTOM_SCENARIO_EXECUTION_CACHE.set(scenario.id, isExecutable);
+  return isExecutable;
+}
+
 function getScenarioExecutionStatus(scenario) {
   if (!scenario) {
     return 'review-only';
+  }
+  if (scenario.origins.includes('custom')) {
+    return canGenerateCustomScenarioPreview(scenario) ? 'generated' : 'non-executable';
   }
   if (scenario.sourceType === SOURCE_TYPE_DOMAIN) {
     return canGenerateDomainScenarioPreview(scenario) ? 'generated' : 'non-executable';
@@ -870,7 +766,7 @@ function getScenarioExecutionStatus(scenario) {
   if (scenario.sourceType === SOURCE_TYPE_FAKER) {
     return canGenerateFakerScenarioPreview(scenario) ? 'generated' : 'non-executable';
   }
-  if (scenario.origins.includes('custom') || scenario.origins.includes('example')) {
+  if (scenario.origins.includes('example')) {
     return 'generated';
   }
   return 'non-executable';

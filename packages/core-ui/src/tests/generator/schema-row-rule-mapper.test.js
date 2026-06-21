@@ -78,9 +78,9 @@ describe('schema-row-rule-mapper', () => {
     expect(buildRuleSpecFromSchemaRow({ sourceType: 'literal', value: 'literal(abc)' })).toBe('literal(abc)');
   });
 
-  test('buildRuleSpecFromSchemaRow handles regex rows including blank named default', () => {
+  test('buildRuleSpecFromSchemaRow handles regex rows without inventing a blank wrapper', () => {
     expect(buildRuleSpecFromSchemaRow({ sourceType: 'regex', value: '[A-Z]{3}' })).toBe('[A-Z]{3}');
-    expect(buildRuleSpecFromSchemaRow({ sourceType: 'regex', name: 'Code', value: '   ' })).toBe('regex("")');
+    expect(buildRuleSpecFromSchemaRow({ sourceType: 'regex', name: 'Code', value: '   ' })).toBe('');
     expect(buildRuleSpecFromSchemaRow({ sourceType: 'regex', value: 'regex("[A-Z]{3}")' })).toBe('regex("[A-Z]{3}")');
   });
 

@@ -25,12 +25,13 @@ No parameters.
 
 Examples:
 
+Shows the default book.author call.
+
 ```txt
-book.author()
+book.author
 ```
 
-Example return values:
-- `Jacqueline Crooks`
+Returns: `Ian McEwan`
 
 ### `book.format`
 
@@ -43,12 +44,13 @@ No parameters.
 
 Examples:
 
+Shows the default book.format call.
+
 ```txt
-book.format()
+book.format
 ```
 
-Example return values:
-- `Paperback`
+Returns: `Ebook`
 
 ### `book.genre`
 
@@ -61,12 +63,13 @@ No parameters.
 
 Examples:
 
+Shows the default book.genre call.
+
 ```txt
-book.genre()
+book.genre
 ```
 
-Example return values:
-- `Science Fiction`
+Returns: `Graphic Novel`
 
 ### `book.publisher`
 
@@ -79,12 +82,13 @@ No parameters.
 
 Examples:
 
+Shows the default book.publisher call.
+
 ```txt
-book.publisher()
+book.publisher
 ```
 
-Example return values:
-- `Butterworth-Heinemann`
+Returns: `Golden Cockerel Press`
 
 ### `book.series`
 
@@ -97,12 +101,13 @@ No parameters.
 
 Examples:
 
+Shows the default book.series call.
+
 ```txt
-book.series()
+book.series
 ```
 
-Example return values:
-- `The Inheritance Cycle`
+Returns: `The Bartimaeus Trilogy`
 
 ### `book.title`
 
@@ -115,9 +120,10 @@ No parameters.
 
 Examples:
 
+Shows the default book.title call.
+
 ```txt
-book.title()
+book.title
 ```
 
-Example return values:
-- `Animal Farm`
+Returns: `Moby Dick`

@@ -180,7 +180,7 @@ describe('generator page runtime factories', () => {
       'number.int(1,10)'
     );
     expect(buildRuleSpecFromSchemaRow({ sourceType: 'regex', value: '[A-Z]{3}' })).toBe('[A-Z]{3}');
-    expect(buildRuleSpecFromSchemaRow({ name: 'Code', sourceType: 'regex', value: '   ' })).toBe('regex("")');
+    expect(buildRuleSpecFromSchemaRow({ name: 'Code', sourceType: 'regex', value: '   ' })).toBe('');
     expect(buildRuleSpecFromSchemaRow({ sourceType: 'literal', value: 'Fixed' })).toBe('literal(Fixed)');
     expect(buildRuleSpecFromSchemaRow({ sourceType: 'literal', value: '   ' })).toBe('literal("")');
 
@@ -388,6 +388,12 @@ describe('generator page runtime factories', () => {
     expect(result.errors.map((error) => error.message)).toEqual(['Row 1: domain command is required.']);
   });
 
+  test('schema validation reports missing regex value', () => {
+    const result = validateSchemaRows([{ name: 'Code', sourceType: 'regex', value: '   ' }]);
+    expect(result.errors.map((error) => error.code)).toEqual(['missing_regex_value']);
+    expect(result.errors.map((error) => error.message)).toEqual(['Row 1: regex value is required.']);
+  });
+
   test('schema validation rejects helpers in domain source rows', () => {
     const result = validateSchemaRows([{ name: 'First', sourceType: 'domain', command: 'helpers.fake' }]);
     expect(result.errors.map((error) => error.code)).toEqual(['helpers_not_supported_in_domain']);
@@ -457,6 +463,56 @@ describe('generator page runtime factories', () => {
     expect(tableArg.getRowCount()).toBe(3);
     expect(tableArg.getHeaders()).toEqual(['Name', 'Code']);
     expect(getOutputPreviewTextArea().value).toBe('csv:sync:3');
+  });
+
+  test('preview blocks blank regex rows with schema validation feedback', () => {
+    const page = createMountedPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker,
+      RandExp,
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: TestDataGenerator,
+    });
+
+    page.schemaRows = [{ id: '1', name: 'Code', sourceType: 'regex', command: '', params: '', value: '   ' }];
+    page.renderSchemaRows();
+    getPreviewRowsInput().value = '3';
+
+    page.previewData();
+
+    expect(FakeGridExtension.lastInstance.setGridFromGenericDataTable).not.toHaveBeenCalled();
+    expect(getSchemaErrorStatus().textContent).toBe('Row 1: regex value is required.');
+    expect(getOutputPreviewTextArea().value).toBe('');
+  });
+
+  test('preview blocks malformed regex rows with schema validation feedback', () => {
+    const page = createMountedPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker,
+      RandExp,
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: TestDataGenerator,
+    });
+
+    page.schemaRows = [{ id: '1', name: 'Code', sourceType: 'regex', command: '', params: '', value: '[' }];
+    page.renderSchemaRows();
+    getPreviewRowsInput().value = '3';
+
+    page.previewData();
+
+    expect(FakeGridExtension.lastInstance.setGridFromGenericDataTable).not.toHaveBeenCalled();
+    expect(getSchemaErrorStatus().textContent).toContain('Unterminated character class');
+    expect(getOutputPreviewTextArea().value).toBe('');
   });
 
   test('preview serializes object-returning domain values as JSON', () => {
@@ -1052,7 +1108,7 @@ describe('generator page runtime factories', () => {
     expect(rowElem.querySelector('[data-field="command"]')).not.toBeNull();
     expect(rowElem.querySelector('[data-field="faker-doc-link"]').hidden).toBe(false);
     expect(rowElem.querySelector('[data-field="faker-doc-link"]').getAttribute('href')).toBe(
-      'https://fakerjs.dev/api/word'
+      'https://anywaydata.com/docs/test-data/domain/word'
     );
     expect(rowElem.querySelector('[data-field="params"]')).not.toBeNull();
     expect(rowElem.querySelector('[data-field="value"]')).toBeNull();
@@ -1091,8 +1147,15 @@ describe('generator page runtime factories', () => {
       (option) => option.value
     );
     expect(options).toContain('number.int');
+    expect(options).toContain('unit.name');
+    expect(options).toContain('unit.symbol');
+    expect(options).toContain('language.name');
+    expect(options).toContain('language.alpha2');
+    expect(options).toContain('language.alpha3');
     expect(options).not.toContain('science.chemicalElement');
+    expect(options).not.toContain('science.unit');
     expect(options).not.toContain('finance.currency');
+    expect(options).not.toContain('location.language');
   });
 
   test('preserves selected non-scalar domain command for existing parsed row', () => {
@@ -1241,7 +1304,7 @@ describe('generator page runtime factories', () => {
 
     const helpLink = document.querySelector('[data-field="faker-doc-link"]');
     expect(helpLink.hidden).toBe(false);
-    expect(helpLink.getAttribute('href')).toBe('https://fakerjs.dev/api/number');
+    expect(helpLink.getAttribute('href')).toBe('https://anywaydata.com/docs/test-data/domain/number');
     expect(helpLink.getAttribute('aria-label')).toBe('Faker command help: number.int');
     expect(helpLink.getAttribute('data-help-text')).toContain('<strong>faker.number.int</strong>');
     expect(helpLink.getAttribute('data-help-text')).toContain('<strong>Call:</strong>');
@@ -1407,7 +1470,7 @@ describe('generator page runtime factories', () => {
     page.renderSchemaRows();
 
     expect(() => page.previewData()).not.toThrow();
-    expect(getSchemaErrorStatus().textContent).toBe('Row 1: column name is required.');
+    expect(getSchemaErrorStatus().textContent).toBe('Row 1: column name is required.\nRow 1: regex value is required.');
   });
 
   test('toggles between schema controls and text editing with round trip', () => {
@@ -1745,6 +1808,50 @@ describe('generator page runtime factories', () => {
     expect(parsed.rows).toHaveLength(1);
     expect(parsed.rows[0].sourceType).toBe('domain');
     expect(parsed.rows[0].command).toBe('chemicalElement.name');
+    expect(parsed.rows[0].params).toBe('');
+  });
+
+  test('maps location.language.alpha2 to domain command without treating trailing alpha2 as params', () => {
+    const page = createMountedPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker,
+      RandExp,
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: TestDataGenerator,
+    });
+
+    const parsed = page.schemaDefinition.parseTextToRows('Language\nlocation.language.alpha2');
+    expect(parsed.errors).toEqual([]);
+    expect(parsed.rows).toHaveLength(1);
+    expect(parsed.rows[0].sourceType).toBe('domain');
+    expect(parsed.rows[0].command).toBe('language.alpha2');
+    expect(parsed.rows[0].params).toBe('');
+  });
+
+  test('maps science.unit.symbol to domain command without treating trailing symbol as params', () => {
+    const page = createMountedPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker,
+      RandExp,
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: TestDataGenerator,
+    });
+
+    const parsed = page.schemaDefinition.parseTextToRows('Unit\nscience.unit.symbol');
+    expect(parsed.errors).toEqual([]);
+    expect(parsed.rows).toHaveLength(1);
+    expect(parsed.rows[0].sourceType).toBe('domain');
+    expect(parsed.rows[0].command).toBe('unit.symbol');
     expect(parsed.rows[0].params).toBe('');
   });
 

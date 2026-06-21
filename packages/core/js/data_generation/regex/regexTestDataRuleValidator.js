@@ -6,9 +6,15 @@ export class RegexTestDataRuleValidator {
 
   validate(aTestDataRule) {
     this.validationError = '';
+    const ruleSpec = String(aTestDataRule?.ruleSpec ?? '');
+
+    if (ruleSpec.trim().length === 0) {
+      this.validationError = 'Regex pattern is required and cannot be blank';
+      return false;
+    }
 
     try {
-      new this.RandExp(aTestDataRule.ruleSpec).gen();
+      new this.RandExp(ruleSpec).gen();
       return true;
     } catch (err) {
       this.validationError = err;
@@ -17,7 +23,7 @@ export class RegexTestDataRuleValidator {
   }
 
   isValid() {
-    return this.validationError.length == 0;
+    return !this.validationError;
   }
 
   getValidationError() {

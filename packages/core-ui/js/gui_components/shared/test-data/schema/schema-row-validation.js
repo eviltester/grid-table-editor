@@ -1,6 +1,7 @@
 import {
   SOURCE_TYPE_FAKER,
   SOURCE_TYPE_DOMAIN,
+  SOURCE_TYPE_REGEX,
   normaliseFakerCommand,
   normaliseDomainCommand,
   normaliseCommandParams,
@@ -17,6 +18,24 @@ const KNOWN_FAKER_COMMANDS = new Set(
 const KNOWN_DOMAIN_COMMANDS = new Set(
   getKnownDomainCommandsAlphabetical().map((command) => normaliseDomainCommand(command))
 );
+
+function buildBracketGuidanceExample(rawParams, command = '') {
+  const paramsText = String(rawParams ?? '').trim();
+  if (!paramsText) {
+    return '()';
+  }
+  const normalizedCommand = String(command || '')
+    .trim()
+    .toLowerCase();
+  if (normalizedCommand === 'datatype.enum') {
+    return 'active,inactive,pending';
+  }
+  const withoutLeadingParen = paramsText.startsWith('(') ? paramsText.slice(1).trim() : paramsText;
+  const withoutTrailingParen = withoutLeadingParen.endsWith(')')
+    ? withoutLeadingParen.slice(0, -1).trim()
+    : withoutLeadingParen;
+  return normaliseCommandParams(withoutTrailingParen);
+}
 
 function createSchemaRowValidation(issues = []) {
   const normalizedIssues = Array.isArray(issues) ? issues.filter(Boolean) : [];
@@ -86,6 +105,21 @@ function getSemanticValidationField(row) {
   return 'value';
 }
 
+function buildSemanticValidationRuleSpec(row, ruleSpec) {
+  const sourceType = normaliseSourceType(row?.sourceType);
+  const spec = String(ruleSpec ?? '');
+  const trimmedSpec = spec.trim();
+
+  if (sourceType === SOURCE_TYPE_REGEX && trimmedSpec.length > 0) {
+    if (/^(regex|datatype\.regex|awd\.datatype\.regex)\s*\(/i.test(trimmedSpec)) {
+      return trimmedSpec;
+    }
+    return `regex(${spec})`;
+  }
+
+  return spec;
+}
+
 function getStaticSchemaRowValidationIssues(row, rowIndex) {
   if (isBlankSchemaRow(row)) {
     return [];
@@ -146,7 +180,7 @@ function getStaticSchemaRowValidationIssues(row, rowIndex) {
           rowIndex,
           code: 'params_missing_brackets',
           field: 'params',
-          message: `Row ${rowIndex + 1}: params should be wrapped in parentheses, e.g. ${normaliseCommandParams(rawParams)}.`,
+          message: `Row ${rowIndex + 1}: params should be wrapped in parentheses, e.g. ${buildBracketGuidanceExample(rawParams, command)}.`,
         })
       );
     }
@@ -198,7 +232,21 @@ function getStaticSchemaRowValidationIssues(row, rowIndex) {
           rowIndex,
           code: 'params_missing_brackets',
           field: 'params',
-          message: `Row ${rowIndex + 1}: params should be wrapped in parentheses, e.g. ${normaliseCommandParams(rawParams)}.`,
+          message: `Row ${rowIndex + 1}: params should be wrapped in parentheses, e.g. ${buildBracketGuidanceExample(rawParams, command)}.`,
+        })
+      );
+    }
+  }
+
+  if (sourceType === SOURCE_TYPE_REGEX) {
+    const rawValue = String(row?.value ?? '').trim();
+    if (!rawValue) {
+      issues.push(
+        createRowValidationIssue({
+          rowIndex,
+          code: 'missing_regex_value',
+          field: 'value',
+          message: `Row ${rowIndex + 1}: regex value is required.`,
         })
       );
     }
@@ -225,7 +273,7 @@ function getSchemaRowSemanticValidationIssues(
   }
 
   const name = String(row?.name ?? '').trim();
-  const ruleSpec = buildRuleSpecFromSchemaRow(row);
+  const ruleSpec = buildSemanticValidationRuleSpec(row, buildRuleSpecFromSchemaRow(row));
   if (!name || !ruleSpec || typeof schemaTextToDataRules !== 'function') {
     return [];
   }

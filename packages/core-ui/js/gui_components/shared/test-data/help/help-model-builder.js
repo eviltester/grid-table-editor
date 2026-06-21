@@ -8,6 +8,7 @@
 import { getFakerCommandHelp } from '@anywaydata/core/faker/faker-helper-keyword-definitions.js';
 import { getDomainCommandHelp } from '../../domain-command-help-metadata.js';
 import { escapeHtml } from '../../html-escape.js';
+import { resolveRuntimeDocsUrl } from './runtime-docs-url.js';
 import {
   SOURCE_TYPE_FAKER,
   SOURCE_TYPE_DOMAIN,
@@ -113,6 +114,18 @@ function buildSchemaParamsHint(params) {
   return `(${params.map((param) => param.name).join(', ')})`;
 }
 
+function getPrimaryUsageExample(model = {}) {
+  const usageExamples = Array.isArray(model?.usageExamples) ? model.usageExamples : [];
+  const firstUsageExample = usageExamples.find(
+    (usageExample) => typeof usageExample?.functionCall === 'string' && usageExample.functionCall.trim().length > 0
+  );
+  if (firstUsageExample) {
+    return firstUsageExample.functionCall.trim();
+  }
+  const example = String(model?.example || '').trim();
+  return example;
+}
+
 function renderSchemaHelpHtml(model) {
   if (!model?.show) {
     return '';
@@ -145,8 +158,9 @@ function renderSchemaHelpHtml(model) {
     sections.push(`<p><strong>Params:</strong></p><ul>${paramItems}</ul>`);
   }
 
-  if (model.example) {
-    sections.push(`<p><strong>Example:</strong> <code>${escapeHtml(model.example)}</code></p>`);
+  const primaryUsageExample = getPrimaryUsageExample(model);
+  if (primaryUsageExample) {
+    sections.push(`<p><strong>Example:</strong> <code>${escapeHtml(primaryUsageExample)}</code></p>`);
   } else if (model.kind === 'command') {
     sections.push('<p><strong>Example:</strong> Output depends on your selected params.</p>');
   }
@@ -172,10 +186,18 @@ function buildTypeHelpModel(typeName, summary, docsUrl, { params = [], example =
     docsUrl,
     params,
     example,
+    usageExamples: example
+      ? [
+          {
+            functionCall: example,
+            description: `${typeName} example usage.`,
+          },
+        ]
+      : [],
   };
 }
 
-function buildSchemaHelpModel(sourceType, commandValue) {
+function buildSchemaHelpModel(sourceType, commandValue, { windowObj } = {}) {
   const normalisedSourceType = normaliseSourceType(sourceType);
 
   if (normalisedSourceType === SOURCE_TYPE_REGEX) {
@@ -251,11 +273,10 @@ function buildSchemaHelpModel(sourceType, commandValue) {
       title: `Faker command help: ${command}`,
       heading: `faker.${command}`,
       summary: commandHelp?.summary || `Generates data using faker.${command}.`,
-      docsUrl: resolveFakerDocsUrl(command, commandHelp?.docsUrl),
+      docsUrl: resolveRuntimeDocsUrl(resolveFakerDocsUrl(command, commandHelp?.docsUrl), { windowObj }),
+      fakerDocsUrl: String(commandHelp?.fakerDocsUrl || '').trim(),
       params: normalizeHelpParams(commandHelp?.params || []),
-      example: commandHelp?.example || '',
-      examples: Array.isArray(commandHelp?.examples) ? commandHelp.examples : [],
-      exampleReturnValues: Array.isArray(commandHelp?.exampleReturnValues) ? commandHelp.exampleReturnValues : [],
+      usageExamples: Array.isArray(commandHelp?.usageExamples) ? commandHelp.usageExamples : [],
     };
   }
 
@@ -275,11 +296,10 @@ function buildSchemaHelpModel(sourceType, commandValue) {
       title: `Domain command help: ${command}`,
       heading: commandHelp?.canonical || command,
       summary: commandHelp?.summary || `Generates data using ${commandHelp?.canonical || command}.`,
-      docsUrl: commandHelp?.docsUrl || HELP_URLS.domain,
+      docsUrl: resolveRuntimeDocsUrl(commandHelp?.docsUrl || HELP_URLS.domain, { windowObj }),
+      fakerDocsUrl: String(commandHelp?.fakerDocsUrl || '').trim(),
       params: resolveDomainHelpParams(command, commandHelp),
-      example: commandHelp?.example || '',
-      examples: Array.isArray(commandHelp?.examples) ? commandHelp.examples : [],
-      exampleReturnValues: Array.isArray(commandHelp?.exampleReturnValues) ? commandHelp.exampleReturnValues : [],
+      usageExamples: Array.isArray(commandHelp?.usageExamples) ? commandHelp.usageExamples : [],
     };
   }
 

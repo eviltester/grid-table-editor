@@ -25,12 +25,13 @@ No parameters.
 
 Examples:
 
+Shows the default vehicle.bicycle call.
+
 ```txt
-vehicle.bicycle()
+vehicle.bicycle
 ```
 
-Example return values:
-- `Touring Bicycle`
+Returns: `Flat-Foot Comfort Bicycle`
 
 ### `vehicle.color`
 
@@ -43,12 +44,13 @@ No parameters.
 
 Examples:
 
+Shows the default vehicle.color call.
+
 ```txt
-vehicle.color()
+vehicle.color
 ```
 
-Example return values:
-- `sky blue`
+Returns: `magenta`
 
 ### `vehicle.fuel`
 
@@ -61,12 +63,13 @@ No parameters.
 
 Examples:
 
+Shows the default vehicle.fuel call.
+
 ```txt
-vehicle.fuel()
+vehicle.fuel
 ```
 
-Example return values:
-- `Gasoline`
+Returns: `Electric`
 
 ### `vehicle.manufacturer`
 
@@ -79,12 +82,13 @@ No parameters.
 
 Examples:
 
+Shows the default vehicle.manufacturer call.
+
 ```txt
-vehicle.manufacturer()
+vehicle.manufacturer
 ```
 
-Example return values:
-- `Hyundai`
+Returns: `Lamborghini`
 
 ### `vehicle.model`
 
@@ -97,12 +101,13 @@ No parameters.
 
 Examples:
 
+Shows the default vehicle.model call.
+
 ```txt
-vehicle.model()
+vehicle.model
 ```
 
-Example return values:
-- `Aventador`
+Returns: `Escalade`
 
 ### `vehicle.type`
 
@@ -115,12 +120,13 @@ No parameters.
 
 Examples:
 
+Shows the default vehicle.type call.
+
 ```txt
-vehicle.type()
+vehicle.type
 ```
 
-Example return values:
-- `Hatchback`
+Returns: `Extended Cab Pickup`
 
 ### `vehicle.vehicle`
 
@@ -133,12 +139,13 @@ No parameters.
 
 Examples:
 
+Shows the default vehicle.vehicle call.
+
 ```txt
-vehicle.vehicle()
+vehicle.vehicle
 ```
 
-Example return values:
-- `Ford CTS`
+Returns: `Lamborghini Model X`
 
 ### `vehicle.vin`
 
@@ -151,12 +158,13 @@ No parameters.
 
 Examples:
 
+Shows the default vehicle.vin call.
+
 ```txt
-vehicle.vin()
+vehicle.vin
 ```
 
-Example return values:
-- `7SJ9N0LM3LM265056`
+Returns: `DP09436BDHKN28064`
 
 ### `vehicle.vrm`
 
@@ -169,9 +177,10 @@ No parameters.
 
 Examples:
 
+Shows the default vehicle.vrm call.
+
 ```txt
-vehicle.vrm()
+vehicle.vrm
 ```
 
-Example return values:
-- `OD11RTZ`
+Returns: `KS03DCE`

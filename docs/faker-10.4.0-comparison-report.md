@@ -54,9 +54,6 @@ These are already on borrowed time in the current curation and should be address
 - `image.urlPlaceholder`
 - `internet.userName`
 - `internet.color`
-- `image.urlLoremFlickr`
-
-`image.urlLoremFlickr` still resolves in faker `10.4.0`, but the runtime emitted a deprecation warning saying it has been deprecated since `10.1.0` and is scheduled for removal in `11.0.0`.
 
 ## New Public Commands In Faker 10.4.0
 

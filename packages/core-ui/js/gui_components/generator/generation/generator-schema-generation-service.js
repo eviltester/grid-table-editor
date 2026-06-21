@@ -1,6 +1,9 @@
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 import { CombinationsTestDataGenerator } from '@anywaydata/core/data_generation/n-wise/combinationsTestDataGenerator.js';
-import { createConfiguredGeneratorFromSchemaRows } from '../../shared/test-data/generation/generation-controller.js';
+import {
+  createConfiguredGeneratorFromSchemaRows,
+  schemaRowsToGenerationSpec,
+} from '../../shared/test-data/generation/generation-controller.js';
 import { createUiGenerationSessionService } from '../../shared/test-data/generation/ui-generation-session-service.js';
 import {
   SOURCE_TYPE_FAKER,
@@ -67,6 +70,12 @@ function createGeneratorSchemaGenerationService({
     getValidatedSchemaState,
     getSchemaText,
     schemaRowsToSpec,
+    schemaRowsToGenerationSpec: (schemaRows) =>
+      schemaRowsToGenerationSpec({
+        schemaRows,
+        buildRuleSpecFromSchemaRow,
+        SOURCE_TYPE_REGEX,
+      }),
     schemaSource: 'generator-page',
     GenericDataTableClass: GenericDataTable,
     CombinationsTestDataGeneratorClass: CombinationsTestDataGenerator,

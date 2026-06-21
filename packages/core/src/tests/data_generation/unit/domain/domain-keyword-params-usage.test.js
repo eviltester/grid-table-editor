@@ -52,10 +52,22 @@ function sampleValueForType(type) {
     .split('|')
     .map((entry) => entry.trim());
   const numericLiterals = allowed.filter((entry) => /^[+-]?\d+(\.\d+)?$/.test(entry)).map((entry) => Number(entry));
+  const stringLiterals = allowed
+    .filter(
+      (entry) =>
+        !['string', 'integer', 'number', 'date', 'regexp', 'boolean', 'array', 'object'].includes(entry) &&
+        !/^[+-]?\d+(\.\d+)?$/.test(entry)
+    )
+    .map((entry) =>
+      (entry.startsWith('"') && entry.endsWith('"')) || (entry.startsWith("'") && entry.endsWith("'"))
+        ? entry.slice(1, -1)
+        : entry
+    );
 
   if (numericLiterals.length === allowed.length && numericLiterals.length > 0) {
     return numericLiterals[0];
   }
+  if (stringLiterals.length > 0) return stringLiterals[0];
 
   if (allowed.includes('integer')) {
     return 7;
@@ -108,7 +120,8 @@ function sampleValueForKeywordArg(keywordName, argName, typeName) {
   if (key === 'internet.jwt.header') return { alg: 'HS256', typ: 'JWT' };
   if (key === 'internet.jwt.payload') return { iss: 'Acme' };
   if (key === 'internet.ipv4.cidrBlock') return '192.168.0.0/24';
-  if (key === 'internet.ipv4.network') return 'private';
+  if (key === 'internet.ipv4.network') return 'private-a';
+  if (key === 'finance.bitcoinAddress.network') return 'testnet';
   if (key === 'internet.password.pattern') return '[A-Za-z0-9]';
   if (key === 'phone.number.style') return 'human';
   if (key === 'string.alpha.casing') return 'lower';
@@ -142,7 +155,7 @@ function sampleValueForKeywordArg(keywordName, argName, typeName) {
   if (type.includes('regexp')) return '[A-Z]';
   if (type.includes('boolean')) return true;
   if (type.includes('array')) return ['a', 'b'];
-  return 'sample';
+  return sampleValueForType(type);
 }
 
 function buildValidArgs(keyword) {

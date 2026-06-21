@@ -52,6 +52,7 @@ describe('domain keyword parser', () => {
 
   test('returns error for missing closing parenthesis', () => {
     const parsedKeyword = parseKeywordInvocation('number.int(1,10');
+    expect(parsedKeyword.keyword).toBe('number.int');
     expect(parsedKeyword.errors).toEqual(['Invalid keyword invocation: missing closing parenthesis']);
   });
 
@@ -62,7 +63,15 @@ describe('domain keyword parser', () => {
 
   test('returns error for missing argument after comma', () => {
     const parsedKeyword = parseKeywordInvocation('number.int(1,)');
+    expect(parsedKeyword.keyword).toBe('number.int');
     expect(parsedKeyword.errors).toEqual(['Invalid keyword arguments: missing argument after comma']);
+  });
+
+  test('preserves recognized keyword prefix on malformed invocation syntax', () => {
+    const parsedKeyword = parseKeywordInvocation('internet.httpMethod(commonOnly=true');
+    expect(parsedKeyword.keyword).toBe('internet.httpMethod');
+    expect(parsedKeyword.args).toEqual([]);
+    expect(parsedKeyword.errors).toEqual(['Invalid keyword invocation: missing closing parenthesis']);
   });
 
   test('parses named args and maps to schema order', () => {

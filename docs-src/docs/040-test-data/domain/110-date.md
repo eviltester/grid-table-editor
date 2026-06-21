@@ -27,12 +27,21 @@ Generates a random date that can be either in the past or in the future.
 
 Examples:
 
+Shows date.anytime when optional params are omitted.
+
 ```txt
 date.anytime()
 ```
 
-Example return values:
-- `"2026-12-25T08:55:20.593Z"`
+Returns: `2026-04-19T02:08:51.881Z`
+
+Shows date.anytime using refDate.
+
+```txt
+date.anytime(refDate=1577836800000)
+```
+
+Returns: `2019-11-01T10:13:31.881Z`
 
 ### `date.between`
 
@@ -43,39 +52,26 @@ Generates a random date between the given boundaries.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `from` | `integer` | no | Start boundary as a Unix timestamp in milliseconds since epoch. |
-| `to` | `integer` | no | End boundary as a Unix timestamp in milliseconds since epoch. |
+| `from` | `integer` | yes | Start boundary as a Unix timestamp in milliseconds since epoch. |
+| `to` | `integer` | yes | End boundary as a Unix timestamp in milliseconds since epoch. |
 
 Examples:
 
-```txt
-date.between(0, 2000000000000)
-```
-
-Example return values:
-- `2026-01-15T12:34:56.000Z`
-
-### `date.betweens`
-
-Generates random dates between the given boundaries. The dates will be returned in an array sorted in chronological order.
-
-- Canonical: `awd.domain.date.betweens`
-- Faker docs: [https://fakerjs.dev/api/date](https://fakerjs.dev/api/date)
-
-| Arg | Type | Required | Description |
-| --- | --- | --- | --- |
-| `count` | `integer` | no | The number of dates to generate. |
-| `from` | `integer` | no | Start boundary as a Unix timestamp in milliseconds since epoch. |
-| `to` | `integer` | no | End boundary as a Unix timestamp in milliseconds since epoch. |
-
-Examples:
+Shows date.between using explicit from and to timestamps.
 
 ```txt
-date.betweens(2, 0, 2000000000000)
+date.between(from=1577836800000, to=1609372800000)
 ```
 
-Example return values:
-- `["2026-01-15T12:34:56.000Z","2026-02-01T09:00:00.000Z"]`
+Returns: `2020-06-01T05:06:45.940Z`
+
+Shows date.between with a different bounded range.
+
+```txt
+date.between(from=1609459200000, to=1640995200000)
+```
+
+Returns: `2021-06-02T05:06:45.940Z`
 
 ### `date.birthdate`
 
@@ -89,16 +85,57 @@ Returns a random birthdate. By default, the birthdate is generated for an adult 
 | `refDate` | `integer` | no | Reference date as a Unix timestamp in milliseconds since epoch used as the generation anchor. |
 | `max` | `integer` | no | The maximum age/year to generate a birthdate for/in. |
 | `min` | `integer` | no | The minimum age/year to generate a birthdate for/in. |
-| `mode` | `string` | no | Either 'age' or 'year' to generate a birthdate based on the age or year range. |
+| `mode` | `age\|year` | no | Either 'age' or 'year' to generate a birthdate based on the age or year range. |
 
 Examples:
+
+Shows date.birthdate in use.
 
 ```txt
 date.birthdate(refDate=20000, max=69, min=16, mode="age")
 ```
 
-Example return values:
-- `"1966-09-18T08:47:31.333Z"`
+Returns: `1922-07-10T12:11:49.191Z`
+
+Shows date.birthdate when optional params are omitted.
+
+```txt
+date.birthdate()
+```
+
+Returns: `1971-09-27T08:09:14.757Z`
+
+Shows date.birthdate using refDate.
+
+```txt
+date.birthdate(refDate=1577836800000)
+```
+
+Returns: `1965-04-10T16:13:54.757Z`
+
+Shows date.birthdate using max.
+
+```txt
+date.birthdate(max=65)
+```
+
+Returns: `1980-06-25T11:25:42.848Z`
+
+Shows date.birthdate using min.
+
+```txt
+date.birthdate(max=10, min=1)
+```
+
+Returns: `2019-08-20T15:04:00.805Z`
+
+Shows date.birthdate using mode.
+
+```txt
+date.birthdate(mode="age")
+```
+
+Returns: `1971-09-27T08:09:14.757Z`
 
 ### `date.future`
 
@@ -114,12 +151,29 @@ Generates a random date in the future.
 
 Examples:
 
+Shows date.future when optional params are omitted.
+
 ```txt
 date.future()
 ```
 
-Example return values:
-- `"2027-02-07T18:41:48.525Z"`
+Returns: `2026-11-17T21:02:06.523Z`
+
+Shows date.future using refDate.
+
+```txt
+date.future(refDate=1577836800000)
+```
+
+Returns: `2020-06-01T05:06:46.523Z`
+
+Shows date.future using years.
+
+```txt
+date.future(years=2)
+```
+
+Returns: `2027-04-19T02:08:52.463Z`
 
 ### `date.month`
 
@@ -135,16 +189,29 @@ Returns a random name of a month.
 
 Examples:
 
+Shows date.month when optional params are omitted.
+
 ```txt
 date.month()
 ```
 
+Returns: `July`
+
+Shows date.month using abbreviated.
+
 ```txt
-date.month(abbreviated=false, context=false)
+date.month(abbreviated=true)
 ```
 
-Example return values:
-- `February`
+Returns: `Jul`
+
+Shows date.month using context.
+
+```txt
+date.month(context=true)
+```
+
+Returns: `July`
 
 ### `date.past`
 
@@ -160,12 +227,29 @@ Generates a random date in the past.
 
 Examples:
 
+Shows date.past when optional params are omitted.
+
 ```txt
 date.past()
 ```
 
-Example return values:
-- `"2025-07-01T11:48:55.347Z"`
+Returns: `2025-11-17T21:02:05.523Z`
+
+Shows date.past using refDate.
+
+```txt
+date.past(refDate=1577836800000)
+```
+
+Returns: `2019-06-02T05:06:45.523Z`
+
+Shows date.past using years.
+
+```txt
+date.past(years=2)
+```
+
+Returns: `2025-04-19T02:08:51.463Z`
 
 ### `date.recent`
 
@@ -181,12 +265,29 @@ Generates a random date in the recent past.
 
 Examples:
 
+Shows date.recent when optional params are omitted.
+
 ```txt
 date.recent()
 ```
 
-Example return values:
-- `"2026-04-27T23:46:16.707Z"`
+Returns: `2026-06-18T01:55:50.284Z`
+
+Shows date.recent using days.
+
+```txt
+date.recent(days=7)
+```
+
+Returns: `2026-06-14T13:58:54.491Z`
+
+Shows date.recent using refDate.
+
+```txt
+date.recent(refDate=1577836800000)
+```
+
+Returns: `2019-12-31T10:00:30.284Z`
 
 ### `date.soon`
 
@@ -202,12 +303,29 @@ Generates a random date in the near future.
 
 Examples:
 
+Shows date.soon when optional params are omitted.
+
 ```txt
 date.soon()
 ```
 
-Example return values:
-- `"2026-04-29T11:09:09.211Z"`
+Returns: `2026-06-19T01:55:51.284Z`
+
+Shows date.soon using days.
+
+```txt
+date.soon(days=7)
+```
+
+Returns: `2026-06-21T13:58:55.491Z`
+
+Shows date.soon using refDate.
+
+```txt
+date.soon(refDate=1577836800000)
+```
+
+Returns: `2020-01-01T10:00:31.284Z`
 
 ### `date.timeZone`
 
@@ -220,12 +338,13 @@ No parameters.
 
 Examples:
 
+Shows the default date.timeZone call.
+
 ```txt
-date.timeZone()
+date.timeZone
 ```
 
-Example return values:
-- `Europe/Stockholm`
+Returns: `America/Santiago`
 
 ### `date.weekday`
 
@@ -241,13 +360,26 @@ Returns a random day of the week.
 
 Examples:
 
+Shows date.weekday when optional params are omitted.
+
 ```txt
 date.weekday()
 ```
 
+Returns: `Saturday`
+
+Shows date.weekday using abbreviated.
+
 ```txt
-date.weekday(abbreviated=false, context=false)
+date.weekday(abbreviated=true)
 ```
 
-Example return values:
-- `Tuesday`
+Returns: `Sat`
+
+Shows date.weekday using context.
+
+```txt
+date.weekday(context=true)
+```
+
+Returns: `Saturday`

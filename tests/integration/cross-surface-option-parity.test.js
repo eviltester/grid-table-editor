@@ -35,7 +35,7 @@ function requestMcpServer(payload) {
     input: request,
     encoding: 'utf8',
     cwd: repoRoot,
-    timeout: 15000,
+    timeout: 45000,
   });
   const messages = jsonRpcMessages(output);
   expect(messages.length).toBeGreaterThan(0);

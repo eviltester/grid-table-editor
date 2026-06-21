@@ -8,8 +8,11 @@ import { getDomainCommandHelp } from '../../../../js/gui_components/shared/domai
 import {
   buildSchemaInteractionScenarios,
   buildScenarioCoverageSummary,
+  buildRuntimeInteractionScenarios,
+  buildUiInteractionScenarios,
   CUSTOM_SOURCE_TYPES,
   FAKER_INTERACTION_COMMANDS,
+  getScenarioExecutionStatus,
 } from './support/schema-interaction-scenario-builder.js';
 
 describe('schema interaction scenario builder', () => {
@@ -57,7 +60,7 @@ describe('schema interaction scenario builder', () => {
       });
 
       const exampleScenarioCount = bucket.scenarios.filter((scenario) => scenario.origins.includes('example')).length;
-      const expectedExamples = Array.isArray(metadata.examples) ? metadata.examples.length : 0;
+      const expectedExamples = Array.isArray(metadata.usageExamples) ? metadata.usageExamples.length : 0;
       if (expectedExamples > 0) {
         expect(exampleScenarioCount).toBeGreaterThanOrEqual(expectedExamples);
       }
@@ -83,8 +86,8 @@ describe('schema interaction scenario builder', () => {
       });
 
       const exampleScenarioCount = bucket.scenarios.filter((scenario) => scenario.origins.includes('example')).length;
-      const expectedExamples = Array.isArray(getDomainKeywordByCommand(command)?.help?.examples)
-        ? getDomainKeywordByCommand(command).help.examples.length
+      const expectedExamples = Array.isArray(getDomainKeywordByCommand(command)?.help?.usageExamples)
+        ? getDomainKeywordByCommand(command).help.usageExamples.length
         : 0;
       if (expectedExamples > 0) {
         expect(exampleScenarioCount).toBeGreaterThanOrEqual(expectedExamples);
@@ -105,27 +108,27 @@ describe('schema interaction scenario builder', () => {
       '(refDate=20000, max=69, min=16, mode="age")'
     );
     expect(scenarios.find((scenario) => scenario.id === 'domain-internet-password-example-1')?.rows[0]?.params).toBe(
-      '(length=10, memorable=false, pattern="[A-Za-z0-9]", prefix="#")'
+      '()'
+    );
+    expect(scenarios.find((scenario) => scenario.id === 'domain-internet-password-example-2')?.rows[0]?.params).toBe(
+      '(length=12)'
     );
     expect(
       scenarios.find((scenario) => scenario.id === 'domain-autoIncrement-sequence-example-1')?.rows[0]?.params
     ).toBe('()');
   });
 
-  test('domain argument scenarios prefer examples from keyword definitions', () => {
+  test('base scenarios reuse minimal curated examples from keyword definitions', () => {
     const scenarios = buildSchemaInteractionScenarios();
 
-    expect(scenarios.find((scenario) => scenario.id === 'domain-airline-seat-arg-aircraftType')?.rows[0]?.params).toBe(
-      '(aircraftType="widebody")'
-    );
-    expect(scenarios.find((scenario) => scenario.id === 'domain-color-rgb-arg-casing')?.rows[0]?.params).toBe(
-      '(casing="upper")'
-    );
-    expect(scenarios.find((scenario) => scenario.id === 'domain-commerce-price-arg-symbol')?.rows[0]?.params).toBe(
-      '(symbol="$")'
+    expect(scenarios.find((scenario) => scenario.id === 'faker-helpers-arrayElements-base')?.rows[0]?.params).toBe(
+      '(["A", "B", "C"])'
     );
     expect(scenarios.find((scenario) => scenario.id === 'domain-date-between-base')?.rows[0]?.params).toBe(
-      '(1577836800000, 1609372800000)'
+      '(from=1577836800000, to=1609372800000)'
+    );
+    expect(scenarios.find((scenario) => scenario.id === 'domain-string-fromCharacters-base')?.rows[0]?.params).toBe(
+      '(characters="ABC123")'
     );
   });
 
@@ -146,26 +149,36 @@ describe('schema interaction scenario builder', () => {
     expect(getDomainCommandHelp('date.betweens')?.args?.find((arg) => arg.name === 'count')?.type).toBe('integer');
   });
 
-  test('domain arg scenarios include required companion args when needed', () => {
+  test('example-derived coverage still includes focused optional-parameter scenarios', () => {
     const scenarios = buildSchemaInteractionScenarios();
 
     expect(
-      scenarios.find((scenario) => scenario.id === 'domain-string-fromCharacters-arg-length')?.rows[0]?.params
-    ).toBe('(characters="ABC123", length=4)');
-    expect(scenarios.find((scenario) => scenario.id === 'domain-date-between-arg-from')?.rows[0]?.params).toBe(
-      '(from=1577836800000, to=1609372800000)'
-    );
-    expect(scenarios.find((scenario) => scenario.id === 'domain-date-birthdate-arg-max')?.rows[0]?.params).toBe(
-      '(max=65, min=18, mode="age")'
-    );
+      scenarios.find((scenario) => scenario.id === 'domain-string-fromCharacters-example-2')?.rows[0]?.params
+    ).toBe('(characters=["A", "B", "C"], length=4)');
+    expect(scenarios.find((scenario) => scenario.id === 'domain-datatype-enum-base')?.coveredArgs).toEqual(['values']);
+    expect(scenarios.find((scenario) => scenario.id === 'domain-date-birthdate-example-3')?.coveredArgs).toEqual([
+      'refDate',
+    ]);
     expect(
-      scenarios.find((scenario) => scenario.id === 'domain-autoIncrement-sequence-arg-zeropadding')?.rows[0]?.params
-    ).toBe('(zeropadding=3)');
+      scenarios.find((scenario) => scenario.id === 'domain-autoIncrement-sequence-example-5')?.coveredArgs
+    ).toEqual(['step']);
   });
 
   test('definitions describe executable option types and return types for matrix generation', () => {
     expect(getDomainCommandHelp('internet.password')?.args?.find((arg) => arg.name === 'pattern')?.type).toBe('regexp');
     expect(getDomainCommandHelp('commerce.price')?.returnType).toBe('string');
     expect(getDomainCommandHelp('finance.amount')?.returnType).toBe('string');
+  });
+
+  test('blank regex custom scenario remains coverage-only and is excluded from executable subsets', () => {
+    const allScenarios = buildSchemaInteractionScenarios();
+    const runtimeScenarios = buildRuntimeInteractionScenarios();
+    const uiScenarios = buildUiInteractionScenarios();
+    const blankRegexScenario = allScenarios.find((scenario) => scenario.id === 'custom-regex-empty');
+
+    expect(blankRegexScenario).toBeTruthy();
+    expect(getScenarioExecutionStatus(blankRegexScenario)).toBe('non-executable');
+    expect(runtimeScenarios.some((scenario) => scenario.id === 'custom-regex-empty')).toBe(false);
+    expect(uiScenarios.some((scenario) => scenario.id === 'custom-regex-empty')).toBe(false);
   });
 });

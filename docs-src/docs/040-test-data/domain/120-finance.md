@@ -25,12 +25,13 @@ No parameters.
 
 Examples:
 
+Shows the default finance.accountName call.
+
 ```txt
-finance.accountName()
+finance.accountName
 ```
 
-Example return values:
-- `Investment Account`
+Returns: `Home Loan Account`
 
 ### `finance.accountNumber`
 
@@ -45,16 +46,21 @@ Generates a random account number.
 
 Examples:
 
+Shows finance.accountNumber when optional params are omitted.
+
 ```txt
 finance.accountNumber()
 ```
 
+Returns: `47031013`
+
+Shows finance.accountNumber using length.
+
 ```txt
-finance.accountNumber(length=1)
+finance.accountNumber(length=5)
 ```
 
-Example return values:
-- `43208795`
+Returns: `47031`
 
 ### `finance.amount`
 
@@ -73,18 +79,53 @@ Generates a random amount between the given bounds (inclusive).
 
 Examples:
 
+Shows finance.amount when optional params are omitted.
+
 ```txt
 finance.amount()
 ```
 
-Type-in examples (named params):
+Returns: `417.02`
+
+Shows finance.amount using autoFormat.
 
 ```txt
 finance.amount(autoFormat=true)
 ```
 
-Example return values:
-- `536.86`
+Returns: `417.02`
+
+Shows finance.amount using dec.
+
+```txt
+finance.amount(dec=2)
+```
+
+Returns: `417.02`
+
+Shows finance.amount using max.
+
+```txt
+finance.amount(max=100)
+```
+
+Returns: `41.70`
+
+Shows finance.amount using min.
+
+```txt
+finance.amount(max=10, min=1)
+```
+
+Returns: `4.75`
+
+Shows finance.amount using symbol.
+
+```txt
+finance.amount(symbol="$")
+```
+
+Returns: `$417.02`
 
 ### `finance.bic`
 
@@ -99,16 +140,21 @@ Generates a random SWIFT/BIC code based on the ISO-9362 format.
 
 Examples:
 
+Shows finance.bic when optional params are omitted.
+
 ```txt
 finance.bic()
 ```
+
+Returns: `SAHDBI6CJFO`
+
+Shows finance.bic using includeBranchCode.
 
 ```txt
 finance.bic(includeBranchCode=true)
 ```
 
-Example return values:
-- `TXWRPYFT`
+Returns: `KSAHBZ36EJF`
 
 ### `finance.bitcoinAddress`
 
@@ -117,16 +163,36 @@ Generates a random Bitcoin address.
 - Canonical: `awd.domain.finance.bitcoinAddress`
 - Faker docs: [https://fakerjs.dev/api/finance](https://fakerjs.dev/api/finance)
 
-No parameters.
+| Arg | Type | Required | Description |
+| --- | --- | --- | --- |
+| `type` | `legacy\|segwit\|bech32\|taproot` | no | The bitcoin address type ('legacy', 'segwit', 'bech32' or 'taproot'). |
+| `network` | `mainnet\|testnet` | no | The bitcoin network ('mainnet' or 'testnet'). |
 
 Examples:
+
+Shows finance.bitcoinAddress when optional params are omitted.
 
 ```txt
 finance.bitcoinAddress()
 ```
 
-Example return values:
-- `39fu5Nhnibj2xa8FPVxCbX7y4xZi5SWd`
+Returns: `31i96bmpxqFcS2Eqy9cNYjGST53aS6qX`
+
+Shows finance.bitcoinAddress using type.
+
+```txt
+finance.bitcoinAddress(type="bech32")
+```
+
+Returns: `bc1fr0a536dekfp7w0pfk57tycqww326w4fykqcpu0`
+
+Shows finance.bitcoinAddress using network.
+
+```txt
+finance.bitcoinAddress(network="testnet")
+```
+
+Returns: `21i96bmpxqFcS2Eqy9cNYjGST53aS6qX`
 
 ### `finance.creditCardCVV`
 
@@ -139,12 +205,13 @@ No parameters.
 
 Examples:
 
+Shows the default finance.creditCardCVV call.
+
 ```txt
-finance.creditCardCVV()
+finance.creditCardCVV
 ```
 
-Example return values:
-- `839`
+Returns: `470`
 
 ### `finance.creditCardIssuer`
 
@@ -157,12 +224,13 @@ No parameters.
 
 Examples:
 
+Shows the default finance.creditCardIssuer call.
+
 ```txt
-finance.creditCardIssuer()
+finance.creditCardIssuer
 ```
 
-Example return values:
-- `jcb`
+Returns: `discover`
 
 ### `finance.creditCardNumber`
 
@@ -177,34 +245,21 @@ Generates a random credit card number.
 
 Examples:
 
+Shows finance.creditCardNumber when optional params are omitted.
+
 ```txt
 finance.creditCardNumber()
 ```
 
-```txt
-finance.creditCardNumber(issuer="value")
-```
+Returns: `6503-1013-3546-2805`
 
-Example return values:
-- `6449-4462-4996-7580`
-
-### `finance.currency`
-
-Returns a random currency object, containing `code`, `name`, `symbol`, and `numericCode` properties.
-
-- Canonical: `awd.domain.finance.currency`
-- Faker docs: [https://fakerjs.dev/api/finance](https://fakerjs.dev/api/finance)
-
-No parameters.
-
-Examples:
+Shows finance.creditCardNumber using issuer.
 
 ```txt
-finance.currency()
+finance.creditCardNumber(issuer="Visa")
 ```
 
-Example return values:
-- `{"name":"Rial Omani","code":"OMR","symbol":"﷼","numericCode":"512"}`
+Returns: `4703101335466`
 
 ### `finance.currencyCode`
 
@@ -217,12 +272,13 @@ No parameters.
 
 Examples:
 
+Shows the default finance.currencyCode call.
+
 ```txt
-finance.currencyCode()
+finance.currencyCode
 ```
 
-Example return values:
-- `ISK`
+Returns: `JOD`
 
 ### `finance.currencyName`
 
@@ -235,12 +291,13 @@ No parameters.
 
 Examples:
 
+Shows the default finance.currencyName call.
+
 ```txt
-finance.currencyName()
+finance.currencyName
 ```
 
-Example return values:
-- `South Sudanese pound`
+Returns: `Jordanian Dinar`
 
 ### `finance.currencyNumericCode`
 
@@ -253,12 +310,13 @@ No parameters.
 
 Examples:
 
+Shows the default finance.currencyNumericCode call.
+
 ```txt
-finance.currencyNumericCode()
+finance.currencyNumericCode
 ```
 
-Example return values:
-- `270`
+Returns: `400`
 
 ### `finance.currencySymbol`
 
@@ -271,12 +329,13 @@ No parameters.
 
 Examples:
 
+Shows the default finance.currencySymbol call.
+
 ```txt
-finance.currencySymbol()
+finance.currencySymbol
 ```
 
-Example return values:
-- `₩`
+Returns: `руб`
 
 ### `finance.ethereumAddress`
 
@@ -289,12 +348,13 @@ No parameters.
 
 Examples:
 
+Shows the default finance.ethereumAddress call.
+
 ```txt
-finance.ethereumAddress()
+finance.ethereumAddress
 ```
 
-Example return values:
-- `0xf5d385aff27de9dee6eeeffd924ffd7dd2d252ca`
+Returns: `0x9f0632478b9f4d0e9c34bf6fdd103d29fbf6fc0a`
 
 ### `finance.iban`
 
@@ -310,16 +370,29 @@ Generates a random IBAN.
 
 Examples:
 
+Shows finance.iban when optional params are omitted.
+
 ```txt
 finance.iban()
 ```
 
+Returns: `IE39SAHD00454601410936`
+
+Shows finance.iban using countryCode.
+
 ```txt
-finance.iban(countryCode="GB", formatted=true)
+finance.iban(countryCode="GB")
 ```
 
-Example return values:
-- `CH67001759079BP5WA811`
+Returns: `GB98KSAH00235420410936`
+
+Shows finance.iban using formatted.
+
+```txt
+finance.iban(formatted=true)
+```
+
+Returns: `IE39 SAHD 0045 4601 4109 36`
 
 ### `finance.litecoinAddress`
 
@@ -332,12 +405,13 @@ No parameters.
 
 Examples:
 
+Shows the default finance.litecoinAddress call.
+
 ```txt
-finance.litecoinAddress()
+finance.litecoinAddress
 ```
 
-Example return values:
-- `M7nWopfUfSjA8cmGWvuENRLu6GU4C1iTK`
+Returns: `31i96bmpxqFcS2Eqy9cNYjGST53aS`
 
 ### `finance.pin`
 
@@ -352,16 +426,21 @@ Generates a random PIN number.
 
 Examples:
 
+Shows finance.pin when optional params are omitted.
+
 ```txt
 finance.pin()
 ```
 
+Returns: `4703`
+
+Shows finance.pin using length.
+
 ```txt
-finance.pin(length=1)
+finance.pin(length=5)
 ```
 
-Example return values:
-- `1107`
+Returns: `47031`
 
 ### `finance.routingNumber`
 
@@ -374,12 +453,13 @@ No parameters.
 
 Examples:
 
+Shows the default finance.routingNumber call.
+
 ```txt
-finance.routingNumber()
+finance.routingNumber
 ```
 
-Example return values:
-- `933657999`
+Returns: `470310139`
 
 ### `finance.transactionDescription`
 
@@ -392,12 +472,13 @@ No parameters.
 
 Examples:
 
+Shows the default finance.transactionDescription call.
+
 ```txt
-finance.transactionDescription()
+finance.transactionDescription
 ```
 
-Example return values:
-- `Transaction alert: deposit at Jones LLC using card ending ****4221 for an amount of GIP 94.88 on account ***3694.`
+Returns: `You made a payment of AED 302.33 at Hegmann - Johnston using card ending in ****6280 from account ***6451.`
 
 ### `finance.transactionType`
 
@@ -410,9 +491,10 @@ No parameters.
 
 Examples:
 
+Shows the default finance.transactionType call.
+
 ```txt
-finance.transactionType()
+finance.transactionType
 ```
 
-Example return values:
-- `deposit`
+Returns: `invoice`

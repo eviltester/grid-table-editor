@@ -26,33 +26,37 @@ class DomainKeywordInvocationParser {
 
     if (!stream.match('LPAREN')) {
       if (this.hasToken(stream, 'RPAREN')) {
-        return { ok: false, error: 'Invalid keyword invocation: missing opening parenthesis' };
+        return this.invalid(keyword, 'Invalid keyword invocation: missing opening parenthesis');
       }
-      return { ok: false, error: 'Invalid keyword invocation: unexpected trailing content' };
+      return this.invalid(keyword, 'Invalid keyword invocation: unexpected trailing content');
     }
 
     if (stream.peek().type === 'RPAREN') {
       stream.consume();
       if (stream.peek().type !== 'EOF') {
-        return { ok: false, error: 'Invalid keyword invocation: unexpected trailing content' };
+        return this.invalid(keyword, 'Invalid keyword invocation: unexpected trailing content');
       }
       return { ok: true, keyword, arguments: [] };
     }
 
     const parsedArgs = this.parseArgumentList(stream);
     if (!parsedArgs.ok) {
-      return parsedArgs;
+      return this.invalid(keyword, parsedArgs.error);
     }
 
     if (!stream.match('RPAREN')) {
-      return { ok: false, error: 'Invalid keyword invocation: missing closing parenthesis' };
+      return this.invalid(keyword, 'Invalid keyword invocation: missing closing parenthesis');
     }
 
     if (stream.peek().type !== 'EOF') {
-      return { ok: false, error: 'Invalid keyword invocation: unexpected trailing content' };
+      return this.invalid(keyword, 'Invalid keyword invocation: unexpected trailing content');
     }
 
     return { ok: true, keyword, arguments: parsedArgs.arguments };
+  }
+
+  invalid(keyword, error) {
+    return { ok: false, keyword, error };
   }
 
   parseArgumentList(stream) {

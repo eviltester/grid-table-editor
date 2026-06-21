@@ -63,6 +63,27 @@ describe('generator focused schema editing', () => {
     });
   });
 
+  test('faker helpers.arrayElement preview returns only supplied array members', async () => {
+    await harness.fillRow(0, {
+      name: 'Pick',
+      sourceType: 'faker',
+      command: 'helpers.arrayElement',
+      params: '(["A","B","C"])',
+    });
+    await harness.setPreviewCount(8);
+    await harness.clickPreview();
+
+    harness.assertSuccessfulPreview('helpers.arrayElement preview');
+
+    const previewTable = harness.getPreviewDataTable();
+    expect(previewTable).toBeTruthy();
+    expect(previewTable.getRowCount()).toBeGreaterThan(0);
+
+    for (let rowIndex = 0; rowIndex < previewTable.getRowCount(); rowIndex += 1) {
+      expect(['A', 'B', 'C']).toContain(previewTable.getCell(rowIndex, 0));
+    }
+  });
+
   test('text-mode invalid schema shows error and valid schema round-trips back to rows', async () => {
     await harness.fillRow(0, {
       name: 'Code',

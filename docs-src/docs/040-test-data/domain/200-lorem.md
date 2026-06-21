@@ -31,16 +31,53 @@ Generates the given number lines of lorem separated by `'\n'`.
 
 Examples:
 
+Shows lorem.lines when optional params are omitted.
+
 ```txt
 lorem.lines()
 ```
 
+Returns: `A cognatus arca aliquam audentia coniuratio crux fugit.\nStillicidium bardus utrimque acsi spargo cur.\nAqua avaritia thesaurus volo combibo stultus utor.`
+
+Shows lorem.lines using min.
+
 ```txt
-lorem.lines(min=1, max=1, lineCount=1, lineCountMax=1, lineCountMin=1)
+lorem.lines(max=10, min=1)
 ```
 
-Example return values:
-- `Illum qui ocer creptio. Antepono aro vergo voluptatem acervus compono apud.`
+Returns: `Suppellex a cognatus arca aliquam audentia.`
+
+Shows lorem.lines using max.
+
+```txt
+lorem.lines(max=5)
+```
+
+Returns: `A cognatus arca aliquam audentia coniuratio crux fugit.\nStillicidium bardus utrimque acsi spargo cur.\nAqua avaritia thesaurus volo combibo stultus utor.`
+
+Shows lorem.lines using lineCount.
+
+```txt
+lorem.lines(lineCount=5)
+```
+
+Returns: `A cognatus arca aliquam audentia coniuratio crux fugit.\nStillicidium bardus utrimque acsi spargo cur.\nAqua avaritia thesaurus volo combibo stultus utor.`
+
+Shows lorem.lines using lineCountMax.
+
+```txt
+lorem.lines(lineCountMax=5)
+```
+
+Returns: `A cognatus arca aliquam audentia coniuratio crux fugit.\nStillicidium bardus utrimque acsi spargo cur.\nAqua avaritia thesaurus volo combibo stultus utor.`
+
+Shows lorem.lines using lineCountMin.
+
+```txt
+lorem.lines(lineCountMin=5)
+```
+
+Returns: `A cognatus arca aliquam audentia coniuratio crux fugit.\nStillicidium bardus utrimque acsi spargo cur.\nAqua avaritia thesaurus volo combibo stultus utor.`
 
 ### `lorem.paragraph`
 
@@ -59,16 +96,53 @@ Generates a paragraph with the given number of sentences.
 
 Examples:
 
+Shows lorem.paragraph when optional params are omitted.
+
 ```txt
 lorem.paragraph()
 ```
 
+Returns: `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.`
+
+Shows lorem.paragraph using min.
+
 ```txt
-lorem.paragraph(min=1, max=1, sentenceCount=1, sentenceCountMax=1, sentenceCountMin=1)
+lorem.paragraph(max=10, min=1)
 ```
 
-Example return values:
-- `Quisquam dolorum modi quae atque.`
+Returns: `Suppellex a cognatus arca aliquam audentia.`
+
+Shows lorem.paragraph using max.
+
+```txt
+lorem.paragraph(max=5)
+```
+
+Returns: `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.`
+
+Shows lorem.paragraph using sentenceCount.
+
+```txt
+lorem.paragraph(sentenceCount=5)
+```
+
+Returns: `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.`
+
+Shows lorem.paragraph using sentenceCountMax.
+
+```txt
+lorem.paragraph(sentenceCountMax=5)
+```
+
+Returns: `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.`
+
+Shows lorem.paragraph using sentenceCountMin.
+
+```txt
+lorem.paragraph(sentenceCountMin=5)
+```
+
+Returns: `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.`
 
 ### `lorem.paragraphs`
 
@@ -88,16 +162,61 @@ Generates the given number of paragraphs.
 
 Examples:
 
+Shows lorem.paragraphs when optional params are omitted.
+
 ```txt
 lorem.paragraphs()
 ```
 
+Returns: `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.\nVarius ago adflicto assentator utrimque altus curiositas vita expedita stultus. Stipes trucido accusamus tandem voveo. Cicuta testimonium amet dedico ver claudeo civis aperio.\nSpoliatio beneficium cena. Adnuo natus arca odit subseco ambulo. Suasoria cupio admiratio facilis sonitus dolorum.`
+
+Shows lorem.paragraphs using min.
+
 ```txt
-lorem.paragraphs(min=1, max=1, paragraphCount=1, separator="-", paragraphCountMax=1, paragraphCountMin=1)
+lorem.paragraphs(max=10, min=1)
 ```
 
-Example return values:
-- `Primus paragraphus.\n\nSecundus paragraphus.`
+Returns: `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.`
+
+Shows lorem.paragraphs using max.
+
+```txt
+lorem.paragraphs(max=5)
+```
+
+Returns: `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.5Varius ago adflicto assentator utrimque altus curiositas vita expedita stultus. Stipes trucido accusamus tandem voveo. Cicuta testimonium amet dedico ver claudeo civis aperio.5Spoliatio beneficium cena. Adnuo natus arca odit subseco ambulo. Suasoria cupio admiratio facilis sonitus dolorum.`
+
+Shows lorem.paragraphs using paragraphCount.
+
+```txt
+lorem.paragraphs(paragraphCount=5)
+```
+
+Returns: `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.\nVarius ago adflicto assentator utrimque altus curiositas vita expedita stultus. Stipes trucido accusamus tandem voveo. Cicuta testimonium amet dedico ver claudeo civis aperio.\nSpoliatio beneficium cena. Adnuo natus arca odit subseco ambulo. Suasoria cupio admiratio facilis sonitus dolorum.`
+
+Shows lorem.paragraphs using separator.
+
+```txt
+lorem.paragraphs(separator="-")
+```
+
+Returns: `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.\nVarius ago adflicto assentator utrimque altus curiositas vita expedita stultus. Stipes trucido accusamus tandem voveo. Cicuta testimonium amet dedico ver claudeo civis aperio.\nSpoliatio beneficium cena. Adnuo natus arca odit subseco ambulo. Suasoria cupio admiratio facilis sonitus dolorum.`
+
+Shows lorem.paragraphs using paragraphCountMax.
+
+```txt
+lorem.paragraphs(paragraphCountMax=5)
+```
+
+Returns: `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.\nVarius ago adflicto assentator utrimque altus curiositas vita expedita stultus. Stipes trucido accusamus tandem voveo. Cicuta testimonium amet dedico ver claudeo civis aperio.\nSpoliatio beneficium cena. Adnuo natus arca odit subseco ambulo. Suasoria cupio admiratio facilis sonitus dolorum.`
+
+Shows lorem.paragraphs using paragraphCountMin.
+
+```txt
+lorem.paragraphs(paragraphCountMin=5)
+```
+
+Returns: `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.\nVarius ago adflicto assentator utrimque altus curiositas vita expedita stultus. Stipes trucido accusamus tandem voveo. Cicuta testimonium amet dedico ver claudeo civis aperio.\nSpoliatio beneficium cena. Adnuo natus arca odit subseco ambulo. Suasoria cupio admiratio facilis sonitus dolorum.`
 
 ### `lorem.sentence`
 
@@ -116,16 +235,53 @@ Generates a space separated list of words beginning with a capital letter and en
 
 Examples:
 
+Shows lorem.sentence when optional params are omitted.
+
 ```txt
 lorem.sentence()
 ```
 
+Returns: `Suppellex a cognatus arca aliquam audentia.`
+
+Shows lorem.sentence using min.
+
 ```txt
-lorem.sentence(min=1, max=1, wordCount=1, wordCountMax=1, wordCountMin=1)
+lorem.sentence(max=10, min=1)
 ```
 
-Example return values:
-- `Auctor cum deorsum attero cum tergo aut.`
+Returns: `Cur.`
+
+Shows lorem.sentence using max.
+
+```txt
+lorem.sentence(max=5)
+```
+
+Returns: `Suppellex a cognatus arca aliquam audentia.`
+
+Shows lorem.sentence using wordCount.
+
+```txt
+lorem.sentence(wordCount=5)
+```
+
+Returns: `Suppellex a cognatus arca aliquam audentia.`
+
+Shows lorem.sentence using wordCountMax.
+
+```txt
+lorem.sentence(wordCountMax=5)
+```
+
+Returns: `Suppellex a cognatus arca aliquam audentia.`
+
+Shows lorem.sentence using wordCountMin.
+
+```txt
+lorem.sentence(wordCountMin=5)
+```
+
+Returns: `Suppellex a cognatus arca aliquam audentia.`
 
 ### `lorem.sentences`
 
@@ -145,16 +301,61 @@ Generates the given number of sentences.
 
 Examples:
 
+Shows lorem.sentences when optional params are omitted.
+
 ```txt
 lorem.sentences()
 ```
 
+Returns: `A cognatus arca aliquam audentia coniuratio crux fugit. Stillicidium bardus utrimque acsi spargo cur. Aqua avaritia thesaurus volo combibo stultus utor. Ago adflicto assentator utrimque altus curiositas vita expedita stultus comedo.`
+
+Shows lorem.sentences using min.
+
 ```txt
-lorem.sentences(min=1, max=1, sentenceCount=1, separator="-", sentenceCountMax=1, sentenceCountMin=1)
+lorem.sentences(max=10, min=1)
 ```
 
-Example return values:
-- `Vicissitudo amet candidus. Urbanus magni carbo artificiose tenus at ambulo.`
+Returns: `Suppellex a cognatus arca aliquam audentia.`
+
+Shows lorem.sentences using max.
+
+```txt
+lorem.sentences(max=5)
+```
+
+Returns: `A cognatus arca aliquam audentia coniuratio crux fugit.5Stillicidium bardus utrimque acsi spargo cur.5Aqua avaritia thesaurus volo combibo stultus utor.5Ago adflicto assentator utrimque altus curiositas vita expedita stultus comedo.`
+
+Shows lorem.sentences using sentenceCount.
+
+```txt
+lorem.sentences(sentenceCount=5)
+```
+
+Returns: `A cognatus arca aliquam audentia coniuratio crux fugit. Stillicidium bardus utrimque acsi spargo cur. Aqua avaritia thesaurus volo combibo stultus utor. Ago adflicto assentator utrimque altus curiositas vita expedita stultus comedo.`
+
+Shows lorem.sentences using separator.
+
+```txt
+lorem.sentences(separator="-")
+```
+
+Returns: `A cognatus arca aliquam audentia coniuratio crux fugit. Stillicidium bardus utrimque acsi spargo cur. Aqua avaritia thesaurus volo combibo stultus utor. Ago adflicto assentator utrimque altus curiositas vita expedita stultus comedo.`
+
+Shows lorem.sentences using sentenceCountMax.
+
+```txt
+lorem.sentences(sentenceCountMax=5)
+```
+
+Returns: `A cognatus arca aliquam audentia coniuratio crux fugit. Stillicidium bardus utrimque acsi spargo cur. Aqua avaritia thesaurus volo combibo stultus utor. Ago adflicto assentator utrimque altus curiositas vita expedita stultus comedo.`
+
+Shows lorem.sentences using sentenceCountMin.
+
+```txt
+lorem.sentences(sentenceCountMin=5)
+```
+
+Returns: `A cognatus arca aliquam audentia coniuratio crux fugit. Stillicidium bardus utrimque acsi spargo cur. Aqua avaritia thesaurus volo combibo stultus utor. Ago adflicto assentator utrimque altus curiositas vita expedita stultus comedo.`
 
 ### `lorem.slug`
 
@@ -173,16 +374,53 @@ Generates a slugified text consisting of the given number of hyphen separated wo
 
 Examples:
 
+Shows lorem.slug when optional params are omitted.
+
 ```txt
 lorem.slug()
 ```
 
+Returns: `cur-suppellex-a`
+
+Shows lorem.slug using min.
+
 ```txt
-lorem.slug(min=1, max=1, wordCount=1, wordCountMax=1, wordCountMin=1)
+lorem.slug(max=10, min=1)
 ```
 
-Example return values:
-- `dolore-accusator-atqui`
+Returns: `cur`
+
+Shows lorem.slug using max.
+
+```txt
+lorem.slug(max=5)
+```
+
+Returns: `cur-suppellex-a`
+
+Shows lorem.slug using wordCount.
+
+```txt
+lorem.slug(wordCount=5)
+```
+
+Returns: `cur-suppellex-a`
+
+Shows lorem.slug using wordCountMax.
+
+```txt
+lorem.slug(wordCountMax=5)
+```
+
+Returns: `cur-suppellex-a`
+
+Shows lorem.slug using wordCountMin.
+
+```txt
+lorem.slug(wordCountMin=5)
+```
+
+Returns: `cur-suppellex-a`
 
 ### `lorem.text`
 
@@ -195,12 +433,13 @@ No parameters.
 
 Examples:
 
+Shows the default lorem.text call.
+
 ```txt
-lorem.text()
+lorem.text
 ```
 
-Example return values:
-- `A short sample text generated from lorem.`
+Returns: `A cognatus arca aliquam audentia coniuratio crux fugit. Stillicidium bardus utrimque acsi spargo cur. Aqua avaritia thesaurus volo combibo stultus utor.`
 
 ### `lorem.word`
 
@@ -214,20 +453,49 @@ Generates a word of a specified length.
 | `min` | `number` | no | Minimum word length when generating a ranged length. |
 | `max` | `number` | no | Maximum word length when generating a ranged length. |
 | `length` | `number` | no | Exact word length to generate. |
-| `strategy` | `string` | no | The strategy to apply when no words with a matching length are found. Available error handling strategies: fail: Throws an error if no words with the given length are found. shortest: Returns any of the shortest words. closest: Returns any of the words closest to the given length. longest: Returns any of the longest words. any-length: Returns a word with any length. |
+| `strategy` | `fail\|closest\|shortest\|longest\|any-length` | no | The strategy to apply when no words with a matching length are found. Available error handling strategies: fail: Throws an error if no words with the given length are found. shortest: Returns any of the shortest words. closest: Returns any of the words closest to the given length. longest: Returns any of the longest words. any-length: Returns a word with any length. |
 
 Examples:
+
+Shows lorem.word when optional params are omitted.
 
 ```txt
 lorem.word()
 ```
 
+Returns: `cur`
+
+Shows lorem.word using min.
+
 ```txt
-lorem.word(min=1, max=1, length=1, strategy="any-length")
+lorem.word(max=10, min=1)
 ```
 
-Example return values:
-- `cumque`
+Returns: `cur`
+
+Shows lorem.word using max.
+
+```txt
+lorem.word(max=5)
+```
+
+Returns: `cur`
+
+Shows lorem.word using length.
+
+```txt
+lorem.word(length=5)
+```
+
+Returns: `curvo`
+
+Shows lorem.word using strategy.
+
+```txt
+lorem.word(strategy="any-length")
+```
+
+Returns: `cur`
 
 ### `lorem.words`
 
@@ -246,13 +514,50 @@ Generates a space separated list of words.
 
 Examples:
 
+Shows lorem.words when optional params are omitted.
+
 ```txt
 lorem.words()
 ```
 
+Returns: `cur suppellex a`
+
+Shows lorem.words using min.
+
 ```txt
-lorem.words(min=1, max=1, wordCount=1, wordCountMax=1, wordCountMin=1)
+lorem.words(max=10, min=1)
 ```
 
-Example return values:
-- `desidero conforto decimus`
+Returns: `cur`
+
+Shows lorem.words using max.
+
+```txt
+lorem.words(max=5)
+```
+
+Returns: `cur suppellex a`
+
+Shows lorem.words using wordCount.
+
+```txt
+lorem.words(wordCount=5)
+```
+
+Returns: `cur suppellex a`
+
+Shows lorem.words using wordCountMax.
+
+```txt
+lorem.words(wordCountMax=5)
+```
+
+Returns: `cur suppellex a`
+
+Shows lorem.words using wordCountMin.
+
+```txt
+lorem.words(wordCountMin=5)
+```
+
+Returns: `cur suppellex a`

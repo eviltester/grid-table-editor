@@ -137,20 +137,33 @@ function applySchemaCommandSelection(currentRow, { sourceType, command } = {}) {
     .toLowerCase();
   const resolvedCommand =
     resolvedSourceType === SOURCE_TYPE_DOMAIN ? normaliseDomainCommand(command) : normaliseFakerCommand(command);
+  const previousCommand =
+    resolvedSourceType === SOURCE_TYPE_DOMAIN
+      ? normaliseDomainCommand(current?.command)
+      : normaliseFakerCommand(current?.command);
+  const commandChanged = previousCommand !== resolvedCommand;
 
   const nextRow = {
     ...current,
     sourceType: resolvedSourceType,
     command: resolvedCommand,
   };
+  const currentValueText = String(current?.value ?? '').trim();
+
+  if (commandChanged) {
+    nextRow.params = '';
+    if (resolvedSourceType === SOURCE_TYPE_FAKER || resolvedSourceType === SOURCE_TYPE_DOMAIN) {
+      nextRow.value = '';
+    }
+  }
 
   if (
     resolvedSourceType === SOURCE_TYPE_DOMAIN &&
     resolvedCommand.toLowerCase() === 'datatype.enum' &&
     String(nextRow?.params ?? '').trim().length === 0 &&
-    String(nextRow?.value ?? '').trim().length > 0
+    currentValueText.length > 0
   ) {
-    nextRow.params = String(nextRow.value ?? '');
+    nextRow.params = currentValueText;
   }
 
   return nextRow;

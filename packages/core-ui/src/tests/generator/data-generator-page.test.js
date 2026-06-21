@@ -180,7 +180,7 @@ describe('generator page runtime factories', () => {
       'number.int(1,10)'
     );
     expect(buildRuleSpecFromSchemaRow({ sourceType: 'regex', value: '[A-Z]{3}' })).toBe('[A-Z]{3}');
-    expect(buildRuleSpecFromSchemaRow({ name: 'Code', sourceType: 'regex', value: '   ' })).toBe('regex("")');
+    expect(buildRuleSpecFromSchemaRow({ name: 'Code', sourceType: 'regex', value: '   ' })).toBe('');
     expect(buildRuleSpecFromSchemaRow({ sourceType: 'literal', value: 'Fixed' })).toBe('literal(Fixed)');
     expect(buildRuleSpecFromSchemaRow({ sourceType: 'literal', value: '   ' })).toBe('literal("")');
 
@@ -388,6 +388,12 @@ describe('generator page runtime factories', () => {
     expect(result.errors.map((error) => error.message)).toEqual(['Row 1: domain command is required.']);
   });
 
+  test('schema validation reports missing regex value', () => {
+    const result = validateSchemaRows([{ name: 'Code', sourceType: 'regex', value: '   ' }]);
+    expect(result.errors.map((error) => error.code)).toEqual(['missing_regex_value']);
+    expect(result.errors.map((error) => error.message)).toEqual(['Row 1: regex value is required.']);
+  });
+
   test('schema validation rejects helpers in domain source rows', () => {
     const result = validateSchemaRows([{ name: 'First', sourceType: 'domain', command: 'helpers.fake' }]);
     expect(result.errors.map((error) => error.code)).toEqual(['helpers_not_supported_in_domain']);
@@ -457,6 +463,56 @@ describe('generator page runtime factories', () => {
     expect(tableArg.getRowCount()).toBe(3);
     expect(tableArg.getHeaders()).toEqual(['Name', 'Code']);
     expect(getOutputPreviewTextArea().value).toBe('csv:sync:3');
+  });
+
+  test('preview blocks blank regex rows with schema validation feedback', () => {
+    const page = createMountedPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker,
+      RandExp,
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: TestDataGenerator,
+    });
+
+    page.schemaRows = [{ id: '1', name: 'Code', sourceType: 'regex', command: '', params: '', value: '   ' }];
+    page.renderSchemaRows();
+    getPreviewRowsInput().value = '3';
+
+    page.previewData();
+
+    expect(FakeGridExtension.lastInstance.setGridFromGenericDataTable).not.toHaveBeenCalled();
+    expect(getSchemaErrorStatus().textContent).toBe('Row 1: regex value is required.');
+    expect(getOutputPreviewTextArea().value).toBe('');
+  });
+
+  test('preview blocks malformed regex rows with schema validation feedback', () => {
+    const page = createMountedPage({
+      parentElement: document.getElementById('app'),
+      documentObj: document,
+      alertFn,
+      faker,
+      RandExp,
+      TabulatorCtor: FakeTabulator,
+      GridExtensionClass: FakeGridExtension,
+      ExporterClass: FakeExporter,
+      DownloadClass: FakeDownload,
+      TestDataGeneratorClass: TestDataGenerator,
+    });
+
+    page.schemaRows = [{ id: '1', name: 'Code', sourceType: 'regex', command: '', params: '', value: '[' }];
+    page.renderSchemaRows();
+    getPreviewRowsInput().value = '3';
+
+    page.previewData();
+
+    expect(FakeGridExtension.lastInstance.setGridFromGenericDataTable).not.toHaveBeenCalled();
+    expect(getSchemaErrorStatus().textContent).toContain('Unterminated character class');
+    expect(getOutputPreviewTextArea().value).toBe('');
   });
 
   test('preview serializes object-returning domain values as JSON', () => {
@@ -1407,7 +1463,7 @@ describe('generator page runtime factories', () => {
     page.renderSchemaRows();
 
     expect(() => page.previewData()).not.toThrow();
-    expect(getSchemaErrorStatus().textContent).toBe('Row 1: column name is required.');
+    expect(getSchemaErrorStatus().textContent).toBe('Row 1: column name is required.\nRow 1: regex value is required.');
   });
 
   test('toggles between schema controls and text editing with round trip', () => {

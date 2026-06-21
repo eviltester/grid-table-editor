@@ -72,9 +72,8 @@ function buildRuleSpecFromRow(row) {
   if (sourceType === SOURCE_TYPE_REGEX) {
     const value = String(row?.value ?? '');
     const trimmedValue = value.trim();
-    const hasName = String(row?.name ?? '').trim().length > 0;
-    if (trimmedValue.length === 0 && hasName) {
-      return 'regex("")';
+    if (trimmedValue.length === 0) {
+      return '';
     }
     if (/^(regex|datatype\.regex|awd\.datatype\.regex)\s*\(/i.test(trimmedValue)) {
       return trimmedValue;
@@ -145,6 +144,9 @@ export function schemaRowsToDataRules({ schemaRows = [] } = {}) {
     }
     if (row.sourceType === SOURCE_TYPE_DOMAIN && row.command.length === 0) {
       errors.push(SchemaParsingErrors.missingDomainCommand(row.line));
+    }
+    if (row.sourceType === SOURCE_TYPE_REGEX && String(row.value ?? '').trim().length === 0) {
+      errors.push(SchemaParsingErrors.missingRegexValue(row.line));
     }
     if (row.sourceType === SOURCE_TYPE_DOMAIN && isDomainHelpersCommand(row.command)) {
       errors.push(SchemaParsingErrors.helpersNotSupportedInDomain(row.line));

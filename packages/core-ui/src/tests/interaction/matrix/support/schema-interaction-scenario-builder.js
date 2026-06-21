@@ -102,13 +102,13 @@ const CUSTOM_SCENARIOS = [
 
 const DOMAIN_SCENARIO_EXECUTION_CACHE = new Map();
 const FAKER_SCENARIO_EXECUTION_CACHE = new Map();
+const CUSTOM_SCENARIO_EXECUTION_CACHE = new Map();
 const UI_REPRESENTATIVE_SCENARIO_IDS = new Set([
   'custom-enum-base',
   'custom-enum-pairwise',
   'custom-literal-base',
   'custom-literal-empty',
   'custom-regex-base',
-  'custom-regex-empty',
   'faker-helpers-arrayElement-base',
   'faker-helpers-fake-base',
   'faker-helpers-fromRegExp-example-1',
@@ -699,9 +699,66 @@ function canGenerateFakerScenarioPreview(scenario) {
   return isExecutable;
 }
 
+function canGenerateCustomScenarioPreview(scenario) {
+  if (CUSTOM_SCENARIO_EXECUTION_CACHE.has(scenario.id)) {
+    return CUSTOM_SCENARIO_EXECUTION_CACHE.get(scenario.id);
+  }
+
+  let isExecutable = false;
+  try {
+    const validation = validateSchemaRows({ schemaRows: scenario.rows, schemaRowsToDataRules });
+    if (validation.errors.length === 0) {
+      const configured = createConfiguredGeneratorFromSchemaRows({
+        schemaRows: scenario.rows,
+        validateSchemaRows: (rows) => validateSchemaRows({ schemaRows: rows, schemaRowsToDataRules }),
+        schemaRowsToSpec: (rows) =>
+          schemaRowsToSpec({
+            schemaRows: rows,
+            schemaRowsToDataRules,
+            dataRulesToSchemaText,
+          }),
+        TestDataGeneratorClass: TestDataGenerator,
+        faker,
+        RandExp,
+        buildRuleSpecFromSchemaRow,
+        extractLiteralValueFromRuleSpec: (ruleSpec) => ruleSpec,
+        extractRegexValueFromRuleSpec: (ruleSpec) => ruleSpec,
+        SOURCE_TYPE_FAKER,
+        SOURCE_TYPE_DOMAIN,
+        SOURCE_TYPE_LITERAL,
+        SOURCE_TYPE_ENUM,
+        SOURCE_TYPE_REGEX,
+      });
+      if (configured.errors.length === 0) {
+        const previewTable = createPreviewDataTable({
+          rowCount: scenario.pairwiseEligible ? 2 : 1,
+          generator: configured.generator,
+          GenericDataTableClass: GenericDataTable,
+        });
+        const exporter = new Exporter({
+          getGridAsGenericDataTable: () => previewTable,
+          getHeadersFromGrid: () => previewTable.getHeaders(),
+        });
+        const csvText = exporter.getDataTableAs('csv', previewTable) || '';
+        isExecutable =
+          !hasErrorIndicators(csvText) &&
+          scenario.rows.every((row, columnIndex) => scenarioRowLooksValid(row, previewTable.getCell(0, columnIndex)));
+      }
+    }
+  } catch {
+    isExecutable = false;
+  }
+
+  CUSTOM_SCENARIO_EXECUTION_CACHE.set(scenario.id, isExecutable);
+  return isExecutable;
+}
+
 function getScenarioExecutionStatus(scenario) {
   if (!scenario) {
     return 'review-only';
+  }
+  if (scenario.origins.includes('custom')) {
+    return canGenerateCustomScenarioPreview(scenario) ? 'generated' : 'non-executable';
   }
   if (scenario.sourceType === SOURCE_TYPE_DOMAIN) {
     return canGenerateDomainScenarioPreview(scenario) ? 'generated' : 'non-executable';
@@ -709,7 +766,7 @@ function getScenarioExecutionStatus(scenario) {
   if (scenario.sourceType === SOURCE_TYPE_FAKER) {
     return canGenerateFakerScenarioPreview(scenario) ? 'generated' : 'non-executable';
   }
-  if (scenario.origins.includes('custom') || scenario.origins.includes('example')) {
+  if (scenario.origins.includes('example')) {
     return 'generated';
   }
   return 'non-executable';

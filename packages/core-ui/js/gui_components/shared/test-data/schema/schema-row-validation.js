@@ -1,6 +1,7 @@
 import {
   SOURCE_TYPE_FAKER,
   SOURCE_TYPE_DOMAIN,
+  SOURCE_TYPE_REGEX,
   normaliseFakerCommand,
   normaliseDomainCommand,
   normaliseCommandParams,
@@ -102,6 +103,21 @@ function getSemanticValidationField(row) {
     return 'params';
   }
   return 'value';
+}
+
+function buildSemanticValidationRuleSpec(row, ruleSpec) {
+  const sourceType = normaliseSourceType(row?.sourceType);
+  const spec = String(ruleSpec ?? '');
+  const trimmedSpec = spec.trim();
+
+  if (sourceType === SOURCE_TYPE_REGEX && trimmedSpec.length > 0) {
+    if (/^(regex|datatype\.regex|awd\.datatype\.regex)\s*\(/i.test(trimmedSpec)) {
+      return trimmedSpec;
+    }
+    return `regex(${spec})`;
+  }
+
+  return spec;
 }
 
 function getStaticSchemaRowValidationIssues(row, rowIndex) {
@@ -222,6 +238,20 @@ function getStaticSchemaRowValidationIssues(row, rowIndex) {
     }
   }
 
+  if (sourceType === SOURCE_TYPE_REGEX) {
+    const rawValue = String(row?.value ?? '').trim();
+    if (!rawValue) {
+      issues.push(
+        createRowValidationIssue({
+          rowIndex,
+          code: 'missing_regex_value',
+          field: 'value',
+          message: `Row ${rowIndex + 1}: regex value is required.`,
+        })
+      );
+    }
+  }
+
   return issues;
 }
 
@@ -243,7 +273,7 @@ function getSchemaRowSemanticValidationIssues(
   }
 
   const name = String(row?.name ?? '').trim();
-  const ruleSpec = buildRuleSpecFromSchemaRow(row);
+  const ruleSpec = buildSemanticValidationRuleSpec(row, buildRuleSpecFromSchemaRow(row));
   if (!name || !ruleSpec || typeof schemaTextToDataRules !== 'function') {
     return [];
   }

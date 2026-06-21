@@ -106,6 +106,49 @@ describe('schema-row-validation', () => {
     ]);
   });
 
+  test('reports missing regex value for blank regex rows', () => {
+    const issues = getSchemaRowValidationIssues(
+      {
+        name: 'Code',
+        sourceType: 'regex',
+        value: '   ',
+      },
+      0
+    );
+
+    expect(issues).toEqual([
+      expect.objectContaining({
+        code: 'missing_regex_value',
+        field: 'value',
+        message: 'Row 1: regex value is required.',
+      }),
+    ]);
+  });
+
+  test('reports invalid regex value through the shared row validation path', () => {
+    const issues = getSchemaRowSemanticValidationIssues(
+      {
+        name: 'Code',
+        sourceType: 'regex',
+        value: '[',
+      },
+      0,
+      {
+        schemaTextToDataRules,
+        faker,
+        RandExp,
+      }
+    );
+
+    expect(issues).toEqual([
+      expect.objectContaining({
+        code: 'compiler_validation_error',
+        field: 'value',
+        message: expect.stringContaining('Row 1: invalid regex value -'),
+      }),
+    ]);
+  });
+
   test('bracket guidance suggests a corrected example instead of echoing broken syntax', () => {
     const issues = getSchemaRowValidationIssues(
       {

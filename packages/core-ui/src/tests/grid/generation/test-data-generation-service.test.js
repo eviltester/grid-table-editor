@@ -80,6 +80,58 @@ describe('test-data-generation-service', () => {
     expect(setGenerateBusy.mock.calls).toEqual([[true], [false]]);
   });
 
+  test('generateTestData blocks blank regex rows before generation and surfaces schema feedback', async () => {
+    const validateCurrentSchemaRows = jest.fn(() => ({
+      errors: [{ code: 'missing_regex_value', message: 'Row 1: regex value is required.' }],
+      rows: [{ name: 'Code', sourceType: 'regex', value: '   ' }],
+    }));
+    const setTestDataLoadingStatus = jest.fn();
+    const setGenerateBusy = jest.fn();
+    const showSchemaError = jest.fn();
+    const setTestDataStatus = jest.fn();
+
+    const service = createTestDataGenerationService({
+      TestDataGeneratorClass: class {},
+      PairwiseTestDataGeneratorClass: class {},
+      GenericDataTableClass: class {},
+      TEST_DATA_MODES: {
+        NEW_TABLE: 'new-table',
+        AMEND_TABLE: 'amend-table',
+        AMEND_SELECTED: 'amend-selected',
+      },
+      normaliseCount: () => 3,
+      createTableFromGenerator: jest.fn(),
+      createAmendedTable: jest.fn(),
+      schemaRowsToSpec: jest.fn(() => 'Code\n'),
+      faker: {},
+      RandExp: function RandExp() {},
+      debouncer: { clear: jest.fn() },
+      syncSchemaTextFromGridBeforeGenerate: jest.fn(),
+      setTestDataStatus,
+      setTestDataLoadingStatus,
+      showSchemaError,
+      yieldToUi: jest.fn(() => Promise.resolve()),
+      validateCurrentSchemaRows,
+      getImporter: () => ({ setGridFromGenericDataTable: jest.fn() }),
+      getTextPreviewRenderer: jest.fn(),
+      getMainGridExtras: jest.fn(),
+      getGenerationMode: () => 'new-table',
+      getRequestedRowCount: () => 3,
+      setGenerateBusy,
+    });
+
+    await service.generateTestData();
+
+    expect(validateCurrentSchemaRows).toHaveBeenCalledTimes(1);
+    expect(setTestDataLoadingStatus).toHaveBeenCalledWith('Validating schema...');
+    expect(showSchemaError).toHaveBeenCalledWith('Row 1: regex value is required.');
+    expect(setTestDataStatus).toHaveBeenCalledWith('Schema validation failed. Grid unchanged.', {
+      severity: 'error',
+      dismissable: true,
+    });
+    expect(setGenerateBusy.mock.calls).toEqual([[true], [false]]);
+  });
+
   test('generateTestData prefers composed schema text so constraints are preserved in row mode', async () => {
     const validateCurrentSchemaRows = jest.fn(() => ({
       errors: [],

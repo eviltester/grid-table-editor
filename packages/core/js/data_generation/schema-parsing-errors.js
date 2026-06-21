@@ -34,6 +34,14 @@ export class SchemaParsingErrors {
     };
   }
 
+  static missingRegexValue(line) {
+    return {
+      code: 'missing_regex_value',
+      message: `Row ${line}: regex value is required.`,
+      ...(Number.isInteger(line) ? { line } : {}),
+    };
+  }
+
   static helpersNotSupportedInDomain(line) {
     return {
       code: 'helpers_not_supported_in_domain',

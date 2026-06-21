@@ -137,8 +137,8 @@
           "value": ""
         }
       ],
-      "expectedSchemaText": "Code\nregex(\"\")",
-      "expectedUiSchemaText": "Code\nregex(\"\")",
+      "expectedSchemaText": "",
+      "expectedUiSchemaText": "Code\n",
       "expectedFileExtension": ".csv",
       "pairwiseEligible": false,
       "expectStructuredSerialization": false,
@@ -26192,29 +26192,6 @@
       "scenarioId": "custom-regex-base"
     },
     {
-      "id": "runtime:custom-regex-empty",
-      "sourceType": "regex",
-      "command": "",
-      "label": "regex empty",
-      "rows": [
-        {
-          "name": "Code",
-          "sourceType": "regex",
-          "command": "",
-          "params": "",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Code\nregex(\"\")",
-      "expectedUiSchemaText": "Code\nregex(\"\")",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": [],
-      "origins": ["custom", "empty"],
-      "scenarioId": "custom-regex-empty"
-    },
-    {
       "id": "runtime:faker-helpers-arrayElement-base",
       "sourceType": "faker",
       "command": "helpers.arrayElement",
@@ -51941,30 +51918,6 @@
       "origins": ["custom"],
       "scenarioId": "custom-regex-base",
       "parityMode": "structural"
-    },
-    {
-      "id": "ui:custom-regex-empty",
-      "sourceType": "regex",
-      "command": "",
-      "label": "regex empty",
-      "rows": [
-        {
-          "name": "Code",
-          "sourceType": "regex",
-          "command": "",
-          "params": "",
-          "value": ""
-        }
-      ],
-      "expectedSchemaText": "Code\nregex(\"\")",
-      "expectedUiSchemaText": "Code\nregex(\"\")",
-      "expectedFileExtension": ".csv",
-      "pairwiseEligible": false,
-      "expectStructuredSerialization": false,
-      "coveredArgs": [],
-      "origins": ["custom", "empty"],
-      "scenarioId": "custom-regex-empty",
-      "parityMode": "exact"
     },
     {
       "id": "ui:faker-helpers-arrayElement-base",

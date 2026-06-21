@@ -8,8 +8,11 @@ import { getDomainCommandHelp } from '../../../../js/gui_components/shared/domai
 import {
   buildSchemaInteractionScenarios,
   buildScenarioCoverageSummary,
+  buildRuntimeInteractionScenarios,
+  buildUiInteractionScenarios,
   CUSTOM_SOURCE_TYPES,
   FAKER_INTERACTION_COMMANDS,
+  getScenarioExecutionStatus,
 } from './support/schema-interaction-scenario-builder.js';
 
 describe('schema interaction scenario builder', () => {
@@ -165,5 +168,17 @@ describe('schema interaction scenario builder', () => {
     expect(getDomainCommandHelp('internet.password')?.args?.find((arg) => arg.name === 'pattern')?.type).toBe('regexp');
     expect(getDomainCommandHelp('commerce.price')?.returnType).toBe('string');
     expect(getDomainCommandHelp('finance.amount')?.returnType).toBe('string');
+  });
+
+  test('blank regex custom scenario remains coverage-only and is excluded from executable subsets', () => {
+    const allScenarios = buildSchemaInteractionScenarios();
+    const runtimeScenarios = buildRuntimeInteractionScenarios();
+    const uiScenarios = buildUiInteractionScenarios();
+    const blankRegexScenario = allScenarios.find((scenario) => scenario.id === 'custom-regex-empty');
+
+    expect(blankRegexScenario).toBeTruthy();
+    expect(getScenarioExecutionStatus(blankRegexScenario)).toBe('non-executable');
+    expect(runtimeScenarios.some((scenario) => scenario.id === 'custom-regex-empty')).toBe(false);
+    expect(uiScenarios.some((scenario) => scenario.id === 'custom-regex-empty')).toBe(false);
   });
 });

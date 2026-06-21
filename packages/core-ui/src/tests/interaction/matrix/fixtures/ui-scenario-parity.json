@@ -24,11 +24,6 @@
     "exactPreviewParity": false,
     "structuralParity": true
   },
-  "ui:custom-regex-empty": {
-    "mode": "exact",
-    "exactPreviewParity": true,
-    "structuralParity": true
-  },
   "ui:faker-helpers-arrayElement-base": {
     "mode": "exact",
     "exactPreviewParity": true,

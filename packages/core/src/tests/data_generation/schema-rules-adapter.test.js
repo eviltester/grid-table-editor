@@ -307,6 +307,30 @@ IF [Ticket] = "ABC-1234" THEN [Ticket] <> "XYZ-9999" ENDIF`,
     );
   });
 
+  test('returns blank explicit regex text as a regex validation error when requested', () => {
+    const result = schemaTextToDataRules({
+      schemaText: 'Code\nregex("")',
+      faker,
+      RandExp,
+      includeInvalidRules: true,
+    });
+
+    expect(result.errors).toEqual([
+      expect.objectContaining({
+        code: 'compiler_validation_error',
+        column: 'Code',
+        message: expect.stringContaining('Regex pattern is required and cannot be blank'),
+      }),
+    ]);
+    expect(result.dataRules).toEqual([
+      expect.objectContaining({
+        name: 'Code',
+        ruleSpec: '',
+        type: 'regex',
+      }),
+    ]);
+  });
+
   test('converts schema rows to data rules with canonical validation errors', () => {
     const result = schemaRowsToDataRules({
       schemaRows: [
@@ -395,12 +419,13 @@ IF [Ticket] = "ABC-1234" THEN [Ticket] <> "XYZ-9999" ENDIF`,
     expect(result.dataRules).toEqual([{ name: 'A', ruleSpec: 'literal("")', comments: '', type: 'literal' }]);
   });
 
-  test('converts empty regex schema row value to regex("")', () => {
+  test('reports missing regex value for empty regex schema row value', () => {
     const result = schemaRowsToDataRules({
       schemaRows: [{ name: 'A', sourceType: 'regex', value: '   ' }],
     });
 
-    expect(result.errors).toEqual([]);
-    expect(result.dataRules).toEqual([{ name: 'A', ruleSpec: 'regex("")', comments: '', type: 'regex' }]);
+    expect(result.dataRules).toEqual([]);
+    expect(result.errors.map((error) => error.code)).toEqual(['missing_regex_value']);
+    expect(result.errors.map((error) => error.message)).toEqual(['Row 1: regex value is required.']);
   });
 });

@@ -1,7 +1,8 @@
 import { cp, mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { spawnSync } from 'node:child_process';
+import { serializeSiteConfigModuleSource } from '../packages/core-ui/js/site/site-config-core.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -15,6 +16,7 @@ const docsStaticDir = path.join(repoRoot, 'docs-src', 'static');
 const docsAppPlaceholderPath = path.join(docsStaticDir, 'app.html');
 const webImagesDir = path.join(repoRoot, 'apps', 'web', 'images');
 const webLibsDir = path.join(repoRoot, 'apps', 'web', 'libs');
+const tempSiteConfigOverridePath = path.join(outputDir, '_site-config.override.mjs');
 const docsAppPlaceholderHtml =
   '<!doctype html><html lang="en"><head><meta charset="utf-8" /><title>App build placeholder</title></head><body></body></html>';
 const TESTENV_ROBOTS_DIRECTIVES = 'noindex,nofollow,noarchive,nosnippet';
@@ -189,56 +191,6 @@ function upsertHeadStyle(html, markerAttribute, styleTag) {
   }
 
   return html.replace('</head>', `${styleTag}\n  </head>`);
-}
-
-function rewriteHrefAttributes(html, rewriteHref) {
-  return String(html || '').replace(/(<a\b[^>]*\bhref=)(["'])([^"']+)\2/giu, (match, prefix, quote, hrefValue) => {
-    const nextHref = rewriteHref(hrefValue);
-    return `${prefix}${quote}${nextHref}${quote}`;
-  });
-}
-
-function resolveTestEnvRootHref(hrefValue) {
-  const value = String(hrefValue || '').trim();
-  if (!value) {
-    return value;
-  }
-
-  if (value === 'https://anywaydata.com' || value === 'https://anywaydata.com/') {
-    return './site/';
-  }
-
-  if (value.startsWith('https://anywaydata.com/docs/')) {
-    const parsed = new URL(value);
-    return `./site${parsed.pathname}${parsed.search}${parsed.hash}`;
-  }
-
-  if (value === 'https://anywaydata.com/blog' || value.startsWith('https://anywaydata.com/blog/')) {
-    const parsed = new URL(value);
-    return `./site${parsed.pathname}${parsed.search}${parsed.hash}`;
-  }
-
-  if (value.startsWith('/docs/')) {
-    return `./site${value}`;
-  }
-
-  if (value.startsWith('docs/')) {
-    return `./site/${value}`;
-  }
-
-  if (value === '/blog' || value.startsWith('/blog/')) {
-    return `./site${value}`;
-  }
-
-  if (value === 'blog' || value.startsWith('blog/')) {
-    return `./site/${value}`;
-  }
-
-  return value;
-}
-
-function rewriteTestEnvRootPageLinks(html) {
-  return rewriteHrefAttributes(html, resolveTestEnvRootHref);
 }
 
 function applySeoDirectivesToHtml(
@@ -570,16 +522,6 @@ async function hideTopHeaderInBuiltPage(pagePath) {
   await writeFile(pagePath, nextHtml, 'utf8');
 }
 
-async function rewriteTestEnvRootPageLinksInFile(pagePath) {
-  const html = await readFile(pagePath, 'utf8');
-  const nextHtml = rewriteTestEnvRootPageLinks(html);
-
-  if (nextHtml === html) {
-    return;
-  }
-  await writeFile(pagePath, nextHtml, 'utf8');
-}
-
 async function copyWebBuildIntoDirectory(sourceDir, targetDir) {
   await cp(sourceDir, targetDir, {
     recursive: true,
@@ -619,23 +561,69 @@ async function removeTemporaryDocsAppPlaceholder() {
   await writeFile(docsAppPlaceholderPath, '<p>This will be overwritten during the npm build.</p>', 'utf8');
 }
 
+function resolveRepositoryName() {
+  return String(process.env.GITHUB_REPOSITORY || '')
+    .split('/')
+    .at(-1)
+    ?.trim();
+}
+
+function createTestEnvSiteConfigInput({ repositoryName = resolveRepositoryName(), pagesHostOrigin = 'https://eviltester.github.io' } = {}) {
+  const repoBasePath = repositoryName ? `/${repositoryName}` : '';
+  const rootedPageHref = (fileName) => (repositoryName ? `${repoBasePath}/${fileName}` : `/${fileName}`);
+  const rootedSiteBase = repositoryName ? `${repoBasePath}/site` : '/site';
+  const siteOrigin = `${pagesHostOrigin}${repoBasePath}`;
+
+  return {
+    siteOrigin,
+    pageHrefs: {
+      landing: repositoryName ? `${repoBasePath}/` : '/',
+      app: rootedPageHref('app.html'),
+      generator: rootedPageHref('generator.html'),
+      combinatorial: rootedPageHref('combinatorial.html'),
+      webmcp: rootedPageHref('webmcp.html'),
+      writerSchema: rootedPageHref('writer-schema.html'),
+    },
+    docsIntroHref: `${rootedSiteBase}/docs/intro`,
+    blogHref: `${rootedSiteBase}/blog`,
+    docsBaseUrl: `${siteOrigin}/site/docs`,
+    blogBaseUrl: `${siteOrigin}/site/blog`,
+  };
+}
+
+async function writeGeneratedTestEnvSiteConfigOverride(filePath, options = {}) {
+  const source = serializeSiteConfigModuleSource(createTestEnvSiteConfigInput(options), {
+    coreModuleUrl: pathToFileURL(path.join(repoRoot, 'packages', 'core-ui', 'js', 'site', 'site-config-core.js')).href,
+  });
+  await writeFile(filePath, source, 'utf8');
+}
+
 async function main() {
   await clearDirectoryContents(outputDir);
 
   const buildMetadata = resolveBuildMetadata();
   const fullSiteBaseUrl = resolveFullSiteBaseUrl();
+  await writeGeneratedTestEnvSiteConfigOverride(tempSiteConfigOverridePath);
 
-  runCommand('pnpm', [
-    'exec',
-    'vite',
-    'build',
-    '--config',
-    path.join(repoRoot, 'apps', 'web', 'vite.config.mjs'),
-    '--base',
-    './',
-    '--outDir',
-    tempWebDir,
-  ]);
+  runCommand(
+    'pnpm',
+    [
+      'exec',
+      'vite',
+      'build',
+      '--config',
+      path.join(repoRoot, 'apps', 'web', 'vite.config.mjs'),
+      '--base',
+      './',
+      '--outDir',
+      tempWebDir,
+    ],
+    {
+      env: {
+        ANYWAYDATA_SITE_CONFIG_OVERRIDE_PATH: tempSiteConfigOverridePath,
+      },
+    }
+  );
 
   await copyWebBuildIntoDirectory(tempWebDir, outputDir);
 
@@ -646,11 +634,6 @@ async function main() {
   await hideTopHeaderInBuiltPage(path.join(outputDir, 'combinatorial.html'));
   await hideTopHeaderInBuiltPage(path.join(outputDir, 'webmcp.html'));
   await hideTopHeaderInBuiltPage(path.join(outputDir, 'writer-schema.html'));
-  await rewriteTestEnvRootPageLinksInFile(path.join(outputDir, 'app.html'));
-  await rewriteTestEnvRootPageLinksInFile(path.join(outputDir, 'generator.html'));
-  await rewriteTestEnvRootPageLinksInFile(path.join(outputDir, 'combinatorial.html'));
-  await rewriteTestEnvRootPageLinksInFile(path.join(outputDir, 'webmcp.html'));
-  await rewriteTestEnvRootPageLinksInFile(path.join(outputDir, 'writer-schema.html'));
 
   await mkdir(fullSiteDir, { recursive: true });
   await createTemporaryDocsAppPlaceholder();
@@ -688,6 +671,7 @@ async function main() {
     recursive: true,
     force: true,
   });
+  await rm(tempSiteConfigOverridePath, { force: true });
 
   await writeFile(path.join(outputDir, 'index.html'), renderIndexPage(buildMetadata), 'utf8');
   await writeFile(path.join(outputDir, 'robots.txt'), createTestenvRobotsTxt(), 'utf8');
@@ -711,12 +695,13 @@ export {
   TESTENV_ROBOTS_DIRECTIVES,
   applySeoDirectivesToHtml,
   applyTopHeaderHideToHtml,
+  createTestEnvSiteConfigInput,
   createLlmsTxt,
   createSiteRobotsTxt,
   createTestenvRobotsTxt,
   hideTopHeaderInBuiltHtml,
-  rewriteTestEnvRootPageLinks,
   renderIndexPage,
+  writeGeneratedTestEnvSiteConfigOverride,
 };
 
 if (isMainModule()) {

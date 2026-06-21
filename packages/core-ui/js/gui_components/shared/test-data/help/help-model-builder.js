@@ -6,9 +6,9 @@
  */
 
 import { getFakerCommandHelp } from '@anywaydata/core/faker/faker-helper-keyword-definitions.js';
+import { buildDocsUrl, resolveOwnedSiteUrl } from '@anywaydata/site-config';
 import { getDomainCommandHelp } from '../../domain-command-help-metadata.js';
 import { escapeHtml } from '../../html-escape.js';
-import { resolveRuntimeDocsUrl } from './runtime-docs-url.js';
 import {
   SOURCE_TYPE_FAKER,
   SOURCE_TYPE_DOMAIN,
@@ -21,11 +21,11 @@ import {
 } from '../../schema-row-rule-mapper.js';
 
 const HELP_URLS = Object.freeze({
-  regex: 'https://anywaydata.com/docs/test-data/regex-test-data',
-  faker: 'https://anywaydata.com/docs/test-data/faker-test-data',
-  domain: 'https://anywaydata.com/docs/test-data/domain/domain-test-data',
-  literal: 'https://anywaydata.com/docs/category/generating-data',
-  enum: 'https://anywaydata.com/docs/category/generating-data',
+  regex: buildDocsUrl('test-data/regex-test-data'),
+  faker: buildDocsUrl('test-data/faker-test-data'),
+  domain: buildDocsUrl('test-data/domain/domain-test-data'),
+  literal: buildDocsUrl('category/generating-data'),
+  enum: buildDocsUrl('category/generating-data'),
 });
 
 const ENUM_VALUE_PARAM = Object.freeze({
@@ -40,7 +40,7 @@ const ENUM_VALUE_PARAM = Object.freeze({
 function resolveFakerDocsUrl(command, docsUrl) {
   const normalizedCommand = String(command || '').trim();
   if (normalizedCommand.startsWith('helpers.')) {
-    return 'https://anywaydata.com/docs/test-data/faker/helpers';
+    return buildDocsUrl('test-data/faker/helpers');
   }
   return String(docsUrl || '').trim() || HELP_URLS.faker;
 }
@@ -197,7 +197,8 @@ function buildTypeHelpModel(typeName, summary, docsUrl, { params = [], example =
   };
 }
 
-function buildSchemaHelpModel(sourceType, commandValue, { windowObj } = {}) {
+function buildSchemaHelpModel(sourceType, commandValue, options = {}) {
+  void options;
   const normalisedSourceType = normaliseSourceType(sourceType);
 
   if (normalisedSourceType === SOURCE_TYPE_REGEX) {
@@ -273,7 +274,7 @@ function buildSchemaHelpModel(sourceType, commandValue, { windowObj } = {}) {
       title: `Faker command help: ${command}`,
       heading: `faker.${command}`,
       summary: commandHelp?.summary || `Generates data using faker.${command}.`,
-      docsUrl: resolveRuntimeDocsUrl(resolveFakerDocsUrl(command, commandHelp?.docsUrl), { windowObj }),
+      docsUrl: resolveOwnedSiteUrl(resolveFakerDocsUrl(command, commandHelp?.docsUrl)),
       fakerDocsUrl: String(commandHelp?.fakerDocsUrl || '').trim(),
       params: normalizeHelpParams(commandHelp?.params || []),
       usageExamples: Array.isArray(commandHelp?.usageExamples) ? commandHelp.usageExamples : [],
@@ -296,7 +297,7 @@ function buildSchemaHelpModel(sourceType, commandValue, { windowObj } = {}) {
       title: `Domain command help: ${command}`,
       heading: commandHelp?.canonical || command,
       summary: commandHelp?.summary || `Generates data using ${commandHelp?.canonical || command}.`,
-      docsUrl: resolveRuntimeDocsUrl(commandHelp?.docsUrl || HELP_URLS.domain, { windowObj }),
+      docsUrl: resolveOwnedSiteUrl(commandHelp?.docsUrl || HELP_URLS.domain),
       fakerDocsUrl: String(commandHelp?.fakerDocsUrl || '').trim(),
       params: resolveDomainHelpParams(command, commandHelp),
       usageExamples: Array.isArray(commandHelp?.usageExamples) ? commandHelp.usageExamples : [],

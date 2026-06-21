@@ -1,13 +1,14 @@
 import { resolveDocumentObj } from '../../shared/dom/default-objects.js';
+import { buildDocsUrl } from '@anywaydata/site-config';
 
 const GENERATE_TO_GRID_HELP_HTML = `
   <p>Generate data from the current schema directly into the grid.</p>
-  <p><a class="helplink" href="/docs/test-data/test-data-generation" target="anywaydatadocs">Test-data generation docs</a></p>
+  <p><a class="helplink" href="${buildDocsUrl('test-data/test-data-generation')}" target="anywaydatadocs">Test-data generation docs</a></p>
 `;
 
 const GENERATE_PAIRWISE_TO_GRID_HELP_HTML = `
   <p>Generate n-wise combinations from enum columns in the current schema directly into the grid.</p>
-  <p><a class="helplink" href="/docs/test-data/n-wise-testing" target="_blank" rel="noopener noreferrer">N-wise generation docs</a></p>
+  <p><a class="helplink" href="${buildDocsUrl('test-data/n-wise-testing')}" target="_blank" rel="noopener noreferrer">N-wise generation docs</a></p>
 `;
 
 const GRID_TO_SCHEMA_HELP_HTML = `

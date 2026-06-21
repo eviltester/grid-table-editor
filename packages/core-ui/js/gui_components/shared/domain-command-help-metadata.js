@@ -1,8 +1,9 @@
 import { getDomainKeywordHelpByAlias } from '@anywaydata/core/domain/domain-keywords.js';
 import { normalizeUsageExamples } from '@anywaydata/core/command-help/command-help-contract.js';
 import { validateEnumMemberValue } from '@anywaydata/core/command-help/command-help-validators.js';
+import { buildDocsUrl } from '@anywaydata/site-config';
 
-const ANYWAYDATA_DOMAIN_DOCS_BASE = 'https://anywaydata.com/docs/test-data/domain';
+const ANYWAYDATA_DOMAIN_DOCS_BASE = buildDocsUrl('test-data/domain');
 
 const SYNTHETIC_DOMAIN_HELP = Object.freeze({
   'datatype.enum': {

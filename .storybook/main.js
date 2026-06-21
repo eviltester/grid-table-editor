@@ -31,6 +31,7 @@ export default {
           '@anywaydata/core/command-help': path.resolve(__dirname, '../packages/core/js/command-help'),
           '@anywaydata/core/libs': path.resolve(__dirname, '../packages/core/js/libs'),
           '@anywaydata/core': path.resolve(__dirname, '../packages/core/src/index.js'),
+          '@anywaydata/site-config': path.resolve(__dirname, '../packages/core-ui/js/site/site-config.production.js'),
         },
       },
     });

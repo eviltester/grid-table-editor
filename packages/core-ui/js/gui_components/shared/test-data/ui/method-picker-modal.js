@@ -1,5 +1,4 @@
 import { getDefaultDocumentObj, getDefaultWindowObj, resolveWindowObj } from '../../dom/default-objects.js';
-import { resolveRuntimeDocsUrl } from '../help/runtime-docs-url.js';
 
 const RECENT_STORAGE_KEY = 'anywaydata.method-picker.recent';
 const MAX_RECENT = 8;
@@ -401,7 +400,7 @@ function openMethodPickerModal({
     const model = selected.helpModel || {};
     const usageExamples = getUsageFunctionCalls(model);
     const returnExamples = getReturnExamples(model);
-    const docsUrl = resolveRuntimeDocsUrl(model.docsUrl, { windowObj });
+    const docsUrl = String(model.docsUrl || '').trim();
     const hasParams = Array.isArray(model.params) && model.params.length > 0;
     detailElem.innerHTML = `
       <h4>${escapeHtml(selected.command)}</h4>

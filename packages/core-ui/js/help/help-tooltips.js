@@ -1,7 +1,6 @@
 import { appOnlyInlineHelpEntries, sharedInlineHelpEntries } from './inline-help-content.js';
 import { getDefaultDocumentObj, resolveWindowObj } from '../gui_components/shared/dom/default-objects.js';
 import { decorateIconContainer } from '../gui_components/shared/primitives/icon/icon-core.js';
-import { rewriteRuntimeSiteLinksHtml } from '../gui_components/shared/test-data/help/runtime-docs-url.js';
 
 const GLOBAL_INLINE_HELP_CONTAINER_ID = 'inline-help-items';
 const SCOPED_INLINE_HELP_CONTAINER_ROLE = 'inline-help-items';
@@ -79,10 +78,12 @@ function upsertInlineHelpItems(documentObj, entries, options = {}) {
 }
 
 function buildHelpTooltipContent(reference, inlineHelpContainer, { documentObj, windowObj } = {}) {
+  void documentObj;
+  void windowObj;
   const id = reference.getAttribute('data-help');
   const inlineHelpText = reference.getAttribute('data-help-text');
   if (inlineHelpText) {
-    return rewriteRuntimeSiteLinksHtml(inlineHelpText, { documentObj, windowObj });
+    return inlineHelpText;
   }
 
   if (!inlineHelpContainer || !id) {
@@ -90,7 +91,7 @@ function buildHelpTooltipContent(reference, inlineHelpContainer, { documentObj, 
   }
   const helpText = inlineHelpContainer.querySelector(`div[data-name='${id}']`);
   if (helpText) {
-    return rewriteRuntimeSiteLinksHtml(helpText.innerHTML, { documentObj, windowObj });
+    return helpText.innerHTML;
   }
 
   console.log('TODO: Create help for ' + id);

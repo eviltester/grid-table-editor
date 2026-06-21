@@ -216,7 +216,7 @@ describe('method picker modal', () => {
 
     const docsLink = getDetail().querySelector('.method-picker-docs-link a');
     expect(docsLink).not.toBeNull();
-    expect(docsLink.getAttribute('href')).toBe('https://example.com/docs/category/generating-data');
+    expect(docsLink.getAttribute('href')).toBe('https://anywaydata.com/docs/category/generating-data');
     expect(docsLink.getAttribute('target')).toBe('_blank');
     expect(docsLink.getAttribute('rel')).toContain('noopener');
     expect(docsLink.getAttribute('rel')).toContain('noreferrer');
@@ -260,9 +260,7 @@ describe('method picker modal', () => {
     await promise;
   });
 
-  test('localizes anyhowdata docs links for github pages deployments', async () => {
-    dom.reconfigure({ url: 'https://eviltester.github.io/grid-table-editor/generator.html' });
-
+  test('renders the authored docs link without runtime localization', async () => {
     const promise = openMethodPickerModal({
       documentObj: document,
       windowObj: window,
@@ -281,9 +279,7 @@ describe('method picker modal', () => {
     });
 
     const docsLink = getDetail().querySelector('.method-picker-docs-link a');
-    expect(docsLink.getAttribute('href')).toBe(
-      'https://eviltester.github.io/grid-table-editor/site/docs/test-data/domain/number'
-    );
+    expect(docsLink.getAttribute('href')).toBe('https://anywaydata.com/docs/test-data/domain/number');
 
     getOverlay().querySelector('[data-role="method-picker-cancel-button"]').click();
     await promise;

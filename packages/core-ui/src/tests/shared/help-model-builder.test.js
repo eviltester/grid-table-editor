@@ -124,31 +124,8 @@ describe('help-model-builder', () => {
     expect(model.fakerDocsUrl).toBe('');
   });
 
-  test('localizes anywaydata docs urls for github pages deployments when a window is provided', () => {
-    const model = buildSchemaHelpModel('domain', 'number.int', {
-      windowObj: {
-        location: {
-          origin: 'https://eviltester.github.io',
-          hostname: 'eviltester.github.io',
-          pathname: '/grid-table-editor/generator.html',
-        },
-      },
-    });
-
-    expect(model.docsUrl).toBe('https://eviltester.github.io/grid-table-editor/site/docs/test-data/domain/number');
-  });
-
-  test('does not rewrite docs urls when the window origin is not an http host', () => {
-    const model = buildSchemaHelpModel('faker', 'helpers.fake', {
-      windowObj: {
-        location: {
-          origin: 'null',
-          hostname: '',
-          pathname: '/generator.html',
-        },
-      },
-    });
-
+  test('keeps config-authored docs urls without runtime localization', () => {
+    const model = buildSchemaHelpModel('faker', 'helpers.fake');
     expect(model.docsUrl).toBe('https://anywaydata.com/docs/test-data/faker/helpers');
   });
 });

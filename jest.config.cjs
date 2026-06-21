@@ -12,6 +12,7 @@ module.exports = {
   modulePathIgnorePatterns: ['<rootDir>/build/'],
   collectCoverageFrom: ['packages/**/*.js', '!packages/core/js/libs/**'],
   moduleNameMapper: {
+    '^@anywaydata/site-config$': '<rootDir>/packages/core-ui/js/site/site-config.production.js',
     '^@anywaydata/core$': '<rootDir>/packages/core/src/index.js',
     '^@anywaydata/core/(.*)$': '<rootDir>/packages/core/js/$1',
     '^@anywaydata/core/data_formats/(.*)$': '<rootDir>/packages/core/js/data_formats/$1',

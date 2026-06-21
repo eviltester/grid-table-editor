@@ -191,6 +191,56 @@ function upsertHeadStyle(html, markerAttribute, styleTag) {
   return html.replace('</head>', `${styleTag}\n  </head>`);
 }
 
+function rewriteHrefAttributes(html, rewriteHref) {
+  return String(html || '').replace(/(<a\b[^>]*\bhref=)(["'])([^"']+)\2/giu, (match, prefix, quote, hrefValue) => {
+    const nextHref = rewriteHref(hrefValue);
+    return `${prefix}${quote}${nextHref}${quote}`;
+  });
+}
+
+function resolveTestEnvRootHref(hrefValue) {
+  const value = String(hrefValue || '').trim();
+  if (!value) {
+    return value;
+  }
+
+  if (value === 'https://anywaydata.com' || value === 'https://anywaydata.com/') {
+    return './site/';
+  }
+
+  if (value.startsWith('https://anywaydata.com/docs/')) {
+    const parsed = new URL(value);
+    return `./site${parsed.pathname}${parsed.search}${parsed.hash}`;
+  }
+
+  if (value === 'https://anywaydata.com/blog' || value.startsWith('https://anywaydata.com/blog/')) {
+    const parsed = new URL(value);
+    return `./site${parsed.pathname}${parsed.search}${parsed.hash}`;
+  }
+
+  if (value.startsWith('/docs/')) {
+    return `./site${value}`;
+  }
+
+  if (value.startsWith('docs/')) {
+    return `./site/${value}`;
+  }
+
+  if (value === '/blog' || value.startsWith('/blog/')) {
+    return `./site${value}`;
+  }
+
+  if (value === 'blog' || value.startsWith('blog/')) {
+    return `./site/${value}`;
+  }
+
+  return value;
+}
+
+function rewriteTestEnvRootPageLinks(html) {
+  return rewriteHrefAttributes(html, resolveTestEnvRootHref);
+}
+
 function applySeoDirectivesToHtml(
   html,
   { canonicalUrl = ROOT_CANONICAL_URL, robotsDirectives = TESTENV_ROBOTS_DIRECTIVES } = {}
@@ -437,7 +487,7 @@ function renderIndexPage({ branchName, commitSha, buildTimestamp }) {
     <main>
       <h1>Test Environment</h1>
       <p>Static build for GitHub Pages-style review, including the main app, generator, experimental AI/test surfaces, Storybook, and a full merged AnyWayData site.</p>
-      <p class="live-link">Access the live version with docs at <a href="https://anywaydata.com">AnyWayData.com</a>.</p>
+      <p class="live-link">Access the nested docs and blog at <a href="./site/">site/</a>.</p>
       <section class="meta" aria-label="Build metadata">
         <article class="meta-card">
           <span class="meta-label">Branch</span>
@@ -520,6 +570,16 @@ async function hideTopHeaderInBuiltPage(pagePath) {
   await writeFile(pagePath, nextHtml, 'utf8');
 }
 
+async function rewriteTestEnvRootPageLinksInFile(pagePath) {
+  const html = await readFile(pagePath, 'utf8');
+  const nextHtml = rewriteTestEnvRootPageLinks(html);
+
+  if (nextHtml === html) {
+    return;
+  }
+  await writeFile(pagePath, nextHtml, 'utf8');
+}
+
 async function copyWebBuildIntoDirectory(sourceDir, targetDir) {
   await cp(sourceDir, targetDir, {
     recursive: true,
@@ -586,6 +646,11 @@ async function main() {
   await hideTopHeaderInBuiltPage(path.join(outputDir, 'combinatorial.html'));
   await hideTopHeaderInBuiltPage(path.join(outputDir, 'webmcp.html'));
   await hideTopHeaderInBuiltPage(path.join(outputDir, 'writer-schema.html'));
+  await rewriteTestEnvRootPageLinksInFile(path.join(outputDir, 'app.html'));
+  await rewriteTestEnvRootPageLinksInFile(path.join(outputDir, 'generator.html'));
+  await rewriteTestEnvRootPageLinksInFile(path.join(outputDir, 'combinatorial.html'));
+  await rewriteTestEnvRootPageLinksInFile(path.join(outputDir, 'webmcp.html'));
+  await rewriteTestEnvRootPageLinksInFile(path.join(outputDir, 'writer-schema.html'));
 
   await mkdir(fullSiteDir, { recursive: true });
   await createTemporaryDocsAppPlaceholder();
@@ -650,6 +715,7 @@ export {
   createSiteRobotsTxt,
   createTestenvRobotsTxt,
   hideTopHeaderInBuiltHtml,
+  rewriteTestEnvRootPageLinks,
   renderIndexPage,
 };
 

@@ -1,3 +1,5 @@
+const PRODUCTION_SITE_ORIGIN = 'https://anywaydata.com';
+
 function getGithubPagesRepoBasePath(pathname = '/') {
   const segments = String(pathname || '/')
     .split('/')
@@ -8,10 +10,18 @@ function getGithubPagesRepoBasePath(pathname = '/') {
   return `/${segments[0]}`;
 }
 
-function toDocsPath(url) {
+function trimTrailingSlash(value) {
+  return String(value || '').replace(/\/+$/u, '');
+}
+
+function normaliseOwnedSitePath(url) {
   const value = String(url || '').trim();
   if (!value) {
     return '';
+  }
+
+  if (value === PRODUCTION_SITE_ORIGIN || value === `${PRODUCTION_SITE_ORIGIN}/`) {
+    return '/';
   }
 
   if (value.startsWith('/docs/')) {
@@ -22,10 +32,26 @@ function toDocsPath(url) {
     return `/${value}`;
   }
 
+  if (value === '/blog' || value.startsWith('/blog/')) {
+    return value;
+  }
+
+  if (value === 'blog' || value.startsWith('blog/')) {
+    return `/${value}`;
+  }
+
   try {
     const parsed = new URL(value);
-    if (parsed.pathname.startsWith('/docs/')) {
-      return parsed.pathname;
+    if (trimTrailingSlash(parsed.origin).toLowerCase() !== PRODUCTION_SITE_ORIGIN) {
+      return '';
+    }
+    if (
+      parsed.pathname === '/' ||
+      parsed.pathname.startsWith('/docs/') ||
+      parsed.pathname === '/blog' ||
+      parsed.pathname.startsWith('/blog/')
+    ) {
+      return `${parsed.pathname}${parsed.search}${parsed.hash}`;
     }
   } catch {
     return '';
@@ -34,14 +60,14 @@ function toDocsPath(url) {
   return '';
 }
 
-function resolveRuntimeDocsUrl(url, { windowObj } = {}) {
+function resolveRuntimeSiteUrl(url, { windowObj } = {}) {
   const value = String(url || '').trim();
   if (!value) {
     return '';
   }
 
-  const docsPath = toDocsPath(value);
-  if (!docsPath) {
+  const sitePath = normaliseOwnedSitePath(value);
+  if (!sitePath) {
     return value;
   }
 
@@ -56,10 +82,44 @@ function resolveRuntimeDocsUrl(url, { windowObj } = {}) {
   const hostname = String(location.hostname || '').toLowerCase();
   if (hostname === 'github.io' || hostname.endsWith('.github.io')) {
     const repoBasePath = getGithubPagesRepoBasePath(location.pathname || '/');
-    return `${location.origin}${repoBasePath}/site${docsPath}`;
+    const siteBasePath = `${repoBasePath}/site`;
+    return `${location.origin}${siteBasePath}${sitePath === '/' ? '/' : sitePath}`;
   }
 
-  return `${location.origin}${docsPath}`;
+  return `${location.origin}${sitePath}`;
 }
 
-export { resolveRuntimeDocsUrl };
+function resolveRuntimeDocsUrl(url, options = {}) {
+  const value = String(url || '').trim();
+  if (!value) {
+    return '';
+  }
+
+  const sitePath = normaliseOwnedSitePath(value);
+  if (!sitePath || (!sitePath.startsWith('/docs/') && sitePath !== '/docs')) {
+    return value;
+  }
+
+  return resolveRuntimeSiteUrl(value, options);
+}
+
+function rewriteRuntimeSiteLinksHtml(html, { documentObj, windowObj } = {}) {
+  const value = String(html || '');
+  if (!value || !documentObj?.createElement) {
+    return value;
+  }
+
+  const wrapper = documentObj.createElement('div');
+  wrapper.innerHTML = value;
+
+  wrapper.querySelectorAll('a[href]').forEach((anchor) => {
+    const resolvedHref = resolveRuntimeSiteUrl(anchor.getAttribute('href') || '', { windowObj });
+    if (resolvedHref) {
+      anchor.setAttribute('href', resolvedHref);
+    }
+  });
+
+  return wrapper.innerHTML;
+}
+
+export { resolveRuntimeDocsUrl, resolveRuntimeSiteUrl, rewriteRuntimeSiteLinksHtml };

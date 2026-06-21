@@ -127,6 +127,30 @@ describe('help tooltips module', () => {
     expect(getElementByIdSpy).not.toHaveBeenCalled();
   });
 
+  test('tooltip content rewrites owned docs and blog links for github pages test environments', () => {
+    dom.reconfigure({ url: 'https://eviltester.github.io/grid-table-editor/app.html' });
+
+    const root = dom.window.document.createElement('section');
+    root.innerHTML =
+      '<span class="helpicon" data-help-role="help-icon" data-help-text=\'<p><a href="/docs/intro">Docs</a> <a href="blog">Blog</a></p>\'></span>';
+    dom.window.document.body.appendChild(root);
+
+    const tippy = jest.fn();
+    const updateHelpHints = createUpdateHelpHints(dom.window.document, root, {
+      windowObj: dom.window,
+      tippyFn: tippy,
+    });
+
+    updateHelpHints();
+
+    const [, tippyOptions] = tippy.mock.calls[0];
+    const helpIcon = root.querySelector('[data-help-role="help-icon"]');
+    const content = tippyOptions.content(helpIcon);
+
+    expect(content).toContain('https://eviltester.github.io/grid-table-editor/site/docs/intro');
+    expect(content).toContain('https://eviltester.github.io/grid-table-editor/site/blog');
+  });
+
   test('scoped updateHelpHints uses root-scoped help containers instead of creating the global registry', () => {
     const root = dom.window.document.createElement('section');
     root.innerHTML = `<span class="helpicon" data-help-role="help-icon" data-help="json-options"></span>`;

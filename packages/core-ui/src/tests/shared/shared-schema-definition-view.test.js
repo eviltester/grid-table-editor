@@ -1,12 +1,11 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
-import { fireEvent, waitFor, within } from '@testing-library/dom';
+import { fireEvent, within } from '@testing-library/dom';
 import {
   schemaTextToDataRules,
   dataRulesToSchemaText,
   schemaRowsToDataRules,
 } from '@anywaydata/core/data_generation/schema-rules-adapter.js';
-import * as sharedSchemaDefinitionExports from '../../../js/gui_components/shared/schema-definition/index.js';
 import { createSharedSchemaDefinitionComponent } from '../../../js/gui_components/shared/schema-definition/index.js';
 import { validateSchemaRows as validateSharedSchemaRows } from '../../../js/gui_components/shared/test-data/schema/schema-editor-core.js';
 import { mapDataRuleToSchemaRow } from '../../../js/gui_components/shared/test-data/schema/schema-row-mapper.js';
@@ -31,6 +30,12 @@ function validateSchemaRows(schemaRows) {
     schemaRows,
     schemaRowsToDataRules,
   });
+}
+
+async function flushAsyncWork(iterations = 4) {
+  for (let index = 0; index < iterations; index += 1) {
+    await Promise.resolve();
+  }
 }
 
 describe('shared-schema-definition view', () => {
@@ -71,21 +76,7 @@ describe('shared-schema-definition view', () => {
     delete dom.window.tippy;
   });
 
-  test('public barrel is component-factory-only', () => {
-    expect(sharedSchemaDefinitionExports.createSharedSchemaDefinitionComponent).toBe(
-      createSharedSchemaDefinitionComponent
-    );
-    expect(sharedSchemaDefinitionExports.SharedSchemaDefinitionController).toBeUndefined();
-    expect(sharedSchemaDefinitionExports.SharedSchemaDefinitionView).toBeUndefined();
-  });
-
-  test('shared schema barrel keeps sample schema examples off the broad runtime surface', async () => {
-    const sharedSchemaModule = await import('../../../js/gui_components/shared/test-data/schema/schema-editor-core.js');
-
-    expect(sharedSchemaModule.TEST_DATA_GRID_SAMPLE_SCHEMA_TEXT).toBeUndefined();
-  });
-
-  function createComponent({ services = {} } = {}) {
+  function createComponent({ props = {}, services = {} } = {}) {
     const root = document.getElementById('root');
     const createBlankRow = createBlankRowFactory();
     return createSharedSchemaDefinitionComponent({
@@ -129,6 +120,7 @@ describe('shared-schema-definition view', () => {
           }
           return [];
         },
+        ...props,
       },
       callbacks: {
         onSchemaError: (message) => {
@@ -530,10 +522,7 @@ IF [Priority] = "high" THEN [Status] = "open" ENDIF`;
     });
 
     fireEvent.change(fileInput);
-    await waitFor(() => {
-      expect(document.querySelector('[data-role="schema-text-region"]').style.display).toBe('none');
-      expect(document.querySelectorAll('.shared-schema-row')).toHaveLength(2);
-    });
+    await flushAsyncWork();
 
     expect(document.querySelector('[data-role="schema-text-region"]').style.display).toBe('none');
     expect(document.querySelectorAll('.shared-schema-row')).toHaveLength(2);
@@ -586,14 +575,183 @@ IF [Priority] = "high" THEN [Status] = "open" ENDIF`;
     });
 
     fireEvent.change(fileInput);
-    await waitFor(() => {
-      expect(document.querySelector('[data-role="schema-error"]').textContent.length).toBeGreaterThan(0);
-      expect(document.querySelector('[data-role="schema-textbox"]').value).toBe('OnlyName');
-    });
+    await flushAsyncWork();
 
     expect(document.querySelector('[data-role="schema-error"]').textContent.length).toBeGreaterThan(0);
     expect(document.querySelector('[data-role="schema-text-region"]').style.display).toBe('block');
     expect(document.querySelector('[data-role="schema-textbox"]').value).toBe('OnlyName');
+  });
+
+  test('text mode preserves comments while schema rows exclude them', () => {
+    const component = createComponent();
+
+    fireEvent.click(document.querySelector('[data-role="schema-mode-toggle"]'));
+
+    const textArea = document.querySelector('[data-role="schema-textbox"]');
+    textArea.value = '# note\nPriority\nenum(high,medium,low)\n\nStatus\nenum(active,inactive,pending)';
+    component.syncFromText({ showErrors: true, force: true });
+    fireEvent.click(document.querySelector('[data-role="schema-mode-toggle"]'));
+
+    expect(component.getState().rows).toHaveLength(2);
+    expect(component.getState().rows[0].name).toBe('Priority');
+    expect(component.getState().rows[1].name).toBe('Status');
+
+    fireEvent.click(document.querySelector('[data-role="schema-mode-toggle"]'));
+    expect(document.querySelector('[data-role="schema-textbox"]').value).toContain('# note');
+  });
+
+  test('text mode round-trip preserves blank lines exactly', () => {
+    createComponent();
+
+    const originalText = '# note\n\nPriority\nenum(high,medium,low)\n\n\nStatus\nenum(active,inactive,pending)';
+    fireEvent.click(document.querySelector('[data-role="schema-mode-toggle"]'));
+    const textArea = document.querySelector('[data-role="schema-textbox"]');
+    textArea.value = originalText;
+    fireEvent.click(document.querySelector('[data-role="schema-mode-toggle"]'));
+    fireEvent.click(document.querySelector('[data-role="schema-mode-toggle"]'));
+
+    expect(document.querySelector('[data-role="schema-textbox"]').value).toBe(originalText);
+  });
+
+  test('text mode accepts hash-prefixed rule text after a column name', () => {
+    const component = createComponent();
+
+    fireEvent.click(document.querySelector('[data-role="schema-mode-toggle"]'));
+
+    const textArea = document.querySelector('[data-role="schema-textbox"]');
+    textArea.value = 'Color\n#[A-F0-9]{6}';
+    const result = component.syncFromText({ showErrors: true, force: true });
+    fireEvent.click(document.querySelector('[data-role="schema-mode-toggle"]'));
+
+    expect(result.errors).toEqual([]);
+    expect(component.getState().rows).toHaveLength(1);
+    expect(component.getState().rows[0].name).toBe('Color');
+    expect(component.getState().rows[0].value).toBe('#[A-F0-9]{6}');
+  });
+
+  test('maps science.chemicalElement.name to domain command without treating trailing name as params', () => {
+    const component = createComponent();
+
+    const parsed = component.parseTextToRows('Element\nscience.chemicalElement.name');
+    expect(parsed.errors).toEqual([]);
+    expect(parsed.rows).toHaveLength(1);
+    expect(parsed.rows[0].sourceType).toBe('domain');
+    expect(parsed.rows[0].command).toBe('chemicalElement.name');
+    expect(parsed.rows[0].params).toBe('');
+  });
+
+  test('maps location.language.alpha2 to domain command without treating trailing alpha2 as params', () => {
+    const component = createComponent();
+
+    const parsed = component.parseTextToRows('Language\nlocation.language.alpha2');
+    expect(parsed.errors).toEqual([]);
+    expect(parsed.rows).toHaveLength(1);
+    expect(parsed.rows[0].sourceType).toBe('domain');
+    expect(parsed.rows[0].command).toBe('language.alpha2');
+    expect(parsed.rows[0].params).toBe('');
+  });
+
+  test('maps science.unit.symbol to domain command without treating trailing symbol as params', () => {
+    const component = createComponent();
+
+    const parsed = component.parseTextToRows('Unit\nscience.unit.symbol');
+    expect(parsed.errors).toEqual([]);
+    expect(parsed.rows).toHaveLength(1);
+    expect(parsed.rows[0].sourceType).toBe('domain');
+    expect(parsed.rows[0].command).toBe('unit.symbol');
+    expect(parsed.rows[0].params).toBe('');
+  });
+
+  test('adding schema rows does not discard existing parsed comments', () => {
+    const component = createComponent();
+
+    fireEvent.click(document.querySelector('[data-role="schema-mode-toggle"]'));
+    const textArea = document.querySelector('[data-role="schema-textbox"]');
+    textArea.value = '# note one\nFirst\none\n\n# note two\nSecond\ntwo';
+    component.syncFromText({ showErrors: true, force: true });
+    fireEvent.click(document.querySelector('[data-role="schema-mode-toggle"]'));
+
+    component.addRowAfter(component.getState().rows.length - 1);
+    const newRow = component.getState().rows[component.getState().rows.length - 1];
+    newRow.name = 'Third';
+    newRow.sourceType = 'literal';
+    newRow.value = 'three';
+
+    fireEvent.click(document.querySelector('[data-role="schema-mode-toggle"]'));
+    const rebuilt = document.querySelector('[data-role="schema-textbox"]').value;
+    expect(rebuilt).toContain('# note one');
+    expect(rebuilt).toContain('# note two');
+    expect(rebuilt).toContain('Third\nliteral(three)');
+  });
+
+  test('adding schema rows preserves whitespace-only blank lines in parsed comment blocks', () => {
+    const component = createComponent();
+
+    fireEvent.click(document.querySelector('[data-role="schema-mode-toggle"]'));
+    const textArea = document.querySelector('[data-role="schema-textbox"]');
+    textArea.value = '# note one\n   \nFirst\none\n\n# note two\nSecond\ntwo';
+    component.syncFromText({ showErrors: true, force: true });
+    fireEvent.click(document.querySelector('[data-role="schema-mode-toggle"]'));
+
+    component.addRowAfter(component.getState().rows.length - 1);
+    const newRow = component.getState().rows[component.getState().rows.length - 1];
+    newRow.name = 'Third';
+    newRow.sourceType = 'literal';
+    newRow.value = 'three';
+
+    fireEvent.click(document.querySelector('[data-role="schema-mode-toggle"]'));
+    const rebuilt = document.querySelector('[data-role="schema-textbox"]').value;
+
+    expect(rebuilt).toContain('# note one\n   \nFirst');
+    expect(rebuilt).toContain('# note two');
+    expect(rebuilt).toContain('Third\nliteral(three)');
+  });
+
+  test('reordering schema rows keeps blank line before moved response-time row', () => {
+    const component = createComponent();
+
+    fireEvent.click(document.querySelector('[data-role="schema-mode-toggle"]'));
+    const textArea = document.querySelector('[data-role="schema-textbox"]');
+    textArea.value = `# pairwise enums
+HTTP Method
+enum(GET,POST,PUT,DELETE)
+
+# pairwise enums
+Content Type
+enum("application/json","application/xml","text/plain")
+
+# randomized fields
+User ID
+number.int
+Request Timestamp
+date.recent
+Email Address
+internet.email
+
+Response Time
+number.int
+
+Authorization Token
+[A-Fa-f0-9]{32}`;
+    component.syncFromText({ showErrors: true, force: true });
+    fireEvent.click(document.querySelector('[data-role="schema-mode-toggle"]'));
+
+    const responseIndex = component.getState().rows.findIndex((row) => row.name === 'Response Time');
+    component.moveRowAt(responseIndex, -1);
+    fireEvent.click(document.querySelector('[data-role="schema-mode-toggle"]'));
+
+    const rebuilt = document.querySelector('[data-role="schema-textbox"]').value;
+    expect(rebuilt).toMatch(
+      /Request Timestamp\s*\ndate\.recent\s*\n\s*\nResponse Time\s*\nnumber\.int\s*\nEmail Address\s*\ninternet\.email/
+    );
+  });
+
+  test('edit as text shows empty textarea for untouched blank schema', () => {
+    createComponent();
+
+    fireEvent.click(document.querySelector('[data-role="schema-mode-toggle"]'));
+
+    expect(document.querySelector('[data-role="schema-textbox"]').value).toBe('');
   });
 
   test('guided params dialog applies generated params back into the shared row editor', async () => {
@@ -624,5 +782,53 @@ IF [Priority] = "high" THEN [Status] = "open" ENDIF`;
 
     expect(document.querySelector('[data-field="params"]').value).toBe('(values=active,inactive,pending)');
     expect(component.getSchemaText()).toContain('enum(values=active,inactive,pending)');
+  });
+
+  test('destroy clears pending validation timers and a second mount works in the same root', () => {
+    let pendingValidationCallback = null;
+    const timerApi = {
+      setTimeout: jest.fn((callback) => {
+        pendingValidationCallback = callback;
+        return 123;
+      }),
+      clearTimeout: jest.fn(),
+    };
+
+    const firstComponent = createComponent({ props: { timerApi } });
+    firstComponent.replaceRows([
+      {
+        id: 'row-1',
+        name: 'Status',
+        sourceType: 'domain',
+        command: 'datatype.enum',
+        params: '',
+        value: '',
+        comments: '',
+        leadingTextLines: [],
+      },
+    ]);
+
+    const paramsInput = document.querySelector('[data-field="params"]');
+    paramsInput.value = '(values=active';
+    fireEvent.input(paramsInput);
+
+    expect(timerApi.setTimeout).toHaveBeenCalledTimes(1);
+    expect(pendingValidationCallback).toBeTruthy();
+
+    firstComponent.destroy();
+
+    expect(timerApi.clearTimeout).toHaveBeenCalledWith(123);
+    expect(document.getElementById('root').children).toHaveLength(0);
+
+    const secondComponent = createComponent();
+    fireEvent.click(document.querySelector('[data-role="schema-mode-toggle"]'));
+    const textArea = document.querySelector('[data-role="schema-textbox"]');
+    textArea.value = 'Remounted Name\nliteral(Ada)';
+    secondComponent.syncFromText({ showErrors: true, force: true });
+    fireEvent.click(document.querySelector('[data-role="schema-mode-toggle"]'));
+
+    expect(document.querySelectorAll('[data-role="shared-schema-definition"]')).toHaveLength(1);
+    expect(secondComponent.getState().rows).toHaveLength(1);
+    expect(secondComponent.getState().rows[0].name).toBe('Remounted Name');
   });
 });

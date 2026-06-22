@@ -293,6 +293,62 @@ describe('help tooltips module', () => {
     expect(global.tippy).not.toHaveBeenCalled();
   });
 
+  test('opening one help tippy closes other open tippies on the page', () => {
+    const root = dom.window.document.createElement('section');
+    root.innerHTML = `
+      <span class="helpicon" data-help-role="help-icon" data-help="csv-options"></span>
+      <span class="helpicon" data-help-role="help-icon" data-help="json-options"></span>
+    `;
+    dom.window.document.body.appendChild(root);
+
+    const tippy = jest.fn();
+    tippy.hideAll = jest.fn();
+
+    const service = createHelpTooltipService({
+      documentObj: dom.window.document,
+      windowObj: { tippy },
+      rootElement: root,
+      resolveHelpElements: () => root.querySelectorAll('[data-help-role][data-help]'),
+    });
+
+    service.update();
+
+    const [, tippyOptions] = tippy.mock.calls[0];
+    const helpIcon = root.querySelector('[data-help-role="help-icon"]');
+    const instance = { reference: helpIcon };
+
+    tippyOptions.onShow(instance);
+
+    expect(tippy.hideAll).toHaveBeenCalledWith({
+      duration: 0,
+      exclude: instance,
+    });
+    expect(helpIcon.getAttribute('aria-expanded')).toBe('true');
+  });
+
+  test('opening help tippies still works when hideAll is unavailable', () => {
+    const root = dom.window.document.createElement('section');
+    root.innerHTML = `<span class="helpicon" data-help-role="help-icon" data-help="csv-options"></span>`;
+    dom.window.document.body.appendChild(root);
+
+    const tippy = jest.fn();
+
+    const service = createHelpTooltipService({
+      documentObj: dom.window.document,
+      windowObj: { tippy },
+      rootElement: root,
+      resolveHelpElements: () => root.querySelectorAll('[data-help-role][data-help]'),
+    });
+
+    service.update();
+
+    const [, tippyOptions] = tippy.mock.calls[0];
+    const helpIcon = root.querySelector('[data-help-role="help-icon"]');
+
+    expect(() => tippyOptions.onShow({ reference: helpIcon })).not.toThrow();
+    expect(helpIcon.getAttribute('aria-expanded')).toBe('true');
+  });
+
   test('createHelpTooltipService uses the injected help-element resolver instead of scanning the root itself', () => {
     const root = dom.window.document.createElement('section');
     root.innerHTML = `<span class="helpicon" data-help-role="help-icon" data-help="csv-options"></span>`;

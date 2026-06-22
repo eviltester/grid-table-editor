@@ -8,6 +8,7 @@ import { createApiService } from '../../apps/api/src/api-service.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const CROSS_SURFACE_PROCESS_TIMEOUT_MS = 45000;
 
 function jsonRpcMessages(output) {
   return output
@@ -31,7 +32,8 @@ function requestMcpServer(payload) {
     input: `${JSON.stringify(payload)}\n`,
     encoding: 'utf8',
     cwd: repoRoot,
-    timeout: 15000,
+    // Full-suite runs can be CPU-bound; keep the cross-surface contract stable under load.
+    timeout: CROSS_SURFACE_PROCESS_TIMEOUT_MS,
   });
   const messages = jsonRpcMessages(output);
   return messages.find((message) => message?.id === payload.id);
@@ -109,7 +111,8 @@ describe('cross-surface amend trim parity', () => {
         {
           cwd: repoRoot,
           encoding: 'utf8',
-          timeout: 15000,
+          // Full-suite runs can be CPU-bound; keep the cross-surface contract stable under load.
+          timeout: CROSS_SURFACE_PROCESS_TIMEOUT_MS,
         }
       );
 

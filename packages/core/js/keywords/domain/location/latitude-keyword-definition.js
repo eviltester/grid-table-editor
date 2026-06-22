@@ -1,4 +1,7 @@
 import { validateNumberValue } from '../../../command-help/command-help-validators.js';
+import { createOrderedArgsValidator } from '../../../domain/domain-keyword-arg-validators.js';
+
+const validateLatitudeBounds = createOrderedArgsValidator({ lowerName: 'min', upperName: 'max' });
 
 const LOCATION_LATITUDE_KEYWORD_DEFINITION = {
   keyword: 'location.latitude',
@@ -12,6 +15,7 @@ const LOCATION_LATITUDE_KEYWORD_DEFINITION = {
     docsUrl: 'https://anywaydata.com/docs/test-data/domain/location',
     fakerDocsUrl: 'https://fakerjs.dev/api/location',
     validator: validateNumberValue,
+    argsValidator: validateLatitudeBounds,
     returnType: 'number',
     usageExamples: [
       {

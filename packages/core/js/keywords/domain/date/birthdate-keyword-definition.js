@@ -1,4 +1,7 @@
 import { validateDateValue } from '../../../command-help/command-help-validators.js';
+import { createOrderedArgsValidator } from '../../../domain/domain-keyword-arg-validators.js';
+
+const validateBirthdateBounds = createOrderedArgsValidator({ lowerName: 'min', upperName: 'max' });
 
 const DATE_BIRTHDATE_KEYWORD_DEFINITION = {
   keyword: 'date.birthdate',
@@ -13,6 +16,7 @@ const DATE_BIRTHDATE_KEYWORD_DEFINITION = {
     docsUrl: 'https://anywaydata.com/docs/test-data/domain/date',
     fakerDocsUrl: 'https://fakerjs.dev/api/date',
     validator: validateDateValue,
+    argsValidator: validateBirthdateBounds,
     returnType: 'date',
     usageExamples: [
       {

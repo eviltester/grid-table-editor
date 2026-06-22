@@ -58,6 +58,32 @@ describe('schema-row-validation', () => {
     ]);
   });
 
+  test('reports reversed domain bounds through the shared row validation path', () => {
+    const issues = getSchemaRowSemanticValidationIssues(
+      {
+        name: 'Age',
+        sourceType: 'domain',
+        command: 'number.int',
+        params: '(min=47, max=32)',
+      },
+      0,
+      {
+        schemaTextToDataRules,
+        faker,
+        RandExp,
+      }
+    );
+
+    expect(issues).toEqual([
+      expect.objectContaining({
+        code: 'compiler_validation_error',
+        field: 'params',
+        message:
+          'Row 1: invalid domain params - Invalid keyword arguments: argument "min" must be less than or equal to argument "max"',
+      }),
+    ]);
+  });
+
   test('merges precomputed semantic issues into row validation state', () => {
     const issues = getSchemaRowValidationIssues(
       {

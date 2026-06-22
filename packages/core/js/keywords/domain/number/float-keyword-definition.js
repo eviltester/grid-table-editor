@@ -1,4 +1,7 @@
 import { validateNumberValue } from '../../../command-help/command-help-validators.js';
+import { createOrderedArgsValidator } from '../../../domain/domain-keyword-arg-validators.js';
+
+const validateFloatBounds = createOrderedArgsValidator({ lowerName: 'min', upperName: 'max' });
 
 const NUMBER_FLOAT_KEYWORD_DEFINITION = {
   keyword: 'number.float',
@@ -13,6 +16,7 @@ const NUMBER_FLOAT_KEYWORD_DEFINITION = {
     docsUrl: 'https://anywaydata.com/docs/test-data/domain/number',
     fakerDocsUrl: 'https://fakerjs.dev/api/number',
     validator: validateNumberValue,
+    argsValidator: validateFloatBounds,
     returnType: 'number',
     usageExamples: [
       {

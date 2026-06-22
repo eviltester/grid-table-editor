@@ -67,6 +67,30 @@ describe('schema rules adapter', () => {
     ]);
   });
 
+  test('returns reversed domain bounds as a domain rule when requested', () => {
+    const result = schemaTextToDataRules({
+      schemaText: 'Age\nnumber.int(min=47, max=32)',
+      faker,
+      RandExp,
+      includeInvalidRules: true,
+    });
+
+    expect(result.errors).toEqual([
+      expect.objectContaining({
+        code: 'compiler_validation_error',
+        column: 'Age',
+        message: expect.stringContaining('argument "min" must be less than or equal to argument "max"'),
+      }),
+    ]);
+    expect(result.dataRules).toEqual([
+      expect.objectContaining({
+        name: 'Age',
+        ruleSpec: 'number.int(min=47, max=32)',
+        type: 'domain',
+      }),
+    ]);
+  });
+
   test('returns malformed recognized domain invocations as domain rules when requested', () => {
     const result = schemaTextToDataRules({
       schemaText: 'Method\ninternet.httpMethod(commonOnly=true',

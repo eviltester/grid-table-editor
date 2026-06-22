@@ -1,4 +1,7 @@
 import { validateStringValue } from '../../../command-help/command-help-validators.js';
+import { createOrderedArgsValidator } from '../../../domain/domain-keyword-arg-validators.js';
+
+const validateBinaryBounds = createOrderedArgsValidator({ lowerName: 'min', upperName: 'max' });
 
 const NUMBER_BINARY_KEYWORD_DEFINITION = {
   keyword: 'number.binary',
@@ -12,6 +15,7 @@ const NUMBER_BINARY_KEYWORD_DEFINITION = {
     docsUrl: 'https://anywaydata.com/docs/test-data/domain/number',
     fakerDocsUrl: 'https://fakerjs.dev/api/number',
     validator: validateStringValue,
+    argsValidator: validateBinaryBounds,
     returnType: 'string',
     usageExamples: [
       {

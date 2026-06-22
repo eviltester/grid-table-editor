@@ -3,6 +3,7 @@ import { jest } from '@jest/globals';
 import { fireEvent } from '@testing-library/dom';
 import { JSDOM } from 'jsdom';
 import { createImportExportWorkspaceComponent } from '../../../js/gui_components/app/import-export-workspace/index.js';
+import { waitForMicrotaskAssertions } from '../helpers/wait-for-microtasks.js';
 
 function createTable(rowCount = 3) {
   const dataTable = new GenericDataTable();
@@ -36,12 +37,6 @@ function getCopyTextButton(documentObj) {
 
 function getCopyTextButtonLabel(documentObj) {
   return documentObj.querySelector('[data-role="text-preview-editor-root"] [data-role="copy-text-label"]');
-}
-
-async function flushAsyncWork(iterations = 4) {
-  for (let index = 0; index < iterations; index += 1) {
-    await Promise.resolve();
-  }
 }
 
 function createHarness({ props = {}, services = {}, navigatorPlatform } = {}) {
@@ -213,12 +208,13 @@ describe('ImportExportWorkspace', () => {
 
     fireEvent.click(importButton);
 
-    await flushAsyncWork();
-    expect(importer.setGridFromGenericDataTable).toHaveBeenCalledTimes(1);
-    expect(getPreviewTextArea(documentObj).value).toBe('csv:rows:2');
-    expect(documentObj.querySelector('#import-progress-status').textContent).toBe('Import complete.');
-    expect(component.getState().previewTextDirty).toBe(false);
-    expect(importButton.disabled).toBe(true);
+    await waitForMicrotaskAssertions(() => {
+      expect(importer.setGridFromGenericDataTable).toHaveBeenCalledTimes(1);
+      expect(getPreviewTextArea(documentObj).value).toBe('csv:rows:2');
+      expect(documentObj.querySelector('#import-progress-status').textContent).toBe('Import complete.');
+      expect(component.getState().previewTextDirty).toBe(false);
+      expect(importButton.disabled).toBe(true);
+    });
 
     component.destroy();
     dom.window.close();
@@ -256,14 +252,15 @@ describe('ImportExportWorkspace', () => {
 
     fireEvent.click(documentObj.querySelector('#filedownload'));
 
-    await flushAsyncWork();
-    expect(downloadService.downloadText).toHaveBeenCalledWith('export.csv', 'full:csv', {
-      exportEncodingSettings: {
-        lineEnding: 'lf',
-        includeBom: true,
-      },
+    await waitForMicrotaskAssertions(() => {
+      expect(downloadService.downloadText).toHaveBeenCalledWith('export.csv', 'full:csv', {
+        exportEncodingSettings: {
+          lineEnding: 'lf',
+          includeBom: true,
+        },
+      });
+      expect(documentObj.querySelector('#export-progress-status').textContent).toBe('Download started.');
     });
-    expect(documentObj.querySelector('#export-progress-status').textContent).toBe('Download started.');
 
     component.destroy();
     dom.window.close();
@@ -288,15 +285,16 @@ describe('ImportExportWorkspace', () => {
     });
     fireEvent.change(fileInput);
 
-    await flushAsyncWork();
-    expect(fileReadService.readText).toHaveBeenCalledTimes(1);
-    expect(importer.setImportSettings).toHaveBeenCalledWith({
-      trimInput: false,
-      trimInputFieldsCsv: '',
+    await waitForMicrotaskAssertions(() => {
+      expect(fileReadService.readText).toHaveBeenCalledTimes(1);
+      expect(importer.setImportSettings).toHaveBeenCalledWith({
+        trimInput: false,
+        trimInputFieldsCsv: '',
+      });
+      expect(importer.setGridFromGenericDataTable).toHaveBeenCalledTimes(1);
+      expect(getPreviewTextArea(documentObj).value).toBe('csv:rows:1');
+      expect(documentObj.querySelector('#import-progress-status').textContent).toBe('Import complete.');
     });
-    expect(importer.setGridFromGenericDataTable).toHaveBeenCalledTimes(1);
-    expect(getPreviewTextArea(documentObj).value).toBe('csv:rows:1');
-    expect(documentObj.querySelector('#import-progress-status').textContent).toBe('Import complete.');
 
     component.destroy();
     dom.window.close();
@@ -315,15 +313,16 @@ describe('ImportExportWorkspace', () => {
 
     fireEvent.click(documentObj.querySelector('[data-role="clipboard-import-button"]'));
 
-    await flushAsyncWork();
-    expect(clipboardService.readText).toHaveBeenCalledTimes(1);
-    expect(importer.setImportSettings).toHaveBeenCalledWith({
-      trimInput: false,
-      trimInputFieldsCsv: '',
+    await waitForMicrotaskAssertions(() => {
+      expect(clipboardService.readText).toHaveBeenCalledTimes(1);
+      expect(importer.setImportSettings).toHaveBeenCalledWith({
+        trimInput: false,
+        trimInputFieldsCsv: '',
+      });
+      expect(importer.importText).toHaveBeenCalledWith('csv', 'Name,Role\nAda,Engineer');
+      expect(getPreviewTextArea(documentObj).value).toBe('csv:rows:1');
+      expect(documentObj.querySelector('#import-progress-status').textContent).toBe('Import complete.');
     });
-    expect(importer.importText).toHaveBeenCalledWith('csv', 'Name,Role\nAda,Engineer');
-    expect(getPreviewTextArea(documentObj).value).toBe('csv:rows:1');
-    expect(documentObj.querySelector('#import-progress-status').textContent).toBe('Import complete.');
 
     component.destroy();
     dom.window.close();
@@ -400,10 +399,11 @@ describe('ImportExportWorkspace', () => {
       readerInstance.emit('progress', { loaded: 5, total: 10, lengthComputable: true });
       readerInstance.emit('load', { target: { result: 'Name,Role\nAda,Engineer' } });
 
-      await flushAsyncWork();
-      expect(importer.setGridFromGenericDataTable).toHaveBeenCalledTimes(1);
-      expect(getPreviewTextArea(documentObj).value).toBe('csv:rows:1');
-      expect(documentObj.querySelector('#import-progress-status').textContent).toBe('Import complete.');
+      await waitForMicrotaskAssertions(() => {
+        expect(importer.setGridFromGenericDataTable).toHaveBeenCalledTimes(1);
+        expect(getPreviewTextArea(documentObj).value).toBe('csv:rows:1');
+        expect(documentObj.querySelector('#import-progress-status').textContent).toBe('Import complete.');
+      });
     } finally {
       if (typeof originalFileReader === 'undefined') {
         delete global.FileReader;
@@ -440,19 +440,21 @@ describe('ImportExportWorkspace', () => {
       trimInput: false,
       trimInputFieldsCsv: '',
     });
-    await flushAsyncWork();
-    expect(importer.importText).toHaveBeenCalledWith('csv', textArea.value);
-    expect(component.getState().importBusy).toBe(false);
-    expect(documentObj.querySelector('#import-progress-status').textContent).toBe('Import complete.');
+    await waitForMicrotaskAssertions(() => {
+      expect(importer.importText).toHaveBeenCalledWith('csv', textArea.value);
+      expect(component.getState().importBusy).toBe(false);
+      expect(documentObj.querySelector('#import-progress-status').textContent).toBe('Import complete.');
+    });
 
     importer.importText.mockRejectedValueOnce(new Error('boom'));
     fireEvent.click(importButton);
 
-    await flushAsyncWork();
-    expect(documentObj.querySelector('#import-progress-status').textContent).toBe(
-      'Import failed. Check file format/options.'
-    );
-    expect(component.getState().importBusy).toBe(false);
+    await waitForMicrotaskAssertions(() => {
+      expect(documentObj.querySelector('#import-progress-status').textContent).toBe(
+        'Import failed. Check file format/options.'
+      );
+      expect(component.getState().importBusy).toBe(false);
+    });
 
     component.destroy();
     dom.window.close();
@@ -532,10 +534,11 @@ describe('ImportExportWorkspace', () => {
     });
 
     fireEvent.click(documentObj.querySelector('[data-role="clipboard-import-button"]'));
-    await flushAsyncWork();
-    expect(importer.setImportSettings).toHaveBeenCalledWith({
-      trimInput: true,
-      trimInputFieldsCsv: 'Role',
+    await waitForMicrotaskAssertions(() => {
+      expect(importer.setImportSettings).toHaveBeenCalledWith({
+        trimInput: true,
+        trimInputFieldsCsv: 'Role',
+      });
     });
 
     const fileInput = documentObj.querySelector('#csvinput');
@@ -545,10 +548,11 @@ describe('ImportExportWorkspace', () => {
     });
     fireEvent.change(fileInput);
 
-    await flushAsyncWork();
-    expect(importer.setImportSettings).toHaveBeenLastCalledWith({
-      trimInput: true,
-      trimInputFieldsCsv: 'Role',
+    await waitForMicrotaskAssertions(() => {
+      expect(importer.setImportSettings).toHaveBeenLastCalledWith({
+        trimInput: true,
+        trimInputFieldsCsv: 'Role',
+      });
     });
 
     component.destroy();

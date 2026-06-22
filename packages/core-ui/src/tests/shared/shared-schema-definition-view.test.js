@@ -10,6 +10,7 @@ import { createSharedSchemaDefinitionComponent } from '../../../js/gui_component
 import { validateSchemaRows as validateSharedSchemaRows } from '../../../js/gui_components/shared/test-data/schema/schema-editor-core.js';
 import { mapDataRuleToSchemaRow } from '../../../js/gui_components/shared/test-data/schema/schema-row-mapper.js';
 import { TEST_DATA_GRID_SAMPLE_SCHEMA_TEXT } from '../../../js/gui_components/shared/test-data/schema/schema-examples.js';
+import { waitForMicrotaskAssertions } from '../helpers/wait-for-microtasks.js';
 
 function createBlankRowFactory(prefix = 'test-schema-row') {
   let counter = 0;
@@ -30,12 +31,6 @@ function validateSchemaRows(schemaRows) {
     schemaRows,
     schemaRowsToDataRules,
   });
-}
-
-async function flushAsyncWork(iterations = 4) {
-  for (let index = 0; index < iterations; index += 1) {
-    await Promise.resolve();
-  }
 }
 
 describe('shared-schema-definition view', () => {
@@ -522,12 +517,12 @@ IF [Priority] = "high" THEN [Status] = "open" ENDIF`;
     });
 
     fireEvent.change(fileInput);
-    await flushAsyncWork();
-
-    expect(document.querySelector('[data-role="schema-text-region"]').style.display).toBe('none');
-    expect(document.querySelectorAll('.shared-schema-row')).toHaveLength(2);
-    expect(within(document.body).getByDisplayValue('Loaded Name')).toBeTruthy();
-    expect(within(document.body).getByDisplayValue('Loaded Status')).toBeTruthy();
+    await waitForMicrotaskAssertions(() => {
+      expect(document.querySelector('[data-role="schema-text-region"]').style.display).toBe('none');
+      expect(document.querySelectorAll('.shared-schema-row')).toHaveLength(2);
+      expect(within(document.body).getByDisplayValue('Loaded Name')).toBeTruthy();
+      expect(within(document.body).getByDisplayValue('Loaded Status')).toBeTruthy();
+    });
   });
 
   test('loadSchemaText preserves text mode by default for existing callers', () => {
@@ -575,11 +570,11 @@ IF [Priority] = "high" THEN [Status] = "open" ENDIF`;
     });
 
     fireEvent.change(fileInput);
-    await flushAsyncWork();
-
-    expect(document.querySelector('[data-role="schema-error"]').textContent.length).toBeGreaterThan(0);
-    expect(document.querySelector('[data-role="schema-text-region"]').style.display).toBe('block');
-    expect(document.querySelector('[data-role="schema-textbox"]').value).toBe('OnlyName');
+    await waitForMicrotaskAssertions(() => {
+      expect(document.querySelector('[data-role="schema-error"]').textContent.length).toBeGreaterThan(0);
+      expect(document.querySelector('[data-role="schema-text-region"]').style.display).toBe('block');
+      expect(document.querySelector('[data-role="schema-textbox"]').value).toBe('OnlyName');
+    });
   });
 
   test('text mode preserves comments while schema rows exclude them', () => {

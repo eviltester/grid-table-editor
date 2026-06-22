@@ -14,6 +14,4 @@ export async function waitForMicrotaskAssertions(assertions, { maxMicrotasks = 1
   if (lastError) {
     throw lastError;
   }
-
-  return assertions();
 }

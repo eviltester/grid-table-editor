@@ -75,7 +75,9 @@ class FakeDownload {
     this.filename = filename;
   }
 
-  downloadFile() {}
+  downloadFile(text) {
+    FakeDownload.lastDownload = { filename: this.filename, text };
+  }
 }
 
 function createUnmountedPage(overrides = {}) {
@@ -100,6 +102,7 @@ describe('generator page runtime helpers', () => {
     dom = new JSDOM(`<!doctype html><html><body><div id="app"></div></body></html>`);
     global.document = dom.window.document;
     global.window = dom.window;
+    FakeDownload.lastDownload = undefined;
   });
 
   afterEach(() => {

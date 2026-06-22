@@ -1,9 +1,14 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
-import { faker } from '@faker-js/faker';
 import RandExp from 'randexp';
 import { createDataGeneratorPage } from '../../../js/gui_components/generator/runtime/create-generator-page.js';
 import { TestDataGenerator } from '../../../../core/js/data_generation/testDataGenerator.js';
+
+const STUB_FAKER = {
+  word: {
+    noun: () => 'x',
+  },
+};
 
 class FakeTabulator {
   constructor(element, options) {
@@ -72,7 +77,7 @@ describe('generator page runtime text mode flows', () => {
       parentElement: document.getElementById('app'),
       documentObj: document,
       alertFn,
-      faker,
+      faker: STUB_FAKER,
       RandExp,
       TabulatorCtor: FakeTabulator,
       GridExtensionClass: FakeGridExtension,
@@ -135,12 +140,14 @@ describe('generator page runtime text mode flows', () => {
 
   afterEach(() => {
     dom.window.close();
+    delete global.document;
+    delete global.window;
   });
 
   test('default validation errors surface inline and do not throw', () => {
     const page = createMountedPage({
-      faker: { word: { noun: () => 'x' } },
-      RandExp: function RandExp() {},
+      faker: STUB_FAKER,
+      RandExp,
     });
     page.schemaRows = [{ id: '1', name: '', sourceType: 'regex', command: '', params: '', value: '' }];
     page.renderSchemaRows();
@@ -208,8 +215,8 @@ describe('generator page runtime text mode flows', () => {
 
   test('row action buttons work immediately after switching from text mode to schema mode', () => {
     const page = createMountedPage({
-      faker: { word: { noun: () => 'x' } },
-      RandExp: function RandExp() {},
+      faker: STUB_FAKER,
+      RandExp,
     });
 
     const toggle = getSchemaModeToggleButton();
@@ -250,8 +257,8 @@ describe('generator page runtime text mode flows', () => {
     window.tippy = { hideAll };
 
     createMountedPage({
-      faker: { word: { noun: () => 'x' } },
-      RandExp: function RandExp() {},
+      faker: STUB_FAKER,
+      RandExp,
     });
 
     const hideInstance = jest.fn();
@@ -264,8 +271,8 @@ describe('generator page runtime text mode flows', () => {
 
   test('schema mode help shows docs link only for Edit as Text and keeps sample button at end', () => {
     createMountedPage({
-      faker: { word: { noun: () => 'x' } },
-      RandExp: function RandExp() {},
+      faker: STUB_FAKER,
+      RandExp,
     });
 
     const helpIcon = getSchemaModeHelpIcon();
@@ -325,8 +332,8 @@ describe('generator page runtime text mode flows', () => {
 
   test('can generate directly from text mode without toggling back to schema mode', async () => {
     const page = createMountedPage({
-      faker: { word: { noun: () => 'x' } },
-      RandExp: function RandExp() {},
+      faker: STUB_FAKER,
+      RandExp,
     });
 
     const toggle = getSchemaModeToggleButton();
@@ -349,8 +356,8 @@ describe('generator page runtime text mode flows', () => {
     jest.useFakeTimers();
     try {
       createMountedPage({
-        faker: { word: { noun: () => 'x' } },
-        RandExp: function RandExp() {},
+        faker: STUB_FAKER,
+        RandExp,
       });
 
       const toggle = getSchemaModeToggleButton();
@@ -381,8 +388,8 @@ describe('generator page runtime text mode flows', () => {
 
   test('schema mode toggle routes schema error and clear callbacks through the schema runtime bridge', () => {
     const page = createMountedPage({
-      faker: { word: { noun: () => 'x' } },
-      RandExp: function RandExp() {},
+      faker: STUB_FAKER,
+      RandExp,
     });
 
     const showSchemaErrorStatus = jest.fn();
@@ -413,8 +420,8 @@ describe('generator page runtime text mode flows', () => {
 
   test('destroy allows remounting a clean generator page in the same root', () => {
     const firstPage = createMountedPage({
-      faker: { word: { noun: () => 'x' } },
-      RandExp: function RandExp() {},
+      faker: STUB_FAKER,
+      RandExp,
     });
 
     firstPage.schemaRows = [{ id: '1', name: 'Name', sourceType: 'literal', command: '', params: '', value: 'first' }];
@@ -427,8 +434,8 @@ describe('generator page runtime text mode flows', () => {
 
     FakeGridExtension.lastInstance = undefined;
     const secondPage = createMountedPage({
-      faker: { word: { noun: () => 'x' } },
-      RandExp: function RandExp() {},
+      faker: STUB_FAKER,
+      RandExp,
     });
 
     expect(document.querySelectorAll('[data-role="generator-schema-definition-root"]')).toHaveLength(1);
@@ -449,8 +456,8 @@ describe('generator page runtime text mode flows', () => {
 
   test('empty text mode schema keeps zero rows and shows add-row validation', async () => {
     const page = createMountedPage({
-      faker: { word: { noun: () => 'x' } },
-      RandExp: function RandExp() {},
+      faker: STUB_FAKER,
+      RandExp,
     });
 
     const toggle = getSchemaModeToggleButton();

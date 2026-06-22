@@ -132,6 +132,67 @@ describe('test-data-generation-service', () => {
     expect(setGenerateBusy.mock.calls).toEqual([[true], [false]]);
   });
 
+  test('generateTestData blocks reversed domain bounds before generation and avoids success status', async () => {
+    const validateCurrentSchemaRows = jest.fn(() => ({
+      errors: [
+        {
+          code: 'compiler_validation_error',
+          message:
+            'Row 1: invalid domain params - Invalid keyword arguments: argument "min" must be less than or equal to argument "max"',
+        },
+      ],
+      rows: [{ name: 'Age', sourceType: 'domain', command: 'number.int', params: '(min=47, max=32)' }],
+    }));
+    const setTestDataLoadingStatus = jest.fn();
+    const setGenerateBusy = jest.fn();
+    const showSchemaError = jest.fn();
+    const setTestDataStatus = jest.fn();
+    const TestDataGeneratorClass = jest.fn();
+
+    const service = createTestDataGenerationService({
+      TestDataGeneratorClass,
+      PairwiseTestDataGeneratorClass: class {},
+      GenericDataTableClass: class {},
+      TEST_DATA_MODES: {
+        NEW_TABLE: 'new-table',
+        AMEND_TABLE: 'amend-table',
+        AMEND_SELECTED: 'amend-selected',
+      },
+      normaliseCount: () => 3,
+      createTableFromGenerator: jest.fn(),
+      createAmendedTable: jest.fn(),
+      schemaRowsToSpec: jest.fn(() => 'Age\nnumber.int(min=47, max=32)'),
+      faker: {},
+      RandExp: function RandExp() {},
+      debouncer: { clear: jest.fn() },
+      syncSchemaTextFromGridBeforeGenerate: jest.fn(),
+      setTestDataStatus,
+      setTestDataLoadingStatus,
+      showSchemaError,
+      yieldToUi: jest.fn(() => Promise.resolve()),
+      validateCurrentSchemaRows,
+      getImporter: () => ({ setGridFromGenericDataTable: jest.fn() }),
+      getTextPreviewRenderer: jest.fn(),
+      getMainGridExtras: jest.fn(),
+      getGenerationMode: () => 'new-table',
+      getRequestedRowCount: () => 3,
+      setGenerateBusy,
+    });
+
+    await service.generateTestData();
+
+    expect(validateCurrentSchemaRows).toHaveBeenCalledTimes(1);
+    expect(showSchemaError).toHaveBeenCalledWith(
+      'Row 1: invalid domain params - Invalid keyword arguments: argument "min" must be less than or equal to argument "max"'
+    );
+    expect(setTestDataStatus).toHaveBeenCalledWith('Schema validation failed. Grid unchanged.', {
+      severity: 'error',
+      dismissable: true,
+    });
+    expect(setTestDataStatus).not.toHaveBeenCalledWith('Generate complete. Grid updated.', expect.anything());
+    expect(TestDataGeneratorClass).not.toHaveBeenCalled();
+  });
+
   test('generateTestData prefers composed schema text so constraints are preserved in row mode', async () => {
     const validateCurrentSchemaRows = jest.fn(() => ({
       errors: [],

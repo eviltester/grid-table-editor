@@ -435,6 +435,33 @@ describe('domain keyword arg validation', () => {
       error: 'Invalid keyword arguments: argument "commonOnly" must be boolean, not string',
     });
   });
+
+  test('rejects reversed number bounds before generation', () => {
+    const keyword = getDomainKeywordByAlias('number.int');
+    const result = validateDomainKeywordArgs(keyword, [47, 32]);
+
+    expect(result).toEqual({
+      ok: false,
+      error: 'Invalid keyword arguments: argument "min" must be less than or equal to argument "max"',
+    });
+  });
+
+  test('rejects reversed date bounds before generation', () => {
+    const keyword = getDomainKeywordByAlias('date.between');
+    const result = validateDomainKeywordArgs(keyword, [1659312000000, 1577836800000]);
+
+    expect(result).toEqual({
+      ok: false,
+      error: 'Invalid keyword arguments: argument "from" must be less than or equal to argument "to"',
+    });
+  });
+
+  test('keeps tolerant counterstring min/max behavior unchanged', () => {
+    const keyword = getDomainKeywordByAlias('string.counterString');
+    const result = validateDomainKeywordArgs(keyword, [47, 32]);
+
+    expect(result).toEqual({ ok: true });
+  });
 });
 
 function setDeepMethod(root, target, fn) {

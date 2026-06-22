@@ -47,6 +47,17 @@ describe('DomainTestDataRuleValidator', () => {
     );
   });
 
+  test('rejects reversed number bounds using shared semantic arg validation', () => {
+    const validator = new DomainTestDataRuleValidator();
+
+    const isValid = validator.validate({ ruleSpec: 'number.int(min=47, max=32)' });
+
+    expect(isValid).toBe(false);
+    expect(validator.getValidationError()).toBe(
+      'Invalid keyword arguments: argument "min" must be less than or equal to argument "max"'
+    );
+  });
+
   test('keeps malformed recognized invocations on the domain path', () => {
     const validator = new DomainTestDataRuleValidator();
 

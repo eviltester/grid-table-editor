@@ -1,4 +1,5 @@
 import { resolveDocumentObj, resolveWindowObj } from '../../shared/dom/default-objects.js';
+import { buildDocsUrl } from '@anywaydata/site-config';
 import { GENERATE_TO_FILE_HELP_URL } from '../constants.js';
 import { renderIconHtml } from '../../shared/primitives/icon/icon-core.js';
 
@@ -9,7 +10,7 @@ const GENERATE_TO_FILE_HELP_HTML = `
 
 const GENERATE_COMBINATIONS_TO_FILE_HELP_HTML = `
   <p>Generate n-wise combinations from enum columns in the current schema.</p>
-  <p><a class="helplink" href="/docs/test-data/n-wise-testing" target="_blank" rel="noopener noreferrer">N-wise generation docs</a></p>
+  <p><a class="helplink" href="${buildDocsUrl('test-data/n-wise-testing')}" target="_blank" rel="noopener noreferrer">N-wise generation docs</a></p>
 `;
 
 class GeneratorControlsView {

@@ -1,4 +1,7 @@
 import { validateStringValue } from '../../../command-help/command-help-validators.js';
+import { createOrderedArgsValidator } from '../../../domain/domain-keyword-arg-validators.js';
+
+const validateFinanceAmountBounds = createOrderedArgsValidator({ lowerName: 'min', upperName: 'max' });
 
 const FINANCE_AMOUNT_KEYWORD_DEFINITION = {
   keyword: 'finance.amount',
@@ -12,6 +15,7 @@ const FINANCE_AMOUNT_KEYWORD_DEFINITION = {
     docsUrl: 'https://anywaydata.com/docs/test-data/domain/finance',
     fakerDocsUrl: 'https://fakerjs.dev/api/finance',
     validator: validateStringValue,
+    argsValidator: validateFinanceAmountBounds,
     returnType: 'string',
     usageExamples: [
       {

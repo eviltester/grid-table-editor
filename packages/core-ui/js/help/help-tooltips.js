@@ -77,7 +77,9 @@ function upsertInlineHelpItems(documentObj, entries, options = {}) {
   return container;
 }
 
-function buildHelpTooltipContent(reference, inlineHelpContainer) {
+function buildHelpTooltipContent(reference, inlineHelpContainer, { documentObj, windowObj } = {}) {
+  void documentObj;
+  void windowObj;
   const id = reference.getAttribute('data-help');
   const inlineHelpText = reference.getAttribute('data-help-text');
   if (inlineHelpText) {
@@ -145,6 +147,12 @@ function createHelpTooltipService({
   resolveHelpElements: resolveHelpElementsFn,
 } = {}) {
   const resolvedWindowObj = resolveWindowObj(windowObj, documentObj);
+  const hideOtherOpenTippies = (instance, resolvedTippyFn) => {
+    resolvedTippyFn?.hideAll?.({
+      duration: 0,
+      exclude: instance,
+    });
+  };
 
   const update = () => {
     if (!documentObj) {
@@ -168,9 +176,10 @@ function createHelpTooltipService({
 
     resolvedTippyFn(helpIcons, {
       content(reference) {
-        return buildHelpTooltipContent(reference, inlineHelpContainer);
+        return buildHelpTooltipContent(reference, inlineHelpContainer, { documentObj, windowObj: resolvedWindowObj });
       },
       onShow(instance) {
+        hideOtherOpenTippies(instance, resolvedTippyFn);
         instance.reference?.setAttribute?.('aria-expanded', 'true');
       },
       onHidden(instance) {

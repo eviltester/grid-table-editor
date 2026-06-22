@@ -1,7 +1,8 @@
 import { cp, mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { spawnSync } from 'node:child_process';
+import { serializeSiteConfigModuleSource } from '../packages/core-ui/js/site/site-config-core.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -15,6 +16,7 @@ const docsStaticDir = path.join(repoRoot, 'docs-src', 'static');
 const docsAppPlaceholderPath = path.join(docsStaticDir, 'app.html');
 const webImagesDir = path.join(repoRoot, 'apps', 'web', 'images');
 const webLibsDir = path.join(repoRoot, 'apps', 'web', 'libs');
+const tempSiteConfigOverridePath = path.join(outputDir, '_site-config.override.mjs');
 const docsAppPlaceholderHtml =
   '<!doctype html><html lang="en"><head><meta charset="utf-8" /><title>App build placeholder</title></head><body></body></html>';
 const TESTENV_ROBOTS_DIRECTIVES = 'noindex,nofollow,noarchive,nosnippet';
@@ -437,7 +439,7 @@ function renderIndexPage({ branchName, commitSha, buildTimestamp }) {
     <main>
       <h1>Test Environment</h1>
       <p>Static build for GitHub Pages-style review, including the main app, generator, experimental AI/test surfaces, Storybook, and a full merged AnyWayData site.</p>
-      <p class="live-link">Access the live version with docs at <a href="https://anywaydata.com">AnyWayData.com</a>.</p>
+      <p class="live-link">Access the nested docs and blog at <a href="./site/">site/</a>.</p>
       <section class="meta" aria-label="Build metadata">
         <article class="meta-card">
           <span class="meta-label">Branch</span>
@@ -559,85 +561,134 @@ async function removeTemporaryDocsAppPlaceholder() {
   await writeFile(docsAppPlaceholderPath, '<p>This will be overwritten during the npm build.</p>', 'utf8');
 }
 
+function resolveRepositoryName() {
+  return String(process.env.GITHUB_REPOSITORY || '')
+    .split('/')
+    .at(-1)
+    ?.trim();
+}
+
+function createTestEnvSiteConfigInput({ repositoryName = resolveRepositoryName(), pagesHostOrigin = 'https://eviltester.github.io' } = {}) {
+  const repoBasePath = repositoryName ? `/${repositoryName}` : '';
+  const rootedPageHref = (fileName) => (repositoryName ? `${repoBasePath}/${fileName}` : `/${fileName}`);
+  const rootedSiteBase = repositoryName ? `${repoBasePath}/site` : '/site';
+  const siteOrigin = `${pagesHostOrigin}${repoBasePath}`;
+
+  return {
+    siteOrigin,
+    pageHrefs: {
+      landing: repositoryName ? `${repoBasePath}/` : '/',
+      app: rootedPageHref('app.html'),
+      generator: rootedPageHref('generator.html'),
+      combinatorial: rootedPageHref('combinatorial.html'),
+      webmcp: rootedPageHref('webmcp.html'),
+      writerSchema: rootedPageHref('writer-schema.html'),
+    },
+    docsIntroHref: `${rootedSiteBase}/docs/intro`,
+    blogHref: `${rootedSiteBase}/blog`,
+    docsBaseUrl: `${siteOrigin}/site/docs`,
+    blogBaseUrl: `${siteOrigin}/site/blog`,
+  };
+}
+
+async function writeGeneratedTestEnvSiteConfigOverride(filePath, options = {}) {
+  const source = serializeSiteConfigModuleSource(createTestEnvSiteConfigInput(options), {
+    coreModuleUrl: pathToFileURL(path.join(repoRoot, 'packages', 'core-ui', 'js', 'site', 'site-config-core.js')).href,
+  });
+  await writeFile(filePath, source, 'utf8');
+}
+
 async function main() {
   await clearDirectoryContents(outputDir);
 
   const buildMetadata = resolveBuildMetadata();
   const fullSiteBaseUrl = resolveFullSiteBaseUrl();
-
-  runCommand('pnpm', [
-    'exec',
-    'vite',
-    'build',
-    '--config',
-    path.join(repoRoot, 'apps', 'web', 'vite.config.mjs'),
-    '--base',
-    './',
-    '--outDir',
-    tempWebDir,
-  ]);
-
-  await copyWebBuildIntoDirectory(tempWebDir, outputDir);
-
-  runCommand('pnpm', ['exec', 'storybook', 'build', '--output-dir', storybookDir]);
-
-  await hideTopHeaderInBuiltPage(path.join(outputDir, 'app.html'));
-  await hideTopHeaderInBuiltPage(path.join(outputDir, 'generator.html'));
-  await hideTopHeaderInBuiltPage(path.join(outputDir, 'combinatorial.html'));
-  await hideTopHeaderInBuiltPage(path.join(outputDir, 'webmcp.html'));
-  await hideTopHeaderInBuiltPage(path.join(outputDir, 'writer-schema.html'));
-
-  await mkdir(fullSiteDir, { recursive: true });
-  await createTemporaryDocsAppPlaceholder();
-
+  await writeGeneratedTestEnvSiteConfigOverride(tempSiteConfigOverridePath);
   try {
-    runCommand('pnpm', ['--dir', 'docs-src', 'exec', 'docusaurus', 'build', '--out-dir', '../testenv/site'], {
-      env: {
-        DOCS_BASE_URL: fullSiteBaseUrl,
-        DOCS_SITE_URL: 'https://eviltester.github.io',
-        DOCS_TEST_BUILD: 'true',
-        DOCS_TEST_CANONICAL_SITE_URL: TESTENV_CANONICAL_SITE_URL,
-      },
+    runCommand(
+      'pnpm',
+      [
+        'exec',
+        'vite',
+        'build',
+        '--config',
+        path.join(repoRoot, 'apps', 'web', 'vite.config.mjs'),
+        '--base',
+        './',
+        '--outDir',
+        tempWebDir,
+      ],
+      {
+        env: {
+          ANYWAYDATA_SITE_CONFIG_OVERRIDE_PATH: tempSiteConfigOverridePath,
+        },
+      }
+    );
+
+    await copyWebBuildIntoDirectory(tempWebDir, outputDir);
+
+    runCommand('pnpm', ['exec', 'storybook', 'build', '--output-dir', storybookDir]);
+
+    await hideTopHeaderInBuiltPage(path.join(outputDir, 'app.html'));
+    await hideTopHeaderInBuiltPage(path.join(outputDir, 'generator.html'));
+    await hideTopHeaderInBuiltPage(path.join(outputDir, 'combinatorial.html'));
+    await hideTopHeaderInBuiltPage(path.join(outputDir, 'webmcp.html'));
+    await hideTopHeaderInBuiltPage(path.join(outputDir, 'writer-schema.html'));
+
+    await mkdir(fullSiteDir, { recursive: true });
+    await createTemporaryDocsAppPlaceholder();
+
+    try {
+      runCommand('pnpm', ['--dir', 'docs-src', 'exec', 'docusaurus', 'build', '--out-dir', '../testenv/site'], {
+        env: {
+          DOCS_BASE_URL: fullSiteBaseUrl,
+          DOCS_SITE_URL: 'https://eviltester.github.io',
+          DOCS_TEST_BUILD: 'true',
+          DOCS_TEST_CANONICAL_SITE_URL: TESTENV_CANONICAL_SITE_URL,
+        },
+      });
+    } finally {
+      await removeTemporaryDocsAppPlaceholder();
+    }
+
+    await copyWebBuildIntoDirectory(tempWebDir, fullSiteDir);
+    await applySeoDirectivesToFile(path.join(fullSiteDir, 'app.html'), {
+      canonicalUrl: ROOT_PAGE_CANONICALS['app.html'],
     });
+    await applySeoDirectivesToFile(path.join(fullSiteDir, 'generator.html'), {
+      canonicalUrl: ROOT_PAGE_CANONICALS['generator.html'],
+    });
+    await applySeoDirectivesToFile(path.join(fullSiteDir, 'combinatorial.html'), {
+      canonicalUrl: ROOT_PAGE_CANONICALS['combinatorial.html'],
+    });
+    await applySeoDirectivesToFile(path.join(fullSiteDir, 'webmcp.html'), {
+      canonicalUrl: ROOT_PAGE_CANONICALS['webmcp.html'],
+    });
+    await applySeoDirectivesToFile(path.join(fullSiteDir, 'writer-schema.html'), {
+      canonicalUrl: ROOT_PAGE_CANONICALS['writer-schema.html'],
+    });
+
+    await writeFile(path.join(outputDir, 'index.html'), renderIndexPage(buildMetadata), 'utf8');
+    await writeFile(path.join(outputDir, 'robots.txt'), createTestenvRobotsTxt(), 'utf8');
+    await writeFile(path.join(outputDir, 'llms.txt'), createLlmsTxt(), 'utf8');
+    await writeFile(path.join(fullSiteDir, 'robots.txt'), createSiteRobotsTxt(), 'utf8');
+    await writeFile(path.join(fullSiteDir, 'llms.txt'), createLlmsTxt(), 'utf8');
+    await rm(path.join(fullSiteDir, 'sitemap.xml'), { force: true });
+
+    for (const [fileName, canonicalUrl] of Object.entries(ROOT_PAGE_CANONICALS)) {
+      await applySeoDirectivesToFile(path.join(outputDir, fileName), { canonicalUrl });
+    }
+
+    await applySeoDirectivesToDirectory(storybookDir, { canonicalUrl: ROOT_CANONICAL_URL });
+
+    console.log(`Created test environment in ${outputDir}`);
   } finally {
-    await removeTemporaryDocsAppPlaceholder();
+    await rm(tempWebDir, {
+      recursive: true,
+      force: true,
+    });
+    await rm(tempSiteConfigOverridePath, { force: true });
   }
-
-  await copyWebBuildIntoDirectory(tempWebDir, fullSiteDir);
-  await applySeoDirectivesToFile(path.join(fullSiteDir, 'app.html'), {
-    canonicalUrl: ROOT_PAGE_CANONICALS['app.html'],
-  });
-  await applySeoDirectivesToFile(path.join(fullSiteDir, 'generator.html'), {
-    canonicalUrl: ROOT_PAGE_CANONICALS['generator.html'],
-  });
-  await applySeoDirectivesToFile(path.join(fullSiteDir, 'combinatorial.html'), {
-    canonicalUrl: ROOT_PAGE_CANONICALS['combinatorial.html'],
-  });
-  await applySeoDirectivesToFile(path.join(fullSiteDir, 'webmcp.html'), {
-    canonicalUrl: ROOT_PAGE_CANONICALS['webmcp.html'],
-  });
-  await applySeoDirectivesToFile(path.join(fullSiteDir, 'writer-schema.html'), {
-    canonicalUrl: ROOT_PAGE_CANONICALS['writer-schema.html'],
-  });
-  await rm(tempWebDir, {
-    recursive: true,
-    force: true,
-  });
-
-  await writeFile(path.join(outputDir, 'index.html'), renderIndexPage(buildMetadata), 'utf8');
-  await writeFile(path.join(outputDir, 'robots.txt'), createTestenvRobotsTxt(), 'utf8');
-  await writeFile(path.join(outputDir, 'llms.txt'), createLlmsTxt(), 'utf8');
-  await writeFile(path.join(fullSiteDir, 'robots.txt'), createSiteRobotsTxt(), 'utf8');
-  await writeFile(path.join(fullSiteDir, 'llms.txt'), createLlmsTxt(), 'utf8');
-  await rm(path.join(fullSiteDir, 'sitemap.xml'), { force: true });
-
-  for (const [fileName, canonicalUrl] of Object.entries(ROOT_PAGE_CANONICALS)) {
-    await applySeoDirectivesToFile(path.join(outputDir, fileName), { canonicalUrl });
-  }
-
-  await applySeoDirectivesToDirectory(storybookDir, { canonicalUrl: ROOT_CANONICAL_URL });
-
-  console.log(`Created test environment in ${outputDir}`);
 }
 
 export {
@@ -646,11 +697,13 @@ export {
   TESTENV_ROBOTS_DIRECTIVES,
   applySeoDirectivesToHtml,
   applyTopHeaderHideToHtml,
+  createTestEnvSiteConfigInput,
   createLlmsTxt,
   createSiteRobotsTxt,
   createTestenvRobotsTxt,
   hideTopHeaderInBuiltHtml,
   renderIndexPage,
+  writeGeneratedTestEnvSiteConfigOverride,
 };
 
 if (isMainModule()) {

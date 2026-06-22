@@ -141,6 +141,7 @@ function buildDomainKeywordCatalog(definitions = DOMAIN_KEYWORD_DEFINITIONS) {
         fakerDocsUrl: String(definition?.help?.fakerDocsUrl || '').trim(),
         usageExamples: normalizedUsageExamples,
         validator: definition?.help?.validator,
+        argsValidator: definition?.help?.argsValidator,
         returnType,
         args: normalizedArgs,
       },
@@ -401,10 +402,14 @@ const BUILT_IN_CUSTOM_DELEGATES = {
 function validateDomainKeywordArgs(keyword, args = []) {
   const argumentList = Array.isArray(args) ? args : [];
   const schema = Array.isArray(keyword?.help?.args) ? keyword.help.args : [];
+  const argsByName = {};
 
   for (let index = 0; index < schema.length; index += 1) {
     const spec = schema[index];
     const value = argumentList[index];
+    if (typeof value !== 'undefined') {
+      argsByName[String(spec?.name || '').trim()] = value;
+    }
     if (spec.required && typeof value === 'undefined') {
       return {
         ok: false,
@@ -424,6 +429,21 @@ function validateDomainKeywordArgs(keyword, args = []) {
       ok: false,
       error: `Too many arguments supplied. Expected ${schema.length}, received ${argumentList.length}.`,
     };
+  }
+
+  const semanticArgsValidator = keyword?.help?.argsValidator;
+  if (typeof semanticArgsValidator === 'function') {
+    const semanticValidation = semanticArgsValidator(argumentList, {
+      keyword,
+      schema,
+      argsByName,
+    });
+    if (!semanticValidation?.ok) {
+      return {
+        ok: false,
+        error: semanticValidation?.error || 'Invalid keyword arguments',
+      };
+    }
   }
 
   return { ok: true };

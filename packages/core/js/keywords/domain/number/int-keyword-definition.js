@@ -1,4 +1,7 @@
 import { validateIntegerValue } from '../../../command-help/command-help-validators.js';
+import { createOrderedArgsValidator } from '../../../domain/domain-keyword-arg-validators.js';
+
+const validateIntegerBounds = createOrderedArgsValidator({ lowerName: 'min', upperName: 'max' });
 
 const NUMBER_INT_KEYWORD_DEFINITION = {
   keyword: 'number.int',
@@ -12,6 +15,7 @@ const NUMBER_INT_KEYWORD_DEFINITION = {
     docsUrl: 'https://anywaydata.com/docs/test-data/domain/number',
     fakerDocsUrl: 'https://fakerjs.dev/api/number',
     validator: validateIntegerValue,
+    argsValidator: validateIntegerBounds,
     returnType: 'integer',
     usageExamples: [
       {

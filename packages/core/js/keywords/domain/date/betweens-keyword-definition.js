@@ -1,4 +1,7 @@
 import { validateArrayValue } from '../../../command-help/command-help-validators.js';
+import { createOrderedArgsValidator } from '../../../domain/domain-keyword-arg-validators.js';
+
+const validateDateBetweensBounds = createOrderedArgsValidator({ lowerName: 'from', upperName: 'to' });
 
 const DATE_BETWEENS_KEYWORD_DEFINITION = {
   keyword: 'date.betweens',
@@ -13,6 +16,7 @@ const DATE_BETWEENS_KEYWORD_DEFINITION = {
     docsUrl: 'https://anywaydata.com/docs/test-data/domain/date',
     fakerDocsUrl: 'https://fakerjs.dev/api/date',
     validator: validateArrayValue,
+    argsValidator: validateDateBetweensBounds,
     returnType: 'array',
     usageExamples: [
       {

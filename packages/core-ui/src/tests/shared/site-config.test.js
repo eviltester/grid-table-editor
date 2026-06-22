@@ -50,4 +50,21 @@ describe('site config', () => {
     );
     expect(testEnvConfig.resolveOwnedSiteUrl('/blog')).toBe('https://eviltester.github.io/grid-table-editor/site/blog');
   });
+
+  test('exact production docs and blog roots resolve without duplicated path segments', () => {
+    const testEnvConfig = createSiteConfig({
+      siteOrigin: 'https://eviltester.github.io/grid-table-editor',
+      docsBaseUrl: 'https://eviltester.github.io/grid-table-editor/site/docs',
+      blogBaseUrl: 'https://eviltester.github.io/grid-table-editor/site/blog',
+    });
+
+    expect(testEnvConfig.resolveOwnedSiteUrl('https://anywaydata.com/docs')).toBe(
+      'https://eviltester.github.io/grid-table-editor/site/docs'
+    );
+    expect(testEnvConfig.resolveOwnedSiteUrl('https://anywaydata.com/blog')).toBe(
+      'https://eviltester.github.io/grid-table-editor/site/blog'
+    );
+    expect(testEnvConfig.buildDocsUrl('docs')).toBe('https://eviltester.github.io/grid-table-editor/site/docs');
+    expect(testEnvConfig.buildBlogUrl('blog')).toBe('https://eviltester.github.io/grid-table-editor/site/blog');
+  });
 });

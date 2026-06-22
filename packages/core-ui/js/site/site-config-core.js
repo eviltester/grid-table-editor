@@ -45,6 +45,9 @@ function normalizeDocsPath(path = '') {
   if (!trimmed) {
     return '';
   }
+  if (trimmed === 'docs') {
+    return '';
+  }
   return trimmed.startsWith('docs/') ? trimmed.slice('docs/'.length) : trimmed;
 }
 
@@ -53,6 +56,9 @@ function normalizeBlogPath(path = '') {
     .trim()
     .replace(/^\/+/u, '');
   if (!trimmed) {
+    return '';
+  }
+  if (trimmed === 'blog') {
     return '';
   }
   return trimmed.startsWith('blog/') ? trimmed.slice('blog/'.length) : trimmed;

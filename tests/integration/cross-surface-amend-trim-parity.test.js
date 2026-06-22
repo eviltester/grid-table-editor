@@ -136,5 +136,5 @@ describe('cross-surface amend trim parity', () => {
       await fs.unlink(schemaPath).catch(() => {});
       await fs.unlink(dataPath).catch(() => {});
     }
-  }, 20000);
+  }, CROSS_SURFACE_PROCESS_TIMEOUT_MS);
 });

@@ -106,7 +106,15 @@ describe('EnumTestDataGenerator', () => {
       expect(EnumParser.isAwdEnumFormat('enum("A", "B")')).toBe(true);
       expect(EnumParser.isAwdEnumFormat('datatype.enum("A", "B")')).toBe(true);
       expect(EnumParser.isAwdEnumFormat('awd.datatype.enum("A", "B")')).toBe(true);
+      expect(EnumParser.isAwdEnumFormat('datatype.enum()')).toBe(true);
+      expect(EnumParser.isAwdEnumFormat('datatype.enum("A") trailing')).toBe(false);
       expect(EnumParser.isAwdEnumFormat('A,B,C')).toBe(false);
+    });
+
+    test('detects only complete canonical domain enum invocations', () => {
+      expect(EnumParser.isCanonicalDomainEnumRuleSpec('datatype.enum("A", "B")')).toBe(true);
+      expect(EnumParser.isCanonicalDomainEnumRuleSpec('datatype.enum("A") trailing')).toBe(false);
+      expect(EnumParser.isCanonicalDomainEnumRuleSpec('datatype.enum()')).toBe(false);
     });
   });
 });

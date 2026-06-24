@@ -369,6 +369,32 @@ IF [Ticket] = "ABC-1234" THEN [Ticket] <> "XYZ-9999" ENDIF`,
     );
   });
 
+  test('keeps malformed datatype enum commands with trailing text out of enum constraint parsing', () => {
+    const parsed = schemaTextToDataRules({
+      schemaText: `Status
+datatype.enum("open") trailing
+
+IF [Status] = "closed" THEN [Status] = "open" ENDIF`,
+      faker,
+      RandExp,
+    });
+
+    expect(parsed.dataRules).toEqual([]);
+    expect(() => parsed.errors).not.toThrow();
+    expect(parsed.errors).not.toContainEqual(
+      expect.objectContaining({
+        code: 'invalid_constraint_enum_value',
+        parameterName: 'Status',
+      })
+    );
+    expect(parsed.errors).toContainEqual(
+      expect.objectContaining({
+        code: 'invalid_constraint_literal_value',
+        parameterName: 'Status',
+      })
+    );
+  });
+
   test('returns blank explicit regex text as a regex validation error when requested', () => {
     const result = schemaTextToDataRules({
       schemaText: 'Code\nregex("")',

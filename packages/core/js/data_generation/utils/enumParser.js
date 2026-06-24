@@ -25,7 +25,11 @@ export class EnumParser {
    * @returns {boolean} True if using function format
    */
   static isAwdEnumFormat(ruleSpec) {
-    return /^(enum|datatype\.enum|awd\.datatype\.enum)\s*\(/.test(ruleSpec);
+    return /^(enum|datatype\.enum|awd\.datatype\.enum)\s*\([\s\S]*\)$/i.test(String(ruleSpec || '').trim());
+  }
+
+  static hasAwdEnumInvocationPrefix(ruleSpec) {
+    return /^(enum|datatype\.enum|awd\.datatype\.enum)\s*\(/i.test(String(ruleSpec || '').trim());
   }
 
   static serializeDomainEnumValue(value) {
@@ -59,7 +63,7 @@ export class EnumParser {
   }
 
   static isCanonicalDomainEnumRuleSpec(ruleSpec) {
-    return /^datatype\.enum\s*\(/i.test(String(ruleSpec || '').trim());
+    return /^datatype\.enum\s*\(\s*[\s\S]+\s*\)$/i.test(String(ruleSpec || '').trim());
   }
 
   static isCanonicalSchemaSerializableEnumRuleSpec(ruleSpec) {
@@ -149,7 +153,7 @@ export class EnumParser {
     const spec = String(ruleSpec || '').trim();
 
     // Check if it's a formal enum function format
-    if (this.isAwdEnumFormat(spec)) {
+    if (this.hasAwdEnumInvocationPrefix(spec)) {
       return this.extractAwdEnumValues(spec);
     }
 

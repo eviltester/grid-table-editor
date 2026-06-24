@@ -51,7 +51,7 @@ const DATATYPE_ENUM_KEYWORD_DEFINITION = {
     args: [
       {
         name: 'values',
-        type: 'string',
+        type: 'comma-separated list',
         required: true,
         optional: false,
         variadic: true,

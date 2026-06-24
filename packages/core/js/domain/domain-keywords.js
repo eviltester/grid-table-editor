@@ -276,6 +276,7 @@ function isTypeMatch(value, typeName) {
   for (const item of allowed) {
     if (/^[+-]?\d+(\.\d+)?$/.test(item) && typeof value === 'number' && Object.is(value, Number(item))) return true;
     if (item === 'string' && typeof value === 'string') return true;
+    if (item === 'comma-separated list' && typeof value === 'string') return true;
     if (item === 'integer' && typeof value === 'number' && Number.isInteger(value)) return true;
     if (item === 'number' && typeof value === 'number' && Number.isFinite(value)) return true;
     if (item === 'date' && value instanceof Date && !Number.isNaN(value.valueOf())) return true;

@@ -224,9 +224,9 @@ test.describe('Generator Schema Editing', () => {
 
     await expect(generatorPage.schema.row(0).locator('[data-action="pick-command"]')).toHaveText('datatype.enum');
     await expect(generatorPage.schema.row(0).locator('input[data-field="params"]')).toHaveValue(
-      '("active,inactive,pending")'
+      '(active,inactive,pending)'
     );
-    await expect.poll(async () => generatorPage.schema.getSchemaText()).toContain('enum("active,inactive,pending")');
+    await expect.poll(async () => generatorPage.schema.getSchemaText()).toContain('enum(active,inactive,pending)');
 
     expectNoPageErrors(pageErrors);
   });

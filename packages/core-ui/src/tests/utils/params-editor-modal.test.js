@@ -199,7 +199,15 @@ describe('params editor modal', () => {
       commandLabel: 'datatype.enum',
       helpModel: {
         summary: 'Enum helper',
-        params: [{ name: 'values', type: 'comma-separated list', optional: false, example: 'active,inactive' }],
+        params: [
+          {
+            name: 'values',
+            type: 'comma-separated list',
+            optional: false,
+            variadic: true,
+            example: 'active,inactive',
+          },
+        ],
       },
       initialParams: '',
     });
@@ -222,13 +230,13 @@ describe('params editor modal', () => {
     expect(error.textContent).toBe('');
     expect(error.hidden).toBe(true);
     expect(
-      within(dialog).getByText('(values=active,inactive,pending)', {
+      within(dialog).getByText('(active,inactive,pending)', {
         selector: '[data-role="params-editor-preview"]',
       })
     ).toBeTruthy();
 
     fireEvent.click(applyButton);
-    await expect(promise).resolves.toBe('(values=active,inactive,pending)');
+    await expect(promise).resolves.toBe('(active,inactive,pending)');
   });
 
   test('shows a warning when existing params cannot be mapped to the documented fields', async () => {

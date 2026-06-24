@@ -27,6 +27,7 @@ describe('domain command metadata', () => {
       expect.arrayContaining([
         expect.objectContaining({
           name: 'values',
+          type: 'comma-separated list',
           variadic: true,
           optional: false,
         }),

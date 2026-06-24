@@ -436,6 +436,12 @@ describe('domain keyword arg validation', () => {
     });
   });
 
+  test('treats comma-separated list metadata as string-compatible for datatype.enum', () => {
+    const keyword = getDomainKeywordByAlias('datatype.enum');
+    const result = validateDomainKeywordArgs(keyword, ['active,inactive,pending']);
+    expect(result).toEqual({ ok: true });
+  });
+
   test('rejects reversed number bounds before generation', () => {
     const keyword = getDomainKeywordByAlias('number.int');
     const result = validateDomainKeywordArgs(keyword, [47, 32]);

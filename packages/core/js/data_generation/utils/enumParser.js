@@ -63,7 +63,7 @@ export class EnumParser {
   }
 
   static isCanonicalDomainEnumRuleSpec(ruleSpec) {
-    return /^datatype\.enum\s*\(\s*[\s\S]+\s*\)$/i.test(String(ruleSpec || '').trim());
+    return /^datatype\.enum\s*\([\s\S]+\)$/i.test(String(ruleSpec || '').trim());
   }
 
   static isCanonicalSchemaSerializableEnumRuleSpec(ruleSpec) {

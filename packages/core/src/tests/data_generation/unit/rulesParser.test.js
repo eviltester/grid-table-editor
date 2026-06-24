@@ -140,6 +140,19 @@ Status: person.jobTitle`;
     expect(parser.renderSpecFromRulesWithTokens(parser.testDataRules.rules)).toBe(inputText);
   });
 
+  test('canonicalizes legacy awd datatype enum rules when rebuilding from parsed tokens', () => {
+    const inputText = `Priority
+enum(high,medium,low)
+Status
+enum(active,inactive)`;
+
+    const parser = new RulesParser(faker, RandExp);
+    parser.parseText(inputText);
+    parser.testDataRules.rules[1].ruleSpec = 'awd.datatype.enum("active","inactive")';
+
+    expect(parser.renderSpecFromRulesWithTokens(parser.testDataRules.rules)).toBe(inputText);
+  });
+
   test('preserves authored inline separator spacing when rebuilding from parsed tokens', () => {
     const inputText = `Name:person.fullName
 Role:   enum(admin,user)`;

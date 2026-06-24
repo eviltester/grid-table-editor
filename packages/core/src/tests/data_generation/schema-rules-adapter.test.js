@@ -204,6 +204,44 @@ Status: person.jobTitle`;
     expect(rendered.text).toBe(schemaText);
   });
 
+  test('canonicalizes legacy awd datatype enum schema text when round-tripping', () => {
+    const parsed = schemaTextToDataRules({
+      schemaText: 'Status\nawd.datatype.enum("active","inactive","pending")',
+      faker,
+      RandExp,
+    });
+
+    expect(parsed.errors).toEqual([]);
+    expect(parsed.dataRules).toEqual([
+      expect.objectContaining({
+        name: 'Status',
+        ruleSpec: 'enum(active,inactive,pending)',
+      }),
+    ]);
+
+    const rendered = dataRulesToSchemaText({
+      dataRules: parsed.dataRules,
+      schemaTokens: parsed.schemaTokens,
+    });
+
+    expect(rendered.text).toBe('Status\nenum(active,inactive,pending)');
+  });
+
+  test('canonicalizes legacy awd datatype enum data rules when rendering schema text', () => {
+    const rendered = dataRulesToSchemaText({
+      dataRules: [
+        {
+          name: 'Status',
+          ruleSpec: 'awd.datatype.enum("active","inactive","pending")',
+          comments: '',
+        },
+      ],
+    });
+
+    expect(rendered.errors).toEqual([]);
+    expect(rendered.text).toBe('Status\nenum(active,inactive,pending)');
+  });
+
   test('prefers schema tokens when rendering so blank lines are preserved', () => {
     const rendered = dataRulesToSchemaText({
       dataRules: [

@@ -239,7 +239,7 @@ export class RulesParser {
     const rows = Array.isArray(rules)
       ? rules.map((rule) => ({
           name: String(rule?.name ?? ''),
-          rule: EnumParser.isCanonicalDomainEnumRuleSpec(rule?.ruleSpec)
+          rule: EnumParser.isCanonicalSchemaSerializableEnumRuleSpec(rule?.ruleSpec)
             ? EnumParser.normalizeToCanonicalSchemaRuleSpec(rule?.ruleSpec)
             : String(rule?.ruleSpec ?? ''),
         }))
@@ -293,7 +293,7 @@ export class RulesParser {
 
       outputLines.push(String(rule?.name ?? ''));
       outputLines.push(
-        EnumParser.isCanonicalDomainEnumRuleSpec(rule?.ruleSpec)
+        EnumParser.isCanonicalSchemaSerializableEnumRuleSpec(rule?.ruleSpec)
           ? EnumParser.normalizeToCanonicalSchemaRuleSpec(rule?.ruleSpec)
           : String(rule?.ruleSpec ?? '')
       );

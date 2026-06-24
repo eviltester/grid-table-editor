@@ -62,6 +62,11 @@ export class EnumParser {
     return /^datatype\.enum\s*\(/i.test(String(ruleSpec || '').trim());
   }
 
+  static isCanonicalSchemaSerializableEnumRuleSpec(ruleSpec) {
+    const spec = String(ruleSpec || '').trim();
+    return this.isCanonicalDomainEnumRuleSpec(spec) || this.isAwdEnumFormat(spec) || this.isShorthandEnumFormat(spec);
+  }
+
   static isEnumLikeRule(rule = {}) {
     const ruleType = String(rule?.type || '')
       .trim()

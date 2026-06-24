@@ -13,7 +13,7 @@ function cloneConstraintAst(ast) {
 
 function cloneRule(rule) {
   const rawRuleSpec = String(rule?.ruleSpec ?? '');
-  const normalizedRuleSpec = EnumParser.isCanonicalDomainEnumRuleSpec(rawRuleSpec)
+  const normalizedRuleSpec = EnumParser.isCanonicalSchemaSerializableEnumRuleSpec(rawRuleSpec)
     ? EnumParser.normalizeToCanonicalSchemaRuleSpec(rawRuleSpec)
     : rawRuleSpec;
   return {
@@ -81,7 +81,7 @@ function renderSpecFromRulesWithTokens(rules, constraints, schemaTokens) {
   const rows = Array.isArray(rules)
     ? rules.map((rule) => ({
         name: String(rule?.name ?? ''),
-        rule: EnumParser.isCanonicalDomainEnumRuleSpec(rule?.ruleSpec)
+        rule: EnumParser.isCanonicalSchemaSerializableEnumRuleSpec(rule?.ruleSpec)
           ? EnumParser.normalizeToCanonicalSchemaRuleSpec(rule?.ruleSpec)
           : String(rule?.ruleSpec ?? ''),
       }))

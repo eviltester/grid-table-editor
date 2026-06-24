@@ -108,7 +108,7 @@ describe('shared-schema-definition view', () => {
                 helpModel: {
                   heading: 'datatype.enum',
                   summary: 'Enum helper',
-                  params: [{ name: 'values', type: 'comma-separated list', optional: false }],
+                  params: [{ name: 'values', type: 'comma-separated list', optional: false, variadic: true }],
                 },
               },
             ];
@@ -775,8 +775,8 @@ Authorization Token
     await Promise.resolve();
     await Promise.resolve();
 
-    expect(document.querySelector('[data-field="params"]').value).toBe('(values=active,inactive,pending)');
-    expect(component.getSchemaText()).toContain('enum(values=active,inactive,pending)');
+    expect(document.querySelector('[data-field="params"]').value).toBe('(active,inactive,pending)');
+    expect(component.getSchemaText()).toContain('enum(active,inactive,pending)');
   });
 
   test('destroy clears pending validation timers and a second mount works in the same root', () => {

@@ -9,7 +9,7 @@ function normalizeDatatypeEnumArgs(args = []) {
     }
 
     try {
-      return EnumParser.extractEnumValues(`enum(${singleValue})`);
+      return EnumParser.extractEnumValues(singleValue);
     } catch {
       return [singleValue];
     }

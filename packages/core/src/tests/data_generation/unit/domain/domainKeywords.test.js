@@ -400,6 +400,19 @@ describe('domain keyword delegation', () => {
     expect(executeDomainKeyword('autoIncrement.sequence', { args: [], autoIncrementState: state })).toBe(2);
   });
 
+  test('executes datatype.enum from a single function-shaped string argument', () => {
+    const originalRandom = Math.random;
+    Math.random = () => 0;
+
+    try {
+      expect(executeDomainKeyword('datatype.enum', { args: ['enum(active,inactive)'] })).toBe('active');
+      expect(executeDomainKeyword('datatype.enum', { args: ['datatype.enum(active,inactive)'] })).toBe('active');
+      expect(executeDomainKeyword('datatype.enum', { args: ['awd.datatype.enum(active,inactive)'] })).toBe('active');
+    } finally {
+      Math.random = originalRandom;
+    }
+  });
+
   test('allows custom literal delegate to override built-in behavior', () => {
     const result = executeDomainKeyword('literal.value', {
       customDelegates: {
@@ -440,6 +453,14 @@ describe('domain keyword arg validation', () => {
     const keyword = getDomainKeywordByAlias('datatype.enum');
     const result = validateDomainKeywordArgs(keyword, ['active,inactive,pending']);
     expect(result).toEqual({ ok: true });
+  });
+
+  test('treats single function-shaped enum args as enum value lists for datatype.enum', () => {
+    const keyword = getDomainKeywordByAlias('datatype.enum');
+
+    expect(validateDomainKeywordArgs(keyword, ['enum(active,inactive)'])).toEqual({ ok: true });
+    expect(validateDomainKeywordArgs(keyword, ['datatype.enum(active,inactive)'])).toEqual({ ok: true });
+    expect(validateDomainKeywordArgs(keyword, ['awd.datatype.enum(active,inactive)'])).toEqual({ ok: true });
   });
 
   test('rejects reversed number bounds before generation', () => {

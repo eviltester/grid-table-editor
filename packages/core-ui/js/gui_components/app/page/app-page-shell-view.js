@@ -1,7 +1,10 @@
+import { bindDetailsContentVisibility } from '../../shared/dom/details-disclosure-focus.js';
+
 class AppPageShellView {
   constructor({ root, controller } = {}) {
     this.root = root;
     this.controller = controller;
+    this.unbindTestDataDetailsVisibility = null;
   }
 
   mount() {
@@ -9,7 +12,7 @@ class AppPageShellView {
       throw new Error('AppPageShellView requires a root element');
     }
 
-    this.root.innerHTML = this.template();
+    this.render();
   }
 
   template() {
@@ -23,9 +26,9 @@ class AppPageShellView {
         <div id="main-grid-view"></div>
 
         <div class="testDataSchemaGui" data-role="test-data-panel-shell">
-          <details${testDataOpenAttribute}>
+          <details data-role="test-data-details"${testDataOpenAttribute}>
             <summary>Test Data <span data-help="test-data-summary-title" data-help-role="help-icon" class="helpicon"></span></summary>
-            <div id="testDataGeneratorContainer"></div>
+            <div id="testDataGeneratorContainer" data-role="test-data-details-content"></div>
           </details>
         </div>
 
@@ -35,10 +38,22 @@ class AppPageShellView {
   }
 
   render() {
+    this.unbindTestDataDetailsVisibility?.();
+    this.unbindTestDataDetailsVisibility = null;
     this.root.innerHTML = this.template();
+    this.bindDisclosureVisibility();
+  }
+
+  bindDisclosureVisibility() {
+    this.unbindTestDataDetailsVisibility = bindDetailsContentVisibility({
+      detailsElement: this.root.querySelector('[data-role="test-data-details"]'),
+      contentElement: this.root.querySelector('[data-role="test-data-details-content"]'),
+    });
   }
 
   destroy() {
+    this.unbindTestDataDetailsVisibility?.();
+    this.unbindTestDataDetailsVisibility = null;
     this.root.replaceChildren();
   }
 }

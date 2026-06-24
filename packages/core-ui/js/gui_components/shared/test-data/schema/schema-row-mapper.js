@@ -39,6 +39,14 @@ function createDefaultSchemaRow() {
   };
 }
 
+function clearRowValidationState(row) {
+  return {
+    ...row,
+    semanticValidationIssues: [],
+    validation: createSchemaRowValidation(),
+  };
+}
+
 function looksLikeMethodRuleSpec(ruleSpec) {
   const spec = String(ruleSpec ?? '').trim();
   if (!spec) {
@@ -104,7 +112,7 @@ function preservePreviousMethodLikeSourceType({ row, previousRow, rawRuleSpec })
 }
 
 function applySchemaSourceTypeChange(currentRow, nextSourceType) {
-  const current = currentRow || {};
+  const current = clearRowValidationState(currentRow || {});
   const resolvedNextSourceType = String(nextSourceType || '')
     .trim()
     .toLowerCase();

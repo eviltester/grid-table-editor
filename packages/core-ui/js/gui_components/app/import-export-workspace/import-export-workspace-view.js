@@ -1,8 +1,13 @@
 import { resolveDocumentObj } from '../../shared/dom/default-objects.js';
+import {
+  bindDetailsContentVisibility,
+  setDetailsContentVisibility,
+} from '../../shared/dom/details-disclosure-focus.js';
 
 const TOOLBAR_ROOT_ROLE = 'import-export-toolbar-root';
 const GRID_PREVIEW_SYNC_ROOT_ROLE = 'grid-preview-sync-root';
 const TEXT_PREVIEW_EDITOR_ROOT_ROLE = 'text-preview-editor-root';
+const TOOLBAR_DETAILS_ROLE = 'import-export-toolbar-details';
 
 class ImportExportWorkspaceView {
   constructor({ root, controller, documentObj, services = {} } = {}) {
@@ -15,6 +20,7 @@ class ImportExportWorkspaceView {
     this.textPreviewEditor = null;
     this.formatSelector = null;
     this.formatOptionsPanel = null;
+    this.unbindToolbarDetailsVisibility = null;
   }
 
   mount() {
@@ -23,6 +29,7 @@ class ImportExportWorkspaceView {
     }
 
     this.root.innerHTML = this.template();
+    this.bindDisclosureVisibility();
     this.createFeatures();
     this.render();
     this.services.updateHelpHints?.();
@@ -32,7 +39,7 @@ class ImportExportWorkspaceView {
     return `
       <section class="import-export-workspace" aria-label="Import Export Workspace">
         <div class="import-export-workspace__sync-row" data-role="${GRID_PREVIEW_SYNC_ROOT_ROLE}"></div>
-        <details class="import-export-workspace__toolbar-details" data-role="import-export-toolbar-details">
+        <details class="import-export-workspace__toolbar-details" data-role="${TOOLBAR_DETAILS_ROLE}">
           <summary>Import / Export</summary>
           <div class="importexport" id="importExportToolbarRoot" data-role="${TOOLBAR_ROOT_ROLE}"></div>
         </details>
@@ -105,6 +112,21 @@ class ImportExportWorkspaceView {
     return this.root?.querySelector?.(`[data-role="${role}"]`) || null;
   }
 
+  bindDisclosureVisibility() {
+    this.unbindToolbarDetailsVisibility?.();
+    this.unbindToolbarDetailsVisibility = bindDetailsContentVisibility({
+      detailsElement: this.getToolbarDetailsElement(),
+      contentElement: this.getElementByRole(TOOLBAR_ROOT_ROLE),
+    });
+  }
+
+  syncToolbarDetailsVisibility() {
+    setDetailsContentVisibility({
+      detailsElement: this.getToolbarDetailsElement(),
+      contentElement: this.getElementByRole(TOOLBAR_ROOT_ROLE),
+    });
+  }
+
   render() {
     const state = this.controller.getState();
     this.gridPreviewSyncControl?.update?.(state);
@@ -121,6 +143,8 @@ class ImportExportWorkspaceView {
   }
 
   destroy() {
+    this.unbindToolbarDetailsVisibility?.();
+    this.unbindToolbarDetailsVisibility = null;
     this.formatOptionsPanel?.destroy?.();
     this.formatSelector?.destroy?.();
     this.textPreviewEditor?.destroy?.();
@@ -142,13 +166,14 @@ class ImportExportWorkspaceView {
   }
 
   getToolbarDetailsElement() {
-    return this.getElementByRole('import-export-toolbar-details');
+    return this.getElementByRole(TOOLBAR_DETAILS_ROLE);
   }
 
   openToolbarDetails() {
     const detailsElement = this.getToolbarDetailsElement();
     if (detailsElement) {
       detailsElement.open = true;
+      this.syncToolbarDetailsVisibility();
     }
   }
 

@@ -8,7 +8,7 @@ import {
 } from '@anywaydata/core/data_generation/schema-rules-adapter.js';
 import { createSchemaPanelComponent } from '../../../../packages/core-ui/js/gui_components/shared/schema-panel/index.js';
 import { validateSchemaRows as validateSharedSchemaRows } from '../../../../packages/core-ui/js/gui_components/shared/test-data/schema/schema-editor-core.js';
-import { getKnownFakerCommandsAlphabetical } from '../../../../packages/core-ui/js/gui_components/shared/faker-commands.js';
+import { getAllowedFakerCommandsAlphabetical } from '../../../../packages/core-ui/js/gui_components/shared/faker-commands.js';
 import { getKnownDomainCommandsAlphabetical } from '../../../../packages/core-ui/js/gui_components/shared/domain-commands.js';
 import { buildSchemaModeHelpHtml } from '../../../../packages/core-ui/js/gui_components/shared/test-data/help/schema-mode-help-builder.js';
 import { createGeneratorSchemaDefinitionSupport } from '../../../../packages/core-ui/js/gui_components/generator/schema-support/create-generator-schema-definition-support.js';
@@ -16,7 +16,7 @@ import { GENERATOR_DEFAULT_EXAMPLE_SCHEMA_TEXT } from '../../../../packages/core
 
 function createGeneratorSchemaStoryProps() {
   let rowCounter = 1;
-  const fakerCommands = getKnownFakerCommandsAlphabetical().filter(
+  const fakerCommands = getAllowedFakerCommandsAlphabetical().filter(
     (command) => command !== 'RegEx' && command.startsWith('helpers.')
   );
   const domainCommands = getKnownDomainCommandsAlphabetical();

@@ -11,7 +11,7 @@ import { createGeneratorPageComponent } from '../../../../packages/core-ui/js/gu
 import { createGeneratorPageShellComponent } from '../../../../packages/core-ui/js/gui_components/generator/page/create-generator-page-shell-component.js';
 import { GENERATOR_DEFAULT_EXAMPLE_SCHEMA_TEXT } from '../../../../packages/core-ui/js/gui_components/shared/test-data/schema/schema-examples.js';
 import { validateSchemaRows as validateSharedSchemaRows } from '../../../../packages/core-ui/js/gui_components/shared/test-data/schema/schema-editor-core.js';
-import { getKnownFakerCommandsAlphabetical } from '../../../../packages/core-ui/js/gui_components/shared/faker-commands.js';
+import { getAllowedFakerCommandsAlphabetical } from '../../../../packages/core-ui/js/gui_components/shared/faker-commands.js';
 import { getKnownDomainCommandsAlphabetical } from '../../../../packages/core-ui/js/gui_components/shared/domain-commands.js';
 import { buildSchemaModeHelpHtml } from '../../../../packages/core-ui/js/gui_components/shared/test-data/help/schema-mode-help-builder.js';
 import { createGeneratorSchemaDefinitionSupport } from '../../../../packages/core-ui/js/gui_components/generator/schema-support/create-generator-schema-definition-support.js';
@@ -50,7 +50,7 @@ function getSchemaHelpText(rootElement) {
 
 function createGeneratorSchemaStoryProps(ids = {}) {
   let rowCounter = 1;
-  const fakerCommands = getKnownFakerCommandsAlphabetical().filter(
+  const fakerCommands = getAllowedFakerCommandsAlphabetical().filter(
     (command) => command !== 'RegEx' && command.startsWith('helpers.')
   );
   const domainCommands = getKnownDomainCommandsAlphabetical();

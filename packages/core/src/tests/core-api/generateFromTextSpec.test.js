@@ -31,6 +31,25 @@ test('generateFromTextSpec returns validation error for invalid output format', 
   );
 });
 
+test('generateFromTextSpec rejects helpers.rangeToNumber range object without max', () => {
+  const result = generateFromTextSpec({
+    textSpec: 'Number\nhelpers.rangeToNumber({ min: 5 })',
+    rowCount: 3,
+    outputFormat: 'json',
+  });
+
+  expect(result.ok).toBe(false);
+  expect(result.rows).toBeUndefined();
+  expect(result.rendered).toBeUndefined();
+  expect(result.errors).toContainEqual(
+    expect.objectContaining({
+      code: 'compiler_validation_error',
+      column: 'Number',
+      message: expect.stringContaining('helpers.rangeToNumber range object requires max'),
+    })
+  );
+});
+
 test('generateFromTextSpec generates rows for valid spec', () => {
   const result = generateFromTextSpec({ textSpec: 'Name\nBob', rowCount: 2, outputFormat: 'json' });
   expect(result.ok).toBe(true);

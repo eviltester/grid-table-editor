@@ -84,6 +84,31 @@ describe('schema-row-validation', () => {
     ]);
   });
 
+  test('reports missing helpers.rangeToNumber max through the shared row validation path', () => {
+    const issues = getSchemaRowSemanticValidationIssues(
+      {
+        name: 'Number',
+        sourceType: 'faker',
+        command: 'helpers.rangeToNumber',
+        params: '({ min: 5 })',
+      },
+      0,
+      {
+        schemaTextToDataRules,
+        faker,
+        RandExp,
+      }
+    );
+
+    expect(issues).toEqual([
+      expect.objectContaining({
+        code: 'compiler_validation_error',
+        field: 'params',
+        message: 'Row 1: invalid faker params - Invalid Faker API Call helpers.rangeToNumber range object requires max',
+      }),
+    ]);
+  });
+
   test('merges precomputed semantic issues into row validation state', () => {
     const issues = getSchemaRowValidationIssues(
       {

@@ -415,6 +415,47 @@ IF [Priority] = "high" THEN [Status] = "open" ENDIF`;
     expect(document.querySelectorAll('.shared-schema-row')).toHaveLength(1);
   });
 
+  test('clears stale regex validation when switching a row to enum', () => {
+    const component = createComponent();
+
+    component.replaceRows([
+      {
+        id: 'regex-row',
+        name: 'Pattern',
+        sourceType: 'regex',
+        command: '',
+        params: '',
+        value: '(',
+        comments: '',
+        leadingTextLines: [],
+        semanticValidationIssues: [
+          {
+            code: 'compiler_validation_error',
+            field: 'value',
+            message: 'Row 1: invalid regex value - unterminated group',
+          },
+        ],
+      },
+    ]);
+
+    expect(document.querySelector('.shared-schema-row-validation')?.textContent).toContain('invalid regex value');
+
+    const sourceTypeSelect = document.querySelector('[data-field="sourceType"]');
+    sourceTypeSelect.value = 'enum';
+    fireEvent.change(sourceTypeSelect);
+
+    expect(document.querySelector('.shared-schema-row-validation')).toBeNull();
+    expect(component.getState().rows[0]).toMatchObject({
+      sourceType: 'enum',
+      semanticValidationIssues: [],
+      validation: {
+        valid: true,
+        issues: [],
+        message: '',
+      },
+    });
+  });
+
   test('save schema file action downloads the current shared schema text', () => {
     const downloadSchemaText = jest.fn(() => true);
     const component = createComponent({

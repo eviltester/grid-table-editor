@@ -1,5 +1,6 @@
 import { describe, expect, jest, test } from '@jest/globals';
 import { createGeneratorPageSchemaServices } from '../../../js/gui_components/generator/runtime/create-generator-page-schema-services.js';
+import { FORBIDDEN_FAKER_COMMANDS } from '../../../js/gui_components/shared/faker-commands.js';
 
 describe('createGeneratorPageSchemaServices', () => {
   test('builds the generator schema support, session, runtime, generation service, and state services together', () => {
@@ -50,6 +51,9 @@ describe('createGeneratorPageSchemaServices', () => {
     });
 
     expect(runtime.fakerCommands.every((command) => command.startsWith('helpers.'))).toBe(true);
+    FORBIDDEN_FAKER_COMMANDS.forEach((command) => {
+      expect(runtime.fakerCommands).not.toContain(command);
+    });
     expect(runtime.domainCommands.length).toBeGreaterThan(0);
     expect(runtime.generatorSchemaDefinitionSupport).toBeDefined();
     expect(runtime.schemaSession).toBeDefined();

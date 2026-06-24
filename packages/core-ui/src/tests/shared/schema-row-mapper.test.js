@@ -179,6 +179,47 @@ describe('schema-row-mapper', () => {
     });
   });
 
+  test('clears stale semantic validation when switching source type', () => {
+    const nextRow = applySchemaSourceTypeChange(
+      {
+        name: 'Pattern',
+        sourceType: 'regex',
+        command: '',
+        params: '',
+        value: '(',
+        semanticValidationIssues: [
+          {
+            code: 'compiler_validation_error',
+            field: 'value',
+            message: 'Row 1: invalid regex value - unterminated group',
+          },
+        ],
+        validation: {
+          valid: false,
+          issues: [
+            {
+              code: 'compiler_validation_error',
+              field: 'value',
+              message: 'Row 1: invalid regex value - unterminated group',
+            },
+          ],
+          message: 'Row 1: invalid regex value - unterminated group',
+        },
+      },
+      'enum'
+    );
+
+    expect(nextRow).toMatchObject({
+      sourceType: 'enum',
+      semanticValidationIssues: [],
+      validation: {
+        valid: true,
+        issues: [],
+        message: '',
+      },
+    });
+  });
+
   test('migrates enum value into datatype.enum params when command is selected', () => {
     const nextRow = applySchemaCommandSelection(
       {

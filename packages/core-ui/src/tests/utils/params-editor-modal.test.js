@@ -259,6 +259,50 @@ describe('params editor modal', () => {
     await expect(promise).resolves.toBe('(active,inactive,pending)');
   });
 
+  test('keeps keyboard focus inside the params editor dialog when tabbing past the edges', async () => {
+    const promise = openParamsEditorModal({
+      documentObj: document,
+      windowObj: window,
+      commandLabel: 'faker.helpers.rangeToNumber',
+      helpModel: {
+        summary: 'Range helper',
+        params: [
+          {
+            name: 'numberOrRange',
+            type: 'number | { min: number; max: number; }',
+            optional: false,
+            positionalOnly: true,
+            example: '{ min: 1, max: 9 }',
+          },
+        ],
+      },
+      initialParams: '',
+    });
+
+    const dialog = within(getOverlay()).getByRole('dialog', {
+      name: /edit params for faker\.helpers\.rangetonumber/i,
+    });
+    const input = within(dialog).getByRole('textbox', { name: /numberorrange value/i });
+    const cancelButton = within(dialog).getByRole('button', { name: /^cancel$/i });
+
+    cancelButton.focus();
+    expect(fireEvent.keyDown(cancelButton, { key: 'Tab' })).toBe(false);
+    const firstWrappedElement = document.activeElement;
+    expect(dialog.contains(firstWrappedElement)).toBe(true);
+    expect(firstWrappedElement).not.toBe(cancelButton);
+
+    firstWrappedElement.focus();
+    expect(fireEvent.keyDown(firstWrappedElement, { key: 'Tab', shiftKey: true })).toBe(false);
+    expect(document.activeElement).toBe(cancelButton);
+
+    input.focus();
+    expect(fireEvent.keyDown(input, { key: 'Tab' })).toBe(true);
+    expect(document.activeElement).toBe(input);
+
+    fireEvent.click(cancelButton);
+    await expect(promise).resolves.toBeNull();
+  });
+
   test('shows a warning when existing params cannot be mapped to the documented fields', async () => {
     const promise = openParamsEditorModal({
       documentObj: document,

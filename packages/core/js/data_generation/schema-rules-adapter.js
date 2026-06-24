@@ -87,12 +87,16 @@ function isDomainHelpersCommand(commandValue) {
   );
 }
 
+function isDomainEnumCommand(commandValue) {
+  return /^(?:datatype\.enum|awd\.datatype\.enum)$/i.test(String(commandValue || '').trim());
+}
+
 function buildRuleSpecFromRow(row) {
   const sourceType = normaliseSourceType(row?.sourceType);
   if (sourceType === SOURCE_TYPE_FAKER || sourceType === SOURCE_TYPE_DOMAIN) {
     const command = normaliseFakerCommand(row?.command);
     const params = String(row?.params ?? '').trim();
-    if (sourceType === SOURCE_TYPE_DOMAIN && command.toLowerCase() === 'datatype.enum') {
+    if (sourceType === SOURCE_TYPE_DOMAIN && isDomainEnumCommand(command)) {
       return buildEnumRuleSpec(params);
     }
     return `${command}${params}`;

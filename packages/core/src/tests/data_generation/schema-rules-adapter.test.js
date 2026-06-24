@@ -460,6 +460,24 @@ IF [Ticket] = "ABC-1234" THEN [Ticket] <> "XYZ-9999" ENDIF`,
     expect(result.dataRules).toEqual([{ name: 'A', ruleSpec: 'number.int(1,10)', comments: '', type: 'domain' }]);
   });
 
+  test('canonicalizes awd datatype enum domain schema rows to enum rule specs', () => {
+    const result = schemaRowsToDataRules({
+      schemaRows: [
+        {
+          name: 'Status',
+          sourceType: 'domain',
+          command: 'awd.datatype.enum',
+          params: '(active,inactive,pending)',
+        },
+      ],
+    });
+
+    expect(result.errors).toEqual([]);
+    expect(result.dataRules).toEqual([
+      { name: 'Status', ruleSpec: 'enum(active,inactive,pending)', comments: '', type: 'domain' },
+    ]);
+  });
+
   test('ignores fully blank rows when at least one real schema row exists', () => {
     const result = schemaRowsToDataRules({
       schemaRows: [

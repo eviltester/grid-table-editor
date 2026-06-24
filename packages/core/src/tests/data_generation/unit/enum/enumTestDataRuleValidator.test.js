@@ -133,6 +133,24 @@ describe('EnumTestDataRuleValidator', () => {
       expect(values).toEqual(['A', 'B', 'C']);
     });
 
+    test('extracts values from documented named datatype.enum values argument', () => {
+      const values = EnumParser.extractAwdEnumValues('datatype.enum(values="active,inactive,pending")');
+
+      expect(values).toEqual(['active', 'inactive', 'pending']);
+    });
+
+    test('extracts values from unquoted named datatype.enum values argument', () => {
+      const values = EnumParser.extractAwdEnumValues('datatype.enum(values=active,inactive,pending)');
+
+      expect(values).toEqual(['active', 'inactive', 'pending']);
+    });
+
+    test('extracts values from named awd.datatype.enum values argument', () => {
+      const values = EnumParser.extractAwdEnumValues('awd.datatype.enum(values="GET,POST,PUT,PATCH")');
+
+      expect(values).toEqual(['GET', 'POST', 'PUT', 'PATCH']);
+    });
+
     test('handles spaces in enum format', () => {
       const values = EnumParser.extractAwdEnumValues('enum( "First" , "Second" , "Third" )');
 

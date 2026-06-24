@@ -28,8 +28,24 @@ const PUBLIC_ENUM_SURFACE_CASES = [
     ruleSpec: 'datatype.enum("active","inactive","pending")',
   },
   {
+    label: 'datatype.enum named values alias',
+    ruleSpec: 'datatype.enum(values="active,inactive,pending")',
+  },
+  {
+    label: 'datatype.enum unquoted named values alias',
+    ruleSpec: 'datatype.enum(values=active,inactive,pending)',
+  },
+  {
     label: 'awd.datatype.enum(...) alias',
     ruleSpec: 'awd.datatype.enum("active","inactive","pending")',
+  },
+  {
+    label: 'awd.datatype.enum named values alias',
+    ruleSpec: 'awd.datatype.enum(values="active,inactive,pending")',
+  },
+  {
+    label: 'enum(...) named values alias',
+    ruleSpec: 'enum(values="active,inactive,pending")',
   },
 ];
 

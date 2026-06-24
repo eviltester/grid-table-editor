@@ -72,6 +72,66 @@ export class EnumParser {
     return ruleType === 'domain' && this.isCanonicalDomainEnumRuleSpec(rule?.ruleSpec);
   }
 
+  static unwrapNamedValuesArgument(paramsStr) {
+    const text = String(paramsStr || '').trim();
+    const match = text.match(/^values\s*=\s*([\s\S]*)$/i);
+    if (!match) {
+      return null;
+    }
+
+    const valuesText = match[1].trim();
+    if (
+      valuesText.length >= 2 &&
+      valuesText.startsWith('"') &&
+      valuesText.endsWith('"') &&
+      valuesText[valuesText.length - 2] !== '\\'
+    ) {
+      return this.unescapeQuotedEnumValue(valuesText.slice(1, -1));
+    }
+
+    return valuesText;
+  }
+
+  static splitEnumParameterValues(paramsStr) {
+    const values = [];
+    let currentValue = '';
+    let inQuotes = false;
+    let i = 0;
+
+    while (i < paramsStr.length) {
+      const char = paramsStr[i];
+
+      if (char === '"' && (i === 0 || paramsStr[i - 1] !== '\\')) {
+        // Toggle quote state for unescaped quotes
+        inQuotes = !inQuotes;
+      } else if (char === ',' && !inQuotes) {
+        // Found separator outside quotes
+        values.push(currentValue.trim());
+        currentValue = '';
+      } else {
+        // Add character to current value
+        currentValue += char;
+      }
+      i++;
+    }
+
+    // Add final value
+    values.push(currentValue.trim());
+
+    if (values.length === 0 || values.every((value) => value.length === 0)) {
+      throw new Error('No valid values found in enum');
+    }
+
+    // Remove surrounding quotes from quoted values
+    return values.map((value) => {
+      const trimmed = value.trim();
+      if (trimmed.startsWith('"') && trimmed.endsWith('"') && trimmed.length >= 2) {
+        return this.unescapeQuotedEnumValue(trimmed.slice(1, -1));
+      }
+      return trimmed;
+    });
+  }
+
   /**
    * Extract enum values from rule specification
    * Handles both formats:
@@ -119,42 +179,11 @@ export class EnumParser {
     }
 
     const paramsStr = match[1].trim();
-    const values = [];
-    let currentValue = '';
-    let inQuotes = false;
-    let i = 0;
-
-    while (i < paramsStr.length) {
-      const char = paramsStr[i];
-
-      if (char === '"' && (i === 0 || paramsStr[i - 1] !== '\\')) {
-        // Toggle quote state for unescaped quotes
-        inQuotes = !inQuotes;
-      } else if (char === ',' && !inQuotes) {
-        // Found separator outside quotes
-        values.push(currentValue.trim());
-        currentValue = '';
-      } else {
-        // Add character to current value
-        currentValue += char;
-      }
-      i++;
+    const namedValues = this.unwrapNamedValuesArgument(paramsStr);
+    if (namedValues !== null) {
+      return this.extractEnumValues(namedValues);
     }
 
-    // Add final value
-    values.push(currentValue.trim());
-
-    if (values.length === 0 || values.every((value) => value.length === 0)) {
-      throw new Error('No valid values found in enum');
-    }
-
-    // Remove surrounding quotes from quoted values
-    return values.map((value) => {
-      const trimmed = value.trim();
-      if (trimmed.startsWith('"') && trimmed.endsWith('"') && trimmed.length >= 2) {
-        return this.unescapeQuotedEnumValue(trimmed.slice(1, -1));
-      }
-      return trimmed;
-    });
+    return this.splitEnumParameterValues(paramsStr);
   }
 }

@@ -28,7 +28,7 @@ import {
   buildExpectedSchemaText,
   buildRuntimeInteractionScenarios,
 } from './support/schema-interaction-scenario-builder.js';
-import { buildChunkDescriptors, formatCommandsForConsole } from './support/schema-interaction-matrix-report.js';
+import { buildChunkDescriptors, formatCommandsForConsole } from './support/schema-interaction-matrix-formatting.js';
 import { assertScenarioDataQuality } from '../support/generated-value-quality.js';
 import {
   createConfiguredGeneratorFromSchemaRows,

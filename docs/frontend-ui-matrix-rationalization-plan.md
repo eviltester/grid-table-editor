@@ -281,4 +281,4 @@ That path removes the most obvious duplication first while preserving the highes
   - one representative domain/options flow
   - pairwise wiring coverage
 - The broad app-vs-generator parity sweep, parity fixture writer, parity fixture JSON, and static matrix summary artifact have been removed.
-- The retained matrix report helper only formats chunk labels and command summaries for the active runtime and smoke suites.
+- The retained matrix formatting helper only formats chunk labels and command summaries for the active runtime and smoke suites.

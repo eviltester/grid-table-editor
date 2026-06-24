@@ -18,7 +18,7 @@
 import { jest } from '@jest/globals';
 import { createAppTestDataInteractionHarness } from './support/app-test-data-interaction-harness.js';
 import { buildUiInteractionScenarios } from './support/schema-interaction-scenario-builder.js';
-import { buildChunkDescriptors, formatCommandsForConsole } from './support/schema-interaction-matrix-report.js';
+import { buildChunkDescriptors, formatCommandsForConsole } from './support/schema-interaction-matrix-formatting.js';
 import { findScenarioByLogicalId } from './support/scenario-fixture-identity.js';
 
 const scenarioSource = 'buildUiInteractionScenarios()';

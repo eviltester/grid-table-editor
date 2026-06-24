@@ -17,6 +17,7 @@ import {
   normaliseDomainCommand,
   normaliseFakerCommand,
 } from '../../schema-row-rule-mapper.js';
+import { EnumParser } from '@anywaydata/core/data_generation/utils/enumParser.js';
 import { getKnownFakerCommandsLongestFirst } from '../../faker-commands.js';
 import { getKnownDomainCommandsLongestFirst, getDomainKeywordByCommand } from '../../domain-commands.js';
 import { extractFakerCommandAndParams, extractDomainCommandAndParams } from './command-spec-parser.js';
@@ -171,6 +172,7 @@ function applySchemaCommandSelection(currentRow, { sourceType, command } = {}) {
 
 function mapDataRuleToSchemaRow(rule, { createBlankSchemaRow = createDefaultSchemaRow } = {}) {
   const row = createBlankSchemaRow();
+  const normalizedRuleSpec = String(rule?.ruleSpec || '').trim();
   row.name = String(rule?.name ?? '');
   row.comments = String(rule?.comments ?? '');
   row.leadingTextLines = Array.isArray(rule?.leadingTextLines)
@@ -180,6 +182,17 @@ function mapDataRuleToSchemaRow(rule, { createBlankSchemaRow = createDefaultSche
     String(rule?.type || SOURCE_TYPE_REGEX)
       .trim()
       .toLowerCase() || SOURCE_TYPE_REGEX;
+
+  if (
+    (row.sourceType === SOURCE_TYPE_ENUM || row.sourceType === SOURCE_TYPE_DOMAIN) &&
+    EnumParser.isAwdEnumFormat(normalizedRuleSpec)
+  ) {
+    row.sourceType = SOURCE_TYPE_ENUM;
+    row.command = '';
+    row.params = '';
+    row.value = extractEnumValueFromRuleSpec(normalizedRuleSpec);
+    return row;
+  }
 
   if (row.sourceType === SOURCE_TYPE_FAKER) {
     const parts = extractFakerCommandAndParams(rule?.ruleSpec, {

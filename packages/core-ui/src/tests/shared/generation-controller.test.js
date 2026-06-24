@@ -148,7 +148,7 @@ describe('generation-controller', () => {
     expect(result.errors).toEqual([]);
   });
 
-  test('treats domain datatype.enum row as enum rule type', () => {
+  test('normalizes datatype.enum rows to canonical domain rules for generation', () => {
     class FakeGenerator {
       constructor() {
         this.importSpec = jest.fn();
@@ -188,7 +188,10 @@ describe('generation-controller', () => {
     });
 
     expect(result.errors).toEqual([]);
-    expect(result.generator.testDataRules()[0]).toEqual({ type: 'enum', ruleSpec: 'enum(active,inactive)' });
+    expect(result.generator.testDataRules()[0]).toEqual({
+      type: 'domain',
+      ruleSpec: 'datatype.enum("active", "inactive")',
+    });
   });
 
   test('creates preview and pairwise tables through shared adapters', () => {

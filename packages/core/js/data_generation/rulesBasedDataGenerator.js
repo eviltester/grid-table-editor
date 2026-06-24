@@ -1,10 +1,10 @@
 import { FakerTestDataGenerator } from './faker/fakerTestDataGenerator.js';
 import { RegexTestDataGenerator } from './regex/regexTestDataGenerator.js';
 import { LiteralTestDataGenerator } from './literal/literalTestDataGenerator.js';
-import { EnumTestDataGenerator } from './enum/enumTestDataGenerator.js';
 import { DomainTestDataGenerator } from './domain/domainTestDataGenerator.js';
 import { dataResponse } from './ruleResponse.js';
 import { evaluateConstraint } from './schema-constraint-evaluator.js';
+import { EnumParser } from './utils/enumParser.js';
 
 export class RulesBasedDataGenerator {
   constructor(aFaker, RandExp, options = {}) {
@@ -15,7 +15,6 @@ export class RulesBasedDataGenerator {
     this.fakerGenerator = new FakerTestDataGenerator(aFaker, options);
     this.regexGenerator = new RegexTestDataGenerator(RandExp);
     this.literalGenerator = new LiteralTestDataGenerator();
-    this.enumGenerator = new EnumTestDataGenerator();
     this.domainGenerator = new DomainTestDataGenerator(aFaker);
     this.defaultGenerator = new DefaultTestDataGenerator();
   }
@@ -63,8 +62,6 @@ export class RulesBasedDataGenerator {
             break;
 
           case 'enum':
-            generator = this.enumGenerator;
-            break;
           case 'domain':
             generator = this.domainGenerator;
             break;
@@ -74,7 +71,16 @@ export class RulesBasedDataGenerator {
             generator = this.defaultGenerator;
         }
 
-        value = generator.generateFrom(rule, { rowIndex, runStartedAt });
+        const executableRule =
+          rule.type === 'enum'
+            ? {
+                ...rule,
+                type: 'domain',
+                ruleSpec: EnumParser.normalizeToCanonicalDomainRuleSpec(rule.ruleSpec),
+              }
+            : rule;
+
+        value = generator.generateFrom(executableRule, { rowIndex, runStartedAt });
 
         if (value.isError) {
           dataGen = '**ERROR**';

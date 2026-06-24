@@ -42,7 +42,8 @@ describe('TestDataRulesCompiler with Enum Support', () => {
 
       compiler.compile(rules);
 
-      expect(rules[0].type).toBe('enum');
+      expect(rules[0].type).toBe('domain');
+      expect(rules[0].ruleSpec).toBe('datatype.enum("Active", "Inactive", "Pending")');
       expect(compiler.isValid()).toBe(true);
     });
 
@@ -51,7 +52,8 @@ describe('TestDataRulesCompiler with Enum Support', () => {
 
       compiler.compile(rules);
 
-      expect(rules[0].type).toBe('enum');
+      expect(rules[0].type).toBe('domain');
+      expect(rules[0].ruleSpec).toBe('datatype.enum("High", "Medium", "Low")');
       expect(compiler.isValid()).toBe(true);
     });
 
@@ -60,7 +62,8 @@ describe('TestDataRulesCompiler with Enum Support', () => {
 
       compiler.compile(rules);
 
-      expect(rules[0].type).toBe('enum');
+      expect(rules[0].type).toBe('domain');
+      expect(rules[0].ruleSpec).toBe('datatype.enum("Open")');
       expect(compiler.isValid()).toBe(true);
     });
 
@@ -69,7 +72,8 @@ describe('TestDataRulesCompiler with Enum Support', () => {
 
       compiler.compile(rules);
 
-      expect(rules[0].type).toBe('enum');
+      expect(rules[0].type).toBe('domain');
+      expect(rules[0].ruleSpec).toBe('datatype.enum("High", "Medium", "Low")');
       expect(compiler.isValid()).toBe(true);
     });
 
@@ -79,7 +83,8 @@ describe('TestDataRulesCompiler with Enum Support', () => {
       compiler.compile(rules);
       compiler.validate();
 
-      expect(rules[0].type).toBe('enum');
+      expect(rules[0].type).toBe('domain');
+      expect(rules[0].ruleSpec).toBe('datatype.enum("One", "Two", "Three")');
       expect(rules[1].type).toBe('regex'); // Single value is valid regex (literal text)
       expect(compiler.isValid()).toBe(true);
     });

@@ -379,6 +379,9 @@ export class PairwiseTestDataGenerator {
    * Support both TestDataRule instances (isType function) and canonical plain rule objects.
    */
   isRuleType(rule, typeName) {
+    if (String(typeName).trim().toLowerCase() === 'enum' && EnumParser.isEnumLikeRule(rule)) {
+      return true;
+    }
     if (rule && typeof rule.isType === 'function') {
       return rule.isType(typeName);
     }

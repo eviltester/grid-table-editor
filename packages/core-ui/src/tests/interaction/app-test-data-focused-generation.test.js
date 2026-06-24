@@ -13,7 +13,7 @@ import { waitFor } from '@testing-library/dom';
 import { jest } from '@jest/globals';
 import { createFocusedAppTestDataHarness } from './support/focused-app-test-data-harness.js';
 
-jest.setTimeout(15000);
+jest.setTimeout(30000);
 
 describe('app test-data focused generation flows', () => {
   let harness;

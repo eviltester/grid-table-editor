@@ -863,6 +863,7 @@ function extractEnumValuesFromContext(context = {}) {
     return explicitEnumValues.map((entry) => String(entry));
   }
 
+  const contextArgs = getContextArgs(context);
   const candidates = [getContextRuleSpec(context)];
   const sourceType = String(fieldDefinition?.sourceType ?? '')
     .trim()
@@ -876,6 +877,16 @@ function extractEnumValuesFromContext(context = {}) {
   if (sourceType === 'enum' && value.length > 0) {
     candidates.push(`enum(${value.replace(/^\(|\)$/g, '').trim()})`);
     candidates.push(value);
+  }
+  if (command === 'datatype.enum' && contextArgs.length > 0) {
+    if (contextArgs.length === 1 && typeof contextArgs[0] === 'string') {
+      try {
+        return EnumParser.extractEnumValues(`enum(${contextArgs[0]})`).map((entry) => String(entry));
+      } catch {
+        return [String(contextArgs[0])];
+      }
+    }
+    return contextArgs.map((entry) => String(entry));
   }
   if (command === 'datatype.enum' && params.length > 0) {
     candidates.push(`datatype.enum(${params.replace(/^\(|\)$/g, '').trim()})`);

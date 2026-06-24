@@ -28,6 +28,50 @@ export class EnumParser {
     return /^(enum|datatype\.enum|awd\.datatype\.enum)\s*\(/.test(ruleSpec);
   }
 
+  static serializeDomainEnumValue(value) {
+    return JSON.stringify(String(value ?? ''));
+  }
+
+  static buildCanonicalDomainRuleSpecFromValues(values = []) {
+    const normalizedValues = (Array.isArray(values) ? values : []).map((value) => String(value));
+    return `datatype.enum(${normalizedValues.map((value) => this.serializeDomainEnumValue(value)).join(', ')})`;
+  }
+
+  static serializeSchemaEnumValue(value) {
+    const text = String(value ?? '');
+    if (/^[^,\s"()]+$/u.test(text)) {
+      return text;
+    }
+    return JSON.stringify(text);
+  }
+
+  static buildCanonicalSchemaRuleSpecFromValues(values = []) {
+    const normalizedValues = (Array.isArray(values) ? values : []).map((value) => String(value));
+    return `enum(${normalizedValues.map((value) => this.serializeSchemaEnumValue(value)).join(',')})`;
+  }
+
+  static normalizeToCanonicalDomainRuleSpec(ruleSpec) {
+    return this.buildCanonicalDomainRuleSpecFromValues(this.extractEnumValues(ruleSpec));
+  }
+
+  static normalizeToCanonicalSchemaRuleSpec(ruleSpec) {
+    return this.buildCanonicalSchemaRuleSpecFromValues(this.extractEnumValues(ruleSpec));
+  }
+
+  static isCanonicalDomainEnumRuleSpec(ruleSpec) {
+    return /^datatype\.enum\s*\(/i.test(String(ruleSpec || '').trim());
+  }
+
+  static isEnumLikeRule(rule = {}) {
+    const ruleType = String(rule?.type || '')
+      .trim()
+      .toLowerCase();
+    if (ruleType === 'enum') {
+      return true;
+    }
+    return ruleType === 'domain' && this.isCanonicalDomainEnumRuleSpec(rule?.ruleSpec);
+  }
+
   /**
    * Extract enum values from rule specification
    * Handles both formats:

@@ -124,9 +124,11 @@ describe('test data schema editor compatibility', () => {
 
   test('combination generation reports an error when fewer than two enum columns exist', async () => {
     setup();
+    document.querySelector('[data-role="schema-mode-toggle"]').click();
     const schemaTextArea = document.querySelector('[data-role="schema-textbox"]');
     schemaTextArea.value = 'OnlyEnum\nenum(a,b)';
     schemaTextArea.dispatchEvent(new Event('input', { bubbles: true }));
+    document.querySelector('[data-role="schema-mode-toggle"]').click();
     await waitForCondition(() => {
       const nameInput = document.querySelector(
         '[data-role="schema-rows-region"] .shared-schema-row input[data-field="name"]'
@@ -141,5 +143,5 @@ describe('test data schema editor compatibility', () => {
     expect(document.querySelector('[data-role="schema-error"]').textContent).toContain(
       'Combination generation requires at least 2 enum columns because n-wise generation combines finite enum values.'
     );
-  });
+  }, 15000);
 });

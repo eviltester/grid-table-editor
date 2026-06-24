@@ -16,16 +16,12 @@
  */
 
 import { jest } from '@jest/globals';
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
 import { createAppTestDataInteractionHarness } from './support/app-test-data-interaction-harness.js';
+import { buildUiInteractionScenarios } from './support/schema-interaction-scenario-builder.js';
 import { buildChunkDescriptors, formatCommandsForConsole } from './support/schema-interaction-matrix-report.js';
 import { findScenarioByLogicalId } from './support/scenario-fixture-identity.js';
 
-const fixturePath = join(
-  process.cwd(),
-  'packages/core-ui/src/tests/interaction/matrix/fixtures/schema-interaction-matrix.json'
-);
+const scenarioSource = 'buildUiInteractionScenarios()';
 const SMOKE_SCENARIO_IDS = [
   'custom-literal-base',
   'custom-regex-base',
@@ -33,7 +29,7 @@ const SMOKE_SCENARIO_IDS = [
   'domain-commerce-price-example-1',
   'custom-enum-pairwise',
 ];
-const allScenarios = JSON.parse(readFileSync(fixturePath, 'utf8')).uiScenarios;
+const allScenarios = buildUiInteractionScenarios();
 const scenarios = SMOKE_SCENARIO_IDS.map((scenarioId) => findScenarioByLogicalId(allScenarios, scenarioId)).filter(
   Boolean
 );
@@ -49,7 +45,7 @@ describe('app test-data schema interaction matrix', () => {
   beforeAll(() => {
     jest.spyOn(console, 'warn').mockImplementation(() => {});
     harness = createAppTestDataInteractionHarness();
-    console.info(`[app-matrix] fixture=${fixturePath}`);
+    console.info(`[app-matrix] source=${scenarioSource}`);
     console.info(`[app-matrix] scenarios=${scenarios.length} chunks=${chunkDescriptors.length}`);
     console.info(`[app-matrix] commands\n${formatCommandsForConsole(scenarios)}`);
   });

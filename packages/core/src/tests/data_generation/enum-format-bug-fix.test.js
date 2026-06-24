@@ -11,8 +11,9 @@ describe('Enum Format Bug Fix Integration', () => {
     const compiler = new TestDataRulesCompiler();
     compiler.compile([rule]);
 
-    // Verify it was detected as enum type
-    expect(rule.type).toBe('enum');
+    // Verify it was normalized to the canonical domain enum type
+    expect(rule.type).toBe('domain');
+    expect(rule.ruleSpec).toBe('datatype.enum("GET", "POST", "PUT", "DELETE")');
 
     // Validate the rule
     compiler.validate();
@@ -34,7 +35,8 @@ describe('Enum Format Bug Fix Integration', () => {
     const compiler = new TestDataRulesCompiler();
     compiler.compile([rule]);
 
-    expect(rule.type).toBe('enum');
+    expect(rule.type).toBe('domain');
+    expect(rule.ruleSpec).toBe('datatype.enum("application/json", "xml", "text/plain")');
     compiler.validate();
     expect(compiler.isValid()).toBe(true);
 
@@ -51,7 +53,8 @@ describe('Enum Format Bug Fix Integration', () => {
     const compiler = new TestDataRulesCompiler();
     compiler.compile([rule]);
 
-    expect(rule.type).toBe('enum');
+    expect(rule.type).toBe('domain');
+    expect(rule.ruleSpec).toBe('datatype.enum("Active, Running", "Inactive, Stopped", "Pending, Waiting")');
     compiler.validate();
     expect(compiler.isValid()).toBe(true);
 

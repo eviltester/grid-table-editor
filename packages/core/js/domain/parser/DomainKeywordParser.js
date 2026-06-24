@@ -41,6 +41,8 @@ class DomainKeywordParser {
 
   mapParsedArguments(argumentsList, keywordMetadata) {
     const schema = Array.isArray(keywordMetadata?.help?.args) ? keywordMetadata.help.args : [];
+    const variadicIndex = schema.findIndex((entry) => entry?.variadic === true);
+    const hasVariadicTail = variadicIndex >= 0 && variadicIndex === schema.length - 1;
     const usesOptionsFromHelpArgs = keywordMetadata?.delegate?.argTransform === 'optionsFromHelpArgs';
     const positional = [];
     const named = {};
@@ -89,7 +91,7 @@ class DomainKeywordParser {
       return { ok: true, args: resolved };
     }
 
-    if (keywordMetadata && positional.length > schema.length) {
+    if (keywordMetadata && !hasVariadicTail && positional.length > schema.length) {
       return {
         ok: false,
         error: `Invalid keyword arguments: too many positional arguments. Expected at most ${schema.length}, received ${positional.length}`,

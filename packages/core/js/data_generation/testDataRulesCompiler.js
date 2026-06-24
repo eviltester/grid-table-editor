@@ -3,6 +3,7 @@ import { RegexTestDataRuleValidator } from './regex/regexTestDataRuleValidator.j
 import { EnumTestDataRuleValidator } from './enum/enumTestDataRuleValidator.js';
 import { DomainTestDataRuleValidator } from './domain/domainTestDataRuleValidator.js';
 import { SchemaParsingErrors } from './schema-parsing-errors.js';
+import { EnumParser } from './utils/enumParser.js';
 
 /*
     'Compilation' of rules is where we try to identify if the rules are
@@ -69,7 +70,8 @@ export class TestDataRulesCompiler {
           enumValidator.validate(rule);
           if (enumValidator.isValid()) {
             this.compilationReportLines.push(`${rule.name} is a valid 'enum': ${rule.ruleSpec}`);
-            rule.type = 'enum';
+            rule.ruleSpec = EnumParser.normalizeToCanonicalDomainRuleSpec(rule.ruleSpec);
+            rule.type = 'domain';
           } else {
             this.compilationReportLines.push(
               `${rule.name} is not a valid 'enum': ${enumValidator.getValidationError()}`

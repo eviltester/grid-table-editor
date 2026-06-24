@@ -29,13 +29,14 @@ function buildRegexMatcher(ruleSpec) {
 
 function matchesRuleScalarValue(rule, value) {
   const normalizedValue = normalizeScalarValue(value);
+  if (EnumParser.isEnumLikeRule(rule)) {
+    return EnumParser.extractEnumValues(rule.ruleSpec).includes(normalizedValue);
+  }
   switch (
     String(rule?.type || '')
       .trim()
       .toLowerCase()
   ) {
-    case 'enum':
-      return EnumParser.extractEnumValues(rule.ruleSpec).includes(normalizedValue);
     case 'regex': {
       const matcher = buildRegexMatcher(rule.ruleSpec);
       return matcher ? matcher.test(normalizedValue) : null;
@@ -48,12 +49,12 @@ function matchesRuleScalarValue(rule, value) {
 }
 
 function getRuleUniverseValues(rule) {
+  if (EnumParser.isEnumLikeRule(rule)) {
+    return EnumParser.extractEnumValues(rule.ruleSpec);
+  }
   const ruleType = String(rule?.type || '')
     .trim()
     .toLowerCase();
-  if (ruleType === 'enum') {
-    return EnumParser.extractEnumValues(rule.ruleSpec);
-  }
   if (ruleType === 'literal') {
     return [normalizeScalarValue(rule.ruleSpec)];
   }
@@ -76,7 +77,7 @@ function validateComparisonPredicate(predicate, rule) {
     .trim()
     .toLowerCase();
   if (predicate.relation === '=' && matchesValue === false) {
-    if (ruleType === 'enum') {
+    if (EnumParser.isEnumLikeRule(rule)) {
       return [SchemaParsingErrors.invalidConstraintEnumValue(rule.name, rightValue, line)];
     }
     if (ruleType === 'regex') {

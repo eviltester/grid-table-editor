@@ -11,8 +11,9 @@ describe('User Reported Bug - HTTP Method enum(GET,POST,PUT,DELETE)', () => {
     const compiler = new TestDataRulesCompiler();
     compiler.compile([rule]);
 
-    // Should be detected as enum type
-    expect(rule.type).toBe('enum');
+    // Should be normalized to the canonical datatype.enum domain type
+    expect(rule.type).toBe('domain');
+    expect(rule.ruleSpec).toBe('datatype.enum("GET", "POST", "PUT", "DELETE")');
 
     // Should validate successfully
     compiler.validate();

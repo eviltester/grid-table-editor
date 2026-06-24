@@ -13,8 +13,6 @@
  */
 
 import { jest } from '@jest/globals';
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
 import { faker } from '@faker-js/faker';
 import RandExp from 'randexp';
 import { TestDataGenerator } from '@anywaydata/core/data_generation/testDataGenerator.js';
@@ -26,7 +24,10 @@ import {
   dataRulesToSchemaText,
   schemaRowsToDataRules,
 } from '@anywaydata/core/data_generation/schema-rules-adapter.js';
-import { buildExpectedSchemaText } from './support/schema-interaction-scenario-builder.js';
+import {
+  buildExpectedSchemaText,
+  buildRuntimeInteractionScenarios,
+} from './support/schema-interaction-scenario-builder.js';
 import { buildChunkDescriptors, formatCommandsForConsole } from './support/schema-interaction-matrix-report.js';
 import { assertScenarioDataQuality } from '../support/generated-value-quality.js';
 import {
@@ -51,18 +52,15 @@ import {
   SOURCE_TYPE_REGEX,
 } from '../../../../js/gui_components/shared/schema-row-rule-mapper.js';
 
-const fixturePath = join(
-  process.cwd(),
-  'packages/core-ui/src/tests/interaction/matrix/fixtures/schema-interaction-matrix.json'
-);
-const scenarios = JSON.parse(readFileSync(fixturePath, 'utf8')).runtimeScenarios;
+const scenarioSource = 'buildRuntimeInteractionScenarios()';
+const scenarios = buildRuntimeInteractionScenarios();
 const CHUNK_SIZE = 100;
 const chunkDescriptors = buildChunkDescriptors(scenarios, CHUNK_SIZE);
 
 describe('schema interaction scenario runtime matrix', () => {
   beforeAll(() => {
     jest.spyOn(console, 'warn').mockImplementation(() => {});
-    console.info(`[runtime-matrix] fixture=${fixturePath}`);
+    console.info(`[runtime-matrix] source=${scenarioSource}`);
     console.info(`[runtime-matrix] scenarios=${scenarios.length} chunks=${chunkDescriptors.length}`);
     console.info(`[runtime-matrix] commands\n${formatCommandsForConsole(scenarios)}`);
   });

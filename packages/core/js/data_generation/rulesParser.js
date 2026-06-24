@@ -2,6 +2,7 @@ import { TestDataRules } from './testDataRules.js';
 import { SchemaParsingErrors } from './schema-parsing-errors.js';
 import { parseConstraintText } from './schema-constraint-parser.js';
 import { looksLikeInlineRuleSpec, startsConstraint } from './inline-schema-rule.js';
+import { EnumParser } from './utils/enumParser.js';
 
 function parseInlineRuleDefinition(line) {
   const source = String(line ?? '');
@@ -238,7 +239,9 @@ export class RulesParser {
     const rows = Array.isArray(rules)
       ? rules.map((rule) => ({
           name: String(rule?.name ?? ''),
-          rule: String(rule?.ruleSpec ?? ''),
+          rule: EnumParser.isCanonicalDomainEnumRuleSpec(rule?.ruleSpec)
+            ? EnumParser.normalizeToCanonicalSchemaRuleSpec(rule?.ruleSpec)
+            : String(rule?.ruleSpec ?? ''),
         }))
       : [];
     const outputLines = [];
@@ -289,7 +292,11 @@ export class RulesParser {
       }
 
       outputLines.push(String(rule?.name ?? ''));
-      outputLines.push(String(rule?.ruleSpec ?? ''));
+      outputLines.push(
+        EnumParser.isCanonicalDomainEnumRuleSpec(rule?.ruleSpec)
+          ? EnumParser.normalizeToCanonicalSchemaRuleSpec(rule?.ruleSpec)
+          : String(rule?.ruleSpec ?? '')
+      );
     });
     return outputLines.join('\n');
   }

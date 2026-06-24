@@ -67,6 +67,7 @@ export class TestDataRulesCompiler {
 
         // Check for enum patterns first
         if (this.isEnumPattern(rule.ruleSpec)) {
+          const parsedEnumRule = EnumParser.parseEnumRuleSpec(rule.ruleSpec);
           enumValidator.validate(rule);
           if (enumValidator.isValid()) {
             this.compilationReportLines.push(`${rule.name} is a valid 'enum': ${rule.ruleSpec}`);
@@ -76,7 +77,7 @@ export class TestDataRulesCompiler {
             this.compilationReportLines.push(
               `${rule.name} is not a valid 'enum': ${enumValidator.getValidationError()}`
             );
-            rule.type = 'literal';
+            rule.type = parsedEnumRule.explicit ? 'domain' : 'literal';
           }
         } else {
           if (this.isDomainHelpersPattern(rule.ruleSpec)) {

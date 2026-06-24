@@ -9,6 +9,7 @@ const HELPERS_RANGE_TO_NUMBER_KEYWORD_DEFINITION = {
     {
       name: 'numberOrRange',
       optional: false,
+      positionalOnly: true,
       type: 'number | { min: number; max: number; }',
       description: 'Fixed number or range object to resolve into a single numeric value.',
     },

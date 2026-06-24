@@ -364,7 +364,8 @@ function buildParamsTextFromEditorEntries({ entries = [], validateParams = null 
       }
     }
     const formattedValue = formatEditorValue(rawValue, entry.mode || 'auto', entry.type || '');
-    formattedValues.push(entry.name && entry.variadic !== true ? `${entry.name}=${formattedValue}` : formattedValue);
+    const useNamedParam = entry.name && entry.variadic !== true && entry.positionalOnly !== true;
+    formattedValues.push(useNamedParam ? `${entry.name}=${formattedValue}` : formattedValue);
   }
 
   const paramsText = formattedValues.length > 0 ? `(${formattedValues.join(',')})` : '';

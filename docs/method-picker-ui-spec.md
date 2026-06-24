@@ -1,7 +1,3 @@
----
-title: Method Picker UI Spec
----
-
 # Method Picker UI Spec
 
 ## Purpose
@@ -60,7 +56,7 @@ Applies to both schema-editing surfaces:
 
 ## Data + Metadata Sources
 - Command lists:
-  - domain: visible domain catalog (`getVisibleDomainCommands`)
+  - domain: visible domain catalog (`getVisibleDomainCommands`), including supported domain commands such as `datatype.enum`
   - faker: approved `helpers.*` commands
   - top-level schema types: `enum`, `literal`, `regex`
 - Help metadata:

@@ -369,7 +369,7 @@ IF [Ticket] = "ABC-1234" THEN [Ticket] <> "XYZ-9999" ENDIF`,
     );
   });
 
-  test('keeps malformed datatype enum commands with trailing text out of enum constraint parsing', () => {
+  test('rejects malformed datatype enum commands with trailing text before constraint validation', () => {
     const parsed = schemaTextToDataRules({
       schemaText: `Status
 datatype.enum("open") trailing
@@ -389,8 +389,9 @@ IF [Status] = "closed" THEN [Status] = "open" ENDIF`,
     );
     expect(parsed.errors).toContainEqual(
       expect.objectContaining({
-        code: 'invalid_constraint_literal_value',
-        parameterName: 'Status',
+        code: 'compiler_validation_error',
+        column: 'Status',
+        message: expect.stringContaining('Status failed domain validation'),
       })
     );
   });

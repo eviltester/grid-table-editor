@@ -140,6 +140,26 @@ describe('params editor modal', () => {
     });
   });
 
+  test('builds positional-only params without named assignment for faker object arguments', () => {
+    const result = buildParamsTextFromEditorEntries({
+      entries: [
+        {
+          name: 'numberOrRange',
+          type: 'number | { min: number; max: number; }',
+          value: '{ min: 1, max: 9 }',
+          mode: 'raw',
+          optional: false,
+          positionalOnly: true,
+        },
+      ],
+    });
+
+    expect(result).toEqual({
+      paramsText: '({ min: 1, max: 9 })',
+      errors: [],
+    });
+  });
+
   test('reports missing earlier params before later params are used', () => {
     const result = buildParamsTextFromEditorEntries({
       entries: [

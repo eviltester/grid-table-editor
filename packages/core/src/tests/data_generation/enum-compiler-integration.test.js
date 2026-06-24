@@ -89,14 +89,21 @@ describe('TestDataRulesCompiler with Enum Support', () => {
       expect(compiler.isValid()).toBe(true);
     });
 
-    test('handles malformed awd enum gracefully', () => {
+    test('keeps malformed explicit enum syntax on a validation path', () => {
       const rules = [new TestDataRule('Bad', 'datatype.enum(unclosed')];
 
       compiler.compile(rules);
       compiler.validate();
 
-      expect(rules[0].type).toBe('literal'); // Falls back to literal
-      expect(compiler.isValid()).toBe(true);
+      expect(rules[0].type).toBe('domain');
+      expect(compiler.isValid()).toBe(false);
+      expect(compiler.errors).toContainEqual(
+        expect.objectContaining({
+          code: 'compiler_validation_error',
+          column: 'Bad',
+          message: expect.stringContaining('Bad failed domain validation'),
+        })
+      );
     });
   });
 });

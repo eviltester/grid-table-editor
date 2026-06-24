@@ -303,6 +303,25 @@ test('generateFromTextSpec rejects malformed recognized faker helper invocations
   );
 });
 
+test('generateFromTextSpec rejects malformed explicit enum syntax instead of treating it as literal data', () => {
+  const result = generateFromTextSpec({
+    textSpec: 'Method\ndatatype.enum(unclosed',
+    rowCount: 3,
+    outputFormat: 'markdown',
+  });
+
+  expect(result.ok).toBe(false);
+  expect(result.rows).toBeUndefined();
+  expect(result.rendered).toBeUndefined();
+  expect(result.errors).toContainEqual(
+    expect.objectContaining({
+      code: 'compiler_validation_error',
+      column: 'Method',
+      message: expect.stringContaining('Method failed domain validation'),
+    })
+  );
+});
+
 test('validateSafeFakerRules accepts known faker commands with literal args', () => {
   const result = validateSafeFakerRules('Name\nperson.firstName("female")');
   expect(result.ok).toBe(true);

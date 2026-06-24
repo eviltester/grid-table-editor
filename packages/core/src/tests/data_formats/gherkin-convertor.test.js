@@ -1,5 +1,6 @@
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
 import { GherkinConvertor, GherkinOptions } from '@anywaydata/core/data_formats/gherkin-convertor.js';
+import { assertNoCommonErrorPatternsInValue } from '../utils/outputQualityAssertions.js';
 
 describe('can get values from a markdown table row', () => {
   test('even if malformed with no start', () => {
@@ -223,6 +224,20 @@ describe('Can convert markdown tables to data suitable for a data grid', () => {
       let output = new GherkinConvertor().fromDataTable(table);
 
       expect(output).toBe(expected);
+    });
+
+    test('converts non-string values and escapes gherkin table separators', () => {
+      let table = new GenericDataTable();
+      table.setHeaders(['Text', 'Number', 'Boolean']);
+      table.appendDataRow(['Data with | pipe', 42, true]);
+      table.appendDataRow(['plain data', 3.14, false]);
+
+      let output = new GherkinConvertor().fromDataTable(table);
+
+      expect(output).toContain('Data with \\| pipe');
+      expect(output).toContain('42');
+      expect(output).toContain('true');
+      assertNoCommonErrorPatternsInValue(output);
     });
   });
 });

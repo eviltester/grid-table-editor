@@ -1,47 +1,12 @@
 import { parseSchemaText, renderSchemaText } from './schema-conversion.js';
 import { SchemaParsingErrors } from './schema-parsing-errors.js';
+import { EnumParser } from './utils/enumParser.js';
 
 const SOURCE_TYPE_FAKER = 'faker';
 const SOURCE_TYPE_DOMAIN = 'domain';
 const SOURCE_TYPE_REGEX = 'regex';
 const SOURCE_TYPE_LITERAL = 'literal';
 const SOURCE_TYPE_ENUM = 'enum';
-
-function extractEnumValueFromRuleSpec(ruleSpec) {
-  const value = String(ruleSpec ?? '').trim();
-  const wrappedMatch = value.match(/^(?:enum|datatype\.enum|awd\.datatype\.enum)\s*\(([\s\S]*)\)$/i);
-  if (wrappedMatch) {
-    return wrappedMatch[1].trim();
-  }
-  if (/^enum\s+/i.test(value)) {
-    const shorthand = value.replace(/^enum\s+/i, '').trim();
-    if (shorthand.startsWith('(') && shorthand.endsWith(')') && shorthand.length >= 2) {
-      return shorthand.slice(1, -1).trim();
-    }
-    return shorthand;
-  }
-  if (value.startsWith('(') && value.endsWith(')') && value.length >= 2) {
-    return value.slice(1, -1).trim();
-  }
-  return value;
-}
-
-function buildEnumRuleSpec(enumInput) {
-  const enumValue = String(enumInput ?? '').trim();
-  if (enumValue.length === 0) {
-    return '';
-  }
-  if (/^(enum|datatype\.enum|awd\.datatype\.enum)\s*\(/i.test(enumValue)) {
-    return `enum(${extractEnumValueFromRuleSpec(enumValue)})`;
-  }
-  if (/^enum\s+/i.test(enumValue)) {
-    return `enum(${enumValue.replace(/^enum\s+/i, '').trim()})`;
-  }
-  if (enumValue.startsWith('(') && enumValue.endsWith(')')) {
-    return `enum${enumValue}`;
-  }
-  return `enum(${enumValue})`;
-}
 
 function isBlankSchemaRow(row) {
   return (
@@ -97,7 +62,7 @@ function buildRuleSpecFromRow(row) {
     const command = normaliseFakerCommand(row?.command);
     const params = String(row?.params ?? '').trim();
     if (sourceType === SOURCE_TYPE_DOMAIN && isDomainEnumCommand(command)) {
-      return buildEnumRuleSpec(params);
+      return EnumParser.buildSchemaRuleSpecFromInput(params);
     }
     return `${command}${params}`;
   }
@@ -124,7 +89,7 @@ function buildRuleSpecFromRow(row) {
     return value;
   }
   if (sourceType === SOURCE_TYPE_ENUM) {
-    return buildEnumRuleSpec(row?.value);
+    return EnumParser.buildSchemaRuleSpecFromInput(row?.value);
   }
   return String(row?.value ?? '').trim();
 }

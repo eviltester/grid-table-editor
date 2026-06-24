@@ -206,31 +206,7 @@ export class TestDataRulesCompiler {
   }
 
   isEnumPattern(ruleSpec) {
-    const spec = String(ruleSpec || '').trim();
-
-    // Check for awd enum formats: enum(), datatype.enum(), awd.datatype.enum()
-    if (spec.match(/^(enum|datatype\.enum|awd\.datatype\.enum)\s*\(/)) {
-      return true;
-    }
-
-    // Check for simple comma-separated values that look like enums
-    if (spec.includes(',')) {
-      const values = spec.split(',').map((v) => v.trim());
-      // Must have at least 2 values
-      if (values.length >= 2) {
-        // Values should be reasonably short (not code/expressions)
-        if (values.every((v) => v.length > 0 && v.length <= 50)) {
-          // Values shouldn't look like regex/function syntax.
-          // Dotted literals such as versions (1.0) or domains (example.com) are valid,
-          // but faker-like dotted member paths (e.g. person.firstName) should not be enums.
-          if (!values.some((v) => /[[\]{}()^$*+?|\\]/.test(v) || (v.includes('.') && /[A-Z]/.test(v)))) {
-            return true;
-          }
-        }
-      }
-    }
-
-    return false;
+    return EnumParser.isEnumRuleSpec(ruleSpec);
   }
 
   isLiteralPattern(ruleSpec) {

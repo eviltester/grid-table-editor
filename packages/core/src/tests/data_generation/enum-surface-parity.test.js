@@ -4,7 +4,6 @@ import RandExp from 'randexp';
 import { generateFromTextSpec } from '../../index.js';
 import { TestDataRulesCompiler } from '../../../js/data_generation/testDataRulesCompiler.js';
 import { TestDataRule } from '../../../js/data_generation/testDataRule.js';
-import { EnumTestDataGenerator } from '../../../js/data_generation/enum/enumTestDataGenerator.js';
 
 const PUBLIC_ENUM_SURFACE_CASES = [
   {
@@ -46,14 +45,6 @@ const PUBLIC_ENUM_SURFACE_CASES = [
   {
     label: 'enum(...) named values alias',
     ruleSpec: 'enum(values="active,inactive,pending")',
-  },
-];
-
-const ENUM_GENERATOR_SURFACE_CASES = [
-  ...PUBLIC_ENUM_SURFACE_CASES,
-  {
-    label: 'parenthesized comma-separated list',
-    ruleSpec: '(active,inactive,pending)',
   },
 ];
 
@@ -110,23 +101,29 @@ describe('enum surface parity', () => {
     }
   );
 
-  test.each(ENUM_GENERATOR_SURFACE_CASES)(
-    'EnumTestDataGenerator evaluates parser-level $label using the same enum value selection',
-    ({ ruleSpec }) => {
-      const generator = new EnumTestDataGenerator();
-      const rule = new TestDataRule('Status', ruleSpec);
-      rule.type = 'enum';
-      const randomSpy = jest.spyOn(Math, 'random').mockReturnValue(0.5);
+  test('compiled enum surfaces execute through the canonical domain rule model', () => {
+    const compiler = new TestDataRulesCompiler(faker, RandExp);
+    const rules = [new TestDataRule('Status', 'enum(values="active,inactive,pending")')];
+    const randomSpy = jest.spyOn(Math, 'random').mockReturnValue(0.5);
 
-      try {
-        const results = Array.from({ length: 3 }, () => generator.generateFrom(rule));
-        results.forEach((result) => {
-          expect(result.isError).toBe(false);
-          expect(result.data).toBe('inactive');
-        });
-      } finally {
-        randomSpy.mockRestore();
-      }
+    try {
+      compiler.compile(rules);
+      compiler.validate();
+
+      expect(rules[0]).toMatchObject({
+        type: 'domain',
+        ruleSpec: 'datatype.enum("active", "inactive", "pending")',
+      });
+      const result = generateFromTextSpec({
+        textSpec: `Status\n${rules[0].ruleSpec}`,
+        rowCount: 1,
+        outputFormat: 'json',
+      });
+
+      expect(result.ok).toBe(true);
+      expect(result.rows).toEqual([['inactive']]);
+    } finally {
+      randomSpy.mockRestore();
     }
-  );
+  });
 });

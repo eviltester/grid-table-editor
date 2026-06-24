@@ -1,4 +1,4 @@
-import { EnumParser } from '../data_generation/utils/enumParser.js';
+import { normalizeDatatypeEnumValuesFromContext } from '../keywords/domain/datatype/datatype-enum.js';
 
 const STRING_COMMANDS_ALLOWING_EMPTY_INPUT_OUTPUT = new Set([
   'helpers.fake',
@@ -856,60 +856,8 @@ const validateCronValue = createPredicateValidator((value) => {
   return fields.every((field) => CRON_FIELD_REGEX.test(field));
 });
 
-function extractEnumValuesFromContext(context = {}) {
-  const fieldDefinition = getFieldDefinitionFromContext(context);
-  const explicitEnumValues = Array.isArray(context?.enumValues) ? context.enumValues : [];
-  if (explicitEnumValues.length > 0) {
-    return explicitEnumValues.map((entry) => String(entry));
-  }
-
-  const contextArgs = getContextArgs(context);
-  const candidates = [getContextRuleSpec(context)];
-  const sourceType = String(fieldDefinition?.sourceType ?? '')
-    .trim()
-    .toLowerCase();
-  const command = String(fieldDefinition?.command ?? '')
-    .trim()
-    .toLowerCase();
-  const params = String(fieldDefinition?.params ?? '').trim();
-  const value = String(fieldDefinition?.value ?? '').trim();
-
-  if (sourceType === 'enum' && value.length > 0) {
-    candidates.push(`enum(${value.replace(/^\(|\)$/g, '').trim()})`);
-    candidates.push(value);
-  }
-  if (command === 'datatype.enum' && contextArgs.length > 0) {
-    if (contextArgs.length === 1 && typeof contextArgs[0] === 'string') {
-      try {
-        return EnumParser.extractEnumValues(`enum(${contextArgs[0]})`).map((entry) => String(entry));
-      } catch {
-        return [String(contextArgs[0])];
-      }
-    }
-    return contextArgs.map((entry) => String(entry));
-  }
-  if (command === 'datatype.enum' && params.length > 0) {
-    candidates.push(`datatype.enum(${params.replace(/^\(|\)$/g, '').trim()})`);
-    candidates.push(params);
-  }
-
-  for (const candidate of candidates) {
-    const ruleSpec = String(candidate ?? '').trim();
-    if (!ruleSpec) {
-      continue;
-    }
-    try {
-      return EnumParser.extractEnumValues(ruleSpec).map((entry) => String(entry));
-    } catch {
-      // Keep looking until a valid enum source is found.
-    }
-  }
-
-  return [];
-}
-
 function validateEnumMemberValue(value, context = {}) {
-  const enumValues = extractEnumValuesFromContext(context);
+  const enumValues = normalizeDatatypeEnumValuesFromContext(context);
   if (enumValues.length === 0) {
     return false;
   }

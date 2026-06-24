@@ -70,6 +70,13 @@ describe('schema-row-rule-mapper', () => {
         params: '("a","quoted","bracketed","list")',
       })
     ).toBe('enum("a","quoted","bracketed","list")');
+    expect(
+      buildRuleSpecFromSchemaRow({
+        sourceType: 'domain',
+        command: 'awd.datatype.enum',
+        params: 'active,inactive,pending',
+      })
+    ).toBe('enum(active,inactive,pending)');
   });
 
   test('buildRuleSpecFromSchemaRow handles literal rows including blank default', () => {

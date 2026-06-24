@@ -19,6 +19,11 @@ export class EnumParser {
     return text;
   }
 
+  static isParenthesizedListFormat(ruleSpec) {
+    const spec = String(ruleSpec || '').trim();
+    return spec.startsWith('(') && spec.endsWith(')') && spec.includes(',');
+  }
+
   /**
    * Check if rule spec uses AWD enum function format
    * @param {string} ruleSpec - The rule specification to check
@@ -54,12 +59,22 @@ export class EnumParser {
     return `enum(${normalizedValues.map((value) => this.serializeSchemaEnumValue(value)).join(',')})`;
   }
 
+  static buildCanonicalDomainRuleSpec(ruleSpecOrValues) {
+    const values = Array.isArray(ruleSpecOrValues) ? ruleSpecOrValues : this.extractEnumValues(ruleSpecOrValues);
+    return this.buildCanonicalDomainRuleSpecFromValues(values);
+  }
+
+  static buildCanonicalSchemaRuleSpec(ruleSpecOrValues) {
+    const values = Array.isArray(ruleSpecOrValues) ? ruleSpecOrValues : this.extractEnumValues(ruleSpecOrValues);
+    return this.buildCanonicalSchemaRuleSpecFromValues(values);
+  }
+
   static normalizeToCanonicalDomainRuleSpec(ruleSpec) {
-    return this.buildCanonicalDomainRuleSpecFromValues(this.extractEnumValues(ruleSpec));
+    return this.buildCanonicalDomainRuleSpec(ruleSpec);
   }
 
   static normalizeToCanonicalSchemaRuleSpec(ruleSpec) {
-    return this.buildCanonicalSchemaRuleSpecFromValues(this.extractEnumValues(ruleSpec));
+    return this.buildCanonicalSchemaRuleSpec(ruleSpec);
   }
 
   static isCanonicalDomainEnumRuleSpec(ruleSpec) {
@@ -69,6 +84,146 @@ export class EnumParser {
   static isCanonicalSchemaSerializableEnumRuleSpec(ruleSpec) {
     const spec = String(ruleSpec || '').trim();
     return this.isCanonicalDomainEnumRuleSpec(spec) || this.isAwdEnumFormat(spec) || this.isShorthandEnumFormat(spec);
+  }
+
+  static isImplicitCsvEnumRuleSpec(ruleSpec) {
+    const spec = String(ruleSpec || '').trim();
+    if (!spec.includes(',')) {
+      return false;
+    }
+
+    const values = spec.split(',').map((value) => value.trim());
+    if (values.length < 2) {
+      return false;
+    }
+
+    return (
+      values.every((value) => value.length > 0 && value.length <= 50) &&
+      !values.some((value) => {
+        return /[[\]{}()^$*+?|\\]/.test(value) || (value.includes('.') && /[A-Z]/.test(value));
+      })
+    );
+  }
+
+  static parseEnumRuleSpec(ruleSpec, { allowImplicitCsv = true } = {}) {
+    const spec = String(ruleSpec || '').trim();
+    if (!spec) {
+      return { ok: false, values: [], explicit: false, source: '', error: 'Invalid enum format' };
+    }
+
+    if (this.hasAwdEnumInvocationPrefix(spec)) {
+      try {
+        return {
+          ok: true,
+          values: this.extractAwdEnumValues(spec),
+          explicit: true,
+          source: 'function',
+          error: '',
+        };
+      } catch (error) {
+        return {
+          ok: false,
+          values: [],
+          explicit: true,
+          source: 'function',
+          error: error?.message || String(error),
+        };
+      }
+    }
+
+    if (this.isShorthandEnumFormat(spec)) {
+      try {
+        return {
+          ok: true,
+          values: this.extractEnumValues(spec),
+          explicit: true,
+          source: 'shorthand',
+          error: '',
+        };
+      } catch (error) {
+        return {
+          ok: false,
+          values: [],
+          explicit: true,
+          source: 'shorthand',
+          error: error?.message || String(error),
+        };
+      }
+    }
+
+    if (this.isParenthesizedListFormat(spec)) {
+      try {
+        return {
+          ok: true,
+          values: this.extractEnumValues(spec),
+          explicit: true,
+          source: 'parenthesized-list',
+          error: '',
+        };
+      } catch (error) {
+        return {
+          ok: false,
+          values: [],
+          explicit: true,
+          source: 'parenthesized-list',
+          error: error?.message || String(error),
+        };
+      }
+    }
+
+    if (allowImplicitCsv && this.isImplicitCsvEnumRuleSpec(spec)) {
+      try {
+        return {
+          ok: true,
+          values: this.extractEnumValues(spec),
+          explicit: false,
+          source: 'implicit-csv',
+          error: '',
+        };
+      } catch (error) {
+        return {
+          ok: false,
+          values: [],
+          explicit: false,
+          source: 'implicit-csv',
+          error: error?.message || String(error),
+        };
+      }
+    }
+
+    return { ok: false, values: [], explicit: false, source: '', error: 'Invalid enum format' };
+  }
+
+  static isEnumRuleSpec(ruleSpec, { allowImplicitCsv = true, includeParenthesizedList = false } = {}) {
+    const parsed = this.parseEnumRuleSpec(ruleSpec, { allowImplicitCsv });
+    if (!parsed.ok && parsed.explicit) {
+      return true;
+    }
+    if (!parsed.ok) {
+      return false;
+    }
+    return includeParenthesizedList || parsed.source !== 'parenthesized-list';
+  }
+
+  static extractEnumDisplayValue(ruleSpec) {
+    const value = String(ruleSpec ?? '').trim();
+    const wrappedMatch = value.match(/^(?:enum|datatype\.enum|awd\.datatype\.enum)\s*\(([\s\S]*)\)$/i);
+    if (wrappedMatch) {
+      return wrappedMatch[1].trim();
+    }
+    if (this.isShorthandEnumFormat(value)) {
+      const shorthand = value.replace(/^enum\s+/i, '').trim();
+      return this.unwrapOptionalListParens(shorthand);
+    }
+    return this.unwrapOptionalListParens(value);
+  }
+
+  static buildSchemaRuleSpecFromInput(enumInput) {
+    const enumValue = String(enumInput ?? '').trim();
+    if (enumValue.length === 0) {
+      return '';
+    }
+    return `enum(${this.extractEnumDisplayValue(enumValue)})`;
   }
 
   static isEnumLikeRule(rule = {}) {

@@ -780,6 +780,48 @@ function buildUiInteractionScenarios() {
   return buildRuntimeInteractionScenarios().filter((scenario) => UI_REPRESENTATIVE_SCENARIO_IDS.has(scenario.id));
 }
 
+function selectPageSmokeScenario(scenarios, label, predicate) {
+  const scenario = scenarios.find(predicate);
+  if (!scenario) {
+    throw new Error(`page-wiring smoke scenario is missing ${label} coverage`);
+  }
+  return scenario;
+}
+
+function buildPageWiringSmokeInteractionScenarios() {
+  const scenarios = buildUiInteractionScenarios();
+  return [
+    selectPageSmokeScenario(
+      scenarios,
+      'literal',
+      (scenario) => scenario.sourceType === SOURCE_TYPE_LITERAL && scenario.origins.includes('custom')
+    ),
+    selectPageSmokeScenario(
+      scenarios,
+      'regex',
+      (scenario) => scenario.sourceType === SOURCE_TYPE_REGEX && scenario.origins.includes('custom')
+    ),
+    selectPageSmokeScenario(
+      scenarios,
+      'faker helpers.arrayElement',
+      (scenario) => scenario.sourceType === SOURCE_TYPE_FAKER && scenario.command === 'helpers.arrayElement'
+    ),
+    selectPageSmokeScenario(
+      scenarios,
+      'domain commerce.price example',
+      (scenario) =>
+        scenario.sourceType === SOURCE_TYPE_DOMAIN &&
+        scenario.command === 'commerce.price' &&
+        scenario.origins.includes('example')
+    ),
+    selectPageSmokeScenario(
+      scenarios,
+      'enum pairwise',
+      (scenario) => scenario.sourceType === SOURCE_TYPE_ENUM && scenario.pairwiseEligible === true
+    ),
+  ];
+}
+
 function buildScenarioCoverageSummary() {
   const scenarios = buildSchemaInteractionScenarios();
   const byCommand = new Map();
@@ -803,6 +845,7 @@ export {
   buildSchemaInteractionScenarios,
   buildRuntimeInteractionScenarios,
   buildUiInteractionScenarios,
+  buildPageWiringSmokeInteractionScenarios,
   buildScenarioCoverageSummary,
   buildExpectedSchemaText,
   buildExpectedUiSchemaText,

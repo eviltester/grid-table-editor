@@ -17,25 +17,11 @@
 
 import { jest } from '@jest/globals';
 import { createGeneratorInteractionHarness } from './support/generator-interaction-harness.js';
-import { buildUiInteractionScenarios } from './support/schema-interaction-scenario-builder.js';
+import { buildPageWiringSmokeInteractionScenarios } from './support/schema-interaction-scenario-builder.js';
 import { buildChunkDescriptors, formatCommandsForConsole } from './support/schema-interaction-matrix-formatting.js';
-import { findScenarioByLogicalId } from './support/scenario-fixture-identity.js';
 
-const scenarioSource = 'buildUiInteractionScenarios()';
-const SMOKE_SCENARIO_IDS = [
-  'custom-literal-base',
-  'custom-regex-base',
-  'faker-helpers-arrayElement-base',
-  'domain-commerce-price-example-1',
-  'custom-enum-pairwise',
-];
-const allScenarios = buildUiInteractionScenarios();
-const scenarios = SMOKE_SCENARIO_IDS.map((scenarioId) => findScenarioByLogicalId(allScenarios, scenarioId)).filter(
-  Boolean
-);
-if (scenarios.length !== SMOKE_SCENARIO_IDS.length) {
-  throw new Error('generator schema interaction smoke subset is missing fixture scenarios');
-}
+const scenarioSource = 'buildPageWiringSmokeInteractionScenarios()';
+const scenarios = buildPageWiringSmokeInteractionScenarios();
 const CHUNK_SIZE = 20;
 const chunkDescriptors = buildChunkDescriptors(scenarios, CHUNK_SIZE);
 

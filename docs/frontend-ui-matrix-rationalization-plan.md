@@ -268,12 +268,12 @@ That path removes the most obvious duplication first while preserving the highes
 
 - The runtime matrix remains the broad generated safety net.
 - `app-schema-interaction-matrix.test.js` and `generator-schema-interaction-matrix.test.js` now run a page-wiring smoke subset instead of the full shared `uiScenarios` fixture.
-- The retained page-shell smoke scenarios are:
-  - `custom-literal-base`
-  - `custom-regex-base`
-  - `faker-helpers-arrayElement-base`
-  - `domain-commerce-price-example-1`
-  - `custom-enum-pairwise`
+- The retained page-shell smoke scenarios are selected by semantic coverage lane:
+  - custom literal
+  - custom regex
+  - faker `helpers.arrayElement`
+  - domain `commerce.price` example with guided params
+  - enum pairwise
 - The smoke subset keeps:
   - simple schema editing and generate wiring
   - regex/text synchronization coverage

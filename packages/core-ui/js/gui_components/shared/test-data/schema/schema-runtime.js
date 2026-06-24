@@ -4,17 +4,7 @@
  * - Shared counting helpers for generated rule collections.
  */
 
-function isDatatypeEnumRule(rule = {}) {
-  return (
-    String(rule?.type || '')
-      .trim()
-      .toLowerCase() === 'domain' &&
-    String(rule?.ruleSpec || '')
-      .trim()
-      .toLowerCase()
-      .startsWith('datatype.enum(')
-  );
-}
+import { EnumParser } from '@anywaydata/core/data_generation/utils/enumParser.js';
 
 function parseSchemaText({ schemaTextToDataRules, schemaText, faker, RandExp }) {
   return schemaTextToDataRules({
@@ -26,7 +16,7 @@ function parseSchemaText({ schemaTextToDataRules, schemaText, faker, RandExp }) 
 }
 
 function countEnumRules(rules = []) {
-  return (Array.isArray(rules) ? rules : []).filter((rule) => rule?.type === 'enum' || isDatatypeEnumRule(rule)).length;
+  return (Array.isArray(rules) ? rules : []).filter((rule) => EnumParser.isEnumLikeRule(rule)).length;
 }
 
 export { parseSchemaText, countEnumRules };

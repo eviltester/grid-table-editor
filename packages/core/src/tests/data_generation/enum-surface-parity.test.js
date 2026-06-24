@@ -74,6 +74,22 @@ describe('enum surface parity', () => {
   );
 
   test.each(PUBLIC_ENUM_SURFACE_CASES)(
+    'compiler normalizes predeclared enum $label to the canonical domain enum model',
+    ({ ruleSpec }) => {
+      const compiler = new TestDataRulesCompiler(faker, RandExp);
+      const rules = [new TestDataRule('Status', ruleSpec)];
+      rules[0].type = 'enum';
+
+      compiler.compile(rules);
+      compiler.validate();
+
+      expect(rules[0].type).toBe('domain');
+      expect(rules[0].ruleSpec).toBe('datatype.enum("active", "inactive", "pending")');
+      expect(compiler.isValid()).toBe(true);
+    }
+  );
+
+  test.each(PUBLIC_ENUM_SURFACE_CASES)(
     'generateFromTextSpec evaluates public $label using the same enum value selection',
     ({ ruleSpec }) => {
       const randomSpy = jest.spyOn(Math, 'random').mockReturnValue(0.5);

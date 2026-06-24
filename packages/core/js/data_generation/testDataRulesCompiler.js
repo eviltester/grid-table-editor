@@ -142,6 +142,13 @@ export class TestDataRulesCompiler {
           if (rule.type === 'regex' && this.isRegexPattern(rule.ruleSpec)) {
             rule.ruleSpec = this.extractRegexValue(rule.ruleSpec);
           }
+          if (rule.type === 'enum') {
+            enumValidator.validate(rule);
+            if (enumValidator.isValid()) {
+              rule.ruleSpec = EnumParser.normalizeToCanonicalDomainRuleSpec(rule.ruleSpec);
+              rule.type = 'domain';
+            }
+          }
         }
       }
     });

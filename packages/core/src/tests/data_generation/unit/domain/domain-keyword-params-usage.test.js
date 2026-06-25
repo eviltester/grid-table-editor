@@ -101,6 +101,7 @@ function sampleValueForKeywordArg(keywordName, argName, typeName) {
   if (key === 'date.birthdate.min') return 18;
   if (key === 'date.birthdate.max') return 65;
   if (key === 'date.birthdate.mode') return 'age';
+  if (key === 'datatype.boolean.probability') return 0.5;
 
   if (key === 'location.latitude.min' || key === 'location.longitude.min') return -10;
   if (key === 'location.latitude.max' || key === 'location.longitude.max') return 10;
@@ -223,8 +224,8 @@ describe('domain keyword parameter usage', () => {
           return createResultForPath(keyword.delegate.resultPath);
         });
 
-        const args = buildValidArgs(keyword);
-        const sample = sampleValueForType(argSpec.type);
+        const args = applyKeywordExecutionDefaults(keyword, buildValidArgs(keyword));
+        const sample = sampleValueForKeywordArg(keyword.keyword, argSpec.name, argSpec.type);
         args[argIndex] = sample;
 
         executeDomainKeyword(keyword.keyword, { faker, args });

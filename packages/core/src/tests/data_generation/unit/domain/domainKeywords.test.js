@@ -473,6 +473,39 @@ describe('domain keyword arg validation', () => {
     });
   });
 
+  test('rejects number.int multipleOf zero before generation', () => {
+    const keyword = getDomainKeywordByAlias('number.int');
+    const result = validateDomainKeywordArgs(keyword, [1, 10, 0]);
+
+    expect(result).toEqual({
+      ok: false,
+      error: 'Invalid keyword arguments: argument "multipleOf" must be greater than 0',
+    });
+  });
+
+  test('rejects datatype.boolean probability outside documented range', () => {
+    const keyword = getDomainKeywordByAlias('datatype.boolean');
+
+    expect(validateDomainKeywordArgs(keyword, [2])).toEqual({
+      ok: false,
+      error: 'Invalid keyword arguments: argument "probability" must be between 0 and 1',
+    });
+    expect(validateDomainKeywordArgs(keyword, [-0.1])).toEqual({
+      ok: false,
+      error: 'Invalid keyword arguments: argument "probability" must be between 0 and 1',
+    });
+  });
+
+  test('rejects negative date.recent days before generation', () => {
+    const keyword = getDomainKeywordByAlias('date.recent');
+    const result = validateDomainKeywordArgs(keyword, [-7]);
+
+    expect(result).toEqual({
+      ok: false,
+      error: 'Invalid keyword arguments: argument "days" must be greater than or equal to 0',
+    });
+  });
+
   test('rejects reversed date bounds before generation', () => {
     const keyword = getDomainKeywordByAlias('date.between');
     const result = validateDomainKeywordArgs(keyword, [1659312000000, 1577836800000]);
@@ -630,6 +663,9 @@ describe('faker keyword invocation styles', () => {
   for (const keyword of fakerKeywordsWithArgs) {
     test(`${keyword.keyword} supports equivalent positional and named argument invocation`, () => {
       const sampleArgs = keyword.help.args.map((arg) => sampleValueForType(arg.type));
+      if (keyword.keyword === 'datatype.boolean') {
+        sampleArgs[0] = 0.5;
+      }
       if (keyword.keyword === 'string.uuid' && sampleArgs.length >= 2) {
         sampleArgs[0] = 7;
       }

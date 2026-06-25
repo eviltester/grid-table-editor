@@ -100,7 +100,7 @@ describe('EnumTestDataRuleValidator', () => {
       const isValid = validator.validate(rule);
 
       expect(isValid).toBe(false);
-      expect(validator.getValidationError()).toContain('Invalid enum format');
+      expect(validator.getValidationError()).toContain('argument "values" is required');
     });
 
     test('rejects explicit enum with trailing empty argument', () => {

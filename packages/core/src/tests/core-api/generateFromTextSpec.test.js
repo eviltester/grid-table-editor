@@ -341,6 +341,65 @@ test('generateFromTextSpec rejects malformed explicit enum syntax instead of tre
   );
 });
 
+test.each([
+  {
+    label: 'malformed enum values quote',
+    textSpec: 'Status\ndatatype.enum(values="active,pending)',
+    message: 'unbalanced expression',
+  },
+  {
+    label: 'unknown enum named argument',
+    textSpec: 'Status\ndatatype.enum(valuez="active,pending")',
+    message: 'unknown named argument "valuez"',
+  },
+  {
+    label: 'empty enum values',
+    textSpec: 'Status\ndatatype.enum(values="")',
+    message: 'argument "values" is required',
+  },
+  {
+    label: 'missing enum values',
+    textSpec: 'Status\ndatatype.enum()',
+    message: 'argument "values" is required',
+  },
+  {
+    label: 'boolean probability above range',
+    textSpec: 'Flag\ndatatype.boolean(probability=2)',
+    message: 'argument "probability" must be between 0 and 1',
+  },
+  {
+    label: 'boolean probability below range',
+    textSpec: 'Flag\ndatatype.boolean(probability=-0.1)',
+    message: 'argument "probability" must be between 0 and 1',
+  },
+  {
+    label: 'number.int multipleOf zero',
+    textSpec: 'Number\nnumber.int(min=1,max=10,multipleOf=0)',
+    message: 'argument "multipleOf" must be greater than 0',
+  },
+  {
+    label: 'date.recent negative days',
+    textSpec: 'Date\ndate.recent(days=-7)',
+    message: 'argument "days" must be greater than or equal to 0',
+  },
+])('generateFromTextSpec rejects invalid schema before generation: $label', ({ textSpec, message }) => {
+  const result = generateFromTextSpec({
+    textSpec,
+    rowCount: 3,
+    outputFormat: 'json',
+  });
+
+  expect(result.ok).toBe(false);
+  expect(result.rows).toBeUndefined();
+  expect(result.rendered).toBeUndefined();
+  expect(result.errors).toContainEqual(
+    expect.objectContaining({
+      code: 'compiler_validation_error',
+      message: expect.stringContaining(message),
+    })
+  );
+});
+
 test('validateSafeFakerRules accepts known faker commands with literal args', () => {
   const result = validateSafeFakerRules('Name\nperson.firstName("female")');
   expect(result.ok).toBe(true);

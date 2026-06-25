@@ -83,7 +83,8 @@ export class EnumParser {
 
   static isCanonicalSchemaSerializableEnumRuleSpec(ruleSpec) {
     const spec = String(ruleSpec || '').trim();
-    return this.isCanonicalDomainEnumRuleSpec(spec) || this.isAwdEnumFormat(spec) || this.isShorthandEnumFormat(spec);
+    const parsed = this.parseEnumRuleSpec(spec, { allowImplicitCsv: false });
+    return parsed.ok && parsed.explicit;
   }
 
   static isImplicitCsvEnumRuleSpec(ruleSpec) {
@@ -238,12 +239,23 @@ export class EnumParser {
 
   static unwrapNamedValuesArgument(paramsStr) {
     const text = String(paramsStr || '').trim();
+    const namedMatch = text.match(/^([A-Za-z_$][\w$]*)\s*=/);
+    if (namedMatch && namedMatch[1].toLowerCase() !== 'values') {
+      throw new Error(`Invalid keyword arguments: unknown named argument "${namedMatch[1]}"`);
+    }
+
     const match = text.match(/^values\s*=\s*([\s\S]*)$/i);
     if (!match) {
       return null;
     }
 
     const valuesText = match[1].trim();
+    if (valuesText.startsWith('"')) {
+      if (!(valuesText.length >= 2 && valuesText.endsWith('"') && valuesText[valuesText.length - 2] !== '\\')) {
+        throw new Error('Invalid keyword arguments: unclosed quote in argument "values"');
+      }
+    }
+
     if (
       valuesText.length >= 2 &&
       valuesText.startsWith('"') &&
@@ -277,6 +289,10 @@ export class EnumParser {
         currentValue += char;
       }
       i++;
+    }
+
+    if (inQuotes) {
+      throw new Error('Invalid keyword arguments: unclosed quote in enum values');
     }
 
     // Add final value
@@ -337,12 +353,16 @@ export class EnumParser {
    */
   static extractAwdEnumValues(ruleSpec) {
     // Match patterns like: enum(value1,value2) or enum("value1", "value2", "value3")
-    const match = ruleSpec.match(/^(?:enum|datatype\.enum|awd\.datatype\.enum)\s*\(\s*(.+)\s*\)$/);
+    const match = ruleSpec.match(/^(?:enum|datatype\.enum|awd\.datatype\.enum)\s*\(\s*([\s\S]*)\s*\)$/);
     if (!match) {
       throw new Error('Invalid enum format');
     }
 
     const paramsStr = match[1].trim();
+    if (paramsStr.length === 0) {
+      throw new Error('Invalid keyword arguments: argument "values" is required');
+    }
+
     const namedValues = this.unwrapNamedValuesArgument(paramsStr);
     if (namedValues !== null) {
       return this.extractEnumValues(namedValues);

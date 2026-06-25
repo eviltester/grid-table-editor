@@ -126,4 +126,20 @@ describe('enum surface parity', () => {
       randomSpy.mockRestore();
     }
   });
+
+  test.each([
+    ['malformed named values quote', 'datatype.enum(values="active,pending)', 'unbalanced expression'],
+    ['unknown named values argument', 'datatype.enum(valuez="active,pending")', 'unknown named argument "valuez"'],
+    ['empty enum invocation', 'datatype.enum()', 'argument "values" is required'],
+  ])('compiler rejects invalid explicit enum surface: %s', (_label, ruleSpec, expectedMessage) => {
+    const compiler = new TestDataRulesCompiler(faker, RandExp);
+    const rules = [new TestDataRule('Status', ruleSpec)];
+
+    compiler.compile(rules);
+    compiler.validate();
+
+    expect(rules[0].type).toBe('domain');
+    expect(compiler.isValid()).toBe(false);
+    expect(compiler.errors.some((error) => String(error?.message || error).includes(expectedMessage))).toBe(true);
+  });
 });

@@ -10,16 +10,7 @@ export class EnumTestDataRuleValidator {
 
     try {
       const ruleSpec = String(aTestDataRule.ruleSpec || '');
-      let parsed = EnumParser.parseEnumRuleSpec(ruleSpec);
-      if (!parsed.ok && !parsed.explicit) {
-        parsed = {
-          ok: true,
-          values: EnumParser.extractEnumValues(ruleSpec),
-          explicit: false,
-          source: 'legacy-enum-type',
-          error: '',
-        };
-      }
+      const parsed = EnumParser.parseEnumRuleSpec(ruleSpec);
 
       if (!parsed.ok) {
         this.validationError = parsed.error;

@@ -77,7 +77,7 @@ export class TestDataRulesCompiler {
             this.compilationReportLines.push(
               `${rule.name} is not a valid 'enum': ${enumValidator.getValidationError()}`
             );
-            rule.type = parsedEnumRule.explicit ? 'domain' : 'literal';
+            rule.type = parsedEnumRule.explicit ? 'domain' : 'enum';
           }
         } else {
           if (this.isDomainHelpersPattern(rule.ruleSpec)) {

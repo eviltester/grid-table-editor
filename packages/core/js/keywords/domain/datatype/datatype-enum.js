@@ -43,6 +43,13 @@ function getContextRuleSpec(context = {}) {
   return '';
 }
 
+function isDatatypeEnumCommand(command) {
+  const normalizedCommand = String(command ?? '')
+    .trim()
+    .toLowerCase();
+  return normalizedCommand === 'datatype.enum' || normalizedCommand === 'awd.datatype.enum';
+}
+
 function normalizeDatatypeEnumValuesFromContext(context = {}) {
   const explicitEnumValues = Array.isArray(context?.enumValues) ? context.enumValues : [];
   if (explicitEnumValues.length > 0) {
@@ -73,7 +80,7 @@ function normalizeDatatypeEnumValuesFromContext(context = {}) {
     candidates.push(`enum(${EnumParser.extractEnumDisplayValue(value)})`);
     candidates.push(value);
   }
-  if (command === 'datatype.enum' && params.length > 0) {
+  if (isDatatypeEnumCommand(command) && params.length > 0) {
     candidates.push(`datatype.enum(${EnumParser.extractEnumDisplayValue(params)})`);
     candidates.push(params);
   }

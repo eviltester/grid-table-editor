@@ -102,13 +102,14 @@ describe('EnumTestDataGenerator', () => {
   });
 
   describe('format detection', () => {
-    test('detects awd enum formats', () => {
-      expect(EnumParser.isAwdEnumFormat('enum("A", "B")')).toBe(true);
-      expect(EnumParser.isAwdEnumFormat('datatype.enum("A", "B")')).toBe(true);
-      expect(EnumParser.isAwdEnumFormat('awd.datatype.enum("A", "B")')).toBe(true);
-      expect(EnumParser.isAwdEnumFormat('datatype.enum()')).toBe(true);
-      expect(EnumParser.isAwdEnumFormat('datatype.enum("A") trailing')).toBe(false);
-      expect(EnumParser.isAwdEnumFormat('A,B,C')).toBe(false);
+    test('detects enum invocation shape without validating values', () => {
+      expect(EnumParser.hasEnumInvocationShape('enum("A", "B")')).toBe(true);
+      expect(EnumParser.hasEnumInvocationShape('datatype.enum("A", "B")')).toBe(true);
+      expect(EnumParser.hasEnumInvocationShape('awd.datatype.enum("A", "B")')).toBe(true);
+      expect(EnumParser.hasEnumInvocationShape('datatype.enum()')).toBe(true);
+      expect(EnumParser.isCanonicalSchemaSerializableEnumRuleSpec('datatype.enum()')).toBe(false);
+      expect(EnumParser.hasEnumInvocationShape('datatype.enum("A") trailing')).toBe(false);
+      expect(EnumParser.hasEnumInvocationShape('A,B,C')).toBe(false);
     });
 
     test('detects only complete canonical domain enum invocations', () => {

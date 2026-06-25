@@ -27,12 +27,12 @@ describe('TestDataRulesCompiler with Enum Support', () => {
       expect(compiler.isEnumPattern('SingleValue')).toBe(false);
     });
 
-    test('rejects faker-like patterns', () => {
-      expect(compiler.isEnumPattern('person.firstName,person.lastName')).toBe(false);
+    test('detects command-looking CSV as enum values', () => {
+      expect(compiler.isEnumPattern('person.firstName,person.lastName')).toBe(true);
     });
 
-    test('rejects regex-like patterns', () => {
-      expect(compiler.isEnumPattern('[A-Z],{3}')).toBe(false);
+    test('detects regex-looking CSV as enum values', () => {
+      expect(compiler.isEnumPattern('[A-Z],{3}')).toBe(true);
     });
   });
 
@@ -86,6 +86,45 @@ describe('TestDataRulesCompiler with Enum Support', () => {
       expect(rules[0].type).toBe('domain');
       expect(rules[0].ruleSpec).toBe('datatype.enum("One", "Two", "Three")');
       expect(rules[1].type).toBe('regex'); // Single value is valid regex (literal text)
+      expect(compiler.isValid()).toBe(true);
+    });
+
+    test('keeps malformed CSV on the enum validation path', () => {
+      const rules = [new TestDataRule('Status', 'One,,Three')];
+
+      compiler.compile(rules);
+      compiler.validate();
+
+      expect(rules[0].type).toBe('enum');
+      expect(compiler.isValid()).toBe(false);
+      expect(compiler.errors).toContainEqual(
+        expect.objectContaining({
+          code: 'compiler_validation_error',
+          column: 'Status',
+          message: 'Status failed enum validation - Enum values cannot be empty',
+        })
+      );
+    });
+
+    test('compiles command-looking CSV as enum values instead of a partial domain command', () => {
+      const rules = [new TestDataRule('Names', 'person.firstName,person.lastName')];
+
+      compiler.compile(rules);
+      compiler.validate();
+
+      expect(rules[0].type).toBe('domain');
+      expect(rules[0].ruleSpec).toBe('datatype.enum("person.firstName", "person.lastName")');
+      expect(compiler.isValid()).toBe(true);
+    });
+
+    test('compiles regex-looking CSV as enum values instead of regex', () => {
+      const rules = [new TestDataRule('PatternParts', '[A-Z],{3}')];
+
+      compiler.compile(rules);
+      compiler.validate();
+
+      expect(rules[0].type).toBe('domain');
+      expect(rules[0].ruleSpec).toBe('datatype.enum("[A-Z]", "{3}")');
       expect(compiler.isValid()).toBe(true);
     });
 

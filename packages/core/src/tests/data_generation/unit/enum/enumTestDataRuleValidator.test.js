@@ -69,6 +69,28 @@ describe('EnumTestDataRuleValidator', () => {
       expect(validator.isValid()).toBe(true);
     });
 
+    test('validates command-looking comma-separated values as enum literals', () => {
+      const rule = new TestDataRule('Names', 'person.firstName,person.lastName');
+      rule.type = 'enum';
+
+      const validator = new EnumTestDataRuleValidator();
+      const isValid = validator.validate(rule);
+
+      expect(isValid).toBe(true);
+      expect(validator.isValid()).toBe(true);
+    });
+
+    test('validates regex-looking comma-separated values as enum literals', () => {
+      const rule = new TestDataRule('Patterns', '[A-Z],{3}');
+      rule.type = 'enum';
+
+      const validator = new EnumTestDataRuleValidator();
+      const isValid = validator.validate(rule);
+
+      expect(isValid).toBe(true);
+      expect(validator.isValid()).toBe(true);
+    });
+
     test('rejects enum with only one value', () => {
       const rule = new TestDataRule('Single', 'OnlyOne');
       rule.type = 'enum';
@@ -77,7 +99,7 @@ describe('EnumTestDataRuleValidator', () => {
       const isValid = validator.validate(rule);
 
       expect(isValid).toBe(false);
-      expect(validator.getValidationError()).toContain('at least 2 values');
+      expect(validator.getValidationError()).toContain('Invalid enum format');
     });
 
     test('rejects enum with empty values', () => {

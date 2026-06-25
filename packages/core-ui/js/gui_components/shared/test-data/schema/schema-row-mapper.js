@@ -193,7 +193,7 @@ function mapDataRuleToSchemaRow(rule, { createBlankSchemaRow = createDefaultSche
 
   if (
     (row.sourceType === SOURCE_TYPE_ENUM || row.sourceType === SOURCE_TYPE_DOMAIN) &&
-    EnumParser.isAwdEnumFormat(normalizedRuleSpec)
+    EnumParser.hasEnumInvocationShape(normalizedRuleSpec)
   ) {
     row.sourceType = SOURCE_TYPE_ENUM;
     row.command = '';

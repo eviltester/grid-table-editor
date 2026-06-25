@@ -227,16 +227,19 @@ describe('Can convert markdown tables to data suitable for a data grid', () => {
     });
 
     test('converts non-string values and escapes gherkin table separators', () => {
+      const expected = `|Text|Number|Boolean|
+|Data with \\| pipe|42|true|
+|plain data|0|false|
+`;
+
       let table = new GenericDataTable();
       table.setHeaders(['Text', 'Number', 'Boolean']);
       table.appendDataRow(['Data with | pipe', 42, true]);
-      table.appendDataRow(['plain data', 3.14, false]);
+      table.appendDataRow(['plain data', 0, false]);
 
       let output = new GherkinConvertor().fromDataTable(table);
 
-      expect(output).toContain('Data with \\| pipe');
-      expect(output).toContain('42');
-      expect(output).toContain('true');
+      expect(output).toBe(expected);
       assertNoCommonErrorPatternsInValue(output);
     });
   });

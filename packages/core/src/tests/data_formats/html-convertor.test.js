@@ -59,16 +59,32 @@ describe('Can convert generic data grids to html tables', () => {
   });
 
   test('converts non-string values and escapes html markup characters', () => {
+    const expected = `<table>
+<tr>
+<th>Text</th>
+<th>Number</th>
+<th>Boolean</th>
+</tr>
+<tr>
+<td>Data with &lt; and &gt;</td>
+<td>42</td>
+<td>true</td>
+</tr>
+<tr>
+<td>plain data</td>
+<td>0</td>
+<td>false</td>
+</tr>
+</table>`;
+
     let table = new GenericDataTable();
     table.setHeaders(['Text', 'Number', 'Boolean']);
     table.appendDataRow(['Data with < and >', 42, true]);
-    table.appendDataRow(['plain data', 3.14, false]);
+    table.appendDataRow(['plain data', 0, false]);
 
     let output = new HtmlConvertor().fromDataTable(table);
 
-    expect(output).toContain('Data with &lt; and &gt;');
-    expect(output).toContain('42');
-    expect(output).toContain('true');
+    expect(output).toBe(expected);
     assertNoCommonErrorPatternsInValue(output);
   });
 

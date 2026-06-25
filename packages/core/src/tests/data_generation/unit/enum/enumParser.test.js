@@ -94,6 +94,20 @@ const VALID_ENUM_RULE_SPECS = [
     explicit: true,
     source: 'function',
   },
+  {
+    label: 'schema shorthand command-looking CSV literal',
+    ruleSpec: 'person.firstName,person.lastName',
+    values: ['person.firstName', 'person.lastName'],
+    explicit: false,
+    source: 'implicit-csv',
+  },
+  {
+    label: 'schema shorthand regex-looking CSV literal',
+    ruleSpec: '[A-Z],{3}',
+    values: ['[A-Z]', '{3}'],
+    explicit: false,
+    source: 'implicit-csv',
+  },
 ];
 
 const ENUM_LIST_INPUT_FRAGMENTS = [
@@ -129,6 +143,30 @@ const INVALID_ENUM_RULE_SPECS = [
     enumRuleSpec: false,
   },
   {
+    label: 'non-enum command invocation with comma params is not enum CSV',
+    ruleSpec: 'number.int(min=47, max=32)',
+    explicit: false,
+    source: '',
+    error: 'Invalid enum format',
+    enumRuleSpec: false,
+  },
+  {
+    label: 'implicit CSV with an empty value is rejected as enum syntax',
+    ruleSpec: 'active,,pending',
+    explicit: false,
+    source: 'implicit-csv',
+    error: 'Enum values cannot be empty',
+    enumRuleSpec: true,
+  },
+  {
+    label: 'implicit CSV with an unclosed quote is rejected as enum syntax',
+    ruleSpec: 'active,"pending',
+    explicit: false,
+    source: 'implicit-csv',
+    error: 'Invalid enum CSV: unclosed quote',
+    enumRuleSpec: true,
+  },
+  {
     label: 'enum shorthand is rejected',
     ruleSpec: 'enum active,inactive,pending',
     explicit: true,
@@ -159,22 +197,6 @@ const INVALID_ENUM_RULE_SPECS = [
     source: 'function',
     error: 'Invalid keyword arguments: bare values are not allowed; wrap strings in quotes',
     enumRuleSpec: true,
-  },
-  {
-    label: 'faker-looking comma-separated values fall through',
-    ruleSpec: 'person.firstName,person.lastName',
-    explicit: false,
-    source: '',
-    error: 'Invalid enum format',
-    enumRuleSpec: false,
-  },
-  {
-    label: 'regex-looking comma-separated values fall through',
-    ruleSpec: '[A-Z],{3}',
-    explicit: false,
-    source: '',
-    error: 'Invalid enum format',
-    enumRuleSpec: false,
   },
   {
     label: 'function prefix without closing parenthesis is an invalid explicit enum',
@@ -254,7 +276,7 @@ const INVALID_ENUM_VALUE_RULES = [
   {
     label: 'implicit enum type with one value',
     ruleSpec: 'OnlyOne',
-    expectedError: 'Enum must have at least 2 values',
+    expectedError: 'Invalid enum format',
   },
   {
     label: 'implicit enum type with empty middle value',
@@ -329,10 +351,10 @@ describe('EnumParser acceptance contract', () => {
     }
   );
 
-  test('keeps compiler-oriented detection compatible with implicit enum heuristics', () => {
+  test('treats valid comma-separated rule text as enum CSV before command or regex interpretation', () => {
     expect(EnumParser.isEnumRuleSpec('active,inactive,pending')).toBe(true);
-    expect(EnumParser.isEnumRuleSpec('person.firstName,person.lastName')).toBe(false);
-    expect(EnumParser.isEnumRuleSpec('[A-Z],{3}')).toBe(false);
+    expect(EnumParser.isEnumRuleSpec('person.firstName,person.lastName')).toBe(true);
+    expect(EnumParser.isEnumRuleSpec('[A-Z],{3}')).toBe(true);
     expect(EnumParser.isEnumRuleSpec('(active,inactive,pending)')).toBe(false);
     expect(EnumParser.isEnumRuleSpec('(active,inactive,pending)', { includeParenthesizedList: true })).toBe(true);
   });

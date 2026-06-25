@@ -27,16 +27,22 @@ export class EnumParser {
   }
 
   /**
-   * Check if rule spec uses AWD enum function format
+   * Check if rule spec has an enum function invocation shape.
+   * This does not validate whether the invocation has usable enum values.
    * @param {string} ruleSpec - The rule specification to check
-   * @returns {boolean} True if using function format
+   * @returns {boolean} True if using enum function invocation shape
    */
-  static isAwdEnumFormat(ruleSpec) {
+  static hasEnumInvocationShape(ruleSpec) {
     return /^(enum|datatype\.enum|awd\.datatype\.enum)\s*\([\s\S]*\)$/i.test(String(ruleSpec || '').trim());
   }
 
   static hasAwdEnumInvocationPrefix(ruleSpec) {
     return /^(enum|datatype\.enum|awd\.datatype\.enum)\s*\(/i.test(String(ruleSpec || '').trim());
+  }
+
+  static hasNonEnumInvocationPrefix(ruleSpec) {
+    const spec = String(ruleSpec || '').trim();
+    return /^[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*\s*\(/.test(spec) && !this.hasAwdEnumInvocationPrefix(spec);
   }
 
   static serializeDomainEnumValue(value) {
@@ -103,23 +109,12 @@ export class EnumParser {
       return false;
     }
 
-    let values;
     try {
-      values = this.parseCsvLiteral(spec);
+      const values = this.parseCsvLiteral(spec);
+      return values.length >= 2 && values.every((value) => value.length > 0);
     } catch {
       return false;
     }
-
-    if (values.length < 2) {
-      return false;
-    }
-
-    return (
-      values.every((value) => value.length > 0 && value.length <= 50) &&
-      !values.some((value) => {
-        return /[[\]{}()^$*+?|\\]/.test(value) || (value.includes('.') && /[A-Z]/.test(value));
-      })
-    );
   }
 
   static parseEnumRuleSpec(ruleSpec, { allowImplicitCsv = true } = {}) {
@@ -178,11 +173,34 @@ export class EnumParser {
       }
     }
 
-    if (allowImplicitCsv && this.isImplicitCsvEnumRuleSpec(spec)) {
+    if (this.hasNonEnumInvocationPrefix(spec)) {
+      return { ok: false, values: [], explicit: false, source: '', error: 'Invalid enum format' };
+    }
+
+    if (allowImplicitCsv && spec.includes(',')) {
       try {
+        const values = this.parseCsvLiteral(spec);
+        if (values.some((value) => value.length === 0)) {
+          return {
+            ok: false,
+            values: [],
+            explicit: false,
+            source: 'implicit-csv',
+            error: 'Enum values cannot be empty',
+          };
+        }
+        if (values.length < 2) {
+          return {
+            ok: false,
+            values: [],
+            explicit: false,
+            source: 'implicit-csv',
+            error: 'Enum must have at least 2 values',
+          };
+        }
         return {
           ok: true,
-          values: this.parseCsvLiteral(spec),
+          values,
           explicit: false,
           source: 'implicit-csv',
           error: '',
@@ -204,6 +222,9 @@ export class EnumParser {
   static isEnumRuleSpec(ruleSpec, { allowImplicitCsv = true, includeParenthesizedList = false } = {}) {
     const parsed = this.parseEnumRuleSpec(ruleSpec, { allowImplicitCsv });
     if (!parsed.ok && parsed.explicit) {
+      return true;
+    }
+    if (!parsed.ok && parsed.source === 'implicit-csv') {
       return true;
     }
     if (!parsed.ok) {

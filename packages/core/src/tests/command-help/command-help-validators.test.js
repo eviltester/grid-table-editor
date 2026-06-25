@@ -101,7 +101,21 @@ describe('command help validators', () => {
         sourceType: 'domain',
         command: 'datatype.enum',
         params: 'active,inactive,pending',
-        ruleSpec: 'datatype.enum(active,inactive,pending)',
+        ruleSpec: 'datatype.enum("active","inactive","pending")',
+      },
+    };
+
+    expect(validateEnumMemberValue('active', context)).toBe(true);
+    expect(validateEnumMemberValue('inactive', context)).toBe(true);
+    expect(validateEnumMemberValue('archived', context)).toBe(false);
+  });
+
+  test('enum validator derives values from awd.datatype.enum params when ruleSpec is unavailable', () => {
+    const context = {
+      fieldDefinition: {
+        sourceType: 'domain',
+        command: 'awd.datatype.enum',
+        params: 'active,inactive,pending',
       },
     };
 

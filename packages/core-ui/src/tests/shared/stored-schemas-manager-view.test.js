@@ -56,6 +56,18 @@ describe('StoredSchemasManagerView', () => {
     expect(document.querySelector('[data-role="stored-schemas-summary"]').textContent).toBe(
       'Managed Stored Schemas (0)'
     );
+    expect(document.querySelector('[data-role="stored-schemas-save-as"]').getAttribute('aria-label')).toBe(
+      'Save Schema As'
+    );
+    expect(document.querySelector('[data-role="stored-schemas-recover-draft"]').getAttribute('aria-label')).toBe(
+      'Recover Draft'
+    );
+    expect(document.querySelector('[data-role="stored-schemas-load-last-used"]').getAttribute('aria-label')).toBe(
+      'Load last used schema'
+    );
+    expect(document.querySelector('[data-role="stored-schemas-clear-last-used"]').getAttribute('aria-label')).toBe(
+      'Clear last used schema'
+    );
 
     component.destroy();
   });

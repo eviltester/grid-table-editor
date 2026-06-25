@@ -68,7 +68,9 @@ class PopulationActionsView {
           helpHtml: state.generateHelpHtml,
           ariaLabel: state.generateHelpLabel,
         })}
-        <button${this.buildOptionalIdAttr(this.ids.generateButton)} data-role="${escapeHtml(generateButtonRole)}">
+        <button${this.buildOptionalIdAttr(this.ids.generateButton)} data-role="${escapeHtml(generateButtonRole)}" aria-label="${escapeHtml(
+          state.generateLabel
+        )}" title="${escapeHtml(state.generateLabel)}">
           ${renderIconHtml('file-plus', { className: 'app-icon shared-file-action-icon generator-file-icon' })}
           ${escapeHtml(state.generateLabel)}
         </button>
@@ -83,7 +85,11 @@ class PopulationActionsView {
           helpHtml: state.generatePairwiseHelpHtml,
           ariaLabel: state.generatePairwiseHelpLabel,
         })}
-        <button${this.buildOptionalIdAttr(this.ids.generatePairwiseButton)} data-role="${escapeHtml(generatePairwiseButtonRole)}">
+        <button${this.buildOptionalIdAttr(
+          this.ids.generatePairwiseButton
+        )} data-role="${escapeHtml(generatePairwiseButtonRole)}" aria-label="${escapeHtml(
+          state.generatePairwiseLabel
+        )}" title="${escapeHtml(state.generatePairwiseLabel)}">
           ${renderIconHtml('file-plus', { className: 'app-icon shared-file-action-icon generator-file-icon' })}
           ${escapeHtml(state.generatePairwiseLabel)}
         </button>
@@ -95,7 +101,9 @@ class PopulationActionsView {
           helpHtml: state.generateSchemaHelpHtml,
           ariaLabel: state.generateSchemaHelpLabel,
         })}
-        <button data-role="${escapeHtml(this.getRoleName('generateSchemaButton', state))}">
+        <button data-role="${escapeHtml(this.getRoleName('generateSchemaButton', state))}" aria-label="${escapeHtml(
+          state.generateSchemaLabel
+        )}" title="${escapeHtml(state.generateSchemaLabel)}">
           ${renderIconHtml('grid', { className: 'app-icon shared-file-action-icon generator-file-icon' })}
           ${escapeHtml(state.generateSchemaLabel)}
         </button>

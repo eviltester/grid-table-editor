@@ -10,6 +10,7 @@ import {
   buildScenarioCoverageSummary,
   buildRuntimeInteractionScenarios,
   buildUiInteractionScenarios,
+  buildPageWiringSmokeInteractionScenarios,
   CUSTOM_SOURCE_TYPES,
   FAKER_INTERACTION_COMMANDS,
   getScenarioExecutionStatus,
@@ -180,5 +181,31 @@ describe('schema interaction scenario builder', () => {
     expect(getScenarioExecutionStatus(blankRegexScenario)).toBe('non-executable');
     expect(runtimeScenarios.some((scenario) => scenario.id === 'custom-regex-empty')).toBe(false);
     expect(uiScenarios.some((scenario) => scenario.id === 'custom-regex-empty')).toBe(false);
+  });
+
+  test('page-wiring smoke subset covers the retained semantic lanes', () => {
+    const scenarios = buildPageWiringSmokeInteractionScenarios();
+
+    expect(scenarios).toHaveLength(5);
+    expect(scenarios.some((scenario) => scenario.sourceType === 'literal' && scenario.origins.includes('custom'))).toBe(
+      true
+    );
+    expect(scenarios.some((scenario) => scenario.sourceType === 'regex' && scenario.origins.includes('custom'))).toBe(
+      true
+    );
+    expect(
+      scenarios.some((scenario) => scenario.sourceType === 'faker' && scenario.command === 'helpers.arrayElement')
+    ).toBe(true);
+    expect(
+      scenarios.some(
+        (scenario) =>
+          scenario.sourceType === 'domain' &&
+          scenario.command === 'commerce.price' &&
+          scenario.origins.includes('example')
+      )
+    ).toBe(true);
+    expect(scenarios.some((scenario) => scenario.sourceType === 'enum' && scenario.pairwiseEligible === true)).toBe(
+      true
+    );
   });
 });

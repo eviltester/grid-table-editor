@@ -306,7 +306,7 @@ export const SampleSchema = {
 export const ValidationError = {
   render: renderSharedSchemaDefinitionStory,
   args: {
-    initialText: 'Status\nenum(active,inactive)',
+    initialText: 'Status\nactive,inactive',
     showErrors: true,
     startInTextMode: false,
   },
@@ -335,7 +335,7 @@ export const ValidationError = {
 export const TextMode = {
   render: renderSharedSchemaDefinitionStory,
   args: {
-    initialText: 'Status\nenum(active,inactive,pending)',
+    initialText: 'Status\nactive,inactive,pending',
     showErrors: true,
     startInTextMode: true,
   },
@@ -351,7 +351,7 @@ export const TextMode = {
     expectTextModeVisible(canvasElement);
     const textArea = within(canvasElement).getByRole('textbox', { name: /schema text/i });
     await expect(textArea.value).toContain('Status');
-    await expect(textArea.value).toContain('enum(active,inactive,pending)');
+    await expect(textArea.value).toContain('active,inactive,pending');
     const helpIcon = canvasElement.querySelector('[data-role="schema-mode-help"]');
     await userEvent.hover(helpIcon);
     await expectSchemaHelpContent(helpIcon, { helpHeadingText: 'Edit as Schema' });
@@ -363,9 +363,9 @@ export const ConstrainedTextMode = {
   render: renderSharedSchemaDefinitionStory,
   args: {
     initialText: `Priority
-enum(high,low)
+enum("high","low")
 Status
-enum(open,closed)
+enum("open","closed")
 IF [Priority] = "high" THEN [Status] = "open" ENDIF`,
     showErrors: true,
     startInTextMode: true,

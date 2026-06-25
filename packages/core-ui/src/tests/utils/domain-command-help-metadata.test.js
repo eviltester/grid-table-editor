@@ -29,7 +29,7 @@ describe('domain command help metadata docs links', () => {
           sourceType: 'domain',
           command: 'datatype.enum',
           params: 'active,inactive,pending',
-          ruleSpec: 'datatype.enum(active,inactive,pending)',
+          ruleSpec: 'datatype.enum("active","inactive","pending")',
         },
       })
     ).toBe(true);
@@ -39,7 +39,7 @@ describe('domain command help metadata docs links', () => {
           sourceType: 'domain',
           command: 'datatype.enum',
           params: 'active,inactive,pending',
-          ruleSpec: 'datatype.enum(active,inactive,pending)',
+          ruleSpec: 'datatype.enum("active","inactive","pending")',
         },
       })
     ).toBe(false);

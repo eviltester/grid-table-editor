@@ -1,4 +1,12 @@
 import { validateBooleanValue } from '../../../command-help/command-help-validators.js';
+import { createNumericArgRangeValidator } from '../../../domain/domain-keyword-arg-validators.js';
+
+const validateBooleanProbability = createNumericArgRangeValidator({
+  argName: 'probability',
+  min: 0,
+  max: 1,
+  description: 'Invalid keyword arguments: argument "probability" must be between 0 and 1',
+});
 
 const DATATYPE_BOOLEAN_KEYWORD_DEFINITION = {
   keyword: 'datatype.boolean',
@@ -12,6 +20,7 @@ const DATATYPE_BOOLEAN_KEYWORD_DEFINITION = {
     docsUrl: 'https://anywaydata.com/docs/test-data/domain/datatype',
     fakerDocsUrl: 'https://fakerjs.dev/api/datatype',
     validator: validateBooleanValue,
+    argsValidator: validateBooleanProbability,
     returnType: 'boolean',
     usageExamples: [
       {

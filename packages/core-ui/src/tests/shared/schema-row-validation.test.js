@@ -84,6 +84,31 @@ describe('schema-row-validation', () => {
     ]);
   });
 
+  test('reports missing helpers.rangeToNumber max through the shared row validation path', () => {
+    const issues = getSchemaRowSemanticValidationIssues(
+      {
+        name: 'Number',
+        sourceType: 'faker',
+        command: 'helpers.rangeToNumber',
+        params: '({ min: 5 })',
+      },
+      0,
+      {
+        schemaTextToDataRules,
+        faker,
+        RandExp,
+      }
+    );
+
+    expect(issues).toEqual([
+      expect.objectContaining({
+        code: 'compiler_validation_error',
+        field: 'params',
+        message: 'Row 1: invalid faker params - Invalid Faker API Call helpers.rangeToNumber range object requires max',
+      }),
+    ]);
+  });
+
   test('merges precomputed semantic issues into row validation state', () => {
     const issues = getSchemaRowValidationIssues(
       {
@@ -147,6 +172,50 @@ describe('schema-row-validation', () => {
         code: 'missing_regex_value',
         field: 'value',
         message: 'Row 1: regex value is required.',
+      }),
+    ]);
+  });
+
+  test('reports missing enum value for blank enum rows', () => {
+    const issues = getSchemaRowValidationIssues(
+      {
+        name: 'Status',
+        sourceType: 'enum',
+        value: '   ',
+      },
+      0
+    );
+
+    expect(issues).toEqual([
+      expect.objectContaining({
+        code: 'missing_enum_value',
+        field: 'value',
+        message: 'Row 1: enum value is required.',
+      }),
+    ]);
+  });
+
+  test('reports missing datatype.enum values through the shared row validation path', () => {
+    const issues = getSchemaRowSemanticValidationIssues(
+      {
+        name: 'Status',
+        sourceType: 'domain',
+        command: 'datatype.enum',
+        params: '',
+      },
+      0,
+      {
+        schemaTextToDataRules,
+        faker,
+        RandExp,
+      }
+    );
+
+    expect(issues).toEqual([
+      expect.objectContaining({
+        code: 'compiler_validation_error',
+        field: 'params',
+        message: 'Row 1: invalid domain params - Invalid keyword arguments: argument "values" is required',
       }),
     ]);
   });

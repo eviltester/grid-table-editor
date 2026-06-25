@@ -10,6 +10,7 @@ import {
   createPairwiseTableFromGenerator,
   createCombinationsTableFromGenerator,
 } from './generation-runtime.js';
+import { EnumParser } from '@anywaydata/core/data_generation/utils/enumParser.js';
 
 function createGeneratorFromDataRules({ dataRules = [], TestDataGeneratorClass, faker, RandExp }) {
   const generator = new TestDataGeneratorClass(faker, RandExp);
@@ -130,6 +131,9 @@ function createConfiguredGeneratorFromSchemaRows({
       .trim()
       .toLowerCase() === 'datatype.enum';
 
+  const toCanonicalEnumDomainRuleSpec = (row) =>
+    EnumParser.normalizeToCanonicalDomainRuleSpec(buildRuleSpecFromSchemaRow(row));
+
   const { errors, rows } = validateSchemaRows(schemaRows);
   if (errors.length > 0) {
     return { generator: null, errors, rows: [] };
@@ -157,8 +161,10 @@ function createConfiguredGeneratorFromSchemaRows({
       return;
     }
     if (row.sourceType === SOURCE_TYPE_FAKER || row.sourceType === SOURCE_TYPE_DOMAIN) {
-      rule.type = isDatatypeEnumDomainRow(row) ? SOURCE_TYPE_ENUM : row.sourceType;
-      rule.ruleSpec = buildRuleSpecFromSchemaRow(row);
+      rule.type = isDatatypeEnumDomainRow(row) ? SOURCE_TYPE_DOMAIN : row.sourceType;
+      rule.ruleSpec = isDatatypeEnumDomainRow(row)
+        ? toCanonicalEnumDomainRuleSpec(row)
+        : buildRuleSpecFromSchemaRow(row);
       return;
     }
     if (row.sourceType === SOURCE_TYPE_LITERAL) {
@@ -167,8 +173,8 @@ function createConfiguredGeneratorFromSchemaRows({
       return;
     }
     if (row.sourceType === SOURCE_TYPE_ENUM) {
-      rule.type = SOURCE_TYPE_ENUM;
-      rule.ruleSpec = buildRuleSpecFromSchemaRow(row);
+      rule.type = SOURCE_TYPE_DOMAIN;
+      rule.ruleSpec = toCanonicalEnumDomainRuleSpec(row);
       return;
     }
     rule.type = SOURCE_TYPE_REGEX;

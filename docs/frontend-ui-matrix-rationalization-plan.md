@@ -70,7 +70,7 @@ The frontend test stack should follow these rules:
 
 ## Current State
 
-Current matrix suites under `packages/core-ui/src/tests/interaction/matrix/` cover three different concerns:
+Current matrix suites under `packages/core-ui/src/tests/interaction/matrix/` cover two retained concerns:
 
 - `schema-interaction-runtime-matrix.test.js`
   - scenario execution against the runtime/data-generation layer
@@ -78,10 +78,8 @@ Current matrix suites under `packages/core-ui/src/tests/interaction/matrix/` cov
   - standalone generator UI scenario execution in JSDOM
 - `app-schema-interaction-matrix.test.js`
   - embedded app test-data panel scenario execution in JSDOM
-- `ui-schema-interaction-parity.test.js`
-  - parity comparison between app and generator scenario outputs
 
-The current issue is not that matrix coverage is useless. The issue is that the app/generator UI and parity matrices now overlap heavily with shared component tests and browser flows, while still being expensive and brittle.
+The app/generator UI matrices are intentionally small page-wiring smoke suites. Broad app-vs-generator parity coverage was removed because both pages now exercise the same shared internals, while runtime semantics, focused component tests, and browser workflows provide clearer protection.
 
 ## Keep / Reduce / Remove Guidance
 
@@ -150,14 +148,14 @@ Exit criteria:
 - There is a documented target layer for every major test-data behavior.
 - We have a replacement destination for any matrix assertion we plan to remove.
 
-## Phase 3: Shrink Cross-Page Parity To A Representative Contract
+## Phase 3: Retire Broad Cross-Page Parity
 
-Goal: keep only the parity checks that still prove something unique.
+Goal: keep cross-page checks only where they prove something unique.
 
-- [ ] Replace the large `ui-schema-interaction-parity.test.js` sweep with a much smaller representative parity set.
-- [ ] Keep scenarios only for composition points that can still diverge between app and generator.
-- [ ] Prefer exact parity checks for a few canonical scenarios rather than structural parity checks for many scenarios.
-- [ ] Remove parity cases that merely re-prove shared component output through both shells.
+- [x] Remove the large `ui-schema-interaction-parity.test.js` sweep.
+- [x] Remove parity fixture generation and static parity/report artifacts.
+- [x] Keep app and generator page coverage as separate smoke suites so failures identify the broken shell directly.
+- [x] Rely on runtime matrix coverage for broad scenario semantics and browser tests for user-visible workflows.
 
 Candidate parity survivors:
 
@@ -169,8 +167,8 @@ Candidate parity survivors:
 
 Exit criteria:
 
-- Cross-page parity coverage is small, fast, and easy to interpret.
-- Failing parity tests point to real app-vs-generator divergence, not broad duplicated behavior.
+- Cross-page parity coverage no longer duplicates shared component output through both shells.
+- Failing page-shell tests point to the app or generator wiring that actually regressed.
 
 ## Phase 4: Move Shared Behavior Coverage Down To Components
 
@@ -218,9 +216,9 @@ Exit criteria:
 
 Goal: reduce maintenance overhead in the test infrastructure itself.
 
-- [ ] Remove harness code that exists only for broad parity sweeps no longer required.
+- [x] Remove harness code that exists only for broad parity sweeps no longer required.
 - [ ] Simplify app/generator interaction harnesses to the smaller retained scenario sets.
-- [ ] Delete helper utilities and fixture complexity that no longer serve a retained suite.
+- [x] Delete helper utilities and fixture complexity that no longer serve a retained suite.
 - [ ] Update contributor docs so the intended role of runtime matrix, component tests, and browser tests is explicit.
 
 Exit criteria:
@@ -248,7 +246,7 @@ Exit criteria:
 
 This plan is complete when:
 
-- broad duplicated app-vs-generator parity coverage has been reduced to a small intentional contract
+- broad duplicated app-vs-generator parity coverage has been retired in favor of separate smoke suites
 - shared behavior is primarily covered by component tests
 - page-specific behavior is primarily covered by focused integration and browser tests
 - runtime semantics remain covered independently of page-shell duplication
@@ -260,7 +258,7 @@ The safest first implementation slice is:
 
 1. Complete Phase 0 and Phase 1 as a paper audit.
 2. Complete Phase 2 as the replacement coverage model.
-3. Shrink `ui-schema-interaction-parity.test.js` to a representative subset.
+3. Retire `ui-schema-interaction-parity.test.js` once app/generator smoke coverage is in place.
 4. Keep the runtime matrix unchanged.
 5. Re-run coverage review before shrinking the app and generator JSDOM matrices.
 
@@ -268,18 +266,19 @@ That path removes the most obvious duplication first while preserving the highes
 
 ### Current Status
 
-- The runtime matrix remains unchanged.
+- The runtime matrix remains the broad generated safety net.
 - `app-schema-interaction-matrix.test.js` and `generator-schema-interaction-matrix.test.js` now run a page-wiring smoke subset instead of the full shared `uiScenarios` fixture.
-- The retained page-shell smoke scenarios are:
-  - `custom-literal-base`
-  - `custom-regex-base`
-  - `faker-helpers-arrayElement-base`
-  - `domain-commerce-price-example-1`
-  - `custom-enum-pairwise`
+- The retained page-shell smoke scenarios are selected by semantic coverage lane:
+  - custom literal
+  - custom regex
+  - faker `helpers.arrayElement`
+  - domain `commerce.price` example with guided params
+  - enum pairwise
 - The smoke subset keeps:
   - simple schema editing and generate wiring
   - regex/text synchronization coverage
   - one representative faker helper flow
   - one representative domain/options flow
   - pairwise wiring coverage
-- The broader semantics matrix still lives in `schema-interaction-runtime-matrix.test.js`, with parity sweeps remaining opt-in.
+- The broad app-vs-generator parity sweep, parity fixture writer, parity fixture JSON, and static matrix summary artifact have been removed.
+- The retained matrix formatting helper only formats chunk labels and command summaries for the active runtime and smoke suites.

@@ -54,6 +54,7 @@ function normalizeFakerHelperKeywordHelp(definition) {
     ? definition.params.map((param) => ({
         name: String(param.name || '').trim(),
         optional: param.optional !== false,
+        positionalOnly: param.positionalOnly === true,
         type: String(param.type || '').trim(),
         description: String(param.description || '').trim(),
         examples: Array.isArray(param.examples) ? param.examples : [],

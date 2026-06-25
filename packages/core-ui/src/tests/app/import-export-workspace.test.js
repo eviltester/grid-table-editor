@@ -114,6 +114,11 @@ describe('ImportExportWorkspace', () => {
     expect(documentObj.querySelector('[data-role="grid-preview-sync-root"] #settextfromgridbutton')).not.toBeNull();
     expect(documentObj.querySelector('[data-role="import-export-toolbar-details"] #settextfromgridbutton')).toBeNull();
     expect(documentObj.querySelector('[data-role="import-export-toolbar-details"]')?.open).toBe(false);
+    expect(documentObj.querySelector('[data-role="import-export-toolbar-root"]')?.hasAttribute('inert')).toBe(true);
+    expect(documentObj.querySelector('[data-role="import-export-toolbar-root"]')?.inert).toBe(true);
+    expect(documentObj.querySelector('[data-role="import-export-toolbar-root"]')?.getAttribute('aria-hidden')).toBe(
+      'true'
+    );
     expect(
       documentObj.querySelector('[data-role="import-export-toolbar-details"] [data-role="auto-preview-checkbox"]')
     ).toBeNull();
@@ -154,6 +159,34 @@ describe('ImportExportWorkspace', () => {
 
     expect(component.getState().previewRowLimit).toBe(50);
     expect(getPreviewRowCountInput(documentObj).value).toBe('50');
+
+    component.destroy();
+    dom.window.close();
+  });
+
+  test('excludes collapsed import/export toolbar content from focus order until opened', () => {
+    const { component, documentObj, dom } = createHarness();
+    const toolbarDetails = documentObj.querySelector('[data-role="import-export-toolbar-details"]');
+    const toolbarRoot = documentObj.querySelector('[data-role="import-export-toolbar-root"]');
+
+    expect(toolbarDetails.open).toBe(false);
+    expect(toolbarRoot.hasAttribute('inert')).toBe(true);
+    expect(toolbarRoot.inert).toBe(true);
+    expect(toolbarRoot.getAttribute('aria-hidden')).toBe('true');
+
+    component.openDetails();
+
+    expect(toolbarDetails.open).toBe(true);
+    expect(toolbarRoot.hasAttribute('inert')).toBe(false);
+    expect(toolbarRoot.inert).toBe(false);
+    expect(toolbarRoot.getAttribute('aria-hidden')).toBeNull();
+
+    toolbarDetails.open = false;
+    fireEvent(toolbarDetails, new dom.window.Event('toggle'));
+
+    expect(toolbarRoot.hasAttribute('inert')).toBe(true);
+    expect(toolbarRoot.inert).toBe(true);
+    expect(toolbarRoot.getAttribute('aria-hidden')).toBe('true');
 
     component.destroy();
     dom.window.close();

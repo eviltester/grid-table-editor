@@ -3,6 +3,7 @@ import { RegexTestDataRuleValidator } from './regex/regexTestDataRuleValidator.j
 import { EnumTestDataRuleValidator } from './enum/enumTestDataRuleValidator.js';
 import { DomainTestDataRuleValidator } from './domain/domainTestDataRuleValidator.js';
 import { SchemaParsingErrors } from './schema-parsing-errors.js';
+import { EnumParser } from './utils/enumParser.js';
 
 /*
     'Compilation' of rules is where we try to identify if the rules are
@@ -66,15 +67,17 @@ export class TestDataRulesCompiler {
 
         // Check for enum patterns first
         if (this.isEnumPattern(rule.ruleSpec)) {
+          const parsedEnumRule = EnumParser.parseEnumRuleSpec(rule.ruleSpec);
           enumValidator.validate(rule);
           if (enumValidator.isValid()) {
             this.compilationReportLines.push(`${rule.name} is a valid 'enum': ${rule.ruleSpec}`);
-            rule.type = 'enum';
+            rule.ruleSpec = EnumParser.normalizeToCanonicalDomainRuleSpec(rule.ruleSpec);
+            rule.type = 'domain';
           } else {
             this.compilationReportLines.push(
               `${rule.name} is not a valid 'enum': ${enumValidator.getValidationError()}`
             );
-            rule.type = 'literal';
+            rule.type = parsedEnumRule.explicit ? 'domain' : 'enum';
           }
         } else {
           if (this.isDomainHelpersPattern(rule.ruleSpec)) {
@@ -140,6 +143,13 @@ export class TestDataRulesCompiler {
           if (rule.type === 'regex' && this.isRegexPattern(rule.ruleSpec)) {
             rule.ruleSpec = this.extractRegexValue(rule.ruleSpec);
           }
+          if (rule.type === 'enum') {
+            enumValidator.validate(rule);
+            if (enumValidator.isValid()) {
+              rule.ruleSpec = EnumParser.normalizeToCanonicalDomainRuleSpec(rule.ruleSpec);
+              rule.type = 'domain';
+            }
+          }
         }
       }
     });
@@ -197,31 +207,7 @@ export class TestDataRulesCompiler {
   }
 
   isEnumPattern(ruleSpec) {
-    const spec = String(ruleSpec || '').trim();
-
-    // Check for awd enum formats: enum(), datatype.enum(), awd.datatype.enum()
-    if (spec.match(/^(enum|datatype\.enum|awd\.datatype\.enum)\s*\(/)) {
-      return true;
-    }
-
-    // Check for simple comma-separated values that look like enums
-    if (spec.includes(',')) {
-      const values = spec.split(',').map((v) => v.trim());
-      // Must have at least 2 values
-      if (values.length >= 2) {
-        // Values should be reasonably short (not code/expressions)
-        if (values.every((v) => v.length > 0 && v.length <= 50)) {
-          // Values shouldn't look like regex/function syntax.
-          // Dotted literals such as versions (1.0) or domains (example.com) are valid,
-          // but faker-like dotted member paths (e.g. person.firstName) should not be enums.
-          if (!values.some((v) => /[[\]{}()^$*+?|\\]/.test(v) || (v.includes('.') && /[A-Z]/.test(v)))) {
-            return true;
-          }
-        }
-      }
-    }
-
-    return false;
+    return EnumParser.isEnumRuleSpec(ruleSpec);
   }
 
   isLiteralPattern(ruleSpec) {

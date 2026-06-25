@@ -38,9 +38,9 @@ describe('EnumTestDataGenerator', () => {
       expect(['S', 'M', 'L']).toContain(result.data);
     });
 
-    test('generates from unquoted enum format', () => {
+    test('generates from schema shorthand CSV values', () => {
       const generator = new EnumTestDataGenerator();
-      const rule = new TestDataRule('HttpMethod', 'enum(GET,POST,PUT,DELETE)');
+      const rule = new TestDataRule('HttpMethod', 'GET,POST,PUT,DELETE');
       rule.type = 'enum';
 
       const result = generator.generateFrom(rule);
@@ -49,9 +49,9 @@ describe('EnumTestDataGenerator', () => {
       expect(['GET', 'POST', 'PUT', 'DELETE']).toContain(result.data);
     });
 
-    test('generates from mixed quoted and unquoted enum format', () => {
+    test('generates from mixed quoted and unquoted schema shorthand CSV values', () => {
       const generator = new EnumTestDataGenerator();
-      const rule = new TestDataRule('Type', 'enum(basic,"with space",advanced)');
+      const rule = new TestDataRule('Type', 'basic,"with space",advanced');
       rule.type = 'enum';
 
       const result = generator.generateFrom(rule);
@@ -102,11 +102,20 @@ describe('EnumTestDataGenerator', () => {
   });
 
   describe('format detection', () => {
-    test('detects awd enum formats', () => {
-      expect(EnumParser.isAwdEnumFormat('enum("A", "B")')).toBe(true);
-      expect(EnumParser.isAwdEnumFormat('datatype.enum("A", "B")')).toBe(true);
-      expect(EnumParser.isAwdEnumFormat('awd.datatype.enum("A", "B")')).toBe(true);
-      expect(EnumParser.isAwdEnumFormat('A,B,C')).toBe(false);
+    test('detects enum invocation shape without validating values', () => {
+      expect(EnumParser.hasEnumInvocationShape('enum("A", "B")')).toBe(true);
+      expect(EnumParser.hasEnumInvocationShape('datatype.enum("A", "B")')).toBe(true);
+      expect(EnumParser.hasEnumInvocationShape('awd.datatype.enum("A", "B")')).toBe(true);
+      expect(EnumParser.hasEnumInvocationShape('datatype.enum()')).toBe(true);
+      expect(EnumParser.isCanonicalSchemaSerializableEnumRuleSpec('datatype.enum()')).toBe(false);
+      expect(EnumParser.hasEnumInvocationShape('datatype.enum("A") trailing')).toBe(false);
+      expect(EnumParser.hasEnumInvocationShape('A,B,C')).toBe(false);
+    });
+
+    test('detects only complete canonical domain enum invocations', () => {
+      expect(EnumParser.isCanonicalDomainEnumRuleSpec('datatype.enum("A", "B")')).toBe(true);
+      expect(EnumParser.isCanonicalDomainEnumRuleSpec('datatype.enum("A") trailing')).toBe(false);
+      expect(EnumParser.isCanonicalDomainEnumRuleSpec('datatype.enum()')).toBe(false);
     });
   });
 });

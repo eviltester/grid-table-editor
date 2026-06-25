@@ -79,7 +79,7 @@ export const Default = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const downloadButton = canvas.getByRole('button', { name: /\.csv Download/i });
+    const downloadButton = canvas.getByRole('button', { name: 'Download file' });
     await expect(downloadButton).toBeEnabled();
     await userEvent.click(downloadButton);
     await expect(canvas.getByText('action:download')).toBeVisible();
@@ -101,7 +101,7 @@ export const Busy = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await expect(canvas.getByRole('button', { name: /\.csv Download/i })).toBeDisabled();
+    await expect(canvas.getByRole('button', { name: 'Download file' })).toBeDisabled();
     await expect(canvas.getByText('Generating export text...')).toBeVisible();
   },
 };

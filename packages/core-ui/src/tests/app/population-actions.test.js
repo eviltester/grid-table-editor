@@ -68,6 +68,9 @@ describe('PopulationActions', () => {
     expect(helpButtons[1].getAttribute('data-help-text')).toContain('Generate n-wise combinations to grid.');
     expect(generateSchemaButton.textContent).toContain('Grid to Enum Schema');
     expect(helpButtons[2].getAttribute('data-help-text')).toContain('enum-only schema');
+    expect(generateButton.getAttribute('aria-label')).toBe('Generate');
+    expect(generatePairwiseButton.getAttribute('aria-label')).toBe('Generate Combinations');
+    expect(generateSchemaButton.getAttribute('aria-label')).toBe('Grid to Enum Schema');
     expect(generateButton.querySelector('svg.shared-file-action-icon')).not.toBeNull();
     expect(generatePairwiseButton.querySelector('svg.shared-file-action-icon')).not.toBeNull();
     expect(generateSchemaButton.querySelector('svg.shared-file-action-icon')).not.toBeNull();

@@ -134,6 +134,7 @@ describe('faker command help metadata', () => {
       expect.arrayContaining([
         expect.objectContaining({
           name: 'numberOrRange',
+          positionalOnly: true,
           description: expect.stringContaining('range object'),
         }),
       ])

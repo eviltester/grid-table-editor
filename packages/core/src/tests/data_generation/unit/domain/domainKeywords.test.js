@@ -400,6 +400,18 @@ describe('domain keyword delegation', () => {
     expect(executeDomainKeyword('autoIncrement.sequence', { args: [], autoIncrementState: state })).toBe(2);
   });
 
+  test('executes datatype.enum from CSV strings and string arrays', () => {
+    const originalRandom = Math.random;
+    Math.random = () => 0;
+
+    try {
+      expect(executeDomainKeyword('datatype.enum', { args: ['active,inactive'] })).toBe('active');
+      expect(executeDomainKeyword('datatype.enum', { args: [['active', 'inactive']] })).toBe('active');
+    } finally {
+      Math.random = originalRandom;
+    }
+  });
+
   test('allows custom literal delegate to override built-in behavior', () => {
     const result = executeDomainKeyword('literal.value', {
       customDelegates: {
@@ -436,6 +448,19 @@ describe('domain keyword arg validation', () => {
     });
   });
 
+  test('treats comma-separated list metadata as string-compatible for datatype.enum', () => {
+    const keyword = getDomainKeywordByAlias('datatype.enum');
+    const result = validateDomainKeywordArgs(keyword, ['active,inactive,pending']);
+    expect(result).toEqual({ ok: true });
+  });
+
+  test('treats CSV strings and string arrays as enum value lists for datatype.enum', () => {
+    const keyword = getDomainKeywordByAlias('datatype.enum');
+
+    expect(validateDomainKeywordArgs(keyword, ['active,inactive'])).toEqual({ ok: true });
+    expect(validateDomainKeywordArgs(keyword, [['active', 'inactive']])).toEqual({ ok: true });
+  });
+
   test('rejects reversed number bounds before generation', () => {
     const keyword = getDomainKeywordByAlias('number.int');
     const result = validateDomainKeywordArgs(keyword, [47, 32]);
@@ -443,6 +468,39 @@ describe('domain keyword arg validation', () => {
     expect(result).toEqual({
       ok: false,
       error: 'Invalid keyword arguments: argument "min" must be less than or equal to argument "max"',
+    });
+  });
+
+  test('rejects number.int multipleOf zero before generation', () => {
+    const keyword = getDomainKeywordByAlias('number.int');
+    const result = validateDomainKeywordArgs(keyword, [1, 10, 0]);
+
+    expect(result).toEqual({
+      ok: false,
+      error: 'Invalid keyword arguments: argument "multipleOf" must be greater than 0',
+    });
+  });
+
+  test('rejects datatype.boolean probability outside documented range', () => {
+    const keyword = getDomainKeywordByAlias('datatype.boolean');
+
+    expect(validateDomainKeywordArgs(keyword, [2])).toEqual({
+      ok: false,
+      error: 'Invalid keyword arguments: argument "probability" must be between 0 and 1',
+    });
+    expect(validateDomainKeywordArgs(keyword, [-0.1])).toEqual({
+      ok: false,
+      error: 'Invalid keyword arguments: argument "probability" must be between 0 and 1',
+    });
+  });
+
+  test('rejects negative date.recent days before generation', () => {
+    const keyword = getDomainKeywordByAlias('date.recent');
+    const result = validateDomainKeywordArgs(keyword, [-7]);
+
+    expect(result).toEqual({
+      ok: false,
+      error: 'Invalid keyword arguments: argument "days" must be greater than or equal to 0',
     });
   });
 
@@ -603,6 +661,9 @@ describe('faker keyword invocation styles', () => {
   for (const keyword of fakerKeywordsWithArgs) {
     test(`${keyword.keyword} supports equivalent positional and named argument invocation`, () => {
       const sampleArgs = keyword.help.args.map((arg) => sampleValueForType(arg.type));
+      if (keyword.keyword === 'datatype.boolean') {
+        sampleArgs[0] = 0.5;
+      }
       if (keyword.keyword === 'string.uuid' && sampleArgs.length >= 2) {
         sampleArgs[0] = 7;
       }

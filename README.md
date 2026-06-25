@@ -102,7 +102,7 @@ name
 rule
 
 # compact pict-style alternative
-status: enum(active,inactive)
+status: active,inactive
 
 IF [name] = "Bob" THEN [status] = "active" ENDIF
 ```

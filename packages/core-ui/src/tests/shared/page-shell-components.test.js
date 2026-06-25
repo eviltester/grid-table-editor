@@ -43,6 +43,8 @@ describe('page shell components', () => {
     expect(root.querySelector('#main-grid-view')).not.toBeNull();
     expect(root.querySelector('#import-export-controls')).not.toBeNull();
     expect(root.querySelector('#testDataGeneratorContainer')).not.toBeNull();
+    expect(root.querySelector('[data-role="test-data-details-content"]')?.hasAttribute('inert')).toBe(false);
+    expect(root.querySelector('[data-role="test-data-details-content"]')?.getAttribute('aria-hidden')).toBeNull();
     expect(root.querySelector('.header')).toBeNull();
     expect(root.querySelector('#initial-load')).toBeNull();
     expect(root.querySelector('.testDataSchemaGui details')?.hasAttribute('open')).toBe(true);
@@ -60,6 +62,30 @@ describe('page shell components', () => {
         return element.tagName.toLowerCase();
       })
     ).toEqual(['main-grid-view', 'testDataSchemaGui', 'import-export-controls']);
+
+    component.destroy();
+    expect(root.children.length).toBe(0);
+  });
+
+  test('app page shell excludes collapsed test data content from focus order', () => {
+    const root = document.getElementById('root');
+    const component = createAppPageComponent({
+      root,
+    });
+    const detailsElement = root.querySelector('[data-role="test-data-details"]');
+    const contentElement = root.querySelector('[data-role="test-data-details-content"]');
+
+    expect(detailsElement.open).toBe(false);
+    expect(contentElement.hasAttribute('inert')).toBe(true);
+    expect(contentElement.inert).toBe(true);
+    expect(contentElement.getAttribute('aria-hidden')).toBe('true');
+
+    detailsElement.open = true;
+    detailsElement.dispatchEvent(new dom.window.Event('toggle'));
+
+    expect(contentElement.hasAttribute('inert')).toBe(false);
+    expect(contentElement.inert).toBe(false);
+    expect(contentElement.getAttribute('aria-hidden')).toBeNull();
 
     component.destroy();
     expect(root.children.length).toBe(0);

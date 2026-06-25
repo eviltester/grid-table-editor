@@ -96,33 +96,33 @@ For more complex scenarios, you can use function-based formats:
 ```
 # function style enum
 Priority
-enum(high,medium,low)
+high,medium,low
 
 # another function style enum
 Status
-enum(active,inactive,pending)
+active,inactive,pending
 ```
 
 #### Datatype enum() Function  
 ```
 # datatype enum form
 Priority
-datatype.enum(high,medium,low)
+datatype.enum(csv="high,medium,low")
 
 # second datatype enum
 Status
-datatype.enum(active,inactive,pending)
+datatype.enum(csv="active,inactive,pending")
 ```
 
 #### Full AWD enum() Function
 ```
 # fully-qualified enum form
 Priority
-awd.datatype.enum(high,medium,low)
+awd.datatype.enum(csv="high,medium,low")
 
 # fully-qualified enum form
 Status
-awd.datatype.enum(active,inactive,pending)
+awd.datatype.enum(csv="active,inactive,pending")
 ```
 
 ### Quoted Values for Complex Data
@@ -171,7 +171,7 @@ Consider testing an API with both categorical parameters (that need pairwise cov
 ```
 # pairwise enums
 HTTP Method
-enum(GET,POST,PUT,DELETE)
+GET,POST,PUT,DELETE
 
 # pairwise enums
 Content Type  

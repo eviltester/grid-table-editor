@@ -415,7 +415,7 @@ function createSharedSchemaEditorController({
         return { ...createBlankRow(), ...mapped };
       },
     });
-    if (parsed.errors.length > 0 && parsed.rows.length === 0) {
+    if (parsed.errors.length > 0) {
       if (showErrors) {
         setSchemaError(schemaErrorsToText(parsed.errors));
       }

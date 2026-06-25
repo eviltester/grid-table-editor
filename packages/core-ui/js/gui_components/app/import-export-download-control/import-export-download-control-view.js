@@ -27,7 +27,7 @@ class ImportExportDownloadControlView {
     return `
       <div class="import-export-download-control" data-role="download-control">
         <span data-help="${state.helpDataHelp}" data-help-role="help-icon" class="helpicon"></span>
-        <button type="button" id="filedownload" data-role="download-button"><span class="fileFormat" data-role="file-format-label">.csv</span> Download</button>
+        <button type="button" id="filedownload" data-role="download-button" aria-label="Download file" title="Download file"><span class="fileFormat" data-role="file-format-label">.csv</span> Download</button>
         <details class="export-encoding-settings" data-role="export-encoding-details">
           <summary class="export-encoding-settings__summary" data-role="export-encoding-summary" aria-label="Export settings">
             ${renderIconHtml('settings', { className: 'app-icon export-encoding-settings__icon' })}

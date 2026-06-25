@@ -1,5 +1,6 @@
 import { parseSchemaText, renderSchemaText } from './schema-conversion.js';
 import { SchemaParsingErrors } from './schema-parsing-errors.js';
+import { EnumParser } from './utils/enumParser.js';
 
 const SOURCE_TYPE_FAKER = 'faker';
 const SOURCE_TYPE_DOMAIN = 'domain';
@@ -51,11 +52,18 @@ function isDomainHelpersCommand(commandValue) {
   );
 }
 
+function isDomainEnumCommand(commandValue) {
+  return /^(?:datatype\.enum|awd\.datatype\.enum)$/i.test(String(commandValue || '').trim());
+}
+
 function buildRuleSpecFromRow(row) {
   const sourceType = normaliseSourceType(row?.sourceType);
   if (sourceType === SOURCE_TYPE_FAKER || sourceType === SOURCE_TYPE_DOMAIN) {
     const command = normaliseFakerCommand(row?.command);
     const params = String(row?.params ?? '').trim();
+    if (sourceType === SOURCE_TYPE_DOMAIN && isDomainEnumCommand(command)) {
+      return EnumParser.buildSchemaRuleSpecFromInput(params);
+    }
     return `${command}${params}`;
   }
   if (sourceType === SOURCE_TYPE_LITERAL) {
@@ -79,6 +87,9 @@ function buildRuleSpecFromRow(row) {
       return trimmedValue;
     }
     return value;
+  }
+  if (sourceType === SOURCE_TYPE_ENUM) {
+    return EnumParser.buildSchemaRuleSpecFromInput(row?.value);
   }
   return String(row?.value ?? '').trim();
 }

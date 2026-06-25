@@ -35,6 +35,8 @@ describe('ImportExportDownloadControl', () => {
     fireEvent.click(downloadButton);
 
     expect(downloadButton.id).toBe('filedownload');
+    expect(downloadButton.getAttribute('aria-label')).toBe('Download file');
+    expect(downloadButton.getAttribute('title')).toBe('Download file');
     expect(downloadButton.textContent).toContain('.xml');
     expect(lineEndingSelect.value).toBe('lf');
     expect(includeBomCheckbox.checked).toBe(false);

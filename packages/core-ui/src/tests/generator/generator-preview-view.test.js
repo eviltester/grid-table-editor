@@ -5,6 +5,13 @@ import { createGeneratorPreviewComponent } from '../../../js/gui_components/gene
 describe('GeneratorPreviewView', () => {
   let dom;
 
+  class FakeTabulator {
+    constructor(rootElement, options) {
+      this.rootElement = rootElement;
+      this.options = options;
+    }
+  }
+
   function getOutputPreviewTextArea() {
     return document.querySelector('[data-role="generator-output-preview"]');
   }
@@ -143,6 +150,27 @@ describe('GeneratorPreviewView', () => {
       global.window = originalWindow;
       isolatedDom.window.close();
     }
+  });
+
+  test('labels preview grid header filters for assistive technology', () => {
+    const root = document.getElementById('root');
+    const component = createGeneratorPreviewComponent({
+      root,
+      documentObj: document,
+      services: {
+        createRowCountControl: ({ root: rowCountRoot, props }) => {
+          rowCountRoot.innerHTML = `<input value="${props.value}" />`;
+          return { destroy() {} };
+        },
+        TabulatorCtor: FakeTabulator,
+      },
+    });
+
+    expect(component.getPreviewTableApi().options.columnDefaults.headerFilterParams).toEqual({
+      elementAttributes: { 'aria-label': 'Filter preview column' },
+    });
+
+    component.destroy();
   });
 
   test('supports two instances in one document with distinct ids', () => {

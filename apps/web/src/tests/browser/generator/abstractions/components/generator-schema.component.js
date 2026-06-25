@@ -17,8 +17,8 @@ class GeneratorSchemaComponent {
     this.storedSchemasSummary = this.container.getByText(/Managed Stored Schemas/);
     this.storedSchemasSaveAsButton = this.container.getByRole('button', { name: 'Save Schema As' });
     this.storedSchemasRecoverDraftButton = this.container.getByRole('button', { name: 'Recover Draft' });
-    this.storedSchemasLastUsedSelect = this.container.getByLabel('Last Used');
-    this.storedSchemasLoadLastUsedButton = this.container.getByRole('button', { name: /^Load$/ });
+    this.storedSchemasLastUsedSelect = this.container.getByRole('combobox', { name: 'Last Used' });
+    this.storedSchemasLoadLastUsedButton = this.container.getByRole('button', { name: 'Load last used schema' });
     this.storedSchemasLoadSavedButton = this.container.getByRole('button', { name: 'Load Saved Schema' });
     this.storedSchemasDialog = page.getByRole('dialog', { name: 'Saved Schemas' });
     this.textInputDialog = new TextInputDialogComponent(page);

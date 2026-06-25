@@ -1,12 +1,12 @@
 ---
 sidebar_position: 1.6
 title: "Generate to File"
-description: "Use generate.html for schema-first data generation with output preview and direct file download."
+description: "Use generator.html for schema-first data generation with output preview and direct file download."
 ---
 
 The **Generate to File** workflow is available at:
 
-- `https://anywaydata.com/generate.html`
+- `https://anywaydata.com/generator.html`
 
 It is designed for schema-driven generation where your main goal is to produce output files quickly.
 
@@ -50,7 +50,7 @@ See [All Pairs Combinatorial Testing](/docs/test-data/pairwise-testing) for deta
 
 ## Relationship to `app.html`
 
-Use `generate.html` when file output speed and schema-driven generation are the priority.
+Use `generator.html` when file output speed and schema-driven generation are the priority.
 
 Use `app.html` when you need richer interactive table editing before or after generation.
 

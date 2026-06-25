@@ -1,4 +1,4 @@
-import { getKnownFakerCommandsAlphabetical } from '../../shared/faker-commands.js';
+import { getAllowedFakerCommandsAlphabetical } from '../../shared/faker-commands.js';
 import { getKnownDomainCommandsAlphabetical } from '../../shared/domain-commands.js';
 import { buildSchemaModeHelpHtml } from '../../shared/test-data/help/schema-mode-help-builder.js';
 import { createSchemaEditingSession } from '../../shared/test-data/schema/schema-controller.js';
@@ -22,7 +22,7 @@ function createGeneratorPageSchemaServices({
   dataRulesToSchemaText,
   sampleSchemaText,
 } = {}) {
-  const fakerCommands = getKnownFakerCommandsAlphabetical().filter(
+  const fakerCommands = getAllowedFakerCommandsAlphabetical().filter(
     (command) => command !== 'RegEx' && command.startsWith('helpers.')
   );
   const domainCommands = getKnownDomainCommandsAlphabetical();

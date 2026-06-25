@@ -140,6 +140,26 @@ describe('params editor modal', () => {
     });
   });
 
+  test('builds positional-only params without named assignment for faker object arguments', () => {
+    const result = buildParamsTextFromEditorEntries({
+      entries: [
+        {
+          name: 'numberOrRange',
+          type: 'number | { min: number; max: number; }',
+          value: '{ min: 1, max: 9 }',
+          mode: 'raw',
+          optional: false,
+          positionalOnly: true,
+        },
+      ],
+    });
+
+    expect(result).toEqual({
+      paramsText: '({ min: 1, max: 9 })',
+      errors: [],
+    });
+  });
+
   test('reports missing earlier params before later params are used', () => {
     const result = buildParamsTextFromEditorEntries({
       entries: [
@@ -199,7 +219,15 @@ describe('params editor modal', () => {
       commandLabel: 'datatype.enum',
       helpModel: {
         summary: 'Enum helper',
-        params: [{ name: 'values', type: 'comma-separated list', optional: false, example: 'active,inactive' }],
+        params: [
+          {
+            name: 'values',
+            type: 'comma-separated list',
+            optional: false,
+            variadic: true,
+            example: 'active,inactive',
+          },
+        ],
       },
       initialParams: '',
     });
@@ -222,13 +250,82 @@ describe('params editor modal', () => {
     expect(error.textContent).toBe('');
     expect(error.hidden).toBe(true);
     expect(
-      within(dialog).getByText('(values=active,inactive,pending)', {
+      within(dialog).getByText('(active,inactive,pending)', {
         selector: '[data-role="params-editor-preview"]',
       })
     ).toBeTruthy();
 
     fireEvent.click(applyButton);
-    await expect(promise).resolves.toBe('(values=active,inactive,pending)');
+    await expect(promise).resolves.toBe('(active,inactive,pending)');
+  });
+
+  test('keeps keyboard focus inside the params editor dialog when tabbing past the edges', async () => {
+    const promise = openParamsEditorModal({
+      documentObj: document,
+      windowObj: window,
+      commandLabel: 'faker.helpers.rangeToNumber',
+      helpModel: {
+        summary: 'Range helper',
+        params: [
+          {
+            name: 'numberOrRange',
+            type: 'number | { min: number; max: number; }',
+            optional: false,
+            positionalOnly: true,
+            example: '{ min: 1, max: 9 }',
+          },
+        ],
+      },
+      initialParams: '',
+    });
+
+    const dialog = within(getOverlay()).getByRole('dialog', {
+      name: /edit params for faker\.helpers\.rangetonumber/i,
+    });
+    const input = within(dialog).getByRole('textbox', { name: /numberorrange value/i });
+    const cancelButton = within(dialog).getByRole('button', { name: /^cancel$/i });
+
+    cancelButton.focus();
+    expect(fireEvent.keyDown(cancelButton, { key: 'Tab' })).toBe(false);
+    const firstWrappedElement = document.activeElement;
+    expect(dialog.contains(firstWrappedElement)).toBe(true);
+    expect(firstWrappedElement).not.toBe(cancelButton);
+
+    firstWrappedElement.focus();
+    expect(fireEvent.keyDown(firstWrappedElement, { key: 'Tab', shiftKey: true })).toBe(false);
+    expect(document.activeElement).toBe(cancelButton);
+
+    input.focus();
+    expect(fireEvent.keyDown(input, { key: 'Tab' })).toBe(true);
+    expect(document.activeElement).toBe(input);
+
+    fireEvent.click(cancelButton);
+    await expect(promise).resolves.toBeNull();
+  });
+
+  test('restores focus to the trigger after closing with escape', async () => {
+    const trigger = document.createElement('button');
+    trigger.textContent = 'Edit params';
+    document.body.appendChild(trigger);
+    trigger.focus();
+
+    const promise = openParamsEditorModal({
+      documentObj: document,
+      windowObj: window,
+      commandLabel: 'number.int',
+      helpModel: {
+        summary: 'Integer helper',
+        params: [{ name: 'min', type: 'integer', optional: true }],
+      },
+      initialParams: '',
+    });
+
+    const dialog = within(getOverlay()).getByRole('dialog', { name: /edit params for number\.int/i });
+    await new Promise((resolve) => window.setTimeout(resolve, 0));
+    expect(dialog.contains(document.activeElement)).toBe(true);
+    fireEvent.keyDown(dialog, { key: 'Escape' });
+    await expect(promise).resolves.toBeNull();
+    expect(document.activeElement).toBe(trigger);
   });
 
   test('shows a warning when existing params cannot be mapped to the documented fields', async () => {

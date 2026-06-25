@@ -110,6 +110,7 @@ describe('help-model-builder', () => {
     expect(model.params).toEqual([
       expect.objectContaining({
         name: 'values',
+        type: 'comma-separated list|array',
         variadic: true,
         optional: false,
       }),

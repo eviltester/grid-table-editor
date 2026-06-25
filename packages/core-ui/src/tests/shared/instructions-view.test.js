@@ -41,9 +41,12 @@ describe('instructions view', () => {
     expect(root.textContent).toContain('Instructions');
     expect(root.textContent).toContain('Copy Instructions To Grid');
     expect(root.textContent).toContain('Alan Richardson');
-    expect(
-      root.querySelector('[data-role="instructions-action-button"][data-action-id="copy-instructions-to-grid"]')
-    ).not.toBeNull();
+    const actionButton = root.querySelector(
+      '[data-role="instructions-action-button"][data-action-id="copy-instructions-to-grid"]'
+    );
+    expect(actionButton).not.toBeNull();
+    expect(actionButton.getAttribute('aria-label')).toBe('Copy Instructions To Grid');
+    expect(actionButton.getAttribute('title')).toBe('Copy Instructions To Grid');
     expect(root.querySelectorAll('.instruction-item-icon svg.instruction-action-icon')).toHaveLength(5);
     expect(root.querySelector('.instruction-item-icon[title="Rename column"]')).not.toBeNull();
   });

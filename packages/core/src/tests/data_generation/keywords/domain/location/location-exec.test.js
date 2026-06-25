@@ -16,6 +16,13 @@ describe('location domain keyword execution', () => {
     expectMeaningfulString(result);
   });
 
+  test('location.cardinalDirection respects abbreviated via named arguments', () => {
+    const parsed = parseKeywordInvocation('location.cardinalDirection(abbreviated=true)');
+    expect(parsed.errors).toEqual([]);
+    const result = executeDomainKeyword(parsed.keyword, { faker, args: parsed.args });
+    expect(result).toMatch(/^[NESW]$/);
+  });
+
   test('executes location.city', () => {
     const result = executeDomainKeyword('location.city', { faker, args: [] });
     console.log('location.city', result);
@@ -50,6 +57,13 @@ describe('location domain keyword execution', () => {
     const result = executeDomainKeyword('location.direction', { faker, args: [] });
     console.log('location.direction', result);
     expectMeaningfulString(result);
+  });
+
+  test('location.direction respects abbreviated via named arguments', () => {
+    const parsed = parseKeywordInvocation('location.direction(abbreviated=true)');
+    expect(parsed.errors).toEqual([]);
+    const result = executeDomainKeyword(parsed.keyword, { faker, args: parsed.args });
+    expect(result).toMatch(/^(?:N|E|S|W|NE|SE|SW|NW)$/);
   });
 
   test('executes location.language', () => {
@@ -149,6 +163,13 @@ describe('location domain keyword execution', () => {
     const result = executeDomainKeyword('location.ordinalDirection', { faker, args: [] });
     console.log('location.ordinalDirection', result);
     expectMeaningfulString(result);
+  });
+
+  test('location.ordinalDirection respects abbreviated via named arguments', () => {
+    const parsed = parseKeywordInvocation('location.ordinalDirection(abbreviated=true)');
+    expect(parsed.errors).toEqual([]);
+    const result = executeDomainKeyword(parsed.keyword, { faker, args: parsed.args });
+    expect(result).toMatch(/^(?:NE|SE|SW|NW)$/);
   });
 
   test('executes location.secondaryAddress', () => {

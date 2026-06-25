@@ -26,10 +26,10 @@ Email
 internet.email
 
 Status
-enum(active,inactive,pending)
+active,inactive,pending
 
 Priority
-enum(high,medium,low)
+high,medium,low
 
 Created Date
 date.recent`;

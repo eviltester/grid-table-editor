@@ -1,6 +1,7 @@
 import { jest } from '@jest/globals';
 import { MarkdownConvertor, MarkdownOptions } from '@anywaydata/core/data_formats/markdown-convertor.js';
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table.js';
+import { assertNoCommonErrorPatternsInValue } from '../utils/outputQualityAssertions.js';
 
 describe('can get values from a markdown table cell', () => {
   test('cell contents are trimmed', () => {
@@ -341,6 +342,20 @@ describe('Can convert markdown tables to data suitable for a data grid', () => {
       let output = new MarkdownConvertor().fromDataTable(table);
 
       expect(output).toBe(expected);
+    });
+
+    test('converts non-string values and escapes markdown table separators', () => {
+      let table = new GenericDataTable();
+      table.setHeaders(['Text', 'Number', 'Boolean']);
+      table.appendDataRow(['Data with | pipe', 42, true]);
+      table.appendDataRow(['plain data', 3.14, false]);
+
+      let output = new MarkdownConvertor().fromDataTable(table);
+
+      expect(output).toContain('Data with &#124; pipe');
+      expect(output).toContain('42');
+      expect(output).toContain('true');
+      assertNoCommonErrorPatternsInValue(output);
     });
   });
 

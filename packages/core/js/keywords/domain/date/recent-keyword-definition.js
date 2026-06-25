@@ -1,4 +1,11 @@
 import { validateDateValue } from '../../../command-help/command-help-validators.js';
+import { createNumericArgRangeValidator } from '../../../domain/domain-keyword-arg-validators.js';
+
+const validateRecentDays = createNumericArgRangeValidator({
+  argName: 'days',
+  min: 0,
+  description: 'Invalid keyword arguments: argument "days" must be greater than or equal to 0',
+});
 
 const DATE_RECENT_KEYWORD_DEFINITION = {
   keyword: 'date.recent',
@@ -12,6 +19,7 @@ const DATE_RECENT_KEYWORD_DEFINITION = {
     docsUrl: 'https://anywaydata.com/docs/test-data/domain/date',
     fakerDocsUrl: 'https://fakerjs.dev/api/date',
     validator: validateDateValue,
+    argsValidator: validateRecentDays,
     returnType: 'date',
     usageExamples: [
       {

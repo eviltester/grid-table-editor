@@ -1,5 +1,4 @@
 import { EnumParser } from '../utils/enumParser.js';
-import { isExplicitEnumRule } from '../utils/enum-rule-detection.js';
 
 export class EnumTestDataRuleValidator {
   constructor() {
@@ -11,8 +10,15 @@ export class EnumTestDataRuleValidator {
 
     try {
       const ruleSpec = String(aTestDataRule.ruleSpec || '');
-      const enumValues = EnumParser.extractEnumValues(ruleSpec);
-      const minimumValues = isExplicitEnumRule(ruleSpec) ? 1 : 2;
+      const parsed = EnumParser.parseEnumRuleSpec(ruleSpec);
+
+      if (!parsed.ok) {
+        this.validationError = parsed.error;
+        return false;
+      }
+
+      const enumValues = parsed.values;
+      const minimumValues = parsed.explicit ? 1 : 2;
 
       // Explicit enum(...) syntax supports a single value, while implicit CSV enums still need at least two.
       if (enumValues.length < minimumValues) {

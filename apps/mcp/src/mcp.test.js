@@ -82,7 +82,7 @@ test('MCP server accepts comments and blank lines in textSpec', () => {
     params: {
       name: 'generate_data_from_spec',
       arguments: {
-        textSpec: '# comment\n\nPriority\nenum(high,medium,low)\nStatus\nenum(active,inactive,pending)',
+        textSpec: '# comment\n\nPriority\nhigh,medium,low\nStatus\nactive,inactive,pending',
         rowCount: 1,
         outputFormat: 'json',
       },

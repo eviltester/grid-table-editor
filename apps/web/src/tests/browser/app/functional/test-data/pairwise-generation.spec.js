@@ -10,7 +10,7 @@ test.describe('7. Test Data Generation', () => {
     await appPage.testDataPanel.expectExpanded();
 
     await appPage.testDataPanel.setSchemaText(
-      'Browser\nenum(chrome,firefox,safari)\n\nPlan\nenum(free,pro,enterprise)\n\nFixed\nliteral(CONSTANT)'
+      'Browser\nchrome,firefox,safari\n\nPlan\nfree,pro,enterprise\n\nFixed\nliteral(CONSTANT)'
     );
 
     const initialRowCount = await appPage.gridEditor.renderer.countRows();
@@ -29,7 +29,7 @@ test.describe('7. Test Data Generation', () => {
     await appPage.testDataPanel.expectExpanded();
 
     await appPage.testDataPanel.setSchemaText(
-      'Browser\nenum(chrome,firefox,safari)\n\nPlan\nenum(free,pro,enterprise)\n\nFixed\nliteral(CONSTANT)\n\nCode\n[A-Z]{2}[0-9]{2}\n\nEnabled\ndatatype.boolean'
+      'Browser\nchrome,firefox,safari\n\nPlan\nfree,pro,enterprise\n\nFixed\nliteral(CONSTANT)\n\nCode\n[A-Z]{2}[0-9]{2}\n\nEnabled\ndatatype.boolean'
     );
 
     await appPage.testDataPanel.clickGeneratePairwise();
@@ -86,7 +86,7 @@ test.describe('7. Test Data Generation', () => {
     await appPage.testDataPanel.expectExpanded();
 
     await appPage.testDataPanel.setSchemaText(
-      'Browser\nenum(chrome,firefox,safari)\n\nPlan\nenum(free,pro,enterprise)\n\nRegion\nenum(amer,emea,apac)\n\nFixed\nliteral(CONSTANT)'
+      'Browser\nchrome,firefox,safari\n\nPlan\nfree,pro,enterprise\n\nRegion\namer,emea,apac\n\nFixed\nliteral(CONSTANT)'
     );
 
     await appPage.testDataPanel.openGenerateCombinationsDialog();
@@ -127,7 +127,7 @@ test.describe('7. Test Data Generation', () => {
     await appPage.testDataPanel.expectExpanded();
 
     await appPage.testDataPanel.setSchemaText(
-      'A\nenum(a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11)\n\nB\nenum(b1,b2,b3,b4,b5,b6,b7,b8,b9,b10,b11)\n\nC\nenum(c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11)\n\nD\nenum(d1,d2,d3,d4,d5,d6,d7,d8,d9,d10,d11)'
+      'A\na1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11\n\nB\nb1,b2,b3,b4,b5,b6,b7,b8,b9,b10,b11\n\nC\nc1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11\n\nD\nd1,d2,d3,d4,d5,d6,d7,d8,d9,d10,d11'
     );
 
     const initialRowCount = await appPage.gridEditor.renderer.countRows();

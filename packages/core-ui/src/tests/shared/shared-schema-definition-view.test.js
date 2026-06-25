@@ -108,7 +108,7 @@ describe('shared-schema-definition view', () => {
                 helpModel: {
                   heading: 'datatype.enum',
                   summary: 'Enum helper',
-                  params: [{ name: 'values', type: 'comma-separated list', optional: false }],
+                  params: [{ name: 'values', type: 'comma-separated list', optional: false, variadic: true }],
                 },
               },
             ];
@@ -236,6 +236,41 @@ describe('shared-schema-definition view', () => {
     expect(document.querySelector('[data-role="schema-error"]').textContent.length).toBeGreaterThan(0);
   });
 
+  test('surfaces compiler validation errors from text mode and stays editable as text', () => {
+    const component = createComponent();
+    const toggleButton = document.querySelector('[data-role="schema-mode-toggle"]');
+    const textArea = document.querySelector('[data-role="schema-textbox"]');
+    const invalidEnumCases = [
+      {
+        schemaText: 'Status\ndatatype.enum(values="")',
+        expectedMessage: 'Invalid keyword arguments: argument "values" is required',
+      },
+      {
+        schemaText: 'Status\ndatatype.enum()',
+        expectedMessage: 'Invalid keyword arguments: argument "values" is required',
+      },
+      {
+        schemaText: 'Status\ndatatype.enum(values="active,pending)',
+        expectedMessage: 'Invalid keyword arguments: unbalanced expression',
+      },
+    ];
+
+    fireEvent.click(toggleButton);
+
+    invalidEnumCases.forEach(({ schemaText, expectedMessage }) => {
+      textArea.value = schemaText;
+
+      const parsed = component.syncFromText({ showErrors: true, force: true });
+      fireEvent.click(toggleButton);
+
+      expect(parsed.rows).toHaveLength(1);
+      expect(parsed.errors[0]?.message).toContain(expectedMessage);
+      expect(document.querySelector('[data-role="schema-error"]').textContent).toContain(expectedMessage);
+      expect(document.querySelector('[data-role="schema-text-region"]').style.display).toBe('block');
+      expect(document.querySelector('[data-role="schema-rows-region"]').style.display).toBe('none');
+    });
+  });
+
   test('shows constrained schemas in the schema constraints details editor after switching back to row mode', () => {
     const component = createComponent();
     const toggleButton = document.querySelector('[data-role="schema-mode-toggle"]');
@@ -243,9 +278,9 @@ describe('shared-schema-definition view', () => {
 
     fireEvent.click(toggleButton);
     textArea.value = `Priority
-enum(high,low)
+enum("high","low")
 Status
-enum(open,closed)
+enum("open","closed")
 IF [Priority] = "high" THEN [Status] = "open" ENDIF`;
     component.syncFromText({ showErrors: true, force: true });
 
@@ -268,9 +303,9 @@ IF [Priority] = "high" THEN [Status] = "open" ENDIF`;
 
     fireEvent.click(toggleButton);
     textArea.value = `Priority
-enum(high,low)
+enum("high","low")
 Status
-enum(open,closed)
+enum("open","closed")
 IF [Priority] = "high" THEN [Status] = "open" ENDIF`;
     component.syncFromText({ showErrors: true, force: true });
     fireEvent.click(toggleButton);
@@ -297,9 +332,9 @@ IF [Priority] = "high" THEN [Status] = "open" ENDIF`;
     const toggleButton = document.querySelector('[data-role="schema-mode-toggle"]');
     const textArea = document.querySelector('[data-role="schema-textbox"]');
     const originalText = `Priority
-enum(high,low)
+enum("high","low")
 Status
-enum(open,closed)
+enum("open","closed")
 
 # open items must stay open
 IF [Priority] = "high" THEN [Status] = "open" ENDIF
@@ -330,10 +365,10 @@ IF [Priority] = "low" THEN [Status] = "closed";`
     const toggleButton = document.querySelector('[data-role="schema-mode-toggle"]');
     const textArea = document.querySelector('[data-role="schema-textbox"]');
     const originalText = `Priority
-enum(high,low)
+enum("high","low")
 
 Status
-enum(open,closed)
+enum("open","closed")
 
 IF [Priority] = "high" THEN [Status] = "open" ENDIF`;
 
@@ -411,8 +446,49 @@ IF [Priority] = "high" THEN [Status] = "open" ENDIF`;
 
     expect(result.errors).toEqual([]);
     expect(component.getState().rows).toHaveLength(1);
-    expect(document.querySelector('[data-role="schema-textbox"]').value).toContain('Status\nenum(active,inactive)');
+    expect(document.querySelector('[data-role="schema-textbox"]').value).toContain('Status\nenum("active","inactive")');
     expect(document.querySelectorAll('.shared-schema-row')).toHaveLength(1);
+  });
+
+  test('clears stale regex validation when switching a row to enum', () => {
+    const component = createComponent();
+
+    component.replaceRows([
+      {
+        id: 'regex-row',
+        name: 'Pattern',
+        sourceType: 'regex',
+        command: '',
+        params: '',
+        value: '(',
+        comments: '',
+        leadingTextLines: [],
+        semanticValidationIssues: [
+          {
+            code: 'compiler_validation_error',
+            field: 'value',
+            message: 'Row 1: invalid regex value - unterminated group',
+          },
+        ],
+      },
+    ]);
+
+    expect(document.querySelector('.shared-schema-row-validation')?.textContent).toContain('invalid regex value');
+
+    const sourceTypeSelect = document.querySelector('[data-field="sourceType"]');
+    sourceTypeSelect.value = 'enum';
+    fireEvent.change(sourceTypeSelect);
+
+    expect(document.querySelector('.shared-schema-row-validation')).toBeNull();
+    expect(component.getState().rows[0]).toMatchObject({
+      sourceType: 'enum',
+      semanticValidationIssues: [],
+      validation: {
+        valid: true,
+        issues: [],
+        message: '',
+      },
+    });
   });
 
   test('save schema file action downloads the current shared schema text', () => {
@@ -441,7 +517,7 @@ IF [Priority] = "high" THEN [Status] = "open" ENDIF`;
 
     fireEvent.click(document.querySelector('[data-role="schema-save-file-button"]'));
 
-    expect(downloadSchemaText).toHaveBeenCalledWith('Status\nenum(active,inactive)', {
+    expect(downloadSchemaText).toHaveBeenCalledWith('Status\nenum("active","inactive")', {
       filename: 'schema.txt',
     });
   });
@@ -504,7 +580,9 @@ IF [Priority] = "high" THEN [Status] = "open" ENDIF`;
     createComponent({
       services: {
         schemaFileTransferService: {
-          readSchemaTextFile: jest.fn(async () => 'Loaded Name\nliteral(Ada)\nLoaded Status\nenum(active,inactive)'),
+          readSchemaTextFile: jest.fn(
+            async () => 'Loaded Name\nliteral(Ada)\nLoaded Status\nenum("active","inactive")'
+          ),
           downloadSchemaText: jest.fn(() => true),
         },
       },
@@ -583,7 +661,7 @@ IF [Priority] = "high" THEN [Status] = "open" ENDIF`;
     fireEvent.click(document.querySelector('[data-role="schema-mode-toggle"]'));
 
     const textArea = document.querySelector('[data-role="schema-textbox"]');
-    textArea.value = '# note\nPriority\nenum(high,medium,low)\n\nStatus\nenum(active,inactive,pending)';
+    textArea.value = '# note\nPriority\nenum("high","medium","low")\n\nStatus\nenum("active","inactive","pending")';
     component.syncFromText({ showErrors: true, force: true });
     fireEvent.click(document.querySelector('[data-role="schema-mode-toggle"]'));
 
@@ -598,7 +676,8 @@ IF [Priority] = "high" THEN [Status] = "open" ENDIF`;
   test('text mode round-trip preserves blank lines exactly', () => {
     createComponent();
 
-    const originalText = '# note\n\nPriority\nenum(high,medium,low)\n\n\nStatus\nenum(active,inactive,pending)';
+    const originalText =
+      '# note\n\nPriority\nenum("high","medium","low")\n\n\nStatus\nenum("active","inactive","pending")';
     fireEvent.click(document.querySelector('[data-role="schema-mode-toggle"]'));
     const textArea = document.querySelector('[data-role="schema-textbox"]');
     textArea.value = originalText;
@@ -709,7 +788,7 @@ IF [Priority] = "high" THEN [Status] = "open" ENDIF`;
     const textArea = document.querySelector('[data-role="schema-textbox"]');
     textArea.value = `# pairwise enums
 HTTP Method
-enum(GET,POST,PUT,DELETE)
+enum("GET","POST","PUT","DELETE")
 
 # pairwise enums
 Content Type
@@ -775,8 +854,8 @@ Authorization Token
     await Promise.resolve();
     await Promise.resolve();
 
-    expect(document.querySelector('[data-field="params"]').value).toBe('(values=active,inactive,pending)');
-    expect(component.getSchemaText()).toContain('enum(values=active,inactive,pending)');
+    expect(document.querySelector('[data-field="params"]').value).toBe('(active,inactive,pending)');
+    expect(component.getSchemaText()).toContain('enum("active","inactive","pending")');
   });
 
   test('destroy clears pending validation timers and a second mount works in the same root', () => {

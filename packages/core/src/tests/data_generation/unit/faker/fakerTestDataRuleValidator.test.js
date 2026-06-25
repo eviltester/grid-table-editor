@@ -65,4 +65,30 @@ describe('Can validate Faker TestDataRules using FakerTestDataRuleValidator', ()
     validator.validate(rule);
     expect(validator.isValid()).toBe(true);
   });
+
+  test('rejects helpers.rangeToNumber range object without max', () => {
+    const rule = new TestDataRule('Test', 'helpers.rangeToNumber({ min: 5 })');
+    rule.type = 'faker';
+
+    const validator = new FakerTestDataRuleValidator(faker);
+    validator.validate(rule);
+
+    expect(validator.isValid()).toBe(false);
+    expect(validator.getValidationError()).toBe(
+      'Invalid Faker API Call helpers.rangeToNumber range object requires max'
+    );
+  });
+
+  test('rejects helpers.rangeToNumber range object when min is greater than max', () => {
+    const rule = new TestDataRule('Test', 'helpers.rangeToNumber({ min: 9, max: 5 })');
+    rule.type = 'faker';
+
+    const validator = new FakerTestDataRuleValidator(faker);
+    validator.validate(rule);
+
+    expect(validator.isValid()).toBe(false);
+    expect(validator.getValidationError()).toBe(
+      'Invalid Faker API Call helpers.rangeToNumber range min must be less than or equal to max'
+    );
+  });
 });

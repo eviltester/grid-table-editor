@@ -45,7 +45,7 @@ Use domain docs for domain-first schemas: [Domain Test Data](/docs/test-data/dom
 
 ```txt
 Sentence
-helpers.mustache("I found {{count}} instances.", { count: () => `${this.number.int()}` })
+helpers.mustache("Hello {{name}}", { name: "Ada" })
 ```
 
 ```txt
@@ -55,10 +55,10 @@ helpers.fake("Hi, my name is {{person.firstName}} {{person.lastName}}!")
 
 ```txt
 Direction
-faker.location.cardinalDirection({ abbreviated: true })
+location.direction(abbreviated=true)
 ```
 
-Note: non-helper faker calls may be superseded by domain mappings over time.
+Note: non-helper faker calls may be superseded by domain mappings over time. Prefer the documented domain syntax when a domain equivalent exists.
 
 ## See Domain Examples
 

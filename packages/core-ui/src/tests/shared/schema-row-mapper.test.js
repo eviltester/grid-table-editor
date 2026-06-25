@@ -14,7 +14,7 @@ describe('schema-row-mapper', () => {
     const enumRow = mapDataRuleToSchemaRow({
       type: 'enum',
       name: 'Status',
-      ruleSpec: 'datatype.enum(active,inactive)',
+      ruleSpec: 'datatype.enum("active","inactive")',
     });
 
     expect(fakerRow).toMatchObject({
@@ -33,6 +33,20 @@ describe('schema-row-mapper', () => {
       name: 'Status',
       sourceType: 'enum',
       value: 'active,inactive',
+    });
+  });
+
+  test('keeps parenthesized regex rules as regex rows instead of enum rows', () => {
+    const row = mapDataRuleToSchemaRow({
+      type: 'regex',
+      name: 'Status',
+      ruleSpec: '(active,inactive,pending)',
+    });
+
+    expect(row).toMatchObject({
+      name: 'Status',
+      sourceType: 'regex',
+      value: '(active,inactive,pending)',
     });
   });
 
@@ -176,6 +190,47 @@ describe('schema-row-mapper', () => {
       command: 'datatype.enum',
       params: 'active,inactive,pending',
       value: 'active,inactive,pending',
+    });
+  });
+
+  test('clears stale semantic validation when switching source type', () => {
+    const nextRow = applySchemaSourceTypeChange(
+      {
+        name: 'Pattern',
+        sourceType: 'regex',
+        command: '',
+        params: '',
+        value: '(',
+        semanticValidationIssues: [
+          {
+            code: 'compiler_validation_error',
+            field: 'value',
+            message: 'Row 1: invalid regex value - unterminated group',
+          },
+        ],
+        validation: {
+          valid: false,
+          issues: [
+            {
+              code: 'compiler_validation_error',
+              field: 'value',
+              message: 'Row 1: invalid regex value - unterminated group',
+            },
+          ],
+          message: 'Row 1: invalid regex value - unterminated group',
+        },
+      },
+      'enum'
+    );
+
+    expect(nextRow).toMatchObject({
+      sourceType: 'enum',
+      semanticValidationIssues: [],
+      validation: {
+        valid: true,
+        issues: [],
+        message: '',
+      },
     });
   });
 

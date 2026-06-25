@@ -116,6 +116,7 @@ function createAppGridTabulatorOptions({
       editor: 'input',
       editorParams: { selectContents: true },
       headerFilter: 'input',
+      headerFilterParams: { elementAttributes: { 'aria-label': 'Filter table column' } },
       headerFilterFunc: 'like',
       sorter: 'string',
       titleFormatter: customHeaderFormatter,

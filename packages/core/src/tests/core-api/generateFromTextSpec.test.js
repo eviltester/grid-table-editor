@@ -31,6 +31,25 @@ test('generateFromTextSpec returns validation error for invalid output format', 
   );
 });
 
+test('generateFromTextSpec rejects helpers.rangeToNumber range object without max', () => {
+  const result = generateFromTextSpec({
+    textSpec: 'Number\nhelpers.rangeToNumber({ min: 5 })',
+    rowCount: 3,
+    outputFormat: 'json',
+  });
+
+  expect(result.ok).toBe(false);
+  expect(result.rows).toBeUndefined();
+  expect(result.rendered).toBeUndefined();
+  expect(result.errors).toContainEqual(
+    expect.objectContaining({
+      code: 'compiler_validation_error',
+      column: 'Number',
+      message: expect.stringContaining('helpers.rangeToNumber range object requires max'),
+    })
+  );
+});
+
 test('generateFromTextSpec generates rows for valid spec', () => {
   const result = generateFromTextSpec({ textSpec: 'Name\nBob', rowCount: 2, outputFormat: 'json' });
   expect(result.ok).toBe(true);
@@ -77,7 +96,7 @@ test('generateFromTextSpec serializes object return values as JSON strings', () 
 
 test('generateFromTextSpec accepts comments and blank lines in spec', () => {
   const result = generateFromTextSpec({
-    textSpec: '# comment\n\nPriority\nenum(high,medium,low)\n\nStatus\nenum(active,inactive,pending)',
+    textSpec: '# comment\n\nPriority\nhigh,medium,low\n\nStatus\nactive,inactive,pending',
     rowCount: 2,
     outputFormat: 'json',
   });
@@ -109,9 +128,9 @@ test('generateFromTextSpec accepts # prefixed rule content lines', () => {
 test('generateFromTextSpec enforces IF THEN constraints during row generation', () => {
   const result = generateFromTextSpec({
     textSpec: `Priority
-enum(high,low)
+high,low
 Status
-enum(open,closed)
+open,closed
 IF [Priority] = "high" THEN [Status] = "open" ENDIF`,
     rowCount: 20,
     outputFormat: 'json',
@@ -146,7 +165,7 @@ IF [Status] = "closed" THEN [Status] = "open" ENDIF`,
 test('generateFromTextSpec returns semantic constraint validation errors for invalid enum and regex values', () => {
   const enumResult = generateFromTextSpec({
     textSpec: `Priority
-enum(high,low)
+high,low
 
 IF [Priority] = "urgent" THEN [Priority] = "high" ENDIF`,
     rowCount: 1,
@@ -206,7 +225,7 @@ test('validateSafeFakerRules ignores constraint lines when checking faker rules'
   const result = validateSafeFakerRules(`Name
 person.firstName("female")
 Status
-enum(active,inactive)
+active,inactive
 IF [Status] = "inactive" THEN [Name] <> "" ENDIF`);
 
   expect(result.ok).toBe(true);
@@ -303,13 +322,91 @@ test('generateFromTextSpec rejects malformed recognized faker helper invocations
   );
 });
 
+test('generateFromTextSpec rejects malformed explicit enum syntax instead of treating it as literal data', () => {
+  const result = generateFromTextSpec({
+    textSpec: 'Method\ndatatype.enum(unclosed',
+    rowCount: 3,
+    outputFormat: 'markdown',
+  });
+
+  expect(result.ok).toBe(false);
+  expect(result.rows).toBeUndefined();
+  expect(result.rendered).toBeUndefined();
+  expect(result.errors).toContainEqual(
+    expect.objectContaining({
+      code: 'compiler_validation_error',
+      column: 'Method',
+      message: expect.stringContaining('Method failed domain validation'),
+    })
+  );
+});
+
+test.each([
+  {
+    label: 'malformed enum values quote',
+    textSpec: 'Status\ndatatype.enum(values="active,pending)',
+    message: 'unbalanced expression',
+  },
+  {
+    label: 'unknown enum named argument',
+    textSpec: 'Status\ndatatype.enum(valuez="active,pending")',
+    message: 'unknown named argument "valuez"',
+  },
+  {
+    label: 'empty enum values',
+    textSpec: 'Status\ndatatype.enum(values="")',
+    message: 'argument "values" is required',
+  },
+  {
+    label: 'missing enum values',
+    textSpec: 'Status\ndatatype.enum()',
+    message: 'argument "values" is required',
+  },
+  {
+    label: 'boolean probability above range',
+    textSpec: 'Flag\ndatatype.boolean(probability=2)',
+    message: 'argument "probability" must be between 0 and 1',
+  },
+  {
+    label: 'boolean probability below range',
+    textSpec: 'Flag\ndatatype.boolean(probability=-0.1)',
+    message: 'argument "probability" must be between 0 and 1',
+  },
+  {
+    label: 'number.int multipleOf zero',
+    textSpec: 'Number\nnumber.int(min=1,max=10,multipleOf=0)',
+    message: 'argument "multipleOf" must be greater than 0',
+  },
+  {
+    label: 'date.recent negative days',
+    textSpec: 'Date\ndate.recent(days=-7)',
+    message: 'argument "days" must be greater than or equal to 0',
+  },
+])('generateFromTextSpec rejects invalid schema before generation: $label', ({ textSpec, message }) => {
+  const result = generateFromTextSpec({
+    textSpec,
+    rowCount: 3,
+    outputFormat: 'json',
+  });
+
+  expect(result.ok).toBe(false);
+  expect(result.rows).toBeUndefined();
+  expect(result.rendered).toBeUndefined();
+  expect(result.errors).toContainEqual(
+    expect.objectContaining({
+      code: 'compiler_validation_error',
+      message: expect.stringContaining(message),
+    })
+  );
+});
+
 test('validateSafeFakerRules accepts known faker commands with literal args', () => {
   const result = validateSafeFakerRules('Name\nperson.firstName("female")');
   expect(result.ok).toBe(true);
 });
 
 test('validateSafeFakerRules accepts pict-style inline faker commands', () => {
-  const result = validateSafeFakerRules('Name: person.firstName("female")\nStatus: enum(active,inactive)');
+  const result = validateSafeFakerRules('Name: person.firstName("female")\nStatus: active,inactive');
   expect(result.ok).toBe(true);
 });
 

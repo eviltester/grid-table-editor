@@ -35,7 +35,7 @@ helpers.fake("Hi, my name is {{person.firstName}} {{person.lastName}}!")
 ```
 
 ```txt
-helpers.mustache("I found {{count}} items.", { count: () => `${this.number.int()}` })
+helpers.mustache("Hello {{name}}", { name: "Ada" })
 ```
 
 ```txt
@@ -114,7 +114,7 @@ helpers.multiple(() => this.person.firstName(), { count: 3 })
 
 - Many helper functions can return arrays or objects depending on method and inputs.
 - Prefer scalar-returning helpers when using grid/display flows that expect single values.
-- Helper methods support callback/object shapes from Faker docs and are intentionally not represented in `domain.*`.
+- Some Faker helper callback shapes are not supported in browser schema text. Use the executable schema examples on this page when copying examples into AnyWayData.
 
 ## Faker Reference
 

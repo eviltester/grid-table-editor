@@ -11,7 +11,7 @@ function buildSchemaModeHelpHtml({ inTextMode, supplementalLinkUrl = '', supplem
 person.firstName
 
 Status
-enum(active,inactive,pending)</pre>
+active,inactive,pending</pre>
       <button type="button" class="shared-schema-sample-button">Insert Example Schema</button>
     `;
   }

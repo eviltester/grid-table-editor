@@ -41,6 +41,8 @@ class DomainKeywordParser {
 
   mapParsedArguments(argumentsList, keywordMetadata) {
     const schema = Array.isArray(keywordMetadata?.help?.args) ? keywordMetadata.help.args : [];
+    const variadicIndex = schema.findIndex((entry) => entry?.variadic === true);
+    const hasVariadicTail = variadicIndex >= 0 && variadicIndex === schema.length - 1;
     const usesOptionsFromHelpArgs = keywordMetadata?.delegate?.argTransform === 'optionsFromHelpArgs';
     const positional = [];
     const named = {};
@@ -89,7 +91,7 @@ class DomainKeywordParser {
       return { ok: true, args: resolved };
     }
 
-    if (keywordMetadata && positional.length > schema.length) {
+    if (keywordMetadata && !hasVariadicTail && positional.length > schema.length) {
       return {
         ok: false,
         error: `Invalid keyword arguments: too many positional arguments. Expected at most ${schema.length}, received ${positional.length}`,
@@ -108,11 +110,11 @@ class DomainKeywordParser {
     }
 
     for (const [name, value] of Object.entries(named)) {
-      if (!schemaByName.has(name)) {
+      const schemaIndex = this.resolveNamedArgumentIndex(name, schemaByName, keywordMetadata);
+      if (schemaIndex < 0) {
         return { ok: false, error: `Invalid keyword arguments: unknown named argument "${name}"` };
       }
 
-      const schemaIndex = schemaByName.get(name);
       if (typeof resolved[schemaIndex] !== 'undefined') {
         return {
           ok: false,
@@ -124,6 +126,16 @@ class DomainKeywordParser {
     }
 
     return { ok: true, args: resolved };
+  }
+
+  resolveNamedArgumentIndex(name, schemaByName, keywordMetadata) {
+    if (schemaByName.has(name)) {
+      return schemaByName.get(name);
+    }
+    if (keywordMetadata?.keyword === 'datatype.enum' && name === 'csv' && schemaByName.has('values')) {
+      return schemaByName.get('values');
+    }
+    return -1;
   }
 }
 

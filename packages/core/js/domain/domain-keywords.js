@@ -1,6 +1,7 @@
 import { DOMAIN_KEYWORD_DEFINITIONS } from './domain-keyword-definitions.js';
 import { executeCustomAutoIncrementTimestamp } from '../keywords/domain/autoincrement/auto-increment-timestamp.js';
 import { executeCustomAutoIncrementSequence } from '../keywords/domain/autoincrement/auto-increment-sequence.js';
+import { executeCustomDatatypeEnum } from '../keywords/domain/datatype/datatype-enum.js';
 import { executeCustomCounterString } from '../keywords/domain/string/counterstring.js';
 import { executeCustomInternetHttpMethod } from '../keywords/domain/internet/internet-http-method.js';
 import { DomainKeywordInvocationParser } from './parser/DomainKeywordInvocationParser.js';
@@ -114,8 +115,19 @@ function buildDomainKeywordCatalog(definitions = DOMAIN_KEYWORD_DEFINITIONS) {
       ? definition.help.args.map((arg) => ({
           name: String(arg?.name || '').trim(),
           type: String(arg?.type || '').trim(),
+          aliases: Array.isArray(arg?.aliases)
+            ? arg.aliases.map((alias) => String(alias || '').trim()).filter(Boolean)
+            : [],
           required: arg?.required === true,
+          optional: arg?.optional === true || arg?.required === false,
+          variadic: arg?.variadic === true,
           description: String(arg?.description || '').trim(),
+          example: String(arg?.example || '').trim(),
+          ...(Object.prototype.hasOwnProperty.call(arg || {}, 'defaultValue')
+            ? { defaultValue: arg.defaultValue }
+            : Object.prototype.hasOwnProperty.call(arg || {}, 'default')
+              ? { defaultValue: arg.default }
+              : {}),
           examples: Array.isArray(arg?.examples) ? arg.examples.filter((value) => value !== undefined) : [],
         }))
       : [];
@@ -267,6 +279,7 @@ function isTypeMatch(value, typeName) {
   for (const item of allowed) {
     if (/^[+-]?\d+(\.\d+)?$/.test(item) && typeof value === 'number' && Object.is(value, Number(item))) return true;
     if (item === 'string' && typeof value === 'string') return true;
+    if (item === 'comma-separated list' && typeof value === 'string') return true;
     if (item === 'integer' && typeof value === 'number' && Number.isInteger(value)) return true;
     if (item === 'number' && typeof value === 'number' && Number.isFinite(value)) return true;
     if (item === 'date' && value instanceof Date && !Number.isNaN(value.valueOf())) return true;
@@ -391,6 +404,7 @@ function applyFakerArgTransform(keyword, args = []) {
 const BUILT_IN_CUSTOM_DELEGATES = {
   'autoIncrement.timestamp': executeCustomAutoIncrementTimestamp,
   'autoIncrement.sequence': executeCustomAutoIncrementSequence,
+  'datatype.enum': executeCustomDatatypeEnum,
   'internet.httpMethod': executeCustomInternetHttpMethod,
   'literal.value': (executionContext = {}) => {
     const args = Array.isArray(executionContext.args) ? executionContext.args : [];
@@ -403,27 +417,101 @@ function validateDomainKeywordArgs(keyword, args = []) {
   const argumentList = Array.isArray(args) ? args : [];
   const schema = Array.isArray(keyword?.help?.args) ? keyword.help.args : [];
   const argsByName = {};
+  const variadicShape = getVariadicTailShape(schema);
+  const positionalValidation = validateFixedKeywordArgs(
+    schema,
+    argumentList,
+    argsByName,
+    variadicShape.fixedSchemaLength
+  );
+  if (!positionalValidation.ok) {
+    return positionalValidation;
+  }
 
-  for (let index = 0; index < schema.length; index += 1) {
-    const spec = schema[index];
-    const value = argumentList[index];
-    if (typeof value !== 'undefined') {
-      argsByName[String(spec?.name || '').trim()] = value;
-    }
-    if (spec.required && typeof value === 'undefined') {
-      return {
-        ok: false,
-        error: `Invalid keyword arguments: argument "${spec.name}" is required`,
-      };
-    }
-    if (typeof value !== 'undefined' && !isTypeMatch(value, spec.type)) {
-      return {
-        ok: false,
-        error: `Invalid keyword arguments: argument "${spec.name}" must be ${formatExpectedType(spec.type)}, not ${describeValueType(value)}`,
-      };
+  const variadicValidation = variadicShape.hasVariadicTail
+    ? validateVariadicKeywordArgs(schema, argumentList, argsByName, variadicShape.variadicIndex)
+    : validateKeywordArgCount(schema, argumentList);
+  if (!variadicValidation.ok) {
+    return variadicValidation;
+  }
+
+  return runSemanticKeywordArgsValidator(keyword, argumentList, schema, argsByName);
+}
+
+function getVariadicTailShape(schema = []) {
+  const variadicIndex = schema.findIndex((spec) => spec?.variadic === true);
+  const hasVariadicTail = variadicIndex >= 0 && variadicIndex === schema.length - 1;
+
+  return {
+    variadicIndex,
+    hasVariadicTail,
+    fixedSchemaLength: hasVariadicTail ? variadicIndex : schema.length,
+  };
+}
+
+function createRequiredArgError(spec) {
+  return {
+    ok: false,
+    error: `Invalid keyword arguments: argument "${spec.name}" is required`,
+  };
+}
+
+function createTypeMismatchArgError(spec, value) {
+  return {
+    ok: false,
+    error: `Invalid keyword arguments: argument "${spec.name}" must be ${formatExpectedType(spec.type)}, not ${describeValueType(value)}`,
+  };
+}
+
+function recordNamedArgValue(argsByName, spec, value) {
+  if (typeof value !== 'undefined') {
+    argsByName[String(spec?.name || '').trim()] = value;
+  }
+}
+
+function validateSingleKeywordArg(spec, value, argsByName) {
+  recordNamedArgValue(argsByName, spec, value);
+
+  if (spec.required && typeof value === 'undefined') {
+    return createRequiredArgError(spec);
+  }
+  if (typeof value !== 'undefined' && !isTypeMatch(value, spec.type)) {
+    return createTypeMismatchArgError(spec, value);
+  }
+
+  return { ok: true };
+}
+
+function validateFixedKeywordArgs(schema, argumentList, argsByName, fixedSchemaLength) {
+  for (let index = 0; index < fixedSchemaLength; index += 1) {
+    const validation = validateSingleKeywordArg(schema[index], argumentList[index], argsByName);
+    if (!validation.ok) {
+      return validation;
     }
   }
 
+  return { ok: true };
+}
+
+function validateVariadicKeywordArgs(schema, argumentList, argsByName, variadicIndex) {
+  const variadicSpec = schema[variadicIndex];
+  const variadicValues = argumentList.slice(variadicIndex);
+  argsByName[String(variadicSpec?.name || '').trim()] = variadicValues;
+
+  if (variadicSpec?.required === true && variadicValues.length === 0) {
+    return createRequiredArgError(variadicSpec);
+  }
+
+  for (const value of variadicValues) {
+    if (typeof value !== 'undefined' && !isTypeMatch(value, variadicSpec.type)) {
+      return createTypeMismatchArgError(variadicSpec, value);
+    }
+  }
+
+  return { ok: true };
+}
+
+function validateKeywordArgCount(schema, argumentList) {
   if (argumentList.length > schema.length) {
     return {
       ok: false,
@@ -431,19 +519,25 @@ function validateDomainKeywordArgs(keyword, args = []) {
     };
   }
 
+  return { ok: true };
+}
+
+function runSemanticKeywordArgsValidator(keyword, argumentList, schema, argsByName) {
   const semanticArgsValidator = keyword?.help?.argsValidator;
-  if (typeof semanticArgsValidator === 'function') {
-    const semanticValidation = semanticArgsValidator(argumentList, {
-      keyword,
-      schema,
-      argsByName,
-    });
-    if (!semanticValidation?.ok) {
-      return {
-        ok: false,
-        error: semanticValidation?.error || 'Invalid keyword arguments',
-      };
-    }
+  if (typeof semanticArgsValidator !== 'function') {
+    return { ok: true };
+  }
+
+  const semanticValidation = semanticArgsValidator(argumentList, {
+    keyword,
+    schema,
+    argsByName,
+  });
+  if (!semanticValidation?.ok) {
+    return {
+      ok: false,
+      error: semanticValidation?.error || 'Invalid keyword arguments',
+    };
   }
 
   return { ok: true };

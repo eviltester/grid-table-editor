@@ -16,7 +16,7 @@ function createInMemoryStorageState(args) {
           {
             id: 'last-1',
             name: 'last used - 2026-06-16T10:05:00.000Z',
-            schemaText: 'Status\nenum(active,inactive)',
+            schemaText: 'Status\nactive,inactive',
             updatedAt: '2026-06-16T10:05:00.000Z',
           },
         ]
@@ -26,7 +26,7 @@ function createInMemoryStorageState(args) {
           {
             id: 'saved-1',
             name: 'Regression Smoke',
-            schemaText: 'Browser\nenum(chrome,firefox)',
+            schemaText: 'Browser\nchrome,firefox',
             updatedAt: '2026-06-16T10:06:00.000Z',
           },
         ]
@@ -203,7 +203,7 @@ export const DraftAndHistory = {
     const canvas = within(canvasElement);
     await userEvent.click(canvas.getByText('Managed Stored Schemas (0)'));
     await userEvent.selectOptions(canvas.getByLabelText('Last Used'), 'last-1');
-    await userEvent.click(canvas.getByRole('button', { name: /^load$/i }));
+    await userEvent.click(canvas.getByRole('button', { name: /load last used schema/i }));
     await expect(canvas.getByText(/Loaded last used/i)).toBeVisible();
   },
 };

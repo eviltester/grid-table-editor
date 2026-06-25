@@ -15,7 +15,13 @@ describe('schema-runtime', () => {
     expect(result).toEqual({ dataRules: [], errors: [] });
   });
 
-  test('countEnumRules counts enum type rows', () => {
-    expect(countEnumRules([{ type: 'enum' }, { type: 'regex' }, { type: 'enum' }])).toBe(2);
+  test('countEnumRules counts enum and canonical datatype.enum domain rows', () => {
+    expect(
+      countEnumRules([
+        { type: 'enum' },
+        { type: 'regex' },
+        { type: 'domain', ruleSpec: 'datatype.enum("active", "inactive")' },
+      ])
+    ).toBe(2);
   });
 });

@@ -17,7 +17,7 @@ describe('createGeneratorPageDefaults schema helpers', () => {
         [{ name: 'Status', sourceType: 'enum', value: 'enum(active,inactive)' }],
         [{ kind: 'comment', text: '# top' }, { kind: 'rule' }]
       )
-    ).toBe('# top\nStatus\nenum(active,inactive)');
+    ).toBe('# top\nStatus\nenum("active","inactive")');
   });
 
   test('exposes schema validation through the page-defaults contract', () => {

@@ -120,7 +120,10 @@ function previewGeneratorData({
     return;
   }
 
-  const result = schemaGenerationService?.generateRows?.({ rowCount: rowCount.value });
+  const result = schemaGenerationService?.generateRows?.({
+    rowCount: rowCount.value,
+    options: { showErrors: true },
+  });
   if (typeof result?.then === 'function') {
     return result.then(applyResult);
   }
@@ -158,7 +161,10 @@ async function generateGeneratorDataFile({
     return;
   }
 
-  const result = await schemaGenerationService?.generateRows?.({ rowCount: rowCount.value });
+  const result = await schemaGenerationService?.generateRows?.({
+    rowCount: rowCount.value,
+    options: { showErrors: true },
+  });
   if (!result?.ok) {
     surfaceGenerationResult({
       operationKind: 'generateRows',
@@ -223,7 +229,7 @@ async function generateGeneratorAllPairsDataFile({
   scheduleClearGenerationStatus,
   recordLastUsedSchema = () => null,
 }) {
-  const result = schemaGenerationService?.generatePairwise?.();
+  const result = schemaGenerationService?.generatePairwise?.({ showErrors: true });
   if (!result?.ok) {
     surfaceGenerationResult({
       operationKind: 'generatePairwise',
@@ -291,10 +297,23 @@ async function generateGeneratorCombinationsDataFile({
 }) {
   const strength = Number.parseInt(selection?.strength, 10);
   const algorithm = selection?.algorithm;
-  const combinationInput = schemaGenerationService?.getCombinationInput?.() || {
+  const combinationInput = schemaGenerationService?.getCombinationInput?.({ showErrors: true }) || {
     enumColumnCount: 0,
     enumValueCounts: [],
   };
+  if (Array.isArray(combinationInput.errors) && combinationInput.errors.length > 0) {
+    surfaceGenerationResult({
+      operationKind: 'generateCombinations',
+      result: {
+        ok: false,
+        errors: combinationInput.errors,
+        rows: combinationInput.rows || [],
+      },
+      surfacePageError,
+      setGenerationStatus,
+    });
+    return;
+  }
 
   const confirmed = await confirmCartesianProductSelection({
     algorithm,
@@ -310,7 +329,11 @@ async function generateGeneratorCombinationsDataFile({
     return;
   }
 
-  const result = schemaGenerationService?.generateCombinations?.({ strength, algorithm });
+  const result = schemaGenerationService?.generateCombinations?.({
+    strength,
+    algorithm,
+    options: { showErrors: true },
+  });
   if (!result?.ok) {
     surfaceGenerationResult({
       operationKind: 'generateCombinations',

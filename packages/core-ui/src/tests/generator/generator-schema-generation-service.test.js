@@ -19,7 +19,7 @@ describe('generator schema generation service', () => {
 
     const validateRowsResult = { rows: [], errors: [] };
     const validateSchemaRows = jest.fn((rows) => ({ ...validateRowsResult, rows }));
-    const schemaRowsToSpec = jest.fn(() => 'Browser\nenum(chrome,firefox)');
+    const schemaRowsToSpec = jest.fn(() => 'Browser\nenum("chrome","firefox")');
     const TestDataGeneratorClass = class FakeGenerator {
       constructor() {
         this.compiler = {
@@ -59,12 +59,48 @@ describe('generator schema generation service', () => {
 
     const sessionContext = service.createSessionContext();
     expect(sessionContext.ok).toBe(true);
-    expect(sessionContext.textSpec).toBe('Browser\nenum(chrome,firefox)');
+    expect(sessionContext.textSpec).toBe('Browser\nenum("chrome","firefox")');
 
     const combinationInput = service.getCombinationInput();
     expect(combinationInput.enumColumnCount).toBe(2);
-    expect(syncSchemaRowsFromTextMode).toHaveBeenCalledTimes(3);
-    expect(validateSchemaRows).toHaveBeenCalledTimes(3);
+    expect(syncSchemaRowsFromTextMode).toHaveBeenCalledTimes(2);
+    expect(validateSchemaRows).toHaveBeenCalledTimes(4);
+  });
+
+  test('returns visible text-mode schema errors when collecting combination input', () => {
+    const syncSchemaRowsFromTextMode = jest.fn(() => ({
+      rows: [{ name: 'Status', sourceType: 'domain', command: 'datatype.enum', params: '' }],
+      errors: [
+        {
+          code: 'compiler_validation_error',
+          message: 'Status failed domain validation - Invalid keyword arguments: argument "values" is required',
+        },
+      ],
+    }));
+    const service = createGeneratorSchemaGenerationService({
+      syncSchemaRowsFromTextMode,
+      validateSchemaRows: jest.fn((rows) => ({ rows, errors: [] })),
+      schemaRowsToSpec: jest.fn(),
+      TestDataGeneratorClass: class FakeGenerator {},
+      faker: {},
+      RandExp: function RandExp() {},
+    });
+
+    expect(service.getCombinationInput({ showErrors: true })).toEqual({
+      enumColumnCount: 0,
+      enumValueCounts: [],
+      errors: [
+        {
+          code: 'compiler_validation_error',
+          message: 'Status failed domain validation - Invalid keyword arguments: argument "values" is required',
+        },
+      ],
+      rows: [{ name: 'Status', sourceType: 'domain', command: 'datatype.enum', params: '' }],
+    });
+    expect(syncSchemaRowsFromTextMode).toHaveBeenCalledWith({
+      showErrors: true,
+      applySemanticValidation: false,
+    });
   });
 
   test('calculates pairwise visibility through the shared generation helper boundary', () => {

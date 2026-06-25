@@ -95,8 +95,8 @@ function renderSharedSchemaRows({
                     <button class="icon-button" type="button" data-action="up" data-row-id="${row.id}" title="Move up" aria-label="Move up" ${index === 0 ? 'disabled' : ''}>${renderIconHtml('arrow-up')}</button>
                     <button class="icon-button" type="button" data-action="down" data-row-id="${row.id}" title="Move down" aria-label="Move down" ${index === schemaRows.length - 1 ? 'disabled' : ''}>${renderIconHtml('arrow-down')}</button>
                 </div>
-                <input type="text" data-field="name" class="${hasNameValidationError ? SHARED_SCHEMA_FIELD_INVALID_CLASS : ''}" placeholder="Column Name" value="${escapeHtml(row.name)}">
-                <select data-field="sourceType" class="${hasCommandValidationError ? SHARED_SCHEMA_FIELD_INVALID_CLASS : ''}">
+                <input type="text" data-field="name" class="${hasNameValidationError ? SHARED_SCHEMA_FIELD_INVALID_CLASS : ''}" placeholder="Column Name" aria-label="Column Name" value="${escapeHtml(row.name)}">
+                <select data-field="sourceType" class="${hasCommandValidationError ? SHARED_SCHEMA_FIELD_INVALID_CLASS : ''}" aria-label="Field type">
                     <option value="${SOURCE_TYPE_ENUM}" ${normalisedSourceType === SOURCE_TYPE_ENUM ? 'selected' : ''}>enum</option>
                     <option value="${SOURCE_TYPE_LITERAL}" ${normalisedSourceType === SOURCE_TYPE_LITERAL ? 'selected' : ''}>literal</option>
                     <option value="${SOURCE_TYPE_REGEX}" ${normalisedSourceType === SOURCE_TYPE_REGEX ? 'selected' : ''}>regex</option>
@@ -109,7 +109,7 @@ function renderSharedSchemaRows({
                         <button type="button" data-action="pick-command" data-row-id="${row.id}" class="${SHARED_SCHEMA_COMMAND_PICKER_BUTTON_CLASS} ${hasCommandValidationError ? SHARED_SCHEMA_FIELD_INVALID_CLASS : ''}">${escapeHtml(
                           row.command || (isDomainSource ? 'Select domain command' : 'Select faker command')
                         )}</button>
-                        <select data-field="command" class="${SHARED_SCHEMA_COMMAND_PICKER_SHADOW_SELECT_CLASS}">
+                        <select data-field="command" class="${SHARED_SCHEMA_COMMAND_PICKER_SHADOW_SELECT_CLASS}" aria-hidden="true" tabindex="-1">
                           <option value="">${isDomainSource ? 'Select domain command' : 'Select faker command'}</option>
                           ${(isDomainSource ? getVisibleDomainCommands(row.command) : fakerCommands)
                             .map((command) => {
@@ -135,7 +135,7 @@ function renderSharedSchemaRows({
                 ${
                   isCommandSource
                     ? `<div class="${SHARED_SCHEMA_PARAMS_CONTROL_CLASS}">
-                        <input type="text" data-field="params" class="${hasParamsValidationError ? SHARED_SCHEMA_FIELD_INVALID_CLASS : ''}" placeholder="Params e.g. (10)" value="${escapeHtml(row.params)}">
+                        <input type="text" data-field="params" class="${hasParamsValidationError ? SHARED_SCHEMA_FIELD_INVALID_CLASS : ''}" placeholder="Params e.g. (10)" aria-label="Params" value="${escapeHtml(row.params)}">
                         <button
                           type="button"
                           data-action="edit-params"
@@ -146,7 +146,7 @@ function renderSharedSchemaRows({
                           ${hasDocumentedParams ? '' : 'disabled'}
                         >${renderIconHtml('pencil')}</button>
                       </div>`
-                    : `<input type="text" data-field="value" placeholder="Value / Regex" value="${escapeHtml(row.value)}">`
+                    : `<input type="text" data-field="value" placeholder="Value / Regex" aria-label="Value / Regex" value="${escapeHtml(row.value)}">`
                 }
                 ${
                   validationMessage

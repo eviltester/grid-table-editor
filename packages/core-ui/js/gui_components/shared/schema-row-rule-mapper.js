@@ -1,3 +1,5 @@
+import { EnumParser } from '@anywaydata/core/data_generation/utils/enumParser.js';
+
 const SOURCE_TYPE_FAKER = 'faker';
 const SOURCE_TYPE_DOMAIN = 'domain';
 const SOURCE_TYPE_REGEX = 'regex';
@@ -46,21 +48,8 @@ function normaliseCommandParams(paramsValue, { allowUnwrapped = false } = {}) {
   return `(${params})`;
 }
 
-function buildEnumRuleSpec(enumInput) {
-  const enumValue = String(enumInput ?? '').trim();
-  if (enumValue.length === 0) {
-    return '';
-  }
-  if (/^(enum|datatype\.enum|awd\.datatype\.enum)\s*\(/i.test(enumValue)) {
-    return `enum(${extractEnumValueFromRuleSpec(enumValue)})`;
-  }
-  if (/^enum\s+/i.test(enumValue)) {
-    return `enum(${enumValue.replace(/^enum\s+/i, '').trim()})`;
-  }
-  if (enumValue.startsWith('(') && enumValue.endsWith(')')) {
-    return `enum${enumValue}`;
-  }
-  return `enum(${enumValue})`;
+function isDomainEnumCommand(commandValue) {
+  return /^(?:datatype\.enum|awd\.datatype\.enum)$/i.test(String(commandValue || '').trim());
 }
 
 function buildRuleSpecFromSchemaRow(row) {
@@ -73,10 +62,10 @@ function buildRuleSpecFromSchemaRow(row) {
   if (sourceType === SOURCE_TYPE_DOMAIN) {
     const command = normaliseDomainCommand(row?.command);
     const params = normaliseCommandParams(row?.params, {
-      allowUnwrapped: command.toLowerCase() === 'datatype.enum',
+      allowUnwrapped: isDomainEnumCommand(command),
     });
-    if (command.toLowerCase() === 'datatype.enum') {
-      return buildEnumRuleSpec(params);
+    if (isDomainEnumCommand(command)) {
+      return EnumParser.buildSchemaRuleSpecFromInput(params);
     }
     return `${command}${params}`;
   }
@@ -103,28 +92,13 @@ function buildRuleSpecFromSchemaRow(row) {
     return regexValue;
   }
   if (sourceType === SOURCE_TYPE_ENUM) {
-    return buildEnumRuleSpec(row?.value);
+    return EnumParser.buildSchemaRuleSpecFromInput(row?.value);
   }
   return String(row?.value ?? '').trim();
 }
 
 function extractEnumValueFromRuleSpec(ruleSpec) {
-  const value = String(ruleSpec ?? '').trim();
-  const wrappedMatch = value.match(/^(?:enum|datatype\.enum|awd\.datatype\.enum)\s*\(([\s\S]*)\)$/i);
-  if (wrappedMatch) {
-    return wrappedMatch[1].trim();
-  }
-  if (/^enum\s+/i.test(value)) {
-    const shorthand = value.replace(/^enum\s+/i, '').trim();
-    if (shorthand.startsWith('(') && shorthand.endsWith(')') && shorthand.length >= 2) {
-      return shorthand.slice(1, -1).trim();
-    }
-    return shorthand;
-  }
-  if (value.startsWith('(') && value.endsWith(')') && value.length >= 2) {
-    return value.slice(1, -1).trim();
-  }
-  return value;
+  return EnumParser.extractEnumDisplayValue(ruleSpec);
 }
 
 function extractLiteralValueFromRuleSpec(ruleSpec) {

@@ -36,7 +36,7 @@ describe('domain generation integration', () => {
       },
       {
         name: 'Keep',
-        ruleSpec: 'enum(yes,no)',
+        ruleSpec: 'yes,no',
         comments: '',
         type: 'enum',
       },
@@ -64,13 +64,15 @@ describe('domain generation integration', () => {
 
     generator.compile();
     let keepAttemptCount = 0;
-    const baseEnumGenerateFrom = generator.generator.enumGenerator.generateFrom.bind(generator.generator.enumGenerator);
-    generator.generator.enumGenerator.generateFrom = (rule) => {
+    const baseDomainGenerateFrom = generator.generator.domainGenerator.generateFrom.bind(
+      generator.generator.domainGenerator
+    );
+    generator.generator.domainGenerator.generateFrom = (rule, executionContext) => {
       if (rule?.name === 'Keep') {
         keepAttemptCount += 1;
         return dataResponse(keepAttemptCount === 1 ? 'no' : 'yes');
       }
-      return baseEnumGenerateFrom(rule);
+      return baseDomainGenerateFrom(rule, executionContext);
     };
 
     const firstRow = generator.generateRow();

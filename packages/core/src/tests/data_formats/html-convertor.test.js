@@ -1,6 +1,7 @@
 import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-table';
 import { HtmlConvertor, HtmlConvertorOptions, Indent } from '@anywaydata/core/data_formats/html-convertor';
 import { JSDOM } from 'jsdom';
+import { assertNoCommonErrorPatternsInValue } from '../utils/outputQualityAssertions.js';
 
 describe('Can use indent class as expected', () => {
   test('by default no indent', () => {
@@ -55,6 +56,36 @@ describe('Can convert generic data grids to html tables', () => {
     let output = new HtmlConvertor().fromDataTable(table);
 
     expect(output).toBe(expected);
+  });
+
+  test('converts non-string values and escapes html markup characters', () => {
+    const expected = `<table>
+<tr>
+<th>Text</th>
+<th>Number</th>
+<th>Boolean</th>
+</tr>
+<tr>
+<td>Data with &lt; and &gt;</td>
+<td>42</td>
+<td>true</td>
+</tr>
+<tr>
+<td>plain data</td>
+<td>0</td>
+<td>false</td>
+</tr>
+</table>`;
+
+    let table = new GenericDataTable();
+    table.setHeaders(['Text', 'Number', 'Boolean']);
+    table.appendDataRow(['Data with < and >', 42, true]);
+    table.appendDataRow(['plain data', 0, false]);
+
+    let output = new HtmlConvertor().fromDataTable(table);
+
+    expect(output).toBe(expected);
+    assertNoCommonErrorPatternsInValue(output);
   });
 
   test('compact output', () => {

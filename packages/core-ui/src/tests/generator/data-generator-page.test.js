@@ -4,6 +4,7 @@ import { faker } from '@faker-js/faker';
 import RandExp from 'randexp';
 import { createDataGeneratorPage } from '../../../js/gui_components/generator/runtime/create-generator-page.js';
 import { getOutputFormatGroups } from '../../../js/gui_components/generator/options/options-ui-schema.js';
+import { FORBIDDEN_FAKER_COMMANDS } from '../../../js/gui_components/shared/faker-commands.js';
 import { TestDataGenerator } from '../../../../core/js/data_generation/testDataGenerator.js';
 
 class FakeTabulator {
@@ -168,6 +169,9 @@ describe('generator page runtime factories', () => {
     expect(optionValues).toContain('helpers.arrayElement');
     expect(optionValues).not.toContain('person.firstName');
     expect(optionValues).not.toContain('airline.airplane.name');
+    FORBIDDEN_FAKER_COMMANDS.forEach((command) => {
+      expect(optionValues).not.toContain(command);
+    });
     expect(optionValues).toEqual(sortedOptionValues);
     expect(optionValues.every((value) => value.startsWith('helpers.'))).toBe(true);
   });

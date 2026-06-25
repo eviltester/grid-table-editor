@@ -2,6 +2,14 @@ import { createHelpTooltipService } from '../../../../help/help-tooltips.js';
 import { getDefaultDocumentObj, getDefaultWindowObj, resolveWindowObj } from '../../dom/default-objects.js';
 
 const STYLE_ID = 'params-editor-modal-styles-link';
+const FOCUSABLE_SELECTOR = [
+  'a[href]',
+  'button:not([disabled])',
+  'input:not([disabled])',
+  'select:not([disabled])',
+  'textarea:not([disabled])',
+  '[tabindex]:not([tabindex="-1"])',
+].join(',');
 
 function escapeHtml(text) {
   return String(text ?? '')
@@ -364,7 +372,8 @@ function buildParamsTextFromEditorEntries({ entries = [], validateParams = null 
       }
     }
     const formattedValue = formatEditorValue(rawValue, entry.mode || 'auto', entry.type || '');
-    formattedValues.push(entry.name && entry.variadic !== true ? `${entry.name}=${formattedValue}` : formattedValue);
+    const useNamedParam = entry.name && entry.variadic !== true && entry.positionalOnly !== true;
+    formattedValues.push(useNamedParam ? `${entry.name}=${formattedValue}` : formattedValue);
   }
 
   const paramsText = formattedValues.length > 0 ? `(${formattedValues.join(',')})` : '';
@@ -592,6 +601,57 @@ function renderEntryRows(entries = []) {
     .join('');
 }
 
+function isFocusableElement(element) {
+  if (!element || typeof element.focus !== 'function') {
+    return false;
+  }
+  if (element.hidden || element.getAttribute?.('aria-hidden') === 'true') {
+    return false;
+  }
+  return true;
+}
+
+function getFocusableElements(rootElement) {
+  return Array.from(rootElement?.querySelectorAll?.(FOCUSABLE_SELECTOR) || []).filter(isFocusableElement);
+}
+
+function trapTabFocus(event, dialogElement, documentObj) {
+  if (event.key !== 'Tab') {
+    return false;
+  }
+
+  const focusableElements = getFocusableElements(dialogElement);
+  if (focusableElements.length === 0) {
+    event.preventDefault();
+    dialogElement?.focus?.();
+    return true;
+  }
+
+  const firstElement = focusableElements[0];
+  const lastElement = focusableElements[focusableElements.length - 1];
+  const activeElement = documentObj?.activeElement;
+
+  if (!dialogElement.contains(activeElement)) {
+    event.preventDefault();
+    (event.shiftKey ? lastElement : firstElement).focus();
+    return true;
+  }
+
+  if (event.shiftKey && activeElement === firstElement) {
+    event.preventDefault();
+    lastElement.focus();
+    return true;
+  }
+
+  if (!event.shiftKey && activeElement === lastElement) {
+    event.preventDefault();
+    firstElement.focus();
+    return true;
+  }
+
+  return false;
+}
+
 function openParamsEditorModal({
   documentObj = getDefaultDocumentObj(),
   windowObj = getDefaultWindowObj(),
@@ -605,6 +665,7 @@ function openParamsEditorModal({
   }
   windowObj = resolveWindowObj(windowObj, documentObj);
   ensureStyles(documentObj);
+  const previouslyFocusedElement = documentObj.activeElement;
 
   const parsed = parseInitialParamEntries({
     params: helpModel?.params || [],
@@ -615,7 +676,7 @@ function openParamsEditorModal({
   overlay.setAttribute('data-role', 'params-editor-overlay');
   const commandHelpHtml = buildCommandHelpHtml(helpModel, commandLabel);
   overlay.innerHTML = `
-    <div class="params-editor-modal" data-role="params-editor-dialog" role="dialog" aria-modal="true" aria-label="${escapeHtml(
+    <div class="params-editor-modal" data-role="params-editor-dialog" role="dialog" aria-modal="true" tabindex="-1" aria-label="${escapeHtml(
       `Edit params for ${commandLabel}`
     )}">
       <header class="params-editor-header">
@@ -673,6 +734,7 @@ function openParamsEditorModal({
   const previewElement = overlay.querySelector('[data-role="params-editor-preview"]');
   const errorElement = overlay.querySelector('[data-role="params-editor-error"]');
   const applyButton = overlay.querySelector('[data-role="params-editor-apply-button"]');
+  const dialogElement = overlay.querySelector('[data-role="params-editor-dialog"]');
   const valueInputs = () => Array.from(overlay.querySelectorAll('[data-role="params-editor-value"]'));
   const booleanInputs = () => Array.from(overlay.querySelectorAll('[data-role="params-editor-boolean"]'));
   const helpTooltipService = createHelpTooltipService({
@@ -718,9 +780,20 @@ function openParamsEditorModal({
   }
 
   return new Promise((resolve) => {
+    function restorePreviousFocus() {
+      if (
+        previouslyFocusedElement &&
+        previouslyFocusedElement !== documentObj.body &&
+        documentObj.contains?.(previouslyFocusedElement)
+      ) {
+        previouslyFocusedElement.focus?.();
+      }
+    }
+
     function close(result) {
       helpTooltipService.destroy();
       overlay.remove();
+      restorePreviousFocus();
       resolve(result ?? null);
     }
 
@@ -742,6 +815,9 @@ function openParamsEditorModal({
     });
 
     overlay.addEventListener('keydown', (event) => {
+      if (trapTabFocus(event, dialogElement, documentObj)) {
+        return;
+      }
       if (event.key === 'Escape') {
         event.preventDefault();
         close(null);
@@ -767,7 +843,7 @@ function openParamsEditorModal({
     syncPreview();
     const firstInput = valueInputs()[0] || booleanInputs()[0];
     const focusFn = windowObj?.requestAnimationFrame?.bind(windowObj) || windowObj?.setTimeout?.bind(windowObj);
-    focusFn?.(() => firstInput?.focus?.());
+    focusFn?.(() => (firstInput || getFocusableElements(dialogElement)[0] || dialogElement)?.focus?.());
   });
 }
 

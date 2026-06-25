@@ -29,8 +29,8 @@ function createGeneratorSchemaGenerationService({
   function getValidatedSchemaState(options) {
     const parsed = options?.schemaState ||
       syncSchemaRowsFromTextMode?.({
-        showErrors: false,
-        applySemanticValidation: false,
+        showErrors: options?.showErrors === true,
+        applySemanticValidation: options?.applySemanticValidation === true,
       }) || { rows: [], errors: [] };
 
     if (parsed.errors?.length > 0) {
@@ -96,7 +96,16 @@ function createGeneratorSchemaGenerationService({
     },
 
     getCombinationInput(options) {
-      return generationEngine.getCombinationInput(options);
+      const schemaState = getValidatedSchemaState(options);
+      if (schemaState.errors.length > 0) {
+        return {
+          enumColumnCount: 0,
+          enumValueCounts: [],
+          errors: schemaState.errors,
+          rows: schemaState.rows || [],
+        };
+      }
+      return generationEngine.getCombinationInput({ ...options, schemaState });
     },
 
     generateRows({ rowCount, options } = {}) {

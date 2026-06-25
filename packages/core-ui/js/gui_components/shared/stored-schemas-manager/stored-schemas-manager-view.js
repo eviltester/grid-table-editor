@@ -86,12 +86,12 @@ class StoredSchemasManagerView {
           <summary data-role="stored-schemas-summary">Managed Stored Schemas (0)</summary>
           <div class="stored-schemas-manager__body" data-role="stored-schemas-body">
             <div class="stored-schemas-manager__actions">
-              <button type="button" data-role="stored-schemas-save-as">Save Schema As</button>
+              <button type="button" data-role="stored-schemas-save-as" aria-label="Save Schema As" title="Save Schema As">Save Schema As</button>
               <span
                 class="helpicon"
                 data-help-role="option-help-icon"
                 data-role="stored-schemas-draft-preview"></span>
-              <button type="button" data-role="stored-schemas-recover-draft">Recover Draft</button>
+              <button type="button" data-role="stored-schemas-recover-draft" aria-label="Recover Draft" title="Recover Draft">Recover Draft</button>
             </div>
             <div class="stored-schemas-manager__actions">
               <label>
@@ -102,8 +102,8 @@ class StoredSchemasManagerView {
                 class="helpicon"
                 data-help-role="option-help-icon"
                 data-role="stored-schemas-last-used-preview"></span>
-              <button type="button" data-role="stored-schemas-load-last-used">Load</button>
-              <button type="button" data-role="stored-schemas-clear-last-used">Clear Last Used</button>
+              <button type="button" data-role="stored-schemas-load-last-used" aria-label="Load last used schema" title="Load last used schema">Load</button>
+              <button type="button" data-role="stored-schemas-clear-last-used" aria-label="Clear last used schema" title="Clear last used schema">Clear Last Used</button>
             </div>
             <div class="stored-schemas-manager__actions">
               <button type="button" data-role="stored-schemas-open-saved-dialog">Load Saved Schema</button>

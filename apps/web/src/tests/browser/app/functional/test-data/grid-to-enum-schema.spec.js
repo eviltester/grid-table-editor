@@ -36,7 +36,7 @@ test.describe('7. Test Data Generation', () => {
     await expect.poll(async () => appPage.testDataPanel.getSchemaRowCount()).toBe(2);
     await expect
       .poll(async () => appPage.testDataPanel.getSchemaText())
-      .toContain('Status\nenum(active,pending,inactive)');
+      .toContain('Status\nenum("active","pending","inactive")');
     await expect(await appPage.testDataPanel.getSchemaCell(0, 'columnName')).toBe('Status');
     await expect(await appPage.testDataPanel.getSchemaCell(1, 'columnName')).toBe('Priority');
     expectNoPageErrors(pageErrors);
@@ -51,7 +51,7 @@ test.describe('7. Test Data Generation', () => {
     await appPage.testDataPanel.submitGridToEnumSchemaLimit(2);
     await appPage.testDataPanel.confirmDialog.confirm({ confirmLabel: /truncate schema/i });
 
-    await expect.poll(async () => appPage.testDataPanel.getSchemaText()).toContain('Status\nenum(active,pending)');
+    await expect.poll(async () => appPage.testDataPanel.getSchemaText()).toContain('Status\nenum("active","pending")');
     await expect.poll(async () => appPage.testDataPanel.getSchemaText()).not.toContain('inactive');
     expectNoPageErrors(pageErrors);
   });

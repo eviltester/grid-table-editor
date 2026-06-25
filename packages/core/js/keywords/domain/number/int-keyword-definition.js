@@ -1,7 +1,19 @@
 import { validateIntegerValue } from '../../../command-help/command-help-validators.js';
-import { createOrderedArgsValidator } from '../../../domain/domain-keyword-arg-validators.js';
+import {
+  composeArgsValidators,
+  createNumericArgRangeValidator,
+  createOrderedArgsValidator,
+} from '../../../domain/domain-keyword-arg-validators.js';
 
-const validateIntegerBounds = createOrderedArgsValidator({ lowerName: 'min', upperName: 'max' });
+const validateIntegerBounds = composeArgsValidators(
+  createOrderedArgsValidator({ lowerName: 'min', upperName: 'max' }),
+  createNumericArgRangeValidator({
+    argName: 'multipleOf',
+    min: 0,
+    inclusiveMin: false,
+    description: 'Invalid keyword arguments: argument "multipleOf" must be greater than 0',
+  })
+);
 
 const NUMBER_INT_KEYWORD_DEFINITION = {
   keyword: 'number.int',

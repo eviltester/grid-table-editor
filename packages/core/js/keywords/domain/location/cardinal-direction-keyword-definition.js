@@ -5,6 +5,7 @@ const LOCATION_CARDINAL_DIRECTION_KEYWORD_DEFINITION = {
   delegate: {
     type: 'faker',
     target: 'location.cardinalDirection',
+    argTransform: 'optionsFromHelpArgs',
   },
   help: {
     summary: 'Returns a random cardinal direction (north, east, south, west).',
@@ -14,12 +15,25 @@ const LOCATION_CARDINAL_DIRECTION_KEYWORD_DEFINITION = {
     returnType: 'string',
     usageExamples: [
       {
-        functionCall: 'location.cardinalDirection',
+        functionCall: 'location.cardinalDirection()',
         sampleReturnValue: 'East',
-        description: 'Shows the default location.cardinalDirection call.',
+        description: 'Shows location.cardinalDirection when optional params are omitted.',
+      },
+      {
+        functionCall: 'location.cardinalDirection(abbreviated=true)',
+        sampleReturnValue: 'E',
+        description: 'Shows location.cardinalDirection using abbreviated.',
       },
     ],
-    args: [],
+    args: [
+      {
+        name: 'abbreviated',
+        type: 'boolean',
+        required: false,
+        description:
+          'If true this will return abbreviated cardinal directions (N, E, S, W). Otherwise this will return the long name.',
+      },
+    ],
   },
 };
 

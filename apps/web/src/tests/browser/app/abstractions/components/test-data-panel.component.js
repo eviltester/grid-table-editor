@@ -57,8 +57,8 @@ class TestDataPanelComponent {
     this.storedSchemasSummary = this.panelRoot.getByText(/Managed Stored Schemas/);
     this.storedSchemasSaveAsButton = this.panelRoot.getByRole('button', { name: 'Save Schema As' });
     this.storedSchemasRecoverDraftButton = this.panelRoot.getByRole('button', { name: 'Recover Draft' });
-    this.storedSchemasLastUsedSelect = this.panelRoot.getByLabel('Last Used');
-    this.storedSchemasLoadLastUsedButton = this.panelRoot.getByRole('button', { name: /^Load$/ });
+    this.storedSchemasLastUsedSelect = this.panelRoot.getByRole('combobox', { name: 'Last Used' });
+    this.storedSchemasLoadLastUsedButton = this.panelRoot.getByRole('button', { name: 'Load last used schema' });
     this.storedSchemasLoadSavedButton = this.panelRoot.getByRole('button', { name: 'Load Saved Schema' });
     this.storedSchemasDialog = page.getByRole('dialog', { name: 'Saved Schemas' });
     this.schemaGrid = this.schemaEditor.rowsContainer;

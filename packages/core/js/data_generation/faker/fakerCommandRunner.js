@@ -34,6 +34,47 @@ function navigateToFunction(commandPath, fakerInstance) {
   return current;
 }
 
+function validateRangeToNumberArgs(args = []) {
+  if (args.length !== 1) {
+    throw new Error('helpers.rangeToNumber requires exactly one number or range object argument');
+  }
+
+  const numberOrRange = args[0];
+  if (typeof numberOrRange === 'number') {
+    if (!Number.isFinite(numberOrRange)) {
+      throw new Error('helpers.rangeToNumber number argument must be finite');
+    }
+    return;
+  }
+
+  if (numberOrRange === null || Array.isArray(numberOrRange) || typeof numberOrRange !== 'object') {
+    throw new Error('helpers.rangeToNumber requires a number or { min, max } range object');
+  }
+
+  if (!Object.prototype.hasOwnProperty.call(numberOrRange, 'min')) {
+    throw new Error('helpers.rangeToNumber range object requires min');
+  }
+  if (!Object.prototype.hasOwnProperty.call(numberOrRange, 'max')) {
+    throw new Error('helpers.rangeToNumber range object requires max');
+  }
+
+  if (typeof numberOrRange.min !== 'number' || !Number.isFinite(numberOrRange.min)) {
+    throw new Error('helpers.rangeToNumber range min must be a finite number');
+  }
+  if (typeof numberOrRange.max !== 'number' || !Number.isFinite(numberOrRange.max)) {
+    throw new Error('helpers.rangeToNumber range max must be a finite number');
+  }
+  if (numberOrRange.min > numberOrRange.max) {
+    throw new Error('helpers.rangeToNumber range min must be less than or equal to max');
+  }
+}
+
+function validateFakerCommandArguments(command, args = []) {
+  if (command === 'helpers.rangeToNumber') {
+    validateRangeToNumberArgs(args);
+  }
+}
+
 function runFakerCommandSafely(thisCommand, theseArguments, usingFaker, propertyAccessors = []) {
   const executionResult = { isError: true, errorMessage: 'Not Executed', data: '' };
 
@@ -46,6 +87,7 @@ function runFakerCommandSafely(thisCommand, theseArguments, usingFaker, property
 
   // Parse arguments safely
   const args = parseArgumentsSafely(theseArguments);
+  validateFakerCommandArguments(thisCommand, args);
 
   // Call the function directly
   let result = fakerFunction.apply(usingFaker, args);

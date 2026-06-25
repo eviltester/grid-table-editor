@@ -97,17 +97,27 @@ Returns a random cardinal direction (north, east, south, west).
 - Canonical: `awd.domain.location.cardinalDirection`
 - Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
 
-No parameters.
+| Arg | Type | Required | Description |
+| --- | --- | --- | --- |
+| `abbreviated` | `boolean` | no | If true this will return abbreviated cardinal directions (N, E, S, W). Otherwise this will return the long name. |
 
 Examples:
 
-Shows the default location.cardinalDirection call.
+Shows location.cardinalDirection when optional params are omitted.
 
 ```txt
-location.cardinalDirection
+location.cardinalDirection()
 ```
 
 Returns: `East`
+
+Shows location.cardinalDirection using abbreviated.
+
+```txt
+location.cardinalDirection(abbreviated=true)
+```
+
+Returns: `E`
 
 ### `location.city`
 
@@ -344,17 +354,27 @@ Returns a random ordinal direction (northwest, southeast, etc).
 - Canonical: `awd.domain.location.ordinalDirection`
 - Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
 
-No parameters.
+| Arg | Type | Required | Description |
+| --- | --- | --- | --- |
+| `abbreviated` | `boolean` | no | If true this will return abbreviated ordinal directions (NW, SE, etc). Otherwise this will return the long name. |
 
 Examples:
 
-Shows the default location.ordinalDirection call.
+Shows location.ordinalDirection when optional params are omitted.
 
 ```txt
-location.ordinalDirection
+location.ordinalDirection()
 ```
 
 Returns: `Northwest`
+
+Shows location.ordinalDirection using abbreviated.
+
+```txt
+location.ordinalDirection(abbreviated=true)
+```
+
+Returns: `NW`
 
 ### `location.secondaryAddress`
 

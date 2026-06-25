@@ -31,7 +31,7 @@ location.streetAddress()
 
 ```txt
 Direction
-location.direction(abbreviated=true)
+location.cardinalDirection(abbreviated=true)
 ```
 
 ```txt

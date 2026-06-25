@@ -5,6 +5,7 @@ const LOCATION_ORDINAL_DIRECTION_KEYWORD_DEFINITION = {
   delegate: {
     type: 'faker',
     target: 'location.ordinalDirection',
+    argTransform: 'optionsFromHelpArgs',
   },
   help: {
     summary: 'Returns a random ordinal direction (northwest, southeast, etc).',
@@ -14,12 +15,25 @@ const LOCATION_ORDINAL_DIRECTION_KEYWORD_DEFINITION = {
     returnType: 'string',
     usageExamples: [
       {
-        functionCall: 'location.ordinalDirection',
+        functionCall: 'location.ordinalDirection()',
         sampleReturnValue: 'Northwest',
-        description: 'Shows the default location.ordinalDirection call.',
+        description: 'Shows location.ordinalDirection when optional params are omitted.',
+      },
+      {
+        functionCall: 'location.ordinalDirection(abbreviated=true)',
+        sampleReturnValue: 'NW',
+        description: 'Shows location.ordinalDirection using abbreviated.',
       },
     ],
-    args: [],
+    args: [
+      {
+        name: 'abbreviated',
+        type: 'boolean',
+        required: false,
+        description:
+          'If true this will return abbreviated ordinal directions (NW, SE, etc). Otherwise this will return the long name.',
+      },
+    ],
   },
 };
 

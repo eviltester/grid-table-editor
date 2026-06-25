@@ -51,7 +51,7 @@ Enum helper accepts CSV values or a string array and returns one value at random
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `values` | `comma-separated list|array` | yes | List of allowed enum values chosen at random during generation. Named csv="..." is also accepted as a CSV-string alias for this argument. |
+| `values` | `comma-separated list\|array` | yes | List of allowed enum values chosen at random during generation. Named csv="..." is also accepted as a CSV-string alias for this argument. |
 
 Examples:
 

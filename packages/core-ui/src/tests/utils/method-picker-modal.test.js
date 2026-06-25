@@ -67,6 +67,56 @@ describe('method picker modal', () => {
     expect(result).toBeNull();
   });
 
+  test('focuses search with slash and selects the first filtered method with enter', async () => {
+    const promise = openMethodPickerModal({
+      documentObj: document,
+      windowObj: window,
+      options: [
+        {
+          sourceType: 'domain',
+          command: 'commerce.price',
+          helpModel: { summary: 'Generate prices', params: [], example: '' },
+        },
+        {
+          sourceType: 'domain',
+          command: 'location.city',
+          helpModel: { summary: 'Generate city values', params: [], example: '' },
+        },
+      ],
+      currentCommand: '',
+    });
+
+    getSearchInput().blur();
+    getOverlay().dispatchEvent(new window.KeyboardEvent('keydown', { key: '/', bubbles: true }));
+    expect(document.activeElement).toBe(getSearchInput());
+
+    const search = getSearchInput();
+    search.value = 'city';
+    search.dispatchEvent(new window.Event('input', { bubbles: true }));
+    search.dispatchEvent(new window.KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+
+    expect(getOverlay().querySelector('[data-role="method-picker-tile"].is-selected').textContent).toContain(
+      'location.city'
+    );
+
+    getOverlay().querySelector('[data-role="method-picker-apply-button"]').click();
+    await expect(promise).resolves.toEqual({ sourceType: 'domain', command: 'location.city' });
+  });
+
+  test('cancels on backdrop click and removes the overlay', async () => {
+    const promise = openMethodPickerModal({
+      documentObj: document,
+      windowObj: window,
+      options: [{ sourceType: 'domain', command: 'number.int', helpModel: { summary: '', params: [], example: '' } }],
+      currentCommand: 'number.int',
+    });
+
+    getOverlay().click();
+
+    await expect(promise).resolves.toBeNull();
+    expect(getOverlay()).toBeNull();
+  });
+
   test('restores focus to the trigger after closing with escape', async () => {
     const trigger = document.createElement('button');
     trigger.textContent = 'Select faker command';

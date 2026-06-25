@@ -535,7 +535,7 @@ Current status:
 
 Use this backlog when the next migration step should be chosen from the reviewer-facing Storybook surface rather than from internal helper seams alone.
 
-- [x] Add dedicated Storybook coverage for the method-picker dialog in `shared/test-data/ui/method-picker-modal.js`, including:
+- [x] Add dedicated Storybook coverage for the component-backed method-picker dialog under `shared/method-picker-dialog/`, including:
   - confirmed selection flow
   - cancel flow
   - filtered or tab-scoped selection flow
@@ -558,6 +558,7 @@ Current status:
 
 - The command picker dialog now has dedicated reviewer-facing Storybook coverage in `apps/web/src/stories/method-picker-dialog.stories.js`, with confirmed, cancelled, and filtered-selection flows.
 - The command picker dialog stories now also include a non-dismissing visual review example that renders the picker open immediately and logs `Apply`, `Cancel`, close-button, and backdrop actions without closing the overlay, so reviewers can inspect the component visually while the other stories keep covering the real promise-driven service flow.
+- The method-picker dialog is now a real MVC component family under `shared/method-picker-dialog/`: `MethodNavigator`, `MethodList`, `MethodHelpDisplay`, and the composed `MethodPickerDialog` have focused tests and Storybook stories, while `openMethodPickerModal(...)` is only a compatibility service wrapper for the body-overlay promise API.
 - The shared confirm dialog and text-input dialog stories now follow that same review pattern with `Visual Always Open` examples, and the loading/status presenter stories now expose `Visual Always Visible` examples so the rendered presenter state can be reviewed immediately instead of only after pressing a trigger button.
 - `PopulationModeSelector` now has dedicated reviewer-facing Storybook coverage in `apps/web/src/stories/population-mode-selector.stories.js`, with default, emitted-change, and alternate-initial-mode states.
 - `PopulationActions` now has dedicated reviewer-facing Storybook coverage in `apps/web/src/stories/population-actions.stories.js`, and the action cluster is now reused by generator controls as a shared icon+tippy action component with host-specific HTML help content for app-to-grid versus generator-to-file flows.

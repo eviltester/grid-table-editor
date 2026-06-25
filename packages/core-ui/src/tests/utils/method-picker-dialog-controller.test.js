@@ -104,4 +104,51 @@ describe('method picker dialog controller', () => {
     expect(controller.applySelection()).toEqual({ sourceType: 'domain', command: 'commerce.price' });
     expect(written).toEqual([['commerce.price', 'helpers.arrayElement']]);
   });
+
+  test('ignores invalid and empty selections without clearing the current selection', () => {
+    const controller = new MethodPickerDialogController({
+      props: {
+        options: OPTIONS,
+        currentCommand: 'commerce.price',
+      },
+    });
+
+    controller.selectCommand('unknown.command');
+    expect(controller.getState().selectedCommand).toBe('commerce.price');
+
+    controller.selectCommand('');
+    expect(controller.getState().selectedCommand).toBe('commerce.price');
+  });
+
+  test('leaves selection empty when selecting first filtered option from an empty result set', () => {
+    const controller = new MethodPickerDialogController({
+      props: {
+        options: OPTIONS,
+      },
+    });
+
+    controller.setSearchTerm('no matching command');
+    expect(controller.getState().selectedCommand).toBe('');
+    expect(controller.getState().applyDisabled).toBe(true);
+
+    controller.selectFirstFilteredOption();
+    expect(controller.getState().selectedCommand).toBe('');
+    expect(controller.getState().applyDisabled).toBe(true);
+  });
+
+  test('re-normalizes selection when options change mid-session', () => {
+    const controller = new MethodPickerDialogController({
+      props: {
+        options: OPTIONS,
+        currentCommand: 'commerce.price',
+      },
+    });
+
+    controller.updateProps({
+      options: [{ sourceType: 'domain', command: 'number.int', helpModel: { summary: 'Integer', params: [] } }],
+    });
+
+    expect(controller.getState().selectedCommand).toBe('number.int');
+    expect(controller.applySelection()).toEqual({ sourceType: 'domain', command: 'number.int' });
+  });
 });

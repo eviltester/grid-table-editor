@@ -2,6 +2,7 @@ import { JSDOM } from 'jsdom';
 import { createMethodHelpDisplay } from '../../../js/gui_components/shared/method-picker-dialog/method-help-display.js';
 import { createMethodList } from '../../../js/gui_components/shared/method-picker-dialog/method-list.js';
 import { createMethodNavigator } from '../../../js/gui_components/shared/method-picker-dialog/method-navigator.js';
+import { getReturnExamples } from '../../../js/gui_components/shared/method-picker-dialog/method-picker-dialog-utils.js';
 
 describe('method picker dialog subcomponents', () => {
   let dom;
@@ -120,5 +121,36 @@ describe('method picker dialog subcomponents', () => {
 
     component.update({ selectedOption: null });
     expect(root.textContent).toContain('No method selected');
+  });
+
+  test('help display omits unsafe docs links and preserves falsy return examples', () => {
+    createMethodHelpDisplay({
+      root,
+      props: {
+        selectedOption: {
+          sourceType: 'domain',
+          command: 'datatype.boolean',
+          helpModel: {
+            summary: 'Boolean helper',
+            docsUrl: 'javascript:alert(1)',
+            params: [],
+            returnExamples: [0, false, ''],
+          },
+        },
+      },
+    });
+
+    expect(root.querySelector('.method-picker-docs-link a')).toBeNull();
+    expect(root.textContent).toContain('0');
+    expect(root.textContent).toContain('false');
+  });
+
+  test('return examples fall back safely for circular values', () => {
+    const circular = { label: 'loop' };
+    circular.self = circular;
+
+    expect(getReturnExamples({ usageExamples: [{ functionCall: 'demo()', sampleReturnValue: circular }] })).toEqual([
+      '[object Object]',
+    ]);
   });
 });

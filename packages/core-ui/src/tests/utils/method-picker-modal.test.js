@@ -136,6 +136,30 @@ describe('method picker modal', () => {
     expect(document.activeElement).toBe(trigger);
   });
 
+  test('wraps tab focus within the modal dialog', async () => {
+    const promise = openMethodPickerModal({
+      documentObj: document,
+      windowObj: window,
+      options: [{ sourceType: 'domain', command: 'number.int', helpModel: { summary: '', params: [], example: '' } }],
+      currentCommand: 'number.int',
+    });
+
+    const closeButton = getOverlay().querySelector('[data-role="method-picker-close-button"]');
+    const applyButton = getOverlay().querySelector('[data-role="method-picker-apply-button"]');
+
+    closeButton.focus();
+    closeButton.dispatchEvent(
+      new window.KeyboardEvent('keydown', { key: 'Tab', shiftKey: true, bubbles: true, cancelable: true })
+    );
+    expect(document.activeElement).toBe(applyButton);
+
+    applyButton.dispatchEvent(new window.KeyboardEvent('keydown', { key: 'Tab', bubbles: true, cancelable: true }));
+    expect(document.activeElement).toBe(closeButton);
+
+    getOverlay().querySelector('[data-role="method-picker-cancel-button"]').click();
+    await promise;
+  });
+
   test('renders component-owned rooted hooks for overlay, tabs, list, detail, and tiles', async () => {
     const promise = openMethodPickerModal({
       documentObj: document,

@@ -6,6 +6,7 @@ import {
   renderParameterDetailsTable,
   renderParameterTypesTable,
   renderUsageExamples,
+  toSafeDocsUrl,
 } from './method-picker-dialog-utils.js';
 
 class MethodHelpDisplayView {
@@ -33,7 +34,7 @@ class MethodHelpDisplayView {
     const model = selected.helpModel || {};
     const usageExamples = getUsageFunctionCalls(model);
     const returnExamples = getReturnExamples(model);
-    const docsUrl = String(model.docsUrl || '').trim();
+    const docsUrl = toSafeDocsUrl(model.docsUrl);
     const hasParams = Array.isArray(model.params) && model.params.length > 0;
     this.root.innerHTML = `
       <h4>${escapeHtml(selected.command)}</h4>

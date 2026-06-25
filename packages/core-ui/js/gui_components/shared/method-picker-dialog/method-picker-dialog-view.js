@@ -71,7 +71,7 @@ class MethodPickerDialogView {
     this.applyButton = this.root.querySelector('[data-role="method-picker-apply-button"]');
     this.root.addEventListener('click', this.handleOverlayClick);
     this.root.addEventListener('keydown', this.handleKeyDown);
-    this.render();
+    this.updateApplyButtonState();
   }
 
   getNavigatorProps() {
@@ -98,10 +98,14 @@ class MethodPickerDialogView {
   }
 
   render() {
-    const state = this.controller.getState();
     this.navigator?.update(this.getNavigatorProps());
     this.list?.update(this.getListProps());
     this.helpDisplay?.update(this.getHelpDisplayProps());
+    this.updateApplyButtonState();
+  }
+
+  updateApplyButtonState() {
+    const state = this.controller.getState();
     if (this.applyButton) {
       this.applyButton.disabled = state.applyDisabled;
       this.applyButton.setAttribute('aria-disabled', state.applyDisabled ? 'true' : 'false');
@@ -130,6 +134,10 @@ class MethodPickerDialogView {
   }
 
   onKeyDown(event) {
+    if (event.key === 'Tab') {
+      this.wrapFocusWithinDialog(event);
+      return;
+    }
     if (event.key === 'Escape') {
       event.preventDefault();
       this.callbacks.onCancel?.({ reason: 'escape' });
@@ -144,6 +152,30 @@ class MethodPickerDialogView {
       event.preventDefault();
       this.controller.selectFirstFilteredOption();
       this.render();
+    }
+  }
+
+  wrapFocusWithinDialog(event) {
+    const dialog = this.root?.querySelector?.('[data-role="method-picker-dialog"]');
+    const focusable = Array.from(
+      dialog?.querySelectorAll?.(
+        'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      ) || []
+    ).filter((element) => element.getAttribute('aria-hidden') !== 'true');
+    if (focusable.length === 0) {
+      return;
+    }
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    const activeElement = this.documentObj?.activeElement;
+    if (event.shiftKey && activeElement === first) {
+      event.preventDefault();
+      last.focus();
+      return;
+    }
+    if (!event.shiftKey && activeElement === last) {
+      event.preventDefault();
+      first.focus();
     }
   }
 

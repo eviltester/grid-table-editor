@@ -58,10 +58,22 @@ function getNextRecentEntries(command, recentEntries = []) {
 
 function toExampleList(value) {
   if (Array.isArray(value)) {
-    return value.map((entry) => String(entry || '').trim()).filter(Boolean);
+    return value.map((entry) => String(entry ?? '').trim()).filter(Boolean);
   }
-  const single = String(value || '').trim();
+  const single = String(value ?? '').trim();
   return single ? [single] : [];
+}
+
+function safeStringify(value) {
+  try {
+    return JSON.stringify(value);
+  } catch {
+    try {
+      return String(value);
+    } catch {
+      return '[Unserializable value]';
+    }
+  }
 }
 
 function normalizeReturnExampleValue(value) {
@@ -69,15 +81,29 @@ function normalizeReturnExampleValue(value) {
     return `${value}n`;
   }
   if (Array.isArray(value)) {
-    return JSON.stringify(value);
+    return safeStringify(value);
   }
   if (value instanceof Date) {
     return value.toISOString();
   }
   if (value && typeof value === 'object') {
-    return JSON.stringify(value);
+    return safeStringify(value);
   }
   return String(value);
+}
+
+function toSafeDocsUrl(value) {
+  const raw = String(value ?? '').trim();
+  if (!raw) {
+    return '';
+  }
+  if (/^https?:\/\//i.test(raw)) {
+    return raw;
+  }
+  if (/^\/(?!\/)/.test(raw)) {
+    return raw;
+  }
+  return '';
 }
 
 function getUsageFunctionCalls(model) {
@@ -312,6 +338,7 @@ export {
   renderUsageExamples,
   resolveSelectedCommandForFiltered,
   selectInitialCommand,
+  toSafeDocsUrl,
   splitFunctionCall,
   writeRecent,
 };

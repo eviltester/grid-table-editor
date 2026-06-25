@@ -110,6 +110,48 @@ test.describe('Generator Schema Editing', () => {
     expectNoPageErrors(pageErrors);
   });
 
+  test('invalid enum text shows a schema error and remains in text mode when editing as schema', async ({ page }) => {
+    const { generatorPage, pageErrors } = await openGenerator(page);
+
+    await generatorPage.schema.setSchemaText('Status\ndatatype.enum(values="active,pending)');
+    await generatorPage.schema.modeToggleButton.click();
+
+    await expect(generatorPage.schema.errorStatus).toContainText(
+      'Status failed domain validation - Invalid keyword arguments: unbalanced expression'
+    );
+    await expect.poll(async () => generatorPage.schema.editor.isRowEditorMode()).toBe(false);
+    await expect(generatorPage.schema.modeToggleButton).toHaveText('Edit as Schema');
+
+    expectNoPageErrors(pageErrors);
+  });
+
+  test('invalid enum text shows a schema error when previewing generator data', async ({ page }) => {
+    const { generatorPage, pageErrors } = await openGenerator(page);
+
+    await generatorPage.schema.setSchemaText('Status\ndatatype.enum(values="")');
+    await generatorPage.preview.clickPreview();
+
+    await expect(generatorPage.schema.errorStatus).toContainText(
+      'Status failed domain validation - Invalid keyword arguments: argument "values" is required'
+    );
+    await expect.poll(async () => generatorPage.preview.getOutputPreviewText()).toBe('');
+
+    expectNoPageErrors(pageErrors);
+  });
+
+  test('invalid enum text shows a schema error when generating data', async ({ page }) => {
+    const { generatorPage, pageErrors } = await openGenerator(page);
+
+    await generatorPage.schema.setSchemaText('Status\ndatatype.enum()');
+    await generatorPage.generateOptions.clickGenerateData();
+
+    await expect(generatorPage.schema.errorStatus).toContainText(
+      'Status failed domain validation - Invalid keyword arguments: argument "values" is required'
+    );
+
+    expectNoPageErrors(pageErrors);
+  });
+
   test('schema help shows tippy tooltip content for faker and literal', async ({ page }) => {
     const { generatorPage, pageErrors } = await openGenerator(page);
 
@@ -133,7 +175,7 @@ test.describe('Generator Schema Editing', () => {
     expectNoPageErrors(pageErrors);
   });
 
-  test('domain rows with invalid params stay domain after text mode round-trip in the generator editor', async ({
+  test('domain rows with invalid params show a schema error after text mode round-trip in the generator editor', async ({
     page,
   }) => {
     const { generatorPage, pageErrors } = await openGenerator(page);
@@ -144,14 +186,10 @@ test.describe('Generator Schema Editing', () => {
     await generatorPage.schema.editor.setRowField(0, 'params', '(10)');
 
     await generatorPage.schema.setTextMode(true);
-    await generatorPage.schema.setTextMode(false);
+    await generatorPage.schema.modeToggleButton.click();
 
-    await expect(generatorPage.schema.row(0).locator('select[data-field="sourceType"]')).toHaveValue('domain');
-    await expect(generatorPage.schema.row(0).locator('[data-action="pick-command"]')).toHaveText('person.fullName');
-    await expect(generatorPage.schema.row(0).locator('input[data-field="params"]')).toHaveValue('(10)');
-    await expect(generatorPage.schema.row(0).locator('.shared-schema-row-validation')).toContainText(
-      'invalid domain params'
-    );
+    await expect(generatorPage.schema.errorStatus).toContainText('Name failed domain validation');
+    await expect.poll(async () => generatorPage.schema.editor.isRowEditorMode()).toBe(false);
 
     expectNoPageErrors(pageErrors);
   });
@@ -200,16 +238,16 @@ test.describe('Generator Schema Editing', () => {
 
     await generatorPage.schema.setTextMode(false);
     await generatorPage.schema.setRowName(0, 'Phone');
-    await generatorPage.schema.editor.setRowTypeValue(0, 'phone.number');
-    await generatorPage.schema.editor.setRowField(0, 'params', 'style=13');
+    await generatorPage.schema.editor.setRowTypeValue(0, 'string.alpha');
+    await generatorPage.schema.editor.setRowField(0, 'params', 'length=4');
 
     await generatorPage.schema.setTextMode(true);
-    await expect.poll(async () => generatorPage.schema.getSchemaText()).toContain('phone.number(style=13)');
+    await expect.poll(async () => generatorPage.schema.getSchemaText()).toContain('string.alpha(length=4)');
     await generatorPage.schema.setTextMode(false);
 
     await expect(generatorPage.schema.row(0).locator('select[data-field="sourceType"]')).toHaveValue('domain');
-    await expect(generatorPage.schema.row(0).locator('[data-action="pick-command"]')).toHaveText('phone.number');
-    await expect(generatorPage.schema.row(0).locator('input[data-field="params"]')).toHaveValue('(style=13)');
+    await expect(generatorPage.schema.row(0).locator('[data-action="pick-command"]')).toHaveText('string.alpha');
+    await expect(generatorPage.schema.row(0).locator('input[data-field="params"]')).toHaveValue('(length=4)');
 
     expectNoPageErrors(pageErrors);
   });

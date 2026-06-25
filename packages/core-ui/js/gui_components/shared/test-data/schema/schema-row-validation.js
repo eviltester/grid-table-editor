@@ -1,6 +1,7 @@
 import {
   SOURCE_TYPE_FAKER,
   SOURCE_TYPE_DOMAIN,
+  SOURCE_TYPE_ENUM,
   SOURCE_TYPE_REGEX,
   normaliseFakerCommand,
   normaliseDomainCommand,
@@ -109,6 +110,10 @@ function buildSemanticValidationRuleSpec(row, ruleSpec) {
   const sourceType = normaliseSourceType(row?.sourceType);
   const spec = String(ruleSpec ?? '');
   const trimmedSpec = spec.trim();
+
+  if (sourceType === SOURCE_TYPE_DOMAIN && normaliseDomainCommand(row?.command).toLowerCase() === 'datatype.enum') {
+    return trimmedSpec.length > 0 ? trimmedSpec : 'datatype.enum()';
+  }
 
   if (sourceType === SOURCE_TYPE_REGEX && trimmedSpec.length > 0) {
     if (/^(regex|datatype\.regex|awd\.datatype\.regex)\s*\(/i.test(trimmedSpec)) {
@@ -247,6 +252,20 @@ function getStaticSchemaRowValidationIssues(row, rowIndex) {
           code: 'missing_regex_value',
           field: 'value',
           message: `Row ${rowIndex + 1}: regex value is required.`,
+        })
+      );
+    }
+  }
+
+  if (sourceType === SOURCE_TYPE_ENUM) {
+    const rawValue = String(row?.value ?? '').trim();
+    if (!rawValue) {
+      issues.push(
+        createRowValidationIssue({
+          rowIndex,
+          code: 'missing_enum_value',
+          field: 'value',
+          message: `Row ${rowIndex + 1}: enum value is required.`,
         })
       );
     }

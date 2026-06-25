@@ -82,7 +82,49 @@ test.describe('7. Test Data Generation', () => {
     expectNoPageErrors(pageErrors);
   });
 
-  test('domain rows with invalid params stay domain after text mode round-trip in the app editor', async ({ page }) => {
+  test('invalid enum text shows a schema error and remains in text mode when editing as schema in the app', async ({
+    page,
+  }) => {
+    const { appPage, pageErrors } = await openApp(page);
+
+    await appPage.testDataPanel.expand();
+    await appPage.testDataPanel.expectExpanded();
+
+    await appPage.testDataPanel.setSchemaText('Status\ndatatype.enum(values="active,pending)');
+    await appPage.testDataPanel.schemaEditor.modeToggleButton.click();
+
+    await expect
+      .poll(async () => appPage.testDataPanel.getSchemaErrorText())
+      .toContain('Status failed domain validation - Invalid keyword arguments: unbalanced expression');
+    await expect.poll(async () => appPage.testDataPanel.isRowEditorMode()).toBe(false);
+    await expect(appPage.testDataPanel.schemaEditor.modeToggleButton).toHaveText('Edit as Schema');
+
+    expectNoPageErrors(pageErrors);
+  });
+
+  test('invalid enum text shows a schema error and leaves the grid unchanged when generating in the app', async ({
+    page,
+  }) => {
+    const { appPage, pageErrors } = await openApp(page);
+
+    await appPage.testDataPanel.expand();
+    await appPage.testDataPanel.expectExpanded();
+
+    const totalRowsBefore = await appPage.gridEditor.totalRows.textContent();
+    await appPage.testDataPanel.setSchemaText('Status\ndatatype.enum()');
+    await appPage.testDataPanel.clickGenerate();
+
+    await expect
+      .poll(async () => appPage.testDataPanel.getSchemaErrorText())
+      .toContain('Status failed domain validation - Invalid keyword arguments: argument "values" is required');
+    await expect(appPage.gridEditor.totalRows).toHaveText(totalRowsBefore || '');
+
+    expectNoPageErrors(pageErrors);
+  });
+
+  test('domain rows with invalid params show a schema error after text mode round-trip in the app editor', async ({
+    page,
+  }) => {
     const { appPage, pageErrors } = await openApp(page);
 
     await appPage.testDataPanel.expand();
@@ -95,12 +137,12 @@ test.describe('7. Test Data Generation', () => {
     await appPage.testDataPanel.setSchemaCell(0, 'params', '(10)');
 
     await appPage.testDataPanel.setSchemaTextMode(true);
-    await appPage.testDataPanel.setSchemaTextMode(false);
+    await appPage.testDataPanel.schemaEditor.modeToggleButton.click();
 
-    await expect.poll(async () => appPage.testDataPanel.getSchemaCell(0, 'type')).toBe('person.fullName');
-    await expect.poll(async () => appPage.testDataPanel.getSchemaSourceType(0)).toBe('domain');
-    await expect.poll(async () => appPage.testDataPanel.getSchemaCell(0, 'params')).toBe('(10)');
-    await expect(appPage.testDataPanel.getSchemaValidationMessage(0)).toContainText('invalid domain params');
+    await expect
+      .poll(async () => appPage.testDataPanel.getSchemaErrorText())
+      .toContain('Name failed domain validation');
+    await expect.poll(async () => appPage.testDataPanel.isRowEditorMode()).toBe(false);
 
     expectNoPageErrors(pageErrors);
   });
@@ -157,17 +199,17 @@ test.describe('7. Test Data Generation', () => {
 
     await appPage.testDataPanel.addSchemaRow();
     await expect.poll(async () => appPage.testDataPanel.getSchemaRowCount()).toBe(1);
-    await appPage.testDataPanel.setSchemaCell(0, 'columnName', 'Phone');
-    await appPage.testDataPanel.setSchemaTypeValue(0, 'phone.number');
-    await appPage.testDataPanel.setSchemaCell(0, 'params', 'style=13');
+    await appPage.testDataPanel.setSchemaCell(0, 'columnName', 'Code');
+    await appPage.testDataPanel.setSchemaTypeValue(0, 'string.alpha');
+    await appPage.testDataPanel.setSchemaCell(0, 'params', 'length=4');
 
     await appPage.testDataPanel.setSchemaTextMode(true);
-    await expect.poll(async () => appPage.testDataPanel.getSchemaText()).toContain('phone.number(style=13)');
+    await expect.poll(async () => appPage.testDataPanel.getSchemaText()).toContain('string.alpha(length=4)');
     await appPage.testDataPanel.setSchemaTextMode(false);
 
-    await expect.poll(async () => appPage.testDataPanel.getSchemaCell(0, 'type')).toBe('phone.number');
+    await expect.poll(async () => appPage.testDataPanel.getSchemaCell(0, 'type')).toBe('string.alpha');
     await expect.poll(async () => appPage.testDataPanel.getSchemaSourceType(0)).toBe('domain');
-    await expect.poll(async () => appPage.testDataPanel.getSchemaCell(0, 'params')).toBe('(style=13)');
+    await expect.poll(async () => appPage.testDataPanel.getSchemaCell(0, 'params')).toBe('(length=4)');
 
     expectNoPageErrors(pageErrors);
   });

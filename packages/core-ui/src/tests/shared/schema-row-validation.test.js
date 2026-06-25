@@ -176,6 +176,50 @@ describe('schema-row-validation', () => {
     ]);
   });
 
+  test('reports missing enum value for blank enum rows', () => {
+    const issues = getSchemaRowValidationIssues(
+      {
+        name: 'Status',
+        sourceType: 'enum',
+        value: '   ',
+      },
+      0
+    );
+
+    expect(issues).toEqual([
+      expect.objectContaining({
+        code: 'missing_enum_value',
+        field: 'value',
+        message: 'Row 1: enum value is required.',
+      }),
+    ]);
+  });
+
+  test('reports missing datatype.enum values through the shared row validation path', () => {
+    const issues = getSchemaRowSemanticValidationIssues(
+      {
+        name: 'Status',
+        sourceType: 'domain',
+        command: 'datatype.enum',
+        params: '',
+      },
+      0,
+      {
+        schemaTextToDataRules,
+        faker,
+        RandExp,
+      }
+    );
+
+    expect(issues).toEqual([
+      expect.objectContaining({
+        code: 'compiler_validation_error',
+        field: 'params',
+        message: 'Row 1: invalid domain params - Invalid keyword arguments: argument "values" is required',
+      }),
+    ]);
+  });
+
   test('reports invalid regex value through the shared row validation path', () => {
     const issues = getSchemaRowSemanticValidationIssues(
       {

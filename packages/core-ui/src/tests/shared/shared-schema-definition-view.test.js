@@ -236,6 +236,41 @@ describe('shared-schema-definition view', () => {
     expect(document.querySelector('[data-role="schema-error"]').textContent.length).toBeGreaterThan(0);
   });
 
+  test('surfaces compiler validation errors from text mode and stays editable as text', () => {
+    const component = createComponent();
+    const toggleButton = document.querySelector('[data-role="schema-mode-toggle"]');
+    const textArea = document.querySelector('[data-role="schema-textbox"]');
+    const invalidEnumCases = [
+      {
+        schemaText: 'Status\ndatatype.enum(values="")',
+        expectedMessage: 'Invalid keyword arguments: argument "values" is required',
+      },
+      {
+        schemaText: 'Status\ndatatype.enum()',
+        expectedMessage: 'Invalid keyword arguments: argument "values" is required',
+      },
+      {
+        schemaText: 'Status\ndatatype.enum(values="active,pending)',
+        expectedMessage: 'Invalid keyword arguments: unbalanced expression',
+      },
+    ];
+
+    fireEvent.click(toggleButton);
+
+    invalidEnumCases.forEach(({ schemaText, expectedMessage }) => {
+      textArea.value = schemaText;
+
+      const parsed = component.syncFromText({ showErrors: true, force: true });
+      fireEvent.click(toggleButton);
+
+      expect(parsed.rows).toHaveLength(1);
+      expect(parsed.errors[0]?.message).toContain(expectedMessage);
+      expect(document.querySelector('[data-role="schema-error"]').textContent).toContain(expectedMessage);
+      expect(document.querySelector('[data-role="schema-text-region"]').style.display).toBe('block');
+      expect(document.querySelector('[data-role="schema-rows-region"]').style.display).toBe('none');
+    });
+  });
+
   test('shows constrained schemas in the schema constraints details editor after switching back to row mode', () => {
     const component = createComponent();
     const toggleButton = document.querySelector('[data-role="schema-mode-toggle"]');
@@ -545,7 +580,9 @@ IF [Priority] = "high" THEN [Status] = "open" ENDIF`;
     createComponent({
       services: {
         schemaFileTransferService: {
-          readSchemaTextFile: jest.fn(async () => 'Loaded Name\nliteral(Ada)\nLoaded Status\nenum(active,inactive)'),
+          readSchemaTextFile: jest.fn(
+            async () => 'Loaded Name\nliteral(Ada)\nLoaded Status\nenum("active","inactive")'
+          ),
           downloadSchemaText: jest.fn(() => true),
         },
       },

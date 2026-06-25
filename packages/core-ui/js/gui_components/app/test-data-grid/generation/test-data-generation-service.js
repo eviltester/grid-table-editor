@@ -284,9 +284,16 @@ function createTestDataGenerationService({
 
     try {
       const algorithm = selection?.algorithm;
+      const schemaState = getCurrentSchemaRowValidation({ syncFromText: true });
+      if (schemaState.errors.length > 0) {
+        showSchemaError(schemaErrorsToText(schemaState.errors || []));
+        setTestDataStatus('Schema validation failed.', { severity: 'error', dismissable: true });
+        return;
+      }
+
       const confirmed = await confirmCartesianProductSelection({
         algorithm,
-        valueCounts: generationEngine.getCombinationInput({ syncFromText: false }).enumValueCounts,
+        valueCounts: generationEngine.getCombinationInput({ schemaState }).enumValueCounts,
         requestConfirm,
       });
       if (!confirmed) {
@@ -305,7 +312,7 @@ function createTestDataGenerationService({
       const result = generationEngine.generateCombinations({
         strength,
         algorithm,
-        validationOptions: { syncFromText: false },
+        validationOptions: { schemaState },
       });
       if (!result.ok) {
         surfaceEnginePresentation(

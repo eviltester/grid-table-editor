@@ -126,7 +126,7 @@ describe('test data schema editor compatibility', () => {
     setup();
     document.querySelector('[data-role="schema-mode-toggle"]').click();
     const schemaTextArea = document.querySelector('[data-role="schema-textbox"]');
-    schemaTextArea.value = 'OnlyEnum\nenum(a,b)';
+    schemaTextArea.value = 'OnlyEnum\nenum("a","b")';
     schemaTextArea.dispatchEvent(new Event('input', { bubbles: true }));
     document.querySelector('[data-role="schema-mode-toggle"]').click();
     await waitForCondition(() => {

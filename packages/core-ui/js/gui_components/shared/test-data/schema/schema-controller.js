@@ -25,7 +25,7 @@ function parseSchemaTextToRows({ schemaTextToDataRules, schemaText, faker, RandE
   const parsedConstraints = Array.isArray(parseResult.constraints) ? parseResult.constraints : [];
   const blockingErrors = parseErrors.filter((error) => !isRecoverableSchemaParseError(error));
   if (blockingErrors.length > 0) {
-    return { rows: [], errors: blockingErrors, tokens, constraints: parsedConstraints };
+    return { rows: [], errors: parseErrors, tokens, constraints: parsedConstraints };
   }
 
   const parsedRows = mapParsedRulesToRows({
@@ -43,7 +43,7 @@ function parseSchemaTextToRows({ schemaTextToDataRules, schemaText, faker, RandE
         rawRuleSpec: ruleTokens[index]?.rule ?? parseResult.dataRules?.[index]?.ruleSpec ?? '',
       })
     ),
-    errors: [],
+    errors: parseErrors,
     tokens,
     constraints: parsedConstraints,
   };
@@ -260,7 +260,7 @@ function createSchemaEditingSession({
     }
 
     const parsed = parseTextToRows(schemaText);
-    if (parsed.errors.length > 0 && parsed.rows.length === 0) {
+    if (parsed.errors.length > 0) {
       return parsed;
     }
 
@@ -278,7 +278,7 @@ function createSchemaEditingSession({
   function toggleMode({ schemaText, preserveEmptyRows = true } = {}) {
     if (state.isTextMode) {
       const parsed = parseTextToRows(schemaText);
-      if (parsed.errors.length > 0 && parsed.rows.length === 0) {
+      if (parsed.errors.length > 0) {
         return { ok: false, errors: parsed.errors, rows: parsed.rows, tokens: parsed.tokens || [] };
       }
       state.rows = parsed.rows.length > 0 || !preserveEmptyRows ? parsed.rows : [createBlankSchemaRow()];

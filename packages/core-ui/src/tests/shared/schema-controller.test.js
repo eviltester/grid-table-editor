@@ -66,6 +66,45 @@ describe('schema-controller', () => {
     ]);
   });
 
+  test('parseSchemaTextToRows preserves compiler validation errors with mapped row context', () => {
+    const parser = jest.fn().mockReturnValue({
+      dataRules: [{ name: 'Status', ruleSpec: 'datatype.enum()', type: 'domain' }],
+      errors: [
+        {
+          code: 'compiler_validation_error',
+          message: 'Status failed domain validation - Invalid keyword arguments: argument "values" is required',
+        },
+      ],
+      schemaTokens: [{ kind: 'rule', rule: 'datatype.enum()' }],
+    });
+
+    const result = parseSchemaTextToRows({
+      schemaTextToDataRules: parser,
+      schemaText: 'Status\ndatatype.enum()',
+      faker: {},
+      RandExp: function RandExp() {},
+      mapRuleToRow: (rule) => ({
+        name: rule.name,
+        sourceType: rule.type,
+        value: rule.ruleSpec,
+      }),
+    });
+
+    expect(result.rows).toEqual([
+      {
+        name: 'Status',
+        sourceType: 'domain',
+        value: 'datatype.enum()',
+      },
+    ]);
+    expect(result.errors).toEqual([
+      {
+        code: 'compiler_validation_error',
+        message: 'Status failed domain validation - Invalid keyword arguments: argument "values" is required',
+      },
+    ]);
+  });
+
   test('row mutation helpers add remove and move rows immutably', () => {
     const blank = () => ({ name: '', sourceType: 'regex', value: '' });
     const baseRows = [{ name: 'A' }, { name: 'B' }];
@@ -177,5 +216,57 @@ describe('schema-controller', () => {
     });
     expect(session.getTextMode()).toBe(true);
     expect(session.getRows()).toEqual([{ name: 'A', sourceType: 'literal', value: 'a' }]);
+  });
+
+  test('schema editing session does not apply rows or leave text mode when text has compiler validation errors', () => {
+    const blank = () => ({
+      name: '',
+      sourceType: 'regex',
+      command: '',
+      params: '',
+      value: '',
+      comments: '',
+    });
+    const schemaTextToDataRules = jest.fn().mockReturnValue({
+      dataRules: [{ name: 'Status', ruleSpec: 'datatype.enum()', type: 'domain' }],
+      errors: [
+        {
+          code: 'compiler_validation_error',
+          message: 'Status failed domain validation - Invalid keyword arguments: argument "values" is required',
+        },
+      ],
+      schemaTokens: [{ kind: 'rule' }],
+    });
+    const session = createSchemaEditingSession({
+      createBlankSchemaRow: blank,
+      schemaTextToDataRules,
+      faker: {},
+      RandExp: function RandExp() {},
+      mapRuleToRow: (rule) => ({
+        name: rule.name,
+        sourceType: rule.type,
+        value: rule.ruleSpec,
+      }),
+      schemaRowsToSpecWithTokens: jest.fn(() => 'Status\ndatatype.enum()'),
+      initialRows: [{ name: 'Previous', sourceType: 'literal', value: 'ok' }],
+      initialTextMode: true,
+    });
+
+    const syncResult = session.syncRowsFromText({
+      schemaText: 'Status\ndatatype.enum()',
+      preserveEmptyRows: false,
+    });
+    const toggleResult = session.toggleMode({ schemaText: 'Status\ndatatype.enum()' });
+
+    expect(syncResult.errors).toEqual([
+      {
+        code: 'compiler_validation_error',
+        message: 'Status failed domain validation - Invalid keyword arguments: argument "values" is required',
+      },
+    ]);
+    expect(syncResult.rows).toEqual([{ name: 'Status', sourceType: 'domain', value: 'datatype.enum()' }]);
+    expect(toggleResult.ok).toBe(false);
+    expect(session.getTextMode()).toBe(true);
+    expect(session.getRows()).toEqual([{ name: 'Previous', sourceType: 'literal', value: 'ok' }]);
   });
 });

@@ -67,6 +67,25 @@ describe('method picker modal', () => {
     expect(result).toBeNull();
   });
 
+  test('restores focus to the trigger after closing with escape', async () => {
+    const trigger = document.createElement('button');
+    trigger.textContent = 'Select faker command';
+    document.body.appendChild(trigger);
+    trigger.focus();
+
+    const promise = openMethodPickerModal({
+      documentObj: document,
+      windowObj: window,
+      options: [{ sourceType: 'domain', command: 'number.int', helpModel: { summary: '', params: [], example: '' } }],
+      currentCommand: 'number.int',
+    });
+
+    expect(document.activeElement).toBe(getSearchInput());
+    getOverlay().dispatchEvent(new window.KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    await expect(promise).resolves.toBeNull();
+    expect(document.activeElement).toBe(trigger);
+  });
+
   test('renders component-owned rooted hooks for overlay, tabs, list, detail, and tiles', async () => {
     const promise = openMethodPickerModal({
       documentObj: document,

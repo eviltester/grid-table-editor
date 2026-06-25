@@ -665,6 +665,7 @@ function openParamsEditorModal({
   }
   windowObj = resolveWindowObj(windowObj, documentObj);
   ensureStyles(documentObj);
+  const previouslyFocusedElement = documentObj.activeElement;
 
   const parsed = parseInitialParamEntries({
     params: helpModel?.params || [],
@@ -779,9 +780,20 @@ function openParamsEditorModal({
   }
 
   return new Promise((resolve) => {
+    function restorePreviousFocus() {
+      if (
+        previouslyFocusedElement &&
+        previouslyFocusedElement !== documentObj.body &&
+        documentObj.contains?.(previouslyFocusedElement)
+      ) {
+        previouslyFocusedElement.focus?.();
+      }
+    }
+
     function close(result) {
       helpTooltipService.destroy();
       overlay.remove();
+      restorePreviousFocus();
       resolve(result ?? null);
     }
 

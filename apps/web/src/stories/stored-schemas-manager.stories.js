@@ -203,7 +203,7 @@ export const DraftAndHistory = {
     const canvas = within(canvasElement);
     await userEvent.click(canvas.getByText('Managed Stored Schemas (0)'));
     await userEvent.selectOptions(canvas.getByLabelText('Last Used'), 'last-1');
-    await userEvent.click(canvas.getByRole('button', { name: /^load$/i }));
+    await userEvent.click(canvas.getByRole('button', { name: /load last used schema/i }));
     await expect(canvas.getByText(/Loaded last used/i)).toBeVisible();
   },
 };

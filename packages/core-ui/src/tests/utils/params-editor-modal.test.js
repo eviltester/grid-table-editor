@@ -303,6 +303,31 @@ describe('params editor modal', () => {
     await expect(promise).resolves.toBeNull();
   });
 
+  test('restores focus to the trigger after closing with escape', async () => {
+    const trigger = document.createElement('button');
+    trigger.textContent = 'Edit params';
+    document.body.appendChild(trigger);
+    trigger.focus();
+
+    const promise = openParamsEditorModal({
+      documentObj: document,
+      windowObj: window,
+      commandLabel: 'number.int',
+      helpModel: {
+        summary: 'Integer helper',
+        params: [{ name: 'min', type: 'integer', optional: true }],
+      },
+      initialParams: '',
+    });
+
+    const dialog = within(getOverlay()).getByRole('dialog', { name: /edit params for number\.int/i });
+    await new Promise((resolve) => window.setTimeout(resolve, 0));
+    expect(dialog.contains(document.activeElement)).toBe(true);
+    fireEvent.keyDown(dialog, { key: 'Escape' });
+    await expect(promise).resolves.toBeNull();
+    expect(document.activeElement).toBe(trigger);
+  });
+
   test('shows a warning when existing params cannot be mapped to the documented fields', async () => {
     const promise = openParamsEditorModal({
       documentObj: document,

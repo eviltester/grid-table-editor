@@ -202,7 +202,7 @@ export const Default = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const helpButtons = canvas.getAllByRole('button', { name: 'Show help' });
-    const downloadButton = canvas.getByRole('button', { name: /\.csv Download/i });
+    const downloadButton = canvas.getByRole('button', { name: 'Download file' });
 
     await expect(helpButtons).toHaveLength(2);
     await expect(helpButtons[0]).toHaveAttribute('data-help', 'import-export-import');
@@ -259,7 +259,7 @@ export const BusyAndStatus = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await expect(canvas.getByRole('button', { name: 'Import From Clipboard' })).toBeDisabled();
-    await expect(canvas.getByRole('button', { name: /\.csv Download/i })).toBeDisabled();
+    await expect(canvas.getByRole('button', { name: 'Download file' })).toBeDisabled();
     await expect(canvas.getByText('Importing full data into grid...')).toBeVisible();
     await expect(canvas.getByText('Generating export text...')).toBeVisible();
   },

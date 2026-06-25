@@ -70,6 +70,25 @@ describe('shared schema editor ui', () => {
     expect(updateHelpHints).toHaveBeenCalledTimes(1);
   });
 
+  test('renders schema row controls with accessible names and hides the shadow command select from tab order', () => {
+    renderSharedSchemaRows({
+      documentObj: document,
+      rowsElement,
+      schemaRows: [{ id: '1', name: 'First', sourceType: 'faker', command: 'person.firstName', params: '()' }],
+      fakerCommands: ['person.firstName'],
+      getSchemaHelpData: () => ({ show: false, docsUrl: '', title: '', html: '' }),
+      updateAllPairsButtonVisibility: () => {},
+    });
+
+    const row = rowsElement.querySelector('.shared-schema-row');
+    expect(row.querySelector('[data-field="name"]').getAttribute('aria-label')).toBe('Column Name');
+    expect(row.querySelector('[data-field="sourceType"]').getAttribute('aria-label')).toBe('Field type');
+    expect(row.querySelector('[data-field="params"]').getAttribute('aria-label')).toBe('Params');
+    const shadowSelect = row.querySelector(`.${SHARED_SCHEMA_COMMAND_PICKER_SHADOW_SELECT_CLASS}`);
+    expect(shadowSelect.getAttribute('aria-hidden')).toBe('true');
+    expect(shadowSelect.getAttribute('tabindex')).toBe('-1');
+  });
+
   test('hides the shared schema mode help tooltip when present', () => {
     const hide = jest.fn();
     modeHelpIconElement._tippy = { hide };

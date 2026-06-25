@@ -99,6 +99,9 @@ describe('DataGridComponent view', () => {
     expect(root.querySelector('[data-role="grid-total-rows"]')?.textContent).toBe('Total rows: 0');
     expect(component.getTableApi()).toBeInstanceOf(FakeTabulator);
     expect(component.getGridExtras()).toBeInstanceOf(FakeGridExtension);
+    expect(component.getTableApi().options.columnDefaults.headerFilterParams).toEqual({
+      elementAttributes: { 'aria-label': 'Filter table column' },
+    });
     const headerHtml = component.getTableApi().options.columnDefaults.titleFormatter({
       getValue: () => 'Column 1',
     });

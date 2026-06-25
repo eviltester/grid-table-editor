@@ -59,7 +59,7 @@ class InstructionsView {
         const className = escapeHtml(action.className || '');
         const label = escapeHtml(action.label || '');
         const actionId = escapeHtml(action.actionId || '');
-        return `<button type="button" class="${className}" data-role="instructions-action-button" data-action-id="${actionId}">${label}</button>`;
+        return `<button type="button" class="${className}" data-role="instructions-action-button" data-action-id="${actionId}" aria-label="${label}" title="${label}">${label}</button>`;
       })
       .join('');
     const helpAttributes = state.helpText ? ` data-help-text="${escapeHtml(state.helpText)}"` : '';

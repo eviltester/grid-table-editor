@@ -298,6 +298,7 @@ function openMethodPickerModal({
   windowObj = resolveWindowObj(windowObj, documentObj);
   ensureCriticalStyles(documentObj);
   ensureStyles(documentObj);
+  const previouslyFocusedElement = documentObj.activeElement;
   const overlay = documentObj.createElement('div');
   overlay.className = 'method-picker-overlay';
   overlay.setAttribute('data-role', 'method-picker-overlay');
@@ -475,8 +476,19 @@ function openMethodPickerModal({
   }
 
   return new Promise((resolve) => {
+    function restorePreviousFocus() {
+      if (
+        previouslyFocusedElement &&
+        previouslyFocusedElement !== documentObj.body &&
+        documentObj.contains?.(previouslyFocusedElement)
+      ) {
+        previouslyFocusedElement.focus?.();
+      }
+    }
+
     function close(result) {
       overlay.remove();
+      restorePreviousFocus();
       resolve(result || null);
     }
 

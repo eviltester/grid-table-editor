@@ -26,6 +26,7 @@ function createDefaultPreviewGridFactory({ TabulatorCtor, GridExtensionClass } =
         columnDefaults: {
           resizable: true,
           headerFilter: 'input',
+          headerFilterParams: { elementAttributes: { 'aria-label': 'Filter preview column' } },
           headerFilterFunc: 'like',
           sorter: 'string',
         },

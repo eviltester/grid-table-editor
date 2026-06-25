@@ -10,7 +10,7 @@ test.describe('Test Data Schema File Load Save', () => {
     await appPage.testDataPanel.loadSchemaFile({
       name: 'schema.txt',
       mimeType: 'text/plain',
-      buffer: Buffer.from('Loaded Name\nliteral(Ada)\nLoaded Status\nenum(active,inactive)'),
+      buffer: Buffer.from('Loaded Name\nliteral(Ada)\nLoaded Status\nactive,inactive'),
     });
 
     await expect.poll(async () => appPage.testDataPanel.getSchemaText()).toContain('Loaded Name');

@@ -43,11 +43,11 @@ test.describe('7. Test Data Generation', () => {
     await appPage.testDataPanel.expand();
     await appPage.testDataPanel.expectExpanded();
 
-    await appPage.testDataPanel.setSchemaText('Priority\nenum(low,medium,high)');
+    await appPage.testDataPanel.setSchemaText('Priority\nlow,medium,high');
     await expect.poll(async () => appPage.testDataPanel.getSchemaRowCount()).toBe(1);
     await expect.poll(async () => appPage.testDataPanel.getSchemaCell(0, 'columnName')).toBe('Priority');
 
-    await appPage.testDataPanel.setSchemaText('Priority\nenum(low,medium,high)\nEnabled\ndatatype.boolean');
+    await appPage.testDataPanel.setSchemaText('Priority\nlow,medium,high\nEnabled\ndatatype.boolean');
 
     await expect.poll(async () => appPage.testDataPanel.getSchemaRowCount()).toBe(2);
     await expect.poll(async () => appPage.testDataPanel.getSchemaCell(1, 'columnName')).toBe('Enabled');
@@ -233,7 +233,9 @@ test.describe('7. Test Data Generation', () => {
 
     await expect.poll(async () => appPage.testDataPanel.getSchemaCell(0, 'type')).toBe('datatype.enum');
     await expect.poll(async () => appPage.testDataPanel.getSchemaCell(0, 'value')).toBe('active,inactive,pending');
-    await expect.poll(async () => appPage.testDataPanel.getSchemaText()).toContain('enum(active,inactive,pending)');
+    await expect
+      .poll(async () => appPage.testDataPanel.getSchemaText())
+      .toContain('enum("active","inactive","pending")');
 
     expectNoPageErrors(pageErrors);
   });

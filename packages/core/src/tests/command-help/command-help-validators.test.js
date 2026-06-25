@@ -101,7 +101,7 @@ describe('command help validators', () => {
         sourceType: 'domain',
         command: 'datatype.enum',
         params: 'active,inactive,pending',
-        ruleSpec: 'datatype.enum(active,inactive,pending)',
+        ruleSpec: 'datatype.enum("active","inactive","pending")',
       },
     };
 

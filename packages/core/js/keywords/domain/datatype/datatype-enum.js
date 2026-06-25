@@ -2,6 +2,9 @@ import { EnumParser } from '../../../data_generation/utils/enumParser.js';
 
 function normalizeDatatypeEnumValuesFromArgs(args = []) {
   const rawArgs = Array.isArray(args) ? args : [];
+  if (rawArgs.length === 1 && Array.isArray(rawArgs[0])) {
+    return rawArgs[0].map((value) => value);
+  }
   if (rawArgs.length === 1 && typeof rawArgs[0] === 'string') {
     const singleValue = rawArgs[0].trim();
     if (singleValue.length === 0) {
@@ -15,7 +18,7 @@ function normalizeDatatypeEnumValuesFromArgs(args = []) {
     }
   }
 
-  return rawArgs.map((value) => value);
+  return rawArgs.flatMap((value) => (Array.isArray(value) ? value : [value]));
 }
 
 function normalizeDatatypeEnumArgs(args = []) {

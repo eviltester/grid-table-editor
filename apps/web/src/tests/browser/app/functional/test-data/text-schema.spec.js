@@ -11,7 +11,7 @@ test.describe('7. Test Data Generation', () => {
     const beforeSchema = await appPage.testDataPanel.getSchemaRowCount();
 
     await appPage.testDataPanel.setSchemaText(
-      '# this comment should be ignored\n\nFirst Name\nperson.firstName\n\n# second comment\nStatus\nenum(active,inactive,pending)'
+      '# this comment should be ignored\n\nFirst Name\nperson.firstName\n\n# second comment\nStatus\nactive,inactive,pending'
     );
     await expect.poll(async () => appPage.testDataPanel.getSchemaRowCount()).toBeGreaterThanOrEqual(beforeSchema + 1);
     await appPage.testDataPanel.setGenerateCount(5);

@@ -65,9 +65,9 @@ This command is especially useful when you generate rows under constraints.
 Ticket
 autoIncrement.sequence(prefix="T-", zeropadding=4)
 Priority
-enum(High,Low)
+High,Low
 Status
-enum(Open,Closed)
+Open,Closed
 
 IF [Priority] = "High" THEN [Status] = "Open";
 ```

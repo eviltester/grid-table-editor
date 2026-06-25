@@ -104,12 +104,12 @@ describe('Pairwise Data Structure Fix', () => {
 
   test('preserves original column order when enum and non-enum rules are interleaved', () => {
     const rules = [
-      new TestDataRule('t1', 'enum(1,2,3)'),
+      new TestDataRule('t1', '1,2,3'),
       new TestDataRule('t8', 'literal(1,3)'),
-      new TestDataRule('t2', 'datatype.enum(4,5,6)'),
-      new TestDataRule('t6', 'awd.datatype.enum(7,8,9)'),
-      new TestDataRule('t7', 'enum(a,b,d)'),
-      new TestDataRule('t9', 'enum(4,5,6)'),
+      new TestDataRule('t2', 'datatype.enum("4","5","6")'),
+      new TestDataRule('t6', 'awd.datatype.enum("7","8","9")'),
+      new TestDataRule('t7', 'a,b,d'),
+      new TestDataRule('t9', '4,5,6'),
     ];
 
     rules[0].setType('enum');

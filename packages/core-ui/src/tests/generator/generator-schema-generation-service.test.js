@@ -19,7 +19,7 @@ describe('generator schema generation service', () => {
 
     const validateRowsResult = { rows: [], errors: [] };
     const validateSchemaRows = jest.fn((rows) => ({ ...validateRowsResult, rows }));
-    const schemaRowsToSpec = jest.fn(() => 'Browser\nenum(chrome,firefox)');
+    const schemaRowsToSpec = jest.fn(() => 'Browser\nenum("chrome","firefox")');
     const TestDataGeneratorClass = class FakeGenerator {
       constructor() {
         this.compiler = {
@@ -59,7 +59,7 @@ describe('generator schema generation service', () => {
 
     const sessionContext = service.createSessionContext();
     expect(sessionContext.ok).toBe(true);
-    expect(sessionContext.textSpec).toBe('Browser\nenum(chrome,firefox)');
+    expect(sessionContext.textSpec).toBe('Browser\nenum("chrome","firefox")');
 
     const combinationInput = service.getCombinationInput();
     expect(combinationInput.enumColumnCount).toBe(2);

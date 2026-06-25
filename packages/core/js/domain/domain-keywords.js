@@ -115,6 +115,9 @@ function buildDomainKeywordCatalog(definitions = DOMAIN_KEYWORD_DEFINITIONS) {
       ? definition.help.args.map((arg) => ({
           name: String(arg?.name || '').trim(),
           type: String(arg?.type || '').trim(),
+          aliases: Array.isArray(arg?.aliases)
+            ? arg.aliases.map((alias) => String(alias || '').trim()).filter(Boolean)
+            : [],
           required: arg?.required === true,
           optional: arg?.optional === true || arg?.required === false,
           variadic: arg?.variadic === true,

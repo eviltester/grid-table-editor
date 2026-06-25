@@ -100,7 +100,7 @@ The second version is shorter, easier to read, and less sensitive to upstream li
 ```text
 # pairwise enums
 HTTP Method
-enum(GET,POST,PUT,DELETE)
+GET,POST,PUT,DELETE
 
 # pairwise enums
 Content Type

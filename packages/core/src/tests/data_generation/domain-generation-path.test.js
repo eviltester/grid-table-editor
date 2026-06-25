@@ -36,7 +36,7 @@ describe('domain generation integration', () => {
       },
       {
         name: 'Keep',
-        ruleSpec: 'enum(yes,no)',
+        ruleSpec: 'yes,no',
         comments: '',
         type: 'enum',
       },

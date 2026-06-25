@@ -101,7 +101,7 @@ describe('generator focused schema editing', () => {
     expect(harness.getSchemaErrorText().length).toBeGreaterThan(0);
     expect(harness.getSchemaTextContainer().style.display).toBe('block');
 
-    await harness.setSchemaText('Status\nenum(active,inactive,pending)');
+    await harness.setSchemaText('Status\nactive,inactive,pending');
     await harness.toggleToSchemaMode();
 
     await waitFor(() => expect(document.querySelectorAll('.shared-schema-row').length).toBe(1));

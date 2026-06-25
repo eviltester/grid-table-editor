@@ -10,7 +10,7 @@ import { parseSchemaText } from '../../../js/data_generation/schema-conversion.j
 describe('schema rules adapter', () => {
   test('returns dataRules for valid schema text', () => {
     const result = schemaTextToDataRules({
-      schemaText: 'Name\nperson.fullName\nStatus\nenum(active,inactive)',
+      schemaText: 'Name\nperson.fullName\nStatus\nactive,inactive',
       faker,
       RandExp,
     });
@@ -181,7 +181,7 @@ describe('schema rules adapter', () => {
   });
 
   test('round-trips pict-style inline schema tokens', () => {
-    const schemaText = `Priority: enum(high,medium,low)
+    const schemaText = `Priority: high,medium,low
 Status: person.jobTitle`;
 
     const parsed = schemaTextToDataRules({
@@ -201,7 +201,8 @@ Status: person.jobTitle`;
       schemaTokens: parsed.schemaTokens,
     });
 
-    expect(rendered.text).toBe(schemaText);
+    expect(rendered.text).toBe(`Priority: enum("high","medium","low")
+Status: person.jobTitle`);
   });
 
   test('canonicalizes legacy awd datatype enum schema text when round-tripping', () => {
@@ -215,7 +216,7 @@ Status: person.jobTitle`;
     expect(parsed.dataRules).toEqual([
       expect.objectContaining({
         name: 'Status',
-        ruleSpec: 'enum(active,inactive,pending)',
+        ruleSpec: 'enum("active","inactive","pending")',
       }),
     ]);
 
@@ -224,7 +225,7 @@ Status: person.jobTitle`;
       schemaTokens: parsed.schemaTokens,
     });
 
-    expect(rendered.text).toBe('Status\nenum(active,inactive,pending)');
+    expect(rendered.text).toBe('Status\nenum("active","inactive","pending")');
   });
 
   test('canonicalizes legacy awd datatype enum data rules when rendering schema text', () => {
@@ -239,14 +240,14 @@ Status: person.jobTitle`;
     });
 
     expect(rendered.errors).toEqual([]);
-    expect(rendered.text).toBe('Status\nenum(active,inactive,pending)');
+    expect(rendered.text).toBe('Status\nenum("active","inactive","pending")');
   });
 
   test('prefers schema tokens when rendering so blank lines are preserved', () => {
     const rendered = dataRulesToSchemaText({
       dataRules: [
-        { name: 'Priority', ruleSpec: 'enum(high,medium,low)', comments: '# old comment' },
-        { name: 'Status', ruleSpec: 'enum(active,inactive,pending)', comments: '' },
+        { name: 'Priority', ruleSpec: 'enum("high","medium","low")', comments: '# old comment' },
+        { name: 'Status', ruleSpec: 'enum("active","inactive","pending")', comments: '' },
       ],
       schemaTokens: [
         { kind: 'comment', text: '# top' },
@@ -259,14 +260,16 @@ Status: person.jobTitle`;
     });
 
     expect(rendered.errors).toEqual([]);
-    expect(rendered.text).toBe('# top\n\nPriority\nenum(high,medium,low)\n\n\nStatus\nenum(active,inactive,pending)');
+    expect(rendered.text).toBe(
+      '# top\n\nPriority\nenum("high","medium","low")\n\n\nStatus\nenum("active","inactive","pending")'
+    );
   });
 
   test('parses and round-trips schema constraints preserving the authored terminator', () => {
     const schemaText = `Priority
-enum(high,low)
+high,low
 Status
-enum(open,closed)
+open,closed
 
 IF [Priority] = "high" THEN [Status] = "open" ENDIF`;
 
@@ -289,15 +292,20 @@ IF [Priority] = "high" THEN [Status] = "open" ENDIF`;
       constraints: parsed.constraints,
     });
 
-    expect(rendered.text).toBe(schemaText);
+    expect(rendered.text).toBe(`Priority
+enum("high","low")
+Status
+enum("open","closed")
+
+IF [Priority] = "high" THEN [Status] = "open" ENDIF`);
   });
 
   test('returns constraint AST copies that do not share mutable state with the generator', () => {
     const parsed = parseSchemaText({
       schemaText: `Priority
-enum(high,low)
+high,low
 Status
-enum(open,closed)
+open,closed
 
 IF [Priority] = "high" THEN [Status] = "open" ENDIF`,
       faker,
@@ -312,9 +320,9 @@ IF [Priority] = "high" THEN [Status] = "open" ENDIF`,
   test('reports invalid enum values used in constraints', () => {
     const parsed = schemaTextToDataRules({
       schemaText: `Priority
-enum(high,low)
+high,low
 Status
-enum(open,closed)
+open,closed
 
 IF [Priority] = "urgent" THEN [Status] = "open" ENDIF`,
       faker,
@@ -394,6 +402,30 @@ IF [Status] = "closed" THEN [Status] = "open" ENDIF`,
         message: expect.stringContaining('Status failed domain validation'),
       })
     );
+  });
+
+  test('does not canonicalize parenthesized regex text as enum schema text', () => {
+    const parsed = schemaTextToDataRules({
+      schemaText: 'Status\n(active,inactive,pending)',
+      faker,
+      RandExp,
+    });
+
+    expect(parsed.errors).toEqual([]);
+    expect(parsed.dataRules).toEqual([
+      expect.objectContaining({
+        name: 'Status',
+        ruleSpec: '(active,inactive,pending)',
+        type: 'regex',
+      }),
+    ]);
+
+    const rendered = dataRulesToSchemaText({
+      dataRules: parsed.dataRules,
+      schemaTokens: parsed.schemaTokens,
+    });
+
+    expect(rendered.text).toBe('Status\n(active,inactive,pending)');
   });
 
   test('returns blank explicit regex text as a regex validation error when requested', () => {
@@ -501,7 +533,7 @@ IF [Status] = "closed" THEN [Status] = "open" ENDIF`,
 
     expect(result.errors).toEqual([]);
     expect(result.dataRules).toEqual([
-      { name: 'Status', ruleSpec: 'enum(active,inactive,pending)', comments: '', type: 'domain' },
+      { name: 'Status', ruleSpec: 'enum("active","inactive","pending")', comments: '', type: 'domain' },
     ]);
   });
 

@@ -11,61 +11,46 @@ describe('Quoted Enum Values', () => {
     validator = new EnumTestDataRuleValidator();
   });
 
+  function expectRuleToMatch(ruleSpec, expectedValues) {
+    const parsed = EnumParser.parseEnumRuleSpec(ruleSpec);
+    expect(parsed).toMatchObject({
+      ok: true,
+      values: expectedValues,
+    });
+  }
+
+  function expectRuleToValidate(ruleSpec) {
+    const rule = new TestDataRule('quotedEnum', ruleSpec);
+    expect(validator.validate(rule)).toBe(true);
+  }
+
   describe('EnumTestDataRuleValidator with quoted values', () => {
     test('should handle quoted values with commas', () => {
-      const rule = new TestDataRule('status', 'enum("active, pending","inactive","completed, finished")');
+      const ruleSpec = 'enum("active, pending","inactive","completed, finished")';
 
-      const isValid = validator.validate(rule);
-      expect(isValid).toBe(true);
-
-      const values = EnumParser.extractAwdEnumValues('enum("active, pending","inactive","completed, finished")');
-      expect(values).toEqual(['active, pending', 'inactive', 'completed, finished']);
+      expectRuleToMatch(ruleSpec, ['active, pending', 'inactive', 'completed, finished']);
+      expectRuleToValidate(ruleSpec);
     });
 
     test('should handle mixed quoted and unquoted values', () => {
-      const rule = new TestDataRule('priority', 'enum("high, urgent",medium,low)');
+      const ruleSpec = 'enum("high, urgent","medium","low")';
 
-      const isValid = validator.validate(rule);
-      expect(isValid).toBe(true);
-
-      const values = EnumParser.extractAwdEnumValues('enum("high, urgent",medium,low)');
-      expect(values).toEqual(['high, urgent', 'medium', 'low']);
+      expectRuleToMatch(ruleSpec, ['high, urgent', 'medium', 'low']);
+      expectRuleToValidate(ruleSpec);
     });
 
     test('should handle datatype.enum format with quotes', () => {
-      const rule = new TestDataRule('category', 'datatype.enum("tech, software","business","design, ui")');
+      const ruleSpec = 'datatype.enum("tech, software","business","design, ui")';
 
-      const isValid = validator.validate(rule);
-      expect(isValid).toBe(true);
-
-      const values = EnumParser.extractAwdEnumValues('datatype.enum("tech, software","business","design, ui")');
-      expect(values).toEqual(['tech, software', 'business', 'design, ui']);
+      expectRuleToMatch(ruleSpec, ['tech, software', 'business', 'design, ui']);
+      expectRuleToValidate(ruleSpec);
     });
 
     test('should handle awd.datatype.enum format with quotes', () => {
-      const rule = new TestDataRule('role', 'awd.datatype.enum("admin, super","user","guest, visitor")');
+      const ruleSpec = 'awd.datatype.enum("admin, super","user","guest, visitor")';
 
-      const isValid = validator.validate(rule);
-      expect(isValid).toBe(true);
-
-      const values = EnumParser.extractAwdEnumValues('awd.datatype.enum("admin, super","user","guest, visitor")');
-      expect(values).toEqual(['admin, super', 'user', 'guest, visitor']);
-    });
-  });
-
-  describe('PairwiseTestDataGenerator with quoted enum values', () => {
-    test('should properly extract quoted enum values for pairwise generation', () => {
-      // Test simple format
-      const simpleValues = EnumParser.extractEnumValues('red,blue,green');
-      expect(simpleValues).toEqual(['red', 'blue', 'green']);
-
-      // Test quoted format with commas
-      const quotedValues = EnumParser.extractEnumValues('enum("red, crimson","blue, navy","green")');
-      expect(quotedValues).toEqual(['red, crimson', 'blue, navy', 'green']);
-
-      // Test mixed format
-      const mixedValues = EnumParser.extractEnumValues('enum("high, urgent",medium,low)');
-      expect(mixedValues).toEqual(['high, urgent', 'medium', 'low']);
+      expectRuleToMatch(ruleSpec, ['admin, super', 'user', 'guest, visitor']);
+      expectRuleToValidate(ruleSpec);
     });
   });
 

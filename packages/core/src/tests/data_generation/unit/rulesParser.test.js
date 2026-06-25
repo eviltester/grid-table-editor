@@ -55,11 +55,11 @@ Name: person.fullName`;
     const inputText = `# top comment
 
 Priority
-enum(high,medium,low)
+high,medium,low
 
   # in between
 Status
-enum(active,inactive,pending)
+active,inactive,pending
 `;
 
     const parser = new RulesParser(faker, RandExp);
@@ -91,7 +91,7 @@ enum(active,inactive,pending)
 
   test('rejects blank lines between header and rule definition', () => {
     const parser = new RulesParser(faker, RandExp);
-    parser.parseText('Priority\n\nenum(high,medium,low)');
+    parser.parseText('Priority\n\nhigh,medium,low');
 
     expect(parser.isValid()).toBe(false);
     expect(parser.errors).toContainEqual(
@@ -117,10 +117,10 @@ enum(active,inactive,pending)
   test('preserves comments and blank lines when rebuilding from parsed tokens', () => {
     const inputText = `# a comment that should be skipped
 Priority
-enum(high,medium,low)
+high,medium,low
 
 Status
-enum(active,inactive,pending)`;
+active,inactive,pending`;
 
     const parser = new RulesParser(faker, RandExp);
     parser.parseText(inputText);
@@ -131,7 +131,7 @@ enum(active,inactive,pending)`;
 
   test('preserves inline pict-style rules when rebuilding from parsed tokens', () => {
     const inputText = `# compact
-Priority: enum(high,medium,low)
+Priority: high,medium,low
 Status: person.jobTitle`;
 
     const parser = new RulesParser(faker, RandExp);
@@ -142,9 +142,9 @@ Status: person.jobTitle`;
 
   test('canonicalizes legacy awd datatype enum rules when rebuilding from parsed tokens', () => {
     const inputText = `Priority
-enum(high,medium,low)
+high,medium,low
 Status
-enum(active,inactive)`;
+enum("active","inactive")`;
 
     const parser = new RulesParser(faker, RandExp);
     parser.parseText(inputText);
@@ -155,7 +155,7 @@ enum(active,inactive)`;
 
   test('preserves authored inline separator spacing when rebuilding from parsed tokens', () => {
     const inputText = `Name:person.fullName
-Role:   enum(admin,user)`;
+Role:   admin,user`;
 
     const parser = new RulesParser(faker, RandExp);
     parser.parseText(inputText);
@@ -171,11 +171,11 @@ Role:   enum(admin,user)`;
     const inputText = `# one
 
 Priority
-enum(high,medium,low)
+high,medium,low
 
 # two
 Status
-enum(active,inactive,pending)`;
+active,inactive,pending`;
     const parser = new RulesParser(faker, RandExp);
     parser.parseText(inputText);
 
@@ -185,9 +185,9 @@ enum(active,inactive,pending)`;
 
   test('parses IF THEN constraints and preserves them as schema tokens', () => {
     const inputText = `Status
-enum(active,inactive)
+active,inactive
 Result
-enum(pass,fail)
+pass,fail
 
 IF [Status] = "inactive" THEN [Result] = "fail" ENDIF`;
 
@@ -206,9 +206,9 @@ IF [Status] = "inactive" THEN [Result] = "fail" ENDIF`;
 
   test('does not treat IF-prefixed field names as constraints', () => {
     const inputText = `IF Condition
-enum(yes,no)
+yes,no
 Status
-enum(open,closed)`;
+open,closed`;
 
     const parser = new RulesParser(faker, RandExp);
     parser.parseText(inputText);
@@ -217,13 +217,13 @@ enum(open,closed)`;
     expect(parser.errors).toHaveLength(0);
     expect(parser.testDataRules.rules).toHaveLength(2);
     expect(parser.testDataRules.rules[0].name).toBe('IF Condition');
-    expect(parser.testDataRules.rules[0].ruleSpec).toBe('enum(yes,no)');
+    expect(parser.testDataRules.rules[0].ruleSpec).toBe('yes,no');
     expect(parser.testDataRules.constraints).toHaveLength(0);
   });
 
   test('does not treat non-rule colon lines as inline pict definitions', () => {
     const inputText = `Environment: Browser
-enum(chrome,firefox)`;
+chrome,firefox`;
 
     const parser = new RulesParser(faker, RandExp);
     parser.parseText(inputText);
@@ -232,15 +232,15 @@ enum(chrome,firefox)`;
     expect(parser.testDataRules.rules).toHaveLength(1);
     expect(parser.testDataRules.rules[0]).toMatchObject({
       name: 'Environment: Browser',
-      ruleSpec: 'enum(chrome,firefox)',
+      ruleSpec: 'chrome,firefox',
     });
   });
 
   test('does not treat ENDIF inside a parameter reference as the constraint terminator', () => {
     const inputText = `ENDIF
-enum(yes,no)
+yes,no
 Status
-enum(open,closed)
+open,closed
 
 IF [Status] = "open" THEN [ENDIF] = "yes" ENDIF`;
 
@@ -261,11 +261,11 @@ IF [Status] = "open" THEN [ENDIF] = "yes" ENDIF`;
     const inputText = `Column One
 enum("a\\\\","b")
 Column Two
-enum(yes,no)
+yes,no
 
 IF [Column One] = "a\\\\" THEN [Column Two] = "yes";
 Status
-enum(active,inactive)`;
+active,inactive`;
 
     const parser = new RulesParser(faker, RandExp);
     parser.parseText(inputText);
@@ -279,6 +279,6 @@ enum(active,inactive)`;
       referencedParameters: ['Column One', 'Column Two'],
     });
     expect(parser.testDataRules.rules[2].name).toBe('Status');
-    expect(parser.testDataRules.rules[2].ruleSpec).toBe('enum(active,inactive)');
+    expect(parser.testDataRules.rules[2].ruleSpec).toBe('active,inactive');
   });
 });

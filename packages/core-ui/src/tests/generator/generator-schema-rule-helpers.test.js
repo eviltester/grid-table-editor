@@ -58,7 +58,7 @@ describe('generatorSchemaRuleHelpers', () => {
         ],
         dataRulesToSchemaText,
       })
-    ).toBe('# top\nPriority\nenum(high,medium,low)\n\nStatus\nenum(active,inactive,pending)');
+    ).toBe('# top\nPriority\nenum("high","medium","low")\n\nStatus\nenum("active","inactive","pending")');
 
     const validation = validateSchemaRows({
       schemaRows: [

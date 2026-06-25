@@ -59,7 +59,7 @@ test('defaults rowCount to imported row count', () => {
 
 test('supports pict-style inline schema definitions for amend flows', () => {
   const result = amendFromTextSpecAndData({
-    textSpec: 'Status: literal(Active)\nRole: enum(Admin,User)',
+    textSpec: 'Status: literal(Active)\nRole: Admin,User',
     inputData: '"Name"\n"Alice"\n"Eve"',
     inputFormat: 'csv',
     outputFormat: 'json',

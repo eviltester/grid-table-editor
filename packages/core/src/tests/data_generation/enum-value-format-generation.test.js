@@ -22,8 +22,8 @@ function compileAndGenerate(ruleSpec, expectedCanonicalRuleSpec, expectedValues)
 }
 
 describe('enum value format generation', () => {
-  test('normalizes and generates unquoted enum function values', () => {
-    compileAndGenerate('enum(GET,POST,PUT,DELETE)', 'datatype.enum("GET", "POST", "PUT", "DELETE")', [
+  test('normalizes and generates schema shorthand CSV values', () => {
+    compileAndGenerate('GET,POST,PUT,DELETE', 'datatype.enum("GET", "POST", "PUT", "DELETE")', [
       'GET',
       'POST',
       'PUT',
@@ -31,9 +31,9 @@ describe('enum value format generation', () => {
     ]);
   });
 
-  test('normalizes and generates mixed quoted and unquoted enum function values', () => {
+  test('normalizes and generates mixed quoted and unquoted schema shorthand CSV values', () => {
     compileAndGenerate(
-      'enum("application/json",xml,"text/plain")',
+      '"application/json",xml,"text/plain"',
       'datatype.enum("application/json", "xml", "text/plain")',
       ['application/json', 'xml', 'text/plain']
     );
@@ -41,7 +41,7 @@ describe('enum value format generation', () => {
 
   test('normalizes and generates quoted enum values that contain commas', () => {
     compileAndGenerate(
-      'enum("Active, Running","Inactive, Stopped","Pending, Waiting")',
+      '"Active, Running","Inactive, Stopped","Pending, Waiting"',
       'datatype.enum("Active, Running", "Inactive, Stopped", "Pending, Waiting")',
       ['Active, Running', 'Inactive, Stopped', 'Pending, Waiting']
     );

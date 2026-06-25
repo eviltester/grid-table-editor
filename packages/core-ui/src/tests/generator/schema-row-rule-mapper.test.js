@@ -58,11 +58,11 @@ describe('schema-row-rule-mapper', () => {
       'number.int(1,10)'
     );
     expect(buildRuleSpecFromSchemaRow({ sourceType: 'domain', command: 'datatype.enum', params: 'a,raw,list' })).toBe(
-      'enum(a,raw,list)'
+      'enum("a","raw","list")'
     );
     expect(
       buildRuleSpecFromSchemaRow({ sourceType: 'domain', command: 'datatype.enum', params: '(a,bracketed,list)' })
-    ).toBe('enum(a,bracketed,list)');
+    ).toBe('enum("a","bracketed","list")');
     expect(
       buildRuleSpecFromSchemaRow({
         sourceType: 'domain',
@@ -76,7 +76,7 @@ describe('schema-row-rule-mapper', () => {
         command: 'awd.datatype.enum',
         params: 'active,inactive,pending',
       })
-    ).toBe('enum(active,inactive,pending)');
+    ).toBe('enum("active","inactive","pending")');
   });
 
   test('buildRuleSpecFromSchemaRow handles literal rows including blank default', () => {
@@ -92,10 +92,10 @@ describe('schema-row-rule-mapper', () => {
   });
 
   test('buildRuleSpecFromSchemaRow handles enum rows including wrapper', () => {
-    expect(buildRuleSpecFromSchemaRow({ sourceType: 'enum', value: '1,2,3' })).toBe('enum(1,2,3)');
-    expect(buildRuleSpecFromSchemaRow({ sourceType: 'enum', value: 'enum(a,b)' })).toBe('enum(a,b)');
-    expect(buildRuleSpecFromSchemaRow({ sourceType: 'enum', value: 'enum a,b,c' })).toBe('enum(a,b,c)');
-    expect(buildRuleSpecFromSchemaRow({ sourceType: 'enum', value: '(a,b,c)' })).toBe('enum(a,b,c)');
+    expect(buildRuleSpecFromSchemaRow({ sourceType: 'enum', value: '1,2,3' })).toBe('enum("1","2","3")');
+    expect(buildRuleSpecFromSchemaRow({ sourceType: 'enum', value: 'enum("a","b")' })).toBe('enum("a","b")');
+    expect(buildRuleSpecFromSchemaRow({ sourceType: 'enum', value: 'enum a,b,c' })).toBe('enum("a","b","c")');
+    expect(buildRuleSpecFromSchemaRow({ sourceType: 'enum', value: '(a,b,c)' })).toBe('enum("a","b","c")');
     expect(buildRuleSpecFromSchemaRow({ sourceType: 'enum', value: '"a","b","c"' })).toBe('enum("a","b","c")');
     expect(buildRuleSpecFromSchemaRow({ sourceType: 'enum', value: '   ' })).toBe('');
   });
@@ -138,7 +138,7 @@ describe('schema-row-rule-mapper', () => {
       })
     ).toEqual({
       name: 'Priority',
-      ruleSpec: 'enum(high,medium,low)',
+      ruleSpec: 'enum("high","medium","low")',
       comments: 'important',
       leadingTextLines: ['# comment', ''],
     });

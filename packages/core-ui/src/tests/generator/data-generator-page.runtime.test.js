@@ -156,7 +156,7 @@ describe('generator page runtime helpers', () => {
       ],
       [{ kind: 'comment', text: '# top' }, { kind: 'rule' }, { kind: 'blank', text: '' }, { kind: 'rule' }]
     );
-    expect(spec).toBe('# top\nPriority\nenum(high,medium,low)\n\nStatus\nenum(active,inactive,pending)');
+    expect(spec).toBe('# top\nPriority\nenum("high","medium","low")\n\nStatus\nenum("active","inactive","pending")');
   });
 
   test('schema validation reports missing column names and faker command', () => {

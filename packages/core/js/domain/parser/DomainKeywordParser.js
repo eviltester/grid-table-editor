@@ -110,11 +110,11 @@ class DomainKeywordParser {
     }
 
     for (const [name, value] of Object.entries(named)) {
-      if (!schemaByName.has(name)) {
+      const schemaIndex = this.resolveNamedArgumentIndex(name, schemaByName, keywordMetadata);
+      if (schemaIndex < 0) {
         return { ok: false, error: `Invalid keyword arguments: unknown named argument "${name}"` };
       }
 
-      const schemaIndex = schemaByName.get(name);
       if (typeof resolved[schemaIndex] !== 'undefined') {
         return {
           ok: false,
@@ -126,6 +126,16 @@ class DomainKeywordParser {
     }
 
     return { ok: true, args: resolved };
+  }
+
+  resolveNamedArgumentIndex(name, schemaByName, keywordMetadata) {
+    if (schemaByName.has(name)) {
+      return schemaByName.get(name);
+    }
+    if (keywordMetadata?.keyword === 'datatype.enum' && name === 'csv' && schemaByName.has('values')) {
+      return schemaByName.get('values');
+    }
+    return -1;
   }
 }
 

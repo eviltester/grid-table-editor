@@ -298,7 +298,7 @@ describe('Pairwise Combinatorial Matching Data Generation', () => {
 
     test('should generate domain values for mixed enum+domain pairwise schemas', () => {
       const rules = [
-        { name: 'HTTP Method', type: 'enum', ruleSpec: 'enum(GET,POST)' },
+        { name: 'HTTP Method', type: 'enum', ruleSpec: 'GET,POST' },
         { name: 'Content Type', type: 'enum', ruleSpec: 'enum("application/json","text/plain")' },
         { name: 'Email Address', type: 'domain', ruleSpec: 'internet.email' },
       ];
@@ -325,8 +325,8 @@ describe('Pairwise Combinatorial Matching Data Generation', () => {
 
     test('supports enum-only constraints for pairwise generation', () => {
       const rules = [
-        { name: 'Browser', type: 'enum', ruleSpec: 'enum(chrome,firefox)' },
-        { name: 'Auth', type: 'enum', ruleSpec: 'enum(password,sso)' },
+        { name: 'Browser', type: 'enum', ruleSpec: 'chrome,firefox' },
+        { name: 'Auth', type: 'enum', ruleSpec: 'password,sso' },
       ];
 
       const generator = new PairwiseTestDataGenerator();
@@ -366,7 +366,7 @@ describe('Pairwise Combinatorial Matching Data Generation', () => {
 
     test('rejects pairwise constraints that reference non-enum columns', () => {
       const rules = [
-        { name: 'Browser', type: 'enum', ruleSpec: 'enum(chrome,firefox)' },
+        { name: 'Browser', type: 'enum', ruleSpec: 'chrome,firefox' },
         { name: 'Token', type: 'literal', ruleSpec: 'always' },
       ];
 

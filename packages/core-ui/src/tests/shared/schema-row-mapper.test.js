@@ -14,7 +14,7 @@ describe('schema-row-mapper', () => {
     const enumRow = mapDataRuleToSchemaRow({
       type: 'enum',
       name: 'Status',
-      ruleSpec: 'datatype.enum(active,inactive)',
+      ruleSpec: 'datatype.enum("active","inactive")',
     });
 
     expect(fakerRow).toMatchObject({
@@ -33,6 +33,20 @@ describe('schema-row-mapper', () => {
       name: 'Status',
       sourceType: 'enum',
       value: 'active,inactive',
+    });
+  });
+
+  test('keeps parenthesized regex rules as regex rows instead of enum rows', () => {
+    const row = mapDataRuleToSchemaRow({
+      type: 'regex',
+      name: 'Status',
+      ruleSpec: '(active,inactive,pending)',
+    });
+
+    expect(row).toMatchObject({
+      name: 'Status',
+      sourceType: 'regex',
+      value: '(active,inactive,pending)',
     });
   });
 

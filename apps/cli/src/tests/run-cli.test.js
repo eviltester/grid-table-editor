@@ -239,7 +239,7 @@ test('generates deterministic pairwise output in buffered mode', async () => {
 
 test('supports comments and blank lines in input schema', async () => {
   const platform = makePlatform({
-    textSpec: '# comment\n\nPriority\nenum(high,medium,low)\n\nStatus\nenum(active,inactive,pending)',
+    textSpec: '# comment\n\nPriority\nhigh,medium,low\n\nStatus\nactive,inactive,pending',
   });
   const code = await runCliCommand({
     platform,

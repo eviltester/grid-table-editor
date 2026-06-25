@@ -19,20 +19,24 @@ const PUBLIC_ENUM_SURFACE_CASES = [
     ruleSpec: 'enum("active","inactive","pending")',
   },
   {
-    label: 'enum shorthand call',
-    ruleSpec: 'enum active,inactive,pending',
+    label: 'explicit enum(...) CSV string call',
+    ruleSpec: 'enum("active,inactive,pending")',
+  },
+  {
+    label: 'explicit enum(...) string array call',
+    ruleSpec: 'enum(["active","inactive","pending"])',
   },
   {
     label: 'datatype.enum(...) alias',
     ruleSpec: 'datatype.enum("active","inactive","pending")',
   },
   {
-    label: 'datatype.enum named values alias',
-    ruleSpec: 'datatype.enum(values="active,inactive,pending")',
+    label: 'datatype.enum csv alias',
+    ruleSpec: 'datatype.enum(csv="active,inactive,pending")',
   },
   {
-    label: 'datatype.enum unquoted named values alias',
-    ruleSpec: 'datatype.enum(values=active,inactive,pending)',
+    label: 'datatype.enum named values alias',
+    ruleSpec: 'datatype.enum(values=["active","inactive","pending"])',
   },
   {
     label: 'awd.datatype.enum(...) alias',
@@ -132,6 +136,28 @@ describe('enum surface parity', () => {
     ['unknown named values argument', 'datatype.enum(valuez="active,pending")', 'unknown named argument "valuez"'],
     ['empty enum invocation', 'datatype.enum()', 'argument "values" is required'],
   ])('compiler rejects invalid explicit enum surface: %s', (_label, ruleSpec, expectedMessage) => {
+    const compiler = new TestDataRulesCompiler(faker, RandExp);
+    const rules = [new TestDataRule('Status', ruleSpec)];
+
+    compiler.compile(rules);
+    compiler.validate();
+
+    expect(rules[0].type).toBe('domain');
+    expect(compiler.isValid()).toBe(false);
+    expect(compiler.errors.some((error) => String(error?.message || error).includes(expectedMessage))).toBe(true);
+  });
+
+  test.each([
+    ['enum shorthand call', 'enum active,inactive,pending', 'unexpected trailing content'],
+    ['bare enum invocation args', 'enum(active,inactive,pending)', 'bare values are not allowed'],
+    ['bare datatype enum invocation args', 'datatype.enum(active,inactive,pending)', 'bare values are not allowed'],
+    [
+      'bare awd datatype enum invocation args',
+      'awd.datatype.enum(active,inactive,pending)',
+      'bare values are not allowed',
+    ],
+    ['unquoted named values args', 'datatype.enum(values=active,inactive,pending)', 'bare values are not allowed'],
+  ])('compiler rejects non-command-compatible enum surface: %s', (_label, ruleSpec, expectedMessage) => {
     const compiler = new TestDataRulesCompiler(faker, RandExp);
     const rules = [new TestDataRule('Status', ruleSpec)];
 

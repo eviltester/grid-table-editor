@@ -13,7 +13,13 @@ describe('domain docs parameter examples', () => {
         continue;
       }
 
-      const documentedArgNames = new Set((keyword.help?.args || []).map((arg) => arg.name).filter(Boolean));
+      const documentedArgNames = new Set();
+      (keyword.help?.args || []).forEach((arg) => {
+        if (arg.name) {
+          documentedArgNames.add(arg.name);
+        }
+        (arg.aliases || []).forEach((alias) => documentedArgNames.add(alias));
+      });
       for (const usageExample of usageExamples) {
         const parsed = invocationParser.parse(String(usageExample?.functionCall || '').trim());
         if (!parsed.ok) {

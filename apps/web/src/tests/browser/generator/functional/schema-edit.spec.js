@@ -23,7 +23,7 @@ test.describe('Generator Schema Editing', () => {
   test('can edit as text then edit as schema', async ({ page }) => {
     const { generatorPage, pageErrors } = await openGenerator(page);
 
-    await generatorPage.schema.setSchemaText('First Name\nliteral(Alice)\n\nStatus\nenum(active,inactive)');
+    await generatorPage.schema.setSchemaText('First Name\nliteral(Alice)\n\nStatus\nactive,inactive');
     await generatorPage.schema.setTextMode(false);
 
     await expect(generatorPage.schema.rows).toHaveCount(2);
@@ -77,7 +77,9 @@ test.describe('Generator Schema Editing', () => {
     await expect(generatorPage.schema.row(0).locator('input[data-field="params"]')).toHaveValue(
       'active,inactive,pending'
     );
-    await expect.poll(async () => generatorPage.schema.getSchemaText()).toContain('enum(active,inactive,pending)');
+    await expect
+      .poll(async () => generatorPage.schema.getSchemaText())
+      .toContain('enum("active","inactive","pending")');
 
     expectNoPageErrors(pageErrors);
   });
@@ -226,7 +228,9 @@ test.describe('Generator Schema Editing', () => {
     await expect(generatorPage.schema.row(0).locator('input[data-field="params"]')).toHaveValue(
       '(active,inactive,pending)'
     );
-    await expect.poll(async () => generatorPage.schema.getSchemaText()).toContain('enum(active,inactive,pending)');
+    await expect
+      .poll(async () => generatorPage.schema.getSchemaText())
+      .toContain('enum("active","inactive","pending")');
 
     expectNoPageErrors(pageErrors);
   });

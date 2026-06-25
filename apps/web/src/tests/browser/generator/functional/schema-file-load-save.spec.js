@@ -9,7 +9,7 @@ test.describe('Generator Schema File Load Save', () => {
     await generatorPage.schema.loadSchemaFile({
       name: 'schema.txt',
       mimeType: 'text/plain',
-      buffer: Buffer.from('Generated Name\nliteral(Ada)\nGenerated Status\nenum(active,inactive)'),
+      buffer: Buffer.from('Generated Name\nliteral(Ada)\nGenerated Status\nactive,inactive'),
     });
 
     await expect.poll(async () => generatorPage.schema.getSchemaText()).toContain('Generated Name');

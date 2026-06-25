@@ -14,11 +14,11 @@ describe('domain command metadata', () => {
     expect(help.usageExamples).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          functionCall: 'datatype.enum(values="active,inactive,pending")',
+          functionCall: 'datatype.enum(csv="active,inactive,pending")',
           sampleReturnValue: 'inactive',
         }),
         expect.objectContaining({
-          functionCall: 'datatype.enum(values="GET,POST,PUT,PATCH")',
+          functionCall: 'datatype.enum(values=["GET","POST","PUT","PATCH"])',
           sampleReturnValue: 'PUT',
         }),
       ])
@@ -27,7 +27,7 @@ describe('domain command metadata', () => {
       expect.arrayContaining([
         expect.objectContaining({
           name: 'values',
-          type: 'comma-separated list',
+          type: 'comma-separated list|array',
           variadic: true,
           optional: false,
         }),

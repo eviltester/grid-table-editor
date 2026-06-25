@@ -1,3 +1,5 @@
+import { DomainKeywordInvocationParser } from '../../domain/parser/DomainKeywordInvocationParser.js';
+
 /**
  * Shared utility for parsing enum rule specifications
  * Handles both simple comma-separated and function-based enum formats
@@ -47,16 +49,24 @@ export class EnumParser {
   }
 
   static serializeSchemaEnumValue(value) {
-    const text = String(value ?? '');
-    if (/^[^,\s"()]+$/u.test(text)) {
-      return text;
-    }
-    return JSON.stringify(text);
+    return JSON.stringify(String(value ?? ''));
   }
 
   static buildCanonicalSchemaRuleSpecFromValues(values = []) {
     const normalizedValues = (Array.isArray(values) ? values : []).map((value) => String(value));
     return `enum(${normalizedValues.map((value) => this.serializeSchemaEnumValue(value)).join(',')})`;
+  }
+
+  static buildCsvLiteralFromValues(values = []) {
+    return (Array.isArray(values) ? values : [])
+      .map((value) => {
+        const text = String(value ?? '');
+        if (text.length === 0 || text.includes(',') || text.includes('"') || text !== text.trim()) {
+          return `"${text.replace(/"/g, '""')}"`;
+        }
+        return text;
+      })
+      .join(',');
   }
 
   static buildCanonicalDomainRuleSpec(ruleSpecOrValues) {
@@ -84,7 +94,7 @@ export class EnumParser {
   static isCanonicalSchemaSerializableEnumRuleSpec(ruleSpec) {
     const spec = String(ruleSpec || '').trim();
     const parsed = this.parseEnumRuleSpec(spec, { allowImplicitCsv: false });
-    return parsed.ok && parsed.explicit;
+    return parsed.ok && parsed.explicit && parsed.source !== 'parenthesized-list';
   }
 
   static isImplicitCsvEnumRuleSpec(ruleSpec) {
@@ -93,7 +103,13 @@ export class EnumParser {
       return false;
     }
 
-    const values = spec.split(',').map((value) => value.trim());
+    let values;
+    try {
+      values = this.parseCsvLiteral(spec);
+    } catch {
+      return false;
+    }
+
     if (values.length < 2) {
       return false;
     }
@@ -116,7 +132,7 @@ export class EnumParser {
       try {
         return {
           ok: true,
-          values: this.extractAwdEnumValues(spec),
+          values: this.parseEnumFunctionValues(spec),
           explicit: true,
           source: 'function',
           error: '',
@@ -133,23 +149,13 @@ export class EnumParser {
     }
 
     if (this.isShorthandEnumFormat(spec)) {
-      try {
-        return {
-          ok: true,
-          values: this.extractEnumValues(spec),
-          explicit: true,
-          source: 'shorthand',
-          error: '',
-        };
-      } catch (error) {
-        return {
-          ok: false,
-          values: [],
-          explicit: true,
-          source: 'shorthand',
-          error: error?.message || String(error),
-        };
-      }
+      return {
+        ok: false,
+        values: [],
+        explicit: true,
+        source: 'shorthand',
+        error: 'Invalid enum format: use a CSV literal or enum("value1", "value2")',
+      };
     }
 
     if (this.isParenthesizedListFormat(spec)) {
@@ -176,7 +182,7 @@ export class EnumParser {
       try {
         return {
           ok: true,
-          values: this.extractEnumValues(spec),
+          values: this.parseCsvLiteral(spec),
           explicit: false,
           source: 'implicit-csv',
           error: '',
@@ -210,6 +216,10 @@ export class EnumParser {
     const value = String(ruleSpec ?? '').trim();
     const wrappedMatch = value.match(/^(?:enum|datatype\.enum|awd\.datatype\.enum)\s*\(([\s\S]*)\)$/i);
     if (wrappedMatch) {
+      const parsed = this.parseEnumRuleSpec(value, { allowImplicitCsv: false });
+      if (parsed.ok) {
+        return this.buildCsvLiteralFromValues(parsed.values);
+      }
       return wrappedMatch[1].trim();
     }
     if (this.isShorthandEnumFormat(value)) {
@@ -224,7 +234,26 @@ export class EnumParser {
     if (enumValue.length === 0) {
       return '';
     }
-    return `enum(${this.extractEnumDisplayValue(enumValue)})`;
+    const parsed = this.parseEnumRuleSpec(enumValue);
+    if (parsed.ok) {
+      return this.buildCanonicalSchemaRuleSpecFromValues(parsed.values);
+    }
+    const displayValue = this.extractEnumDisplayValue(enumValue);
+    if (this.looksLikeEnumInvocationArgumentFragment(displayValue)) {
+      const fragmentParsed = this.parseEnumRuleSpec(`enum(${displayValue})`, { allowImplicitCsv: false });
+      if (fragmentParsed.ok) {
+        return this.buildCanonicalSchemaRuleSpecFromValues(fragmentParsed.values);
+      }
+      if (fragmentParsed.explicit) {
+        throw new Error(fragmentParsed.error);
+      }
+    }
+    return this.buildCanonicalSchemaRuleSpecFromValues(this.parseCsvLiteral(displayValue));
+  }
+
+  static looksLikeEnumInvocationArgumentFragment(value) {
+    const text = String(value || '').trim();
+    return text.startsWith('[') || /^(csv|values)\s*=/i.test(text);
   }
 
   static isEnumLikeRule(rule = {}) {
@@ -266,6 +295,160 @@ export class EnumParser {
     }
 
     return valuesText;
+  }
+
+  static parseCsvLiteral(csvText) {
+    const text = String(csvText ?? '');
+    const values = [];
+    let currentValue = '';
+    let inQuotes = false;
+    let quotedField = false;
+    let afterClosingQuote = false;
+
+    for (let index = 0; index < text.length; index += 1) {
+      const char = text[index];
+
+      if (inQuotes) {
+        if (char === '"') {
+          if (text[index + 1] === '"') {
+            currentValue += '"';
+            index += 1;
+          } else {
+            inQuotes = false;
+            afterClosingQuote = true;
+          }
+        } else {
+          currentValue += char;
+        }
+        continue;
+      }
+
+      if (afterClosingQuote) {
+        if (char === ',') {
+          values.push(currentValue);
+          currentValue = '';
+          quotedField = false;
+          afterClosingQuote = false;
+          continue;
+        }
+        if (char === ' ' || char === '\t') {
+          continue;
+        }
+        throw new Error('Invalid enum CSV: unexpected content after closing quote');
+      }
+
+      if (char === ',') {
+        values.push(quotedField ? currentValue : currentValue.trim());
+        currentValue = '';
+        quotedField = false;
+        continue;
+      }
+
+      if (char === '"') {
+        if (currentValue.trim().length > 0) {
+          throw new Error('Invalid enum CSV: unexpected quote in unquoted value');
+        }
+        inQuotes = true;
+        quotedField = true;
+        currentValue = '';
+        continue;
+      }
+
+      currentValue += char;
+    }
+
+    if (inQuotes) {
+      throw new Error('Invalid enum CSV: unclosed quote');
+    }
+
+    values.push(quotedField || afterClosingQuote ? currentValue : currentValue.trim());
+
+    return values;
+  }
+
+  static validateEnumValueList(values, sourceName = 'values') {
+    if (!Array.isArray(values)) {
+      throw new Error(`Invalid keyword arguments: argument "${sourceName}" must be an array`);
+    }
+    if (values.length === 0) {
+      throw new Error('Invalid keyword arguments: argument "values" is required');
+    }
+    if (values.some((value) => typeof value !== 'string')) {
+      throw new Error(`Invalid keyword arguments: argument "${sourceName}" must contain only strings`);
+    }
+    if (values.some((value) => value.length === 0)) {
+      throw new Error('Enum values cannot be empty');
+    }
+    return values;
+  }
+
+  static parseCsvEnumValues(csvText) {
+    return this.validateEnumValueList(this.parseCsvLiteral(csvText), 'csv');
+  }
+
+  static parseEnumFunctionValues(ruleSpec) {
+    const invocationParser = new DomainKeywordInvocationParser();
+    const parsed = invocationParser.parse(ruleSpec);
+    if (!parsed.ok) {
+      throw new Error(parsed.error || 'Invalid enum format');
+    }
+
+    const keyword = String(parsed.keyword || '').toLowerCase();
+    if (!['enum', 'datatype.enum', 'awd.datatype.enum'].includes(keyword)) {
+      throw new Error('Invalid enum format');
+    }
+
+    return this.extractEnumValuesFromParsedArguments(parsed.arguments || []);
+  }
+
+  static extractEnumValuesFromParsedArguments(args = []) {
+    if (!Array.isArray(args) || args.length === 0) {
+      throw new Error('Invalid keyword arguments: argument "values" is required');
+    }
+
+    const hasNamedArgs = args.some((argument) => argument.kind === 'named');
+    const hasPositionalArgs = args.some((argument) => argument.kind !== 'named');
+    if (hasNamedArgs && hasPositionalArgs) {
+      throw new Error('Invalid keyword arguments: cannot mix named and positional enum arguments');
+    }
+
+    if (hasNamedArgs) {
+      if (args.length !== 1) {
+        throw new Error('Invalid keyword arguments: enum accepts one named argument');
+      }
+      const [argument] = args;
+      const name = String(argument.name || '').toLowerCase();
+      if (name === 'csv') {
+        if (typeof argument.value !== 'string') {
+          throw new Error('Invalid keyword arguments: argument "csv" must be string');
+        }
+        return this.parseCsvEnumValues(argument.value);
+      }
+      if (name === 'values') {
+        if (Array.isArray(argument.value)) {
+          return this.validateEnumValueList(argument.value, 'values');
+        }
+        if (typeof argument.value === 'string') {
+          return this.parseCsvEnumValues(argument.value);
+        }
+        throw new Error('Invalid keyword arguments: argument "values" must be string or array');
+      }
+      throw new Error(`Invalid keyword arguments: unknown named argument "${argument.name}"`);
+    }
+
+    const positionalValues = args.map((argument) => argument.value);
+    if (positionalValues.length === 1) {
+      const [value] = positionalValues;
+      if (Array.isArray(value)) {
+        return this.validateEnumValueList(value, 'values');
+      }
+      if (typeof value === 'string') {
+        return this.parseCsvEnumValues(value);
+      }
+      throw new Error('Invalid keyword arguments: enum values must be strings or an array of strings');
+    }
+
+    return this.validateEnumValueList(positionalValues, 'values');
   }
 
   static splitEnumParameterValues(paramsStr) {
@@ -316,7 +499,7 @@ export class EnumParser {
    * Extract enum values from rule specification
    * Handles both formats:
    * - Simple: "value1,value2,value3"
-   * - Function: enum("value1","value2","value3") or enum(value1,value2,value3)
+   * - Function: enum("value1","value2","value3")
    * @param {string} ruleSpec - The rule specification to parse
    * @returns {string[]} Array of enum values
    */
@@ -325,49 +508,24 @@ export class EnumParser {
 
     // Check if it's a formal enum function format
     if (this.hasAwdEnumInvocationPrefix(spec)) {
-      return this.extractAwdEnumValues(spec);
+      return this.parseEnumFunctionValues(spec);
     }
 
     if (this.isShorthandEnumFormat(spec)) {
-      const shorthand = spec.replace(/^enum\s+/i, '');
-      return this.extractEnumValues(this.unwrapOptionalListParens(shorthand));
+      throw new Error('Invalid enum format: use a CSV literal or enum("value1", "value2")');
     }
 
     // Simple comma-separated format
-    return this.unwrapOptionalListParens(spec)
-      .split(',')
-      .map((v) => {
-        const trimmed = v.trim();
-        if (trimmed.startsWith('"') && trimmed.endsWith('"') && trimmed.length >= 2) {
-          return this.unescapeQuotedEnumValue(trimmed.slice(1, -1));
-        }
-        return trimmed;
-      });
+    return this.parseCsvLiteral(this.unwrapOptionalListParens(spec));
   }
 
   /**
    * Extract values from formal enum function formats
-   * Handles: enum(value1,value2) and enum("value1", "value2", "value3")
+   * Handles: enum("value1", "value2", "value3")
    * @param {string} ruleSpec - The function-format rule specification
    * @returns {string[]} Array of enum values
    */
   static extractAwdEnumValues(ruleSpec) {
-    // Match patterns like: enum(value1,value2) or enum("value1", "value2", "value3")
-    const match = ruleSpec.match(/^(?:enum|datatype\.enum|awd\.datatype\.enum)\s*\(\s*([\s\S]*)\s*\)$/);
-    if (!match) {
-      throw new Error('Invalid enum format');
-    }
-
-    const paramsStr = match[1].trim();
-    if (paramsStr.length === 0) {
-      throw new Error('Invalid keyword arguments: argument "values" is required');
-    }
-
-    const namedValues = this.unwrapNamedValuesArgument(paramsStr);
-    if (namedValues !== null) {
-      return this.extractEnumValues(namedValues);
-    }
-
-    return this.splitEnumParameterValues(paramsStr);
+    return this.parseEnumFunctionValues(ruleSpec);
   }
 }

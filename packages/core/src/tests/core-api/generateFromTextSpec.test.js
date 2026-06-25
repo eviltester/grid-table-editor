@@ -96,7 +96,7 @@ test('generateFromTextSpec serializes object return values as JSON strings', () 
 
 test('generateFromTextSpec accepts comments and blank lines in spec', () => {
   const result = generateFromTextSpec({
-    textSpec: '# comment\n\nPriority\nenum(high,medium,low)\n\nStatus\nenum(active,inactive,pending)',
+    textSpec: '# comment\n\nPriority\nhigh,medium,low\n\nStatus\nactive,inactive,pending',
     rowCount: 2,
     outputFormat: 'json',
   });
@@ -128,9 +128,9 @@ test('generateFromTextSpec accepts # prefixed rule content lines', () => {
 test('generateFromTextSpec enforces IF THEN constraints during row generation', () => {
   const result = generateFromTextSpec({
     textSpec: `Priority
-enum(high,low)
+high,low
 Status
-enum(open,closed)
+open,closed
 IF [Priority] = "high" THEN [Status] = "open" ENDIF`,
     rowCount: 20,
     outputFormat: 'json',
@@ -165,7 +165,7 @@ IF [Status] = "closed" THEN [Status] = "open" ENDIF`,
 test('generateFromTextSpec returns semantic constraint validation errors for invalid enum and regex values', () => {
   const enumResult = generateFromTextSpec({
     textSpec: `Priority
-enum(high,low)
+high,low
 
 IF [Priority] = "urgent" THEN [Priority] = "high" ENDIF`,
     rowCount: 1,
@@ -225,7 +225,7 @@ test('validateSafeFakerRules ignores constraint lines when checking faker rules'
   const result = validateSafeFakerRules(`Name
 person.firstName("female")
 Status
-enum(active,inactive)
+active,inactive
 IF [Status] = "inactive" THEN [Name] <> "" ENDIF`);
 
   expect(result.ok).toBe(true);
@@ -406,7 +406,7 @@ test('validateSafeFakerRules accepts known faker commands with literal args', ()
 });
 
 test('validateSafeFakerRules accepts pict-style inline faker commands', () => {
-  const result = validateSafeFakerRules('Name: person.firstName("female")\nStatus: enum(active,inactive)');
+  const result = validateSafeFakerRules('Name: person.firstName("female")\nStatus: active,inactive');
   expect(result.ok).toBe(true);
 });
 

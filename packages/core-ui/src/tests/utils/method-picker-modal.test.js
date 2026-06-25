@@ -200,17 +200,17 @@ describe('method picker modal', () => {
             docsUrl: 'https://anywaydata.com/docs/category/generating-data',
             usageExamples: [
               {
-                functionCall: 'enum active,inactive,pending',
+                functionCall: 'enum("active","inactive","pending")',
                 sampleReturnValue: 'active',
                 description: 'Shows enum helper usage.',
               },
               {
-                functionCall: 'datatype.enum(active,inactive,pending)',
+                functionCall: 'datatype.enum(csv="active,inactive,pending")',
                 sampleReturnValue: 'inactive',
                 description: 'Shows datatype.enum helper usage.',
               },
               {
-                functionCall: 'datatype.enum(open,closed)',
+                functionCall: 'datatype.enum(values=["open","closed"])',
                 sampleReturnValue: 'closed',
                 description: 'Shows an alternate enum call.',
               },
@@ -223,11 +223,11 @@ describe('method picker modal', () => {
     });
 
     const usageSection = getDetail();
-    expect(usageSection.textContent).toContain('enum active,inactive,pending');
-    expect(usageSection.textContent).toContain('datatype.enum(active,inactive,pending)');
+    expect(usageSection.textContent).toContain('enum("active","inactive","pending")');
+    expect(usageSection.textContent).toContain('datatype.enum(csv="active,inactive,pending")');
     expect(usageSection.textContent).toContain('Command: datatype.enum');
-    expect(usageSection.textContent).toContain('Params field: active,inactive,pending');
-    expect(usageSection.textContent).toContain('Full call: datatype.enum(active,inactive,pending)');
+    expect(usageSection.textContent).toContain('Params field: csv="active,inactive,pending"');
+    expect(usageSection.textContent).toContain('Full call: datatype.enum(csv="active,inactive,pending")');
     expect(usageSection.textContent).toContain('Returns: active');
     expect(usageSection.textContent).toContain('Returns: inactive');
     expect(usageSection.textContent).toContain('Returns: closed');

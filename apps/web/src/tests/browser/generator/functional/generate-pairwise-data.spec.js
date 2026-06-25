@@ -45,7 +45,7 @@ function validatePairwiseRows(rows) {
 
 async function setPairwiseSchema(generatorPage) {
   await generatorPage.schema.setSchemaText(
-    'Browser\nenum(chrome,firefox,safari)\n\nPlan\nenum(free,pro,enterprise)\n\nFixed\nliteral(CONSTANT)\n\nCode\n[A-Z]{2}[0-9]{2}\n\nEnabled\ndatatype.boolean'
+    'Browser\nchrome,firefox,safari\n\nPlan\nfree,pro,enterprise\n\nFixed\nliteral(CONSTANT)\n\nCode\n[A-Z]{2}[0-9]{2}\n\nEnabled\ndatatype.boolean'
   );
 }
 

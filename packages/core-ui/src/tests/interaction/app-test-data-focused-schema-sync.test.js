@@ -39,7 +39,7 @@ describe('app test-data focused schema sync', () => {
     await waitFor(() => expect(harness.getSchemaText()).toContain('Code'));
     expect(harness.getSchemaText()).toContain('[A-Z]{2}');
 
-    await harness.setSchemaText('Status\nenum(active,inactive)');
+    await harness.setSchemaText('Status\nactive,inactive');
 
     await waitFor(() =>
       expect(
@@ -55,7 +55,7 @@ describe('app test-data focused schema sync', () => {
     await harness.setSchemaText('OnlyName');
     await waitFor(() => expect(harness.getSchemaErrorText().length).toBeGreaterThan(0));
 
-    await harness.setSchemaText('Status\nenum(active,inactive)');
+    await harness.setSchemaText('Status\nactive,inactive');
 
     await waitFor(() => expect(harness.getSchemaErrorText()).toBe(''));
     expect(

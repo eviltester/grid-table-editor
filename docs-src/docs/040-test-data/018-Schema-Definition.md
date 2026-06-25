@@ -4,7 +4,7 @@ title: "Schema Definition"
 description: "Full reference for schema text format, field rules, and IF ... THEN schema constraints."
 ---
 
-The schema editor in `app.html` and `generate.html` uses a plain text format.
+The schema editor in `app.html` and `generator.html` uses a plain text format.
 
 This page explains:
 

@@ -1,13 +1,13 @@
 ---
 sidebar_position: 1
 title: "Test Data Generation"
-description: "Overview of test-data generation workflows in app.html and generate.html."
+description: "Overview of test-data generation workflows in app.html and generator.html."
 ---
 
 AnyWayData offers two main web UI workflows for generating and working with test data:
 
 - **Data Grid Editable** (`app.html`) for interactive grid-first editing and generation
-- **Generate to File** (`generate.html`) for schema-driven generation and direct file output
+- **Generate to File** (`generator.html`) for schema-driven generation and direct file output
 
 ## Choose a Workflow
 
@@ -21,7 +21,7 @@ Use this when you want to:
 
 See [Data Grid Editable](/docs/test-data/data-grid-editable).
 
-### Generate to File (`generate.html`)
+### Generate to File (`generator.html`)
 
 Use this when you want to:
 

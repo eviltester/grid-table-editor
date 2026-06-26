@@ -136,6 +136,30 @@ describe('method picker modal', () => {
     expect(document.activeElement).toBe(trigger);
   });
 
+  test('locks document scrolling while open and restores original overflow on close', async () => {
+    document.body.style.overflow = 'auto';
+    document.documentElement.style.overflow = 'scroll';
+
+    const promise = openMethodPickerModal({
+      documentObj: document,
+      windowObj: window,
+      options: [{ sourceType: 'domain', command: 'number.int', helpModel: { summary: '', params: [], example: '' } }],
+      currentCommand: 'number.int',
+    });
+
+    expect(document.body.style.overflow).toBe('hidden');
+    expect(document.documentElement.style.overflow).toBe('hidden');
+
+    getSearchInput().dispatchEvent(new window.KeyboardEvent('keydown', { key: 'PageDown', bubbles: true }));
+    expect(document.body.style.overflow).toBe('hidden');
+    expect(document.documentElement.style.overflow).toBe('hidden');
+
+    getOverlay().querySelector('[data-role="method-picker-cancel-button"]').click();
+    await expect(promise).resolves.toBeNull();
+    expect(document.body.style.overflow).toBe('auto');
+    expect(document.documentElement.style.overflow).toBe('scroll');
+  });
+
   test('wraps tab focus within the modal dialog', async () => {
     const promise = openMethodPickerModal({
       documentObj: document,

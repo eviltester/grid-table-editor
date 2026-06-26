@@ -4,6 +4,9 @@ import { createMethodPickerRecentStore } from '../../method-picker-dialog/method
 
 const STYLE_ID = 'method-picker-modal-styles-link';
 const CRITICAL_STYLE_ID = 'method-picker-modal-critical-styles';
+const SCROLL_LOCK_COUNT_ATTR = 'data-method-picker-scroll-lock-count';
+const BODY_PREVIOUS_OVERFLOW_ATTR = 'data-method-picker-previous-body-overflow';
+const ROOT_PREVIOUS_OVERFLOW_ATTR = 'data-method-picker-previous-root-overflow';
 
 function ensureCriticalStyles(documentObj) {
   if (!documentObj?.head || documentObj.getElementById(CRITICAL_STYLE_ID)) {
@@ -95,6 +98,56 @@ function restoreFocus(documentObj, previouslyFocusedElement) {
   }
 }
 
+function lockDocumentScroll(documentObj) {
+  const body = documentObj?.body;
+  const root = documentObj?.documentElement;
+  if (!body?.style) {
+    return () => {};
+  }
+
+  const currentLockCount = Number.parseInt(body.getAttribute(SCROLL_LOCK_COUNT_ATTR) || '0', 10) || 0;
+  if (currentLockCount === 0) {
+    body.setAttribute(BODY_PREVIOUS_OVERFLOW_ATTR, body.style.overflow || '');
+    if (root?.style) {
+      body.setAttribute(ROOT_PREVIOUS_OVERFLOW_ATTR, root.style.overflow || '');
+      root.style.overflow = 'hidden';
+    }
+    body.style.overflow = 'hidden';
+  }
+
+  body.setAttribute(SCROLL_LOCK_COUNT_ATTR, String(currentLockCount + 1));
+
+  return () => restoreDocumentScrollLock(documentObj);
+}
+
+function restoreDocumentScrollLock(documentObj, { force = false } = {}) {
+  const body = documentObj?.body;
+  const root = documentObj?.documentElement;
+  if (!body?.style || !body.hasAttribute(SCROLL_LOCK_COUNT_ATTR)) {
+    return;
+  }
+
+  const nextLockCount = force
+    ? 0
+    : Math.max(0, (Number.parseInt(body.getAttribute(SCROLL_LOCK_COUNT_ATTR) || '1', 10) || 1) - 1);
+  if (nextLockCount > 0) {
+    body.setAttribute(SCROLL_LOCK_COUNT_ATTR, String(nextLockCount));
+    return;
+  }
+
+  body.style.overflow = body.getAttribute(BODY_PREVIOUS_OVERFLOW_ATTR) || '';
+  if (root?.style) {
+    root.style.overflow = body.getAttribute(ROOT_PREVIOUS_OVERFLOW_ATTR) || '';
+  }
+  body.removeAttribute(SCROLL_LOCK_COUNT_ATTR);
+  body.removeAttribute(BODY_PREVIOUS_OVERFLOW_ATTR);
+  body.removeAttribute(ROOT_PREVIOUS_OVERFLOW_ATTR);
+}
+
+function restoreMethodPickerDocumentScrollLock(documentObj = getDefaultDocumentObj()) {
+  restoreDocumentScrollLock(documentObj, { force: true });
+}
+
 function openMethodPickerModal({
   documentObj = getDefaultDocumentObj(),
   windowObj = getDefaultWindowObj(),
@@ -113,6 +166,7 @@ function openMethodPickerModal({
 
   const previouslyFocusedElement = documentObj.activeElement;
   const overlay = documentObj.createElement('div');
+  const restoreScrollLock = lockDocumentScroll(documentObj);
   documentObj.body.appendChild(overlay);
 
   return new Promise((resolve) => {
@@ -126,6 +180,7 @@ function openMethodPickerModal({
       resolved = true;
       component?.destroy?.();
       overlay.remove();
+      restoreScrollLock();
       restoreFocus(documentObj, previouslyFocusedElement);
       resolve(result || null);
     }
@@ -152,4 +207,4 @@ function openMethodPickerModal({
   });
 }
 
-export { openMethodPickerModal };
+export { openMethodPickerModal, restoreMethodPickerDocumentScrollLock };

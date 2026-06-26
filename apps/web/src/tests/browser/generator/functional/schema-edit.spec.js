@@ -84,6 +84,28 @@ test.describe('Generator Schema Editing', () => {
     expectNoPageErrors(pageErrors);
   });
 
+  test('method picker keeps PageDown from scrolling the generator page background', async ({ page }) => {
+    const { generatorPage, pageErrors } = await openGenerator(page);
+
+    await page.keyboard.press('Home');
+    await expect.poll(async () => page.evaluate(() => window.scrollY)).toBe(0);
+
+    await generatorPage.schema.setTextMode(false);
+    await generatorPage.schema.setRowSourceType(0, 'domain');
+    await generatorPage.schema.editor.dismissOpenHelpTooltips();
+    await generatorPage.schema.row(0).locator('[data-action="pick-command"]').click();
+    await generatorPage.schema.editor.methodPicker.expectOpen();
+
+    const scrollBeforePageDown = await page.evaluate(() => window.scrollY);
+    await page.keyboard.press('PageDown');
+
+    await expect.poll(async () => page.evaluate(() => window.scrollY)).toBe(scrollBeforePageDown);
+
+    await page.keyboard.press('Escape');
+    await expect(generatorPage.schema.editor.methodPicker.overlay).toHaveCount(0);
+    expectNoPageErrors(pageErrors);
+  });
+
   test('invalid domain command text preserves the domain row type in the generator editor', async ({ page }) => {
     const { generatorPage, pageErrors } = await openGenerator(page);
 

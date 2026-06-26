@@ -7,6 +7,7 @@ import {
   renderStoryWithCleanup,
   removeStoryArtifacts,
 } from '../../../stories/story-cleanup.js';
+import { openMethodPickerModal } from '../../../../../../packages/core-ui/js/gui_components/shared/test-data/ui/method-picker-modal.js';
 
 describe('story cleanup helpers', () => {
   let dom;
@@ -46,6 +47,28 @@ describe('story cleanup helpers', () => {
     removeStoryArtifacts(document);
 
     expect(document.body.children).toHaveLength(0);
+  });
+
+  test('removeStoryArtifacts restores method picker scroll lock when clearing a stale overlay', () => {
+    document.body.style.overflow = 'auto';
+    document.documentElement.style.overflow = 'scroll';
+
+    openMethodPickerModal({
+      documentObj: document,
+      windowObj: dom.window,
+      options: [{ sourceType: 'domain', command: 'number.int', helpModel: { summary: '', params: [], example: '' } }],
+      currentCommand: 'number.int',
+    });
+
+    expect(document.querySelector('[data-role="method-picker-overlay"]')).not.toBeNull();
+    expect(document.body.style.overflow).toBe('hidden');
+    expect(document.documentElement.style.overflow).toBe('hidden');
+
+    removeStoryArtifacts(document);
+
+    expect(document.querySelector('[data-role="method-picker-overlay"]')).toBeNull();
+    expect(document.body.style.overflow).toBe('auto');
+    expect(document.documentElement.style.overflow).toBe('scroll');
   });
 
   test('registerStoryCleanup supports async story results', async () => {

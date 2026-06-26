@@ -631,6 +631,7 @@ function createSharedSchemaEditorController({
             title: 'Select schema method',
           });
           if (selected?.command) {
+            const pickerFocusState = captureActiveFieldState(documentObj);
             session.updateRowAtIndex(index, (currentRow) =>
               applySchemaCommandSelection(currentRow, {
                 sourceType: selected.sourceType || currentRow.sourceType,
@@ -644,6 +645,7 @@ function createSharedSchemaEditorController({
             renderRows();
             syncTextFromRows();
             scheduleSemanticValidationForRow(rowId, { immediate: true });
+            restoreActiveFieldState(documentObj, pickerFocusState);
           }
         } catch (error) {
           console.error('Failed opening schema method picker.', error);

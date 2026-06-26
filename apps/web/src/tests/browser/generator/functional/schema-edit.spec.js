@@ -148,6 +148,22 @@ test.describe('Generator Schema Editing', () => {
     expectNoPageErrors(pageErrors);
   });
 
+  test('method picker restores focus to the command button after applying a selection', async ({ page }) => {
+    const { generatorPage, pageErrors } = await openGenerator(page);
+
+    await generatorPage.schema.setTextMode(false);
+    await generatorPage.schema.setRowSourceType(0, 'domain');
+    await generatorPage.schema.editor.dismissOpenHelpTooltips();
+    await generatorPage.schema.row(0).locator('[data-action="pick-command"]').click();
+    await generatorPage.schema.editor.methodPicker.chooseCommand('internet.httpMethod');
+
+    const commandButton = generatorPage.schema.row(0).locator('[data-action="pick-command"]');
+    await expect(commandButton).toHaveText('internet.httpMethod');
+    await expect(commandButton).toBeFocused();
+
+    expectNoPageErrors(pageErrors);
+  });
+
   test('method picker active filter tabs meet light theme text contrast', async ({ page }) => {
     const { generatorPage, pageErrors } = await openGenerator(page);
 

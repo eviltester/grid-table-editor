@@ -158,6 +158,62 @@ describe('createSharedSchemaEditorController', () => {
     expect(dom.window.document.querySelector('[data-field="params"]').value).toBe('(values=active,inactive,pending)');
   });
 
+  test('restores focus to the command picker button after applying a method picker selection', async () => {
+    const root = createRoot(dom.window.document);
+    const controller = createSharedSchemaEditorController({
+      documentObj: dom.window.document,
+      rootElement: root,
+      createBlankRow: () => ({
+        id: 'row-1',
+        name: 'Method',
+        sourceType: 'domain',
+        command: '',
+        value: '',
+        params: '',
+        semanticValidationIssues: [],
+      }),
+      mapRuleToRow: () => ({
+        id: 'row-1',
+        name: 'Method',
+        sourceType: 'domain',
+        command: '',
+        value: '',
+        params: '',
+        semanticValidationIssues: [],
+      }),
+      schemaTextToDataRules: jest.fn(() => ({ dataRules: [], errors: [] })),
+      dataRulesToSchemaText: jest.fn(() => ''),
+      getMethodPickerOptions: () => [
+        {
+          sourceType: 'domain',
+          command: 'internet.httpMethod',
+          helpModel: {
+            heading: 'internet.httpMethod',
+            summary: 'HTTP method helper',
+            params: [],
+          },
+        },
+      ],
+      getVisibleDomainCommands: () => ['internet.httpMethod'],
+      validateSchemaRows: jest.fn((rows) => ({ rows, errors: [] })),
+      updatePairwiseButtonVisibility: jest.fn(),
+      updateHelpHints: jest.fn(),
+    });
+
+    controller.init();
+    const pickerButton = dom.window.document.querySelector('[data-action="pick-command"]');
+    pickerButton.focus();
+    const dialogPromise = controller.handleClick({ target: pickerButton });
+
+    const dialog = within(dom.window.document.body).getByRole('dialog', { name: /select schema method/i });
+    fireEvent.click(within(dialog).getByRole('button', { name: /^apply$/i }));
+
+    await dialogPromise;
+    const replacementPickerButton = dom.window.document.querySelector('[data-action="pick-command"]');
+    expect(replacementPickerButton.textContent).toBe('internet.httpMethod');
+    expect(dom.window.document.activeElement).toBe(replacementPickerButton);
+  });
+
   test('applies helpers.arrayElement array params as positional values from the params editor', async () => {
     const root = createRoot(dom.window.document);
     const controller = createSharedSchemaEditorController({

@@ -5,9 +5,9 @@ body.theme-light {
   --mp-text: #121620;
   --mp-muted: #495066;
   --mp-subtle: #495066;
-  --mp-accent: #1f6feb;
+  --mp-accent: #0b63ce;
   --mp-accent-soft: #e9f1ff;
-  --mp-focus: #1f6feb;
+  --mp-focus: #0b63ce;
   --mp-overlay: rgba(15, 23, 42, 0.45);
   --mp-code-bg: #eef2f8;
 }

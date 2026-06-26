@@ -1,5 +1,33 @@
 import { JSDOM } from 'jsdom';
+import { readFileSync } from 'node:fs';
 import { openMethodPickerModal } from '../../../js/gui_components/shared/test-data/ui/method-picker-modal.js';
+
+function hexToRgb(hex) {
+  const value = String(hex || '').replace('#', '');
+  return [0, 2, 4].map((start) => parseInt(value.slice(start, start + 2), 16));
+}
+
+function luminanceChannel(channelValue) {
+  const normalized = channelValue / 255;
+  return normalized <= 0.03928 ? normalized / 12.92 : ((normalized + 0.055) / 1.055) ** 2.4;
+}
+
+function relativeLuminance(hexColor) {
+  const [red, green, blue] = hexToRgb(hexColor).map(luminanceChannel);
+  return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+}
+
+function contrastRatio(foreground, background) {
+  const foregroundLuminance = relativeLuminance(foreground);
+  const backgroundLuminance = relativeLuminance(background);
+  const lighter = Math.max(foregroundLuminance, backgroundLuminance);
+  const darker = Math.min(foregroundLuminance, backgroundLuminance);
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
+function readCssVariable(cssText, variableName) {
+  return cssText.match(new RegExp(`${variableName}:\\s*(#[0-9a-fA-F]{6})`))?.[1] || '';
+}
 
 describe('method picker modal', () => {
   let dom;
@@ -536,5 +564,18 @@ describe('method picker modal', () => {
 
     getOverlay().querySelector('[data-role="method-picker-cancel-button"]').click();
     await promise;
+  });
+
+  test('light theme active tab colors meet normal text contrast', () => {
+    const cssText = readFileSync(
+      new URL('../../../js/gui_components/shared/test-data/ui/method-picker-modal.css', import.meta.url),
+      'utf8'
+    );
+    const accent = readCssVariable(cssText, '--mp-accent');
+    const accentSoft = readCssVariable(cssText, '--mp-accent-soft');
+
+    expect(accent).toBe('#0b63ce');
+    expect(accentSoft).toBe('#e9f1ff');
+    expect(contrastRatio(accent, accentSoft)).toBeGreaterThanOrEqual(4.5);
   });
 });

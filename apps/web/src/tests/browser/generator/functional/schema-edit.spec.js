@@ -148,6 +148,44 @@ test.describe('Generator Schema Editing', () => {
     expectNoPageErrors(pageErrors);
   });
 
+  test('method picker active filter tabs meet light theme text contrast', async ({ page }) => {
+    const { generatorPage, pageErrors } = await openGenerator(page);
+
+    await expect(page.locator('body')).toHaveClass(/theme-light/);
+    await generatorPage.schema.setTextMode(false);
+    await generatorPage.schema.setRowSourceType(0, 'domain');
+    await generatorPage.schema.editor.dismissOpenHelpTooltips();
+    await generatorPage.schema.row(0).locator('[data-action="pick-command"]').click();
+    await generatorPage.schema.editor.methodPicker.expectOpen();
+
+    const activeTab = generatorPage.schema.editor.methodPicker.overlay
+      .locator('[data-role="method-picker-tab"].is-active')
+      .first();
+    await expect(activeTab).toBeVisible();
+    const contrast = await activeTab.evaluate((element) => {
+      function parseRgb(value) {
+        return (value.match(/\d+/g) || []).slice(0, 3).map((part) => Number(part));
+      }
+      function channel(value) {
+        const normalized = value / 255;
+        return normalized <= 0.03928 ? normalized / 12.92 : ((normalized + 0.055) / 1.055) ** 2.4;
+      }
+      function luminance(rgb) {
+        const [red, green, blue] = rgb.map(channel);
+        return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+      }
+      const styles = window.getComputedStyle(element);
+      const foreground = luminance(parseRgb(styles.color));
+      const background = luminance(parseRgb(styles.backgroundColor));
+      return (Math.max(foreground, background) + 0.05) / (Math.min(foreground, background) + 0.05);
+    });
+    expect(contrast).toBeGreaterThanOrEqual(4.5);
+
+    await page.keyboard.press('Escape');
+    await expect(generatorPage.schema.editor.methodPicker.overlay).toHaveCount(0);
+    expectNoPageErrors(pageErrors);
+  });
+
   test('invalid domain command text preserves the domain row type in the generator editor', async ({ page }) => {
     const { generatorPage, pageErrors } = await openGenerator(page);
 

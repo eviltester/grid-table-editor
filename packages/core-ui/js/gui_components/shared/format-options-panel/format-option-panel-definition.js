@@ -114,8 +114,8 @@ function renderField(field) {
   if (field.type === 'checkbox') {
     return `
       <div class="${escapeHtml(wrapperClassName)}">
+        ${help}
         <label>
-          ${help}
           <input type="checkbox" name="${escapeHtml(field.name)}" ${field.defaultValue === true ? 'checked' : ''}>
           ${labelText}
         </label>
@@ -132,8 +132,8 @@ function renderField(field) {
       field.type === 'selectCustom'
         ? `
       <div class="${escapeHtml(`format-option-field ${field.customClassName || `custom-${field.name}`} option-child`)}">
+        <span class="helpicon option-help-icon" data-role="option-help-icon" data-help-role="option-help-icon" data-help="${escapeHtml(field.customHelp)}"></span>
         <label class="format-option-block-label">
-          <span class="helpicon option-help-icon" data-role="option-help-icon" data-help-role="option-help-icon" data-help="${escapeHtml(field.customHelp)}"></span>
           <span class="format-option-label-text">${escapeHtml(field.customLabel || 'Custom')}</span>
           <input class="format-option-control" type="text" name="${escapeHtml(field.customName)}" value="" style="width:${escapeHtml(field.customWidth || '100%')}">
         </label>
@@ -142,8 +142,8 @@ function renderField(field) {
         : '';
     return `
       <div class="${escapeHtml(wrapperClassName)}">
+        ${help}
         <label class="format-option-block-label">
-          ${help}
           ${labelText}
           <select class="format-option-control" name="${escapeHtml(field.name)}" ${field.disabled ? 'disabled' : ''}>
             ${optionHtml(options)}
@@ -156,8 +156,8 @@ function renderField(field) {
   if (field.type === 'textarea') {
     return `
       <div class="${escapeHtml(wrapperClassName)}">
+        ${help}
         <label class="format-option-block-label">
-          ${help}
           ${labelText}
           <textarea class="format-option-control format-option-textarea" name="${escapeHtml(field.name)}" rows="${field.rows || 3}" style="width:${escapeHtml(field.width || '100%')}"></textarea>
         </label>
@@ -167,8 +167,8 @@ function renderField(field) {
 
   return `
     <div class="${escapeHtml(wrapperClassName)}">
+      ${help}
       <label class="format-option-block-label">
-        ${help}
         ${labelText}
         <input class="format-option-control" type="${field.type === 'number' ? 'number' : 'text'}" name="${escapeHtml(field.name)}" value="${escapeHtml(
           field.defaultValue ?? ''

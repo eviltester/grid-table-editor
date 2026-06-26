@@ -150,9 +150,39 @@ class MethodPickerDialogView {
     }
     if (event.key === 'Enter' && this.navigator?.isSearchFocused(this.documentObj)) {
       event.preventDefault();
-      this.controller.selectFirstFilteredOption();
-      this.render();
+      this.activateCommandWithEnter(this.controller.getFilteredOptions()[0]?.command || '');
+      return;
     }
+    if (event.key === 'Enter') {
+      const focusedCommand = this.getFocusedTileCommand();
+      if (focusedCommand) {
+        event.preventDefault();
+        this.activateCommandWithEnter(focusedCommand, { restoreListFocus: true });
+      }
+    }
+  }
+
+  activateCommandWithEnter(command, { restoreListFocus = false } = {}) {
+    const result = this.controller.activateCommandWithEnter(command);
+    if (result.action === 'apply' && result.selection) {
+      this.callbacks.onApply?.(result.selection);
+      return;
+    }
+    if (result.action === 'preview') {
+      this.render();
+      if (restoreListFocus) {
+        this.list?.focusCommand(command);
+      }
+    }
+  }
+
+  getFocusedTileCommand() {
+    const activeElement = this.documentObj?.activeElement;
+    const tile = activeElement?.closest?.('[data-role="method-picker-tile"]');
+    if (!tile || !this.root?.contains?.(tile)) {
+      return '';
+    }
+    return tile.getAttribute('data-command') || '';
   }
 
   wrapFocusWithinDialog(event) {

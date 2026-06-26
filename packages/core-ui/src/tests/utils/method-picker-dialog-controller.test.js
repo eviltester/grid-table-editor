@@ -105,6 +105,32 @@ describe('method picker dialog controller', () => {
     expect(written).toEqual([['commerce.price', 'helpers.arrayElement']]);
   });
 
+  test('previews a mismatched Enter command before applying the matching command', () => {
+    const written = [];
+    const controller = new MethodPickerDialogController({
+      props: {
+        options: OPTIONS,
+        currentCommand: 'location.city',
+        recentEntries: ['helpers.arrayElement'],
+      },
+      services: {
+        recentStore: {
+          write: (entries) => written.push(entries),
+        },
+      },
+    });
+
+    expect(controller.activateCommandWithEnter('commerce.price')).toEqual({ action: 'preview', selection: null });
+    expect(controller.getState().selectedCommand).toBe('commerce.price');
+    expect(written).toEqual([]);
+
+    expect(controller.activateCommandWithEnter('commerce.price')).toEqual({
+      action: 'apply',
+      selection: { sourceType: 'domain', command: 'commerce.price' },
+    });
+    expect(written).toEqual([['commerce.price', 'helpers.arrayElement']]);
+  });
+
   test('ignores invalid and empty selections without clearing the current selection', () => {
     const controller = new MethodPickerDialogController({
       props: {

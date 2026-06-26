@@ -164,6 +164,32 @@ test.describe('Generator Schema Editing', () => {
     expectNoPageErrors(pageErrors);
   });
 
+  test('method picker applies a focused selected command tile with Enter', async ({ page }) => {
+    const { generatorPage, pageErrors } = await openGenerator(page);
+
+    await generatorPage.schema.setTextMode(false);
+    await generatorPage.schema.setRowSourceType(0, 'domain');
+    await generatorPage.schema.editor.dismissOpenHelpTooltips();
+    await generatorPage.schema.row(0).locator('[data-action="pick-command"]').click();
+    await generatorPage.schema.editor.methodPicker.expectOpen();
+
+    const picker = generatorPage.schema.editor.methodPicker;
+    await picker.searchInput.fill('internet.httpMethod');
+    const targetTile = picker.overlay.locator('[data-role="method-picker-tile"]', {
+      hasText: 'internet.httpMethod',
+    });
+    await expect(targetTile).toBeVisible();
+    await targetTile.click();
+    await expect(targetTile).toBeFocused();
+
+    await page.keyboard.press('Enter');
+
+    await expect(picker.overlay).toHaveCount(0);
+    await expect(generatorPage.schema.row(0).locator('[data-action="pick-command"]')).toHaveText('internet.httpMethod');
+
+    expectNoPageErrors(pageErrors);
+  });
+
   test('method picker active filter tabs meet light theme text contrast', async ({ page }) => {
     const { generatorPage, pageErrors } = await openGenerator(page);
 

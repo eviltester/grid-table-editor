@@ -88,6 +88,18 @@ class MethodPickerDialogController {
     }
   }
 
+  activateCommandWithEnter(command) {
+    const selected = String(command || '').trim();
+    if (!this.state.options.some((option) => option.command === selected)) {
+      return { action: 'none', selection: null };
+    }
+    if (this.state.selectedCommand !== selected) {
+      this.state.selectedCommand = selected;
+      return { action: 'preview', selection: null };
+    }
+    return { action: 'apply', selection: this.applySelection() };
+  }
+
   getSelectedOption() {
     return this.state.options.find((option) => option.command === this.state.selectedCommand) || null;
   }

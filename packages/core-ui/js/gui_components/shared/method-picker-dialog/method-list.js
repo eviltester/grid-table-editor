@@ -17,6 +17,9 @@ function createMethodList({ root, props = {}, callbacks = {} } = {}) {
     getState() {
       return controller.getState();
     },
+    focusCommand(command) {
+      view.focusCommand(command);
+    },
   };
 }
 

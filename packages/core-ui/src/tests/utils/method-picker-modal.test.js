@@ -95,7 +95,7 @@ describe('method picker modal', () => {
     expect(result).toBeNull();
   });
 
-  test('focuses search with slash and selects the first filtered method with enter', async () => {
+  test('focuses search with slash and previews then applies the first filtered method with enter', async () => {
     const promise = openMethodPickerModal({
       documentObj: document,
       windowObj: window,
@@ -103,7 +103,7 @@ describe('method picker modal', () => {
         {
           sourceType: 'domain',
           command: 'commerce.price',
-          helpModel: { summary: 'Generate prices', params: [], example: '' },
+          helpModel: { summary: 'Generate values with prices', params: [], example: '' },
         },
         {
           sourceType: 'domain',
@@ -111,7 +111,7 @@ describe('method picker modal', () => {
           helpModel: { summary: 'Generate city values', params: [], example: '' },
         },
       ],
-      currentCommand: '',
+      currentCommand: 'location.city',
     });
 
     getSearchInput().blur();
@@ -119,16 +119,41 @@ describe('method picker modal', () => {
     expect(document.activeElement).toBe(getSearchInput());
 
     const search = getSearchInput();
-    search.value = 'city';
+    search.value = 'Generate';
     search.dispatchEvent(new window.Event('input', { bubbles: true }));
     search.dispatchEvent(new window.KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
 
     expect(getOverlay().querySelector('[data-role="method-picker-tile"].is-selected').textContent).toContain(
-      'location.city'
+      'commerce.price'
     );
+    expect(getDetail().textContent).toContain('Generate values with prices');
+    expect(getOverlay()).not.toBeNull();
 
-    getOverlay().querySelector('[data-role="method-picker-apply-button"]').click();
-    await expect(promise).resolves.toEqual({ sourceType: 'domain', command: 'location.city' });
+    getSearchInput().dispatchEvent(new window.KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+    await expect(promise).resolves.toEqual({ sourceType: 'domain', command: 'commerce.price' });
+    expect(getOverlay()).toBeNull();
+  });
+
+  test('applies the focused selected method tile with enter', async () => {
+    const promise = openMethodPickerModal({
+      documentObj: document,
+      windowObj: window,
+      options: [
+        {
+          sourceType: 'domain',
+          command: 'internet.httpMethod',
+          helpModel: { summary: 'Generate HTTP methods', params: [], example: '' },
+        },
+      ],
+      currentCommand: 'internet.httpMethod',
+    });
+
+    const tile = getOverlay().querySelector('[data-role="method-picker-tile"]');
+    tile.focus();
+    tile.dispatchEvent(new window.KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }));
+
+    await expect(promise).resolves.toEqual({ sourceType: 'domain', command: 'internet.httpMethod' });
+    expect(getOverlay()).toBeNull();
   });
 
   test('cancels on backdrop click and removes the overlay', async () => {

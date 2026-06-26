@@ -113,8 +113,13 @@ class MethodListView {
     }
     const command = this.pendingFocusCommand;
     this.pendingFocusCommand = '';
+    this.focusCommand(command);
+  }
+
+  focusCommand(command) {
+    const selectedCommand = String(command || '');
     const tile = Array.from(this.root.querySelectorAll('[data-role="method-picker-tile"]')).find(
-      (element) => element.getAttribute('data-command') === command
+      (element) => element.getAttribute('data-command') === selectedCommand
     );
     tile?.focus?.();
   }

@@ -25,6 +25,15 @@ describe('Hybrid Faker Command Runner', () => {
     expect(['red', 'green', 'blue']).toContain(result.data);
   });
 
+  test('should accept helpers.uniqueArray with a faker function source', () => {
+    const result = runFakerCommand('helpers.uniqueArray', '(faker.word.sample, 3)', faker);
+
+    expect(result.isError).toBe(false);
+    expect(Array.isArray(result.data)).toBe(true);
+    expect(result.data).toHaveLength(3);
+    expect(result.data.every((value) => typeof value === 'string')).toBe(true);
+  });
+
   test('should report malformed array helper params with an array example', () => {
     const result = runFakerCommand('helpers.arrayElement', '(["red", "green")', faker);
 

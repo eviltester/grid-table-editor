@@ -2,15 +2,13 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { mergeConfig } from 'vite';
 import { resolveBuildVersion } from '../packages/core-ui/js/build-metadata/build-metadata.js';
+import { resolveSiteConfigModulePath } from '../packages/core-ui/js/site/site-config-module-path.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const defaultSiteConfigModulePath = path.resolve(__dirname, '../packages/core-ui/js/site/site-config.production.js');
 
 function resolveStorybookSiteConfigModulePath(env = process.env) {
-  return env.ANYWAYDATA_SITE_CONFIG_OVERRIDE_PATH
-    ? path.resolve(env.ANYWAYDATA_SITE_CONFIG_OVERRIDE_PATH)
-    : defaultSiteConfigModulePath;
+  return resolveSiteConfigModulePath(env);
 }
 
 function resolveStorybookBuildVersion(env = process.env, date = new Date()) {

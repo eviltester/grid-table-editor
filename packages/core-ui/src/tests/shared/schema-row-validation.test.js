@@ -27,6 +27,7 @@ describe('schema-row-validation', () => {
       expect.objectContaining({
         code: 'compiler_validation_error',
         field: 'params',
+        severity: 'error',
         message: expect.stringContaining('Row 1: invalid domain params -'),
       }),
     ]);
@@ -105,6 +106,33 @@ describe('schema-row-validation', () => {
         code: 'compiler_validation_error',
         field: 'params',
         message: 'Row 1: invalid faker params - Invalid Faker API Call helpers.rangeToNumber range object requires max',
+      }),
+    ]);
+  });
+
+  test('marks unsafe faker semantic validation as warning metadata', () => {
+    const issues = getSchemaRowSemanticValidationIssues(
+      {
+        name: 'Choice',
+        sourceType: 'faker',
+        command: 'helpers.fake',
+        params: '(faker.person.firstName())',
+      },
+      0,
+      {
+        schemaTextToDataRules,
+        faker,
+        RandExp,
+      }
+    );
+
+    expect(issues).toEqual([
+      expect.objectContaining({
+        code: 'compiler_validation_error',
+        reasonCode: 'unsafe_faker_rule',
+        field: 'params',
+        severity: 'warning',
+        message: expect.stringContaining('Unsafe faker rule syntax detected'),
       }),
     ]);
   });

@@ -86,7 +86,10 @@ describe('schema-row-rule-mapper', () => {
   });
 
   test('buildRuleSpecFromSchemaRow handles regex rows with an explicit wrapper', () => {
-    expect(buildRuleSpecFromSchemaRow({ sourceType: 'regex', value: '[A-Z]{3}' })).toBe('regex([A-Z]{3})');
+    const canonicalRuleSpec = buildRuleSpecFromSchemaRow({ sourceType: 'regex', value: '[A-Z]{3}' });
+
+    expect(canonicalRuleSpec).toBe('regex([A-Z]{3})');
+    expect(extractRegexValueFromRuleSpec(canonicalRuleSpec)).toBe('[A-Z]{3}');
     expect(buildRuleSpecFromSchemaRow({ sourceType: 'regex', name: 'Code', value: '   ' })).toBe('');
     expect(buildRuleSpecFromSchemaRow({ sourceType: 'regex', value: 'regex("[A-Z]{3}")' })).toBe('regex("[A-Z]{3}")');
   });

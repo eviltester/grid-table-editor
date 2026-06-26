@@ -114,22 +114,33 @@ function buildSchemaParamsHint(params) {
   return `(${params.map((param) => param.name).join(', ')})`;
 }
 
-function getPrimaryUsageExample(model = {}) {
+function getPrimaryUsageExampleModel(model = {}) {
   const usageExamples = Array.isArray(model?.usageExamples) ? model.usageExamples : [];
   const firstUsageExample = usageExamples.find(
     (usageExample) => typeof usageExample?.functionCall === 'string' && usageExample.functionCall.trim().length > 0
   );
   if (firstUsageExample) {
-    return firstUsageExample.functionCall.trim();
+    return {
+      functionCall: firstUsageExample.functionCall.trim(),
+      description: String(firstUsageExample.description || '').trim(),
+    };
   }
   const example = String(model?.example || '').trim();
-  return example;
+  return example ? { functionCall: example, description: '' } : null;
 }
 
-function getUsageExampleCalls(model = {}) {
+function getUsageExampleModels(model = {}) {
   return (Array.isArray(model?.usageExamples) ? model.usageExamples : [])
-    .map((usageExample) => String(usageExample?.functionCall || '').trim())
-    .filter(Boolean);
+    .map((usageExample) => ({
+      functionCall: String(usageExample?.functionCall || '').trim(),
+      description: String(usageExample?.description || '').trim(),
+    }))
+    .filter((usageExample) => usageExample.functionCall);
+}
+
+function renderUsageExampleHtml(usageExample) {
+  const descriptionHtml = usageExample.description ? ` - ${escapeHtml(usageExample.description)}` : '';
+  return `<code>${escapeHtml(usageExample.functionCall)}</code>${descriptionHtml}`;
 }
 
 function renderSchemaHelpHtml(model) {
@@ -164,18 +175,18 @@ function renderSchemaHelpHtml(model) {
     sections.push(`<p><strong>Params:</strong></p><ul>${paramItems}</ul>`);
   }
 
-  const usageExampleCalls = getUsageExampleCalls(model);
-  if (model.showUsageExampleList && usageExampleCalls.length > 1) {
-    const exampleItems = usageExampleCalls
-      .map((functionCall) => `<li><code>${escapeHtml(functionCall)}</code></li>`)
+  const usageExampleModels = getUsageExampleModels(model);
+  if (model.showUsageExampleList && usageExampleModels.length > 1) {
+    const exampleItems = usageExampleModels
+      .map((usageExample) => `<li>${renderUsageExampleHtml(usageExample)}</li>`)
       .join('');
     sections.push(`<p><strong>Examples:</strong></p><ul>${exampleItems}</ul>`);
-  } else if (usageExampleCalls.length > 0) {
-    sections.push(`<p><strong>Example:</strong> <code>${escapeHtml(usageExampleCalls[0])}</code></p>`);
+  } else if (usageExampleModels.length > 0) {
+    sections.push(`<p><strong>Example:</strong> ${renderUsageExampleHtml(usageExampleModels[0])}</p>`);
   } else {
-    const primaryUsageExample = getPrimaryUsageExample(model);
+    const primaryUsageExample = getPrimaryUsageExampleModel(model);
     if (primaryUsageExample) {
-      sections.push(`<p><strong>Example:</strong> <code>${escapeHtml(primaryUsageExample)}</code></p>`);
+      sections.push(`<p><strong>Example:</strong> ${renderUsageExampleHtml(primaryUsageExample)}</p>`);
     } else if (model.kind === 'command') {
       sections.push('<p><strong>Example:</strong> Output depends on your selected params.</p>');
     }

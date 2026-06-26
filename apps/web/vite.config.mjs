@@ -3,15 +3,13 @@ import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { transformStandaloneHtmlWithSiteConfig } from './site-config-html.mjs';
 import { resolveBuildVersion } from '../../packages/core-ui/js/build-metadata/build-metadata.js';
+import { resolveSiteConfigModulePath as resolveSharedSiteConfigModulePath } from '../../packages/core-ui/js/site/site-config-module-path.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const defaultSiteConfigModulePath = path.resolve(__dirname, '../../packages/core-ui/js/site/site-config.production.js');
 
-function resolveSiteConfigModulePath() {
-  return process.env.ANYWAYDATA_SITE_CONFIG_OVERRIDE_PATH
-    ? path.resolve(process.env.ANYWAYDATA_SITE_CONFIG_OVERRIDE_PATH)
-    : defaultSiteConfigModulePath;
+function resolveSiteConfigModulePath(env = process.env) {
+  return resolveSharedSiteConfigModulePath(env);
 }
 
 function resolveWebBuildVersion(env = process.env, date = new Date()) {

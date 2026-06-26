@@ -215,7 +215,7 @@ function createSharedSchemaEditorController({
     })
       .map((issue) => ({
         message: issue?.message,
-        severity: /Unsafe faker rule syntax detected/iu.test(String(issue?.message || '')) ? 'warning' : 'error',
+        severity: issue?.severity === 'warning' ? 'warning' : 'error',
       }))
       .filter((issue) => issue.message);
   };

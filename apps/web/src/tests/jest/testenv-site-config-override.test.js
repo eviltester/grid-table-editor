@@ -1,6 +1,8 @@
 import { readFile, rm } from 'node:fs/promises';
 import path from 'node:path';
 import storybookConfig, { resolveStorybookSiteConfigModulePath } from '../../../../../.storybook/main.js';
+import { resolveSiteConfigModulePath as resolveWebSiteConfigModulePath } from '../../../vite.config.mjs';
+import { DEFAULT_SITE_CONFIG_MODULE_PATH } from '../../../../../packages/core-ui/js/site/site-config-module-path.js';
 import {
   createSiteConfigOverrideBuildEnv,
   createTestEnvSiteConfigInput,
@@ -55,12 +57,12 @@ describe('testenv site-config override generation', () => {
 
     try {
       delete process.env.ANYWAYDATA_SITE_CONFIG_OVERRIDE_PATH;
-      expect(resolveStorybookSiteConfigModulePath()).toBe(
-        path.resolve(process.cwd(), 'packages/core-ui/js/site/site-config.production.js')
-      );
+      expect(resolveStorybookSiteConfigModulePath()).toBe(DEFAULT_SITE_CONFIG_MODULE_PATH);
+      expect(resolveWebSiteConfigModulePath()).toBe(DEFAULT_SITE_CONFIG_MODULE_PATH);
 
       process.env.ANYWAYDATA_SITE_CONFIG_OVERRIDE_PATH = overridePath;
       expect(resolveStorybookSiteConfigModulePath()).toBe(overridePath);
+      expect(resolveWebSiteConfigModulePath()).toBe(overridePath);
 
       const viteConfig = await storybookConfig.viteFinal({});
       expect(viteConfig.resolve.alias['@anywaydata/site-config']).toBe(overridePath);

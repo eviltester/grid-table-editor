@@ -157,6 +157,64 @@ describe('createSharedSchemaEditorController', () => {
     expect(dom.window.document.querySelector('[data-field="params"]').value).toBe('(values=active,inactive,pending)');
   });
 
+  test('applies helpers.arrayElement array params as positional values from the params editor', async () => {
+    const root = createRoot(dom.window.document);
+    const controller = createSharedSchemaEditorController({
+      documentObj: dom.window.document,
+      rootElement: root,
+      createBlankRow: () => ({
+        id: 'row-1',
+        name: 'Tier',
+        sourceType: 'faker',
+        command: 'helpers.arrayElement',
+        value: '',
+        params: '',
+        semanticValidationIssues: [],
+      }),
+      mapRuleToRow: () => ({
+        id: 'row-1',
+        name: 'Tier',
+        sourceType: 'faker',
+        command: 'helpers.arrayElement',
+        value: '',
+        params: '',
+        semanticValidationIssues: [],
+      }),
+      schemaTextToDataRules: jest.fn(() => ({ dataRules: [], errors: [] })),
+      dataRulesToSchemaText: jest.fn(() => ''),
+      getMethodPickerOptions: () => [
+        {
+          sourceType: 'faker',
+          command: 'helpers.arrayElement',
+          helpModel: {
+            heading: 'helpers.arrayElement',
+            summary: 'Returns one random element from the supplied array.',
+            params: [{ name: 'array', type: 'array', optional: false, positionalOnly: true }],
+          },
+        },
+      ],
+      getVisibleDomainCommands: () => ['datatype.enum'],
+      validateSchemaRows: jest.fn((rows) => ({ rows, errors: [] })),
+      updatePairwiseButtonVisibility: jest.fn(),
+      updateHelpHints: jest.fn(),
+    });
+
+    controller.init();
+    const paramsButton = dom.window.document.querySelector('[data-action="edit-params"]');
+    const dialogPromise = controller.handleClick({ target: paramsButton });
+
+    const dialog = within(dom.window.document.body).getByRole('dialog', {
+      name: /edit params for helpers\.arrayelement/i,
+    });
+    const paramsInput = within(dialog).getByRole('textbox', { name: /array value/i });
+    paramsInput.value = '["free","pro","enterprise"]';
+    fireEvent.input(paramsInput);
+    fireEvent.click(within(dialog).getByRole('button', { name: /^apply$/i }));
+
+    await dialogPromise;
+    expect(dom.window.document.querySelector('[data-field="params"]').value).toBe('(["free","pro","enterprise"])');
+  });
+
   test('logs unexpected params editor failures instead of silently swallowing them', async () => {
     const root = createRoot(dom.window.document);
     const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});

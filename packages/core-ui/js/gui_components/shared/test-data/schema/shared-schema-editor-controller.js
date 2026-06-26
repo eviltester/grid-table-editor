@@ -213,8 +213,11 @@ function createSharedSchemaEditorController({
       RandExp,
       includeBracketGuidance: false,
     })
-      .map((issue) => issue?.message)
-      .filter(Boolean);
+      .map((issue) => ({
+        message: issue?.message,
+        severity: /Unsafe faker rule syntax detected/iu.test(String(issue?.message || '')) ? 'warning' : 'error',
+      }))
+      .filter((issue) => issue.message);
   };
 
   const revalidateRows = () => {

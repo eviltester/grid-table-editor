@@ -202,6 +202,7 @@ function parseInitialParamEntries({ params = [], initialParams = '' } = {}) {
         type: param?.type || '',
         optional: param?.optional === true,
         variadic: param?.variadic === true,
+        positionalOnly: param?.positionalOnly === true,
         description: param?.description || '',
         example: param?.example || '',
         examples: Array.isArray(param?.examples) ? param.examples : [],
@@ -289,6 +290,7 @@ function parseInitialParamEntries({ params = [], initialParams = '' } = {}) {
         type: param?.type || '',
         optional: param?.optional === true,
         variadic: param?.variadic === true,
+        positionalOnly: param?.positionalOnly === true,
         description: param?.description || '',
         example: param?.example || '',
         examples: Array.isArray(param?.examples) ? param.examples : [],
@@ -340,7 +342,6 @@ function buildParamsTextFromEditorEntries({ entries = [], validateParams = null 
     -1
   );
   const errors = [];
-
   if (lastFilledIndex < 0) {
     const requiredMissing = normalizedEntries.some((entry) => entry?.optional !== true);
     if (requiredMissing) {
@@ -378,16 +379,36 @@ function buildParamsTextFromEditorEntries({ entries = [], validateParams = null 
 
   const paramsText = formattedValues.length > 0 ? `(${formattedValues.join(',')})` : '';
   const validationResult = typeof validateParams === 'function' ? validateParams(paramsText) : [];
-  const semanticErrors = Array.isArray(validationResult)
-    ? validationResult
-    : validationResult
-      ? [String(validationResult)]
-      : [];
+  const semanticIssues = (
+    Array.isArray(validationResult) ? validationResult : validationResult ? [validationResult] : []
+  )
+    .map((issue) => {
+      if (!issue) {
+        return null;
+      }
+      if (typeof issue === 'string') {
+        return { message: issue, severity: 'error' };
+      }
+      const message = String(issue?.message || issue || '').trim();
+      if (!message) {
+        return null;
+      }
+      const severity =
+        String(issue?.severity || issue?.level || 'error').toLowerCase() === 'warning' ? 'warning' : 'error';
+      return { message, severity };
+    })
+    .filter(Boolean);
 
-  return {
+  const semanticErrors = semanticIssues.filter((issue) => issue.severity !== 'warning').map((issue) => issue.message);
+  const semanticWarnings = semanticIssues.filter((issue) => issue.severity === 'warning').map((issue) => issue.message);
+  const result = {
     paramsText,
-    errors: [...errors, ...semanticErrors.filter(Boolean)],
+    errors: [...errors, ...semanticErrors],
   };
+  if (semanticWarnings.length > 0) {
+    result.warnings = semanticWarnings;
+  }
+  return result;
 }
 
 function buildParamValidationRules(entry = {}) {
@@ -723,6 +744,7 @@ function openParamsEditorModal({
           <output id="params-editor-preview" data-role="params-editor-preview" class="params-editor-preview"></output>
         </div>
         <p data-role="params-editor-error" class="params-editor-error" role="status" aria-live="polite"></p>
+        <p data-role="params-editor-validation-warning" class="params-editor-warning" role="status" aria-live="polite"></p>
       </div>
       <footer class="params-editor-footer">
         <button type="button" data-role="params-editor-cancel-button">Cancel</button>
@@ -733,6 +755,7 @@ function openParamsEditorModal({
 
   const previewElement = overlay.querySelector('[data-role="params-editor-preview"]');
   const errorElement = overlay.querySelector('[data-role="params-editor-error"]');
+  const validationWarningElement = overlay.querySelector('[data-role="params-editor-validation-warning"]');
   const applyButton = overlay.querySelector('[data-role="params-editor-apply-button"]');
   const dialogElement = overlay.querySelector('[data-role="params-editor-dialog"]');
   const valueInputs = () => Array.from(overlay.querySelectorAll('[data-role="params-editor-value"]'));
@@ -754,10 +777,17 @@ function openParamsEditorModal({
     errorElement.hidden = resolvedMessage.length === 0;
   }
 
+  function setValidationWarningMessage(message = '') {
+    const resolvedMessage = String(message || '');
+    validationWarningElement.textContent = resolvedMessage;
+    validationWarningElement.hidden = resolvedMessage.length === 0;
+  }
+
   function syncPreview() {
     if (warningVisible) {
       previewElement.textContent = initialParams || '';
       setErrorMessage('');
+      setValidationWarningMessage('');
       applyButton.disabled = true;
       applyButton.setAttribute('aria-disabled', 'true');
       return;
@@ -773,6 +803,7 @@ function openParamsEditorModal({
     });
     previewElement.textContent = result.paramsText || '()';
     setErrorMessage(result.errors[0] || '');
+    setValidationWarningMessage(result.warnings?.[0] || '');
     const hasErrors = result.errors.length > 0;
     applyButton.disabled = hasErrors;
     applyButton.setAttribute('aria-disabled', hasErrors ? 'true' : 'false');

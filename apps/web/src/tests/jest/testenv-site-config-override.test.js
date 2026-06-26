@@ -40,7 +40,11 @@ describe('testenv site-config override generation', () => {
   test('exposes the site-config override env used by testenv app and storybook builds', () => {
     const overridePath = path.join(process.cwd(), 'testenv', '_site-config.override.mjs');
 
-    expect(createSiteConfigOverrideBuildEnv(overridePath)).toEqual({
+    expect(createSiteConfigOverrideBuildEnv(overridePath, { buildVersion: 'v20260519.0102' })).toEqual({
+      ANYWAYDATA_SITE_CONFIG_OVERRIDE_PATH: overridePath,
+      ANYWAYDATA_BUILD_VERSION: 'v20260519.0102',
+    });
+    expect(createSiteConfigOverrideBuildEnv(overridePath, { buildVersion: 'bad' })).toEqual({
       ANYWAYDATA_SITE_CONFIG_OVERRIDE_PATH: overridePath,
     });
   });
@@ -60,6 +64,7 @@ describe('testenv site-config override generation', () => {
 
       const viteConfig = await storybookConfig.viteFinal({});
       expect(viteConfig.resolve.alias['@anywaydata/site-config']).toBe(overridePath);
+      expect(viteConfig.define['globalThis.__ANYWAYDATA_BUILD_VERSION__']).toMatch(/^"v\d{8}\.\d{4}"$/);
     } finally {
       if (originalOverridePath === undefined) {
         delete process.env.ANYWAYDATA_SITE_CONFIG_OVERRIDE_PATH;

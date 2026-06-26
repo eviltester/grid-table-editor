@@ -1,6 +1,9 @@
 import { JSDOM } from 'jsdom';
 import { createInstructionsComponent } from '../../../js/gui_components/shared/instructions/index.js';
-import { APP_PAGE_INSTRUCTIONS_PROPS } from '../../../js/gui_components/shared/instructions/app-page-instructions.js';
+import {
+  APP_PAGE_INSTRUCTIONS_PROPS,
+  createAppPageInstructionsProps,
+} from '../../../js/gui_components/shared/instructions/app-page-instructions.js';
 import { GENERATOR_PAGE_INSTRUCTIONS_PROPS } from '../../../js/gui_components/shared/instructions/generator-page-instructions.js';
 import * as instructionsExports from '../../../js/gui_components/shared/instructions/index.js';
 import { jest } from '@jest/globals';
@@ -41,6 +44,8 @@ describe('instructions view', () => {
     expect(root.textContent).toContain('Instructions');
     expect(root.textContent).toContain('Copy Instructions To Grid');
     expect(root.textContent).toContain('Alan Richardson');
+    expect(root.textContent).not.toContain('v20260519.001');
+    expect(root.textContent).toMatch(/v\d{8}\.\d{4}\s+Built by/);
     const actionButton = root.querySelector(
       '[data-role="instructions-action-button"][data-action-id="copy-instructions-to-grid"]'
     );
@@ -49,6 +54,19 @@ describe('instructions view', () => {
     expect(actionButton.getAttribute('title')).toBe('Copy Instructions To Grid');
     expect(root.querySelectorAll('.instruction-item-icon svg.instruction-action-icon')).toHaveLength(5);
     expect(root.querySelector('.instruction-item-icon[title="Rename column"]')).not.toBeNull();
+  });
+
+  test('renders injected app instructions build metadata in the attribution text', () => {
+    const root = document.getElementById('root');
+    createInstructionsComponent({
+      root,
+      props: createAppPageInstructionsProps({
+        buildMetadata: { version: 'v20260519.0102' },
+      }),
+    });
+
+    expect(root.textContent).toContain('v20260519.0102 Built by');
+    expect(root.textContent).not.toContain('v20260519.001');
   });
 
   test('renders the generator instructions variant without the app-only action button', () => {

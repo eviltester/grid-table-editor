@@ -50,6 +50,27 @@ test('generateFromTextSpec rejects helpers.rangeToNumber range object without ma
   );
 });
 
+test('generateFromTextSpec rejects malformed helpers.arrayElement params with array guidance', () => {
+  const result = generateFromTextSpec({
+    textSpec: 'Choice\nhelpers.arrayElement(["A", "B")',
+    rowCount: 3,
+    outputFormat: 'json',
+  });
+
+  expect(result.ok).toBe(false);
+  expect(result.rows).toBeUndefined();
+  expect(result.rendered).toBeUndefined();
+  expect(result.errors).toContainEqual(
+    expect.objectContaining({
+      code: 'compiler_validation_error',
+      column: 'Choice',
+      message: expect.stringContaining(
+        'helpers.arrayElement requires an array argument, e.g. helpers.arrayElement(["A", "B", "C"]).'
+      ),
+    })
+  );
+});
+
 test('generateFromTextSpec generates rows for valid spec', () => {
   const result = generateFromTextSpec({ textSpec: 'Name\nBob', rowCount: 2, outputFormat: 'json' });
   expect(result.ok).toBe(true);

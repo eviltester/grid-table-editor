@@ -109,6 +109,32 @@ describe('schema-row-validation', () => {
     ]);
   });
 
+  test('reports malformed helpers.arrayElement params with array guidance', () => {
+    const issues = getSchemaRowSemanticValidationIssues(
+      {
+        name: 'Choice',
+        sourceType: 'faker',
+        command: 'helpers.arrayElement',
+        params: '(["A", "B")',
+      },
+      0,
+      {
+        schemaTextToDataRules,
+        faker,
+        RandExp,
+      }
+    );
+
+    expect(issues).toEqual([
+      expect.objectContaining({
+        code: 'compiler_validation_error',
+        field: 'params',
+        message:
+          'Row 1: invalid faker params - Invalid Faker API Call helpers.arrayElement requires an array argument, e.g. helpers.arrayElement(["A", "B", "C"]).',
+      }),
+    ]);
+  });
+
   test('merges precomputed semantic issues into row validation state', () => {
     const issues = getSchemaRowValidationIssues(
       {

@@ -1,6 +1,7 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
 import { fireEvent, within } from '@testing-library/dom';
+import { dataRulesToSchemaText } from '@anywaydata/core/data_generation/schema-rules-adapter.js';
 import * as schemaControllerExports from '../../../js/gui_components/shared/test-data/schema/schema-controller.js';
 import * as schemaEditorCoreExports from '../../../js/gui_components/shared/test-data/schema/schema-editor-core.js';
 import { createSharedSchemaEditorController } from '../../../js/gui_components/shared/test-data/schema/shared-schema-editor-controller.js';
@@ -365,5 +366,56 @@ describe('createSharedSchemaEditorController', () => {
     );
     expect(result.errors).toEqual([{ code: 'missing_rule_definition', message: 'Missing generator definition' }]);
     expect(onSchemaTextChanged).toHaveBeenLastCalledWith('OnlyName');
+  });
+
+  test('refreshes open text mode to the interpreted regex schema when requested', () => {
+    const root = createRoot(dom.window.document);
+    const onSchemaTextChanged = jest.fn();
+    const schemaTextToDataRules = jest.fn(() => ({
+      dataRules: [{ name: 'Mystery', ruleSpec: 'unknown()', type: 'regex' }],
+      errors: [],
+      schemaTokens: [{ kind: 'rule' }],
+      constraints: [],
+    }));
+
+    const controller = createSharedSchemaEditorController({
+      documentObj: dom.window.document,
+      rootElement: root,
+      createBlankRow: () => ({
+        id: 'row-1',
+        name: '',
+        sourceType: 'regex',
+        command: '',
+        value: '',
+        params: '',
+        semanticValidationIssues: [],
+      }),
+      mapRuleToRow: (rule) => ({
+        id: 'row-1',
+        name: rule.name,
+        sourceType: rule.type,
+        command: '',
+        value: rule.ruleSpec,
+        params: '',
+        semanticValidationIssues: [],
+      }),
+      schemaTextToDataRules,
+      dataRulesToSchemaText,
+      onSchemaTextChanged,
+      validateSchemaRows: jest.fn((rows) => ({ rows, errors: [] })),
+      updatePairwiseButtonVisibility: jest.fn(),
+      updateHelpHints: jest.fn(),
+    });
+
+    controller.init();
+    controller.setTextMode(true);
+    const textArea = root.querySelector('[data-role="schema-textbox"]');
+    textArea.value = 'Mystery\nunknown()';
+
+    const result = controller.syncFromText({ showErrors: true, force: true, refreshTextFromRows: true });
+
+    expect(result.errors).toEqual([]);
+    expect(textArea.value).toBe('Mystery\nregex(unknown())');
+    expect(onSchemaTextChanged).toHaveBeenLastCalledWith('Mystery\nregex(unknown())');
   });
 });

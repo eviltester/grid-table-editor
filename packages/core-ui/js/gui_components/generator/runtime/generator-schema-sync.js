@@ -12,7 +12,10 @@ function syncGeneratorSchemaRowsFromTextMode({
   const isTextMode = state?.isTextMode === true;
 
   if (isTextMode) {
-    const parsed = schemaDefinition?.syncFromText?.({ showErrors, force: true }) || { rows: [], errors: [] };
+    const parsed = schemaDefinition?.syncFromText?.({ showErrors, force: true, refreshTextFromRows: true }) || {
+      rows: [],
+      errors: [],
+    };
     if (parsed.errors.length > 0) {
       if (showErrors) {
         surfaceSchemaError?.(formatSchemaErrors?.(parsed.errors) || '');

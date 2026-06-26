@@ -80,7 +80,11 @@ function createDataPopulationPanelComponent({ root, props = {}, services = {}, c
       if (syncFromText) {
         const isTextMode = view.getSchemaDefinition()?.getState?.()?.isTextMode === true;
         if (isTextMode) {
-          const parsed = view.getSchemaDefinition()?.syncFromText?.({ showErrors: true, force: true }) || {
+          const parsed = view.getSchemaDefinition()?.syncFromText?.({
+            showErrors: true,
+            force: true,
+            refreshTextFromRows: true,
+          }) || {
             rows: [],
             errors: [],
           };

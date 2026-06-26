@@ -299,11 +299,15 @@ function createSharedSchemaEditorController({
     semanticValidationTimers.set(rowId, timerId);
   };
 
-  const syncTextFromRows = () => {
+  const updateTextElementFromRows = () => {
     const textElement = getTextElement();
     if (textElement) {
       textElement.value = composeSchemaText();
     }
+  };
+
+  const syncTextFromRows = () => {
+    updateTextElementFromRows();
     updatePairwiseButtonVisibility();
     onRowsChanged?.(session.getRows());
     emitSchemaTextChanged();
@@ -382,7 +386,7 @@ function createSharedSchemaEditorController({
     return 'all';
   };
 
-  const syncFromText = ({ showErrors = false, force = false } = {}) => {
+  const syncFromText = ({ showErrors = false, force = false, refreshTextFromRows = false } = {}) => {
     if (!force && !session.getTextMode()) {
       return { rows: session.getRows(), errors: [], tokens: session.getTokens() };
     }
@@ -435,6 +439,9 @@ function createSharedSchemaEditorController({
     updateModeView();
     revalidateRows();
     applySemanticValidationForAllRows();
+    if (refreshTextFromRows && session.getTextMode()) {
+      updateTextElementFromRows();
+    }
     emitSchemaTextChanged();
     return { rows: session.getRows(), errors: [], tokens: session.getTokens() };
   };

@@ -346,6 +346,7 @@ describe('generator page runtime text mode flows', () => {
     await page.generateDataFile();
 
     expect(alertFn).not.toHaveBeenCalled();
+    expect(textArea.value).toBe('City\nregex(London)');
     expect(FakeDownload.lastDownload).toEqual({
       filename: 'generated-data.csv',
       text: 'csv:async:2',

@@ -77,10 +77,12 @@ Use a regex when the value should match a pattern.
 
 ```text
 Ticket Id
-[A-Z]{3}-\d{4}
+regex([A-Z]{3}-\d{4})
 ```
 
 This generates values such as `ABC-1234`.
+
+Raw regex patterns are still accepted for quick entry. For example, if you enter `[A-Z]{3}` or method-like text that is not a known domain or Faker method, the editor interprets it as a regex rule. When schema text is refreshed after previewing or generating data, regex rules are shown in explicit `regex(...)` form so the interpreted schema is visible.
 
 ### Domain and Faker-style methods
 
@@ -366,7 +368,7 @@ This is invalid because `bob` does not match the regex:
 
 ```text
 Ticket Id
-[A-Z]{3}-\d{4}
+regex([A-Z]{3}-\d{4})
 
 IF [Ticket Id] = "bob" THEN [Status] = "Open";
 ```
@@ -502,7 +504,7 @@ Illustrates:
 
 ```text
 Ticket Id
-[A-Z]{3}-\d{4}
+regex([A-Z]{3}-\d{4})
 Queue
 enum("Support","QA","Ops")
 

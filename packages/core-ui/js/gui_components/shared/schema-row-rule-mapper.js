@@ -89,7 +89,7 @@ function buildRuleSpecFromSchemaRow(row) {
     if (/^(regex|datatype\.regex|awd\.datatype\.regex)\s*\(/i.test(trimmedRegexValue)) {
       return trimmedRegexValue;
     }
-    return regexValue;
+    return `regex(${regexValue})`;
   }
   if (sourceType === SOURCE_TYPE_ENUM) {
     return EnumParser.buildSchemaRuleSpecFromInput(row?.value);

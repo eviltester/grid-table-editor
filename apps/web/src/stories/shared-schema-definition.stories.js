@@ -472,7 +472,7 @@ export const CommandPicker = {
     await userEvent.clear(searchInput);
     await userEvent.type(searchInput, 'helpers.fake');
 
-    const replacementTile = dialogScope.getByRole('button', { name: /helpers\.fake/i });
+    const replacementTile = dialogScope.getByRole('option', { name: /helpers\.fake/i });
     await userEvent.click(replacementTile);
     await userEvent.click(dialogScope.getByRole('button', { name: /^apply$/i }));
 

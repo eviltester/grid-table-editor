@@ -106,6 +106,48 @@ test.describe('Generator Schema Editing', () => {
     expectNoPageErrors(pageErrors);
   });
 
+  test('method picker uses arrow keys rather than tabbing through the method list', async ({ page }) => {
+    const { generatorPage, pageErrors } = await openGenerator(page);
+
+    await generatorPage.schema.setTextMode(false);
+    await generatorPage.schema.setRowSourceType(0, 'domain');
+    await generatorPage.schema.editor.dismissOpenHelpTooltips();
+    await generatorPage.schema.row(0).locator('[data-action="pick-command"]').click();
+    await generatorPage.schema.editor.methodPicker.expectOpen();
+
+    const tiles = generatorPage.schema.editor.methodPicker.overlay.locator('[data-role="method-picker-tile"]');
+    await expect(tiles.nth(1)).toBeVisible();
+
+    const firstTile = tiles.first();
+    const secondTile = tiles.nth(1);
+    const secondCommand = await secondTile.locator('[data-role="method-picker-command"]').innerText();
+
+    await firstTile.click();
+    await expect(firstTile).toBeFocused();
+    await expect(firstTile).toHaveAttribute('tabindex', '0');
+    await expect(secondTile).toHaveAttribute('tabindex', '-1');
+
+    await page.keyboard.press('ArrowDown');
+    await expect(secondTile).toBeFocused();
+    await expect(secondTile).toHaveAttribute('tabindex', '0');
+    await expect(firstTile).toHaveAttribute('tabindex', '-1');
+    await expect(
+      generatorPage.schema.editor.methodPicker.overlay.locator('[data-role="method-picker-tile"].is-selected')
+    ).toContainText(secondCommand);
+
+    await page.keyboard.press('Tab');
+    await expect(
+      generatorPage.schema.editor.methodPicker.overlay.locator('[data-role="method-picker-tile"]:focus')
+    ).toHaveCount(0);
+
+    await page.keyboard.press('Shift+Tab');
+    await expect(secondTile).toBeFocused();
+
+    await page.keyboard.press('Escape');
+    await expect(generatorPage.schema.editor.methodPicker.overlay).toHaveCount(0);
+    expectNoPageErrors(pageErrors);
+  });
+
   test('invalid domain command text preserves the domain row type in the generator editor', async ({ page }) => {
     const { generatorPage, pageErrors } = await openGenerator(page);
 

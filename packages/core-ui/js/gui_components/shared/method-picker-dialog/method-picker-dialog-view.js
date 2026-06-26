@@ -159,7 +159,7 @@ class MethodPickerDialogView {
     const dialog = this.root?.querySelector?.('[data-role="method-picker-dialog"]');
     const focusable = Array.from(
       dialog?.querySelectorAll?.(
-        'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        'button:not([disabled]):not([tabindex="-1"]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
       ) || []
     ).filter((element) => element.getAttribute('aria-hidden') !== 'true');
     if (focusable.length === 0) {

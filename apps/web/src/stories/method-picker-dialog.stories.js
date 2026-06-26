@@ -325,7 +325,7 @@ export const ListDefault = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await userEvent.click(
-      canvas.getByRole('button', {
+      canvas.getByRole('option', {
         name: 'commerce.price Generates a price between min and max (inclusive). domain',
       })
     );
@@ -368,7 +368,7 @@ export const VisualAlwaysOpen = {
     const canvas = within(canvasElement);
     await expect(canvas.getByRole('dialog', { name: 'Choose Method' })).toBeVisible();
     await expect(
-      canvas.getByRole('button', {
+      canvas.getByRole('option', {
         name: 'helpers.arrayElement Returns one random element from the supplied array. faker',
       })
     ).toHaveClass('is-selected');
@@ -402,7 +402,7 @@ export const ChooseFakerMethod = {
     await userEvent.click(canvas.getByRole('button', { name: 'Open method picker' }));
     const dialog = within(document.body);
     await userEvent.click(
-      dialog.getByRole('button', {
+      dialog.getByRole('option', {
         name: 'helpers.arrayElement Returns one random element from the supplied array. faker',
       })
     );
@@ -431,7 +431,7 @@ export const FilterAndChooseDomainMethod = {
     const dialog = within(document.body);
     await userEvent.type(dialog.getByRole('searchbox', { name: 'Filter methods' }), 'commerce');
     await userEvent.click(
-      dialog.getByRole('button', { name: 'commerce.price Generates a price between min and max (inclusive). domain' })
+      dialog.getByRole('option', { name: 'commerce.price Generates a price between min and max (inclusive). domain' })
     );
     await userEvent.click(dialog.getByRole('button', { name: 'Apply' }));
     await expect(canvas.getByText('domain:commerce.price')).toBeVisible();

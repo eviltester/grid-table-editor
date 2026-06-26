@@ -83,6 +83,53 @@ describe('method picker dialog subcomponents', () => {
     expect(root.children).toHaveLength(0);
   });
 
+  test('list uses roving tabindex and arrow keys for method navigation', () => {
+    let component;
+    let selectedCommand = 'location.city';
+    const options = [
+      { sourceType: 'domain', command: 'location.city', helpModel: { summary: 'City' } },
+      { sourceType: 'domain', command: 'location.country', helpModel: { summary: 'Country' } },
+      { sourceType: 'faker', command: 'helpers.arrayElement', helpModel: { summary: 'Pick' } },
+    ];
+    const selectCommand = (command) => {
+      selectedCommand = command;
+      component.update({ options, selectedCommand });
+    };
+
+    component = createMethodList({
+      root,
+      props: { options, selectedCommand },
+      callbacks: { onSelectCommand: selectCommand },
+    });
+
+    const cityTile = root.querySelector('[data-command="location.city"]');
+    const countryTile = root.querySelector('[data-command="location.country"]');
+    const arrayTile = root.querySelector('[data-command="helpers.arrayElement"]');
+    expect(cityTile.tabIndex).toBe(0);
+    expect(countryTile.tabIndex).toBe(-1);
+    expect(arrayTile.tabIndex).toBe(-1);
+
+    cityTile.focus();
+    cityTile.dispatchEvent(new dom.window.KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+
+    const selectedCountryTile = root.querySelector('[data-command="location.country"]');
+    expect(selectedCommand).toBe('location.country');
+    expect(selectedCountryTile.tabIndex).toBe(0);
+    expect(selectedCountryTile.getAttribute('aria-selected')).toBe('true');
+    expect(dom.window.document.activeElement).toBe(selectedCountryTile);
+    expect(root.querySelector('[data-command="location.city"]').tabIndex).toBe(-1);
+
+    selectedCountryTile.dispatchEvent(new dom.window.KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true }));
+    expect(selectedCommand).toBe('location.city');
+    expect(dom.window.document.activeElement).toBe(root.querySelector('[data-command="location.city"]'));
+
+    root
+      .querySelector('[data-command="location.city"]')
+      .dispatchEvent(new dom.window.KeyboardEvent('keydown', { key: 'End', bubbles: true }));
+    expect(selectedCommand).toBe('helpers.arrayElement');
+    expect(dom.window.document.activeElement).toBe(root.querySelector('[data-command="helpers.arrayElement"]'));
+  });
+
   test('help display renders params, usage examples, return values, and docs links', () => {
     const component = createMethodHelpDisplay({
       root,

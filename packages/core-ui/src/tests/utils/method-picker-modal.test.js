@@ -184,6 +184,32 @@ describe('method picker modal', () => {
     await promise;
   });
 
+  test('keeps only the active method tile in the tab sequence', async () => {
+    const promise = openMethodPickerModal({
+      documentObj: document,
+      windowObj: window,
+      options: [
+        { sourceType: 'domain', command: 'number.int', helpModel: { summary: '', params: [], example: '' } },
+        { sourceType: 'domain', command: 'location.city', helpModel: { summary: '', params: [], example: '' } },
+        { sourceType: 'faker', command: 'helpers.arrayElement', helpModel: { summary: '', params: [], example: '' } },
+      ],
+      currentCommand: 'number.int',
+    });
+
+    const tiles = Array.from(getOverlay().querySelectorAll('[data-role="method-picker-tile"]'));
+    expect(tiles.map((tile) => tile.tabIndex)).toEqual([0, -1, -1]);
+
+    tiles[0].focus();
+    tiles[0].dispatchEvent(new window.KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+
+    const updatedTiles = Array.from(getOverlay().querySelectorAll('[data-role="method-picker-tile"]'));
+    expect(updatedTiles.map((tile) => tile.tabIndex)).toEqual([-1, 0, -1]);
+    expect(document.activeElement).toBe(updatedTiles[1]);
+
+    getOverlay().querySelector('[data-role="method-picker-cancel-button"]').click();
+    await promise;
+  });
+
   test('renders component-owned rooted hooks for overlay, tabs, list, detail, and tiles', async () => {
     const promise = openMethodPickerModal({
       documentObj: document,

@@ -163,7 +163,8 @@ test.describe('Generator Schema Editing', () => {
     await expect(
       generatorPage.page
         .locator('.tippy-content')
-        .filter({ hasText: 'Faker commands generate realistic random values' })
+        .filter({ hasText: 'Faker helper commands allow use of more complex generation than the domain commands' })
+        .filter({ hasText: 'helpers.rangeToNumber({ min: 1, max: 10 })' })
     ).toBeVisible();
 
     await generatorPage.schema.setRowSourceType(0, 'literal');

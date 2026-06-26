@@ -1,6 +1,8 @@
 import { readFile, rm } from 'node:fs/promises';
 import path from 'node:path';
+import storybookConfig, { resolveStorybookSiteConfigModulePath } from '../../../../../.storybook/main.js';
 import {
+  createSiteConfigOverrideBuildEnv,
   createTestEnvSiteConfigInput,
   writeGeneratedTestEnvSiteConfigOverride,
 } from '../../../../../scripts/create-testenv.mjs';
@@ -32,6 +34,38 @@ describe('testenv site-config override generation', () => {
       expect(source).toContain('https://eviltester.github.io/grid-table-editor/site/docs');
     } finally {
       await rm(overridePath, { force: true });
+    }
+  });
+
+  test('exposes the site-config override env used by testenv app and storybook builds', () => {
+    const overridePath = path.join(process.cwd(), 'testenv', '_site-config.override.mjs');
+
+    expect(createSiteConfigOverrideBuildEnv(overridePath)).toEqual({
+      ANYWAYDATA_SITE_CONFIG_OVERRIDE_PATH: overridePath,
+    });
+  });
+
+  test('storybook resolves the same site-config override alias as the main app build', async () => {
+    const originalOverridePath = process.env.ANYWAYDATA_SITE_CONFIG_OVERRIDE_PATH;
+    const overridePath = path.join(process.cwd(), 'testenv', '_site-config.override.mjs');
+
+    try {
+      delete process.env.ANYWAYDATA_SITE_CONFIG_OVERRIDE_PATH;
+      expect(resolveStorybookSiteConfigModulePath()).toBe(
+        path.resolve(process.cwd(), 'packages/core-ui/js/site/site-config.production.js')
+      );
+
+      process.env.ANYWAYDATA_SITE_CONFIG_OVERRIDE_PATH = overridePath;
+      expect(resolveStorybookSiteConfigModulePath()).toBe(overridePath);
+
+      const viteConfig = await storybookConfig.viteFinal({});
+      expect(viteConfig.resolve.alias['@anywaydata/site-config']).toBe(overridePath);
+    } finally {
+      if (originalOverridePath === undefined) {
+        delete process.env.ANYWAYDATA_SITE_CONFIG_OVERRIDE_PATH;
+      } else {
+        process.env.ANYWAYDATA_SITE_CONFIG_OVERRIDE_PATH = originalOverridePath;
+      }
     }
   });
 });

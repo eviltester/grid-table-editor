@@ -568,7 +568,10 @@ function resolveRepositoryName() {
     ?.trim();
 }
 
-function createTestEnvSiteConfigInput({ repositoryName = resolveRepositoryName(), pagesHostOrigin = 'https://eviltester.github.io' } = {}) {
+function createTestEnvSiteConfigInput({
+  repositoryName = resolveRepositoryName(),
+  pagesHostOrigin = 'https://eviltester.github.io',
+} = {}) {
   const repoBasePath = repositoryName ? `/${repositoryName}` : '';
   const rootedPageHref = (fileName) => (repositoryName ? `${repoBasePath}/${fileName}` : `/${fileName}`);
   const rootedSiteBase = repositoryName ? `${repoBasePath}/site` : '/site';
@@ -598,6 +601,12 @@ async function writeGeneratedTestEnvSiteConfigOverride(filePath, options = {}) {
   await writeFile(filePath, source, 'utf8');
 }
 
+function createSiteConfigOverrideBuildEnv(filePath = tempSiteConfigOverridePath) {
+  return {
+    ANYWAYDATA_SITE_CONFIG_OVERRIDE_PATH: filePath,
+  };
+}
+
 async function main() {
   await clearDirectoryContents(outputDir);
 
@@ -619,15 +628,15 @@ async function main() {
         tempWebDir,
       ],
       {
-        env: {
-          ANYWAYDATA_SITE_CONFIG_OVERRIDE_PATH: tempSiteConfigOverridePath,
-        },
+        env: createSiteConfigOverrideBuildEnv(),
       }
     );
 
     await copyWebBuildIntoDirectory(tempWebDir, outputDir);
 
-    runCommand('pnpm', ['exec', 'storybook', 'build', '--output-dir', storybookDir]);
+    runCommand('pnpm', ['exec', 'storybook', 'build', '--output-dir', storybookDir], {
+      env: createSiteConfigOverrideBuildEnv(),
+    });
 
     await hideTopHeaderInBuiltPage(path.join(outputDir, 'app.html'));
     await hideTopHeaderInBuiltPage(path.join(outputDir, 'generator.html'));
@@ -698,6 +707,7 @@ export {
   applySeoDirectivesToHtml,
   applyTopHeaderHideToHtml,
   createTestEnvSiteConfigInput,
+  createSiteConfigOverrideBuildEnv,
   createLlmsTxt,
   createSiteRobotsTxt,
   createTestenvRobotsTxt,

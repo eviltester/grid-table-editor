@@ -4,6 +4,13 @@ import { mergeConfig } from 'vite';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const defaultSiteConfigModulePath = path.resolve(__dirname, '../packages/core-ui/js/site/site-config.production.js');
+
+function resolveStorybookSiteConfigModulePath(env = process.env) {
+  return env.ANYWAYDATA_SITE_CONFIG_OVERRIDE_PATH
+    ? path.resolve(env.ANYWAYDATA_SITE_CONFIG_OVERRIDE_PATH)
+    : defaultSiteConfigModulePath;
+}
 
 export default {
   framework: {
@@ -17,6 +24,7 @@ export default {
     autodocs: true,
   },
   async viteFinal(config) {
+    const siteConfigModulePath = resolveStorybookSiteConfigModulePath();
     return mergeConfig(config, {
       resolve: {
         alias: {
@@ -31,9 +39,11 @@ export default {
           '@anywaydata/core/command-help': path.resolve(__dirname, '../packages/core/js/command-help'),
           '@anywaydata/core/libs': path.resolve(__dirname, '../packages/core/js/libs'),
           '@anywaydata/core': path.resolve(__dirname, '../packages/core/src/index.js'),
-          '@anywaydata/site-config': path.resolve(__dirname, '../packages/core-ui/js/site/site-config.production.js'),
+          '@anywaydata/site-config': siteConfigModulePath,
         },
       },
     });
   },
 };
+
+export { resolveStorybookSiteConfigModulePath };

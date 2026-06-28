@@ -386,6 +386,24 @@ function createSharedSchemaEditorController({
     return 'all';
   };
 
+  const applyParsedSchemaTextState = (parsed, { revalidate = true } = {}) => {
+    clearAllSemanticValidationTimers();
+    session.setRows(parsed.rows || []);
+    session.setTokens(parsed.tokens || []);
+    session.setConstraints(parsed.constraints || []);
+    session.setConstraintText(buildConstraintTextFromTokens(parsed.tokens || [], parsed.constraints || []));
+    updateModeView();
+    renderRows();
+    updatePairwiseButtonVisibility();
+    onRowsChanged?.(session.getRows());
+    if (revalidate) {
+      revalidateRows();
+    }
+  };
+
+  const isRowEditableParsedError = (issue) =>
+    ['unknown_domain_command', 'unknown_faker_command', 'forbidden_faker_command'].includes(issue?.code);
+
   const syncFromText = ({ showErrors = false, force = false, refreshTextFromRows = false } = {}) => {
     if (!force && !session.getTextMode()) {
       return { rows: session.getRows(), errors: [], tokens: session.getTokens() };
@@ -423,21 +441,34 @@ function createSharedSchemaEditorController({
       },
     });
     if (parsed.errors.length > 0) {
-      if (showErrors) {
-        setSchemaError(schemaErrorsToText(parsed.errors));
+      let validation = null;
+      if (Array.isArray(parsed.rows) && parsed.rows.length > 0) {
+        applyParsedSchemaTextState(parsed, { revalidate: false });
+        try {
+          validation = revalidateRows();
+          renderRows();
+        } catch {
+          // Keep compiler errors for malformed rows that cannot be safely row-validated yet.
+        }
       }
-      onSchemaParseError?.(parsed.errors);
+      const validationErrors = Array.isArray(validation?.errors) ? validation.errors : [];
+      const shouldUseRowErrors =
+        validationErrors.length > 0 && validationErrors.every((issue) => isRowEditableParsedError(issue));
+      const errors = shouldUseRowErrors ? validationErrors : parsed.errors;
+      if (showErrors) {
+        setSchemaError(schemaErrorsToText(errors));
+      }
+      onSchemaParseError?.(errors);
       emitSchemaTextChanged();
-      return parsed;
+      return {
+        ...parsed,
+        rows: validation?.rows || parsed.rows,
+        errors,
+        rowEditableErrors: shouldUseRowErrors,
+      };
     }
     clearSchemaError();
-    clearAllSemanticValidationTimers();
-    session.setRows(parsed.rows || []);
-    session.setTokens(parsed.tokens || []);
-    session.setConstraints(parsed.constraints || []);
-    session.setConstraintText(buildConstraintTextFromTokens(parsed.tokens || [], parsed.constraints || []));
-    updateModeView();
-    revalidateRows();
+    applyParsedSchemaTextState(parsed);
     applySemanticValidationForAllRows();
     if (refreshTextFromRows && session.getTextMode()) {
       updateTextElementFromRows();
@@ -498,7 +529,7 @@ function createSharedSchemaEditorController({
     });
     if (session.getTextMode()) {
       const parsed = syncFromText({ showErrors: true });
-      if (parsed?.errors?.length > 0) {
+      if (parsed?.errors?.length > 0 && !parsed.rowEditableErrors) {
         return parsed;
       }
       session.setTextMode(false);

@@ -325,6 +325,24 @@ test('generateFromTextSpec rejects forbidden faker commands even without safe mo
   expect(result.errors[0]?.message || result.errors[0]).toMatch(/Forbidden faker command/);
 });
 
+test('generateFromTextSpec rejects deprecated live faker commands that are not domain commands', () => {
+  const result = generateFromTextSpec({
+    textSpec: 'Image\nimage.urlLoremFlickr()',
+    rowCount: 1,
+    outputFormat: 'json',
+  });
+
+  expect(result.ok).toBe(false);
+  expect(result.rows).toBeUndefined();
+  expect(result.errors).toContainEqual(
+    expect.objectContaining({
+      code: 'compiler_validation_error',
+      column: 'Image',
+      message: expect.stringContaining('Unknown keyword: image.urlLoremFlickr'),
+    })
+  );
+});
+
 test('generateFromTextSpec rejects malformed recognized faker helper invocations instead of treating them as regex', () => {
   const result = generateFromTextSpec({
     textSpec: 'Code\nhelpers.fromRegExp("("[A-Z]{2}[0-9]{2}")")',

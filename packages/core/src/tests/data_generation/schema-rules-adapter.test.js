@@ -472,6 +472,30 @@ IF [Status] = "closed" THEN [Status] = "open" ENDIF`,
     expect(result.errors.map((error) => error.code)).toEqual(['missing_domain_command']);
   });
 
+  test('parses deprecated live faker image commands as invalid domain commands', () => {
+    const result = schemaTextToDataRules({
+      schemaText: 'Image\nimage.urlLoremFlickr()',
+      faker,
+      RandExp,
+      includeInvalidRules: true,
+    });
+
+    expect(result.dataRules).toEqual([
+      expect.objectContaining({
+        name: 'Image',
+        ruleSpec: 'image.urlLoremFlickr()',
+        type: 'domain',
+      }),
+    ]);
+    expect(result.errors).toContainEqual(
+      expect.objectContaining({
+        code: 'compiler_validation_error',
+        column: 'Image',
+        message: expect.stringContaining('Unknown keyword: image.urlLoremFlickr'),
+      })
+    );
+  });
+
   test('reports helpers_not_supported_in_domain for domain helper commands', () => {
     const result = schemaRowsToDataRules({
       schemaRows: [{ name: 'First', sourceType: 'domain', command: 'helpers.fake', params: '("x")' }],
@@ -534,6 +558,28 @@ IF [Status] = "closed" THEN [Status] = "open" ENDIF`,
     expect(result.errors).toEqual([]);
     expect(result.dataRules).toEqual([
       { name: 'Status', ruleSpec: 'enum("active","inactive","pending")', comments: '', type: 'domain' },
+    ]);
+  });
+
+  test('returns domain validation errors when enum domain row params cannot be serialized', () => {
+    const result = schemaRowsToDataRules({
+      schemaRows: [
+        {
+          name: 'Status',
+          sourceType: 'domain',
+          command: 'awd.datatype.enum',
+          params: '(values=["active")',
+        },
+      ],
+    });
+
+    expect(result.dataRules).toEqual([]);
+    expect(result.errors).toEqual([
+      expect.objectContaining({
+        code: 'compiler_validation_error',
+        column: 'Status',
+        message: 'Status failed domain validation - Invalid keyword arguments: unbalanced expression',
+      }),
     ]);
   });
 

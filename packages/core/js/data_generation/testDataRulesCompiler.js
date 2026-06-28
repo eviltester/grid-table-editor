@@ -4,6 +4,17 @@ import { EnumTestDataRuleValidator } from './enum/enumTestDataRuleValidator.js';
 import { DomainTestDataRuleValidator } from './domain/domainTestDataRuleValidator.js';
 import { SchemaParsingErrors } from './schema-parsing-errors.js';
 import { EnumParser } from './utils/enumParser.js';
+import { extractFakerCommandCandidate, isSupportedFakerRuleCommand } from '../faker/faker-commands.js';
+
+function looksLikeCommandRuleSpec(ruleSpec) {
+  const spec = String(ruleSpec || '').trim();
+  return /^(?:faker\.)?[A-Za-z_][\w]*(?:\.[A-Za-z_][\w]*)+(?:\s*\([\s\S]*\))?$/.test(spec);
+}
+
+function looksLikeFakerHelperRuleSpec(ruleSpec) {
+  const command = extractFakerCommandCandidate(ruleSpec);
+  return command.startsWith('helpers.');
+}
 
 /*
     'Compilation' of rules is where we try to identify if the rules are
@@ -115,6 +126,23 @@ export class TestDataRulesCompiler {
                 `${rule.name} resolves to faker command '${fakerValidator.lastParsed.command}' but has invalid arguments: ${fakerValidator.getValidationError()}`
               );
               rule.type = 'faker';
+              return;
+            }
+            if (looksLikeCommandRuleSpec(rule.ruleSpec)) {
+              if (
+                looksLikeFakerHelperRuleSpec(rule.ruleSpec) ||
+                isSupportedFakerRuleCommand(extractFakerCommandCandidate(rule.ruleSpec))
+              ) {
+                this.compilationReportLines.push(
+                  `${rule.name} looks like a faker command but is invalid: ${fakerValidator.getValidationError()}`
+                );
+                rule.type = 'faker';
+                return;
+              }
+              this.compilationReportLines.push(
+                `${rule.name} looks like a domain command but is not registered: ${domainValidator.getValidationError()}`
+              );
+              rule.type = 'domain';
               return;
             }
             // does the regex generation work?

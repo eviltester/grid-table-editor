@@ -71,7 +71,7 @@ class SharedSchemaDefinitionView {
       this.controller.syncFromText({ showErrors: false, force: true });
     };
     this.handleTextFocusOut = () => {
-      this.controller.syncFromText({ showErrors: false, force: true });
+      this.controller.syncFromText({ showErrors: true, force: true });
     };
     this.handleConstraintsInput = () => {
       this.controller.syncConstraintsFromEditor({ showErrors: false });

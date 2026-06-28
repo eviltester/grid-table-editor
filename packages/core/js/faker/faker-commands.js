@@ -1,4 +1,5 @@
 import { FAKER_HELPER_KEYWORD_DEFINITIONS } from './faker-helper-keyword-definitions.js';
+import { getDomainKeywordByAlias } from '../domain/domain-keywords.js';
 
 const HELPER_FAKER_COMMANDS = Object.keys(FAKER_HELPER_KEYWORD_DEFINITIONS);
 
@@ -321,6 +322,17 @@ function isKnownFakerCommand(command) {
   return KNOWN_FAKER_COMMANDS.includes(normalizeFakerCommandCandidate(command));
 }
 
+function isSupportedFakerRuleCommand(command) {
+  const normalizedCommand = normalizeFakerCommandCandidate(command);
+  if (!normalizedCommand) {
+    return false;
+  }
+  if (normalizedCommand.startsWith('helpers.')) {
+    return isKnownFakerCommand(normalizedCommand);
+  }
+  return Boolean(getDomainKeywordByAlias(normalizedCommand));
+}
+
 export {
   KNOWN_FAKER_COMMANDS,
   FORBIDDEN_FAKER_COMMANDS,
@@ -332,4 +344,5 @@ export {
   normalizeFakerCommandCandidate,
   extractFakerCommandCandidate,
   isKnownFakerCommand,
+  isSupportedFakerRuleCommand,
 };

@@ -74,7 +74,7 @@ describe('api-service handleFromSchemaRequest', () => {
 
   test('supports complex schema', () => {
     const { service } = createConcreteService();
-    const body = `Name\nfirstName\nEmail\nemail\nAge\ndatatype.number({"min":18,"max":65})\nCity\nlocation.city`;
+    const body = `Name\nperson.firstName\nEmail\ninternet.email\nAge\nnumber.int(min=18,max=65)\nCity\nlocation.city`;
     const result = service.handleFromSchemaRequest({ body, query: { rowCount: '3' } });
 
     expect(result.statusCode).toBe(200);

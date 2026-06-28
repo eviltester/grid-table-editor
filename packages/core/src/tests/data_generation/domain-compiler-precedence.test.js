@@ -64,4 +64,21 @@ describe('domain compiler precedence', () => {
       })
     );
   });
+
+  test('rejects deprecated live faker commands that are not registered domain commands', () => {
+    const compiler = new TestDataRulesCompiler(faker, RandExp);
+    const rules = [{ name: 'Image', type: '', ruleSpec: 'image.urlLoremFlickr()' }];
+
+    compiler.compile(rules);
+    compiler.validate();
+
+    expect(rules[0].type).toBe('domain');
+    expect(compiler.errors).toContainEqual(
+      expect.objectContaining({
+        code: 'compiler_validation_error',
+        column: 'Image',
+        message: expect.stringContaining('Unknown keyword: image.urlLoremFlickr'),
+      })
+    );
+  });
 });

@@ -36,6 +36,22 @@ describe('schema-row-mapper', () => {
     });
   });
 
+  test('keeps removed image commands intact instead of splitting them at image.url', () => {
+    const row = mapDataRuleToSchemaRow({
+      type: 'domain',
+      name: 'Image',
+      ruleSpec: 'image.urlLoremFlickr()',
+    });
+
+    expect(row).toMatchObject({
+      name: 'Image',
+      sourceType: 'domain',
+      command: 'image.urlLoremFlickr',
+      params: '()',
+      value: '',
+    });
+  });
+
   test('keeps parenthesized regex rules as regex rows instead of enum rows', () => {
     const row = mapDataRuleToSchemaRow({
       type: 'regex',

@@ -94,6 +94,23 @@ function buildRuleSpecFromRow(row) {
   return String(row?.value ?? '').trim();
 }
 
+function buildRuleSpecErrorFromRow(row, error) {
+  const reason = error?.message || String(error);
+  if (row.sourceType === SOURCE_TYPE_DOMAIN) {
+    return SchemaParsingErrors.domainValidationFailed(row.name, reason);
+  }
+  if (row.sourceType === SOURCE_TYPE_ENUM) {
+    return SchemaParsingErrors.enumValidationFailed(row.name, reason);
+  }
+  if (row.sourceType === SOURCE_TYPE_REGEX) {
+    return SchemaParsingErrors.regexValidationFailed(row.name, reason);
+  }
+  if (row.sourceType === SOURCE_TYPE_FAKER) {
+    return SchemaParsingErrors.fakerValidationFailed(row.name, reason);
+  }
+  return SchemaParsingErrors.domainValidationFailed(row.name, reason);
+}
+
 export function schemaTextToDataRules({
   schemaText,
   faker,
@@ -170,7 +187,13 @@ export function schemaRowsToDataRules({ schemaRows = [] } = {}) {
 
   const dataRules = [];
   effectiveRows.forEach((row) => {
-    const ruleSpec = buildRuleSpecFromRow(row);
+    let ruleSpec = '';
+    try {
+      ruleSpec = buildRuleSpecFromRow(row);
+    } catch (error) {
+      errors.push(buildRuleSpecErrorFromRow(row, error));
+      return;
+    }
     if (row.name.length === 0 && ruleSpec.length === 0) {
       return;
     }
@@ -181,6 +204,10 @@ export function schemaRowsToDataRules({ schemaRows = [] } = {}) {
       type: row.sourceType,
     });
   });
+
+  if (errors.length > 0) {
+    return { dataRules: [], errors, rows: effectiveRows };
+  }
 
   return { dataRules, errors: [], rows: effectiveRows };
 }

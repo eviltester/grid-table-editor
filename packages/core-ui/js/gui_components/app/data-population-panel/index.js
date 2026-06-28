@@ -89,6 +89,16 @@ function createDataPopulationPanelComponent({ root, props = {}, services = {}, c
             errors: [],
           };
           if (parsed?.errors?.length > 0) {
+            if (Array.isArray(parsed.rows) && parsed.rows.length > 0) {
+              try {
+                const validation = view.getSchemaDefinition()?.validateRows?.();
+                if (Array.isArray(validation?.errors) && validation.errors.length > 0) {
+                  return validation;
+                }
+              } catch {
+                // Keep compiler errors for malformed recoverable rows that cannot be row-validated.
+              }
+            }
             return parsed;
           }
         }

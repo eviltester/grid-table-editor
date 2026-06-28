@@ -1,5 +1,9 @@
 import { FakerCommand } from './fakerCommand.js';
-import { extractFakerCommandCandidate, isKnownFakerCommand } from '../../faker/faker-commands.js';
+import {
+  extractFakerCommandCandidate,
+  isForbiddenFakerCommand,
+  isSupportedFakerRuleCommand,
+} from '../../faker/faker-commands.js';
 
 // requires faker.js which should be passed in via constructor
 // faker can be imported in different ways
@@ -24,7 +28,7 @@ class FakerTestDataRuleValidator {
     const command = extractFakerCommandCandidate(ruleSpec);
     this.lastParsed = {
       command,
-      recognized: isKnownFakerCommand(command),
+      recognized: isSupportedFakerRuleCommand(command),
       error: String(error || ''),
     };
   }
@@ -41,6 +45,21 @@ class FakerTestDataRuleValidator {
     this.lastParsed = null;
     const ruleSpec = String(aTestDataRule?.ruleSpec || '');
     this.recordLastParsed(ruleSpec);
+    const commandCandidate = this.lastParsed?.command || '';
+
+    if (isForbiddenFakerCommand(commandCandidate)) {
+      this.setValidationError(
+        `Forbidden faker command: ${commandCandidate}. This command is known but not allowed through the API.`
+      );
+      return false;
+    }
+
+    if (!isSupportedFakerRuleCommand(commandCandidate)) {
+      this.setValidationError(
+        `Unknown faker command: ${commandCandidate}. Use a supported domain command or faker helper.`
+      );
+      return false;
+    }
 
     // is it a faker function?
     try {

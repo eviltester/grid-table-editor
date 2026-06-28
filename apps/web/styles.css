@@ -121,6 +121,7 @@ body.theme-dark a:hover {
   color: var(--header-text);
   display: flex;
   height: 2.4em;
+  box-sizing: border-box;
 }
 
 div.header div {
@@ -583,6 +584,46 @@ body.theme-dark .writer-schema-progress-output li {
 }
 
 @media (max-width: 640px) {
+  .import-export-toolbar__segment--import,
+  .import-export-toolbar__segment--download,
+  .import-export-import-control,
+  .import-export-download-control,
+  .export-encoding-settings,
+  .export-encoding-settings__panel,
+  .import-export-import-control__settings,
+  .import-export-import-control__settings-panel {
+    box-sizing: border-box;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .import-export-toolbar__segment--import,
+  .import-export-toolbar__segment--download,
+  .import-export-import-control,
+  .import-export-download-control,
+  .export-encoding-settings,
+  .import-export-import-control__settings,
+  .import-export-import-control__settings-panel {
+    width: 100%;
+  }
+
+  .export-encoding-settings {
+    display: block;
+  }
+
+  .export-encoding-settings__panel {
+    width: 100%;
+  }
+
+  .export-encoding-settings__field {
+    min-width: 0;
+  }
+
+  .export-encoding-settings__field select {
+    width: 100%;
+    min-width: 0;
+  }
+
   .generator-export-encoding-settings {
     margin-left: 0;
   }
@@ -1143,6 +1184,35 @@ body.theme-dark .webmcp-code-block {
 
 .theme-toggle-button:hover {
   background: color-mix(in srgb, var(--header-bg) 70%, #ffffff 30%);
+}
+
+@media (max-width: 640px) {
+  .header {
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem 0.75rem;
+    height: auto;
+    min-height: 2.4em;
+    padding: 0.35rem 0.5rem;
+  }
+
+  div.header div {
+    margin-top: 0;
+  }
+
+  .header .pageheading,
+  .header .mainmenu {
+    padding-left: 0;
+  }
+
+  .header .pageheading {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .theme-toggle-container {
+    margin: 0;
+  }
 }
 
 .mainmenu a:hover,
@@ -2133,6 +2203,37 @@ body.theme-dark .shared-schema-row-validation {
   .shared-generator-preview-controls,
   .generator-preview-controls {
     justify-content: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .shared-schema-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .shared-schema-row-actions,
+  .shared-schema-row > input[data-field='name'],
+  .shared-schema-row > select[data-field='sourceType'],
+  .shared-schema-row > .shared-schema-command-picker-control,
+  .shared-schema-row > .shared-schema-help-link,
+  .shared-schema-row > .shared-schema-params-control,
+  .shared-schema-row > input[data-field='value'] {
+    grid-column: 1;
+    grid-row: auto;
+    min-width: 0;
+  }
+
+  .shared-schema-row > input[data-field='name'],
+  .shared-schema-row > select[data-field='sourceType'],
+  .shared-schema-row > .shared-schema-command-picker-control,
+  .shared-schema-row > .shared-schema-params-control,
+  .shared-schema-row > input[data-field='value'] {
+    width: 100%;
+  }
+
+  .shared-schema-row > .shared-schema-help-link {
+    justify-self: start;
+    margin: 0;
   }
 }
 

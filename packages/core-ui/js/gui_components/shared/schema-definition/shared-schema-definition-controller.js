@@ -98,6 +98,8 @@ class SharedSchemaDefinitionController {
       timerApi: this.props.timerApi,
       rootElement: this.props.rootElement,
       elements: this.props.elements,
+      requestConfirm: this.services.requestConfirm,
+      createConfirmDialogServiceFn: this.services.createConfirmDialogServiceFn,
     });
   }
 

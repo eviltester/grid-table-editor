@@ -16,6 +16,10 @@ function looksLikeFakerHelperRuleSpec(ruleSpec) {
   return command.startsWith('helpers.');
 }
 
+function looksLikeRegexShorthand(ruleSpec) {
+  return /[\\[\]{}()*+?|^$]/.test(String(ruleSpec || '').trim());
+}
+
 /*
     'Compilation' of rules is where we try to identify if the rules are
     faker or regex.
@@ -145,14 +149,21 @@ export class TestDataRulesCompiler {
               rule.type = 'domain';
               return;
             }
-            // does the regex generation work?
-            regexValidator.validate(rule);
-            if (regexValidator.isValid()) {
-              this.compilationReportLines.push(`${rule.name} is a valid 'regex': ${rule.ruleSpec}`);
-              rule.type = 'regex';
+            if (looksLikeRegexShorthand(rule.ruleSpec)) {
+              // does the regex generation work?
+              regexValidator.validate(rule);
+              if (regexValidator.isValid()) {
+                this.compilationReportLines.push(`${rule.name} is a valid 'regex': ${rule.ruleSpec}`);
+                rule.type = 'regex';
+              } else {
+                this.compilationReportLines.push(
+                  `${rule.name} is not a 'regex': ${regexValidator.getValidationError()}`
+                );
+                this.errors.push(SchemaParsingErrors.evaluatingAsLiteral(rule.name));
+                rule.type = 'literal';
+              }
             } else {
-              this.compilationReportLines.push(`${rule.name} is not a 'regex': ${regexValidator.getValidationError()}`);
-              this.errors.push(SchemaParsingErrors.evaluatingAsLiteral(rule.name));
+              this.compilationReportLines.push(`${rule.name} is plain text and is treated as a 'literal'`);
               rule.type = 'literal';
             }
           }

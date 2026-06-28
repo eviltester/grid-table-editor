@@ -53,13 +53,7 @@ describe('TestDataRulesCompiler regex pattern detection', () => {
     compiler.compile(rules);
 
     expect(rules[0].type).toBe('literal');
-    expect(compiler.errors).toContainEqual(
-      expect.objectContaining({
-        code: 'compiler_validation_error',
-        column: 'BlankRule',
-        message: "Evaluating BlankRule as 'literal'",
-      })
-    );
+    expect(compiler.errors).toEqual([]);
   });
 
   test('untyped malformed regex-like text falls back to literal', () => {

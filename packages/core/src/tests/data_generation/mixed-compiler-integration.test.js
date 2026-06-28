@@ -20,7 +20,7 @@ describe('TestDataRulesCompiler mixed rule types', () => {
     expect(rules[0].ruleSpec).toBe('datatype.enum("Red", "Blue", "Green")');
     expect(rules[1].type).toBe('domain');
     expect(rules[2].type).toBe('regex');
-    expect(rules[3].type).toBe('regex');
+    expect(rules[3].type).toBe('literal');
     expect(rules[4].type).toBe('domain');
     expect(rules[4].ruleSpec).toBe('datatype.enum("A", "B")');
   });

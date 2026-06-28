@@ -474,4 +474,145 @@ describe('createSharedSchemaEditorController', () => {
     expect(textArea.value).toBe('Mystery\nregex(unknown())');
     expect(onSchemaTextChanged).toHaveBeenLastCalledWith('Mystery\nregex(unknown())');
   });
+
+  test('confirms before converting invalid text definitions to literal rows when leaving text mode', async () => {
+    const root = createRoot(dom.window.document);
+    const requestConfirm = jest.fn(() => Promise.resolve(true));
+    const schemaTextToDataRules = jest.fn(() => ({
+      dataRules: [
+        { name: 'First Name', ruleSpec: 'person.fullName()', type: 'domain' },
+        { name: 'Bad Command', ruleSpec: 'person.notACommand()', type: 'domain' },
+      ],
+      errors: [
+        {
+          code: 'compiler_validation_error',
+          column: 'Bad Command',
+          message: 'Bad Command failed domain validation - Unknown keyword: person.notACommand',
+        },
+      ],
+      schemaTokens: [
+        { kind: 'rule', name: 'First Name', rule: 'person.fullName()', ruleLine: 2 },
+        { kind: 'rule', name: 'Bad Command', rule: 'person.notACommand()', ruleLine: 4 },
+      ],
+      constraints: [],
+    }));
+    const controller = createSharedSchemaEditorController({
+      documentObj: dom.window.document,
+      rootElement: root,
+      requestConfirm,
+      createBlankRow: () => ({
+        id: 'blank',
+        name: '',
+        sourceType: 'literal',
+        command: 'literal',
+        value: '',
+        params: '',
+        semanticValidationIssues: [],
+      }),
+      mapRuleToRow: (rule) => ({
+        id: rule.name,
+        name: rule.name,
+        sourceType: rule.type,
+        command: rule.type === 'domain' ? rule.ruleSpec.replace(/\([\s\S]*\)$/u, '') : '',
+        value: rule.type === 'literal' ? rule.ruleSpec : '',
+        params: rule.type === 'domain' && rule.ruleSpec.endsWith('()') ? '()' : '',
+        semanticValidationIssues: [],
+      }),
+      schemaTextToDataRules,
+      dataRulesToSchemaText,
+      validateSchemaRows: jest.fn((rows) => ({ rows, errors: [] })),
+      updatePairwiseButtonVisibility: jest.fn(),
+      updateHelpHints: jest.fn(),
+    });
+
+    controller.init();
+    controller.setTextMode(true);
+    const textArea = root.querySelector('[data-role="schema-textbox"]');
+    textArea.value = 'First Name\nperson.fullName()\nBad Command\nperson.notACommand()';
+
+    const result = await controller.toggleMode();
+
+    expect(requestConfirm).toHaveBeenCalledWith({
+      title: 'Convert invalid definitions?',
+      message:
+        'Syntax errors are present that can not be edited in Schema UI. Allow editing by converting invalid definitions to literal?',
+      okLabel: 'Yes',
+      cancelLabel: 'No',
+    });
+    expect(result).toMatchObject({ errors: [], convertedInvalidRules: true });
+    expect(controller.getState().isTextMode).toBe(false);
+    expect(controller.getState().rows).toEqual([
+      expect.objectContaining({ name: 'First Name', sourceType: 'domain', command: 'person.fullName' }),
+      expect.objectContaining({
+        name: 'Bad Command',
+        sourceType: 'literal',
+        command: 'literal',
+        value: 'person.notACommand()',
+      }),
+    ]);
+    expect(root.querySelector('[data-role="schema-error"]')?.textContent || '').toBe('');
+  });
+
+  test('stays in text mode when invalid text definition literal conversion is declined', async () => {
+    const root = createRoot(dom.window.document);
+    const requestConfirm = jest.fn(() => Promise.resolve(false));
+    const schemaTextToDataRules = jest.fn(() => ({
+      dataRules: [{ name: 'Bad Command', ruleSpec: 'person.notACommand', type: 'domain' }],
+      errors: [
+        {
+          code: 'compiler_validation_error',
+          column: 'Bad Command',
+          message: 'Bad Command failed domain validation - Unknown keyword: person.notACommand',
+        },
+      ],
+      schemaTokens: [{ kind: 'rule', name: 'Bad Command', rule: 'person.notACommand', ruleLine: 2 }],
+      constraints: [],
+    }));
+    const onSchemaError = jest.fn();
+    const controller = createSharedSchemaEditorController({
+      documentObj: dom.window.document,
+      rootElement: root,
+      requestConfirm,
+      createBlankRow: () => ({
+        id: 'blank',
+        name: '',
+        sourceType: 'literal',
+        command: 'literal',
+        value: '',
+        params: '',
+        semanticValidationIssues: [],
+      }),
+      mapRuleToRow: (rule) => ({
+        id: rule.name,
+        name: rule.name,
+        sourceType: rule.type,
+        command: rule.ruleSpec,
+        value: '',
+        params: '',
+        semanticValidationIssues: [],
+      }),
+      schemaTextToDataRules,
+      dataRulesToSchemaText,
+      onSchemaError,
+      validateSchemaRows: jest.fn((rows) => ({ rows, errors: [] })),
+      updatePairwiseButtonVisibility: jest.fn(),
+      updateHelpHints: jest.fn(),
+    });
+
+    controller.init();
+    controller.setTextMode(true);
+    root.querySelector('[data-role="schema-textbox"]').value = 'Bad Command\nperson.notACommand';
+
+    const result = await controller.toggleMode();
+
+    expect(requestConfirm).toHaveBeenCalledTimes(1);
+    expect(result.errors).toEqual([
+      expect.objectContaining({
+        code: 'compiler_validation_error',
+        message: expect.stringContaining('Unknown keyword: person.notACommand'),
+      }),
+    ]);
+    expect(controller.getState().isTextMode).toBe(true);
+    expect(onSchemaError).toHaveBeenLastCalledWith(expect.stringContaining('Unknown keyword: person.notACommand'));
+  });
 });

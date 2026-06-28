@@ -85,7 +85,7 @@ describe('TestDataGenerator meets Acceptance Criteria', () => {
       expect(generator.testDataRules()[1].type).toBe('regex');
       expect(generator.testDataRules()[1].ruleSpec).toBe('[A-Z]{4}');
       expect(generator.testDataRules()[2].name).toBe('Literal');
-      expect(generator.testDataRules()[2].type).toBe('regex');
+      expect(generator.testDataRules()[2].type).toBe('literal');
       expect(generator.testDataRules()[2].ruleSpec).toBe('Bob');
       expect(generator.testDataRules().length).toBe(3);
     });

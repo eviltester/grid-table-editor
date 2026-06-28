@@ -23,6 +23,7 @@ import { schemaErrorsToText } from './schema-error-text.js';
 import { getSchemaRowSemanticValidationIssues } from './schema-row-validation.js';
 import { captureActiveFieldState, restoreActiveFieldState } from './schema-focus-state.js';
 import { getDefaultDocumentObj, resolveWindowObj } from '../../dom/default-objects.js';
+import { createConfirmDialogService } from '../../dialog-services/confirm-dialog-service.js';
 import {
   renderSharedSchemaRows,
   clearSchemaRowDragClasses,
@@ -43,6 +44,8 @@ const SCHEMA_MODE_HELP_ROLE = 'schema-mode-help';
 const SCHEMA_CONSTRAINTS_REGION_ROLE = 'schema-constraints-region';
 const SCHEMA_CONSTRAINTS_SUMMARY_ROLE = 'schema-constraints-summary';
 const SCHEMA_CONSTRAINTS_TEXT_ROLE = 'schema-constraints-textbox';
+const TEXT_TO_SCHEMA_LITERAL_RECOVERY_MESSAGE =
+  'Syntax errors are present that can not be edited in Schema UI. Allow editing by converting invalid definitions to literal?';
 
 function createSharedSchemaEditorController({
   documentObj = getDefaultDocumentObj(),
@@ -69,10 +72,21 @@ function createSharedSchemaEditorController({
   elements = {},
   rootElement = documentObj?.body,
   timerApi = documentObj?.defaultView || globalThis,
+  requestConfirm,
+  createConfirmDialogServiceFn = createConfirmDialogService,
 }) {
   const semanticValidationTimers = new Map();
   let dragState = null;
   const SEMANTIC_VALIDATION_DEBOUNCE_MS = 1000;
+  const ownedConfirmDialogService =
+    typeof requestConfirm === 'function'
+      ? null
+      : createConfirmDialogServiceFn({
+          documentObj,
+          windowObj: resolveWindowObj(null, documentObj),
+        });
+  const confirmTextToSchemaLiteralRecovery =
+    typeof requestConfirm === 'function' ? requestConfirm : ownedConfirmDialogService?.requestConfirm;
   const session = createSchemaEditingSession({
     createBlankSchemaRow: createBlankRow,
     schemaTextToDataRules,
@@ -401,8 +415,58 @@ function createSharedSchemaEditorController({
     }
   };
 
-  const isRowEditableParsedError = (issue) =>
-    ['unknown_domain_command', 'unknown_faker_command', 'forbidden_faker_command'].includes(issue?.code);
+  const canRecoverSchemaDefinitionErrorsAsLiterals = (parsed) =>
+    Array.isArray(parsed?.rows) &&
+    parsed.rows.length > 0 &&
+    Array.isArray(parsed?.errors) &&
+    parsed.errors.length > 0 &&
+    parsed.errors.every((error) => error?.code === 'compiler_validation_error');
+
+  const getInvalidSchemaRowIndexes = (parsed) => {
+    const rows = Array.isArray(parsed?.rows) ? parsed.rows : [];
+    const invalidIndexes = new Set();
+    (Array.isArray(parsed?.errors) ? parsed.errors : []).forEach((error) => {
+      const column = String(error?.column ?? '').trim();
+      if (column.length > 0) {
+        rows.forEach((row, index) => {
+          if (String(row?.name ?? '').trim() === column) {
+            invalidIndexes.add(index);
+          }
+        });
+      }
+      const line = Number(error?.line);
+      if (Number.isInteger(line)) {
+        const ruleIndex = (Array.isArray(parsed?.tokens) ? parsed.tokens : [])
+          .filter((token) => token?.kind === 'rule')
+          .findIndex((token) => token?.line === line || token?.ruleLine === line || token?.headerLine === line);
+        if (ruleIndex >= 0 && ruleIndex < rows.length) {
+          invalidIndexes.add(ruleIndex);
+        }
+      }
+    });
+    return invalidIndexes;
+  };
+
+  const convertInvalidSchemaRowsToLiterals = (parsed) => {
+    const rows = Array.isArray(parsed?.rows) ? parsed.rows : [];
+    const ruleTokens = (Array.isArray(parsed?.tokens) ? parsed.tokens : []).filter((token) => token?.kind === 'rule');
+    const invalidIndexes = getInvalidSchemaRowIndexes(parsed);
+    const convertAllRows = invalidIndexes.size === 0;
+    return rows.map((row, index) => {
+      if (!convertAllRows && !invalidIndexes.has(index)) {
+        return row;
+      }
+      const rawRule = String(ruleTokens[index]?.rule ?? row?.value ?? row?.command ?? '');
+      return {
+        ...row,
+        sourceType: SOURCE_TYPE_LITERAL,
+        command: 'literal',
+        params: '',
+        value: rawRule,
+        semanticValidationIssues: [],
+      };
+    });
+  };
 
   const syncFromText = ({ showErrors = false, force = false, refreshTextFromRows = false } = {}) => {
     if (!force && !session.getTextMode()) {
@@ -451,10 +515,7 @@ function createSharedSchemaEditorController({
           // Keep compiler errors for malformed rows that cannot be safely row-validated yet.
         }
       }
-      const validationErrors = Array.isArray(validation?.errors) ? validation.errors : [];
-      const shouldUseRowErrors =
-        validationErrors.length > 0 && validationErrors.every((issue) => isRowEditableParsedError(issue));
-      const errors = shouldUseRowErrors ? validationErrors : parsed.errors;
+      const errors = parsed.errors;
       if (showErrors) {
         setSchemaError(schemaErrorsToText(errors));
       }
@@ -464,7 +525,6 @@ function createSharedSchemaEditorController({
         ...parsed,
         rows: validation?.rows || parsed.rows,
         errors,
-        rowEditableErrors: shouldUseRowErrors,
       };
     }
     clearSchemaError();
@@ -521,7 +581,7 @@ function createSharedSchemaEditorController({
     return { rows: session.getRows(), errors: [], tokens: session.getTokens(), constraints: session.getConstraints() };
   };
 
-  const toggleMode = () => {
+  const toggleMode = async () => {
     hideVisibleHelpTooltips({
       modeHelpIconElement: getModeHelpIconElement(),
       windowObj: documentObj?.defaultView,
@@ -529,8 +589,34 @@ function createSharedSchemaEditorController({
     });
     if (session.getTextMode()) {
       const parsed = syncFromText({ showErrors: true });
-      if (parsed?.errors?.length > 0 && !parsed.rowEditableErrors) {
-        return parsed;
+      if (parsed?.errors?.length > 0) {
+        if (!canRecoverSchemaDefinitionErrorsAsLiterals(parsed)) {
+          return parsed;
+        }
+        const confirmed = await confirmTextToSchemaLiteralRecovery?.({
+          title: 'Convert invalid definitions?',
+          message: TEXT_TO_SCHEMA_LITERAL_RECOVERY_MESSAGE,
+          okLabel: 'Yes',
+          cancelLabel: 'No',
+        });
+        if (!confirmed) {
+          return parsed;
+        }
+        clearSchemaError();
+        const recoveredRows = convertInvalidSchemaRowsToLiterals(parsed);
+        applyParsedSchemaTextState(
+          {
+            ...parsed,
+            rows: recoveredRows,
+          },
+          { revalidate: true }
+        );
+        syncTextFromRows();
+        session.setTextMode(false);
+        updateModeView();
+        applySemanticValidationForAllRows();
+        emitSchemaTextChanged();
+        return { rows: session.getRows(), errors: [], tokens: session.getTokens(), convertedInvalidRules: true };
       }
       session.setTextMode(false);
       updateModeView();
@@ -542,6 +628,12 @@ function createSharedSchemaEditorController({
     session.setTextMode(true);
     updateModeView();
     return { rows: session.getRows(), errors: [], tokens: session.getTokens() };
+  };
+
+  const destroy = () => {
+    clearAllSemanticValidationTimers();
+    clearDragState();
+    ownedConfirmDialogService?.destroy?.();
   };
 
   const insertSampleSchema = () => {
@@ -871,10 +963,7 @@ function createSharedSchemaEditorController({
 
   return {
     init,
-    destroy: () => {
-      clearAllSemanticValidationTimers();
-      clearDragState();
-    },
+    destroy,
     handleInput,
     handleClick,
     handleDragStart,

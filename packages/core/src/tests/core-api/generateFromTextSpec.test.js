@@ -343,6 +343,27 @@ test('generateFromTextSpec rejects deprecated live faker commands that are not d
   );
 });
 
+test.each(['person.notACommand()', 'person.notACommand'])(
+  'generateFromTextSpec rejects unknown command-like schema text %s',
+  (ruleSpec) => {
+    const result = generateFromTextSpec({
+      textSpec: `Name\n${ruleSpec}`,
+      rowCount: 1,
+      outputFormat: 'json',
+    });
+
+    expect(result.ok).toBe(false);
+    expect(result.rows).toBeUndefined();
+    expect(result.errors).toContainEqual(
+      expect.objectContaining({
+        code: 'compiler_validation_error',
+        column: 'Name',
+        message: expect.stringContaining('Unknown keyword: person.notACommand'),
+      })
+    );
+  }
+);
+
 test('generateFromTextSpec rejects malformed recognized faker helper invocations instead of treating them as regex', () => {
   const result = generateFromTextSpec({
     textSpec: 'Code\nhelpers.fromRegExp("("[A-Z]{2}[0-9]{2}")")',

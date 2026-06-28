@@ -228,7 +228,7 @@ test.describe('Generator Schema Editing', () => {
     expectNoPageErrors(pageErrors);
   });
 
-  test('invalid domain command text preserves the domain row type in the generator editor', async ({ page }) => {
+  test('invalid command text prompts before converting to literal rows in the generator editor', async ({ page }) => {
     const { generatorPage, pageErrors } = await openGenerator(page);
 
     await generatorPage.schema.setSchemaText('Name\nperson.fullName');
@@ -239,17 +239,42 @@ test.describe('Generator Schema Editing', () => {
     await expect(generatorPage.schema.row(0).locator('[data-action="pick-command"]')).toHaveText('person.fullName');
 
     await generatorPage.schema.setSchemaText('Name\nperson.fullNam');
-    await generatorPage.schema.setTextMode(false);
-
-    await expect(generatorPage.schema.row(0).locator('select[data-field="sourceType"]')).toHaveValue('domain');
-    await expect(generatorPage.schema.row(0).locator('[data-action="pick-command"]')).toHaveText('person.fullNam');
-    await expect(generatorPage.schema.row(0)).toHaveClass(/shared-schema-row-invalid/);
-    await expect(generatorPage.schema.row(0).locator('.shared-schema-row-validation')).toContainText(
-      'Row 1: unknown domain command "person.fullNam".'
+    await generatorPage.schema.modeToggleButton.click();
+    await generatorPage.schema.confirmDialog.expectVisible();
+    await expect(generatorPage.schema.confirmDialog.backdrop).toContainText(
+      'Syntax errors are present that can not be edited in Schema UI. Allow editing by converting invalid definitions to literal?'
     );
+    await generatorPage.schema.confirmDialog.cancel({ cancelLabel: /^no$/i });
+
+    await expect.poll(async () => generatorPage.schema.editor.isRowEditorMode()).toBe(false);
+    await expect(generatorPage.schema.modeToggleButton).toHaveText('Edit as Schema');
+    await expect(generatorPage.schema.errorStatus).toContainText('Unknown keyword: person.fullNam');
 
     await generatorPage.preview.clickPreview();
-    await expect(generatorPage.schema.errorStatus).toContainText('Row 1: unknown domain command "person.fullNam".');
+    await expect(generatorPage.schema.errorStatus).toContainText('Unknown keyword: person.fullNam');
+    await expect.poll(async () => generatorPage.preview.getOutputPreviewText()).toBe('');
+
+    await generatorPage.schema.modeToggleButton.click();
+    await generatorPage.schema.confirmDialog.confirm({ confirmLabel: /^yes$/i });
+
+    await expect(generatorPage.schema.rows).toHaveCount(1);
+    await expect(generatorPage.schema.row(0).locator('select[data-field="sourceType"]')).toHaveValue('literal');
+    await expect(generatorPage.schema.row(0).locator('input[data-field="value"]')).toHaveValue('person.fullNam');
+
+    expectNoPageErrors(pageErrors);
+  });
+
+  test('regex and literal shorthand keep their strict parsing behavior in the generator editor', async ({ page }) => {
+    const { generatorPage, pageErrors } = await openGenerator(page);
+
+    await generatorPage.schema.setSchemaText('Code\n[A-Z]{3}\nCity\nLondon');
+    await generatorPage.schema.setTextMode(false);
+
+    await expect(generatorPage.schema.rows).toHaveCount(2);
+    await expect(generatorPage.schema.row(0).locator('select[data-field="sourceType"]')).toHaveValue('regex');
+    await expect(generatorPage.schema.row(0).locator('input[data-field="value"]')).toHaveValue('[A-Z]{3}');
+    await expect(generatorPage.schema.row(1).locator('select[data-field="sourceType"]')).toHaveValue('literal');
+    await expect(generatorPage.schema.row(1).locator('input[data-field="value"]')).toHaveValue('London');
 
     expectNoPageErrors(pageErrors);
   });

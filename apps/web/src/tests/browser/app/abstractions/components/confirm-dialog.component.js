@@ -40,9 +40,9 @@ class ConfirmDialogComponent {
     await this.expectHidden();
   }
 
-  async cancel() {
+  async cancel({ cancelLabel = /^cancel$/i } = {}) {
     await this.expectVisible();
-    await this.backdrop.getByRole('button', { name: /^cancel$/i }).click();
+    await this.backdrop.getByRole('button', { name: cancelLabel }).click();
     await this.expectHidden();
   }
 }

@@ -65,7 +65,7 @@ class SharedSchemaDefinitionView {
     };
     this.handleToggleButtonClick = (event) => {
       event.preventDefault();
-      this.controller.toggleMode();
+      void this.controller.toggleMode();
     };
     this.handleTextInput = () => {
       this.controller.syncFromText({ showErrors: false, force: true });

@@ -99,8 +99,8 @@ export class FakerCommand {
     var commandConjoiner = '';
     var foundFunctionIndex = -1;
 
-    for (var i = 0; i < parts.length; i++) {
-      var part = parts[i];
+    for (let i = 0; i < parts.length; i++) {
+      const part = parts[i];
       const possibleFakerCommandRegex = new RegExp('^([A-Za-z][A-Za-z0-9]*)$');
       if (possibleFakerCommandRegex.test(part)) {
         if (foundFunctionIndex !== -1) {

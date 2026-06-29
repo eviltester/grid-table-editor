@@ -114,7 +114,7 @@ export class TestDataRulesCompiler {
     const validTypes = ['regex', 'faker', 'domain', 'literal', 'enum'];
 
     this.rules.forEach((rule) => {
-      if (rule.type == '') {
+      if (rule.type === '') {
         // unassigned a type, try and generate one
         this.compilationReportLines.push(`Identifying type for ${rule.name}`);
 
@@ -406,7 +406,7 @@ export class TestDataRulesCompiler {
   }
 
   isValid() {
-    return this.errors.length == 0;
+    return this.errors.length === 0;
   }
 
   compilationReport() {

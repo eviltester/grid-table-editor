@@ -15,9 +15,11 @@ updates:
       semver-minor-days: 7
       semver-patch-days: 3
     groups:
-      eslint:
+      linting:
         patterns:
-          - "eslint*"
+          - "oxlint"
+          - "oxfmt"
+          - "@biomejs/*"
       types:
         patterns:
           - "@types/*"

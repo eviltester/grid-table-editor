@@ -21,7 +21,9 @@ function runActiveStoryCleanup() {
   }
   const cleanups = Array.from(activeStoryCleanups);
   activeStoryCleanups.clear();
-  cleanups.forEach((cleanup) => cleanup?.());
+  cleanups.forEach((cleanup) => {
+    cleanup?.();
+  });
 }
 
 function destroyTippyInstances(documentObj = getDefaultDocumentObj()) {
@@ -45,7 +47,9 @@ function removeStoryArtifacts(documentObj = getDefaultDocumentObj()) {
 
   restoreMethodPickerDocumentScrollLock(documentObj);
   STORY_ARTIFACT_SELECTORS.forEach((selector) => {
-    documentObj.querySelectorAll(selector).forEach((element) => element.remove());
+    documentObj.querySelectorAll(selector).forEach((element) => {
+      element.remove();
+    });
   });
 }
 

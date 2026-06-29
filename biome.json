@@ -1,0 +1,165 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.5.1/schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "files": {
+    "ignoreUnknown": true,
+    "maxSize": 2097152,
+    "includes": [
+      "apps/**",
+      "packages/**",
+      "tests/**",
+      "scripts/**",
+      ".storybook/**",
+      "*.cjs",
+      "*.js",
+      "*.json",
+      "*.mjs",
+      "!docs",
+      "!docs-src",
+      "!build",
+      "!coverage",
+      "!node_modules",
+      "!storybook-static",
+      "!testenv",
+      "!apps/web/dist",
+      "!apps/web/libs",
+      "!packages/core/js/libs"
+    ]
+  },
+  "formatter": {
+    "enabled": false,
+    "useEditorconfig": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineEnding": "lf",
+    "lineWidth": 120,
+    "includes": [
+      "apps/**/*.js",
+      "apps/**/*.json",
+      "apps/**/*.mjs",
+      "packages/**/*.js",
+      "packages/**/*.json",
+      "packages/**/*.mjs",
+      "tests/**/*.js",
+      "scripts/**/*.js",
+      "scripts/**/*.mjs",
+      ".storybook/**/*.js",
+      "*.cjs",
+      "*.js",
+      "*.json",
+      "*.mjs"
+    ]
+  },
+  "linter": {
+    "enabled": true,
+    "domains": {
+      "test": "recommended"
+    },
+    "rules": {
+      "correctness": {
+        "noInnerDeclarations": "error",
+        "noUndeclaredVariables": "error",
+        "noUnusedFunctionParameters": "off",
+        "noUnusedVariables": "off",
+        "useParseIntRadix": "off"
+      },
+      "style": {
+        "noDescendingSpecificity": "off",
+        "useConst": "off",
+        "useErrorCause": "off",
+        "useNodejsImportProtocol": "off",
+        "useTemplate": "off"
+      },
+      "complexity": {
+        "noArguments": "off",
+        "noImportantStyles": "off",
+        "noStaticOnlyClass": "off",
+        "noThisInStatic": "off",
+        "noUselessConstructor": "off",
+        "noUselessRename": "off",
+        "noUselessUndefinedInitialization": "off",
+        "useLiteralKeys": "off",
+        "useArrowFunction": "off",
+        "useOptionalChain": "off",
+        "useRegexLiterals": "off"
+      },
+      "suspicious": {
+        "noConsole": "off",
+        "noDoubleEquals": "error",
+        "noGlobalIsNan": "off",
+        "noPrototypeBuiltins": "off",
+        "noTemplateCurlyInString": "off",
+        "useIterableCallbackReturn": "error"
+      }
+    }
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "single",
+      "jsxQuoteStyle": "double",
+      "trailingCommas": "es5",
+      "semicolons": "always",
+      "arrowParentheses": "always",
+      "bracketSpacing": true,
+      "quoteProperties": "asNeeded"
+    },
+    "globals": [
+      "RandExp",
+      "Tabulator",
+      "agGrid",
+      "arguments",
+      "dom",
+      "faker",
+      "headerAddLeftButton",
+      "onAddLeftButtonClick",
+      "onAddLeftButtonListener",
+      "Papa"
+    ]
+  },
+  "json": {
+    "formatter": {
+      "expand": "always"
+    }
+  },
+  "overrides": [
+    {
+      "includes": [
+        "tests/**/*.js",
+        "tests/**/*.mjs",
+        "apps/**/*.test.js",
+        "apps/**/*.spec.js",
+        "apps/**/tests/**/*.js",
+        "apps/**/tests/**/*.mjs",
+        "packages/**/*.test.js",
+        "packages/**/*.spec.js",
+        "packages/**/src/tests/**/*.js",
+        "packages/**/src/tests/**/*.mjs"
+      ],
+      "javascript": {
+        "globals": [
+          "afterAll",
+          "afterEach",
+          "beforeAll",
+          "beforeEach",
+          "describe",
+          "expect",
+          "fdescribe",
+          "fit",
+          "it",
+          "jest",
+          "test",
+          "xdescribe",
+          "xit",
+          "xtest"
+        ]
+      }
+    }
+  ],
+  "assist": {
+    "enabled": false
+  }
+}

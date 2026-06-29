@@ -189,7 +189,9 @@ class PythonConvertor {
       .filter((line) => line.length > 0);
 
     if (this.config.options.includeImports) {
-      configuredImports.forEach((line) => importLines.push(line));
+      configuredImports.forEach((line) => {
+        importLines.push(line);
+      });
     }
 
     if (this.usedDecimal && !importLines.includes('from decimal import Decimal')) {

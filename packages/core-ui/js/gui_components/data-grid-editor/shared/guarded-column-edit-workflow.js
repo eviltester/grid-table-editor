@@ -47,7 +47,7 @@ class GuardedColumnEditWorkflow {
       initialValue,
     });
 
-    if (value == null || value === '') {
+    if (value === null || value === undefined || value === '') {
       return null;
     }
 
@@ -82,7 +82,7 @@ class GuardedColumnEditWorkflow {
       logMessage: (value) => `rename column ${logLabel(target)} with this name: ${value}`,
     });
 
-    if (nextName == null) {
+    if (nextName === null || nextName === undefined) {
       return false;
     }
 
@@ -99,7 +99,7 @@ class GuardedColumnEditWorkflow {
   }
 
   async delete(target, { getCurrentName, applyDelete }) {
-    if (this.gridExtras.getNumberOfColumns() == 1) {
+    if (this.gridExtras.getNumberOfColumns() === 1) {
       this.showError('Cannot Delete The Only Column');
       return false;
     }
@@ -133,7 +133,7 @@ class GuardedColumnEditWorkflow {
       initialValue: '',
       logMessage: (value) => `duplicate a column with this name: ${value}`,
     });
-    if (nextName == null) {
+    if (nextName === null || nextName === undefined) {
       return false;
     }
 
@@ -156,7 +156,7 @@ class GuardedColumnEditWorkflow {
       initialValue: '',
       logMessage: (value) => `create a new neighbour column with this name: ${value}`,
     });
-    if (nextName == null) {
+    if (nextName === null || nextName === undefined) {
       return false;
     }
 

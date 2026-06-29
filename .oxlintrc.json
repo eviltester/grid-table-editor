@@ -1,0 +1,33 @@
+{
+  "env": {
+    "browser": true,
+    "builtin": true,
+    "jest": true,
+    "node": true
+  },
+  "ignorePatterns": [
+    "build/**",
+    "coverage/**",
+    "docs/**",
+    "docs-src/**",
+    "node_modules/**",
+    "storybook-static/**",
+    "test-results/**",
+    "testenv/**",
+    "apps/web/dist/**",
+    "apps/web/libs/**",
+    "packages/core/js/libs/**"
+  ],
+  "globals": {
+    "agGrid": "readonly",
+    "dom": "readonly",
+    "faker": "readonly",
+    "headerAddLeftButton": "writable",
+    "onAddLeftButtonClick": "readonly",
+    "onAddLeftButtonListener": "writable",
+    "Papa": "readonly",
+    "RandExp": "readonly",
+    "Tabulator": "readonly"
+  },
+  "rules": {}
+}

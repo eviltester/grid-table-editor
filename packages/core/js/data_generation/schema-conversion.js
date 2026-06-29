@@ -2,7 +2,7 @@ import { TestDataGenerator } from './testDataGenerator.js';
 import { EnumParser } from './utils/enumParser.js';
 
 function cloneConstraintAst(ast) {
-  if (ast == null) {
+  if (ast === null || ast === undefined) {
     return null;
   }
   if (typeof structuredClone === 'function') {

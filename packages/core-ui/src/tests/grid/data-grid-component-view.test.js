@@ -45,14 +45,18 @@ class FakeGridExtension {
   setTotalRowCount(count) {
     this.totalRowCount = count;
     this.visibleRowCount = count;
-    this.gridChangeCallbacks.forEach((callback) => callback());
+    this.gridChangeCallbacks.forEach((callback) => {
+      callback();
+    });
   }
 
   setFilterSummary({ totalRowCount, visibleRowCount, hasActiveFilters }) {
     this.totalRowCount = totalRowCount;
     this.visibleRowCount = visibleRowCount;
     this.hasFilters = hasActiveFilters === true;
-    this.gridChangeCallbacks.forEach((callback) => callback());
+    this.gridChangeCallbacks.forEach((callback) => {
+      callback();
+    });
   }
 }
 

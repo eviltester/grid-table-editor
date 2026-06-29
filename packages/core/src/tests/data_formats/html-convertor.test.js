@@ -250,8 +250,8 @@ describe('Can convert generic data grids to html tables', () => {
 describe('Can convert html tables to generic data grids', () => {
   const documentHTML = '<!doctype html><html><body><div id="root"></div></body></html>';
   global.dom = new JSDOM(documentHTML);
-  global.window = dom.window;
-  global.document = dom.window.document;
+  global.window = global.dom.window;
+  global.document = global.dom.window.document;
 
   console.log(global.document);
   console.log(global.document.createElement);

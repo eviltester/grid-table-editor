@@ -33,7 +33,9 @@ const DATA_SOURCE_STRATEGY_BY_FRAMEWORK = {
 function buildTable(headers, rows) {
   const table = new GenericDataTable();
   table.setHeaders(headers);
-  rows.forEach((row) => table.appendDataRow(row));
+  rows.forEach((row) => {
+    table.appendDataRow(row);
+  });
   return table;
 }
 

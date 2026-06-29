@@ -872,8 +872,12 @@ function openParamsEditorModal({
       }
     });
 
-    valueInputs().forEach((input) => input.addEventListener('input', syncPreview));
-    booleanInputs().forEach((input) => input.addEventListener('change', syncPreview));
+    valueInputs().forEach((input) => {
+      input.addEventListener('input', syncPreview);
+    });
+    booleanInputs().forEach((input) => {
+      input.addEventListener('change', syncPreview);
+    });
 
     documentObj.body.appendChild(overlay);
     helpTooltipService.update();

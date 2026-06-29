@@ -117,7 +117,9 @@ class GeneratorPreviewView {
 
   destroy() {
     this.getPreviewButton()?.removeEventListener('click', this.handlePreviewClick);
-    this.rowCountControls.forEach((control) => control?.destroy?.());
+    this.rowCountControls.forEach((control) => {
+      control?.destroy?.();
+    });
     this.rowCountControls = [];
     this.previewGridAdapter?.destroy?.();
     this.previewGridAdapter = null;

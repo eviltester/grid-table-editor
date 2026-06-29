@@ -549,12 +549,9 @@ function normalizeStructuredSchemaPayload(payload, { allowedDomainCommands = [] 
   });
 
   if (schemaRows.length === 0 && normalizationErrors.length > 0) {
-    throw createWriterGenerationError(
-      normalizationErrors.map((item) => item.message).join('; '),
-      {
-        normalizationErrors,
-      }
-    );
+    throw createWriterGenerationError(normalizationErrors.map((item) => item.message).join('; '), {
+      normalizationErrors,
+    });
   }
 
   return {
@@ -922,10 +919,8 @@ async function bootstrapWriterSchemaPage({
       return applySchemaResult(result, { sourceLabel: 'Writer API output' });
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      const fullErrorText =
-        error instanceof Error && error.stack ? error.stack : `Error: ${message}`;
-      const rawResponseText =
-        typeof error?.writerResponseText === 'string' ? error.writerResponseText : '';
+      const fullErrorText = error instanceof Error && error.stack ? error.stack : `Error: ${message}`;
+      const rawResponseText = typeof error?.writerResponseText === 'string' ? error.writerResponseText : '';
       const requestDetails = error?.writerRequestDetails ?? 'Writer request details were not captured.';
 
       setTextOutput(errorOutputElement, fullErrorText, 'No errors yet.');

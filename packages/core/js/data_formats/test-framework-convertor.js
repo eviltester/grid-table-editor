@@ -99,7 +99,7 @@ const RESERVED_IDENTIFIERS = new Set([
 ]);
 
 function sanitizeIdentifier(value, fallback = 'value') {
-  const raw = value == null ? '' : String(value);
+  const raw = value === null || value === undefined ? '' : String(value);
   const normalized = raw.replace(/[^A-Za-z0-9_]/g, '_').replace(/_+/g, '_');
   if (!normalized) return fallback;
   const prefixed = /^[A-Za-z_]/.test(normalized) ? normalized : `_${normalized}`;

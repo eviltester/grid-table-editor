@@ -202,7 +202,7 @@ class GridExtensionTabulator {
 
   // [x] convert to tabulature
   addNeighbourColumn(position, existingColumn, colTitle) {
-    if (colTitle === undefined || colTitle === '' || colTitle.length == 0) return;
+    if (colTitle === undefined || colTitle === '' || colTitle.length === 0) return;
 
     const column = this.getNewCol(colTitle);
     const resolvedExistingColumn = this._resolveColumn(existingColumn);
@@ -479,9 +479,9 @@ class GridExtensionTabulator {
     var selectedRows = this.tabulator.getSelectedRows();
 
     // if nothing is selected, just call add row above or below
-    if (selectedRows.length == 0) {
+    if (selectedRows.length === 0) {
       // and there are no rows then add to top
-      if (this.tabulator.getDataCount() == 0 || position < 0) {
+      if (this.tabulator.getDataCount() === 0 || position < 0) {
         return Promise.resolve(this.tabUtils.addRowToTop(this._getBlankRowData())).then(() => {
           this._notifyGridChanged();
         });
@@ -501,7 +501,7 @@ class GridExtensionTabulator {
 
     var objectsToAdd = [];
     var numberOfRowsToAdd = selectedRows.length;
-    for (var objectCountToAdd = 0; objectCountToAdd < numberOfRowsToAdd; objectCountToAdd++) {
+    for (let objectCountToAdd = 0; objectCountToAdd < numberOfRowsToAdd; objectCountToAdd++) {
       objectsToAdd.push(this._getBlankRowData());
     }
 
@@ -607,7 +607,7 @@ class GridExtensionTabulator {
   _getRowAsGenericDataValsArray(aRow, fieldnames) {
     var vals = [];
     for (const propertyid in fieldnames) {
-      var property = fieldnames[propertyid];
+      const property = fieldnames[propertyid];
       const value = aRow?.[property];
       vals.push(value === undefined || value === null ? '' : String(value));
     }
@@ -624,7 +624,7 @@ class GridExtensionTabulator {
     */
   // [x] convert to tabulature
   setGridFromGenericDataTable(dataTable) {
-    if (dataTable.getColumnCount() == 0) {
+    if (dataTable.getColumnCount() === 0) {
       // will not create a table with no columns
       // TODO : report errors on screen
     }

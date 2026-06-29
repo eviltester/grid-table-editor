@@ -29,7 +29,7 @@ export class RulesBasedDataGenerator {
     data.push(headers);
 
     const runStartedAt = new Date();
-    for (var row = 0; row < thisMany; row++) {
+    for (let row = 0; row < thisMany; row++) {
       const aRow = this.generateRandomRow(fromRules, { ...options, rowIndex: row, runStartedAt });
       data.push(aRow);
     }

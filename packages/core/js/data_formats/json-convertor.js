@@ -73,10 +73,11 @@ class JsonConvertor {
     let replacer = null;
     if (this.config.options.makeNumbersNumeric) {
       replacer = (key, value) => {
-        if (value * 1 == 0) {
+        const numericValue = value * 1;
+        if (numericValue === 0) {
           return 0;
         } // special case 0
-        return value == value * 1 ? value * 1 : value;
+        return Number.isNaN(numericValue) ? value : numericValue;
       };
     }
 

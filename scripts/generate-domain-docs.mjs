@@ -158,9 +158,11 @@ function getDefinitionUsageExamples(entry) {
 
 let pageIndex = 20;
 for (const domain of domains) {
-  const keywords = byDomain.get(domain).sort((a, b) =>
-    String(a.displayCommand || a.keyword || '').localeCompare(String(b.displayCommand || b.keyword || ''))
-  );
+  const keywords = byDomain
+    .get(domain)
+    .sort((a, b) =>
+      String(a.displayCommand || a.keyword || '').localeCompare(String(b.displayCommand || b.keyword || ''))
+    );
   const lines = [
     '---',
     `sidebar_position: ${pageIndex}`,

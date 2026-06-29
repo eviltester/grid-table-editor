@@ -1,8 +1,5 @@
 import { createThemeToggleComponent } from '../../../packages/core-ui/js/gui_components/shared/theme-toggle.js';
-import {
-  executeAnyWayDataMcpTool,
-  listAnyWayDataMcpTools,
-} from '@anywaydata/core/mcp/anywaydata-mcp-contract.js';
+import { executeAnyWayDataMcpTool, listAnyWayDataMcpTools } from '@anywaydata/core/mcp/anywaydata-mcp-contract.js';
 
 function findModelContext(documentObj) {
   if (!documentObj) {
@@ -86,7 +83,9 @@ async function registerTools({ modelContext, tools }) {
       registrations.push(abortController);
     }
   } catch (error) {
-    registrations.forEach((registration) => registration.abort());
+    registrations.forEach((registration) => {
+      registration.abort();
+    });
     throw error;
   }
 
@@ -150,7 +149,9 @@ async function bootstrapWebMcpPage({
 
   return {
     destroy() {
-      registrations.forEach((registration) => registration.abort());
+      registrations.forEach((registration) => {
+        registration.abort();
+      });
       themeToggle?.destroy?.();
     },
     registeredToolNames: tools.map((tool) => tool.name),

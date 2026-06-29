@@ -172,7 +172,9 @@ describe('Pairwise Combinatorial Matching Data Generation', () => {
       ];
 
       // Set rule types to enum for pairwise generation
-      rules.forEach((rule) => rule.setType(RuleType.ENUM));
+      rules.forEach((rule) => {
+        rule.setType(RuleType.ENUM);
+      });
 
       const generator = new PairwiseTestDataGenerator();
       const initResult = generator.initializeFromRules(rules);
@@ -183,7 +185,9 @@ describe('Pairwise Combinatorial Matching Data Generation', () => {
 
     test('should generate data records as data rows', () => {
       const rules = [new TestDataRule('Color', 'Red,Green,Blue'), new TestDataRule('Size', 'Small,Large')];
-      rules.forEach((rule) => rule.setType(RuleType.ENUM));
+      rules.forEach((rule) => {
+        rule.setType(RuleType.ENUM);
+      });
 
       const generator = new PairwiseTestDataGenerator();
       generator.initializeFromRules(rules);
@@ -248,7 +252,9 @@ describe('Pairwise Combinatorial Matching Data Generation', () => {
 
     test('should clear previous generation state before failed re-initialization', () => {
       const validRules = [new TestDataRule('Color', 'Red,Green'), new TestDataRule('Size', 'Small,Large')];
-      validRules.forEach((rule) => rule.setType(RuleType.ENUM));
+      validRules.forEach((rule) => {
+        rule.setType(RuleType.ENUM);
+      });
 
       const generator = new PairwiseTestDataGenerator();
       const firstInit = generator.initializeFromRules(validRules);

@@ -120,7 +120,9 @@ function getReturnExamples(model) {
       unique.add(normalizeReturnExampleValue(usageExample.sampleReturnValue).trim());
     }
   });
-  toExampleList(model?.returnExamples).forEach((entry) => unique.add(entry));
+  toExampleList(model?.returnExamples).forEach((entry) => {
+    unique.add(entry);
+  });
   return [...unique].filter(Boolean);
 }
 

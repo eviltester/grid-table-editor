@@ -22,7 +22,9 @@ class StoryMemoryGrid {
 
   setGridFromGenericDataTable(dataTable) {
     this.table = dataTable;
-    this.callbacks.forEach((callback) => callback());
+    this.callbacks.forEach((callback) => {
+      callback();
+    });
     return Promise.resolve();
   }
 

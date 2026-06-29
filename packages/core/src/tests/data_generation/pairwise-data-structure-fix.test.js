@@ -11,7 +11,9 @@ describe('Pairwise Data Structure Fix', () => {
       new TestDataRule('Size', 'enum("small","large")'),
     ];
 
-    rules.forEach((rule) => rule.setType('enum'));
+    rules.forEach((rule) => {
+      rule.setType('enum');
+    });
 
     // Generate data using PairwiseTestDataGenerator
     const generator = new PairwiseTestDataGenerator();
@@ -57,7 +59,9 @@ describe('Pairwise Data Structure Fix', () => {
   test('PairwiseTestDataGenerator returns correct nested data structure', () => {
     const rules = [new TestDataRule('Color', 'enum("red","blue")'), new TestDataRule('Size', 'enum("small","large")')];
 
-    rules.forEach((rule) => rule.setType('enum'));
+    rules.forEach((rule) => {
+      rule.setType('enum');
+    });
 
     const generator = new PairwiseTestDataGenerator();
     const initResult = generator.initializeFromRules(rules);
@@ -83,7 +87,9 @@ describe('Pairwise Data Structure Fix', () => {
   test('demonstrates the original error would occur with wrong data access', () => {
     const rules = [new TestDataRule('Color', 'enum("red","blue")'), new TestDataRule('Size', 'enum("small","large")')];
 
-    rules.forEach((rule) => rule.setType('enum'));
+    rules.forEach((rule) => {
+      rule.setType('enum');
+    });
 
     const generator = new PairwiseTestDataGenerator();
     generator.initializeFromRules(rules);

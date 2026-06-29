@@ -1,7 +1,0 @@
-build/
-coverage/
-docs/
-docs-src/build/
-node_modules/
-package-lock.json
-docs-src/package-lock.json

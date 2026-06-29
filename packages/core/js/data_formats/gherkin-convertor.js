@@ -83,10 +83,10 @@ class GherkinConvertor {
   getOutputCellsFromTableRow(aRowString) {
     let rowString = aRowString.trim();
 
-    if (rowString.charAt(0) == '|') {
+    if (rowString.charAt(0) === '|') {
       rowString = rowString.substring(1);
     }
-    if (rowString.charAt(rowString.length - 1) == '|') {
+    if (rowString.charAt(rowString.length - 1) === '|') {
       rowString = rowString.slice(0, -1);
     }
 
@@ -176,7 +176,7 @@ class GherkinConvertor {
     let formatting = this.options.options;
     let leftIndent = formatting.leftIndent;
     if (formatting.showHeadings) {
-      var renderHeaders = dataTable
+      const renderHeaders = dataTable
         .getHeaders()
         .map((header, index) => this.padCell(this.formatCell(header), prettyPrintColumnWidths[index]));
       output = leftIndent + '|' + renderHeaders.join('|') + '|' + '\n';
@@ -184,7 +184,7 @@ class GherkinConvertor {
 
     for (let rowIndex = 0; rowIndex < dataTable.getRowCount(); rowIndex++) {
       let row = dataTable.getRow(rowIndex);
-      var renderValues = row.map((value, index) =>
+      const renderValues = row.map((value, index) =>
         this.padCell(this.formatCell(value), prettyPrintColumnWidths[index])
       );
       output = output + leftIndent + '|' + renderValues.join('|') + '|' + '\n';

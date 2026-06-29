@@ -27,15 +27,25 @@ function identifyFakerCommands() {
   DOMAIN_COMMANDS.length = 0;
   DOMAIN_COMMANDS_LONGEST_FIRST.length = 0;
 
-  TOP_LEVEL_TYPE_OPTIONS.forEach((typeOption) => FAKER_COMMANDS.push(typeOption));
+  TOP_LEVEL_TYPE_OPTIONS.forEach((typeOption) => {
+    FAKER_COMMANDS.push(typeOption);
+  });
   getAllowedFakerCommandsAlphabetical()
     .filter((command) => command !== 'RegEx' && command.startsWith('helpers.'))
-    .forEach((command) => FAKER_COMMANDS.push(command));
+    .forEach((command) => {
+      FAKER_COMMANDS.push(command);
+    });
   getAllowedFakerCommandsLongestFirst()
     .filter((command) => command.startsWith('helpers.'))
-    .forEach((command) => FAKER_COMMANDS_LONGEST_FIRST.push(command));
-  getKnownDomainCommandsAlphabetical().forEach((command) => DOMAIN_COMMANDS.push(command));
-  getKnownDomainCommandsLongestFirst().forEach((command) => DOMAIN_COMMANDS_LONGEST_FIRST.push(command));
+    .forEach((command) => {
+      FAKER_COMMANDS_LONGEST_FIRST.push(command);
+    });
+  getKnownDomainCommandsAlphabetical().forEach((command) => {
+    DOMAIN_COMMANDS.push(command);
+  });
+  getKnownDomainCommandsLongestFirst().forEach((command) => {
+    DOMAIN_COMMANDS_LONGEST_FIRST.push(command);
+  });
 }
 
 function getVisibleDomainCommandOptions(currentValue = '') {

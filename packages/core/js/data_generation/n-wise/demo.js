@@ -109,7 +109,9 @@ const testRules = [
 ];
 
 // Set rule types to enum for pairwise generation
-testRules.forEach((rule) => rule.setType(RuleType.ENUM));
+testRules.forEach((rule) => {
+  rule.setType(RuleType.ENUM);
+});
 
 const pairwiseGenerator = new PairwiseTestDataGenerator(null, null, {
   enableLogging: true,

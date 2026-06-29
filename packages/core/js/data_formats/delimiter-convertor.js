@@ -30,7 +30,7 @@ export class DelimiterConvertor {
     let headerText = '';
 
     if (this.delimiterOptions) {
-      if (this.delimiterOptions.options.header == false) {
+      if (this.delimiterOptions.options.header === false) {
         // if we have any stored headers then add them to the input
         let headers = this.delimiterOptions.headers;
         if (headers !== undefined && headers.length > 0) {

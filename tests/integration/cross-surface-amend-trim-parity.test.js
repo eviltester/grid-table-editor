@@ -81,60 +81,64 @@ describe('cross-surface amend trim parity', () => {
     expect(mcpPayload.rows).toEqual(coreResult.rows);
   });
 
-  test('cli amend stays aligned with core for import trim settings', async () => {
-    const schemaPath = await writeTempFile('trim-schema', 'Status\nActive');
-    const dataPath = await writeTempFile('trim-data', '"Name","Role"\n"  Alice  ","  Engineer  "');
-    const repoRoot = path.resolve(__dirname, '../..');
-    const cliEntry = path.join(repoRoot, 'apps', 'cli', 'src', 'node-entry.js');
+  test(
+    'cli amend stays aligned with core for import trim settings',
+    async () => {
+      const schemaPath = await writeTempFile('trim-schema', 'Status\nActive');
+      const dataPath = await writeTempFile('trim-data', '"Name","Role"\n"  Alice  ","  Engineer  "');
+      const repoRoot = path.resolve(__dirname, '../..');
+      const cliEntry = path.join(repoRoot, 'apps', 'cli', 'src', 'node-entry.js');
 
-    try {
-      const output = execFileSync(
-        process.execPath,
-        [
-          cliEntry,
-          'amend',
-          '--schema-file',
-          schemaPath,
-          '--data-file',
-          dataPath,
-          '--input-format',
-          'csv',
-          '--trim-input-fields',
-          'Name',
-          '-n',
-          '0',
-          '-f',
-          'json',
-          '--show-progress',
-          'false',
-        ],
-        {
-          cwd: repoRoot,
-          encoding: 'utf8',
-          // Full-suite runs can be CPU-bound; keep the cross-surface contract stable under load.
-          timeout: CROSS_SURFACE_PROCESS_TIMEOUT_MS,
-        }
-      );
+      try {
+        const output = execFileSync(
+          process.execPath,
+          [
+            cliEntry,
+            'amend',
+            '--schema-file',
+            schemaPath,
+            '--data-file',
+            dataPath,
+            '--input-format',
+            'csv',
+            '--trim-input-fields',
+            'Name',
+            '-n',
+            '0',
+            '-f',
+            'json',
+            '--show-progress',
+            'false',
+          ],
+          {
+            cwd: repoRoot,
+            encoding: 'utf8',
+            // Full-suite runs can be CPU-bound; keep the cross-surface contract stable under load.
+            timeout: CROSS_SURFACE_PROCESS_TIMEOUT_MS,
+          }
+        );
 
-      const coreResult = amendFromTextSpecAndData({
-        textSpec: 'Status\nActive',
-        inputData: '"Name","Role"\n"  Alice  ","  Engineer  "',
-        inputFormat: 'csv',
-        rowCount: 0,
-        outputFormat: 'json',
-        trimInputFieldsCsv: 'Name',
-      });
+        const coreResult = amendFromTextSpecAndData({
+          textSpec: 'Status\nActive',
+          inputData: '"Name","Role"\n"  Alice  ","  Engineer  "',
+          inputFormat: 'csv',
+          rowCount: 0,
+          outputFormat: 'json',
+          trimInputFieldsCsv: 'Name',
+        });
 
-      expect(JSON.parse(output.trim())).toEqual(
-        coreResult.rows.map((row) => ({
-          Name: row[0],
-          Role: row[1],
-          Status: row[2],
-        }))
-      );
-    } finally {
-      await fs.unlink(schemaPath).catch(() => {});
-      await fs.unlink(dataPath).catch(() => {});
-    }
-  }, CROSS_SURFACE_PROCESS_TIMEOUT_MS);
+        expect(JSON.parse(output.trim())).toEqual(
+          coreResult.rows.map((row) => ({
+            Name: row[0],
+            Role: row[1],
+            Status: row[2],
+          }))
+        );
+      } finally {
+        await fs.unlink(schemaPath).catch(() => {});
+        await fs.unlink(dataPath).catch(() => {});
+      }
+    },
+    CROSS_SURFACE_PROCESS_TIMEOUT_MS
+  );
 });

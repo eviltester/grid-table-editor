@@ -834,8 +834,12 @@ function buildScenarioCoverageSummary() {
     }
     const bucket = byCommand.get(key);
     bucket.scenarios.push(scenario);
-    scenario.coveredArgs.forEach((argName) => bucket.coveredArgs.add(argName));
-    scenario.origins.forEach((origin) => bucket.origins.add(origin));
+    scenario.coveredArgs.forEach((argName) => {
+      bucket.coveredArgs.add(argName);
+    });
+    scenario.origins.forEach((origin) => {
+      bucket.origins.add(origin);
+    });
   });
   return { scenarios, byCommand };
 }

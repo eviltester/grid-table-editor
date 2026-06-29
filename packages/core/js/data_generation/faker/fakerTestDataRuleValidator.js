@@ -84,7 +84,7 @@ class FakerTestDataRuleValidator {
   }
 
   isValid() {
-    return this.validationError.length == 0;
+    return this.validationError.length === 0;
   }
 
   getValidationError() {

@@ -19,7 +19,7 @@ function formatCanonicalErrors(errors = []) {
     }
     const code = String(error.code || 'error');
     const message = String(error.message || '');
-    const column = error.column != null ? ` column=${error.column}` : '';
+    const column = error.column !== null && error.column !== undefined ? ` column=${error.column}` : '';
     const line = Number.isInteger(error.line) ? ` line=${error.line}` : '';
     return `[${code}] ${message}${column}${line}`.trim();
   });

@@ -154,9 +154,9 @@ class CombinationsDialogView {
   bindDialogEvents() {
     const strengthSelect = this.root.querySelector('[data-role="n-wise-strength-select"]');
     strengthSelect?.addEventListener('change', this.handleStrengthChange);
-    this.root
-      .querySelectorAll('[data-role="n-wise-strategy-option"]')
-      .forEach((strategyButton) => strategyButton.addEventListener('click', this.handleStrategyButtonClick));
+    this.root.querySelectorAll('[data-role="n-wise-strategy-option"]').forEach((strategyButton) => {
+      strategyButton.addEventListener('click', this.handleStrategyButtonClick);
+    });
     this.root.querySelector('[data-role="n-wise-dialog-submit"]')?.addEventListener('click', this.handleSubmit);
     this.root.querySelector('[data-role="n-wise-dialog-cancel"]')?.addEventListener('click', this.handleCancel);
     this.root.querySelector('[data-role="n-wise-dialog-close"]')?.addEventListener('click', this.handleCancel);

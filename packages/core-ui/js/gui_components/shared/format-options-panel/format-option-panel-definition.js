@@ -282,7 +282,9 @@ class DeclarativeFormatOptionPanel {
   }
 
   destroyBindings() {
-    this.cleanupCallbacks.forEach((cleanup) => cleanup());
+    this.cleanupCallbacks.forEach((cleanup) => {
+      cleanup();
+    });
     this.cleanupCallbacks = [];
   }
 

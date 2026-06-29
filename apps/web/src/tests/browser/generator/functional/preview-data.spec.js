@@ -28,8 +28,12 @@ test.describe('Generator Preview Data', () => {
 
     const firstNameValues = await generatorPage.preview.getColumnTextsByName('First Name');
     const statusValues = await generatorPage.preview.getColumnTextsByName('Status');
-    firstNameValues.forEach((value) => expect(value).toBe('Alice'));
-    statusValues.forEach((value) => expect(value).toBe('active'));
+    firstNameValues.forEach((value) => {
+      expect(value).toBe('Alice');
+    });
+    statusValues.forEach((value) => {
+      expect(value).toBe('active');
+    });
     await generatorPage.preview.expectReadOnly();
 
     expectNoPageErrors(pageErrors);
@@ -60,8 +64,12 @@ test.describe('Generator Preview Data', () => {
 
     const firstNameValues = await generatorPage.preview.getColumnTextsByName('First Name');
     const statusValues = await generatorPage.preview.getColumnTextsByName('Status');
-    firstNameValues.forEach((value) => expect(value).toBe('Alice'));
-    statusValues.forEach((value) => expect(value).toBe('active'));
+    firstNameValues.forEach((value) => {
+      expect(value).toBe('Alice');
+    });
+    statusValues.forEach((value) => {
+      expect(value).toBe('active');
+    });
 
     expectNoPageErrors(pageErrors);
   });

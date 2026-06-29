@@ -33,7 +33,9 @@ function killPid(pid) {
 
 function ensurePortFree(port) {
   const pids = [...new Set(listPidsForPort(port))];
-  pids.forEach((pid) => killPid(pid));
+  pids.forEach((pid) => {
+    killPid(pid);
+  });
 }
 
 ensurePortFree(6006);

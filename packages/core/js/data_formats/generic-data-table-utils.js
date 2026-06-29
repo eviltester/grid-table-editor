@@ -12,7 +12,7 @@ class GenericDataTableUtils {
       // clear the table
       return aGenericDataTable.clear();
     }
-    if (aDataArray.length == 0) {
+    if (aDataArray.length === 0) {
       return false;
     }
 
@@ -27,7 +27,7 @@ class GenericDataTableUtils {
         console.log('Cannot set headers to null, data unchanged');
         return false;
       }
-      if (dataHeaders.length == 0) {
+      if (dataHeaders.length === 0) {
         // what are you doing? table needs headers
         // leave data as it is
         console.log('Cannot set headers to none, data unchanged');

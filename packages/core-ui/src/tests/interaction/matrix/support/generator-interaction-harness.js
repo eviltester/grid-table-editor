@@ -171,7 +171,9 @@ function createGeneratorInteractionHarness() {
       for (let index = 1; index < scenario.rows.length; index += 1) {
         clickElement(within(document.body).getByRole('button', { name: /add field/i }));
       }
-      scenario.rows.forEach((row, index) => fillGeneratorRow(index, row));
+      scenario.rows.forEach((row, index) => {
+        fillGeneratorRow(index, row);
+      });
 
       const helpLink =
         scenario.sourceType === 'faker' || scenario.sourceType === 'domain'

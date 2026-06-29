@@ -310,7 +310,9 @@ class GeneratorControlsView {
     this.loadingStatusPresenter?.destroy?.();
     this.statusPresenter = null;
     this.loadingStatusPresenter = null;
-    this.rowCountControls.forEach((control) => control?.destroy?.());
+    this.rowCountControls.forEach((control) => {
+      control?.destroy?.();
+    });
     this.rowCountControls = [];
     this.root.replaceChildren();
   }

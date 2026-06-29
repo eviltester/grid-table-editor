@@ -62,7 +62,7 @@ class AsciiTableOptions {
 
   isValidStyleName(name) {
     for (const [, value] of Object.entries(this.styleNames)) {
-      if (name == value) {
+      if (name === value) {
         return true;
       }
     }

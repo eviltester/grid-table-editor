@@ -55,7 +55,9 @@ function bindColumnHeaderActionButtons({ rootElement, handlers = {} } = {}) {
 
   return {
     destroy() {
-      disposers.forEach((dispose) => dispose());
+      disposers.forEach((dispose) => {
+        dispose();
+      });
     },
   };
 }

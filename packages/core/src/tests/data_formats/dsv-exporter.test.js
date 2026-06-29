@@ -5,7 +5,9 @@ import { GenericDataTable } from '@anywaydata/core/data_formats/generic-data-tab
 function createTable(headers, rows) {
   const table = new GenericDataTable();
   table.setHeaders(headers);
-  rows.forEach((row) => table.appendDataRow(row));
+  rows.forEach((row) => {
+    table.appendDataRow(row);
+  });
   return table;
 }
 

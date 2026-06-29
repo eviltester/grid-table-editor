@@ -77,7 +77,7 @@ class MarkdownConvertor {
 
       let nominus = value.replace(/-/g, '');
       // nominus should now be empty
-      if (nominus.length != 0) {
+      if (nominus.length !== 0) {
         // not valid
         return false;
       } else {
@@ -121,10 +121,10 @@ class MarkdownConvertor {
   getOutputCellsFromTableRow(aRowString) {
     let rowString = aRowString.trim();
 
-    if (rowString.charAt(0) == '|') {
+    if (rowString.charAt(0) === '|') {
       rowString = rowString.substring(1);
     }
-    if (rowString.charAt(rowString.length - 1) == '|') {
+    if (rowString.charAt(rowString.length - 1) === '|') {
       rowString = rowString.slice(0, -1);
     }
 
@@ -163,7 +163,7 @@ class MarkdownConvertor {
 
       // it is the header row
       if (rowString.length > 0 && rowCount === 0) {
-        var headerValues = this.getOutputCellsFromTableRow(rowString);
+        const headerValues = this.getOutputCellsFromTableRow(rowString);
         dataTable.setHeaders(headerValues);
       }
 
@@ -179,7 +179,7 @@ class MarkdownConvertor {
 
       // it is row data
       if (rowString.length > 0 && rowCount >= 2) {
-        var cellValues = this.getOutputCellsFromTableRow(rowString);
+        const cellValues = this.getOutputCellsFromTableRow(rowString);
         dataTable.appendDataRow(cellValues);
       }
 

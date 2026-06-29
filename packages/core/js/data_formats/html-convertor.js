@@ -158,7 +158,7 @@ class HtmlConvertor {
       html = html + indenter.getIndent() + '<tr>' + delim;
 
       indenter.indent();
-      var renderValues = row.map((value) => this.validHTMLCellValue(value));
+      const renderValues = row.map((value) => this.validHTMLCellValue(value));
       renderValues.forEach((value) => {
         html += indenter.getIndent() + '<td>' + value + `</td>${delim}`;
       });

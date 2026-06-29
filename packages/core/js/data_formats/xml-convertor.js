@@ -86,7 +86,9 @@ class XmlConvertor {
 
       const attributesSuffix = itemAttributes.length > 0 ? ` ${itemAttributes.join(' ')}` : '';
       lines.push(`  <${itemElementName}${attributesSuffix}>`);
-      childElements.forEach((line) => lines.push(line));
+      childElements.forEach((line) => {
+        lines.push(line);
+      });
       lines.push(`  </${itemElementName}>`);
     }
 

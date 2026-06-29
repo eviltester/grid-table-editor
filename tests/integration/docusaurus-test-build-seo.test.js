@@ -28,11 +28,8 @@ describe('Docusaurus test build SEO', () => {
   });
 
   test('test-build plugin injects noindex tags and rewrites canonical URLs', async () => {
-    const {
-      TEST_BUILD_ROBOTS_DIRECTIVES,
-      applyTestBuildSeoToHtml,
-      createTestBuildSeoPlugin,
-    } = loadFresh(helperModulePath);
+    const { TEST_BUILD_ROBOTS_DIRECTIVES, applyTestBuildSeoToHtml, createTestBuildSeoPlugin } =
+      loadFresh(helperModulePath);
 
     const transformedHtml = applyTestBuildSeoToHtml(
       `<!doctype html><html><head>
@@ -44,7 +41,7 @@ describe('Docusaurus test build SEO', () => {
       {
         canonicalSiteUrl: 'https://anywaydata.com',
         docsBaseUrl: '/site/',
-      },
+      }
     );
 
     expect(transformedHtml).toContain('<meta name="robots" content="noindex,nofollow,noarchive,nosnippet">');
@@ -70,7 +67,7 @@ describe('Docusaurus test build SEO', () => {
     fs.writeFileSync(
       htmlPath,
       '<!doctype html><html><head><link rel="canonical" href="https://eviltester.github.io/site/"></head><body><script type="application/ld+json">{"@context":"https://schema.org","@type":"Blog","@id":"https://eviltester.github.io/site/blog","mainEntityOfPage":"https://eviltester.github.io/site/blog","author":{"@type":"Person","url":"https://github.com/eviltester","image":"https://github.com/eviltester.png"},"blogPost":[{"@type":"BlogPosting","url":"https://eviltester.github.io/site/blog/shared-schema-editor-and-method-picker"}]}</script></body></html>',
-      'utf8',
+      'utf8'
     );
     fs.writeFileSync(sitemapPath, '<xml></xml>', 'utf8');
 
@@ -107,7 +104,7 @@ describe('Docusaurus test build SEO', () => {
         expect.objectContaining({
           src: 'https://plausible.io/js/script.js',
         }),
-      ]),
+      ])
     );
   });
 

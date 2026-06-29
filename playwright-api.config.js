@@ -14,17 +14,21 @@ module.exports = defineConfig({
   },
   fullyParallel: false,
   retries: process.env.CI ? 2 : 1,
-  reporter: process.env.CI 
-    ? [['list'], ['json', { outputFile: 'test-results/api-results.json' }], ['html', { open: 'never', outputFolder: 'test-results/api-report' }]] 
+  reporter: process.env.CI
+    ? [
+        ['list'],
+        ['json', { outputFile: 'test-results/api-results.json' }],
+        ['html', { open: 'never', outputFolder: 'test-results/api-report' }],
+      ]
     : [['list'], ['html', { open: 'never', outputFolder: 'test-results/api-report' }]],
-  
+
   // API testing doesn't need browser contexts, only request contexts
   use: {
     // No baseURL needed as we start our own server
     // Request context will be used instead of browser context
     extraHTTPHeaders: {
       // Add any default headers if needed
-      'Accept': 'application/json',
+      Accept: 'application/json',
     },
     // API tests don't need these browser-specific settings
     ignoreHTTPSErrors: true,
@@ -44,7 +48,7 @@ module.exports = defineConfig({
 
   // Output directories
   outputDir: 'test-results/api-output',
-  
+
   // Global setup and teardown
   globalSetup: './apps/api/src/tests/global-setup.js',
   globalTeardown: './apps/api/src/tests/global-teardown.js',

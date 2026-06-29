@@ -62,7 +62,9 @@ describe('Quoted Enum Values', () => {
       ];
 
       // Set rule types to enum for pairwise generation
-      rules.forEach((rule) => rule.setType('enum'));
+      rules.forEach((rule) => {
+        rule.setType('enum');
+      });
 
       const generator = new PairwiseTestDataGenerator();
       const initResult = generator.initializeFromRules(rules);

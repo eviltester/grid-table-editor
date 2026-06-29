@@ -251,12 +251,16 @@ function collectReferencedParameters(astNode, names = new Set()) {
     return names;
   }
   if (astNode.kind === 'set') {
-    astNode.values.forEach((value) => collectReferencedParameters(value, names));
+    astNode.values.forEach((value) => {
+      collectReferencedParameters(value, names);
+    });
     return names;
   }
   Object.values(astNode).forEach((value) => {
     if (Array.isArray(value)) {
-      value.forEach((item) => collectReferencedParameters(item, names));
+      value.forEach((item) => {
+        collectReferencedParameters(item, names);
+      });
       return;
     }
     collectReferencedParameters(value, names);

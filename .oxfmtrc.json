@@ -1,0 +1,21 @@
+{
+  "printWidth": 120,
+  "singleQuote": true,
+  "trailingComma": "es5",
+  "sortPackageJson": false,
+  "ignorePatterns": [
+    "build/**",
+    "coverage/**",
+    "docs/**",
+    "docs-src/**",
+    "node_modules/**",
+    "playwright-specs/**",
+    "storybook-static/**",
+    "test-results/**",
+    "testenv/**",
+    "apps/api/docs/**",
+    "apps/web/dist/**",
+    "apps/web/libs/**",
+    "packages/core/js/libs/**"
+  ]
+}

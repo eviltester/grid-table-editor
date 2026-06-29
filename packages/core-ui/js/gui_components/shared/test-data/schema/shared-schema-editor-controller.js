@@ -254,7 +254,9 @@ function createSharedSchemaEditorController({
   };
 
   const clearAllSemanticValidationTimers = () => {
-    [...semanticValidationTimers.keys()].forEach((rowId) => clearSemanticValidationTimer(rowId));
+    [...semanticValidationTimers.keys()].forEach((rowId) => {
+      clearSemanticValidationTimer(rowId);
+    });
   };
 
   const clearDragState = () => {

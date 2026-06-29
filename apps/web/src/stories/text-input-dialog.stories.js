@@ -23,7 +23,7 @@ function renderTextInputDialogStory(args) {
       okLabel: args.okLabel,
       cancelLabel: args.cancelLabel,
     });
-    result.textContent = value == null ? 'Cancelled' : value;
+    result.textContent = value === null || value === undefined ? 'Cancelled' : value;
   });
 
   root.__storybookCleanup = () => {

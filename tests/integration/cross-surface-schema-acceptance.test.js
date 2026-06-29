@@ -5,10 +5,7 @@ import path from 'node:path';
 const CROSS_SURFACE_PROCESS_TIMEOUT_MS = 60000;
 
 const require = createRequire(import.meta.url);
-const {
-  repoRoot,
-  SCHEMA_ACCEPTANCE_SCENARIOS,
-} = require('./support/schema-acceptance-fixtures.cjs');
+const { repoRoot, SCHEMA_ACCEPTANCE_SCENARIOS } = require('./support/schema-acceptance-fixtures.cjs');
 const {
   normalizeCliSuccess,
   normalizeCliFailure,
@@ -49,24 +46,18 @@ function parseMcpScenarioPayload(response, scenarioId) {
   if (response?.error) {
     const code = response.error.code ?? 'unknown';
     const message = response.error.message || JSON.stringify(response.error);
-    throw new Error(
-      `MCP JSON-RPC error for schema acceptance scenario "${scenarioId}" [${code}]: ${message}`
-    );
+    throw new Error(`MCP JSON-RPC error for schema acceptance scenario "${scenarioId}" [${code}]: ${message}`);
   }
 
   const text = response?.result?.content?.[0]?.text;
   if (typeof text !== 'string' || text.trim() === '') {
-    throw new Error(
-      `MCP returned no result payload for schema acceptance scenario "${scenarioId}".`
-    );
+    throw new Error(`MCP returned no result payload for schema acceptance scenario "${scenarioId}".`);
   }
 
   try {
     return JSON.parse(text);
   } catch (error) {
-    throw new Error(
-      `MCP returned non-JSON payload for schema acceptance scenario "${scenarioId}": ${error.message}`
-    );
+    throw new Error(`MCP returned non-JSON payload for schema acceptance scenario "${scenarioId}": ${error.message}`);
   }
 }
 
@@ -103,9 +94,7 @@ function runCliScenario(scenario) {
   try {
     return normalizeCliSuccess(stdout, scenario.expectedHeaders);
   } catch (error) {
-    throw new Error(
-      `CLI returned non-JSON output for schema acceptance scenario "${scenario.id}": ${error.message}`
-    );
+    throw new Error(`CLI returned non-JSON output for schema acceptance scenario "${scenario.id}": ${error.message}`);
   }
 }
 

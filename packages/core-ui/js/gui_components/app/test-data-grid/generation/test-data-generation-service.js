@@ -352,7 +352,8 @@ function createTestDataGenerationService({
 
     try {
       const requestedRowCount = getRequestedRowCount();
-      const desiredRowCountRaw = requestedRowCount == null ? '' : `${requestedRowCount}`;
+      const desiredRowCountRaw =
+        requestedRowCount === null || requestedRowCount === undefined ? '' : `${requestedRowCount}`;
       const desiredRowCountParsed = Number.parseInt(desiredRowCountRaw, 10);
       const desiredRowCount = normaliseCount(desiredRowCountRaw);
       const generationMode = getGenerationMode();

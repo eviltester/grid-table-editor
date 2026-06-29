@@ -18,7 +18,9 @@ describe('domain docs parameter examples', () => {
         if (arg.name) {
           documentedArgNames.add(arg.name);
         }
-        (arg.aliases || []).forEach((alias) => documentedArgNames.add(alias));
+        (arg.aliases || []).forEach((alias) => {
+          documentedArgNames.add(alias);
+        });
       });
       for (const usageExample of usageExamples) {
         const parsed = invocationParser.parse(String(usageExample?.functionCall || '').trim());

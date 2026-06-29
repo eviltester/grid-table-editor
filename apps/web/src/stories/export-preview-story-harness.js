@@ -166,7 +166,9 @@ class StoryMemoryGrid {
   }
 
   notifyGridChanged() {
-    this.changeCallbacks.forEach((callback) => callback());
+    this.changeCallbacks.forEach((callback) => {
+      callback();
+    });
   }
 }
 

@@ -3,8 +3,8 @@
 ## Build and Test
 
 ```bash
-pnpm run format:check   # Prettier formatting check
-pnpm run lint           # ESLint
+pnpm run format:check   # Oxfmt formatting check
+pnpm run lint           # Oxlint + Biome linting
 pnpm run verify:local # Jest unit/integration tests (54 suites)
 pnpm run test:browser   # Playwright browser smoke tests (app.html, generator.html)
 ```

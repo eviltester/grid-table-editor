@@ -303,7 +303,12 @@ jobs:
         run: python -m pip install -r .semgrep/requirements.txt
 
       - name: Run Semgrep
-        run: pnpm run semgrep:ci
+        run: |
+          semgrep scan --error --metrics off --disable-version-check \
+            --config p/javascript \
+            --config p/nodejs \
+            --exclude-rule javascript.express.security.injection.raw-html-format.raw-html-format \
+            apps/api/src apps/cli/src apps/mcp/src apps/web/src packages/core/js packages/core-ui/js scripts
 
   verify-ci:
     name: Verify CI

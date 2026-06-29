@@ -46,6 +46,16 @@ function createTabulatorStub() {
   };
 }
 
+function createGenericDataTable({ headers, rows }) {
+  return {
+    getColumnCount: () => headers.length,
+    getHeaders: () => headers,
+    getRowCount: () => rows.length,
+    getRowAsObjectUsingHeadings: (rowIndex, fieldNames) =>
+      Object.fromEntries(fieldNames.map((fieldName, index) => [fieldName, rows[rowIndex][index]])),
+  };
+}
+
 describe('GridExtensionTabulator duplicate column', () => {
   test('tabulator helper returns the underlying addData result for row insertion helpers', () => {
     const addDataResult = Promise.resolve('row-added');
@@ -174,5 +184,59 @@ describe('GridExtensionTabulator duplicate column', () => {
     await addRowPromise;
 
     expect(gridChanged).toHaveBeenCalledTimes(1);
+  });
+
+  test('setGridFromGenericDataTable refreshes active filters after replacing data', async () => {
+    const tabulator = createTabulatorStub();
+    tabulator.setColumns = jest.fn((columns) => {
+      tabulator._columnDefinitions = columns;
+    });
+    tabulator.setData = jest.fn((rows) => {
+      tabulator._rowData = rows;
+    });
+    tabulator.refreshFilter = jest.fn();
+    tabulator.getColumn = jest.fn(() => createColumnComponent(tabulator._columnDefinitions[0]));
+    const extension = new GridExtensionTabulator(tabulator);
+
+    await extension.setGridFromGenericDataTable(
+      createGenericDataTable({
+        headers: ['CaseId'],
+        rows: [['100'], ['200']],
+      })
+    );
+
+    expect(tabulator.refreshFilter).toHaveBeenCalledTimes(1);
+  });
+
+  test('applyGeneratedSchemaAmend refreshes active filters after mutating visible rows', async () => {
+    const tabulator = createTabulatorStub();
+    tabulator._columnDefinitions = [{ title: 'CaseId', field: 'column1' }];
+    tabulator._rowData = [{ column1: '2' }];
+    tabulator.getData = jest.fn((mode) => {
+      if (mode === 'active') {
+        return tabulator._rowData;
+      }
+      return tabulator._rowData;
+    });
+    tabulator.getDataCount = jest.fn((mode) => {
+      if (mode === 'active') {
+        return tabulator._rowData.length;
+      }
+      return tabulator._rowData.length;
+    });
+    tabulator.refreshData = jest.fn();
+    tabulator.refreshFilter = jest.fn();
+    const extension = new GridExtensionTabulator(tabulator);
+
+    await extension.applyGeneratedSchemaAmend({
+      mode: 'amend-table',
+      desiredRowCount: 1,
+      schemaHeaders: ['CaseId'],
+      generateRow: () => ['100'],
+    });
+
+    expect(tabulator._rowData).toEqual([{ column1: '100' }]);
+    expect(tabulator.refreshData).toHaveBeenCalledTimes(1);
+    expect(tabulator.refreshFilter).toHaveBeenCalledTimes(1);
   });
 });

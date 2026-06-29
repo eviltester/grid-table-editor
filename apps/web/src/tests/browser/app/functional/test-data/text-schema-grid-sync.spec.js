@@ -153,7 +153,7 @@ test.describe('7. Test Data Generation', () => {
     expectNoPageErrors(pageErrors);
   });
 
-  test('domain rows with invalid params show a schema error after text mode round-trip in the app editor', async ({
+  test('domain rows with invalid params switch back to schema mode with row validation in the app editor', async ({
     page,
   }) => {
     const { appPage, pageErrors } = await openApp(page);
@@ -170,10 +170,11 @@ test.describe('7. Test Data Generation', () => {
     await appPage.testDataPanel.setSchemaTextMode(true);
     await appPage.testDataPanel.schemaEditor.modeToggleButton.click();
 
+    await expect.poll(async () => appPage.testDataPanel.isRowEditorMode()).toBe(true);
+    await expect.poll(async () => appPage.testDataPanel.getSchemaErrorText()).toBe('');
     await expect
-      .poll(async () => appPage.testDataPanel.getSchemaErrorText())
-      .toContain('Name failed domain validation');
-    await expect.poll(async () => appPage.testDataPanel.isRowEditorMode()).toBe(false);
+      .poll(async () => await appPage.testDataPanel.getSchemaValidationMessage(0).textContent(), { timeout: 2500 })
+      .toContain('invalid domain params');
 
     expectNoPageErrors(pageErrors);
   });

@@ -20,7 +20,7 @@ import {
 import { applySchemaCommandSelection } from './schema-row-mapper.js';
 import { schemaRowsToSpecWithTokens } from './schema-editor-core.js';
 import { schemaErrorsToText } from './schema-error-text.js';
-import { getSchemaRowSemanticValidationIssues } from './schema-row-validation.js';
+import { getSchemaRowSemanticValidationIssues, getStaticSchemaRowValidationIssues } from './schema-row-validation.js';
 import { captureActiveFieldState, restoreActiveFieldState } from './schema-focus-state.js';
 import { getDefaultDocumentObj, resolveWindowObj } from '../../dom/default-objects.js';
 import { createConfirmDialogService } from '../../dialog-services/confirm-dialog-service.js';
@@ -424,6 +424,15 @@ function createSharedSchemaEditorController({
     parsed.errors.length > 0 &&
     parsed.errors.every((error) => error?.code === 'compiler_validation_error');
 
+  const SCHEMA_UI_BLOCKING_ROW_ERROR_CODES = new Set([
+    'missing_domain_command',
+    'unknown_domain_command',
+    'helpers_not_supported_in_domain',
+    'missing_faker_command',
+    'unknown_faker_command',
+    'forbidden_faker_command',
+  ]);
+
   const getInvalidSchemaRowIndexes = (parsed) => {
     const rows = Array.isArray(parsed?.rows) ? parsed.rows : [];
     const invalidIndexes = new Set();
@@ -447,6 +456,27 @@ function createSharedSchemaEditorController({
       }
     });
     return invalidIndexes;
+  };
+
+  const canEditCompilerValidationErrorsInSchemaRows = (parsed) => {
+    if (!canRecoverSchemaDefinitionErrorsAsLiterals(parsed)) {
+      return false;
+    }
+    const invalidIndexes = getInvalidSchemaRowIndexes(parsed);
+    if (invalidIndexes.size === 0) {
+      return false;
+    }
+
+    return [...invalidIndexes].every((rowIndex) => {
+      const row = parsed.rows[rowIndex];
+      const sourceType = normaliseSourceType(row?.sourceType);
+      if (sourceType !== SOURCE_TYPE_DOMAIN && sourceType !== SOURCE_TYPE_FAKER) {
+        return false;
+      }
+      return !getStaticSchemaRowValidationIssues(row, rowIndex).some((issue) =>
+        SCHEMA_UI_BLOCKING_ROW_ERROR_CODES.has(issue?.code)
+      );
+    });
   };
 
   const convertInvalidSchemaRowsToLiterals = (parsed) => {
@@ -592,6 +622,13 @@ function createSharedSchemaEditorController({
     if (session.getTextMode()) {
       const parsed = syncFromText({ showErrors: true });
       if (parsed?.errors?.length > 0) {
+        if (canEditCompilerValidationErrorsInSchemaRows(parsed)) {
+          clearSchemaError();
+          session.setTextMode(false);
+          updateModeView();
+          applySemanticValidationForAllRows();
+          return { rows: session.getRows(), errors: parsed.errors, tokens: session.getTokens() };
+        }
         if (!canRecoverSchemaDefinitionErrorsAsLiterals(parsed)) {
           return parsed;
         }

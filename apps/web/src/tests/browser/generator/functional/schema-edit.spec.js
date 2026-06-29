@@ -345,7 +345,7 @@ test.describe('Generator Schema Editing', () => {
     expectNoPageErrors(pageErrors);
   });
 
-  test('domain rows with invalid params show a schema error after text mode round-trip in the generator editor', async ({
+  test('domain rows with invalid params switch back to schema mode with row validation in the generator editor', async ({
     page,
   }) => {
     const { generatorPage, pageErrors } = await openGenerator(page);
@@ -358,8 +358,12 @@ test.describe('Generator Schema Editing', () => {
     await generatorPage.schema.setTextMode(true);
     await generatorPage.schema.modeToggleButton.click();
 
-    await expect(generatorPage.schema.errorStatus).toContainText('Name failed domain validation');
-    await expect.poll(async () => generatorPage.schema.editor.isRowEditorMode()).toBe(false);
+    await expect.poll(async () => generatorPage.schema.editor.isRowEditorMode()).toBe(true);
+    await expect(generatorPage.schema.errorStatus).toHaveText('');
+    await expect(generatorPage.schema.row(0).locator('.shared-schema-row-validation')).toContainText(
+      'invalid domain params',
+      { timeout: 2500 }
+    );
 
     expectNoPageErrors(pageErrors);
   });

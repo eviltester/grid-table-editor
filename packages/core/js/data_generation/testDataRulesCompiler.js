@@ -4,6 +4,12 @@ import { EnumTestDataRuleValidator } from './enum/enumTestDataRuleValidator.js';
 import { DomainTestDataRuleValidator } from './domain/domainTestDataRuleValidator.js';
 import { SchemaParsingErrors } from './schema-parsing-errors.js';
 import { EnumParser } from './utils/enumParser.js';
+import {
+  looksLikeJavaScriptRegexLiteral,
+  looksLikeRegexShorthand,
+  normalizeRegexRuleSpec,
+  parseJavaScriptRegexLiteral,
+} from './utils/regex-rule-detection.js';
 import { extractFakerCommandCandidate, isSupportedFakerRuleCommand } from '../faker/faker-commands.js';
 
 function looksLikeCommandRuleSpec(ruleSpec) {
@@ -16,8 +22,57 @@ function looksLikeFakerHelperRuleSpec(ruleSpec) {
   return command.startsWith('helpers.');
 }
 
-function looksLikeRegexShorthand(ruleSpec) {
-  return /[\\[\]{}()*+?|^$]/.test(String(ruleSpec || '').trim());
+function hasTopLevelComma(ruleSpec) {
+  const spec = String(ruleSpec || '');
+  let quote = null;
+  let squareDepth = 0;
+  let roundDepth = 0;
+  let curlyDepth = 0;
+  for (let index = 0; index < spec.length; index += 1) {
+    const char = spec[index];
+    if (quote) {
+      if (char === '\\') {
+        index += 1;
+        continue;
+      }
+      if (char === quote) {
+        quote = null;
+      }
+      continue;
+    }
+    if (char === '"' || char === "'") {
+      quote = char;
+      continue;
+    }
+    if (char === '[') {
+      squareDepth += 1;
+      continue;
+    }
+    if (char === ']' && squareDepth > 0) {
+      squareDepth -= 1;
+      continue;
+    }
+    if (char === '(') {
+      roundDepth += 1;
+      continue;
+    }
+    if (char === ')' && roundDepth > 0) {
+      roundDepth -= 1;
+      continue;
+    }
+    if (char === '{') {
+      curlyDepth += 1;
+      continue;
+    }
+    if (char === '}' && curlyDepth > 0) {
+      curlyDepth -= 1;
+      continue;
+    }
+    if (char === ',' && squareDepth === 0 && roundDepth === 0 && curlyDepth === 0) {
+      return true;
+    }
+  }
+  return false;
 }
 
 /*
@@ -73,15 +128,17 @@ export class TestDataRulesCompiler {
         }
 
         if (this.isRegexPattern(rule.ruleSpec)) {
-          const regexValue = this.extractRegexValue(rule.ruleSpec);
+          const regexValueResult = this.extractRegexValueResult(rule.ruleSpec);
           this.compilationReportLines.push(`${rule.name} is a valid 'regex': ${rule.ruleSpec}`);
-          rule.ruleSpec = regexValue;
+          rule.ruleSpec = regexValueResult.value;
+          if (regexValueResult.error) {
+            rule._regexValidationError = regexValueResult.error;
+          }
           rule.type = 'regex';
           return;
         }
 
-        // Check for enum patterns first
-        if (this.isEnumPattern(rule.ruleSpec)) {
+        if (this.isExplicitEnumPattern(rule.ruleSpec)) {
           const parsedEnumRule = EnumParser.parseEnumRuleSpec(rule.ruleSpec);
           enumValidator.validate(rule);
           if (enumValidator.isValid()) {
@@ -93,6 +150,18 @@ export class TestDataRulesCompiler {
               `${rule.name} is not a valid 'enum': ${enumValidator.getValidationError()}`
             );
             rule.type = parsedEnumRule.explicit ? 'domain' : 'enum';
+          }
+        } else if (hasTopLevelComma(rule.ruleSpec) && !looksLikeRegexShorthand(rule.ruleSpec)) {
+          enumValidator.validate(rule);
+          if (enumValidator.isValid()) {
+            this.compilationReportLines.push(`${rule.name} is a valid 'enum': ${rule.ruleSpec}`);
+            rule.ruleSpec = EnumParser.normalizeToCanonicalDomainRuleSpec(rule.ruleSpec);
+            rule.type = 'domain';
+          } else {
+            this.compilationReportLines.push(
+              `${rule.name} is not a valid 'enum': ${enumValidator.getValidationError()}`
+            );
+            rule.type = 'enum';
           }
         } else {
           if (this.isDomainHelpersPattern(rule.ruleSpec)) {
@@ -151,6 +220,16 @@ export class TestDataRulesCompiler {
             }
             if (looksLikeRegexShorthand(rule.ruleSpec)) {
               // does the regex generation work?
+              if (looksLikeJavaScriptRegexLiteral(rule.ruleSpec)) {
+                const parsedJavaScriptRegex = parseJavaScriptRegexLiteral(rule.ruleSpec);
+                if (!parsedJavaScriptRegex.ok) {
+                  rule.ruleSpec = parsedJavaScriptRegex.pattern;
+                  rule._regexValidationError = parsedJavaScriptRegex.error;
+                  rule.type = 'regex';
+                  return;
+                }
+              }
+              rule.ruleSpec = normalizeRegexRuleSpec(rule.ruleSpec);
               regexValidator.validate(rule);
               if (regexValidator.isValid()) {
                 this.compilationReportLines.push(`${rule.name} is a valid 'regex': ${rule.ruleSpec}`);
@@ -161,6 +240,18 @@ export class TestDataRulesCompiler {
                 );
                 this.errors.push(SchemaParsingErrors.evaluatingAsLiteral(rule.name));
                 rule.type = 'literal';
+              }
+            } else if (this.isImplicitEnumPattern(rule.ruleSpec)) {
+              enumValidator.validate(rule);
+              if (enumValidator.isValid()) {
+                this.compilationReportLines.push(`${rule.name} is a valid 'enum': ${rule.ruleSpec}`);
+                rule.ruleSpec = EnumParser.normalizeToCanonicalDomainRuleSpec(rule.ruleSpec);
+                rule.type = 'domain';
+              } else {
+                this.compilationReportLines.push(
+                  `${rule.name} is not a valid 'enum': ${enumValidator.getValidationError()}`
+                );
+                rule.type = 'enum';
               }
             } else {
               this.compilationReportLines.push(`${rule.name} is plain text and is treated as a 'literal'`);
@@ -180,7 +271,11 @@ export class TestDataRulesCompiler {
             rule.ruleSpec = this.extractLiteralValue(rule.ruleSpec);
           }
           if (rule.type === 'regex' && this.isRegexPattern(rule.ruleSpec)) {
-            rule.ruleSpec = this.extractRegexValue(rule.ruleSpec);
+            const regexValueResult = this.extractRegexValueResult(rule.ruleSpec);
+            rule.ruleSpec = regexValueResult.value;
+            if (regexValueResult.error) {
+              rule._regexValidationError = regexValueResult.error;
+            }
           }
           if (rule.type === 'enum') {
             enumValidator.validate(rule);
@@ -249,6 +344,15 @@ export class TestDataRulesCompiler {
     return EnumParser.isEnumRuleSpec(ruleSpec);
   }
 
+  isExplicitEnumPattern(ruleSpec) {
+    return EnumParser.isEnumRuleSpec(ruleSpec, { allowImplicitCsv: false, includeParenthesizedList: false });
+  }
+
+  isImplicitEnumPattern(ruleSpec) {
+    const spec = String(ruleSpec || '').trim();
+    return EnumParser.isEnumRuleSpec(spec, { allowImplicitCsv: true, includeParenthesizedList: false });
+  }
+
   isLiteralPattern(ruleSpec) {
     const spec = String(ruleSpec || '').trim();
     return /^(literal|datatype\.literal|awd\.datatype\.literal)\s*\(/i.test(spec);
@@ -278,16 +382,27 @@ export class TestDataRulesCompiler {
   }
 
   extractRegexValue(ruleSpec) {
+    return this.extractRegexValueResult(ruleSpec).value;
+  }
+
+  extractRegexValueResult(ruleSpec) {
     const spec = String(ruleSpec || '').trim();
     const match = spec.match(/^(?:regex|datatype\.regex|awd\.datatype\.regex)\s*\(([\s\S]*)\)\s*$/i);
     if (!match) {
-      return spec;
+      return { value: spec, error: '' };
     }
     const unwrapped = match[1];
     if (unwrapped === '""' || unwrapped === "''") {
-      return '';
+      return { value: '', error: '' };
     }
-    return unwrapped;
+    if (looksLikeJavaScriptRegexLiteral(unwrapped)) {
+      const parsedJavaScriptRegex = parseJavaScriptRegexLiteral(unwrapped);
+      return {
+        value: parsedJavaScriptRegex.pattern,
+        error: parsedJavaScriptRegex.ok ? '' : parsedJavaScriptRegex.error,
+      };
+    }
+    return { value: normalizeRegexRuleSpec(unwrapped), error: '' };
   }
 
   isValid() {

@@ -66,6 +66,20 @@ describe('schema-row-mapper', () => {
     });
   });
 
+  test('maps parsed comma regex rules into regex rows with canonical values', () => {
+    const row = mapDataRuleToSchemaRow({
+      type: 'regex',
+      name: 'Code',
+      ruleSpec: '[A-Z]{2,3}',
+    });
+
+    expect(row).toMatchObject({
+      name: 'Code',
+      sourceType: 'regex',
+      value: '[A-Z]{2,3}',
+    });
+  });
+
   test('maps parsed domain rules into grid rows', () => {
     const row = mapDataRuleToGridRow({
       type: 'domain',

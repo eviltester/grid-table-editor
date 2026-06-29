@@ -1,3 +1,5 @@
+import { looksLikeRegexShorthand } from './utils/regex-rule-detection.js';
+
 function startsConstraint(trimmedLine) {
   return /^IF\s+(?:\[|\(|NOT\b)/i.test(trimmedLine);
 }
@@ -15,6 +17,10 @@ function looksLikeInlineRuleSpec(ruleText) {
   }
 
   if (/^(?:faker\.)?[A-Za-z][A-Za-z0-9_]*(?:\.[A-Za-z][A-Za-z0-9_]*)+(?:\s*\(.*\)\s*|\s*)$/i.test(trimmed)) {
+    return true;
+  }
+
+  if (looksLikeRegexShorthand(trimmed)) {
     return true;
   }
 

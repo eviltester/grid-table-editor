@@ -428,6 +428,21 @@ IF [Status] = "closed" THEN [Status] = "open" ENDIF`,
     expect(rendered.text).toBe('Status\n(active,inactive,pending)');
   });
 
+  test('classifies comma regex shorthand as regex rows when parsing schema text', () => {
+    const parsed = schemaTextToDataRules({
+      schemaText: 'Code\n[A-Z]{2,3}\nLiteral Regex\n/[A-Z]{3}/\nMethod\nGET,POST,PUT',
+      faker,
+      RandExp,
+    });
+
+    expect(parsed.errors).toEqual([]);
+    expect(parsed.dataRules).toEqual([
+      expect.objectContaining({ name: 'Code', ruleSpec: '[A-Z]{2,3}', type: 'regex' }),
+      expect.objectContaining({ name: 'Literal Regex', ruleSpec: '[A-Z]{3}', type: 'regex' }),
+      expect.objectContaining({ name: 'Method', ruleSpec: 'enum("GET","POST","PUT")', type: 'domain' }),
+    ]);
+  });
+
   test('returns blank explicit regex text as a regex validation error when requested', () => {
     const result = schemaTextToDataRules({
       schemaText: 'Code\nregex("")',

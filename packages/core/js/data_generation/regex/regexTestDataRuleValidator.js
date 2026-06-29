@@ -7,6 +7,11 @@ export class RegexTestDataRuleValidator {
   validate(aTestDataRule) {
     this.validationError = '';
     const ruleSpec = String(aTestDataRule?.ruleSpec ?? '');
+    const forcedValidationError = String(aTestDataRule?._regexValidationError ?? '');
+    if (forcedValidationError.length > 0) {
+      this.validationError = forcedValidationError;
+      return false;
+    }
 
     if (ruleSpec.trim().length === 0) {
       this.validationError = 'Regex pattern is required and cannot be blank';

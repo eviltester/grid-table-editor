@@ -777,9 +777,18 @@ The pull request checks also run Fallow as an additional static-analysis gate:
 
 - `pnpm run ast-grep` runs the repo-specific structural analysis rules that protect shared-component DOM scoping, browser abstraction interaction discipline, and command-help metadata shape.
 - `pnpm run ast-grep:test` runs the checked-in `ast-grep` rule tests so rule behavior stays reviewable as the rule pack evolves.
+- `pnpm run semgrep` runs the pinned Semgrep JavaScript/Node security scan over the repo's runtime surfaces (`apps/api/src`, `apps/cli/src`, `apps/mcp/src`, `apps/web/src`, `packages/core/js`, `packages/core-ui/js`, and `scripts`).
+- `pnpm run semgrep:ci` is the blocking PR/main CI path for that same Semgrep scan.
 - `pnpm run fallow` runs the local health and duplication regression checks plus the dead-code pass.
 - `pnpm run fallow:ci` is the blocking CI path and fails on Fallow health or duplication regressions against the checked-in baselines and on any dead-code findings.
 - `pnpm run fallow:dead-code` runs the clean repo-tuned dead-code pass directly.
+
+Semgrep usage notes:
+
+- Install the pinned CLI locally with `python -m venv .tmp/semgrep-env` then `.tmp/semgrep-env/Scripts/python -m pip install -r .semgrep/requirements.txt`.
+- `.semgrepignore` narrows the scan away from tests, stories, docs, generated assets, and other low-signal surfaces so Semgrep stays focused on runtime code.
+- The current Semgrep wrapper uses the `p/javascript` and `p/nodejs` community packs and explicitly excludes the noisy `javascript.express.security.injection.raw-html-format.raw-html-format` rule after repo evaluation.
+- Prefer rule-specific `nosemgrep` suppressions with a short reason on reviewed false positives instead of broadly disabling packs or rules.
 
 The workflow also publishes coverage output as build artifacts on each run:
 

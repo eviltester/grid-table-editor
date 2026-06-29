@@ -1,0 +1,22 @@
+# Scope Semgrep to runtime code rather than tests, stories, docs, or generated assets.
+**/*.test.js
+**/*.test.mjs
+**/*.test.cjs
+**/jest.config.cjs
+apps/web/src/stories/
+apps/web/src/tests/
+apps/api/src/tests/
+packages/**/src/tests/
+tests/
+playwright-specs/
+test-fixtures/
+docs/
+docs-src/
+apps/web/libs/
+apps/web/dist/
+packages/core/js/libs/
+storybook-static/
+coverage/
+build/
+.tmp/
+.tmp-pack/

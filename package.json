@@ -35,6 +35,8 @@
     "lint:docker": "node scripts/lint-docker.js",
     "ast-grep": "ast-grep scan --config sgconfig.yml .",
     "ast-grep:test": "ast-grep test --config sgconfig.yml",
+    "semgrep": "node ./scripts/run-semgrep.mjs",
+    "semgrep:ci": "node ./scripts/run-semgrep.mjs --ci",
     "fallow": "pnpm run fallow:health && pnpm run fallow:dupes && pnpm run fallow:dead-code",
     "fallow:health": "fallow health --production --summary --min-score 0 --fail-on-regression --regression-baseline .fallow/baselines/health-regression.json",
     "fallow:dupes": "fallow dupes --production --summary --fail-on-regression --regression-baseline .fallow/baselines/dupes-regression.json",

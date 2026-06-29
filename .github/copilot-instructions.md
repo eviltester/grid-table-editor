@@ -6,6 +6,7 @@
 pnpm run format:check   # Oxfmt formatting check
 pnpm run lint           # Oxlint + Biome linting
 pnpm run ast-grep       # Repo-specific structural analysis rules
+pnpm run semgrep        # Optional runtime-focused Semgrep security scan
 pnpm run fallow         # Fallow health + duplication regression checks + clean dead-code pass
 pnpm run fallow:dead-code # Fallow dead-code check
 pnpm run verify:local # Jest unit/integration tests (54 suites)

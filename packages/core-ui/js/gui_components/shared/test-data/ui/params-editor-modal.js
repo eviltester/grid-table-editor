@@ -582,6 +582,8 @@ function renderEntryRows(entries = []) {
       const nameLabel = isBooleanParamType(entry.type || '')
         ? `<code>${escapeHtml(entry.name)}</code>`
         : `<label for="params-editor-value-${index}"><code>${escapeHtml(entry.name)}</code></label>`;
+      const requiredStateLabel = entry.optional ? 'Optional' : 'Required';
+      const requiredStateAccessibleLabel = `${requiredStateLabel} ${entry.name}`;
       return `
         <tr>
           <td>
@@ -598,11 +600,15 @@ function renderEntryRows(entries = []) {
           </td>
           <td><code>${escapeHtml(entry.type || 'unknown')}</code></td>
           <td>
-            <label class="params-editor-required-checkbox-label" aria-label="Required ${escapeHtml(entry.name)}">
+            <label
+              class="params-editor-required-checkbox-label"
+              title="${escapeHtml(requiredStateAccessibleLabel)}"
+            >
               <input
                 data-role="params-editor-required"
                 data-index="${index}"
                 type="checkbox"
+                aria-label="${escapeHtml(requiredStateAccessibleLabel)}"
                 ${entry.optional ? '' : 'checked'}
                 disabled
               />

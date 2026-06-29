@@ -73,6 +73,10 @@ describe('method picker dialog subcomponents', () => {
     });
 
     expect(root.querySelector('[data-command="location.city"]').classList.contains('is-selected')).toBe(true);
+    expect(root.getAttribute('role')).toBe('listbox');
+    expect(root.getAttribute('aria-orientation')).toBe('vertical');
+    expect(root.querySelector('[data-role="method-picker-tile"]').tagName).toBe('DIV');
+    expect(root.querySelector('[data-role="method-picker-tile"]').getAttribute('role')).toBe('option');
     root.querySelector('[data-command="helpers.arrayElement"]').click();
     expect(selections).toEqual(['helpers.arrayElement']);
 

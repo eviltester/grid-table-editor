@@ -274,9 +274,15 @@ describe('method picker modal', () => {
     expect(getOverlay()).not.toBeNull();
     expect(getOverlay().querySelector('[data-role="method-picker-dialog"]')).not.toBeNull();
     expect(getTabsRoot()).not.toBeNull();
-    expect(getOverlay().querySelector('[data-role="method-picker-list"]')).not.toBeNull();
+    const methodList = getOverlay().querySelector('[data-role="method-picker-list"]');
+    expect(methodList).not.toBeNull();
+    expect(methodList.tagName).toBe('DIV');
+    expect(methodList.getAttribute('role')).toBe('listbox');
     expect(getDetail()).not.toBeNull();
-    expect(getOverlay().querySelector('[data-role="method-picker-tile"]')).not.toBeNull();
+    const methodTile = getOverlay().querySelector('[data-role="method-picker-tile"]');
+    expect(methodTile).not.toBeNull();
+    expect(methodTile.tagName).toBe('DIV');
+    expect(methodTile.getAttribute('role')).toBe('option');
     expect(getOverlay().querySelector('[data-role="method-picker-command"]')).not.toBeNull();
     expect(getOverlay().querySelector('[data-role="method-picker-close-button"]')).not.toBeNull();
     expect(getOverlay().querySelector('[data-role="method-picker-cancel-button"]')).not.toBeNull();

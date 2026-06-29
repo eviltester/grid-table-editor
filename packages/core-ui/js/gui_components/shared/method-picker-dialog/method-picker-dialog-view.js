@@ -30,7 +30,7 @@ class MethodPickerDialogView {
         </header>
         <div data-role="method-picker-navigator-root"></div>
         <div class="method-picker-content">
-          <section data-role="method-picker-list-root"></section>
+          <div data-role="method-picker-list-root"></div>
           <aside data-role="method-picker-detail-root"></aside>
         </div>
         <footer class="method-picker-footer">

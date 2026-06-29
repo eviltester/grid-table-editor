@@ -460,6 +460,9 @@ describe('params editor modal', () => {
     const reqBoxes = Array.from(dialog.querySelectorAll('[data-role="params-editor-required"]'));
     expect(reqBoxes).toHaveLength(5);
     expect(reqBoxes.every((box) => box.checked === false)).toBe(true);
+    expect(within(dialog).getByRole('checkbox', { name: 'Optional start' })).toBeTruthy();
+    expect(within(dialog).getByRole('checkbox', { name: 'Optional zeropadding' })).toBeTruthy();
+    expect(within(dialog).queryByRole('checkbox', { name: 'Required start' })).toBeNull();
 
     const startInput = within(dialog).getByRole('textbox', { name: /start value/i });
     const zeroPaddingInput = within(dialog).getByRole('textbox', { name: /zeropadding value/i });
@@ -514,6 +517,9 @@ describe('params editor modal', () => {
     expect(helpIcons[1].getAttribute('data-help-text')).toContain('Optional.');
     expect(helpIcons[1].getAttribute('data-help-text')).toContain('Default: 10');
     expect(helpIcons[1].getAttribute('data-help-text')).toContain('<code>100</code>');
+    expect(within(dialog).getByRole('checkbox', { name: 'Required min' }).checked).toBe(true);
+    expect(within(dialog).getByRole('checkbox', { name: 'Optional max' }).checked).toBe(false);
+    expect(within(dialog).queryByRole('checkbox', { name: 'Required max' })).toBeNull();
 
     fireEvent.click(within(dialog).getByRole('button', { name: /^cancel$/i }));
     await expect(promise).resolves.toBeNull();

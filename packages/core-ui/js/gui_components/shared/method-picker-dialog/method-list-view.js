@@ -40,8 +40,7 @@ class MethodListView {
       .map((option) => {
         const isSelected = option.command === state.selectedCommand;
         return `
-          <button
-            type="button"
+          <div
             class="method-picker-tile ${isSelected ? 'is-selected' : ''}"
             data-role="method-picker-tile"
             data-command="${escapeHtml(option.command)}"
@@ -52,7 +51,7 @@ class MethodListView {
             <span class="method-picker-tile-command" data-role="method-picker-command">${escapeHtml(option.command)}</span>
             <span class="method-picker-tile-summary">${escapeHtml(option.helpModel?.summary || '')}</span>
             <span class="method-picker-tile-tag">${escapeHtml(option.sourceType)}</span>
-          </button>`;
+          </div>`;
       })
       .join('');
     this.focusPendingCommand();

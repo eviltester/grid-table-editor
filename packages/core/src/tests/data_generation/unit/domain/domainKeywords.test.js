@@ -488,6 +488,10 @@ describe('domain keyword arg validation', () => {
       ok: false,
       error: 'Invalid keyword arguments: argument "step" must be a non-zero integer',
     });
+    expect(validateDomainKeywordArgs(keyword, [1, -0])).toEqual({
+      ok: false,
+      error: 'Invalid keyword arguments: argument "step" must be a non-zero integer',
+    });
     expect(validateDomainKeywordArgs(keyword, [1, 1, '', '', -1])).toEqual({
       ok: false,
       error: 'Invalid keyword arguments: argument "zeropadding" must be greater than or equal to 0',

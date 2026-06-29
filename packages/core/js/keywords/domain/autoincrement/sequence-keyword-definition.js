@@ -3,7 +3,7 @@ import { validateStringOrNumberValue } from '../../../command-help/command-help-
 function validateAutoIncrementSequenceArgs(_args = [], context = {}) {
   const argsByName = context?.argsByName || {};
 
-  if (Object.is(argsByName.step, 0)) {
+  if (argsByName.step === 0) {
     return {
       ok: false,
       error: 'Invalid keyword arguments: argument "step" must be a non-zero integer',

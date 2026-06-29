@@ -433,49 +433,61 @@ function createSharedSchemaEditorController({
     'forbidden_faker_command',
   ]);
 
-  const getInvalidSchemaRowIndexes = (parsed) => {
+  const getSchemaErrorRowIndex = (parsed, error) => {
     const rows = Array.isArray(parsed?.rows) ? parsed.rows : [];
+    const column = String(error?.column ?? '').trim();
+    if (column.length > 0) {
+      const columnIndex = rows.findIndex((row) => String(row?.name ?? '').trim() === column);
+      if (columnIndex >= 0) {
+        return columnIndex;
+      }
+    }
+
+    const line = Number(error?.line);
+    if (Number.isInteger(line)) {
+      const ruleIndex = (Array.isArray(parsed?.tokens) ? parsed.tokens : [])
+        .filter((token) => token?.kind === 'rule')
+        .findIndex((token) => token?.line === line || token?.ruleLine === line || token?.headerLine === line);
+      if (ruleIndex >= 0 && ruleIndex < rows.length) {
+        return ruleIndex;
+      }
+    }
+
+    return -1;
+  };
+
+  const getInvalidSchemaRowIndexes = (parsed) => {
     const invalidIndexes = new Set();
     (Array.isArray(parsed?.errors) ? parsed.errors : []).forEach((error) => {
-      const column = String(error?.column ?? '').trim();
-      if (column.length > 0) {
-        rows.forEach((row, index) => {
-          if (String(row?.name ?? '').trim() === column) {
-            invalidIndexes.add(index);
-          }
-        });
-      }
-      const line = Number(error?.line);
-      if (Number.isInteger(line)) {
-        const ruleIndex = (Array.isArray(parsed?.tokens) ? parsed.tokens : [])
-          .filter((token) => token?.kind === 'rule')
-          .findIndex((token) => token?.line === line || token?.ruleLine === line || token?.headerLine === line);
-        if (ruleIndex >= 0 && ruleIndex < rows.length) {
-          invalidIndexes.add(ruleIndex);
-        }
+      const rowIndex = getSchemaErrorRowIndex(parsed, error);
+      if (rowIndex >= 0) {
+        invalidIndexes.add(rowIndex);
       }
     });
     return invalidIndexes;
+  };
+
+  const isSchemaRowEditableForCompilerValidationError = (row, rowIndex) => {
+    const sourceType = normaliseSourceType(row?.sourceType);
+    if (sourceType !== SOURCE_TYPE_DOMAIN && sourceType !== SOURCE_TYPE_FAKER) {
+      return false;
+    }
+    return !getStaticSchemaRowValidationIssues(row, rowIndex).some((issue) =>
+      SCHEMA_UI_BLOCKING_ROW_ERROR_CODES.has(issue?.code)
+    );
   };
 
   const canEditCompilerValidationErrorsInSchemaRows = (parsed) => {
     if (!canRecoverSchemaDefinitionErrorsAsLiterals(parsed)) {
       return false;
     }
-    const invalidIndexes = getInvalidSchemaRowIndexes(parsed);
-    if (invalidIndexes.size === 0) {
-      return false;
-    }
 
-    return [...invalidIndexes].every((rowIndex) => {
-      const row = parsed.rows[rowIndex];
-      const sourceType = normaliseSourceType(row?.sourceType);
-      if (sourceType !== SOURCE_TYPE_DOMAIN && sourceType !== SOURCE_TYPE_FAKER) {
+    return parsed.errors.every((error) => {
+      const rowIndex = getSchemaErrorRowIndex(parsed, error);
+      if (rowIndex < 0) {
         return false;
       }
-      return !getStaticSchemaRowValidationIssues(row, rowIndex).some((issue) =>
-        SCHEMA_UI_BLOCKING_ROW_ERROR_CODES.has(issue?.code)
-      );
+      return isSchemaRowEditableForCompilerValidationError(parsed.rows[rowIndex], rowIndex);
     });
   };
 

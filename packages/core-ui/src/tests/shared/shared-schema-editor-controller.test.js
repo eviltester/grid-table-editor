@@ -625,6 +625,68 @@ describe('createSharedSchemaEditorController', () => {
     expect(root.querySelector('[data-role="schema-error"]')?.textContent || '').toBe('');
   });
 
+  test('keeps text mode when compiler validation includes an unmatched error', async () => {
+    const root = createRoot(dom.window.document);
+    const requestConfirm = jest.fn(() => Promise.resolve(false));
+    const onSchemaError = jest.fn();
+    const schemaTextToDataRules = jest.fn(() => ({
+      dataRules: [{ name: 'Num', ruleSpec: 'number.int(min=1, min=2)', type: 'domain' }],
+      errors: [
+        {
+          code: 'compiler_validation_error',
+          column: 'Num',
+          message: 'Num failed domain validation - Invalid keyword arguments: duplicate named argument "min"',
+        },
+        {
+          code: 'compiler_validation_error',
+          message: 'Constraint validation failed without a row anchor',
+        },
+      ],
+      schemaTokens: [{ kind: 'rule', name: 'Num', rule: 'number.int(min=1, min=2)', ruleLine: 2 }],
+      constraints: [],
+    }));
+    const controller = createSharedSchemaEditorController({
+      documentObj: dom.window.document,
+      rootElement: root,
+      requestConfirm,
+      createBlankRow: () => ({
+        id: 'blank',
+        name: '',
+        sourceType: 'domain',
+        command: '',
+        value: '',
+        params: '',
+        semanticValidationIssues: [],
+      }),
+      mapRuleToRow: (rule) => ({
+        id: rule.name,
+        name: rule.name,
+        sourceType: rule.type,
+        command: 'number.int',
+        value: '',
+        params: '(min=1, min=2)',
+        semanticValidationIssues: [],
+      }),
+      schemaTextToDataRules,
+      dataRulesToSchemaText,
+      onSchemaError,
+      validateSchemaRows: jest.fn((rows) => ({ rows, errors: [] })),
+      updatePairwiseButtonVisibility: jest.fn(),
+      updateHelpHints: jest.fn(),
+    });
+
+    controller.init();
+    controller.setTextMode(true);
+    root.querySelector('[data-role="schema-textbox"]').value = 'Num\nnumber.int(min=1, min=2)';
+
+    const result = await controller.toggleMode();
+
+    expect(requestConfirm).toHaveBeenCalledTimes(1);
+    expect(result.errors).toHaveLength(2);
+    expect(controller.getState().isTextMode).toBe(true);
+    expect(onSchemaError).toHaveBeenLastCalledWith(expect.stringContaining('Constraint validation failed'));
+  });
+
   test('stays in text mode when invalid text definition literal conversion is declined', async () => {
     const root = createRoot(dom.window.document);
     const requestConfirm = jest.fn(() => Promise.resolve(false));

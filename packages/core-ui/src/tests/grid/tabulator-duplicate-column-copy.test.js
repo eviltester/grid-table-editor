@@ -56,6 +56,37 @@ function createGenericDataTable({ headers, rows }) {
   };
 }
 
+function addFilterSupport(tabulator) {
+  tabulator._filterPredicate = null;
+  tabulator._activeRows = tabulator._rowData;
+  tabulator.setFilter = jest.fn((predicate) => {
+    tabulator._filterPredicate = predicate;
+    tabulator.refreshFilter();
+  });
+  tabulator.clearFilter = jest.fn(() => {
+    tabulator._filterPredicate = null;
+    tabulator._activeRows = tabulator._rowData;
+  });
+  tabulator.refreshFilter = jest.fn(() => {
+    tabulator._activeRows =
+      typeof tabulator._filterPredicate === 'function'
+        ? tabulator._rowData.filter((row) => tabulator._filterPredicate(row))
+        : tabulator._rowData;
+  });
+  tabulator.getData = jest.fn((mode) => {
+    if (mode === 'active') {
+      return tabulator._activeRows;
+    }
+    return tabulator._rowData.map((row) => ({ ...row }));
+  });
+  tabulator.getDataCount = jest.fn((mode) => {
+    if (mode === 'active') {
+      return tabulator._activeRows.length;
+    }
+    return tabulator._rowData.length;
+  });
+}
+
 describe('GridExtensionTabulator duplicate column', () => {
   test('tabulator helper returns the underlying addData result for row insertion helpers', () => {
     const addDataResult = Promise.resolve('row-added');
@@ -194,9 +225,12 @@ describe('GridExtensionTabulator duplicate column', () => {
     tabulator.setData = jest.fn((rows) => {
       tabulator._rowData = rows;
     });
-    tabulator.refreshFilter = jest.fn();
+    addFilterSupport(tabulator);
     tabulator.getColumn = jest.fn(() => createColumnComponent(tabulator._columnDefinitions[0]));
     const extension = new GridExtensionTabulator(tabulator);
+
+    extension.filterText('200');
+    expect(tabulator.getData('active')).toEqual([]);
 
     await extension.setGridFromGenericDataTable(
       createGenericDataTable({
@@ -205,28 +239,20 @@ describe('GridExtensionTabulator duplicate column', () => {
       })
     );
 
-    expect(tabulator.refreshFilter).toHaveBeenCalledTimes(1);
+    expect(tabulator.refreshFilter).toHaveBeenCalledTimes(2);
+    expect(tabulator.getData('active')).toEqual([{ column1: '200' }]);
   });
 
   test('applyGeneratedSchemaAmend refreshes active filters after mutating visible rows', async () => {
     const tabulator = createTabulatorStub();
     tabulator._columnDefinitions = [{ title: 'CaseId', field: 'column1' }];
-    tabulator._rowData = [{ column1: '2' }];
-    tabulator.getData = jest.fn((mode) => {
-      if (mode === 'active') {
-        return tabulator._rowData;
-      }
-      return tabulator._rowData;
-    });
-    tabulator.getDataCount = jest.fn((mode) => {
-      if (mode === 'active') {
-        return tabulator._rowData.length;
-      }
-      return tabulator._rowData.length;
-    });
+    tabulator._rowData = [{ column1: '2' }, { column1: '3' }];
     tabulator.refreshData = jest.fn();
-    tabulator.refreshFilter = jest.fn();
+    addFilterSupport(tabulator);
     const extension = new GridExtensionTabulator(tabulator);
+
+    extension.filterText('2');
+    expect(tabulator.getData('active')).toEqual([{ column1: '2' }]);
 
     await extension.applyGeneratedSchemaAmend({
       mode: 'amend-table',
@@ -235,8 +261,9 @@ describe('GridExtensionTabulator duplicate column', () => {
       generateRow: () => ['100'],
     });
 
-    expect(tabulator._rowData).toEqual([{ column1: '100' }]);
+    expect(tabulator._rowData).toEqual([{ column1: '100' }, { column1: '3' }]);
+    expect(tabulator.getData('active')).toEqual([]);
     expect(tabulator.refreshData).toHaveBeenCalledTimes(1);
-    expect(tabulator.refreshFilter).toHaveBeenCalledTimes(1);
+    expect(tabulator.refreshFilter).toHaveBeenCalledTimes(2);
   });
 });

@@ -20,6 +20,8 @@ updates:
           - "oxlint"
           - "oxfmt"
           - "@biomejs/*"
+          - "fallow"
+          - "@fallow-cli/*"
       types:
         patterns:
           - "@types/*"

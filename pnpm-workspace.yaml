@@ -1,6 +1,8 @@
 packages:
   - 'packages/*'
-  - 'apps/*'
+  - 'apps/api'
+  - 'apps/cli'
+  - 'apps/mcp'
   - 'docs-src'
 
 minimumReleaseAge: 10080
@@ -58,6 +60,15 @@ minimumReleaseAgeExclude:
   - '@oxlint/binding-win32-x64-msvc@1.71.0'
   - oxfmt@0.56.0
   - oxlint@1.71.0
+  - '@fallow-cli/darwin-arm64@2.103.0'
+  - '@fallow-cli/darwin-x64@2.103.0'
+  - '@fallow-cli/linux-arm64-gnu@2.103.0'
+  - '@fallow-cli/linux-arm64-musl@2.103.0'
+  - '@fallow-cli/linux-x64-gnu@2.103.0'
+  - '@fallow-cli/linux-x64-musl@2.103.0'
+  - '@fallow-cli/win32-arm64-msvc@2.103.0'
+  - '@fallow-cli/win32-x64-msvc@2.103.0'
+  - fallow@2.103.0
 allowBuilds:
   '@scarf/scarf': true
   core-js: true

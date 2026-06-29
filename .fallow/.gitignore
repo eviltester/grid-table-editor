@@ -1,0 +1,5 @@
+*
+!.gitignore
+!baselines/
+!baselines/health-regression.json
+!baselines/dupes-regression.json

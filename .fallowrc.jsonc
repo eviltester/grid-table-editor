@@ -1,0 +1,80 @@
+{
+  // Keep generated, vendored, cache, and build outputs out of every analysis.
+  "ignorePatterns": [
+    "**/node_modules/**",
+    "**/coverage/**",
+    "**/build/**",
+    "**/storybook-static/**",
+    "**/playwright-report/**",
+    "**/test-results/**",
+    "**/.tmp-pack/**",
+    ".fallow/**",
+    "apps/web/dist/**",
+    "apps/web/libs/**",
+    "docs/**",
+    "docs-src/src/components/HomepageFeatures/**",
+    "docs-src/src/css/custom.css",
+    "packages/core/js/libs/**",
+    "tests/integration/**"
+  ],
+
+  // Limit workspace discovery to the packages we actually want fallow to reason about.
+  "workspaces": {
+    "patterns": ["packages/*", "apps/api", "apps/cli", "apps/mcp", "docs-src"]
+  },
+
+  // Repo-level tool/runtime wiring that is valid but not modelled as package-local imports.
+  "ignoreDependencies": [
+    "@anywaydata/site-config",
+    "@babel/preset-env",
+    "@docusaurus/module-type-aliases",
+    "@faker-js/faker",
+    "@jest/globals",
+    "@mdx-js/react",
+    "@rolldown/binding-linux-x64-gnu",
+    "@rolldown/binding-linux-x64-musl",
+    "@testing-library/dom",
+    "@testing-library/user-event",
+    "globals",
+    "jest-extended",
+    "jsdom",
+    "papaparse",
+    "randexp",
+    "react-dom"
+  ],
+
+  "ignoreUnresolvedImports": ["../../../../../experiments/n-wise/experimentalNWiseGenerator.js"],
+
+  "ignoreExports": [
+    {
+      "file": "docs-src/test-build-seo.cjs",
+      "exports": ["*"]
+    }
+  ],
+
+  // Storybook/test duplication is intentionally repetitive and drowns the signal.
+  "duplicates": {
+    "mode": "mild",
+    "minTokens": 60,
+    "minLines": 6,
+    "ignore": [
+      ".storybook/**",
+      "apps/**/src/tests/**",
+      "packages/**/src/tests/**",
+      "tests/integration/**",
+      "**/*.stories.js"
+    ]
+  },
+
+  // Use health on production code paths; tests/stories/docs can still be inspected ad hoc.
+  "health": {
+    "ignore": [
+      ".storybook/**",
+      "apps/**/src/tests/**",
+      "packages/**/src/tests/**",
+      "tests/integration/**",
+      "**/*.stories.js",
+      "docs-src/**"
+    ]
+  }
+}

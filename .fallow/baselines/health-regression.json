@@ -1,0 +1,1947 @@
+{
+  "finding_counts": {
+    "apps/api/src/api-service.js": {
+      "complexity_critical": {
+        "count": 1
+      },
+      "crap_critical": {
+        "count": 4
+      },
+      "crap_high": {
+        "count": 4
+      },
+      "crap_moderate": {
+        "count": 5
+      }
+    },
+    "apps/api/src/index.js": {
+      "complexity_critical": {
+        "count": 1
+      },
+      "crap_critical": {
+        "count": 1
+      },
+      "crap_high": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 3
+      }
+    },
+    "apps/cli/src/cli-options.js": {
+      "complexity_critical": {
+        "count": 1
+      },
+      "crap_critical": {
+        "count": 1
+      }
+    },
+    "apps/cli/src/platform/bun-platform.js": {
+      "crap_high": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "apps/cli/src/run-cli.js": {
+      "complexity_critical": {
+        "count": 1
+      },
+      "crap_critical": {
+        "count": 1
+      },
+      "crap_high": {
+        "count": 1
+      }
+    },
+    "apps/mcp/src/index.js": {
+      "crap_critical": {
+        "count": 1
+      }
+    },
+    "apps/web/site-config-html.mjs": {
+      "crap_critical": {
+        "count": 1
+      }
+    },
+    "apps/web/src/combinatorial-entry.mjs": {
+      "crap_critical": {
+        "count": 5
+      },
+      "crap_moderate": {
+        "count": 2
+      }
+    },
+    "apps/web/src/stories/export-preview-story-harness.js": {
+      "crap_critical": {
+        "count": 3
+      },
+      "crap_high": {
+        "count": 2
+      },
+      "crap_moderate": {
+        "count": 2
+      }
+    },
+    "apps/web/src/stories/format-option-panel.story-helpers.js": {
+      "crap_high": {
+        "count": 1
+      }
+    },
+    "apps/web/src/stories/story-cleanup.js": {
+      "crap_high": {
+        "count": 1
+      }
+    },
+    "apps/web/src/webmcp-page.mjs": {
+      "crap_high": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "apps/web/src/writer-schema-page.mjs": {
+      "complexity_critical": {
+        "count": 1
+      },
+      "crap_critical": {
+        "count": 5
+      },
+      "crap_high": {
+        "count": 5
+      },
+      "crap_moderate": {
+        "count": 5
+      }
+    },
+    "packages/core-ui/js/generator-script.js": {
+      "crap_high": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/app/data-population-panel/data-population-panel-controller.js": {
+      "crap_critical": {
+        "count": 1
+      },
+      "crap_high": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/app/data-population-panel/data-population-panel-view.js": {
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/app/data-population-panel/index.js": {
+      "crap_critical": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/app/drag-drop-control.js": {
+      "crap_critical": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/app/format-selector/format-selector-controller.js": {
+      "crap_high": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 3
+      }
+    },
+    "packages/core-ui/js/gui_components/app/format-selector/format-selector-view.js": {
+      "crap_moderate": {
+        "count": 2
+      }
+    },
+    "packages/core-ui/js/gui_components/app/format-selector/index.js": {
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/app/import-export-adapters/file-import-bindings-adapter.js": {
+      "crap_high": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/app/import-export-download-control/import-export-download-control-controller.js": {
+      "crap_critical": {
+        "count": 1
+      },
+      "crap_high": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/app/import-export-download-control/import-export-download-control-view.js": {
+      "crap_critical": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/app/import-export-grid-preview-sync-control/import-export-grid-preview-sync-control-controller.js": {
+      "crap_high": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/app/import-export-grid-preview-sync-control/import-export-grid-preview-sync-control-view.js": {
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/app/import-export-import-control/import-export-import-control-controller.js": {
+      "crap_critical": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/app/import-export-import-control/import-export-import-control-view.js": {
+      "complexity_critical": {
+        "count": 1
+      },
+      "crap_critical": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 2
+      }
+    },
+    "packages/core-ui/js/gui_components/app/import-export-toolbar/import-export-toolbar-controller.js": {
+      "complexity_critical": {
+        "count": 1
+      },
+      "crap_critical": {
+        "count": 2
+      }
+    },
+    "packages/core-ui/js/gui_components/app/import-export-toolbar/import-export-toolbar-view.js": {
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/app/import-export-toolbar/index.js": {
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/app/import-export-trim-state.js": {
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/app/import-export-workspace/create-import-export-file-transfer-service.js": {
+      "crap_critical": {
+        "count": 4
+      },
+      "crap_high": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/app/import-export-workspace/create-import-export-preview-workflow-service.js": {
+      "crap_high": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 2
+      }
+    },
+    "packages/core-ui/js/gui_components/app/import-export-workspace/create-import-export-workspace-runtime.js": {
+      "complexity_critical": {
+        "count": 1
+      },
+      "crap_critical": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/app/import-export-workspace/create-import-export-workspace-workflow-service.js": {
+      "crap_critical": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/app/import-export-workspace/import-export-workspace-controller.js": {
+      "complexity_critical": {
+        "count": 1
+      },
+      "crap_critical": {
+        "count": 2
+      },
+      "crap_high": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/app/import-export-workspace/import-export-workspace-services.js": {
+      "crap_high": {
+        "count": 2
+      },
+      "crap_moderate": {
+        "count": 3
+      }
+    },
+    "packages/core-ui/js/gui_components/app/import-export-workspace/import-export-workspace-view.js": {
+      "crap_high": {
+        "count": 3
+      },
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/app/options-preview-split-layout/options-preview-split-layout-controller.js": {
+      "crap_critical": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/app/options-preview-split-layout/options-preview-split-layout-view.js": {
+      "crap_critical": {
+        "count": 1
+      },
+      "crap_high": {
+        "count": 3
+      },
+      "crap_moderate": {
+        "count": 2
+      }
+    },
+    "packages/core-ui/js/gui_components/app/page/app-page-runtime.js": {
+      "crap_critical": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 3
+      }
+    },
+    "packages/core-ui/js/gui_components/app/population-actions/index.js": {
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/app/population-actions/population-actions-controller.js": {
+      "complexity_critical": {
+        "count": 1
+      },
+      "crap_critical": {
+        "count": 2
+      }
+    },
+    "packages/core-ui/js/gui_components/app/population-actions/population-actions-view.js": {
+      "complexity_critical": {
+        "count": 1
+      },
+      "crap_critical": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/app/test-data-grid/controller/test-data-grid-controller.js": {
+      "complexity_critical": {
+        "count": 1
+      },
+      "crap_critical": {
+        "count": 2
+      },
+      "crap_high": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 3
+      }
+    },
+    "packages/core-ui/js/gui_components/app/test-data-grid/generation/test-data-amend.js": {
+      "complexity_critical": {
+        "count": 1
+      },
+      "crap_critical": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/app/test-data-grid/generation/test-data-generation-service.js": {
+      "complexity_critical": {
+        "count": 1
+      },
+      "crap_critical": {
+        "count": 1
+      },
+      "crap_high": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 4
+      }
+    },
+    "packages/core-ui/js/gui_components/app/test-data-grid/schema/grid-to-enum-schema.js": {
+      "crap_moderate": {
+        "count": 2
+      }
+    },
+    "packages/core-ui/js/gui_components/app/test-data-grid/schema/test-data-grid-schema-text-sync.js": {
+      "crap_critical": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/app/test-data-grid/ui/test-data-ui-status.js": {
+      "crap_moderate": {
+        "count": 2
+      }
+    },
+    "packages/core-ui/js/gui_components/app/test-data-population-toolbar/test-data-population-toolbar-controller.js": {
+      "crap_high": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/app/text-preview-editor/text-preview-editor-controller.js": {
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/app/text-preview-editor/text-preview-editor-view.js": {
+      "crap_high": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/app/text-preview-toolbar/text-preview-toolbar-controller.js": {
+      "crap_high": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/app/text-preview-toolbar/text-preview-toolbar-view.js": {
+      "crap_high": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/data-grid-editor/data-grid-component-controller.js": {
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/data-grid-editor/data-grid-component-view.js": {
+      "complexity_critical": {
+        "count": 1
+      },
+      "crap_critical": {
+        "count": 4
+      },
+      "crap_high": {
+        "count": 2
+      }
+    },
+    "packages/core-ui/js/gui_components/data-grid-editor/grid-error-surface.js": {
+      "crap_high": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/data-grid-editor/grid-library-loader.js": {
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/data-grid-editor/grid-row-visibility-summary/grid-row-visibility-summary-controller.js": {
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/data-grid-editor/grid-toolbar/grid-toolbar-view.js": {
+      "crap_high": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/data-grid-editor/shared/guarded-column-edit-workflow.js": {
+      "crap_high": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 5
+      }
+    },
+    "packages/core-ui/js/gui_components/data-grid-editor/tabulator-grid-adapter.js": {
+      "crap_critical": {
+        "count": 2
+      },
+      "crap_high": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/data-grid-editor/tabulator/gridExtension-tabulator.js": {
+      "crap_critical": {
+        "count": 4
+      },
+      "crap_high": {
+        "count": 11
+      },
+      "crap_moderate": {
+        "count": 10
+      }
+    },
+    "packages/core-ui/js/gui_components/data-grid-editor/tabulator/tabulator-helpers.js": {
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/generator/controls/generator-controls-controller.js": {
+      "crap_critical": {
+        "count": 1
+      },
+      "crap_high": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/generator/controls/generator-controls-view.js": {
+      "crap_critical": {
+        "count": 2
+      },
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/generator/controls/index.js": {
+      "crap_critical": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/generator/generation/data-generator-generation-actions.js": {
+      "crap_critical": {
+        "count": 3
+      },
+      "crap_high": {
+        "count": 3
+      },
+      "crap_moderate": {
+        "count": 2
+      }
+    },
+    "packages/core-ui/js/gui_components/generator/generation/generator-schema-generation-service.js": {
+      "crap_critical": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/generator/generation/n-wise-generation-options.js": {
+      "crap_moderate": {
+        "count": 2
+      }
+    },
+    "packages/core-ui/js/gui_components/generator/options/apply-generator-format-options.js": {
+      "crap_critical": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/generator/output-format-selector/generator-output-format-selector-view.js": {
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/generator/page/create-generator-page-component.js": {
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/generator/page/generator-page-controller.js": {
+      "crap_moderate": {
+        "count": 2
+      }
+    },
+    "packages/core-ui/js/gui_components/generator/page/generator-page-view.js": {
+      "crap_critical": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/generator/preview/generator-preview-controller.js": {
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/generator/preview/generator-preview-view.js": {
+      "crap_critical": {
+        "count": 1
+      },
+      "crap_high": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/generator/preview/index.js": {
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/generator/runtime/create-generator-mounted-page-state.js": {
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/generator/runtime/create-generator-page-base-state.js": {
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/generator/runtime/generator-page-actions-service.js": {
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/generator/runtime/generator-page-view-state.js": {
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/generator/runtime/generator-schema-runtime-service.js": {
+      "crap_critical": {
+        "count": 1
+      },
+      "crap_high": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/generator/runtime/generator-schema-state-service.js": {
+      "crap_high": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 2
+      }
+    },
+    "packages/core-ui/js/gui_components/generator/runtime/generator-schema-sync.js": {
+      "crap_critical": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/combinations-dialog/combinations-dialog-controller.js": {
+      "crap_critical": {
+        "count": 1
+      },
+      "crap_high": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/combinations-dialog/combinations-dialog-view.js": {
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/combinations-dialog/index.js": {
+      "crap_high": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/dialog-services/stored-schemas-dialog-service.js": {
+      "crap_critical": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 2
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/download.js": {
+      "crap_high": {
+        "count": 2
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/export-encoding-settings.js": {
+      "crap_high": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/format-options-panel/code-unit-test/test-framework-definition.js": {
+      "crap_high": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/format-options-panel/format-option-help.js": {
+      "crap_critical": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/format-options-panel/format-option-panel-definition.js": {
+      "complexity_critical": {
+        "count": 1
+      },
+      "crap_critical": {
+        "count": 3
+      },
+      "crap_high": {
+        "count": 4
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/format-options-panel/format-option-panel-dom.js": {
+      "crap_high": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/format-options-panel/format-options-panel-controller.js": {
+      "crap_high": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/format-options-panel/format-options-panel-view.js": {
+      "crap_critical": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/format-options-panel/index.js": {
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/instructions/instructions-view.js": {
+      "crap_high": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/method-picker-dialog/method-help-display-view.js": {
+      "crap_critical": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/method-picker-dialog/method-list-view.js": {
+      "crap_critical": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/method-picker-dialog/method-picker-dialog-controller.js": {
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/method-picker-dialog/method-picker-dialog-utils.js": {
+      "crap_critical": {
+        "count": 3
+      },
+      "crap_high": {
+        "count": 2
+      },
+      "crap_moderate": {
+        "count": 5
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/method-picker-dialog/method-picker-dialog-view.js": {
+      "crap_critical": {
+        "count": 3
+      },
+      "crap_high": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/modal-confirm.js": {
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/modal-text-input.js": {
+      "complexity_critical": {
+        "count": 1
+      },
+      "crap_critical": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/primitives/icon/icon-core.js": {
+      "crap_high": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/primitives/inline-message/inline-message-controller.js": {
+      "crap_critical": {
+        "count": 1
+      },
+      "crap_high": {
+        "count": 2
+      },
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/primitives/inline-message/inline-message-view.js": {
+      "crap_critical": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/row-count-control/row-count-control-controller.js": {
+      "crap_critical": {
+        "count": 2
+      },
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/row-count-control/row-count-control-parsing.js": {
+      "crap_high": {
+        "count": 2
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/row-count-control/row-count-control-view.js": {
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/schema-definition/shared-schema-definition-controller.js": {
+      "complexity_critical": {
+        "count": 1
+      },
+      "crap_critical": {
+        "count": 2
+      },
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/schema-definition/shared-schema-definition-view.js": {
+      "crap_high": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/schema-file-transfer-service.js": {
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/schema-panel/schema-panel-controller.js": {
+      "crap_critical": {
+        "count": 2
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/schema-panel/schema-panel-view.js": {
+      "crap_critical": {
+        "count": 1
+      },
+      "crap_high": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/schema-row-rule-mapper.js": {
+      "complexity_critical": {
+        "count": 1
+      },
+      "crap_critical": {
+        "count": 1
+      },
+      "crap_high": {
+        "count": 2
+      },
+      "crap_moderate": {
+        "count": 3
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/stored-schemas-dialog/stored-schemas-dialog-view.js": {
+      "crap_critical": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/stored-schemas-manager/index.js": {
+      "crap_critical": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/stored-schemas-manager/stored-schemas-manager-controller.js": {
+      "crap_high": {
+        "count": 2
+      },
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/stored-schemas-manager/stored-schemas-manager-view.js": {
+      "crap_critical": {
+        "count": 2
+      },
+      "crap_high": {
+        "count": 3
+      },
+      "crap_moderate": {
+        "count": 3
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/stored-schemas/stored-schemas-storage.js": {
+      "crap_high": {
+        "count": 4
+      },
+      "crap_moderate": {
+        "count": 3
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/test-data/generation/generation-controller.js": {
+      "complexity_critical": {
+        "count": 1
+      },
+      "crap_critical": {
+        "count": 1
+      },
+      "crap_high": {
+        "count": 2
+      },
+      "crap_moderate": {
+        "count": 3
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/test-data/generation/generation-runtime.js": {
+      "crap_high": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 2
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/test-data/generation/ui-derived-state.js": {
+      "crap_high": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/test-data/generation/ui-generation-session-service.js": {
+      "complexity_critical": {
+        "count": 1
+      },
+      "crap_critical": {
+        "count": 3
+      },
+      "crap_high": {
+        "count": 2
+      },
+      "crap_moderate": {
+        "count": 3
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/test-data/generation/ui-generation-status-presenter.js": {
+      "complexity_critical": {
+        "count": 1
+      },
+      "crap_critical": {
+        "count": 1
+      },
+      "crap_high": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 2
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/test-data/help/help-model-builder.js": {
+      "complexity_critical": {
+        "count": 2
+      },
+      "crap_critical": {
+        "count": 2
+      },
+      "crap_high": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 4
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/test-data/help/schema-mode-help-builder.js": {
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/test-data/schema/command-spec-parser.js": {
+      "complexity_critical": {
+        "count": 1
+      },
+      "crap_critical": {
+        "count": 2
+      },
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/test-data/schema/schema-controller.js": {
+      "crap_critical": {
+        "count": 2
+      },
+      "crap_high": {
+        "count": 4
+      },
+      "crap_moderate": {
+        "count": 6
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/test-data/schema/schema-editor-core.js": {
+      "crap_high": {
+        "count": 3
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/test-data/schema/schema-error-text.js": {
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/test-data/schema/schema-focus-state.js": {
+      "crap_critical": {
+        "count": 2
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/test-data/schema/schema-row-mapper.js": {
+      "complexity_critical": {
+        "count": 2
+      },
+      "crap_critical": {
+        "count": 5
+      },
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/test-data/schema/schema-row-validation.js": {
+      "complexity_critical": {
+        "count": 2
+      },
+      "crap_critical": {
+        "count": 4
+      },
+      "crap_high": {
+        "count": 2
+      },
+      "crap_moderate": {
+        "count": 3
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/test-data/schema/shared-schema-editor-controller.js": {
+      "complexity_critical": {
+        "count": 2
+      },
+      "crap_critical": {
+        "count": 4
+      },
+      "crap_high": {
+        "count": 12
+      },
+      "crap_moderate": {
+        "count": 11
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/test-data/schema/shared-schema-editor-ui.js": {
+      "complexity_critical": {
+        "count": 2
+      },
+      "crap_critical": {
+        "count": 4
+      },
+      "crap_high": {
+        "count": 2
+      },
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/test-data/ui/method-picker-modal.js": {
+      "crap_critical": {
+        "count": 2
+      },
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/test-data/ui/params-editor-modal.js": {
+      "complexity_critical": {
+        "count": 5
+      },
+      "crap_critical": {
+        "count": 14
+      },
+      "crap_high": {
+        "count": 6
+      },
+      "crap_moderate": {
+        "count": 5
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/test-data/ui/status-presenter.js": {
+      "crap_high": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/text-file-read-service.js": {
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/theme-toggle.js": {
+      "crap_high": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 2
+      }
+    },
+    "packages/core-ui/js/gui_components/shared/timed-error-display.js": {
+      "crap_high": {
+        "count": 1
+      }
+    },
+    "packages/core-ui/js/help/help-tooltips.js": {
+      "crap_critical": {
+        "count": 1
+      },
+      "crap_high": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 2
+      }
+    },
+    "packages/core-ui/js/site/site-config-core.js": {
+      "complexity_critical": {
+        "count": 1
+      },
+      "crap_critical": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 4
+      }
+    },
+    "packages/core/js/command-help/command-help-contract.js": {
+      "complexity_critical": {
+        "count": 2
+      },
+      "crap_critical": {
+        "count": 2
+      },
+      "crap_moderate": {
+        "count": 4
+      }
+    },
+    "packages/core/js/command-help/command-help-validators.js": {
+      "complexity_critical": {
+        "count": 1
+      },
+      "crap_critical": {
+        "count": 4
+      },
+      "crap_moderate": {
+        "count": 11
+      }
+    },
+    "packages/core/js/data_formats/asciitable-convertor.js": {
+      "crap_high": {
+        "count": 1
+      }
+    },
+    "packages/core/js/data_formats/csharp-convertor.js": {
+      "complexity_critical": {
+        "count": 1
+      },
+      "crap_critical": {
+        "count": 1
+      },
+      "crap_high": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 3
+      }
+    },
+    "packages/core/js/data_formats/delimiter-convertor.js": {
+      "crap_high": {
+        "count": 1
+      }
+    },
+    "packages/core/js/data_formats/dsv-exporter.js": {
+      "crap_high": {
+        "count": 2
+      },
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core/js/data_formats/generic-data-table-utils.js": {
+      "crap_critical": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core/js/data_formats/generic-data-table.js": {
+      "crap_high": {
+        "count": 1
+      }
+    },
+    "packages/core/js/data_formats/gherkin-convertor.js": {
+      "crap_critical": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 3
+      }
+    },
+    "packages/core/js/data_formats/html-convertor.js": {
+      "crap_high": {
+        "count": 2
+      }
+    },
+    "packages/core/js/data_formats/java-convertor.js": {
+      "complexity_critical": {
+        "count": 1
+      },
+      "crap_critical": {
+        "count": 2
+      },
+      "crap_high": {
+        "count": 2
+      },
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core/js/data_formats/json-convertor.js": {
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core/js/data_formats/kotlin-convertor.js": {
+      "complexity_critical": {
+        "count": 1
+      },
+      "crap_critical": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 2
+      }
+    },
+    "packages/core/js/data_formats/markdown-convertor.js": {
+      "complexity_critical": {
+        "count": 2
+      },
+      "crap_critical": {
+        "count": 3
+      },
+      "crap_high": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core/js/data_formats/perl-convertor.js": {
+      "crap_critical": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 2
+      }
+    },
+    "packages/core/js/data_formats/php-convertor.js": {
+      "complexity_critical": {
+        "count": 1
+      },
+      "crap_critical": {
+        "count": 2
+      },
+      "crap_moderate": {
+        "count": 3
+      }
+    },
+    "packages/core/js/data_formats/python-convertor.js": {
+      "complexity_critical": {
+        "count": 1
+      },
+      "crap_critical": {
+        "count": 2
+      },
+      "crap_high": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 3
+      }
+    },
+    "packages/core/js/data_formats/ruby-convertor.js": {
+      "complexity_critical": {
+        "count": 1
+      },
+      "crap_critical": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 2
+      }
+    },
+    "packages/core/js/data_formats/sql-convertor.js": {
+      "crap_critical": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 2
+      }
+    },
+    "packages/core/js/data_formats/test-framework-convertor.js": {
+      "crap_critical": {
+        "count": 3
+      },
+      "crap_high": {
+        "count": 6
+      },
+      "crap_moderate": {
+        "count": 4
+      }
+    },
+    "packages/core/js/data_formats/typescript-convertor.js": {
+      "complexity_critical": {
+        "count": 1
+      },
+      "crap_critical": {
+        "count": 2
+      },
+      "crap_high": {
+        "count": 2
+      },
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core/js/data_formats/xml-convertor.js": {
+      "crap_critical": {
+        "count": 1
+      },
+      "crap_high": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core/js/data_generation/domain/domainTestDataGenerator.js": {
+      "crap_critical": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core/js/data_generation/domain/domainTestDataRuleValidator.js": {
+      "complexity_critical": {
+        "count": 1
+      },
+      "crap_critical": {
+        "count": 1
+      }
+    },
+    "packages/core/js/data_generation/enum/enumTestDataRuleValidator.js": {
+      "crap_high": {
+        "count": 1
+      }
+    },
+    "packages/core/js/data_generation/faker/fakerCommand.js": {
+      "complexity_critical": {
+        "count": 1
+      },
+      "crap_critical": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 2
+      }
+    },
+    "packages/core/js/data_generation/faker/fakerCommandRunner.js": {
+      "complexity_critical": {
+        "count": 2
+      },
+      "crap_critical": {
+        "count": 3
+      },
+      "crap_moderate": {
+        "count": 2
+      }
+    },
+    "packages/core/js/data_generation/faker/fakerTestDataRuleValidator.js": {
+      "crap_critical": {
+        "count": 1
+      }
+    },
+    "packages/core/js/data_generation/faker/safeLiteralArgumentParser.js": {
+      "crap_critical": {
+        "count": 1
+      },
+      "crap_high": {
+        "count": 5
+      },
+      "crap_moderate": {
+        "count": 3
+      }
+    },
+    "packages/core/js/data_generation/faker/saferFakerCommandRunner.js": {
+      "crap_high": {
+        "count": 2
+      }
+    },
+    "packages/core/js/data_generation/inline-schema-rule.js": {
+      "crap_critical": {
+        "count": 1
+      }
+    },
+    "packages/core/js/data_generation/n-wise/bachAllPairsGenerator.js": {
+      "crap_moderate": {
+        "count": 3
+      }
+    },
+    "packages/core/js/data_generation/n-wise/combinationsTestDataGenerator.js": {
+      "crap_critical": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core/js/data_generation/n-wise/constrained-combinations.js": {
+      "crap_high": {
+        "count": 1
+      }
+    },
+    "packages/core/js/data_generation/n-wise/nWiseCoverageModel.js": {
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core/js/data_generation/n-wise/nWiseGenerator.js": {
+      "crap_high": {
+        "count": 3
+      },
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core/js/data_generation/n-wise/nWiseShared.js": {
+      "crap_moderate": {
+        "count": 2
+      }
+    },
+    "packages/core/js/data_generation/n-wise/nWiseStrategies/aetgStrategy.js": {
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core/js/data_generation/n-wise/nWiseStrategies/compatibilityGraphStrategy.js": {
+      "complexity_critical": {
+        "count": 1
+      },
+      "crap_critical": {
+        "count": 1
+      },
+      "crap_high": {
+        "count": 1
+      }
+    },
+    "packages/core/js/data_generation/n-wise/nWiseStrategies/hypergraphVertexStrategy.js": {
+      "complexity_critical": {
+        "count": 1
+      },
+      "crap_critical": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core/js/data_generation/n-wise/nWiseStrategies/ipogStrategy.js": {
+      "complexity_critical": {
+        "count": 1
+      },
+      "crap_critical": {
+        "count": 1
+      }
+    },
+    "packages/core/js/data_generation/n-wise/nWiseStrategies/pictGcdStrategy.js": {
+      "complexity_high": {
+        "count": 1
+      },
+      "crap_high": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core/js/data_generation/n-wise/nWiseStrategies/shared.js": {
+      "complexity_high": {
+        "count": 1
+      },
+      "crap_high": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 4
+      }
+    },
+    "packages/core/js/data_generation/n-wise/pairwiseGenerator.js": {
+      "crap_moderate": {
+        "count": 4
+      }
+    },
+    "packages/core/js/data_generation/n-wise/pairwiseTestDataGenerator.js": {
+      "crap_critical": {
+        "count": 2
+      },
+      "crap_high": {
+        "count": 2
+      },
+      "crap_moderate": {
+        "count": 4
+      }
+    },
+    "packages/core/js/data_generation/regex/regexTestDataRuleValidator.js": {
+      "crap_high": {
+        "count": 1
+      }
+    },
+    "packages/core/js/data_generation/ruleResponse.js": {
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core/js/data_generation/rulesBasedDataGenerator.js": {
+      "crap_high": {
+        "count": 2
+      },
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core/js/data_generation/rulesParser.js": {
+      "complexity_critical": {
+        "count": 2
+      },
+      "crap_critical": {
+        "count": 4
+      },
+      "crap_high": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core/js/data_generation/schema-constraint-evaluator.js": {
+      "complexity_critical": {
+        "count": 1
+      },
+      "crap_critical": {
+        "count": 1
+      },
+      "crap_high": {
+        "count": 2
+      }
+    },
+    "packages/core/js/data_generation/schema-constraint-parser.js": {
+      "complexity_critical": {
+        "count": 1
+      },
+      "crap_critical": {
+        "count": 2
+      },
+      "crap_moderate": {
+        "count": 3
+      }
+    },
+    "packages/core/js/data_generation/schema-constraint-validator.js": {
+      "complexity_critical": {
+        "count": 1
+      },
+      "crap_critical": {
+        "count": 3
+      },
+      "crap_high": {
+        "count": 3
+      },
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core/js/data_generation/schema-conversion.js": {
+      "crap_critical": {
+        "count": 3
+      },
+      "crap_high": {
+        "count": 4
+      }
+    },
+    "packages/core/js/data_generation/schema-rules-adapter.js": {
+      "complexity_critical": {
+        "count": 1
+      },
+      "crap_critical": {
+        "count": 4
+      },
+      "crap_high": {
+        "count": 2
+      },
+      "crap_moderate": {
+        "count": 2
+      }
+    },
+    "packages/core/js/data_generation/testDataRules.js": {
+      "crap_critical": {
+        "count": 1
+      }
+    },
+    "packages/core/js/data_generation/testDataRulesCompiler.js": {
+      "complexity_critical": {
+        "count": 2
+      },
+      "crap_critical": {
+        "count": 3
+      },
+      "crap_high": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core/js/data_generation/utils/enumParser.js": {
+      "complexity_critical": {
+        "count": 3
+      },
+      "crap_critical": {
+        "count": 5
+      },
+      "crap_high": {
+        "count": 2
+      },
+      "crap_moderate": {
+        "count": 7
+      }
+    },
+    "packages/core/js/data_generation/utils/regex-rule-detection.js": {
+      "crap_high": {
+        "count": 2
+      }
+    },
+    "packages/core/js/domain/domain-command-metadata.js": {
+      "crap_critical": {
+        "count": 1
+      },
+      "crap_high": {
+        "count": 1
+      }
+    },
+    "packages/core/js/domain/domain-command-visibility.js": {
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core/js/domain/domain-doc-markdown.js": {
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core/js/domain/domain-keyword-arg-validators.js": {
+      "complexity_critical": {
+        "count": 1
+      },
+      "crap_critical": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 2
+      }
+    },
+    "packages/core/js/domain/domain-keywords.js": {
+      "complexity_critical": {
+        "count": 5
+      },
+      "crap_critical": {
+        "count": 6
+      },
+      "crap_high": {
+        "count": 7
+      },
+      "crap_moderate": {
+        "count": 5
+      }
+    },
+    "packages/core/js/domain/parser/DomainKeywordInvocationParser.js": {
+      "complexity_critical": {
+        "count": 1
+      },
+      "crap_critical": {
+        "count": 4
+      },
+      "crap_high": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core/js/domain/parser/DomainKeywordLexer.js": {
+      "complexity_critical": {
+        "count": 1
+      },
+      "crap_critical": {
+        "count": 3
+      },
+      "crap_high": {
+        "count": 1
+      }
+    },
+    "packages/core/js/domain/parser/DomainKeywordParser.js": {
+      "complexity_critical": {
+        "count": 1
+      },
+      "crap_critical": {
+        "count": 1
+      },
+      "crap_high": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core/js/faker/faker-helper-keyword-definitions.js": {
+      "crap_high": {
+        "count": 2
+      },
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core/js/grid/exporter.js": {
+      "crap_high": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 2
+      }
+    },
+    "packages/core/js/grid/import-trim-settings.js": {
+      "complexity_critical": {
+        "count": 1
+      },
+      "crap_critical": {
+        "count": 1
+      }
+    },
+    "packages/core/js/grid/importer.js": {
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "packages/core/js/keywords/domain/autoincrement/auto-increment-sequence.js": {
+      "crap_high": {
+        "count": 1
+      }
+    },
+    "packages/core/js/keywords/domain/autoincrement/auto-increment-timestamp.js": {
+      "crap_critical": {
+        "count": 2
+      },
+      "crap_high": {
+        "count": 1
+      }
+    },
+    "packages/core/js/keywords/domain/datatype/datatype-enum.js": {
+      "complexity_critical": {
+        "count": 1
+      },
+      "crap_critical": {
+        "count": 1
+      },
+      "crap_high": {
+        "count": 2
+      }
+    },
+    "packages/core/js/keywords/domain/internet/http-method-keyword-definition.js": {
+      "crap_high": {
+        "count": 1
+      }
+    },
+    "packages/core/js/keywords/domain/string/counterstring.js": {
+      "crap_moderate": {
+        "count": 2
+      }
+    },
+    "packages/core/js/mcp/anywaydata-mcp-contract.js": {
+      "crap_critical": {
+        "count": 1
+      },
+      "crap_high": {
+        "count": 2
+      },
+      "crap_moderate": {
+        "count": 2
+      }
+    },
+    "packages/core/js/options/format-option-catalog.js": {
+      "crap_high": {
+        "count": 2
+      }
+    },
+    "packages/core/js/utils/number-convertor.js": {
+      "crap_critical": {
+        "count": 1
+      }
+    },
+    "packages/core/src/index.js": {
+      "complexity_critical": {
+        "count": 4
+      },
+      "crap_critical": {
+        "count": 8
+      },
+      "crap_high": {
+        "count": 7
+      },
+      "crap_moderate": {
+        "count": 7
+      }
+    },
+    "scripts/create-testenv.mjs": {
+      "crap_high": {
+        "count": 2
+      },
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "scripts/generate-domain-docs.mjs": {
+      "crap_high": {
+        "count": 1
+      },
+      "crap_moderate": {
+        "count": 1
+      }
+    },
+    "scripts/run-build-storybook.mjs": {
+      "crap_moderate": {
+        "count": 1
+      }
+    }
+  },
+  "runtime_coverage_findings": [],
+  "target_keys": [
+    "apps/web/site-config-html.mjs:dead code",
+    "packages/core-ui/js/site/site-config.production.js:dead code",
+    "packages/core-ui/js/gui_components/shared/test-data/schema/schema-focus-state.js:untested risk",
+    "packages/core-ui/js/gui_components/shared/schema-panel/schema-panel-controller.js:untested risk",
+    "packages/core-ui/js/gui_components/app/import-export-workspace/import-export-workspace-services.js:high impact",
+    "packages/core-ui/js/gui_components/generator/runtime/generator-schema-rule-helpers.js:dead code",
+    "packages/core-ui/js/gui_components/shared/test-data/help/help-model-builder.js:dead code",
+    "packages/core-ui/js/gui_components/shared/test-data/schema/schema-controller.js:high impact",
+    "packages/core-ui/js/gui_components/shared/test-data/schema/schema-row-validation.js:high impact",
+    "packages/core-ui/js/gui_components/shared/test-data/schema/shared-schema-editor-ui.js:dead code",
+    "packages/core/js/data_generation/schema-rules-adapter.js:high impact",
+    "packages/core-ui/js/gui_components/shared/schema-definition/shared-schema-definition-controller.js:complexity",
+    "packages/core-ui/js/gui_components/shared/test-data/generation/generation-controller.js:dead code",
+    "packages/core-ui/js/gui_components/shared/format-options-panel/format-option-panel-definition.js:untested risk",
+    "packages/core-ui/js/gui_components/shared/test-data/generation/ui-derived-state.js:high impact",
+    "apps/web/src/stories/export-format-interactions.js:dead code",
+    "packages/core-ui/js/gui_components/shared/test-data/schema/schema-editor-core.js:high impact",
+    "packages/core/js/domain/domain-keywords.js:high impact",
+    "apps/web/src/stories/story-cleanup.js:dead code",
+    "packages/core-ui/js/gui_components/shared/stored-schemas/stored-schemas-storage.js:dead code",
+    "packages/core-ui/js/gui_components/shared/schema-file-transfer-service.js:dead code",
+    "packages/core-ui/js/gui_components/shared/test-data/schema/schema-row-mapper.js:high impact",
+    "packages/core-ui/js/build-metadata/build-metadata.js:dead code",
+    "packages/core-ui/js/gui_components/shared/test-data/schema/command-spec-parser.js:untested risk",
+    "apps/web/src/writer-schema-page.mjs:dead code",
+    "packages/core-ui/js/gui_components/data-grid-editor/grid-error-surface.js:dead code",
+    "apps/web/src/combinatorial-entry.mjs:dead code",
+    "packages/core-ui/js/gui_components/shared/test-data/ui/params-editor-modal.js:dead code",
+    "packages/core/src/index.js:complexity",
+    "packages/core-ui/js/gui_components/app/data-population-panel/index.js:untested risk",
+    "packages/core-ui/js/gui_components/shared/method-picker-dialog/method-picker-dialog-utils.js:high impact",
+    "packages/core-ui/js/site/site-config-core.js:dead code",
+    "packages/core/js/keywords/domain/datatype/datatype-enum.js:high impact",
+    "packages/core-ui/js/gui_components/shared/dom/default-objects.js:high impact",
+    "packages/core-ui/js/gui_components/app/population-actions/population-actions-controller.js:untested risk",
+    "packages/core/js/data_generation/testDataRulesCompiler.js:complexity",
+    "packages/core-ui/js/gui_components/app/import-export-adapters/file-import-bindings-adapter.js:high impact",
+    "packages/core-ui/js/gui_components/data-grid-editor/shared/column-header-action-buttons.js:dead code",
+    "packages/core/js/data_generation/schema-constraint-validator.js:untested risk",
+    "packages/core/js/data_generation/rulesParser.js:untested risk",
+    "packages/core-ui/js/gui_components/shared/theme-toggle.js:high impact",
+    "packages/core-ui/js/gui_components/shared/schema-row-rule-mapper.js:high impact",
+    "packages/core-ui/js/gui_components/shared/download.js:untested risk",
+    "packages/core/js/domain/domain-command-metadata.js:untested risk",
+    "packages/core-ui/js/gui_components/shared/test-data/schema/shared-schema-editor-controller.js:untested risk",
+    "packages/core/js/command-help/command-help-contract.js:untested risk",
+    "packages/core-ui/js/gui_components/generator/runtime/generator-schema-state-service.js:untested risk",
+    "packages/core-ui/js/gui_components/shared/format-options-panel/format-option-panel-dom.js:high impact",
+    "packages/core-ui/js/gui_components/generator/runtime/generator-schema-runtime-service.js:untested risk",
+    "packages/core/js/data_generation/ruleResponse.js:high impact",
+    "packages/core/js/data_generation/utils/enumParser.js:high impact",
+    "packages/core-ui/js/gui_components/shared/dialog-services/stored-schemas-dialog-service.js:untested risk",
+    "packages/core/js/data_generation/utils/regex-rule-detection.js:untested risk",
+    "packages/core/js/data_generation/schema-conversion.js:untested risk",
+    "packages/core-ui/js/gui_components/app/import-export-workspace/create-import-export-file-transfer-service.js:untested risk",
+    "packages/core-ui/js/gui_components/app/import-export-workspace/import-export-workspace-controller.js:untested risk",
+    "packages/core-ui/js/gui_components/app/import-export-toolbar/import-export-toolbar-controller.js:untested risk",
+    "packages/core-ui/js/gui_components/shared/stored-schemas-manager/stored-schemas-manager-controller.js:untested risk",
+    "packages/core/js/command-help/command-help-validators.js:high impact",
+    "packages/core/js/domain/domain-keyword-arg-validators.js:high impact",
+    "apps/api/src/api-service.js:untested risk",
+    "packages/core-ui/js/gui_components/app/import-export-workspace/create-import-export-preview-workflow-service.js:untested risk",
+    "packages/core-ui/js/gui_components/shared/stored-schemas-manager/stored-schemas-manager-view.js:untested risk",
+    "packages/core/js/domain/parser/DomainKeywordParser.js:untested risk",
+    "apps/cli/src/run-cli.js:complexity",
+    "apps/web/src/stories/format-option-panel.story-helpers.js:dead code",
+    "packages/core-ui/js/gui_components/app/format-selector/format-selector-controller.js:untested risk",
+    "packages/core/js/data_generation/schema-constraint-evaluator.js:untested risk",
+    "packages/core-ui/js/gui_components/generator/controls/generator-controls-controller.js:untested risk",
+    "packages/core-ui/js/gui_components/shared/schema-panel/schema-panel-view.js:untested risk",
+    "packages/core-ui/js/gui_components/data-grid-editor/tabulator/gridExtension-tabulator.js:high impact",
+    "packages/core-ui/js/gui_components/app/import-export-download-control/import-export-download-control-controller.js:untested risk",
+    "packages/core-ui/js/gui_components/shared/combinations-dialog/combinations-dialog-controller.js:untested risk",
+    "packages/core-ui/js/gui_components/shared/instructions/instructions-view.js:untested risk",
+    "packages/core-ui/js/gui_components/shared/row-count-control/row-count-control-controller.js:untested risk",
+    "packages/core-ui/js/gui_components/app/test-data-grid/generation/test-data-generation-service.js:complexity",
+    "packages/core-ui/js/gui_components/app/data-population-panel/data-population-panel-controller.js:untested risk",
+    "packages/core-ui/js/gui_components/shared/method-picker-dialog/method-list-view.js:untested risk",
+    "packages/core-ui/js/gui_components/app/test-data-population-toolbar/test-data-population-toolbar-controller.js:untested risk",
+    "packages/core-ui/js/gui_components/app/options-preview-split-layout/options-preview-split-layout-controller.js:untested risk",
+    "packages/core/js/data_formats/php-convertor.js:untested risk",
+    "packages/core/js/data_formats/ruby-convertor.js:complexity",
+    "packages/core/js/data_generation/schema-constraint-parser.js:complexity",
+    "packages/core/js/data_formats/java-convertor.js:complexity",
+    "packages/core/js/domain/parser/DomainKeywordLexer.js:complexity",
+    "packages/core/js/data_generation/n-wise/nWiseStrategies/compatibilityGraphStrategy.js:complexity"
+  ]
+}

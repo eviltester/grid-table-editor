@@ -49,6 +49,7 @@ jobs:
         run: |
           pnpm run lint
           pnpm run format:check
+          pnpm run fallow:ci
           pnpm run lint:docker
 
   unit-tests:

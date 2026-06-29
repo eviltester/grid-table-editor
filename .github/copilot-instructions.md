@@ -5,6 +5,8 @@
 ```bash
 pnpm run format:check   # Oxfmt formatting check
 pnpm run lint           # Oxlint + Biome linting
+pnpm run fallow         # Fallow health + duplication regression checks + clean dead-code pass
+pnpm run fallow:dead-code # Fallow dead-code check
 pnpm run verify:local # Jest unit/integration tests (54 suites)
 pnpm run test:browser   # Playwright browser smoke tests (app.html, generator.html)
 ```

@@ -428,6 +428,21 @@ IF [Status] = "closed" THEN [Status] = "open" ENDIF`,
     expect(rendered.text).toBe('Status\n(active,inactive,pending)');
   });
 
+  test('classifies comma regex shorthand as regex rows when parsing schema text', () => {
+    const parsed = schemaTextToDataRules({
+      schemaText: 'Code\n[A-Z]{2,3}\nLiteral Regex\n/[A-Z]{3}/\nMethod\nGET,POST,PUT',
+      faker,
+      RandExp,
+    });
+
+    expect(parsed.errors).toEqual([]);
+    expect(parsed.dataRules).toEqual([
+      expect.objectContaining({ name: 'Code', ruleSpec: '[A-Z]{2,3}', type: 'regex' }),
+      expect.objectContaining({ name: 'Literal Regex', ruleSpec: '[A-Z]{3}', type: 'regex' }),
+      expect.objectContaining({ name: 'Method', ruleSpec: 'enum("GET","POST","PUT")', type: 'domain' }),
+    ]);
+  });
+
   test('returns blank explicit regex text as a regex validation error when requested', () => {
     const result = schemaTextToDataRules({
       schemaText: 'Code\nregex("")',
@@ -470,6 +485,30 @@ IF [Status] = "closed" THEN [Status] = "open" ENDIF`,
     });
     expect(result.dataRules).toEqual([]);
     expect(result.errors.map((error) => error.code)).toEqual(['missing_domain_command']);
+  });
+
+  test('parses deprecated live faker image commands as invalid domain commands', () => {
+    const result = schemaTextToDataRules({
+      schemaText: 'Image\nimage.urlLoremFlickr()',
+      faker,
+      RandExp,
+      includeInvalidRules: true,
+    });
+
+    expect(result.dataRules).toEqual([
+      expect.objectContaining({
+        name: 'Image',
+        ruleSpec: 'image.urlLoremFlickr()',
+        type: 'domain',
+      }),
+    ]);
+    expect(result.errors).toContainEqual(
+      expect.objectContaining({
+        code: 'compiler_validation_error',
+        column: 'Image',
+        message: expect.stringContaining('Unknown keyword: image.urlLoremFlickr'),
+      })
+    );
   });
 
   test('reports helpers_not_supported_in_domain for domain helper commands', () => {
@@ -534,6 +573,28 @@ IF [Status] = "closed" THEN [Status] = "open" ENDIF`,
     expect(result.errors).toEqual([]);
     expect(result.dataRules).toEqual([
       { name: 'Status', ruleSpec: 'enum("active","inactive","pending")', comments: '', type: 'domain' },
+    ]);
+  });
+
+  test('returns domain validation errors when enum domain row params cannot be serialized', () => {
+    const result = schemaRowsToDataRules({
+      schemaRows: [
+        {
+          name: 'Status',
+          sourceType: 'domain',
+          command: 'awd.datatype.enum',
+          params: '(values=["active")',
+        },
+      ],
+    });
+
+    expect(result.dataRules).toEqual([]);
+    expect(result.errors).toEqual([
+      expect.objectContaining({
+        code: 'compiler_validation_error',
+        column: 'Status',
+        message: 'Status failed domain validation - Invalid keyword arguments: unbalanced expression',
+      }),
     ]);
   });
 

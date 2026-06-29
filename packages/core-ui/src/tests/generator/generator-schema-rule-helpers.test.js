@@ -29,6 +29,7 @@ describe('generatorSchemaRuleHelpers', () => {
     expect(buildRuleSpecFromSchemaRow({ sourceType: 'faker', command: 'faker.person.firstName', params: '()' })).toBe(
       'person.firstName()'
     );
+    expect(buildRuleSpecFromSchemaRow({ sourceType: 'regex', value: '[A-Z]{3}' })).toBe('regex([A-Z]{3})');
     expect(extractLiteralValueFromRuleSpec('literal(Fixed)')).toBe('Fixed');
     expect(extractRegexValueFromRuleSpec('regex("[A-Z]{3}")')).toBe('"[A-Z]{3}"');
   });

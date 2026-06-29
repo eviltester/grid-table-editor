@@ -6,6 +6,17 @@ import { errorResponse } from '../ruleResponse.js';
 import { parseFakerLiteralArguments } from './safeLiteralArgumentParser.js';
 import { isForbiddenFakerCommand } from '../../faker/faker-commands.js';
 
+const ARRAY_ARGUMENT_HELPER_EXAMPLES = Object.freeze({
+  'helpers.arrayElement': 'helpers.arrayElement(["A", "B", "C"])',
+  'helpers.arrayElements': 'helpers.arrayElements(["A", "B", "C"])',
+  'helpers.shuffle': 'helpers.shuffle(["A", "B", "C"])',
+});
+
+function buildArrayArgumentError(command) {
+  const example = ARRAY_ARGUMENT_HELPER_EXAMPLES[command];
+  return example ? `${command} requires an array argument, e.g. ${example}.` : '';
+}
+
 function parseArgumentsSafely(argString) {
   if (!argString || argString === '()') {
     return [];
@@ -69,10 +80,29 @@ function validateRangeToNumberArgs(args = []) {
   }
 }
 
+function validateArrayArgumentHelperArgs(command, args = []) {
+  const error = buildArrayArgumentError(command);
+  if (!error) {
+    return;
+  }
+
+  if (args.length < 1 || !Array.isArray(args[0])) {
+    throw new Error(error);
+  }
+}
+
 function validateFakerCommandArguments(command, args = []) {
   if (command === 'helpers.rangeToNumber') {
     validateRangeToNumberArgs(args);
   }
+  validateArrayArgumentHelperArgs(command, args);
+}
+
+function hasSafeUniqueArrayFunctionSource(command, argsText) {
+  return (
+    command === 'helpers.uniqueArray' &&
+    /^\(\s*faker\.[A-Za-z_$][A-Za-z0-9_$]*(?:\.[A-Za-z_$][A-Za-z0-9_$]*)+\s*,\s*\d+\s*\)$/u.test(String(argsText || ''))
+  );
 }
 
 function runFakerCommandSafely(thisCommand, theseArguments, usingFaker, propertyAccessors = []) {
@@ -180,7 +210,7 @@ function runFakerCommandWithFallback(thisCommand, theseArguments, usingFaker, pr
   }
 
   var fakerPrefix = 'this.';
-  const commandToRun = 'return ' + fakerPrefix + thisCommand + useArguments;
+  const commandToRun = 'const faker = this; return ' + fakerPrefix + thisCommand + useArguments;
 
   try {
     executionResult.isError = false;
@@ -253,7 +283,12 @@ export function runFakerCommand(thisCommand, theseArguments, usingFaker, propert
         if (hasDangerousPattern) {
           // Let the fallback function handle dangerous patterns properly
           return runFakerCommandWithFallback(thisCommand, theseArguments, usingFaker, propertyAccessors, options);
-        } else if (looksLikeSimpleArgs) {
+        }
+
+        const arrayArgumentError = buildArrayArgumentError(thisCommand);
+        if (arrayArgumentError) {
+          return errorResponse(arrayArgumentError);
+        } else if (looksLikeSimpleArgs || hasSafeUniqueArrayFunctionSource(thisCommand, useArguments)) {
           // Allow simple arguments (strings, arrays, numbers) to use fallback even without unsafe mode
           return runFakerCommandWithFallback(thisCommand, theseArguments, usingFaker, propertyAccessors, options);
         }

@@ -34,6 +34,20 @@ Name: person.fullName`;
     expect(parser.getSchemaTokens().every((token) => token.kind !== 'rule' || token.inline === true)).toBe(true);
   });
 
+  test('accepts JavaScript regex literals as inline pict-style column definitions', () => {
+    const inputText = `Code: /[A-Z]{2,3}/
+Method: GET,POST`;
+
+    const parser = new RulesParser(faker, RandExp);
+    parser.parseText(inputText);
+
+    expect(parser.isValid()).toBe(true);
+    expect(parser.testDataRules.rules).toHaveLength(2);
+    expect(parser.testDataRules.rules[0]).toMatchObject({ name: 'Code', ruleSpec: '/[A-Z]{2,3}/' });
+    expect(parser.testDataRules.rules[1]).toMatchObject({ name: 'Method', ruleSpec: 'GET,POST' });
+    expect(parser.getSchemaTokens().every((token) => token.kind !== 'rule' || token.inline === true)).toBe(true);
+  });
+
   test('flags an empty rule definition line', () => {
     const inputText = `Name
 `;

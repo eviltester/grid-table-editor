@@ -16,6 +16,7 @@ function createSharedSchemaDefinitionComponent({ root, props = {}, callbacks = {
     },
     callbacks,
     services: {
+      ...services,
       schemaFileTransferService,
     },
     documentObj: resolvedDocumentObj,

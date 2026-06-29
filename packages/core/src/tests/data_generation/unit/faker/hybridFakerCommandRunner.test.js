@@ -25,6 +25,33 @@ describe('Hybrid Faker Command Runner', () => {
     expect(['red', 'green', 'blue']).toContain(result.data);
   });
 
+  test('should accept helpers.uniqueArray with a faker function source', () => {
+    const result = runFakerCommand('helpers.uniqueArray', '(faker.word.sample, 3)', faker);
+
+    expect(result.isError).toBe(false);
+    expect(Array.isArray(result.data)).toBe(true);
+    expect(result.data).toHaveLength(3);
+    expect(result.data.every((value) => typeof value === 'string')).toBe(true);
+  });
+
+  test('should report malformed array helper params with an array example', () => {
+    const result = runFakerCommand('helpers.arrayElement', '(["red", "green")', faker);
+
+    expect(result.isError).toBe(true);
+    expect(result.errorMessage).toBe(
+      'helpers.arrayElement requires an array argument, e.g. helpers.arrayElement(["A", "B", "C"]).'
+    );
+  });
+
+  test('should report non-array array helper params with an array example', () => {
+    const result = runFakerCommand('helpers.arrayElement', '("red")', faker);
+
+    expect(result.isError).toBe(true);
+    expect(result.errorMessage).toBe(
+      'helpers.arrayElement requires an array argument, e.g. helpers.arrayElement(["A", "B", "C"]).'
+    );
+  });
+
   test('should use safe method for simple string arguments', () => {
     const result = runFakerCommand('string.alpha', '(5)', faker);
 

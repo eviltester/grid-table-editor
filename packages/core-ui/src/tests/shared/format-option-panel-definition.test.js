@@ -1,4 +1,5 @@
 import { JSDOM } from 'jsdom';
+import { within } from '@testing-library/dom';
 import {
   createFormatOptionPanel,
   getFormatOptionDefinition,
@@ -68,6 +69,26 @@ describe('format option panel definitions', () => {
     expect(root.querySelector("select[name='delimiter']").value).toBe('hash');
     expect(root.querySelector("input[name='quotes']").checked).toBe(true);
     expect(root.querySelector("input[name='header']").checked).toBe(true);
+
+    dom.window.close();
+  });
+
+  test('option help triggers do not pollute field accessible names', () => {
+    const { dom, root } = createRoot();
+    const panel = createFormatOptionPanel(getFormatOptionDefinition('csv'), { root });
+    const panelQueries = within(root);
+
+    panel.render();
+    root.querySelectorAll('[data-role="option-help-icon"]').forEach((helpIcon) => {
+      helpIcon.setAttribute('role', 'button');
+      helpIcon.setAttribute('aria-label', 'Show help for this option');
+    });
+
+    expect(panelQueries.getByRole('checkbox', { name: 'Use Quotes' })).toBeTruthy();
+    expect(panelQueries.getByRole('textbox', { name: 'Quote Char' })).toBeTruthy();
+    expect(panelQueries.queryByRole('checkbox', { name: /show help for this option use quotes/i })).toBeNull();
+    expect(panelQueries.queryByRole('textbox', { name: /show help for this option quote char/i })).toBeNull();
+    expect(panelQueries.getAllByRole('button', { name: 'Show help for this option' }).length).toBeGreaterThan(0);
 
     dom.window.close();
   });

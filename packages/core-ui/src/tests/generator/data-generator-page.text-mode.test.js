@@ -308,7 +308,7 @@ describe('generator page runtime text mode flows', () => {
 
     getPreviewRowsInput().value = '1';
     page.previewData();
-    expect(getSchemaErrorStatus().textContent).toContain('Row 1: unknown domain command "person.fullNam".');
+    expect(getSchemaErrorStatus().textContent).toContain('Unknown keyword: person.fullNam');
   });
 
   test('shared schema definition parser can be used directly when mounted on the page', () => {
@@ -346,6 +346,7 @@ describe('generator page runtime text mode flows', () => {
     await page.generateDataFile();
 
     expect(alertFn).not.toHaveBeenCalled();
+    expect(textArea.value).toBe('City\nliteral(London)');
     expect(FakeDownload.lastDownload).toEqual({
       filename: 'generated-data.csv',
       text: 'csv:async:2',

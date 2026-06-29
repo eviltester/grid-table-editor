@@ -30,6 +30,53 @@ describe('help-model-builder', () => {
     expect(renderSchemaHelpHtml(model)).toContain('faker.person.firstName');
   });
 
+  test('builds top-level faker help with helper guidance and an example', () => {
+    const model = buildSchemaHelpModel('faker', '');
+    const html = renderSchemaHelpHtml(model);
+
+    expect(model.show).toBe(true);
+    expect(model.kind).toBe('type');
+    expect(model.heading).toBe('Faker');
+    expect(html).toContain('Faker helper commands allow use of more complex generation than the domain commands');
+    expect(html).not.toContain('Faker commands generate realistic random values');
+    expect(html).toContain('helpers.rangeToNumber({ min: 1, max: 10 })');
+    expect(html).toContain('Generate a number from a helper range object.');
+  });
+
+  test('builds top-level domain help with command examples', () => {
+    const model = buildSchemaHelpModel('domain', '');
+    const html = renderSchemaHelpHtml(model);
+
+    expect(model.show).toBe(true);
+    expect(model.kind).toBe('type');
+    expect(model.heading).toBe('Domain');
+    expect(html).toContain('<strong>Examples:</strong>');
+    expect(html).toContain('person.fullName()');
+    expect(html).toContain('Generate a person name.');
+    expect(html).toContain('number.int(1,10)');
+    expect(html).toContain('Generate a number within a range.');
+    expect(html).toContain('internet.email()');
+    expect(html).toContain('Generate an email address.');
+  });
+
+  test('renders usage example descriptions with escaped call and description text', () => {
+    const html = renderSchemaHelpHtml({
+      show: true,
+      kind: 'command',
+      heading: 'demo.command',
+      params: [],
+      usageExamples: [
+        {
+          functionCall: 'demo.command("<tag>")',
+          description: 'Use <tag> safely.',
+        },
+      ],
+    });
+
+    expect(html).toContain('<code>demo.command(&quot;&lt;tag&gt;&quot;)</code>');
+    expect(html).toContain('Use &lt;tag&gt; safely.');
+  });
+
   test('builds literal type help with params and example guidance', () => {
     const model = buildSchemaHelpModel('literal', '');
 

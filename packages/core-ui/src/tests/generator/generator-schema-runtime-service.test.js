@@ -75,6 +75,7 @@ describe('createGeneratorSchemaRuntimeService', () => {
     expect(schemaDefinition.syncFromText).toHaveBeenCalledWith({
       showErrors: true,
       force: true,
+      refreshTextFromRows: true,
     });
     expect(schemaDefinition.validateRows).toHaveBeenCalledTimes(1);
   });

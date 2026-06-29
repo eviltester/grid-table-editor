@@ -788,6 +788,11 @@ describe('generator page runtime factories', () => {
     expect(helpLink.getAttribute('href')).toBe('https://anywaydata.com/docs/test-data/faker-test-data');
     expect(helpLink.getAttribute('target')).toBe('_blank');
     expect(helpLink.getAttribute('rel')).toBe('noopener noreferrer');
+    expect(helpLink.getAttribute('data-help-text')).toContain(
+      'Faker helper commands allow use of more complex generation than the domain commands'
+    );
+    expect(helpLink.getAttribute('data-help-text')).not.toContain('Faker commands generate realistic random values');
+    expect(helpLink.getAttribute('data-help-text')).toContain('helpers.rangeToNumber({ min: 1, max: 10 })');
 
     const commandSelect = document.querySelector('[data-field="command"]');
     commandSelect.value = 'helpers.fake';
@@ -865,6 +870,10 @@ describe('generator page runtime factories', () => {
     const help = document.querySelector('[data-field="faker-doc-link"]');
     expect(help).not.toBeNull();
     expect(help.getAttribute('href')).toBe('https://anywaydata.com/docs/test-data/domain/domain-test-data');
+    expect(help.getAttribute('data-help-text')).toContain('<strong>Examples:</strong>');
+    expect(help.getAttribute('data-help-text')).toContain('person.fullName()');
+    expect(help.getAttribute('data-help-text')).toContain('number.int(1,10)');
+    expect(help.getAttribute('data-help-text')).toContain('internet.email()');
   });
 
   test('shows command metadata summary and params in faker help tooltip', () => {

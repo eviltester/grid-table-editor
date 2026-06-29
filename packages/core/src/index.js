@@ -95,16 +95,18 @@ function extractRuleLines(textSpec) {
     }
 
     let matchedInlineRule = false;
-    for (let separatorIndex = 0; separatorIndex < line.length; separatorIndex += 1) {
-      if (line[separatorIndex] !== ':') {
-        continue;
-      }
-      const rule = line.slice(separatorIndex + 1).trim();
-      if (looksLikeInlineRuleSpec(rule)) {
-        ruleLines.push(rule);
-        pendingName = null;
-        matchedInlineRule = true;
-        break;
+    if (pendingName === null) {
+      for (let separatorIndex = 0; separatorIndex < line.length; separatorIndex += 1) {
+        if (line[separatorIndex] !== ':') {
+          continue;
+        }
+        const rule = line.slice(separatorIndex + 1).trim();
+        if (looksLikeInlineRuleSpec(rule)) {
+          ruleLines.push(rule);
+          pendingName = null;
+          matchedInlineRule = true;
+          break;
+        }
       }
     }
 

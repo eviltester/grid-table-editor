@@ -101,6 +101,16 @@ class FormatOptionsPanelComponent {
     throw new Error(`Could not find option control named "${controlName}"`);
   }
 
+  async expectCsvOptionAccessibleNames() {
+    await expect(this.container.getByRole('checkbox', { name: 'Use Quotes', exact: true })).toBeVisible();
+    await expect(this.container.getByRole('textbox', { name: 'Quote Char', exact: true })).toBeVisible();
+    await expect(this.container.getByRole('checkbox', { name: /show help for this option use quotes/i })).toHaveCount(
+      0
+    );
+    await expect(this.container.getByRole('textbox', { name: /show help for this option quote char/i })).toHaveCount(0);
+    await expect(this.container.getByRole('button', { name: 'Show help for this option' }).first()).toBeVisible();
+  }
+
   async setFirstEditableOption() {
     const select = this.container.locator('select').first();
     if (await select.count()) {

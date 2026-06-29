@@ -2,28 +2,41 @@ import { defineConfig } from 'vite';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { transformStandaloneHtmlWithSiteConfig } from './site-config-html.mjs';
+import { resolveBuildVersion } from '../../packages/core-ui/js/build-metadata/build-metadata.js';
+import { resolveSiteConfigModulePath as resolveSharedSiteConfigModulePath } from '../../packages/core-ui/js/site/site-config-module-path.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const defaultSiteConfigModulePath = path.resolve(__dirname, '../../packages/core-ui/js/site/site-config.production.js');
 
-function resolveSiteConfigModulePath() {
-  return process.env.ANYWAYDATA_SITE_CONFIG_OVERRIDE_PATH
-    ? path.resolve(process.env.ANYWAYDATA_SITE_CONFIG_OVERRIDE_PATH)
-    : defaultSiteConfigModulePath;
+function resolveSiteConfigModulePath(env = process.env) {
+  return resolveSharedSiteConfigModulePath(env);
+}
+
+function resolveWebBuildVersion(env = process.env, date = new Date()) {
+  return resolveBuildVersion({
+    configuredVersion: env.ANYWAYDATA_BUILD_VERSION,
+    date,
+  });
 }
 
 export default defineConfig(async () => {
   const siteConfigModulePath = resolveSiteConfigModulePath();
   const siteConfigModule = await import(pathToFileURL(siteConfigModulePath).href);
   const siteConfig = siteConfigModule.siteConfig || siteConfigModule.default;
+  const buildVersion = resolveWebBuildVersion();
 
   return {
     root: __dirname,
+    define: {
+      'globalThis.__ANYWAYDATA_BUILD_VERSION__': JSON.stringify(buildVersion),
+    },
     resolve: {
       alias: [
         { find: /^@anywaydata\/core$/, replacement: path.resolve(__dirname, '../../packages/core/src/index.js') },
-        { find: /^@anywaydata\/core\/mcp\/(.*)$/, replacement: path.resolve(__dirname, '../../packages/core/js/mcp/$1') },
+        {
+          find: /^@anywaydata\/core\/mcp\/(.*)$/,
+          replacement: path.resolve(__dirname, '../../packages/core/js/mcp/$1'),
+        },
         {
           find: /^@anywaydata\/core\/faker\/(.*)$/,
           replacement: path.resolve(__dirname, '../../packages/core/js/faker/$1'),
@@ -94,3 +107,5 @@ export default defineConfig(async () => {
     },
   };
 });
+
+export { resolveSiteConfigModulePath, resolveWebBuildVersion };

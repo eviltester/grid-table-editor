@@ -4,6 +4,10 @@ export class SchemaParsingErrors {
     return text.length > 0 ? text : '__';
   }
 
+  static #fakerValidationReasonCode(reason) {
+    return /\bUnsafe faker rule syntax detected\b/iu.test(String(reason || '')) ? 'unsafe_faker_rule' : '';
+  }
+
   static missingSchemaRows() {
     return {
       code: 'missing_schema_rows',
@@ -215,10 +219,12 @@ export class SchemaParsingErrors {
 
   static fakerValidationFailed(column, reason) {
     const columnLabel = SchemaParsingErrors.#columnLabel(column);
+    const reasonCode = SchemaParsingErrors.#fakerValidationReasonCode(reason);
     return {
       code: 'compiler_validation_error',
       message: `${columnLabel} failed faker validation - ${reason}`,
       ...(column ? { column } : {}),
+      ...(reasonCode ? { reasonCode } : {}),
     };
   }
   static domainValidationFailed(column, reason) {

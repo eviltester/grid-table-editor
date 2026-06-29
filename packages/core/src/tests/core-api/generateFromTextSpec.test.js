@@ -50,6 +50,27 @@ test('generateFromTextSpec rejects helpers.rangeToNumber range object without ma
   );
 });
 
+test('generateFromTextSpec rejects malformed helpers.arrayElement params with array guidance', () => {
+  const result = generateFromTextSpec({
+    textSpec: 'Choice\nhelpers.arrayElement(["A", "B")',
+    rowCount: 3,
+    outputFormat: 'json',
+  });
+
+  expect(result.ok).toBe(false);
+  expect(result.rows).toBeUndefined();
+  expect(result.rendered).toBeUndefined();
+  expect(result.errors).toContainEqual(
+    expect.objectContaining({
+      code: 'compiler_validation_error',
+      column: 'Choice',
+      message: expect.stringContaining(
+        'helpers.arrayElement requires an array argument, e.g. helpers.arrayElement(["A", "B", "C"]).'
+      ),
+    })
+  );
+});
+
 test('generateFromTextSpec generates rows for valid spec', () => {
   const result = generateFromTextSpec({ textSpec: 'Name\nBob', rowCount: 2, outputFormat: 'json' });
   expect(result.ok).toBe(true);
@@ -303,6 +324,45 @@ test('generateFromTextSpec rejects forbidden faker commands even without safe mo
   expect(result.ok).toBe(false);
   expect(result.errors[0]?.message || result.errors[0]).toMatch(/Forbidden faker command/);
 });
+
+test('generateFromTextSpec rejects deprecated live faker commands that are not domain commands', () => {
+  const result = generateFromTextSpec({
+    textSpec: 'Image\nimage.urlLoremFlickr()',
+    rowCount: 1,
+    outputFormat: 'json',
+  });
+
+  expect(result.ok).toBe(false);
+  expect(result.rows).toBeUndefined();
+  expect(result.errors).toContainEqual(
+    expect.objectContaining({
+      code: 'compiler_validation_error',
+      column: 'Image',
+      message: expect.stringContaining('Unknown keyword: image.urlLoremFlickr'),
+    })
+  );
+});
+
+test.each(['person.notACommand()', 'person.notACommand'])(
+  'generateFromTextSpec rejects unknown command-like schema text %s',
+  (ruleSpec) => {
+    const result = generateFromTextSpec({
+      textSpec: `Name\n${ruleSpec}`,
+      rowCount: 1,
+      outputFormat: 'json',
+    });
+
+    expect(result.ok).toBe(false);
+    expect(result.rows).toBeUndefined();
+    expect(result.errors).toContainEqual(
+      expect.objectContaining({
+        code: 'compiler_validation_error',
+        column: 'Name',
+        message: expect.stringContaining('Unknown keyword: person.notACommand'),
+      })
+    );
+  }
+);
 
 test('generateFromTextSpec rejects malformed recognized faker helper invocations instead of treating them as regex', () => {
   const result = generateFromTextSpec({

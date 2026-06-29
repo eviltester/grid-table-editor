@@ -114,16 +114,33 @@ function buildSchemaParamsHint(params) {
   return `(${params.map((param) => param.name).join(', ')})`;
 }
 
-function getPrimaryUsageExample(model = {}) {
+function getPrimaryUsageExampleModel(model = {}) {
   const usageExamples = Array.isArray(model?.usageExamples) ? model.usageExamples : [];
   const firstUsageExample = usageExamples.find(
     (usageExample) => typeof usageExample?.functionCall === 'string' && usageExample.functionCall.trim().length > 0
   );
   if (firstUsageExample) {
-    return firstUsageExample.functionCall.trim();
+    return {
+      functionCall: firstUsageExample.functionCall.trim(),
+      description: String(firstUsageExample.description || '').trim(),
+    };
   }
   const example = String(model?.example || '').trim();
-  return example;
+  return example ? { functionCall: example, description: '' } : null;
+}
+
+function getUsageExampleModels(model = {}) {
+  return (Array.isArray(model?.usageExamples) ? model.usageExamples : [])
+    .map((usageExample) => ({
+      functionCall: String(usageExample?.functionCall || '').trim(),
+      description: String(usageExample?.description || '').trim(),
+    }))
+    .filter((usageExample) => usageExample.functionCall);
+}
+
+function renderUsageExampleHtml(usageExample) {
+  const descriptionHtml = usageExample.description ? ` - ${escapeHtml(usageExample.description)}` : '';
+  return `<code>${escapeHtml(usageExample.functionCall)}</code>${descriptionHtml}`;
 }
 
 function renderSchemaHelpHtml(model) {
@@ -158,11 +175,21 @@ function renderSchemaHelpHtml(model) {
     sections.push(`<p><strong>Params:</strong></p><ul>${paramItems}</ul>`);
   }
 
-  const primaryUsageExample = getPrimaryUsageExample(model);
-  if (primaryUsageExample) {
-    sections.push(`<p><strong>Example:</strong> <code>${escapeHtml(primaryUsageExample)}</code></p>`);
-  } else if (model.kind === 'command') {
-    sections.push('<p><strong>Example:</strong> Output depends on your selected params.</p>');
+  const usageExampleModels = getUsageExampleModels(model);
+  if (model.showUsageExampleList && usageExampleModels.length > 1) {
+    const exampleItems = usageExampleModels
+      .map((usageExample) => `<li>${renderUsageExampleHtml(usageExample)}</li>`)
+      .join('');
+    sections.push(`<p><strong>Examples:</strong></p><ul>${exampleItems}</ul>`);
+  } else if (usageExampleModels.length > 0) {
+    sections.push(`<p><strong>Example:</strong> ${renderUsageExampleHtml(usageExampleModels[0])}</p>`);
+  } else {
+    const primaryUsageExample = getPrimaryUsageExampleModel(model);
+    if (primaryUsageExample) {
+      sections.push(`<p><strong>Example:</strong> ${renderUsageExampleHtml(primaryUsageExample)}</p>`);
+    } else if (model.kind === 'command') {
+      sections.push('<p><strong>Example:</strong> Output depends on your selected params.</p>');
+    }
   }
 
   if (model.docsUrl) {
@@ -176,7 +203,31 @@ function renderSchemaHelpHtml(model) {
   return sections.join('');
 }
 
-function buildTypeHelpModel(typeName, summary, docsUrl, { params = [], example = '' } = {}) {
+function buildUsageExample(functionCall, description = '') {
+  return {
+    functionCall,
+    description,
+  };
+}
+
+function buildTypeHelpModel(
+  typeName,
+  summary,
+  docsUrl,
+  { params = [], example = '', usageExamples = [], showUsageExampleList = false } = {}
+) {
+  const normalizedUsageExamples =
+    Array.isArray(usageExamples) && usageExamples.length > 0
+      ? usageExamples
+      : example
+        ? [
+            {
+              functionCall: example,
+              description: `${typeName} example usage.`,
+            },
+          ]
+        : [];
+
   return {
     show: true,
     kind: 'type',
@@ -186,15 +237,41 @@ function buildTypeHelpModel(typeName, summary, docsUrl, { params = [], example =
     docsUrl,
     params,
     example,
-    usageExamples: example
-      ? [
-          {
-            functionCall: example,
-            description: `${typeName} example usage.`,
-          },
-        ]
-      : [],
+    usageExamples: normalizedUsageExamples,
+    showUsageExampleList,
   };
+}
+
+function buildFakerTopLevelHelpModel() {
+  return buildTypeHelpModel(
+    'Faker',
+    'Faker helper commands allow use of more complex generation than the domain commands. See help for details.',
+    HELP_URLS.faker,
+    {
+      usageExamples: [
+        buildUsageExample(
+          'helpers.rangeToNumber({ min: 1, max: 10 })',
+          'Generate a number from a helper range object.'
+        ),
+      ],
+    }
+  );
+}
+
+function buildDomainTopLevelHelpModel() {
+  return buildTypeHelpModel(
+    'Domain',
+    'Domain commands provide a controlled interface for common data generation tasks.',
+    HELP_URLS.domain,
+    {
+      usageExamples: [
+        buildUsageExample('person.fullName()', 'Generate a person name.'),
+        buildUsageExample('number.int(1,10)', 'Generate a number within a range.'),
+        buildUsageExample('internet.email()', 'Generate an email address.'),
+      ],
+      showUsageExampleList: true,
+    }
+  );
 }
 
 function buildSchemaHelpModel(sourceType, commandValue, options = {}) {
@@ -261,11 +338,7 @@ function buildSchemaHelpModel(sourceType, commandValue, options = {}) {
   if (normalisedSourceType === SOURCE_TYPE_FAKER) {
     const command = normaliseFakerCommand(commandValue);
     if (!command) {
-      return buildTypeHelpModel(
-        'Faker',
-        'Faker commands generate realistic random values such as names, addresses, and dates.',
-        HELP_URLS.faker
-      );
+      return buildFakerTopLevelHelpModel();
     }
     const commandHelp = getFakerCommandHelp(command);
     return {
@@ -284,11 +357,7 @@ function buildSchemaHelpModel(sourceType, commandValue, options = {}) {
   if (normalisedSourceType === SOURCE_TYPE_DOMAIN) {
     const command = normaliseDomainCommand(commandValue);
     if (!command) {
-      return buildTypeHelpModel(
-        'Domain',
-        'Domain commands provide a controlled interface for data generation.',
-        HELP_URLS.domain
-      );
+      return buildDomainTopLevelHelpModel();
     }
     const commandHelp = getDomainCommandHelp(command);
     return {

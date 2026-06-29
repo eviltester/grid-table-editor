@@ -19,9 +19,13 @@ function extractFakerCommandAndParams(ruleSpec, { normaliseFakerCommand, fakerCo
       return { command, params: '' };
     }
     if (normalisedSpec.startsWith(command)) {
+      const remainder = normalisedSpec.slice(command.length);
+      if (remainder.length > 0 && !remainder.startsWith('(')) {
+        continue;
+      }
       return {
         command,
-        params: normalisedSpec.slice(command.length),
+        params: remainder,
       };
     }
   }

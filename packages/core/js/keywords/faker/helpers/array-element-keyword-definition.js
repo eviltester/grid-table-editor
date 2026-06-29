@@ -9,6 +9,7 @@ const HELPERS_ARRAY_ELEMENT_KEYWORD_DEFINITION = {
     {
       name: 'array',
       optional: false,
+      positionalOnly: true,
       type: 'array',
       description: 'Array of candidate values to choose from.',
     },

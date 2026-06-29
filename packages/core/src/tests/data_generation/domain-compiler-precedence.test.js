@@ -64,4 +64,76 @@ describe('domain compiler precedence', () => {
       })
     );
   });
+
+  test('rejects deprecated live faker commands that are not registered domain commands', () => {
+    const compiler = new TestDataRulesCompiler(faker, RandExp);
+    const rules = [{ name: 'Image', type: '', ruleSpec: 'image.urlLoremFlickr()' }];
+
+    compiler.compile(rules);
+    compiler.validate();
+
+    expect(rules[0].type).toBe('domain');
+    expect(compiler.errors).toContainEqual(
+      expect.objectContaining({
+        code: 'compiler_validation_error',
+        column: 'Image',
+        message: expect.stringContaining('Unknown keyword: image.urlLoremFlickr'),
+      })
+    );
+  });
+
+  test.each(['person.notACommand()', 'person.notACommand'])(
+    'rejects unknown command-like input %s instead of falling through to regex',
+    (ruleSpec) => {
+      const compiler = new TestDataRulesCompiler(faker, RandExp);
+      const rules = [{ name: 'Name', type: '', ruleSpec }];
+
+      compiler.compile(rules);
+      compiler.validate();
+
+      expect(rules[0].type).toBe('domain');
+      expect(compiler.errors).toContainEqual(
+        expect.objectContaining({
+          code: 'compiler_validation_error',
+          column: 'Name',
+          message: expect.stringContaining('Unknown keyword: person.notACommand'),
+        })
+      );
+    }
+  );
+
+  test('keeps non-command regex shorthand as regex', () => {
+    const compiler = new TestDataRulesCompiler(faker, RandExp);
+    const rules = [{ name: 'Code', type: '', ruleSpec: '[A-Z]{3}' }];
+
+    compiler.compile(rules);
+    compiler.validate();
+
+    expect(rules[0]).toMatchObject({ type: 'regex', ruleSpec: '[A-Z]{3}' });
+    expect(compiler.errors).toEqual([]);
+  });
+
+  test('keeps plain non-command text as literal shorthand', () => {
+    const compiler = new TestDataRulesCompiler(faker, RandExp);
+    const rules = [{ name: 'City', type: '', ruleSpec: 'London' }];
+
+    compiler.compile(rules);
+
+    expect(rules[0]).toMatchObject({ type: 'literal', ruleSpec: 'London' });
+  });
+
+  test('honors explicit regex and literal wrappers for command-looking text', () => {
+    const compiler = new TestDataRulesCompiler(faker, RandExp);
+    const rules = [
+      { name: 'Regex', type: '', ruleSpec: 'regex(person.notACommand())' },
+      { name: 'Literal', type: '', ruleSpec: 'literal(person.notACommand())' },
+    ];
+
+    compiler.compile(rules);
+    compiler.validate();
+
+    expect(rules[0]).toMatchObject({ type: 'regex', ruleSpec: 'person.notACommand()' });
+    expect(rules[1]).toMatchObject({ type: 'literal', ruleSpec: 'person.notACommand()' });
+    expect(compiler.errors).toEqual([]);
+  });
 });

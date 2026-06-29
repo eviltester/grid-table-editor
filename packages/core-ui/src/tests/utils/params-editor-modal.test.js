@@ -184,6 +184,27 @@ describe('params editor modal', () => {
     });
   });
 
+  test('surfaces warning validation issues without blocking params text construction', () => {
+    const result = buildParamsTextFromEditorEntries({
+      entries: [{ name: 'array', type: 'array', value: '["free","pro"]', mode: 'raw', optional: false }],
+      validateParams: () => [
+        {
+          message:
+            'Row 1: invalid faker params - Invalid Faker API Call Unsafe faker rule syntax detected: requires complex argument parsing',
+          severity: 'warning',
+        },
+      ],
+    });
+
+    expect(result).toEqual({
+      paramsText: '(array=["free","pro"])',
+      errors: [],
+      warnings: [
+        'Row 1: invalid faker params - Invalid Faker API Call Unsafe faker rule syntax detected: requires complex argument parsing',
+      ],
+    });
+  });
+
   test('auto quotes string values even when the editor input includes surrounding quotes', () => {
     const result = buildParamsTextFromEditorEntries({
       entries: [{ name: 'prefix', type: 'string', value: '"filename"', mode: 'text', optional: true }],
@@ -257,6 +278,42 @@ describe('params editor modal', () => {
 
     fireEvent.click(applyButton);
     await expect(promise).resolves.toBe('(active,inactive,pending)');
+  });
+
+  test('keeps apply enabled when semantic validation returns a warning', async () => {
+    const promise = openParamsEditorModal({
+      documentObj: document,
+      windowObj: window,
+      commandLabel: 'helpers.arrayElement',
+      helpModel: {
+        summary: 'Selects an array member',
+        params: [{ name: 'array', type: 'array', optional: false }],
+      },
+      initialParams: '',
+      validateParams: () => [
+        {
+          message:
+            'Row 1: invalid faker params - Invalid Faker API Call Unsafe faker rule syntax detected: requires complex argument parsing',
+          severity: 'warning',
+        },
+      ],
+    });
+
+    const dialog = within(getOverlay()).getByRole('dialog', { name: /edit params for helpers\.arrayelement/i });
+    const applyButton = within(dialog).getByRole('button', { name: /^apply$/i });
+    const input = within(dialog).getByRole('textbox', { name: /array value/i });
+
+    input.value = '["free","pro"]';
+    fireEvent.input(input);
+
+    expect(applyButton.disabled).toBe(false);
+    expect(dialog.querySelector('[data-role="params-editor-error"]').hidden).toBe(true);
+    expect(dialog.querySelector('[data-role="params-editor-validation-warning"]').textContent).toContain(
+      'Unsafe faker rule syntax detected'
+    );
+
+    fireEvent.click(applyButton);
+    await expect(promise).resolves.toBe('(array=["free","pro"])');
   });
 
   test('keeps keyboard focus inside the params editor dialog when tabbing past the edges', async () => {
@@ -403,6 +460,9 @@ describe('params editor modal', () => {
     const reqBoxes = Array.from(dialog.querySelectorAll('[data-role="params-editor-required"]'));
     expect(reqBoxes).toHaveLength(5);
     expect(reqBoxes.every((box) => box.checked === false)).toBe(true);
+    expect(within(dialog).getByRole('checkbox', { name: 'Optional start' })).toBeTruthy();
+    expect(within(dialog).getByRole('checkbox', { name: 'Optional zeropadding' })).toBeTruthy();
+    expect(within(dialog).queryByRole('checkbox', { name: 'Required start' })).toBeNull();
 
     const startInput = within(dialog).getByRole('textbox', { name: /start value/i });
     const zeroPaddingInput = within(dialog).getByRole('textbox', { name: /zeropadding value/i });
@@ -457,6 +517,9 @@ describe('params editor modal', () => {
     expect(helpIcons[1].getAttribute('data-help-text')).toContain('Optional.');
     expect(helpIcons[1].getAttribute('data-help-text')).toContain('Default: 10');
     expect(helpIcons[1].getAttribute('data-help-text')).toContain('<code>100</code>');
+    expect(within(dialog).getByRole('checkbox', { name: 'Required min' }).checked).toBe(true);
+    expect(within(dialog).getByRole('checkbox', { name: 'Optional max' }).checked).toBe(false);
+    expect(within(dialog).queryByRole('checkbox', { name: 'Required max' })).toBeNull();
 
     fireEvent.click(within(dialog).getByRole('button', { name: /^cancel$/i }));
     await expect(promise).resolves.toBeNull();

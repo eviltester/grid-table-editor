@@ -130,6 +130,7 @@ body.theme-dark {
   background: var(--pe-error-soft, #fef3f2);
 }
 
+.params-editor-warning[hidden],
 .params-editor-error[hidden] {
   display: none;
 }

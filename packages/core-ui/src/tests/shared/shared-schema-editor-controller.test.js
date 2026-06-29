@@ -1,6 +1,7 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
 import { fireEvent, within } from '@testing-library/dom';
+import { dataRulesToSchemaText } from '@anywaydata/core/data_generation/schema-rules-adapter.js';
 import * as schemaControllerExports from '../../../js/gui_components/shared/test-data/schema/schema-controller.js';
 import * as schemaEditorCoreExports from '../../../js/gui_components/shared/test-data/schema/schema-editor-core.js';
 import { createSharedSchemaEditorController } from '../../../js/gui_components/shared/test-data/schema/shared-schema-editor-controller.js';
@@ -157,6 +158,120 @@ describe('createSharedSchemaEditorController', () => {
     expect(dom.window.document.querySelector('[data-field="params"]').value).toBe('(values=active,inactive,pending)');
   });
 
+  test('restores focus to the command picker button after applying a method picker selection', async () => {
+    const root = createRoot(dom.window.document);
+    const controller = createSharedSchemaEditorController({
+      documentObj: dom.window.document,
+      rootElement: root,
+      createBlankRow: () => ({
+        id: 'row-1',
+        name: 'Method',
+        sourceType: 'domain',
+        command: '',
+        value: '',
+        params: '',
+        semanticValidationIssues: [],
+      }),
+      mapRuleToRow: () => ({
+        id: 'row-1',
+        name: 'Method',
+        sourceType: 'domain',
+        command: '',
+        value: '',
+        params: '',
+        semanticValidationIssues: [],
+      }),
+      schemaTextToDataRules: jest.fn(() => ({ dataRules: [], errors: [] })),
+      dataRulesToSchemaText: jest.fn(() => ''),
+      getMethodPickerOptions: () => [
+        {
+          sourceType: 'domain',
+          command: 'internet.httpMethod',
+          helpModel: {
+            heading: 'internet.httpMethod',
+            summary: 'HTTP method helper',
+            params: [],
+          },
+        },
+      ],
+      getVisibleDomainCommands: () => ['internet.httpMethod'],
+      validateSchemaRows: jest.fn((rows) => ({ rows, errors: [] })),
+      updatePairwiseButtonVisibility: jest.fn(),
+      updateHelpHints: jest.fn(),
+    });
+
+    controller.init();
+    const pickerButton = dom.window.document.querySelector('[data-action="pick-command"]');
+    pickerButton.focus();
+    const dialogPromise = controller.handleClick({ target: pickerButton });
+
+    const dialog = within(dom.window.document.body).getByRole('dialog', { name: /select schema method/i });
+    fireEvent.click(within(dialog).getByRole('button', { name: /^apply$/i }));
+
+    await dialogPromise;
+    const replacementPickerButton = dom.window.document.querySelector('[data-action="pick-command"]');
+    expect(replacementPickerButton.textContent).toBe('internet.httpMethod');
+    expect(dom.window.document.activeElement).toBe(replacementPickerButton);
+  });
+
+  test('applies helpers.arrayElement array params as positional values from the params editor', async () => {
+    const root = createRoot(dom.window.document);
+    const controller = createSharedSchemaEditorController({
+      documentObj: dom.window.document,
+      rootElement: root,
+      createBlankRow: () => ({
+        id: 'row-1',
+        name: 'Tier',
+        sourceType: 'faker',
+        command: 'helpers.arrayElement',
+        value: '',
+        params: '',
+        semanticValidationIssues: [],
+      }),
+      mapRuleToRow: () => ({
+        id: 'row-1',
+        name: 'Tier',
+        sourceType: 'faker',
+        command: 'helpers.arrayElement',
+        value: '',
+        params: '',
+        semanticValidationIssues: [],
+      }),
+      schemaTextToDataRules: jest.fn(() => ({ dataRules: [], errors: [] })),
+      dataRulesToSchemaText: jest.fn(() => ''),
+      getMethodPickerOptions: () => [
+        {
+          sourceType: 'faker',
+          command: 'helpers.arrayElement',
+          helpModel: {
+            heading: 'helpers.arrayElement',
+            summary: 'Returns one random element from the supplied array.',
+            params: [{ name: 'array', type: 'array', optional: false, positionalOnly: true }],
+          },
+        },
+      ],
+      getVisibleDomainCommands: () => ['datatype.enum'],
+      validateSchemaRows: jest.fn((rows) => ({ rows, errors: [] })),
+      updatePairwiseButtonVisibility: jest.fn(),
+      updateHelpHints: jest.fn(),
+    });
+
+    controller.init();
+    const paramsButton = dom.window.document.querySelector('[data-action="edit-params"]');
+    const dialogPromise = controller.handleClick({ target: paramsButton });
+
+    const dialog = within(dom.window.document.body).getByRole('dialog', {
+      name: /edit params for helpers\.arrayelement/i,
+    });
+    const paramsInput = within(dialog).getByRole('textbox', { name: /array value/i });
+    paramsInput.value = '["free","pro","enterprise"]';
+    fireEvent.input(paramsInput);
+    fireEvent.click(within(dialog).getByRole('button', { name: /^apply$/i }));
+
+    await dialogPromise;
+    expect(dom.window.document.querySelector('[data-field="params"]').value).toBe('(["free","pro","enterprise"])');
+  });
+
   test('logs unexpected params editor failures instead of silently swallowing them', async () => {
     const root = createRoot(dom.window.document);
     const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
@@ -307,5 +422,197 @@ describe('createSharedSchemaEditorController', () => {
     );
     expect(result.errors).toEqual([{ code: 'missing_rule_definition', message: 'Missing generator definition' }]);
     expect(onSchemaTextChanged).toHaveBeenLastCalledWith('OnlyName');
+  });
+
+  test('refreshes open text mode to the interpreted regex schema when requested', () => {
+    const root = createRoot(dom.window.document);
+    const onSchemaTextChanged = jest.fn();
+    const schemaTextToDataRules = jest.fn(() => ({
+      dataRules: [{ name: 'Mystery', ruleSpec: 'unknown()', type: 'regex' }],
+      errors: [],
+      schemaTokens: [{ kind: 'rule' }],
+      constraints: [],
+    }));
+
+    const controller = createSharedSchemaEditorController({
+      documentObj: dom.window.document,
+      rootElement: root,
+      createBlankRow: () => ({
+        id: 'row-1',
+        name: '',
+        sourceType: 'regex',
+        command: '',
+        value: '',
+        params: '',
+        semanticValidationIssues: [],
+      }),
+      mapRuleToRow: (rule) => ({
+        id: 'row-1',
+        name: rule.name,
+        sourceType: rule.type,
+        command: '',
+        value: rule.ruleSpec,
+        params: '',
+        semanticValidationIssues: [],
+      }),
+      schemaTextToDataRules,
+      dataRulesToSchemaText,
+      onSchemaTextChanged,
+      validateSchemaRows: jest.fn((rows) => ({ rows, errors: [] })),
+      updatePairwiseButtonVisibility: jest.fn(),
+      updateHelpHints: jest.fn(),
+    });
+
+    controller.init();
+    controller.setTextMode(true);
+    const textArea = root.querySelector('[data-role="schema-textbox"]');
+    textArea.value = 'Mystery\nunknown()';
+
+    const result = controller.syncFromText({ showErrors: true, force: true, refreshTextFromRows: true });
+
+    expect(result.errors).toEqual([]);
+    expect(textArea.value).toBe('Mystery\nregex(unknown())');
+    expect(onSchemaTextChanged).toHaveBeenLastCalledWith('Mystery\nregex(unknown())');
+  });
+
+  test('confirms before converting invalid text definitions to literal rows when leaving text mode', async () => {
+    const root = createRoot(dom.window.document);
+    const requestConfirm = jest.fn(() => Promise.resolve(true));
+    const schemaTextToDataRules = jest.fn(() => ({
+      dataRules: [
+        { name: 'First Name', ruleSpec: 'person.fullName()', type: 'domain' },
+        { name: 'Bad Command', ruleSpec: 'person.notACommand()', type: 'domain' },
+      ],
+      errors: [
+        {
+          code: 'compiler_validation_error',
+          column: 'Bad Command',
+          message: 'Bad Command failed domain validation - Unknown keyword: person.notACommand',
+        },
+      ],
+      schemaTokens: [
+        { kind: 'rule', name: 'First Name', rule: 'person.fullName()', ruleLine: 2 },
+        { kind: 'rule', name: 'Bad Command', rule: 'person.notACommand()', ruleLine: 4 },
+      ],
+      constraints: [],
+    }));
+    const controller = createSharedSchemaEditorController({
+      documentObj: dom.window.document,
+      rootElement: root,
+      requestConfirm,
+      createBlankRow: () => ({
+        id: 'blank',
+        name: '',
+        sourceType: 'literal',
+        command: 'literal',
+        value: '',
+        params: '',
+        semanticValidationIssues: [],
+      }),
+      mapRuleToRow: (rule) => ({
+        id: rule.name,
+        name: rule.name,
+        sourceType: rule.type,
+        command: rule.type === 'domain' ? rule.ruleSpec.replace(/\([\s\S]*\)$/u, '') : '',
+        value: rule.type === 'literal' ? rule.ruleSpec : '',
+        params: rule.type === 'domain' && rule.ruleSpec.endsWith('()') ? '()' : '',
+        semanticValidationIssues: [],
+      }),
+      schemaTextToDataRules,
+      dataRulesToSchemaText,
+      validateSchemaRows: jest.fn((rows) => ({ rows, errors: [] })),
+      updatePairwiseButtonVisibility: jest.fn(),
+      updateHelpHints: jest.fn(),
+    });
+
+    controller.init();
+    controller.setTextMode(true);
+    const textArea = root.querySelector('[data-role="schema-textbox"]');
+    textArea.value = 'First Name\nperson.fullName()\nBad Command\nperson.notACommand()';
+
+    const result = await controller.toggleMode();
+
+    expect(requestConfirm).toHaveBeenCalledWith({
+      title: 'Convert invalid definitions?',
+      message:
+        'Syntax errors are present that can not be edited in Schema UI. Allow editing by converting invalid definitions to literal?',
+      okLabel: 'Yes',
+      cancelLabel: 'No',
+    });
+    expect(result).toMatchObject({ errors: [], convertedInvalidRules: true });
+    expect(controller.getState().isTextMode).toBe(false);
+    expect(controller.getState().rows).toEqual([
+      expect.objectContaining({ name: 'First Name', sourceType: 'domain', command: 'person.fullName' }),
+      expect.objectContaining({
+        name: 'Bad Command',
+        sourceType: 'literal',
+        command: 'literal',
+        value: 'person.notACommand()',
+      }),
+    ]);
+    expect(root.querySelector('[data-role="schema-error"]')?.textContent || '').toBe('');
+  });
+
+  test('stays in text mode when invalid text definition literal conversion is declined', async () => {
+    const root = createRoot(dom.window.document);
+    const requestConfirm = jest.fn(() => Promise.resolve(false));
+    const schemaTextToDataRules = jest.fn(() => ({
+      dataRules: [{ name: 'Bad Command', ruleSpec: 'person.notACommand', type: 'domain' }],
+      errors: [
+        {
+          code: 'compiler_validation_error',
+          column: 'Bad Command',
+          message: 'Bad Command failed domain validation - Unknown keyword: person.notACommand',
+        },
+      ],
+      schemaTokens: [{ kind: 'rule', name: 'Bad Command', rule: 'person.notACommand', ruleLine: 2 }],
+      constraints: [],
+    }));
+    const onSchemaError = jest.fn();
+    const controller = createSharedSchemaEditorController({
+      documentObj: dom.window.document,
+      rootElement: root,
+      requestConfirm,
+      createBlankRow: () => ({
+        id: 'blank',
+        name: '',
+        sourceType: 'literal',
+        command: 'literal',
+        value: '',
+        params: '',
+        semanticValidationIssues: [],
+      }),
+      mapRuleToRow: (rule) => ({
+        id: rule.name,
+        name: rule.name,
+        sourceType: rule.type,
+        command: rule.ruleSpec,
+        value: '',
+        params: '',
+        semanticValidationIssues: [],
+      }),
+      schemaTextToDataRules,
+      dataRulesToSchemaText,
+      onSchemaError,
+      validateSchemaRows: jest.fn((rows) => ({ rows, errors: [] })),
+      updatePairwiseButtonVisibility: jest.fn(),
+      updateHelpHints: jest.fn(),
+    });
+
+    controller.init();
+    controller.setTextMode(true);
+    root.querySelector('[data-role="schema-textbox"]').value = 'Bad Command\nperson.notACommand';
+
+    const result = await controller.toggleMode();
+
+    expect(requestConfirm).toHaveBeenCalledTimes(1);
+    expect(result.errors).toEqual([
+      expect.objectContaining({
+        code: 'compiler_validation_error',
+        message: expect.stringContaining('Unknown keyword: person.notACommand'),
+      }),
+    ]);
+    expect(controller.getState().isTextMode).toBe(true);
+    expect(onSchemaError).toHaveBeenLastCalledWith(expect.stringContaining('Unknown keyword: person.notACommand'));
   });
 });

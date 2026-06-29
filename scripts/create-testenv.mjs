@@ -2,6 +2,7 @@ import { cp, mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { spawnSync } from 'node:child_process';
+import { normaliseBuildVersion, resolveBuildVersion } from '../packages/core-ui/js/build-metadata/build-metadata.js';
 import { serializeSiteConfigModuleSource } from '../packages/core-ui/js/site/site-config-core.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -568,7 +569,10 @@ function resolveRepositoryName() {
     ?.trim();
 }
 
-function createTestEnvSiteConfigInput({ repositoryName = resolveRepositoryName(), pagesHostOrigin = 'https://eviltester.github.io' } = {}) {
+function createTestEnvSiteConfigInput({
+  repositoryName = resolveRepositoryName(),
+  pagesHostOrigin = 'https://eviltester.github.io',
+} = {}) {
   const repoBasePath = repositoryName ? `/${repositoryName}` : '';
   const rootedPageHref = (fileName) => (repositoryName ? `${repoBasePath}/${fileName}` : `/${fileName}`);
   const rootedSiteBase = repositoryName ? `${repoBasePath}/site` : '/site';
@@ -598,12 +602,27 @@ async function writeGeneratedTestEnvSiteConfigOverride(filePath, options = {}) {
   await writeFile(filePath, source, 'utf8');
 }
 
+function createSiteConfigOverrideBuildEnv(filePath = tempSiteConfigOverridePath, { buildVersion = '' } = {}) {
+  const env = {
+    ANYWAYDATA_SITE_CONFIG_OVERRIDE_PATH: filePath,
+  };
+  const normalisedBuildVersion = normaliseBuildVersion(buildVersion);
+  if (normalisedBuildVersion) {
+    env.ANYWAYDATA_BUILD_VERSION = normalisedBuildVersion;
+  }
+  return env;
+}
+
 async function main() {
   await clearDirectoryContents(outputDir);
 
   const buildMetadata = resolveBuildMetadata();
+  const buildVersion = resolveBuildVersion({
+    configuredVersion: process.env.ANYWAYDATA_BUILD_VERSION,
+  });
   const fullSiteBaseUrl = resolveFullSiteBaseUrl();
   await writeGeneratedTestEnvSiteConfigOverride(tempSiteConfigOverridePath);
+  const appBuildEnv = createSiteConfigOverrideBuildEnv(tempSiteConfigOverridePath, { buildVersion });
   try {
     runCommand(
       'pnpm',
@@ -619,15 +638,15 @@ async function main() {
         tempWebDir,
       ],
       {
-        env: {
-          ANYWAYDATA_SITE_CONFIG_OVERRIDE_PATH: tempSiteConfigOverridePath,
-        },
+        env: appBuildEnv,
       }
     );
 
     await copyWebBuildIntoDirectory(tempWebDir, outputDir);
 
-    runCommand('pnpm', ['exec', 'storybook', 'build', '--output-dir', storybookDir]);
+    runCommand('pnpm', ['exec', 'storybook', 'build', '--output-dir', storybookDir], {
+      env: appBuildEnv,
+    });
 
     await hideTopHeaderInBuiltPage(path.join(outputDir, 'app.html'));
     await hideTopHeaderInBuiltPage(path.join(outputDir, 'generator.html'));
@@ -698,6 +717,7 @@ export {
   applySeoDirectivesToHtml,
   applyTopHeaderHideToHtml,
   createTestEnvSiteConfigInput,
+  createSiteConfigOverrideBuildEnv,
   createLlmsTxt,
   createSiteRobotsTxt,
   createTestenvRobotsTxt,

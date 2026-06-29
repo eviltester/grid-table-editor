@@ -122,6 +122,14 @@ describe('faker command help metadata', () => {
     );
 
     expect(arrayElement.summary).toContain('one random element');
+    expect(arrayElement.params).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          name: 'array',
+          positionalOnly: true,
+        }),
+      ])
+    );
     expect(arrayElement.usageExamples).toEqual(
       expect.arrayContaining([
         expect.objectContaining({

@@ -85,7 +85,7 @@ describe('TestDataRulesCompiler with Enum Support', () => {
 
       expect(rules[0].type).toBe('domain');
       expect(rules[0].ruleSpec).toBe('datatype.enum("One", "Two", "Three")');
-      expect(rules[1].type).toBe('regex'); // Single value is valid regex (literal text)
+      expect(rules[1].type).toBe('literal');
       expect(compiler.isValid()).toBe(true);
     });
 
@@ -117,14 +117,14 @@ describe('TestDataRulesCompiler with Enum Support', () => {
       expect(compiler.isValid()).toBe(true);
     });
 
-    test('compiles regex-looking CSV as enum values instead of regex', () => {
+    test('compiles regex-looking CSV as regex instead of enum shorthand', () => {
       const rules = [new TestDataRule('PatternParts', '[A-Z],{3}')];
 
       compiler.compile(rules);
       compiler.validate();
 
-      expect(rules[0].type).toBe('domain');
-      expect(rules[0].ruleSpec).toBe('datatype.enum("[A-Z]", "{3}")');
+      expect(rules[0].type).toBe('regex');
+      expect(rules[0].ruleSpec).toBe('[A-Z],{3}');
       expect(compiler.isValid()).toBe(true);
     });
 

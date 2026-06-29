@@ -1,9 +1,22 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { mergeConfig } from 'vite';
+import { resolveBuildVersion } from '../packages/core-ui/js/build-metadata/build-metadata.js';
+import { resolveSiteConfigModulePath } from '../packages/core-ui/js/site/site-config-module-path.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+function resolveStorybookSiteConfigModulePath(env = process.env) {
+  return resolveSiteConfigModulePath(env);
+}
+
+function resolveStorybookBuildVersion(env = process.env, date = new Date()) {
+  return resolveBuildVersion({
+    configuredVersion: env.ANYWAYDATA_BUILD_VERSION,
+    date,
+  });
+}
 
 export default {
   framework: {
@@ -17,7 +30,12 @@ export default {
     autodocs: true,
   },
   async viteFinal(config) {
+    const siteConfigModulePath = resolveStorybookSiteConfigModulePath();
+    const buildVersion = resolveStorybookBuildVersion();
     return mergeConfig(config, {
+      define: {
+        'globalThis.__ANYWAYDATA_BUILD_VERSION__': JSON.stringify(buildVersion),
+      },
       resolve: {
         alias: {
           'https://cdn.skypack.dev/@faker-js/faker@v9.7.0': '@faker-js/faker',
@@ -31,9 +49,11 @@ export default {
           '@anywaydata/core/command-help': path.resolve(__dirname, '../packages/core/js/command-help'),
           '@anywaydata/core/libs': path.resolve(__dirname, '../packages/core/js/libs'),
           '@anywaydata/core': path.resolve(__dirname, '../packages/core/src/index.js'),
-          '@anywaydata/site-config': path.resolve(__dirname, '../packages/core-ui/js/site/site-config.production.js'),
+          '@anywaydata/site-config': siteConfigModulePath,
         },
       },
     });
   },
 };
+
+export { resolveStorybookBuildVersion, resolveStorybookSiteConfigModulePath };

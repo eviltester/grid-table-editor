@@ -77,10 +77,16 @@ Use a regex when the value should match a pattern.
 
 ```text
 Ticket Id
-[A-Z]{3}-\d{4}
+regex([A-Z]{3}-\d{4})
 ```
 
 This generates values such as `ABC-1234`.
+
+Raw regex patterns are still accepted for quick entry when the text does not look like a command. For example, `[A-Z]{3}` and `[A-Z]{2,3}` are treated as regex shorthand and are shown as `regex([A-Z]{3})` or `regex([A-Z]{2,3})` when schema text is refreshed after previewing or generating data. JavaScript-style regex literals such as `/[A-Z]{3}/` are also accepted and are normalized to the inner pattern. Regex flags such as `/abc/i` are not supported.
+
+Plain comma-separated words still act as enum shorthand. For example, `GET,POST,PUT` is treated as `enum("GET","POST","PUT")`. If comma-containing text includes regex syntax such as `[A-Z]{2,3}` or `^GET,POST$`, it is treated as regex shorthand rather than enum. Use `regex(...)` or `enum(...)` when you want the intent to be completely explicit.
+
+Command-like text is validated as a command before regex or literal shorthand is considered. A dotted identifier such as `person.fullName`, `person.fullName()`, `person.notACommand`, or `person.notACommand()` must resolve to a supported AnyWayData domain command or allowed Faker helper. Unknown command-like text is reported as a schema error instead of being interpreted as regex or literal text. To use command-looking text as data, wrap it explicitly with `literal(...)`; to use it as a regex, wrap it explicitly with `regex(...)`.
 
 ### Domain and Faker-style methods
 
@@ -97,6 +103,12 @@ autoIncrement.timestamp(start="2026-06-12T12:39:23Z", step=1, type="seconds")
 ```
 
 The `Customer Name` example generates names such as `Alice Smith`. The `CreatedAt` example generates deterministic timestamps for time-ordered rows.
+
+## Switching text schemas back to the Schema UI
+
+When you switch from **Edit as Text** to **Edit as Schema**, AnyWayData validates the text first. If the text contains invalid rule definitions, the app asks whether to convert those invalid definitions to literal values so they can be edited in the Schema UI.
+
+Choosing **Yes** keeps valid rows as their detected types and converts only invalid rule definitions to literal rows using the original rule text. Choosing **No**, pressing Escape, or dismissing the dialog keeps you in **Edit as Text** mode with the schema error visible. Constraint errors are not converted to literals; fix those in text mode first.
 
 ## Comments and blank lines
 
@@ -366,7 +378,7 @@ This is invalid because `bob` does not match the regex:
 
 ```text
 Ticket Id
-[A-Z]{3}-\d{4}
+regex([A-Z]{3}-\d{4})
 
 IF [Ticket Id] = "bob" THEN [Status] = "Open";
 ```
@@ -502,7 +514,7 @@ Illustrates:
 
 ```text
 Ticket Id
-[A-Z]{3}-\d{4}
+regex([A-Z]{3}-\d{4})
 Queue
 enum("Support","QA","Ops")
 

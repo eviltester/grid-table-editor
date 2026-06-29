@@ -1,3 +1,5 @@
+import { restoreMethodPickerDocumentScrollLock } from '../../../../packages/core-ui/js/gui_components/shared/test-data/ui/method-picker-modal.js';
+
 const STORY_ARTIFACT_SELECTORS = [
   '#confirm-modal-backdrop',
   '#text-input-modal-backdrop',
@@ -41,6 +43,7 @@ function removeStoryArtifacts(documentObj = getDefaultDocumentObj()) {
     return;
   }
 
+  restoreMethodPickerDocumentScrollLock(documentObj);
   STORY_ARTIFACT_SELECTORS.forEach((selector) => {
     documentObj.querySelectorAll(selector).forEach((element) => element.remove());
   });

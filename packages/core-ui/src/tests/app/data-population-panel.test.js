@@ -226,6 +226,89 @@ describe('DataPopulationPanel', () => {
     component.destroy();
   });
 
+  test('validateSchemaRows returns text compiler errors without row validation fallback', () => {
+    const compilerError = {
+      code: 'compiler_validation_error',
+      column: 'Name',
+      message: 'Name failed domain validation - Unknown keyword: person.notACommand',
+    };
+    const schemaDefinition = {
+      update: jest.fn(),
+      destroy: jest.fn(),
+      getState: jest.fn(() => ({ isTextMode: true })),
+      syncFromText: jest.fn(() => ({
+        rows: [{ name: 'Name' }],
+        errors: [compilerError],
+      })),
+      validateRows: jest.fn(() => ({
+        rows: [{ name: 'Name' }],
+        errors: [{ code: 'unknown_domain_command', message: 'Row 1: unknown domain command "person.notACommand".' }],
+      })),
+      syncTextFromRows: jest.fn(),
+    };
+
+    const component = createDataPopulationPanelComponent({
+      root: document.getElementById('root'),
+      props: {
+        selectedMode: 'new-table',
+        pairwiseVisible: false,
+        modeOptions: [{ value: 'new-table', label: 'New Table' }],
+        rowCountProps: {
+          label: 'How Many?',
+          min: 1,
+          step: 1,
+          value: 1,
+          normalizeOnInput: true,
+        },
+        schemaDefinitionProps: {
+          schemaTextToDataRules: () => ({ dataRules: [], errors: [], schemaTokens: [] }),
+          dataRulesToSchemaText: () => '',
+          createBlankRow: () => ({
+            id: 'row-1',
+            name: '',
+            sourceType: 'regex',
+            command: '',
+            params: '',
+            value: '',
+            comments: '',
+            leadingTextLines: [],
+          }),
+          mapRuleToRow: (value) => value,
+          getMethodPickerOptions: () => [],
+          getVisibleDomainCommands: () => [],
+          fakerCommands: [],
+          sampleSchemaText: '',
+          buildModeHelpHtml: () => '',
+          validateSchemaRows: (rows) => ({ rows, errors: [] }),
+          updatePairwiseButtonVisibility: () => {},
+        },
+      },
+      services: {
+        createSchemaPanelComponent: ({ root }) => {
+          root.innerHTML =
+            '<div data-role="test-data-schema-panel-root"><div data-role="schema-definition-root"></div></div>';
+          return {
+            update: jest.fn(),
+            destroy: jest.fn(() => schemaDefinition.destroy()),
+            getSchemaDefinition: () => schemaDefinition,
+          };
+        },
+      },
+    });
+
+    const result = component.validateSchemaRows({ showErrors: true });
+
+    expect(schemaDefinition.syncFromText).toHaveBeenCalledWith({
+      showErrors: true,
+      force: true,
+      refreshTextFromRows: true,
+    });
+    expect(schemaDefinition.validateRows).not.toHaveBeenCalled();
+    expect(result.errors).toEqual([compilerError]);
+
+    component.destroy();
+  });
+
   test('supports two panel instances with isolated action ids and row counts', () => {
     const firstSchemaDefinition = {
       update: jest.fn(),

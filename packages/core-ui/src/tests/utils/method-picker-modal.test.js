@@ -1,5 +1,33 @@
 import { JSDOM } from 'jsdom';
+import { readFileSync } from 'node:fs';
 import { openMethodPickerModal } from '../../../js/gui_components/shared/test-data/ui/method-picker-modal.js';
+
+function hexToRgb(hex) {
+  const value = String(hex || '').replace('#', '');
+  return [0, 2, 4].map((start) => parseInt(value.slice(start, start + 2), 16));
+}
+
+function luminanceChannel(channelValue) {
+  const normalized = channelValue / 255;
+  return normalized <= 0.03928 ? normalized / 12.92 : ((normalized + 0.055) / 1.055) ** 2.4;
+}
+
+function relativeLuminance(hexColor) {
+  const [red, green, blue] = hexToRgb(hexColor).map(luminanceChannel);
+  return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+}
+
+function contrastRatio(foreground, background) {
+  const foregroundLuminance = relativeLuminance(foreground);
+  const backgroundLuminance = relativeLuminance(background);
+  const lighter = Math.max(foregroundLuminance, backgroundLuminance);
+  const darker = Math.min(foregroundLuminance, backgroundLuminance);
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
+function readCssVariable(cssText, variableName) {
+  return cssText.match(new RegExp(`${variableName}:\\s*(#[0-9a-fA-F]{6})`))?.[1] || '';
+}
 
 describe('method picker modal', () => {
   let dom;
@@ -67,6 +95,81 @@ describe('method picker modal', () => {
     expect(result).toBeNull();
   });
 
+  test('focuses search with slash and previews then applies the first filtered method with enter', async () => {
+    const promise = openMethodPickerModal({
+      documentObj: document,
+      windowObj: window,
+      options: [
+        {
+          sourceType: 'domain',
+          command: 'commerce.price',
+          helpModel: { summary: 'Generate values with prices', params: [], example: '' },
+        },
+        {
+          sourceType: 'domain',
+          command: 'location.city',
+          helpModel: { summary: 'Generate city values', params: [], example: '' },
+        },
+      ],
+      currentCommand: 'location.city',
+    });
+
+    getSearchInput().blur();
+    getOverlay().dispatchEvent(new window.KeyboardEvent('keydown', { key: '/', bubbles: true }));
+    expect(document.activeElement).toBe(getSearchInput());
+
+    const search = getSearchInput();
+    search.value = 'Generate';
+    search.dispatchEvent(new window.Event('input', { bubbles: true }));
+    search.dispatchEvent(new window.KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+
+    expect(getOverlay().querySelector('[data-role="method-picker-tile"].is-selected').textContent).toContain(
+      'commerce.price'
+    );
+    expect(getDetail().textContent).toContain('Generate values with prices');
+    expect(getOverlay()).not.toBeNull();
+
+    getSearchInput().dispatchEvent(new window.KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+    await expect(promise).resolves.toEqual({ sourceType: 'domain', command: 'commerce.price' });
+    expect(getOverlay()).toBeNull();
+  });
+
+  test('applies the focused selected method tile with enter', async () => {
+    const promise = openMethodPickerModal({
+      documentObj: document,
+      windowObj: window,
+      options: [
+        {
+          sourceType: 'domain',
+          command: 'internet.httpMethod',
+          helpModel: { summary: 'Generate HTTP methods', params: [], example: '' },
+        },
+      ],
+      currentCommand: 'internet.httpMethod',
+    });
+
+    const tile = getOverlay().querySelector('[data-role="method-picker-tile"]');
+    tile.focus();
+    tile.dispatchEvent(new window.KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }));
+
+    await expect(promise).resolves.toEqual({ sourceType: 'domain', command: 'internet.httpMethod' });
+    expect(getOverlay()).toBeNull();
+  });
+
+  test('cancels on backdrop click and removes the overlay', async () => {
+    const promise = openMethodPickerModal({
+      documentObj: document,
+      windowObj: window,
+      options: [{ sourceType: 'domain', command: 'number.int', helpModel: { summary: '', params: [], example: '' } }],
+      currentCommand: 'number.int',
+    });
+
+    getOverlay().click();
+
+    await expect(promise).resolves.toBeNull();
+    expect(getOverlay()).toBeNull();
+  });
+
   test('restores focus to the trigger after closing with escape', async () => {
     const trigger = document.createElement('button');
     trigger.textContent = 'Select faker command';
@@ -86,6 +189,80 @@ describe('method picker modal', () => {
     expect(document.activeElement).toBe(trigger);
   });
 
+  test('locks document scrolling while open and restores original overflow on close', async () => {
+    document.body.style.overflow = 'auto';
+    document.documentElement.style.overflow = 'scroll';
+
+    const promise = openMethodPickerModal({
+      documentObj: document,
+      windowObj: window,
+      options: [{ sourceType: 'domain', command: 'number.int', helpModel: { summary: '', params: [], example: '' } }],
+      currentCommand: 'number.int',
+    });
+
+    expect(document.body.style.overflow).toBe('hidden');
+    expect(document.documentElement.style.overflow).toBe('hidden');
+
+    getSearchInput().dispatchEvent(new window.KeyboardEvent('keydown', { key: 'PageDown', bubbles: true }));
+    expect(document.body.style.overflow).toBe('hidden');
+    expect(document.documentElement.style.overflow).toBe('hidden');
+
+    getOverlay().querySelector('[data-role="method-picker-cancel-button"]').click();
+    await expect(promise).resolves.toBeNull();
+    expect(document.body.style.overflow).toBe('auto');
+    expect(document.documentElement.style.overflow).toBe('scroll');
+  });
+
+  test('wraps tab focus within the modal dialog', async () => {
+    const promise = openMethodPickerModal({
+      documentObj: document,
+      windowObj: window,
+      options: [{ sourceType: 'domain', command: 'number.int', helpModel: { summary: '', params: [], example: '' } }],
+      currentCommand: 'number.int',
+    });
+
+    const closeButton = getOverlay().querySelector('[data-role="method-picker-close-button"]');
+    const applyButton = getOverlay().querySelector('[data-role="method-picker-apply-button"]');
+
+    closeButton.focus();
+    closeButton.dispatchEvent(
+      new window.KeyboardEvent('keydown', { key: 'Tab', shiftKey: true, bubbles: true, cancelable: true })
+    );
+    expect(document.activeElement).toBe(applyButton);
+
+    applyButton.dispatchEvent(new window.KeyboardEvent('keydown', { key: 'Tab', bubbles: true, cancelable: true }));
+    expect(document.activeElement).toBe(closeButton);
+
+    getOverlay().querySelector('[data-role="method-picker-cancel-button"]').click();
+    await promise;
+  });
+
+  test('keeps only the active method tile in the tab sequence', async () => {
+    const promise = openMethodPickerModal({
+      documentObj: document,
+      windowObj: window,
+      options: [
+        { sourceType: 'domain', command: 'number.int', helpModel: { summary: '', params: [], example: '' } },
+        { sourceType: 'domain', command: 'location.city', helpModel: { summary: '', params: [], example: '' } },
+        { sourceType: 'faker', command: 'helpers.arrayElement', helpModel: { summary: '', params: [], example: '' } },
+      ],
+      currentCommand: 'number.int',
+    });
+
+    const tiles = Array.from(getOverlay().querySelectorAll('[data-role="method-picker-tile"]'));
+    expect(tiles.map((tile) => tile.tabIndex)).toEqual([0, -1, -1]);
+
+    tiles[0].focus();
+    tiles[0].dispatchEvent(new window.KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+
+    const updatedTiles = Array.from(getOverlay().querySelectorAll('[data-role="method-picker-tile"]'));
+    expect(updatedTiles.map((tile) => tile.tabIndex)).toEqual([-1, 0, -1]);
+    expect(document.activeElement).toBe(updatedTiles[1]);
+
+    getOverlay().querySelector('[data-role="method-picker-cancel-button"]').click();
+    await promise;
+  });
+
   test('renders component-owned rooted hooks for overlay, tabs, list, detail, and tiles', async () => {
     const promise = openMethodPickerModal({
       documentObj: document,
@@ -97,9 +274,15 @@ describe('method picker modal', () => {
     expect(getOverlay()).not.toBeNull();
     expect(getOverlay().querySelector('[data-role="method-picker-dialog"]')).not.toBeNull();
     expect(getTabsRoot()).not.toBeNull();
-    expect(getOverlay().querySelector('[data-role="method-picker-list"]')).not.toBeNull();
+    const methodList = getOverlay().querySelector('[data-role="method-picker-list"]');
+    expect(methodList).not.toBeNull();
+    expect(methodList.tagName).toBe('DIV');
+    expect(methodList.getAttribute('role')).toBe('listbox');
     expect(getDetail()).not.toBeNull();
-    expect(getOverlay().querySelector('[data-role="method-picker-tile"]')).not.toBeNull();
+    const methodTile = getOverlay().querySelector('[data-role="method-picker-tile"]');
+    expect(methodTile).not.toBeNull();
+    expect(methodTile.tagName).toBe('DIV');
+    expect(methodTile.getAttribute('role')).toBe('option');
     expect(getOverlay().querySelector('[data-role="method-picker-command"]')).not.toBeNull();
     expect(getOverlay().querySelector('[data-role="method-picker-close-button"]')).not.toBeNull();
     expect(getOverlay().querySelector('[data-role="method-picker-cancel-button"]')).not.toBeNull();
@@ -412,5 +595,18 @@ describe('method picker modal', () => {
 
     getOverlay().querySelector('[data-role="method-picker-cancel-button"]').click();
     await promise;
+  });
+
+  test('light theme active tab colors meet normal text contrast', () => {
+    const cssText = readFileSync(
+      new URL('../../../js/gui_components/shared/test-data/ui/method-picker-modal.css', import.meta.url),
+      'utf8'
+    );
+    const accent = readCssVariable(cssText, '--mp-accent');
+    const accentSoft = readCssVariable(cssText, '--mp-accent-soft');
+
+    expect(accent).toBe('#0b63ce');
+    expect(accentSoft).toBe('#e9f1ff');
+    expect(contrastRatio(accent, accentSoft)).toBeGreaterThanOrEqual(4.5);
   });
 });

@@ -16,6 +16,18 @@ describe('command-spec-parser', () => {
     });
   });
 
+  test('extractFakerCommandAndParams does not split unknown commands at a known prefix', () => {
+    const result = extractFakerCommandAndParams('image.urlLoremFlickr()', {
+      normaliseFakerCommand: (value) => String(value || '').trim(),
+      fakerCommandsLongestFirst: ['image.url'],
+    });
+
+    expect(result).toEqual({
+      command: 'image.urlLoremFlickr',
+      params: '()',
+    });
+  });
+
   test('extractDomainCommandAndParams resolves alias and params', () => {
     const result = extractDomainCommandAndParams('string.counterString(2,4)', {
       normaliseDomainCommand: (value) => String(value || '').trim(),

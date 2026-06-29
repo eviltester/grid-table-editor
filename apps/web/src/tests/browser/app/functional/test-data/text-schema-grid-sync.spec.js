@@ -56,7 +56,7 @@ test.describe('7. Test Data Generation', () => {
     expectNoPageErrors(pageErrors);
   });
 
-  test('invalid domain command text preserves the domain row type in the app editor', async ({ page }) => {
+  test('invalid command text prompts before converting to literal rows in the app editor', async ({ page }) => {
     const { appPage, pageErrors } = await openApp(page);
 
     await appPage.testDataPanel.expand();
@@ -68,16 +68,47 @@ test.describe('7. Test Data Generation', () => {
     await expect.poll(async () => appPage.testDataPanel.getSchemaSourceType(0)).toBe('domain');
 
     await appPage.testDataPanel.setSchemaText('Name\nperson.fullNam');
+    await appPage.testDataPanel.schemaEditor.modeToggleButton.click();
+    await appPage.testDataPanel.confirmDialog.expectVisible();
+    await expect(appPage.testDataPanel.confirmDialog.backdrop).toContainText(
+      'Syntax errors are present that can not be edited in Schema UI. Allow editing by converting invalid definitions to literal?'
+    );
+    await appPage.testDataPanel.confirmDialog.cancel({ cancelLabel: /^no$/i });
 
-    await expect.poll(async () => appPage.testDataPanel.getSchemaCell(0, 'type')).toBe('person.fullNam');
-    await expect.poll(async () => appPage.testDataPanel.getSchemaSourceType(0)).toBe('domain');
-
-    await expect(appPage.testDataPanel.getSchemaRow(0)).toHaveClass(/shared-schema-row-invalid/);
+    await expect.poll(async () => appPage.testDataPanel.isRowEditorMode()).toBe(false);
+    await expect
+      .poll(async () => appPage.testDataPanel.getSchemaErrorText())
+      .toContain('Unknown keyword: person.fullNam');
 
     await appPage.testDataPanel.clickGenerate();
     await expect
       .poll(async () => appPage.testDataPanel.getSchemaErrorText())
-      .toContain('Row 1: unknown domain command "person.fullNam".');
+      .toContain('Unknown keyword: person.fullNam');
+
+    await appPage.testDataPanel.schemaEditor.modeToggleButton.click();
+    await appPage.testDataPanel.confirmDialog.confirm({ confirmLabel: /^yes$/i });
+
+    await expect.poll(async () => appPage.testDataPanel.isRowEditorMode()).toBe(true);
+    await expect.poll(async () => appPage.testDataPanel.getSchemaSourceType(0)).toBe('literal');
+    await expect.poll(async () => appPage.testDataPanel.getSchemaCell(0, 'value')).toBe('person.fullNam');
+
+    expectNoPageErrors(pageErrors);
+  });
+
+  test('regex shorthand and literal shorthand sync into the app schema grid', async ({ page }) => {
+    const { appPage, pageErrors } = await openApp(page);
+
+    await appPage.testDataPanel.expand();
+    await appPage.testDataPanel.expectExpanded();
+
+    await appPage.testDataPanel.setSchemaText('Order Code\n[A-Z]{3}\nCity\nLondon');
+    await appPage.testDataPanel.schemaEditor.modeToggleButton.click();
+
+    await expect.poll(async () => appPage.testDataPanel.getSchemaRowCount()).toBe(2);
+    await expect.poll(async () => appPage.testDataPanel.getSchemaSourceType(0)).toBe('regex');
+    await expect.poll(async () => appPage.testDataPanel.getSchemaCell(0, 'value')).toBe('[A-Z]{3}');
+    await expect.poll(async () => appPage.testDataPanel.getSchemaSourceType(1)).toBe('literal');
+    await expect.poll(async () => appPage.testDataPanel.getSchemaCell(1, 'value')).toBe('London');
 
     expectNoPageErrors(pageErrors);
   });

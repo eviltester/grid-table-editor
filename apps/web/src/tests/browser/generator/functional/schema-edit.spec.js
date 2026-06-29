@@ -84,7 +84,151 @@ test.describe('Generator Schema Editing', () => {
     expectNoPageErrors(pageErrors);
   });
 
-  test('invalid domain command text preserves the domain row type in the generator editor', async ({ page }) => {
+  test('method picker keeps PageDown from scrolling the generator page background', async ({ page }) => {
+    const { generatorPage, pageErrors } = await openGenerator(page);
+
+    await page.keyboard.press('Home');
+    await expect.poll(async () => page.evaluate(() => window.scrollY)).toBe(0);
+
+    await generatorPage.schema.setTextMode(false);
+    await generatorPage.schema.setRowSourceType(0, 'domain');
+    await generatorPage.schema.editor.dismissOpenHelpTooltips();
+    await generatorPage.schema.row(0).locator('[data-action="pick-command"]').click();
+    await generatorPage.schema.editor.methodPicker.expectOpen();
+
+    const scrollBeforePageDown = await page.evaluate(() => window.scrollY);
+    await page.keyboard.press('PageDown');
+
+    await expect.poll(async () => page.evaluate(() => window.scrollY)).toBe(scrollBeforePageDown);
+
+    await page.keyboard.press('Escape');
+    await expect(generatorPage.schema.editor.methodPicker.overlay).toHaveCount(0);
+    expectNoPageErrors(pageErrors);
+  });
+
+  test('method picker uses arrow keys rather than tabbing through the method list', async ({ page }) => {
+    const { generatorPage, pageErrors } = await openGenerator(page);
+
+    await generatorPage.schema.setTextMode(false);
+    await generatorPage.schema.setRowSourceType(0, 'domain');
+    await generatorPage.schema.editor.dismissOpenHelpTooltips();
+    await generatorPage.schema.row(0).locator('[data-action="pick-command"]').click();
+    await generatorPage.schema.editor.methodPicker.expectOpen();
+
+    const tiles = generatorPage.schema.editor.methodPicker.overlay.locator('[data-role="method-picker-tile"]');
+    await expect(tiles.nth(1)).toBeVisible();
+
+    const firstTile = tiles.first();
+    const secondTile = tiles.nth(1);
+    const secondCommand = await secondTile.locator('[data-role="method-picker-command"]').innerText();
+
+    await firstTile.click();
+    await expect(firstTile).toBeFocused();
+    await expect(firstTile).toHaveAttribute('tabindex', '0');
+    await expect(secondTile).toHaveAttribute('tabindex', '-1');
+
+    await page.keyboard.press('ArrowDown');
+    await expect(secondTile).toBeFocused();
+    await expect(secondTile).toHaveAttribute('tabindex', '0');
+    await expect(firstTile).toHaveAttribute('tabindex', '-1');
+    await expect(
+      generatorPage.schema.editor.methodPicker.overlay.locator('[data-role="method-picker-tile"].is-selected')
+    ).toContainText(secondCommand);
+
+    await page.keyboard.press('Tab');
+    await expect(
+      generatorPage.schema.editor.methodPicker.overlay.locator('[data-role="method-picker-tile"]:focus')
+    ).toHaveCount(0);
+
+    await page.keyboard.press('Shift+Tab');
+    await expect(secondTile).toBeFocused();
+
+    await page.keyboard.press('Escape');
+    await expect(generatorPage.schema.editor.methodPicker.overlay).toHaveCount(0);
+    expectNoPageErrors(pageErrors);
+  });
+
+  test('method picker restores focus to the command button after applying a selection', async ({ page }) => {
+    const { generatorPage, pageErrors } = await openGenerator(page);
+
+    await generatorPage.schema.setTextMode(false);
+    await generatorPage.schema.setRowSourceType(0, 'domain');
+    await generatorPage.schema.editor.dismissOpenHelpTooltips();
+    await generatorPage.schema.row(0).locator('[data-action="pick-command"]').click();
+    await generatorPage.schema.editor.methodPicker.chooseCommand('internet.httpMethod');
+
+    const commandButton = generatorPage.schema.row(0).locator('[data-action="pick-command"]');
+    await expect(commandButton).toHaveText('internet.httpMethod');
+    await expect(commandButton).toBeFocused();
+
+    expectNoPageErrors(pageErrors);
+  });
+
+  test('method picker applies a focused selected command tile with Enter', async ({ page }) => {
+    const { generatorPage, pageErrors } = await openGenerator(page);
+
+    await generatorPage.schema.setTextMode(false);
+    await generatorPage.schema.setRowSourceType(0, 'domain');
+    await generatorPage.schema.editor.dismissOpenHelpTooltips();
+    await generatorPage.schema.row(0).locator('[data-action="pick-command"]').click();
+    await generatorPage.schema.editor.methodPicker.expectOpen();
+
+    const picker = generatorPage.schema.editor.methodPicker;
+    await picker.searchInput.fill('internet.httpMethod');
+    const targetTile = picker.overlay.locator('[data-role="method-picker-tile"]', {
+      hasText: 'internet.httpMethod',
+    });
+    await expect(targetTile).toBeVisible();
+    await targetTile.click();
+    await expect(targetTile).toBeFocused();
+
+    await page.keyboard.press('Enter');
+
+    await expect(picker.overlay).toHaveCount(0);
+    await expect(generatorPage.schema.row(0).locator('[data-action="pick-command"]')).toHaveText('internet.httpMethod');
+
+    expectNoPageErrors(pageErrors);
+  });
+
+  test('method picker active filter tabs meet light theme text contrast', async ({ page }) => {
+    const { generatorPage, pageErrors } = await openGenerator(page);
+
+    await expect(page.locator('body')).toHaveClass(/theme-light/);
+    await generatorPage.schema.setTextMode(false);
+    await generatorPage.schema.setRowSourceType(0, 'domain');
+    await generatorPage.schema.editor.dismissOpenHelpTooltips();
+    await generatorPage.schema.row(0).locator('[data-action="pick-command"]').click();
+    await generatorPage.schema.editor.methodPicker.expectOpen();
+
+    const activeTab = generatorPage.schema.editor.methodPicker.overlay
+      .locator('[data-role="method-picker-tab"].is-active')
+      .first();
+    await expect(activeTab).toBeVisible();
+    const contrast = await activeTab.evaluate((element) => {
+      function parseRgb(value) {
+        return (value.match(/\d+/g) || []).slice(0, 3).map((part) => Number(part));
+      }
+      function channel(value) {
+        const normalized = value / 255;
+        return normalized <= 0.03928 ? normalized / 12.92 : ((normalized + 0.055) / 1.055) ** 2.4;
+      }
+      function luminance(rgb) {
+        const [red, green, blue] = rgb.map(channel);
+        return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+      }
+      const styles = window.getComputedStyle(element);
+      const foreground = luminance(parseRgb(styles.color));
+      const background = luminance(parseRgb(styles.backgroundColor));
+      return (Math.max(foreground, background) + 0.05) / (Math.min(foreground, background) + 0.05);
+    });
+    expect(contrast).toBeGreaterThanOrEqual(4.5);
+
+    await page.keyboard.press('Escape');
+    await expect(generatorPage.schema.editor.methodPicker.overlay).toHaveCount(0);
+    expectNoPageErrors(pageErrors);
+  });
+
+  test('invalid command text prompts before converting to literal rows in the generator editor', async ({ page }) => {
     const { generatorPage, pageErrors } = await openGenerator(page);
 
     await generatorPage.schema.setSchemaText('Name\nperson.fullName');
@@ -95,17 +239,42 @@ test.describe('Generator Schema Editing', () => {
     await expect(generatorPage.schema.row(0).locator('[data-action="pick-command"]')).toHaveText('person.fullName');
 
     await generatorPage.schema.setSchemaText('Name\nperson.fullNam');
-    await generatorPage.schema.setTextMode(false);
-
-    await expect(generatorPage.schema.row(0).locator('select[data-field="sourceType"]')).toHaveValue('domain');
-    await expect(generatorPage.schema.row(0).locator('[data-action="pick-command"]')).toHaveText('person.fullNam');
-    await expect(generatorPage.schema.row(0)).toHaveClass(/shared-schema-row-invalid/);
-    await expect(generatorPage.schema.row(0).locator('.shared-schema-row-validation')).toContainText(
-      'Row 1: unknown domain command "person.fullNam".'
+    await generatorPage.schema.modeToggleButton.click();
+    await generatorPage.schema.confirmDialog.expectVisible();
+    await expect(generatorPage.schema.confirmDialog.backdrop).toContainText(
+      'Syntax errors are present that can not be edited in Schema UI. Allow editing by converting invalid definitions to literal?'
     );
+    await generatorPage.schema.confirmDialog.cancel({ cancelLabel: /^no$/i });
+
+    await expect.poll(async () => generatorPage.schema.editor.isRowEditorMode()).toBe(false);
+    await expect(generatorPage.schema.modeToggleButton).toHaveText('Edit as Schema');
+    await expect(generatorPage.schema.errorStatus).toContainText('Unknown keyword: person.fullNam');
 
     await generatorPage.preview.clickPreview();
-    await expect(generatorPage.schema.errorStatus).toContainText('Row 1: unknown domain command "person.fullNam".');
+    await expect(generatorPage.schema.errorStatus).toContainText('Unknown keyword: person.fullNam');
+    await expect.poll(async () => generatorPage.preview.getOutputPreviewText()).toBe('');
+
+    await generatorPage.schema.modeToggleButton.click();
+    await generatorPage.schema.confirmDialog.confirm({ confirmLabel: /^yes$/i });
+
+    await expect(generatorPage.schema.rows).toHaveCount(1);
+    await expect(generatorPage.schema.row(0).locator('select[data-field="sourceType"]')).toHaveValue('literal');
+    await expect(generatorPage.schema.row(0).locator('input[data-field="value"]')).toHaveValue('person.fullNam');
+
+    expectNoPageErrors(pageErrors);
+  });
+
+  test('regex and literal shorthand keep their strict parsing behavior in the generator editor', async ({ page }) => {
+    const { generatorPage, pageErrors } = await openGenerator(page);
+
+    await generatorPage.schema.setSchemaText('Code\n[A-Z]{3}\nCity\nLondon');
+    await generatorPage.schema.setTextMode(false);
+
+    await expect(generatorPage.schema.rows).toHaveCount(2);
+    await expect(generatorPage.schema.row(0).locator('select[data-field="sourceType"]')).toHaveValue('regex');
+    await expect(generatorPage.schema.row(0).locator('input[data-field="value"]')).toHaveValue('[A-Z]{3}');
+    await expect(generatorPage.schema.row(1).locator('select[data-field="sourceType"]')).toHaveValue('literal');
+    await expect(generatorPage.schema.row(1).locator('input[data-field="value"]')).toHaveValue('London');
 
     expectNoPageErrors(pageErrors);
   });
@@ -163,7 +332,8 @@ test.describe('Generator Schema Editing', () => {
     await expect(
       generatorPage.page
         .locator('.tippy-content')
-        .filter({ hasText: 'Faker commands generate realistic random values' })
+        .filter({ hasText: 'Faker helper commands allow use of more complex generation than the domain commands' })
+        .filter({ hasText: 'helpers.rangeToNumber({ min: 1, max: 10 })' })
     ).toBeVisible();
 
     await generatorPage.schema.setRowSourceType(0, 'literal');

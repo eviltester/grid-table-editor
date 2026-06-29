@@ -1,12 +1,15 @@
 import React from 'react';
 import { Canvas, Controls, Description, Title } from '@storybook/addon-docs/blocks';
 import { expect, fn, userEvent, within } from 'storybook/test';
+import { createMethodHelpDisplay } from '../../../../packages/core-ui/js/gui_components/shared/method-picker-dialog/method-help-display.js';
+import { createMethodList } from '../../../../packages/core-ui/js/gui_components/shared/method-picker-dialog/method-list.js';
+import { createMethodNavigator } from '../../../../packages/core-ui/js/gui_components/shared/method-picker-dialog/method-navigator.js';
+import { createMethodPickerDialog } from '../../../../packages/core-ui/js/gui_components/shared/method-picker-dialog/index.js';
+import { RECENT_STORAGE_KEY } from '../../../../packages/core-ui/js/gui_components/shared/method-picker-dialog/method-picker-dialog-utils.js';
 import { openMethodPickerModal } from '../../../../packages/core-ui/js/gui_components/shared/test-data/ui/method-picker-modal.js';
 import { buildSchemaHelpModel } from '../../../../packages/core-ui/js/gui_components/shared/test-data/help/help-model-builder.js';
 
-const METHOD_PICKER_RECENT_STORAGE_KEY = 'anywaydata.method-picker.recent';
 const METHOD_PICKER_STYLE_ID = 'storybook-method-picker-modal-styles-link';
-const CORE_COMMANDS = new Set(['enum', 'literal', 'regex']);
 
 const METHOD_OPTION_SPECS = Object.freeze([
   { sourceType: 'regex', command: 'regex', helpCommand: '' },
@@ -24,56 +27,14 @@ function buildMethodOptions() {
 }
 
 const METHOD_OPTIONS = buildMethodOptions();
-
-function escapeHtml(text) {
-  return String(text ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
-
-function toExampleList(value) {
-  if (Array.isArray(value)) {
-    return value.map((entry) => String(entry || '').trim()).filter(Boolean);
-  }
-  const single = String(value || '').trim();
-  return single ? [single] : [];
-}
-
-function getReturnExamples(model) {
-  const unique = new Set();
-  const usageExamples = Array.isArray(model?.usageExamples) ? model.usageExamples : [];
-  usageExamples.forEach((usageExample) => {
-    if (Object.prototype.hasOwnProperty.call(usageExample || {}, 'sampleReturnValue')) {
-      unique.add(String(usageExample.sampleReturnValue ?? '').trim());
-    }
-  });
-  toExampleList(model?.returnExamples).forEach((entry) => unique.add(entry));
-  return [...unique].filter(Boolean);
-}
-
-function getUsageFunctionCalls(model) {
-  return (Array.isArray(model?.usageExamples) ? model.usageExamples : [])
-    .map((usageExample) => String(usageExample?.functionCall || '').trim())
-    .filter(Boolean);
-}
-
-function buildSearchText(option) {
-  const params = Array.isArray(option?.helpModel?.params) ? option.helpModel.params.map((p) => p?.name || '') : [];
-  const usageExamples = getUsageFunctionCalls(option?.helpModel);
-  const returnExamples = getReturnExamples(option?.helpModel);
-  return [
-    option.command,
-    option.helpModel?.summary || '',
-    usageExamples.join(' '),
-    returnExamples.join(' '),
-    params.join(' '),
-  ]
-    .join(' ')
-    .toLowerCase();
-}
+const TAB_SPECS = [
+  { id: 'all', label: 'All' },
+  { id: 'core', label: 'Core' },
+  { id: 'domain:commerce', label: 'commerce' },
+  { id: 'domain:internet', label: 'internet' },
+  { id: 'faker', label: 'Faker' },
+  { id: 'recent', label: 'Recently used' },
+];
 
 function ensureMethodPickerStyles(documentObj) {
   if (!documentObj?.head || documentObj.getElementById(METHOD_PICKER_STYLE_ID)) {
@@ -89,284 +50,132 @@ function ensureMethodPickerStyles(documentObj) {
   documentObj.head.appendChild(link);
 }
 
-function renderExampleList(examples, emptyText) {
-  if (!examples.length) {
-    return `<p class="method-picker-empty">${escapeHtml(emptyText)}</p>`;
-  }
-  const rows = examples.map((example) => `<li><code>${escapeHtml(example)}</code></li>`).join('');
-  return `<ul class="method-picker-example-list">${rows}</ul>`;
-}
-
-function renderParameterDetailsTable(model) {
-  if (!Array.isArray(model?.params) || model.params.length === 0) {
-    return '<p class="method-picker-empty">No params</p>';
-  }
-  const rows = model.params
-    .map((param) => {
-      const description = String(param.description || '').trim();
-      const example = String(param.example || param.examples || '').trim();
-      const details = [description, example ? `Example: ${example}` : ''].filter(Boolean).join(' ');
-      return `<tr><td><code>${escapeHtml(param.name)}</code></td><td>${escapeHtml(details || '-')}</td></tr>`;
-    })
-    .join('');
-  return `<table class="method-picker-table method-picker-param-details"><thead><tr><th>Name</th><th>Details</th></tr></thead><tbody>${rows}</tbody></table>`;
-}
-
-function renderParameterTypesTable(model) {
-  if (!Array.isArray(model?.params) || model.params.length === 0) {
-    return '<p class="method-picker-empty">No params</p>';
-  }
-  const rows = model.params
-    .map((param) => {
-      const optional = param.optional ? 'optional' : 'required';
-      return `<tr><td><code>${escapeHtml(param.name)}</code></td><td><code>${escapeHtml(
-        param.type || 'unknown'
-      )}</code></td><td>${optional}</td></tr>`;
-    })
-    .join('');
-  return `<table class="method-picker-table method-picker-param-types"><thead><tr><th>Name</th><th>Type</th><th>Req</th></tr></thead><tbody>${rows}</tbody></table>`;
-}
-
-function createVisualMethodPickerStory(root, args) {
-  ensureMethodPickerStyles(document);
-
-  const prepared = METHOD_OPTIONS.map((option) => ({
-    ...option,
-    searchText: buildSearchText(option),
-  }));
-  const domainCategories = [
-    ...new Set(
-      prepared
-        .filter((option) => option.sourceType === 'domain' && String(option.command || '').includes('.'))
-        .map((option) => String(option.command).split('.')[0])
-    ),
-  ].sort((left, right) => left.localeCompare(right));
-  const tabSpecs = [
-    { id: 'all', label: 'All' },
-    { id: 'core', label: 'Core' },
-    ...domainCategories.map((category) => ({ id: `domain:${category}`, label: category })),
-    { id: 'faker', label: 'Faker' },
-    { id: 'recent', label: 'Recently used' },
-  ];
-
-  let activeTab = args.initialTab || 'all';
-  let selectedCommand = args.currentCommand || 'helpers.arrayElement';
-  let searchValue = '';
-
+function createRootWithLog() {
+  const root = document.createElement('section');
   root.style.display = 'grid';
   root.style.gap = '0.75rem';
-  root.innerHTML = `
-    <div data-role="visual-method-picker-frame" style="position:relative; min-height:780px;">
-      <div class="method-picker-overlay" data-role="method-picker-overlay" style="position:absolute; inset:0;">
-        <div class="method-picker-modal" data-role="method-picker-dialog" role="dialog" aria-modal="true" aria-label="${escapeHtml(
-          args.title
-        )}">
-          <header class="method-picker-header">
-            <h3>${escapeHtml(args.title)}</h3>
-            <button type="button" class="method-picker-close" data-role="method-picker-close-button" aria-label="Close">×</button>
-          </header>
-          <div class="method-picker-toolbar">
-            <input
-              type="search"
-              class="method-picker-search"
-              data-role="method-picker-search"
-              placeholder="Filter domain or method..."
-              aria-label="Filter methods"
-            />
-            <div class="method-picker-tabs" data-role="method-picker-tabs"></div>
-          </div>
-          <div class="method-picker-content">
-            <section class="method-picker-list" data-role="method-picker-list" aria-label="Methods"></section>
-            <aside class="method-picker-detail" data-role="method-picker-detail" aria-label="Method details"></aside>
-          </div>
-          <footer class="method-picker-footer">
-            <button type="button" data-role="method-picker-cancel-button">Cancel</button>
-            <button type="button" data-role="method-picker-apply-button" class="method-picker-apply">Apply</button>
-          </footer>
-        </div>
-      </div>
-    </div>
-    <output data-role="visual-method-picker-log" aria-label="Method picker action log">No actions yet.</output>
-  `;
+  root.innerHTML = '<output data-role="story-log" aria-label="Method picker story log">No actions yet.</output>';
+  return {
+    root,
+    log: root.querySelector('[data-role="story-log"]'),
+  };
+}
 
-  const overlay = root.querySelector('[data-role="method-picker-overlay"]');
-  const searchInput = root.querySelector('[data-role="method-picker-search"]');
-  const tabsElem = root.querySelector('[data-role="method-picker-tabs"]');
-  const listElem = root.querySelector('[data-role="method-picker-list"]');
-  const detailElem = root.querySelector('[data-role="method-picker-detail"]');
-  const applyButton = root.querySelector('[data-role="method-picker-apply-button"]');
-  const log = root.querySelector('[data-role="visual-method-picker-log"]');
+function renderNavigatorStory(args) {
+  ensureMethodPickerStyles(document);
+  const { root, log } = createRootWithLog();
+  const host = document.createElement('div');
+  root.prepend(host);
+  let state = {
+    searchTerm: args.searchTerm,
+    activeTab: args.activeTab,
+    tabSpecs: TAB_SPECS,
+  };
+  let component = null;
+  component = createMethodNavigator({
+    root: host,
+    props: state,
+    callbacks: {
+      onSearchTermChange: (searchTerm) => {
+        state = { ...state, searchTerm };
+        log.textContent = `search:${searchTerm}`;
+        args.onSearchTermChange?.(searchTerm);
+        component.update(state);
+      },
+      onTabChange: (activeTab) => {
+        state = { ...state, activeTab };
+        log.textContent = `tab:${activeTab}`;
+        args.onTabChange?.(activeTab);
+        component.update(state);
+      },
+    },
+  });
+  root.__storybookCleanup = () => component.destroy();
+  return root;
+}
 
-  function writeLog(actionName) {
-    log.textContent = `action:${actionName}`;
-  }
+function renderListStory(args) {
+  ensureMethodPickerStyles(document);
+  const { root, log } = createRootWithLog();
+  const host = document.createElement('section');
+  root.prepend(host);
+  let selectedCommand = args.selectedCommand;
+  let component = null;
+  component = createMethodList({
+    root: host,
+    props: {
+      selectedCommand,
+      options: METHOD_OPTIONS,
+    },
+    callbacks: {
+      onSelectCommand: (command) => {
+        selectedCommand = command;
+        log.textContent = `selected:${command}`;
+        args.onSelectCommand?.(command);
+        component.update({ selectedCommand, options: METHOD_OPTIONS });
+      },
+    },
+  });
+  root.__storybookCleanup = () => component.destroy();
+  return root;
+}
 
-  function emitAction(actionName, payload) {
-    writeLog(actionName);
-    if (actionName === 'apply') {
-      args.onApply?.(payload);
-    } else if (actionName === 'cancel') {
-      args.onCancel?.();
-    } else if (actionName === 'close') {
-      args.onClose?.();
-    } else if (actionName === 'backdrop') {
-      args.onBackdrop?.();
-    }
-  }
+function renderHelpDisplayStory(args) {
+  ensureMethodPickerStyles(document);
+  const root = document.createElement('section');
+  const selectedOption = METHOD_OPTIONS.find((option) => option.command === args.selectedCommand) || METHOD_OPTIONS[0];
+  const component = createMethodHelpDisplay({
+    root,
+    props: { selectedOption },
+  });
+  root.__storybookCleanup = () => component.destroy();
+  return root;
+}
 
-  function getSelected() {
-    return prepared.find((option) => option.command === selectedCommand) || null;
-  }
+function renderVisualMethodPickerDialogStory(args) {
+  ensureMethodPickerStyles(document);
+  const { root, log } = createRootWithLog();
+  const frame = document.createElement('div');
+  frame.setAttribute('data-role', 'visual-method-picker-frame');
+  frame.style.position = 'relative';
+  frame.style.minHeight = '780px';
+  const overlayRoot = document.createElement('div');
+  frame.appendChild(overlayRoot);
+  root.prepend(frame);
 
-  function getFiltered() {
-    return prepared.filter((option) => {
-      if (activeTab === 'core' && !CORE_COMMANDS.has(String(option.command || '').toLowerCase())) {
-        return false;
-      }
-      if (activeTab === 'faker' && option.sourceType !== 'faker') {
-        return false;
-      }
-      if (activeTab === 'recent') {
-        return option.command === selectedCommand;
-      }
-      if (activeTab.startsWith('domain:')) {
-        if (option.sourceType !== 'domain') {
-          return false;
+  const component = createMethodPickerDialog({
+    root: overlayRoot,
+    documentObj: document,
+    props: {
+      title: args.title,
+      options: METHOD_OPTIONS,
+      currentCommand: args.currentCommand,
+      initialTab: args.initialTab,
+    },
+    callbacks: {
+      onApply: (selection) => {
+        log.textContent = `action:apply:${selection.command}`;
+        args.onApply?.(selection);
+      },
+      onCancel: ({ reason } = {}) => {
+        log.textContent = `action:${reason || 'cancel'}`;
+        if (reason === 'close') {
+          args.onClose?.();
+        } else if (reason === 'backdrop') {
+          args.onBackdrop?.();
+        } else {
+          args.onCancel?.();
         }
-        const category = activeTab.split(':')[1] || '';
-        if (!String(option.command || '').startsWith(`${category}.`)) {
-          return false;
-        }
-      }
-      if (!searchValue) {
-        return true;
-      }
-      return option.searchText.includes(searchValue);
-    });
-  }
-
-  function renderDetail() {
-    const selected = getSelected();
-    if (!selected) {
-      detailElem.innerHTML = '<p class="method-picker-empty">No method selected</p>';
-      return;
-    }
-    const model = selected.helpModel || {};
-    const usageExamples = getUsageFunctionCalls(model);
-    const returnExamples = getReturnExamples(model);
-    const docsUrl = String(model.docsUrl || '').trim();
-    const hasParams = Array.isArray(model.params) && model.params.length > 0;
-    detailElem.innerHTML = `
-      <h4>${escapeHtml(selected.command)}</h4>
-      <p>${escapeHtml(model.summary || 'No summary available.')}</p>
-      <p><strong>Schema:</strong> <code>${escapeHtml(model.heading || selected.command)}()</code></p>
-      <h5>Parameter Details</h5>
-      <div class="method-picker-table-wrap">${renderParameterDetailsTable(model)}</div>
-      ${hasParams ? `<h5>Parameter Types</h5><div class="method-picker-table-wrap">${renderParameterTypesTable(model)}</div>` : ''}
-      ${usageExamples.length ? `<h5>Usage Examples</h5>${renderExampleList(usageExamples, '')}` : ''}
-      <h5>Return Examples</h5>
-      ${renderExampleList(returnExamples, 'No return examples available')}
-      ${
-        docsUrl
-          ? `<p class="method-picker-docs-link"><a href="${escapeHtml(docsUrl)}" target="_blank" rel="noopener noreferrer">Open documentation</a></p>`
-          : ''
-      }
-    `;
-  }
-
-  function syncApplyButtonState() {
-    applyButton.disabled = !selectedCommand;
-    applyButton.setAttribute('aria-disabled', applyButton.disabled ? 'true' : 'false');
-  }
-
-  function renderTabs() {
-    tabsElem.innerHTML = tabSpecs
-      .map(
-        (tab) =>
-          `<button type="button" data-role="method-picker-tab" data-tab="${escapeHtml(tab.id)}" class="${
-            tab.id === activeTab ? 'is-active' : ''
-          }">${escapeHtml(tab.label)}</button>`
-      )
-      .join('');
-  }
-
-  function renderList() {
-    const filtered = getFiltered();
-    if (!filtered.some((option) => option.command === selectedCommand)) {
-      selectedCommand = filtered[0]?.command || '';
-    }
-    listElem.innerHTML = filtered
-      .map((option) => {
-        const isSelected = option.command === selectedCommand;
-        return `
-          <button
-            type="button"
-            class="method-picker-tile ${isSelected ? 'is-selected' : ''}"
-            data-role="method-picker-tile"
-            data-command="${escapeHtml(option.command)}"
-          >
-            <span class="method-picker-tile-command" data-role="method-picker-command">${escapeHtml(option.command)}</span>
-            <span class="method-picker-tile-summary">${escapeHtml(option.helpModel?.summary || '')}</span>
-            <span class="method-picker-tile-tag">${escapeHtml(option.sourceType)}</span>
-          </button>`;
-      })
-      .join('');
-    renderDetail();
-    syncApplyButtonState();
-  }
-
-  function rerender() {
-    renderTabs();
-    renderList();
-  }
-
-  tabsElem.addEventListener('click', (event) => {
-    const tabId = event.target?.closest?.('[data-tab]')?.getAttribute?.('data-tab');
-    if (!tabId) {
-      return;
-    }
-    activeTab = tabId;
-    rerender();
+      },
+    },
   });
-
-  listElem.addEventListener('click', (event) => {
-    const command = event.target?.closest?.('[data-command]')?.getAttribute?.('data-command');
-    if (!command) {
-      return;
-    }
-    selectedCommand = command;
-    renderList();
-  });
-
-  searchInput.addEventListener('input', () => {
-    searchValue = String(searchInput.value || '')
-      .trim()
-      .toLowerCase();
-    renderList();
-  });
-
-  overlay.addEventListener('click', (event) => {
-    const selected = getSelected();
-    if (event.target === overlay) {
-      emitAction('backdrop');
-      return;
-    }
-    if (event.target?.closest?.('[data-role="method-picker-close-button"]')) {
-      emitAction('close');
-      return;
-    }
-    if (event.target?.closest?.('[data-role="method-picker-cancel-button"]')) {
-      emitAction('cancel');
-      return;
-    }
-    if (event.target?.closest?.('[data-role="method-picker-apply-button"]')) {
-      if (selected) {
-        emitAction('apply', { sourceType: selected.sourceType, command: selected.command });
-      }
-    }
-  });
-
-  rerender();
+  overlayRoot.style.position = 'absolute';
+  overlayRoot.style.inset = '0';
+  root.__storybookCleanup = () => {
+    component.destroy();
+    document.defaultView?.localStorage?.removeItem?.(RECENT_STORAGE_KEY);
+  };
+  return root;
 }
 
 function renderMethodPickerDialogStory(args) {
@@ -396,20 +205,10 @@ function renderMethodPickerDialogStory(args) {
   };
 
   root.querySelector('[data-action="open"]')?.addEventListener('click', openDialog);
-
   root.__storybookCleanup = () => {
-    windowObj?.localStorage?.removeItem?.(METHOD_PICKER_RECENT_STORAGE_KEY);
+    windowObj?.localStorage?.removeItem?.(RECENT_STORAGE_KEY);
   };
 
-  return root;
-}
-
-function renderVisualMethodPickerDialogStory(args) {
-  const root = document.createElement('section');
-  createVisualMethodPickerStory(root, args);
-  root.__storybookCleanup = () => {
-    document.defaultView?.localStorage?.removeItem?.(METHOD_PICKER_RECENT_STORAGE_KEY);
-  };
   return root;
 }
 
@@ -425,6 +224,9 @@ const meta = {
           React.createElement(Title),
           React.createElement(Description),
           React.createElement(Controls),
+          React.createElement(Canvas, { of: NavigatorDefault }),
+          React.createElement(Canvas, { of: ListDefault }),
+          React.createElement(Canvas, { of: HelpDisplayWithUsage }),
           React.createElement(Canvas, { of: VisualAlwaysOpen }),
           React.createElement(Canvas, { of: ChooseFakerMethod }),
           React.createElement(Canvas, { of: FilterAndChooseDomainMethod }),
@@ -432,7 +234,7 @@ const meta = {
         ),
       description: {
         component:
-          'Storybook coverage for the shared method-picker dialog. The visual always-open example is reviewer-facing and non-dismissing so the UI can be inspected directly, while the other stories still demonstrate the real promise-based open/apply/cancel service flow.',
+          'Component-backed Method Picker Dialog coverage. Navigator, list, help display, and composed dialog stories all mount the real MVC components; the service-flow stories still demonstrate the promise-based open/apply/cancel compatibility API.',
       },
     },
   },
@@ -450,35 +252,107 @@ const meta = {
       options: ['all', 'core', 'faker', 'domain:commerce', 'domain:internet', 'recent'],
       description: 'Initial tab shown when the picker opens.',
     },
-    onApply: {
-      description: 'Storybook action fired when the visual always-open example simulates Apply.',
-      table: { category: 'Events' },
+    selectedCommand: {
+      control: 'select',
+      options: METHOD_OPTIONS.map((option) => option.command),
+      description: 'Selected command for focused list/help stories.',
     },
-    onCancel: {
-      description: 'Storybook action fired when the visual always-open example simulates Cancel.',
-      table: { category: 'Events' },
+    searchTerm: {
+      control: 'text',
+      description: 'Initial navigator search text for focused navigator stories.',
     },
-    onClose: {
-      description: 'Storybook action fired when the visual always-open example simulates the close button.',
-      table: { category: 'Events' },
+    activeTab: {
+      control: 'select',
+      options: TAB_SPECS.map((tab) => tab.id),
+      description: 'Initial navigator active tab for focused navigator stories.',
     },
-    onBackdrop: {
-      description: 'Storybook action fired when the visual always-open example simulates a backdrop click.',
-      table: { category: 'Events' },
-    },
+    onApply: { table: { category: 'Events' } },
+    onCancel: { table: { category: 'Events' } },
+    onClose: { table: { category: 'Events' } },
+    onBackdrop: { table: { category: 'Events' } },
+    onSearchTermChange: { table: { category: 'Events' } },
+    onTabChange: { table: { category: 'Events' } },
+    onSelectCommand: { table: { category: 'Events' } },
   },
   args: {
     title: 'Choose Method',
     currentCommand: 'helpers.arrayElement',
     initialTab: 'all',
+    selectedCommand: 'helpers.arrayElement',
+    searchTerm: '',
+    activeTab: 'all',
     onApply: fn(),
     onCancel: fn(),
     onClose: fn(),
     onBackdrop: fn(),
+    onSearchTermChange: fn(),
+    onTabChange: fn(),
+    onSelectCommand: fn(),
   },
 };
 
 export default meta;
+
+export const NavigatorDefault = {
+  render: renderNavigatorStory,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Focused Method Navigator story. Type in the filter or switch tabs and watch the story log record the emitted component events.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.type(canvas.getByRole('searchbox', { name: 'Filter methods' }), 'city');
+    await expect(canvas.getByText('search:city')).toBeVisible();
+    await userEvent.click(canvas.getByRole('button', { name: 'Core' }));
+    await expect(canvas.getByText('tab:core')).toBeVisible();
+  },
+};
+
+export const ListDefault = {
+  render: renderListStory,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Focused Method List story. It renders method tiles with the selected command highlighted and emits a selection event when a tile is chosen.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(
+      canvas.getByRole('option', {
+        name: 'commerce.price Generates a price between min and max (inclusive). domain',
+      })
+    );
+    await expect(canvas.getByText('selected:commerce.price')).toBeVisible();
+  },
+};
+
+export const HelpDisplayWithUsage = {
+  render: renderHelpDisplayStory,
+  args: {
+    selectedCommand: 'internet.password',
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Focused Method Help Display story. It shows the selected method summary, schema heading, parameter tables, structured usage examples, return values, and docs link.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByRole('heading', { name: 'internet.password' })).toBeVisible();
+    await expect(canvas.getByText('Parameter Details')).toBeVisible();
+    await expect(canvas.getByText('Usage Examples')).toBeVisible();
+  },
+};
 
 export const VisualAlwaysOpen = {
   render: renderVisualMethodPickerDialogStory,
@@ -486,7 +360,7 @@ export const VisualAlwaysOpen = {
     docs: {
       description: {
         story:
-          'This reviewer-facing example renders the method picker immediately and intentionally never closes. **Apply**, **Cancel**, the close button, and the backdrop all report what would have happened in the log and the Actions panel, while the dialog stays visible for visual inspection.',
+          'Reviewer-facing composed dialog story. The dialog stays open while Apply, Cancel, and Close log the action that the component emitted.',
       },
     },
   },
@@ -494,13 +368,13 @@ export const VisualAlwaysOpen = {
     const canvas = within(canvasElement);
     await expect(canvas.getByRole('dialog', { name: 'Choose Method' })).toBeVisible();
     await expect(
-      canvas.getByRole('button', {
+      canvas.getByRole('option', {
         name: 'helpers.arrayElement Returns one random element from the supplied array. faker',
       })
     ).toHaveClass('is-selected');
 
     await userEvent.click(canvas.getByRole('button', { name: 'Apply' }));
-    await expect(canvas.getByText('action:apply')).toBeVisible();
+    await expect(canvas.getByText('action:apply:helpers.arrayElement')).toBeVisible();
     await expect(canvas.getByRole('dialog', { name: 'Choose Method' })).toBeVisible();
 
     await userEvent.click(canvas.getByRole('button', { name: 'Cancel' }));
@@ -509,10 +383,6 @@ export const VisualAlwaysOpen = {
 
     await userEvent.click(canvas.getByRole('button', { name: 'Close' }));
     await expect(canvas.getByText('action:close')).toBeVisible();
-    await expect(canvas.getByRole('dialog', { name: 'Choose Method' })).toBeVisible();
-
-    await userEvent.click(canvas.getByRole('button', { name: 'All' }).closest('[data-role="method-picker-overlay"]'));
-    await expect(canvas.getByText('action:backdrop')).toBeVisible();
     await expect(canvas.getByRole('dialog', { name: 'Choose Method' })).toBeVisible();
   },
 };
@@ -523,7 +393,7 @@ export const ChooseFakerMethod = {
     docs: {
       description: {
         story:
-          'Click **Open method picker**, choose **helpers.arrayElement**, then confirm with **Apply**. This shows the normal confirmed-selection path and the visible promise result beneath the trigger button.',
+          'Click Open method picker, choose helpers.arrayElement, then confirm with Apply. This demonstrates the normal confirmed-selection promise path.',
       },
     },
   },
@@ -532,7 +402,7 @@ export const ChooseFakerMethod = {
     await userEvent.click(canvas.getByRole('button', { name: 'Open method picker' }));
     const dialog = within(document.body);
     await userEvent.click(
-      dialog.getByRole('button', {
+      dialog.getByRole('option', {
         name: 'helpers.arrayElement Returns one random element from the supplied array. faker',
       })
     );
@@ -551,7 +421,7 @@ export const FilterAndChooseDomainMethod = {
     docs: {
       description: {
         story:
-          'Open the picker, type `commerce` into the filter, choose **commerce.price**, and apply. This demonstrates that the Storybook surface covers the searchable list behavior, not just a preselected tile.',
+          'Open the picker, type commerce into the filter, choose commerce.price, and apply. This covers searchable list behavior through the compatibility service.',
       },
     },
   },
@@ -561,7 +431,7 @@ export const FilterAndChooseDomainMethod = {
     const dialog = within(document.body);
     await userEvent.type(dialog.getByRole('searchbox', { name: 'Filter methods' }), 'commerce');
     await userEvent.click(
-      dialog.getByRole('button', { name: 'commerce.price Generates a price between min and max (inclusive). domain' })
+      dialog.getByRole('option', { name: 'commerce.price Generates a price between min and max (inclusive). domain' })
     );
     await userEvent.click(dialog.getByRole('button', { name: 'Apply' }));
     await expect(canvas.getByText('domain:commerce.price')).toBeVisible();
@@ -574,7 +444,7 @@ export const CancelMethodSelection = {
     docs: {
       description: {
         story:
-          'Open the picker and choose **Cancel**. This demonstrates the dismissed overlay path and shows the `Cancelled` result in the story output.',
+          'Open the picker and choose Cancel. This demonstrates the dismissed overlay path and shows the Cancelled result in the story output.',
       },
     },
   },

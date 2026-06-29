@@ -47,12 +47,14 @@ function createSchemaRowValidation(issues = []) {
   };
 }
 
-function createRowValidationIssue({ rowIndex, code, field, message }) {
+function createRowValidationIssue({ rowIndex, code, field, message, severity, reasonCode }) {
   return {
     code,
     field,
     line: Number.isInteger(rowIndex) ? rowIndex + 1 : undefined,
     message,
+    ...(severity ? { severity: severity === 'warning' ? 'warning' : 'error' } : {}),
+    ...(reasonCode ? { reasonCode } : {}),
   };
 }
 
@@ -104,6 +106,13 @@ function getSemanticValidationField(row) {
     return 'params';
   }
   return 'value';
+}
+
+function getSemanticValidationSeverity(error) {
+  if (error?.severity === 'warning' || error?.reasonCode === 'unsafe_faker_rule') {
+    return 'warning';
+  }
+  return 'error';
 }
 
 function buildSemanticValidationRuleSpec(row, ruleSpec) {
@@ -325,6 +334,8 @@ function getSchemaRowSemanticValidationIssues(
         code: error?.code || 'semantic_validation_failed',
         field,
         message: createSemanticValidationMessage(row, error?.message, rowIndex),
+        severity: getSemanticValidationSeverity(error),
+        reasonCode: error?.reasonCode,
       })
     )
     .filter((issue) => issue.message);

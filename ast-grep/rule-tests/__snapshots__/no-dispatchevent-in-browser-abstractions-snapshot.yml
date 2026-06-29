@@ -1,0 +1,27 @@
+id: no-dispatchevent-in-browser-abstractions
+snapshots:
+  ? |
+    export class SchemaEditorComponent {
+      async forceInput(input, value) {
+        await input.evaluate((element, nextValue) => {
+          element.value = nextValue;
+          element.dispatchEvent(new Event('input', { bubbles: true }));
+        }, value);
+      }
+    }
+  : labels:
+      - source: "element.dispatchEvent(new Event('input', { bubbles: true }))"
+        style: primary
+        start: 162
+        end: 222
+  ? |
+    export class ToolbarComponent {
+      async forceChange(select) {
+        await select.dispatchEvent('change');
+      }
+    }
+  : labels:
+      - source: select.dispatchEvent('change')
+        style: primary
+        start: 72
+        end: 102

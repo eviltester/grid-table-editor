@@ -1,0 +1,17 @@
+id: no-example-return-values-field
+valid:
+  - |
+    const help = {
+      usageExamples: [
+        {
+          functionCall: 'internet.password(length=12)',
+          sampleReturnValue: 'pa$$w0rd',
+          description: 'Shows the modern usageExamples shape.',
+        },
+      ],
+    };
+invalid:
+  - |
+    const help = {
+      exampleReturnValues: ['pa$$w0rd'],
+    };

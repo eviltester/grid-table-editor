@@ -1,0 +1,14 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+
+id: no-example-return-values-field
+message: exampleReturnValues is legacy command-help metadata. Use structured usageExamples instead.
+severity: error
+language: JavaScript
+files:
+  - packages/core/js/**/*.js
+  - packages/core-ui/js/**/*.js
+  - apps/web/src/**/*.js
+rule:
+  kind: property_identifier
+  regex: exampleReturnValues
+note: Repo command-help contracts forbid exampleReturnValues on keyword definitions and runtime help objects.

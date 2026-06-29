@@ -1,0 +1,11 @@
+id: no-example-return-values-field
+snapshots:
+  ? |
+    const help = {
+      exampleReturnValues: ['pa$$w0rd'],
+    };
+  : labels:
+      - source: exampleReturnValues
+        style: primary
+        start: 17
+        end: 36

@@ -1,0 +1,23 @@
+id: no-document-global-dom-lookup-in-shared-components
+valid:
+  - |
+    class SharedThingView {
+      mount(root) {
+        return root.querySelector('[data-role="thing"]');
+      }
+    }
+  - |
+    function ensureStyles(root) {
+      return root.ownerDocument.getElementById('shared-style');
+    }
+invalid:
+  - |
+    class SharedThingView {
+      mount() {
+        return document.querySelector('[data-role="thing"]');
+      }
+    }
+  - |
+    function mountThing() {
+      return document.getElementById('thing-root');
+    }

@@ -1,0 +1,22 @@
+id: no-document-global-dom-lookup-in-shared-components
+snapshots:
+  ? |
+    class SharedThingView {
+      mount() {
+        return document.querySelector('[data-role="thing"]');
+      }
+    }
+  : labels:
+      - source: document.querySelector('[data-role="thing"]')
+        style: primary
+        start: 47
+        end: 92
+  ? |
+    function mountThing() {
+      return document.getElementById('thing-root');
+    }
+  : labels:
+      - source: document.getElementById('thing-root')
+        style: primary
+        start: 33
+        end: 70

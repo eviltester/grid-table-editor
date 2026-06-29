@@ -775,6 +775,8 @@ GitHub Actions runs linting and tests for pushes and pull requests to `master`.
 
 The pull request checks also run Fallow as an additional static-analysis gate:
 
+- `pnpm run ast-grep` runs the repo-specific structural analysis rules that protect shared-component DOM scoping, browser abstraction interaction discipline, and command-help metadata shape.
+- `pnpm run ast-grep:test` runs the checked-in `ast-grep` rule tests so rule behavior stays reviewable as the rule pack evolves.
 - `pnpm run fallow` runs the local health and duplication regression checks plus the dead-code pass.
 - `pnpm run fallow:ci` is the blocking CI path and fails on Fallow health or duplication regressions against the checked-in baselines and on any dead-code findings.
 - `pnpm run fallow:dead-code` runs the clean repo-tuned dead-code pass directly.

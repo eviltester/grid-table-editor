@@ -1,0 +1,11 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+
+id: no-dispatchevent-in-browser-abstractions
+message: Browser abstractions should use user-like Playwright interactions instead of dispatchEvent-based DOM forcing.
+severity: error
+language: JavaScript
+files:
+  - apps/web/src/tests/browser/**/*.{js,mjs}
+rule:
+  pattern: $TARGET.dispatchEvent($$$ARGS)
+note: Prefer click, fill, type, keyboard, blur/focus, and visible outcome assertions in browser page objects and components.

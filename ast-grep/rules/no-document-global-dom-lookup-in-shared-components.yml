@@ -1,0 +1,16 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/ast-grep/ast-grep/main/schemas/rule.json
+
+id: no-document-global-dom-lookup-in-shared-components
+message: Reusable shared components should query from an injected root or ownerDocument instead of the global document object.
+severity: error
+language: JavaScript
+files:
+  - packages/core-ui/js/gui_components/shared/**/*.js
+rule:
+  any:
+    - pattern: document.querySelector($$$ARGS)
+    - pattern: document.querySelectorAll($$$ARGS)
+    - pattern: document.getElementById($$$ARGS)
+    - pattern: document.getElementsByClassName($$$ARGS)
+    - pattern: document.getElementsByName($$$ARGS)
+note: Keep shared component DOM access scoped to the component root, injected document service, or ownerDocument boundary.

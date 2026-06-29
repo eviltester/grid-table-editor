@@ -70,6 +70,7 @@ minimumReleaseAgeExclude:
   - '@fallow-cli/win32-x64-msvc@2.103.0'
   - fallow@2.103.0
 allowBuilds:
+  '@ast-grep/cli': true
   '@scarf/scarf': true
   core-js: true
   esbuild: true

@@ -1,0 +1,24 @@
+id: no-dispatchevent-in-browser-abstractions
+valid:
+  - |
+    export class SchemaEditorComponent {
+      async fillName(input, value) {
+        await input.fill(value);
+      }
+    }
+invalid:
+  - |
+    export class SchemaEditorComponent {
+      async forceInput(input, value) {
+        await input.evaluate((element, nextValue) => {
+          element.value = nextValue;
+          element.dispatchEvent(new Event('input', { bubbles: true }));
+        }, value);
+      }
+    }
+  - |
+    export class ToolbarComponent {
+      async forceChange(select) {
+        await select.dispatchEvent('change');
+      }
+    }
